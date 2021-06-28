@@ -1,0 +1,29 @@
+{
+    "private": true,
+    "scripts": {
+        "postinstall": "npx mix",
+        "dev": "npx nodemon"
+    },
+    "devDependencies": {
+        "laravel-mix": "^6.0.11",
+        "nodemon": "^2.0.7",
+        "resolve-url-loader": "^4.0.0",
+        "sass": "^1.35.1",
+        "sass-loader": "^12.1.0"
+    },
+    "dependencies": {
+        "@ttskch/select2-bootstrap4-theme": "^1.5.2",
+        "autosize": "^4.0.2",
+        "bootstrap": "^4.6.0",
+        "flatpickr": "^4.6.3",
+        "node-sass": "^4.14.1",
+        "select2": "^4.1.0-rc.0",
+        "tablesort": "^5.1.0"
+    },
+    "nodemonConfig": {
+        "exec": "go run main.go server start || exit 1",
+        "signal": "SIGTERM",
+        "ext": "go,gohtml,json,po",
+        "delay": "1500"
+    }
+}
