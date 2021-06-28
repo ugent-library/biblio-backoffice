@@ -10,7 +10,8 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use: "biblio-backend [command]",
+	Use:   "biblio-backend [command]",
+	Short: "The biblio-backend CLI",
 	// flags override env vars
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		cmd.Flags().VisitAll(func(f *pflag.Flag) {
@@ -26,6 +27,8 @@ func init() {
 	viper.SetEnvPrefix("biblio-backend")
 	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
 	viper.AutomaticEnv()
+	viper.SetDefault("base-url", defaultBaseURL)
+	viper.SetDefault("port", defaultPort)
 }
 
 func Execute() {
