@@ -1,0 +1,25 @@
+.table {
+  margin-bottom: 0;
+}
+
+.table th {
+  color: $gray-700;
+  font-weight: 500;
+  max-height: 4.8rem;
+  padding: 1.5rem 1.2rem;
+  line-height: 1.8rem;
+  border-top: none;
+}
+
+.table td {
+  height: 6.4rem;
+  vertical-align: middle;
+  padding: 1.2rem;
+}
+
+
+.table .c-button-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}

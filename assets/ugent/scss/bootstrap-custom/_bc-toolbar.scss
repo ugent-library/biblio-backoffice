@@ -1,0 +1,166 @@
+/* ==========================================================================
+  bc-toolbar
+  Toolbar
+   ========================================================================== */
+
+/* Variables
+   ========================================================================== */
+
+$bc-toolbar-sm-height: 4.8rem !default;
+$bc-toolbar-height: 6.4rem !default;
+
+/* Reset padding in common Bootstrap elements
+  ========================================================================== */
+
+.bc-panel-header.has-bc-toolbar,
+.bc-panel-footer.has-bc-toolbar {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.alert.has-bc-toolbar {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* Component
+  ========================================================================== */
+
+.bc-toolbar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.bc-toolbar-bordered {
+  background-color: white;
+  border-bottom: 1px solid $border;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+
+/* Standard titles and text
+  ========================================================================== */
+
+.bc-toolbar-title {
+  white-space: nowrap;
+  font-size: 2rem;
+  font-weight: 500;
+  margin: 0;
+  color: $header;
+}
+
+.bc-toolbar-title,
+.bc-toolbar-title-sm {
+  .bc-toolbar-sm & {
+    line-height: $bc-toolbar-sm-height;
+  }
+}
+
+/* Heights
+  ========================================================================== */
+
+.bc-toolbar {
+  height: $bc-toolbar-height;
+}
+
+.bc-toolbar-sm {
+  height: $bc-toolbar-sm-height;
+}
+
+.bc-toolbar-auto {
+  height: auto;
+}
+
+/* Parts alignment
+  A toolbar can have a left, right and center part
+  ========================================================================== */
+
+.bc-toolbar-left {
+  justify-content: flex-start;
+  height: 100%;
+}
+
+.bc-toolbar-right {
+  justify-content: flex-end;
+  height: 100%;
+}
+
+.bc-toolbar-center {
+  justify-content: center;
+  height: 100%;
+}
+
+.bc-toolbar-center-inner {
+  margin-left: -50%;
+}
+
+/* Truncated elements
+  Using this modifier class, a toolbar element will truncate content inside of it with an ellipsis.
+  ========================================================================== */
+
+.bc-toolbar-truncated {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+
+/* Component alignment
+  Within the toolbar-left, toolbar-center or toolbar-right part, there are toolbar-item divs,
+  these are flexed to position the elements
+  ========================================================================== */
+
+.bc-toolbar-left,
+.bc-toolbar-right,
+.bc-toolbar-center,
+.bc-toolbar-center-inner {
+  flex: 1 auto;
+  display: flex;
+  align-items: center;
+
+  &.bc-toolbar-shrink {
+    flex: 0 auto;
+  }
+}
+
+.bc-toolbar-left .bc-toolbar-item {
+  padding-right: 1rem;
+  &:last-child {
+    padding-right: 0;
+  }
+}
+
+.bc-toolbar-right .bc-toolbar-item {
+  padding-left: 1rem;
+  &:first-child {
+    padding-left: 0;
+  }
+}
+
+.bc-toolbar-item--no-spacing {
+  .bc-toolbar-left & {
+    padding: 0;
+  }
+  .bc-toolbar-right & {
+    padding: 0;
+  }
+}
+
+
+
+.bc-toolbar-sm .bc-toolbar-left .bc-toolbar-item {
+  padding-right: $grid-gutter-width / 4;
+  &:last-child {
+    padding-right: 0;
+  }
+}
+
+.bc-toolbar-sm .bc-toolbar-right .bc-toolbar-item {
+  padding-left: $grid-gutter-width / 4;
+  &:first-child {
+    padding-left: 0;
+  }
+}

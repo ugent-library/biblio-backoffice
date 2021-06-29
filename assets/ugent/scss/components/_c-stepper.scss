@@ -1,0 +1,71 @@
+.c-stepper {
+  list-style: none;
+  padding: 0;
+}
+
+.c-stepper__item {
+  margin-bottom: 1.2rem;
+  height: 4.2rem;
+  display: flex;
+  align-items: center;
+
+  a {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    color: $text;
+    padding: 0 2.4rem;
+    font-weight: 500;
+    line-height: 2.4rem;
+
+    &:hover {
+      background: $gray-100;
+    }
+  }
+}
+
+.c-stepper__step {
+  width: 2.4rem;
+  height: 2.4rem;
+  margin-right: 1.2rem;
+  background-color: $gray-300;
+  border-radius: 50%;
+  text-align: center;
+  color: $white;
+}
+
+.c-stepper__step--active {
+  background-color: $primary;
+}
+
+.c-stepper__step--complete {
+  background-color: $success;
+  .if {
+    font-size: 1.6rem;
+  }
+}
+
+.c-stepper__item-sub {
+  font-size: 1.3rem;
+  margin-bottom: 0.8rem;
+  height: 3.6rem;
+
+  .c-stepper__text {
+    padding-left: 3.6rem;
+  }
+}
+
+.c-stepper__item-sub--active {
+  a {
+    background-color: $gray-100;
+    color: $header;
+  }
+}
+
+.c-stepper__item--active {
+  a {
+    color: $header;
+    background: $gray-100;
+  }
+}

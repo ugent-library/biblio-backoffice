@@ -1,0 +1,177 @@
+//
+// Additions to Bootstrap `_buttons.scss`
+//
+
+.btn {
+  align-self: center;
+  padding: 0 1.6rem;
+  line-height: 3.4rem;
+  white-space: nowrap;
+
+  .btn-text {
+    display: inline-block;
+  }
+
+  .if {
+    position: relative;
+    top: 3px;
+    font-size: 2.4rem;
+    line-height: 1;
+  }
+}
+
+.if + .btn-text,
+.btn-text + .if {
+  padding-left: .4rem;
+}
+
+.btn:not(.btn-icon-only) .if:first-child {
+  margin-left: -.8rem;
+}
+
+.btn:not(.btn-icon-only) .if:last-child {
+  margin-right: -.8rem;
+}
+
+.btn-link {
+  font-weight: 500;
+}
+
+// Skins
+
+.btn-warning {
+  color: $white;
+
+  &:hover,
+  &:focus {
+    color: $white;
+  }
+}
+
+.btn-outline-primary {
+  &:hover,
+  &:focus {
+    background-color: $light-blue;
+    color: $blue;
+  }
+}
+
+.btn-outline-secondary {
+  color: $text;
+  border-color: $border;
+
+  &:hover,
+  &:focus {
+    background-color: $gray-50;
+  }
+}
+
+.btn-outline-success {
+  &:hover,
+  &:focus {
+    background-color: $light-green;
+    color: $green;
+  }
+}
+
+.btn-outline-danger {
+  &:hover,
+  &:focus {
+    background-color: $light-warm-red;
+    color: $warm-red;
+  }
+}
+
+.btn-outline-warning {
+  &:hover,
+  &:focus {
+    background-color: $light-orange;
+    color: $orange;
+  }
+}
+
+.btn-outline-info {
+  &:hover,
+  &:focus {
+    background-color: rgba($aqua, .1);
+    color: $aqua;
+  }
+}
+
+.btn-outline-light {
+  &:hover,
+  &:focus {
+    background-color: $gray-25;
+    color: $gray-200;
+  }
+}
+
+.btn-outline-dark {
+  &:hover,
+  &:focus {
+    background-color: $gray-50;
+    color: $gray-1000;
+  }
+}
+
+.btn:not(.btn-link).disabled {
+  background-color: $gray-100;
+  border-color: $gray-100;
+  color: $text-muted;
+}
+
+.btn-link-muted {
+  color: $icon-default;
+
+  &:hover,
+  &:focus {
+    color: $gray-700;
+  }
+}
+
+// Icon only button
+
+.btn-icon-only {
+  width: 3.6rem;
+  text-align: center;
+  padding: 0;
+  height: 3.6rem;
+  min-width: 3.6rem;
+  min-height: 3.6rem;
+}
+
+.btn-sm {
+  height: 2.4rem;
+  font-size: 1.3rem;
+  line-height: 2.4rem;
+  .if {
+    font-size: 1.6rem;
+  }
+}
+
+.btn-thumbnail {
+  border-radius: 50%;
+  width: 2.4rem;
+  min-width: 2.4rem;
+  height: 2.4rem;
+  min-height: 2.4rem;
+  line-height: 1.6rem;
+  position: absolute;
+  left: 8.8rem;
+  bottom: 1.2rem;
+  background-color: $light-blue;
+  color: $blue;
+  border: none;
+
+  &:hover,
+  &:focus,
+  &:active {
+    background-color: rgba($blue, .2);
+    color: $blue;
+  }
+
+  .if {
+    font-size: 1.6rem;
+    top: 0;
+  }
+}

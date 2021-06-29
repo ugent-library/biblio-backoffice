@@ -1,0 +1,73 @@
+/* ==========================================================================
+  Additions to bootstrap/cards
+   ========================================================================== */
+
+/* Always clear alerts
+   ========================================================================== */
+
+.alert {
+  @extend .clearfix;
+  display: flex;
+  align-items: center;
+
+  p {
+    margin: 0;
+    padding-left: 1.6rem;
+  }
+}
+
+.alert-dismissible .close {
+  opacity: 1;
+
+  .if {
+    color: $icon-muted;
+  }
+}
+
+/* Success alert
+   ========================================================================== */
+
+.alert-success {
+  background: $light-green;
+  color: $dark-green;
+
+  .if {
+    color: $success;
+  }
+}
+
+/* Danger alert
+   ========================================================================== */
+
+.alert-danger {
+  background: $light-warm-red;
+  color: $dark-warm-red;
+
+  .if {
+    color: $danger;
+  }
+}
+
+/* Info alert
+   ========================================================================== */
+
+.alert-info {
+  background: $light-blue;
+  color: $dark-blue;
+
+  .if {
+    color: $blue;
+  }
+}
+
+/* Warning alert
+   ========================================================================== */
+
+.alert-warning {
+  background: $light-orange;
+  color: $dark-orange;
+
+  .if {
+    color: $orange;
+  }
+}

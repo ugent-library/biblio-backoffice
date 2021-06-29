@@ -4,12 +4,15 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/ugent-library/biblio-backend/internal/controllers"
 	"github.com/ugent-library/biblio-backend/internal/routes"
 	"github.com/ugent-library/go-graceful/server"
+	"github.com/unrolled/render"
 )
 
 func init() {
 	serverStartCmd.Flags().String("base-url", defaultBaseURL, "base url")
+	serverStartCmd.Flags().String("host", defaultHost, "server host")
 	serverStartCmd.Flags().Int("port", defaultPort, "server port")
 
 	serverCmd.AddCommand(serverStartCmd)
@@ -25,9 +28,23 @@ var serverStartCmd = &cobra.Command{
 	Use:   "start",
 	Short: "start the http server",
 	Run: func(cmd *cobra.Command, args []string) {
-		r := chi.NewRouter()
-		routes.Register(r)
-		s := server.New(r,
+		// renderer
+		renderer := render.New(render.Options{
+			Directory:  "templates",
+			Extensions: []string{".gohtml"},
+			Layout:     "layout",
+		})
+
+		// router
+		router := chi.NewRouter()
+		routes.Register(
+			router,
+			controllers.NewPublication(renderer),
+		)
+
+		// server
+		s := server.New(router,
+			server.WithHost(viper.GetString("host")),
 			server.WithPort(viper.GetInt("port")),
 		)
 		s.Start()

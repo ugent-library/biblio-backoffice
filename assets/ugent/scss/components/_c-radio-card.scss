@@ -1,0 +1,44 @@
+.c-radio-card {
+  border: .1rem solid $border;
+  border-radius: .3rem;
+  display: flex;
+  align-items: center;
+  padding: 2rem 1.6rem;
+  margin: 0;
+  font-weight: normal;
+  line-height: 2.4rem;
+
+  &:hover,
+  &:focus {
+    border-color: $blue;
+    box-shadow: 0 0 0 3px $light-blue;
+  }
+
+  .custom-control-label {
+    height: 2.2rem;
+  }
+}
+
+.c-radio-card--selected {
+  border-color: $blue;
+  box-shadow: 0 0 0 3px $light-blue;
+  background-color: $gray-25;
+}
+
+.c-radio-card__radio {
+  margin-right: 1.1rem;
+}
+
+.c-radio-card + .c-radio-card {
+  margin-top: 1.6rem;
+}
+
+.c-radio-card__hidden-content {
+  display: none;
+}
+
+.c-radio-card--selected .c-radio-card__hidden-content {
+  display: block;
+  padding-left: 7.2rem;
+  margin-top: .8rem;
+}

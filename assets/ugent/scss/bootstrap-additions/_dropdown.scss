@@ -1,0 +1,52 @@
+// Dropdown links
+
+.dropdown-item {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+
+  .if {
+    padding-right: 1.2rem;
+  }
+}
+
+.dropdown-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: .1rem solid $border-color;
+  height: 5.2rem;
+  padding: 0 1.6rem
+}
+
+.dropdown-body {
+  padding: 1.6rem;
+}
+
+.dropdown-footer {
+  padding: 0 1.6rem;
+}
+
+.dropdown-menu {
+  z-index: 100000 !important;
+}
+
+.dropdown-item-check {
+  display: none;
+}
+
+.dropdown-toggle {
+    //Fix safari
+    -webkit-appearance: none;
+}
+
+.dropdown-item--selected {
+  background-color: $gray-50;
+
+  .dropdown-item-check {
+    display: block;
+    margin-left: 1.2rem;
+    flex: 1;
+    text-align: end;
+  }
+}

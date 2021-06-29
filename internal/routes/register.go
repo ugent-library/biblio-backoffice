@@ -5,15 +5,24 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	chimw "github.com/go-chi/chi/v5/middleware"
+	"github.com/ugent-library/biblio-backend/internal/controllers"
 )
 
-func Register(r chi.Router) {
+func Register(router chi.Router, publicationController *controllers.Publication) {
 	// general middleware
-	r.Use(chimw.RequestID)
-	r.Use(chimw.RealIP)
-	r.Use(chimw.Logger)
-	r.Use(chimw.Recoverer)
+	router.Use(chimw.RequestID)
+	router.Use(chimw.RealIP)
+	router.Use(chimw.Logger)
+	router.Use(chimw.Recoverer)
 
-	// static file server
-	r.Mount("/s/", http.StripPrefix("/s/", http.FileServer(http.Dir("static"))))
+	// static files
+	router.Mount("/s/", http.StripPrefix("/s/", http.FileServer(http.Dir("static"))))
+
+	// home
+	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/publication", http.StatusPermanentRedirect)
+	})
+
+	// publication
+	router.Get("/publication", publicationController.List)
 }

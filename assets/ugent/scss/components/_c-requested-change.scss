@@ -1,0 +1,30 @@
+/* ==========================================================================
+    Component: Requested change
+   ========================================================================== */
+
+.c-requested-change__initial,
+.c-requested-change__new {
+  border-radius: 0.3rem;
+  padding: 0.6rem 0.8rem;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  background: $light-warm-red;
+  .if {
+    margin-right: 0.8rem;
+  }
+}
+
+.c-requested-change__initial {
+  color: $warm-red;
+  background: $light-warm-red;
+}
+
+.c-requested-change__new {
+  color: $green;
+  background: $light-green;
+}
+
+.c-requested-change__initial + .c-requested-change__new {
+  margin-top: 0.8rem;
+}

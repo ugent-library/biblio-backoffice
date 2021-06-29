@@ -1,0 +1,86 @@
+.select2-container--bootstrap4 {
+  .select2-selection--multiple {
+
+    // height of input box
+    min-height: $input-height !important; // stylelint-disable-line declaration-no-important
+    padding: 0.4rem 0;
+    // input box
+    .select2-selection__rendered {
+      box-sizing: border-box;
+      width: 100%;
+      padding: 0 $input-padding-x / 2;
+      margin: 0;
+      list-style: none;
+    }
+
+    // each selected item in input box
+    .select2-selection__choice {
+      height: 2.4rem;
+      display: inline-flex;
+      align-items: center;
+      line-height: 2.4rem;
+      background-color: $light-blue;
+      color: $blue;
+      padding-right: $badge-pill-padding-x;
+      padding-left: .4rem;
+      font-size: 1.3rem;
+      font-weight: 500;
+      @include border-radius($badge-pill-border-radius);
+    }
+
+    .select2-selection__choice + .select2-selection__choice {
+      margin-left: 0.8rem;
+    }
+
+    // search field
+    .select2-search__field {
+      color: $input-color;
+    }
+
+    // fixes placeholder width
+    .select2-selection__choice + .select2-search {
+      width: 0;
+    }
+
+    // x button of each selected item in input box
+    .select2-selection__choice__remove {
+      float: left;
+      background: transparent;
+      color: $blue;
+      font-size: 1.6rem;
+      border: 1px solid transparent;
+      margin-right: 0.4rem;
+      font-weight: 700;
+      appearance: none;
+      opacity: 0.5;
+      &:hover {
+        color: $dark-blue;
+      }
+    }
+
+    // all clear button
+    .select2-selection__clear {
+      position: absolute !important; // stylelint-disable-line declaration-no-important
+      top: 0;
+      right: .7em;
+      // overwrite layout.scss
+      float: none;
+      margin-right: 0;
+    }
+  }
+
+  // hide x button of each selected item in disabled input box
+  &.select2-container--disabled {
+    .select2-selection--multiple {
+      .select2-selection__choice {
+        padding: 0 5px;
+        cursor: not-allowed;
+        // stylelint-disable selector-max-class
+        .select2-selection__choice__remove {
+          display: none;
+        }
+        // stylelint-enable selector-max-class
+      }
+    }
+  }
+}

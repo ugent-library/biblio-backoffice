@@ -1,0 +1,301 @@
+/**
+ * Bootstrap settings
+ * overrides bootstrap's default variables
+ */
+
+//
+// Color system
+//
+
+$primary:       $blue;
+$secondary:     $gray-100;
+$success:       $success;
+$info:          $aqua;
+$danger:        $danger;
+$warning:       $warning;
+$light:         $gray-50;
+$dark:          $gray-900;
+
+
+// Body
+//
+// Settings for the `<body>` element.
+
+$body-color              : $gray-700;
+
+// Can't use global $enable-rounded since we want rounded in some cases (e.g. tabs)
+$border-radius           : .3rem;
+$border-radius-lg        : 0.375rem;
+$border-radius-sm        : 0.125rem;
+
+$border-color            : $gray-150;
+
+// Grid columns
+//
+// Set the number of columns and specify the width of the gutters.
+
+$grid-columns           : 12;
+$grid-gutter-width      : 16px;
+
+// Spacing
+//
+// Control the default styling of most Bootstrap elements by modifying these
+// variables. Mostly focused on spacing.
+// You can add more entries to the $spacers map, should you need more variation.
+
+$spacer: .8rem !default;
+$spacers: () !default;
+$spacers: map-merge(
+  (
+    0: 0,
+    1: ($spacer * .25),
+    2: ($spacer * .5),
+    3: $spacer,
+    4: ($spacer * 1.5),
+    5: ($spacer * 2),
+    6: ($spacer * 3)
+  ),
+  $spacers
+);
+
+// Options
+//
+// Quickly modify global styling by enabling or disabling optional features.
+$enable-shadows:              true !default;
+
+// Fonts
+//
+// Font, line-height, and color for body text, headings, and more.
+
+$font-size-base:              1.5rem;
+$font-size-lg:                $font-size-base * 1.25 !default;
+$font-size-sm:                1.3rem;
+
+$font-weight-lighter:         lighter !default;
+$font-weight-light:           300 !default;
+$font-weight-normal:          400 !default;
+$font-weight-bold:            500 !default;
+$font-weight-bolder:          bolder !default;
+
+$font-weight-base:            $font-weight-normal !default;
+$line-height-base:            1.5 !default;
+
+$h1-font-size:                2.4rem;
+$h2-font-size:                2rem;
+$h3-font-size:                1.8rem;
+$h4-font-size:                1.5rem;
+
+$text-muted:                  $text-muted;
+
+// Buttons + Forms
+//
+// Shared variables that are reassigned to `$input-` and `$btn-` specific variables.
+
+$input-btn-padding-y:         .9rem;
+$input-btn-padding-x:         1.6rem;
+
+
+// Buttons
+//
+// For each of Bootstrap's buttons, define text, background, and border color.
+
+$btn-font-weight:             500;
+
+$btn-link-disabled-color:     rgba($blue, .5);
+
+// Links
+//
+// Style anchor elements.
+
+$link-hover-color:                        $dark-blue;
+$link-hover-decoration:                   none;
+
+// Alerts
+//
+// Define alert colors, border radius, and padding.
+
+$alert-padding-y:                   1.6rem;
+$alert-padding-x:                   1.6rem;
+$alert-border-width:                0;
+
+
+// Dropdowns
+//
+// Dropdown menu container and contents.
+
+$dropdown-padding-y:                .8rem;
+$dropdown-border-color:             $border-color;
+
+$dropdown-link-color:               $text;
+$dropdown-link-hover-bg:            $gray-50;
+
+$dropdown-link-active-color:        $text;
+$dropdown-link-hover-color:         $text;
+$dropdown-link-active-bg:           $gray-50;
+
+$dropdown-item-padding-y:           .8rem;
+$dropdown-item-padding-x:           1.2rem;
+
+$dropdown-header-color:             $header;
+$dropdown-header-padding:           1.2rem;
+
+
+// Forms
+
+$label-margin-bottom:                   .8rem;
+
+$input-padding-y:                       .6rem;
+$input-padding-x:                       1.2rem;
+
+$input-disabled-bg:                     $gray-50;
+
+$input-color:                           $text;
+$input-border-color:                    $gray-200;
+
+$input-focus-border-color:              $primary;
+
+$input-placeholder-color:               $text-muted;
+
+$input-height:                          3.6rem;
+
+// $form-text-margin-top:                  .25rem !default;
+
+// $form-check-input-gutter:               1.25rem !default;
+// $form-check-input-margin-y:             .3rem !default;
+// $form-check-input-margin-x:             .25rem !default;
+
+// $form-check-inline-margin-x:            .75rem !default;
+// $form-check-inline-input-margin-x:      .3125rem !default;
+
+$form-grid-gutter-width:                1.6rem;
+// $form-group-margin-bottom:              1rem !default;
+
+$input-group-addon-color:               $text-muted;
+$input-group-addon-bg:                  $gray-50;
+
+$custom-control-indicator-size:         1.6rem;
+
+$custom-control-indicator-border-color: $gray-200;
+
+$custom-control-indicator-disabled-bg:          $gray-100;
+
+$custom-control-indicator-checked-color:        $white;
+$custom-control-indicator-checked-bg:           $primary;
+$custom-control-indicator-checked-disabled-bg:  $gray-100;
+$custom-control-indicator-checked-border-color: $primary;
+
+$custom-checkbox-indicator-indeterminate-bg:           $primary;
+$custom-checkbox-indicator-indeterminate-color:        $white;
+$custom-checkbox-indicator-indeterminate-border-color: $primary;
+
+$custom-switch-width:                           4rem;
+$custom-switch-indicator-border-radius:         1.2rem;
+$custom-switch-indicator-size:                  1.6rem;
+
+// Modals
+
+// Padding applied to the modal body
+$modal-inner-padding:               1.6rem;
+
+// Margin between elements in footer, must be lower than or equal to 2 * $modal-inner-padding
+$modal-footer-margin-between:       1.6rem;
+
+$modal-content-border-color:        $border;
+$modal-content-border-radius:       .3rem;
+
+$modal-backdrop-bg:                 $gray-1000;
+$modal-backdrop-opacity:            .8;
+$modal-header-border-color:         $border;
+$modal-footer-border-color:         $border;
+$modal-header-padding-y:            1.2rem;
+$modal-header-padding-x:            1.6rem;
+$modal-header-padding:              $modal-header-padding-y $modal-header-padding-x; // Keep this for backwards compatibility
+
+// Tooltips
+
+$tooltip-max-width:                 35rem;
+$tooltip-bg:                        $gray-800;
+$tooltip-opacity:                   1;
+$tooltip-padding-y:                 .8rem;
+$tooltip-padding-x:                 1.2rem;
+
+$tooltip-arrow-width:               1.6rem;
+$tooltip-arrow-height:              .8rem;
+
+// Popovers
+
+$popover-max-width:                 35rem;
+$popover-border-color:              $border;
+$popover-border-radius:             .3rem;
+$popover-box-shadow:                0 .25rem .5rem rgba($black, .2) !default;
+
+$popover-header-bg:                 $white;
+$popover-header-color:              $header;
+$popover-header-padding-y:          1.6rem;
+$popover-header-padding-x:          1.6rem;
+
+$popover-body-padding-y:            1.6rem;
+$popover-body-padding-x:            1.6rem;
+
+$popover-arrow-width:               1.6rem;
+$popover-arrow-height:              .8rem;
+
+
+// Badges
+
+$badge-font-size:                   1.3rem;
+$badge-font-weight:                 500;
+$badge-padding-y:                   .5rem;
+$badge-padding-x:                   1.2rem;
+
+$badge-pill-padding-x:              1.2rem;
+
+// Navs
+
+$nav-link-padding-y:                .5rem;
+$nav-link-padding-x:                0;
+
+$nav-tabs-border-color:             $border;
+$nav-tabs-border-radius:            0;
+$nav-tabs-link-active-color:        $primary;
+$nav-tabs-link-active-border-color: $primary;
+
+// Cards
+
+$card-spacer-y:                     0;
+$card-spacer-x:                     2.4rem;
+$card-border-color:                 $border;
+$card-cap-bg:                       $white;
+$card-cap-color:                    $header;
+$card-color:                        $text;
+$card-bg:                           $white;
+
+
+// Pagination
+
+$pagination-padding-y:              0;
+$pagination-padding-x:              0;
+
+$pagination-color:                  $text;
+$pagination-border-color:           $border;
+
+$pagination-hover-color:            $text;
+$pagination-hover-bg:               $light-blue;
+$pagination-hover-border-color:     $blue;
+
+$pagination-active-color:           $white;
+$pagination-active-bg:              $blue;
+$pagination-active-border-color:    $blue;
+
+$pagination-disabled-color:         $gray-200;
+$pagination-disabled-border-color:  $border;
+
+// List group
+
+$list-group-border-color:           $border;
+
+$list-group-item-padding-y:         2rem;
+$list-group-item-padding-x:         2.4rem;
+
+$list-group-action-active-bg:       $gray-50;
+$list-group-hover-bg:               $gray-50;

@@ -27,8 +27,9 @@ func init() {
 	viper.SetEnvPrefix("biblio-backend")
 	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
 	viper.AutomaticEnv()
-	viper.SetDefault("base-url", defaultBaseURL)
+	viper.SetDefault("host", defaultHost)
 	viper.SetDefault("port", defaultPort)
+	viper.SetDefault("base-url", defaultBaseURL)
 }
 
 func Execute() {

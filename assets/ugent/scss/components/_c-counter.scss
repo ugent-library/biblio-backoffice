@@ -1,0 +1,23 @@
+.c-counter {
+  background-color: $blue;
+  color: $white;
+  border-radius: 3rem;
+  font-size: 1.3rem;
+  font-weight: 500;
+  height: 2.4rem;
+  text-align: center;
+  line-height: 2.4rem;
+  display: inline-block;
+  padding: 0 .8rem;
+}
+
+.c-counter--danger {
+  background-color: $danger;
+}
+
+.c-counter--small {
+  height: 1.6rem;
+  line-height: 1.6rem;
+  padding: 0 .5rem;
+  font-size: 1.1rem;
+}

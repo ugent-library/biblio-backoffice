@@ -1,0 +1,66 @@
+/* ==========================================================================
+  Additions to forms
+   ========================================================================== */
+
+.form-control-sm {
+  font-size: 0.75rem;
+}
+
+.form-icon-input {
+  position: relative;
+
+  > .svg-icon {
+    opacity: 0.5;
+    position: absolute;
+    left: 0.5rem;
+    top: 0.3rem;
+  }
+
+  .form-control {
+    padding-left: 2rem;
+  }
+
+  .form-control-sm {
+    padding-left: 1.4rem;
+    &  + .svg-icon {
+      left: 0.35rem;
+      top: 0.2rem;
+    }
+  }
+}
+
+.col-form-label {
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+}
+
+abbr.required {
+  text-decoration: none;
+  opacity: 0.5;
+}
+
+abbr {
+  border-bottom: 1px dotted $gray-400;
+}
+
+/*form label {
+  line-height: 3.6rem;
+  font-weight: 500;
+}*/
+
+// .form-group:last-child {
+//   margin-bottom: 0;
+// }
+
+
+
+/* Better focus states
+   ========================================================================== */
+
+.form-control:focus {
+  background-color: $input-focus-bg;
+  border-color: $primary;
+  outline: 0;
+}
+

@@ -1,0 +1,10 @@
+.tooltip-text {
+  display: none;
+}
+
+.tooltip-inner {
+  text-align: left;
+  .if {
+    font-size: 1.6rem;
+  }
+}

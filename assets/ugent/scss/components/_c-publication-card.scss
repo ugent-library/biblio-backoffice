@@ -1,0 +1,65 @@
+/* ==========================================================================
+    Component: Publication card
+   ========================================================================== */
+
+.c-publication-card {
+  border: 0.1rem solid $border;
+  border-radius: 0.3rem;
+  height: 100%;
+  background: $white;
+}
+
+.c-publication-card__thumbnail {
+  background: $gray-50;
+  padding: 4rem;
+  img {
+    width: 100%;
+    height: auto;
+  }
+}
+
+.c-publication-card__content {
+  padding: 1.6rem;
+}
+
+.c-publication-card__subline {
+  width: 100%;
+  font-size: 1.3rem;
+  font-weight: 500;
+  display: flex;
+  color: $text-muted;
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
+
+.c-publication-card__title {
+  margin-bottom: 0.8rem;
+  a {
+    color: $header;
+  }
+}
+
+.c-publication-card__authors {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  font-size: 1.3rem;
+  margin: 0.4rem 0;
+
+}
+
+.c-publication-card__author {
+  margin-right: 1.2rem;
+  white-space: nowrap;
+
+  .if {
+    color: $icon-muted;
+    font-size: 1.6rem;
+  }
+}
+
+.c-publication-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+}

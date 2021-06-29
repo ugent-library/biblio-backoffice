@@ -1,0 +1,90 @@
+/* ==========================================================================
+  Component: sub side bar
+   ========================================================================== */
+
+/* Variables
+   ========================================================================== */
+
+  $c-sub-sidebar-width: 26rem !default;
+  $c-sub-sidebar-background-color: $gray-50 !default;
+  $c-sub-sidebar-color: $text !default;
+  $c-sub-sidebar-active-background-color: $gray-100 !default;
+  $c-sub-sidebar-active-color: $header !default;
+  $c-sub-sidebar-hover-background-color: $gray-100 !default;
+  $c-sub-sidebar-hover-color: $text !default;
+
+/* Component
+   ========================================================================== */
+
+.c-sub-sidebar {
+  background: $c-sub-sidebar-background-color;
+  height: 100%;
+  width: $c-sub-sidebar-width;
+  position: relative;
+  min-width: $c-sub-sidebar-width;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.c-sub-sidebar__menu {
+  flex: 1;
+  overflow: auto;
+
+  .c-sub-sidebar-menu {
+    list-style: none;
+    padding: 0;
+  }
+
+  .c-sub-sidebar__item {
+    margin-bottom: .4rem;
+  }
+
+  .c-sub-sidebar__item a {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 2.4rem;
+    color: $c-sub-sidebar-color;
+    height: 4rem;
+    font-weight: 500;
+
+    &:hover,
+    &:focus {
+      background: $c-sub-sidebar-hover-background-color;
+      color: $c-sub-sidebar-hover-color;
+    }
+  }
+  .c-sub-sidebar__item--active a {
+    background: $c-sub-sidebar-active-background-color;
+    color: $c-sub-sidebar-active-color;
+  }
+
+  .c-sub-sidebar__label {
+    max-width: 100%;
+    display: block;
+    text-align: center;
+    padding-top: .4rem;
+  }
+}
+
+.c-sub-sidebar__item-sub {
+  font-size: 1.3rem;
+  margin-bottom: 0.8rem;
+  height: 3.6rem;
+
+  a {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 2.4rem 0 3.6rem;
+    color: $c-sub-sidebar-color;
+    height: 4rem;
+    font-weight: 500;
+  }
+}
+
+.c-sub-sidebar__item-sub--active a {
+  background: $c-sub-sidebar-active-background-color;
+  color: $c-sub-sidebar-active-color;
+}

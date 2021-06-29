@@ -1,0 +1,71 @@
+/* ==========================================================================
+  Colors
+  Only define colors here. Don't use sass color functions, stick to hex values,
+  or the color component in styleguide won't regenerate automatically anymore.
+ ========================================================================== */
+
+/* Grays
+ ========================================================================== */
+
+$gray-25: #FAFAFA;
+$gray-50: #F2F2F2;
+$gray-100: #E5E5E5;
+$gray-150: #DEDEDE;
+$gray-200: #CCCCCC;
+$gray-300: #B4B4B4;
+$gray-400: #999999;
+$gray-500: #808080;
+$gray-600: #646464;
+$gray-700: #4D4D4D;
+$gray-800: #333333;
+$gray-900: #202020;
+$gray-1000: #1A1A1A;
+$white: #FFF;
+$black: #000;
+
+
+/* Primary
+ ========================================================================== */
+
+$blue: #1E64C8;
+$dark-blue: #003FA3;
+$light-blue: #E9F0FA;
+
+$yellow: #FFD200;
+$dark-yellow: #E5B400;
+$light-yellow: #FFFAE5;
+
+/* Secondary
+ ========================================================================== */
+
+$green: #71A860;
+$dark-green: #528448;
+$light-green: #F0F6EF;
+$warm-red: #DC4E28;
+$dark-warm-red: #B8381E;
+$light-warm-red: #FBEEE9;
+$orange: #F1A42B;
+$dark-orange: #D28914;
+$light-orange: #FDF5E7;
+$turquoise: #27ABAD;
+$aqua: #2D8CA8;
+$grey-blue: #6F71B9;
+$purple: #825491;
+$light-purple: #BE5190;
+$salmon-pink: #E85E71;
+$warm-orange: #FB7E3A;
+
+ /* Semantic
+ ========================================================================== */
+
+$warning: #F1A42B;
+$success: #71A860;
+$danger: #DC4E28;
+
+$text: #4D4D4D;
+$header: #1A1A1A;
+$text-muted: #808080;
+
+$border: #DEDEDE;
+$icon-muted: #999999;
+$icon-default: #666666;

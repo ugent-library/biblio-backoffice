@@ -1,0 +1,57 @@
+.c-progress-bar {
+  display: flex;
+  align-items: center;
+
+  .c-progress-bar__progress {
+    width: 8rem;
+    display: flex;
+  }
+
+  .c-progress-bar__bar {
+    width: 30%;
+    height: .3rem;
+    background-color: $gray-150;
+    margin-right: .4rem;
+
+    &:last-child {
+      margin: 0;
+    }
+  }
+
+  .c-progress-bar__bar--start {
+    border-radius: .3rem 0 0 .3rem;
+  }
+
+  .c-progress-bar__bar--end {
+    border-radius: 0 .3rem .3rem 0;
+  }
+
+  .c-progress-bar__label {
+    font-size: 1.3rem;
+    color: $text-muted;
+    padding-left: .8rem;
+  }
+}
+
+.c-progress-bar--low {
+  .c-progress-bar__bar--start {
+    background-color: $danger;
+  }
+
+  .c-progress-bar__label {
+    color: $danger;
+  }
+}
+
+.c-progress-bar--medium {
+  .c-progress-bar__bar--start,
+  .c-progress-bar__bar--middle {
+    background-color: $success;
+  }
+}
+
+.c-progress-bar--high {
+  .c-progress-bar__bar {
+    background-color: $success;
+  }
+}

@@ -1,0 +1,40 @@
+// Additions to Bootstrap
+
+/* Variables
+   ========================================================================== */
+
+.nav {
+  .nav-item {
+    margin-right: 2.4rem;
+    font-weight: 500;
+    color: $text-muted;
+    height: 4.8rem;
+  }
+
+  .nav-link{
+    color:  $text-muted;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    border-bottom: 2px solid transparent;
+
+    .c-counter {
+      margin-left: .8rem;
+    }
+
+    &:hover,
+    &:focus {
+      border-bottom: 2px solid $primary;
+    }
+
+    &.active {
+      border-bottom: 2px solid $primary;
+      color: $primary;
+    }
+
+    &.disabled {
+      color: $gray-200;
+    }
+  }
+}

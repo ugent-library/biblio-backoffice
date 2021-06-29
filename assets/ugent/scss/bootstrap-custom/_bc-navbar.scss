@@ -1,0 +1,54 @@
+$bc-navbar-small-height         : 3.2rem !default;
+$bc-navbar-height               : 4.8rem !default;
+$bc-navbar-large-height         : 6.4rem !default;
+$bc-navbar-xlarge-height         : 8rem !default;
+
+.bc-navbar {
+  padding: 0 2.4rem;
+  height: $bc-navbar-height;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.bc-navbar--auto {
+  height: auto;
+}
+
+.bc-navbar--white {
+  background: #FFF;
+}
+
+.bc-navbar--fixed {
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 1001;
+  border-bottom: 1px solid $border;
+}
+
+/* Bordered equivalents
+   ========================================================================== */
+
+.bc-navbar--bordered-top {
+  border-top: 0.1rem solid $border;
+}
+
+.bc-navbar--bordered-bottom {
+  border-bottom: 0.1rem solid $border;
+}
+
+/* Sizes
+   ========================================================================== */
+
+.bc-navbar--large {
+  height: $bc-navbar-large-height;
+}
+
+.bc-navbar--small {
+  height: $bc-navbar-small-height;
+}
+
+.bc-navbar--xlarge {
+  height: $bc-navbar-xlarge-height;
+}

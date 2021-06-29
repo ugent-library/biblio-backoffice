@@ -1,0 +1,17 @@
+.c-header-collapsible[data-collapsed="true"] {
+  .c-header-collapsible__expanded {
+    display: none;
+  }
+  .c-header-collapsible__collapsed {
+    display: block;
+  }
+}
+
+.c-header-collapsible[data-collapsed="false"] {
+  .c-header-collapsible__expanded {
+    display: block;
+  }
+  .c-header-collapsible__collapsed {
+    display: none;
+  }
+}
