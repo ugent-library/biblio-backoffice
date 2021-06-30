@@ -1,10 +1,13 @@
 package commands
 
 import (
+	"html/template"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/controllers"
+	"github.com/ugent-library/biblio-backend/internal/helpers"
 	"github.com/ugent-library/biblio-backend/internal/routes"
 	"github.com/ugent-library/go-graceful/server"
 	"github.com/unrolled/render"
@@ -33,6 +36,9 @@ var serverStartCmd = &cobra.Command{
 			Directory:  "templates",
 			Extensions: []string{".gohtml"},
 			Layout:     "layout",
+			Funcs: []template.FuncMap{
+				helpers.Asset(),
+			},
 		})
 
 		// router

@@ -1,4 +1,14 @@
 {
     "/js/app.js": "/js/app.js",
-    "/css/app.css": "/css/app.css"
+    "/css/app.css": "/css/app.css",
+    "/ugent/images/avatar.svg": "/ugent/images/avatar.svg",
+    "/ugent/images/biblio-logo.svg": "/ugent/images/biblio-logo.svg",
+    "/ugent/images/dataset-1.jpg": "/ugent/images/dataset-1.jpg",
+    "/ugent/images/dataset-2.jpg": "/ugent/images/dataset-2.jpg",
+    "/ugent/images/dataset-thumbnail.jpg": "/ugent/images/dataset-thumbnail.jpg",
+    "/ugent/images/logo-ugent-white.svg": "/ugent/images/logo-ugent-white.svg",
+    "/ugent/images/logo-ugent.svg": "/ugent/images/logo-ugent.svg",
+    "/ugent/images/thumbnail-placeholder.png": "/ugent/images/thumbnail-placeholder.png",
+    "/ugent/images/thumbnail.jpg": "/ugent/images/thumbnail.jpg",
+    "/ugent/images/universiteitsbibliotheek.svg": "/ugent/images/universiteitsbibliotheek.svg"
 }

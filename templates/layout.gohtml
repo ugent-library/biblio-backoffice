@@ -1,8 +1,54 @@
-<html>
-  <head>
-    <title>My Layout</title>
-  </head>
-  <body>
-    {{ yield }}
-  </body>
+<!DOCTYPE html>
+<html class="u-maximize-height" dir="ltr" lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noindex">
+        <link rel="stylesheet" href="{{assetPath "/css/app.css"}}">
+        <title>Overview - Publications - Biblio</title>
+    </head>
+    <body class="u-maximize-height overflow-hidden u-scroll-wrapper">
+        <header>
+            <div class="bc-navbar bc-navbar--bordered-bottom bc-navbar--white bc-navbar--fixed shadow-sm">
+                <div class="bc-toolbar bc-toolbar-sm">
+                    <div class="bc-toolbar-left">
+                        <div class="bc-toolbar-item">
+                            <img class="mr-2" src="/static/ugent/images/universiteitsbibliotheek.svg">
+                        </div>
+                    </div>
+                    <div class="bc-toolbar-right">
+                        <div class="bc-toolbar-item">
+                            <button class="btn btn-link btn-icon-only btn-link-muted mr-4">
+                                <i class="if if-notification"></i>
+                                <div class="sr-only">Notifications</div>
+                            </button>
+                        </div>
+                        <div class="bc-toolbar-item">
+                            <div class="dropdown">
+                                <a class="dropdown-toggle d-flex align-items-center text-body" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <div class="bc-avatar-and-text mr-2">
+                                        <div class="bc-avatar bc-avatar--img bc-avatar--small">
+                                            <img src="/static/ugent/images/avatars/avatar-1.jpg" alt="Jane Cooper">
+                                        </div>
+                                        <div class="bc-avatar-text font-weight-bold">Jane Cooper</div>
+                                    </div>
+                                </a>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="#">Action</a>
+                                    <a class="dropdown-item" href="#">Another action</a>
+                                    <a class="dropdown-item" href="#">Something else here</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <main>
+            <div class="d-flex u-maximize-height">
+                {{yield}}
+            </div>
+        </main>
+        <script type="application/javascript" src="{{assetPath "/js/app.js"}}"></script>
+    </body>
 </html>

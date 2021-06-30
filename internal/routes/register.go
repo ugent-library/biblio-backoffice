@@ -16,11 +16,11 @@ func Register(router chi.Router, publicationController *controllers.Publication)
 	router.Use(chimw.Recoverer)
 
 	// static files
-	router.Mount("/s/", http.StripPrefix("/s/", http.FileServer(http.Dir("static"))))
+	router.Mount("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
 	// home
 	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, "/publication", http.StatusPermanentRedirect)
+		http.Redirect(w, r, "/publication", http.StatusFound)
 	})
 
 	// publication
