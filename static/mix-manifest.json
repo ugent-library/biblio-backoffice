@@ -1,14 +1,16 @@
 {
     "/js/app.js": "/js/app.js",
     "/css/app.css": "/css/app.css",
-    "/ugent/images/avatar.svg": "/ugent/images/avatar.svg",
-    "/ugent/images/biblio-logo.svg": "/ugent/images/biblio-logo.svg",
-    "/ugent/images/dataset-1.jpg": "/ugent/images/dataset-1.jpg",
-    "/ugent/images/dataset-2.jpg": "/ugent/images/dataset-2.jpg",
-    "/ugent/images/dataset-thumbnail.jpg": "/ugent/images/dataset-thumbnail.jpg",
-    "/ugent/images/logo-ugent-white.svg": "/ugent/images/logo-ugent-white.svg",
-    "/ugent/images/logo-ugent.svg": "/ugent/images/logo-ugent.svg",
-    "/ugent/images/thumbnail-placeholder.png": "/ugent/images/thumbnail-placeholder.png",
-    "/ugent/images/thumbnail.jpg": "/ugent/images/thumbnail.jpg",
-    "/ugent/images/universiteitsbibliotheek.svg": "/ugent/images/universiteitsbibliotheek.svg"
+    "/images/avatar.svg": "/images/avatar.svg",
+    "/images/avatar-1.jpg": "/images/avatar-1.jpg",
+    "/images/avatar-2.jpg": "/images/avatar-2.jpg",
+    "/images/biblio-logo.svg": "/images/biblio-logo.svg",
+    "/images/dataset-1.jpg": "/images/dataset-1.jpg",
+    "/images/dataset-2.jpg": "/images/dataset-2.jpg",
+    "/images/dataset-thumbnail.jpg": "/images/dataset-thumbnail.jpg",
+    "/images/logo-ugent-white.svg": "/images/logo-ugent-white.svg",
+    "/images/logo-ugent.svg": "/images/logo-ugent.svg",
+    "/images/thumbnail-placeholder.png": "/images/thumbnail-placeholder.png",
+    "/images/thumbnail.jpg": "/images/thumbnail.jpg",
+    "/images/universiteitsbibliotheek.svg": "/images/universiteitsbibliotheek.svg"
 }

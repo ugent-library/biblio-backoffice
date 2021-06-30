@@ -5,7 +5,7 @@ mix.sass('./assets/css/app.scss', 'css')
 mix.setPublicPath('./static')
 
 // copy images
-mix.copyDirectory('assets/ugent/images', 'static/ugent/images');
+mix.copy('assets/ugent/images/**/*', 'static/images');
 
 // set the resourceroot for fonts so it points to the static assets path
 mix.setResourceRoot('/static/fonts/')
