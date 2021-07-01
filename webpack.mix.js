@@ -6,6 +6,7 @@ mix.setPublicPath('./static')
 
 // copy images
 mix.copy('assets/ugent/images/**/*', 'static/images');
+mix.copy('assets/ugent/favicon.ico', 'static/favicon.ico');
 
 // set the resourceroot for fonts so it points to the static assets path
 mix.setResourceRoot('/static/fonts/')
