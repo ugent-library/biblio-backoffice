@@ -1,1 +1,365 @@
-    
+<div class="c-sub-sidebar c-sidebar--bordered">
+    <div class="bc-navbar bc-navbar--xlarge bc-navbar--bordered-bottom">
+        <div class="bc-toolbar">
+            <div class="bc-toolbar-left">
+                <div class="bc-toolbar-item">
+                    <h4 class="bc-toolbar-title">Publications</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="c-sub-sidebar__menu my-6">
+        <nav>
+            <ul class="c-sub-sidebar-menu">
+                <li class="c-sub-sidebar__item c-sub-sidebar__item--active">
+                    <a href="/publications/overview.html">
+                        <span class="c-sidebar__label">Overview</span>
+                    </a>
+                </li>
+                <li class="c-sub-sidebar__item">
+                    <a href="/publications/reports.html">
+                        <span class="c-sidebar__label">Reports</span>
+                    </a>
+                </li>
+                <li class="c-sub-sidebar__item" href="/publications/statistics.html">
+                    <a href="/publications/statistics.html">
+                        <span class="c-sidebar__label">Statistics</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+<div class="w-100 u-scroll-wrapper">
+    <div class="bg-white">
+        <div class="bc-navbar bc-navbar--xlarge bc-navbar--white">
+            <div class="bc-toolbar">
+                <div class="bc-toolbar-left">
+                    <div class="bc-toolbar-item">
+                        <h4 class="bc-toolbar-title">Overview publications</h4>
+                    </div>
+                </div>
+                <div class="bc-toolbar-right">
+                    <div class="bc-toolbar-item">
+                        <a class="btn btn-primary" href="/add-publication/single/step-1.html">
+                            <i class="if if-add"></i>
+                            <div class="btn-text">Add publication</div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="c-divider my-0 mx-6"></div>
+        <div class="bc-navbar bc-navbar--bordered-bottom bc-navbar--white">
+            <ul class="nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">All</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="#">My publications</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Registered by me</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="u-scroll-wrapper__body p-6">
+        <form class="mb-4">
+            <div class="form-row">
+                <div class="col">
+                    <label class="sr-only" for="search">Search</label>
+                    <div class="dropdown">
+                        <input class="form-control" type="text" name="search" placeholder="Search..."
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                            autocomplete="off">
+                        <div class="dropdown-menu w-100" aria-labelledby="dropdownMenuLink">
+                            <a class="dropdown-item" href="#">Search all publications</a>
+                            <a class="dropdown-item" href="#">Search my publications</a>
+                            <a class="dropdown-item" href="#">Search publications registered by me</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="d-flex">
+                        <label class="col-form-label pr-3" for="sort" style="white-space: nowrap">Sort
+                            by</label>
+                        <select class="custom-select">
+                            <option>Newest first</option>
+                            <option>Option 2</option>
+                            <option>Option 3</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <div class="btn-group">
+                        <a class="btn btn-primary btn-icon-only active" href="/publications/overview.html">
+                            <i class="if if-list-unordered"></i>
+                            <div class="sr-only">List view</div>
+                        </a>
+                        <a class="btn btn-primary btn-icon-only"
+                            href="/publications/overview--thumbnail.html">
+                            <i class="if if-grid"></i>
+                            <div class="sr-only">Grid view</div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="d-flex flex-wrap mb-6">
+            <div class="dropdown mt-4">
+                <a class="badge badge-pill badge-default mr-3" data-toggle="dropdown" aria-haspopup="true"
+                    aria-expanded="false" href="#" role="button">
+                    <span class="badge-text">Publication type</span>
+                    <div class="c-counter c-counter--small">2</div>
+                    <i class="if if-caret-down"></i>
+                </a>
+                <div class="dropdown-menu">
+                    <div class="dropdown-header">
+                        <div class="bc-toolbar">
+                            <div class="bc-toolbar__left">
+                                <div class="bc-toolbar__item">
+                                    <h6>Publication type</h6>
+                                </div>
+                            </div>
+                            <div class="bc-toolbar__right">
+                                <div class="bc-toolbar__item">
+                                    <button class="btn btn-link">Select all</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dropdown-body">
+                        <div class="custom-control custom-checkbox mb-4">
+                            <input class="custom-control-input" id="customCheck1" type="checkbox">
+                            <label class="custom-control-label" for="customCheck1">Book</label>
+                        </div>
+                        <div class="custom-control custom-checkbox mb-4">
+                            <input class="custom-control-input" id="customCheck2" type="checkbox">
+                            <label class="custom-control-label" for="customCheck2">Book chapter</label>
+                        </div>
+                        <div class="custom-control custom-checkbox mb-4">
+                            <input class="custom-control-input" id="customCheck3" type="checkbox">
+                            <label class="custom-control-label" for="customCheck3">Book editor</label>
+                        </div>
+                        <div class="custom-control custom-checkbox mb-4">
+                            <input class="custom-control-input" id="customCheck3" type="checkbox">
+                            <label class="custom-control-label" for="customCheck3">Conference
+                                contribution</label>
+                        </div>
+                        <div class="custom-control custom-checkbox mb-4">
+                            <input class="custom-control-input" id="customCheck3" type="checkbox" checked>
+                            <label class="custom-control-label" for="customCheck3">Dissertation</label>
+                        </div>
+                        <div class="custom-control custom-checkbox mb-4">
+                            <input class="custom-control-input" id="customCheck3" type="checkbox" checked>
+                            <label class="custom-control-label" for="customCheck3">Journal article</label>
+                        </div>
+                        <div class="custom-control custom-checkbox mb-4">
+                            <input class="custom-control-input" id="customCheck3" type="checkbox">
+                            <label class="custom-control-label" for="customCheck3">Miscellaneous</label>
+                        </div>
+                        <div class="custom-control custom-checkbox mb-4">
+                            <input class="custom-control-input" id="customCheck3" type="checkbox">
+                            <label class="custom-control-label" for="customCheck3">Research data</label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                            <input class="custom-control-input" id="customCheck3" type="checkbox">
+                            <label class="custom-control-label" for="customCheck3">Preprint</label>
+                        </div>
+                    </div>
+                    <div class="dropdown-footer">
+                        <button class="btn btn-primary btn-block" type="button">Apply filter</button>
+                    </div>
+                </div>
+            </div>
+            <a class="badge badge-pill badge-default mr-3 mt-4" href="#" role="button">
+                <span class="badge-text">Completeness</span>
+                <i class="if if-caret-down"></i>
+            </a>
+            <a class="badge badge-pill badge-default mr-3 mt-4" href="#" role="button">
+                <span class="badge-text">Credits</span>
+                <i class="if if-caret-down"></i>
+            </a>
+            <a class="badge badge-pill badge-default mr-4 mt-4" href="#" role="button">
+                <span class="badge-text">Biblio Status</span>
+                <i class="if if-caret-down"></i>
+            </a>
+            <button class="btn btn-link p-0 btn-sm mt-4">
+                <div class="btn-text">Show all filters</div>
+            </button>
+        </div>
+        <div class="card mb-6">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                    <div class="custom-control custom-checkbox">
+                        <input class="custom-control-input" id="selectAll" type="checkbox"
+                            name="overviewItems">
+                        <label class="custom-control-label" for="selectAll">
+                            <span class="h4 mr-2 ml-5">Publications</span>
+                            <span class="text-muted c-body-small">0 of {{.Hits.Total}} publications selected</span>
+                        </label>
+                    </div>
+                </li>
+                {{range $pub := .Hits.Hits}}
+                <li class="list-group-item">
+                    <div class="d-flex w-100">
+                        <div class="custom-control custom-checkbox mr-4 align-self-start">
+                            <input class="custom-control-input" type="checkbox" name="overviewItems"
+                                id="20393" />
+                            <label class="custom-control-label" for="20393">&nbsp;</label>
+                        </div>
+                        <div class="w-100">
+                            <div class="d-flex align-items-start">
+                                <img class="list-group-item-thumbnail" src="{{assetPath "/images/thumbnail.jpg"}}"
+                                    height="156" />
+                                <div class="list-group-item-content">
+                                    <div class="list-group-item-subline">
+                                        <div class="list-group-item-subline-left">
+                                            <span class="mr-3 pr-3 border-right">{{$pub.type}}: {{$pub.classification}}</span>
+                                            <div class="d-flex align-items-center">
+                                                <i class="if if-download if--small if--success"></i>
+                                                <span class="pl-2 text-muted">Open Access</span>
+                                            </div>
+                                        </div>
+                                        <div class="list-group-item-subline-right">
+                                            <div class="dropdown">
+                                                <button class="btn btn-link btn-icon-only btn-link-muted"
+                                                    type="button" data-toggle="dropdown"
+                                                    aria-haspopup="true" aria-expanded="false">
+                                                    <i class="if if-more"></i>
+                                                </button>
+                                                <div class="dropdown-menu">
+                                                    <a class="dropdown-item"
+                                                        href="/publication-detail/description.html">
+                                                        <i class="if if-file-text"></i>
+                                                        <span>View details</span>
+                                                    </a>
+                                                    <button class="dropdown-item">
+                                                        <i class="if if-double-quotes"></i>
+                                                        <span>Cite</span>
+                                                    </button>
+                                                    <button class="dropdown-item">
+                                                        <i class="if if-add"></i>
+                                                        <span>Add to list</span>
+                                                    </button>
+                                                    <button class="dropdown-item">
+                                                        <i class="if if-notification"></i>
+                                                        <span>Turn on notifications</span>
+                                                    </button>
+                                                    <button class="dropdown-item">
+                                                        <i class="if if-orcid" style="color: #A6CE39"></i>
+                                                        <span>Send to ORCID</span>
+                                                    </button>
+                                                    <button class="dropdown-item" type="button"
+                                                        data-toggle="modal" data-target="#delete">
+                                                        <i class="if if-delete"></i>
+                                                        <span>Delete</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="list-group-item-text">
+                                        <a href="/publication-detail/description.html">
+                                            <h4 class="c-h4">{{$pub.title}}</h4>
+                                        </a>
+                                        <div class="list-group-item-authors">
+                                            <div class="list-group-item-author">
+                                                <i class="if if-ghent-university" data-toggle="tooltip"
+                                                    title="UGent author" data-placement="bottom"></i>
+                                                <span>Jane Cooper</span>
+                                            </div>
+                                            <div class="list-group-item-author">
+                                                <i class="if if-ghent-university" data-toggle="tooltip"
+                                                    title="UGent author" data-placement="bottom"></i>
+                                                <span>Brooklyn Simmons</span>
+                                            </div>
+                                            <div class="list-group-item-author">
+                                                <i class="if if-orcid" data-toggle="tooltip"
+                                                    title="Author with ORCID" data-placement="bottom"></i>
+                                                <i class="if if-ghent-university" data-toggle="tooltip"
+                                                    title="UGent author" data-placement="bottom"></i>
+                                                <span>Esther Howard</span>
+                                            </div>
+                                        </div>
+                                        <span class="c-body-small text-muted">{{$pub.year}}, International Journal of
+                                            Environmental Research and Public Health</span>
+                                    </div>
+                                    <div class="list-group-item-meta mt-5">
+                                        <div class="list-group-item-meta-left">
+                                            <div class="list-group-item-meta-item">
+                                                <span class="badge badge-pill badge-success">
+                                                    <span class="badge-text">Biblio Validated</span>
+                                                </span>
+                                            </div>
+                                            <div class="list-group-item-meta-item">
+                                                <div class="c-progress-bar c-progress-bar--medium">
+                                                    <div class="c-progress-bar__progress">
+                                                        <div
+                                                            class="c-progress-bar__bar c-progress-bar__bar--start">
+                                                        </div>
+                                                        <div
+                                                            class="c-progress-bar__bar c-progress-bar__bar--middle">
+                                                        </div>
+                                                        <div
+                                                            class="c-progress-bar__bar c-progress-bar__bar--end">
+                                                        </div>
+                                                    </div>
+                                                    <div class="c-progress-bar__label">Good</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="list-group-item-meta-right">
+                                            <div class="list-group-item-meta-item">
+                                                <span class="text-muted c-body-small">Biblio ID: {{$pub._id}}</span>
+                                            </div>
+                                            <div class="list-group-item-meta-item" data-toggle="tooltip"
+                                                title="2 related datasets" data-placement="bottom">
+                                                <span class="text-muted c-body-small">
+                                                    <i class="if if-database if--muted if--small"></i>2
+                                                </span>
+                                            </div>
+                                            <div class="list-group-item-meta-item" data-toggle="tooltip"
+                                                title="Sent to Orcid" data-placement="bottom">
+                                                <i class="if if-orcid if--muted if--small"></i>
+                                                <i class="if if-check text-success if--small"></i>
+                                            </div>
+                                            <div class="list-group-item-meta-item">
+                                                <span class="text-muted c-body-small">Created today</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                {{end}}
+            </ul>
+        </div>
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" aria-label="Previous">
+                        <i class="if if-chevron-left" aria-hidden="true"></i>
+                    </a>
+                </li>
+                <li class="page-item active">
+                    <a class="page-link" href="#">1</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="#">2</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="#">3</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="#" aria-label="Next">
+                        <i class="if if-chevron-right" aria-hidden="true"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>

@@ -30,6 +30,10 @@ func init() {
 	viper.SetDefault("host", defaultHost)
 	viper.SetDefault("port", defaultPort)
 	viper.SetDefault("base-url", defaultBaseURL)
+
+	rootCmd.PersistentFlags().String("librecat-url", "", "librecat rest api url")
+	rootCmd.PersistentFlags().String("librecat-username", "", "librecat rest api username")
+	rootCmd.PersistentFlags().String("librecat-password", "", "librecat rest api password")
 }
 
 func Execute() {

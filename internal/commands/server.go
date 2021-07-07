@@ -2,11 +2,13 @@ package commands
 
 import (
 	"html/template"
+	"log"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/controllers"
+	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/helpers"
 	"github.com/ugent-library/biblio-backend/internal/routes"
 	"github.com/ugent-library/go-graceful/server"
@@ -31,8 +33,18 @@ var serverStartCmd = &cobra.Command{
 	Use:   "start",
 	Short: "start the http server",
 	Run: func(cmd *cobra.Command, args []string) {
+		// engine
+		e, err := engine.New(engine.Config{
+			URL:      viper.GetString("librecat-url"),
+			Username: viper.GetString("librecat-username"),
+			Password: viper.GetString("librecat-password"),
+		})
+		if err != nil {
+			log.Fatal(err)
+		}
+
 		// renderer
-		renderer := render.New(render.Options{
+		r := render.New(render.Options{
 			Directory:  "templates",
 			Extensions: []string{".gohtml"},
 			Layout:     "layout",
@@ -45,7 +57,7 @@ var serverStartCmd = &cobra.Command{
 		router := chi.NewRouter()
 		routes.Register(
 			router,
-			controllers.NewPublication(renderer),
+			controllers.NewPublication(e, r),
 		)
 
 		// server
