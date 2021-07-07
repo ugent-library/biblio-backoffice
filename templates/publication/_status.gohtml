@@ -1,4 +1,4 @@
-{{if and (eq .status "public") (ne .classification "U") }}
+{{if and (eq .status "public") .locked }}
 <span class="badge badge-pill badge-success">
     <span class="badge-text">Biblio Validated</span>
 </span>

@@ -1,0 +1,130 @@
+<div class="d-flex w-100">
+    <div class="custom-control custom-checkbox mr-4 align-self-start">
+        <input class="custom-control-input" type="checkbox" name="overviewItems"
+            id="20393" />
+        <label class="custom-control-label" for="20393">&nbsp;</label>
+    </div>
+    <div class="w-100">
+        <div class="d-flex align-items-start">
+            <img class="list-group-item-thumbnail" src="{{assetPath "/images/thumbnail.jpg"}}"
+                height="156" />
+            <div class="list-group-item-content">
+                <div class="list-group-item-subline">
+                    <div class="list-group-item-subline-left">
+                        <span class="mr-3 pr-3 border-right">{{.type}}: {{.classification}}</span>
+                        <div class="d-flex align-items-center">
+                            <i class="if if-download if--small if--success"></i>
+                            <span class="pl-2 text-muted">Open Access</span>
+                        </div>
+                    </div>
+                    <div class="list-group-item-subline-right">
+                        <div class="dropdown">
+                            <button class="btn btn-link btn-icon-only btn-link-muted"
+                                type="button" data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false">
+                                <i class="if if-more"></i>
+                            </button>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item"
+                                    href="/publication-detail/description.html">
+                                    <i class="if if-file-text"></i>
+                                    <span>View details</span>
+                                </a>
+                                <button class="dropdown-item">
+                                    <i class="if if-double-quotes"></i>
+                                    <span>Cite</span>
+                                </button>
+                                <button class="dropdown-item">
+                                    <i class="if if-add"></i>
+                                    <span>Add to list</span>
+                                </button>
+                                <button class="dropdown-item">
+                                    <i class="if if-notification"></i>
+                                    <span>Turn on notifications</span>
+                                </button>
+                                <button class="dropdown-item">
+                                    <i class="if if-orcid" style="color: #A6CE39"></i>
+                                    <span>Send to ORCID</span>
+                                </button>
+                                <button class="dropdown-item" type="button"
+                                    data-toggle="modal" data-target="#delete">
+                                    <i class="if if-delete"></i>
+                                    <span>Delete</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="list-group-item-text">
+                    <a href="/publication-detail/description.html">
+                        <h4 class="c-h4">{{.title}}</h4>
+                    </a>
+                    <div class="list-group-item-authors">
+                        <div class="list-group-item-author">
+                            <i class="if if-ghent-university" data-toggle="tooltip"
+                                title="UGent author" data-placement="bottom"></i>
+                            <span>Jane Cooper</span>
+                        </div>
+                        <div class="list-group-item-author">
+                            <i class="if if-ghent-university" data-toggle="tooltip"
+                                title="UGent author" data-placement="bottom"></i>
+                            <span>Brooklyn Simmons</span>
+                        </div>
+                        <div class="list-group-item-author">
+                            <i class="if if-orcid" data-toggle="tooltip"
+                                title="Author with ORCID" data-placement="bottom"></i>
+                            <i class="if if-ghent-university" data-toggle="tooltip"
+                                title="UGent author" data-placement="bottom"></i>
+                            <span>Esther Howard</span>
+                        </div>
+                    </div>
+                    <span class="c-body-small text-muted">
+                        {{.year}}{{with .publication}}, {{.}}{{end}}
+                    </span>
+                </div>
+                <div class="list-group-item-meta mt-5">
+                    <div class="list-group-item-meta-left">
+                        <div class="list-group-item-meta-item">
+                            {{template "publication/_status" .}}
+                        </div>
+                        <div class="list-group-item-meta-item">
+                            <div class="c-progress-bar c-progress-bar--medium">
+                                <div class="c-progress-bar__progress">
+                                    <div
+                                        class="c-progress-bar__bar c-progress-bar__bar--start">
+                                    </div>
+                                    <div
+                                        class="c-progress-bar__bar c-progress-bar__bar--middle">
+                                    </div>
+                                    <div
+                                        class="c-progress-bar__bar c-progress-bar__bar--end">
+                                    </div>
+                                </div>
+                                <div class="c-progress-bar__label">Good</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="list-group-item-meta-right">
+                        <div class="list-group-item-meta-item">
+                            <span class="text-muted c-body-small">Biblio ID: {{._id}}</span>
+                        </div>
+                        <div class="list-group-item-meta-item" data-toggle="tooltip"
+                            title="2 related datasets" data-placement="bottom">
+                            <span class="text-muted c-body-small">
+                                <i class="if if-database if--muted if--small"></i>2
+                            </span>
+                        </div>
+                        <div class="list-group-item-meta-item" data-toggle="tooltip"
+                            title="Sent to Orcid" data-placement="bottom">
+                            <i class="if if-orcid if--muted if--small"></i>
+                            <i class="if if-check text-success if--small"></i>
+                        </div>
+                        <div class="list-group-item-meta-item">
+                            <span class="text-muted c-body-small">Created today</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
