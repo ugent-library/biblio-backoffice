@@ -1,0 +1,17 @@
+{{if and (eq .status "public") (ne .classification "U") }}
+<span class="badge badge-pill badge-success">
+    <span class="badge-text">Biblio Validated</span>
+</span>
+{{else if eq .status "public"}}
+<span class="badge badge-pill badge-default">
+    <span class="badge-text">Biblio Public</span>
+</span>
+{{else if eq .status "returned"}}
+<span class="badge badge-pill badge-warning">
+    <span class="badge-text">Biblio Returned</span>
+</span>
+{{else if eq .status "private"}}
+<span class="badge badge-pill badge-secondary">
+    <span class="badge-text">Biblio Draft</span>
+</span>
+{{end}}

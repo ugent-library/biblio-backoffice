@@ -53,10 +53,10 @@
         <div class="bc-navbar bc-navbar--bordered-bottom bc-navbar--white">
             <ul class="nav">
                 <li class="nav-item">
-                    <a class="nav-link" href="#">All</a>
+                    <a class="nav-link active" href="#">All</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" href="#">My publications</a>
+                    <a class="nav-link" href="#">My publications</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">Registered by me</a>
@@ -289,9 +289,7 @@
                                     <div class="list-group-item-meta mt-5">
                                         <div class="list-group-item-meta-left">
                                             <div class="list-group-item-meta-item">
-                                                <span class="badge badge-pill badge-success">
-                                                    <span class="badge-text">Biblio Validated</span>
-                                                </span>
+                                                {{template "publication/_status" $pub}}
                                             </div>
                                             <div class="list-group-item-meta-item">
                                                 <div class="c-progress-bar c-progress-bar--medium">

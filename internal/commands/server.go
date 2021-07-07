@@ -9,7 +9,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/controllers"
 	"github.com/ugent-library/biblio-backend/internal/engine"
-	"github.com/ugent-library/biblio-backend/internal/helpers"
+	"github.com/ugent-library/biblio-backend/internal/helpers/assets"
 	"github.com/ugent-library/biblio-backend/internal/routes"
 	"github.com/ugent-library/go-graceful/server"
 	"github.com/unrolled/render"
@@ -45,11 +45,12 @@ var serverStartCmd = &cobra.Command{
 
 		// renderer
 		r := render.New(render.Options{
-			Directory:  "templates",
-			Extensions: []string{".gohtml"},
-			Layout:     "layout",
+			Directory:                   "templates",
+			Extensions:                  []string{".gohtml"},
+			Layout:                      "layout",
+			RenderPartialsWithoutPrefix: true,
 			Funcs: []template.FuncMap{
-				helpers.Asset(),
+				assets.FuncMap(),
 			},
 		})
 
