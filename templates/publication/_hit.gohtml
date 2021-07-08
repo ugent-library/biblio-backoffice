@@ -65,23 +65,8 @@
                             {{range (slice . 0 3)}}
                                 {{template "publication/_hit_contributor" .}}
                             {{end}}
-                            <div class="list-group-item-author" data-toggle="tooltip">
-                                <div class="tooltip-text">
-                                    <div class="d-flex flex-column">
-                                        <div class="list-group-item-author">
-                                            <span>Wade Warren</span>
-                                        </div>
-                                        <div class="list-group-item-author">
-                                            <i class="if if-orcid"></i>
-                                            <span>Cameron Williamson</span>
-                                        </div>
-                                        <div class="list-group-item-author">
-                                            <i class="if if-orcid"></i>
-                                            <span>Bessie Cooper</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <span>{{sub (len .) 3}} more authors</span>
+                            <div class="list-group-item-author">
+                                <span>{{sub (len .) 3}} more author{{if gt (sub (len .) 3) 1}}s{{end}}</span>
                                 <i class="if if-more ml-2"></i>
                             </div>
                         {{else}}
@@ -133,7 +118,7 @@
                             <i class="if if-check text-success if--small"></i>
                         </div>
                         <div class="list-group-item-meta-item">
-                            <span class="text-muted c-body-small">Created today</span>
+                            <span class="text-muted c-body-small">Created {{timeElapsed .date_created}}</span>
                         </div>
                     </div>
                 </div>

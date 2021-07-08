@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/controllers"
 	"github.com/ugent-library/biblio-backend/internal/engine"
+	"github.com/ugent-library/biblio-backend/internal/helpers"
 	"github.com/ugent-library/biblio-backend/internal/routes"
 	"github.com/ugent-library/go-graceful/server"
 	"github.com/ugent-library/go-mix/mix"
@@ -56,6 +57,7 @@ var serverStartCmd = &cobra.Command{
 					ManifestFile: "static/mix-manifest.json",
 					PublicPath:   "/static/",
 				}),
+				helpers.FuncMap(),
 			},
 		})
 
