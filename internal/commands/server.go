@@ -4,14 +4,15 @@ import (
 	"html/template"
 	"log"
 
+	"github.com/Masterminds/sprig"
 	"github.com/go-chi/chi/v5"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/controllers"
 	"github.com/ugent-library/biblio-backend/internal/engine"
-	"github.com/ugent-library/biblio-backend/internal/helpers/assets"
 	"github.com/ugent-library/biblio-backend/internal/routes"
 	"github.com/ugent-library/go-graceful/server"
+	"github.com/ugent-library/go-mix/mix"
 	"github.com/unrolled/render"
 )
 
@@ -50,7 +51,11 @@ var serverStartCmd = &cobra.Command{
 			Layout:                      "layout",
 			RenderPartialsWithoutPrefix: true,
 			Funcs: []template.FuncMap{
-				assets.FuncMap(),
+				sprig.FuncMap(),
+				mix.FuncMap(mix.Config{
+					ManifestFile: "static/mix-manifest.json",
+					PublicPath:   "/static/",
+				}),
 			},
 		})
 

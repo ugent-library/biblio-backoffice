@@ -1,8 +1,8 @@
 <div class="d-flex w-100">
     <div class="custom-control custom-checkbox mr-4 align-self-start">
         <input class="custom-control-input" type="checkbox" name="overviewItems"
-            id="20393" />
-        <label class="custom-control-label" for="20393">&nbsp;</label>
+            id="publication-{{._id}}" />
+        <label class="custom-control-label" for="publication-{{._id}}">&nbsp;</label>
     </div>
     <div class="w-100">
         <div class="d-flex align-items-start">
@@ -11,7 +11,7 @@
             <div class="list-group-item-content">
                 <div class="list-group-item-subline">
                     <div class="list-group-item-subline-left">
-                        <span class="mr-3 pr-3 border-right">{{.type}}: {{.classification}}</span>
+                        <span class="mr-3 pr-3 border-right">{{.type}}{{with .classification}}: {{.}}{{end}}</span>
                         <div class="d-flex align-items-center">
                             <i class="if if-download if--small if--success"></i>
                             <span class="pl-2 text-muted">Open Access</span>
@@ -59,25 +59,38 @@
                     <a href="/publication-detail/description.html">
                         <h4 class="c-h4">{{.title}}</h4>
                     </a>
-                    <div class="list-group-item-authors">
-                        <div class="list-group-item-author">
-                            <i class="if if-ghent-university" data-toggle="tooltip"
-                                title="UGent author" data-placement="bottom"></i>
-                            <span>Jane Cooper</span>
-                        </div>
-                        <div class="list-group-item-author">
-                            <i class="if if-ghent-university" data-toggle="tooltip"
-                                title="UGent author" data-placement="bottom"></i>
-                            <span>Brooklyn Simmons</span>
-                        </div>
-                        <div class="list-group-item-author">
-                            <i class="if if-orcid" data-toggle="tooltip"
-                                title="Author with ORCID" data-placement="bottom"></i>
-                            <i class="if if-ghent-university" data-toggle="tooltip"
-                                title="UGent author" data-placement="bottom"></i>
-                            <span>Esther Howard</span>
-                        </div>
-                    </div>
+                    {{with .author}}
+                        <div class="list-group-item-authors">
+                        {{if gt (len .) 3}}
+                            {{range (slice . 0 3)}}
+                                {{template "publication/_hit_contributor" .}}
+                            {{end}}
+                            <div class="list-group-item-author" data-toggle="tooltip">
+                                <div class="tooltip-text">
+                                    <div class="d-flex flex-column">
+                                        <div class="list-group-item-author">
+                                            <span>Wade Warren</span>
+                                        </div>
+                                        <div class="list-group-item-author">
+                                            <i class="if if-orcid"></i>
+                                            <span>Cameron Williamson</span>
+                                        </div>
+                                        <div class="list-group-item-author">
+                                            <i class="if if-orcid"></i>
+                                            <span>Bessie Cooper</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span>{{sub (len .) 3}} more authors</span>
+                                <i class="if if-more ml-2"></i>
+                            </div>
+                        {{else}}
+                            {{range .}}
+                                {{template "publication/_hit_contributor" .}}
+                            {{end}}
+                        {{end}}
+                        </div>                        
+                    {{end}}
                     <span class="c-body-small text-muted">
                         {{.year}}{{with .publication}}, {{.}}{{end}}
                     </span>
