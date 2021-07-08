@@ -5,7 +5,6 @@ import (
 	"log"
 
 	"github.com/Masterminds/sprig/v3"
-	"github.com/go-chi/chi/v5"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/controllers"
@@ -62,9 +61,7 @@ var serverStartCmd = &cobra.Command{
 		})
 
 		// router
-		router := chi.NewRouter()
-		routes.Register(
-			router,
+		router := routes.New(
 			controllers.NewPublication(e, r),
 		)
 

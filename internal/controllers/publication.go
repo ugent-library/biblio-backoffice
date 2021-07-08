@@ -29,5 +29,6 @@ func (c *Publication) List(w http.ResponseWriter, r *http.Request) {
 	}{
 		Hits: hits,
 	}
+
 	c.render.HTML(w, http.StatusOK, "publication/list", vars)
 }
