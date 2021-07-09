@@ -24,11 +24,11 @@ func (c *Publication) List(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	vars := struct {
 		Hits *engine.PublicationHits
 	}{
 		Hits: hits,
 	}
-
 	c.render.HTML(w, http.StatusOK, "publication/list", vars)
 }

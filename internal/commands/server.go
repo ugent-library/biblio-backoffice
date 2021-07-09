@@ -3,8 +3,11 @@ package commands
 import (
 	"html/template"
 	"log"
+	"os"
 
 	"github.com/Masterminds/sprig/v3"
+	"github.com/gorilla/handlers"
+	"github.com/gorilla/mux"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/controllers"
@@ -44,8 +47,11 @@ var serverStartCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
+		// router
+		router := mux.NewRouter()
+
 		// renderer
-		r := render.New(render.Options{
+		renderer := render.New(render.Options{
 			Directory:                   "templates",
 			Extensions:                  []string{".gohtml"},
 			Layout:                      "layout",
@@ -56,20 +62,27 @@ var serverStartCmd = &cobra.Command{
 					ManifestFile: "static/mix-manifest.json",
 					PublicPath:   "/static/",
 				}),
-				helpers.FuncMap(),
+				helpers.Time(),
+				helpers.URL(router),
 			},
 		})
 
-		// router
-		router := routes.New(
-			controllers.NewPublication(e, r),
+		// add middleware
+		router.Use(handlers.RecoveryHandler())
+
+		// add routes
+		routes.Register(
+			router,
+			controllers.NewPublication(e, renderer),
 		)
 
-		// server
-		s := server.New(router,
+		// logging
+		handler := handlers.LoggingHandler(os.Stdout, router)
+
+		// start server
+		server.New(handler,
 			server.WithHost(viper.GetString("host")),
 			server.WithPort(viper.GetInt("port")),
-		)
-		s.Start()
+		).Start()
 	},
 }
