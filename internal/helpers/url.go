@@ -33,7 +33,4 @@ func urlSet(k, v interface{}, u *url.URL) (*url.URL, error) {
 	q.Set(cast.ToString(k), cast.ToString(v))
 	u.RawQuery = q.Encode()
 	return u, nil
-	// if u, ok := v.(*url.URL); ok {
-	// 	return
-	// }
 }

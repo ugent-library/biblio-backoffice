@@ -1,12 +1,15 @@
 package engine
 
+import (
+	"fmt"
+
+	"github.com/go-playground/form/v4"
+)
+
 type Publication map[string]interface{}
 
 type PublicationHits struct {
 	Total        int           `json:"total"`
-	Start        int           `json:"start"`
-	Limit        int           `json:"limit"`
-	PageSize     int           `json:"page_size"`
 	Page         int           `json:"page"`
 	LastPage     int           `json:"last_page"`
 	PreviousPage bool          `json:"previous_page"`
@@ -14,6 +17,26 @@ type PublicationHits struct {
 	Hits         []Publication `json:"hits"`
 }
 
-func (r Publication) ID() string {
-	return r["_id"].(string)
+func (e *Engine) UserPublications(userID string, q Query) (*PublicationHits, error) {
+	return e.getPublications(fmt.Sprintf("/users/%s/publications", userID), q)
+}
+
+func (e *Engine) UserPublicationsContributed(userID string, q Query) (*PublicationHits, error) {
+	return e.getPublications(fmt.Sprintf("/users/%s/publications-contributed", userID), q)
+}
+
+func (e *Engine) UserPublicationsCreated(userID string, q Query) (*PublicationHits, error) {
+	return e.getPublications(fmt.Sprintf("/users/%s/publications-created", userID), q)
+}
+
+func (e *Engine) getPublications(path string, q Query) (*PublicationHits, error) {
+	qp, err := form.NewEncoder().Encode(q)
+	if err != nil {
+		return nil, err
+	}
+	hits := &PublicationHits{}
+	if _, err := e.get(path, qp, hits); err != nil {
+		return nil, err
+	}
+	return hits, nil
 }

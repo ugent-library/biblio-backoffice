@@ -3,9 +3,9 @@ package engine
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 )
 
 type Config struct {
@@ -33,42 +33,15 @@ func New(c Config) (*Engine, error) {
 	return e, nil
 }
 
-func (e *Engine) UserPublications(userID string) (*PublicationHits, error) {
-	path := fmt.Sprintf("/users/%s/publications", userID)
-	hits := &PublicationHits{}
-	if _, err := e.get(path, hits); err != nil {
-		return nil, err
-	}
-	return hits, nil
-}
-
-func (e *Engine) UserPublicationsContributed(userID string) (*PublicationHits, error) {
-	path := fmt.Sprintf("/users/%s/publications-contributed", userID)
-	hits := &PublicationHits{}
-	if _, err := e.get(path, hits); err != nil {
-		return nil, err
-	}
-	return hits, nil
-}
-
-func (e *Engine) UserPublicationsCreated(userID string) (*PublicationHits, error) {
-	path := fmt.Sprintf("/users/%s/publications-created", userID)
-	hits := &PublicationHits{}
-	if _, err := e.get(path, hits); err != nil {
-		return nil, err
-	}
-	return hits, nil
-}
-
-func (e *Engine) get(path string, v interface{}) (*http.Response, error) {
-	req, err := e.newRequest("GET", path, nil)
+func (e *Engine) get(path string, qp url.Values, v interface{}) (*http.Response, error) {
+	req, err := e.newRequest("GET", path, qp, nil)
 	if err != nil {
 		return nil, err
 	}
 	return e.doRequest(req, v)
 }
 
-func (e *Engine) newRequest(method, path string, body interface{}) (*http.Request, error) {
+func (e *Engine) newRequest(method, path string, qp url.Values, body interface{}) (*http.Request, error) {
 	var buf io.ReadWriter
 	if body != nil {
 		buf = new(bytes.Buffer)
@@ -78,7 +51,7 @@ func (e *Engine) newRequest(method, path string, body interface{}) (*http.Reques
 		}
 	}
 
-	req, err := http.NewRequest(method, e.config.URL+path, buf)
+	req, err := http.NewRequest(method, e.config.URL+path+"?"+qp.Encode(), buf)
 	if err != nil {
 		return nil, err
 	}
