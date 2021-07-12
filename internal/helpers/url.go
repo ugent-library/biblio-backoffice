@@ -4,6 +4,7 @@ import (
 	"html/template"
 	"net/url"
 
+	"github.com/go-playground/form/v4"
 	"github.com/gorilla/mux"
 	"github.com/spf13/cast"
 )
@@ -13,6 +14,7 @@ func URL(r *mux.Router) template.FuncMap {
 		"urlFor":     urlFor(r),
 		"urlPathFor": urlPathFor(r),
 		"urlSet":     urlSet,
+		"urlQuery":   urlQuery,
 	}
 }
 
@@ -31,6 +33,25 @@ func urlPathFor(r *mux.Router) func(string, ...string) (*url.URL, error) {
 func urlSet(k, v interface{}, u *url.URL) (*url.URL, error) {
 	q := u.Query()
 	q.Set(cast.ToString(k), cast.ToString(v))
+	u.RawQuery = q.Encode()
+	return u, nil
+}
+
+func urlQuery(v interface{}, u *url.URL) (*url.URL, error) {
+	vals, err := form.NewEncoder().Encode(v)
+	if err != nil {
+		return u, err
+	}
+	q := u.Query()
+	for k, vv := range vals {
+		for i, v := range vv {
+			if i == 0 {
+				q.Set(k, v)
+			} else {
+				q.Add(k, v)
+			}
+		}
+	}
 	u.RawQuery = q.Encode()
 	return u, nil
 }
