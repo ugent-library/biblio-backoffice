@@ -41,7 +41,7 @@ func (e *Engine) get(path string, qp url.Values, v interface{}) (*http.Response,
 	return e.doRequest(req, v)
 }
 
-func (e *Engine) newRequest(method, path string, qp url.Values, body interface{}) (*http.Request, error) {
+func (e *Engine) newRequest(method, path string, vals url.Values, body interface{}) (*http.Request, error) {
 	var buf io.ReadWriter
 	if body != nil {
 		buf = new(bytes.Buffer)
@@ -51,7 +51,12 @@ func (e *Engine) newRequest(method, path string, qp url.Values, body interface{}
 		}
 	}
 
-	req, err := http.NewRequest(method, e.config.URL+path+"?"+qp.Encode(), buf)
+	u := e.config.URL + path
+	if vals != nil {
+		u = u + "?" + vals.Encode()
+	}
+
+	req, err := http.NewRequest(method, u, buf)
 	if err != nil {
 		return nil, err
 	}

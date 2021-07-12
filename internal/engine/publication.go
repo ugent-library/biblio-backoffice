@@ -17,6 +17,14 @@ type PublicationHits struct {
 	Hits         []Publication `json:"hits"`
 }
 
+func (e *Engine) GetPublication(id string) (*Publication, error) {
+	pub := &Publication{}
+	if _, err := e.get(fmt.Sprintf("/publications/%s", id), nil, pub); err != nil {
+		return nil, err
+	}
+	return pub, nil
+}
+
 func (e *Engine) UserPublications(userID string, q Query) (*PublicationHits, error) {
 	return e.getPublications(fmt.Sprintf("/users/%s/publications", userID), q)
 }

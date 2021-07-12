@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/go-playground/form/v4"
+	"github.com/gorilla/mux"
 	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/unrolled/render"
 )
@@ -17,6 +18,10 @@ type Publication struct {
 type PublicationListVars struct {
 	Query engine.Query
 	Hits  *engine.PublicationHits
+}
+
+type PublicationShowVars struct {
+	Pub *engine.Publication
 }
 
 func NewPublication(e *engine.Engine, r *render.Render) *Publication {
@@ -39,4 +44,16 @@ func (c *Publication) List(w http.ResponseWriter, r *http.Request) {
 	}
 
 	c.render.HTML(w, http.StatusOK, "publication/list", PublicationListVars{Query: q, Hits: hits})
+}
+
+func (c *Publication) Show(w http.ResponseWriter, r *http.Request) {
+	id := mux.Vars(r)["id"]
+	pub, err := c.engine.GetPublication(id)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	c.render.HTML(w, http.StatusOK, "publication/show", PublicationShowVars{Pub: pub})
 }

@@ -13,11 +13,14 @@ func Register(r *mux.Router, publicationController *controllers.Publication) {
 
 	// home
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, "/publications", http.StatusFound)
+		http.Redirect(w, r, "/publication", http.StatusFound)
 	}).Methods("GET").Name("home")
 
 	// publications
-	r.HandleFunc("/publications", publicationController.List).
+	r.HandleFunc("/publication", publicationController.List).
 		Methods("GET").
 		Name("publications")
+	r.HandleFunc("/publication/{id}", publicationController.Show).
+		Methods("GET").
+		Name("publication")
 }

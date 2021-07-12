@@ -1,0 +1,1032 @@
+<div class="w-100 u-scroll-wrapper">
+    <div class="c-header-collapsible bg-white" data-collapsed="true">
+        <div class="bc-navbar bc-navbar--large bc-navbar--white">
+            <div class="bc-toolbar">
+                <div class="bc-toolbar-left">
+                    <div class="bc-toolbar-item">
+                        <a class="btn btn-link btn-link-muted" href="{{urlPathFor "publications"}}">
+                            <i class="if if-arrow-left"></i>
+                            <div class="btn-text">Publications overview</div>
+                        </a>
+                    </div>
+                </div>
+                <div class="bc-toolbar-right">
+                    <div class="bc-toolbar-item">
+                        <div class="dropdown">
+                            <button class="btn btn-outline-primary btn-icon-only" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="if if-more"></i>
+                            </button>
+                            <div class="dropdown-menu">
+                                <button class="dropdown-item">
+                                    <i class="if if-double-quotes"></i>
+                                    <span>Cite</span>
+                                </button>
+                                <button class="dropdown-item">
+                                    <i class="if if-add"></i>
+                                    <span>Add to list</span>
+                                </button>
+                                <button class="dropdown-item">
+                                    <i class="if if-notification"></i>
+                                    <span>Turn on notifications</span>
+                                </button>
+                                <button class="dropdown-item">
+                                    <i class="if if-orcid" style="color: #A6CE39"></i>
+                                    <span>Send to ORCID</span>
+                                </button>
+                                <button class="dropdown-item" type="button" data-toggle="modal" data-target="#delete">
+                                    <i class="if if-delete"></i>
+                                    <span>Delete</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="c-divider mt-0 mx-6"></div>
+        <div class="c-header-collapsible__collapsed mx-6">
+            <h4 class="h4">{{.Pub.title}}</h4>
+        </div>
+        <div class="c-header-collapsible__expanded mx-6">
+            <div class="d-flex w-100">
+                <div class="w-100">
+                    <div class="d-flex align-items-start">
+                        <img class="list-group-item-thumbnail" src="{{assetPath "/images/thumbnail.jpg"}}" height="156">
+                        <div class="list-group-item-content">
+                            <div class="list-group-item-subline">
+                                <div class="list-group-item-subline-left">
+                                    <span class="mr-3 pr-3 border-right">Journal Article: A1</span>
+                                    <div class="d-flex align-items-center">
+                                        <i class="if if-download if--small if--success"></i>
+                                        <span class="pl-2 text-muted">Open Access</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="list-group-item-text">
+                                <h4 class="c-h4">Neuropsychiatric aspects of COVID-19 pandemic: A selective review<i class="if if-no-edit if--small ml-3 text-muted" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Locked for editing"></i>
+                                </h4>
+                                <div class="list-group-item-authors">
+                                    <div class="list-group-item-author">
+                                        <i class="if if-ghent-university" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="UGent author"></i>
+                                        <span>Jane Cooper</span>
+                                    </div>
+                                    <div class="list-group-item-author">
+                                        <i class="if if-ghent-university" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="UGent author"></i>
+                                        <span>Brooklyn Simmons</span>
+                                    </div>
+                                    <div class="list-group-item-author">
+                                        <i class="if if-orcid" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Author with ORCID"></i>
+                                        <i class="if if-ghent-university" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="UGent author"></i>
+                                        <span>Esther Howard</span>
+                                    </div>
+                                </div>
+                                <span class="c-body-small text-muted">2020, International Journal of Environmental Research and Public Health</span>
+                            </div>
+                            <div class="list-group-item-meta mt-5">
+                                <div class="list-group-item-meta-left">
+                                    <div class="list-group-item-meta-item">
+                                        <span class="badge badge-pill badge-success">
+                                            <span class="badge-text">Biblio Validated</span>
+                                        </span>
+                                    </div>
+                                    <div class="list-group-item-meta-item">
+                                        <div class="c-progress-bar c-progress-bar--medium">
+                                            <div class="c-progress-bar__progress">
+                                                <div class="c-progress-bar__bar c-progress-bar__bar--start"></div>
+                                                <div class="c-progress-bar__bar c-progress-bar__bar--middle"></div>
+                                                <div class="c-progress-bar__bar c-progress-bar__bar--end"></div>
+                                            </div>
+                                            <div class="c-progress-bar__label">Good</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="list-group-item-meta-right">
+                                    <div class="list-group-item-meta-item">
+                                        <span class="text-muted c-body-small">Biblio ID: 20393</span>
+                                    </div>
+                                    <div class="list-group-item-meta-item" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="1 related datasets">
+                                        <span class="text-muted c-body-small">
+                                            <i class="if if-database if--muted if--small"></i>1
+                                        </span>
+                                    </div>
+                                    <div class="list-group-item-meta-item" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Sent to Orcid">
+                                        <i class="if if-orcid if--muted if--small"></i>
+                                        <i class="if if-check text-success if--small"></i>
+                                    </div>
+                                    <div class="list-group-item-meta-item">
+                                        <span class="text-muted c-body-small">Created today</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="c-divider mb-2 mx-6"></div>
+        <div class="bc-navbar bc-navbar--white bc-navbar--bordered-bottom">
+            <div class="bc-toolbar">
+                <div class="bc-toolbar-left">
+                    <div class="bc-toolbar-item">
+                        <ul class="nav">
+                            <li class="nav-item">
+                                <a class="nav-link active" href="../../publication-detail/description.html">Description</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="../../publication-detail/full-text.html">Full text</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="../../publication-detail/authors-editors.html">Authors &amp; Editors</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="../../publication-detail/datasets.html">Datasets</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="../../publication-detail/biblio-review.html">Biblio Review</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="bc-toolbar-right">
+                    <div class="bc-toolbar-item">
+                        <div class="c-header-collapsible__expanded mb-2">
+                            <button class="btn btn-link btn-small c-header-collapse-trigger" type="button">
+                                <div class="btn-text">Collapse</div>
+                                <i class="if if-chevron-up"></i>
+                            </button>
+                        </div>
+                        <div class="c-header-collapsible__collapsed mb-2">
+                            <button class="btn btn-link btn-small c-header-collapse-trigger" type="button">
+                                <div class="btn-text">Expand</div>
+                                <i class="if if-chevron-down"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="u-scroll-wrapper__body p-6">
+        <div class="card card-collapsible mb-6">
+            <div class="card-header">
+                <div class="collapse-trigger" data-toggle="collapse" data-target="#collapse1" aria-expanded="false" aria-controls="collapse1"></div>
+                <div class="bc-toolbar">
+                    <div class="bc-toolbar-left">
+                        <i class="if if-chevron-right mr-4 text-muted"></i>Publication details
+                    </div>
+                    <div class="bc-toolbar-right">
+                        <div class="c-button-toolbar" data-panel-state="read">
+                            <button class="btn btn-outline-primary" data-panel-toggle="edit1">
+                                <i class="if if-edit"></i>
+                                <div class="btn-text">Edit</div>
+                            </button>
+                        </div>
+                        <div class="c-button-toolbar u-hidden" data-panel-state="edit">
+                            <button class="btn btn-outline-primary" data-panel-toggle="edit1">
+                                <div class="btn-text">Cancel</div>
+                            </button>
+                            <button class="btn btn-primary" data-panel-toggle="edit1">
+                                <div class="btn-text">Save</div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="collapse" id="collapse1">
+                <div class="card-body p-0" id="edit1">
+                    <ul class="list-group list-group-flush" data-panel-state="read">
+                        <li class="list-group-item">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label align-self-start" for="Publication type">Publication type &nbsp;<abbr class="required" title="Required">*</abbr>
+                                </label>
+                                <div class="col-sm-9">
+                                    <span>Journal article</span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label align-self-start" for="DOI">DOI &nbsp;</label>
+                                <div class="col-sm-9">
+                                    <span>10.1016/j.ajp.2020.102188</span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label align-self-start" for="ISSN/ISBN">ISSN/ISBN &nbsp;</label>
+                                <div class="col-sm-9">
+                                    <span>ISSN: 1876-2018</span>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label align-self-start" for="Title">Title &nbsp;<abbr class="required" title="Required">*</abbr>
+                                </label>
+                                <div class="col-sm-9">
+                                    <span>Neuropsychiatric aspects of COVID-19 pandemic: A selective review</span>
+                                    <div class="small text-muted mt-2">Pre-filled based on DOI</div>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label align-self-start" for="Alternative title">Alternative title &nbsp;</label>
+                                <div class="col-sm-9">
+                                    <span>-</span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label align-self-start" for="Journal title">Journal title &nbsp;<abbr class="required" title="Required">*</abbr>
+                                </label>
+                                <div class="col-sm-9">
+                                    <span>Neuropsychiatric aspects of COVID-19 pandemic: A selective review</span>
+                                    <div class="small text-muted mt-2">Pre-filled based on DOI</div>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label align-self-start" for="Classification">Classification &nbsp;<a class="text-muted mx-2" href="#" data-container="body" data-toggle="popover" data-placement="right" data-content="This is some helptext." data-original-title="" title="">
+                                        <i class="if if-info-circle if--small"></i>
+                                        <div class="sr-only">More info</div>
+                                    </a>
+                                </label>
+                                <div class="col-sm-9">
+                                    <span>A1 - Article available in the Web of Science</span>
+                                    <div class="small text-muted mt-2">Pre-filled based on DOI</div>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label align-self-start" for="Article type">Article type &nbsp;</label>
+                                <div class="col-sm-9">
+                                    <span>Original article</span>
+                                    <div class="small text-muted mt-2">Pre-filled based on DOI</div>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label align-self-start" for="Article number">Article number &nbsp;</label>
+                                <div class="col-sm-9">
+                                    <span>102188</span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label align-self-start" for="WOS type">WOS type &nbsp;<a class="text-muted mx-2" href="#" data-container="body" data-toggle="popover" data-placement="right" data-content="This is some helptext." data-original-title="" title="">
+                                        <i class="if if-info-circle if--small"></i>
+                                        <div class="sr-only">More info</div>
+                                    </a>
+                                </label>
+                                <div class="col-sm-9">
+                                    <span>-</span>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label align-self-start" for="Publication short title">Publication short title &nbsp;</label>
+                                <div class="col-sm-9">
+                                    <span>-</span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label align-self-start" for="Publisher">Publisher &nbsp;</label>
+                                <div class="col-sm-9">
+                                    <span>-</span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label align-self-start" for="Place of publication">Place of publication &nbsp;</label>
+                                <div class="col-sm-9">
+                                    <span>-</span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label align-self-start" for="Publication year">Publication year &nbsp;<abbr class="required" title="Required">*</abbr>
+                                </label>
+                                <div class="col-sm-9">
+                                    <span>2020</span>
+                                    <div class="small text-muted mt-2">Pre-filled based on DOI</div>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label align-self-start" for="Languages">Languages &nbsp;</label>
+                                <div class="col-sm-9">
+                                    <span>English</span>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label align-self-start" for="Volume">Volume &nbsp;</label>
+                                <div class="col-sm-9">
+                                    <span>3</span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label align-self-start" for="Issue">Issue &nbsp;</label>
+                                <div class="col-sm-9">
+                                    <span>5</span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label align-self-start" for="Pages">Pages &nbsp;</label>
+                                <div class="col-sm-9">
+                                    <span>-</span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label align-self-start" for="Number of pages">Number of pages &nbsp;</label>
+                                <div class="col-sm-9">
+                                    <span>25</span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label align-self-start" for="Article number">Article number &nbsp;</label>
+                                <div class="col-sm-9">
+                                    <span>-</span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label align-self-start" for="Special issue title">Special issue title &nbsp;</label>
+                                <div class="col-sm-9">
+                                    <span>-</span>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label align-self-start" for="Department">Department &nbsp;</label>
+                                <div class="col-sm-9">
+                                    <span>-</span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label align-self-start" for="Project">Project &nbsp;</label>
+                                <div class="col-sm-9">
+                                    <span>-</span>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                    <ul class="list-group list-group-flush u-hidden" data-panel-state="edit">
+                        <li class="list-group-item">
+                            <form>
+                                <div class="form-group row">
+                                    <label class="col-3 col-form-label" for="publicationType">Publication type</label>
+                                    <div class="col-3">
+                                        <select class="custom-select form-control select2-hidden-accessible" id="publicationType" data-select2-id="select2-data-publicationType" tabindex="-1" aria-hidden="true">
+                                            <option data-select2-id="select2-data-2-8j0k">Journal article</option>
+                                            <option>Item B</option>
+                                            <option>Item C</option>
+                                        </select><span class="select2 select2-container select2-container--bootstrap4" dir="ltr" data-select2-id="select2-data-1-2pkv" style="width: auto;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-disabled="false" aria-labelledby="select2-publicationType-container" aria-controls="select2-publicationType-container"><span class="select2-selection__rendered" id="select2-publicationType-container" role="textbox" aria-readonly="true" title="Journal article">Journal article</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-3 col-form-label" for="doi">DOI</label>
+                                    <div class="col-3">
+                                        <input class="form-control" id="doi" type="text" value="10.1016/j.ajp.2020.102188">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-3 col-form-label" for="issnIsbn">ISSN/ISBN</label>
+                                    <div class="col-3">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">ISSN</button>
+                                                <div class="dropdown-menu">
+                                                    <a class="dropdown-item" href="#">ISSN</a>
+                                                    <a class="dropdown-item" href="#">ISBN</a>
+                                                </div>
+                                            </div>
+                                            <input class="form-control" id="issnIsbn" type="text" value="1876-2018">
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </li>
+                        <li class="list-group-item">
+                            <form>
+                                <div class="form-group row">
+                                    <label class="col-3 col-form-label" for="title">Title<abbr class="required" title="Required">*</abbr>
+                                    </label>
+                                    <div class="col-9">
+                                        <input class="form-control" id="title" type="text" value="Neuropsychiatric aspects of COVID-19 pandemic: A selective review">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-3 col-form-label" for="alternativeTitle">Alternative title</label>
+                                    <div class="col-9 d-flex">
+                                        <input class="form-control" id="alternativeTitle" type="text">
+                                        <button class="btn btn-outline-primary btn-icon-only ml-3" type="button">
+                                            <i class="if if-add"></i>
+                                            <div class="sr-only">Add</div>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-3 col-form-label" for="journalTitle">Journal title<abbr class="required" title="Required">*</abbr>
+                                    </label>
+                                    <div class="col-9">
+                                        <input class="form-control" id="journalTitle" type="text" value="Neuropsychiatric aspects of COVID-19 pandemic: A selective review">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-3 col-form-label" for="classification">Classification<a class="text-muted mx-2" href="#" data-container="body" data-toggle="popover" data-placement="right" data-content="This is some helper text." data-original-title="" title="">
+                                            <i class="if if-info-circle if--small"></i>
+                                            <div class="sr-only">More info</div>
+                                        </a>
+                                    </label>
+                                    <div class="col-3">
+                                        <select class="custom-select form-control select2-hidden-accessible" id="classification" data-select2-id="select2-data-classification" tabindex="-1" aria-hidden="true">
+                                            <option data-select2-id="select2-data-4-1hm4">A1 - Article available in the Web of Science</option>
+                                            <option>Item B</option>
+                                            <option>Item C</option>
+                                        </select><span class="select2 select2-container select2-container--bootstrap4" dir="ltr" data-select2-id="select2-data-3-pxmx" style="width: auto;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-disabled="false" aria-labelledby="select2-classification-container" aria-controls="select2-classification-container"><span class="select2-selection__rendered" id="select2-classification-container" role="textbox" aria-readonly="true" title="A1 - Article available in the Web of Science">A1 - Article available in the Web of Science</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-3 col-form-label" for="articleType">Article type</label>
+                                    <div class="col-3">
+                                        <select class="custom-select form-control select2-hidden-accessible" id="articleType" data-select2-id="select2-data-articleType" tabindex="-1" aria-hidden="true">
+                                            <option data-select2-id="select2-data-6-ww3h">Original article</option>
+                                            <option>Item B</option>
+                                            <option>Item C</option>
+                                        </select><span class="select2 select2-container select2-container--bootstrap4" dir="ltr" data-select2-id="select2-data-5-x1al" style="width: auto;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-disabled="false" aria-labelledby="select2-articleType-container" aria-controls="select2-articleType-container"><span class="select2-selection__rendered" id="select2-articleType-container" role="textbox" aria-readonly="true" title="Original article">Original article</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-3 col-form-label" for="articleNumber">Article number</label>
+                                    <div class="col-3">
+                                        <input class="form-control" id="articleNumber" type="text" value="102188">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-3 col-form-label" for="wosType">WOS type<a class="text-muted mx-2" href="#" data-container="body" data-toggle="popover" data-placement="right" data-content="This is some helper text." data-original-title="" title="">
+                                            <i class="if if-info-circle if--small"></i>
+                                            <div class="sr-only">More info</div>
+                                        </a>
+                                    </label>
+                                    <div class="col-3">
+                                        <input class="form-control" id="wosType" type="text">
+                                    </div>
+                                </div>
+                            </form>
+                        </li>
+                        <li class="list-group-item">
+                            <form>
+                                <div class="form-group row">
+                                    <label class="col-3 col-form-label" for="shortTitle">Publication short title</label>
+                                    <div class="col-9">
+                                        <input class="form-control" id="shortTitle" type="text">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-3 col-form-label" for="publisher">Publisher</label>
+                                    <div class="col-9">
+                                        <input class="form-control" id="publisher" type="text">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-3 col-form-label" for="placeOfPublication">Place of publication</label>
+                                    <div class="col-9">
+                                        <input class="form-control" id="placeOfPublication" type="text">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-3 col-form-label" for="publicationYear">Publication Year<abbr class="required" title="Required">*</abbr>
+                                    </label>
+                                    <div class="col-3">
+                                        <input class="form-control" id="publicationYear" type="text" value="2020">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-3 col-form-label" for="check"></label>
+                                    <div class="col-9">
+                                        <div class="custom-control custom-checkbox">
+                                            <input class="custom-control-input" id="customCheck1" type="checkbox">
+                                            <label class="custom-control-label" for="customCheck1">Published while none of the authors are employed at UGent</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-3 col-form-label" for="languages">Languages</label>
+                                    <div class="col-3">
+                                        <select class="custom-select form-control select2-hidden-accessible" id="languages" data-select2-id="select2-data-languages" tabindex="-1" aria-hidden="true">
+                                            <option data-select2-id="select2-data-8-bazg">English</option>
+                                            <option>Item B</option>
+                                            <option>Item C</option>
+                                        </select><span class="select2 select2-container select2-container--bootstrap4" dir="ltr" data-select2-id="select2-data-7-e9lt" style="width: auto;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-disabled="false" aria-labelledby="select2-languages-container" aria-controls="select2-languages-container"><span class="select2-selection__rendered" id="select2-languages-container" role="textbox" aria-readonly="true" title="English">English</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+                                    </div>
+                                    <button class="btn btn-outline-primary btn-icon-only" type="button">
+                                        <i class="if if-add"></i>
+                                        <div class="sr-only">Add</div>
+                                    </button>
+                                </div>
+                            </form>
+                        </li>
+                        <li class="list-group-item">
+                            <form>
+                                <div class="form-group row">
+                                    <label class="col-3 col-form-label" for="volume">Volume</label>
+                                    <div class="col-3">
+                                        <input class="form-control" id="volume" type="text" value="3">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-3 col-form-label" for="issue">Issue</label>
+                                    <div class="col-3">
+                                        <input class="form-control" id="issue" type="text" value="5">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-3 col-form-label" for="pages">Pages</label>
+                                    <div class="col-3">
+                                        <input class="form-control" id="pages" type="text">
+                                    </div>
+                                    <button class="btn btn-outline-primary btn-icon-only" type="button">
+                                        <i class="if if-add"></i>
+                                        <div class="sr-only">Add</div>
+                                    </button>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-3 col-form-label" for="numberOfPages">Number of pages</label>
+                                    <div class="col-3">
+                                        <input class="form-control" id="numberOfPages" type="text" value="25">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-3 col-form-label" for="articleNumber">Article number</label>
+                                    <div class="col-3">
+                                        <input class="form-control" id="articleNumber" type="text">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-3 col-form-label" for="specialIssueTitle">Special issue title</label>
+                                    <div class="col-8">
+                                        <input class="form-control" id="specialIssueTitle" type="text">
+                                    </div>
+                                </div>
+                            </form>
+                        </li>
+                        <li class="list-group-item">
+                            <form>
+                                <div class="form-group row">
+                                    <label class="col-3 col-form-label" for="department">Department</label>
+                                    <div class="col-9 d-flex">
+                                        <input class="form-control" id="department" type="text">
+                                        <div class="button btn btn-outline-primary btn-icon-only ml-3" type="button">
+                                            <i class="if if-add"></i>
+                                            <div class="sr-only">Add</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-3 col-form-label" for="project">Project</label>
+                                    <div class="col-9 d-flex">
+                                        <input class="form-control" id="project" type="text">
+                                        <div class="button btn btn-outline-primary btn-icon-only ml-3" type="button">
+                                            <i class="if if-add"></i>
+                                            <div class="sr-only">Add</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="card card-collapsible mb-6">
+            <div class="card-header">
+                <div class="collapse-trigger" data-toggle="collapse" data-target="#collapse2" aria-expanded="false" aria-controls="collapse2"></div>
+                <div class="bc-toolbar">
+                    <div class="bc-toolbar-left">
+                        <i class="if if-chevron-right mr-4 text-muted"></i>Conference details
+                    </div>
+                    <div class="bc-toolbar-right">
+                        <div class="c-button-toolbar" data-panel-state="read">
+                            <button class="btn btn-outline-primary" data-panel-toggle="edit2">
+                                <i class="if if-edit"></i>
+                                <div class="btn-text">Edit</div>
+                            </button>
+                        </div>
+                        <div class="c-button-toolbar u-hidden" data-panel-state="edit">
+                            <button class="btn btn-outline-primary" data-panel-toggle="edit2">
+                                <div class="btn-text">Cancel</div>
+                            </button>
+                            <button class="btn btn-primary" data-panel-toggle="edit2">
+                                <div class="btn-text">Save</div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="collapse" id="collapse2">
+                <div class="card-body p-0" id="edit2">
+                    <ul class="list-group list-group-flush" data-panel-state="read">
+                        <li class="list-group-item">
+                            <div class="form-group row">
+                                <label class="col-sm-4 col-form-label" for="Conference">Conference &nbsp;</label>
+                                <div class="col-sm-8 d-flex align-items-center">
+                                    <span>International Conference on Neuropsychology and Neurosystems</span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-4 col-form-label" for="Conference location">Conference location &nbsp;</label>
+                                <div class="col-sm-8 d-flex align-items-center">
+                                    <span>Barcelona</span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-4 col-form-label" for="Conference organiser">Conference organiser &nbsp;</label>
+                                <div class="col-sm-8 d-flex align-items-center">
+                                    <span>-</span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-4 col-form-label" for="Conference date">Conference date &nbsp;</label>
+                                <div class="col-sm-8 d-flex align-items-center">
+                                    <span>24/05/2021</span>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                    <ul class="list-group list-group-flush u-hidden" data-panel-state="edit">
+                        <li class="list-group-item">
+                            <form>
+                                <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label" for="conference">Conference</label>
+                                    <div class="col-sm-6">
+                                        <input class="form-control" id="conference" type="text">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label" for="conferenceLocation">Conference location</label>
+                                    <div class="col-sm-3">
+                                        <input class="form-control" id="conferenceLocation" type="text">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label" for="conferenceOrganiser">Conference organiser</label>
+                                    <div class="col-sm-6">
+                                        <input class="form-control" id="conferenceOrganiser" type="text">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-4 col-form-label" for="conferenceOrganiser">Conference date</label>
+                                    <div class="row col-8">
+                                        <div class="col-1">
+                                            <label class="col-form-label" for="conferenceOrganiser">Start</label>
+                                        </div>
+                                        <div class="col-5">
+                                            <input class="form-control" id="conferenceOrganiser" type="date">
+                                        </div>
+                                        <div class="col-1">
+                                            <label class="col-form-label" for="conferenceOrganiser">End</label>
+                                        </div>
+                                        <div class="col-5">
+                                            <input class="form-control" id="conferenceOrganiser" type="date">
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="card card-collapsible mb-6">
+            <div class="card-header">
+                <div class="collapse-trigger collapsed" data-toggle="collapse" data-target="#collapse3" aria-expanded="false" aria-controls="collapse3"></div>
+                <div class="bc-toolbar">
+                    <div class="bc-toolbar-left">
+                        <i class="if if-chevron-right mr-4 text-muted"></i>Abstract
+                    </div>
+                    <div class="bc-toolbar-right">
+                        <button class="btn btn-outline-primary" type="button" data-toggle="modal" data-target="#addAbstract">
+                            <i class="if if-add"></i>
+                            <div class="btn-text">Add Abstract</div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="collapse" id="collapse3" style="">
+                <div class="card-body p-0">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th class="pl-6">Abstract</th>
+                                <th>Language</th>
+                                <th class="pr-6"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="pl-6">
+                                    <p>Velit mi aliquam at aliquam egestas habitant. Amet, neque, volutpat venenatis diam amet ac condimentum. Rutrum pulvinar consequat consectetur vestibulum proin est eros feugiat. Aliquet sit facilisi facilisi eu, venenatis. Elit enim etiam euismod cursus at amet sed massa.Pretium sem tincidunt curabitur scelerisque at ligula phasellus libero cras. Congue sed placerat convallis quam velit viverra. Consequat consequat id purus sed vitae lectus amet suscipit maecenas. Auctor mauris, mauris velit sit elementum. Ultrices lectus tempor interdum accumsan duis turpis praesent ipsum.</p>
+                                </td>
+                                <td>English</td>
+                                <td class="pr-6">
+                                    <div class="c-button-toolbar">
+                                        <div class="dropdown">
+                                            <button class="btn btn-link btn-icon-only btn-link-muted" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <i class="if if-more"></i>
+                                            </button>
+                                            <div class="dropdown-menu">
+                                                <button class="dropdown-item" type="button">
+                                                    <i class="if if-edit"></i>
+                                                    <span>Edit</span>
+                                                </button>
+                                                <button class="dropdown-item" type="button" data-toggle="modal" data-target="#delete">
+                                                    <i class="if if-delete"></i>
+                                                    <span>Delete</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="pl-6">
+                                    <p>Velit mi aliquam at aliquam egestas habitant. Amet, neque, volutpat venenatis diam amet ac condimentum. Rutrum pulvinar consequat consectetur vestibulum proin est eros feugiat. Aliquet sit facilisi facilisi eu, venenatis. Elit enim etiam euismod cursus at amet sed massa.</p>
+                                </td>
+                                <td>-</td>
+                                <td class="pr-6">
+                                    <div class="c-button-toolbar">
+                                        <div class="dropdown">
+                                            <button class="btn btn-link btn-icon-only btn-link-muted" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <i class="if if-more"></i>
+                                            </button>
+                                            <div class="dropdown-menu">
+                                                <button class="dropdown-item" type="button">
+                                                    <i class="if if-edit"></i>
+                                                    <span>Edit</span>
+                                                </button>
+                                                <button class="dropdown-item" type="button" data-toggle="modal" data-target="#delete">
+                                                    <i class="if if-delete"></i>
+                                                    <span>Delete</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="card card-collapsible mb-6">
+            <div class="card-header">
+                <div class="collapse-trigger" data-toggle="collapse" data-target="#collapse4" aria-expanded="false" aria-controls="collapse4"></div>
+                <div class="bc-toolbar">
+                    <div class="bc-toolbar-left">
+                        <i class="if if-chevron-right mr-4 text-muted"></i>Links
+                    </div>
+                    <div class="bc-toolbar-right">
+                        <button class="btn btn-outline-primary" type="button" data-toggle="modal" data-target="#addLink">
+                            <i class="if if-add"></i>
+                            <div class="btn-text">Add Link</div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="collapse" id="collapse4">
+                <div class="card-body p-0">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th class="pl-6">Link</th>
+                                <th>Relation</th>
+                                <th class="pr-6"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="pl-6">
+                                    <a href="http://sample-url.com">http://sample-url.com</a>
+                                    <p class="c-body-small text-muted m-0">Small description tortor, ultricies enim cursus cursus sollicitudin rhoncus in.</p>
+                                </td>
+                                <td>Data Management Plan</td>
+                                <td class="pr-6">
+                                    <div class="c-button-toolbar">
+                                        <div class="dropdown">
+                                            <button class="btn btn-link btn-icon-only btn-link-muted" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <i class="if if-more"></i>
+                                            </button>
+                                            <div class="dropdown-menu">
+                                                <button class="dropdown-item" type="button">
+                                                    <i class="if if-edit"></i>
+                                                    <span>Edit</span>
+                                                </button>
+                                                <button class="dropdown-item" type="button" data-toggle="modal" data-target="#delete">
+                                                    <i class="if if-delete"></i>
+                                                    <span>Delete</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="pl-6">
+                                    <a href="http://sample-url.com">http://sample-url.com</a>
+                                    <p class="c-body-small text-muted m-0">Small description tortor, ultricies enim cursus cursus sollicitudin rhoncus in.</p>
+                                </td>
+                                <td>Data Management Plan</td>
+                                <td class="pr-6">
+                                    <div class="c-button-toolbar">
+                                        <div class="dropdown">
+                                            <button class="btn btn-link btn-icon-only btn-link-muted" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <i class="if if-more"></i>
+                                            </button>
+                                            <div class="dropdown-menu">
+                                                <button class="dropdown-item" type="button">
+                                                    <i class="if if-edit"></i>
+                                                    <span>Edit</span>
+                                                </button>
+                                                <button class="dropdown-item" type="button" data-toggle="modal" data-target="#delete">
+                                                    <i class="if if-delete"></i>
+                                                    <span>Delete</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="card card-collapsible">
+            <div class="card-header">
+                <div class="collapse-trigger" data-toggle="collapse" data-target="#collapse5" aria-expanded="false" aria-controls="collapse5"></div>
+                <div class="bc-toolbar">
+                    <div class="bc-toolbar-left">
+                        <i class="if if-chevron-right mr-4 text-muted"></i>Additional information
+                    </div>
+                    <div class="bc-toolbar-right">
+                        <div class="c-button-toolbar" data-panel-state="read">
+                            <button class="btn btn-outline-primary" data-panel-toggle="edit3">
+                                <i class="if if-edit"></i>
+                                <div class="btn-text">Edit</div>
+                            </button>
+                        </div>
+                        <div class="c-button-toolbar u-hidden" data-panel-state="edit">
+                            <button class="btn btn-outline-primary" data-panel-toggle="edit3">
+                                <div class="btn-text">Cancel</div>
+                            </button>
+                            <button class="btn btn-primary" data-panel-toggle="edit3">
+                                <div class="btn-text">Save</div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="collapse" id="collapse5">
+                <div class="card-body p-0" id="edit3">
+                    <ul class="list-group list-group-flush" data-panel-state="read">
+                        <li class="list-group-item">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label" for="Research field">Research field &nbsp;</label>
+                                <div class="col-sm-9 d-flex align-items-center">
+                                    <p>Medicine and Health Sciences</p>
+                                    <p>Biology and Life Sciences</p>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label" for="Keywords">Keywords &nbsp;</label>
+                                <div class="col-sm-9 d-flex align-items-center">
+                                    <div class="d-flex align-items-center h-100">
+                                        <span class="badge badge-pill badge-default mr-3">General Psychology</span>
+                                        <span class="badge badge-pill badge-default mr-3">Psychiatry and Mental health</span>
+                                        <span class="badge badge-pill badge-default mr-3">General Medicine</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label" for="External identifier">External identifier &nbsp;</label>
+                                <div class="col-sm-9 d-flex align-items-center">
+                                    <span>PMID 32314460</span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label" for="Additional information">Additional information &nbsp;</label>
+                                <div class="col-sm-9 d-flex align-items-center">
+                                    <span>Proin aenean tristique ut id tortor ipsum.</span>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                    <ul class="list-group list-group-flush u-hidden" data-panel-state="edit">
+                        <li class="list-group-item">
+                            <form>
+                                <div class="form-group row">
+                                    <label class="col-3 col-form-label" for="conference">Research field</label>
+                                    <div class="col-9 d-flex">
+                                        <input class="form-control" id="conference" type="text" value="Medicine and Health Sciences">
+                                        <button class="btn btn-outline-primary btn-icon-only ml-3" type="button">
+                                            <i class="if if-add"></i>
+                                            <div class="sr-only">Add</div>
+                                        </button>
+                                    </div>
+                                    <div class="col-3"></div>
+                                    <div class="col-9 d-flex mt-3">
+                                        <input class="form-control" id="conference" type="text" value="Biology and Life Sciences">
+                                        <button class="btn btn-link btn-link-muted btn-icon-only ml-3" type="button">
+                                            <i class="if if-delete"></i>
+                                            <div class="sr-only">Delete</div>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-form-label col-3" for="keywords">Keywords</label>
+                                    <div class="col-9">
+                                        <select class="form-control w-100 select2-hidden-accessible" id="keywords" multiple="" data-placeholder="Keywords" data-allow-clear="1" data-select2-id="select2-data-keywords" tabindex="-1" aria-hidden="true">
+                                            <option selected="" data-select2-id="select2-data-10-vqqf">General Psychology</option>
+                                            <option selected="" data-select2-id="select2-data-11-2ht2">Psychiatry and Mental health</option>
+                                        </select><span class="select2 select2-container select2-container--bootstrap4" dir="ltr" data-select2-id="select2-data-9-65rf" style="width: auto;"><span class="selection"><span class="select2-selection select2-selection--multiple select2-selection--clearable" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="-1" aria-disabled="false"><button type="button" class="select2-selection__clear" tabindex="-1" title="Remove all items" aria-label="Remove all items" aria-describedby="select2-keywords-container" data-select2-id="select2-data-14-t0iz"><span aria-hidden="true">×</span></button><ul class="select2-selection__rendered" id="select2-keywords-container"><li class="select2-selection__choice" title="General Psychology" data-select2-id="select2-data-12-fggx"><button type="button" class="select2-selection__choice__remove" tabindex="-1" title="Remove item" aria-label="Remove item" aria-describedby="select2-keywords-container-choice-zfmh-General Psychology"><span aria-hidden="true">×</span></button><span class="select2-selection__choice__display" id="select2-keywords-container-choice-zfmh-General Psychology">General Psychology</span></li><li class="select2-selection__choice" title="Psychiatry and Mental health" data-select2-id="select2-data-13-x3nv"><button type="button" class="select2-selection__choice__remove" tabindex="-1" title="Remove item" aria-label="Remove item" aria-describedby="select2-keywords-container-choice-d7vt-Psychiatry and Mental health"><span aria-hidden="true">×</span></button><span class="select2-selection__choice__display" id="select2-keywords-container-choice-d7vt-Psychiatry and Mental health">Psychiatry and Mental health</span></li></ul><span class="select2-search select2-search--inline"><textarea class="select2-search__field" type="search" tabindex="0" autocorrect="off" autocapitalize="none" spellcheck="false" role="searchbox" aria-autocomplete="list" autocomplete="off" aria-label="Search" aria-describedby="select2-keywords-container" placeholder="" style="width: 0.75em;"></textarea></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-3 col-form-label" for="externalIdentifier">External identifier</label>
+                                    <div class="col-3">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">PMID</button>
+                                                <div class="dropdown-menu">
+                                                    <a class="dropdown-item" href="#">PMID</a>
+                                                    <a class="dropdown-item" href="#">Option 2</a>
+                                                </div>
+                                            </div>
+                                            <input class="form-control" id="externalIdentifier" type="text" value="32314460">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-3 col-form-label" for="additionalInformation">Additional information</label>
+                                    <div class="col-9"><textarea class="form-control"></textarea>
+                                    </div>
+                                </div>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="modal" id="addLink" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title">Add Link</h2>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <label class="col-form-label">Url</label>
+                                <input class="form-control" type="text">
+                            </div>
+                            <div class="form-group">
+                                <label class="col-form-label">Relation</label>
+                                <select class="custom-select w-100 select2-hidden-accessible" data-select2-id="select2-data-15-7vco" tabindex="-1" aria-hidden="true">
+                                    <option data-select2-id="select2-data-17-4596">Select</option>
+                                    <option>Option 2</option>
+                                    <option>Option 3</option>
+                                </select><span class="select2 select2-container select2-container--bootstrap4" dir="ltr" data-select2-id="select2-data-16-ph4p" style="width: auto;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-disabled="false" aria-labelledby="select2-bwqa-container" aria-controls="select2-bwqa-container"><span class="select2-selection__rendered" id="select2-bwqa-container" role="textbox" aria-readonly="true" title="Select">Select</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-form-label">Description</label><textarea class="form-control"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-link" data-dismiss="modal">Cancel</button>
+                        <button class="btn btn-primary" data-dismiss="modal">Add Link</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal" id="addAbstract" tabindex="-1" aria-hidden="true" style="display: none;">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title">Add Abstract</h2>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <label class="col-form-label">Abstract</label><textarea class="form-control" placeholder="Add abstract text here..." rows="6"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-form-label">Language</label>
+                                <select class="custom-select w-100 select2-hidden-accessible" data-select2-id="select2-data-18-cm82" tabindex="-1" aria-hidden="true">
+                                    <option data-select2-id="select2-data-20-wsi7">English</option>
+                                    <option>Option 2</option>
+                                    <option>Option 3</option>
+                                </select><span class="select2 select2-container select2-container--bootstrap4" dir="ltr" data-select2-id="select2-data-19-s0hr" style="width: auto;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-disabled="false" aria-labelledby="select2-r9zy-container" aria-controls="select2-r9zy-container"><span class="select2-selection__rendered" id="select2-r9zy-container" role="textbox" aria-readonly="true" title="English">English</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-link" data-dismiss="modal">Cancel</button>
+                        <button class="btn btn-primary" data-dismiss="modal">Add Abstract</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
