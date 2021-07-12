@@ -1,5 +1,6 @@
 package engine
 
 type Query struct {
-	Page int `form:"page"`
+	QueryString string `form:"q"`
+	Page        int    `form:"page"`
 }

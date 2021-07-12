@@ -65,12 +65,12 @@
         </div>
     </div>
     <div class="u-scroll-wrapper__body p-6">
-        <form class="mb-4">
+        <form class="mb-4" method="GET" action="{{urlPathFor "publications"}}">
             <div class="form-row">
                 <div class="col">
-                    <label class="sr-only" for="search">Search</label>
+                    <label class="sr-only" for="q">Search</label>
                     <div class="dropdown">
-                        <input class="form-control" type="text" name="search" placeholder="Search..."
+                        <input class="form-control" type="text" name="q" value="{{.Query.QueryString}}" placeholder="Search..."
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
                             autocomplete="off">
                         <div class="dropdown-menu w-100" aria-labelledby="dropdownMenuLink">

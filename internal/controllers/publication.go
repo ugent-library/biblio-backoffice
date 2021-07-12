@@ -15,7 +15,8 @@ type Publication struct {
 }
 
 type PublicationListVars struct {
-	Hits *engine.PublicationHits
+	Query engine.Query
+	Hits  *engine.PublicationHits
 }
 
 func NewPublication(e *engine.Engine, r *render.Render) *Publication {
@@ -37,5 +38,5 @@ func (c *Publication) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.render.HTML(w, http.StatusOK, "publication/list", PublicationListVars{Hits: hits})
+	c.render.HTML(w, http.StatusOK, "publication/list", PublicationListVars{Query: q, Hits: hits})
 }
