@@ -20,6 +20,9 @@ func Register(r *mux.Router, publicationController *controllers.Publication) {
 	r.HandleFunc("/publication", publicationController.List).
 		Methods("GET").
 		Name("publications")
+	r.HandleFunc("/publication/new", publicationController.New).
+		Methods("GET").
+		Name("new_publication")
 	r.HandleFunc("/publication/{id}", publicationController.Show).
 		Methods("GET").
 		Name("publication")

@@ -24,6 +24,9 @@ type PublicationShowVars struct {
 	Pub *engine.Publication
 }
 
+type PublicationNewVars struct {
+}
+
 func NewPublication(e *engine.Engine, r *render.Render) *Publication {
 	return &Publication{engine: e, render: r}
 }
@@ -56,4 +59,8 @@ func (c *Publication) Show(w http.ResponseWriter, r *http.Request) {
 	}
 
 	c.render.HTML(w, http.StatusOK, "publication/show", PublicationShowVars{Pub: pub})
+}
+
+func (c *Publication) New(w http.ResponseWriter, r *http.Request) {
+	c.render.HTML(w, http.StatusOK, "publication/new", PublicationNewVars{})
 }
