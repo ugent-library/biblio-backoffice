@@ -210,39 +210,7 @@
             </ul>
         </div>
         <nav aria-label="Page navigation">
-            <ul class="pagination">
-                {{if .Hits.PreviousPage}}
-                <li class="page-item">
-                    <a class="page-link" href="{{urlPathFor "publications" | urlQuery (.Query.WithPage (sub .Hits.Page 1 | int))}}" aria-label="Previous">
-                        <i class="if if-chevron-left" aria-hidden="true"></i>
-                    </a>
-                </li>
-                {{else}}
-                <li class="page-item disabled">
-                    <a class="page-link" href="#" aria-label="Previous">
-                        <i class="if if-chevron-left" aria-hidden="true"></i>
-                    </a>
-                </li>
-                {{end}}
-                {{range untilStep 1 (min .Hits.LastPage 10 | add 1 | int) 1}}
-                    <li class="page-item{{if eq . $.Hits.Page}} active{{end}}">
-                        <a class="page-link" href="{{urlPathFor "publications" | urlQuery ($.Query.WithPage .)}}">{{.}}</a>
-                    </li>
-                {{end}}
-                {{if .Hits.NextPage}}
-                <li class="page-item">
-                    <a class="page-link" href="{{urlPathFor "publications" | urlQuery (.Query.WithPage (add .Hits.Page 1 | int))}}" aria-label="Next">
-                        <i class="if if-chevron-right" aria-hidden="true"></i>
-                    </a>
-                </li>
-                {{else}}
-                <li class="page-item disabled">
-                    <a class="page-link" href="#" aria-label="Next">
-                        <i class="if if-chevron-right" aria-hidden="true"></i>
-                    </a>
-                </li>
-                {{end}}
-            </ul>
+            {{template "publication/_pagination" .}}
         </nav>
     </div>
 </div>
