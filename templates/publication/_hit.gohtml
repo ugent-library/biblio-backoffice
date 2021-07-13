@@ -59,23 +59,7 @@
                     <a href="{{urlPathFor "publication" "id" ._id}}">
                         <h4 class="c-h4">{{.title}}</h4>
                     </a>
-                    {{with .author}}
-                        <div class="list-group-item-authors">
-                        {{if gt (len .) 3}}
-                            {{range (slice . 0 3)}}
-                                {{template "publication/_hit_contributor" .}}
-                            {{end}}
-                            <div class="list-group-item-author">
-                                <span>{{sub (len .) 3}} more author{{if gt (sub (len .) 3) 1}}s{{end}}</span>
-                                <i class="if if-more ml-2"></i>
-                            </div>
-                        {{else}}
-                            {{range .}}
-                                {{template "publication/_hit_contributor" .}}
-                            {{end}}
-                        {{end}}
-                        </div>                    
-                    {{end}}
+                    {{with .author}}{{template "publication/_contributors_short" .}}{{end}}
                     <span class="c-body-small text-muted">
                         {{.year}}{{with .publication}}, {{.}}{{end}}
                     </span>
