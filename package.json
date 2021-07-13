@@ -16,6 +16,7 @@
         "autosize": "^4.0.2",
         "bootstrap": "^4.6.0",
         "flatpickr": "^4.6.3",
+        "jquery": "^3.6.0",
         "node-sass": "^4.14.1",
         "select2": "^4.1.0-rc.0",
         "tablesort": "^5.1.0"

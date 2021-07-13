@@ -1,0 +1,1 @@
+require('../ugent/js/index');
