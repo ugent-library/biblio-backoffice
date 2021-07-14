@@ -15,7 +15,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/helpers"
 	"github.com/ugent-library/biblio-backend/internal/routes"
 	"github.com/ugent-library/go-graceful/server"
-	"github.com/ugent-library/go-mix/mix"
+	"github.com/ugent-library/go-web/mix"
 	"github.com/unrolled/render"
 )
 

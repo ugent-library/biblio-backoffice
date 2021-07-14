@@ -16,6 +16,6 @@ require (
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.8.1
 	github.com/ugent-library/go-graceful v0.0.0-20210629084951-cc0426be60e8
-	github.com/ugent-library/go-mix v0.0.0-20210708100045-bdb8d255d2e1
+	github.com/ugent-library/go-web v0.0.0-20210714151555-4b45fdd6bc6e
 	github.com/unrolled/render v1.4.0
 )

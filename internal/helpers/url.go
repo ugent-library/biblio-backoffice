@@ -4,12 +4,10 @@ import (
 	"html/template"
 	"net/url"
 
-	"github.com/go-playground/form/v4"
 	"github.com/gorilla/mux"
 	"github.com/spf13/cast"
+	"github.com/ugent-library/go-web/forms"
 )
-
-var formEncoder = form.NewEncoder()
 
 func URL(r *mux.Router) template.FuncMap {
 	return template.FuncMap{
@@ -40,7 +38,7 @@ func urlSet(k, v interface{}, u *url.URL) (*url.URL, error) {
 }
 
 func urlQuery(v interface{}, u *url.URL) (*url.URL, error) {
-	vals, err := formEncoder.Encode(v)
+	vals, err := forms.Encode(v)
 	if err != nil {
 		return u, err
 	}
