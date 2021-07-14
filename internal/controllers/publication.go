@@ -16,7 +16,7 @@ type Publication struct {
 }
 
 type PublicationListVars struct {
-	Query engine.Query
+	Query *engine.Query
 	Hits  *engine.PublicationHits
 }
 
@@ -32,8 +32,8 @@ func NewPublication(e *engine.Engine, r *render.Render) *Publication {
 }
 
 func (c *Publication) List(w http.ResponseWriter, r *http.Request) {
-	q := engine.Query{}
-	if err := form.NewDecoder().Decode(&q, r.URL.Query()); err != nil {
+	q := engine.NewQuery()
+	if err := form.NewDecoder().Decode(q, r.URL.Query()); err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

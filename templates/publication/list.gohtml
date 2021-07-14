@@ -54,13 +54,13 @@
         <div class="bc-navbar bc-navbar--bordered-bottom bc-navbar--white">
             <ul class="nav">
                 <li class="nav-item">
-                    <a class="nav-link active" href="#">All</a>
+                    <a class="nav-link active" href="{{urlPathFor "publications"}}">All</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">My publications</a>
+                    <a class="nav-link" href="{{urlPathFor "publications" | urlSet "f[scope][0]" "contributed"}}">My publications</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Registered by me</a>
+                    <a class="nav-link" href="{{urlPathFor "publications" | urlSet "f[scope][0]" "created"}}">Registered by me</a>
                 </li>
             </ul>
         </div>

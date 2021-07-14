@@ -9,6 +9,8 @@ import (
 	"github.com/spf13/cast"
 )
 
+var formEncoder = form.NewEncoder()
+
 func URL(r *mux.Router) template.FuncMap {
 	return template.FuncMap{
 		"urlFor":     urlFor(r),
@@ -38,10 +40,11 @@ func urlSet(k, v interface{}, u *url.URL) (*url.URL, error) {
 }
 
 func urlQuery(v interface{}, u *url.URL) (*url.URL, error) {
-	vals, err := form.NewEncoder().Encode(v)
+	vals, err := formEncoder.Encode(v)
 	if err != nil {
 		return u, err
 	}
+
 	q := u.Query()
 	for k, vv := range vals {
 		for i, v := range vv {
@@ -53,5 +56,6 @@ func urlQuery(v interface{}, u *url.URL) (*url.URL, error) {
 		}
 	}
 	u.RawQuery = q.Encode()
+
 	return u, nil
 }
