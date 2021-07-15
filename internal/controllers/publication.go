@@ -4,9 +4,9 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/go-playground/form/v4"
 	"github.com/gorilla/mux"
 	"github.com/ugent-library/biblio-backend/internal/engine"
+	"github.com/ugent-library/go-web/forms"
 	"github.com/unrolled/render"
 )
 
@@ -33,7 +33,7 @@ func NewPublication(e *engine.Engine, r *render.Render) *Publication {
 
 func (c *Publication) List(w http.ResponseWriter, r *http.Request) {
 	q := engine.NewQuery()
-	if err := form.NewDecoder().Decode(q, r.URL.Query()); err != nil {
+	if err := forms.Decode(q, r.URL.Query()); err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

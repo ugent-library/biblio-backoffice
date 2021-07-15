@@ -3,7 +3,7 @@ package engine
 import (
 	"fmt"
 
-	"github.com/go-playground/form/v4"
+	"github.com/ugent-library/go-web/forms"
 )
 
 type Publication map[string]interface{}
@@ -18,7 +18,7 @@ type PublicationHits struct {
 }
 
 func (e *Engine) UserPublications(userID string, q *Query) (*PublicationHits, error) {
-	qp, err := form.NewEncoder().Encode(q)
+	qp, err := forms.Encode(q)
 	if err != nil {
 		return nil, err
 	}
