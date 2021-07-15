@@ -54,24 +54,24 @@
         <div class="bc-navbar bc-navbar--bordered-bottom bc-navbar--white">
             <ul class="nav">
                 <li class="nav-item">
-                    <a class="nav-link active" href="{{urlPathFor "publications"}}">All</a>
+                    <a class="nav-link{{if not (.SearchArgs.HasFilter "scope")}} active{{end}}" href="{{pathFor "publications" | query searchArgs}}">All</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{urlPathFor "publications" | urlSet "f[scope][0]" "contributed"}}">My publications</a>
+                    <a class="nav-link{{if .SearchArgs.HasFilter "scope" "contributed"}} active{{end}}" href="{{pathFor "publications" | query (searchArgs.WithFilter "scope" "contributed")}}">My publications</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{urlPathFor "publications" | urlSet "f[scope][0]" "created"}}">Registered by me</a>
+                    <a class="nav-link{{if .SearchArgs.HasFilter "scope" "created"}} active{{end}}" href="{{pathFor "publications" | query (searchArgs.WithFilter "scope" "created")}}">Registered by me</a>
                 </li>
             </ul>
         </div>
     </div>
     <div class="u-scroll-wrapper__body p-6">
-        <form class="mb-4" method="GET" action="{{urlPathFor "publications"}}">
+        <form class="mb-4" method="GET" action="{{pathFor "publications"}}">
             <div class="form-row">
                 <div class="col">
                     <label class="sr-only" for="q">Search</label>
                     <div class="dropdown">
-                        <input class="form-control" type="text" name="q" value="{{.Query.QueryString}}" placeholder="Search..."
+                        <input class="form-control" type="text" name="q" value="{{.SearchArgs.Query}}" placeholder="Search..."
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
                             autocomplete="off">
                         <div class="dropdown-menu w-100" aria-labelledby="dropdownMenuLink">

@@ -273,6 +273,8 @@ github.com/ugent-library/go-graceful v0.0.0-20210629084951-cc0426be60e8 h1:qf+uy
 github.com/ugent-library/go-graceful v0.0.0-20210629084951-cc0426be60e8/go.mod h1:vfUTMMD3dI2LAj2BzlXyDWJ14b+6zeZRWDWvw3sYizE=
 github.com/ugent-library/go-web v0.0.0-20210714151555-4b45fdd6bc6e h1:QfSOhgRkR0moIC8h8Xgrbq8WcnHkEzWvbJTSLEIkWFE=
 github.com/ugent-library/go-web v0.0.0-20210714151555-4b45fdd6bc6e/go.mod h1:VBllTLWMaHh5WGX+g2Qj9BRs5r0/psAy42I7mwdNpZM=
+github.com/ugent-library/go-web v0.0.0-20210715062624-a1de215a06c9 h1:S6N0pxdUzvthrrLWLgY7gEGy/J1lEyK69Wv3FmP1WDg=
+github.com/ugent-library/go-web v0.0.0-20210715062624-a1de215a06c9/go.mod h1:DcyOY8w5IfH6zkDOMfRspxc2uBesMBM2SJqVqIBuPPg=
 github.com/unrolled/render v1.4.0 h1:p73obhpsXuE3paXOtcuXTBKgBJpLCfmABnsUiO35x+Q=
 github.com/unrolled/render v1.4.0/go.mod h1:cK4RSTTVdND5j9EYEc0LAMOvdG11JeiKjyjfyZRvV2w=
 github.com/yuin/goldmark v1.1.25/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=

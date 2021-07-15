@@ -17,8 +17,8 @@ type PublicationHits struct {
 	Hits         []Publication `json:"hits"`
 }
 
-func (e *Engine) UserPublications(userID string, q *Query) (*PublicationHits, error) {
-	qp, err := forms.Encode(q)
+func (e *Engine) UserPublications(userID string, args *SearchArgs) (*PublicationHits, error) {
+	qp, err := forms.Encode(args)
 	if err != nil {
 		return nil, err
 	}

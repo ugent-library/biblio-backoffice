@@ -26,7 +26,7 @@
                             </button>
                             <div class="dropdown-menu">
                                 <a class="dropdown-item"
-                                    href="{{urlPathFor "publication" "id" ._id}}">
+                                    href="{{pathFor "publication" "id" ._id}}">
                                     <i class="if if-file-text"></i>
                                     <span>View details</span>
                                 </a>
@@ -56,7 +56,7 @@
                     </div>
                 </div>
                 <div class="list-group-item-text">
-                    <a href="{{urlPathFor "publication" "id" ._id}}">
+                    <a href="{{pathFor "publication" "id" ._id}}">
                         <h4 class="c-h4">{{.title}}</h4>
                     </a>
                     {{with .author}}{{template "publication/_contributors_short" .}}{{end}}

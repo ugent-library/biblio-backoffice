@@ -16,8 +16,8 @@ type Publication struct {
 }
 
 type PublicationListVars struct {
-	Query *engine.Query
-	Hits  *engine.PublicationHits
+	SearchArgs *engine.SearchArgs
+	Hits       *engine.PublicationHits
 }
 
 type PublicationShowVars struct {
@@ -32,21 +32,21 @@ func NewPublication(e *engine.Engine, r *render.Render) *Publication {
 }
 
 func (c *Publication) List(w http.ResponseWriter, r *http.Request) {
-	q := engine.NewQuery()
-	if err := forms.Decode(q, r.URL.Query()); err != nil {
+	args := engine.NewSearchArgs()
+	if err := forms.Decode(args, r.URL.Query()); err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	hits, err := c.engine.UserPublications("F72763F2-F0ED-11E1-A9DE-61C894A0A6B4", q)
+	hits, err := c.engine.UserPublications("F72763F2-F0ED-11E1-A9DE-61C894A0A6B4", args)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	c.render.HTML(w, http.StatusOK, "publication/list", PublicationListVars{Query: q, Hits: hits})
+	c.render.HTML(w, http.StatusOK, "publication/list", PublicationListVars{SearchArgs: args, Hits: hits})
 }
 
 func (c *Publication) Show(w http.ResponseWriter, r *http.Request) {

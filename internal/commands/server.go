@@ -16,6 +16,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/routes"
 	"github.com/ugent-library/go-graceful/server"
 	"github.com/ugent-library/go-web/mix"
+	"github.com/ugent-library/go-web/urls"
 	"github.com/unrolled/render"
 )
 
@@ -62,8 +63,8 @@ var serverStartCmd = &cobra.Command{
 					ManifestFile: "static/mix-manifest.json",
 					PublicPath:   "/static/",
 				}),
-				helpers.Time(),
-				helpers.URL(router),
+				urls.FuncMap(router),
+				helpers.FuncMap(),
 			},
 		})
 

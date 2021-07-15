@@ -5,10 +5,12 @@ import (
 	"time"
 
 	"github.com/rvflash/elapsed"
+	"github.com/ugent-library/biblio-backend/internal/engine"
 )
 
-func Time() template.FuncMap {
+func FuncMap() template.FuncMap {
 	return template.FuncMap{
+		"searchArgs":  engine.NewSearchArgs,
 		"timeElapsed": timeElapsed,
 	}
 }
