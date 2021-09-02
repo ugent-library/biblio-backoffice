@@ -8,15 +8,16 @@ import (
 )
 
 func Register(r *mux.Router,
-	authController *controllers.Auth, publicationController *controllers.Publication) {
-
-	requireUser := controllers.RequireUser()
+	requireUser mux.MiddlewareFunc,
+	setUser mux.MiddlewareFunc,
+	authController *controllers.Auth,
+	publicationController *controllers.Publication) {
 
 	// static files
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
 	// home
-	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/publication", http.StatusFound)
 	}).Methods("GET").Name("home")
 
@@ -32,6 +33,7 @@ func Register(r *mux.Router,
 
 	// publications
 	publicationRouter := r.PathPrefix("/publication").Subrouter()
+	publicationRouter.Use(setUser)
 	publicationRouter.Use(requireUser)
 	publicationRouter.HandleFunc("", publicationController.List).
 		Methods("GET").

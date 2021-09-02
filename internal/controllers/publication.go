@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/ugent-library/biblio-backend/internal/ctx"
 	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/go-web/forms"
 	"github.com/unrolled/render"
@@ -39,7 +40,7 @@ func (c *Publication) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	hits, err := c.engine.UserPublications("F72763F2-F0ED-11E1-A9DE-61C894A0A6B4", args)
+	hits, err := c.engine.UserPublications(ctx.GetUser(r).ID(), args)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)

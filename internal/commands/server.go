@@ -16,9 +16,12 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/controllers"
 	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/helpers"
+	"github.com/ugent-library/biblio-backend/internal/middleware"
 	"github.com/ugent-library/biblio-backend/internal/routes"
 	"github.com/ugent-library/go-graceful/server"
 	"github.com/ugent-library/go-oidc/oidc"
+
+	// "github.com/ugent-library/go-oidc/oidc"
 	"github.com/ugent-library/go-web/mix"
 	"github.com/ugent-library/go-web/urls"
 	"github.com/unrolled/render"
@@ -82,6 +85,8 @@ var serverStartCmd = &cobra.Command{
 		})
 
 		// sessions & auth
+		sessionName := viper.GetString("session-name")
+
 		sessionStore := sessions.NewCookieStore([]byte(viper.GetString("session-secret")))
 		sessionStore.MaxAge(viper.GetInt("session-max-age"))
 		sessionStore.Options.Path = "/"
@@ -105,7 +110,9 @@ var serverStartCmd = &cobra.Command{
 		// add routes
 		routes.Register(
 			router,
-			controllers.NewAuth(e, viper.GetString("session-name"), sessionStore, oidcClient),
+			middleware.RequireUser("/logout"),
+			middleware.SetUser(e, sessionName, sessionStore),
+			controllers.NewAuth(e, sessionName, sessionStore, oidcClient),
 			controllers.NewPublication(e, renderer),
 		)
 
