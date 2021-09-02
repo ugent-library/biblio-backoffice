@@ -3,9 +3,11 @@ package engine
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 type message struct {
@@ -58,6 +60,9 @@ func (e *Engine) doRequest(req *http.Request, v interface{}) (*http.Response, er
 	var msg message
 	if err = json.NewDecoder(res.Body).Decode(&msg); err != nil {
 		return res, err
+	}
+	if len(msg.Errors) > 0 {
+		return res, errors.New(strings.Join(msg.Errors, "; "))
 	}
 	return res, json.Unmarshal(msg.Data, v)
 }

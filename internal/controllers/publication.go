@@ -21,7 +21,7 @@ type PublicationListVars struct {
 }
 
 type PublicationShowVars struct {
-	Pub *engine.Publication
+	Pub engine.Publication
 }
 
 type PublicationNewVars struct {

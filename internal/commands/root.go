@@ -9,6 +9,14 @@ import (
 	"github.com/spf13/viper"
 )
 
+const (
+	defaultHost          = "localhost"
+	defaultPort          = 3000
+	defaultBaseURL       = "http://localhost:3000"
+	defaultSessionName   = "biblio-backend"
+	defaultSessionMaxAge = 86400 * 30 // 30 days
+)
+
 var rootCmd = &cobra.Command{
 	Use:   "biblio-backend [command]",
 	Short: "The biblio-backend CLI",
@@ -29,11 +37,16 @@ func init() {
 	viper.AutomaticEnv()
 	viper.SetDefault("host", defaultHost)
 	viper.SetDefault("port", defaultPort)
-	viper.SetDefault("base-url", defaultBaseURL)
+	viper.SetDefault("session-name", defaultSessionName)
+	viper.SetDefault("session-max-age", defaultSessionMaxAge)
 
 	rootCmd.PersistentFlags().String("librecat-url", "", "librecat rest api url")
 	rootCmd.PersistentFlags().String("librecat-username", "", "librecat rest api username")
 	rootCmd.PersistentFlags().String("librecat-password", "", "librecat rest api password")
+
+	rootCmd.PersistentFlags().String("oidc-url", "", "openid connect url")
+	rootCmd.PersistentFlags().String("oidc-client-id", "", "openid connect client id")
+	rootCmd.PersistentFlags().String("oidc-client-secret", "", "openid connect client secret")
 }
 
 func Execute() {

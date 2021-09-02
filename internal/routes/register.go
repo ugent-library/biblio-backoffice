@@ -7,7 +7,11 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/controllers"
 )
 
-func Register(r *mux.Router, publicationController *controllers.Publication) {
+func Register(r *mux.Router,
+	authController *controllers.Auth, publicationController *controllers.Publication) {
+
+	requireUser := controllers.RequireUser()
+
 	// static files
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
@@ -16,14 +20,26 @@ func Register(r *mux.Router, publicationController *controllers.Publication) {
 		http.Redirect(w, r, "/publication", http.StatusFound)
 	}).Methods("GET").Name("home")
 
+	// auth
+	r.HandleFunc("/login", authController.Login).
+		Methods("GET").
+		Name("login")
+	r.HandleFunc("/auth/openid-connect/callback", authController.Callback).
+		Methods("GET")
+	r.HandleFunc("/logout", authController.Logout).
+		Methods("GET").
+		Name("logout")
+
 	// publications
-	r.HandleFunc("/publication", publicationController.List).
+	publicationRouter := r.PathPrefix("/publication").Subrouter()
+	publicationRouter.Use(requireUser)
+	publicationRouter.HandleFunc("", publicationController.List).
 		Methods("GET").
 		Name("publications")
-	r.HandleFunc("/publication/new", publicationController.New).
+	publicationRouter.HandleFunc("/new", publicationController.New).
 		Methods("GET").
 		Name("new_publication")
-	r.HandleFunc("/publication/{id}", publicationController.Show).
+	publicationRouter.HandleFunc("/{id}", publicationController.Show).
 		Methods("GET").
 		Name("publication")
 }

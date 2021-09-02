@@ -29,8 +29,8 @@ func (e *Engine) UserPublications(userID string, args *SearchArgs) (*Publication
 	return hits, nil
 }
 
-func (e *Engine) GetPublication(id string) (*Publication, error) {
-	pub := &Publication{}
+func (e *Engine) GetPublication(id string) (Publication, error) {
+	var pub Publication
 	if _, err := e.get(fmt.Sprintf("/publication/%s", id), nil, pub); err != nil {
 		return nil, err
 	}
