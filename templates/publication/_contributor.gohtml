@@ -1,7 +1,11 @@
 <div class="list-group-item-author">
+	{{with .orcid}}
 	<i class="if if-orcid" data-toggle="tooltip"
 		title="Author with ORCID" data-placement="bottom"></i>
+	{{end}}
+	{{with .id}}
 	<i class="if if-ghent-university" data-toggle="tooltip"
 		title="UGent author" data-placement="bottom"></i>
+	{{end}}
 	<span>{{.full_name}}</span>
 </div>
