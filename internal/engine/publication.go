@@ -30,8 +30,8 @@ func (e *Engine) UserPublications(userID string, args *SearchArgs) (*Publication
 }
 
 func (e *Engine) GetPublication(id string) (Publication, error) {
-	var pub Publication
-	if _, err := e.get(fmt.Sprintf("/publication/%s", id), nil, pub); err != nil {
+	pub := make(Publication)
+	if _, err := e.get(fmt.Sprintf("/publication/%s", id), nil, &pub); err != nil {
 		return nil, err
 	}
 	return pub, nil
