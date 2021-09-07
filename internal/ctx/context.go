@@ -17,10 +17,10 @@ func (c *key) String() string {
 }
 
 func HasUser(r *http.Request) bool {
-	_, ok := r.Context().Value(UserKey).(engine.User)
+	_, ok := r.Context().Value(UserKey).(*engine.User)
 	return ok
 }
 
-func GetUser(r *http.Request) engine.User {
-	return r.Context().Value(UserKey).(engine.User)
+func GetUser(r *http.Request) *engine.User {
+	return r.Context().Value(UserKey).(*engine.User)
 }

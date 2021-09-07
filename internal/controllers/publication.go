@@ -22,7 +22,7 @@ type PublicationListVars struct {
 }
 
 type PublicationShowVars struct {
-	Pub engine.Publication
+	Pub *engine.Publication
 }
 
 type PublicationNewVars struct {
@@ -40,7 +40,7 @@ func (c *Publication) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	hits, err := c.engine.UserPublications(ctx.GetUser(r).ID(), args)
+	hits, err := c.engine.UserPublications(ctx.GetUser(r).ID, args)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)

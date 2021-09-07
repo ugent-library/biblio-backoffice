@@ -45,7 +45,7 @@
         </div>
         <div class="c-divider mt-0 mx-6"></div>
         <div class="c-header-collapsible__collapsed mx-6">
-            <h4 class="h4">{{.Pub.title}}</h4>
+            <h4 class="h4">{{.Pub.Data.title}}</h4>
         </div>
         <div class="c-header-collapsible__expanded mx-6">
             <div class="d-flex w-100">
@@ -55,7 +55,7 @@
                         <div class="list-group-item-content">
                             <div class="list-group-item-subline">
                                 <div class="list-group-item-subline-left">
-                                    <span class="mr-3 pr-3 border-right">{{.Pub.type}}{{with .Pub.classification}}: {{.}}{{end}}</span>
+                                    <span class="mr-3 pr-3 border-right">{{.Pub.Data.type}}{{with .Pub.Data.classification}}: {{.}}{{end}}</span>
                                     <div class="d-flex align-items-center">
                                         <i class="if if-download if--small if--success"></i>
                                         <span class="pl-2 text-muted">Open Access</span>
@@ -63,17 +63,17 @@
                                 </div>
                             </div>
                             <div class="list-group-item-text">
-                                <h4 class="c-h4">{{.Pub.title}}<i class="if if-no-edit if--small ml-3 text-muted" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Locked for editing"></i>
+                                <h4 class="c-h4">{{.Pub.Data.title}}<i class="if if-no-edit if--small ml-3 text-muted" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Locked for editing"></i>
                                 </h4>
-                                {{with .Pub.author}}
+                                {{with .Pub.Data.author}}
                                     {{template "publication/_contributors_short" .}}
                                 {{end}}
-                                <span class="c-body-small text-muted">{{.Pub.year}}{{with .Pub.publication}}, {{.}}{{end}}</span>
+                                <span class="c-body-small text-muted">{{.Pub.Data.year}}{{with .Pub.Data.publication}}, {{.}}{{end}}</span>
                             </div>
                             <div class="list-group-item-meta mt-5">
                                 <div class="list-group-item-meta-left">
                                     <div class="list-group-item-meta-item">
-                                        {{template "publication/_status" .Pub}}
+                                        {{template "publication/_status" .Pub.Data}}
                                     </div>
                                     <div class="list-group-item-meta-item">
                                         <div class="c-progress-bar c-progress-bar--medium">
@@ -88,7 +88,7 @@
                                 </div>
                                 <div class="list-group-item-meta-right">
                                     <div class="list-group-item-meta-item">
-                                        <span class="text-muted c-body-small">Biblio ID: {{.Pub._id}}</span>
+                                        <span class="text-muted c-body-small">Biblio ID: {{.Pub.Data._id}}</span>
                                     </div>
                                     <div class="list-group-item-meta-item" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="1 related datasets">
                                         <span class="text-muted c-body-small">
@@ -100,7 +100,7 @@
                                         <i class="if if-check text-success if--small"></i>
                                     </div>
                                     <div class="list-group-item-meta-item">
-                                        <span class="text-muted c-body-small">Created {{timeElapsed .Pub.date_created}}</span>
+                                        <span class="text-muted c-body-small">Created {{timeElapsed .Pub.Data.date_created}}</span>
                                     </div>
                                 </div>
                             </div>
@@ -188,7 +188,7 @@
                                         <label class="col-sm-3 col-form-label align-self-start" for="Publication type">Publication type &nbsp;<abbr class="required" title="Required">*</abbr>
                                         </label>
                                         <div class="col-sm-9">
-                                            <span>{{.Pub.type}}</span>
+                                            <span>{{.Pub.Data.type}}</span>
                                         </div>
                                     </div>
                                     <div class="form-group row">

@@ -84,7 +84,7 @@ func (c *Auth) Login(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("user: %+v", user)
 
-	session.Values["user_id"] = user.ID()
+	session.Values["user_id"] = user.ID
 	session.Save(r, w)
 
 	http.Redirect(w, r, "/publication", http.StatusFound)
