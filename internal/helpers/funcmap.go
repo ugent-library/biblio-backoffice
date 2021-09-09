@@ -10,5 +10,6 @@ func FuncMap() template.FuncMap {
 	return template.FuncMap{
 		"searchArgs":  engine.NewSearchArgs,
 		"timeElapsed": TimeElapsed,
+		"str2html":    StringToHtml,
 	}
 }
