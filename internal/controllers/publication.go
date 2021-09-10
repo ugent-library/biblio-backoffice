@@ -7,6 +7,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/ugent-library/biblio-backend/internal/ctx"
 	"github.com/ugent-library/biblio-backend/internal/engine"
+	"github.com/ugent-library/biblio-backend/internal/presenters"
 	"github.com/ugent-library/go-web/forms"
 	"github.com/unrolled/render"
 )
@@ -22,7 +23,7 @@ type PublicationListVars struct {
 }
 
 type PublicationShowVars struct {
-	Pub *engine.Publication
+	Pub *presenters.Publication
 }
 
 type PublicationNewVars struct {
@@ -59,7 +60,7 @@ func (c *Publication) Show(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.render.HTML(w, http.StatusOK, "publication/show", PublicationShowVars{Pub: pub})
+	c.render.HTML(w, http.StatusOK, "publication/show", PublicationShowVars{Pub: &presenters.Publication{Publication: pub, Render: c.render}})
 }
 
 func (c *Publication) New(w http.ResponseWriter, r *http.Request) {
