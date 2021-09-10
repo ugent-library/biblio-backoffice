@@ -44,7 +44,4 @@ func Register(r *mux.Router,
 	publicationRouter.HandleFunc("/{id}", publicationController.Show).
 		Methods("GET").
 		Name("publication")
-	publicationRouter.HandleFunc("/{id}/description", publicationController.Description).
-		Methods("GET").
-		Name("publication")
 }
