@@ -60,7 +60,8 @@ func (c *Publication) Show(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.render.HTML(w, http.StatusOK, "publication/show", PublicationShowVars{Pub: &presenters.Publication{Publication: pub, Render: c.render}})
+	h := &presenters.Publication{Publication: pub, Render: c.render}
+	c.render.HTML(w, http.StatusOK, "publication/show", PublicationShowVars{Pub: h})
 }
 
 func (c *Publication) New(w http.ResponseWriter, r *http.Request) {
