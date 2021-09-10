@@ -29,22 +29,18 @@ type Publication struct {
 // Render the "Publication details" section under the Description tab
 
 func (p *Publication) RenderDetails() template.HTML {
-	if data, ok := p.Data()["type"]; ok {
-		if val, ok := data.(string); ok {
-			tpl := fmt.Sprintf("publication/details/_%s", val)
-			return p.renderPartial(tpl, p)
-		}
+	if val, ok := p.Data()["type"]; ok {
+		tpl := fmt.Sprintf("publication/details/_%s", val.(string))
+		return p.renderPartial(tpl, p)
 	}
 
 	return template.HTML("")
 }
 
 func (p *Publication) RenderConference() template.HTML {
-	if data, ok := p.Data()["type"]; ok {
-		if val, ok := data.(string); ok {
-			tpl := fmt.Sprintf("publication/conference/_%s", val)
-			return p.renderPartial(tpl, p)
-		}
+	if val, ok := p.Data()["type"]; ok {
+		tpl := fmt.Sprintf("publication/conference/_%s", val.(string))
+		return p.renderPartial(tpl, p)
 	}
 
 	return template.HTML("")
@@ -58,10 +54,8 @@ func (p *Publication) RenderConference() template.HTML {
 
 func (p *Publication) RenderType() template.HTML {
 	text := "-"
-	if data, ok := p.Data()["type"]; ok {
-		if val, ok := data.(string); ok {
-			text = val
-		}
+	if val, ok := p.Data()["type"]; ok {
+		text = val.(string)
 	}
 
 	return p.renderPartial("part/_text", &PartData{
@@ -74,10 +68,8 @@ func (p *Publication) RenderType() template.HTML {
 
 func (p *Publication) RenderDOI() template.HTML {
 	text := "-"
-	if data, ok := p.Data()["doi"]; ok {
-		if val, ok := data.(string); ok {
-			text = val
-		}
+	if val, ok := p.Data()["doi"]; ok {
+		text = val.(string)
 	}
 
 	return p.renderPartial("part/_text", &PartData{
@@ -90,11 +82,8 @@ func (p *Publication) RenderDOI() template.HTML {
 
 func (p *Publication) RenderISXN() template.HTML {
 	text := "-"
-
-	if data, ok := p.Data()["issn"]; ok {
-		if val, ok := data.(string); ok {
-			text = val
-		}
+	if val, ok := p.Data()["issn"]; ok {
+		text = val.(string)
 	}
 
 	return p.renderPartial("part/_text", &PartData{
@@ -107,11 +96,8 @@ func (p *Publication) RenderISXN() template.HTML {
 
 func (p *Publication) RenderTitle() template.HTML {
 	text := "-"
-
-	if data, ok := p.Data()["title"]; ok {
-		if val, ok := data.(string); ok {
-			text = val
-		}
+	if val, ok := p.Data()["title"]; ok {
+		text = val.(string)
 	}
 
 	return p.renderPartial("part/_text", &PartData{
@@ -126,11 +112,8 @@ func (p *Publication) RenderTitle() template.HTML {
 
 func (p *Publication) RenderAlternativeTitle() template.HTML {
 	text := "-"
-
-	if data, ok := p.Data()["alternative_title"]; ok {
-		if val, ok := data.(string); ok {
-			text = val
-		}
+	if val, ok := p.Data()["alternative_title"]; ok {
+		text = val.(string)
 	}
 
 	return p.renderPartial("part/_text", &PartData{
