@@ -91,70 +91,9 @@
     <div class="u-scroll-wrapper__body p-6">
         <div class="tab-content">
             <div id="description-content" class="tab-pane fade show active" role="tabpanel" aria-labelledby="description-tab">
-                <div class="card card-collapsible mb-6">
-                    <div class="card-header">
-                        <div class="collapse-trigger" data-toggle="collapse" data-target="#collapse1" aria-expanded="false" aria-controls="collapse1"></div>
-                        <div class="bc-toolbar">
-                            <div class="bc-toolbar-left">
-                                <i class="if if-chevron-right mr-4 text-muted"></i>Publication details
-                            </div>
-                            <div class="bc-toolbar-right">
-                                <div class="c-button-toolbar" data-panel-state="read">
-                                    <button class="btn btn-outline-primary" data-panel-toggle="edit1">
-                                        <i class="if if-edit"></i>
-                                        <div class="btn-text">Edit</div>
-                                    </button>
-                                </div>
-                                <div class="c-button-toolbar u-hidden" data-panel-state="edit">
-                                    <button class="btn btn-outline-primary" data-panel-toggle="edit1">
-                                        <div class="btn-text">Cancel</div>
-                                    </button>
-                                    <button class="btn btn-primary" data-panel-toggle="edit1">
-                                        <div class="btn-text">Save</div>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="collapse" id="collapse1">
-                        <div class="card-body p-0" id="edit1">
-                            {{.Pub.RenderDetails}}
-                        </div>
-                    </div>
-                </div>
+                {{publicationRenderer.Details .Pub}}
 
-                <div class="card card-collapsible mb-6">
-                    <div class="card-header">
-                        <div class="collapse-trigger" data-toggle="collapse" data-target="#collapse2" aria-expanded="false" aria-controls="collapse2"></div>
-                        <div class="bc-toolbar">
-                            <div class="bc-toolbar-left">
-                                <i class="if if-chevron-right mr-4 text-muted"></i>Conference Details
-                            </div>
-                            <div class="bc-toolbar-right">
-                                <div class="c-button-toolbar" data-panel-state="read">
-                                    <button class="btn btn-outline-primary" data-panel-toggle="edit1">
-                                        <i class="if if-edit"></i>
-                                        <div class="btn-text">Edit</div>
-                                    </button>
-                                </div>
-                                <div class="c-button-toolbar u-hidden" data-panel-state="edit">
-                                    <button class="btn btn-outline-primary" data-panel-toggle="edit1">
-                                        <div class="btn-text">Cancel</div>
-                                    </button>
-                                    <button class="btn btn-primary" data-panel-toggle="edit1">
-                                        <div class="btn-text">Save</div>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="collapse" id="collapse2">
-                        <div class="card-body p-0" id="edit1">
-                            {{.Pub.RenderConference}}
-                        </div>
-                    </div>
-                </div>
-
+                {{publicationRenderer.Conference .Pub}}
             </div>
         </div>
     </div>

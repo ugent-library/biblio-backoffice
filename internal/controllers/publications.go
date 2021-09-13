@@ -7,7 +7,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/ugent-library/biblio-backend/internal/ctx"
 	"github.com/ugent-library/biblio-backend/internal/engine"
-	"github.com/ugent-library/biblio-backend/internal/presenters"
+	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/go-web/forms"
 	"github.com/unrolled/render"
 )
@@ -19,18 +19,21 @@ type Publications struct {
 
 type PublicationListVars struct {
 	SearchArgs *engine.SearchArgs
-	Hits       *engine.PublicationHits
+	Hits       *models.PublicationHits
 }
 
 type PublicationShowVars struct {
-	Pub *presenters.Publication
+	Pub *models.Publication
 }
 
 type PublicationNewVars struct {
 }
 
 func NewPublication(e *engine.Engine, r *render.Render) *Publications {
-	return &Publications{engine: e, render: r}
+	return &Publications{
+		engine: e,
+		render: r,
+	}
 }
 
 func (c *Publications) List(w http.ResponseWriter, r *http.Request) {
@@ -60,8 +63,9 @@ func (c *Publications) Show(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h := &presenters.Publication{Publication: pub, Render: c.render}
-	c.render.HTML(w, http.StatusOK, "publication/show", PublicationShowVars{Pub: h})
+	c.render.HTML(w, http.StatusOK, "publication/show", PublicationShowVars{
+		Pub: pub,
+	})
 }
 
 func (c *Publications) New(w http.ResponseWriter, r *http.Request) {

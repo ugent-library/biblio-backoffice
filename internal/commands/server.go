@@ -17,6 +17,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/helpers"
 	"github.com/ugent-library/biblio-backend/internal/middleware"
+	"github.com/ugent-library/biblio-backend/internal/renderers"
 	"github.com/ugent-library/biblio-backend/internal/routes"
 	"github.com/ugent-library/go-graceful/server"
 	"github.com/ugent-library/go-oidc/oidc"
@@ -68,6 +69,12 @@ var serverStartCmd = &cobra.Command{
 		router := mux.NewRouter()
 
 		// renderer
+		var publicationRenderer *renderers.Publication
+		helperFuncs := helpers.FuncMap()
+		helperFuncs["publicationRenderer"] = func() *renderers.Publication {
+			return publicationRenderer
+		}
+
 		renderer := render.New(render.Options{
 			Directory:                   "templates",
 			Extensions:                  []string{".gohtml"},
@@ -80,9 +87,11 @@ var serverStartCmd = &cobra.Command{
 					PublicPath:   "/static/",
 				}),
 				urls.FuncMap(router),
-				helpers.FuncMap(),
+				helperFuncs,
 			},
 		})
+
+		publicationRenderer = &renderers.Publication{Render: renderer}
 
 		// sessions & auth
 		sessionName := viper.GetString("session-name")

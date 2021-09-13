@@ -1,5 +1,5 @@
 <div class="c-header-collapsible__collapsed mx-6">
-    <h4 class="h4">{{.Data.title}}</h4>
+    <h4 class="h4">{{.Title}}</h4>
 </div>
 <div class="c-header-collapsible__expanded mx-6">
     <div class="d-flex w-100">
@@ -9,7 +9,7 @@
                 <div class="list-group-item-content">
                     <div class="list-group-item-subline">
                         <div class="list-group-item-subline-left">
-                            <span class="mr-3 pr-3 border-right">{{.Data.type}}{{with .Data.classification}}: {{.}}{{end}}</span>
+                            <span class="mr-3 pr-3 border-right">{{.Type}}{{with .Classification}}: {{.}}{{end}}</span>
                             {{if .IsOpenAccess}}
                             <div class="d-flex align-items-center">
                                 <i class="if if-download if--small if--success"></i>
@@ -19,17 +19,17 @@
                         </div>
                     </div>
                     <div class="list-group-item-text">
-                        <h4 class="c-h4">{{.Data.title}}<i class="if if-no-edit if--small ml-3 text-muted" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Locked for editing"></i>
+                        <h4 class="c-h4">{{.Title}}<i class="if if-no-edit if--small ml-3 text-muted" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Locked for editing"></i>
                         </h4>
-                        {{with .Data.author}}
+                        {{with .Author}}
                             {{template "publication/_contributors_short" .}}
                         {{end}}
-                        <span class="c-body-small text-muted">{{.Data.year}}{{with .Data.publication}}, {{.}}{{end}}</span>
+                        <span class="c-body-small text-muted">{{.Year}}{{with .Publication}}, {{.}}{{end}}</span>
                     </div>
                     <div class="list-group-item-meta mt-5">
                         <div class="list-group-item-meta-left">
                             <div class="list-group-item-meta-item">
-                                {{template "publication/_status" .Data}}
+                                {{template "publication/_status" .}}
                             </div>
                             <div class="list-group-item-meta-item">
                                 <div class="c-progress-bar c-progress-bar--medium">
@@ -44,7 +44,7 @@
                         </div>
                         <div class="list-group-item-meta-right">
                             <div class="list-group-item-meta-item">
-                                <span class="text-muted c-body-small">Biblio ID: {{.Data._id}}</span>
+                                <span class="text-muted c-body-small">Biblio ID: {{.ID}}</span>
                             </div>
                             <div class="list-group-item-meta-item" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="1 related datasets">
                                 <span class="text-muted c-body-small">
@@ -56,7 +56,7 @@
                                 <i class="if if-check text-success if--small"></i>
                             </div>
                             <div class="list-group-item-meta-item">
-                                <span class="text-muted c-body-small">Created {{timeElapsed .Data.date_created}}</span>
+                                <span class="text-muted c-body-small">Created {{timeElapsed .DateCreated "en"}}</span>
                             </div>
                         </div>
                     </div>

@@ -3,7 +3,6 @@ module github.com/ugent-library/biblio-backend
 go 1.16
 
 require (
-	github.com/Jeffail/gabs/v2 v2.6.1
 	github.com/Masterminds/sprig/v3 v3.2.2
 	github.com/gorilla/handlers v1.5.1
 	github.com/gorilla/mux v1.8.0
