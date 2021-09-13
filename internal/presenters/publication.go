@@ -10,11 +10,10 @@ import (
 )
 
 type PartData struct {
-	Label        string
-	Text         string
-	Tooltip      string
-	PrefilledDOI bool
-	Required     bool
+	Label    string
+	Text     string
+	Tooltip  string
+	Required bool
 }
 
 type Publication struct {
@@ -101,10 +100,9 @@ func (p *Publication) RenderTitle() template.HTML {
 	}
 
 	return p.renderPartial("part/_text", &PartData{
-		Label:        "Title",
-		Text:         text,
-		PrefilledDOI: true,
-		Required:     true,
+		Label:    "Title",
+		Text:     text,
+		Required: true,
 	})
 }
 
