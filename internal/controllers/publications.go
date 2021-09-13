@@ -12,7 +12,7 @@ import (
 	"github.com/unrolled/render"
 )
 
-type Publication struct {
+type Publications struct {
 	engine *engine.Engine
 	render *render.Render
 }
@@ -29,11 +29,11 @@ type PublicationShowVars struct {
 type PublicationNewVars struct {
 }
 
-func NewPublication(e *engine.Engine, r *render.Render) *Publication {
-	return &Publication{engine: e, render: r}
+func NewPublication(e *engine.Engine, r *render.Render) *Publications {
+	return &Publications{engine: e, render: r}
 }
 
-func (c *Publication) List(w http.ResponseWriter, r *http.Request) {
+func (c *Publications) List(w http.ResponseWriter, r *http.Request) {
 	args := engine.NewSearchArgs()
 	if err := forms.Decode(args, r.URL.Query()); err != nil {
 		log.Println(err)
@@ -51,7 +51,7 @@ func (c *Publication) List(w http.ResponseWriter, r *http.Request) {
 	c.render.HTML(w, http.StatusOK, "publication/list", PublicationListVars{SearchArgs: args, Hits: hits})
 }
 
-func (c *Publication) Show(w http.ResponseWriter, r *http.Request) {
+func (c *Publications) Show(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	pub, err := c.engine.GetPublication(id)
 	if err != nil {
@@ -64,6 +64,6 @@ func (c *Publication) Show(w http.ResponseWriter, r *http.Request) {
 	c.render.HTML(w, http.StatusOK, "publication/show", PublicationShowVars{Pub: h})
 }
 
-func (c *Publication) New(w http.ResponseWriter, r *http.Request) {
+func (c *Publications) New(w http.ResponseWriter, r *http.Request) {
 	c.render.HTML(w, http.StatusOK, "publication/new", PublicationNewVars{})
 }

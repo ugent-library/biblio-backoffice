@@ -11,7 +11,7 @@ func Register(r *mux.Router,
 	requireUser mux.MiddlewareFunc,
 	setUser mux.MiddlewareFunc,
 	authController *controllers.Auth,
-	publicationController *controllers.Publication) {
+	publicationController *controllers.Publications) {
 
 	// static files
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
