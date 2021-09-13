@@ -30,7 +30,7 @@ type Publication struct {
 func (p *Publication) RenderDetails() template.HTML {
 	if val, ok := p.Data()["type"]; ok {
 		tpl := fmt.Sprintf("publication/details/_%s", val.(string))
-		return p.renderPartial(tpl, p)
+		return p.renderPartial(tpl, p, "publication/details/_default")
 	}
 
 	return template.HTML("")
@@ -39,7 +39,7 @@ func (p *Publication) RenderDetails() template.HTML {
 func (p *Publication) RenderConference() template.HTML {
 	if val, ok := p.Data()["type"]; ok {
 		tpl := fmt.Sprintf("publication/conference/_%s", val.(string))
-		return p.renderPartial(tpl, p)
+		return p.renderPartial(tpl, p, "publication/conference/_default")
 	}
 
 	return template.HTML("")
@@ -120,9 +120,20 @@ func (p *Publication) RenderAlternativeTitle() template.HTML {
 	})
 }
 
-func (p *Publication) renderPartial(name string, vars interface{}) template.HTML {
+func (p *Publication) renderPartial(partial string, vars interface{}, fallbacks ...string) template.HTML {
 	buf := &bytes.Buffer{}
-	tmpl := p.Render.TemplateLookup(name)
-	tmpl.Execute(buf, vars)
+	tmpl := p.Render.TemplateLookup(partial)
+	// look for fallback partial if template doeesn't exist
+	if tmpl == nil {
+		for _, f := range fallbacks {
+			if t := p.Render.TemplateLookup(f); t != nil {
+				tmpl = t
+				break
+			}
+		}
+	}
+	if tmpl != nil {
+		tmpl.Execute(buf, vars)
+	}
 	return template.HTML(buf.String())
 }
