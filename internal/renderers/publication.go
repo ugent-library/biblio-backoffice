@@ -16,6 +16,13 @@ type textData struct {
 	Required bool
 }
 
+type listData struct {
+	Label    string
+	List     []string
+	Tooltip  string
+	Required bool
+}
+
 type Publication struct {
 	Render *render.Render
 }
@@ -50,42 +57,35 @@ func (r *Publication) Type(p *models.Publication) template.HTML {
 // Render the "DOI" field
 
 func (r *Publication) DOI(p *models.Publication) template.HTML {
-	text := p.DOI
-	if text == "" {
-		text = "-"
-	}
-
 	return r.partial("part/_text", &textData{
 		Label: "DOI",
-		Text:  text,
+		Text:  p.DOI,
 	})
 }
 
 // Render the "ISSN/ISBN" field
 
 func (r *Publication) ISXN(p *models.Publication) template.HTML {
-	text := "-"
-	if len(p.ISSN) > 0 {
-		text = p.ISSN[0]
+	var list []string
+	for _, val := range p.ISSN {
+		list = append(list, fmt.Sprintf("ISSN: %s", val))
+	}
+	for _, val := range p.ISBN {
+		list = append(list, fmt.Sprintf("ISBN: %s", val))
 	}
 
-	return r.partial("part/_text", &textData{
+	return r.partial("part/_list", &listData{
 		Label: "ISSN/ISBN",
-		Text:  text,
+		List:  list,
 	})
 }
 
 // Render the "Title" field
 
 func (r *Publication) Title(p *models.Publication) template.HTML {
-	text := p.Title
-	if text == "" {
-		text = "-"
-	}
-
 	return r.partial("part/_text", &textData{
 		Label:    "Title",
-		Text:     text,
+		Text:     p.Title,
 		Required: true,
 	})
 }
@@ -93,14 +93,9 @@ func (r *Publication) Title(p *models.Publication) template.HTML {
 // Render the "Alternative Title" field
 
 func (r *Publication) AlternativeTitle(p *models.Publication) template.HTML {
-	text := "-"
-	if len(p.AlternativeTitle) > 0 {
-		text = p.AlternativeTitle[0]
-	}
-
-	return r.partial("part/_text", &textData{
+	return r.partial("part/_list", &listData{
 		Label: "Alternative title",
-		Text:  text,
+		List:  p.AlternativeTitle,
 	})
 }
 

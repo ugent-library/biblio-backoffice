@@ -12,38 +12,38 @@ type PublicationHits struct {
 }
 
 type PublicationFile struct {
-	AccessLevel string `json:"access_level"`
+	AccessLevel string `json:"access_level,omitempty"`
 }
 
 type PublicationContributor struct {
-	ID        string `json:"id"`
-	ORCID     string `json:"orcid"`
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
-	FullName  string `json:"full_name"`
+	ID        string `json:"id,omitempty"`
+	ORCID     string `json:"orcid,omitempty"`
+	FirstName string `json:"first_name,omitempty"`
+	LastName  string `json:"last_name,omitempty"`
+	FullName  string `json:"full_name,omitempty"`
 }
 
 type Publication struct {
-	ID                string                   `json:"_id"`
-	Version           int                      `json:"_version"`
-	Type              string                   `json:"type"`
-	DateCreated       *time.Time               `json:"date_created"`
-	DateUpdated       *time.Time               `json:"date_updated"`
-	UserID            string                   `json:"user_id"`
-	Locked            bool                     `json:"locked"`
-	Extern            bool                     `json:"extern"`
-	Status            string                   `json:"status"`
-	PublicationStatus string                   `json:"publication_status"`
-	File              []PublicationFile        `json:"file"`
-	Classification    string                   `json:"classification"`
-	DOI               string                   `json:"doi"`
-	ISBN              []string                 `json:"isbn"`
-	ISSN              []string                 `json:"issn"`
-	Title             string                   `json:"title"`
-	AlternativeTitle  []string                 `json:"alternative_title"`
-	Publication       string                   `json:"publication"`
-	Year              string                   `json:"year"`
-	Author            []PublicationContributor `json:"author"`
+	ID                string                   `json:"_id,omitempty"`
+	Version           int                      `json:"_version,omitempty"`
+	Type              string                   `json:"type,omitempty"`
+	DateCreated       *time.Time               `json:"date_created,omitempty"`
+	DateUpdated       *time.Time               `json:"date_updated,omitempty"`
+	UserID            string                   `json:"user_id,omitempty"`
+	Locked            bool                     `json:"locked,omitempty"`
+	Extern            bool                     `json:"extern,omitempty"`
+	Status            string                   `json:"status,omitempty"`
+	PublicationStatus string                   `json:"publication_status,omitempty"`
+	File              []PublicationFile        `json:"file,omitempty"`
+	Classification    string                   `json:"classification,omitempty"`
+	DOI               string                   `json:"doi,omitempty"`
+	ISBN              []string                 `json:"isbn,omitempty"`
+	ISSN              []string                 `json:"issn,omitempty"`
+	Title             string                   `json:"title,omitempty"`
+	AlternativeTitle  []string                 `json:"alternative_title,omitempty"`
+	Publication       string                   `json:"publication,omitempty"`
+	Year              string                   `json:"year,omitempty"`
+	Author            []PublicationContributor `json:"author,omitempty"`
 }
 
 func (p *Publication) IsOpenAccess() bool {
