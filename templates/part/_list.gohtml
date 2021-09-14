@@ -4,6 +4,14 @@
         {{if .Required}}&nbsp;<abbr class="required" title="Required">*</abbr>{{end}}
     </label>
     <div class="col-sm-9">
-        <span>{{if .Text}}{{.Text}}{{else}}-{{end}}</span>
+        {{if .List}}
+        <ul class="list-unstyled">
+        {{range .List}}
+            <li>{{.}}</li>
+        {{end}}
+        </ul>
+        {{else}}
+        <span>-</span>
+        {{end}}
     </div>
 </div>
