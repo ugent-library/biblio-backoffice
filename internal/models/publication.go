@@ -23,6 +23,14 @@ type PublicationContributor struct {
 	FullName  string `json:"full_name,omitempty"`
 }
 
+type PublicationConference struct {
+	Name      string `json:"name,omitempty"`
+	Location  string `json:"location,omitempty"`
+	Organizer string `json:"organizer,omitempty"`
+	StartDate string `json:"start_date,omitempty"`
+	EndDate   string `json:"end_date,omitempty"`
+}
+
 type Publication struct {
 	ID                string                   `json:"_id,omitempty"`
 	Version           int                      `json:"_version,omitempty"`
@@ -44,6 +52,7 @@ type Publication struct {
 	Publication       string                   `json:"publication,omitempty"`
 	Year              string                   `json:"year,omitempty"`
 	Author            []PublicationContributor `json:"author,omitempty"`
+	Conference        PublicationConference    `json:"conference,omitempty"`
 }
 
 func (p *Publication) IsOpenAccess() bool {

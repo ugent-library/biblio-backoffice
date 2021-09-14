@@ -25,6 +25,14 @@
     </div>
     <div class="collapse" id="collapse2">
         <div class="card-body p-0" id="edit1">
+            <ul class="list-group list-group-flush" data-panel-state="read">
+                <li class="list-group-item">
+                    {{publicationRenderer.Text .Name "Conference" false}}
+                    {{publicationRenderer.Text .Location "Conference location" false}}
+                    {{publicationRenderer.Text .Organizer "Conference organiser" false}}
+                    {{publicationRenderer.Range .StartDate .EndDate "Conference date" false}}
+                </li>
+            </ul>
         </div>
     </div>
 </div>

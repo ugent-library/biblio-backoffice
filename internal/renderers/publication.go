@@ -38,7 +38,7 @@ func (r *Publication) Details(p *models.Publication) template.HTML {
 }
 
 func (r *Publication) Conference(p *models.Publication) template.HTML {
-	return r.Partial(fmt.Sprintf("publication/conference/_%s", p.Type), p)
+	return r.Partial(fmt.Sprintf("publication/conference/_%s", p.Type), p.Conference)
 }
 
 //
@@ -74,6 +74,24 @@ func (r *Publication) List(list []string, label string, required bool) template.
 	return r.Partial("part/_list", &listData{
 		Label:    label,
 		List:     list,
+		Required: required,
+	})
+}
+
+func (r *Publication) Range(start, end, label string, required bool) template.HTML {
+	var text string
+	if len(start) > 0 && len(end) > 0 && start == end {
+		text = start
+	} else if len(start) > 0 && len(end) > 0 {
+		text = fmt.Sprintf("%s - %s", start, end)
+	} else if len(start) > 0 {
+		text = fmt.Sprintf("%s -", start)
+	} else if len(end) > 0 {
+		text = fmt.Sprintf("- %s", end)
+	}
+	return r.Partial("part/_text", &textData{
+		Label:    label,
+		Text:     text,
 		Required: required,
 	})
 }
