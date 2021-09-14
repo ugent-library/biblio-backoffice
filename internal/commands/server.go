@@ -123,6 +123,7 @@ var serverStartCmd = &cobra.Command{
 			middleware.SetUser(e, sessionName, sessionStore),
 			controllers.NewAuth(e, sessionName, sessionStore, oidcClient),
 			controllers.NewPublication(e, renderer),
+			controllers.NewPublicationsDetails(e, renderer),
 		)
 
 		// logging
