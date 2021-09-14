@@ -11,7 +11,8 @@ func Register(r *mux.Router,
 	requireUser mux.MiddlewareFunc,
 	setUser mux.MiddlewareFunc,
 	authController *controllers.Auth,
-	publicationController *controllers.Publications) {
+	publicationController *controllers.Publications,
+	publicationDetailsController *controllers.PublicationsDetails) {
 
 	// static files
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
@@ -44,4 +45,15 @@ func Register(r *mux.Router,
 	publicationRouter.HandleFunc("/{id}", publicationController.Show).
 		Methods("GET").
 		Name("publication")
+
+	// Publication details
+	publicationRouter.HandleFunc("/{id}/details", publicationDetailsController.Show).
+		Methods("GET").
+		Name("publication_details")
+	publicationRouter.HandleFunc("/{id}/details/edit", publicationDetailsController.EditForm).
+		Methods("GET").
+		Name("publication_details_edit_form")
+	publicationRouter.HandleFunc("/{id}/details/edit", publicationDetailsController.EditForm).
+		Methods("PATCH").
+		Name("publication_details_edit_form")
 }

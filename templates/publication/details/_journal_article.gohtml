@@ -1,29 +1,26 @@
-<div class="card card-collapsible mb-6">
+<div class="card card-collapsible mb-6 publication-details">
     <div class="card-header">
-        <div class="collapse-trigger" data-toggle="collapse" data-target="#collapse1" aria-expanded="false" aria-controls="collapse1"></div>
+        <div class="collapse-trigger" data-toggle="collapse" data-target="#collapse-details" aria-expanded="false" aria-controls="collapse-details"></div>
         <div class="bc-toolbar">
             <div class="bc-toolbar-left">
                 <i class="if if-chevron-right mr-4 text-muted"></i>Publication details
             </div>
             <div class="bc-toolbar-right">
                 <div class="c-button-toolbar" data-panel-state="read">
-                    <button class="btn btn-outline-primary" data-panel-toggle="edit1">
+                    <button class="btn btn-outline-primary"
+                        hx-get="/publication/{{ .ID }}/details/edit"
+                        hx-swap="outerHTML"
+                        hx-target=".publication-details"
+                    >
                         <i class="if if-edit"></i>
                         <div class="btn-text">Edit</div>
-                    </button>
-                </div>
-                <div class="c-button-toolbar u-hidden" data-panel-state="edit">
-                    <button class="btn btn-outline-primary" data-panel-toggle="edit1">
-                        <div class="btn-text">Cancel</div>
-                    </button>
-                    <button class="btn btn-primary" data-panel-toggle="edit1">
-                        <div class="btn-text">Save</div>
                     </button>
                 </div>
             </div>
         </div>
     </div>
-    <div class="collapse" id="collapse1">
+
+    <div class="collapse" id="collapse-details">
         <div class="card-body p-0" id="edit1">
             <ul class="list-group list-group-flush" data-panel-state="read">
                 <li class="list-group-item">
@@ -39,5 +36,3 @@
         </div>
     </div>
 </div>
-
-
