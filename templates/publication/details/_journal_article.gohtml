@@ -27,13 +27,13 @@
         <div class="card-body p-0" id="edit1">
             <ul class="list-group list-group-flush" data-panel-state="read">
                 <li class="list-group-item">
-                    {{publicationRenderer.Type .}}
-                    {{publicationRenderer.DOI .}}
-                    {{publicationRenderer.ISXN .}}
+                    {{publicationRenderer.Text .Type "Publication type" false}}
+                    {{publicationRenderer.Text .DOI "DOI" false}}
+                    {{publicationRenderer.ISXN . "ISSN/ISBN" false}}
                 </li>
                 <li class="list-group-item">
-                    {{publicationRenderer.Title .}}
-                    {{publicationRenderer.AlternativeTitle .}}
+                    {{publicationRenderer.Text .Title "Title" true}}
+                    {{publicationRenderer.List .AlternativeTitle "Alternative title" false}}
                 </li>
             </ul>
         </div>
