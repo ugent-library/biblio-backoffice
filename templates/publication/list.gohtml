@@ -54,13 +54,13 @@
         <div class="bc-navbar bc-navbar--bordered-bottom bc-navbar--white">
             <ul class="nav">
                 <li class="nav-item">
-                    <a class="nav-link{{if not (.SearchArgs.HasFilter "scope")}} active{{end}}" href="{{pathFor "publications" | query searchArgs}}">All</a>
+                    <a class="nav-link{{if not (.Data.SearchArgs.HasFilter "scope")}} active{{end}}" href="{{pathFor "publications" | query searchArgs}}">All</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link{{if .SearchArgs.HasFilter "scope" "contributed"}} active{{end}}" href="{{pathFor "publications" | query (searchArgs.WithFilter "scope" "contributed")}}">My publications</a>
+                    <a class="nav-link{{if .Data.SearchArgs.HasFilter "scope" "contributed"}} active{{end}}" href="{{pathFor "publications" | query (searchArgs.WithFilter "scope" "contributed")}}">My publications</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link{{if .SearchArgs.HasFilter "scope" "created"}} active{{end}}" href="{{pathFor "publications" | query (searchArgs.WithFilter "scope" "created")}}">Registered by me</a>
+                    <a class="nav-link{{if .Data.SearchArgs.HasFilter "scope" "created"}} active{{end}}" href="{{pathFor "publications" | query (searchArgs.WithFilter "scope" "created")}}">Registered by me</a>
                 </li>
             </ul>
         </div>
@@ -71,7 +71,7 @@
                 <div class="col">
                     <label class="sr-only" for="q">Search</label>
                     <div class="dropdown">
-                        <input class="form-control" type="text" name="q" value="{{.SearchArgs.Query}}" placeholder="Search..."
+                        <input class="form-control" type="text" name="q" value="{{.Data.SearchArgs.Query}}" placeholder="Search..."
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
                             autocomplete="off">
                         <div class="dropdown-menu w-100" aria-labelledby="dropdownMenuLink">
@@ -198,11 +198,11 @@
                             name="overviewItems">
                         <label class="custom-control-label" for="selectAll">
                             <span class="h4 mr-2 ml-5">Publications</span>
-                            <span class="text-muted c-body-small">0 of {{.Hits.Total}} publications selected</span>
+                            <span class="text-muted c-body-small">0 of {{.Data.Hits.Total}} publications selected</span>
                         </label>
                     </div>
                 </li>
-                {{range .Hits.Hits}}
+                {{range .Data.Hits.Hits}}
                 <li class="list-group-item">
                     {{template "publication/_hit" .}}
                 </li>
@@ -210,7 +210,7 @@
             </ul>
         </div>
         <nav aria-label="Page navigation">
-            {{template "publication/_pagination" .}}
+            {{template "publication/_pagination" .Data}}
         </nav>
     </div>
 </div>

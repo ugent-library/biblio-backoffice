@@ -38,7 +38,7 @@ func (c *PublicationsDetails) Show(w http.ResponseWriter, r *http.Request) {
 		tmpl.Execute(buf, pub)
 	}
 
-	fmt.Fprintf(w, buf.String())
+	fmt.Fprint(w, buf.String())
 }
 
 func (c *PublicationsDetails) EditForm(w http.ResponseWriter, r *http.Request) {
@@ -59,5 +59,5 @@ func (c *PublicationsDetails) EditForm(w http.ResponseWriter, r *http.Request) {
 		tmpl.Execute(buf, pub)
 	}
 
-	fmt.Fprintf(w, buf.String())
+	fmt.Fprint(w, buf.String())
 }

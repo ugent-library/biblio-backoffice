@@ -8,13 +8,16 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/context"
 	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backend/internal/views"
 	"github.com/ugent-library/go-web/forms"
 	"github.com/unrolled/render"
 )
 
 type Publications struct {
-	engine *engine.Engine
-	render *render.Render
+	engine   *engine.Engine
+	render   *render.Render
+	listView views.Renderer
+	newView  views.Renderer
 }
 
 type PublicationListVars struct {
@@ -31,8 +34,10 @@ type PublicationNewVars struct {
 
 func NewPublication(e *engine.Engine, r *render.Render) *Publications {
 	return &Publications{
-		engine: e,
-		render: r,
+		engine:   e,
+		render:   r,
+		listView: views.NewView(r, "publication/list"),
+		newView:  views.NewView(r, "publication/new"),
 	}
 }
 
@@ -51,7 +56,7 @@ func (c *Publications) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.render.HTML(w, http.StatusOK, "publication/list", PublicationListVars{SearchArgs: args, Hits: hits})
+	c.listView.Render(w, r, http.StatusOK, PublicationListVars{SearchArgs: args, Hits: hits})
 }
 
 func (c *Publications) Show(w http.ResponseWriter, r *http.Request) {
@@ -69,5 +74,5 @@ func (c *Publications) Show(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Publications) New(w http.ResponseWriter, r *http.Request) {
-	c.render.HTML(w, http.StatusOK, "publication/new", PublicationNewVars{})
+	c.newView.Render(w, r, http.StatusOK, PublicationNewVars{})
 }
