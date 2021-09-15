@@ -27,10 +27,10 @@
         <div class="card-body p-0" id="edit1">
             <ul class="list-group list-group-flush" data-panel-state="read">
                 <li class="list-group-item">
-                    {{publicationRenderer.Text .Name "Conference" false}}
-                    {{publicationRenderer.Text .Location "Conference location" false}}
-                    {{publicationRenderer.Text .Organizer "Conference organiser" false}}
-                    {{publicationRenderer.Range .StartDate .EndDate "Conference date" false}}
+                    {{.RenderText .Publication.Conference.Name "Conference" false}}
+                    {{.RenderText .Publication.Conference.Location "Conference location" false}}
+                    {{.RenderText .Publication.Conference.Organizer "Conference organiser" false}}
+                    {{.RenderRange .Publication.Conference.StartDate .Publication.Conference.EndDate "Conference date" false}}
                 </li>
             </ul>
         </div>

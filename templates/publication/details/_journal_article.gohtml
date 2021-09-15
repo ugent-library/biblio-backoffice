@@ -8,7 +8,7 @@
             <div class="bc-toolbar-right">
                 <div class="c-button-toolbar" data-panel-state="read">
                     <button class="btn btn-outline-primary"
-                        hx-get="/publication/{{ .ID }}/details/edit"
+                        hx-get="/publication/{{.Publication.ID}}/details/edit"
                         hx-swap="outerHTML"
                         hx-target=".publication-details"
                     >
@@ -24,18 +24,18 @@
         <div class="card-body p-0" id="edit1">
             <ul class="list-group list-group-flush" data-panel-state="read">
                 <li class="list-group-item">
-                    {{publicationRenderer.Text .Type "Publication type" false}}
-                    {{publicationRenderer.Text .DOI "DOI" false}}
-                    {{publicationRenderer.ISXN . "ISSN/ISBN" false}}
+                    {{.RenderText .Publication.Type "Publication type" false}}
+                    {{.RenderText .Publication.DOI "DOI" false}}
+                    {{.RenderISXN "ISSN/ISBN" false}}
                 </li>
                 <li class="list-group-item">
-                    {{publicationRenderer.Text .Title "Title" true}}
-                    {{publicationRenderer.List .AlternativeTitle "Alternative title" false}}
-                    {{publicationRenderer.Text .Publication "Journal title" true}}
-                    {{publicationRenderer.Text .Classification "Classification" false}}
-                    {{publicationRenderer.Text .ArticleType "Article type" false}}
-                    {{publicationRenderer.Text .ArticleNumber "Article number" false}}
-                    {{publicationRenderer.Text .WOSType "WOS type" false}}
+                    {{.RenderText .Publication.Title "Title" true}}
+                    {{.RenderList .Publication.AlternativeTitle "Alternative title" false}}
+                    {{.RenderText .Publication.Publication "Journal title" true}}
+                    {{.RenderText .Publication.Classification "Classification" false}}
+                    {{.RenderText .Publication.ArticleType "Article type" false}}
+                    {{.RenderText .Publication.ArticleNumber "Article number" false}}
+                    {{.RenderText .Publication.WOSType "WOS type" false}}
                 </li>
             </ul>
         </div>

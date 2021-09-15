@@ -14,31 +14,23 @@ import (
 )
 
 type Publications struct {
-	engine   *engine.Engine
-	render   *render.Render
-	listView views.Renderer
-	newView  views.Renderer
+	engine *engine.Engine
+	render *render.Render
 }
 
 type PublicationListVars struct {
+	views.Data
 	SearchArgs *engine.SearchArgs
 	Hits       *models.PublicationHits
 }
 
 type PublicationShowVars struct {
+	views.Data
 	Pub *models.Publication
 }
 
-type PublicationNewVars struct {
-}
-
 func NewPublication(e *engine.Engine, r *render.Render) *Publications {
-	return &Publications{
-		engine:   e,
-		render:   r,
-		listView: views.NewView(r, "publication/list"),
-		newView:  views.NewView(r, "publication/new"),
-	}
+	return &Publications{engine: e, render: r}
 }
 
 func (c *Publications) List(w http.ResponseWriter, r *http.Request) {
@@ -56,7 +48,7 @@ func (c *Publications) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.listView.Render(w, r, http.StatusOK, PublicationListVars{SearchArgs: args, Hits: hits})
+	c.render.HTML(w, http.StatusOK, "publication/list", PublicationListVars{Data: views.NewData(r), SearchArgs: args, Hits: hits})
 }
 
 func (c *Publications) Show(w http.ResponseWriter, r *http.Request) {
@@ -68,11 +60,9 @@ func (c *Publications) Show(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.render.HTML(w, http.StatusOK, "publication/show", PublicationShowVars{
-		Pub: pub,
-	})
+	c.render.HTML(w, http.StatusOK, "publication/show", views.NewPublicationData(r, c.render, pub))
 }
 
 func (c *Publications) New(w http.ResponseWriter, r *http.Request) {
-	c.newView.Render(w, r, http.StatusOK, PublicationNewVars{})
+	c.render.HTML(w, http.StatusOK, "publication/new", views.NewData(r))
 }

@@ -44,7 +44,7 @@
             </div>
         </div>
         <div class="c-divider mt-0 mx-6"></div>
-        {{template "publication/_summary" .Pub}}
+        {{template "publication/_summary" .Publication}}
         <div class="c-divider mb-2 mx-6"></div>
         <div class="bc-navbar bc-navbar--white bc-navbar--bordered-bottom">
             <div class="bc-toolbar">
@@ -91,9 +91,9 @@
     <div class="u-scroll-wrapper__body p-6">
         <div class="tab-content">
             <div id="description-content" class="tab-pane fade show active" role="tabpanel" aria-labelledby="description-tab">
-                {{publicationRenderer.Details .Pub}}
-                {{publicationRenderer.Conference .Pub}}
-                {{publicationRenderer.Abstract .Pub}}
+                {{.RenderDetails}}
+                {{.RenderConference}}
+                {{.RenderAbstract}}
             </div>
         </div>
     </div>
