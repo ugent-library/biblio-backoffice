@@ -41,6 +41,10 @@ func (r *Publication) Conference(p *models.Publication) template.HTML {
 	return r.Partial(fmt.Sprintf("publication/conference/_%s", p.Type), p.Conference)
 }
 
+func (r *Publication) Abstract(p *models.Publication) template.HTML {
+	return r.Partial(fmt.Sprintf("publication/abstract/_%s", p.Type), p.Abstract)
+}
+
 //
 // Render each field
 //

@@ -31,6 +31,11 @@ type PublicationConference struct {
 	EndDate   string `json:"end_date,omitempty"`
 }
 
+type PublicationAbstract struct {
+	Text string `json:"text,omitempty"`
+	Lang string `json:"lang,omitempty"`
+}
+
 type Publication struct {
 	ID                string                   `json:"_id,omitempty"`
 	Version           int                      `json:"_version,omitempty"`
@@ -52,6 +57,7 @@ type Publication struct {
 	Publication       string                   `json:"publication,omitempty"`
 	Year              string                   `json:"year,omitempty"`
 	Author            []PublicationContributor `json:"author,omitempty"`
+	Abstract          []PublicationAbstract    `json:"abstract,omitempty"`
 	Conference        PublicationConference    `json:"conference,omitempty"`
 }
 
