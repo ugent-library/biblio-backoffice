@@ -31,6 +31,11 @@
                 <li class="list-group-item">
                     {{publicationRenderer.Text .Title "Title" true}}
                     {{publicationRenderer.List .AlternativeTitle "Alternative title" false}}
+                    {{publicationRenderer.Text .Publication "Journal title" true}}
+                    {{publicationRenderer.Text .Classification "Classification" false}}
+                    {{publicationRenderer.Text .ArticleType "Article type" false}}
+                    {{publicationRenderer.Text .ArticleNumber "Article number" false}}
+                    {{publicationRenderer.Text .WOSType "WOS type" false}}
                 </li>
             </ul>
         </div>

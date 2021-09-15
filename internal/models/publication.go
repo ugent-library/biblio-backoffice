@@ -37,28 +37,32 @@ type PublicationAbstract struct {
 }
 
 type Publication struct {
-	ID                string                   `json:"_id,omitempty"`
-	Version           int                      `json:"_version,omitempty"`
-	Type              string                   `json:"type,omitempty"`
+	Abstract          []PublicationAbstract    `json:"abstract,omitempty"`
+	AlternativeTitle  []string                 `json:"alternative_title,omitempty"`
+	ArticleNumber     string                   `json:"article_number,omitempty"`
+	ArticleType       string                   `json:"article_type,omitempty"`
+	Author            []PublicationContributor `json:"author,omitempty"`
+	Classification    string                   `json:"classification,omitempty"`
+	Conference        PublicationConference    `json:"conference,omitempty"`
 	DateCreated       *time.Time               `json:"date_created,omitempty"`
 	DateUpdated       *time.Time               `json:"date_updated,omitempty"`
-	UserID            string                   `json:"user_id,omitempty"`
-	Locked            bool                     `json:"locked,omitempty"`
-	Extern            bool                     `json:"extern,omitempty"`
-	Status            string                   `json:"status,omitempty"`
-	PublicationStatus string                   `json:"publication_status,omitempty"`
-	File              []PublicationFile        `json:"file,omitempty"`
-	Classification    string                   `json:"classification,omitempty"`
 	DOI               string                   `json:"doi,omitempty"`
+	Extern            bool                     `json:"extern,omitempty"`
+	File              []PublicationFile        `json:"file,omitempty"`
+	ID                string                   `json:"_id,omitempty"`
 	ISBN              []string                 `json:"isbn,omitempty"`
 	ISSN              []string                 `json:"issn,omitempty"`
-	Title             string                   `json:"title,omitempty"`
-	AlternativeTitle  []string                 `json:"alternative_title,omitempty"`
+	Locked            bool                     `json:"locked,omitempty"`
 	Publication       string                   `json:"publication,omitempty"`
+	PublicationStatus string                   `json:"publication_status,omitempty"`
+	Status            string                   `json:"status,omitempty"`
+	Title             string                   `json:"title,omitempty"`
+	Type              string                   `json:"type,omitempty"`
+	UserID            string                   `json:"user_id,omitempty"`
+	Version           int                      `json:"_version,omitempty"`
+	WOSID             string                   `json:"wos_id,omitempty"`
+	WOSType           string                   `json:"wos_type,omitempty"`
 	Year              string                   `json:"year,omitempty"`
-	Author            []PublicationContributor `json:"author,omitempty"`
-	Abstract          []PublicationAbstract    `json:"abstract,omitempty"`
-	Conference        PublicationConference    `json:"conference,omitempty"`
 }
 
 func (p *Publication) IsOpenAccess() bool {

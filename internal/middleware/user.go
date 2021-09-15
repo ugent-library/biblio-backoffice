@@ -1,12 +1,11 @@
 package middleware
 
 import (
-	"context"
 	"log"
 	"net/http"
 
 	"github.com/gorilla/sessions"
-	"github.com/ugent-library/biblio-backend/internal/ctx"
+	"github.com/ugent-library/biblio-backend/internal/context"
 	"github.com/ugent-library/biblio-backend/internal/engine"
 )
 
@@ -33,7 +32,7 @@ func SetUser(e *engine.Engine, sessionName string, sessionStore sessions.Store) 
 				return
 			}
 
-			c := context.WithValue(r.Context(), ctx.UserKey, user)
+			c := context.WithUser(r.Context(), user)
 			next.ServeHTTP(w, r.WithContext(c))
 		})
 	}
@@ -42,7 +41,7 @@ func SetUser(e *engine.Engine, sessionName string, sessionStore sessions.Store) 
 func RequireUser(redirectURL string) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if !ctx.HasUser(r) {
+			if !context.HasUser(r.Context()) {
 				http.Redirect(w, r, redirectURL, http.StatusFound)
 				return
 			}
