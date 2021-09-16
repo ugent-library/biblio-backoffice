@@ -5,9 +5,10 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/ugent-library/biblio-backend/internal/ctx"
+	"github.com/ugent-library/biblio-backend/internal/context"
 	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backend/internal/views"
 	"github.com/ugent-library/go-web/forms"
 	"github.com/unrolled/render"
 )
@@ -18,22 +19,18 @@ type Publications struct {
 }
 
 type PublicationListVars struct {
+	views.Data
 	SearchArgs *engine.SearchArgs
 	Hits       *models.PublicationHits
 }
 
 type PublicationShowVars struct {
+	views.Data
 	Pub *models.Publication
 }
 
-type PublicationNewVars struct {
-}
-
 func NewPublication(e *engine.Engine, r *render.Render) *Publications {
-	return &Publications{
-		engine: e,
-		render: r,
-	}
+	return &Publications{engine: e, render: r}
 }
 
 func (c *Publications) List(w http.ResponseWriter, r *http.Request) {
@@ -44,14 +41,14 @@ func (c *Publications) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	hits, err := c.engine.UserPublications(ctx.GetUser(r).ID, args)
+	hits, err := c.engine.UserPublications(context.User(r.Context()).ID, args)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	c.render.HTML(w, http.StatusOK, "publication/list", PublicationListVars{SearchArgs: args, Hits: hits})
+	c.render.HTML(w, http.StatusOK, "publication/list", PublicationListVars{Data: views.NewData(r), SearchArgs: args, Hits: hits})
 }
 
 func (c *Publications) Show(w http.ResponseWriter, r *http.Request) {
@@ -63,11 +60,9 @@ func (c *Publications) Show(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.render.HTML(w, http.StatusOK, "publication/show", PublicationShowVars{
-		Pub: pub,
-	})
+	c.render.HTML(w, http.StatusOK, "publication/show", views.NewPublicationData(r, c.render, pub))
 }
 
 func (c *Publications) New(w http.ResponseWriter, r *http.Request) {
-	c.render.HTML(w, http.StatusOK, "publication/new", PublicationNewVars{})
+	c.render.HTML(w, http.StatusOK, "publication/new", views.NewData(r))
 }

@@ -7,7 +7,7 @@
         <div class="bc-toolbar-right">
             <div class="c-button-toolbar" data-panel-state="read">
                 <button class="btn btn-outline-primary"
-                    hx-get="/publication/{{ .ID }}/details/edit"
+                    hx-get="/publication/{{ .Publication.ID }}/details/edit"
                     hx-swap="innerHTML"
                     hx-target=".publication-details"
                 >
@@ -23,13 +23,18 @@
     <div class="card-body p-0" id="edit1">
         <ul class="list-group list-group-flush" data-panel-state="read">
             <li class="list-group-item">
-                {{publicationRenderer.Type .}}
-                {{publicationRenderer.DOI .}}
-                {{publicationRenderer.ISXN .}}
+                {{.RenderText .Publication.Type "Publication type" false}}
+                {{.RenderText .Publication.DOI "DOI" false}}
+                {{.RenderISXN "ISSN/ISBN" false}}
             </li>
             <li class="list-group-item">
-                {{publicationRenderer.Title .}}
-                {{publicationRenderer.AlternativeTitle .}}
+                {{.RenderText .Publication.Title "Title" true}}
+                {{.RenderList .Publication.AlternativeTitle "Alternative title" false}}
+                {{.RenderText .Publication.Publication "Journal title" true}}
+                {{.RenderText .Publication.Classification "Classification" false}}
+                {{.RenderText .Publication.ArticleType "Article type" false}}
+                {{.RenderText .Publication.ArticleNumber "Article number" false}}
+                {{.RenderText .Publication.WOSType "WOS type" false}}
             </li>
         </ul>
     </div>

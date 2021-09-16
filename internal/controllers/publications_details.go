@@ -8,6 +8,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/ugent-library/biblio-backend/internal/engine"
+	"github.com/ugent-library/biblio-backend/internal/views"
 	"github.com/unrolled/render"
 )
 
@@ -35,10 +36,10 @@ func (c *PublicationsDetails) Show(w http.ResponseWriter, r *http.Request) {
 
 	buf := &bytes.Buffer{}
 	if tmpl := c.render.TemplateLookup(fmt.Sprintf("publication/details/_%s", pub.Type)); tmpl != nil {
-		tmpl.Execute(buf, pub)
+		tmpl.Execute(buf, views.NewPublicationData(r, c.render, pub))
 	}
 
-	fmt.Fprintf(w, buf.String())
+	fmt.Fprint(w, buf.String())
 }
 
 func (c *PublicationsDetails) OpenForm(w http.ResponseWriter, r *http.Request) {
@@ -57,7 +58,7 @@ func (c *PublicationsDetails) OpenForm(w http.ResponseWriter, r *http.Request) {
 		tmpl.Execute(buf, pub)
 	}
 
-	fmt.Fprintf(w, buf.String())
+	fmt.Fprint(w, buf.String())
 }
 
 func (c *PublicationsDetails) SaveForm(w http.ResponseWriter, r *http.Request) {
@@ -75,7 +76,7 @@ func (c *PublicationsDetails) SaveForm(w http.ResponseWriter, r *http.Request) {
 	pub.Title = "Mock title"
 
 	if tmpl := c.render.TemplateLookup(fmt.Sprintf("publication/details/_%s_edit_submit", pub.Type)); tmpl != nil {
-		tmpl.Execute(buf, pub)
+		tmpl.Execute(buf, views.NewPublicationData(r, c.render, pub))
 	}
 
 	fmt.Fprintf(w, buf.String())
