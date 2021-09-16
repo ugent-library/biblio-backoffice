@@ -2,7 +2,6 @@ package views
 
 import (
 	"net/http"
-	"strings"
 
 	"github.com/ugent-library/biblio-backend/internal/context"
 	"github.com/ugent-library/biblio-backend/internal/models"
@@ -21,5 +20,9 @@ func NewData(r *http.Request) Data {
 }
 
 func (d Data) OnHTMXFragment() bool {
-	return strings.Contains(d.request.RequestURI, "htmx")
+	if d.request.Header.Get("HX-Request") == "" {
+		return false
+	}
+
+	return true
 }
