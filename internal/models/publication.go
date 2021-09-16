@@ -12,7 +12,17 @@ type PublicationHits struct {
 }
 
 type PublicationFile struct {
-	AccessLevel string `json:"access_level,omitempty"`
+	AccessLevel        string     `json:"access_level,omitempty"`
+	ContentType        string     `json:"content_type,omitempty"`
+	DateCreated        *time.Time `json:"date_created,omitempty"`
+	DateUpdated        *time.Time `json:"date_updated,omitempty"`
+	Embargo            string     `json:"embargo,omitempty"`
+	EmbargoTo          string     `json:"embargo_to,omitempty"`
+	FileID             string     `json:"file_id,omitempty"`
+	Filename           string     `json:"file_name,omitempty"`
+	FileSize           int        `json:"file_size,omitempty"`
+	PublicationVersion string     `json:"publication_version,omitempty"`
+	Relation           string     `json:"relation,omitempty"`
 }
 
 type PublicationContributor struct {
