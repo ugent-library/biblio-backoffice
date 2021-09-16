@@ -58,6 +58,11 @@ type PublicationDepartment struct {
 	ID string `json:"_id,omitempty"`
 }
 
+type PublicationProject struct {
+	ID   string `json:"_id,omitempty"`
+	Name string `json:"name,omitempty"`
+}
+
 type Publication struct {
 	Abstract                []PublicationText        `json:"abstract,omitempty"`
 	AdditionalInfo          string                   `json:"additional_info,omitempty"`
@@ -101,6 +106,7 @@ type Publication struct {
 	PageCount               string                   `json:"page_count,omitempty"`
 	PageFirst               string                   `json:"page_first,omitempty"`
 	PageLast                string                   `json:"page_last,omitempty"`
+	Project                 []PublicationProject     `json:"project,omitempty"`
 	Publication             string                   `json:"publication,omitempty"`
 	PublicationAbbreviation string                   `json:"publication_abbreviation,omitempty"`
 	PublicationStatus       string                   `json:"publication_status,omitempty"`
