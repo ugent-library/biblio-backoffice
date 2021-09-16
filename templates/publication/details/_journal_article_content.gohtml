@@ -1,0 +1,36 @@
+<div class="card-header">
+    <div class="collapse-trigger collapsed" data-toggle="collapse" data-target="#collapse-details" aria-expanded="false" aria-controls="collapse-details"></div>
+    <div class="bc-toolbar">
+        <div class="bc-toolbar-left">
+            <i class="if if-chevron-right mr-4 text-muted"></i>Publication details
+        </div>
+        <div class="bc-toolbar-right">
+            <div class="c-button-toolbar" data-panel-state="read">
+                <button class="btn btn-outline-primary"
+                    hx-get="/publication/{{ .ID }}/details/edit"
+                    hx-swap="innerHTML"
+                    hx-target=".publication-details"
+                >
+                    <i class="if if-edit"></i>
+                    <div class="btn-text">Edit</div>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="collapse" id="collapse-details">
+    <div class="card-body p-0" id="edit1">
+        <ul class="list-group list-group-flush" data-panel-state="read">
+            <li class="list-group-item">
+                {{publicationRenderer.Type .}}
+                {{publicationRenderer.DOI .}}
+                {{publicationRenderer.ISXN .}}
+            </li>
+            <li class="list-group-item">
+                {{publicationRenderer.Title .}}
+                {{publicationRenderer.AlternativeTitle .}}
+            </li>
+        </ul>
+    </div>
+</div>

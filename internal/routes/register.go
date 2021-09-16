@@ -50,10 +50,10 @@ func Register(r *mux.Router,
 	publicationRouter.HandleFunc("/{id}/details", publicationDetailsController.Show).
 		Methods("GET").
 		Name("publication_details")
-	publicationRouter.HandleFunc("/{id}/details/edit", publicationDetailsController.EditForm).
+	publicationRouter.HandleFunc("/{id}/details/edit", publicationDetailsController.OpenForm).
 		Methods("GET").
 		Name("publication_details_edit_form")
-	publicationRouter.HandleFunc("/{id}/details/edit", publicationDetailsController.EditForm).
+	publicationRouter.HandleFunc("/{id}/details/edit", publicationDetailsController.SaveForm).
 		Methods("PATCH").
-		Name("publication_details_edit_form")
+		Name("publication_details_save_form")
 }

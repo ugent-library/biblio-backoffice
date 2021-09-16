@@ -1,249 +1,247 @@
-<div class="card card-collapsible mb-6 publication-details">
-    <form>
-        <div class="card-header">
-            <div class="collapse-trigger" data-toggle="collapse" data-target="#collapse1" aria-expanded="true" aria-controls="collapse1"></div>
-            <div class="bc-toolbar">
-                <div class="bc-toolbar-left">
-                    <i class="if if-chevron-right mr-4 text-muted"></i>Publication details
+<form>
+    <div class="card-header">
+        <div class="collapse-trigger" data-toggle="collapse" data-target="#collapse-details" aria-expanded="true" aria-controls="collapse-details"></div>
+        <div class="bc-toolbar">
+            <div class="bc-toolbar-left">
+                <i class="if if-chevron-right mr-4 text-muted"></i>Publication details
+            </div>
+            <div class="bc-toolbar-right">
+                <div class="c-button-toolbar" data-panel-state="edit">
+                    <button class="btn btn-outline-primary"
+                        hx-get="/publication/{{ .ID }}/details/cancel"
+                        hx-swap="innerHTML"
+                        hx-target=".publication-details"
+                    >
+                        <div class="btn-text">Cancel</div>
+                    </button>
+                    <button class="btn btn-primary"
+                        hx-patch="/publication/{{ .ID }}/details/edit"
+                        hx-swap="innerHTML"
+                        hx-target=".publication-details"
+                    >
+                        <div class="btn-text">Save</div>
+                    </button>
                 </div>
-                <div class="bc-toolbar-right">
-                    <div class="c-button-toolbar" data-panel-state="edit">
-                        <button class="btn btn-outline-primary"
-                            hx-get="/publication/{{ .ID }}/details"
-                            hx-swap="outerHTML"
-                            hx-target=".publication-details"
-                        >
-                            <div class="btn-text">Cancel</div>
-                        </button>
-                        <button class="btn btn-primary"
-                            hx-patch="/publication/{{ .ID }}/details/edit"
-                            hx-swap="outerHTML"
-                            hx-target=".publication-details"
-                        >
-                            <div class="btn-text">Save</div>
+            </div>
+        </div>
+    </div>
+    <div class="collapse show" id="collapse-details" style="">
+        <div class="card-body p-0" id="edit1">
+            <ul class="list-group list-group-flush" data-panel-state="edit">
+                <li class="list-group-item">
+                    <div class="form-group row">
+                        <label class="col-3 col-form-label" for="publicationType">Publication type</label>
+                        <div class="col-3">
+                            <select class="custom-select form-control select2-hidden-accessible" id="publicationType" data-select2-id="select2-data-publicationType" tabindex="-1" aria-hidden="true">
+                                <option data-select2-id="select2-data-2-s3zb">Journal article</option>
+                                <option>Item B</option>
+                                <option>Item C</option>
+                            </select><span class="select2 select2-container select2-container--bootstrap4" dir="ltr" data-select2-id="select2-data-1-ab1y" style="width: auto;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-disabled="false" aria-labelledby="select2-publicationType-container" aria-controls="select2-publicationType-container"><span class="select2-selection__rendered" id="select2-publicationType-container" role="textbox" aria-readonly="true" title="Journal article">Journal article</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-3 col-form-label" for="doi">DOI</label>
+                        <div class="col-3">
+                            <input class="form-control" id="doi" type="text" value="10.1016/j.ajp.2020.102188">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-3 col-form-label" for="issnIsbn">ISSN/ISBN</label>
+                        <div class="col-3">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">ISSN</button>
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item" href="#">ISSN</a>
+                                        <a class="dropdown-item" href="#">ISBN</a>
+                                    </div>
+                                </div>
+                                <input class="form-control" id="issnIsbn" type="text" value="1876-2018">
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="form-group row">
+                        <label class="col-3 col-form-label" for="title">Title<abbr class="required" title="Required">*</abbr>
+                        </label>
+                        <div class="col-9">
+                            <input class="form-control" id="title" type="text" value="Neuropsychiatric aspects of COVID-19 pandemic: A selective review">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-3 col-form-label" for="alternativeTitle">Alternative title</label>
+                        <div class="col-9 d-flex">
+                            <input class="form-control" id="alternativeTitle" type="text">
+                            <button class="btn btn-outline-primary btn-icon-only ml-3" type="button">
+                                <i class="if if-add"></i>
+                                <div class="sr-only">Add</div>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-3 col-form-label" for="journalTitle">Journal title<abbr class="required" title="Required">*</abbr>
+                        </label>
+                        <div class="col-9">
+                            <input class="form-control" id="journalTitle" type="text" value="Neuropsychiatric aspects of COVID-19 pandemic: A selective review">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-3 col-form-label" for="classification">Classification<a class="text-muted mx-2" href="#" data-container="body" data-toggle="popover" data-placement="right" data-content="This is some helper text." data-original-title="" title="">
+                                <i class="if if-info-circle if--small"></i>
+                                <div class="sr-only">More info</div>
+                            </a>
+                        </label>
+                        <div class="col-3">
+                            <select class="custom-select form-control select2-hidden-accessible" id="classification" data-select2-id="select2-data-classification" tabindex="-1" aria-hidden="true">
+                                <option data-select2-id="select2-data-4-di94">A1 - Article available in the Web of Science</option>
+                                <option>Item B</option>
+                                <option>Item C</option>
+                            </select><span class="select2 select2-container select2-container--bootstrap4" dir="ltr" data-select2-id="select2-data-3-ci6w" style="width: auto;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-disabled="false" aria-labelledby="select2-classification-container" aria-controls="select2-classification-container"><span class="select2-selection__rendered" id="select2-classification-container" role="textbox" aria-readonly="true" title="A1 - Article available in the Web of Science">A1 - Article available in the Web of Science</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-3 col-form-label" for="articleType">Article type</label>
+                        <div class="col-3">
+                            <select class="custom-select form-control select2-hidden-accessible" id="articleType" data-select2-id="select2-data-articleType" tabindex="-1" aria-hidden="true">
+                                <option data-select2-id="select2-data-6-t3pa">Original article</option>
+                                <option>Item B</option>
+                                <option>Item C</option>
+                            </select><span class="select2 select2-container select2-container--bootstrap4" dir="ltr" data-select2-id="select2-data-5-0u60" style="width: auto;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-disabled="false" aria-labelledby="select2-articleType-container" aria-controls="select2-articleType-container"><span class="select2-selection__rendered" id="select2-articleType-container" role="textbox" aria-readonly="true" title="Original article">Original article</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-3 col-form-label" for="articleNumber">Article number</label>
+                        <div class="col-3">
+                            <input class="form-control" id="articleNumber" type="text" value="102188">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-3 col-form-label" for="wosType">WOS type<a class="text-muted mx-2" href="#" data-container="body" data-toggle="popover" data-placement="right" data-content="This is some helper text." data-original-title="" title="">
+                                <i class="if if-info-circle if--small"></i>
+                                <div class="sr-only">More info</div>
+                            </a>
+                        </label>
+                        <div class="col-3">
+                            <input class="form-control" id="wosType" type="text">
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="form-group row">
+                        <label class="col-3 col-form-label" for="shortTitle">Publication short title</label>
+                        <div class="col-9">
+                            <input class="form-control" id="shortTitle" type="text">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-3 col-form-label" for="publisher">Publisher</label>
+                        <div class="col-9">
+                            <input class="form-control" id="publisher" type="text">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-3 col-form-label" for="placeOfPublication">Place of publication</label>
+                        <div class="col-9">
+                            <input class="form-control" id="placeOfPublication" type="text">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-3 col-form-label" for="publicationYear">Publication Year<abbr class="required" title="Required">*</abbr>
+                        </label>
+                        <div class="col-3">
+                            <input class="form-control" id="publicationYear" type="text" value="2020">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-3 col-form-label" for="check"></label>
+                        <div class="col-9">
+                            <div class="custom-control custom-checkbox">
+                                <input class="custom-control-input" id="customCheck1" type="checkbox">
+                                <label class="custom-control-label" for="customCheck1">Published while none of the authors are employed at UGent</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-3 col-form-label" for="languages">Languages</label>
+                        <div class="col-3">
+                            <select class="custom-select form-control select2-hidden-accessible" id="languages" data-select2-id="select2-data-languages" tabindex="-1" aria-hidden="true">
+                                <option data-select2-id="select2-data-8-cuin">English</option>
+                                <option>Item B</option>
+                                <option>Item C</option>
+                            </select><span class="select2 select2-container select2-container--bootstrap4" dir="ltr" data-select2-id="select2-data-7-niv0" style="width: auto;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-disabled="false" aria-labelledby="select2-languages-container" aria-controls="select2-languages-container"><span class="select2-selection__rendered" id="select2-languages-container" role="textbox" aria-readonly="true" title="English">English</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+                        </div>
+                        <button class="btn btn-outline-primary btn-icon-only" type="button">
+                            <i class="if if-add"></i>
+                            <div class="sr-only">Add</div>
                         </button>
                     </div>
-                </div>
-            </div>
-        </div>
-        <div class="collapse show" id="collapse1" style="">
-            <div class="card-body p-0" id="edit1">
-                <ul class="list-group list-group-flush" data-panel-state="edit">
-                    <li class="list-group-item">
-                        <div class="form-group row">
-                            <label class="col-3 col-form-label" for="publicationType">Publication type</label>
-                            <div class="col-3">
-                                <select class="custom-select form-control select2-hidden-accessible" id="publicationType" data-select2-id="select2-data-publicationType" tabindex="-1" aria-hidden="true">
-                                    <option data-select2-id="select2-data-2-s3zb">Journal article</option>
-                                    <option>Item B</option>
-                                    <option>Item C</option>
-                                </select><span class="select2 select2-container select2-container--bootstrap4" dir="ltr" data-select2-id="select2-data-1-ab1y" style="width: auto;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-disabled="false" aria-labelledby="select2-publicationType-container" aria-controls="select2-publicationType-container"><span class="select2-selection__rendered" id="select2-publicationType-container" role="textbox" aria-readonly="true" title="Journal article">Journal article</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
-                            </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="form-group row">
+                        <label class="col-3 col-form-label" for="volume">Volume</label>
+                        <div class="col-3">
+                            <input class="form-control" id="volume" type="text" value="3">
                         </div>
-                        <div class="form-group row">
-                            <label class="col-3 col-form-label" for="doi">DOI</label>
-                            <div class="col-3">
-                                <input class="form-control" id="doi" type="text" value="10.1016/j.ajp.2020.102188">
-                            </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-3 col-form-label" for="issue">Issue</label>
+                        <div class="col-3">
+                            <input class="form-control" id="issue" type="text" value="5">
                         </div>
-                        <div class="form-group row">
-                            <label class="col-3 col-form-label" for="issnIsbn">ISSN/ISBN</label>
-                            <div class="col-3">
-                                <div class="input-group">
-                                    <div class="input-group-prepend">
-                                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">ISSN</button>
-                                        <div class="dropdown-menu">
-                                            <a class="dropdown-item" href="#">ISSN</a>
-                                            <a class="dropdown-item" href="#">ISBN</a>
-                                        </div>
-                                    </div>
-                                    <input class="form-control" id="issnIsbn" type="text" value="1876-2018">
-                                </div>
-                            </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-3 col-form-label" for="pages">Pages</label>
+                        <div class="col-3">
+                            <input class="form-control" id="pages" type="text">
                         </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="form-group row">
-                            <label class="col-3 col-form-label" for="title">Title<abbr class="required" title="Required">*</abbr>
-                            </label>
-                            <div class="col-9">
-                                <input class="form-control" id="title" type="text" value="Neuropsychiatric aspects of COVID-19 pandemic: A selective review">
-                            </div>
+                        <button class="btn btn-outline-primary btn-icon-only" type="button">
+                            <i class="if if-add"></i>
+                            <div class="sr-only">Add</div>
+                        </button>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-3 col-form-label" for="numberOfPages">Number of pages</label>
+                        <div class="col-3">
+                            <input class="form-control" id="numberOfPages" type="text" value="25">
                         </div>
-                        <div class="form-group row">
-                            <label class="col-3 col-form-label" for="alternativeTitle">Alternative title</label>
-                            <div class="col-9 d-flex">
-                                <input class="form-control" id="alternativeTitle" type="text">
-                                <button class="btn btn-outline-primary btn-icon-only ml-3" type="button">
-                                    <i class="if if-add"></i>
-                                    <div class="sr-only">Add</div>
-                                </button>
-                            </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-3 col-form-label" for="articleNumber">Article number</label>
+                        <div class="col-3">
+                            <input class="form-control" id="articleNumber" type="text">
                         </div>
-                        <div class="form-group row">
-                            <label class="col-3 col-form-label" for="journalTitle">Journal title<abbr class="required" title="Required">*</abbr>
-                            </label>
-                            <div class="col-9">
-                                <input class="form-control" id="journalTitle" type="text" value="Neuropsychiatric aspects of COVID-19 pandemic: A selective review">
-                            </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-3 col-form-label" for="specialIssueTitle">Special issue title</label>
+                        <div class="col-8">
+                            <input class="form-control" id="specialIssueTitle" type="text">
                         </div>
-                        <div class="form-group row">
-                            <label class="col-3 col-form-label" for="classification">Classification<a class="text-muted mx-2" href="#" data-container="body" data-toggle="popover" data-placement="right" data-content="This is some helper text." data-original-title="" title="">
-                                    <i class="if if-info-circle if--small"></i>
-                                    <div class="sr-only">More info</div>
-                                </a>
-                            </label>
-                            <div class="col-3">
-                                <select class="custom-select form-control select2-hidden-accessible" id="classification" data-select2-id="select2-data-classification" tabindex="-1" aria-hidden="true">
-                                    <option data-select2-id="select2-data-4-di94">A1 - Article available in the Web of Science</option>
-                                    <option>Item B</option>
-                                    <option>Item C</option>
-                                </select><span class="select2 select2-container select2-container--bootstrap4" dir="ltr" data-select2-id="select2-data-3-ci6w" style="width: auto;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-disabled="false" aria-labelledby="select2-classification-container" aria-controls="select2-classification-container"><span class="select2-selection__rendered" id="select2-classification-container" role="textbox" aria-readonly="true" title="A1 - Article available in the Web of Science">A1 - Article available in the Web of Science</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label class="col-3 col-form-label" for="articleType">Article type</label>
-                            <div class="col-3">
-                                <select class="custom-select form-control select2-hidden-accessible" id="articleType" data-select2-id="select2-data-articleType" tabindex="-1" aria-hidden="true">
-                                    <option data-select2-id="select2-data-6-t3pa">Original article</option>
-                                    <option>Item B</option>
-                                    <option>Item C</option>
-                                </select><span class="select2 select2-container select2-container--bootstrap4" dir="ltr" data-select2-id="select2-data-5-0u60" style="width: auto;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-disabled="false" aria-labelledby="select2-articleType-container" aria-controls="select2-articleType-container"><span class="select2-selection__rendered" id="select2-articleType-container" role="textbox" aria-readonly="true" title="Original article">Original article</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label class="col-3 col-form-label" for="articleNumber">Article number</label>
-                            <div class="col-3">
-                                <input class="form-control" id="articleNumber" type="text" value="102188">
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label class="col-3 col-form-label" for="wosType">WOS type<a class="text-muted mx-2" href="#" data-container="body" data-toggle="popover" data-placement="right" data-content="This is some helper text." data-original-title="" title="">
-                                    <i class="if if-info-circle if--small"></i>
-                                    <div class="sr-only">More info</div>
-                                </a>
-                            </label>
-                            <div class="col-3">
-                                <input class="form-control" id="wosType" type="text">
-                            </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="form-group row">
-                            <label class="col-3 col-form-label" for="shortTitle">Publication short title</label>
-                            <div class="col-9">
-                                <input class="form-control" id="shortTitle" type="text">
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label class="col-3 col-form-label" for="publisher">Publisher</label>
-                            <div class="col-9">
-                                <input class="form-control" id="publisher" type="text">
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label class="col-3 col-form-label" for="placeOfPublication">Place of publication</label>
-                            <div class="col-9">
-                                <input class="form-control" id="placeOfPublication" type="text">
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label class="col-3 col-form-label" for="publicationYear">Publication Year<abbr class="required" title="Required">*</abbr>
-                            </label>
-                            <div class="col-3">
-                                <input class="form-control" id="publicationYear" type="text" value="2020">
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label class="col-3 col-form-label" for="check"></label>
-                            <div class="col-9">
-                                <div class="custom-control custom-checkbox">
-                                    <input class="custom-control-input" id="customCheck1" type="checkbox">
-                                    <label class="custom-control-label" for="customCheck1">Published while none of the authors are employed at UGent</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label class="col-3 col-form-label" for="languages">Languages</label>
-                            <div class="col-3">
-                                <select class="custom-select form-control select2-hidden-accessible" id="languages" data-select2-id="select2-data-languages" tabindex="-1" aria-hidden="true">
-                                    <option data-select2-id="select2-data-8-cuin">English</option>
-                                    <option>Item B</option>
-                                    <option>Item C</option>
-                                </select><span class="select2 select2-container select2-container--bootstrap4" dir="ltr" data-select2-id="select2-data-7-niv0" style="width: auto;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-disabled="false" aria-labelledby="select2-languages-container" aria-controls="select2-languages-container"><span class="select2-selection__rendered" id="select2-languages-container" role="textbox" aria-readonly="true" title="English">English</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
-                            </div>
-                            <button class="btn btn-outline-primary btn-icon-only" type="button">
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="form-group row">
+                        <label class="col-3 col-form-label" for="department">Department</label>
+                        <div class="col-9 d-flex">
+                            <input class="form-control" id="department" type="text">
+                            <div class="button btn btn-outline-primary btn-icon-only ml-3" type="button">
                                 <i class="if if-add"></i>
                                 <div class="sr-only">Add</div>
-                            </button>
-                        </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="form-group row">
-                            <label class="col-3 col-form-label" for="volume">Volume</label>
-                            <div class="col-3">
-                                <input class="form-control" id="volume" type="text" value="3">
                             </div>
                         </div>
-                        <div class="form-group row">
-                            <label class="col-3 col-form-label" for="issue">Issue</label>
-                            <div class="col-3">
-                                <input class="form-control" id="issue" type="text" value="5">
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label class="col-3 col-form-label" for="pages">Pages</label>
-                            <div class="col-3">
-                                <input class="form-control" id="pages" type="text">
-                            </div>
-                            <button class="btn btn-outline-primary btn-icon-only" type="button">
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-3 col-form-label" for="project">Project</label>
+                        <div class="col-9 d-flex">
+                            <input class="form-control" id="project" type="text">
+                            <div class="button btn btn-outline-primary btn-icon-only ml-3" type="button">
                                 <i class="if if-add"></i>
                                 <div class="sr-only">Add</div>
-                            </button>
-                        </div>
-                        <div class="form-group row">
-                            <label class="col-3 col-form-label" for="numberOfPages">Number of pages</label>
-                            <div class="col-3">
-                                <input class="form-control" id="numberOfPages" type="text" value="25">
                             </div>
                         </div>
-                        <div class="form-group row">
-                            <label class="col-3 col-form-label" for="articleNumber">Article number</label>
-                            <div class="col-3">
-                                <input class="form-control" id="articleNumber" type="text">
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label class="col-3 col-form-label" for="specialIssueTitle">Special issue title</label>
-                            <div class="col-8">
-                                <input class="form-control" id="specialIssueTitle" type="text">
-                            </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="form-group row">
-                            <label class="col-3 col-form-label" for="department">Department</label>
-                            <div class="col-9 d-flex">
-                                <input class="form-control" id="department" type="text">
-                                <div class="button btn btn-outline-primary btn-icon-only ml-3" type="button">
-                                    <i class="if if-add"></i>
-                                    <div class="sr-only">Add</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label class="col-3 col-form-label" for="project">Project</label>
-                            <div class="col-9 d-flex">
-                                <input class="form-control" id="project" type="text">
-                                <div class="button btn btn-outline-primary btn-icon-only ml-3" type="button">
-                                    <i class="if if-add"></i>
-                                    <div class="sr-only">Add</div>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                </ul>
-            </div>
+                    </div>
+                </li>
+            </ul>
         </div>
-    </form>
-</div>
+    </div>
+</form>
