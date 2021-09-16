@@ -1,5 +1,43 @@
-<div
-    class="card card-collapsible mb-6 publication-details"
->
-    {{ template "publication/details/_journal_article_content" . }}
-</div>
+{{ if not .Data.OnHTMXFragment }}<div class="card card-collapsible mb-6 publication-details">{{ end }}
+    <div class="card-header">
+        <div class="collapse-trigger collapsed" data-toggle="collapse" data-target="#collapse-details" aria-expanded="{{ .Data.OnHTMXFragment }}" aria-controls="collapse-details"></div>
+        <div class="bc-toolbar">
+            <div class="bc-toolbar-left">
+                <i class="if if-chevron-right mr-4 text-muted"></i>Publication details
+            </div>
+            <div class="bc-toolbar-right">
+                <div class="c-button-toolbar" data-panel-state="read">
+                    <button class="btn btn-outline-primary"
+                        hx-get="/publication/{{ .Publication.ID }}/htmx/edit"
+                        hx-swap="innerHTML"
+                        hx-target=".publication-details"
+                    >
+                        <i class="if if-edit"></i>
+                        <div class="btn-text">Edit</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="collapse {{ if .Data.OnHTMXFragment }}show{{ end }}" id="collapse-details">
+        <div class="card-body p-0" id="edit1">
+            <ul class="list-group list-group-flush" data-panel-state="read">
+                <li class="list-group-item">
+                    {{.RenderText .Publication.Type "Publication type" false}}
+                    {{.RenderText .Publication.DOI "DOI" false}}
+                    {{.RenderISXN "ISSN/ISBN" false}}
+                </li>
+                <li class="list-group-item">
+                    {{.RenderText .Publication.Title "Title" true}}
+                    {{.RenderList .Publication.AlternativeTitle "Alternative title" false}}
+                    {{.RenderText .Publication.Publication "Journal title" true}}
+                    {{.RenderText .Publication.Classification "Classification" false}}
+                    {{.RenderText .Publication.ArticleType "Article type" false}}
+                    {{.RenderText .Publication.ArticleNumber "Article number" false}}
+                    {{.RenderText .Publication.WOSType "WOS type" false}}
+                </li>
+            </ul>
+        </div>
+    </div>
+{{ if not .Data.OnHTMXFragment }}</div>{{ end }}

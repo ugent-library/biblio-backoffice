@@ -8,14 +8,14 @@
             <div class="bc-toolbar-right">
                 <div class="c-button-toolbar" data-panel-state="edit">
                     <button class="btn btn-outline-primary"
-                        hx-get="/publication/{{ .ID }}/details/cancel"
+                        hx-get="/publication/{{ .ID }}/htmx"
                         hx-swap="innerHTML"
                         hx-target=".publication-details"
                     >
                         <div class="btn-text">Cancel</div>
                     </button>
                     <button class="btn btn-primary"
-                        hx-patch="/publication/{{ .ID }}/details/edit"
+                        hx-patch="/publication/{{ .ID }}/htmx/edit"
                         hx-swap="innerHTML"
                         hx-target=".publication-details"
                     >
