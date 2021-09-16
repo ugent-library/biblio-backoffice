@@ -8,6 +8,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/ugent-library/biblio-backend/internal/engine"
+	"github.com/ugent-library/biblio-backend/internal/views"
 	"github.com/unrolled/render"
 )
 
@@ -35,17 +36,14 @@ func (c *PublicationsDetails) Show(w http.ResponseWriter, r *http.Request) {
 
 	buf := &bytes.Buffer{}
 	if tmpl := c.render.TemplateLookup(fmt.Sprintf("publication/details/_%s", pub.Type)); tmpl != nil {
-		tmpl.Execute(buf, pub)
+		tmpl.Execute(buf, views.NewPublicationData(r, c.render, pub))
 	}
 
 	fmt.Fprint(w, buf.String())
 }
 
-func (c *PublicationsDetails) EditForm(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationsDetails) OpenForm(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
-
-	vars := mux.Vars(r)
-	fmt.Println(vars)
 
 	pub, err := c.engine.GetPublication(id)
 	if err != nil {
@@ -55,9 +53,31 @@ func (c *PublicationsDetails) EditForm(w http.ResponseWriter, r *http.Request) {
 	}
 
 	buf := &bytes.Buffer{}
+
 	if tmpl := c.render.TemplateLookup(fmt.Sprintf("publication/details/_%s_edit_form", pub.Type)); tmpl != nil {
 		tmpl.Execute(buf, pub)
 	}
 
 	fmt.Fprint(w, buf.String())
+}
+
+func (c *PublicationsDetails) SaveForm(w http.ResponseWriter, r *http.Request) {
+	id := mux.Vars(r)["id"]
+
+	pub, err := c.engine.GetPublication(id)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	buf := &bytes.Buffer{}
+
+	pub.Title = "Mock title"
+
+	if tmpl := c.render.TemplateLookup(fmt.Sprintf("publication/details/_%s_edit_submit", pub.Type)); tmpl != nil {
+		tmpl.Execute(buf, views.NewPublicationData(r, c.render, pub))
+	}
+
+	fmt.Fprintf(w, buf.String())
 }

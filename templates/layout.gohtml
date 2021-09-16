@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="{{assetPath "/css/app.css"}}">
     <link rel="icon" href="{{assetPath "/favicon.ico"}}">
     <title>Overview - Publications - Biblio</title>
+    <meta name="htmx-config" content='{"useTemplateFragments":true}'>
 </head>
 
 <body class="u-maximize-height overflow-hidden u-scroll-wrapper">
@@ -101,7 +102,7 @@
                     <img src="{{assetPath "/images/logo-ugent-white.svg"}}" alt="Logo UGent" height="48px" width="auto">
                 </div>
             </div>
-            
+
             {{yield}}
 
         </div>
