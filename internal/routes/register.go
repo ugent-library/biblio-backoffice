@@ -46,14 +46,14 @@ func Register(r *mux.Router,
 		Methods("GET").
 		Name("publication")
 
-	// Publication details
-	publicationRouter.HandleFunc("/{id}/details", publicationDetailsController.Show).
+	// Publication details HTMX fragments
+	publicationRouter.HandleFunc("/{id}/htmx", publicationDetailsController.Show).
 		Methods("GET").
 		Name("publication_details")
-	publicationRouter.HandleFunc("/{id}/details/edit", publicationDetailsController.OpenForm).
+	publicationRouter.HandleFunc("/{id}/htmx/edit", publicationDetailsController.OpenForm).
 		Methods("GET").
 		Name("publication_details_edit_form")
-	publicationRouter.HandleFunc("/{id}/details/edit", publicationDetailsController.SaveForm).
+	publicationRouter.HandleFunc("/{id}/htmx/edit", publicationDetailsController.SaveForm).
 		Methods("PATCH").
 		Name("publication_details_save_form")
 }

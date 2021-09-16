@@ -8,14 +8,14 @@
             <div class="bc-toolbar-right">
                 <div class="c-button-toolbar" data-panel-state="edit">
                     <button class="btn btn-outline-primary"
-                        hx-get="/publication/{{ .ID }}/details/cancel"
+                        hx-get="/publication/{{ .ID }}/htmx"
                         hx-swap="innerHTML"
                         hx-target=".publication-details"
                     >
                         <div class="btn-text">Cancel</div>
                     </button>
                     <button class="btn btn-primary"
-                        hx-patch="/publication/{{ .ID }}/details/edit"
+                        hx-patch="/publication/{{ .ID }}/htmx/edit"
                         hx-swap="innerHTML"
                         hx-target=".publication-details"
                     >
@@ -32,11 +32,11 @@
                     <div class="form-group row">
                         <label class="col-3 col-form-label" for="publicationType">Publication type</label>
                         <div class="col-3">
-                            <select class="custom-select form-control select2-hidden-accessible" id="publicationType" data-select2-id="select2-data-publicationType" tabindex="-1" aria-hidden="true">
-                                <option data-select2-id="select2-data-2-s3zb">Journal article</option>
+                            <select class="custom-select form-control" id="publicationType">
+                                <option>Journal article</option>
                                 <option>Item B</option>
                                 <option>Item C</option>
-                            </select><span class="select2 select2-container select2-container--bootstrap4" dir="ltr" data-select2-id="select2-data-1-ab1y" style="width: auto;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-disabled="false" aria-labelledby="select2-publicationType-container" aria-controls="select2-publicationType-container"><span class="select2-selection__rendered" id="select2-publicationType-container" role="textbox" aria-readonly="true" title="Journal article">Journal article</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+                            </select>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -87,27 +87,27 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label class="col-3 col-form-label" for="classification">Classification<a class="text-muted mx-2" href="#" data-container="body" data-toggle="popover" data-placement="right" data-content="This is some helper text." data-original-title="" title="">
+                        <label class="col-3 col-form-label" for="classification">Classification<a class="text-muted mx-2" href="#" data-container="body" data-toggle="popover" data-placement="right" data-content="This is some helper text.">
                                 <i class="if if-info-circle if--small"></i>
                                 <div class="sr-only">More info</div>
                             </a>
                         </label>
                         <div class="col-3">
-                            <select class="custom-select form-control select2-hidden-accessible" id="classification" data-select2-id="select2-data-classification" tabindex="-1" aria-hidden="true">
-                                <option data-select2-id="select2-data-4-di94">A1 - Article available in the Web of Science</option>
+                            <select class="custom-select form-control" id="classification">
+                                <option>A1 - Article available in the Web of Science</option>
                                 <option>Item B</option>
                                 <option>Item C</option>
-                            </select><span class="select2 select2-container select2-container--bootstrap4" dir="ltr" data-select2-id="select2-data-3-ci6w" style="width: auto;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-disabled="false" aria-labelledby="select2-classification-container" aria-controls="select2-classification-container"><span class="select2-selection__rendered" id="select2-classification-container" role="textbox" aria-readonly="true" title="A1 - Article available in the Web of Science">A1 - Article available in the Web of Science</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+                            </select>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label class="col-3 col-form-label" for="articleType">Article type</label>
                         <div class="col-3">
-                            <select class="custom-select form-control select2-hidden-accessible" id="articleType" data-select2-id="select2-data-articleType" tabindex="-1" aria-hidden="true">
-                                <option data-select2-id="select2-data-6-t3pa">Original article</option>
+                            <select class="custom-select form-control" id="articleType">
+                                <option>Original article</option>
                                 <option>Item B</option>
                                 <option>Item C</option>
-                            </select><span class="select2 select2-container select2-container--bootstrap4" dir="ltr" data-select2-id="select2-data-5-0u60" style="width: auto;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-disabled="false" aria-labelledby="select2-articleType-container" aria-controls="select2-articleType-container"><span class="select2-selection__rendered" id="select2-articleType-container" role="textbox" aria-readonly="true" title="Original article">Original article</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+                            </select>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -117,7 +117,7 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label class="col-3 col-form-label" for="wosType">WOS type<a class="text-muted mx-2" href="#" data-container="body" data-toggle="popover" data-placement="right" data-content="This is some helper text." data-original-title="" title="">
+                        <label class="col-3 col-form-label" for="wosType">WOS type<a class="text-muted mx-2" href="#" data-container="body" data-toggle="popover" data-placement="right" data-content="This is some helper text.">
                                 <i class="if if-info-circle if--small"></i>
                                 <div class="sr-only">More info</div>
                             </a>
@@ -165,11 +165,11 @@
                     <div class="form-group row">
                         <label class="col-3 col-form-label" for="languages">Languages</label>
                         <div class="col-3">
-                            <select class="custom-select form-control select2-hidden-accessible" id="languages" data-select2-id="select2-data-languages" tabindex="-1" aria-hidden="true">
-                                <option data-select2-id="select2-data-8-cuin">English</option>
+                            <select class="custom-select form-control" id="languages">
+                                <option>English</option>
                                 <option>Item B</option>
                                 <option>Item C</option>
-                            </select><span class="select2 select2-container select2-container--bootstrap4" dir="ltr" data-select2-id="select2-data-7-niv0" style="width: auto;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-disabled="false" aria-labelledby="select2-languages-container" aria-controls="select2-languages-container"><span class="select2-selection__rendered" id="select2-languages-container" role="textbox" aria-readonly="true" title="English">English</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+                            </select>
                         </div>
                         <button class="btn btn-outline-primary btn-icon-only" type="button">
                             <i class="if if-add"></i>
