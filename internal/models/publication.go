@@ -54,6 +54,10 @@ type PublicationText struct {
 	Lang string `json:"lang,omitempty"`
 }
 
+type PublicationDepartment struct {
+	ID string `json:"_id,omitempty"`
+}
+
 type Publication struct {
 	Abstract                []PublicationText        `json:"abstract,omitempty"`
 	AdditionalInfo          string                   `json:"additional_info,omitempty"`
@@ -70,6 +74,7 @@ type Publication struct {
 	DefenseDate             string                   `json:"defense_date,omitempty"`
 	DefensePlace            string                   `json:"defense_place,omitempty"`
 	DefenseTime             string                   `json:"defense_time,omitempty"`
+	Department              []PublicationDepartment  `json:"department,omitempty"`
 	DOI                     string                   `json:"doi,omitempty"`
 	EISBN                   []string                 `json:"eisbn,omitempty"`
 	EISSN                   []string                 `json:"eissn,omitempty"`
