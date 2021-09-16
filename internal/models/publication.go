@@ -81,6 +81,8 @@ type Publication struct {
 	DefenseTime             string                   `json:"defense_time,omitempty"`
 	Department              []PublicationDepartment  `json:"department,omitempty"`
 	DOI                     string                   `json:"doi,omitempty"`
+	Edition                 string                   `json:"edition,omitempty"`
+	Editor                  []PublicationContributor `json:"editor,omitempty"`
 	EISBN                   []string                 `json:"eisbn,omitempty"`
 	EISSN                   []string                 `json:"eissn,omitempty"`
 	ESCIID                  string                   `json:"esci_id,omitempty"`
@@ -94,6 +96,7 @@ type Publication struct {
 	ID                      string                   `json:"_id,omitempty"`
 	ISBN                    []string                 `json:"isbn,omitempty"`
 	ISSN                    []string                 `json:"issn,omitempty"`
+	Issue                   string                   `json:"issue,omitempty"`
 	IssueTitle              string                   `json:"issue_title,omitempty"`
 	JournalArticleType      string                   `json:"journal_article_type,omitempty"`
 	Keyword                 []string                 `json:"keyword,omitempty"`
@@ -116,8 +119,11 @@ type Publication struct {
 	SourceDB                string                   `json:"source_db,omitempty"`
 	SourceID                string                   `json:"source_id,omitempty"`
 	SourceRecord            string                   `json:"source_record,omitempty"`
+	SeriesTitle             string                   `json:"series_title,omitempty"`
 	Status                  string                   `json:"status,omitempty"`
-	Subject                 []string                 `json:"subject,omitempty"`
+	ReportNumber            string                   `json:"report_number,omitempty"`
+	ResearchField           []string                 `json:"research_field,omitempty"`
+	Supervisor              []PublicationContributor `json:"supervisor,omitempty"`
 	Title                   string                   `json:"title,omitempty"`
 	Type                    string                   `json:"type,omitempty"`
 	UserID                  string                   `json:"user_id,omitempty"`
@@ -126,6 +132,8 @@ type Publication struct {
 	WOSID                   string                   `json:"wos_id,omitempty"`
 	WOSType                 string                   `json:"wos_type,omitempty"`
 	Year                    string                   `json:"year,omitempty"`
+	Publisher               string                   `json:"publisher,omitempty"`
+	PlaceOfPublication      string                   `json:"place_of_publication,omitempty"`
 }
 
 func (p *Publication) IsOpenAccess() bool {
