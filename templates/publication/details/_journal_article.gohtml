@@ -1,6 +1,6 @@
 {{ if not .OnHTMXFragment }}<div class="card card-collapsible mb-6 publication-details">{{ end }}
     <div class="card-header">
-        <div class="collapse-trigger collapsed" data-toggle="collapse" data-target="#collapse-details" aria-expanded="{{ .Data.OnHTMXFragment }}" aria-controls="collapse-details"></div>
+        <div class="collapse-trigger collapsed" data-toggle="collapse" data-target="#collapse-details" aria-expanded="{{ .OnHTMXFragment }}" aria-controls="collapse-details"></div>
         <div class="bc-toolbar">
             <div class="bc-toolbar-left">
                 <i class="if if-chevron-right mr-4 text-muted"></i>Publication details
@@ -35,7 +35,7 @@
                     {{.RenderText .Publication.Classification "Classification" false}}
                     {{.RenderText .Publication.JournalArticleType "Article type" false}}
                     {{.RenderText .Publication.ArticleNumber "Article number" false}}
-                    {{.RenderText .Publication.WOSType "WOS type" false}}
+                    {{.RenderText .Publication.WOSType "WOS type" false}} */}}
                 </li>
                 <li class="list-group-item">
                     {{.RenderText .Publication.PublicationAbbreviation "Publication short title" false}}

@@ -1,5 +1,6 @@
 // Tooltips
-const $ = require('jquery');
+//const $ = require('jquery');
+import $ from 'jquery';
 
 // button tooltip from html element
 $('.fromElement').each(function(){

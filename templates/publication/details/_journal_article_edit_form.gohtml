@@ -8,14 +8,14 @@
             <div class="bc-toolbar-right">
                 <div class="c-button-toolbar" data-panel-state="edit">
                     <button class="btn btn-outline-primary"
-                        hx-get="/publication/{{ .ID }}/htmx"
+                        hx-get="/publication/{{ .Publication.ID }}/htmx"
                         hx-swap="innerHTML"
                         hx-target=".publication-details"
                     >
                         <div class="btn-text">Cancel</div>
                     </button>
                     <button class="btn btn-primary"
-                        hx-patch="/publication/{{ .ID }}/htmx/edit"
+                        hx-patch="/publication/{{ .Publication.ID }}/htmx/edit"
                         hx-swap="innerHTML"
                         hx-target=".publication-details"
                     >
@@ -29,22 +29,9 @@
         <div class="card-body p-0" id="edit1">
             <ul class="list-group list-group-flush" data-panel-state="edit">
                 <li class="list-group-item">
-                    <div class="form-group row">
-                        <label class="col-3 col-form-label" for="publicationType">Publication type</label>
-                        <div class="col-3">
-                            <select class="custom-select form-control" id="publicationType">
-                                <option>Journal article</option>
-                                <option>Item B</option>
-                                <option>Item C</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label class="col-3 col-form-label" for="doi">DOI</label>
-                        <div class="col-3">
-                            <input class="form-control" id="doi" type="text" value="10.1016/j.ajp.2020.102188">
-                        </div>
-                    </div>
+                    {{.RenderFormList "publicationType" "Publication Type" .Publication.Type "type" "This is a helper text" false 3}}
+                    {{.RenderFormText .Publication.DOI "doi" "DOI" "" false 3}}
+
                     <div class="form-group row">
                         <label class="col-3 col-form-label" for="issnIsbn">ISSN/ISBN</label>
                         <div class="col-3">
@@ -57,102 +44,36 @@
                                     </div>
                                 </div>
                                 <input class="form-control" id="issnIsbn" type="text" value="1876-2018">
+                                <button class="btn btn-outline-primary btn-icon-only ml-3" type="button">
+                                    <i class="if if-add"></i>
+                                    <div class="sr-only">Add</div>
+                                </button>
                             </div>
                         </div>
                     </div>
                 </li>
                 <li class="list-group-item">
-                    <div class="form-group row">
-                        <label class="col-3 col-form-label" for="title">Title<abbr class="required" title="Required">*</abbr>
-                        </label>
-                        <div class="col-9">
-                            <input class="form-control" id="title" type="text" value="Neuropsychiatric aspects of COVID-19 pandemic: A selective review">
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label class="col-3 col-form-label" for="alternativeTitle">Alternative title</label>
-                        <div class="col-9 d-flex">
-                            <input class="form-control" id="alternativeTitle" type="text">
-                            <button class="btn btn-outline-primary btn-icon-only ml-3" type="button">
-                                <i class="if if-add"></i>
-                                <div class="sr-only">Add</div>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label class="col-3 col-form-label" for="journalTitle">Journal title<abbr class="required" title="Required">*</abbr>
-                        </label>
-                        <div class="col-9">
-                            <input class="form-control" id="journalTitle" type="text" value="Neuropsychiatric aspects of COVID-19 pandemic: A selective review">
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label class="col-3 col-form-label" for="classification">Classification<a class="text-muted mx-2" href="#" data-container="body" data-toggle="popover" data-placement="right" data-content="This is some helper text.">
-                                <i class="if if-info-circle if--small"></i>
-                                <div class="sr-only">More info</div>
-                            </a>
-                        </label>
-                        <div class="col-3">
-                            <select class="custom-select form-control" id="classification">
-                                <option>A1 - Article available in the Web of Science</option>
-                                <option>Item B</option>
-                                <option>Item C</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label class="col-3 col-form-label" for="articleType">Article type</label>
-                        <div class="col-3">
-                            <select class="custom-select form-control" id="articleType">
-                                <option>Original article</option>
-                                <option>Item B</option>
-                                <option>Item C</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label class="col-3 col-form-label" for="articleNumber">Article number</label>
-                        <div class="col-3">
-                            <input class="form-control" id="articleNumber" type="text" value="102188">
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label class="col-3 col-form-label" for="wosType">WOS type<a class="text-muted mx-2" href="#" data-container="body" data-toggle="popover" data-placement="right" data-content="This is some helper text.">
-                                <i class="if if-info-circle if--small"></i>
-                                <div class="sr-only">More info</div>
-                            </a>
-                        </label>
-                        <div class="col-3">
-                            <input class="form-control" id="wosType" type="text">
-                        </div>
-                    </div>
+                    {{.RenderFormText .Publication.Title "title" "Title" "" true 9}}
+                    {{.RenderFormTextMultiple .Publication.AlternativeTitle "alternativeTitle" "Alternative Title" "" true 9}}
+                    {{.RenderFormText .Publication.Publication "journalTitle" "Journal title" "" true 9}}
+                    {{.RenderFormList "classification" "Classification" .Publication.Classification "classification" "" false 3}}
+                    {{.RenderFormList "articleType" "Article Type" .Publication.JournalArticleType "articleType" "" false 3}}
+                    {{.RenderFormText .Publication.ArticleNumber "articleNumber" "Article number" "" false 3}}
+                    {{.RenderFormText .Publication.WOSType "wosType" "WOS type" "It's a tooltip!" false 3}}
                 </li>
                 <li class="list-group-item">
+                    <!-- Does not exist? -->
                     <div class="form-group row">
                         <label class="col-3 col-form-label" for="shortTitle">Publication short title</label>
                         <div class="col-9">
                             <input class="form-control" id="shortTitle" type="text">
                         </div>
                     </div>
-                    <div class="form-group row">
-                        <label class="col-3 col-form-label" for="publisher">Publisher</label>
-                        <div class="col-9">
-                            <input class="form-control" id="publisher" type="text">
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label class="col-3 col-form-label" for="placeOfPublication">Place of publication</label>
-                        <div class="col-9">
-                            <input class="form-control" id="placeOfPublication" type="text">
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label class="col-3 col-form-label" for="publicationYear">Publication Year<abbr class="required" title="Required">*</abbr>
-                        </label>
-                        <div class="col-3">
-                            <input class="form-control" id="publicationYear" type="text" value="2020">
-                        </div>
-                    </div>
+
+                    {{.RenderFormText .Publication.Publisher "publisher" "Publisher" "" false 9}}
+                    {{.RenderFormText .Publication.PlaceOfPublication "placeOfPublication" "Place of Publication" "" false 9}}
+                    {{.RenderFormText .Publication.Year "publicationYear" "Publication Year" "" true 3}}
+
                     <div class="form-group row">
                         <label class="col-3 col-form-label" for="check"></label>
                         <div class="col-9">
@@ -162,34 +83,14 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-group row">
-                        <label class="col-3 col-form-label" for="languages">Languages</label>
-                        <div class="col-3">
-                            <select class="custom-select form-control" id="languages">
-                                <option>English</option>
-                                <option>Item B</option>
-                                <option>Item C</option>
-                            </select>
-                        </div>
-                        <button class="btn btn-outline-primary btn-icon-only" type="button">
-                            <i class="if if-add"></i>
-                            <div class="sr-only">Add</div>
-                        </button>
-                    </div>
+
+                    {{.RenderFormListMultiple .Publication.Language "languages" "Languages" "languages" "" false 9}}
                 </li>
                 <li class="list-group-item">
-                    <div class="form-group row">
-                        <label class="col-3 col-form-label" for="volume">Volume</label>
-                        <div class="col-3">
-                            <input class="form-control" id="volume" type="text" value="3">
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label class="col-3 col-form-label" for="issue">Issue</label>
-                        <div class="col-3">
-                            <input class="form-control" id="issue" type="text" value="5">
-                        </div>
-                    </div>
+                    {{.RenderFormText .Publication.Volume "volume" "Volume" "" false 3}}
+                    {{.RenderFormText .Publication.Issue "issue" "Issue" "" false 3}}
+
+                    <!-- Does not exist? -->
                     <div class="form-group row">
                         <label class="col-3 col-form-label" for="pages">Pages</label>
                         <div class="col-3">
@@ -200,46 +101,23 @@
                             <div class="sr-only">Add</div>
                         </button>
                     </div>
-                    <div class="form-group row">
-                        <label class="col-3 col-form-label" for="numberOfPages">Number of pages</label>
-                        <div class="col-3">
-                            <input class="form-control" id="numberOfPages" type="text" value="25">
-                        </div>
-                    </div>
+
+                    {{.RenderFormText .Publication.PageCount "numberOfPages" "Number of Pages" "" false 3}}
+
+
+                    <!-- Repeated field! -->
                     <div class="form-group row">
                         <label class="col-3 col-form-label" for="articleNumber">Article number</label>
                         <div class="col-3">
                             <input class="form-control" id="articleNumber" type="text">
                         </div>
                     </div>
-                    <div class="form-group row">
-                        <label class="col-3 col-form-label" for="specialIssueTitle">Special issue title</label>
-                        <div class="col-8">
-                            <input class="form-control" id="specialIssueTitle" type="text">
-                        </div>
-                    </div>
+
+                    {{.RenderFormText .Publication.IssueTitle "specialIssueTitle" "Special issue title" "" false 3}}
                 </li>
                 <li class="list-group-item">
-                    <div class="form-group row">
-                        <label class="col-3 col-form-label" for="department">Department</label>
-                        <div class="col-9 d-flex">
-                            <input class="form-control" id="department" type="text">
-                            <div class="button btn btn-outline-primary btn-icon-only ml-3" type="button">
-                                <i class="if if-add"></i>
-                                <div class="sr-only">Add</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label class="col-3 col-form-label" for="project">Project</label>
-                        <div class="col-9 d-flex">
-                            <input class="form-control" id="project" type="text">
-                            <div class="button btn btn-outline-primary btn-icon-only ml-3" type="button">
-                                <i class="if if-add"></i>
-                                <div class="sr-only">Add</div>
-                            </div>
-                        </div>
-                    </div>
+                    {{.RenderFormTextMultiple .Publication.Department "department" "Department" "" false 9}}
+                    {{.RenderFormTextMultiple .Publication.Project "project" "Project" "" false 9}}
                 </li>
             </ul>
         </div>
