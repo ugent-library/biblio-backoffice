@@ -1,0 +1,28 @@
+<div class="form-group row form-text-multiple">
+   <label class="col-3 col-form-label d-flex align-items-stretch" for="{{ .Key }}">
+        {{.Label}}
+        {{if .Required}}&nbsp;<abbr class="required" title="Required">*</abbr>{{end}}
+        {{ if .Tooltip }}<a class="text-muted mx-2" href="#" data-container="body" data-toggle="popover" data-placement="right" data-content="{{ .Tooltip }}">
+            <i class="if if-info-circle if--small"></i>
+            <div class="sr-only">More info</div>
+        </a>{{ end }}
+    </label>
+    <div class="col-{{.Cols}} form-values">
+        {{ range $k, $v := .Text }}
+        <div class="d-flex mb-3 form-value">
+            <input class="form-control" id="{{ $.Key }}-{{ $k }}" name="{{ $.Key }}[{{ $k }}]" type="text" value="{{ $v }}">
+            <button class="btn btn-outline-primary btn-icon-only ml-3 form-value-subtract" type="button">
+                <i class="if if-subtract"></i>
+                <div class="sr-only">Subtract</div>
+            </button>
+        </div>
+        {{ end }}
+        <div class="d-flex form-value-add">
+            <input class="form-control" id="{{ $.Key }}" type="text">
+            <button class="btn btn-outline-primary btn-icon-only ml-3" type="button">
+                <i class="if if-add"></i>
+                <div class="sr-only">Add</div>
+            </button>
+        </div>
+    </div>
+</div>

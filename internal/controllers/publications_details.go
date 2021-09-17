@@ -55,7 +55,7 @@ func (c *PublicationsDetails) OpenForm(w http.ResponseWriter, r *http.Request) {
 	buf := &bytes.Buffer{}
 
 	if tmpl := c.render.TemplateLookup(fmt.Sprintf("publication/details/_%s_edit_form", pub.Type)); tmpl != nil {
-		tmpl.Execute(buf, pub)
+		tmpl.Execute(buf, views.NewPublicationForm(r, c.render, pub))
 	}
 
 	fmt.Fprint(w, buf.String())

@@ -1,0 +1,31 @@
+<div class="form-group row">
+    <label class="col-3 col-form-label" for="{{ .Key }}">
+        {{.Label}}
+        {{if .Required}}&nbsp;<abbr class="required" title="Required">*</abbr>{{end}}
+        {{ if .Tooltip }}<a class="text-muted mx-2" href="#" data-container="body" data-toggle="popover" data-placement="right" data-content="{{ .Tooltip }}">
+            <i class="if if-info-circle if--small"></i>
+            <div class="sr-only">More info</div>
+        </a>{{ end }}
+    </label>
+    <div class="col-{{.Cols}}">
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ .DefaultValue }}</button>
+                <div class="dropdown-menu">
+                    {{ range .Values}}
+                    <a class="dropdown-item" href="#">{{.}}</a>
+                    {{ end }}
+                </div>
+            </div>
+            <input class="form-control" id="{{ .Key }}-select" type="hidden" value="{{ .DefaultValue }}">
+            <input class="form-control" id="{{ .Key }}" type="text" value="{{if .Text}}{{.Text}}{{else}}{{end}}">
+
+            {{ if .Multiple }}
+            <button class="btn btn-outline-primary btn-icon-only ml-3" type="button">
+                <i class="if if-add"></i>
+                <div class="sr-only">Add</div>
+            </button>
+            {{ end }}
+        </div>
+    </div>
+</div>

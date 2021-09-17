@@ -1,6 +1,6 @@
-{{ if not .Data.OnHTMXFragment }}<div class="card card-collapsible mb-6 publication-details">{{ end }}
+{{ if not .OnHTMXFragment }}<div class="card card-collapsible mb-6 publication-details">{{ end }}
     <div class="card-header">
-        <div class="collapse-trigger collapsed" data-toggle="collapse" data-target="#collapse-details" aria-expanded="{{ .Data.OnHTMXFragment }}" aria-controls="collapse-details"></div>
+        <div class="collapse-trigger collapsed" data-toggle="collapse" data-target="#collapse-details" aria-expanded="{{ .OnHTMXFragment }}" aria-controls="collapse-details"></div>
         <div class="bc-toolbar">
             <div class="bc-toolbar-left">
                 <i class="if if-chevron-right mr-4 text-muted"></i>Publication details
@@ -20,7 +20,7 @@
         </div>
     </div>
 
-    <div class="collapse {{ if .Data.OnHTMXFragment }}show{{ end }}" id="collapse-details">
+    <div class="collapse {{ if .OnHTMXFragment }}show{{ end }}" id="collapse-details">
         <div class="card-body p-0" id="edit1">
             <ul class="list-group list-group-flush" data-panel-state="read">
                 <li class="list-group-item">
@@ -33,11 +33,11 @@
                     {{.RenderList .Publication.AlternativeTitle "Alternative title" false}}
                     {{.RenderText .Publication.Publication "Journal title" true}}
                     {{.RenderText .Publication.Classification "Classification" false}}
-                    {{.RenderText .Publication.ArticleType "Article type" false}}
+                    {{/* {{.RenderText .Publication.ArticleType "Article type" false}}
                     {{.RenderText .Publication.ArticleNumber "Article number" false}}
-                    {{.RenderText .Publication.WOSType "WOS type" false}}
+                    {{.RenderText .Publication.WOSType "WOS type" false}} */}}
                 </li>
             </ul>
         </div>
     </div>
-{{ if not .Data.OnHTMXFragment }}</div>{{ end }}
+{{ if not .OnHTMXFragment }}</div>{{ end }}
