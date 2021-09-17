@@ -7,10 +7,11 @@ import (
 	"github.com/unrolled/render"
 )
 
-func RenderPartial(r *render.Render, tmpl string, data interface{}) template.HTML {
+func RenderPartial(r *render.Render, tmpl string, data interface{}) (template.HTML, error) {
 	buf := &bytes.Buffer{}
+	var err error
 	if tmpl := r.TemplateLookup(tmpl); tmpl != nil {
-		tmpl.Execute(buf, data)
+		err = tmpl.Execute(buf, data)
 	}
-	return template.HTML(buf.String())
+	return template.HTML(buf.String()), err
 }
