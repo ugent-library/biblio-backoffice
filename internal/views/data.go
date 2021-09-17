@@ -20,9 +20,5 @@ func NewData(r *http.Request) Data {
 }
 
 func (d Data) OnHTMXFragment() bool {
-	if d.request.Header.Get("HX-Request") == "" {
-		return false
-	}
-
-	return true
+	return d.request.Header.Get("HX-Request") != ""
 }
