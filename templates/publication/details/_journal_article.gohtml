@@ -1,4 +1,4 @@
-{{ if not .Data.OnHTMXFragment }}<div class="card card-collapsible mb-6 publication-details">{{ end }}
+{{ if not .OnHTMXFragment }}<div class="card card-collapsible mb-6 publication-details">{{ end }}
     <div class="card-header">
         <div class="collapse-trigger collapsed" data-toggle="collapse" data-target="#collapse-details" aria-expanded="{{ .Data.OnHTMXFragment }}" aria-controls="collapse-details"></div>
         <div class="bc-toolbar">
@@ -20,7 +20,7 @@
         </div>
     </div>
 
-    <div class="collapse {{ if .Data.OnHTMXFragment }}show{{ end }}" id="collapse-details">
+    <div class="collapse {{ if .OnHTMXFragment }}show{{ end }}" id="collapse-details">
         <div class="card-body p-0" id="edit1">
             <ul class="list-group list-group-flush" data-panel-state="read">
                 <li class="list-group-item">
@@ -54,4 +54,4 @@
             </ul>
         </div>
     </div>
-{{ if not .Data.OnHTMXFragment }}</div>{{ end }}
+{{ if not .OnHTMXFragment }}</div>{{ end }}

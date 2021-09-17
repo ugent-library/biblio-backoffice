@@ -45,6 +45,10 @@ func (d PublicationData) RenderAbstract() (template.HTML, error) {
 	return RenderPartial(d.render, fmt.Sprintf("publication/abstract/_%s", d.Publication.Type), d)
 }
 
+func (d PublicationData) RenderAdditionalInfo() (template.HTML, error) {
+	return RenderPartial(d.render, fmt.Sprintf("publication/additional_info/_%s", d.Publication.Type), d)
+}
+
 func (d PublicationData) RenderISXN(label string, required bool) (template.HTML, error) {
 	var list []string
 	for _, val := range d.Publication.ISSN {
@@ -91,6 +95,14 @@ func (d PublicationData) RenderRange(start, end, label string, required bool) (t
 	return RenderPartial(d.render, "part/_text", &textData{
 		Label:    label,
 		Text:     text,
+		Required: required,
+	})
+}
+
+func (d PublicationData) RenderBadgeList(list []string, label string, required bool) (template.HTML, error) {
+	return RenderPartial(d.render, "part/_badge_list", &listData{
+		Label:    label,
+		List:     list,
 		Required: required,
 	})
 }
