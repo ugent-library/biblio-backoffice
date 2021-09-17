@@ -8,8 +8,8 @@ type UserDepartment struct {
 
 type User struct {
 	Active      bool             `json:"active"`
-	DateCreated *time.Time       `json:"date_created,omitempty"`
-	DateUpdated *time.Time       `json:"date_updated,omitempty"`
+	DateCreated *time.Time       `json:"date_created"`
+	DateUpdated *time.Time       `json:"date_updated"`
 	Department  []UserDepartment `json:"department"`
 	Email       string           `json:"email"`
 	FirstName   string           `json:"first_name"`
