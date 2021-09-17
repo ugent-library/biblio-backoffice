@@ -33,9 +33,23 @@
                     {{.RenderList .Publication.AlternativeTitle "Alternative title" false}}
                     {{.RenderText .Publication.Publication "Journal title" true}}
                     {{.RenderText .Publication.Classification "Classification" false}}
-                    {{.RenderText .Publication.ArticleType "Article type" false}}
+                    {{.RenderText .Publication.JournalArticleType "Article type" false}}
                     {{.RenderText .Publication.ArticleNumber "Article number" false}}
                     {{.RenderText .Publication.WOSType "WOS type" false}}
+                </li>
+                <li class="list-group-item">
+                    {{.RenderText .Publication.PublicationAbbreviation "Publication short title" false}}
+                    {{.RenderText .Publication.Publisher "Publisher" false}}
+                    {{.RenderText .Publication.PlaceOfPublication "Place of publication" false}}
+                    {{.RenderText .Publication.Year "Year of publication" true}}
+                    {{.RenderList .Publication.Language "Languages" false}}
+                </li>
+                <li class="list-group-item">
+                    {{.RenderText .Publication.Volume "Volume" false}}
+                    {{.RenderText .Publication.Issue "Issue" false}}
+                    {{.RenderRange .Publication.PageFirst .Publication.PageLast "Pages" false}}
+                    {{.RenderText .Publication.PageCount "Number of pages" false}}
+                    {{.RenderText .Publication.IssueTitle "Special issue title" false}}
                 </li>
             </ul>
         </div>
