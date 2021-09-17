@@ -3,7 +3,7 @@ package models
 import "time"
 
 type UserDepartment struct {
-	ID string `json:"_id,omitempty"`
+	ID string `json:"_id"`
 }
 
 type User struct {
