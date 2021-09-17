@@ -1,3 +1,5 @@
+import $ from 'jquery';
+
 $(".custom-file input[type=file]").change(function () {
 
   var fieldVal = $(this).val();

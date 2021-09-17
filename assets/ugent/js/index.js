@@ -1,6 +1,5 @@
 // jQuery
-const $ = require('jquery');
-window.$ = $;
+import $ from 'jquery';
 
 // Bootstrap bundle
 require('bootstrap/dist/js/bootstrap.bundle');

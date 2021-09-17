@@ -1,3 +1,5 @@
+import $ from 'jquery';
+
 let cards;
 
 $(window).bind("load", function() {
