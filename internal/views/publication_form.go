@@ -63,7 +63,7 @@ func NewPublicationForm(r *http.Request, render *render.Render, p *models.Public
 }
 
 func (f PublicationForm) RenderFormText(text, key, label string, tooltip string, required bool, cols int) template.HTML {
-	return RenderPartial(f.render, "form/_text", &textFormData{
+	renderedPartial, _ := RenderPartial(f.render, "form/_text", &textFormData{
 		Key:      key,
 		Label:    label,
 		Text:     text,
@@ -71,6 +71,8 @@ func (f PublicationForm) RenderFormText(text, key, label string, tooltip string,
 		Required: required,
 		Cols:     cols,
 	})
+
+	return renderedPartial
 }
 
 // TODO: We'll need dedicated functions for Department, Project, etc. because
@@ -80,7 +82,7 @@ func (f PublicationForm) RenderFormTextMultiple(text interface{}, key, label str
 	// TODO: remove me
 	values := []string{"foo", "bar"}
 
-	return RenderPartial(f.render, "form/_text_multiple", &textMultipleFormData{
+	renderedPartial, _ := RenderPartial(f.render, "form/_text_multiple", &textMultipleFormData{
 		Key:      key,
 		Label:    label,
 		Text:     values,
@@ -88,6 +90,8 @@ func (f PublicationForm) RenderFormTextMultiple(text interface{}, key, label str
 		Required: required,
 		Cols:     cols,
 	})
+
+	return renderedPartial
 }
 
 func (f PublicationForm) RenderFormList(key, label string, selectedTerm string, taxonomy string, tooltip string, required bool, cols int) template.HTML {
@@ -140,7 +144,7 @@ func (f PublicationForm) RenderFormList(key, label string, selectedTerm string, 
 		})
 	}
 
-	return RenderPartial(f.render, "form/_list", &listFormData{
+	renderedPartial, _ := RenderPartial(f.render, "form/_list", &listFormData{
 		Key:      key,
 		Label:    label,
 		Values:   terms,
@@ -148,6 +152,8 @@ func (f PublicationForm) RenderFormList(key, label string, selectedTerm string, 
 		Required: required,
 		Cols:     cols,
 	})
+
+	return renderedPartial
 }
 
 // TODO: We'll need dedicated functions for fields that take specific types ([]PublicationDepartment, []PublicationProject)
@@ -186,7 +192,7 @@ func (f PublicationForm) RenderFormListMultiple(selectedTerms interface{}, key, 
 		values[lkey] = terms
 	}
 
-	return RenderPartial(f.render, "form/_list_multiple", &listMultipleFormData{
+	renderedPartial, _ := RenderPartial(f.render, "form/_list_multiple", &listMultipleFormData{
 		Key:        key,
 		Label:      label,
 		Values:     values,
@@ -195,4 +201,6 @@ func (f PublicationForm) RenderFormListMultiple(selectedTerms interface{}, key, 
 		Required:   required,
 		Cols:       cols,
 	})
+
+	return renderedPartial
 }

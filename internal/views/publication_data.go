@@ -33,19 +33,23 @@ func NewPublicationData(r *http.Request, render *render.Render, p *models.Public
 	return PublicationData{Data: NewData(r), render: render, Publication: p}
 }
 
-func (d PublicationData) RenderDetails() template.HTML {
+func (d PublicationData) RenderDetails() (template.HTML, error) {
 	return RenderPartial(d.render, fmt.Sprintf("publication/details/_%s", d.Publication.Type), d)
 }
 
-func (d PublicationData) RenderConference() template.HTML {
+func (d PublicationData) RenderConference() (template.HTML, error) {
 	return RenderPartial(d.render, fmt.Sprintf("publication/conference/_%s", d.Publication.Type), d)
 }
 
-func (d PublicationData) RenderAbstract() template.HTML {
+func (d PublicationData) RenderAbstract() (template.HTML, error) {
 	return RenderPartial(d.render, fmt.Sprintf("publication/abstract/_%s", d.Publication.Type), d)
 }
 
-func (d PublicationData) RenderISXN(label string, required bool) template.HTML {
+func (d PublicationData) RenderAdditionalInfo() (template.HTML, error) {
+	return RenderPartial(d.render, fmt.Sprintf("publication/additional_info/_%s", d.Publication.Type), d)
+}
+
+func (d PublicationData) RenderISXN(label string, required bool) (template.HTML, error) {
 	var list []string
 	for _, val := range d.Publication.ISSN {
 		list = append(list, fmt.Sprintf("ISSN: %s", val))
@@ -60,7 +64,7 @@ func (d PublicationData) RenderISXN(label string, required bool) template.HTML {
 	})
 }
 
-func (d PublicationData) RenderText(text, label string, required bool) template.HTML {
+func (d PublicationData) RenderText(text, label string, required bool) (template.HTML, error) {
 	return RenderPartial(d.render, "part/_text", &textData{
 		Label:    label,
 		Text:     text,
@@ -68,7 +72,7 @@ func (d PublicationData) RenderText(text, label string, required bool) template.
 	})
 }
 
-func (d PublicationData) RenderList(list []string, label string, required bool) template.HTML {
+func (d PublicationData) RenderList(list []string, label string, required bool) (template.HTML, error) {
 	return RenderPartial(d.render, "part/_list", &listData{
 		Label:    label,
 		List:     list,
@@ -76,7 +80,7 @@ func (d PublicationData) RenderList(list []string, label string, required bool) 
 	})
 }
 
-func (d PublicationData) RenderRange(start, end, label string, required bool) template.HTML {
+func (d PublicationData) RenderRange(start, end, label string, required bool) (template.HTML, error) {
 	var text string
 	if len(start) > 0 && len(end) > 0 && start == end {
 		text = start
@@ -91,6 +95,14 @@ func (d PublicationData) RenderRange(start, end, label string, required bool) te
 	return RenderPartial(d.render, "part/_text", &textData{
 		Label:    label,
 		Text:     text,
+		Required: required,
+	})
+}
+
+func (d PublicationData) RenderBadgeList(list []string, label string, required bool) (template.HTML, error) {
+	return RenderPartial(d.render, "part/_badge_list", &listData{
+		Label:    label,
+		List:     list,
 		Required: required,
 	})
 }
