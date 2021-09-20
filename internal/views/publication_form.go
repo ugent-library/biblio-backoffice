@@ -62,8 +62,8 @@ func NewPublicationForm(r *http.Request, render *render.Render, p *models.Public
 	return PublicationForm{Data: NewData(r), render: render, Publication: p}
 }
 
-func (f PublicationForm) RenderFormText(text, key, label string, tooltip string, required bool, cols int) template.HTML {
-	renderedPartial, _ := RenderPartial(f.render, "form/_text", &textFormData{
+func (f PublicationForm) RenderFormText(text, key, label string, tooltip string, required bool, cols int) (template.HTML, error) {
+	return RenderPartial(f.render, "form/_text", &textFormData{
 		Key:      key,
 		Label:    label,
 		Text:     text,
@@ -71,18 +71,15 @@ func (f PublicationForm) RenderFormText(text, key, label string, tooltip string,
 		Required: required,
 		Cols:     cols,
 	})
-
-	return renderedPartial
 }
 
 // TODO: We'll need dedicated functions for Department, Project, etc. because
 // Department, Project take specific types ([]PublicationDepartment, []PublicationProject)
-func (f PublicationForm) RenderFormTextMultiple(text interface{}, key, label string, tooltip string, required bool, cols int) template.HTML {
-
+func (f PublicationForm) RenderFormTextMultiple(text interface{}, key, label string, tooltip string, required bool, cols int) (template.HTML, error) {
 	// TODO: remove me
 	values := []string{"foo", "bar"}
 
-	renderedPartial, _ := RenderPartial(f.render, "form/_text_multiple", &textMultipleFormData{
+	return RenderPartial(f.render, "form/_text_multiple", &textMultipleFormData{
 		Key:      key,
 		Label:    label,
 		Text:     values,
@@ -91,11 +88,9 @@ func (f PublicationForm) RenderFormTextMultiple(text interface{}, key, label str
 		Cols:     cols,
 	})
 
-	return renderedPartial
 }
 
-func (f PublicationForm) RenderFormList(key, label string, selectedTerm string, taxonomy string, tooltip string, required bool, cols int) template.HTML {
-
+func (f PublicationForm) RenderFormList(key, label string, selectedTerm string, taxonomy string, tooltip string, required bool, cols int) (template.HTML, error) {
 	// TODO: should come from a different API, use "taxonomy" to fetch list of values from taxonomy
 	vocabulary := make(map[string]map[string]string)
 	vocabulary["type"] = map[string]string{
@@ -144,7 +139,7 @@ func (f PublicationForm) RenderFormList(key, label string, selectedTerm string, 
 		})
 	}
 
-	renderedPartial, _ := RenderPartial(f.render, "form/_list", &listFormData{
+	return RenderPartial(f.render, "form/_list", &listFormData{
 		Key:      key,
 		Label:    label,
 		Values:   terms,
@@ -152,14 +147,11 @@ func (f PublicationForm) RenderFormList(key, label string, selectedTerm string, 
 		Required: required,
 		Cols:     cols,
 	})
-
-	return renderedPartial
 }
 
 // TODO: We'll need dedicated functions for fields that take specific types ([]PublicationDepartment, []PublicationProject)
 //    type assertion in one single function would become too complex quickly.
-func (f PublicationForm) RenderFormListMultiple(selectedTerms interface{}, key, label string, taxonomy string, tooltip string, required bool, cols int) template.HTML {
-
+func (f PublicationForm) RenderFormListMultiple(selectedTerms interface{}, key, label string, taxonomy string, tooltip string, required bool, cols int) (template.HTML, error) {
 	// TODO: remove me / Fetch me from a struct field
 	languages := []string{"eng", "dut"}
 
@@ -192,7 +184,7 @@ func (f PublicationForm) RenderFormListMultiple(selectedTerms interface{}, key, 
 		values[lkey] = terms
 	}
 
-	renderedPartial, _ := RenderPartial(f.render, "form/_list_multiple", &listMultipleFormData{
+	return RenderPartial(f.render, "form/_list_multiple", &listMultipleFormData{
 		Key:        key,
 		Label:      label,
 		Values:     values,
@@ -201,6 +193,4 @@ func (f PublicationForm) RenderFormListMultiple(selectedTerms interface{}, key, 
 		Required:   required,
 		Cols:       cols,
 	})
-
-	return renderedPartial
 }
