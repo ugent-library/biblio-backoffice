@@ -1,0 +1,119 @@
+{{if .Publication.Editor}}
+<div class="card mb-6">
+    <div class="card-header">
+        <div class="bc-toolbar">
+            <div class="bc-toolbar-left">
+                <h1 class="bc-toolbar-title">Editors</h1>
+            </div>
+            <div class="bc-toolbar-right">
+                <button class="btn btn-outline-primary" type="button" data-toggle="modal" data-target="#addAuthor">
+                    <i class="if if-add"></i>
+                    <div class="btn-text">Add editor</div>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="pl-6">Name</th>
+                    <th>UGent membership</th>
+                    <th class="pr-6"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {{range $c := .Publication.Editor}}
+                <tr>
+                    <td class="pl-6">
+                        <div class="bc-avatar-and-text">
+                            <div class="bc-avatar bc-avatar-icon bc-avatar--muted">
+                                <i class="if if-user"></i>
+                            </div>
+                            <div class="bc-avatar-text">{{$c.FullName}}</div>
+                        </div>
+                    </td>
+                    <td>
+                        {{if $c.ID}}
+                        <i class="if if-ghent-university"></i>
+                        <span>UGent member</span>
+                        {{else}}
+                        External member
+                        {{end}}
+                    </td>
+                    <td class="pr-6">
+                        <div class="c-button-toolbar">
+                            <div class="dropdown">
+                                <button class="btn btn-link btn-icon-only btn-link-muted" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="if if-more"></i>
+                                </button>
+                                <div class="dropdown-menu">
+                                    <button class="dropdown-item" type="button" data-toggle="modal" data-target="#editAuthor">
+                                        <i class="if if-edit"></i>
+                                        <span>Edit</span>
+                                    </button>
+                                    <button class="dropdown-item" type="button" data-toggle="modal" data-target="#delete">
+                                        <i class="if if-delete"></i>
+                                        <span>Delete</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="modal" id="editAuthor" tabindex="-1" role="dialog">
+                                <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h2 class="modal-title">Edit Author</h2>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form>
+                                                <div class="form-row">
+                                                    <div class="col form-group">
+                                                        <label class="col-form-label">First name</label>
+                                                        <input class="form-control" type="text" value="Jane">
+                                                    </div>
+                                                    <div class="col form-group">
+                                                        <label class="col-form-label">Last name</label>
+                                                        <input class="form-control" type="text" value="Cooper">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-form-label">Role</label>
+                                                    <select class="custom-select w-100 select2-hidden-accessible" data-select2-id="select2-data-1-2tzn" tabindex="-1" aria-hidden="true">
+                                                        <option data-select2-id="select2-data-3-uygq">First author</option>
+                                                        <option>Option 2</option>
+                                                        <option>Option 3</option>
+                                                    </select><span class="select2 select2-container select2-container--bootstrap4" dir="ltr" data-select2-id="select2-data-2-etsg" style="width: auto;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-disabled="false" aria-labelledby="select2-wo22-container" aria-controls="select2-wo22-container"><span class="select2-selection__rendered" id="select2-wo22-container" role="textbox" aria-readonly="true" title="First author">First author</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-form-label">UGent membership</label>
+                                                    <div class="mt-1">
+                                                        <div class="custom-control custom-radio custom-control-inline">
+                                                            <input class="custom-control-input" id="customRadio1" type="radio" name="customRadio" checked="">
+                                                            <label class="custom-control-label custom-control-label-light" for="customRadio1">
+                                                                <i class="if if-ghent-university if--small"></i>UGent member
+                                                            </label>
+                                                        </div>
+                                                        <div class="custom-control custom-radio custom-control-inline">
+                                                            <input class="custom-control-input" id="customRadio2" type="radio" name="customRadio">
+                                                            <label class="custom-control-label custom-control-label-light" for="customRadio2">External member</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button class="btn btn-link" data-dismiss="modal">Cancel</button>
+                                            <a class="btn btn-primary" href="#">Done</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                {{end}}
+            </tbody>
+        </table>
+    </div>
+</div>
+{{end}}

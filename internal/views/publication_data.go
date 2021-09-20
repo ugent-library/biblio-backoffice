@@ -53,6 +53,14 @@ func (d PublicationData) RenderAdditionalInfo() (template.HTML, error) {
 	return RenderPartial(d.render, fmt.Sprintf("publication/additional_info/_%s", d.Publication.Type), d)
 }
 
+func (d PublicationData) RenderAuthors() (template.HTML, error) {
+	return RenderPartial(d.render, fmt.Sprintf("publication/authors/_%s", d.Publication.Type), d)
+}
+
+func (d PublicationData) RenderEditors() (template.HTML, error) {
+	return RenderPartial(d.render, fmt.Sprintf("publication/editors/_%s", d.Publication.Type), d)
+}
+
 func (d PublicationData) RenderISXN(label string, required bool) (template.HTML, error) {
 	var list []string
 	for _, val := range d.Publication.ISSN {
