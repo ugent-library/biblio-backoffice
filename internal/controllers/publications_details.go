@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"bytes"
 	"fmt"
 	"log"
 	"net/http"
@@ -34,12 +33,11 @@ func (c *PublicationsDetails) Show(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	buf := &bytes.Buffer{}
-	if tmpl := c.render.TemplateLookup(fmt.Sprintf("publication/details/_%s", pub.Type)); tmpl != nil {
-		tmpl.Execute(buf, views.NewPublicationData(r, c.render, pub))
-	}
-
-	fmt.Fprint(w, buf.String())
+	c.render.HTML(w, 200,
+		fmt.Sprintf("publication/details/_%s", pub.Type),
+		views.NewPublicationData(r, c.render, pub),
+		render.HTMLOptions{Layout: "layouts/htmx"},
+	)
 }
 
 func (c *PublicationsDetails) OpenForm(w http.ResponseWriter, r *http.Request) {
@@ -52,13 +50,11 @@ func (c *PublicationsDetails) OpenForm(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	buf := &bytes.Buffer{}
-
-	if tmpl := c.render.TemplateLookup(fmt.Sprintf("publication/details/_%s_edit_form", pub.Type)); tmpl != nil {
-		tmpl.Execute(buf, views.NewPublicationForm(r, c.render, pub))
-	}
-
-	fmt.Fprint(w, buf.String())
+	c.render.HTML(w, 200,
+		fmt.Sprintf("publication/details/_%s_edit_form", pub.Type),
+		views.NewPublicationForm(r, c.render, pub),
+		render.HTMLOptions{Layout: "layouts/htmx"},
+	)
 }
 
 func (c *PublicationsDetails) SaveForm(w http.ResponseWriter, r *http.Request) {
@@ -71,13 +67,11 @@ func (c *PublicationsDetails) SaveForm(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	buf := &bytes.Buffer{}
-
 	pub.Title = "Mock title"
 
-	if tmpl := c.render.TemplateLookup(fmt.Sprintf("publication/details/_%s_edit_submit", pub.Type)); tmpl != nil {
-		tmpl.Execute(buf, views.NewPublicationData(r, c.render, pub))
-	}
-
-	fmt.Fprint(w, buf.String())
+	c.render.HTML(w, 200,
+		fmt.Sprintf("publication/details/_%s_edit_submit", pub.Type),
+		views.NewPublicationData(r, c.render, pub),
+		render.HTMLOptions{Layout: "layouts/htmx"},
+	)
 }
