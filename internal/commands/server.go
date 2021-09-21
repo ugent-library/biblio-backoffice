@@ -71,7 +71,7 @@ var serverStartCmd = &cobra.Command{
 		renderer := render.New(render.Options{
 			Directory:                   "templates",
 			Extensions:                  []string{".gohtml"},
-			Layout:                      "layout",
+			Layout:                      "layouts/layout",
 			RenderPartialsWithoutPrefix: true,
 			Funcs: []template.FuncMap{
 				sprig.FuncMap(),
