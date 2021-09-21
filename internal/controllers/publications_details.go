@@ -79,5 +79,5 @@ func (c *PublicationsDetails) SaveForm(w http.ResponseWriter, r *http.Request) {
 		tmpl.Execute(buf, views.NewPublicationData(r, c.render, pub))
 	}
 
-	fmt.Fprintf(w, buf.String())
+	fmt.Fprint(w, buf.String())
 }

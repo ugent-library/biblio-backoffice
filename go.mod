@@ -16,7 +16,7 @@ require (
 	github.com/spf13/viper v1.8.1
 	github.com/ugent-library/go-graceful v0.0.0-20210629084951-cc0426be60e8
 	github.com/ugent-library/go-oidc v0.0.0-20210901124208-bda4cc73ba56
-	github.com/ugent-library/go-web v0.0.0-20210715062624-a1de215a06c9
+	github.com/ugent-library/go-web v0.0.0-20210921071904-38ad74b02e33
 	github.com/unrolled/render v1.4.0
 	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5 // indirect
 	golang.org/x/net v0.0.0-20210825183410-e898025ed96a // indirect

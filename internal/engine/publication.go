@@ -26,3 +26,11 @@ func (e *Engine) GetPublication(id string) (*models.Publication, error) {
 	}
 	return pub, nil
 }
+
+func (e *Engine) UpdatePublication(pub *models.Publication) (*models.Publication, error) {
+	resPub := &models.Publication{}
+	if _, err := e.put(fmt.Sprintf("/publication/%s", pub.ID), pub, resPub); err != nil {
+		return nil, err
+	}
+	return resPub, nil
+}
