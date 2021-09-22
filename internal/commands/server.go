@@ -13,10 +13,8 @@ import (
 	"github.com/gorilla/sessions"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/ugent-library/biblio-backend/internal/controllers"
 	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/helpers"
-	"github.com/ugent-library/biblio-backend/internal/middleware"
 	"github.com/ugent-library/biblio-backend/internal/routes"
 	"github.com/ugent-library/go-graceful/server"
 	"github.com/ugent-library/go-oidc/oidc"
@@ -109,12 +107,12 @@ var serverStartCmd = &cobra.Command{
 
 		// add routes
 		routes.Register(
+			e,
 			router,
-			middleware.RequireUser("/logout"),
-			middleware.SetUser(e, sessionName, sessionStore),
-			controllers.NewAuth(e, sessionName, sessionStore, oidcClient),
-			controllers.NewPublication(e, renderer),
-			controllers.NewPublicationsDetails(e, renderer),
+			renderer,
+			sessionName,
+			sessionStore,
+			oidcClient,
 		)
 
 		// logging

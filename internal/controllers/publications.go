@@ -24,12 +24,7 @@ type PublicationListVars struct {
 	Hits       *models.PublicationHits
 }
 
-type PublicationShowVars struct {
-	views.Data
-	Pub *models.Publication
-}
-
-func NewPublication(e *engine.Engine, r *render.Render) *Publications {
+func NewPublications(e *engine.Engine, r *render.Render) *Publications {
 	return &Publications{engine: e, render: r}
 }
 

@@ -1,0 +1,98 @@
+<div class="w-100 u-scroll-wrapper">
+    <div class="c-header-collapsible bg-white" data-collapsed="true">
+        <div class="bc-navbar bc-navbar--large bc-navbar--white">
+            <div class="bc-toolbar">
+                <div class="bc-toolbar-left">
+                    <div class="bc-toolbar-item">
+                        <a class="btn btn-link btn-link-muted" href="{{pathFor "datasets"}}">
+                            <i class="if if-arrow-left"></i>
+                            <div class="btn-text">Datasets overview</div>
+                        </a>
+                    </div>
+                </div>
+                <div class="bc-toolbar-right">
+                    <div class="bc-toolbar-item">
+                        <div class="dropdown">
+                            <button class="btn btn-outline-primary btn-icon-only" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="if if-more"></i>
+                            </button>
+                            <div class="dropdown-menu">
+                                <button class="dropdown-item">
+                                    <i class="if if-double-quotes"></i>
+                                    <span>Cite</span>
+                                </button>
+                                <button class="dropdown-item">
+                                    <i class="if if-add"></i>
+                                    <span>Add to list</span>
+                                </button>
+                                <button class="dropdown-item">
+                                    <i class="if if-notification"></i>
+                                    <span>Turn on notifications</span>
+                                </button>
+                                <button class="dropdown-item">
+                                    <i class="if if-orcid" style="color: #A6CE39"></i>
+                                    <span>Send to ORCID</span>
+                                </button>
+                                <button class="dropdown-item" type="button" data-toggle="modal" data-target="#delete">
+                                    <i class="if if-delete"></i>
+                                    <span>Delete</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="c-divider mt-0 mx-6"></div>
+        <div id="publication-summary">
+            {{template "dataset/_summary" .Dataset}}
+        </div>
+        <div class="c-divider mb-2 mx-6"></div>
+        <div class="bc-navbar bc-navbar--white bc-navbar--bordered-bottom">
+            <div class="bc-toolbar">
+                <div class="bc-toolbar-left">
+                    <div class="bc-toolbar-item">
+                        <ul class="nav" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="description-tab" data-toggle="tab" href="#description-content" role="tab" aria-controls="description" aria-selected="true">Description</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="creators-tab" data-toggle="tab" href="#creators-content" role="tab" aria-controls="creators" aria-selected="false">Creators</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="bc-toolbar-right">
+                    <div class="bc-toolbar-item">
+                        <div class="c-header-collapsible__expanded mb-2">
+                            <button class="btn btn-link btn-small c-header-collapse-trigger" type="button">
+                                <div class="btn-text">Collapse</div>
+                                <i class="if if-chevron-up"></i>
+                            </button>
+                        </div>
+                        <div class="c-header-collapsible__collapsed mb-2">
+                            <button class="btn btn-link btn-small c-header-collapse-trigger" type="button">
+                                <div class="btn-text">Expand</div>
+                                <i class="if if-chevron-down"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="u-scroll-wrapper__body p-6">
+        <div class="tab-content">
+            <div id="description-content" class="tab-pane fade show active" role="tabpanel" aria-labelledby="description-tab">
+                {{template "dataset/_details" .}}
+                {{template "dataset/_access" .}}
+                {{template "dataset/_abstract" .}}
+            </div>
+
+            <div id="creators-content" class="tab-pane fade" role="tabpanel" aria-labelledby="creators-tab">
+                {{template "dataset/_creators" .}}
+                {{template "dataset/_contributors" .}}
+            </div>
+        </div>
+    </div>
+</div>

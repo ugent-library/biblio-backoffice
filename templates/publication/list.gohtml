@@ -70,16 +70,9 @@
             <div class="form-row">
                 <div class="col">
                     <label class="sr-only" for="q">Search</label>
-                    <div class="dropdown">
-                        <input class="form-control" type="text" name="q" value="{{.SearchArgs.Query}}" placeholder="Search..."
-                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                            autocomplete="off">
-                        <div class="dropdown-menu w-100" aria-labelledby="dropdownMenuLink">
-                            <a class="dropdown-item" href="#">Search all publications</a>
-                            <a class="dropdown-item" href="#">Search my publications</a>
-                            <a class="dropdown-item" href="#">Search publications registered by me</a>
-                        </div>
-                    </div>
+                    <input class="form-control" type="text" name="q" value="{{.SearchArgs.Query}}" placeholder="Search..."
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                        autocomplete="off">
                 </div>
                 <div class="col-3">
                     <div class="d-flex">

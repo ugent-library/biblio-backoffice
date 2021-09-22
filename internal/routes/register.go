@@ -4,15 +4,21 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/gorilla/sessions"
 	"github.com/ugent-library/biblio-backend/internal/controllers"
+	"github.com/ugent-library/biblio-backend/internal/engine"
+	"github.com/ugent-library/biblio-backend/internal/middleware"
+	"github.com/ugent-library/go-oidc/oidc"
+	"github.com/unrolled/render"
 )
 
-func Register(r *mux.Router,
-	requireUser mux.MiddlewareFunc,
-	setUser mux.MiddlewareFunc,
-	authController *controllers.Auth,
-	publicationController *controllers.Publications,
-	publicationDetailsController *controllers.PublicationsDetails) {
+func Register(e *engine.Engine, r *mux.Router, renderer *render.Render, sessionName string, sessionStore sessions.Store, oidcClient *oidc.Client) {
+	requireUser := middleware.RequireUser("/logout")
+	setUser := middleware.SetUser(e, sessionName, sessionStore)
+	authController := controllers.NewAuth(e, sessionName, sessionStore, oidcClient)
+	publicationController := controllers.NewPublications(e, renderer)
+	datasetController := controllers.NewDatasets(e, renderer)
+	publicationDetailsController := controllers.NewPublicationsDetails(e, renderer)
 
 	// static files
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
@@ -56,4 +62,15 @@ func Register(r *mux.Router,
 	publicationRouter.HandleFunc("/{id}/htmx/edit", publicationDetailsController.SaveForm).
 		Methods("PATCH").
 		Name("publication_details_save_form")
+
+	// datasets
+	datasetRouter := r.PathPrefix("/dataset").Subrouter()
+	datasetRouter.Use(setUser)
+	datasetRouter.Use(requireUser)
+	datasetRouter.HandleFunc("", datasetController.List).
+		Methods("GET").
+		Name("datasets")
+	datasetRouter.HandleFunc("/{id}", datasetController.Show).
+		Methods("GET").
+		Name("dataset")
 }
