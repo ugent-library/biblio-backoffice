@@ -30,6 +30,7 @@ func init() {
 	serverStartCmd.Flags().String("host", defaultHost, "server host")
 	serverStartCmd.Flags().Int("port", defaultPort, "server port")
 	serverStartCmd.Flags().String("session-name", defaultSessionName, "session name")
+	serverStartCmd.Flags().String("session-secret", "", "session secret")
 	serverStartCmd.Flags().Int("session-max-age", defaultSessionMaxAge, "session lifetime")
 
 	serverCmd.AddCommand(serverStartCmd)
