@@ -1,6 +1,6 @@
 <div class="card card-collapsible mb-6 publication-additional-information">
     <div class="card-header">
-        <div class="collapse-trigger collapsed" data-toggle="collapse" data-target="#collapse-additional-information" aria-expanded="{{ .Data.OnHTMXFragment }}" aria-controls="collapse-additional-information"></div>
+        <div class="collapse-trigger collapsed" data-toggle="collapse" data-target="#collapse-additional-information" aria-expanded="{{ .Data.IsHTMXRequest }}" aria-controls="collapse-additional-information"></div>
         <div class="bc-toolbar">
             <div class="bc-toolbar-left">
                 <i class="if if-chevron-right mr-4 text-muted"></i>Additional information
@@ -30,6 +30,10 @@
                 <li class="list-group-item">
                     {{.RenderList .Publication.ResearchField "Research field" false}}
                     {{.RenderBadgeList .Publication.Keyword "Keywords" false}}
+                    {{.RenderText .Publication.WOSID "Web of Science ID" false}}
+                    {{.RenderText .Publication.PubMedID "PubMed ID" false}}
+                    {{.RenderText .Publication.ArxivID "Arxiv ID" false}}
+                    {{.RenderText .Publication.ESCIID "ESCI ID" false}}
                     {{.RenderText .Publication.AdditionalInfo "Additional information" false}}
                 </li>
             </ul>

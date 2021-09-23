@@ -3,31 +3,43 @@ package engine
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"io"
 	"net/http"
 	"net/url"
-	"strings"
+
+	"github.com/ugent-library/go-web/jsonapi"
 )
 
-type message struct {
-	Data   json.RawMessage `json:"data,omitempty"`
-	Errors []string        `json:"errors,omitempty"`
+type requestPayload struct {
+	Data interface{} `json:"data"`
 }
 
-func (e *Engine) get(path string, qp url.Values, v interface{}) (*http.Response, error) {
+type responsePayload struct {
+	Data   json.RawMessage `json:"data"`
+	Errors jsonapi.Errors  `json:"errors"`
+}
+
+func (e *Engine) get(path string, qp url.Values, responseData interface{}) (*http.Response, error) {
 	req, err := e.newRequest("GET", path, qp, nil)
 	if err != nil {
 		return nil, err
 	}
-	return e.doRequest(req, v)
+	return e.doRequest(req, responseData)
 }
 
-func (e *Engine) newRequest(method, path string, vals url.Values, body interface{}) (*http.Request, error) {
+func (e *Engine) put(path string, requestData, responseData interface{}) (*http.Response, error) {
+	req, err := e.newRequest("PUT", path, nil, requestData)
+	if err != nil {
+		return nil, err
+	}
+	return e.doRequest(req, responseData)
+}
+
+func (e *Engine) newRequest(method, path string, vals url.Values, requestData interface{}) (*http.Request, error) {
 	var buf io.ReadWriter
-	if body != nil {
+	if requestData != nil {
 		buf = new(bytes.Buffer)
-		err := json.NewEncoder(buf).Encode(body)
+		err := json.NewEncoder(buf).Encode(&requestPayload{Data: requestData})
 		if err != nil {
 			return nil, err
 		}
@@ -43,7 +55,7 @@ func (e *Engine) newRequest(method, path string, vals url.Values, body interface
 		return nil, err
 	}
 	req.SetBasicAuth(e.config.Username, e.config.Password)
-	if body != nil {
+	if requestData != nil {
 		req.Header.Set("Content-Type", "application/json")
 	}
 	req.Header.Set("Accept", "application/json")
@@ -51,18 +63,19 @@ func (e *Engine) newRequest(method, path string, vals url.Values, body interface
 	return req, nil
 }
 
-func (e *Engine) doRequest(req *http.Request, v interface{}) (*http.Response, error) {
+func (e *Engine) doRequest(req *http.Request, responseData interface{}) (*http.Response, error) {
 	res, err := e.client.Do(req)
 	if err != nil {
 		return res, err
 	}
 	defer res.Body.Close()
-	var msg message
-	if err = json.NewDecoder(res.Body).Decode(&msg); err != nil {
+
+	var p responsePayload
+	if err = json.NewDecoder(res.Body).Decode(&p); err != nil {
 		return res, err
 	}
-	if len(msg.Errors) > 0 {
-		return res, errors.New(strings.Join(msg.Errors, "; "))
+	if len(p.Errors) > 0 {
+		return res, p.Errors
 	}
-	return res, json.Unmarshal(msg.Data, v)
+	return res, json.Unmarshal(p.Data, responseData)
 }

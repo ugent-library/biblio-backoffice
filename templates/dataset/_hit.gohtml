@@ -1,0 +1,118 @@
+<div class="d-flex w-100">
+    <div class="custom-control custom-checkbox mr-4 align-self-start">
+        <input class="custom-control-input" type="checkbox" name="overviewItems"
+            id="publication-{{.ID}}" />
+        <label class="custom-control-label" for="publication-{{.ID}}">&nbsp;</label>
+    </div>
+    <div class="w-100">
+        <div class="d-flex align-items-start">
+            <div class="list-group-item-thumbnail">
+                <div class="c-thumbnail c-thumbnail--dataset c-thumbnail--medium">
+                    <i class="if if-database"></i>
+                </div>
+            </div>
+            <div class="list-group-item-content">
+                <div class="list-group-item-subline">
+                    <div class="list-group-item-subline-left">
+                        <div class="d-flex align-items-center">
+                            <i class="if if-download if--small if--success"></i>
+                            <span class="pl-2 text-muted">Open Access</span>
+                        </div>
+                    </div>
+                    <div class="list-group-item-subline-right">
+                        <div class="dropdown">
+                            <button class="btn btn-link btn-icon-only btn-link-muted"
+                                type="button" data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false">
+                                <i class="if if-more"></i>
+                            </button>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item"
+                                    href="{{pathFor "dataset" "id" .ID}}">
+                                    <i class="if if-file-text"></i>
+                                    <span>View details</span>
+                                </a>
+                                <button class="dropdown-item">
+                                    <i class="if if-double-quotes"></i>
+                                    <span>Cite</span>
+                                </button>
+                                <button class="dropdown-item">
+                                    <i class="if if-add"></i>
+                                    <span>Add to list</span>
+                                </button>
+                                <button class="dropdown-item">
+                                    <i class="if if-notification"></i>
+                                    <span>Turn on notifications</span>
+                                </button>
+                                <button class="dropdown-item">
+                                    <i class="if if-orcid" style="color: #A6CE39"></i>
+                                    <span>Send to ORCID</span>
+                                </button>
+                                <button class="dropdown-item" type="button"
+                                    data-toggle="modal" data-target="#delete">
+                                    <i class="if if-delete"></i>
+                                    <span>Delete</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="list-group-item-text">
+                    <a href="{{pathFor "dataset" "id" .ID}}">
+                        <h4 class="c-h4">{{.Title}}</h4>
+                    </a>
+                    {{with .Author}}{{template "publication/_contributors_short" .}}{{end}}
+                    <span class="c-body-small text-muted">
+                        {{.Year}},
+                        <a class="link-primary" href="#">
+                            <span class="text-decoration-underline"> DataverseNL</span>
+                            <i class="if if--small if-external-link"></i>
+                        </a>
+                    </span>
+                </div>
+                <div class="list-group-item-meta mt-5">
+                    <div class="list-group-item-meta-left">
+                        <div class="list-group-item-meta-item">
+                            {{template "publication/_status" .}}
+                        </div>
+                        <div class="list-group-item-meta-item">
+                            <div class="c-progress-bar c-progress-bar--medium">
+                                <div class="c-progress-bar__progress">
+                                    <div
+                                        class="c-progress-bar__bar c-progress-bar__bar--start">
+                                    </div>
+                                    <div
+                                        class="c-progress-bar__bar c-progress-bar__bar--middle">
+                                    </div>
+                                    <div
+                                        class="c-progress-bar__bar c-progress-bar__bar--end">
+                                    </div>
+                                </div>
+                                <div class="c-progress-bar__label">Good</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="list-group-item-meta-right">
+                        <div class="list-group-item-meta-item">
+                            <span class="text-muted c-body-small">Biblio ID: {{.ID}}</span>
+                        </div>
+                        <div class="list-group-item-meta-item" data-toggle="tooltip"
+                            title="2 related datasets" data-placement="bottom">
+                            <span class="text-muted c-body-small">
+                                <i class="if if-database if--muted if--small"></i>2
+                            </span>
+                        </div>
+                        <div class="list-group-item-meta-item" data-toggle="tooltip"
+                            title="Sent to Orcid" data-placement="bottom">
+                            <i class="if if-orcid if--muted if--small"></i>
+                            <i class="if if-check text-success if--small"></i>
+                        </div>
+                        <div class="list-group-item-meta-item">
+                            <span class="text-muted c-body-small">Created {{timeElapsed .DateCreated "en"}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -4,9 +4,9 @@
             <div class="bc-toolbar">
                 <div class="bc-toolbar-left">
                     <div class="bc-toolbar-item">
-                        <a class="btn btn-link btn-link-muted" href="{{pathFor "publications"}}">
+                        <a class="btn btn-link btn-link-muted" href="{{pathFor "datasets"}}">
                             <i class="if if-arrow-left"></i>
-                            <div class="btn-text">Publications overview</div>
+                            <div class="btn-text">Datasets overview</div>
                         </a>
                     </div>
                 </div>
@@ -45,7 +45,7 @@
         </div>
         <div class="c-divider mt-0 mx-6"></div>
         <div id="publication-summary">
-            {{template "publication/_summary" .Publication}}
+            {{template "dataset/_summary" .Dataset}}
         </div>
         <div class="c-divider mb-2 mx-6"></div>
         <div class="bc-navbar bc-navbar--white bc-navbar--bordered-bottom">
@@ -57,16 +57,7 @@
                                 <a class="nav-link active" id="description-tab" data-toggle="tab" href="#description-content" role="tab" aria-controls="description" aria-selected="true">Description</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" id="fulltext-tab" data-toggle="tab" href="#fulltext-content" role="tab" aria-controls="fulltext" aria-selected="false">Full text</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="authors-tab" data-toggle="tab" href="#authors-content" role="tab" aria-controls="authors" aria-selected="false">Authors &amp; Editors</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="datasets-tab" data-toggle="tab" href="#datasets-content" role="tab" aria-controls="datasets" aria-selected="false">Datasets</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="review-tab" data-toggle="tab" href="#review-content" role="tab" aria-controls="review" aria-selected="false">Biblio Review</a>
+                                <a class="nav-link" id="creators-tab" data-toggle="tab" href="#creators-content" role="tab" aria-controls="creators" aria-selected="false">Creators</a>
                             </li>
                         </ul>
                     </div>
@@ -93,16 +84,14 @@
     <div class="u-scroll-wrapper__body p-6">
         <div class="tab-content">
             <div id="description-content" class="tab-pane fade show active" role="tabpanel" aria-labelledby="description-tab">
-                {{.RenderDetails}}
-                {{.RenderConference}}
-                {{.RenderAbstract}}
-                {{.RenderLinks}}
-                {{.RenderAdditionalInfo}}
+                {{template "dataset/_details" .}}
+                {{template "dataset/_access" .}}
+                {{template "dataset/_abstract" .}}
             </div>
 
-            <div id="authors-content" class="tab-pane fade" role="tabpanel" aria-labelledby="authors-tab">
-                {{.RenderAuthors}}
-                {{.RenderEditors}}
+            <div id="creators-content" class="tab-pane fade" role="tabpanel" aria-labelledby="creators-tab">
+                {{template "dataset/_creators" .}}
+                {{template "dataset/_contributors" .}}
             </div>
         </div>
     </div>
