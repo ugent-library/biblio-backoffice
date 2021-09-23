@@ -8,7 +8,7 @@
         </a>{{ end }}
     </label>
     <div class="col-{{ .Cols }}">
-        <select class="custom-select form-control" id="{{ .Key }}">
+        <select class="custom-select form-control" name="{{ .Key }}">
             {{ range .Values }}
             <option value="{{ .Key }}" {{if .Selected}}selected{{ end}}>{{ .Value}}</option>
             {{ end }}

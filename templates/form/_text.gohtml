@@ -8,6 +8,6 @@
         </a>{{ end }}
     </label>
     <div class="col-{{ .Cols }}">
-        <input class="form-control" id="{{ .Key }}" type="text" value="{{ if .Text }}{{ .Text }}{{ else }}{{ end }}">
+        <input class="form-control" name="{{ .Key }}" type="text" {{ if .Text }}value="{{ .Text }}"{{ else }}{{ end }}>
     </div>
 </div>
