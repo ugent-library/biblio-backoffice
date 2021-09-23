@@ -39,7 +39,6 @@ htmx.on("htmx:afterSwap", function(evt) {
         minimumResultsForSearch: Infinity
       });
 
-
       $(".select-multi-icons").select2({
         theme: 'bootstrap4',
         templateResult: setMultiIconsText,

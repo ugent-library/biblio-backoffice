@@ -10,16 +10,16 @@
     <div class="col-{{.Cols}} form-values">
         {{ range $k, $v := .Text }}
         <div class="d-flex mb-3 form-value">
-            <input class="form-control" id="{{ $.Key }}-{{ $k }}" name="{{ $.Key }}[{{ $k }}]" type="text" value="{{ $v }}">
-            <button class="btn btn-outline-primary btn-icon-only ml-3 form-value-subtract" type="button">
-                <i class="if if-subtract"></i>
-                <div class="sr-only">Subtract</div>
+            <input class="form-control" name="{{ $.Key }}[{{ $k }}]" type="text" value="{{ $v }}">
+            <button class="btn btn-link-muted btn-icon-only ml-3 form-value-delete" type="button">
+                <i class="if if-delete"></i>
+                <div class="sr-only">delete</div>
             </button>
         </div>
         {{ end }}
-        <div class="d-flex form-value-add">
-            <input class="form-control" id="{{ $.Key }}" type="text">
-            <button class="btn btn-outline-primary btn-icon-only ml-3" type="button">
+        <div class="d-flex mb-3 form-value">
+            <input class="form-control" name="{{ $.Key}}[{{ len .Text }}]" type="text">
+            <button class="btn btn-outline-primary btn-icon-only ml-3 form-value-add" type="button">
                 <i class="if if-add"></i>
                 <div class="sr-only">Add</div>
             </button>

@@ -1,22 +1,18 @@
-require('../ugent/js/index');
-htmx = require('htmx.org');
+import htmx from 'htmx.org';
+import _BSN from "bootstrap.native";
 
-htmx.on("htmx:afterSwap", function(evt) {
-    // TODO: reuse code below for url fragment
+//import '../ugent/js/index';
+import multipleValues from './multiple.js'
+import popovers from './popover.js'
+import collapsible from './collapse.js'
 
-    // callback = function() {
-    //     card = 'publication-details';
-    //     document
-    //         .getElementsByClassName(card)[0]
-    //         .getElementsByClassName('collapse')[0]
-    //         .classList.add('show')
+(function main () {
+    htmx.on("htmx:afterSwap", function(evt) {
+        // TODO
+        //   Only execute on add / edit forms of publication / dataset
 
-    //     document
-    //         .getElementsByClassName(card)[0]
-    //         .getElementsByClassName('collapse-trigger')[0]
-    //         .setAttribute("aria-expanded", "true");
-    //         setTimeout(callback, 40);
-    // }
-
-    // setTimeout(callback, 40)
-});
+        multipleValues()
+        popovers()
+        collapsible(evt.detail.target)
+    });
+})();

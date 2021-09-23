@@ -10,10 +10,17 @@ mix.copy('assets/ugent/favicon.ico', 'static/favicon.ico');
 
 // set the resourceroot for fonts so it points to the static assets path
 mix.setResourceRoot('/static/fonts/')
-// copy font files to the ./static/fonts folder
 mix.webpackConfig({
   module: {
     rules: [
+      // Load bootstrap native
+      {
+        test: /bootstrap\.native/,
+        use: {
+          loader: 'bootstrap.native-loader'
+        }
+      },
+      // copy font files to the ./static/fonts folder
       {
         test: '/(\\.(woff2?|ttf|eot|otf)$|font.*\\.svg$)/',
         use: [{
