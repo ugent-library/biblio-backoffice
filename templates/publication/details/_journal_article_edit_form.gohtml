@@ -1,4 +1,4 @@
-<form>
+<form hx-patch="/publication/{{ .Publication.ID }}/htmx/edit" hx-swap="outerHTML" hx-target="this">
     <div class="card-header">
         <div class="collapse-trigger" data-toggle="collapse" data-target="#collapse-details" aria-expanded="true" aria-controls="collapse-details"></div>
         <div class="bc-toolbar">
@@ -14,11 +14,7 @@
                     >
                         <div class="btn-text">Cancel</div>
                     </button>
-                    <button class="btn btn-primary"
-                        hx-patch="/publication/{{ .Publication.ID }}/htmx/edit"
-                        hx-swap="innerHTML"
-                        hx-target=".publication-details"
-                    >
+                    <button class="btn btn-primary">
                         <div class="btn-text">Save</div>
                     </button>
                 </div>
