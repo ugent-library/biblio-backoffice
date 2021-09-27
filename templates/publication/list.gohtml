@@ -131,10 +131,10 @@
                     {{end}}
                     {{end}}
                     <div class="dropdown-body">
-                        {{range .PublicationTypes}}
+                        {{range .Hits.Facets.Type}}
                         <div class="custom-control custom-checkbox mb-4">
-                            <input class="custom-control-input" id="filter-type-{{.}}" type="checkbox" name="f[type]" value="{{.}}"{{if $.SearchArgs.HasFilter "type" .}} checked{{end}}>
-                            <label class="custom-control-label" for="filter-type-{{.}}">{{.}}</label>
+                            <input class="custom-control-input" id="filter-type-{{.Value}}" type="checkbox" name="f[type]" value="{{.Value}}"{{if $.SearchArgs.HasFilter "type" .Value}} checked{{end}}>
+                            <label class="custom-control-label" for="filter-type-{{.Value}}">{{.Value}}</label>
                         </div>
                         {{end}}
                     </div>
