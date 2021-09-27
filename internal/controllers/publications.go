@@ -20,8 +20,9 @@ type Publications struct {
 
 type PublicationListVars struct {
 	views.Data
-	SearchArgs *engine.SearchArgs
-	Hits       *models.PublicationHits
+	SearchArgs       *engine.SearchArgs
+	Hits             *models.PublicationHits
+	PublicationTypes []string
 }
 
 func NewPublications(e *engine.Engine, r *render.Render) *Publications {
@@ -43,7 +44,12 @@ func (c *Publications) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.render.HTML(w, http.StatusOK, "publication/list", PublicationListVars{Data: views.NewData(r), SearchArgs: args, Hits: hits})
+	c.render.HTML(w, http.StatusOK, "publication/list", PublicationListVars{
+		Data:             views.NewData(r),
+		SearchArgs:       args,
+		Hits:             hits,
+		PublicationTypes: c.engine.PublicationTypes(),
+	})
 }
 
 func (c *Publications) Show(w http.ResponseWriter, r *http.Request) {
