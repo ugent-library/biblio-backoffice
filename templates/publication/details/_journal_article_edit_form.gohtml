@@ -7,7 +7,7 @@
 </div>
 {{ end }}
 
-<form hx-patch="/publication/{{ .Publication.ID }}/htmx/edit" hx-swap="outerHTML" hx-target="this">
+<form hx-patch="/publication/{{ .Publication.ID }}/htmx/edit" hx-swap="innerHTML" hx-target="closest .publication-details">
     <div class="card-header">
         <div class="collapse-trigger" data-toggle="collapse" data-target="#collapse-details" aria-expanded="true" aria-controls="collapse-details"></div>
         <div class="bc-toolbar">
