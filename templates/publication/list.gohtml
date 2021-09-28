@@ -67,17 +67,23 @@
     </div>
     <div class="u-scroll-wrapper__body p-6">
         <form class="mb-4" method="GET" action="{{pathFor "publications"}}">
+            {{range .SearchArgs.FiltersFor "scope"}}
+            <input type="hidden" name="f[scope]" value="{{.}}">
+            {{end}}
             <div class="form-row">
-                <div class="col">
+                <div class="col input-group">
                     <label class="sr-only" for="q">Search</label>
                     <input class="form-control" type="text" name="q" value="{{.SearchArgs.Query}}" placeholder="Search..."
                         autocomplete="off">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-primary" type="button">Search</button>
+                    </div>
                 </div>
                 <div class="col-3">
                     <div class="d-flex">
                         <label class="col-form-label pr-3" for="sort" style="white-space: nowrap">Sort
                             by</label>
-                        <select class="custom-select" name="sort">
+                        <select class="custom-select form-change-submit" name="sort">
                             {{range .PublicationSorts}}
                             <option value="{{.}}"{{if $.SearchArgs.HasSort .}} selected{{end}}>{{.}}</option>
                             {{end}}
@@ -104,7 +110,7 @@
                 <a class="badge badge-pill badge-default mr-3" data-toggle="dropdown" data-persist="true" aria-haspopup="true"
                     aria-expanded="false" role="button">
                     <span class="badge-text">Publication type</span>
-                    <div class="c-counter c-counter--small">{{.SearchArgs.NumFilters "type"}}</div>
+                    <div class="c-counter c-counter--small">{{len (.SearchArgs.FiltersFor "type")}}</div>
                     <i class="if if-caret-down"></i>
                 </a>
                 <form class="mb-4 dropdown-menu" method="GET" action="{{pathFor "publications"}}">
@@ -123,6 +129,9 @@
                         </div>
                     </div>
                     <input type="hidden" name="q" value="{{.SearchArgs.Query}}">
+                    {{range .SearchArgs.Sort}}
+                    <input type="hidden" name="sort" value="{{.}}">
+                    {{end}}
                     {{range $f, $vals := .SearchArgs.Filters}}
                     {{if ne $f "type"}}
                     {{range $vals}}

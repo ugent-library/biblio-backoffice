@@ -58,10 +58,6 @@ func (s *SearchArgs) HasFilter(field string, terms ...string) bool {
 	return true
 }
 
-func (s *SearchArgs) NumFilters(field string) int {
-	return len(s.Filters[field])
-}
-
 func (s *SearchArgs) HasSort(sort string) bool {
 	for _, s := range s.Sort {
 		if s == sort {
@@ -70,4 +66,8 @@ func (s *SearchArgs) HasSort(sort string) bool {
 	}
 
 	return false
+}
+
+func (s *SearchArgs) FiltersFor(field string) []string {
+	return s.Filters[field]
 }
