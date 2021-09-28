@@ -31,9 +31,6 @@ func (s *SearchArgs) WithPage(p int) *SearchArgs {
 }
 
 func (s *SearchArgs) HasFilter(field string, terms ...string) bool {
-	if s.Filters == nil {
-		return false
-	}
 	filter, ok := s.Filters[field]
 	if !ok {
 		return false
@@ -53,4 +50,8 @@ func (s *SearchArgs) HasFilter(field string, terms ...string) bool {
 	}
 
 	return true
+}
+
+func (s *SearchArgs) NumFilters(field string) int {
+	return len(s.Filters[field])
 }

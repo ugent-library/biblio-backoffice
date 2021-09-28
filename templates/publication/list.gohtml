@@ -71,7 +71,6 @@
                 <div class="col">
                     <label class="sr-only" for="q">Search</label>
                     <input class="form-control" type="text" name="q" value="{{.SearchArgs.Query}}" placeholder="Search..."
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
                         autocomplete="off">
                 </div>
                 <div class="col-3">
@@ -102,13 +101,13 @@
         </form>
         <div class="d-flex flex-wrap mb-6">
             <div class="dropdown mt-4">
-                <a class="badge badge-pill badge-default mr-3" data-toggle="dropdown" aria-haspopup="true"
-                    aria-expanded="false" href="#" role="button">
+                <a class="badge badge-pill badge-default mr-3" data-toggle="dropdown" data-persist="true" aria-haspopup="true"
+                    aria-expanded="false" role="button">
                     <span class="badge-text">Publication type</span>
-                    <div class="c-counter c-counter--small">2</div>
+                    <div class="c-counter c-counter--small">{{.SearchArgs.NumFilters "type"}}</div>
                     <i class="if if-caret-down"></i>
                 </a>
-                <div class="dropdown-menu">
+                <form class="mb-4 dropdown-menu" method="GET" action="{{pathFor "publications"}}">
                     <div class="dropdown-header">
                         <div class="bc-toolbar">
                             <div class="bc-toolbar__left">
@@ -118,54 +117,31 @@
                             </div>
                             <div class="bc-toolbar__right">
                                 <div class="bc-toolbar__item">
-                                    <button class="btn btn-link">Select all</button>
+                                    <button type="button" class="btn btn-link form-check-all">Select all</button>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <input type="hidden" name="q" value="{{.SearchArgs.Query}}">
+                    {{range $f, $vals := .SearchArgs.Filters}}
+                    {{if ne $f "type"}}
+                    {{range $vals}}
+                    <input type="hidden" name="f[{{$f}}]" value="{{.}}">
+                    {{end}}
+                    {{end}}
+                    {{end}}
                     <div class="dropdown-body">
+                        {{range .Hits.Facets.Type}}
                         <div class="custom-control custom-checkbox mb-4">
-                            <input class="custom-control-input" id="customCheck1" type="checkbox">
-                            <label class="custom-control-label" for="customCheck1">Book</label>
+                            <input class="custom-control-input" id="filter-type-{{.Value}}" type="checkbox" name="f[type]" value="{{.Value}}"{{if $.SearchArgs.HasFilter "type" .Value}} checked{{end}}>
+                            <label class="custom-control-label" for="filter-type-{{.Value}}">{{.Value}}</label>
                         </div>
-                        <div class="custom-control custom-checkbox mb-4">
-                            <input class="custom-control-input" id="customCheck2" type="checkbox">
-                            <label class="custom-control-label" for="customCheck2">Book chapter</label>
-                        </div>
-                        <div class="custom-control custom-checkbox mb-4">
-                            <input class="custom-control-input" id="customCheck3" type="checkbox">
-                            <label class="custom-control-label" for="customCheck3">Book editor</label>
-                        </div>
-                        <div class="custom-control custom-checkbox mb-4">
-                            <input class="custom-control-input" id="customCheck3" type="checkbox">
-                            <label class="custom-control-label" for="customCheck3">Conference
-                                contribution</label>
-                        </div>
-                        <div class="custom-control custom-checkbox mb-4">
-                            <input class="custom-control-input" id="customCheck3" type="checkbox" checked>
-                            <label class="custom-control-label" for="customCheck3">Dissertation</label>
-                        </div>
-                        <div class="custom-control custom-checkbox mb-4">
-                            <input class="custom-control-input" id="customCheck3" type="checkbox" checked>
-                            <label class="custom-control-label" for="customCheck3">Journal article</label>
-                        </div>
-                        <div class="custom-control custom-checkbox mb-4">
-                            <input class="custom-control-input" id="customCheck3" type="checkbox">
-                            <label class="custom-control-label" for="customCheck3">Miscellaneous</label>
-                        </div>
-                        <div class="custom-control custom-checkbox mb-4">
-                            <input class="custom-control-input" id="customCheck3" type="checkbox">
-                            <label class="custom-control-label" for="customCheck3">Research data</label>
-                        </div>
-                        <div class="custom-control custom-checkbox">
-                            <input class="custom-control-input" id="customCheck3" type="checkbox">
-                            <label class="custom-control-label" for="customCheck3">Preprint</label>
-                        </div>
+                        {{end}}
                     </div>
                     <div class="dropdown-footer">
-                        <button class="btn btn-primary btn-block" type="button">Apply filter</button>
+                        <button class="btn btn-primary btn-block" type="submit">Apply filter</button>
                     </div>
-                </div>
+                </form>
             </div>
             <a class="badge badge-pill badge-default mr-3 mt-4" href="#" role="button">
                 <span class="badge-text">Completeness</span>

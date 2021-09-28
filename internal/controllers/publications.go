@@ -43,7 +43,11 @@ func (c *Publications) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.render.HTML(w, http.StatusOK, "publication/list", PublicationListVars{Data: views.NewData(r), SearchArgs: args, Hits: hits})
+	c.render.HTML(w, http.StatusOK, "publication/list", PublicationListVars{
+		Data:       views.NewData(r),
+		SearchArgs: args,
+		Hits:       hits,
+	})
 }
 
 func (c *Publications) Show(w http.ResponseWriter, r *http.Request) {
