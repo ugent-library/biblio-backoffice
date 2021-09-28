@@ -2,18 +2,14 @@ package models
 
 import "time"
 
-type PublicationFacets struct {
-	Type []Facet `json:"type"`
-}
-
 type PublicationHits struct {
-	Total        int               `json:"total"`
-	Page         int               `json:"page"`
-	LastPage     int               `json:"last_page"`
-	PreviousPage bool              `json:"previous_page"`
-	NextPage     bool              `json:"next_page"`
-	Hits         []Publication     `json:"hits"`
-	Facets       PublicationFacets `json:"facets"`
+	Total        int                `json:"total"`
+	Page         int                `json:"page"`
+	LastPage     int                `json:"last_page"`
+	PreviousPage bool               `json:"previous_page"`
+	NextPage     bool               `json:"next_page"`
+	Hits         []Publication      `json:"hits"`
+	Facets       map[string][]Facet `json:"facets"`
 }
 
 type PublicationFile struct {
