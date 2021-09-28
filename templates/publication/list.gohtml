@@ -77,10 +77,10 @@
                     <div class="d-flex">
                         <label class="col-form-label pr-3" for="sort" style="white-space: nowrap">Sort
                             by</label>
-                        <select class="custom-select">
-                            <option>Newest first</option>
-                            <option>Option 2</option>
-                            <option>Option 3</option>
+                        <select class="custom-select" name="sort">
+                            {{range .PublicationSorts}}
+                            <option value="{{.}}"{{if $.SearchArgs.HasSort .}} selected{{end}}>{{.}}</option>
+                            {{end}}
                         </select>
                     </div>
                 </div>
