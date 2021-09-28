@@ -1,4 +1,4 @@
-<div class="form-group row">
+<div class="form-group row {{ if .HasError }}is-invalid{{ end }}">
     <label class="col-3 col-form-label" for="{{ .Key }}">
         {{ .Label }}
         {{ if .Required}}&nbsp;<abbr class="required" title="Required">*</abbr>{{ end }}
@@ -8,10 +8,11 @@
         </a>{{ end }}
     </label>
     <div class="col-{{ .Cols }}">
-        <select class="custom-select form-control" name="{{ .Key }}">
+        <select class="custom-select form-control {{ if .HasError }}is-invalid{{ end }}" name="{{ .Key }}">
             {{ range .Values }}
             <option value="{{ .Key }}" {{if .Selected}}selected{{ end}}>{{ .Value}}</option>
             {{ end }}
         </select>
+        {{ if .HasError }}<div class="invalid-feedback">{{ .Error.Title }}</div>{{ end }}
     </div>
 </div>

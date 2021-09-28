@@ -2,4 +2,11 @@
     {{template "publication/_summary" .Publication}}
 </div>
 
+<div hx-swap-oob="innerHTML:#alerts">
+    <div class="alert alert-success">
+        <i class="if if-check-circle-fill"></i>
+        <p>This is a success message!</p>
+    </div>
+</div>
+
 {{ template "publication/details/_journal_article" . }}

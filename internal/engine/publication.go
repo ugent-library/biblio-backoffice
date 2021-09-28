@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/ugent-library/biblio-backend/internal/models"
@@ -27,10 +28,13 @@ func (e *Engine) GetPublication(id string) (*models.Publication, error) {
 	return pub, nil
 }
 
-func (e *Engine) UpdatePublication(pub *models.Publication) (*models.Publication, error) {
+func (e *Engine) UpdatePublication(pub *models.Publication) (*models.Publication, []models.FormError) {
 	resPub := &models.Publication{}
 	if _, err := e.put(fmt.Sprintf("/publication/%s", pub.ID), pub, resPub); err != nil {
-		return nil, err
+		var errors []models.FormError
+		_ = json.Unmarshal([]byte(err.Error()), &errors)
+
+		return nil, errors
 	}
 	return resPub, nil
 }

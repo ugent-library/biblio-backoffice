@@ -1,3 +1,12 @@
+{{ if .FormErrors }}
+<div hx-swap-oob="innerHTML:#alerts">
+    <div class="alert alert-danger">
+        <i class="if if-check-circle-fill"></i>
+        <p>An error has occurred!</p>
+    </div>
+</div>
+{{ end }}
+
 <form hx-patch="/publication/{{ .Publication.ID }}/htmx/edit" hx-swap="outerHTML" hx-target="this">
     <div class="card-header">
         <div class="collapse-trigger" data-toggle="collapse" data-target="#collapse-details" aria-expanded="true" aria-controls="collapse-details"></div>
@@ -25,8 +34,8 @@
         <div class="card-body p-0" id="edit1">
             <ul class="list-group list-group-flush" data-panel-state="edit">
                 <li class="list-group-item">
-                    {{.RenderFormList "publicationType" "Publication Type" .Publication.Type "type" "This is a helper text" false 3}}
-                    {{.RenderFormText .Publication.DOI "doi" "DOI" "" false 3}}
+                    {{.RenderFormList "Type" "/data/type" "Publication Type" .Publication.Type "type" "This is a helper text" false 3}}
+                    {{.RenderFormText .Publication.DOI "DOI" "/data/DOI" "DOI" "" false 3}}
 
                     <div class="form-group row">
                         <label class="col-3 col-form-label" for="issnIsbn">ISSN/ISBN</label>
@@ -49,13 +58,13 @@
                     </div>
                 </li>
                 <li class="list-group-item">
-                    {{.RenderFormText .Publication.Title "title" "Title" "" true 9}}
-                    {{.RenderFormTextMultiple .Publication.AlternativeTitle "alternativeTitle" "Alternative Title" "" true 9}}
-                    {{.RenderFormText .Publication.Publication "journalTitle" "Journal title" "" true 9}}
-                    {{.RenderFormList "classification" "Classification" .Publication.Classification "classification" "" false 3}}
-                    {{.RenderFormList "articleType" "Article Type" .Publication.JournalArticleType "articleType" "" false 3}}
-                    {{.RenderFormText .Publication.ArticleNumber "articleNumber" "Article number" "" false 3}}
-                    {{.RenderFormText .Publication.WOSType "wosType" "WOS type" "It's a tooltip!" false 3}}
+                    {{.RenderFormText .Publication.Title "Title" "/data/title" "Title" "" true 9}}
+                    {{.RenderFormTextMultiple .Publication.AlternativeTitle "AlternativeTitle" "/data/alternative_title" "Alternative Title" "" true 9}}
+                    {{.RenderFormText .Publication.Publication "Publication" "/data/publication" "Journal title" "" true 9}}
+                    {{.RenderFormList "Classification" "/type/classification" "Classification" .Publication.Classification "Classification" "" false 3}}
+                    {{.RenderFormList "JournalArticleType" "/type/journal_article_type" "Article Type" .Publication.JournalArticleType "Classification" "" false 3}}
+                    {{.RenderFormText .Publication.ArticleNumber "ArticleNumber" "/data/article_number" "Article number" "" false 3}}
+                    {{.RenderFormText .Publication.WOSType "WOSType" "/data/WOSType" "WOS type" "It's a tooltip!" false 3}}
                 </li>
                 <li class="list-group-item">
                     <!-- Does not exist? -->
@@ -66,9 +75,9 @@
                         </div>
                     </div>
 
-                    {{.RenderFormText .Publication.Publisher "publisher" "Publisher" "" false 9}}
-                    {{.RenderFormText .Publication.PlaceOfPublication "placeOfPublication" "Place of Publication" "" false 9}}
-                    {{.RenderFormText .Publication.Year "publicationYear" "Publication Year" "" true 3}}
+                    {{.RenderFormText .Publication.Publisher "Publisher" "/data/publisher" "Publisher" "" false 9}}
+                    {{.RenderFormText .Publication.PlaceOfPublication "PlaceOfPublication" "/data/place_of_publication" "Place of Publication" "" false 9}}
+                    {{.RenderFormText .Publication.Year "Year" "/data/year" "Publication Year" "" true 3}}
 
                     <div class="form-group row">
                         <label class="col-3 col-form-label" for="check"></label>
@@ -80,11 +89,11 @@
                         </div>
                     </div>
 
-                    {{.RenderFormListMultiple .Publication.Language "languages" "Languages" "languages" "" false 9}}
+                    {{.RenderFormListMultiple .Publication.Language "Languages" "/data/language" "Languages" "Languages" "" false 9}}
                 </li>
                 <li class="list-group-item">
-                    {{.RenderFormText .Publication.Volume "volume" "Volume" "" false 3}}
-                    {{.RenderFormText .Publication.Issue "issue" "Issue" "" false 3}}
+                    {{.RenderFormText .Publication.Volume "Volume" "/data/volume" "Volume" "" false 3}}
+                    {{.RenderFormText .Publication.Issue "Issue" "/data/issue" "Issue" "" false 3}}
 
                     <!-- Does not exist? -->
                     <div class="form-group row">
@@ -98,7 +107,7 @@
                         </button>
                     </div>
 
-                    {{.RenderFormText .Publication.PageCount "numberOfPages" "Number of Pages" "" false 3}}
+                    {{.RenderFormText .Publication.PageCount "PageCount" "/data/page_count" "Number of Pages" "" false 3}}
 
 
                     <!-- Repeated field! -->
@@ -109,11 +118,11 @@
                         </div>
                     </div>
 
-                    {{.RenderFormText .Publication.IssueTitle "specialIssueTitle" "Special issue title" "" false 3}}
+                    {{.RenderFormText .Publication.IssueTitle "IssueTitle" "/data/issue_title" "Special issue title" "" false 3}}
                 </li>
                 <li class="list-group-item">
-                    {{.RenderFormTextMultiple .Publication.Department "department" "Department" "" false 9}}
-                    {{.RenderFormTextMultiple .Publication.Project "project" "Project" "" false 9}}
+                    {{.RenderFormTextMultiple .Publication.Department "Department" "/data/department" "Department" "" false 9}}
+                    {{.RenderFormTextMultiple .Publication.Project "Project" "/data/project" "Project" "" false 9}}
                 </li>
             </ul>
         </div>
