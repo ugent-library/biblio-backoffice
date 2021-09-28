@@ -1,7 +1,6 @@
 package views
 
 import (
-	"fmt"
 	"html/template"
 	"net/http"
 
@@ -13,6 +12,7 @@ type PublicationForm struct {
 	Data
 	render      *render.Render
 	Publication *models.Publication
+	FormErrors  []models.FormError
 }
 
 type textFormData struct {
@@ -22,6 +22,8 @@ type textFormData struct {
 	Required bool
 	Tooltip  string
 	Cols     int
+	HasError bool
+	Error    models.FormError
 }
 
 type textMultipleFormData struct {
@@ -31,6 +33,8 @@ type textMultipleFormData struct {
 	Required bool
 	Tooltip  string
 	Cols     int
+	HasError bool
+	Error    models.FormError
 }
 
 type listFormValues struct {
@@ -46,6 +50,8 @@ type listFormData struct {
 	Required bool
 	Tooltip  string
 	Cols     int
+	HasError bool
+	Error    models.FormError
 }
 
 type listMultipleFormData struct {
@@ -56,13 +62,28 @@ type listMultipleFormData struct {
 	Required   bool
 	Tooltip    string
 	Cols       int
+	HasError   bool
+	Error      models.FormError
 }
 
-func NewPublicationForm(r *http.Request, render *render.Render, p *models.Publication) PublicationForm {
-	return PublicationForm{Data: NewData(r), render: render, Publication: p}
+func NewPublicationForm(r *http.Request, render *render.Render, p *models.Publication, fe []models.FormError) PublicationForm {
+	return PublicationForm{Data: NewData(r), render: render, Publication: p, FormErrors: fe}
 }
 
-func (f PublicationForm) RenderFormText(text, key, label string, tooltip string, required bool, cols int) (template.HTML, error) {
+func (f PublicationForm) RenderFormText(text, key, pointer, label string, tooltip string, required bool, cols int) (template.HTML, error) {
+
+	var formError models.FormError
+	hasError := false
+
+	if f.FormErrors != nil {
+		for _, err := range f.FormErrors {
+			if err.Source["pointer"] == pointer {
+				formError = err
+				hasError = true
+			}
+		}
+	}
+
 	return RenderPartial(f.render, "form/_text", &textFormData{
 		Key:      key,
 		Label:    label,
@@ -70,14 +91,28 @@ func (f PublicationForm) RenderFormText(text, key, label string, tooltip string,
 		Tooltip:  tooltip,
 		Required: required,
 		Cols:     cols,
+		HasError: hasError,
+		Error:    formError,
 	})
 }
 
 // TODO: We'll need dedicated functions for Department, Project, etc. because
 // Department, Project take specific types ([]PublicationDepartment, []PublicationProject)
-func (f PublicationForm) RenderFormTextMultiple(text interface{}, key, label string, tooltip string, required bool, cols int) (template.HTML, error) {
+func (f PublicationForm) RenderFormTextMultiple(text interface{}, key, pointer, label string, tooltip string, required bool, cols int) (template.HTML, error) {
 	// TODO: remove me
 	values := []string{"foo", "bar"}
+
+	var formError models.FormError
+	hasError := false
+
+	if f.FormErrors != nil {
+		for _, err := range f.FormErrors {
+			if err.Source["pointer"] == pointer {
+				formError = err
+				hasError = true
+			}
+		}
+	}
 
 	return RenderPartial(f.render, "form/_text_multiple", &textMultipleFormData{
 		Key:      key,
@@ -86,11 +121,25 @@ func (f PublicationForm) RenderFormTextMultiple(text interface{}, key, label str
 		Tooltip:  tooltip,
 		Required: required,
 		Cols:     cols,
+		HasError: hasError,
+		Error:    formError,
 	})
 
 }
 
-func (f PublicationForm) RenderFormList(key, label string, selectedTerm string, taxonomy string, tooltip string, required bool, cols int) (template.HTML, error) {
+func (f PublicationForm) RenderFormList(key, pointer, label string, selectedTerm string, taxonomy string, tooltip string, required bool, cols int) (template.HTML, error) {
+	var formError models.FormError
+	hasError := false
+
+	if f.FormErrors != nil {
+		for _, err := range f.FormErrors {
+			if err.Source["pointer"] == pointer {
+				formError = err
+				hasError = true
+			}
+		}
+	}
+
 	// TODO: should come from a different API, use "taxonomy" to fetch list of values from taxonomy
 	vocabulary := make(map[string]map[string]string)
 	vocabulary["type"] = map[string]string{
@@ -146,12 +195,26 @@ func (f PublicationForm) RenderFormList(key, label string, selectedTerm string, 
 		Tooltip:  tooltip,
 		Required: required,
 		Cols:     cols,
+		HasError: hasError,
+		Error:    formError,
 	})
 }
 
 // TODO: We'll need dedicated functions for fields that take specific types ([]PublicationDepartment, []PublicationProject)
 //    type assertion in one single function would become too complex quickly.
-func (f PublicationForm) RenderFormListMultiple(selectedTerms interface{}, key, label string, taxonomy string, tooltip string, required bool, cols int) (template.HTML, error) {
+func (f PublicationForm) RenderFormListMultiple(selectedTerms interface{}, key, pointer, label string, taxonomy string, tooltip string, required bool, cols int) (template.HTML, error) {
+	var formError models.FormError
+	hasError := false
+
+	if f.FormErrors != nil {
+		for _, err := range f.FormErrors {
+			if err.Source["pointer"] == pointer {
+				formError = err
+				hasError = true
+			}
+		}
+	}
+
 	// TODO: remove me / Fetch me from a struct field
 	languages := []string{"eng", "dut"}
 
@@ -179,8 +242,6 @@ func (f PublicationForm) RenderFormListMultiple(selectedTerms interface{}, key, 
 			})
 		}
 
-		fmt.Println(terms)
-
 		values[lkey] = terms
 	}
 
@@ -192,5 +253,7 @@ func (f PublicationForm) RenderFormListMultiple(selectedTerms interface{}, key, 
 		Tooltip:    tooltip,
 		Required:   required,
 		Cols:       cols,
+		HasError:   hasError,
+		Error:      formError,
 	})
 }

@@ -1,4 +1,4 @@
-<div class="form-group row form-text-multiple">
+<div class="form-group row form-text-multiple {{ if .HasError }}is-invalid{{ end }}">
    <label class="col-3 col-form-label d-flex align-items-stretch" for="{{ .Key }}">
         {{.Label}}
         {{if .Required}}&nbsp;<abbr class="required" title="Required">*</abbr>{{end}}
@@ -8,21 +8,25 @@
         </a>{{ end }}
     </label>
     <div class="col-{{.Cols}} form-values">
+        {{ $he := .HasError }}
         {{ range $k, $v := .Text }}
         <div class="d-flex mb-3 form-value">
-            <input class="form-control" name="{{ $.Key }}[{{ $k }}]" type="text" value="{{ $v }}">
+            <input class="form-control {{ if $he }}is-invalid{{ end }}" name="{{ $.Key }}[{{ $k }}]" type="text" value="{{ $v }}">
             <button class="btn btn-link-muted btn-icon-only ml-3 form-value-delete" type="button">
                 <i class="if if-delete"></i>
                 <div class="sr-only">delete</div>
             </button>
         </div>
         {{ end }}
-        <div class="d-flex mb-3 form-value">
-            <input class="form-control" name="{{ $.Key}}[{{ len .Text }}]" type="text">
-            <button class="btn btn-outline-primary btn-icon-only ml-3 form-value-add" type="button">
-                <i class="if if-add"></i>
-                <div class="sr-only">Add</div>
-            </button>
+        <div class="mb-3 form-value">
+            <div class="d-flex is-invalid">
+                <input class="form-control {{ if .HasError }}is-invalid{{ end }}" name="{{ $.Key}}[{{ len .Text }}]" type="text">
+                <button class="btn btn-outline-primary btn-icon-only ml-3 form-value-add" type="button">
+                    <i class="if if-add"></i>
+                    <div class="sr-only">Add</div>
+                </button>
+            </div>
         </div>
+        {{ if .HasError }}<div class="invalid-feedback">{{ .Error.title }}</div>{{ end }}
     </div>
 </div>

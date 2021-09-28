@@ -48,6 +48,13 @@ export default function() {
 
             node.querySelector("button.form-value-delete").addEventListener("click", deleteFormValue)
 
+            let nodes = node.querySelectorAll(".is-invalid")
+            nodes.forEach(
+                item => {
+                    item.classList.remove("is-invalid")
+                }
+            )
+
             formValue.before(node)
         }
 

@@ -1,4 +1,4 @@
-<div class="form-group row">
+<div class="form-group row {{ if .HasError }}is-invalid{{ end }}">
     <label class="col-3 col-form-label" for="{{ .Key }}">
         {{ .Label }}
         {{ if .Required }}&nbsp;<abbr class="required" title="Required">*</abbr>{{ end }}
@@ -8,6 +8,7 @@
         </a>{{ end }}
     </label>
     <div class="col-{{ .Cols }}">
-        <input class="form-control" id="{{ .Key }}" type="text" value="{{ if .Text }}{{ .Text }}{{ else }}{{ end }}">
+        <input class="form-control {{ if .HasError }}is-invalid{{ end }}" name="{{ .Key }}" type="text" {{ if .Text }}value="{{ .Text }}"{{ else }}{{ end }}>
+        {{ if .HasError }}<div class="invalid-feedback">{{ .Error.Title }}</div>{{ end }}
     </div>
 </div>
