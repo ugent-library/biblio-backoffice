@@ -11,13 +11,13 @@ type Config struct {
 }
 
 type Engine struct {
-	config Config
+	Config Config
 	client *http.Client
 }
 
 func New(c Config) (*Engine, error) {
 	e := &Engine{
-		config: c,
+		Config: c,
 		client: http.DefaultClient,
 	}
 

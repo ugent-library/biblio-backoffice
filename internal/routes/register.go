@@ -51,6 +51,9 @@ func Register(e *engine.Engine, r *mux.Router, renderer *render.Render, sessionN
 	publicationRouter.HandleFunc("/{id}", publicationController.Show).
 		Methods("GET").
 		Name("publication")
+	publicationRouter.HandleFunc("/{id}/thumbnail", publicationController.Thumbnail).
+		Methods("GET").
+		Name("publication_thumbnail")
 
 	// Publication details HTMX fragments
 	publicationRouter.HandleFunc("/{id}/htmx", publicationDetailsController.Show).

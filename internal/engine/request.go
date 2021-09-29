@@ -45,7 +45,7 @@ func (e *Engine) newRequest(method, path string, vals url.Values, requestData in
 		}
 	}
 
-	u := e.config.URL + path
+	u := e.Config.URL + path
 	if vals != nil {
 		u = u + "?" + vals.Encode()
 	}
@@ -54,7 +54,7 @@ func (e *Engine) newRequest(method, path string, vals url.Values, requestData in
 	if err != nil {
 		return nil, err
 	}
-	req.SetBasicAuth(e.config.Username, e.config.Password)
+	req.SetBasicAuth(e.Config.Username, e.Config.Password)
 	if requestData != nil {
 		req.Header.Set("Content-Type", "application/json")
 	}
