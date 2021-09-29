@@ -146,3 +146,12 @@ func (p *Publication) IsOpenAccess() bool {
 	}
 	return false
 }
+
+func (p *Publication) ThumbnailURL() string {
+	for _, file := range p.File {
+		if file.ThumbnailURL != "" {
+			return file.ThumbnailURL
+		}
+	}
+	return ""
+}

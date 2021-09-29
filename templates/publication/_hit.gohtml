@@ -6,8 +6,15 @@
     </div>
     <div class="w-100">
         <div class="d-flex align-items-start">
-            <img class="list-group-item-thumbnail" src="{{assetPath "/images/thumbnail.jpg"}}"
-                height="156" />
+            {{if .ThumbnailURL}}
+            <img class="list-group-item-thumbnail" src="{{pathFor "publication_thumbnail" "id" .ID}}" height="156">
+            {{else}}
+            <div class="list-group-item-thumbnail">
+                <div class="c-thumbnail c-thumbnail--publication c-thumbnail--medium">
+                    <i class="if if-article"></i>
+                </div>
+            </div>
+            {{end}}
             <div class="list-group-item-content">
                 <div class="list-group-item-subline">
                     <div class="list-group-item-subline-left">
