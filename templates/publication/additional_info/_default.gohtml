@@ -1,0 +1,42 @@
+<div class="card card-collapsible mb-6 publication-additional-information">
+    <div class="card-header">
+        <div class="collapse-trigger collapsed" data-toggle="collapse" data-target="#collapse-additional-information" aria-expanded="{{ .Data.IsHTMXRequest }}" aria-controls="collapse-additional-information"></div>
+        <div class="bc-toolbar">
+            <div class="bc-toolbar-left">
+                <i class="if if-chevron-right mr-4 text-muted"></i>Additional information
+            </div>
+            <div class="bc-toolbar-right">
+                <div class="c-button-toolbar" data-panel-state="read">
+                    <button class="btn btn-outline-primary" data-panel-toggle="edit3">
+                        <i class="if if-edit"></i>
+                        <div class="btn-text">Edit</div>
+                    </button>
+                </div>
+                <div class="c-button-toolbar u-hidden" data-panel-state="edit">
+                    <button class="btn btn-outline-primary" data-panel-toggle="edit3">
+                        <div class="btn-text">Cancel</div>
+                    </button>
+                    <button class="btn btn-primary" data-panel-toggle="edit3">
+                        <div class="btn-text">Save</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="collapse" id="collapse-additional-information">
+        <div class="card-body p-0" id="edit1">
+            <ul class="list-group list-group-flush" data-panel-state="read">
+                <li class="list-group-item">
+                    {{.RenderList .Publication.ResearchField "Research field" false}}
+                    {{.RenderBadgeList .Publication.Keyword "Keywords" false}}
+                    {{.RenderText .Publication.WOSID "Web of Science ID" false}}
+                    {{.RenderText .Publication.PubMedID "PubMed ID" false}}
+                    {{.RenderText .Publication.ArxivID "Arxiv ID" false}}
+                    {{.RenderText .Publication.ESCIID "ESCI ID" false}}
+                    {{.RenderText .Publication.AdditionalInfo "Additional information" false}}
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
