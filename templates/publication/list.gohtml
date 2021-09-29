@@ -67,34 +67,27 @@
     </div>
     <div class="u-scroll-wrapper__body p-6">
         <form class="mb-4" method="GET" action="{{pathFor "publications"}}">
+            {{range .SearchArgs.FiltersFor "scope"}}
+            <input type="hidden" name="f[scope]" value="{{.}}">
+            {{end}}
             <div class="form-row">
-                <div class="col">
+                <div class="col input-group">
                     <label class="sr-only" for="q">Search</label>
                     <input class="form-control" type="text" name="q" value="{{.SearchArgs.Query}}" placeholder="Search..."
                         autocomplete="off">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-primary" type="button">Search</button>
+                    </div>
                 </div>
                 <div class="col-3">
                     <div class="d-flex">
                         <label class="col-form-label pr-3" for="sort" style="white-space: nowrap">Sort
                             by</label>
-                        <select class="custom-select">
-                            <option>Newest first</option>
-                            <option>Option 2</option>
-                            <option>Option 3</option>
+                        <select class="custom-select form-change-submit" name="sort">
+                            {{range .PublicationSorts}}
+                            <option value="{{.}}"{{if $.SearchArgs.HasSort .}} selected{{end}}>{{.}}</option>
+                            {{end}}
                         </select>
-                    </div>
-                </div>
-                <div class="col-auto">
-                    <div class="btn-group">
-                        <a class="btn btn-primary btn-icon-only active" href="/publications/overview.html">
-                            <i class="if if-list-unordered"></i>
-                            <div class="sr-only">List view</div>
-                        </a>
-                        <a class="btn btn-primary btn-icon-only"
-                            href="/publications/overview--thumbnail.html">
-                            <i class="if if-grid"></i>
-                            <div class="sr-only">Grid view</div>
-                        </a>
                     </div>
                 </div>
             </div>
@@ -104,7 +97,7 @@
                 <a class="badge badge-pill badge-default mr-3" data-toggle="dropdown" data-persist="true" aria-haspopup="true"
                     aria-expanded="false" role="button">
                     <span class="badge-text">Publication type</span>
-                    <div class="c-counter c-counter--small">{{.SearchArgs.NumFilters "type"}}</div>
+                    <div class="c-counter c-counter--small">{{len (.SearchArgs.FiltersFor "type")}}</div>
                     <i class="if if-caret-down"></i>
                 </a>
                 <form class="mb-4 dropdown-menu" method="GET" action="{{pathFor "publications"}}">
@@ -123,6 +116,9 @@
                         </div>
                     </div>
                     <input type="hidden" name="q" value="{{.SearchArgs.Query}}">
+                    {{range .SearchArgs.Sort}}
+                    <input type="hidden" name="sort" value="{{.}}">
+                    {{end}}
                     {{range $f, $vals := .SearchArgs.Filters}}
                     {{if ne $f "type"}}
                     {{range $vals}}
@@ -131,7 +127,7 @@
                     {{end}}
                     {{end}}
                     <div class="dropdown-body">
-                        {{range .Hits.Facets.Type}}
+                        {{range .Hits.Facets.type}}
                         <div class="custom-control custom-checkbox mb-4">
                             <input class="custom-control-input" id="filter-type-{{.Value}}" type="checkbox" name="f[type]" value="{{.Value}}"{{if $.SearchArgs.HasFilter "type" .Value}} checked{{end}}>
                             <label class="custom-control-label" for="filter-type-{{.Value}}">{{.Value}}</label>
@@ -143,21 +139,52 @@
                     </div>
                 </form>
             </div>
-            <a class="badge badge-pill badge-default mr-3 mt-4" href="#" role="button">
-                <span class="badge-text">Completeness</span>
-                <i class="if if-caret-down"></i>
-            </a>
-            <a class="badge badge-pill badge-default mr-3 mt-4" href="#" role="button">
-                <span class="badge-text">Credits</span>
-                <i class="if if-caret-down"></i>
-            </a>
-            <a class="badge badge-pill badge-default mr-4 mt-4" href="#" role="button">
-                <span class="badge-text">Biblio Status</span>
-                <i class="if if-caret-down"></i>
-            </a>
-            <button class="btn btn-link p-0 btn-sm mt-4">
-                <div class="btn-text">Show all filters</div>
-            </button>
+            <div class="dropdown mt-4">
+                <a class="badge badge-pill badge-default mr-3" data-toggle="dropdown" data-persist="true" aria-haspopup="true"
+                    aria-expanded="false" role="button">
+                    <span class="badge-text">Biblio status</span>
+                    <div class="c-counter c-counter--small">{{len (.SearchArgs.FiltersFor "status")}}</div>
+                    <i class="if if-caret-down"></i>
+                </a>
+                <form class="mb-4 dropdown-menu" method="GET" action="{{pathFor "publications"}}">
+                    <div class="dropdown-header">
+                        <div class="bc-toolbar">
+                            <div class="bc-toolbar__left">
+                                <div class="bc-toolbar__item">
+                                    <h6>Biblio status</h6>
+                                </div>
+                            </div>
+                            <div class="bc-toolbar__right">
+                                <div class="bc-toolbar__item">
+                                    <button type="button" class="btn btn-link form-check-all">Select all</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" name="q" value="{{.SearchArgs.Query}}">
+                    {{range .SearchArgs.Sort}}
+                    <input type="hidden" name="sort" value="{{.}}">
+                    {{end}}
+                    {{range $f, $vals := .SearchArgs.Filters}}
+                    {{if ne $f "status"}}
+                    {{range $vals}}
+                    <input type="hidden" name="f[{{$f}}]" value="{{.}}">
+                    {{end}}
+                    {{end}}
+                    {{end}}
+                    <div class="dropdown-body">
+                        {{range .Hits.Facets.status}}
+                        <div class="custom-control custom-checkbox mb-4">
+                            <input class="custom-control-input" id="filter-type-{{.Value}}" type="checkbox" name="f[status]" value="{{.Value}}"{{if $.SearchArgs.HasFilter "status" .Value}} checked{{end}}>
+                            <label class="custom-control-label" for="filter-type-{{.Value}}">{{.Value}}</label>
+                        </div>
+                        {{end}}
+                    </div>
+                    <div class="dropdown-footer">
+                        <button class="btn btn-primary btn-block" type="submit">Apply filter</button>
+                    </div>
+                </form>
+            </div>
         </div>
         <div class="card mb-6">
             <ul class="list-group list-group-flush">
