@@ -64,8 +64,8 @@
                     {{.RenderFormText .Publication.Title "Title" "/data/title" "Title" "" true 9}}
                     {{.RenderFormTextMultiple .Publication.AlternativeTitle "AlternativeTitle" "/data/alternative_title" "Alternative Title" "" true 9}}
                     {{.RenderFormText .Publication.Publication "Publication" "/data/publication" "Journal title" "" true 9}}
-                    {{.RenderFormList "Classification" "/type/classification" "Classification" .Publication.Classification "Classification" "" false 3}}
-                    {{.RenderFormList "JournalArticleType" "/type/journal_article_type" "Article Type" .Publication.JournalArticleType "Classification" "" false 3}}
+                    {{.RenderFormList "Classification" "/data/classification" "Classification" .Publication.Classification "Classification" "" false 3}}
+                    {{.RenderFormList "JournalArticleType" "/data/journal_article_type" "Article Type" .Publication.JournalArticleType "Classification" "" false 3}}
                     {{.RenderFormText .Publication.ArticleNumber "ArticleNumber" "/data/article_number" "Article number" "" false 3}}
                     {{.RenderFormText .Publication.WOSType "WOSType" "/data/WOSType" "WOS type" "It's a tooltip!" false 3}}
                 </li>
