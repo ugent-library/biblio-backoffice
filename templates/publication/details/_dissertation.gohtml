@@ -9,15 +9,16 @@
                     {{.RenderText .Publication.Type "Publication type" false}}
                     {{.RenderText .Publication.DOI "DOI" false}}
                     {{.RenderList .Publication.ISSN "ISSN" false}}
+                    {{.RenderList .Publication.ISBN "ISBN" false}}
                  </li>
                 <li class="list-group-item">
                     {{.RenderText .Publication.Title "Title" true}}
                     {{.RenderList .Publication.AlternativeTitle "Alternative title" false}}
-                    {{.RenderText .Publication.Publication "Journal title" true}}
                     {{.RenderText .Publication.Classification "Classification" false}}
-                    {{.RenderText .Publication.JournalArticleType "Article type" false}}
-                    {{.RenderText .Publication.ArticleNumber "Article number" false}}
                     {{.RenderText .Publication.WOSType "Web of Science type" false}}
+                    {{.RenderText .Publication.DefenseDate "Date of defense" true}}
+                    {{.RenderText .Publication.DefenseTime "Time of defense" true}}
+                    {{.RenderText .Publication.DefensePlace "Place of defense" true}}
                 </li>
                 <li class="list-group-item">
                     {{.RenderText .Publication.PublicationAbbreviation "Publication short title" false}}
@@ -27,12 +28,9 @@
                     {{.RenderList .Publication.Language "Languages" false}}
                 </li>
                 <li class="list-group-item">
+                    {{.RenderText .Publication.SeriesTitle "Series title" false}}
                     {{.RenderText .Publication.Volume "Volume" false}}
-                    {{.RenderText .Publication.Issue "Issue" false}}
-                    {{.RenderRange .Publication.PageFirst .Publication.PageLast "Pages" false}}
                     {{.RenderText .Publication.PageCount "Number of pages" false}}
-                    {{.RenderText .Publication.ArticleNumber "Article Number" false}}
-                    {{.RenderText .Publication.IssueTitle "Special issue title" false}}
                 </li>
             </ul>
         </div>

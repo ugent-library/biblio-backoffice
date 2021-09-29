@@ -7,19 +7,19 @@
             <ul class="list-group list-group-flush" data-panel-state="read">
                 <li class="list-group-item">
                     {{.RenderText .Publication.Type "Publication type" false}}
+                    {{.RenderText .Publication.MiscellaneousType "Miscelanous type" false }}
                     {{.RenderText .Publication.DOI "DOI" false}}
                     {{.RenderList .Publication.ISSN "ISSN" false}}
+                    {{.RenderList .Publication.ISBN "ISBN" false}}
                  </li>
                 <li class="list-group-item">
                     {{.RenderText .Publication.Title "Title" true}}
                     {{.RenderList .Publication.AlternativeTitle "Alternative title" false}}
-                    {{.RenderText .Publication.Publication "Journal title" true}}
                     {{.RenderText .Publication.Classification "Classification" false}}
-                    {{.RenderText .Publication.JournalArticleType "Article type" false}}
-                    {{.RenderText .Publication.ArticleNumber "Article number" false}}
                     {{.RenderText .Publication.WOSType "Web of Science type" false}}
                 </li>
                 <li class="list-group-item">
+                    {{.RenderText .Publication.Publication "Publication title" true}}
                     {{.RenderText .Publication.PublicationAbbreviation "Publication short title" false}}
                     {{.RenderText .Publication.Publisher "Publisher" false}}
                     {{.RenderText .Publication.PlaceOfPublication "Place of publication" false}}
@@ -27,12 +27,15 @@
                     {{.RenderList .Publication.Language "Languages" false}}
                 </li>
                 <li class="list-group-item">
+                    {{.RenderText .Publication.SeriesTitle "Series title" false}}
                     {{.RenderText .Publication.Volume "Volume" false}}
                     {{.RenderText .Publication.Issue "Issue" false}}
+                    {{.RenderText .Publication.Edition "Edition" false}}
                     {{.RenderRange .Publication.PageFirst .Publication.PageLast "Pages" false}}
                     {{.RenderText .Publication.PageCount "Number of pages" false}}
                     {{.RenderText .Publication.ArticleNumber "Article Number" false}}
                     {{.RenderText .Publication.IssueTitle "Special issue title" false}}
+                    {{.RenderText .Publication.ReportNumber "Report number" false}}
                 </li>
             </ul>
         </div>

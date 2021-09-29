@@ -1,14 +1,14 @@
-{{if .Publication.Author}}
+{{if .Publication.Supervisor}}
 <div class="card mb-6">
     <div class="card-header">
         <div class="bc-toolbar">
             <div class="bc-toolbar-left">
-                <h1 class="bc-toolbar-title">Authors</h1>
+                <h1 class="bc-toolbar-title">Supervisors</h1>
             </div>
             <div class="bc-toolbar-right">
-                <button class="btn btn-outline-primary" type="button" data-toggle="modal" data-target="#addAuthor">
+                <button class="btn btn-outline-primary" type="button" data-toggle="modal" data-target="#addSupervisor">
                     <i class="if if-add"></i>
-                    <div class="btn-text">Add author</div>
+                    <div class="btn-text">Add supervisor</div>
                 </button>
             </div>
         </div>
@@ -18,13 +18,12 @@
             <thead>
                 <tr>
                     <th class="pl-6">Name</th>
-                    <th>Role</th>
                     <th>UGent membership</th>
                     <th class="pr-6"></th>
                 </tr>
             </thead>
             <tbody>
-                {{range $c := .Publication.Author}}
+                {{range $c := .Publication.Supervisor}}
                 <tr>
                     <td class="pl-6">
                         <div class="bc-avatar-and-text">
@@ -33,13 +32,6 @@
                             </div>
                             <div class="bc-avatar-text">{{$c.FullName}}</div>
                         </div>
-                    </td>
-                    <td>
-                        <ul class="list-unstyled">
-                            {{range $c.CreditRole}}
-                            <li>{{.}}</li>
-                            {{end}}
-                        </ul>
                     </td>
                     <td>
                         {{if $c.ID}}
@@ -56,7 +48,7 @@
                                     <i class="if if-more"></i>
                                 </button>
                                 <div class="dropdown-menu">
-                                    <button class="dropdown-item" type="button" data-toggle="modal" data-target="#editAuthor">
+                                    <button class="dropdown-item" type="button" data-toggle="modal" data-target="#editSupervisor">
                                         <i class="if if-edit"></i>
                                         <span>Edit</span>
                                     </button>
@@ -66,11 +58,11 @@
                                     </button>
                                 </div>
                             </div>
-                            <div class="modal" id="editAuthor" tabindex="-1" role="dialog">
+                            <div class="modal" id="editSupervisor" tabindex="-1" role="dialog">
                                 <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h2 class="modal-title">Edit Author</h2>
+                                            <h2 class="modal-title">Edit supervisor</h2>
                                         </div>
                                         <div class="modal-body">
                                             <form>
@@ -83,14 +75,6 @@
                                                         <label class="col-form-label">Last name</label>
                                                         <input class="form-control" type="text" value="Cooper">
                                                     </div>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label class="col-form-label">Role</label>
-                                                    <select class="custom-select w-100 select2-hidden-accessible" data-select2-id="select2-data-1-2tzn" tabindex="-1" aria-hidden="true">
-                                                        <option data-select2-id="select2-data-3-uygq">First author</option>
-                                                        <option>Option 2</option>
-                                                        <option>Option 3</option>
-                                                    </select><span class="select2 select2-container select2-container--bootstrap4" dir="ltr" data-select2-id="select2-data-2-etsg" style="width: auto;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-disabled="false" aria-labelledby="select2-wo22-container" aria-controls="select2-wo22-container"><span class="select2-selection__rendered" id="select2-wo22-container" role="textbox" aria-readonly="true" title="First author">First author</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
                                                 </div>
                                                 <div class="form-group">
                                                     <label class="col-form-label">UGent membership</label>
