@@ -1,7 +1,8 @@
+import htmx from 'htmx.org';
+
 // Handles fields with multiple values
 export default function() {
-    let multiple = function() {
-
+    const multiple = () => {
         // Delete a value from the field
         let deleteFormValue = function (e) {
             let formField = e.target.closest("div.form-values")
@@ -14,7 +15,6 @@ export default function() {
                 name = name.replace(/\[.*\]/, "")
                 input.setAttribute("name", name + "[" + i + "]")
             }
-
         }
 
         // Add a new value to the field
@@ -65,8 +65,13 @@ export default function() {
         document.querySelectorAll("button.form-value-add").forEach( el =>
             el.addEventListener("click", addFormValue)
         )
-    }
+    };
 
-    // Required for HTMX. Ensures DOM has been fully updated.
-    setTimeout(multiple, 40)
+    // Init event listeners whenever HTMX swaps in a card-collapsible having a form element.
+    htmx.on("htmx:afterSettle", function(evt) {
+        let item = evt.detail.target.children.item(0)
+        if (item && item.nodeName && (item.nodeName.toLowerCase() == "form")) {
+            multiple()
+        }
+    });
 }
