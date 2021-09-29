@@ -19,14 +19,14 @@
             </div>
             <div class="bc-toolbar-right">
                 <div class="c-button-toolbar" data-panel-state="edit">
-                    <button class="btn btn-outline-primary"
+                    <button class="btn btn-outline-primary btn-cancel"
                         hx-get="/publication/{{ .Publication.ID }}/htmx"
                         hx-swap="innerHTML"
                         hx-target=".publication-details"
                     >
                         <div class="btn-text">Cancel</div>
                     </button>
-                    <button class="btn btn-primary">
+                    <button class="btn btn-primary btn-save">
                         <div class="btn-text">Save</div>
                     </button>
                 </div>
