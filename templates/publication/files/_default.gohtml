@@ -55,7 +55,7 @@
                                             <i class="if if-caret-down"></i>
                                         </span>
                                         <div class="dropdown-menu">
-                                            <button class="dropdown-item dropdown-item--selected">
+                                            <button class="dropdown-item{{if eq .AccessLevel "open_access"}} dropdown-item--selected{{end}}">
                                                 <i class="if if-download text-success"></i>
                                                 <div>
                                                     <p class="mb-0">Open Access</p>
@@ -65,7 +65,7 @@
                                                     <i class="if if-check text-primary"></i>
                                                 </div>
                                             </button>
-                                            <button class="dropdown-item">
+                                            <button class="dropdown-item{{if eq .AccessLevel "local"}} dropdown-item--selected{{end}}">
                                                 <i class="if if-ghent-university text-primary"></i>
                                                 <div>
                                                     <p class="mb-0">UGent Access</p>
@@ -75,7 +75,7 @@
                                                     <i class="if if-check text-primary"></i>
                                                 </div>
                                             </button>
-                                            <button class="dropdown-item">
+                                            <button class="dropdown-item{{if eq .AccessLevel "closed"}} dropdown-item--selected{{end}}">
                                                 <i class="if if-eye-off text-muted"></i>
                                                 <div>
                                                     <p class="mb-0">Private Access</p>
