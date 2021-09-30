@@ -57,6 +57,9 @@ func Register(e *engine.Engine, r *mux.Router, renderer *render.Render, sessionN
 		Name("publication_thumbnail")
 
 	// Publication files
+	publicationRouter.HandleFunc("/{id}/file/{file_id}", publicationFilesController.Download).
+		Methods("GET").
+		Name("publication_file")
 	publicationRouter.HandleFunc("/{id}/file/{file_id}/thumbnail", publicationFilesController.Thumbnail).
 		Methods("GET").
 		Name("publication_file_thumbnail")

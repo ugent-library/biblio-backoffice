@@ -26,6 +26,7 @@ type PublicationFile struct {
 	PublicationVersion string     `json:"publication_version,omitempty"`
 	Relation           string     `json:"relation,omitempty"`
 	ThumbnailURL       string     `json:"thumbnail_url,omitempty"`
+	URL                string     `json:"url,omitempty"`
 }
 
 type PublicationLink struct {
