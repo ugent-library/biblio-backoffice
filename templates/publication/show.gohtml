@@ -56,11 +56,11 @@
                             <li class="nav-item">
                                 <a class="nav-link active" id="description-tab" data-toggle="tab" href="#description-content" role="tab" aria-controls="description" aria-selected="true">Description</a>
                             </li>
-                            {{/* <li class="nav-item">
-                                <a class="nav-link" id="fulltext-tab" data-toggle="tab" href="#fulltext-content" role="tab" aria-controls="fulltext" aria-selected="false">Full text</a>
-                            </li> */}}
                             <li class="nav-item">
-                                <a class="nav-link" id="authors-tab" data-toggle="tab" href="#authors-content" role="tab" aria-controls="authors" aria-selected="false">Authors &amp; Editors</a>
+                                <a class="nav-link" id="files-tab" data-toggle="tab" href="#files-content" role="tab" aria-controls="files" aria-selected="false">Full text</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="contributors-tab" data-toggle="tab" href="#contributors-content" role="tab" aria-controls="contributors" aria-selected="false">Authors &amp; Editors</a>
                             </li>
                             {{/* <li class="nav-item">
                                 <a class="nav-link" id="datasets-tab" data-toggle="tab" href="#datasets-content" role="tab" aria-controls="datasets" aria-selected="false">Datasets</a>
@@ -101,7 +101,11 @@
                 {{.RenderAdditionalInfo}}
             </div>
 
-            <div id="authors-content" class="tab-pane fade" role="tabpanel" aria-labelledby="authors-tab">
+            <div id="files-content" class="tab-pane fade" role="tabpanel" aria-labelledby="files-tab">
+                {{.RenderFiles}}
+            </div>
+
+            <div id="contributors-content" class="tab-pane fade" role="tabpanel" aria-labelledby="contributors-tab">
                 {{.RenderAuthors}}
                 {{.RenderEditors}}
                 {{.RenderSupervisors}}

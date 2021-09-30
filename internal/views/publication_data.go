@@ -45,6 +45,10 @@ func (d PublicationData) RenderAbstract() (template.HTML, error) {
 	return RenderPartial(d.render, fmt.Sprintf("publication/abstract/_%s", d.Publication.Type), d)
 }
 
+func (d PublicationData) RenderFiles() (template.HTML, error) {
+	return RenderPartial(d.render, fmt.Sprintf("publication/files/_%s", d.Publication.Type), d)
+}
+
 func (d PublicationData) RenderLinks() (template.HTML, error) {
 	return RenderPartial(d.render, fmt.Sprintf("publication/links/_%s", d.Publication.Type), d)
 }
