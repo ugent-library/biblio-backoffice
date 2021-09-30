@@ -6,15 +6,7 @@
     </div>
     <div class="w-100">
         <div class="d-flex align-items-start">
-            {{if .ThumbnailURL}}
-            <img class="list-group-item-thumbnail" src="{{pathFor "publication_thumbnail" "id" .ID}}" height="156">
-            {{else}}
-            <div class="list-group-item-thumbnail">
-                <div class="c-thumbnail c-thumbnail--publication c-thumbnail--medium">
-                    <i class="if if-article"></i>
-                </div>
-            </div>
-            {{end}}
+            {{template "publication/_thumbnail" .}}
             <div class="list-group-item-content">
                 <div class="list-group-item-subline">
                     <div class="list-group-item-subline-left">
@@ -97,17 +89,6 @@
                         <div class="list-group-item-meta-item">
                             <span class="text-muted c-body-small">Biblio ID: {{.ID}}</span>
                         </div>
-                        <div class="list-group-item-meta-item" data-toggle="tooltip"
-                            title="2 related datasets" data-placement="bottom">
-                            <span class="text-muted c-body-small">
-                                <i class="if if-database if--muted if--small"></i>2
-                            </span>
-                        </div>
-                        <div class="list-group-item-meta-item" data-toggle="tooltip"
-                            title="Sent to Orcid" data-placement="bottom">
-                            <i class="if if-orcid if--muted if--small"></i>
-                            <i class="if if-check text-success if--small"></i>
-                        </div>
                         <div class="list-group-item-meta-item">
                             <span class="text-muted c-body-small">Created {{timeElapsed .DateCreated "en"}}</span>
                         </div>
@@ -115,5 +96,22 @@
                 </div>
             </div>
         </div>
+        {{with .Message}}
+        <div class="list-group-item-comment">
+            <div class="d-flex">
+                <div class="bc-avatar bc-avatar-icon bc-avatar--muted">
+                    <i class="if if-user"></i>
+                </div>
+                <div class="ml-5 w-100">
+                    <div class="d-flex w-100 justify-content-between">
+                        <div>
+                            <h4 class="c-h4">Reviewer</h4>
+                        </div>
+                    </div>
+                    <p class="mb-0 mt-3">{{.}}</p>
+                </div>
+            </div>
+        </div>
+        {{end}}
     </div>
 </div>

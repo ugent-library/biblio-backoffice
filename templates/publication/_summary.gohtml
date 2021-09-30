@@ -5,7 +5,7 @@
     <div class="d-flex w-100">
         <div class="w-100">
             <div class="d-flex align-items-start">
-                <img class="list-group-item-thumbnail" src="{{assetPath "/images/thumbnail.jpg"}}" height="156">
+                {{template "publication/_thumbnail" .}}
                 <div class="list-group-item-content">
                     <div class="list-group-item-subline">
                         <div class="list-group-item-subline-left">
@@ -45,15 +45,6 @@
                         <div class="list-group-item-meta-right">
                             <div class="list-group-item-meta-item">
                                 <span class="text-muted c-body-small">Biblio ID: {{.ID}}</span>
-                            </div>
-                            <div class="list-group-item-meta-item" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="1 related datasets">
-                                <span class="text-muted c-body-small">
-                                    <i class="if if-database if--muted if--small"></i>1
-                                </span>
-                            </div>
-                            <div class="list-group-item-meta-item" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Sent to Orcid">
-                                <i class="if if-orcid if--muted if--small"></i>
-                                <i class="if if-check text-success if--small"></i>
                             </div>
                             <div class="list-group-item-meta-item">
                                 <span class="text-muted c-body-small">Created {{timeElapsed .DateCreated "en"}}</span>
