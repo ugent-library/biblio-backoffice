@@ -23,12 +23,19 @@ export default function() {
         const submitButton = form.querySelector('.btn-save')
         const cancelButton = form.querySelector('.btn-cancel')
 
-        submitButton.addEventListener("click", function(evt) {
-            submitButton.setAttribute("disabled", "")
-            cancelButton.setAttribute("disabled", "")
-
+        // Load the spinner when the button is clicked
+        htmx.on(submitButton, "click", function(evt) {
             const spinner = createSpinner()
             submitButton.after(spinner)
+        })
+
+        // Disable the buttons after HTMX has started, but before the XHR request is
+        // dispatched. Doing this on the 'click' event blocks triggering the HTMX lifecycle.
+        //
+        // See: https://github.com/bigskysoftware/htmx/issues/394
+        htmx.on("htmx:beforeRequest", function(evt) {
+            submitButton.setAttribute("disabled", "")
+            cancelButton.setAttribute("disabled", "")
         })
     }
 
@@ -53,7 +60,7 @@ export default function() {
         if (item && item.nodeName && (item.nodeName.toLowerCase() == "form")) {
             formSubmit(item)
         } else {
-        //    closeAlerts()
+            // closeAlerts()
         }
     });
 }
