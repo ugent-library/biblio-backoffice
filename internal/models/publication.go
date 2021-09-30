@@ -17,11 +17,12 @@ type PublicationFile struct {
 	ContentType        string     `json:"content_type,omitempty"`
 	DateCreated        *time.Time `json:"date_created,omitempty"`
 	DateUpdated        *time.Time `json:"date_updated,omitempty"`
+	Description        string     `json:"description,omitempty"`
 	Embargo            string     `json:"embargo,omitempty"`
 	EmbargoTo          string     `json:"embargo_to,omitempty"`
-	FileID             string     `json:"file_id,omitempty"`
 	Filename           string     `json:"file_name,omitempty"`
 	FileSize           int        `json:"file_size,omitempty"`
+	ID                 string     `json:"file_id,omitempty"`
 	PublicationVersion string     `json:"publication_version,omitempty"`
 	Relation           string     `json:"relation,omitempty"`
 	ThumbnailURL       string     `json:"thumbnail_url,omitempty"`

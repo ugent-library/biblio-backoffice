@@ -18,6 +18,7 @@ func Register(e *engine.Engine, r *mux.Router, renderer *render.Render, sessionN
 	authController := controllers.NewAuth(e, sessionName, sessionStore, oidcClient)
 	publicationController := controllers.NewPublications(e, renderer)
 	datasetController := controllers.NewDatasets(e, renderer)
+	publicationFilesController := controllers.NewPublicationsFiles(e, renderer)
 	publicationDetailsController := controllers.NewPublicationsDetails(e, renderer)
 
 	// static files
@@ -54,6 +55,11 @@ func Register(e *engine.Engine, r *mux.Router, renderer *render.Render, sessionN
 	publicationRouter.HandleFunc("/{id}/thumbnail", publicationController.Thumbnail).
 		Methods("GET").
 		Name("publication_thumbnail")
+
+	// Publication files
+	publicationRouter.HandleFunc("/{id}/file/{file_id}/thumbnail", publicationFilesController.Thumbnail).
+		Methods("GET").
+		Name("publication_file_thumbnail")
 
 	// Publication details HTMX fragments
 	publicationRouter.HandleFunc("/{id}/htmx", publicationDetailsController.Show).
