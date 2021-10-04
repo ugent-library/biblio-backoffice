@@ -16,57 +16,6 @@ type PublicationForm struct {
 	FormErrors  []jsonapi.Error
 }
 
-type textFormData struct {
-	Key      string
-	Text     string
-	Label    string
-	Required bool
-	Tooltip  string
-	Cols     int
-	HasError bool
-	Error    jsonapi.Error
-}
-
-type textMultipleFormData struct {
-	Key      string
-	Text     []string
-	Label    string
-	Required bool
-	Tooltip  string
-	Cols     int
-	HasError bool
-	Error    jsonapi.Error
-}
-
-type listFormValues struct {
-	Key      string
-	Value    string
-	Selected bool
-}
-
-type listFormData struct {
-	Key      string
-	Values   []*listFormValues
-	Label    string
-	Required bool
-	Tooltip  string
-	Cols     int
-	HasError bool
-	Error    jsonapi.Error
-}
-
-type listMultipleFormData struct {
-	Key        string
-	Values     map[int][]*listFormValues
-	Vocabulary map[string]string
-	Label      string
-	Required   bool
-	Tooltip    string
-	Cols       int
-	HasError   bool
-	Error      jsonapi.Error
-}
-
 func NewPublicationForm(r *http.Request, render *render.Render, p *models.Publication, fe []jsonapi.Error) PublicationForm {
 	return PublicationForm{Data: NewData(r), render: render, Publication: p, FormErrors: fe}
 }

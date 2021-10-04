@@ -15,20 +15,6 @@ type PublicationData struct {
 	Publication *models.Publication
 }
 
-type textData struct {
-	Text     string
-	Label    string
-	Required bool
-	Tooltip  string
-}
-
-type listData struct {
-	List     []string
-	Label    string
-	Required bool
-	Tooltip  string
-}
-
 func NewPublicationData(r *http.Request, render *render.Render, p *models.Publication) PublicationData {
 	return PublicationData{Data: NewData(r), render: render, Publication: p}
 }

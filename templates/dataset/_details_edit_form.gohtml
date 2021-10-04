@@ -1,0 +1,58 @@
+{{ if .FormErrors }}
+<div hx-swap-oob="innerHTML:#alerts">
+    <div class="alert alert-danger alert-dismissible fade show">
+        <i class="if if-check-circle-fill"></i>
+        <p>An error has occurred!</p>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+</div>
+{{ end }}
+
+<form hx-patch="/dataset/{{ .Dataset.ID }}/htmx/edit" hx-swap="innerHTML" hx-target="closest .dataset-details">
+    <div class="card-header">
+        <div class="collapse-trigger" data-toggle="collapse" data-target="#collapse-details" aria-expanded="true" aria-controls="collapse-details"></div>
+        <div class="bc-toolbar">
+            <div class="bc-toolbar-left">
+                <i class="if if-chevron-right mr-4 text-muted"></i>Publication details
+            </div>
+            <div class="bc-toolbar-right">
+                <div class="c-button-toolbar" data-panel-state="edit">
+                    <button class="btn btn-outline-primary btn-cancel"
+                        hx-get="/dataset/{{ .Dataset.ID }}/htmx"
+                        hx-swap="innerHTML"
+                        hx-target=".dataset-details"
+                    >
+                        <div class="btn-text">Cancel</div>
+                    </button>
+                    <button class="btn btn-primary btn-save">
+                        <div class="btn-text">Save</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="collapse show" id="collapse-details">
+        <div class="card-body p-0" id="edit1">
+            <ul class="list-group list-group-flush" data-panel-state="edit">
+                <li class="list-group-item">
+                    {{.RenderFormText .Dataset.Title "Title" "/data/title" "Title" "" true 9}}
+                    {{.RenderFormText .Dataset.DOI "DOI" "/data/DOI" "DOI" "" false 3}}
+                    <p>LINK</p>
+                </li>
+                <li class="list-group-item">
+                    {{.RenderFormText .Dataset.Publisher "Publisher" "/data/publisher" "Publisher" "" false 9}}
+                    {{.RenderFormText .Dataset.Year "Year" "/data/year" "Publication Year" "" true 3}}
+                </li>
+                <li class="list-group-item">
+                    <p>DATA FORMATS</p>
+                    <p>KEYWORDS</p>
+                </li>
+                <li class="list-group-item">
+                    <p>PROJECT</p>
+                </li>
+            </ul>
+        </div>
+    </div>
+</form>

@@ -20,6 +20,7 @@ func Register(e *engine.Engine, r *mux.Router, renderer *render.Render, sessionN
 	datasetController := controllers.NewDatasets(e, renderer)
 	publicationFilesController := controllers.NewPublicationsFiles(e, renderer)
 	publicationDetailsController := controllers.NewPublicationsDetails(e, renderer)
+	datasetDetailsController := controllers.NewDatasetDetails(e, renderer)
 
 	// static files
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
@@ -85,4 +86,16 @@ func Register(e *engine.Engine, r *mux.Router, renderer *render.Render, sessionN
 	datasetRouter.HandleFunc("/{id}", datasetController.Show).
 		Methods("GET").
 		Name("dataset")
+
+	// Dataset details HTMX fragments
+	datasetRouter.HandleFunc("/{id}/htmx", datasetDetailsController.Show).
+		Methods("GET").
+		Name("dataset_details")
+	datasetRouter.HandleFunc("/{id}/htmx/edit", datasetDetailsController.OpenForm).
+		Methods("GET").
+		Name("dataset_details_edit_form")
+	datasetRouter.HandleFunc("/{id}/htmx/edit", datasetDetailsController.SaveForm).
+		Methods("PATCH").
+		Name("dataset_details_save_form")
+
 }
