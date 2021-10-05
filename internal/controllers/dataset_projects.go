@@ -34,9 +34,52 @@ func (d *DatasetProjects) ListProjects(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get 20 random projects (no search, init state)
+	hits, _ := d.engine.SuggestProjects("")
+
 	d.render.HTML(w, 200,
 		"dataset/_projects_modal",
-		views.NewDatasetData(r, d.render, pub),
+		struct {
+			Dataset *models.Publication
+			Hits    []models.Completion
+		}{
+			pub,
+			hits,
+		},
+		render.HTMLOptions{Layout: "layouts/htmx"},
+	)
+}
+
+func (d *DatasetProjects) ActiveSearch(w http.ResponseWriter, r *http.Request) {
+	id := mux.Vars(r)["id"]
+
+	// TODO: set constraint to research_data
+	pub, err := d.engine.GetPublication(id)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	err = r.ParseForm()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Get 20 results from the search query
+	query := r.Form["search"]
+	hits, _ := d.engine.SuggestProjects(query[0])
+
+	d.render.HTML(w, 200,
+		"dataset/_projects_modal_hits",
+		struct {
+			Dataset *models.Publication
+			Hits    []models.Completion
+		}{
+			pub,
+			hits,
+		},
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }

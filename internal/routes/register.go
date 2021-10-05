@@ -106,6 +106,9 @@ func Register(e *engine.Engine, r *mux.Router, renderer *render.Render, sessionN
 	datasetRouter.HandleFunc("/{id}/htmx/projects/list", datasetProjectsController.ListProjects).
 		Methods("GET").
 		Name("dataset_projects")
+	datasetRouter.HandleFunc("/{id}/htmx/projects/list/activesearch", datasetProjectsController.ActiveSearch).
+		Methods("POST").
+		Name("dataset_projects_activesearch")
 	datasetRouter.HandleFunc("/{id}/htmx/projects/add/{project_id}", datasetProjectsController.AddToDataset).
 		Methods("PATCH").
 		Name("dataset_projects_add_to_dataset")

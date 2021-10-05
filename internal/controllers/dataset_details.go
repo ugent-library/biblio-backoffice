@@ -8,6 +8,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/views"
 	"github.com/ugent-library/go-web/forms"
+	"github.com/ugent-library/go-web/jsonapi"
 	"github.com/unrolled/render"
 )
 
@@ -82,9 +83,9 @@ func (d *DatasetDetails) SaveForm(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// TODO: set constriant to research_data
-	savedPub, formErrors := d.engine.UpdatePublication(pub)
+	savedPub, err := d.engine.UpdatePublication(pub)
 
-	if formErrors != nil {
+	if formErrors, ok := err.(jsonapi.Errors); ok {
 		d.render.HTML(w, 200,
 			"dataset/_details_edit_form",
 			views.NewDatasetForm(r, d.render, pub, formErrors),
