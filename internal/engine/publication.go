@@ -1,8 +1,11 @@
 package engine
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"mime/multipart"
+	"net/http"
 
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/go-web/forms"
@@ -29,7 +32,7 @@ func (e *Engine) GetPublication(id string) (*models.Publication, error) {
 	return pub, nil
 }
 
-func (e *Engine) UpdatePublication(pub *models.Publication) (*models.Publication, jsonapi.Errors) {
+func (e *Engine) UpdatePublication(pub *models.Publication) (*models.Publication, error) {
 	resPub := &models.Publication{}
 	if _, err := e.put(fmt.Sprintf("/publication/%s", pub.ID), pub, resPub); err != nil {
 		var errors jsonapi.Errors
@@ -38,4 +41,27 @@ func (e *Engine) UpdatePublication(pub *models.Publication) (*models.Publication
 		return nil, errors
 	}
 	return resPub, nil
+}
+
+func (e *Engine) AddPublicationFile(id string, pubFile models.PublicationFile, b []byte) error {
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+	part, err := writer.CreateFormFile("file", pubFile.Filename)
+	if err != nil {
+		return err
+	}
+	part.Write(b)
+
+	if err = writer.Close(); err != nil {
+		return err
+	}
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/publication/%s/file", e.Config.URL, id), body)
+	if err != nil {
+		return err
+	}
+	req.Header.Add("Content-Type", writer.FormDataContentType())
+	req.SetBasicAuth(e.Config.Username, e.Config.Password)
+
+	_, err = e.doRequest(req, nil)
+	return err
 }

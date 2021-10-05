@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/http/httputil"
@@ -9,18 +11,22 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/ugent-library/biblio-backend/internal/engine"
+	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backend/internal/views"
 	"github.com/unrolled/render"
 )
 
 type PublicationsFiles struct {
 	engine *engine.Engine
 	render *render.Render
+	router *mux.Router
 }
 
-func NewPublicationsFiles(e *engine.Engine, r *render.Render) *PublicationsFiles {
+func NewPublicationsFiles(e *engine.Engine, r *render.Render, router *mux.Router) *PublicationsFiles {
 	return &PublicationsFiles{
 		engine: e,
 		render: r,
+		router: router,
 	}
 }
 
@@ -98,4 +104,63 @@ func (c *PublicationsFiles) Thumbnail(w http.ResponseWriter, r *http.Request) {
 	r.Host = url.Host
 	r.SetBasicAuth(c.engine.Config.Username, c.engine.Config.Password)
 	proxy.ServeHTTP(w, r)
+}
+
+func (c *PublicationsFiles) Upload(w http.ResponseWriter, r *http.Request) {
+	id := mux.Vars(r)["id"]
+	pub, err := c.engine.GetPublication(id)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	// 2GB limit
+	if err := r.ParseMultipartForm(2000000000); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	file, handler, err := r.FormFile("file")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	defer file.Close()
+
+	// detect content type
+	buff := make([]byte, 512)
+	_, err = file.Read(buff)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	filetype := http.DetectContentType(buff)
+	// rewind
+	_, err = file.Seek(0, io.SeekStart)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	pubFile := models.PublicationFile{
+		Filename:    handler.Filename,
+		FileSize:    int(handler.Size),
+		ContentType: filetype,
+	}
+
+	fileContents, err := ioutil.ReadAll(file)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if err := c.engine.AddPublicationFile(id, pubFile, fileContents); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	pub, _ = c.engine.GetPublication(id)
+
+	c.render.HTML(w, http.StatusCreated, "publication/show", views.NewPublicationData(r, c.render, pub))
 }

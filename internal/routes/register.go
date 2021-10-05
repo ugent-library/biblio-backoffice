@@ -18,7 +18,7 @@ func Register(e *engine.Engine, r *mux.Router, renderer *render.Render, sessionN
 	authController := controllers.NewAuth(e, sessionName, sessionStore, oidcClient)
 	publicationController := controllers.NewPublications(e, renderer)
 	datasetController := controllers.NewDatasets(e, renderer)
-	publicationFilesController := controllers.NewPublicationsFiles(e, renderer)
+	publicationFilesController := controllers.NewPublicationsFiles(e, renderer, r)
 	publicationDetailsController := controllers.NewPublicationsDetails(e, renderer)
 	datasetDetailsController := controllers.NewDatasetDetails(e, renderer)
 	datasetProjectsController := controllers.NewDatasetProjects(e, renderer)
@@ -65,6 +65,9 @@ func Register(e *engine.Engine, r *mux.Router, renderer *render.Render, sessionN
 	publicationRouter.HandleFunc("/{id}/file/{file_id}/thumbnail", publicationFilesController.Thumbnail).
 		Methods("GET").
 		Name("publication_file_thumbnail")
+	publicationRouter.HandleFunc("/{id}/file", publicationFilesController.Upload).
+		Methods("POST").
+		Name("upload_publication_file")
 
 	// Publication details HTMX fragments
 	publicationRouter.HandleFunc("/{id}/htmx", publicationDetailsController.Show).
