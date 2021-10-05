@@ -1,0 +1,70 @@
+<div id="modal-backdrop" class="modal-backdrop fade show" style="display:block;"></div>
+<div class="modal show" id="addDatasets" tabindex="-1" style="display: block;" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Select projects</h2>
+            </div>
+            <div class="modal-body">
+                <label class="sr-only" for="search">Search</label>
+                <input class="form-control" type="text" name="search" placeholder="Search...">
+                <ul class="list-group mt-6">
+                    <li class="list-group-item">
+                        <div class="d-flex w-100">
+                            <div class="w-100">
+                                <div class="d-flex align-items-start">
+                                    <img class="list-group-item-thumbnail" src="/images/dataset-1.jpg" height="96">
+                                    <div class="list-group-item-content">
+                                        <div class="list-group-item-text">
+                                            <h4 class="c-h4">Ankh Morkpocian project granted by the Patrician to the University of Magic</h4>
+                                            <div class="c-body-small text-muted">Description</div>
+                                            <div class="text-muted c-body-small">Project ID: 20393</div>
+                                        </div>
+                                        <div class="list-group-item-meta mt-2">
+                                        <div class="list-group-item-meta-left">
+                                        </div>
+                                        <div class="list-group-item-meta-right">
+                                            <button class="btn btn-primary"
+                                                hx-patch="/dataset/{{ .Dataset.ID }}/htmx/projects/add/1234"
+                                                hx-swap="innerHTML"
+                                                hx-target=".dataset-projects"
+                                            >Add Project</button>
+                                        </div>
+                                    </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="d-flex w-100">
+                            <div class="w-100">
+                                <div class="d-flex align-items-start">
+                                    <img class="list-group-item-thumbnail" src="/images/dataset-1.jpg" height="96">
+                                    <div class="list-group-item-content">
+                                        <div class="list-group-item-text">
+                                            <h4 class="c-h4">Ankh Morkpocian project granted by the Patrician to the University of Magic</h4>
+                                            <div class="c-body-small text-muted">Description</div>
+                                            <div class="text-muted c-body-small">Project ID: 20393</div>
+                                        </div>
+                                        <div class="list-group-item-meta mt-2">
+                                        <div class="list-group-item-meta-left">
+                                        </div>
+                                        <div class="list-group-item-meta-right">
+                                            <button class="btn btn-primary">Add Project</button>
+                                        </div>
+                                    </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-link" data-dismiss="modal">Cancel</button>
+                {{/* <button class="btn btn-primary" data-dismiss="modal">Add Datasets</button> */}}
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,20 @@
+<div id="modal-backdrop" class="modal-backdrop fade show" style="display:block;"></div>
+<div class="modal show" id="addDatasets" tabindex="-1" style="display: block;" aria-modal="true" role="dialog">
+<div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">Are you sure</h2>
+        </div>
+        <div class="modal-body">
+            <p>Are you sure you want to remove this item {{ .ProjectID }} {{ .ID }}</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-link" data-dismiss="modal">Cancel</button>
+            <button class="btn btn-danger"
+                hx-patch="/dataset/{{ .ID }}/htmx/projects/remove/{{ .ProjectID }}"
+                hx-swap="innerHTML"
+                hx-target=".dataset-projects"
+            >Delete</button>
+        </div>
+    </div>
+</div>

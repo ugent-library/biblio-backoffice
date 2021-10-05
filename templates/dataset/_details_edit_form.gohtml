@@ -10,7 +10,7 @@
 </div>
 {{ end }}
 
-<form hx-patch="/dataset/{{ .Dataset.ID }}/htmx/edit" hx-swap="innerHTML" hx-target="closest .dataset-details">
+<form hx-patch="/dataset/{{ .Dataset.ID }}/htmx/details/edit" hx-swap="innerHTML" hx-target="closest .dataset-details">
     <div class="card-header">
         <div class="collapse-trigger" data-toggle="collapse" data-target="#collapse-details" aria-expanded="true" aria-controls="collapse-details"></div>
         <div class="bc-toolbar">
@@ -20,7 +20,7 @@
             <div class="bc-toolbar-right">
                 <div class="c-button-toolbar" data-panel-state="edit">
                     <button class="btn btn-outline-primary btn-cancel"
-                        hx-get="/dataset/{{ .Dataset.ID }}/htmx"
+                        hx-get="/dataset/{{ .Dataset.ID }}/htmx/details"
                         hx-swap="innerHTML"
                         hx-target=".dataset-details"
                     >
@@ -48,9 +48,6 @@
                 <li class="list-group-item">
                     {{.RenderFormList "DataFormat" "/data/data_format" "Data Format" .Dataset.DataFormat "dataFormat" "" false 3}}
                     <p>KEYWORDS</p>
-                </li>
-                <li class="list-group-item">
-                    <p>PROJECT</p>
                 </li>
             </ul>
         </div>
