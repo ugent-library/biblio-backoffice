@@ -75,6 +75,7 @@ type Publication struct {
 	ArxivID                 string                   `json:"arxiv_id,omitempty"`
 	Author                  []PublicationContributor `json:"author,omitempty"`
 	Classification          string                   `json:"classification,omitempty"`
+	CompletenessScore       int                      `json:"completeness_score,omitempty"`
 	Conference              PublicationConference    `json:"conference,omitempty"`
 	ConferenceType          string                   `json:"conference_type,omitempty"`
 	CreatorID               string                   `json:"creator_id,omitempty"`
@@ -113,20 +114,22 @@ type Publication struct {
 	PageCount               string                   `json:"page_count,omitempty"`
 	PageFirst               string                   `json:"page_first,omitempty"`
 	PageLast                string                   `json:"page_last,omitempty"`
+	PlaceOfPublication      string                   `json:"place_of_publication,omitempty"`
 	Project                 []PublicationProject     `json:"project,omitempty"`
 	Publication             string                   `json:"publication,omitempty"`
 	PublicationAbbreviation string                   `json:"publication_abbreviation,omitempty"`
 	PublicationStatus       string                   `json:"publication_status,omitempty"`
+	Publisher               string                   `json:"publisher,omitempty"`
 	PubMedID                string                   `json:"pubmed_id,omitempty"`
+	ReportNumber            string                   `json:"report_number,omitempty"`
+	ResearchField           []string                 `json:"research_field,omitempty"`
 	ReviewerNote            string                   `json:"reviewer_note,omitempty"`
 	ReviewerTags            []string                 `json:"reviewer_tags,omitempty"`
+	SeriesTitle             string                   `json:"series_title,omitempty"`
 	SourceDB                string                   `json:"source_db,omitempty"`
 	SourceID                string                   `json:"source_id,omitempty"`
 	SourceRecord            string                   `json:"source_record,omitempty"`
-	SeriesTitle             string                   `json:"series_title,omitempty"`
 	Status                  string                   `json:"status,omitempty"`
-	ReportNumber            string                   `json:"report_number,omitempty"`
-	ResearchField           []string                 `json:"research_field,omitempty"`
 	Supervisor              []PublicationContributor `json:"supervisor,omitempty"`
 	Title                   string                   `json:"title,omitempty"`
 	Type                    string                   `json:"type,omitempty"`
@@ -136,8 +139,6 @@ type Publication struct {
 	WOSID                   string                   `json:"wos_id,omitempty"`
 	WOSType                 string                   `json:"wos_type,omitempty"`
 	Year                    string                   `json:"year,omitempty"`
-	Publisher               string                   `json:"publisher,omitempty"`
-	PlaceOfPublication      string                   `json:"place_of_publication,omitempty"`
 }
 
 func (p *Publication) IsOpenAccess() bool {
