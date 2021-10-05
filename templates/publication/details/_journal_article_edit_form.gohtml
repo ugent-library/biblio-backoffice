@@ -38,7 +38,7 @@
             <ul class="list-group list-group-flush" data-panel-state="edit">
                 <li class="list-group-item">
                     {{.RenderFormList "Type" "/data/type" "Publication Type" .Publication.Type "type" "This is a helper text" false 3}}
-                    {{.RenderFormText .Publication.DOI "DOI" "/data/DOI" "DOI" "" false 3}}
+                    {{.RenderFormText .Publication.DOI "DOI" "/data/doi" "DOI" "" false 3}}
 
                     <div class="form-group row">
                         <label class="col-3 col-form-label" for="issnIsbn">ISSN/ISBN</label>
@@ -67,7 +67,7 @@
                     {{.RenderFormList "Classification" "/data/classification" "Classification" .Publication.Classification "Classification" "" false 3}}
                     {{.RenderFormList "JournalArticleType" "/data/journal_article_type" "Article Type" .Publication.JournalArticleType "Classification" "" false 3}}
                     {{.RenderFormText .Publication.ArticleNumber "ArticleNumber" "/data/article_number" "Article number" "" false 3}}
-                    {{.RenderFormText .Publication.WOSType "WOSType" "/data/WOSType" "WOS type" "It's a tooltip!" false 3}}
+                    {{.RenderFormText .Publication.WOSType "WOSType" "/data/wos_type" "WOS type" "It's a tooltip!" false 3}}
                 </li>
                 <li class="list-group-item">
                     <!-- Does not exist? -->
