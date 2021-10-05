@@ -27,7 +27,7 @@
                 <li class="list-group-item">
                     {{.RenderText .Dataset.Title "Title" true}}
                     {{.RenderText .Dataset.DOI "DOI" true}}
-                    <p>LINK</p>
+                    {{.RenderText .Dataset.URL "URL" true}}
                 </li>
                 <li class="list-group-item">
                     {{.RenderText .Dataset.Publisher "Publisher" false}}
