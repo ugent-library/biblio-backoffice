@@ -92,6 +92,18 @@ func (f DatasetForm) RenderFormList(key, pointer, label string, selectedTerm str
 		"proceedingsPaper": "Proceedings Paper",
 	}
 
+	vocabulary["dataFormat"] = map[string]string{
+		"xml":   "XML",
+		"pdf":   "PDF",
+		"json":  "JSON",
+		"txt":   "TXT",
+		"docx":  "DOCX",
+		"zip":   "ZIP",
+		"xlsx":  "XLSX",
+		"pptx":  "PPTX",
+		"rdf":   "RDF",
+		"other": "Other",
+	}
 	// Generate list of dropdown values, set selectedTerm in dropdown to "selected"
 	// TODO: if we get a map back, we'll need to explicitly sort (numerical, alphabetically) since maps are hashmaps
 	var terms []*listFormValues

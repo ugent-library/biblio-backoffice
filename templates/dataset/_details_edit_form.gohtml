@@ -46,7 +46,7 @@
                     {{.RenderFormText .Dataset.Year "Year" "/data/year" "Publication Year" "" true 3}}
                 </li>
                 <li class="list-group-item">
-                    <p>DATA FORMATS</p>
+                    {{.RenderFormList "DataFormat" "/data/data_format" "Data Format" .Dataset.DataFormat "dataFormat" "" false 3}}
                     <p>KEYWORDS</p>
                 </li>
                 <li class="list-group-item">
