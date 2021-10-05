@@ -9,6 +9,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/views"
 	"github.com/ugent-library/go-web/forms"
+	"github.com/ugent-library/go-web/jsonapi"
 	"github.com/unrolled/render"
 )
 
@@ -79,15 +80,18 @@ func (c *PublicationsDetails) SaveForm(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	savedPub, formErrors := c.engine.UpdatePublication(pub)
+	savedPub, err := c.engine.UpdatePublication(pub)
 
-	if formErrors != nil {
+	if formErrors, ok := err.(jsonapi.Errors); ok {
 		c.render.HTML(w, 200,
 			fmt.Sprintf("publication/details/_%s_edit_form", pub.Type),
 			views.NewPublicationForm(r, c.render, pub, formErrors),
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
 
+		return
+	} else if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
