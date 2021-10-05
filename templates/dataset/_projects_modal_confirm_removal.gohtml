@@ -9,7 +9,7 @@
             <p>Are you sure you want to remove this item {{ .ProjectID }} {{ .ID }}</p>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-link" data-dismiss="modal">Cancel</button>
+            <button class="btn btn-link modal-close">Cancel</button>
             <button class="btn btn-danger"
                 hx-patch="/dataset/{{ .ID }}/htmx/projects/remove/{{ .ProjectID }}"
                 hx-swap="innerHTML"
