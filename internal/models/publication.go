@@ -79,7 +79,6 @@ type Publication struct {
 	Conference              PublicationConference    `json:"conference,omitempty"`
 	ConferenceType          string                   `json:"conference_type,omitempty"`
 	CreatorID               string                   `json:"creator_id,omitempty"`
-	DataFormat              string                   `json:"data_format,omitempty"`
 	DateCreated             *time.Time               `json:"date_created,omitempty"`
 	DateUpdated             *time.Time               `json:"date_updated,omitempty"`
 	DefenseDate             string                   `json:"defense_date,omitempty"`
@@ -134,6 +133,7 @@ type Publication struct {
 	Supervisor              []PublicationContributor `json:"supervisor,omitempty"`
 	Title                   string                   `json:"title,omitempty"`
 	Type                    string                   `json:"type,omitempty"`
+	URL                     string                   `json:"url,omitempty"`
 	UserID                  string                   `json:"user_id,omitempty"`
 	Version                 int                      `json:"_version,omitempty"`
 	Volume                  string                   `json:"volume,omitempty"`
