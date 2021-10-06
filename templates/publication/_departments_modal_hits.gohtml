@@ -1,0 +1,30 @@
+{{ $publicationId := .Publication.ID }}
+{{ range $key, $hit := .Hits }}
+<li class="list-group-item">
+    <div class="d-flex w-100">
+        <div class="w-100">
+            <div class="d-flex align-items-start">
+                <img class="list-group-item-thumbnail" src="{{ $hit.ThumbnailURL }}" height="96">
+                <div class="list-group-item-content">
+                    <div class="list-group-item-text">
+                        <h4 class="c-h4">{{ $hit.Heading }}</h4>
+                        <div class="c-body-small text-muted">{{ $hit.Description }}</div>
+                        <div class="text-muted c-body-small">Department ID: {{ $hit.ID }}</div>
+                    </div>
+                    <div class="list-group-item-meta mt-2">
+                    <div class="list-group-item-meta-left">
+                    </div>
+                    <div class="list-group-item-meta-right">
+                        <button class="btn btn-primary"
+                            hx-patch="/publication/{{ $publicationId }}/htmx/departments/add/{{ $hit.ID }}"
+                            hx-swap="innerHTML"
+                            hx-target=".publication-departments"
+                        >Add Department</button>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</li>
+{{ end }}

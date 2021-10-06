@@ -27,6 +27,10 @@ func (d PublicationData) RenderProjects() (template.HTML, error) {
 	return RenderPartial(d.render, "publication/_projects", d)
 }
 
+func (d PublicationData) RenderDepartments() (template.HTML, error) {
+	return RenderPartial(d.render, "publication/_departments", d)
+}
+
 func (d PublicationData) RenderConference() (template.HTML, error) {
 	return RenderPartial(d.render, fmt.Sprintf("publication/conference/_%s", d.Publication.Type), d)
 }
