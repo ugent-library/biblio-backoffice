@@ -9,7 +9,5 @@ RUN go build -o app -v ./main.go
 FROM alpine:latest
 WORKDIR /dist
 COPY --from=build /build .
-EXPOSE 3000
-EXPOSE 80
-EXPOSE 443
+EXPOSE 3333
 CMD ["/dist/app", "server", "start"]
