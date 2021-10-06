@@ -11,23 +11,22 @@ import (
 	"github.com/unrolled/render"
 )
 
-type DatasetProjects struct {
+type PublicationProjects struct {
 	engine *engine.Engine
 	render *render.Render
 }
 
-func NewDatasetProjects(e *engine.Engine, r *render.Render) *DatasetProjects {
-	return &DatasetProjects{
+func NewPublicationProjects(e *engine.Engine, r *render.Render) *PublicationProjects {
+	return &PublicationProjects{
 		engine: e,
 		render: r,
 	}
 }
 
-func (d *DatasetProjects) ListProjects(w http.ResponseWriter, r *http.Request) {
+func (p *PublicationProjects) ListProjects(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
-	// TODO: set constraint to research_data
-	pub, err := d.engine.GetPublication(id)
+	pub, err := p.engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -35,13 +34,13 @@ func (d *DatasetProjects) ListProjects(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get 20 random projects (no search, init state)
-	hits, _ := d.engine.SuggestProjects("")
+	hits, _ := p.engine.SuggestProjects("")
 
-	d.render.HTML(w, 200,
-		"dataset/_projects_modal",
+	p.render.HTML(w, 200,
+		"publication/_projects_modal",
 		struct {
-			Dataset *models.Publication
-			Hits    []models.Completion
+			Publication *models.Publication
+			Hits        []models.Completion
 		}{
 			pub,
 			hits,
@@ -50,11 +49,10 @@ func (d *DatasetProjects) ListProjects(w http.ResponseWriter, r *http.Request) {
 	)
 }
 
-func (d *DatasetProjects) ActiveSearch(w http.ResponseWriter, r *http.Request) {
+func (p *PublicationProjects) ActiveSearch(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
-	// TODO: set constraint to research_data
-	pub, err := d.engine.GetPublication(id)
+	pub, err := p.engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -69,13 +67,13 @@ func (d *DatasetProjects) ActiveSearch(w http.ResponseWriter, r *http.Request) {
 
 	// Get 20 results from the search query
 	query := r.Form["search"]
-	hits, _ := d.engine.SuggestProjects(query[0])
+	hits, _ := p.engine.SuggestProjects(query[0])
 
-	d.render.HTML(w, 200,
-		"dataset/_projects_modal_hits",
+	p.render.HTML(w, 200,
+		"publication/_projects_modal_hits",
 		struct {
-			Dataset *models.Publication
-			Hits    []models.Completion
+			Publication *models.Publication
+			Hits        []models.Completion
 		}{
 			pub,
 			hits,
@@ -84,48 +82,48 @@ func (d *DatasetProjects) ActiveSearch(w http.ResponseWriter, r *http.Request) {
 	)
 }
 
-func (d *DatasetProjects) AddToDataset(w http.ResponseWriter, r *http.Request) {
+func (p *PublicationProjects) AddToPublication(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	projectId := mux.Vars(r)["project_id"]
 
-	// TODO: set constraint to research_data
-	pub, err := d.engine.GetPublication(id)
+	pub, err := p.engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
-	project, err := d.engine.GetProject(projectId)
+	project, err := p.engine.GetProject(projectId)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
+	// TODO: get the project based on the ID from the LibreCat REST API
 	publicationProject := models.PublicationProject{
 		ID:   projectId,
 		Name: project.Name,
 	}
 	pub.Project = append(pub.Project, publicationProject)
 
-	savedPub, _ := d.engine.UpdatePublication(pub)
+	savedPub, _ := p.engine.UpdatePublication(pub)
 
 	// TODO: error handling if project save fails
 
-	d.render.HTML(w, 200,
-		"dataset/_projects",
-		views.NewDatasetData(r, d.render, savedPub),
+	p.render.HTML(w, 200,
+		"publication/_projects",
+		views.NewPublicationData(r, p.render, savedPub),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
 
-func (d *DatasetProjects) ConfirmRemoveFromDataset(w http.ResponseWriter, r *http.Request) {
+func (p *PublicationProjects) ConfirmRemoveFromPublication(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	projectId := mux.Vars(r)["project_id"]
 
-	d.render.HTML(w, 200,
-		"dataset/_projects_modal_confirm_removal",
+	p.render.HTML(w, 200,
+		"publication/_projects_modal_confirm_removal",
 		struct {
 			ID        string
 			ProjectID string
@@ -137,12 +135,12 @@ func (d *DatasetProjects) ConfirmRemoveFromDataset(w http.ResponseWriter, r *htt
 	)
 }
 
-func (d *DatasetProjects) RemoveFromDataset(w http.ResponseWriter, r *http.Request) {
+func (p *PublicationProjects) RemoveFromPublication(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	projectId := mux.Vars(r)["project_id"]
 
 	// TODO: set constraint to research_data
-	pub, err := d.engine.GetPublication(id)
+	pub, err := p.engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -163,11 +161,11 @@ func (d *DatasetProjects) RemoveFromDataset(w http.ResponseWriter, r *http.Reque
 	pub.Project = projects
 
 	// TODO: error handling
-	savedPub, _ := d.engine.UpdatePublication(pub)
+	savedPub, _ := p.engine.UpdatePublication(pub)
 
-	d.render.HTML(w, 200,
-		"dataset/_projects",
-		views.NewDatasetData(r, d.render, savedPub),
+	p.render.HTML(w, 200,
+		"publication/_projects",
+		views.NewPublicationData(r, p.render, savedPub),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
