@@ -1,5 +1,5 @@
 <div class="form-group row">
-    <label class="col-3 col-form-label" for="{{ .Key }}">
+    <label class="col-3 col-form-label" for="{{ .Name }}">
         {{.Label}}
         {{if .Required}}&nbsp;<abbr class="required" title="Required">*</abbr>{{end}}
         {{ if .Tooltip }}<a class="text-muted mx-2" href="#" data-container="body" data-toggle="popover" data-placement="right" data-content="{{ .Tooltip }}">
@@ -17,8 +17,8 @@
                     {{ end }}
                 </div>
             </div>
-            <input class="form-control" id="{{ .Key }}-select" type="hidden" value="{{ .DefaultValue }}">
-            <input class="form-control" id="{{ .Key }}" type="text" value="{{if .Text}}{{.Text}}{{else}}{{end}}">
+            <input class="form-control" id="{{ .Name }}-select" type="hidden" value="{{ .DefaultValue }}">
+            <input class="form-control" id="{{ .Name }}" type="text" value="{{if .Value}}{{.Value}}{{else}}{{end}}">
 
             {{ if .Multiple }}
             <button class="btn btn-outline-primary btn-icon-only ml-3" type="button">
