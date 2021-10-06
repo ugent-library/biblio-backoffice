@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	defaultHost          = "localhost"
+	defaultHost          = ""
 	defaultPort          = 3000
 	defaultBaseURL       = "http://localhost:3000"
 	defaultSessionName   = "biblio-backend"
