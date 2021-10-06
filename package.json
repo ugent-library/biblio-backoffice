@@ -26,7 +26,7 @@
     "nodemonConfig": {
         "exec": "go run main.go server start --host localhost --port 3001 || exit 1",
         "signal": "SIGTERM",
-        "ext": "go,gohtml,json,po",
+        "ext": "go,gohtml,json",
         "delay": "1500"
     }
 }
