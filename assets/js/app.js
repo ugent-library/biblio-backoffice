@@ -5,6 +5,7 @@ import header from './ui/header.js'
 import changeSubmit from './ui/form_change_submit.js'
 import submit from './ui/form_submit.js'
 import modalClose from './ui/modal_close.js'
+import modalPopper from './ui/modal_popper.js'
 
 bootstrap()
 check()
@@ -13,3 +14,4 @@ header()
 changeSubmit()
 submit()
 modalClose()
+modalPopper()

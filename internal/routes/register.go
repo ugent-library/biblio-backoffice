@@ -21,6 +21,7 @@ func Register(e *engine.Engine, r *mux.Router, renderer *render.Render, sessionN
 	publicationFilesController := controllers.NewPublicationsFiles(e, renderer, r)
 	publicationDetailsController := controllers.NewPublicationsDetails(e, renderer)
 	publicationProjectsController := controllers.NewPublicationProjects(e, renderer)
+	publicationDepartmentsController := controllers.NewPublicationDepartments(e, renderer)
 	datasetDetailsController := controllers.NewDatasetDetails(e, renderer)
 	datasetProjectsController := controllers.NewDatasetProjects(e, renderer)
 
@@ -97,6 +98,23 @@ func Register(e *engine.Engine, r *mux.Router, renderer *render.Render, sessionN
 	publicationRouter.HandleFunc("/{id}/htmx/projects/remove/{project_id}", publicationProjectsController.RemoveFromPublication).
 		Methods("PATCH").
 		Name("publication_projects_remove_from_publication")
+
+	// Publication departments HTMX fragments
+	publicationRouter.HandleFunc("/{id}/htmx/departments/list", publicationDepartmentsController.ListDepartments).
+		Methods("GET").
+		Name("publicationDepartments")
+	publicationRouter.HandleFunc("/{id}/htmx/departments/list/activesearch", publicationDepartmentsController.ActiveSearch).
+		Methods("POST").
+		Name("publicationDepartments_activesearch")
+	publicationRouter.HandleFunc("/{id}/htmx/departments/add/{department_id}", publicationDepartmentsController.AddToPublication).
+		Methods("PATCH").
+		Name("publicationDepartments_add_to_publication")
+	publicationRouter.HandleFunc("/{id}/htmx/departments/remove/{department_id}", publicationDepartmentsController.ConfirmRemoveFromPublication).
+		Methods("GET").
+		Name("publicationDepartments_confirm_remove_from_publication")
+	publicationRouter.HandleFunc("/{id}/htmx/departments/remove/{department_id}", publicationDepartmentsController.RemoveFromPublication).
+		Methods("PATCH").
+		Name("publicationDepartments_remove_from_publication")
 
 	// datasets
 	datasetRouter := r.PathPrefix("/dataset").Subrouter()
