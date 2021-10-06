@@ -96,12 +96,18 @@ func (d *DatasetProjects) AddToDataset(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO: get the project based on the ID from the LibreCat REST API
-	project := models.PublicationProject{
-		ID:   projectId,
-		Name: "Ankh Morkpocian project granted by the Patrician to the University of Magic",
+	project, err := d.engine.GetProject(projectId)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
 	}
-	pub.Project = append(pub.Project, project)
+
+	publicationProject := models.PublicationProject{
+		ID:   projectId,
+		Name: project.Name,
+	}
+	pub.Project = append(pub.Project, publicationProject)
 
 	savedPub, _ := d.engine.UpdatePublication(pub)
 
