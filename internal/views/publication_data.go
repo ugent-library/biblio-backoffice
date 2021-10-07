@@ -15,26 +15,20 @@ type PublicationData struct {
 	Publication *models.Publication
 }
 
-type textData struct {
-	Text     string
-	Label    string
-	Required bool
-	Tooltip  string
-}
-
-type listData struct {
-	List     []string
-	Label    string
-	Required bool
-	Tooltip  string
-}
-
 func NewPublicationData(r *http.Request, render *render.Render, p *models.Publication) PublicationData {
 	return PublicationData{Data: NewData(r), render: render, Publication: p}
 }
 
 func (d PublicationData) RenderDetails() (template.HTML, error) {
 	return RenderPartial(d.render, fmt.Sprintf("publication/details/_%s", d.Publication.Type), d)
+}
+
+func (d PublicationData) RenderProjects() (template.HTML, error) {
+	return RenderPartial(d.render, "publication/_projects", d)
+}
+
+func (d PublicationData) RenderDepartments() (template.HTML, error) {
+	return RenderPartial(d.render, "publication/_departments", d)
 }
 
 func (d PublicationData) RenderConference() (template.HTML, error) {

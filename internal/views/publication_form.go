@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/go-web/jsonapi"
 	"github.com/unrolled/render"
 )
 
@@ -12,72 +13,21 @@ type PublicationForm struct {
 	Data
 	render      *render.Render
 	Publication *models.Publication
-	FormErrors  []models.FormError
+	FormErrors  []jsonapi.Error
 }
 
-type textFormData struct {
-	Key      string
-	Text     string
-	Label    string
-	Required bool
-	Tooltip  string
-	Cols     int
-	HasError bool
-	Error    models.FormError
-}
-
-type textMultipleFormData struct {
-	Key      string
-	Text     []string
-	Label    string
-	Required bool
-	Tooltip  string
-	Cols     int
-	HasError bool
-	Error    models.FormError
-}
-
-type listFormValues struct {
-	Key      string
-	Value    string
-	Selected bool
-}
-
-type listFormData struct {
-	Key      string
-	Values   []*listFormValues
-	Label    string
-	Required bool
-	Tooltip  string
-	Cols     int
-	HasError bool
-	Error    models.FormError
-}
-
-type listMultipleFormData struct {
-	Key        string
-	Values     map[int][]*listFormValues
-	Vocabulary map[string]string
-	Label      string
-	Required   bool
-	Tooltip    string
-	Cols       int
-	HasError   bool
-	Error      models.FormError
-}
-
-func NewPublicationForm(r *http.Request, render *render.Render, p *models.Publication, fe []models.FormError) PublicationForm {
+func NewPublicationForm(r *http.Request, render *render.Render, p *models.Publication, fe []jsonapi.Error) PublicationForm {
 	return PublicationForm{Data: NewData(r), render: render, Publication: p, FormErrors: fe}
 }
 
 func (f PublicationForm) RenderFormText(text, key, pointer, label string, tooltip string, required bool, cols int) (template.HTML, error) {
 
-	var formError models.FormError
+	var formError jsonapi.Error
 	hasError := false
 
 	if f.FormErrors != nil {
 		for _, err := range f.FormErrors {
-			if err.Source["pointer"] == pointer {
+			if err.Source.Pointer == pointer {
 				formError = err
 				hasError = true
 			}
@@ -102,12 +52,12 @@ func (f PublicationForm) RenderFormTextMultiple(text interface{}, key, pointer, 
 	// TODO: remove me
 	values := []string{"foo", "bar"}
 
-	var formError models.FormError
+	var formError jsonapi.Error
 	hasError := false
 
 	if f.FormErrors != nil {
 		for _, err := range f.FormErrors {
-			if err.Source["pointer"] == pointer {
+			if err.Source.Pointer == pointer {
 				formError = err
 				hasError = true
 			}
@@ -128,12 +78,12 @@ func (f PublicationForm) RenderFormTextMultiple(text interface{}, key, pointer, 
 }
 
 func (f PublicationForm) RenderFormList(key, pointer, label string, selectedTerm string, taxonomy string, tooltip string, required bool, cols int) (template.HTML, error) {
-	var formError models.FormError
+	var formError jsonapi.Error
 	hasError := false
 
 	if f.FormErrors != nil {
 		for _, err := range f.FormErrors {
-			if err.Source["pointer"] == pointer {
+			if err.Source.Pointer == pointer {
 				formError = err
 				hasError = true
 			}
@@ -203,12 +153,12 @@ func (f PublicationForm) RenderFormList(key, pointer, label string, selectedTerm
 // TODO: We'll need dedicated functions for fields that take specific types ([]PublicationDepartment, []PublicationProject)
 //    type assertion in one single function would become too complex quickly.
 func (f PublicationForm) RenderFormListMultiple(selectedTerms interface{}, key, pointer, label string, taxonomy string, tooltip string, required bool, cols int) (template.HTML, error) {
-	var formError models.FormError
+	var formError jsonapi.Error
 	hasError := false
 
 	if f.FormErrors != nil {
 		for _, err := range f.FormErrors {
-			if err.Source["pointer"] == pointer {
+			if err.Source.Pointer == pointer {
 				formError = err
 				hasError = true
 			}

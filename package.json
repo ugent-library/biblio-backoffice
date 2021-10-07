@@ -20,13 +20,14 @@
         "htmx.org": "^1.5.0",
         "jquery": "^3.6.0",
         "node-sass": "^4.14.1",
+        "popper.js": "^1.16.1",
         "select2": "^4.1.0-rc.0",
         "tablesort": "^5.1.0"
     },
     "nodemonConfig": {
         "exec": "go run main.go server start --host localhost --port 3001 || exit 1",
         "signal": "SIGTERM",
-        "ext": "go,gohtml,json,po",
+        "ext": "go,gohtml,json",
         "delay": "1500"
     }
 }

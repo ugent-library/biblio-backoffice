@@ -1,0 +1,18 @@
+{{if .CompletenessScore}}
+<div class="c-progress-bar c-progress-bar--{{if eq .CompletenessScore 3}}high{{else if eq .CompletenessScore 2}}medium{{else}}low{{end}}">
+    <div class="c-progress-bar__progress">
+        <div class="c-progress-bar__bar c-progress-bar__bar--start"></div>
+        <div class="c-progress-bar__bar c-progress-bar__bar--middle"></div>
+        <div class="c-progress-bar__bar c-progress-bar__bar--end"></div>
+    </div>
+    <div class="c-progress-bar__label">
+        {{if eq .CompletenessScore 3}}
+            Completed
+        {{else if eq .CompletenessScore 2}}
+            Good
+        {{else}}
+            Missing full text
+        {{end}}
+    </div>
+</div>
+{{end}}

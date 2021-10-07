@@ -12,7 +12,7 @@
                 </div>
                 <div class="bc-toolbar-right">
                     <div class="bc-toolbar-item">
-                        <div class="dropdown">
+                        <div class="dropdown dropleft">
                             <button class="btn btn-outline-primary btn-icon-only" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="if if-more"></i>
                             </button>
@@ -95,6 +95,8 @@
         <div class="tab-content">
             <div id="description-content" class="tab-pane fade show active" role="tabpanel" aria-labelledby="description-tab">
                 {{.RenderDetails}}
+                {{.RenderProjects}}
+                {{.RenderDepartments}}
                 {{.RenderConference}}
                 {{.RenderAbstract}}
                 {{.RenderLinks}}

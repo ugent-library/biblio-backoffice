@@ -1,0 +1,72 @@
+{{ if not .IsHTMXRequest }}<div class="card card-collapsible mb-6 publication-departments">{{ end }}
+    <div class="card-header">
+        <div class="collapse-trigger collapsed" data-toggle="collapse" data-target="#collapse-departments" aria-expanded="false" aria-controls="collapse-departments"></div>
+        <div class="bc-toolbar">
+            <div class="bc-toolbar-left">
+                <i class="if if-chevron-right mr-4 text-muted"></i>Departments
+            </div>
+            <div class="bc-toolbar-right">
+                <div class="c-button-toolbar" data-panel-state="read">
+                    <button class="btn btn-outline-primary"
+                        hx-get="/publication/{{ .Publication.ID }}/htmx/departments/list"
+                        hx-target="#publications-departments-modal"
+                        hx-trigger="click"
+                    >
+                        <i class="if if-add"></i>
+                        <div class="btn-text">Add department</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="collapse {{ if .IsHTMXRequest }}show{{ end }}" id="collapse-departments">
+        <div class="card-body p-0" id="edit1">
+            <table class="table">
+                <tbody>
+                    {{ $publicationID := .Publication.ID }}
+                    {{ range $k, $v := .Publication.Department }}
+                    <tr>
+                        <td class="pl-6">
+                            <div class="d-flex w-100">
+                                <div class="w-100">
+                                    <div class="d-flex align-items-start">
+                                        <div class="list-group-item-content">
+                                            <div class="list-group-item-text">
+                                                <h4 class="c-h4">{{ $v.ID }}</h4>
+                                                <div class="text-muted c-body-small">Department ID: {{ $v.ID }}</div>
+                                            </div>
+                                        </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="pr-6">
+                            <div class="c-button-toolbar">
+                                <div class="dropdown">
+                                    <button class="btn btn-link btn-icon-only btn-link-muted" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="if if-more"></i>
+                                    </button>
+                                    <div class="dropdown-menu" style="">
+                                        <button class="dropdown-item" type="button"
+                                            hx-get="/publication/{{ $publicationID }}/htmx/departments/remove/{{ $v.ID }}"
+                                            hx-target="#publications-departments-modal"
+                                            hx-trigger="click"
+                                        >
+                                            <i class="if if-delete"></i>
+                                            <span>Remove from publication</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {{ end }}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="publications-departments-modal" class="modals"></div>
+{{ if not .IsHTMXRequest }}</div>{{ end }}

@@ -7,6 +7,16 @@
         </div>
     </div>
     <div class="card-body p-0">
+        <form class="p-6" action="{{pathFor "upload_publication_file" "id" $.Publication.ID}}"
+            method="POST" enctype="multipart/form-data">
+            <div class="c-file-upload">
+                <input type="file" name="file" class="form-change-submit">
+                <div class="c-file-upload__content">
+                    <p>Drag and drop or</p>
+                    <button class="btn btn-outline-primary">Upload file</button>
+                </div>
+            </div>
+        </form>
         <hr>
         <ul class="list-group list-group-flush">
             {{range .Publication.File}}
@@ -109,7 +119,9 @@
                                 </div>
                             </div>
                             <div class="list-group-item-text">
-                                <h4 class="c-h4">{{.Filename}}</h4>
+                                <a href="{{pathFor "publication_file" "id" $.Publication.ID "file_id" .ID}}">
+                                    <h4 class="c-h4">{{.Filename}}</h4>
+                                </a>
                                 {{with .Description}}<p class="text-muted c-body-small">{{.}}</p>{{end}}
                             </div>
                             <div class="list-group-item-meta">

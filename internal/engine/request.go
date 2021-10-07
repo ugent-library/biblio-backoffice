@@ -77,5 +77,8 @@ func (e *Engine) doRequest(req *http.Request, responseData interface{}) (*http.R
 	if len(p.Errors) > 0 {
 		return res, p.Errors
 	}
-	return res, json.Unmarshal(p.Data, responseData)
+	if responseData != nil {
+		return res, json.Unmarshal(p.Data, responseData)
+	}
+	return res, nil
 }
