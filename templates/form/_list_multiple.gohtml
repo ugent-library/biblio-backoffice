@@ -1,5 +1,5 @@
 <div class="form-group row form-list-multiple">
-   <label class="col-3 col-form-label d-flex align-items-stretch" for="{{ .Name }}">
+   <label class="col-3 col-form-label d-flex align-items-stretch" for="{{ .Key }}">
         {{.Label}}
         {{if .Required}}&nbsp;<abbr class="required" title="Required">*</abbr>{{end}}
         {{ if .Tooltip }}<a class="text-muted mx-2" href="#" data-container="body" data-toggle="popover" data-placement="right" data-content="{{ .Tooltip }}">
@@ -10,9 +10,9 @@
     <div class="col-{{.Cols}} form-values">
         {{ range $fk, $fv := .Values }}
         <div class="d-flex mb-3 form-value">
-            <select class="custom-select form-control" name="{{$.Name}}[{{ $fk }}]">
+            <select class="custom-select form-control" name="{{ $.Key}}[{{ $fk }}]">
                 {{ range $vk, $vv := $fv }}
-                <option value="{{ $vv.Value }}" {{if $vv.Selected}}selected{{ end}}>{{ $vv.Label }}</option>
+                <option value="{{ $vk }}" {{if $vv.Selected}}selected{{ end}}>{{ $vv.Value }}</option>
                 {{ end }}
             </select>
             <button class="btn btn-link-muted btn-icon-only ml-3 form-value-delete" type="button">
@@ -23,9 +23,9 @@
         {{ end }}
 
         <div class="d-flex mb-3 form-value">
-            <select class="custom-select form-control" name="{{ $.Name}}[{{ len .Values }}]">
-                {{ range $i, $p := .Vocabulary }}
-                <option value="{{ $p.Value }}">{{ $p.Label }}</option>
+            <select class="custom-select form-control" name="{{ $.Key}}[{{ len .Values }}]">
+                {{ range $k, $v := .Vocabulary }}
+                <option value="{{ $k }}">{{ $v}}</option>
                 {{ end }}
             </select>
             <button class="btn btn-outline-primary btn-icon-only ml-3 form-value-add" type="button">

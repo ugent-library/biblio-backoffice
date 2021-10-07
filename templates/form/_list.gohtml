@@ -1,5 +1,5 @@
 <div class="form-group row {{ if .HasError }}is-invalid{{ end }}">
-    <label class="col-3 col-form-label" for="{{ .Name }}">
+    <label class="col-3 col-form-label" for="{{ .Key }}">
         {{ .Label }}
         {{ if .Required}}&nbsp;<abbr class="required" title="Required">*</abbr>{{ end }}
         {{ if .Tooltip }}<a class="text-muted mx-2" href="#" data-container="body" data-toggle="popover" data-placement="right" data-content="{{ .Tooltip }}">
@@ -8,9 +8,9 @@
         </a>{{ end }}
     </label>
     <div class="col-{{ .Cols }}">
-        <select class="custom-select form-control {{ if .HasError }}is-invalid{{ end }}" name="{{ .Name }}">
+        <select class="custom-select form-control {{ if .HasError }}is-invalid{{ end }}" name="{{ .Key }}">
             {{ range .Values }}
-            <option value="{{ .Value }}" {{if .Selected}}selected{{ end}}>{{.Label}}</option>
+            <option value="{{ .Key }}" {{if .Selected}}selected{{ end}}>{{ .Value}}</option>
             {{ end }}
         </select>
         {{ if .HasError }}<div class="invalid-feedback">{{ .Error.Title }}</div>{{ end }}

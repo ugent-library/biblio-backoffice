@@ -8,11 +8,6 @@ import (
 	"github.com/unrolled/render"
 )
 
-type Pair struct {
-	Label string
-	Value string
-}
-
 type PublicationForm struct {
 	Data
 	render      *render.Render
@@ -21,8 +16,8 @@ type PublicationForm struct {
 }
 
 type textFormData struct {
-	Name     string
-	Value    string
+	Key      string
+	Text     string
 	Label    string
 	Required bool
 	Tooltip  string
@@ -32,8 +27,8 @@ type textFormData struct {
 }
 
 type textMultipleFormData struct {
-	Name     string
-	Values   []string
+	Key      string
+	Text     []string
 	Label    string
 	Required bool
 	Tooltip  string
@@ -43,13 +38,13 @@ type textMultipleFormData struct {
 }
 
 type listFormValues struct {
+	Key      string
 	Value    string
-	Label    string
 	Selected bool
 }
 
 type listFormData struct {
-	Name     string
+	Key      string
 	Values   []*listFormValues
 	Label    string
 	Required bool
@@ -60,9 +55,9 @@ type listFormData struct {
 }
 
 type listMultipleFormData struct {
-	Name       string
-	Values     [][]*listFormValues
-	Vocabulary []*listFormValues
+	Key        string
+	Values     map[int][]*listFormValues
+	Vocabulary map[string]string
 	Label      string
 	Required   bool
 	Tooltip    string
@@ -75,7 +70,7 @@ func NewPublicationForm(r *http.Request, render *render.Render, p *models.Public
 	return PublicationForm{Data: NewData(r), render: render, Publication: p, FormErrors: fe}
 }
 
-func (f PublicationForm) RenderFormText(value, name, pointer, label string, tooltip string, required bool, cols int) (template.HTML, error) {
+func (f PublicationForm) RenderFormText(text, key, pointer, label string, tooltip string, required bool, cols int) (template.HTML, error) {
 
 	var formError models.FormError
 	hasError := false
@@ -90,9 +85,9 @@ func (f PublicationForm) RenderFormText(value, name, pointer, label string, tool
 	}
 
 	return RenderPartial(f.render, "form/_text", &textFormData{
-		Name:     name,
+		Key:      key,
 		Label:    label,
-		Value:    value,
+		Text:     text,
 		Tooltip:  tooltip,
 		Required: required,
 		Cols:     cols,
@@ -103,7 +98,9 @@ func (f PublicationForm) RenderFormText(value, name, pointer, label string, tool
 
 // TODO: We'll need dedicated functions for Department, Project, etc. because
 // Department, Project take specific types ([]PublicationDepartment, []PublicationProject)
-func (f PublicationForm) RenderFormTextMultiple(values []string, name, pointer, label string, tooltip string, required bool, cols int) (template.HTML, error) {
+func (f PublicationForm) RenderFormTextMultiple(text interface{}, key, pointer, label string, tooltip string, required bool, cols int) (template.HTML, error) {
+	// TODO: remove me
+	values := []string{"foo", "bar"}
 
 	var formError models.FormError
 	hasError := false
@@ -118,9 +115,9 @@ func (f PublicationForm) RenderFormTextMultiple(values []string, name, pointer, 
 	}
 
 	return RenderPartial(f.render, "form/_text_multiple", &textMultipleFormData{
-		Name:     name,
+		Key:      key,
 		Label:    label,
-		Values:   values,
+		Text:     values,
 		Tooltip:  tooltip,
 		Required: required,
 		Cols:     cols,
@@ -130,7 +127,7 @@ func (f PublicationForm) RenderFormTextMultiple(values []string, name, pointer, 
 
 }
 
-func (f PublicationForm) RenderFormList(name, pointer, label string, selectedTerm string, taxonomy string, tooltip string, required bool, cols int) (template.HTML, error) {
+func (f PublicationForm) RenderFormList(key, pointer, label string, selectedTerm string, taxonomy string, tooltip string, required bool, cols int) (template.HTML, error) {
 	var formError models.FormError
 	hasError := false
 
@@ -143,64 +140,56 @@ func (f PublicationForm) RenderFormList(name, pointer, label string, selectedTer
 		}
 	}
 
-  mapLabelEmpty := map[string]string{
-    "classification": "",
-		"articleType": "",
-  }
-
 	// TODO: should come from a different API, use "taxonomy" to fetch list of values from taxonomy
-	vocabulary := make(map[string][]Pair)
-	vocabulary["type"] = []Pair{
-		Pair{Value: "journal_article", Label: "Journal Article"},
-		Pair{Value: "book", Label: "Book"},
-		Pair{Value: "book_chapter", Label: "Book Chapter"},
-		Pair{Value: "book_editor", Label: "Book editor"},
-		Pair{Value: "issue_editor", Label: "Issue editor"},
-		Pair{Value: "conference", Label: "Conference"},
-		Pair{Value: "dissertation", Label: "Dissertation"},
-		Pair{Value: "miscellaneous", Label: "Miscellaneous"},
-		Pair{Value: "report", Label: "Report"},
-		Pair{Value: "preprint", Label:"Preprint"},
+	vocabulary := make(map[string]map[string]string)
+	vocabulary["type"] = map[string]string{
+		"journal_article": "Journal Article",
+		"book":            "Book",
+		"book_chapter":    "Book Chapter",
+		"book_editor":     "Book editor",
+		"issue_editor":    "Issue editor",
+		"conference":      "Conference",
+		"dissertation":    "Dissertation",
+		"miscellaneous":   "Miscellaneous",
+		"report":          "Report",
+		"preprint":        "Preprint",
 	}
 
 	// TODO: should come from a different API, use "taxonomy" to fetch list of values from taxonomy
 	// TODO: This might be hierarchical select with a dep on type: only show "journal article" if type of publication = "Journal Article"
-	vocabulary["classification"] = []Pair{
-		Pair{Value: "U", Label: "U"},
-		Pair{Value: "A1", Label: "A1"},
-		Pair{Value: "A2", Label: "A2"},
-		Pair{Value: "A3", Label: "A3"},
-		Pair{Value: "A4", Label: "A4"},
-		Pair{Value: "V", Label: "V"},
+	vocabulary["classification"] = map[string]string{
+		"journal_article_u":  "Journal Article - U",
+		"journal_article_a1": "Journal Article - A1",
+		"journal_article_a2": "Journal Article - A2",
+		"journal_article_a3": "Journal Article - A3",
+		"journal_article_a4": "Journal Article - A4",
+		"journal_article_v":  "Journal Article - V",
 	}
 
-	vocabulary["articleType"] = []Pair{
-		Pair{Value:	"original", Label: "Original"},
-		Pair{Value: "review", Label: "Review"},
-		Pair{Value:	"letter_note", Label: "Letter note"},
-		Pair{Value: "proceedingsPaper", Label: "Proceedings Paper"},
+	vocabulary["articleType"] = map[string]string{
+		"original":         "Original",
+		"review":           "Review",
+		"letter_note":      "Letter note",
+		"proceedingsPaper": "Proceedings Paper",
 	}
 
 	// Generate list of dropdown values, set selectedTerm in dropdown to "selected"
-	//empty option?
-  var emptyOption *listFormValues = nil
-  if labelEmpty, ok := mapLabelEmpty[taxonomy]; ok {
-    emptyOption = &listFormValues{ Label: labelEmpty }
-  }
+	// TODO: if we get a map back, we'll need to explicitly sort (numerical, alphabetically) since maps are hashmaps
 	var terms []*listFormValues
-	if emptyOption != nil {
-		terms = append(terms, emptyOption)
-	}
-	for _, pair := range vocabulary[taxonomy] {
+	for key, term := range vocabulary[taxonomy] {
+		selected := false
+		if key == selectedTerm {
+			selected = true
+		}
 		terms = append(terms, &listFormValues{
-			Value: pair.Value,
-			Label: pair.Label,
-			Selected: pair.Value == selectedTerm,
+			key,
+			term,
+			selected,
 		})
 	}
 
 	return RenderPartial(f.render, "form/_list", &listFormData{
-		Name:     name,
+		Key:      key,
 		Label:    label,
 		Values:   terms,
 		Tooltip:  tooltip,
@@ -213,7 +202,7 @@ func (f PublicationForm) RenderFormList(name, pointer, label string, selectedTer
 
 // TODO: We'll need dedicated functions for fields that take specific types ([]PublicationDepartment, []PublicationProject)
 //    type assertion in one single function would become too complex quickly.
-func (f PublicationForm) RenderFormListMultiple(selectedTerms []string, name, pointer, label string, taxonomy string, tooltip string, required bool, cols int) (template.HTML, error) {
+func (f PublicationForm) RenderFormListMultiple(selectedTerms interface{}, key, pointer, label string, taxonomy string, tooltip string, required bool, cols int) (template.HTML, error) {
 	var formError models.FormError
 	hasError := false
 
@@ -226,60 +215,41 @@ func (f PublicationForm) RenderFormListMultiple(selectedTerms []string, name, po
 		}
 	}
 
-	mapLabelEmpty := map[string]string{
-		"languages": "",
-	}
+	// TODO: remove me / Fetch me from a struct field
+	languages := []string{"eng", "dut"}
 
 	// // TODO: should come from a different API, use "taxonomy" to fetch list of values from taxonomy
-	vocabulary := make(map[string][]Pair)
-	vocabulary["languages"] = []Pair{
-		Pair{Value:	"eng", Label: "English"},
-		Pair{Value:	"dut", Label: "Dutch"},
-		Pair{Value:	"ger", Label: "German"},
-		Pair{Value:	"fre", Label:"French"},
+	vocabulary := make(map[string]map[string]string)
+	vocabulary["languages"] = map[string]string{
+		"eng": "English",
+		"dut": "Dutch",
+		"ger": "German",
+		"fre": "French",
 	}
 
-	//empty option?
-	var emptyOption *listFormValues = nil
-	if labelEmpty, ok := mapLabelEmpty[taxonomy]; ok {
-		emptyOption = &listFormValues{ Label: labelEmpty }
-	}
-
-	//list of selects
-	values := [][]*listFormValues{}
-	for _, lterm := range selectedTerms {
+	values := make(map[int][]*listFormValues)
+	for lkey, lterm := range languages {
 		var terms []*listFormValues
-		if emptyOption != nil {
-			terms = append(terms, emptyOption)
-		}
-		for _, vpair := range vocabulary[taxonomy] {
+		for vkey, vterm := range vocabulary[taxonomy] {
+			selected := false
+			if vkey == lterm {
+				selected = true
+			}
 			terms = append(terms, &listFormValues{
-				Value: vpair.Value,
-				Label: vpair.Label,
-				Selected: vpair.Value == lterm,
+				vkey,
+				vterm,
+				selected,
 			})
 		}
 
-		values = append(values, terms)
+		values[lkey] = terms
 	}
-
-	//new select
-	var selectableOptions []*listFormValues
-	if emptyOption != nil {
-  	selectableOptions = append(selectableOptions, emptyOption)
-	}
-	for _, vpair := range vocabulary[taxonomy] {
-    selectableOptions = append(selectableOptions, &listFormValues{
-      Value: vpair.Value,
-      Label: vpair.Label,
-    })
-  }
 
 	return RenderPartial(f.render, "form/_list_multiple", &listMultipleFormData{
-		Name:       name,
+		Key:        key,
 		Label:      label,
 		Values:     values,
-		Vocabulary: selectableOptions,
+		Vocabulary: vocabulary["languages"],
 		Tooltip:    tooltip,
 		Required:   required,
 		Cols:       cols,
