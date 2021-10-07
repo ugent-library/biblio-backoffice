@@ -1,0 +1,13 @@
+<div class="form-group row">
+    <label class="col-sm-3 col-form-label align-self-start">
+        {{.Label}}
+        {{if .Required}}&nbsp;<abbr class="required" title="Required">*</abbr>{{end}}
+    </label>
+    <div class="col-sm-9">
+        {{ if .Value }}
+          <i class="if if-check"></i>
+        {{ else }}
+          -
+        {{end}}
+    </div>
+</div>

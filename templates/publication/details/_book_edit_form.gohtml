@@ -45,10 +45,7 @@
                 <li class="list-group-item">
                     {{.RenderFormText .Publication.Title "Title" "/data/title" "Title" "" true 9}}
                     {{.RenderFormTextMultiple .Publication.AlternativeTitle "AlternativeTitle" "/data/alternative_title" "Alternative Title" "" true 9}}
-                    {{.RenderFormText .Publication.Publication "Publication" "/data/publication" "Journal title" "" true 9}}
                     {{.RenderFormList "Classification" "/data/classification" "Classification" .Publication.Classification "classification" "" false 3}}
-                    {{.RenderFormList "JournalArticleType" "/data/journal_article_type" "Article Type" .Publication.JournalArticleType "articleType" "" false 3}}
-                    {{.RenderFormText .Publication.ArticleNumber "ArticleNumber" "/data/article_number" "Article number" "" false 3}}
                     {{.RenderFormText .Publication.WOSType "WOSType" "/data/WOSType" "WOS type" "It's a tooltip!" false 3}}
                 </li>
                 <li class="list-group-item">
@@ -57,7 +54,15 @@
                     {{.RenderFormText .Publication.PlaceOfPublication "PlaceOfPublication" "/data/place_of_publication" "Place of Publication" "" false 9}}
                     {{.RenderFormText .Publication.Year "Year" "/data/year" "Publication Year" "" true 3}}
 
-                    {{.RenderFormCheckbox .Publication.Extern "Extern" "/data/extern" "Published while none of the authors are employed at UGent" "" false 9 }}
+                    <div class="form-group row">
+                        <label class="col-3 col-form-label" for="check"></label>
+                        <div class="col-9">
+                            <div class="custom-control custom-checkbox">
+                                <input class="custom-control-input" id="customCheck1" type="checkbox">
+                                <label class="custom-control-label" for="customCheck1">Published while none of the authors are employed at UGent</label>
+                            </div>
+                        </div>
+                    </div>
 
                     {{.RenderFormListMultiple .Publication.Language "Languages" "/data/language" "Languages" "languages" "" false 9}}
                 </li>

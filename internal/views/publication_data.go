@@ -22,6 +22,12 @@ type textData struct {
 	Tooltip  string
 }
 
+type boolData struct {
+	Value    bool
+	Label    string
+	Required bool
+	Tooltip  string
+}
 type listData struct {
 	List     []string
 	Label    string
@@ -73,6 +79,14 @@ func (d PublicationData) RenderText(text, label string, required bool) (template
 	return RenderPartial(d.render, "part/_text", &textData{
 		Label:    label,
 		Text:     text,
+		Required: required,
+	})
+}
+
+func (d PublicationData) RenderBool(value bool, label string, required bool) (template.HTML, error) {
+	return RenderPartial(d.render, "part/_bool", &boolData{
+		Label:    label,
+		Value:    value,
 		Required: required,
 	})
 }

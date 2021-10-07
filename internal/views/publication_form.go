@@ -20,57 +20,6 @@ type PublicationForm struct {
 	FormErrors  []models.FormError
 }
 
-type textFormData struct {
-	Name     string
-	Value    string
-	Label    string
-	Required bool
-	Tooltip  string
-	Cols     int
-	HasError bool
-	Error    models.FormError
-}
-
-type textMultipleFormData struct {
-	Name     string
-	Values   []string
-	Label    string
-	Required bool
-	Tooltip  string
-	Cols     int
-	HasError bool
-	Error    models.FormError
-}
-
-type listFormValues struct {
-	Value    string
-	Label    string
-	Selected bool
-}
-
-type listFormData struct {
-	Name     string
-	Values   []*listFormValues
-	Label    string
-	Required bool
-	Tooltip  string
-	Cols     int
-	HasError bool
-	Error    models.FormError
-}
-
-type listMultipleFormData struct {
-	Name       string
-	Values     [][]*listFormValues
-	Vocabulary []*listFormValues
-	Label      string
-	Required   bool
-	Tooltip    string
-	Cols       int
-	HasError   bool
-	Error      models.FormError
-}
-
 func NewPublicationForm(r *http.Request, render *render.Render, p *models.Publication, fe []models.FormError) PublicationForm {
 	return PublicationForm{Data: NewData(r), render: render, Publication: p, FormErrors: fe}
 }
@@ -89,16 +38,16 @@ func (f PublicationForm) RenderFormText(value, name, pointer, label string, tool
 		}
 	}
 
-	return RenderPartial(f.render, "form/_text", &textFormData{
+	return (&TextInput{
 		Name:     name,
-		Label:    label,
-		Value:    value,
-		Tooltip:  tooltip,
-		Required: required,
-		Cols:     cols,
-		HasError: hasError,
-		Error:    formError,
-	})
+    Label:    label,
+    Value:    value,
+    Tooltip:  tooltip,
+    Required: required,
+    Cols:     cols,
+    HasError: hasError,
+    Error:    formError,
+	}).Render(f.render)
 }
 
 // TODO: We'll need dedicated functions for Department, Project, etc. because
@@ -117,7 +66,7 @@ func (f PublicationForm) RenderFormTextMultiple(values []string, name, pointer, 
 		}
 	}
 
-	return RenderPartial(f.render, "form/_text_multiple", &textMultipleFormData{
+	return (&MultiTextInput{
 		Name:     name,
 		Label:    label,
 		Values:   values,
@@ -126,7 +75,7 @@ func (f PublicationForm) RenderFormTextMultiple(values []string, name, pointer, 
 		Cols:     cols,
 		HasError: hasError,
 		Error:    formError,
-	})
+	}).Render(f.render)
 
 }
 
@@ -183,23 +132,23 @@ func (f PublicationForm) RenderFormList(name, pointer, label string, selectedTer
 
 	// Generate list of dropdown values, set selectedTerm in dropdown to "selected"
 	//empty option?
-  var emptyOption *listFormValues = nil
+  var emptyOption *SelectOption = nil
   if labelEmpty, ok := mapLabelEmpty[taxonomy]; ok {
-    emptyOption = &listFormValues{ Label: labelEmpty }
+    emptyOption = &SelectOption{ Label: labelEmpty }
   }
-	var terms []*listFormValues
+	var terms []*SelectOption
 	if emptyOption != nil {
 		terms = append(terms, emptyOption)
 	}
 	for _, pair := range vocabulary[taxonomy] {
-		terms = append(terms, &listFormValues{
+		terms = append(terms, &SelectOption{
 			Value: pair.Value,
 			Label: pair.Label,
 			Selected: pair.Value == selectedTerm,
 		})
 	}
 
-	return RenderPartial(f.render, "form/_list", &listFormData{
+	return (&Select{
 		Name:     name,
 		Label:    label,
 		Values:   terms,
@@ -208,7 +157,8 @@ func (f PublicationForm) RenderFormList(name, pointer, label string, selectedTer
 		Cols:     cols,
 		HasError: hasError,
 		Error:    formError,
-	})
+	}).Render(f.render)
+
 }
 
 // TODO: We'll need dedicated functions for fields that take specific types ([]PublicationDepartment, []PublicationProject)
@@ -240,20 +190,20 @@ func (f PublicationForm) RenderFormListMultiple(selectedTerms []string, name, po
 	}
 
 	//empty option?
-	var emptyOption *listFormValues = nil
+	var emptyOption *SelectOption = nil
 	if labelEmpty, ok := mapLabelEmpty[taxonomy]; ok {
-		emptyOption = &listFormValues{ Label: labelEmpty }
+		emptyOption = &SelectOption{ Label: labelEmpty }
 	}
 
 	//list of selects
-	values := [][]*listFormValues{}
+	values := [][]*SelectOption{}
 	for _, lterm := range selectedTerms {
-		var terms []*listFormValues
+		var terms []*SelectOption
 		if emptyOption != nil {
 			terms = append(terms, emptyOption)
 		}
 		for _, vpair := range vocabulary[taxonomy] {
-			terms = append(terms, &listFormValues{
+			terms = append(terms, &SelectOption{
 				Value: vpair.Value,
 				Label: vpair.Label,
 				Selected: vpair.Value == lterm,
@@ -264,18 +214,18 @@ func (f PublicationForm) RenderFormListMultiple(selectedTerms []string, name, po
 	}
 
 	//new select
-	var selectableOptions []*listFormValues
+	var selectableOptions []*SelectOption
 	if emptyOption != nil {
   	selectableOptions = append(selectableOptions, emptyOption)
 	}
 	for _, vpair := range vocabulary[taxonomy] {
-    selectableOptions = append(selectableOptions, &listFormValues{
+    selectableOptions = append(selectableOptions, &SelectOption{
       Value: vpair.Value,
       Label: vpair.Label,
     })
   }
 
-	return RenderPartial(f.render, "form/_list_multiple", &listMultipleFormData{
+	return (&MultiSelect{
 		Name:       name,
 		Label:      label,
 		Values:     values,
@@ -285,5 +235,32 @@ func (f PublicationForm) RenderFormListMultiple(selectedTerms []string, name, po
 		Cols:       cols,
 		HasError:   hasError,
 		Error:      formError,
-	})
+	}).Render(f.render)
+
+}
+
+func (f PublicationForm) RenderFormCheckbox(checked bool, name, pointer, label string, tooltip string, required bool, cols int) (template.HTML, error) {
+
+	var formError models.FormError
+	hasError := false
+
+	if f.FormErrors != nil {
+		for _, err := range f.FormErrors {
+			if err.Source["pointer"] == pointer {
+				formError = err
+				hasError = true
+			}
+		}
+	}
+
+	return (&CheckboxInput{
+		Name:     name,
+		Label:    label,
+		Checked:  checked,
+		Tooltip:  tooltip,
+		Required: required,
+		Cols:     cols,
+		HasError: hasError,
+		Error:    formError,
+	}).Render(f.render)
 }
