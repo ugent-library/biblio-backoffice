@@ -1,7 +1,9 @@
 package routes
 
 import (
+	"log"
 	"net/http"
+	"net/url"
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
@@ -12,7 +14,7 @@ import (
 	"github.com/unrolled/render"
 )
 
-func Register(e *engine.Engine, r *mux.Router, renderer *render.Render, sessionName string, sessionStore sessions.Store, oidcClient *oidc.Client) {
+func Register(baseURL string, e *engine.Engine, r *mux.Router, renderer *render.Render, sessionName string, sessionStore sessions.Store, oidcClient *oidc.Client) {
 	requireUser := middleware.RequireUser("/logout")
 	setUser := middleware.SetUser(e, sessionName, sessionStore)
 	authController := controllers.NewAuth(e, sessionName, sessionStore, oidcClient)
@@ -24,6 +26,13 @@ func Register(e *engine.Engine, r *mux.Router, renderer *render.Render, sessionN
 	publicationDepartmentsController := controllers.NewPublicationDepartments(e, renderer)
 	datasetDetailsController := controllers.NewDatasetDetails(e, renderer)
 	datasetProjectsController := controllers.NewDatasetProjects(e, renderer)
+
+	// build route urls from base url
+	u, err := url.Parse(baseURL)
+	if err != nil {
+		log.Fatal(err)
+	}
+	r = r.Schemes(u.Scheme).Host(u.Host).PathPrefix(u.Path).Subrouter()
 
 	// static files
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))

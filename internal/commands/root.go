@@ -12,7 +12,6 @@ import (
 const (
 	defaultHost          = ""
 	defaultPort          = 3000
-	defaultBaseURL       = "http://localhost:3000"
 	defaultSessionName   = "biblio-backend"
 	defaultSessionMaxAge = 86400 * 30 // 30 days
 )

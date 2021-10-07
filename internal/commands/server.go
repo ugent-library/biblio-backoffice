@@ -49,8 +49,16 @@ var serverStartCmd = &cobra.Command{
 		host := viper.GetString("host")
 		port := viper.GetInt("port")
 		baseURL := viper.GetString("base-url")
-		if len(baseURL) == 0 {
-			baseURL = fmt.Sprintf("http://%s:%d", host, port)
+
+		if baseURL == "" {
+			if host == "" {
+				baseURL = "http://localhost"
+			} else {
+				baseURL = "http://" + host
+			}
+			if port != 80 {
+				baseURL = fmt.Sprintf("%s:%d", baseURL, port)
+			}
 		}
 
 		// engine
@@ -108,6 +116,7 @@ var serverStartCmd = &cobra.Command{
 
 		// add routes
 		routes.Register(
+			baseURL,
 			e,
 			router,
 			renderer,
