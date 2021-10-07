@@ -32,7 +32,16 @@ func Register(baseURL string, e *engine.Engine, r *mux.Router, renderer *render.
 	if err != nil {
 		log.Fatal(err)
 	}
-	r = r.Schemes(u.Scheme).Host(u.Host).PathPrefix(u.Path).Subrouter()
+
+	// var schemes []string
+	// if u.Scheme == "http" {
+	// 	schemes = []string{"http", "https"}
+	// } else {
+	// 	schemes = []string{"https", "http"}
+	// }
+
+	// r = r.Schemes(schemes...).Host(u.Host).PathPrefix(u.Path).Subrouter()
+	r = r.PathPrefix(u.Path).Subrouter()
 
 	// static files
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))

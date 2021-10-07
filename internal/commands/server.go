@@ -26,15 +26,100 @@ import (
 )
 
 func init() {
-	serverStartCmd.Flags().String("base-url", "", "base url")
+	serverCmd.PersistentFlags().String("base-url", "", "base url")
+
 	serverStartCmd.Flags().String("host", defaultHost, "server host")
 	serverStartCmd.Flags().Int("port", defaultPort, "server port")
 	serverStartCmd.Flags().String("session-name", defaultSessionName, "session name")
 	serverStartCmd.Flags().String("session-secret", "", "session secret")
 	serverStartCmd.Flags().Int("session-max-age", defaultSessionMaxAge, "session lifetime")
 
+	serverCmd.AddCommand(serverRoutesCmd)
 	serverCmd.AddCommand(serverStartCmd)
 	rootCmd.AddCommand(serverCmd)
+}
+
+func buildRouter() *mux.Router {
+	host := viper.GetString("host")
+	port := viper.GetInt("port")
+	baseURL := viper.GetString("base-url")
+
+	if baseURL == "" {
+		if host == "" {
+			baseURL = "http://localhost"
+		} else {
+			baseURL = "http://" + host
+		}
+		if port != 80 {
+			baseURL = fmt.Sprintf("%s:%d", baseURL, port)
+		}
+	}
+
+	// engine
+	e, err := engine.New(engine.Config{
+		URL:      viper.GetString("librecat-url"),
+		Username: viper.GetString("librecat-username"),
+		Password: viper.GetString("librecat-password"),
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// router
+	router := mux.NewRouter()
+
+	// renderer
+	renderer := render.New(render.Options{
+		Directory:                   "templates",
+		Extensions:                  []string{".gohtml"},
+		Layout:                      "layouts/layout",
+		RenderPartialsWithoutPrefix: true,
+		Funcs: []template.FuncMap{
+			sprig.FuncMap(),
+			mix.FuncMap(mix.Config{
+				ManifestFile: "static/mix-manifest.json",
+				PublicPath:   "/static/",
+			}),
+			urls.FuncMap(router),
+			helpers.FuncMap(),
+		},
+	})
+
+	// sessions & auth
+	sessionName := viper.GetString("session-name")
+
+	sessionStore := sessions.NewCookieStore([]byte(viper.GetString("session-secret")))
+	sessionStore.MaxAge(viper.GetInt("session-max-age"))
+	sessionStore.Options.Path = "/"
+	sessionStore.Options.HttpOnly = true
+	sessionStore.Options.Secure = strings.HasPrefix(baseURL, "https")
+
+	oidcClient, err := oidc.New(oidc.Config{
+		URL:          viper.GetString("oidc-url"),
+		ClientID:     viper.GetString("oidc-client-id"),
+		ClientSecret: viper.GetString("oidc-client-secret"),
+		RedirectURL:  baseURL + "/auth/openid-connect/callback",
+	})
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// add middleware
+	router.Use(handlers.RecoveryHandler())
+
+	// add routes
+	routes.Register(
+		baseURL,
+		e,
+		router,
+		renderer,
+		sessionName,
+		sessionStore,
+		oidcClient,
+	)
+
+	return router
 }
 
 var serverCmd = &cobra.Command{
@@ -42,96 +127,55 @@ var serverCmd = &cobra.Command{
 	Short: "The biblio-backend HTTP server",
 }
 
+var serverRoutesCmd = &cobra.Command{
+	Use:   "routes",
+	Short: "print routes",
+	Run: func(cmd *cobra.Command, args []string) {
+		router := buildRouter()
+		router.Walk(func(route *mux.Route, router *mux.Router, ancestors []*mux.Route) error {
+			hostTemplate, err := route.GetHostTemplate()
+			if err == nil {
+				fmt.Println("HOST:", hostTemplate)
+			}
+			pathTemplate, err := route.GetPathTemplate()
+			if err == nil {
+				fmt.Println("ROUTE:", pathTemplate)
+			}
+			pathRegexp, err := route.GetPathRegexp()
+			if err == nil {
+				fmt.Println("Path regexp:", pathRegexp)
+			}
+			queriesTemplates, err := route.GetQueriesTemplates()
+			if err == nil {
+				fmt.Println("Queries templates:", strings.Join(queriesTemplates, ","))
+			}
+			queriesRegexps, err := route.GetQueriesRegexp()
+			if err == nil {
+				fmt.Println("Queries regexps:", strings.Join(queriesRegexps, ","))
+			}
+			methods, err := route.GetMethods()
+			if err == nil {
+				fmt.Println("Methods:", strings.Join(methods, ","))
+			}
+			fmt.Println()
+			return nil
+		})
+	},
+}
+
 var serverStartCmd = &cobra.Command{
 	Use:   "start",
 	Short: "start the http server",
 	Run: func(cmd *cobra.Command, args []string) {
-		host := viper.GetString("host")
-		port := viper.GetInt("port")
-		baseURL := viper.GetString("base-url")
-
-		if baseURL == "" {
-			if host == "" {
-				baseURL = "http://localhost"
-			} else {
-				baseURL = "http://" + host
-			}
-			if port != 80 {
-				baseURL = fmt.Sprintf("%s:%d", baseURL, port)
-			}
-		}
-
-		// engine
-		e, err := engine.New(engine.Config{
-			URL:      viper.GetString("librecat-url"),
-			Username: viper.GetString("librecat-username"),
-			Password: viper.GetString("librecat-password"),
-		})
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		// router
-		router := mux.NewRouter()
-
-		// renderer
-		renderer := render.New(render.Options{
-			Directory:                   "templates",
-			Extensions:                  []string{".gohtml"},
-			Layout:                      "layouts/layout",
-			RenderPartialsWithoutPrefix: true,
-			Funcs: []template.FuncMap{
-				sprig.FuncMap(),
-				mix.FuncMap(mix.Config{
-					ManifestFile: "static/mix-manifest.json",
-					PublicPath:   "/static/",
-				}),
-				urls.FuncMap(router),
-				helpers.FuncMap(),
-			},
-		})
-
-		// sessions & auth
-		sessionName := viper.GetString("session-name")
-
-		sessionStore := sessions.NewCookieStore([]byte(viper.GetString("session-secret")))
-		sessionStore.MaxAge(viper.GetInt("session-max-age"))
-		sessionStore.Options.Path = "/"
-		sessionStore.Options.HttpOnly = true
-		sessionStore.Options.Secure = strings.HasPrefix(baseURL, "https")
-
-		oidcClient, err := oidc.New(oidc.Config{
-			URL:          viper.GetString("oidc-url"),
-			ClientID:     viper.GetString("oidc-client-id"),
-			ClientSecret: viper.GetString("oidc-client-secret"),
-			RedirectURL:  baseURL + "/auth/openid-connect/callback",
-		})
-
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		// add middleware
-		router.Use(handlers.RecoveryHandler())
-
-		// add routes
-		routes.Register(
-			baseURL,
-			e,
-			router,
-			renderer,
-			sessionName,
-			sessionStore,
-			oidcClient,
-		)
+		router := buildRouter()
 
 		// logging
 		handler := handlers.LoggingHandler(os.Stdout, router)
 
 		// start server
 		server.New(handler,
-			server.WithHost(host),
-			server.WithPort(port),
+			server.WithHost(viper.GetString("host")),
+			server.WithPort(viper.GetInt("port")),
 		).Start()
 	},
 }
