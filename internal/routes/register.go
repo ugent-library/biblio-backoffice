@@ -13,7 +13,21 @@ import (
 	"github.com/unrolled/render"
 )
 
-func Register(baseURL *url.URL, e *engine.Engine, r *mux.Router, renderer *render.Render, sessionName string, sessionStore sessions.Store, oidcClient *oidc.Client) {
+func Register(baseURL *url.URL, e *engine.Engine, router *mux.Router, renderer *render.Render, sessionName string, sessionStore sessions.Store, oidcClient *oidc.Client) {
+	// static files
+	router.PathPrefix(baseURL.Path + "/static/").Handler(http.StripPrefix(baseURL.Path+"/static/", http.FileServer(http.Dir("./static"))))
+
+	requireUser := middleware.RequireUser(baseURL.Path + "/logout")
+	setUser := middleware.SetUser(e, sessionName, sessionStore)
+	authController := controllers.NewAuth(e, sessionName, sessionStore, oidcClient, router)
+	publicationController := controllers.NewPublications(e, renderer)
+	datasetController := controllers.NewDatasets(e, renderer)
+	publicationFilesController := controllers.NewPublicationsFiles(e, renderer, router)
+	publicationDetailsController := controllers.NewPublicationsDetails(e, renderer)
+	publicationProjectsController := controllers.NewPublicationProjects(e, renderer)
+	publicationDepartmentsController := controllers.NewPublicationDepartments(e, renderer)
+	datasetDetailsController := controllers.NewDatasetDetails(e, renderer)
+	datasetProjectsController := controllers.NewDatasetProjects(e, renderer)
 
 	// TODO fix absolute url generation
 	// var schemes []string
@@ -22,24 +36,8 @@ func Register(baseURL *url.URL, e *engine.Engine, r *mux.Router, renderer *rende
 	// } else {
 	// 	schemes = []string{"https", "http"}
 	// }
-
 	// r = r.Schemes(schemes...).Host(u.Host).PathPrefix(u.Path).Subrouter()
-	r = r.PathPrefix(baseURL.Path).Subrouter()
-
-	requireUser := middleware.RequireUser(baseURL.Path + "/logout")
-	setUser := middleware.SetUser(e, sessionName, sessionStore)
-	authController := controllers.NewAuth(e, sessionName, sessionStore, oidcClient)
-	publicationController := controllers.NewPublications(e, renderer)
-	datasetController := controllers.NewDatasets(e, renderer)
-	publicationFilesController := controllers.NewPublicationsFiles(e, renderer, r)
-	publicationDetailsController := controllers.NewPublicationsDetails(e, renderer)
-	publicationProjectsController := controllers.NewPublicationProjects(e, renderer)
-	publicationDepartmentsController := controllers.NewPublicationDepartments(e, renderer)
-	datasetDetailsController := controllers.NewDatasetDetails(e, renderer)
-	datasetProjectsController := controllers.NewDatasetProjects(e, renderer)
-
-	// static files
-	r.PathPrefix(baseURL.Path + "/static/").Handler(http.StripPrefix(baseURL.Path+"/static/", http.FileServer(http.Dir("static"))))
+	r := router.PathPrefix(baseURL.Path).Subrouter()
 
 	// home
 	r.HandleFunc("", func(w http.ResponseWriter, r *http.Request) {

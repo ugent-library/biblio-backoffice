@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/go-oidc/oidc"
@@ -14,14 +15,16 @@ type Auth struct {
 	sessionName  string
 	sessionStore sessions.Store
 	oidcClient   *oidc.Client
+	router       *mux.Router
 }
 
-func NewAuth(e *engine.Engine, sessionName string, sessionStore sessions.Store, oidcClient *oidc.Client) *Auth {
+func NewAuth(e *engine.Engine, sessionName string, sessionStore sessions.Store, oidcClient *oidc.Client, router *mux.Router) *Auth {
 	return &Auth{
 		engine:       e,
 		sessionName:  sessionName,
 		sessionStore: sessionStore,
 		oidcClient:   oidcClient,
+		router:       router,
 	}
 }
 
@@ -87,7 +90,8 @@ func (c *Auth) Login(w http.ResponseWriter, r *http.Request) {
 	session.Values["user_id"] = user.ID
 	session.Save(r, w)
 
-	http.Redirect(w, r, "/publication", http.StatusFound)
+	redirectURL, _ := c.router.Get("publications").URLPath()
+	http.Redirect(w, r, redirectURL.String(), http.StatusFound)
 }
 
 func (c *Auth) Logout(w http.ResponseWriter, r *http.Request) {
