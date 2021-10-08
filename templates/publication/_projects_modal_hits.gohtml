@@ -1,4 +1,3 @@
-{{ $publicationId := .Publication.ID }}
 {{ range $key, $hit := .Hits }}
 <li class="list-group-item">
     <div class="d-flex w-100">
@@ -16,7 +15,7 @@
                     </div>
                     <div class="list-group-item-meta-right">
                         <button class="btn btn-primary"
-                            hx-patch="/publication/{{ $publicationId }}/htmx/projects/add/{{ $hit.ID }}"
+                            hx-patch="{{pathFor "publication_projects_add_to_publication" "id" $.Publication.ID "project_id" $hit.ID}}"
                             hx-swap="innerHTML"
                             hx-target=".publication-projects"
                         >Add Project</button>

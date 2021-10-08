@@ -11,7 +11,7 @@
         <div class="modal-footer">
             <button class="btn btn-link modal-close">Cancel</button>
             <button class="btn btn-danger"
-                hx-patch="/publication/{{ .ID }}/htmx/departments/remove/{{ .DepartmentID }}"
+                hx-patch="{{pathFor "publicationDepartments_remove_from_publication" "id " .ID "department_id" .DepartmentID}}"
                 hx-swap="innerHTML"
                 hx-target=".publication-departments"
             >Delete</button>

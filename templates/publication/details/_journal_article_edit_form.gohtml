@@ -10,7 +10,7 @@
 </div>
 {{ end }}
 
-<form hx-patch="/publication/{{ .Publication.ID }}/htmx/edit" hx-swap="innerHTML" hx-target="closest .publication-details">
+<form hx-patch="{{pathFor "publication_details_save_form" "id" .Publication.ID}}" hx-swap="innerHTML" hx-target="closest .publication-details">
     <div class="card-header">
         <div class="collapse-trigger" data-toggle="collapse" data-target="#collapse-details" aria-expanded="true" aria-controls="collapse-details"></div>
         <div class="bc-toolbar">
@@ -20,7 +20,7 @@
             <div class="bc-toolbar-right">
                 <div class="c-button-toolbar" data-panel-state="edit">
                     <button class="btn btn-outline-primary btn-cancel"
-                        hx-get="/publication/{{ .Publication.ID }}/htmx"
+                        hx-get="{{pathFor "publication_details" "id" .Publication.ID}}"
                         hx-swap="innerHTML"
                         hx-target=".publication-details"
                     >
