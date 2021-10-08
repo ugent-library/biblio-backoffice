@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html/template"
 	"log"
+	"net/url"
 	"os"
 	"strings"
 
@@ -42,17 +43,21 @@ func init() {
 func buildRouter() *mux.Router {
 	host := viper.GetString("host")
 	port := viper.GetInt("port")
-	baseURL := viper.GetString("base-url")
 
-	if baseURL == "" {
+	b := viper.GetString("base-url")
+	if b == "" {
 		if host == "" {
-			baseURL = "http://localhost"
+			b = "http://localhost"
 		} else {
-			baseURL = "http://" + host
+			b = "http://" + host
 		}
 		if port != 80 {
-			baseURL = fmt.Sprintf("%s:%d", baseURL, port)
+			b = fmt.Sprintf("%s:%d", b, port)
 		}
+	}
+	baseURL, err := url.Parse(b)
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	// engine
@@ -78,7 +83,7 @@ func buildRouter() *mux.Router {
 			sprig.FuncMap(),
 			mix.FuncMap(mix.Config{
 				ManifestFile: "static/mix-manifest.json",
-				PublicPath:   "/static/",
+				PublicPath:   baseURL.Path + "/static/",
 			}),
 			urls.FuncMap(router),
 			helpers.FuncMap(),
@@ -92,13 +97,13 @@ func buildRouter() *mux.Router {
 	sessionStore.MaxAge(viper.GetInt("session-max-age"))
 	sessionStore.Options.Path = "/"
 	sessionStore.Options.HttpOnly = true
-	sessionStore.Options.Secure = strings.HasPrefix(baseURL, "https")
+	sessionStore.Options.Secure = baseURL.Scheme == "https"
 
 	oidcClient, err := oidc.New(oidc.Config{
 		URL:          viper.GetString("oidc-url"),
 		ClientID:     viper.GetString("oidc-client-id"),
 		ClientSecret: viper.GetString("oidc-client-secret"),
-		RedirectURL:  baseURL + "/auth/openid-connect/callback",
+		RedirectURL:  baseURL.String() + "/auth/openid-connect/callback",
 	})
 
 	if err != nil {
