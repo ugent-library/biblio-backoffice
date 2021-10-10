@@ -18,16 +18,14 @@
                     {{.RenderText .Publication.WOSType "Web of Science type" false}}
                 </li>
                 <li class="list-group-item">
-                    {{.RenderText .Publication.PublicationAbbreviation "Publication short title" false}}
                     {{.RenderText .Publication.Publisher "Publisher" false}}
                     {{.RenderText .Publication.PlaceOfPublication "Place of publication" false}}
                     {{.RenderText .Publication.Year "Year of publication" true}}
+                    {{.RenderBool .Publication.Extern "Published while none of the authors are employed at UGent" true}}
+                    {{.RenderText .Publication.PublicationStatus "Publication status" false}}
                     {{.RenderList .Publication.Language "Languages" false}}
                 </li>
                 <li class="list-group-item">
-                    {{.RenderText .Publication.SeriesTitle "Series" false}}
-                    {{.RenderText .Publication.Volume "Volume" false}}
-                    {{.RenderText .Publication.Edition "Edition" false}}
                     {{.RenderText .Publication.PageCount "Number of pages" false}}
                 </li>
             </ul>

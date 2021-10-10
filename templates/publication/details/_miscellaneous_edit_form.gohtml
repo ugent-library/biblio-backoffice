@@ -38,6 +38,7 @@
             <ul class="list-group list-group-flush" data-panel-state="edit">
                 <li class="list-group-item">
                     {{.RenderFormList "Type" "/data/type" "Publication Type" .Publication.Type "type" "This is a helper text" false 3}}
+                    {{.RenderFormList "MiscellaneousType" "/data/miscellaneous_type" "Miscelanous type" .Publication.MiscellaneousType "miscellaneousType" "" false 3}}
                     {{.RenderFormText .Publication.DOI "DOI" "/data/doi" "DOI" "" false 3}}
                     {{.RenderFormTextMultiple .Publication.ISSN "ISSN" "/data/issn" "ISSN" "" true 9}}
                     {{.RenderFormTextMultiple .Publication.ISBN "ISBN" "/data/isbn" "ISBN" "" true 9}}
@@ -45,13 +46,11 @@
                 <li class="list-group-item">
                     {{.RenderFormText .Publication.Title "Title" "/data/title" "Title" "" true 9}}
                     {{.RenderFormTextMultiple .Publication.AlternativeTitle "AlternativeTitle" "/data/alternative_title" "Alternative Title" "" true 9}}
-                    {{.RenderFormText .Publication.Publication "Publication" "/data/publication" "Journal title" "" true 9}}
                     {{.RenderFormList "Classification" "/data/classification" "Classification" .Publication.Classification "classification" "" false 3}}
-                    {{.RenderFormList "JournalArticleType" "/data/journal_article_type" "Article Type" .Publication.JournalArticleType "articleType" "" false 3}}
-                    {{.RenderFormText .Publication.ArticleNumber "ArticleNumber" "/data/article_number" "Article number" "" false 3}}
                     {{.RenderFormText .Publication.WOSType "WOSType" "/data/wos_type" "WOS type" "It's a tooltip!" false 3}}
                 </li>
                 <li class="list-group-item">
+                    {{.RenderFormText .Publication.Publication "Publication" "/data/publication" "Publication title" "" false 9}}
                     {{.RenderFormText .Publication.PublicationAbbreviation "PublicationAbbreviation" "/data/publication_abbreviation" "Publication short title" "" false 9}}
                     {{.RenderFormText .Publication.Publisher "Publisher" "/data/publisher" "Publisher" "" false 9}}
                     {{.RenderFormText .Publication.PlaceOfPublication "PlaceOfPublication" "/data/place_of_publication" "Place of Publication" "" false 9}}
@@ -61,12 +60,16 @@
                     {{.RenderFormListMultiple .Publication.Language "Languages" "/data/language" "Languages" "languages" "" false 9}}
                 </li>
                 <li class="list-group-item">
+                    {{.RenderFormText .Publication.SeriesTitle "SeriesTitle" "/data/series_title" "Series title" "" false 3}}
                     {{.RenderFormText .Publication.Volume "Volume" "/data/volume" "Volume" "" false 3}}
                     {{.RenderFormText .Publication.Issue "Issue" "/data/issue" "Issue" "" false 3}}
+                    {{.RenderFormText .Publication.Edition "Edition" "/data/edition" "Edition" "" false 3}}
                     {{.RenderFormText .Publication.PageFirst "PageFirst" "/data/page_first" "Eerste pagina" "" false 3}}
                     {{.RenderFormText .Publication.PageLast "PageLast" "/data/page_last" "Laatste pagina" "" false 3}}
                     {{.RenderFormText .Publication.PageCount "PageCount" "/data/page_count" "Number of Pages" "" false 3}}
+                    {{.RenderFormText .Publication.ArticleNumber "ArticleNumber" "/data/article_number" "Article Number" "" false 3}}
                     {{.RenderFormText .Publication.IssueTitle "IssueTitle" "/data/issue_title" "Special issue title" "" false 3}}
+                    {{.RenderFormText .Publication.ReportNumber "ReportNumber" "/data/report_number" "Report Number" "" false 3}}
                 </li>
                 <li class="list-group-item">
                     {{/*.RenderFormTextMultiple .Publication.Department "Department" "/data/department" "Department" "" false 9*/}}

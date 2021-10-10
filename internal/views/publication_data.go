@@ -105,3 +105,11 @@ func (d PublicationData) RenderBadgeList(list []string, label string, required b
 		Required: required,
 	})
 }
+
+func (d PublicationData) RenderBool(value bool, label string, required bool) (template.HTML, error) {
+	return RenderPartial(d.render, "part/_bool", &boolData{
+		Label:    label,
+		Value:    value,
+		Required: required,
+	})
+}
