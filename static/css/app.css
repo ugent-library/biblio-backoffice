@@ -14119,3 +14119,148 @@ h4 {
 .if--muted {
   color: #999999;
 }
+
+/*!
+ * IconicMultiSelect v0.7.0
+ * Licence:  MIT
+ * (c) 2021 Sidney Wimart.
+ *
+ * See: https://github.com/sidneywm/iconic-multiselect
+ *
+ * This is plugin is installed manually since no package on NPM exists.
+ */
+.multiselect__container {
+  align-items: center;
+  background-color: #fff;
+  border-radius: 2px;
+  box-shadow: 0 1px 3px 0 #d1d1d2, 0 0 0 1px #d1d1d2;
+  box-sizing: border-box;
+  display: flex;
+  min-height: 36px;
+  padding: 4px 8px 0 8px;
+  position: relative;
+}
+
+.multiselect__container:after {
+  content: "";
+  min-height: inherit;
+  font-size: 0;
+}
+
+.multiselect__container > * {
+  color: #656565;
+  font-size: 14px;
+}
+
+.multiselect__wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  height: 100%;
+  width: 100%;
+}
+
+.multiselect__clear-btn {
+  cursor: pointer;
+  align-items: center;
+  margin-bottom: 4px;
+  margin-left: 4px;
+}
+
+.multiselect__clear-btn svg {
+  height: 20px;
+  width: 20px;
+}
+
+.multiselect__options {
+  background-color: #f6f6f6;
+  border-radius: 2px;
+  left: 0;
+  max-height: 0;
+  overflow: hidden;
+  position: absolute;
+  top: calc(100% + 3px);
+  z-index: 9999;
+  width: 100%;
+  opacity: 0;
+  transition: max-height 0.1s ease;
+}
+
+.multiselect__options.visible {
+  max-height: 200px;
+  box-shadow: 0 1px 3px 0 #d1d1d2, 0 0 0 1px #d1d1d2;
+  opacity: 1;
+  transition: max-height 0.2s ease;
+}
+
+.multiselect__options ul {
+  list-style: none;
+  margin: 0;
+  padding: 2px 0;
+  max-height: 200px;
+  overflow: auto;
+}
+
+.multiselect__options ul li {
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.multiselect__options ul li * {
+  pointer-events: none;
+}
+
+.multiselect__options ul p.multiselect__options--no-results,
+.multiselect__options ul p.multiselect__options--no-data {
+  margin: 0;
+  padding: 8px;
+  text-align: center;
+}
+
+.multiselect__options ul li.multiselect__options--selected {
+  background-color: #ff6358;
+  color: #fff;
+}
+
+.multiselect__options ul li.multiselect__options--selected:hover {
+  background-color: #eb5b51;
+}
+
+.multiselect__options ul li:hover {
+  background-color: #dedede;
+}
+
+.multiselect__options ul li.arrow-selected {
+  border: 2px solid rgba(101, 101, 101, 0.5);
+}
+
+.multiselect__selected {
+  background-color: #656565;
+  border-radius: 2px;
+  color: #fff;
+  margin-bottom: 4px;
+  margin-right: 4px;
+  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+}
+
+.multiselect__selected .multiselect__remove-btn {
+  cursor: pointer;
+  display: flex;
+  margin-left: 6px;
+}
+
+.multiselect__selected .multiselect__remove-btn svg {
+  height: 16px;
+  width: 16px;
+}
+
+.multiselect__input {
+  border: none;
+  flex-basis: 40px;
+  flex-grow: 1;
+  height: 24px;
+  margin-bottom: 4px;
+  min-width: 40px;
+  outline: none;
+}

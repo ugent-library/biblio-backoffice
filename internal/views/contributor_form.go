@@ -47,7 +47,7 @@ func (f ContributorForm) RenderFormText(text, key, pointer, label string, toolti
 	})
 }
 
-func (f ContributorForm) RenderFormList(key, pointer, label string, selectedTerm string, taxonomy string, tooltip string, required bool, cols int) (template.HTML, error) {
+func (f ContributorForm) RenderFormMultiSelectList(key, pointer, label string, selectedTerms []string, taxonomy string, tooltip string, required bool, cols int) (template.HTML, error) {
 	var formError jsonapi.Error
 	hasError := false
 
@@ -62,57 +62,36 @@ func (f ContributorForm) RenderFormList(key, pointer, label string, selectedTerm
 
 	// TODO: should come from a different API, use "taxonomy" to fetch list of values from taxonomy
 	vocabulary := make(map[string]map[string]string)
-	vocabulary["type"] = map[string]string{
-		"journal_article": "Journal Article",
-		"book":            "Book",
-		"book_chapter":    "Book Chapter",
-		"book_editor":     "Book editor",
-		"issue_editor":    "Issue editor",
-		"conference":      "Conference",
-		"dissertation":    "Dissertation",
-		"miscellaneous":   "Miscellaneous",
-		"report":          "Report",
-		"preprint":        "Preprint",
+	vocabulary["creditRoles"] = map[string]string{
+		"first_author":           "First author",
+		"last_author":            "Last author",
+		"conceptualization":      "Conceptualization",
+		"data_curation":          "Datacuration",
+		"formal_analysis":        "Formala nalysis",
+		"funding_acquisition":    "Funding acquisition",
+		"investigation":          "Investigation",
+		"methodology":            "Methodology",
+		"project_administration": "Project administration",
+		"resources":              "Resources",
+		"software":               "Software",
+		"supervision":            "Supervision",
+		"validation":             "Validation",
+		"visualization":          "Visualization",
+		"writing_original_draft": "Writing - original draft",
+		"writing_review_editing": "Writing - review & editing",
 	}
 
-	// TODO: should come from a different API, use "taxonomy" to fetch list of values from taxonomy
-	// TODO: This might be hierarchical select with a dep on type: only show "journal article" if type of publication = "Journal Article"
-	vocabulary["classification"] = map[string]string{
-		"journal_article_u":  "Journal Article - U",
-		"journal_article_a1": "Journal Article - A1",
-		"journal_article_a2": "Journal Article - A2",
-		"journal_article_a3": "Journal Article - A3",
-		"journal_article_a4": "Journal Article - A4",
-		"journal_article_v":  "Journal Article - V",
-	}
-
-	vocabulary["articleType"] = map[string]string{
-		"original":         "Original",
-		"review":           "Review",
-		"letter_note":      "Letter note",
-		"proceedingsPaper": "Proceedings Paper",
-	}
-
-	vocabulary["dataFormat"] = map[string]string{
-		"xml":   "XML",
-		"pdf":   "PDF",
-		"json":  "JSON",
-		"txt":   "TXT",
-		"docx":  "DOCX",
-		"zip":   "ZIP",
-		"xlsx":  "XLSX",
-		"pptx":  "PPTX",
-		"rdf":   "RDF",
-		"other": "Other",
-	}
 	// Generate list of dropdown values, set selectedTerm in dropdown to "selected"
 	// TODO: if we get a map back, we'll need to explicitly sort (numerical, alphabetically) since maps are hashmaps
 	var terms []*listFormValues
 	for key, term := range vocabulary[taxonomy] {
 		selected := false
-		if key == selectedTerm {
-			selected = true
+		for skey := range selectedTerms {
+			if key == selectedTerms[skey] {
+				selected = true
+			}
 		}
+
 		terms = append(terms, &listFormValues{
 			key,
 			term,
@@ -120,7 +99,7 @@ func (f ContributorForm) RenderFormList(key, pointer, label string, selectedTerm
 		})
 	}
 
-	return RenderPartial(f.render, "form/_list", &listFormData{
+	return RenderPartial(f.render, "form/_list_multi_select", &listFormData{
 		Key:      key,
 		Label:    label,
 		Values:   terms,

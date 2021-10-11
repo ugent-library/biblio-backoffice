@@ -24,10 +24,12 @@ export default function() {
         const cancelButton = form.querySelector('.btn-cancel')
 
         // Load the spinner when the button is clicked
-        htmx.on(submitButton, "click", function(evt) {
-            const spinner = createSpinner()
-            submitButton.after(spinner)
-        })
+        if (submitButton !== null) {
+            htmx.on(submitButton, "click", function(evt) {
+                const spinner = createSpinner()
+                submitButton.after(spinner)
+            })
+        }
 
         // Disable the buttons after HTMX has started, but before the XHR request is
         // dispatched. Doing this on the 'click' event blocks triggering the HTMX lifecycle.

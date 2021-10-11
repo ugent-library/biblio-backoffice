@@ -107,6 +107,9 @@ func (p *PublicationAuthors) SaveAuthorToPublication(w http.ResponseWriter, r *h
 		return
 	}
 
+	log.Println(r.Form)
+	log.Println(author)
+
 	authorDelta, _ := strconv.Atoi(formAuthorDelta)
 	placeholder := models.PublicationContributor{}
 
@@ -184,32 +187,6 @@ func (p *PublicationAuthors) RemoveFromPublication(w http.ResponseWriter, r *htt
 	)
 }
 
-// func (p *PublicationAuthors) ListDepartments(w http.ResponseWriter, r *http.Request) {
-// 	id := mux.Vars(r)["id"]
-
-// 	pub, err := p.engine.GetPublication(id)
-// 	if err != nil {
-// 		log.Println(err)
-// 		http.Error(w, err.Error(), http.StatusNotFound)
-// 		return
-// 	}
-
-// 	// Get 20 random departments (no search, init state)
-// 	hits, _ := p.engine.SuggestDepartments("")
-
-// 	p.render.HTML(w, 200,
-// 		"publication/_departments_modal",
-// 		struct {
-// 			Publication *models.Publication
-// 			Hits        []models.Completion
-// 		}{
-// 			pub,
-// 			hits,
-// 		},
-// 		render.HTMLOptions{Layout: "layouts/htmx"},
-// 	)
-// }
-
 // func (p *PublicationAuthors) ActiveSearch(w http.ResponseWriter, r *http.Request) {
 // 	id := mux.Vars(r)["id"]
 
@@ -239,90 +216,6 @@ func (p *PublicationAuthors) RemoveFromPublication(w http.ResponseWriter, r *htt
 // 			pub,
 // 			hits,
 // 		},
-// 		render.HTMLOptions{Layout: "layouts/htmx"},
-// 	)
-// }
-
-// func (p *PublicationAuthors) AddToPublication(w http.ResponseWriter, r *http.Request) {
-// 	id := mux.Vars(r)["id"]
-// 	departmentId := mux.Vars(r)["department_id"]
-
-// 	pub, err := p.engine.GetPublication(id)
-// 	if err != nil {
-// 		log.Println(err)
-// 		http.Error(w, err.Error(), http.StatusNotFound)
-// 		return
-// 	}
-
-// 	// department, err := p.engine.GetDepartment(departmentId)
-// 	// if err != nil {
-// 	// 	log.Println(err)
-// 	// 	http.Error(w, err.Error(), http.StatusNotFound)
-// 	// 	return
-// 	// }
-
-// 	publicationDepartment := models.PublicationDepartment{
-// 		ID: departmentId,
-// 	}
-// 	pub.Department = append(pub.Department, publicationDepartment)
-// 	savedPub, _ := p.engine.UpdatePublication(pub)
-
-// 	// TODO: error handling if department save fails
-
-// 	p.render.HTML(w, 200,
-// 		"publication/_departments",
-// 		views.NewPublicationData(r, p.render, savedPub),
-// 		render.HTMLOptions{Layout: "layouts/htmx"},
-// 	)
-// }
-
-// func (p *PublicationAuthors) ConfirmRemoveFromPublication(w http.ResponseWriter, r *http.Request) {
-// 	id := mux.Vars(r)["id"]
-// 	departmentId := mux.Vars(r)["department_id"]
-
-// 	p.render.HTML(w, 200,
-// 		"publication/_departments_modal_confirm_removal",
-// 		struct {
-// 			ID           string
-// 			DepartmentID string
-// 		}{
-// 			id,
-// 			departmentId,
-// 		},
-// 		render.HTMLOptions{Layout: "layouts/htmx"},
-// 	)
-// }
-
-// func (p *PublicationAuthors) RemoveFromPublication(w http.ResponseWriter, r *http.Request) {
-// 	id := mux.Vars(r)["id"]
-// 	departmentId := mux.Vars(r)["department_id"]
-
-// 	pub, err := p.engine.GetPublication(id)
-// 	if err != nil {
-// 		log.Println(err)
-// 		http.Error(w, err.Error(), http.StatusNotFound)
-// 		return
-// 	}
-
-// 	departments := make([]models.PublicationDepartment, len(pub.Department))
-// 	copy(departments, pub.Department)
-
-// 	var removeKey int
-// 	for key, department := range departments {
-// 		if department.ID == departmentId {
-// 			removeKey = key
-// 		}
-// 	}
-
-// 	departments = append(departments[:removeKey], departments[removeKey+1:]...)
-// 	pub.Department = departments
-
-// 	// TODO: error handling
-// 	savedPub, _ := p.engine.UpdatePublication(pub)
-
-// 	p.render.HTML(w, 200,
-// 		"publication/_departments",
-// 		views.NewPublicationData(r, p.render, savedPub),
 // 		render.HTMLOptions{Layout: "layouts/htmx"},
 // 	)
 // }
