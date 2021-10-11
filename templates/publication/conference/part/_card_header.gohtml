@@ -1,0 +1,20 @@
+<div class="card-header">
+	<div class="collapse-trigger collapsed" data-toggle="collapse" data-target="#collapse-conference" aria-expanded="{{ .IsHTMXRequest }}" aria-controls="collapse-conference"></div>
+	<div class="bc-toolbar">
+		<div class="bc-toolbar-left">
+			<i class="if if-chevron-right mr-4 text-muted"></i>Conference Details
+		</div>
+		<div class="bc-toolbar-right">
+			<div class="c-button-toolbar" data-panel-state="read">
+				<button class="btn btn-outline-primary"
+					hx-get="{{pathFor "publication_conference_edit_form" "id" .Publication.ID}}"
+					hx-swap="innerHTML"
+					hx-target=".publication-conference"
+				>
+					<i class="if if-edit"></i>
+					<div class="btn-text">Edit</div>
+				</button>
+			</div>
+		</div>
+	</div>
+</div>

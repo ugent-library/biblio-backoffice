@@ -24,6 +24,7 @@ func Register(baseURL *url.URL, e *engine.Engine, router *mux.Router, renderer *
 	datasetController := controllers.NewDatasets(e, renderer)
 	publicationFilesController := controllers.NewPublicationsFiles(e, renderer, router)
 	publicationDetailsController := controllers.NewPublicationsDetails(e, renderer)
+	publicationConferenceController := controllers.NewPublicationConference(e, renderer)
 	publicationProjectsController := controllers.NewPublicationProjects(e, renderer)
 	publicationDepartmentsController := controllers.NewPublicationDepartments(e, renderer)
 	datasetDetailsController := controllers.NewDatasetDetails(e, renderer)
@@ -92,6 +93,17 @@ func Register(baseURL *url.URL, e *engine.Engine, router *mux.Router, renderer *
 	publicationRouter.HandleFunc("/{id}/htmx/edit", publicationDetailsController.SaveForm).
 		Methods("PATCH").
 		Name("publication_details_save_form")
+
+	// Publication conference HTMX fragments
+	publicationRouter.HandleFunc("/{id}/htmx/conference", publicationConferenceController.Show).
+		Methods("GET").
+		Name("publication_conference")
+	publicationRouter.HandleFunc("/{id}/htmx/conference/edit", publicationConferenceController.OpenForm).
+		Methods("GET").
+		Name("publication_conference_edit_form")
+	publicationRouter.HandleFunc("/{id}/htmx/conference/edit", publicationConferenceController.SaveForm).
+		Methods("PATCH").
+		Name("publication_conference_save_form")
 
 	// Publication projects HTMX fragmetns
 	publicationRouter.HandleFunc("/{id}/htmx/projects/list", publicationProjectsController.ListProjects).
