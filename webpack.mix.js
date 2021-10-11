@@ -8,25 +8,10 @@ mix.setPublicPath('./static')
 mix.copy('assets/ugent/images/**/*', 'static/images');
 mix.copy('assets/ugent/favicon.ico', 'static/favicon.ico');
 
+// copy fonts
+mix.copy('assets/ugent/fonts/**', 'static/fonts');
 // set the resourceroot for fonts so it points to the static assets path
-mix.setResourceRoot('/static/fonts/')
-mix.webpackConfig({
-  module: {
-    rules: [
-      // copy font files to the ./static/fonts folder
-      {
-        test: '/(\\.(woff2?|ttf|eot|otf)$|font.*\\.svg$)/',
-        use: [{
-          loader: 'file-loader',
-          options: {
-            name: '[name].[ext]',
-            outputPath: './fonts/'
-          }
-        }]
-      }
-    ]
-  }
-})
+mix.setResourceRoot('../')
 
 if (mix.inProduction()) {
   mix.version()

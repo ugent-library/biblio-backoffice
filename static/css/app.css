@@ -14,7 +14,7 @@
 ========================================================================== */
 @font-face {
   font-family: "icon-font";
-  src: url(/static/fonts/icon-font.woff2) format("woff2"), url(/static/fonts/icon-font.woff) format("woff");
+  src: url(../fonts/icon-font.woff2?4b763e8b153095b1ab68e6686f478608) format("woff2"), url(../fonts/icon-font.woff?5ab18e1bb7faeeca8ca1a60040267a38) format("woff");
 }
 i[class^=if-]:before, i[class*=" if-"]:before {
   font-family: icon-font !important;

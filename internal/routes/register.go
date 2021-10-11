@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"log"
 	"net/http"
 	"net/url"
 
@@ -14,13 +13,16 @@ import (
 	"github.com/unrolled/render"
 )
 
-func Register(baseURL string, e *engine.Engine, r *mux.Router, renderer *render.Render, sessionName string, sessionStore sessions.Store, oidcClient *oidc.Client) {
-	requireUser := middleware.RequireUser("/logout")
+func Register(baseURL *url.URL, e *engine.Engine, router *mux.Router, renderer *render.Render, sessionName string, sessionStore sessions.Store, oidcClient *oidc.Client) {
+	// static files
+	router.PathPrefix(baseURL.Path + "/static/").Handler(http.StripPrefix(baseURL.Path+"/static/", http.FileServer(http.Dir("./static"))))
+
+	requireUser := middleware.RequireUser(baseURL.Path + "/logout")
 	setUser := middleware.SetUser(e, sessionName, sessionStore)
-	authController := controllers.NewAuth(e, sessionName, sessionStore, oidcClient)
+	authController := controllers.NewAuth(e, sessionName, sessionStore, oidcClient, router)
 	publicationController := controllers.NewPublications(e, renderer)
 	datasetController := controllers.NewDatasets(e, renderer)
-	publicationFilesController := controllers.NewPublicationsFiles(e, renderer, r)
+	publicationFilesController := controllers.NewPublicationsFiles(e, renderer, router)
 	publicationDetailsController := controllers.NewPublicationsDetails(e, renderer)
 	publicationProjectsController := controllers.NewPublicationProjects(e, renderer)
 	publicationDepartmentsController := controllers.NewPublicationDepartments(e, renderer)
@@ -28,28 +30,19 @@ func Register(baseURL string, e *engine.Engine, r *mux.Router, renderer *render.
 	datasetDetailsController := controllers.NewDatasetDetails(e, renderer)
 	datasetProjectsController := controllers.NewDatasetProjects(e, renderer)
 
-	// build route urls from base url
-	u, err := url.Parse(baseURL)
-	if err != nil {
-		log.Fatal(err)
-	}
-
+	// TODO fix absolute url generation
 	// var schemes []string
 	// if u.Scheme == "http" {
 	// 	schemes = []string{"http", "https"}
 	// } else {
 	// 	schemes = []string{"https", "http"}
 	// }
-
 	// r = r.Schemes(schemes...).Host(u.Host).PathPrefix(u.Path).Subrouter()
-	r = r.PathPrefix(u.Path).Subrouter()
-
-	// static files
-	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+	r := router.PathPrefix(baseURL.Path).Subrouter()
 
 	// home
 	r.HandleFunc("", func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, "/publication", http.StatusFound)
+		http.Redirect(w, r, baseURL.Path+"/publication", http.StatusFound)
 	}).Methods("GET").Name("home")
 
 	// auth

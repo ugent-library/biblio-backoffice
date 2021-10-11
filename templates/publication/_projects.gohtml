@@ -8,7 +8,7 @@
             <div class="bc-toolbar-right">
                 <div class="c-button-toolbar" data-panel-state="read">
                     <button class="btn btn-outline-primary"
-                        hx-get="/publication/{{ .Publication.ID }}/htmx/projects/list"
+                        hx-get="{{pathFor "publication_projects" "id" .Publication.ID}}"
                         hx-target="#publications-projects-modal"
                         hx-trigger="click"
                     >
@@ -24,14 +24,13 @@
         <div class="card-body p-0" id="edit1">
             <table class="table">
                 <tbody>
-                    {{ $publicationID := .Publication.ID }}
                     {{ range $k, $v := .Publication.Project }}
                     <tr>
                         <td class="pl-6">
                             <div class="d-flex w-100">
                                 <div class="w-100">
                                     <div class="d-flex align-items-start">
-                                        <img class="list-group-item-thumbnail" src="/images/dataset-1.jpg" height="96">
+                                        <img class="list-group-item-thumbnail" src="{{assetPath "/images/dataset-1.jpg"}}" height="96">
                                         <div class="list-group-item-content">
                                             <div class="list-group-item-text">
                                                 <h4 class="c-h4">{{ $v.Name }}</h4>
@@ -52,7 +51,7 @@
                                     </button>
                                     <div class="dropdown-menu" style="">
                                         <button class="dropdown-item" type="button"
-                                            hx-get="/publication/{{ $publicationID }}/htmx/projects/remove/{{ $v.ID }}"
+                                            hx-get="{{pathFor "publication_projects_confirm_remove_from_publication" "id" $.Publication.ID "project_id" $v.ID}}"
                                             hx-target="#publications-projects-modal"
                                             hx-trigger="click"
                                         >

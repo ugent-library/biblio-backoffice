@@ -8,7 +8,7 @@
             <div class="modal-body">
                 <label class="sr-only" for="search">Search</label>
                 <input class="form-control" type="text" name="search" placeholder="Search..."
-                    hx-post="/publication/{{ .Publication.ID }}/htmx/projects/list/activesearch"
+                    hx-post="{{pathFor "publication_projects_activesearch" "id" .Publication.ID}}"
                     hx-trigger="keyup changed delay:500ms"
                     hx-target="#modal-projects-list"
                     hx-swap="innerHTML"

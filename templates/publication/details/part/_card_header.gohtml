@@ -7,7 +7,7 @@
         <div class="bc-toolbar-right">
             <div class="c-button-toolbar" data-panel-state="read">
                 <button class="btn btn-outline-primary"
-                    hx-get="/publication/{{ .Publication.ID }}/htmx/edit"
+                    hx-get="{{pathFor "publication_details_edit_form" "id" .Publication.ID}}"
                     hx-swap="innerHTML"
                     hx-target=".publication-details"
                 >

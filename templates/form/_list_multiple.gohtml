@@ -11,6 +11,7 @@
         {{ range $fk, $fv := .Values }}
         <div class="d-flex mb-3 form-value">
             <select class="custom-select form-control" name="{{ $.Key}}[{{ $fk }}]">
+                <option></option>
                 {{ range $vk, $vv := $fv }}
                 <option value="{{ $vk }}" {{if $vv.Selected}}selected{{ end}}>{{ $vv.Value }}</option>
                 {{ end }}
@@ -24,6 +25,7 @@
 
         <div class="d-flex mb-3 form-value">
             <select class="custom-select form-control" name="{{ $.Key}}[{{ len .Values }}]">
+                <option></option>
                 {{ range $k, $v := .Vocabulary }}
                 <option value="{{ $k }}">{{ $v}}</option>
                 {{ end }}

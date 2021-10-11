@@ -73,6 +73,25 @@ type listMultipleFormData struct {
 	Error      jsonapi.Error
 }
 
+type boolData struct {
+	Value    bool
+	Label    string
+	Required bool
+	Tooltip  string
+}
+
+type CheckboxInput struct {
+	Name     string
+	Value    string
+	Checked  bool
+	Label    string
+	Required bool
+	Tooltip  string
+	Cols     int
+	HasError bool
+	Error    jsonapi.Error
+}
+
 type Data struct {
 	User    *models.User
 	request *http.Request

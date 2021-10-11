@@ -9,6 +9,7 @@
     </label>
     <div class="col-{{ .Cols }}">
         <select class="custom-select form-control {{ if .HasError }}is-invalid{{ end }}" name="{{ .Key }}">
+            <option></option>
             {{ range .Values }}
             <option value="{{ .Key }}" {{if .Selected}}selected{{ end}}>{{ .Value}}</option>
             {{ end }}
