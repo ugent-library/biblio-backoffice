@@ -121,49 +121,49 @@ func (f PublicationForm) RenderFormList(key, pointer, label string, selectedTerm
 		"proceedingsPaper": "Proceedings Paper",
 	}
 
-	vocabulary["miscellaneousType"] = map[string]string {
-		"artReview": "Art review",
-		"artisticWork": "Artistic Work",
-		"bibliography": "Bibliography",
-		"biography": "Biography",
-		"blogPost": "Blogpost",
-		"bookReview": "Book review",
-		"correction": "Correction",
-		"dictionaryEntry": "Dictionary entry",
+	vocabulary["miscellaneousType"] = map[string]string{
+		"artReview":         "Art review",
+		"artisticWork":      "Artistic Work",
+		"bibliography":      "Bibliography",
+		"biography":         "Biography",
+		"blogPost":          "Blogpost",
+		"bookReview":        "Book review",
+		"correction":        "Correction",
+		"dictionaryEntry":   "Dictionary entry",
 		"editorialMaterial": "Editorial material",
 		"encyclopediaEntry": "Encyclopedia entry",
-		"exhibitionReview": "Exhibition review",
-		"filmReview": "Film review",
-		"lectureSpeech": "Lecture speech",
-		"lemma": "Lemma",
-		"magazinePiece": "Magazine piece",
-		"manual": "Manual",
-		"musicEdition": "Music edition",
-		"musicReview": "Music review",
-		"newsArticle": "News article",
-		"newspaperPiece": "Newspaper piece",
-		"other": "Other",
-		"preprint": "Preprint",
-		"productReview": "Product review",
-		"report": "Report",
+		"exhibitionReview":  "Exhibition review",
+		"filmReview":        "Film review",
+		"lectureSpeech":     "Lecture speech",
+		"lemma":             "Lemma",
+		"magazinePiece":     "Magazine piece",
+		"manual":            "Manual",
+		"musicEdition":      "Music edition",
+		"musicReview":       "Music review",
+		"newsArticle":       "News article",
+		"newspaperPiece":    "Newspaper piece",
+		"other":             "Other",
+		"preprint":          "Preprint",
+		"productReview":     "Product review",
+		"report":            "Report",
 		"technicalStandard": "Technical standard",
-		"textEdition": "Text edition",
-		"textTranslation": "Text translation",
-		"theatreReview": "Theatre review",
-		"workingPaper": "Working paper",
+		"textEdition":       "Text edition",
+		"textTranslation":   "Text translation",
+		"theatreReview":     "Theatre review",
+		"workingPaper":      "Working paper",
 	}
 
-	vocabulary["publicationStatus"] = map[string]string {
+	vocabulary["publicationStatus"] = map[string]string{
 		"unpublished": "unpublished",
-		"accepted": "accepted",
-		"published": "published",
+		"accepted":    "accepted",
+		"published":   "published",
 	}
 
-	vocabulary["conferenceType"] = map[string]string {
+	vocabulary["conferenceType"] = map[string]string{
 		"proceedingsPaper": "proceedingsPaper",
-		"abstract": "abstract",
-		"poster": "poster",
-		"other": "other",
+		"abstract":         "abstract",
+		"poster":           "poster",
+		"other":            "other",
 	}
 
 	// Generate list of dropdown values, set selectedTerm in dropdown to "selected"
@@ -251,16 +251,16 @@ func (f PublicationForm) RenderFormListMultiple(selectedTerms []string, key, poi
 func (f PublicationForm) RenderFormCheckbox(checked bool, name, pointer, label string, tooltip string, required bool, cols int) (template.HTML, error) {
 
 	var formError jsonapi.Error
-  hasError := false
+	hasError := false
 
-  if f.FormErrors != nil {
-    for _, err := range f.FormErrors {
-      if err.Source.Pointer == pointer {
-        formError = err
-        hasError = true
-      }
-    }
-  }
+	if f.FormErrors != nil {
+		for _, err := range f.FormErrors {
+			if err.Source.Pointer == pointer {
+				formError = err
+				hasError = true
+			}
+		}
+	}
 
 	return RenderPartial(f.render, "form/_checkbox", &CheckboxInput{
 		Name:     name,

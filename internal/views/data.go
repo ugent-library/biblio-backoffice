@@ -81,15 +81,15 @@ type boolData struct {
 }
 
 type CheckboxInput struct {
-	Name         string
-  Value        string
-  Checked      bool
-	Label        string
-  Required     bool
-  Tooltip      string
-  Cols         int
-  HasError     bool
-  Error        jsonapi.Error
+	Name     string
+	Value    string
+	Checked  bool
+	Label    string
+	Required bool
+	Tooltip  string
+	Cols     int
+	HasError bool
+	Error    jsonapi.Error
 }
 
 type Data struct {
