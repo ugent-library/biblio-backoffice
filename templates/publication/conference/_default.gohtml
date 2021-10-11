@@ -3,7 +3,7 @@
 	{{template "publication/conference/part/_card_header" .}}
 
 	<div class="collapse {{ if .IsHTMXRequest }}show{{ end }}" id="collapse-conference">
-		<div class="card-body p-0" id="edit1">
+		<div class="card-body p-0">
 			<ul class="list-group list-group-flush" data-panel-state="read">
 				<li class="list-group-item">
 					{{.RenderText .Publication.Conference.Name "Conference" false}}
