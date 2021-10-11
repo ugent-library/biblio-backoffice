@@ -1,0 +1,108 @@
+<form hx-patch="/publication/{{ .Publication.ID }}/htmx/authors/save" hx-swap="innerHTML" hx-target="#authors-list">
+    <table class="table">
+        <thead>
+            <tr>
+                <th class="pl-6">Name</th>
+                <th>Role</th>
+                <th>UGent membership</th>
+                <th class="pr-6"></th>
+            </tr>
+        </thead>
+        <tbody>
+            {{ $dot := . }}
+            {{range $delta, $c := .Publication.Author}}
+            {{ if (ne $delta $dot.AuthorDelta ) }}
+            <tr class="item-order-{{ $delta }}">
+                <td class="pl-8">
+                    <div class="bc-avatar-and-text">
+                        <div class="bc-avatar bc-avatar-icon bc-avatar--muted">
+                            <i class="if if-user"></i>
+                        </div>
+                        <div class="bc-avatar-text">{{$c.FullName}}</div>
+                    </div>
+                </td>
+                <td>
+                    <ul class="list-unstyled">
+                        {{range $c.CreditRole}}
+                        <li>{{.}}</li>
+                        {{end}}
+                    </ul>
+                </td>
+                <td>
+                    {{if $c.ID}}
+                    <i class="if if-ghent-university"></i>
+                    <span>UGent member</span>
+                    {{else}}
+                    External member
+                    {{end}}
+                </td>
+                <td class="pr-4">
+                    <div class="c-button-toolbar">
+                        {{/* <button class="btn btn-link btn-icon-only btn-link-muted" type="button"
+                            hx-get="/publication/{{ $pub.ID }}/htmx/authors/add/{{ $delta }}"
+                            hx-target="#authors-list"
+                            hx-swap="innerHTML"
+                        >
+                            <i class="if if-add"></i>
+                        </button>
+                        <button class="btn btn-link btn-icon-only btn-link-muted" type="button">
+                            <i class="if if-edit"></i>
+                        </button>
+                        <button class="btn btn-link btn-icon-only btn-link-muted" type="button">
+                            <i class="if if-subtract"></i>
+                        </button> */}}
+                    </div>
+                </td>
+            </tr>
+            {{ else }}
+            <tr class="item-{{ $delta }}">
+                <td class="pl-8">
+                    <div class="bc-avatar-and-text">
+                        <div class="bc-avatar bc-avatar-icon bc-avatar--muted">
+                            <i class="if if-user"></i>
+                        </div>
+                        {{$dot.RenderFormText $c.FirstName "FirstName" "/data/title" "First Name" "" false 8}}
+                        {{$dot.RenderFormText $c.LastName "LastName" "/data/title" "Last Name" "" false 8}}
+                        <input type="hidden" name="delta" value="{{ $delta }}">
+                        <!-- <input class="form-control" name="item-first-name" type="text" value="{{ $c.FirstName }}">
+                        <input class="form-control" name="item-last-name" type="text" value="{{ $c.LastName }}"> -->
+                    </div>
+                </td>
+                <td>
+                    <ul class="list-unstyled">
+                        {{range $c.CreditRole}}
+                        <li>{{.}}</li>
+                        {{end}}
+                    </ul>
+                </td>
+                <td>
+                    {{if $c.ID}}
+                    <i class="if if-ghent-university"></i>
+                    <span>UGent member</span>
+                    (<a href="#">Demote</a>)
+                    {{else}}
+                    External member
+                    {{end}}
+                    (<a href="#">Promote</a>)
+                </td>
+                <td class="pr-4">
+                    <div class="c-button-toolbar">
+                        <button class="btn btn-link btn-icon-only btn-link-muted">
+                            <i class="if if-user-add"></i>
+                        </button>
+                        <button class="btn btn-link btn-icon-only btn-link-muted"
+                            hx-get="/publication/{{ $dot.Publication.ID }}/htmx/authors/add/cancel"
+                            hx-target="#authors-list"
+                            hx-swap="innerHTML"
+                        >
+                            <i class="if if-subtract"></i>
+                        </button>
+                    </div>
+                </td>
+                </form>
+            </tr>
+            {{ end }}
+            {{end}}
+        </tbody>
+    </table>
+</form>

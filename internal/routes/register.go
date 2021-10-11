@@ -24,6 +24,7 @@ func Register(baseURL string, e *engine.Engine, r *mux.Router, renderer *render.
 	publicationDetailsController := controllers.NewPublicationsDetails(e, renderer)
 	publicationProjectsController := controllers.NewPublicationProjects(e, renderer)
 	publicationDepartmentsController := controllers.NewPublicationDepartments(e, renderer)
+	publicationAuthorsController := controllers.NewPublicationAuthors(e, renderer)
 	datasetDetailsController := controllers.NewDatasetDetails(e, renderer)
 	datasetProjectsController := controllers.NewDatasetProjects(e, renderer)
 
@@ -133,6 +134,29 @@ func Register(baseURL string, e *engine.Engine, r *mux.Router, renderer *render.
 	publicationRouter.HandleFunc("/{id}/htmx/departments/remove/{department_id}", publicationDepartmentsController.RemoveFromPublication).
 		Methods("PATCH").
 		Name("publicationDepartments_remove_from_publication")
+
+	// Publication authors HTMX fragments
+	// publicationRouter.HandleFunc("/{id}/htmx/authors/list", publicationAuthorsController.Listauthors).
+	// 	Methods("GET").
+	// 	Name("publicationAuthors")
+	// publicationRouter.HandleFunc("/{id}/htmx/authors/list/activesearch", publicationAuthorsController.ActiveSearch).
+	// 	Methods("POST").
+	// 	Name("publicationAuthors_activesearch")
+	publicationRouter.HandleFunc("/{id}/htmx/authors/add/cancel", publicationAuthorsController.CancelAddAuthorToTable).
+		Methods("GET").
+		Name("publication_authors_cancel_add_to_publication")
+	publicationRouter.HandleFunc("/{id}/htmx/authors/add/{author_delta}", publicationAuthorsController.AddAuthorToTable).
+		Methods("GET").
+		Name("publication_authors_add_to_publication")
+	publicationRouter.HandleFunc("/{id}/htmx/authors/save", publicationAuthorsController.SaveAuthorToPublication).
+		Methods("PATCH").
+		Name("publication_authors_save_to_publication")
+	// publicationRouter.HandleFunc("/{id}/htmx/authors/remove/{author_id}", publicationAuthorsController.ConfirmRemoveFromPublication).
+	// 	Methods("GET").
+	// 	Name("publicationAuthors_confirm_remove_from_publication")
+	// publicationRouter.HandleFunc("/{id}/htmx/authors/remove/{author_id}", publicationAuthorsController.RemoveFromPublication).
+	// 	Methods("PATCH").
+	// 	Name("publicationAuthors_remove_from_publication")
 
 	// datasets
 	datasetRouter := r.PathPrefix("/dataset").Subrouter()
