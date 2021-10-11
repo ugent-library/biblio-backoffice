@@ -63,6 +63,10 @@ func (d PublicationData) RenderSupervisors() (template.HTML, error) {
 	return RenderPartial(d.render, fmt.Sprintf("publication/supervisors/_%s", d.Publication.Type), d)
 }
 
+func (d PublicationData) RenderDatasets() (template.HTML, error) {
+	return RenderPartial(d.render, fmt.Sprintf("publication/datasets/_%s", d.Publication.Type), d)
+}
+
 func (d PublicationData) RenderText(text, label string, required bool) (template.HTML, error) {
 	return RenderPartial(d.render, "part/_text", &textData{
 		Label:    label,

@@ -1,0 +1,16 @@
+{{ range .Hits.Hits }}
+<li class="list-group-item">
+    <div class="d-flex w-100">
+        <div class="w-100">
+            <div class="d-flex align-items-start">
+                <button class="btn btn-primary"
+                   hx-patch="{{pathFor "publication_datasets_add" "id" $.Publication.ID "dataset_id" .ID}}"
+                   hx-swap="innerHTML"
+                   hx-target=".publication-datasets"
+                >Add Dataset</button>
+                {{template "dataset/_summary_body" .}}
+            </div>
+        </div>
+    </div>
+</li>
+{{ end }}

@@ -62,10 +62,10 @@
                             <li class="nav-item">
                                 <a class="nav-link" id="contributors-tab" data-toggle="tab" href="#contributors-content" role="tab" aria-controls="contributors" aria-selected="false">Authors &amp; Editors</a>
                             </li>
-                            {{/* <li class="nav-item">
+                            <li class="nav-item">
                                 <a class="nav-link" id="datasets-tab" data-toggle="tab" href="#datasets-content" role="tab" aria-controls="datasets" aria-selected="false">Datasets</a>
                             </li>
-                            <li class="nav-item">
+                            {{/* <li class="nav-item">
                                 <a class="nav-link" id="review-tab" data-toggle="tab" href="#review-content" role="tab" aria-controls="review" aria-selected="false">Biblio Review</a>
                             </li> */}}
                         </ul>
@@ -111,6 +111,10 @@
                 {{.RenderAuthors}}
                 {{.RenderEditors}}
                 {{.RenderSupervisors}}
+            </div>
+
+            <div id="datasets-content" class="tab-pane fade" role="tabpanel" aria-labelledby="files-tab">
+                {{.RenderDatasets}}
             </div>
         </div>
     </div>

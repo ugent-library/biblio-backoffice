@@ -160,7 +160,7 @@
                             <input class="custom-control-input" id="filter-completeness_score-{{.Value}}" type="checkbox" name="f[completeness_score]" value="{{.Value}}"{{if $.SearchArgs.HasFilter "completeness_score" .Value}} checked{{end}}>
                             <label class="custom-control-label" for="filter-completeness_score-{{.Value}}">
                                 {{if eq .Value "3"}}
-                                Completed
+                                    Completed
                                 {{else if eq .Value "2"}}
                                     Good
                                 {{else if eq .Value "1"}}

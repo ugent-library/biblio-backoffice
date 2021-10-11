@@ -27,6 +27,14 @@ func (e *Engine) get(path string, qp url.Values, responseData interface{}) (*htt
 	return e.doRequest(req, responseData)
 }
 
+func (e *Engine) post(path string, requestData, responseData interface{}) (*http.Response, error) {
+	req, err := e.newRequest("POST", path, nil, requestData)
+	if err != nil {
+		return nil, err
+	}
+	return e.doRequest(req, responseData)
+}
+
 func (e *Engine) put(path string, requestData, responseData interface{}) (*http.Response, error) {
 	req, err := e.newRequest("PUT", path, nil, requestData)
 	if err != nil {
