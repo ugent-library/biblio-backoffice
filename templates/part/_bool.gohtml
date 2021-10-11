@@ -1,0 +1,9 @@
+<div class="form-group row">
+    <label class="col-sm-3 col-form-label align-self-start">
+        {{.Label}}
+        {{if .Required}}&nbsp;<abbr class="required" title="Required">*</abbr>{{end}}
+    </label>
+    <div class="col-sm-9">
+      <input type="checkbox" disabled {{if .Value}}checked{{end}}>
+    </div>
+</div>

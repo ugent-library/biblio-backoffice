@@ -1,0 +1,15 @@
+<div class="form-group row {{ if .HasError }}is-invalid{{ end }}">
+  <div class="col-{{ .Cols }} offset-3">
+    <div class="custom-control custom-checkbox">
+      <input class="custom-control-input {{ if .HasError }}is-invalid{{ end }}" type="checkbox" id="{{.Name}}" name="{{ .Name }}" {{ if .Checked }}che
+cked{{ end }} value="true">
+      <label class="custom-control-label" for="{{.Name}}">{{.Label}}</label>
+      {{ if .HasError }}<div class="invalid-feedback">{{ .Error.Title }}</div>{{ end }}
+    </div>
+  </div>
+</div>
+<!--
+  TODO: when not checked, no value is sent to the server
+        SaveForm only overwrites the values as received from the form input,
+        so unchecking this checkbox does not update anything..
+-->

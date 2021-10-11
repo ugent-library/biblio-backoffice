@@ -48,9 +48,7 @@ func (f PublicationForm) RenderFormText(text, key, pointer, label string, toolti
 
 // TODO: We'll need dedicated functions for Department, Project, etc. because
 // Department, Project take specific types ([]PublicationDepartment, []PublicationProject)
-func (f PublicationForm) RenderFormTextMultiple(text interface{}, key, pointer, label string, tooltip string, required bool, cols int) (template.HTML, error) {
-	// TODO: remove me
-	values := []string{"foo", "bar"}
+func (f PublicationForm) RenderFormTextMultiple(values []string, key, pointer, label string, tooltip string, required bool, cols int) (template.HTML, error) {
 
 	var formError jsonapi.Error
 	hasError := false
@@ -108,12 +106,12 @@ func (f PublicationForm) RenderFormList(key, pointer, label string, selectedTerm
 	// TODO: should come from a different API, use "taxonomy" to fetch list of values from taxonomy
 	// TODO: This might be hierarchical select with a dep on type: only show "journal article" if type of publication = "Journal Article"
 	vocabulary["classification"] = map[string]string{
-		"journal_article_u":  "Journal Article - U",
-		"journal_article_a1": "Journal Article - A1",
-		"journal_article_a2": "Journal Article - A2",
-		"journal_article_a3": "Journal Article - A3",
-		"journal_article_a4": "Journal Article - A4",
-		"journal_article_v":  "Journal Article - V",
+		"U":  "U",
+		"A1": "A1",
+		"A2": "A2",
+		"A3": "A3",
+		"A4": "A4",
+		"V":  "V",
 	}
 
 	vocabulary["articleType"] = map[string]string{
@@ -121,6 +119,51 @@ func (f PublicationForm) RenderFormList(key, pointer, label string, selectedTerm
 		"review":           "Review",
 		"letter_note":      "Letter note",
 		"proceedingsPaper": "Proceedings Paper",
+	}
+
+	vocabulary["miscellaneousType"] = map[string]string {
+		"artReview": "Art review",
+		"artisticWork": "Artistic Work",
+		"bibliography": "Bibliography",
+		"biography": "Biography",
+		"blogPost": "Blogpost",
+		"bookReview": "Book review",
+		"correction": "Correction",
+		"dictionaryEntry": "Dictionary entry",
+		"editorialMaterial": "Editorial material",
+		"encyclopediaEntry": "Encyclopedia entry",
+		"exhibitionReview": "Exhibition review",
+		"filmReview": "Film review",
+		"lectureSpeech": "Lecture speech",
+		"lemma": "Lemma",
+		"magazinePiece": "Magazine piece",
+		"manual": "Manual",
+		"musicEdition": "Music edition",
+		"musicReview": "Music review",
+		"newsArticle": "News article",
+		"newspaperPiece": "Newspaper piece",
+		"other": "Other",
+		"preprint": "Preprint",
+		"productReview": "Product review",
+		"report": "Report",
+		"technicalStandard": "Technical standard",
+		"textEdition": "Text edition",
+		"textTranslation": "Text translation",
+		"theatreReview": "Theatre review",
+		"workingPaper": "Working paper",
+	}
+
+	vocabulary["publicationStatus"] = map[string]string {
+		"unpublished": "unpublished",
+		"accepted": "accepted",
+		"published": "published",
+	}
+
+	vocabulary["conferenceType"] = map[string]string {
+		"proceedingsPaper": "proceedingsPaper",
+		"abstract": "abstract",
+		"poster": "poster",
+		"other": "other",
 	}
 
 	// Generate list of dropdown values, set selectedTerm in dropdown to "selected"
@@ -152,7 +195,7 @@ func (f PublicationForm) RenderFormList(key, pointer, label string, selectedTerm
 
 // TODO: We'll need dedicated functions for fields that take specific types ([]PublicationDepartment, []PublicationProject)
 //    type assertion in one single function would become too complex quickly.
-func (f PublicationForm) RenderFormListMultiple(selectedTerms interface{}, key, pointer, label string, taxonomy string, tooltip string, required bool, cols int) (template.HTML, error) {
+func (f PublicationForm) RenderFormListMultiple(selectedTerms []string, key, pointer, label string, taxonomy string, tooltip string, required bool, cols int) (template.HTML, error) {
 	var formError jsonapi.Error
 	hasError := false
 
@@ -165,9 +208,6 @@ func (f PublicationForm) RenderFormListMultiple(selectedTerms interface{}, key, 
 		}
 	}
 
-	// TODO: remove me / Fetch me from a struct field
-	languages := []string{"eng", "dut"}
-
 	// // TODO: should come from a different API, use "taxonomy" to fetch list of values from taxonomy
 	vocabulary := make(map[string]map[string]string)
 	vocabulary["languages"] = map[string]string{
@@ -178,7 +218,7 @@ func (f PublicationForm) RenderFormListMultiple(selectedTerms interface{}, key, 
 	}
 
 	values := make(map[int][]*listFormValues)
-	for lkey, lterm := range languages {
+	for lkey, lterm := range selectedTerms {
 		var terms []*listFormValues
 		for vkey, vterm := range vocabulary[taxonomy] {
 			selected := false
@@ -206,4 +246,31 @@ func (f PublicationForm) RenderFormListMultiple(selectedTerms interface{}, key, 
 		HasError:   hasError,
 		Error:      formError,
 	})
+}
+
+func (f PublicationForm) RenderFormCheckbox(checked bool, name, pointer, label string, tooltip string, required bool, cols int) (template.HTML, error) {
+
+	var formError jsonapi.Error
+  hasError := false
+
+  if f.FormErrors != nil {
+    for _, err := range f.FormErrors {
+      if err.Source.Pointer == pointer {
+        formError = err
+        hasError = true
+      }
+    }
+  }
+
+	return RenderPartial(f.render, "form/_checkbox", &CheckboxInput{
+		Name:     name,
+		Label:    label,
+		Checked:  checked,
+		Tooltip:  tooltip,
+		Required: required,
+		Cols:     cols,
+		HasError: hasError,
+		Error:    formError,
+	})
+
 }
