@@ -140,6 +140,50 @@ func (p *PublicationAuthors) SaveAuthorToPublication(w http.ResponseWriter, r *h
 	)
 }
 
+func (p *PublicationAuthors) ConfirmRemoveFromPublication(w http.ResponseWriter, r *http.Request) {
+	id := mux.Vars(r)["id"]
+	authorDelta := mux.Vars(r)["author_delta"]
+
+	p.render.HTML(w, 200,
+		"publication/_authors_modal_confirm_removal",
+		struct {
+			ID          string
+			AuthorDelta string
+		}{
+			id,
+			authorDelta,
+		},
+		render.HTMLOptions{Layout: "layouts/htmx"},
+	)
+}
+
+func (p *PublicationAuthors) RemoveFromPublication(w http.ResponseWriter, r *http.Request) {
+	id := mux.Vars(r)["id"]
+	muxAuthorDelta := mux.Vars(r)["author_delta"]
+	authorDelta, _ := strconv.Atoi(muxAuthorDelta)
+	pub, err := p.engine.GetPublication(id)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	authors := make([]models.PublicationContributor, len(pub.Author))
+	copy(authors, pub.Author)
+
+	authors = append(authors[:authorDelta], authors[authorDelta+1:]...)
+	pub.Author = authors
+
+	// TODO: error handling
+	savedPub, _ := p.engine.UpdatePublication(pub)
+
+	p.render.HTML(w, 200,
+		fmt.Sprintf("publication/authors/_%s_form_submit", pub.Type),
+		views.NewPublicationData(r, p.render, savedPub),
+		render.HTMLOptions{Layout: "layouts/htmx"},
+	)
+}
+
 // func (p *PublicationAuthors) ListDepartments(w http.ResponseWriter, r *http.Request) {
 // 	id := mux.Vars(r)["id"]
 

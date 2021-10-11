@@ -28,6 +28,7 @@
                 <tbody>
                     {{ $pub := .Publication }}
                     {{range $k, $c := .Publication.Author}}
+                    {{ $kstring := $k | toString }}
                     <tr class="item-order-{{ $k }}">
                         <td class="pl-8">
                             <div class="bc-avatar-and-text">
@@ -64,7 +65,11 @@
                                 <button class="btn btn-link btn-icon-only btn-link-muted" type="button">
                                     <i class="if if-edit"></i>
                                 </button>
-                                <button class="btn btn-link btn-icon-only btn-link-muted" type="button">
+                                <button class="btn btn-link btn-icon-only btn-link-muted" type="button"
+                                    hx-get="{{pathFor "publication_authors_confirm_remove_from_publication" "id" $pub.ID "author_delta" $kstring }}"
+                                    hx-target="#publications-authors-modal"
+                                    hx-trigger="click"
+                                >
                                     <i class="if if-subtract"></i>
                                 </button>
                             </div>
@@ -73,6 +78,7 @@
                     {{end}}
                 </tbody>
             </table>
+            <div id="publications-authors-modal" class="modals"></div>
 {{ if not .IsHTMXRequest }}
         </div>
     </div>

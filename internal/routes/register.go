@@ -144,12 +144,12 @@ func Register(baseURL *url.URL, e *engine.Engine, router *mux.Router, renderer *
 	publicationRouter.HandleFunc("/{id}/htmx/authors/save", publicationAuthorsController.SaveAuthorToPublication).
 		Methods("PATCH").
 		Name("publication_authors_save_to_publication")
-	// publicationRouter.HandleFunc("/{id}/htmx/authors/remove/{author_id}", publicationAuthorsController.ConfirmRemoveFromPublication).
-	// 	Methods("GET").
-	// 	Name("publicationAuthors_confirm_remove_from_publication")
-	// publicationRouter.HandleFunc("/{id}/htmx/authors/remove/{author_id}", publicationAuthorsController.RemoveFromPublication).
-	// 	Methods("PATCH").
-	// 	Name("publicationAuthors_remove_from_publication")
+	publicationRouter.HandleFunc("/{id}/htmx/authors/remove/{author_delta}", publicationAuthorsController.ConfirmRemoveFromPublication).
+		Methods("GET").
+		Name("publication_authors_confirm_remove_from_publication")
+	publicationRouter.HandleFunc("/{id}/htmx/authors/remove/{author_delta}", publicationAuthorsController.RemoveFromPublication).
+		Methods("PATCH").
+		Name("publication_authors_remove_from_publication")
 
 	// datasets
 	datasetRouter := r.PathPrefix("/dataset").Subrouter()
