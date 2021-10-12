@@ -22,6 +22,7 @@
 
 	<div class="collapse {{ if .IsHTMXRequest }}show{{ end }}" id="collapse-datasets">
 		<div class="card-body p-0">
+            {{template "publication/datasets/_list" .}}
 		</div>
 	</div>
 

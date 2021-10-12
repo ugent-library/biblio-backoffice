@@ -8,7 +8,6 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/context"
 	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/biblio-backend/internal/views"
 	"github.com/unrolled/render"
 )
 
@@ -108,7 +107,14 @@ func (c *PublicationDatasets) Add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = c.engine.AddPublicationRelation(id, datasetID)
+	err = c.engine.AddRelatedPublication(id, datasetID)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	related, err := c.engine.GetRelatedPublications(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -117,7 +123,13 @@ func (c *PublicationDatasets) Add(w http.ResponseWriter, r *http.Request) {
 
 	c.render.HTML(w, 200,
 		"publication/datasets/_list",
-		views.NewPublicationData(r, c.render, pub),
+		struct {
+			Publication         *models.Publication
+			RelatedPublications []*models.RelatedPublication
+		}{
+			Publication:         pub,
+			RelatedPublications: related,
+		},
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }

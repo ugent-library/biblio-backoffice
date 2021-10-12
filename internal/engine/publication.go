@@ -38,7 +38,15 @@ func (e *Engine) UpdatePublication(pub *models.Publication) (*models.Publication
 	return resPub, nil
 }
 
-func (e *Engine) AddPublicationRelation(id, relatedID string) error {
+func (e *Engine) GetRelatedPublications(id string) ([]*models.RelatedPublication, error) {
+	related := make([]*models.RelatedPublication, 0)
+	if _, err := e.get(fmt.Sprintf("/publication/%s/related", id), nil, &related); err != nil {
+		return nil, err
+	}
+	return related, nil
+}
+
+func (e *Engine) AddRelatedPublication(id, relatedID string) error {
 	reqBody := struct {
 		RelatedPublicationID string `json:"related_publication_id"`
 	}{relatedID}
