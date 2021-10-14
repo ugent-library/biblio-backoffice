@@ -1,0 +1,49 @@
+{{ if .FormErrors }}
+<div hx-swap-oob="innerHTML:#alerts">
+	<div class="alert alert-danger alert-dismissible fade show">
+		<i class="if if-check-circle-fill"></i>
+		<p>An error has occurred!</p>
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		</button>
+	</div>
+</div>
+{{ end }}
+
+<form hx-patch="/publication/{{ .Publication.ID }}/htmx/conference/edit" hx-swap="innerHTML" hx-target="closest .publication-conference">
+	<div class="card-header">
+		<div class="collapse-trigger" data-toggle="collapse" data-target="#collapse-conference" aria-expanded="true" aria-controls="collapse-conference"></div>
+		<div class="bc-toolbar">
+			<div class="bc-toolbar-left">
+				<i class="if if-chevron-right mr-4 text-muted"></i>Conference Details
+			</div>
+			<div class="bc-toolbar-right">
+				<div class="c-button-toolbar" data-panel-state="edit">
+					<button class="btn btn-outline-primary btn-cancel"
+						hx-get="/publication/{{ .Publication.ID }}/htmx/conference"
+						hx-swap="innerHTML"
+						hx-target=".publication-conference"
+					>
+						<div class="btn-text">Cancel</div>
+					</button>
+					<button class="btn btn-primary btn-save">
+						<div class="btn-text">Save</div>
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="collapse show" id="collapse-conference">
+		<div class="card-body p-0">
+			<ul class="list-group list-group-flush" data-panel-state="edit">
+				<li class="list-group-item">
+				  {{.RenderFormText .Publication.Conference.Name "Conference.Name" "/data/conference/name" "Conference" "" false 9}}
+				  {{.RenderFormText .Publication.Conference.Location "Conference.Location" "/data/conference/location" "Conference location" "" false 9}}
+				  {{.RenderFormText .Publication.Conference.Organizer "Conference.Organizer" "/data/conference/organizer" "Conference organizer" "" false 9}}
+				  {{.RenderFormText .Publication.Conference.StartDate "Conference.StartDate" "/data/conference/start_date" "Conference start date" "" false 3}}
+				  {{.RenderFormText .Publication.Conference.EndDate "Conference.EndDate" "/data/conference/end_date" "Conference end date" "" false 3}}
+				</li>
+			</ul>
+		</div>
+	</div>
+</form>

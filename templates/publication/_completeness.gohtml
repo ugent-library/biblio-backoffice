@@ -10,8 +10,8 @@
             Completed
         {{else if eq .CompletenessScore 2}}
             Good
-        {{else}}
-            Missing full text
+        {{else if eq .CompletenessScore 1}}
+            Missing fields
         {{end}}
     </div>
 </div>

@@ -49,43 +49,31 @@
     </div>
     <div class="u-scroll-wrapper__body p-6">
         <form class="mb-4" method="GET" action="{{pathFor "datasets"}}">
+            {{range .SearchArgs.FiltersFor "scope"}}
+            <input type="hidden" name="f[scope]" value="{{.}}">
+            {{end}}
             <div class="form-row">
-                <div class="col">
+                <div class="col input-group">
                     <label class="sr-only" for="q">Search</label>
                     <input class="form-control" type="text" name="q" value="{{.SearchArgs.Query}}" placeholder="Search..."
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
                         autocomplete="off">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-primary" type="button">Search</button>
+                    </div>
                 </div>
                 <div class="col-3">
                     <div class="d-flex">
                         <label class="col-form-label pr-3" for="sort" style="white-space: nowrap">Sort
                             by</label>
-                        <select class="custom-select">
-                            <option>Newest first</option>
-                            <option>Option 2</option>
-                            <option>Option 3</option>
+                        <select class="custom-select form-change-submit" name="sort">
+                            {{range .PublicationSorts}}
+                            <option value="{{.}}"{{if $.SearchArgs.HasSort .}} selected{{end}}>{{.}}</option>
+                            {{end}}
                         </select>
                     </div>
                 </div>
             </div>
         </form>
-        <div class="d-flex flex-wrap mb-6">
-            <a class="badge badge-pill badge-default mr-3 mt-4" href="#" role="button">
-                <span class="badge-text">Completeness</span>
-                <i class="if if-caret-down"></i>
-            </a>
-            <a class="badge badge-pill badge-default mr-3 mt-4" href="#" role="button">
-                <span class="badge-text">Access Rights</span>
-                <i class="if if-caret-down"></i>
-            </a>
-            <a class="badge badge-pill badge-default mr-4 mt-4" href="#" role="button">
-                <span class="badge-text">Biblio Status</span>
-                <i class="if if-caret-down"></i>
-            </a>
-            <button class="btn btn-link p-0 btn-sm mt-4">
-                <div class="btn-text">Show all filters</div>
-            </button>
-        </div>
         <div class="card mb-6">
             <ul class="list-group list-group-flush">
                 <li class="list-group-item">

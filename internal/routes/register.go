@@ -24,9 +24,14 @@ func Register(baseURL *url.URL, e *engine.Engine, router *mux.Router, renderer *
 	datasetController := controllers.NewDatasets(e, renderer)
 	publicationFilesController := controllers.NewPublicationsFiles(e, renderer, router)
 	publicationDetailsController := controllers.NewPublicationsDetails(e, renderer)
+	publicationConferenceController := controllers.NewPublicationConference(e, renderer)
 	publicationProjectsController := controllers.NewPublicationProjects(e, renderer)
 	publicationDepartmentsController := controllers.NewPublicationDepartments(e, renderer)
+<<<<<<< HEAD
 	publicationAuthorsController := controllers.NewPublicationAuthors(e, renderer)
+=======
+	publicationDatasetsController := controllers.NewPublicationDatasets(e, renderer)
+>>>>>>> main
 	datasetDetailsController := controllers.NewDatasetDetails(e, renderer)
 	datasetProjectsController := controllers.NewDatasetProjects(e, renderer)
 
@@ -94,7 +99,18 @@ func Register(baseURL *url.URL, e *engine.Engine, router *mux.Router, renderer *
 		Methods("PATCH").
 		Name("publication_details_save_form")
 
-	// Publication projects HTMX fragmetns
+	// Publication conference HTMX fragments
+	publicationRouter.HandleFunc("/{id}/htmx/conference", publicationConferenceController.Show).
+		Methods("GET").
+		Name("publication_conference")
+	publicationRouter.HandleFunc("/{id}/htmx/conference/edit", publicationConferenceController.OpenForm).
+		Methods("GET").
+		Name("publication_conference_edit_form")
+	publicationRouter.HandleFunc("/{id}/htmx/conference/edit", publicationConferenceController.SaveForm).
+		Methods("PATCH").
+		Name("publication_conference_save_form")
+
+	// Publication projects HTMX fragments
 	publicationRouter.HandleFunc("/{id}/htmx/projects/list", publicationProjectsController.ListProjects).
 		Methods("GET").
 		Name("publication_projects")
@@ -150,6 +166,17 @@ func Register(baseURL *url.URL, e *engine.Engine, router *mux.Router, renderer *
 	publicationRouter.HandleFunc("/{id}/htmx/authors/remove/{author_delta}", publicationAuthorsController.RemoveFromPublication).
 		Methods("PATCH").
 		Name("publication_authors_remove_from_publication")
+
+	// Publication projects HTMX fragments
+	publicationRouter.HandleFunc("/{id}/htmx/datasets/choose", publicationDatasetsController.Choose).
+		Methods("GET").
+		Name("publication_datasets_choose")
+	publicationRouter.HandleFunc("/{id}/htmx/datasets/activesearch", publicationDatasetsController.ActiveSearch).
+		Methods("POST").
+		Name("publication_datasets_activesearch")
+	publicationRouter.HandleFunc("/{id}/htmx/datasets/add/{dataset_id}", publicationDatasetsController.Add).
+		Methods("PATCH").
+		Name("publication_datasets_add")
 
 	// datasets
 	datasetRouter := r.PathPrefix("/dataset").Subrouter()

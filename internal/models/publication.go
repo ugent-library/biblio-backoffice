@@ -12,6 +12,10 @@ type PublicationHits struct {
 	Facets       map[string][]Facet `json:"facets"`
 }
 
+type RelatedPublication struct {
+	Publication *Publication `json:"publication,omitempty"`
+}
+
 type PublicationFile struct {
 	AccessLevel        string     `json:"access_level,omitempty"`
 	ContentType        string     `json:"content_type,omitempty"`
@@ -121,6 +125,7 @@ type Publication struct {
 	PublicationStatus       string                   `json:"publication_status,omitempty"`
 	Publisher               string                   `json:"publisher,omitempty"`
 	PubMedID                string                   `json:"pubmed_id,omitempty"`
+	RelatedPublications     []*RelatedPublication
 	ReportNumber            string                   `json:"report_number,omitempty"`
 	ResearchField           []string                 `json:"research_field,omitempty"`
 	ReviewerNote            string                   `json:"reviewer_note,omitempty"`

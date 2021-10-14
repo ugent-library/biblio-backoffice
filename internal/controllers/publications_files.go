@@ -108,7 +108,7 @@ func (c *PublicationsFiles) Thumbnail(w http.ResponseWriter, r *http.Request) {
 
 func (c *PublicationsFiles) Upload(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
-	pub, err := c.engine.GetPublication(id)
+	_, err := c.engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -160,7 +160,7 @@ func (c *PublicationsFiles) Upload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pub, _ = c.engine.GetPublication(id)
+	pub, _ := c.engine.GetPublication(id)
 
 	c.render.HTML(w, http.StatusCreated, "publication/show", views.NewPublicationData(r, c.render, pub))
 }

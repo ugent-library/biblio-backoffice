@@ -2,14 +2,12 @@ package engine
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"mime/multipart"
 	"net/http"
 
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/go-web/forms"
-	"github.com/ugent-library/go-web/jsonapi"
 )
 
 func (e *Engine) UserPublications(userID string, args *SearchArgs) (*models.PublicationHits, error) {
@@ -35,12 +33,25 @@ func (e *Engine) GetPublication(id string) (*models.Publication, error) {
 func (e *Engine) UpdatePublication(pub *models.Publication) (*models.Publication, error) {
 	resPub := &models.Publication{}
 	if _, err := e.put(fmt.Sprintf("/publication/%s", pub.ID), pub, resPub); err != nil {
-		var errors jsonapi.Errors
-		_ = json.Unmarshal([]byte(err.Error()), &errors)
-
-		return nil, errors
+		return nil, err
 	}
 	return resPub, nil
+}
+
+func (e *Engine) GetRelatedPublications(id string) ([]*models.RelatedPublication, error) {
+	related := make([]*models.RelatedPublication, 0)
+	if _, err := e.get(fmt.Sprintf("/publication/%s/related", id), nil, &related); err != nil {
+		return nil, err
+	}
+	return related, nil
+}
+
+func (e *Engine) AddRelatedPublication(id, relatedID string) error {
+	reqBody := struct {
+		RelatedPublicationID string `json:"related_publication_id"`
+	}{relatedID}
+	_, err := e.post(fmt.Sprintf("/publication/%s/related", id), &reqBody, nil)
+	return err
 }
 
 func (e *Engine) AddPublicationFile(id string, pubFile models.PublicationFile, b []byte) error {

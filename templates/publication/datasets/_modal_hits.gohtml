@@ -1,7 +1,5 @@
-<div class="c-header-collapsible__collapsed mx-6">
-    <h4 class="h4">{{.Title}}</h4>
-</div>
-<div class="c-header-collapsible__expanded mx-6">
+{{ range .Hits.Hits }}
+<li class="list-group-item">
     <div class="d-flex w-100">
         <div class="w-100">
             <div class="d-flex align-items-start">
@@ -19,6 +17,13 @@
                                 <span class="pl-2 text-muted">Open Access</span>
                             </div>
                             {{end}}
+                        </div>
+                        <div class="list-group-item-subline-right">
+                            <button class="btn btn-primary"
+                            hx-patch="{{pathFor "publication_datasets_add" "id" $.Publication.ID "dataset_id" .ID}}"
+                            hx-swap="innerHTML"
+                            hx-target=".publication-datasets"
+                            >Add Dataset</button>
                         </div>
                     </div>
                     <div class="list-group-item-text">
@@ -39,16 +44,6 @@
                         <div class="list-group-item-meta-left">
                             <div class="list-group-item-meta-item">
                                 {{template "publication/_status" .}}
-                            </div>
-                            <div class="list-group-item-meta-item">
-                                <div class="c-progress-bar c-progress-bar--medium">
-                                    <div class="c-progress-bar__progress">
-                                        <div class="c-progress-bar__bar c-progress-bar__bar--start"></div>
-                                        <div class="c-progress-bar__bar c-progress-bar__bar--middle"></div>
-                                        <div class="c-progress-bar__bar c-progress-bar__bar--end"></div>
-                                    </div>
-                                    <div class="c-progress-bar__label">Good</div>
-                                </div>
                             </div>
                         </div>
                         <div class="list-group-item-meta-right">
@@ -73,4 +68,5 @@
             </div>
         </div>
     </div>
-</div>
+</li>
+{{ end }}

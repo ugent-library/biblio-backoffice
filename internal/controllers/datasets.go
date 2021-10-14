@@ -37,7 +37,12 @@ func (c *Datasets) List(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// TODO: change PublicationListVars into DatasetListVars
-	c.render.HTML(w, http.StatusOK, "dataset/list", PublicationListVars{Data: views.NewData(r), SearchArgs: args, Hits: hits})
+	c.render.HTML(w, http.StatusOK, "dataset/list", PublicationListVars{
+		Data:             views.NewData(r),
+		SearchArgs:       args,
+		Hits:             hits,
+		PublicationSorts: c.engine.PublicationSorts(),
+	})
 }
 
 func (c *Datasets) Show(w http.ResponseWriter, r *http.Request) {
