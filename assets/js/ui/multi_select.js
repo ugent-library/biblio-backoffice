@@ -643,10 +643,10 @@ export default function () {
                 select: "#" + el.id,
             });
 
+            // See: https://github.com/sidneywm/iconic-multiselect/issues/10
             iconicMultiSelectElement.subscribe(function (evt) {
                 switch (evt.action) {
                   case 'ADD_OPTION':
-
                     for (let i = 0; i < iconicMultiSelectElement._selectContainer.options.length; i++) {
                       if (iconicMultiSelectElement._selectContainer.options[i].value == evt.value) {
                         iconicMultiSelectElement._selectContainer.options[i].selected = true
