@@ -27,11 +27,8 @@ func Register(baseURL *url.URL, e *engine.Engine, router *mux.Router, renderer *
 	publicationConferenceController := controllers.NewPublicationConference(e, renderer)
 	publicationProjectsController := controllers.NewPublicationProjects(e, renderer)
 	publicationDepartmentsController := controllers.NewPublicationDepartments(e, renderer)
-<<<<<<< HEAD
 	publicationAuthorsController := controllers.NewPublicationAuthors(e, renderer)
-=======
 	publicationDatasetsController := controllers.NewPublicationDatasets(e, renderer)
->>>>>>> main
 	datasetDetailsController := controllers.NewDatasetDetails(e, renderer)
 	datasetProjectsController := controllers.NewDatasetProjects(e, renderer)
 
