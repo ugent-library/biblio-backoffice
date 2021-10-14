@@ -7,10 +7,18 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/ugent-library/biblio-backend/internal/context"
 	"github.com/ugent-library/biblio-backend/internal/engine"
+	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/views"
 	"github.com/ugent-library/go-web/forms"
 	"github.com/unrolled/render"
 )
+
+type DatasetListVars struct {
+	views.Data
+	SearchArgs       *engine.SearchArgs
+	Hits             *models.DatasetHits
+	PublicationSorts []string
+}
 
 type Datasets struct {
 	engine *engine.Engine
@@ -36,8 +44,7 @@ func (c *Datasets) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO: change PublicationListVars into DatasetListVars
-	c.render.HTML(w, http.StatusOK, "dataset/list", PublicationListVars{
+	c.render.HTML(w, http.StatusOK, "dataset/list", DatasetListVars{
 		Data:             views.NewData(r),
 		SearchArgs:       args,
 		Hits:             hits,

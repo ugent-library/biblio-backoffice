@@ -14,10 +14,6 @@
             <div class="list-group-item-content">
                 <div class="list-group-item-subline">
                     <div class="list-group-item-subline-left">
-                        <div class="d-flex align-items-center">
-                            <i class="if if-download if--small if--success"></i>
-                            <span class="pl-2 text-muted">Open Access</span>
-                        </div>
                     </div>
                     <div class="list-group-item-subline-right">
                         <div class="dropdown">
@@ -61,7 +57,7 @@
                     <a href="{{pathFor "dataset" "id" .ID}}">
                         <h4 class="c-h4">{{.Title}}</h4>
                     </a>
-                    {{with .Author}}{{template "publication/_contributors_short" .}}{{end}}
+                    {{with .Creator}}{{template "publication/_contributors_short" .}}{{end}}
                     <span class="c-body-small text-muted">
                         {{.Year}},
                         <a class="link-primary" href="#">

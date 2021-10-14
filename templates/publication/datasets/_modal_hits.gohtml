@@ -11,12 +11,6 @@
                 <div class="list-group-item-content">
                     <div class="list-group-item-subline">
                         <div class="list-group-item-subline-left">
-                            {{if .IsOpenAccess}}
-                            <div class="d-flex align-items-center">
-                                <i class="if if-download if--small if--success"></i>
-                                <span class="pl-2 text-muted">Open Access</span>
-                            </div>
-                            {{end}}
                         </div>
                         <div class="list-group-item-subline-right">
                             <button class="btn btn-primary"
@@ -29,7 +23,7 @@
                     <div class="list-group-item-text">
                         <h4 class="c-h4">{{.Title}}<i class="if if-no-edit if--small ml-3 text-muted" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Locked for editing"></i>
                         </h4>
-                        {{with .Author}}
+                        {{with .Creator}}
                             {{template "publication/_contributors_short" .}}
                         {{end}}
                         <span class="c-body-small text-muted">
