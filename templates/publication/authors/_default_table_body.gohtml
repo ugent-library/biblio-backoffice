@@ -1,0 +1,54 @@
+{{ $pub := .Publication }}
+{{range $k, $c := .Publication.Author}}
+
+<tr class="row-{{ $k }}">
+    <td class="pl-8">
+        <div class="bc-avatar-and-text">
+            <div class="bc-avatar bc-avatar-icon bc-avatar--muted">
+                <i class="if if-user"></i>
+            </div>
+            <div class="bc-avatar-text">{{$c.FullName}}</div>
+        </div>
+    </td>
+    <td>
+        <ul class="list-unstyled">
+            {{range $c.CreditRole}}
+            <li>{{.}}</li>
+            {{end}}
+        </ul>
+    </td>
+    <td>
+        {{if $c.ID}}
+        <i class="if if-ghent-university"></i>
+        <span>UGent member</span>
+        {{else}}
+        External member
+        {{end}}
+    </td>
+    <td class="pr-4">
+        <div class="c-button-toolbar">
+            <button type="button" class="btn btn-link btn-icon-only btn-link-muted add-author btn-swap"
+                hx-get="/publication/{{ $pub.ID }}/htmx/authors/add/{{ $k }}"
+                hx-target=".row-{{ $k }}"
+                hx-swap="afterend settle:.25s"
+            >
+                <i class="if if-add"></i>
+            </button>
+            <button type="button" class="btn btn-link btn-icon-only btn-link-muted edit-author btn-swap"
+                hx-get="/publication/{{ $pub.ID }}/htmx/authors/edit/{{ $k }}"
+                hx-target=".row-{{ $k }}"
+                hx-swap="outerHTML settle:.25s"
+            >
+                <i class="if if-edit"></i>
+            </button>
+            <button type="button" class="btn btn-link btn-icon-only btn-link-muted delete-author"
+                hx-get="/publication/{{ $pub.ID }}/htmx/authors/remove/{{ $k }}"
+                hx-target="#publications-authors-modal"
+                hx-trigger="click"
+            >
+                <i class="if if-subtract"></i>
+            </button>
+        </div>
+    </td>
+</tr>
+{{end}}

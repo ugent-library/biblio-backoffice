@@ -142,26 +142,26 @@ func Register(baseURL *url.URL, e *engine.Engine, router *mux.Router, renderer *
 		Name("publicationDepartments_remove_from_publication")
 
 	// Publication authors HTMX fragments
-	// publicationRouter.HandleFunc("/{id}/htmx/authors/list", publicationAuthorsController.Listauthors).
-	// 	Methods("GET").
-	// 	Name("publicationAuthors")
-	// publicationRouter.HandleFunc("/{id}/htmx/authors/list/activesearch", publicationAuthorsController.ActiveSearch).
-	// 	Methods("POST").
-	// 	Name("publicationAuthors_activesearch")
-	publicationRouter.HandleFunc("/{id}/htmx/authors/add/cancel", publicationAuthorsController.CancelAddAuthorToTable).
+	publicationRouter.HandleFunc("/{id}/htmx/authors/list", publicationAuthorsController.List).
 		Methods("GET").
-		Name("publication_authors_cancel_add_to_publication")
-	publicationRouter.HandleFunc("/{id}/htmx/authors/add/{author_delta}", publicationAuthorsController.AddAuthorToTable).
+		Name("publication_authors_list")
+	publicationRouter.HandleFunc("/{id}/htmx/authors/add/{delta}", publicationAuthorsController.AddRow).
 		Methods("GET").
-		Name("publication_authors_add_to_publication")
-	publicationRouter.HandleFunc("/{id}/htmx/authors/save", publicationAuthorsController.SaveAuthorToPublication).
-		Methods("PATCH").
-		Name("publication_authors_save_to_publication")
-	publicationRouter.HandleFunc("/{id}/htmx/authors/remove/{author_delta}", publicationAuthorsController.ConfirmRemoveFromPublication).
+		Name("publication_authors_add_row")
+	publicationRouter.HandleFunc("/{id}/htmx/authors/create/{delta}", publicationAuthorsController.CreateAuthor).
+		Methods("POST").
+		Name("publication_authors_create_author")
+	publicationRouter.HandleFunc("/{id}/htmx/authors/edit/{delta}", publicationAuthorsController.EditRow).
+		Methods("GET").
+		Name("publication_authors_edit_row")
+	publicationRouter.HandleFunc("/{id}/htmx/authors/update/{delta}", publicationAuthorsController.UpdateAuthor).
+		Methods("POST").
+		Name("publication_authors_update_author")
+	publicationRouter.HandleFunc("/{id}/htmx/authors/remove/{delta}", publicationAuthorsController.ConfirmRemoveFromPublication).
 		Methods("GET").
 		Name("publication_authors_confirm_remove_from_publication")
-	publicationRouter.HandleFunc("/{id}/htmx/authors/remove/{author_delta}", publicationAuthorsController.RemoveFromPublication).
-		Methods("PATCH").
+	publicationRouter.HandleFunc("/{id}/htmx/authors/remove/{delta}", publicationAuthorsController.RemoveAuthor).
+		Methods("DELETE").
 		Name("publication_authors_remove_from_publication")
 
 	// Publication projects HTMX fragments

@@ -7,6 +7,7 @@ import submit from './ui/form_submit.js'
 import modalClose from './ui/modal_close.js'
 import modalPopper from './ui/modal_popper.js'
 import multipleSelect from './ui/multi_select.js'
+import interactiveTable from './ui/interactive_table.js'
 
 bootstrap()
 check()
@@ -17,3 +18,4 @@ submit()
 modalClose()
 modalPopper()
 multipleSelect()
+interactiveTable()

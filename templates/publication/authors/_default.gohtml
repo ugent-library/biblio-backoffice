@@ -1,5 +1,5 @@
 {{if .Publication.Author}}
-{{ if not .IsHTMXRequest }}<div class="card mb-6">
+<div class="card mb-6">
     <div class="card-header">
         <div class="bc-toolbar">
             <div class="bc-toolbar-left">
@@ -15,8 +15,65 @@
     </div>
     <div class="card-body p-0">
         <div id="authors-list">
-{{ end }}
-            <table class="table">
+            <style>
+                .row-edit.htmx-added,
+                .row-saved.htmx-added,
+                .row-new.htmx-added {
+                opacity: 0;
+                }
+
+                tr.htmx-swapping {
+                    opacity: 0;
+                    transition: opacity .15s ease-out;
+                }
+
+                .row-edit,
+                .row-saved,
+                .row-new {
+                opacity: 1;
+                transition: opacity .15s ease-out;
+                }
+{{/*
+                .table {
+                    border: 1px solid #ccc;
+                    border-collapse: collapse;
+                }
+                .table th,
+                .table td {
+                    border: 1px solid #ccc;
+                }
+                .table th,
+                .table td {
+                    padding: 0.5rem;
+                }
+                .draggable {
+                    cursor: move;
+                    user-select: none;
+                }
+                .placeholder {
+                    background-color: #edf2f7;
+                    border: 2px dashed #cbd5e0;
+                }
+                .clone-list {
+                    border-top: 1px solid #ccc;
+                }
+                .clone-table {
+                    border-collapse: collapse;
+                    border: none;
+                }
+                .clone-table th,
+                .clone-table td {
+                    border: 1px solid #ccc;
+                    border-top: none;
+                    padding: 0.5rem;
+                }
+                .dragging {
+                    background: #fff;
+                    border-top: 1px solid #ccc;
+                    z-index: 999;
+                } */}}
+            </style>
+            <table class="table" id="foobar">
                 <thead>
                     <tr>
                         <th class="pl-6">Name</th>
@@ -25,63 +82,16 @@
                         <th class="pr-6"></th>
                     </tr>
                 </thead>
-                <tbody>
-                    {{ $pub := .Publication }}
-                    {{range $k, $c := .Publication.Author}}
-                    {{ $kstring := $k | toString }}
-                    <tr class="item-order-{{ $k }}">
-                        <td class="pl-8">
-                            <div class="bc-avatar-and-text">
-                                <div class="bc-avatar bc-avatar-icon bc-avatar--muted">
-                                    <i class="if if-user"></i>
-                                </div>
-                                <div class="bc-avatar-text">{{$c.FullName}}</div>
-                            </div>
-                        </td>
-                        <td>
-                            <ul class="list-unstyled">
-                                {{range $c.CreditRole}}
-                                <li>{{.}}</li>
-                                {{end}}
-                            </ul>
-                        </td>
-                        <td>
-                            {{if $c.ID}}
-                            <i class="if if-ghent-university"></i>
-                            <span>UGent member</span>
-                            {{else}}
-                            External member
-                            {{end}}
-                        </td>
-                        <td class="pr-4">
-                            <div class="c-button-toolbar">
-                                <button class="btn btn-link btn-icon-only btn-link-muted" type="button"
-                                    hx-get="/publication/{{ $pub.ID }}/htmx/authors/add/{{ $k }}"
-                                    hx-target="#authors-list"
-                                    hx-swap="innerHTML"
-                                >
-                                    <i class="if if-add"></i>
-                                </button>
-                                <button class="btn btn-link btn-icon-only btn-link-muted" type="button">
-                                    <i class="if if-edit"></i>
-                                </button>
-                                <button class="btn btn-link btn-icon-only btn-link-muted" type="button"
-                                    hx-get="{{pathFor "publication_authors_confirm_remove_from_publication" "id" $pub.ID "author_delta" $kstring }}"
-                                    hx-target="#publications-authors-modal"
-                                    hx-trigger="click"
-                                >
-                                    <i class="if if-subtract"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    {{end}}
-                </tbody>
+                <tbody
+                    hx-trigger="itemDeleted from:body delay:.25s, itemSaved from:body delay:.25s, itemUpdated from:body delay:.25s"
+                    hx-get="/publication/{{ .Publication.ID }}/htmx/authors/list"
+                    hx-swap="innerHTML"
+                >
+                    {{ template "publication/authors/_default_table_body" . }}
+               </tbody>
             </table>
             <div id="publications-authors-modal" class="modals"></div>
-{{ if not .IsHTMXRequest }}
         </div>
     </div>
 </div>
-{{ end }}
 {{end}}

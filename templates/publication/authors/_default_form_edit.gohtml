@@ -1,4 +1,4 @@
-<tr class="row-new">
+<tr class="row-edit">
     <td class="pl-8">
         <div class="bc-avatar-and-text">
             <div class="bc-avatar bc-avatar-icon bc-avatar--muted">
@@ -19,12 +19,12 @@
     <td class="pr-4">
         <div class="c-button-toolbar">
             <button type="button" name="create" class="btn btn-link btn-icon-only btn-link-muted create-author"
-                hx-post="/publication/{{ .ID }}/htmx/authors/create/{{ .Key }}"
-                hx-target=".row-new"
-                hx-include=".row-new"
+                hx-post="/publication/{{ .ID }}/htmx/authors/update/{{ .Key }}"
+                hx-target=".row-edit"
+                hx-include=".row-edit"
                 hx-swap="outerHTML settle:.25s"
             >
-                <i class="if if-add"></i>
+                <i class="if if-edit"></i>
             </button>
             {{/* <button class="btn btn-link btn-icon-only btn-link-muted" type="button">
                 <i class="if if-edit"></i>

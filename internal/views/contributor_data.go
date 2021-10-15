@@ -11,8 +11,10 @@ type ContributorData struct {
 	Data
 	render      *render.Render
 	Publication *models.Publication
+	Author      *models.PublicationContributor
+	Key         int
 }
 
-func NewContributorData(r *http.Request, render *render.Render, p *models.Publication) ContributorData {
-	return ContributorData{Data: NewData(r), render: render, Publication: p}
+func NewContributorData(r *http.Request, render *render.Render, p *models.Publication, a *models.PublicationContributor, k int) ContributorData {
+	return ContributorData{Data: NewData(r), render: render, Publication: p, Author: a, Key: k}
 }

@@ -27,46 +27,7 @@ func NewPublicationAuthors(e *engine.Engine, r *render.Render) *PublicationAutho
 	}
 }
 
-func (p *PublicationAuthors) AddAuthorToTable(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
-	muxAuthorDelta := mux.Vars(r)["author_delta"]
-
-	pub, err := p.engine.GetPublication(id)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
-
-	// Convert string to int
-	authorDelta, _ := strconv.Atoi(muxAuthorDelta)
-	// Create an empty author
-	author := models.PublicationContributor{}
-
-	// Deep copy authors from pub.Author
-	authors := make([]models.PublicationContributor, len(pub.Author))
-	copy(authors, pub.Author)
-
-	// Intersperse a new item in an slice
-	// 1. Append an empty author to the end fo the slice, creating room in the slice.
-	authors = append(authors, author)
-	// 2. Shift all authors one element to the right, the last item will be overwritten.
-	//    Element at autohrDelta+1 will be duplicated, with the element at authorDelta
-	copy(authors[authorDelta+1:], authors[authorDelta:])
-	// 3. Overwrite the element at authorDelta+1 with the actual element we want show
-	//    at that position
-	authors[authorDelta+1] = author
-
-	pub.Author = authors
-
-	p.render.HTML(w, 200,
-		fmt.Sprintf("publication/authors/_%s_form", pub.Type),
-		views.NewContributorForm(r, p.render, pub, authorDelta+1, nil),
-		render.HTMLOptions{Layout: "layouts/htmx"},
-	)
-}
-
-func (p *PublicationAuthors) CancelAddAuthorToTable(w http.ResponseWriter, r *http.Request) {
+func (p *PublicationAuthors) List(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
 	pub, err := p.engine.GetPublication(id)
@@ -77,14 +38,33 @@ func (p *PublicationAuthors) CancelAddAuthorToTable(w http.ResponseWriter, r *ht
 	}
 
 	p.render.HTML(w, 200,
-		fmt.Sprintf("publication/authors/_%s", pub.Type),
-		views.NewContributorData(r, p.render, pub),
+		"publication/authors/_default_table_body",
+		views.NewContributorData(r, p.render, pub, nil, 0),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
 
-func (p *PublicationAuthors) SaveAuthorToPublication(w http.ResponseWriter, r *http.Request) {
+func (p *PublicationAuthors) AddRow(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
+	muxRowDelta := mux.Vars(r)["delta"]
+	rowDelta, _ := strconv.Atoi(muxRowDelta)
+
+	rowDelta++
+
+	// Skeleton to make the render fields happy
+	author := &models.PublicationContributor{}
+
+	p.render.HTML(w, http.StatusOK,
+		"publication/authors/_default_form",
+		views.NewContributorForm(r, p.render, id, author, rowDelta, nil),
+		render.HTMLOptions{Layout: "layouts/htmx"},
+	)
+}
+
+func (p *PublicationAuthors) CreateAuthor(w http.ResponseWriter, r *http.Request) {
+	id := mux.Vars(r)["id"]
+	muxRowDelta := mux.Vars(r)["delta"]
+	rowDelta, _ := strconv.Atoi(muxRowDelta)
 
 	pub, err := p.engine.GetPublication(id)
 	if err != nil {
@@ -100,25 +80,20 @@ func (p *PublicationAuthors) SaveAuthorToPublication(w http.ResponseWriter, r *h
 	}
 
 	author := &models.PublicationContributor{}
-	formAuthorDelta := r.Form.Get("delta")
 
 	if err := forms.Decode(author, r.Form); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	log.Println(r.Form)
-	log.Println(author)
-
-	authorDelta, _ := strconv.Atoi(formAuthorDelta)
 	placeholder := models.PublicationContributor{}
 
 	authors := make([]models.PublicationContributor, len(pub.Author))
 	copy(authors, pub.Author)
 
 	authors = append(authors, placeholder)
-	copy(authors[authorDelta+1:], authors[authorDelta:])
-	authors[authorDelta] = *author
+	copy(authors[rowDelta+1:], authors[rowDelta:])
+	authors[rowDelta] = *author
 	pub.Author = authors
 
 	savedPub, err := p.engine.UpdatePublication(pub)
@@ -126,7 +101,7 @@ func (p *PublicationAuthors) SaveAuthorToPublication(w http.ResponseWriter, r *h
 	if formErrors, ok := err.(jsonapi.Errors); ok {
 		p.render.HTML(w, 200,
 			fmt.Sprintf("publication/authors/_%s_form", pub.Type),
-			views.NewContributorForm(r, p.render, pub, authorDelta, formErrors),
+			views.NewContributorForm(r, p.render, savedPub.ID, author, rowDelta, formErrors),
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
 
@@ -136,16 +111,100 @@ func (p *PublicationAuthors) SaveAuthorToPublication(w http.ResponseWriter, r *h
 		return
 	}
 
-	p.render.HTML(w, 200,
-		fmt.Sprintf("publication/authors/_%s_form_submit", savedPub.Type),
-		views.NewContributorData(r, p.render, savedPub),
+	// Use the SavedAuthor since Librecat returns Author.FullName
+	savedAuthor := &savedPub.Author[rowDelta]
+
+	w.Header().Set("HX-Trigger", "itemSaved")
+
+	p.render.HTML(w, http.StatusOK,
+		"publication/authors/_default_row",
+		views.NewContributorData(r, p.render, savedPub, savedAuthor, rowDelta),
+		render.HTMLOptions{Layout: "layouts/htmx"},
+	)
+}
+
+func (p *PublicationAuthors) EditRow(w http.ResponseWriter, r *http.Request) {
+	id := mux.Vars(r)["id"]
+	muxRowDelta := mux.Vars(r)["delta"]
+	rowDelta, _ := strconv.Atoi(muxRowDelta)
+
+	pub, err := p.engine.GetPublication(id)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	// Skeleton to make the render fields happy
+	author := &pub.Author[rowDelta]
+
+	p.render.HTML(w, http.StatusOK,
+		"publication/authors/_default_form_edit",
+		views.NewContributorForm(r, p.render, id, author, rowDelta, nil),
+		render.HTMLOptions{Layout: "layouts/htmx"},
+	)
+}
+
+func (p *PublicationAuthors) UpdateAuthor(w http.ResponseWriter, r *http.Request) {
+	id := mux.Vars(r)["id"]
+	muxRowDelta := mux.Vars(r)["delta"]
+	rowDelta, _ := strconv.Atoi(muxRowDelta)
+
+	pub, err := p.engine.GetPublication(id)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	err = r.ParseForm()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	author := &models.PublicationContributor{}
+
+	if err := forms.Decode(author, r.Form); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	authors := make([]models.PublicationContributor, len(pub.Author))
+	copy(authors, pub.Author)
+
+	authors[rowDelta] = *author
+	pub.Author = authors
+
+	savedPub, err := p.engine.UpdatePublication(pub)
+
+	if formErrors, ok := err.(jsonapi.Errors); ok {
+		p.render.HTML(w, 200,
+			fmt.Sprintf("publication/authors/_%s_edit_form", pub.Type),
+			views.NewContributorForm(r, p.render, savedPub.ID, author, rowDelta, formErrors),
+			render.HTMLOptions{Layout: "layouts/htmx"},
+		)
+
+		return
+	} else if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Use the SavedAuthor since Librecat returns Author.FullName
+	savedAuthor := &savedPub.Author[rowDelta]
+
+	w.Header().Set("HX-Trigger", "itemUpdated")
+
+	p.render.HTML(w, http.StatusOK,
+		"publication/authors/_default_row",
+		views.NewContributorData(r, p.render, savedPub, savedAuthor, rowDelta),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
 
 func (p *PublicationAuthors) ConfirmRemoveFromPublication(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
-	authorDelta := mux.Vars(r)["author_delta"]
+	muxRowDelta := mux.Vars(r)["delta"]
 
 	p.render.HTML(w, 200,
 		"publication/_authors_modal_confirm_removal",
@@ -154,16 +213,17 @@ func (p *PublicationAuthors) ConfirmRemoveFromPublication(w http.ResponseWriter,
 			AuthorDelta string
 		}{
 			id,
-			authorDelta,
+			muxRowDelta,
 		},
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
 
-func (p *PublicationAuthors) RemoveFromPublication(w http.ResponseWriter, r *http.Request) {
+func (p *PublicationAuthors) RemoveAuthor(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
-	muxAuthorDelta := mux.Vars(r)["author_delta"]
-	authorDelta, _ := strconv.Atoi(muxAuthorDelta)
+	muxRowDelta := mux.Vars(r)["delta"]
+	rowDelta, _ := strconv.Atoi(muxRowDelta)
+
 	pub, err := p.engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
@@ -174,48 +234,14 @@ func (p *PublicationAuthors) RemoveFromPublication(w http.ResponseWriter, r *htt
 	authors := make([]models.PublicationContributor, len(pub.Author))
 	copy(authors, pub.Author)
 
-	authors = append(authors[:authorDelta], authors[authorDelta+1:]...)
+	authors = append(authors[:rowDelta], authors[rowDelta+1:]...)
 	pub.Author = authors
 
 	// TODO: error handling
-	savedPub, _ := p.engine.UpdatePublication(pub)
+	p.engine.UpdatePublication(pub)
 
-	p.render.HTML(w, 200,
-		fmt.Sprintf("publication/authors/_%s_form_submit", pub.Type),
-		views.NewPublicationData(r, p.render, savedPub),
-		render.HTMLOptions{Layout: "layouts/htmx"},
-	)
+	w.Header().Set("HX-Trigger", "itemDeleted")
+
+	// Empty content, denotes we deleted the record
+	fmt.Fprintf(w, "")
 }
-
-// func (p *PublicationAuthors) ActiveSearch(w http.ResponseWriter, r *http.Request) {
-// 	id := mux.Vars(r)["id"]
-
-// 	pub, err := p.engine.GetPublication(id)
-// 	if err != nil {
-// 		log.Println(err)
-// 		http.Error(w, err.Error(), http.StatusNotFound)
-// 		return
-// 	}
-
-// 	err = r.ParseForm()
-// 	if err != nil {
-// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-// 		return
-// 	}
-
-// 	// Get 20 results from the search query
-// 	query := r.Form["search"]
-// 	hits, _ := p.engine.SuggestDepartments(query[0])
-
-// 	p.render.HTML(w, 200,
-// 		"publication/_departments_modal_hits",
-// 		struct {
-// 			Publication *models.Publication
-// 			Hits        []models.Completion
-// 		}{
-// 			pub,
-// 			hits,
-// 		},
-// 		render.HTMLOptions{Layout: "layouts/htmx"},
-// 	)
-// }
