@@ -88,8 +88,7 @@ func (d *DatasetProjects) AddToDataset(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	projectId := mux.Vars(r)["project_id"]
 
-	// TODO: set constraint to research_data
-	pub, err := d.engine.GetPublication(id)
+	dataset, err := d.engine.GetDataset(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -107,15 +106,18 @@ func (d *DatasetProjects) AddToDataset(w http.ResponseWriter, r *http.Request) {
 		ID:   projectId,
 		Name: project.Name,
 	}
-	pub.Project = append(pub.Project, publicationProject)
+	dataset.Project = append(dataset.Project, publicationProject)
 
-	savedPub, _ := d.engine.UpdatePublication(pub)
-
-	// TODO: error handling if project save fails
+	savedDataset, _ := d.engine.UpdateDataset(dataset)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	d.render.HTML(w, 200,
 		"dataset/_projects",
-		views.NewDatasetData(r, d.render, savedPub),
+		views.NewDatasetData(r, d.render, savedDataset),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -141,16 +143,15 @@ func (d *DatasetProjects) RemoveFromDataset(w http.ResponseWriter, r *http.Reque
 	id := mux.Vars(r)["id"]
 	projectId := mux.Vars(r)["project_id"]
 
-	// TODO: set constraint to research_data
-	pub, err := d.engine.GetPublication(id)
+	dataset, err := d.engine.GetDataset(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
-	projects := make([]models.PublicationProject, len(pub.Project))
-	copy(projects, pub.Project)
+	projects := make([]models.PublicationProject, len(dataset.Project))
+	copy(projects, dataset.Project)
 
 	var removeKey int
 	for key, project := range projects {
@@ -160,14 +161,14 @@ func (d *DatasetProjects) RemoveFromDataset(w http.ResponseWriter, r *http.Reque
 	}
 
 	projects = append(projects[:removeKey], projects[removeKey+1:]...)
-	pub.Project = projects
+	dataset.Project = projects
 
 	// TODO: error handling
-	savedPub, _ := d.engine.UpdatePublication(pub)
+	savedDataset, _ := d.engine.UpdateDataset(dataset)
 
 	d.render.HTML(w, 200,
 		"dataset/_projects",
-		views.NewDatasetData(r, d.render, savedPub),
+		views.NewDatasetData(r, d.render, savedDataset),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }

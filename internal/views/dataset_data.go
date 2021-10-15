@@ -12,11 +12,11 @@ import (
 type DatasetData struct {
 	Data
 	render  *render.Render
-	Dataset *models.Publication
+	Dataset *models.Dataset
 }
 
-func NewDatasetData(r *http.Request, render *render.Render, p *models.Publication) DatasetData {
-	return DatasetData{Data: NewData(r), render: render, Dataset: p}
+func NewDatasetData(r *http.Request, render *render.Render, d *models.Dataset) DatasetData {
+	return DatasetData{Data: NewData(r), render: render, Dataset: d}
 }
 
 func (d DatasetData) RenderDetails() (template.HTML, error) {

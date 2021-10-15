@@ -12,12 +12,12 @@ import (
 type DatasetForm struct {
 	Data
 	render     *render.Render
-	Dataset    *models.Publication
+	Dataset    *models.Dataset
 	FormErrors []jsonapi.Error
 }
 
-func NewDatasetForm(r *http.Request, render *render.Render, p *models.Publication, fe []jsonapi.Error) DatasetForm {
-	return DatasetForm{Data: NewData(r), render: render, Dataset: p, FormErrors: fe}
+func NewDatasetForm(r *http.Request, render *render.Render, d *models.Dataset, fe []jsonapi.Error) DatasetForm {
+	return DatasetForm{Data: NewData(r), render: render, Dataset: d, FormErrors: fe}
 }
 
 func (f DatasetForm) RenderFormText(text, key, pointer, label string, tooltip string, required bool, cols int) (template.HTML, error) {

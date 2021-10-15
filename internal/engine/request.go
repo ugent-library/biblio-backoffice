@@ -43,6 +43,14 @@ func (e *Engine) put(path string, requestData, responseData interface{}) (*http.
 	return e.doRequest(req, responseData)
 }
 
+func (e *Engine) delete(path string, qp url.Values, responseData interface{}) (*http.Response, error) {
+	req, err := e.newRequest("DELETE", path, qp, nil)
+	if err != nil {
+		return nil, err
+	}
+	return e.doRequest(req, responseData)
+}
+
 func (e *Engine) newRequest(method, path string, vals url.Values, requestData interface{}) (*http.Request, error) {
 	var buf io.ReadWriter
 	if requestData != nil {

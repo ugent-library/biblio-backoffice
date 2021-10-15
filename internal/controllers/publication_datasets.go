@@ -8,6 +8,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/context"
 	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backend/internal/views"
 	"github.com/unrolled/render"
 )
 
@@ -152,12 +153,59 @@ func (c *PublicationDatasets) Add(w http.ResponseWriter, r *http.Request) {
 	pub.Dataset = datasets
 
 	c.render.HTML(w, 200,
-		"publication/datasets/_list",
+		"publication/datasets/_content",
+		views.NewPublicationData(r, c.render, pub),
+		render.HTMLOptions{Layout: "layouts/htmx"},
+	)
+}
+
+func (c *PublicationDatasets) ConfirmRemove(w http.ResponseWriter, r *http.Request) {
+	id := mux.Vars(r)["id"]
+	datasetID := mux.Vars(r)["dataset_id"]
+
+	c.render.HTML(w, 200,
+		"publication/datasets/_modal_confirm_removal",
 		struct {
-			Publication *models.Publication
+			PublicationID string
+			DatasetID     string
 		}{
-			Publication: pub,
+			id,
+			datasetID,
 		},
+		render.HTMLOptions{Layout: "layouts/htmx"},
+	)
+}
+
+func (c *PublicationDatasets) Remove(w http.ResponseWriter, r *http.Request) {
+	id := mux.Vars(r)["id"]
+	datasetID := mux.Vars(r)["dataset_id"]
+
+	pub, err := c.engine.GetPublication(id)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	err = c.engine.RemovePublicationDataset(id, datasetID)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	datasets, err := c.engine.GetPublicationDatasets(id)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	pub.Dataset = datasets
+
+	c.render.HTML(w, 200,
+		"publication/datasets/_content",
+		views.NewPublicationData(r, c.render, pub),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }

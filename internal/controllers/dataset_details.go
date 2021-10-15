@@ -28,7 +28,7 @@ func (d *DatasetDetails) Show(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
 	// TODO: set constriant to research_data
-	pub, err := d.engine.GetPublication(id)
+	dataset, err := d.engine.GetDataset(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -37,7 +37,7 @@ func (d *DatasetDetails) Show(w http.ResponseWriter, r *http.Request) {
 
 	d.render.HTML(w, 200,
 		"dataset/_details",
-		views.NewDatasetData(r, d.render, pub),
+		views.NewDatasetData(r, d.render, dataset),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -45,8 +45,7 @@ func (d *DatasetDetails) Show(w http.ResponseWriter, r *http.Request) {
 func (d *DatasetDetails) OpenForm(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
-	// TODO: set constriant to research_data
-	pub, err := d.engine.GetPublication(id)
+	dataset, err := d.engine.GetDataset(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -55,7 +54,7 @@ func (d *DatasetDetails) OpenForm(w http.ResponseWriter, r *http.Request) {
 
 	d.render.HTML(w, 200,
 		"dataset/_details_edit_form",
-		views.NewDatasetForm(r, d.render, pub, nil),
+		views.NewDatasetForm(r, d.render, dataset, nil),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -64,7 +63,7 @@ func (d *DatasetDetails) SaveForm(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
 	// TODO: set constriant to research_data
-	pub, err := d.engine.GetPublication(id)
+	dataset, err := d.engine.GetDataset(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -77,18 +76,18 @@ func (d *DatasetDetails) SaveForm(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := forms.Decode(pub, r.Form); err != nil {
+	if err := forms.Decode(dataset, r.Form); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	// TODO: set constriant to research_data
-	savedPub, err := d.engine.UpdatePublication(pub)
+	savedDataset, err := d.engine.UpdateDataset(dataset)
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {
 		d.render.HTML(w, 200,
 			"dataset/_details_edit_form",
-			views.NewDatasetForm(r, d.render, pub, formErrors),
+			views.NewDatasetForm(r, d.render, dataset, formErrors),
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
 
@@ -97,7 +96,7 @@ func (d *DatasetDetails) SaveForm(w http.ResponseWriter, r *http.Request) {
 
 	d.render.HTML(w, 200,
 		"dataset/_details_edit_submit",
-		views.NewDatasetData(r, d.render, savedPub),
+		views.NewDatasetData(r, d.render, savedDataset),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }

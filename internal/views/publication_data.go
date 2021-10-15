@@ -63,10 +63,6 @@ func (d PublicationData) RenderSupervisors() (template.HTML, error) {
 	return RenderPartial(d.render, fmt.Sprintf("publication/supervisors/_%s", d.Publication.Type), d)
 }
 
-func (d PublicationData) RenderDatasets() (template.HTML, error) {
-	return RenderPartial(d.render, fmt.Sprintf("publication/datasets/_%s", d.Publication.Type), d)
-}
-
 func (d PublicationData) RenderSummary() (template.HTML, error) {
 	return RenderPartial(d.render, fmt.Sprintf("publication/summary/_%s", d.Publication.Type), d.Publication)
 }

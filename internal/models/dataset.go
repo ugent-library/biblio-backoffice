@@ -15,7 +15,7 @@ type DatasetHits struct {
 type Dataset struct {
 	Abstract          []Text               `json:"abstract,omitempty"`
 	CompletenessScore int                  `json:"completeness_score,omitempty"`
-	Contributor       []Contributor        `json:"contributors,omitempty"`
+	Contributor       []Contributor        `json:"contributor,omitempty"`
 	Creator           []Contributor        `json:"author,omitempty"`
 	CreatorID         string               `json:"creator_id,omitempty"`
 	DateCreated       *time.Time           `json:"date_created,omitempty"`

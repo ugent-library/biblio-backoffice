@@ -54,12 +54,12 @@ func (c *Datasets) List(w http.ResponseWriter, r *http.Request) {
 
 func (c *Datasets) Show(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
-	pub, err := c.engine.GetPublication(id) // TODO constrain to research_data type
+	dataset, err := c.engine.GetDataset(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
-	c.render.HTML(w, http.StatusOK, "dataset/show", views.NewDatasetData(r, c.render, pub))
+	c.render.HTML(w, http.StatusOK, "dataset/show", views.NewDatasetData(r, c.render, dataset))
 }

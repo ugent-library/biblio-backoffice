@@ -54,6 +54,11 @@ func (e *Engine) AddPublicationDataset(id, datasetID string) error {
 	return err
 }
 
+func (e *Engine) RemovePublicationDataset(id, datasetID string) error {
+	_, err := e.delete(fmt.Sprintf("/publication/%s/dataset/%s", id, datasetID), nil, nil)
+	return err
+}
+
 func (e *Engine) AddPublicationFile(id string, pubFile models.PublicationFile, b []byte) error {
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
