@@ -63,13 +63,14 @@ func (c *Publications) Show(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
-	related, err := c.engine.GetRelatedPublications(id)
+
+	datasets, err := c.engine.GetPublicationDatasets(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	pub.RelatedPublications = related
+	pub.Dataset = datasets
 
 	c.render.HTML(w, http.StatusOK, "publication/show", views.NewPublicationData(r, c.render, pub))
 }

@@ -164,7 +164,7 @@ func Register(baseURL *url.URL, e *engine.Engine, router *mux.Router, renderer *
 		Methods("DELETE").
 		Name("publication_authors_remove_from_publication")
 
-	// Publication projects HTMX fragments
+	// Publication datasets HTMX fragments
 	publicationRouter.HandleFunc("/{id}/htmx/datasets/choose", publicationDatasetsController.Choose).
 		Methods("GET").
 		Name("publication_datasets_choose")
@@ -174,6 +174,12 @@ func Register(baseURL *url.URL, e *engine.Engine, router *mux.Router, renderer *
 	publicationRouter.HandleFunc("/{id}/htmx/datasets/add/{dataset_id}", publicationDatasetsController.Add).
 		Methods("PATCH").
 		Name("publication_datasets_add")
+	publicationRouter.HandleFunc("/{id}/htmx/datasets/remove/{dataset_id}", publicationDatasetsController.ConfirmRemove).
+		Methods("GET").
+		Name("publication_datasets_confirm_remove")
+	publicationRouter.HandleFunc("/{id}/htmx/datasets/remove/{dataset_id}", publicationDatasetsController.Remove).
+		Methods("PATCH").
+		Name("publication_datasets_remove")
 
 	// datasets
 	datasetRouter := r.PathPrefix("/dataset").Subrouter()

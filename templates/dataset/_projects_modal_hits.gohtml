@@ -1,22 +1,20 @@
-{{ $datasetId := .Dataset.ID }}
-{{ range $key, $hit := .Hits }}
+{{ range .Hits }}
 <li class="list-group-item">
     <div class="d-flex w-100">
         <div class="w-100">
             <div class="d-flex align-items-start">
-                <img class="list-group-item-thumbnail" src="{{ $hit.ThumbnailURL }}" height="96">
                 <div class="list-group-item-content">
                     <div class="list-group-item-text">
-                        <h4 class="c-h4">{{ $hit.Heading }}</h4>
-                        <div class="c-body-small text-muted">{{ $hit.Description }}</div>
-                        <div class="text-muted c-body-small">Project ID: {{ $hit.ID }}</div>
+                        <h4 class="c-h4">{{ .Heading }}</h4>
+                        <div class="c-body-small text-muted">{{ .Description }}</div>
+                        <div class="text-muted c-body-small">Project ID: {{ .ID }}</div>
                     </div>
                     <div class="list-group-item-meta mt-2">
                     <div class="list-group-item-meta-left">
                     </div>
                     <div class="list-group-item-meta-right">
                         <button class="btn btn-primary"
-                            hx-patch="/dataset/{{ $datasetId }}/htmx/projects/add/{{ $hit.ID }}"
+                            hx-patch="/dataset/{{ $.Dataset.ID }}/htmx/projects/add/{{ .ID }}"
                             hx-swap="innerHTML"
                             hx-target=".dataset-projects"
                         >Add Project</button>

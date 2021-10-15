@@ -12,10 +12,6 @@ type PublicationHits struct {
 	Facets       map[string][]Facet `json:"facets"`
 }
 
-type RelatedPublication struct {
-	Publication *Publication `json:"publication,omitempty"`
-}
-
 type PublicationFile struct {
 	AccessLevel        string     `json:"access_level,omitempty"`
 	ContentType        string     `json:"content_type,omitempty"`
@@ -39,27 +35,12 @@ type PublicationLink struct {
 	Description string `json:"description,omitempty"`
 }
 
-type PublicationContributor struct {
-	ID         string   `json:"id,omitempty"`
-	ORCID      string   `json:"orcid,omitempty"`
-	UGentID    []string `json:"ugent_id,omitempty"`
-	FirstName  string   `json:"first_name,omitempty"`
-	LastName   string   `json:"last_name,omitempty"`
-	FullName   string   `json:"full_name,omitempty"`
-	CreditRole []string `json:"credit_role,omitempty"`
-}
-
 type PublicationConference struct {
 	Name      string `json:"name,omitempty"`
 	Location  string `json:"location,omitempty"`
 	Organizer string `json:"organizer,omitempty"`
 	StartDate string `json:"start_date,omitempty"`
 	EndDate   string `json:"end_date,omitempty"`
-}
-
-type PublicationText struct {
-	Text string `json:"text,omitempty"`
-	Lang string `json:"lang,omitempty"`
 }
 
 type PublicationDepartment struct {
@@ -71,8 +52,18 @@ type PublicationProject struct {
 	Name string `json:"name,omitempty"`
 }
 
+type PublicationContributor struct {
+	ID         string   `json:"id,omitempty"`
+	ORCID      string   `json:"orcid,omitempty"`
+	UGentID    []string `json:"ugent_id,omitempty"`
+	FirstName  string   `json:"first_name,omitempty"`
+	LastName   string   `json:"last_name,omitempty"`
+	FullName   string   `json:"full_name,omitempty"`
+	CreditRole []string `json:"credit_role,omitempty"`
+}
+
 type Publication struct {
-	Abstract                []PublicationText        `json:"abstract,omitempty"`
+	Abstract                []Text                   `json:"abstract,omitempty"`
 	AdditionalInfo          string                   `json:"additional_info,omitempty"`
 	AlternativeTitle        []string                 `json:"alternative_title,omitempty"`
 	ArticleNumber           string                   `json:"article_number,omitempty"`
@@ -110,7 +101,7 @@ type Publication struct {
 	JournalArticleType      string                   `json:"journal_article_type,omitempty"`
 	Keyword                 []string                 `json:"keyword,omitempty"`
 	Language                []string                 `json:"language,omitempty"`
-	LaySummary              []PublicationText        `json:"lay_summary,omitempty"`
+	LaySummary              []Text                   `json:"lay_summary,omitempty"`
 	Link                    []PublicationLink        `json:"link,omitempty"`
 	Locked                  bool                     `json:"locked,omitempty"`
 	Message                 string                   `json:"message,omitempty"`
@@ -125,7 +116,7 @@ type Publication struct {
 	PublicationStatus       string                   `json:"publication_status,omitempty"`
 	Publisher               string                   `json:"publisher,omitempty"`
 	PubMedID                string                   `json:"pubmed_id,omitempty"`
-	RelatedPublications     []*RelatedPublication
+	Dataset                 []*Dataset
 	ReportNumber            string                   `json:"report_number,omitempty"`
 	ResearchField           []string                 `json:"research_field,omitempty"`
 	ReviewerNote            string                   `json:"reviewer_note,omitempty"`

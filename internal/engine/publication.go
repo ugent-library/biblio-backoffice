@@ -38,19 +38,24 @@ func (e *Engine) UpdatePublication(pub *models.Publication) (*models.Publication
 	return resPub, nil
 }
 
-func (e *Engine) GetRelatedPublications(id string) ([]*models.RelatedPublication, error) {
-	related := make([]*models.RelatedPublication, 0)
-	if _, err := e.get(fmt.Sprintf("/publication/%s/related", id), nil, &related); err != nil {
+func (e *Engine) GetPublicationDatasets(id string) ([]*models.Dataset, error) {
+	datasets := make([]*models.Dataset, 0)
+	if _, err := e.get(fmt.Sprintf("/publication/%s/dataset", id), nil, &datasets); err != nil {
 		return nil, err
 	}
-	return related, nil
+	return datasets, nil
 }
 
-func (e *Engine) AddRelatedPublication(id, relatedID string) error {
+func (e *Engine) AddPublicationDataset(id, datasetID string) error {
 	reqBody := struct {
 		RelatedPublicationID string `json:"related_publication_id"`
-	}{relatedID}
+	}{datasetID}
 	_, err := e.post(fmt.Sprintf("/publication/%s/related", id), &reqBody, nil)
+	return err
+}
+
+func (e *Engine) RemovePublicationDataset(id, datasetID string) error {
+	_, err := e.delete(fmt.Sprintf("/publication/%s/dataset/%s", id, datasetID), nil, nil)
 	return err
 }
 

@@ -1,5 +1,16 @@
 <div hx-swap-oob="innerHTML:#publication-summary">
-    {{template "publication/_summary" .Dataset}}
+    <div class="c-header-collapsible__collapsed mx-6">
+        <h4 class="h4">{{.Dataset.Title}}</h4>
+    </div>
+    <div class="c-header-collapsible__expanded mx-6">
+        <div class="d-flex w-100">
+            <div class="w-100">
+                <div class="d-flex align-items-start">
+                    {{template "dataset/_summary_body" .Dataset}}
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div hx-swap-oob="innerHTML:#alerts">
