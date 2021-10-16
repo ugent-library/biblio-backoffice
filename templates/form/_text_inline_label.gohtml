@@ -1,0 +1,4 @@
+<div class="form-group {{ if .HasError }}is-invalid{{ end }} col-{{ .Cols }}">
+    <input class="form-control {{ if .HasError }}is-invalid{{ end }}" name="{{ .Key }}" type="text" {{ if .Text }}value="{{ .Text }}"{{ else }}{{ end }} placeholder="{{ .Label }}{{ if .Required }}*{{ end }}">
+    {{ if .HasError }}<div class="invalid-feedback">{{ .Error.Title }}</div>{{ end }}
+</div>

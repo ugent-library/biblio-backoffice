@@ -36,7 +36,7 @@ func (f ContributorForm) RenderFormText(text, key, pointer, label string, toolti
 		}
 	}
 
-	return RenderPartial(f.render, "form/_text", &textFormData{
+	return RenderPartial(f.render, "form/_text_inline_label", &textFormData{
 		Key:      key,
 		Label:    label,
 		Text:     text,

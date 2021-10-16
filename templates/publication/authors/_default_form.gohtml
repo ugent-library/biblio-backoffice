@@ -4,9 +4,11 @@
             <div class="bc-avatar bc-avatar-icon bc-avatar--muted">
                 <i class="if if-user"></i>
             </div>
-            <div class="bc-avatar-text">
-                {{ .RenderFormText .Author.FirstName "FirstName" "/data/first_name" "First Name" "" false 8 }}
-                {{ .RenderFormText .Author.LastName "LastName" "/data/last_name" "Last Name" "" false 8 }}
+            <div class="bc-avatar-text container">
+                <div class="row">
+                    {{ .RenderFormText .Author.FirstName "FirstName" "/data/first_name" "First Name" "" false 5 }}
+                    {{ .RenderFormText .Author.LastName "LastName" "/data/last_name" "Last Name" "" false 5 }}
+                </div>
             </div>
         </div>
     </td>
