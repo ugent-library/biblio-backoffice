@@ -61,6 +61,13 @@ func (p *PublicationAuthors) AddRow(w http.ResponseWriter, r *http.Request) {
 	)
 }
 
+func (p *PublicationAuthors) CancelAddRow(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("HX-Trigger", "itemDeleted")
+
+	// Empty content, denotes we deleted the row
+	fmt.Fprintf(w, "")
+}
+
 func (p *PublicationAuthors) CreateAuthor(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	muxRowDelta := mux.Vars(r)["delta"]
@@ -140,6 +147,29 @@ func (p *PublicationAuthors) EditRow(w http.ResponseWriter, r *http.Request) {
 	p.render.HTML(w, http.StatusOK,
 		"publication/authors/_default_form_edit",
 		views.NewContributorForm(r, p.render, id, author, rowDelta, nil),
+		render.HTMLOptions{Layout: "layouts/htmx"},
+	)
+}
+
+func (p *PublicationAuthors) CancelEditRow(w http.ResponseWriter, r *http.Request) {
+	id := mux.Vars(r)["id"]
+	muxRowDelta := mux.Vars(r)["delta"]
+	rowDelta, _ := strconv.Atoi(muxRowDelta)
+
+	pub, err := p.engine.GetPublication(id)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	author := &pub.Author[rowDelta]
+
+	w.Header().Set("HX-Trigger", "itemUpdated")
+
+	p.render.HTML(w, http.StatusOK,
+		"publication/authors/_default_row",
+		views.NewContributorData(r, p.render, pub, author, rowDelta),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }

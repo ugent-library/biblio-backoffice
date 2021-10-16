@@ -26,12 +26,13 @@
             >
                 <i class="if if-edit"></i>
             </button>
-            {{/* <button class="btn btn-link btn-icon-only btn-link-muted" type="button">
-                <i class="if if-edit"></i>
+            <button type="button" name="cancel" class="btn btn-link btn-icon-only btn-link-muted"
+                hx-delete="/publication/{{ .ID }}/htmx/authors/cancel/edit/{{ .Key }}"
+                hx-target=".row-edit"
+                hx-swap="outerHTML settle:.25s"
+            >
+                <i class="if if-no-edit"></i>
             </button>
-            <button class="btn btn-link btn-icon-only btn-link-muted" type="button">
-                <i class="if if-subtract"></i>
-            </button> */}}
         </div>
     </td>
 </tr>

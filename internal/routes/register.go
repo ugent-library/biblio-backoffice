@@ -148,12 +148,18 @@ func Register(baseURL *url.URL, e *engine.Engine, router *mux.Router, renderer *
 	publicationRouter.HandleFunc("/{id}/htmx/authors/add/{delta}", publicationAuthorsController.AddRow).
 		Methods("GET").
 		Name("publication_authors_add_row")
+	publicationRouter.HandleFunc("/{id}/htmx/authors/cancel/add/{delta}", publicationAuthorsController.CancelAddRow).
+		Methods("DELETE").
+		Name("publication_authors_cancel_add_row")
 	publicationRouter.HandleFunc("/{id}/htmx/authors/create/{delta}", publicationAuthorsController.CreateAuthor).
 		Methods("POST").
 		Name("publication_authors_create_author")
 	publicationRouter.HandleFunc("/{id}/htmx/authors/edit/{delta}", publicationAuthorsController.EditRow).
 		Methods("GET").
 		Name("publication_authors_edit_row")
+	publicationRouter.HandleFunc("/{id}/htmx/authors/cancel/edit/{delta}", publicationAuthorsController.CancelEditRow).
+		Methods("DELETE").
+		Name("publication_authors_cancel_edit_row")
 	publicationRouter.HandleFunc("/{id}/htmx/authors/update/{delta}", publicationAuthorsController.UpdateAuthor).
 		Methods("POST").
 		Name("publication_authors_update_author")
