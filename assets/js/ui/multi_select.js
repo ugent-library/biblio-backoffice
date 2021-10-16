@@ -669,10 +669,9 @@ export default function () {
         })
     }
 
+    setMultiSelect()
+
     htmx.on("htmx:afterSettle", function(evt) {
-        let item = evt.detail.target.children.item(0)
-        if (item && item.nodeName && (item.nodeName.toLowerCase() == "form")) {
-            setMultiSelect()
-        }
+        setMultiSelect()
     });
 }
