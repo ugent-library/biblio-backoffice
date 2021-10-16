@@ -16,22 +16,18 @@
     <div class="card-body p-0">
         <div id="authors-list">
             <style>
-                .row-edit.htmx-added,
-                .row-saved.htmx-added,
-                .row-new.htmx-added {
-                opacity: 0;
+                table.inline-editing tr.htmx-added {
+                    opacity: 0;
                 }
 
-                tr.htmx-swapping {
+                table.inline-editing tr.htmx-swapping {
                     opacity: 0;
                     transition: opacity .15s ease-out;
                 }
 
-                .row-edit,
-                .row-saved,
-                .row-new {
-                opacity: 1;
-                transition: opacity .15s ease-out;
+                table.inline-editing tr {
+                    opacity: 1;
+                    transition: opacity .15s ease-out;
                 }
 {{/*
                 .table {
@@ -73,7 +69,7 @@
                     z-index: 999;
                 } */}}
             </style>
-            <table class="table" id="foobar">
+            <table class="inline-editing table" id="foobar">
                 <thead>
                     <tr>
                         <th class="pl-6">Name</th>
