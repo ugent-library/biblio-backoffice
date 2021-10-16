@@ -7,13 +7,23 @@ export default function() {
         let modal = document.querySelectorAll(".modal").item(0)
         let backdrop = document.querySelectorAll(".modal-backdrop").item(0)
 
-        modal.classList.remove("show")
-        backdrop.classList.remove("show")
+        if (modal) {
+            modal.classList.remove("show")
+        }
+
+        if (backdrop) {
+            backdrop.classList.remove("show")
+        }
 
         // Timeout gives us a fluid animation
         setTimeout(function() {
-            backdrop.remove();
-            modal.remove();
+            if (backdrop) {
+                backdrop.remove();
+            }
+
+            if (modal) {
+                modal.remove();
+            }
         }, 100)
     }
 
