@@ -8,6 +8,7 @@ import modalClose from './ui/modal_close.js'
 import modalPopper from './ui/modal_popper.js'
 import multipleSelect from './ui/multi_select.js'
 import interactiveTable from './ui/interactive_table.js'
+import tabs from './ui/tabs.js'
 
 bootstrap()
 check()
@@ -19,3 +20,4 @@ modalClose()
 modalPopper()
 multipleSelect()
 interactiveTable()
+tabs()
