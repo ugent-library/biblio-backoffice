@@ -6,84 +6,30 @@
                 <h1 class="bc-toolbar-title">Authors</h1>
             </div>
             <div class="bc-toolbar-right">
-                {{/* <button class="btn btn-outline-primary" type="button" data-toggle="modal" data-target="#addAuthor">
+                <button type="button" class="btn btn-outline-primary btn-swap add-author"
+                    hx-get="{{ pathFor "publication_authors_shift_row" "id" .Publication.ID "delta" "0" }}"
+                    hx-target="table.inline-editing tbody"
+                    hx-swap="afterbegin settle:.25s"
+                >
                     <i class="if if-add"></i>
                     <div class="btn-text">Add author</div>
-                </button> */}}
+                </button>
             </div>
         </div>
     </div>
     <div class="card-body p-0">
         <div id="authors-list">
-            <style>
-                .row-edit.htmx-added,
-                .row-saved.htmx-added,
-                .row-new.htmx-added {
-                opacity: 0;
-                }
-
-                tr.htmx-swapping {
-                    opacity: 0;
-                    transition: opacity .15s ease-out;
-                }
-
-                .row-edit,
-                .row-saved,
-                .row-new {
-                opacity: 1;
-                transition: opacity .15s ease-out;
-                }
-{{/*
-                .table {
-                    border: 1px solid #ccc;
-                    border-collapse: collapse;
-                }
-                .table th,
-                .table td {
-                    border: 1px solid #ccc;
-                }
-                .table th,
-                .table td {
-                    padding: 0.5rem;
-                }
-                .draggable {
-                    cursor: move;
-                    user-select: none;
-                }
-                .placeholder {
-                    background-color: #edf2f7;
-                    border: 2px dashed #cbd5e0;
-                }
-                .clone-list {
-                    border-top: 1px solid #ccc;
-                }
-                .clone-table {
-                    border-collapse: collapse;
-                    border: none;
-                }
-                .clone-table th,
-                .clone-table td {
-                    border: 1px solid #ccc;
-                    border-top: none;
-                    padding: 0.5rem;
-                }
-                .dragging {
-                    background: #fff;
-                    border-top: 1px solid #ccc;
-                    z-index: 999;
-                } */}}
-            </style>
-            <table class="table" id="foobar">
+            <table class="inline-editing table" id="foobar">
                 <thead>
                     <tr>
-                        <th class="pl-6">Name</th>
-                        <th>Role</th>
-                        <th>UGent membership</th>
-                        <th class="pr-6"></th>
+                        <th class="pl-6 col-5">Name</th>
+                        <th class="col-2">Role</th>
+                        <th class="col-2">UGent membership</th>
+                        <th class="pr-6 col-3"></th>
                     </tr>
                 </thead>
                 <tbody
-                    hx-trigger="itemDeleted from:body delay:.25s, itemSaved from:body delay:.25s, itemUpdated from:body delay:.25s"
+                    hx-trigger="ITCancelAddRow from:body delay:.25s, ITCancelEditRow from:body delay:.25s, ITRemoveItem from:body delay:.25s, ITCreateItem from:body delay:.25s, ITUpdateItem from:body delay:.25s"
                     hx-get="/publication/{{ .Publication.ID }}/htmx/authors/list"
                     hx-swap="innerHTML"
                 >
