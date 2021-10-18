@@ -14,11 +14,11 @@ type ContributorForm struct {
 	render     *render.Render
 	ID         string
 	Author     *models.PublicationContributor
-	Key        int
+	Key        string
 	FormErrors []jsonapi.Error
 }
 
-func NewContributorForm(r *http.Request, render *render.Render, id string, c *models.PublicationContributor, ad int, fe []jsonapi.Error) ContributorForm {
+func NewContributorForm(r *http.Request, render *render.Render, id string, c *models.PublicationContributor, ad string, fe []jsonapi.Error) ContributorForm {
 	return ContributorForm{Data: NewData(r), render: render, ID: id, Author: c, Key: ad, FormErrors: fe}
 }
 
