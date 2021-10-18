@@ -308,3 +308,53 @@ func (p *PublicationAuthors) RemoveAuthor(w http.ResponseWriter, r *http.Request
 	// Empty content, denotes we deleted the record
 	fmt.Fprintf(w, "")
 }
+
+func (p *PublicationAuthors) OrderAuthors(w http.ResponseWriter, r *http.Request) {
+	id := mux.Vars(r)["id"]
+
+	muxStart := mux.Vars(r)["start"]
+	start, _ := strconv.Atoi(muxStart)
+
+	muxEnd := mux.Vars(r)["end"]
+	end, _ := strconv.Atoi(muxEnd)
+
+	pub, err := p.engine.GetPublication(id)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	author := &pub.Author[start]
+
+	// Remove the author
+	authors := make([]models.PublicationContributor, len(pub.Author))
+	copy(authors, pub.Author)
+	authors = append(authors[:start], authors[start+1:]...)
+	pub.Author = authors
+
+	// Re-insert the author at the new position
+	placeholder := models.PublicationContributor{}
+	authors = append(authors, placeholder)
+	copy(authors[end+1:], authors[end:])
+	authors[end] = *author
+
+	// Save everything
+	pub.Author = authors
+
+	savedPub, err := p.engine.UpdatePublication(pub)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("HX-Trigger", "ITOrderAuthors")
+	w.Header().Set("HX-Trigger-After-Swap", "ITOrderAuthorsAfterSwap")
+
+	p.render.HTML(w, 200,
+		"publication/authors/_default_table_body",
+		views.NewContributorData(r, p.render, savedPub, nil, 0),
+		render.HTMLOptions{Layout: "layouts/htmx"},
+	)
+}

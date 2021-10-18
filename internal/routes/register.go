@@ -168,7 +168,10 @@ func Register(baseURL *url.URL, e *engine.Engine, router *mux.Router, renderer *
 		Name("publication_authors_confirm_remove_from_publication")
 	publicationRouter.HandleFunc("/{id}/htmx/authors/remove/{delta}", publicationAuthorsController.RemoveAuthor).
 		Methods("DELETE").
-		Name("publication_authors_remove_from_publication")
+		Name("publication_authors_remove_author")
+	publicationRouter.HandleFunc("/{id}/htmx/authors/order/{start}/{end}", publicationAuthorsController.OrderAuthors).
+		Methods("PUT").
+		Name("publication_authors_order_authors")
 
 	// Publication datasets HTMX fragments
 	publicationRouter.HandleFunc("/{id}/htmx/datasets/choose", publicationDatasetsController.Choose).
