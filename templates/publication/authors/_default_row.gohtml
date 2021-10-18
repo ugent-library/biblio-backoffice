@@ -1,5 +1,5 @@
 <tr class="row-{{ .Key }}">
-    <td class="pl-8">
+    <td class="pl-8 col-5">
         <div class="bc-avatar-and-text">
             <div class="bc-avatar bc-avatar-icon bc-avatar--muted">
                 <i class="if if-user"></i>
@@ -7,14 +7,16 @@
             <div class="bc-avatar-text">{{ .Author.FullName}}</div>
         </div>
     </td>
-    <td>
+    <td class="col-2">
+        {{ if .Author.CreditRole }}
         <ul class="list-unstyled">
             {{range .Author.CreditRole}}
             <li>{{.}}</li>
             {{end}}
         </ul>
+        {{ end }}
     </td>
-    <td>
+    <td class="col-2">
         {{if .Author.ID}}
         <i class="if if-ghent-university"></i>
         <span>UGent member</span>
@@ -22,7 +24,7 @@
         External member
         {{end}}
     </td>
-    <td class="pr-4">
+    <td class="pr-4 col-3">
         <div class="c-button-toolbar">
             <button type="button" class="btn btn-link btn-icon-only btn-link-muted add-author btn-swap"
                 hx-get="/publication/{{ .Publication.ID }}/htmx/authors/add/{{ .Key }}"

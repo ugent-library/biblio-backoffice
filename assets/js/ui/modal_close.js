@@ -35,7 +35,7 @@ export default function() {
     // in the DOM, the event won't be registered correctly by HTMX. As a result,
     // other triggers listening for the event won't execute. Instead, we
     // use the event itself as a trigger for the modal to close.
-    htmx.on("itemDeleted", function(evt) {
+    htmx.on("ITRemoveItem", function(evt) {
         modalClose();
     });
 

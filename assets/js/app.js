@@ -1,5 +1,6 @@
 import check from './ui/check.js'
 import bootstrap from './ui/bootstrap.js'
+import draggable from './ui/draggable.js'
 import multiple from './ui/multiple.js'
 import header from './ui/header.js'
 import changeSubmit from './ui/form_change_submit.js'
@@ -11,6 +12,7 @@ import interactiveTable from './ui/interactive_table.js'
 import tabs from './ui/tabs.js'
 
 bootstrap()
+draggable()
 check()
 multiple()
 header()

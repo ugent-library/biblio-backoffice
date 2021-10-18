@@ -29,57 +29,59 @@
                     opacity: 1;
                     transition: opacity .15s ease-out;
                 }
-{{/*
-                .table {
-                    border: 1px solid #ccc;
-                    border-collapse: collapse;
+
+                table.clone-table tr th {
+                    vertical-align: bottom;
+                    border-bottom: 1px solid #DEDEDE;
+                    color: #4D4D4D;
+                    font-weight: 500;
+                    max-height: 4.8rem;
+                    padding: 1.5rem 1.2rem;
+                    padding-left: 1.2rem;
+                    line-height: 1.8rem;
+                    border-top: none;
                 }
-                .table th,
-                .table td {
-                    border: 1px solid #ccc;
+
+                table.clone-table td {
+                    height: 6.4rem;
+                    padding: 1.2rem;
+                    vertical-align: middle;
                 }
-                .table th,
-                .table td {
-                    padding: 0.5rem;
-                }
+
                 .draggable {
                     cursor: move;
                     user-select: none;
                 }
                 .placeholder {
                     background-color: #edf2f7;
-                    border: 2px dashed #cbd5e0;
-                }
-                .clone-list {
-                    border-top: 1px solid #ccc;
                 }
                 .clone-table {
                     border-collapse: collapse;
                     border: none;
                 }
+                .clone-table .row {
+                    margin-right: 0px;
+                    margin-left: 0px;
+                }
                 .clone-table th,
                 .clone-table td {
-                    border: 1px solid #ccc;
-                    border-top: none;
-                    padding: 0.5rem;
                 }
                 .dragging {
                     background: #fff;
-                    border-top: 1px solid #ccc;
                     z-index: 999;
-                } */}}
+                }
             </style>
             <table class="inline-editing table" id="foobar">
                 <thead>
                     <tr>
-                        <th class="pl-6">Name</th>
-                        <th>Role</th>
-                        <th>UGent membership</th>
-                        <th class="pr-6"></th>
+                        <th class="pl-6 col-5">Name</th>
+                        <th class="col-2">Role</th>
+                        <th class="col-2">UGent membership</th>
+                        <th class="pr-6 col-3"></th>
                     </tr>
                 </thead>
                 <tbody
-                    hx-trigger="itemDeleted from:body delay:.25s, itemSaved from:body delay:.25s, itemUpdated from:body delay:.25s"
+                    hx-trigger="ITCancelAddRow from:body delay:.25s, ITCancelEditRow from:body delay:.25s, ITRemoveItem from:body delay:.25s, ITCreateItem from:body delay:.25s, ITUpdateItem from:body delay:.25s"
                     hx-get="/publication/{{ .Publication.ID }}/htmx/authors/list"
                     hx-swap="innerHTML"
                 >

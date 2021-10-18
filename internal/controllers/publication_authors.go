@@ -1,3 +1,29 @@
+// Publication Authors controller
+//
+// Manages the listing of authors on the Publication detail page.
+//
+// HTMX Custom Events:
+//  See: https://htmx.org/headers/hx-trigger/
+//
+// 	ITList
+//		The table listing is being refreshed.
+//  ITListAfterSwap
+//      The table listing is being refreshed, trigger on htmx:AfterSwap
+// 	ITAddRow
+//		A row w/ inline-edit form for a new author is being added
+// 	ITCancelAddRow
+//		A row w/ inline-edit form for a new author is being cancelled
+// 	ITCreateItem
+//		A new author has been added to the publication
+// 	ITEditRow
+//		A row w/ inline-edit form for an existing author is inserted
+// 	ITCancelEditRow
+//		A row w/ inline-edit form for an existing author is being cancelled
+// 	ITUpdateItem
+//		An existing author has been updated
+// 	ITRemoveItem
+//		An existing author has been removed
+
 package controllers
 
 import (
@@ -37,6 +63,9 @@ func (p *PublicationAuthors) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.Header().Set("HX-Trigger", "ITList")
+	w.Header().Set("HX-Trigger-After-Swap", "ITListAfterSwap")
+
 	p.render.HTML(w, 200,
 		"publication/authors/_default_table_body",
 		views.NewContributorData(r, p.render, pub, nil, 0),
@@ -54,6 +83,8 @@ func (p *PublicationAuthors) AddRow(w http.ResponseWriter, r *http.Request) {
 	// Skeleton to make the render fields happy
 	author := &models.PublicationContributor{}
 
+	w.Header().Set("HX-Trigger", "ITAddRow")
+
 	p.render.HTML(w, http.StatusOK,
 		"publication/authors/_default_form",
 		views.NewContributorForm(r, p.render, id, author, rowDelta, nil),
@@ -62,7 +93,7 @@ func (p *PublicationAuthors) AddRow(w http.ResponseWriter, r *http.Request) {
 }
 
 func (p *PublicationAuthors) CancelAddRow(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("HX-Trigger", "itemDeleted")
+	w.Header().Set("HX-Trigger", "ITCancelAddRow")
 
 	// Empty content, denotes we deleted the row
 	fmt.Fprintf(w, "")
@@ -121,7 +152,7 @@ func (p *PublicationAuthors) CreateAuthor(w http.ResponseWriter, r *http.Request
 	// Use the SavedAuthor since Librecat returns Author.FullName
 	savedAuthor := &savedPub.Author[rowDelta]
 
-	w.Header().Set("HX-Trigger", "itemSaved")
+	w.Header().Set("HX-Trigger", "ITCreateItem")
 
 	p.render.HTML(w, http.StatusOK,
 		"publication/authors/_default_row",
@@ -144,6 +175,8 @@ func (p *PublicationAuthors) EditRow(w http.ResponseWriter, r *http.Request) {
 	// Skeleton to make the render fields happy
 	author := &pub.Author[rowDelta]
 
+	w.Header().Set("HX-Trigger", "ITEditRow")
+
 	p.render.HTML(w, http.StatusOK,
 		"publication/authors/_default_form_edit",
 		views.NewContributorForm(r, p.render, id, author, rowDelta, nil),
@@ -165,7 +198,7 @@ func (p *PublicationAuthors) CancelEditRow(w http.ResponseWriter, r *http.Reques
 
 	author := &pub.Author[rowDelta]
 
-	w.Header().Set("HX-Trigger", "itemUpdated")
+	w.Header().Set("HX-Trigger", "ITCancelEditRow")
 
 	p.render.HTML(w, http.StatusOK,
 		"publication/authors/_default_row",
@@ -223,7 +256,7 @@ func (p *PublicationAuthors) UpdateAuthor(w http.ResponseWriter, r *http.Request
 	// Use the SavedAuthor since Librecat returns Author.FullName
 	savedAuthor := &savedPub.Author[rowDelta]
 
-	w.Header().Set("HX-Trigger", "itemUpdated")
+	w.Header().Set("HX-Trigger", "ITUpdateItem")
 
 	p.render.HTML(w, http.StatusOK,
 		"publication/authors/_default_row",
@@ -270,7 +303,7 @@ func (p *PublicationAuthors) RemoveAuthor(w http.ResponseWriter, r *http.Request
 	// TODO: error handling
 	p.engine.UpdatePublication(pub)
 
-	w.Header().Set("HX-Trigger", "itemDeleted")
+	w.Header().Set("HX-Trigger", "ITRemoveItem")
 
 	// Empty content, denotes we deleted the record
 	fmt.Fprintf(w, "")
