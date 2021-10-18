@@ -65,6 +65,7 @@ func (p *PublicationAuthors) List(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("HX-Trigger", "ITList")
 	w.Header().Set("HX-Trigger-After-Swap", "ITListAfterSwap")
+	w.Header().Set("HX-Trigger-After-Settle", "ITListAfterSettle")
 
 	p.render.HTML(w, 200,
 		"publication/authors/_default_table_body",
@@ -86,6 +87,28 @@ func (p *PublicationAuthors) AddRow(w http.ResponseWriter, r *http.Request) {
 	author := &models.PublicationContributor{}
 
 	w.Header().Set("HX-Trigger", "ITAddRow")
+	w.Header().Set("HX-Trigger-After-Swap", "ITAddRowAfterSwap")
+	w.Header().Set("HX-Trigger-After-Settle", "ITAddRowAfterSettle")
+
+	p.render.HTML(w, http.StatusOK,
+		"publication/authors/_default_form",
+		views.NewContributorForm(r, p.render, id, author, muxRowDelta, nil),
+		render.HTMLOptions{Layout: "layouts/htmx"},
+	)
+}
+
+func (p *PublicationAuthors) ShiftRow(w http.ResponseWriter, r *http.Request) {
+	id := mux.Vars(r)["id"]
+	muxRowDelta := mux.Vars(r)["delta"]
+
+	// Note: we don't increment the delta in this method!
+
+	// Skeleton to make the render fields happy
+	author := &models.PublicationContributor{}
+
+	w.Header().Set("HX-Trigger", "ITAddRow")
+	w.Header().Set("HX-Trigger-After-Swap", "ITAddRowAfterSwap")
+	w.Header().Set("HX-Trigger-After-Settle", "ITAddRowAfterSettle")
 
 	p.render.HTML(w, http.StatusOK,
 		"publication/authors/_default_form",
@@ -96,6 +119,8 @@ func (p *PublicationAuthors) AddRow(w http.ResponseWriter, r *http.Request) {
 
 func (p *PublicationAuthors) CancelAddRow(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("HX-Trigger", "ITCancelAddRow")
+	w.Header().Set("HX-Trigger-After-Swap", "ITCancelAddRowAfterSwap")
+	w.Header().Set("HX-Trigger-After-Settle", "ITCancelAddRowAfterSettle")
 
 	// Empty content, denotes we deleted the row
 	fmt.Fprintf(w, "")
@@ -155,6 +180,8 @@ func (p *PublicationAuthors) CreateAuthor(w http.ResponseWriter, r *http.Request
 	savedAuthor := &savedPub.Author[rowDelta]
 
 	w.Header().Set("HX-Trigger", "ITCreateItem")
+	w.Header().Set("HX-Trigger-After-Swap", "ITCreateItemAfterSwap")
+	w.Header().Set("HX-Trigger-After-Settle", "ITCreateItemAfterSettle")
 
 	p.render.HTML(w, http.StatusOK,
 		"publication/authors/_default_row",
@@ -178,6 +205,8 @@ func (p *PublicationAuthors) EditRow(w http.ResponseWriter, r *http.Request) {
 	author := &pub.Author[rowDelta]
 
 	w.Header().Set("HX-Trigger", "ITEditRow")
+	w.Header().Set("HX-Trigger-After-Swap", "ITEditRowAfterSwap")
+	w.Header().Set("HX-Trigger-After-Settle", "ITEditRowAfterSettle")
 
 	p.render.HTML(w, http.StatusOK,
 		"publication/authors/_default_form_edit",
@@ -201,6 +230,8 @@ func (p *PublicationAuthors) CancelEditRow(w http.ResponseWriter, r *http.Reques
 	author := &pub.Author[rowDelta]
 
 	w.Header().Set("HX-Trigger", "ITCancelEditRow")
+	w.Header().Set("HX-Trigger-After-Swap", "ITCancelEditRowAfterSwap")
+	w.Header().Set("HX-Trigger-After-Settle", "ITCancelEditRowAfterSettle")
 
 	p.render.HTML(w, http.StatusOK,
 		"publication/authors/_default_row",
@@ -259,6 +290,8 @@ func (p *PublicationAuthors) UpdateAuthor(w http.ResponseWriter, r *http.Request
 	savedAuthor := &savedPub.Author[rowDelta]
 
 	w.Header().Set("HX-Trigger", "ITUpdateItem")
+	w.Header().Set("HX-Trigger-After-Swap", "ITUpdateItemAfterSwap")
+	w.Header().Set("HX-Trigger-After-Settle", "ITUpdateItemAfterSettle")
 
 	p.render.HTML(w, http.StatusOK,
 		"publication/authors/_default_row",
@@ -306,6 +339,8 @@ func (p *PublicationAuthors) RemoveAuthor(w http.ResponseWriter, r *http.Request
 	p.engine.UpdatePublication(pub)
 
 	w.Header().Set("HX-Trigger", "ITRemoveItem")
+	w.Header().Set("HX-Trigger-After-Swap", "ITRemoveItemAfterSwap")
+	w.Header().Set("HX-Trigger-After-Settle", "ITRemoveItemAfterSettle")
 
 	// Empty content, denotes we deleted the record
 	fmt.Fprintf(w, "")
@@ -353,6 +388,7 @@ func (p *PublicationAuthors) OrderAuthors(w http.ResponseWriter, r *http.Request
 
 	w.Header().Set("HX-Trigger", "ITOrderAuthors")
 	w.Header().Set("HX-Trigger-After-Swap", "ITOrderAuthorsAfterSwap")
+	w.Header().Set("HX-Trigger-After-Settle", "ITOrderAuthorsAfterSettle")
 
 	p.render.HTML(w, 200,
 		"publication/authors/_default_table_body",

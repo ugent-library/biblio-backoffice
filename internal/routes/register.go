@@ -148,6 +148,9 @@ func Register(baseURL *url.URL, e *engine.Engine, router *mux.Router, renderer *
 	publicationRouter.HandleFunc("/{id}/htmx/authors/add/{delta}", publicationAuthorsController.AddRow).
 		Methods("GET").
 		Name("publication_authors_add_row")
+	publicationRouter.HandleFunc("/{id}/htmx/authors/shift/{delta}", publicationAuthorsController.ShiftRow).
+		Methods("GET").
+		Name("publication_authors_shift_row")
 	publicationRouter.HandleFunc("/{id}/htmx/authors/cancel/add/{delta}", publicationAuthorsController.CancelAddRow).
 		Methods("DELETE").
 		Name("publication_authors_cancel_add_row")

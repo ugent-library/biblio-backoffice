@@ -6,10 +6,14 @@
                 <h1 class="bc-toolbar-title">Authors</h1>
             </div>
             <div class="bc-toolbar-right">
-                {{/* <button class="btn btn-outline-primary" type="button" data-toggle="modal" data-target="#addAuthor">
+                <button type="button" class="btn btn-outline-primary btn-swap add-author"
+                    hx-get="{{ pathFor "publication_authors_shift_row" "id" .Publication.ID "delta" "0" }}"
+                    hx-target="table.inline-editing tbody"
+                    hx-swap="afterbegin settle:.25s"
+                >
                     <i class="if if-add"></i>
                     <div class="btn-text">Add author</div>
-                </button> */}}
+                </button>
             </div>
         </div>
     </div>
