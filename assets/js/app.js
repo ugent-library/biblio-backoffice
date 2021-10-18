@@ -12,6 +12,7 @@ import interactiveTable from './ui/interactive_table.js'
 import tabs from './ui/tabs.js'
 
 document.addEventListener('DOMContentLoaded', function () {
+    tabs();
     check();
     bootstrap();
     draggable();
@@ -23,5 +24,4 @@ document.addEventListener('DOMContentLoaded', function () {
     modalPopper();
     multipleSelect();
     interactiveTable();
-    tabs();
 });

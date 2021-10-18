@@ -1,0 +1,58 @@
+// Smooth transitions for inline editing
+// TODO: move this to separate SCSS module
+table.inline-editing tr.htmx-added {
+    opacity: 0;
+}
+
+table.inline-editing tr.htmx-swapping {
+    opacity: 0;
+    transition: opacity .15s ease-out;
+}
+
+table.inline-editing tr {
+    opacity: 1;
+    transition: opacity .15s ease-out;
+}
+
+// Style the mock-table when dragging
+table.clone-table tr th {
+    vertical-align: bottom;
+    border-bottom: 1px solid #DEDEDE;
+    color: #4D4D4D;
+    font-weight: 500;
+    max-height: 4.8rem;
+    padding: 1.5rem 1.2rem;
+    padding-left: 1.2rem;
+    line-height: 1.8rem;
+    border-top: none;
+}
+
+table.clone-table td {
+    height: 6.4rem;
+    padding: 1.2rem;
+    vertical-align: middle;
+}
+
+.draggable {
+    cursor: move;
+    user-select: none;
+}
+
+.placeholder {
+    background-color: #edf2f7;
+}
+
+.clone-table {
+    border-collapse: collapse;
+    border: none;
+}
+
+.clone-table .row {
+    margin-right: 0px;
+    margin-left: 0px;
+}
+
+.dragging {
+    background: #fff;
+    z-index: 999;
+}
