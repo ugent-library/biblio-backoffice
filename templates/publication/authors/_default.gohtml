@@ -30,7 +30,7 @@
                 </thead>
                 <tbody
                     hx-trigger="ITCancelAddRow from:body delay:.25s, ITCancelEditRow from:body delay:.25s, ITRemoveItem from:body delay:.25s, ITCreateItem from:body delay:.25s, ITUpdateItem from:body delay:.25s"
-                    hx-get="/publication/{{ .Publication.ID }}/htmx/authors/list"
+                    hx-get="{{pathFor "publication_authors_list" "id" .Publication.ID}}"
                     hx-swap="innerHTML"
                 >
                     {{ template "publication/authors/_default_table_body" . }}
