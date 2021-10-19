@@ -17,7 +17,7 @@
             <div class="bc-toolbar bc-toolbar-sm">
                 <div class="bc-toolbar-left">
                     <div class="bc-toolbar-item">
-                        <img class="mr-2" src="{{assetPath "/images/universiteitsbibliotheek.svg"}}">
+                        <a href="{{pathFor "home"}}"><img class="mr-2" src="{{assetPath "/images/universiteitsbibliotheek.svg"}}"></a>
                     </div>
                 </div>
                 <div class="bc-toolbar-right">
@@ -80,7 +80,6 @@
             </div>
 
             {{yield}}
-
         </div>
     </main>
     <script type="application/javascript" src="{{assetPath "/js/app.js"}}"></script>
