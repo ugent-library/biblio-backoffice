@@ -33,14 +33,14 @@
             <button type="button" class="btn btn-link btn-icon-only btn-link-muted add-author btn-swap"
                 hx-get="{{pathFor "publication_authors_add_row" "id" $pub.ID "delta" $k}}"
                 hx-target=".row-{{ $k }}"
-                hx-swap="afterend settle:.25s"
+                hx-swap="afterend settle:.15s"
             >
                 <i class="if if-add"></i>
             </button>
             <button type="button" class="btn btn-link btn-icon-only btn-link-muted edit-author btn-swap"
                 hx-get="{{pathFor "publication_authors_edit_row" "id" $pub.ID "delta" $k}}"
                 hx-target=".row-{{ $k }}"
-                hx-swap="outerHTML settle:.25s"
+                hx-swap="outerHTML settle:.15s"
             >
                 <i class="if if-edit"></i>
             </button>
