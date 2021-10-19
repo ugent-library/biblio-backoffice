@@ -28,8 +28,8 @@ package engine
 
 func (e *Engine) PublicationSorts() []string {
 	return []string{
+		"year.desc",
 		"date_created.desc",
 		"date_updated.desc",
-		"year.desc",
 	}
 }
