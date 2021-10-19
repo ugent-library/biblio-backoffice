@@ -24,6 +24,7 @@ export class DraggableTable {
     _mouseUp;
     _mouseMove;
     _mouseDown;
+    _mouseHandlers = [];
 
     /**
      * Dragable Table constructor.
@@ -232,15 +233,15 @@ export class DraggableTable {
             const firstCell = row.firstElementChild;
             firstCell.classList.add('draggable');
 
-            this._mouseDown = this._mouseDownHandler.bind(this);
-            firstCell.addEventListener('mousedown', this._mouseDown);
+            this._mouseHandlers[index] = this._mouseDownHandler.bind(this);
+            firstCell.addEventListener('mousedown', this._mouseHandlers[index]);
         }, this);
     }
 
     reset() {
         this._table = document.getElementById(this._tableSelector);
 
-        this._table.querySelectorAll('tr').forEach(function (row, index) {
+        this._table.querySelectorAll('tr:not(.row-new)').forEach(function (row, index) {
             // Ignore the header
             // We don't want user to change the order of header
             if (index === 0) {
@@ -250,7 +251,7 @@ export class DraggableTable {
             const firstCell = row.firstElementChild;
             firstCell.classList.remove('draggable');
 
-            firstCell.removeEventListener('mousedown', this.__mouseDown);
+            firstCell.removeEventListener('mousedown', this._mouseHandlers[index]);
         }, this);
     }
 }
