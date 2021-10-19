@@ -59,6 +59,7 @@ func Register(baseURL *url.URL, e *engine.Engine, router *mux.Router, renderer *
 
 	// publications
 	publicationRouter := r.PathPrefix("/publication").Subrouter()
+	publicationRouter.Use(middleware.SetActiveMenu("publications"))
 	publicationRouter.Use(setUser)
 	publicationRouter.Use(requireUser)
 	publicationRouter.HandleFunc("", publicationController.List).
@@ -195,6 +196,7 @@ func Register(baseURL *url.URL, e *engine.Engine, router *mux.Router, renderer *
 
 	// datasets
 	datasetRouter := r.PathPrefix("/dataset").Subrouter()
+	datasetRouter.Use(middleware.SetActiveMenu("datasets"))
 	datasetRouter.Use(setUser)
 	datasetRouter.Use(requireUser)
 	datasetRouter.HandleFunc("", datasetController.List).

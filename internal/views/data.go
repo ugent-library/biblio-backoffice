@@ -107,3 +107,7 @@ func NewData(r *http.Request) Data {
 func (d Data) IsHTMXRequest() bool {
 	return d.request.Header.Get("HX-Request") != ""
 }
+
+func (d Data) ActiveMenu() string {
+	return context.ActiveMenu(d.request.Context())
+}

@@ -33,7 +33,7 @@
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <div class="bc-avatar-and-text mr-2">
                                     <div class="bc-avatar bc-avatar--img bc-avatar--small">
-                                        <img src="{{assetPath "/images/avatar-1.jpg"}}" alt="Jane Cooper">
+                                        <img src="{{assetPath "/images/avatar-1.jpg"}}" alt="{{.User.FullName}}">
                                     </div>
                                     <div class="bc-avatar-text font-weight-bold">{{.User.FullName}}</div>
                                 </div>
@@ -55,7 +55,7 @@
                 <div class="c-sidebar__menu">
                     <nav>
                         <ul class="c-sidebar-menu">
-                            <li class="c-sidebar__item c-sidebar__item--active">
+                            <li class="c-sidebar__item{{if eq .ActiveMenu "publications"}} c-sidebar__item--active{{end}}">
                                 <a href="{{pathFor "publications"}}">
                                     <span class="c-sidebar__icon">
                                         <i class="if if-article"></i>
@@ -63,7 +63,7 @@
                                     <span class="c-sidebar__label">Biblio Publications</span>
                                 </a>
                             </li>
-                            <li class="c-sidebar__item">
+                            <li class="c-sidebar__item{{if eq .ActiveMenu "datasets"}} c-sidebar__item--active{{end}}">
                                 <a href="{{pathFor "datasets"}}">
                                     <span class="c-sidebar__icon">
                                         <i class="if if-database"></i>
