@@ -81,7 +81,6 @@ func (d *DatasetDetails) SaveForm(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO: set constriant to research_data
 	savedDataset, err := d.engine.UpdateDataset(dataset)
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {

@@ -7,6 +7,7 @@ import (
 )
 
 var userKey = &key{"User"}
+var activeMenuKey = &key{"ActiveMenu"}
 
 type key struct {
 	name string
@@ -27,4 +28,12 @@ func User(c context.Context) *models.User {
 
 func WithUser(c context.Context, user *models.User) context.Context {
 	return context.WithValue(c, userKey, user)
+}
+
+func ActiveMenu(c context.Context) string {
+	return c.Value(activeMenuKey).(string)
+}
+
+func WithActiveMenu(c context.Context, menu string) context.Context {
+	return context.WithValue(c, activeMenuKey, menu)
 }
