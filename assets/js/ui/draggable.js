@@ -27,7 +27,8 @@ export function draggable() {
     let tableSelector;
 
     // Generate the callback for the authors
-    if (currentUrl.pathname.match(new RegExp(`^\\/publication\/[0-9]*$`, 'gm'))) {
+    // TODO: Turn the pattern matching into something that incorporates the basePath of the Go app.
+    if (currentUrl.pathname.match(new RegExp(`^\.*\/publication\/[0-9]*$`, 'gm'))) {
         if (currentUrl.hash == "#contributors-content") {
             callback = currentUrl.pathname + "/htmx/authors/order/:start/:end"
             tableSelector = "foobar";
