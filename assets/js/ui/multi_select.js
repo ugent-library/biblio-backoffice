@@ -669,9 +669,12 @@ export default function () {
         })
     }
 
-    setMultiSelect()
+    // TODO
+    //   Disable the IconicMultiSelect for now. We're not allt hat
 
-    htmx.on("htmx:afterSettle", function(evt) {
-        setMultiSelect()
-    });
+    // setMultiSelect()
+
+    // htmx.on("htmx:afterSettle", function(evt) {
+    //     setMultiSelect()
+    // });
 }
