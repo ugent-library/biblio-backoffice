@@ -1,5 +1,5 @@
 <tr class="row-edit">
-    <td class="pl-8">
+    <td class="pl-8 col-6">
         <div class="bc-avatar-and-text">
             <div class="bc-avatar bc-avatar-icon bc-avatar--muted">
                 <i class="if if-user"></i>
@@ -12,8 +12,8 @@
             </div>
         </div>
     </td>
-    <td>
-        {{ .RenderFormMultiSelectList "CreditRole" "/data/credit_role" "" .Author.CreditRole "creditRoles" "" false 6 }}
+    <td class="col-3">
+        {{ .RenderFormMultiSelectList "CreditRole" "/data/credit_role" "" .Author.CreditRole "creditRoles" "" false 12 }}
     </td>
     <td>
         External member (<a href="#">Promote</a>)
