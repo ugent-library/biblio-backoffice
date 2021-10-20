@@ -67,7 +67,7 @@
                             by</label>
                         <select class="custom-select form-change-submit" name="sort">
                             {{range .PublicationSorts}}
-                            <option value="{{.}}"{{if $.SearchArgs.HasSort .}} selected{{end}}>{{.}}</option>
+                            <option value="{{.}}"{{if $.SearchArgs.HasSort .}} selected{{end}}>{{$.T .}}</option>
                             {{end}}
                         </select>
                     </div>

@@ -41,7 +41,7 @@ func SetUser(e *engine.Engine, sessionName string, sessionStore sessions.Store) 
 func RequireUser(redirectURL string) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if !context.HasUser(r.Context()) {
+			if context.GetUser(r.Context()) == nil {
 				http.Redirect(w, r, redirectURL, http.StatusFound)
 				return
 			}

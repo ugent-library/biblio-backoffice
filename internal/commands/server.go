@@ -18,6 +18,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/helpers"
 	"github.com/ugent-library/biblio-backend/internal/routes"
 	"github.com/ugent-library/go-graceful/server"
+	"github.com/ugent-library/go-locale/locale"
 	"github.com/ugent-library/go-oidc/oidc"
 
 	// "github.com/ugent-library/go-oidc/oidc"
@@ -90,6 +91,9 @@ func buildRouter() *mux.Router {
 		},
 	})
 
+	// localizer
+	localizer := locale.NewLocalizer("en")
+
 	// sessions & auth
 	sessionName := viper.GetString("session-name")
 
@@ -122,6 +126,7 @@ func buildRouter() *mux.Router {
 		sessionName,
 		sessionStore,
 		oidcClient,
+		localizer,
 	)
 
 	return router
