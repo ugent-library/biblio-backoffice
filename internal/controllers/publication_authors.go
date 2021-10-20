@@ -21,6 +21,8 @@
 //		A row w/ inline-edit form for an existing author is being cancelled
 // 	ITUpdateItem
 //		An existing author has been updated
+//  ITConfirmRemoveFromPublication
+//      The confirmation pop-up for removing an author is being shown.
 // 	ITRemoveItem
 //		An existing author has been removed
 
@@ -303,6 +305,10 @@ func (p *PublicationAuthors) UpdateAuthor(w http.ResponseWriter, r *http.Request
 func (p *PublicationAuthors) ConfirmRemoveFromPublication(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	muxRowDelta := mux.Vars(r)["delta"]
+
+	w.Header().Set("HX-Trigger", "ITConfirmRemoveFromPublication")
+	w.Header().Set("HX-Trigger-After-Swap", "ITConfirmRemoveFromPublicationAfterSwap")
+	w.Header().Set("HX-Trigger-After-Settle", "ITConfirmRemoveFromPublicationAfterSettle")
 
 	p.render.HTML(w, 200,
 		"publication/_authors_modal_confirm_removal",

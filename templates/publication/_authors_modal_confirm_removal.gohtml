@@ -1,6 +1,6 @@
 <div id="modal-backdrop" class="modal-backdrop fade show" style="display:block;"></div>
 <div class="modal show" id="removeAuthorConfirmation" tabindex="-1" style="display: block;" aria-modal="true" role="dialog">
-<div class="modal-dialog modal-dialog-centered" role="document">
+<div class="modal-dialog modal-dialog-centered modal-confirm-author-removal" role="document">
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">Are you sure</h2>
@@ -10,7 +10,7 @@
         </div>
         <div class="modal-footer">
             <button class="btn btn-link modal-close">Cancel</button>
-            <button class="btn btn-danger"
+            <button class="btn btn-danger delete-author"
                 hx-delete="{{pathFor "publication_authors_remove_author" "id" .ID "delta" .AuthorDelta}}"
                 hx-target=".row-{{ .AuthorDelta }}"
                 hx-swap="outerHTML swap:.15s"

@@ -22,6 +22,21 @@ export function draggable() {
         }
     }
 
+    // Compose a spinner element
+    let createSpinner = function() {
+        const spinner = document.createElement("div")
+        spinner.classList.add('spinner-border')
+
+        const text = document.createElement("span")
+        text.classList.add("sr-only")
+        let cta = document.createTextNode("Loading...")
+        text.appendChild(cta)
+
+        spinner.appendChild(text)
+
+        return spinner
+    }
+
     let currentUrl = new URL(window.location.href);
     let callback = "";
     let tableSelector;
@@ -31,7 +46,7 @@ export function draggable() {
     if (currentUrl.pathname.match(new RegExp(`^\.*\/publication\/[0-9]*$`, 'gm'))) {
         if (currentUrl.hash == "#contributors-content") {
             callback = currentUrl.pathname + "/htmx/authors/order/:start/:end"
-            tableSelector = "foobar";
+            tableSelector = "authors-table";
         }
     }
 
@@ -43,6 +58,9 @@ export function draggable() {
         // Init the addAuthor button
         let addAuthor = document.querySelector("button.btn-outline-primary.add-author");
 
+        // Init a spinner (loading...) object
+        let spinner;
+
         // ... This is where the magic starts to happen ...
 
         // After the table is refreshed
@@ -51,6 +69,11 @@ export function draggable() {
             table.init();
             // We can click the 'add author' button from the top menu.
             addAuthor.removeAttribute("disabled");
+
+            // We remove the spinner if there is any active
+            if (spinner !== undefined) {
+                spinner.remove();
+            }
         });
 
         // After the order was changed thru drag n' droppin'
@@ -66,6 +89,12 @@ export function draggable() {
             addAuthor.setAttribute("disabled", "true");
             // Remove all buttons except the one's on the active form.
             disableRowButtons(evt);
+            // Add spinner handler to the 'create' button.
+            let updateButton = document.querySelector("table#authors-table button.create-author");
+            updateButton.addEventListener("click", function(e) {
+                spinner = createSpinner();
+                addAuthor.after(spinner);
+            })
         });
 
         // An row is being edited. Disable all add / edit / delete buttons
@@ -73,6 +102,20 @@ export function draggable() {
             table.reset();
             addAuthor.setAttribute("disabled", "true");
             disableRowButtons(evt);
+            let createButton = document.querySelector("table#authors-table button.update-author");
+            createButton.addEventListener("click", function(e) {
+                spinner = createSpinner();
+                addAuthor.after(spinner);
+            })
         });
+
+        // A row is being deleted. Show a spinner next to the 'delete' button in the popup
+        htmx.on("ITConfirmRemoveFromPublicationAfterSwap", function(evt) {
+            let removeButton = document.querySelector("div.modal-confirm-author-removal button.delete-author");
+            removeButton.addEventListener("click", function(e) {
+                spinner = createSpinner();
+                removeButton.after(spinner);
+            })
+        })
     }
 }
