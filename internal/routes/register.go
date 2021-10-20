@@ -86,6 +86,11 @@ func Register(baseURL *url.URL, e *engine.Engine, router *mux.Router, renderer *
 		Methods("POST").
 		Name("upload_publication_file")
 
+	// Publication HTMX fragments
+	publicationRouter.HandleFunc("/{id}/htmx/summary", publicationController.Summary).
+		Methods("GET").
+		Name("publication_summary")
+
 	// Publication details HTMX fragments
 	publicationRouter.HandleFunc("/{id}/htmx", publicationDetailsController.Show).
 		Methods("GET").

@@ -44,7 +44,11 @@
             </div>
         </div>
         <div class="c-divider mt-0 mx-6"></div>
-        <div id="publication-summary">
+        <div id="publication-summary"
+            hx-trigger="ITRemoveItem from:body, ITCreateItem from:body, ITUpdateItem from:body, ITOrderAuthors from:body"
+            hx-get="{{pathFor "publication_summary" "id" .Publication.ID}}"
+            hx-swap="innerHTML"
+        >
             {{template "publication/_summary" .Publication}}
         </div>
         <div class="c-divider mb-2 mx-6"></div>

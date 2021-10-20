@@ -101,3 +101,20 @@ func (c *Publications) Thumbnail(w http.ResponseWriter, r *http.Request) {
 func (c *Publications) New(w http.ResponseWriter, r *http.Request) {
 	c.render.HTML(w, http.StatusOK, "publication/new", views.NewData(r))
 }
+
+func (c *Publications) Summary(w http.ResponseWriter, r *http.Request) {
+	id := mux.Vars(r)["id"]
+
+	pub, err := c.engine.GetPublication(id)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	c.render.HTML(w, 200,
+		"publication/_summary",
+		pub,
+		render.HTMLOptions{Layout: "layouts/htmx"},
+	)
+}
