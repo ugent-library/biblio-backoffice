@@ -15,7 +15,7 @@
                     </div>
                     <div class="list-group-item-meta-right">
                         <button class="btn btn-primary"
-                            hx-patch="{{pathFor "publicationDepartments_add_to_publication" "id " $.Publication.ID "department_id" $hit.ID}}"
+                            hx-patch="{{pathFor "publicationDepartments_add_to_publication" "id" $.Publication.ID "department_id" $hit.ID}}"
                             hx-swap="innerHTML"
                             hx-target=".publication-departments"
                         >Add Department</button>
