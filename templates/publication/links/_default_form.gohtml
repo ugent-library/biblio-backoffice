@@ -1,0 +1,26 @@
+<div id="modal-backdrop" class="modal-backdrop fade show" style="display:block;"></div>
+<div class="modal show" id="addLink" tabindex="-1" style="display: block;" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Add Link</h2>
+            </div>
+            <div class="modal-body">
+                {{ .RenderFormText .Link.URL "URL" "/data/text" "Link" "" false 12}}
+                {{ .RenderFormList "Relation" "/data/lang" "Relation" .Link.Relation "relations" "" false 12}}
+                {{ .RenderFormText .Link.Description "Description" "/data/text" "Description" "" false 12}}
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-link modal-close">Cancel</button>
+                <button type="button" name="create" class="btn btn-primary create-link"
+                    hx-post="{{pathFor "publication_links_create_link" "id" .ID }}"
+                    hx-target="#links-table tbody"
+                    hx-include=".modal-body"
+                    hx-swap="innerHTML settle:.15s"
+                >
+                    Add link
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
