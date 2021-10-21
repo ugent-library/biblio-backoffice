@@ -1,9 +1,11 @@
 package commands
 
 import (
+	"crypto/tls"
 	"fmt"
 	"html/template"
 	"log"
+	"net/http"
 	"net/url"
 	"os"
 	"strings"
@@ -11,7 +13,6 @@ import (
 	"github.com/Masterminds/sprig/v3"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	"github.com/gorilla/sessions"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/engine"
@@ -19,9 +20,8 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/routes"
 	"github.com/ugent-library/go-graceful/server"
 	"github.com/ugent-library/go-locale/locale"
-	"github.com/ugent-library/go-oidc/oidc"
+	"gopkg.in/cas.v2"
 
-	// "github.com/ugent-library/go-oidc/oidc"
 	"github.com/ugent-library/go-web/mix"
 	"github.com/ugent-library/go-web/urls"
 	"github.com/unrolled/render"
@@ -95,24 +95,24 @@ func buildRouter() *mux.Router {
 	localizer := locale.NewLocalizer("en")
 
 	// sessions & auth
-	sessionName := viper.GetString("session-name")
+	// sessionName := viper.GetString("session-name")
 
-	sessionStore := sessions.NewCookieStore([]byte(viper.GetString("session-secret")))
-	sessionStore.MaxAge(viper.GetInt("session-max-age"))
-	sessionStore.Options.Path = "/"
-	sessionStore.Options.HttpOnly = true
-	sessionStore.Options.Secure = baseURL.Scheme == "https"
+	// sessionStore := sessions.NewCookieStore([]byte(viper.GetString("session-secret")))
+	// sessionStore.MaxAge(viper.GetInt("session-max-age"))
+	// sessionStore.Options.Path = "/"
+	// sessionStore.Options.HttpOnly = true
+	// sessionStore.Options.Secure = baseURL.Scheme == "https"
 
-	oidcClient, err := oidc.New(oidc.Config{
-		URL:          viper.GetString("oidc-url"),
-		ClientID:     viper.GetString("oidc-client-id"),
-		ClientSecret: viper.GetString("oidc-client-secret"),
-		RedirectURL:  baseURL.String() + "/auth/openid-connect/callback",
-	})
+	// oidcClient, err := oidc.New(oidc.Config{
+	// 	URL:          viper.GetString("oidc-url"),
+	// 	ClientID:     viper.GetString("oidc-client-id"),
+	// 	ClientSecret: viper.GetString("oidc-client-secret"),
+	// 	RedirectURL:  baseURL.String() + "/auth/openid-connect/callback",
+	// })
 
-	if err != nil {
-		log.Fatal(err)
-	}
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 
 	// add middleware
 	router.Use(handlers.RecoveryHandler())
@@ -123,9 +123,9 @@ func buildRouter() *mux.Router {
 		e,
 		router,
 		renderer,
-		sessionName,
-		sessionStore,
-		oidcClient,
+		// sessionName,
+		// sessionStore,
+		// oidcClient,
 		localizer,
 	)
 
@@ -181,6 +181,23 @@ var serverStartCmd = &cobra.Command{
 
 		// logging
 		handler := handlers.LoggingHandler(os.Stdout, router)
+
+		// cas auth
+		casURL, _ := url.Parse(viper.GetString("cas-url"))
+		casOpts := &cas.Options{
+			URL: casURL,
+		}
+		if viper.GetBool("cas-skip-verify-tls") {
+			casOpts.Client = &http.Client{
+				Transport: &http.Transport{
+					TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+				},
+			}
+		}
+		casClient := cas.NewClient(casOpts)
+
+		// router.Use(casClient.Handler)
+		handler = casClient.Handle(handler)
 
 		// start server
 		server.New(handler,
