@@ -51,6 +51,18 @@ export default function() {
         modalClose();
     });
 
+    htmx.on("PublicationCreateLink", function(evt) {
+        modalClose();
+    });
+
+    htmx.on("PublicationUpdateLink", function(evt) {
+        modalClose();
+    });
+
+    htmx.on("PublicationRemoveLink", function(evt) {
+        modalClose();
+    });
+
     htmx.on("htmx:afterSettle", function(evt) {
         let container = evt.detail.target
         if (container.classList.contains("modals")) {

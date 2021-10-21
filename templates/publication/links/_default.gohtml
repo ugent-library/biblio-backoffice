@@ -1,21 +1,26 @@
 <div class="card card-collapsible mb-6">
     <div class="card-header">
-        <div class="collapse-trigger" data-toggle="collapse" data-target="#collapse4" aria-expanded="false" aria-controls="collapse4"></div>
+        <div class="collapse-trigger collapsed" data-toggle="collapse" data-target="#collapse4" aria-expanded="false" aria-controls="collapse4"></div>
         <div class="bc-toolbar">
             <div class="bc-toolbar-left">
                 <i class="if if-chevron-right mr-4 text-muted"></i>Links
             </div>
             <div class="bc-toolbar-right">
-                {{/* <button class="btn btn-outline-primary" type="button" data-toggle="modal" data-target="#addLink">
+                <button class="btn btn-outline-primary" type="button"
+                    hx-get="/publication/{{ .Publication.ID }}/htmx/links/add"
+                    hx-get="{{pathFor "publication_links_add_link" "id" .Publication.ID }}"
+                    hx-swap="innerHTML"
+                    hx-target="#link-modals"
+                >
                     <i class="if if-add"></i>
                     <div class="btn-text">Add Link</div>
-                </button> */}}
+                </button>
             </div>
         </div>
     </div>
     <div class="collapse" id="collapse4">
         <div class="card-body p-0">
-            <table class="table">
+            <table class="table" id="links-table">
                 <thead>
                     <tr>
                         <th class="pl-6">Link</th>
@@ -24,36 +29,10 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {{range .Publication.Link}}
-                    <tr>
-                        <td class="pl-6">
-                            <a href="{{.URL}}">{{.URL}}</a>
-                            <p class="c-body-small text-muted m-0">{{.Description}}</p>
-                        </td>
-                        <td>{{.Relation}}</td>
-                        <td class="pr-6">
-                            <div class="c-button-toolbar">
-                                <div class="dropdown">
-                                    <button class="btn btn-link btn-icon-only btn-link-muted" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <i class="if if-more"></i>
-                                    </button>
-                                    <div class="dropdown-menu">
-                                        <button class="dropdown-item" type="button">
-                                            <i class="if if-edit"></i>
-                                            <span>Edit</span>
-                                        </button>
-                                        {{/* <button class="dropdown-item" type="button" data-toggle="modal" data-target="#delete">
-                                            <i class="if if-delete"></i>
-                                            <span>Delete</span>
-                                        </button> */}}
-                                    </div>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                    {{end}}
+                    {{ template "publication/links/_default_table_body" . }}
                 </tbody>
             </table>
         </div>
     </div>
+    <div id="link-modals" class="modals"></div>
 </div>
