@@ -1,5 +1,5 @@
 <div id="modal-backdrop" class="modal-backdrop fade show" style="display:block;"></div>
-<div class="modal show" id="addAbstract" tabindex="-1" style="display: block;" aria-modal="true" role="dialog">
+<div class="modal show" id="editAbstract" tabindex="-1" style="display: block;" aria-modal="true" role="dialog">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -11,7 +11,7 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-link modal-close">Cancel</button>
-                <button type="button" name="create" class="btn btn-primary create-abstract"
+                <button type="button" name="create" class="btn btn-primary update-abstract"
                     hx-put="{{pathFor "publication_abstracts_update_abstract" "id" .ID "delta" .Key}}"
                     hx-target="#abstracts-table tbody"
                     hx-include=".modal-body"
