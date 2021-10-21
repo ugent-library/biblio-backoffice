@@ -1,0 +1,25 @@
+<div id="modal-backdrop" class="modal-backdrop fade show" style="display:block;"></div>
+<div class="modal show" id="addAbstract" tabindex="-1" style="display: block;" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Add Abstract</h2>
+            </div>
+            <div class="modal-body">
+                {{ .RenderFormTextArea .Abstract.Text "Text" "/data/text" "Abstract" "" "Add abstract text here..." false 12 6}}
+                {{ .RenderFormList "Lang" "/data/lang" "Language" .Abstract.Lang "languages" "" false 12}}
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-link modal-close">Cancel</button>
+                <button type="button" name="create" class="btn btn-primary create-abstract"
+                    hx-post="{{pathFor "publication_abstracts_create_abstract" "id" .ID }}"
+                    hx-target="#abstracts-table tbody"
+                    hx-include=".modal-body"
+                    hx-swap="innerHTML settle:.15s"
+                >
+                    Add abstract
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

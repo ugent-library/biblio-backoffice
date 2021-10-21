@@ -39,13 +39,24 @@ export default function() {
         modalClose();
     });
 
+    htmx.on("PublicationCreateAbstract", function(evt) {
+        modalClose();
+    });
+
+    htmx.on("PublicationUpdateAbstract", function(evt) {
+        modalClose();
+    });
+
+    htmx.on("PublicationRemoveAbstract", function(evt) {
+        modalClose();
+    });
+
     htmx.on("htmx:afterSettle", function(evt) {
         let container = evt.detail.target
-
         if (container.classList.contains("modals")) {
-            container.querySelectorAll(".modal-close").forEach( el =>
-                el.addEventListener("click", modalClose)
-            )
+            container.querySelectorAll(".modal-close").forEach( function (el) {
+                el.addEventListener("click", modalClose);
+            });
         }
     });
 }

@@ -36,7 +36,7 @@ func (d PublicationData) RenderConference() (template.HTML, error) {
 }
 
 func (d PublicationData) RenderAbstract() (template.HTML, error) {
-	return RenderPartial(d.render, fmt.Sprintf("publication/abstract/_%s", d.Publication.Type), d)
+	return RenderPartial(d.render, fmt.Sprintf("publication/abstracts/_%s", d.Publication.Type), d)
 }
 
 func (d PublicationData) RenderFiles() (template.HTML, error) {

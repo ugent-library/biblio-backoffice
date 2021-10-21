@@ -24,7 +24,7 @@ func (d DatasetData) RenderDetails() (template.HTML, error) {
 }
 
 func (d DatasetData) RenderAbstract() (template.HTML, error) {
-	return RenderPartial(d.render, fmt.Sprintf("publication/abstract/_%s", d.Dataset.Type), d)
+	return RenderPartial(d.render, fmt.Sprintf("publication/abstracts/_%s", d.Dataset.Type), d)
 }
 
 func (d DatasetData) RenderLinks() (template.HTML, error) {

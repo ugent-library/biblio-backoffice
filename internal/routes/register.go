@@ -27,6 +27,7 @@ func Register(baseURL *url.URL, e *engine.Engine, router *mux.Router, renderer *
 	publicationConferenceController := controllers.NewPublicationConference(e, renderer)
 	publicationProjectsController := controllers.NewPublicationProjects(e, renderer)
 	publicationDepartmentsController := controllers.NewPublicationDepartments(e, renderer)
+	publicationAbstractsController := controllers.NewPublicationAbstracts(e, renderer)
 	publicationAuthorsController := controllers.NewPublicationAuthors(e, renderer)
 	publicationDatasetsController := controllers.NewPublicationDatasets(e, renderer)
 	datasetDetailsController := controllers.NewDatasetDetails(e, renderer)
@@ -146,6 +147,26 @@ func Register(baseURL *url.URL, e *engine.Engine, router *mux.Router, renderer *
 	publicationRouter.HandleFunc("/{id}/htmx/departments/remove/{department_id}", publicationDepartmentsController.RemoveFromPublication).
 		Methods("PATCH").
 		Name("publicationDepartments_remove_from_publication")
+
+	// Publication abstracts HTMX fragments
+	publicationRouter.HandleFunc("/{id}/htmx/abstracts/add", publicationAbstractsController.AddAbstract).
+		Methods("GET").
+		Name("publication_abstracts_add_abstract")
+	publicationRouter.HandleFunc("/{id}/htmx/abstracts/create", publicationAbstractsController.CreateAbstract).
+		Methods("POST").
+		Name("publication_abstracts_create_abstract")
+	publicationRouter.HandleFunc("/{id}/htmx/abstracts/edit/{delta}", publicationAbstractsController.EditAbstract).
+		Methods("GET").
+		Name("publication_abstracts_edit_abstract")
+	publicationRouter.HandleFunc("/{id}/htmx/abstracts/update/{delta}", publicationAbstractsController.UpdateAbstract).
+		Methods("PUT").
+		Name("publication_abstracts_update_abstract")
+	publicationRouter.HandleFunc("/{id}/htmx/abstracts/remove/{delta}", publicationAbstractsController.ConfirmRemoveFromPublication).
+		Methods("GET").
+		Name("publication_abstracts_confirm_remove_from_publication")
+	publicationRouter.HandleFunc("/{id}/htmx/abstracts/remove/{delta}", publicationAbstractsController.RemoveAbstract).
+		Methods("DELETE").
+		Name("publication_abstracts_remove_abstract")
 
 	// Publication authors HTMX fragments
 	publicationRouter.HandleFunc("/{id}/htmx/authors/list", publicationAuthorsController.List).
