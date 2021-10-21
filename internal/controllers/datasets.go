@@ -37,7 +37,7 @@ func (c *Datasets) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	hits, err := c.engine.UserDatasets(context.User(r.Context()).ID, args)
+	hits, err := c.engine.UserDatasets(context.GetUser(r.Context()).ID, args)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)

@@ -9,11 +9,14 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/controllers"
 	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/middleware"
+	"github.com/ugent-library/go-locale/locale"
 	"github.com/ugent-library/go-oidc/oidc"
 	"github.com/unrolled/render"
 )
 
-func Register(baseURL *url.URL, e *engine.Engine, router *mux.Router, renderer *render.Render, sessionName string, sessionStore sessions.Store, oidcClient *oidc.Client) {
+func Register(baseURL *url.URL, e *engine.Engine, router *mux.Router, renderer *render.Render,
+	sessionName string, sessionStore sessions.Store, oidcClient *oidc.Client, localizer *locale.Localizer) {
+
 	// static files
 	router.PathPrefix(baseURL.Path + "/static/").Handler(http.StripPrefix(baseURL.Path+"/static/", http.FileServer(http.Dir("./static"))))
 
@@ -41,7 +44,10 @@ func Register(baseURL *url.URL, e *engine.Engine, router *mux.Router, renderer *
 	// 	schemes = []string{"https", "http"}
 	// }
 	// r = r.Schemes(schemes...).Host(u.Host).PathPrefix(u.Path).Subrouter()
+
 	r := router.PathPrefix(baseURL.Path).Subrouter()
+
+	r.Use(locale.Detect(localizer))
 
 	// home
 	r.HandleFunc("", func(w http.ResponseWriter, r *http.Request) {

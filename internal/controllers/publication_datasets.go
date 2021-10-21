@@ -48,7 +48,7 @@ func (c *PublicationDatasets) Choose(w http.ResponseWriter, r *http.Request) {
 	searchArgs := engine.NewSearchArgs()
 	searchArgs.Filters["exclude"] = pubDatasetIDs
 
-	hits, err := c.engine.UserDatasets(context.User(r.Context()).ID, searchArgs)
+	hits, err := c.engine.UserDatasets(context.GetUser(r.Context()).ID, searchArgs)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -98,7 +98,7 @@ func (c *PublicationDatasets) ActiveSearch(w http.ResponseWriter, r *http.Reques
 	searchArgs.Query = r.Form["search"][0]
 	searchArgs.Filters["exclude"] = pubDatasetIDs
 
-	hits, err := c.engine.UserDatasets(context.User(r.Context()).ID, searchArgs)
+	hits, err := c.engine.UserDatasets(context.GetUser(r.Context()).ID, searchArgs)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
