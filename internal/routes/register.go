@@ -27,18 +27,15 @@ func Register(baseURL *url.URL, e *engine.Engine, router *mux.Router, renderer *
 	requireUser := func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if !cas.IsAuthenticated(r) {
-				log.Print("cas not authenticated, redirecting")
 				cas.RedirectToLogin(w, r)
 				return
 			}
 
-			log.Printf("cas authenticated as %s", cas.Username(r))
 			next.ServeHTTP(w, r)
 		})
 	}
 	setUser := func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			log.Printf("cas get username %s", cas.Username(r))
 			user, err := e.GetUserByUsername(cas.Username(r))
 			if err != nil {
 				log.Printf("get user error: %s", err)
