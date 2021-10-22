@@ -324,6 +324,8 @@ github.com/ugent-library/go-graceful v0.0.0-20210629084951-cc0426be60e8 h1:qf+uy
 github.com/ugent-library/go-graceful v0.0.0-20210629084951-cc0426be60e8/go.mod h1:vfUTMMD3dI2LAj2BzlXyDWJ14b+6zeZRWDWvw3sYizE=
 github.com/ugent-library/go-locale v0.0.0-20211022091540-705be03d4992 h1:qtx63C+TnXcyvf+isvjtuH/LyENhIlO8tCHtQsaEx7w=
 github.com/ugent-library/go-locale v0.0.0-20211022091540-705be03d4992/go.mod h1:aurVBvhnCWoCWFBFGgNyKqFIegDZrvImWch7Xe4xsFg=
+github.com/ugent-library/go-locale v0.0.0-20211022092904-1063e4862b82 h1:TUlF9CW2clNNDIBXsOIkZryn42u/zs3dRTnzyz8O0xk=
+github.com/ugent-library/go-locale v0.0.0-20211022092904-1063e4862b82/go.mod h1:aurVBvhnCWoCWFBFGgNyKqFIegDZrvImWch7Xe4xsFg=
 github.com/ugent-library/go-oidc v0.0.0-20210901124208-bda4cc73ba56 h1:y3N5ZTuh2z1ZzNIKEqJY7eoM9e51tJCyhQIx8zBhD3g=
 github.com/ugent-library/go-oidc v0.0.0-20210901124208-bda4cc73ba56/go.mod h1:tkGlY27D3dQDVc5rNv8wzLaY5e44EHqmnusD/Pv0u4I=
 github.com/ugent-library/go-web v0.0.0-20210921071904-38ad74b02e33 h1:sA0zbnBkSmntybtxbN3JtAnhNG8kZ1IEFB/nLmM0ltc=
