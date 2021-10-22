@@ -194,10 +194,8 @@ var serverStartCmd = &cobra.Command{
 				},
 			}
 		}
-		casClient := cas.NewClient(casOpts)
 
-		// router.Use(casClient.Handler)
-		handler = casClient.Handle(handler)
+		handler = cas.NewClient(casOpts).Handle(handler)
 
 		// start server
 		server.New(handler,
