@@ -8,7 +8,7 @@
             <div class="bc-toolbar-right">
                 <button type="button" class="btn btn-outline-primary btn-swap add-author"
                     hx-get="{{ pathFor "publication_authors_shift_row" "id" .Publication.ID "delta" "0" }}"
-                    hx-target="table.inline-editing tbody"
+                    hx-target="#authors-table tbody"
                     hx-swap="afterbegin settle:.15s"
                 >
                     <i class="if if-add"></i>
