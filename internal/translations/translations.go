@@ -6,6 +6,23 @@ import (
 )
 
 func init() {
+	message.SetString(language.English, "credit_roles.first_author", "First author")
+	message.SetString(language.English, "credit_roles.last_author", "Last author")
+	message.SetString(language.English, "credit_roles.conceptualization", "Conceptualization")
+	message.SetString(language.English, "credit_roles.data_curation", "Datacuration")
+	message.SetString(language.English, "credit_roles.formal_analysis", "Formala nalysis")
+	message.SetString(language.English, "credit_roles.funding_acquisition", "Funding acquisition")
+	message.SetString(language.English, "credit_roles.investigation", "Investigation")
+	message.SetString(language.English, "credit_roles.methodology", "Methodology")
+	message.SetString(language.English, "credit_roles.project_administration", "Project administration")
+	message.SetString(language.English, "credit_roles.resources", "Resources")
+	message.SetString(language.English, "credit_roles.software", "Software")
+	message.SetString(language.English, "credit_roles.supervision", "Supervision")
+	message.SetString(language.English, "credit_roles.validation", "Validation")
+	message.SetString(language.English, "credit_roles.visualization", "Visualization")
+	message.SetString(language.English, "credit_roles.writing_original_draft", "Writing - original draft")
+	message.SetString(language.English, "credit_roles.writing_review_editing", "Writing - review & editing")
+
 	message.SetString(language.English, "publication_sorts.year.desc", "Year (newest first)")
 	message.SetString(language.English, "publication_sorts.date_created.desc", "Added (newest first)")
 	message.SetString(language.English, "publication_sorts.date_updated.desc", "Updated (newest first)")

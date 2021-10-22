@@ -1,5 +1,26 @@
 package engine
 
+func (e *Engine) CreditRoles() []string {
+	return []string{
+		"first_author",
+		"last_author",
+		"conceptualization",
+		"data_curation",
+		"formal_analysis",
+		"funding_acquisition",
+		"investigation",
+		"methodology",
+		"project_administration",
+		"resources",
+		"software",
+		"supervision",
+		"validation",
+		"visualization",
+		"writing_original_draft",
+		"writing_review_editing",
+	}
+}
+
 func (e *Engine) PublicationClassifications(t string) []string {
 	switch t {
 	case "journal_article":
