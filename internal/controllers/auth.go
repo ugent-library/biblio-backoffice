@@ -29,47 +29,18 @@ func NewAuth(e *engine.Engine, sessionName string, sessionStore sessions.Store, 
 }
 
 func (c *Auth) Callback(w http.ResponseWriter, r *http.Request) {
-	// claims := &oidc.Claims{}
-	// err := c.oidcClient.Exchange(r.URL.Query().Get("code"), claims)
-	// if err != nil {
-	// 	log.Printf("oidc error: %s", err)
-	// 	// TODO
-	// 	http.Error(w, err.Error(), http.StatusInternalServerError)
-	// 	return
-	// }
+	claims := &oidc.Claims{}
+	err := c.oidcClient.Exchange(r.URL.Query().Get("code"), claims)
+	if err != nil {
+		log.Printf("oidc error: %s", err)
+		// TODO
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
-	// log.Printf("user claims: %+v", claims)
+	log.Printf("user claims: %+v", claims)
 
-	// session, _ := c.sessionStore.Get(r, c.sessionName)
-	// if err != nil {
-	// 	log.Printf("session error: %s", err)
-	// 	// TODO
-	// 	http.Error(w, err.Error(), http.StatusInternalServerError)
-	// 	return
-	// }
-
-	// user, err := c.engine.GetUserByEmail(claims.Email)
-	// if err != nil {
-	// 	log.Printf("get user error: %s", err)
-	// 	// TODO
-	// 	http.Error(w, err.Error(), http.StatusInternalServerError)
-	// 	return
-	// }
-
-	// log.Printf("user: %+v", user)
-
-	// session.Values["user_id"] = user["_id"].(string)
-	// session.Save(r, w)
-
-	// http.Redirect(w, r, "/publication", http.StatusFound)
-}
-
-// func (c *Auth) Login(w http.ResponseWriter, r *http.Request) {
-// 	http.Redirect(w, r, c.oidcClient.AuthorizationURL(), http.StatusFound)
-// }
-
-func (c *Auth) Login(w http.ResponseWriter, r *http.Request) {
-	session, err := c.sessionStore.Get(r, c.sessionName)
+	session, _ := c.sessionStore.Get(r, c.sessionName)
 	if err != nil {
 		log.Printf("session error: %s", err)
 		// TODO
@@ -77,7 +48,7 @@ func (c *Auth) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := c.engine.GetUserByUsername(r.URL.Query().Get("username"))
+	user, err := c.engine.GetUserByEmail(claims.Email)
 	if err != nil {
 		log.Printf("get user error: %s", err)
 		// TODO
@@ -92,6 +63,10 @@ func (c *Auth) Login(w http.ResponseWriter, r *http.Request) {
 
 	redirectURL, _ := c.router.Get("publications").URLPath()
 	http.Redirect(w, r, redirectURL.String(), http.StatusFound)
+}
+
+func (c *Auth) Login(w http.ResponseWriter, r *http.Request) {
+	http.Redirect(w, r, c.oidcClient.AuthorizationURL(), http.StatusFound)
 }
 
 func (c *Auth) Logout(w http.ResponseWriter, r *http.Request) {

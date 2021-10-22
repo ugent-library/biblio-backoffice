@@ -20,9 +20,7 @@ require (
 	github.com/ugent-library/go-web v0.0.0-20210921071904-38ad74b02e33
 	github.com/unrolled/render v1.4.0
 	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5 // indirect
-	golang.org/x/net v0.0.0-20210825183410-e898025ed96a // indirect
 	golang.org/x/sys v0.0.0-20211020064051-0ec99a608a1b // indirect
 	golang.org/x/text v0.3.7
-	google.golang.org/protobuf v1.27.1 // indirect
-	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
+	gopkg.in/cas.v2 v2.2.1
 )

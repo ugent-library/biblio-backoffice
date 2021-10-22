@@ -1,28 +1,54 @@
 package routes
 
 import (
+	"log"
 	"net/http"
 	"net/url"
 
 	"github.com/gorilla/mux"
-	"github.com/gorilla/sessions"
+	"github.com/ugent-library/biblio-backend/internal/context"
 	"github.com/ugent-library/biblio-backend/internal/controllers"
 	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/middleware"
 	"github.com/ugent-library/go-locale/locale"
-	"github.com/ugent-library/go-oidc/oidc"
 	"github.com/unrolled/render"
+	"gopkg.in/cas.v2"
 )
 
 func Register(baseURL *url.URL, e *engine.Engine, router *mux.Router, renderer *render.Render,
-	sessionName string, sessionStore sessions.Store, oidcClient *oidc.Client, localizer *locale.Localizer) {
+	// sessionName string, sessionStore sessions.Store, oidcClient *oidc.Client, localizer *locale.Localizer) {
+	localizer *locale.Localizer) {
 
 	// static files
 	router.PathPrefix(baseURL.Path + "/static/").Handler(http.StripPrefix(baseURL.Path+"/static/", http.FileServer(http.Dir("./static"))))
 
-	requireUser := middleware.RequireUser(baseURL.Path + "/logout")
-	setUser := middleware.SetUser(e, sessionName, sessionStore)
-	authController := controllers.NewAuth(e, sessionName, sessionStore, oidcClient, router)
+	// requireUser := middleware.RequireUser(baseURL.Path + "/logout")
+	// setUser := middleware.SetUser(e, sessionName, sessionStore)
+	requireUser := func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if !cas.IsAuthenticated(r) {
+				cas.RedirectToLogin(w, r)
+				return
+			}
+
+			next.ServeHTTP(w, r)
+		})
+	}
+	setUser := func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			user, err := e.GetUserByUsername(cas.Username(r))
+			if err != nil {
+				log.Printf("get user error: %s", err)
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			c := context.WithUser(r.Context(), user)
+			next.ServeHTTP(w, r.WithContext(c))
+		})
+	}
+
+	// authController := controllers.NewAuth(e, sessionName, sessionStore, oidcClient, router)
 	publicationController := controllers.NewPublications(e, renderer)
 	datasetController := controllers.NewDatasets(e, renderer)
 	publicationFilesController := controllers.NewPublicationsFiles(e, renderer, router)
@@ -56,20 +82,23 @@ func Register(baseURL *url.URL, e *engine.Engine, router *mux.Router, renderer *
 	}).Methods("GET").Name("home")
 
 	// auth
-	r.HandleFunc("/login", authController.Login).
-		Methods("GET").
-		Name("login")
-	r.HandleFunc("/auth/openid-connect/callback", authController.Callback).
-		Methods("GET")
-	r.HandleFunc("/logout", authController.Logout).
+	// r.HandleFunc("/login", authController.Login).
+	// 	Methods("GET").
+	// 	Name("login")
+	// r.HandleFunc("/auth/openid-connect/callback", authController.Callback).
+	// 	Methods("GET")
+	// r.HandleFunc("/logout", authController.Logout).
+	// 	Methods("GET").
+	// 	Name("logout")
+	r.HandleFunc("/logout", cas.RedirectToLogout).
 		Methods("GET").
 		Name("logout")
 
 	// publications
 	publicationRouter := r.PathPrefix("/publication").Subrouter()
 	publicationRouter.Use(middleware.SetActiveMenu("publications"))
-	publicationRouter.Use(setUser)
 	publicationRouter.Use(requireUser)
+	publicationRouter.Use(setUser)
 	publicationRouter.HandleFunc("", publicationController.List).
 		Methods("GET").
 		Name("publications")
@@ -250,8 +279,8 @@ func Register(baseURL *url.URL, e *engine.Engine, router *mux.Router, renderer *
 	// datasets
 	datasetRouter := r.PathPrefix("/dataset").Subrouter()
 	datasetRouter.Use(middleware.SetActiveMenu("datasets"))
-	datasetRouter.Use(setUser)
 	datasetRouter.Use(requireUser)
+	datasetRouter.Use(setUser)
 	datasetRouter.HandleFunc("", datasetController.List).
 		Methods("GET").
 		Name("datasets")
