@@ -22,15 +22,15 @@
         <div class="c-button-toolbar">
             <button type="button" name="create" class="btn btn-link btn-icon-only btn-link-muted create-author"
                 hx-post="{{pathFor "publication_authors_create_author" "id" .ID "delta" .Key}}"
-                hx-target=".row-new"
-                hx-include=".row-new"
+                hx-target="#authors-table .row-new"
+                hx-include="#authors-table .row-new"
                 hx-swap="outerHTML settle:.15s"
             >
                 <i class="if if-user-add"></i>
             </button>
             <button type="button" name="cancel" class="btn btn-link btn-icon-only btn-link-muted cancel-create"
                 hx-delete="{{pathFor "publication_authors_cancel_add_row" "id" .ID "delta" .Key}}"
-                hx-target=".row-new"
+                hx-target="#authors-table .row-new"
                 hx-swap="outerHTML settle:.15s"
             >
                 <i class="if if-no-edit"></i>

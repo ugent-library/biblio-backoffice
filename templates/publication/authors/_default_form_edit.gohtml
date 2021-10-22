@@ -22,15 +22,15 @@
         <div class="c-button-toolbar">
             <button type="button" name="edit" class="btn btn-link btn-icon-only btn-link-muted btn-swap update-author"
                 hx-post="{{pathFor "publication_authors_update_author" "id" .ID "delta" .Key}}"
-                hx-target=".row-edit"
-                hx-include=".row-edit"
+                hx-target="#authors-table .row-edit"
+                hx-include="#authors-table .row-edit"
                 hx-swap="outerHTML settle:.15s"
             >
                 <i class="if if-edit"></i>
             </button>
             <button type="button" name="cancel" class="btn btn-link btn-icon-only btn-link-muted btn-swap cancel-update"
                 hx-delete="{{pathFor "publication_authors_cancel_edit_row" "id" .ID "delta" .Key}}"
-                hx-target=".row-edit"
+                hx-target="#authors-table .row-edit"
                 hx-swap="outerHTML settle:.15s"
             >
                 <i class="if if-no-edit"></i>
