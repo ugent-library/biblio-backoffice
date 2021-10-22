@@ -22,8 +22,8 @@ func NewData(r *http.Request) Data {
 	}
 }
 
-func (d Data) T(key string, args ...interface{}) string {
-	return d.Locale.Translate(key, args...)
+func (d Data) T(scope, key string, args ...interface{}) string {
+	return d.Locale.Translate(scope, key, args...)
 }
 
 func (d Data) IsHTMXRequest() bool {

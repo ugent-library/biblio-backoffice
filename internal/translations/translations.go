@@ -6,7 +6,7 @@ import (
 )
 
 func init() {
-	message.SetString(language.English, "year.desc", "Year (newest first)")
-	message.SetString(language.English, "date_created.desc", "Added (newest first)")
-	message.SetString(language.English, "date_updated.desc", "Updated (newest first)")
+	message.SetString(language.English, "publication_sorts.year.desc", "Year (newest first)")
+	message.SetString(language.English, "publication_sorts.date_created.desc", "Added (newest first)")
+	message.SetString(language.English, "publication_sorts.date_updated.desc", "Updated (newest first)")
 }
