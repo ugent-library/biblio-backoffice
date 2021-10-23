@@ -9,7 +9,7 @@
     {{.RenderFormTextMultiple .Publication.AlternativeTitle "AlternativeTitle" "/data/alternative_title" "Alternative Title" "" true 9}}
     {{.RenderFormText .Publication.Publication "Publication" "/data/publication" "Journal title" "" true 9}}
     {{.Form.List (.Form.Name "classification") (.Form.Value .Publication.Classification) (.Form.Cols 3) (.Form.Required)
-        (.Form.Choices .Publication.ClassificationChoices "publication_classifications")}}
+        (.Form.Choices .Publication.ClassificationChoices (.Form.Locale "publication_classifications"))}}
     {{.RenderFormList "JournalArticleType" "/data/journal_article_type" "Article Type" .Publication.JournalArticleType "articleType" "" false 3}}
     {{.RenderFormText .Publication.ArticleNumber "ArticleNumber" "/data/article_number" "Article number" "" false 3}}
     {{.RenderFormText .Publication.WOSType "WOSType" "/data/wos_type" "WOS type" "It's a tooltip!" false 3}}
@@ -22,7 +22,7 @@
     {{.RenderFormCheckbox .Publication.Extern "Extern" "/data/extern" "Published while none of the authors are employed at UGent" "" false 9 }}
     {{.RenderFormList "PublicationStatus" "/data/publication_status" "Publication status" .Publication.PublicationStatus "publicationStatus" "" false 3}}
     {{.Form.ListMultiple (.Form.Name "language") (.Form.Value .Publication.Language) (.Form.Cols 9)
-        (.Form.Choices .Vocabularies.language_codes ":language_name") (.Form.EmptyChoice)}}
+        (.Form.Choices .Vocabularies.language_codes .Form.LanguageName) (.Form.EmptyChoice)}}
 </li>
 <li class="list-group-item">
     {{.RenderFormText .Publication.Volume "Volume" "/data/volume" "Volume" "" false 3}}

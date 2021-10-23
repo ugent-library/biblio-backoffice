@@ -27,16 +27,18 @@ type formData struct {
 
 type formOption func(*formData)
 
+type formLocaleOption func(string) string
+
 type FormBuilder struct {
 	renderer *render.Render
-	Locale   *locale.Locale
+	locale   *locale.Locale
 	Errors   jsonapi.Errors
 }
 
 func NewFormBuilder(r *render.Render, l *locale.Locale, e jsonapi.Errors) *FormBuilder {
 	return &FormBuilder{
 		renderer: r,
-		Locale:   l,
+		locale:   l,
 		Errors:   e,
 	}
 }
@@ -49,7 +51,7 @@ func (b *FormBuilder) newFormData(opts []formOption) *formData {
 	}
 
 	if d.Label == "" {
-		d.Label = b.Locale.Translate("form_builder", d.Name)
+		d.Label = b.locale.Translate("form_builder", d.Name)
 	}
 
 	if d.errorPointer == "" {
@@ -114,21 +116,30 @@ func (b *FormBuilder) Checked() formOption {
 	}
 }
 
-// TODO use functional options here too
-func (b *FormBuilder) Choices(choices []string, scopes ...string) formOption {
+func (b *FormBuilder) Locale(scope string) formLocaleOption {
+	return func(str string) string {
+		return b.locale.Translate(scope, str)
+	}
+}
+
+func (b *FormBuilder) LanguageName() formLocaleOption {
+	return func(str string) string {
+		return b.locale.LanguageName(str)
+	}
+}
+
+func (b *FormBuilder) Choices(choices []string, localeOpts ...formLocaleOption) formOption {
 	return func(d *formData) {
-		d.Choices = choices
-		if len(scopes) > 0 {
-			d.ChoicesLabels = make([]string, len(choices))
-			scope := scopes[0]
-			// pseudo locale scopes
-			if scope == ":language_name" {
-				for i, c := range choices {
-					d.ChoicesLabels[i] = b.Locale.LanguageName(c)
-				}
-			} else {
-				for i, c := range choices {
-					d.ChoicesLabels[i] = b.Locale.Translate(scope, c)
+		d.Choices = make([]string, len(choices))
+		d.ChoicesLabels = make([]string, len(choices))
+		copy(d.Choices, choices)
+		copy(d.ChoicesLabels, choices)
+
+		if len(localeOpts) > 0 {
+			opt := localeOpts[0]
+			for i, c := range choices {
+				if lbl := opt(c); lbl != "" {
+					d.ChoicesLabels[i] = lbl
 				}
 			}
 		}
