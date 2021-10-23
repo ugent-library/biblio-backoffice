@@ -19,7 +19,7 @@ type LinkForm struct {
 }
 
 func NewLinkForm(r *http.Request, render *render.Render, id string, link *models.PublicationLink, key string, fe []jsonapi.Error) LinkForm {
-	return LinkForm{Data: NewData(r), render: render, ID: id, Link: link, Key: key, FormErrors: fe}
+	return LinkForm{Data: NewData(render, r), render: render, ID: id, Link: link, Key: key, FormErrors: fe}
 }
 
 func (f LinkForm) RenderFormText(text, key, pointer, label string, tooltip string, required bool, cols int) (template.HTML, error) {

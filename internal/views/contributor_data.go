@@ -16,5 +16,5 @@ type ContributorData struct {
 }
 
 func NewContributorData(r *http.Request, render *render.Render, p *models.Publication, a *models.PublicationContributor, k string) ContributorData {
-	return ContributorData{Data: NewData(r), render: render, Publication: p, Author: a, Key: k}
+	return ContributorData{Data: NewData(render, r), render: render, Publication: p, Author: a, Key: k}
 }

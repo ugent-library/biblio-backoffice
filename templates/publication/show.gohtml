@@ -82,7 +82,7 @@
         <div id="alerts"></div>
         <div class="tab-content">
             <div id="description-content" class="tab-pane fade show active" role="tabpanel" aria-labelledby="description-tab">
-                {{.RenderDetails}}
+                {{template "publication/details/_show" .}}
                 {{.RenderProjects}}
                 {{.RenderDepartments}}
                 {{.RenderConference}}

@@ -16,5 +16,5 @@ type AbstractData struct {
 }
 
 func NewAbstractData(r *http.Request, render *render.Render, p *models.Publication, a *models.Text, k string) AbstractData {
-	return AbstractData{Data: NewData(r), render: render, Publication: p, Abstract: a, Key: k}
+	return AbstractData{Data: NewData(render, r), render: render, Publication: p, Abstract: a, Key: k}
 }

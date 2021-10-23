@@ -1,0 +1,40 @@
+<div class="form-group row form-list-multiple">
+   <label class="col-3 col-form-label d-flex align-items-stretch" for="{{ .Name }}">
+        {{.Label}}{{if .Required}}&nbsp;<abbr class="required" title="Required">*</abbr>{{end}}
+        {{ if .Tooltip }}
+        <a class="text-muted mx-2" href="#" data-container="body" data-toggle="popover" data-placement="right" data-content="{{ .Tooltip }}">
+            <i class="if if-info-circle if--small"></i>
+            <div class="sr-only">More info</div>
+        </a>
+        {{ end }}
+    </label>
+    <div class="col-{{ .Cols }} form-values">
+        {{ range $i, $v := .Value }}
+        <div class="d-flex mb-3 form-value">
+            <select class="custom-select form-control" name="{{ $.Name }}[{{ $i }}]">
+                {{if $.EmptyChoice }}<option></option>{{ end }}
+                {{ range $ci, $c := $.Choices }}
+                <option value="{{ $c }}"{{ if eq $c $v }} selected{{ end }}>{{ index $.ChoicesLabels $ci }}</option>
+                {{ end }}
+            </select>
+            <button class="btn btn-link-muted btn-icon-only ml-3 form-value-delete" type="button">
+                <i class="if if-delete"></i>
+                <div class="sr-only">Delete</div>
+            </button>
+        </div>
+        {{ end }}
+
+        <div class="d-flex mb-3 form-value">
+            <select class="custom-select form-control" name="{{ $.Name }}[{{ len .Value }}]">
+                {{if $.EmptyChoice }}<option></option>{{ end }}
+                {{ range $ci, $c := .Choices }}
+                <option value="{{ $c }}">{{ index $.ChoicesLabels $ci }}</option>
+                {{ end }}
+            </select>
+            <button class="btn btn-outline-primary btn-icon-only ml-3 form-value-add" type="button">
+                <i class="if if-add"></i>
+                <div class="sr-only">Add</div>
+            </button>
+        </div>
+    </div>
+</div>

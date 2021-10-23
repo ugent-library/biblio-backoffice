@@ -48,10 +48,10 @@ func (c *Publications) List(w http.ResponseWriter, r *http.Request) {
 	}
 
 	c.render.HTML(w, http.StatusOK, "publication/list", PublicationListVars{
-		Data:             views.NewData(r),
+		Data:             views.NewData(c.render, r),
 		SearchArgs:       args,
 		Hits:             hits,
-		PublicationSorts: c.engine.PublicationSorts(),
+		PublicationSorts: c.engine.Vocabularies()["publication_sorts"],
 	})
 }
 
@@ -99,7 +99,7 @@ func (c *Publications) Thumbnail(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Publications) New(w http.ResponseWriter, r *http.Request) {
-	c.render.HTML(w, http.StatusOK, "publication/new", views.NewData(r))
+	c.render.HTML(w, http.StatusOK, "publication/new", views.NewData(c.render, r))
 }
 
 func (c *Publications) Summary(w http.ResponseWriter, r *http.Request) {

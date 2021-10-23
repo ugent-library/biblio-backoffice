@@ -1,7 +1,11 @@
 package engine
 
-func (e *Engine) CreditRoles() []string {
-	return []string{
+func (e *Engine) Vocabularies() map[string][]string {
+	return vocabularies
+}
+
+var vocabularies = map[string][]string{
+	"credit_roles": {
 		"first_author",
 		"last_author",
 		"conceptualization",
@@ -18,61 +22,8 @@ func (e *Engine) CreditRoles() []string {
 		"visualization",
 		"writing_original_draft",
 		"writing_review_editing",
-	}
-}
-
-func (e *Engine) PublicationClassifications(t string) []string {
-	switch t {
-	case "journal_article":
-		return []string{
-			"U",
-			"A1",
-			"A2",
-			"A3",
-			"A4",
-			"V",
-		}
-	case "book":
-		return []string{
-			"U",
-			"B1",
-		}
-	case "book_chapter":
-		return []string{
-			"U",
-			"B2",
-		}
-	case "book_editor", "issue_editor":
-		return []string{
-			"U",
-			"B3",
-		}
-	case "conference":
-		return []string{
-			"U",
-			"P1",
-			"C1",
-			"C3",
-		}
-	case "dissertation":
-		return []string{
-			"U",
-			"D1",
-		}
-	case "miscellaneous", "report", "preprint":
-		return []string{
-			"U",
-			"V",
-		}
-	default:
-		return []string{
-			"U",
-		}
-	}
-}
-
-func (e *Engine) PublicationTypes() []string {
-	return []string{
+	},
+	"publication_types": {
 		"journal_article",
 		"book",
 		"book_chapter",
@@ -83,55 +34,38 @@ func (e *Engine) PublicationTypes() []string {
 		"miscellaneous",
 		"report",
 		"preprint",
-	}
-}
-
-func (e *Engine) PublicationStatuses() []string {
-	return []string{
+	},
+	"publication_statuses": {
 		"new",
 		"private",
 		"submitted",
 		"returned",
 		"public",
 		"deleted",
-	}
-}
-
-func (e *Engine) PublicationPublishingStatuses() []string {
-	return []string{
+	},
+	"publication_publishing_statuses": {
 		"unpublished",
 		"accepted",
 		"published",
-	}
-}
-
-func (e *Engine) PublicationSorts() []string {
-	return []string{
-		"year.desc",
-		"date_created.desc",
-		"date_updated.desc",
-	}
-}
-
-func (e *Engine) ConferenceTypes() []string {
-	return []string{
+	},
+	"publication_sorts": {
+		"unpublished",
+		"accepted",
+		"published",
+	},
+	"conference_types": {
 		"proceedingsPaper",
 		"abstract",
 		"poster",
 		"other",
-	}
-}
-func (e *Engine) JournalArticleTypes() []string {
-	return []string{
+	},
+	"journal_article_types": {
 		"original",
 		"review",
 		"letter_note",
 		"proceedingsPaper",
-	}
-}
-
-func (e *Engine) MiscellaneousTypes() []string {
-	return []string{
+	},
+	"miscellaneous_types": {
 		"artReview",
 		"artisticWork",
 		"bibliography",
@@ -161,11 +95,8 @@ func (e *Engine) MiscellaneousTypes() []string {
 		"textTranslation",
 		"theatreReview",
 		"workingPaper",
-	}
-}
-
-func (e *Engine) LanguageCodes() []string {
-	return []string{
+	},
+	"language_codes": {
 		"und",
 		"eng",
 		"dut",
@@ -670,5 +601,5 @@ func (e *Engine) LanguageCodes() []string {
 		"zun",
 		"zxx",
 		"zza",
-	}
+	},
 }

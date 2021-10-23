@@ -17,7 +17,7 @@ type DatasetForm struct {
 }
 
 func NewDatasetForm(r *http.Request, render *render.Render, d *models.Dataset, fe []jsonapi.Error) DatasetForm {
-	return DatasetForm{Data: NewData(r), render: render, Dataset: d, FormErrors: fe}
+	return DatasetForm{Data: NewData(render, r), render: render, Dataset: d, FormErrors: fe}
 }
 
 func (f DatasetForm) RenderFormText(text, key, pointer, label string, tooltip string, required bool, cols int) (template.HTML, error) {

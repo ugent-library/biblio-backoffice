@@ -1,0 +1,43 @@
+{{ if .Form.Errors }}
+<div hx-swap-oob="innerHTML:#alerts">
+    <div class="alert alert-danger alert-dismissible fade show">
+        <i class="if if-check-circle-fill"></i>
+        <p>An error has occurred!</p>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+</div>
+{{ end }}
+
+<form hx-patch="{{pathFor "publication_details_save_form" "id" .Publication.ID}}" hx-swap="innerHTML" hx-target="closest .publication-details">
+    <div class="card-header">
+        <div class="collapse-trigger" data-toggle="collapse" data-target="#collapse-details" aria-expanded="true" aria-controls="collapse-details"></div>
+        <div class="bc-toolbar">
+            <div class="bc-toolbar-left">
+                <i class="if if-chevron-right mr-4 text-muted"></i>Publication details
+            </div>
+            <div class="bc-toolbar-right">
+                <div class="c-button-toolbar" data-panel-state="edit">
+                    <button class="btn btn-outline-primary btn-cancel"
+                        hx-get="{{pathFor "publication_details" "id" .Publication.ID}}"
+                        hx-swap="innerHTML"
+                        hx-target=".publication-details"
+                    >
+                        <div class="btn-text">Cancel</div>
+                    </button>
+                    <button class="btn btn-primary btn-save">
+                        <div class="btn-text">Save</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="collapse show" id="collapse-details">
+        <div class="card-body p-0">
+            <ul class="list-group list-group-flush" data-panel-state="edit">
+                {{.Partial (printf "publication/details/edit/_%s" .Publication.Type) .}}
+            </ul>
+        </div>
+    </div>
+</form>

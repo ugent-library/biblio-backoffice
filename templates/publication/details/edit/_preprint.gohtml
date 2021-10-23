@@ -1,0 +1,25 @@
+<li class="list-group-item">
+    {{.RenderFormList "Type" "/data/type" "Publication Type" .Publication.Type "type" "This is a helper text" false 3}}
+    {{.RenderFormText .Publication.DOI "DOI" "/data/DOI" "DOI" "" false 3}}
+    {{.RenderFormTextMultiple .Publication.ISSN "ISSN" "/data/issn" "ISSN" "" true 9}}
+    {{.RenderFormTextMultiple .Publication.ISBN "ISBN" "/data/isbn" "ISBN" "" true 9}}
+</li>
+<li class="list-group-item">
+    {{.RenderFormText .Publication.Title "Title" "/data/title" "Title" "" true 9}}
+    {{.RenderFormList "Classification" "/data/classification" "Classification" .Publication.Classification "classification" "" false 3}}
+    {{.RenderFormText .Publication.WOSType "WOSType" "/data/WOSType" "WOS type" "It's a tooltip!" false 3}}
+</li>
+<li class="list-group-item">
+    {{.RenderFormText .Publication.Publication "Publication" "/data/publication" "Journal title" "" false 9}}
+    {{.RenderFormText .Publication.Publisher "Publisher" "/data/publisher" "Publisher" "" false 9}}
+    {{.RenderFormText .Publication.PlaceOfPublication "PlaceOfPublication" "/data/place_of_publication" "Place of Publication" "" false 9}}
+    {{.RenderFormText .Publication.Year "Year" "/data/year" "Publication Year" "" true 3}}
+    {{.RenderFormCheckbox .Publication.Extern "Extern" "/data/extern" "Published while none of the authors are employed at UGent" "" false 9 }}
+    {{.RenderFormList "PublicationStatus" "/data/publication_status" "Publication status" .Publication.PublicationStatus "publicationStatus" "" false 3}}
+    {{.RenderFormListMultiple .Publication.Language "Languages" "/data/language" "Languages" "languages" "" false 9}}
+</li>
+<li class="list-group-item">
+    {{.RenderFormText .Publication.PageFirst "PageFirst" "/data/page_first" "Eerste pagina" "" false 3}}
+    {{.RenderFormText .Publication.PageLast "PageLast" "/data/page_last" "Laatste pagina" "" false 3}}
+    {{.RenderFormText .Publication.PageCount "PageCount" "/data/page_count" "Number of Pages" "" false 3}}
+</li>

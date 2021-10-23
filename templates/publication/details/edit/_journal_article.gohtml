@@ -1,0 +1,35 @@
+
+<li class="list-group-item">
+    {{.RenderFormList "Type" "/data/type" "Publication Type" .Publication.Type "type" "This is a helper text" false 3}}
+    {{.Form.Text (.Form.Name "doi") (.Form.Value .Publication.DOI) (.Form.Cols 3)}}
+    {{.Form.TextMultiple (.Form.Name "issn") (.Form.Value .Publication.ISSN) (.Form.Cols 9) (.Form.Required)}}
+    {{.Form.TextMultiple (.Form.Name "isbn") (.Form.Value .Publication.ISBN) (.Form.Cols 9)}}
+</li>
+<li class="list-group-item">
+    {{.Form.Text (.Form.Name "title") (.Form.Value .Publication.Title) (.Form.Cols 9) (.Form.Required)}}
+    {{.RenderFormTextMultiple .Publication.AlternativeTitle "AlternativeTitle" "/data/alternative_title" "Alternative Title" "" true 9}}
+    {{.RenderFormText .Publication.Publication "Publication" "/data/publication" "Journal title" "" true 9}}
+    {{.Form.List (.Form.Name "classification") (.Form.Value .Publication.Classification) (.Form.Cols 3) (.Form.Required)
+        (.Form.Choices .Publication.ClassificationChoices "publication_classifications")}}
+    {{.RenderFormList "JournalArticleType" "/data/journal_article_type" "Article Type" .Publication.JournalArticleType "articleType" "" false 3}}
+    {{.RenderFormText .Publication.ArticleNumber "ArticleNumber" "/data/article_number" "Article number" "" false 3}}
+    {{.RenderFormText .Publication.WOSType "WOSType" "/data/wos_type" "WOS type" "It's a tooltip!" false 3}}
+</li>
+<li class="list-group-item">
+    {{.RenderFormText .Publication.PublicationAbbreviation "PublicationAbbreviation" "/data/publication_abbreviation" "Publication short title" "" false 9}}
+    {{.RenderFormText .Publication.Publisher "Publisher" "/data/publisher" "Publisher" "" false 9}}
+    {{.RenderFormText .Publication.PlaceOfPublication "PlaceOfPublication" "/data/place_of_publication" "Place of Publication" "" false 9}}
+    {{.RenderFormText .Publication.Year "Year" "/data/year" "Publication Year" "" true 3}}
+    {{.RenderFormCheckbox .Publication.Extern "Extern" "/data/extern" "Published while none of the authors are employed at UGent" "" false 9 }}
+    {{.RenderFormList "PublicationStatus" "/data/publication_status" "Publication status" .Publication.PublicationStatus "publicationStatus" "" false 3}}
+    {{.Form.ListMultiple (.Form.Name "language") (.Form.Value .Publication.Language) (.Form.Cols 9)
+        (.Form.Choices .Vocabularies.language_codes ":language_name") (.Form.EmptyChoice)}}
+</li>
+<li class="list-group-item">
+    {{.RenderFormText .Publication.Volume "Volume" "/data/volume" "Volume" "" false 3}}
+    {{.RenderFormText .Publication.Issue "Issue" "/data/issue" "Issue" "" false 3}}
+    {{.RenderFormText .Publication.PageFirst "PageFirst" "/data/page_first" "Eerste pagina" "" false 3}}
+    {{.RenderFormText .Publication.PageLast "PageLast" "/data/page_last" "Laatste pagina" "" false 3}}
+    {{.RenderFormText .Publication.PageCount "PageCount" "/data/page_count" "Number of Pages" "" false 3}}
+    {{.RenderFormText .Publication.IssueTitle "IssueTitle" "/data/issue_title" "Special issue title" "" false 3}}
+</li>

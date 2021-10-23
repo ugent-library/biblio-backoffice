@@ -17,7 +17,7 @@ type PublicationForm struct {
 }
 
 func NewPublicationForm(r *http.Request, render *render.Render, p *models.Publication, fe []jsonapi.Error) PublicationForm {
-	return PublicationForm{Data: NewData(r), render: render, Publication: p, FormErrors: fe}
+	return PublicationForm{Data: NewData(render, r), render: render, Publication: p, FormErrors: fe}
 }
 
 func (f PublicationForm) RenderFormText(text, key, pointer, label string, tooltip string, required bool, cols int) (template.HTML, error) {

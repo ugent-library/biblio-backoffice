@@ -16,5 +16,5 @@ type LinkData struct {
 }
 
 func NewLinkData(r *http.Request, render *render.Render, p *models.Publication, l *models.PublicationLink, k string) LinkData {
-	return LinkData{Data: NewData(r), render: render, Publication: p, Link: l, Key: k}
+	return LinkData{Data: NewData(render, r), render: render, Publication: p, Link: l, Key: k}
 }

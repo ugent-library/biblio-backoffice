@@ -63,79 +63,79 @@ type PublicationContributor struct {
 }
 
 type Publication struct {
-	Abstract                []Text                   `json:"abstract,omitempty"`
-	AdditionalInfo          string                   `json:"additional_info,omitempty"`
-	AlternativeTitle        []string                 `json:"alternative_title,omitempty"`
-	ArticleNumber           string                   `json:"article_number,omitempty"`
-	ArxivID                 string                   `json:"arxiv_id,omitempty"`
-	Author                  []PublicationContributor `json:"author,omitempty"`
-	Classification          string                   `json:"classification,omitempty"`
-	CompletenessScore       int                      `json:"completeness_score,omitempty"`
-	Conference              PublicationConference    `json:"conference,omitempty"`
-	ConferenceType          string                   `json:"conference_type,omitempty"`
-	CreatorID               string                   `json:"creator_id,omitempty"`
-	DateCreated             *time.Time               `json:"date_created,omitempty"`
-	DateUpdated             *time.Time               `json:"date_updated,omitempty"`
-	DefenseDate             string                   `json:"defense_date,omitempty"`
-	DefensePlace            string                   `json:"defense_place,omitempty"`
-	DefenseTime             string                   `json:"defense_time,omitempty"`
-	Department              []PublicationDepartment  `json:"department,omitempty"`
-	DOI                     string                   `json:"doi,omitempty"`
-	Edition                 string                   `json:"edition,omitempty"`
-	Editor                  []PublicationContributor `json:"editor,omitempty"`
-	EISBN                   []string                 `json:"eisbn,omitempty"`
-	EISSN                   []string                 `json:"eissn,omitempty"`
-	ESCIID                  string                   `json:"esci_id,omitempty"`
-	Extern                  bool                     `json:"extern,omitempty"`
-	File                    []PublicationFile        `json:"file,omitempty"`
-	Handle                  string                   `json:"handle,omitempty"`
-	HasConfidentialData     string                   `json:"has_confidential_data,omitempty"`
-	HasPatentApplication    string                   `json:"has_patent_application,omitempty"`
-	HasPublicationsPlanned  string                   `json:"has_publications_planned,omitempty"`
-	HasPublishedMaterial    string                   `json:"has_published_material,omitempty"`
-	ID                      string                   `json:"_id,omitempty"`
-	ISBN                    []string                 `json:"isbn,omitempty"`
-	ISSN                    []string                 `json:"issn,omitempty"`
-	Issue                   string                   `json:"issue,omitempty"`
-	IssueTitle              string                   `json:"issue_title,omitempty"`
-	JournalArticleType      string                   `json:"journal_article_type,omitempty"`
-	Keyword                 []string                 `json:"keyword,omitempty"`
-	Language                []string                 `json:"language,omitempty"`
-	LaySummary              []Text                   `json:"lay_summary,omitempty"`
-	Link                    []PublicationLink        `json:"link,omitempty"`
-	Locked                  bool                     `json:"locked,omitempty"`
-	Message                 string                   `json:"message,omitempty"`
-	MiscellaneousType       string                   `json:"miscellaneous_type,omitempty"`
-	PageCount               string                   `json:"page_count,omitempty"`
-	PageFirst               string                   `json:"page_first,omitempty"`
-	PageLast                string                   `json:"page_last,omitempty"`
-	PlaceOfPublication      string                   `json:"place_of_publication,omitempty"`
-	Project                 []PublicationProject     `json:"project,omitempty"`
-	Publication             string                   `json:"publication,omitempty"`
-	PublicationAbbreviation string                   `json:"publication_abbreviation,omitempty"`
-	PublicationStatus       string                   `json:"publication_status,omitempty"`
-	Publisher               string                   `json:"publisher,omitempty"`
-	PubMedID                string                   `json:"pubmed_id,omitempty"`
+	Abstract                []Text                   `json:"abstract,omitempty" form:"abstract"`
+	AdditionalInfo          string                   `json:"additional_info,omitempty" form:"additional_info"`
+	AlternativeTitle        []string                 `json:"alternative_title,omitempty" form:"alternative_title"`
+	ArticleNumber           string                   `json:"article_number,omitempty" form:"article_number"`
+	ArxivID                 string                   `json:"arxiv_id,omitempty" form:"arxvid_id"`
+	Author                  []PublicationContributor `json:"author,omitempty" form:"-"`
+	Classification          string                   `json:"classification,omitempty" form:"classification"`
+	CompletenessScore       int                      `json:"completeness_score,omitempty" form:"-"`
+	Conference              PublicationConference    `json:"conference,omitempty" form:"-"`
+	ConferenceType          string                   `json:"conference_type,omitempty" form:"conference_type"`
+	CreatorID               string                   `json:"creator_id,omitempty" form:"-"`
+	DateCreated             *time.Time               `json:"date_created,omitempty" form:"-"`
+	DateUpdated             *time.Time               `json:"date_updated,omitempty" form:"-"`
+	DefenseDate             string                   `json:"defense_date,omitempty" form:"defense_date"`
+	DefensePlace            string                   `json:"defense_place,omitempty" form:"defense_place"`
+	DefenseTime             string                   `json:"defense_time,omitempty" form:"defense_time"`
+	Department              []PublicationDepartment  `json:"department,omitempty" form:"-"`
+	DOI                     string                   `json:"doi,omitempty" form:"doi"`
+	Edition                 string                   `json:"edition,omitempty" form:"edition"`
+	Editor                  []PublicationContributor `json:"editor,omitempty" form:"-"`
+	EISBN                   []string                 `json:"eisbn,omitempty" form:"eisbn"`
+	EISSN                   []string                 `json:"eissn,omitempty" form:"eissn"`
+	ESCIID                  string                   `json:"esci_id,omitempty" form:"esci_id"`
+	Extern                  bool                     `json:"extern,omitempty" form:"extern"`
+	File                    []PublicationFile        `json:"file,omitempty" form:"-"`
+	Handle                  string                   `json:"handle,omitempty" form:"-"`
+	HasConfidentialData     string                   `json:"has_confidential_data,omitempty" form:"-"`
+	HasPatentApplication    string                   `json:"has_patent_application,omitempty" form:"-"`
+	HasPublicationsPlanned  string                   `json:"has_publications_planned,omitempty" form:"-"`
+	HasPublishedMaterial    string                   `json:"has_published_material,omitempty" form:"-"`
+	ID                      string                   `json:"_id,omitempty" form:"-"`
+	ISBN                    []string                 `json:"isbn,omitempty" form:"isbn"`
+	ISSN                    []string                 `json:"issn,omitempty" form:"issn"`
+	Issue                   string                   `json:"issue,omitempty" form:"issue"`
+	IssueTitle              string                   `json:"issue_title,omitempty" form:"issue_title"`
+	JournalArticleType      string                   `json:"journal_article_type,omitempty" form:"journal_article_type"`
+	Keyword                 []string                 `json:"keyword,omitempty" form:"keyword"`
+	Language                []string                 `json:"language,omitempty" form:"language"`
+	LaySummary              []Text                   `json:"lay_summary,omitempty" form:"lay_summary"`
+	Link                    []PublicationLink        `json:"link,omitempty" form:"-"`
+	Locked                  bool                     `json:"locked,omitempty" form:"-"`
+	Message                 string                   `json:"message,omitempty" form:"-"`
+	MiscellaneousType       string                   `json:"miscellaneous_type,omitempty" form:"miscellaneous_type"`
+	PageCount               string                   `json:"page_count,omitempty" form:"page_count"`
+	PageFirst               string                   `json:"page_first,omitempty" form:"page_first"`
+	PageLast                string                   `json:"page_last,omitempty" form:"page_last"`
+	PlaceOfPublication      string                   `json:"place_of_publication,omitempty" form:"place_of_publication"`
+	Project                 []PublicationProject     `json:"project,omitempty" form:"-"`
+	Publication             string                   `json:"publication,omitempty" form:"publication"`
+	PublicationAbbreviation string                   `json:"publication_abbreviation,omitempty" form:"publication_abbreviation"`
+	PublicationStatus       string                   `json:"publication_status,omitempty" form:"publication_status"`
+	Publisher               string                   `json:"publisher,omitempty" form:"publisher"`
+	PubMedID                string                   `json:"pubmed_id,omitempty" form:"pubmed_id"`
 	Dataset                 []*Dataset
-	ReportNumber            string                   `json:"report_number,omitempty"`
-	ResearchField           []string                 `json:"research_field,omitempty"`
-	ReviewerNote            string                   `json:"reviewer_note,omitempty"`
-	ReviewerTags            []string                 `json:"reviewer_tags,omitempty"`
-	SeriesTitle             string                   `json:"series_title,omitempty"`
-	SourceDB                string                   `json:"source_db,omitempty"`
-	SourceID                string                   `json:"source_id,omitempty"`
-	SourceRecord            string                   `json:"source_record,omitempty"`
-	Status                  string                   `json:"status,omitempty"`
-	Supervisor              []PublicationContributor `json:"supervisor,omitempty"`
-	Title                   string                   `json:"title,omitempty"`
-	Type                    string                   `json:"type,omitempty"`
-	URL                     string                   `json:"url,omitempty"`
-	UserID                  string                   `json:"user_id,omitempty"`
-	Version                 int                      `json:"_version,omitempty"`
-	Volume                  string                   `json:"volume,omitempty"`
-	WOSID                   string                   `json:"wos_id,omitempty"`
-	WOSType                 string                   `json:"wos_type,omitempty"`
-	Year                    string                   `json:"year,omitempty"`
+	ReportNumber            string                   `json:"report_number,omitempty" form:"report_number"`
+	ResearchField           []string                 `json:"research_field,omitempty" form:"research_field"`
+	ReviewerNote            string                   `json:"reviewer_note,omitempty" form:"-"`
+	ReviewerTags            []string                 `json:"reviewer_tags,omitempty" form:"-"`
+	SeriesTitle             string                   `json:"series_title,omitempty" form:"series_title"`
+	SourceDB                string                   `json:"source_db,omitempty" form:"-"`
+	SourceID                string                   `json:"source_id,omitempty" form:"-"`
+	SourceRecord            string                   `json:"source_record,omitempty" form:"-"`
+	Status                  string                   `json:"status,omitempty" form:"-"`
+	Supervisor              []PublicationContributor `json:"supervisor,omitempty" form:"-"`
+	Title                   string                   `json:"title,omitempty" form:"title"`
+	Type                    string                   `json:"type,omitempty" form:"-"`
+	URL                     string                   `json:"url,omitempty" form:"url"`
+	UserID                  string                   `json:"user_id,omitempty" form:"-"`
+	Version                 int                      `json:"_version,omitempty" form:"-"`
+	Volume                  string                   `json:"volume,omitempty" form:"volume"`
+	WOSID                   string                   `json:"wos_id,omitempty" form:"-"`
+	WOSType                 string                   `json:"wos_type,omitempty" form:"-"`
+	Year                    string                   `json:"year,omitempty" form:"year"`
 }
 
 func (p *Publication) IsOpenAccess() bool {
@@ -154,4 +154,54 @@ func (p *Publication) ThumbnailURL() string {
 		}
 	}
 	return ""
+}
+
+func (p *Publication) ClassificationChoices() []string {
+	switch p.Type {
+	case "journal_article":
+		return []string{
+			"U",
+			"A1",
+			"A2",
+			"A3",
+			"A4",
+			"V",
+		}
+	case "book":
+		return []string{
+			"U",
+			"B1",
+		}
+	case "book_chapter":
+		return []string{
+			"U",
+			"B2",
+		}
+	case "book_editor", "issue_editor":
+		return []string{
+			"U",
+			"B3",
+		}
+	case "conference":
+		return []string{
+			"U",
+			"P1",
+			"C1",
+			"C3",
+		}
+	case "dissertation":
+		return []string{
+			"U",
+			"D1",
+		}
+	case "miscellaneous", "report", "preprint":
+		return []string{
+			"U",
+			"V",
+		}
+	default:
+		return []string{
+			"U",
+		}
+	}
 }

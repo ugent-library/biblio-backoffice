@@ -19,7 +19,7 @@ type ContributorForm struct {
 }
 
 func NewContributorForm(r *http.Request, render *render.Render, id string, c *models.PublicationContributor, ad string, fe []jsonapi.Error) ContributorForm {
-	return ContributorForm{Data: NewData(r), render: render, ID: id, Author: c, Key: ad, FormErrors: fe}
+	return ContributorForm{Data: NewData(render, r), render: render, ID: id, Author: c, Key: ad, FormErrors: fe}
 }
 
 func (f ContributorForm) RenderFormText(text, key, pointer, label string, tooltip string, required bool, cols int) (template.HTML, error) {

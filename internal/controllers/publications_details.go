@@ -1,13 +1,13 @@
 package controllers
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
 	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/views"
+	"github.com/ugent-library/go-locale/locale"
 	"github.com/ugent-library/go-web/forms"
 	"github.com/ugent-library/go-web/jsonapi"
 	"github.com/unrolled/render"
@@ -36,7 +36,7 @@ func (c *PublicationsDetails) Show(w http.ResponseWriter, r *http.Request) {
 	}
 
 	c.render.HTML(w, 200,
-		fmt.Sprintf("publication/details/_%s", pub.Type),
+		"publication/details/_show",
 		views.NewPublicationData(r, c.render, pub),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
@@ -53,8 +53,16 @@ func (c *PublicationsDetails) OpenForm(w http.ResponseWriter, r *http.Request) {
 	}
 
 	c.render.HTML(w, 200,
-		fmt.Sprintf("publication/details/_%s_edit_form", pub.Type),
-		views.NewPublicationForm(r, c.render, pub, nil),
+		"publication/details/_edit",
+		struct {
+			views.PublicationForm
+			Form         *views.FormBuilder
+			Vocabularies map[string][]string
+		}{
+			views.NewPublicationForm(r, c.render, pub, nil),
+			views.NewFormBuilder(c.render, locale.Get(r.Context()), nil),
+			c.engine.Vocabularies(),
+		},
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -84,8 +92,16 @@ func (c *PublicationsDetails) SaveForm(w http.ResponseWriter, r *http.Request) {
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {
 		c.render.HTML(w, 200,
-			fmt.Sprintf("publication/details/_%s_edit_form", pub.Type),
-			views.NewPublicationForm(r, c.render, pub, formErrors),
+			"publication/details/_edit",
+			struct {
+				views.PublicationForm
+				Form         *views.FormBuilder
+				Vocabularies map[string][]string
+			}{
+				views.NewPublicationForm(r, c.render, pub, formErrors),
+				views.NewFormBuilder(c.render, locale.Get(r.Context()), formErrors),
+				c.engine.Vocabularies(),
+			},
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
 
@@ -96,7 +112,7 @@ func (c *PublicationsDetails) SaveForm(w http.ResponseWriter, r *http.Request) {
 	}
 
 	c.render.HTML(w, 200,
-		fmt.Sprintf("publication/details/_%s_edit_submit", savedPub.Type),
+		"publication/details/_update",
 		views.NewPublicationData(r, c.render, savedPub),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)

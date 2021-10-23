@@ -19,7 +19,7 @@ type AbstractForm struct {
 }
 
 func NewAbstractForm(r *http.Request, render *render.Render, id string, abstract *models.Text, key string, fe []jsonapi.Error) AbstractForm {
-	return AbstractForm{Data: NewData(r), render: render, ID: id, Abstract: abstract, Key: key, FormErrors: fe}
+	return AbstractForm{Data: NewData(render, r), render: render, ID: id, Abstract: abstract, Key: key, FormErrors: fe}
 }
 
 func (f AbstractForm) RenderFormTextArea(text, key, pointer, label string, tooltip string, placeholder string, required bool, cols int, rows int) (template.HTML, error) {

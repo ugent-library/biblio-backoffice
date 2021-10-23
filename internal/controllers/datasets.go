@@ -45,10 +45,10 @@ func (c *Datasets) List(w http.ResponseWriter, r *http.Request) {
 	}
 
 	c.render.HTML(w, http.StatusOK, "dataset/list", DatasetListVars{
-		Data:             views.NewData(r),
+		Data:             views.NewData(c.render, r),
 		SearchArgs:       args,
 		Hits:             hits,
-		PublicationSorts: c.engine.PublicationSorts(),
+		PublicationSorts: c.engine.Vocabularies()["publication_sorts"],
 	})
 }
 

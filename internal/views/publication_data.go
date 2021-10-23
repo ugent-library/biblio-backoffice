@@ -16,7 +16,7 @@ type PublicationData struct {
 }
 
 func NewPublicationData(r *http.Request, render *render.Render, p *models.Publication) PublicationData {
-	return PublicationData{Data: NewData(r), render: render, Publication: p}
+	return PublicationData{Data: NewData(render, r), render: render, Publication: p}
 }
 
 func (d PublicationData) RenderDetails() (template.HTML, error) {
