@@ -116,7 +116,7 @@ type Publication struct {
 	PublicationStatus       string                   `json:"publication_status,omitempty" form:"publication_status"`
 	Publisher               string                   `json:"publisher,omitempty" form:"publisher"`
 	PubMedID                string                   `json:"pubmed_id,omitempty" form:"pubmed_id"`
-	Dataset                 []*Dataset
+	Dataset                 []*Dataset               `json:"-" form:"-"`
 	ReportNumber            string                   `json:"report_number,omitempty" form:"report_number"`
 	ResearchField           []string                 `json:"research_field,omitempty" form:"research_field"`
 	ReviewerNote            string                   `json:"reviewer_note,omitempty" form:"-"`
@@ -138,7 +138,7 @@ type Publication struct {
 	Year                    string                   `json:"year,omitempty" form:"year"`
 }
 
-func (p *Publication) IsOpenAccess() bool {
+func (p *Publication) OpenAccess() bool {
 	for _, file := range p.File {
 		if file.AccessLevel == "open_access" {
 			return true
@@ -203,5 +203,41 @@ func (p *Publication) ClassificationChoices() []string {
 		return []string{
 			"U",
 		}
+	}
+}
+
+func (p *Publication) UsesConference() bool {
+	switch p.Type {
+	case "book_chapter", "book_editor", "conference", "issue_editor", "journal_article":
+		return true
+	default:
+		return false
+	}
+}
+
+func (p *Publication) UsesAuthor() bool {
+	switch p.Type {
+	case "book", "book_chapter", "conference", "dissertation", "journal_article", "miscellaneous":
+		return true
+	default:
+		return false
+	}
+}
+
+func (p *Publication) UsesEditor() bool {
+	switch p.Type {
+	case "book", "book_chapter", "book_editor", "conference", "issue_editor", "journal_article", "miscellaneous":
+		return true
+	default:
+		return false
+	}
+}
+
+func (p *Publication) UsesSupervisor() bool {
+	switch p.Type {
+	case "dissertation":
+		return true
+	default:
+		return false
 	}
 }

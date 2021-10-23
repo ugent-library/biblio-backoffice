@@ -25,7 +25,7 @@ type formData struct {
 	errorPointer  string
 }
 
-type formOption func(*formData) error
+type formOption func(*formData)
 
 type FormBuilder struct {
 	renderer *render.Render
@@ -41,13 +41,11 @@ func NewFormBuilder(r *render.Render, l *locale.Locale, e jsonapi.Errors) *FormB
 	}
 }
 
-func (b *FormBuilder) newFormData(opts []formOption) (*formData, error) {
+func (b *FormBuilder) newFormData(opts []formOption) *formData {
 	d := &formData{}
 
 	for _, opt := range opts {
-		if err := opt(d); err != nil {
-			return d, err
-		}
+		opt(d)
 	}
 
 	if d.Label == "" {
@@ -62,7 +60,7 @@ func (b *FormBuilder) newFormData(opts []formOption) (*formData, error) {
 		d.Error = formErr.Title
 	}
 
-	return d, nil
+	return d
 }
 
 func (b *FormBuilder) errorFor(pointer string) *jsonapi.Error {
@@ -75,57 +73,50 @@ func (b *FormBuilder) errorFor(pointer string) *jsonapi.Error {
 }
 
 func (b *FormBuilder) Name(str string) formOption {
-	return func(d *formData) error {
+	return func(d *formData) {
 		d.Name = str
-		return nil
 	}
 }
 
 func (b *FormBuilder) Value(v interface{}) formOption {
-	return func(d *formData) error {
+	return func(d *formData) {
 		d.Value = v
-		return nil
 	}
 }
 
 func (b *FormBuilder) Label(str string) formOption {
-	return func(d *formData) error {
+	return func(d *formData) {
 		d.Label = str
-		return nil
 	}
 }
 
 func (b *FormBuilder) Tooltip(str string) formOption {
-	return func(d *formData) error {
+	return func(d *formData) {
 		d.Tooltip = str
-		return nil
 	}
 }
 
 func (b *FormBuilder) Placeholder(str string) formOption {
-	return func(d *formData) error {
+	return func(d *formData) {
 		d.Placeholder = str
-		return nil
 	}
 }
 
 func (b *FormBuilder) Required() formOption {
-	return func(d *formData) error {
+	return func(d *formData) {
 		d.Required = true
-		return nil
 	}
 }
 
 func (b *FormBuilder) Checked() formOption {
-	return func(d *formData) error {
+	return func(d *formData) {
 		d.Checked = true
-		return nil
 	}
 }
 
 // TODO use functional options here too
 func (b *FormBuilder) Choices(choices []string, scopes ...string) formOption {
-	return func(d *formData) error {
+	return func(d *formData) {
 		d.Choices = choices
 		if len(scopes) > 0 {
 			d.ChoicesLabels = make([]string, len(choices))
@@ -141,74 +132,49 @@ func (b *FormBuilder) Choices(choices []string, scopes ...string) formOption {
 				}
 			}
 		}
-		return nil
 	}
 }
 
 func (b *FormBuilder) EmptyChoice() formOption {
-	return func(d *formData) error {
+	return func(d *formData) {
 		d.EmptyChoice = true
-		return nil
 	}
 }
 
 func (b *FormBuilder) Cols(num int) formOption {
-	return func(d *formData) error {
+	return func(d *formData) {
 		d.Cols = num
-		return nil
 	}
 }
 
 func (b *FormBuilder) Rows(num int) formOption {
-	return func(d *formData) error {
+	return func(d *formData) {
 		d.Rows = num
-		return nil
 	}
 }
 
 func (b *FormBuilder) ErrorPointer(ptr string) formOption {
-	return func(d *formData) error {
+	return func(d *formData) {
 		d.errorPointer = ptr
-		return nil
 	}
 }
 
 func (b *FormBuilder) Text(opts ...formOption) (template.HTML, error) {
-	d, err := b.newFormData(opts)
-	if err != nil {
-		return template.HTML(""), err
-	}
-	return RenderPartial(b.renderer, "form_builder/_text", d)
+	return RenderPartial(b.renderer, "form_builder/_text", b.newFormData(opts))
 }
 
 func (b *FormBuilder) TextMultiple(opts ...formOption) (template.HTML, error) {
-	d, err := b.newFormData(opts)
-	if err != nil {
-		return template.HTML(""), err
-	}
-	return RenderPartial(b.renderer, "form_builder/_text_multiple", d)
+	return RenderPartial(b.renderer, "form_builder/_text_multiple", b.newFormData(opts))
 }
 
 func (b *FormBuilder) Checkbox(opts ...formOption) (template.HTML, error) {
-	d, err := b.newFormData(opts)
-	if err != nil {
-		return template.HTML(""), err
-	}
-	return RenderPartial(b.renderer, "form_builder/_checkbox", d)
+	return RenderPartial(b.renderer, "form_builder/_checkbox", b.newFormData(opts))
 }
 
 func (b *FormBuilder) List(opts ...formOption) (template.HTML, error) {
-	d, err := b.newFormData(opts)
-	if err != nil {
-		return template.HTML(""), err
-	}
-	return RenderPartial(b.renderer, "form_builder/_list", d)
+	return RenderPartial(b.renderer, "form_builder/_list", b.newFormData(opts))
 }
 
 func (b *FormBuilder) ListMultiple(opts ...formOption) (template.HTML, error) {
-	d, err := b.newFormData(opts)
-	if err != nil {
-		return template.HTML(""), err
-	}
-	return RenderPartial(b.renderer, "form_builder/_list_multiple", d)
+	return RenderPartial(b.renderer, "form_builder/_list_multiple", b.newFormData(opts))
 }
