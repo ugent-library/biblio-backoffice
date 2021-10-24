@@ -9,7 +9,7 @@
         {{ end }}
     </label>
     <div class="col-{{ .Cols }} form-values">
-        {{ range $i, $v := .Value }}
+        {{ range $i, $v := .Values}}
         <div class="d-flex mb-3 form-value">
             <select class="custom-select form-control" name="{{ $.Name }}[{{ $i }}]">
                 {{if $.EmptyChoice }}<option></option>{{ end }}

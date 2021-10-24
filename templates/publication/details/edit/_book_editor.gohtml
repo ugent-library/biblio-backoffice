@@ -1,24 +1,28 @@
 <li class="list-group-item">
-    {{.RenderFormList "Type" "/data/type" "Publication Type" .Publication.Type "type" "This is a helper text" false 3}}
-    {{.RenderFormText .Publication.DOI "DOI" "/data/DOI" "DOI" "" false 3}}
-    {{.RenderFormTextMultiple .Publication.ISSN "ISSN" "/data/issn" "ISSN" "" true 9}}
-    {{.RenderFormTextMultiple .Publication.ISBN "ISBN" "/data/isbn" "ISBN" "" true 9}}
+    {{.Form.Text (.Form.Name "doi") (.Form.Value .Publication.DOI) (.Form.Cols 3)}}
+    {{.Form.TextMultiple (.Form.Name "issn") (.Form.Values .Publication.ISSN) (.Form.Cols 9)}}
+    {{.Form.TextMultiple (.Form.Name "isbn") (.Form.Values .Publication.ISBN) (.Form.Cols 9)}}
 </li>
 <li class="list-group-item">
-    {{.RenderFormText .Publication.Title "Title" "/data/title" "Title" "" true 9}}
-    {{.RenderFormTextMultiple .Publication.AlternativeTitle "AlternativeTitle" "/data/alternative_title" "Alternative Title" "" true 9}}
-    {{.RenderFormList "Classification" "/data/classification" "Classification" .Publication.Classification "classification" "" false 3}}
-    {{.RenderFormText .Publication.WOSType "WOSType" "/data/WOSType" "WOS type" "It's a tooltip!" false 3}}
+    {{.Form.Text (.Form.Name "title") (.Form.Value .Publication.Title) (.Form.Cols 9) (.Form.Required)}}
+    {{.Form.TextMultiple (.Form.Name "alternative_title") (.Form.Values .Publication.AlternativeTitle) (.Form.Cols 9)}}
+    {{.Form.List (.Form.Name "classification") (.Form.Value .Publication.Classification) (.Form.Cols 3) (.Form.Required)
+        (.Form.Choices .Publication.ClassificationChoices (.Form.Locale "publication_classifications"))}}
+    {{.Form.Text (.Form.Name "wos_type") (.Form.Value .Publication.WOSType) (.Form.Cols 3) (.Form.Tooltip "It's a tooltip!")}}
 </li>
 <li class="list-group-item">
-    {{.RenderFormText .Publication.PublicationAbbreviation "PublicationAbbreviation" "/data/publication_abbreviation" "Publication short title" "" false 9}}
-    {{.RenderFormText .Publication.Publisher "Publisher" "/data/publisher" "Publisher" "" false 9}}
-    {{.RenderFormText .Publication.PlaceOfPublication "PlaceOfPublication" "/data/place_of_publication" "Place of Publication" "" false 9}}
-    {{.RenderFormText .Publication.Year "Year" "/data/year" "Publication Year" "" true 3}}
-    {{.RenderFormCheckbox .Publication.Extern "Extern" "/data/extern" "Published while none of the authors are employed at UGent" "" false 9 }}
-    {{.RenderFormList "PublicationStatus" "/data/publication_status" "Publication status" .Publication.PublicationStatus "publicationStatus" "" false 3}}
-    {{.RenderFormListMultiple .Publication.Language "Languages" "/data/language" "Languages" "languages" "" false 9}}
+    {{.Form.Text (.Form.Name "publication_abbreviation" (.Form.Locale "form_builder.journal_article"))
+        (.Form.Value .Publication.PublicationAbbreviation) (.Form.Cols 3)}}
+    {{.Form.Text (.Form.Name "publisher") (.Form.Value .Publication.Publisher) (.Form.Cols 9)}}
+    {{.Form.Text (.Form.Name "place_of_publication") (.Form.Value .Publication.PlaceOfPublication) (.Form.Cols 9)}}
+    {{.Form.Text (.Form.Name "year") (.Form.Value .Publication.Year) (.Form.Cols 3)}}
+    {{.Form.Checkbox (.Form.Name "extern") (.Form.Checked .Publication.Extern) (.Form.Value "true") (.Form.Cols 9)}}
+    {{.Form.List (.Form.Name "publication_status") (.Form.Value .Publication.PublicationStatus) (.Form.Cols 3)
+        (.Form.Choices .Vocabularies.publication_publishing_statuses
+        (.Form.Locale "publication_publishing_statuses")) (.Form.EmptyChoice)}}
+    {{.Form.ListMultiple (.Form.Name "language") (.Form.Values .Publication.Language) (.Form.Cols 9)
+        (.Form.Choices .Vocabularies.language_codes .Form.LanguageName) (.Form.EmptyChoice)}}
 </li>
 <li class="list-group-item">
-    {{.RenderFormText .Publication.PageCount "PageCount" "/data/page_count" "Number of Pages" "" false 3}}
+    {{.Form.Text (.Form.Name "page_count") (.Form.Value .Publication.PageCount) (.Form.Cols 3)}}
 </li>

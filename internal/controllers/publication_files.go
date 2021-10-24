@@ -16,21 +16,21 @@ import (
 	"github.com/unrolled/render"
 )
 
-type PublicationsFiles struct {
+type PublicationFiles struct {
 	engine *engine.Engine
 	render *render.Render
 	router *mux.Router
 }
 
-func NewPublicationsFiles(e *engine.Engine, r *render.Render, router *mux.Router) *PublicationsFiles {
-	return &PublicationsFiles{
+func NewPublicationFiles(e *engine.Engine, r *render.Render, router *mux.Router) *PublicationFiles {
+	return &PublicationFiles{
 		engine: e,
 		render: r,
 		router: router,
 	}
 }
 
-func (c *PublicationsFiles) Download(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationFiles) Download(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	fileID := mux.Vars(r)["file_id"]
 	pub, err := c.engine.GetPublication(id)
@@ -68,7 +68,7 @@ func (c *PublicationsFiles) Download(w http.ResponseWriter, r *http.Request) {
 	proxy.ServeHTTP(w, r)
 }
 
-func (c *PublicationsFiles) Thumbnail(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationFiles) Thumbnail(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	fileID := mux.Vars(r)["file_id"]
 	pub, err := c.engine.GetPublication(id)
@@ -106,7 +106,7 @@ func (c *PublicationsFiles) Thumbnail(w http.ResponseWriter, r *http.Request) {
 	proxy.ServeHTTP(w, r)
 }
 
-func (c *PublicationsFiles) Upload(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationFiles) Upload(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	_, err := c.engine.GetPublication(id)
 	if err != nil {

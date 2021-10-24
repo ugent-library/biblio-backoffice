@@ -6,6 +6,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/ugent-library/biblio-backend/internal/engine"
+	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/views"
 	"github.com/ugent-library/go-locale/locale"
 	"github.com/ugent-library/go-web/forms"
@@ -13,19 +14,19 @@ import (
 	"github.com/unrolled/render"
 )
 
-type PublicationsDetails struct {
+type PublicationDetails struct {
 	engine *engine.Engine
 	render *render.Render
 }
 
-func NewPublicationsDetails(e *engine.Engine, r *render.Render) *PublicationsDetails {
-	return &PublicationsDetails{
+func NewPublicationDetails(e *engine.Engine, r *render.Render) *PublicationDetails {
+	return &PublicationDetails{
 		engine: e,
 		render: r,
 	}
 }
 
-func (c *PublicationsDetails) Show(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationDetails) Show(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
 	pub, err := c.engine.GetPublication(id)
@@ -42,7 +43,7 @@ func (c *PublicationsDetails) Show(w http.ResponseWriter, r *http.Request) {
 	)
 }
 
-func (c *PublicationsDetails) OpenForm(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationDetails) OpenForm(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
 	pub, err := c.engine.GetPublication(id)
@@ -55,11 +56,13 @@ func (c *PublicationsDetails) OpenForm(w http.ResponseWriter, r *http.Request) {
 	c.render.HTML(w, 200,
 		"publication/details/_edit",
 		struct {
-			views.PublicationForm
+			views.Data
+			Publication  *models.Publication
 			Form         *views.FormBuilder
 			Vocabularies map[string][]string
 		}{
-			views.NewPublicationForm(r, c.render, pub, nil),
+			views.NewData(c.render, r),
+			pub,
 			views.NewFormBuilder(c.render, locale.Get(r.Context()), nil),
 			c.engine.Vocabularies(),
 		},
@@ -67,7 +70,7 @@ func (c *PublicationsDetails) OpenForm(w http.ResponseWriter, r *http.Request) {
 	)
 }
 
-func (c *PublicationsDetails) SaveForm(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationDetails) SaveForm(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
 	pub, err := c.engine.GetPublication(id)
@@ -94,11 +97,13 @@ func (c *PublicationsDetails) SaveForm(w http.ResponseWriter, r *http.Request) {
 		c.render.HTML(w, 200,
 			"publication/details/_edit",
 			struct {
-				views.PublicationForm
+				views.Data
+				Publication  *models.Publication
 				Form         *views.FormBuilder
 				Vocabularies map[string][]string
 			}{
-				views.NewPublicationForm(r, c.render, pub, formErrors),
+				views.NewData(c.render, r),
+				pub,
 				views.NewFormBuilder(c.render, locale.Get(r.Context()), formErrors),
 				c.engine.Vocabularies(),
 			},

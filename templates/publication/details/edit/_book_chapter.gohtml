@@ -1,72 +1,30 @@
-{{ if .FormErrors }}
-<div hx-swap-oob="innerHTML:#alerts">
-    <div class="alert alert-danger alert-dismissible fade show">
-        <i class="if if-check-circle-fill"></i>
-        <p>An error has occurred!</p>
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-</div>
-{{ end }}
-
-<form hx-patch="/publication/{{ .Publication.ID }}/htmx/edit" hx-swap="innerHTML" hx-target="closest .publication-details">
-    <div class="card-header">
-        <div class="collapse-trigger" data-toggle="collapse" data-target="#collapse-details" aria-expanded="true" aria-controls="collapse-details"></div>
-        <div class="bc-toolbar">
-            <div class="bc-toolbar-left">
-                <i class="if if-chevron-right mr-4 text-muted"></i>Publication details
-            </div>
-            <div class="bc-toolbar-right">
-                <div class="c-button-toolbar" data-panel-state="edit">
-                    <button class="btn btn-outline-primary btn-cancel"
-                        hx-get="/publication/{{ .Publication.ID }}/htmx"
-                        hx-swap="innerHTML"
-                        hx-target=".publication-details"
-                    >
-                        <div class="btn-text">Cancel</div>
-                    </button>
-                    <button class="btn btn-primary btn-save">
-                        <div class="btn-text">Save</div>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="collapse show" id="collapse-details">
-        <div class="card-body p-0">
-            <ul class="list-group list-group-flush" data-panel-state="edit">
-                <li class="list-group-item">
-                    {{.RenderFormList "Type" "/data/type" "Publication Type" .Publication.Type "type" "This is a helper text" false 3}}
-                    {{.RenderFormText .Publication.DOI "DOI" "/data/DOI" "DOI" "" false 3}}
-                    {{.RenderFormTextMultiple .Publication.ISSN "ISSN" "/data/issn" "ISSN" "" true 9}}
-                    {{.RenderFormTextMultiple .Publication.ISBN "ISBN" "/data/isbn" "ISBN" "" true 9}}
-                </li>
-                <li class="list-group-item">
-                    {{.RenderFormText .Publication.Title "Title" "/data/title" "Title" "" true 9}}
-                    {{.RenderFormTextMultiple .Publication.AlternativeTitle "AlternativeTitle" "/data/alternative_title" "Alternative Title" "" true 9}}
-                    {{.RenderFormText .Publication.Publication "Publication" "/data/publication" "Book title" "" true 9}}
-                    {{.RenderFormList "Classification" "/data/classification" "Classification" .Publication.Classification "classification" "" false 3}}
-                    {{.RenderFormText .Publication.WOSType "WOSType" "/data/WOSType" "WOS type" "It's a tooltip!" false 3}}
-                </li>
-                <li class="list-group-item">
-                    {{.RenderFormText .Publication.Publisher "Publisher" "/data/publisher" "Publisher" "" false 9}}
-                    {{.RenderFormText .Publication.PlaceOfPublication "PlaceOfPublication" "/data/place_of_publication" "Place of Publication" "" false 9}}
-                    {{.RenderFormText .Publication.Year "Year" "/data/year" "Publication Year" "" true 3}}
-                    {{.RenderFormCheckbox .Publication.Extern "Extern" "/data/extern" "Published while none of the authors are employed at UGent" "" false 9 }}
-                    {{.RenderFormList "PublicationStatus" "/data/publication_status" "Publication status" .Publication.PublicationStatus "publicationStatus" "" false 3}}
-                    {{.RenderFormListMultiple .Publication.Language "Languages" "/data/language" "Languages" "languages" "" false 9}}
-                </li>
-                <li class="list-group-item">
-                    {{.RenderFormText .Publication.PageFirst "PageFirst" "/data/page_first" "Eerste pagina" "" false 3}}
-                    {{.RenderFormText .Publication.PageLast "PageLast" "/data/page_last" "Laatste pagina" "" false 3}}
-                    {{.RenderFormText .Publication.PageCount "PageCount" "/data/page_count" "Number of Pages" "" false 3}}
-                </li>
-                <li class="list-group-item">
-                    {{/*.RenderFormTextMultiple .Publication.Department "Department" "/data/department" "Department" "" false 9*/}}
-                    {{/*.RenderFormTextMultiple .Publication.Project "Project" "/data/project" "Project" "" false 9*/}}
-                </li>
-            </ul>
-        </div>
-    </div>
-</form>
+<li class="list-group-item">
+    {{.Form.Text (.Form.Name "doi") (.Form.Value .Publication.DOI) (.Form.Cols 3)}}
+    {{.Form.TextMultiple (.Form.Name "issn") (.Form.Values .Publication.ISSN) (.Form.Cols 9)}}
+    {{.Form.TextMultiple (.Form.Name "isbn") (.Form.Values .Publication.ISBN) (.Form.Cols 9)}}
+</li>
+<li class="list-group-item">
+    {{.Form.Text (.Form.Name "title") (.Form.Value .Publication.Title) (.Form.Cols 9) (.Form.Required)}}
+    {{.Form.TextMultiple (.Form.Name "alternative_title") (.Form.Values .Publication.AlternativeTitle) (.Form.Cols 9)}}
+    {{.Form.Text (.Form.Name "publication" (.Form.Locale "form_builder.book"))
+        (.Form.Value .Publication.Publication) (.Form.Cols 9) (.Form.Required)}}
+    {{.Form.List (.Form.Name "classification") (.Form.Value .Publication.Classification) (.Form.Cols 3) (.Form.Required)
+        (.Form.Choices .Publication.ClassificationChoices (.Form.Locale "publication_classifications"))}}
+    {{.Form.Text (.Form.Name "wos_type") (.Form.Value .Publication.WOSType) (.Form.Cols 3) (.Form.Tooltip "It's a tooltip!")}}
+</li>
+<li class="list-group-item">
+    {{.Form.Text (.Form.Name "publisher") (.Form.Value .Publication.Publisher) (.Form.Cols 9)}}
+    {{.Form.Text (.Form.Name "place_of_publication") (.Form.Value .Publication.PlaceOfPublication) (.Form.Cols 9)}}
+    {{.Form.Text (.Form.Name "year") (.Form.Value .Publication.Year) (.Form.Cols 3)}}
+    {{.Form.Checkbox (.Form.Name "extern") (.Form.Checked .Publication.Extern) (.Form.Value "true") (.Form.Cols 9)}}
+    {{.Form.List (.Form.Name "publication_status") (.Form.Value .Publication.PublicationStatus) (.Form.Cols 3)
+        (.Form.Choices .Vocabularies.publication_publishing_statuses
+        (.Form.Locale "publication_publishing_statuses")) (.Form.EmptyChoice)}}
+    {{.Form.ListMultiple (.Form.Name "language") (.Form.Values .Publication.Language) (.Form.Cols 9)
+        (.Form.Choices .Vocabularies.language_codes .Form.LanguageName) (.Form.EmptyChoice)}}
+</li>
+<li class="list-group-item">
+    {{.Form.Text (.Form.Name "page_first") (.Form.Value .Publication.PageFirst) (.Form.Cols 3)}}
+    {{.Form.Text (.Form.Name "page_last") (.Form.Value .Publication.PageLast) (.Form.Cols 3)}}
+    {{.Form.Text (.Form.Name "page_count") (.Form.Value .Publication.PageCount) (.Form.Cols 3)}}
+</li>
