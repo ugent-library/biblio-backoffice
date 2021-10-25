@@ -88,7 +88,7 @@
                 {{if .Publication.UsesConference}}
                     {{template "publication/conference/_show" .}}
                 {{end}}
-                {{.RenderAbstract}}
+                {{template "publication/abstracts/_show" .}}
                 {{.RenderLinks}}
                 {{.RenderAdditionalInfo}}
             </div>

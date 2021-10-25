@@ -8,7 +8,6 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/views"
-	"github.com/ugent-library/go-locale/locale"
 	"github.com/unrolled/render"
 )
 
@@ -121,11 +120,9 @@ func (c *DatasetProjects) AddToDataset(w http.ResponseWriter, r *http.Request) {
 		struct {
 			views.Data
 			Dataset *models.Dataset
-			Show    *views.ShowBuilder
 		}{
 			views.NewData(c.render, r),
 			savedDataset,
-			views.NewShowBuilder(c.render, locale.Get(r.Context())),
 		},
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
@@ -180,11 +177,9 @@ func (c *DatasetProjects) RemoveFromDataset(w http.ResponseWriter, r *http.Reque
 		struct {
 			views.Data
 			Dataset *models.Dataset
-			Show    *views.ShowBuilder
 		}{
 			views.NewData(c.render, r),
 			savedDataset,
-			views.NewShowBuilder(c.render, locale.Get(r.Context())),
 		},
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)

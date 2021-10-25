@@ -82,11 +82,11 @@ func (p *PublicationDepartments) ActiveSearch(w http.ResponseWriter, r *http.Req
 	)
 }
 
-func (p *PublicationDepartments) AddToPublication(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationDepartments) AddToPublication(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	departmentId := mux.Vars(r)["department_id"]
 
-	pub, err := p.engine.GetPublication(id)
+	pub, err := c.engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -104,13 +104,19 @@ func (p *PublicationDepartments) AddToPublication(w http.ResponseWriter, r *http
 		ID: departmentId,
 	}
 	pub.Department = append(pub.Department, publicationDepartment)
-	savedPub, _ := p.engine.UpdatePublication(pub)
+	savedPub, _ := c.engine.UpdatePublication(pub)
 
 	// TODO: error handling if department save fails
 
-	p.render.HTML(w, 200,
+	c.render.HTML(w, 200,
 		"publication/_departments",
-		views.NewPublicationData(r, p.render, savedPub),
+		struct {
+			views.Data
+			Publication *models.Publication
+		}{
+			views.NewData(c.render, r),
+			savedPub,
+		},
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -132,11 +138,11 @@ func (p *PublicationDepartments) ConfirmRemoveFromPublication(w http.ResponseWri
 	)
 }
 
-func (p *PublicationDepartments) RemoveFromPublication(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationDepartments) RemoveFromPublication(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	departmentId := mux.Vars(r)["department_id"]
 
-	pub, err := p.engine.GetPublication(id)
+	pub, err := c.engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -157,11 +163,17 @@ func (p *PublicationDepartments) RemoveFromPublication(w http.ResponseWriter, r 
 	pub.Department = departments
 
 	// TODO: error handling
-	savedPub, _ := p.engine.UpdatePublication(pub)
+	savedPub, _ := c.engine.UpdatePublication(pub)
 
-	p.render.HTML(w, 200,
+	c.render.HTML(w, 200,
 		"publication/_departments",
-		views.NewPublicationData(r, p.render, savedPub),
+		struct {
+			views.Data
+			Publication *models.Publication
+		}{
+			views.NewData(c.render, r),
+			savedPub,
+		},
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }

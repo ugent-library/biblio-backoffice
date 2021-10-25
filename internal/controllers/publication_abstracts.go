@@ -38,7 +38,7 @@ func (p *PublicationAbstracts) AddAbstract(w http.ResponseWriter, r *http.Reques
 	w.Header().Set("HX-Trigger-After-Settle", "PublicationAddAbstractAfterSettle")
 
 	p.render.HTML(w, http.StatusOK,
-		"publication/abstracts/_default_form",
+		"publication/abstracts/_form",
 		views.NewAbstractForm(r, p.render, id, abstract, "", nil),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
@@ -78,7 +78,7 @@ func (p *PublicationAbstracts) CreateAbstract(w http.ResponseWriter, r *http.Req
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {
 		p.render.HTML(w, 200,
-			fmt.Sprintf("publication/abstracts/_%s_form", pub.Type),
+			"publication/abstracts/_form",
 			views.NewAbstractForm(r, p.render, savedPub.ID, abstract, "", formErrors),
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
@@ -94,8 +94,14 @@ func (p *PublicationAbstracts) CreateAbstract(w http.ResponseWriter, r *http.Req
 	w.Header().Set("HX-Trigger-After-Settle", "PublicationCreateAbstractAfterSettle")
 
 	p.render.HTML(w, http.StatusOK,
-		"publication/abstracts/_default_table_body",
-		views.NewAbstractData(r, p.render, savedPub, nil, ""),
+		"publication/abstracts/_table_body",
+		struct {
+			views.Data
+			Publication *models.Publication
+		}{
+			views.NewData(p.render, r),
+			savedPub,
+		},
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -120,7 +126,7 @@ func (p *PublicationAbstracts) EditAbstract(w http.ResponseWriter, r *http.Reque
 	w.Header().Set("HX-Trigger-After-Settle", "PublicationAddAbstractAfterSettle")
 
 	p.render.HTML(w, http.StatusOK,
-		"publication/abstracts/_default_form_edit",
+		"publication/abstracts/_form_edit",
 		views.NewAbstractForm(r, p.render, id, abstract, muxRowDelta, nil),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
@@ -162,7 +168,7 @@ func (p *PublicationAbstracts) UpdateAbstract(w http.ResponseWriter, r *http.Req
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {
 		p.render.HTML(w, 200,
-			fmt.Sprintf("publication/abstracts/_%s_form_edit", pub.Type),
+			"publication/abstracts/_form_edit",
 			views.NewAbstractForm(r, p.render, savedPub.ID, abstract, "", formErrors),
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
@@ -178,8 +184,14 @@ func (p *PublicationAbstracts) UpdateAbstract(w http.ResponseWriter, r *http.Req
 	w.Header().Set("HX-Trigger-After-Settle", "PublicationUpdateAbstractAfterSettle")
 
 	p.render.HTML(w, http.StatusOK,
-		"publication/abstracts/_default_table_body",
-		views.NewAbstractData(r, p.render, savedPub, nil, ""),
+		"publication/abstracts/_table_body",
+		struct {
+			views.Data
+			Publication *models.Publication
+		}{
+			views.NewData(p.render, r),
+			savedPub,
+		},
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }

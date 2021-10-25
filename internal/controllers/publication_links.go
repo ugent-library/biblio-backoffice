@@ -181,7 +181,13 @@ func (p *PublicationLinks) UpdateLink(w http.ResponseWriter, r *http.Request) {
 
 	p.render.HTML(w, http.StatusOK,
 		"publication/links/_default_table_body",
-		views.NewAbstractData(r, p.render, savedPub, nil, ""),
+		struct {
+			views.Data
+			Publication *models.Publication
+		}{
+			views.NewData(p.render, r),
+			savedPub,
+		},
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }

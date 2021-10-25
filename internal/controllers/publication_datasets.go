@@ -154,7 +154,13 @@ func (c *PublicationDatasets) Add(w http.ResponseWriter, r *http.Request) {
 
 	c.render.HTML(w, 200,
 		"publication/datasets/_content",
-		views.NewPublicationData(r, c.render, pub),
+		struct {
+			views.Data
+			Publication *models.Publication
+		}{
+			views.NewData(c.render, r),
+			pub,
+		},
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -205,7 +211,13 @@ func (c *PublicationDatasets) Remove(w http.ResponseWriter, r *http.Request) {
 
 	c.render.HTML(w, 200,
 		"publication/datasets/_content",
-		views.NewPublicationData(r, c.render, pub),
+		struct {
+			views.Data
+			Publication *models.Publication
+		}{
+			views.NewData(c.render, r),
+			pub,
+		},
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }

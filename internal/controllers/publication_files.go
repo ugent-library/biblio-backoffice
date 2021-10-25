@@ -13,6 +13,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/views"
+	"github.com/ugent-library/go-locale/locale"
 	"github.com/unrolled/render"
 )
 
@@ -162,5 +163,15 @@ func (c *PublicationFiles) Upload(w http.ResponseWriter, r *http.Request) {
 
 	pub, _ := c.engine.GetPublication(id)
 
-	c.render.HTML(w, http.StatusCreated, "publication/show", views.NewPublicationData(r, c.render, pub))
+	c.render.HTML(w, http.StatusCreated, "publication/show",
+		struct {
+			views.PublicationData
+			Show         *views.ShowBuilder
+			Vocabularies map[string][]string
+		}{
+			views.NewPublicationData(r, c.render, pub),
+			views.NewShowBuilder(c.render, locale.Get(r.Context())),
+			c.engine.Vocabularies(),
+		},
+	)
 }
