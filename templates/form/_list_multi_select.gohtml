@@ -9,7 +9,7 @@
         </a>{{ end }}
     </label>
     {{ end }}
-    <div class="forme-element">
+    <div class="form-element">
         <select id="{{ .Key }}" class="custom-multi-select form-control {{ if .HasError }}is-invalid{{ end }}" name="{{ .Key }}" multiple>
             <option></option>
             {{ range .Values }}
