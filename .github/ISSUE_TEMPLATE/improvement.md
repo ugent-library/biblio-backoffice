@@ -3,7 +3,7 @@ name: Improvement report
 about: Create a report to help us improve
 title: ''
 labels: ''
-project: 1
+project: ''
 assignees: sdebodt
 
 ---
