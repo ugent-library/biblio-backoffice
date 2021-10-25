@@ -1,0 +1,14 @@
+<div class="form-group row">
+    <label class="col-sm-3 col-form-label align-self-start">
+        {{.Label}}{{if .Required}}&nbsp;<abbr class="required" title="Required">*</abbr>{{end}}
+    </label>
+    <div class="col-sm-9">
+        {{if .Values}}
+        {{range .Values}}
+        <span class="badge badge-pill badge-default mr-3">{{.}}</span>
+        {{end}}
+        {{else}}
+        <span>-</span>
+        {{end}}
+    </div>
+</div>

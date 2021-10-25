@@ -6,7 +6,9 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/ugent-library/biblio-backend/internal/engine"
+	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/views"
+	"github.com/ugent-library/go-locale/locale"
 	"github.com/ugent-library/go-web/forms"
 	"github.com/ugent-library/go-web/jsonapi"
 	"github.com/unrolled/render"
@@ -24,46 +26,62 @@ func NewDatasetDetails(e *engine.Engine, r *render.Render) *DatasetDetails {
 	}
 }
 
-func (d *DatasetDetails) Show(w http.ResponseWriter, r *http.Request) {
+func (c *DatasetDetails) Show(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
 	// TODO: set constriant to research_data
-	dataset, err := d.engine.GetDataset(id)
+	dataset, err := c.engine.GetDataset(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
-	d.render.HTML(w, 200,
-		"dataset/_details",
-		views.NewDatasetData(r, d.render, dataset),
+	c.render.HTML(w, 200,
+		"dataset/details/_show",
+		struct {
+			views.Data
+			Dataset *models.Dataset
+			Show    *views.ShowBuilder
+		}{
+			views.NewData(c.render, r),
+			dataset,
+			views.NewShowBuilder(c.render, locale.Get(r.Context())),
+		},
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
 
-func (d *DatasetDetails) OpenForm(w http.ResponseWriter, r *http.Request) {
+func (c *DatasetDetails) OpenForm(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
-	dataset, err := d.engine.GetDataset(id)
+	dataset, err := c.engine.GetDataset(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
-	d.render.HTML(w, 200,
-		"dataset/_details_edit_form",
-		views.NewDatasetForm(r, d.render, dataset, nil),
+	c.render.HTML(w, 200,
+		"dataset/details/_edit",
+		struct {
+			views.Data
+			Dataset *models.Dataset
+			Form    *views.FormBuilder
+		}{
+			views.NewData(c.render, r),
+			dataset,
+			views.NewFormBuilder(c.render, locale.Get(r.Context()), nil),
+		},
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
 
-func (d *DatasetDetails) SaveForm(w http.ResponseWriter, r *http.Request) {
+func (c *DatasetDetails) SaveForm(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
 	// TODO: set constriant to research_data
-	dataset, err := d.engine.GetDataset(id)
+	dataset, err := c.engine.GetDataset(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -81,21 +99,37 @@ func (d *DatasetDetails) SaveForm(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	savedDataset, err := d.engine.UpdateDataset(dataset)
+	savedDataset, err := c.engine.UpdateDataset(dataset)
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {
-		d.render.HTML(w, 200,
-			"dataset/_details_edit_form",
-			views.NewDatasetForm(r, d.render, dataset, formErrors),
+		c.render.HTML(w, 200,
+			"dataset/details/_edit",
+			struct {
+				views.Data
+				Dataset *models.Dataset
+				Form    *views.FormBuilder
+			}{
+				views.NewData(c.render, r),
+				dataset,
+				views.NewFormBuilder(c.render, locale.Get(r.Context()), formErrors),
+			},
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
 
 		return
 	}
 
-	d.render.HTML(w, 200,
-		"dataset/_details_edit_submit",
-		views.NewDatasetData(r, d.render, savedDataset),
+	c.render.HTML(w, 200,
+		"dataset/details/_update",
+		struct {
+			views.Data
+			Dataset *models.Dataset
+			Show    *views.ShowBuilder
+		}{
+			views.NewData(c.render, r),
+			savedDataset,
+			views.NewShowBuilder(c.render, locale.Get(r.Context())),
+		},
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }

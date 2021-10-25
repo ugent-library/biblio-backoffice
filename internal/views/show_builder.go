@@ -120,3 +120,7 @@ func (b *ShowBuilder) Text(opts ...showOption) (template.HTML, error) {
 func (b *ShowBuilder) List(opts ...showOption) (template.HTML, error) {
 	return RenderPartial(b.renderer, "show_builder/_list", b.newShowData(opts))
 }
+
+func (b *ShowBuilder) BadgeList(opts ...showOption) (template.HTML, error) {
+	return RenderPartial(b.renderer, "show_builder/_badge_list", b.newShowData(opts))
+}

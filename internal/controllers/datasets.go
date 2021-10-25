@@ -9,6 +9,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/views"
+	"github.com/ugent-library/go-locale/locale"
 	"github.com/ugent-library/go-web/forms"
 	"github.com/unrolled/render"
 )
@@ -61,5 +62,13 @@ func (c *Datasets) Show(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.render.HTML(w, http.StatusOK, "dataset/show", views.NewDatasetData(r, c.render, dataset))
+	c.render.HTML(w, http.StatusOK, "dataset/show",
+		struct {
+			views.DatasetData
+			Show *views.ShowBuilder
+		}{
+			views.NewDatasetData(r, c.render, dataset),
+			views.NewShowBuilder(c.render, locale.Get(r.Context())),
+		},
+	)
 }

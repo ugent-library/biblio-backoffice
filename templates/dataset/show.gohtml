@@ -67,9 +67,6 @@
                             <li class="nav-item">
                                 <a class="nav-link active" id="description-tab" data-toggle="tab" href="#description-content" role="tab" aria-controls="description" aria-selected="true">Description</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="creators-tab" data-toggle="tab" href="#creators-content" role="tab" aria-controls="creators" aria-selected="false">Creators</a>
-                            </li>
                         </ul>
                     </div>
                 </div>
@@ -96,15 +93,8 @@
         <div id="alerts"></div>
         <div class="tab-content">
             <div id="description-content" class="tab-pane fade show active" role="tabpanel" aria-labelledby="description-tab">
-                {{template "dataset/_details" .}}
+                {{template "dataset/details/_show" .}}
                 {{template "dataset/_projects" .}}
-                {{template "dataset/_access" .}}
-                {{template "dataset/_abstract" .}}
-            </div>
-
-            <div id="creators-content" class="tab-pane fade" role="tabpanel" aria-labelledby="creators-tab">
-                {{template "dataset/_creators" .}}
-                {{template "dataset/_contributors" .}}
             </div>
         </div>
     </div>

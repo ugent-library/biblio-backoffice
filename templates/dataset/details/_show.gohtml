@@ -25,17 +25,16 @@
         <div class="card-body p-0">
             <ul class="list-group list-group-flush" data-panel-state="read">
                 <li class="list-group-item">
-                    {{.RenderText .Dataset.Title "Title" true}}
-                    {{.RenderText .Dataset.DOI "DOI" true}}
-                    {{.RenderText .Dataset.URL "URL" true}}
+                    {{.Show.Text (.Show.Label "title") (.Show.Value .Dataset.Title)}}
+                    {{.Show.Text (.Show.Label "doi") (.Show.Value .Dataset.DOI)}}
+                    {{.Show.Text (.Show.Label "url") (.Show.Value .Dataset.URL)}}
                 </li>
                 <li class="list-group-item">
-                    {{.RenderText .Dataset.Publisher "Publisher" false}}
-                    {{.RenderText .Dataset.Year "Year of publication" true}}
+                    {{.Show.Text (.Show.Label "publisher") (.Show.Value .Dataset.Publisher)}}
+                    {{.Show.Text (.Show.Label "year") (.Show.Value .Dataset.Year)}}
                 </li>
                 <li class="list-group-item">
-                    <p>DATA FORMAT</p>
-                    {{.RenderBadgeList .Dataset.Keyword "Keywords" false}}
+                    {{.Show.BadgeList (.Show.Label "keyword") (.Show.Values .Dataset.Keyword)}}
                 </li>
             </ul>
         </div>

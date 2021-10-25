@@ -40,17 +40,6 @@ type textAreaFormData struct {
 	Error       jsonapi.Error
 }
 
-type textMultipleFormData struct {
-	Key      string
-	Text     []string
-	Label    string
-	Required bool
-	Tooltip  string
-	Cols     int
-	HasError bool
-	Error    jsonapi.Error
-}
-
 type listFormValues struct {
 	Key      string
 	Value    string
@@ -66,18 +55,6 @@ type listFormData struct {
 	Cols     int
 	HasError bool
 	Error    jsonapi.Error
-}
-
-type listMultipleFormData struct {
-	Key        string
-	Values     map[int][]*listFormValues
-	Vocabulary map[string]string
-	Label      string
-	Required   bool
-	Tooltip    string
-	Cols       int
-	HasError   bool
-	Error      jsonapi.Error
 }
 
 type boolData struct {

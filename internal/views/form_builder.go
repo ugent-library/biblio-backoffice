@@ -2,6 +2,7 @@ package views
 
 import (
 	"html/template"
+	"strings"
 
 	"github.com/ugent-library/go-locale/locale"
 	"github.com/ugent-library/go-web/jsonapi"
@@ -64,7 +65,7 @@ func (b *FormBuilder) newFormData(opts []formOption) *formData {
 	}
 
 	if d.errorPointer == "" {
-		d.errorPointer = "/data/" + d.Name
+		d.errorPointer = "/data/" + strings.ReplaceAll(d.Name, ".", "/")
 	}
 
 	if formErr := b.errorFor(d.errorPointer); formErr != nil {
