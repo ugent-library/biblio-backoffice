@@ -139,6 +139,9 @@ func init() {
 	message.SetString(language.English, "builder.conference.start_date", "Conference start date")
 	message.SetString(language.English, "builder.conference.end_date", "Conference end date")
 
+	message.SetString(language.English, "builder.abstract.text", "Abstract")
+	message.SetString(language.English, "builder.abstract.lang", "Language")
+
 	message.SetString(language.English, "builder.book.publication", "Series title")
 
 	message.SetString(language.English, "builder.book_chapter.publication", "Book title")

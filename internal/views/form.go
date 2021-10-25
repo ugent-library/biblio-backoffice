@@ -27,19 +27,6 @@ type textFormData struct {
 	Error    jsonapi.Error
 }
 
-type textAreaFormData struct {
-	Key         string
-	Text        string
-	Label       string
-	Required    bool
-	Tooltip     string
-	Placeholder string
-	Cols        int
-	Rows        int
-	HasError    bool
-	Error       jsonapi.Error
-}
-
 type listFormValues struct {
 	Key      string
 	Value    string

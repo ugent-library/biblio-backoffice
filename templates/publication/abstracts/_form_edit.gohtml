@@ -6,13 +6,14 @@
                 <h2 class="modal-title">Add Abstract</h2>
             </div>
             <div class="modal-body">
-                {{ .RenderFormTextArea .Abstract.Text "Text" "/data/text" "Abstract" "" "Add abstract text here..." false 12 6}}
-                {{ .RenderFormList "Lang" "/data/lang" "Language" .Abstract.Lang "languages" "" false 12}}
+                {{.Form.TextArea (.Form.Name "text" (.Form.Locale "builder.abstract")) (.Form.Value .Abstract.Text) (.Form.Cols 12) (.Form.Rows 6) (.Form.Placeholder "Add abstract text here...")}}
+                {{.Form.List (.Form.Name "lang" (.Form.Locale "builder.abstract")) (.Form.Value .Abstract.Lang) (.Form.Cols 12)
+                    (.Form.Choices .Vocabularies.language_codes .Form.LanguageName)}}
             </div>
             <div class="modal-footer">
                 <button class="btn btn-link modal-close">Cancel</button>
                 <button type="button" name="create" class="btn btn-primary update-abstract"
-                    hx-put="{{pathFor "publication_abstracts_update_abstract" "id" .ID "delta" .Key}}"
+                    hx-put="{{pathFor "publication_abstracts_update_abstract" "id" .PublicationID "delta" .Delta}}"
                     hx-target="#abstracts-table tbody"
                     hx-include=".modal-body"
                     hx-swap="innerHTML settle:.15s"

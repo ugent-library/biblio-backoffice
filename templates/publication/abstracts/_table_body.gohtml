@@ -1,4 +1,3 @@
-{{ $pub := .Publication }}
 {{range $k, $a := .Publication.Abstract}}
 {{ $k = $k | toString }}
 
@@ -6,7 +5,7 @@
     <td class="pl-6">
         <p>{{ $a.Text }}</p>
     </td>
-    <td>{{ $a.Lang }}</td>
+    <td>{{ $.Locale.LanguageName $a.Lang }}</td>
     <td class="pr-6">
         <div class="c-button-toolbar">
             <div class="dropdown">
@@ -15,7 +14,7 @@
                 </button>
                 <div class="dropdown-menu">
                     <button class="dropdown-item" type="button"
-                        hx-get="{{pathFor "publication_abstracts_edit_abstract" "id" $pub.ID "delta" $k}}"
+                        hx-get="{{pathFor "publication_abstracts_edit_abstract" "id" $.Publication.ID "delta" $k}}"
                         hx-target="#abstract-modals"
                         hx-swap="innerHTML"
                     >
@@ -24,7 +23,7 @@
                     </button>
 
                     <button class="dropdown-item" type="button"
-                        hx-get="{{pathFor "publication_abstracts_confirm_remove_from_publication" "id" $pub.ID "delta" $k}}"
+                        hx-get="{{pathFor "publication_abstracts_confirm_remove_from_publication" "id" $.Publication.ID "delta" $k}}"
                         hx-target="#abstract-modals"
                         hx-swap="innerHTML"
                     >

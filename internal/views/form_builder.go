@@ -197,6 +197,10 @@ func (b *FormBuilder) TextMultiple(opts ...formOption) (template.HTML, error) {
 	return RenderPartial(b.renderer, "form_builder/_text_multiple", b.newFormData(opts))
 }
 
+func (b *FormBuilder) TextArea(opts ...formOption) (template.HTML, error) {
+	return RenderPartial(b.renderer, "form_builder/_text_area", b.newFormData(opts))
+}
+
 func (b *FormBuilder) Checkbox(opts ...formOption) (template.HTML, error) {
 	return RenderPartial(b.renderer, "form_builder/_checkbox", b.newFormData(opts))
 }

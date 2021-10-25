@@ -10,6 +10,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/views"
+	"github.com/ugent-library/go-locale/locale"
 	"github.com/ugent-library/go-web/forms"
 	"github.com/ugent-library/go-web/jsonapi"
 	"github.com/unrolled/render"
@@ -39,7 +40,19 @@ func (p *PublicationAbstracts) AddAbstract(w http.ResponseWriter, r *http.Reques
 
 	p.render.HTML(w, http.StatusOK,
 		"publication/abstracts/_form",
-		views.NewAbstractForm(r, p.render, id, abstract, "", nil),
+		struct {
+			views.Data
+			PublicationID string
+			Abstract      *models.Text
+			Form          *views.FormBuilder
+			Vocabularies  map[string][]string
+		}{
+			views.NewData(p.render, r),
+			id,
+			abstract,
+			views.NewFormBuilder(p.render, locale.Get(r.Context()), nil),
+			p.engine.Vocabularies(),
+		},
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -79,7 +92,19 @@ func (p *PublicationAbstracts) CreateAbstract(w http.ResponseWriter, r *http.Req
 	if formErrors, ok := err.(jsonapi.Errors); ok {
 		p.render.HTML(w, 200,
 			"publication/abstracts/_form",
-			views.NewAbstractForm(r, p.render, savedPub.ID, abstract, "", formErrors),
+			struct {
+				views.Data
+				PublicationID string
+				Abstract      *models.Text
+				Form          *views.FormBuilder
+				Vocabularies  map[string][]string
+			}{
+				views.NewData(p.render, r),
+				savedPub.ID,
+				abstract,
+				views.NewFormBuilder(p.render, locale.Get(r.Context()), formErrors),
+				p.engine.Vocabularies(),
+			},
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
 
@@ -127,7 +152,21 @@ func (p *PublicationAbstracts) EditAbstract(w http.ResponseWriter, r *http.Reque
 
 	p.render.HTML(w, http.StatusOK,
 		"publication/abstracts/_form_edit",
-		views.NewAbstractForm(r, p.render, id, abstract, muxRowDelta, nil),
+		struct {
+			views.Data
+			PublicationID string
+			Delta         string
+			Abstract      *models.Text
+			Form          *views.FormBuilder
+			Vocabularies  map[string][]string
+		}{
+			views.NewData(p.render, r),
+			id,
+			muxRowDelta,
+			abstract,
+			views.NewFormBuilder(p.render, locale.Get(r.Context()), nil),
+			p.engine.Vocabularies(),
+		},
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -169,7 +208,21 @@ func (p *PublicationAbstracts) UpdateAbstract(w http.ResponseWriter, r *http.Req
 	if formErrors, ok := err.(jsonapi.Errors); ok {
 		p.render.HTML(w, 200,
 			"publication/abstracts/_form_edit",
-			views.NewAbstractForm(r, p.render, savedPub.ID, abstract, "", formErrors),
+			struct {
+				views.Data
+				PublicationID string
+				Delta         string
+				Abstract      *models.Text
+				Form          *views.FormBuilder
+				Vocabularies  map[string][]string
+			}{
+				views.NewData(p.render, r),
+				savedPub.ID,
+				strconv.Itoa(rowDelta),
+				abstract,
+				views.NewFormBuilder(p.render, locale.Get(r.Context()), formErrors),
+				p.engine.Vocabularies(),
+			},
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
 
