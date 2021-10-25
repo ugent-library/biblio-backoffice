@@ -64,10 +64,12 @@ func (c *Datasets) Show(w http.ResponseWriter, r *http.Request) {
 
 	c.render.HTML(w, http.StatusOK, "dataset/show",
 		struct {
-			views.DatasetData
-			Show *views.ShowBuilder
+			views.Data
+			Dataset *models.Dataset
+			Show    *views.ShowBuilder
 		}{
-			views.NewDatasetData(r, c.render, dataset),
+			views.NewData(c.render, r),
+			dataset,
 			views.NewShowBuilder(c.render, locale.Get(r.Context())),
 		},
 	)

@@ -8,6 +8,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/views"
+	"github.com/ugent-library/go-locale/locale"
 	"github.com/unrolled/render"
 )
 
@@ -84,18 +85,18 @@ func (d *DatasetProjects) ActiveSearch(w http.ResponseWriter, r *http.Request) {
 	)
 }
 
-func (d *DatasetProjects) AddToDataset(w http.ResponseWriter, r *http.Request) {
+func (c *DatasetProjects) AddToDataset(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	projectId := mux.Vars(r)["project_id"]
 
-	dataset, err := d.engine.GetDataset(id)
+	dataset, err := c.engine.GetDataset(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
-	project, err := d.engine.GetProject(projectId)
+	project, err := c.engine.GetProject(projectId)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -108,25 +109,33 @@ func (d *DatasetProjects) AddToDataset(w http.ResponseWriter, r *http.Request) {
 	}
 	dataset.Project = append(dataset.Project, publicationProject)
 
-	savedDataset, _ := d.engine.UpdateDataset(dataset)
+	savedDataset, _ := c.engine.UpdateDataset(dataset)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	d.render.HTML(w, 200,
+	c.render.HTML(w, 200,
 		"dataset/_projects",
-		views.NewDatasetData(r, d.render, savedDataset),
+		struct {
+			views.Data
+			Dataset *models.Dataset
+			Show    *views.ShowBuilder
+		}{
+			views.NewData(c.render, r),
+			savedDataset,
+			views.NewShowBuilder(c.render, locale.Get(r.Context())),
+		},
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
 
-func (d *DatasetProjects) ConfirmRemoveFromDataset(w http.ResponseWriter, r *http.Request) {
+func (c *DatasetProjects) ConfirmRemoveFromDataset(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	projectId := mux.Vars(r)["project_id"]
 
-	d.render.HTML(w, 200,
+	c.render.HTML(w, 200,
 		"dataset/_projects_modal_confirm_removal",
 		struct {
 			ID        string
@@ -139,11 +148,11 @@ func (d *DatasetProjects) ConfirmRemoveFromDataset(w http.ResponseWriter, r *htt
 	)
 }
 
-func (d *DatasetProjects) RemoveFromDataset(w http.ResponseWriter, r *http.Request) {
+func (c *DatasetProjects) RemoveFromDataset(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	projectId := mux.Vars(r)["project_id"]
 
-	dataset, err := d.engine.GetDataset(id)
+	dataset, err := c.engine.GetDataset(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -164,11 +173,19 @@ func (d *DatasetProjects) RemoveFromDataset(w http.ResponseWriter, r *http.Reque
 	dataset.Project = projects
 
 	// TODO: error handling
-	savedDataset, _ := d.engine.UpdateDataset(dataset)
+	savedDataset, _ := c.engine.UpdateDataset(dataset)
 
-	d.render.HTML(w, 200,
+	c.render.HTML(w, 200,
 		"dataset/_projects",
-		views.NewDatasetData(r, d.render, savedDataset),
+		struct {
+			views.Data
+			Dataset *models.Dataset
+			Show    *views.ShowBuilder
+		}{
+			views.NewData(c.render, r),
+			savedDataset,
+			views.NewShowBuilder(c.render, locale.Get(r.Context())),
+		},
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
