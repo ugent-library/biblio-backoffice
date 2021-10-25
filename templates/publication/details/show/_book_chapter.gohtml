@@ -1,25 +1,25 @@
 <li class="list-group-item">
-    {{.RenderText .Publication.Type "Publication type" false}}
-    {{.RenderText .Publication.DOI "DOI" false}}
-    {{.RenderList .Publication.ISSN "ISSN" false}}
-    {{.RenderList .Publication.ISBN "ISBN" false}}
+    {{.Show.Text (.Show.Label "type") (.Show.Value .Publication.Type (.Show.Locale "publication_types"))}}
+    {{.Show.Text (.Show.Label "doi") (.Show.Value .Publication.DOI)}}
+    {{.Show.List (.Show.Label "issn") (.Show.Values .Publication.ISSN)}}
+    {{.Show.List (.Show.Label "isbn") (.Show.Values .Publication.ISBN)}}
  </li>
 <li class="list-group-item">
-    {{.RenderText .Publication.Title "Title" true}}
-    {{.RenderList .Publication.AlternativeTitle "Alternative title" false}}
-    {{.RenderText .Publication.Publication "Book title" true}}
-    {{.RenderText .Publication.Classification "Classification" false}}
-    {{.RenderText .Publication.WOSType "Web of Science type" false}}
+    {{.Show.Text (.Show.Label "title") (.Show.Value .Publication.Title) (.Show.Required)}}
+    {{.Show.List (.Show.Label "alternative_title") (.Show.Values .Publication.AlternativeTitle)}}
+    {{.Show.Text (.Show.Label "publication" (.Show.Locale "builder.book_chapter")) (.Show.Value .Publication.Publication) (.Show.Required)}}
+    {{.Show.Text (.Show.Label "classification") (.Show.Value .Publication.Classification (.Show.Locale "publication_classifications"))}}
+    {{.Show.Text (.Show.Label "wos_type") (.Show.Value .Publication.WOSType)}}
 </li>
 <li class="list-group-item">
-    {{.RenderText .Publication.Publisher "Publisher" false}}
-    {{.RenderText .Publication.PlaceOfPublication "Place of publication" false}}
-    {{.RenderText .Publication.Year "Year of publication" true}}
-    {{.RenderBool .Publication.Extern "Published while none of the authors are employed at UGent" true}}
-    {{.RenderText .Publication.PublicationStatus "Publication status" false}}
-    {{.RenderList .Publication.Language "Languages" false}}
+    {{.Show.Text (.Show.Label "publisher") (.Show.Value .Publication.Publisher)}}
+    {{.Show.Text (.Show.Label "place_of_publication") (.Show.Value .Publication.PlaceOfPublication)}}
+    {{.Show.Text (.Show.Label "year") (.Show.Value .Publication.Year) (.Show.Required)}}
+    {{.Show.Text (.Show.Label "extern") (.Show.Value (formatBool .Publication.Extern "✓" ""))}}
+    {{.Show.Text (.Show.Label "publication_status") (.Show.Value .Publication.PublicationStatus (.Show.Locale "publication_publishing_statuses"))}}
+    {{.Show.List (.Show.Label "language") (.Show.Values .Publication.Language (.Show.LanguageName))}}
 </li>
 <li class="list-group-item">
-    {{.RenderRange .Publication.PageFirst .Publication.PageLast "Pages" false}}
-    {{.RenderText .Publication.PageCount "Number of pages" false}}
+    {{.Show.Text (.Show.Label "pages") (.Show.Value (formatRange .Publication.PageFirst .Publication.PageLast))}}
+    {{.Show.Text (.Show.Label "page_count") (.Show.Value .Publication.PageCount)}}
 </li>

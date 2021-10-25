@@ -118,6 +118,8 @@ func init() {
 	message.SetString(language.English, "builder.page_count", "Number of pages")
 	message.SetString(language.English, "builder.pages", "Pages")
 	message.SetString(language.English, "builder.place_of_publication", "Place of publication")
+	message.SetString(language.English, "builder.publication", "Publication title")
+	message.SetString(language.English, "builder.publication_abbreviation", "Publication short title")
 	message.SetString(language.English, "builder.publisher", "Publisher")
 	message.SetString(language.English, "builder.publication_status", "Publishing status")
 	message.SetString(language.English, "builder.report_number", "Report number")
@@ -128,9 +130,12 @@ func init() {
 	message.SetString(language.English, "builder.wos_type", "Web of Science type")
 	message.SetString(language.English, "builder.year", "Publication year")
 
-	message.SetString(language.English, "builder.book.publication", "Book title")
+	message.SetString(language.English, "builder.book.publication", "Series title")
+
+	message.SetString(language.English, "builder.book_chapter.publication", "Book title")
 
 	message.SetString(language.English, "builder.conference.publication", "Proceedings title")
+	message.SetString(language.English, "builder.conference.series_title", "Series or journal title")
 
 	message.SetString(language.English, "builder.journal_article.publication", "Journal title")
 	message.SetString(language.English, "builder.journal_article.publication_abbreviation", "Short journal title")

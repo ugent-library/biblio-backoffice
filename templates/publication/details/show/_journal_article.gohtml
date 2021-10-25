@@ -26,6 +26,6 @@
     {{.Show.Text (.Show.Label "volume") (.Show.Value .Publication.Volume)}}
     {{.Show.Text (.Show.Label "issue") (.Show.Value .Publication.Issue)}}
     {{.Show.Text (.Show.Label "pages") (.Show.Value (formatRange .Publication.PageFirst .Publication.PageLast))}}
-    {{.Show.Text (.Show.Label "page_count") (.Show.Value .Publication.Issue)}}
-    {{.Show.Text (.Show.Label "issue_title") (.Show.Value .Publication.Issue)}}
+    {{.Show.Text (.Show.Label "page_count") (.Show.Value .Publication.PageCount)}}
+    {{.Show.Text (.Show.Label "issue_title") (.Show.Value .Publication.IssueTitle)}}
 </li>

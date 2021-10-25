@@ -6,7 +6,7 @@
 <li class="list-group-item">
     {{.Form.Text (.Form.Name "title") (.Form.Value .Publication.Title) (.Form.Cols 9) (.Form.Required)}}
     {{.Form.TextMultiple (.Form.Name "alternative_title") (.Form.Values .Publication.AlternativeTitle) (.Form.Cols 9)}}
-    {{.Form.Text (.Form.Name "publication" (.Form.Locale "builder.book"))
+    {{.Form.Text (.Form.Name "publication" (.Form.Locale "builder.book_chapter"))
         (.Form.Value .Publication.Publication) (.Form.Cols 9) (.Form.Required)}}
     {{.Form.List (.Form.Name "classification") (.Form.Value .Publication.Classification) (.Form.Cols 3) (.Form.Required)
         (.Form.Choices .Publication.ClassificationChoices (.Form.Locale "publication_classifications"))}}

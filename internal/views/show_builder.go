@@ -82,7 +82,7 @@ func (b *ShowBuilder) Value(v string, localeOpts ...showLocaleOption) showOption
 	return func(d *showData) {
 		d.values = []string{v}
 
-		if len(localeOpts) > 0 {
+		if v != "" && len(localeOpts) > 0 {
 			opt := localeOpts[0]
 			if lbl := opt(v); lbl != "" {
 				d.values[0] = lbl
