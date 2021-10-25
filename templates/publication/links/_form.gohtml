@@ -6,14 +6,15 @@
                 <h2 class="modal-title">Add Link</h2>
             </div>
             <div class="modal-body">
-                {{ .RenderFormText .Link.URL "URL" "/data/text" "Link" "" false 12}}
-                {{ .RenderFormList "Relation" "/data/lang" "Relation" .Link.Relation "relations" "" false 12}}
-                {{ .RenderFormText .Link.Description "Description" "/data/text" "Description" "" false 12}}
+                {{.Form.Text (.Form.Name "url" (.Form.Locale "builder.link")) (.Form.Value .Link.URL) (.Form.Cols 12)}}
+                {{.Form.List (.Form.Name "relation" (.Form.Locale "builder.link")) (.Form.Value .Link.Relation) (.Form.Cols 12)
+                    (.Form.Choices .Vocabularies.publication_link_relations (.Form.Locale "publication_link_relations"))}}
+                {{.Form.Text (.Form.Name "description" (.Form.Locale "builder.link")) (.Form.Value .Link.Description) (.Form.Cols 12)}}
             </div>
             <div class="modal-footer">
                 <button class="btn btn-link modal-close">Cancel</button>
                 <button type="button" name="create" class="btn btn-primary create-link"
-                    hx-post="{{pathFor "publication_links_create_link" "id" .ID }}"
+                    hx-post="{{pathFor "publication_links_create_link" "id" .PublicationID }}"
                     hx-target="#links-table tbody"
                     hx-include=".modal-body"
                     hx-swap="innerHTML settle:.15s"

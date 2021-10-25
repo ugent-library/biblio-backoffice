@@ -30,9 +30,9 @@ type PublicationFile struct {
 }
 
 type PublicationLink struct {
-	URL         string `json:"url,omitempty"`
-	Relation    string `json:"relation,omitempty"`
-	Description string `json:"description,omitempty"`
+	URL         string `json:"url,omitempty" form:"url"`
+	Relation    string `json:"relation,omitempty" form:"relation"`
+	Description string `json:"description,omitempty" form:"description"`
 }
 
 type PublicationConference struct {

@@ -10,6 +10,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/views"
+	"github.com/ugent-library/go-locale/locale"
 	"github.com/ugent-library/go-web/forms"
 	"github.com/ugent-library/go-web/jsonapi"
 	"github.com/unrolled/render"
@@ -38,8 +39,20 @@ func (p *PublicationLinks) AddLink(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("HX-Trigger-After-Settle", "PublicationAddLinkAfterSettle")
 
 	p.render.HTML(w, http.StatusOK,
-		"publication/links/_default_form",
-		views.NewLinkForm(r, p.render, id, link, "", nil),
+		"publication/links/_form",
+		struct {
+			views.Data
+			PublicationID string
+			Link          *models.PublicationLink
+			Form          *views.FormBuilder
+			Vocabularies  map[string][]string
+		}{
+			views.NewData(p.render, r),
+			id,
+			link,
+			views.NewFormBuilder(p.render, locale.Get(r.Context()), nil),
+			p.engine.Vocabularies(),
+		},
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -78,8 +91,20 @@ func (p *PublicationLinks) CreateLink(w http.ResponseWriter, r *http.Request) {
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {
 		p.render.HTML(w, 200,
-			fmt.Sprintf("publication/links/_%s_form", pub.Type),
-			views.NewLinkForm(r, p.render, savedPub.ID, link, "", formErrors),
+			"publication/links/_form",
+			struct {
+				views.Data
+				PublicationID string
+				Link          *models.PublicationLink
+				Form          *views.FormBuilder
+				Vocabularies  map[string][]string
+			}{
+				views.NewData(p.render, r),
+				savedPub.ID,
+				link,
+				views.NewFormBuilder(p.render, locale.Get(r.Context()), formErrors),
+				p.engine.Vocabularies(),
+			},
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
 
@@ -94,8 +119,14 @@ func (p *PublicationLinks) CreateLink(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("HX-Trigger-After-Settle", "PublicationCreateLinkAfterSettle")
 
 	p.render.HTML(w, http.StatusOK,
-		"publication/links/_default_table_body",
-		views.NewLinkData(r, p.render, savedPub, nil, ""),
+		"publication/links/_table_body",
+		struct {
+			views.Data
+			Publication *models.Publication
+		}{
+			views.NewData(p.render, r),
+			savedPub,
+		},
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -120,8 +151,22 @@ func (p *PublicationLinks) EditLink(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("HX-Trigger-After-Settle", "PublicationEditLinkAfterSwapAfterSettle")
 
 	p.render.HTML(w, http.StatusOK,
-		"publication/links/_default_form_edit",
-		views.NewLinkForm(r, p.render, id, link, muxRowDelta, nil),
+		"publication/links/_form_edit",
+		struct {
+			views.Data
+			PublicationID string
+			Delta         string
+			Link          *models.PublicationLink
+			Form          *views.FormBuilder
+			Vocabularies  map[string][]string
+		}{
+			views.NewData(p.render, r),
+			id,
+			muxRowDelta,
+			link,
+			views.NewFormBuilder(p.render, locale.Get(r.Context()), nil),
+			p.engine.Vocabularies(),
+		},
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -164,8 +209,22 @@ func (p *PublicationLinks) UpdateLink(w http.ResponseWriter, r *http.Request) {
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {
 		p.render.HTML(w, 200,
-			fmt.Sprintf("publication/links/_%s_form_edit", pub.Type),
-			views.NewLinkForm(r, p.render, savedPub.ID, link, "", formErrors),
+			"publication/links/_form_edit",
+			struct {
+				views.Data
+				PublicationID string
+				Delta         string
+				Link          *models.PublicationLink
+				Form          *views.FormBuilder
+				Vocabularies  map[string][]string
+			}{
+				views.NewData(p.render, r),
+				savedPub.ID,
+				strconv.Itoa(rowDelta),
+				link,
+				views.NewFormBuilder(p.render, locale.Get(r.Context()), formErrors),
+				p.engine.Vocabularies(),
+			},
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
 
@@ -180,7 +239,7 @@ func (p *PublicationLinks) UpdateLink(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("HX-Trigger-After-Settle", "PublicationUpdateLinkAfterSettle")
 
 	p.render.HTML(w, http.StatusOK,
-		"publication/links/_default_table_body",
+		"publication/links/_table_body",
 		struct {
 			views.Data
 			Publication *models.Publication

@@ -53,6 +53,9 @@ var vocabularies = map[string][]string{
 		"accepted",
 		"published",
 	},
+	"publication_link_relations": {
+		"data_management_plan",
+	},
 	"conference_types": {
 		"proceedingsPaper",
 		"abstract",

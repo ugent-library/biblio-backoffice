@@ -96,6 +96,9 @@ func init() {
 	message.SetString(language.English, "publication_publishing_statuses.accepted", "Accepted")
 	message.SetString(language.English, "publication_publishing_statuses.published", "Published")
 
+	// TODO add missing
+	message.SetString(language.English, "publication_link_relations.data_management_plan", "Data management plan")
+
 	message.SetString(language.English, "builder.alternative_title", "Alternative title")
 	message.SetString(language.English, "builder.article_number", "Article number")
 	message.SetString(language.English, "builder.classification", "Classification")
@@ -141,6 +144,10 @@ func init() {
 
 	message.SetString(language.English, "builder.abstract.text", "Abstract")
 	message.SetString(language.English, "builder.abstract.lang", "Language")
+
+	message.SetString(language.English, "builder.link.url", "URL")
+	message.SetString(language.English, "builder.link.relation", "Relation")
+	message.SetString(language.English, "builder.link.description", "Description")
 
 	message.SetString(language.English, "builder.book.publication", "Series title")
 
