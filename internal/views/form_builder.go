@@ -193,8 +193,8 @@ func (b *FormBuilder) Text(opts ...formOption) (template.HTML, error) {
 	return RenderPartial(b.renderer, "form_builder/_text", b.newFormData(opts))
 }
 
-func (b *FormBuilder) TextMultiple(opts ...formOption) (template.HTML, error) {
-	return RenderPartial(b.renderer, "form_builder/_text_multiple", b.newFormData(opts))
+func (b *FormBuilder) TextRepeat(opts ...formOption) (template.HTML, error) {
+	return RenderPartial(b.renderer, "form_builder/_text_repeat", b.newFormData(opts))
 }
 
 func (b *FormBuilder) TextArea(opts ...formOption) (template.HTML, error) {
@@ -209,6 +209,6 @@ func (b *FormBuilder) List(opts ...formOption) (template.HTML, error) {
 	return RenderPartial(b.renderer, "form_builder/_list", b.newFormData(opts))
 }
 
-func (b *FormBuilder) ListMultiple(opts ...formOption) (template.HTML, error) {
-	return RenderPartial(b.renderer, "form_builder/_list_multiple", b.newFormData(opts))
+func (b *FormBuilder) ListRepeat(opts ...formOption) (template.HTML, error) {
+	return RenderPartial(b.renderer, "form_builder/_list_repeat", b.newFormData(opts))
 }

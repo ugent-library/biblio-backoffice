@@ -1,11 +1,11 @@
 <li class="list-group-item">
     {{.Form.Text (.Form.Name "doi") (.Form.Value .Publication.DOI) (.Form.Cols 3)}}
-    {{.Form.TextMultiple (.Form.Name "issn") (.Form.Values .Publication.ISSN) (.Form.Cols 9)}}
-    {{.Form.TextMultiple (.Form.Name "isbn") (.Form.Values .Publication.ISBN) (.Form.Cols 9)}}
+    {{.Form.TextRepeat (.Form.Name "issn") (.Form.Values .Publication.ISSN) (.Form.Cols 9)}}
+    {{.Form.TextRepeat (.Form.Name "isbn") (.Form.Values .Publication.ISBN) (.Form.Cols 9)}}
 </li>
 <li class="list-group-item">
     {{.Form.Text (.Form.Name "title") (.Form.Value .Publication.Title) (.Form.Cols 9) (.Form.Required)}}
-    {{.Form.TextMultiple (.Form.Name "alternative_title") (.Form.Values .Publication.AlternativeTitle) (.Form.Cols 9)}}
+    {{.Form.TextRepeat (.Form.Name "alternative_title") (.Form.Values .Publication.AlternativeTitle) (.Form.Cols 9)}}
     {{.Form.List (.Form.Name "classification") (.Form.Value .Publication.Classification) (.Form.Cols 3) (.Form.Required)
         (.Form.Choices .Publication.ClassificationChoices (.Form.Locale "publication_classifications"))}}
     {{.Form.Text (.Form.Name "wos_type") (.Form.Value .Publication.WOSType) (.Form.Cols 3) (.Form.Tooltip "It's a tooltip!")}}
@@ -20,7 +20,7 @@
     {{.Form.List (.Form.Name "publication_status") (.Form.Value .Publication.PublicationStatus) (.Form.Cols 3)
         (.Form.Choices .Vocabularies.publication_publishing_statuses
         (.Form.Locale "publication_publishing_statuses")) (.Form.EmptyChoice)}}
-    {{.Form.ListMultiple (.Form.Name "language") (.Form.Values .Publication.Language) (.Form.Cols 9)
+    {{.Form.ListRepeat (.Form.Name "language") (.Form.Values .Publication.Language) (.Form.Cols 9)
         (.Form.Choices .Vocabularies.language_codes .Form.LanguageName) (.Form.EmptyChoice)}}
 </li>
 <li class="list-group-item">
