@@ -91,6 +91,7 @@ func init() {
 	message.SetString(language.English, "publication_classifications.D2", "D2 - student thesis")
 	message.SetString(language.English, "publication_classifications.P1", "P1 - proceedings paper (WoS)")
 	message.SetString(language.English, "publication_classifications.V", "V - miscellaneous")
+	message.SetString(language.English, "publication_classifications.U", "U - undetermined")
 
 	message.SetString(language.English, "publication_publishing_statuses.unpublished", "Unpublished")
 	message.SetString(language.English, "publication_publishing_statuses.accepted", "Accepted")
@@ -127,6 +128,7 @@ func init() {
 	message.SetString(language.English, "builder.place_of_publication", "Place of publication")
 	message.SetString(language.English, "builder.publication", "Publication title")
 	message.SetString(language.English, "builder.publication_abbreviation", "Publication short title")
+	message.SetString(language.English, "builder.publication_status", "Publishing status")
 	message.SetString(language.English, "builder.publisher", "Publisher")
 	message.SetString(language.English, "builder.pubmed_id", "PubMed ID")
 	message.SetString(language.English, "builder.wos_id", "Web of Science ID")

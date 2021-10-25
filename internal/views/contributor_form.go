@@ -9,6 +9,34 @@ import (
 	"github.com/unrolled/render"
 )
 
+type textFormData struct {
+	Key      string
+	Text     string
+	Label    string
+	Required bool
+	Tooltip  string
+	Cols     int
+	HasError bool
+	Error    jsonapi.Error
+}
+
+type listFormValues struct {
+	Key      string
+	Value    string
+	Selected bool
+}
+
+type listFormData struct {
+	Key      string
+	Values   []*listFormValues
+	Label    string
+	Required bool
+	Tooltip  string
+	Cols     int
+	HasError bool
+	Error    jsonapi.Error
+}
+
 type ContributorForm struct {
 	Data
 	render     *render.Render
