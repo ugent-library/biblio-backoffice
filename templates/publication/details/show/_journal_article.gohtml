@@ -1,8 +1,8 @@
 <li class="list-group-item">
     {{.Show.Text (.Show.Label "type") (.Show.Value .Publication.Type (.Show.Locale "publication_types"))}}
     {{.Show.Text (.Show.Label "doi") (.Show.Value .Publication.DOI)}}
-    {{.RenderList .Publication.ISSN "ISSN" false}}
-    {{.RenderList .Publication.ISBN "ISBN" false}}
+    {{.Show.List (.Show.Label "issn") (.Show.Values .Publication.ISSN)}}
+    {{.Show.List (.Show.Label "isbn") (.Show.Values .Publication.ISBN)}}
  </li>
 <li class="list-group-item">
     {{.Show.Text (.Show.Label "title") (.Show.Value .Publication.Title) (.Show.Required)}}
@@ -18,14 +18,14 @@
     {{.Show.Text (.Show.Label "publisher") (.Show.Value .Publication.Publisher)}}
     {{.Show.Text (.Show.Label "place_of_publication") (.Show.Value .Publication.PlaceOfPublication)}}
     {{.Show.Text (.Show.Label "year") (.Show.Value .Publication.Year) (.Show.Required)}}
-    {{.RenderBool .Publication.Extern "Published while none of the authors are employed at UGent" true}}
+    {{.Show.Text (.Show.Label "extern") (.Show.Value (formatBool .Publication.Extern "✓" "")}}
     {{.Show.Text (.Show.Label "publication_status") (.Show.Value .Publication.PublicationStatus (.Show.Locale "publication_publishing_statuses"))}}
     {{.Show.List (.Show.Label "language") (.Show.Values .Publication.Language (.Show.LanguageName))}}
 </li>
 <li class="list-group-item">
     {{.Show.Text (.Show.Label "volume") (.Show.Value .Publication.Volume)}}
     {{.Show.Text (.Show.Label "issue") (.Show.Value .Publication.Issue)}}
-    {{.RenderRange .Publication.PageFirst .Publication.PageLast "Pages" false}}
+    {{.Show.Text (.Show.Label "pages") (.Show.Value (formatRange .Publication.PageFirst .Publication.PageLast))}}
     {{.Show.Text (.Show.Label "page_count") (.Show.Value .Publication.Issue)}}
     {{.Show.Text (.Show.Label "issue_title") (.Show.Value .Publication.Issue)}}
 </li>

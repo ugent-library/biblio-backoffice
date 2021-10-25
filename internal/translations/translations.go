@@ -116,6 +116,7 @@ func init() {
 	message.SetString(language.English, "builder.page_first", "First page")
 	message.SetString(language.English, "builder.page_last", "Last page")
 	message.SetString(language.English, "builder.page_count", "Number of pages")
+	message.SetString(language.English, "builder.pages", "Pages")
 	message.SetString(language.English, "builder.place_of_publication", "Place of publication")
 	message.SetString(language.English, "builder.publisher", "Publisher")
 	message.SetString(language.English, "builder.publication_status", "Publishing status")
