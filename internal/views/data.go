@@ -34,10 +34,6 @@ func (d Data) Partial(tmpl string, data interface{}) (template.HTML, error) {
 	return RenderPartial(d.renderer, tmpl, data)
 }
 
-// func (d Data) PartialFallback(tmpl, tmplFallback string, data interface{}) (template.HTML, error) {
-// 	return RenderPartialFallback(d.renderer, tmpl, tmplFallback, data)
-// }
-
 func (d Data) IsHTMXRequest() bool {
 	return d.request.Header.Get("HX-Request") != ""
 }
