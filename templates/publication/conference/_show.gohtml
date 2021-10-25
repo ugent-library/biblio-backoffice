@@ -1,0 +1,37 @@
+{{ if not .IsHTMXRequest }}<div class="card card-collapsible mb-6 publication-conference">{{ end }}
+
+	<div class="card-header">
+		<div class="collapse-trigger collapsed" data-toggle="collapse" data-target="#collapse-conference" aria-expanded="{{ .IsHTMXRequest }}" aria-controls="collapse-conference"></div>
+		<div class="bc-toolbar">
+			<div class="bc-toolbar-left">
+				<i class="if if-chevron-right mr-4 text-muted"></i>Conference Details
+			</div>
+			<div class="bc-toolbar-right">
+				<div class="c-button-toolbar" data-panel-state="read">
+					<button class="btn btn-outline-primary"
+						hx-get="{{pathFor "publication_conference_edit_form" "id" .Publication.ID}}"
+						hx-swap="innerHTML"
+						hx-target=".publication-conference"
+					>
+						<i class="if if-edit"></i>
+						<div class="btn-text">Edit</div>
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="collapse {{ if .IsHTMXRequest }}show{{ end }}" id="collapse-conference">
+		<div class="card-body p-0">
+			<ul class="list-group list-group-flush" data-panel-state="read">
+				<li class="list-group-item">
+					{{.Show.Text (.Show.Label "name" (.Show.Locale "builder.conference")) (.Show.Value .Publication.Conference.Name)}}
+					{{.Show.Text (.Show.Label "location" (.Show.Locale "builder.conference")) (.Show.Value .Publication.Conference.Location)}}
+					{{.Show.Text (.Show.Label "organizer" (.Show.Locale "builder.conference")) (.Show.Value .Publication.Conference.Organizer)}}
+					{{.Show.Text (.Show.Label "date" (.Show.Locale "builder.conference"))
+						(.Show.Value (formatRange .Publication.Conference.StartDate .Publication.Conference.EndDate))}}
+				</li>
+			</ul>
+		</div>
+	</div>
+{{ if not .IsHTMXRequest }}</div>{{ end }}

@@ -1,4 +1,4 @@
-{{ if .FormErrors }}
+{{ if .Form.Errors }}
 <div hx-swap-oob="innerHTML:#alerts">
 	<div class="alert alert-danger alert-dismissible fade show">
 		<i class="if if-check-circle-fill"></i>
@@ -37,11 +37,11 @@
 		<div class="card-body p-0">
 			<ul class="list-group list-group-flush" data-panel-state="edit">
 				<li class="list-group-item">
-				  {{.RenderFormText .Publication.Conference.Name "Conference.Name" "/data/conference/name" "Conference" "" false 9}}
-				  {{.RenderFormText .Publication.Conference.Location "Conference.Location" "/data/conference/location" "Conference location" "" false 9}}
-				  {{.RenderFormText .Publication.Conference.Organizer "Conference.Organizer" "/data/conference/organizer" "Conference organizer" "" false 9}}
-				  {{.RenderFormText .Publication.Conference.StartDate "Conference.StartDate" "/data/conference/start_date" "Conference start date" "" false 3}}
-				  {{.RenderFormText .Publication.Conference.EndDate "Conference.EndDate" "/data/conference/end_date" "Conference end date" "" false 3}}
+			      {{.Form.Text (.Form.Name "conference.name") (.Form.Value .Publication.Conference.Name) (.Form.Cols 9)}}
+			      {{.Form.Text (.Form.Name "conference.location") (.Form.Value .Publication.Conference.Location) (.Form.Cols 9)}}
+			      {{.Form.Text (.Form.Name "conference.organizer") (.Form.Value .Publication.Conference.Organizer) (.Form.Cols 9)}}
+			      {{.Form.Text (.Form.Name "conference.start_date") (.Form.Value .Publication.Conference.StartDate) (.Form.Cols 3)}}
+			      {{.Form.Text (.Form.Name "conference.end_date") (.Form.Value .Publication.Conference.EndDate) (.Form.Cols 3)}}
 				</li>
 			</ul>
 		</div>

@@ -39,11 +39,13 @@ func (c *PublicationDetails) Show(w http.ResponseWriter, r *http.Request) {
 	c.render.HTML(w, 200,
 		"publication/details/_show",
 		struct {
-			views.PublicationData
+			views.Data
+			Publication  *models.Publication
 			Show         *views.ShowBuilder
 			Vocabularies map[string][]string
 		}{
-			views.NewPublicationData(r, c.render, pub),
+			views.NewData(c.render, r),
+			pub,
 			views.NewShowBuilder(c.render, locale.Get(r.Context())),
 			c.engine.Vocabularies(),
 		},
@@ -127,11 +129,13 @@ func (c *PublicationDetails) SaveForm(w http.ResponseWriter, r *http.Request) {
 	c.render.HTML(w, 200,
 		"publication/details/_update",
 		struct {
-			views.PublicationData
+			views.Data
+			Publication  *models.Publication
 			Show         *views.ShowBuilder
 			Vocabularies map[string][]string
 		}{
-			views.NewPublicationData(r, c.render, savedPub),
+			views.NewData(c.render, r),
+			savedPub,
 			views.NewShowBuilder(c.render, locale.Get(r.Context())),
 			c.engine.Vocabularies(),
 		},

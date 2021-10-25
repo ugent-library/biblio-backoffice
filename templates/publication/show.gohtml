@@ -85,7 +85,9 @@
                 {{template "publication/details/_show" .}}
                 {{.RenderProjects}}
                 {{.RenderDepartments}}
-                {{.RenderConference}}
+                {{if .Publication.UsesConference}}
+                    {{template "publication/conference/_show" .}}
+                {{end}}
                 {{.RenderAbstract}}
                 {{.RenderLinks}}
                 {{.RenderAdditionalInfo}}

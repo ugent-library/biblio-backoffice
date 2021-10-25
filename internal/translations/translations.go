@@ -129,6 +129,13 @@ func init() {
 	message.SetString(language.English, "builder.volume", "Volume")
 	message.SetString(language.English, "builder.wos_type", "Web of Science type")
 	message.SetString(language.English, "builder.year", "Publication year")
+	// TODO could conflict with the conference type fields
+	message.SetString(language.English, "builder.conference.name", "Conference")
+	message.SetString(language.English, "builder.conference.location", "Conference location")
+	message.SetString(language.English, "builder.conference.organizer", "Conference organiser")
+	message.SetString(language.English, "builder.conference.date", "Conference date")
+	message.SetString(language.English, "builder.conference.start_date", "Conference start date")
+	message.SetString(language.English, "builder.conference.end_date", "Conference end date")
 
 	message.SetString(language.English, "builder.book.publication", "Series title")
 

@@ -36,11 +36,11 @@ type PublicationLink struct {
 }
 
 type PublicationConference struct {
-	Name      string `json:"name,omitempty"`
-	Location  string `json:"location,omitempty"`
-	Organizer string `json:"organizer,omitempty"`
-	StartDate string `json:"start_date,omitempty"`
-	EndDate   string `json:"end_date,omitempty"`
+	Name      string `json:"name,omitempty" form:"name"`
+	Location  string `json:"location,omitempty" form:"location"`
+	Organizer string `json:"organizer,omitempty" form:"organizer"`
+	StartDate string `json:"start_date,omitempty" form:"start_date"`
+	EndDate   string `json:"end_date,omitempty" form:"end_date"`
 }
 
 type PublicationDepartment struct {
@@ -71,7 +71,7 @@ type Publication struct {
 	Author                  []PublicationContributor `json:"author,omitempty" form:"-"`
 	Classification          string                   `json:"classification,omitempty" form:"classification"`
 	CompletenessScore       int                      `json:"completeness_score,omitempty" form:"-"`
-	Conference              PublicationConference    `json:"conference,omitempty" form:"-"`
+	Conference              PublicationConference    `json:"conference,omitempty" form:"conference"`
 	ConferenceType          string                   `json:"conference_type,omitempty" form:"conference_type"`
 	CreatorID               string                   `json:"creator_id,omitempty" form:"-"`
 	DateCreated             *time.Time               `json:"date_created,omitempty" form:"-"`

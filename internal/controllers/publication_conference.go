@@ -1,13 +1,14 @@
 package controllers
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
 	"github.com/ugent-library/biblio-backend/internal/engine"
+	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/views"
+	"github.com/ugent-library/go-locale/locale"
 	"github.com/ugent-library/go-web/forms"
 	"github.com/ugent-library/go-web/jsonapi"
 	"github.com/unrolled/render"
@@ -36,8 +37,16 @@ func (c *PublicationConference) Show(w http.ResponseWriter, r *http.Request) {
 	}
 
 	c.render.HTML(w, 200,
-		fmt.Sprintf("publication/conference/_%s", pub.Type),
-		views.NewPublicationData(r, c.render, pub),
+		"publication/conference/_show",
+		struct {
+			views.Data
+			Publication *models.Publication
+			Show        *views.ShowBuilder
+		}{
+			views.NewData(c.render, r),
+			pub,
+			views.NewShowBuilder(c.render, locale.Get(r.Context())),
+		},
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -53,8 +62,16 @@ func (c *PublicationConference) OpenForm(w http.ResponseWriter, r *http.Request)
 	}
 
 	c.render.HTML(w, 200,
-		fmt.Sprintf("publication/conference/_%s_edit_form", pub.Type),
-		views.NewPublicationForm(r, c.render, pub, nil),
+		"publication/conference/_edit",
+		struct {
+			views.Data
+			Publication *models.Publication
+			Form        *views.FormBuilder
+		}{
+			views.NewData(c.render, r),
+			pub,
+			views.NewFormBuilder(c.render, locale.Get(r.Context()), nil),
+		},
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -84,8 +101,16 @@ func (c *PublicationConference) SaveForm(w http.ResponseWriter, r *http.Request)
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {
 		c.render.HTML(w, 200,
-			fmt.Sprintf("publication/conference/_%s_edit_form", pub.Type),
-			views.NewPublicationForm(r, c.render, pub, formErrors),
+			"publication/conference/_edit",
+			struct {
+				views.Data
+				Publication *models.Publication
+				Form        *views.FormBuilder
+			}{
+				views.NewData(c.render, r),
+				pub,
+				views.NewFormBuilder(c.render, locale.Get(r.Context()), formErrors),
+			},
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
 
@@ -96,8 +121,16 @@ func (c *PublicationConference) SaveForm(w http.ResponseWriter, r *http.Request)
 	}
 
 	c.render.HTML(w, 200,
-		fmt.Sprintf("publication/conference/_%s_edit_submit", savedPub.Type),
-		views.NewPublicationData(r, c.render, savedPub),
+		"publication/conference/_update",
+		struct {
+			views.Data
+			Publication *models.Publication
+			Show        *views.ShowBuilder
+		}{
+			views.NewData(c.render, r),
+			savedPub,
+			views.NewShowBuilder(c.render, locale.Get(r.Context())),
+		},
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
