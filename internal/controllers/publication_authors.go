@@ -167,7 +167,7 @@ func (p *PublicationAuthors) CreateAuthor(w http.ResponseWriter, r *http.Request
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {
 		p.render.HTML(w, 200,
-			fmt.Sprintf("publication/authors/_%s_form", pub.Type),
+			"publication/authors/_default_form",
 			views.NewContributorForm(r, p.render, savedPub.ID, author, muxRowDelta, formErrors),
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)

@@ -83,8 +83,8 @@
         <div class="tab-content">
             <div id="description-content" class="tab-pane fade show active" role="tabpanel" aria-labelledby="description-tab">
                 {{template "publication/details/_show" .}}
-                {{.RenderProjects}}
-                {{.RenderDepartments}}
+                {{template "publication/_projects" .}}
+                {{template "publication/_departments" .}}
                 {{if .Publication.UsesConference}}
                     {{template "publication/conference/_show" .}}
                 {{end}}
@@ -98,9 +98,15 @@
             </div>
 
             <div id="contributors-content" class="tab-pane fade" role="tabpanel" aria-labelledby="contributors-tab">
-                {{.RenderAuthors}}
-                {{.RenderEditors}}
-                {{.RenderSupervisors}}
+                {{if .Publication.UsesAuthor}}
+                    {{template "publication/authors/_default" .}}
+                {{end}}
+                {{if .Publication.UsesEditor}}
+                    {{template "publication/editors/_default" .}}
+                {{end}}
+                {{if .Publication.UsesSupervisor}}
+                    {{template "publication/supervisors/_default" .}}
+                {{end}}
             </div>
 
             <div id="datasets-content" class="tab-pane fade" role="tabpanel" aria-labelledby="files-tab">

@@ -75,11 +75,13 @@ func (c *Publications) Show(w http.ResponseWriter, r *http.Request) {
 
 	c.render.HTML(w, http.StatusOK, "publication/show",
 		struct {
-			views.PublicationData
+			views.Data
+			Publication  *models.Publication
 			Show         *views.ShowBuilder
 			Vocabularies map[string][]string
 		}{
-			views.NewPublicationData(r, c.render, pub),
+			views.NewData(c.render, r),
+			pub,
 			views.NewShowBuilder(c.render, locale.Get(r.Context())),
 			c.engine.Vocabularies(),
 		},

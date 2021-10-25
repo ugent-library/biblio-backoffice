@@ -21,7 +21,6 @@
     {{.Show.List (.Show.Label "language") (.Show.Values .Publication.Language (.Show.LanguageName))}}
 </li>
 <li class="list-group-item">
-    {{.RenderText .Publication.SeriesTitle "Series title" false}}
     {{.Show.Text (.Show.Label "volume") (.Show.Value .Publication.Volume)}}
     {{.Show.Text (.Show.Label "issue") (.Show.Value .Publication.Issue)}}
     {{.Show.Text (.Show.Label "edition") (.Show.Value .Publication.dition)}}
