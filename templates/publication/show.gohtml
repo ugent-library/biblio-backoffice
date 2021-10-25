@@ -92,7 +92,7 @@
             </div>
 
             <div id="files-content" class="tab-pane fade" role="tabpanel" aria-labelledby="files-tab">
-                {{.RenderFiles}}
+                {{template "publication/files/_show" .}}
             </div>
 
             <div id="contributors-content" class="tab-pane fade" role="tabpanel" aria-labelledby="contributors-tab">

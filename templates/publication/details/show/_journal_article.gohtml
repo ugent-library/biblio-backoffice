@@ -18,7 +18,7 @@
     {{.Show.Text (.Show.Label "publisher") (.Show.Value .Publication.Publisher)}}
     {{.Show.Text (.Show.Label "place_of_publication") (.Show.Value .Publication.PlaceOfPublication)}}
     {{.Show.Text (.Show.Label "year") (.Show.Value .Publication.Year) (.Show.Required)}}
-    {{.Show.Text (.Show.Label "extern") (.Show.Value (formatBool .Publication.Extern "✓" "")}}
+    {{.Show.Text (.Show.Label "extern") (.Show.Value (formatBool .Publication.Extern "✓" ""))}}
     {{.Show.Text (.Show.Label "publication_status") (.Show.Value .Publication.PublicationStatus (.Show.Locale "publication_publishing_statuses"))}}
     {{.Show.List (.Show.Label "language") (.Show.Values .Publication.Language (.Show.LanguageName))}}
 </li>
