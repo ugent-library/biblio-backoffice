@@ -49,9 +49,9 @@ var vocabularies = map[string][]string{
 		"published",
 	},
 	"publication_sorts": {
-		"unpublished",
-		"accepted",
-		"published",
+		"year.desc",
+		"date_updated.desc",
+		"date_created.desc",
 	},
 	"publication_link_relations": {
 		"data_management_plan",

@@ -6,7 +6,7 @@
                 <i class="if if-chevron-right mr-4 text-muted"></i>Additional information
             </div>
             <div class="bc-toolbar-right">
-                <div class="c-button-toolbar" data-panel-state="read">
+                <!-- <div class="c-button-toolbar" data-panel-state="read">
                     <button class="btn btn-outline-primary" data-panel-toggle="edit3">
                         <i class="if if-edit"></i>
                         <div class="btn-text">Edit</div>
@@ -19,7 +19,7 @@
                     <button class="btn btn-primary" data-panel-toggle="edit3">
                         <div class="btn-text">Save</div>
                     </button>
-                </div>
+                </div> -->
             </div>
         </div>
     </div>
@@ -28,13 +28,13 @@
         <div class="card-body p-0">
             <ul class="list-group list-group-flush" data-panel-state="read">
                 <li class="list-group-item">
-                    {{.RenderList .Publication.ResearchField "Research field" false}}
-                    {{.RenderBadgeList .Publication.Keyword "Keywords" false}}
-                    {{.RenderText .Publication.WOSID "Web of Science ID" false}}
-                    {{.RenderText .Publication.PubMedID "PubMed ID" false}}
-                    {{.RenderText .Publication.ArxivID "Arxiv ID" false}}
-                    {{.RenderText .Publication.ESCIID "ESCI ID" false}}
-                    {{.RenderText .Publication.AdditionalInfo "Additional information" false}}
+                    {{.Show.List (.Show.Label "research_field") (.Show.Values .Publication.ResearchField)}}
+                    {{.Show.BadgeList (.Show.Label "keyword") (.Show.Values .Publication.Keyword)}}
+                    {{.Show.Text (.Show.Label "wos_id") (.Show.Value .Publication.WOSID)}}
+                    {{.Show.Text (.Show.Label "pubmed_id") (.Show.Value .Publication.PubMedID)}}
+                    {{.Show.Text (.Show.Label "arxiv_id") (.Show.Value .Publication.ArxivID)}}
+                    {{.Show.Text (.Show.Label "esci_id") (.Show.Value .Publication.ESCIID)}}
+                    {{.Show.Text (.Show.Label "additional_info") (.Show.Value .Publication.AdditionalInfo)}}
                 </li>
             </ul>
         </div>
