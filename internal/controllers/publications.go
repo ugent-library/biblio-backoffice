@@ -12,6 +12,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/views"
+	"github.com/ugent-library/go-locale/locale"
 	"github.com/ugent-library/go-web/forms"
 	"github.com/unrolled/render"
 )
@@ -72,7 +73,17 @@ func (c *Publications) Show(w http.ResponseWriter, r *http.Request) {
 	}
 	pub.Dataset = datasets
 
-	c.render.HTML(w, http.StatusOK, "publication/show", views.NewPublicationData(r, c.render, pub))
+	c.render.HTML(w, http.StatusOK, "publication/show",
+		struct {
+			views.PublicationData
+			Show         *views.ShowBuilder
+			Vocabularies map[string][]string
+		}{
+			views.NewPublicationData(r, c.render, pub),
+			views.NewShowBuilder(c.render, locale.Get(r.Context())),
+			c.engine.Vocabularies(),
+		},
+	)
 }
 
 func (c *Publications) Thumbnail(w http.ResponseWriter, r *http.Request) {

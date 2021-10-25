@@ -43,16 +43,16 @@ type formLocaleOption func(string) string
 type FormBuilder struct {
 	renderer    *render.Render
 	locale      *locale.Locale
-	Errors      jsonapi.Errors
 	localeScope string
+	Errors      jsonapi.Errors
 }
 
 func NewFormBuilder(r *render.Render, l *locale.Locale, e jsonapi.Errors) *FormBuilder {
 	return &FormBuilder{
 		renderer:    r,
 		locale:      l,
+		localeScope: "builder",
 		Errors:      e,
-		localeScope: "form_builder",
 	}
 }
 
@@ -61,10 +61,6 @@ func (b *FormBuilder) newFormData(opts []formOption) *formData {
 
 	for _, opt := range opts {
 		opt(d)
-	}
-
-	if d.Label == "" {
-		d.Label = b.locale.Translate(b.localeScope, d.Name)
 	}
 
 	if d.errorPointer == "" {
@@ -87,6 +83,18 @@ func (b *FormBuilder) errorFor(pointer string) *jsonapi.Error {
 	return nil
 }
 
+func (b *FormBuilder) Locale(scope string) formLocaleOption {
+	return func(str string) string {
+		return b.locale.Translate(scope, str)
+	}
+}
+
+func (b *FormBuilder) LanguageName() formLocaleOption {
+	return func(str string) string {
+		return b.locale.LanguageName(str)
+	}
+}
+
 func (b *FormBuilder) Name(name string, localeOpts ...formLocaleOption) formOption {
 	return func(d *formData) {
 		d.Name = name
@@ -96,6 +104,9 @@ func (b *FormBuilder) Name(name string, localeOpts ...formLocaleOption) formOpti
 			if lbl := opt(name); lbl != "" {
 				d.Label = lbl
 			}
+		}
+		if d.Label == "" {
+			d.Label = b.locale.Translate(b.localeScope, d.Name)
 		}
 	}
 }
@@ -109,12 +120,6 @@ func (b *FormBuilder) Value(v string) formOption {
 func (b *FormBuilder) Values(v []string) formOption {
 	return func(d *formData) {
 		d.values = v
-	}
-}
-
-func (b *FormBuilder) Label(v string) formOption {
-	return func(d *formData) {
-		d.Label = v
 	}
 }
 
@@ -141,18 +146,6 @@ func (b *FormBuilder) Checked(v bool) formOption {
 	}
 }
 
-func (b *FormBuilder) Locale(scope string) formLocaleOption {
-	return func(str string) string {
-		return b.locale.Translate(scope, str)
-	}
-}
-
-func (b *FormBuilder) LanguageName() formLocaleOption {
-	return func(str string) string {
-		return b.locale.LanguageName(str)
-	}
-}
-
 func (b *FormBuilder) Choices(choices []string, localeOpts ...formLocaleOption) formOption {
 	return func(d *formData) {
 		d.Choices = make([]string, len(choices))
@@ -168,12 +161,6 @@ func (b *FormBuilder) Choices(choices []string, localeOpts ...formLocaleOption) 
 				}
 			}
 		}
-	}
-}
-
-func (b *FormBuilder) ChoicesLabels(labels []string) formOption {
-	return func(d *formData) {
-		d.ChoicesLabels = labels
 	}
 }
 

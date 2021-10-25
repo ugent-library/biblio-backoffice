@@ -11,7 +11,7 @@
     {{.Form.Text (.Form.Name "wos_type") (.Form.Value .Publication.WOSType) (.Form.Cols 3) (.Form.Tooltip "It's a tooltip!")}}
 </li>
 <li class="list-group-item">
-    {{.Form.Text (.Form.Name "publication_abbreviation" (.Form.Locale "form_builder.journal_article"))
+    {{.Form.Text (.Form.Name "publication_abbreviation" (.Form.Locale "builder.journal_article"))
         (.Form.Value .Publication.PublicationAbbreviation) (.Form.Cols 3)}}
     {{.Form.Text (.Form.Name "publisher") (.Form.Value .Publication.Publisher) (.Form.Cols 9)}}
     {{.Form.Text (.Form.Name "place_of_publication") (.Form.Value .Publication.PlaceOfPublication) (.Form.Cols 9)}}

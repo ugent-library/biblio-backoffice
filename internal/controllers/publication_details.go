@@ -38,7 +38,15 @@ func (c *PublicationDetails) Show(w http.ResponseWriter, r *http.Request) {
 
 	c.render.HTML(w, 200,
 		"publication/details/_show",
-		views.NewPublicationData(r, c.render, pub),
+		struct {
+			views.PublicationData
+			Show         *views.ShowBuilder
+			Vocabularies map[string][]string
+		}{
+			views.NewPublicationData(r, c.render, pub),
+			views.NewShowBuilder(c.render, locale.Get(r.Context())),
+			c.engine.Vocabularies(),
+		},
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -118,7 +126,15 @@ func (c *PublicationDetails) SaveForm(w http.ResponseWriter, r *http.Request) {
 
 	c.render.HTML(w, 200,
 		"publication/details/_update",
-		views.NewPublicationData(r, c.render, savedPub),
+		struct {
+			views.PublicationData
+			Show         *views.ShowBuilder
+			Vocabularies map[string][]string
+		}{
+			views.NewPublicationData(r, c.render, savedPub),
+			views.NewShowBuilder(c.render, locale.Get(r.Context())),
+			c.engine.Vocabularies(),
+		},
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
