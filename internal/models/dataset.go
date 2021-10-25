@@ -13,27 +13,27 @@ type DatasetHits struct {
 }
 
 type Dataset struct {
-	Abstract          []Text                   `json:"abstract,omitempty"`
-	CompletenessScore int                      `json:"completeness_score,omitempty"`
-	Contributor       []PublicationContributor `json:"contributor,omitempty"`
-	Creator           []PublicationContributor `json:"author,omitempty"`
-	CreatorID         string                   `json:"creator_id,omitempty"`
-	DateCreated       *time.Time               `json:"date_created,omitempty"`
-	DateUpdated       *time.Time               `json:"date_updated,omitempty"`
-	DOI               string                   `json:"doi,omitempty"`
-	ID                string                   `json:"_id,omitempty"`
-	Keyword           []string                 `json:"keyword,omitempty"`
-	Locked            bool                     `json:"locked,omitempty"`
-	Message           string                   `json:"message,omitempty"`
-	Project           []PublicationProject     `json:"project,omitempty"`
-	Publisher         string                   `json:"publisher,omitempty"`
-	ReviewerNote      string                   `json:"reviewer_note,omitempty"`
-	ReviewerTags      []string                 `json:"reviewer_tags,omitempty"`
-	Status            string                   `json:"status,omitempty"`
-	Title             string                   `json:"title,omitempty"`
-	Type              string                   `json:"type,omitempty"`
-	URL               string                   `json:"url,omitempty"`
-	UserID            string                   `json:"user_id,omitempty"`
-	Version           int                      `json:"_version,omitempty"`
-	Year              string                   `json:"year,omitempty"`
+	Abstract          []Text                   `json:"abstract,omitempty" form:"abstract"`
+	CompletenessScore int                      `json:"completeness_score,omitempty" form:"-"`
+	Contributor       []PublicationContributor `json:"contributor,omitempty" form:"-"`
+	Creator           []PublicationContributor `json:"author,omitempty" form:"-"`
+	CreatorID         string                   `json:"creator_id,omitempty" form:"-"`
+	DateCreated       *time.Time               `json:"date_created,omitempty" form:"-"`
+	DateUpdated       *time.Time               `json:"date_updated,omitempty" form:"-"`
+	DOI               string                   `json:"doi,omitempty" form:"-"`
+	ID                string                   `json:"_id,omitempty" form:"-"`
+	Keyword           []string                 `json:"keyword,omitempty" form:"keyword"`
+	Locked            bool                     `json:"locked,omitempty" form:"-"`
+	Message           string                   `json:"message,omitempty" form:"-"`
+	Project           []PublicationProject     `json:"project,omitempty" form:"-"`
+	Publisher         string                   `json:"publisher,omitempty" form:"publisher"`
+	ReviewerNote      string                   `json:"reviewer_note,omitempty" form:"-"`
+	ReviewerTags      []string                 `json:"reviewer_tags,omitempty" form:"-"`
+	Status            string                   `json:"status,omitempty" form:"-"`
+	Title             string                   `json:"title,omitempty" form:"title"`
+	Type              string                   `json:"type,omitempty" form:"-"`
+	URL               string                   `json:"url,omitempty" form:"url"`
+	UserID            string                   `json:"user_id,omitempty" form:"-"`
+	Version           int                      `json:"_version,omitempty" form:"-"`
+	Year              string                   `json:"year,omitempty" form:"year"`
 }
