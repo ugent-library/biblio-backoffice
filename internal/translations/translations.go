@@ -28,7 +28,7 @@ func init() {
 	message.SetString(language.English, "publication_sorts.date_updated.desc", "Updated (newest first)")
 
 	message.SetString(language.English, "publication_types.journal_article", "Journal article")
-	message.SetString(language.English, "publication_types.book", "Journal article")
+	message.SetString(language.English, "publication_types.book", "Book")
 	message.SetString(language.English, "publication_types.book_chapter", "Book chapter")
 	message.SetString(language.English, "publication_types.book_editor", "Book editor")
 	message.SetString(language.English, "publication_types.issue_editor", "Issue editor")
