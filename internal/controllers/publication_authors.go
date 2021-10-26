@@ -71,7 +71,7 @@ func (p *PublicationAuthors) List(w http.ResponseWriter, r *http.Request) {
 
 	p.render.HTML(w, 200,
 		"publication/authors/_default_table_body",
-		views.NewContributorData(r, p.render, pub, nil, "0"),
+		views.NewData(p.render, r, views.NewContributorData(p.render, pub, nil, "0")),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -94,7 +94,7 @@ func (p *PublicationAuthors) AddRow(w http.ResponseWriter, r *http.Request) {
 
 	p.render.HTML(w, http.StatusOK,
 		"publication/authors/_default_form",
-		views.NewContributorForm(r, p.render, id, author, muxRowDelta, nil),
+		views.NewData(p.render, r, views.NewContributorForm(p.render, id, author, muxRowDelta, nil)),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -114,7 +114,7 @@ func (p *PublicationAuthors) ShiftRow(w http.ResponseWriter, r *http.Request) {
 
 	p.render.HTML(w, http.StatusOK,
 		"publication/authors/_default_form",
-		views.NewContributorForm(r, p.render, id, author, muxRowDelta, nil),
+		views.NewData(p.render, r, views.NewContributorForm(p.render, id, author, muxRowDelta, nil)),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -168,7 +168,7 @@ func (p *PublicationAuthors) CreateAuthor(w http.ResponseWriter, r *http.Request
 	if formErrors, ok := err.(jsonapi.Errors); ok {
 		p.render.HTML(w, 200,
 			"publication/authors/_default_form",
-			views.NewContributorForm(r, p.render, savedPub.ID, author, muxRowDelta, formErrors),
+			views.NewData(p.render, r, views.NewContributorForm(p.render, savedPub.ID, author, muxRowDelta, formErrors)),
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
 
@@ -187,7 +187,7 @@ func (p *PublicationAuthors) CreateAuthor(w http.ResponseWriter, r *http.Request
 
 	p.render.HTML(w, http.StatusOK,
 		"publication/authors/_default_row",
-		views.NewContributorData(r, p.render, savedPub, savedAuthor, muxRowDelta),
+		views.NewData(p.render, r, views.NewContributorData(p.render, savedPub, savedAuthor, muxRowDelta)),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -212,7 +212,7 @@ func (p *PublicationAuthors) EditRow(w http.ResponseWriter, r *http.Request) {
 
 	p.render.HTML(w, http.StatusOK,
 		"publication/authors/_default_form_edit",
-		views.NewContributorForm(r, p.render, id, author, muxRowDelta, nil),
+		views.NewData(p.render, r, views.NewContributorForm(p.render, id, author, muxRowDelta, nil)),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -237,7 +237,7 @@ func (p *PublicationAuthors) CancelEditRow(w http.ResponseWriter, r *http.Reques
 
 	p.render.HTML(w, http.StatusOK,
 		"publication/authors/_default_row",
-		views.NewContributorData(r, p.render, pub, author, muxRowDelta),
+		views.NewData(p.render, r, views.NewContributorData(p.render, pub, author, muxRowDelta)),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -278,7 +278,7 @@ func (p *PublicationAuthors) UpdateAuthor(w http.ResponseWriter, r *http.Request
 	if formErrors, ok := err.(jsonapi.Errors); ok {
 		p.render.HTML(w, 200,
 			fmt.Sprintf("publication/authors/_%s_edit_form", pub.Type),
-			views.NewContributorForm(r, p.render, savedPub.ID, author, muxRowDelta, formErrors),
+			views.NewData(p.render, r, views.NewContributorForm(p.render, savedPub.ID, author, muxRowDelta, formErrors)),
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
 
@@ -297,7 +297,7 @@ func (p *PublicationAuthors) UpdateAuthor(w http.ResponseWriter, r *http.Request
 
 	p.render.HTML(w, http.StatusOK,
 		"publication/authors/_default_row",
-		views.NewContributorData(r, p.render, savedPub, savedAuthor, muxRowDelta),
+		views.NewData(p.render, r, views.NewContributorData(p.render, savedPub, savedAuthor, muxRowDelta)),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -398,7 +398,7 @@ func (p *PublicationAuthors) OrderAuthors(w http.ResponseWriter, r *http.Request
 
 	p.render.HTML(w, 200,
 		"publication/authors/_default_table_body",
-		views.NewContributorData(r, p.render, savedPub, nil, "0"),
+		views.NewData(p.render, r, views.NewContributorData(p.render, savedPub, nil, "0")),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }

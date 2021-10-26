@@ -6,12 +6,12 @@
             <h2 class="modal-title">Are you sure</h2>
         </div>
         <div class="modal-body">
-            <p>Are you sure you want to remove this item {{ .ProjectID }} {{ .ID }}</p>
+            <p>Are you sure you want to remove this item {{ .D.ProjectID }} {{ .D.ID }}</p>
         </div>
         <div class="modal-footer">
             <button class="btn btn-link modal-close">Cancel</button>
             <button class="btn btn-danger"
-                hx-patch="/dataset/{{ .ID }}/htmx/projects/remove/{{ .ProjectID }}"
+                hx-patch="/dataset/{{ .D.ID }}/htmx/projects/remove/{{ .D.ProjectID }}"
                 hx-swap="innerHTML"
                 hx-target=".dataset-projects"
             >Delete</button>

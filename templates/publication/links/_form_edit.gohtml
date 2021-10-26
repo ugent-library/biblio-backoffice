@@ -6,15 +6,15 @@
                 <h2 class="modal-title">Edit Link</h2>
             </div>
             <div class="modal-body">
-                {{.Form.Text (.Form.Name "url" (.Form.Locale "builder.link")) (.Form.Value .Link.URL) (.Form.Cols 12)}}
-                {{.Form.List (.Form.Name "relation" (.Form.Locale "builder.link")) (.Form.Value .Link.Relation) (.Form.Cols 12)
-                    (.Form.Choices .Vocabularies.publication_link_relations (.Form.Locale "publication_link_relations"))}}
-                {{.Form.Text (.Form.Name "description" (.Form.Locale "builder.description")) (.Form.Value .Link.Description) (.Form.Cols 12)}}
+                {{.D.Form.Text (.D.Form.Name "url" (.D.Form.Locale "builder.link")) (.D.Form.Value .Link.URL) (.D.Form.Cols 12)}}
+                {{.D.Form.List (.D.Form.Name "relation" (.D.Form.Locale "builder.link")) (.D.Form.Value .Link.Relation) (.D.Form.Cols 12)
+                    (.D.Form.Choices .D.Vocabularies.publication_link_relations (.D.Form.Locale "publication_link_relations"))}}
+                {{.D.Form.Text (.D.Form.Name "description" (.D.Form.Locale "builder.description")) (.D.Form.Value .Link.Description) (.D.Form.Cols 12)}}
             </div>
             <div class="modal-footer">
                 <button class="btn btn-link modal-close">Cancel</button>
                 <button type="button" name="update" class="btn btn-primary update-link"
-                    hx-put="{{pathFor "publication_links_update_link" "id" .PublicationID "delta" .Delta}}"
+                    hx-put="{{pathFor "publication_links_update_link" "id" .D.PublicationID "delta" .Delta}}"
                     hx-target="#links-table tbody"
                     hx-include=".modal-body"
                     hx-swap="innerHTML settle:.15s"

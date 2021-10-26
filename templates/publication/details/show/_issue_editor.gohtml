@@ -1,27 +1,27 @@
 <li class="list-group-item">
-    {{.Show.Text (.Show.Label "type") (.Show.Value .Publication.Type (.Show.Locale "publication_types"))}}
-    {{.Show.Text (.Show.Label "doi") (.Show.Value .Publication.DOI)}}
-    {{.Show.List (.Show.Label "issn") (.Show.Values .Publication.ISSN)}}
-    {{.Show.List (.Show.Label "isbn") (.Show.Values .Publication.ISBN)}}
+    {{.D.Show.Text (.D.Show.Label "type") (.D.Show.Value .D.Publication.Type (.D.Show.Locale "publication_types"))}}
+    {{.D.Show.Text (.D.Show.Label "doi") (.D.Show.Value .D.Publication.DOI)}}
+    {{.D.Show.List (.D.Show.Label "issn") (.D.Show.Values .D.Publication.ISSN)}}
+    {{.D.Show.List (.D.Show.Label "isbn") (.D.Show.Values .D.Publication.ISBN)}}
  </li>
 <li class="list-group-item">
-    {{.Show.List (.Show.Label "title") (.Show.Value .Publication.Title)}}
-    {{.Show.List (.Show.Label "alternative_title") (.Show.Values .Publication.AlternativeTitle)}}
-    {{.Show.Text (.Show.Label "classification") (.Show.Value .Publication.Classification (.Show.Locale "publication_classifications"))}}
-    {{.Show.Text (.Show.Label "wos_type") (.Show.Value .Publication.WOSType)}}
+    {{.D.Show.List (.D.Show.Label "title") (.D.Show.Value .D.Publication.Title)}}
+    {{.D.Show.List (.D.Show.Label "alternative_title") (.D.Show.Values .D.Publication.AlternativeTitle)}}
+    {{.D.Show.Text (.D.Show.Label "classification") (.D.Show.Value .D.Publication.Classification (.D.Show.Locale "publication_classifications"))}}
+    {{.D.Show.Text (.D.Show.Label "wos_type") (.D.Show.Value .D.Publication.WOSType)}}
 </li>
 <li class="list-group-item">
-    {{.Show.Text (.Show.Label "publication" (.Show.Locale "builder.journal_article")) (.Show.Value .Publication.Publication)}}
-    {{.Show.Text (.Show.Label "publication_abbreviation" (.Show.Locale "builder.journal_article")) (.Show.Value .Publication.PublicationAbbreviation)}}
-    {{.Show.Text (.Show.Label "publisher") (.Show.Value .Publication.Publisher)}}
-    {{.Show.Text (.Show.Label "place_of_publication") (.Show.Value .Publication.PlaceOfPublication)}}
-    {{.Show.Text (.Show.Label "year") (.Show.Value .Publication.Year) (.Show.Required)}}
-    {{.Show.Text (.Show.Label "extern") (.Show.Value (formatBool .Publication.Extern "✓" ""))}}
-    {{.Show.Text (.Show.Label "publication_status") (.Show.Value .Publication.PublicationStatus (.Show.Locale "publication_publishing_statuses"))}}
-    {{.Show.List (.Show.Label "language") (.Show.Values .Publication.Language (.Show.LanguageName))}}
+    {{.D.Show.Text (.D.Show.Label "publication" (.D.Show.Locale "builder.journal_article")) (.D.Show.Value .D.Publication.Publication)}}
+    {{.D.Show.Text (.D.Show.Label "publication_abbreviation" (.D.Show.Locale "builder.journal_article")) (.D.Show.Value .D.Publication.PublicationAbbreviation)}}
+    {{.D.Show.Text (.D.Show.Label "publisher") (.D.Show.Value .D.Publication.Publisher)}}
+    {{.D.Show.Text (.D.Show.Label "place_of_publication") (.D.Show.Value .D.Publication.PlaceOfPublication)}}
+    {{.D.Show.Text (.D.Show.Label "year") (.D.Show.Value .D.Publication.Year) (.D.Show.Required)}}
+    {{.D.Show.Text (.D.Show.Label "extern") (.D.Show.Value (formatBool .D.Publication.Extern "✓" ""))}}
+    {{.D.Show.Text (.D.Show.Label "publication_status") (.D.Show.Value .D.Publication.PublicationStatus (.D.Show.Locale "publication_publishing_statuses"))}}
+    {{.D.Show.List (.D.Show.Label "language") (.D.Show.Values .D.Publication.Language (.D.Show.LanguageName))}}
 </li>
 <li class="list-group-item">
-    {{.Show.Text (.Show.Label "volume") (.Show.Value .Publication.Volume)}}
-    {{.Show.Text (.Show.Label "issue") (.Show.Value .Publication.Issue)}}
-    {{.Show.Text (.Show.Label "page_count") (.Show.Value .Publication.PageCount)}}
+    {{.D.Show.Text (.D.Show.Label "volume") (.D.Show.Value .D.Publication.Volume)}}
+    {{.D.Show.Text (.D.Show.Label "issue") (.D.Show.Value .D.Publication.Issue)}}
+    {{.D.Show.Text (.D.Show.Label "page_count") (.D.Show.Value .D.Publication.PageCount)}}
 </li>

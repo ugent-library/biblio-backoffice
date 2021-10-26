@@ -8,7 +8,7 @@
             <div class="bc-toolbar-right">
                 <div class="c-button-toolbar" data-panel-state="read">
                     <button class="btn btn-outline-primary"
-                        hx-get="/dataset/{{ .Dataset.ID }}/htmx/projects/list"
+                        hx-get="/dataset/{{ .D.Dataset.ID }}/htmx/projects/list"
                         hx-target="#datasets-projects-modal"
                         hx-trigger="click"
                     >
@@ -24,8 +24,8 @@
         <div class="card-body p-0">
             <table class="table">
                 <tbody>
-                    {{ $datasetID := .Dataset.ID }}
-                    {{ range $k, $v := .Dataset.Project }}
+                    {{ $datasetID := .D.Dataset.ID }}
+                    {{ range $k, $v := .D.Dataset.Project }}
                     <tr>
                         <td class="pl-6">
                             <div class="d-flex w-100">

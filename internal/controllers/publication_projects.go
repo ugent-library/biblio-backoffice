@@ -113,13 +113,11 @@ func (c *PublicationProjects) AddToPublication(w http.ResponseWriter, r *http.Re
 
 	c.render.HTML(w, 200,
 		"publication/_projects",
-		struct {
-			views.Data
+		views.NewData(c.render, r, struct {
 			Publication *models.Publication
 		}{
-			views.NewData(c.render, r),
 			savedPub,
-		},
+		}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -171,13 +169,11 @@ func (c *PublicationProjects) RemoveFromPublication(w http.ResponseWriter, r *ht
 
 	c.render.HTML(w, 200,
 		"publication/_projects",
-		struct {
-			views.Data
+		views.NewData(c.render, r, struct {
 			Publication *models.Publication
 		}{
-			views.NewData(c.render, r),
 			savedPub,
-		},
+		}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }

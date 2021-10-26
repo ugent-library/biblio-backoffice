@@ -2,7 +2,6 @@ package views
 
 import (
 	"html/template"
-	"net/http"
 
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/go-web/jsonapi"
@@ -38,7 +37,6 @@ type listFormData struct {
 }
 
 type ContributorForm struct {
-	Data
 	render     *render.Render
 	ID         string
 	Author     *models.PublicationContributor
@@ -46,8 +44,8 @@ type ContributorForm struct {
 	FormErrors []jsonapi.Error
 }
 
-func NewContributorForm(r *http.Request, render *render.Render, id string, c *models.PublicationContributor, ad string, fe []jsonapi.Error) ContributorForm {
-	return ContributorForm{Data: NewData(render, r), render: render, ID: id, Author: c, Key: ad, FormErrors: fe}
+func NewContributorForm(render *render.Render, id string, c *models.PublicationContributor, ad string, fe []jsonapi.Error) ContributorForm {
+	return ContributorForm{render: render, ID: id, Author: c, Key: ad, FormErrors: fe}
 }
 
 func (f ContributorForm) RenderFormText(text, key, pointer, label string, tooltip string, required bool, cols int) (template.HTML, error) {

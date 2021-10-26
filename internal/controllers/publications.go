@@ -23,7 +23,6 @@ type Publications struct {
 }
 
 type PublicationListVars struct {
-	views.Data
 	SearchArgs       *engine.SearchArgs
 	Hits             *models.PublicationHits
 	PublicationSorts []string
@@ -48,12 +47,13 @@ func (c *Publications) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.render.HTML(w, http.StatusOK, "publication/list", PublicationListVars{
-		Data:             views.NewData(c.render, r),
-		SearchArgs:       args,
-		Hits:             hits,
-		PublicationSorts: c.engine.Vocabularies()["publication_sorts"],
-	})
+	c.render.HTML(w, http.StatusOK, "publication/list",
+		views.NewData(c.render, r, PublicationListVars{
+			SearchArgs:       args,
+			Hits:             hits,
+			PublicationSorts: c.engine.Vocabularies()["publication_sorts"],
+		}),
+	)
 }
 
 func (c *Publications) Show(w http.ResponseWriter, r *http.Request) {
@@ -74,17 +74,15 @@ func (c *Publications) Show(w http.ResponseWriter, r *http.Request) {
 	pub.Dataset = datasets
 
 	c.render.HTML(w, http.StatusOK, "publication/show",
-		struct {
-			views.Data
+		views.NewData(c.render, r, struct {
 			Publication  *models.Publication
 			Show         *views.ShowBuilder
 			Vocabularies map[string][]string
 		}{
-			views.NewData(c.render, r),
 			pub,
 			views.NewShowBuilder(c.render, locale.Get(r.Context())),
 			c.engine.Vocabularies(),
-		},
+		}),
 	)
 }
 
@@ -112,7 +110,7 @@ func (c *Publications) Thumbnail(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Publications) New(w http.ResponseWriter, r *http.Request) {
-	c.render.HTML(w, http.StatusOK, "publication/new", views.NewData(c.render, r))
+	c.render.HTML(w, http.StatusOK, "publication/new", views.NewData(c.render, r, nil))
 }
 
 func (c *Publications) Summary(w http.ResponseWriter, r *http.Request) {
@@ -125,7 +123,7 @@ func (c *Publications) Summary(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.render.HTML(w, 200,
+	c.render.HTML(w, http.StatusOK,
 		"publication/_summary",
 		pub,
 		render.HTMLOptions{Layout: "layouts/htmx"},

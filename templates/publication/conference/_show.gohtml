@@ -9,7 +9,7 @@
 			<div class="bc-toolbar-right">
 				<div class="c-button-toolbar" data-panel-state="read">
 					<button class="btn btn-outline-primary"
-						hx-get="{{pathFor "publication_conference_edit_form" "id" .Publication.ID}}"
+						hx-get="{{pathFor "publication_conference_edit_form" "id" .D.Publication.ID}}"
 						hx-swap="innerHTML"
 						hx-target=".publication-conference"
 					>
@@ -25,11 +25,11 @@
 		<div class="card-body p-0">
 			<ul class="list-group list-group-flush" data-panel-state="read">
 				<li class="list-group-item">
-					{{.Show.Text (.Show.Label "name" (.Show.Locale "builder.conference")) (.Show.Value .Publication.Conference.Name)}}
-					{{.Show.Text (.Show.Label "location" (.Show.Locale "builder.conference")) (.Show.Value .Publication.Conference.Location)}}
-					{{.Show.Text (.Show.Label "organizer" (.Show.Locale "builder.conference")) (.Show.Value .Publication.Conference.Organizer)}}
-					{{.Show.Text (.Show.Label "date" (.Show.Locale "builder.conference"))
-						(.Show.Value (formatRange .Publication.Conference.StartDate .Publication.Conference.EndDate))}}
+					{{.D.Show.Text (.D.Show.Label "name" (.D.Show.Locale "builder.conference")) (.D.Show.Value .D.Publication.Conference.Name)}}
+					{{.D.Show.Text (.D.Show.Label "location" (.D.Show.Locale "builder.conference")) (.D.Show.Value .D.Publication.Conference.Location)}}
+					{{.D.Show.Text (.D.Show.Label "organizer" (.D.Show.Locale "builder.conference")) (.D.Show.Value .D.Publication.Conference.Organizer)}}
+					{{.D.Show.Text (.D.Show.Label "date" (.D.Show.Locale "builder.conference"))
+						(.D.Show.Value (formatRange .D.Publication.Conference.StartDate .D.Publication.Conference.EndDate))}}
 				</li>
 			</ul>
 		</div>

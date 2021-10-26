@@ -1,7 +1,7 @@
 <ul class="pagination">
-    {{if .Hits.PreviousPage}}
+    {{if .D.Hits.PreviousPage}}
     <li class="page-item">
-        <a class="page-link" href="{{pathFor "datasets" | query (.SearchArgs.WithPage (sub .Hits.Page 1 | int))}}" aria-label="Previous">
+        <a class="page-link" href="{{pathFor "datasets" | query (.D.SearchArgs.WithPage (sub .D.Hits.Page 1 | int))}}" aria-label="Previous">
             <i class="if if-chevron-left" aria-hidden="true"></i>
         </a>
     </li>
@@ -12,14 +12,14 @@
         </a>
     </li>
     {{end}}
-    {{range untilStep 1 (min .Hits.LastPage 10 | add 1 | int) 1}}
-        <li class="page-item{{if eq . $.Hits.Page}} active{{end}}">
-            <a class="page-link" href="{{pathFor "datasets" | query ($.SearchArgs.WithPage .)}}">{{.}}</a>
+    {{range untilStep 1 (min .D.Hits.LastPage 10 | add 1 | int) 1}}
+        <li class="page-item{{if eq . $.D.Hits.Page}} active{{end}}">
+            <a class="page-link" href="{{pathFor "datasets" | query ($.D.SearchArgs.WithPage .)}}">{{.}}</a>
         </li>
     {{end}}
-    {{if .Hits.NextPage}}
+    {{if .D.Hits.NextPage}}
     <li class="page-item">
-        <a class="page-link" href="{{pathFor "datasets" | query (.SearchArgs.WithPage (add .Hits.Page 1 | int))}}" aria-label="Next">
+        <a class="page-link" href="{{pathFor "datasets" | query (.D.SearchArgs.WithPage (add .D.Hits.Page 1 | int))}}" aria-label="Next">
             <i class="if if-chevron-right" aria-hidden="true"></i>
         </a>
     </li>

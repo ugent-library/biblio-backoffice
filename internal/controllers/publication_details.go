@@ -38,17 +38,15 @@ func (c *PublicationDetails) Show(w http.ResponseWriter, r *http.Request) {
 
 	c.render.HTML(w, 200,
 		"publication/details/_show",
-		struct {
-			views.Data
+		views.NewData(c.render, r, struct {
 			Publication  *models.Publication
 			Show         *views.ShowBuilder
 			Vocabularies map[string][]string
 		}{
-			views.NewData(c.render, r),
 			pub,
 			views.NewShowBuilder(c.render, locale.Get(r.Context())),
 			c.engine.Vocabularies(),
-		},
+		}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -65,17 +63,15 @@ func (c *PublicationDetails) OpenForm(w http.ResponseWriter, r *http.Request) {
 
 	c.render.HTML(w, 200,
 		"publication/details/_edit",
-		struct {
-			views.Data
+		views.NewData(c.render, r, struct {
 			Publication  *models.Publication
 			Form         *views.FormBuilder
 			Vocabularies map[string][]string
 		}{
-			views.NewData(c.render, r),
 			pub,
 			views.NewFormBuilder(c.render, locale.Get(r.Context()), nil),
 			c.engine.Vocabularies(),
-		},
+		}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -106,17 +102,15 @@ func (c *PublicationDetails) SaveForm(w http.ResponseWriter, r *http.Request) {
 	if formErrors, ok := err.(jsonapi.Errors); ok {
 		c.render.HTML(w, 200,
 			"publication/details/_edit",
-			struct {
-				views.Data
+			views.NewData(c.render, r, struct {
 				Publication  *models.Publication
 				Form         *views.FormBuilder
 				Vocabularies map[string][]string
 			}{
-				views.NewData(c.render, r),
 				pub,
 				views.NewFormBuilder(c.render, locale.Get(r.Context()), formErrors),
 				c.engine.Vocabularies(),
-			},
+			}),
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
 
@@ -128,17 +122,15 @@ func (c *PublicationDetails) SaveForm(w http.ResponseWriter, r *http.Request) {
 
 	c.render.HTML(w, 200,
 		"publication/details/_update",
-		struct {
-			views.Data
+		views.NewData(c.render, r, struct {
 			Publication  *models.Publication
 			Show         *views.ShowBuilder
 			Vocabularies map[string][]string
 		}{
-			views.NewData(c.render, r),
 			savedPub,
 			views.NewShowBuilder(c.render, locale.Get(r.Context())),
 			c.engine.Vocabularies(),
-		},
+		}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }

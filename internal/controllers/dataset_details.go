@@ -29,7 +29,7 @@ func NewDatasetDetails(e *engine.Engine, r *render.Render) *DatasetDetails {
 func (c *DatasetDetails) Show(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
-	// TODO: set constriant to research_data
+	// TODO: set constraint to research_data
 	dataset, err := c.engine.GetDataset(id)
 	if err != nil {
 		log.Println(err)
@@ -37,17 +37,14 @@ func (c *DatasetDetails) Show(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.render.HTML(w, 200,
-		"dataset/details/_show",
-		struct {
-			views.Data
+	c.render.HTML(w, 200, "dataset/details/_show",
+		views.NewData(c.render, r, struct {
 			Dataset *models.Dataset
 			Show    *views.ShowBuilder
 		}{
-			views.NewData(c.render, r),
 			dataset,
 			views.NewShowBuilder(c.render, locale.Get(r.Context())),
-		},
+		}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -62,17 +59,15 @@ func (c *DatasetDetails) OpenForm(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.render.HTML(w, 200,
+	c.render.HTML(w, http.StatusOK,
 		"dataset/details/_edit",
-		struct {
-			views.Data
+		views.NewData(c.render, r, struct {
 			Dataset *models.Dataset
 			Form    *views.FormBuilder
 		}{
-			views.NewData(c.render, r),
 			dataset,
 			views.NewFormBuilder(c.render, locale.Get(r.Context()), nil),
-		},
+		}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -104,15 +99,13 @@ func (c *DatasetDetails) SaveForm(w http.ResponseWriter, r *http.Request) {
 	if formErrors, ok := err.(jsonapi.Errors); ok {
 		c.render.HTML(w, 200,
 			"dataset/details/_edit",
-			struct {
-				views.Data
+			views.NewData(c.render, r, struct {
 				Dataset *models.Dataset
 				Form    *views.FormBuilder
 			}{
-				views.NewData(c.render, r),
 				dataset,
 				views.NewFormBuilder(c.render, locale.Get(r.Context()), formErrors),
-			},
+			}),
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
 
@@ -121,15 +114,13 @@ func (c *DatasetDetails) SaveForm(w http.ResponseWriter, r *http.Request) {
 
 	c.render.HTML(w, 200,
 		"dataset/details/_update",
-		struct {
-			views.Data
+		views.NewData(c.render, r, struct {
 			Dataset *models.Dataset
 			Show    *views.ShowBuilder
 		}{
-			views.NewData(c.render, r),
 			savedDataset,
 			views.NewShowBuilder(c.render, locale.Get(r.Context())),
-		},
+		}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }

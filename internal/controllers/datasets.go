@@ -15,7 +15,6 @@ import (
 )
 
 type DatasetListVars struct {
-	views.Data
 	SearchArgs       *engine.SearchArgs
 	Hits             *models.DatasetHits
 	PublicationSorts []string
@@ -45,12 +44,13 @@ func (c *Datasets) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.render.HTML(w, http.StatusOK, "dataset/list", DatasetListVars{
-		Data:             views.NewData(c.render, r),
-		SearchArgs:       args,
-		Hits:             hits,
-		PublicationSorts: c.engine.Vocabularies()["publication_sorts"],
-	})
+	c.render.HTML(w, http.StatusOK, "dataset/list",
+		views.NewData(c.render, r, DatasetListVars{
+			SearchArgs:       args,
+			Hits:             hits,
+			PublicationSorts: c.engine.Vocabularies()["publication_sorts"],
+		}),
+	)
 }
 
 func (c *Datasets) Show(w http.ResponseWriter, r *http.Request) {
@@ -63,14 +63,12 @@ func (c *Datasets) Show(w http.ResponseWriter, r *http.Request) {
 	}
 
 	c.render.HTML(w, http.StatusOK, "dataset/show",
-		struct {
-			views.Data
+		views.NewData(c.render, r, struct {
 			Dataset *models.Dataset
 			Show    *views.ShowBuilder
 		}{
-			views.NewData(c.render, r),
 			dataset,
 			views.NewShowBuilder(c.render, locale.Get(r.Context())),
-		},
+		}),
 	)
 }

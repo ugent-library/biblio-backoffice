@@ -1,6 +1,6 @@
 <div class="card card-collapsible mb-6 publication-additional-information">
     <div class="card-header">
-        <div class="collapse-trigger collapsed" data-toggle="collapse" data-target="#collapse-additional-information" aria-expanded="{{ .Data.IsHTMXRequest }}" aria-controls="collapse-additional-information"></div>
+        <div class="collapse-trigger collapsed" data-toggle="collapse" data-target="#collapse-additional-information" aria-expanded="{{ .IsHTMXRequest }}" aria-controls="collapse-additional-information"></div>
         <div class="bc-toolbar">
             <div class="bc-toolbar-left">
                 <i class="if if-chevron-right mr-4 text-muted"></i>Additional information
@@ -28,13 +28,13 @@
         <div class="card-body p-0">
             <ul class="list-group list-group-flush" data-panel-state="read">
                 <li class="list-group-item">
-                    {{.Show.List (.Show.Label "research_field") (.Show.Values .Publication.ResearchField)}}
-                    {{.Show.BadgeList (.Show.Label "keyword") (.Show.Values .Publication.Keyword)}}
-                    {{.Show.Text (.Show.Label "wos_id") (.Show.Value .Publication.WOSID)}}
-                    {{.Show.Text (.Show.Label "pubmed_id") (.Show.Value .Publication.PubMedID)}}
-                    {{.Show.Text (.Show.Label "arxiv_id") (.Show.Value .Publication.ArxivID)}}
-                    {{.Show.Text (.Show.Label "esci_id") (.Show.Value .Publication.ESCIID)}}
-                    {{.Show.Text (.Show.Label "additional_info") (.Show.Value .Publication.AdditionalInfo)}}
+                    {{.D.Show.List (.D.Show.Label "research_field") (.D.Show.Values .D.Publication.ResearchField)}}
+                    {{.D.Show.BadgeList (.D.Show.Label "keyword") (.D.Show.Values .D.Publication.Keyword)}}
+                    {{.D.Show.Text (.D.Show.Label "wos_id") (.D.Show.Value .D.Publication.WOSID)}}
+                    {{.D.Show.Text (.D.Show.Label "pubmed_id") (.D.Show.Value .D.Publication.PubMedID)}}
+                    {{.D.Show.Text (.D.Show.Label "arxiv_id") (.D.Show.Value .D.Publication.ArxivID)}}
+                    {{.D.Show.Text (.D.Show.Label "esci_id") (.D.Show.Value .D.Publication.ESCIID)}}
+                    {{.D.Show.Text (.D.Show.Label "additional_info") (.D.Show.Value .D.Publication.AdditionalInfo)}}
                 </li>
             </ul>
         </div>

@@ -1,4 +1,4 @@
-{{range $k, $a := .Publication.Link}}
+{{range $k, $a := .D.Publication.Link}}
 {{ $k = $k | toString }}
 
 <tr class="row-{{ $k }}">
@@ -15,7 +15,7 @@
                 </button>
                 <div class="dropdown-menu">
                     <button class="dropdown-item" type="button"
-                        hx-get="{{pathFor "publication_links_edit_link" "id" $.Publication.ID "delta" $k}}"
+                        hx-get="{{pathFor "publication_links_edit_link" "id" $.D.Publication.ID "delta" $k}}"
                         hx-target="#link-modals"
                         hx-swap="innerHTML"
                     >
@@ -24,7 +24,7 @@
                     </button>
 
                     <button class="dropdown-item" type="button"
-                        hx-get="{{pathFor "publication_links_confirm_remove_from_publication" "id" $.Publication.ID "delta" $k}}"
+                        hx-get="{{pathFor "publication_links_confirm_remove_from_publication" "id" $.D.Publication.ID "delta" $k}}"
                         hx-target="#link-modals"
                         hx-swap="innerHTML"
                     >

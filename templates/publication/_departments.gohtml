@@ -8,7 +8,7 @@
             <div class="bc-toolbar-right">
                 <div class="c-button-toolbar" data-panel-state="read">
                     <button class="btn btn-outline-primary"
-                        hx-get="{{pathFor "publicationDepartments" "id" .Publication.ID}}"
+                        hx-get="{{pathFor "publicationDepartments" "id" .D.Publication.ID}}"
                         hx-target="#publications-departments-modal"
                         hx-trigger="click"
                     >
@@ -24,7 +24,7 @@
         <div class="card-body p-0">
             <table class="table">
                 <tbody>
-                    {{ range $k, $v := .Publication.Department }}
+                    {{ range $k, $v := .D.Publication.Department }}
                     <tr>
                         <td class="pl-6">
                             <div class="d-flex w-100">
@@ -49,7 +49,7 @@
                                     </button>
                                     <div class="dropdown-menu">
                                         <button class="dropdown-item" type="button"
-                                            hx-get="{{pathFor "publicationDepartments_confirm_remove_from_publication" "id" $.Publication.ID "department_id" $v.ID}}"
+                                            hx-get="{{pathFor "publicationDepartments_confirm_remove_from_publication" "id" $.D.Publication.ID "department_id" $v.ID}}"
                                             hx-target="#publications-departments-modal"
                                             hx-trigger="click"
                                         >

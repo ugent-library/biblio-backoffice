@@ -39,13 +39,13 @@ func (d *DatasetProjects) ListProjects(w http.ResponseWriter, r *http.Request) {
 
 	d.render.HTML(w, 200,
 		"dataset/_projects_modal",
-		struct {
+		views.NewData(d.render, r, struct {
 			Dataset *models.Publication
 			Hits    []models.Completion
 		}{
 			pub,
 			hits,
-		},
+		}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -73,13 +73,13 @@ func (d *DatasetProjects) ActiveSearch(w http.ResponseWriter, r *http.Request) {
 
 	d.render.HTML(w, 200,
 		"dataset/_projects_modal_hits",
-		struct {
+		views.NewData(d.render, r, struct {
 			Dataset *models.Publication
 			Hits    []models.Completion
 		}{
 			pub,
 			hits,
-		},
+		}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -117,13 +117,11 @@ func (c *DatasetProjects) AddToDataset(w http.ResponseWriter, r *http.Request) {
 
 	c.render.HTML(w, 200,
 		"dataset/_projects",
-		struct {
-			views.Data
+		views.NewData(c.render, r, struct {
 			Dataset *models.Dataset
 		}{
-			views.NewData(c.render, r),
 			savedDataset,
-		},
+		}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -134,13 +132,13 @@ func (c *DatasetProjects) ConfirmRemoveFromDataset(w http.ResponseWriter, r *htt
 
 	c.render.HTML(w, 200,
 		"dataset/_projects_modal_confirm_removal",
-		struct {
+		views.NewData(c.render, r, struct {
 			ID        string
 			ProjectID string
 		}{
 			id,
 			projectId,
-		},
+		}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -174,13 +172,11 @@ func (c *DatasetProjects) RemoveFromDataset(w http.ResponseWriter, r *http.Reque
 
 	c.render.HTML(w, 200,
 		"dataset/_projects",
-		struct {
-			views.Data
+		views.NewData(c.render, r, struct {
 			Dataset *models.Dataset
 		}{
-			views.NewData(c.render, r),
 			savedDataset,
-		},
+		}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }

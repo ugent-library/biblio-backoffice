@@ -40,19 +40,17 @@ func (p *PublicationAbstracts) AddAbstract(w http.ResponseWriter, r *http.Reques
 
 	p.render.HTML(w, http.StatusOK,
 		"publication/abstracts/_form",
-		struct {
-			views.Data
+		views.NewData(p.render, r, struct {
 			PublicationID string
 			Abstract      *models.Text
 			Form          *views.FormBuilder
 			Vocabularies  map[string][]string
 		}{
-			views.NewData(p.render, r),
 			id,
 			abstract,
 			views.NewFormBuilder(p.render, locale.Get(r.Context()), nil),
 			p.engine.Vocabularies(),
-		},
+		}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -92,19 +90,17 @@ func (p *PublicationAbstracts) CreateAbstract(w http.ResponseWriter, r *http.Req
 	if formErrors, ok := err.(jsonapi.Errors); ok {
 		p.render.HTML(w, 200,
 			"publication/abstracts/_form",
-			struct {
-				views.Data
+			views.NewData(p.render, r, struct {
 				PublicationID string
 				Abstract      *models.Text
 				Form          *views.FormBuilder
 				Vocabularies  map[string][]string
 			}{
-				views.NewData(p.render, r),
 				savedPub.ID,
 				abstract,
 				views.NewFormBuilder(p.render, locale.Get(r.Context()), formErrors),
 				p.engine.Vocabularies(),
-			},
+			}),
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
 
@@ -120,13 +116,11 @@ func (p *PublicationAbstracts) CreateAbstract(w http.ResponseWriter, r *http.Req
 
 	p.render.HTML(w, http.StatusOK,
 		"publication/abstracts/_table_body",
-		struct {
-			views.Data
+		views.NewData(p.render, r, struct {
 			Publication *models.Publication
 		}{
-			views.NewData(p.render, r),
 			savedPub,
-		},
+		}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -152,21 +146,19 @@ func (p *PublicationAbstracts) EditAbstract(w http.ResponseWriter, r *http.Reque
 
 	p.render.HTML(w, http.StatusOK,
 		"publication/abstracts/_form_edit",
-		struct {
-			views.Data
+		views.NewData(p.render, r, struct {
 			PublicationID string
 			Delta         string
 			Abstract      *models.Text
 			Form          *views.FormBuilder
 			Vocabularies  map[string][]string
 		}{
-			views.NewData(p.render, r),
 			id,
 			muxRowDelta,
 			abstract,
 			views.NewFormBuilder(p.render, locale.Get(r.Context()), nil),
 			p.engine.Vocabularies(),
-		},
+		}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -208,21 +200,19 @@ func (p *PublicationAbstracts) UpdateAbstract(w http.ResponseWriter, r *http.Req
 	if formErrors, ok := err.(jsonapi.Errors); ok {
 		p.render.HTML(w, 200,
 			"publication/abstracts/_form_edit",
-			struct {
-				views.Data
+			views.NewData(p.render, r, struct {
 				PublicationID string
 				Delta         string
 				Abstract      *models.Text
 				Form          *views.FormBuilder
 				Vocabularies  map[string][]string
 			}{
-				views.NewData(p.render, r),
 				savedPub.ID,
 				strconv.Itoa(rowDelta),
 				abstract,
 				views.NewFormBuilder(p.render, locale.Get(r.Context()), formErrors),
 				p.engine.Vocabularies(),
-			},
+			}),
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
 
@@ -238,13 +228,11 @@ func (p *PublicationAbstracts) UpdateAbstract(w http.ResponseWriter, r *http.Req
 
 	p.render.HTML(w, http.StatusOK,
 		"publication/abstracts/_table_body",
-		struct {
-			views.Data
+		views.NewData(p.render, r, struct {
 			Publication *models.Publication
 		}{
-			views.NewData(p.render, r),
 			savedPub,
-		},
+		}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }

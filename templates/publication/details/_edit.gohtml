@@ -1,4 +1,4 @@
-{{ if .Form.Errors }}
+{{ if .D.Form.Errors }}
 <div hx-swap-oob="innerHTML:#alerts">
     <div class="alert alert-danger alert-dismissible fade show">
         <i class="if if-check-circle-fill"></i>
@@ -10,7 +10,7 @@
 </div>
 {{ end }}
 
-<form hx-patch="{{pathFor "publication_details_save_form" "id" .Publication.ID}}" hx-swap="innerHTML" hx-target="closest .publication-details">
+<form hx-patch="{{pathFor "publication_details_save_form" "id" .D.Publication.ID}}" hx-swap="innerHTML" hx-target="closest .publication-details">
     <div class="card-header">
         <div class="collapse-trigger" data-toggle="collapse" data-target="#collapse-details" aria-expanded="true" aria-controls="collapse-details"></div>
         <div class="bc-toolbar">
@@ -20,7 +20,7 @@
             <div class="bc-toolbar-right">
                 <div class="c-button-toolbar" data-panel-state="edit">
                     <button class="btn btn-outline-primary btn-cancel"
-                        hx-get="{{pathFor "publication_details" "id" .Publication.ID}}"
+                        hx-get="{{pathFor "publication_details" "id" .D.Publication.ID}}"
                         hx-swap="innerHTML"
                         hx-target=".publication-details"
                     >
@@ -36,7 +36,7 @@
     <div class="collapse show" id="collapse-details">
         <div class="card-body p-0">
             <ul class="list-group list-group-flush" data-panel-state="edit">
-                {{.Partial (printf "publication/details/edit/_%s" .Publication.Type) .}}
+                {{.Partial (printf "publication/details/edit/_%s" .D.Publication.Type) .}}
             </ul>
         </div>
     </div>

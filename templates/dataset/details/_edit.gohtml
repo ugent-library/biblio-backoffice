@@ -1,4 +1,4 @@
-{{ if .Form.Errors }}
+{{ if .D.Form.Errors }}
 <div hx-swap-oob="innerHTML:#alerts">
     <div class="alert alert-danger alert-dismissible fade show">
         <i class="if if-check-circle-fill"></i>
@@ -10,7 +10,7 @@
 </div>
 {{ end }}
 
-<form hx-patch="/dataset/{{ .Dataset.ID }}/htmx/details/edit" hx-swap="innerHTML" hx-target="closest .dataset-details">
+<form hx-patch="/dataset/{{ .D.Dataset.ID }}/htmx/details/edit" hx-swap="innerHTML" hx-target="closest .dataset-details">
     <div class="card-header">
         <div class="collapse-trigger" data-toggle="collapse" data-target="#collapse-details" aria-expanded="true" aria-controls="collapse-details"></div>
         <div class="bc-toolbar">
@@ -20,7 +20,7 @@
             <div class="bc-toolbar-right">
                 <div class="c-button-toolbar" data-panel-state="edit">
                     <button class="btn btn-outline-primary btn-cancel"
-                        hx-get="/dataset/{{ .Dataset.ID }}/htmx/details"
+                        hx-get="/dataset/{{ .D.Dataset.ID }}/htmx/details"
                         hx-swap="innerHTML"
                         hx-target=".dataset-details"
                     >
@@ -37,13 +37,13 @@
         <div class="card-body p-0">
             <ul class="list-group list-group-flush" data-panel-state="edit">
                 <li class="list-group-item">
-                    {{.Form.Text (.Form.Name "title") (.Form.Value .Dataset.Title) (.Form.Cols 9) (.Form.Required)}}
-                    {{.Form.Text (.Form.Name "doi") (.Form.Value .Dataset.DOI) (.Form.Cols 3)}}
-                    {{.Form.Text (.Form.Name "url") (.Form.Value .Dataset.URL) (.Form.Cols 3)}}
+                    {{.D.Form.Text (.D.Form.Name "title") (.D.Form.Value .D.Dataset.Title) (.D.Form.Cols 9) (.D.Form.Required)}}
+                    {{.D.Form.Text (.D.Form.Name "doi") (.D.Form.Value .D.Dataset.DOI) (.D.Form.Cols 3)}}
+                    {{.D.Form.Text (.D.Form.Name "url") (.D.Form.Value .D.Dataset.URL) (.D.Form.Cols 3)}}
                 </li>
                 <li class="list-group-item">
-                    {{.Form.Text (.Form.Name "url") (.Form.Value .Dataset.Publisher) (.Form.Cols 9)}}
-                    {{.Form.Text (.Form.Name "year") (.Form.Value .Dataset.Year) (.Form.Cols 3)}}
+                    {{.D.Form.Text (.D.Form.Name "url") (.D.Form.Value .D.Dataset.Publisher) (.D.Form.Cols 9)}}
+                    {{.D.Form.Text (.D.Form.Name "year") (.D.Form.Value .D.Dataset.Year) (.D.Form.Cols 3)}}
                 </li>
             </ul>
         </div>

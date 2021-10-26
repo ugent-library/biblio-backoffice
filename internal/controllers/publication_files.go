@@ -164,16 +164,14 @@ func (c *PublicationFiles) Upload(w http.ResponseWriter, r *http.Request) {
 	pub, _ := c.engine.GetPublication(id)
 
 	c.render.HTML(w, http.StatusCreated, "publication/show",
-		struct {
-			views.Data
+		views.NewData(c.render, r, struct {
 			Publication  *models.Publication
 			Show         *views.ShowBuilder
 			Vocabularies map[string][]string
 		}{
-			views.NewData(c.render, r),
 			pub,
 			views.NewShowBuilder(c.render, locale.Get(r.Context())),
 			c.engine.Vocabularies(),
-		},
+		}),
 	)
 }

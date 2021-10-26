@@ -9,7 +9,7 @@
             <div class="bc-toolbar-right">
                 <div class="c-button-toolbar" data-panel-state="read">
                     <button class="btn btn-outline-primary"
-                        hx-get="{{pathFor "publication_details_edit_form" "id" .Publication.ID}}"
+                        hx-get="{{pathFor "publication_details_edit_form" "id" .D.Publication.ID}}"
                         hx-swap="innerHTML"
                         hx-target=".publication-details"
                     >
@@ -20,11 +20,11 @@
             </div>
         </div>
     </div>
-    
+
     <div class="collapse {{ if .IsHTMXRequest }}show{{ end }}" id="collapse-details">
         <div class="card-body p-0">
             <ul class="list-group list-group-flush" data-panel-state="read">
-                {{.Partial (printf "publication/details/show/_%s" .Publication.Type) .}}
+                {{.Partial (printf "publication/details/show/_%s" .D.Publication.Type) .}}
             </ul>
         </div>
     </div>

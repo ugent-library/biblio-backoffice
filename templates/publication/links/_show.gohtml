@@ -7,8 +7,8 @@
             </div>
             <div class="bc-toolbar-right">
                 <button class="btn btn-outline-primary" type="button"
-                    hx-get="/publication/{{ .Publication.ID }}/htmx/links/add"
-                    hx-get="{{pathFor "publication_links_add_link" "id" .Publication.ID }}"
+                    hx-get="/publication/{{ .D.Publication.ID }}/htmx/links/add"
+                    hx-get="{{pathFor "publication_links_add_link" "id" .D.Publication.ID }}"
                     hx-swap="innerHTML"
                     hx-target="#link-modals"
                 >

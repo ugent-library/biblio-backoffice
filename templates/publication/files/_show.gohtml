@@ -7,7 +7,7 @@
         </div>
     </div>
     <div class="card-body p-0">
-        <form class="p-6" action="{{pathFor "upload_publication_file" "id" $.Publication.ID}}"
+        <form class="p-6" action="{{pathFor "upload_publication_file" "id" $.D.Publication.ID}}"
             method="POST" enctype="multipart/form-data">
             <div class="c-file-upload">
                 <input type="file" name="file" class="form-change-submit">
@@ -19,13 +19,13 @@
         </form>
         <hr>
         <ul class="list-group list-group-flush">
-            {{range .Publication.File}}
+            {{range .D.Publication.File}}
             <li class="list-group-item">
                 <div class="d-flex">
                     <div class="d-flex align-items-center w-100">
                         <div class="position-relative">
                             {{if .ThumbnailURL}}
-                            <img class="list-group-item-thumbnail" src="{{pathFor "publication_file_thumbnail" "id" $.Publication.ID "file_id" .ID}}" height="156">
+                            <img class="list-group-item-thumbnail" src="{{pathFor "publication_file_thumbnail" "id" $.D.Publication.ID "file_id" .ID}}" height="156">
                             {{else}}
                             <div class="list-group-item-thumbnail">
                                 <div class="c-thumbnail c-thumbnail--publication c-thumbnail--medium">
@@ -106,7 +106,7 @@
                                 </div>
                             </div>
                             <div class="list-group-item-text">
-                                <a href="{{pathFor "publication_file" "id" $.Publication.ID "file_id" .ID}}">
+                                <a href="{{pathFor "publication_file" "id" $.D.Publication.ID "file_id" .ID}}">
                                     <h4 class="c-h4">{{.Filename}}</h4>
                                 </a>
                                 {{with .Description}}<p class="text-muted c-body-small">{{.}}</p>{{end}}

@@ -40,19 +40,17 @@ func (p *PublicationLinks) AddLink(w http.ResponseWriter, r *http.Request) {
 
 	p.render.HTML(w, http.StatusOK,
 		"publication/links/_form",
-		struct {
-			views.Data
+		views.NewData(p.render, r, struct {
 			PublicationID string
 			Link          *models.PublicationLink
 			Form          *views.FormBuilder
 			Vocabularies  map[string][]string
 		}{
-			views.NewData(p.render, r),
 			id,
 			link,
 			views.NewFormBuilder(p.render, locale.Get(r.Context()), nil),
 			p.engine.Vocabularies(),
-		},
+		}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -92,19 +90,17 @@ func (p *PublicationLinks) CreateLink(w http.ResponseWriter, r *http.Request) {
 	if formErrors, ok := err.(jsonapi.Errors); ok {
 		p.render.HTML(w, 200,
 			"publication/links/_form",
-			struct {
-				views.Data
+			views.NewData(p.render, r, struct {
 				PublicationID string
 				Link          *models.PublicationLink
 				Form          *views.FormBuilder
 				Vocabularies  map[string][]string
 			}{
-				views.NewData(p.render, r),
 				savedPub.ID,
 				link,
 				views.NewFormBuilder(p.render, locale.Get(r.Context()), formErrors),
 				p.engine.Vocabularies(),
-			},
+			}),
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
 
@@ -120,13 +116,11 @@ func (p *PublicationLinks) CreateLink(w http.ResponseWriter, r *http.Request) {
 
 	p.render.HTML(w, http.StatusOK,
 		"publication/links/_table_body",
-		struct {
-			views.Data
+		views.NewData(p.render, r, struct {
 			Publication *models.Publication
 		}{
-			views.NewData(p.render, r),
 			savedPub,
-		},
+		}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -152,21 +146,19 @@ func (p *PublicationLinks) EditLink(w http.ResponseWriter, r *http.Request) {
 
 	p.render.HTML(w, http.StatusOK,
 		"publication/links/_form_edit",
-		struct {
-			views.Data
+		views.NewData(p.render, r, struct {
 			PublicationID string
 			Delta         string
 			Link          *models.PublicationLink
 			Form          *views.FormBuilder
 			Vocabularies  map[string][]string
 		}{
-			views.NewData(p.render, r),
 			id,
 			muxRowDelta,
 			link,
 			views.NewFormBuilder(p.render, locale.Get(r.Context()), nil),
 			p.engine.Vocabularies(),
-		},
+		}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -210,21 +202,19 @@ func (p *PublicationLinks) UpdateLink(w http.ResponseWriter, r *http.Request) {
 	if formErrors, ok := err.(jsonapi.Errors); ok {
 		p.render.HTML(w, 200,
 			"publication/links/_form_edit",
-			struct {
-				views.Data
+			views.NewData(p.render, r, struct {
 				PublicationID string
 				Delta         string
 				Link          *models.PublicationLink
 				Form          *views.FormBuilder
 				Vocabularies  map[string][]string
 			}{
-				views.NewData(p.render, r),
 				savedPub.ID,
 				strconv.Itoa(rowDelta),
 				link,
 				views.NewFormBuilder(p.render, locale.Get(r.Context()), formErrors),
 				p.engine.Vocabularies(),
-			},
+			}),
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
 
@@ -240,13 +230,11 @@ func (p *PublicationLinks) UpdateLink(w http.ResponseWriter, r *http.Request) {
 
 	p.render.HTML(w, http.StatusOK,
 		"publication/links/_table_body",
-		struct {
-			views.Data
+		views.NewData(p.render, r, struct {
 			Publication *models.Publication
 		}{
-			views.NewData(p.render, r),
 			savedPub,
-		},
+		}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }

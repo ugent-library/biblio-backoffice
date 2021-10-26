@@ -1,37 +1,37 @@
 <li class="list-group-item">
-    {{.Form.List (.Form.Name "conference_type") (.Form.Value .Publication.ConferenceType) (.Form.Cols 3)
-        (.Form.Choices .Vocabularies.conference_types (.Form.Locale "conference_types"))}}
-    {{.Form.Text (.Form.Name "doi") (.Form.Value .Publication.DOI) (.Form.Cols 3)}}
-    {{.Form.TextRepeat (.Form.Name "issn") (.Form.Values .Publication.ISSN) (.Form.Cols 9)}}
-    {{.Form.TextRepeat (.Form.Name "isbn") (.Form.Values .Publication.ISBN) (.Form.Cols 9)}}
+    {{.D.Form.List (.D.Form.Name "conference_type") (.D.Form.Value .D.Publication.ConferenceType) (.D.Form.Cols 3)
+        (.D.Form.Choices .D.Vocabularies.conference_types (.D.Form.Locale "conference_types"))}}
+    {{.D.Form.Text (.D.Form.Name "doi") (.D.Form.Value .D.Publication.DOI) (.D.Form.Cols 3)}}
+    {{.D.Form.TextRepeat (.D.Form.Name "issn") (.D.Form.Values .D.Publication.ISSN) (.D.Form.Cols 9)}}
+    {{.D.Form.TextRepeat (.D.Form.Name "isbn") (.D.Form.Values .D.Publication.ISBN) (.D.Form.Cols 9)}}
 </li>
 <li class="list-group-item">
-    {{.Form.Text (.Form.Name "title") (.Form.Value .Publication.Title) (.Form.Cols 9) (.Form.Required)}}
-    {{.Form.TextRepeat (.Form.Name "alternative_title") (.Form.Values .Publication.AlternativeTitle) (.Form.Cols 9)}}
-    {{.Form.List (.Form.Name "classification") (.Form.Value .Publication.Classification) (.Form.Cols 3) (.Form.Required)
-        (.Form.Choices .Publication.ClassificationChoices (.Form.Locale "publication_classifications"))}}
-    {{.Form.Text (.Form.Name "wos_type") (.Form.Value .Publication.WOSType) (.Form.Cols 3) (.Form.Tooltip "It's a tooltip!")}}
+    {{.D.Form.Text (.D.Form.Name "title") (.D.Form.Value .D.Publication.Title) (.D.Form.Cols 9) (.D.Form.Required)}}
+    {{.D.Form.TextRepeat (.D.Form.Name "alternative_title") (.D.Form.Values .D.Publication.AlternativeTitle) (.D.Form.Cols 9)}}
+    {{.D.Form.List (.D.Form.Name "classification") (.D.Form.Value .D.Publication.Classification) (.D.Form.Cols 3) (.D.Form.Required)
+        (.D.Form.Choices .D.Publication.ClassificationChoices (.D.Form.Locale "publication_classifications"))}}
+    {{.D.Form.Text (.D.Form.Name "wos_type") (.D.Form.Value .D.Publication.WOSType) (.D.Form.Cols 3) (.D.Form.Tooltip "It's a tooltip!")}}
 </li>
 <li class="list-group-item">
-    {{.Form.Text (.Form.Name "publication" (.Form.Locale "builder.conference"))
-        (.Form.Value .Publication.Publication) (.Form.Cols 9) (.Form.Required)}}
-    {{.Form.Text (.Form.Name "publication_abbreviation" (.Form.Locale "builder.journal_article"))
-        (.Form.Value .Publication.PublicationAbbreviation) (.Form.Cols 3)}}
-    {{.Form.Text (.Form.Name "publisher") (.Form.Value .Publication.Publisher) (.Form.Cols 9)}}
-    {{.Form.Text (.Form.Name "place_of_publication") (.Form.Value .Publication.PlaceOfPublication) (.Form.Cols 9)}}
-    {{.Form.Text (.Form.Name "year") (.Form.Value .Publication.Year) (.Form.Cols 3)}}
-    {{.Form.Checkbox (.Form.Name "extern") (.Form.Checked .Publication.Extern) (.Form.Value "true") (.Form.Cols 9)}}
-    {{.Form.List (.Form.Name "publication_status") (.Form.Value .Publication.PublicationStatus) (.Form.Cols 3)
-        (.Form.Choices .Vocabularies.publication_publishing_statuses
-        (.Form.Locale "publication_publishing_statuses")) (.Form.EmptyChoice)}}
-    {{.Form.ListRepeat (.Form.Name "language") (.Form.Values .Publication.Language) (.Form.Cols 9)
-        (.Form.Choices .Vocabularies.language_codes .Form.LanguageName) (.Form.EmptyChoice)}}
+    {{.D.Form.Text (.D.Form.Name "publication" (.D.Form.Locale "builder.conference"))
+        (.D.Form.Value .D.Publication.Publication) (.D.Form.Cols 9) (.D.Form.Required)}}
+    {{.D.Form.Text (.D.Form.Name "publication_abbreviation" (.D.Form.Locale "builder.journal_article"))
+        (.D.Form.Value .D.Publication.PublicationAbbreviation) (.D.Form.Cols 3)}}
+    {{.D.Form.Text (.D.Form.Name "publisher") (.D.Form.Value .D.Publication.Publisher) (.D.Form.Cols 9)}}
+    {{.D.Form.Text (.D.Form.Name "place_of_publication") (.D.Form.Value .D.Publication.PlaceOfPublication) (.D.Form.Cols 9)}}
+    {{.D.Form.Text (.D.Form.Name "year") (.D.Form.Value .D.Publication.Year) (.D.Form.Cols 3)}}
+    {{.D.Form.Checkbox (.D.Form.Name "extern") (.D.Form.Checked .D.Publication.Extern) (.D.Form.Value "true") (.D.Form.Cols 9)}}
+    {{.D.Form.List (.D.Form.Name "publication_status") (.D.Form.Value .D.Publication.PublicationStatus) (.D.Form.Cols 3)
+        (.D.Form.Choices .D.Vocabularies.publication_publishing_statuses
+        (.D.Form.Locale "publication_publishing_statuses")) (.D.Form.EmptyChoice)}}
+    {{.D.Form.ListRepeat (.D.Form.Name "language") (.D.Form.Values .D.Publication.Language) (.D.Form.Cols 9)
+        (.D.Form.Choices .D.Vocabularies.language_codes .D.Form.LanguageName) (.D.Form.EmptyChoice)}}
 </li>
 <li class="list-group-item">
-    {{.Form.Text (.Form.Name "series_title") (.Form.Value .Publication.SeriesTitle) (.Form.Cols 9)}}
-    {{.Form.Text (.Form.Name "volume") (.Form.Value .Publication.Volume) (.Form.Cols 3)}}
-    {{.Form.Text (.Form.Name "issue") (.Form.Value .Publication.Issue) (.Form.Cols 3)}}
-    {{.Form.Text (.Form.Name "page_first") (.Form.Value .Publication.PageFirst) (.Form.Cols 3)}}
-    {{.Form.Text (.Form.Name "page_last") (.Form.Value .Publication.PageLast) (.Form.Cols 3)}}
-    {{.Form.Text (.Form.Name "page_count") (.Form.Value .Publication.PageCount) (.Form.Cols 3)}}
+    {{.D.Form.Text (.D.Form.Name "series_title") (.D.Form.Value .D.Publication.SeriesTitle) (.D.Form.Cols 9)}}
+    {{.D.Form.Text (.D.Form.Name "volume") (.D.Form.Value .D.Publication.Volume) (.D.Form.Cols 3)}}
+    {{.D.Form.Text (.D.Form.Name "issue") (.D.Form.Value .D.Publication.Issue) (.D.Form.Cols 3)}}
+    {{.D.Form.Text (.D.Form.Name "page_first") (.D.Form.Value .D.Publication.PageFirst) (.D.Form.Cols 3)}}
+    {{.D.Form.Text (.D.Form.Name "page_last") (.D.Form.Value .D.Publication.PageLast) (.D.Form.Cols 3)}}
+    {{.D.Form.Text (.D.Form.Name "page_count") (.D.Form.Value .D.Publication.PageCount) (.D.Form.Cols 3)}}
 </li>

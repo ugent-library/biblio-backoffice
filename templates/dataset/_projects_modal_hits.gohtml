@@ -1,4 +1,4 @@
-{{ range .Hits }}
+{{ range .D.Hits }}
 <li class="list-group-item">
     <div class="d-flex w-100">
         <div class="w-100">
@@ -14,7 +14,7 @@
                     </div>
                     <div class="list-group-item-meta-right">
                         <button class="btn btn-primary"
-                            hx-patch="/dataset/{{ $.Dataset.ID }}/htmx/projects/add/{{ .ID }}"
+                            hx-patch="/dataset/{{ $.D.Dataset.ID }}/htmx/projects/add/{{ .ID }}"
                             hx-swap="innerHTML"
                             hx-target=".dataset-projects"
                         >Add Project</button>

@@ -8,7 +8,7 @@
             <div class="bc-toolbar-right">
                 <div class="c-button-toolbar" data-panel-state="read">
                     <button class="btn btn-outline-primary"
-                        hx-get="{{pathFor "publication_datasets_choose" "id" .Publication.ID}}"
+                        hx-get="{{pathFor "publication_datasets_choose" "id" .D.Publication.ID}}"
                         hx-target="#publication-datasets-modal"
                         hx-trigger="click"
                     >
@@ -23,7 +23,7 @@
 	<div class="collapse {{ if .IsHTMXRequest }}show{{ end }}" id="collapse-datasets">
 		<div class="card-body p-0">
             <ul class="list-group list-group-flush publication-datasets-list">
-                {{range .Publication.Dataset}}
+                {{range .D.Publication.Dataset}}
                 <li class="list-group-item">
                     <div class="d-flex w-100">
                         <div class="w-100">

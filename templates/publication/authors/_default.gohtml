@@ -6,7 +6,7 @@
             </div>
             <div class="bc-toolbar-right">
                 <button type="button" class="btn btn-outline-primary btn-swap add-author"
-                    hx-get="{{ pathFor "publication_authors_shift_row" "id" .Publication.ID "delta" "0" }}"
+                    hx-get="{{ pathFor "publication_authors_shift_row" "id" .D.Publication.ID "delta" "0" }}"
                     hx-target="#authors-table tbody"
                     hx-swap="afterbegin settle:.15s"
                 >
@@ -29,7 +29,7 @@
                 </thead>
                 <tbody
                     hx-trigger="ITCancelAddRow from:body delay:.15s, ITCancelEditRow from:body delay:.15s, ITRemoveItem from:body delay:.15s, ITCreateItem from:body delay:.15s, ITUpdateItem from:body delay:.15s"
-                    hx-get="{{pathFor "publication_authors_list" "id" .Publication.ID}}"
+                    hx-get="{{pathFor "publication_authors_list" "id" .D.Publication.ID}}"
                     hx-swap="innerHTML"
                 >
                     {{ template "publication/authors/_default_table_body" . }}

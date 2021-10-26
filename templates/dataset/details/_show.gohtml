@@ -9,7 +9,7 @@
             <div class="bc-toolbar-right">
                 <div class="c-button-toolbar" data-panel-state="read">
                     <button class="btn btn-outline-primary"
-                        hx-get="/dataset/{{ .Dataset.ID }}/htmx/details/edit"
+                        hx-get="/dataset/{{ .D.Dataset.ID }}/htmx/details/edit"
                         hx-swap="innerHTML"
                         hx-target=".dataset-details"
                     >
@@ -25,16 +25,16 @@
         <div class="card-body p-0">
             <ul class="list-group list-group-flush" data-panel-state="read">
                 <li class="list-group-item">
-                    {{.Show.Text (.Show.Label "title") (.Show.Value .Dataset.Title)}}
-                    {{.Show.Text (.Show.Label "doi") (.Show.Value .Dataset.DOI)}}
-                    {{.Show.Text (.Show.Label "url") (.Show.Value .Dataset.URL)}}
+                    {{.D.Show.Text (.D.Show.Label "title") (.D.Show.Value .D.Dataset.Title)}}
+                    {{.D.Show.Text (.D.Show.Label "doi") (.D.Show.Value .D.Dataset.DOI)}}
+                    {{.D.Show.Text (.D.Show.Label "url") (.D.Show.Value .D.Dataset.URL)}}
                 </li>
                 <li class="list-group-item">
-                    {{.Show.Text (.Show.Label "publisher") (.Show.Value .Dataset.Publisher)}}
-                    {{.Show.Text (.Show.Label "year") (.Show.Value .Dataset.Year)}}
+                    {{.D.Show.Text (.D.Show.Label "publisher") (.D.Show.Value .D.Dataset.Publisher)}}
+                    {{.D.Show.Text (.D.Show.Label "year") (.D.Show.Value .D.Dataset.Year)}}
                 </li>
                 <li class="list-group-item">
-                    {{.Show.BadgeList (.Show.Label "keyword") (.Show.Values .Dataset.Keyword)}}
+                    {{.D.Show.BadgeList (.D.Show.Label "keyword") (.D.Show.Values .D.Dataset.Keyword)}}
                 </li>
             </ul>
         </div>
