@@ -6,8 +6,8 @@
                 <h2 class="modal-title">Add Abstract</h2>
             </div>
             <div class="modal-body">
-                {{.D.Form.TextArea (.D.Form.Name "text" (.D.Form.Locale "builder.abstract")) (.D.Form.Value .Abstract.Text) (.D.Form.Cols 12) (.D.Form.Rows 6) (.D.Form.Placeholder "Add abstract text here...")}}
-                {{.D.Form.List (.D.Form.Name "lang" (.D.Form.Locale "builder.abstract")) (.D.Form.Value .Abstract.Lang) (.D.Form.Cols 12)
+                {{.D.Form.TextArea (.D.Form.Name "text" (.D.Form.Locale "builder.abstract")) (.D.Form.Value .D.Abstract.Text) (.D.Form.Cols 12) (.D.Form.Rows 6) (.D.Form.Placeholder "Add abstract text here...")}}
+                {{.D.Form.List (.D.Form.Name "lang" (.D.Form.Locale "builder.abstract")) (.D.Form.Value .D.Abstract.Lang) (.D.Form.Cols 12)
                     (.D.Form.Choices .D.Vocabularies.language_codes .D.Form.LanguageName)}}
             </div>
             <div class="modal-footer">
