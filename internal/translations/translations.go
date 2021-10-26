@@ -5,6 +5,10 @@ import (
 	"golang.org/x/text/message"
 )
 
+// TODO load from files
+// https://medium.com/@oborin/localization-in-go-with-enclosing-packages-6fe2efb85a15
+// https://www.alexedwards.net/blog/i18n-managing-translations
+// https://phrase.com/blog/posts/internationalization-i18n-go/#Manually_setting_the_translation_strings
 func init() {
 	message.SetString(language.English, "credit_roles.first_author", "First author")
 	message.SetString(language.English, "credit_roles.last_author", "Last author")
