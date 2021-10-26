@@ -8,7 +8,7 @@ type PublicationHits struct {
 	LastPage     int                `json:"last_page"`
 	PreviousPage bool               `json:"previous_page"`
 	NextPage     bool               `json:"next_page"`
-	Hits         []Publication      `json:"hits"`
+	Hits         []*Publication     `json:"hits"`
 	Facets       map[string][]Facet `json:"facets"`
 }
 

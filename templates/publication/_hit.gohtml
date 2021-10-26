@@ -1,16 +1,16 @@
 <div class="d-flex w-100">
     <div class="custom-control custom-checkbox mr-4 align-self-start">
         <input class="custom-control-input" type="checkbox" name="overviewItems"
-            id="publication-{{.ID}}" />
-        <label class="custom-control-label" for="publication-{{.ID}}">&nbsp;</label>
+            id="publication-{{.D.ID}}" />
+        <label class="custom-control-label" for="publication-{{.D.ID}}">&nbsp;</label>
     </div>
     <div class="w-100">
         <div class="d-flex align-items-start">
-            {{template "publication/_thumbnail" .}}
+            {{template "publication/_thumbnail" .D}}
             <div class="list-group-item-content">
                 <div class="list-group-item-subline">
                     <div class="list-group-item-subline-left">
-                        <span class="mr-3 pr-3 border-right">{{.Type}}{{with .Classification}}: {{.}}{{end}}</span>
+                        <span class="mr-3 pr-3 border-right">{{.T "publication_types" .D.Type}}{{with .D.Classification}}: {{.}}{{end}}</span>
                         <div class="d-flex align-items-center">
                             <i class="if if-download if--small if--success"></i>
                             <span class="pl-2 text-muted">Open Access</span>
@@ -25,7 +25,7 @@
                             </button>
                             <div class="dropdown-menu">
                                 <a class="dropdown-item"
-                                    href="{{pathFor "publication" "id" .ID}}">
+                                    href="{{pathFor "publication" "id" .D.ID}}">
                                     <i class="if if-file-text"></i>
                                     <span>View details</span>
                                 </a>
@@ -55,35 +55,35 @@
                     </div>
                 </div>
                 <div class="list-group-item-text">
-                    <a href="{{pathFor "publication" "id" .ID}}">
-                        <h4 class="c-h4">{{.Title}}</h4>
+                    <a href="{{pathFor "publication" "id" .D.ID}}">
+                        <h4 class="c-h4">{{.D.Title}}</h4>
                     </a>
-                    {{with .Author}}{{template "publication/_contributors_short" .}}{{end}}
+                    {{with .D.Author}}{{template "publication/_contributors_short" .}}{{end}}
                     <span class="c-body-small text-muted">
-                        {{.Year}}{{with .Publication}}, {{.}}{{end}}
+                        {{.D.Year}}{{with .D.Publication}}, {{.}}{{end}}
                     </span>
                 </div>
                 <div class="list-group-item-meta mt-5">
                     <div class="list-group-item-meta-left">
                         <div class="list-group-item-meta-item">
-                            {{template "publication/_status" .}}
+                            {{template "publication/_status" .D}}
                         </div>
                         <div class="list-group-item-meta-item">
-                            {{template "publication/_completeness" .}}
+                            {{template "publication/_completeness" .D}}
                         </div>
                     </div>
                     <div class="list-group-item-meta-right">
                         <div class="list-group-item-meta-item">
-                            <span class="text-muted c-body-small">Biblio ID: {{.ID}}</span>
+                            <span class="text-muted c-body-small">Biblio ID: {{.D.ID}}</span>
                         </div>
                         <div class="list-group-item-meta-item">
-                            <span class="text-muted c-body-small">Created {{timeElapsed .DateCreated "en"}}</span>
+                            <span class="text-muted c-body-small">Created {{timeElapsed .D.DateCreated "en"}}</span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        {{with .Message}}
+        {{with .D.Message}}
         <div class="list-group-item-comment">
             <div class="d-flex">
                 <div class="bc-avatar bc-avatar-icon bc-avatar--muted">

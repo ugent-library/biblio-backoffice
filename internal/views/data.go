@@ -29,9 +29,6 @@ func NewData(renderer *render.Render, r *http.Request, data interface{}) *Data {
 }
 
 func (d *Data) NewData(data interface{}) *Data {
-	if _, ok := data.(*Data); !ok {
-		data = d.NewData(data)
-	}
 	return NewData(d.renderer, d.request, data)
 }
 

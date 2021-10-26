@@ -236,7 +236,7 @@
                 </li>
                 {{range .D.Hits.Hits}}
                 <li class="list-group-item">
-                    {{template "publication/_hit" .}}
+                    {{template "publication/_hit" ($.NewData .)}}
                 </li>
                 {{end}}
             </ul>
