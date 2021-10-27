@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/views"
 	"github.com/ugent-library/go-locale/locale"
@@ -15,37 +14,33 @@ import (
 )
 
 type PublicationDetails struct {
-	engine *engine.Engine
-	render *render.Render
+	Context
 }
 
-func NewPublicationDetails(e *engine.Engine, r *render.Render) *PublicationDetails {
-	return &PublicationDetails{
-		engine: e,
-		render: r,
-	}
+func NewPublicationDetails(c Context) *PublicationDetails {
+	return &PublicationDetails{c}
 }
 
 func (c *PublicationDetails) Show(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
-	pub, err := c.engine.GetPublication(id)
+	pub, err := c.Engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
-	c.render.HTML(w, 200,
+	c.Render.HTML(w, 200,
 		"publication/details/_show",
-		views.NewData(c.render, r, struct {
+		views.NewData(c.Render, r, struct {
 			Publication  *models.Publication
 			Show         *views.ShowBuilder
 			Vocabularies map[string][]string
 		}{
 			pub,
-			views.NewShowBuilder(c.render, locale.Get(r.Context())),
-			c.engine.Vocabularies(),
+			views.NewShowBuilder(c.Render, locale.Get(r.Context())),
+			c.Engine.Vocabularies(),
 		}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
@@ -54,23 +49,23 @@ func (c *PublicationDetails) Show(w http.ResponseWriter, r *http.Request) {
 func (c *PublicationDetails) OpenForm(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
-	pub, err := c.engine.GetPublication(id)
+	pub, err := c.Engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
-	c.render.HTML(w, 200,
+	c.Render.HTML(w, 200,
 		"publication/details/_edit",
-		views.NewData(c.render, r, struct {
+		views.NewData(c.Render, r, struct {
 			Publication  *models.Publication
 			Form         *views.FormBuilder
 			Vocabularies map[string][]string
 		}{
 			pub,
-			views.NewFormBuilder(c.render, locale.Get(r.Context()), nil),
-			c.engine.Vocabularies(),
+			views.NewFormBuilder(c.Render, locale.Get(r.Context()), nil),
+			c.Engine.Vocabularies(),
 		}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
@@ -79,7 +74,7 @@ func (c *PublicationDetails) OpenForm(w http.ResponseWriter, r *http.Request) {
 func (c *PublicationDetails) SaveForm(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
-	pub, err := c.engine.GetPublication(id)
+	pub, err := c.Engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -97,19 +92,19 @@ func (c *PublicationDetails) SaveForm(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	savedPub, err := c.engine.UpdatePublication(pub)
+	savedPub, err := c.Engine.UpdatePublication(pub)
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {
-		c.render.HTML(w, 200,
+		c.Render.HTML(w, 200,
 			"publication/details/_edit",
-			views.NewData(c.render, r, struct {
+			views.NewData(c.Render, r, struct {
 				Publication  *models.Publication
 				Form         *views.FormBuilder
 				Vocabularies map[string][]string
 			}{
 				pub,
-				views.NewFormBuilder(c.render, locale.Get(r.Context()), formErrors),
-				c.engine.Vocabularies(),
+				views.NewFormBuilder(c.Render, locale.Get(r.Context()), formErrors),
+				c.Engine.Vocabularies(),
 			}),
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
@@ -120,16 +115,16 @@ func (c *PublicationDetails) SaveForm(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.render.HTML(w, 200,
+	c.Render.HTML(w, 200,
 		"publication/details/_update",
-		views.NewData(c.render, r, struct {
+		views.NewData(c.Render, r, struct {
 			Publication  *models.Publication
 			Show         *views.ShowBuilder
 			Vocabularies map[string][]string
 		}{
 			savedPub,
-			views.NewShowBuilder(c.render, locale.Get(r.Context())),
-			c.engine.Vocabularies(),
+			views.NewShowBuilder(c.Render, locale.Get(r.Context())),
+			c.Engine.Vocabularies(),
 		}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)

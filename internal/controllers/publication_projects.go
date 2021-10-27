@@ -5,28 +5,23 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/views"
 	"github.com/unrolled/render"
 )
 
 type PublicationProjects struct {
-	engine *engine.Engine
-	render *render.Render
+	Context
 }
 
-func NewPublicationProjects(e *engine.Engine, r *render.Render) *PublicationProjects {
-	return &PublicationProjects{
-		engine: e,
-		render: r,
-	}
+func NewPublicationProjects(c Context) *PublicationProjects {
+	return &PublicationProjects{c}
 }
 
 func (c *PublicationProjects) ListProjects(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
-	pub, err := c.engine.GetPublication(id)
+	pub, err := c.Engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -34,9 +29,9 @@ func (c *PublicationProjects) ListProjects(w http.ResponseWriter, r *http.Reques
 	}
 
 	// Get 20 random projects (no search, init state)
-	hits, _ := c.engine.SuggestProjects("")
+	hits, _ := c.Engine.SuggestProjects("")
 
-	c.render.HTML(w, 200,
+	c.Render.HTML(w, 200,
 		"publication/_projects_modal",
 		struct {
 			Publication *models.Publication
@@ -52,7 +47,7 @@ func (c *PublicationProjects) ListProjects(w http.ResponseWriter, r *http.Reques
 func (c *PublicationProjects) ActiveSearch(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
-	pub, err := c.engine.GetPublication(id)
+	pub, err := c.Engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -67,9 +62,9 @@ func (c *PublicationProjects) ActiveSearch(w http.ResponseWriter, r *http.Reques
 
 	// Get 20 results from the search query
 	query := r.Form["search"]
-	hits, _ := c.engine.SuggestProjects(query[0])
+	hits, _ := c.Engine.SuggestProjects(query[0])
 
-	c.render.HTML(w, 200,
+	c.Render.HTML(w, 200,
 		"publication/_projects_modal_hits",
 		struct {
 			Publication *models.Publication
@@ -86,14 +81,14 @@ func (c *PublicationProjects) AddToPublication(w http.ResponseWriter, r *http.Re
 	id := mux.Vars(r)["id"]
 	projectId := mux.Vars(r)["project_id"]
 
-	pub, err := c.engine.GetPublication(id)
+	pub, err := c.Engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
-	project, err := c.engine.GetProject(projectId)
+	project, err := c.Engine.GetProject(projectId)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -107,13 +102,13 @@ func (c *PublicationProjects) AddToPublication(w http.ResponseWriter, r *http.Re
 	}
 	pub.Project = append(pub.Project, publicationProject)
 
-	savedPub, _ := c.engine.UpdatePublication(pub)
+	savedPub, _ := c.Engine.UpdatePublication(pub)
 
 	// TODO: error handling if project save fails
 
-	c.render.HTML(w, 200,
+	c.Render.HTML(w, 200,
 		"publication/_projects",
-		views.NewData(c.render, r, struct {
+		views.NewData(c.Render, r, struct {
 			Publication *models.Publication
 		}{
 			savedPub,
@@ -126,7 +121,7 @@ func (c *PublicationProjects) ConfirmRemoveFromPublication(w http.ResponseWriter
 	id := mux.Vars(r)["id"]
 	projectId := mux.Vars(r)["project_id"]
 
-	c.render.HTML(w, 200,
+	c.Render.HTML(w, 200,
 		"publication/_projects_modal_confirm_removal",
 		struct {
 			ID        string
@@ -144,7 +139,7 @@ func (c *PublicationProjects) RemoveFromPublication(w http.ResponseWriter, r *ht
 	projectId := mux.Vars(r)["project_id"]
 
 	// TODO: set constraint to research_data
-	pub, err := c.engine.GetPublication(id)
+	pub, err := c.Engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -165,11 +160,11 @@ func (c *PublicationProjects) RemoveFromPublication(w http.ResponseWriter, r *ht
 	pub.Project = projects
 
 	// TODO: error handling
-	savedPub, _ := c.engine.UpdatePublication(pub)
+	savedPub, _ := c.Engine.UpdatePublication(pub)
 
-	c.render.HTML(w, 200,
+	c.Render.HTML(w, 200,
 		"publication/_projects",
-		views.NewData(c.render, r, struct {
+		views.NewData(c.Render, r, struct {
 			Publication *models.Publication
 		}{
 			savedPub,

@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/views"
 	"github.com/ugent-library/go-locale/locale"
@@ -15,35 +14,31 @@ import (
 )
 
 type PublicationConference struct {
-	engine *engine.Engine
-	render *render.Render
+	Context
 }
 
-func NewPublicationConference(e *engine.Engine, r *render.Render) *PublicationConference {
-	return &PublicationConference{
-		engine: e,
-		render: r,
-	}
+func NewPublicationConference(c Context) *PublicationConference {
+	return &PublicationConference{c}
 }
 
 func (c *PublicationConference) Show(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
-	pub, err := c.engine.GetPublication(id)
+	pub, err := c.Engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
-	c.render.HTML(w, 200,
+	c.Render.HTML(w, 200,
 		"publication/conference/_show",
-		views.NewData(c.render, r, struct {
+		views.NewData(c.Render, r, struct {
 			Publication *models.Publication
 			Show        *views.ShowBuilder
 		}{
 			pub,
-			views.NewShowBuilder(c.render, locale.Get(r.Context())),
+			views.NewShowBuilder(c.Render, locale.Get(r.Context())),
 		}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
@@ -52,21 +47,21 @@ func (c *PublicationConference) Show(w http.ResponseWriter, r *http.Request) {
 func (c *PublicationConference) OpenForm(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
-	pub, err := c.engine.GetPublication(id)
+	pub, err := c.Engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
-	c.render.HTML(w, 200,
+	c.Render.HTML(w, 200,
 		"publication/conference/_edit",
-		views.NewData(c.render, r, struct {
+		views.NewData(c.Render, r, struct {
 			Publication *models.Publication
 			Form        *views.FormBuilder
 		}{
 			pub,
-			views.NewFormBuilder(c.render, locale.Get(r.Context()), nil),
+			views.NewFormBuilder(c.Render, locale.Get(r.Context()), nil),
 		}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
@@ -75,7 +70,7 @@ func (c *PublicationConference) OpenForm(w http.ResponseWriter, r *http.Request)
 func (c *PublicationConference) SaveForm(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
-	pub, err := c.engine.GetPublication(id)
+	pub, err := c.Engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -93,17 +88,17 @@ func (c *PublicationConference) SaveForm(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	savedPub, err := c.engine.UpdatePublication(pub)
+	savedPub, err := c.Engine.UpdatePublication(pub)
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {
-		c.render.HTML(w, 200,
+		c.Render.HTML(w, 200,
 			"publication/conference/_edit",
-			views.NewData(c.render, r, struct {
+			views.NewData(c.Render, r, struct {
 				Publication *models.Publication
 				Form        *views.FormBuilder
 			}{
 				pub,
-				views.NewFormBuilder(c.render, locale.Get(r.Context()), formErrors),
+				views.NewFormBuilder(c.Render, locale.Get(r.Context()), formErrors),
 			}),
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
@@ -114,14 +109,14 @@ func (c *PublicationConference) SaveForm(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	c.render.HTML(w, 200,
+	c.Render.HTML(w, 200,
 		"publication/conference/_update",
-		views.NewData(c.render, r, struct {
+		views.NewData(c.Render, r, struct {
 			Publication *models.Publication
 			Show        *views.ShowBuilder
 		}{
 			savedPub,
-			views.NewShowBuilder(c.render, locale.Get(r.Context())),
+			views.NewShowBuilder(c.Render, locale.Get(r.Context())),
 		}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)

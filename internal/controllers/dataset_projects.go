@@ -5,29 +5,24 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/views"
 	"github.com/unrolled/render"
 )
 
 type DatasetProjects struct {
-	engine *engine.Engine
-	render *render.Render
+	Context
 }
 
-func NewDatasetProjects(e *engine.Engine, r *render.Render) *DatasetProjects {
-	return &DatasetProjects{
-		engine: e,
-		render: r,
-	}
+func NewDatasetProjects(c Context) *DatasetProjects {
+	return &DatasetProjects{c}
 }
 
-func (d *DatasetProjects) ListProjects(w http.ResponseWriter, r *http.Request) {
+func (c *DatasetProjects) ListProjects(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
 	// TODO: set constraint to research_data
-	pub, err := d.engine.GetPublication(id)
+	pub, err := c.Engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -35,11 +30,11 @@ func (d *DatasetProjects) ListProjects(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get 20 random projects (no search, init state)
-	hits, _ := d.engine.SuggestProjects("")
+	hits, _ := c.Engine.SuggestProjects("")
 
-	d.render.HTML(w, 200,
+	c.Render.HTML(w, 200,
 		"dataset/_projects_modal",
-		views.NewData(d.render, r, struct {
+		views.NewData(c.Render, r, struct {
 			Dataset *models.Publication
 			Hits    []models.Completion
 		}{
@@ -50,11 +45,11 @@ func (d *DatasetProjects) ListProjects(w http.ResponseWriter, r *http.Request) {
 	)
 }
 
-func (d *DatasetProjects) ActiveSearch(w http.ResponseWriter, r *http.Request) {
+func (c *DatasetProjects) ActiveSearch(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
 	// TODO: set constraint to research_data
-	pub, err := d.engine.GetPublication(id)
+	pub, err := c.Engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -69,11 +64,11 @@ func (d *DatasetProjects) ActiveSearch(w http.ResponseWriter, r *http.Request) {
 
 	// Get 20 results from the search query
 	query := r.Form["search"]
-	hits, _ := d.engine.SuggestProjects(query[0])
+	hits, _ := c.Engine.SuggestProjects(query[0])
 
-	d.render.HTML(w, 200,
+	c.Render.HTML(w, 200,
 		"dataset/_projects_modal_hits",
-		views.NewData(d.render, r, struct {
+		views.NewData(c.Render, r, struct {
 			Dataset *models.Publication
 			Hits    []models.Completion
 		}{
@@ -88,14 +83,14 @@ func (c *DatasetProjects) AddToDataset(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	projectId := mux.Vars(r)["project_id"]
 
-	dataset, err := c.engine.GetDataset(id)
+	dataset, err := c.Engine.GetDataset(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
-	project, err := c.engine.GetProject(projectId)
+	project, err := c.Engine.GetProject(projectId)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -108,16 +103,16 @@ func (c *DatasetProjects) AddToDataset(w http.ResponseWriter, r *http.Request) {
 	}
 	dataset.Project = append(dataset.Project, publicationProject)
 
-	savedDataset, _ := c.engine.UpdateDataset(dataset)
+	savedDataset, _ := c.Engine.UpdateDataset(dataset)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	c.render.HTML(w, 200,
+	c.Render.HTML(w, 200,
 		"dataset/_projects",
-		views.NewData(c.render, r, struct {
+		views.NewData(c.Render, r, struct {
 			Dataset *models.Dataset
 		}{
 			savedDataset,
@@ -130,9 +125,9 @@ func (c *DatasetProjects) ConfirmRemoveFromDataset(w http.ResponseWriter, r *htt
 	id := mux.Vars(r)["id"]
 	projectId := mux.Vars(r)["project_id"]
 
-	c.render.HTML(w, 200,
+	c.Render.HTML(w, 200,
 		"dataset/_projects_modal_confirm_removal",
-		views.NewData(c.render, r, struct {
+		views.NewData(c.Render, r, struct {
 			ID        string
 			ProjectID string
 		}{
@@ -147,7 +142,7 @@ func (c *DatasetProjects) RemoveFromDataset(w http.ResponseWriter, r *http.Reque
 	id := mux.Vars(r)["id"]
 	projectId := mux.Vars(r)["project_id"]
 
-	dataset, err := c.engine.GetDataset(id)
+	dataset, err := c.Engine.GetDataset(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -168,11 +163,11 @@ func (c *DatasetProjects) RemoveFromDataset(w http.ResponseWriter, r *http.Reque
 	dataset.Project = projects
 
 	// TODO: error handling
-	savedDataset, _ := c.engine.UpdateDataset(dataset)
+	savedDataset, _ := c.Engine.UpdateDataset(dataset)
 
-	c.render.HTML(w, 200,
+	c.Render.HTML(w, 200,
 		"dataset/_projects",
-		views.NewData(c.render, r, struct {
+		views.NewData(c.Render, r, struct {
 			Dataset *models.Dataset
 		}{
 			savedDataset,

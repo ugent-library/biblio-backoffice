@@ -5,28 +5,23 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/views"
 	"github.com/unrolled/render"
 )
 
 type PublicationDepartments struct {
-	engine *engine.Engine
-	render *render.Render
+	Context
 }
 
-func NewPublicationDepartments(e *engine.Engine, r *render.Render) *PublicationDepartments {
-	return &PublicationDepartments{
-		engine: e,
-		render: r,
-	}
+func NewPublicationDepartments(c Context) *PublicationDepartments {
+	return &PublicationDepartments{c}
 }
 
-func (p *PublicationDepartments) ListDepartments(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationDepartments) ListDepartments(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
-	pub, err := p.engine.GetPublication(id)
+	pub, err := c.Engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -34,9 +29,9 @@ func (p *PublicationDepartments) ListDepartments(w http.ResponseWriter, r *http.
 	}
 
 	// Get 20 random departments (no search, init state)
-	hits, _ := p.engine.SuggestDepartments("")
+	hits, _ := c.Engine.SuggestDepartments("")
 
-	p.render.HTML(w, 200,
+	c.Render.HTML(w, 200,
 		"publication/_departments_modal",
 		struct {
 			Publication *models.Publication
@@ -49,10 +44,10 @@ func (p *PublicationDepartments) ListDepartments(w http.ResponseWriter, r *http.
 	)
 }
 
-func (p *PublicationDepartments) ActiveSearch(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationDepartments) ActiveSearch(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
-	pub, err := p.engine.GetPublication(id)
+	pub, err := c.Engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -67,9 +62,9 @@ func (p *PublicationDepartments) ActiveSearch(w http.ResponseWriter, r *http.Req
 
 	// Get 20 results from the search query
 	query := r.Form["search"]
-	hits, _ := p.engine.SuggestDepartments(query[0])
+	hits, _ := c.Engine.SuggestDepartments(query[0])
 
-	p.render.HTML(w, 200,
+	c.Render.HTML(w, 200,
 		"publication/_departments_modal_hits",
 		struct {
 			Publication *models.Publication
@@ -86,7 +81,7 @@ func (c *PublicationDepartments) AddToPublication(w http.ResponseWriter, r *http
 	id := mux.Vars(r)["id"]
 	departmentId := mux.Vars(r)["department_id"]
 
-	pub, err := c.engine.GetPublication(id)
+	pub, err := c.Engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -104,13 +99,13 @@ func (c *PublicationDepartments) AddToPublication(w http.ResponseWriter, r *http
 		ID: departmentId,
 	}
 	pub.Department = append(pub.Department, publicationDepartment)
-	savedPub, _ := c.engine.UpdatePublication(pub)
+	savedPub, _ := c.Engine.UpdatePublication(pub)
 
 	// TODO: error handling if department save fails
 
-	c.render.HTML(w, 200,
+	c.Render.HTML(w, 200,
 		"publication/_departments",
-		views.NewData(c.render, r, struct {
+		views.NewData(c.Render, r, struct {
 			Publication *models.Publication
 		}{
 			savedPub,
@@ -119,11 +114,11 @@ func (c *PublicationDepartments) AddToPublication(w http.ResponseWriter, r *http
 	)
 }
 
-func (p *PublicationDepartments) ConfirmRemoveFromPublication(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationDepartments) ConfirmRemoveFromPublication(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	departmentId := mux.Vars(r)["department_id"]
 
-	p.render.HTML(w, 200,
+	c.Render.HTML(w, 200,
 		"publication/_departments_modal_confirm_removal",
 		struct {
 			ID           string
@@ -140,7 +135,7 @@ func (c *PublicationDepartments) RemoveFromPublication(w http.ResponseWriter, r 
 	id := mux.Vars(r)["id"]
 	departmentId := mux.Vars(r)["department_id"]
 
-	pub, err := c.engine.GetPublication(id)
+	pub, err := c.Engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -161,11 +156,11 @@ func (c *PublicationDepartments) RemoveFromPublication(w http.ResponseWriter, r 
 	pub.Department = departments
 
 	// TODO: error handling
-	savedPub, _ := c.engine.UpdatePublication(pub)
+	savedPub, _ := c.Engine.UpdatePublication(pub)
 
-	c.render.HTML(w, 200,
+	c.Render.HTML(w, 200,
 		"publication/_departments",
-		views.NewData(c.render, r, struct {
+		views.NewData(c.Render, r, struct {
 			Publication *models.Publication
 		}{
 			savedPub,

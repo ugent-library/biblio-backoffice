@@ -4,35 +4,22 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/gorilla/mux"
-	"github.com/gorilla/sessions"
 	"github.com/ugent-library/biblio-backend/internal/context"
-	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/views"
 	"github.com/unrolled/render"
 )
 
 type Users struct {
-	engine       *engine.Engine
-	render       *render.Render
-	sessionName  string
-	sessionStore sessions.Store
-	router       *mux.Router
+	Context
 }
 
-func NewUsers(e *engine.Engine, r *render.Render, sessionName string, sessionStore sessions.Store, router *mux.Router) *Users {
-	return &Users{
-		engine:       e,
-		render:       r,
-		router:       router,
-		sessionName:  sessionName,
-		sessionStore: sessionStore,
-	}
+func NewUsers(c Context) *Users {
+	return &Users{c}
 }
 
 func (c *Users) ImpersonateChoose(w http.ResponseWriter, r *http.Request) {
-	c.render.HTML(w, 200, "user/_impersonate_choose",
-		views.NewData(c.render, r, nil),
+	c.Render.HTML(w, 200, "user/_impersonate_choose",
+		views.NewData(c.Render, r, nil),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -41,7 +28,7 @@ func (c *Users) Impersonate(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	username := r.FormValue("username")
 
-	user, err := c.engine.GetUserByUsername(username)
+	user, err := c.Engine.GetUserByUsername(username)
 	if err != nil {
 		log.Printf("impersonate get user error: %s", err)
 		// TODO
@@ -54,23 +41,23 @@ func (c *Users) Impersonate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	session, _ := c.sessionStore.Get(r, c.sessionName)
+	session, _ := c.Session(r)
 	session.Values["original_user_id"] = context.GetUser(r.Context()).ID
 	session.Values["user_id"] = user.ID
 	session.Save(r, w)
 
-	redirectURL, _ := c.router.Get("home").URLPath()
+	redirectURL, _ := c.Router.Get("home").URLPath()
 	http.Redirect(w, r, redirectURL.String(), http.StatusFound)
 }
 
 func (c *Users) ImpersonateRemove(w http.ResponseWriter, r *http.Request) {
-	session, _ := c.sessionStore.Get(r, c.sessionName)
+	session, _ := c.Session(r)
 	if origUserID := session.Values["original_user_id"]; origUserID != nil {
 		delete(session.Values, "original_user_id")
 		session.Values["user_id"] = origUserID
 		session.Save(r, w)
 	}
 
-	redirectURL, _ := c.router.Get("home").URLPath()
+	redirectURL, _ := c.Router.Get("home").URLPath()
 	http.Redirect(w, r, redirectURL.String(), http.StatusFound)
 }

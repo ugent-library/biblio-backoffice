@@ -3,26 +3,24 @@ package routes
 import (
 	"log"
 	"net/http"
-	"net/url"
 
-	"github.com/gorilla/mux"
-	"github.com/gorilla/sessions"
+	"github.com/gorilla/handlers"
 	"github.com/ugent-library/biblio-backend/internal/context"
 	"github.com/ugent-library/biblio-backend/internal/controllers"
-	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/middleware"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/go-locale/locale"
-	"github.com/unrolled/render"
 	"gopkg.in/cas.v2"
 )
 
-func Register(baseURL *url.URL, e *engine.Engine, router *mux.Router, renderer *render.Render,
-	// oidcClient *oidc.Client,
-	sessionName string, sessionStore sessions.Store, localizer *locale.Localizer) {
+func Register(c controllers.Context) {
+	router := c.Router
+	basePath := c.BaseURL.Path
+
+	router.Use(handlers.RecoveryHandler())
 
 	// static files
-	router.PathPrefix(baseURL.Path + "/static/").Handler(http.StripPrefix(baseURL.Path+"/static/", http.FileServer(http.Dir("./static"))))
+	router.PathPrefix(basePath + "/static/").Handler(http.StripPrefix(basePath+"/static/", http.FileServer(http.Dir("./static"))))
 
 	// requireUser := middleware.RequireUser(baseURL.Path + "/logout")
 	// setUser := middleware.SetUser(e, sessionName, sessionStore)
@@ -40,10 +38,10 @@ func Register(baseURL *url.URL, e *engine.Engine, router *mux.Router, renderer *
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			var user *models.User
 
-			session, _ := sessionStore.Get(r, sessionName)
+			session, _ := c.Session(r)
 			userID := session.Values["user_id"]
 			if userID != nil {
-				u, err := e.GetUser(userID.(string))
+				u, err := c.Engine.GetUser(userID.(string))
 				if err != nil {
 					log.Printf("get user error: %s", err)
 					// TODO
@@ -54,7 +52,7 @@ func Register(baseURL *url.URL, e *engine.Engine, router *mux.Router, renderer *
 			}
 
 			if user == nil {
-				u, err := e.GetUserByUsername(cas.Username(r))
+				u, err := c.Engine.GetUserByUsername(cas.Username(r))
 				if err != nil {
 					log.Printf("get user error: %s", err)
 					http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -65,7 +63,7 @@ func Register(baseURL *url.URL, e *engine.Engine, router *mux.Router, renderer *
 
 			originalUserID := session.Values["original_user_id"]
 			if originalUserID != nil {
-				originalUser, err := e.GetUser(originalUserID.(string))
+				originalUser, err := c.Engine.GetUser(originalUserID.(string))
 				if err != nil {
 					log.Printf("get user error: %s", err)
 					// TODO
@@ -82,20 +80,20 @@ func Register(baseURL *url.URL, e *engine.Engine, router *mux.Router, renderer *
 	}
 
 	// authController := controllers.NewAuth(e, sessionName, sessionStore, oidcClient, router)
-	usersController := controllers.NewUsers(e, renderer, sessionName, sessionStore, router)
-	publicationsController := controllers.NewPublications(e, renderer)
-	datasetsController := controllers.NewDatasets(e, renderer)
-	publicationFilesController := controllers.NewPublicationFiles(e, renderer, router)
-	publicationDetailsController := controllers.NewPublicationDetails(e, renderer)
-	publicationConferenceController := controllers.NewPublicationConference(e, renderer)
-	publicationProjectsController := controllers.NewPublicationProjects(e, renderer)
-	publicationDepartmentsController := controllers.NewPublicationDepartments(e, renderer)
-	publicationAbstractsController := controllers.NewPublicationAbstracts(e, renderer)
-	publicationLinksController := controllers.NewPublicationLinks(e, renderer)
-	publicationAuthorsController := controllers.NewPublicationAuthors(e, renderer)
-	publicationDatasetsController := controllers.NewPublicationDatasets(e, renderer)
-	datasetDetailsController := controllers.NewDatasetDetails(e, renderer)
-	datasetProjectsController := controllers.NewDatasetProjects(e, renderer)
+	usersController := controllers.NewUsers(c)
+	publicationsController := controllers.NewPublications(c)
+	datasetsController := controllers.NewDatasets(c)
+	publicationFilesController := controllers.NewPublicationFiles(c)
+	publicationDetailsController := controllers.NewPublicationDetails(c)
+	publicationConferenceController := controllers.NewPublicationConference(c)
+	publicationProjectsController := controllers.NewPublicationProjects(c)
+	publicationDepartmentsController := controllers.NewPublicationDepartments(c)
+	publicationAbstractsController := controllers.NewPublicationAbstracts(c)
+	publicationLinksController := controllers.NewPublicationLinks(c)
+	publicationAuthorsController := controllers.NewPublicationAuthors(c)
+	publicationDatasetsController := controllers.NewPublicationDatasets(c)
+	datasetDetailsController := controllers.NewDatasetDetails(c)
+	datasetProjectsController := controllers.NewDatasetProjects(c)
 
 	// TODO fix absolute url generation
 	// var schemes []string
@@ -106,14 +104,14 @@ func Register(baseURL *url.URL, e *engine.Engine, router *mux.Router, renderer *
 	// }
 	// r = r.Schemes(schemes...).Host(u.Host).PathPrefix(u.Path).Subrouter()
 
-	r := router.PathPrefix(baseURL.Path).Subrouter()
+	r := router.PathPrefix(basePath).Subrouter()
 
 	// r.Use(handlers.HTTPMethodOverrideHandler)
-	r.Use(locale.Detect(localizer))
+	r.Use(locale.Detect(c.Localizer))
 
 	// home
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, baseURL.Path+"/publication", http.StatusFound)
+		http.Redirect(w, r, basePath+"/publication", http.StatusFound)
 	}).Methods("GET").Name("home")
 
 	// auth
@@ -126,7 +124,7 @@ func Register(baseURL *url.URL, e *engine.Engine, router *mux.Router, renderer *
 	// 	Methods("GET").
 	// 	Name("logout")
 	r.HandleFunc("/logout", func(w http.ResponseWriter, r *http.Request) {
-		session, _ := sessionStore.Get(r, sessionName)
+		session, _ := c.SessionStore.Get(r, c.SessionName)
 		delete(session.Values, "original_user_id")
 		delete(session.Values, "user_id")
 		session.Save(r, w)

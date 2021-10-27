@@ -13,28 +13,24 @@ import (
 )
 
 type PublicationDatasets struct {
-	engine *engine.Engine
-	render *render.Render
+	Context
 }
 
-func NewPublicationDatasets(e *engine.Engine, r *render.Render) *PublicationDatasets {
-	return &PublicationDatasets{
-		engine: e,
-		render: r,
-	}
+func NewPublicationDatasets(c Context) *PublicationDatasets {
+	return &PublicationDatasets{c}
 }
 
 func (c *PublicationDatasets) Choose(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
-	pub, err := c.engine.GetPublication(id)
+	pub, err := c.Engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
-	pubDatasets, err := c.engine.GetPublicationDatasets(id)
+	pubDatasets, err := c.Engine.GetPublicationDatasets(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -48,14 +44,14 @@ func (c *PublicationDatasets) Choose(w http.ResponseWriter, r *http.Request) {
 	searchArgs := engine.NewSearchArgs()
 	searchArgs.Filters["exclude"] = pubDatasetIDs
 
-	hits, err := c.engine.UserDatasets(context.GetUser(r.Context()).ID, searchArgs)
+	hits, err := c.Engine.UserDatasets(context.GetUser(r.Context()).ID, searchArgs)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	c.render.HTML(w, 200,
+	c.Render.HTML(w, 200,
 		"publication/datasets/_modal",
 		struct {
 			Publication *models.Publication
@@ -71,7 +67,7 @@ func (c *PublicationDatasets) Choose(w http.ResponseWriter, r *http.Request) {
 func (c *PublicationDatasets) ActiveSearch(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
-	pub, err := c.engine.GetPublication(id)
+	pub, err := c.Engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -83,7 +79,7 @@ func (c *PublicationDatasets) ActiveSearch(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	pubDatasets, err := c.engine.GetPublicationDatasets(id)
+	pubDatasets, err := c.Engine.GetPublicationDatasets(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -98,14 +94,14 @@ func (c *PublicationDatasets) ActiveSearch(w http.ResponseWriter, r *http.Reques
 	searchArgs.Query = r.Form["search"][0]
 	searchArgs.Filters["exclude"] = pubDatasetIDs
 
-	hits, err := c.engine.UserDatasets(context.GetUser(r.Context()).ID, searchArgs)
+	hits, err := c.Engine.UserDatasets(context.GetUser(r.Context()).ID, searchArgs)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	c.render.HTML(w, 200,
+	c.Render.HTML(w, 200,
 		"publication/datasets/_modal_hits",
 		struct {
 			Publication *models.Publication
@@ -122,28 +118,28 @@ func (c *PublicationDatasets) Add(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	datasetID := mux.Vars(r)["dataset_id"]
 
-	pub, err := c.engine.GetPublication(id)
+	pub, err := c.Engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
-	_, err = c.engine.GetPublication(datasetID)
+	_, err = c.Engine.GetPublication(datasetID)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
-	err = c.engine.AddPublicationDataset(id, datasetID)
+	err = c.Engine.AddPublicationDataset(id, datasetID)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	datasets, err := c.engine.GetPublicationDatasets(id)
+	datasets, err := c.Engine.GetPublicationDatasets(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -152,9 +148,9 @@ func (c *PublicationDatasets) Add(w http.ResponseWriter, r *http.Request) {
 
 	pub.Dataset = datasets
 
-	c.render.HTML(w, 200,
+	c.Render.HTML(w, 200,
 		"publication/datasets/_content",
-		views.NewData(c.render, r, struct {
+		views.NewData(c.Render, r, struct {
 			Publication *models.Publication
 		}{
 			pub,
@@ -167,7 +163,7 @@ func (c *PublicationDatasets) ConfirmRemove(w http.ResponseWriter, r *http.Reque
 	id := mux.Vars(r)["id"]
 	datasetID := mux.Vars(r)["dataset_id"]
 
-	c.render.HTML(w, 200,
+	c.Render.HTML(w, 200,
 		"publication/datasets/_modal_confirm_removal",
 		struct {
 			PublicationID string
@@ -184,21 +180,21 @@ func (c *PublicationDatasets) Remove(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	datasetID := mux.Vars(r)["dataset_id"]
 
-	pub, err := c.engine.GetPublication(id)
+	pub, err := c.Engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
-	err = c.engine.RemovePublicationDataset(id, datasetID)
+	err = c.Engine.RemovePublicationDataset(id, datasetID)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	datasets, err := c.engine.GetPublicationDatasets(id)
+	datasets, err := c.Engine.GetPublicationDatasets(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -207,9 +203,9 @@ func (c *PublicationDatasets) Remove(w http.ResponseWriter, r *http.Request) {
 
 	pub.Dataset = datasets
 
-	c.render.HTML(w, 200,
+	c.Render.HTML(w, 200,
 		"publication/datasets/_content",
-		views.NewData(c.render, r, struct {
+		views.NewData(c.Render, r, struct {
 			Publication *models.Publication
 		}{
 			pub,

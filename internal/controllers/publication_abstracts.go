@@ -7,7 +7,6 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
-	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/views"
 	"github.com/ugent-library/go-locale/locale"
@@ -17,19 +16,15 @@ import (
 )
 
 type PublicationAbstracts struct {
-	engine *engine.Engine
-	render *render.Render
+	Context
 }
 
-func NewPublicationAbstracts(e *engine.Engine, r *render.Render) *PublicationAbstracts {
-	return &PublicationAbstracts{
-		engine: e,
-		render: r,
-	}
+func NewPublicationAbstracts(c Context) *PublicationAbstracts {
+	return &PublicationAbstracts{c}
 }
 
 // Show the "Add abstract" modal
-func (p *PublicationAbstracts) AddAbstract(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationAbstracts) AddAbstract(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
 	abstract := &models.Text{}
@@ -38,9 +33,9 @@ func (p *PublicationAbstracts) AddAbstract(w http.ResponseWriter, r *http.Reques
 	w.Header().Set("HX-Trigger-After-Swap", "PublicationAddAbstractAfterSwap")
 	w.Header().Set("HX-Trigger-After-Settle", "PublicationAddAbstractAfterSettle")
 
-	p.render.HTML(w, http.StatusOK,
+	c.Render.HTML(w, http.StatusOK,
 		"publication/abstracts/_form",
-		views.NewData(p.render, r, struct {
+		views.NewData(c.Render, r, struct {
 			PublicationID string
 			Abstract      *models.Text
 			Form          *views.FormBuilder
@@ -48,18 +43,18 @@ func (p *PublicationAbstracts) AddAbstract(w http.ResponseWriter, r *http.Reques
 		}{
 			id,
 			abstract,
-			views.NewFormBuilder(p.render, locale.Get(r.Context()), nil),
-			p.engine.Vocabularies(),
+			views.NewFormBuilder(c.Render, locale.Get(r.Context()), nil),
+			c.Engine.Vocabularies(),
 		}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
 
 // Save an abstract to Librecat
-func (p *PublicationAbstracts) CreateAbstract(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationAbstracts) CreateAbstract(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
-	pub, err := p.engine.GetPublication(id)
+	pub, err := c.Engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -85,12 +80,12 @@ func (p *PublicationAbstracts) CreateAbstract(w http.ResponseWriter, r *http.Req
 	abstracts = append(abstracts, *abstract)
 	pub.Abstract = abstracts
 
-	savedPub, err := p.engine.UpdatePublication(pub)
+	savedPub, err := c.Engine.UpdatePublication(pub)
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {
-		p.render.HTML(w, 200,
+		c.Render.HTML(w, 200,
 			"publication/abstracts/_form",
-			views.NewData(p.render, r, struct {
+			views.NewData(c.Render, r, struct {
 				PublicationID string
 				Abstract      *models.Text
 				Form          *views.FormBuilder
@@ -98,8 +93,8 @@ func (p *PublicationAbstracts) CreateAbstract(w http.ResponseWriter, r *http.Req
 			}{
 				savedPub.ID,
 				abstract,
-				views.NewFormBuilder(p.render, locale.Get(r.Context()), formErrors),
-				p.engine.Vocabularies(),
+				views.NewFormBuilder(c.Render, locale.Get(r.Context()), formErrors),
+				c.Engine.Vocabularies(),
 			}),
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
@@ -114,9 +109,9 @@ func (p *PublicationAbstracts) CreateAbstract(w http.ResponseWriter, r *http.Req
 	w.Header().Set("HX-Trigger-After-Swap", "PublicationCreateAbstractAfterSwap")
 	w.Header().Set("HX-Trigger-After-Settle", "PublicationCreateAbstractAfterSettle")
 
-	p.render.HTML(w, http.StatusOK,
+	c.Render.HTML(w, http.StatusOK,
 		"publication/abstracts/_table_body",
-		views.NewData(p.render, r, struct {
+		views.NewData(c.Render, r, struct {
 			Publication *models.Publication
 		}{
 			savedPub,
@@ -126,12 +121,12 @@ func (p *PublicationAbstracts) CreateAbstract(w http.ResponseWriter, r *http.Req
 }
 
 // Show the "Edit abstract" modal
-func (p *PublicationAbstracts) EditAbstract(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationAbstracts) EditAbstract(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	muxRowDelta := mux.Vars(r)["delta"]
 	rowDelta, _ := strconv.Atoi(muxRowDelta)
 
-	pub, err := p.engine.GetPublication(id)
+	pub, err := c.Engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -144,9 +139,9 @@ func (p *PublicationAbstracts) EditAbstract(w http.ResponseWriter, r *http.Reque
 	w.Header().Set("HX-Trigger-After-Swap", "PublicationAddAbstractAfterSwap")
 	w.Header().Set("HX-Trigger-After-Settle", "PublicationAddAbstractAfterSettle")
 
-	p.render.HTML(w, http.StatusOK,
+	c.Render.HTML(w, http.StatusOK,
 		"publication/abstracts/_form_edit",
-		views.NewData(p.render, r, struct {
+		views.NewData(c.Render, r, struct {
 			PublicationID string
 			Delta         string
 			Abstract      *models.Text
@@ -156,20 +151,20 @@ func (p *PublicationAbstracts) EditAbstract(w http.ResponseWriter, r *http.Reque
 			id,
 			muxRowDelta,
 			abstract,
-			views.NewFormBuilder(p.render, locale.Get(r.Context()), nil),
-			p.engine.Vocabularies(),
+			views.NewFormBuilder(c.Render, locale.Get(r.Context()), nil),
+			c.Engine.Vocabularies(),
 		}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
 
 // // Save the updated abstract to Librecat
-func (p *PublicationAbstracts) UpdateAbstract(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationAbstracts) UpdateAbstract(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	muxRowDelta := mux.Vars(r)["delta"]
 	rowDelta, _ := strconv.Atoi(muxRowDelta)
 
-	pub, err := p.engine.GetPublication(id)
+	pub, err := c.Engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -195,12 +190,12 @@ func (p *PublicationAbstracts) UpdateAbstract(w http.ResponseWriter, r *http.Req
 	abstracts[rowDelta] = *abstract
 	pub.Abstract = abstracts
 
-	savedPub, err := p.engine.UpdatePublication(pub)
+	savedPub, err := c.Engine.UpdatePublication(pub)
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {
-		p.render.HTML(w, 200,
+		c.Render.HTML(w, 200,
 			"publication/abstracts/_form_edit",
-			views.NewData(p.render, r, struct {
+			views.NewData(c.Render, r, struct {
 				PublicationID string
 				Delta         string
 				Abstract      *models.Text
@@ -210,8 +205,8 @@ func (p *PublicationAbstracts) UpdateAbstract(w http.ResponseWriter, r *http.Req
 				savedPub.ID,
 				strconv.Itoa(rowDelta),
 				abstract,
-				views.NewFormBuilder(p.render, locale.Get(r.Context()), formErrors),
-				p.engine.Vocabularies(),
+				views.NewFormBuilder(c.Render, locale.Get(r.Context()), formErrors),
+				c.Engine.Vocabularies(),
 			}),
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
@@ -226,9 +221,9 @@ func (p *PublicationAbstracts) UpdateAbstract(w http.ResponseWriter, r *http.Req
 	w.Header().Set("HX-Trigger-After-Swap", "PublicationUpdateAbstractAfterSwap")
 	w.Header().Set("HX-Trigger-After-Settle", "PublicationUpdateAbstractAfterSettle")
 
-	p.render.HTML(w, http.StatusOK,
+	c.Render.HTML(w, http.StatusOK,
 		"publication/abstracts/_table_body",
-		views.NewData(p.render, r, struct {
+		views.NewData(c.Render, r, struct {
 			Publication *models.Publication
 		}{
 			savedPub,
@@ -238,7 +233,7 @@ func (p *PublicationAbstracts) UpdateAbstract(w http.ResponseWriter, r *http.Req
 }
 
 // // Show the "Confirm remove" modal
-func (p *PublicationAbstracts) ConfirmRemoveFromPublication(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationAbstracts) ConfirmRemoveFromPublication(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	muxRowDelta := mux.Vars(r)["delta"]
 
@@ -246,7 +241,7 @@ func (p *PublicationAbstracts) ConfirmRemoveFromPublication(w http.ResponseWrite
 	w.Header().Set("HX-Trigger-After-Swap", "PublicationConfirmRemoveAfterSwap")
 	w.Header().Set("HX-Trigger-After-Settle", "PublicationConfirmRemoveAfterSettle")
 
-	p.render.HTML(w, 200,
+	c.Render.HTML(w, 200,
 		"publication/_abstracts_modal_confirm_removal",
 		struct {
 			ID  string
@@ -260,12 +255,12 @@ func (p *PublicationAbstracts) ConfirmRemoveFromPublication(w http.ResponseWrite
 }
 
 // // Remove an abstract from Librecat
-func (p *PublicationAbstracts) RemoveAbstract(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationAbstracts) RemoveAbstract(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	muxRowDelta := mux.Vars(r)["delta"]
 	rowDelta, _ := strconv.Atoi(muxRowDelta)
 
-	pub, err := p.engine.GetPublication(id)
+	pub, err := c.Engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -279,7 +274,7 @@ func (p *PublicationAbstracts) RemoveAbstract(w http.ResponseWriter, r *http.Req
 	pub.Abstract = abstracts
 
 	// TODO: error handling
-	p.engine.UpdatePublication(pub)
+	c.Engine.UpdatePublication(pub)
 
 	w.Header().Set("HX-Trigger", "PublicationRemoveAbstract")
 	w.Header().Set("HX-Trigger-After-Swap", "PublicationRemoveAbstractAfterSwap")

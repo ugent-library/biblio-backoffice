@@ -10,31 +10,23 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/views"
 	"github.com/ugent-library/go-locale/locale"
-	"github.com/unrolled/render"
 )
 
 type PublicationFiles struct {
-	engine *engine.Engine
-	render *render.Render
-	router *mux.Router
+	Context
 }
 
-func NewPublicationFiles(e *engine.Engine, r *render.Render, router *mux.Router) *PublicationFiles {
-	return &PublicationFiles{
-		engine: e,
-		render: r,
-		router: router,
-	}
+func NewPublicationFiles(c Context) *PublicationFiles {
+	return &PublicationFiles{c}
 }
 
 func (c *PublicationFiles) Download(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	fileID := mux.Vars(r)["file_id"]
-	pub, err := c.engine.GetPublication(id)
+	pub, err := c.Engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -56,7 +48,7 @@ func (c *PublicationFiles) Download(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// quick and dirty reverse proxy
-	baseURL, _ := url.Parse(c.engine.Config.URL)
+	baseURL, _ := url.Parse(c.Engine.Config.URL)
 	url, _ := url.Parse(fileURL)
 	proxy := httputil.NewSingleHostReverseProxy(baseURL)
 	// update the headers to allow for SSL redirection
@@ -65,14 +57,14 @@ func (c *PublicationFiles) Download(w http.ResponseWriter, r *http.Request) {
 	r.URL.Path = strings.Replace(url.Path, baseURL.Path, "", 1)
 	r.Header.Set("X-Forwarded-Host", r.Header.Get("Host"))
 	r.Host = url.Host
-	r.SetBasicAuth(c.engine.Config.Username, c.engine.Config.Password)
+	r.SetBasicAuth(c.Engine.Config.Username, c.Engine.Config.Password)
 	proxy.ServeHTTP(w, r)
 }
 
 func (c *PublicationFiles) Thumbnail(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	fileID := mux.Vars(r)["file_id"]
-	pub, err := c.engine.GetPublication(id)
+	pub, err := c.Engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -94,7 +86,7 @@ func (c *PublicationFiles) Thumbnail(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// quick and dirty reverse proxy
-	baseURL, _ := url.Parse(c.engine.Config.URL)
+	baseURL, _ := url.Parse(c.Engine.Config.URL)
 	url, _ := url.Parse(thumbnailURL)
 	proxy := httputil.NewSingleHostReverseProxy(baseURL)
 	// update the headers to allow for SSL redirection
@@ -103,13 +95,13 @@ func (c *PublicationFiles) Thumbnail(w http.ResponseWriter, r *http.Request) {
 	r.URL.Path = strings.Replace(url.Path, baseURL.Path, "", 1)
 	r.Header.Set("X-Forwarded-Host", r.Header.Get("Host"))
 	r.Host = url.Host
-	r.SetBasicAuth(c.engine.Config.Username, c.engine.Config.Password)
+	r.SetBasicAuth(c.Engine.Config.Username, c.Engine.Config.Password)
 	proxy.ServeHTTP(w, r)
 }
 
 func (c *PublicationFiles) Upload(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
-	_, err := c.engine.GetPublication(id)
+	_, err := c.Engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -156,22 +148,22 @@ func (c *PublicationFiles) Upload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := c.engine.AddPublicationFile(id, pubFile, fileContents); err != nil {
+	if err := c.Engine.AddPublicationFile(id, pubFile, fileContents); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	pub, _ := c.engine.GetPublication(id)
+	pub, _ := c.Engine.GetPublication(id)
 
-	c.render.HTML(w, http.StatusCreated, "publication/show",
-		views.NewData(c.render, r, struct {
+	c.Render.HTML(w, http.StatusCreated, "publication/show",
+		views.NewData(c.Render, r, struct {
 			Publication  *models.Publication
 			Show         *views.ShowBuilder
 			Vocabularies map[string][]string
 		}{
 			pub,
-			views.NewShowBuilder(c.render, locale.Get(r.Context())),
-			c.engine.Vocabularies(),
+			views.NewShowBuilder(c.Render, locale.Get(r.Context())),
+			c.Engine.Vocabularies(),
 		}),
 	)
 }

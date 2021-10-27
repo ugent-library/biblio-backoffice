@@ -7,7 +7,6 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
-	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/views"
 	"github.com/ugent-library/go-locale/locale"
@@ -17,19 +16,15 @@ import (
 )
 
 type PublicationLinks struct {
-	engine *engine.Engine
-	render *render.Render
+	Context
 }
 
-func NewPublicationLinks(e *engine.Engine, r *render.Render) *PublicationLinks {
-	return &PublicationLinks{
-		engine: e,
-		render: r,
-	}
+func NewPublicationLinks(c Context) *PublicationLinks {
+	return &PublicationLinks{c}
 }
 
 // Show the "Add link" modal
-func (p *PublicationLinks) AddLink(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationLinks) AddLink(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
 	link := &models.PublicationLink{}
@@ -38,9 +33,9 @@ func (p *PublicationLinks) AddLink(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("HX-Trigger-After-Swap", "PublicationAddLinkAfterSwap")
 	w.Header().Set("HX-Trigger-After-Settle", "PublicationAddLinkAfterSettle")
 
-	p.render.HTML(w, http.StatusOK,
+	c.Render.HTML(w, http.StatusOK,
 		"publication/links/_form",
-		views.NewData(p.render, r, struct {
+		views.NewData(c.Render, r, struct {
 			PublicationID string
 			Link          *models.PublicationLink
 			Form          *views.FormBuilder
@@ -48,18 +43,18 @@ func (p *PublicationLinks) AddLink(w http.ResponseWriter, r *http.Request) {
 		}{
 			id,
 			link,
-			views.NewFormBuilder(p.render, locale.Get(r.Context()), nil),
-			p.engine.Vocabularies(),
+			views.NewFormBuilder(c.Render, locale.Get(r.Context()), nil),
+			c.Engine.Vocabularies(),
 		}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
 
 // Save a link to Librecat
-func (p *PublicationLinks) CreateLink(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationLinks) CreateLink(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
-	pub, err := p.engine.GetPublication(id)
+	pub, err := c.Engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -85,12 +80,12 @@ func (p *PublicationLinks) CreateLink(w http.ResponseWriter, r *http.Request) {
 	links = append(links, *link)
 	pub.Link = links
 
-	savedPub, err := p.engine.UpdatePublication(pub)
+	savedPub, err := c.Engine.UpdatePublication(pub)
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {
-		p.render.HTML(w, 200,
+		c.Render.HTML(w, 200,
 			"publication/links/_form",
-			views.NewData(p.render, r, struct {
+			views.NewData(c.Render, r, struct {
 				PublicationID string
 				Link          *models.PublicationLink
 				Form          *views.FormBuilder
@@ -98,8 +93,8 @@ func (p *PublicationLinks) CreateLink(w http.ResponseWriter, r *http.Request) {
 			}{
 				savedPub.ID,
 				link,
-				views.NewFormBuilder(p.render, locale.Get(r.Context()), formErrors),
-				p.engine.Vocabularies(),
+				views.NewFormBuilder(c.Render, locale.Get(r.Context()), formErrors),
+				c.Engine.Vocabularies(),
 			}),
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
@@ -114,9 +109,9 @@ func (p *PublicationLinks) CreateLink(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("HX-Trigger-After-Swap", "PublicationCreateLinkAfterSwap")
 	w.Header().Set("HX-Trigger-After-Settle", "PublicationCreateLinkAfterSettle")
 
-	p.render.HTML(w, http.StatusOK,
+	c.Render.HTML(w, http.StatusOK,
 		"publication/links/_table_body",
-		views.NewData(p.render, r, struct {
+		views.NewData(c.Render, r, struct {
 			Publication *models.Publication
 		}{
 			savedPub,
@@ -126,12 +121,12 @@ func (p *PublicationLinks) CreateLink(w http.ResponseWriter, r *http.Request) {
 }
 
 // Show the "Edit link" modal
-func (p *PublicationLinks) EditLink(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationLinks) EditLink(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	muxRowDelta := mux.Vars(r)["delta"]
 	rowDelta, _ := strconv.Atoi(muxRowDelta)
 
-	pub, err := p.engine.GetPublication(id)
+	pub, err := c.Engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -144,9 +139,9 @@ func (p *PublicationLinks) EditLink(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("HX-Trigger-After-Swap", "PublicationEditLinkAfterSwap")
 	w.Header().Set("HX-Trigger-After-Settle", "PublicationEditLinkAfterSwapAfterSettle")
 
-	p.render.HTML(w, http.StatusOK,
+	c.Render.HTML(w, http.StatusOK,
 		"publication/links/_form_edit",
-		views.NewData(p.render, r, struct {
+		views.NewData(c.Render, r, struct {
 			PublicationID string
 			Delta         string
 			Link          *models.PublicationLink
@@ -156,20 +151,20 @@ func (p *PublicationLinks) EditLink(w http.ResponseWriter, r *http.Request) {
 			id,
 			muxRowDelta,
 			link,
-			views.NewFormBuilder(p.render, locale.Get(r.Context()), nil),
-			p.engine.Vocabularies(),
+			views.NewFormBuilder(c.Render, locale.Get(r.Context()), nil),
+			c.Engine.Vocabularies(),
 		}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
 
 // // Save the updated link to Librecat
-func (p *PublicationLinks) UpdateLink(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationLinks) UpdateLink(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	muxRowDelta := mux.Vars(r)["delta"]
 	rowDelta, _ := strconv.Atoi(muxRowDelta)
 
-	pub, err := p.engine.GetPublication(id)
+	pub, err := c.Engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -197,12 +192,12 @@ func (p *PublicationLinks) UpdateLink(w http.ResponseWriter, r *http.Request) {
 
 	log.Println(links)
 
-	savedPub, err := p.engine.UpdatePublication(pub)
+	savedPub, err := c.Engine.UpdatePublication(pub)
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {
-		p.render.HTML(w, 200,
+		c.Render.HTML(w, 200,
 			"publication/links/_form_edit",
-			views.NewData(p.render, r, struct {
+			views.NewData(c.Render, r, struct {
 				PublicationID string
 				Delta         string
 				Link          *models.PublicationLink
@@ -212,8 +207,8 @@ func (p *PublicationLinks) UpdateLink(w http.ResponseWriter, r *http.Request) {
 				savedPub.ID,
 				strconv.Itoa(rowDelta),
 				link,
-				views.NewFormBuilder(p.render, locale.Get(r.Context()), formErrors),
-				p.engine.Vocabularies(),
+				views.NewFormBuilder(c.Render, locale.Get(r.Context()), formErrors),
+				c.Engine.Vocabularies(),
 			}),
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
@@ -228,9 +223,9 @@ func (p *PublicationLinks) UpdateLink(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("HX-Trigger-After-Swap", "PublicationUpdateLinkAfterSwap")
 	w.Header().Set("HX-Trigger-After-Settle", "PublicationUpdateLinkAfterSettle")
 
-	p.render.HTML(w, http.StatusOK,
+	c.Render.HTML(w, http.StatusOK,
 		"publication/links/_table_body",
-		views.NewData(p.render, r, struct {
+		views.NewData(c.Render, r, struct {
 			Publication *models.Publication
 		}{
 			savedPub,
@@ -240,7 +235,7 @@ func (p *PublicationLinks) UpdateLink(w http.ResponseWriter, r *http.Request) {
 }
 
 // // Show the "Confirm remove" modal
-func (p *PublicationLinks) ConfirmRemoveFromPublication(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationLinks) ConfirmRemoveFromPublication(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	muxRowDelta := mux.Vars(r)["delta"]
 
@@ -248,7 +243,7 @@ func (p *PublicationLinks) ConfirmRemoveFromPublication(w http.ResponseWriter, r
 	w.Header().Set("HX-Trigger-After-Swap", "PublicationConfirmRemoveAfterSwap")
 	w.Header().Set("HX-Trigger-After-Settle", "PublicationConfirmRemoveAfterSettle")
 
-	p.render.HTML(w, 200,
+	c.Render.HTML(w, 200,
 		"publication/_links_modal_confirm_removal",
 		struct {
 			ID  string
@@ -262,12 +257,12 @@ func (p *PublicationLinks) ConfirmRemoveFromPublication(w http.ResponseWriter, r
 }
 
 // // Remove a link from Librecat
-func (p *PublicationLinks) RemoveLink(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationLinks) RemoveLink(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	muxRowDelta := mux.Vars(r)["delta"]
 	rowDelta, _ := strconv.Atoi(muxRowDelta)
 
-	pub, err := p.engine.GetPublication(id)
+	pub, err := c.Engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -281,7 +276,7 @@ func (p *PublicationLinks) RemoveLink(w http.ResponseWriter, r *http.Request) {
 	pub.Link = links
 
 	// TODO: error handling
-	p.engine.UpdatePublication(pub)
+	c.Engine.UpdatePublication(pub)
 
 	w.Header().Set("HX-Trigger", "PublicationRemoveLink")
 	w.Header().Set("HX-Trigger-After-Swap", "PublicationRemoveLinkAfterSwap")

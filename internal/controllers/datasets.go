@@ -11,7 +11,6 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/views"
 	"github.com/ugent-library/go-locale/locale"
 	"github.com/ugent-library/go-web/forms"
-	"github.com/unrolled/render"
 )
 
 type DatasetListVars struct {
@@ -21,12 +20,11 @@ type DatasetListVars struct {
 }
 
 type Datasets struct {
-	engine *engine.Engine
-	render *render.Render
+	Context
 }
 
-func NewDatasets(e *engine.Engine, r *render.Render) *Datasets {
-	return &Datasets{engine: e, render: r}
+func NewDatasets(c Context) *Datasets {
+	return &Datasets{c}
 }
 
 func (c *Datasets) List(w http.ResponseWriter, r *http.Request) {
@@ -37,38 +35,38 @@ func (c *Datasets) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	hits, err := c.engine.UserDatasets(context.GetUser(r.Context()).ID, args)
+	hits, err := c.Engine.UserDatasets(context.GetUser(r.Context()).ID, args)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	c.render.HTML(w, http.StatusOK, "dataset/list",
-		views.NewData(c.render, r, DatasetListVars{
+	c.Render.HTML(w, http.StatusOK, "dataset/list",
+		views.NewData(c.Render, r, DatasetListVars{
 			SearchArgs:       args,
 			Hits:             hits,
-			PublicationSorts: c.engine.Vocabularies()["publication_sorts"],
+			PublicationSorts: c.Engine.Vocabularies()["publication_sorts"],
 		}),
 	)
 }
 
 func (c *Datasets) Show(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
-	dataset, err := c.engine.GetDataset(id)
+	dataset, err := c.Engine.GetDataset(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
-	c.render.HTML(w, http.StatusOK, "dataset/show",
-		views.NewData(c.render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "dataset/show",
+		views.NewData(c.Render, r, struct {
 			Dataset *models.Dataset
 			Show    *views.ShowBuilder
 		}{
 			dataset,
-			views.NewShowBuilder(c.render, locale.Get(r.Context())),
+			views.NewShowBuilder(c.Render, locale.Get(r.Context())),
 		}),
 	)
 }

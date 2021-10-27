@@ -35,7 +35,6 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
-	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/views"
 	"github.com/ugent-library/go-web/forms"
@@ -44,21 +43,17 @@ import (
 )
 
 type PublicationAuthors struct {
-	engine *engine.Engine
-	render *render.Render
+	Context
 }
 
-func NewPublicationAuthors(e *engine.Engine, r *render.Render) *PublicationAuthors {
-	return &PublicationAuthors{
-		engine: e,
-		render: r,
-	}
+func NewPublicationAuthors(c Context) *PublicationAuthors {
+	return &PublicationAuthors{c}
 }
 
-func (p *PublicationAuthors) List(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationAuthors) List(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
-	pub, err := p.engine.GetPublication(id)
+	pub, err := c.Engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -69,14 +64,14 @@ func (p *PublicationAuthors) List(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("HX-Trigger-After-Swap", "ITListAfterSwap")
 	w.Header().Set("HX-Trigger-After-Settle", "ITListAfterSettle")
 
-	p.render.HTML(w, 200,
+	c.Render.HTML(w, 200,
 		"publication/authors/_default_table_body",
-		views.NewData(p.render, r, views.NewContributorData(p.render, pub, nil, "0")),
+		views.NewData(c.Render, r, views.NewContributorData(c.Render, pub, nil, "0")),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
 
-func (p *PublicationAuthors) AddRow(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationAuthors) AddRow(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	muxRowDelta := mux.Vars(r)["delta"]
 	rowDelta, _ := strconv.Atoi(muxRowDelta)
@@ -92,14 +87,14 @@ func (p *PublicationAuthors) AddRow(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("HX-Trigger-After-Swap", "ITAddRowAfterSwap")
 	w.Header().Set("HX-Trigger-After-Settle", "ITAddRowAfterSettle")
 
-	p.render.HTML(w, http.StatusOK,
+	c.Render.HTML(w, http.StatusOK,
 		"publication/authors/_default_form",
-		views.NewData(p.render, r, views.NewContributorForm(p.render, id, author, muxRowDelta, nil)),
+		views.NewData(c.Render, r, views.NewContributorForm(c.Render, id, author, muxRowDelta, nil)),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
 
-func (p *PublicationAuthors) ShiftRow(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationAuthors) ShiftRow(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	muxRowDelta := mux.Vars(r)["delta"]
 
@@ -112,14 +107,14 @@ func (p *PublicationAuthors) ShiftRow(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("HX-Trigger-After-Swap", "ITAddRowAfterSwap")
 	w.Header().Set("HX-Trigger-After-Settle", "ITAddRowAfterSettle")
 
-	p.render.HTML(w, http.StatusOK,
+	c.Render.HTML(w, http.StatusOK,
 		"publication/authors/_default_form",
-		views.NewData(p.render, r, views.NewContributorForm(p.render, id, author, muxRowDelta, nil)),
+		views.NewData(c.Render, r, views.NewContributorForm(c.Render, id, author, muxRowDelta, nil)),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
 
-func (p *PublicationAuthors) CancelAddRow(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationAuthors) CancelAddRow(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("HX-Trigger", "ITCancelAddRow")
 	w.Header().Set("HX-Trigger-After-Swap", "ITCancelAddRowAfterSwap")
 	w.Header().Set("HX-Trigger-After-Settle", "ITCancelAddRowAfterSettle")
@@ -128,12 +123,12 @@ func (p *PublicationAuthors) CancelAddRow(w http.ResponseWriter, r *http.Request
 	fmt.Fprintf(w, "")
 }
 
-func (p *PublicationAuthors) CreateAuthor(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationAuthors) CreateAuthor(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	muxRowDelta := mux.Vars(r)["delta"]
 	rowDelta, _ := strconv.Atoi(muxRowDelta)
 
-	pub, err := p.engine.GetPublication(id)
+	pub, err := c.Engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -163,12 +158,12 @@ func (p *PublicationAuthors) CreateAuthor(w http.ResponseWriter, r *http.Request
 	authors[rowDelta] = *author
 	pub.Author = authors
 
-	savedPub, err := p.engine.UpdatePublication(pub)
+	savedPub, err := c.Engine.UpdatePublication(pub)
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {
-		p.render.HTML(w, 200,
+		c.Render.HTML(w, 200,
 			"publication/authors/_default_form",
-			views.NewData(p.render, r, views.NewContributorForm(p.render, savedPub.ID, author, muxRowDelta, formErrors)),
+			views.NewData(c.Render, r, views.NewContributorForm(c.Render, savedPub.ID, author, muxRowDelta, formErrors)),
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
 
@@ -185,19 +180,19 @@ func (p *PublicationAuthors) CreateAuthor(w http.ResponseWriter, r *http.Request
 	w.Header().Set("HX-Trigger-After-Swap", "ITCreateItemAfterSwap")
 	w.Header().Set("HX-Trigger-After-Settle", "ITCreateItemAfterSettle")
 
-	p.render.HTML(w, http.StatusOK,
+	c.Render.HTML(w, http.StatusOK,
 		"publication/authors/_default_row",
-		views.NewData(p.render, r, views.NewContributorData(p.render, savedPub, savedAuthor, muxRowDelta)),
+		views.NewData(c.Render, r, views.NewContributorData(c.Render, savedPub, savedAuthor, muxRowDelta)),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
 
-func (p *PublicationAuthors) EditRow(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationAuthors) EditRow(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	muxRowDelta := mux.Vars(r)["delta"]
 	rowDelta, _ := strconv.Atoi(muxRowDelta)
 
-	pub, err := p.engine.GetPublication(id)
+	pub, err := c.Engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -210,19 +205,19 @@ func (p *PublicationAuthors) EditRow(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("HX-Trigger-After-Swap", "ITEditRowAfterSwap")
 	w.Header().Set("HX-Trigger-After-Settle", "ITEditRowAfterSettle")
 
-	p.render.HTML(w, http.StatusOK,
+	c.Render.HTML(w, http.StatusOK,
 		"publication/authors/_default_form_edit",
-		views.NewData(p.render, r, views.NewContributorForm(p.render, id, author, muxRowDelta, nil)),
+		views.NewData(c.Render, r, views.NewContributorForm(c.Render, id, author, muxRowDelta, nil)),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
 
-func (p *PublicationAuthors) CancelEditRow(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationAuthors) CancelEditRow(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	muxRowDelta := mux.Vars(r)["delta"]
 	rowDelta, _ := strconv.Atoi(muxRowDelta)
 
-	pub, err := p.engine.GetPublication(id)
+	pub, err := c.Engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -235,19 +230,19 @@ func (p *PublicationAuthors) CancelEditRow(w http.ResponseWriter, r *http.Reques
 	w.Header().Set("HX-Trigger-After-Swap", "ITCancelEditRowAfterSwap")
 	w.Header().Set("HX-Trigger-After-Settle", "ITCancelEditRowAfterSettle")
 
-	p.render.HTML(w, http.StatusOK,
+	c.Render.HTML(w, http.StatusOK,
 		"publication/authors/_default_row",
-		views.NewData(p.render, r, views.NewContributorData(p.render, pub, author, muxRowDelta)),
+		views.NewData(c.Render, r, views.NewContributorData(c.Render, pub, author, muxRowDelta)),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
 
-func (p *PublicationAuthors) UpdateAuthor(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationAuthors) UpdateAuthor(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	muxRowDelta := mux.Vars(r)["delta"]
 	rowDelta, _ := strconv.Atoi(muxRowDelta)
 
-	pub, err := p.engine.GetPublication(id)
+	pub, err := c.Engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -273,12 +268,12 @@ func (p *PublicationAuthors) UpdateAuthor(w http.ResponseWriter, r *http.Request
 	authors[rowDelta] = *author
 	pub.Author = authors
 
-	savedPub, err := p.engine.UpdatePublication(pub)
+	savedPub, err := c.Engine.UpdatePublication(pub)
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {
-		p.render.HTML(w, 200,
+		c.Render.HTML(w, 200,
 			fmt.Sprintf("publication/authors/_%s_edit_form", pub.Type),
-			views.NewData(p.render, r, views.NewContributorForm(p.render, savedPub.ID, author, muxRowDelta, formErrors)),
+			views.NewData(c.Render, r, views.NewContributorForm(c.Render, savedPub.ID, author, muxRowDelta, formErrors)),
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
 
@@ -295,14 +290,14 @@ func (p *PublicationAuthors) UpdateAuthor(w http.ResponseWriter, r *http.Request
 	w.Header().Set("HX-Trigger-After-Swap", "ITUpdateItemAfterSwap")
 	w.Header().Set("HX-Trigger-After-Settle", "ITUpdateItemAfterSettle")
 
-	p.render.HTML(w, http.StatusOK,
+	c.Render.HTML(w, http.StatusOK,
 		"publication/authors/_default_row",
-		views.NewData(p.render, r, views.NewContributorData(p.render, savedPub, savedAuthor, muxRowDelta)),
+		views.NewData(c.Render, r, views.NewContributorData(c.Render, savedPub, savedAuthor, muxRowDelta)),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
 
-func (p *PublicationAuthors) ConfirmRemoveFromPublication(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationAuthors) ConfirmRemoveFromPublication(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	muxRowDelta := mux.Vars(r)["delta"]
 
@@ -310,7 +305,7 @@ func (p *PublicationAuthors) ConfirmRemoveFromPublication(w http.ResponseWriter,
 	w.Header().Set("HX-Trigger-After-Swap", "ITConfirmRemoveFromPublicationAfterSwap")
 	w.Header().Set("HX-Trigger-After-Settle", "ITConfirmRemoveFromPublicationAfterSettle")
 
-	p.render.HTML(w, 200,
+	c.Render.HTML(w, 200,
 		"publication/_authors_modal_confirm_removal",
 		struct {
 			ID          string
@@ -323,12 +318,12 @@ func (p *PublicationAuthors) ConfirmRemoveFromPublication(w http.ResponseWriter,
 	)
 }
 
-func (p *PublicationAuthors) RemoveAuthor(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationAuthors) RemoveAuthor(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	muxRowDelta := mux.Vars(r)["delta"]
 	rowDelta, _ := strconv.Atoi(muxRowDelta)
 
-	pub, err := p.engine.GetPublication(id)
+	pub, err := c.Engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -342,7 +337,7 @@ func (p *PublicationAuthors) RemoveAuthor(w http.ResponseWriter, r *http.Request
 	pub.Author = authors
 
 	// TODO: error handling
-	p.engine.UpdatePublication(pub)
+	c.Engine.UpdatePublication(pub)
 
 	w.Header().Set("HX-Trigger", "ITRemoveItem")
 	w.Header().Set("HX-Trigger-After-Swap", "ITRemoveItemAfterSwap")
@@ -352,7 +347,7 @@ func (p *PublicationAuthors) RemoveAuthor(w http.ResponseWriter, r *http.Request
 	fmt.Fprintf(w, "")
 }
 
-func (p *PublicationAuthors) OrderAuthors(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationAuthors) OrderAuthors(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
 	muxStart := mux.Vars(r)["start"]
@@ -361,7 +356,7 @@ func (p *PublicationAuthors) OrderAuthors(w http.ResponseWriter, r *http.Request
 	muxEnd := mux.Vars(r)["end"]
 	end, _ := strconv.Atoi(muxEnd)
 
-	pub, err := p.engine.GetPublication(id)
+	pub, err := c.Engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -385,7 +380,7 @@ func (p *PublicationAuthors) OrderAuthors(w http.ResponseWriter, r *http.Request
 	// Save everything
 	pub.Author = authors
 
-	savedPub, err := p.engine.UpdatePublication(pub)
+	savedPub, err := c.Engine.UpdatePublication(pub)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -396,9 +391,9 @@ func (p *PublicationAuthors) OrderAuthors(w http.ResponseWriter, r *http.Request
 	w.Header().Set("HX-Trigger-After-Swap", "ITOrderAuthorsAfterSwap")
 	w.Header().Set("HX-Trigger-After-Settle", "ITOrderAuthorsAfterSettle")
 
-	p.render.HTML(w, 200,
+	c.Render.HTML(w, 200,
 		"publication/authors/_default_table_body",
-		views.NewData(p.render, r, views.NewContributorData(p.render, savedPub, nil, "0")),
+		views.NewData(c.Render, r, views.NewContributorData(c.Render, savedPub, nil, "0")),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }

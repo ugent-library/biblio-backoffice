@@ -16,6 +16,7 @@ import (
 	"github.com/gorilla/sessions"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/ugent-library/biblio-backend/internal/controllers"
 	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/helpers"
 	"github.com/ugent-library/biblio-backend/internal/routes"
@@ -76,7 +77,7 @@ func buildRouter() *mux.Router {
 	router := mux.NewRouter()
 
 	// renderer
-	renderer := render.New(render.Options{
+	r := render.New(render.Options{
 		Directory:                   "templates",
 		Extensions:                  []string{".gohtml"},
 		Layout:                      "layouts/layout",
@@ -110,25 +111,23 @@ func buildRouter() *mux.Router {
 	// 	ClientSecret: viper.GetString("oidc-client-secret"),
 	// 	RedirectURL:  baseURL.String() + "/auth/openid-connect/callback",
 	// })
-
 	// if err != nil {
 	// 	log.Fatal(err)
 	// }
 
-	// add middleware
-	router.Use(handlers.RecoveryHandler())
+	// controller config
+	config := controllers.Context{
+		Engine:       e,
+		BaseURL:      baseURL,
+		Router:       router,
+		Render:       r,
+		Localizer:    localizer,
+		SessionName:  sessionName,
+		SessionStore: sessionStore,
+	}
 
 	// add routes
-	routes.Register(
-		baseURL,
-		e,
-		router,
-		renderer,
-		sessionName,
-		sessionStore,
-		// oidcClient,
-		localizer,
-	)
+	routes.Register(config)
 
 	return router
 }

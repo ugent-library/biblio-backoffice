@@ -18,8 +18,7 @@ import (
 )
 
 type Publications struct {
-	engine *engine.Engine
-	render *render.Render
+	Context
 }
 
 type PublicationListVars struct {
@@ -28,8 +27,8 @@ type PublicationListVars struct {
 	PublicationSorts []string
 }
 
-func NewPublications(e *engine.Engine, r *render.Render) *Publications {
-	return &Publications{engine: e, render: r}
+func NewPublications(c Context) *Publications {
+	return &Publications{c}
 }
 
 func (c *Publications) List(w http.ResponseWriter, r *http.Request) {
@@ -40,32 +39,32 @@ func (c *Publications) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	hits, err := c.engine.UserPublications(context.GetUser(r.Context()).ID, args)
+	hits, err := c.Engine.UserPublications(context.GetUser(r.Context()).ID, args)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	c.render.HTML(w, http.StatusOK, "publication/list",
-		views.NewData(c.render, r, PublicationListVars{
+	c.Render.HTML(w, http.StatusOK, "publication/list",
+		views.NewData(c.Render, r, PublicationListVars{
 			SearchArgs:       args,
 			Hits:             hits,
-			PublicationSorts: c.engine.Vocabularies()["publication_sorts"],
+			PublicationSorts: c.Engine.Vocabularies()["publication_sorts"],
 		}),
 	)
 }
 
 func (c *Publications) Show(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
-	pub, err := c.engine.GetPublication(id)
+	pub, err := c.Engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
-	datasets, err := c.engine.GetPublicationDatasets(id)
+	datasets, err := c.Engine.GetPublicationDatasets(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -73,22 +72,22 @@ func (c *Publications) Show(w http.ResponseWriter, r *http.Request) {
 	}
 	pub.Dataset = datasets
 
-	c.render.HTML(w, http.StatusOK, "publication/show",
-		views.NewData(c.render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "publication/show",
+		views.NewData(c.Render, r, struct {
 			Publication  *models.Publication
 			Show         *views.ShowBuilder
 			Vocabularies map[string][]string
 		}{
 			pub,
-			views.NewShowBuilder(c.render, locale.Get(r.Context())),
-			c.engine.Vocabularies(),
+			views.NewShowBuilder(c.Render, locale.Get(r.Context())),
+			c.Engine.Vocabularies(),
 		}),
 	)
 }
 
 func (c *Publications) Thumbnail(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
-	pub, err := c.engine.GetPublication(id)
+	pub, err := c.Engine.GetPublication(id)
 	if err != nil || pub.ThumbnailURL() == "" {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -96,7 +95,7 @@ func (c *Publications) Thumbnail(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// quick and dirty reverse proxy
-	baseURL, _ := url.Parse(c.engine.Config.URL)
+	baseURL, _ := url.Parse(c.Engine.Config.URL)
 	url, _ := url.Parse(pub.ThumbnailURL())
 	proxy := httputil.NewSingleHostReverseProxy(baseURL)
 	// update the headers to allow for SSL redirection
@@ -105,25 +104,25 @@ func (c *Publications) Thumbnail(w http.ResponseWriter, r *http.Request) {
 	r.URL.Path = strings.Replace(url.Path, baseURL.Path, "", 1)
 	r.Header.Set("X-Forwarded-Host", r.Header.Get("Host"))
 	r.Host = url.Host
-	r.SetBasicAuth(c.engine.Config.Username, c.engine.Config.Password)
+	r.SetBasicAuth(c.Engine.Config.Username, c.Engine.Config.Password)
 	proxy.ServeHTTP(w, r)
 }
 
 func (c *Publications) New(w http.ResponseWriter, r *http.Request) {
-	c.render.HTML(w, http.StatusOK, "publication/new", views.NewData(c.render, r, nil))
+	c.Render.HTML(w, http.StatusOK, "publication/new", views.NewData(c.Render, r, nil))
 }
 
 func (c *Publications) Summary(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
-	pub, err := c.engine.GetPublication(id)
+	pub, err := c.Engine.GetPublication(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
-	c.render.HTML(w, http.StatusOK,
+	c.Render.HTML(w, http.StatusOK,
 		"publication/_summary",
 		pub,
 		render.HTMLOptions{Layout: "layouts/htmx"},
