@@ -64,7 +64,7 @@ func (c *PublicationAuthors) List(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("HX-Trigger-After-Swap", "ITListAfterSwap")
 	w.Header().Set("HX-Trigger-After-Settle", "ITListAfterSettle")
 
-	c.Render.HTML(w, 200,
+	c.Render.HTML(w, http.StatusOK,
 		"publication/authors/_default_table_body",
 		views.NewData(c.Render, r, views.NewContributorData(c.Render, pub, nil, "0")),
 		render.HTMLOptions{Layout: "layouts/htmx"},
@@ -161,7 +161,7 @@ func (c *PublicationAuthors) CreateAuthor(w http.ResponseWriter, r *http.Request
 	savedPub, err := c.Engine.UpdatePublication(pub)
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {
-		c.Render.HTML(w, 200,
+		c.Render.HTML(w, http.StatusOK,
 			"publication/authors/_default_form",
 			views.NewData(c.Render, r, views.NewContributorForm(c.Render, savedPub.ID, author, muxRowDelta, formErrors)),
 			render.HTMLOptions{Layout: "layouts/htmx"},
@@ -271,7 +271,7 @@ func (c *PublicationAuthors) UpdateAuthor(w http.ResponseWriter, r *http.Request
 	savedPub, err := c.Engine.UpdatePublication(pub)
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {
-		c.Render.HTML(w, 200,
+		c.Render.HTML(w, http.StatusOK,
 			fmt.Sprintf("publication/authors/_%s_edit_form", pub.Type),
 			views.NewData(c.Render, r, views.NewContributorForm(c.Render, savedPub.ID, author, muxRowDelta, formErrors)),
 			render.HTMLOptions{Layout: "layouts/htmx"},
@@ -305,7 +305,7 @@ func (c *PublicationAuthors) ConfirmRemoveFromPublication(w http.ResponseWriter,
 	w.Header().Set("HX-Trigger-After-Swap", "ITConfirmRemoveFromPublicationAfterSwap")
 	w.Header().Set("HX-Trigger-After-Settle", "ITConfirmRemoveFromPublicationAfterSettle")
 
-	c.Render.HTML(w, 200,
+	c.Render.HTML(w, http.StatusOK,
 		"publication/_authors_modal_confirm_removal",
 		struct {
 			ID          string
@@ -391,7 +391,7 @@ func (c *PublicationAuthors) OrderAuthors(w http.ResponseWriter, r *http.Request
 	w.Header().Set("HX-Trigger-After-Swap", "ITOrderAuthorsAfterSwap")
 	w.Header().Set("HX-Trigger-After-Settle", "ITOrderAuthorsAfterSettle")
 
-	c.Render.HTML(w, 200,
+	c.Render.HTML(w, http.StatusOK,
 		"publication/authors/_default_table_body",
 		views.NewData(c.Render, r, views.NewContributorData(c.Render, savedPub, nil, "0")),
 		render.HTMLOptions{Layout: "layouts/htmx"},

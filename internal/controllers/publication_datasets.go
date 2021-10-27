@@ -51,7 +51,7 @@ func (c *PublicationDatasets) Choose(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.Render.HTML(w, 200,
+	c.Render.HTML(w, http.StatusOK,
 		"publication/datasets/_modal",
 		struct {
 			Publication *models.Publication
@@ -101,7 +101,7 @@ func (c *PublicationDatasets) ActiveSearch(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	c.Render.HTML(w, 200,
+	c.Render.HTML(w, http.StatusOK,
 		"publication/datasets/_modal_hits",
 		struct {
 			Publication *models.Publication
@@ -148,7 +148,7 @@ func (c *PublicationDatasets) Add(w http.ResponseWriter, r *http.Request) {
 
 	pub.Dataset = datasets
 
-	c.Render.HTML(w, 200,
+	c.Render.HTML(w, http.StatusOK,
 		"publication/datasets/_content",
 		views.NewData(c.Render, r, struct {
 			Publication *models.Publication
@@ -163,7 +163,7 @@ func (c *PublicationDatasets) ConfirmRemove(w http.ResponseWriter, r *http.Reque
 	id := mux.Vars(r)["id"]
 	datasetID := mux.Vars(r)["dataset_id"]
 
-	c.Render.HTML(w, 200,
+	c.Render.HTML(w, http.StatusOK,
 		"publication/datasets/_modal_confirm_removal",
 		struct {
 			PublicationID string
@@ -203,7 +203,7 @@ func (c *PublicationDatasets) Remove(w http.ResponseWriter, r *http.Request) {
 
 	pub.Dataset = datasets
 
-	c.Render.HTML(w, 200,
+	c.Render.HTML(w, http.StatusOK,
 		"publication/datasets/_content",
 		views.NewData(c.Render, r, struct {
 			Publication *models.Publication

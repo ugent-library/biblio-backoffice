@@ -83,7 +83,7 @@ func (c *PublicationLinks) CreateLink(w http.ResponseWriter, r *http.Request) {
 	savedPub, err := c.Engine.UpdatePublication(pub)
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {
-		c.Render.HTML(w, 200,
+		c.Render.HTML(w, http.StatusOK,
 			"publication/links/_form",
 			views.NewData(c.Render, r, struct {
 				PublicationID string
@@ -195,7 +195,7 @@ func (c *PublicationLinks) UpdateLink(w http.ResponseWriter, r *http.Request) {
 	savedPub, err := c.Engine.UpdatePublication(pub)
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {
-		c.Render.HTML(w, 200,
+		c.Render.HTML(w, http.StatusOK,
 			"publication/links/_form_edit",
 			views.NewData(c.Render, r, struct {
 				PublicationID string
@@ -243,7 +243,7 @@ func (c *PublicationLinks) ConfirmRemoveFromPublication(w http.ResponseWriter, r
 	w.Header().Set("HX-Trigger-After-Swap", "PublicationConfirmRemoveAfterSwap")
 	w.Header().Set("HX-Trigger-After-Settle", "PublicationConfirmRemoveAfterSettle")
 
-	c.Render.HTML(w, 200,
+	c.Render.HTML(w, http.StatusOK,
 		"publication/_links_modal_confirm_removal",
 		struct {
 			ID  string

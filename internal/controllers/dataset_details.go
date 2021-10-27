@@ -32,7 +32,7 @@ func (c *DatasetDetails) Show(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.Render.HTML(w, 200, "dataset/details/_show",
+	c.Render.HTML(w, http.StatusOK, "dataset/details/_show",
 		views.NewData(c.Render, r, struct {
 			Dataset *models.Dataset
 			Show    *views.ShowBuilder
@@ -92,7 +92,7 @@ func (c *DatasetDetails) SaveForm(w http.ResponseWriter, r *http.Request) {
 	savedDataset, err := c.Engine.UpdateDataset(dataset)
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {
-		c.Render.HTML(w, 200,
+		c.Render.HTML(w, http.StatusOK,
 			"dataset/details/_edit",
 			views.NewData(c.Render, r, struct {
 				Dataset *models.Dataset
@@ -107,7 +107,7 @@ func (c *DatasetDetails) SaveForm(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.Render.HTML(w, 200,
+	c.Render.HTML(w, http.StatusOK,
 		"dataset/details/_update",
 		views.NewData(c.Render, r, struct {
 			Dataset *models.Dataset

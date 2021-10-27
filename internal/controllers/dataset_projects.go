@@ -32,7 +32,7 @@ func (c *DatasetProjects) ListProjects(w http.ResponseWriter, r *http.Request) {
 	// Get 20 random projects (no search, init state)
 	hits, _ := c.Engine.SuggestProjects("")
 
-	c.Render.HTML(w, 200,
+	c.Render.HTML(w, http.StatusOK,
 		"dataset/_projects_modal",
 		views.NewData(c.Render, r, struct {
 			Dataset *models.Publication
@@ -66,7 +66,7 @@ func (c *DatasetProjects) ActiveSearch(w http.ResponseWriter, r *http.Request) {
 	query := r.Form["search"]
 	hits, _ := c.Engine.SuggestProjects(query[0])
 
-	c.Render.HTML(w, 200,
+	c.Render.HTML(w, http.StatusOK,
 		"dataset/_projects_modal_hits",
 		views.NewData(c.Render, r, struct {
 			Dataset *models.Publication
@@ -110,7 +110,7 @@ func (c *DatasetProjects) AddToDataset(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.Render.HTML(w, 200,
+	c.Render.HTML(w, http.StatusOK,
 		"dataset/_projects",
 		views.NewData(c.Render, r, struct {
 			Dataset *models.Dataset
@@ -125,7 +125,7 @@ func (c *DatasetProjects) ConfirmRemoveFromDataset(w http.ResponseWriter, r *htt
 	id := mux.Vars(r)["id"]
 	projectId := mux.Vars(r)["project_id"]
 
-	c.Render.HTML(w, 200,
+	c.Render.HTML(w, http.StatusOK,
 		"dataset/_projects_modal_confirm_removal",
 		views.NewData(c.Render, r, struct {
 			ID        string
@@ -165,7 +165,7 @@ func (c *DatasetProjects) RemoveFromDataset(w http.ResponseWriter, r *http.Reque
 	// TODO: error handling
 	savedDataset, _ := c.Engine.UpdateDataset(dataset)
 
-	c.Render.HTML(w, 200,
+	c.Render.HTML(w, http.StatusOK,
 		"dataset/_projects",
 		views.NewData(c.Render, r, struct {
 			Dataset *models.Dataset

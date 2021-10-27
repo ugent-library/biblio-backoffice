@@ -31,7 +31,7 @@ func (c *PublicationDepartments) ListDepartments(w http.ResponseWriter, r *http.
 	// Get 20 random departments (no search, init state)
 	hits, _ := c.Engine.SuggestDepartments("")
 
-	c.Render.HTML(w, 200,
+	c.Render.HTML(w, http.StatusOK,
 		"publication/_departments_modal",
 		struct {
 			Publication *models.Publication
@@ -64,7 +64,7 @@ func (c *PublicationDepartments) ActiveSearch(w http.ResponseWriter, r *http.Req
 	query := r.Form["search"]
 	hits, _ := c.Engine.SuggestDepartments(query[0])
 
-	c.Render.HTML(w, 200,
+	c.Render.HTML(w, http.StatusOK,
 		"publication/_departments_modal_hits",
 		struct {
 			Publication *models.Publication
@@ -103,7 +103,7 @@ func (c *PublicationDepartments) AddToPublication(w http.ResponseWriter, r *http
 
 	// TODO: error handling if department save fails
 
-	c.Render.HTML(w, 200,
+	c.Render.HTML(w, http.StatusOK,
 		"publication/_departments",
 		views.NewData(c.Render, r, struct {
 			Publication *models.Publication
@@ -118,7 +118,7 @@ func (c *PublicationDepartments) ConfirmRemoveFromPublication(w http.ResponseWri
 	id := mux.Vars(r)["id"]
 	departmentId := mux.Vars(r)["department_id"]
 
-	c.Render.HTML(w, 200,
+	c.Render.HTML(w, http.StatusOK,
 		"publication/_departments_modal_confirm_removal",
 		struct {
 			ID           string
@@ -158,7 +158,7 @@ func (c *PublicationDepartments) RemoveFromPublication(w http.ResponseWriter, r 
 	// TODO: error handling
 	savedPub, _ := c.Engine.UpdatePublication(pub)
 
-	c.Render.HTML(w, 200,
+	c.Render.HTML(w, http.StatusOK,
 		"publication/_departments",
 		views.NewData(c.Render, r, struct {
 			Publication *models.Publication

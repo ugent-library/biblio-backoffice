@@ -18,7 +18,7 @@ func NewUsers(c Context) *Users {
 }
 
 func (c *Users) ImpersonateChoose(w http.ResponseWriter, r *http.Request) {
-	c.Render.HTML(w, 200, "user/_impersonate_choose",
+	c.Render.HTML(w, http.StatusOK, "user/_impersonate_choose",
 		views.NewData(c.Render, r, nil),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)

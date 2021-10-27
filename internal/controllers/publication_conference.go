@@ -31,7 +31,7 @@ func (c *PublicationConference) Show(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.Render.HTML(w, 200,
+	c.Render.HTML(w, http.StatusOK,
 		"publication/conference/_show",
 		views.NewData(c.Render, r, struct {
 			Publication *models.Publication
@@ -54,7 +54,7 @@ func (c *PublicationConference) OpenForm(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	c.Render.HTML(w, 200,
+	c.Render.HTML(w, http.StatusOK,
 		"publication/conference/_edit",
 		views.NewData(c.Render, r, struct {
 			Publication *models.Publication
@@ -91,7 +91,7 @@ func (c *PublicationConference) SaveForm(w http.ResponseWriter, r *http.Request)
 	savedPub, err := c.Engine.UpdatePublication(pub)
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {
-		c.Render.HTML(w, 200,
+		c.Render.HTML(w, http.StatusOK,
 			"publication/conference/_edit",
 			views.NewData(c.Render, r, struct {
 				Publication *models.Publication
@@ -109,7 +109,7 @@ func (c *PublicationConference) SaveForm(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	c.Render.HTML(w, 200,
+	c.Render.HTML(w, http.StatusOK,
 		"publication/conference/_update",
 		views.NewData(c.Render, r, struct {
 			Publication *models.Publication

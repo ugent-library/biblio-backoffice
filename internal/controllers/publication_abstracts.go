@@ -83,7 +83,7 @@ func (c *PublicationAbstracts) CreateAbstract(w http.ResponseWriter, r *http.Req
 	savedPub, err := c.Engine.UpdatePublication(pub)
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {
-		c.Render.HTML(w, 200,
+		c.Render.HTML(w, http.StatusOK,
 			"publication/abstracts/_form",
 			views.NewData(c.Render, r, struct {
 				PublicationID string
@@ -193,7 +193,7 @@ func (c *PublicationAbstracts) UpdateAbstract(w http.ResponseWriter, r *http.Req
 	savedPub, err := c.Engine.UpdatePublication(pub)
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {
-		c.Render.HTML(w, 200,
+		c.Render.HTML(w, http.StatusOK,
 			"publication/abstracts/_form_edit",
 			views.NewData(c.Render, r, struct {
 				PublicationID string
@@ -241,7 +241,7 @@ func (c *PublicationAbstracts) ConfirmRemoveFromPublication(w http.ResponseWrite
 	w.Header().Set("HX-Trigger-After-Swap", "PublicationConfirmRemoveAfterSwap")
 	w.Header().Set("HX-Trigger-After-Settle", "PublicationConfirmRemoveAfterSettle")
 
-	c.Render.HTML(w, 200,
+	c.Render.HTML(w, http.StatusOK,
 		"publication/_abstracts_modal_confirm_removal",
 		struct {
 			ID  string
