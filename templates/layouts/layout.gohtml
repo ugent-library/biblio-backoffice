@@ -13,6 +13,14 @@
 
 <body class="u-maximize-height overflow-hidden u-scroll-wrapper">
     <header>
+        {{with .OriginalUser}}
+        <div class="alert alert-danger" role="alert">
+            <form class="form-inline" action="{{pathFor "user_impersonate_remove"}}" method="POST">
+                <label class="my-1 mr-2 font-weight-bold">Viewing the perspective of {{$.User.FullName}}.</label>
+                <button type="submit" class="btn btn-danger my-1">Return to {{.FullName}}</button>.
+            </form>
+        </div>
+        {{end}}
         <div class="bc-navbar bc-navbar--bordered-bottom bc-navbar--white bc-navbar--fixed shadow-sm">
             <div class="bc-toolbar bc-toolbar-sm">
                 <div class="bc-toolbar-left">
@@ -39,6 +47,13 @@
                                 </div>
                             </a>
                             <div class="dropdown-menu">
+                                {{if .User.CanImpersonateUser}}
+                                <a class="dropdown-item" href="#"
+                                    hx-get="{{pathFor "user_impersonate_choose"}}"
+                                    hx-target="#user-impersonate-modal"
+                                    hx-trigger="click"
+                                >View as other user</a>
+                                {{end}}
                                 <a class="dropdown-item" href="{{pathFor "logout"}}">Logout</a>
                             </div>
                         </div>
@@ -80,6 +95,9 @@
             {{yield}}
         </div>
     </main>
+
+    <div id="user-impersonate-modal" class="modals"></div>
+
     <script type="application/javascript" src="{{assetPath "/js/app.js"}}"></script>
 </body>
 

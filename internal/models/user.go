@@ -78,3 +78,7 @@ func (u *User) CanEditDataset(p *Dataset) bool {
 	}
 	return false
 }
+
+func (u *User) CanImpersonateUser() bool {
+	return u.Role == "admin"
+}

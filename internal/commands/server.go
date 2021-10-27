@@ -13,6 +13,7 @@ import (
 	"github.com/Masterminds/sprig/v3"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/gorilla/sessions"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/engine"
@@ -95,13 +96,13 @@ func buildRouter() *mux.Router {
 	localizer := locale.NewLocalizer("en")
 
 	// sessions & auth
-	// sessionName := viper.GetString("session-name")
+	sessionName := viper.GetString("session-name")
 
-	// sessionStore := sessions.NewCookieStore([]byte(viper.GetString("session-secret")))
-	// sessionStore.MaxAge(viper.GetInt("session-max-age"))
-	// sessionStore.Options.Path = "/"
-	// sessionStore.Options.HttpOnly = true
-	// sessionStore.Options.Secure = baseURL.Scheme == "https"
+	sessionStore := sessions.NewCookieStore([]byte(viper.GetString("session-secret")))
+	sessionStore.MaxAge(viper.GetInt("session-max-age"))
+	sessionStore.Options.Path = "/"
+	sessionStore.Options.HttpOnly = true
+	sessionStore.Options.Secure = baseURL.Scheme == "https"
 
 	// oidcClient, err := oidc.New(oidc.Config{
 	// 	URL:          viper.GetString("oidc-url"),
@@ -123,8 +124,8 @@ func buildRouter() *mux.Router {
 		e,
 		router,
 		renderer,
-		// sessionName,
-		// sessionStore,
+		sessionName,
+		sessionStore,
 		// oidcClient,
 		localizer,
 	)

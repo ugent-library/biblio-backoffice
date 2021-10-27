@@ -10,6 +10,7 @@ type key int
 
 const (
 	userKey key = iota
+	originalUserKey
 	activeMenuKey
 )
 
@@ -22,6 +23,17 @@ func GetUser(c context.Context) *models.User {
 
 func WithUser(c context.Context, user *models.User) context.Context {
 	return context.WithValue(c, userKey, user)
+}
+
+func GetOriginalUser(c context.Context) *models.User {
+	if v := c.Value(originalUserKey); v != nil {
+		return v.(*models.User)
+	}
+	return nil
+}
+
+func WithOriginalUser(c context.Context, user *models.User) context.Context {
+	return context.WithValue(c, originalUserKey, user)
 }
 
 func GetActiveMenu(c context.Context) string {

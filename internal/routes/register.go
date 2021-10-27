@@ -6,18 +6,20 @@ import (
 	"net/url"
 
 	"github.com/gorilla/mux"
+	"github.com/gorilla/sessions"
 	"github.com/ugent-library/biblio-backend/internal/context"
 	"github.com/ugent-library/biblio-backend/internal/controllers"
 	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/middleware"
+	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/go-locale/locale"
 	"github.com/unrolled/render"
 	"gopkg.in/cas.v2"
 )
 
 func Register(baseURL *url.URL, e *engine.Engine, router *mux.Router, renderer *render.Render,
-	// sessionName string, sessionStore sessions.Store, oidcClient *oidc.Client, localizer *locale.Localizer) {
-	localizer *locale.Localizer) {
+	// oidcClient *oidc.Client,
+	sessionName string, sessionStore sessions.Store, localizer *locale.Localizer) {
 
 	// static files
 	router.PathPrefix(baseURL.Path + "/static/").Handler(http.StripPrefix(baseURL.Path+"/static/", http.FileServer(http.Dir("./static"))))
@@ -36,11 +38,42 @@ func Register(baseURL *url.URL, e *engine.Engine, router *mux.Router, renderer *
 	}
 	setUser := func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			user, err := e.GetUserByUsername(cas.Username(r))
-			if err != nil {
-				log.Printf("get user error: %s", err)
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
+			var user *models.User
+
+			session, _ := sessionStore.Get(r, sessionName)
+			userID := session.Values["user_id"]
+			if userID != nil {
+				u, err := e.GetUser(userID.(string))
+				if err != nil {
+					log.Printf("get user error: %s", err)
+					// TODO
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				}
+				user = u
+			}
+
+			if user == nil {
+				u, err := e.GetUserByUsername(cas.Username(r))
+				if err != nil {
+					log.Printf("get user error: %s", err)
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				}
+				user = u
+			}
+
+			originalUserID := session.Values["original_user_id"]
+			if originalUserID != nil {
+				originalUser, err := e.GetUser(originalUserID.(string))
+				if err != nil {
+					log.Printf("get user error: %s", err)
+					// TODO
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				}
+				c := context.WithOriginalUser(r.Context(), originalUser)
+				r = r.WithContext(c)
 			}
 
 			c := context.WithUser(r.Context(), user)
@@ -49,8 +82,9 @@ func Register(baseURL *url.URL, e *engine.Engine, router *mux.Router, renderer *
 	}
 
 	// authController := controllers.NewAuth(e, sessionName, sessionStore, oidcClient, router)
-	publicationController := controllers.NewPublications(e, renderer)
-	datasetController := controllers.NewDatasets(e, renderer)
+	usersController := controllers.NewUsers(e, renderer, sessionName, sessionStore, router)
+	publicationsController := controllers.NewPublications(e, renderer)
+	datasetsController := controllers.NewDatasets(e, renderer)
 	publicationFilesController := controllers.NewPublicationFiles(e, renderer, router)
 	publicationDetailsController := controllers.NewPublicationDetails(e, renderer)
 	publicationConferenceController := controllers.NewPublicationConference(e, renderer)
@@ -74,10 +108,11 @@ func Register(baseURL *url.URL, e *engine.Engine, router *mux.Router, renderer *
 
 	r := router.PathPrefix(baseURL.Path).Subrouter()
 
+	// r.Use(handlers.HTTPMethodOverrideHandler)
 	r.Use(locale.Detect(localizer))
 
 	// home
-	r.HandleFunc("", func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, baseURL.Path+"/publication", http.StatusFound)
 	}).Methods("GET").Name("home")
 
@@ -90,25 +125,44 @@ func Register(baseURL *url.URL, e *engine.Engine, router *mux.Router, renderer *
 	// r.HandleFunc("/logout", authController.Logout).
 	// 	Methods("GET").
 	// 	Name("logout")
-	r.HandleFunc("/logout", cas.RedirectToLogout).
+	r.HandleFunc("/logout", func(w http.ResponseWriter, r *http.Request) {
+		session, _ := sessionStore.Get(r, sessionName)
+		delete(session.Values, "original_user_id")
+		delete(session.Values, "user_id")
+		session.Save(r, w)
+		cas.RedirectToLogout(w, r)
+	}).Methods("GET").Name("logout")
+
+	// users
+	userRouter := r.PathPrefix("/user").Subrouter()
+	userRouter.Use(requireUser)
+	userRouter.Use(setUser)
+	userRouter.HandleFunc("/htmx/impersonate/choose", usersController.ImpersonateChoose).
 		Methods("GET").
-		Name("logout")
+		Name("user_impersonate_choose")
+	userRouter.HandleFunc("/impersonate", usersController.Impersonate).
+		Methods("POST").
+		Name("user_impersonate")
+	// TODO why doesn't a DELETE with methodoverride work with CAS?
+	userRouter.HandleFunc("/impersonate/remove", usersController.ImpersonateRemove).
+		Methods("POST").
+		Name("user_impersonate_remove")
 
 	// publications
 	publicationRouter := r.PathPrefix("/publication").Subrouter()
 	publicationRouter.Use(middleware.SetActiveMenu("publications"))
 	publicationRouter.Use(requireUser)
 	publicationRouter.Use(setUser)
-	publicationRouter.HandleFunc("", publicationController.List).
+	publicationRouter.HandleFunc("", publicationsController.List).
 		Methods("GET").
 		Name("publications")
-	publicationRouter.HandleFunc("/new", publicationController.New).
+	publicationRouter.HandleFunc("/new", publicationsController.New).
 		Methods("GET").
 		Name("new_publication")
-	publicationRouter.HandleFunc("/{id}", publicationController.Show).
+	publicationRouter.HandleFunc("/{id}", publicationsController.Show).
 		Methods("GET").
 		Name("publication")
-	publicationRouter.HandleFunc("/{id}/thumbnail", publicationController.Thumbnail).
+	publicationRouter.HandleFunc("/{id}/thumbnail", publicationsController.Thumbnail).
 		Methods("GET").
 		Name("publication_thumbnail")
 
@@ -124,7 +178,7 @@ func Register(baseURL *url.URL, e *engine.Engine, router *mux.Router, renderer *
 		Name("upload_publication_file")
 
 	// Publication HTMX fragments
-	publicationRouter.HandleFunc("/{id}/htmx/summary", publicationController.Summary).
+	publicationRouter.HandleFunc("/{id}/htmx/summary", publicationsController.Summary).
 		Methods("GET").
 		Name("publication_summary")
 
@@ -281,10 +335,10 @@ func Register(baseURL *url.URL, e *engine.Engine, router *mux.Router, renderer *
 	datasetRouter.Use(middleware.SetActiveMenu("datasets"))
 	datasetRouter.Use(requireUser)
 	datasetRouter.Use(setUser)
-	datasetRouter.HandleFunc("", datasetController.List).
+	datasetRouter.HandleFunc("", datasetsController.List).
 		Methods("GET").
 		Name("datasets")
-	datasetRouter.HandleFunc("/{id}", datasetController.Show).
+	datasetRouter.HandleFunc("/{id}", datasetsController.Show).
 		Methods("GET").
 		Name("dataset")
 
@@ -299,7 +353,7 @@ func Register(baseURL *url.URL, e *engine.Engine, router *mux.Router, renderer *
 		Methods("PATCH").
 		Name("dataset_details_save_form")
 
-	// Dataset projects HTMX fragmetns
+	// Dataset projects HTMX fragments
 	datasetRouter.HandleFunc("/{id}/htmx/projects/list", datasetProjectsController.ListProjects).
 		Methods("GET").
 		Name("dataset_projects")

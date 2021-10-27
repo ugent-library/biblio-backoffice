@@ -44,6 +44,10 @@ func (d *Data) Partial(tmpl string, data interface{}) (template.HTML, error) {
 	return RenderPartial(d.renderer, tmpl, data)
 }
 
+func (d *Data) OriginalUser() *models.User {
+	return context.GetOriginalUser(d.request.Context())
+}
+
 func (d *Data) IsHTMXRequest() bool {
 	return d.request.Header.Get("HX-Request") != ""
 }
