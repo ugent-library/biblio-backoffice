@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"net/http/httputil"
@@ -142,13 +141,7 @@ func (c *PublicationFiles) Upload(w http.ResponseWriter, r *http.Request) {
 		ContentType: filetype,
 	}
 
-	fileContents, err := ioutil.ReadAll(file)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	if err := c.Engine.AddPublicationFile(id, pubFile, fileContents); err != nil {
+	if err := c.Engine.AddPublicationFile(id, pubFile, file); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

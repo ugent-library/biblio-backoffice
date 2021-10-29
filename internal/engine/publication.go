@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"mime/multipart"
 	"net/http"
+	"io"
 
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/go-web/forms"
@@ -59,14 +60,16 @@ func (e *Engine) RemovePublicationDataset(id, datasetID string) error {
 	return err
 }
 
-func (e *Engine) AddPublicationFile(id string, pubFile models.PublicationFile, b []byte) error {
+func (e *Engine) AddPublicationFile(id string, pubFile models.PublicationFile, reader io.Reader) error {
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 	part, err := writer.CreateFormFile("file", pubFile.Filename)
 	if err != nil {
 		return err
 	}
-	part.Write(b)
+	if _, err = io.Copy(part, reader); err != nil {
+		return err
+	}
 
 	if err = writer.Close(); err != nil {
 		return err
