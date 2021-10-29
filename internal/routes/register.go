@@ -92,7 +92,7 @@ func Register(c controllers.Context) {
 	publicationLinksController := controllers.NewPublicationLinks(c)
 	publicationAuthorsController := controllers.NewPublicationAuthors(c)
 	publicationDatasetsController := controllers.NewPublicationDatasets(c)
-    publicationAdditionalInfoController := controllers.NewPublicationAdditionalInfo(c)
+	publicationAdditionalInfoController := controllers.NewPublicationAdditionalInfo(c)
 	datasetDetailsController := controllers.NewDatasetDetails(c)
 	datasetProjectsController := controllers.NewDatasetProjects(c)
 
@@ -202,14 +202,14 @@ func Register(c controllers.Context) {
 
 	// Publication additional info HTMX fragments
 	publicationRouter.HandleFunc("/{id}/htmx/additional_info", publicationAdditionalInfoController.Show).
-        Methods("GET").
-        Name("publication_additional_info")
-    publicationRouter.HandleFunc("/{id}/htmx/additional_info/edit", publicationAdditionalInfoController.OpenForm).
-        Methods("GET").
-        Name("publication_additional_info_edit_form")
-    publicationRouter.HandleFunc("/{id}/htmx/additional_info/edit", publicationAdditionalInfoController.SaveForm).
-        Methods("PATCH").
-        Name("publication_additional_info_save_form")
+		Methods("GET").
+		Name("publication_additional_info")
+	publicationRouter.HandleFunc("/{id}/htmx/additional_info/edit", publicationAdditionalInfoController.OpenForm).
+		Methods("GET").
+		Name("publication_additional_info_edit_form")
+	publicationRouter.HandleFunc("/{id}/htmx/additional_info/edit", publicationAdditionalInfoController.SaveForm).
+		Methods("PATCH").
+		Name("publication_additional_info_save_form")
 
 	// Publication projects HTMX fragments
 	publicationRouter.HandleFunc("/{id}/htmx/projects/list", publicationProjectsController.ListProjects).
@@ -265,7 +265,6 @@ func Register(c controllers.Context) {
 		Methods("DELETE").
 		Name("publication_abstracts_remove_abstract")
 
-
 	// Publication links HTMX fragments
 	publicationRouter.HandleFunc("/{id}/htmx/links/add", publicationLinksController.AddLink).
 		Methods("GET").
@@ -285,8 +284,6 @@ func Register(c controllers.Context) {
 	publicationRouter.HandleFunc("/{id}/htmx/links/remove/{delta}", publicationLinksController.RemoveLink).
 		Methods("DELETE").
 		Name("publication_links_remove_link")
-
-		
 
 	// Publication authors HTMX fragments
 	publicationRouter.HandleFunc("/{id}/htmx/authors/list", publicationAuthorsController.List).

@@ -37,13 +37,15 @@
         <div class="card-body p-0">
             <ul class="list-group list-group-flush" data-panel-state="edit">
 				<li class="list-group-item">
-					{{.D.Form.ListRepeat (.D.Form.Name "research_field") (.D.Form.Values .D.Publication.ResearchField) (.D.Form.Cols 9) (.D.Form.Choices .D.Vocabularies.research_field) (.D.Form.EmptyChoice)}}
+					{{.D.Form.ListRepeat (.D.Form.Name "research_field") (.D.Form.Values .D.Publication.ResearchField)
+                        (.D.Form.Cols 9) (.D.Form.Choices .D.Vocabularies.research_fields) (.D.Form.EmptyChoice)}}
 					{{.D.Form.TextRepeat (.D.Form.Name "keyword") (.D.Form.Values .D.Publication.Keyword) (.D.Form.Cols 9)}}
-					{{.D.Form.Text (.D.Form.Name "wos_id") (.D.Form.Value .D.Publication.WOSID) (.D.Form.Cols 9)}}
-					{{.D.Form.Text (.D.Form.Name "pubmed_id") (.D.Form.Value .D.Publication.PubMedID) (.D.Form.Cols 9)}}
-					{{.D.Form.Text (.D.Form.Name "arxiv_id") (.D.Form.Value .D.Publication.ArxivID) (.D.Form.Cols 9)}}
-					{{.D.Form.Text (.D.Form.Name "esci_id") (.D.Form.Value .D.Publication.ESCIID) (.D.Form.Cols 9)}}
-					{{.D.Form.Text (.D.Form.Name "additional_info") (.D.Form.Value .D.Publication.AdditionalInfo) (.D.Form.Cols 9)}}
+					{{.D.Form.Text (.D.Form.Name "wos_id") (.D.Form.Value .D.Publication.WOSID) (.D.Form.Cols 3)}}
+					{{.D.Form.Text (.D.Form.Name "pubmed_id") (.D.Form.Value .D.Publication.PubMedID) (.D.Form.Cols 3)}}
+					{{.D.Form.Text (.D.Form.Name "arxiv_id") (.D.Form.Value .D.Publication.ArxivID) (.D.Form.Cols 3)}}
+					{{.D.Form.Text (.D.Form.Name "esci_id") (.D.Form.Value .D.Publication.ESCIID) (.D.Form.Cols 3)}}
+					{{.D.Form.TextArea (.D.Form.Name "additional_info") (.D.Form.Value .D.Publication.AdditionalInfo)
+                        (.D.Form.Cols 9) (.D.Form.Rows 4)}}
 				</li>
             </ul>
         </div>
