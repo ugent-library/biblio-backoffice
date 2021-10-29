@@ -1,7 +1,6 @@
 package engine
 
 import (
-	"bytes"
 	"fmt"
 	"mime/multipart"
 	"net/http"
@@ -60,25 +59,31 @@ func (e *Engine) RemovePublicationDataset(id, datasetID string) error {
 	return err
 }
 
-func (e *Engine) AddPublicationFile(id string, pubFile models.PublicationFile, reader io.Reader) error {
-	body := &bytes.Buffer{}
-	writer := multipart.NewWriter(body)
-	part, err := writer.CreateFormFile("file", pubFile.Filename)
-	if err != nil {
-		return err
-	}
-	if _, err = io.Copy(part, reader); err != nil {
-		return err
-	}
+func (e *Engine) AddPublicationFile(id string, pubFile models.PublicationFile, file io.Reader) error {
+	pipedReader, pipedWriter := io.Pipe()
+	multiPartWriter := multipart.NewWriter(pipedWriter)
 
-	if err = writer.Close(); err != nil {
-		return err
-	}
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/publication/%s/file", e.Config.URL, id), body)
+	go func(){
+
+		defer pipedWriter.Close()
+		defer multiPartWriter.Close()
+
+		part, err := multiPartWriter.CreateFormFile("file", pubFile.Filename)
+		if err != nil {
+			return
+		}
+
+		if _, err = io.Copy(part, file); err != nil {
+        	return
+    	}
+
+	}()
+
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/publication/%s/file", e.Config.URL, id), pipedReader)
 	if err != nil {
 		return err
 	}
-	req.Header.Add("Content-Type", writer.FormDataContentType())
+	req.Header.Add("Content-Type", multiPartWriter.FormDataContentType())
 	req.SetBasicAuth(e.Config.Username, e.Config.Password)
 
 	_, err = e.doRequest(req, nil)
