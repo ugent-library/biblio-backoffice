@@ -154,9 +154,6 @@ func Register(c controllers.Context) {
 	publicationRouter.HandleFunc("", publicationsController.List).
 		Methods("GET").
 		Name("publications")
-	publicationRouter.HandleFunc("/new", publicationsController.New).
-		Methods("GET").
-		Name("new_publication")
 	publicationRouter.HandleFunc("/{id}", publicationsController.Show).
 		Methods("GET").
 		Name("publication")
@@ -336,6 +333,21 @@ func Register(c controllers.Context) {
 	datasetRouter.HandleFunc("", datasetsController.List).
 		Methods("GET").
 		Name("datasets")
+	datasetRouter.HandleFunc("/add", datasetsController.Add).
+		Methods("GET").
+		Name("dataset_add")
+	datasetRouter.HandleFunc("/add/import", datasetsController.AddImport).
+		Methods("POST").
+		Name("dataset_add_import")
+	datasetRouter.HandleFunc("/{id}/add/description", datasetsController.AddDescription).
+		Methods("GET").
+		Name("dataset_add_description")
+	datasetRouter.HandleFunc("/{id}/add/confirm", datasetsController.AddConfirm).
+		Methods("GET").
+		Name("dataset_add_confirm")
+	datasetRouter.HandleFunc("/{id}/add/publish", datasetsController.AddPublish).
+		Methods("POST").
+		Name("dataset_add_publish")
 	datasetRouter.HandleFunc("/{id}", datasetsController.Show).
 		Methods("GET").
 		Name("dataset")
