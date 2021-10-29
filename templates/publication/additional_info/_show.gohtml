@@ -1,30 +1,27 @@
-<div class="card card-collapsible mb-6 publication-additional-information">
+{{ if not .IsHTMXRequest }}<div class="card card-collapsible mb-6 publication-additional-info">{{end}}
+
     <div class="card-header">
-        <div class="collapse-trigger collapsed" data-toggle="collapse" data-target="#collapse-additional-information" aria-expanded="{{ .IsHTMXRequest }}" aria-controls="collapse-additional-information"></div>
+        <div class="collapse-trigger collapsed" data-toggle="collapse" data-target="#collapse-additional-info" aria-expanded="{{ .IsHTMXRequest }}" aria-controls="collapse-additional-info"></div>
         <div class="bc-toolbar">
             <div class="bc-toolbar-left">
                 <i class="if if-chevron-right mr-4 text-muted"></i>Additional information
             </div>
             <div class="bc-toolbar-right">
-                <!-- <div class="c-button-toolbar" data-panel-state="read">
-                    <button class="btn btn-outline-primary" data-panel-toggle="edit3">
+				<div class="c-button-toolbar" data-panel-state="read">
+                    <button class="btn btn-outline-primary"
+                        hx-get="{{pathFor "publication_additional_info_edit_form" "id" .D.Publication.ID}}"
+                        hx-swap="innerHTML"
+                        hx-target=".publication-additional-info"
+                    >
                         <i class="if if-edit"></i>
                         <div class="btn-text">Edit</div>
                     </button>
                 </div>
-                <div class="c-button-toolbar u-hidden" data-panel-state="edit">
-                    <button class="btn btn-outline-primary" data-panel-toggle="edit3">
-                        <div class="btn-text">Cancel</div>
-                    </button>
-                    <button class="btn btn-primary" data-panel-toggle="edit3">
-                        <div class="btn-text">Save</div>
-                    </button>
-                </div> -->
             </div>
         </div>
     </div>
 
-    <div class="collapse" id="collapse-additional-information">
+    <div class="collapse" id="collapse-additional-info">
         <div class="card-body p-0">
             <ul class="list-group list-group-flush" data-panel-state="read">
                 <li class="list-group-item">
@@ -39,4 +36,4 @@
             </ul>
         </div>
     </div>
-</div>
+{{ if not .IsHTMXRequest }}</div>{{end}}
