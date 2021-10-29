@@ -3,7 +3,6 @@ package controllers
 import (
 	"log"
 	"net/http"
-    "fmt"
 
 	"github.com/gorilla/mux"
 	"github.com/ugent-library/biblio-backend/internal/models"
@@ -92,8 +91,6 @@ func (c *PublicationAdditionalInfo) SaveForm(w http.ResponseWriter, r *http.Requ
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	fmt.Printf("form: %+v\n", r.Form)
 
 	savedPub, err := c.Engine.UpdatePublication(pub)
 
