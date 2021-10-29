@@ -53,25 +53,25 @@ func (u *User) CanEditPublication(p *Publication) bool {
 	return false
 }
 
-func (u *User) CanEditDataset(p *Dataset) bool {
-	if p.Status == "deleted" {
+func (u *User) CanEditDataset(d *Dataset) bool {
+	if d.Status == "deleted" {
 		return false
 	}
 	if u.Role == "admin" {
 		return true
 	}
-	if p.Locked {
+	if d.Locked {
 		return false
 	}
-	if p.CreatorID == u.ID {
+	if d.CreatorID == u.ID {
 		return true
 	}
-	for _, c := range p.Creator {
+	for _, c := range d.Creator {
 		if c.ID == u.ID {
 			return true
 		}
 	}
-	for _, c := range p.Contributor {
+	for _, c := range d.Contributor {
 		if c.ID == u.ID {
 			return true
 		}
