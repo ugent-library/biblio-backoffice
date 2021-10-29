@@ -20,7 +20,7 @@
         {{ end }}
         <div class="mb-3 form-value">
             <div class="d-flex is-invalid">
-                <input class="form-control{{ if .Error }} is-invalid{{ end }}" name="{{ .Name}}[{{ len .Value }}]" type="text">
+                <input class="form-control{{ if .Error }} is-invalid{{ end }}" name="{{ .Name}}[{{ len .Values }}]" type="text">
                 <button class="btn btn-outline-primary btn-icon-only ml-3 form-value-add" type="button">
                     <i class="if if-add"></i>
                     <div class="sr-only">Add</div>
