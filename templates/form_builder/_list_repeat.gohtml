@@ -25,7 +25,7 @@
         {{ end }}
 
         <div class="d-flex mb-3 form-value">
-            <select class="custom-select form-control" name="{{ $.Name }}[{{ len .Value }}]">
+            <select class="custom-select form-control" name="{{ $.Name }}[{{ len .Values }}]">
                 {{if $.EmptyChoice }}<option></option>{{ end }}
                 {{ range $ci, $c := .Choices }}
                 <option value="{{ $c }}">{{ index $.ChoicesLabels $ci }}</option>
