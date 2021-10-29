@@ -67,7 +67,7 @@ type Publication struct {
 	AdditionalInfo          string                   `json:"additional_info,omitempty" form:"additional_info"`
 	AlternativeTitle        []string                 `json:"alternative_title,omitempty" form:"alternative_title"`
 	ArticleNumber           string                   `json:"article_number,omitempty" form:"article_number"`
-	ArxivID                 string                   `json:"arxiv_id,omitempty" form:"arxvid_id"`
+	ArxivID                 string                   `json:"arxiv_id,omitempty" form:"arxiv_id"`
 	Author                  []PublicationContributor `json:"author,omitempty" form:"-"`
 	Classification          string                   `json:"classification,omitempty" form:"classification"`
 	CompletenessScore       int                      `json:"completeness_score,omitempty" form:"-"`
@@ -133,7 +133,7 @@ type Publication struct {
 	UserID                  string                   `json:"user_id,omitempty" form:"-"`
 	Version                 int                      `json:"_version,omitempty" form:"-"`
 	Volume                  string                   `json:"volume,omitempty" form:"volume"`
-	WOSID                   string                   `json:"wos_id,omitempty" form:"-"`
+	WOSID                   string                   `json:"wos_id,omitempty" form:"wos_id"`
 	WOSType                 string                   `json:"wos_type,omitempty" form:"-"`
 	Year                    string                   `json:"year,omitempty" form:"year"`
 }
