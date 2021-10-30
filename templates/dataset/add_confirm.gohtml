@@ -48,7 +48,7 @@
                                     {{template "dataset/_summary_body" .D.Dataset}}
                                 </div>
                                 <div class="list-group mt-6">
-                                    <a class="list-group-item list-group-item-action" href="{{pathFor "dataset_add_description" "id" .D.Dataset.ID}}">
+                                    <a class="list-group-item list-group-item-action" href="{{pathFor "dataset_add_description" "id" .D.Dataset.ID}}#description-content">
                                         <div class="d-flex justify-content-between align-items-center">
                                             <div class="d-flex align-items-center">
                                                 <i class="if if-check-circle-fill if--success"></i>
@@ -57,7 +57,7 @@
                                             <i class="if if-chevron-right"></i>
                                         </div>
                                     </a>
-                                    <a class="list-group-item list-group-item-action" href="{{pathFor "dataset_add_description" "id" .D.Dataset.ID}}">
+                                    <a class="list-group-item list-group-item-action" href="{{pathFor "dataset_add_description" "id" .D.Dataset.ID}}#contributors-content">
                                         <div class="d-flex justify-content-between align-items-center">
                                             <div class="d-flex align-items-center">
                                                 <i class="if if-check-circle-fill if--success"></i>
