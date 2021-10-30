@@ -1,0 +1,7 @@
+<div id="publication-summary"
+    hx-trigger="ITRemoveItem from:body, ITCreateItem from:body, ITUpdateItem from:body, ITOrderAuthors from:body"
+    hx-get="{{pathFor "publication_summary" "id" .D.Publication.ID}}"
+    hx-swap="innerHTML"
+>
+    {{template "publication/_summary" .D.Publication}}
+</div>

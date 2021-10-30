@@ -17,6 +17,7 @@
                 </div>
             </div>
         </form>
+        {{if .D.Publication.File}}
         <hr>
         <ul class="list-group list-group-flush">
             {{range .D.Publication.File}}
@@ -129,5 +130,6 @@
             </li>
             {{end}}
         </ul>
+        {{end}}
     </div>
 </div>

@@ -1,0 +1,81 @@
+<div class="c-sub-sidebar c-sidebar--bordered">
+    <div class="bc-navbar bc-navbar--xlarge bc-navbar--bordered-bottom">
+        <div class="bc-toolbar">
+            <div class="bc-toolbar-left">
+                <div class="bc-toolbar-item">
+                    <div class="d-flex flex-column">
+                        <a class="btn btn-link btn-link-muted p-0" href="{{pathFor "publications"}}">
+                            <i class="if if-arrow-left"></i>
+                            <div class="btn-text">Biblio publications</div>
+                        </a>
+                        <h4 class="bc-toolbar-title mb-3">Add Publication</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="c-sub-sidebar__menu">
+        <nav>
+            <div class="c-sub-sidebar-menu">
+                <ol class="c-stepper my-6">
+                    <li class="c-stepper__item{{if eq .D.Step 1}} c-stepper__item--active{{end}}">
+                        <a href="{{pathFor "publication_add"}}">
+                            {{if gt .D.Step 1}}
+                            <div class="c-stepper__step c-stepper__step--complete"><i class="if if-check"></i></div>
+                            {{else}}
+                            <div class="c-stepper__step{{if eq .D.Step 1}} c-stepper__step--active{{end}}">1</div>
+                            {{end}}
+                            <span class="c-stepper__text">Single or multiple</span>
+                        </a>
+                    </li>
+                    <li class="c-stepper__item{{if eq .D.Step 2}} c-stepper__item--active{{end}}">
+                        <a href="#">
+                            {{if gt .D.Step 2}}
+                            <div class="c-stepper__step c-stepper__step--complete"><i class="if if-check"></i></div>
+                            {{else}}
+                            <div class="c-stepper__step{{if eq .D.Step 2}} c-stepper__step--active{{end}}">2</div>
+                            {{end}}
+                            <span class="c-stepper__text">Add reference</span>
+                        </a>
+                    </li>
+                    <li class="c-stepper__item{{if eq .D.Step 3}} c-stepper__item--active{{end}}">
+                        <a href="#">
+                            {{if gt .D.Step 3}}
+                            <div class="c-stepper__step c-stepper__step--complete"><i class="if if-check"></i></div>
+                            {{else}}
+                            <div class="c-stepper__step{{if eq .D.Step 3}} c-stepper__step--active{{end}}">3</div>
+                            {{end}}
+                            <span class="c-stepper__text">Import file</span>
+                        </a>
+                    </li>
+                    <li class="c-stepper__item{{if eq .D.Step 4}} c-stepper__item--active{{end}}">
+                        <a href="#">
+                            {{if gt .D.Step 4}}
+                            <div class="c-stepper__step c-stepper__step--complete"><i class="if if-check"></i></div>
+                            {{else}}
+                            <div class="c-stepper__step{{if eq .D.Step 4}} c-stepper__step--active{{end}}">4</div>
+                            {{end}}
+                            <span class="c-stepper__text">Complete description</span>
+                        </a>
+                    </li>
+                    <li class="c-stepper__item{{if eq .D.Step 5}} c-stepper__item--active{{end}}">
+                        <a href="#">
+                            {{if gt .D.Step 5}}
+                            <div class="c-stepper__step c-stepper__step--complete"><i class="if if-check"></i></div>
+                            {{else}}
+                            <div class="c-stepper__step{{if eq .D.Step 5}} c-stepper__step--active{{end}}">5</div>
+                            {{end}}
+                            <span class="c-stepper__text">Summary</span>
+                        </a>
+                    </li>
+                    <li class="c-stepper__item{{if eq .D.Step 6}} c-stepper__item--active{{end}}">
+                        <a href="#">
+                            <div class="c-stepper__step{{if eq .D.Step 6}} c-stepper__step--active{{end}}">6</div>
+                            <span class="c-stepper__text">Publish</span>
+                        </a>
+                    </li>
+                </ol>
+            </div>
+        </nav>
+    </div>
+</div>

@@ -155,6 +155,24 @@ func Register(c controllers.Context) {
 	publicationRouter.HandleFunc("", publicationsController.List).
 		Methods("GET").
 		Name("publications")
+	publicationRouter.HandleFunc("/add", publicationsController.Add).
+		Methods("GET").
+		Name("publication_add")
+	publicationRouter.HandleFunc("/add-single", publicationsController.AddSingle).
+		Methods("GET").
+		Name("publication_add_single")
+	publicationRouter.HandleFunc("/add-single/import", publicationsController.AddSingleImport).
+		Methods("POST").
+		Name("publication_add_single_import")
+	publicationRouter.HandleFunc("/{id}/add-single/description", publicationsController.AddSingleDescription).
+		Methods("GET").
+		Name("publication_add_single_description")
+	publicationRouter.HandleFunc("/{id}/add-single/confirm", publicationsController.AddSingleConfirm).
+		Methods("GET").
+		Name("publication_add_single_confirm")
+	publicationRouter.HandleFunc("/{id}/add-single/publish", publicationsController.AddSinglePublish).
+		Methods("POST").
+		Name("publication_add_single_publish")
 	publicationRouter.HandleFunc("/{id}", publicationsController.Show).
 		Methods("GET").
 		Name("publication")

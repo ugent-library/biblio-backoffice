@@ -30,12 +30,41 @@ func (e *Engine) GetPublication(id string) (*models.Publication, error) {
 	return pub, nil
 }
 
+// TODO change validation for new and draft publications in librecat
+func (e *Engine) CreatePublication(pt string) (*models.Publication, error) {
+	pub := &models.Publication{Type: pt, Status: "private", Title: "New publication"}
+	resPub := &models.Publication{}
+	if _, err := e.post("/publication", pub, resPub); err != nil {
+		return nil, err
+	}
+	return resPub, nil
+}
+
+// TODO: set constraint to not research_data
+func (e *Engine) ImportUserPublications(userID, identifier string) ([]*models.Publication, error) {
+	reqData := struct {
+		Identifier string `json:"identifier"`
+	}{
+		identifier,
+	}
+	publications := make([]*models.Publication, 0)
+	if _, err := e.post(fmt.Sprintf("/user/%s/publication/import", userID), &reqData, &publications); err != nil {
+		return nil, err
+	}
+	return publications, nil
+}
+
 func (e *Engine) UpdatePublication(pub *models.Publication) (*models.Publication, error) {
 	resPub := &models.Publication{}
 	if _, err := e.put(fmt.Sprintf("/publication/%s", pub.ID), pub, resPub); err != nil {
 		return nil, err
 	}
 	return resPub, nil
+}
+
+func (e *Engine) PublishPublication(pub *models.Publication) (*models.Publication, error) {
+	pub.Status = "public"
+	return e.UpdatePublication(pub)
 }
 
 func (e *Engine) GetPublicationDatasets(id string) ([]*models.Dataset, error) {

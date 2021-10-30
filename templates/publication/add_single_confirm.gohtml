@@ -1,0 +1,86 @@
+{{template "publication/_add_sidebar" .}}
+
+<div class="w-100 u-scroll-wrapper">
+    <div class="bc-navbar bc-navbar--xlarge bc-navbar-bordered bc-navbar--white bc-navbar--bordered-bottom">
+        <div class="bc-toolbar">
+            <div class="bc-toolbar-left">
+                <div class="bc-toolbar-item">
+                    <div class="d-flex flex-column">
+                        <span class="text-muted mb-2">Step {{.D.Step}}</span>
+                        <h4 class="bc-toolbar-title">Summary</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="bc-toolbar-right">
+                <div class="bc-toolbar-item">
+                    <a class="btn btn-outline-primary" href="{{pathFor "publications"}}">
+                        <div class="btn-text">Save as draft</div>
+                    </a>
+                </div>
+                <div class="bc-toolbar-item">
+                    <form action="{{pathFor "publication_add_single_publish" "id" .D.Publication.ID}}" method="POST">
+                        <button type="submit" class="btn btn-success">
+                            <div class="btn-text">Publish to Biblio</div>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="p-6 u-scroll-wrapper__body">
+        <div class="card mb-6">
+            <div class="card-header">Next steps</div>
+            <div class="card-body">
+                <p>Your publication will be reviewed by Biblio first, once it has been validated it will become public in Biblio.</p>
+                <p>You can also save your publication as draft and publish it to Biblio later.</p>
+            </div>
+        </div>
+
+        <div class="card mb-6">
+            <div class="card-header">Publication</div>
+            <div class="card-body p-0">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <div class="d-flex w-100">
+                            <div class="w-100">
+                                <div class="d-flex align-items-start">
+                                    {{template "publication/_summary_body" .D.Publication}}
+                                </div>
+                                <div class="list-group mt-6">
+                                    <a class="list-group-item list-group-item-action" href="{{pathFor "publication_add_single_description" "id" .D.Publication.ID}}">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="d-flex align-items-center">
+                                                <i class="if if-check-circle-fill if--success"></i>
+                                                <span class="ml-3">Description</span>
+                                            </div>
+                                            <i class="if if-chevron-right"></i>
+                                        </div>
+                                    </a>
+                                    <a class="list-group-item list-group-item-action" href="{{pathFor "publication_add_single_description" "id" .D.Publication.ID}}">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="d-flex align-items-center">
+                                                <i class="if if-check-circle-fill if--success"></i>
+                                                <span class="ml-3">Authors &amp; editors</span>
+                                            </div>
+                                            <i class="if if-chevron-right"></i>
+                                        </div>
+                                    </a>
+                                    <a class="list-group-item list-group-item-action" href="{{pathFor "publication_add_single_description" "id" .D.Publication.ID}}">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="d-flex align-items-center">
+                                                <i class="if if-check-circle-fill if--success"></i>
+                                                <span class="ml-3">Full text</span>
+                                            </div>
+                                            <i class="if if-chevron-right"></i>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

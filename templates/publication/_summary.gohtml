@@ -2,46 +2,7 @@
     <div class="d-flex w-100">
         <div class="w-100">
             <div class="d-flex align-items-start">
-                {{template "publication/_thumbnail" .}}
-                <div class="list-group-item-content">
-                    <div class="list-group-item-subline">
-                        <div class="list-group-item-subline-left">
-                            <span class="mr-3 pr-3 border-right">{{.Type}}{{with .Classification}}: {{.}}{{end}}</span>
-                            {{if .OpenAccess}}
-                            <div class="d-flex align-items-center">
-                                <i class="if if-download if--small if--success"></i>
-                                <span class="pl-2 text-muted">Open Access</span>
-                            </div>
-                            {{end}}
-                        </div>
-                    </div>
-                    <div class="list-group-item-text">
-                        <h4 class="c-h4">{{.Title}}<i class="if if-no-edit if--small ml-3 text-muted" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Locked for editing"></i>
-                        </h4>
-                        {{with .Author}}
-                            {{template "publication/_contributors_short" .}}
-                        {{end}}
-                        <span class="c-body-small text-muted">{{.Year}}{{with .Publication}}, {{.}}{{end}}</span>
-                    </div>
-                    <div class="list-group-item-meta mt-5">
-                        <div class="list-group-item-meta-left">
-                            <div class="list-group-item-meta-item">
-                                {{template "publication/_status" .}}
-                            </div>
-                            <div class="list-group-item-meta-item">
-                                {{template "publication/_completeness" .}}
-                            </div>
-                        </div>
-                        <div class="list-group-item-meta-right">
-                            <div class="list-group-item-meta-item">
-                                <span class="text-muted c-body-small">Biblio ID: {{.ID}}</span>
-                            </div>
-                            <div class="list-group-item-meta-item">
-                                <span class="text-muted c-body-small">Created {{timeElapsed .DateCreated "en"}}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                {{template "publication/_summary_body" .}}
             </div>
         </div>
     </div>

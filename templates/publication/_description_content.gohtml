@@ -1,0 +1,33 @@
+<div class="tab-content">
+    <div id="description-content" class="tab-pane fade show active" role="tabpanel" aria-labelledby="description-tab">
+        {{template "publication/details/_show" .}}
+        {{template "publication/_projects" .}}
+        {{template "publication/_departments" .}}
+        {{if .D.Publication.UsesConference}}
+            {{template "publication/conference/_show" .}}
+        {{end}}
+        {{template "publication/abstracts/_show" .}}
+        {{template "publication/links/_show" .}}
+        {{template "publication/additional_info/_show" .}}
+    </div>
+
+    <div id="files-content" class="tab-pane fade" role="tabpanel" aria-labelledby="files-tab">
+        {{template "publication/files/_show" .}}
+    </div>
+
+    <div id="contributors-content" class="tab-pane fade" role="tabpanel" aria-labelledby="contributors-tab">
+        {{if .D.Publication.UsesAuthor}}
+            {{template "publication/authors/_default" .}}
+        {{end}}
+        {{if .D.Publication.UsesEditor}}
+            {{template "publication/editors/_default" .}}
+        {{end}}
+        {{if .D.Publication.UsesSupervisor}}
+            {{template "publication/supervisors/_default" .}}
+        {{end}}
+    </div>
+
+    <div id="datasets-content" class="tab-pane fade" role="tabpanel" aria-labelledby="files-tab">
+        {{template "publication/datasets/_content" .}}
+    </div>
+</div>

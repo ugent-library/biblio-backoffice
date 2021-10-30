@@ -152,7 +152,7 @@ func (c *Datasets) AddPublish(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	savedDataset, err := c.Engine.UpdateDataset(dataset)
+	savedDataset, err := c.Engine.PublishDataset(dataset)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
