@@ -1,4 +1,4 @@
-<div class="card card-collapsible mb-6">
+<div class="card card-collapsible mb-6 publication-files">
     <div class="card-header">
         <div class="bc-toolbar">
             <div class="bc-toolbar-left">
@@ -7,10 +7,15 @@
         </div>
     </div>
     <div class="card-body p-0">
-        <form class="p-6" action="{{pathFor "upload_publication_file" "id" $.D.Publication.ID}}"
-            method="POST" enctype="multipart/form-data">
+        <form class="p-6"
+            hx-post="{{pathFor "upload_publication_file" "id" $.D.Publication.ID}}"
+            hx-encoding="multipart/form-data"
+            hx-swap="outerHTML"
+            hx-target="closest .publication-files"
+            hx-trigger="change"
+        >
             <div class="c-file-upload">
-                <input type="file" name="file" class="form-change-submit">
+                <input type="file" name="file">
                 <div class="c-file-upload__content">
                     <p>Drag and drop or</p>
                     <button class="btn btn-outline-primary">Upload file</button>
@@ -87,23 +92,21 @@
                                     </div>
                                 </div>
                                 <div class="list-group-item-subline-right">
-                                    <div class="dropdown">
+                                    <!-- <div class="dropdown">
                                         <button class="btn btn-link btn-icon-only btn-link-muted" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             <i class="if if-more"></i>
                                         </button>
                                         <div class="dropdown-menu">
-                                            <!-- <button class="dropdown-item" type="button" data-toggle="modal" data-target="#editFile"> -->
                                             <button class="dropdown-item" type="button">
                                                 <i class="if if-edit"></i>
                                                 <span>Edit</span>
                                             </button>
-                                            <!-- <button class="dropdown-item" type="button" data-toggle="modal" data-target="#delete"> -->
                                             <button class="dropdown-item" type="button">
                                                 <i class="if if-delete"></i>
                                                 <span>Delete</span>
                                             </button>
                                         </div>
-                                    </div>
+                                    </div> -->
                                 </div>
                             </div>
                             <div class="list-group-item-text">

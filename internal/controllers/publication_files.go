@@ -12,7 +12,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/views"
-	"github.com/ugent-library/go-locale/locale"
+	"github.com/unrolled/render"
 )
 
 type PublicationFiles struct {
@@ -155,15 +155,12 @@ func (c *PublicationFiles) Upload(w http.ResponseWriter, r *http.Request) {
 
 	pub, _ := c.Engine.GetPublication(id)
 
-	c.Render.HTML(w, http.StatusCreated, "publication/show",
+	c.Render.HTML(w, http.StatusCreated, "publication/files/_show",
 		views.NewData(c.Render, r, struct {
-			Publication  *models.Publication
-			Show         *views.ShowBuilder
-			Vocabularies map[string][]string
+			Publication *models.Publication
 		}{
 			pub,
-			views.NewShowBuilder(c.Render, locale.Get(r.Context())),
-			c.Engine.Vocabularies(),
 		}),
+		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
