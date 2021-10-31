@@ -187,9 +187,12 @@ func Register(c controllers.Context) {
 	publicationRouter.HandleFunc("/{id}/file/{file_id}/thumbnail", publicationFilesController.Thumbnail).
 		Methods("GET").
 		Name("publication_file_thumbnail")
-	publicationRouter.HandleFunc("/{id}/file", publicationFilesController.Upload).
+	publicationRouter.HandleFunc("/{id}/htmx/file", publicationFilesController.Upload).
 		Methods("POST").
 		Name("upload_publication_file")
+	publicationRouter.HandleFunc("/{id}/htmx/file/{file_id}/remove", publicationFilesController.Remove).
+		Methods("PATCH").
+		Name("publication_file_remove")
 
 	// Publication HTMX fragments
 	publicationRouter.HandleFunc("/{id}/htmx/summary", publicationsController.Summary).

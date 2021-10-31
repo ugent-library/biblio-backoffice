@@ -92,21 +92,25 @@
                                     </div>
                                 </div>
                                 <div class="list-group-item-subline-right">
-                                    <!-- <div class="dropdown">
+                                    <div class="dropdown">
                                         <button class="btn btn-link btn-icon-only btn-link-muted" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             <i class="if if-more"></i>
                                         </button>
                                         <div class="dropdown-menu">
-                                            <button class="dropdown-item" type="button">
+                                            <!-- <button class="dropdown-item" type="button">
                                                 <i class="if if-edit"></i>
                                                 <span>Edit</span>
-                                            </button>
-                                            <button class="dropdown-item" type="button">
+                                            </button> -->
+                                            <button class="dropdown-item" type="button"
+                                                hx-patch="{{pathFor "publication_file_remove" "id" $.D.Publication.ID "file_id" .ID}}"
+                                                hx-swap="outerHTML"
+                                                hx-target="closest .publication-files"
+                                            >
                                                 <i class="if if-delete"></i>
                                                 <span>Delete</span>
                                             </button>
                                         </div>
-                                    </div> -->
+                                    </div>
                                 </div>
                             </div>
                             <div class="list-group-item-text">

@@ -164,3 +164,24 @@ func (c *PublicationFiles) Upload(w http.ResponseWriter, r *http.Request) {
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
+
+func (c *PublicationFiles) Remove(w http.ResponseWriter, r *http.Request) {
+	id := mux.Vars(r)["id"]
+	fileID := mux.Vars(r)["file_id"]
+
+	if err := c.Engine.RemovePublicationFile(id, fileID); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	pub, _ := c.Engine.GetPublication(id)
+
+	c.Render.HTML(w, http.StatusCreated, "publication/files/_show",
+		views.NewData(c.Render, r, struct {
+			Publication *models.Publication
+		}{
+			pub,
+		}),
+		render.HTMLOptions{Layout: "layouts/htmx"},
+	)
+}

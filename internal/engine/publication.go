@@ -110,3 +110,8 @@ func (e *Engine) AddPublicationFile(id string, pubFile models.PublicationFile, b
 	_, err = e.doRequest(req, nil)
 	return err
 }
+
+func (e *Engine) RemovePublicationFile(id, fileID string) error {
+	_, err := e.delete(fmt.Sprintf("/publication/%s/file/%s", id, fileID), nil, nil)
+	return err
+}
