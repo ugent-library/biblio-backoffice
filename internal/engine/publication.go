@@ -5,6 +5,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"io"
+	"sync"
 
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/go-web/forms"
@@ -92,8 +93,13 @@ func (e *Engine) AddPublicationFile(id string, pubFile models.PublicationFile, f
 	pipedReader, pipedWriter := io.Pipe()
 	multiPartWriter := multipart.NewWriter(pipedWriter)
 
+	var wg sync.WaitGroup
+
+	wg.Add(1)
+
 	go func(){
 
+		defer wg.Done()
 		defer pipedWriter.Close()
 		defer multiPartWriter.Close()
 
@@ -116,6 +122,10 @@ func (e *Engine) AddPublicationFile(id string, pubFile models.PublicationFile, f
 	req.SetBasicAuth(e.Config.Username, e.Config.Password)
 
 	_, err = e.doRequest(req, nil)
+
+	// IMPORTANT: wait for go routine to finish
+	wg.Wait()
+
 	return err
 }
 
