@@ -101,8 +101,25 @@ func init() {
 	message.SetString(language.English, "publication_publishing_statuses.accepted", "Accepted")
 	message.SetString(language.English, "publication_publishing_statuses.published", "Published")
 
-	// TODO add missing
+	message.SetString(language.English, "publication_versions.publishedVersion", "Published version")
+	message.SetString(language.English, "publication_versions.authorVersion", "Author's original")
+	message.SetString(language.English, "publication_versions.acceptedVersion", "Accepted manuscript")
+	message.SetString(language.English, "publication_versions.updatedVersion", "Corrected version")
+
+	message.SetString(language.English, "publication_file_relations.main_file", "Full text")
+	message.SetString(language.English, "publication_file_relations.colophon", "Colophon/Title page")
+	message.SetString(language.English, "publication_file_relations.data_fact_sheet", "Data fact sheet")
+	message.SetString(language.English, "publication_file_relations.peer_review_report", "Peer review report")
+	message.SetString(language.English, "publication_file_relations.table_of_contents", "Table of contents")
+	message.SetString(language.English, "publication_file_relations.agreement", "Contract/Agreement")
+
 	message.SetString(language.English, "publication_link_relations.data_management_plan", "Data management plan")
+	message.SetString(language.English, "publication_link_relations.homepage", "Accompanying website")
+	message.SetString(language.English, "publication_link_relations.peer_review_report", "Peer review report")
+	message.SetString(language.English, "publication_link_relations.related_information", "Related information")
+	message.SetString(language.English, "publication_link_relations.software", "Software")
+	message.SetString(language.English, "publication_link_relations.table_of_contents", "Table of contents")
+	message.SetString(language.English, "publication_link_relations.main_file", "Full text")
 
 	message.SetString(language.English, "builder.additional_info", "Additional information")
 	message.SetString(language.English, "builder.alternative_title", "Alternative title")

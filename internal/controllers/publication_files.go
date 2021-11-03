@@ -11,6 +11,8 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/views"
+	"github.com/ugent-library/go-web/forms"
+	"github.com/ugent-library/go-web/jsonapi"
 	"github.com/unrolled/render"
 )
 
@@ -161,6 +163,110 @@ func (c *PublicationFiles) Upload(w http.ResponseWriter, r *http.Request) {
 	)
 }
 
+func (c *PublicationFiles) Edit(w http.ResponseWriter, r *http.Request) {
+	id := mux.Vars(r)["id"]
+	fileID := mux.Vars(r)["file_id"]
+
+	pub, err := c.Engine.GetPublication(id)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	var file *models.PublicationFile
+	for _, f := range pub.File {
+		if f.ID == fileID {
+			file = f
+		}
+	}
+
+	if file == nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	c.Render.HTML(w, http.StatusOK, "publication/files/_edit", views.NewData(c.Render, r, struct {
+		Publication  *models.Publication
+		File         *models.PublicationFile
+		Vocabularies map[string][]string
+	}{
+		pub,
+		file,
+		c.Engine.Vocabularies(),
+	}),
+		render.HTMLOptions{Layout: "layouts/htmx"},
+	)
+}
+
+func (c *PublicationFiles) Update(w http.ResponseWriter, r *http.Request) {
+	id := mux.Vars(r)["id"]
+	fileID := mux.Vars(r)["file_id"]
+
+	pub, err := c.Engine.GetPublication(id)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	var file *models.PublicationFile
+	for _, f := range pub.File {
+		if f.ID == fileID {
+			file = f
+		}
+	}
+
+	if file == nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	err = r.ParseForm()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if err := forms.Decode(file, r.Form); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// TODO save file metadata
+	savedPub, err := c.Engine.UpdatePublication(pub)
+
+	// TODO show errors
+	if _, ok := err.(jsonapi.Errors); ok {
+		c.Render.HTML(w, http.StatusOK, "publication/files/_edit", views.NewData(c.Render, r, struct {
+			Publication  *models.Publication
+			File         *models.PublicationFile
+			Vocabularies map[string][]string
+		}{
+			pub,
+			file,
+			c.Engine.Vocabularies(),
+		}),
+			render.HTMLOptions{Layout: "layouts/htmx"},
+		)
+
+		return
+	} else if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	c.Render.HTML(w, http.StatusOK, "publication/files/_show", views.NewData(c.Render, r, struct {
+		Publication *models.Publication
+	}{
+		savedPub,
+	}),
+		render.HTMLOptions{Layout: "layouts/htmx"},
+	)
+}
+
 func (c *PublicationFiles) Remove(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	fileID := mux.Vars(r)["file_id"]
@@ -172,12 +278,11 @@ func (c *PublicationFiles) Remove(w http.ResponseWriter, r *http.Request) {
 
 	pub, _ := c.Engine.GetPublication(id)
 
-	c.Render.HTML(w, http.StatusCreated, "publication/files/_show",
-		views.NewData(c.Render, r, struct {
-			Publication *models.Publication
-		}{
-			pub,
-		}),
+	c.Render.HTML(w, http.StatusCreated, "publication/files/_show", views.NewData(c.Render, r, struct {
+		Publication *models.Publication
+	}{
+		pub,
+	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }

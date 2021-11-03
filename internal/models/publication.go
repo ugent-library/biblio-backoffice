@@ -13,20 +13,21 @@ type PublicationHits struct {
 }
 
 type PublicationFile struct {
-	AccessLevel        string     `json:"access_level,omitempty"`
-	ContentType        string     `json:"content_type,omitempty"`
-	DateCreated        *time.Time `json:"date_created,omitempty"`
-	DateUpdated        *time.Time `json:"date_updated,omitempty"`
-	Description        string     `json:"description,omitempty"`
-	Embargo            string     `json:"embargo,omitempty"`
-	EmbargoTo          string     `json:"embargo_to,omitempty"`
-	Filename           string     `json:"file_name,omitempty"`
-	FileSize           int        `json:"file_size,omitempty"`
-	ID                 string     `json:"file_id,omitempty"`
-	PublicationVersion string     `json:"publication_version,omitempty"`
-	Relation           string     `json:"relation,omitempty"`
-	ThumbnailURL       string     `json:"thumbnail_url,omitempty"`
-	URL                string     `json:"url,omitempty"`
+	AccessLevel        string     `json:"access_level,omitempty" form:"access_level"`
+	ContentType        string     `json:"content_type,omitempty" form:"-"`
+	DateCreated        *time.Time `json:"date_created,omitempty" form:"-"`
+	DateUpdated        *time.Time `json:"date_updated,omitempty" form:"-"`
+	Description        string     `json:"description,omitempty" form:"description"`
+	Embargo            string     `json:"embargo,omitempty" form:"embargo"`
+	EmbargoTo          string     `json:"embargo_to,omitempty" form:"embargo_to"`
+	Filename           string     `json:"file_name,omitempty" form:"-"`
+	FileSize           int        `json:"file_size,omitempty" form:"-"`
+	ID                 string     `json:"file_id,omitempty" form:"-"`
+	PublicationVersion string     `json:"publication_version,omitempty" form:"publication_version"`
+	Relation           string     `json:"relation,omitempty" form:"relation"`
+	Title              string     `json:"title,omitempty" form:"title"`
+	ThumbnailURL       string     `json:"thumbnail_url,omitempty" form:"-"`
+	URL                string     `json:"url,omitempty" form:"-"`
 }
 
 type PublicationLink struct {
@@ -87,7 +88,7 @@ type Publication struct {
 	EISSN                   []string                 `json:"eissn,omitempty" form:"eissn"`
 	ESCIID                  string                   `json:"esci_id,omitempty" form:"esci_id"`
 	Extern                  bool                     `json:"extern,omitempty" form:"extern"`
-	File                    []PublicationFile        `json:"file,omitempty" form:"-"`
+	File                    []*PublicationFile       `json:"file,omitempty" form:"-"`
 	Handle                  string                   `json:"handle,omitempty" form:"-"`
 	HasConfidentialData     string                   `json:"has_confidential_data,omitempty" form:"-"`
 	HasPatentApplication    string                   `json:"has_patent_application,omitempty" form:"-"`

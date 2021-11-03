@@ -2,9 +2,9 @@ package engine
 
 import (
 	"fmt"
+	"io"
 	"mime/multipart"
 	"net/http"
-	"io"
 	"sync"
 
 	"github.com/ugent-library/biblio-backend/internal/models"
@@ -97,7 +97,7 @@ func (e *Engine) AddPublicationFile(id string, pubFile models.PublicationFile, f
 
 	wg.Add(1)
 
-	go func(){
+	go func() {
 
 		defer wg.Done()
 		defer pipedWriter.Close()
@@ -109,8 +109,8 @@ func (e *Engine) AddPublicationFile(id string, pubFile models.PublicationFile, f
 		}
 
 		if _, err = io.Copy(part, file); err != nil {
-        	return
-    	}
+			return
+		}
 
 	}()
 

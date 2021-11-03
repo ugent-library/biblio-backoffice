@@ -97,10 +97,14 @@
                                             <i class="if if-more"></i>
                                         </button>
                                         <div class="dropdown-menu">
-                                            <!-- <button class="dropdown-item" type="button">
+                                            <button class="dropdown-item" type="button"
+                                                hx-get="{{pathFor "publication_file_edit" "id" $.D.Publication.ID "file_id" .ID}}"
+                                                hx-swap="innerHTML"
+                                                hx-target="#publication-files-modal"
+                                            >
                                                 <i class="if if-edit"></i>
                                                 <span>Edit</span>
-                                            </button> -->
+                                            </button>
                                             <button class="dropdown-item" type="button"
                                                 hx-patch="{{pathFor "publication_file_remove" "id" $.D.Publication.ID "file_id" .ID}}"
                                                 hx-swap="outerHTML"
@@ -139,4 +143,6 @@
         </ul>
         {{end}}
     </div>
+
+    <div id="publication-files-modal" class="modals"></div>
 </div>

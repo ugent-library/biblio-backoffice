@@ -11,7 +11,7 @@
         <div class="modal-footer">
             <button class="btn btn-link modal-close">Cancel</button>
             <button class="btn btn-danger"
-                hx-patch="/dataset/{{ .D.ID }}/htmx/projects/remove/{{ .D.ProjectID }}"
+                hx-patch="{{pathFor "dataset_projects_remove_from_dataset" "id" .D.ID "project_id" .D.ProjectID}}"
                 hx-swap="innerHTML"
                 hx-target=".dataset-projects"
             >Delete</button>

@@ -14,7 +14,7 @@
                     </div>
                     <div class="list-group-item-meta-right">
                         <button class="btn btn-primary"
-                            hx-patch="/dataset/{{ $.D.Dataset.ID }}/htmx/projects/add/{{ .ID }}"
+                            hx-patch="{{pathFor "dataset_projects_add_to_dataset" "id" $.D.Dataset.ID "project_id" .ID}}"
                             hx-swap="innerHTML"
                             hx-target=".dataset-projects"
                         >Add Project</button>

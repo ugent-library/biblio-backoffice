@@ -10,7 +10,7 @@
 </div>
 {{ end }}
 
-<form hx-patch="/dataset/{{ .D.Dataset.ID }}/htmx/details/edit" hx-swap="innerHTML" hx-target="closest .dataset-details">
+<form hx-patch="{{pathFor "dataset_details_save_form" "id" .D.Dataset.ID}}" hx-swap="innerHTML" hx-target="closest .dataset-details">
     <div class="card-header">
         <div class="collapse-trigger" data-toggle="collapse" data-target="#collapse-details" aria-expanded="true" aria-controls="collapse-details"></div>
         <div class="bc-toolbar">
@@ -20,7 +20,7 @@
             <div class="bc-toolbar-right">
                 <div class="c-button-toolbar" data-panel-state="edit">
                     <button class="btn btn-outline-primary btn-cancel"
-                        hx-get="/dataset/{{ .D.Dataset.ID }}/htmx/details"
+                        hx-get="{{pathFor "dataset_details" "id" .D.Dataset.ID}}"
                         hx-swap="innerHTML"
                         hx-target=".dataset-details"
                     >

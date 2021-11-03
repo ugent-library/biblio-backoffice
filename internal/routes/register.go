@@ -191,6 +191,12 @@ func Register(c controllers.Context) {
 	publicationRouter.HandleFunc("/{id}/htmx/file", publicationFilesController.Upload).
 		Methods("POST").
 		Name("upload_publication_file")
+	publicationRouter.HandleFunc("/{id}/htmx/file/{file_id}/edit", publicationFilesController.Edit).
+		Methods("GET").
+		Name("publication_file_edit")
+	publicationRouter.HandleFunc("/{id}/htmx/file/{file_id}", publicationFilesController.Update).
+		Methods("PUT").
+		Name("publication_file_update")
 	publicationRouter.HandleFunc("/{id}/htmx/file/{file_id}/remove", publicationFilesController.Remove).
 		Methods("PATCH").
 		Name("publication_file_remove")

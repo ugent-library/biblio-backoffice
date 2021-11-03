@@ -48,13 +48,33 @@ var vocabularies = map[string][]string{
 		"accepted",
 		"published",
 	},
+	"publication_versions": {
+		"publishedVersion",
+		"authorVersion",
+		"acceptedVersion",
+		"updatedVersion",
+	},
 	"publication_sorts": {
 		"year.desc",
 		"date_updated.desc",
 		"date_created.desc",
 	},
+	"publication_file_relations": {
+		"main_file",
+		"colophon",
+		"data_fact_sheet",
+		"peer_review_report",
+		"table_of_contents",
+		"agreement",
+	},
 	"publication_link_relations": {
 		"data_management_plan",
+		"homepage",
+		"peer_review_report",
+		"related_information",
+		"software",
+		"table_of_contents",
+		"main_file",
 	},
 	"conference_types": {
 		"proceedingsPaper",

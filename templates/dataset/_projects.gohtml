@@ -8,7 +8,7 @@
             <div class="bc-toolbar-right">
                 <div class="c-button-toolbar" data-panel-state="read">
                     <button class="btn btn-outline-primary"
-                        hx-get="/dataset/{{ .D.Dataset.ID }}/htmx/projects/list"
+                        hx-get="{{pathFor "dataset_projects" "id" .D.Dataset.ID}}"
                         hx-target="#datasets-projects-modal"
                         hx-trigger="click"
                     >
@@ -52,7 +52,7 @@
                                     </button>
                                     <div class="dropdown-menu">
                                         <button class="dropdown-item" type="button"
-                                            hx-get="/dataset/{{ $datasetID }}/htmx/projects/remove/{{ $v.ID }}"
+                                            hx-get="{{pathFor "dataset_projects_confirm_remove_from_publication" "id" $datasetID "project_id" $v.ID}}"
                                             hx-target="#datasets-projects-modal"
                                             hx-trigger="click"
                                         >
