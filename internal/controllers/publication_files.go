@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"net/http/httputil"
@@ -108,8 +107,11 @@ func (c *PublicationFiles) Upload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 2GB limit
-	if err := r.ParseMultipartForm(2000000000); err != nil {
+	// 2GB limit on request body
+	r.Body = http.MaxBytesReader(w, r.Body, 2000000000)
+
+	// buffer limit of 32MB
+	if err := r.ParseMultipartForm(32 << 20); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -142,13 +144,7 @@ func (c *PublicationFiles) Upload(w http.ResponseWriter, r *http.Request) {
 		ContentType: filetype,
 	}
 
-	fileContents, err := ioutil.ReadAll(file)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	if err := c.Engine.AddPublicationFile(id, pubFile, fileContents); err != nil {
+	if err := c.Engine.AddPublicationFile(id, pubFile, file); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
