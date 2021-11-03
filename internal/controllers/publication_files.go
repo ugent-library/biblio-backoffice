@@ -107,8 +107,11 @@ func (c *PublicationFiles) Upload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 2GB limit
-	if err := r.ParseMultipartForm(2000000000); err != nil {
+	// 2GB limit on request body
+	r.Body = http.MaxBytesReader(w, r.Body, 2000000000)
+
+	// buffer limit of 32MB
+	if err := r.ParseMultipartForm(32 << 20); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
