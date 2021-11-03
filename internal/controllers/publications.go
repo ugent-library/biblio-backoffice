@@ -123,3 +123,125 @@ func (c *Publications) Summary(w http.ResponseWriter, r *http.Request) {
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
+
+func (c *Publications) Add(w http.ResponseWriter, r *http.Request) {
+	c.Render.HTML(w, http.StatusOK, "publication/add", views.NewData(c.Render, r, struct {
+		Step int
+	}{
+		1,
+	}))
+}
+
+func (c *Publications) AddSingle(w http.ResponseWriter, r *http.Request) {
+	c.Render.HTML(w, http.StatusOK, "publication/add_single", views.NewData(c.Render, r, struct {
+		Step int
+	}{
+		2,
+	}))
+}
+
+func (c *Publications) AddSingleImport(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
+
+	var publication *models.Publication
+
+	if identifier := r.FormValue("identifier"); identifier != "" {
+		publications, err := c.Engine.ImportUserPublications(context.GetUser(r.Context()).ID, identifier)
+		if err != nil {
+			log.Println(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		// TODO flash messages
+		if len(publications) == 0 {
+			log.Println(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		publication = publications[0]
+	} else {
+		pt := r.FormValue("publication_type")
+		p, err := c.Engine.CreatePublication(pt)
+		if err != nil {
+			log.Println(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		publication = p
+	}
+
+	c.Render.HTML(w, http.StatusOK, "publication/add_single_files", views.NewData(c.Render, r, struct {
+		Step        int
+		Publication *models.Publication
+		Show        *views.ShowBuilder
+	}{
+		3,
+		publication,
+		views.NewShowBuilder(c.Render, locale.Get(r.Context())),
+	}))
+}
+
+func (c *Publications) AddSingleDescription(w http.ResponseWriter, r *http.Request) {
+	id := mux.Vars(r)["id"]
+	publication, err := c.Engine.GetPublication(id)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	c.Render.HTML(w, http.StatusOK, "publication/add_single_description", views.NewData(c.Render, r, struct {
+		Step        int
+		Publication *models.Publication
+		Show        *views.ShowBuilder
+	}{
+		4,
+		publication,
+		views.NewShowBuilder(c.Render, locale.Get(r.Context())),
+	}))
+}
+
+func (c *Publications) AddSingleConfirm(w http.ResponseWriter, r *http.Request) {
+	id := mux.Vars(r)["id"]
+	publication, err := c.Engine.GetPublication(id)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	c.Render.HTML(w, http.StatusOK, "publication/add_single_confirm", views.NewData(c.Render, r, struct {
+		Step        int
+		Publication *models.Publication
+	}{
+		5,
+		publication,
+	}))
+}
+
+func (c *Publications) AddSinglePublish(w http.ResponseWriter, r *http.Request) {
+	id := mux.Vars(r)["id"]
+	publication, err := c.Engine.GetPublication(id)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	savedPublication, err := c.Engine.PublishPublication(publication)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	c.Render.HTML(w, http.StatusOK, "publication/add_single_publish", views.NewData(c.Render, r, struct {
+		Step        int
+		Publication *models.Publication
+	}{
+		6,
+		savedPublication,
+	}))
+}

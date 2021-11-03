@@ -44,74 +44,12 @@
             </div>
         </div>
         <div class="c-divider mt-0 mx-6"></div>
-        <div id="publication-summary"
-            hx-trigger="ITRemoveItem from:body, ITCreateItem from:body, ITUpdateItem from:body, ITOrderAuthors from:body"
-            hx-get="{{pathFor "publication_summary" "id" .D.Publication.ID}}"
-            hx-swap="innerHTML"
-        >
-            {{template "publication/_summary" .D.Publication}}
-        </div>
+        {{template "publication/_description_summary" .}}
         <div class="c-divider mb-2 mx-6"></div>
-        <div class="bc-navbar bc-navbar--white bc-navbar--bordered-bottom">
-            <div class="bc-toolbar">
-                <div class="bc-toolbar-left">
-                    <div class="bc-toolbar-item">
-                        <ul class="nav" role="tablist">
-                            <li class="nav-item">
-                                <a class="nav-link active" id="description-tab" data-toggle="tab" href="#description-content" role="tab" aria-controls="description" aria-selected="true">Description</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="files-tab" data-toggle="tab" href="#files-content" role="tab" aria-controls="files" aria-selected="false">Full text</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="contributors-tab" data-toggle="tab" href="#contributors-content" role="tab" aria-controls="contributors" aria-selected="false">Authors &amp; Editors</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="datasets-tab" data-toggle="tab" href="#datasets-content" role="tab" aria-controls="datasets" aria-selected="false">Datasets</a>
-                            </li>
-                            {{/* <li class="nav-item">
-                                <a class="nav-link" id="review-tab" data-toggle="tab" href="#review-content" role="tab" aria-controls="review" aria-selected="false">Biblio Review</a>
-                            </li> */}}
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
+        {{template "publication/_description_nav" .}}
     </div>
     <div class="u-scroll-wrapper__body p-6">
         <div id="alerts"></div>
-        <div class="tab-content">
-            <div id="description-content" class="tab-pane fade show active" role="tabpanel" aria-labelledby="description-tab">
-                {{template "publication/details/_show" .}}
-                {{template "publication/_projects" .}}
-                {{template "publication/_departments" .}}
-                {{if .D.Publication.UsesConference}}
-                    {{template "publication/conference/_show" .}}
-                {{end}}
-                {{template "publication/abstracts/_show" .}}
-                {{template "publication/links/_show" .}}
-                {{template "publication/additional_info/_show" .}}
-            </div>
-
-            <div id="files-content" class="tab-pane fade" role="tabpanel" aria-labelledby="files-tab">
-                {{template "publication/files/_show" .}}
-            </div>
-
-            <div id="contributors-content" class="tab-pane fade" role="tabpanel" aria-labelledby="contributors-tab">
-                {{if .D.Publication.UsesAuthor}}
-                    {{template "publication/authors/_default" .}}
-                {{end}}
-                {{if .D.Publication.UsesEditor}}
-                    {{template "publication/editors/_default" .}}
-                {{end}}
-                {{if .D.Publication.UsesSupervisor}}
-                    {{template "publication/supervisors/_default" .}}
-                {{end}}
-            </div>
-
-            <div id="datasets-content" class="tab-pane fade" role="tabpanel" aria-labelledby="files-tab">
-                {{template "publication/datasets/_content" .}}
-            </div>
-        </div>
+        {{template "publication/_description_content" .}}
     </div>
 </div>

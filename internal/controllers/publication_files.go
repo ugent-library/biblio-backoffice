@@ -11,7 +11,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/views"
-	"github.com/ugent-library/go-locale/locale"
+	"github.com/unrolled/render"
 )
 
 type PublicationFiles struct {
@@ -151,15 +151,33 @@ func (c *PublicationFiles) Upload(w http.ResponseWriter, r *http.Request) {
 
 	pub, _ := c.Engine.GetPublication(id)
 
-	c.Render.HTML(w, http.StatusCreated, "publication/show",
+	c.Render.HTML(w, http.StatusCreated, "publication/files/_show",
 		views.NewData(c.Render, r, struct {
-			Publication  *models.Publication
-			Show         *views.ShowBuilder
-			Vocabularies map[string][]string
+			Publication *models.Publication
 		}{
 			pub,
-			views.NewShowBuilder(c.Render, locale.Get(r.Context())),
-			c.Engine.Vocabularies(),
 		}),
+		render.HTMLOptions{Layout: "layouts/htmx"},
+	)
+}
+
+func (c *PublicationFiles) Remove(w http.ResponseWriter, r *http.Request) {
+	id := mux.Vars(r)["id"]
+	fileID := mux.Vars(r)["file_id"]
+
+	if err := c.Engine.RemovePublicationFile(id, fileID); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	pub, _ := c.Engine.GetPublication(id)
+
+	c.Render.HTML(w, http.StatusCreated, "publication/files/_show",
+		views.NewData(c.Render, r, struct {
+			Publication *models.Publication
+		}{
+			pub,
+		}),
+		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }

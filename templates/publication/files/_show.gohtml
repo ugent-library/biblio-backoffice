@@ -1,4 +1,4 @@
-<div class="card card-collapsible mb-6">
+<div class="card card-collapsible mb-6 publication-files">
     <div class="card-header">
         <div class="bc-toolbar">
             <div class="bc-toolbar-left">
@@ -7,16 +7,22 @@
         </div>
     </div>
     <div class="card-body p-0">
-        <form class="p-6" action="{{pathFor "upload_publication_file" "id" $.D.Publication.ID}}"
-            method="POST" enctype="multipart/form-data">
+        <form class="p-6"
+            hx-post="{{pathFor "upload_publication_file" "id" $.D.Publication.ID}}"
+            hx-encoding="multipart/form-data"
+            hx-swap="outerHTML"
+            hx-target="closest .publication-files"
+            hx-trigger="change"
+        >
             <div class="c-file-upload">
-                <input type="file" name="file" class="form-change-submit">
+                <input type="file" name="file">
                 <div class="c-file-upload__content">
                     <p>Drag and drop or</p>
                     <button class="btn btn-outline-primary">Upload file</button>
                 </div>
             </div>
         </form>
+        {{if .D.Publication.File}}
         <hr>
         <ul class="list-group list-group-flush">
             {{range .D.Publication.File}}
@@ -91,13 +97,15 @@
                                             <i class="if if-more"></i>
                                         </button>
                                         <div class="dropdown-menu">
-                                            <!-- <button class="dropdown-item" type="button" data-toggle="modal" data-target="#editFile"> -->
-                                            <button class="dropdown-item" type="button">
+                                            <!-- <button class="dropdown-item" type="button">
                                                 <i class="if if-edit"></i>
                                                 <span>Edit</span>
-                                            </button>
-                                            <!-- <button class="dropdown-item" type="button" data-toggle="modal" data-target="#delete"> -->
-                                            <button class="dropdown-item" type="button">
+                                            </button> -->
+                                            <button class="dropdown-item" type="button"
+                                                hx-patch="{{pathFor "publication_file_remove" "id" $.D.Publication.ID "file_id" .ID}}"
+                                                hx-swap="outerHTML"
+                                                hx-target="closest .publication-files"
+                                            >
                                                 <i class="if if-delete"></i>
                                                 <span>Delete</span>
                                             </button>
@@ -129,5 +137,6 @@
             </li>
             {{end}}
         </ul>
+        {{end}}
     </div>
 </div>
