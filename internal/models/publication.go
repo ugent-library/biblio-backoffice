@@ -116,7 +116,6 @@ type Publication struct {
 	PublicationStatus       string                   `json:"publication_status,omitempty" form:"publication_status"`
 	Publisher               string                   `json:"publisher,omitempty" form:"publisher"`
 	PubMedID                string                   `json:"pubmed_id,omitempty" form:"pubmed_id"`
-	Dataset                 []*Dataset               `json:"-" form:"-"`
 	ReportNumber            string                   `json:"report_number,omitempty" form:"report_number"`
 	ResearchField           []string                 `json:"research_field,omitempty" form:"research_field"`
 	ReviewerNote            string                   `json:"reviewer_note,omitempty" form:"-"`

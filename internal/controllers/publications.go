@@ -70,15 +70,16 @@ func (c *Publications) Show(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	pub.Dataset = datasets
 
 	c.Render.HTML(w, http.StatusOK, "publication/show",
 		views.NewData(c.Render, r, struct {
-			Publication  *models.Publication
-			Show         *views.ShowBuilder
-			Vocabularies map[string][]string
+			Publication         *models.Publication
+			PublicationDatasets []*models.Dataset
+			Show                *views.ShowBuilder
+			Vocabularies        map[string][]string
 		}{
 			pub,
+			datasets,
 			views.NewShowBuilder(c.Render, locale.Get(r.Context())),
 			c.Engine.Vocabularies(),
 		}),

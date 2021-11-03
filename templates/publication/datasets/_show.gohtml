@@ -20,10 +20,10 @@
         </div>
     </div>
 
-	<div class="collapse {{ if .IsHTMXRequest }}show{{ end }}" id="collapse-datasets">
+	<div class="collapse{{ if .IsHTMXRequest }} show{{ end }}" id="collapse-datasets">
 		<div class="card-body p-0">
             <ul class="list-group list-group-flush publication-datasets-list">
-                {{range .D.Publication.Dataset}}
+                {{range .D.PublicationDatasets}}
                 <li class="list-group-item">
                     <div class="d-flex w-100">
                         <div class="w-100">

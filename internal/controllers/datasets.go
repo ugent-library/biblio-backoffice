@@ -58,11 +58,20 @@ func (c *Datasets) Show(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	datasetPubs, err := c.Engine.GetDatasetPublications(id)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	c.Render.HTML(w, http.StatusOK, "dataset/show", views.NewData(c.Render, r, struct {
-		Dataset *models.Dataset
-		Show    *views.ShowBuilder
+		Dataset             *models.Dataset
+		DatasetPublications []*models.Publication
+		Show                *views.ShowBuilder
 	}{
 		dataset,
+		datasetPubs,
 		views.NewShowBuilder(c.Render, locale.Get(r.Context())),
 	}))
 }

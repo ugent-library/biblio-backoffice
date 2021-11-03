@@ -55,3 +55,11 @@ func (e *Engine) PublishDataset(dataset *models.Dataset) (*models.Dataset, error
 	dataset.Status = "public"
 	return e.UpdateDataset(dataset)
 }
+
+func (e *Engine) GetDatasetPublications(id string) ([]*models.Publication, error) {
+	pubs := make([]*models.Publication, 0)
+	if _, err := e.get(fmt.Sprintf("/dataset/%s/publication", id), nil, &pubs); err != nil {
+		return nil, err
+	}
+	return pubs, nil
+}

@@ -95,6 +95,7 @@ func Register(c controllers.Context) {
 	publicationAdditionalInfoController := controllers.NewPublicationAdditionalInfo(c)
 	datasetDetailsController := controllers.NewDatasetDetails(c)
 	datasetProjectsController := controllers.NewDatasetProjects(c)
+	datasetPublicationsController := controllers.NewDatasetPublications(c)
 
 	// TODO fix absolute url generation
 	// var schemes []string
@@ -412,4 +413,21 @@ func Register(c controllers.Context) {
 	datasetRouter.HandleFunc("/{id}/htmx/projects/remove/{project_id}", datasetProjectsController.RemoveFromDataset).
 		Methods("PATCH").
 		Name("dataset_projects_remove_from_dataset")
+
+	// Dataset publications HTMX fragments
+	datasetRouter.HandleFunc("/{id}/htmx/publications/choose", datasetPublicationsController.Choose).
+		Methods("GET").
+		Name("dataset_publications_choose")
+	datasetRouter.HandleFunc("/{id}/htmx/publications/activesearch", datasetPublicationsController.ActiveSearch).
+		Methods("POST").
+		Name("dataset_publications_activesearch")
+	datasetRouter.HandleFunc("/{id}/htmx/publications/add/{publication_id}", datasetPublicationsController.Add).
+		Methods("PATCH").
+		Name("dataset_publications_add")
+	datasetRouter.HandleFunc("/{id}/htmx/publications/remove/{publication_id}", datasetPublicationsController.ConfirmRemove).
+		Methods("GET").
+		Name("dataset_publications_confirm_remove")
+	datasetRouter.HandleFunc("/{id}/htmx/publications/remove/{publication_id}", datasetPublicationsController.Remove).
+		Methods("PATCH").
+		Name("dataset_publications_remove")
 }

@@ -64,6 +64,9 @@
                             <li class="nav-item">
                                 <a class="nav-link active" id="description-tab" data-toggle="tab" href="#description-content" role="tab" aria-controls="description" aria-selected="true">Description</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="publications-tab" data-toggle="tab" href="#publications-content" role="tab" aria-controls="publications" aria-selected="false">Publications</a>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -78,6 +81,10 @@
             <div id="description-content" class="tab-pane fade show active" role="tabpanel" aria-labelledby="description-tab">
                 {{template "dataset/details/_show" .}}
                 {{template "dataset/_projects" .}}
+            </div>
+
+            <div id="publications-content" class="tab-pane fade" role="tabpanel" aria-labelledby="publications-tab">
+                {{template "dataset/publications/_show" .}}
             </div>
         </div>
     </div>

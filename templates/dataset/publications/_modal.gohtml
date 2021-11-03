@@ -1,0 +1,25 @@
+<div id="modal-backdrop" class="modal-backdrop fade show" style="display:block;"></div>
+<div class="modal show" tabindex="-1" style="display: block;" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Select publications</h2>
+            </div>
+            <div class="modal-body">
+                <label class="sr-only" for="search">Search</label>
+                <input class="form-control" type="text" name="search" placeholder="Search..."
+                    hx-post="{{pathFor "dataset_publications_activesearch" "id" .Dataset.ID}}"
+                    hx-trigger="keyup changed delay:500ms"
+                    hx-target="#modal-publications-list"
+                    hx-swap="innerHTML"
+                >
+                <ul class="list-group mt-6" id ="modal-publications-list">
+                     {{ template "dataset/publications/_modal_hits" . }}
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-link modal-close" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>

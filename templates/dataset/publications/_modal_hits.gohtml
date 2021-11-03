@@ -1,0 +1,50 @@
+{{ range .Hits.Hits }}
+<li class="list-group-item">
+    <div class="d-flex w-100">
+        <div class="w-100">
+            <div class="d-flex align-items-start">
+                {{template "publication/_thumbnail" .}}
+                <div class="list-group-item-content">
+                    <div class="list-group-item-subline">
+                        <div class="list-group-item-subline-left">
+                        </div>
+                        <div class="list-group-item-subline-right">
+                            <button class="btn btn-primary"
+                            hx-patch="{{pathFor "dataset_publications_add" "id" $.Dataset.ID "publication_id" .ID}}"
+                            hx-swap="innerHTML"
+                            hx-target="closest .dataset-publications"
+                            >Add Publication</button>
+                        </div>
+                    </div>
+                    <div class="list-group-item-text">
+                        <h4 class="c-h4">{{.Title}}<i class="if if-no-edit if--small ml-3 text-muted" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Locked for editing"></i>
+                        </h4>
+                        {{with .Author}}
+                            {{template "publication/_contributors_short" .}}
+                        {{end}}
+                        <span class="c-body-small text-muted">{{.Year}}{{with .Publication}}, {{.}}{{end}}</span>
+                    </div>
+                    <div class="list-group-item-meta mt-5">
+                        <div class="list-group-item-meta-left">
+                            <div class="list-group-item-meta-item">
+                                {{template "publication/_status" .}}
+                            </div>
+                            <div class="list-group-item-meta-item">
+                                {{template "publication/_completeness" .}}
+                            </div>
+                        </div>
+                        <div class="list-group-item-meta-right">
+                            <div class="list-group-item-meta-item">
+                                <span class="text-muted c-body-small">Biblio ID: {{.ID}}</span>
+                            </div>
+                            <div class="list-group-item-meta-item">
+                                <span class="text-muted c-body-small">Created {{timeElapsed .DateCreated "en"}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</li>
+{{ end }}
