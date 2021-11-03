@@ -129,6 +129,11 @@ func (e *Engine) AddPublicationFile(id string, pubFile models.PublicationFile, f
 	return err
 }
 
+func (e *Engine) UpdatePublicationFile(id string, pubFile *models.PublicationFile) error {
+	_, err := e.put(fmt.Sprintf("/publication/%s/file/%s", id, pubFile.ID), pubFile, nil)
+	return err
+}
+
 func (e *Engine) RemovePublicationFile(id, fileID string) error {
 	_, err := e.delete(fmt.Sprintf("/publication/%s/file/%s", id, fileID), nil, nil)
 	return err

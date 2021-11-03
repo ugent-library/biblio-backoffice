@@ -200,6 +200,7 @@ func (c *PublicationFiles) Edit(w http.ResponseWriter, r *http.Request) {
 	)
 }
 
+// TODO avoid getting publication multiple times
 func (c *PublicationFiles) Update(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	fileID := mux.Vars(r)["file_id"]
@@ -236,7 +237,7 @@ func (c *PublicationFiles) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// TODO save file metadata
-	savedPub, err := c.Engine.UpdatePublication(pub)
+	err = c.Engine.UpdatePublicationFile(pub.ID, file)
 
 	// TODO show errors
 	if _, ok := err.(jsonapi.Errors); ok {
@@ -258,10 +259,17 @@ func (c *PublicationFiles) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	pub, err = c.Engine.GetPublication(id)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	c.Render.HTML(w, http.StatusOK, "publication/files/_show", views.NewData(c.Render, r, struct {
 		Publication *models.Publication
 	}{
-		savedPub,
+		pub,
 	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
