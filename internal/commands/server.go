@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/Masterminds/sprig/v3"
 	"github.com/gorilla/handlers"
@@ -201,6 +202,8 @@ var serverStartCmd = &cobra.Command{
 		server.New(handler,
 			server.WithHost(viper.GetString("host")),
 			server.WithPort(viper.GetInt("port")),
+			server.WithWriteTimeOut(1800 * time.Second),
+			server.WithReadTimeOut(1800 * time.Second),
 		).Start()
 	},
 }

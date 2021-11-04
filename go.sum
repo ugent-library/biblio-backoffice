@@ -322,6 +322,8 @@ github.com/subosito/gotenv v1.2.0 h1:Slr1R9HxAlEKefgq5jn9U+DnETlIUa6HfgEzj0g5d7s
 github.com/subosito/gotenv v1.2.0/go.mod h1:N0PQaV/YGNqwC0u51sEeR/aUtSLEXKX9iv69rRypqCw=
 github.com/ugent-library/go-graceful v0.0.0-20210629084951-cc0426be60e8 h1:qf+uyGZQp5A8lwUsxgRZf8SHsSszck8c+EwpRySM2sU=
 github.com/ugent-library/go-graceful v0.0.0-20210629084951-cc0426be60e8/go.mod h1:vfUTMMD3dI2LAj2BzlXyDWJ14b+6zeZRWDWvw3sYizE=
+github.com/ugent-library/go-graceful v0.0.0-20211104090201-39f21722d44b h1:0RWOnGIyG7tXWWC4SjTve+PEy/SGxXMaaF0mU7tdNNE=
+github.com/ugent-library/go-graceful v0.0.0-20211104090201-39f21722d44b/go.mod h1:vfUTMMD3dI2LAj2BzlXyDWJ14b+6zeZRWDWvw3sYizE=
 github.com/ugent-library/go-locale v0.0.0-20211023163356-49e4307227b1 h1:vod9PeBN6IJH5HDYT4XSFSwWmfs+hs3P6Kdr7gKirt4=
 github.com/ugent-library/go-locale v0.0.0-20211023163356-49e4307227b1/go.mod h1:aurVBvhnCWoCWFBFGgNyKqFIegDZrvImWch7Xe4xsFg=
 github.com/ugent-library/go-oidc v0.0.0-20210901124208-bda4cc73ba56 h1:y3N5ZTuh2z1ZzNIKEqJY7eoM9e51tJCyhQIx8zBhD3g=
