@@ -14,8 +14,9 @@ export default function () {
             evt.currentTarget.classList.add('c-radio-card--selected');
         }
 
-        parentEl.querySelectorAll('.c-radio-card').forEach(el =>
-            el.addEventListener('click', toggleSelected)
+
+        parentEl.querySelectorAll('.radio-card-group .c-radio-card').forEach(card =>
+            card.addEventListener('click', toggleSelected)
         )
     }
 
