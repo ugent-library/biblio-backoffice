@@ -202,8 +202,8 @@ var serverStartCmd = &cobra.Command{
 		server.New(handler,
 			server.WithHost(viper.GetString("host")),
 			server.WithPort(viper.GetInt("port")),
-			server.WithWriteTimeOut(180 * time.Second),
-			server.WithReadTimeOut(180 * time.Second),
+			server.WithWriteTimeOut(3*time.Minute),
+			server.WithReadTimeOut(3*time.Minute),
 		).Start()
 	},
 }
