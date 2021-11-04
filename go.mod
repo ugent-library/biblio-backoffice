@@ -14,7 +14,7 @@ require (
 	github.com/spf13/cobra v1.2.1
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.9.0
-	github.com/ugent-library/go-graceful v0.0.0-20210629084951-cc0426be60e8
+	github.com/ugent-library/go-graceful v0.0.0-20211104090201-39f21722d44b
 	github.com/ugent-library/go-locale v0.0.0-20211023163356-49e4307227b1
 	github.com/ugent-library/go-oidc v0.0.0-20210901124208-bda4cc73ba56
 	github.com/ugent-library/go-web v0.0.0-20211029075216-2afe6295a285
