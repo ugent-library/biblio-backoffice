@@ -1,9 +1,8 @@
-{{ if not .IsHTMXRequest }}<div class="card card-collapsible mb-6 publication-datasets">{{ end }}
+{{ if not .IsHTMXRequest }}<div class="card mb-6 publication-datasets">{{ end }}
     <div class="card-header">
-        <div class="collapse-trigger collapsed" data-toggle="collapse" data-target="#collapse-datasets" aria-expanded="{{ .IsHTMXRequest }}" aria-controls="collapse-datasets"></div>
         <div class="bc-toolbar">
             <div class="bc-toolbar-left">
-                <i class="if if-chevron-right mr-4 text-muted"></i>Related datasets
+                <div class="bc-toolbar-title">Related datasets</div>
             </div>
             <div class="bc-toolbar-right">
                 <div class="c-button-toolbar" data-panel-state="read">
@@ -20,92 +19,90 @@
         </div>
     </div>
 
-	<div class="collapse{{ if .IsHTMXRequest }} show{{ end }}" id="collapse-datasets">
-		<div class="card-body p-0">
-            <ul class="list-group list-group-flush publication-datasets-list">
-                {{range .D.PublicationDatasets}}
-                <li class="list-group-item">
-                    <div class="d-flex w-100">
-                        <div class="w-100">
-                            <div class="d-flex align-items-start">
-                                <div class="list-group-item-thumbnail">
-                                    <div class="c-thumbnail c-thumbnail--dataset c-thumbnail--medium">
-                                        <i class="if if-database"></i>
+    <div class="card-body p-0">
+        <ul class="list-group list-group-flush publication-datasets-list">
+            {{range .D.PublicationDatasets}}
+            <li class="list-group-item">
+                <div class="d-flex w-100">
+                    <div class="w-100">
+                        <div class="d-flex align-items-start">
+                            <div class="list-group-item-thumbnail">
+                                <div class="c-thumbnail c-thumbnail--dataset c-thumbnail--medium">
+                                    <i class="if if-database"></i>
+                                </div>
+                            </div>
+                            <div class="list-group-item-content">
+                                <div class="list-group-item-subline">
+                                    <div class="list-group-item-subline-left">
+                                    </div>
+                                    <div class="list-group-item-subline-right">
+                                        <div class="dropdown">
+                                            <button class="btn btn-link btn-icon-only btn-link-muted" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <i class="if if-more"></i>
+                                            </button>
+                                            <div class="dropdown-menu">
+                                                <a class="dropdown-item" href="{{pathFor "dataset" "id" .ID}}">
+                                                    <i class="if if-file-text"></i>
+                                                    <span>View details</span>
+                                                </a>
+                                                <button class="dropdown-item" type="button"
+                                                    hx-get="{{pathFor "publication_datasets_confirm_remove" "id" $.D.Publication.ID "dataset_id" .ID}}"
+                                                    hx-target="#publication-datasets-modal"
+                                                    hx-trigger="click"
+                                                >
+                                                    <i class="if if-delete"></i>
+                                                    <span>Remove from publication</span>
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="list-group-item-content">
-                                    <div class="list-group-item-subline">
-                                        <div class="list-group-item-subline-left">
-                                        </div>
-                                        <div class="list-group-item-subline-right">
-                                            <div class="dropdown">
-                                                <button class="btn btn-link btn-icon-only btn-link-muted" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                    <i class="if if-more"></i>
-                                                </button>
-                                                <div class="dropdown-menu">
-                                                    <a class="dropdown-item" href="{{pathFor "dataset" "id" .ID}}">
-                                                        <i class="if if-file-text"></i>
-                                                        <span>View details</span>
-                                                    </a>
-                                                    <button class="dropdown-item" type="button"
-                                                        hx-get="{{pathFor "publication_datasets_confirm_remove" "id" $.D.Publication.ID "dataset_id" .ID}}"
-                                                        hx-target="#publication-datasets-modal"
-                                                        hx-trigger="click"
-                                                    >
-                                                        <i class="if if-delete"></i>
-                                                        <span>Remove from publication</span>
-                                                    </button>
-                                                </div>
-                                            </div>
+                                <div class="list-group-item-text">
+                                    <h4 class="c-h4">{{.Title}}<i class="if if-no-edit if--small ml-3 text-muted" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Locked for editing"></i>
+                                    </h4>
+                                    {{with .Creator}}
+                                        {{template "publication/_contributors_short" .}}
+                                    {{end}}
+                                    <span class="c-body-small text-muted">
+                                        {{.Year}},
+                                        <a class="link-primary" href="#">
+                                            <span class="text-decoration-underline"> DataverseNL</span>
+                                            <i class="if if--small if-external-link"></i>
+                                        </a>
+                                    </span>
+                                </div>
+                                <div class="list-group-item-meta mt-5">
+                                    <div class="list-group-item-meta-left">
+                                        <div class="list-group-item-meta-item">
+                                            {{template "publication/_status" .}}
                                         </div>
                                     </div>
-                                    <div class="list-group-item-text">
-                                        <h4 class="c-h4">{{.Title}}<i class="if if-no-edit if--small ml-3 text-muted" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Locked for editing"></i>
-                                        </h4>
-                                        {{with .Creator}}
-                                            {{template "publication/_contributors_short" .}}
-                                        {{end}}
-                                        <span class="c-body-small text-muted">
-                                            {{.Year}},
-                                            <a class="link-primary" href="#">
-                                                <span class="text-decoration-underline"> DataverseNL</span>
-                                                <i class="if if--small if-external-link"></i>
-                                            </a>
-                                        </span>
-                                    </div>
-                                    <div class="list-group-item-meta mt-5">
-                                        <div class="list-group-item-meta-left">
-                                            <div class="list-group-item-meta-item">
-                                                {{template "publication/_status" .}}
-                                            </div>
+                                    <div class="list-group-item-meta-right">
+                                        <div class="list-group-item-meta-item">
+                                            <span class="text-muted c-body-small">Biblio ID: {{.ID}}</span>
                                         </div>
-                                        <div class="list-group-item-meta-right">
-                                            <div class="list-group-item-meta-item">
-                                                <span class="text-muted c-body-small">Biblio ID: {{.ID}}</span>
-                                            </div>
-                                            <div class="list-group-item-meta-item" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="1 related datasets">
-                                                <span class="text-muted c-body-small">
-                                                    <i class="if if-database if--muted if--small"></i>1
-                                                </span>
-                                            </div>
-                                            <div class="list-group-item-meta-item" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Sent to Orcid">
-                                                <i class="if if-orcid if--muted if--small"></i>
-                                                <i class="if if-check text-success if--small"></i>
-                                            </div>
-                                            <div class="list-group-item-meta-item">
-                                                <span class="text-muted c-body-small">Created {{timeElapsed .DateCreated "en"}}</span>
-                                            </div>
+                                        <div class="list-group-item-meta-item" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="1 related datasets">
+                                            <span class="text-muted c-body-small">
+                                                <i class="if if-database if--muted if--small"></i>1
+                                            </span>
+                                        </div>
+                                        <div class="list-group-item-meta-item" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Sent to Orcid">
+                                            <i class="if if-orcid if--muted if--small"></i>
+                                            <i class="if if-check text-success if--small"></i>
+                                        </div>
+                                        <div class="list-group-item-meta-item">
+                                            <span class="text-muted c-body-small">Created {{timeElapsed .DateCreated "en"}}</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </li>
-                {{end}}
-            </ul>
-		</div>
-	</div>
+                </div>
+            </li>
+            {{end}}
+        </ul>
+    </div>
 
     <div id="publication-datasets-modal" class="modals"></div>
 {{ if not .IsHTMXRequest }}</div>{{ end }}
