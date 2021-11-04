@@ -1,4 +1,4 @@
-{{template "publication/_add_sidebar" .}}
+{{template "publication/_add_single_sidebar" .}}
 
 <div class="w-100 u-scroll-wrapper">
     <div class="w-100">
@@ -34,7 +34,7 @@
                     <form>
                         <div class="row">
                             <div class="col">
-                                <label class="c-radio-card c-radio-card--selected" aria-selected="true">
+                                <label class="c-radio-card c-radio-card--selected" aria-selected="true" onclick="javascript:window.location='{{pathFor "publication_add_single"}}'">
                                     <div class="c-radio-card__radio">
                                         <div class="custom-control custom-radio">
                                             <input class="custom-control-input" id="radio1" type="radio" name="component2" checked="">
@@ -44,8 +44,8 @@
                                     <div class="c-radio-card__content">A single publication</div>
                                 </label>
                             </div>
-                            <!-- <div class="col">
-                                <label class="c-radio-card" aria-selected="false" onclick="javascript:window.location='/add-publication/multiple/step-1.html'">
+                            <div class="col">
+                                <label class="c-radio-card" aria-selected="false" onclick="javascript:window.location='{{pathFor "publication_add_multiple"}}'">
                                     <div class="c-radio-card__radio">
                                         <div class="custom-control custom-radio">
                                             <input class="custom-control-input" id="radio2" type="radio" name="component2">
@@ -54,7 +54,7 @@
                                     </div>
                                     <div class="c-radio-card__content">Multiple publications</div>
                                 </label>
-                            </div> -->
+                            </div>
                         </div>
                     </form>
                 </div>

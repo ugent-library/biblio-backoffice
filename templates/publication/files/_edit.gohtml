@@ -39,9 +39,15 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group radio-card-group">
                         <label>Access level</label>
-                        <label class="c-radio-card">
+                        <label
+                            {{if eq .D.File.AccessLevel "open_access"}}
+                            class="c-radio-card c-radio-card--selected" aria-selected="true"
+                            {{else}}
+                            class="c-radio-card" aria-selected="false"
+                            {{end}}
+                        >
                             <div class="c-radio-card__radio">
                                 <div class="custom-control custom-radio">
                                     <input class="custom-control-input" id="openAccess" type="radio" name="access_level" value="open_access"{{if eq .D.File.AccessLevel "open_access"}} checked{{end}}>
@@ -56,7 +62,13 @@
                                 </div>
                             </div>
                         </label>
-                        <label class="c-radio-card">
+                        <label
+                            {{if eq .D.File.AccessLevel "local"}}
+                            class="c-radio-card c-radio-card--selected" aria-selected="true"
+                            {{else}}
+                            class="c-radio-card" aria-selected="false"
+                            {{end}}
+                        >
                             <div class="c-radio-card__radio">
                                 <div class="custom-control custom-radio">
                                     <input class="custom-control-input" id="ugentAccess" type="radio" name="access_level" value="local"{{if eq .D.File.AccessLevel "local"}} checked{{end}}>
@@ -71,7 +83,13 @@
                                 </div>
                             </div>
                         </label>
-                        <label class="c-radio-card">
+                        <label
+                            {{if eq .D.File.AccessLevel "closed"}}
+                            class="c-radio-card c-radio-card--selected" aria-selected="true"
+                            {{else}}
+                            class="c-radio-card" aria-selected="false"
+                            {{end}}
+                        >
                             <div class="c-radio-card__radio">
                                 <div class="custom-control custom-radio">
                                     <input class="custom-control-input" id="privateAccess" type="radio" name="access_level" value="closed"{{if eq .D.File.AccessLevel "closed"}} checked{{end}}>

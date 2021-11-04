@@ -162,6 +162,9 @@ func Register(c controllers.Context) {
 	publicationRouter.HandleFunc("/add-single", publicationsController.AddSingle).
 		Methods("GET").
 		Name("publication_add_single")
+	publicationRouter.HandleFunc("/add-multiple", publicationsController.AddMultiple).
+		Methods("GET").
+		Name("publication_add_multiple")
 	publicationRouter.HandleFunc("/add-single/import", publicationsController.AddSingleImport).
 		Methods("POST").
 		Name("publication_add_single_import")

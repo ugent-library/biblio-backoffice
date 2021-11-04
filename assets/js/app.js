@@ -8,6 +8,7 @@ import modalClose from './ui/modal_close.js'
 import modalPopper from './ui/modal_popper.js'
 import multipleSelect from './ui/multi_select.js'
 import tabs from './ui/tabs.js'
+import radioCard from './ui/radio_card.js'
 
 document.addEventListener('DOMContentLoaded', function () {
     tabs();
@@ -20,4 +21,5 @@ document.addEventListener('DOMContentLoaded', function () {
     modalClose();
     modalPopper();
     multipleSelect();
+    radioCard();
 });

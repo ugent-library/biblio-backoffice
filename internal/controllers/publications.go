@@ -246,3 +246,11 @@ func (c *Publications) AddSinglePublish(w http.ResponseWriter, r *http.Request) 
 		savedPublication,
 	}))
 }
+
+func (c *Publications) AddMultiple(w http.ResponseWriter, r *http.Request) {
+	c.Render.HTML(w, http.StatusOK, "publication/add_multiple", views.NewData(c.Render, r, struct {
+		Step int
+	}{
+		2,
+	}))
+}
