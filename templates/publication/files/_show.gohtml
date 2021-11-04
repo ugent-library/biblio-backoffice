@@ -43,7 +43,9 @@
                         <div class="list-group-item-content">
                             <div class="list-group-item-subline">
                                 <div class="list-group-item-subline-left">
-                                    <span class="pr-5">{{.Relation}}{{with .PublicationVersion}}<span class="ml-3 pl-3 border-left">{{.}}{{end}}</span>
+                                    <span class="pr-5">
+                                        {{$.T "publication_file_relations" .Relation}}
+                                        {{with .PublicationVersion}}<span class="ml-3 pl-3 border-left">{{$.T "publication_versions" .}}</span>{{end}}
                                     </span>
                                     <div class="dropdown">
                                         <span class="badge badge-pill badge-outline-success" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -54,14 +56,14 @@
                                             {{else if eq .AccessLevel "closed"}}
                                             <i class="if if-eye-off text-muted"></i>
                                             {{end}}
-                                            <span class="badge-text">{{.AccessLevel}}</span>
+                                            <span class="badge-text">{{$.T "publication_file_access_levels" .AccessLevel}}</span>
                                             <i class="if if-caret-down"></i>
                                         </span>
                                         <div class="dropdown-menu">
                                             <button class="dropdown-item{{if eq .AccessLevel "open_access"}} dropdown-item--selected{{end}}">
                                                 <i class="if if-download text-success"></i>
                                                 <div>
-                                                    <p class="mb-0">Open Access</p>
+                                                    <p class="mb-0">{{$.T "publication_file_access_levels" "open_access"}}</p>
                                                     <span class="text-muted c-body-small">Recommended option if there is no sensitive information.</span>
                                                 </div>
                                                 <div class="dropdown-item-check">
@@ -71,7 +73,7 @@
                                             <button class="dropdown-item{{if eq .AccessLevel "local"}} dropdown-item--selected{{end}}">
                                                 <i class="if if-ghent-university text-primary"></i>
                                                 <div>
-                                                    <p class="mb-0">UGent Access</p>
+                                                    <p class="mb-0">{{$.T "publication_file_access_levels" "local"}}</p>
                                                     <span class="text-muted c-body-small">Your file will only be available for UGent members.</span>
                                                 </div>
                                                 <div class="dropdown-item-check">
@@ -81,7 +83,7 @@
                                             <button class="dropdown-item{{if eq .AccessLevel "closed"}} dropdown-item--selected{{end}}">
                                                 <i class="if if-eye-off text-muted"></i>
                                                 <div>
-                                                    <p class="mb-0">Private Access</p>
+                                                    <p class="mb-0">{{$.T "publication_file_access_levels" "closed"}}</p>
                                                     <span class="text-muted c-body-small">Your file will only be available to the authors and reviewers.</span>
                                                 </div>
                                                 <div class="dropdown-item-check">

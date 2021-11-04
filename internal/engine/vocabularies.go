@@ -59,6 +59,11 @@ var vocabularies = map[string][]string{
 		"date_updated.desc",
 		"date_created.desc",
 	},
+	"publication_file_access_levels": {
+		"open_access",
+		"local",
+		"closed",
+	},
 	"publication_file_relations": {
 		"main_file",
 		"colophon",
