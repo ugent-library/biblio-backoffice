@@ -1,9 +1,10 @@
-{{template "publication/_thumbnail" .}}
+{{$p := .D.Publication}}
+{{template "publication/_thumbnail" $p}}
 <div class="list-group-item-content">
     <div class="list-group-item-subline">
         <div class="list-group-item-subline-left">
-            <span class="mr-3 pr-3 border-right">{{.Type}}{{with .Classification}}: {{.}}{{end}}</span>
-            {{if .OpenAccess}}
+            <span class="mr-3 pr-3 border-right">{{.T "publication_types" $p.Type}}{{with $p.Classification}}: {{.}}{{end}}</span>
+            {{if $p.OpenAccess}}
             <div class="d-flex align-items-center">
                 <i class="if if-download if--small if--success"></i>
                 <span class="pl-2 text-muted">Open Access</span>
@@ -12,28 +13,28 @@
         </div>
     </div>
     <div class="list-group-item-text">
-        <h4 class="c-h4">{{.Title}}<i class="if if-no-edit if--small ml-3 text-muted" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Locked for editing"></i>
+        <h4 class="c-h4">{{$p.Title}}<i class="if if-no-edit if--small ml-3 text-muted" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Locked for editing"></i>
         </h4>
-        {{with .Author}}
+        {{with $p.Author}}
             {{template "publication/_contributors_short" .}}
         {{end}}
-        <span class="c-body-small text-muted">{{.Year}}{{with .Publication}}, {{.}}{{end}}</span>
+        <span class="c-body-small text-muted">{{$p.Year}}{{with $p.Publication}}, {{.}}{{end}}</span>
     </div>
     <div class="list-group-item-meta mt-5">
         <div class="list-group-item-meta-left">
             <div class="list-group-item-meta-item">
-                {{template "publication/_status" .}}
+                {{template "publication/_status" $p}}
             </div>
             <div class="list-group-item-meta-item">
-                {{template "publication/_completeness" .}}
+                {{template "publication/_completeness" $p}}
             </div>
         </div>
         <div class="list-group-item-meta-right">
             <div class="list-group-item-meta-item">
-                <span class="text-muted c-body-small">Biblio ID: {{.ID}}</span>
+                <span class="text-muted c-body-small">Biblio ID: {{$p.ID}}</span>
             </div>
             <div class="list-group-item-meta-item">
-                <span class="text-muted c-body-small">Created {{timeElapsed .DateCreated "en"}}</span>
+                <span class="text-muted c-body-small">Created {{timeElapsed $p.DateCreated "en"}}</span>
             </div>
         </div>
     </div>

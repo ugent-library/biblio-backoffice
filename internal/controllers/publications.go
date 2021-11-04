@@ -108,6 +108,7 @@ func (c *Publications) Thumbnail(w http.ResponseWriter, r *http.Request) {
 	r.SetBasicAuth(c.Engine.Config.Username, c.Engine.Config.Password)
 	proxy.ServeHTTP(w, r)
 }
+
 func (c *Publications) Summary(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
@@ -118,9 +119,11 @@ func (c *Publications) Summary(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.Render.HTML(w, http.StatusOK,
-		"publication/_summary",
+	c.Render.HTML(w, http.StatusOK, "publication/_summary", views.NewData(c.Render, r, struct {
+		Publication *models.Publication
+	}{
 		pub,
+	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
