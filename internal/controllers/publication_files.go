@@ -57,6 +57,7 @@ func (c *PublicationFiles) Download(w http.ResponseWriter, r *http.Request) {
 	r.URL.Scheme = url.Scheme
 	r.URL.Path = strings.Replace(url.Path, baseURL.Path, "", 1)
 	r.Header.Set("X-Forwarded-Host", r.Header.Get("Host"))
+	r.Header.Del("Cookie")
 	r.Host = url.Host
 	r.SetBasicAuth(c.Engine.Config.Username, c.Engine.Config.Password)
 	proxy.ServeHTTP(w, r)
@@ -95,6 +96,7 @@ func (c *PublicationFiles) Thumbnail(w http.ResponseWriter, r *http.Request) {
 	r.URL.Scheme = url.Scheme
 	r.URL.Path = strings.Replace(url.Path, baseURL.Path, "", 1)
 	r.Header.Set("X-Forwarded-Host", r.Header.Get("Host"))
+	r.Header.Del("Cookie")
 	r.Host = url.Host
 	r.SetBasicAuth(c.Engine.Config.Username, c.Engine.Config.Password)
 	proxy.ServeHTTP(w, r)
