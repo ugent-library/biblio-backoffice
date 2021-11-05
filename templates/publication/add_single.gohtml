@@ -33,22 +33,22 @@
                     </div>
                     <div class="card-body">
                         <div classp="card-body">
-                            <p class="mb-4">Enter publication ID and we will search the description for you in the Web of Science or other databases</p>                            <form>
-                            <form>
-                                <div class="form-group">
-                                    <div class="form-row">
-                                        <div class="col-6">
-                                            <label class="col-form-label" for="textarea">Enter publication ID</label>
-                                            <div class="input-group">
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">DOI</span>
-                                                </div>
-                                                <input class="form-control" type="text" name="identifier" placeholder="e.g. 10.7484/INSPIREHEP.DATA.RF5P.6M3K">
-                                            </div>
+                            <p class="mb-4">Enter publication ID and we will search the description for you in the Web of Science or other databases</p>
+                            <div class="form-group">
+                                <div class="form-row">
+                                    <div class="col-6">
+                                        <label class="col-form-label" for="textarea">Enter publication ID</label>
+                                        <div class="input-group">
+                                            <select name="identifier_type" class="form-control col-3">
+                                                <option value="doi">DOI</option>
+                                                <option value="pubmed_id">PubMed</option>
+                                                <option value="arxiv_id">arXiv</option>
+                                            </select>
+                                            <input class="form-control col-9" type="text" name="identifier" placeholder="e.g. 10.7484/INSPIREHEP.DATA.RF5P.6M3K">
                                         </div>
                                     </div>
                                 </div>
-                            </form>
+                            </div>
                         </div>
                     </div>
                 </div>
