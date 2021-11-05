@@ -191,13 +191,22 @@ func (c *Publications) AddSingleImport(w http.ResponseWriter, r *http.Request) {
 func (c *Publications) AddSingleDescription(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
+	datasets, err := c.Engine.GetPublicationDatasets(pub.ID)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	c.Render.HTML(w, http.StatusOK, "publication/add_single_description", views.NewData(c.Render, r, struct {
-		Step        int
-		Publication *models.Publication
-		Show        *views.ShowBuilder
+		Step                int
+		Publication         *models.Publication
+		PublicationDatasets []*models.Dataset
+		Show                *views.ShowBuilder
 	}{
 		4,
 		pub,
+		datasets,
 		views.NewShowBuilder(c.Render, locale.Get(r.Context())),
 	}))
 }
