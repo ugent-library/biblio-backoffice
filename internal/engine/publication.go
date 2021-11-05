@@ -42,11 +42,13 @@ func (e *Engine) CreatePublication(pt string) (*models.Publication, error) {
 }
 
 // TODO: set constraint to not research_data
-func (e *Engine) ImportUserPublications(userID, identifier string) ([]*models.Publication, error) {
+func (e *Engine) ImportUserPublications(userID, identifier string, identifier_type string) ([]*models.Publication, error) {
 	reqData := struct {
 		Identifier string `json:"identifier"`
+		IdentifierType string `json:"identifier_type"`
 	}{
 		identifier,
+		identifier_type,
 	}
 	publications := make([]*models.Publication, 0)
 	if _, err := e.post(fmt.Sprintf("/user/%s/publication/import", userID), &reqData, &publications); err != nil {
