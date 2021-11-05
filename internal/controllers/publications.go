@@ -71,17 +71,26 @@ func (c *Publications) Show(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	searchArgs := engine.NewSearchArgs()
+	if err := forms.Decode(searchArgs, r.URL.Query()); err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
 	c.Render.HTML(w, http.StatusOK, "publication/show",
 		views.NewData(c.Render, r, struct {
 			Publication         *models.Publication
 			PublicationDatasets []*models.Dataset
 			Show                *views.ShowBuilder
 			Vocabularies        map[string][]string
+			SearchArgs          *engine.SearchArgs
 		}{
 			pub,
 			datasets,
 			views.NewShowBuilder(c.Render, locale.Get(r.Context())),
 			c.Engine.Vocabularies(),
+			searchArgs,
 		}),
 	)
 }

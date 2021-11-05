@@ -65,14 +65,23 @@ func (c *Datasets) Show(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	searchArgs := engine.NewSearchArgs()
+	if err := forms.Decode(searchArgs, r.URL.Query()); err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
 	c.Render.HTML(w, http.StatusOK, "dataset/show", views.NewData(c.Render, r, struct {
 		Dataset             *models.Dataset
 		DatasetPublications []*models.Publication
 		Show                *views.ShowBuilder
+		SearchArgs          *engine.SearchArgs
 	}{
 		dataset,
 		datasetPubs,
 		views.NewShowBuilder(c.Render, locale.Get(r.Context())),
+		searchArgs,
 	}))
 }
 

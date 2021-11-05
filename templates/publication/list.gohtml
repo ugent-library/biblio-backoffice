@@ -290,7 +290,7 @@
                 </li>
                 {{range .D.Hits.Hits}}
                 <li class="list-group-item">
-                    {{template "publication/_hit" ($.NewData .)}}
+                    {{template "publication/_hit" ($.NewData (dict "Publication" . "SearchArgs" $.D.SearchArgs))}}
                 </li>
                 {{end}}
             </ul>

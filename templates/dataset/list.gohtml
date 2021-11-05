@@ -96,7 +96,7 @@
                 </li>
                 {{range .D.Hits.Hits}}
                 <li class="list-group-item">
-                    {{template "dataset/_hit" .}}
+                    {{template "dataset/_hit" ($.NewData (dict "Dataset" . "SearchArgs" $.D.SearchArgs))}}
                 </li>
                 {{end}}
             </ul>

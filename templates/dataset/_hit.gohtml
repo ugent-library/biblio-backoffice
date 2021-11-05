@@ -1,8 +1,9 @@
+{{$d := .D.Dataset}}
 <div class="d-flex w-100">
     <div class="custom-control custom-checkbox mr-4 align-self-start">
         <input class="custom-control-input" type="checkbox" name="overviewItems"
-            id="publication-{{.ID}}" />
-        <label class="custom-control-label" for="publication-{{.ID}}">&nbsp;</label>
+            id="publication-{{$d.ID}}" />
+        <label class="custom-control-label" for="publication-{{$d.ID}}">&nbsp;</label>
     </div>
     <div class="w-100">
         <div class="d-flex align-items-start">
@@ -24,7 +25,7 @@
                             </button>
                             <div class="dropdown-menu">
                                 <a class="dropdown-item"
-                                    href="{{pathFor "dataset" "id" .ID}}">
+                                    href="{{pathFor "dataset" "id" $d.ID | query .D.SearchArgs}}">
                                     <i class="if if-file-text"></i>
                                     <span>View details</span>
                                 </a>
@@ -54,12 +55,12 @@
                     </div>
                 </div>
                 <div class="list-group-item-text">
-                    <a href="{{pathFor "dataset" "id" .ID}}">
-                        <h4 class="c-h4">{{.Title}}</h4>
+                    <a href="{{pathFor "dataset" "id" $d.ID | query .D.SearchArgs}}">
+                        <h4 class="c-h4">{{$d.Title}}</h4>
                     </a>
-                    {{with .Creator}}{{template "publication/_contributors_short" .}}{{end}}
+                    {{with $d.Creator}}{{template "publication/_contributors_short" .}}{{end}}
                     <span class="c-body-small text-muted">
-                        {{.Year}},
+                        {{$d.Year}},
                         <a class="link-primary" href="#">
                             <span class="text-decoration-underline"> DataverseNL</span>
                             <i class="if if--small if-external-link"></i>
@@ -69,7 +70,7 @@
                 <div class="list-group-item-meta mt-5">
                     <div class="list-group-item-meta-left">
                         <div class="list-group-item-meta-item">
-                            {{template "publication/_status" .}}
+                            {{template "publication/_status" $d}}
                         </div>
                         <div class="list-group-item-meta-item">
                             <div class="c-progress-bar c-progress-bar--medium">
@@ -90,7 +91,7 @@
                     </div>
                     <div class="list-group-item-meta-right">
                         <div class="list-group-item-meta-item">
-                            <span class="text-muted c-body-small">Biblio ID: {{.ID}}</span>
+                            <span class="text-muted c-body-small">Biblio ID: {{$d.ID}}</span>
                         </div>
                         <div class="list-group-item-meta-item" data-toggle="tooltip"
                             title="2 related datasets" data-placement="bottom">
@@ -104,7 +105,7 @@
                             <i class="if if-check text-success if--small"></i>
                         </div>
                         <div class="list-group-item-meta-item">
-                            <span class="text-muted c-body-small">Created {{timeElapsed .DateCreated "en"}}</span>
+                            <span class="text-muted c-body-small">Created {{timeElapsed $d.DateCreated "en"}}</span>
                         </div>
                     </div>
                 </div>
