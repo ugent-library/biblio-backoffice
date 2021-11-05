@@ -2,11 +2,11 @@ package controllers
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/ugent-library/biblio-backend/internal/context"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/views"
 	"github.com/ugent-library/go-locale/locale"
@@ -52,16 +52,9 @@ func (c *PublicationAbstracts) AddAbstract(w http.ResponseWriter, r *http.Reques
 
 // Save an abstract to Librecat
 func (c *PublicationAbstracts) CreateAbstract(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
+	pub := context.GetPublication(r.Context())
 
-	pub, err := c.Engine.GetPublication(id)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
-
-	err = r.ParseForm()
+	err := r.ParseForm()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -122,16 +115,10 @@ func (c *PublicationAbstracts) CreateAbstract(w http.ResponseWriter, r *http.Req
 
 // Show the "Edit abstract" modal
 func (c *PublicationAbstracts) EditAbstract(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
 	muxRowDelta := mux.Vars(r)["delta"]
 	rowDelta, _ := strconv.Atoi(muxRowDelta)
 
-	pub, err := c.Engine.GetPublication(id)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
+	pub := context.GetPublication(r.Context())
 
 	abstract := &pub.Abstract[rowDelta]
 
@@ -148,7 +135,7 @@ func (c *PublicationAbstracts) EditAbstract(w http.ResponseWriter, r *http.Reque
 			Form          *views.FormBuilder
 			Vocabularies  map[string][]string
 		}{
-			id,
+			pub.ID,
 			muxRowDelta,
 			abstract,
 			views.NewFormBuilder(c.Render, locale.Get(r.Context()), nil),
@@ -160,18 +147,12 @@ func (c *PublicationAbstracts) EditAbstract(w http.ResponseWriter, r *http.Reque
 
 // // Save the updated abstract to Librecat
 func (c *PublicationAbstracts) UpdateAbstract(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
 	muxRowDelta := mux.Vars(r)["delta"]
 	rowDelta, _ := strconv.Atoi(muxRowDelta)
 
-	pub, err := c.Engine.GetPublication(id)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
+	pub := context.GetPublication(r.Context())
 
-	err = r.ParseForm()
+	err := r.ParseForm()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -256,16 +237,10 @@ func (c *PublicationAbstracts) ConfirmRemoveFromPublication(w http.ResponseWrite
 
 // // Remove an abstract from Librecat
 func (c *PublicationAbstracts) RemoveAbstract(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
 	muxRowDelta := mux.Vars(r)["delta"]
 	rowDelta, _ := strconv.Atoi(muxRowDelta)
 
-	pub, err := c.Engine.GetPublication(id)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
+	pub := context.GetPublication(r.Context())
 
 	abstracts := make([]models.Text, len(pub.Abstract))
 	copy(abstracts, pub.Abstract)

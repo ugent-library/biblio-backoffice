@@ -1,10 +1,9 @@
 package controllers
 
 import (
-	"log"
 	"net/http"
 
-	"github.com/gorilla/mux"
+	"github.com/ugent-library/biblio-backend/internal/context"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/views"
 	"github.com/ugent-library/go-locale/locale"
@@ -22,14 +21,7 @@ func NewPublicationConference(c Context) *PublicationConference {
 }
 
 func (c *PublicationConference) Show(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
-
-	pub, err := c.Engine.GetPublication(id)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
+	pub := context.GetPublication(r.Context())
 
 	c.Render.HTML(w, http.StatusOK,
 		"publication/conference/_show",
@@ -45,14 +37,7 @@ func (c *PublicationConference) Show(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *PublicationConference) OpenForm(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
-
-	pub, err := c.Engine.GetPublication(id)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
+	pub := context.GetPublication(r.Context())
 
 	c.Render.HTML(w, http.StatusOK,
 		"publication/conference/_edit",
@@ -68,16 +53,9 @@ func (c *PublicationConference) OpenForm(w http.ResponseWriter, r *http.Request)
 }
 
 func (c *PublicationConference) SaveForm(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
+	pub := context.GetPublication(r.Context())
 
-	pub, err := c.Engine.GetPublication(id)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
-
-	err = r.ParseForm()
+	err := r.ParseForm()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

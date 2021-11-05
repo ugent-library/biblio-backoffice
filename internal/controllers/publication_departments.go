@@ -1,10 +1,10 @@
 package controllers
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/ugent-library/biblio-backend/internal/context"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/views"
 	"github.com/unrolled/render"
@@ -19,14 +19,7 @@ func NewPublicationDepartments(c Context) *PublicationDepartments {
 }
 
 func (c *PublicationDepartments) ListDepartments(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
-
-	pub, err := c.Engine.GetPublication(id)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
+	pub := context.GetPublication(r.Context())
 
 	// Get 20 random departments (no search, init state)
 	hits, _ := c.Engine.SuggestDepartments("")
@@ -45,16 +38,9 @@ func (c *PublicationDepartments) ListDepartments(w http.ResponseWriter, r *http.
 }
 
 func (c *PublicationDepartments) ActiveSearch(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
+	pub := context.GetPublication(r.Context())
 
-	pub, err := c.Engine.GetPublication(id)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
-
-	err = r.ParseForm()
+	err := r.ParseForm()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -78,15 +64,9 @@ func (c *PublicationDepartments) ActiveSearch(w http.ResponseWriter, r *http.Req
 }
 
 func (c *PublicationDepartments) AddToPublication(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
 	departmentId := mux.Vars(r)["department_id"]
 
-	pub, err := c.Engine.GetPublication(id)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
+	pub := context.GetPublication(r.Context())
 
 	// department, err := p.engine.GetDepartment(departmentId)
 	// if err != nil {
@@ -132,15 +112,9 @@ func (c *PublicationDepartments) ConfirmRemoveFromPublication(w http.ResponseWri
 }
 
 func (c *PublicationDepartments) RemoveFromPublication(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
 	departmentId := mux.Vars(r)["department_id"]
 
-	pub, err := c.Engine.GetPublication(id)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
+	pub := context.GetPublication(r.Context())
 
 	departments := make([]models.PublicationDepartment, len(pub.Department))
 	copy(departments, pub.Department)

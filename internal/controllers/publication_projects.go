@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/ugent-library/biblio-backend/internal/context"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/views"
 	"github.com/unrolled/render"
@@ -19,14 +20,7 @@ func NewPublicationProjects(c Context) *PublicationProjects {
 }
 
 func (c *PublicationProjects) ListProjects(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
-
-	pub, err := c.Engine.GetPublication(id)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
+	pub := context.GetPublication(r.Context())
 
 	// Get 20 random projects (no search, init state)
 	hits, _ := c.Engine.SuggestProjects("")
@@ -45,16 +39,9 @@ func (c *PublicationProjects) ListProjects(w http.ResponseWriter, r *http.Reques
 }
 
 func (c *PublicationProjects) ActiveSearch(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
+	pub := context.GetPublication(r.Context())
 
-	pub, err := c.Engine.GetPublication(id)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
-
-	err = r.ParseForm()
+	err := r.ParseForm()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -78,15 +65,9 @@ func (c *PublicationProjects) ActiveSearch(w http.ResponseWriter, r *http.Reques
 }
 
 func (c *PublicationProjects) AddToPublication(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
 	projectId := mux.Vars(r)["project_id"]
 
-	pub, err := c.Engine.GetPublication(id)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
+	pub := context.GetPublication(r.Context())
 
 	project, err := c.Engine.GetProject(projectId)
 	if err != nil {
@@ -135,16 +116,9 @@ func (c *PublicationProjects) ConfirmRemoveFromPublication(w http.ResponseWriter
 }
 
 func (c *PublicationProjects) RemoveFromPublication(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
 	projectId := mux.Vars(r)["project_id"]
 
-	// TODO: set constraint to research_data
-	pub, err := c.Engine.GetPublication(id)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
+	pub := context.GetPublication(r.Context())
 
 	projects := make([]models.PublicationProject, len(pub.Project))
 	copy(projects, pub.Project)

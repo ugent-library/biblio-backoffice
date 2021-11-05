@@ -4,7 +4,6 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/gorilla/mux"
 	"github.com/ugent-library/biblio-backend/internal/context"
 	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/models"
@@ -50,15 +49,9 @@ func (c *Datasets) List(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Datasets) Show(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
-	dataset, err := c.Engine.GetDataset(id)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
+	dataset := context.GetDataset(r.Context())
 
-	datasetPubs, err := c.Engine.GetDatasetPublications(id)
+	datasetPubs, err := c.Engine.GetDatasetPublications(dataset.ID)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -124,13 +117,7 @@ func (c *Datasets) AddImport(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Datasets) AddDescription(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
-	dataset, err := c.Engine.GetDataset(id)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
+	dataset := context.GetDataset(r.Context())
 
 	c.Render.HTML(w, http.StatusOK, "dataset/add_description", views.NewData(c.Render, r, struct {
 		Step    int
@@ -144,13 +131,7 @@ func (c *Datasets) AddDescription(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Datasets) AddConfirm(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
-	dataset, err := c.Engine.GetDataset(id)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
+	dataset := context.GetDataset(r.Context())
 
 	c.Render.HTML(w, http.StatusOK, "dataset/add_confirm", views.NewData(c.Render, r, struct {
 		Step    int
@@ -162,13 +143,7 @@ func (c *Datasets) AddConfirm(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Datasets) AddPublish(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
-	dataset, err := c.Engine.GetDataset(id)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
+	dataset := context.GetDataset(r.Context())
 
 	savedDataset, err := c.Engine.PublishDataset(dataset)
 	if err != nil {

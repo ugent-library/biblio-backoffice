@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/ugent-library/biblio-backend/internal/context"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/views"
 	"github.com/ugent-library/go-locale/locale"
@@ -52,16 +53,9 @@ func (c *PublicationLinks) AddLink(w http.ResponseWriter, r *http.Request) {
 
 // Save a link to Librecat
 func (c *PublicationLinks) CreateLink(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
+	pub := context.GetPublication(r.Context())
 
-	pub, err := c.Engine.GetPublication(id)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
-
-	err = r.ParseForm()
+	err := r.ParseForm()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -122,16 +116,10 @@ func (c *PublicationLinks) CreateLink(w http.ResponseWriter, r *http.Request) {
 
 // Show the "Edit link" modal
 func (c *PublicationLinks) EditLink(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
 	muxRowDelta := mux.Vars(r)["delta"]
 	rowDelta, _ := strconv.Atoi(muxRowDelta)
 
-	pub, err := c.Engine.GetPublication(id)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
+	pub := context.GetPublication(r.Context())
 
 	link := &pub.Link[rowDelta]
 
@@ -148,7 +136,7 @@ func (c *PublicationLinks) EditLink(w http.ResponseWriter, r *http.Request) {
 			Form          *views.FormBuilder
 			Vocabularies  map[string][]string
 		}{
-			id,
+			pub.ID,
 			muxRowDelta,
 			link,
 			views.NewFormBuilder(c.Render, locale.Get(r.Context()), nil),
@@ -160,18 +148,12 @@ func (c *PublicationLinks) EditLink(w http.ResponseWriter, r *http.Request) {
 
 // // Save the updated link to Librecat
 func (c *PublicationLinks) UpdateLink(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
 	muxRowDelta := mux.Vars(r)["delta"]
 	rowDelta, _ := strconv.Atoi(muxRowDelta)
 
-	pub, err := c.Engine.GetPublication(id)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
+	pub := context.GetPublication(r.Context())
 
-	err = r.ParseForm()
+	err := r.ParseForm()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -258,16 +240,10 @@ func (c *PublicationLinks) ConfirmRemoveFromPublication(w http.ResponseWriter, r
 
 // // Remove a link from Librecat
 func (c *PublicationLinks) RemoveLink(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
 	muxRowDelta := mux.Vars(r)["delta"]
 	rowDelta, _ := strconv.Atoi(muxRowDelta)
 
-	pub, err := c.Engine.GetPublication(id)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
+	pub := context.GetPublication(r.Context())
 
 	links := make([]models.PublicationLink, len(pub.Link))
 	copy(links, pub.Link)

@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
+	"github.com/ugent-library/biblio-backend/internal/context"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/views"
 	"github.com/ugent-library/go-web/forms"
@@ -25,14 +26,9 @@ func NewPublicationFiles(c Context) *PublicationFiles {
 }
 
 func (c *PublicationFiles) Download(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
 	fileID := mux.Vars(r)["file_id"]
-	pub, err := c.Engine.GetPublication(id)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
+
+	pub := context.GetPublication(r.Context())
 
 	var fileURL string
 	for _, file := range pub.File {
@@ -43,8 +39,7 @@ func (c *PublicationFiles) Download(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if fileURL == "" {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
 
@@ -64,14 +59,9 @@ func (c *PublicationFiles) Download(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *PublicationFiles) Thumbnail(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
 	fileID := mux.Vars(r)["file_id"]
-	pub, err := c.Engine.GetPublication(id)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
+
+	pub := context.GetPublication(r.Context())
 
 	var thumbnailURL string
 	for _, file := range pub.File {
@@ -82,8 +72,7 @@ func (c *PublicationFiles) Thumbnail(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if thumbnailURL == "" {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
 
@@ -104,12 +93,6 @@ func (c *PublicationFiles) Thumbnail(w http.ResponseWriter, r *http.Request) {
 
 func (c *PublicationFiles) Upload(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
-	_, err := c.Engine.GetPublication(id)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
 
 	// 2GB limit on request body
 	r.Body = http.MaxBytesReader(w, r.Body, 2000000000)
@@ -166,15 +149,9 @@ func (c *PublicationFiles) Upload(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *PublicationFiles) Edit(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
 	fileID := mux.Vars(r)["file_id"]
 
-	pub, err := c.Engine.GetPublication(id)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
+	pub := context.GetPublication(r.Context())
 
 	var file *models.PublicationFile
 	for _, f := range pub.File {
@@ -184,8 +161,7 @@ func (c *PublicationFiles) Edit(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if file == nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
 
@@ -204,15 +180,9 @@ func (c *PublicationFiles) Edit(w http.ResponseWriter, r *http.Request) {
 
 // TODO avoid getting publication multiple times
 func (c *PublicationFiles) Update(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
 	fileID := mux.Vars(r)["file_id"]
 
-	pub, err := c.Engine.GetPublication(id)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
+	pub := context.GetPublication(r.Context())
 
 	var file *models.PublicationFile
 	for _, f := range pub.File {
@@ -222,12 +192,11 @@ func (c *PublicationFiles) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if file == nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
 
-	err = r.ParseForm()
+	err := r.ParseForm()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -261,7 +230,7 @@ func (c *PublicationFiles) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pub, err = c.Engine.GetPublication(id)
+	pub, err = c.Engine.GetPublication(pub.ID)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)

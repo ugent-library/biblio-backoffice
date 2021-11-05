@@ -12,6 +12,7 @@ const (
 	userKey key = iota
 	originalUserKey
 	activeMenuKey
+	publicationKey
 )
 
 func GetUser(c context.Context) *models.User {
@@ -45,4 +46,26 @@ func GetActiveMenu(c context.Context) string {
 
 func WithActiveMenu(c context.Context, menu string) context.Context {
 	return context.WithValue(c, activeMenuKey, menu)
+}
+
+func GetPublication(c context.Context) *models.Publication {
+	if v := c.Value(publicationKey); v != nil {
+		return v.(*models.Publication)
+	}
+	return nil
+}
+
+func WithPublication(c context.Context, pub *models.Publication) context.Context {
+	return context.WithValue(c, publicationKey, pub)
+}
+
+func GetDataset(c context.Context) *models.Dataset {
+	if v := c.Value(publicationKey); v != nil {
+		return v.(*models.Dataset)
+	}
+	return nil
+}
+
+func WithDataset(c context.Context, pub *models.Dataset) context.Context {
+	return context.WithValue(c, publicationKey, pub)
 }

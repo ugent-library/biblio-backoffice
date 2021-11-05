@@ -7,7 +7,6 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/gorilla/mux"
 	"github.com/ugent-library/biblio-backend/internal/context"
 	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/models"
@@ -56,15 +55,9 @@ func (c *Publications) List(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Publications) Show(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
-	pub, err := c.Engine.GetPublication(id)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
+	pub := context.GetPublication(r.Context())
 
-	datasets, err := c.Engine.GetPublicationDatasets(id)
+	datasets, err := c.Engine.GetPublicationDatasets(pub.ID)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -96,11 +89,10 @@ func (c *Publications) Show(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Publications) Thumbnail(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
-	pub, err := c.Engine.GetPublication(id)
-	if err != nil || pub.ThumbnailURL() == "" {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
+	pub := context.GetPublication(r.Context())
+
+	if pub.ThumbnailURL() == "" {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
 
@@ -113,20 +105,14 @@ func (c *Publications) Thumbnail(w http.ResponseWriter, r *http.Request) {
 	r.URL.Scheme = url.Scheme
 	r.URL.Path = strings.Replace(url.Path, baseURL.Path, "", 1)
 	r.Header.Set("X-Forwarded-Host", r.Header.Get("Host"))
+	r.Header.Del("Cookie")
 	r.Host = url.Host
 	r.SetBasicAuth(c.Engine.Config.Username, c.Engine.Config.Password)
 	proxy.ServeHTTP(w, r)
 }
 
 func (c *Publications) Summary(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
-
-	pub, err := c.Engine.GetPublication(id)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
+	pub := context.GetPublication(r.Context())
 
 	c.Render.HTML(w, http.StatusOK, "publication/_summary", views.NewData(c.Render, r, struct {
 		Publication *models.Publication
@@ -197,13 +183,7 @@ func (c *Publications) AddSingleImport(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Publications) AddSingleDescription(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
-	publication, err := c.Engine.GetPublication(id)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
+	pub := context.GetPublication(r.Context())
 
 	c.Render.HTML(w, http.StatusOK, "publication/add_single_description", views.NewData(c.Render, r, struct {
 		Step        int
@@ -211,39 +191,27 @@ func (c *Publications) AddSingleDescription(w http.ResponseWriter, r *http.Reque
 		Show        *views.ShowBuilder
 	}{
 		4,
-		publication,
+		pub,
 		views.NewShowBuilder(c.Render, locale.Get(r.Context())),
 	}))
 }
 
 func (c *Publications) AddSingleConfirm(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
-	publication, err := c.Engine.GetPublication(id)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
+	pub := context.GetPublication(r.Context())
 
 	c.Render.HTML(w, http.StatusOK, "publication/add_single_confirm", views.NewData(c.Render, r, struct {
 		Step        int
 		Publication *models.Publication
 	}{
 		5,
-		publication,
+		pub,
 	}))
 }
 
 func (c *Publications) AddSinglePublish(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
-	publication, err := c.Engine.GetPublication(id)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
+	pub := context.GetPublication(r.Context())
 
-	savedPublication, err := c.Engine.PublishPublication(publication)
+	savedPub, err := c.Engine.PublishPublication(pub)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -255,7 +223,7 @@ func (c *Publications) AddSinglePublish(w http.ResponseWriter, r *http.Request) 
 		Publication *models.Publication
 	}{
 		6,
-		savedPublication,
+		savedPub,
 	}))
 }
 

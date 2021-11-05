@@ -30,11 +30,11 @@ package controllers
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/ugent-library/biblio-backend/internal/context"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/views"
 	"github.com/ugent-library/go-web/forms"
@@ -51,14 +51,7 @@ func NewPublicationAuthors(c Context) *PublicationAuthors {
 }
 
 func (c *PublicationAuthors) List(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
-
-	pub, err := c.Engine.GetPublication(id)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
+	pub := context.GetPublication(r.Context())
 
 	w.Header().Set("HX-Trigger", "ITList")
 	w.Header().Set("HX-Trigger-After-Swap", "ITListAfterSwap")
@@ -124,18 +117,12 @@ func (c *PublicationAuthors) CancelAddRow(w http.ResponseWriter, r *http.Request
 }
 
 func (c *PublicationAuthors) CreateAuthor(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
 	muxRowDelta := mux.Vars(r)["delta"]
 	rowDelta, _ := strconv.Atoi(muxRowDelta)
 
-	pub, err := c.Engine.GetPublication(id)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
+	pub := context.GetPublication(r.Context())
 
-	err = r.ParseForm()
+	err := r.ParseForm()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -188,16 +175,11 @@ func (c *PublicationAuthors) CreateAuthor(w http.ResponseWriter, r *http.Request
 }
 
 func (c *PublicationAuthors) EditRow(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
 	muxRowDelta := mux.Vars(r)["delta"]
 	rowDelta, _ := strconv.Atoi(muxRowDelta)
 
-	pub, err := c.Engine.GetPublication(id)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
+	pub := context.GetPublication(r.Context())
+
 	// Skeleton to make the render fields happy
 	author := &pub.Author[rowDelta]
 
@@ -207,22 +189,16 @@ func (c *PublicationAuthors) EditRow(w http.ResponseWriter, r *http.Request) {
 
 	c.Render.HTML(w, http.StatusOK,
 		"publication/authors/_default_form_edit",
-		views.NewData(c.Render, r, views.NewContributorForm(c.Render, id, author, muxRowDelta, nil)),
+		views.NewData(c.Render, r, views.NewContributorForm(c.Render, pub.ID, author, muxRowDelta, nil)),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
 
 func (c *PublicationAuthors) CancelEditRow(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
 	muxRowDelta := mux.Vars(r)["delta"]
 	rowDelta, _ := strconv.Atoi(muxRowDelta)
 
-	pub, err := c.Engine.GetPublication(id)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
+	pub := context.GetPublication(r.Context())
 
 	author := &pub.Author[rowDelta]
 
@@ -238,18 +214,12 @@ func (c *PublicationAuthors) CancelEditRow(w http.ResponseWriter, r *http.Reques
 }
 
 func (c *PublicationAuthors) UpdateAuthor(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
 	muxRowDelta := mux.Vars(r)["delta"]
 	rowDelta, _ := strconv.Atoi(muxRowDelta)
 
-	pub, err := c.Engine.GetPublication(id)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
+	pub := context.GetPublication(r.Context())
 
-	err = r.ParseForm()
+	err := r.ParseForm()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -319,16 +289,10 @@ func (c *PublicationAuthors) ConfirmRemoveFromPublication(w http.ResponseWriter,
 }
 
 func (c *PublicationAuthors) RemoveAuthor(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
 	muxRowDelta := mux.Vars(r)["delta"]
 	rowDelta, _ := strconv.Atoi(muxRowDelta)
 
-	pub, err := c.Engine.GetPublication(id)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
+	pub := context.GetPublication(r.Context())
 
 	authors := make([]models.PublicationContributor, len(pub.Author))
 	copy(authors, pub.Author)
@@ -348,20 +312,13 @@ func (c *PublicationAuthors) RemoveAuthor(w http.ResponseWriter, r *http.Request
 }
 
 func (c *PublicationAuthors) OrderAuthors(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
-
 	muxStart := mux.Vars(r)["start"]
 	start, _ := strconv.Atoi(muxStart)
 
 	muxEnd := mux.Vars(r)["end"]
 	end, _ := strconv.Atoi(muxEnd)
 
-	pub, err := c.Engine.GetPublication(id)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
+	pub := context.GetPublication(r.Context())
 
 	author := &pub.Author[start]
 
