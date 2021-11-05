@@ -145,7 +145,13 @@ func (c *Publications) AddSingleImport(w http.ResponseWriter, r *http.Request) {
 	var publication *models.Publication
 
 	if identifier := r.FormValue("identifier"); identifier != "" {
-		publications, err := c.Engine.ImportUserPublications(context.GetUser(r.Context()).ID, identifier)
+		var identifier_type string = r.FormValue("identifier_type")
+		if identifier_type == "" {
+			log.Println("missing form field identifier_type")
+			http.Error(w, "missing form field identifier_type", http.StatusInternalServerError)
+			return
+		}
+		publications, err := c.Engine.ImportUserPublications(context.GetUser(r.Context()).ID, identifier, identifier_type)
 		if err != nil {
 			log.Println(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
