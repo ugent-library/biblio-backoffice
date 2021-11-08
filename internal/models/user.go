@@ -22,6 +22,34 @@ type User struct {
 	Username    string           `json:"username"`
 }
 
+func (u *User) CanViewPublication(p *Publication) bool {
+	if p.Status == "deleted" {
+		return false
+	}
+	if u.Role == "admin" {
+		return true
+	}
+	if p.CreatorID == u.ID {
+		return true
+	}
+	for _, c := range p.Author {
+		if c.ID == u.ID {
+			return true
+		}
+	}
+	for _, c := range p.Editor {
+		if c.ID == u.ID {
+			return true
+		}
+	}
+	for _, c := range p.Supervisor {
+		if c.ID == u.ID {
+			return true
+		}
+	}
+	return false
+}
+
 func (u *User) CanEditPublication(p *Publication) bool {
 	if p.Status == "deleted" {
 		return false
@@ -46,6 +74,29 @@ func (u *User) CanEditPublication(p *Publication) bool {
 		}
 	}
 	for _, c := range p.Supervisor {
+		if c.ID == u.ID {
+			return true
+		}
+	}
+	return false
+}
+
+func (u *User) CanViewDataset(d *Dataset) bool {
+	if d.Status == "deleted" {
+		return false
+	}
+	if u.Role == "admin" {
+		return true
+	}
+	if d.CreatorID == u.ID {
+		return true
+	}
+	for _, c := range d.Creator {
+		if c.ID == u.ID {
+			return true
+		}
+	}
+	for _, c := range d.Contributor {
 		if c.ID == u.ID {
 			return true
 		}

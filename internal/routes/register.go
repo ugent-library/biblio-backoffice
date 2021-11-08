@@ -171,21 +171,23 @@ func Register(c controllers.Context) {
 
 	pubRouter := pubsRouter.PathPrefix("/{id}").Subrouter()
 	pubRouter.Use(middleware.SetPublication(c.Engine))
+	pubEditRouter := pubRouter.PathPrefix("").Subrouter()
+	pubEditRouter.Use(middleware.RequireCanEditPublication)
 	pubRouter.HandleFunc("", publicationsController.Show).
 		Methods("GET").
 		Name("publication")
-	pubRouter.HandleFunc("/add-single/description", publicationsController.AddSingleDescription).
-		Methods("GET").
-		Name("publication_add_single_description")
-	pubRouter.HandleFunc("/add-single/confirm", publicationsController.AddSingleConfirm).
-		Methods("GET").
-		Name("publication_add_single_confirm")
-	pubRouter.HandleFunc("/add-single/publish", publicationsController.AddSinglePublish).
-		Methods("POST").
-		Name("publication_add_single_publish")
 	pubRouter.HandleFunc("/thumbnail", publicationsController.Thumbnail).
 		Methods("GET").
 		Name("publication_thumbnail")
+	pubEditRouter.HandleFunc("/add-single/description", publicationsController.AddSingleDescription).
+		Methods("GET").
+		Name("publication_add_single_description")
+	pubEditRouter.HandleFunc("/add-single/confirm", publicationsController.AddSingleConfirm).
+		Methods("GET").
+		Name("publication_add_single_confirm")
+	pubEditRouter.HandleFunc("/add-single/publish", publicationsController.AddSinglePublish).
+		Methods("POST").
+		Name("publication_add_single_publish")
 	// Publication files
 	pubRouter.HandleFunc("/file/{file_id}", publicationFilesController.Download).
 		Methods("GET").
@@ -193,170 +195,170 @@ func Register(c controllers.Context) {
 	pubRouter.HandleFunc("/file/{file_id}/thumbnail", publicationFilesController.Thumbnail).
 		Methods("GET").
 		Name("publication_file_thumbnail")
-	pubRouter.HandleFunc("/htmx/file", publicationFilesController.Upload).
+	pubEditRouter.HandleFunc("/htmx/file", publicationFilesController.Upload).
 		Methods("POST").
 		Name("upload_publication_file")
-	pubRouter.HandleFunc("/htmx/file/{file_id}/edit", publicationFilesController.Edit).
+	pubEditRouter.HandleFunc("/htmx/file/{file_id}/edit", publicationFilesController.Edit).
 		Methods("GET").
 		Name("publication_file_edit")
-	pubRouter.HandleFunc("/htmx/file/{file_id}", publicationFilesController.Update).
+	pubEditRouter.HandleFunc("/htmx/file/{file_id}", publicationFilesController.Update).
 		Methods("PUT").
 		Name("publication_file_update")
-	pubRouter.HandleFunc("/htmx/file/{file_id}/remove", publicationFilesController.Remove).
+	pubEditRouter.HandleFunc("/htmx/file/{file_id}/remove", publicationFilesController.Remove).
 		Methods("PATCH").
 		Name("publication_file_remove")
 	// Publication HTMX fragments
-	pubRouter.HandleFunc("/htmx/summary", publicationsController.Summary).
+	pubEditRouter.HandleFunc("/htmx/summary", publicationsController.Summary).
 		Methods("GET").
 		Name("publication_summary")
 	// Publication details HTMX fragments
-	pubRouter.HandleFunc("/htmx", publicationDetailsController.Show).
+	pubEditRouter.HandleFunc("/htmx", publicationDetailsController.Show).
 		Methods("GET").
 		Name("publication_details")
-	pubRouter.HandleFunc("/htmx/edit", publicationDetailsController.OpenForm).
+	pubEditRouter.HandleFunc("/htmx/edit", publicationDetailsController.OpenForm).
 		Methods("GET").
 		Name("publication_details_edit_form")
-	pubRouter.HandleFunc("/htmx/edit", publicationDetailsController.SaveForm).
+	pubEditRouter.HandleFunc("/htmx/edit", publicationDetailsController.SaveForm).
 		Methods("PATCH").
 		Name("publication_details_save_form")
 	// Publication conference HTMX fragments
-	pubRouter.HandleFunc("/htmx/conference", publicationConferenceController.Show).
+	pubEditRouter.HandleFunc("/htmx/conference", publicationConferenceController.Show).
 		Methods("GET").
 		Name("publication_conference")
-	pubRouter.HandleFunc("/htmx/conference/edit", publicationConferenceController.OpenForm).
+	pubEditRouter.HandleFunc("/htmx/conference/edit", publicationConferenceController.OpenForm).
 		Methods("GET").
 		Name("publication_conference_edit_form")
-	pubRouter.HandleFunc("/htmx/conference/edit", publicationConferenceController.SaveForm).
+	pubEditRouter.HandleFunc("/htmx/conference/edit", publicationConferenceController.SaveForm).
 		Methods("PATCH").
 		Name("publication_conference_save_form")
 	// Publication additional info HTMX fragments
-	pubRouter.HandleFunc("/htmx/additional_info", publicationAdditionalInfoController.Show).
+	pubEditRouter.HandleFunc("/htmx/additional_info", publicationAdditionalInfoController.Show).
 		Methods("GET").
 		Name("publication_additional_info")
-	pubRouter.HandleFunc("/htmx/additional_info/edit", publicationAdditionalInfoController.OpenForm).
+	pubEditRouter.HandleFunc("/htmx/additional_info/edit", publicationAdditionalInfoController.OpenForm).
 		Methods("GET").
 		Name("publication_additional_info_edit_form")
-	pubRouter.HandleFunc("/htmx/additional_info/edit", publicationAdditionalInfoController.SaveForm).
+	pubEditRouter.HandleFunc("/htmx/additional_info/edit", publicationAdditionalInfoController.SaveForm).
 		Methods("PATCH").
 		Name("publication_additional_info_save_form")
 	// Publication projects HTMX fragments
-	pubRouter.HandleFunc("/htmx/projects/list", publicationProjectsController.ListProjects).
+	pubEditRouter.HandleFunc("/htmx/projects/list", publicationProjectsController.ListProjects).
 		Methods("GET").
 		Name("publication_projects")
-	pubRouter.HandleFunc("/htmx/projects/list/activesearch", publicationProjectsController.ActiveSearch).
+	pubEditRouter.HandleFunc("/htmx/projects/list/activesearch", publicationProjectsController.ActiveSearch).
 		Methods("POST").
 		Name("publication_projects_activesearch")
-	pubRouter.HandleFunc("/htmx/projects/add/{project_id}", publicationProjectsController.AddToPublication).
+	pubEditRouter.HandleFunc("/htmx/projects/add/{project_id}", publicationProjectsController.AddToPublication).
 		Methods("PATCH").
 		Name("publication_projects_add_to_publication")
-	pubRouter.HandleFunc("/htmx/projects/remove/{project_id}", publicationProjectsController.ConfirmRemoveFromPublication).
+	pubEditRouter.HandleFunc("/htmx/projects/remove/{project_id}", publicationProjectsController.ConfirmRemoveFromPublication).
 		Methods("GET").
 		Name("publication_projects_confirm_remove_from_publication")
-	pubRouter.HandleFunc("/htmx/projects/remove/{project_id}", publicationProjectsController.RemoveFromPublication).
+	pubEditRouter.HandleFunc("/htmx/projects/remove/{project_id}", publicationProjectsController.RemoveFromPublication).
 		Methods("PATCH").
 		Name("publication_projects_remove_from_publication")
 	// Publication departments HTMX fragments
-	pubRouter.HandleFunc("/htmx/departments/list", publicationDepartmentsController.ListDepartments).
+	pubEditRouter.HandleFunc("/htmx/departments/list", publicationDepartmentsController.ListDepartments).
 		Methods("GET").
 		Name("publicationDepartments")
-	pubRouter.HandleFunc("/htmx/departments/list/activesearch", publicationDepartmentsController.ActiveSearch).
+	pubEditRouter.HandleFunc("/htmx/departments/list/activesearch", publicationDepartmentsController.ActiveSearch).
 		Methods("POST").
 		Name("publicationDepartments_activesearch")
-	pubRouter.HandleFunc("/htmx/departments/add/{department_id}", publicationDepartmentsController.AddToPublication).
+	pubEditRouter.HandleFunc("/htmx/departments/add/{department_id}", publicationDepartmentsController.AddToPublication).
 		Methods("PATCH").
 		Name("publicationDepartments_add_to_publication")
-	pubRouter.HandleFunc("/htmx/departments/remove/{department_id}", publicationDepartmentsController.ConfirmRemoveFromPublication).
+	pubEditRouter.HandleFunc("/htmx/departments/remove/{department_id}", publicationDepartmentsController.ConfirmRemoveFromPublication).
 		Methods("GET").
 		Name("publicationDepartments_confirm_remove_from_publication")
-	pubRouter.HandleFunc("/htmx/departments/remove/{department_id}", publicationDepartmentsController.RemoveFromPublication).
+	pubEditRouter.HandleFunc("/htmx/departments/remove/{department_id}", publicationDepartmentsController.RemoveFromPublication).
 		Methods("PATCH").
 		Name("publicationDepartments_remove_from_publication")
 	// Publication abstracts HTMX fragments
-	pubRouter.HandleFunc("/htmx/abstracts/add", publicationAbstractsController.AddAbstract).
+	pubEditRouter.HandleFunc("/htmx/abstracts/add", publicationAbstractsController.AddAbstract).
 		Methods("GET").
 		Name("publication_abstracts_add_abstract")
-	pubRouter.HandleFunc("/htmx/abstracts/create", publicationAbstractsController.CreateAbstract).
+	pubEditRouter.HandleFunc("/htmx/abstracts/create", publicationAbstractsController.CreateAbstract).
 		Methods("POST").
 		Name("publication_abstracts_create_abstract")
-	pubRouter.HandleFunc("/htmx/abstracts/edit/{delta}", publicationAbstractsController.EditAbstract).
+	pubEditRouter.HandleFunc("/htmx/abstracts/edit/{delta}", publicationAbstractsController.EditAbstract).
 		Methods("GET").
 		Name("publication_abstracts_edit_abstract")
-	pubRouter.HandleFunc("/htmx/abstracts/update/{delta}", publicationAbstractsController.UpdateAbstract).
+	pubEditRouter.HandleFunc("/htmx/abstracts/update/{delta}", publicationAbstractsController.UpdateAbstract).
 		Methods("PUT").
 		Name("publication_abstracts_update_abstract")
-	pubRouter.HandleFunc("/htmx/abstracts/remove/{delta}", publicationAbstractsController.ConfirmRemoveFromPublication).
+	pubEditRouter.HandleFunc("/htmx/abstracts/remove/{delta}", publicationAbstractsController.ConfirmRemoveFromPublication).
 		Methods("GET").
 		Name("publication_abstracts_confirm_remove_from_publication")
-	pubRouter.HandleFunc("/htmx/abstracts/remove/{delta}", publicationAbstractsController.RemoveAbstract).
+	pubEditRouter.HandleFunc("/htmx/abstracts/remove/{delta}", publicationAbstractsController.RemoveAbstract).
 		Methods("DELETE").
 		Name("publication_abstracts_remove_abstract")
 	// Publication links HTMX fragments
-	pubRouter.HandleFunc("/htmx/links/add", publicationLinksController.AddLink).
+	pubEditRouter.HandleFunc("/htmx/links/add", publicationLinksController.AddLink).
 		Methods("GET").
 		Name("publication_links_add_link")
-	pubRouter.HandleFunc("/htmx/links/create", publicationLinksController.CreateLink).
+	pubEditRouter.HandleFunc("/htmx/links/create", publicationLinksController.CreateLink).
 		Methods("POST").
 		Name("publication_links_create_link")
-	pubRouter.HandleFunc("/htmx/links/edit/{delta}", publicationLinksController.EditLink).
+	pubEditRouter.HandleFunc("/htmx/links/edit/{delta}", publicationLinksController.EditLink).
 		Methods("GET").
 		Name("publication_links_edit_link")
-	pubRouter.HandleFunc("/htmx/links/update/{delta}", publicationLinksController.UpdateLink).
+	pubEditRouter.HandleFunc("/htmx/links/update/{delta}", publicationLinksController.UpdateLink).
 		Methods("PUT").
 		Name("publication_links_update_link")
-	pubRouter.HandleFunc("/htmx/links/remove/{delta}", publicationLinksController.ConfirmRemoveFromPublication).
+	pubEditRouter.HandleFunc("/htmx/links/remove/{delta}", publicationLinksController.ConfirmRemoveFromPublication).
 		Methods("GET").
 		Name("publication_links_confirm_remove_from_publication")
-	pubRouter.HandleFunc("/htmx/links/remove/{delta}", publicationLinksController.RemoveLink).
+	pubEditRouter.HandleFunc("/htmx/links/remove/{delta}", publicationLinksController.RemoveLink).
 		Methods("DELETE").
 		Name("publication_links_remove_link")
 	// Publication authors HTMX fragments
-	pubRouter.HandleFunc("/htmx/authors/list", publicationAuthorsController.List).
+	pubEditRouter.HandleFunc("/htmx/authors/list", publicationAuthorsController.List).
 		Methods("GET").
 		Name("publication_authors_list")
-	pubRouter.HandleFunc("/htmx/authors/add/{delta}", publicationAuthorsController.AddRow).
+	pubEditRouter.HandleFunc("/htmx/authors/add/{delta}", publicationAuthorsController.AddRow).
 		Methods("GET").
 		Name("publication_authors_add_row")
-	pubRouter.HandleFunc("/htmx/authors/shift/{delta}", publicationAuthorsController.ShiftRow).
+	pubEditRouter.HandleFunc("/htmx/authors/shift/{delta}", publicationAuthorsController.ShiftRow).
 		Methods("GET").
 		Name("publication_authors_shift_row")
-	pubRouter.HandleFunc("/htmx/authors/cancel/add/{delta}", publicationAuthorsController.CancelAddRow).
+	pubEditRouter.HandleFunc("/htmx/authors/cancel/add/{delta}", publicationAuthorsController.CancelAddRow).
 		Methods("DELETE").
 		Name("publication_authors_cancel_add_row")
-	pubRouter.HandleFunc("/htmx/authors/create/{delta}", publicationAuthorsController.CreateAuthor).
+	pubEditRouter.HandleFunc("/htmx/authors/create/{delta}", publicationAuthorsController.CreateAuthor).
 		Methods("POST").
 		Name("publication_authors_create_author")
-	pubRouter.HandleFunc("/htmx/authors/edit/{delta}", publicationAuthorsController.EditRow).
+	pubEditRouter.HandleFunc("/htmx/authors/edit/{delta}", publicationAuthorsController.EditRow).
 		Methods("GET").
 		Name("publication_authors_edit_row")
-	pubRouter.HandleFunc("/htmx/authors/cancel/edit/{delta}", publicationAuthorsController.CancelEditRow).
+	pubEditRouter.HandleFunc("/htmx/authors/cancel/edit/{delta}", publicationAuthorsController.CancelEditRow).
 		Methods("DELETE").
 		Name("publication_authors_cancel_edit_row")
-	pubRouter.HandleFunc("/htmx/authors/update/{delta}", publicationAuthorsController.UpdateAuthor).
+	pubEditRouter.HandleFunc("/htmx/authors/update/{delta}", publicationAuthorsController.UpdateAuthor).
 		Methods("POST").
 		Name("publication_authors_update_author")
-	pubRouter.HandleFunc("/htmx/authors/remove/{delta}", publicationAuthorsController.ConfirmRemoveFromPublication).
+	pubEditRouter.HandleFunc("/htmx/authors/remove/{delta}", publicationAuthorsController.ConfirmRemoveFromPublication).
 		Methods("GET").
 		Name("publication_authors_confirm_remove_from_publication")
-	pubRouter.HandleFunc("/htmx/authors/remove/{delta}", publicationAuthorsController.RemoveAuthor).
+	pubEditRouter.HandleFunc("/htmx/authors/remove/{delta}", publicationAuthorsController.RemoveAuthor).
 		Methods("DELETE").
 		Name("publication_authors_remove_author")
-	pubRouter.HandleFunc("/htmx/authors/order/{start}/{end}", publicationAuthorsController.OrderAuthors).
+	pubEditRouter.HandleFunc("/htmx/authors/order/{start}/{end}", publicationAuthorsController.OrderAuthors).
 		Methods("PUT").
 		Name("publication_authors_order_authors")
 	// Publication datasets HTMX fragments
-	pubRouter.HandleFunc("/htmx/datasets/choose", publicationDatasetsController.Choose).
+	pubEditRouter.HandleFunc("/htmx/datasets/choose", publicationDatasetsController.Choose).
 		Methods("GET").
 		Name("publication_datasets_choose")
-	pubRouter.HandleFunc("/htmx/datasets/activesearch", publicationDatasetsController.ActiveSearch).
+	pubEditRouter.HandleFunc("/htmx/datasets/activesearch", publicationDatasetsController.ActiveSearch).
 		Methods("POST").
 		Name("publication_datasets_activesearch")
-	pubRouter.HandleFunc("/htmx/datasets/add/{dataset_id}", publicationDatasetsController.Add).
+	pubEditRouter.HandleFunc("/htmx/datasets/add/{dataset_id}", publicationDatasetsController.Add).
 		Methods("PATCH").
 		Name("publication_datasets_add")
-	pubRouter.HandleFunc("/htmx/datasets/remove/{dataset_id}", publicationDatasetsController.ConfirmRemove).
+	pubEditRouter.HandleFunc("/htmx/datasets/remove/{dataset_id}", publicationDatasetsController.ConfirmRemove).
 		Methods("GET").
 		Name("publication_datasets_confirm_remove")
-	pubRouter.HandleFunc("/htmx/datasets/remove/{dataset_id}", publicationDatasetsController.Remove).
+	pubEditRouter.HandleFunc("/htmx/datasets/remove/{dataset_id}", publicationDatasetsController.Remove).
 		Methods("PATCH").
 		Name("publication_datasets_remove")
 
@@ -377,58 +379,60 @@ func Register(c controllers.Context) {
 
 	datasetRouter := datasetsRouter.PathPrefix("/{id}").Subrouter()
 	datasetRouter.Use(middleware.SetDataset(c.Engine))
+	datasetEditRouter := datasetRouter.PathPrefix("").Subrouter()
+	datasetEditRouter.Use(middleware.RequireCanEditDataset)
 	datasetRouter.HandleFunc("", datasetsController.Show).
 		Methods("GET").
 		Name("dataset")
-	datasetRouter.HandleFunc("/add/description", datasetsController.AddDescription).
+	datasetEditRouter.HandleFunc("/add/description", datasetsController.AddDescription).
 		Methods("GET").
 		Name("dataset_add_description")
-	datasetRouter.HandleFunc("/add/confirm", datasetsController.AddConfirm).
+	datasetEditRouter.HandleFunc("/add/confirm", datasetsController.AddConfirm).
 		Methods("GET").
 		Name("dataset_add_confirm")
-	datasetRouter.HandleFunc("/add/publish", datasetsController.AddPublish).
+	datasetEditRouter.HandleFunc("/add/publish", datasetsController.AddPublish).
 		Methods("POST").
 		Name("dataset_add_publish")
 	// Dataset details HTMX fragments
-	datasetRouter.HandleFunc("/htmx/details", datasetDetailsController.Show).
+	datasetEditRouter.HandleFunc("/htmx/details", datasetDetailsController.Show).
 		Methods("GET").
 		Name("dataset_details")
-	datasetRouter.HandleFunc("/htmx/details/edit", datasetDetailsController.OpenForm).
+	datasetEditRouter.HandleFunc("/htmx/details/edit", datasetDetailsController.OpenForm).
 		Methods("GET").
 		Name("dataset_details_edit_form")
-	datasetRouter.HandleFunc("/htmx/details/edit", datasetDetailsController.SaveForm).
+	datasetEditRouter.HandleFunc("/htmx/details/edit", datasetDetailsController.SaveForm).
 		Methods("PATCH").
 		Name("dataset_details_save_form")
 	// Dataset projects HTMX fragments
-	datasetRouter.HandleFunc("/htmx/projects/list", datasetProjectsController.Choose).
+	datasetEditRouter.HandleFunc("/htmx/projects/list", datasetProjectsController.Choose).
 		Methods("GET").
 		Name("dataset_projects")
-	datasetRouter.HandleFunc("/htmx/projects/list/activesearch", datasetProjectsController.ActiveSearch).
+	datasetEditRouter.HandleFunc("/htmx/projects/list/activesearch", datasetProjectsController.ActiveSearch).
 		Methods("POST").
 		Name("dataset_projects_activesearch")
-	datasetRouter.HandleFunc("/htmx/projects/add/{project_id}", datasetProjectsController.Add).
+	datasetEditRouter.HandleFunc("/htmx/projects/add/{project_id}", datasetProjectsController.Add).
 		Methods("PATCH").
 		Name("dataset_projects_add")
-	datasetRouter.HandleFunc("/htmx/projects/remove/{project_id}", datasetProjectsController.ConfirmRemove).
+	datasetEditRouter.HandleFunc("/htmx/projects/remove/{project_id}", datasetProjectsController.ConfirmRemove).
 		Methods("GET").
 		Name("dataset_projects_confirm_remove")
-	datasetRouter.HandleFunc("/htmx/projects/remove/{project_id}", datasetProjectsController.Remove).
+	datasetEditRouter.HandleFunc("/htmx/projects/remove/{project_id}", datasetProjectsController.Remove).
 		Methods("PATCH").
 		Name("dataset_projects_remove")
 	// Dataset publications HTMX fragments
-	datasetRouter.HandleFunc("/htmx/publications/choose", datasetPublicationsController.Choose).
+	datasetEditRouter.HandleFunc("/htmx/publications/choose", datasetPublicationsController.Choose).
 		Methods("GET").
 		Name("dataset_publications_choose")
-	datasetRouter.HandleFunc("/htmx/publications/activesearch", datasetPublicationsController.ActiveSearch).
+	datasetEditRouter.HandleFunc("/htmx/publications/activesearch", datasetPublicationsController.ActiveSearch).
 		Methods("POST").
 		Name("dataset_publications_activesearch")
-	datasetRouter.HandleFunc("/htmx/publications/add/{publication_id}", datasetPublicationsController.Add).
+	datasetEditRouter.HandleFunc("/htmx/publications/add/{publication_id}", datasetPublicationsController.Add).
 		Methods("PATCH").
 		Name("dataset_publications_add")
-	datasetRouter.HandleFunc("/htmx/publications/remove/{publication_id}", datasetPublicationsController.ConfirmRemove).
+	datasetEditRouter.HandleFunc("/htmx/publications/remove/{publication_id}", datasetPublicationsController.ConfirmRemove).
 		Methods("GET").
 		Name("dataset_publications_confirm_remove")
-	datasetRouter.HandleFunc("/htmx/publications/remove/{publication_id}", datasetPublicationsController.Remove).
+	datasetEditRouter.HandleFunc("/htmx/publications/remove/{publication_id}", datasetPublicationsController.Remove).
 		Methods("PATCH").
 		Name("dataset_publications_remove")
 }
