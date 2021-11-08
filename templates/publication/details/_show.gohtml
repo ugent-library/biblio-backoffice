@@ -7,6 +7,7 @@
                 <i class="if if-chevron-right mr-4 text-muted"></i>Publication details
             </div>
             <div class="bc-toolbar-right">
+		        {{if .User.CanEditPublication .D.Publication}}
                 <div class="c-button-toolbar" data-panel-state="read">
                     <button class="btn btn-outline-primary"
                         hx-get="{{pathFor "publication_details_edit_form" "id" .D.Publication.ID}}"
@@ -17,6 +18,7 @@
                         <div class="btn-text">Edit</div>
                     </button>
                 </div>
+		        {{end}}
             </div>
         </div>
     </div>

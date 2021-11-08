@@ -29,6 +29,7 @@
         {{end}}
     </td>
     <td class="pr-4 col-3">
+        {{if $.User.CanEditPublication $pub}}
         <div class="c-button-toolbar">
             <button type="button" class="btn btn-link btn-icon-only btn-link-muted add-author btn-swap"
                 hx-get="{{pathFor "publication_authors_add_row" "id" $pub.ID "delta" $k}}"
@@ -52,6 +53,7 @@
                 <i class="if if-subtract"></i>
             </button>
         </div>
+        {{end}}
     </td>
 </tr>
 {{end}}

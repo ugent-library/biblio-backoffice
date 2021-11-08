@@ -6,6 +6,7 @@
                 <i class="if if-chevron-right mr-4 text-muted"></i>Departments
             </div>
             <div class="bc-toolbar-right">
+                {{if .User.CanEditPublication .D.Publication}}
                 <div class="c-button-toolbar" data-panel-state="read">
                     <button class="btn btn-outline-primary"
                         hx-get="{{pathFor "publicationDepartments" "id" .D.Publication.ID}}"
@@ -16,6 +17,7 @@
                         <div class="btn-text">Add department</div>
                     </button>
                 </div>
+                {{end}}
             </div>
         </div>
     </div>
@@ -42,6 +44,7 @@
                             </div>
                         </td>
                         <td class="pr-6">
+                            {{if $.User.CanEditPublication $.D.Publication}}
                             <div class="c-button-toolbar">
                                 <div class="dropdown">
                                     <button class="btn btn-link btn-icon-only btn-link-muted" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -59,6 +62,7 @@
                                     </div>
                                 </div>
                             </div>
+                            {{end}}
                         </td>
                     </tr>
                     {{ end }}

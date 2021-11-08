@@ -6,6 +6,7 @@
                 <i class="if if-chevron-right mr-4 text-muted"></i>Abstract
             </div>
             <div class="bc-toolbar-right">
+                {{if .User.CanEditPublication .D.Publication}}
                 <button class="btn btn-outline-primary" type="button"
                     hx-get="{{pathFor "publication_abstracts_add_abstract" "id" .D.Publication.ID }}"
                     hx-swap="innerHTML"
@@ -14,6 +15,7 @@
                     <i class="if if-add"></i>
                     <div class="btn-text">Add Abstract</div>
                 </button>
+                {{end}}
             </div>
         </div>
     </div>

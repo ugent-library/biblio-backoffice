@@ -5,6 +5,7 @@
                 <div class="bc-toolbar-title">Related datasets</div>
             </div>
             <div class="bc-toolbar-right">
+				{{if .User.CanEditPublication .D.Publication}}
                 <div class="c-button-toolbar" data-panel-state="read">
                     <button class="btn btn-outline-primary"
                         hx-get="{{pathFor "publication_datasets_choose" "id" .D.Publication.ID}}"
@@ -15,6 +16,7 @@
                         <div class="btn-text">Add dataset</div>
                     </button>
                 </div>
+				{{end}}
             </div>
         </div>
     </div>
@@ -45,6 +47,7 @@
                                                     <i class="if if-file-text"></i>
                                                     <span>View details</span>
                                                 </a>
+				                                {{if $.User.CanEditPublication $.D.Publication}}
                                                 <button class="dropdown-item" type="button"
                                                     hx-get="{{pathFor "publication_datasets_confirm_remove" "id" $.D.Publication.ID "dataset_id" .ID}}"
                                                     hx-target="#publication-datasets-modal"
@@ -53,6 +56,7 @@
                                                     <i class="if if-delete"></i>
                                                     <span>Remove from publication</span>
                                                 </button>
+				                                {{end}}
                                             </div>
                                         </div>
                                     </div>

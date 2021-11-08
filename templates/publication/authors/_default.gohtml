@@ -5,6 +5,7 @@
                 <h1 class="bc-toolbar-title">Authors</h1>
             </div>
             <div class="bc-toolbar-right">
+                {{if .User.CanEditPublication .D.Publication}}
                 <button type="button" class="btn btn-outline-primary btn-swap add-author"
                     hx-get="{{ pathFor "publication_authors_shift_row" "id" .D.Publication.ID "delta" "0" }}"
                     hx-target="#authors-table tbody"
@@ -13,12 +14,13 @@
                     <i class="if if-add"></i>
                     <div class="btn-text">Add author</div>
                 </button>
+                {{end}}
             </div>
         </div>
     </div>
     <div class="card-body p-0">
         <div id="authors-list">
-            <table class="inline-editing table" id="authors-table">
+            <table class="table inline-editing" id="authors-table">
                 <thead>
                     <tr>
                         <th class="pl-6 col-5">Name</th>

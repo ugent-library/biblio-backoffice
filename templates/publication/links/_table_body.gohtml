@@ -6,8 +6,9 @@
         <a href="{{.URL}}">{{.URL}}</a>
         <p class="c-body-small text-muted m-0">{{.Description}}</p>
     </td>
-    <td>{{.Relation}}</td>
+    <td>{{$.T "publication_link_relations" .Relation}}</td>
     <td class="pr-6">
+        {{if $.User.CanEditPublication $.D.Publication}}
         <div class="c-button-toolbar">
             <div class="dropdown">
                 <button class="btn btn-link btn-icon-only btn-link-muted" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -34,6 +35,7 @@
                 </div>
             </div>
         </div>
+        {{end}}
     </td>
 </tr>
 {{end}}

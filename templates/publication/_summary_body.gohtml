@@ -13,7 +13,9 @@
         </div>
     </div>
     <div class="list-group-item-text">
-        <h4 class="c-h4">{{$p.Title}}<i class="if if-no-edit if--small ml-3 text-muted" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Locked for editing"></i>
+        <h4 class="c-h4">
+            {{$p.Title}}
+            {{if not (.User.CanEditPublication $p)}}<i class="if if-no-edit if--small ml-3 text-muted" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Locked for editing"></i>{{end}}
         </h4>
         {{with $p.Author}}
             {{template "publication/_contributors_short" .}}
