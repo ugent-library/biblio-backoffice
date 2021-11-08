@@ -48,7 +48,7 @@ export function draggable() {
         tableSelector = "authors-table";
     }
 
-    if (tableSelector !== undefined) {
+    if (tableSelector !== undefined && document.getElementById(tableSelector)) {
         // Init the Draggable table
         const table = new DraggableTable({ tableSelector: tableSelector, callback: callback });
         table.init();

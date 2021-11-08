@@ -20,7 +20,7 @@
     </div>
     <div class="card-body p-0">
         <div id="authors-list">
-            <table class="table inline-editing" id="authors-table">
+            <table class="table inline-editing"{{if .User.CanEditPublication .D.Publication}} id="authors-table"{{end}}>
                 <thead>
                     <tr>
                         <th class="pl-6 col-5">Name</th>
