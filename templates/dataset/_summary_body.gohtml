@@ -6,7 +6,9 @@
 </div>
 <div class="list-group-item-content">
     <div class="list-group-item-text">
-        <h4 class="c-h4">{{$d.Title}}<i class="if if-no-edit if--small ml-3 text-muted" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Locked for editing"></i>
+        <h4 class="c-h4">
+            {{$d.Title}}
+            {{if not (.User.CanEditDataset $d)}}<i class="if if-no-edit if--small ml-3 text-muted" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Locked for editing"></i>{{end}}
         </h4>
         {{with $d.Creator}}
             {{template "publication/_contributors_short" .}}

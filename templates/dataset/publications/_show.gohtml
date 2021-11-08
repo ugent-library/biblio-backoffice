@@ -5,6 +5,7 @@
                 <div class="bc-toolbar-title">Related publications</div>
             </div>
             <div class="bc-toolbar-right">
+                {{if .User.CanEditDataset .D.Dataset}}
                 <div class="c-button-toolbar" data-panel-state="read">
                     <button class="btn btn-outline-primary"
                         hx-get="{{pathFor "dataset_publications_choose" "id" .D.Dataset.ID}}"
@@ -15,6 +16,7 @@
                         <div class="btn-text">Add publication</div>
                     </button>
                 </div>
+                {{end}}
             </div>
         </div>
     </div>
@@ -41,6 +43,7 @@
                                                     <i class="if if-file-text"></i>
                                                     <span>View details</span>
                                                 </a>
+                                                {{if $.User.CanEditDataset $.D.Dataset}}
                                                 <button class="dropdown-item" type="button"
                                                     hx-get="{{pathFor "dataset_publications_confirm_remove" "id" $.D.Dataset.ID "publication_id" .ID}}"
                                                     hx-target="#dataset-publications-modal"
@@ -49,12 +52,15 @@
                                                     <i class="if if-delete"></i>
                                                     <span>Remove from dataset</span>
                                                 </button>
+                                                {{end}}
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="list-group-item-text">
-                                    <h4 class="c-h4">{{.Title}}<i class="if if-no-edit if--small ml-3 text-muted" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Locked for editing"></i>
+                                    <h4 class="c-h4">
+                                        {{.Title}}
+                                        {{if not ($.User.CanEditPublication .)}}<i class="if if-no-edit if--small ml-3 text-muted" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Locked for editing"></i>{{end}}
                                     </h4>
                                     {{with .Author}}
                                         {{template "publication/_contributors_short" .}}
