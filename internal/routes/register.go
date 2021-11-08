@@ -171,6 +171,7 @@ func Register(c controllers.Context) {
 
 	pubRouter := pubsRouter.PathPrefix("/{id}").Subrouter()
 	pubRouter.Use(middleware.SetPublication(c.Engine))
+	pubRouter.Use(middleware.RequireCanViewPublication)
 	pubEditRouter := pubRouter.PathPrefix("").Subrouter()
 	pubEditRouter.Use(middleware.RequireCanEditPublication)
 	pubRouter.HandleFunc("", publicationsController.Show).
@@ -379,6 +380,7 @@ func Register(c controllers.Context) {
 
 	datasetRouter := datasetsRouter.PathPrefix("/{id}").Subrouter()
 	datasetRouter.Use(middleware.SetDataset(c.Engine))
+	datasetRouter.Use(middleware.RequireCanViewDataset)
 	datasetEditRouter := datasetRouter.PathPrefix("").Subrouter()
 	datasetEditRouter.Use(middleware.RequireCanEditDataset)
 	datasetRouter.HandleFunc("", datasetsController.Show).

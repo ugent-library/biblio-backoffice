@@ -17,17 +17,25 @@ func SetPublication(e *engine.Engine) func(next http.Handler) http.Handler {
 				return
 			}
 
-			user := context.GetUser(r.Context())
-
-			if user.CanViewPublication(pub) {
-				c := context.WithPublication(r.Context(), pub)
-				next.ServeHTTP(w, r.WithContext(c))
-				return
-			}
-
-			http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
+			c := context.WithPublication(r.Context(), pub)
+			next.ServeHTTP(w, r.WithContext(c))
 		})
 	}
+}
+
+func RequireCanViewPublication(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		c := r.Context()
+		pub := context.GetPublication(c)
+		user := context.GetUser(c)
+
+		if user.CanViewPublication(pub) {
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
+	})
 }
 
 func RequireCanEditPublication(next http.Handler) http.Handler {

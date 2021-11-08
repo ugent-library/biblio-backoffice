@@ -17,17 +17,25 @@ func SetDataset(e *engine.Engine) func(next http.Handler) http.Handler {
 				return
 			}
 
-			user := context.GetUser(r.Context())
-
-			if user.CanViewDataset(dataset) {
-				c := context.WithDataset(r.Context(), dataset)
-				next.ServeHTTP(w, r.WithContext(c))
-				return
-			}
-
-			http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
+			c := context.WithDataset(r.Context(), dataset)
+			next.ServeHTTP(w, r.WithContext(c))
 		})
 	}
+}
+
+func RequireCanViewDataset(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		c := r.Context()
+		pub := context.GetDataset(c)
+		user := context.GetUser(c)
+
+		if user.CanViewDataset(pub) {
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
+	})
 }
 
 func RequireCanEditDataset(next http.Handler) http.Handler {
