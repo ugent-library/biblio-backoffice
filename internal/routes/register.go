@@ -4,7 +4,9 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/gorilla/csrf"
 	"github.com/gorilla/handlers"
+	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/context"
 	"github.com/ugent-library/biblio-backend/internal/controllers"
 	"github.com/ugent-library/biblio-backend/internal/middleware"
@@ -107,6 +109,17 @@ func Register(c controllers.Context) {
 	// r = r.Schemes(schemes...).Host(u.Host).PathPrefix(u.Path).Subrouter()
 
 	r := router.PathPrefix(basePath).Subrouter()
+
+	csrfMiddleware := csrf.Protect(
+		[]byte(viper.GetString("csrf-secret")),
+		csrf.CookieName(viper.GetString("csrf-name")),
+		csrf.Path(basePath),
+		csrf.Secure(c.BaseURL.Scheme == "https"),
+		csrf.SameSite(csrf.SameSiteStrictMode),
+		csrf.FieldName("csrf-token"),
+	)
+	// TODO restrict to POST,PUT,PATCH
+	r.Use(csrfMiddleware)
 
 	// r.Use(handlers.HTTPMethodOverrideHandler)
 	r.Use(locale.Detect(c.Localizer))

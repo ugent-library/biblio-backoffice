@@ -16,6 +16,7 @@ const (
 	defaultPort          = 3000
 	defaultSessionName   = "biblio-backend"
 	defaultSessionMaxAge = 86400 * 30 // 30 days
+	defaultCSRFName      = "biblio-backend.csrf-token"
 )
 
 var rootCmd = &cobra.Command{
@@ -40,6 +41,7 @@ func init() {
 	viper.SetDefault("port", defaultPort)
 	viper.SetDefault("session-name", defaultSessionName)
 	viper.SetDefault("session-max-age", defaultSessionMaxAge)
+	viper.SetDefault("csrf-name", defaultCSRFName)
 
 	rootCmd.PersistentFlags().String("librecat-url", "", "librecat rest api url")
 	rootCmd.PersistentFlags().String("librecat-username", "", "librecat rest api username")

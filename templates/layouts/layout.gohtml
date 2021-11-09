@@ -16,6 +16,7 @@
         {{with .OriginalUser}}
         <div class="alert alert-danger" role="alert">
             <form class="form-inline" action="{{pathFor "user_impersonate_remove"}}" method="POST">
+                {{.CSRFTag}}
                 <label class="my-1 mr-2 font-weight-bold">Viewing the perspective of {{$.User.FullName}}.</label>
                 <button type="submit" class="btn btn-danger my-1">Return to {{.FullName}}</button>.
             </form>
@@ -99,6 +100,11 @@
     <div id="user-impersonate-modal" class="modals"></div>
 
     <script type="application/javascript" src="{{assetPath "/js/app.js"}}"></script>
+    <script type="application/javascript">
+        document.body.addEventListener('htmx:configRequest', (event) => {
+            event.detail.headers['X-CSRF-Token'] = '{{.CSRFToken}}';
+        })
+    </script>
 </body>
 
 </html>

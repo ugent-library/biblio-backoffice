@@ -1,6 +1,7 @@
 {{template "publication/_add_single_sidebar" .}}
 
 <form class="w-100 u-scroll-wrapper" action="{{pathFor "publication_add_single_import"}}" method="POST">
+    {{.CSRFTag}}
     <div class="bc-navbar bc-navbar--xlarge bc-navbar-bordered bc-navbar--white bc-navbar--bordered-bottom">
         <div class="bc-toolbar">
             <div class="bc-toolbar-left">

@@ -6,6 +6,7 @@
             hx-swap="outerHTML"
             hx-target="closest .publication-files"
         >
+	        {{.CSRFTag}}
             <div class="modal-content">
                 <div class="modal-header">
                     <h2 class="modal-title">{{.D.File.Filename}}</h2>

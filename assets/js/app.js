@@ -11,15 +11,15 @@ import tabs from './ui/tabs.js'
 import radioCard from './ui/radio_card.js'
 
 document.addEventListener('DOMContentLoaded', function () {
-    tabs();
-    check();
-    bootstrap();
-    draggable();
-    multiple();
-    changeSubmit();
-    submit();
-    modalClose();
-    modalPopper();
-    multipleSelect();
-    radioCard();
+    tabs()
+    check()
+    bootstrap()
+    draggable()
+    multiple()
+    changeSubmit()
+    submit()
+    modalClose()
+    modalPopper()
+    multipleSelect()
+    radioCard()
 });

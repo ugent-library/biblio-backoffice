@@ -4,6 +4,7 @@ import (
 	"html/template"
 	"net/http"
 
+	"github.com/gorilla/csrf"
 	"github.com/ugent-library/biblio-backend/internal/context"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/go-locale/locale"
@@ -42,6 +43,14 @@ func (d *Data) T(scope, key string, args ...interface{}) string {
 
 func (d *Data) Partial(tmpl string, data interface{}) (template.HTML, error) {
 	return RenderPartial(d.renderer, tmpl, data)
+}
+
+func (d *Data) CSRFToken() string {
+	return csrf.Token(d.request)
+}
+
+func (d *Data) CSRFTag() template.HTML {
+	return csrf.TemplateField(d.request)
 }
 
 func (d *Data) OriginalUser() *models.User {

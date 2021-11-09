@@ -38,6 +38,8 @@ func init() {
 	serverStartCmd.Flags().String("session-name", defaultSessionName, "session name")
 	serverStartCmd.Flags().String("session-secret", "", "session secret")
 	serverStartCmd.Flags().Int("session-max-age", defaultSessionMaxAge, "session lifetime")
+	serverStartCmd.Flags().String("csrf-name", "", "csrf cookie name")
+	serverStartCmd.Flags().String("csrf-secret", "", "csrf cookie secret")
 
 	serverCmd.AddCommand(serverRoutesCmd)
 	serverCmd.AddCommand(serverStartCmd)
@@ -98,11 +100,11 @@ func buildRouter() *mux.Router {
 	localizer := locale.NewLocalizer("en")
 
 	// sessions & auth
+	sessionSecret := []byte(viper.GetString("session-secret"))
 	sessionName := viper.GetString("session-name")
-
-	sessionStore := sessions.NewCookieStore([]byte(viper.GetString("session-secret")))
+	sessionStore := sessions.NewCookieStore(sessionSecret)
 	sessionStore.MaxAge(viper.GetInt("session-max-age"))
-	sessionStore.Options.Path = "/"
+	sessionStore.Options.Path = baseURL.Path
 	sessionStore.Options.HttpOnly = true
 	sessionStore.Options.Secure = baseURL.Scheme == "https"
 

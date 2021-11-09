@@ -10,7 +10,12 @@
 </div>
 {{ end }}
 
-<form hx-patch="{{pathFor "dataset_details_save_form" "id" .D.Dataset.ID}}" hx-swap="innerHTML" hx-target="closest .dataset-details">
+<form
+    hx-patch="{{pathFor "dataset_details_save_form" "id" .D.Dataset.ID}}"
+    hx-swap="innerHTML"
+    hx-target="closest .dataset-details"
+>
+    {{.CSRFTag}}
     <div class="card-header">
         <div class="collapse-trigger" data-toggle="collapse" data-target="#collapse-details" aria-expanded="true" aria-controls="collapse-details"></div>
         <div class="bc-toolbar">

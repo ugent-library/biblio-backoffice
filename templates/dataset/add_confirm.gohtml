@@ -19,6 +19,7 @@
                 </div>
                 <div class="bc-toolbar-item">
                     <form action="{{pathFor "dataset_add_publish" "id" .D.Dataset.ID}}" method="POST">
+                        {{.CSRFTag}}
                         <button type="submit" class="btn btn-success">
                             <div class="btn-text">Publish to Biblio</div>
                         </button>

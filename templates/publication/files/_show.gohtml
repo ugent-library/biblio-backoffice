@@ -15,6 +15,8 @@
                 hx-target="closest .publication-files"
                 hx-trigger="change"
             >
+	            {{.CSRFTag}}
+
                 <div class="c-file-upload">
                     <input type="file" name="file">
                     <div class="c-file-upload__content">
