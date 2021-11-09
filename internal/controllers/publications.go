@@ -142,7 +142,7 @@ func (c *Publications) AddSingle(w http.ResponseWriter, r *http.Request) {
 func (c *Publications) AddSingleImport(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 
-	var publication *models.Publication
+	var pub *models.Publication
 
 	if identifier := r.FormValue("identifier"); identifier != "" {
 		var identifier_type string = r.FormValue("identifier_type")
@@ -151,21 +151,14 @@ func (c *Publications) AddSingleImport(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "missing form field identifier_type", http.StatusInternalServerError)
 			return
 		}
-		publications, err := c.Engine.ImportUserPublications(context.GetUser(r.Context()).ID, identifier, identifier_type)
+		p, err := c.Engine.ImportUserPublicationByIdentifier(context.GetUser(r.Context()).ID, identifier, identifier_type)
 		if err != nil {
 			log.Println(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		// TODO flash messages
-		if len(publications) == 0 {
-			log.Println(err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		publication = publications[0]
+		pub = p
 	} else {
 		pt := r.FormValue("publication_type")
 		p, err := c.Engine.CreatePublication(pt)
@@ -174,7 +167,7 @@ func (c *Publications) AddSingleImport(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		publication = p
+		pub = p
 	}
 
 	c.Render.HTML(w, http.StatusOK, "publication/add_single_files", views.NewData(c.Render, r, struct {
@@ -183,7 +176,7 @@ func (c *Publications) AddSingleImport(w http.ResponseWriter, r *http.Request) {
 		Show        *views.ShowBuilder
 	}{
 		3,
-		publication,
+		pub,
 		views.NewShowBuilder(c.Render, locale.Get(r.Context())),
 	}))
 }
@@ -248,4 +241,49 @@ func (c *Publications) AddMultiple(w http.ResponseWriter, r *http.Request) {
 	}{
 		2,
 	}))
+}
+
+func (c *Publications) AddMultipleImport(w http.ResponseWriter, r *http.Request) {
+	// 2GB limit on request body
+	r.Body = http.MaxBytesReader(w, r.Body, 2000000000)
+
+	// buffer limit of 32MB
+	if err := r.ParseMultipartForm(32 << 20); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	source := r.FormValue("source")
+
+	file, _, err := r.FormFile("file")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	defer file.Close()
+
+	userID := context.GetUser(r.Context()).ID
+
+	batchID, err := c.Engine.ImportUserPublications(userID, source, file)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	args := engine.NewSearchArgs().WithFilter("batch_id", batchID)
+
+	hits, err := c.Engine.UserPublications(userID, args)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	c.Render.HTML(w, http.StatusOK, "publication/list",
+		views.NewData(c.Render, r, PublicationListVars{
+			SearchArgs:       args,
+			Hits:             hits,
+			PublicationSorts: c.Engine.Vocabularies()["publication_sorts"],
+		}),
+	)
 }

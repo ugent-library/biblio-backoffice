@@ -1,59 +1,81 @@
 {{template "publication/_add_multiple_sidebar" .}}
 
 <div class="w-100 u-scroll-wrapper">
-    <form>
-        {{.CSRFTag}}
-        <div class="w-100">
-            <div class="bc-navbar bc-navbar--xlarge bc-navbar-bordered bc-navbar--white bc-navbar--bordered-bottom">
-                <div class="bc-toolbar">
-                    <div class="bc-toolbar-left">
-                        <div class="bc-toolbar-item">
-                            <div class="d-flex flex-column">
-                                <span class="text-muted mb-2">Step {{.D.Step}}</span>
-                                <h4 class="bc-toolbar-title">Add references</h4>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bc-toolbar-right">
-                        <div class="bc-toolbar-item">
-                            <button type="submit" class="btn btn-primary">
-                                <div class="btn-text">Complete description</div>
-                                <i class="if if-arrow-right"></i>
-                            </button>
+    <div class="w-100">
+        <div class="bc-navbar bc-navbar--xlarge bc-navbar-bordered bc-navbar--white bc-navbar--bordered-bottom">
+            <div class="bc-toolbar">
+                <div class="bc-toolbar-left">
+                    <div class="bc-toolbar-item">
+                        <div class="d-flex flex-column">
+                            <span class="text-muted mb-2">Step {{.D.Step}}</span>
+                            <h4 class="bc-toolbar-title">Add references</h4>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="p-6 u-scroll-wrapper__body">
-                <div class="card mb-6">
-                    <div class="card-header">
-                        <div class="bc-toolbar">
-                            <div class="bc-toolbar-left">Import from Web of Science</div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div classp="card-body">
-                        </div>
+                <div class="bc-toolbar-right">
+                    <div class="bc-toolbar-item">
+                        <button class="btn btn-primary">
+                            <div class="btn-text">Complete description</div>
+                            <i class="if if-arrow-right"></i>
+                        </button>
                     </div>
                 </div>
-
-                <div class="card card-collapsible mb-6">
-                    <div class="card-header">
-                        <div class="collapse-trigger" data-toggle="collapse" data-target="#notInExternalRepo" aria-expanded="false" aria-controls="collapse1"></div>
-                        <div class="bc-toolbar">
-                            <div class="bc-toolbar-left">
-                                <i class="if if-chevron-right mr-4 text-muted"></i>No Web of Science file?
-                            </div>
-                        </div>
-                    </div>
-                    <div class="collapse" id="notInExternalRepo">
-                        <div class="card-body">
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </div>
-    </form>
+
+        <div class="p-6 u-scroll-wrapper__body">
+            <div class="card mb-6">
+                <div class="card-header">
+                    <div class="bc-toolbar">
+                        <div class="bc-toolbar-left">Import from Web of Science</div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <form class="form-change-submit" action="{{pathFor "publication_add_multiple_import"}}" method="POST" enctype="multipart/form-data">
+                        {{.CSRFTag}}
+                        <input type="hidden" name="source" value="wos">
+
+                        <div class="c-file-upload">
+                            <input type="file" name="file">
+                            <div class="c-file-upload__content">
+                                <p>Drag and drop or</p>
+                                <button class="btn btn-outline-primary">Upload file</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card card-collapsible mb-6">
+                <div class="card-header">
+                    <div class="collapse-trigger" data-toggle="collapse" data-target="#notInExternalRepo" aria-expanded="false" aria-controls="collapse1"></div>
+                    <div class="bc-toolbar">
+                        <div class="bc-toolbar-left">
+                            <i class="if if-chevron-right mr-4 text-muted"></i>No Web of Science file?
+                        </div>
+                    </div>
+                </div>
+                <div class="collapse" id="notInExternalRepo">
+                    <div class="card-body">
+                        <p class="mb-4">Alternatively, you can upload a BibTex
+                        file to import publications in bulk.</p>
+
+                        <form class="form-change-submit" action="{{pathFor "publication_add_multiple_import"}}" method="POST" enctype="multipart/form-data">
+                            {{.CSRFTag}}
+                            <input type="hidden" name="source" value="bibtex">
+
+                            <div class="c-file-upload">
+                                <input type="file" name="file">
+                                <div class="c-file-upload__content">
+                                    <p>Drag and drop or</p>
+                                    <button class="btn btn-outline-primary">Upload file</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
 </div>

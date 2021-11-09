@@ -3,6 +3,7 @@ package engine
 import (
 	"fmt"
 	"io"
+	"log"
 	"mime/multipart"
 	"net/http"
 	"sync"
@@ -42,19 +43,72 @@ func (e *Engine) CreatePublication(pt string) (*models.Publication, error) {
 }
 
 // TODO: set constraint to not research_data
-func (e *Engine) ImportUserPublications(userID, identifier string, identifier_type string) ([]*models.Publication, error) {
+func (e *Engine) ImportUserPublicationByIdentifier(userID, identifier, identifier_type string) (*models.Publication, error) {
 	reqData := struct {
-		Identifier string `json:"identifier"`
+		Identifier     string `json:"identifier"`
 		IdentifierType string `json:"identifier_type"`
 	}{
 		identifier,
 		identifier_type,
 	}
-	publications := make([]*models.Publication, 0)
-	if _, err := e.post(fmt.Sprintf("/user/%s/publication/import", userID), &reqData, &publications); err != nil {
+	pub := &models.Publication{}
+	if _, err := e.post(fmt.Sprintf("/user/%s/publication/import", userID), &reqData, pub); err != nil {
 		return nil, err
 	}
-	return publications, nil
+	return pub, nil
+}
+
+func (e *Engine) ImportUserPublications(userID, source string, file io.Reader) (string, error) {
+	pipedReader, pipedWriter := io.Pipe()
+	multiPartWriter := multipart.NewWriter(pipedWriter)
+
+	var wg sync.WaitGroup
+
+	wg.Add(1)
+
+	go func() {
+
+		defer wg.Done()
+		defer pipedWriter.Close()
+		defer multiPartWriter.Close()
+
+		if err := multiPartWriter.WriteField("source", source); err != nil {
+			log.Print(err)
+			return
+		}
+
+		part, err := multiPartWriter.CreateFormFile("file", "DUMMY")
+		if err != nil {
+			log.Print(err)
+			return
+		}
+
+		if _, err = io.Copy(part, file); err != nil {
+			log.Print(err)
+			return
+		}
+
+	}()
+
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/user/%s/publication/import-from-file", e.Config.URL, userID), pipedReader)
+	if err != nil {
+		return "", err
+	}
+	// req.Header.Add("Content-Type", multiPartWriter.FormDataContentType())
+	req.SetBasicAuth(e.Config.Username, e.Config.Password)
+
+	resData := &struct {
+		BatchID string `json:"batch_id"`
+	}{}
+
+	if _, err = e.doRequest(req, resData); err != nil {
+		return "", err
+	}
+
+	// IMPORTANT: wait for go routine to finish
+	wg.Wait()
+
+	return resData.BatchID, nil
 }
 
 func (e *Engine) UpdatePublication(pub *models.Publication) (*models.Publication, error) {
@@ -123,7 +177,9 @@ func (e *Engine) AddPublicationFile(id string, pubFile models.PublicationFile, f
 	req.Header.Add("Content-Type", multiPartWriter.FormDataContentType())
 	req.SetBasicAuth(e.Config.Username, e.Config.Password)
 
-	_, err = e.doRequest(req, nil)
+	if _, err = e.doRequest(req, nil); err != nil {
+		return err
+	}
 
 	// IMPORTANT: wait for go routine to finish
 	wg.Wait()

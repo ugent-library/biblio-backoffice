@@ -56,7 +56,7 @@
         </div>
     </div>
     <div class="u-scroll-wrapper__body p-6">
-        <form class="mb-4" method="GET" action="{{pathFor "datasets"}}">
+        <form class="mb-4 form-change-submit" method="GET" action="{{pathFor "datasets"}}">
             {{range .D.SearchArgs.FiltersFor "scope"}}
             <input type="hidden" name="f[scope]" value="{{.}}">
             {{end}}
@@ -73,7 +73,7 @@
                     <div class="d-flex">
                         <label class="col-form-label pr-3" for="sort" style="white-space: nowrap">Sort
                             by</label>
-                        <select class="custom-select form-change-submit" name="sort">
+                        <select class="custom-select" name="sort">
                             {{range .D.PublicationSorts}}
                             <option value="{{.}}"{{if $.D.SearchArgs.HasSort .}} selected{{end}}>{{$.T "publication_sorts" .}}</option>
                             {{end}}
