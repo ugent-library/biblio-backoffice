@@ -1,7 +1,6 @@
 package engine
 
 import (
-	"bytes"
 	"fmt"
 	"io"
 	"mime/multipart"
@@ -58,26 +57,38 @@ func (e *Engine) ImportUserPublicationByIdentifier(userID, identifierType, ident
 	return pub, nil
 }
 
+// TODO is waitgroup necessary?
+// TODO capture goroutine errors
 func (e *Engine) ImportUserPublications(userID, source string, file io.Reader) (string, error) {
-	b := &bytes.Buffer{}
-	multiPartWriter := multipart.NewWriter(b)
+	pipedReader, pipedWriter := io.Pipe()
+	multiPartWriter := multipart.NewWriter(pipedWriter)
 
-	if err := multiPartWriter.WriteField("source", source); err != nil {
-		return "", err
-	}
+	var wg sync.WaitGroup
 
-	part, err := multiPartWriter.CreateFormFile("file", "DUMMY")
-	if err != nil {
-		return "", err
-	}
+	wg.Add(1)
 
-	if _, err := io.Copy(part, file); err != nil {
-		return "", err
-	}
+	go func() {
 
-	multiPartWriter.Close()
+		defer wg.Done()
+		defer pipedWriter.Close()
+		defer multiPartWriter.Close()
 
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/user/%s/publication/import-from-file", e.Config.URL, userID), b)
+		if err := multiPartWriter.WriteField("source", source); err != nil {
+			return
+		}
+
+		part, err := multiPartWriter.CreateFormFile("file", "DUMMY")
+		if err != nil {
+			return
+		}
+
+		if _, err = io.Copy(part, file); err != nil {
+			return
+		}
+
+	}()
+
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/user/%s/publication/import-from-file", e.Config.URL, userID), pipedReader)
 	if err != nil {
 		return "", err
 	}
@@ -87,6 +98,9 @@ func (e *Engine) ImportUserPublications(userID, source string, file io.Reader) (
 	if _, err = e.doRequest(req, nil); err != nil {
 		return "", err
 	}
+
+	// IMPORTANT: wait for go routine to finish
+	wg.Wait()
 
 	return "", err
 
@@ -126,6 +140,8 @@ func (e *Engine) RemovePublicationDataset(id, datasetID string) error {
 	return err
 }
 
+// TODO is waitgroup necessary?
+// TODO capture goroutine errors
 func (e *Engine) AddPublicationFile(id string, pubFile models.PublicationFile, file io.Reader) error {
 	pipedReader, pipedWriter := io.Pipe()
 	multiPartWriter := multipart.NewWriter(pipedWriter)
