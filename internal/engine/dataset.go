@@ -29,17 +29,19 @@ func (e *Engine) GetDataset(id string) (*models.Dataset, error) {
 }
 
 // TODO: set constraint to research_data
-func (e *Engine) ImportUserDatasets(userID, identifier string) ([]*models.Dataset, error) {
+func (e *Engine) ImportUserDatasetByIdentifier(userID, identifierType, identifier string) (*models.Dataset, error) {
 	reqData := struct {
-		Identifier string `json:"identifier"`
+		IdentifierType string `json:"identifier_type"`
+		Identifier     string `json:"identifier"`
 	}{
+		identifierType,
 		identifier,
 	}
-	datasets := make([]*models.Dataset, 0)
-	if _, err := e.post(fmt.Sprintf("/user/%s/publication/import", userID), &reqData, &datasets); err != nil {
+	dataset := &models.Dataset{}
+	if _, err := e.post(fmt.Sprintf("/user/%s/publication/import", userID), &reqData, dataset); err != nil {
 		return nil, err
 	}
-	return datasets, nil
+	return dataset, nil
 }
 
 // TODO: set constraint to research_data

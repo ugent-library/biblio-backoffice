@@ -89,17 +89,11 @@ func (c *Datasets) Add(w http.ResponseWriter, r *http.Request) {
 func (c *Datasets) AddImport(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 
+	identifierType := r.FormValue("identifier_type")
 	identifier := r.FormValue("identifier")
 
-	datasets, err := c.Engine.ImportUserDatasets(context.GetUser(r.Context()).ID, identifier)
+	dataset, err := c.Engine.ImportUserDatasetByIdentifier(context.GetUser(r.Context()).ID, identifierType, identifier)
 	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	// TODO flash messages
-	if len(datasets) == 0 {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -111,7 +105,7 @@ func (c *Datasets) AddImport(w http.ResponseWriter, r *http.Request) {
 		Show    *views.ShowBuilder
 	}{
 		2,
-		datasets[0],
+		dataset,
 		views.NewShowBuilder(c.Render, locale.Get(r.Context())),
 	}))
 }

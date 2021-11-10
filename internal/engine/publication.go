@@ -6,6 +6,7 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
+	"sync"
 
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/go-web/forms"
@@ -42,13 +43,13 @@ func (e *Engine) CreatePublication(pt string) (*models.Publication, error) {
 }
 
 // TODO: set constraint to not research_data
-func (e *Engine) ImportUserPublicationByIdentifier(userID, identifier, identifier_type string) (*models.Publication, error) {
+func (e *Engine) ImportUserPublicationByIdentifier(userID, identifierType, identifier string) (*models.Publication, error) {
 	reqData := struct {
-		Identifier     string `json:"identifier"`
 		IdentifierType string `json:"identifier_type"`
+		Identifier     string `json:"identifier"`
 	}{
+		identifierType,
 		identifier,
-		identifier_type,
 	}
 	pub := &models.Publication{}
 	if _, err := e.post(fmt.Sprintf("/user/%s/publication/import", userID), &reqData, pub); err != nil {
@@ -126,21 +127,31 @@ func (e *Engine) RemovePublicationDataset(id, datasetID string) error {
 }
 
 func (e *Engine) AddPublicationFile(id string, pubFile models.PublicationFile, file io.Reader) error {
-	b := &bytes.Buffer{}
-	multiPartWriter := multipart.NewWriter(b)
+	pipedReader, pipedWriter := io.Pipe()
+	multiPartWriter := multipart.NewWriter(pipedWriter)
 
-	part, err := multiPartWriter.CreateFormFile("file", pubFile.Filename)
-	if err != nil {
-		return err
-	}
+	var wg sync.WaitGroup
 
-	if _, err := io.Copy(part, file); err != nil {
-		return err
-	}
+	wg.Add(1)
 
-	multiPartWriter.Close()
+	go func() {
 
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/publication/%s/file", e.Config.URL, id), b)
+		defer wg.Done()
+		defer pipedWriter.Close()
+		defer multiPartWriter.Close()
+
+		part, err := multiPartWriter.CreateFormFile("file", pubFile.Filename)
+		if err != nil {
+			return
+		}
+
+		if _, err = io.Copy(part, file); err != nil {
+			return
+		}
+
+	}()
+
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/publication/%s/file", e.Config.URL, id), pipedReader)
 	if err != nil {
 		return err
 	}
@@ -148,6 +159,9 @@ func (e *Engine) AddPublicationFile(id string, pubFile models.PublicationFile, f
 	req.SetBasicAuth(e.Config.Username, e.Config.Password)
 
 	_, err = e.doRequest(req, nil)
+
+	// IMPORTANT: wait for go routine to finish
+	wg.Wait()
 
 	return err
 }
