@@ -6,7 +6,6 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
-	"sync"
 
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/go-web/forms"
@@ -88,87 +87,9 @@ func (e *Engine) ImportUserPublications(userID, source string, file io.Reader) (
 		return "", err
 	}
 
-	// IMPORTANT: wait for goroutine to finish
-	// wg.Wait()
-
 	return "", err
 
 }
-
-// func (e *Engine) ImportUserPublications(userID, source string, file io.Reader) (string, error) {
-// 	pr, pw := io.Pipe()
-
-// 	req, err := http.NewRequest(http.MethodPost, y, pr)
-// 	if err != nil {
-// 		return "", err
-// 	}
-
-// 	mw := multipart.NewWriter(pw)
-// 	req.Header.Add("Content-Type", mw.FormDataContentType())
-// 	req.SetBasicAuth(e.Config.Username, e.Config.Password)
-
-// 	var wg sync.WaitGroup
-
-// 	wg.Add(1)
-
-// 	go func() {
-// 		var err error
-
-// 		defer func() {
-// 			if err != nil {
-// 				pw.CloseWithError(err)
-// 			} else {
-// 				pw.Close()
-// 			}
-// 		}()
-// 		defer mw.Close()
-// 		defer wg.Done()
-
-// 		part, err := mw.CreateFormFile("file", "DUMMY")
-// 		if err != nil {
-// 			return
-// 		}
-
-// 		if _, err = io.Copy(part, file); err != nil {
-// 			return
-// 		}
-
-// 		// if err = mw.WriteField("source", source); err != nil {
-// 		// 	return
-// 		// }
-// 	}()
-
-// 	// if err != nil {
-// 	// 	return "", err
-// 	// }
-// 	// pr, pw := io.Pipe()
-// 	// defer pr.Close()
-// 	// mw := multipart.NewWriter(pw)
-// 	// errChan := make(chan error, 1)
-// 	// go func() {
-
-// 	// }()
-
-// 	// req, err := http.NewRequest("POST", fmt.Sprintf("%s/user/%s/publication/import-from-file", e.Config.URL, userID), pr)
-// 	// if err != nil {
-// 	// 	return "", err
-// 	// }
-// 	// req.Header.Add("Content-Type", mw.FormDataContentType())
-// 	// req.SetBasicAuth(e.Config.Username, e.Config.Password)
-
-// 	resData := &struct {
-// 		BatchID string `json:"batch_id"`
-// 	}{}
-
-// 	if _, err = e.doRequest(req, resData); err != nil {
-// 		return "", err
-// 	}
-
-// 	// IMPORTANT: wait for goroutine to finish
-// 	wg.Wait()
-
-// 	return resData.BatchID, nil
-// }
 
 func (e *Engine) UpdatePublication(pub *models.Publication) (*models.Publication, error) {
 	resPub := &models.Publication{}
@@ -205,43 +126,28 @@ func (e *Engine) RemovePublicationDataset(id, datasetID string) error {
 }
 
 func (e *Engine) AddPublicationFile(id string, pubFile models.PublicationFile, file io.Reader) error {
-	pipedReader, pipedWriter := io.Pipe()
-	multiPartWriter := multipart.NewWriter(pipedWriter)
+	b := &bytes.Buffer{}
+	multiPartWriter := multipart.NewWriter(b)
 
-	var wg sync.WaitGroup
+	part, err := multiPartWriter.CreateFormFile("file", pubFile.Filename)
+	if err != nil {
+		return err
+	}
 
-	wg.Add(1)
+	if _, err := io.Copy(part, file); err != nil {
+		return err
+	}
 
-	go func() {
+	multiPartWriter.Close()
 
-		defer wg.Done()
-		defer pipedWriter.Close()
-		defer multiPartWriter.Close()
-
-		part, err := multiPartWriter.CreateFormFile("file", pubFile.Filename)
-		if err != nil {
-			return
-		}
-
-		if _, err = io.Copy(part, file); err != nil {
-			return
-		}
-
-	}()
-
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/publication/%s/file", e.Config.URL, id), pipedReader)
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/publication/%s/file", e.Config.URL, id), b)
 	if err != nil {
 		return err
 	}
 	req.Header.Add("Content-Type", multiPartWriter.FormDataContentType())
 	req.SetBasicAuth(e.Config.Username, e.Config.Password)
 
-	if _, err = e.doRequest(req, nil); err != nil {
-		return err
-	}
-
-	// IMPORTANT: wait for goroutine to finish
-	wg.Wait()
+	_, err = e.doRequest(req, nil)
 
 	return err
 }
