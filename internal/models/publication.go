@@ -70,6 +70,7 @@ type Publication struct {
 	ArticleNumber           string                   `json:"article_number,omitempty" form:"article_number"`
 	ArxivID                 string                   `json:"arxiv_id,omitempty" form:"arxiv_id"`
 	Author                  []PublicationContributor `json:"author,omitempty" form:"-"`
+	BatchId                 string                   `json:"batch_id,omitempty" form:""`
 	Classification          string                   `json:"classification,omitempty" form:"classification"`
 	CompletenessScore       int                      `json:"completeness_score,omitempty" form:"-"`
 	Conference              PublicationConference    `json:"conference,omitempty" form:"conference"`
