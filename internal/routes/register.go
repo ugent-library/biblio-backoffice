@@ -187,6 +187,12 @@ func Register(c controllers.Context) {
 	pubsRouter.HandleFunc("/add-multiple/{batch_id}/description", publicationsController.AddMultipleDescription).
 		Methods("GET").
 		Name("publication_add_multiple_description")
+	pubsRouter.HandleFunc("/add-multiple/{batch_id}/confirm", publicationsController.AddMultipleConfirm).
+		Methods("GET").
+		Name("publication_add_multiple_confirm")
+	pubsRouter.HandleFunc("/add-multiple/{batch_id}/publish", publicationsController.AddMultiplePublish).
+		Methods("POST").
+		Name("publication_add_multiple_publish")
 
 	pubRouter := pubsRouter.PathPrefix("/{id}").Subrouter()
 	pubRouter.Use(middleware.SetPublication(c.Engine))
@@ -211,6 +217,9 @@ func Register(c controllers.Context) {
 	pubRouter.HandleFunc("/add-multiple/{batch_id}", publicationsController.AddMultipleShow).
 		Methods("GET").
 		Name("publication_add_multiple_show")
+	pubRouter.HandleFunc("/add-multiple/{batch_id}/confirm", publicationsController.AddMultipleConfirmShow).
+		Methods("GET").
+		Name("publication_add_multiple_confirm_show")
 	// Publication files
 	pubRouter.HandleFunc("/file/{file_id}", publicationFilesController.Download).
 		Methods("GET").

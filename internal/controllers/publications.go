@@ -371,3 +371,68 @@ func (c *Publications) AddMultipleShow(w http.ResponseWriter, r *http.Request) {
 	}),
 	)
 }
+
+func (c *Publications) AddMultipleConfirm(w http.ResponseWriter, r *http.Request) {
+	userID := context.GetUser(r.Context()).ID
+	batchID := mux.Vars(r)["batch_id"]
+
+	args := engine.NewSearchArgs()
+
+	hits, err := c.Engine.UserPublications(userID, args.Clone().WithFilter("batch_id", batchID))
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	searchURL, _ := c.Router.Get("publication_add_multiple_confirm").URLPath("batch_id", batchID)
+
+	c.Render.HTML(w, http.StatusOK, "publication/add_multiple_confirm", views.NewData(c.Render, r, struct {
+		Step             int
+		SearchURL        *url.URL
+		SearchArgs       *engine.SearchArgs
+		Hits             *models.PublicationHits
+		PublicationSorts []string
+		BatchID          string
+	}{
+		4,
+		searchURL,
+		args,
+		hits,
+		c.Engine.Vocabularies()["publication_sorts"],
+		batchID,
+	}),
+	)
+}
+
+func (c *Publications) AddMultipleConfirmShow(w http.ResponseWriter, r *http.Request) {
+	batchID := mux.Vars(r)["batch_id"]
+	pub := context.GetPublication(r.Context())
+
+	datasets, err := c.Engine.GetPublicationDatasets(pub.ID)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	c.Render.HTML(w, http.StatusOK, "publication/add_multiple_confirm_show", views.NewData(c.Render, r, struct {
+		Step                int
+		Publication         *models.Publication
+		PublicationDatasets []*models.Dataset
+		Show                *views.ShowBuilder
+		Vocabularies        map[string][]string
+		BatchID             string
+	}{
+		4,
+		pub,
+		datasets,
+		views.NewShowBuilder(c.Render, locale.Get(r.Context())),
+		c.Engine.Vocabularies(),
+		batchID,
+	}),
+	)
+}
+
+func (c *Publications) AddMultiplePublish(w http.ResponseWriter, r *http.Request) {
+}
