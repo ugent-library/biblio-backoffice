@@ -1,17 +1,13 @@
 <div id="modal-backdrop" class="modal-backdrop fade show" style="display:block;"></div>
 <div class="modal show" tabindex="-1" style="display: block;" aria-modal="true" role="dialog">
     <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable" role="document">
-        <form
-            hx-put="{{pathFor "publication_file_update" "id" .D.Publication.ID "file_id" .D.File.ID}}"
-            hx-swap="outerHTML"
-            hx-target="closest .publication-files"
-            class="modal-content"
-        >
-	        {{.CSRFTag}}
-                <div class="modal-header">
-                    <h2 class="modal-title">{{.D.File.Filename}}</h2>
-                </div>
-                <div class="modal-body">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">{{.D.File.Filename}}</h2>
+            </div>
+            <div class="modal-body">
+                <form class="file-attributes">
+                    {{.CSRFTag}}
                     <div class="form-group">
                         <label class="col-form-label">Title</label>
                         <input class="form-control" name="title" type="text" value="{{.D.File.Title}}">
@@ -134,19 +130,25 @@
                         <label class="col-form-label">Description</label>
                         <textarea class="form-control" name="description" rows="4">{{.D.File.Description}}</textarea>
                     </div>
-                    <button class="btn btn-outline-danger mt-4" type="button"
-                        hx-patch="{{pathFor "publication_file_remove" "id" .D.Publication.ID "file_id" .D.File.ID}}"
-                        hx-swap="outerHTML"
-                        hx-target="closest .publication-files"
-                    >
-                        <i class="if if-delete"></i>
-                        <div class="btn-text">Delete file</div>
-                    </button>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-link modal-close" data-dismiss="modal">Cancel</button>
-                    <button class="btn btn-primary" type="submit">Save</button>
-                </div>
-        </form>
+                </form>
+                <button class="btn btn-outline-danger mt-4" type="button"
+                    hx-patch="{{pathFor "publication_file_remove" "id" .D.Publication.ID "file_id" .D.File.ID}}"
+                    hx-swap="outerHTML"
+                    hx-target="closest .publication-files"
+                >
+                    <i class="if if-delete"></i>
+                    <div class="btn-text">Delete file</div>
+                </button>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-link modal-close" data-dismiss="modal">Cancel</button>
+                <button class="btn btn-primary"
+                    hx-put="{{pathFor "publication_file_update" "id" .D.Publication.ID "file_id" .D.File.ID}}"
+                    hx-swap="outerHTML"
+                    hx-include="form.file-attributes > *"
+                    hx-target="closest .publication-files"
+                >Save</button>
+            </div>
+        </div>
     </div>
 </div>
