@@ -435,4 +435,34 @@ func (c *Publications) AddMultipleConfirmShow(w http.ResponseWriter, r *http.Req
 }
 
 func (c *Publications) AddMultiplePublish(w http.ResponseWriter, r *http.Request) {
+	userID := context.GetUser(r.Context()).ID
+	batchID := mux.Vars(r)["batch_id"]
+
+	args := engine.NewSearchArgs()
+
+	hits, err := c.Engine.UserPublications(userID, args.Clone().WithFilter("batch_id", batchID))
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	searchURL, _ := c.Router.Get("publication_add_multiple_publish").URLPath("batch_id", batchID)
+
+	c.Render.HTML(w, http.StatusOK, "publication/add_multiple_publish", views.NewData(c.Render, r, struct {
+		Step             int
+		SearchURL        *url.URL
+		SearchArgs       *engine.SearchArgs
+		Hits             *models.PublicationHits
+		PublicationSorts []string
+		BatchID          string
+	}{
+		5,
+		searchURL,
+		args,
+		hits,
+		c.Engine.Vocabularies()["publication_sorts"],
+		batchID,
+	}),
+	)
 }
