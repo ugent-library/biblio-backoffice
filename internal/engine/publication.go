@@ -5,7 +5,6 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
-	"sync"
 
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/go-web/forms"
@@ -63,21 +62,24 @@ func (e *Engine) ImportUserPublications(userID, source string, file io.Reader) (
 	pipedReader, pipedWriter := io.Pipe()
 	multiPartWriter := multipart.NewWriter(pipedWriter)
 
-	var wg sync.WaitGroup
-
-	wg.Add(1)
-
 	go func() {
+		var err error
+		var part io.Writer
 
-		defer wg.Done()
-		defer pipedWriter.Close()
+		defer func() {
+			if err != nil {
+				pipedWriter.CloseWithError(err)
+			} else {
+				pipedWriter.Close()
+			}
+		}()
 		defer multiPartWriter.Close()
 
 		if err := multiPartWriter.WriteField("source", source); err != nil {
 			return
 		}
 
-		part, err := multiPartWriter.CreateFormFile("file", "DUMMY")
+		part, err = multiPartWriter.CreateFormFile("file", "DUMMY")
 		if err != nil {
 			return
 		}
@@ -98,9 +100,6 @@ func (e *Engine) ImportUserPublications(userID, source string, file io.Reader) (
 	if _, err = e.doRequest(req, nil); err != nil {
 		return "", err
 	}
-
-	// IMPORTANT: wait for go routine to finish
-	wg.Wait()
 
 	return "", err
 
@@ -140,23 +139,24 @@ func (e *Engine) RemovePublicationDataset(id, datasetID string) error {
 	return err
 }
 
-// TODO is waitgroup necessary?
-// TODO capture goroutine errors
 func (e *Engine) AddPublicationFile(id string, pubFile models.PublicationFile, file io.Reader) error {
 	pipedReader, pipedWriter := io.Pipe()
 	multiPartWriter := multipart.NewWriter(pipedWriter)
 
-	var wg sync.WaitGroup
-
-	wg.Add(1)
-
 	go func() {
+		var err error
+		var part io.Writer
 
-		defer wg.Done()
-		defer pipedWriter.Close()
+		defer func() {
+			if err != nil {
+				pipedWriter.CloseWithError(err)
+			} else {
+				pipedWriter.Close()
+			}
+		}()
 		defer multiPartWriter.Close()
 
-		part, err := multiPartWriter.CreateFormFile("file", pubFile.Filename)
+		part, err = multiPartWriter.CreateFormFile("file", pubFile.Filename)
 		if err != nil {
 			return
 		}
@@ -175,9 +175,6 @@ func (e *Engine) AddPublicationFile(id string, pubFile models.PublicationFile, f
 	req.SetBasicAuth(e.Config.Username, e.Config.Password)
 
 	_, err = e.doRequest(req, nil)
-
-	// IMPORTANT: wait for go routine to finish
-	wg.Wait()
 
 	return err
 }

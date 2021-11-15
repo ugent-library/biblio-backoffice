@@ -60,20 +60,20 @@
             {{range .D.SearchArgs.FiltersFor "scope"}}
             <input type="hidden" name="f[scope]" value="{{.}}">
             {{end}}
-            <div class="form-row form-change-submit">
+            <div class="form-row">
                 <div class="col input-group">
                     <label class="sr-only" for="q">Search</label>
                     <input class="form-control" type="text" name="q" value="{{.D.SearchArgs.Query}}" placeholder="Search..."
                         autocomplete="off">
                     <div class="input-group-append">
-                        <button class="btn btn-outline-primary" type="button">Search</button>
+                        <button type="submit" class="btn btn-outline-primary" type="button">Search</button>
                     </div>
                 </div>
                 <div class="col-3">
                     <div class="d-flex">
                         <label class="col-form-label pr-3" for="sort" style="white-space: nowrap">Sort
                             by</label>
-                        <select class="custom-select" name="sort">
+                        <select class="custom-select form-change-submit" name="sort">
                             {{range .D.PublicationSorts}}
                             <option value="{{.}}"{{if $.D.SearchArgs.HasSort .}} selected{{end}}>{{$.T "publication_sorts" .}}</option>
                             {{end}}
