@@ -1,12 +1,12 @@
 <div id="modal-backdrop" class="modal-backdrop fade show" style="display:block;"></div>
-<form
-    hx-put="{{pathFor "publication_file_update" "id" .D.Publication.ID "file_id" .D.File.ID}}"
-    hx-swap="outerHTML"
-    hx-target="closest .publication-files"
->
-    {{.CSRFTag}}
-    <div class="modal show" tabindex="-1" style="display: block;" aria-modal="true" role="dialog">
-        <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable" role="document">
+<div class="modal show" tabindex="-1" style="display: block;" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable" role="document">
+        <form
+            hx-put="{{pathFor "publication_file_update" "id" .D.Publication.ID "file_id" .D.File.ID}}"
+            hx-swap="outerHTML"
+            hx-target="closest .publication-files"
+        >
+	        {{.CSRFTag}}
             <div class="modal-content">
                 <div class="modal-header">
                     <h2 class="modal-title">{{.D.File.Filename}}</h2>
@@ -148,6 +148,6 @@
                     <button class="btn btn-primary" type="submit">Save</button>
                 </div>
             </div>
-        </div>
+        </form>
     </div>
-</form>
+</div>
