@@ -11,6 +11,25 @@ func NewSearchArgs() *SearchArgs {
 	return &SearchArgs{Filters: map[string][]string{}, Page: 1}
 }
 
+func (s *SearchArgs) Clone() *SearchArgs {
+	filters := make(map[string][]string, len(s.Filters))
+	for field, terms := range s.Filters {
+		t := make([]string, len(terms))
+		copy(t, terms)
+		filters[field] = t
+	}
+
+	sort := make([]string, len(s.Sort))
+	copy(sort, s.Sort)
+
+	return &SearchArgs{
+		Query:   s.Query,
+		Filters: filters,
+		Page:    s.Page,
+		Sort:    sort,
+	}
+}
+
 func (s *SearchArgs) WithQuery(q string) *SearchArgs {
 	s.Query = q
 	return s

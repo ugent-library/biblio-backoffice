@@ -1,7 +1,7 @@
 <ul class="pagination">
     {{if .D.Hits.PreviousPage}}
     <li class="page-item">
-        <a class="page-link" href="{{pathFor "publications" | query (.D.SearchArgs.WithPage (sub .D.Hits.Page 1 | int))}}" aria-label="Previous">
+        <a class="page-link" href="{{.D.SearchURL | query (.D.SearchArgs.WithPage (sub .D.Hits.Page 1 | int))}}" aria-label="Previous">
             <i class="if if-chevron-left" aria-hidden="true"></i>
         </a>
     </li>
@@ -14,12 +14,12 @@
     {{end}}
     {{range untilStep 1 (min .D.Hits.LastPage 10 | add 1 | int) 1}}
         <li class="page-item{{if eq . $.D.Hits.Page}} active{{end}}">
-            <a class="page-link" href="{{pathFor "publications" | query ($.D.SearchArgs.WithPage .)}}">{{.}}</a>
+            <a class="page-link" href="{{$.D.SearchURL | query ($.D.SearchArgs.WithPage .)}}">{{.}}</a>
         </li>
     {{end}}
     {{if .D.Hits.NextPage}}
     <li class="page-item">
-        <a class="page-link" href="{{pathFor "publications" | query (.D.SearchArgs.WithPage (add .D.Hits.Page 1 | int))}}" aria-label="Next">
+        <a class="page-link" href="{{.D.SearchURL | query (.D.SearchArgs.WithPage (add .D.Hits.Page 1 | int))}}" aria-label="Next">
             <i class="if if-chevron-right" aria-hidden="true"></i>
         </a>
     </li>
