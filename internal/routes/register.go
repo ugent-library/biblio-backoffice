@@ -184,6 +184,9 @@ func Register(c controllers.Context) {
 	pubsRouter.HandleFunc("/add-multiple/import", publicationsController.AddMultipleImport).
 		Methods("POST").
 		Name("publication_add_multiple_import")
+	pubsRouter.HandleFunc("/add-multiple/{batch_id}/description", publicationsController.AddMultipleDescription).
+		Methods("GET").
+		Name("publication_add_multiple_description")
 
 	pubRouter := pubsRouter.PathPrefix("/{id}").Subrouter()
 	pubRouter.Use(middleware.SetPublication(c.Engine))
@@ -205,6 +208,9 @@ func Register(c controllers.Context) {
 	pubEditRouter.HandleFunc("/add-single/publish", publicationsController.AddSinglePublish).
 		Methods("POST").
 		Name("publication_add_single_publish")
+	pubRouter.HandleFunc("/add-multiple/{batch_id}", publicationsController.AddMultipleShow).
+		Methods("GET").
+		Name("publication_add_multiple_show")
 	// Publication files
 	pubRouter.HandleFunc("/file/{file_id}", publicationFilesController.Download).
 		Methods("GET").

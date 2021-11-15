@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/gorilla/mux"
 	"github.com/ugent-library/biblio-backend/internal/context"
 	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/models"
@@ -18,12 +19,6 @@ import (
 
 type Publications struct {
 	Context
-}
-
-type PublicationListVars struct {
-	SearchArgs       *engine.SearchArgs
-	Hits             *models.PublicationHits
-	PublicationSorts []string
 }
 
 func NewPublications(c Context) *Publications {
@@ -45,12 +40,19 @@ func (c *Publications) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.Render.HTML(w, http.StatusOK, "publication/list",
-		views.NewData(c.Render, r, PublicationListVars{
-			SearchArgs:       args,
-			Hits:             hits,
-			PublicationSorts: c.Engine.Vocabularies()["publication_sorts"],
-		}),
+	searchURL, _ := c.Router.Get("publications").URLPath()
+
+	c.Render.HTML(w, http.StatusOK, "publication/list", views.NewData(c.Render, r, struct {
+		SearchURL        *url.URL
+		SearchArgs       *engine.SearchArgs
+		Hits             *models.PublicationHits
+		PublicationSorts []string
+	}{
+		searchURL,
+		args,
+		hits,
+		c.Engine.Vocabularies()["publication_sorts"],
+	}),
 	)
 }
 
@@ -71,20 +73,19 @@ func (c *Publications) Show(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.Render.HTML(w, http.StatusOK, "publication/show",
-		views.NewData(c.Render, r, struct {
-			Publication         *models.Publication
-			PublicationDatasets []*models.Dataset
-			Show                *views.ShowBuilder
-			Vocabularies        map[string][]string
-			SearchArgs          *engine.SearchArgs
-		}{
-			pub,
-			datasets,
-			views.NewShowBuilder(c.Render, locale.Get(r.Context())),
-			c.Engine.Vocabularies(),
-			searchArgs,
-		}),
+	c.Render.HTML(w, http.StatusOK, "publication/show", views.NewData(c.Render, r, struct {
+		Publication         *models.Publication
+		PublicationDatasets []*models.Dataset
+		Show                *views.ShowBuilder
+		Vocabularies        map[string][]string
+		SearchArgs          *engine.SearchArgs
+	}{
+		pub,
+		datasets,
+		views.NewShowBuilder(c.Render, locale.Get(r.Context())),
+		c.Engine.Vocabularies(),
+		searchArgs,
+	}),
 	)
 }
 
@@ -266,20 +267,107 @@ func (c *Publications) AddMultipleImport(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	args := engine.NewSearchArgs().WithFilter("batch_id", batchID)
+	args := engine.NewSearchArgs()
 
-	hits, err := c.Engine.UserPublications(userID, args)
+	hits, err := c.Engine.UserPublications(userID, args.Clone().WithFilter("batch_id", batchID))
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	c.Render.HTML(w, http.StatusOK, "publication/list",
-		views.NewData(c.Render, r, PublicationListVars{
-			SearchArgs:       args,
-			Hits:             hits,
-			PublicationSorts: c.Engine.Vocabularies()["publication_sorts"],
-		}),
+	searchURL, _ := c.Router.Get("publication_add_multiple_description").URLPath("batch_id", batchID)
+
+	c.Render.HTML(w, http.StatusOK, "publication/add_multiple_description", views.NewData(c.Render, r, struct {
+		Step             int
+		SearchURL        *url.URL
+		SearchArgs       *engine.SearchArgs
+		Hits             *models.PublicationHits
+		PublicationSorts []string
+		BatchID          string
+	}{
+		3,
+		searchURL,
+		args,
+		hits,
+		c.Engine.Vocabularies()["publication_sorts"],
+		batchID,
+	}),
+	)
+}
+
+func (c *Publications) AddMultipleDescription(w http.ResponseWriter, r *http.Request) {
+	userID := context.GetUser(r.Context()).ID
+	batchID := mux.Vars(r)["batch_id"]
+
+	args := engine.NewSearchArgs()
+	if err := forms.Decode(args, r.URL.Query()); err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	hits, err := c.Engine.UserPublications(userID, args.Clone().WithFilter("batch_id", batchID))
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	searchURL, _ := c.Router.Get("publication_add_multiple_description").URLPath("batch_id", batchID)
+
+	c.Render.HTML(w, http.StatusOK, "publication/add_multiple_description", views.NewData(c.Render, r, struct {
+		Step             int
+		SearchURL        *url.URL
+		SearchArgs       *engine.SearchArgs
+		Hits             *models.PublicationHits
+		PublicationSorts []string
+		BatchID          string
+	}{
+		3,
+		searchURL,
+		args,
+		hits,
+		c.Engine.Vocabularies()["publication_sorts"],
+		batchID,
+	}),
+	)
+}
+
+func (c *Publications) AddMultipleShow(w http.ResponseWriter, r *http.Request) {
+	batchID := mux.Vars(r)["batch_id"]
+	pub := context.GetPublication(r.Context())
+
+	datasets, err := c.Engine.GetPublicationDatasets(pub.ID)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	searchArgs := engine.NewSearchArgs()
+	if err := forms.Decode(searchArgs, r.URL.Query()); err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	c.Render.HTML(w, http.StatusOK, "publication/add_multiple_show", views.NewData(c.Render, r, struct {
+		Step                int
+		Publication         *models.Publication
+		PublicationDatasets []*models.Dataset
+		Show                *views.ShowBuilder
+		Vocabularies        map[string][]string
+		SearchArgs          *engine.SearchArgs
+		BatchID             string
+	}{
+		3,
+		pub,
+		datasets,
+		views.NewShowBuilder(c.Render, locale.Get(r.Context())),
+		c.Engine.Vocabularies(),
+		searchArgs,
+		batchID,
+	}),
 	)
 }

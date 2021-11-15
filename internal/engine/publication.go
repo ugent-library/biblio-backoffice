@@ -56,8 +56,6 @@ func (e *Engine) ImportUserPublicationByIdentifier(userID, identifierType, ident
 	return pub, nil
 }
 
-// TODO is waitgroup necessary?
-// TODO capture goroutine errors
 func (e *Engine) ImportUserPublications(userID, source string, file io.Reader) (string, error) {
 	pipedReader, pipedWriter := io.Pipe()
 	multiPartWriter := multipart.NewWriter(pipedWriter)
@@ -97,12 +95,15 @@ func (e *Engine) ImportUserPublications(userID, source string, file io.Reader) (
 	req.Header.Add("Content-Type", multiPartWriter.FormDataContentType())
 	req.SetBasicAuth(e.Config.Username, e.Config.Password)
 
-	if _, err = e.doRequest(req, nil); err != nil {
+	resData := struct {
+		BatchID string `json:"batch_id"`
+	}{}
+
+	if _, err = e.doRequest(req, &resData); err != nil {
 		return "", err
 	}
 
-	return "", err
-
+	return resData.BatchID, nil
 }
 
 func (e *Engine) UpdatePublication(pub *models.Publication) (*models.Publication, error) {
