@@ -5,9 +5,9 @@
             hx-put="{{pathFor "publication_file_update" "id" .D.Publication.ID "file_id" .D.File.ID}}"
             hx-swap="outerHTML"
             hx-target="closest .publication-files"
+            class="modal-content"
         >
 	        {{.CSRFTag}}
-            <div class="modal-content">
                 <div class="modal-header">
                     <h2 class="modal-title">{{.D.File.Filename}}</h2>
                 </div>
@@ -147,7 +147,6 @@
                     <button class="btn btn-link modal-close" data-dismiss="modal">Cancel</button>
                     <button class="btn btn-primary" type="submit">Save</button>
                 </div>
-            </div>
         </form>
     </div>
 </div>
