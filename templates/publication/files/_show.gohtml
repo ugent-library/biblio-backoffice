@@ -1,3 +1,4 @@
+{{ $canEditPublication := .User.CanEditPublication .D.Publication }}
 <div class="card mb-6 publication-files">
     <div class="card-header">
         <div class="bc-toolbar">
@@ -7,7 +8,7 @@
         </div>
     </div>
     <div class="card-body p-0">
-        {{if .User.CanEditPublication .D.Publication}}
+        {{if $canEditPublication}}
             <form class="p-6"
                 hx-post="{{pathFor "upload_publication_file" "id" .D.Publication.ID}}"
                 hx-encoding="multipart/form-data"
@@ -64,8 +65,17 @@
                                             <span class="badge-text">{{$.T "publication_file_access_levels" .AccessLevel}}</span>
                                             <i class="if if-caret-down"></i>
                                         </span>
+                                        {{if $canEditPublication}}
                                         <div class="dropdown-menu">
-                                            <button class="dropdown-item{{if eq .AccessLevel "open_access"}} dropdown-item--selected{{end}}">
+                                            <button
+                                                class="dropdown-item{{if eq .AccessLevel "open_access"}} dropdown-item--selected{{end}}"
+                                                {{ if not (eq .AccessLevel "open_access") }}
+                                                hx-put="{{pathFor "publication_file_update" "id" $.D.Publication.ID "file_id" .ID}}"
+                                                hx-vals='{ "access_level": "open_access" }'
+                                                hx-swap="outerHTML"
+                                                hx-target="closest .publication-files"
+                                                {{ end }}
+                                            >
                                                 <i class="if if-download text-success"></i>
                                                 <div>
                                                     <p class="mb-0">{{$.T "publication_file_access_levels" "open_access"}}</p>
@@ -75,7 +85,15 @@
                                                     <i class="if if-check text-primary"></i>
                                                 </div>
                                             </button>
-                                            <button class="dropdown-item{{if eq .AccessLevel "local"}} dropdown-item--selected{{end}}">
+                                            <button
+                                                class="dropdown-item{{if eq .AccessLevel "local"}} dropdown-item--selected{{end}}"
+                                                {{ if not (eq .AccessLevel "local") }}
+                                                hx-put="{{pathFor "publication_file_update" "id" $.D.Publication.ID "file_id" .ID}}"
+                                                hx-vals='{ "access_level": "local" }'
+                                                hx-swap="outerHTML"
+                                                hx-target="closest .publication-files"
+                                                {{ end }}
+                                            >
                                                 <i class="if if-ghent-university text-primary"></i>
                                                 <div>
                                                     <p class="mb-0">{{$.T "publication_file_access_levels" "local"}}</p>
@@ -85,7 +103,15 @@
                                                     <i class="if if-check text-primary"></i>
                                                 </div>
                                             </button>
-                                            <button class="dropdown-item{{if eq .AccessLevel "closed"}} dropdown-item--selected{{end}}">
+                                            <button
+                                                class="dropdown-item{{if eq .AccessLevel "closed"}} dropdown-item--selected{{end}}"
+                                                {{ if not (eq .AccessLevel "closed") }}
+                                                hx-put="{{pathFor "publication_file_update" "id" $.D.Publication.ID "file_id" .ID}}"
+                                                hx-vals='{ "access_level": "closed" }'
+                                                hx-swap="outerHTML"
+                                                hx-target="closest .publication-files"
+                                                {{ end }}
+                                            >
                                                 <i class="if if-eye-off text-muted"></i>
                                                 <div>
                                                     <p class="mb-0">{{$.T "publication_file_access_levels" "closed"}}</p>
@@ -96,10 +122,11 @@
                                                 </div>
                                             </button>
                                         </div>
+                                        {{end}}
                                     </div>
                                 </div>
                                 <div class="list-group-item-subline-right">
-                                    {{if $.User.CanEditPublication $.D.Publication}}
+                                    {{if $canEditPublication}}
                                     <div class="dropdown">
                                         <button class="btn btn-link btn-icon-only btn-link-muted" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             <i class="if if-more"></i>

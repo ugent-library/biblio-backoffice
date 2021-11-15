@@ -5,149 +5,148 @@
             hx-put="{{pathFor "publication_file_update" "id" .D.Publication.ID "file_id" .D.File.ID}}"
             hx-swap="outerHTML"
             hx-target="closest .publication-files"
+            class="modal-content"
         >
 	        {{.CSRFTag}}
-            <!-- <div class="modal-content"> -->
-                <div class="modal-header">
-                    <h2 class="modal-title">{{.D.File.Filename}}</h2>
+            <div class="modal-header">
+                <h2 class="modal-title">{{.D.File.Filename}}</h2>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="col-form-label">Title</label>
+                    <input class="form-control" name="title" type="text" value="{{.D.File.Title}}">
                 </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label class="col-form-label">Title</label>
-                        <input class="form-control" name="title" type="text" value="{{.D.File.Title}}">
-                    </div>
-                    <div class="row">
-                        <div class="col-6">
-                            <div class="form-group">
-                                <label class="col-form-label">Relation</label>
-                                <select class="custom-select w-10" name="relation">
-                                    <option></option>
-                                    {{range .D.Vocabularies.publication_file_relations}}
-                                    <option value="{{.}}"{{if eq . $.D.File.Relation}} selected{{end}}>{{$.T "publication_file_relations" .}}</option>
-                                    {{end}}
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="form-group">
-                                <label class="col-form-label">Publication version</label>
-                                <select class="custom-select w-100" name="publication_version">
-                                    <option></option>
-                                    {{range .D.Vocabularies.publication_versions}}
-                                    <option value="{{.}}"{{if eq . $.D.File.PublicationVersion}} selected{{end}}>{{$.T "publication_versions" .}}</option>
-                                    {{end}}
-                                </select>
-                            </div>
+                <div class="row">
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label class="col-form-label">Relation</label>
+                            <select class="custom-select w-10" name="relation">
+                                <option></option>
+                                {{range .D.Vocabularies.publication_file_relations}}
+                                <option value="{{.}}"{{if eq . $.D.File.Relation}} selected{{end}}>{{$.T "publication_file_relations" .}}</option>
+                                {{end}}
+                            </select>
                         </div>
                     </div>
-                    <div class="form-group radio-card-group">
-                        <label>Access level</label>
-                        <label
-                            {{if eq .D.File.AccessLevel "open_access"}}
-                            class="c-radio-card c-radio-card--selected" aria-selected="true"
-                            {{else}}
-                            class="c-radio-card" aria-selected="false"
-                            {{end}}
-                        >
-                            <div class="c-radio-card__radio">
-                                <div class="custom-control custom-radio">
-                                    <input class="custom-control-input" id="openAccess" type="radio" name="access_level" value="open_access"{{if eq .D.File.AccessLevel "open_access"}} checked{{end}}>
-                                    <label class="custom-control-label" for="openAccess"></label>
-                                </div>
-                            </div>
-                            <div class="c-radio-card__content d-flex align-content-center">
-                                <i class="if if-download text-success align-self-center"></i>
-                                <div class="ml-5">
-                                    <p class="mb-1 mr-3">Open Access</p>
-                                    <span class="text-muted c-body-small">Recommended option if the file doesn’t contain any sensitive information. Share your work to help other researchers.</span>
-                                </div>
-                            </div>
-                        </label>
-                        <label
-                            {{if eq .D.File.AccessLevel "local"}}
-                            class="c-radio-card c-radio-card--selected" aria-selected="true"
-                            {{else}}
-                            class="c-radio-card" aria-selected="false"
-                            {{end}}
-                        >
-                            <div class="c-radio-card__radio">
-                                <div class="custom-control custom-radio">
-                                    <input class="custom-control-input" id="ugentAccess" type="radio" name="access_level" value="local"{{if eq .D.File.AccessLevel "local"}} checked{{end}}>
-                                    <label class="custom-control-label" for="ugentAccess"></label>
-                                </div>
-                            </div>
-                            <div class="c-radio-card__content d-flex align-content-center">
-                                <i class="if if-ghent-university text-primary align-self-center"></i>
-                                <div class="ml-5">
-                                    <p class="mb-1 mr-3">UGent Access</p>
-                                    <span class="text-muted c-body-small">Your file will only be available for UGent members.</span>
-                                </div>
-                            </div>
-                        </label>
-                        <label
-                            {{if eq .D.File.AccessLevel "closed"}}
-                            class="c-radio-card c-radio-card--selected" aria-selected="true"
-                            {{else}}
-                            class="c-radio-card" aria-selected="false"
-                            {{end}}
-                        >
-                            <div class="c-radio-card__radio">
-                                <div class="custom-control custom-radio">
-                                    <input class="custom-control-input" id="privateAccess" type="radio" name="access_level" value="closed"{{if eq .D.File.AccessLevel "closed"}} checked{{end}}>
-                                    <label class="custom-control-label" for="privateAccess"></label>
-                                </div>
-                            </div>
-                            <div class="c-radio-card__content d-flex align-content-center">
-                                <i class="if if-eye-off text-muted align-self-center"></i>
-                                <div class="ml-5">
-                                    <p class="mb-1 mr-3">Private Access</p>
-                                    <span class="text-muted c-body-small">Your file will only be available to the authors and reviewers.</span>
-                                </div>
-                            </div>
-                        </label>
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label class="col-form-label">Publication version</label>
+                            <select class="custom-select w-100" name="publication_version">
+                                <option></option>
+                                {{range .D.Vocabularies.publication_versions}}
+                                <option value="{{.}}"{{if eq . $.D.File.PublicationVersion}} selected{{end}}>{{$.T "publication_versions" .}}</option>
+                                {{end}}
+                            </select>
+                        </div>
                     </div>
-                    <!-- <div class="form-group">
-                        <label class="col-form-label">
-                            <span>License</span>
-                            <a class="text-muted mx-2" href="#" data-container="body" data-toggle="popover-custom" data-placement="right" data-popover-content="#helper" data-original-title="" title="">
-                                <i class="if if-info-circle if--small"></i>
-                                <div class="sr-only">More info</div>
-                            </a>
-                            <div class="u-hidden" id="helper">
-                                <div class="popover-body p-0">
-                                    <p>Not sure which license to pick? Go to the <a href="https://chooser-beta.creativecommons.org/">License Chooser from Creative Commons</a>
-                                    </p>
-                                </div>
-                            </div>
-                        </label>
-                        <select class="custom-select select-multi-icons w-100">
-                            <option value="usd" data-icon="[&quot;cc-line&quot;,&quot;cc-zero-line&quot;]">CC0</option>
-                            <option value="usd" data-icon="[&quot;cc-line&quot;,&quot;cc-by-line&quot;]">CC-BY</option>
-                            <option value="usd" data-icon="[&quot;cc-line&quot;,&quot;cc-by-line&quot;,&quot;cc-sa-line&quot;]">CC-BY-SA</option>
-                            <option value="usd" data-icon="[&quot;cc-line&quot;,&quot;cc-by-line&quot;,&quot;cc-nd-line&quot;]">CC-BY-ND</option>
-                            <option value="usd" data-icon="[&quot;cc-line&quot;,&quot;cc-by-line&quot;,&quot;cc-nc-line&quot;]">CC-BY-NC</option>
-                            <option value="usd" data-icon="[&quot;cc-line&quot;,&quot;cc-by-line&quot;,&quot;cc-nc-line&quot;,&quot;cc-sa-line&quot;]">CC-BY-NC-SA</option>
-                            <option value="usd" data-icon="[&quot;cc-line&quot;,&quot;cc-by-line&quot;,&quot;cc-nc-line&quot;,&quot;cc-nd-line&quot;]">CC-BY-NC-ND</option>
-                        </select>
-                    </div> -->
-                    <div class="form-group">
-                        <label class="col-form-label">Description</label>
-                        <textarea class="form-control" name="description" rows="4">{{.D.File.Description}}</textarea>
-                    </div>
-                    <button class="btn btn-outline-danger mt-4" type="button"
-                        hx-patch="{{pathFor "publication_file_remove" "id" .D.Publication.ID "file_id" .D.File.ID}}"
-                        hx-swap="outerHTML"
-                        hx-target="closest .publication-files"
+                </div>
+                <div class="form-group radio-card-group">
+                    <label>Access level</label>
+                    <label
+                        {{if eq .D.File.AccessLevel "open_access"}}
+                        class="c-radio-card c-radio-card--selected" aria-selected="true"
+                        {{else}}
+                        class="c-radio-card" aria-selected="false"
+                        {{end}}
                     >
-                        <i class="if if-delete"></i>
-                        <div class="btn-text">Delete file</div>
-                    </button>
+                        <div class="c-radio-card__radio">
+                            <div class="custom-control custom-radio">
+                                <input class="custom-control-input" id="openAccess" type="radio" name="access_level" value="open_access"{{if eq .D.File.AccessLevel "open_access"}} checked{{end}}>
+                                <label class="custom-control-label" for="openAccess"></label>
+                            </div>
+                        </div>
+                        <div class="c-radio-card__content d-flex align-content-center">
+                            <i class="if if-download text-success align-self-center"></i>
+                            <div class="ml-5">
+                                <p class="mb-1 mr-3">Open Access</p>
+                                <span class="text-muted c-body-small">Recommended option if the file doesn’t contain any sensitive information. Share your work to help other researchers.</span>
+                            </div>
+                        </div>
+                    </label>
+                    <label
+                        {{if eq .D.File.AccessLevel "local"}}
+                        class="c-radio-card c-radio-card--selected" aria-selected="true"
+                        {{else}}
+                        class="c-radio-card" aria-selected="false"
+                        {{end}}
+                    >
+                        <div class="c-radio-card__radio">
+                            <div class="custom-control custom-radio">
+                                <input class="custom-control-input" id="ugentAccess" type="radio" name="access_level" value="local"{{if eq .D.File.AccessLevel "local"}} checked{{end}}>
+                                <label class="custom-control-label" for="ugentAccess"></label>
+                            </div>
+                        </div>
+                        <div class="c-radio-card__content d-flex align-content-center">
+                            <i class="if if-ghent-university text-primary align-self-center"></i>
+                            <div class="ml-5">
+                                <p class="mb-1 mr-3">UGent Access</p>
+                                <span class="text-muted c-body-small">Your file will only be available for UGent members.</span>
+                            </div>
+                        </div>
+                    </label>
+                    <label
+                        {{if eq .D.File.AccessLevel "closed"}}
+                        class="c-radio-card c-radio-card--selected" aria-selected="true"
+                        {{else}}
+                        class="c-radio-card" aria-selected="false"
+                        {{end}}
+                    >
+                        <div class="c-radio-card__radio">
+                            <div class="custom-control custom-radio">
+                                <input class="custom-control-input" id="privateAccess" type="radio" name="access_level" value="closed"{{if eq .D.File.AccessLevel "closed"}} checked{{end}}>
+                                <label class="custom-control-label" for="privateAccess"></label>
+                            </div>
+                        </div>
+                        <div class="c-radio-card__content d-flex align-content-center">
+                            <i class="if if-eye-off text-muted align-self-center"></i>
+                            <div class="ml-5">
+                                <p class="mb-1 mr-3">Private Access</p>
+                                <span class="text-muted c-body-small">Your file will only be available to the authors and reviewers.</span>
+                            </div>
+                        </div>
+                    </label>
                 </div>
-                <div class="modal-footer">
-                    <button class="btn btn-link modal-close" data-dismiss="modal">Cancel</button>
-                    <button class="btn btn-primary" type="submit">Save</button>
+                <!-- <div class="form-group">
+                    <label class="col-form-label">
+                        <span>License</span>
+                        <a class="text-muted mx-2" href="#" data-container="body" data-toggle="popover-custom" data-placement="right" data-popover-content="#helper" data-original-title="" title="">
+                            <i class="if if-info-circle if--small"></i>
+                            <div class="sr-only">More info</div>
+                        </a>
+                        <div class="u-hidden" id="helper">
+                            <div class="popover-body p-0">
+                                <p>Not sure which license to pick? Go to the <a href="https://chooser-beta.creativecommons.org/">License Chooser from Creative Commons</a>
+                                </p>
+                            </div>
+                        </div>
+                    </label>
+                    <select class="custom-select select-multi-icons w-100">
+                        <option value="usd" data-icon="[&quot;cc-line&quot;,&quot;cc-zero-line&quot;]">CC0</option>
+                        <option value="usd" data-icon="[&quot;cc-line&quot;,&quot;cc-by-line&quot;]">CC-BY</option>
+                        <option value="usd" data-icon="[&quot;cc-line&quot;,&quot;cc-by-line&quot;,&quot;cc-sa-line&quot;]">CC-BY-SA</option>
+                        <option value="usd" data-icon="[&quot;cc-line&quot;,&quot;cc-by-line&quot;,&quot;cc-nd-line&quot;]">CC-BY-ND</option>
+                        <option value="usd" data-icon="[&quot;cc-line&quot;,&quot;cc-by-line&quot;,&quot;cc-nc-line&quot;]">CC-BY-NC</option>
+                        <option value="usd" data-icon="[&quot;cc-line&quot;,&quot;cc-by-line&quot;,&quot;cc-nc-line&quot;,&quot;cc-sa-line&quot;]">CC-BY-NC-SA</option>
+                        <option value="usd" data-icon="[&quot;cc-line&quot;,&quot;cc-by-line&quot;,&quot;cc-nc-line&quot;,&quot;cc-nd-line&quot;]">CC-BY-NC-ND</option>
+                    </select>
+                </div> -->
+                <div class="form-group">
+                    <label class="col-form-label">Description</label>
+                    <textarea class="form-control" name="description" rows="4">{{.D.File.Description}}</textarea>
                 </div>
-            <!-- </div> -->
+                <button class="btn btn-outline-danger mt-4" type="button"
+                    hx-patch="{{pathFor "publication_file_remove" "id" .D.Publication.ID "file_id" .D.File.ID}}"
+                    hx-swap="outerHTML"
+                    hx-target="closest .publication-files"
+                >
+                    <i class="if if-delete"></i>
+                    <div class="btn-text">Delete file</div>
+                </button>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-link modal-close" data-dismiss="modal">Cancel</button>
+                <button class="btn btn-primary" type="submit">Save</button>
+            </div>
         </form>
     </div>
 </div>
