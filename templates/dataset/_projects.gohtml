@@ -7,7 +7,6 @@
             </div>
             <div class="bc-toolbar-right">
                 {{if .User.CanEditDataset .D.Dataset}}
-                <div class="c-button-toolbar" data-panel-state="read">
                     <button class="btn btn-outline-primary"
                         hx-get="{{pathFor "dataset_projects" "id" .D.Dataset.ID}}"
                         hx-target="#datasets-projects-modal"
@@ -16,7 +15,6 @@
                         <i class="if if-add"></i>
                         <div class="btn-text">Add project</div>
                     </button>
-                </div>
                 {{end}}
             </div>
         </div>
