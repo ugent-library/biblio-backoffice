@@ -119,6 +119,23 @@ func (e *Engine) PublishPublication(pub *models.Publication) (*models.Publicatio
 	return e.UpdatePublication(pub)
 }
 
+func (e *Engine) BatchPublishPublications(userID string, args *SearchArgs) (err error) {
+	var hits *models.PublicationHits
+	for {
+		hits, err = e.UserPublications(userID, args)
+		for _, pub := range hits.Hits {
+			pub.Status = "public"
+			if _, err = e.UpdatePublication(pub); err != nil {
+				break
+			}
+		}
+		if !hits.NextPage {
+			break
+		}
+	}
+	return
+}
+
 func (e *Engine) GetPublicationDatasets(id string) ([]*models.Dataset, error) {
 	datasets := make([]*models.Dataset, 0)
 	if _, err := e.get(fmt.Sprintf("/publication/%s/dataset", id), nil, &datasets); err != nil {

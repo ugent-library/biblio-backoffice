@@ -438,9 +438,15 @@ func (c *Publications) AddMultiplePublish(w http.ResponseWriter, r *http.Request
 	userID := context.GetUser(r.Context()).ID
 	batchID := mux.Vars(r)["batch_id"]
 
-	args := engine.NewSearchArgs()
+	batchFilter := engine.NewSearchArgs().WithFilter("batch_id", batchID)
 
-	hits, err := c.Engine.UserPublications(userID, args.Clone().WithFilter("batch_id", batchID))
+	if err := c.Engine.BatchPublishPublications(userID, batchFilter); err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	hits, err := c.Engine.UserPublications(userID, batchFilter)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -459,7 +465,7 @@ func (c *Publications) AddMultiplePublish(w http.ResponseWriter, r *http.Request
 	}{
 		5,
 		searchURL,
-		args,
+		engine.NewSearchArgs(),
 		hits,
 		c.Engine.Vocabularies()["publication_sorts"],
 		batchID,
