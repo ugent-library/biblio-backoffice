@@ -8,7 +8,7 @@
 <li class="list-group-item">
     {{.D.Form.Text (.D.Form.Name "title") (.D.Form.Value .D.Publication.Title) (.D.Form.Cols 9) (.D.Form.Required)}}
     {{.D.Form.TextRepeat (.D.Form.Name "alternative_title") (.D.Form.Values .D.Publication.AlternativeTitle) (.D.Form.Cols 9)}}
-    {{.D.Form.List (.D.Form.Name "classification") (.D.Form.Value .D.Publication.Classification) (.D.Form.Cols 3) (.D.Form.Required)
+    {{.D.Form.List (.D.Form.Name "classification") (.D.Form.Value .D.Publication.Classification) (.D.Form.Cols 3)
         (.D.Form.Choices .D.Publication.ClassificationChoices (.D.Form.Locale "publication_classifications"))}}
     {{.D.Form.Text (.D.Form.Name "wos_type") (.D.Form.Value .D.Publication.WOSType) (.D.Form.Cols 3) (.D.Form.Tooltip "It's a tooltip!")}}
 </li>
@@ -19,7 +19,7 @@
         (.D.Form.Value .D.Publication.PublicationAbbreviation) (.D.Form.Cols 3)}}
     {{.D.Form.Text (.D.Form.Name "publisher") (.D.Form.Value .D.Publication.Publisher) (.D.Form.Cols 9)}}
     {{.D.Form.Text (.D.Form.Name "place_of_publication") (.D.Form.Value .D.Publication.PlaceOfPublication) (.D.Form.Cols 9)}}
-    {{.D.Form.Text (.D.Form.Name "year") (.D.Form.Value .D.Publication.Year) (.D.Form.Cols 3)}}
+    {{.D.Form.Text (.D.Form.Name "year") (.D.Form.Value .D.Publication.Year) (.D.Form.Cols 3) (.D.Form.Required)}}
     {{.D.Form.Checkbox (.D.Form.Name "extern") (.D.Form.Checked .D.Publication.Extern) (.D.Form.Value "true") (.D.Form.Cols 9)}}
     {{.D.Form.List (.D.Form.Name "publication_status") (.D.Form.Value .D.Publication.PublicationStatus) (.D.Form.Cols 3)
         (.D.Form.Choices .D.Vocabularies.publication_publishing_statuses
