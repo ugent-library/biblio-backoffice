@@ -9,9 +9,9 @@
     {{.D.Show.List (.D.Show.Label "alternative_title") (.D.Show.Values .D.Publication.AlternativeTitle)}}
     {{.D.Show.Text (.D.Show.Label "classification") (.D.Show.Value .D.Publication.Classification (.D.Show.Locale "publication_classifications"))}}
     {{.D.Show.Text (.D.Show.Label "wos_type") (.D.Show.Value .D.Publication.WOSType)}}
-    {{.D.Show.Text (.D.Show.Label "defense_date") (.D.Show.Value .D.Publication.DefenseDate)}}
-    {{.D.Show.Text (.D.Show.Label "defense_time") (.D.Show.Value .D.Publication.DefenseTime)}}
-    {{.D.Show.Text (.D.Show.Label "defense_place") (.D.Show.Value .D.Publication.DefensePlace)}}
+    {{.D.Show.Text (.D.Show.Label "defense_date") (.D.Show.Value .D.Publication.DefenseDate) (.D.Show.Required)}}
+    {{.D.Show.Text (.D.Show.Label "defense_time") (.D.Show.Value .D.Publication.DefenseTime) (.D.Show.Required)}}
+    {{.D.Show.Text (.D.Show.Label "defense_place") (.D.Show.Value .D.Publication.DefensePlace) (.D.Show.Required)}}
 </li>
 <li class="list-group-item">
     {{.D.Show.Text (.D.Show.Label "publication_abbreviation") (.D.Show.Value .D.Publication.PublicationAbbreviation)}}
