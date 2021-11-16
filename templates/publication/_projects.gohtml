@@ -7,7 +7,6 @@
             </div>
             <div class="bc-toolbar-right">
                 {{if .User.CanEditPublication .D.Publication}}
-                <div class="c-button-toolbar" data-panel-state="read">
                     <button class="btn btn-outline-primary"
                         hx-get="{{pathFor "publication_projects" "id" .D.Publication.ID}}"
                         hx-target="#publications-projects-modal"
@@ -16,7 +15,6 @@
                         <i class="if if-add"></i>
                         <div class="btn-text">Add project</div>
                     </button>
-                </div>
                 {{end}}
             </div>
         </div>
