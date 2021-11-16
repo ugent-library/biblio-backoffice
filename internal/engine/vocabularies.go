@@ -32,8 +32,6 @@ var vocabularies = map[string][]string{
 		"conference",
 		"dissertation",
 		"miscellaneous",
-		"report",
-		"preprint",
 	},
 	"publication_statuses": {
 		"new",

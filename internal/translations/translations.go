@@ -39,8 +39,6 @@ func init() {
 	message.SetString(language.English, "publication_types.conference", "Conference")
 	message.SetString(language.English, "publication_types.dissertation", "Dissertation")
 	message.SetString(language.English, "publication_types.miscellaneous", "Miscellaneous")
-	message.SetString(language.English, "publication_types.report", "Report")
-	message.SetString(language.English, "publication_types.preprint", "Preprint")
 
 	message.SetString(language.English, "journal_article_types.original", "Original")
 	message.SetString(language.English, "journal_article_types.review", "Review")
