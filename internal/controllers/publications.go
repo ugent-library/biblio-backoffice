@@ -146,9 +146,9 @@ func (c *Publications) AddSingleImport(w http.ResponseWriter, r *http.Request) {
 	var pub *models.Publication
 
 	if identifier := r.FormValue("identifier"); identifier != "" {
-		var identifierType string = r.FormValue("identifier_type")
+		var source string = r.FormValue("source")
 
-		p, err := c.Engine.ImportUserPublicationByIdentifier(context.GetUser(r.Context()).ID, identifierType, identifier)
+		p, err := c.Engine.ImportUserPublicationByIdentifier(context.GetUser(r.Context()).ID, source, identifier)
 		if err != nil {
 			log.Println(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)

@@ -28,13 +28,12 @@ func (e *Engine) GetDataset(id string) (*models.Dataset, error) {
 	return dataset, nil
 }
 
-// TODO: set constraint to research_data
-func (e *Engine) ImportUserDatasetByIdentifier(userID, identifierType, identifier string) (*models.Dataset, error) {
+func (e *Engine) ImportUserDatasetByIdentifier(userID, source, identifier string) (*models.Dataset, error) {
 	reqData := struct {
-		IdentifierType string `json:"identifier_type"`
-		Identifier     string `json:"identifier"`
+		Source     string `json:"source"`
+		Identifier string `json:"identifier"`
 	}{
-		identifierType,
+		source,
 		identifier,
 	}
 	dataset := &models.Dataset{}

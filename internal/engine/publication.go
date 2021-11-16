@@ -40,13 +40,12 @@ func (e *Engine) CreatePublication(pt string) (*models.Publication, error) {
 	return resPub, nil
 }
 
-// TODO: set constraint to not research_data
-func (e *Engine) ImportUserPublicationByIdentifier(userID, identifierType, identifier string) (*models.Publication, error) {
+func (e *Engine) ImportUserPublicationByIdentifier(userID, source, identifier string) (*models.Publication, error) {
 	reqData := struct {
-		IdentifierType string `json:"identifier_type"`
-		Identifier     string `json:"identifier"`
+		Source     string `json:"source"`
+		Identifier string `json:"identifier"`
 	}{
-		identifierType,
+		source,
 		identifier,
 	}
 	pub := &models.Publication{}

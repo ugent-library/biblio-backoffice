@@ -89,10 +89,10 @@ func (c *Datasets) Add(w http.ResponseWriter, r *http.Request) {
 func (c *Datasets) AddImport(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 
-	identifierType := r.FormValue("identifier_type")
+	source := r.FormValue("source")
 	identifier := r.FormValue("identifier")
 
-	dataset, err := c.Engine.ImportUserDatasetByIdentifier(context.GetUser(r.Context()).ID, identifierType, identifier)
+	dataset, err := c.Engine.ImportUserDatasetByIdentifier(context.GetUser(r.Context()).ID, source, identifier)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
