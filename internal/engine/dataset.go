@@ -19,10 +19,9 @@ func (e *Engine) UserDatasets(userID string, args *SearchArgs) (*models.DatasetH
 	return hits, nil
 }
 
-// TODO: set constraint to research_data
 func (e *Engine) GetDataset(id string) (*models.Dataset, error) {
 	dataset := &models.Dataset{}
-	if _, err := e.get(fmt.Sprintf("/publication/%s", id), nil, dataset); err != nil {
+	if _, err := e.get(fmt.Sprintf("/dataset/%s", id), nil, dataset); err != nil {
 		return nil, err
 	}
 	return dataset, nil
