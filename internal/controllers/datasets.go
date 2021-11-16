@@ -3,6 +3,7 @@ package controllers
 import (
 	"log"
 	"net/http"
+	"net/url"
 
 	"github.com/ugent-library/biblio-backend/internal/context"
 	"github.com/ugent-library/biblio-backend/internal/engine"
@@ -41,10 +42,18 @@ func (c *Datasets) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.Render.HTML(w, http.StatusOK, "dataset/list", views.NewData(c.Render, r, DatasetListVars{
-		SearchArgs:       args,
-		Hits:             hits,
-		PublicationSorts: c.Engine.Vocabularies()["publication_sorts"],
+	searchURL, _ := c.Router.Get("datasets").URLPath()
+
+	c.Render.HTML(w, http.StatusOK, "dataset/list", views.NewData(c.Render, r, struct {
+		SearchURL        *url.URL
+		SearchArgs       *engine.SearchArgs
+		Hits             *models.DatasetHits
+		PublicationSorts []string
+	}{
+		searchURL,
+		args,
+		hits,
+		c.Engine.Vocabularies()["publication_sorts"],
 	}))
 }
 
