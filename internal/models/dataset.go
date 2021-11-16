@@ -8,7 +8,7 @@ type DatasetHits struct {
 	LastPage     int                `json:"last_page"`
 	PreviousPage bool               `json:"previous_page"`
 	NextPage     bool               `json:"next_page"`
-	Hits         []Dataset          `json:"hits"`
+	Hits         []*Dataset         `json:"hits"`
 	Facets       map[string][]Facet `json:"facets"`
 }
 
@@ -36,4 +36,12 @@ type Dataset struct {
 	UserID            string                   `json:"user_id,omitempty" form:"-"`
 	Version           int                      `json:"_version,omitempty" form:"-"`
 	Year              string                   `json:"year,omitempty" form:"year"`
+}
+
+func (d *Dataset) ResolveDOI() string {
+	if d.DOI != "" {
+		return "https://doi.org/" + d.DOI
+
+	}
+	return ""
 }
