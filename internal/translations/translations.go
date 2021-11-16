@@ -14,7 +14,7 @@ func init() {
 	message.SetString(language.English, "credit_roles.last_author", "Last author")
 	message.SetString(language.English, "credit_roles.conceptualization", "Conceptualization")
 	message.SetString(language.English, "credit_roles.data_curation", "Datacuration")
-	message.SetString(language.English, "credit_roles.formal_analysis", "Formala nalysis")
+	message.SetString(language.English, "credit_roles.formal_analysis", "Formal analysis")
 	message.SetString(language.English, "credit_roles.funding_acquisition", "Funding acquisition")
 	message.SetString(language.English, "credit_roles.investigation", "Investigation")
 	message.SetString(language.English, "credit_roles.methodology", "Methodology")
