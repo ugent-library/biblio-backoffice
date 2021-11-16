@@ -377,6 +377,9 @@ func Register(c controllers.Context) {
 	pubEditRouter.HandleFunc("/htmx/authors/order/{start}/{end}", publicationAuthorsController.OrderAuthors).
 		Methods("PUT").
 		Name("publication_authors_order_authors")
+	pubEditRouter.HandleFunc("/{id}/htmx/authors/promote/search/{delta}", publicationAuthorsController.PromoteSearchAuthor).
+		Methods("POST").
+		Name("publication_authors_promote_author_modal")
 	// Publication datasets HTMX fragments
 	pubEditRouter.HandleFunc("/htmx/datasets/choose", publicationDatasetsController.Choose).
 		Methods("GET").

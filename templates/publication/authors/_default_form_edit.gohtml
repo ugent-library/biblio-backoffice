@@ -15,8 +15,18 @@
     <td class="col-3">
         {{ .D.RenderFormMultiSelectList "CreditRole" "/data/credit_role" "" .D.Author.CreditRole "creditRoles" "" false 12 }}
     </td>
-    <td>
-        External member (<a href="#">Promote</a>)
+    <td class="membership">
+        <span class="mr-3">External member</span>
+        <button type="button" name="promote" class="btn btn-outline-primary promote-author"
+            hx-post="{{pathFor "publication_authors_promote_author_modal" "id" .D.ID "delta" .D.Key}}"
+            hx-target="#publications-authors-modal"
+            hx-trigger="click"
+            hx-include="#authors-table .row-edit"
+        >
+            <i class="if if-ghent-university"></i>
+            <div class="btn-text">Promote</div>
+        </button>
+        <input type="hidden" name="UGentID" value="" />
     </td>
     <td class="pr-4">
         <div class="c-button-toolbar">

@@ -354,3 +354,49 @@ func (c *PublicationAuthors) OrderAuthors(w http.ResponseWriter, r *http.Request
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
+
+func (c *PublicationAuthors) PromoteSearchAuthor(w http.ResponseWriter, r *http.Request) {
+	id := mux.Vars(r)["id"]
+	muxRowDelta := mux.Vars(r)["delta"]
+	// rowDelta, _ := strconv.Atoi(muxRowDelta)
+
+	err := r.ParseForm()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	person := &struct {
+		FirstName string
+		LastName  string
+	}{}
+
+	if err := forms.Decode(person, r.Form); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	q := person.FirstName + " " + person.LastName
+	people, _ := c.Engine.SuggestUsers(q)
+
+	// pub, err := c.Engine.GetPublication(id)
+	// if err != nil {
+	// 	log.Println(err)
+	// 	http.Error(w, err.Error(), http.StatusNotFound)
+	// 	return
+	// }
+
+	c.Render.HTML(w, 200,
+		"publication/_authors_modal_promote_author",
+		views.NewData(c.Render, r, struct {
+			ID     string
+			People []models.User
+			Delta  string
+		}{
+			id,
+			people,
+			muxRowDelta,
+		}),
+		render.HTMLOptions{Layout: "layouts/htmx"},
+	)
+}
