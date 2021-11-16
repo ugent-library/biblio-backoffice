@@ -11,7 +11,7 @@
     {{.D.Show.Text (.D.Show.Label "wos_type") (.D.Show.Value .D.Publication.WOSType)}}
 </li>
 <li class="list-group-item">
-    {{.D.Show.Text (.D.Show.Label "publication") (.D.Show.Value .D.Publication.Publication)}}
+    {{.D.Show.Text (.D.Show.Label "publication") (.D.Show.Value .D.Publication.Publication) (.D.Show.Required)}}
     {{.D.Show.Text (.D.Show.Label "publication_abbreviation") (.D.Show.Value .D.Publication.PublicationAbbreviation)}}
     {{.D.Show.Text (.D.Show.Label "publisher") (.D.Show.Value .D.Publication.Publisher)}}
     {{.D.Show.Text (.D.Show.Label "place_of_publication") (.D.Show.Value .D.Publication.PlaceOfPublication)}}
