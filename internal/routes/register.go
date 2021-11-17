@@ -97,6 +97,7 @@ func Register(c controllers.Context) {
 	publicationAdditionalInfoController := controllers.NewPublicationAdditionalInfo(c)
 	datasetDetailsController := controllers.NewDatasetDetails(c)
 	datasetProjectsController := controllers.NewDatasetProjects(c)
+	datasetDepartmentsController := controllers.NewDatasetDepartments(c)
 	datasetPublicationsController := controllers.NewDatasetPublications(c)
 
 	// TODO fix absolute url generation
@@ -452,6 +453,22 @@ func Register(c controllers.Context) {
 	datasetEditRouter.HandleFunc("/htmx/projects/remove/{project_id}", datasetProjectsController.Remove).
 		Methods("PATCH").
 		Name("dataset_projects_remove")
+	// Dataset departments HTMX fragments
+	datasetEditRouter.HandleFunc("/htmx/departments/list", datasetDepartmentsController.ListDepartments).
+		Methods("GET").
+		Name("datasetDepartments")
+	datasetEditRouter.HandleFunc("/htmx/departments/list/activesearch", datasetDepartmentsController.ActiveSearch).
+		Methods("POST").
+		Name("datasetDepartments_activesearch")
+	datasetEditRouter.HandleFunc("/htmx/departments/add/{department_id}", datasetDepartmentsController.AddToDataset).
+		Methods("PATCH").
+		Name("datasetDepartments_add_to_dataset")
+	datasetEditRouter.HandleFunc("/htmx/departments/remove/{department_id}", datasetDepartmentsController.ConfirmRemoveFromDataset).
+		Methods("GET").
+		Name("datasetDepartments_confirm_remove_from_dataset")
+	datasetEditRouter.HandleFunc("/htmx/departments/remove/{department_id}", datasetDepartmentsController.RemoveFromDataset).
+		Methods("PATCH").
+		Name("datasetDepartments_remove_from_dataset")
 	// Dataset publications HTMX fragments
 	datasetEditRouter.HandleFunc("/htmx/publications/choose", datasetPublicationsController.Choose).
 		Methods("GET").

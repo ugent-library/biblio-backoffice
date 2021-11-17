@@ -12,6 +12,10 @@ type DatasetHits struct {
 	Facets       map[string][]Facet `json:"facets"`
 }
 
+type DatasetDepartment struct {
+	ID string `json:"_id,omitempty"`
+}
+
 type Dataset struct {
 	Abstract          []Text                   `json:"abstract,omitempty" form:"abstract"`
 	CompletenessScore int                      `json:"completeness_score,omitempty" form:"-"`
@@ -20,6 +24,7 @@ type Dataset struct {
 	CreatorID         string                   `json:"creator_id,omitempty" form:"-"`
 	DateCreated       *time.Time               `json:"date_created,omitempty" form:"-"`
 	DateUpdated       *time.Time               `json:"date_updated,omitempty" form:"-"`
+	Department        []DatasetDepartment      `json:"department,omitempty" form:"-"`
 	DOI               string                   `json:"doi,omitempty" form:"-"`
 	ID                string                   `json:"_id,omitempty" form:"-"`
 	Keyword           []string                 `json:"keyword,omitempty" form:"keyword"`
