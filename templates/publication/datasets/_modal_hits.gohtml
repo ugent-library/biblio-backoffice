@@ -1,4 +1,4 @@
-{{ range .Hits.Hits }}
+{{ range .D.Hits.Hits }}
 <li class="list-group-item">
     <div class="d-flex w-100">
         <div class="w-100">
@@ -14,7 +14,7 @@
                         </div>
                         <div class="list-group-item-subline-right">
                             <button class="btn btn-primary"
-                            hx-patch="{{pathFor "publication_datasets_add" "id" $.Publication.ID "dataset_id" .ID}}"
+                            hx-patch="{{pathFor "publication_datasets_add" "id" $.D.Publication.ID "dataset_id" .ID}}"
                             hx-swap="innerHTML"
                             hx-target=".publication-datasets"
                             >Add Dataset</button>

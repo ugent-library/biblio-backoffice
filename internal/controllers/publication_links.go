@@ -215,13 +215,13 @@ func (c *PublicationLinks) ConfirmRemoveFromPublication(w http.ResponseWriter, r
 	w.Header().Set("HX-Trigger-After-Swap", "PublicationConfirmRemoveAfterSwap")
 	w.Header().Set("HX-Trigger-After-Settle", "PublicationConfirmRemoveAfterSettle")
 
-	c.Render.HTML(w, http.StatusOK, "publication/links/_modal_confirm_removal", struct {
+	c.Render.HTML(w, http.StatusOK, "publication/links/_modal_confirm_removal", views.NewData(c.Render, r, struct {
 		ID  string
 		Key string
 	}{
 		id,
 		muxRowDelta,
-	},
+	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }

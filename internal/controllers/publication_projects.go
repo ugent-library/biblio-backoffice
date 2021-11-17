@@ -25,13 +25,13 @@ func (c *PublicationProjects) ListProjects(w http.ResponseWriter, r *http.Reques
 	// Get 20 random projects (no search, init state)
 	hits, _ := c.Engine.SuggestProjects("")
 
-	c.Render.HTML(w, http.StatusOK, "publication/projects/_modal", struct {
+	c.Render.HTML(w, http.StatusOK, "publication/projects/_modal", views.NewData(c.Render, r, struct {
 		Publication *models.Publication
 		Hits        []models.Completion
 	}{
 		pub,
 		hits,
-	},
+	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -49,13 +49,13 @@ func (c *PublicationProjects) ActiveSearch(w http.ResponseWriter, r *http.Reques
 	query := r.Form["search"]
 	hits, _ := c.Engine.SuggestProjects(query[0])
 
-	c.Render.HTML(w, http.StatusOK, "publication/projects/_modal_hits", struct {
+	c.Render.HTML(w, http.StatusOK, "publication/projects/_modal_hits", views.NewData(c.Render, r, struct {
 		Publication *models.Publication
 		Hits        []models.Completion
 	}{
 		pub,
 		hits,
-	},
+	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -96,13 +96,13 @@ func (c *PublicationProjects) ConfirmRemoveFromPublication(w http.ResponseWriter
 	id := mux.Vars(r)["id"]
 	projectId := mux.Vars(r)["project_id"]
 
-	c.Render.HTML(w, http.StatusOK, "publication/projects/_modal_confirm_removal", struct {
+	c.Render.HTML(w, http.StatusOK, "publication/projects/_modal_confirm_removal", views.NewData(c.Render, r, struct {
 		ID        string
 		ProjectID string
 	}{
 		id,
 		projectId,
-	},
+	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }

@@ -24,13 +24,13 @@ func (c *PublicationDepartments) ListDepartments(w http.ResponseWriter, r *http.
 	// Get 20 random departments (no search, init state)
 	hits, _ := c.Engine.SuggestDepartments("")
 
-	c.Render.HTML(w, http.StatusOK, "publication/departments/_modal", struct {
+	c.Render.HTML(w, http.StatusOK, "publication/departments/_modal", views.NewData(c.Render, r, struct {
 		Publication *models.Publication
 		Hits        []models.Completion
 	}{
 		pub,
 		hits,
-	},
+	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -48,13 +48,13 @@ func (c *PublicationDepartments) ActiveSearch(w http.ResponseWriter, r *http.Req
 	query := r.Form["search"]
 	hits, _ := c.Engine.SuggestDepartments(query[0])
 
-	c.Render.HTML(w, http.StatusOK, "publication/departments/_modal_hits", struct {
+	c.Render.HTML(w, http.StatusOK, "publication/departments/_modal_hits", views.NewData(c.Render, r, struct {
 		Publication *models.Publication
 		Hits        []models.Completion
 	}{
 		pub,
 		hits,
-	},
+	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -92,13 +92,13 @@ func (c *PublicationDepartments) ConfirmRemoveFromPublication(w http.ResponseWri
 	id := mux.Vars(r)["id"]
 	departmentId := mux.Vars(r)["department_id"]
 
-	c.Render.HTML(w, http.StatusOK, "publication/departments/_modal_confirm_removal", struct {
+	c.Render.HTML(w, http.StatusOK, "publication/departments/_modal_confirm_removal", views.NewData(c.Render, r, struct {
 		ID           string
 		DepartmentID string
 	}{
 		id,
 		departmentId,
-	},
+	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }

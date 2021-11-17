@@ -11,8 +11,8 @@
         <div class="modal-footer">
             <button class="btn btn-link modal-close">Cancel</button>
             <button class="btn btn-danger delete-author"
-                hx-delete="{{pathFor "publication_authors_remove_author" "id" .ID "delta" .AuthorDelta}}"
-                hx-target=".row-{{ .AuthorDelta }}"
+                hx-delete="{{pathFor "publication_authors_remove_author" "id" .D.ID "delta" .D.AuthorDelta}}"
+                hx-target=".row-{{ .D.AuthorDelta }}"
                 hx-swap="outerHTML swap:.15s"
             >Delete</button>
         </div>

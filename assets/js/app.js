@@ -9,6 +9,7 @@ import modalPopper from './ui/modal_popper.js'
 import multipleSelect from './ui/multi_select.js'
 import tabs from './ui/tabs.js'
 import radioCard from './ui/radio_card.js'
+import toast from './ui/toast.js'
 
 document.addEventListener('DOMContentLoaded', function () {
     tabs()
@@ -22,4 +23,5 @@ document.addEventListener('DOMContentLoaded', function () {
     modalPopper()
     multipleSelect()
     radioCard()
+    toast()
 });

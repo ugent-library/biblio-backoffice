@@ -24,13 +24,13 @@ func (c *DatasetDepartments) ListDepartments(w http.ResponseWriter, r *http.Requ
 	// Get 20 random departments (no search, init state)
 	hits, _ := c.Engine.SuggestDepartments("")
 
-	c.Render.HTML(w, http.StatusOK, "dataset/departments/_modal", struct {
+	c.Render.HTML(w, http.StatusOK, "dataset/departments/_modal", views.NewData(c.Render, r, struct {
 		Dataset *models.Dataset
 		Hits    []models.Completion
 	}{
 		dataset,
 		hits,
-	},
+	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -48,13 +48,13 @@ func (c *DatasetDepartments) ActiveSearch(w http.ResponseWriter, r *http.Request
 	query := r.Form["search"]
 	hits, _ := c.Engine.SuggestDepartments(query[0])
 
-	c.Render.HTML(w, http.StatusOK, "dataset/departments/_modal_hits", struct {
+	c.Render.HTML(w, http.StatusOK, "dataset/departments/_modal_hits", views.NewData(c.Render, r, struct {
 		Dataset *models.Dataset
 		Hits    []models.Completion
 	}{
 		dataset,
 		hits,
-	},
+	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -92,13 +92,13 @@ func (c *DatasetDepartments) ConfirmRemoveFromDataset(w http.ResponseWriter, r *
 	id := mux.Vars(r)["id"]
 	departmentId := mux.Vars(r)["department_id"]
 
-	c.Render.HTML(w, http.StatusOK, "dataset/departments/_modal_confirm_removal", struct {
+	c.Render.HTML(w, http.StatusOK, "dataset/departments/_modal_confirm_removal", views.NewData(c.Render, r, struct {
 		ID           string
 		DepartmentID string
 	}{
 		id,
 		departmentId,
-	},
+	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }

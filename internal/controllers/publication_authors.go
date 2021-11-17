@@ -277,13 +277,13 @@ func (c *PublicationAuthors) ConfirmRemoveFromPublication(w http.ResponseWriter,
 
 	c.Render.HTML(w, http.StatusOK,
 		"publication/_authors_modal_confirm_removal",
-		struct {
+		views.NewData(c.Render, r, struct {
 			ID          string
 			AuthorDelta string
 		}{
 			id,
 			muxRowDelta,
-		},
+		}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }

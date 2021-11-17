@@ -99,6 +99,12 @@
 
     <div id="user-impersonate-modal" class="modals"></div>
 
+    <div id="flash-messages">
+        {{range .Flash}}
+        {{template "layouts/_flash_message" .}}
+        {{end}}
+    </div>
+
     <script type="application/javascript" src="{{assetPath "/js/app.js"}}"></script>
     <script type="application/javascript">
         document.body.addEventListener('htmx:configRequest', (event) => {

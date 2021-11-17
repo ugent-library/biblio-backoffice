@@ -14323,3 +14323,15 @@ table.clone-table td {
   background: #fff;
   z-index: 999;
 }
+
+#flash-messages {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column-reverse;
+  background-color: transparent;
+}
+#flash-messages .bc-toast {
+  margin: 0 1.3rem 1.3rem 0;
+}

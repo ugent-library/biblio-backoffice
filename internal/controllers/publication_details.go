@@ -95,7 +95,9 @@ func (c *PublicationDetails) SaveForm(w http.ResponseWriter, r *http.Request) {
 		savedPub,
 		views.NewShowBuilder(c.Render, locale.Get(r.Context())),
 		c.Engine.Vocabularies(),
-	}),
+	},
+		views.Flash{Type: "success", Message: "Details updated succesfully"},
+	),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
