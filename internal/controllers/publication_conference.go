@@ -77,7 +77,9 @@ func (c *PublicationConference) SaveForm(w http.ResponseWriter, r *http.Request)
 			}{
 				pub,
 				views.NewFormBuilder(c.Render, locale.Get(r.Context()), formErrors),
-			}),
+			},
+				views.Flash{Type: "error", Message: "There are some problems with your input"},
+			),
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
 
