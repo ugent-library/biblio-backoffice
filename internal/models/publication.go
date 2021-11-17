@@ -129,13 +129,15 @@ type Publication struct {
 	Year                    string                  `json:"year,omitempty" form:"year"`
 }
 
-func (p *Publication) OpenAccess() bool {
-	for _, file := range p.File {
-		if file.AccessLevel == "open_access" {
-			return true
+func (p *Publication) AccessLevel() string {
+	for _, a := range []string{"open_access", "local", "closed"} {
+		for _, file := range p.File {
+			if file.AccessLevel == a {
+				return a
+			}
 		}
 	}
-	return false
+	return ""
 }
 
 func (p *Publication) ThumbnailURL() string {

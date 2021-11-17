@@ -12,10 +12,7 @@
                 <div class="list-group-item-subline">
                     <div class="list-group-item-subline-left">
                         <span class="mr-3 pr-3 border-right">{{.T "publication_types" $p.Type}}{{with $p.Classification}}: {{.}}{{end}}</span>
-                        <div class="d-flex align-items-center">
-                            <i class="if if-download if--small if--success"></i>
-                            <span class="pl-2 text-muted">Open Access</span>
-                        </div>
+                        {{template "publication/_access_level" $p}}
                     </div>
                     <div class="list-group-item-subline-right">
                         <div class="dropdown dropleft">

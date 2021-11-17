@@ -99,9 +99,9 @@ func init() {
 	message.SetString(language.English, "publication_publishing_statuses.accepted", "Accepted")
 	message.SetString(language.English, "publication_publishing_statuses.published", "Published")
 
-	message.SetString(language.English, "publication_file_access_levels.open_access", "Open access")
-	message.SetString(language.English, "publication_file_access_levels.local", "UGent access")
-	message.SetString(language.English, "publication_file_access_levels.closed", "Private access")
+	message.SetString(language.English, "publication_file_access_levels.open_access", "Open Access")
+	message.SetString(language.English, "publication_file_access_levels.local", "UGent Access")
+	message.SetString(language.English, "publication_file_access_levels.closed", "Private Access")
 
 	message.SetString(language.English, "publication_versions.publishedVersion", "Published version")
 	message.SetString(language.English, "publication_versions.authorVersion", "Author's original")
