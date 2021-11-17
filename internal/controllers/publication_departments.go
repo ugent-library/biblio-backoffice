@@ -24,7 +24,7 @@ func (c *PublicationDepartments) ListDepartments(w http.ResponseWriter, r *http.
 	// Get 20 random departments (no search, init state)
 	hits, _ := c.Engine.SuggestDepartments("")
 
-	c.Render.HTML(w, http.StatusOK, "publication/_departments_modal", struct {
+	c.Render.HTML(w, http.StatusOK, "publication/departments/_modal", struct {
 		Publication *models.Publication
 		Hits        []models.Completion
 	}{
@@ -48,7 +48,7 @@ func (c *PublicationDepartments) ActiveSearch(w http.ResponseWriter, r *http.Req
 	query := r.Form["search"]
 	hits, _ := c.Engine.SuggestDepartments(query[0])
 
-	c.Render.HTML(w, http.StatusOK, "publication/_departments_modal_hits", struct {
+	c.Render.HTML(w, http.StatusOK, "publication/departments/_modal_hits", struct {
 		Publication *models.Publication
 		Hits        []models.Completion
 	}{
@@ -79,13 +79,11 @@ func (c *PublicationDepartments) AddToPublication(w http.ResponseWriter, r *http
 
 	// TODO: error handling if department save fails
 
-	c.Render.HTML(w, http.StatusOK,
-		"publication/_departments",
-		views.NewData(c.Render, r, struct {
-			Publication *models.Publication
-		}{
-			savedPub,
-		}),
+	c.Render.HTML(w, http.StatusOK, "publication/departments/_show", views.NewData(c.Render, r, struct {
+		Publication *models.Publication
+	}{
+		savedPub,
+	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -94,7 +92,7 @@ func (c *PublicationDepartments) ConfirmRemoveFromPublication(w http.ResponseWri
 	id := mux.Vars(r)["id"]
 	departmentId := mux.Vars(r)["department_id"]
 
-	c.Render.HTML(w, http.StatusOK, "publication/_departments_modal_confirm_removal", struct {
+	c.Render.HTML(w, http.StatusOK, "publication/departments/_modal_confirm_removal", struct {
 		ID           string
 		DepartmentID string
 	}{
@@ -126,7 +124,7 @@ func (c *PublicationDepartments) RemoveFromPublication(w http.ResponseWriter, r 
 	// TODO: error handling
 	savedPub, _ := c.Engine.UpdatePublication(pub)
 
-	c.Render.HTML(w, http.StatusOK, "publication/_departments", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "publication/departments/_show", views.NewData(c.Render, r, struct {
 		Publication *models.Publication
 	}{
 		savedPub,

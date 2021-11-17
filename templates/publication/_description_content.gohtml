@@ -2,7 +2,7 @@
     <div id="description-content" class="tab-pane fade show active" role="tabpanel" aria-labelledby="description-tab">
         {{template "publication/details/_show" .}}
         {{template "publication/_projects" .}}
-        {{template "publication/_departments" .}}
+        {{template "publication/departments/_show" .}}
         {{if .D.Publication.UsesConference}}
             {{template "publication/conference/_show" .}}
         {{end}}
