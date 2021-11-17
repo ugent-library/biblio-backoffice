@@ -109,12 +109,14 @@ func (c *Datasets) AddImport(w http.ResponseWriter, r *http.Request) {
 	}
 
 	c.Render.HTML(w, http.StatusOK, "dataset/add_description", views.NewData(c.Render, r, struct {
-		Step    int
-		Dataset *models.Dataset
-		Show    *views.ShowBuilder
+		Step                int
+		Dataset             *models.Dataset
+		DatasetPublications []*models.Publication
+		Show                *views.ShowBuilder
 	}{
 		2,
 		dataset,
+		nil,
 		views.NewShowBuilder(c.Render, locale.Get(r.Context())),
 	}))
 }
@@ -123,12 +125,14 @@ func (c *Datasets) AddDescription(w http.ResponseWriter, r *http.Request) {
 	dataset := context.GetDataset(r.Context())
 
 	c.Render.HTML(w, http.StatusOK, "dataset/add_description", views.NewData(c.Render, r, struct {
-		Step    int
-		Dataset *models.Dataset
-		Show    *views.ShowBuilder
+		Step                int
+		Dataset             *models.Dataset
+		DatasetPublications []*models.Publication
+		Show                *views.ShowBuilder
 	}{
 		2,
 		dataset,
+		nil,
 		views.NewShowBuilder(c.Render, locale.Get(r.Context())),
 	}))
 }

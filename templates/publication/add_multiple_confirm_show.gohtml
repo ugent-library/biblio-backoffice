@@ -29,8 +29,17 @@
 
         <div class="c-divider mb-2 mx-6"></div>
 
-        {{template "publication/_description_nav" .}}
+        <div class="bc-navbar bc-navbar--white bc-navbar--bordered-bottom">
+            <div class="bc-toolbar">
+                <div class="bc-toolbar-left">
+                    <div class="bc-toolbar-item">
+                        {{template "publication/_description_nav" .}}
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+
     <div class="u-scroll-wrapper__body p-6">
         <div id="alerts"></div>
         {{template "publication/_description_content" .}}
