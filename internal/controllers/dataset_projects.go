@@ -72,11 +72,10 @@ func (c *DatasetProjects) Add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	publicationProject := models.PublicationProject{
+	dataset.Project = append(dataset.Project, models.DatasetProject{
 		ID:   projectId,
 		Name: project.Name,
-	}
-	dataset.Project = append(dataset.Project, publicationProject)
+	})
 
 	savedDataset, _ := c.Engine.UpdateDataset(dataset)
 	if err != nil {
@@ -114,7 +113,7 @@ func (c *DatasetProjects) Remove(w http.ResponseWriter, r *http.Request) {
 
 	dataset := context.GetDataset(r.Context())
 
-	projects := make([]models.PublicationProject, len(dataset.Project))
+	projects := make([]models.DatasetProject, len(dataset.Project))
 	copy(projects, dataset.Project)
 
 	var removeKey int

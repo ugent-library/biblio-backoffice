@@ -39,12 +39,12 @@ type listFormData struct {
 type ContributorForm struct {
 	render     *render.Render
 	ID         string
-	Author     *models.PublicationContributor
+	Author     *models.Contributor
 	Key        string
 	FormErrors []jsonapi.Error
 }
 
-func NewContributorForm(render *render.Render, id string, c *models.PublicationContributor, ad string, fe []jsonapi.Error) ContributorForm {
+func NewContributorForm(render *render.Render, id string, c *models.Contributor, ad string, fe []jsonapi.Error) ContributorForm {
 	return ContributorForm{render: render, ID: id, Author: c, Key: ad, FormErrors: fe}
 }
 

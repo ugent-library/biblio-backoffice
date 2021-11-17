@@ -74,7 +74,7 @@ func (c *PublicationAuthors) AddRow(w http.ResponseWriter, r *http.Request) {
 	muxRowDelta = strconv.Itoa(rowDelta)
 
 	// Skeleton to make the render fields happy
-	author := &models.PublicationContributor{}
+	author := &models.Contributor{}
 
 	w.Header().Set("HX-Trigger", "ITAddRow")
 	w.Header().Set("HX-Trigger-After-Swap", "ITAddRowAfterSwap")
@@ -94,7 +94,7 @@ func (c *PublicationAuthors) ShiftRow(w http.ResponseWriter, r *http.Request) {
 	// Note: we don't increment the delta in this method!
 
 	// Skeleton to make the render fields happy
-	author := &models.PublicationContributor{}
+	author := &models.Contributor{}
 
 	w.Header().Set("HX-Trigger", "ITAddRow")
 	w.Header().Set("HX-Trigger-After-Swap", "ITAddRowAfterSwap")
@@ -128,16 +128,16 @@ func (c *PublicationAuthors) CreateAuthor(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	author := &models.PublicationContributor{}
+	author := &models.Contributor{}
 
 	if err := forms.Decode(author, r.Form); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	placeholder := models.PublicationContributor{}
+	placeholder := models.Contributor{}
 
-	authors := make([]models.PublicationContributor, len(pub.Author))
+	authors := make([]models.Contributor, len(pub.Author))
 	copy(authors, pub.Author)
 
 	authors = append(authors, placeholder)
@@ -225,14 +225,14 @@ func (c *PublicationAuthors) UpdateAuthor(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	author := &models.PublicationContributor{}
+	author := &models.Contributor{}
 
 	if err := forms.Decode(author, r.Form); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	authors := make([]models.PublicationContributor, len(pub.Author))
+	authors := make([]models.Contributor, len(pub.Author))
 	copy(authors, pub.Author)
 
 	authors[rowDelta] = *author
@@ -294,7 +294,7 @@ func (c *PublicationAuthors) RemoveAuthor(w http.ResponseWriter, r *http.Request
 
 	pub := context.GetPublication(r.Context())
 
-	authors := make([]models.PublicationContributor, len(pub.Author))
+	authors := make([]models.Contributor, len(pub.Author))
 	copy(authors, pub.Author)
 
 	authors = append(authors[:rowDelta], authors[rowDelta+1:]...)
@@ -323,13 +323,13 @@ func (c *PublicationAuthors) OrderAuthors(w http.ResponseWriter, r *http.Request
 	author := &pub.Author[start]
 
 	// Remove the author
-	authors := make([]models.PublicationContributor, len(pub.Author))
+	authors := make([]models.Contributor, len(pub.Author))
 	copy(authors, pub.Author)
 	authors = append(authors[:start], authors[start+1:]...)
 	pub.Author = authors
 
 	// Re-insert the author at the new position
-	placeholder := models.PublicationContributor{}
+	placeholder := models.Contributor{}
 	authors = append(authors, placeholder)
 	copy(authors[end+1:], authors[end:])
 	authors[end] = *author

@@ -8,10 +8,10 @@ import (
 type ContributorData struct {
 	render      *render.Render
 	Publication *models.Publication
-	Author      *models.PublicationContributor
+	Author      *models.Contributor
 	Key         string
 }
 
-func NewContributorData(render *render.Render, p *models.Publication, a *models.PublicationContributor, k string) ContributorData {
+func NewContributorData(render *render.Render, p *models.Publication, a *models.Contributor, k string) ContributorData {
 	return ContributorData{render: render, Publication: p, Author: a, Key: k}
 }
