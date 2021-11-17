@@ -95,7 +95,9 @@ func (c *PublicationConference) SaveForm(w http.ResponseWriter, r *http.Request)
 		}{
 			savedPub,
 			views.NewShowBuilder(c.Render, locale.Get(r.Context())),
-		}),
+		},
+			views.Flash{Type: "sucess", Message: "Conference updated succesfully"},
+		),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
