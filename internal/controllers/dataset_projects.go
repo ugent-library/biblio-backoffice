@@ -25,7 +25,7 @@ func (c *DatasetProjects) Choose(w http.ResponseWriter, r *http.Request) {
 	// Get 20 random projects (no search, init state)
 	hits, _ := c.Engine.SuggestProjects("")
 
-	c.Render.HTML(w, http.StatusOK, "dataset/_projects_modal", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "dataset/projects/_modal", views.NewData(c.Render, r, struct {
 		Dataset *models.Dataset
 		Hits    []models.Completion
 	}{
@@ -49,7 +49,7 @@ func (c *DatasetProjects) ActiveSearch(w http.ResponseWriter, r *http.Request) {
 	query := r.Form["search"]
 	hits, _ := c.Engine.SuggestProjects(query[0])
 
-	c.Render.HTML(w, http.StatusOK, "dataset/_projects_modal_hits", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "dataset/projects/_modal_hits", views.NewData(c.Render, r, struct {
 		Dataset *models.Dataset
 		Hits    []models.Completion
 	}{
@@ -85,7 +85,7 @@ func (c *DatasetProjects) Add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.Render.HTML(w, http.StatusOK, "dataset/_projects", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "dataset/projects/_show", views.NewData(c.Render, r, struct {
 		Dataset *models.Dataset
 	}{
 		savedDataset,
@@ -98,7 +98,7 @@ func (c *DatasetProjects) ConfirmRemove(w http.ResponseWriter, r *http.Request) 
 	id := mux.Vars(r)["id"]
 	projectId := mux.Vars(r)["project_id"]
 
-	c.Render.HTML(w, http.StatusOK, "dataset/_projects_modal_confirm_removal", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "dataset/projects/_modal_confirm_removal", views.NewData(c.Render, r, struct {
 		ID        string
 		ProjectID string
 	}{
@@ -130,7 +130,7 @@ func (c *DatasetProjects) Remove(w http.ResponseWriter, r *http.Request) {
 	// TODO: error handling
 	savedDataset, _ := c.Engine.UpdateDataset(dataset)
 
-	c.Render.HTML(w, http.StatusOK, "dataset/_projects", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "dataset/projects/_show", views.NewData(c.Render, r, struct {
 		Dataset *models.Dataset
 	}{
 		savedDataset,
