@@ -102,7 +102,7 @@
                             </div>
                         </label>
                     </div>
-                    <!-- <div class="form-group">
+                    <div class="form-group">
                         <label class="col-form-label">
                             <span>License</span>
                             <a class="text-muted mx-2" href="#" data-container="body" data-toggle="popover-custom" data-placement="right" data-popover-content="#helper" data-original-title="" title="">
@@ -116,16 +116,17 @@
                                 </div>
                             </div>
                         </label>
-                        <select class="custom-select select-multi-icons w-100">
-                            <option value="usd" data-icon="[&quot;cc-line&quot;,&quot;cc-zero-line&quot;]">CC0</option>
-                            <option value="usd" data-icon="[&quot;cc-line&quot;,&quot;cc-by-line&quot;]">CC-BY</option>
-                            <option value="usd" data-icon="[&quot;cc-line&quot;,&quot;cc-by-line&quot;,&quot;cc-sa-line&quot;]">CC-BY-SA</option>
-                            <option value="usd" data-icon="[&quot;cc-line&quot;,&quot;cc-by-line&quot;,&quot;cc-nd-line&quot;]">CC-BY-ND</option>
-                            <option value="usd" data-icon="[&quot;cc-line&quot;,&quot;cc-by-line&quot;,&quot;cc-nc-line&quot;]">CC-BY-NC</option>
-                            <option value="usd" data-icon="[&quot;cc-line&quot;,&quot;cc-by-line&quot;,&quot;cc-nc-line&quot;,&quot;cc-sa-line&quot;]">CC-BY-NC-SA</option>
-                            <option value="usd" data-icon="[&quot;cc-line&quot;,&quot;cc-by-line&quot;,&quot;cc-nc-line&quot;,&quot;cc-nd-line&quot;]">CC-BY-NC-ND</option>
+                        <select name="license" class="custom-select w-100">
+                            <option></option>
+                            <option{{if eq .D.File.License "CC"}} selected{{end}} value="CC0">CC0</option>
+                            <option{{if eq .D.File.License "CC-BY"}} selected{{end}} value="CC-BY">CC-BY</option>
+                            <option{{if eq .D.File.License "CC-BY-SA"}} selected{{end}} value="CC-BY-SA">CC-BY-SA</option>
+                            <option{{if eq .D.File.License "CC-BY-ND"}} selected{{end}} value="CC-BY-ND">CC-BY-ND</option>
+                            <option{{if eq .D.File.License "CC-BY-NC"}} selected{{end}} value="CC-BY-NC">CC-BY-NC</option>
+                            <option{{if eq .D.File.License "CC-BY-NC-SA"}} selected{{end}} value="CC-BY-NC-SA">CC-BY-NC-SA</option>
+                            <option{{if eq .D.File.License "CC-BY-NC-ND"}} selected{{end}} value="CC-BY-NC-ND">CC-BY-NC-ND</option>
                         </select>
-                    </div> -->
+                    </div>
                     <div class="form-group">
                         <label class="col-form-label">Description</label>
                         <textarea class="form-control" name="description" rows="4">{{.D.File.Description}}</textarea>
