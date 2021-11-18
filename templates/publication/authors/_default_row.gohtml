@@ -27,21 +27,21 @@
     <td class="pr-4 col-3">
         <div class="c-button-toolbar">
             <button type="button" class="btn btn-link btn-icon-only btn-link-muted add-author btn-swap"
-                hx-get="{{pathFor "publication_authors_add_row" "id" .D.Publication.ID "delta" .D.Key}}"
+                hx-get="{{pathFor "publication_authors_add_row" "type" "authors" "id" .D.Publication.ID "delta" .D.Key}}"
                 hx-target="#authors-table .row-{{ .D.Key }}"
                 hx-swap="afterend settle:.15s"
             >
                 <i class="if if-add"></i>
             </button>
             <button type="button" class="btn btn-link btn-icon-only btn-link-muted edit-author btn-swap"
-                hx-get="{{pathFor "publication_authors_edit_row" "id" .D.Publication.ID "delta" .D.Key}}"
+                hx-get="{{pathFor "publication_authors_edit_row" "type" "authors" "id" .D.Publication.ID "delta" .D.Key}}"
                 hx-target="#authors-table .row-{{ .D.Key }}"
                 hx-swap="outerHTML settle:25s"
             >
                 <i class="if if-edit"></i>
             </button>
             <button type="button" class="btn btn-link btn-icon-only btn-link-muted delete-author"
-                hx-get="{{pathFor "publication_authors_confirm_remove_from_publication" "id" .D.Publication.ID "delta" .D.Key}}"
+                hx-get="{{pathFor "publication_authors_confirm_remove_from_publication" "type" "authors" "id" .D.Publication.ID "delta" .D.Key}}"
                 hx-target="#publications-authors-modal"
                 hx-trigger="click"
             >
