@@ -45,11 +45,13 @@ func (c *Datasets) List(w http.ResponseWriter, r *http.Request) {
 	searchURL, _ := c.Router.Get("datasets").URLPath()
 
 	c.Render.HTML(w, http.StatusOK, "dataset/list", views.NewData(c.Render, r, struct {
+		PageTitle        string
 		SearchURL        *url.URL
 		SearchArgs       *engine.SearchArgs
 		Hits             *models.DatasetHits
 		PublicationSorts []string
 	}{
+		"Overview - Datasets - Biblio",
 		searchURL,
 		args,
 		hits,
@@ -75,11 +77,13 @@ func (c *Datasets) Show(w http.ResponseWriter, r *http.Request) {
 	}
 
 	c.Render.HTML(w, http.StatusOK, "dataset/show", views.NewData(c.Render, r, struct {
+		PageTitle           string
 		Dataset             *models.Dataset
 		DatasetPublications []*models.Publication
 		Show                *views.ShowBuilder
 		SearchArgs          *engine.SearchArgs
 	}{
+		"Dataset - Biblio",
 		dataset,
 		datasetPubs,
 		views.NewShowBuilder(c.Render, locale.Get(r.Context())),
@@ -109,11 +113,13 @@ func (c *Datasets) AddImport(w http.ResponseWriter, r *http.Request) {
 	}
 
 	c.Render.HTML(w, http.StatusOK, "dataset/add_description", views.NewData(c.Render, r, struct {
+		PageTitle           string
 		Step                int
 		Dataset             *models.Dataset
 		DatasetPublications []*models.Publication
 		Show                *views.ShowBuilder
 	}{
+		"Add - Datasets - Biblio",
 		2,
 		dataset,
 		nil,
@@ -125,11 +131,13 @@ func (c *Datasets) AddDescription(w http.ResponseWriter, r *http.Request) {
 	dataset := context.GetDataset(r.Context())
 
 	c.Render.HTML(w, http.StatusOK, "dataset/add_description", views.NewData(c.Render, r, struct {
+		PageTitle           string
 		Step                int
 		Dataset             *models.Dataset
 		DatasetPublications []*models.Publication
 		Show                *views.ShowBuilder
 	}{
+		"Add - Datasets - Biblio",
 		2,
 		dataset,
 		nil,
@@ -141,9 +149,11 @@ func (c *Datasets) AddConfirm(w http.ResponseWriter, r *http.Request) {
 	dataset := context.GetDataset(r.Context())
 
 	c.Render.HTML(w, http.StatusOK, "dataset/add_confirm", views.NewData(c.Render, r, struct {
-		Step    int
-		Dataset *models.Dataset
+		PageTitle string
+		Step      int
+		Dataset   *models.Dataset
 	}{
+		"Add - Datasets - Biblio",
 		3,
 		dataset,
 	}))
@@ -160,9 +170,11 @@ func (c *Datasets) AddPublish(w http.ResponseWriter, r *http.Request) {
 	}
 
 	c.Render.HTML(w, http.StatusOK, "dataset/add_publish", views.NewData(c.Render, r, struct {
-		Step    int
-		Dataset *models.Dataset
+		PageTitle string
+		Step      int
+		Dataset   *models.Dataset
 	}{
+		"Add - Datasets - Biblio",
 		4,
 		savedDataset,
 	}))

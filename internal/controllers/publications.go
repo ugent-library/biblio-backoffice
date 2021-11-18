@@ -43,11 +43,13 @@ func (c *Publications) List(w http.ResponseWriter, r *http.Request) {
 	searchURL, _ := c.Router.Get("publications").URLPath()
 
 	c.Render.HTML(w, http.StatusOK, "publication/list", views.NewData(c.Render, r, struct {
+		PageTitle        string
 		SearchURL        *url.URL
 		SearchArgs       *engine.SearchArgs
 		Hits             *models.PublicationHits
 		PublicationSorts []string
 	}{
+		"Overview - Publications - Biblio",
 		searchURL,
 		args,
 		hits,
@@ -74,12 +76,14 @@ func (c *Publications) Show(w http.ResponseWriter, r *http.Request) {
 	}
 
 	c.Render.HTML(w, http.StatusOK, "publication/show", views.NewData(c.Render, r, struct {
+		PageTitle           string
 		Publication         *models.Publication
 		PublicationDatasets []*models.Dataset
 		Show                *views.ShowBuilder
 		Vocabularies        map[string][]string
 		SearchArgs          *engine.SearchArgs
 	}{
+		"Publication - Biblio",
 		pub,
 		datasets,
 		views.NewShowBuilder(c.Render, locale.Get(r.Context())),
@@ -126,16 +130,20 @@ func (c *Publications) Summary(w http.ResponseWriter, r *http.Request) {
 
 func (c *Publications) Add(w http.ResponseWriter, r *http.Request) {
 	c.Render.HTML(w, http.StatusOK, "publication/add", views.NewData(c.Render, r, struct {
-		Step int
+		PageTitle string
+		Step      int
 	}{
+		"Add - Publications - Biblio",
 		1,
 	}))
 }
 
 func (c *Publications) AddSingle(w http.ResponseWriter, r *http.Request) {
 	c.Render.HTML(w, http.StatusOK, "publication/add_single", views.NewData(c.Render, r, struct {
-		Step int
+		PageTitle string
+		Step      int
 	}{
+		"Add - Publications - Biblio",
 		2,
 	}))
 }
@@ -168,10 +176,12 @@ func (c *Publications) AddSingleImport(w http.ResponseWriter, r *http.Request) {
 	}
 
 	c.Render.HTML(w, http.StatusOK, "publication/add_single_files", views.NewData(c.Render, r, struct {
+		PageTitle   string
 		Step        int
 		Publication *models.Publication
 		Show        *views.ShowBuilder
 	}{
+		"Add - Publications - Biblio",
 		3,
 		pub,
 		views.NewShowBuilder(c.Render, locale.Get(r.Context())),
@@ -189,11 +199,13 @@ func (c *Publications) AddSingleDescription(w http.ResponseWriter, r *http.Reque
 	}
 
 	c.Render.HTML(w, http.StatusOK, "publication/add_single_description", views.NewData(c.Render, r, struct {
+		PageTitle           string
 		Step                int
 		Publication         *models.Publication
 		PublicationDatasets []*models.Dataset
 		Show                *views.ShowBuilder
 	}{
+		"Add - Publications - Biblio",
 		4,
 		pub,
 		datasets,
@@ -205,9 +217,11 @@ func (c *Publications) AddSingleConfirm(w http.ResponseWriter, r *http.Request) 
 	pub := context.GetPublication(r.Context())
 
 	c.Render.HTML(w, http.StatusOK, "publication/add_single_confirm", views.NewData(c.Render, r, struct {
+		PageTitle   string
 		Step        int
 		Publication *models.Publication
 	}{
+		"Add - Publications - Biblio",
 		5,
 		pub,
 	}))
@@ -224,9 +238,11 @@ func (c *Publications) AddSinglePublish(w http.ResponseWriter, r *http.Request) 
 	}
 
 	c.Render.HTML(w, http.StatusOK, "publication/add_single_publish", views.NewData(c.Render, r, struct {
+		PageTitle   string
 		Step        int
 		Publication *models.Publication
 	}{
+		"Add - Publications - Biblio",
 		6,
 		savedPub,
 	}))
@@ -234,8 +250,10 @@ func (c *Publications) AddSinglePublish(w http.ResponseWriter, r *http.Request) 
 
 func (c *Publications) AddMultiple(w http.ResponseWriter, r *http.Request) {
 	c.Render.HTML(w, http.StatusOK, "publication/add_multiple", views.NewData(c.Render, r, struct {
-		Step int
+		PageTitle string
+		Step      int
 	}{
+		"Add - Publications - Biblio",
 		2,
 	}))
 }
@@ -279,6 +297,7 @@ func (c *Publications) AddMultipleImport(w http.ResponseWriter, r *http.Request)
 	searchURL, _ := c.Router.Get("publication_add_multiple_description").URLPath("batch_id", batchID)
 
 	c.Render.HTML(w, http.StatusOK, "publication/add_multiple_description", views.NewData(c.Render, r, struct {
+		PageTitle        string
 		Step             int
 		SearchURL        *url.URL
 		SearchArgs       *engine.SearchArgs
@@ -286,6 +305,7 @@ func (c *Publications) AddMultipleImport(w http.ResponseWriter, r *http.Request)
 		PublicationSorts []string
 		BatchID          string
 	}{
+		"Add - Publications - Biblio",
 		3,
 		searchURL,
 		args,
@@ -317,6 +337,7 @@ func (c *Publications) AddMultipleDescription(w http.ResponseWriter, r *http.Req
 	searchURL, _ := c.Router.Get("publication_add_multiple_description").URLPath("batch_id", batchID)
 
 	c.Render.HTML(w, http.StatusOK, "publication/add_multiple_description", views.NewData(c.Render, r, struct {
+		PageTitle        string
 		Step             int
 		SearchURL        *url.URL
 		SearchArgs       *engine.SearchArgs
@@ -324,6 +345,7 @@ func (c *Publications) AddMultipleDescription(w http.ResponseWriter, r *http.Req
 		PublicationSorts []string
 		BatchID          string
 	}{
+		"Add - Publications - Biblio",
 		3,
 		searchURL,
 		args,
@@ -353,6 +375,7 @@ func (c *Publications) AddMultipleShow(w http.ResponseWriter, r *http.Request) {
 	}
 
 	c.Render.HTML(w, http.StatusOK, "publication/add_multiple_show", views.NewData(c.Render, r, struct {
+		PageTitle           string
 		Step                int
 		Publication         *models.Publication
 		PublicationDatasets []*models.Dataset
@@ -361,6 +384,7 @@ func (c *Publications) AddMultipleShow(w http.ResponseWriter, r *http.Request) {
 		SearchArgs          *engine.SearchArgs
 		BatchID             string
 	}{
+		"Add - Publications - Biblio",
 		3,
 		pub,
 		datasets,
@@ -388,6 +412,7 @@ func (c *Publications) AddMultipleConfirm(w http.ResponseWriter, r *http.Request
 	searchURL, _ := c.Router.Get("publication_add_multiple_confirm").URLPath("batch_id", batchID)
 
 	c.Render.HTML(w, http.StatusOK, "publication/add_multiple_confirm", views.NewData(c.Render, r, struct {
+		PageTitle        string
 		Step             int
 		SearchURL        *url.URL
 		SearchArgs       *engine.SearchArgs
@@ -395,6 +420,7 @@ func (c *Publications) AddMultipleConfirm(w http.ResponseWriter, r *http.Request
 		PublicationSorts []string
 		BatchID          string
 	}{
+		"Add - Publications - Biblio",
 		4,
 		searchURL,
 		args,
@@ -417,6 +443,7 @@ func (c *Publications) AddMultipleConfirmShow(w http.ResponseWriter, r *http.Req
 	}
 
 	c.Render.HTML(w, http.StatusOK, "publication/add_multiple_confirm_show", views.NewData(c.Render, r, struct {
+		PageTitle           string
 		Step                int
 		Publication         *models.Publication
 		PublicationDatasets []*models.Dataset
@@ -424,6 +451,7 @@ func (c *Publications) AddMultipleConfirmShow(w http.ResponseWriter, r *http.Req
 		Vocabularies        map[string][]string
 		BatchID             string
 	}{
+		"Add - Publications - Biblio",
 		4,
 		pub,
 		datasets,
@@ -456,6 +484,7 @@ func (c *Publications) AddMultiplePublish(w http.ResponseWriter, r *http.Request
 	searchURL, _ := c.Router.Get("publication_add_multiple_publish").URLPath("batch_id", batchID)
 
 	c.Render.HTML(w, http.StatusOK, "publication/add_multiple_publish", views.NewData(c.Render, r, struct {
+		PageTitle        string
 		Step             int
 		SearchURL        *url.URL
 		SearchArgs       *engine.SearchArgs
@@ -463,6 +492,7 @@ func (c *Publications) AddMultiplePublish(w http.ResponseWriter, r *http.Request
 		PublicationSorts []string
 		BatchID          string
 	}{
+		"Add - Publications - Biblio",
 		5,
 		searchURL,
 		engine.NewSearchArgs(),
