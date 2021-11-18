@@ -161,7 +161,15 @@ func (c *Publications) AddSingleImport(w http.ResponseWriter, r *http.Request) {
 		p, err := c.Engine.ImportUserPublicationByIdentifier(context.GetUser(r.Context()).ID, source, identifier)
 		if err != nil {
 			log.Println(err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			c.Render.HTML(w, http.StatusOK, "publication/add_single", views.NewData(c.Render, r, struct {
+				PageTitle string
+				Step      int
+			}{
+				"Add - Publications - Biblio",
+				2,
+			},
+				views.Flash{Type: "error", Message: "Sorry, something went wrong. Could not import the publication."},
+			))
 			return
 		}
 
@@ -285,7 +293,16 @@ func (c *Publications) AddMultipleImport(w http.ResponseWriter, r *http.Request)
 
 	batchID, err := c.Engine.ImportUserPublications(userID, source, file)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Println(err)
+		c.Render.HTML(w, http.StatusOK, "publication/add_multiple", views.NewData(c.Render, r, struct {
+			PageTitle string
+			Step      int
+		}{
+			"Add - Publications - Biblio",
+			2,
+		},
+			views.Flash{Type: "error", Message: "Sorry, something went wrong. Could not import the publications."},
+		))
 		return
 	}
 

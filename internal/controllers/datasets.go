@@ -110,7 +110,13 @@ func (c *Datasets) AddImport(w http.ResponseWriter, r *http.Request) {
 	dataset, err := c.Engine.ImportUserDatasetByIdentifier(context.GetUser(r.Context()).ID, source, identifier)
 	if err != nil {
 		log.Println(err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		c.Render.HTML(w, http.StatusOK, "dataset/add", views.NewData(c.Render, r, struct {
+			Step int
+		}{
+			1,
+		},
+			views.Flash{Type: "error", Message: "Sorry, something went wrong. Could not import the dataset."},
+		))
 		return
 	}
 
