@@ -434,7 +434,7 @@ func (c *PublicationAuthors) PromoteSearchAuthor(w http.ResponseWriter, r *http.
 	}
 
 	q := person.FirstName + " " + person.LastName
-	people, _ := c.Engine.SuggestUsers(q)
+	people, _ := c.Engine.SuggestPersons(q)
 
 	// pub, err := c.Engine.GetPublication(id)
 	// if err != nil {
@@ -453,7 +453,7 @@ func (c *PublicationAuthors) PromoteSearchAuthor(w http.ResponseWriter, r *http.
 		"publication/_authors_modal_promote_author",
 		views.NewData(c.Render, r, struct {
 			ID       string
-			People   []models.User
+			People   []models.Person
 			Length   string
 			RowDelta string
 		}{
