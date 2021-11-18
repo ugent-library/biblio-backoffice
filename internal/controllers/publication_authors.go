@@ -30,7 +30,6 @@ package controllers
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -134,15 +133,9 @@ func (c *PublicationAuthors) CreateAuthor(w http.ResponseWriter, r *http.Request
 	id := r.Form["ID"]
 
 	if id[0] != "" {
-		log.Println("Submitted ugent author")
-		log.Println(id)
-		log.Println(id[0])
 		// Submitted an UGent author
-
 		// Check if the user really exists
 		user, err := c.Engine.GetPerson(id[0])
-		log.Println(user)
-		log.Println(err)
 		if err != nil {
 			// TODO: throw appropriate error
 			return
@@ -152,7 +145,6 @@ func (c *PublicationAuthors) CreateAuthor(w http.ResponseWriter, r *http.Request
 		author.ID = user.ID
 		author.FirstName = user.FirstName
 		author.LastName = user.LastName
-		log.Println(author)
 	} else {
 		// Submitted an external member
 
@@ -257,15 +249,9 @@ func (c *PublicationAuthors) UpdateAuthor(w http.ResponseWriter, r *http.Request
 	id := r.Form["ID"]
 
 	if id[0] != "" {
-		log.Println("Submitted ugent author")
-		log.Println(id)
-		log.Println(id[0])
 		// Submitted an UGent author
-
 		// Check if the user really exists
 		user, err := c.Engine.GetPerson(id[0])
-		log.Println(user)
-		log.Println(err)
 		if err != nil {
 			// TODO: throw appropriate error
 			return
@@ -275,7 +261,6 @@ func (c *PublicationAuthors) UpdateAuthor(w http.ResponseWriter, r *http.Request
 		author.ID = user.ID
 		author.FirstName = user.FirstName
 		author.LastName = user.LastName
-		log.Println(author)
 	} else {
 		// Submitted an external member
 
