@@ -225,12 +225,20 @@ func (c *PublicationAuthors) UpdateAuthor(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	author := &models.PublicationContributor{}
+	id := r.Form["ID"]
 
-	if err := forms.Decode(author, r.Form); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	// Check if the user really exists
+	user, err := c.Engine.GetUser(id[0])
+	if err != nil {
+		// TODO: throw appropriate error
 		return
 	}
+
+	author := &models.PublicationContributor{}
+	// Use the registered values from the user, avoid relying on user input.
+	author.ID = user.ID
+	author.FirstName = user.FirstName
+	author.LastName = user.LastName
 
 	authors := make([]models.PublicationContributor, len(pub.Author))
 	copy(authors, pub.Author)
@@ -249,7 +257,7 @@ func (c *PublicationAuthors) UpdateAuthor(w http.ResponseWriter, r *http.Request
 
 		return
 	} else if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		// TODO: throw appropriate error
 		return
 	}
 
@@ -358,7 +366,6 @@ func (c *PublicationAuthors) OrderAuthors(w http.ResponseWriter, r *http.Request
 func (c *PublicationAuthors) PromoteSearchAuthor(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	muxRowDelta := mux.Vars(r)["delta"]
-	// rowDelta, _ := strconv.Atoi(muxRowDelta)
 
 	err := r.ParseForm()
 	if err != nil {
@@ -386,15 +393,23 @@ func (c *PublicationAuthors) PromoteSearchAuthor(w http.ResponseWriter, r *http.
 	// 	return
 	// }
 
+	length := strconv.Itoa(len(people))
+
+	w.Header().Set("HX-Trigger", "ITPromoteModal")
+	w.Header().Set("HX-Trigger-After-Swap", "ITPromoteModalAfterSwap")
+	w.Header().Set("HX-Trigger-After-Settle", "ITPromoteModalAfterSettle")
+
 	c.Render.HTML(w, 200,
 		"publication/_authors_modal_promote_author",
 		views.NewData(c.Render, r, struct {
-			ID     string
-			People []models.User
-			Delta  string
+			ID       string
+			People   []models.User
+			Length   string
+			RowDelta string
 		}{
 			id,
 			people,
+			length,
 			muxRowDelta,
 		}),
 		render.HTMLOptions{Layout: "layouts/htmx"},

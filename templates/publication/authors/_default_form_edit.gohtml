@@ -8,6 +8,7 @@
                 <div class="row">
                     {{ .D.RenderFormText .D.Author.FirstName "FirstName" "/data/first_name" "First Name" "" false 5 }}
                     {{ .D.RenderFormText .D.Author.LastName "LastName" "/data/last_name" "Last Name" "" false 5 }}
+                    <input type="hidden" name="ID" value="{{ .D.Author.ID }}">
                 </div>
             </div>
         </div>
@@ -16,17 +17,25 @@
         {{ .D.RenderFormMultiSelectList "CreditRole" "/data/credit_role" "" .D.Author.CreditRole "creditRoles" "" false 12 }}
     </td>
     <td class="membership">
-        <span class="mr-3">External member</span>
-        <button type="button" name="promote" class="btn btn-outline-primary promote-author"
-            hx-post="{{pathFor "publication_authors_promote_author_modal" "id" .D.ID "delta" .D.Key}}"
-            hx-target="#publications-authors-modal"
-            hx-trigger="click"
-            hx-include="#authors-table .row-edit"
-        >
+        <div class="external {{ if not .D.Author.ID }} d-display {{ else }} d-none {{ end }}">
+            <span class="mr-3">External member</span>
+            <button type="button" name="ugent-author" class="btn btn-outline-primary promote-author"
+                hx-post="{{pathFor "publication_authors_promote_author_modal" "id" .D.ID "delta" .D.Key}}"
+                hx-target="#publications-authors-modal"
+                hx-trigger="click"
+                hx-include="#authors-table .row-edit"
+            >
+                <i class="if if-ghent-university"></i>
+                <div class="btn-text">UGent Author</div>
+            </button>
+        </div>
+        <div class="ugent-author {{ if .D.Author.ID }} d-display {{ else}} d-none {{ end }}">
             <i class="if if-ghent-university"></i>
-            <div class="btn-text">Promote</div>
-        </button>
-        <input type="hidden" name="UGentID" value="" />
+            <span class="mr-3">UGent author</span>
+            <button type="button" name="external-member" class="btn btn-outline-primary demote-external-member">
+                <div class="btn-text">External member</div>
+            </button>
+        </div>
     </td>
     <td class="pr-4">
         <div class="c-button-toolbar">

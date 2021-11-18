@@ -1,0 +1,41 @@
+<div id="modal-backdrop" class="modal-backdrop fade show" style="display:block;"></div>
+<div class="modal show" id="promoteContributor" tabindex="-1" style="display: block;" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Promote a contributor</h2>
+            </div>
+            <div class="modal-body">
+                <p>Lenght: {{ .D.Length }}</p>
+                <ul class="list-group mt-6" id ="modal-contributors-list">
+                    {{ $rowDelta := .D.RowDelta }}
+                    {{ range $key, $p := .D.People }}
+                    <li class="list-group-item"
+                        data-id="{{ $p.ID }}"
+                        data-firstname="{{ $p.FirstName }}"
+                        data-lastname="{{ $p.LastName }}"
+                    >
+                        <div class="d-flex w-100">
+                            <div class="w-100">
+                                <div class="d-flex align-items-start">
+                                    <div class="list-group-item-content">
+                                        <div class="list-group-item-text">
+                                            <a href="#" data-row="{{ $rowDelta }}" class="c-h4">{{ $p.FullName }}</a>
+                                            <div class="text-muted c-body-small">Department: {{ if $p.Department }} {{ $p.Department | join "," }} {{ else }} ~ {{ end }}</div>
+                                        </div>
+                                        <div class="list-group-item-meta mt-2">
+                                    </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    {{ end }}
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-link modal-close" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
