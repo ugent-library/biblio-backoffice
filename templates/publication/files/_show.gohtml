@@ -141,9 +141,9 @@
                                                 <span>Edit</span>
                                             </button>
                                             <button class="dropdown-item" type="button"
-                                                hx-patch="{{pathFor "publication_file_remove" "id" $.D.Publication.ID "file_id" .ID}}"
-                                                hx-swap="outerHTML"
-                                                hx-target="closest .publication-files"
+                                                hx-get="{{pathFor "publication_file_remove" "id" $.D.Publication.ID "file_id" .ID}}"
+                                                hx-target="#publication-files-modal"
+                                                hx-trigger="click"
                                             >
                                                 <i class="if if-delete"></i>
                                                 <span>Delete</span>

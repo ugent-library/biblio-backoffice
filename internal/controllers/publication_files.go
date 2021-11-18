@@ -246,6 +246,21 @@ func (c *PublicationFiles) Update(w http.ResponseWriter, r *http.Request) {
 	)
 }
 
+func (c *PublicationFiles) ConfirmRemove(w http.ResponseWriter, r *http.Request) {
+	id := mux.Vars(r)["id"]
+	fileID := mux.Vars(r)["file_id"]
+
+	c.Render.HTML(w, http.StatusOK, "publication/files/_modal_confirm_removal", views.NewData(c.Render, r, struct {
+		PublicationID string
+		FileID        string
+	}{
+		id,
+		fileID,
+	}),
+		render.HTMLOptions{Layout: "layouts/htmx"},
+	)
+}
+
 func (c *PublicationFiles) Remove(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	fileID := mux.Vars(r)["file_id"]
