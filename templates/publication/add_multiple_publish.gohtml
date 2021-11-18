@@ -26,12 +26,12 @@
         </div>
 
         <div class="card mb-6">
-            <div class="card-header">Publications</div>
+            <div class="card-header">
+                <h4 class="mr-5 d-inline">Imported publications</h4>
+                {{template "search/_count" .}}
+            </div>
             <div class="card-body p-0">
                 <ul class="list-group list-group-flush">
-                    <li class="list-group-item">
-                        <h4>Publications</h4>
-                    </li>
                     {{range .D.Hits.Hits}}
                     <li class="list-group-item">
                         {{template "publication/_hit" ($.NewData (dict "Publication" . "SearchArgs" $.D.SearchArgs))}}

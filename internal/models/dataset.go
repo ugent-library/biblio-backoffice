@@ -8,6 +8,8 @@ type DatasetHits struct {
 	LastPage     int                `json:"last_page"`
 	PreviousPage bool               `json:"previous_page"`
 	NextPage     bool               `json:"next_page"`
+	FirstOnPage  int                `json:"first_on_page"`
+	LastOnPage   int                `json:"last_on_page"`
 	Hits         []*Dataset         `json:"hits"`
 	Facets       map[string][]Facet `json:"facets"`
 }

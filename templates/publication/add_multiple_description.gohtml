@@ -25,86 +25,77 @@
     <div class="px-6 pt-6 u-scroll-wrapper__body">
         {{template "publication/_search" .}}
         <div class="card mb-6">
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item">
-                    <div class="custom-control custom-checkbox">
-                        <input class="custom-control-input" id="selectAll" type="checkbox"
-                            name="overviewItems">
-                        <label class="custom-control-label" for="selectAll">
-                            <span class="h4 mr-2 ml-5">Publications</span>
-                            <span class="text-muted c-body-small">0 of {{.D.Hits.Total}} publications selected</span>
-                        </label>
-                    </div>
-                </li>
-                {{range .D.Hits.Hits}}
-                {{$pubURL := pathFor "publication_add_multiple_show" "batch_id" $.D.BatchID "id" .ID| query $.D.SearchArgs}}
-                <li class="list-group-item">
-                    <div class="d-flex w-100">
-                        <div class="custom-control custom-checkbox mr-4 align-self-start">
-                            <input class="custom-control-input" type="checkbox" name="overviewItems"
-                                id="publication-{{.ID}}" />
-                            <label class="custom-control-label" for="publication-{{.ID}}">&nbsp;</label>
-                        </div>
-                        <div class="w-100">
-                            <div class="d-flex align-items-start">
-                                {{template "publication/_thumbnail" .}}
-                                <div class="list-group-item-content">
-                                    <div class="list-group-item-subline">
-                                        <div class="list-group-item-subline-left">
-                                            <span class="mr-3 pr-3 border-right">{{$.T "publication_types" .Type}}{{with .Classification}}: {{.}}{{end}}</span>
-                                            {{template "publication/_access_level" .}}
-                                        </div>
-                                        <div class="list-group-item-subline-right">
-                                            <div class="dropdown dropleft">
-                                                <button class="btn btn-link btn-icon-only btn-link-muted"
-                                                    type="button" data-toggle="dropdown"
-                                                    aria-haspopup="true" aria-expanded="false">
-                                                    <i class="if if-more"></i>
-                                                </button>
-                                                <div class="dropdown-menu">
-                                                    <a class="dropdown-item"
-                                                        href="$pubURL">
-                                                        <i class="if if-file-text"></i>
-                                                        <span>View details</span>
-                                                    </a>
+            <div class="card-header">
+                <h4 class="mr-5 d-inline">Imported publications</h4>
+                {{template "search/_count" .}}
+            </div>
+            <div class="card-body p-0">
+                <ul class="list-group list-group-flush">
+                    {{range .D.Hits.Hits}}
+                    {{$pubURL := pathFor "publication_add_multiple_show" "batch_id" $.D.BatchID "id" .ID| query $.D.SearchArgs}}
+                    <li class="list-group-item">
+                        <div class="d-flex w-100">
+                            <div class="w-100">
+                                <div class="d-flex align-items-start">
+                                    {{template "publication/_thumbnail" .}}
+                                    <div class="list-group-item-content">
+                                        <div class="list-group-item-subline">
+                                            <div class="list-group-item-subline-left">
+                                                <span class="mr-3 pr-3 border-right">{{$.T "publication_types" .Type}}{{with .Classification}}: {{.}}{{end}}</span>
+                                                {{template "publication/_access_level" .}}
+                                            </div>
+                                            <div class="list-group-item-subline-right">
+                                                <div class="dropdown dropleft">
+                                                    <button class="btn btn-link btn-icon-only btn-link-muted"
+                                                        type="button" data-toggle="dropdown"
+                                                        aria-haspopup="true" aria-expanded="false">
+                                                        <i class="if if-more"></i>
+                                                    </button>
+                                                    <div class="dropdown-menu">
+                                                        <a class="dropdown-item"
+                                                            href="$pubURL">
+                                                            <i class="if if-file-text"></i>
+                                                            <span>View details</span>
+                                                        </a>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="list-group-item-text">
-                                        <a href="{{$pubURL}}">
-                                            <h4 class="c-h4">{{.Title}}</h4>
-                                        </a>
-                                        {{with .Author}}{{template "publication/_contributors_short" .}}{{end}}
-                                        <span class="c-body-small text-muted">
-                                            {{.Year}}{{with .Publication}}, {{.}}{{end}}
-                                        </span>
-                                    </div>
-                                    <div class="list-group-item-meta mt-5">
-                                        <div class="list-group-item-meta-left">
-                                            <div class="list-group-item-meta-item">
-                                                {{template "publication/_status" .}}
-                                            </div>
-                                            <div class="list-group-item-meta-item">
-                                                {{template "publication/_completeness" .}}
-                                            </div>
+                                        <div class="list-group-item-text">
+                                            <a href="{{$pubURL}}">
+                                                <h4 class="c-h4">{{.Title}}</h4>
+                                            </a>
+                                            {{with .Author}}{{template "publication/_contributors_short" .}}{{end}}
+                                            <span class="c-body-small text-muted">
+                                                {{.Year}}{{with .Publication}}, {{.}}{{end}}
+                                            </span>
                                         </div>
-                                        <div class="list-group-item-meta-right">
-                                            <div class="list-group-item-meta-item">
-                                                <span class="text-muted c-body-small">Biblio ID: {{.ID}}</span>
+                                        <div class="list-group-item-meta mt-5">
+                                            <div class="list-group-item-meta-left">
+                                                <div class="list-group-item-meta-item">
+                                                    {{template "publication/_status" .}}
+                                                </div>
+                                                <div class="list-group-item-meta-item">
+                                                    {{template "publication/_completeness" .}}
+                                                </div>
                                             </div>
-                                            <div class="list-group-item-meta-item">
-                                                <span class="text-muted c-body-small">Created {{timeElapsed .DateCreated "en"}}</span>
+                                            <div class="list-group-item-meta-right">
+                                                <div class="list-group-item-meta-item">
+                                                    <span class="text-muted c-body-small">Biblio ID: {{.ID}}</span>
+                                                </div>
+                                                <div class="list-group-item-meta-item">
+                                                    <span class="text-muted c-body-small">Created {{timeElapsed .DateCreated "en"}}</span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </li>
-                {{end}}
-            </ul>
+                    </li>
+                    {{end}}
+                </ul>
+            </div>
         </div>
         <nav aria-label="Page navigation">
             {{template "search/_pagination" .}}
