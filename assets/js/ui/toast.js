@@ -6,7 +6,7 @@ export default function () {
     }
 
     let addEvents = function() {
-        document.querySelectorAll('.bc-toast .toast-close').forEach(btn =>
+        document.querySelectorAll('.bc-toast .toast-dismiss').forEach(btn =>
             btn.addEventListener('click', dismissToast)
         )
     }
