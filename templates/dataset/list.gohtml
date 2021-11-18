@@ -56,53 +56,30 @@
         </div>
     </div>
     <div class="u-scroll-wrapper__body p-6">
-        <form class="mb-4" method="GET" action="{{pathFor "datasets"}}">
-            {{range .D.SearchArgs.FiltersFor "scope"}}
-            <input type="hidden" name="f[scope]" value="{{.}}">
-            {{end}}
-            <div class="form-row">
-                <div class="col input-group">
-                    <label class="sr-only" for="q">Search</label>
-                    <input class="form-control" type="text" name="q" value="{{.D.SearchArgs.Query}}" placeholder="Search..."
-                        autocomplete="off">
-                    <div class="input-group-append">
-                        <button type="submit" class="btn btn-outline-primary" type="button">Search</button>
-                    </div>
-                </div>
-                <div class="col-3">
-                    <div class="d-flex">
-                        <label class="col-form-label pr-3" for="sort" style="white-space: nowrap">Sort
-                            by</label>
-                        <select class="custom-select form-change-submit" name="sort">
-                            {{range .D.PublicationSorts}}
-                            <option value="{{.}}"{{if $.D.SearchArgs.HasSort .}} selected{{end}}>{{$.T "publication_sorts" .}}</option>
-                            {{end}}
-                        </select>
-                    </div>
-                </div>
-            </div>
-        </form>
+        {{template "search/_query" .}}
+        <div class="d-flex flex-wrap mb-6">
+            {{template "search/_completeness_score_facet" .}}
+            {{template "search/_status_facet" .}}
+            {{template "search/_faculty_facet" .}}
+        </div>
+
         <div class="card mb-6">
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item">
-                    <div class="custom-control custom-checkbox">
-                        <input class="custom-control-input" id="selectAll" type="checkbox"
-                            name="overviewItems">
-                        <label class="custom-control-label" for="selectAll">
-                            <span class="h4 mr-2 ml-5">Datasets</span>
-                            <span class="text-muted c-body-small">0 of {{.D.Hits.Total}} datasets selected</span>
-                        </label>
-                    </div>
-                </li>
-                {{range .D.Hits.Hits}}
-                <li class="list-group-item">
-                    {{template "dataset/_hit" ($.NewData (dict "Dataset" . "SearchArgs" $.D.SearchArgs))}}
-                </li>
-                {{end}}
-            </ul>
+            <div class="card-header">
+                <h4 class="mr-5 d-inline">Datasets</h4>
+                {{template "search/_count" .}}
+            </div>
+            <div class="card-body p-0">
+                <ul class="list-group list-group-flush">
+                    {{range .D.Hits.Hits}}
+                    <li class="list-group-item">
+                        {{template "dataset/_hit" ($.NewData (dict "Dataset" . "SearchArgs" $.D.SearchArgs))}}
+                    </li>
+                    {{end}}
+                </ul>
+            </div>
         </div>
         <nav aria-label="Page navigation">
-            {{template "dataset/_pagination" .}}
+            {{template "search/_pagination" .}}
         </nav>
     </div>
 </div>

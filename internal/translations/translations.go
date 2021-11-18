@@ -14,7 +14,7 @@ func init() {
 	message.SetString(language.English, "credit_roles.last_author", "Last author")
 	message.SetString(language.English, "credit_roles.conceptualization", "Conceptualization")
 	message.SetString(language.English, "credit_roles.data_curation", "Datacuration")
-	message.SetString(language.English, "credit_roles.formal_analysis", "Formala nalysis")
+	message.SetString(language.English, "credit_roles.formal_analysis", "Formal analysis")
 	message.SetString(language.English, "credit_roles.funding_acquisition", "Funding acquisition")
 	message.SetString(language.English, "credit_roles.investigation", "Investigation")
 	message.SetString(language.English, "credit_roles.methodology", "Methodology")
@@ -39,8 +39,6 @@ func init() {
 	message.SetString(language.English, "publication_types.conference", "Conference")
 	message.SetString(language.English, "publication_types.dissertation", "Dissertation")
 	message.SetString(language.English, "publication_types.miscellaneous", "Miscellaneous")
-	message.SetString(language.English, "publication_types.report", "Report")
-	message.SetString(language.English, "publication_types.preprint", "Preprint")
 
 	message.SetString(language.English, "journal_article_types.original", "Original")
 	message.SetString(language.English, "journal_article_types.review", "Review")
@@ -101,9 +99,9 @@ func init() {
 	message.SetString(language.English, "publication_publishing_statuses.accepted", "Accepted")
 	message.SetString(language.English, "publication_publishing_statuses.published", "Published")
 
-	message.SetString(language.English, "publication_file_access_levels.open_access", "Open access")
-	message.SetString(language.English, "publication_file_access_levels.local", "UGent access")
-	message.SetString(language.English, "publication_file_access_levels.closed", "Private access")
+	message.SetString(language.English, "publication_file_access_levels.open_access", "Open Access")
+	message.SetString(language.English, "publication_file_access_levels.local", "UGent Access")
+	message.SetString(language.English, "publication_file_access_levels.closed", "Private Access")
 
 	message.SetString(language.English, "publication_versions.publishedVersion", "Published version")
 	message.SetString(language.English, "publication_versions.authorVersion", "Author's original")

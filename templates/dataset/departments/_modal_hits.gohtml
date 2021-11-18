@@ -1,4 +1,4 @@
-{{ range $key, $hit := .Hits }}
+{{ range $key, $hit := .D.Hits }}
 <li class="list-group-item">
     <div class="d-flex w-100">
         <div class="w-100">
@@ -15,9 +15,9 @@
                     </div>
                     <div class="list-group-item-meta-right">
                         <button class="btn btn-primary"
-                            hx-patch="{{pathFor "publicationDepartments_add_to_publication" "id" $.Publication.ID "department_id" $hit.ID}}"
+                            hx-patch="{{pathFor "datasetDepartments_add_to_dataset" "id" $.D.Dataset.ID "department_id" $hit.ID}}"
                             hx-swap="innerHTML"
-                            hx-target=".publication-departments"
+                            hx-target=".dataset-departments"
                         >Add Department</button>
                     </div>
                 </div>

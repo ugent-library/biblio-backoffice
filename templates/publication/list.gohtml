@@ -58,26 +58,22 @@
     <div class="u-scroll-wrapper__body p-6">
         {{template "publication/_search" .}}
         <div class="card mb-6">
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item">
-                    <div class="custom-control custom-checkbox">
-                        <input class="custom-control-input" id="selectAll" type="checkbox"
-                            name="overviewItems">
-                        <label class="custom-control-label" for="selectAll">
-                            <span class="h4 mr-2 ml-5">Publications</span>
-                            <span class="text-muted c-body-small">0 of {{.D.Hits.Total}} publications selected</span>
-                        </label>
-                    </div>
-                </li>
-                {{range .D.Hits.Hits}}
-                <li class="list-group-item">
-                    {{template "publication/_hit" ($.NewData (dict "Publication" . "SearchArgs" $.D.SearchArgs))}}
-                </li>
-                {{end}}
-            </ul>
+            <div class="card-header">
+                <h4 class="mr-5 d-inline">Publications</h4>
+                {{template "search/_count" .}}
+            </div>
+            <div class="card-body p-0">
+                <ul class="list-group list-group-flush">
+                    {{range .D.Hits.Hits}}
+                    <li class="list-group-item">
+                        {{template "publication/_hit" ($.NewData (dict "Publication" . "SearchArgs" $.D.SearchArgs))}}
+                    </li>
+                    {{end}}
+                </ul>
+            </div>
         </div>
         <nav aria-label="Page navigation">
-            {{template "publication/_pagination" .}}
+            {{template "search/_pagination" .}}
         </nav>
     </div>
 </div>

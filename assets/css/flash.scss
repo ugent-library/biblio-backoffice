@@ -1,0 +1,12 @@
+#flash-messages {
+    position: absolute;
+    bottom: 0; 
+    right: 0;
+    display: flex;
+    flex-direction: column-reverse; 
+    background-color: transparent;
+
+    .bc-toast {
+        margin: 0 1.3rem 1.3rem 0;
+    }
+}

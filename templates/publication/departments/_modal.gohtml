@@ -1,20 +1,20 @@
 <div id="modal-backdrop" class="modal-backdrop fade show" style="display:block;"></div>
-<div class="modal show" id="addDatasets" tabindex="-1" style="display: block;" aria-modal="true" role="dialog">
+<div class="modal show" id="addDepartments" tabindex="-1" style="display: block;" aria-modal="true" role="dialog">
     <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title">Select projects</h2>
+                <h2 class="modal-title">Select departments</h2>
             </div>
             <div class="modal-body">
                 <label class="sr-only" for="search">Search</label>
                 <input class="form-control" type="text" name="search" placeholder="Search..."
-                    hx-post="{{pathFor "dataset_projects_activesearch" "id" .D.Dataset.ID}}"
+                    hx-post="{{pathFor "publicationDepartments_activesearch" "id" .D.Publication.ID}}"
                     hx-trigger="keyup changed delay:500ms"
-                    hx-target="#modal-projects-list"
+                    hx-target="#modal-departments-list"
                     hx-swap="innerHTML"
                 >
-                <ul class="list-group mt-6" id ="modal-projects-list">
-                     {{ template "dataset/_projects_modal_hits" . }}
+                <ul class="list-group mt-6" id ="modal-departments-list">
+                     {{ template "publication/departments/_modal_hits" . }}
                 </ul>
             </div>
             <div class="modal-footer">

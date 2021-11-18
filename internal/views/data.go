@@ -11,21 +11,28 @@ import (
 	"github.com/unrolled/render"
 )
 
+type Flash struct {
+	Type    string
+	Message string
+}
+
 type Data struct {
 	renderer *render.Render
 	request  *http.Request
 	User     *models.User
 	Locale   *locale.Locale
+	Flash    []Flash
 	Data     interface{}
 }
 
-func NewData(renderer *render.Render, r *http.Request, data interface{}) *Data {
+func NewData(renderer *render.Render, r *http.Request, data interface{}, flashes ...Flash) *Data {
 	return &Data{
 		renderer: renderer,
 		request:  r,
 		User:     context.GetUser(r.Context()),
 		Locale:   locale.Get(r.Context()),
 		Data:     data,
+		Flash:    flashes,
 	}
 }
 

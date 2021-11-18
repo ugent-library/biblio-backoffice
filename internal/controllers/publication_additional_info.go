@@ -83,7 +83,9 @@ func (c *PublicationAdditionalInfo) SaveForm(w http.ResponseWriter, r *http.Requ
 				pub,
 				views.NewFormBuilder(c.Render, locale.Get(r.Context()), formErrors),
 				c.Engine.Vocabularies(),
-			}),
+			},
+				views.Flash{Type: "error", Message: "There are some problems with your input"},
+			),
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
 
@@ -103,7 +105,9 @@ func (c *PublicationAdditionalInfo) SaveForm(w http.ResponseWriter, r *http.Requ
 			savedPub,
 			views.NewShowBuilder(c.Render, locale.Get(r.Context())),
 			c.Engine.Vocabularies(),
-		}),
+		},
+			views.Flash{Type: "success", Message: "Additional info updated succesfully"},
+		),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }

@@ -1,4 +1,4 @@
-{{ range .Hits.Hits }}
+{{ range .D.Hits.Hits }}
 <li class="list-group-item">
     <div class="d-flex w-100">
         <div class="w-100">
@@ -14,7 +14,7 @@
                         </div>
                         <div class="list-group-item-subline-right">
                             <button class="btn btn-primary"
-                            hx-patch="{{pathFor "publication_datasets_add" "id" $.Publication.ID "dataset_id" .ID}}"
+                            hx-patch="{{pathFor "publication_datasets_add" "id" $.D.Publication.ID "dataset_id" .ID}}"
                             hx-swap="innerHTML"
                             hx-target=".publication-datasets"
                             >Add Dataset</button>
@@ -28,8 +28,8 @@
                         {{end}}
                         <span class="c-body-small text-muted">
                             {{.Year}},
-                            <a class="link-primary" href="#">
-                                <span class="text-decoration-underline"> DataverseNL</span>
+                            <a class="link-primary" href="{{.ResolveDOI}}">
+                                <span class="text-decoration-underline"> View in external repository</span>
                                 <i class="if if--small if-external-link"></i>
                             </a>
                         </span>

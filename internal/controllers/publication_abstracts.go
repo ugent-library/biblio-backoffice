@@ -33,19 +33,17 @@ func (c *PublicationAbstracts) AddAbstract(w http.ResponseWriter, r *http.Reques
 	w.Header().Set("HX-Trigger-After-Swap", "PublicationAddAbstractAfterSwap")
 	w.Header().Set("HX-Trigger-After-Settle", "PublicationAddAbstractAfterSettle")
 
-	c.Render.HTML(w, http.StatusOK,
-		"publication/abstracts/_form",
-		views.NewData(c.Render, r, struct {
-			PublicationID string
-			Abstract      *models.Text
-			Form          *views.FormBuilder
-			Vocabularies  map[string][]string
-		}{
-			id,
-			abstract,
-			views.NewFormBuilder(c.Render, locale.Get(r.Context()), nil),
-			c.Engine.Vocabularies(),
-		}),
+	c.Render.HTML(w, http.StatusOK, "publication/abstracts/_form", views.NewData(c.Render, r, struct {
+		PublicationID string
+		Abstract      *models.Text
+		Form          *views.FormBuilder
+		Vocabularies  map[string][]string
+	}{
+		id,
+		abstract,
+		views.NewFormBuilder(c.Render, locale.Get(r.Context()), nil),
+		c.Engine.Vocabularies(),
+	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -76,19 +74,17 @@ func (c *PublicationAbstracts) CreateAbstract(w http.ResponseWriter, r *http.Req
 	savedPub, err := c.Engine.UpdatePublication(pub)
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {
-		c.Render.HTML(w, http.StatusOK,
-			"publication/abstracts/_form",
-			views.NewData(c.Render, r, struct {
-				PublicationID string
-				Abstract      *models.Text
-				Form          *views.FormBuilder
-				Vocabularies  map[string][]string
-			}{
-				savedPub.ID,
-				abstract,
-				views.NewFormBuilder(c.Render, locale.Get(r.Context()), formErrors),
-				c.Engine.Vocabularies(),
-			}),
+		c.Render.HTML(w, http.StatusOK, "publication/abstracts/_form", views.NewData(c.Render, r, struct {
+			PublicationID string
+			Abstract      *models.Text
+			Form          *views.FormBuilder
+			Vocabularies  map[string][]string
+		}{
+			savedPub.ID,
+			abstract,
+			views.NewFormBuilder(c.Render, locale.Get(r.Context()), formErrors),
+			c.Engine.Vocabularies(),
+		}),
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
 
@@ -126,21 +122,19 @@ func (c *PublicationAbstracts) EditAbstract(w http.ResponseWriter, r *http.Reque
 	w.Header().Set("HX-Trigger-After-Swap", "PublicationAddAbstractAfterSwap")
 	w.Header().Set("HX-Trigger-After-Settle", "PublicationAddAbstractAfterSettle")
 
-	c.Render.HTML(w, http.StatusOK,
-		"publication/abstracts/_form_edit",
-		views.NewData(c.Render, r, struct {
-			PublicationID string
-			Delta         string
-			Abstract      *models.Text
-			Form          *views.FormBuilder
-			Vocabularies  map[string][]string
-		}{
-			pub.ID,
-			muxRowDelta,
-			abstract,
-			views.NewFormBuilder(c.Render, locale.Get(r.Context()), nil),
-			c.Engine.Vocabularies(),
-		}),
+	c.Render.HTML(w, http.StatusOK, "publication/abstracts/_form_edit", views.NewData(c.Render, r, struct {
+		PublicationID string
+		Delta         string
+		Abstract      *models.Text
+		Form          *views.FormBuilder
+		Vocabularies  map[string][]string
+	}{
+		pub.ID,
+		muxRowDelta,
+		abstract,
+		views.NewFormBuilder(c.Render, locale.Get(r.Context()), nil),
+		c.Engine.Vocabularies(),
+	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -202,13 +196,11 @@ func (c *PublicationAbstracts) UpdateAbstract(w http.ResponseWriter, r *http.Req
 	w.Header().Set("HX-Trigger-After-Swap", "PublicationUpdateAbstractAfterSwap")
 	w.Header().Set("HX-Trigger-After-Settle", "PublicationUpdateAbstractAfterSettle")
 
-	c.Render.HTML(w, http.StatusOK,
-		"publication/abstracts/_table_body",
-		views.NewData(c.Render, r, struct {
-			Publication *models.Publication
-		}{
-			savedPub,
-		}),
+	c.Render.HTML(w, http.StatusOK, "publication/abstracts/_table_body", views.NewData(c.Render, r, struct {
+		Publication *models.Publication
+	}{
+		savedPub,
+	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -222,15 +214,13 @@ func (c *PublicationAbstracts) ConfirmRemoveFromPublication(w http.ResponseWrite
 	w.Header().Set("HX-Trigger-After-Swap", "PublicationConfirmRemoveAfterSwap")
 	w.Header().Set("HX-Trigger-After-Settle", "PublicationConfirmRemoveAfterSettle")
 
-	c.Render.HTML(w, http.StatusOK,
-		"publication/_abstracts_modal_confirm_removal",
-		struct {
-			ID  string
-			Key string
-		}{
-			id,
-			muxRowDelta,
-		},
+	c.Render.HTML(w, http.StatusOK, "publication/abstracts/_modal_confirm_removal", views.NewData(c.Render, r, struct {
+		ID  string
+		Key string
+	}{
+		id,
+		muxRowDelta,
+	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }

@@ -7,8 +7,9 @@
     <meta name="robots" content="noindex">
     <link rel="stylesheet" href="{{assetPath "/css/app.css"}}">
     <link rel="icon" href="{{assetPath "/favicon.ico"}}">
-    <title>Overview - Publications - Biblio</title>
+    <title>{{.D.PageTitle}}</title>
     <meta name="htmx-config" content='{"useTemplateFragments":true}'>
+    <meta name="csrf-token" content='{{.CSRFToken}}'>
 </head>
 
 <body class="u-maximize-height overflow-hidden u-scroll-wrapper">
@@ -30,12 +31,12 @@
                     </div>
                 </div>
                 <div class="bc-toolbar-right">
-                    <div class="bc-toolbar-item">
+                    <!-- <div class="bc-toolbar-item">
                         <button class="btn btn-link btn-icon-only btn-link-muted mr-4">
                             <i class="if if-notification"></i>
                             <div class="sr-only">Notifications</div>
                         </button>
-                    </div>
+                    </div> -->
                     <div class="bc-toolbar-item">
                         <div class="dropdown">
                             <a class="dropdown-toggle d-flex align-items-center text-body" type="button"
@@ -99,12 +100,13 @@
 
     <div id="user-impersonate-modal" class="modals"></div>
 
+    <div id="flash-messages">
+        {{range .Flash}}
+        {{template "layouts/_flash_message" .}}
+        {{end}}
+    </div>
+
     <script type="application/javascript" src="{{assetPath "/js/app.js"}}"></script>
-    <script type="application/javascript">
-        document.body.addEventListener('htmx:configRequest', (event) => {
-            event.detail.headers['X-CSRF-Token'] = '{{.CSRFToken}}';
-        })
-    </script>
 </body>
 
 </html>

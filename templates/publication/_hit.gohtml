@@ -1,10 +1,5 @@
 {{$p := .D.Publication}}
 <div class="d-flex w-100">
-    <div class="custom-control custom-checkbox mr-4 align-self-start">
-        <input class="custom-control-input" type="checkbox" name="overviewItems"
-            id="publication-{{$p.ID}}" />
-        <label class="custom-control-label" for="publication-{{$p.ID}}">&nbsp;</label>
-    </div>
     <div class="w-100">
         <div class="d-flex align-items-start">
             {{template "publication/_thumbnail" $p}}
@@ -12,10 +7,7 @@
                 <div class="list-group-item-subline">
                     <div class="list-group-item-subline-left">
                         <span class="mr-3 pr-3 border-right">{{.T "publication_types" $p.Type}}{{with $p.Classification}}: {{.}}{{end}}</span>
-                        <div class="d-flex align-items-center">
-                            <i class="if if-download if--small if--success"></i>
-                            <span class="pl-2 text-muted">Open Access</span>
-                        </div>
+                        {{template "publication/_access_level" $p}}
                     </div>
                     <div class="list-group-item-subline-right">
                         <div class="dropdown dropleft">
@@ -30,27 +22,6 @@
                                     <i class="if if-file-text"></i>
                                     <span>View details</span>
                                 </a>
-                                <!-- <button class="dropdown-item">
-                                    <i class="if if-double-quotes"></i>
-                                    <span>Cite</span>
-                                </button>
-                                <button class="dropdown-item">
-                                    <i class="if if-add"></i>
-                                    <span>Add to list</span>
-                                </button>
-                                <button class="dropdown-item">
-                                    <i class="if if-notification"></i>
-                                    <span>Turn on notifications</span>
-                                </button>
-                                <button class="dropdown-item">
-                                    <i class="if if-orcid" style="color: #A6CE39"></i>
-                                    <span>Send to ORCID</span>
-                                </button>
-                                <button class="dropdown-item" type="button"
-                                    data-toggle="modal" data-target="#delete">
-                                    <i class="if if-delete"></i>
-                                    <span>Delete</span>
-                                </button> -->
                             </div>
                         </div>
                     </div>

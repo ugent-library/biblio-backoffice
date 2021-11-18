@@ -14,7 +14,7 @@
             <div class="modal-footer">
                 <button class="btn btn-link modal-close">Cancel</button>
                 <button type="button" name="update" class="btn btn-primary update-link"
-                    hx-put="{{pathFor "publication_links_update_link" "id" .D.PublicationID "delta" .Delta}}"
+                    hx-put="{{pathFor "publication_links_update_link" "id" .D.PublicationID "delta" .D.Delta}}"
                     hx-target="#links-table tbody"
                     hx-include=".modal-body"
                     hx-swap="innerHTML settle:.15s"

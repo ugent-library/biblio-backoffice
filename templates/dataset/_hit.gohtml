@@ -1,10 +1,5 @@
 {{$d := .D.Dataset}}
 <div class="d-flex w-100">
-    <div class="custom-control custom-checkbox mr-4 align-self-start">
-        <input class="custom-control-input" type="checkbox" name="overviewItems"
-            id="publication-{{$d.ID}}" />
-        <label class="custom-control-label" for="publication-{{$d.ID}}">&nbsp;</label>
-    </div>
     <div class="w-100">
         <div class="d-flex align-items-start">
             <div class="list-group-item-thumbnail">
@@ -61,8 +56,8 @@
                     {{with $d.Creator}}{{template "publication/_contributors_short" .}}{{end}}
                     <span class="c-body-small text-muted">
                         {{$d.Year}},
-                        <a class="link-primary" href="#">
-                            <span class="text-decoration-underline"> DataverseNL</span>
+                        <a class="link-primary" href="{{$d.ResolveDOI}}">
+                            <span class="text-decoration-underline"> View in external repository</span>
                             <i class="if if--small if-external-link"></i>
                         </a>
                     </span>

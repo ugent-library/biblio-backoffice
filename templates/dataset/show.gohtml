@@ -60,14 +60,7 @@
             <div class="bc-toolbar">
                 <div class="bc-toolbar-left">
                     <div class="bc-toolbar-item">
-                        <ul class="nav" role="tablist">
-                            <li class="nav-item">
-                                <a class="nav-link active" id="description-tab" data-toggle="tab" href="#description-content" role="tab" aria-controls="description" aria-selected="true">Description</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="publications-tab" data-toggle="tab" href="#publications-content" role="tab" aria-controls="publications" aria-selected="false">Publications</a>
-                            </li>
-                        </ul>
+                        {{template "dataset/_description_nav" .}}
                     </div>
                 </div>
                 <div class="bc-toolbar-right">
@@ -76,16 +69,6 @@
         </div>
     </div>
     <div class="u-scroll-wrapper__body p-6">
-        <div id="alerts"></div>
-        <div class="tab-content">
-            <div id="description-content" class="tab-pane fade show active" role="tabpanel" aria-labelledby="description-tab">
-                {{template "dataset/details/_show" .}}
-                {{template "dataset/_projects" .}}
-            </div>
-
-            <div id="publications-content" class="tab-pane fade" role="tabpanel" aria-labelledby="publications-tab">
-                {{template "dataset/publications/_show" .}}
-            </div>
-        </div>
+        {{template "dataset/_description_content" .}}
     </div>
 </div>

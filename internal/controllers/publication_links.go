@@ -34,19 +34,17 @@ func (c *PublicationLinks) AddLink(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("HX-Trigger-After-Swap", "PublicationAddLinkAfterSwap")
 	w.Header().Set("HX-Trigger-After-Settle", "PublicationAddLinkAfterSettle")
 
-	c.Render.HTML(w, http.StatusOK,
-		"publication/links/_form",
-		views.NewData(c.Render, r, struct {
-			PublicationID string
-			Link          *models.PublicationLink
-			Form          *views.FormBuilder
-			Vocabularies  map[string][]string
-		}{
-			id,
-			link,
-			views.NewFormBuilder(c.Render, locale.Get(r.Context()), nil),
-			c.Engine.Vocabularies(),
-		}),
+	c.Render.HTML(w, http.StatusOK, "publication/links/_form", views.NewData(c.Render, r, struct {
+		PublicationID string
+		Link          *models.PublicationLink
+		Form          *views.FormBuilder
+		Vocabularies  map[string][]string
+	}{
+		id,
+		link,
+		views.NewFormBuilder(c.Render, locale.Get(r.Context()), nil),
+		c.Engine.Vocabularies(),
+	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -77,19 +75,17 @@ func (c *PublicationLinks) CreateLink(w http.ResponseWriter, r *http.Request) {
 	savedPub, err := c.Engine.UpdatePublication(pub)
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {
-		c.Render.HTML(w, http.StatusOK,
-			"publication/links/_form",
-			views.NewData(c.Render, r, struct {
-				PublicationID string
-				Link          *models.PublicationLink
-				Form          *views.FormBuilder
-				Vocabularies  map[string][]string
-			}{
-				savedPub.ID,
-				link,
-				views.NewFormBuilder(c.Render, locale.Get(r.Context()), formErrors),
-				c.Engine.Vocabularies(),
-			}),
+		c.Render.HTML(w, http.StatusOK, "publication/links/_form", views.NewData(c.Render, r, struct {
+			PublicationID string
+			Link          *models.PublicationLink
+			Form          *views.FormBuilder
+			Vocabularies  map[string][]string
+		}{
+			savedPub.ID,
+			link,
+			views.NewFormBuilder(c.Render, locale.Get(r.Context()), formErrors),
+			c.Engine.Vocabularies(),
+		}),
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
 
@@ -103,13 +99,11 @@ func (c *PublicationLinks) CreateLink(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("HX-Trigger-After-Swap", "PublicationCreateLinkAfterSwap")
 	w.Header().Set("HX-Trigger-After-Settle", "PublicationCreateLinkAfterSettle")
 
-	c.Render.HTML(w, http.StatusOK,
-		"publication/links/_table_body",
-		views.NewData(c.Render, r, struct {
-			Publication *models.Publication
-		}{
-			savedPub,
-		}),
+	c.Render.HTML(w, http.StatusOK, "publication/links/_table_body", views.NewData(c.Render, r, struct {
+		Publication *models.Publication
+	}{
+		savedPub,
+	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -127,21 +121,19 @@ func (c *PublicationLinks) EditLink(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("HX-Trigger-After-Swap", "PublicationEditLinkAfterSwap")
 	w.Header().Set("HX-Trigger-After-Settle", "PublicationEditLinkAfterSwapAfterSettle")
 
-	c.Render.HTML(w, http.StatusOK,
-		"publication/links/_form_edit",
-		views.NewData(c.Render, r, struct {
-			PublicationID string
-			Delta         string
-			Link          *models.PublicationLink
-			Form          *views.FormBuilder
-			Vocabularies  map[string][]string
-		}{
-			pub.ID,
-			muxRowDelta,
-			link,
-			views.NewFormBuilder(c.Render, locale.Get(r.Context()), nil),
-			c.Engine.Vocabularies(),
-		}),
+	c.Render.HTML(w, http.StatusOK, "publication/links/_form_edit", views.NewData(c.Render, r, struct {
+		PublicationID string
+		Delta         string
+		Link          *models.PublicationLink
+		Form          *views.FormBuilder
+		Vocabularies  map[string][]string
+	}{
+		pub.ID,
+		muxRowDelta,
+		link,
+		views.NewFormBuilder(c.Render, locale.Get(r.Context()), nil),
+		c.Engine.Vocabularies(),
+	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -177,21 +169,19 @@ func (c *PublicationLinks) UpdateLink(w http.ResponseWriter, r *http.Request) {
 	savedPub, err := c.Engine.UpdatePublication(pub)
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {
-		c.Render.HTML(w, http.StatusOK,
-			"publication/links/_form_edit",
-			views.NewData(c.Render, r, struct {
-				PublicationID string
-				Delta         string
-				Link          *models.PublicationLink
-				Form          *views.FormBuilder
-				Vocabularies  map[string][]string
-			}{
-				savedPub.ID,
-				strconv.Itoa(rowDelta),
-				link,
-				views.NewFormBuilder(c.Render, locale.Get(r.Context()), formErrors),
-				c.Engine.Vocabularies(),
-			}),
+		c.Render.HTML(w, http.StatusOK, "publication/links/_form_edit", views.NewData(c.Render, r, struct {
+			PublicationID string
+			Delta         string
+			Link          *models.PublicationLink
+			Form          *views.FormBuilder
+			Vocabularies  map[string][]string
+		}{
+			savedPub.ID,
+			strconv.Itoa(rowDelta),
+			link,
+			views.NewFormBuilder(c.Render, locale.Get(r.Context()), formErrors),
+			c.Engine.Vocabularies(),
+		}),
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
 
@@ -225,15 +215,13 @@ func (c *PublicationLinks) ConfirmRemoveFromPublication(w http.ResponseWriter, r
 	w.Header().Set("HX-Trigger-After-Swap", "PublicationConfirmRemoveAfterSwap")
 	w.Header().Set("HX-Trigger-After-Settle", "PublicationConfirmRemoveAfterSettle")
 
-	c.Render.HTML(w, http.StatusOK,
-		"publication/_links_modal_confirm_removal",
-		struct {
-			ID  string
-			Key string
-		}{
-			id,
-			muxRowDelta,
-		},
+	c.Render.HTML(w, http.StatusOK, "publication/links/_modal_confirm_removal", views.NewData(c.Render, r, struct {
+		ID  string
+		Key string
+	}{
+		id,
+		muxRowDelta,
+	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }

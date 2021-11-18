@@ -1,6 +1,6 @@
 <div id="modal-backdrop" class="modal-backdrop fade show" style="display:block;"></div>
-<div class="modal show" id="removeDepartmentConfirmation" tabindex="-1" style="display: block;" aria-modal="true" role="dialog">
-<div class="modal-dialog modal-dialog-centered" role="document">
+<div class="modal show" id="removeLinkConfirmation" tabindex="-1" style="display: block;" aria-modal="true" role="dialog">
+<div class="modal-dialog modal-dialog-centered modal-confirm-link-removal" role="document">
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">Are you sure</h2>
@@ -10,10 +10,10 @@
         </div>
         <div class="modal-footer">
             <button class="btn btn-link modal-close">Cancel</button>
-            <button class="btn btn-danger"
-                hx-patch="{{pathFor "publicationDepartments_remove_from_publication" "id" .ID "department_id" .DepartmentID}}"
-                hx-swap="innerHTML"
-                hx-target=".publication-departments"
+            <button class="btn btn-danger delete-link"
+                hx-delete="{{pathFor "publication_links_remove_link" "id" .D.ID "delta" .D.Key}}"
+                hx-target="#links-table .row-{{ .D.Key }}"
+                hx-swap="outerHTML swap:.15s"
             >Delete</button>
         </div>
     </div>

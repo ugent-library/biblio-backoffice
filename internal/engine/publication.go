@@ -40,13 +40,12 @@ func (e *Engine) CreatePublication(pt string) (*models.Publication, error) {
 	return resPub, nil
 }
 
-// TODO: set constraint to not research_data
-func (e *Engine) ImportUserPublicationByIdentifier(userID, identifierType, identifier string) (*models.Publication, error) {
+func (e *Engine) ImportUserPublicationByIdentifier(userID, source, identifier string) (*models.Publication, error) {
 	reqData := struct {
-		IdentifierType string `json:"identifier_type"`
-		Identifier     string `json:"identifier"`
+		Source     string `json:"source"`
+		Identifier string `json:"identifier"`
 	}{
-		identifierType,
+		source,
 		identifier,
 	}
 	pub := &models.Publication{}
@@ -117,6 +116,23 @@ func (e *Engine) UpdatePublication(pub *models.Publication) (*models.Publication
 func (e *Engine) PublishPublication(pub *models.Publication) (*models.Publication, error) {
 	pub.Status = "public"
 	return e.UpdatePublication(pub)
+}
+
+func (e *Engine) BatchPublishPublications(userID string, args *SearchArgs) (err error) {
+	var hits *models.PublicationHits
+	for {
+		hits, err = e.UserPublications(userID, args)
+		for _, pub := range hits.Hits {
+			pub.Status = "public"
+			if _, err = e.UpdatePublication(pub); err != nil {
+				break
+			}
+		}
+		if !hits.NextPage {
+			break
+		}
+	}
+	return
 }
 
 func (e *Engine) GetPublicationDatasets(id string) ([]*models.Dataset, error) {

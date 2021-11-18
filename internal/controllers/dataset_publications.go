@@ -44,13 +44,13 @@ func (c *DatasetPublications) Choose(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.Render.HTML(w, http.StatusOK, "dataset/publications/_modal", struct {
+	c.Render.HTML(w, http.StatusOK, "dataset/publications/_modal", views.NewData(c.Render, r, struct {
 		Dataset *models.Dataset
 		Hits    *models.PublicationHits
 	}{
 		dataset,
 		hits,
-	},
+	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -85,13 +85,13 @@ func (c *DatasetPublications) ActiveSearch(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	c.Render.HTML(w, http.StatusOK, "dataset/publications/_modal_hits", struct {
+	c.Render.HTML(w, http.StatusOK, "dataset/publications/_modal_hits", views.NewData(c.Render, r, struct {
 		Dataset *models.Dataset
 		Hits    *models.PublicationHits
 	}{
 		dataset,
 		hits,
-	},
+	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -137,13 +137,13 @@ func (c *DatasetPublications) ConfirmRemove(w http.ResponseWriter, r *http.Reque
 	id := mux.Vars(r)["id"]
 	pubID := mux.Vars(r)["publication_id"]
 
-	c.Render.HTML(w, http.StatusOK, "dataset/publications/_modal_confirm_removal", struct {
+	c.Render.HTML(w, http.StatusOK, "dataset/publications/_modal_confirm_removal", views.NewData(c.Render, r, struct {
 		DatasetID     string
 		PublicationID string
 	}{
 		id,
 		pubID,
-	},
+	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }

@@ -3,6 +3,7 @@ package controllers
 import (
 	"log"
 	"net/http"
+	"net/url"
 
 	"github.com/ugent-library/biblio-backend/internal/context"
 	"github.com/ugent-library/biblio-backend/internal/engine"
@@ -41,10 +42,20 @@ func (c *Datasets) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.Render.HTML(w, http.StatusOK, "dataset/list", views.NewData(c.Render, r, DatasetListVars{
-		SearchArgs:       args,
-		Hits:             hits,
-		PublicationSorts: c.Engine.Vocabularies()["publication_sorts"],
+	searchURL, _ := c.Router.Get("datasets").URLPath()
+
+	c.Render.HTML(w, http.StatusOK, "dataset/list", views.NewData(c.Render, r, struct {
+		PageTitle        string
+		SearchURL        *url.URL
+		SearchArgs       *engine.SearchArgs
+		Hits             *models.DatasetHits
+		PublicationSorts []string
+	}{
+		"Overview - Datasets - Biblio",
+		searchURL,
+		args,
+		hits,
+		c.Engine.Vocabularies()["publication_sorts"],
 	}))
 }
 
@@ -66,11 +77,13 @@ func (c *Datasets) Show(w http.ResponseWriter, r *http.Request) {
 	}
 
 	c.Render.HTML(w, http.StatusOK, "dataset/show", views.NewData(c.Render, r, struct {
+		PageTitle           string
 		Dataset             *models.Dataset
 		DatasetPublications []*models.Publication
 		Show                *views.ShowBuilder
 		SearchArgs          *engine.SearchArgs
 	}{
+		"Dataset - Biblio",
 		dataset,
 		datasetPubs,
 		views.NewShowBuilder(c.Render, locale.Get(r.Context())),
@@ -89,10 +102,10 @@ func (c *Datasets) Add(w http.ResponseWriter, r *http.Request) {
 func (c *Datasets) AddImport(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 
-	identifierType := r.FormValue("identifier_type")
+	source := r.FormValue("source")
 	identifier := r.FormValue("identifier")
 
-	dataset, err := c.Engine.ImportUserDatasetByIdentifier(context.GetUser(r.Context()).ID, identifierType, identifier)
+	dataset, err := c.Engine.ImportUserDatasetByIdentifier(context.GetUser(r.Context()).ID, source, identifier)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -100,12 +113,16 @@ func (c *Datasets) AddImport(w http.ResponseWriter, r *http.Request) {
 	}
 
 	c.Render.HTML(w, http.StatusOK, "dataset/add_description", views.NewData(c.Render, r, struct {
-		Step    int
-		Dataset *models.Dataset
-		Show    *views.ShowBuilder
+		PageTitle           string
+		Step                int
+		Dataset             *models.Dataset
+		DatasetPublications []*models.Publication
+		Show                *views.ShowBuilder
 	}{
+		"Add - Datasets - Biblio",
 		2,
 		dataset,
+		nil,
 		views.NewShowBuilder(c.Render, locale.Get(r.Context())),
 	}))
 }
@@ -114,12 +131,16 @@ func (c *Datasets) AddDescription(w http.ResponseWriter, r *http.Request) {
 	dataset := context.GetDataset(r.Context())
 
 	c.Render.HTML(w, http.StatusOK, "dataset/add_description", views.NewData(c.Render, r, struct {
-		Step    int
-		Dataset *models.Dataset
-		Show    *views.ShowBuilder
+		PageTitle           string
+		Step                int
+		Dataset             *models.Dataset
+		DatasetPublications []*models.Publication
+		Show                *views.ShowBuilder
 	}{
+		"Add - Datasets - Biblio",
 		2,
 		dataset,
+		nil,
 		views.NewShowBuilder(c.Render, locale.Get(r.Context())),
 	}))
 }
@@ -128,9 +149,11 @@ func (c *Datasets) AddConfirm(w http.ResponseWriter, r *http.Request) {
 	dataset := context.GetDataset(r.Context())
 
 	c.Render.HTML(w, http.StatusOK, "dataset/add_confirm", views.NewData(c.Render, r, struct {
-		Step    int
-		Dataset *models.Dataset
+		PageTitle string
+		Step      int
+		Dataset   *models.Dataset
 	}{
+		"Add - Datasets - Biblio",
 		3,
 		dataset,
 	}))
@@ -147,9 +170,11 @@ func (c *Datasets) AddPublish(w http.ResponseWriter, r *http.Request) {
 	}
 
 	c.Render.HTML(w, http.StatusOK, "dataset/add_publish", views.NewData(c.Render, r, struct {
-		Step    int
-		Dataset *models.Dataset
+		PageTitle string
+		Step      int
+		Dataset   *models.Dataset
 	}{
+		"Add - Datasets - Biblio",
 		4,
 		savedDataset,
 	}))
