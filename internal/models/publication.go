@@ -25,10 +25,11 @@ type PublicationFile struct {
 	Filename           string     `json:"file_name,omitempty" form:"-"`
 	FileSize           int        `json:"file_size,omitempty" form:"-"`
 	ID                 string     `json:"file_id,omitempty" form:"-"`
+	License            string     `json:"license,omitempty" form:"license"`
 	PublicationVersion string     `json:"publication_version,omitempty" form:"publication_version"`
 	Relation           string     `json:"relation,omitempty" form:"relation"`
-	Title              string     `json:"title,omitempty" form:"title"`
 	ThumbnailURL       string     `json:"thumbnail_url,omitempty" form:"-"`
+	Title              string     `json:"title,omitempty" form:"title"`
 	URL                string     `json:"url,omitempty" form:"-"`
 }
 
