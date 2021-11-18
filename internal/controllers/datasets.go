@@ -95,8 +95,10 @@ func (c *Datasets) Show(w http.ResponseWriter, r *http.Request) {
 
 func (c *Datasets) Add(w http.ResponseWriter, r *http.Request) {
 	c.Render.HTML(w, http.StatusOK, "dataset/add", views.NewData(c.Render, r, struct {
-		Step int
+		PageTitle string
+		Step      int
 	}{
+		"Add - Datasets - Biblio",
 		1,
 	}))
 }
