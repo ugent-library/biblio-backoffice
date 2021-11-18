@@ -89,9 +89,9 @@
                             <span class="text-muted c-body-small">Biblio ID: {{$d.ID}}</span>
                         </div>
                         <div class="list-group-item-meta-item" data-toggle="tooltip"
-                            title="2 related datasets" data-placement="bottom">
+                            title="{{$d.RelatedPublicationCount}} related publications" data-placement="bottom">
                             <span class="text-muted c-body-small">
-                                <i class="if if-database if--muted if--small"></i>2
+                                <i class="if if-database if--muted if--small"></i>{{$d.RelatedPublicationCount}}
                             </span>
                         </div>
                         <div class="list-group-item-meta-item" data-toggle="tooltip"

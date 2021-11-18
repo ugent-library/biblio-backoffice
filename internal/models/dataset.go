@@ -39,6 +39,7 @@ type Dataset struct {
 	Message           string              `json:"message,omitempty" form:"-"`
 	Project           []DatasetProject    `json:"project,omitempty" form:"-"`
 	Publisher         string              `json:"publisher,omitempty" form:"publisher"`
+	RelatedPublicationCount int           `json:"related_publication_count" form:"-"`
 	ReviewerNote      string              `json:"reviewer_note,omitempty" form:"-"`
 	ReviewerTags      []string            `json:"reviewer_tags,omitempty" form:"-"`
 	Status            string              `json:"status,omitempty" form:"-"`
