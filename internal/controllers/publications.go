@@ -73,6 +73,8 @@ func (c *Publications) Show(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	pub.RelatedDatasetCount = len(datasets)
+
 	c.Render.HTML(w, http.StatusOK, "publication/show", views.NewData(c.Render, r, struct {
 		Publication         *models.Publication
 		PublicationDatasets []*models.Dataset
@@ -187,6 +189,8 @@ func (c *Publications) AddSingleDescription(w http.ResponseWriter, r *http.Reque
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	pub.RelatedDatasetCount = len(datasets)
 
 	c.Render.HTML(w, http.StatusOK, "publication/add_single_description", views.NewData(c.Render, r, struct {
 		Step                int
@@ -352,6 +356,8 @@ func (c *Publications) AddMultipleShow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	pub.RelatedDatasetCount = len(datasets)
+
 	c.Render.HTML(w, http.StatusOK, "publication/add_multiple_show", views.NewData(c.Render, r, struct {
 		Step                int
 		Publication         *models.Publication
@@ -415,6 +421,8 @@ func (c *Publications) AddMultipleConfirmShow(w http.ResponseWriter, r *http.Req
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	pub.RelatedDatasetCount = len(datasets)
 
 	c.Render.HTML(w, http.StatusOK, "publication/add_multiple_confirm_show", views.NewData(c.Render, r, struct {
 		Step                int
