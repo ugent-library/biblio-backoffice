@@ -1,5 +1,5 @@
 import htmx from 'htmx.org';
-import { DraggableTable } from '../classes/draggableTable.js';
+// import { DraggableTable } from '../classes/draggableTable.js';
 
 // TODO: We likely want to turn this into a separate class too.
 //  we just want to set the callback and ensure everything gets hooked
@@ -37,21 +37,31 @@ export function draggable() {
         return spinner
     }
 
-    let currentUrl = new URL(window.location.href);
-    let callback = "";
+    //let currentUrl = new URL(window.location.href);
+    // let callback = "";
     let tableSelector;
 
-    // Generate the callback for the authors
-    // TODO: Turn the pattern matching into something that incorporates the basePath of the Go app.
-    if (currentUrl.pathname.match(new RegExp(`^\.*\/publication\/[0-9]*$`, 'gm'))) {
-        callback = currentUrl.pathname + "/htmx/authors/order/:start/:end"
-        tableSelector = "authors-table";
-    }
+    // @todo
+    //   Dragging / dropping rows in the table (re-ordering) has been disabled for now because
+    //   it's a nice to have, but comes with too much complexity that might introduce bugs.
+    //   Uncomment these to enable this functionality at a later time.
+    //
+    // // Generate the callback for the authors
+    // // TODO: Turn the pattern matching into something that incorporates the basePath of the Go app.
+    // if (currentUrl.pathname.match(new RegExp(`^\.*\/publication\/[0-9]*$`, 'gm'))) {
+    //     callback = currentUrl.pathname + "/htmx/authors/order/:start/:end"
+    //     tableSelector = "authors-table";
+    // }
 
     if (tableSelector !== undefined && document.getElementById(tableSelector)) {
+        // @todo
+        //   Dragging / dropping rows in the table (re-ordering) has been disabled for now because
+        //   it's a nice to have, but comes with too much complexity that might introduce bugs.
+        //   Uncomment these to enable this functionality at a later time.
+        //
         // Init the Draggable table
-        const table = new DraggableTable({ tableSelector: tableSelector, callback: callback });
-        table.init();
+        // const table = new DraggableTable({ tableSelector: tableSelector, callback: callback });
+        // table.init();
 
         // Init the addAuthor button
         let addAuthor = document.querySelector("button.btn-outline-primary.add-author");
@@ -64,7 +74,7 @@ export function draggable() {
         // After the table is refreshed
         htmx.on("ITListAfterSwap", function(evt) {
             // Make the table draggable again.
-            table.init();
+            // table.init();
             // We can click the 'add author' button from the top menu.
             addAuthor.removeAttribute("disabled");
 
@@ -75,14 +85,14 @@ export function draggable() {
         });
 
         // After the order was changed thru drag n' droppin'
-        htmx.on("ITOrderAuthorsAfterSwap", function(evt) {
-            table.init();
-        });
+        // htmx.on("ITOrderAuthorsAfterSwap", function(evt) {
+        //     table.init();
+        // });
 
         // A new empty row form was added. Disable all add / edit / delete buttons
         htmx.on("ITAddRowAfterSwap", function(evt) {
             // Make the table static non-draggable.
-            table.reset();
+            // table.reset();
             // Disable the 'Add author' button from the top menu.
             addAuthor.setAttribute("disabled", "true");
             // Remove all buttons except the one's on the active form.
@@ -97,7 +107,7 @@ export function draggable() {
 
         // An row is being edited. Disable all add / edit / delete buttons
         htmx.on("ITEditRowAfterSwap", function(evt) {
-            table.reset();
+            // table.reset();
             addAuthor.setAttribute("disabled", "true");
             disableRowButtons(evt);
             let createButton = document.querySelector("table#authors-table button.update-author");

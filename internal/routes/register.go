@@ -375,9 +375,13 @@ func Register(c controllers.Context) {
 	pubEditRouter.HandleFunc("/htmx/authors/remove/{delta}", publicationAuthorsController.RemoveAuthor).
 		Methods("DELETE").
 		Name("publication_authors_remove_author")
-	pubEditRouter.HandleFunc("/htmx/authors/order/{start}/{end}", publicationAuthorsController.OrderAuthors).
-		Methods("PUT").
-		Name("publication_authors_order_authors")
+	// @todo
+	//   Temporarily disabling dragging / re-ordering authors. It's a complex feature which
+	//   might introduce complex bugs. May re-enable this later again when there's a real need
+	//   for this feature.
+	// pubEditRouter.HandleFunc("/htmx/authors/order/{start}/{end}", publicationAuthorsController.OrderAuthors).
+	// 	Methods("PUT").
+	// 	Name("publication_authors_order_authors")
 	pubEditRouter.HandleFunc("/{id}/htmx/authors/promote/search/{delta}", publicationAuthorsController.PromoteSearchAuthor).
 		Methods("POST").
 		Name("publication_authors_promote_author_modal")

@@ -364,49 +364,54 @@ func (c *PublicationAuthors) RemoveAuthor(w http.ResponseWriter, r *http.Request
 	fmt.Fprintf(w, "")
 }
 
-func (c *PublicationAuthors) OrderAuthors(w http.ResponseWriter, r *http.Request) {
-	muxStart := mux.Vars(r)["start"]
-	start, _ := strconv.Atoi(muxStart)
+// @todo
+//   Temporarily disabling dragging / re-ordering authors. It's a complex feature which
+//   might introduce complex bugs. May re-enable this later again when there's a real need
+//   for this feature.
+//
+// func (c *PublicationAuthors) OrderAuthors(w http.ResponseWriter, r *http.Request) {
+// 	muxStart := mux.Vars(r)["start"]
+// 	start, _ := strconv.Atoi(muxStart)
 
-	muxEnd := mux.Vars(r)["end"]
-	end, _ := strconv.Atoi(muxEnd)
+// 	muxEnd := mux.Vars(r)["end"]
+// 	end, _ := strconv.Atoi(muxEnd)
 
-	pub := context.GetPublication(r.Context())
+// 	pub := context.GetPublication(r.Context())
 
-	author := &pub.Author[start]
+// 	author := &pub.Author[start]
 
-	// Remove the author
-	authors := make([]models.Contributor, len(pub.Author))
-	copy(authors, pub.Author)
-	authors = append(authors[:start], authors[start+1:]...)
-	pub.Author = authors
+// 	// Remove the author
+// 	authors := make([]models.Contributor, len(pub.Author))
+// 	copy(authors, pub.Author)
+// 	authors = append(authors[:start], authors[start+1:]...)
+// 	pub.Author = authors
 
-	// Re-insert the author at the new position
-	placeholder := models.Contributor{}
-	authors = append(authors, placeholder)
-	copy(authors[end+1:], authors[end:])
-	authors[end] = *author
+// 	// Re-insert the author at the new position
+// 	placeholder := models.Contributor{}
+// 	authors = append(authors, placeholder)
+// 	copy(authors[end+1:], authors[end:])
+// 	authors[end] = *author
 
-	// Save everything
-	pub.Author = authors
+// 	// Save everything
+// 	pub.Author = authors
 
-	savedPub, err := c.Engine.UpdatePublication(pub)
+// 	savedPub, err := c.Engine.UpdatePublication(pub)
 
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+// 	if err != nil {
+// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+// 		return
+// 	}
 
-	w.Header().Set("HX-Trigger", "ITOrderAuthors")
-	w.Header().Set("HX-Trigger-After-Swap", "ITOrderAuthorsAfterSwap")
-	w.Header().Set("HX-Trigger-After-Settle", "ITOrderAuthorsAfterSettle")
+// 	w.Header().Set("HX-Trigger", "ITOrderAuthors")
+// 	w.Header().Set("HX-Trigger-After-Swap", "ITOrderAuthorsAfterSwap")
+// 	w.Header().Set("HX-Trigger-After-Settle", "ITOrderAuthorsAfterSettle")
 
-	c.Render.HTML(w, http.StatusOK,
-		"publication/authors/_default_table_body",
-		views.NewData(c.Render, r, views.NewContributorData(c.Render, savedPub, nil, "0")),
-		render.HTMLOptions{Layout: "layouts/htmx"},
-	)
-}
+// 	c.Render.HTML(w, http.StatusOK,
+// 		"publication/authors/_default_table_body",
+// 		views.NewData(c.Render, r, views.NewContributorData(c.Render, savedPub, nil, "0")),
+// 		render.HTMLOptions{Layout: "layouts/htmx"},
+// 	)
+// }
 
 func (c *PublicationAuthors) PromoteSearchAuthor(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
