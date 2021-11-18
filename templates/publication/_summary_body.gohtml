@@ -30,6 +30,13 @@
             <div class="list-group-item-meta-item">
                 <span class="text-muted c-body-small">Biblio ID: {{$p.ID}}</span>
             </div>
+            {{with .D.Publication.RelatedDatasetCount}}
+            <div class="list-group-item-meta-item" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="{{.}} related datasets">
+                <span class="text-muted c-body-small">
+                    <i class="if if-database if--muted if--small"></i>{{.}}
+                </span>
+            </div>
+            {{end}}
             <div class="list-group-item-meta-item">
                 <span class="text-muted c-body-small">Created {{timeElapsed $p.DateCreated "en"}}</span>
             </div>
