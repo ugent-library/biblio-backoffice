@@ -76,6 +76,8 @@ func (c *Datasets) Show(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	dataset.RelatedPublicationCount = len(datasetPubs)
+
 	c.Render.HTML(w, http.StatusOK, "dataset/show", views.NewData(c.Render, r, struct {
 		PageTitle           string
 		Dataset             *models.Dataset

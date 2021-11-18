@@ -132,9 +132,9 @@
                         <textarea class="form-control" name="description" rows="4">{{.D.File.Description}}</textarea>
                     </div>
                     <button class="btn btn-outline-danger mt-4" type="button"
-                        hx-patch="{{pathFor "publication_file_remove" "id" .D.Publication.ID "file_id" .D.File.ID}}"
-                        hx-swap="outerHTML"
-                        hx-target="closest .publication-files"
+                        hx-get="{{pathFor "publication_file_remove" "id" .D.Publication.ID "file_id" .D.File.ID}}"
+                        hx-target="#publication-files-modal"
+                        hx-trigger="click"
                     >
                         <i class="if if-delete"></i>
                         <div class="btn-text">Delete file</div>
