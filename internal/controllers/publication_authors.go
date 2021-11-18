@@ -30,6 +30,7 @@ package controllers
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -130,9 +131,35 @@ func (c *PublicationAuthors) CreateAuthor(w http.ResponseWriter, r *http.Request
 
 	author := &models.Contributor{}
 
-	if err := forms.Decode(author, r.Form); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+	id := r.Form["ID"]
+
+	if id[0] != "" {
+		log.Println("Submitted ugent author")
+		log.Println(id)
+		log.Println(id[0])
+		// Submitted an UGent author
+
+		// Check if the user really exists
+		user, err := c.Engine.GetPerson(id[0])
+		log.Println(user)
+		log.Println(err)
+		if err != nil {
+			// TODO: throw appropriate error
+			return
+		}
+
+		// Use the registered values from the user, avoid relying on user input.
+		author.ID = user.ID
+		author.FirstName = user.FirstName
+		author.LastName = user.LastName
+		log.Println(author)
+	} else {
+		// Submitted an external member
+
+		if err := forms.Decode(author, r.Form); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
 
 	placeholder := models.Contributor{}
@@ -225,20 +252,38 @@ func (c *PublicationAuthors) UpdateAuthor(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	author := &models.Contributor{}
+
 	id := r.Form["ID"]
 
-	// Check if the user really exists
-	user, err := c.Engine.GetUser(id[0])
-	if err != nil {
-		// TODO: throw appropriate error
-		return
-	}
+	if id[0] != "" {
+		log.Println("Submitted ugent author")
+		log.Println(id)
+		log.Println(id[0])
+		// Submitted an UGent author
 
-	author := &models.Contributor{}
-	// Use the registered values from the user, avoid relying on user input.
-	author.ID = user.ID
-	author.FirstName = user.FirstName
-	author.LastName = user.LastName
+		// Check if the user really exists
+		user, err := c.Engine.GetPerson(id[0])
+		log.Println(user)
+		log.Println(err)
+		if err != nil {
+			// TODO: throw appropriate error
+			return
+		}
+
+		// Use the registered values from the user, avoid relying on user input.
+		author.ID = user.ID
+		author.FirstName = user.FirstName
+		author.LastName = user.LastName
+		log.Println(author)
+	} else {
+		// Submitted an external member
+
+		if err := forms.Decode(author, r.Form); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
 
 	authors := make([]models.Contributor, len(pub.Author))
 	copy(authors, pub.Author)
