@@ -9,6 +9,7 @@
     <link rel="icon" href="{{assetPath "/favicon.ico"}}">
     <title>Overview - Publications - Biblio</title>
     <meta name="htmx-config" content='{"useTemplateFragments":true}'>
+    <meta name="csrf-token" content='{{.CSRFToken}}'>
 </head>
 
 <body class="u-maximize-height overflow-hidden u-scroll-wrapper">
@@ -106,11 +107,6 @@
     </div>
 
     <script type="application/javascript" src="{{assetPath "/js/app.js"}}"></script>
-    <script type="application/javascript">
-        document.body.addEventListener('htmx:configRequest', (event) => {
-            event.detail.headers['X-CSRF-Token'] = '{{.CSRFToken}}';
-        })
-    </script>
 </body>
 
 </html>

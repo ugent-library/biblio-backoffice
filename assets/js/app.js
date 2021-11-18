@@ -1,3 +1,4 @@
+import csrf from './ui/csrf.js'
 import check from './ui/check.js'
 import bootstrap from './ui/bootstrap.js'
 import { draggable } from './ui/draggable.js'
@@ -12,6 +13,7 @@ import radioCard from './ui/radio_card.js'
 import toast from './ui/toast.js'
 
 document.addEventListener('DOMContentLoaded', function () {
+    csrf()
     tabs()
     check()
     bootstrap()
