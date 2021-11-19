@@ -175,6 +175,7 @@ func (c *PublicationContributors) CreateContributor(w http.ResponseWriter, r *ht
 				return
 			}
 			contributor.ID = user.ID
+			contributor.CreditRole = r.Form["credit_role"]
 			contributor.FirstName = user.FirstName
 			contributor.LastName = user.LastName
 		} else {
@@ -345,6 +346,7 @@ func (c *PublicationContributors) UpdateContributor(w http.ResponseWriter, r *ht
 				return
 			}
 			contributor.ID = user.ID
+			contributor.CreditRole = r.Form["credit_role"]
 			contributor.FirstName = user.FirstName
 			contributor.LastName = user.LastName
 		} else {

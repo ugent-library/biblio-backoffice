@@ -14,13 +14,13 @@ export default function () {
                 let row = document.querySelectorAll("table#authors-table tbody tr").item(rowDelta)
 
                 // Set the values on the input fields
-                row.querySelector("input[name=FirstName]").value = item.dataset.firstname;
-                row.querySelector("input[name=LastName]").value = item.dataset.lastname;
+                row.querySelector("input[name=first_name]").value = item.dataset.firstname;
+                row.querySelector("input[name=last_name]").value = item.dataset.lastname;
                 row.querySelector("input[name=ID]").value = item.dataset.id;
 
                 // Disable the input fields (name shouldn't be editable if UGent author)
-                row.querySelector("input[name=FirstName]").setAttribute("disabled", "disabled");
-                row.querySelector("input[name=LastName]").setAttribute("disabled", "disabled");
+                row.querySelector("input[name=first_name]").setAttribute("disabled", "disabled");
+                row.querySelector("input[name=last_name]").setAttribute("disabled", "disabled");
 
                 // Flip the promote / degrade buttons
                 row.querySelector('div.external').classList.remove('d-display');
@@ -68,8 +68,8 @@ export default function () {
                 row.querySelector("input[name=ID]").value = "";
 
                 // Enable the input fields (editable as external member)
-                row.querySelector("input[name=FirstName]").removeAttribute("readonly");
-                row.querySelector("input[name=LastName]").removeAttribute("readonly");
+                row.querySelector("input[name=first_name]").removeAttribute("disabled");
+                row.querySelector("input[name=last_name]").removeAttribute("disabled");
 
                 // Flip the promote / degrade buttons
                 row.querySelector('div.external').classList.remove('d-none');
