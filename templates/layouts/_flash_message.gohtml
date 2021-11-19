@@ -1,4 +1,4 @@
-<div class="bc-toast bc-toast--{{.Type}}">
+<div class="bc-toast bc-toast--{{.Type}}"{{with .DismissAfter}} data-dismiss-after="{{.Milliseconds}}"{{end}}>
     <div class="bc-toast__left">
         {{if eq .Type "success"}}
         <i class="if if-check-circle-fill"></i>

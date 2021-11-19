@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/ugent-library/biblio-backend/internal/context"
 	"github.com/ugent-library/biblio-backend/internal/models"
@@ -98,7 +99,7 @@ func (c *PublicationConference) SaveForm(w http.ResponseWriter, r *http.Request)
 			savedPub,
 			views.NewShowBuilder(c.Render, locale.Get(r.Context())),
 		},
-			views.Flash{Type: "sucess", Message: "Conference updated succesfully"},
+			views.Flash{Type: "sucess", Message: "Conference updated succesfully", DismissAfter: 5 * time.Second},
 		),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)

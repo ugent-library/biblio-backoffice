@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/ugent-library/biblio-backend/internal/context"
 	"github.com/ugent-library/biblio-backend/internal/models"
@@ -97,7 +98,7 @@ func (c *PublicationDetails) SaveForm(w http.ResponseWriter, r *http.Request) {
 		views.NewShowBuilder(c.Render, locale.Get(r.Context())),
 		c.Engine.Vocabularies(),
 	},
-		views.Flash{Type: "success", Message: "Details updated succesfully"},
+		views.Flash{Type: "success", Message: "Details updated succesfully", DismissAfter: 5 * time.Second},
 	),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
