@@ -10,6 +10,10 @@ import (
 // https://www.alexedwards.net/blog/i18n-managing-translations
 // https://phrase.com/blog/posts/internationalization-i18n-go/#Manually_setting_the_translation_strings
 func init() {
+	message.SetString(language.English, "confirmations.yes", "Yes")
+	message.SetString(language.English, "confirmations.no", "No")
+	message.SetString(language.English, "confirmations.dontknow", "Don't know")
+
 	message.SetString(language.English, "credit_roles.first_author", "First author")
 	message.SetString(language.English, "credit_roles.last_author", "Last author")
 	message.SetString(language.English, "credit_roles.conceptualization", "Conceptualization")
@@ -136,6 +140,10 @@ func init() {
 	message.SetString(language.English, "builder.edition", "Edition")
 	message.SetString(language.English, "builder.esci_id", "ESCI ID")
 	message.SetString(language.English, "builder.extern", "Published while none of the authors are employed at UGent")
+	message.SetString(language.English, "builder.has_confidential_data", "Does the dissertation contain confidential or personal data?")
+	message.SetString(language.English, "builder.has_patent_application", "Is a patent application ongoing or planned?")
+	message.SetString(language.English, "builder.has_publications_planned", "Are other publications planned based on this dissertation (e.g. articles or book)?")
+	message.SetString(language.English, "builder.has_published_material", "Does the dissertation contain published articles (publisher's version or accepted manuscript)?")
 	message.SetString(language.English, "builder.isbn", "ISBN")
 	message.SetString(language.English, "builder.issn", "ISSN")
 	message.SetString(language.English, "builder.issue", "Issue")

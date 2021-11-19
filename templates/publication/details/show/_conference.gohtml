@@ -6,17 +6,17 @@
     {{.D.Show.List (.D.Show.Label "isbn") (.D.Show.Values .D.Publication.ISBN)}}
  </li>
 <li class="list-group-item">
-    {{.D.Show.Text (.D.Show.Label "title") (.D.Show.Value .D.Publication.Title) (.D.Show.Required)}}
+    {{.D.Show.Text (.D.Show.Label "title") (.D.Show.Value .D.Publication.Title) .D.Show.Required}}
     {{.D.Show.List (.D.Show.Label "alternative_title") (.D.Show.Values .D.Publication.AlternativeTitle)}}
     {{.D.Show.Text (.D.Show.Label "classification") (.D.Show.Value .D.Publication.Classification (.D.Show.Locale "publication_classifications"))}}
     {{.D.Show.Text (.D.Show.Label "wos_type") (.D.Show.Value .D.Publication.WOSType)}}
 </li>
 <li class="list-group-item">
-    {{.D.Show.Text (.D.Show.Label "publication" (.D.Show.Locale "builder.conference")) (.D.Show.Value .D.Publication.Publication) (.D.Show.Required)}}
+    {{.D.Show.Text (.D.Show.Label "publication" (.D.Show.Locale "builder.conference")) (.D.Show.Value .D.Publication.Publication) .D.Show.Required}}
     {{.D.Show.Text (.D.Show.Label "publication_abbreviation") (.D.Show.Value .D.Publication.PublicationAbbreviation)}}
     {{.D.Show.Text (.D.Show.Label "publisher") (.D.Show.Value .D.Publication.Publisher)}}
     {{.D.Show.Text (.D.Show.Label "place_of_publication") (.D.Show.Value .D.Publication.PlaceOfPublication)}}
-    {{.D.Show.Text (.D.Show.Label "year") (.D.Show.Value .D.Publication.Year) (.D.Show.Required)}}
+    {{.D.Show.Text (.D.Show.Label "year") (.D.Show.Value .D.Publication.Year) .D.Show.Required}}
     {{.D.Show.Text (.D.Show.Label "extern") (.D.Show.Value (formatBool .D.Publication.Extern "✓" ""))}}
     {{.D.Show.Text (.D.Show.Label "publication_status") (.D.Show.Value .D.Publication.PublicationStatus (.D.Show.Locale "publication_publishing_statuses"))}}
     {{.D.Show.List (.D.Show.Label "language") (.D.Show.Values .D.Publication.Language (.D.Show.LanguageName))}}

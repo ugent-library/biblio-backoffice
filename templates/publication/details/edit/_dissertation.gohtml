@@ -31,3 +31,21 @@
     {{.D.Form.Text (.D.Form.Name "volume") (.D.Form.Value .D.Publication.Volume) (.D.Form.Cols 3)}}
     {{.D.Form.Text (.D.Form.Name "page_count") (.D.Form.Value .D.Publication.PageCount) (.D.Form.Cols 3)}}
 </li>
+<li class="list-group-item">
+    {{.D.Form.RadioButtonGroup (.D.Form.Name "has_confidential_data")
+        (.D.Form.Value .D.Publication.HasConfidentialData)
+        (.D.Form.Cols 3)
+        (.D.Form.Choices .D.Vocabularies.confirmations (.D.Form.Locale "confirmations"))}}
+    {{.D.Form.RadioButtonGroup (.D.Form.Name "has_patent_application")
+        (.D.Form.Value .D.Publication.HasPatentApplication)
+        (.D.Form.Cols 3)
+        (.D.Form.Choices .D.Vocabularies.confirmations (.D.Form.Locale "confirmations"))}}
+    {{.D.Form.RadioButtonGroup (.D.Form.Name "has_publications_planned")
+        (.D.Form.Value .D.Publication.HasPublicationsPlanned)
+        (.D.Form.Cols 3)
+        (.D.Form.Choices .D.Vocabularies.confirmations (.D.Form.Locale "confirmations"))}}
+    {{.D.Form.RadioButtonGroup (.D.Form.Name "has_published_material")
+        (.D.Form.Value .D.Publication.HasPublishedMaterial)
+        (.D.Form.Cols 3)
+        (.D.Form.Choices .D.Vocabularies.confirmations (.D.Form.Locale "confirmations"))}}
+</li>
