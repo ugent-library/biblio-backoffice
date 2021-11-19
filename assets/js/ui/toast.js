@@ -9,6 +9,10 @@ export default function () {
         document.querySelectorAll('.bc-toast .toast-dismiss').forEach(btn =>
             btn.addEventListener('click', dismissToast)
         )
+        document.querySelectorAll('.bc-toast[data-dismiss-after]').forEach(function(toast) {
+            const t = parseInt(toast.dataset.dismissAfter, 10)
+            setTimeout(() => {toast.classList.add('d-none')}, t)
+        })
     }
 
     addEvents()

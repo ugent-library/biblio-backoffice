@@ -3,6 +3,7 @@ package views
 import (
 	"html/template"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/csrf"
 	"github.com/ugent-library/biblio-backend/internal/context"
@@ -12,8 +13,9 @@ import (
 )
 
 type Flash struct {
-	Type    string
-	Message string
+	Type         string
+	Message      string
+	DismissAfter time.Duration
 }
 
 type Data struct {
