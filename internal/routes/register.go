@@ -93,6 +93,7 @@ func Register(c controllers.Context) {
 	publicationAbstractsController := controllers.NewPublicationAbstracts(c)
 	publicationLinksController := controllers.NewPublicationLinks(c)
 	publicationAuthorsController := controllers.NewPublicationAuthors(c)
+	publicationContributorsController := controllers.NewPublicationContributors(c)
 	publicationDatasetsController := controllers.NewPublicationDatasets(c)
 	publicationAdditionalInfoController := controllers.NewPublicationAdditionalInfo(c)
 	datasetDetailsController := controllers.NewDatasetDetails(c)
@@ -348,34 +349,34 @@ func Register(c controllers.Context) {
 		Methods("DELETE").
 		Name("publication_links_remove_link")
 	// Publication authors HTMX fragments
-	pubEditRouter.HandleFunc("/htmx/authors/list", publicationAuthorsController.List).
+	pubEditRouter.HandleFunc("/htmx/{type}/list", publicationContributorsController.List).
 		Methods("GET").
 		Name("publication_authors_list")
-	pubEditRouter.HandleFunc("/htmx/authors/add/{delta}", publicationAuthorsController.AddRow).
+	pubEditRouter.HandleFunc("/htmx/{type}/add/{delta}", publicationContributorsController.AddRow).
 		Methods("GET").
 		Name("publication_authors_add_row")
-	pubEditRouter.HandleFunc("/htmx/authors/shift/{delta}", publicationAuthorsController.ShiftRow).
+	pubEditRouter.HandleFunc("/htmx/{type}/shift/{delta}", publicationContributorsController.ShiftRow).
 		Methods("GET").
 		Name("publication_authors_shift_row")
-	pubEditRouter.HandleFunc("/htmx/authors/cancel/add/{delta}", publicationAuthorsController.CancelAddRow).
+	pubEditRouter.HandleFunc("/htmx/{type}/cancel/add/{delta}", publicationContributorsController.CancelAddRow).
 		Methods("DELETE").
 		Name("publication_authors_cancel_add_row")
-	pubEditRouter.HandleFunc("/htmx/authors/create/{delta}", publicationAuthorsController.CreateAuthor).
+	pubEditRouter.HandleFunc("/htmx/{type}/create/{delta}", publicationContributorsController.CreateContributor).
 		Methods("POST").
 		Name("publication_authors_create_author")
-	pubEditRouter.HandleFunc("/htmx/authors/edit/{delta}", publicationAuthorsController.EditRow).
+	pubEditRouter.HandleFunc("/htmx/{type}/edit/{delta}", publicationContributorsController.EditRow).
 		Methods("GET").
 		Name("publication_authors_edit_row")
-	pubEditRouter.HandleFunc("/htmx/authors/cancel/edit/{delta}", publicationAuthorsController.CancelEditRow).
+	pubEditRouter.HandleFunc("/htmx/{type}/cancel/edit/{delta}", publicationContributorsController.CancelEditRow).
 		Methods("DELETE").
 		Name("publication_authors_cancel_edit_row")
-	pubEditRouter.HandleFunc("/htmx/authors/update/{delta}", publicationAuthorsController.UpdateAuthor).
+	pubEditRouter.HandleFunc("/htmx/{type}/update/{delta}", publicationContributorsController.UpdateContributor).
 		Methods("POST").
 		Name("publication_authors_update_author")
-	pubEditRouter.HandleFunc("/htmx/authors/remove/{delta}", publicationAuthorsController.ConfirmRemoveFromPublication).
+	pubEditRouter.HandleFunc("/htmx/{type}/remove/{delta}", publicationContributorsController.ConfirmRemoveFromPublication).
 		Methods("GET").
 		Name("publication_authors_confirm_remove_from_publication")
-	pubEditRouter.HandleFunc("/htmx/authors/remove/{delta}", publicationAuthorsController.RemoveAuthor).
+	pubEditRouter.HandleFunc("/htmx/{type}/remove/{delta}", publicationContributorsController.RemoveContributor).
 		Methods("DELETE").
 		Name("publication_authors_remove_author")
 	// @todo
