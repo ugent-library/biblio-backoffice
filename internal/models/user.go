@@ -17,6 +17,7 @@ type User struct {
 	ID          string           `json:"_id"`
 	LastName    string           `json:"last_name"`
 	ORCID       string           `json:"orcid"`
+	ORCIDToken  string           `json:"orcid_token"`
 	Role        string           `json:"role"`
 	UGentID     []string         `json:"ugent_id"`
 	Username    string           `json:"username"`
