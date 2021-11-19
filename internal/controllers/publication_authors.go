@@ -49,7 +49,7 @@ func (c *PublicationAuthors) PromoteSearchAuthor(w http.ResponseWriter, r *http.
 	w.Header().Set("HX-Trigger-After-Settle", "ITPromoteModalAfterSettle")
 
 	c.Render.HTML(w, 200,
-		"publication/_authors_modal_promote_author",
+		"publication/authors/_modal_promote_author",
 		views.NewData(c.Render, r, struct {
 			ID       string
 			People   []models.Person

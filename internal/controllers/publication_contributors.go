@@ -333,6 +333,7 @@ func (c *PublicationContributors) UpdateContributor(w http.ResponseWriter, r *ht
 }
 
 func (c *PublicationContributors) ConfirmRemoveFromPublication(w http.ResponseWriter, r *http.Request) {
+	ctype := mux.Vars(r)["type"]
 	id := mux.Vars(r)["id"]
 	muxRowDelta := mux.Vars(r)["delta"]
 
@@ -341,7 +342,7 @@ func (c *PublicationContributors) ConfirmRemoveFromPublication(w http.ResponseWr
 	w.Header().Set("HX-Trigger-After-Settle", "ITConfirmRemoveFromPublicationAfterSettle")
 
 	c.Render.HTML(w, http.StatusOK,
-		"publication/_authors_modal_confirm_removal",
+		fmt.Sprintf("publication/%s/_modal_confirm_removal", ctype),
 		views.NewData(c.Render, r, struct {
 			ID               string
 			ContributorDelta string

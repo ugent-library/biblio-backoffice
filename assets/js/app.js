@@ -2,7 +2,7 @@ import csrf from './ui/csrf.js'
 import check from './ui/check.js'
 import bootstrap from './ui/bootstrap.js'
 import header from './ui/header.js'
-import { draggable } from './ui/draggable.js'
+import { actionTables } from './ui/action_tables.js'
 import multiple from './ui/multiple.js'
 import changeSubmit from './ui/form_change_submit.js'
 import submit from './ui/form_submit.js'
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function () {
     check()
     bootstrap()
     header()
-    draggable()
+    actionTables()
     multiple()
     changeSubmit()
     submit()
