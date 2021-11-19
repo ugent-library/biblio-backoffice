@@ -6,15 +6,18 @@
             </div>
             <div class="bc-avatar-text container">
                 <div class="row">
-                    {{ .D.RenderFormText .D.Author.FirstName "FirstName" "/data/first_name" "First Name" "" false 5 }}
-                    {{ .D.RenderFormText .D.Author.LastName "LastName" "/data/last_name" "Last Name" "" false 5 }}
+                    {{.D.Form.TextInline (.D.Form.Name "first_name" (.D.Form.Locale "contributor"))
+                        (.D.Form.Value .D.Author.FirstName) (.D.Form.Cols 5) }}
+                    {{.D.Form.TextInline (.D.Form.Name "last_name" (.D.Form.Locale "contributor"))
+                        (.D.Form.Value .D.Author.LastName) (.D.Form.Cols 5) (.D.Form.ShowLabel false) }}
                     <input type="hidden" name="ID" value="">
                 </div>
             </div>
         </div>
     </td>
     <td class="col-3">
-        {{ .D.RenderFormMultiSelectList "CreditRole" "/data/credit_role" "" .D.Author.CreditRole "creditRoles" "" false 12 }}
+        {{.D.Form.ListMulti (.D.Form.Name "CreditRole") (.D.Form.Values .D.Author.CreditRole) (.D.Form.Cols 9)
+            (.D.Form.Choices .D.Author.CreditRoleChoices (.D.Form.Locale "credit_roles"))}}
     </td>
     <td class="membership">
         <div class="external {{ if not .D.Author.ID }} d-display {{ else }} d-none {{ end }}">

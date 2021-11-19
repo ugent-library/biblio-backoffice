@@ -37,6 +37,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/context"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/views"
+	"github.com/ugent-library/go-locale/locale"
 	"github.com/ugent-library/go-web/forms"
 	"github.com/ugent-library/go-web/jsonapi"
 	"github.com/unrolled/render"
@@ -60,7 +61,17 @@ func (c *PublicationContributors) List(w http.ResponseWriter, r *http.Request) {
 
 	c.Render.HTML(w, http.StatusOK,
 		fmt.Sprintf("publication/%s/_default_table_body", ctype),
-		views.NewData(c.Render, r, views.NewContributorData(c.Render, pub, nil, "0")),
+		views.NewData(c.Render, r, struct {
+			render      *render.Render
+			Publication *models.Publication
+			Author      *models.Contributor
+			Key         string
+		}{
+			c.Render,
+			pub,
+			nil,
+			"0",
+		}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -82,9 +93,17 @@ func (c *PublicationContributors) AddRow(w http.ResponseWriter, r *http.Request)
 	w.Header().Set("HX-Trigger-After-Swap", "ITAddRowAfterSwap")
 	w.Header().Set("HX-Trigger-After-Settle", "ITAddRowAfterSettle")
 
-	c.Render.HTML(w, http.StatusOK,
-		fmt.Sprintf("publication/%s/_default_form", ctype),
-		views.NewData(c.Render, r, views.NewContributorForm(c.Render, id, contributor, muxRowDelta, nil)),
+	c.Render.HTML(w, http.StatusOK, fmt.Sprintf("publication/%s/_default_form", ctype), views.NewData(c.Render, r, struct {
+		Author *models.Contributor
+		Form   *views.FormBuilder
+		ID     string
+		Key    string
+	}{
+		contributor,
+		views.NewFormBuilder(c.Render, locale.Get(r.Context()), nil),
+		id,
+		muxRowDelta,
+	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -103,9 +122,17 @@ func (c *PublicationContributors) ShiftRow(w http.ResponseWriter, r *http.Reques
 	w.Header().Set("HX-Trigger-After-Swap", "ITAddRowAfterSwap")
 	w.Header().Set("HX-Trigger-After-Settle", "ITAddRowAfterSettle")
 
-	c.Render.HTML(w, http.StatusOK,
-		fmt.Sprintf("publication/%s/_default_form", ctype),
-		views.NewData(c.Render, r, views.NewContributorForm(c.Render, id, contributor, muxRowDelta, nil)),
+	c.Render.HTML(w, http.StatusOK, fmt.Sprintf("publication/%s/_default_form", ctype), views.NewData(c.Render, r, struct {
+		Author *models.Contributor
+		Form   *views.FormBuilder
+		ID     string
+		Key    string
+	}{
+		contributor,
+		views.NewFormBuilder(c.Render, locale.Get(r.Context()), nil),
+		id,
+		muxRowDelta,
+	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -166,12 +193,19 @@ func (c *PublicationContributors) CreateContributor(w http.ResponseWriter, r *ht
 	savedPub, err := c.Engine.UpdatePublication(pub)
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {
-		c.Render.HTML(w, http.StatusOK,
-			fmt.Sprintf("publication/%s/_default_form", ctype),
-			views.NewData(c.Render, r, views.NewContributorForm(c.Render, savedPub.ID, contributor, muxRowDelta, formErrors)),
+		c.Render.HTML(w, http.StatusOK, fmt.Sprintf("publication/%s/_default_form", ctype), views.NewData(c.Render, r, struct {
+			Author *models.Contributor
+			Form   *views.FormBuilder
+			ID     string
+			Key    string
+		}{
+			contributor,
+			views.NewFormBuilder(c.Render, locale.Get(r.Context()), formErrors),
+			savedPub.ID,
+			muxRowDelta,
+		}),
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
-
 		return
 	} else if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -194,7 +228,17 @@ func (c *PublicationContributors) CreateContributor(w http.ResponseWriter, r *ht
 
 	c.Render.HTML(w, http.StatusOK,
 		fmt.Sprintf("publication/%s/_default_row", ctype),
-		views.NewData(c.Render, r, views.NewContributorData(c.Render, savedPub, savedContributor, muxRowDelta)),
+		views.NewData(c.Render, r, struct {
+			render      *render.Render
+			Publication *models.Publication
+			Author      *models.Contributor
+			Key         string
+		}{
+			c.Render,
+			savedPub,
+			savedContributor,
+			muxRowDelta,
+		}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -220,9 +264,17 @@ func (c *PublicationContributors) EditRow(w http.ResponseWriter, r *http.Request
 	w.Header().Set("HX-Trigger-After-Swap", "ITEditRowAfterSwap")
 	w.Header().Set("HX-Trigger-After-Settle", "ITEditRowAfterSettle")
 
-	c.Render.HTML(w, http.StatusOK,
-		fmt.Sprintf("publication/%s/_default_form_edit", ctype),
-		views.NewData(c.Render, r, views.NewContributorForm(c.Render, pub.ID, contributor, muxRowDelta, nil)),
+	c.Render.HTML(w, http.StatusOK, fmt.Sprintf("publication/%s/_default_form_edit", ctype), views.NewData(c.Render, r, struct {
+		Author *models.Contributor
+		Form   *views.FormBuilder
+		ID     string
+		Key    string
+	}{
+		contributor,
+		views.NewFormBuilder(c.Render, locale.Get(r.Context()), nil),
+		pub.ID,
+		muxRowDelta,
+	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -249,7 +301,17 @@ func (c *PublicationContributors) CancelEditRow(w http.ResponseWriter, r *http.R
 
 	c.Render.HTML(w, http.StatusOK,
 		fmt.Sprintf("publication/%s/_default_row", ctype),
-		views.NewData(c.Render, r, views.NewContributorData(c.Render, pub, contributor, muxRowDelta)),
+		views.NewData(c.Render, r, struct {
+			render      *render.Render
+			Publication *models.Publication
+			Author      *models.Contributor
+			Key         string
+		}{
+			c.Render,
+			pub,
+			contributor,
+			muxRowDelta,
+		}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
@@ -299,12 +361,19 @@ func (c *PublicationContributors) UpdateContributor(w http.ResponseWriter, r *ht
 	savedPub, err := c.Engine.UpdatePublication(pub)
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {
-		c.Render.HTML(w, http.StatusOK,
-			fmt.Sprintf("publication/%s/_%s_edit_form", ctype, pub.Type),
-			views.NewData(c.Render, r, views.NewContributorForm(c.Render, savedPub.ID, contributor, muxRowDelta, formErrors)),
+		c.Render.HTML(w, http.StatusOK, fmt.Sprintf("publication/%s/%s_edit_form", ctype, savedPub.Type), views.NewData(c.Render, r, struct {
+			Author *models.Contributor
+			Form   *views.FormBuilder
+			ID     string
+			Key    string
+		}{
+			contributor,
+			views.NewFormBuilder(c.Render, locale.Get(r.Context()), formErrors),
+			savedPub.ID,
+			muxRowDelta,
+		}),
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
-
 		return
 	} else if err != nil {
 		// @todo: throw appropriate error if saving the publication fails
@@ -327,7 +396,17 @@ func (c *PublicationContributors) UpdateContributor(w http.ResponseWriter, r *ht
 
 	c.Render.HTML(w, http.StatusOK,
 		fmt.Sprintf("publication/%s/_default_row", ctype),
-		views.NewData(c.Render, r, views.NewContributorData(c.Render, savedPub, savedContributor, muxRowDelta)),
+		views.NewData(c.Render, r, struct {
+			render      *render.Render
+			Publication *models.Publication
+			Author      *models.Contributor
+			Key         string
+		}{
+			c.Render,
+			savedPub,
+			savedContributor,
+			muxRowDelta,
+		}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }

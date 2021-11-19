@@ -13,6 +13,7 @@ type formData struct {
 	Name          string
 	values        []string
 	Label         string
+	ShowLabel     bool
 	Tooltip       string
 	Placeholder   string
 	Required      bool
@@ -124,6 +125,12 @@ func (b *FormBuilder) Values(v []string) formOption {
 	}
 }
 
+func (b *FormBuilder) ShowLabel(v bool) formOption {
+	return func(d *formData) {
+		d.ShowLabel = v
+	}
+}
+
 func (b *FormBuilder) Tooltip(v string) formOption {
 	return func(d *formData) {
 		d.Tooltip = v
@@ -193,6 +200,10 @@ func (b *FormBuilder) Text(opts ...formOption) (template.HTML, error) {
 	return RenderPartial(b.renderer, "form_builder/_text", b.newFormData(opts))
 }
 
+func (b *FormBuilder) TextInline(opts ...formOption) (template.HTML, error) {
+	return RenderPartial(b.renderer, "form_builder/_text_inline_label", b.newFormData(opts))
+}
+
 func (b *FormBuilder) TextRepeat(opts ...formOption) (template.HTML, error) {
 	return RenderPartial(b.renderer, "form_builder/_text_repeat", b.newFormData(opts))
 }
@@ -211,6 +222,10 @@ func (b *FormBuilder) List(opts ...formOption) (template.HTML, error) {
 
 func (b *FormBuilder) ListRepeat(opts ...formOption) (template.HTML, error) {
 	return RenderPartial(b.renderer, "form_builder/_list_repeat", b.newFormData(opts))
+}
+
+func (b *FormBuilder) ListMulti(opts ...formOption) (template.HTML, error) {
+	return RenderPartial(b.renderer, "form_builder/_list_multi", b.newFormData(opts))
 }
 
 func (b *FormBuilder) RadioButtonGroup(opts ...formOption) (template.HTML, error) {
