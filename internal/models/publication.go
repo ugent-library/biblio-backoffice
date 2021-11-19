@@ -84,10 +84,10 @@ type Publication struct {
 	Extern                  bool                    `json:"extern,omitempty" form:"extern"`
 	File                    []*PublicationFile      `json:"file,omitempty" form:"-"`
 	Handle                  string                  `json:"handle,omitempty" form:"-"`
-	HasConfidentialData     string                  `json:"has_confidential_data,omitempty" form:"-"`
-	HasPatentApplication    string                  `json:"has_patent_application,omitempty" form:"-"`
-	HasPublicationsPlanned  string                  `json:"has_publications_planned,omitempty" form:"-"`
-	HasPublishedMaterial    string                  `json:"has_published_material,omitempty" form:"-"`
+	HasConfidentialData     string                  `json:"has_confidential_data,omitempty" form:"has_confidential_data"`
+	HasPatentApplication    string                  `json:"has_patent_application,omitempty" form:"has_patent_application"`
+	HasPublicationsPlanned  string                  `json:"has_publications_planned,omitempty" form:"has_publications_planned"`
+	HasPublishedMaterial    string                  `json:"has_published_material,omitempty" form:"has_published_material"`
 	ID                      string                  `json:"_id,omitempty" form:"-"`
 	ISBN                    []string                `json:"isbn,omitempty" form:"isbn"`
 	ISSN                    []string                `json:"issn,omitempty" form:"issn"`

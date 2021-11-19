@@ -5,6 +5,11 @@ func (e *Engine) Vocabularies() map[string][]string {
 }
 
 var vocabularies = map[string][]string{
+	"confirmations": {
+		"yes",
+		"no",
+		"dontknow",
+	},
 	"credit_roles": {
 		"first_author",
 		"last_author",

@@ -212,3 +212,7 @@ func (b *FormBuilder) List(opts ...formOption) (template.HTML, error) {
 func (b *FormBuilder) ListRepeat(opts ...formOption) (template.HTML, error) {
 	return RenderPartial(b.renderer, "form_builder/_list_repeat", b.newFormData(opts))
 }
+
+func (b *FormBuilder) RadioButtonGroup(opts ...formOption) (template.HTML, error) {
+	return RenderPartial(b.renderer, "form_builder/_radio_button_group", b.newFormData(opts))
+}
