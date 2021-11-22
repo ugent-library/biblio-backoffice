@@ -63,6 +63,18 @@ export default function() {
         modalClose();
     });
 
+    htmx.on("DatasetCreateAbstract", function(evt) {
+        modalClose();
+    });
+
+    htmx.on("DatasetUpdateAbstract", function(evt) {
+        modalClose();
+    });
+
+    htmx.on("DatasetRemoveAbstract", function(evt) {
+        modalClose();
+    });
+
     htmx.on("htmx:afterSettle", function(evt) {
         let container = evt.detail.target
         if (container.classList.contains("modals")) {

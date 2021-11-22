@@ -35,8 +35,15 @@
                     {{.D.Form.Text (.D.Form.Name "url") (.D.Form.Value .D.Dataset.URL) (.D.Form.Cols 3)}}
                 </li>
                 <li class="list-group-item">
-                    {{.D.Form.Text (.D.Form.Name "url") (.D.Form.Value .D.Dataset.Publisher) (.D.Form.Cols 9)}}
+                    {{.D.Form.Text (.D.Form.Name "publisher") (.D.Form.Value .D.Dataset.Publisher) (.D.Form.Cols 9)}}
                     {{.D.Form.Text (.D.Form.Name "year") (.D.Form.Value .D.Dataset.Year) (.D.Form.Cols 3)}}
+                </li>
+                <li class="list-group-item">
+                    {{.D.Form.Text (.D.Form.Name "format") (.D.Form.Value .D.Dataset.Format) (.D.Form.Cols 9)}}
+					{{.D.Form.TextRepeat (.D.Form.Name "keyword") (.D.Form.Values .D.Dataset.Keyword) (.D.Form.Cols 9)}}
+                </li>
+                <li class="list-group-item">
+                    {{.D.Form.Text (.D.Form.Name "license") (.D.Form.Value .D.Dataset.License) (.D.Form.Cols 9)}}
                 </li>
             </ul>
         </div>

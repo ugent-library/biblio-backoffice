@@ -83,8 +83,8 @@ func Register(c controllers.Context) {
 
 	// authController := controllers.NewAuth(e, sessionName, sessionStore, oidcClient, router)
 	usersController := controllers.NewUsers(c)
+
 	publicationsController := controllers.NewPublications(c)
-	datasetsController := controllers.NewDatasets(c)
 	publicationFilesController := controllers.NewPublicationFiles(c)
 	publicationDetailsController := controllers.NewPublicationDetails(c)
 	publicationConferenceController := controllers.NewPublicationConference(c)
@@ -96,9 +96,12 @@ func Register(c controllers.Context) {
 	publicationContributorsController := controllers.NewPublicationContributors(c)
 	publicationDatasetsController := controllers.NewPublicationDatasets(c)
 	publicationAdditionalInfoController := controllers.NewPublicationAdditionalInfo(c)
+
+	datasetsController := controllers.NewDatasets(c)
 	datasetDetailsController := controllers.NewDatasetDetails(c)
 	datasetProjectsController := controllers.NewDatasetProjects(c)
 	datasetDepartmentsController := controllers.NewDatasetDepartments(c)
+	datasetAbstractsController := controllers.NewDatasetAbstracts(c)
 	datasetPublicationsController := controllers.NewDatasetPublications(c)
 
 	// TODO fix absolute url generation
@@ -480,6 +483,25 @@ func Register(c controllers.Context) {
 	datasetEditRouter.HandleFunc("/htmx/departments/remove/{department_id}", datasetDepartmentsController.RemoveFromDataset).
 		Methods("PATCH").
 		Name("datasetDepartments_remove_from_dataset")
+	// Dataset abstracts HTMX fragments
+	datasetEditRouter.HandleFunc("/htmx/abstracts/add", datasetAbstractsController.AddAbstract).
+		Methods("GET").
+		Name("dataset_abstracts_add_abstract")
+	datasetEditRouter.HandleFunc("/htmx/abstracts/create", datasetAbstractsController.CreateAbstract).
+		Methods("POST").
+		Name("dataset_abstracts_create_abstract")
+	datasetEditRouter.HandleFunc("/htmx/abstracts/edit/{delta}", datasetAbstractsController.EditAbstract).
+		Methods("GET").
+		Name("dataset_abstracts_edit_abstract")
+	datasetEditRouter.HandleFunc("/htmx/abstracts/update/{delta}", datasetAbstractsController.UpdateAbstract).
+		Methods("PUT").
+		Name("dataset_abstracts_update_abstract")
+	datasetEditRouter.HandleFunc("/htmx/abstracts/remove/{delta}", datasetAbstractsController.ConfirmRemoveFromDataset).
+		Methods("GET").
+		Name("dataset_abstracts_confirm_remove_from_dataset")
+	datasetEditRouter.HandleFunc("/htmx/abstracts/remove/{delta}", datasetAbstractsController.RemoveAbstract).
+		Methods("DELETE").
+		Name("dataset_abstracts_remove_abstract")
 	// Dataset publications HTMX fragments
 	datasetEditRouter.HandleFunc("/htmx/publications/choose", datasetPublicationsController.Choose).
 		Methods("GET").

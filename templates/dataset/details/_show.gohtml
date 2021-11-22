@@ -36,7 +36,11 @@
                     {{.D.Show.Text (.D.Show.Label "year") (.D.Show.Value .D.Dataset.Year)}}
                 </li>
                 <li class="list-group-item">
+                    {{.D.Show.Text (.D.Show.Label "format") (.D.Show.Value .D.Dataset.Format)}}
                     {{.D.Show.BadgeList (.D.Show.Label "keyword") (.D.Show.Values .D.Dataset.Keyword)}}
+                </li>
+                <li class="list-group-item">
+                    {{.D.Show.Text (.D.Show.Label "license") (.D.Show.Value .D.Dataset.License)}}
                 </li>
             </ul>
         </div>

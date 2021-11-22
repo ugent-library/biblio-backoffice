@@ -113,8 +113,10 @@ func (c *Datasets) AddImport(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println(err)
 		c.Render.HTML(w, http.StatusOK, "dataset/add", views.NewData(c.Render, r, struct {
-			Step int
+			PageTitle string
+			Step      int
 		}{
+			"Add - Datasets - Biblio",
 			1,
 		},
 			views.Flash{Type: "error", Message: "Sorry, something went wrong. Could not import the dataset."},
