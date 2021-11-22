@@ -214,13 +214,12 @@ func (c *PublicationContributors) CreateContributor(w http.ResponseWriter, r *ht
 	}
 
 	// Use the SavedContributor since Librecat returns contributor.FullName
-	savedContributor := &models.Contributor{}
+	var savedContributor *models.Contributor
 	switch ctype {
 	case "authors":
 		savedContributor = c.Engine.GetAuthorFromPublication(savedPub, rowDelta)
 	default:
 		// @todo: Throw an error, unkown type
-		return
 	}
 
 	w.Header().Set("HX-Trigger", "ITCreateItem")
@@ -251,7 +250,7 @@ func (c *PublicationContributors) EditRow(w http.ResponseWriter, r *http.Request
 
 	pub := context.GetPublication(r.Context())
 
-	contributor := &models.Contributor{}
+	var contributor *models.Contributor
 	switch ctype {
 	case "authors":
 		contributor = c.Engine.GetAuthorFromPublication(pub, rowDelta)
@@ -287,7 +286,7 @@ func (c *PublicationContributors) CancelEditRow(w http.ResponseWriter, r *http.R
 
 	pub := context.GetPublication(r.Context())
 
-	contributor := &models.Contributor{}
+	var contributor *models.Contributor
 	switch ctype {
 	case "authors":
 		contributor = c.Engine.GetAuthorFromPublication(pub, rowDelta)
@@ -383,7 +382,7 @@ func (c *PublicationContributors) UpdateContributor(w http.ResponseWriter, r *ht
 	}
 
 	// Use the SavedContributor since Librecat returns contributor.FullName
-	savedContributor := &models.Contributor{}
+	var savedContributor *models.Contributor
 	switch ctype {
 	case "authors":
 		savedContributor = c.Engine.GetAuthorFromPublication(savedPub, rowDelta)
