@@ -8,17 +8,11 @@
             <div class="bc-avatar bc-avatar-icon bc-avatar--muted">
                 <i class="if if-user"></i>
             </div>
-            <div class="bc-avatar-text">{{$c.FullName}}</div>
+            <div class="bc-avatar-text">{{$.D.Show.SlimText ($.D.Show.Value $c.FullName)}}</div>
         </div>
     </td>
     <td class="col-2">
-        {{ if $c.CreditRole }}
-        <ul class="list-unstyled">
-            {{range $c.CreditRole}}
-            <li>{{.}}</li>
-            {{end}}
-        </ul>
-        {{ end }}
+        {{$.D.Show.SlimList ($.D.Show.Values $c.CreditRole ($.D.Show.Locale "credit_roles"))}}
     </td>
     <td class="col-2">
         {{if $c.ID}}

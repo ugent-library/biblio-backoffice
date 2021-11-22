@@ -1,0 +1,9 @@
+{{if .Values}}
+<ul class="list-unstyled">
+{{range .Values}}
+    <li>{{.}}</li>
+{{end}}
+</ul>
+{{else}}
+<span>-</span>
+{{end}}

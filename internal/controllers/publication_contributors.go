@@ -62,13 +62,13 @@ func (c *PublicationContributors) List(w http.ResponseWriter, r *http.Request) {
 	c.Render.HTML(w, http.StatusOK,
 		fmt.Sprintf("publication/%s/_default_table_body", ctype),
 		views.NewData(c.Render, r, struct {
-			render      *render.Render
 			Publication *models.Publication
+			Show        *views.ShowBuilder
 			Author      *models.Contributor
 			Key         string
 		}{
-			c.Render,
 			pub,
+			views.NewShowBuilder(c.Render, locale.Get(r.Context())),
 			nil,
 			"0",
 		}),
@@ -230,13 +230,13 @@ func (c *PublicationContributors) CreateContributor(w http.ResponseWriter, r *ht
 	c.Render.HTML(w, http.StatusOK,
 		fmt.Sprintf("publication/%s/_default_row", ctype),
 		views.NewData(c.Render, r, struct {
-			render      *render.Render
 			Publication *models.Publication
+			Show        *views.ShowBuilder
 			Author      *models.Contributor
 			Key         string
 		}{
-			c.Render,
 			savedPub,
+			views.NewShowBuilder(c.Render, locale.Get(r.Context())),
 			savedContributor,
 			muxRowDelta,
 		}),
@@ -399,13 +399,13 @@ func (c *PublicationContributors) UpdateContributor(w http.ResponseWriter, r *ht
 	c.Render.HTML(w, http.StatusOK,
 		fmt.Sprintf("publication/%s/_default_row", ctype),
 		views.NewData(c.Render, r, struct {
-			render      *render.Render
 			Publication *models.Publication
+			Show        *views.ShowBuilder
 			Author      *models.Contributor
 			Key         string
 		}{
-			c.Render,
 			savedPub,
+			views.NewShowBuilder(c.Render, locale.Get(r.Context())),
 			savedContributor,
 			muxRowDelta,
 		}),
