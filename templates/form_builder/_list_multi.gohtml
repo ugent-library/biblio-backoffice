@@ -14,7 +14,7 @@
         <select class="custom-select form-control{{ if .Error }} is-invalid{{ end }}" name="{{ .Name }}" multiple>
             {{ if .EmptyChoice }}<option></option>{{end}}
             {{ range $i, $c := .Choices }}
-            <option value="{{ . }}"{{if eq . $.Value }} selected{{ end }}>{{ index $.ChoicesLabels $i }}</option>
+            <option value="{{ . }}"{{if has . $.Values }} selected{{ end }}>{{ index $.ChoicesLabels $i }}</option>
             {{ end }}
         </select>
         {{ if .Error }}<div class="invalid-feedback">{{ .Error }}</div>{{ end }}
