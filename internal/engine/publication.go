@@ -87,12 +87,12 @@ func (e *Engine) ImportUserPublications(userID, source string, file io.Reader) (
 
 	}()
 
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/user/%s/publication/import-from-file", e.Config.URL, userID), pipedReader)
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/user/%s/publication/import-from-file", e.Config.LibreCatURL, userID), pipedReader)
 	if err != nil {
 		return "", err
 	}
 	req.Header.Add("Content-Type", multiPartWriter.FormDataContentType())
-	req.SetBasicAuth(e.Config.Username, e.Config.Password)
+	req.SetBasicAuth(e.Config.LibreCatUsername, e.Config.LibreCatPassword)
 
 	resData := struct {
 		BatchID string `json:"batch_id"`
@@ -184,12 +184,12 @@ func (e *Engine) AddPublicationFile(id string, pubFile models.PublicationFile, f
 
 	}()
 
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/publication/%s/file", e.Config.URL, id), pipedReader)
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/publication/%s/file", e.Config.LibreCatURL, id), pipedReader)
 	if err != nil {
 		return err
 	}
 	req.Header.Add("Content-Type", multiPartWriter.FormDataContentType())
-	req.SetBasicAuth(e.Config.Username, e.Config.Password)
+	req.SetBasicAuth(e.Config.LibreCatUsername, e.Config.LibreCatPassword)
 
 	_, err = e.doRequest(req, nil)
 

@@ -68,9 +68,12 @@ func buildRouter() *mux.Router {
 
 	// engine
 	e, err := engine.New(engine.Config{
-		URL:      viper.GetString("librecat-url"),
-		Username: viper.GetString("librecat-username"),
-		Password: viper.GetString("librecat-password"),
+		LibreCatURL:       viper.GetString("librecat-url"),
+		LibreCatUsername:  viper.GetString("librecat-username"),
+		LibreCatPassword:  viper.GetString("librecat-password"),
+		ORCIDClientID:     viper.GetString("orcid-client-id"),
+		ORCIDClientSecret: viper.GetString("orcid-client-secret"),
+		ORCIDSandbox:      viper.GetBool("orcid-sandbox"),
 	})
 	if err != nil {
 		log.Fatal(err)
