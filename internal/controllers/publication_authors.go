@@ -29,10 +29,7 @@ func (c *PublicationAuthors) PromoteSearchAuthor(w http.ResponseWriter, r *http.
 		return
 	}
 
-	person := &struct {
-		FirstName string
-		LastName  string
-	}{}
+	person := &models.Person{}
 
 	if err := forms.Decode(person, r.Form); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

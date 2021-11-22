@@ -14,6 +14,9 @@ func init() {
 	message.SetString(language.English, "confirmations.no", "No")
 	message.SetString(language.English, "confirmations.dontknow", "Don't know")
 
+	message.SetString(language.English, "contributor.first_name", "First name")
+	message.SetString(language.English, "contributor.last_name", "Last name")
+
 	message.SetString(language.English, "credit_roles.first_author", "First author")
 	message.SetString(language.English, "credit_roles.last_author", "Last author")
 	message.SetString(language.English, "credit_roles.conceptualization", "Conceptualization")
