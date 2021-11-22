@@ -1,5 +1,5 @@
 <tr class="row-edit">
-    <td class="pl-8 col-6">
+    <td class="pl-8 col-5">
         <div class="bc-avatar-and-text">
             <div class="bc-avatar bc-avatar-icon bc-avatar--muted">
                 <i class="if if-user"></i>
@@ -40,22 +40,24 @@
             </button>
         </div>
     </td>
-    <td class="pr-4">
+    <td class="pr-5">
         <div class="c-button-toolbar">
-            <button type="button" name="edit" class="btn btn-link btn-icon-only btn-link-muted btn-swap update-contributor"
+            <button type="button" name="edit" class="btn btn-outline-primary update-contributor"
                 hx-post="{{pathFor "publication_authors_update_author" "type" "authors" "id" .D.ID "delta" .D.Key}}"
                 hx-target="#authors-table .row-edit"
                 hx-include="#authors-table .row-edit"
                 hx-swap="outerHTML settle:.15s"
             >
                 <i class="if if-edit"></i>
+                <span>Update author</span>
             </button>
-            <button type="button" name="cancel" class="btn btn-link btn-icon-only btn-link-muted btn-swap cancel-update"
+            <button type="button" name="cancel" class="btn btn-outline-secondary cancel-update"
                 hx-delete="{{pathFor "publication_authors_cancel_edit_row" "type" "authors" "id" .D.ID "delta" .D.Key}}"
                 hx-target="#authors-table .row-edit"
                 hx-swap="outerHTML settle:.15s"
             >
                 <i class="if if-no-edit"></i>
+                <span>Cancel</span>
             </button>
         </div>
     </td>
