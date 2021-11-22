@@ -92,7 +92,6 @@ func Register(c controllers.Context) {
 	publicationDepartmentsController := controllers.NewPublicationDepartments(c)
 	publicationAbstractsController := controllers.NewPublicationAbstracts(c)
 	publicationLinksController := controllers.NewPublicationLinks(c)
-	publicationAuthorsController := controllers.NewPublicationAuthors(c)
 	publicationContributorsController := controllers.NewPublicationContributors(c)
 	publicationDatasetsController := controllers.NewPublicationDatasets(c)
 	publicationAdditionalInfoController := controllers.NewPublicationAdditionalInfo(c)
@@ -389,7 +388,7 @@ func Register(c controllers.Context) {
 	// pubEditRouter.HandleFunc("/htmx/authors/order/{start}/{end}", publicationAuthorsController.OrderAuthors).
 	// 	Methods("PUT").
 	// 	Name("publication_authors_order_authors")
-	pubEditRouter.HandleFunc("/{id}/htmx/authors/promote/search/{delta}", publicationAuthorsController.PromoteSearchAuthor).
+	pubEditRouter.HandleFunc("/{id}/htmx/{type}/promote/search/{delta}", publicationContributorsController.PromoteSearchContributor).
 		Methods("POST").
 		Name("publication_authors_promote_author_modal")
 	// Publication datasets HTMX fragments

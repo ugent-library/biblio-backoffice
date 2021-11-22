@@ -4,17 +4,11 @@
             <div class="bc-avatar bc-avatar-icon bc-avatar--muted">
                 <i class="if if-user"></i>
             </div>
-            <div class="bc-avatar-text">{{ .D.Author.FullName}}</div>
+            <div class="bc-avatar-text">{{.D.Show.SlimText (.D.Show.Value .D.Author.FullName)}}</div>
         </div>
     </td>
     <td class="col-2">
-        {{ if .D.Author.CreditRole }}
-        <ul class="list-unstyled">
-            {{range .D.Author.CreditRole}}
-            <li>{{.}}</li>
-            {{end}}
-        </ul>
-        {{ end }}
+        {{.D.Show.SlimList (.D.Show.Values .D.Author.CreditRole (.D.Show.Locale "credit_roles"))}}
     </td>
     <td class="col-2">
         {{if .D.Author.ID}}

@@ -62,13 +62,13 @@ func (c *PublicationContributors) List(w http.ResponseWriter, r *http.Request) {
 	c.Render.HTML(w, http.StatusOK,
 		fmt.Sprintf("publication/%s/_default_table_body", ctype),
 		views.NewData(c.Render, r, struct {
-			render      *render.Render
 			Publication *models.Publication
+			Show        *views.ShowBuilder
 			Author      *models.Contributor
 			Key         string
 		}{
-			c.Render,
 			pub,
+			views.NewShowBuilder(c.Render, locale.Get(r.Context())),
 			nil,
 			"0",
 		}),
@@ -214,13 +214,12 @@ func (c *PublicationContributors) CreateContributor(w http.ResponseWriter, r *ht
 	}
 
 	// Use the SavedContributor since Librecat returns contributor.FullName
-	savedContributor := &models.Contributor{}
+	var savedContributor *models.Contributor
 	switch ctype {
 	case "authors":
 		savedContributor = c.Engine.GetAuthorFromPublication(savedPub, rowDelta)
 	default:
 		// @todo: Throw an error, unkown type
-		return
 	}
 
 	w.Header().Set("HX-Trigger", "ITCreateItem")
@@ -230,13 +229,13 @@ func (c *PublicationContributors) CreateContributor(w http.ResponseWriter, r *ht
 	c.Render.HTML(w, http.StatusOK,
 		fmt.Sprintf("publication/%s/_default_row", ctype),
 		views.NewData(c.Render, r, struct {
-			render      *render.Render
 			Publication *models.Publication
+			Show        *views.ShowBuilder
 			Author      *models.Contributor
 			Key         string
 		}{
-			c.Render,
 			savedPub,
+			views.NewShowBuilder(c.Render, locale.Get(r.Context())),
 			savedContributor,
 			muxRowDelta,
 		}),
@@ -251,7 +250,7 @@ func (c *PublicationContributors) EditRow(w http.ResponseWriter, r *http.Request
 
 	pub := context.GetPublication(r.Context())
 
-	contributor := &models.Contributor{}
+	var contributor *models.Contributor
 	switch ctype {
 	case "authors":
 		contributor = c.Engine.GetAuthorFromPublication(pub, rowDelta)
@@ -287,7 +286,7 @@ func (c *PublicationContributors) CancelEditRow(w http.ResponseWriter, r *http.R
 
 	pub := context.GetPublication(r.Context())
 
-	contributor := &models.Contributor{}
+	var contributor *models.Contributor
 	switch ctype {
 	case "authors":
 		contributor = c.Engine.GetAuthorFromPublication(pub, rowDelta)
@@ -383,7 +382,7 @@ func (c *PublicationContributors) UpdateContributor(w http.ResponseWriter, r *ht
 	}
 
 	// Use the SavedContributor since Librecat returns contributor.FullName
-	savedContributor := &models.Contributor{}
+	var savedContributor *models.Contributor
 	switch ctype {
 	case "authors":
 		savedContributor = c.Engine.GetAuthorFromPublication(savedPub, rowDelta)
@@ -399,13 +398,13 @@ func (c *PublicationContributors) UpdateContributor(w http.ResponseWriter, r *ht
 	c.Render.HTML(w, http.StatusOK,
 		fmt.Sprintf("publication/%s/_default_row", ctype),
 		views.NewData(c.Render, r, struct {
-			render      *render.Render
 			Publication *models.Publication
+			Show        *views.ShowBuilder
 			Author      *models.Contributor
 			Key         string
 		}{
-			c.Render,
 			savedPub,
+			views.NewShowBuilder(c.Render, locale.Get(r.Context())),
 			savedContributor,
 			muxRowDelta,
 		}),
@@ -458,6 +457,50 @@ func (c *PublicationContributors) RemoveContributor(w http.ResponseWriter, r *ht
 
 	// Empty content, denotes we deleted the record
 	fmt.Fprintf(w, "")
+}
+
+func (c *PublicationContributors) PromoteSearchContributor(w http.ResponseWriter, r *http.Request) {
+	ctype := mux.Vars(r)["type"]
+	id := mux.Vars(r)["id"]
+	muxRowDelta := mux.Vars(r)["delta"]
+
+	err := r.ParseForm()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	person := &models.Person{}
+
+	if err := forms.Decode(person, r.Form); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	q := person.FirstName + " " + person.LastName
+	people, _ := c.Engine.SuggestPersons(q)
+
+	length := strconv.Itoa(len(people))
+
+	w.Header().Set("HX-Trigger", "ITPromoteModal")
+	w.Header().Set("HX-Trigger-After-Swap", "ITPromoteModalAfterSwap")
+	w.Header().Set("HX-Trigger-After-Settle", "ITPromoteModalAfterSettle")
+
+	c.Render.HTML(w, 200,
+		fmt.Sprintf("publication/%s/_modal_promote_contributor", ctype),
+		views.NewData(c.Render, r, struct {
+			ID       string
+			People   []models.Person
+			Length   string
+			RowDelta string
+		}{
+			id,
+			people,
+			length,
+			muxRowDelta,
+		}),
+		render.HTMLOptions{Layout: "layouts/htmx"},
+	)
 }
 
 // @todo
