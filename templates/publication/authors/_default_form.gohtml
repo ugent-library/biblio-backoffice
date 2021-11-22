@@ -23,7 +23,7 @@
         <div class="external {{ if not .D.Author.ID }} d-display {{ else }} d-none {{ end }}">
             <span class="mr-3">External member</span>
             <button type="button" name="ugent-author" class="btn btn-outline-primary promote-author"
-                hx-post="{{pathFor "publication_authors_promote_author_modal" "id" .D.ID "delta" .D.Key}}"
+                hx-post="{{pathFor "publication_authors_promote_author_modal" "type" "authors" "id" .D.ID "delta" .D.Key}}"
                 hx-target="#publications-contributors-modal"
                 hx-trigger="click"
                 hx-include="#authors-table .row-new"

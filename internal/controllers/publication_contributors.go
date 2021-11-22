@@ -459,6 +459,50 @@ func (c *PublicationContributors) RemoveContributor(w http.ResponseWriter, r *ht
 	fmt.Fprintf(w, "")
 }
 
+func (c *PublicationContributors) PromoteSearchContributor(w http.ResponseWriter, r *http.Request) {
+	ctype := mux.Vars(r)["type"]
+	id := mux.Vars(r)["id"]
+	muxRowDelta := mux.Vars(r)["delta"]
+
+	err := r.ParseForm()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	person := &models.Person{}
+
+	if err := forms.Decode(person, r.Form); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	q := person.FirstName + " " + person.LastName
+	people, _ := c.Engine.SuggestPersons(q)
+
+	length := strconv.Itoa(len(people))
+
+	w.Header().Set("HX-Trigger", "ITPromoteModal")
+	w.Header().Set("HX-Trigger-After-Swap", "ITPromoteModalAfterSwap")
+	w.Header().Set("HX-Trigger-After-Settle", "ITPromoteModalAfterSettle")
+
+	c.Render.HTML(w, 200,
+		fmt.Sprintf("publication/%s/_modal_promote_contributor", ctype),
+		views.NewData(c.Render, r, struct {
+			ID       string
+			People   []models.Person
+			Length   string
+			RowDelta string
+		}{
+			id,
+			people,
+			length,
+			muxRowDelta,
+		}),
+		render.HTMLOptions{Layout: "layouts/htmx"},
+	)
+}
+
 // @todo
 //   Temporarily disabling dragging / re-ordering authors. It's a complex feature which
 //   might introduce complex bugs. May re-enable this later again when there's a real need
