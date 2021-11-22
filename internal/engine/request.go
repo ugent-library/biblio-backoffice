@@ -61,7 +61,7 @@ func (e *Engine) newRequest(method, path string, vals url.Values, requestData in
 		}
 	}
 
-	u := e.Config.URL + path
+	u := e.Config.LibreCatURL + path
 	if vals != nil {
 		u = u + "?" + vals.Encode()
 	}
@@ -70,7 +70,7 @@ func (e *Engine) newRequest(method, path string, vals url.Values, requestData in
 	if err != nil {
 		return nil, err
 	}
-	req.SetBasicAuth(e.Config.Username, e.Config.Password)
+	req.SetBasicAuth(e.Config.LibreCatUsername, e.Config.LibreCatPassword)
 	if requestData != nil {
 		req.Header.Set("Content-Type", "application/json")
 	}
@@ -80,7 +80,7 @@ func (e *Engine) newRequest(method, path string, vals url.Values, requestData in
 }
 
 func (e *Engine) doRequest(req *http.Request, responseData interface{}) (*http.Response, error) {
-	res, err := e.client.Do(req)
+	res, err := e.librecatClient.Do(req)
 	if err != nil {
 		return res, err
 	}

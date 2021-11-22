@@ -2,23 +2,37 @@ package engine
 
 import (
 	"net/http"
+
+	"github.com/nics/orcid-go/orcid"
 )
 
 type Config struct {
-	URL      string
-	Username string
-	Password string
+	LibreCatURL       string
+	LibreCatUsername  string
+	LibreCatPassword  string
+	ORCIDClientID     string
+	ORCIDClientSecret string
+	ORCIDSandbox      bool
 }
 
 type Engine struct {
-	Config Config
-	client *http.Client
+	Config         Config
+	librecatClient *http.Client
+	orcidClient    *orcid.Client
 }
 
 func New(c Config) (*Engine, error) {
+	orcidClient := orcid.NewClient(orcid.Config{
+		ClientId:     c.ORCIDClientID,
+		ClientSecret: c.ORCIDClientSecret,
+		Scopes:       []string{"/read-public"},
+		Sandbox:      c.ORCIDSandbox,
+	})
+
 	e := &Engine{
-		Config: c,
-		client: http.DefaultClient,
+		Config:         c,
+		librecatClient: http.DefaultClient,
+		orcidClient:    orcidClient,
 	}
 
 	return e, nil

@@ -44,7 +44,7 @@ func (c *PublicationFiles) Download(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// quick and dirty reverse proxy
-	baseURL, _ := url.Parse(c.Engine.Config.URL)
+	baseURL, _ := url.Parse(c.Engine.Config.LibreCatURL)
 	url, _ := url.Parse(fileURL)
 	proxy := httputil.NewSingleHostReverseProxy(baseURL)
 	// update the headers to allow for SSL redirection
@@ -54,7 +54,7 @@ func (c *PublicationFiles) Download(w http.ResponseWriter, r *http.Request) {
 	r.Header.Set("X-Forwarded-Host", r.Header.Get("Host"))
 	r.Header.Del("Cookie")
 	r.Host = url.Host
-	r.SetBasicAuth(c.Engine.Config.Username, c.Engine.Config.Password)
+	r.SetBasicAuth(c.Engine.Config.LibreCatUsername, c.Engine.Config.LibreCatPassword)
 	proxy.ServeHTTP(w, r)
 }
 
@@ -77,7 +77,7 @@ func (c *PublicationFiles) Thumbnail(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// quick and dirty reverse proxy
-	baseURL, _ := url.Parse(c.Engine.Config.URL)
+	baseURL, _ := url.Parse(c.Engine.Config.LibreCatURL)
 	url, _ := url.Parse(thumbnailURL)
 	proxy := httputil.NewSingleHostReverseProxy(baseURL)
 	// update the headers to allow for SSL redirection
@@ -87,7 +87,7 @@ func (c *PublicationFiles) Thumbnail(w http.ResponseWriter, r *http.Request) {
 	r.Header.Set("X-Forwarded-Host", r.Header.Get("Host"))
 	r.Header.Del("Cookie")
 	r.Host = url.Host
-	r.SetBasicAuth(c.Engine.Config.Username, c.Engine.Config.Password)
+	r.SetBasicAuth(c.Engine.Config.LibreCatUsername, c.Engine.Config.LibreCatPassword)
 	proxy.ServeHTTP(w, r)
 }
 

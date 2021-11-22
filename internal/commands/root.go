@@ -47,6 +47,10 @@ func init() {
 	rootCmd.PersistentFlags().String("librecat-username", "", "librecat rest api username")
 	rootCmd.PersistentFlags().String("librecat-password", "", "librecat rest api password")
 
+	rootCmd.PersistentFlags().String("orcid-client-id", "", "orcid client id")
+	rootCmd.PersistentFlags().String("orcid-client-secret", "", "orcid client secret")
+	rootCmd.PersistentFlags().Bool("orcid-sandbox", false, "use the orcid sandbox in development")
+
 	rootCmd.PersistentFlags().String("oidc-url", "", "openid connect url")
 	rootCmd.PersistentFlags().String("oidc-client-id", "", "openid connect client id")
 	rootCmd.PersistentFlags().String("oidc-client-secret", "", "openid connect client secret")
