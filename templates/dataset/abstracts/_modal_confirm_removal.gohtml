@@ -1,0 +1,20 @@
+<div id="modal-backdrop" class="modal-backdrop fade show" style="display:block;"></div>
+<div class="modal show" id="removeAbstractConfirmation" tabindex="-1" style="display: block;" aria-modal="true" role="dialog">
+<div class="modal-dialog modal-dialog-centered modal-confirm-abstract-removal" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">Are you sure</h2>
+        </div>
+        <div class="modal-body">
+            <p>Are you sure you want to remove this abstract</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-link modal-close">Cancel</button>
+            <button class="btn btn-danger delete-abstract"
+                hx-delete="{{pathFor "dataset_abstracts_remove_abstract" "id" .D.ID "delta" .D.Key}}"
+                hx-target=".row-{{ .D.Key }}"
+                hx-swap="outerHTML swap:.15s"
+            >Delete</button>
+        </div>
+    </div>
+</div>

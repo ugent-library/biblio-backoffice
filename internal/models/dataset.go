@@ -33,6 +33,7 @@ type Dataset struct {
 	DateUpdated             *time.Time          `json:"date_updated,omitempty" form:"-"`
 	Department              []DatasetDepartment `json:"department,omitempty" form:"-"`
 	DOI                     string              `json:"doi,omitempty" form:"-"`
+	Format                  string              `json:"format,omitempty" form:"-"`
 	ID                      string              `json:"_id,omitempty" form:"-"`
 	Keyword                 []string            `json:"keyword,omitempty" form:"keyword"`
 	Locked                  bool                `json:"locked,omitempty" form:"-"`
@@ -42,6 +43,7 @@ type Dataset struct {
 	RelatedPublicationCount int                 `json:"related_publication_count" form:"-"`
 	ReviewerNote            string              `json:"reviewer_note,omitempty" form:"-"`
 	ReviewerTags            []string            `json:"reviewer_tags,omitempty" form:"-"`
+	License                 string              `json:"license,omitempty" form:"-"`
 	Status                  string              `json:"status,omitempty" form:"-"`
 	Title                   string              `json:"title,omitempty" form:"title"`
 	Type                    string              `json:"type,omitempty" form:"-"`

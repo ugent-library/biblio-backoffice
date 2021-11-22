@@ -1,0 +1,39 @@
+<div class="card card-collapsible mb-6">
+    <div class="card-header">
+        <div class="collapse-trigger collapsed" data-toggle="collapse" data-target="#collapse3" aria-expanded="false" aria-controls="collapse3"></div>
+        <div class="bc-toolbar">
+            <div class="bc-toolbar-left">
+                <i class="if if-chevron-right mr-4 text-muted"></i>Abstract
+            </div>
+            <div class="bc-toolbar-right">
+                {{if .User.CanEditDataset .D.Dataset}}
+                <button class="btn btn-outline-primary" type="button"
+                    hx-get="{{pathFor "dataset_abstracts_add_abstract" "id" .D.Dataset.ID }}"
+                    hx-swap="innerHTML"
+                    hx-target="#abstract-modals"
+                >
+                    <i class="if if-add"></i>
+                    <div class="btn-text">Add Abstract</div>
+                </button>
+                {{end}}
+            </div>
+        </div>
+    </div>
+    <div class="collapse" id="collapse3">
+        <div class="card-body p-0">
+            <table class="table" id="abstracts-table">
+                <thead>
+                    <tr>
+                        <th class="pl-6">Abstract</th>
+                        <th>Language</th>
+                        <th class="pr-6"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{ template "dataset/abstracts/_table_body" . }}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div id="abstract-modals" class="modals"></div>
+</div>
