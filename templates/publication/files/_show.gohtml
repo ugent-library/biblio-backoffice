@@ -54,7 +54,7 @@
                                         {{with .PublicationVersion}}<span class="ml-3 pl-3 border-left">{{$.T "publication_versions" .}}</span>{{end}}
                                     </span>
                                     <div class="dropdown">
-                                        <span class="badge badge-pill badge-outline-success" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <span class="badge badge-pill badge-outline-success" type="button"{{if $canEditPublication}} data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"{{end}}>
                                             {{if eq .AccessLevel "open_access"}}
                                             <i class="if if-download text-success"></i>
                                             {{else if eq .AccessLevel "local"}}
@@ -63,7 +63,7 @@
                                             <i class="if if-eye-off text-muted"></i>
                                             {{end}}
                                             <span class="badge-text">{{$.T "publication_file_access_levels" .AccessLevel}}</span>
-                                            <i class="if if-caret-down"></i>
+                                            {{if $canEditPublication}}<i class="if if-caret-down"></i>{{end}}
                                         </span>
                                         {{if $canEditPublication}}
                                         <div class="dropdown-menu">
