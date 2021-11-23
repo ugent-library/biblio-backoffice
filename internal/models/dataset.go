@@ -25,6 +25,7 @@ type DatasetProject struct {
 
 type Dataset struct {
 	Abstract                []Text              `json:"abstract,omitempty" form:"abstract"`
+	AccessLevel             string              `json:"access_level,omitempty" form:"access_level"`
 	CompletenessScore       int                 `json:"completeness_score,omitempty" form:"-"`
 	Contributor             []Contributor       `json:"contributor,omitempty" form:"-"`
 	Creator                 []Contributor       `json:"author,omitempty" form:"-"`
@@ -33,7 +34,7 @@ type Dataset struct {
 	DateUpdated             *time.Time          `json:"date_updated,omitempty" form:"-"`
 	Department              []DatasetDepartment `json:"department,omitempty" form:"-"`
 	DOI                     string              `json:"doi,omitempty" form:"-"`
-	Format                  string              `json:"format,omitempty" form:"-"`
+	Format                  string              `json:"format,omitempty" form:"format"`
 	ID                      string              `json:"_id,omitempty" form:"-"`
 	Keyword                 []string            `json:"keyword,omitempty" form:"keyword"`
 	Locked                  bool                `json:"locked,omitempty" form:"-"`
@@ -43,7 +44,7 @@ type Dataset struct {
 	RelatedPublicationCount int                 `json:"related_publication_count" form:"-"`
 	ReviewerNote            string              `json:"reviewer_note,omitempty" form:"-"`
 	ReviewerTags            []string            `json:"reviewer_tags,omitempty" form:"-"`
-	License                 string              `json:"license,omitempty" form:"-"`
+	License                 string              `json:"license,omitempty" form:"license"`
 	Status                  string              `json:"status,omitempty" form:"-"`
 	Title                   string              `json:"title,omitempty" form:"title"`
 	Type                    string              `json:"type,omitempty" form:"-"`
