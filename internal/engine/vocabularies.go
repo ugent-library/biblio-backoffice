@@ -28,6 +28,12 @@ var vocabularies = map[string][]string{
 		"writing_original_draft",
 		"writing_review_editing",
 	},
+	"access_levels": {
+		"info:eu-repo/semantics/closedAccess",
+		"info:eu-repo/semantics/embargoedAccess",
+		"info:eu-repo/semantics/restrictedAccess",
+		"info:eu-repo/semantics/openAccess",
+	},
 	"publication_types": {
 		"journal_article",
 		"book",

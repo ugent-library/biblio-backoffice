@@ -27,7 +27,7 @@
         <div class="card-body p-0">
             <ul class="list-group list-group-flush" data-panel-state="read">
                 <li class="list-group-item">
-                    {{.D.Show.Text (.D.Show.Label "title") (.D.Show.Value .D.Dataset.Title)}}
+                    {{.D.Show.Text (.D.Show.Label "title") (.D.Show.Value .D.Dataset.Title) .D.Show.Required}}
                     {{.D.Show.Text (.D.Show.Label "doi") (.D.Show.Value .D.Dataset.DOI)}}
                     {{.D.Show.Text (.D.Show.Label "url") (.D.Show.Value .D.Dataset.URL)}}
                 </li>
@@ -41,6 +41,7 @@
                 </li>
                 <li class="list-group-item">
                     {{.D.Show.Text (.D.Show.Label "license") (.D.Show.Value .D.Dataset.License)}}
+                    {{.D.Show.Text (.D.Show.Label "access_level") (.D.Show.Value .D.Dataset.AccessLevel (.D.Show.Locale "access_levels"))}}
                 </li>
             </ul>
         </div>

@@ -34,6 +34,11 @@ func init() {
 	message.SetString(language.English, "credit_roles.writing_original_draft", "Writing - original draft")
 	message.SetString(language.English, "credit_roles.writing_review_editing", "Writing - review & editing")
 
+	message.SetString(language.English, "access_levels.info:eu-repo/semantics/closedAccess", "Closed access")
+	message.SetString(language.English, "access_levels.info:eu-repo/semantics/embargoedAccess", "Embargoed access")
+	message.SetString(language.English, "access_levels.info:eu-repo/semantics/restrictedAccess", "Restricted access")
+	message.SetString(language.English, "access_levels.info:eu-repo/semantics/openAccess", "Open access")
+
 	message.SetString(language.English, "publication_sorts.year.desc", "Year (newest first)")
 	message.SetString(language.English, "publication_sorts.date_created.desc", "Added (newest first)")
 	message.SetString(language.English, "publication_sorts.date_updated.desc", "Updated (newest first)")
@@ -106,9 +111,9 @@ func init() {
 	message.SetString(language.English, "publication_publishing_statuses.accepted", "Accepted")
 	message.SetString(language.English, "publication_publishing_statuses.published", "Published")
 
-	message.SetString(language.English, "publication_file_access_levels.open_access", "Open Access")
-	message.SetString(language.English, "publication_file_access_levels.local", "UGent Access")
-	message.SetString(language.English, "publication_file_access_levels.closed", "Private Access")
+	message.SetString(language.English, "publication_file_access_levels.open_access", "Open access")
+	message.SetString(language.English, "publication_file_access_levels.local", "UGent access")
+	message.SetString(language.English, "publication_file_access_levels.closed", "Private access")
 
 	message.SetString(language.English, "publication_versions.publishedVersion", "Published version")
 	message.SetString(language.English, "publication_versions.authorVersion", "Author's original")
@@ -130,6 +135,7 @@ func init() {
 	message.SetString(language.English, "publication_link_relations.table_of_contents", "Table of contents")
 	message.SetString(language.English, "publication_link_relations.main_file", "Full text")
 
+	message.SetString(language.English, "builder.access_level", "Access level")
 	message.SetString(language.English, "builder.additional_info", "Additional information")
 	message.SetString(language.English, "builder.alternative_title", "Alternative title")
 	message.SetString(language.English, "builder.article_number", "Article number")

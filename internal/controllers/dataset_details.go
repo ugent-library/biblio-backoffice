@@ -39,11 +39,15 @@ func (c *DatasetDetails) OpenForm(w http.ResponseWriter, r *http.Request) {
 	dataset := context.GetDataset(r.Context())
 
 	c.Render.HTML(w, http.StatusOK, "dataset/details/_edit", views.NewData(c.Render, r, struct {
-		Dataset *models.Dataset
-		Form    *views.FormBuilder
+		Dataset      *models.Dataset
+		Show         *views.ShowBuilder
+		Form         *views.FormBuilder
+		Vocabularies map[string][]string
 	}{
 		dataset,
+		views.NewShowBuilder(c.Render, locale.Get(r.Context())),
 		views.NewFormBuilder(c.Render, locale.Get(r.Context()), nil),
+		c.Engine.Vocabularies(),
 	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
@@ -67,11 +71,15 @@ func (c *DatasetDetails) SaveForm(w http.ResponseWriter, r *http.Request) {
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {
 		c.Render.HTML(w, http.StatusOK, "dataset/details/_edit", views.NewData(c.Render, r, struct {
-			Dataset *models.Dataset
-			Form    *views.FormBuilder
+			Dataset      *models.Dataset
+			Show         *views.ShowBuilder
+			Form         *views.FormBuilder
+			Vocabularies map[string][]string
 		}{
 			dataset,
+			views.NewShowBuilder(c.Render, locale.Get(r.Context())),
 			views.NewFormBuilder(c.Render, locale.Get(r.Context()), formErrors),
+			c.Engine.Vocabularies(),
 		},
 			views.Flash{Type: "error", Message: "There are some problems with your input"},
 		),

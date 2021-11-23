@@ -31,7 +31,7 @@
             <ul class="list-group list-group-flush" data-panel-state="edit">
                 <li class="list-group-item">
                     {{.D.Form.Text (.D.Form.Name "title") (.D.Form.Value .D.Dataset.Title) (.D.Form.Cols 9) (.D.Form.Required)}}
-                    {{.D.Form.Text (.D.Form.Name "doi") (.D.Form.Value .D.Dataset.DOI) (.D.Form.Cols 3)}}
+                    {{.D.Show.Text (.D.Show.Label "doi") (.D.Show.Value .D.Dataset.DOI)}}
                     {{.D.Form.Text (.D.Form.Name "url") (.D.Form.Value .D.Dataset.URL) (.D.Form.Cols 3)}}
                 </li>
                 <li class="list-group-item">
@@ -44,6 +44,9 @@
                 </li>
                 <li class="list-group-item">
                     {{.D.Form.Text (.D.Form.Name "license") (.D.Form.Value .D.Dataset.License) (.D.Form.Cols 9)}}
+                    {{.D.Form.List (.D.Form.Name "access_level") (.D.Form.Value .D.Dataset.AccessLevel) (.D.Form.Cols 3)
+                        (.D.Form.Choices .D.Vocabularies.access_levels
+                        (.D.Form.Locale "access_levels")) (.D.Form.EmptyChoice)}}
                 </li>
             </ul>
         </div>
