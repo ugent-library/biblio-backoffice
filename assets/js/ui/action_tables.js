@@ -4,7 +4,7 @@ export function actionTables() {
 
     // Authors table
     const authorsTable = new ActionTable({
-        tableSelector: "table#authors-table",
+        tableSelector: "table#author-table",
         addButtonSelector: "button.btn-outline-primary.add-author"
     })
 

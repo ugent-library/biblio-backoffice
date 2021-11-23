@@ -6,12 +6,12 @@
             <h2 class="modal-title">Are you sure?</h2>
         </div>
         <div class="modal-body">
-            <p>Are you sure you want to remove this author?</p>
+            <p>Are you sure you want to remove this {{.D.Role}}?</p>
         </div>
         <div class="modal-footer">
             <button class="btn btn-link modal-close">Cancel</button>
             <button class="btn btn-danger delete-contributor"
-                hx-delete="{{pathFor "publication_authors_remove_author" "type" "authors" "id" .D.ID "delta" .D.ContributorDelta}}"
+                hx-delete="{{pathFor "publication_contributors_remove_contributor" "role" .D.Role "id" .D.ID "delta" .D.ContributorDelta}}"
                 hx-target=".row-{{ .D.ContributorDelta }}"
                 hx-swap="outerHTML swap:.15s"
             >Delete</button>

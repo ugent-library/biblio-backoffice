@@ -211,7 +211,7 @@ func Register(c controllers.Context) {
 		Name("publication_thumbnail")
 	pubEditRouter.HandleFunc("/publish", publicationsController.Publish).
 		Methods("POST").
-		Name("publication_publish")
+		Name("dataset_publish")
 	pubEditRouter.HandleFunc("/add-single/description", publicationsController.AddSingleDescription).
 		Methods("GET").
 		Name("publication_add_single_description")
@@ -354,46 +354,46 @@ func Register(c controllers.Context) {
 		Methods("DELETE").
 		Name("publication_links_remove_link")
 	// Publication authors HTMX fragments
-	pubEditRouter.HandleFunc("/htmx/{type}/list", publicationContributorsController.List).
+	pubEditRouter.HandleFunc("/htmx/{role}/list", publicationContributorsController.List).
 		Methods("GET").
-		Name("publication_authors_list")
-	pubEditRouter.HandleFunc("/htmx/{type}/add/{delta}", publicationContributorsController.AddRow).
+		Name("publication_contributors_list")
+	pubEditRouter.HandleFunc("/htmx/{role}/add/{delta}", publicationContributorsController.AddRow).
 		Methods("GET").
-		Name("publication_authors_add_row")
-	pubEditRouter.HandleFunc("/htmx/{type}/shift/{delta}", publicationContributorsController.ShiftRow).
+		Name("publication_contributors_add_row")
+	pubEditRouter.HandleFunc("/htmx/{role}/shift/{delta}", publicationContributorsController.ShiftRow).
 		Methods("GET").
-		Name("publication_authors_shift_row")
-	pubEditRouter.HandleFunc("/htmx/{type}/cancel/add/{delta}", publicationContributorsController.CancelAddRow).
+		Name("publication_contributors_shift_row")
+	pubEditRouter.HandleFunc("/htmx/{role}/cancel/add/{delta}", publicationContributorsController.CancelAddRow).
 		Methods("DELETE").
-		Name("publication_authors_cancel_add_row")
-	pubEditRouter.HandleFunc("/htmx/{type}/create/{delta}", publicationContributorsController.CreateContributor).
+		Name("publication_contributors_cancel_add_row")
+	pubEditRouter.HandleFunc("/htmx/{role}/create/{delta}", publicationContributorsController.CreateContributor).
 		Methods("POST").
-		Name("publication_authors_create_author")
-	pubEditRouter.HandleFunc("/htmx/{type}/edit/{delta}", publicationContributorsController.EditRow).
+		Name("publication_contributors_create_contributor")
+	pubEditRouter.HandleFunc("/htmx/{role}/edit/{delta}", publicationContributorsController.EditRow).
 		Methods("GET").
-		Name("publication_authors_edit_row")
-	pubEditRouter.HandleFunc("/htmx/{type}/cancel/edit/{delta}", publicationContributorsController.CancelEditRow).
+		Name("publication_contributors_edit_row")
+	pubEditRouter.HandleFunc("/htmx/{role}/cancel/edit/{delta}", publicationContributorsController.CancelEditRow).
 		Methods("DELETE").
-		Name("publication_authors_cancel_edit_row")
-	pubEditRouter.HandleFunc("/htmx/{type}/update/{delta}", publicationContributorsController.UpdateContributor).
+		Name("publication_contributors_cancel_edit_row")
+	pubEditRouter.HandleFunc("/htmx/{role}/update/{delta}", publicationContributorsController.UpdateContributor).
 		Methods("POST").
-		Name("publication_authors_update_author")
-	pubEditRouter.HandleFunc("/htmx/{type}/remove/{delta}", publicationContributorsController.ConfirmRemoveFromPublication).
+		Name("publication_contributors_update_contributor")
+	pubEditRouter.HandleFunc("/htmx/{role}/remove/{delta}", publicationContributorsController.ConfirmRemoveFromPublication).
 		Methods("GET").
-		Name("publication_authors_confirm_remove_from_publication")
-	pubEditRouter.HandleFunc("/htmx/{type}/remove/{delta}", publicationContributorsController.RemoveContributor).
+		Name("publication_contributors_confirm_remove_from_publication")
+	pubEditRouter.HandleFunc("/htmx/{role}/remove/{delta}", publicationContributorsController.RemoveContributor).
 		Methods("DELETE").
-		Name("publication_authors_remove_author")
+		Name("publication_contributors_remove_contributor")
 	// @todo
-	//   Temporarily disabling dragging / re-ordering authors. It's a complex feature which
+	//   Temporarily disabling dragging / re-ordering contributors. It's a complex feature which
 	//   might introduce complex bugs. May re-enable this later again when there's a real need
 	//   for this feature.
-	// pubEditRouter.HandleFunc("/htmx/authors/order/{start}/{end}", publicationAuthorsController.OrderAuthors).
+	// pubEditRouter.HandleFunc("/htmx/contributors/order/{start}/{end}", publicationAuthorsController.OrderAuthors).
 	// 	Methods("PUT").
-	// 	Name("publication_authors_order_authors")
-	pubEditRouter.HandleFunc("/{id}/htmx/{type}/promote/search/{delta}", publicationContributorsController.PromoteSearchContributor).
+	// 	Name("publication_contributors_order_contributors")
+	pubEditRouter.HandleFunc("/{id}/htmx/{role}/promote/search/{delta}", publicationContributorsController.PromoteSearchContributor).
 		Methods("POST").
-		Name("publication_authors_promote_author_modal")
+		Name("publication_contributors_promote_contributor_modal")
 	// Publication datasets HTMX fragments
 	pubEditRouter.HandleFunc("/htmx/datasets/choose", publicationDatasetsController.Choose).
 		Methods("GET").

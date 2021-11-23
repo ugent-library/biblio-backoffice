@@ -4,41 +4,41 @@
             <div class="bc-avatar bc-avatar-icon bc-avatar--muted">
                 <i class="if if-user"></i>
             </div>
-            <div class="bc-avatar-text">{{.D.Show.SlimText (.D.Show.Value .D.Author.FullName)}}</div>
+            <div class="bc-avatar-text">{{.D.Show.SlimText (.D.Show.Value .D.Contributor.FullName)}}</div>
         </div>
     </td>
     <td class="col-2">
-        {{.D.Show.SlimList (.D.Show.Values .D.Author.CreditRole (.D.Show.Locale "credit_roles"))}}
+        {{.D.Show.SlimList (.D.Show.Values .D.Contributor.CreditRole (.D.Show.Locale "credit_roles"))}}
     </td>
     <td class="col-2">
-        {{if .D.Author.ID}}
+        {{if .D.Contributor.ID}}
         <i class="if if-ghent-university"></i>
-        <span>UGent member</span>
+        <span>UGent {{.D.Role}}</span>
         {{else}}
-        External member
+        External {{.D.Role}}
         {{end}}
     </td>
     <td class="pr-4 col-3">
         <div class="c-button-toolbar">
             <button type="button" class="btn btn-outline-primary add-author"
-                hx-get="{{pathFor "publication_authors_add_row" "type" "authors" "id" .D.Publication.ID "delta" .D.Key}}"
-                hx-target="#authors-table .row-{{ .D.Key }}"
+                hx-get="{{pathFor "publication_contributors_add_row" "role" .D.Role "id" .D.Publication.ID "delta" .D.Key}}"
+                hx-target="#{{.D.Role}}-table .row-{{ .D.Key }}"
                 hx-swap="afterend settle:.15s"
             >
                 <i class="if if-add"></i>
-                <span>Add author</span>
+                <span>Add {{.D.Role}}</span>
             </button>
             <button type="button" class="btn e edit-author"
-                hx-get="{{pathFor "publication_authors_edit_row" "type" "authors" "id" .D.Publication.ID "delta" .D.Key}}"
-                hx-target="#authors-table .row-{{ .D.Key }}"
+                hx-get="{{pathFor "publication_contributors_edit_row" "role" .D.Role "id" .D.Publication.ID "delta" .D.Key}}"
+                hx-target="#{{.D.Role}}-table .row-{{ .D.Key }}"
                 hx-swap="outerHTML settle:25s"e44564654654
             >
                 <i class="if if-edit"></i>
                 <span>Edit</span>
             </button>edit
             <button type="button" class="btn btn-outline-danger edelete-author"
-                hx-get="{{pathFor "publication_authors_confirm_remove_from_publication" "type" "authors" "id" .D.Publication.ID "delta" .D.Key}}"
-                hx-target="#publications-authors-modal"
+                hx-get="{{pathFor "publication_contributors_confirm_remove_from_publication" "role" .D.Role "id" .D.Publication.ID "delta" .D.Key}}"
+                hx-target="#publications-contributors-modal"
                 hx-trigger="click"
             >
                 <i class="if if-subtract"></i>

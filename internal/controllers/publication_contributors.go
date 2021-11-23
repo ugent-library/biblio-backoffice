@@ -52,33 +52,27 @@ func NewPublicationContributors(c Context) *PublicationContributors {
 }
 
 func (c *PublicationContributors) List(w http.ResponseWriter, r *http.Request) {
-	ctype := mux.Vars(r)["type"]
 	pub := context.GetPublication(r.Context())
 
 	w.Header().Set("HX-Trigger", "ITList")
 	w.Header().Set("HX-Trigger-After-Swap", "ITListAfterSwap")
 	w.Header().Set("HX-Trigger-After-Settle", "ITListAfterSettle")
 
-	c.Render.HTML(w, http.StatusOK,
-		fmt.Sprintf("publication/%s/_default_table_body", ctype),
-		views.NewData(c.Render, r, struct {
-			Publication *models.Publication
-			Show        *views.ShowBuilder
-			Author      *models.Contributor
-			Key         string
-		}{
-			pub,
-			views.NewShowBuilder(c.Render, locale.Get(r.Context())),
-			nil,
-			"0",
-		}),
+	c.Render.HTML(w, http.StatusOK, "contributors/_table_body", views.NewData(c.Render, r, struct {
+		Role        string
+		Publication *models.Publication
+		Show        *views.ShowBuilder
+	}{
+		mux.Vars(r)["role"],
+		pub,
+		views.NewShowBuilder(c.Render, locale.Get(r.Context())),
+	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
 
 func (c *PublicationContributors) AddRow(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
-	ctype := mux.Vars(r)["type"]
 	muxRowDelta := mux.Vars(r)["delta"]
 	rowDelta, _ := strconv.Atoi(muxRowDelta)
 
@@ -86,20 +80,19 @@ func (c *PublicationContributors) AddRow(w http.ResponseWriter, r *http.Request)
 
 	muxRowDelta = strconv.Itoa(rowDelta)
 
-	// Skeleton to make the render fields happy
-	contributor := &models.Contributor{}
-
 	w.Header().Set("HX-Trigger", "ITAddRow")
 	w.Header().Set("HX-Trigger-After-Swap", "ITAddRowAfterSwap")
 	w.Header().Set("HX-Trigger-After-Settle", "ITAddRowAfterSettle")
 
-	c.Render.HTML(w, http.StatusOK, fmt.Sprintf("publication/%s/_default_form", ctype), views.NewData(c.Render, r, struct {
-		Author *models.Contributor
-		Form   *views.FormBuilder
-		ID     string
-		Key    string
+	c.Render.HTML(w, http.StatusOK, "contributors/_form", views.NewData(c.Render, r, struct {
+		Role        string
+		Contributor *models.Contributor
+		Form        *views.FormBuilder
+		ID          string
+		Key         string
 	}{
-		contributor,
+		mux.Vars(r)["role"],
+		&models.Contributor{},
 		views.NewFormBuilder(c.Render, locale.Get(r.Context()), nil),
 		id,
 		muxRowDelta,
@@ -110,25 +103,23 @@ func (c *PublicationContributors) AddRow(w http.ResponseWriter, r *http.Request)
 
 func (c *PublicationContributors) ShiftRow(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
-	ctype := mux.Vars(r)["type"]
 	muxRowDelta := mux.Vars(r)["delta"]
 
 	// Note: we don't increment the delta in this method!
-
-	// Skeleton to make the render fields happy
-	contributor := &models.Contributor{}
 
 	w.Header().Set("HX-Trigger", "ITAddRow")
 	w.Header().Set("HX-Trigger-After-Swap", "ITAddRowAfterSwap")
 	w.Header().Set("HX-Trigger-After-Settle", "ITAddRowAfterSettle")
 
-	c.Render.HTML(w, http.StatusOK, fmt.Sprintf("publication/%s/_default_form", ctype), views.NewData(c.Render, r, struct {
-		Author *models.Contributor
-		Form   *views.FormBuilder
-		ID     string
-		Key    string
+	c.Render.HTML(w, http.StatusOK, "contributors/_form", views.NewData(c.Render, r, struct {
+		Role        string
+		Contributor *models.Contributor
+		Form        *views.FormBuilder
+		ID          string
+		Key         string
 	}{
-		contributor,
+		mux.Vars(r)["role"],
+		&models.Contributor{},
 		views.NewFormBuilder(c.Render, locale.Get(r.Context()), nil),
 		id,
 		muxRowDelta,
@@ -147,9 +138,9 @@ func (c *PublicationContributors) CancelAddRow(w http.ResponseWriter, r *http.Re
 }
 
 func (c *PublicationContributors) CreateContributor(w http.ResponseWriter, r *http.Request) {
-	ctype := mux.Vars(r)["type"]
-	muxRowDelta := mux.Vars(r)["delta"]
-	rowDelta, _ := strconv.Atoi(muxRowDelta)
+	role := mux.Vars(r)["role"]
+	muxDelta := mux.Vars(r)["delta"]
+	delta, _ := strconv.Atoi(muxDelta)
 
 	pub := context.GetPublication(r.Context())
 
@@ -161,49 +152,42 @@ func (c *PublicationContributors) CreateContributor(w http.ResponseWriter, r *ht
 
 	contributor := &models.Contributor{}
 
-	// Add the contributor to the publication
-	switch ctype {
-	case "authors":
-		// Authors can be "UGent Author" / "External member".
-		// Separate form processing if a submitted author is an "UGent Author"
-		id := r.Form["ID"]
-		if id[0] != "" {
-			// Check if the user really exists
-			user, err := c.Engine.GetPerson(id[0])
-			if err != nil {
-				// @todo: throw an error
-				return
-			}
-			contributor.ID = user.ID
-			contributor.CreditRole = r.Form["credit_role"]
-			contributor.FirstName = user.FirstName
-			contributor.LastName = user.LastName
-		} else {
-			if err := forms.Decode(contributor, r.Form); err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
+	id := r.Form["ID"]
+	if id[0] != "" {
+		// Check if the user really exists
+		user, err := c.Engine.GetPerson(id[0])
+		if err != nil {
+			// @todo: throw an error
+			return
 		}
-
-		c.Engine.AddAuthorToPublication(pub, contributor, rowDelta)
-	default:
-		// Throw an error, unkown type
-		return
+		contributor.ID = user.ID
+		contributor.CreditRole = r.Form["credit_role"]
+		contributor.FirstName = user.FirstName
+		contributor.LastName = user.LastName
+	} else {
+		if err := forms.Decode(contributor, r.Form); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
+
+	pub.AddContributor(role, delta, contributor)
 
 	savedPub, err := c.Engine.UpdatePublication(pub)
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {
-		c.Render.HTML(w, http.StatusOK, fmt.Sprintf("publication/%s/_default_form", ctype), views.NewData(c.Render, r, struct {
-			Author *models.Contributor
-			Form   *views.FormBuilder
-			ID     string
-			Key    string
+		c.Render.HTML(w, http.StatusOK, "contributors/_form", views.NewData(c.Render, r, struct {
+			Role        string
+			Contributor *models.Contributor
+			Form        *views.FormBuilder
+			ID          string
+			Key         string
 		}{
+			role,
 			contributor,
 			views.NewFormBuilder(c.Render, locale.Get(r.Context()), formErrors),
 			savedPub.ID,
-			muxRowDelta,
+			muxDelta,
 		}),
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
@@ -214,112 +198,91 @@ func (c *PublicationContributors) CreateContributor(w http.ResponseWriter, r *ht
 	}
 
 	// Use the SavedContributor since Librecat returns contributor.FullName
-	var savedContributor *models.Contributor
-	switch ctype {
-	case "authors":
-		savedContributor = c.Engine.GetAuthorFromPublication(savedPub, rowDelta)
-	default:
-		// @todo: Throw an error, unkown type
-	}
+	savedContributor := savedPub.Contributors(role)[delta]
 
 	w.Header().Set("HX-Trigger", "ITCreateItem")
 	w.Header().Set("HX-Trigger-After-Swap", "ITCreateItemAfterSwap")
 	w.Header().Set("HX-Trigger-After-Settle", "ITCreateItemAfterSettle")
 
-	c.Render.HTML(w, http.StatusOK,
-		fmt.Sprintf("publication/%s/_default_row", ctype),
-		views.NewData(c.Render, r, struct {
-			Publication *models.Publication
-			Show        *views.ShowBuilder
-			Author      *models.Contributor
-			Key         string
-		}{
-			savedPub,
-			views.NewShowBuilder(c.Render, locale.Get(r.Context())),
-			savedContributor,
-			muxRowDelta,
-		}),
+	c.Render.HTML(w, http.StatusOK, "contributors/_row", views.NewData(c.Render, r, struct {
+		Role        string
+		Publication *models.Publication
+		Show        *views.ShowBuilder
+		Contributor *models.Contributor
+		Key         string
+	}{
+		role,
+		savedPub,
+		views.NewShowBuilder(c.Render, locale.Get(r.Context())),
+		savedContributor,
+		muxDelta,
+	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
 
 func (c *PublicationContributors) EditRow(w http.ResponseWriter, r *http.Request) {
-	ctype := mux.Vars(r)["type"]
-	muxRowDelta := mux.Vars(r)["delta"]
-	rowDelta, _ := strconv.Atoi(muxRowDelta)
+	role := mux.Vars(r)["role"]
+	muxDelta := mux.Vars(r)["delta"]
+	delta, _ := strconv.Atoi(muxDelta)
 
 	pub := context.GetPublication(r.Context())
 
-	var contributor *models.Contributor
-	switch ctype {
-	case "authors":
-		contributor = c.Engine.GetAuthorFromPublication(pub, rowDelta)
-	default:
-		// @todo: Throw an error, unkown type
-		return
-
-	}
+	contributor := pub.Contributors(role)[delta]
 
 	w.Header().Set("HX-Trigger", "ITEditRow")
 	w.Header().Set("HX-Trigger-After-Swap", "ITEditRowAfterSwap")
 	w.Header().Set("HX-Trigger-After-Settle", "ITEditRowAfterSettle")
 
-	c.Render.HTML(w, http.StatusOK, fmt.Sprintf("publication/%s/_default_form_edit", ctype), views.NewData(c.Render, r, struct {
-		Author *models.Contributor
-		Form   *views.FormBuilder
-		ID     string
-		Key    string
+	c.Render.HTML(w, http.StatusOK, "contributors/_form_edit", views.NewData(c.Render, r, struct {
+		Role        string
+		Contributor *models.Contributor
+		Form        *views.FormBuilder
+		ID          string
+		Key         string
 	}{
+		role,
 		contributor,
 		views.NewFormBuilder(c.Render, locale.Get(r.Context()), nil),
 		pub.ID,
-		muxRowDelta,
+		muxDelta,
 	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
 
 func (c *PublicationContributors) CancelEditRow(w http.ResponseWriter, r *http.Request) {
-	ctype := mux.Vars(r)["type"]
-	muxRowDelta := mux.Vars(r)["delta"]
-	rowDelta, _ := strconv.Atoi(muxRowDelta)
+	role := mux.Vars(r)["role"]
+	muxDelta := mux.Vars(r)["delta"]
+	delta, _ := strconv.Atoi(muxDelta)
 
 	pub := context.GetPublication(r.Context())
 
-	var contributor *models.Contributor
-	switch ctype {
-	case "authors":
-		contributor = c.Engine.GetAuthorFromPublication(pub, rowDelta)
-	default:
-		// @todo: Throw an error, unkown type
-		return
-	}
+	contributor := pub.Contributors(role)[delta]
 
 	w.Header().Set("HX-Trigger", "ITCancelEditRow")
 	w.Header().Set("HX-Trigger-After-Swap", "ITCancelEditRowAfterSwap")
 	w.Header().Set("HX-Trigger-After-Settle", "ITCancelEditRowAfterSettle")
 
-	c.Render.HTML(w, http.StatusOK,
-		fmt.Sprintf("publication/%s/_default_row", ctype),
-		views.NewData(c.Render, r, struct {
-			render      *render.Render
-			Publication *models.Publication
-			Author      *models.Contributor
-			Key         string
-		}{
-			c.Render,
-			pub,
-			contributor,
-			muxRowDelta,
-		}),
+	c.Render.HTML(w, http.StatusOK, "contributors/_row", views.NewData(c.Render, r, struct {
+		Role        string
+		Publication *models.Publication
+		Contributor *models.Contributor
+		Key         string
+	}{
+		role,
+		pub,
+		contributor,
+		muxDelta,
+	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
 
 func (c *PublicationContributors) UpdateContributor(w http.ResponseWriter, r *http.Request) {
-	ctype := mux.Vars(r)["type"]
-	muxRowDelta := mux.Vars(r)["delta"]
-	rowDelta, _ := strconv.Atoi(muxRowDelta)
+	role := mux.Vars(r)["role"]
+	muxDelta := mux.Vars(r)["delta"]
+	delta, _ := strconv.Atoi(muxDelta)
 
 	pub := context.GetPublication(r.Context())
 
@@ -331,47 +294,42 @@ func (c *PublicationContributors) UpdateContributor(w http.ResponseWriter, r *ht
 
 	contributor := &models.Contributor{}
 
-	// Update the contributor
-	switch ctype {
-	case "authors":
-		// Authors can be "UGent Author" / "External member".
-		// Separate form processing if a submitted author is an "UGent Author"
-		id := r.Form["ID"]
-		if id[0] != "" {
-			// Check if the user really exists
-			user, err := c.Engine.GetPerson(id[0])
-			if err != nil {
-				// @todo: throw an error
-				return
-			}
-			contributor.ID = user.ID
-			contributor.CreditRole = r.Form["credit_role"]
-			contributor.FirstName = user.FirstName
-			contributor.LastName = user.LastName
-		} else {
-			if err := forms.Decode(contributor, r.Form); err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
+	id := r.Form["ID"]
+	if id[0] != "" {
+		// Check if the user really exists
+		user, err := c.Engine.GetPerson(id[0])
+		if err != nil {
+			// TODO throw an error
+			return
 		}
-		c.Engine.UpdateAuthorOnPublication(pub, contributor, rowDelta)
-	default:
-		return
+		contributor.ID = user.ID
+		contributor.CreditRole = r.Form["credit_role"]
+		contributor.FirstName = user.FirstName
+		contributor.LastName = user.LastName
+	} else {
+		if err := forms.Decode(contributor, r.Form); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
+
+	pub.Contributors(role)[delta] = contributor
 
 	savedPub, err := c.Engine.UpdatePublication(pub)
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {
-		c.Render.HTML(w, http.StatusOK, fmt.Sprintf("publication/%s/%s_edit_form", ctype, savedPub.Type), views.NewData(c.Render, r, struct {
-			Author *models.Contributor
-			Form   *views.FormBuilder
-			ID     string
-			Key    string
+		c.Render.HTML(w, http.StatusOK, "contributors/_form_edit", views.NewData(c.Render, r, struct {
+			Role        string
+			Contributor *models.Contributor
+			Form        *views.FormBuilder
+			ID          string
+			Key         string
 		}{
+			role,
 			contributor,
 			views.NewFormBuilder(c.Render, locale.Get(r.Context()), formErrors),
 			savedPub.ID,
-			muxRowDelta,
+			muxDelta,
 		}),
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
@@ -382,38 +340,30 @@ func (c *PublicationContributors) UpdateContributor(w http.ResponseWriter, r *ht
 	}
 
 	// Use the SavedContributor since Librecat returns contributor.FullName
-	var savedContributor *models.Contributor
-	switch ctype {
-	case "authors":
-		savedContributor = c.Engine.GetAuthorFromPublication(savedPub, rowDelta)
-	default:
-		// @todo: Throw an error, unkown type
-		return
-	}
+	savedContributor := savedPub.Contributors(role)[delta]
 
 	w.Header().Set("HX-Trigger", "ITUpdateItem")
 	w.Header().Set("HX-Trigger-After-Swap", "ITUpdateItemAfterSwap")
 	w.Header().Set("HX-Trigger-After-Settle", "ITUpdateItemAfterSettle")
 
-	c.Render.HTML(w, http.StatusOK,
-		fmt.Sprintf("publication/%s/_default_row", ctype),
-		views.NewData(c.Render, r, struct {
-			Publication *models.Publication
-			Show        *views.ShowBuilder
-			Author      *models.Contributor
-			Key         string
-		}{
-			savedPub,
-			views.NewShowBuilder(c.Render, locale.Get(r.Context())),
-			savedContributor,
-			muxRowDelta,
-		}),
+	c.Render.HTML(w, http.StatusOK, "contributors/_row", views.NewData(c.Render, r, struct {
+		Role        string
+		Publication *models.Publication
+		Show        *views.ShowBuilder
+		Contributor *models.Contributor
+		Key         string
+	}{
+		role,
+		savedPub,
+		views.NewShowBuilder(c.Render, locale.Get(r.Context())),
+		savedContributor,
+		muxDelta,
+	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
 
 func (c *PublicationContributors) ConfirmRemoveFromPublication(w http.ResponseWriter, r *http.Request) {
-	ctype := mux.Vars(r)["type"]
 	id := mux.Vars(r)["id"]
 	muxRowDelta := mux.Vars(r)["delta"]
 
@@ -421,33 +371,25 @@ func (c *PublicationContributors) ConfirmRemoveFromPublication(w http.ResponseWr
 	w.Header().Set("HX-Trigger-After-Swap", "ITConfirmRemoveFromPublicationAfterSwap")
 	w.Header().Set("HX-Trigger-After-Settle", "ITConfirmRemoveFromPublicationAfterSettle")
 
-	c.Render.HTML(w, http.StatusOK,
-		fmt.Sprintf("publication/%s/_modal_confirm_removal", ctype),
-		views.NewData(c.Render, r, struct {
-			ID               string
-			ContributorDelta string
-		}{
-			id,
-			muxRowDelta,
-		}),
+	c.Render.HTML(w, http.StatusOK, "contributors/_modal_confirm_removal", views.NewData(c.Render, r, struct {
+		Role             string
+		ID               string
+		ContributorDelta string
+	}{
+		mux.Vars(r)["role"],
+		id,
+		muxRowDelta,
+	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
 
 func (c *PublicationContributors) RemoveContributor(w http.ResponseWriter, r *http.Request) {
-	ctype := mux.Vars(r)["type"]
-	muxRowDelta := mux.Vars(r)["delta"]
-	rowDelta, _ := strconv.Atoi(muxRowDelta)
+	role := mux.Vars(r)["role"]
+	delta, _ := strconv.Atoi(mux.Vars(r)["delta"])
 
 	pub := context.GetPublication(r.Context())
-
-	switch ctype {
-	case "authors":
-		c.Engine.RemoveAuthorFromPublication(pub, rowDelta)
-	default:
-		return
-	}
-
+	pub.RemoveContributor(role, delta)
 	// @todo: error handling
 	c.Engine.UpdatePublication(pub)
 
@@ -460,7 +402,6 @@ func (c *PublicationContributors) RemoveContributor(w http.ResponseWriter, r *ht
 }
 
 func (c *PublicationContributors) PromoteSearchContributor(w http.ResponseWriter, r *http.Request) {
-	ctype := mux.Vars(r)["type"]
 	id := mux.Vars(r)["id"]
 	muxRowDelta := mux.Vars(r)["delta"]
 
@@ -486,19 +427,17 @@ func (c *PublicationContributors) PromoteSearchContributor(w http.ResponseWriter
 	w.Header().Set("HX-Trigger-After-Swap", "ITPromoteModalAfterSwap")
 	w.Header().Set("HX-Trigger-After-Settle", "ITPromoteModalAfterSettle")
 
-	c.Render.HTML(w, 200,
-		fmt.Sprintf("publication/%s/_modal_promote_contributor", ctype),
-		views.NewData(c.Render, r, struct {
-			ID       string
-			People   []models.Person
-			Length   string
-			RowDelta string
-		}{
-			id,
-			people,
-			length,
-			muxRowDelta,
-		}),
+	c.Render.HTML(w, 200, "contributors/_modal_promote_contributor", views.NewData(c.Render, r, struct {
+		ID       string
+		People   []models.Person
+		Length   string
+		RowDelta string
+	}{
+		id,
+		people,
+		length,
+		muxRowDelta,
+	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }

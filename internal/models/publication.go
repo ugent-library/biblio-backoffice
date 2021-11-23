@@ -62,7 +62,7 @@ type Publication struct {
 	AlternativeTitle        []string                `json:"alternative_title,omitempty" form:"alternative_title"`
 	ArticleNumber           string                  `json:"article_number,omitempty" form:"article_number"`
 	ArxivID                 string                  `json:"arxiv_id,omitempty" form:"arxiv_id"`
-	Author                  []Contributor           `json:"author,omitempty" form:"-"`
+	Author                  []*Contributor          `json:"author,omitempty" form:"-"`
 	BatchID                 string                  `json:"batch_id,omitempty" form:"-"`
 	Classification          string                  `json:"classification,omitempty" form:"classification"`
 	CompletenessScore       int                     `json:"completeness_score,omitempty" form:"-"`
@@ -77,7 +77,7 @@ type Publication struct {
 	Department              []PublicationDepartment `json:"department,omitempty" form:"-"`
 	DOI                     string                  `json:"doi,omitempty" form:"doi"`
 	Edition                 string                  `json:"edition,omitempty" form:"edition"`
-	Editor                  []Contributor           `json:"editor,omitempty" form:"-"`
+	Editor                  []*Contributor          `json:"editor,omitempty" form:"-"`
 	EISBN                   []string                `json:"eisbn,omitempty" form:"eisbn"`
 	EISSN                   []string                `json:"eissn,omitempty" form:"eissn"`
 	ESCIID                  string                  `json:"esci_id,omitempty" form:"esci_id"`
@@ -121,7 +121,7 @@ type Publication struct {
 	SourceID                string                  `json:"source_id,omitempty" form:"-"`
 	SourceRecord            string                  `json:"source_record,omitempty" form:"-"`
 	Status                  string                  `json:"status,omitempty" form:"-"`
-	Supervisor              []Contributor           `json:"supervisor,omitempty" form:"-"`
+	Supervisor              []*Contributor          `json:"supervisor,omitempty" form:"-"`
 	Title                   string                  `json:"title,omitempty" form:"title"`
 	Type                    string                  `json:"type,omitempty" form:"-"`
 	URL                     string                  `json:"url,omitempty" form:"url"`
@@ -201,6 +201,49 @@ func (p *Publication) ClassificationChoices() []string {
 			"U",
 		}
 	}
+}
+
+func (p *Publication) Contributors(role string) []*Contributor {
+	switch role {
+	case "author":
+		return p.Author
+	case "editor":
+		return p.Editor
+	case "supervisor":
+		return p.Supervisor
+	default:
+		return nil
+	}
+}
+
+func (p *Publication) SetContributors(role string, c []*Contributor) {
+	switch role {
+	case "author":
+		p.Author = c
+	case "editor":
+		p.Editor = c
+	case "supervisor":
+		p.Supervisor = c
+	}
+}
+
+func (p *Publication) AddContributor(role string, i int, c *Contributor) {
+	cc := p.Contributors(role)
+
+	if len(cc) == i {
+		p.SetContributors(role, append(cc, c))
+		return
+	}
+
+	newCC := append(cc[:i+1], cc[i:]...)
+	newCC[i] = c
+	p.SetContributors(role, newCC)
+}
+
+func (p *Publication) RemoveContributor(role string, i int) {
+	cc := p.Contributors(role)
+
+	p.SetContributors(role, append(cc[:i], cc[i+1:]...))
 }
 
 func (p *Publication) UsesConference() bool {
