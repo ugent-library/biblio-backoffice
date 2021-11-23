@@ -11,7 +11,17 @@
                     </div>
                 </div>
                 <div class="bc-toolbar-right">
+                    {{if .User.CanPublishPublication .D.Publication}}
                     <div class="bc-toolbar-item">
+                        <form action="{{pathFor "publication_publish" "id" .D.Publication.ID}}" method="POST">
+                            {{.CSRFTag}}
+                            <button type="submit" class="btn btn-success">
+                                <div class="btn-text">Publish to Biblio</div>
+                            </button>
+                        </form>
+                    </div>
+                    {{end}}
+                    <!-- <div class="bc-toolbar-item">
                         <div class="dropdown dropleft">
                             <button class="btn btn-outline-primary btn-icon-only" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="if if-more"></i>
@@ -33,13 +43,13 @@
                                     <i class="if if-orcid" style="color: #A6CE39"></i>
                                     <span>Send to ORCID</span>
                                 </button>
-                                {{/* <button class="dropdown-item" type="button" data-toggle="modal" data-target="#delete">
+                                <button class="dropdown-item" type="button" data-toggle="modal" data-target="#delete">
                                     <i class="if if-delete"></i>
                                     <span>Delete</span>
-                                </button> */}}
+                                </button>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>

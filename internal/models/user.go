@@ -82,6 +82,10 @@ func (u *User) CanEditPublication(p *Publication) bool {
 	return false
 }
 
+func (u *User) CanPublishPublication(p *Publication) bool {
+	return u.CanEditPublication(p) && p.Status != "public"
+}
+
 func (u *User) CanViewDataset(d *Dataset) bool {
 	if d.Status == "deleted" {
 		return false
@@ -129,6 +133,10 @@ func (u *User) CanEditDataset(d *Dataset) bool {
 		}
 	}
 	return false
+}
+
+func (u *User) CanPublishDataset(d *Dataset) bool {
+	return u.CanEditDataset(d) && d.Status != "public"
 }
 
 func (u *User) CanImpersonateUser() bool {

@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"time"
 
 	"github.com/ugent-library/biblio-backend/internal/context"
 	"github.com/ugent-library/biblio-backend/internal/engine"
@@ -91,6 +92,49 @@ func (c *Datasets) Show(w http.ResponseWriter, r *http.Request) {
 		views.NewShowBuilder(c.Render, locale.Get(r.Context())),
 		searchArgs,
 	}))
+}
+
+func (c *Datasets) Publish(w http.ResponseWriter, r *http.Request) {
+	dataset := context.GetDataset(r.Context())
+
+	savedDataset, err := c.Engine.PublishDataset(dataset)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	datasetPubs, err := c.Engine.GetDatasetPublications(dataset.ID)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	searchArgs := engine.NewSearchArgs()
+	if err := forms.Decode(searchArgs, r.URL.Query()); err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	savedDataset.RelatedPublicationCount = len(datasetPubs)
+
+	c.Render.HTML(w, http.StatusOK, "dataset/show", views.NewData(c.Render, r, struct {
+		PageTitle           string
+		Dataset             *models.Dataset
+		DatasetPublications []*models.Publication
+		Show                *views.ShowBuilder
+		SearchArgs          *engine.SearchArgs
+	}{
+		"Dataset - Biblio",
+		savedDataset,
+		datasetPubs,
+		views.NewShowBuilder(c.Render, locale.Get(r.Context())),
+		searchArgs,
+	},
+		views.Flash{Type: "success", Message: "Successfully published to Biblio.", DismissAfter: 5 * time.Second},
+	))
 }
 
 func (c *Datasets) Add(w http.ResponseWriter, r *http.Request) {

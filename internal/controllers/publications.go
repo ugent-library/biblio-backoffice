@@ -6,6 +6,7 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/ugent-library/biblio-backend/internal/context"
@@ -116,6 +117,49 @@ func (c *Publications) Thumbnail(w http.ResponseWriter, r *http.Request) {
 	r.Host = url.Host
 	r.SetBasicAuth(c.Engine.Config.LibreCatUsername, c.Engine.Config.LibreCatPassword)
 	proxy.ServeHTTP(w, r)
+}
+
+func (c *Publications) Publish(w http.ResponseWriter, r *http.Request) {
+	pub := context.GetPublication(r.Context())
+
+	savedPub, err := c.Engine.PublishPublication(pub)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	pubDatasets, err := c.Engine.GetPublicationDatasets(pub.ID)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	searchArgs := engine.NewSearchArgs()
+	if err := forms.Decode(searchArgs, r.URL.Query()); err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	savedPub.RelatedDatasetCount = len(pubDatasets)
+
+	c.Render.HTML(w, http.StatusOK, "publication/show", views.NewData(c.Render, r, struct {
+		PageTitle           string
+		Publication         *models.Publication
+		PublicationDatasets []*models.Dataset
+		Show                *views.ShowBuilder
+		SearchArgs          *engine.SearchArgs
+	}{
+		"Publication - Biblio",
+		savedPub,
+		pubDatasets,
+		views.NewShowBuilder(c.Render, locale.Get(r.Context())),
+		searchArgs,
+	},
+		views.Flash{Type: "success", Message: "Successfully published to Biblio.", DismissAfter: 5 * time.Second},
+	))
 }
 
 func (c *Publications) Summary(w http.ResponseWriter, r *http.Request) {
