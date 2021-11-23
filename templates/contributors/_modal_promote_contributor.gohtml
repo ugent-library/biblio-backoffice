@@ -7,7 +7,7 @@
             </div>
             <div class="modal-body">
                 <p>Found {{ .D.Length }} persons.</p>
-                <ul class="list-group mt-6" id ="modal-contributors-list">
+                <ul class="list-group mt-6" id="modal-contributors-list" data-contributor-list="{{.D.Role}}-list">
                     {{ $rowDelta := .D.RowDelta }}
                     {{ range $key, $p := .D.People }}
                     <li class="list-group-item"

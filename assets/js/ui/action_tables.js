@@ -1,12 +1,11 @@
 import { ActionTable } from '../classes/actionTable.js';
 
 export function actionTables() {
-
-    // Authors table
-    const authorsTable = new ActionTable({
-        tableSelector: "table#author-table",
-        addButtonSelector: "button.btn-outline-primary.add-author"
+    document.querySelectorAll("table.contributor-table").forEach(function(table) {
+        const actionTable = new ActionTable({
+            tableSelector: "table#" + table.id,
+            addButtonSelector: "button.btn-outline-primary.add-contributor"
+        })
+        actionTable.init()
     })
-
-    authorsTable.init();
 }

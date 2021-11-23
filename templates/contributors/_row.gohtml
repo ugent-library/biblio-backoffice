@@ -20,7 +20,7 @@
     </td>
     <td class="pr-4 col-3">
         <div class="c-button-toolbar">
-            <button type="button" class="btn btn-outline-primary add-author"
+            <button type="button" class="btn btn-outline-primary add-contributor"
                 hx-get="{{pathFor "publication_contributors_add_row" "role" .D.Role "id" .D.Publication.ID "delta" .D.Key}}"
                 hx-target="#{{.D.Role}}-table .row-{{ .D.Key }}"
                 hx-swap="afterend settle:.15s"

@@ -4,14 +4,16 @@ export default function () {
 
     // Promote an author to "UGent author"
     let promoteAuthor = function(evt) {
-        let contributors = document.querySelectorAll("#modal-contributors-list li a")
+        let modal = document.querySelector("#modal-contributors-list")
+        let tableID = modal.dataset.contributorList
+        let contributors = modal.querySelectorAll("li a")
 
         contributors.forEach(function (el) {
             el.addEventListener("click", function(evt) {
                 let rowDelta = el.dataset.row;
                 let item = el.closest("li.list-group-item");
-
-                let row = document.querySelectorAll("table#author-table tbody tr").item(rowDelta)
+                let table = document.getElementById(tableID)
+                let row = table.querySelectorAll("tbody tr").item(rowDelta)
 
                 // Set the values on the input fields
                 row.querySelector("input[name=first_name]").value = item.dataset.firstname;
@@ -58,7 +60,7 @@ export default function () {
 
     // Demote an UGent author to "external member"
     let demoteAuthor = function (evt) {
-        let demoteButtons = document.querySelectorAll("table#author-table tbody tr button.demote-external-member");
+        let demoteButtons = document.querySelectorAll("table#contributor-table tbody tr button.demote-external-member");
 
         demoteButtons.forEach(function (el) {
             el.addEventListener("click", function(evt) {

@@ -402,6 +402,7 @@ func (c *PublicationContributors) RemoveContributor(w http.ResponseWriter, r *ht
 }
 
 func (c *PublicationContributors) PromoteSearchContributor(w http.ResponseWriter, r *http.Request) {
+	role := mux.Vars(r)["role"]
 	id := mux.Vars(r)["id"]
 	muxRowDelta := mux.Vars(r)["delta"]
 
@@ -428,11 +429,13 @@ func (c *PublicationContributors) PromoteSearchContributor(w http.ResponseWriter
 	w.Header().Set("HX-Trigger-After-Settle", "ITPromoteModalAfterSettle")
 
 	c.Render.HTML(w, 200, "contributors/_modal_promote_contributor", views.NewData(c.Render, r, struct {
+		Role     string
 		ID       string
 		People   []models.Person
 		Length   string
 		RowDelta string
 	}{
+		role,
 		id,
 		people,
 		length,
