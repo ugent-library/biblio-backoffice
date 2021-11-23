@@ -25,8 +25,8 @@ func New(c Config) (*Engine, error) {
 	orcidClient := orcid.NewClient(orcid.Config{
 		ClientId:     c.ORCIDClientID,
 		ClientSecret: c.ORCIDClientSecret,
-		Scopes:       []string{"/read-public"},
-		Sandbox:      c.ORCIDSandbox,
+		// Scopes:       []string{"/read-public"},
+		Sandbox: c.ORCIDSandbox,
 	})
 
 	e := &Engine{
