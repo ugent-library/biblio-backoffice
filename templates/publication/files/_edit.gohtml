@@ -118,13 +118,9 @@
                         </label>
                         <select name="license" class="custom-select w-100">
                             <option></option>
-                            <option{{if eq .D.File.License "CC0"}} selected{{end}} value="CC0">CC0</option>
-                            <option{{if eq .D.File.License "CC-BY"}} selected{{end}} value="CC-BY">CC-BY</option>
-                            <option{{if eq .D.File.License "CC-BY-SA"}} selected{{end}} value="CC-BY-SA">CC-BY-SA</option>
-                            <option{{if eq .D.File.License "CC-BY-ND"}} selected{{end}} value="CC-BY-ND">CC-BY-ND</option>
-                            <option{{if eq .D.File.License "CC-BY-NC"}} selected{{end}} value="CC-BY-NC">CC-BY-NC</option>
-                            <option{{if eq .D.File.License "CC-BY-NC-SA"}} selected{{end}} value="CC-BY-NC-SA">CC-BY-NC-SA</option>
-                            <option{{if eq .D.File.License "CC-BY-NC-ND"}} selected{{end}} value="CC-BY-NC-ND">CC-BY-NC-ND</option>
+                            {{range .D.Vocabularies.file_license_codes}}
+                            <option{{if eq $.D.File.License .}} selected{{end}} value="{{.}}">{{.}}</option>
+                            {{end}}
                         </select>
                     </div>
                     <div class="form-group">
