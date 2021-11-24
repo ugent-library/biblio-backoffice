@@ -15,7 +15,7 @@ func (e *Engine) GetPerson(id string) (*models.Person, error) {
 	return p, nil
 }
 
-func (e *Engine) SuggestPersons(q string) ([]models.Person, error) {
+func (e *Engine) SuggestPeople(q string) ([]models.Person, error) {
 	hits := make([]models.Person, 0)
 	qp := url.Values{}
 	qp.Set("q", q)

@@ -20,7 +20,27 @@
             (.D.Form.Choices .D.Contributor.CreditRoleChoices (.D.Form.Locale "credit_roles"))}}
     </td>
     <td class="membership">
-        <div class="external {{ if not .D.Contributor.ID }} d-display {{ else }} d-none {{ end }}">
+        <div class="mt-1">
+            <div class="custom-control custom-radio custom-control-inline">
+                <input class="custom-control-input" id="{{.D.Role}}-promote-{{.D.Key}}" type="radio" name="ugent-author" class="promote-author"
+                    {{ if .D.Contributor.ID }} checked{{end}}
+                    hx-post="{{pathFor "publication_contributors_promote_contributor_modal" "role" .D.Role "id" .D.ID "delta" .D.Key}}"
+                    hx-target="#publications-contributors-modal"
+                    hx-trigger="click"
+                    hx-include="#{{.D.Role}}-table .row-edit"
+                >
+                <label class="custom-control-label custom-control-label-light" for="{{.D.Role}}-promote-{{.D.Key}}">
+                    <i class="if if-ghent-university if--small"></i>UGent {{.D.Role}}
+                </label>
+            </div>
+            <div class="custom-control custom-radio custom-control-inline">
+                <input class="custom-control-input" id="{{.D.Role}}-demote-{{.D.Key}}" type="radio" name="ugent-author" class="demote-external-member"
+                    {{ if not .D.Contributor.ID }} checked{{end}}
+                >
+                <label class="custom-control-label custom-control-label-light" for="{{.D.Role}}-demote-{{.D.Key}}">External {{.D.Role}}</label>
+            </div>
+        </div>
+        <!-- <div class="external {{ if not .D.Contributor.ID }} d-display {{ else }} d-none {{ end }}">
             <span class="mr-3">External {{.D.Role}}</span>
             <button type="button" name="ugent-author" class="btn btn-outline-primary promote-author"
                 hx-post="{{pathFor "publication_contributors_promote_contributor_modal" "role" .D.Role "id" .D.ID "delta" .D.Key}}"
@@ -38,26 +58,24 @@
             <button type="button" name="external-member" class="btn btn-outline-primary demote-external-member">
                 <div class="btn-text">External member</div>
             </button>
-        </div>
+        </div> -->
     </td>
-    <td class="pr-5">
+    <td class="pr-4 col-3">
         <div class="c-button-toolbar">
-            <button type="button" name="edit" class="btn btn-outline-primary update-contributor"
+            <button type="button" name="cancel" class="btn btn-link cancel-update"
+                hx-delete="{{pathFor "publication_contributors_cancel_edit_row" "role" .D.Role "id" .D.ID "delta" .D.Key}}"
+                hx-target="#{{.D.Role}}-table .row-edit"
+                hx-swap="outerHTML settle:.15s"
+            >
+                <span>Cancel</span>
+            </button>
+            <button type="button" name="edit" class="btn btn-primary update-contributor"
                 hx-post="{{pathFor "publication_contributors_update_contributor" "role" .D.Role "id" .D.ID "delta" .D.Key}}"
                 hx-target="#{{.D.Role}}-table .row-edit"
                 hx-include="#{{.D.Role}}-table .row-edit"
                 hx-swap="outerHTML settle:.15s"
             >
-                <i class="if if-edit"></i>
                 <span>Update {{.D.Role}}</span>
-            </button>
-            <button type="button" name="cancel" class="btn btn-outline-secondary cancel-update"
-                hx-delete="{{pathFor "publication_contributors_cancel_edit_row" "role" .D.Role "id" .D.ID "delta" .D.Key}}"
-                hx-target="#{{.D.Role}}-table .row-edit"
-                hx-swap="outerHTML settle:.15s"
-            >
-                <i class="if if-no-edit"></i>
-                <span>Cancel</span>
             </button>
         </div>
     </td>

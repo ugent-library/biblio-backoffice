@@ -1,0 +1,22 @@
+<div id="modal-backdrop" class="modal-backdrop fade show" style="display:block;"></div>
+<div class="modal show" tabindex="-1" style="display: block;" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Add {{.D.Role}}</h2>
+            </div>
+            <div class="modal-body">
+                {{template "publication/contributors/_form" .}}
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-link modal-close" data-dismiss="modal">Cancel</button>
+                <button class="btn btn-primary modal-close" data-dismiss="modal"
+                    hx-post="{{pathFor "publication_contributors_create" "id" .D.Publication.ID "role" .D.Role}}"
+                    hx-include="#{{.D.Role}}-modal .modal-body form > *"
+                    hx-vals='{"position":"{{.D.Position}}"}'
+                    hx-swap="none"
+                >Add</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -353,7 +353,32 @@ func Register(c controllers.Context) {
 	pubEditRouter.HandleFunc("/htmx/links/remove/{delta}", publicationLinksController.RemoveLink).
 		Methods("DELETE").
 		Name("publication_links_remove_link")
-	// Publication authors HTMX fragments
+	// Publication contributors HTMX fragments
+	pubEditRouter.HandleFunc("/htmx/{role}/add", publicationContributorsController.Add).
+		Methods("GET").
+		Name("publication_contributors_add")
+	pubEditRouter.HandleFunc("/htmx/{role}", publicationContributorsController.Create).
+		Methods("POST").
+		Name("publication_contributors_create")
+	pubEditRouter.HandleFunc("/htmx/{role}/{position}/remove", publicationContributorsController.ConfirmRemove).
+		Methods("GET").
+		Name("publication_contributors_confirm_remove")
+	pubEditRouter.HandleFunc("/htmx/{role}/{position}", publicationContributorsController.Remove).
+		Methods("DELETE").
+		Name("publication_contributors_remove")
+	pubEditRouter.HandleFunc("/htmx/{role}/{position}/edit", publicationContributorsController.Edit).
+		Methods("GET").
+		Name("publication_contributors_edit")
+	pubEditRouter.HandleFunc("/htmx/{role}/{position}/choose", publicationContributorsController.Choose).
+		Methods("GET").
+		Name("publication_contributors_choose")
+	pubEditRouter.HandleFunc("/htmx/{role}/{position}", publicationContributorsController.Update).
+		Methods("PUT").
+		Name("publication_contributors_update")
+
+	pubEditRouter.HandleFunc("/htmx/{role}/add/{delta}", publicationContributorsController.AddRow).
+		Methods("GET").
+		Name("publication_contributors_add_row")
 	pubEditRouter.HandleFunc("/htmx/{role}/list", publicationContributorsController.List).
 		Methods("GET").
 		Name("publication_contributors_list")

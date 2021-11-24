@@ -31,23 +31,20 @@
                 hx-swap="afterend settle:.15s"
             >
                 <i class="if if-add"></i>
-                <span>Add row</span>
             </button>
-            <button type="button" class="btn btn-outline-primary edit-contributor"
+            <button type="button" class="btn btn-default edit-contributor"
                 hx-get="{{pathFor "publication_contributors_edit_row" "role" $.D.Role "id" $pub.ID "delta" $k}}"
                 hx-target="#{{$.D.Role}}-table .row-{{ $k }}"
                 hx-swap="outerHTML settle:.15s"
             >
                 <i class="if if-edit"></i>
-                <span>Edit</span>
             </button>
-            <button type="button" class="btn btn-outline-danger delete-contributor"
+            <button type="button" class="btn btn-default delete-contributor"
                 hx-get="{{pathFor "publication_contributors_confirm_remove_from_publication" "role" $.D.Role "id" $pub.ID "delta" $k}}"
                 hx-target="#publications-contributors-modal"
                 hx-trigger="click"
             >
-                <i class="if if-subtract"></i>
-                <span>Delete</span>
+                <i class="if if-delete"></i>
             </button>
         </div>
         {{end}}

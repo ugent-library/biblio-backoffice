@@ -3,7 +3,7 @@ import htmx from 'htmx.org';
 // Set an event handler on any buttons that have the 'modal-close' class.
 // This ensures that any and all modals can be closed via 'close', 'cancel', etc. buttons.
 export default function() {
-    let modalClose = function(e) {
+    let modalClose = function(evt) {
         let modal = document.querySelectorAll(".modal").item(0)
         let backdrop = document.querySelectorAll(".modal-backdrop").item(0)
 
@@ -21,6 +21,21 @@ export default function() {
                 backdrop.remove();
             }
 
+            if (modal) {
+                modal.remove();
+            }
+        }, 100)
+    }
+    
+    let modalCloseSecondary = function(evt) {
+        let modal = evt.target.closest(".modal")
+
+        if (modal) {
+            modal.classList.remove("show")
+        }
+
+        // Timeout gives us a fluid animation
+        setTimeout(function() {
             if (modal) {
                 modal.remove();
             }
@@ -80,6 +95,9 @@ export default function() {
         if (container.classList.contains("modals")) {
             container.querySelectorAll(".modal-close").forEach( function (el) {
                 el.addEventListener("click", modalClose);
+            });
+            container.querySelectorAll(".modal-close-secondary").forEach( function (el) {
+                el.addEventListener("click", modalCloseSecondary);
             });
         }
     });

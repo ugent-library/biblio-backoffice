@@ -51,6 +51,271 @@ func NewPublicationContributors(c Context) *PublicationContributors {
 	return &PublicationContributors{c}
 }
 
+func (c *PublicationContributors) Add(w http.ResponseWriter, r *http.Request) {
+	pub := context.GetPublication(r.Context())
+	role := mux.Vars(r)["role"]
+	positionVar := r.URL.Query().Get("position")
+	contributors := pub.Contributors(role)
+	position := len(contributors)
+	if positionVar != "" {
+		position, _ = strconv.Atoi(positionVar)
+	}
+
+	c.Render.HTML(w, http.StatusOK, "publication/contributors/_add", views.NewData(c.Render, r, struct {
+		Role        string
+		Publication *models.Publication
+		Contributor *models.Contributor
+		Position    int
+		Form        *views.FormBuilder
+	}{
+		role,
+		pub,
+		&models.Contributor{},
+		position,
+		views.NewFormBuilder(c.Render, locale.Get(r.Context()), nil),
+	}),
+		render.HTMLOptions{Layout: "layouts/htmx"},
+	)
+}
+
+func (c *PublicationContributors) Create(w http.ResponseWriter, r *http.Request) {
+	pub := context.GetPublication(r.Context())
+	role := mux.Vars(r)["role"]
+	r.ParseForm()
+	positionVar := r.FormValue("position")
+	contributors := pub.Contributors(role)
+	position := len(contributors)
+	if positionVar != "" {
+		position, _ = strconv.Atoi(positionVar)
+	}
+
+	contributor := &models.Contributor{}
+
+	// id := r.Form["ID"]
+	// if id[0] != "" {
+	// 	// Check if the user really exists
+	// 	user, err := c.Engine.GetPerson(id[0])
+	// 	if err != nil {
+	// 		// @todo: throw an error
+	// 		return
+	// 	}
+	// 	contributor.ID = user.ID
+	// 	contributor.CreditRole = r.Form["credit_role"]
+	// 	contributor.FirstName = user.FirstName
+	// 	contributor.LastName = user.LastName
+	// } else {
+	if err := forms.Decode(contributor, r.Form); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	// }
+
+	pub.AddContributor(role, position, contributor)
+
+	savedPub, err := c.Engine.UpdatePublication(pub)
+
+	// if formErrors, ok := err.(jsonapi.Errors); ok {
+	// 	c.Render.HTML(w, http.StatusOK, "contributors/_form", views.NewData(c.Render, r, struct {
+	// 		Role        string
+	// 		Contributor *models.Contributor
+	// 		Form        *views.FormBuilder
+	// 		ID          string
+	// 		Key         string
+	// 	}{
+	// 		role,
+	// 		contributor,
+	// 		views.NewFormBuilder(c.Render, locale.Get(r.Context()), formErrors),
+	// 		savedPub.ID,
+	// 		muxDelta,
+	// 	}),
+	// 		render.HTMLOptions{Layout: "layouts/htmx"},
+	// 	)
+	// 	return
+	// } else if err != nil {
+	// 	http.Error(w, err.Error(), http.StatusInternalServerError)
+	// 	return
+	// }
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	savedContributor := savedPub.Contributors(role)[position]
+
+	c.Render.HTML(w, http.StatusOK, "publication/contributors/_insert_row", views.NewData(c.Render, r, struct {
+		Role        string
+		Publication *models.Publication
+		Contributor *models.Contributor
+		Position    int
+	}{
+		role,
+		savedPub,
+		savedContributor,
+		position,
+	}),
+		render.HTMLOptions{Layout: "layouts/htmx"},
+	)
+}
+
+func (c *PublicationContributors) Edit(w http.ResponseWriter, r *http.Request) {
+	pub := context.GetPublication(r.Context())
+	role := mux.Vars(r)["role"]
+	positionVar := mux.Vars(r)["position"]
+	position, _ := strconv.Atoi(positionVar)
+
+	contributor := pub.Contributors(role)[position]
+
+	c.Render.HTML(w, http.StatusOK, "publication/contributors/_edit", views.NewData(c.Render, r, struct {
+		Role        string
+		Publication *models.Publication
+		Contributor *models.Contributor
+		Position    int
+		Form        *views.FormBuilder
+	}{
+		role,
+		pub,
+		contributor,
+		position,
+		views.NewFormBuilder(c.Render, locale.Get(r.Context()), nil),
+	}),
+		render.HTMLOptions{Layout: "layouts/htmx"},
+	)
+}
+
+func (c *PublicationContributors) Update(w http.ResponseWriter, r *http.Request) {
+	pub := context.GetPublication(r.Context())
+	role := mux.Vars(r)["role"]
+	positionVar := mux.Vars(r)["position"]
+	position, _ := strconv.Atoi(positionVar)
+
+	contributor := pub.Contributors(role)[position]
+
+	r.ParseForm()
+
+	// id := r.Form["ID"]
+	// if id[0] != "" {
+	// 	// Check if the user really exists
+	// 	user, err := c.Engine.GetPerson(id[0])
+	// 	if err != nil {
+	// 		// TODO throw an error
+	// 		return
+	// 	}
+	// 	contributor.ID = user.ID
+	// 	contributor.CreditRole = r.Form["credit_role"]
+	// 	contributor.FirstName = user.FirstName
+	// 	contributor.LastName = user.LastName
+	// } else {
+	if err := forms.Decode(contributor, r.Form); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	// }
+
+	// pub.Contributors(role)[delta] = contributor
+
+	savedPub, err := c.Engine.UpdatePublication(pub)
+
+	// if formErrors, ok := err.(jsonapi.Errors); ok {
+	// 	c.Render.HTML(w, http.StatusOK, "contributors/_form_edit", views.NewData(c.Render, r, struct {
+	// 		Role        string
+	// 		Contributor *models.Contributor
+	// 		Form        *views.FormBuilder
+	// 		ID          string
+	// 		Key         string
+	// 	}{
+	// 		role,
+	// 		contributor,
+	// 		views.NewFormBuilder(c.Render, locale.Get(r.Context()), formErrors),
+	// 		savedPub.ID,
+	// 		muxDelta,
+	// 	}),
+	// 		render.HTMLOptions{Layout: "layouts/htmx"},
+	// 	)
+	// 	return
+	// } else if err != nil {
+	// 	// @todo: throw appropriate error if saving the publication fails
+	// 	return
+	// }
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	savedContributor := savedPub.Contributors(role)[position]
+
+	c.Render.HTML(w, http.StatusOK, "publication/contributors/_update_row", views.NewData(c.Render, r, struct {
+		Role        string
+		Publication *models.Publication
+		Contributor *models.Contributor
+		Position    int
+	}{
+		role,
+		savedPub,
+		savedContributor,
+		position,
+	}),
+		render.HTMLOptions{Layout: "layouts/htmx"},
+	)
+}
+
+func (c *PublicationContributors) ConfirmRemove(w http.ResponseWriter, r *http.Request) {
+	pub := context.GetPublication(r.Context())
+	role := mux.Vars(r)["role"]
+	positionVar := mux.Vars(r)["position"]
+	position, _ := strconv.Atoi(positionVar)
+
+	c.Render.HTML(w, http.StatusOK, "publication/contributors/_confirm_remove", views.NewData(c.Render, r, struct {
+		Role        string
+		Publication *models.Publication
+		Position    int
+	}{
+		role,
+		pub,
+		position,
+	}),
+		render.HTMLOptions{Layout: "layouts/htmx"},
+	)
+}
+
+func (c *PublicationContributors) Remove(w http.ResponseWriter, r *http.Request) {
+	pub := context.GetPublication(r.Context())
+	role := mux.Vars(r)["role"]
+	positionVar := mux.Vars(r)["position"]
+	position, _ := strconv.Atoi(positionVar)
+
+	// TODO error handling
+	pub.RemoveContributor(role, position)
+	c.Engine.UpdatePublication(pub)
+}
+
+func (c *PublicationContributors) Choose(w http.ResponseWriter, r *http.Request) {
+	pub := context.GetPublication(r.Context())
+	role := mux.Vars(r)["role"]
+	positionVar := mux.Vars(r)["position"]
+	position, _ := strconv.Atoi(positionVar)
+
+	firstName := r.URL.Query().Get("first_name")
+	lastName := r.URL.Query().Get("last_name")
+
+	suggestions, _ := c.Engine.SuggestPeople(firstName + " " + lastName)
+
+	c.Render.HTML(w, http.StatusOK, "publication/contributors/_choose", views.NewData(c.Render, r, struct {
+		Role        string
+		Publication *models.Publication
+		Position    int
+		Suggestions []models.Person
+	}{
+		role,
+		pub,
+		position,
+		suggestions,
+	}),
+		render.HTMLOptions{Layout: "layouts/htmx"},
+	)
+}
+
+// OLD
+
 func (c *PublicationContributors) List(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
@@ -420,7 +685,7 @@ func (c *PublicationContributors) PromoteSearchContributor(w http.ResponseWriter
 	}
 
 	q := person.FirstName + " " + person.LastName
-	people, _ := c.Engine.SuggestPersons(q)
+	people, _ := c.Engine.SuggestPeople(q)
 
 	length := strconv.Itoa(len(people))
 
