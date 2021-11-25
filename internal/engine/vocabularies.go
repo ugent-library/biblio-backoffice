@@ -5,6 +5,15 @@ func (e *Engine) Vocabularies() map[string][]string {
 }
 
 var vocabularies = map[string][]string{
+	"file_license_codes": {
+		"CC0",
+		"CC-BY",
+		"CC-BY-SA",
+		"CC-BY-ND",
+		"CC-BY-NC",
+		"CC-BY-NC-SA",
+		"CC-BY-NC-ND",
+	},
 	"confirmations": {
 		"yes",
 		"no",
