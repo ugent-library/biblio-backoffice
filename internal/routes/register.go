@@ -211,7 +211,7 @@ func Register(c controllers.Context) {
 		Name("publication_thumbnail")
 	pubEditRouter.HandleFunc("/publish", publicationsController.Publish).
 		Methods("POST").
-		Name("dataset_publish")
+		Name("publication_publish")
 	pubEditRouter.HandleFunc("/add-single/description", publicationsController.AddSingleDescription).
 		Methods("GET").
 		Name("publication_add_single_description")
