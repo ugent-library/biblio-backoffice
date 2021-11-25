@@ -1,4 +1,0 @@
-<div class="form-group {{ if .Error }}is-invalid{{ end }} col-{{ .Cols }}">
-    <input class="form-control {{ if .Error }}is-invalid{{ end }}" name="{{ .Name }}" type="text" value="{{ .Value }}" placeholder="{{ .Label }}{{ if .Required }}*{{ end }}">
-    {{ if .Error }}<div class="invalid-feedback">{{ .Error.Title }}</div>{{ end }}
-</div>

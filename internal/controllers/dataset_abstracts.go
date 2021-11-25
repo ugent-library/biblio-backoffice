@@ -29,10 +29,6 @@ func (c *DatasetAbstracts) AddAbstract(w http.ResponseWriter, r *http.Request) {
 
 	abstract := &models.Text{}
 
-	w.Header().Set("HX-Trigger", "DatasetAddAbstract")
-	w.Header().Set("HX-Trigger-After-Swap", "DatasetAddAbstractAfterSwap")
-	w.Header().Set("HX-Trigger-After-Settle", "DatasetAddAbstractAfterSettle")
-
 	c.Render.HTML(w, http.StatusOK, "dataset/abstracts/_form", views.NewData(c.Render, r, struct {
 		DatasetID    string
 		Abstract     *models.Text
@@ -95,8 +91,6 @@ func (c *DatasetAbstracts) CreateAbstract(w http.ResponseWriter, r *http.Request
 	}
 
 	w.Header().Set("HX-Trigger", "DatasetCreateAbstract")
-	w.Header().Set("HX-Trigger-After-Swap", "DatasetCreateAbstractAfterSwap")
-	w.Header().Set("HX-Trigger-After-Settle", "DatasetCreateAbstractAfterSettle")
 
 	c.Render.HTML(w, http.StatusOK,
 		"dataset/abstracts/_table_body",
@@ -117,10 +111,6 @@ func (c *DatasetAbstracts) EditAbstract(w http.ResponseWriter, r *http.Request) 
 	dataset := context.GetDataset(r.Context())
 
 	abstract := &dataset.Abstract[rowDelta]
-
-	w.Header().Set("HX-Trigger", "DatasetAddAbstract")
-	w.Header().Set("HX-Trigger-After-Swap", "DatasetAddAbstractAfterSwap")
-	w.Header().Set("HX-Trigger-After-Settle", "DatasetAddAbstractAfterSettle")
 
 	c.Render.HTML(w, http.StatusOK, "dataset/abstracts/_form_edit", views.NewData(c.Render, r, struct {
 		DatasetID    string
@@ -193,8 +183,6 @@ func (c *DatasetAbstracts) UpdateAbstract(w http.ResponseWriter, r *http.Request
 	}
 
 	w.Header().Set("HX-Trigger", "DatasetUpdateAbstract")
-	w.Header().Set("HX-Trigger-After-Swap", "DatasetUpdateAbstractAfterSwap")
-	w.Header().Set("HX-Trigger-After-Settle", "DatasetUpdateAbstractAfterSettle")
 
 	c.Render.HTML(w, http.StatusOK, "dataset/abstracts/_table_body", views.NewData(c.Render, r, struct {
 		Dataset *models.Dataset
@@ -209,10 +197,6 @@ func (c *DatasetAbstracts) UpdateAbstract(w http.ResponseWriter, r *http.Request
 func (c *DatasetAbstracts) ConfirmRemoveFromDataset(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	muxRowDelta := mux.Vars(r)["delta"]
-
-	w.Header().Set("HX-Trigger", "DatasetConfirmRemove")
-	w.Header().Set("HX-Trigger-After-Swap", "DatasetConfirmRemoveAfterSwap")
-	w.Header().Set("HX-Trigger-After-Settle", "DatasetConfirmRemoveAfterSettle")
 
 	c.Render.HTML(w, http.StatusOK, "dataset/abstracts/_modal_confirm_removal", views.NewData(c.Render, r, struct {
 		ID  string
@@ -242,8 +226,6 @@ func (c *DatasetAbstracts) RemoveAbstract(w http.ResponseWriter, r *http.Request
 	c.Engine.UpdateDataset(pub)
 
 	w.Header().Set("HX-Trigger", "DatasetRemoveAbstract")
-	w.Header().Set("HX-Trigger-After-Swap", "DatasetRemoveAbstractAfterSwap")
-	w.Header().Set("HX-Trigger-After-Settle", "DatasetRemoveAbstractAfterSettle")
 
 	// Empty content, denotes we deleted the record
 	fmt.Fprintf(w, "")

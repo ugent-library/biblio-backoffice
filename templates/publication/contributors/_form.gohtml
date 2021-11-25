@@ -25,10 +25,11 @@
     <label class="col-form-label">UGent {{.D.Role}}</label>
     <div class="mt-1">
         <div class="custom-control custom-radio custom-control-inline">
-            <input class="custom-control-input" id="{{.D.Role}}-{{.D.Position}}-member" type="radio"{{if .D.Contributor.ID}} checked{{end}} name="member"
+            <input class="custom-control-input" id="{{.D.Role}}-{{.D.Position}}-member" type="radio" name="membership"
+                {{if .D.Contributor.ID}} checked{{end}}
                 hx-get="{{pathFor "publication_contributors_choose" "id" .D.Publication.ID "role" .D.Role "position" (.D.Position | toString)}}"
                 hx-swap="innerHTML"
-                hx-target="#{{.D.Role}}-member-modal"
+                hx-target="#{{.D.Role}}-membership-modal"
                 hx-include='#{{.D.Role}}-modal form input[name="first_name"], #{{.D.Role}}-modal form input[name="last_name"]'
             >
             <label class="custom-control-label custom-control-label-light" for="{{.D.Role}}-{{.D.Position}}-member">
@@ -36,10 +37,13 @@
             </label>
         </div>
         <div class="custom-control custom-radio custom-control-inline">
-            <input class="custom-control-input" id="{{.D.Role}}-{{.D.Position}}-external" type="radio"{{if not .D.Contributor.ID}} checked{{end}} name="member">
+            <input class="custom-control-input membership-external" id="{{.D.Role}}-{{.D.Position}}-external" type="radio" name="membership"
+                {{if not .D.Contributor.ID}}checked{{end}}
+                data-target="#{{$.D.Role}}-modal"
+            >
             <label class="custom-control-label custom-control-label-light" for="{{.D.Role}}-{{.D.Position}}-external">External {{.D.Role}}</label>
         </div>
     </div>
 </div>
 
-<div id="{{.D.Role}}-member-modal" class="modals"></div>
+<div id="{{.D.Role}}-membership-modal" class="modals"></div>

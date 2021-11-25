@@ -13,7 +13,12 @@
                                 <div class="d-flex align-items-start">
                                     <div class="list-group-item-content">
                                         <div class="list-group-item-text">
-                                            <button class="btn btn-link">{{.FullName}}</button>
+                                            <button class="btn btn-link membership-member"
+                                                data-target="#{{$.D.Role}}-modal"
+                                                data-id="{{.ID}}"
+                                                data-first-name="{{.FirstName}}"
+                                                data-last-name="{{.LastName}}"
+                                            >{{.FullName}}</button>
                                         </div>
                                     </div>
                                 </div>
@@ -24,7 +29,7 @@
                 </ul>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-link modal-close-secondary" data-dismiss="modal">Cancel</button>
+                <button class="btn btn-link membership-external" data-target="#{{.D.Role}}-modal" data-dismiss="modal">Cancel</button>
             </div>
         </div>
     </div>

@@ -30,10 +30,6 @@ func (c *PublicationLinks) AddLink(w http.ResponseWriter, r *http.Request) {
 
 	link := &models.PublicationLink{}
 
-	w.Header().Set("HX-Trigger", "PublicationAddLink")
-	w.Header().Set("HX-Trigger-After-Swap", "PublicationAddLinkAfterSwap")
-	w.Header().Set("HX-Trigger-After-Settle", "PublicationAddLinkAfterSettle")
-
 	c.Render.HTML(w, http.StatusOK, "publication/links/_form", views.NewData(c.Render, r, struct {
 		PublicationID string
 		Link          *models.PublicationLink
@@ -96,8 +92,6 @@ func (c *PublicationLinks) CreateLink(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("HX-Trigger", "PublicationCreateLink")
-	w.Header().Set("HX-Trigger-After-Swap", "PublicationCreateLinkAfterSwap")
-	w.Header().Set("HX-Trigger-After-Settle", "PublicationCreateLinkAfterSettle")
 
 	c.Render.HTML(w, http.StatusOK, "publication/links/_table_body", views.NewData(c.Render, r, struct {
 		Publication *models.Publication
@@ -116,10 +110,6 @@ func (c *PublicationLinks) EditLink(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
 	link := &pub.Link[rowDelta]
-
-	w.Header().Set("HX-Trigger", "PublicationEditLink")
-	w.Header().Set("HX-Trigger-After-Swap", "PublicationEditLinkAfterSwap")
-	w.Header().Set("HX-Trigger-After-Settle", "PublicationEditLinkAfterSwapAfterSettle")
 
 	c.Render.HTML(w, http.StatusOK, "publication/links/_form_edit", views.NewData(c.Render, r, struct {
 		PublicationID string
@@ -192,8 +182,6 @@ func (c *PublicationLinks) UpdateLink(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("HX-Trigger", "PublicationUpdateLink")
-	w.Header().Set("HX-Trigger-After-Swap", "PublicationUpdateLinkAfterSwap")
-	w.Header().Set("HX-Trigger-After-Settle", "PublicationUpdateLinkAfterSettle")
 
 	c.Render.HTML(w, http.StatusOK,
 		"publication/links/_table_body",
@@ -210,10 +198,6 @@ func (c *PublicationLinks) UpdateLink(w http.ResponseWriter, r *http.Request) {
 func (c *PublicationLinks) ConfirmRemoveFromPublication(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	muxRowDelta := mux.Vars(r)["delta"]
-
-	w.Header().Set("HX-Trigger", "PublicationConfirmRemove")
-	w.Header().Set("HX-Trigger-After-Swap", "PublicationConfirmRemoveAfterSwap")
-	w.Header().Set("HX-Trigger-After-Settle", "PublicationConfirmRemoveAfterSettle")
 
 	c.Render.HTML(w, http.StatusOK, "publication/links/_modal_confirm_removal", views.NewData(c.Render, r, struct {
 		ID  string
@@ -243,8 +227,6 @@ func (c *PublicationLinks) RemoveLink(w http.ResponseWriter, r *http.Request) {
 	c.Engine.UpdatePublication(pub)
 
 	w.Header().Set("HX-Trigger", "PublicationRemoveLink")
-	w.Header().Set("HX-Trigger-After-Swap", "PublicationRemoveLinkAfterSwap")
-	w.Header().Set("HX-Trigger-After-Settle", "PublicationRemoveLinkAfterSettle")
 
 	// Empty content, denotes we deleted the record
 	fmt.Fprintf(w, "")
