@@ -13,12 +13,22 @@
                                 <div class="d-flex align-items-start">
                                     <div class="list-group-item-content">
                                         <div class="list-group-item-text">
-                                            <button class="btn btn-link membership-member"
-                                                data-target="#{{$.D.Role}}-modal"
-                                                data-id="{{.ID}}"
-                                                data-first-name="{{.FirstName}}"
-                                                data-last-name="{{.LastName}}"
-                                            >{{.FullName}}</button>
+                                            <h4 class="c-h4">{{.FullName}}</h4>
+                                            {{range .Department}}
+                                            <div class="text-muted c-body-small">{{$.T "organization" .ID}}</div>
+                                            {{end}}
+                                        </div>
+                                        <div class="list-group-item-meta mt-2">
+                                            <div class="list-group-item-meta-left">
+                                            </div>
+                                            <div class="list-group-item-meta-right">
+                                                <button class="btn btn-primary membership-member"
+                                                    data-target="#{{$.D.Role}}-modal"
+                                                    data-id="{{.ID}}"
+                                                    data-first-name="{{.FirstName}}"
+                                                    data-last-name="{{.LastName}}"
+                                                >Confirm {{$.D.Role}}</button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
