@@ -27,3 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
     membership()
     toast()
 });
+
+document.body.addEventListener("summary-changed", function(evt){
+    alert("summary changed was triggered!");
+})

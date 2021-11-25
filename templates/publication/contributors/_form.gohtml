@@ -11,6 +11,7 @@
             <input class="form-control" type="text" name="last_name" value="{{.D.Contributor.LastName}}"{{if .D.Contributor.ID}} readonly{{end}}>
         </div>
     </div>
+    {{if eq .D.Role "author"}}
     <div class="form-group">
         <label class="col-form-label">Credit roles</label>
         <select class="custom-select form-control" name="credit_role" multiple>
@@ -19,6 +20,7 @@
             {{ end }}
         </select>
     </div>
+    {{end}}
 </form>
 
 <div class="form-group">
