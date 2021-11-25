@@ -12,7 +12,7 @@
             <button class="btn btn-link modal-close">Cancel</button>
             <button class="btn btn-danger modal-close"
                 hx-delete="{{pathFor "publication_contributors_remove" "id" .D.Publication.ID "role" .D.Role "position" (.D.Position | toString)}}"
-                hx-target="#{{.D.Role}}-{{.D.Position}}"
+                hx-target="#{{.D.Role}}-table"
                 hx-swap="outerHTML"
             >Delete</button>
         </div>

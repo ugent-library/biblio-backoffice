@@ -261,6 +261,16 @@ func (c *PublicationContributors) Remove(w http.ResponseWriter, r *http.Request)
 	}
 
 	w.Header().Set("HX-Trigger", "summary-changed")
+
+	c.Render.HTML(w, http.StatusOK, "publication/contributors/_table", views.NewData(c.Render, r, struct {
+		Role        string
+		Publication *models.Publication
+	}{
+		role,
+		pub,
+	}),
+		render.HTMLOptions{Layout: "layouts/htmx"},
+	)
 }
 
 func (c *PublicationContributors) Choose(w http.ResponseWriter, r *http.Request) {
