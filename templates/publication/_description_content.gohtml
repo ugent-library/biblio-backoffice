@@ -17,13 +17,13 @@
 
     <div id="contributors-content" class="tab-pane fade" role="tabpanel" aria-labelledby="contributors-tab">
         {{if .D.Publication.UsesAuthor}}
-            {{template "contributors/_show" (.NewData (dict "Publication" .D.Publication "Show" .D.Show "Role" "author"))}}
+            {{template "publication/contributors/_show" (.NewData (dict "Publication" .D.Publication "Show" .D.Show "Role" "author"))}}
         {{end}}
         {{if .D.Publication.UsesEditor}}
-            {{template "contributors/_show" (.NewData (dict "Publication" .D.Publication "Show" .D.Show "Role" "editor"))}}
+            {{template "publication/contributors/_show" (.NewData (dict "Publication" .D.Publication "Show" .D.Show "Role" "editor"))}}
         {{end}}
         {{if .D.Publication.UsesSupervisor}}
-            {{template "contributors/_show" (.NewData (dict "Publication" .D.Publication "Show" .D.Show "Role" "supervisor"))}}
+            {{template "publication/contributors/_show" (.NewData (dict "Publication" .D.Publication "Show" .D.Show "Role" "supervisor"))}}
         {{end}}
     </div>
 

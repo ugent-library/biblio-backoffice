@@ -10,6 +10,15 @@ type Contributor struct {
 	CreditRole []string `json:"credit_role,omitempty" form:"credit_role"`
 }
 
+func (p *Contributor) HasCreditRole(role string) bool {
+	for _, r := range p.CreditRole {
+		if r == role {
+			return true
+		}
+	}
+	return false
+}
+
 func (p *Contributor) CreditRoleChoices() []string {
 	return []string{
 		"first_author",

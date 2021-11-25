@@ -1,0 +1,25 @@
+<div class="card mb-6">
+    <div class="card-header">
+        <div class="bc-toolbar">
+            <div class="bc-toolbar-left">
+                <h1 class="bc-toolbar-title">{{.T "contributor.title" .D.Role}}</h1>
+            </div>
+            <div class="bc-toolbar-right">
+                {{if .User.CanEditPublication .D.Publication}}
+                <button type="button" class="btn btn-outline-primary"
+                    hx-get="{{pathFor "publication_contributors_add" "id" $.D.Publication.ID "role" .D.Role}}"
+                    hx-swap="innerHTML"
+                    hx-target="#{{.D.Role}}-modal"
+                >
+                    <i class="if if-add"></i>
+                    <div class="btn-text">Add {{.D.Role}}</div>
+                </button>
+                {{end}}
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        {{template "publication/contributors/_table" .}}
+    </div>
+    <div id="{{.D.Role}}-modal" class="modals"></div>
+</div>

@@ -1,0 +1,46 @@
+<div class="modal show" tabindex="-1" style="display: block;" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Choose UGent {{.D.Role}}</h2>
+            </div>
+            <div class="modal-body">
+                <ul class="list-group mt-6">
+                    {{range .D.Suggestions}}
+                    <li class="list-group-item">
+                        <div class="d-flex w-100">
+                            <div class="w-100">
+                                <div class="d-flex align-items-start">
+                                    <div class="list-group-item-content">
+                                        <div class="list-group-item-text">
+                                            <h4 class="c-h4">{{.FullName}}</h4>
+                                            {{range .Department}}
+                                            <div class="text-muted c-body-small">{{$.T "organization" .ID}}</div>
+                                            {{end}}
+                                        </div>
+                                        <div class="list-group-item-meta mt-2">
+                                            <div class="list-group-item-meta-left">
+                                            </div>
+                                            <div class="list-group-item-meta-right">
+                                                <button class="btn btn-primary membership-member"
+                                                    data-target="#{{$.D.Role}}-modal"
+                                                    data-id="{{.ID}}"
+                                                    data-first-name="{{.FirstName}}"
+                                                    data-last-name="{{.LastName}}"
+                                                >Confirm {{$.D.Role}}</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    {{end}}
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-link membership-external" data-target="#{{.D.Role}}-modal" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,51 @@
+<form>
+    {{.CSRFTag}}
+    <input type="hidden" name="id" value="{{.D.Contributor.ID}}">
+    <div class="form-row">
+        <div class="col form-group">
+            <label class="col-form-label">First name</label>
+            <input class="form-control" type="text" name="first_name" value="{{.D.Contributor.FirstName}}"{{if .D.Contributor.ID}} readonly{{end}}>
+        </div>
+        <div class="col form-group">
+            <label class="col-form-label">Last name</label>
+            <input class="form-control" type="text" name="last_name" value="{{.D.Contributor.LastName}}"{{if .D.Contributor.ID}} readonly{{end}}>
+        </div>
+    </div>
+    {{if eq .D.Role "author"}}
+    <div class="form-group">
+        <label class="col-form-label">Credit roles</label>
+        <select class="custom-select form-control" name="credit_role" multiple>
+            {{ range $i, $c := .D.Contributor.CreditRoleChoices }}
+            <option value="{{ . }}"{{if $.D.Contributor.HasCreditRole . }} selected{{ end }}>{{$.T "credit_roles" .}}</option>
+            {{ end }}
+        </select>
+    </div>
+    {{end}}
+</form>
+
+<div class="form-group">
+    <label class="col-form-label">UGent {{.D.Role}}</label>
+    <div class="mt-1">
+        <div class="custom-control custom-radio custom-control-inline">
+            <input class="custom-control-input" id="{{.D.Role}}-{{.D.Position}}-member" type="radio" name="membership"
+                {{if .D.Contributor.ID}} checked{{end}}
+                hx-get="{{pathFor "publication_contributors_choose" "id" .D.Publication.ID "role" .D.Role "position" (.D.Position | toString)}}"
+                hx-swap="innerHTML"
+                hx-target="#{{.D.Role}}-membership-modal"
+                hx-include='#{{.D.Role}}-modal form input[name="first_name"], #{{.D.Role}}-modal form input[name="last_name"]'
+            >
+            <label class="custom-control-label custom-control-label-light" for="{{.D.Role}}-{{.D.Position}}-member">
+                <i class="if if-ghent-university if--small"></i>UGent {{.D.Role}}
+            </label>
+        </div>
+        <div class="custom-control custom-radio custom-control-inline">
+            <input class="custom-control-input membership-external" id="{{.D.Role}}-{{.D.Position}}-external" type="radio" name="membership"
+                {{if not .D.Contributor.ID}}checked{{end}}
+                data-target="#{{$.D.Role}}-modal"
+            >
+            <label class="custom-control-label custom-control-label-light" for="{{.D.Role}}-{{.D.Position}}-external">External {{.D.Role}}</label>
+        </div>
+    </div>
+</div>
+
+<div id="{{.D.Role}}-membership-modal" class="modals"></div>

@@ -1,0 +1,17 @@
+<table class="table"{{if .User.CanEditPublication .D.Publication}} id="{{.D.Role}}-table"{{end}}>
+    <thead>
+        <tr>
+            <th class="pl-6 col-5">Name</th>
+            {{if eq .D.Role "author"}}<th class="col-2">Credit role</th>{{end}}
+            <th class="col-2">UGent {{.D.Role}}</th>
+            <th class="pr-6 col-3"></th>
+        </tr>
+    </thead>
+    <tbody>
+        {{range $i, $c := (.D.Publication.Contributors .D.Role)}}
+        <tr id="{{$.D.Role}}-{{$i}}">
+            {{template "publication/contributors/_columns" ($.NewData (dict "Publication" $.D.Publication "Contributor" $c "Position" $i "Role" $.D.Role))}}
+        </tr>
+        {{end}}
+    </tbody>
+</table>

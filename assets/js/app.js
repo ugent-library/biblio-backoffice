@@ -1,33 +1,33 @@
 import csrf from './ui/csrf.js'
-import check from './ui/check.js'
+import checkbox from './ui/checkbox.js'
 import bootstrap from './ui/bootstrap.js'
 import header from './ui/header.js'
-import { actionTables } from './ui/action_tables.js'
 import multiple from './ui/multiple.js'
 import changeSubmit from './ui/form_change_submit.js'
 import submit from './ui/form_submit.js'
 import modalClose from './ui/modal_close.js'
 import modalPopper from './ui/modal_popper.js'
-import multipleSelect from './ui/multi_select.js'
 import tabs from './ui/tabs.js'
 import radioCard from './ui/radio_card.js'
-import promote from './ui/promote.js'
+import membership from './ui/membership.js'
 import toast from './ui/toast.js'
 
 document.addEventListener('DOMContentLoaded', function () {
     csrf()
     tabs()
-    check()
+    checkbox()
     bootstrap()
     header()
-    actionTables()
     multiple()
     changeSubmit()
     submit()
     modalClose()
     modalPopper()
-    multipleSelect()
     radioCard()
-    promote()
+    membership()
     toast()
 });
+
+document.body.addEventListener("summary-changed", function(evt){
+    alert("summary changed was triggered!");
+})
