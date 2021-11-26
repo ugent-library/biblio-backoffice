@@ -25,7 +25,7 @@
                                     <span>View details</span>
                                 </a>
                                 {{if .User.CanDeleteDataset $d}}
-                                <a class="dropdown-item"
+                                <a class="dropdown-item" href="#"
                                     hx-get="{{pathFor "dataset_confirm_delete" "id" $d.ID | query .D.SearchArgs}}"
                                     hx-target="#dataset-{{$d.ID}}-modal"
                                     hx-trigger="click"

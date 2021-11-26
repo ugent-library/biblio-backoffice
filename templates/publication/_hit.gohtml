@@ -23,7 +23,7 @@
                                     <span>View details</span>
                                 </a>
                                 {{if .User.CanDeletePublication $p}}
-                                <a class="dropdown-item"
+                                <a class="dropdown-item" href="#"
                                     hx-get="{{pathFor "publication_confirm_delete" "id" $p.ID | query .D.SearchArgs}}"
                                     hx-target="#publication-{{$p.ID}}-modal"
                                     hx-trigger="click"

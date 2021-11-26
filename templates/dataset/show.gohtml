@@ -21,35 +21,27 @@
                         </form>
                     </div>
                     {{end}}
-                    <!-- <div class="bc-toolbar-item">
+                    <div class="bc-toolbar-item">
                         <div class="dropdown">
-                            <button class="btn btn-outline-primary btn-icon-only" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <button class="btn btn-link btn-icon-only btn-link-muted"
+                                type="button" data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false">
                                 <i class="if if-more"></i>
                             </button>
                             <div class="dropdown-menu">
-                                <button class="dropdown-item">
-                                    <i class="if if-double-quotes"></i>
-                                    <span>Cite</span>
-                                </button>
-                                <button class="dropdown-item">
-                                    <i class="if if-add"></i>
-                                    <span>Add to list</span>
-                                </button>
-                                <button class="dropdown-item">
-                                    <i class="if if-notification"></i>
-                                    <span>Turn on notifications</span>
-                                </button>
-                                <button class="dropdown-item">
-                                    <i class="if if-orcid" style="color: #A6CE39"></i>
-                                    <span>Send to ORCID</span>
-                                </button>
-                                <button class="dropdown-item" type="button" data-toggle="modal" data-target="#delete">
+                                {{if .User.CanDeleteDataset .D.Dataset}}
+                                <a class="dropdown-item" href="#"
+                                    hx-get="{{pathFor "dataset_confirm_delete" "id" .D.Dataset.ID | query .D.SearchArgs}}"
+                                    hx-target="#dataset-{{.D.Dataset.ID}}-modal"
+                                    hx-trigger="click"
+                                >
                                     <i class="if if-delete"></i>
                                     <span>Delete</span>
-                                </button>
+                                </a>
+                                {{end}}
                             </div>
                         </div>
-                    </div> -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -82,3 +74,5 @@
         {{template "dataset/_description_content" .}}
     </div>
 </div>
+
+<div id="dataset-{{.D.Dataset.ID}}-modal" class="modals"></div>
