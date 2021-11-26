@@ -24,27 +24,16 @@
                                     <i class="if if-file-text"></i>
                                     <span>View details</span>
                                 </a>
-                                <!-- <button class="dropdown-item">
-                                    <i class="if if-double-quotes"></i>
-                                    <span>Cite</span>
-                                </button>
-                                <button class="dropdown-item">
-                                    <i class="if if-add"></i>
-                                    <span>Add to list</span>
-                                </button>
-                                <button class="dropdown-item">
-                                    <i class="if if-notification"></i>
-                                    <span>Turn on notifications</span>
-                                </button>
-                                <button class="dropdown-item">
-                                    <i class="if if-orcid" style="color: #A6CE39"></i>
-                                    <span>Send to ORCID</span>
-                                </button>
-                                <button class="dropdown-item" type="button"
-                                    data-toggle="modal" data-target="#delete">
+                                {{if .User.CanDeleteDataset $d}}
+                                <a class="dropdown-item"
+                                    hx-get="{{pathFor "dataset_confirm_delete" "id" $d.ID | query .D.SearchArgs}}"
+                                    hx-target="#dataset-{{$d.ID}}-modal"
+                                    hx-trigger="click"
+                                >
                                     <i class="if if-delete"></i>
                                     <span>Delete</span>
-                                </button> -->
+                                </a>
+                                {{end}}
                             </div>
                         </div>
                     </div>
@@ -110,3 +99,5 @@
         </div>
     </div>
 </div>
+
+<div id="dataset-{{$d.ID}}-modal" class="modals"></div>

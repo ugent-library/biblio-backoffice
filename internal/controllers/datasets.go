@@ -12,6 +12,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/views"
 	"github.com/ugent-library/go-locale/locale"
 	"github.com/ugent-library/go-web/forms"
+	"github.com/unrolled/render"
 )
 
 type DatasetListVars struct {
@@ -234,4 +235,67 @@ func (c *Datasets) AddPublish(w http.ResponseWriter, r *http.Request) {
 		4,
 		savedDataset,
 	}))
+}
+
+func (c *Datasets) ConfirmDelete(w http.ResponseWriter, r *http.Request) {
+	dataset := context.GetDataset(r.Context())
+
+	searchArgs := engine.NewSearchArgs()
+	if err := forms.Decode(searchArgs, r.URL.Query()); err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	c.Render.HTML(w, http.StatusOK, "dataset/_confirm_delete", views.NewData(c.Render, r, struct {
+		Dataset    *models.Dataset
+		SearchArgs *engine.SearchArgs
+	}{
+		dataset,
+		searchArgs,
+	}),
+		render.HTMLOptions{Layout: "layouts/htmx"},
+	)
+}
+
+func (c *Datasets) Delete(w http.ResponseWriter, r *http.Request) {
+	dataset := context.GetDataset(r.Context())
+
+	r.ParseForm()
+	searchArgs := engine.NewSearchArgs()
+	if err := forms.Decode(searchArgs, r.Form); err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	if _, err := c.Engine.UpdateDataset(dataset); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	hits, err := c.Engine.UserDatasets(context.GetUser(r.Context()).ID, searchArgs)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	searchURL, _ := c.Router.Get("datasets").URLPath()
+
+	c.Render.HTML(w, http.StatusOK, "dataset/list", views.NewData(c.Render, r, struct {
+		PageTitle        string
+		SearchURL        *url.URL
+		SearchArgs       *engine.SearchArgs
+		Hits             *models.DatasetHits
+		PublicationSorts []string
+	}{
+		"Overview - Datasets - Biblio",
+		searchURL,
+		searchArgs,
+		hits,
+		c.Engine.Vocabularies()["publication_sorts"],
+	},
+		views.Flash{Type: "success", Message: "Successfully deleted dataset.", DismissAfter: 5 * time.Second},
+	),
+	)
 }

@@ -27,14 +27,14 @@ func NewPublications(c Context) *Publications {
 }
 
 func (c *Publications) List(w http.ResponseWriter, r *http.Request) {
-	args := engine.NewSearchArgs()
-	if err := forms.Decode(args, r.URL.Query()); err != nil {
+	searchArgs := engine.NewSearchArgs()
+	if err := forms.Decode(searchArgs, r.URL.Query()); err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	hits, err := c.Engine.UserPublications(context.GetUser(r.Context()).ID, args)
+	hits, err := c.Engine.UserPublications(context.GetUser(r.Context()).ID, searchArgs)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -52,7 +52,7 @@ func (c *Publications) List(w http.ResponseWriter, r *http.Request) {
 	}{
 		"Overview - Publications - Biblio",
 		searchURL,
-		args,
+		searchArgs,
 		hits,
 		c.Engine.Vocabularies()["publication_sorts"],
 	}),
@@ -117,49 +117,6 @@ func (c *Publications) Thumbnail(w http.ResponseWriter, r *http.Request) {
 	r.Host = url.Host
 	r.SetBasicAuth(c.Engine.Config.LibreCatUsername, c.Engine.Config.LibreCatPassword)
 	proxy.ServeHTTP(w, r)
-}
-
-func (c *Publications) Publish(w http.ResponseWriter, r *http.Request) {
-	pub := context.GetPublication(r.Context())
-
-	savedPub, err := c.Engine.PublishPublication(pub)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	pubDatasets, err := c.Engine.GetPublicationDatasets(pub.ID)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	searchArgs := engine.NewSearchArgs()
-	if err := forms.Decode(searchArgs, r.URL.Query()); err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	savedPub.RelatedDatasetCount = len(pubDatasets)
-
-	c.Render.HTML(w, http.StatusOK, "publication/show", views.NewData(c.Render, r, struct {
-		PageTitle           string
-		Publication         *models.Publication
-		PublicationDatasets []*models.Dataset
-		Show                *views.ShowBuilder
-		SearchArgs          *engine.SearchArgs
-	}{
-		"Publication - Biblio",
-		savedPub,
-		pubDatasets,
-		views.NewShowBuilder(c.Render, locale.Get(r.Context())),
-		searchArgs,
-	},
-		views.Flash{Type: "success", Message: "Successfully published to Biblio.", DismissAfter: 5 * time.Second},
-	))
 }
 
 func (c *Publications) Summary(w http.ResponseWriter, r *http.Request) {
@@ -569,5 +526,111 @@ func (c *Publications) AddMultiplePublish(w http.ResponseWriter, r *http.Request
 		c.Engine.Vocabularies()["publication_sorts"],
 		batchID,
 	}),
+	)
+}
+
+func (c *Publications) Publish(w http.ResponseWriter, r *http.Request) {
+	pub := context.GetPublication(r.Context())
+
+	savedPub, err := c.Engine.PublishPublication(pub)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	pubDatasets, err := c.Engine.GetPublicationDatasets(pub.ID)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	searchArgs := engine.NewSearchArgs()
+	if err := forms.Decode(searchArgs, r.URL.Query()); err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	savedPub.RelatedDatasetCount = len(pubDatasets)
+
+	c.Render.HTML(w, http.StatusOK, "publication/show", views.NewData(c.Render, r, struct {
+		PageTitle           string
+		Publication         *models.Publication
+		PublicationDatasets []*models.Dataset
+		Show                *views.ShowBuilder
+		SearchArgs          *engine.SearchArgs
+	}{
+		"Publication - Biblio",
+		savedPub,
+		pubDatasets,
+		views.NewShowBuilder(c.Render, locale.Get(r.Context())),
+		searchArgs,
+	},
+		views.Flash{Type: "success", Message: "Successfully published to Biblio.", DismissAfter: 5 * time.Second},
+	))
+}
+
+func (c *Publications) ConfirmDelete(w http.ResponseWriter, r *http.Request) {
+	pub := context.GetPublication(r.Context())
+
+	searchArgs := engine.NewSearchArgs()
+	if err := forms.Decode(searchArgs, r.URL.Query()); err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	c.Render.HTML(w, http.StatusOK, "publication/_confirm_delete", views.NewData(c.Render, r, struct {
+		Publication *models.Publication
+		SearchArgs  *engine.SearchArgs
+	}{
+		pub,
+		searchArgs,
+	}),
+		render.HTMLOptions{Layout: "layouts/htmx"},
+	)
+}
+
+func (c *Publications) Delete(w http.ResponseWriter, r *http.Request) {
+	pub := context.GetPublication(r.Context())
+
+	r.ParseForm()
+	searchArgs := engine.NewSearchArgs()
+	if err := forms.Decode(searchArgs, r.Form); err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	if _, err := c.Engine.UpdatePublication(pub); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	hits, err := c.Engine.UserPublications(context.GetUser(r.Context()).ID, searchArgs)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	searchURL, _ := c.Router.Get("publications").URLPath()
+
+	c.Render.HTML(w, http.StatusOK, "publication/list", views.NewData(c.Render, r, struct {
+		PageTitle        string
+		SearchURL        *url.URL
+		SearchArgs       *engine.SearchArgs
+		Hits             *models.PublicationHits
+		PublicationSorts []string
+	}{
+		"Overview - Publications - Biblio",
+		searchURL,
+		searchArgs,
+		hits,
+		c.Engine.Vocabularies()["publication_sorts"],
+	},
+		views.Flash{Type: "success", Message: "Successfully deleted publication.", DismissAfter: 5 * time.Second},
+	),
 	)
 }

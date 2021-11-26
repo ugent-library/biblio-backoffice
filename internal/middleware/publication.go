@@ -52,3 +52,33 @@ func RequireCanEditPublication(next http.Handler) http.Handler {
 		http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
 	})
 }
+
+func RequireCanPublishPublication(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		c := r.Context()
+		pub := context.GetPublication(c)
+		user := context.GetUser(c)
+
+		if user.CanPublishPublication(pub) {
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
+	})
+}
+
+func RequireCanDeletePublication(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		c := r.Context()
+		pub := context.GetPublication(c)
+		user := context.GetUser(c)
+
+		if user.CanDeletePublication(pub) {
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
+	})
+}

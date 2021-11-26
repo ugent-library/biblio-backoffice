@@ -204,13 +204,24 @@ func Register(c controllers.Context) {
 	pubRouter.Use(middleware.RequireCanViewPublication)
 	pubEditRouter := pubRouter.PathPrefix("").Subrouter()
 	pubEditRouter.Use(middleware.RequireCanEditPublication)
+	pubPublishRouter := pubRouter.PathPrefix("").Subrouter()
+	pubPublishRouter.Use(middleware.RequireCanPublishPublication)
+	pubDeleteRouter := pubRouter.PathPrefix("").Subrouter()
+	pubDeleteRouter.Use(middleware.RequireCanDeletePublication)
 	pubRouter.HandleFunc("", publicationsController.Show).
 		Methods("GET").
 		Name("publication")
+	pubRouter.HandleFunc("/delete", publicationsController.ConfirmDelete).
+		Methods("GET").
+		Name("publication_confirm_delete")
+	// TODO why doesn't a DELETE with methodoverride work with CAS?
+	pubDeleteRouter.HandleFunc("/delete", publicationsController.Delete).
+		Methods("POST").
+		Name("publication_delete")
 	pubRouter.HandleFunc("/thumbnail", publicationsController.Thumbnail).
 		Methods("GET").
 		Name("publication_thumbnail")
-	pubEditRouter.HandleFunc("/publish", publicationsController.Publish).
+	pubPublishRouter.HandleFunc("/publish", publicationsController.Publish).
 		Methods("POST").
 		Name("publication_publish")
 	pubEditRouter.HandleFunc("/add-single/description", publicationsController.AddSingleDescription).
@@ -413,9 +424,20 @@ func Register(c controllers.Context) {
 	datasetRouter.Use(middleware.RequireCanViewDataset)
 	datasetEditRouter := datasetRouter.PathPrefix("").Subrouter()
 	datasetEditRouter.Use(middleware.RequireCanEditDataset)
+	datasetPublishRouter := datasetRouter.PathPrefix("").Subrouter()
+	datasetPublishRouter.Use(middleware.RequireCanPublishDataset)
+	datasetDeleteRouter := datasetRouter.PathPrefix("").Subrouter()
+	datasetDeleteRouter.Use(middleware.RequireCanDeleteDataset)
 	datasetRouter.HandleFunc("", datasetsController.Show).
 		Methods("GET").
 		Name("dataset")
+	datasetRouter.HandleFunc("/delete", datasetsController.ConfirmDelete).
+		Methods("GET").
+		Name("dataset_confirm_delete")
+	// TODO why doesn't a DELETE with methodoverride work with CAS?
+	datasetDeleteRouter.HandleFunc("/delete", datasetsController.Delete).
+		Methods("POST").
+		Name("dataset_delete")
 	datasetEditRouter.HandleFunc("/publish", datasetsController.Publish).
 		Methods("POST").
 		Name("dataset_publish")

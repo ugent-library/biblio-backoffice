@@ -1,0 +1,28 @@
+<div id="modal-backdrop" class="modal-backdrop fade show" style="display:block;"></div>
+<div class="modal show" tabindex="-1" style="display: block;" aria-modal="true" role="dialog">
+<div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">Are you sure?</h2>
+        </div>
+        <div class="modal-body">
+            <p>Are you sure you want to delete this dataset?</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-link modal-close">Cancel</button>
+            <form action="{{pathFor "dataset_delete" "id" .D.Dataset.ID}}" method="POST">
+                {{.CSRFTag}}
+                <input type="hidden" name="q" value="{{.D.SearchArgs.Query}}">
+                {{range .D.SearchArgs.Sort}}
+                <input type="hidden" name="sort" value="{{.}}">
+                {{end}}
+                {{range $f, $vals := .D.SearchArgs.Filters}}
+                {{range $vals}}
+                <input type="hidden" name="f[{{$f}}]" value="{{.}}">
+                {{end}}
+                {{end}}
+                <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
+        </div>
+    </div>
+</div>

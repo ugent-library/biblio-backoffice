@@ -63,3 +63,8 @@ func (e *Engine) GetDatasetPublications(id string) ([]*models.Publication, error
 	}
 	return pubs, nil
 }
+
+func (e *Engine) DeleteDataset(id string) error {
+	_, err := e.delete(fmt.Sprintf("/publication/%s", id), nil, nil)
+	return err
+}

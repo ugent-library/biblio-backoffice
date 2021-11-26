@@ -205,3 +205,8 @@ func (e *Engine) RemovePublicationFile(id, fileID string) error {
 	_, err := e.delete(fmt.Sprintf("/publication/%s/file/%s", id, fileID), nil, nil)
 	return err
 }
+
+func (e *Engine) DeletePublication(id string) error {
+	_, err := e.delete(fmt.Sprintf("/publication/%s", id), nil, nil)
+	return err
+}

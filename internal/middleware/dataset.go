@@ -52,3 +52,33 @@ func RequireCanEditDataset(next http.Handler) http.Handler {
 		http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
 	})
 }
+
+func RequireCanPublishDataset(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		c := r.Context()
+		pub := context.GetDataset(c)
+		user := context.GetUser(c)
+
+		if user.CanPublishDataset(pub) {
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
+	})
+}
+
+func RequireCanDeleteDataset(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		c := r.Context()
+		pub := context.GetDataset(c)
+		user := context.GetUser(c)
+
+		if user.CanDeleteDataset(pub) {
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
+	})
+}

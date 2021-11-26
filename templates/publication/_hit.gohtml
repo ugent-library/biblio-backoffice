@@ -22,6 +22,16 @@
                                     <i class="if if-file-text"></i>
                                     <span>View details</span>
                                 </a>
+                                {{if .User.CanDeletePublication $p}}
+                                <a class="dropdown-item"
+                                    hx-get="{{pathFor "publication_confirm_delete" "id" $p.ID | query .D.SearchArgs}}"
+                                    hx-target="#publication-{{$p.ID}}-modal"
+                                    hx-trigger="click"
+                                >
+                                    <i class="if if-delete"></i>
+                                    <span>Delete</span>
+                                </a>
+                                {{end}}
                             </div>
                         </div>
                     </div>
@@ -81,3 +91,5 @@
         {{end}}
     </div>
 </div>
+
+<div id="publication-{{$p.ID}}-modal" class="modals"></div>
