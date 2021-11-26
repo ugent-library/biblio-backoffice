@@ -35,7 +35,7 @@ func (c *DatasetDetails) Show(w http.ResponseWriter, r *http.Request) {
 	)
 }
 
-func (c *DatasetDetails) OpenForm(w http.ResponseWriter, r *http.Request) {
+func (c *DatasetDetails) Edit(w http.ResponseWriter, r *http.Request) {
 	dataset := context.GetDataset(r.Context())
 
 	c.Render.HTML(w, http.StatusOK, "dataset/details/_edit", views.NewData(c.Render, r, struct {
@@ -53,7 +53,7 @@ func (c *DatasetDetails) OpenForm(w http.ResponseWriter, r *http.Request) {
 	)
 }
 
-func (c *DatasetDetails) SaveForm(w http.ResponseWriter, r *http.Request) {
+func (c *DatasetDetails) Update(w http.ResponseWriter, r *http.Request) {
 	dataset := context.GetDataset(r.Context())
 
 	err := r.ParseForm()

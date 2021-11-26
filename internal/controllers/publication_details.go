@@ -37,7 +37,7 @@ func (c *PublicationDetails) Show(w http.ResponseWriter, r *http.Request) {
 	)
 }
 
-func (c *PublicationDetails) OpenForm(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationDetails) Edit(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
 	c.Render.HTML(w, http.StatusOK, "publication/details/_edit", views.NewData(c.Render, r, struct {
@@ -53,7 +53,7 @@ func (c *PublicationDetails) OpenForm(w http.ResponseWriter, r *http.Request) {
 	)
 }
 
-func (c *PublicationDetails) SaveForm(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationDetails) Update(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
 	err := r.ParseForm()

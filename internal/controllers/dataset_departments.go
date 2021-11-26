@@ -18,7 +18,7 @@ func NewDatasetDepartments(c Context) *DatasetDepartments {
 	return &DatasetDepartments{c}
 }
 
-func (c *DatasetDepartments) ListDepartments(w http.ResponseWriter, r *http.Request) {
+func (c *DatasetDepartments) List(w http.ResponseWriter, r *http.Request) {
 	dataset := context.GetDataset(r.Context())
 
 	// Get 20 random departments (no search, init state)
@@ -59,7 +59,7 @@ func (c *DatasetDepartments) ActiveSearch(w http.ResponseWriter, r *http.Request
 	)
 }
 
-func (c *DatasetDepartments) AddToDataset(w http.ResponseWriter, r *http.Request) {
+func (c *DatasetDepartments) Add(w http.ResponseWriter, r *http.Request) {
 	departmentId := mux.Vars(r)["department_id"]
 
 	dataset := context.GetDataset(r.Context())
@@ -88,7 +88,7 @@ func (c *DatasetDepartments) AddToDataset(w http.ResponseWriter, r *http.Request
 	)
 }
 
-func (c *DatasetDepartments) ConfirmRemoveFromDataset(w http.ResponseWriter, r *http.Request) {
+func (c *DatasetDepartments) ConfirmRemove(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	departmentId := mux.Vars(r)["department_id"]
 
@@ -103,7 +103,7 @@ func (c *DatasetDepartments) ConfirmRemoveFromDataset(w http.ResponseWriter, r *
 	)
 }
 
-func (c *DatasetDepartments) RemoveFromDataset(w http.ResponseWriter, r *http.Request) {
+func (c *DatasetDepartments) Remove(w http.ResponseWriter, r *http.Request) {
 	departmentId := mux.Vars(r)["department_id"]
 
 	dataset := context.GetDataset(r.Context())

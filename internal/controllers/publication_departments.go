@@ -18,7 +18,7 @@ func NewPublicationDepartments(c Context) *PublicationDepartments {
 	return &PublicationDepartments{c}
 }
 
-func (c *PublicationDepartments) ListDepartments(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationDepartments) List(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
 	// Get 20 random departments (no search, init state)
@@ -59,7 +59,7 @@ func (c *PublicationDepartments) ActiveSearch(w http.ResponseWriter, r *http.Req
 	)
 }
 
-func (c *PublicationDepartments) AddToPublication(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationDepartments) Add(w http.ResponseWriter, r *http.Request) {
 	departmentId := mux.Vars(r)["department_id"]
 
 	pub := context.GetPublication(r.Context())
@@ -88,7 +88,7 @@ func (c *PublicationDepartments) AddToPublication(w http.ResponseWriter, r *http
 	)
 }
 
-func (c *PublicationDepartments) ConfirmRemoveFromPublication(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationDepartments) ConfirmRemove(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	departmentId := mux.Vars(r)["department_id"]
 
@@ -103,7 +103,7 @@ func (c *PublicationDepartments) ConfirmRemoveFromPublication(w http.ResponseWri
 	)
 }
 
-func (c *PublicationDepartments) RemoveFromPublication(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationDepartments) Remove(w http.ResponseWriter, r *http.Request) {
 	departmentId := mux.Vars(r)["department_id"]
 
 	pub := context.GetPublication(r.Context())

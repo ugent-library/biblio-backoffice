@@ -24,7 +24,7 @@ func NewPublicationAbstracts(c Context) *PublicationAbstracts {
 }
 
 // Show the "Add abstract" modal
-func (c *PublicationAbstracts) AddAbstract(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationAbstracts) Add(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
 	abstract := &models.Text{}
@@ -45,7 +45,7 @@ func (c *PublicationAbstracts) AddAbstract(w http.ResponseWriter, r *http.Reques
 }
 
 // Save an abstract to Librecat
-func (c *PublicationAbstracts) CreateAbstract(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationAbstracts) Create(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
 	err := r.ParseForm()
@@ -104,7 +104,7 @@ func (c *PublicationAbstracts) CreateAbstract(w http.ResponseWriter, r *http.Req
 }
 
 // Show the "Edit abstract" modal
-func (c *PublicationAbstracts) EditAbstract(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationAbstracts) Edit(w http.ResponseWriter, r *http.Request) {
 	muxRowDelta := mux.Vars(r)["delta"]
 	rowDelta, _ := strconv.Atoi(muxRowDelta)
 
@@ -130,7 +130,7 @@ func (c *PublicationAbstracts) EditAbstract(w http.ResponseWriter, r *http.Reque
 }
 
 // // Save the updated abstract to Librecat
-func (c *PublicationAbstracts) UpdateAbstract(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationAbstracts) Update(w http.ResponseWriter, r *http.Request) {
 	muxRowDelta := mux.Vars(r)["delta"]
 	rowDelta, _ := strconv.Atoi(muxRowDelta)
 
@@ -194,7 +194,7 @@ func (c *PublicationAbstracts) UpdateAbstract(w http.ResponseWriter, r *http.Req
 }
 
 // // Show the "Confirm remove" modal
-func (c *PublicationAbstracts) ConfirmRemoveFromPublication(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationAbstracts) ConfirmRemove(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	muxRowDelta := mux.Vars(r)["delta"]
 
@@ -210,7 +210,7 @@ func (c *PublicationAbstracts) ConfirmRemoveFromPublication(w http.ResponseWrite
 }
 
 // // Remove an abstract from Librecat
-func (c *PublicationAbstracts) RemoveAbstract(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationAbstracts) Remove(w http.ResponseWriter, r *http.Request) {
 	muxRowDelta := mux.Vars(r)["delta"]
 	rowDelta, _ := strconv.Atoi(muxRowDelta)
 

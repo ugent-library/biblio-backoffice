@@ -37,7 +37,7 @@ func (c *PublicationConference) Show(w http.ResponseWriter, r *http.Request) {
 	)
 }
 
-func (c *PublicationConference) OpenForm(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationConference) Edit(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
 	c.Render.HTML(w, http.StatusOK,
@@ -53,7 +53,7 @@ func (c *PublicationConference) OpenForm(w http.ResponseWriter, r *http.Request)
 	)
 }
 
-func (c *PublicationConference) SaveForm(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationConference) Update(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
 	err := r.ParseForm()

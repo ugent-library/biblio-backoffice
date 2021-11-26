@@ -19,7 +19,7 @@ func NewPublicationProjects(c Context) *PublicationProjects {
 	return &PublicationProjects{c}
 }
 
-func (c *PublicationProjects) ListProjects(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationProjects) List(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
 	// Get 20 random projects (no search, init state)
@@ -60,7 +60,7 @@ func (c *PublicationProjects) ActiveSearch(w http.ResponseWriter, r *http.Reques
 	)
 }
 
-func (c *PublicationProjects) AddToPublication(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationProjects) Add(w http.ResponseWriter, r *http.Request) {
 	projectId := mux.Vars(r)["project_id"]
 
 	pub := context.GetPublication(r.Context())
@@ -92,7 +92,7 @@ func (c *PublicationProjects) AddToPublication(w http.ResponseWriter, r *http.Re
 	)
 }
 
-func (c *PublicationProjects) ConfirmRemoveFromPublication(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationProjects) ConfirmRemove(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	projectId := mux.Vars(r)["project_id"]
 
@@ -107,7 +107,7 @@ func (c *PublicationProjects) ConfirmRemoveFromPublication(w http.ResponseWriter
 	)
 }
 
-func (c *PublicationProjects) RemoveFromPublication(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationProjects) Remove(w http.ResponseWriter, r *http.Request) {
 	projectId := mux.Vars(r)["project_id"]
 
 	pub := context.GetPublication(r.Context())

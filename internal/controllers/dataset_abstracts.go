@@ -24,7 +24,7 @@ func NewDatasetAbstracts(c Context) *DatasetAbstracts {
 }
 
 // Show the "Add abstract" modal
-func (c *DatasetAbstracts) AddAbstract(w http.ResponseWriter, r *http.Request) {
+func (c *DatasetAbstracts) Add(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
 	abstract := &models.Text{}
@@ -45,7 +45,7 @@ func (c *DatasetAbstracts) AddAbstract(w http.ResponseWriter, r *http.Request) {
 }
 
 // Save an abstract to Librecat
-func (c *DatasetAbstracts) CreateAbstract(w http.ResponseWriter, r *http.Request) {
+func (c *DatasetAbstracts) Create(w http.ResponseWriter, r *http.Request) {
 	dataset := context.GetDataset(r.Context())
 
 	err := r.ParseForm()
@@ -104,7 +104,7 @@ func (c *DatasetAbstracts) CreateAbstract(w http.ResponseWriter, r *http.Request
 }
 
 // Show the "Edit abstract" modal
-func (c *DatasetAbstracts) EditAbstract(w http.ResponseWriter, r *http.Request) {
+func (c *DatasetAbstracts) Edit(w http.ResponseWriter, r *http.Request) {
 	muxRowDelta := mux.Vars(r)["delta"]
 	rowDelta, _ := strconv.Atoi(muxRowDelta)
 
@@ -130,7 +130,7 @@ func (c *DatasetAbstracts) EditAbstract(w http.ResponseWriter, r *http.Request) 
 }
 
 // // Save the updated abstract to Librecat
-func (c *DatasetAbstracts) UpdateAbstract(w http.ResponseWriter, r *http.Request) {
+func (c *DatasetAbstracts) Update(w http.ResponseWriter, r *http.Request) {
 	muxRowDelta := mux.Vars(r)["delta"]
 	rowDelta, _ := strconv.Atoi(muxRowDelta)
 
@@ -194,7 +194,7 @@ func (c *DatasetAbstracts) UpdateAbstract(w http.ResponseWriter, r *http.Request
 }
 
 // // Show the "Confirm remove" modal
-func (c *DatasetAbstracts) ConfirmRemoveFromDataset(w http.ResponseWriter, r *http.Request) {
+func (c *DatasetAbstracts) ConfirmRemove(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	muxRowDelta := mux.Vars(r)["delta"]
 
@@ -210,7 +210,7 @@ func (c *DatasetAbstracts) ConfirmRemoveFromDataset(w http.ResponseWriter, r *ht
 }
 
 // // Remove an abstract from Librecat
-func (c *DatasetAbstracts) RemoveAbstract(w http.ResponseWriter, r *http.Request) {
+func (c *DatasetAbstracts) Remove(w http.ResponseWriter, r *http.Request) {
 	muxRowDelta := mux.Vars(r)["delta"]
 	rowDelta, _ := strconv.Atoi(muxRowDelta)
 

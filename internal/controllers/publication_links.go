@@ -25,7 +25,7 @@ func NewPublicationLinks(c Context) *PublicationLinks {
 }
 
 // Show the "Add link" modal
-func (c *PublicationLinks) AddLink(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationLinks) Add(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
 	link := &models.PublicationLink{}
@@ -46,7 +46,7 @@ func (c *PublicationLinks) AddLink(w http.ResponseWriter, r *http.Request) {
 }
 
 // Save a link to Librecat
-func (c *PublicationLinks) CreateLink(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationLinks) Create(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
 	err := r.ParseForm()
@@ -103,7 +103,7 @@ func (c *PublicationLinks) CreateLink(w http.ResponseWriter, r *http.Request) {
 }
 
 // Show the "Edit link" modal
-func (c *PublicationLinks) EditLink(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationLinks) Edit(w http.ResponseWriter, r *http.Request) {
 	muxRowDelta := mux.Vars(r)["delta"]
 	rowDelta, _ := strconv.Atoi(muxRowDelta)
 
@@ -129,7 +129,7 @@ func (c *PublicationLinks) EditLink(w http.ResponseWriter, r *http.Request) {
 }
 
 // // Save the updated link to Librecat
-func (c *PublicationLinks) UpdateLink(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationLinks) Update(w http.ResponseWriter, r *http.Request) {
 	muxRowDelta := mux.Vars(r)["delta"]
 	rowDelta, _ := strconv.Atoi(muxRowDelta)
 
@@ -195,7 +195,7 @@ func (c *PublicationLinks) UpdateLink(w http.ResponseWriter, r *http.Request) {
 }
 
 // // Show the "Confirm remove" modal
-func (c *PublicationLinks) ConfirmRemoveFromPublication(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationLinks) ConfirmRemove(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	muxRowDelta := mux.Vars(r)["delta"]
 
@@ -211,7 +211,7 @@ func (c *PublicationLinks) ConfirmRemoveFromPublication(w http.ResponseWriter, r
 }
 
 // // Remove a link from Librecat
-func (c *PublicationLinks) RemoveLink(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationLinks) Remove(w http.ResponseWriter, r *http.Request) {
 	muxRowDelta := mux.Vars(r)["delta"]
 	rowDelta, _ := strconv.Atoi(muxRowDelta)
 
