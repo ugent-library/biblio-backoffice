@@ -10,7 +10,7 @@
             {{$d.Title}}
             {{if not (.User.CanEditDataset $d)}}<i class="if if-no-edit if--small ml-3 text-muted" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Locked for editing"></i>{{end}}
         </h4>
-        {{with $d.Creator}}
+        {{with $d.Author}}
             {{template "publication/_contributors_short" .}}
         {{end}}
         <span class="c-body-small text-muted">

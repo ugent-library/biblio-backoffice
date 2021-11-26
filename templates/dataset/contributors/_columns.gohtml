@@ -1,0 +1,36 @@
+<td class="pl-8 col-5">
+    <div class="bc-avatar-and-text">
+        <div class="bc-avatar bc-avatar-icon bc-avatar--muted">
+            <i class="if if-user"></i>
+        </div>
+        <div class="bc-avatar-text">{{.D.Contributor.FirstName}} {{.D.Contributor.LastName}}</div>
+    </div>
+</td>
+<td class="col-2">
+    {{if .D.Contributor.ID}}
+    <i class="if if-ghent-university"></i>
+    <span>UGent {{.D.Role}}</span>
+    {{else}}
+    External {{.D.Role}}
+    {{end}}
+</td>
+<td class="pr-4 col-3">
+    {{if .User.CanEditDataset .D.Dataset}}
+    <div class="c-button-toolbar">
+        <button type="button" class="btn btn-default edit-contributor"
+            hx-get="{{pathFor "dataset_contributors_edit" "id" .D.Dataset.ID "role" .D.Role "position" (.D.Position | toString)}}"
+            hx-target="#{{.D.Role}}-modal"
+            hx-trigger="click"
+        >
+            <i class="if if-edit"></i>
+        </button>
+        <button type="button" class="btn btn-default delete-contributor"
+            hx-get="{{pathFor "dataset_contributors_confirm_remove" "id" .D.Dataset.ID "role" .D.Role "position" (.D.Position | toString)}}"
+            hx-target="#{{.D.Role}}-modal"
+            hx-trigger="click"
+        >
+            <i class="if if-delete"></i>
+        </button>
+    </div>
+    {{end}}
+</td>

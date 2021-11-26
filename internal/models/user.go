@@ -96,7 +96,7 @@ func (u *User) CanViewDataset(d *Dataset) bool {
 	if d.CreatorID == u.ID {
 		return true
 	}
-	for _, c := range d.Creator {
+	for _, c := range d.Author {
 		if c.ID == u.ID {
 			return true
 		}
@@ -122,7 +122,7 @@ func (u *User) CanEditDataset(d *Dataset) bool {
 	if d.CreatorID == u.ID {
 		return true
 	}
-	for _, c := range d.Creator {
+	for _, c := range d.Author {
 		if c.ID == u.ID {
 			return true
 		}

@@ -101,6 +101,7 @@ func Register(c controllers.Context) {
 	datasetProjectsController := controllers.NewDatasetProjects(c)
 	datasetDepartmentsController := controllers.NewDatasetDepartments(c)
 	datasetAbstractsController := controllers.NewDatasetAbstracts(c)
+	datasetContributorsController := controllers.NewDatasetContributors(c)
 	datasetPublicationsController := controllers.NewDatasetPublications(c)
 
 	// TODO fix absolute url generation
@@ -469,6 +470,28 @@ func Register(c controllers.Context) {
 	datasetEditRouter.HandleFunc("/htmx/departments/remove/{department_id}", datasetDepartmentsController.RemoveFromDataset).
 		Methods("PATCH").
 		Name("datasetDepartments_remove_from_dataset")
+	// Publication contributors HTMX fragments
+	datasetEditRouter.HandleFunc("/htmx/{role}/add", datasetContributorsController.Add).
+		Methods("GET").
+		Name("dataset_contributors_add")
+	datasetEditRouter.HandleFunc("/htmx/{role}", datasetContributorsController.Create).
+		Methods("POST").
+		Name("dataset_contributors_create")
+	datasetEditRouter.HandleFunc("/htmx/{role}/{position}/remove", datasetContributorsController.ConfirmRemove).
+		Methods("GET").
+		Name("dataset_contributors_confirm_remove")
+	datasetEditRouter.HandleFunc("/htmx/{role}/{position}", datasetContributorsController.Remove).
+		Methods("DELETE").
+		Name("dataset_contributors_remove")
+	datasetEditRouter.HandleFunc("/htmx/{role}/{position}/edit", datasetContributorsController.Edit).
+		Methods("GET").
+		Name("dataset_contributors_edit")
+	datasetEditRouter.HandleFunc("/htmx/{role}/{position}/choose", datasetContributorsController.Choose).
+		Methods("GET").
+		Name("dataset_contributors_choose")
+	datasetEditRouter.HandleFunc("/htmx/{role}/{position}", datasetContributorsController.Update).
+		Methods("PUT").
+		Name("dataset_contributors_update")
 	// Dataset abstracts HTMX fragments
 	datasetEditRouter.HandleFunc("/htmx/abstracts/add", datasetAbstractsController.AddAbstract).
 		Methods("GET").

@@ -53,7 +53,7 @@
                     <a href="{{pathFor "dataset" "id" $d.ID | query .D.SearchArgs}}">
                         <h4 class="c-h4">{{$d.Title}}</h4>
                     </a>
-                    {{with $d.Creator}}{{template "publication/_contributors_short" .}}{{end}}
+                    {{with $d.Author}}{{template "publication/_contributors_short" .}}{{end}}
                     <span class="c-body-small text-muted">
                         {{$d.Year}},
                         <a class="link-primary" href="{{$d.ResolveDOI}}">

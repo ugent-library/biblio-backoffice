@@ -1,0 +1,21 @@
+<div id="modal-backdrop" class="modal-backdrop fade show" style="display:block;"></div>
+<div class="modal show" tabindex="-1" style="display: block;" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Edit {{.D.Role}}</h2>
+            </div>
+            <div class="modal-body">
+                {{template "dataset/contributors/_form" .}}
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-link modal-close" data-dismiss="modal">Cancel</button>
+                <button class="btn btn-primary modal-close" data-dismiss="modal"
+                    hx-put="{{pathFor "dataset_contributors_update" "id" .D.Dataset.ID "role" .D.Role "position" (.D.Position | toString)}}"
+                    hx-include="#{{.D.Role}}-modal .modal-body form > *"
+                    hx-swap="none"
+                >Done</button>
+            </div>
+        </div>
+    </div>
+</div>

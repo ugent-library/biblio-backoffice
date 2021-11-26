@@ -14,11 +14,13 @@ func init() {
 	message.SetString(language.English, "confirmations.no", "No")
 	message.SetString(language.English, "confirmations.dontknow", "Don't know")
 
-	message.SetString(language.English, "contributor.title.author", "Authors")
-	message.SetString(language.English, "contributor.title.editor", "Editors")
-	message.SetString(language.English, "contributor.title.supervisor", "Supervisors")
 	message.SetString(language.English, "contributor.first_name", "First name")
 	message.SetString(language.English, "contributor.last_name", "Last name")
+	message.SetString(language.English, "publication.contributor.title.author", "Authors")
+	message.SetString(language.English, "publication.contributor.title.editor", "Editors")
+	message.SetString(language.English, "publication.contributor.title.supervisor", "Supervisors")
+	message.SetString(language.English, "dataset.contributor.title.author", "Creators")
+	message.SetString(language.English, "dataset.contributor.title.contributor", "Contributors")
 
 	message.SetString(language.English, "credit_roles.first_author", "First author")
 	message.SetString(language.English, "credit_roles.last_author", "Last author")
