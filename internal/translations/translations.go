@@ -118,7 +118,8 @@ func init() {
 
 	message.SetString(language.English, "publication_statuses.new", "New")
 	message.SetString(language.English, "publication_statuses.private", "Draft")
-	message.SetString(language.English, "publication_statuses.public", "Validated")
+	message.SetString(language.English, "publication_statuses.public", "Public")
+	message.SetString(language.English, "publication_statuses.returned", "Returned")
 
 	message.SetString(language.English, "publication_file_access_levels.open_access", "Open access")
 	message.SetString(language.English, "publication_file_access_levels.local", "UGent access")
