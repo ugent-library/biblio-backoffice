@@ -1,3 +1,7 @@
 .card-collapsible .bc-toolbar-right .c-button-toolbar {
   z-index: inherit;
 }
+
+.bc-toast {
+  z-index: 9999;
+}
