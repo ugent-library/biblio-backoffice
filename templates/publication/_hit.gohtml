@@ -22,15 +22,25 @@
                                     <i class="if if-file-text"></i>
                                     <span>View details</span>
                                 </a>
+                                {{if and (eq $p.Status "public") .User.ORCID .User.ORCIDToken}}
+                                <button class="dropdown-item"
+                                    hx-post="{{pathFor "publication_orcid_add" "id" $p.ID}}"
+                                    hx-target="#publication-{{$p.ID}}-orcid-status"
+                                    hx-trigger="click"
+                                >
+                                    <i class="if if-orcid" style="color: #A6CE39"></i>
+                                    <span>Send to ORCID</span>
+                                </button>
+                                {{end}}
                                 {{if .User.CanDeletePublication $p}}
-                                <a class="dropdown-item" href="#"
+                                <button class="dropdown-item"
                                     hx-get="{{pathFor "publication_confirm_delete" "id" $p.ID | query .D.SearchArgs}}"
                                     hx-target="#publication-{{$p.ID}}-modal"
                                     hx-trigger="click"
                                 >
                                     <i class="if if-delete"></i>
                                     <span>Delete</span>
-                                </a>
+                                </button>
                                 {{end}}
                             </div>
                         </div>
@@ -57,6 +67,13 @@
                     <div class="list-group-item-meta-right">
                         <div class="list-group-item-meta-item">
                             <span class="text-muted c-body-small">Biblio ID: {{$p.ID}}</span>
+                        </div>
+                        {{if and (eq $p.Status "public") .User.ORCID}}
+                        <div id="publication-{{$p.ID}}-orcid-status"
+                            hx-get="{{pathFor "publication_orcid_status" "id" $p.ID}}"
+                            hx-trigger="load"
+                        >
+                        {{end}}
                         </div>
                         {{with $p.RelatedDatasetCount}}
                         <div class="list-group-item-meta-item" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="{{$p.RelatedDatasetCount}} related datasets">

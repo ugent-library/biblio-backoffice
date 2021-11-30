@@ -3,7 +3,7 @@ package engine
 import (
 	"net/http"
 
-	"github.com/nics/orcid-go/orcid"
+	"github.com/ugent-library/go-orcid/orcid"
 )
 
 type Config struct {
@@ -18,12 +18,12 @@ type Config struct {
 type Engine struct {
 	Config         Config
 	librecatClient *http.Client
-	orcidClient    *orcid.Client
+	orcidClient    *orcid.MemberClient
 }
 
 func New(c Config) (*Engine, error) {
-	orcidClient := orcid.NewClient(orcid.Config{
-		ClientId:     c.ORCIDClientID,
+	orcidClient := orcid.NewMemberClient(orcid.Config{
+		ClientID:     c.ORCIDClientID,
 		ClientSecret: c.ORCIDClientSecret,
 		// Scopes:       []string{"/read-public"},
 		Sandbox: c.ORCIDSandbox,

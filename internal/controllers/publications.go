@@ -634,3 +634,43 @@ func (c *Publications) Delete(w http.ResponseWriter, r *http.Request) {
 	),
 	)
 }
+
+func (c *Publications) ORCIDStatus(w http.ResponseWriter, r *http.Request) {
+	user := context.GetUser(r.Context())
+	pub := context.GetPublication(r.Context())
+	onORCID := c.Engine.IsOnORCID(user.ORCID, pub.ID)
+	c.Render.HTML(w, http.StatusOK, "publication/_orcid_status", views.NewData(c.Render, r, struct {
+		OnORCID bool
+	}{
+		onORCID,
+	}),
+		render.HTMLOptions{Layout: "layouts/htmx"},
+	)
+}
+
+func (c *Publications) ORCIDAdd(w http.ResponseWriter, r *http.Request) {
+	user := context.GetUser(r.Context())
+	pub := context.GetPublication(r.Context())
+	if err := c.Engine.AddPublicationToORCID(user.ORCID, user.ORCIDToken, pub); err != nil {
+		c.Render.HTML(w, http.StatusOK, "publication/_orcid_status", views.NewData(c.Render, r, struct {
+			OnORCID bool
+		}{
+			false,
+		},
+			views.Flash{Type: "error", Message: "Adding the publication to your ORCID works failed."},
+		),
+			render.HTMLOptions{Layout: "layouts/htmx"},
+		)
+		return
+	}
+
+	c.Render.HTML(w, http.StatusOK, "publication/_orcid_status", views.NewData(c.Render, r, struct {
+		OnORCID bool
+	}{
+		true,
+	},
+		views.Flash{Type: "success", Message: "Successfully added the publication to your ORCID works.", DismissAfter: 5 * time.Second},
+	),
+		render.HTMLOptions{Layout: "layouts/htmx"},
+	)
+}

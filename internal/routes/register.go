@@ -221,6 +221,12 @@ func Register(c controllers.Context) {
 	pubRouter.HandleFunc("/thumbnail", publicationsController.Thumbnail).
 		Methods("GET").
 		Name("publication_thumbnail")
+	pubRouter.HandleFunc("/orcid-status", publicationsController.ORCIDStatus).
+		Methods("GET").
+		Name("publication_orcid_status")
+	pubRouter.HandleFunc("/orcid", publicationsController.ORCIDAdd).
+		Methods("POST").
+		Name("publication_orcid_add")
 	pubPublishRouter.HandleFunc("/publish", publicationsController.Publish).
 		Methods("POST").
 		Name("publication_publish")
