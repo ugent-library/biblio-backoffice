@@ -27,6 +27,7 @@
                                     hx-post="{{pathFor "publication_orcid_add" "id" $p.ID}}"
                                     hx-target="#publication-{{$p.ID}}-orcid-status"
                                     hx-trigger="click"
+                                    hx-swap="outerHTML"
                                 >
                                     <i class="if if-orcid" style="color: #A6CE39"></i>
                                     <span>Send to ORCID</span>
@@ -72,9 +73,10 @@
                         <div id="publication-{{$p.ID}}-orcid-status"
                             hx-get="{{pathFor "publication_orcid_status" "id" $p.ID}}"
                             hx-trigger="load"
+                            hx-swap="outerHTML"
                         >
-                        {{end}}
                         </div>
+                        {{end}}
                         {{with $p.RelatedDatasetCount}}
                         <div class="list-group-item-meta-item" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="{{$p.RelatedDatasetCount}} related datasets">
                             <span class="text-muted c-body-small">
