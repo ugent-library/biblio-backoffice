@@ -14,6 +14,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/views"
 	"github.com/ugent-library/go-locale/locale"
+	"github.com/ugent-library/go-orcid/orcid"
 	"github.com/ugent-library/go-web/forms"
 	"github.com/unrolled/render"
 )
@@ -653,19 +654,21 @@ func (c *Publications) ORCIDStatus(w http.ResponseWriter, r *http.Request) {
 func (c *Publications) ORCIDAdd(w http.ResponseWriter, r *http.Request) {
 	user := context.GetUser(r.Context())
 	pub := context.GetPublication(r.Context())
+
+	var (
+		onORCID bool
+		flash   views.Flash
+	)
+
 	if err := c.Engine.AddPublicationToORCID(user.ORCID, user.ORCIDToken, pub); err != nil {
-		c.Render.HTML(w, http.StatusOK, "publication/_orcid_status", views.NewData(c.Render, r, struct {
-			Publication *models.Publication
-			OnORCID     bool
-		}{
-			pub,
-			false,
-		},
-			views.Flash{Type: "error", Message: "Adding the publication to your ORCID works failed."},
-		),
-			render.HTMLOptions{Layout: "layouts/htmx"},
-		)
-		return
+		if err == orcid.ErrDuplicate {
+			flash = views.Flash{Type: "warning", Message: "This publication is already part of your ORCID works."}
+		} else {
+			flash = views.Flash{Type: "error", Message: "Couldn't add this publication to your ORCID works."}
+		}
+	} else {
+		onORCID = true
+		flash = views.Flash{Type: "success", Message: "Successfully added the publication to your ORCID works.", DismissAfter: 5 * time.Second}
 	}
 
 	c.Render.HTML(w, http.StatusOK, "publication/_orcid_status", views.NewData(c.Render, r, struct {
@@ -673,9 +676,9 @@ func (c *Publications) ORCIDAdd(w http.ResponseWriter, r *http.Request) {
 		OnORCID     bool
 	}{
 		pub,
-		true,
+		onORCID,
 	},
-		views.Flash{Type: "success", Message: "Successfully added the publication to your ORCID works.", DismissAfter: 5 * time.Second},
+		flash,
 	),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)

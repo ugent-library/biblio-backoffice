@@ -18,7 +18,7 @@ require (
 	github.com/ugent-library/go-graceful v0.0.0-20211104090201-39f21722d44b
 	github.com/ugent-library/go-locale v0.0.0-20211023163356-49e4307227b1
 	github.com/ugent-library/go-oidc v0.0.0-20210901124208-bda4cc73ba56
-	github.com/ugent-library/go-orcid v0.0.0-20211130153044-ca5ec2fcf935
+	github.com/ugent-library/go-orcid v0.0.0-20211130191640-1138a344c30b
 	github.com/ugent-library/go-web v0.0.0-20211029075216-2afe6295a285
 	github.com/unrolled/render v1.4.1
 	golang.org/x/crypto v0.0.0-20211117183948-ae814b36b871 // indirect
