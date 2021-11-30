@@ -7,13 +7,13 @@ type PersonDepartment struct {
 }
 
 type Person struct {
-	DateCreated *time.Time         `json:"date_created"`
-	DateUpdated *time.Time         `json:"date_updated"`
-	Department  []PersonDepartment `json:"department"`
+	DateCreated *time.Time         `json:"date_created" form:"-"`
+	DateUpdated *time.Time         `json:"date_updated" form:"-"`
+	Department  []PersonDepartment `json:"department" form:"-"`
 	FirstName   string             `json:"first_name" form:"first_name"`
-	FullName    string             `json:"full_name"`
-	ID          string             `json:"_id"`
+	FullName    string             `json:"full_name" form:"-"`
+	ID          string             `json:"_id" form:"-"`
 	LastName    string             `json:"last_name" form:"last_name"`
-	ORCID       string             `json:"orcid"`
-	UGentID     []string           `json:"ugent_id" form:"ugent_id"`
+	ORCID       string             `json:"orcid" form:"-"`
+	UGentID     []string           `json:"ugent_id" form:"-"`
 }
