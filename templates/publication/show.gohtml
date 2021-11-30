@@ -29,6 +29,17 @@
                                 <i class="if if-more"></i>
                             </button>
                             <div class="dropdown-menu">
+                                {{if and (eq .D.Publication.Status "public") .User.ORCID .User.ORCIDToken}}
+                                <button class="dropdown-item"
+                                    hx-post="{{pathFor "publication_orcid_add" "id" .D.Publication.ID}}"
+                                    hx-target="#publication-{{.D.Publication.ID}}-orcid-status"
+                                    hx-trigger="click"
+                                    hx-swap="outerHTML"
+                                >
+                                    <i class="if if-orcid" style="color: #A6CE39"></i>
+                                    <span>Send to ORCID</span>
+                                </button>
+                                {{end}}
                                 {{if .User.CanDeletePublication .D.Publication}}
                                 <a class="dropdown-item" href="#"
                                     hx-get="{{pathFor "publication_confirm_delete" "id" .D.Publication.ID | query .D.SearchArgs}}"
