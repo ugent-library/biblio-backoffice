@@ -662,7 +662,7 @@ func (c *Publications) ORCIDAdd(w http.ResponseWriter, r *http.Request) {
 
 	if err := c.Engine.AddPublicationToORCID(user.ORCID, user.ORCIDToken, pub); err != nil {
 		if err == orcid.ErrDuplicate {
-			flash = views.Flash{Type: "warning", Message: "This publication is already part of your ORCID works."}
+			flash = views.Flash{Type: "info", Message: "This publication is already part of your ORCID works."}
 		} else {
 			flash = views.Flash{Type: "error", Message: "Couldn't add this publication to your ORCID works."}
 		}
