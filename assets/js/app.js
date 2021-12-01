@@ -11,6 +11,7 @@ import tabs from './ui/tabs.js'
 import radioCard from './ui/radio_card.js'
 import membership from './ui/membership.js'
 import toast from './ui/toast.js'
+import fileEmbargo from './ui/file_embargo.js'
 
 document.addEventListener('DOMContentLoaded', function () {
     csrf()
@@ -26,8 +27,5 @@ document.addEventListener('DOMContentLoaded', function () {
     radioCard()
     membership()
     toast()
+    fileEmbargo()
 });
-
-document.body.addEventListener("summary-changed", function(evt){
-    alert("summary changed was triggered!");
-})

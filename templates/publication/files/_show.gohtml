@@ -81,7 +81,7 @@
                                                 <i class="if if-download text-success"></i>
                                                 <div>
                                                     <p class="mb-0">{{$.T "publication_file_access_levels" "open_access"}}</p>
-                                                    <span class="text-muted c-body-small">Recommended option if there is no sensitive information.</span>
+                                                    <span class="text-muted c-body-small">Recommended option if there is no confidential information.</span>
                                                 </div>
                                                 <div class="dropdown-item-check">
                                                     <i class="if if-check text-primary"></i>
@@ -117,7 +117,7 @@
                                                 <i class="if if-eye-off text-muted"></i>
                                                 <div>
                                                     <p class="mb-0">{{$.T "publication_file_access_levels" "closed"}}</p>
-                                                    <span class="text-muted c-body-small">Your file will only be available to the authors and reviewers.</span>
+                                                    <span class="text-muted c-body-small">Your file will only be available to the authors and Biblio reviewers.</span>
                                                 </div>
                                                 <div class="dropdown-item-check">
                                                     <i class="if if-check text-primary"></i>
@@ -126,6 +126,9 @@
                                         </div>
                                         {{end}}
                                     </div>
+                                    {{if .EmbargoTo}}
+                                    <span class="text-muted c-body-small pl-5">Changes to {{$.T "publication_file_access_levels" .EmbargoTo}} on {{.Embargo}}</span>
+                                    {{end}}
                                 </div>
                                 <div class="list-group-item-subline-right">
                                     {{if $canEditPublication}}
@@ -163,11 +166,6 @@
                             </div>
                             <div class="list-group-item-meta">
                                 <div class="list-group-item-meta-left">
-                                    <div class="list-group-item-meta-item">
-                                        <span class="text-muted c-body-small">
-                                            <cc0 (1.0)=""></cc0>
-                                        </span>
-                                    </div>
                                     <div class="list-group-item-meta-item">
                                         <span class="text-muted c-body-small">Uploaded {{.DateCreated | date "02-01-2006 at 15:04"}}</span>
                                     </div>

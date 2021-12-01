@@ -207,7 +207,12 @@ func (c *PublicationFiles) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO save file metadata
+	// embargo sanity check
+	if file.AccessLevel == "open_access" || file.EmbargoTo == file.AccessLevel {
+		file.EmbargoTo = ""
+		file.Embargo = ""
+	}
+
 	err = c.Engine.UpdatePublicationFile(pub.ID, file)
 
 	// TODO show errors
@@ -237,6 +242,7 @@ func (c *PublicationFiles) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// TODO show flash
 	c.Render.HTML(w, http.StatusOK, "publication/files/_show", views.NewData(c.Render, r, struct {
 		Publication *models.Publication
 	}{
