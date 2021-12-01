@@ -101,6 +101,7 @@ type Publication struct {
 	Locked                  bool                    `json:"locked,omitempty" form:"-"`
 	Message                 string                  `json:"message,omitempty" form:"-"`
 	MiscellaneousType       string                  `json:"miscellaneous_type,omitempty" form:"miscellaneous_type"`
+	ORCIDPutCode            string                  `json:"orcid_put_code,omitempty" form:"orcid_put_code"`
 	PageCount               string                  `json:"page_count,omitempty" form:"page_count"`
 	PageFirst               string                  `json:"page_first,omitempty" form:"page_first"`
 	PageLast                string                  `json:"page_last,omitempty" form:"page_last"`
