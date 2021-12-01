@@ -42,10 +42,12 @@ func (c *PublicationDetails) Edit(w http.ResponseWriter, r *http.Request) {
 
 	c.Render.HTML(w, http.StatusOK, "publication/details/_edit", views.NewData(c.Render, r, struct {
 		Publication  *models.Publication
+		Show         *views.ShowBuilder
 		Form         *views.FormBuilder
 		Vocabularies map[string][]string
 	}{
 		pub,
+		views.NewShowBuilder(c.Render, locale.Get(r.Context())),
 		views.NewFormBuilder(c.Render, locale.Get(r.Context()), nil),
 		c.Engine.Vocabularies(),
 	}),
@@ -71,10 +73,12 @@ func (c *PublicationDetails) Update(w http.ResponseWriter, r *http.Request) {
 	if formErrors, ok := err.(jsonapi.Errors); ok {
 		c.Render.HTML(w, http.StatusOK, "publication/details/_edit", views.NewData(c.Render, r, struct {
 			Publication  *models.Publication
+			Show         *views.ShowBuilder
 			Form         *views.FormBuilder
 			Vocabularies map[string][]string
 		}{
 			pub,
+			views.NewShowBuilder(c.Render, locale.Get(r.Context())),
 			views.NewFormBuilder(c.Render, locale.Get(r.Context()), formErrors),
 			c.Engine.Vocabularies(),
 		},
