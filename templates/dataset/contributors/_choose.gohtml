@@ -18,8 +18,11 @@
                                             {{range .Department}}
                                             <div class="text-muted c-body-small">{{$.T "organization" .ID}}</div>
                                             {{end}}
+                                            {{with .ORCID}}
+                                            <div class="text-muted c-body-small">ORCID: {{.}}</div>
+                                            {{end}}
                                             {{range .UGentID}}
-                                            <div class="text-muted c-body-small">Ugent ID: {{.}}</div>
+                                            <div class="text-muted c-body-small">UGent ID: {{.}}</div>
                                             {{end}}
                                         </div>
                                         <div class="list-group-item-meta mt-2">

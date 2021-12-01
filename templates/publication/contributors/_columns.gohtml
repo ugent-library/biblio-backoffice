@@ -3,7 +3,12 @@
         <div class="bc-avatar bc-avatar-icon bc-avatar--muted">
             <i class="if if-user"></i>
         </div>
-        <div class="bc-avatar-text">{{.D.Contributor.FirstName}} {{.D.Contributor.LastName}}</div>
+        <div class="bc-avatar-text">
+            {{.D.Contributor.FirstName}} {{.D.Contributor.LastName}}
+            {{with .D.Contributor.ORCID}}
+            <span class="text-muted c-body-small ml-4"><i class="if if-orcid if--muted if--small"></i> {{.}}</span>
+            {{end}}
+        </div>
     </div>
 </td>
 {{if eq .D.Role "author"}}
