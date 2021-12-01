@@ -15,7 +15,7 @@
                     <div class="row">
                         <div class="col-6">
                             <div class="form-group">
-                                <label class="col-form-label">Relation</label>
+                                <label class="col-form-label">Document type</label>
                                 <select class="custom-select w-10" name="relation">
                                     <option></option>
                                     {{range .D.Vocabularies.publication_file_relations}}
@@ -55,7 +55,7 @@
                                 <i class="if if-download text-success align-self-center"></i>
                                 <div class="ml-5">
                                     <p class="mb-1 mr-3">Open Access</p>
-                                    <span class="text-muted c-body-small">Recommended option if the file doesn’t contain any sensitive information. Share your work to help other researchers.</span>
+                                    <span class="text-muted c-body-small">Recommended option if the file doesn’t contain any confidential information. Share your work to help other researchers.</span>
                                 </div>
                             </div>
                         </label>
@@ -97,7 +97,7 @@
                                 <i class="if if-eye-off text-muted align-self-center"></i>
                                 <div class="ml-5">
                                     <p class="mb-1 mr-3">Private Access</p>
-                                    <span class="text-muted c-body-small">Your file will only be available to the authors and reviewers.</span>
+                                    <span class="text-muted c-body-small">Your file will only be available to the authors and Biblio reviewers.</span>
                                 </div>
                             </div>
                         </label>
