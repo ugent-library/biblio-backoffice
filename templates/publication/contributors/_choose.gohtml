@@ -2,7 +2,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title">Choose UGent {{.D.Role}}</h2>
+                <h2 class="modal-title">Assign UGent membership to {{.D.Role}}</h2>
             </div>
             <div class="modal-body">
                 {{if .D.Suggestions}}
@@ -45,7 +45,7 @@
                     {{end}}
                 </ul>
                 {{else}}
-                No {{.D.Role}}s found.
+                This {{.D.Role}} is not a UGent employee or student.
                 {{end}}
             </div>
             <div class="modal-footer">
