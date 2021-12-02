@@ -54,9 +54,6 @@ func init() {
 	rootCmd.PersistentFlags().String("oidc-url", "", "openid connect url")
 	rootCmd.PersistentFlags().String("oidc-client-id", "", "openid connect client id")
 	rootCmd.PersistentFlags().String("oidc-client-secret", "", "openid connect client secret")
-
-	rootCmd.PersistentFlags().String("cas-url", "", "CAS url")
-	rootCmd.PersistentFlags().Bool("cas-skip-verify-tls", false, "skip CAS server TLS verification in development")
 }
 
 func Execute() {
