@@ -25,7 +25,7 @@
         "tablesort": "^5.1.0"
     },
     "nodemonConfig": {
-        "exec": "go run main.go server start --host localhost --port 3001 --cas-skip-verify-tls || exit 1",
+        "exec": "go run main.go server start --host localhost --port 3001 || exit 1",
         "signal": "SIGTERM",
         "ext": "go,gohtml,json",
         "delay": "1500"
