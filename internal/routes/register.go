@@ -88,8 +88,8 @@ func Register(c controllers.Context) {
 
 	// users
 	userRouter := r.PathPrefix("/user").Subrouter()
-	userRouter.Use(requireUser)
 	userRouter.Use(setUser)
+	userRouter.Use(requireUser)
 	userRouter.HandleFunc("/htmx/impersonate/choose", usersController.ImpersonateChoose).
 		Methods("GET").
 		Name("user_impersonate_choose")
@@ -104,8 +104,8 @@ func Register(c controllers.Context) {
 	// publications
 	pubsRouter := r.PathPrefix("/publication").Subrouter()
 	pubsRouter.Use(middleware.SetActiveMenu("publications"))
-	pubsRouter.Use(requireUser)
 	pubsRouter.Use(setUser)
+	pubsRouter.Use(requireUser)
 	pubsRouter.HandleFunc("", publicationsController.List).
 		Methods("GET").
 		Name("publications")
@@ -351,8 +351,8 @@ func Register(c controllers.Context) {
 	// datasets
 	datasetsRouter := r.PathPrefix("/dataset").Subrouter()
 	datasetsRouter.Use(middleware.SetActiveMenu("datasets"))
-	datasetsRouter.Use(requireUser)
 	datasetsRouter.Use(setUser)
+	datasetsRouter.Use(requireUser)
 	datasetsRouter.HandleFunc("", datasetsController.List).
 		Methods("GET").
 		Name("datasets")
