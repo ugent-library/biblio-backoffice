@@ -26,7 +26,6 @@ func SetUser(e *engine.Engine, sessionName string, sessionStore sessions.Store) 
 
 			user, err := e.GetUser(userID.(string))
 			if err != nil {
-				log.Printf("get user error: %s", err)
 				// TODO
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return

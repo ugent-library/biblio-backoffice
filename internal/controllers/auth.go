@@ -25,8 +25,6 @@ func (c *Auth) Callback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("user claims: %+v", claims)
-
 	session, _ := c.Session(r)
 	if err != nil {
 		log.Printf("session error: %s", err)
@@ -43,10 +41,12 @@ func (c *Auth) Callback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("user: %+v", user)
-
 	session.Values["user_id"] = user.ID
-	session.Save(r, w)
+	if err = session.Save(r, w); err != nil {
+		log.Print(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	redirectURL, _ := c.Router.Get("publications").URLPath()
 	http.Redirect(w, r, redirectURL.String(), http.StatusFound)

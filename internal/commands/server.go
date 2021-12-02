@@ -101,11 +101,15 @@ func buildRouter() *mux.Router {
 	localizer := locale.NewLocalizer("en")
 
 	// sessions & auth
+	cookiePath := baseURL.Path
+	if cookiePath == "" {
+		cookiePath = "/"
+	}
 	sessionSecret := []byte(viper.GetString("session-secret"))
 	sessionName := viper.GetString("session-name")
 	sessionStore := sessions.NewCookieStore(sessionSecret)
 	sessionStore.MaxAge(viper.GetInt("session-max-age"))
-	sessionStore.Options.Path = baseURL.Path
+	sessionStore.Options.Path = cookiePath
 	sessionStore.Options.HttpOnly = true
 	sessionStore.Options.Secure = baseURL.Scheme == "https"
 
