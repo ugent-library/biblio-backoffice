@@ -20,7 +20,7 @@ func Register(c controllers.Context) {
 	// static files
 	router.PathPrefix(basePath + "/static/").Handler(http.StripPrefix(basePath+"/static/", http.FileServer(http.Dir("./static"))))
 
-	requireUser := middleware.RequireUser(c.BaseURL.Path + "/logout")
+	requireUser := middleware.RequireUser(c.BaseURL.Path + "/login")
 	setUser := middleware.SetUser(c.Engine, c.SessionName, c.SessionStore)
 
 	authController := controllers.NewAuth(c)
