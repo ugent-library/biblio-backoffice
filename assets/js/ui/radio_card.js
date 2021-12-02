@@ -11,10 +11,17 @@ export default function () {
         evt.currentTarget.setAttribute('aria-selected', 'true');
         evt.currentTarget.classList.add('c-radio-card--selected');
     }
+    
+    let goToURL = function(evt) {
+        window.location = this.dataset.url
+    }
 
     let addEvents = function() {
         document.querySelectorAll('.radio-card-group .c-radio-card').forEach(card =>
             card.addEventListener('click', toggleSelected)
+        )
+        document.querySelectorAll('.c-radio-card[data-url]').forEach(card =>
+            card.addEventListener('click', goToURL)
         )
     }
 

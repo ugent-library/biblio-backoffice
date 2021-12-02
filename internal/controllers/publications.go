@@ -132,8 +132,8 @@ func (c *Publications) Summary(w http.ResponseWriter, r *http.Request) {
 	)
 }
 
-func (c *Publications) Add(w http.ResponseWriter, r *http.Request) {
-	c.Render.HTML(w, http.StatusOK, "publication/add", views.NewData(c.Render, r, struct {
+func (c *Publications) AddSingle(w http.ResponseWriter, r *http.Request) {
+	c.Render.HTML(w, http.StatusOK, "publication/add_single", views.NewData(c.Render, r, struct {
 		PageTitle string
 		Step      int
 	}{
@@ -142,8 +142,8 @@ func (c *Publications) Add(w http.ResponseWriter, r *http.Request) {
 	}))
 }
 
-func (c *Publications) AddSingle(w http.ResponseWriter, r *http.Request) {
-	c.Render.HTML(w, http.StatusOK, "publication/add_single", views.NewData(c.Render, r, struct {
+func (c *Publications) AddSingleStart(w http.ResponseWriter, r *http.Request) {
+	c.Render.HTML(w, http.StatusOK, "publication/add_single_start", views.NewData(c.Render, r, struct {
 		PageTitle string
 		Step      int
 	}{
@@ -163,7 +163,7 @@ func (c *Publications) AddSingleImport(w http.ResponseWriter, r *http.Request) {
 		p, err := c.Engine.ImportUserPublicationByIdentifier(context.GetUser(r.Context()).ID, source, identifier)
 		if err != nil {
 			log.Println(err)
-			c.Render.HTML(w, http.StatusOK, "publication/add_single", views.NewData(c.Render, r, struct {
+			c.Render.HTML(w, http.StatusOK, "publication/add_single_start", views.NewData(c.Render, r, struct {
 				PageTitle string
 				Step      int
 			}{
@@ -264,6 +264,16 @@ func (c *Publications) AddSinglePublish(w http.ResponseWriter, r *http.Request) 
 
 func (c *Publications) AddMultiple(w http.ResponseWriter, r *http.Request) {
 	c.Render.HTML(w, http.StatusOK, "publication/add_multiple", views.NewData(c.Render, r, struct {
+		PageTitle string
+		Step      int
+	}{
+		"Add - Publications - Biblio",
+		1,
+	}))
+}
+
+func (c *Publications) AddMultipleStart(w http.ResponseWriter, r *http.Request) {
+	c.Render.HTML(w, http.StatusOK, "publication/add_multiple_start", views.NewData(c.Render, r, struct {
 		PageTitle string
 		Step      int
 	}{
