@@ -1,18 +1,14 @@
 package routes
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/handlers"
 	"github.com/spf13/viper"
-	"github.com/ugent-library/biblio-backend/internal/context"
 	"github.com/ugent-library/biblio-backend/internal/controllers"
 	"github.com/ugent-library/biblio-backend/internal/middleware"
-	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/go-locale/locale"
-	"gopkg.in/cas.v2"
 )
 
 func Register(c controllers.Context) {
@@ -24,64 +20,10 @@ func Register(c controllers.Context) {
 	// static files
 	router.PathPrefix(basePath + "/static/").Handler(http.StripPrefix(basePath+"/static/", http.FileServer(http.Dir("./static"))))
 
-	// requireUser := middleware.RequireUser(baseURL.Path + "/logout")
-	// setUser := middleware.SetUser(e, sessionName, sessionStore)
-	requireUser := func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if !cas.IsAuthenticated(r) {
-				cas.RedirectToLogin(w, r)
-				return
-			}
+	requireUser := middleware.RequireUser(c.BaseURL.Path + "/logout")
+	setUser := middleware.SetUser(c.Engine, c.SessionName, c.SessionStore)
 
-			next.ServeHTTP(w, r)
-		})
-	}
-	setUser := func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			var user *models.User
-
-			session, _ := c.Session(r)
-			userID := session.Values["user_id"]
-			if userID != nil {
-				u, err := c.Engine.GetUser(userID.(string))
-				if err != nil {
-					log.Printf("get user error: %s", err)
-					// TODO
-					http.Error(w, err.Error(), http.StatusInternalServerError)
-					return
-				}
-				user = u
-			}
-
-			if user == nil {
-				u, err := c.Engine.GetUserByUsername(cas.Username(r))
-				if err != nil {
-					log.Printf("get user error: %s", err)
-					http.Error(w, err.Error(), http.StatusInternalServerError)
-					return
-				}
-				user = u
-			}
-
-			originalUserID := session.Values["original_user_id"]
-			if originalUserID != nil {
-				originalUser, err := c.Engine.GetUser(originalUserID.(string))
-				if err != nil {
-					log.Printf("get user error: %s", err)
-					// TODO
-					http.Error(w, err.Error(), http.StatusInternalServerError)
-					return
-				}
-				c := context.WithOriginalUser(r.Context(), originalUser)
-				r = r.WithContext(c)
-			}
-
-			c := context.WithUser(r.Context(), user)
-			next.ServeHTTP(w, r.WithContext(c))
-		})
-	}
-
-	// authController := controllers.NewAuth(e, sessionName, sessionStore, oidcClient, router)
+	authController := controllers.NewAuth(c)
 	usersController := controllers.NewUsers(c)
 
 	publicationsController := controllers.NewPublications(c)
@@ -135,21 +77,14 @@ func Register(c controllers.Context) {
 	}).Methods("GET").Name("home")
 
 	// auth
-	// r.HandleFunc("/login", authController.Login).
-	// 	Methods("GET").
-	// 	Name("login")
-	// r.HandleFunc("/auth/openid-connect/callback", authController.Callback).
-	// 	Methods("GET")
-	// r.HandleFunc("/logout", authController.Logout).
-	// 	Methods("GET").
-	// 	Name("logout")
-	r.HandleFunc("/logout", func(w http.ResponseWriter, r *http.Request) {
-		session, _ := c.SessionStore.Get(r, c.SessionName)
-		delete(session.Values, "original_user_id")
-		delete(session.Values, "user_id")
-		session.Save(r, w)
-		cas.RedirectToLogout(w, r)
-	}).Methods("GET").Name("logout")
+	r.HandleFunc("/login", authController.Login).
+		Methods("GET").
+		Name("login")
+	r.HandleFunc("/auth/openid-connect/callback", authController.Callback).
+		Methods("GET")
+	r.HandleFunc("/logout", authController.Logout).
+		Methods("GET").
+		Name("logout")
 
 	// users
 	userRouter := r.PathPrefix("/user").Subrouter()

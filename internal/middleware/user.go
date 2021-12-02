@@ -32,6 +32,19 @@ func SetUser(e *engine.Engine, sessionName string, sessionStore sessions.Store) 
 				return
 			}
 
+			originalUserID := session.Values["original_user_id"]
+			if originalUserID != nil {
+				originalUser, err := e.GetUser(originalUserID.(string))
+				if err != nil {
+					log.Printf("get user error: %s", err)
+					// TODO
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				}
+				c := context.WithOriginalUser(r.Context(), originalUser)
+				r = r.WithContext(c)
+			}
+
 			c := context.WithUser(r.Context(), user)
 			next.ServeHTTP(w, r.WithContext(c))
 		})

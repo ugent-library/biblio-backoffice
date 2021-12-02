@@ -8,6 +8,7 @@ import (
 	"github.com/gorilla/sessions"
 	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/go-locale/locale"
+	"github.com/ugent-library/go-oidc/oidc"
 	"github.com/unrolled/render"
 )
 
@@ -19,6 +20,7 @@ type Context struct {
 	Localizer    *locale.Localizer
 	SessionName  string
 	SessionStore sessions.Store
+	OIDC         *oidc.Client
 }
 
 func (c *Context) Session(r *http.Request) (*sessions.Session, error) {

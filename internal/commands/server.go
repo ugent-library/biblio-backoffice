@@ -1,11 +1,9 @@
 package commands
 
 import (
-	"crypto/tls"
 	"fmt"
 	"html/template"
 	"log"
-	"net/http"
 	"net/url"
 	"os"
 	"strings"
@@ -23,7 +21,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/routes"
 	"github.com/ugent-library/go-graceful/server"
 	"github.com/ugent-library/go-locale/locale"
-	"gopkg.in/cas.v2"
+	"github.com/ugent-library/go-oidc/oidc"
 
 	"github.com/ugent-library/go-web/mix"
 	"github.com/ugent-library/go-web/urls"
@@ -111,15 +109,15 @@ func buildRouter() *mux.Router {
 	sessionStore.Options.HttpOnly = true
 	sessionStore.Options.Secure = baseURL.Scheme == "https"
 
-	// oidcClient, err := oidc.New(oidc.Config{
-	// 	URL:          viper.GetString("oidc-url"),
-	// 	ClientID:     viper.GetString("oidc-client-id"),
-	// 	ClientSecret: viper.GetString("oidc-client-secret"),
-	// 	RedirectURL:  baseURL.String() + "/auth/openid-connect/callback",
-	// })
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
+	oidcClient, err := oidc.New(oidc.Config{
+		URL:          viper.GetString("oidc-url"),
+		ClientID:     viper.GetString("oidc-client-id"),
+		ClientSecret: viper.GetString("oidc-client-secret"),
+		RedirectURL:  baseURL.String() + "/auth/openid-connect/callback",
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// controller config
 	config := controllers.Context{
@@ -130,6 +128,7 @@ func buildRouter() *mux.Router {
 		Localizer:    localizer,
 		SessionName:  sessionName,
 		SessionStore: sessionStore,
+		OIDC:         oidcClient,
 	}
 
 	// add routes
@@ -187,21 +186,6 @@ var serverStartCmd = &cobra.Command{
 
 		// logging
 		handler := handlers.LoggingHandler(os.Stdout, router)
-
-		// cas auth
-		casURL, _ := url.Parse(viper.GetString("cas-url"))
-		casOpts := &cas.Options{
-			URL: casURL,
-		}
-		if viper.GetBool("cas-skip-verify-tls") {
-			casOpts.Client = &http.Client{
-				Transport: &http.Transport{
-					TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-				},
-			}
-		}
-
-		handler = cas.NewClient(casOpts).Handle(handler)
 
 		// start server
 		server.New(handler,
