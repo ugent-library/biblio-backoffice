@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"net/url"
 	"strings"
 
 	"github.com/ugent-library/biblio-backend/internal/models"
@@ -12,22 +11,22 @@ import (
 	"golang.org/x/text/language"
 )
 
-func (e *Engine) IsOnORCID(orcidID, id string) bool {
-	if orcidID == "" {
-		return false
-	}
+// func (e *Engine) IsOnORCID(orcidID, id string) bool {
+// 	if orcidID == "" {
+// 		return false
+// 	}
 
-	params := url.Values{}
-	params.Set("q", fmt.Sprintf(`orcid:"%s" AND handle:"1854/LU-%s"`, orcidID, id))
+// 	params := url.Values{}
+// 	params.Set("q", fmt.Sprintf(`orcid:"%s" AND handle:"1854/LU-%s"`, orcidID, id))
 
-	res, _, err := e.orcidClient.Search(params)
-	if err != nil {
-		log.Print(err)
-		return false
-	}
+// 	res, _, err := e.orcidClient.Search(params)
+// 	if err != nil {
+// 		log.Print(err)
+// 		return false
+// 	}
 
-	return res.NumFound > 0
-}
+// 	return res.NumFound > 0
+// }
 
 func (e *Engine) AddPublicationToORCID(orcidID, orcidToken string, p *models.Publication) (*models.Publication, error) {
 	client := orcid.NewMemberClient(orcid.Config{

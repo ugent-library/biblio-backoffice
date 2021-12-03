@@ -6,7 +6,7 @@
                 <h2 class="modal-title">{{.D.File.Filename}}</h2>
             </div>
             <div class="modal-body">
-                <form class="file-attributes">
+                <div class="file-attributes">
     	            {{.CSRFTag}}
                     <div class="form-group">
                         <label class="col-form-label">Title</label>
@@ -153,7 +153,7 @@
                         <i class="if if-delete"></i>
                         <div class="btn-text">Delete file</div>
                     </button>
-                </form>
+                </div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-link modal-close" data-dismiss="modal">Cancel</button>
@@ -161,7 +161,7 @@
                     hx-put="{{pathFor "publication_file_update" "id" .D.Publication.ID "file_id" .D.File.ID}}"
                     hx-swap="outerHTML"
                     hx-target="closest .publication-files"
-                    hx-include="form.file-attributes > *"
+                    hx-include=".file-attributes > *"
                 >Save</button>
             </div>
         </div>

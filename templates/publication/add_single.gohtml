@@ -31,32 +31,30 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <form>
-                        <div class="row">
-                            <div class="col">
-                                <label class="c-radio-card c-radio-card--selected" aria-selected="true" data-url="{{pathFor "publication_add_single_start"}}">
-                                    <div class="c-radio-card__radio">
-                                        <div class="custom-control custom-radio">
-                                            <input class="custom-control-input" id="add-select-single" type="radio" name="add-select" checked>
-                                            <label class="custom-control-label" for="add-select-single"></label>
-                                        </div>
+                    <div class="row">
+                        <div class="col">
+                            <label class="c-radio-card c-radio-card--selected" aria-selected="true" data-url="{{pathFor "publication_add_single"}}">
+                                <div class="c-radio-card__radio">
+                                    <div class="custom-control custom-radio">
+                                        <input class="custom-control-input" id="add-select-single" type="radio" name="add-select" checked>
+                                        <label class="custom-control-label" for="add-select-single"></label>
                                     </div>
-                                    <div class="c-radio-card__content">A single publication</div>
-                                </label>
-                            </div>
-                            <div class="col">
-                                <label class="c-radio-card" aria-selected="false" data-url="{{pathFor "publication_add_multiple"}}">
-                                    <div class="c-radio-card__radio">
-                                        <div class="custom-control custom-radio">
-                                            <input class="custom-control-input" id="add-select-multiple" type="radio" name="add-select">
-                                            <label class="custom-control-label" for="add-select-multiple"></label>
-                                        </div>
-                                    </div>
-                                    <div class="c-radio-card__content">Multiple publications</div>
-                                </label>
-                            </div>
+                                </div>
+                                <div class="c-radio-card__content">A single publication</div>
+                            </label>
                         </div>
-                    </form>
+                        <div class="col">
+                            <label class="c-radio-card" aria-selected="false" data-url="{{pathFor "publication_add_multiple"}}">
+                                <div class="c-radio-card__radio">
+                                    <div class="custom-control custom-radio">
+                                        <input class="custom-control-input" id="add-select-multiple" type="radio" name="add-select">
+                                        <label class="custom-control-label" for="add-select-multiple"></label>
+                                    </div>
+                                </div>
+                                <div class="c-radio-card__content">Multiple publications</div>
+                            </label>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
