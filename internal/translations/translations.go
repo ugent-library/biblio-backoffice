@@ -44,9 +44,9 @@ func init() {
 	message.SetString(language.English, "access_levels.info:eu-repo/semantics/restrictedAccess", "Restricted access")
 	message.SetString(language.English, "access_levels.info:eu-repo/semantics/openAccess", "Open access")
 
-	message.SetString(language.English, "publication_sorts.year.desc", "Year (newest first)")
-	message.SetString(language.English, "publication_sorts.date_created.desc", "Added (newest first)")
-	message.SetString(language.English, "publication_sorts.date_updated.desc", "Updated (newest first)")
+	message.SetString(language.English, "publication_sorts.date-updated-desc", "Updated (newest first)")
+	message.SetString(language.English, "publication_sorts.date-created-desc", "Added (newest first)")
+	message.SetString(language.English, "publication_sorts.year-desc", "Year (newest first)")
 
 	message.SetString(language.English, "publication_types.journal_article", "Journal article")
 	message.SetString(language.English, "publication_types.book", "Book")

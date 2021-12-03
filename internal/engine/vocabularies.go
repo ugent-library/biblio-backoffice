@@ -73,9 +73,9 @@ var vocabularies = map[string][]string{
 		"updatedVersion",
 	},
 	"publication_sorts": {
-		"year.desc",
-		"date_updated.desc",
-		"date_created.desc",
+		"date-updated-desc",
+		"date-created-desc",
+		"year-desc",
 	},
 	"publication_file_access_levels": {
 		"open_access",
