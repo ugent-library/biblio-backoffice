@@ -1,4 +1,4 @@
-{{if .D.OnORCID}}
+{{if .D.Publication.InORCIDWorks .User.ORCID}}
 <div id="publication-{{.D.Publication.ID}}-orcid-status" class="list-group-item-meta-item"
     data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Sent to Orcid"
 >

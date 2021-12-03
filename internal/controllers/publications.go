@@ -648,47 +648,29 @@ func (c *Publications) Delete(w http.ResponseWriter, r *http.Request) {
 	)
 }
 
-func (c *Publications) ORCIDStatus(w http.ResponseWriter, r *http.Request) {
-	user := context.GetUser(r.Context())
-	pub := context.GetPublication(r.Context())
-	onORCID := c.Engine.IsOnORCID(user.ORCID, pub.ID)
-	c.Render.HTML(w, http.StatusOK, "publication/_orcid_status", views.NewData(c.Render, r, struct {
-		Publication *models.Publication
-		OnORCID     bool
-	}{
-		pub,
-		onORCID,
-	}),
-		render.HTMLOptions{Layout: "layouts/htmx"},
-	)
-}
-
 func (c *Publications) ORCIDAdd(w http.ResponseWriter, r *http.Request) {
 	user := context.GetUser(r.Context())
 	pub := context.GetPublication(r.Context())
 
 	var (
-		onORCID bool
-		flash   views.Flash
+		flash views.Flash
 	)
 
-	if err := c.Engine.AddPublicationToORCID(user.ORCID, user.ORCIDToken, pub); err != nil {
+	pub, err := c.Engine.AddPublicationToORCID(user.ORCID, user.ORCIDToken, pub)
+	if err != nil {
 		if err == orcid.ErrDuplicate {
 			flash = views.Flash{Type: "info", Message: "This publication is already part of your ORCID works."}
 		} else {
 			flash = views.Flash{Type: "error", Message: "Couldn't add this publication to your ORCID works."}
 		}
 	} else {
-		onORCID = true
 		flash = views.Flash{Type: "success", Message: "Successfully added the publication to your ORCID works.", DismissAfter: 5 * time.Second}
 	}
 
 	c.Render.HTML(w, http.StatusOK, "publication/_orcid_status", views.NewData(c.Render, r, struct {
 		Publication *models.Publication
-		OnORCID     bool
 	}{
 		pub,
-		onORCID,
 	},
 		flash,
 	),

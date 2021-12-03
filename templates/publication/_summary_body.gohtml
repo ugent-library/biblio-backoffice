@@ -30,14 +30,7 @@
             <div class="list-group-item-meta-item">
                 <span class="text-muted c-body-small">Biblio ID: {{$p.ID}}</span>
             </div>
-            {{if and (eq $p.Status "public") .User.ORCID}}
-            <div id="publication-{{$p.ID}}-orcid-status"
-                hx-get="{{pathFor "publication_orcid_status" "id" $p.ID}}"
-                hx-trigger="load"
-                hx-swap="outerHTML"
-            >
-            </div>
-            {{end}}
+            {{template "publication/_orcid_status" .}}
             {{with $p.RelatedDatasetCount}}
             <div class="list-group-item-meta-item" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="{{.}} related datasets">
                 <span class="text-muted c-body-small">

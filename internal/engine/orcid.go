@@ -29,20 +29,27 @@ func (e *Engine) IsOnORCID(orcidID, id string) bool {
 	return res.NumFound > 0
 }
 
-func (e *Engine) AddPublicationToORCID(orcidID, orcidToken string, p *models.Publication) error {
+func (e *Engine) AddPublicationToORCID(orcidID, orcidToken string, p *models.Publication) (*models.Publication, error) {
 	client := orcid.NewMemberClient(orcid.Config{
 		Token:   orcidToken,
 		Sandbox: e.Config.ORCIDSandbox,
 	})
 
 	work := publicationToORCID(p)
-	_, res, err := client.AddWork(orcidID, work)
+	putCode, res, err := client.AddWork(orcidID, work)
 	if err != nil {
 		log.Println(err)
 		body, _ := ioutil.ReadAll(res.Body)
 		log.Print(string(body))
+		return p, err
 	}
-	return err
+
+	p.ORCIDWork = append(p.ORCIDWork, models.PublicationORCIDWork{
+		ORCID:   orcidID,
+		PutCode: putCode,
+	})
+
+	return e.UpdatePublication(p)
 }
 
 func publicationToORCID(p *models.Publication) *orcid.Work {

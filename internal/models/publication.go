@@ -56,6 +56,11 @@ type PublicationProject struct {
 	Name string `json:"name,omitempty"`
 }
 
+type PublicationORCIDWork struct {
+	ORCID   string `json:"orcid,omitempty"`
+	PutCode int    `json:"put_code,omitempty"`
+}
+
 type Publication struct {
 	Abstract                []Text                  `json:"abstract,omitempty" form:"abstract"`
 	AdditionalInfo          string                  `json:"additional_info,omitempty" form:"additional_info"`
@@ -101,6 +106,7 @@ type Publication struct {
 	Locked                  bool                    `json:"locked,omitempty" form:"-"`
 	Message                 string                  `json:"message,omitempty" form:"-"`
 	MiscellaneousType       string                  `json:"miscellaneous_type,omitempty" form:"miscellaneous_type"`
+	ORCIDWork               []PublicationORCIDWork  `json:"orcid_work,omitempty" form:"-"`
 	PageCount               string                  `json:"page_count,omitempty" form:"page_count"`
 	PageFirst               string                  `json:"page_first,omitempty" form:"page_first"`
 	PageLast                string                  `json:"page_last,omitempty" form:"page_last"`
@@ -280,4 +286,13 @@ func (p *Publication) UsesSupervisor() bool {
 	default:
 		return false
 	}
+}
+
+func (p *Publication) InORCIDWorks(orcidID string) bool {
+	for _, w := range p.ORCIDWork {
+		if w.ORCID == orcidID {
+			return true
+		}
+	}
+	return false
 }
