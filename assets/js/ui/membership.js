@@ -13,18 +13,18 @@ export default function () {
 
     let membershipMember = function(target, id, firstName, lastName) {
         const targetEl = document.querySelector(target);
-        targetEl.querySelector('form input[name="id"]').value = id;
-        targetEl.querySelector('form input[name="first_name"]').value = firstName;
-        targetEl.querySelector('form input[name="last_name"]').value = lastName;
-        targetEl.querySelector('form input[name="first_name"]').setAttribute("readonly", "readonly")
-        targetEl.querySelector('form input[name="last_name"]').setAttribute("readonly", "readonly")
+        targetEl.querySelector('.contributor-attributes input[name="id"]').value = id;
+        targetEl.querySelector('.contributor-attributes input[name="first_name"]').value = firstName;
+        targetEl.querySelector('.contributor-attributes input[name="last_name"]').value = lastName;
+        targetEl.querySelector('.contributor-attributes input[name="first_name"]').setAttribute("readonly", "readonly")
+        targetEl.querySelector('.contributor-attributes input[name="last_name"]').setAttribute("readonly", "readonly")
     }
 
     let membershipExternal = function(target) {
         const targetEl = document.querySelector(target);
-        targetEl.querySelector('form input[name="id"]').value = "";
-        targetEl.querySelector('form input[name="first_name"]').removeAttribute("readonly")
-        targetEl.querySelector('form input[name="last_name"]').removeAttribute("readonly")
+        targetEl.querySelector('.contributor-attributes input[name="id"]').value = "";
+        targetEl.querySelector('.contributor-attributes input[name="first_name"]').removeAttribute("readonly")
+        targetEl.querySelector('.contributor-attributes input[name="last_name"]').removeAttribute("readonly")
     }
 
     let addEvents = function() {

@@ -1,5 +1,4 @@
-<form>
-    {{.CSRFTag}}
+<div class="contributor-attributes">
     <input type="hidden" name="id" value="{{.D.Contributor.ID}}">
     <div class="form-row">
         <div class="col form-group">
@@ -32,7 +31,7 @@
                 hx-get="{{pathFor "publication_contributors_choose" "id" .D.Publication.ID "role" .D.Role "position" (.D.Position | toString)}}"
                 hx-swap="innerHTML"
                 hx-target="#{{.D.Role}}-membership-modal"
-                hx-include='#{{.D.Role}}-modal form input[name="first_name"], #{{.D.Role}}-modal form input[name="last_name"]'
+                hx-include='#{{.D.Role}}-modal .contributor-attributes input[name="first_name"], #{{.D.Role}}-modal .contributor-attributes input[name="last_name"]'
             >
             <label class="custom-control-label custom-control-label-light" for="{{.D.Role}}-{{.D.Position}}-member">
                 <i class="if if-ghent-university if--small"></i>UGent {{.D.Role}}
