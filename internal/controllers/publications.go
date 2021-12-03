@@ -251,7 +251,7 @@ func (c *Publications) AddSinglePublish(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	c.Render.HTML(w, http.StatusOK, "publication/add_single_publish", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "publication/add_single_finish", views.NewData(c.Render, r, struct {
 		PageTitle   string
 		Step        int
 		Publication *models.Publication
@@ -520,7 +520,7 @@ func (c *Publications) AddMultiplePublish(w http.ResponseWriter, r *http.Request
 
 	searchURL, _ := c.Router.Get("publication_add_multiple_publish").URLPath("batch_id", batchID)
 
-	c.Render.HTML(w, http.StatusOK, "publication/add_multiple_publish", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "publication/add_multiple_finish", views.NewData(c.Render, r, struct {
 		PageTitle        string
 		Step             int
 		SearchURL        *url.URL

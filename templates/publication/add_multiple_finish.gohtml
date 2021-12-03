@@ -1,4 +1,4 @@
-{{template "publication/_add_single_sidebar" .}}
+{{template "publication/_add_multiple_sidebar" .}}
 
 <div class="w-100 u-scroll-wrapper">
     <div class="bc-navbar bc-navbar--xlarge bc-navbar-bordered bc-navbar--white bc-navbar--bordered-bottom">
@@ -6,8 +6,7 @@
             <div class="bc-toolbar-left">
                 <div class="bc-toolbar-item">
                     <div class="d-flex flex-column">
-                        <span class="text-muted mb-2">Step {{.D.Step}}</span>
-                        <h4 class="bc-toolbar-title">Publish</h4>
+                        <h4 class="bc-toolbar-title">Congratulations!</h4>
                     </div>
                 </div>
             </div>
@@ -18,28 +17,30 @@
 
     <div class="p-6 u-scroll-wrapper__body">
         <div class="card mb-6">
-            <div class="card-header">Congratulations!</div>
+            <div class="card-header">Next steps</div>
             <div class="card-body">
-                <p class="mb-6">Your publication is published in Biblio and sent for review to the Biblio team. You can expect a response from a Biblio reviewer within the next 4 business days.</p>
+                <p class="mb-6">Your publications will now be reviewed. You can expect this to be done in the next 4 business days.</p>
                 <a class="btn btn-outline-primary" href="{{pathFor "publications"}}">Continue to overview</a>
             </div>
         </div>
 
         <div class="card mb-6">
-            <div class="card-header">Publication</div>
+            <div class="card-header">
+                <h4 class="mr-5 d-inline">Imported publications</h4>
+                {{template "search/_count" .}}
+            </div>
             <div class="card-body p-0">
                 <ul class="list-group list-group-flush">
+                    {{range .D.Hits.Hits}}
                     <li class="list-group-item">
-                        <div class="d-flex w-100">
-                            <div class="w-100">
-                                <div class="d-flex align-items-start">
-                                    {{template "publication/_summary_body" .}}
-                                </div>
-                            </div>
-                        </div>
+                        {{template "publication/_hit" ($.NewData (dict "Publication" . "SearchArgs" $.D.SearchArgs))}}
                     </li>
+                    {{end}}
                 </ul>
             </div>
+            <nav aria-label="Page navigation">
+                {{template "search/_pagination" .}}
+            </nav>
         </div>
     </div>
 </div>

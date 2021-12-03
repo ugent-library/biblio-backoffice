@@ -226,7 +226,7 @@ func (c *Datasets) AddPublish(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.Render.HTML(w, http.StatusOK, "dataset/add_publish", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "dataset/add_finish", views.NewData(c.Render, r, struct {
 		PageTitle string
 		Step      int
 		Dataset   *models.Dataset
