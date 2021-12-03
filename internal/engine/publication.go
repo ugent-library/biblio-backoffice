@@ -30,11 +30,10 @@ func (e *Engine) GetPublication(id string) (*models.Publication, error) {
 	return pub, nil
 }
 
-// TODO change validation for new and draft publications in librecat
-func (e *Engine) CreatePublication(pt string) (*models.Publication, error) {
-	pub := &models.Publication{Type: pt, Status: "private", Title: "New publication"}
+func (e *Engine) CreateUserPublication(userID, pubType string) (*models.Publication, error) {
+	pub := &models.Publication{Type: pubType, Status: "private"}
 	resPub := &models.Publication{}
-	if _, err := e.post("/publication", pub, resPub); err != nil {
+	if _, err := e.post(fmt.Sprintf("/user/%s/publication", userID), pub, resPub); err != nil {
 		return nil, err
 	}
 	return resPub, nil

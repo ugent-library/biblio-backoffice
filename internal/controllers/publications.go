@@ -153,6 +153,8 @@ func (c *Publications) AddSingleStart(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Publications) AddSingleImport(w http.ResponseWriter, r *http.Request) {
+	userID := context.GetUser(r.Context()).ID
+
 	r.ParseForm()
 
 	var pub *models.Publication
@@ -160,7 +162,7 @@ func (c *Publications) AddSingleImport(w http.ResponseWriter, r *http.Request) {
 	if identifier := r.FormValue("identifier"); identifier != "" {
 		var source string = r.FormValue("source")
 
-		p, err := c.Engine.ImportUserPublicationByIdentifier(context.GetUser(r.Context()).ID, source, identifier)
+		p, err := c.Engine.ImportUserPublicationByIdentifier(userID, source, identifier)
 		if err != nil {
 			log.Println(err)
 			c.Render.HTML(w, http.StatusOK, "publication/add_single_start", views.NewData(c.Render, r, struct {
@@ -177,8 +179,8 @@ func (c *Publications) AddSingleImport(w http.ResponseWriter, r *http.Request) {
 
 		pub = p
 	} else {
-		pt := r.FormValue("publication_type")
-		p, err := c.Engine.CreatePublication(pt)
+		pubType := r.FormValue("publication_type")
+		p, err := c.Engine.CreateUserPublication(userID, pubType)
 		if err != nil {
 			log.Println(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
