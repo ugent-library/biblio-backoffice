@@ -9,7 +9,6 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/views"
 	"github.com/ugent-library/go-locale/locale"
-	"github.com/ugent-library/go-web/forms"
 	"github.com/ugent-library/go-web/jsonapi"
 	"github.com/unrolled/render"
 )
@@ -49,7 +48,6 @@ func (c *DatasetContributors) Add(w http.ResponseWriter, r *http.Request) {
 	)
 }
 
-// TODO flashes, errors
 func (c *DatasetContributors) Create(w http.ResponseWriter, r *http.Request) {
 	dataset := context.GetDataset(r.Context())
 	role := mux.Vars(r)["role"]
@@ -76,10 +74,8 @@ func (c *DatasetContributors) Create(w http.ResponseWriter, r *http.Request) {
 		contributor.FirstName = user.FirstName
 		contributor.LastName = user.LastName
 	} else {
-		if err := forms.Decode(contributor, r.Form); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+		contributor.FirstName = r.FormValue("first_name")
+		contributor.LastName = r.FormValue("last_name")
 	}
 
 	dataset.AddContributor(role, position, contributor)
@@ -152,14 +148,13 @@ func (c *DatasetContributors) Edit(w http.ResponseWriter, r *http.Request) {
 	)
 }
 
-// TODO flashes, errors
 func (c *DatasetContributors) Update(w http.ResponseWriter, r *http.Request) {
 	dataset := context.GetDataset(r.Context())
 	role := mux.Vars(r)["role"]
 	positionVar := mux.Vars(r)["position"]
 	position, _ := strconv.Atoi(positionVar)
 
-	contributor := dataset.Contributors(role)[position]
+	contributor := &models.Contributor{}
 
 	r.ParseForm()
 
@@ -176,10 +171,8 @@ func (c *DatasetContributors) Update(w http.ResponseWriter, r *http.Request) {
 		contributor.FirstName = user.FirstName
 		contributor.LastName = user.LastName
 	} else {
-		if err := forms.Decode(contributor, r.Form); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+		contributor.FirstName = r.FormValue("first_name")
+		contributor.LastName = r.FormValue("last_name")
 	}
 
 	dataset.Contributors(role)[position] = contributor
@@ -246,7 +239,6 @@ func (c *DatasetContributors) ConfirmRemove(w http.ResponseWriter, r *http.Reque
 	)
 }
 
-// TODO flashes, errors
 func (c *DatasetContributors) Remove(w http.ResponseWriter, r *http.Request) {
 	dataset := context.GetDataset(r.Context())
 	role := mux.Vars(r)["role"]

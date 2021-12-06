@@ -13,7 +13,8 @@
                 <button class="btn btn-primary modal-close" data-dismiss="modal"
                     hx-put="{{pathFor "dataset_contributors_update" "id" .D.Dataset.ID "role" .D.Role "position" (.D.Position | toString)}}"
                     hx-include="#{{.D.Role}}-modal .modal-body .contributor-attributes > *"
-                    hx-swap="none"
+                    hx-swap="innerHTML"
+                    hx-target="#{{.D.Role}}-modal"
                 >Done</button>
             </div>
         </div>

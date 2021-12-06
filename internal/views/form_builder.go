@@ -69,14 +69,14 @@ func (b *FormBuilder) newFormData(opts []formOption) *formData {
 		d.errorPointer = "/data/" + strings.ReplaceAll(d.Name, ".", "/")
 	}
 
-	if formErr := b.errorFor(d.errorPointer); formErr != nil {
+	if formErr := b.ErrorFor(d.errorPointer); formErr != nil {
 		d.Error = formErr.Title
 	}
 
 	return d
 }
 
-func (b *FormBuilder) errorFor(pointer string) *jsonapi.Error {
+func (b *FormBuilder) ErrorFor(pointer string) *jsonapi.Error {
 	for _, err := range b.Errors {
 		if err.Source.Pointer == pointer {
 			return &err

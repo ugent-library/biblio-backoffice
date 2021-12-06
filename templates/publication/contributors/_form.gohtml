@@ -1,13 +1,17 @@
+{{$firstNameError := .D.Form.ErrorFor (printf "/data/%s/%d/first_name" .D.Role .D.Position)}}
+{{$lastNameError := .D.Form.ErrorFor (printf "/data/%s/%d/last_name" .D.Role .D.Position)}}
 <div class="contributor-attributes">
     <input type="hidden" name="id" value="{{.D.Contributor.ID}}">
     <div class="form-row">
-        <div class="col form-group">
-            <label class="col-form-label">First name</label>
-            <input class="form-control" type="text" name="first_name" value="{{.D.Contributor.FirstName}}"{{if .D.Contributor.ID}} readonly{{end}}>
+        <div class="col form-group{{if $firstNameError}} is-invalid{{end}}">
+            <label class="col-form-label">First name <abbr class="required" title="Required">*</abbr></label>
+            <input class="form-control{{if $firstNameError}} is-invalid{{end}}" type="text" name="first_name" value="{{.D.Contributor.FirstName}}"{{if .D.Contributor.ID}} readonly{{end}}>
+            {{if $firstNameError}}<div class="invalid-feedback">First name is required</div>{{end}}
         </div>
-        <div class="col form-group">
-            <label class="col-form-label">Last name</label>
-            <input class="form-control" type="text" name="last_name" value="{{.D.Contributor.LastName}}"{{if .D.Contributor.ID}} readonly{{end}}>
+        <div class="col form-group{{if $lastNameError}} is-invalid{{end}}">
+            <label class="col-form-label">Last name <abbr class="required" title="Required">*</abbr></label>
+            <input class="form-control{{if $lastNameError}} is-invalid{{end}}" type="text" name="last_name" value="{{.D.Contributor.LastName}}"{{if .D.Contributor.ID}} readonly{{end}}>
+            {{if $lastNameError}}<div class="invalid-feedback">Last name is required</div>{{end}}
         </div>
     </div>
     {{if eq .D.Role "author"}}
