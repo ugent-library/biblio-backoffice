@@ -23,6 +23,8 @@ func Register(c controllers.Context) {
 	requireUser := middleware.RequireUser(c.BaseURL.Path + "/login")
 	setUser := middleware.SetUser(c.Engine, c.SessionName, c.SessionStore)
 
+	homeController := controllers.NewHome(c)
+
 	authController := controllers.NewAuth(c)
 	usersController := controllers.NewUsers(c)
 
@@ -72,9 +74,7 @@ func Register(c controllers.Context) {
 	r.Use(locale.Detect(c.Localizer))
 
 	// home
-	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, basePath+"/publication", http.StatusFound)
-	}).Methods("GET").Name("home")
+	r.HandleFunc("/", homeController.Home).Methods("GET").Name("home")
 
 	// auth
 	r.HandleFunc("/login", authController.Login).

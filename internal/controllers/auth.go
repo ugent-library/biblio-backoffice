@@ -65,4 +65,7 @@ func (c *Auth) Logout(w http.ResponseWriter, r *http.Request) {
 	delete(session.Values, "user_id")
 	delete(session.Values, "original_user_id")
 	session.Save(r, w)
+
+	redirectURL, _ := c.Router.Get("home").URLPath()
+	http.Redirect(w, r, redirectURL.String(), http.StatusFound)
 }
