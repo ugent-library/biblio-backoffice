@@ -1,4 +1,5 @@
 <li class="list-group-item">
+    {{.D.Show.Text (.D.Show.Label "type") (.D.Show.Value .D.Publication.Type (.D.Show.Locale "publication_types"))}}
     {{.D.Form.List (.D.Form.Name "miscellaneous_type") (.D.Form.Value .D.Publication.MiscellaneousType) (.D.Form.Cols 3)
         (.D.Form.Choices .D.Vocabularies.miscellaneous_types (.D.Form.Locale "miscellaneous_types"))}}
     {{.D.Form.Text (.D.Form.Name "doi") (.D.Form.Value .D.Publication.DOI) (.D.Form.Cols 3)}}
