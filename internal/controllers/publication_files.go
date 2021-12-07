@@ -131,12 +131,21 @@ func (c *PublicationFiles) Upload(w http.ResponseWriter, r *http.Request) {
 		ContentType: filetype,
 	}
 
-	err = c.Engine.AddPublicationFile(id, pubFile, file)
-
-	// if apiErrors, ok := err.(jsonapi.Errors); ok {
-
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	if err = c.Engine.AddPublicationFile(id, pubFile, file); err != nil {
+		flash := views.Flash{Type: "error", Message: "There was a problem adding your file"}
+		if apiErrors, ok := err.(jsonapi.Errors); ok && apiErrors[0].Code == "api.create_publication_file.file_already_present" {
+			flash = views.Flash{Type: "warning", Message: "A file with the same name is already attached to this publication"}
+		}
+		c.Render.HTML(w, http.StatusCreated, "publication/files/_list",
+			views.NewData(c.Render, r, struct {
+				Publication *models.Publication
+			}{
+				context.GetPublication(r.Context()),
+			},
+				flash,
+			),
+			render.HTMLOptions{Layout: "layouts/htmx"},
+		)
 		return
 	}
 
