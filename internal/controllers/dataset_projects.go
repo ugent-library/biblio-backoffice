@@ -67,7 +67,6 @@ func (c *DatasetProjects) Add(w http.ResponseWriter, r *http.Request) {
 
 	project, err := c.Engine.GetProject(projectId)
 	if err != nil {
-		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
@@ -77,9 +76,9 @@ func (c *DatasetProjects) Add(w http.ResponseWriter, r *http.Request) {
 		Name: project.Name,
 	})
 
-	savedDataset, _ := c.Engine.UpdateDataset(dataset)
+	savedDataset, err := c.Engine.UpdateDataset(dataset)
+
 	if err != nil {
-		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -126,8 +125,13 @@ func (c *DatasetProjects) Remove(w http.ResponseWriter, r *http.Request) {
 	projects = append(projects[:removeKey], projects[removeKey+1:]...)
 	dataset.Project = projects
 
-	// TODO: error handling
-	savedDataset, _ := c.Engine.UpdateDataset(dataset)
+	savedDataset, err := c.Engine.UpdateDataset(dataset)
+
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	c.Render.HTML(w, http.StatusOK, "dataset/projects/_show", views.NewData(c.Render, r, struct {
 		Dataset *models.Dataset

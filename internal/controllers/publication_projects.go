@@ -79,9 +79,12 @@ func (c *PublicationProjects) Add(w http.ResponseWriter, r *http.Request) {
 	}
 	pub.Project = append(pub.Project, publicationProject)
 
-	savedPub, _ := c.Engine.UpdatePublication(pub)
+	savedPub, err := c.Engine.UpdatePublication(pub)
 
-	// TODO: error handling if project save fails
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	c.Render.HTML(w, http.StatusOK, "publication/projects/_show", views.NewData(c.Render, r, struct {
 		Publication *models.Publication
@@ -126,7 +129,12 @@ func (c *PublicationProjects) Remove(w http.ResponseWriter, r *http.Request) {
 	pub.Project = projects
 
 	// TODO: error handling
-	savedPub, _ := c.Engine.UpdatePublication(pub)
+	savedPub, err := c.Engine.UpdatePublication(pub)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	c.Render.HTML(w, http.StatusOK, "publication/projects/_show", views.NewData(c.Render, r, struct {
 		Publication *models.Publication

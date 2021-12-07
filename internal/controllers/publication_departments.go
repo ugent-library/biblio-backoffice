@@ -75,9 +75,12 @@ func (c *PublicationDepartments) Add(w http.ResponseWriter, r *http.Request) {
 		ID: departmentId,
 	}
 	pub.Department = append(pub.Department, publicationDepartment)
-	savedPub, _ := c.Engine.UpdatePublication(pub)
+	savedPub, err := c.Engine.UpdatePublication(pub)
 
-	// TODO: error handling if department save fails
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	c.Render.HTML(w, http.StatusOK, "publication/departments/_show", views.NewData(c.Render, r, struct {
 		Publication *models.Publication
@@ -121,8 +124,12 @@ func (c *PublicationDepartments) Remove(w http.ResponseWriter, r *http.Request) 
 	departments = append(departments[:removeKey], departments[removeKey+1:]...)
 	pub.Department = departments
 
-	// TODO: error handling
-	savedPub, _ := c.Engine.UpdatePublication(pub)
+	savedPub, err := c.Engine.UpdatePublication(pub)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	c.Render.HTML(w, http.StatusOK, "publication/departments/_show", views.NewData(c.Render, r, struct {
 		Publication *models.Publication
