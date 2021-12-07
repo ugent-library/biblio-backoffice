@@ -46,7 +46,7 @@ func (c *Users) Impersonate(w http.ResponseWriter, r *http.Request) {
 	session.Values["user_id"] = user.ID
 	session.Save(r, w)
 
-	redirectURL, _ := c.Router.Get("home").URLPath()
+	redirectURL, _ := c.Router.Get("publications").URLPath()
 	http.Redirect(w, r, redirectURL.String(), http.StatusFound)
 }
 
@@ -58,6 +58,6 @@ func (c *Users) ImpersonateRemove(w http.ResponseWriter, r *http.Request) {
 		session.Save(r, w)
 	}
 
-	redirectURL, _ := c.Router.Get("home").URLPath()
+	redirectURL, _ := c.Router.Get("publications").URLPath()
 	http.Redirect(w, r, redirectURL.String(), http.StatusFound)
 }

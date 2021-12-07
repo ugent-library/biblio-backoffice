@@ -19,7 +19,7 @@
             <form class="form-inline" action="{{pathFor "user_impersonate_remove"}}" method="POST">
                 {{$.CSRFTag}}
                 <label class="my-1 mr-2 font-weight-bold">Viewing the perspective of {{$.User.FullName}}.</label>
-                <button type="submit" class="btn btn-danger my-1">return to {{.fullname}}</button>.
+                <button type="submit" class="btn btn-danger my-1">return to {{.FullName}}</button>.
             </form>
         </div>
         {{end}}

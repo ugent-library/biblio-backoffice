@@ -73,6 +73,8 @@ func Register(c controllers.Context) {
 	// r.Use(handlers.HTTPMethodOverrideHandler)
 	r.Use(locale.Detect(c.Localizer))
 
+	r.Use(setUser)
+
 	// home
 	r.HandleFunc("/", homeController.Home).Methods("GET").Name("home")
 
@@ -88,7 +90,6 @@ func Register(c controllers.Context) {
 
 	// users
 	userRouter := r.PathPrefix("/user").Subrouter()
-	userRouter.Use(setUser)
 	userRouter.Use(requireUser)
 	userRouter.HandleFunc("/htmx/impersonate/choose", usersController.ImpersonateChoose).
 		Methods("GET").
@@ -104,7 +105,6 @@ func Register(c controllers.Context) {
 	// publications
 	pubsRouter := r.PathPrefix("/publication").Subrouter()
 	pubsRouter.Use(middleware.SetActiveMenu("publications"))
-	pubsRouter.Use(setUser)
 	pubsRouter.Use(requireUser)
 	pubsRouter.HandleFunc("", publicationsController.List).
 		Methods("GET").
@@ -348,7 +348,6 @@ func Register(c controllers.Context) {
 	// datasets
 	datasetsRouter := r.PathPrefix("/dataset").Subrouter()
 	datasetsRouter.Use(middleware.SetActiveMenu("datasets"))
-	datasetsRouter.Use(setUser)
 	datasetsRouter.Use(requireUser)
 	datasetsRouter.HandleFunc("", datasetsController.List).
 		Methods("GET").
