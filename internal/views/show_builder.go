@@ -11,6 +11,7 @@ type showData struct {
 	values   []string
 	Label    string
 	Required bool
+	Tooltip  string
 }
 
 func (f *showData) Value() string {
@@ -110,6 +111,12 @@ func (b *ShowBuilder) Values(values []string, localeOpts ...showLocaleOption) sh
 func (b *ShowBuilder) Required() showOption {
 	return func(d *showData) {
 		d.Required = true
+	}
+}
+
+func (b *ShowBuilder) Tooltip(v string) showOption {
+	return func(d *showData) {
+		d.Tooltip = v
 	}
 }
 

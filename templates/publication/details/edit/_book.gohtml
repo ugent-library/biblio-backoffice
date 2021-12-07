@@ -6,8 +6,10 @@
 <li class="list-group-item">
     {{.D.Form.Text (.D.Form.Name "title") (.D.Form.Value .D.Publication.Title) (.D.Form.Cols 9) (.D.Form.Required)}}
     {{.D.Form.TextRepeat (.D.Form.Name "alternative_title") (.D.Form.Values .D.Publication.AlternativeTitle) (.D.Form.Cols 9)}}
-    {{.D.Show.Text (.D.Show.Label "classification") (.D.Show.Value .D.Publication.Classification (.D.Show.Locale "publication_classifications"))}}
-    {{.D.Form.Text (.D.Form.Name "wos_type") (.D.Form.Value .D.Publication.WOSType) (.D.Form.Cols 3) (.D.Form.Tooltip "It's a tooltip!")}}
+    {{.D.Show.Text (.D.Show.Label "classification") (.D.Show.Value .D.Publication.Classification (.D.Show.Locale "publication_classifications"))
+        (.D.Show.Tooltip "The publication will be classified by the Biblio team as part of the bibliographic review process.")}}
+    {{.D.Show.Text (.D.Show.Label "wos_type") (.D.Show.Value .D.Publication.WOSType)
+        (.D.Show.Tooltip "This is the type assigned by Web of Science when a publication is also registered in Web of Science and can be different from the Biblio type.")}}
 </li>
 <li class="list-group-item">
     {{.D.Form.Text (.D.Form.Name "publisher") (.D.Form.Value .D.Publication.Publisher) (.D.Form.Cols 9)}}

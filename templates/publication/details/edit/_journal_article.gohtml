@@ -8,11 +8,13 @@
     {{.D.Form.TextRepeat (.D.Form.Name "alternative_title") (.D.Form.Values .D.Publication.AlternativeTitle) (.D.Form.Cols 9)}}
     {{.D.Form.Text (.D.Form.Name "publication" (.D.Form.Locale "builder.journal_article"))
         (.D.Form.Value .D.Publication.Publication) (.D.Form.Cols 9) (.D.Form.Required)}}
-    {{.D.Show.Text (.D.Show.Label "classification") (.D.Show.Value .D.Publication.Classification (.D.Show.Locale "publication_classifications"))}}
+    {{.D.Show.Text (.D.Show.Label "classification") (.D.Show.Value .D.Publication.Classification (.D.Show.Locale "publication_classifications"))
+        (.D.Show.Tooltip "The publication will be classified by the Biblio team as part of the bibliographic review process.")}}
     {{.D.Form.List (.D.Form.Name "journal_article_type") (.D.Form.Value .D.Publication.JournalArticleType) (.D.Form.Cols 3)
         (.D.Form.Choices .D.Vocabularies.journal_article_types (.D.Form.Locale "journal_article_types"))}}
     {{.D.Form.Text (.D.Form.Name "article_number") (.D.Form.Value .D.Publication.ArticleNumber) (.D.Form.Cols 3)}}
-    {{.D.Form.Text (.D.Form.Name "wos_type") (.D.Form.Value .D.Publication.WOSType) (.D.Form.Cols 3) (.D.Form.Tooltip "It's a tooltip!")}}
+    {{.D.Show.Text (.D.Show.Label "wos_type") (.D.Show.Value .D.Publication.WOSType)
+        (.D.Show.Tooltip "This is the type assigned by Web of Science when a publication is also registered in Web of Science and can be different from the Biblio type.")}}
 </li>
 <li class="list-group-item">
     {{.D.Form.Text (.D.Form.Name "publication_abbreviation" (.D.Form.Locale "builder.journal_article"))
