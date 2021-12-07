@@ -10,10 +10,9 @@
         </div>
         <div class="modal-footer">
             <button class="btn btn-link modal-close">Cancel</button>
-            <button class="btn btn-danger"
+            <button class="btn btn-danger modal-close"
                 hx-patch="{{pathFor "publication_file_remove" "id" .D.PublicationID "file_id" .D.FileID}}"
-                hx-swap="outerHTML"
-                hx-target="closest .publication-files"
+                hx-target="#publication-files"
             >Delete</button>
         </div>
     </div>

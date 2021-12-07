@@ -86,15 +86,12 @@ export default function() {
         modalClose();
     });
 
-    htmx.on("htmx:afterSettle", function(evt) {
-        let container = evt.detail.target
-        if (container.classList.contains("modals")) {
-            container.querySelectorAll(".modal-close").forEach( function (el) {
-                el.addEventListener("click", modalClose);
-            });
-            container.querySelectorAll(".modal-close-secondary").forEach( function (el) {
-                el.addEventListener("click", modalCloseSecondary);
-            });
-        }
+    htmx.onLoad(function(el) {
+        el.querySelectorAll(".modal-close").forEach( function (btn) {
+            btn.addEventListener("click", modalClose);
+        });
+        el.querySelectorAll(".modal-close-secondary").forEach( function (btn) {
+            btn.addEventListener("click", modalCloseSecondary);
+        });
     });
 }

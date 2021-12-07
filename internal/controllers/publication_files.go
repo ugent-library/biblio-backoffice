@@ -131,18 +131,26 @@ func (c *PublicationFiles) Upload(w http.ResponseWriter, r *http.Request) {
 		ContentType: filetype,
 	}
 
-	if err := c.Engine.AddPublicationFile(id, pubFile, file); err != nil {
+	err = c.Engine.AddPublicationFile(id, pubFile, file)
+
+	// if apiErrors, ok := err.(jsonapi.Errors); ok {
+
+	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	pub, _ := c.Engine.GetPublication(id)
 
-	c.Render.HTML(w, http.StatusCreated, "publication/files/_show",
+	c.Render.HTML(w, http.StatusCreated, "publication/files/_upload_edit",
 		views.NewData(c.Render, r, struct {
-			Publication *models.Publication
+			Publication  *models.Publication
+			File         *models.PublicationFile
+			Vocabularies map[string][]string
 		}{
 			pub,
+			pub.File[len(pub.File)-1],
+			c.Engine.Vocabularies(),
 		}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
@@ -243,7 +251,7 @@ func (c *PublicationFiles) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// TODO show flash
-	c.Render.HTML(w, http.StatusOK, "publication/files/_show", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "publication/files/_list", views.NewData(c.Render, r, struct {
 		Publication *models.Publication
 	}{
 		pub,
@@ -278,7 +286,7 @@ func (c *PublicationFiles) Remove(w http.ResponseWriter, r *http.Request) {
 
 	pub, _ := c.Engine.GetPublication(id)
 
-	c.Render.HTML(w, http.StatusCreated, "publication/files/_show", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusCreated, "publication/files/_list", views.NewData(c.Render, r, struct {
 		Publication *models.Publication
 	}{
 		pub,
