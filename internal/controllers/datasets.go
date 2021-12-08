@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/ugent-library/biblio-backend/internal/context"
@@ -12,6 +13,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/views"
 	"github.com/ugent-library/go-locale/locale"
 	"github.com/ugent-library/go-web/forms"
+	"github.com/ugent-library/go-web/jsonapi"
 	"github.com/unrolled/render"
 )
 
@@ -153,10 +155,22 @@ func (c *Datasets) AddImport(w http.ResponseWriter, r *http.Request) {
 
 	source := r.FormValue("source")
 	identifier := r.FormValue("identifier")
+	loc := locale.Get(r.Context())
 
 	dataset, err := c.Engine.ImportUserDatasetByIdentifier(context.GetUser(r.Context()).ID, source, identifier)
 	if err != nil {
 		log.Println(err)
+		messages := make([]string, 0)
+		switch cErr := err.(type) {
+		case jsonapi.Errors:
+			for _, e := range cErr {
+				messages = append(messages, loc.T("dataset.single_import", e.Code))
+			}
+		default:
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		flash := strings.Join(messages, "<br>")
 		c.Render.HTML(w, http.StatusOK, "dataset/add", views.NewData(c.Render, r, struct {
 			PageTitle string
 			Step      int
@@ -164,7 +178,7 @@ func (c *Datasets) AddImport(w http.ResponseWriter, r *http.Request) {
 			"Add - Datasets - Biblio",
 			1,
 		},
-			views.Flash{Type: "error", Message: "Sorry, something went wrong. Could not import the dataset."},
+			views.Flash{Type: "error", Message: flash},
 		))
 		return
 	}
@@ -180,7 +194,7 @@ func (c *Datasets) AddImport(w http.ResponseWriter, r *http.Request) {
 		2,
 		dataset,
 		nil,
-		views.NewShowBuilder(c.Render, locale.Get(r.Context())),
+		views.NewShowBuilder(c.Render, loc),
 	}))
 }
 
