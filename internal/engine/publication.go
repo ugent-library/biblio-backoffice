@@ -130,6 +130,7 @@ func (e *Engine) BatchPublishPublications(userID string, args *SearchArgs) (err 
 		if !hits.NextPage {
 			break
 		}
+		args.Page = args.Page + 1
 	}
 	return
 }
