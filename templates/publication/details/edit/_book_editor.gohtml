@@ -1,8 +1,10 @@
 <li class="list-group-item">
     {{.D.Show.Text (.D.Show.Label "type") (.D.Show.Value .D.Publication.Type (.D.Show.Locale "publication_types"))}}
-    {{.D.Form.Text (.D.Form.Name "doi") (.D.Form.Value .D.Publication.DOI) (.D.Form.Cols 3)}}
-    {{.D.Form.TextRepeat (.D.Form.Name "issn") (.D.Form.Values .D.Publication.ISSN) (.D.Form.Cols 9)}}
-    {{.D.Form.TextRepeat (.D.Form.Name "isbn") (.D.Form.Values .D.Publication.ISBN) (.D.Form.Cols 9)}}
+    {{.D.Form.Text (.D.Form.Name "doi") (.D.Form.Value .D.Publication.DOI) (.D.Form.Cols 9)}}
+    {{.D.Form.TextRepeat (.D.Form.Name "issn") (.D.Form.Values .D.Publication.ISSN) (.D.Form.Cols 3)}}
+    {{.D.Form.TextRepeat (.D.Form.Name "eissn") (.D.Form.Values .D.Publication.EISSN) (.D.Form.Cols 3)}}
+    {{.D.Form.TextRepeat (.D.Form.Name "isbn") (.D.Form.Values .D.Publication.ISBN) (.D.Form.Cols 3)}}
+    {{.D.Form.TextRepeat (.D.Form.Name "eisbn") (.D.Form.Values .D.Publication.EISBN) (.D.Form.Cols 3)}}
 </li>
 <li class="list-group-item">
     {{.D.Form.Text (.D.Form.Name "title") (.D.Form.Value .D.Publication.Title) (.D.Form.Cols 9) (.D.Form.Required)}}

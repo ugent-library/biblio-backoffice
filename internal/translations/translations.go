@@ -166,6 +166,8 @@ func init() {
 	message.SetString(language.English, "builder.has_published_material", "Does the dissertation contain published articles (publisher's version or accepted manuscript)?")
 	message.SetString(language.English, "builder.isbn", "ISBN")
 	message.SetString(language.English, "builder.issn", "ISSN")
+	message.SetString(language.English, "builder.eisbn", "E-ISBN")
+	message.SetString(language.English, "builder.eissn", "E-ISSN")
 	message.SetString(language.English, "builder.issue", "Issue")
 	message.SetString(language.English, "builder.issue_title", "Special issue title")
 	message.SetString(language.English, "builder.journal_article_type", "Article type")

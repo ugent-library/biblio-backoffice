@@ -3,7 +3,9 @@
     {{.D.Show.Text (.D.Show.Label "conference_type") (.D.Show.Value .D.Publication.ConferenceType (.D.Show.Locale "conference_types"))}}
     {{.D.Show.Text (.D.Show.Label "doi") (.D.Show.Value .D.Publication.DOI)}}
     {{.D.Show.List (.D.Show.Label "issn") (.D.Show.Values .D.Publication.ISSN)}}
+    {{.D.Show.List (.D.Show.Label "eissn") (.D.Show.Values .D.Publication.EISSN)}}
     {{.D.Show.List (.D.Show.Label "isbn") (.D.Show.Values .D.Publication.ISBN)}}
+    {{.D.Show.List (.D.Show.Label "eisbn") (.D.Show.Values .D.Publication.EISBN)}}
  </li>
 <li class="list-group-item">
     {{.D.Show.Text (.D.Show.Label "title") (.D.Show.Value .D.Publication.Title) .D.Show.Required}}
