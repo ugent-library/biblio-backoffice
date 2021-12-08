@@ -161,6 +161,11 @@ func (c *Datasets) AddImport(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println(err)
 		messages := make([]string, 0)
+		/*
+			TODO: when datacite does not provide the necessary information for a record
+				  to validate, this list will be too long to show, and there is no
+				  way to attach an error to a specific field as we do not have a full form.
+		*/
 		switch cErr := err.(type) {
 		case jsonapi.Errors:
 			for _, e := range cErr {
