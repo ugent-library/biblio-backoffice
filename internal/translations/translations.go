@@ -511,4 +511,8 @@ func init() {
 	message.SetString(language.English, "organization.WE63", "Zoology Museum")
 	message.SetString(language.English, "organization.WE64", "Museum of the History of Sciences")
 	message.SetString(language.English, "organization.WE65", "Honeybee Valley")
+
+	message.SetString(language.English, "publication.single_import.import_by_id.id_not_found", "Unable to find identifier on crossref.org.")
+	message.SetString(language.English, "publication.single_import.string.minLength", "identifier is too short")
+	message.SetString(language.English, "publication.single_import.import_by_id.import_failed", "Sorry, something went wrong. Could not import the dataset.")
 }
