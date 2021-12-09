@@ -1,7 +1,3 @@
-<div id="publication-summary"
-    hx-trigger="summary-changed from:body"
-    hx-get="{{pathFor "publication_summary" "id" .D.Publication.ID}}"
-    hx-swap="innerHTML"
->
+<div id="publication-summary">
     {{template "publication/_summary" .}}
 </div>

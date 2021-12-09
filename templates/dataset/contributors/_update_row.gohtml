@@ -1,3 +1,9 @@
-<tr id="{{.D.Role}}-{{.D.Position}}" hx-swap-oob="true">
-    {{template "dataset/contributors/_columns" .}}
-</tr>
+<div hx-swap-oob="innerHTML:#publication-summary">
+    {{template "dataset/_summary" .}}
+</div>
+
+<table>
+    <tr id="{{.D.Role}}-{{.D.Position}}" hx-swap-oob="true">
+        {{template "dataset/contributors/_columns" .}}
+    </tr>
+</table>

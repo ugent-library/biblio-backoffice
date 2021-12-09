@@ -106,8 +106,6 @@ func (c *DatasetContributors) Create(w http.ResponseWriter, r *http.Request) {
 
 	savedContributor := savedDataset.Contributors(role)[position]
 
-	w.Header().Set("HX-Trigger", "summary-changed")
-
 	c.Render.HTML(w, http.StatusOK, "dataset/contributors/_insert_row", views.NewData(c.Render, r, struct {
 		Role        string
 		Dataset     *models.Dataset
@@ -203,8 +201,6 @@ func (c *DatasetContributors) Update(w http.ResponseWriter, r *http.Request) {
 
 	savedContributor := savedDataset.Contributors(role)[position]
 
-	w.Header().Set("HX-Trigger", "summary-changed")
-
 	c.Render.HTML(w, http.StatusOK, "dataset/contributors/_update_row", views.NewData(c.Render, r, struct {
 		Role        string
 		Dataset     *models.Dataset
@@ -251,8 +247,6 @@ func (c *DatasetContributors) Remove(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	w.Header().Set("HX-Trigger", "summary-changed")
 
 	c.Render.HTML(w, http.StatusOK, "dataset/contributors/_table", views.NewData(c.Render, r, struct {
 		Role    string

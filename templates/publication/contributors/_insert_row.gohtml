@@ -1,11 +1,17 @@
-<tbody 
-    {{if eq .D.Position 0}}
-    hx-swap-oob="afterbegin:#{{.D.Role}}-table"
-    {{else}}
-    hx-swap-oob="afterend:#{{.D.Role}}-{{sub .D.Position 1}}"
-    {{end}}
->
-    <tr id="{{.D.Role}}-{{.D.Position}}">
-        {{template "publication/contributors/_columns" .}}
-    </tr>
-</tbody>
+<div hx-swap-oob="innerHTML:#publication-summary">
+    {{template "publication/_summary" .}}
+</div>
+
+<table>
+    <tbody 
+        {{if eq .D.Position 0}}
+        hx-swap-oob="afterbegin:#{{.D.Role}}-table"
+        {{else}}
+        hx-swap-oob="afterend:#{{.D.Role}}-{{sub .D.Position 1}}"
+        {{end}}
+    >
+        <tr id="{{.D.Role}}-{{.D.Position}}">
+            {{template "publication/contributors/_columns" .}}
+        </tr>
+    </tbody>
+<table>
