@@ -157,15 +157,17 @@ func (c *Datasets) AddImport(w http.ResponseWriter, r *http.Request) {
 	loc := locale.Get(r.Context())
 
 	dataset, err := c.Engine.ImportUserDatasetByIdentifier(context.GetUser(r.Context()).ID, source, identifier)
+
 	if err != nil {
 		flash := views.Flash{Type: "error"}
-		switch e := err.(type) {
-		case jsonapi.Errors:
+
+		if e, ok := err.(jsonapi.Errors); ok {
 			flash.Message = loc.T("dataset.single_import", e[0].Code)
-		default:
+		} else {
 			log.Println(e)
 			flash.Message = loc.T("dataset.single_import", "import_by_id.import_failed")
 		}
+
 		c.Render.HTML(w, http.StatusOK, "dataset/add", views.NewData(c.Render, r, struct {
 			PageTitle string
 			Step      int
