@@ -307,25 +307,25 @@ func Register(c controllers.Context) {
 		Methods("DELETE").
 		Name("publication_links_remove_link")
 	// Publication contributors HTMX fragments
-	pubEditRouter.HandleFunc("/htmx/{role}/add", publicationContributorsController.Add).
+	pubEditRouter.HandleFunc("/htmx/contributors/{role}/add", publicationContributorsController.Add).
 		Methods("GET").
 		Name("publication_contributors_add")
-	pubEditRouter.HandleFunc("/htmx/{role}", publicationContributorsController.Create).
+	pubEditRouter.HandleFunc("/htmx/contributors/{role}", publicationContributorsController.Create).
 		Methods("POST").
 		Name("publication_contributors_create")
-	pubEditRouter.HandleFunc("/htmx/{role}/{position}/remove", publicationContributorsController.ConfirmRemove).
+	pubEditRouter.HandleFunc("/htmx/contributors/{role}/{position}/remove", publicationContributorsController.ConfirmRemove).
 		Methods("GET").
 		Name("publication_contributors_confirm_remove")
-	pubEditRouter.HandleFunc("/htmx/{role}/{position}", publicationContributorsController.Remove).
+	pubEditRouter.HandleFunc("/htmx/contributors/{role}/{position}", publicationContributorsController.Remove).
 		Methods("DELETE").
 		Name("publication_contributors_remove")
-	pubEditRouter.HandleFunc("/htmx/{role}/{position}/edit", publicationContributorsController.Edit).
+	pubEditRouter.HandleFunc("/htmx/contributors/{role}/{position}/edit", publicationContributorsController.Edit).
 		Methods("GET").
 		Name("publication_contributors_edit")
-	pubEditRouter.HandleFunc("/htmx/{role}/{position}/choose", publicationContributorsController.Choose).
+	pubEditRouter.HandleFunc("/htmx/contributors/{role}/{position}/choose", publicationContributorsController.Choose).
 		Methods("GET").
 		Name("publication_contributors_choose")
-	pubEditRouter.HandleFunc("/htmx/{role}/{position}", publicationContributorsController.Update).
+	pubEditRouter.HandleFunc("/htmx/contributors/{role}/{position}", publicationContributorsController.Update).
 		Methods("PUT").
 		Name("publication_contributors_update")
 	// Publication datasets HTMX fragments
@@ -432,26 +432,26 @@ func Register(c controllers.Context) {
 	datasetEditRouter.HandleFunc("/htmx/departments/remove/{department_id}", datasetDepartmentsController.Remove).
 		Methods("PATCH").
 		Name("datasetDepartments_remove_from_dataset")
-	// Publication contributors HTMX fragments
-	datasetEditRouter.HandleFunc("/htmx/{role}/add", datasetContributorsController.Add).
+	// Dataset contributors HTMX fragments
+	datasetEditRouter.HandleFunc("/htmx/contributors/{role}/add", datasetContributorsController.Add).
 		Methods("GET").
 		Name("dataset_contributors_add")
-	datasetEditRouter.HandleFunc("/htmx/{role}", datasetContributorsController.Create).
+	datasetEditRouter.HandleFunc("/htmx/contributors/{role}", datasetContributorsController.Create).
 		Methods("POST").
 		Name("dataset_contributors_create")
-	datasetEditRouter.HandleFunc("/htmx/{role}/{position}/remove", datasetContributorsController.ConfirmRemove).
+	datasetEditRouter.HandleFunc("/htmx/contributors/{role}/{position}/remove", datasetContributorsController.ConfirmRemove).
 		Methods("GET").
 		Name("dataset_contributors_confirm_remove")
-	datasetEditRouter.HandleFunc("/htmx/{role}/{position}", datasetContributorsController.Remove).
+	datasetEditRouter.HandleFunc("/htmx/contributors/{role}/{position}", datasetContributorsController.Remove).
 		Methods("DELETE").
 		Name("dataset_contributors_remove")
-	datasetEditRouter.HandleFunc("/htmx/{role}/{position}/edit", datasetContributorsController.Edit).
+	datasetEditRouter.HandleFunc("/htmx/contributors/{role}/{position}/edit", datasetContributorsController.Edit).
 		Methods("GET").
 		Name("dataset_contributors_edit")
-	datasetEditRouter.HandleFunc("/htmx/{role}/{position}/choose", datasetContributorsController.Choose).
+	datasetEditRouter.HandleFunc("/htmx/contributors/{role}/{position}/choose", datasetContributorsController.Choose).
 		Methods("GET").
 		Name("dataset_contributors_choose")
-	datasetEditRouter.HandleFunc("/htmx/{role}/{position}", datasetContributorsController.Update).
+	datasetEditRouter.HandleFunc("/htmx/contributors/{role}/{position}", datasetContributorsController.Update).
 		Methods("PUT").
 		Name("dataset_contributors_update")
 	// Dataset abstracts HTMX fragments
