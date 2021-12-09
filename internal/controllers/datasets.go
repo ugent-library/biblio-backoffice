@@ -4,7 +4,6 @@ import (
 	"log"
 	"net/http"
 	"net/url"
-	"strings"
 	"time"
 
 	"github.com/ugent-library/biblio-backend/internal/context"
@@ -159,23 +158,14 @@ func (c *Datasets) AddImport(w http.ResponseWriter, r *http.Request) {
 
 	dataset, err := c.Engine.ImportUserDatasetByIdentifier(context.GetUser(r.Context()).ID, source, identifier)
 	if err != nil {
-		log.Println(err)
-		messages := make([]string, 0)
-		/*
-			TODO: when datacite does not provide the necessary information for a record
-				  to validate, this list will be too long to show, and there is no
-				  way to attach an error to a specific field as we do not have a full form.
-		*/
-		switch cErr := err.(type) {
+		flash := views.Flash{Type: "error"}
+		switch e := err.(type) {
 		case jsonapi.Errors:
-			for _, e := range cErr {
-				messages = append(messages, loc.T("dataset.single_import", e.Code))
-			}
+			flash.Message = loc.T("dataset.single_import", e[0].Code)
 		default:
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
+			log.Println(e)
+			flash.Message = loc.T("dataset.single_import", "import_by_id.import_failed")
 		}
-		flash := strings.Join(messages, "<br>")
 		c.Render.HTML(w, http.StatusOK, "dataset/add", views.NewData(c.Render, r, struct {
 			PageTitle string
 			Step      int
@@ -183,7 +173,7 @@ func (c *Datasets) AddImport(w http.ResponseWriter, r *http.Request) {
 			"Add - Datasets - Biblio",
 			1,
 		},
-			views.Flash{Type: "error", Message: flash},
+			flash,
 		))
 		return
 	}
