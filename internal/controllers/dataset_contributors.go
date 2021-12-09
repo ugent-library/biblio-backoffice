@@ -92,7 +92,7 @@ func (c *DatasetContributors) Create(w http.ResponseWriter, r *http.Request) {
 		}{
 			role,
 			dataset,
-			&models.Contributor{},
+			contributor,
 			position,
 			views.NewFormBuilder(c.Render, locale.Get(r.Context()), formErrors),
 		}),

@@ -93,7 +93,7 @@ func (c *PublicationContributors) Create(w http.ResponseWriter, r *http.Request)
 		}{
 			role,
 			pub,
-			&models.Contributor{},
+			contributor,
 			position,
 			views.NewFormBuilder(c.Render, locale.Get(r.Context()), formErrors),
 		}),
