@@ -14,7 +14,8 @@
                     hx-post="{{pathFor "publication_contributors_create" "id" .D.Publication.ID "role" .D.Role}}"
                     hx-include="#{{.D.Role}}-modal .modal-body .contributor-attributes > *"
                     hx-vals='{"position":"{{.D.Position}}"}'
-                    hx-swap="none"
+                    hx-swap="innerHTML"
+                    hx-target="#{{.D.Role}}-modal"
                 >Add</button>
             </div>
         </div>
