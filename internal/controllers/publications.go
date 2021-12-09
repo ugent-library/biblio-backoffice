@@ -16,6 +16,7 @@ import (
 	"github.com/ugent-library/go-locale/locale"
 	"github.com/ugent-library/go-orcid/orcid"
 	"github.com/ugent-library/go-web/forms"
+	"github.com/ugent-library/go-web/jsonapi"
 	"github.com/unrolled/render"
 )
 
@@ -158,6 +159,7 @@ func (c *Publications) AddSingleImport(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 
 	var pub *models.Publication
+	loc := locale.Get(r.Context())
 
 	if identifier := r.FormValue("identifier"); identifier != "" {
 		var source string = r.FormValue("source")
@@ -165,6 +167,22 @@ func (c *Publications) AddSingleImport(w http.ResponseWriter, r *http.Request) {
 		p, err := c.Engine.ImportUserPublicationByIdentifier(userID, source, identifier)
 		if err != nil {
 			log.Println(err)
+			messages := make([]string, 0)
+			/*
+				TODO: when crossref does not provide the necessary information for a record
+					  to validate, this list will be too long to show, and there is no
+					  way to attach an error to a specific field as we do not have a full form.
+			*/
+			switch cErr := err.(type) {
+				case jsonapi.Errors:
+					for _, e := range cErr {
+						messages = append(messages, loc.T("publication.single_import", e.Code))
+					}
+				default:
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+			}
+			flash := strings.Join(messages, "<br>")
 			c.Render.HTML(w, http.StatusOK, "publication/add_single_start", views.NewData(c.Render, r, struct {
 				PageTitle string
 				Step      int
@@ -172,7 +190,7 @@ func (c *Publications) AddSingleImport(w http.ResponseWriter, r *http.Request) {
 				"Add - Publications - Biblio",
 				2,
 			},
-				views.Flash{Type: "error", Message: "Sorry, something went wrong. Could not import the publication."},
+				views.Flash{Type: "error", Message: flash},
 			))
 			return
 		}
@@ -198,7 +216,7 @@ func (c *Publications) AddSingleImport(w http.ResponseWriter, r *http.Request) {
 		"Add - Publications - Biblio",
 		3,
 		pub,
-		views.NewShowBuilder(c.Render, locale.Get(r.Context())),
+		views.NewShowBuilder(c.Render, loc),
 	}))
 }
 
