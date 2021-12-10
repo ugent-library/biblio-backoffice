@@ -99,11 +99,32 @@ func (c *Datasets) Show(w http.ResponseWriter, r *http.Request) {
 func (c *Datasets) Publish(w http.ResponseWriter, r *http.Request) {
 	dataset := context.GetDataset(r.Context())
 
+	flashes := make([]views.Flash, 0)
+
+	oldStatus := dataset.Status
 	savedDataset, err := c.Engine.PublishDataset(dataset)
 	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+
+		// pub not updated, but status has been set in struct
+		savedDataset = dataset
+		savedDataset.Status = oldStatus
+
+		if e, ok := err.(jsonapi.Errors); ok {
+
+			flashes = append(flashes, views.Flash{Type: "error", Message: e[0].Title})
+
+		} else {
+
+			log.Println(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+
+		}
+
+	} else {
+
+		flashes = append(flashes, views.Flash{Type: "success", Message: "Successfully published to Biblio.", DismissAfter: 5 * time.Second})
+
 	}
 
 	datasetPubs, err := c.Engine.GetDatasetPublications(dataset.ID)
@@ -135,7 +156,7 @@ func (c *Datasets) Publish(w http.ResponseWriter, r *http.Request) {
 		views.NewShowBuilder(c.Render, locale.Get(r.Context())),
 		searchArgs,
 	},
-		views.Flash{Type: "success", Message: "Successfully published to Biblio.", DismissAfter: 5 * time.Second},
+		flashes...,
 	))
 }
 
@@ -230,8 +251,33 @@ func (c *Datasets) AddConfirm(w http.ResponseWriter, r *http.Request) {
 func (c *Datasets) AddPublish(w http.ResponseWriter, r *http.Request) {
 	dataset := context.GetDataset(r.Context())
 
+	oldStatus := dataset.Status
 	savedDataset, err := c.Engine.PublishDataset(dataset)
 	if err != nil {
+
+		/*
+		   TODO: return to dataset - add_confirm with flash in session instead of rendering this in the wrong path
+		   We only use one error, as publishing can only fail on attribute title
+		*/
+		if e, ok := err.(jsonapi.Errors); ok {
+
+			// status not changed, but dataset.Status was changed by function
+			dataset.Status = oldStatus
+
+			c.Render.HTML(w, http.StatusOK, "dataset/add_confirm", views.NewData(c.Render, r, struct {
+				PageTitle string
+				Step      int
+				Dataset   *models.Dataset
+			}{
+				"Add - Datasets - Biblio",
+				3,
+				dataset,
+			},
+				views.Flash{Type: "error", Message: e[0].Title},
+			))
+			return
+		}
+
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
