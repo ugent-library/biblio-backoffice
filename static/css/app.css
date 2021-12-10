@@ -14139,3 +14139,19 @@ h4 {
 #flash-messages .bc-toast {
   margin: 0 1.3rem 1.3rem 0;
 }
+
+.spinner-border {
+  display: none;
+  opacity: 0;
+  transition: opacity 500ms ease-in;
+}
+
+.htmx-request .spinner-border {
+  display: inline-block;
+  opacity: 1;
+}
+
+.htmx-request.spinner-border {
+  display: inline-block;
+  opacity: 1;
+}
