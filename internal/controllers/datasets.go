@@ -279,7 +279,7 @@ func (c *Datasets) Delete(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	if _, err := c.Engine.UpdateDataset(dataset); err != nil {
+	if err := c.Engine.DeleteDataset(dataset.ID); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

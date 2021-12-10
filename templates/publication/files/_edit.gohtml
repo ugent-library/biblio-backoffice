@@ -105,18 +105,18 @@
                     <div id="file-embargo{{if eq .D.File.AccessLevel "open_access"}}d-none{{end}}" class="row">
                         <div class="col-6">
                             <div class="form-group">
-                                <label class="col-form-label">Change access level to</label>
+                                <label class="col-form-label">Embargo period</label>
+                                <input class="form-control w-10" type="date" name="embargo"{{with .D.File.Embargo}} value="{{.}}"{{end}} min="{{now | htmlDate}}">
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label class="col-form-label">Access level after embargo period</label>
                                 <select class="custom-select w-10" name="embargo_to">
                                     <option></option>
                                     <option value="open_access"{{if eq .D.File.EmbargoTo "open_access"}} selected{{end}}>{{.T "publication_file_access_levels" "open_access"}}</option>
                                     <option value="local"{{if eq .D.File.EmbargoTo "local"}} selected{{end}}{{if eq .D.File.AccessLevel "closed"}} disabled{{end}}>{{.T "publication_file_access_levels" "local"}}</option>
                                 </select>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="form-group">
-                                <label class="col-form-label">on</label>
-                                <input class="form-control w-10" type="date" name="embargo"{{with .D.File.Embargo}} value="{{.}}"{{end}} min="{{now | htmlDate}}">
                             </div>
                         </div>
                     </div>

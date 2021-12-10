@@ -93,7 +93,7 @@ func (c *PublicationContributors) Create(w http.ResponseWriter, r *http.Request)
 		}{
 			role,
 			pub,
-			&models.Contributor{},
+			contributor,
 			position,
 			views.NewFormBuilder(c.Render, locale.Get(r.Context()), formErrors),
 		}),
@@ -106,8 +106,6 @@ func (c *PublicationContributors) Create(w http.ResponseWriter, r *http.Request)
 	}
 
 	savedContributor := savedPub.Contributors(role)[position]
-
-	w.Header().Set("HX-Trigger", "summary-changed")
 
 	c.Render.HTML(w, http.StatusOK, "publication/contributors/_insert_row", views.NewData(c.Render, r, struct {
 		Role        string
@@ -205,8 +203,6 @@ func (c *PublicationContributors) Update(w http.ResponseWriter, r *http.Request)
 
 	savedContributor := savedPub.Contributors(role)[position]
 
-	w.Header().Set("HX-Trigger", "summary-changed")
-
 	c.Render.HTML(w, http.StatusOK, "publication/contributors/_update_row", views.NewData(c.Render, r, struct {
 		Role        string
 		Publication *models.Publication
@@ -253,8 +249,6 @@ func (c *PublicationContributors) Remove(w http.ResponseWriter, r *http.Request)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	w.Header().Set("HX-Trigger", "summary-changed")
 
 	c.Render.HTML(w, http.StatusOK, "publication/contributors/_table", views.NewData(c.Render, r, struct {
 		Role        string

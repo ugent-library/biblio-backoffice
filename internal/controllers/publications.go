@@ -627,7 +627,7 @@ func (c *Publications) Delete(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	if _, err := c.Engine.UpdatePublication(pub); err != nil {
+	if err := c.Engine.DeletePublication(pub.ID); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
