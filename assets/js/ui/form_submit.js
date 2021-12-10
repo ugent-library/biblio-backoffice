@@ -32,14 +32,14 @@ export default function() {
         // Find .btn-save buttons on dataset/description and publication/description templates
         const buttons = document.querySelector(".btn-save");
         if (buttons !== null) {
-            const publishToBiblio = document.querySelector('.bc-toolbar-right .btn');
+            const publishToBiblio = document.querySelector('.bc-toolbar-right .btn-submit-description');
             if (publishToBiblio !== null) {
                 publishToBiblio.setAttribute("data-toggle", "modal");
                 publishToBiblio.setAttribute("data-target", "#confirmation-next-step");
             }
         }
         else {
-            const publishToBiblio = document.querySelector('.bc-toolbar-right .btn');
+            const publishToBiblio = document.querySelector('.bc-toolbar-right .btn-submit-description');
             if (publishToBiblio !== null) {
                 publishToBiblio.removeAttribute("data-toggle");
                 publishToBiblio.removeAttribute("data-target");
