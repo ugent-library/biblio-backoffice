@@ -27,10 +27,6 @@
                 <li class="list-group-item">
                     {{.D.Show.List (.D.Show.Label "research_field") (.D.Show.Values .D.Publication.ResearchField)}}
                     {{.D.Show.BadgeList (.D.Show.Label "keyword") (.D.Show.Values .D.Publication.Keyword)}}
-                    {{.D.Show.Text (.D.Show.Label "wos_id") (.D.Show.Value .D.Publication.WOSID)}}
-                    {{.D.Show.Text (.D.Show.Label "pubmed_id") (.D.Show.Value .D.Publication.PubMedID)}}
-                    {{.D.Show.Text (.D.Show.Label "arxiv_id") (.D.Show.Value .D.Publication.ArxivID)}}
-                    {{.D.Show.Text (.D.Show.Label "esci_id") (.D.Show.Value .D.Publication.ESCIID)}}
                     {{.D.Show.Text (.D.Show.Label "additional_info") (.D.Show.Value .D.Publication.AdditionalInfo)}}
                 </li>
             </ul>
