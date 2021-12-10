@@ -101,13 +101,10 @@ func (c *Datasets) Publish(w http.ResponseWriter, r *http.Request) {
 
 	flashes := make([]views.Flash, 0)
 
-	oldStatus := dataset.Status
 	savedDataset, err := c.Engine.PublishDataset(dataset)
 	if err != nil {
 
-		// pub not updated, but status has been set in struct
 		savedDataset = dataset
-		savedDataset.Status = oldStatus
 
 		if e, ok := err.(jsonapi.Errors); ok {
 
@@ -251,7 +248,6 @@ func (c *Datasets) AddConfirm(w http.ResponseWriter, r *http.Request) {
 func (c *Datasets) AddPublish(w http.ResponseWriter, r *http.Request) {
 	dataset := context.GetDataset(r.Context())
 
-	oldStatus := dataset.Status
 	savedDataset, err := c.Engine.PublishDataset(dataset)
 	if err != nil {
 
@@ -260,9 +256,6 @@ func (c *Datasets) AddPublish(w http.ResponseWriter, r *http.Request) {
 		   We only use one error, as publishing can only fail on attribute title
 		*/
 		if e, ok := err.(jsonapi.Errors); ok {
-
-			// status not changed, but dataset.Status was changed by function
-			dataset.Status = oldStatus
 
 			c.Render.HTML(w, http.StatusOK, "dataset/add_confirm", views.NewData(c.Render, r, struct {
 				PageTitle string

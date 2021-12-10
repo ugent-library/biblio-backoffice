@@ -113,8 +113,11 @@ func (e *Engine) UpdatePublication(pub *models.Publication) (*models.Publication
 }
 
 func (e *Engine) PublishPublication(pub *models.Publication) (*models.Publication, error) {
+	oldStatus := pub.Status
 	pub.Status = "public"
-	return e.UpdatePublication(pub)
+	updatedPub, err := e.UpdatePublication(pub)
+	pub.Status = oldStatus
+	return updatedPub, err
 }
 
 func (e *Engine) BatchPublishPublications(userID string, args *SearchArgs) (err error) {

@@ -257,7 +257,6 @@ func (c *Publications) AddSingleConfirm(w http.ResponseWriter, r *http.Request) 
 func (c *Publications) AddSinglePublish(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
-	oldStatus := pub.Status
 	savedPub, err := c.Engine.PublishPublication(pub)
 	if err != nil {
 
@@ -266,9 +265,6 @@ func (c *Publications) AddSinglePublish(w http.ResponseWriter, r *http.Request) 
 			We only use one error, as publishing can only fail on attribute title
 		*/
 		if e, ok := err.(jsonapi.Errors); ok {
-
-			// status not changed, but pub.Status was changed by function
-			pub.Status = oldStatus
 
 			c.Render.HTML(w, http.StatusOK, "publication/add_single_confirm", views.NewData(c.Render, r, struct {
 				PageTitle   string
@@ -582,16 +578,13 @@ func (c *Publications) AddMultiplePublish(w http.ResponseWriter, r *http.Request
 func (c *Publications) Publish(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
-	oldStatus := pub.Status
 	savedPub, err := c.Engine.PublishPublication(pub)
 
 	flashes := make([]views.Flash, 0)
 
 	if err != nil {
 
-		// pub not updated, but status has been set in struct
 		savedPub = pub
-		savedPub.Status = oldStatus
 
 		if e, ok := err.(jsonapi.Errors); ok {
 
