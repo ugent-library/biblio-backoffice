@@ -8,12 +8,14 @@ export default function() {
         if (buttons !== undefined) {
             buttons.forEach(function(el) {
                 el.addEventListener("click", function (evt) {
-                    // Save button
-                    el.setAttribute("disabled", "disabled");
-                    // Cancel button, if any
-                    if (el.previousElementSibling !== undefined) {
-                        el.previousElementSibling.setAttribute("disabled", "disabled");
-                    }
+                    htmx.on('htmx:beforeRequest', function(e) {
+                        // Save button
+                        el.setAttribute("disabled", "disabled");
+                        // Cancel button, if any
+                        if (el.previousElementSibling !== undefined) {
+                            el.previousElementSibling.setAttribute("disabled", "disabled");
+                        }
+                    })
                 })
             });
         }
