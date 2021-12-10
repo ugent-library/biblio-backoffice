@@ -24,7 +24,7 @@
         </div>
 
         <div class="c-divider mt-0 mx-6"></div>
-    
+
         <div id="publication-summary">
             <div class="c-header-collapsible mx-6">
                 <div class="d-flex w-100">
@@ -37,8 +37,8 @@
             </div>
         </div>
 
-        <div class="c-divider mb-2 mx-6"></div>    
-    
+        <div class="c-divider mb-2 mx-6"></div>
+
         <div class="bc-navbar bc-navbar--white bc-navbar--bordered-bottom">
             <div class="bc-toolbar">
                 <div class="bc-toolbar-left">
@@ -54,5 +54,27 @@
 
     <div class="u-scroll-wrapper__body p-6">
         {{template "dataset/_description_content" .}}
+    </div>
+
+    <div class="modals">
+        <div id="confirmation-next-step" class="modal fade" tabindex="-1" aria-hidden="true" role="dialog">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title">Some form sections are still being edited.</h2>
+                    </div>
+                    <div class="modal-body">
+                        <p>You risk losing any unsaved changes. Are you sure you want to continue?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-link" data-dismiss="modal">Cancel</button>
+                        <a class="btn btn-primary" href="{{pathFor "dataset_add_confirm" "id" .D.Dataset.ID}}">
+                            <div class="btn-text">Publish to Biblio</div>
+                            <i class="if if-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
