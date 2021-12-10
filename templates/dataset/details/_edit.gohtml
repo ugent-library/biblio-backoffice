@@ -2,6 +2,8 @@
     hx-patch="{{pathFor "dataset_details_save_form" "id" .D.Dataset.ID}}"
     hx-swap="innerHTML"
     hx-target="closest .dataset-details"
+	hx-indicator=".dataset-details .spinner-border"
+
 >
     {{.CSRFTag}}
     <div class="card-header">
@@ -22,6 +24,9 @@
                     <button class="btn btn-primary btn-save">
                         <div class="btn-text">Save</div>
                     </button>
+					<div class="spinner-border">
+						<span class="sr-only"></span>
+					</div>
                 </div>
             </div>
         </div>

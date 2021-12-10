@@ -2,6 +2,7 @@
     hx-patch="{{pathFor "publication_details_save_form" "id" .D.Publication.ID}}"
     hx-swap="innerHTML"
     hx-target="closest .publication-details"
+	hx-indicator=".publication-details .spinner-border"
 >
 	{{.CSRFTag}}
     <div class="card-header">
@@ -22,6 +23,9 @@
                     <button class="btn btn-primary btn-save">
                         <div class="btn-text">Save</div>
                     </button>
+					<div class="spinner-border">
+						<span class="sr-only"></span>
+					</div>
                 </div>
             </div>
         </div>
