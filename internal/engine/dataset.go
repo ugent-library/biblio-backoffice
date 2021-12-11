@@ -52,8 +52,11 @@ func (e *Engine) UpdateDataset(dataset *models.Dataset) (*models.Dataset, error)
 }
 
 func (e *Engine) PublishDataset(dataset *models.Dataset) (*models.Dataset, error) {
+	oldStatus := dataset.Status
 	dataset.Status = "public"
-	return e.UpdateDataset(dataset)
+	updatedDataset, err := e.UpdateDataset(dataset)
+	dataset.Status = oldStatus
+	return updatedDataset, err
 }
 
 func (e *Engine) GetDatasetPublications(id string) ([]*models.Publication, error) {

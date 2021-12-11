@@ -259,6 +259,28 @@ func (c *Publications) AddSinglePublish(w http.ResponseWriter, r *http.Request) 
 
 	savedPub, err := c.Engine.PublishPublication(pub)
 	if err != nil {
+
+		/*
+			TODO: return to /add-single/confirm with flash in session instead of rendering this in the wrong path
+			We only use one error, as publishing can only fail on attribute title
+		*/
+		if e, ok := err.(jsonapi.Errors); ok {
+
+			c.Render.HTML(w, http.StatusOK, "publication/add_single_confirm", views.NewData(c.Render, r, struct {
+				PageTitle   string
+				Step        int
+				Publication *models.Publication
+			}{
+				"Add - Publications - Biblio",
+				5,
+				pub,
+			},
+				views.Flash{Type: "error", Message: e[0].Title},
+			))
+			return
+		}
+
+		// unexpected error
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -557,10 +579,29 @@ func (c *Publications) Publish(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
 	savedPub, err := c.Engine.PublishPublication(pub)
+
+	flashes := make([]views.Flash, 0)
+
 	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+
+		savedPub = pub
+
+		if e, ok := err.(jsonapi.Errors); ok {
+
+			flashes = append(flashes, views.Flash{Type: "error", Message: e[0].Title})
+
+		} else {
+
+			log.Println(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+
+		}
+
+	} else {
+
+		flashes = append(flashes, views.Flash{Type: "success", Message: "Successfully published to Biblio.", DismissAfter: 5 * time.Second})
+
 	}
 
 	pubDatasets, err := c.Engine.GetPublicationDatasets(pub.ID)
@@ -592,7 +633,7 @@ func (c *Publications) Publish(w http.ResponseWriter, r *http.Request) {
 		views.NewShowBuilder(c.Render, locale.Get(r.Context())),
 		searchArgs,
 	},
-		views.Flash{Type: "success", Message: "Successfully published to Biblio.", DismissAfter: 5 * time.Second},
+		flashes...,
 	))
 }
 
