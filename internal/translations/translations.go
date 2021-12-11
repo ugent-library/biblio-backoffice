@@ -157,6 +157,8 @@ func init() {
 	message.SetString(language.English, "builder.defense_place", "Place of defense")
 	message.SetString(language.English, "builder.doi", "DOI")
 	message.SetString(language.English, "builder.edition", "Edition")
+	message.SetString(language.English, "builder.embargo", "Embargo period")
+	message.SetString(language.English, "builder.embargo_to", "Access level after embargo period")
 	message.SetString(language.English, "builder.esci_id", "ESCI ID")
 	message.SetString(language.English, "builder.extern", "Published while none of the authors are employed at UGent")
 	message.SetString(language.English, "builder.format", "Data format")

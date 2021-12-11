@@ -34,6 +34,8 @@ type Dataset struct {
 	DateUpdated             *time.Time          `json:"date_updated,omitempty" form:"-"`
 	Department              []DatasetDepartment `json:"department,omitempty" form:"-"`
 	DOI                     string              `json:"doi,omitempty" form:"-"`
+	Embargo                 string              `json:"embargo,omitempty" form:"embargo"`
+	EmbargoTo               string              `json:"embargo_to,omitempty" form:"embargo_to"`
 	Format                  string              `json:"format,omitempty" form:"format"`
 	ID                      string              `json:"_id,omitempty" form:"-"`
 	Keyword                 []string            `json:"keyword,omitempty" form:"keyword"`

@@ -52,6 +52,10 @@
                     {{.D.Form.List (.D.Form.Name "access_level") (.D.Form.Value .D.Dataset.AccessLevel) (.D.Form.Cols 3)
                         (.D.Form.Choices .D.Vocabularies.access_levels
                         (.D.Form.Locale "access_levels")) (.D.Form.EmptyChoice)}}
+                    {{.D.Form.Date (.D.Form.Name "embargo") (.D.Form.Value .D.Dataset.Embargo) (.D.Form.Cols 3)}}
+                    {{.D.Form.List (.D.Form.Name "embargo_to") (.D.Form.Value .D.Dataset.EmbargoTo) (.D.Form.Cols 3)
+                        (.D.Form.Choices .D.Vocabularies.access_levels
+                        (.D.Form.Locale "access_levels")) (.D.Form.EmptyChoice)}}
                 </li>
             </ul>
         </div>

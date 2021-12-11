@@ -18,6 +18,8 @@ type formData struct {
 	Placeholder   string
 	Required      bool
 	Checked       bool
+	Max           string
+	Min           string
 	Choices       []string
 	ChoicesLabels []string
 	EmptyChoice   bool
@@ -148,9 +150,22 @@ func (b *FormBuilder) Required() formOption {
 		d.Required = true
 	}
 }
+
 func (b *FormBuilder) Checked(v bool) formOption {
 	return func(d *formData) {
 		d.Checked = v
+	}
+}
+
+func (b *FormBuilder) Max(v string) formOption {
+	return func(d *formData) {
+		d.Max = v
+	}
+}
+
+func (b *FormBuilder) Min(v string) formOption {
+	return func(d *formData) {
+		d.Min = v
 	}
 }
 
@@ -222,4 +237,8 @@ func (b *FormBuilder) ListRepeat(opts ...formOption) (template.HTML, error) {
 
 func (b *FormBuilder) RadioButtonGroup(opts ...formOption) (template.HTML, error) {
 	return RenderPartial(b.renderer, "form_builder/_radio_button_group", b.newFormData(opts))
+}
+
+func (b *FormBuilder) Date(opts ...formOption) (template.HTML, error) {
+	return RenderPartial(b.renderer, "form_builder/_date", b.newFormData(opts))
 }
