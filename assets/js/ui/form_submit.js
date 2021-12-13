@@ -25,26 +25,32 @@ export default function() {
 
     // Show a warning / confirmation when user navigates away from form with
     // potential unsaved data.
-    //
-    // @todo: Currently only targets the button in the toolbar. Should become more generic
-    //   and target groups of outgoing links and buttons in the future.
     htmx.on("htmx:afterSettle", function(evt) {
         // Find .btn-save buttons on dataset/description and publication/description templates
         const buttons = document.querySelector(".btn-save");
-        if (buttons !== null) {
-            const publishToBiblio = document.querySelector('.bc-toolbar-right .btn-submit-description');
-            if (publishToBiblio !== null) {
-                publishToBiblio.setAttribute("data-toggle", "modal");
-                publishToBiblio.setAttribute("data-target", "#confirmation-next-step");
+
+        function confirmationHandler(el) {
+            let callback = function (evt) {
+                const submit = document.querySelector('#confirmation-next-step a.btn-primary');
+                submit.href = el.href;
+            }
+
+            if (buttons !== null) {
+                el.setAttribute("data-toggle", "modal");
+                el.setAttribute("data-target", "#confirmation-next-step");
+
+                // Set URL from the link in the modal
+                el.addEventListener("click", callback)
+            }
+            else {
+                el.removeAttribute("data-toggle");
+                el.removeAttribute("data-target");
             }
         }
-        else {
-            const publishToBiblio = document.querySelector('.bc-toolbar-right .btn-submit-description');
-            if (publishToBiblio !== null) {
-                publishToBiblio.removeAttribute("data-toggle");
-                publishToBiblio.removeAttribute("data-target");
-            }
-        }
+
+        document.querySelectorAll('.btn-confirmation-next-step').forEach(function(el) {
+            confirmationHandler(el);
+        });
 
         BSN.initCallback();
     });
