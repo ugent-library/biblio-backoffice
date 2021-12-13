@@ -39,6 +39,14 @@ func init() {
 	message.SetString(language.English, "credit_roles.writing_original_draft", "Writing - original draft")
 	message.SetString(language.English, "credit_roles.writing_review_editing", "Writing - review & editing")
 
+	message.SetString(language.English, "cc_licenses.cc_0", "CC0 (1.0)")
+	message.SetString(language.English, "cc_licenses.cc_by", "CC BY (4.0)")
+	message.SetString(language.English, "cc_licenses.cc_by_sa", "CC BY-SA (4.0)")
+	message.SetString(language.English, "cc_licenses.cc_by_nd", "CC BY-ND (4.0)")
+	message.SetString(language.English, "cc_licenses.cc_by_nc", "CC BY-NC (4.0)")
+	message.SetString(language.English, "cc_licenses.cc_by_nc_sa", "CC BY-NC-SA (4.0)")
+	message.SetString(language.English, "cc_licenses.cc_by_nc_nd", "CC BY-NC-ND (4.0)")
+
 	message.SetString(language.English, "access_levels.info:eu-repo/semantics/closedAccess", "Closed access")
 	message.SetString(language.English, "access_levels.info:eu-repo/semantics/embargoedAccess", "Embargoed access")
 	message.SetString(language.English, "access_levels.info:eu-repo/semantics/restrictedAccess", "Restricted access")

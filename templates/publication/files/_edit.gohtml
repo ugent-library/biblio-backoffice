@@ -122,37 +122,35 @@
                     </div>
                     <div class="form-group">
                         <label class="col-form-label">
-                            <span>License</span>
+                            <span>Creative commons license</span>
                             <a class="text-muted mx-2" href="#" data-container="body" data-toggle="popover-custom" data-placement="right" data-popover-content="#helper" data-original-title="" title="">
                                 <i class="if if-info-circle if--small"></i>
                                 <div class="sr-only">More info</div>
                             </a>
                             <div class="u-hidden" id="helper">
                                 <div class="popover-body p-0">
-                                    <p>Not sure which license to pick? Go to the <a href="https://chooser-beta.creativecommons.org/">License Chooser from Creative Commons</a>
-                                    </p>
+                                    <p>Not sure which license to pick? Go to the
+                                    <a
+                                    href="https://chooser-beta.creativecommons.org/">License
+                                    Chooser from Creative Commons</a></p>
                                 </div>
                             </div>
                         </label>
-                        <select name="license" class="custom-select w-100">
+                        <select name="cc_license" class="custom-select w-100">
                             <option></option>
-                            {{range .D.Vocabularies.file_license_codes}}
-                            <option{{if eq $.D.File.License .}} selected{{end}} value="{{.}}">{{.}}</option>
+                            {{range .D.Vocabularies.cc_licenses}}
+                            <option{{if eq $.D.File.CCLicense .}} selected{{end}} value="{{.}}">{{$.T "cc_licenses" .}}</option>
                             {{end}}
                         </select>
+                        <label class="col-form-label">
+                            <span>Other license</span>
+                        </label>
+                        <input class="form-control" type="text" name="other_license" value="{{.D.File.OtherLicense}}">
                     </div>
                     <div class="form-group">
                         <label class="col-form-label">Description</label>
                         <textarea class="form-control" name="description" rows="4">{{.D.File.Description}}</textarea>
                     </div>
-                    <button class="btn btn-outline-danger mt-4" type="button"
-                        hx-get="{{pathFor "publication_file_remove" "id" .D.Publication.ID "file_id" .D.File.ID}}"
-                        hx-target="#publication-files-modal"
-                        hx-trigger="click"
-                    >
-                        <i class="if if-delete"></i>
-                        <div class="btn-text">Delete file</div>
-                    </button>
                 </div>
             </div>
             <div class="modal-footer">
