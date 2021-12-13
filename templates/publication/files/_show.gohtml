@@ -14,6 +14,7 @@
             hx-encoding="multipart/form-data"
             hx-target="#publication-files"
             hx-trigger="change"
+	        hx-indicator=".c-file-upload .spinner-border"
         >
             {{.CSRFTag}}
 
@@ -21,7 +22,11 @@
                 <input type="file" name="file">
                 <div class="c-file-upload__content">
                     <p>Drag and drop or</p>
-                    <button class="btn btn-outline-primary">Upload file</button>
+                    <button class="btn btn-outline-primary">Upload file
+                        <div class="spinner-border">
+                            <span class="sr-only"></span>
+                        </div>
+                    </button>
                 </div>
             </div>
 

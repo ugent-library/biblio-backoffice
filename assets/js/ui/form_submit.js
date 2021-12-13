@@ -55,4 +55,26 @@ export default function() {
         BSN.initCallback();
     });
 
+    // Generic spinner for buttons. Add .btn-display-indicator as a button class. Ensure
+    // you've got a spinner added to the button itself e.g.
+    //
+    // <button type="submit" class="btn btn-primary btn-display-indicator">
+    //     <div class="btn-text">Complete description</div>
+    //     <i class="if if-arrow-right"></i>
+    //     <div class="spinner-border">
+    //         <span class="sr-only"></span>
+    //     </div>
+    // </button>
+    function showIndicatorOnButton() {
+        document.querySelectorAll('.btn-display-indicator').forEach(function(button) {
+            button.addEventListener("click", function(evt) {
+                const spinner = button.querySelector('.spinner-border');
+                spinner.style.display = "inline-block";
+                spinner.style.opacity = "1";
+            })
+        })
+    }
+
+    showIndicatorOnButton();
+
 }

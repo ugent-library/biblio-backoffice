@@ -20,8 +20,11 @@
                 <div class="bc-toolbar-item">
                     <form action="{{pathFor "publication_add_multiple_publish" "batch_id" .D.BatchID}}" method="POST">
                         {{.CSRFTag}}
-                        <button type="submit" class="btn btn-success">
+                        <button type="submit" class="btn btn-success btn-display-indicator">
                             <div class="btn-text">Publish all to Biblio</div>
+                            <div class="spinner-border">
+                                <span class="sr-only"></span>
+                            </div>
                         </button>
                     </form>
                 </div>
