@@ -56,7 +56,6 @@ var vocabularies = map[string][]string{
 	"publication_statuses": {
 		"new",
 		"private",
-		"submitted",
 		"returned",
 		"public",
 		"deleted",
