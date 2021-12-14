@@ -14,15 +14,6 @@ var vocabularies = map[string][]string{
 		"cc_by_nc_sa",
 		"cc_by_nc_nd",
 	},
-	"file_license_codes": {
-		"CC0",
-		"CC-BY",
-		"CC-BY-SA",
-		"CC-BY-ND",
-		"CC-BY-NC",
-		"CC-BY-NC-SA",
-		"CC-BY-NC-ND",
-	},
 	"confirmations": {
 		"yes",
 		"no",
