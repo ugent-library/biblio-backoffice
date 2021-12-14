@@ -32,21 +32,26 @@
                 <div class="card mb-6">
                     <div class="card-header">
                         <div class="bc-toolbar">
-                            <div class="bc-toolbar-left">Enter identifier of your dataset in external repository</div>
+                            <div class="bc-toolbar-left">Enter dataset identifier from external repository</div>
                         </div>
                     </div>
                     <div class="card-body">
-                            <div class="form-row">
-                                <div class="col-6">
-                                    <div class="input-group">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text">DOI</span>
-                                        </div>
-                                        <input type="hidden" name="source" value="datacite">
-                                        <input class="form-control" type="text" name="identifier" placeholder="e.g. 10.7484/INSPIREHEP.DATA.RF5P.6M3K">
+                        <p class="mb-4">Enter dataset identifier to import the
+                        metadata of the dataset from an external repository or
+                        database.  Currently, only DOIs (Digital Object
+                        Identifier) are accepted. Alternative identifiers will
+                        be enabled in the near future.</p>
+                        <div class="form-row">
+                            <div class="col-6">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">DOI</span>
                                     </div>
+                                    <input type="hidden" name="source" value="datacite">
+                                    <input class="form-control" type="text" name="identifier" placeholder="e.g. 10.7484/INSPIREHEP.DATA.RF5P.6M3K">
                                 </div>
                             </div>
+                        </div>
                     </div>
                 </div>
 
