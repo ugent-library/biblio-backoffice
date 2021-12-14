@@ -15,6 +15,7 @@ func Register(c controllers.Context) {
 	router := c.Router
 	basePath := c.BaseURL.Path
 
+	router.StrictSlash(true)
 	router.Use(handlers.RecoveryHandler())
 
 	// static files
