@@ -133,10 +133,10 @@ func init() {
 	message.SetString(language.English, "publication_file_access_levels.local", "UGent access")
 	message.SetString(language.English, "publication_file_access_levels.closed", "Private access")
 
-	message.SetString(language.English, "publication_versions.publishedVersion", "Published version")
-	message.SetString(language.English, "publication_versions.authorVersion", "Author's original")
-	message.SetString(language.English, "publication_versions.acceptedVersion", "Accepted manuscript")
-	message.SetString(language.English, "publication_versions.updatedVersion", "Corrected version")
+	message.SetString(language.English, "publication_versions.publishedVersion", "Publisher version/Version of record (VoR)")
+	message.SetString(language.English, "publication_versions.authorVersion", "Author's original (AO)")
+	message.SetString(language.English, "publication_versions.acceptedVersion", "Author accepted manuscript (AAM)")
+	message.SetString(language.English, "publication_versions.updatedVersion", "Corrected version of record (CVoR)")
 
 	message.SetString(language.English, "publication_file_relations.main_file", "Full text")
 	message.SetString(language.English, "publication_file_relations.colophon", "Colophon/Title page")

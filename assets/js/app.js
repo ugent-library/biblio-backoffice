@@ -2,6 +2,7 @@ import htmx from 'htmx.org';
 import csrf from './ui/csrf.js'
 import checkbox from './ui/checkbox.js'
 import bootstrap from './ui/bootstrap.js'
+import popover from './ui/popover.js'
 import header from './ui/header.js'
 import multiple from './ui/multiple.js'
 import changeSubmit from './ui/form_change_submit.js'
@@ -19,6 +20,7 @@ document.addEventListener('DOMContentLoaded', function () {
     tabs()
     checkbox()
     bootstrap()
+    popover()
     header()
     multiple()
     changeSubmit()
