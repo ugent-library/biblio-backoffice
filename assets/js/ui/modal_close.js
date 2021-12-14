@@ -26,7 +26,7 @@ export default function() {
             }
         }, 100)
     }
-    
+
     let modalCloseSecondary = function(evt) {
         let modal = evt.target.closest(".modal")
 
