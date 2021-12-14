@@ -27,6 +27,13 @@ export default function () {
         targetEl.querySelector('.contributor-attributes input[name="last_name"]').removeAttribute("readonly")
     }
 
+    let resetRadioButtons = function() {
+        const ugentButton = document.querySelector('input.membership-ugent');
+        ugentButton.checked = false;
+        const externalButton = document.querySelector('input.membership-external');
+        externalButton.checked = true;
+    }
+
     let addEvents = function() {
         document.querySelectorAll('button.membership-member').forEach(btn =>
             btn.addEventListener('click', function(evt) {
@@ -48,6 +55,7 @@ export default function () {
             btn.addEventListener('click', function(evt){
                 membershipExternal(btn.dataset.target)
                 modalCloseSecondary(btn.closest(".modal"))
+                resetRadioButtons()
             })
         )
     }

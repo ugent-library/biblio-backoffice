@@ -28,20 +28,20 @@
             <ul class="list-group list-group-flush" data-panel-state="read">
                 <li class="list-group-item">
                     {{.D.Show.Text (.D.Show.Label "title") (.D.Show.Value .D.Dataset.Title) .D.Show.Required}}
-                    {{.D.Show.Text (.D.Show.Label "doi") (.D.Show.Value .D.Dataset.DOI)}}
+                    {{.D.Show.Text (.D.Show.Label "doi") (.D.Show.Value .D.Dataset.DOI) (.D.Show.Required)}}
                     {{.D.Show.Text (.D.Show.Label "url") (.D.Show.Value .D.Dataset.URL)}}
                 </li>
                 <li class="list-group-item">
-                    {{.D.Show.Text (.D.Show.Label "publisher") (.D.Show.Value .D.Dataset.Publisher)}}
-                    {{.D.Show.Text (.D.Show.Label "year") (.D.Show.Value .D.Dataset.Year)}}
+                    {{.D.Show.Text (.D.Show.Label "publisher") (.D.Show.Value .D.Dataset.Publisher) (.D.Show.Required)}}
+                    {{.D.Show.Text (.D.Show.Label "year") (.D.Show.Value .D.Dataset.Year) (.D.Show.Required)}}
                 </li>
                 <li class="list-group-item">
-                    {{.D.Show.Text (.D.Show.Label "format") (.D.Show.Value .D.Dataset.Format)}}
+                    {{.D.Show.Text (.D.Show.Label "format") (.D.Show.Value .D.Dataset.Format) (.D.Show.Required)}}
                     {{.D.Show.BadgeList (.D.Show.Label "keyword") (.D.Show.Values .D.Dataset.Keyword)}}
                 </li>
                 <li class="list-group-item">
-                    {{.D.Show.Text (.D.Show.Label "license") (.D.Show.Value .D.Dataset.License)}}
-                    {{.D.Show.Text (.D.Show.Label "access_level") (.D.Show.Value .D.Dataset.AccessLevel (.D.Show.Locale "access_levels"))}}
+                    {{.D.Show.Text (.D.Show.Label "license") (.D.Show.Value .D.Dataset.License) (.D.Show.Required)}}
+                    {{.D.Show.Text (.D.Show.Label "access_level") (.D.Show.Value .D.Dataset.AccessLevel (.D.Show.Locale "access_levels")) (.D.Show.Required)}}
                     {{.D.Show.Text (.D.Show.Label "embargo") (.D.Show.Value .D.Dataset.Embargo)}}
                     {{.D.Show.Text (.D.Show.Label "embargo_to") (.D.Show.Value .D.Dataset.EmbargoTo (.D.Show.Locale "access_levels"))}}
                 </li>

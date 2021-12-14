@@ -30,7 +30,7 @@
     <label class="col-form-label">UGent {{.D.Role}}</label>
     <div class="mt-1">
         <div class="custom-control custom-radio custom-control-inline">
-            <input class="custom-control-input" id="{{.D.Role}}-{{.D.Position}}-member" type="radio" name="membership"
+            <input class="custom-control-input membership-ugent" id="{{.D.Role}}-{{.D.Position}}-member" type="radio" name="membership"
                 {{if .D.Contributor.ID}} checked{{end}}
                 hx-get="{{pathFor "publication_contributors_choose" "id" .D.Publication.ID "role" .D.Role "position" (.D.Position | toString)}}"
                 hx-swap="innerHTML"
