@@ -13,6 +13,7 @@ import radioCard from './ui/radio_card.js'
 import membership from './ui/membership.js'
 import toast from './ui/toast.js'
 import fileEmbargo from './ui/file_embargo.js'
+import datasetEmbargo from './ui/dataset_embargo.js';
 
 document.addEventListener('DOMContentLoaded', function () {
     csrf()
@@ -29,4 +30,5 @@ document.addEventListener('DOMContentLoaded', function () {
     membership()
     toast()
     fileEmbargo()
+    datasetEmbargo()
 });
