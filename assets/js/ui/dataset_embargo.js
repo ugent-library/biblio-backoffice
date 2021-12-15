@@ -17,8 +17,6 @@ export default function () {
 
             let hidden = function(el, name) {
                 const parent = el.parentNode;
-
-                console.log(parent.querySelector('*[name=' + name + '][type=hidden]'));
                 if (parent.querySelector('*[name=' + name + '][type=hidden]') == null) {
                     const hidden = document.createElement('input');
                     hidden.type = "hidden";
