@@ -36,7 +36,7 @@ type Dataset struct {
 	DOI                     string              `json:"doi,omitempty" form:"-"`
 	Embargo                 string              `json:"embargo,omitempty" form:"embargo"`
 	EmbargoTo               string              `json:"embargo_to,omitempty" form:"embargo_to"`
-	Format                  string              `json:"format,omitempty" form:"format"`
+	Format                  []string            `json:"format,omitempty" form:"format"`
 	ID                      string              `json:"_id,omitempty" form:"-"`
 	Keyword                 []string            `json:"keyword,omitempty" form:"keyword"`
 	License                 string              `json:"license,omitempty" form:"license"`
