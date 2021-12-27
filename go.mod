@@ -11,11 +11,11 @@ require (
 	github.com/huandu/xstrings v1.3.2 // indirect
 	github.com/imdario/mergo v0.3.12 // indirect
 	github.com/mitchellh/copystructure v1.2.0 // indirect
+	github.com/ory/graceful v0.1.1
 	github.com/rvflash/elapsed v0.2.0
 	github.com/spf13/cobra v1.2.1
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.9.0
-	github.com/ugent-library/go-graceful v0.0.0-20211104090201-39f21722d44b
 	github.com/ugent-library/go-locale v0.0.0-20211023163356-49e4307227b1
 	github.com/ugent-library/go-oidc v0.0.0-20210901124208-bda4cc73ba56
 	github.com/ugent-library/go-orcid v0.0.0-20211130191640-1138a344c30b

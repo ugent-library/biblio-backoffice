@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html/template"
 	"log"
+	"net/http"
 	"net/url"
 	"os"
 	"strings"
@@ -13,13 +14,13 @@ import (
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
+	"github.com/ory/graceful"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/controllers"
 	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/helpers"
 	"github.com/ugent-library/biblio-backend/internal/routes"
-	"github.com/ugent-library/go-graceful/server"
 	"github.com/ugent-library/go-locale/locale"
 	"github.com/ugent-library/go-oidc/oidc"
 
@@ -190,11 +191,19 @@ var serverStartCmd = &cobra.Command{
 		handler := handlers.LoggingHandler(os.Stdout, router)
 
 		// start server
-		server.New(handler,
-			server.WithHost(viper.GetString("host")),
-			server.WithPort(viper.GetInt("port")),
-			server.WithWriteTimeOut(3*time.Minute),
-			server.WithReadTimeOut(3*time.Minute),
-		).Start()
+		addr := fmt.Sprintf("%s:%d", viper.GetString("host"), viper.GetInt("port"))
+
+		server := graceful.WithDefaults(&http.Server{
+			Addr:         addr,
+			Handler:      handler,
+			ReadTimeout:  3 * time.Minute,
+			WriteTimeout: 3 * time.Minute,
+		})
+
+		log.Println("Starting the server at " + addr)
+		if err := graceful.Graceful(server.ListenAndServe, server.Shutdown); err != nil {
+			log.Fatal(err)
+		}
+		log.Println("Server was shutdown gracefully")
 	},
 }
