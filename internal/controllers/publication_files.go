@@ -4,9 +4,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"net/http/httputil"
-	"net/url"
-	"strings"
 
 	"github.com/gorilla/mux"
 	"github.com/ugent-library/biblio-backend/internal/context"
@@ -43,19 +40,7 @@ func (c *PublicationFiles) Download(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// quick and dirty reverse proxy
-	baseURL, _ := url.Parse(c.Engine.Config.LibreCatURL)
-	url, _ := url.Parse(fileURL)
-	proxy := httputil.NewSingleHostReverseProxy(baseURL)
-	// update the headers to allow for SSL redirection
-	r.URL.Host = url.Host
-	r.URL.Scheme = url.Scheme
-	r.URL.Path = strings.Replace(url.Path, baseURL.Path, "", 1)
-	r.Header.Set("X-Forwarded-Host", r.Header.Get("Host"))
-	r.Header.Del("Cookie")
-	r.Host = url.Host
-	r.SetBasicAuth(c.Engine.Config.LibreCatUsername, c.Engine.Config.LibreCatPassword)
-	proxy.ServeHTTP(w, r)
+	c.Engine.ServePublicationFile(fileURL, w, r)
 }
 
 func (c *PublicationFiles) Thumbnail(w http.ResponseWriter, r *http.Request) {
@@ -76,19 +61,7 @@ func (c *PublicationFiles) Thumbnail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// quick and dirty reverse proxy
-	baseURL, _ := url.Parse(c.Engine.Config.LibreCatURL)
-	url, _ := url.Parse(thumbnailURL)
-	proxy := httputil.NewSingleHostReverseProxy(baseURL)
-	// update the headers to allow for SSL redirection
-	r.URL.Host = url.Host
-	r.URL.Scheme = url.Scheme
-	r.URL.Path = strings.Replace(url.Path, baseURL.Path, "", 1)
-	r.Header.Set("X-Forwarded-Host", r.Header.Get("Host"))
-	r.Header.Del("Cookie")
-	r.Host = url.Host
-	r.SetBasicAuth(c.Engine.Config.LibreCatUsername, c.Engine.Config.LibreCatPassword)
-	proxy.ServeHTTP(w, r)
+	c.Engine.ServePublicationFile(thumbnailURL, w, r)
 }
 
 func (c *PublicationFiles) Upload(w http.ResponseWriter, r *http.Request) {
@@ -125,7 +98,7 @@ func (c *PublicationFiles) Upload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pubFile := models.PublicationFile{
+	pubFile := &models.PublicationFile{
 		Filename:    handler.Filename,
 		FileSize:    int(handler.Size),
 		ContentType: filetype,

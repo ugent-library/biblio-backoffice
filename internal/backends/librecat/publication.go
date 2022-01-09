@@ -1,16 +1,20 @@
-package engine
+package librecat
 
 import (
 	"fmt"
 	"io"
 	"mime/multipart"
 	"net/http"
+	"net/http/httputil"
+	"net/url"
+	"strings"
 
+	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/go-web/forms"
 )
 
-func (e *Engine) UserPublications(userID string, args *SearchArgs) (*models.PublicationHits, error) {
+func (e *Client) UserPublications(userID string, args *engine.SearchArgs) (*models.PublicationHits, error) {
 	qp, err := forms.Encode(args)
 	if err != nil {
 		return nil, err
@@ -22,7 +26,7 @@ func (e *Engine) UserPublications(userID string, args *SearchArgs) (*models.Publ
 	return hits, nil
 }
 
-func (e *Engine) GetPublication(id string) (*models.Publication, error) {
+func (e *Client) GetPublication(id string) (*models.Publication, error) {
 	pub := &models.Publication{}
 	if _, err := e.get(fmt.Sprintf("/publication/%s", id), nil, pub); err != nil {
 		return nil, err
@@ -30,7 +34,23 @@ func (e *Engine) GetPublication(id string) (*models.Publication, error) {
 	return pub, nil
 }
 
-func (e *Engine) CreateUserPublication(userID, pubType string) (*models.Publication, error) {
+// quick and dirty reverse proxy
+func (c *Client) ServePublicationFile(fileURL string, w http.ResponseWriter, r *http.Request) {
+	u, _ := url.Parse(fileURL)
+	baseURL, _ := url.Parse(c.config.URL)
+	proxy := httputil.NewSingleHostReverseProxy(baseURL)
+	// update the headers to allow for SSL redirection
+	r.URL.Host = u.Host
+	r.URL.Scheme = u.Scheme
+	r.URL.Path = strings.Replace(u.Path, baseURL.Path, "", 1)
+	r.Header.Set("X-Forwarded-Host", r.Header.Get("Host"))
+	r.Header.Del("Cookie")
+	r.Host = u.Host
+	r.SetBasicAuth(c.config.Username, c.config.Password)
+	proxy.ServeHTTP(w, r)
+}
+
+func (e *Client) CreateUserPublication(userID, pubType string) (*models.Publication, error) {
 	pub := &models.Publication{Type: pubType, Status: "private"}
 	resPub := &models.Publication{}
 	if _, err := e.post(fmt.Sprintf("/user/%s/publication", userID), pub, resPub); err != nil {
@@ -39,7 +59,7 @@ func (e *Engine) CreateUserPublication(userID, pubType string) (*models.Publicat
 	return resPub, nil
 }
 
-func (e *Engine) ImportUserPublicationByIdentifier(userID, source, identifier string) (*models.Publication, error) {
+func (e *Client) ImportUserPublicationByIdentifier(userID, source, identifier string) (*models.Publication, error) {
 	reqData := struct {
 		Source     string `json:"source"`
 		Identifier string `json:"identifier"`
@@ -54,7 +74,7 @@ func (e *Engine) ImportUserPublicationByIdentifier(userID, source, identifier st
 	return pub, nil
 }
 
-func (e *Engine) ImportUserPublications(userID, source string, file io.Reader) (string, error) {
+func (e *Client) ImportUserPublications(userID, source string, file io.Reader) (string, error) {
 	pipedReader, pipedWriter := io.Pipe()
 	multiPartWriter := multipart.NewWriter(pipedWriter)
 
@@ -86,12 +106,12 @@ func (e *Engine) ImportUserPublications(userID, source string, file io.Reader) (
 
 	}()
 
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/user/%s/publication/import-from-file", e.Config.LibreCatURL, userID), pipedReader)
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/user/%s/publication/import-from-file", e.config.URL, userID), pipedReader)
 	if err != nil {
 		return "", err
 	}
 	req.Header.Add("Content-Type", multiPartWriter.FormDataContentType())
-	req.SetBasicAuth(e.Config.LibreCatUsername, e.Config.LibreCatPassword)
+	req.SetBasicAuth(e.config.Username, e.config.Password)
 
 	resData := struct {
 		BatchID string `json:"batch_id"`
@@ -104,7 +124,7 @@ func (e *Engine) ImportUserPublications(userID, source string, file io.Reader) (
 	return resData.BatchID, nil
 }
 
-func (e *Engine) UpdatePublication(pub *models.Publication) (*models.Publication, error) {
+func (e *Client) UpdatePublication(pub *models.Publication) (*models.Publication, error) {
 	resPub := &models.Publication{}
 	if _, err := e.put(fmt.Sprintf("/publication/%s", pub.ID), pub, resPub); err != nil {
 		return nil, err
@@ -112,7 +132,7 @@ func (e *Engine) UpdatePublication(pub *models.Publication) (*models.Publication
 	return resPub, nil
 }
 
-func (e *Engine) PublishPublication(pub *models.Publication) (*models.Publication, error) {
+func (e *Client) PublishPublication(pub *models.Publication) (*models.Publication, error) {
 	oldStatus := pub.Status
 	pub.Status = "public"
 	updatedPub, err := e.UpdatePublication(pub)
@@ -120,7 +140,7 @@ func (e *Engine) PublishPublication(pub *models.Publication) (*models.Publicatio
 	return updatedPub, err
 }
 
-func (e *Engine) BatchPublishPublications(userID string, args *SearchArgs) (err error) {
+func (e *Client) BatchPublishPublications(userID string, args *engine.SearchArgs) (err error) {
 	var hits *models.PublicationHits
 	for {
 		hits, err = e.UserPublications(userID, args)
@@ -138,7 +158,7 @@ func (e *Engine) BatchPublishPublications(userID string, args *SearchArgs) (err 
 	return
 }
 
-func (e *Engine) GetPublicationDatasets(id string) ([]*models.Dataset, error) {
+func (e *Client) GetPublicationDatasets(id string) ([]*models.Dataset, error) {
 	datasets := make([]*models.Dataset, 0)
 	if _, err := e.get(fmt.Sprintf("/publication/%s/dataset", id), nil, &datasets); err != nil {
 		return nil, err
@@ -146,7 +166,7 @@ func (e *Engine) GetPublicationDatasets(id string) ([]*models.Dataset, error) {
 	return datasets, nil
 }
 
-func (e *Engine) AddPublicationDataset(id, datasetID string) error {
+func (e *Client) AddPublicationDataset(id, datasetID string) error {
 	reqBody := struct {
 		RelatedPublicationID string `json:"related_publication_id"`
 	}{datasetID}
@@ -154,12 +174,12 @@ func (e *Engine) AddPublicationDataset(id, datasetID string) error {
 	return err
 }
 
-func (e *Engine) RemovePublicationDataset(id, datasetID string) error {
+func (e *Client) RemovePublicationDataset(id, datasetID string) error {
 	_, err := e.delete(fmt.Sprintf("/publication/%s/dataset/%s", id, datasetID), nil, nil)
 	return err
 }
 
-func (e *Engine) AddPublicationFile(id string, pubFile models.PublicationFile, file io.Reader) error {
+func (e *Client) AddPublicationFile(id string, pubFile *models.PublicationFile, file io.Reader) error {
 	pipedReader, pipedWriter := io.Pipe()
 	multiPartWriter := multipart.NewWriter(pipedWriter)
 
@@ -187,29 +207,29 @@ func (e *Engine) AddPublicationFile(id string, pubFile models.PublicationFile, f
 
 	}()
 
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/publication/%s/file", e.Config.LibreCatURL, id), pipedReader)
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/publication/%s/file", e.config.URL, id), pipedReader)
 	if err != nil {
 		return err
 	}
 	req.Header.Add("Content-Type", multiPartWriter.FormDataContentType())
-	req.SetBasicAuth(e.Config.LibreCatUsername, e.Config.LibreCatPassword)
+	req.SetBasicAuth(e.config.Username, e.config.Password)
 
 	_, err = e.doRequest(req, nil)
 
 	return err
 }
 
-func (e *Engine) UpdatePublicationFile(id string, pubFile *models.PublicationFile) error {
+func (e *Client) UpdatePublicationFile(id string, pubFile *models.PublicationFile) error {
 	_, err := e.put(fmt.Sprintf("/publication/%s/file/%s", id, pubFile.ID), pubFile, nil)
 	return err
 }
 
-func (e *Engine) RemovePublicationFile(id, fileID string) error {
+func (e *Client) RemovePublicationFile(id, fileID string) error {
 	_, err := e.delete(fmt.Sprintf("/publication/%s/file/%s", id, fileID), nil, nil)
 	return err
 }
 
-func (e *Engine) DeletePublication(id string) error {
+func (e *Client) DeletePublication(id string) error {
 	_, err := e.delete(fmt.Sprintf("/publication/%s", id), nil, nil)
 	return err
 }

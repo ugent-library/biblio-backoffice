@@ -22,7 +22,7 @@ func (c *PublicationDepartments) List(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
 	// Get 20 random departments (no search, init state)
-	hits, _ := c.Engine.SuggestDepartments("")
+	hits, _ := c.Engine.SuggestOrganizations("")
 
 	c.Render.HTML(w, http.StatusOK, "publication/departments/_modal", views.NewData(c.Render, r, struct {
 		Publication *models.Publication
@@ -46,7 +46,7 @@ func (c *PublicationDepartments) ActiveSearch(w http.ResponseWriter, r *http.Req
 
 	// Get 20 results from the search query
 	query := r.Form["search"]
-	hits, _ := c.Engine.SuggestDepartments(query[0])
+	hits, _ := c.Engine.SuggestOrganizations(query[0])
 
 	c.Render.HTML(w, http.StatusOK, "publication/departments/_modal_hits", views.NewData(c.Render, r, struct {
 		Publication *models.Publication

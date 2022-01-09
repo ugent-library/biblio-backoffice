@@ -17,12 +17,14 @@ import (
 	"github.com/ory/graceful"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/ugent-library/biblio-backend/internal/backends/librecat"
 	"github.com/ugent-library/biblio-backend/internal/controllers"
 	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/helpers"
 	"github.com/ugent-library/biblio-backend/internal/routes"
 	"github.com/ugent-library/go-locale/locale"
 	"github.com/ugent-library/go-oidc/oidc"
+	"github.com/ugent-library/go-orcid/orcid"
 
 	"github.com/ugent-library/go-web/mix"
 	"github.com/ugent-library/go-web/urls"
@@ -66,16 +68,28 @@ func buildRouter() *mux.Router {
 	}
 
 	// engine
-	e, err := engine.New(engine.Config{
-		LibreCatURL:       viper.GetString("librecat-url"),
-		LibreCatUsername:  viper.GetString("librecat-username"),
-		LibreCatPassword:  viper.GetString("librecat-password"),
-		ORCIDClientID:     viper.GetString("orcid-client-id"),
-		ORCIDClientSecret: viper.GetString("orcid-client-secret"),
-		ORCIDSandbox:      viper.GetBool("orcid-sandbox"),
+	librecatClient := librecat.New(librecat.Config{
+		URL:      viper.GetString("librecat-url"),
+		Username: viper.GetString("librecat-username"),
+		Password: viper.GetString("librecat-password"),
 	})
-	if err != nil {
-		log.Fatal(err)
+	orcidConfig := orcid.Config{
+		ClientID:     viper.GetString("orcid-client-id"),
+		ClientSecret: viper.GetString("orcid-client-secret"),
+		Sandbox:      viper.GetBool("orcid-sandbox"),
+	}
+	orcidClient := orcid.NewMemberClient(orcidConfig)
+	e := &engine.Engine{
+		ORCIDSandbox:             orcidConfig.Sandbox,
+		ORCIDClient:              orcidClient,
+		DatasetService:           librecatClient,
+		DatasetSearchService:     librecatClient,
+		PublicationService:       librecatClient,
+		PublicationSearchService: librecatClient,
+		PersonService:            librecatClient,
+		ProjectService:           librecatClient,
+		UserService:              librecatClient,
+		SuggestionService:        librecatClient,
 	}
 
 	// router

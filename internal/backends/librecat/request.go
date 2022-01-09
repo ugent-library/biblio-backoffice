@@ -1,4 +1,4 @@
-package engine
+package librecat
 
 import (
 	"bytes"
@@ -19,39 +19,39 @@ type responsePayload struct {
 	Errors jsonapi.Errors  `json:"errors"`
 }
 
-func (e *Engine) get(path string, qp url.Values, responseData interface{}) (*http.Response, error) {
-	req, err := e.newRequest("GET", path, qp, nil)
+func (c *Client) get(path string, qp url.Values, responseData interface{}) (*http.Response, error) {
+	req, err := c.newRequest("GET", path, qp, nil)
 	if err != nil {
 		return nil, err
 	}
-	return e.doRequest(req, responseData)
+	return c.doRequest(req, responseData)
 }
 
-func (e *Engine) post(path string, requestData, responseData interface{}) (*http.Response, error) {
-	req, err := e.newRequest("POST", path, nil, requestData)
+func (c *Client) post(path string, requestData, responseData interface{}) (*http.Response, error) {
+	req, err := c.newRequest("POST", path, nil, requestData)
 	if err != nil {
 		return nil, err
 	}
-	return e.doRequest(req, responseData)
+	return c.doRequest(req, responseData)
 }
 
-func (e *Engine) put(path string, requestData, responseData interface{}) (*http.Response, error) {
-	req, err := e.newRequest("PUT", path, nil, requestData)
+func (c *Client) put(path string, requestData, responseData interface{}) (*http.Response, error) {
+	req, err := c.newRequest("PUT", path, nil, requestData)
 	if err != nil {
 		return nil, err
 	}
-	return e.doRequest(req, responseData)
+	return c.doRequest(req, responseData)
 }
 
-func (e *Engine) delete(path string, qp url.Values, responseData interface{}) (*http.Response, error) {
-	req, err := e.newRequest("DELETE", path, qp, nil)
+func (c *Client) delete(path string, qp url.Values, responseData interface{}) (*http.Response, error) {
+	req, err := c.newRequest("DELETE", path, qp, nil)
 	if err != nil {
 		return nil, err
 	}
-	return e.doRequest(req, responseData)
+	return c.doRequest(req, responseData)
 }
 
-func (e *Engine) newRequest(method, path string, vals url.Values, requestData interface{}) (*http.Request, error) {
+func (c *Client) newRequest(method, path string, vals url.Values, requestData interface{}) (*http.Request, error) {
 	var buf io.ReadWriter
 	if requestData != nil {
 		buf = new(bytes.Buffer)
@@ -61,7 +61,7 @@ func (e *Engine) newRequest(method, path string, vals url.Values, requestData in
 		}
 	}
 
-	u := e.Config.LibreCatURL + path
+	u := c.config.URL + path
 	if vals != nil {
 		u = u + "?" + vals.Encode()
 	}
@@ -70,7 +70,7 @@ func (e *Engine) newRequest(method, path string, vals url.Values, requestData in
 	if err != nil {
 		return nil, err
 	}
-	req.SetBasicAuth(e.Config.LibreCatUsername, e.Config.LibreCatPassword)
+	req.SetBasicAuth(c.config.Username, c.config.Password)
 	if requestData != nil {
 		req.Header.Set("Content-Type", "application/json")
 	}
@@ -79,8 +79,8 @@ func (e *Engine) newRequest(method, path string, vals url.Values, requestData in
 	return req, nil
 }
 
-func (e *Engine) doRequest(req *http.Request, responseData interface{}) (*http.Response, error) {
-	res, err := e.librecatClient.Do(req)
+func (c *Client) doRequest(req *http.Request, responseData interface{}) (*http.Response, error) {
+	res, err := c.http.Do(req)
 	if err != nil {
 		return res, err
 	}

@@ -3,9 +3,7 @@ package controllers
 import (
 	"log"
 	"net/http"
-	"net/http/httputil"
 	"net/url"
-	"strings"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -106,19 +104,7 @@ func (c *Publications) Thumbnail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// quick and dirty reverse proxy
-	baseURL, _ := url.Parse(c.Engine.Config.LibreCatURL)
-	url, _ := url.Parse(pub.ThumbnailURL())
-	proxy := httputil.NewSingleHostReverseProxy(baseURL)
-	// update the headers to allow for SSL redirection
-	r.URL.Host = url.Host
-	r.URL.Scheme = url.Scheme
-	r.URL.Path = strings.Replace(url.Path, baseURL.Path, "", 1)
-	r.Header.Set("X-Forwarded-Host", r.Header.Get("Host"))
-	r.Header.Del("Cookie")
-	r.Host = url.Host
-	r.SetBasicAuth(c.Engine.Config.LibreCatUsername, c.Engine.Config.LibreCatPassword)
-	proxy.ServeHTTP(w, r)
+	c.Engine.ServePublicationFile(pub.ThumbnailURL(), w, r)
 }
 
 func (c *Publications) Summary(w http.ResponseWriter, r *http.Request) {

@@ -22,7 +22,7 @@ func (c *DatasetDepartments) List(w http.ResponseWriter, r *http.Request) {
 	dataset := context.GetDataset(r.Context())
 
 	// Get 20 random departments (no search, init state)
-	hits, _ := c.Engine.SuggestDepartments("")
+	hits, _ := c.Engine.SuggestOrganizations("")
 
 	c.Render.HTML(w, http.StatusOK, "dataset/departments/_modal", views.NewData(c.Render, r, struct {
 		Dataset *models.Dataset
@@ -46,7 +46,7 @@ func (c *DatasetDepartments) ActiveSearch(w http.ResponseWriter, r *http.Request
 
 	// Get 20 results from the search query
 	query := r.Form["search"]
-	hits, _ := c.Engine.SuggestDepartments(query[0])
+	hits, _ := c.Engine.SuggestOrganizations(query[0])
 
 	c.Render.HTML(w, http.StatusOK, "dataset/departments/_modal_hits", views.NewData(c.Render, r, struct {
 		Dataset *models.Dataset

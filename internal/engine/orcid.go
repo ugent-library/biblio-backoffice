@@ -31,7 +31,7 @@ import (
 func (e *Engine) AddPublicationToORCID(orcidID, orcidToken string, p *models.Publication) (*models.Publication, error) {
 	client := orcid.NewMemberClient(orcid.Config{
 		Token:   orcidToken,
-		Sandbox: e.Config.ORCIDSandbox,
+		Sandbox: e.ORCIDSandbox,
 	})
 
 	work := publicationToORCID(p)
