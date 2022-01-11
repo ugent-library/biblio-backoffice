@@ -55,9 +55,15 @@ type UserService interface {
 	GetUserByUsername(string) (*models.User, error)
 }
 
-type SuggestionService interface {
+type OrganizationSearchService interface {
 	SuggestOrganizations(string) ([]models.Completion, error)
+}
+
+type PersonSearchService interface {
 	SuggestPeople(string) ([]models.Person, error)
+}
+
+type ProjectSearchService interface {
 	SuggestProjects(string) ([]models.Completion, error)
 }
 
@@ -71,5 +77,7 @@ type Engine struct {
 	PublicationService
 	PublicationSearchService
 	UserService
-	SuggestionService
+	OrganizationSearchService
+	PersonSearchService
+	ProjectSearchService
 }

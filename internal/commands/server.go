@@ -80,16 +80,18 @@ func buildRouter() *mux.Router {
 	}
 	orcidClient := orcid.NewMemberClient(orcidConfig)
 	e := &engine.Engine{
-		ORCIDSandbox:             orcidConfig.Sandbox,
-		ORCIDClient:              orcidClient,
-		DatasetService:           librecatClient,
-		DatasetSearchService:     librecatClient,
-		PublicationService:       librecatClient,
-		PublicationSearchService: librecatClient,
-		PersonService:            librecatClient,
-		ProjectService:           librecatClient,
-		UserService:              librecatClient,
-		SuggestionService:        librecatClient,
+		ORCIDSandbox:              orcidConfig.Sandbox,
+		ORCIDClient:               orcidClient,
+		DatasetService:            librecatClient,
+		DatasetSearchService:      librecatClient,
+		PublicationService:        librecatClient,
+		PublicationSearchService:  librecatClient,
+		PersonService:             librecatClient,
+		ProjectService:            librecatClient,
+		UserService:               librecatClient,
+		OrganizationSearchService: librecatClient,
+		PersonSearchService:       librecatClient,
+		ProjectSearchService:      librecatClient,
 	}
 
 	// router
