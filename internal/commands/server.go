@@ -18,6 +18,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/backends/librecat"
+	"github.com/ugent-library/biblio-backend/internal/backends/spdx"
 	"github.com/ugent-library/biblio-backend/internal/controllers"
 	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/helpers"
@@ -92,6 +93,7 @@ func buildRouter() *mux.Router {
 		OrganizationSearchService: librecatClient,
 		PersonSearchService:       librecatClient,
 		ProjectSearchService:      librecatClient,
+		LicenseSearchService:      spdx.New(),
 	}
 
 	// router

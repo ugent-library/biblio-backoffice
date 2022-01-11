@@ -67,6 +67,10 @@ type ProjectSearchService interface {
 	SuggestProjects(string) ([]models.Completion, error)
 }
 
+type LicenseSearchService interface {
+	SuggestLicenses(string) ([]models.Completion, error)
+}
+
 type Engine struct {
 	ORCIDSandbox bool
 	ORCIDClient  *orcid.MemberClient
@@ -80,4 +84,5 @@ type Engine struct {
 	OrganizationSearchService
 	PersonSearchService
 	ProjectSearchService
+	LicenseSearchService
 }
