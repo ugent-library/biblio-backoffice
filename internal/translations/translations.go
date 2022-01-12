@@ -529,4 +529,9 @@ func init() {
 	message.SetString(language.English, "dataset.single_import.import_by_id.id_not_found", "Unable to find this DOI in DataCite")
 	message.SetString(language.English, "dataset.single_import.string.minLength", "Not a valid DOI")
 	message.SetString(language.English, "dataset.single_import.import_by_id.import_failed", "Sorry, something went wrong. Could not import the dataset")
+
+	message.SetString(language.English, "tooltip.publication.classification", "The publication will be classified by the Biblio team as part of the bibliographic review process.")
+
+	message.SetString(language.English, "tooltip.publication.wos_type", "This is the type assigned by Web of Science when a publication is also registered in Web of Science and can be different from the Biblio type.")
+
 }
