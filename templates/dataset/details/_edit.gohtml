@@ -40,16 +40,17 @@
                     {{.D.Form.Text (.D.Form.Name "url") (.D.Form.Value .D.Dataset.URL) (.D.Form.Cols 3)}}
                 </li>
                 <li class="list-group-item">
-                    {{.D.Form.Text (.D.Form.Name "publisher") (.D.Form.Value .D.Dataset.Publisher) (.D.Form.Cols 9) (.D.Form.Required)}}
+                    {{.D.Form.Text (.D.Form.Name "publisher") (.D.Form.Value .D.Dataset.Publisher) (.D.Form.Cols 9) (.D.Form.Required) (.D.Form.Tooltip (.T "tooltip.dataset" "publisher"))}}
                     {{.D.Form.Text (.D.Form.Name "year") (.D.Form.Value .D.Dataset.Year) (.D.Form.Cols 3) (.D.Form.Required)}}
                 </li>
                 <li class="list-group-item">
-                    {{.D.Form.TextRepeat (.D.Form.Name "format") (.D.Form.Values .D.Dataset.Format) (.D.Form.Cols 9) (.D.Form.Required)}}
+                    {{.D.Form.TextRepeat (.D.Form.Name "format") (.D.Form.Values .D.Dataset.Format) (.D.Form.Cols 9) (.D.Form.Required) (.D.Form.Tooltip (.T "tooltip.dataset" "format"))}}
 					{{.D.Form.TextRepeat (.D.Form.Name "keyword") (.D.Form.Values .D.Dataset.Keyword) (.D.Form.Cols 9)}}
                 </li>
                 <li class="list-group-item">
-                    {{.D.Form.Text (.D.Form.Name "license") (.D.Form.Value .D.Dataset.License) (.D.Form.Cols 9) (.D.Form.Required)}}
+                    {{.D.Form.Text (.D.Form.Name "license") (.D.Form.Value .D.Dataset.License) (.D.Form.Cols 9) (.D.Form.Required) (.D.Form.Tooltip (.T "tooltip.dataset" "license"))}}
                     {{.D.Form.List (.D.Form.Name "access_level") (.D.Form.Value .D.Dataset.AccessLevel) (.D.Form.Cols 3)
+                        (.D.Form.Tooltip (.T "tooltip.dataset" "access_level"))
                         (.D.Form.Choices .D.Vocabularies.access_levels
                         (.D.Form.Locale "access_levels")) (.D.Form.EmptyChoice) (.D.Form.Required)}}
                     {{.D.Form.Date (.D.Form.Name "embargo") (.D.Form.Value .D.Dataset.Embargo) (.D.Form.Cols 3)}}
