@@ -30,11 +30,13 @@ func (c *Client) GetDataset(id string) (*models.Dataset, error) {
 
 func (c *Client) ImportUserDatasetByIdentifier(userID, source, identifier string) (*models.Dataset, error) {
 	reqData := struct {
-		Source     string `json:"source"`
-		Identifier string `json:"identifier"`
+		Source          string `json:"source"`
+		Identifier      string `json:"identifier"`
+		CreationContext string `json:"creation_context"`
 	}{
 		source,
 		identifier,
+		"biblio-backend",
 	}
 	dataset := &models.Dataset{}
 	if _, err := c.post(fmt.Sprintf("/user/%s/publication/import", userID), &reqData, dataset); err != nil {
