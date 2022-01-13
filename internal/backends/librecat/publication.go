@@ -51,7 +51,7 @@ func (c *Client) ServePublicationFile(fileURL string, w http.ResponseWriter, r *
 }
 
 func (e *Client) CreateUserPublication(userID, pubType string) (*models.Publication, error) {
-	pub := &models.Publication{Type: pubType, Status: "private"}
+	pub := &models.Publication{Type: pubType, Status: "private", CreationContext: "biblio-backend"}
 	resPub := &models.Publication{}
 	if _, err := e.post(fmt.Sprintf("/user/%s/publication", userID), pub, resPub); err != nil {
 		return nil, err
@@ -61,11 +61,13 @@ func (e *Client) CreateUserPublication(userID, pubType string) (*models.Publicat
 
 func (e *Client) ImportUserPublicationByIdentifier(userID, source, identifier string) (*models.Publication, error) {
 	reqData := struct {
-		Source     string `json:"source"`
-		Identifier string `json:"identifier"`
+		Source          string `json:"source"`
+		Identifier      string `json:"identifier"`
+		CreationContext string `json:"creation_context"`
 	}{
 		source,
 		identifier,
+		"biblio-backend",
 	}
 	pub := &models.Publication{}
 	if _, err := e.post(fmt.Sprintf("/user/%s/publication/import", userID), &reqData, pub); err != nil {
@@ -92,6 +94,10 @@ func (e *Client) ImportUserPublications(userID, source string, file io.Reader) (
 		defer multiPartWriter.Close()
 
 		if err := multiPartWriter.WriteField("source", source); err != nil {
+			return
+		}
+
+		if err := multiPartWriter.WriteField("creation_context", "biblio-backend"); err != nil {
 			return
 		}
 

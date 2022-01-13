@@ -74,6 +74,7 @@ type Publication struct {
 	CompletenessScore       int                     `json:"completeness_score,omitempty" form:"-"`
 	Conference              PublicationConference   `json:"conference,omitempty" form:"conference"`
 	ConferenceType          string                  `json:"conference_type,omitempty" form:"conference_type"`
+	CreationContext         string                  `json:"creation_context,omitempty" form:"-"`
 	CreatorID               string                  `json:"creator_id,omitempty" form:"-"`
 	DateCreated             *time.Time              `json:"date_created,omitempty" form:"-"`
 	DateUpdated             *time.Time              `json:"date_updated,omitempty" form:"-"`

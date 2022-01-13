@@ -29,6 +29,7 @@ type Dataset struct {
 	Author                  []*Contributor      `json:"author,omitempty" form:"-"`
 	CompletenessScore       int                 `json:"completeness_score,omitempty" form:"-"`
 	Contributor             []*Contributor      `json:"contributor,omitempty" form:"-"`
+	CreationContext         string              `json:"creation_context,omitempty" form:"-"`
 	CreatorID               string              `json:"creator_id,omitempty" form:"-"`
 	DateCreated             *time.Time          `json:"date_created,omitempty" form:"-"`
 	DateUpdated             *time.Time          `json:"date_updated,omitempty" form:"-"`
