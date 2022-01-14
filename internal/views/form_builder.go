@@ -10,23 +10,24 @@ import (
 )
 
 type formData struct {
-	Name          string
-	values        []string
-	Label         string
-	ShowLabel     bool
-	Tooltip       string
-	Placeholder   string
-	Required      bool
-	Checked       bool
-	Max           string
-	Min           string
-	Choices       []string
-	ChoicesLabels []string
-	EmptyChoice   bool
-	Cols          int
-	Rows          int
-	Error         string
-	errorPointer  string
+	Name            string
+	values          []string
+	Label           string
+	ShowLabel       bool
+	Tooltip         string
+	Placeholder     string
+	Required        bool
+	Checked         bool
+	Max             string
+	Min             string
+	Choices         []string
+	ChoicesLabels   []string
+	EmptyChoice     bool
+	Cols            int
+	Rows            int
+	AutocompleteURL string
+	Error           string
+	errorPointer    string
 }
 
 func (f *formData) Value() string {
@@ -208,6 +209,12 @@ func (b *FormBuilder) Rows(num int) formOption {
 func (b *FormBuilder) ErrorPointer(ptr string) formOption {
 	return func(d *formData) {
 		d.errorPointer = ptr
+	}
+}
+
+func (b *FormBuilder) AutocompleteURL(v string) formOption {
+	return func(d *formData) {
+		d.AutocompleteURL = v
 	}
 }
 

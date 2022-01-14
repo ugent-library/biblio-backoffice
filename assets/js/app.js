@@ -6,6 +6,7 @@ import popover from './ui/popover.js'
 import header from './ui/header.js'
 import multiple from './ui/multiple.js'
 import changeSubmit from './ui/form_change_submit.js'
+import autocomplete from './ui/autocomplete.js';
 import submit from './ui/form_submit.js'
 import modalClose from './ui/modal_close.js'
 import modalPopper from './ui/modal_popper.js'
@@ -25,6 +26,7 @@ document.addEventListener('DOMContentLoaded', function () {
     header()
     multiple()
     changeSubmit()
+    autocomplete()
     submit()
     modalClose()
     modalPopper()

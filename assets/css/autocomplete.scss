@@ -1,0 +1,14 @@
+.autocomplete {
+    position: relative;
+
+    .autocomplete-hits {
+        position: absolute;
+        z-index: 9999;
+        left: 1.2rem;
+        right: 1.2rem;
+
+        .autocomplete-hit {
+            cursor: pointer;
+        }
+    }
+}

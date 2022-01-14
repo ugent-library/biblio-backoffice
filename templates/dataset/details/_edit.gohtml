@@ -48,7 +48,8 @@
 					{{.D.Form.TextRepeat (.D.Form.Name "keyword") (.D.Form.Values .D.Dataset.Keyword) (.D.Form.Cols 9)}}
                 </li>
                 <li class="list-group-item">
-                    {{.D.Form.Text (.D.Form.Name "license") (.D.Form.Value .D.Dataset.License) (.D.Form.Cols 9) (.D.Form.Required)}}
+                    {{.D.Form.Text (.D.Form.Name "license") (.D.Form.Value .D.Dataset.License) (.D.Form.Cols 9)
+                        (.D.Form.Required) (.D.Form.AutocompleteURL (pathFor "license_choose" | toString))}}
                     {{.D.Form.List (.D.Form.Name "access_level") (.D.Form.Value .D.Dataset.AccessLevel) (.D.Form.Cols 3)
                         (.D.Form.Choices .D.Vocabularies.access_levels
                         (.D.Form.Locale "access_levels")) (.D.Form.EmptyChoice) (.D.Form.Required)}}

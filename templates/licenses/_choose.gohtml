@@ -1,0 +1,7 @@
+{{if .D.Suggestions}}
+<ul class="list-group">
+    {{range .D.Suggestions}}
+    <li class="list-group-item list-group-item-action autocomplete-hit" data-value="{{.ID}}">{{.ID}} {{.Description}}</li>
+    {{end}}
+</ul>
+{{end}}

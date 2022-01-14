@@ -49,6 +49,8 @@ func Register(c controllers.Context) {
 	datasetContributorsController := controllers.NewDatasetContributors(c)
 	datasetPublicationsController := controllers.NewDatasetPublications(c)
 
+	licensesController := controllers.NewLicenses(c)
+
 	// TODO fix absolute url generation
 	// var schemes []string
 	// if u.Scheme == "http" {
@@ -490,4 +492,9 @@ func Register(c controllers.Context) {
 	datasetEditRouter.HandleFunc("/htmx/publications/remove/{publication_id}", datasetPublicationsController.Remove).
 		Methods("PATCH").
 		Name("dataset_publications_remove")
+
+	licensesRouter := r.PathPrefix("/license").Subrouter()
+	licensesRouter.HandleFunc("/htmx/choose", licensesController.Choose).
+		Methods("GET").
+		Name("license_choose")
 }

@@ -14155,3 +14155,16 @@ h4 {
   display: inline-block;
   opacity: 1;
 }
+
+.autocomplete {
+  position: relative;
+}
+.autocomplete .autocomplete-hits {
+  position: absolute;
+  z-index: 9999;
+  left: 1.2rem;
+  right: 1.2rem;
+}
+.autocomplete .autocomplete-hits .autocomplete-hit {
+  cursor: pointer;
+}

@@ -8,8 +8,17 @@
         </a>
         {{ end }}
     </label>
-    <div class="col-{{ .Cols }}">
-        <input class="form-control{{ if .Error }} is-invalid{{ end }}" name="{{ .Name }}" type="text" value="{{ .Value }}">
+    <div class="col-{{ .Cols }}{{if .AutocompleteURL}} autocomplete{{end}}" data-target="[name={{ .Name }}]">
+        <input class="form-control{{ if .Error }} is-invalid{{ end }}" name="{{ .Name }}" type="text" value="{{ .Value }}"
+            {{if .AutocompleteURL}}
+            autocomplete="off"
+            hx-get="{{ .AutocompleteURL }}"
+            hx-trigger="keyup changed delay:100ms"
+            hx-target="#{{ .Name }}-autocomplete"
+            hx-vals='{"input": {{ .Name | quote }}}'
+            {{end}}
+        >
+        {{ if .AutocompleteURL }}<div class="autocomplete-hits" id="{{ .Name }}-autocomplete"></div>{{ end }}
         {{ if .Error }}<div class="invalid-feedback">{{ .Error }}</div>{{ end }}
     </div>
 </div>
