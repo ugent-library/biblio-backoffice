@@ -31,7 +31,6 @@ func New() *localSuggester {
 	indexMapping := bleve.NewIndexMapping()
 	docMapping := bleve.NewDocumentMapping()
 	textFieldMapping := bleve.NewTextFieldMapping()
-	textFieldMapping.Analyzer = "en"
 	docMapping.AddFieldMappingsAt("licenseId", textFieldMapping)
 	docMapping.AddFieldMappingsAt("name", textFieldMapping)
 	indexMapping.AddDocumentMapping("_default", docMapping)
@@ -61,11 +60,9 @@ func (c *localSuggester) SuggestLicenses(q string) ([]models.Completion, error) 
 	words := strings.Fields(q)
 
 	if len(words) == 1 {
-		m := bleve.NewMatchQuery(q)
-		m.Fuzziness = 1
 		bq := bleve.NewDisjunctionQuery(
 			bleve.NewPrefixQuery(q),
-			m,
+			bleve.NewMatchQuery(q),
 		)
 		search := bleve.NewSearchRequest(bq)
 		search.Fields = []string{"name"}
