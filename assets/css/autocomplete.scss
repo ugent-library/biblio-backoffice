@@ -7,6 +7,11 @@
         left: 1.2rem;
         right: 1.2rem;
 
+        .list-group {
+            max-height: 200px;
+            overflow-y: auto;    
+        }
+
         .autocomplete-hit {
             cursor: pointer;
         }

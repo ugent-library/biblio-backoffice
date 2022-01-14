@@ -14165,6 +14165,10 @@ h4 {
   left: 1.2rem;
   right: 1.2rem;
 }
+.autocomplete .autocomplete-hits .list-group {
+  max-height: 200px;
+  overflow-y: auto;
+}
 .autocomplete .autocomplete-hits .autocomplete-hit {
   cursor: pointer;
 }
