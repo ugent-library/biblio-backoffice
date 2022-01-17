@@ -25,7 +25,7 @@ type localSuggester struct {
 
 func New() *localSuggester {
 	l := &licenseEnv{}
-	file, _ := ioutil.ReadFile("etc/licenses.json")
+	file, _ := ioutil.ReadFile("etc/spdx-licenses.json")
 	_ = json.Unmarshal([]byte(file), l)
 
 	indexMapping := bleve.NewIndexMapping()
