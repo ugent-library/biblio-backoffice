@@ -44,7 +44,8 @@
                     {{.D.Form.Text (.D.Form.Name "year") (.D.Form.Value .D.Dataset.Year) (.D.Form.Cols 3) (.D.Form.Required)}}
                 </li>
                 <li class="list-group-item">
-                    {{.D.Form.TextRepeat (.D.Form.Name "format") (.D.Form.Values .D.Dataset.Format) (.D.Form.Cols 9) (.D.Form.Required)}}
+                    {{.D.Form.TextRepeat (.D.Form.Name "format") (.D.Form.Values .D.Dataset.Format) (.D.Form.Cols 9)
+                        (.D.Form.Required) (.D.Form.AutocompleteURL (pathFor "media_type_choose" | toString))}}
 					{{.D.Form.TextRepeat (.D.Form.Name "keyword") (.D.Form.Values .D.Dataset.Keyword) (.D.Form.Cols 9)}}
                 </li>
                 <li class="list-group-item">

@@ -1,4 +1,4 @@
-package spdx
+package spdxlicenses
 
 import (
 	"encoding/json"

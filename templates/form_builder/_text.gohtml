@@ -8,7 +8,7 @@
         </a>
         {{ end }}
     </label>
-    <div class="col-{{ .Cols }}{{if .AutocompleteURL}} autocomplete{{end}}" data-target="[name={{ .Name }}]">
+    <div class="col-{{ .Cols }}{{if .AutocompleteURL}} autocomplete{{end}}"{{if .AutocompleteURL}} data-target="[name={{ .Name }}]"{{end}}>
         <input class="form-control{{ if .Error }} is-invalid{{ end }}" name="{{ .Name }}" type="text" value="{{ .Value }}"
             {{if .AutocompleteURL}}
             autocomplete="off"

@@ -10,12 +10,23 @@
     </label>
     <div class="col-{{.Cols}} form-values">
         {{ range $i, $v := .Values }}
-        <div class="d-flex mb-3 form-value">
-            <input class="form-control{{ if $.Error }} is-invalid{{ end }}" name="{{ $.Name }}[{{ $i }}]" type="text" value="{{ $v }}">
-            <button class="btn btn-link-muted btn-icon-only ml-3 form-value-delete" type="button">
-                <i class="if if-delete"></i>
-                <div class="sr-only">Delete</div>
-            </button>
+        <div class="form-value{{if $.AutocompleteURL}} autocomplete{{end}}"{{if $.AutocompleteURL}} data-target="[name='{{ $.Name }}[{{ $i }}]']"{{end}}>
+            <div class="d-flex mb-3">
+                <input class="form-control{{ if $.Error }} is-invalid{{ end }}" name="{{ $.Name }}[{{ $i }}]" type="text" value="{{ $v }}"
+                    {{if $.AutocompleteURL}}
+                    autocomplete="off"
+                    hx-get="{{ $.AutocompleteURL }}"
+                    hx-trigger="keyup changed delay:100ms"
+                    hx-target="#{{ $.Name }}-{{$i}}-autocomplete"
+                    hx-vals='{"input": "{{ $.Name }}[{{ $i }}]"}'
+                    {{end}}
+                >
+                <button class="btn btn-link-muted btn-icon-only ml-3 form-value-delete" type="button">
+                    <i class="if if-delete"></i>
+                    <div class="sr-only">Delete</div>
+                </button>
+            </div>
+            {{ if $.AutocompleteURL }}<div class="autocomplete-hits" id="{{ $.Name }}-{{$i}}-autocomplete"></div>{{ end }}
         </div>
         {{ end }}
         <div class="mb-3 form-value">

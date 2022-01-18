@@ -50,6 +50,7 @@ func Register(c controllers.Context) {
 	datasetPublicationsController := controllers.NewDatasetPublications(c)
 
 	licensesController := controllers.NewLicenses(c)
+	mediaTypesController := controllers.NewMediaTypes(c)
 
 	// TODO fix absolute url generation
 	// var schemes []string
@@ -497,4 +498,9 @@ func Register(c controllers.Context) {
 	licensesRouter.HandleFunc("/htmx/choose", licensesController.Choose).
 		Methods("GET").
 		Name("license_choose")
+
+	mediaTypesRouter := r.PathPrefix("/media_types").Subrouter()
+	mediaTypesRouter.HandleFunc("/htmx/choose", mediaTypesController.Choose).
+		Methods("GET").
+		Name("media_type_choose")
 }
