@@ -21,6 +21,11 @@ func init() {
 	message.SetString(language.English, "publication.contributor.title.supervisor", "Supervisors")
 	message.SetString(language.English, "dataset.contributor.title.author", "Creators")
 	message.SetString(language.English, "dataset.contributor.title.contributor", "Contributors")
+	message.SetString(language.English, "publication.contributor.role.author", "author")
+	message.SetString(language.English, "publication.contributor.role.editor", "editor")
+	message.SetString(language.English, "publication.contributor.role.promoter", "promoter")
+	message.SetString(language.English, "dataset.contributor.role.author", "creator")
+	message.SetString(language.English, "dataset.contributor.role.contributor", "contributor")
 
 	message.SetString(language.English, "credit_roles.first_author", "First author")
 	message.SetString(language.English, "credit_roles.last_author", "Last author")
