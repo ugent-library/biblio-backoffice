@@ -38,10 +38,10 @@ var vocabularies = map[string][]string{
 		"writing_review_editing",
 	},
 	"access_levels": {
-		"info:eu-repo/semantics/closedAccess",
-		"info:eu-repo/semantics/embargoedAccess",
-		"info:eu-repo/semantics/restrictedAccess",
 		"info:eu-repo/semantics/openAccess",
+		"info:eu-repo/semantics/restrictedAccess",
+		"info:eu-repo/semantics/embargoedAccess",
+		"info:eu-repo/semantics/closedAccess",
 	},
 	"publication_types": {
 		"journal_article",
