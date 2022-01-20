@@ -34,6 +34,7 @@ import (
 func init() {
 	serverCmd.PersistentFlags().String("base-url", "", "base url")
 
+	serverStartCmd.Flags().String("mode", defaultMode, "server mode (development, staging or production)")
 	serverStartCmd.Flags().String("host", defaultHost, "server host")
 	serverStartCmd.Flags().Int("port", defaultPort, "server port")
 	serverStartCmd.Flags().String("session-name", defaultSessionName, "session name")
@@ -141,6 +142,7 @@ func buildRouter() *mux.Router {
 	// controller config
 	config := controllers.Context{
 		Engine:       e,
+		Mode:         viper.GetString("mode"),
 		BaseURL:      baseURL,
 		Router:       router,
 		Render:       r,

@@ -7,8 +7,8 @@
     </div>
 
     <div id="contributors-content" class="tab-pane fade" role="tabpanel" aria-labelledby="contributors-tab">
-        {{template "dataset/contributors/_show" (.NewData (dict "Dataset" .D.Dataset "Show" .D.Show "Role" "author"))}}
-        {{/*template "dataset/contributors/_show" (.NewData (dict "Dataset" .D.Dataset "Show" .D.Show "Role" "contributor"))*/}}
+        {{template "dataset/contributors/_show" (.ViewData (dict "Dataset" .D.Dataset "Show" .D.Show "Role" "author"))}}
+        {{/*template "dataset/contributors/_show" (.ViewData (dict "Dataset" .D.Dataset "Show" .D.Show "Role" "contributor"))*/}}
     </div>
 
     <div id="publications-content" class="tab-pane fade" role="tabpanel" aria-labelledby="publications-tab">

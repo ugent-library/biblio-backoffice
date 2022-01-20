@@ -10,7 +10,7 @@
     <tbody>
         {{range $i, $c := (.D.Publication.Contributors .D.Role)}}
         <tr id="{{$.D.Role}}-{{$i}}">
-            {{template "publication/contributors/_columns" ($.NewData (dict "Publication" $.D.Publication "Contributor" $c "Position" $i "Role" $.D.Role))}}
+            {{template "publication/contributors/_columns" ($.ViewData (dict "Publication" $.D.Publication "Contributor" $c "Position" $i "Role" $.D.Role))}}
         </tr>
         {{end}}
     </tbody>

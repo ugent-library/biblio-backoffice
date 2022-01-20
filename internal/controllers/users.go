@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/ugent-library/biblio-backend/internal/context"
-	"github.com/ugent-library/biblio-backend/internal/views"
 	"github.com/unrolled/render"
 )
 
@@ -19,7 +18,7 @@ func NewUsers(c Context) *Users {
 
 func (c *Users) ImpersonateChoose(w http.ResponseWriter, r *http.Request) {
 	c.Render.HTML(w, http.StatusOK, "user/_impersonate_choose",
-		views.NewData(c.Render, r, nil),
+		c.ViewData(r, nil),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }

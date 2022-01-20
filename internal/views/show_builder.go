@@ -4,7 +4,6 @@ import (
 	"html/template"
 
 	"github.com/ugent-library/go-locale/locale"
-	"github.com/unrolled/render"
 )
 
 type showData struct {
@@ -30,16 +29,16 @@ type showOption func(*showData)
 type showLocaleOption func(string) string
 
 type ShowBuilder struct {
-	renderer    *render.Render
-	locale      *locale.Locale
-	localeScope string
+	renderPartial func(string, interface{}) (template.HTML, error)
+	locale        *locale.Locale
+	localeScope   string
 }
 
-func NewShowBuilder(r *render.Render, l *locale.Locale) *ShowBuilder {
+func NewShowBuilder(r func(string, interface{}) (template.HTML, error), l *locale.Locale) *ShowBuilder {
 	return &ShowBuilder{
-		renderer:    r,
-		locale:      l,
-		localeScope: "builder",
+		renderPartial: r,
+		locale:        l,
+		localeScope:   "builder",
 	}
 }
 
@@ -121,13 +120,13 @@ func (b *ShowBuilder) Tooltip(v string) showOption {
 }
 
 func (b *ShowBuilder) Text(opts ...showOption) (template.HTML, error) {
-	return RenderPartial(b.renderer, "show_builder/_text", b.newShowData(opts))
+	return b.renderPartial("show_builder/_text", b.newShowData(opts))
 }
 
 func (b *ShowBuilder) List(opts ...showOption) (template.HTML, error) {
-	return RenderPartial(b.renderer, "show_builder/_list", b.newShowData(opts))
+	return b.renderPartial("show_builder/_list", b.newShowData(opts))
 }
 
 func (b *ShowBuilder) BadgeList(opts ...showOption) (template.HTML, error) {
-	return RenderPartial(b.renderer, "show_builder/_badge_list", b.newShowData(opts))
+	return b.renderPartial("show_builder/_badge_list", b.newShowData(opts))
 }

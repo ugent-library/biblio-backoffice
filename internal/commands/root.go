@@ -12,6 +12,7 @@ import (
 )
 
 const (
+	defaultMode          = "production"
 	defaultHost          = ""
 	defaultPort          = 3000
 	defaultSessionName   = "biblio-backend"
@@ -37,6 +38,7 @@ func init() {
 	viper.SetEnvPrefix("biblio-backend")
 	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
 	viper.AutomaticEnv()
+	viper.SetDefault("mode", defaultMode)
 	viper.SetDefault("host", defaultHost)
 	viper.SetDefault("port", defaultPort)
 	viper.SetDefault("session-name", defaultSessionName)

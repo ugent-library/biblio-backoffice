@@ -31,7 +31,7 @@ func (c *PublicationContributors) Add(w http.ResponseWriter, r *http.Request) {
 		position, _ = strconv.Atoi(positionVar)
 	}
 
-	c.Render.HTML(w, http.StatusOK, "publication/contributors/_add", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "publication/contributors/_add", c.ViewData(r, struct {
 		Role        string
 		Publication *models.Publication
 		Contributor *models.Contributor
@@ -42,7 +42,7 @@ func (c *PublicationContributors) Add(w http.ResponseWriter, r *http.Request) {
 		pub,
 		&models.Contributor{},
 		position,
-		views.NewFormBuilder(c.Render, locale.Get(r.Context()), nil),
+		views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), nil),
 	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
@@ -84,7 +84,7 @@ func (c *PublicationContributors) Create(w http.ResponseWriter, r *http.Request)
 	savedPub, err := c.Engine.UpdatePublication(pub)
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {
-		c.Render.HTML(w, http.StatusOK, "publication/contributors/_add", views.NewData(c.Render, r, struct {
+		c.Render.HTML(w, http.StatusOK, "publication/contributors/_add", c.ViewData(r, struct {
 			Role        string
 			Publication *models.Publication
 			Contributor *models.Contributor
@@ -95,7 +95,7 @@ func (c *PublicationContributors) Create(w http.ResponseWriter, r *http.Request)
 			pub,
 			contributor,
 			position,
-			views.NewFormBuilder(c.Render, locale.Get(r.Context()), formErrors),
+			views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), formErrors),
 		}),
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
@@ -107,7 +107,7 @@ func (c *PublicationContributors) Create(w http.ResponseWriter, r *http.Request)
 
 	savedContributor := savedPub.Contributors(role)[position]
 
-	c.Render.HTML(w, http.StatusOK, "publication/contributors/_insert_row", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "publication/contributors/_insert_row", c.ViewData(r, struct {
 		Role        string
 		Publication *models.Publication
 		Contributor *models.Contributor
@@ -130,7 +130,7 @@ func (c *PublicationContributors) Edit(w http.ResponseWriter, r *http.Request) {
 
 	contributor := pub.Contributors(role)[position]
 
-	c.Render.HTML(w, http.StatusOK, "publication/contributors/_edit", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "publication/contributors/_edit", c.ViewData(r, struct {
 		Role        string
 		Publication *models.Publication
 		Contributor *models.Contributor
@@ -141,7 +141,7 @@ func (c *PublicationContributors) Edit(w http.ResponseWriter, r *http.Request) {
 		pub,
 		contributor,
 		position,
-		views.NewFormBuilder(c.Render, locale.Get(r.Context()), nil),
+		views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), nil),
 	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
@@ -180,7 +180,7 @@ func (c *PublicationContributors) Update(w http.ResponseWriter, r *http.Request)
 	savedPub, err := c.Engine.UpdatePublication(pub)
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {
-		c.Render.HTML(w, http.StatusOK, "publication/contributors/_edit", views.NewData(c.Render, r, struct {
+		c.Render.HTML(w, http.StatusOK, "publication/contributors/_edit", c.ViewData(r, struct {
 			Role        string
 			Publication *models.Publication
 			Contributor *models.Contributor
@@ -191,7 +191,7 @@ func (c *PublicationContributors) Update(w http.ResponseWriter, r *http.Request)
 			pub,
 			contributor,
 			position,
-			views.NewFormBuilder(c.Render, locale.Get(r.Context()), formErrors),
+			views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), formErrors),
 		}),
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
@@ -203,7 +203,7 @@ func (c *PublicationContributors) Update(w http.ResponseWriter, r *http.Request)
 
 	savedContributor := savedPub.Contributors(role)[position]
 
-	c.Render.HTML(w, http.StatusOK, "publication/contributors/_update_row", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "publication/contributors/_update_row", c.ViewData(r, struct {
 		Role        string
 		Publication *models.Publication
 		Contributor *models.Contributor
@@ -224,7 +224,7 @@ func (c *PublicationContributors) ConfirmRemove(w http.ResponseWriter, r *http.R
 	positionVar := mux.Vars(r)["position"]
 	position, _ := strconv.Atoi(positionVar)
 
-	c.Render.HTML(w, http.StatusOK, "publication/contributors/_confirm_remove", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "publication/contributors/_confirm_remove", c.ViewData(r, struct {
 		Role        string
 		Publication *models.Publication
 		Position    int
@@ -250,7 +250,7 @@ func (c *PublicationContributors) Remove(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	c.Render.HTML(w, http.StatusOK, "publication/contributors/_table", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "publication/contributors/_table", c.ViewData(r, struct {
 		Role        string
 		Publication *models.Publication
 	}{
@@ -272,7 +272,7 @@ func (c *PublicationContributors) Choose(w http.ResponseWriter, r *http.Request)
 
 	suggestions, _ := c.Engine.SuggestPeople(firstName + " " + lastName)
 
-	c.Render.HTML(w, http.StatusOK, "publication/contributors/_choose", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "publication/contributors/_choose", c.ViewData(r, struct {
 		Role        string
 		Publication *models.Publication
 		Position    int

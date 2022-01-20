@@ -2,8 +2,6 @@ package controllers
 
 import (
 	"net/http"
-
-	"github.com/ugent-library/biblio-backend/internal/views"
 )
 
 type Home struct {
@@ -15,7 +13,7 @@ func NewHome(c Context) *Auth {
 }
 
 func (c *Auth) Home(w http.ResponseWriter, r *http.Request) {
-	c.Render.HTML(w, http.StatusOK, "home/home", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "home/home", c.ViewData(r, struct {
 		PageTitle string
 	}{
 		"Biblio",

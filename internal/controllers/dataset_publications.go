@@ -8,7 +8,6 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/context"
 	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/biblio-backend/internal/views"
 	"github.com/unrolled/render"
 )
 
@@ -44,7 +43,7 @@ func (c *DatasetPublications) Choose(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.Render.HTML(w, http.StatusOK, "dataset/publications/_modal", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "dataset/publications/_modal", c.ViewData(r, struct {
 		Dataset *models.Dataset
 		Hits    *models.PublicationHits
 	}{
@@ -85,7 +84,7 @@ func (c *DatasetPublications) ActiveSearch(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	c.Render.HTML(w, http.StatusOK, "dataset/publications/_modal_hits", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "dataset/publications/_modal_hits", c.ViewData(r, struct {
 		Dataset *models.Dataset
 		Hits    *models.PublicationHits
 	}{
@@ -122,7 +121,7 @@ func (c *DatasetPublications) Add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.Render.HTML(w, http.StatusOK, "dataset/publications/_show", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "dataset/publications/_show", c.ViewData(r, struct {
 		Dataset             *models.Dataset
 		DatasetPublications []*models.Publication
 	}{
@@ -137,7 +136,7 @@ func (c *DatasetPublications) ConfirmRemove(w http.ResponseWriter, r *http.Reque
 	id := mux.Vars(r)["id"]
 	pubID := mux.Vars(r)["publication_id"]
 
-	c.Render.HTML(w, http.StatusOK, "dataset/publications/_modal_confirm_removal", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "dataset/publications/_modal_confirm_removal", c.ViewData(r, struct {
 		DatasetID     string
 		PublicationID string
 	}{
@@ -167,7 +166,7 @@ func (c *DatasetPublications) Remove(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.Render.HTML(w, http.StatusOK, "dataset/publications/_show", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "dataset/publications/_show", c.ViewData(r, struct {
 		Dataset             *models.Dataset
 		DatasetPublications []*models.Publication
 	}{

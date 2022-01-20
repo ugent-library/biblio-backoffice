@@ -31,7 +31,7 @@ func (c *DatasetContributors) Add(w http.ResponseWriter, r *http.Request) {
 		position, _ = strconv.Atoi(positionVar)
 	}
 
-	c.Render.HTML(w, http.StatusOK, "dataset/contributors/_add", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "dataset/contributors/_add", c.ViewData(r, struct {
 		Role        string
 		Dataset     *models.Dataset
 		Contributor *models.Contributor
@@ -42,7 +42,7 @@ func (c *DatasetContributors) Add(w http.ResponseWriter, r *http.Request) {
 		dataset,
 		&models.Contributor{},
 		position,
-		views.NewFormBuilder(c.Render, locale.Get(r.Context()), nil),
+		views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), nil),
 	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
@@ -83,7 +83,7 @@ func (c *DatasetContributors) Create(w http.ResponseWriter, r *http.Request) {
 	savedDataset, err := c.Engine.UpdateDataset(dataset)
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {
-		c.Render.HTML(w, http.StatusOK, "dataset/contributors/_add", views.NewData(c.Render, r, struct {
+		c.Render.HTML(w, http.StatusOK, "dataset/contributors/_add", c.ViewData(r, struct {
 			Role        string
 			Dataset     *models.Dataset
 			Contributor *models.Contributor
@@ -94,7 +94,7 @@ func (c *DatasetContributors) Create(w http.ResponseWriter, r *http.Request) {
 			dataset,
 			contributor,
 			position,
-			views.NewFormBuilder(c.Render, locale.Get(r.Context()), formErrors),
+			views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), formErrors),
 		}),
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
@@ -106,7 +106,7 @@ func (c *DatasetContributors) Create(w http.ResponseWriter, r *http.Request) {
 
 	savedContributor := savedDataset.Contributors(role)[position]
 
-	c.Render.HTML(w, http.StatusOK, "dataset/contributors/_insert_row", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "dataset/contributors/_insert_row", c.ViewData(r, struct {
 		Role        string
 		Dataset     *models.Dataset
 		Contributor *models.Contributor
@@ -129,7 +129,7 @@ func (c *DatasetContributors) Edit(w http.ResponseWriter, r *http.Request) {
 
 	contributor := dataset.Contributors(role)[position]
 
-	c.Render.HTML(w, http.StatusOK, "dataset/contributors/_edit", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "dataset/contributors/_edit", c.ViewData(r, struct {
 		Role        string
 		Dataset     *models.Dataset
 		Contributor *models.Contributor
@@ -140,7 +140,7 @@ func (c *DatasetContributors) Edit(w http.ResponseWriter, r *http.Request) {
 		dataset,
 		contributor,
 		position,
-		views.NewFormBuilder(c.Render, locale.Get(r.Context()), nil),
+		views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), nil),
 	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
@@ -178,7 +178,7 @@ func (c *DatasetContributors) Update(w http.ResponseWriter, r *http.Request) {
 	savedDataset, err := c.Engine.UpdateDataset(dataset)
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {
-		c.Render.HTML(w, http.StatusOK, "dataset/contributors/_edit", views.NewData(c.Render, r, struct {
+		c.Render.HTML(w, http.StatusOK, "dataset/contributors/_edit", c.ViewData(r, struct {
 			Role        string
 			Dataset     *models.Dataset
 			Contributor *models.Contributor
@@ -189,7 +189,7 @@ func (c *DatasetContributors) Update(w http.ResponseWriter, r *http.Request) {
 			dataset,
 			contributor,
 			position,
-			views.NewFormBuilder(c.Render, locale.Get(r.Context()), formErrors),
+			views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), formErrors),
 		}),
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
@@ -201,7 +201,7 @@ func (c *DatasetContributors) Update(w http.ResponseWriter, r *http.Request) {
 
 	savedContributor := savedDataset.Contributors(role)[position]
 
-	c.Render.HTML(w, http.StatusOK, "dataset/contributors/_update_row", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "dataset/contributors/_update_row", c.ViewData(r, struct {
 		Role        string
 		Dataset     *models.Dataset
 		Contributor *models.Contributor
@@ -222,7 +222,7 @@ func (c *DatasetContributors) ConfirmRemove(w http.ResponseWriter, r *http.Reque
 	positionVar := mux.Vars(r)["position"]
 	position, _ := strconv.Atoi(positionVar)
 
-	c.Render.HTML(w, http.StatusOK, "dataset/contributors/_confirm_remove", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "dataset/contributors/_confirm_remove", c.ViewData(r, struct {
 		Role     string
 		Dataset  *models.Dataset
 		Position int
@@ -248,7 +248,7 @@ func (c *DatasetContributors) Remove(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.Render.HTML(w, http.StatusOK, "dataset/contributors/_table", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "dataset/contributors/_table", c.ViewData(r, struct {
 		Role    string
 		Dataset *models.Dataset
 	}{
@@ -270,7 +270,7 @@ func (c *DatasetContributors) Choose(w http.ResponseWriter, r *http.Request) {
 
 	suggestions, _ := c.Engine.SuggestPeople(firstName + " " + lastName)
 
-	c.Render.HTML(w, http.StatusOK, "dataset/contributors/_choose", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "dataset/contributors/_choose", c.ViewData(r, struct {
 		Role        string
 		Dataset     *models.Dataset
 		Position    int

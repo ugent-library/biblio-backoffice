@@ -110,7 +110,7 @@ func (c *PublicationFiles) Upload(w http.ResponseWriter, r *http.Request) {
 			flash = views.Flash{Type: "warning", Message: "A file with the same name is already attached to this publication"}
 		}
 		c.Render.HTML(w, http.StatusCreated, "publication/files/_list",
-			views.NewData(c.Render, r, struct {
+			c.ViewData(r, struct {
 				Publication *models.Publication
 			}{
 				context.GetPublication(r.Context()),
@@ -125,7 +125,7 @@ func (c *PublicationFiles) Upload(w http.ResponseWriter, r *http.Request) {
 	pub, _ := c.Engine.GetPublication(id)
 
 	c.Render.HTML(w, http.StatusCreated, "publication/files/_upload_edit",
-		views.NewData(c.Render, r, struct {
+		c.ViewData(r, struct {
 			Publication  *models.Publication
 			File         *models.PublicationFile
 			Vocabularies map[string][]string
@@ -155,7 +155,7 @@ func (c *PublicationFiles) Edit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.Render.HTML(w, http.StatusOK, "publication/files/_edit", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "publication/files/_edit", c.ViewData(r, struct {
 		Publication  *models.Publication
 		File         *models.PublicationFile
 		Vocabularies map[string][]string
@@ -207,7 +207,7 @@ func (c *PublicationFiles) Update(w http.ResponseWriter, r *http.Request) {
 
 	// TODO show errors
 	if _, ok := err.(jsonapi.Errors); ok {
-		c.Render.HTML(w, http.StatusOK, "publication/files/_edit", views.NewData(c.Render, r, struct {
+		c.Render.HTML(w, http.StatusOK, "publication/files/_edit", c.ViewData(r, struct {
 			Publication  *models.Publication
 			File         *models.PublicationFile
 			Vocabularies map[string][]string
@@ -233,7 +233,7 @@ func (c *PublicationFiles) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// TODO show flash
-	c.Render.HTML(w, http.StatusOK, "publication/files/_list", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "publication/files/_list", c.ViewData(r, struct {
 		Publication *models.Publication
 	}{
 		pub,
@@ -246,7 +246,7 @@ func (c *PublicationFiles) ConfirmRemove(w http.ResponseWriter, r *http.Request)
 	id := mux.Vars(r)["id"]
 	fileID := mux.Vars(r)["file_id"]
 
-	c.Render.HTML(w, http.StatusOK, "publication/files/_modal_confirm_removal", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "publication/files/_modal_confirm_removal", c.ViewData(r, struct {
 		PublicationID string
 		FileID        string
 	}{
@@ -268,7 +268,7 @@ func (c *PublicationFiles) Remove(w http.ResponseWriter, r *http.Request) {
 
 	pub, _ := c.Engine.GetPublication(id)
 
-	c.Render.HTML(w, http.StatusCreated, "publication/files/_list", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusCreated, "publication/files/_list", c.ViewData(r, struct {
 		Publication *models.Publication
 	}{
 		pub,

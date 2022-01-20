@@ -6,7 +6,6 @@ import (
 
 	"github.com/ugent-library/go-locale/locale"
 	"github.com/ugent-library/go-web/jsonapi"
-	"github.com/unrolled/render"
 )
 
 type formData struct {
@@ -45,18 +44,18 @@ type formOption func(*formData)
 type formLocaleOption func(string) string
 
 type FormBuilder struct {
-	renderer    *render.Render
-	locale      *locale.Locale
-	localeScope string
-	Errors      jsonapi.Errors
+	renderPartial func(string, interface{}) (template.HTML, error)
+	locale        *locale.Locale
+	localeScope   string
+	Errors        jsonapi.Errors
 }
 
-func NewFormBuilder(r *render.Render, l *locale.Locale, e jsonapi.Errors) *FormBuilder {
+func NewFormBuilder(r func(string, interface{}) (template.HTML, error), l *locale.Locale, e jsonapi.Errors) *FormBuilder {
 	return &FormBuilder{
-		renderer:    r,
-		locale:      l,
-		localeScope: "builder",
-		Errors:      e,
+		renderPartial: r,
+		locale:        l,
+		localeScope:   "builder",
+		Errors:        e,
 	}
 }
 
@@ -212,33 +211,33 @@ func (b *FormBuilder) ErrorPointer(ptr string) formOption {
 }
 
 func (b *FormBuilder) Text(opts ...formOption) (template.HTML, error) {
-	return RenderPartial(b.renderer, "form_builder/_text", b.newFormData(opts))
+	return b.renderPartial("form_builder/_text", b.newFormData(opts))
 }
 
 func (b *FormBuilder) TextRepeat(opts ...formOption) (template.HTML, error) {
-	return RenderPartial(b.renderer, "form_builder/_text_repeat", b.newFormData(opts))
+	return b.renderPartial("form_builder/_text_repeat", b.newFormData(opts))
 }
 
 func (b *FormBuilder) TextArea(opts ...formOption) (template.HTML, error) {
-	return RenderPartial(b.renderer, "form_builder/_text_area", b.newFormData(opts))
+	return b.renderPartial("form_builder/_text_area", b.newFormData(opts))
 }
 
 func (b *FormBuilder) Checkbox(opts ...formOption) (template.HTML, error) {
-	return RenderPartial(b.renderer, "form_builder/_checkbox", b.newFormData(opts))
+	return b.renderPartial("form_builder/_checkbox", b.newFormData(opts))
 }
 
 func (b *FormBuilder) List(opts ...formOption) (template.HTML, error) {
-	return RenderPartial(b.renderer, "form_builder/_list", b.newFormData(opts))
+	return b.renderPartial("form_builder/_list", b.newFormData(opts))
 }
 
 func (b *FormBuilder) ListRepeat(opts ...formOption) (template.HTML, error) {
-	return RenderPartial(b.renderer, "form_builder/_list_repeat", b.newFormData(opts))
+	return b.renderPartial("form_builder/_list_repeat", b.newFormData(opts))
 }
 
 func (b *FormBuilder) RadioButtonGroup(opts ...formOption) (template.HTML, error) {
-	return RenderPartial(b.renderer, "form_builder/_radio_button_group", b.newFormData(opts))
+	return b.renderPartial("form_builder/_radio_button_group", b.newFormData(opts))
 }
 
 func (b *FormBuilder) Date(opts ...formOption) (template.HTML, error) {
-	return RenderPartial(b.renderer, "form_builder/_date", b.newFormData(opts))
+	return b.renderPartial("form_builder/_date", b.newFormData(opts))
 }

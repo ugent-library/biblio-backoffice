@@ -33,7 +33,7 @@
     <div class="collapse show" id="collapse-details">
         <div class="card-body p-0">
             <ul class="list-group list-group-flush" data-panel-state="edit">
-                {{.Partial (printf "publication/details/edit/_%s" .D.Publication.Type) .}}
+                {{.RenderPartial (printf "publication/details/edit/_%s" .D.Publication.Type) .}}
             </ul>
         </div>
     </div>

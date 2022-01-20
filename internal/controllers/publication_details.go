@@ -24,13 +24,13 @@ func NewPublicationDetails(c Context) *PublicationDetails {
 func (c *PublicationDetails) Show(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
-	c.Render.HTML(w, http.StatusOK, "publication/details/_show", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "publication/details/_show", c.ViewData(r, struct {
 		Publication  *models.Publication
 		Show         *views.ShowBuilder
 		Vocabularies map[string][]string
 	}{
 		pub,
-		views.NewShowBuilder(c.Render, locale.Get(r.Context())),
+		views.NewShowBuilder(c.RenderPartial, locale.Get(r.Context())),
 		c.Engine.Vocabularies(),
 	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
@@ -40,15 +40,15 @@ func (c *PublicationDetails) Show(w http.ResponseWriter, r *http.Request) {
 func (c *PublicationDetails) Edit(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
-	c.Render.HTML(w, http.StatusOK, "publication/details/_edit", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "publication/details/_edit", c.ViewData(r, struct {
 		Publication  *models.Publication
 		Show         *views.ShowBuilder
 		Form         *views.FormBuilder
 		Vocabularies map[string][]string
 	}{
 		pub,
-		views.NewShowBuilder(c.Render, locale.Get(r.Context())),
-		views.NewFormBuilder(c.Render, locale.Get(r.Context()), nil),
+		views.NewShowBuilder(c.RenderPartial, locale.Get(r.Context())),
+		views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), nil),
 		c.Engine.Vocabularies(),
 	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
@@ -71,15 +71,15 @@ func (c *PublicationDetails) Update(w http.ResponseWriter, r *http.Request) {
 	savedPub, err := c.Engine.UpdatePublication(pub)
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {
-		c.Render.HTML(w, http.StatusOK, "publication/details/_edit", views.NewData(c.Render, r, struct {
+		c.Render.HTML(w, http.StatusOK, "publication/details/_edit", c.ViewData(r, struct {
 			Publication  *models.Publication
 			Show         *views.ShowBuilder
 			Form         *views.FormBuilder
 			Vocabularies map[string][]string
 		}{
 			pub,
-			views.NewShowBuilder(c.Render, locale.Get(r.Context())),
-			views.NewFormBuilder(c.Render, locale.Get(r.Context()), formErrors),
+			views.NewShowBuilder(c.RenderPartial, locale.Get(r.Context())),
+			views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), formErrors),
 			c.Engine.Vocabularies(),
 		},
 			views.Flash{Type: "error", Message: "There are some problems with your input"},
@@ -93,13 +93,13 @@ func (c *PublicationDetails) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.Render.HTML(w, http.StatusOK, "publication/details/_update", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "publication/details/_update", c.ViewData(r, struct {
 		Publication  *models.Publication
 		Show         *views.ShowBuilder
 		Vocabularies map[string][]string
 	}{
 		savedPub,
-		views.NewShowBuilder(c.Render, locale.Get(r.Context())),
+		views.NewShowBuilder(c.RenderPartial, locale.Get(r.Context())),
 		c.Engine.Vocabularies(),
 	},
 		views.Flash{Type: "success", Message: "Details updated succesfully", DismissAfter: 5 * time.Second},

@@ -14,6 +14,18 @@
 
 <body class="u-maximize-height overflow-hidden u-scroll-wrapper">
     <header>
+        {{if eq .Mode "development"}}
+        <div class="alert alert-warning" role="alert">
+            <strong>Warning!</strong>&nbsp;This is the&nbsp;<strong>development</strong>&nbsp;version of the Biblio
+            backend. Features may not work correctly and data entered here will
+            not be retained.
+        </div>
+        {{else if eq .Mode "staging"}}
+        <div class="alert alert-warning" role="alert">
+            <strong>Warning!</strong>&nbsp;This is the&nbsp;<strong>test</strong>&nbsp;version of the Biblio
+            backend. Data entered here will not be retained.
+        </div>
+        {{end}}
         {{with .OriginalUser}}
         <div class="alert alert-danger" role="alert">
             <form class="form-inline" action="{{pathFor "user_impersonate_remove"}}" method="POST">

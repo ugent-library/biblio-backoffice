@@ -30,7 +30,7 @@ func (c *PublicationLinks) Add(w http.ResponseWriter, r *http.Request) {
 
 	link := &models.PublicationLink{}
 
-	c.Render.HTML(w, http.StatusOK, "publication/links/_form", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "publication/links/_form", c.ViewData(r, struct {
 		PublicationID string
 		Link          *models.PublicationLink
 		Form          *views.FormBuilder
@@ -38,7 +38,7 @@ func (c *PublicationLinks) Add(w http.ResponseWriter, r *http.Request) {
 	}{
 		id,
 		link,
-		views.NewFormBuilder(c.Render, locale.Get(r.Context()), nil),
+		views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), nil),
 		c.Engine.Vocabularies(),
 	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
@@ -71,7 +71,7 @@ func (c *PublicationLinks) Create(w http.ResponseWriter, r *http.Request) {
 	savedPub, err := c.Engine.UpdatePublication(pub)
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {
-		c.Render.HTML(w, http.StatusOK, "publication/links/_form", views.NewData(c.Render, r, struct {
+		c.Render.HTML(w, http.StatusOK, "publication/links/_form", c.ViewData(r, struct {
 			PublicationID string
 			Link          *models.PublicationLink
 			Form          *views.FormBuilder
@@ -79,7 +79,7 @@ func (c *PublicationLinks) Create(w http.ResponseWriter, r *http.Request) {
 		}{
 			savedPub.ID,
 			link,
-			views.NewFormBuilder(c.Render, locale.Get(r.Context()), formErrors),
+			views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), formErrors),
 			c.Engine.Vocabularies(),
 		}),
 			render.HTMLOptions{Layout: "layouts/htmx"},
@@ -93,7 +93,7 @@ func (c *PublicationLinks) Create(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("HX-Trigger", "PublicationCreateLink")
 
-	c.Render.HTML(w, http.StatusOK, "publication/links/_table_body", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "publication/links/_table_body", c.ViewData(r, struct {
 		Publication *models.Publication
 	}{
 		savedPub,
@@ -111,7 +111,7 @@ func (c *PublicationLinks) Edit(w http.ResponseWriter, r *http.Request) {
 
 	link := &pub.Link[rowDelta]
 
-	c.Render.HTML(w, http.StatusOK, "publication/links/_form_edit", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "publication/links/_form_edit", c.ViewData(r, struct {
 		PublicationID string
 		Delta         string
 		Link          *models.PublicationLink
@@ -121,7 +121,7 @@ func (c *PublicationLinks) Edit(w http.ResponseWriter, r *http.Request) {
 		pub.ID,
 		muxRowDelta,
 		link,
-		views.NewFormBuilder(c.Render, locale.Get(r.Context()), nil),
+		views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), nil),
 		c.Engine.Vocabularies(),
 	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
@@ -159,7 +159,7 @@ func (c *PublicationLinks) Update(w http.ResponseWriter, r *http.Request) {
 	savedPub, err := c.Engine.UpdatePublication(pub)
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {
-		c.Render.HTML(w, http.StatusOK, "publication/links/_form_edit", views.NewData(c.Render, r, struct {
+		c.Render.HTML(w, http.StatusOK, "publication/links/_form_edit", c.ViewData(r, struct {
 			PublicationID string
 			Delta         string
 			Link          *models.PublicationLink
@@ -169,7 +169,7 @@ func (c *PublicationLinks) Update(w http.ResponseWriter, r *http.Request) {
 			savedPub.ID,
 			strconv.Itoa(rowDelta),
 			link,
-			views.NewFormBuilder(c.Render, locale.Get(r.Context()), formErrors),
+			views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), formErrors),
 			c.Engine.Vocabularies(),
 		}),
 			render.HTMLOptions{Layout: "layouts/htmx"},
@@ -185,7 +185,7 @@ func (c *PublicationLinks) Update(w http.ResponseWriter, r *http.Request) {
 
 	c.Render.HTML(w, http.StatusOK,
 		"publication/links/_table_body",
-		views.NewData(c.Render, r, struct {
+		c.ViewData(r, struct {
 			Publication *models.Publication
 		}{
 			savedPub,
@@ -199,7 +199,7 @@ func (c *PublicationLinks) ConfirmRemove(w http.ResponseWriter, r *http.Request)
 	id := mux.Vars(r)["id"]
 	muxRowDelta := mux.Vars(r)["delta"]
 
-	c.Render.HTML(w, http.StatusOK, "publication/links/_modal_confirm_removal", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "publication/links/_modal_confirm_removal", c.ViewData(r, struct {
 		ID  string
 		Key string
 	}{
