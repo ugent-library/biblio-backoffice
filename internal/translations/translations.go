@@ -529,4 +529,13 @@ func init() {
 	message.SetString(language.English, "dataset.single_import.import_by_id.id_not_found", "Unable to find this DOI in DataCite")
 	message.SetString(language.English, "dataset.single_import.string.minLength", "Not a valid DOI")
 	message.SetString(language.English, "dataset.single_import.import_by_id.import_failed", "Sorry, something went wrong. Could not import the dataset")
+
+	message.SetString(language.English, "tooltip.publication.classification", "The publication will be classified by the Biblio team as part of the bibliographic review process.")
+
+	message.SetString(language.English, "tooltip.publication.wos_type", "This is the type assigned by Web of Science when a publication is also registered in Web of Science and can be different from the Biblio type.")
+
+	message.SetString(language.English, "tooltip.dataset.publisher", "The name of the entity that holds, archives, publishes prints, distributes, releases, issues, or produces the resource. Typically, the name of the data repository in which the datasets was deposited.")
+	message.SetString(language.English, "tooltip.dataset.format", "Technical format of the data (e.g. file format such as csv, jpg)")
+	message.SetString(language.English, "tooltip.dataset.access_level", "Specify the access level that is set in the external data repository.")
+	message.SetString(language.English, "tooltip.dataset.license", "Specify the license that is set in the external data repository. This license lets potential users of your data know in advance what they are allowed to do with the data. The supported licenses in the list are harvested from spdx.org/licenses. If you cannot find the license you're looking for, you can add a URL or URI to the license.")
 }
