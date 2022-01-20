@@ -7,7 +7,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/ugent-library/biblio-backend/internal/context"
 	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/biblio-backend/internal/views"
 	"github.com/unrolled/render"
 )
 
@@ -25,7 +24,7 @@ func (c *DatasetProjects) Choose(w http.ResponseWriter, r *http.Request) {
 	// Get 20 random projects (no search, init state)
 	hits, _ := c.Engine.SuggestProjects("")
 
-	c.Render.HTML(w, http.StatusOK, "dataset/projects/_modal", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "dataset/projects/_modal", c.ViewData(r, struct {
 		Dataset *models.Dataset
 		Hits    []models.Completion
 	}{
@@ -49,7 +48,7 @@ func (c *DatasetProjects) ActiveSearch(w http.ResponseWriter, r *http.Request) {
 	query := r.Form["search"]
 	hits, _ := c.Engine.SuggestProjects(query[0])
 
-	c.Render.HTML(w, http.StatusOK, "dataset/projects/_modal_hits", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "dataset/projects/_modal_hits", c.ViewData(r, struct {
 		Dataset *models.Dataset
 		Hits    []models.Completion
 	}{
@@ -83,7 +82,7 @@ func (c *DatasetProjects) Add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.Render.HTML(w, http.StatusOK, "dataset/projects/_show", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "dataset/projects/_show", c.ViewData(r, struct {
 		Dataset *models.Dataset
 	}{
 		savedDataset,
@@ -96,7 +95,7 @@ func (c *DatasetProjects) ConfirmRemove(w http.ResponseWriter, r *http.Request) 
 	id := mux.Vars(r)["id"]
 	projectId := mux.Vars(r)["project_id"]
 
-	c.Render.HTML(w, http.StatusOK, "dataset/projects/_modal_confirm_removal", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "dataset/projects/_modal_confirm_removal", c.ViewData(r, struct {
 		ID        string
 		ProjectID string
 	}{
@@ -133,7 +132,7 @@ func (c *DatasetProjects) Remove(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.Render.HTML(w, http.StatusOK, "dataset/projects/_show", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "dataset/projects/_show", c.ViewData(r, struct {
 		Dataset *models.Dataset
 	}{
 		savedDataset,

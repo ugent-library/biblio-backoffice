@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/biblio-backend/internal/views"
 	"github.com/unrolled/render"
 )
 
@@ -26,7 +25,7 @@ func (c *Licenses) Choose(w http.ResponseWriter, r *http.Request) {
 
 	suggestions, _ := c.Engine.SuggestLicenses(q)
 
-	c.Render.HTML(w, http.StatusOK, "licenses/_choose", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "licenses/_choose", c.ViewData(r, struct {
 		Suggestions []models.Completion
 	}{
 		suggestions,

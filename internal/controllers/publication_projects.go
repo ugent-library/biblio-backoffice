@@ -7,7 +7,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/ugent-library/biblio-backend/internal/context"
 	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/biblio-backend/internal/views"
 	"github.com/unrolled/render"
 )
 
@@ -25,7 +24,7 @@ func (c *PublicationProjects) List(w http.ResponseWriter, r *http.Request) {
 	// Get 20 random projects (no search, init state)
 	hits, _ := c.Engine.SuggestProjects("")
 
-	c.Render.HTML(w, http.StatusOK, "publication/projects/_modal", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "publication/projects/_modal", c.ViewData(r, struct {
 		Publication *models.Publication
 		Hits        []models.Completion
 	}{
@@ -49,7 +48,7 @@ func (c *PublicationProjects) ActiveSearch(w http.ResponseWriter, r *http.Reques
 	query := r.Form["search"]
 	hits, _ := c.Engine.SuggestProjects(query[0])
 
-	c.Render.HTML(w, http.StatusOK, "publication/projects/_modal_hits", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "publication/projects/_modal_hits", c.ViewData(r, struct {
 		Publication *models.Publication
 		Hits        []models.Completion
 	}{
@@ -86,7 +85,7 @@ func (c *PublicationProjects) Add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.Render.HTML(w, http.StatusOK, "publication/projects/_show", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "publication/projects/_show", c.ViewData(r, struct {
 		Publication *models.Publication
 	}{
 		savedPub,
@@ -99,7 +98,7 @@ func (c *PublicationProjects) ConfirmRemove(w http.ResponseWriter, r *http.Reque
 	id := mux.Vars(r)["id"]
 	projectId := mux.Vars(r)["project_id"]
 
-	c.Render.HTML(w, http.StatusOK, "publication/projects/_modal_confirm_removal", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "publication/projects/_modal_confirm_removal", c.ViewData(r, struct {
 		ID        string
 		ProjectID string
 	}{
@@ -136,7 +135,7 @@ func (c *PublicationProjects) Remove(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.Render.HTML(w, http.StatusOK, "publication/projects/_show", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "publication/projects/_show", c.ViewData(r, struct {
 		Publication *models.Publication
 	}{
 		savedPub,

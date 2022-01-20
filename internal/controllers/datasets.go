@@ -47,7 +47,7 @@ func (c *Datasets) List(w http.ResponseWriter, r *http.Request) {
 
 	searchURL, _ := c.Router.Get("datasets").URLPath()
 
-	c.Render.HTML(w, http.StatusOK, "dataset/list", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "dataset/list", c.ViewData(r, struct {
 		PageTitle        string
 		SearchURL        *url.URL
 		SearchArgs       *engine.SearchArgs
@@ -81,7 +81,7 @@ func (c *Datasets) Show(w http.ResponseWriter, r *http.Request) {
 
 	dataset.RelatedPublicationCount = len(datasetPubs)
 
-	c.Render.HTML(w, http.StatusOK, "dataset/show", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "dataset/show", c.ViewData(r, struct {
 		PageTitle           string
 		Dataset             *models.Dataset
 		DatasetPublications []*models.Publication
@@ -91,7 +91,7 @@ func (c *Datasets) Show(w http.ResponseWriter, r *http.Request) {
 		"Dataset - Biblio",
 		dataset,
 		datasetPubs,
-		views.NewShowBuilder(c.Render, locale.Get(r.Context())),
+		views.NewShowBuilder(c.RenderPartial, locale.Get(r.Context())),
 		searchArgs,
 	}))
 }
@@ -140,7 +140,7 @@ func (c *Datasets) Publish(w http.ResponseWriter, r *http.Request) {
 
 	savedDataset.RelatedPublicationCount = len(datasetPubs)
 
-	c.Render.HTML(w, http.StatusOK, "dataset/show", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "dataset/show", c.ViewData(r, struct {
 		PageTitle           string
 		Dataset             *models.Dataset
 		DatasetPublications []*models.Publication
@@ -150,7 +150,7 @@ func (c *Datasets) Publish(w http.ResponseWriter, r *http.Request) {
 		"Dataset - Biblio",
 		savedDataset,
 		datasetPubs,
-		views.NewShowBuilder(c.Render, locale.Get(r.Context())),
+		views.NewShowBuilder(c.RenderPartial, locale.Get(r.Context())),
 		searchArgs,
 	},
 		flashes...,
@@ -158,7 +158,7 @@ func (c *Datasets) Publish(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Datasets) Add(w http.ResponseWriter, r *http.Request) {
-	c.Render.HTML(w, http.StatusOK, "dataset/add", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "dataset/add", c.ViewData(r, struct {
 		PageTitle string
 		Step      int
 	}{
@@ -186,7 +186,7 @@ func (c *Datasets) AddImport(w http.ResponseWriter, r *http.Request) {
 			flash.Message = loc.T("dataset.single_import", "import_by_id.import_failed")
 		}
 
-		c.Render.HTML(w, http.StatusOK, "dataset/add", views.NewData(c.Render, r, struct {
+		c.Render.HTML(w, http.StatusOK, "dataset/add", c.ViewData(r, struct {
 			PageTitle string
 			Step      int
 		}{
@@ -198,7 +198,7 @@ func (c *Datasets) AddImport(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.Render.HTML(w, http.StatusOK, "dataset/add_description", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "dataset/add_description", c.ViewData(r, struct {
 		PageTitle           string
 		Step                int
 		Dataset             *models.Dataset
@@ -209,14 +209,14 @@ func (c *Datasets) AddImport(w http.ResponseWriter, r *http.Request) {
 		2,
 		dataset,
 		nil,
-		views.NewShowBuilder(c.Render, loc),
+		views.NewShowBuilder(c.RenderPartial, loc),
 	}))
 }
 
 func (c *Datasets) AddDescription(w http.ResponseWriter, r *http.Request) {
 	dataset := context.GetDataset(r.Context())
 
-	c.Render.HTML(w, http.StatusOK, "dataset/add_description", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "dataset/add_description", c.ViewData(r, struct {
 		PageTitle           string
 		Step                int
 		Dataset             *models.Dataset
@@ -227,14 +227,14 @@ func (c *Datasets) AddDescription(w http.ResponseWriter, r *http.Request) {
 		2,
 		dataset,
 		nil,
-		views.NewShowBuilder(c.Render, locale.Get(r.Context())),
+		views.NewShowBuilder(c.RenderPartial, locale.Get(r.Context())),
 	}))
 }
 
 func (c *Datasets) AddConfirm(w http.ResponseWriter, r *http.Request) {
 	dataset := context.GetDataset(r.Context())
 
-	c.Render.HTML(w, http.StatusOK, "dataset/add_confirm", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "dataset/add_confirm", c.ViewData(r, struct {
 		PageTitle string
 		Step      int
 		Dataset   *models.Dataset
@@ -257,7 +257,7 @@ func (c *Datasets) AddPublish(w http.ResponseWriter, r *http.Request) {
 		*/
 		if e, ok := err.(jsonapi.Errors); ok {
 
-			c.Render.HTML(w, http.StatusOK, "dataset/add_confirm", views.NewData(c.Render, r, struct {
+			c.Render.HTML(w, http.StatusOK, "dataset/add_confirm", c.ViewData(r, struct {
 				PageTitle string
 				Step      int
 				Dataset   *models.Dataset
@@ -276,7 +276,7 @@ func (c *Datasets) AddPublish(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.Render.HTML(w, http.StatusOK, "dataset/add_finish", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "dataset/add_finish", c.ViewData(r, struct {
 		PageTitle string
 		Step      int
 		Dataset   *models.Dataset
@@ -297,7 +297,7 @@ func (c *Datasets) ConfirmDelete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.Render.HTML(w, http.StatusOK, "dataset/_confirm_delete", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "dataset/_confirm_delete", c.ViewData(r, struct {
 		Dataset    *models.Dataset
 		SearchArgs *engine.SearchArgs
 	}{
@@ -332,7 +332,7 @@ func (c *Datasets) Delete(w http.ResponseWriter, r *http.Request) {
 
 	searchURL, _ := c.Router.Get("datasets").URLPath()
 
-	c.Render.HTML(w, http.StatusOK, "dataset/list", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "dataset/list", c.ViewData(r, struct {
 		PageTitle        string
 		SearchURL        *url.URL
 		SearchArgs       *engine.SearchArgs

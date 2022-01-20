@@ -9,7 +9,7 @@
     <tbody>
         {{range $i, $c := (.D.Dataset.Contributors .D.Role)}}
         <tr id="{{$.D.Role}}-{{$i}}">
-            {{template "dataset/contributors/_columns" ($.NewData (dict "Dataset" $.D.Dataset "Contributor" $c "Position" $i "Role" $.D.Role))}}
+            {{template "dataset/contributors/_columns" ($.ViewData (dict "Dataset" $.D.Dataset "Contributor" $c "Position" $i "Role" $.D.Role))}}
         </tr>
         {{end}}
     </tbody>

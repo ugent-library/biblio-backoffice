@@ -29,7 +29,7 @@ func (c *DatasetAbstracts) Add(w http.ResponseWriter, r *http.Request) {
 
 	abstract := &models.Text{}
 
-	c.Render.HTML(w, http.StatusOK, "dataset/abstracts/_form", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "dataset/abstracts/_form", c.ViewData(r, struct {
 		DatasetID    string
 		Abstract     *models.Text
 		Form         *views.FormBuilder
@@ -37,7 +37,7 @@ func (c *DatasetAbstracts) Add(w http.ResponseWriter, r *http.Request) {
 	}{
 		id,
 		abstract,
-		views.NewFormBuilder(c.Render, locale.Get(r.Context()), nil),
+		views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), nil),
 		c.Engine.Vocabularies(),
 	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
@@ -70,7 +70,7 @@ func (c *DatasetAbstracts) Create(w http.ResponseWriter, r *http.Request) {
 	savedDataset, err := c.Engine.UpdateDataset(dataset)
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {
-		c.Render.HTML(w, http.StatusOK, "dataset/abstracts/_form", views.NewData(c.Render, r, struct {
+		c.Render.HTML(w, http.StatusOK, "dataset/abstracts/_form", c.ViewData(r, struct {
 			DatasetID    string
 			Abstract     *models.Text
 			Form         *views.FormBuilder
@@ -78,7 +78,7 @@ func (c *DatasetAbstracts) Create(w http.ResponseWriter, r *http.Request) {
 		}{
 			savedDataset.ID,
 			abstract,
-			views.NewFormBuilder(c.Render, locale.Get(r.Context()), formErrors),
+			views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), formErrors),
 			c.Engine.Vocabularies(),
 		}),
 			render.HTMLOptions{Layout: "layouts/htmx"},
@@ -94,7 +94,7 @@ func (c *DatasetAbstracts) Create(w http.ResponseWriter, r *http.Request) {
 
 	c.Render.HTML(w, http.StatusOK,
 		"dataset/abstracts/_table_body",
-		views.NewData(c.Render, r, struct {
+		c.ViewData(r, struct {
 			Dataset *models.Dataset
 		}{
 			savedDataset,
@@ -112,7 +112,7 @@ func (c *DatasetAbstracts) Edit(w http.ResponseWriter, r *http.Request) {
 
 	abstract := &dataset.Abstract[rowDelta]
 
-	c.Render.HTML(w, http.StatusOK, "dataset/abstracts/_form_edit", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "dataset/abstracts/_form_edit", c.ViewData(r, struct {
 		DatasetID    string
 		Delta        string
 		Abstract     *models.Text
@@ -122,7 +122,7 @@ func (c *DatasetAbstracts) Edit(w http.ResponseWriter, r *http.Request) {
 		dataset.ID,
 		muxRowDelta,
 		abstract,
-		views.NewFormBuilder(c.Render, locale.Get(r.Context()), nil),
+		views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), nil),
 		c.Engine.Vocabularies(),
 	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
@@ -160,7 +160,7 @@ func (c *DatasetAbstracts) Update(w http.ResponseWriter, r *http.Request) {
 	if formErrors, ok := err.(jsonapi.Errors); ok {
 		c.Render.HTML(w, http.StatusOK,
 			"dataset/abstracts/_form_edit",
-			views.NewData(c.Render, r, struct {
+			c.ViewData(r, struct {
 				DatasetID    string
 				Delta        string
 				Abstract     *models.Text
@@ -170,7 +170,7 @@ func (c *DatasetAbstracts) Update(w http.ResponseWriter, r *http.Request) {
 				savedDataset.ID,
 				strconv.Itoa(rowDelta),
 				abstract,
-				views.NewFormBuilder(c.Render, locale.Get(r.Context()), formErrors),
+				views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), formErrors),
 				c.Engine.Vocabularies(),
 			}),
 			render.HTMLOptions{Layout: "layouts/htmx"},
@@ -184,7 +184,7 @@ func (c *DatasetAbstracts) Update(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("HX-Trigger", "DatasetUpdateAbstract")
 
-	c.Render.HTML(w, http.StatusOK, "dataset/abstracts/_table_body", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "dataset/abstracts/_table_body", c.ViewData(r, struct {
 		Dataset *models.Dataset
 	}{
 		savedDataset,
@@ -198,7 +198,7 @@ func (c *DatasetAbstracts) ConfirmRemove(w http.ResponseWriter, r *http.Request)
 	id := mux.Vars(r)["id"]
 	muxRowDelta := mux.Vars(r)["delta"]
 
-	c.Render.HTML(w, http.StatusOK, "dataset/abstracts/_modal_confirm_removal", views.NewData(c.Render, r, struct {
+	c.Render.HTML(w, http.StatusOK, "dataset/abstracts/_modal_confirm_removal", c.ViewData(r, struct {
 		ID  string
 		Key string
 	}{

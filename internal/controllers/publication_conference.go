@@ -26,12 +26,12 @@ func (c *PublicationConference) Show(w http.ResponseWriter, r *http.Request) {
 
 	c.Render.HTML(w, http.StatusOK,
 		"publication/conference/_show",
-		views.NewData(c.Render, r, struct {
+		c.ViewData(r, struct {
 			Publication *models.Publication
 			Show        *views.ShowBuilder
 		}{
 			pub,
-			views.NewShowBuilder(c.Render, locale.Get(r.Context())),
+			views.NewShowBuilder(c.RenderPartial, locale.Get(r.Context())),
 		}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
@@ -42,12 +42,12 @@ func (c *PublicationConference) Edit(w http.ResponseWriter, r *http.Request) {
 
 	c.Render.HTML(w, http.StatusOK,
 		"publication/conference/_edit",
-		views.NewData(c.Render, r, struct {
+		c.ViewData(r, struct {
 			Publication *models.Publication
 			Form        *views.FormBuilder
 		}{
 			pub,
-			views.NewFormBuilder(c.Render, locale.Get(r.Context()), nil),
+			views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), nil),
 		}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
@@ -72,12 +72,12 @@ func (c *PublicationConference) Update(w http.ResponseWriter, r *http.Request) {
 	if formErrors, ok := err.(jsonapi.Errors); ok {
 		c.Render.HTML(w, http.StatusOK,
 			"publication/conference/_edit",
-			views.NewData(c.Render, r, struct {
+			c.ViewData(r, struct {
 				Publication *models.Publication
 				Form        *views.FormBuilder
 			}{
 				pub,
-				views.NewFormBuilder(c.Render, locale.Get(r.Context()), formErrors),
+				views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), formErrors),
 			},
 				views.Flash{Type: "error", Message: "There are some problems with your input"},
 			),
@@ -92,12 +92,12 @@ func (c *PublicationConference) Update(w http.ResponseWriter, r *http.Request) {
 
 	c.Render.HTML(w, http.StatusOK,
 		"publication/conference/_update",
-		views.NewData(c.Render, r, struct {
+		c.ViewData(r, struct {
 			Publication *models.Publication
 			Show        *views.ShowBuilder
 		}{
 			savedPub,
-			views.NewShowBuilder(c.Render, locale.Get(r.Context())),
+			views.NewShowBuilder(c.RenderPartial, locale.Get(r.Context())),
 		},
 			views.Flash{Type: "sucess", Message: "Conference updated succesfully", DismissAfter: 5 * time.Second},
 		),

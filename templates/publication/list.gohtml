@@ -66,7 +66,7 @@
                 <ul class="list-group list-group-flush">
                     {{range .D.Hits.Hits}}
                     <li class="list-group-item">
-                        {{template "publication/_hit" ($.NewData (dict "Publication" . "SearchArgs" $.D.SearchArgs))}}
+                        {{template "publication/_hit" ($.ViewData (dict "Publication" . "SearchArgs" $.D.SearchArgs))}}
                     </li>
                     {{end}}
                 </ul>
