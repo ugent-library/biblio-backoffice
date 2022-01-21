@@ -4,56 +4,60 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ugent-library/biblio-backend/internal/context"
 	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/biblio-backend/internal/views"
+	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
+	"github.com/ugent-library/biblio-backend/services/webapp/internal/views"
 	"github.com/ugent-library/go-locale/locale"
 	"github.com/ugent-library/go-web/forms"
 	"github.com/ugent-library/go-web/jsonapi"
 	"github.com/unrolled/render"
 )
 
-type PublicationConference struct {
+type PublicationAdditionalInfo struct {
 	Context
 }
 
-func NewPublicationConference(c Context) *PublicationConference {
-	return &PublicationConference{c}
+func NewPublicationAdditionalInfo(c Context) *PublicationAdditionalInfo {
+	return &PublicationAdditionalInfo{c}
 }
 
-func (c *PublicationConference) Show(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationAdditionalInfo) Show(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
 	c.Render.HTML(w, http.StatusOK,
-		"publication/conference/_show",
+		"publication/additional_info/_show",
 		c.ViewData(r, struct {
-			Publication *models.Publication
-			Show        *views.ShowBuilder
+			Publication  *models.Publication
+			Show         *views.ShowBuilder
+			Vocabularies map[string][]string
 		}{
 			pub,
 			views.NewShowBuilder(c.RenderPartial, locale.Get(r.Context())),
+			c.Engine.Vocabularies(),
 		}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
 
-func (c *PublicationConference) Edit(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationAdditionalInfo) Edit(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
 	c.Render.HTML(w, http.StatusOK,
-		"publication/conference/_edit",
+		"publication/additional_info/_edit",
 		c.ViewData(r, struct {
-			Publication *models.Publication
-			Form        *views.FormBuilder
+			Publication  *models.Publication
+			Form         *views.FormBuilder
+			Vocabularies map[string][]string
 		}{
 			pub,
 			views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), nil),
+			c.Engine.Vocabularies(),
 		}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
 
-func (c *PublicationConference) Update(w http.ResponseWriter, r *http.Request) {
+func (c *PublicationAdditionalInfo) Update(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
 	err := r.ParseForm()
@@ -71,13 +75,15 @@ func (c *PublicationConference) Update(w http.ResponseWriter, r *http.Request) {
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {
 		c.Render.HTML(w, http.StatusOK,
-			"publication/conference/_edit",
+			"publication/additional_info/_edit",
 			c.ViewData(r, struct {
-				Publication *models.Publication
-				Form        *views.FormBuilder
+				Publication  *models.Publication
+				Form         *views.FormBuilder
+				Vocabularies map[string][]string
 			}{
 				pub,
 				views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), formErrors),
+				c.Engine.Vocabularies(),
 			},
 				views.Flash{Type: "error", Message: "There are some problems with your input"},
 			),
@@ -91,15 +97,17 @@ func (c *PublicationConference) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	c.Render.HTML(w, http.StatusOK,
-		"publication/conference/_update",
+		"publication/additional_info/_update",
 		c.ViewData(r, struct {
-			Publication *models.Publication
-			Show        *views.ShowBuilder
+			Publication  *models.Publication
+			Show         *views.ShowBuilder
+			Vocabularies map[string][]string
 		}{
 			savedPub,
 			views.NewShowBuilder(c.RenderPartial, locale.Get(r.Context())),
+			c.Engine.Vocabularies(),
 		},
-			views.Flash{Type: "sucess", Message: "Conference updated succesfully", DismissAfter: 5 * time.Second},
+			views.Flash{Type: "success", Message: "Additional info updated succesfully", DismissAfter: 5 * time.Second},
 		),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)

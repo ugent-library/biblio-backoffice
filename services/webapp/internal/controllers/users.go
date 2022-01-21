@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/ugent-library/biblio-backend/internal/context"
+	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 	"github.com/unrolled/render"
 )
 

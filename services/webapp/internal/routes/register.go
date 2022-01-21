@@ -6,8 +6,8 @@ import (
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/handlers"
 	"github.com/spf13/viper"
-	"github.com/ugent-library/biblio-backend/internal/controllers"
-	"github.com/ugent-library/biblio-backend/internal/middleware"
+	"github.com/ugent-library/biblio-backend/services/webapp/internal/controllers"
+	"github.com/ugent-library/biblio-backend/services/webapp/internal/middleware"
 	"github.com/ugent-library/go-locale/locale"
 )
 
@@ -19,7 +19,7 @@ func Register(c controllers.Context) {
 	router.Use(handlers.RecoveryHandler())
 
 	// static files
-	router.PathPrefix(basePath + "/static/").Handler(http.StripPrefix(basePath+"/static/", http.FileServer(http.Dir("./static"))))
+	router.PathPrefix(basePath + "/static/").Handler(http.StripPrefix(basePath+"/static/", http.FileServer(http.Dir("./services/webapp/static"))))
 
 	requireUser := middleware.RequireUser(c.BaseURL.Path + "/login")
 	setUser := middleware.SetUser(c.Engine, c.SessionName, c.SessionStore)

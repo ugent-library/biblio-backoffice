@@ -6,34 +6,34 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
-	"github.com/ugent-library/biblio-backend/internal/context"
 	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/biblio-backend/internal/views"
+	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
+	"github.com/ugent-library/biblio-backend/services/webapp/internal/views"
 	"github.com/ugent-library/go-locale/locale"
 	"github.com/ugent-library/go-web/forms"
 	"github.com/ugent-library/go-web/jsonapi"
 	"github.com/unrolled/render"
 )
 
-type PublicationAbstracts struct {
+type DatasetAbstracts struct {
 	Context
 }
 
-func NewPublicationAbstracts(c Context) *PublicationAbstracts {
-	return &PublicationAbstracts{c}
+func NewDatasetAbstracts(c Context) *DatasetAbstracts {
+	return &DatasetAbstracts{c}
 }
 
 // Show the "Add abstract" modal
-func (c *PublicationAbstracts) Add(w http.ResponseWriter, r *http.Request) {
+func (c *DatasetAbstracts) Add(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
 	abstract := &models.Text{}
 
-	c.Render.HTML(w, http.StatusOK, "publication/abstracts/_form", c.ViewData(r, struct {
-		PublicationID string
-		Abstract      *models.Text
-		Form          *views.FormBuilder
-		Vocabularies  map[string][]string
+	c.Render.HTML(w, http.StatusOK, "dataset/abstracts/_form", c.ViewData(r, struct {
+		DatasetID    string
+		Abstract     *models.Text
+		Form         *views.FormBuilder
+		Vocabularies map[string][]string
 	}{
 		id,
 		abstract,
@@ -45,8 +45,8 @@ func (c *PublicationAbstracts) Add(w http.ResponseWriter, r *http.Request) {
 }
 
 // Save an abstract to Librecat
-func (c *PublicationAbstracts) Create(w http.ResponseWriter, r *http.Request) {
-	pub := context.GetPublication(r.Context())
+func (c *DatasetAbstracts) Create(w http.ResponseWriter, r *http.Request) {
+	dataset := context.GetDataset(r.Context())
 
 	err := r.ParseForm()
 	if err != nil {
@@ -61,22 +61,22 @@ func (c *PublicationAbstracts) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	abstracts := make([]models.Text, len(pub.Abstract))
-	copy(abstracts, pub.Abstract)
+	abstracts := make([]models.Text, len(dataset.Abstract))
+	copy(abstracts, dataset.Abstract)
 
 	abstracts = append(abstracts, *abstract)
-	pub.Abstract = abstracts
+	dataset.Abstract = abstracts
 
-	savedPub, err := c.Engine.UpdatePublication(pub)
+	savedDataset, err := c.Engine.UpdateDataset(dataset)
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {
-		c.Render.HTML(w, http.StatusOK, "publication/abstracts/_form", c.ViewData(r, struct {
-			PublicationID string
-			Abstract      *models.Text
-			Form          *views.FormBuilder
-			Vocabularies  map[string][]string
+		c.Render.HTML(w, http.StatusOK, "dataset/abstracts/_form", c.ViewData(r, struct {
+			DatasetID    string
+			Abstract     *models.Text
+			Form         *views.FormBuilder
+			Vocabularies map[string][]string
 		}{
-			savedPub.ID,
+			savedDataset.ID,
 			abstract,
 			views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), formErrors),
 			c.Engine.Vocabularies(),
@@ -90,36 +90,36 @@ func (c *PublicationAbstracts) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("HX-Trigger", "PublicationCreateAbstract")
+	w.Header().Set("HX-Trigger", "DatasetCreateAbstract")
 
 	c.Render.HTML(w, http.StatusOK,
-		"publication/abstracts/_table_body",
+		"dataset/abstracts/_table_body",
 		c.ViewData(r, struct {
-			Publication *models.Publication
+			Dataset *models.Dataset
 		}{
-			savedPub,
+			savedDataset,
 		}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
 
 // Show the "Edit abstract" modal
-func (c *PublicationAbstracts) Edit(w http.ResponseWriter, r *http.Request) {
+func (c *DatasetAbstracts) Edit(w http.ResponseWriter, r *http.Request) {
 	muxRowDelta := mux.Vars(r)["delta"]
 	rowDelta, _ := strconv.Atoi(muxRowDelta)
 
-	pub := context.GetPublication(r.Context())
+	dataset := context.GetDataset(r.Context())
 
-	abstract := &pub.Abstract[rowDelta]
+	abstract := &dataset.Abstract[rowDelta]
 
-	c.Render.HTML(w, http.StatusOK, "publication/abstracts/_form_edit", c.ViewData(r, struct {
-		PublicationID string
-		Delta         string
-		Abstract      *models.Text
-		Form          *views.FormBuilder
-		Vocabularies  map[string][]string
+	c.Render.HTML(w, http.StatusOK, "dataset/abstracts/_form_edit", c.ViewData(r, struct {
+		DatasetID    string
+		Delta        string
+		Abstract     *models.Text
+		Form         *views.FormBuilder
+		Vocabularies map[string][]string
 	}{
-		pub.ID,
+		dataset.ID,
 		muxRowDelta,
 		abstract,
 		views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), nil),
@@ -130,11 +130,11 @@ func (c *PublicationAbstracts) Edit(w http.ResponseWriter, r *http.Request) {
 }
 
 // // Save the updated abstract to Librecat
-func (c *PublicationAbstracts) Update(w http.ResponseWriter, r *http.Request) {
+func (c *DatasetAbstracts) Update(w http.ResponseWriter, r *http.Request) {
 	muxRowDelta := mux.Vars(r)["delta"]
 	rowDelta, _ := strconv.Atoi(muxRowDelta)
 
-	pub := context.GetPublication(r.Context())
+	dataset := context.GetDataset(r.Context())
 
 	err := r.ParseForm()
 	if err != nil {
@@ -149,25 +149,25 @@ func (c *PublicationAbstracts) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	abstracts := make([]models.Text, len(pub.Abstract))
-	copy(abstracts, pub.Abstract)
+	abstracts := make([]models.Text, len(dataset.Abstract))
+	copy(abstracts, dataset.Abstract)
 
 	abstracts[rowDelta] = *abstract
-	pub.Abstract = abstracts
+	dataset.Abstract = abstracts
 
-	savedPub, err := c.Engine.UpdatePublication(pub)
+	savedDataset, err := c.Engine.UpdateDataset(dataset)
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {
 		c.Render.HTML(w, http.StatusOK,
-			"publication/abstracts/_form_edit",
+			"dataset/abstracts/_form_edit",
 			c.ViewData(r, struct {
-				PublicationID string
-				Delta         string
-				Abstract      *models.Text
-				Form          *views.FormBuilder
-				Vocabularies  map[string][]string
+				DatasetID    string
+				Delta        string
+				Abstract     *models.Text
+				Form         *views.FormBuilder
+				Vocabularies map[string][]string
 			}{
-				savedPub.ID,
+				savedDataset.ID,
 				strconv.Itoa(rowDelta),
 				abstract,
 				views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), formErrors),
@@ -182,23 +182,23 @@ func (c *PublicationAbstracts) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("HX-Trigger", "PublicationUpdateAbstract")
+	w.Header().Set("HX-Trigger", "DatasetUpdateAbstract")
 
-	c.Render.HTML(w, http.StatusOK, "publication/abstracts/_table_body", c.ViewData(r, struct {
-		Publication *models.Publication
+	c.Render.HTML(w, http.StatusOK, "dataset/abstracts/_table_body", c.ViewData(r, struct {
+		Dataset *models.Dataset
 	}{
-		savedPub,
+		savedDataset,
 	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
 
 // // Show the "Confirm remove" modal
-func (c *PublicationAbstracts) ConfirmRemove(w http.ResponseWriter, r *http.Request) {
+func (c *DatasetAbstracts) ConfirmRemove(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	muxRowDelta := mux.Vars(r)["delta"]
 
-	c.Render.HTML(w, http.StatusOK, "publication/abstracts/_modal_confirm_removal", c.ViewData(r, struct {
+	c.Render.HTML(w, http.StatusOK, "dataset/abstracts/_modal_confirm_removal", c.ViewData(r, struct {
 		ID  string
 		Key string
 	}{
@@ -210,11 +210,11 @@ func (c *PublicationAbstracts) ConfirmRemove(w http.ResponseWriter, r *http.Requ
 }
 
 // // Remove an abstract from Librecat
-func (c *PublicationAbstracts) Remove(w http.ResponseWriter, r *http.Request) {
+func (c *DatasetAbstracts) Remove(w http.ResponseWriter, r *http.Request) {
 	muxRowDelta := mux.Vars(r)["delta"]
 	rowDelta, _ := strconv.Atoi(muxRowDelta)
 
-	pub := context.GetPublication(r.Context())
+	pub := context.GetDataset(r.Context())
 
 	abstracts := make([]models.Text, len(pub.Abstract))
 	copy(abstracts, pub.Abstract)
@@ -223,9 +223,9 @@ func (c *PublicationAbstracts) Remove(w http.ResponseWriter, r *http.Request) {
 	pub.Abstract = abstracts
 
 	// TODO: error handling
-	c.Engine.UpdatePublication(pub)
+	c.Engine.UpdateDataset(pub)
 
-	w.Header().Set("HX-Trigger", "PublicationRemoveAbstract")
+	w.Header().Set("HX-Trigger", "DatasetRemoveAbstract")
 
 	// Empty content, denotes we deleted the record
 	fmt.Fprintf(w, "")

@@ -3,7 +3,7 @@ package middleware
 import (
 	"net/http"
 
-	"github.com/ugent-library/biblio-backend/internal/context"
+	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 )
 
 func SetActiveMenu(menu string) func(next http.Handler) http.Handler {

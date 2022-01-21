@@ -42,30 +42,40 @@ BIBLIO_BACKEND_MODE
 Install node dependencies:
 
 ```
+cd services/webapp/
 npm install
 ```
 
 Build assets:
 
 ```
+cd services/webapp/
 npx mix
 ```
 
 Watch file changes in development:
 
 ```
+cd services/webapp/
 npx mix watch
 ```
 
 Build production assets:
 
 ```
+cd services/webapp/
 npx mix --production
 ```
 
 Laravel Mix [documentation](https://laravel.com/docs/8.x).
 
 ## Start server
+
+Install node dependencies:
+
+```
+npm install
+```
 
 To start the development server with live reload:
 

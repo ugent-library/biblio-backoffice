@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/sessions"
-	"github.com/ugent-library/biblio-backend/internal/context"
 	"github.com/ugent-library/biblio-backend/internal/engine"
+	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 )
 
 func SetUser(e *engine.Engine, sessionName string, sessionStore sessions.Store) func(next http.Handler) http.Handler {
