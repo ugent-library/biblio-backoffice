@@ -9,6 +9,14 @@
         {{ end }}
     </label>
     <div class="col-sm-9">
-        <span>{{if .Value}}{{.Value}}{{else}}-{{end}}</span>
+        <span>
+            {{if .HTMLValue}}
+                {{.HTMLValue}}
+            {{else if .Value}}
+                {{.Value}}
+            {{else}}
+                -
+            {{end}}
+        </span>
     </div>
 </div>
