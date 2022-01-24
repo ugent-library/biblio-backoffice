@@ -70,11 +70,11 @@ var serverStartCmd = &cobra.Command{
 	Use:   "start",
 	Short: "start the http server",
 	Run: func(cmd *cobra.Command, args []string) {
-		wa, err := webapp.New()
+		wa, err := webapp.New(newEngine())
 		if err != nil {
 			log.Fatal(err)
 		}
-		if err = services.Serve(wa); err != nil {
+		if err = services.Start(wa); err != nil {
 			log.Fatal(err)
 		}
 	},

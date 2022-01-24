@@ -15,16 +15,12 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"github.com/spf13/viper"
-	"github.com/ugent-library/biblio-backend/internal/backends/ianamedia"
-	"github.com/ugent-library/biblio-backend/internal/backends/librecat"
-	"github.com/ugent-library/biblio-backend/internal/backends/spdxlicenses"
 	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/controllers"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/helpers"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/routes"
 	"github.com/ugent-library/go-locale/locale"
 	"github.com/ugent-library/go-oidc/oidc"
-	"github.com/ugent-library/go-orcid/orcid"
 	"github.com/ugent-library/go-web/mix"
 	"github.com/ugent-library/go-web/urls"
 	"github.com/unrolled/render"
@@ -36,8 +32,8 @@ type service struct {
 	server *http.Server
 }
 
-func New() (*service, error) {
-	router := buildRouter()
+func New(e *engine.Engine) (*service, error) {
+	router := buildRouter(e)
 
 	// logging
 	handler := handlers.LoggingHandler(os.Stdout, router)
@@ -59,15 +55,15 @@ func (s *service) Name() string {
 	return "biblio-backend-webapp"
 }
 
-func (s *service) Serve() error {
+func (s *service) Start() error {
 	return s.server.ListenAndServe()
 }
 
-func (s *service) Shutdown(ctx context.Context) error {
+func (s *service) Stop(ctx context.Context) error {
 	return s.server.Shutdown(ctx)
 }
 
-func buildRouter() *mux.Router {
+func buildRouter(e *engine.Engine) *mux.Router {
 	host := viper.GetString("host")
 	port := viper.GetInt("port")
 
@@ -85,35 +81,6 @@ func buildRouter() *mux.Router {
 	baseURL, err := url.Parse(b)
 	if err != nil {
 		log.Fatal(err)
-	}
-
-	// engine
-	librecatClient := librecat.New(librecat.Config{
-		URL:      viper.GetString("librecat-url"),
-		Username: viper.GetString("librecat-username"),
-		Password: viper.GetString("librecat-password"),
-	})
-	orcidConfig := orcid.Config{
-		ClientID:     viper.GetString("orcid-client-id"),
-		ClientSecret: viper.GetString("orcid-client-secret"),
-		Sandbox:      viper.GetBool("orcid-sandbox"),
-	}
-	orcidClient := orcid.NewMemberClient(orcidConfig)
-	e := &engine.Engine{
-		ORCIDSandbox:              orcidConfig.Sandbox,
-		ORCIDClient:               orcidClient,
-		DatasetService:            librecatClient,
-		DatasetSearchService:      librecatClient,
-		PublicationService:        librecatClient,
-		PublicationSearchService:  librecatClient,
-		PersonService:             librecatClient,
-		ProjectService:            librecatClient,
-		UserService:               librecatClient,
-		OrganizationSearchService: librecatClient,
-		PersonSearchService:       librecatClient,
-		ProjectSearchService:      librecatClient,
-		LicenseSearchService:      spdxlicenses.New(),
-		MediaTypeSearchService:    ianamedia.New(),
 	}
 
 	// router

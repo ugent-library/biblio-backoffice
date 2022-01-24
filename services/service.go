@@ -11,11 +11,11 @@ import (
 
 type Service interface {
 	Name() string
-	Serve() error
-	Shutdown(context.Context) error
+	Start() error
+	Stop(context.Context) error
 }
 
-func Serve(services ...Service) (err error) {
+func Start(services ...Service) (err error) {
 	var (
 		stopChan = make(chan os.Signal)
 		errChan  = make(chan error)
@@ -36,7 +36,7 @@ func Serve(services ...Service) (err error) {
 			service := service
 			go func() {
 				defer wg.Done()
-				if err := service.Shutdown(timer); err != nil {
+				if err := service.Stop(timer); err != nil {
 					errChan <- err
 				}
 			}()
@@ -50,7 +50,7 @@ func Serve(services ...Service) (err error) {
 	for _, service := range services {
 		service := service
 		go func() {
-			if err := service.Serve(); err != nil {
+			if err := service.Start(); err != nil {
 				errChan <- err
 			}
 		}()

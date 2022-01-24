@@ -2,8 +2,10 @@ package engine
 
 import (
 	"io"
+	"log"
 	"net/http"
 
+	"github.com/nats-io/nats.go"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/go-orcid/orcid"
 )
@@ -75,7 +77,8 @@ type MediaTypeSearchService interface {
 	SuggestMediaTypes(string) ([]models.Completion, error)
 }
 
-type Engine struct {
+type Config struct {
+	NATS         *nats.Conn
 	ORCIDSandbox bool
 	ORCIDClient  *orcid.MemberClient
 	DatasetService
@@ -90,4 +93,55 @@ type Engine struct {
 	ProjectSearchService
 	LicenseSearchService
 	MediaTypeSearchService
+}
+
+type Engine struct {
+	Config
+	js nats.JetStreamContext
+}
+
+func New(c Config) (*Engine, error) {
+	e := &Engine{Config: c}
+
+	js, err := e.NATS.JetStream()
+	if err != nil {
+		return e, err
+	}
+	if err = createWorkStream(js); err != nil {
+		return e, err
+	}
+	e.js = js
+
+	return e, nil
+}
+
+func createWorkStream(js nats.JetStreamContext) error {
+	streamName := "WORK"
+	streamSubjects := "WORK.*"
+
+	// Check if the WORK stream already exists; if not, create it.
+	stream, err := js.StreamInfo(streamName)
+	if err != nil {
+		log.Println(err)
+	}
+
+	// js.DeleteStream("WORK")
+	if stream == nil {
+		log.Printf("creating stream %q and subjects %q", streamName, streamSubjects)
+		_, err = js.AddStream(&nats.StreamConfig{
+			Name:      streamName,
+			Subjects:  []string{streamSubjects},
+			Storage:   nats.FileStorage,
+			Retention: nats.WorkQueuePolicy,
+			// Discard:    nats.DiscardOld,
+			// Duplicates: 1 * time.Hour,
+			// MaxMsgs:    -1,
+			// MaxBytes:   -1,
+			// MaxAge:     -1,
+		})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
