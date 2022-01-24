@@ -7,15 +7,24 @@ import (
 )
 
 type showData struct {
-	values   []string
-	Label    string
-	Required bool
-	Tooltip  string
+	values        []string
+	htmlValues    []template.HTML
+	valueTemplate string
+	Label         string
+	Required      bool
+	Tooltip       string
 }
 
 func (f *showData) Value() string {
 	if len(f.values) > 0 {
 		return f.values[0]
+	}
+	return ""
+}
+
+func (f *showData) HTMLValue() template.HTML {
+	if len(f.htmlValues) > 0 {
+		return f.htmlValues[0]
 	}
 	return ""
 }
@@ -47,6 +56,13 @@ func (b *ShowBuilder) newShowData(opts []showOption) *showData {
 
 	for _, opt := range opts {
 		opt(d)
+	}
+
+	if d.valueTemplate != "" {
+		d.htmlValues = make([]template.HTML, len(d.values))
+		for i, v := range d.values {
+			d.htmlValues[i], _ = b.renderPartial(d.valueTemplate, v)
+		}
 	}
 
 	return d
@@ -116,6 +132,12 @@ func (b *ShowBuilder) Required() showOption {
 func (b *ShowBuilder) Tooltip(v string) showOption {
 	return func(d *showData) {
 		d.Tooltip = v
+	}
+}
+
+func (b *ShowBuilder) ValueTemplate(v string) showOption {
+	return func(d *showData) {
+		d.valueTemplate = v
 	}
 }
 

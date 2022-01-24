@@ -28,7 +28,8 @@
             <ul class="list-group list-group-flush" data-panel-state="read">
                 <li class="list-group-item">
                     {{.D.Show.Text (.D.Show.Label "title") (.D.Show.Value .D.Dataset.Title) .D.Show.Required}}
-                    {{.D.Show.Text (.D.Show.Label "doi") (.D.Show.Value .D.Dataset.DOI) (.D.Show.Required)}}
+                    {{.D.Show.Text (.D.Show.Label "doi") (.D.Show.Value .D.Dataset.DOI) (.D.Show.Required)
+                        (.D.Show.ValueTemplate "value/_doi")}}
                     {{.D.Show.Text (.D.Show.Label "url") (.D.Show.Value .D.Dataset.URL)}}
                 </li>
                 <li class="list-group-item">
