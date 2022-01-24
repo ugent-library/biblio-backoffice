@@ -119,6 +119,10 @@ func (b *ShowBuilder) Tooltip(v string) showOption {
 	}
 }
 
+func (b *ShowBuilder) Link(opts ...showOption) (template.HTML, error) {
+	return b.renderPartial("show_builder/_link", b.newShowData(opts))
+}
+
 func (b *ShowBuilder) Text(opts ...showOption) (template.HTML, error) {
 	return b.renderPartial("show_builder/_text", b.newShowData(opts))
 }

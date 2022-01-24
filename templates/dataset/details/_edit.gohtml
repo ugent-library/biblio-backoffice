@@ -36,7 +36,7 @@
             <ul class="list-group list-group-flush" data-panel-state="edit">
                 <li class="list-group-item">
                     {{.D.Form.Text (.D.Form.Name "title") (.D.Form.Value .D.Dataset.Title) (.D.Form.Cols 9) (.D.Form.Required)}}
-                    {{.D.Show.Text (.D.Show.Label "doi") (.D.Show.Value .D.Dataset.DOI) (.D.Show.Required)}}
+                    {{.D.Show.Link (.D.Show.Label "doi") (.D.Show.Value .D.Dataset.DOI) (.D.Show.Required)}}
                     {{.D.Form.Text (.D.Form.Name "url") (.D.Form.Value .D.Dataset.URL) (.D.Form.Cols 3)}}
                 </li>
                 <li class="list-group-item">
