@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/nats-io/nats.go"
+	"github.com/rabbitmq/amqp091-go"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/go-orcid/orcid"
 )
@@ -78,7 +78,7 @@ type MediaTypeSearchService interface {
 }
 
 type Config struct {
-	NATS         *nats.Conn
+	MQ           *amqp091.Connection
 	ORCIDSandbox bool
 	ORCIDClient  *orcid.MemberClient
 	DatasetService
@@ -97,51 +97,30 @@ type Config struct {
 
 type Engine struct {
 	Config
-	js nats.JetStreamContext
+	mQChan *amqp091.Channel
 }
 
 func New(c Config) (*Engine, error) {
 	e := &Engine{Config: c}
 
-	js, err := e.NATS.JetStream()
+	mqCh, err := e.MQ.Channel()
 	if err != nil {
-		return e, err
+		log.Fatal(err)
 	}
-	if err = createWorkStream(js); err != nil {
-		return e, err
+	e.mQChan = mqCh
+
+	err = mqCh.ExchangeDeclare(
+		"tasks", // exchange name
+		"topic", // exchange type
+		true,    // durable
+		false,   // auto-deleted
+		false,   // internal
+		false,   // no-wait
+		nil,     // arguments
+	)
+	if err != nil {
+		return nil, err
 	}
-	e.js = js
 
 	return e, nil
-}
-
-func createWorkStream(js nats.JetStreamContext) error {
-	streamName := "WORK"
-	streamSubjects := "WORK.*"
-
-	// Check if the WORK stream already exists; if not, create it.
-	stream, err := js.StreamInfo(streamName)
-	if err != nil {
-		log.Println(err)
-	}
-
-	// js.DeleteStream("WORK")
-	if stream == nil {
-		log.Printf("creating stream %q and subjects %q", streamName, streamSubjects)
-		_, err = js.AddStream(&nats.StreamConfig{
-			Name:      streamName,
-			Subjects:  []string{streamSubjects},
-			Storage:   nats.FileStorage,
-			Retention: nats.WorkQueuePolicy,
-			// Discard:    nats.DiscardOld,
-			// Duplicates: 1 * time.Hour,
-			// MaxMsgs:    -1,
-			// MaxBytes:   -1,
-			// MaxAge:     -1,
-		})
-		if err != nil {
-			return err
-		}
-	}
-	return nil
 }

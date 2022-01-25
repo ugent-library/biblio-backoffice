@@ -1,11 +1,13 @@
 package engine
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"strings"
 
+	"github.com/rabbitmq/amqp091-go"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/go-orcid/orcid"
 	"golang.org/x/text/language"
@@ -27,6 +29,28 @@ import (
 
 // 	return res.NumFound > 0
 // }
+
+func (e *Engine) AddPublicationsToORCID(userID string, s *SearchArgs) error {
+	task := struct {
+		UserID     string      `json:"user_id"`
+		SearchArgs *SearchArgs `json:"search_args"`
+	}{
+		userID,
+		s,
+	}
+	taskJSON, _ := json.Marshal(task)
+
+	return e.mQChan.Publish(
+		"tasks",           // exchange
+		"tasks.orcid.add", // routing key
+		false,             // mandatory
+		false,
+		amqp091.Publishing{
+			DeliveryMode: amqp091.Persistent,
+			ContentType:  "application/json",
+			Body:         taskJSON,
+		})
+}
 
 func (e *Engine) AddPublicationToORCID(orcidID, orcidToken string, p *models.Publication) (*models.Publication, error) {
 	client := orcid.NewMemberClient(orcid.Config{

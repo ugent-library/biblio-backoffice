@@ -3,7 +3,7 @@ package commands
 import (
 	"log"
 
-	"github.com/nats-io/nats.go"
+	"github.com/rabbitmq/amqp091-go"
 	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/backends/ianamedia"
 	"github.com/ugent-library/biblio-backend/internal/backends/librecat"
@@ -13,7 +13,7 @@ import (
 )
 
 func newEngine() *engine.Engine {
-	natsConn, err := nats.Connect(nats.DefaultURL)
+	mqConn, err := amqp091.Dial(viper.GetString("amqp-conn"))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -31,7 +31,7 @@ func newEngine() *engine.Engine {
 	orcidClient := orcid.NewMemberClient(orcidConfig)
 
 	e, err := engine.New(engine.Config{
-		NATS:                      natsConn,
+		MQ:                        mqConn,
 		ORCIDSandbox:              orcidConfig.Sandbox,
 		ORCIDClient:               orcidClient,
 		DatasetService:            librecatClient,

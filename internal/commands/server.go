@@ -5,6 +5,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/ugent-library/biblio-backend/services"
+	"github.com/ugent-library/biblio-backend/services/orcidworker"
 	"github.com/ugent-library/biblio-backend/services/webapp"
 )
 
@@ -70,11 +71,16 @@ var serverStartCmd = &cobra.Command{
 	Use:   "start",
 	Short: "start the http server",
 	Run: func(cmd *cobra.Command, args []string) {
-		wa, err := webapp.New(newEngine())
+		e := newEngine()
+		wa, err := webapp.New(e)
 		if err != nil {
 			log.Fatal(err)
 		}
-		if err = services.Start(wa); err != nil {
+		ow, err := orcidworker.New(e)
+		if err != nil {
+			log.Fatal(err)
+		}
+		if err = services.Start(ow, wa); err != nil {
 			log.Fatal(err)
 		}
 	},
