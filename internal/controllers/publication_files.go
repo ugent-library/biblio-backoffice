@@ -146,9 +146,11 @@ func (c *PublicationFiles) Edit(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
 	var file *models.PublicationFile
-	for _, f := range pub.File {
+	fileIndex := 0
+	for i, f := range pub.File {
 		if f.ID == fileID {
 			file = f
+			fileIndex = i
 		}
 	}
 
@@ -160,11 +162,13 @@ func (c *PublicationFiles) Edit(w http.ResponseWriter, r *http.Request) {
 	c.Render.HTML(w, http.StatusOK, "publication/files/_edit", c.ViewData(r, struct {
 		Publication  *models.Publication
 		File         *models.PublicationFile
+		FileIndex    int
 		Form         *views.FormBuilder
 		Vocabularies map[string][]string
 	}{
 		pub,
 		file,
+		fileIndex,
 		views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), nil),
 		c.Engine.Vocabularies(),
 	}),
@@ -179,9 +183,11 @@ func (c *PublicationFiles) Update(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
 	var file *models.PublicationFile
-	for _, f := range pub.File {
+	fileIndex := 0
+	for i, f := range pub.File {
 		if f.ID == fileID {
 			file = f
+			fileIndex = i
 		}
 	}
 
@@ -213,11 +219,13 @@ func (c *PublicationFiles) Update(w http.ResponseWriter, r *http.Request) {
 		c.Render.HTML(w, http.StatusOK, "publication/files/_edit", c.ViewData(r, struct {
 			Publication  *models.Publication
 			File         *models.PublicationFile
+			FileIndex    int
 			Form         *views.FormBuilder
 			Vocabularies map[string][]string
 		}{
 			pub,
 			file,
+			fileIndex,
 			views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), formErrors),
 			c.Engine.Vocabularies(),
 		},
