@@ -49,13 +49,13 @@ func (c *Flashes) Ws(w http.ResponseWriter, r *http.Request) {
 	c.Engine.MessageHub.Register(user.ID, sendCh)
 
 	go c.wsWriter(ws, sendCh)
-	c.wsReader(ws, user.ID)
+	c.wsReader(ws, user.ID, sendCh)
 }
 
-func (c *Flashes) wsReader(ws *websocket.Conn, userID string) {
+func (c *Flashes) wsReader(ws *websocket.Conn, userID string, sendCh chan []byte) {
 	defer func() {
 		ws.Close()
-		c.Engine.MessageHub.Unregister(userID)
+		c.Engine.MessageHub.Unregister(userID, sendCh)
 	}()
 	ws.SetReadLimit(512)
 	ws.SetReadDeadline(time.Now().Add(pongWait))

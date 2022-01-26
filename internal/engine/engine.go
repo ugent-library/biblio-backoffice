@@ -179,14 +179,14 @@ func New(c Config) (*Engine, error) {
 
 	go func() {
 		for d := range msgs {
-			not := struct {
-				UserID  string
-				Message string
+			noti := struct {
+				UserID  string `json:"user_id"`
+				Message string `json:"message"`
 			}{}
-			if err := json.Unmarshal(d.Body, &not); err != nil {
+			if err := json.Unmarshal(d.Body, &noti); err != nil {
 				log.Println(err)
 			}
-			e.MessageHub.Dispatch(not.UserID, []byte(not.Message))
+			e.MessageHub.Dispatch(noti.UserID, []byte(noti.Message))
 		}
 	}()
 
