@@ -25,8 +25,8 @@ func Register(c controllers.Context) {
 	setUser := middleware.SetUser(c.Engine, c.SessionName, c.SessionStore)
 
 	homeController := controllers.NewHome(c)
-
 	authController := controllers.NewAuth(c)
+	flashController := controllers.NewFlashes(c)
 	usersController := controllers.NewUsers(c)
 
 	publicationsController := controllers.NewPublications(c)
@@ -91,6 +91,13 @@ func Register(c controllers.Context) {
 	r.HandleFunc("/logout", authController.Logout).
 		Methods("GET").
 		Name("logout")
+
+	// flash (ws)
+	flashRouter := r.PathPrefix("/ws/flash").Subrouter()
+	flashRouter.Use(requireUser)
+	flashRouter.HandleFunc("", flashController.Ws).
+		Methods("GET").
+		Name("ws_flash")
 
 	// users
 	userRouter := r.PathPrefix("/user").Subrouter()

@@ -1,11 +1,13 @@
 package engine
 
 import (
+	"encoding/json"
 	"io"
 	"log"
 	"net/http"
 
 	"github.com/rabbitmq/amqp091-go"
+	"github.com/ugent-library/biblio-backend/internal/message"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/go-orcid/orcid"
 )
@@ -97,11 +99,14 @@ type Config struct {
 
 type Engine struct {
 	Config
-	mQChan *amqp091.Channel
+	MessageHub *message.Hub
+	mQChan     *amqp091.Channel
 }
 
 func New(c Config) (*Engine, error) {
-	e := &Engine{Config: c}
+	e := &Engine{Config: c, MessageHub: message.NewHub()}
+
+	go e.MessageHub.Run()
 
 	mqCh, err := e.MQ.Channel()
 	if err != nil {
@@ -121,6 +126,69 @@ func New(c Config) (*Engine, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	// receive notifications
+	err = mqCh.ExchangeDeclare(
+		"notifications", // exchange name
+		"fanout",        // exchange type
+		true,            // durable
+		false,           // auto-deleted
+		false,           // internal
+		false,           // no-wait
+		nil,             // arguments
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	q, err := mqCh.QueueDeclare(
+		"",    // name
+		false, // durable
+		false, // delete when unused
+		true,  // exclusive
+		false, // no-wait
+		nil,   // arguments
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	err = mqCh.QueueBind(
+		q.Name,          // queue name
+		"",              // routing key
+		"notifications", // exchange
+		false,
+		nil,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	msgs, err := mqCh.Consume(
+		q.Name, // queue
+		"",     // consumer
+		true,   // auto-ack
+		false,  // exclusive
+		false,  // no-local
+		false,  // no-wait
+		nil,    // args
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	go func() {
+		for d := range msgs {
+			not := struct {
+				UserID  string
+				Message string
+			}{}
+			if err := json.Unmarshal(d.Body, &not); err != nil {
+				log.Println(err)
+			}
+			e.MessageHub.Dispatch(not.UserID, []byte(not.Message))
+		}
+	}()
 
 	return e, nil
 }

@@ -111,14 +111,13 @@
                     <img src="{{assetPath "/images/logo-ugent-white.svg"}}" alt="Logo UGent" height="48px" width="auto">
                 </div>
             </div>
-
             {{yield}}
         </div>
     </main>
 
     <div id="user-impersonate-modal" class="modals"></div>
 
-    <div id="flash-messages">
+    <div id="flash-messages" hx-ws="connect:{{pathFor "ws_flash"}}">
         {{range .Flash}}
         {{template "layouts/_flash_message" .}}
         {{end}}
