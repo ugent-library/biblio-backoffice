@@ -130,10 +130,14 @@ func (c *PublicationFiles) Upload(w http.ResponseWriter, r *http.Request) {
 		c.ViewData(r, struct {
 			Publication  *models.Publication
 			File         *models.PublicationFile
+			FileIndex    int
+			Form         *views.FormBuilder
 			Vocabularies map[string][]string
 		}{
 			pub,
 			pub.File[len(pub.File)-1],
+			len(pub.File)-1,
+			views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), nil),
 			c.Engine.Vocabularies(),
 		}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
