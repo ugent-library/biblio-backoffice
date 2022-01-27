@@ -715,3 +715,10 @@ func (c *Publications) ORCIDAdd(w http.ResponseWriter, r *http.Request) {
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
+
+func (c *Publications) ORCIDAddAll(w http.ResponseWriter, r *http.Request) {
+	c.Engine.AddPublicationsToORCID(
+		context.GetUser(r.Context()).ID,
+		engine.NewSearchArgs().WithFilter("status", "public"),
+	)
+}

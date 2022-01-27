@@ -32,6 +32,20 @@ func New(e *engine.Engine) (*service, error) {
 		log.Fatal(err)
 	}
 
+	// ensure notifications exchange exists
+	err = mqCh.ExchangeDeclare(
+		"notifications", // exchange name
+		"fanout",        // exchange type
+		true,            // durable
+		false,           // auto-deleted
+		false,           // internal
+		false,           // no-wait
+		nil,             // arguments
+	)
+	if err != nil {
+		return nil, err
+	}
+
 	_, err = mqCh.QueueDeclare(
 		"tasks_orcid", // queue name
 		true,          // durable
@@ -82,6 +96,28 @@ func (s *service) Start() error {
 			}
 			s.handleTask(task)
 			d.Ack(false)
+
+			noti := struct {
+				UserID  string `json:"user_id"`
+				Message string `json:"message"`
+			}{
+				task.UserID,
+				"Your publications were added to your ORCID profile",
+			}
+			notiJSON, _ := json.Marshal(&noti)
+			err := s.mqChan.Publish(
+				"notifications", // exchange
+				"",              // routing key
+				false,           // mandatory
+				false,           // immediate
+				amqp091.Publishing{
+					ContentType: "application/json",
+					Body:        notiJSON,
+				},
+			)
+			if err != nil {
+				log.Println(err)
+			}
 		}
 	}()
 
