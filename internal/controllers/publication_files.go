@@ -4,12 +4,14 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/ugent-library/biblio-backend/internal/context"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/views"
 	"github.com/ugent-library/go-web/forms"
+	"github.com/ugent-library/go-locale/locale"
 	"github.com/ugent-library/go-web/jsonapi"
 	"github.com/unrolled/render"
 )
@@ -128,10 +130,14 @@ func (c *PublicationFiles) Upload(w http.ResponseWriter, r *http.Request) {
 		c.ViewData(r, struct {
 			Publication  *models.Publication
 			File         *models.PublicationFile
+			FileIndex    int
+			Form         *views.FormBuilder
 			Vocabularies map[string][]string
 		}{
 			pub,
 			pub.File[len(pub.File)-1],
+			len(pub.File)-1,
+			views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), nil),
 			c.Engine.Vocabularies(),
 		}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
@@ -144,9 +150,11 @@ func (c *PublicationFiles) Edit(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
 	var file *models.PublicationFile
-	for _, f := range pub.File {
+	fileIndex := 0
+	for i, f := range pub.File {
 		if f.ID == fileID {
 			file = f
+			fileIndex = i
 		}
 	}
 
@@ -158,10 +166,14 @@ func (c *PublicationFiles) Edit(w http.ResponseWriter, r *http.Request) {
 	c.Render.HTML(w, http.StatusOK, "publication/files/_edit", c.ViewData(r, struct {
 		Publication  *models.Publication
 		File         *models.PublicationFile
+		FileIndex    int
+		Form         *views.FormBuilder
 		Vocabularies map[string][]string
 	}{
 		pub,
 		file,
+		fileIndex,
+		views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), nil),
 		c.Engine.Vocabularies(),
 	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
@@ -175,9 +187,11 @@ func (c *PublicationFiles) Update(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
 	var file *models.PublicationFile
-	for _, f := range pub.File {
+	fileIndex := 0
+	for i, f := range pub.File {
 		if f.ID == fileID {
 			file = f
+			fileIndex = i
 		}
 	}
 
@@ -205,17 +219,22 @@ func (c *PublicationFiles) Update(w http.ResponseWriter, r *http.Request) {
 
 	err = c.Engine.UpdatePublicationFile(pub.ID, file)
 
-	// TODO show errors
-	if _, ok := err.(jsonapi.Errors); ok {
+	if formErrors, ok := err.(jsonapi.Errors); ok {
 		c.Render.HTML(w, http.StatusOK, "publication/files/_edit", c.ViewData(r, struct {
 			Publication  *models.Publication
 			File         *models.PublicationFile
+			FileIndex    int
+			Form         *views.FormBuilder
 			Vocabularies map[string][]string
 		}{
 			pub,
 			file,
+			fileIndex,
+			views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), formErrors),
 			c.Engine.Vocabularies(),
-		}),
+		},
+			views.Flash{Type: "error", Message: "There are some problems with your input"},
+		),
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
 
@@ -225,6 +244,7 @@ func (c *PublicationFiles) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//reload publication
 	pub, err = c.Engine.GetPublication(pub.ID)
 	if err != nil {
 		log.Println(err)
@@ -232,12 +252,13 @@ func (c *PublicationFiles) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO show flash
-	c.Render.HTML(w, http.StatusOK, "publication/files/_list", c.ViewData(r, struct {
-		Publication *models.Publication
+	c.Render.HTML(w, http.StatusOK, "publication/files/_update", c.ViewData(r, struct {
+		Publication  *models.Publication
 	}{
 		pub,
-	}),
+	},
+		views.Flash{Type: "success", Message: "File metadata updated succesfully", DismissAfter: 5 * time.Second},
+	),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }

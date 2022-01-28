@@ -1,4 +1,5 @@
 <div id="modal-backdrop" class="modal-backdrop fade show" style="display:block;"></div>
+{{ $ccLicenseError := .D.Form.ErrorFor (printf "/data/file/%d/cc_license" .D.FileIndex) }}
 <div class="modal show" tabindex="-1" style="display: block;" aria-modal="true" role="dialog">
     <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" role="document">
         <div class="modal-content">
@@ -164,12 +165,17 @@
                                 </div>
                             </div>
                         </label>
-                        <select name="cc_license" class="custom-select w-100">
+                        <select name="cc_license" class="custom-select w-100{{if $ccLicenseError }} is-invalid{{end}}">
                             <option></option>
                             {{range .D.Vocabularies.cc_licenses}}
                             <option{{if eq $.D.File.CCLicense .}} selected{{end}} value="{{.}}">{{$.T "cc_licenses" .}}</option>
                             {{end}}
                         </select>
+                        {{if $ccLicenseError }}
+                        <div class="invalid-feedback">License is required</div>
+                        {{end}}
+                    </div>
+                    <div class="form-group">
                         <label class="col-form-label">
                             <span>Other license</span>
                         </label>
@@ -182,11 +188,15 @@
                 </div>
             </div>
             <div class="modal-footer">
+                <div class="spinner-border">
+                    <span class="sr-only"></span>
+                </div>
                 <button class="btn btn-link modal-close">Cancel</button>
                 <button class="btn btn-primary modal-close" type="submit"
                     hx-put="{{pathFor "publication_file_update" "id" .D.Publication.ID "file_id" .D.File.ID}}"
-                    hx-target="#publication-files"
+                    hx-target="#publication-files-modal"
                     hx-include=".file-attributes > *"
+                    hx-indicator=".modal-dialog .spinner-border"
                 >Save</button>
             </div>
         </div>
