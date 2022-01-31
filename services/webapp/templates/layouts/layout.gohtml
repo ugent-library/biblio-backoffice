@@ -12,7 +12,7 @@
     <meta name="csrf-token" content='{{.CSRFToken}}'>
 </head>
 
-<body class="u-maximize-height overflow-hidden u-scroll-wrapper">
+<body class="u-maximize-height overflow-hidden u-scroll-wrapper" hx-ws="connect:{{pathFor "ws"}}">
     <header>
         {{if eq .Mode "development"}}
         <div class="alert alert-warning" role="alert">
@@ -117,7 +117,7 @@
 
     <div id="user-impersonate-modal" class="modals"></div>
 
-    <div id="flash-messages" hx-ws="connect:{{pathFor "ws_flash"}}">
+    <div id="flash-messages">
         {{range .Flash}}
         {{template "layouts/_flash_message" .}}
         {{end}}

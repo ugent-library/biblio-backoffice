@@ -26,15 +26,15 @@ var (
 	pingPeriod = (pongWait * 9) / 10
 )
 
-type Flashes struct {
+type WebSockets struct {
 	Context
 }
 
-func NewFlashes(c Context) *Flashes {
-	return &Flashes{c}
+func NewWebSockets(c Context) *WebSockets {
+	return &WebSockets{c}
 }
 
-func (c *Flashes) Ws(w http.ResponseWriter, r *http.Request) {
+func (c *WebSockets) Connect(w http.ResponseWriter, r *http.Request) {
 	user := context.GetUser(r.Context())
 
 	ws, err := upgrader.Upgrade(w, r, nil)
@@ -45,14 +45,14 @@ func (c *Flashes) Ws(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sendCh := make(chan []byte, 64)
-	c.Engine.MessageHub.Register(user.ID, sendCh)
+	ch := make(chan []byte, 64)
+	c.Engine.MessageHub.Register(user.ID, ch)
 
-	go c.wsWriter(ws, sendCh)
-	c.wsReader(ws, user.ID, sendCh)
+	go c.writer(ws, ch)
+	c.reader(ws, user.ID, ch)
 }
 
-func (c *Flashes) wsReader(ws *websocket.Conn, userID string, sendCh chan []byte) {
+func (c *WebSockets) reader(ws *websocket.Conn, userID string, sendCh chan []byte) {
 	defer func() {
 		ws.Close()
 		c.Engine.MessageHub.Unregister(userID, sendCh)
@@ -68,7 +68,7 @@ func (c *Flashes) wsReader(ws *websocket.Conn, userID string, sendCh chan []byte
 	}
 }
 
-func (c *Flashes) wsWriter(ws *websocket.Conn, sendCh chan []byte) {
+func (c *WebSockets) writer(ws *websocket.Conn, sendCh chan []byte) {
 	pingTicker := time.NewTicker(pingPeriod)
 	defer func() {
 		pingTicker.Stop()

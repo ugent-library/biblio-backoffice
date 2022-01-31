@@ -26,7 +26,7 @@ func Register(c controllers.Context) {
 
 	homeController := controllers.NewHome(c)
 	authController := controllers.NewAuth(c)
-	flashController := controllers.NewFlashes(c)
+	wsController := controllers.NewWebSockets(c)
 	usersController := controllers.NewUsers(c)
 
 	publicationsController := controllers.NewPublications(c)
@@ -92,12 +92,12 @@ func Register(c controllers.Context) {
 		Methods("GET").
 		Name("logout")
 
-	// flash (ws)
-	flashRouter := r.PathPrefix("/ws/flash").Subrouter()
-	flashRouter.Use(requireUser)
-	flashRouter.HandleFunc("", flashController.Ws).
+	// websockets
+	wsRouter := r.PathPrefix("/ws").Subrouter()
+	wsRouter.Use(requireUser)
+	wsRouter.HandleFunc("", wsController.Connect).
 		Methods("GET").
-		Name("ws_flash")
+		Name("ws")
 
 	// users
 	userRouter := r.PathPrefix("/user").Subrouter()
