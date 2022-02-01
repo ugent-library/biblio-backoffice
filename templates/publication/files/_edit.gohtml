@@ -140,7 +140,7 @@
                             </div>
                         </label>
                     </div>
-                    <div id="file-embargo{{if eq .D.File.AccessLevel "open_access"}}d-none{{end}}" class="row">
+                    <div id="file-embargo" class="row{{if eq .D.File.AccessLevel "open_access"}} d-none{{end}}">
                         <div class="col-6">
                             <div class="form-group">
                                 <label class="col-form-label">{{.T "builder" "embargo"}}</label>

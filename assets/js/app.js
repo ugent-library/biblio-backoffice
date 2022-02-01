@@ -16,6 +16,7 @@ import membership from './ui/membership.js'
 import toast from './ui/toast.js'
 import fileEmbargo from './ui/file_embargo.js'
 import datasetEmbargo from './ui/dataset_embargo.js';
+import fileShowCCLicense from './ui/file_show_cc_license.js';
 
 document.addEventListener('DOMContentLoaded', function () {
     csrf()
@@ -35,4 +36,5 @@ document.addEventListener('DOMContentLoaded', function () {
     toast()
     fileEmbargo()
     datasetEmbargo()
+    fileShowCCLicense()
 });
