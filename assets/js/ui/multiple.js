@@ -26,7 +26,7 @@ export default function() {
 
             let node = formValue.cloneNode(true)
 
-            formValue.querySelector(".form-control")
+            node.querySelector(".form-control")
                     .value = ""
 
             let input = formValue.querySelector(".form-control")
