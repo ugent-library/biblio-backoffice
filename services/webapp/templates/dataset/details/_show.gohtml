@@ -1,5 +1,4 @@
-{{ if not .IsHTMXRequest }}<div class="card card-collapsible mb-6 dataset-details">{{ end }}
-
+{{ if not .IsHTMXRequest }}<div id="dataset-details" class="card card-collapsible mb-6">{{ end }}
     <div class="card-header">
         <div class="collapse-trigger collapsed" data-toggle="collapse" data-target="#collapse-details" aria-expanded="{{ .IsHTMXRequest }}" aria-controls="collapse-details"></div>
         <div class="bc-toolbar">
@@ -12,7 +11,7 @@
                     <button class="btn btn-outline-primary"
                         hx-get="{{pathFor "dataset_details_edit_form" "id" .D.Dataset.ID}}"
                         hx-swap="innerHTML"
-                        hx-target=".dataset-details"
+                        hx-target="#dataset-details-modal"
                     >
                         <i class="if if-edit"></i>
                         <div class="btn-text">Edit</div>
@@ -50,3 +49,5 @@
         </div>
     </div>
 {{ if not .IsHTMXRequest }}</div>{{ end }}
+
+{{ if not .IsHTMXRequest }}<div id="dataset-details-modal" class="modals"></div>{{ end }}

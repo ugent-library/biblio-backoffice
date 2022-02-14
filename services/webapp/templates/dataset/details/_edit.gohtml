@@ -1,67 +1,57 @@
-<form
-    hx-patch="{{pathFor "dataset_details_save_form" "id" .D.Dataset.ID}}"
-    hx-swap="innerHTML"
-    hx-target="closest .dataset-details"
-	hx-indicator=".dataset-details .spinner-border"
-
->
-    {{.CSRFTag}}
-    <div class="card-header">
-        <div class="collapse-trigger" data-toggle="collapse" data-target="#collapse-details" aria-expanded="true" aria-controls="collapse-details"></div>
-        <div class="bc-toolbar">
-            <div class="bc-toolbar-left">
-                <i class="if if-chevron-right mr-4 text-muted"></i>Dataset details
+<div id="modal-backdrop" class="modal-backdrop fade show" style="display:block;"></div>
+<div class="modal show" tabindex="-1" style="display: block;" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Edit dataset details</h2>
             </div>
-            <div class="bc-toolbar-right">
-                <div class="c-button-toolbar" data-panel-state="edit">
-                    <button class="btn btn-outline-primary btn-cancel"
-                        hx-get="{{pathFor "dataset_details" "id" .D.Dataset.ID}}"
-                        hx-swap="innerHTML"
-                        hx-target=".dataset-details"
-                    >
-                        <div class="btn-text">Cancel</div>
-                    </button>
-                    <button class="btn btn-primary btn-save">
-                        <div class="btn-text">Save</div>
-                    </button>
-					<div class="spinner-border">
-						<span class="sr-only"></span>
-					</div>
+            <div class="modal-body">
+    	        {{.CSRFTag}}
+                <ul class="list-group list-group-flush" data-panel-state="edit">
+                    <li class="list-group-item">
+                        {{.D.Form.Text (.D.Form.Name "title") (.D.Form.Value .D.Dataset.Title) (.D.Form.Cols 9) (.D.Form.Required)}}
+                        {{.D.Show.Text (.D.Show.Label "doi") (.D.Show.Value .D.Dataset.DOI) (.D.Show.Required)
+                            (.D.Show.ValueTemplate "value/_doi")}}
+                        {{.D.Form.Text (.D.Form.Name "url") (.D.Form.Value .D.Dataset.URL) (.D.Form.Cols 3)}}
+                    </li>
+                    <li class="list-group-item">
+                        {{.D.Form.Text (.D.Form.Name "publisher") (.D.Form.Value .D.Dataset.Publisher) (.D.Form.Cols 9) (.D.Form.Required) (.D.Form.Tooltip (.T "tooltip.dataset" "publisher"))}}
+                        {{.D.Form.Text (.D.Form.Name "year") (.D.Form.Value .D.Dataset.Year) (.D.Form.Cols 3) (.D.Form.Required)}}
+                    </li>
+                    <li class="list-group-item">
+                        {{.D.Form.TextRepeat (.D.Form.Name "format") (.D.Form.Values .D.Dataset.Format) (.D.Form.Cols 9) (.D.Form.Tooltip (.T "tooltip.dataset" "format"))
+                            (.D.Form.Required) (.D.Form.AutocompleteURL (pathFor "media_type_choose" | toString))}}
+                        {{.D.Form.TextRepeat (.D.Form.Name "keyword") (.D.Form.Values .D.Dataset.Keyword) (.D.Form.Cols 9)}}
+                    </li>
+                    <li class="list-group-item">
+                        {{.D.Form.Text (.D.Form.Name "license") (.D.Form.Value .D.Dataset.License) (.D.Form.Cols 9) (.D.Form.Tooltip (.T "tooltip.dataset" "license"))
+                            (.D.Form.Required) (.D.Form.AutocompleteURL (pathFor "license_choose" | toString))}}
+                        {{.D.Form.List (.D.Form.Name "access_level") (.D.Form.Value .D.Dataset.AccessLevel) (.D.Form.Cols 3)
+                            (.D.Form.Tooltip (.T "tooltip.dataset" "access_level"))
+                            (.D.Form.Choices .D.Vocabularies.access_levels
+                            (.D.Form.Locale "access_levels")) (.D.Form.EmptyChoice) (.D.Form.Required)}}
+                        {{.D.Form.Date (.D.Form.Name "embargo") (.D.Form.Value .D.Dataset.Embargo) (.D.Form.Cols 3)}}
+                        {{.D.Form.List (.D.Form.Name "embargo_to") (.D.Form.Value .D.Dataset.EmbargoTo) (.D.Form.Cols 3)
+                            (.D.Form.Choices .D.Vocabularies.access_levels
+                            (.D.Form.Locale "access_levels")) (.D.Form.EmptyChoice)}}
+                    </li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <div class="spinner-border">
+                    <span class="sr-only"></span>
                 </div>
+                <button class="btn btn-link modal-close">Cancel</button>
+                <button type="button" name="create" class="btn btn-primary"
+                    hx-patch="{{pathFor "dataset_details_save_form" "id" .D.Dataset.ID}}"
+                    hx-indicator=".modal-dialog .spinner-border"
+                    hx-swap="innerHTML"
+                    hx-target="#dataset-details-modal"
+                    hx-include=".modal-body"
+                >
+                    Save
+                </button>
             </div>
         </div>
     </div>
-    <div class="collapse show" id="collapse-details">
-        <div class="card-body p-0">
-            <ul class="list-group list-group-flush" data-panel-state="edit">
-                <li class="list-group-item">
-                    {{.D.Form.Text (.D.Form.Name "title") (.D.Form.Value .D.Dataset.Title) (.D.Form.Cols 9) (.D.Form.Required)}}
-                    {{.D.Show.Text (.D.Show.Label "doi") (.D.Show.Value .D.Dataset.DOI) (.D.Show.Required)
-                        (.D.Show.ValueTemplate "value/_doi")}}
-                    {{.D.Form.Text (.D.Form.Name "url") (.D.Form.Value .D.Dataset.URL) (.D.Form.Cols 3)}}
-                </li>
-                <li class="list-group-item">
-                    {{.D.Form.Text (.D.Form.Name "publisher") (.D.Form.Value .D.Dataset.Publisher) (.D.Form.Cols 9) (.D.Form.Required) (.D.Form.Tooltip (.T "tooltip.dataset" "publisher"))}}
-                    {{.D.Form.Text (.D.Form.Name "year") (.D.Form.Value .D.Dataset.Year) (.D.Form.Cols 3) (.D.Form.Required)}}
-                </li>
-                <li class="list-group-item">
-                    {{.D.Form.TextRepeat (.D.Form.Name "format") (.D.Form.Values .D.Dataset.Format) (.D.Form.Cols 9) (.D.Form.Tooltip (.T "tooltip.dataset" "format"))
-                        (.D.Form.Required) (.D.Form.AutocompleteURL (pathFor "media_type_choose" | toString))}}
-					{{.D.Form.TextRepeat (.D.Form.Name "keyword") (.D.Form.Values .D.Dataset.Keyword) (.D.Form.Cols 9)}}
-                </li>
-                <li class="list-group-item">
-                    {{.D.Form.Text (.D.Form.Name "license") (.D.Form.Value .D.Dataset.License) (.D.Form.Cols 9) (.D.Form.Tooltip (.T "tooltip.dataset" "license"))
-                        (.D.Form.Required) (.D.Form.AutocompleteURL (pathFor "license_choose" | toString))}}
-                    {{.D.Form.List (.D.Form.Name "access_level") (.D.Form.Value .D.Dataset.AccessLevel) (.D.Form.Cols 3)
-                        (.D.Form.Tooltip (.T "tooltip.dataset" "access_level"))
-                        (.D.Form.Choices .D.Vocabularies.access_levels
-                        (.D.Form.Locale "access_levels")) (.D.Form.EmptyChoice) (.D.Form.Required)}}
-                    {{.D.Form.Date (.D.Form.Name "embargo") (.D.Form.Value .D.Dataset.Embargo) (.D.Form.Cols 3)}}
-                    {{.D.Form.List (.D.Form.Name "embargo_to") (.D.Form.Value .D.Dataset.EmbargoTo) (.D.Form.Cols 3)
-                        (.D.Form.Choices .D.Vocabularies.access_levels
-                        (.D.Form.Locale "access_levels")) (.D.Form.EmptyChoice)}}
-                </li>
-            </ul>
-        </div>
-    </div>
-</form>
+</div>

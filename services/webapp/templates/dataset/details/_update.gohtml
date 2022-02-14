@@ -10,4 +10,6 @@
     </div>
 </div>
 
-{{ template "dataset/details/_show" . }}
+<div hx-swap-oob="innerHTML:#dataset-details">
+    {{ template "dataset/details/_show" . }}
+</div>

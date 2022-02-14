@@ -1,5 +1,4 @@
-{{ if not .IsHTMXRequest }}<div class="card card-collapsible mb-6 publication-conference">{{ end }}
-
+{{ if not .IsHTMXRequest }}<div id="publication-conference" class="card card-collapsible mb-6">{{ end }}
 	<div class="card-header">
 		<div class="collapse-trigger collapsed" data-toggle="collapse" data-target="#collapse-conference" aria-expanded="{{ .IsHTMXRequest }}" aria-controls="collapse-conference"></div>
 		<div class="bc-toolbar">
@@ -11,7 +10,7 @@
 					<button class="btn btn-outline-primary"
 						hx-get="{{pathFor "publication_conference_edit_form" "id" .D.Publication.ID}}"
 						hx-swap="innerHTML"
-						hx-target=".publication-conference"
+						hx-target="#publication-conference-modal"
 					>
 						<i class="if if-edit"></i>
 						<div class="btn-text">Edit</div>
@@ -35,3 +34,5 @@
 		</div>
 	</div>
 {{ if not .IsHTMXRequest }}</div>{{ end }}
+
+{{ if not .IsHTMXRequest }}<div id="publication-conference-modal" class="modals"></div>{{ end }}

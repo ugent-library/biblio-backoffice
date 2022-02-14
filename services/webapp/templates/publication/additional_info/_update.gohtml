@@ -2,4 +2,6 @@
     {{template "publication/_summary" .}}
 </div>
 
-{{ template "publication/additional_info/_show" . }}
+<div hx-swap-oob="innerHTML:#publication-additional-info">
+    {{ template "publication/additional_info/_show" . }}
+</div>

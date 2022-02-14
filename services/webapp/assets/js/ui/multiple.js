@@ -2,7 +2,7 @@ import htmx from 'htmx.org';
 
 // Handles fields with multiple values
 export default function() {
-    const multiple = () => {
+    const addEvents = (rootEl) => {
         // Delete a value from the field
         let deleteFormValue = function (e) {
             let formField = e.target.closest("div.form-values")
@@ -58,20 +58,16 @@ export default function() {
             formValue.before(node)
         }
 
-        document.querySelectorAll("button.form-value-delete").forEach( el =>
+        rootEl.querySelectorAll("button.form-value-delete").forEach( el =>
             el.addEventListener("click", deleteFormValue)
         )
 
-        document.querySelectorAll("button.form-value-add").forEach( el =>
+        rootEl.querySelectorAll("button.form-value-add").forEach( el =>
             el.addEventListener("click", addFormValue)
         )
     };
 
-    // Init event listeners whenever HTMX swaps in a card-collapsible having a form element.
-    htmx.on("htmx:afterSettle", function(evt) {
-        let item = evt.detail.target.children.item(0)
-        if (item && item.nodeName && (item.nodeName.toLowerCase() == "form")) {
-            multiple()
-        }
+    htmx.onLoad(function(el) {
+        addEvents(el)
     });
 }

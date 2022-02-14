@@ -4,21 +4,6 @@
   * Licensed under MIT (https://github.com/thednp/bootstrap.native/blob/master/LICENSE)
   */
 
-/*!
- * IconicMultiSelect v0.7.0
- * Licence:  MIT
- * (c) 2021 Sidney Wimart.
- *
- * See: https://github.com/sidneywm/iconic-multiselect
- *
- * This is plugin is installed manually since no package on NPM exists.
- */
-
-/**
- * @version IconicMultiSelect v0.7.0
- * @licence  MIT
- */
-
 /**!
  * @fileOverview Kickass library to create and place poppers near their reference elements.
  * @version 1.16.1

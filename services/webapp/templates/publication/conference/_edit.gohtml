@@ -1,46 +1,37 @@
-<form
-	hx-patch="{{pathFor "publication_conference_save_form" "id" .D.Publication.ID}}"
-	hx-swap="innerHTML"
-	hx-target="closest .publication-conference"
-	hx-indicator=".publication-conference .spinner-border"
->
-	{{.CSRFTag}}
-	<div class="card-header">
-		<div class="collapse-trigger" data-toggle="collapse" data-target="#collapse-conference" aria-expanded="true" aria-controls="collapse-conference"></div>
-		<div class="bc-toolbar">
-			<div class="bc-toolbar-left">
-				<i class="if if-chevron-right mr-4 text-muted"></i>Conference Details
-			</div>
-			<div class="bc-toolbar-right">
-				<div class="c-button-toolbar" data-panel-state="edit">
-					<button class="btn btn-outline-primary btn-cancel"
-						hx-get="{{pathFor "publication_conference" "id" .D.Publication.ID}}"
-						hx-swap="innerHTML"
-						hx-target=".publication-conference"
-					>
-						<div class="btn-text">Cancel</div>
-					</button>
-					<button class="btn btn-primary btn-save">
-						<div class="btn-text">Save</div>
-					</button>
-					<div class="spinner-border">
-						<span class="sr-only"></span>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="collapse show" id="collapse-conference">
-		<div class="card-body p-0">
-			<ul class="list-group list-group-flush" data-panel-state="edit">
-				<li class="list-group-item">
-			      {{.D.Form.Text (.D.Form.Name "conference.name") (.D.Form.Value .D.Publication.Conference.Name) (.D.Form.Cols 9)}}
-			      {{.D.Form.Text (.D.Form.Name "conference.location") (.D.Form.Value .D.Publication.Conference.Location) (.D.Form.Cols 9)}}
-			      {{.D.Form.Text (.D.Form.Name "conference.organizer") (.D.Form.Value .D.Publication.Conference.Organizer) (.D.Form.Cols 9)}}
-			      {{.D.Form.Text (.D.Form.Name "conference.start_date") (.D.Form.Value .D.Publication.Conference.StartDate) (.D.Form.Cols 3)}}
-			      {{.D.Form.Text (.D.Form.Name "conference.end_date") (.D.Form.Value .D.Publication.Conference.EndDate) (.D.Form.Cols 3)}}
-				</li>
-			</ul>
-		</div>
-	</div>
-</form>
+<div id="modal-backdrop" class="modal-backdrop fade show" style="display:block;"></div>
+<div class="modal show" tabindex="-1" style="display: block;" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Edit conference details</h2>
+            </div>
+            <div class="modal-body">
+    	        {{.CSRFTag}}
+				<ul class="list-group list-group-flush">
+					<li class="list-group-item">
+					{{.D.Form.Text (.D.Form.Name "conference.name") (.D.Form.Value .D.Publication.Conference.Name) (.D.Form.Cols 9)}}
+					{{.D.Form.Text (.D.Form.Name "conference.location") (.D.Form.Value .D.Publication.Conference.Location) (.D.Form.Cols 9)}}
+					{{.D.Form.Text (.D.Form.Name "conference.organizer") (.D.Form.Value .D.Publication.Conference.Organizer) (.D.Form.Cols 9)}}
+					{{.D.Form.Text (.D.Form.Name "conference.start_date") (.D.Form.Value .D.Publication.Conference.StartDate) (.D.Form.Cols 3)}}
+					{{.D.Form.Text (.D.Form.Name "conference.end_date") (.D.Form.Value .D.Publication.Conference.EndDate) (.D.Form.Cols 3)}}
+					</li>
+				</ul>
+            </div>
+            <div class="modal-footer">
+                <div class="spinner-border">
+                    <span class="sr-only"></span>
+                </div>
+                <button class="btn btn-link modal-close">Cancel</button>
+                <button type="button" name="create" class="btn btn-primary"
+					hx-patch="{{pathFor "publication_conference_save_form" "id" .D.Publication.ID}}"
+                    hx-indicator=".modal-dialog .spinner-border"
+                    hx-swap="innerHTML"
+                    hx-target="#publication-conference-modal"
+                    hx-include=".modal-body"
+                >
+                    Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
