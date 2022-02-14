@@ -7,8 +7,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
-
-	_ "github.com/ugent-library/biblio-backend/internal/translations"
 )
 
 const (
@@ -56,6 +54,8 @@ func init() {
 	rootCmd.PersistentFlags().String("oidc-url", "", "openid connect url")
 	rootCmd.PersistentFlags().String("oidc-client-id", "", "openid connect client id")
 	rootCmd.PersistentFlags().String("oidc-client-secret", "", "openid connect client secret")
+
+	rootCmd.PersistentFlags().String("amqp-conn", "", "amqp connection")
 }
 
 func Execute() {

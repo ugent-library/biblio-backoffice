@@ -1,0 +1,23 @@
+{
+    "private": true,
+    "devDependencies": {
+        "laravel-mix": "^6.0.11",
+        "resolve-url-loader": "^4.0.0",
+        "sass": "^1.35.1",
+        "sass-loader": "^12.1.0",
+        "uglify-js": "^3.14.2"
+    },
+    "dependencies": {
+        "@ttskch/select2-bootstrap4-theme": "^1.5.2",
+        "autosize": "^4.0.2",
+        "bootstrap": "^4.6.0",
+        "bootstrap.native": "^4.0.6",
+        "flatpickr": "^4.6.3",
+        "htmx.org": "^1.6.0",
+        "jquery": "^3.6.0",
+        "node-sass": "^4.14.1",
+        "popper.js": "^1.16.1",
+        "select2": "^4.1.0-rc.0",
+        "tablesort": "^5.1.0"
+    }
+}
