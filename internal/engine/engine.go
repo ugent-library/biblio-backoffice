@@ -178,15 +178,15 @@ func New(c Config) (*Engine, error) {
 	}
 
 	go func() {
+		// dispatch message based on user_id
 		for d := range msgs {
-			noti := struct {
-				UserID  string `json:"user_id"`
-				Message string `json:"message"`
+			msg := struct {
+				UserID string `json:"user_id"`
 			}{}
-			if err := json.Unmarshal(d.Body, &noti); err != nil {
+			if err := json.Unmarshal(d.Body, &msg); err != nil {
 				log.Println(err)
 			}
-			e.MessageHub.Dispatch(noti.UserID, []byte(noti.Message))
+			e.MessageHub.Dispatch(msg.UserID, []byte(d.Body))
 		}
 	}()
 

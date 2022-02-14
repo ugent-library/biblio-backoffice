@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
 	"time"
@@ -78,8 +79,16 @@ func (c *WebSockets) writer(ws *websocket.Conn, sendCh chan []byte) {
 		select {
 		case msg := <-sendCh:
 			ws.SetWriteDeadline(time.Now().Add(writeWait))
+			m := struct {
+				// CorrelationID string `json:"correlation_id"`
+				// UserID        string `json:"user_id"`
+				Message string `json:"message"`
+			}{}
+			if err := json.Unmarshal(msg, &m); err != nil {
+				log.Println(err)
+			}
 			flash, _ := c.RenderPartial("layouts/_flash_message", views.Flash{
-				Message: string(msg),
+				Message: m.Message,
 			})
 			swap := `<div hx-swap-oob="beforeend:#flash-messages">` + flash + `</div>`
 			if err := ws.WriteMessage(websocket.TextMessage, []byte(swap)); err != nil {

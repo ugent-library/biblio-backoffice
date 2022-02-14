@@ -22,8 +22,9 @@ type service struct {
 }
 
 type addToORCID struct {
-	UserID     string             `json:"user_id"`
-	SearchArgs *engine.SearchArgs `json:"search_args"`
+	CorrelationID string             `json:"correlation_id"`
+	UserID        string             `json:"user_id"`
+	SearchArgs    *engine.SearchArgs `json:"search_args"`
 }
 
 func New(e *engine.Engine) (*service, error) {
@@ -98,9 +99,11 @@ func (s *service) Start() error {
 			d.Ack(false)
 
 			noti := struct {
-				UserID  string `json:"user_id"`
-				Message string `json:"message"`
+				CorrelationID string `json:"correlation_id"`
+				UserID        string `json:"user_id"`
+				Message       string `json:"message"`
 			}{
+				task.CorrelationID,
 				task.UserID,
 				"Your publications were added to your ORCID profile",
 			}

@@ -32,9 +32,11 @@ import (
 
 func (e *Engine) AddPublicationsToORCID(userID string, s *SearchArgs) error {
 	task := struct {
-		UserID     string      `json:"user_id"`
-		SearchArgs *SearchArgs `json:"search_args"`
+		CorrelationID string      `json:"correlation_id"`
+		UserID        string      `json:"user_id"`
+		SearchArgs    *SearchArgs `json:"search_args"`
 	}{
+		NewCorrelationID(),
 		userID,
 		s,
 	}
