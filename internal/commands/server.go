@@ -72,15 +72,23 @@ var serverStartCmd = &cobra.Command{
 	Short: "start the http server",
 	Run: func(cmd *cobra.Command, args []string) {
 		e := newEngine()
+		serviceInstances := make([]services.Service, 0)
+
 		wa, err := webapp.New(e)
 		if err != nil {
 			log.Fatal(err)
 		}
-		ow, err := orcidworker.New(e)
-		if err != nil {
-			log.Fatal(err)
+		serviceInstances = append(serviceInstances, wa)
+
+		for i := 0; i < 10; i++ {
+			ow, err := orcidworker.New(e)
+			if err != nil {
+				log.Fatal(err)
+			}
+			serviceInstances = append(serviceInstances, ow)
 		}
-		if err = services.Start(ow, wa); err != nil {
+
+		if err = services.Start(serviceInstances...); err != nil {
 			log.Fatal(err)
 		}
 	},
