@@ -143,14 +143,16 @@ func (s *service) handleTask(task addToORCID) error {
 		hits, _ := s.engine.UserPublications(user.ID, args)
 		for _, pub := range hits.Hits {
 			for _, ow := range pub.ORCIDWork {
-				if ow.ORCID == user.ORCID {
+				if ow.ORCID == user.ORCID { // already sent to orcid
 					continue
 				}
 			}
 
 			work := publicationToORCID(pub)
 			putCode, res, err := client.AddWork(user.ORCID, work)
-			if err != nil {
+			if res.StatusCode == 409 { // duplicate
+				continue
+			} else if err != nil {
 				log.Println(err)
 				body, _ := ioutil.ReadAll(res.Body)
 				log.Print(string(body))
