@@ -1,5 +1,4 @@
 import htmx from 'htmx.org';
-import BSN from "bootstrap.native/dist/bootstrap-native-v4";
 
 export default function() {
 
@@ -21,38 +20,6 @@ export default function() {
                 })
             });
         }
-    });
-
-    // Show a warning / confirmation when user navigates away from form with
-    // potential unsaved data.
-    htmx.on("htmx:afterSettle", function(evt) {
-        // Find .btn-save buttons on dataset/description and publication/description templates
-        const buttons = document.querySelector(".btn-save");
-
-        function confirmationHandler(el) {
-            let callback = function (evt) {
-                const submit = document.querySelector('#confirmation-next-step a.btn-primary');
-                submit.href = el.href;
-            }
-
-            if (buttons !== null) {
-                el.setAttribute("data-toggle", "modal");
-                el.setAttribute("data-target", "#confirmation-next-step");
-
-                // Set URL from the link in the modal
-                el.addEventListener("click", callback)
-            }
-            else {
-                el.removeAttribute("data-toggle");
-                el.removeAttribute("data-target");
-            }
-        }
-
-        document.querySelectorAll('.btn-confirmation-next-step').forEach(function(el) {
-            confirmationHandler(el);
-        });
-
-        BSN.initCallback();
     });
 
     // Generic spinner for buttons. Add .btn-display-indicator as a button class. Ensure
