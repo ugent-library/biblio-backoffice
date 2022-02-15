@@ -22,6 +22,7 @@ type DatasetService interface {
 }
 
 type DatasetSearchService interface {
+	Datasets(*SearchArgs) (*models.DatasetHits, error)
 	UserDatasets(string, *SearchArgs) (*models.DatasetHits, error)
 }
 
@@ -44,8 +45,10 @@ type PublicationService interface {
 }
 
 type PublicationSearchService interface {
+	Publications(*SearchArgs) (*models.PublicationHits, error)
 	UserPublications(string, *SearchArgs) (*models.PublicationHits, error)
 }
+
 type PersonService interface {
 	GetPerson(string) (*models.Person, error)
 }

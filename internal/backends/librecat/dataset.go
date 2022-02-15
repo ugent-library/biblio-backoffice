@@ -8,6 +8,18 @@ import (
 	"github.com/ugent-library/go-web/forms"
 )
 
+func (c *Client) Datasets(args *engine.SearchArgs) (*models.DatasetHits, error) {
+	qp, err := forms.Encode(args)
+	if err != nil {
+		return nil, err
+	}
+	hits := &models.DatasetHits{}
+	if _, err := c.get("/dataset", qp, hits); err != nil {
+		return nil, err
+	}
+	return hits, nil
+}
+
 func (c *Client) UserDatasets(userID string, args *engine.SearchArgs) (*models.DatasetHits, error) {
 	qp, err := forms.Encode(args)
 	if err != nil {

@@ -14,6 +14,18 @@ import (
 	"github.com/ugent-library/go-web/forms"
 )
 
+func (e *Client) Publications(args *engine.SearchArgs) (*models.PublicationHits, error) {
+	qp, err := forms.Encode(args)
+	if err != nil {
+		return nil, err
+	}
+	hits := &models.PublicationHits{}
+	if _, err := e.get("/publication", qp, hits); err != nil {
+		return nil, err
+	}
+	return hits, nil
+}
+
 func (e *Client) UserPublications(userID string, args *engine.SearchArgs) (*models.PublicationHits, error) {
 	qp, err := forms.Encode(args)
 	if err != nil {

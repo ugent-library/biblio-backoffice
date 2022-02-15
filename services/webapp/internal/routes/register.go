@@ -369,6 +369,9 @@ func Register(c controllers.Context) {
 	datasetsRouter.HandleFunc("/add", datasetsController.Add).
 		Methods("GET").
 		Name("dataset_add")
+	datasetsRouter.HandleFunc("/add/import/confirm", datasetsController.AddImportConfirm).
+		Methods("POST").
+		Name("dataset_add_import_confirm")
 	datasetsRouter.HandleFunc("/add/import", datasetsController.AddImport).
 		Methods("POST").
 		Name("dataset_add_import")
@@ -388,7 +391,6 @@ func Register(c controllers.Context) {
 	datasetRouter.HandleFunc("/delete", datasetsController.ConfirmDelete).
 		Methods("GET").
 		Name("dataset_confirm_delete")
-	// TODO why doesn't a DELETE with methodoverride work with CAS?
 	datasetDeleteRouter.HandleFunc("/delete", datasetsController.Delete).
 		Methods("POST").
 		Name("dataset_delete")
