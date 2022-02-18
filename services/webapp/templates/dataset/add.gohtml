@@ -81,10 +81,10 @@
 <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
     <div class="modal-content">
         <div class="modal-header">
-            <h2 class="modal-title">Are you sure?</h2>
+            <h2 class="modal-title">Are you sure you want to import this dataset?</h2>
         </div>
         <div class="modal-body">
-            <p>Are you sure you want to import this dataset? Biblio contains another dataset with the same doi:</p>
+            <p>Biblio contains another dataset with the same doi:</p>
             <hr>
             {{template "dataset/_summary" (.ViewData (dict "Dataset" .D.DuplicateDataset))}}
         </div>
