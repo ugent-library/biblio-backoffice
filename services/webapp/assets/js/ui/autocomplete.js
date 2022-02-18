@@ -25,4 +25,8 @@ export default function () {
     htmx.onLoad(function(el) {
         addEvents(el)
     });
+    // listen for inputs added with multiple.js
+    document.addEventListener('form-value-add', function(evt) {
+        addEvents(evt.target)
+    });
 }

@@ -13,19 +13,19 @@
         <div class="form-value">
             <div class="d-flex mb-3">
                 {{ if $.AutocompleteURL }}
-                <div class="w-100 autocomplete" data-target="[name='{{ $.Name }}[{{ $i }}]']">
+                <div class="w-100 autocomplete" data-target="[name='{{ $.Name }}[{{ $i }}]']" data-tmpl-data-target="[name='{{ $.Name }}[{i}]']">
                 {{ end }}
-                    <input class="form-control{{ if $.Error }} is-invalid{{ end }}" name="{{ $.Name }}[{{ $i }}]" type="text" value="{{ $v }}"
+                    <input class="form-control{{ if $.Error }} is-invalid{{ end }}" name="{{ $.Name }}[{{ $i }}]" data-tmpl-name="{{ $.Name }}[{i}]" type="text" value="{{ $v }}"
                         {{ if $.AutocompleteURL }}
                         autocomplete="off"
                         hx-get="{{ $.AutocompleteURL }}"
                         hx-trigger="keyup changed delay:100ms"
-                        hx-target="#{{ $.Name }}-{{$i}}-autocomplete"
-                        hx-vals='{"input": "{{ $.Name }}[{{ $i }}]"}'
+                        hx-target="#{{ $.Name }}-{{$i}}-autocomplete" data-tmpl-hx-target="#{{ $.Name }}-{i}-autocomplete"
+                        hx-vals='{"input": "{{ $.Name }}[{{ $i }}]"}' data-tmpl-hx-vals='{"input": "{{ $.Name }}[{i}]"}'
                         {{ end }}
                     >
                 {{ if $.AutocompleteURL }}
-                <div class="autocomplete-hits" id="{{ $.Name }}-{{ $i }}-autocomplete"></div>
+                <div class="autocomplete-hits" id="{{ $.Name }}-{{ $i }}-autocomplete" data-tmpl-id="{{ $.Name }}-{i}-autocomplete"></div>
                 </div>
                 {{ end }}
                 <button class="btn btn-link-muted btn-icon-only ml-3 form-value-delete" type="button">
@@ -38,19 +38,19 @@
         <div class="mb-3 form-value">
             <div class="d-flex">
                 {{ if .AutocompleteURL }}
-                <div class="w-100 autocomplete" data-target="[name='{{ .Name }}[{{ len .Values }}]']">
+                <div class="w-100 autocomplete" data-target="[name='{{ .Name }}[{{ len .Values }}]']" data-tmpl-data-target="[name='{{ .Name }}[{i}]']">
                 {{ end }}
-                    <input class="form-control{{ if .Error }} is-invalid{{ end }}" name="{{ .Name }}[{{ len .Values }}]" type="text"
+                    <input class="form-control{{ if .Error }} is-invalid{{ end }}" name="{{ .Name }}[{{ len .Values }}]" data-tmpl-name="{{ .Name }}[{i}]" type="text"
                         {{ if .AutocompleteURL }}
                         autocomplete="off"
                         hx-get="{{ .AutocompleteURL }}"
                         hx-trigger="keyup changed delay:100ms"
-                        hx-target="#{{ .Name }}-{{ len .Values }}-autocomplete"
-                        hx-vals='{"input": "{{ .Name }}[{{ len .Values }}]"}'
+                        hx-target="#{{ .Name }}-{{ len .Values }}-autocomplete" data-tmpl-hx-target="#{{ .Name }}-{i}-autocomplete"
+                        hx-vals='{"input": "{{ .Name }}[{{ len .Values }}]"}' data-tmpl-hx-vals='{"input": "{{ .Name }}[{i}]"}'
                         {{ end }}
                     >
                 {{ if .AutocompleteURL }}
-                <div class="autocomplete-hits" id="{{ .Name }}-{{ len .Values }}-autocomplete"></div>
+                <div class="autocomplete-hits" id="{{ .Name }}-{{ len .Values }}-autocomplete" data-tmpl-id="{{ .Name }}-{i}-autocomplete"></div>
                 </div>
                 {{ end }}
                 <button class="btn btn-outline-primary btn-icon-only ml-3 form-value-add" type="button">
