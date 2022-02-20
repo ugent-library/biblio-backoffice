@@ -18,6 +18,14 @@ import (
 	"github.com/unrolled/render"
 )
 
+type PublicationAddSingleVars struct {
+	PageTitle            string
+	Step                 int
+	Source               string
+	Identifier           string
+	DuplicatePublication *models.Publication
+}
+
 type Publications struct {
 	Context
 }
@@ -120,23 +128,40 @@ func (c *Publications) Summary(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Publications) AddSingle(w http.ResponseWriter, r *http.Request) {
-	c.Render.HTML(w, http.StatusOK, "publication/add_single", c.ViewData(r, struct {
-		PageTitle string
-		Step      int
-	}{
-		"Add - Publications - Biblio",
-		1,
+	c.Render.HTML(w, http.StatusOK, "publication/add_single", c.ViewData(r, PublicationAddSingleVars{
+		PageTitle: "Add - Publications - Biblio",
+		Step:      1,
 	}))
 }
 
 func (c *Publications) AddSingleStart(w http.ResponseWriter, r *http.Request) {
-	c.Render.HTML(w, http.StatusOK, "publication/add_single_start", c.ViewData(r, struct {
-		PageTitle string
-		Step      int
-	}{
-		"Add - Publications - Biblio",
-		2,
+	c.Render.HTML(w, http.StatusOK, "publication/add_single_start", c.ViewData(r, PublicationAddSingleVars{
+		PageTitle: "Add - Publications - Biblio",
+		Step:      2,
 	}))
+}
+
+func (c *Publications) AddSingleImportConfirm(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
+
+	source := r.FormValue("source")
+	identifier := r.FormValue("identifier")
+
+	// check for duplicates
+	if source == "crossref" && identifier != "" {
+		if existing, _ := c.Engine.Publications(engine.NewSearchArgs().WithFilter("doi", identifier).WithFilter("status", "public")); existing.Total > 0 {
+			c.Render.HTML(w, http.StatusOK, "publication/add_single_start", c.ViewData(r, PublicationAddSingleVars{
+				PageTitle:            "Add - Publications - Biblio",
+				Step:                 1,
+				Source:               source,
+				Identifier:           identifier,
+				DuplicatePublication: existing.Hits[0],
+			}))
+			return
+		}
+	}
+
+	c.AddSingleImport(w, r)
 }
 
 func (c *Publications) AddSingleImport(w http.ResponseWriter, r *http.Request) {
@@ -162,12 +187,9 @@ func (c *Publications) AddSingleImport(w http.ResponseWriter, r *http.Request) {
 				flash.Message = loc.T("publication.single_import", "import_by_id.import_failed")
 			}
 
-			c.Render.HTML(w, http.StatusOK, "publication/add_single_start", c.ViewData(r, struct {
-				PageTitle string
-				Step      int
-			}{
-				"Add - Publications - Biblio",
-				2,
+			c.Render.HTML(w, http.StatusOK, "publication/add_single_start", c.ViewData(r, PublicationAddSingleVars{
+				PageTitle: "Add - Publications - Biblio",
+				Step:      2,
 			},
 				flash,
 			))

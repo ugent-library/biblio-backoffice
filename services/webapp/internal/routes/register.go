@@ -126,6 +126,9 @@ func Register(c controllers.Context) {
 	pubsRouter.HandleFunc("/add-single/start", publicationsController.AddSingleStart).
 		Methods("GET").
 		Name("publication_add_single_start")
+	pubsRouter.HandleFunc("/add-single/import/confirm", publicationsController.AddSingleImportConfirm).
+		Methods("POST").
+		Name("publication_add_single_import_confirm")
 	pubsRouter.HandleFunc("/add-single/import", publicationsController.AddSingleImport).
 		Methods("POST").
 		Name("publication_add_single_import")
