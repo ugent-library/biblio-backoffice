@@ -43,6 +43,7 @@ type Dataset struct {
 	License                 string              `json:"license,omitempty" form:"license"`
 	Locked                  bool                `json:"locked,omitempty" form:"-"`
 	Message                 string              `json:"message,omitempty" form:"-"`
+	OtherLicense            string              `json:"other_license,omitempty" form:"other_license"`
 	Project                 []DatasetProject    `json:"project,omitempty" form:"-"`
 	Publisher               string              `json:"publisher,omitempty" form:"publisher"`
 	RelatedPublicationCount int                 `json:"related_publication_count" form:"-"`
