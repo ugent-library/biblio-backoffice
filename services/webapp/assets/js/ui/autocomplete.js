@@ -21,7 +21,6 @@ export default function () {
         })
     }
 
-    addEvents(document);
     htmx.onLoad(function(el) {
         addEvents(el)
     });

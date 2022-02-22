@@ -18,6 +18,6 @@
         "node-sass": "^4.14.1",
         "popper.js": "^1.16.1",
         "select2": "^4.1.0-rc.0",
-        "tablesort": "^5.1.0"
+        "sortablejs": "^1.14.0"
     }
 }

@@ -14172,3 +14172,12 @@ h4 {
 .autocomplete .autocomplete-hits .autocomplete-hit {
   cursor: pointer;
 }
+
+.btn:not(:disabled).sortable-handle {
+  cursor: -webkit-grab;
+  cursor: grab;
+}
+
+.sortable tr {
+  background-color: #FFF;
+}

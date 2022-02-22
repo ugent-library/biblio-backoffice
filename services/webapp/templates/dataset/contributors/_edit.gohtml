@@ -9,8 +9,8 @@
                 {{template "dataset/contributors/_form" .}}
             </div>
             <div class="modal-footer">
-                <button class="btn btn-link modal-close" data-dismiss="modal">Cancel</button>
-                <button class="btn btn-primary modal-close" data-dismiss="modal"
+                <button class="btn btn-link modal-close">Cancel</button>
+                <button class="btn btn-primary modal-close"
                     hx-put="{{pathFor "dataset_contributors_update" "id" .D.Dataset.ID "role" .D.Role "position" (.D.Position | toString)}}"
                     hx-include="#{{.D.Role}}-modal .modal-body .contributor-attributes > *"
                     hx-swap="innerHTML"

@@ -1,4 +1,4 @@
-<table class="table"{{if .User.CanEditDataset .D.Dataset}} id="{{.D.Role}}-table"{{end}}>
+<table class="table" id="{{.D.Role}}-table">
     <thead>
         <tr>
             <th class="pl-6 col-5">Name</th>
@@ -6,7 +6,16 @@
             <th class="pr-6 col-3"></th>
         </tr>
     </thead>
-    <tbody>
+    <tbody
+        {{if .User.CanEditDataset .D.Dataset}}
+        class="sortable"
+        hx-post="{{pathFor "dataset_contributors_order" "id" .D.Dataset.ID "role" .D.Role}}"
+        hx-trigger="end"
+        hx-target="#{{.D.Role}}-table"
+        hx-swap="outerHTML"
+        hx-include="#{{.D.Role}}-table [name='position']"
+        {{end}}
+    >
         {{range $i, $c := (.D.Dataset.Contributors .D.Role)}}
         <tr id="{{$.D.Role}}-{{$i}}">
             {{template "dataset/contributors/_columns" ($.ViewData (dict "Dataset" $.D.Dataset "Contributor" $c "Position" $i "Role" $.D.Role))}}

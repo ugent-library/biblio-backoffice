@@ -284,3 +284,34 @@ func (c *DatasetContributors) Choose(w http.ResponseWriter, r *http.Request) {
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
+
+func (c *DatasetContributors) Order(w http.ResponseWriter, r *http.Request) {
+	dataset := context.GetDataset(r.Context())
+	role := mux.Vars(r)["role"]
+	contributors := dataset.Contributors(role)
+	newContributors := make([]*models.Contributor, len(contributors))
+
+	r.ParseForm()
+
+	for i, v := range r.Form["position"] {
+		pos, _ := strconv.Atoi(v)
+		newContributors[i] = contributors[pos]
+	}
+
+	dataset.SetContributors(role, newContributors)
+
+	if _, err := c.Engine.UpdateDataset(dataset); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	c.Render.HTML(w, http.StatusOK, "dataset/contributors/_table", c.ViewData(r, struct {
+		Role    string
+		Dataset *models.Dataset
+	}{
+		role,
+		dataset,
+	}),
+		render.HTMLOptions{Layout: "layouts/htmx"},
+	)
+}

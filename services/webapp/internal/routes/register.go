@@ -458,6 +458,9 @@ func Register(c controllers.Context) {
 	datasetEditRouter.HandleFunc("/htmx/contributors/{role}", datasetContributorsController.Create).
 		Methods("POST").
 		Name("dataset_contributors_create")
+	datasetEditRouter.HandleFunc("/htmx/contributors/{role}/order", datasetContributorsController.Order).
+		Methods("POST").
+		Name("dataset_contributors_order")
 	datasetEditRouter.HandleFunc("/htmx/contributors/{role}/{position}/remove", datasetContributorsController.ConfirmRemove).
 		Methods("GET").
 		Name("dataset_contributors_confirm_remove")
