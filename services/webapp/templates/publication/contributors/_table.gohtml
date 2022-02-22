@@ -1,4 +1,4 @@
-<table class="table"{{if .User.CanEditPublication .D.Publication}} id="{{.D.Role}}-table"{{end}}>
+<table class="table" id="{{.D.Role}}-table">
     <thead>
         <tr>
             <th class="pl-6 col-5">Name</th>
@@ -7,7 +7,16 @@
             <th class="pr-6 col-3"></th>
         </tr>
     </thead>
-    <tbody>
+    <tbody
+        {{if .User.CanEditPublication .D.Publication}}
+        class="sortable"
+        hx-post="{{pathFor "publication_contributors_order" "id" .D.Publication.ID "role" .D.Role}}"
+        hx-trigger="end"
+        hx-target="#{{.D.Role}}-table"
+        hx-swap="outerHTML"
+        hx-include="#{{.D.Role}}-table [name='position']"
+        {{end}}
+    >
         {{range $i, $c := (.D.Publication.Contributors .D.Role)}}
         <tr id="{{$.D.Role}}-{{$i}}">
             {{template "publication/contributors/_columns" ($.ViewData (dict "Publication" $.D.Publication "Contributor" $c "Position" $i "Role" $.D.Role))}}

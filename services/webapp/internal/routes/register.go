@@ -330,6 +330,9 @@ func Register(c controllers.Context) {
 	pubEditRouter.HandleFunc("/htmx/contributors/{role}", publicationContributorsController.Create).
 		Methods("POST").
 		Name("publication_contributors_create")
+	pubEditRouter.HandleFunc("/htmx/contributors/{role}/order", publicationContributorsController.Order).
+		Methods("POST").
+		Name("publication_contributors_order")
 	pubEditRouter.HandleFunc("/htmx/contributors/{role}/{position}/remove", publicationContributorsController.ConfirmRemove).
 		Methods("GET").
 		Name("publication_contributors_confirm_remove")

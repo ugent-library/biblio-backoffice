@@ -286,3 +286,34 @@ func (c *PublicationContributors) Choose(w http.ResponseWriter, r *http.Request)
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }
+
+func (c *PublicationContributors) Order(w http.ResponseWriter, r *http.Request) {
+	publication := context.GetPublication(r.Context())
+	role := mux.Vars(r)["role"]
+	contributors := publication.Contributors(role)
+	newContributors := make([]*models.Contributor, len(contributors))
+
+	r.ParseForm()
+
+	for i, v := range r.Form["position"] {
+		pos, _ := strconv.Atoi(v)
+		newContributors[i] = contributors[pos]
+	}
+
+	publication.SetContributors(role, newContributors)
+
+	if _, err := c.Engine.UpdatePublication(publication); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	c.Render.HTML(w, http.StatusOK, "publication/contributors/_table", c.ViewData(r, struct {
+		Role        string
+		Publication *models.Publication
+	}{
+		role,
+		publication,
+	}),
+		render.HTMLOptions{Layout: "layouts/htmx"},
+	)
+}
