@@ -88,5 +88,7 @@
 
 <div id="dataset-{{.D.Dataset.ID}}-modal" class="modals"></div>
 {{ with .D.Errors }}
+    <div id="dataset-{{$.D.Dataset.ID}}-modal-errors" class="modals">
     {{ template "dataset/_modal_errors" $ }}
+    </div>
 {{ end }}
