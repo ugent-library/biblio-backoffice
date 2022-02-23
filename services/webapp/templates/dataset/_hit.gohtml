@@ -2,11 +2,13 @@
 <div class="d-flex w-100">
     <div class="w-100">
         <div class="d-flex align-items-start">
+            <a href="{{pathFor "dataset" "id" $d.ID | query .D.SearchArgs}}">
             <div class="list-group-item-thumbnail">
                 <div class="c-thumbnail c-thumbnail--dataset c-thumbnail--medium">
                     <i class="if if-database"></i>
                 </div>
             </div>
+            </a>
             <div class="list-group-item-content">
                 <div class="list-group-item-subline">
                     <div class="list-group-item-subline-left">

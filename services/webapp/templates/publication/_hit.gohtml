@@ -1,8 +1,9 @@
 {{$p := .D.Publication}}
+{{$pUrl := pathFor "publication" "id" $p.ID | query .D.SearchArgs}}
 <div class="d-flex w-100">
     <div class="w-100">
         <div class="d-flex align-items-start">
-            {{template "publication/_thumbnail" $p}}
+            {{template "publication/_thumbnail" ($.ViewData (dict "Publication" $p "ShowPublicationUrl" $pUrl))}}
             <div class="list-group-item-content">
                 <div class="list-group-item-subline">
                     <div class="list-group-item-subline-left">

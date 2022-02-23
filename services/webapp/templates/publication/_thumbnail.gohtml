@@ -1,5 +1,6 @@
-{{if .ThumbnailURL}}
-<img class="list-group-item-thumbnail" src="{{pathFor "publication_thumbnail" "id" .ID}}" height="156">
+{{ with .D.ShowPublicationUrl }}<a href="{{ . }}">{{end}}
+{{if .D.Publication.ThumbnailURL}}
+<img class="list-group-item-thumbnail" src="{{pathFor "publication_thumbnail" "id" .D.Publication.ID}}" height="156">
 {{else}}
 <div class="list-group-item-thumbnail">
     <div class="c-thumbnail c-thumbnail--publication c-thumbnail--medium">
@@ -7,3 +8,4 @@
     </div>
 </div>
 {{end}}
+{{ with .D.ShowPublicationUrl }}</a>{{end}}
