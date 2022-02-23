@@ -96,3 +96,6 @@
 </div>
 
 <div id="publication-{{.D.Publication.ID}}-modal" class="modals"></div>
+{{ with .D.Errors }}
+    {{ template "publication/_modal_errors" $ }}
+{{ end }}
