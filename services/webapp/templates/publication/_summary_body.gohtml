@@ -1,5 +1,5 @@
 {{$p := .D.Publication}}
-{{template "publication/_thumbnail" $p}}
+{{template "publication/_thumbnail" ($.ViewData (dict "Publication" $p "ShowPublicationUrl" "" ))}}
 <div class="list-group-item-content">
     <div class="list-group-item-subline">
         <div class="list-group-item-subline-left">
