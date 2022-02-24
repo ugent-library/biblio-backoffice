@@ -47,7 +47,7 @@ func (c *WebSockets) Connect(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ch := make(chan []byte, 64)
-	c.Engine.MessageHub.Register(user.ID, ch)
+	c.Engine.Messages.Register(user.ID, ch)
 
 	go c.writer(ws, ch)
 	c.reader(ws, user.ID, ch)
@@ -56,7 +56,7 @@ func (c *WebSockets) Connect(w http.ResponseWriter, r *http.Request) {
 func (c *WebSockets) reader(ws *websocket.Conn, userID string, sendCh chan []byte) {
 	defer func() {
 		ws.Close()
-		c.Engine.MessageHub.Unregister(userID, sendCh)
+		c.Engine.Messages.Unregister(userID, sendCh)
 	}()
 	ws.SetReadLimit(512)
 	ws.SetReadDeadline(time.Now().Add(pongWait))

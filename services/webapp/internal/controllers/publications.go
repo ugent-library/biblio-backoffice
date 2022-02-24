@@ -9,6 +9,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backend/internal/task"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/views"
 	"github.com/ugent-library/go-locale/locale"
@@ -739,8 +740,21 @@ func (c *Publications) ORCIDAdd(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Publications) ORCIDAddAll(w http.ResponseWriter, r *http.Request) {
-	c.Engine.AddPublicationsToORCID(
+	// TODO handle error
+	id, err := c.Engine.AddPublicationsToORCID(
 		context.GetUser(r.Context()).ID,
 		engine.NewSearchArgs().WithFilter("status", "public"),
+	)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	c.Render.HTML(w, http.StatusOK, "task/_status", c.ViewData(r, struct {
+		Task task.Task
+	}{
+		task.Task{ID: id},
+	}),
+		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }

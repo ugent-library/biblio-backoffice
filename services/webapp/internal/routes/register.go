@@ -28,6 +28,7 @@ func Register(c controllers.Context) {
 	authController := controllers.NewAuth(c)
 	wsController := controllers.NewWebSockets(c)
 	usersController := controllers.NewUsers(c)
+	tasksController := controllers.NewTasks(c)
 
 	publicationsController := controllers.NewPublications(c)
 	publicationFilesController := controllers.NewPublicationFiles(c)
@@ -98,6 +99,13 @@ func Register(c controllers.Context) {
 	wsRouter.HandleFunc("", wsController.Connect).
 		Methods("GET").
 		Name("ws")
+
+	// tasks
+	taskRouter := r.PathPrefix("/task").Subrouter()
+	taskRouter.Use(requireUser)
+	taskRouter.HandleFunc("/{id}/status", tasksController.Status).
+		Methods("GET").
+		Name("task_status")
 
 	// users
 	userRouter := r.PathPrefix("/user").Subrouter()

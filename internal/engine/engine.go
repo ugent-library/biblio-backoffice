@@ -9,6 +9,7 @@ import (
 	"github.com/rabbitmq/amqp091-go"
 	"github.com/ugent-library/biblio-backend/internal/message"
 	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backend/internal/task"
 	"github.com/ugent-library/go-orcid/orcid"
 )
 
@@ -102,20 +103,17 @@ type Config struct {
 
 type Engine struct {
 	Config
-	MessageHub *message.Hub
-	mQChan     *amqp091.Channel
+	Tasks    *task.Hub
+	Messages *message.Hub
 }
 
 func New(c Config) (*Engine, error) {
-	e := &Engine{Config: c, MessageHub: message.NewHub()}
-
-	go e.MessageHub.Run()
+	e := &Engine{Config: c, Messages: message.NewHub()}
 
 	mqCh, err := e.MQ.Channel()
 	if err != nil {
 		log.Fatal(err)
 	}
-	e.mQChan = mqCh
 
 	err = mqCh.ExchangeDeclare(
 		"tasks", // exchange name
@@ -180,6 +178,10 @@ func New(c Config) (*Engine, error) {
 		return nil, err
 	}
 
+	e.Tasks = task.NewHub(mqCh)
+
+	go e.Messages.Run()
+
 	go func() {
 		// dispatch message based on user_id
 		for d := range msgs {
@@ -189,7 +191,7 @@ func New(c Config) (*Engine, error) {
 			if err := json.Unmarshal(d.Body, &msg); err != nil {
 				log.Println(err)
 			}
-			e.MessageHub.Dispatch(msg.UserID, []byte(d.Body))
+			e.Messages.Dispatch(msg.UserID, []byte(d.Body))
 		}
 	}()
 
