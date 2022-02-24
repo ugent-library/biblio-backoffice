@@ -6,13 +6,13 @@ func (e *Engine) Vocabularies() map[string][]string {
 
 var vocabularies = map[string][]string{
 	"cc_licenses": {
-		"cc_0",
-		"cc_by",
-		"cc_by_sa",
-		"cc_by_nd",
-		"cc_by_nc",
-		"cc_by_nc_sa",
-		"cc_by_nc_nd",
+		"CC0-1.0",
+		"CC-BY-4.0",
+		"CC-BY-SA-4.0",
+		"CC-BY-NC-4.0",
+		"CC-BY-ND-4.0",
+		"CC-BY-NC-SA-4.0",
+		"CC-BY-NC-ND-4.0",
 	},
 	"confirmations": {
 		"yes",
