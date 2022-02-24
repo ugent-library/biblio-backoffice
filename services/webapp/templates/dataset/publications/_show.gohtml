@@ -27,8 +27,9 @@
             <li class="list-group-item">
                 <div class="d-flex w-100">
                     <div class="w-100">
+                        {{ $pUrl := pathFor "publication" "id" .ID }}
                         <div class="d-flex align-items-start">
-                            {{template "publication/_thumbnail" .}}
+                            {{template "publication/_thumbnail" ($.ViewData (dict "Publication" . "ShowPublicationUrl" $pUrl))}}
                             <div class="list-group-item-content">
                                 <div class="list-group-item-subline">
                                     <div class="list-group-item-subline-left">
@@ -39,7 +40,7 @@
                                                 <i class="if if-more"></i>
                                             </button>
                                             <div class="dropdown-menu">
-                                                <a class="dropdown-item" href="{{pathFor "publication" "id" .ID}}">
+                                                <a class="dropdown-item" href="{{ $pUrl }}">
                                                     <i class="if if-file-text"></i>
                                                     <span>View details</span>
                                                 </a>
