@@ -24,7 +24,7 @@ type service struct {
 type addToORCID struct {
 	CorrelationID string             `json:"correlation_id"`
 	UserID        string             `json:"user_id"`
-	SearchArgs    *engine.SearchArgs `json:"search_args"`
+	SearchArgs    *engine.SearchArgs `json:"payload"`
 }
 
 func New(e *engine.Engine) (*service, error) {
@@ -34,18 +34,18 @@ func New(e *engine.Engine) (*service, error) {
 	}
 
 	// ensure notifications exchange exists
-	err = mqCh.ExchangeDeclare(
-		"notifications", // exchange name
-		"fanout",        // exchange type
-		true,            // durable
-		false,           // auto-deleted
-		false,           // internal
-		false,           // no-wait
-		nil,             // arguments
-	)
-	if err != nil {
-		return nil, err
-	}
+	// err = mqCh.ExchangeDeclare(
+	// 	"notifications", // exchange name
+	// 	"fanout",        // exchange type
+	// 	true,            // durable
+	// 	false,           // auto-deleted
+	// 	false,           // internal
+	// 	false,           // no-wait
+	// 	nil,             // arguments
+	// )
+	// if err != nil {
+	// 	return nil, err
+	// }
 
 	_, err = mqCh.QueueDeclare(
 		"tasks_orcid", // queue name
@@ -91,36 +91,36 @@ func (s *service) Name() string {
 func (s *service) Start() error {
 	go func() {
 		for d := range s.msgChan {
-			task := addToORCID{}
-			if err := json.Unmarshal(d.Body, &task); err != nil {
+			t := addToORCID{}
+			if err := json.Unmarshal(d.Body, &t); err != nil {
 				log.Println(err)
 			}
-			s.handleTask(task)
+			s.handleTask(t)
 			d.Ack(false)
 
-			noti := struct {
-				CorrelationID string `json:"correlation_id"`
-				UserID        string `json:"user_id"`
-				Message       string `json:"message"`
-			}{
-				task.CorrelationID,
-				task.UserID,
-				"Your publications were added to your ORCID profile",
-			}
-			notiJSON, _ := json.Marshal(&noti)
-			err := s.mqChan.Publish(
-				"notifications", // exchange
-				"",              // routing key
-				false,           // mandatory
-				false,           // immediate
-				amqp091.Publishing{
-					ContentType: "application/json",
-					Body:        notiJSON,
-				},
-			)
-			if err != nil {
-				log.Println(err)
-			}
+			// noti := struct {
+			// 	CorrelationID string `json:"correlation_id"`
+			// 	UserID        string `json:"user_id"`
+			// 	Message       string `json:"message"`
+			// }{
+			// 	task.CorrelationID,
+			// 	task.UserID,
+			// 	"Your publications were added to your ORCID profile",
+			// }
+			// notiJSON, _ := json.Marshal(&noti)
+			// err := s.mqChan.Publish(
+			// 	"notifications", // exchange
+			// 	"",              // routing key
+			// 	false,           // mandatory
+			// 	false,           // immediate
+			// 	amqp091.Publishing{
+			// 		ContentType: "application/json",
+			// 		Body:        notiJSON,
+			// 	},
+			// )
+			// if err != nil {
+			// 	log.Println(err)
+			// }
 		}
 	}()
 
@@ -131,21 +131,32 @@ func (s *service) Stop(ctx context.Context) error {
 	return s.mqChan.Close()
 }
 
-func (s *service) handleTask(task addToORCID) error {
-	user, _ := s.engine.GetUser(task.UserID)
-	args := task.SearchArgs
+func (s *service) handleTask(t addToORCID) error {
+	user, _ := s.engine.GetUser(t.UserID)
+	args := t.SearchArgs
 	client := orcid.NewMemberClient(orcid.Config{
 		Token:   user.ORCIDToken,
 		Sandbox: s.engine.ORCIDSandbox,
 	})
 
+	var seen int
+
 	for {
 		hits, _ := s.engine.UserPublications(user.ID, args)
+
+		s.engine.Tasks.SetProgress(t.CorrelationID, seen, hits.Total)
+
 		for _, pub := range hits.Hits {
+			seen += 1
+
+			var done bool
 			for _, ow := range pub.ORCIDWork {
 				if ow.ORCID == user.ORCID { // already sent to orcid
-					continue
+					done = true
 				}
+			}
+			if done {
+				continue
 			}
 
 			work := publicationToORCID(pub)
@@ -153,6 +164,7 @@ func (s *service) handleTask(task addToORCID) error {
 			if res.StatusCode == 409 { // duplicate
 				continue
 			} else if err != nil {
+				s.engine.Tasks.SetError(t.CorrelationID, err)
 				log.Println(err)
 				body, _ := ioutil.ReadAll(res.Body)
 				log.Print(string(body))
@@ -165,16 +177,21 @@ func (s *service) handleTask(task addToORCID) error {
 			})
 
 			if _, err := s.engine.UpdatePublication(pub); err != nil {
+				s.engine.Tasks.SetError(t.CorrelationID, err)
 				log.Println(err)
 			}
 
-			log.Printf("processed task orcid add for pub %s and user %s", pub.ID, user.ID)
+			// log.Printf("processed task orcid add for pub %s and user %s", pub.ID, user.ID)
 		}
+
+		s.engine.Tasks.SetProgress(t.CorrelationID, seen, hits.Total)
+
 		if !hits.NextPage {
 			break
 		}
 		args.Page = args.Page + 1
 	}
+
 	return nil
 }
 
@@ -270,7 +287,7 @@ func publicationToORCID(p *models.Publication) *orcid.Work {
 		}
 	}
 
-	log.Printf("%+v", w)
+	// log.Printf("%+v", w)
 
 	return w
 }

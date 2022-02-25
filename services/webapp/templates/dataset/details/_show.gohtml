@@ -40,7 +40,7 @@
                     {{.D.Show.BadgeList (.D.Show.Label "keyword") (.D.Show.Values .D.Dataset.Keyword)}}
                 </li>
                 <li class="list-group-item">
-                    {{.D.Show.Text (.D.Show.Label "license") (.D.Show.Value .D.Dataset.License) (.D.Show.Required)}}
+                    {{.D.Show.Text (.D.Show.Label "license") (.D.Show.Value .D.Dataset.License (.D.Show.Locale "cc_licenses")) (.D.Show.Required)}}
                     {{.D.Show.Text (.D.Show.Label "other_license") (.D.Show.Value .D.Dataset.OtherLicense)}}
                     {{.D.Show.Text (.D.Show.Label "access_level") (.D.Show.Value .D.Dataset.AccessLevel (.D.Show.Locale "access_levels")) (.D.Show.Required)}}
                     {{.D.Show.Text (.D.Show.Label "embargo") (.D.Show.Value .D.Dataset.Embargo)}}

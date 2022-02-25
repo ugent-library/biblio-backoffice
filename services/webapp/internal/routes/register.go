@@ -16,6 +16,7 @@ func Register(c controllers.Context) {
 	basePath := c.BaseURL.Path
 
 	router.StrictSlash(true)
+	router.UseEncodedPath()
 	router.Use(handlers.RecoveryHandler())
 
 	// static files
@@ -28,6 +29,7 @@ func Register(c controllers.Context) {
 	authController := controllers.NewAuth(c)
 	wsController := controllers.NewWebSockets(c)
 	usersController := controllers.NewUsers(c)
+	tasksController := controllers.NewTasks(c)
 
 	publicationsController := controllers.NewPublications(c)
 	publicationFilesController := controllers.NewPublicationFiles(c)
@@ -98,6 +100,13 @@ func Register(c controllers.Context) {
 	wsRouter.HandleFunc("", wsController.Connect).
 		Methods("GET").
 		Name("ws")
+
+	// tasks
+	taskRouter := r.PathPrefix("/task").Subrouter()
+	taskRouter.Use(requireUser)
+	taskRouter.HandleFunc("/{id}/status", tasksController.Status).
+		Methods("GET").
+		Name("task_status")
 
 	// users
 	userRouter := r.PathPrefix("/user").Subrouter()
@@ -260,13 +269,13 @@ func Register(c controllers.Context) {
 	pubEditRouter.HandleFunc("/htmx/projects/list/activesearch", publicationProjectsController.ActiveSearch).
 		Methods("POST").
 		Name("publication_projects_activesearch")
-	pubEditRouter.HandleFunc("/htmx/projects/add/{project_id}", publicationProjectsController.Add).
+	pubEditRouter.HandleFunc("/htmx/projects/add/{project_id:[a-zA-Z0-9].*}", publicationProjectsController.Add).
 		Methods("PATCH").
 		Name("publication_projects_add_to_publication")
-	pubEditRouter.HandleFunc("/htmx/projects/remove/{project_id}", publicationProjectsController.ConfirmRemove).
+	pubEditRouter.HandleFunc("/htmx/projects/remove/{project_id:[a-zA-Z0-9].*}", publicationProjectsController.ConfirmRemove).
 		Methods("GET").
 		Name("publication_projects_confirm_remove_from_publication")
-	pubEditRouter.HandleFunc("/htmx/projects/remove/{project_id}", publicationProjectsController.Remove).
+	pubEditRouter.HandleFunc("/htmx/projects/remove/{project_id:[a-zA-Z0-9].*}", publicationProjectsController.Remove).
 		Methods("PATCH").
 		Name("publication_projects_remove_from_publication")
 	// Publication departments HTMX fragments
@@ -429,13 +438,13 @@ func Register(c controllers.Context) {
 	datasetEditRouter.HandleFunc("/htmx/projects/list/activesearch", datasetProjectsController.ActiveSearch).
 		Methods("POST").
 		Name("dataset_projects_activesearch")
-	datasetEditRouter.HandleFunc("/htmx/projects/add/{project_id}", datasetProjectsController.Add).
+	datasetEditRouter.HandleFunc("/htmx/projects/add/{project_id:[a-zA-Z0-9].*}", datasetProjectsController.Add).
 		Methods("PATCH").
 		Name("dataset_projects_add")
-	datasetEditRouter.HandleFunc("/htmx/projects/remove/{project_id}", datasetProjectsController.ConfirmRemove).
+	datasetEditRouter.HandleFunc("/htmx/projects/remove/{project_id:[a-zA-Z0-9].*}", datasetProjectsController.ConfirmRemove).
 		Methods("GET").
 		Name("dataset_projects_confirm_remove")
-	datasetEditRouter.HandleFunc("/htmx/projects/remove/{project_id}", datasetProjectsController.Remove).
+	datasetEditRouter.HandleFunc("/htmx/projects/remove/{project_id:[a-zA-Z0-9].*}", datasetProjectsController.Remove).
 		Methods("PATCH").
 		Name("dataset_projects_remove")
 	// Dataset departments HTMX fragments
