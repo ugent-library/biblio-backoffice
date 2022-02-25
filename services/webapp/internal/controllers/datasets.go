@@ -95,12 +95,16 @@ func (c *Datasets) Show(w http.ResponseWriter, r *http.Request) {
 		DatasetPublications []*models.Publication
 		Show                *views.ShowBuilder
 		SearchArgs          *engine.SearchArgs
+		ErrorsTitle         string
+		Errors              jsonapi.Errors
 	}{
 		"Dataset - Biblio",
 		dataset,
 		datasetPubs,
 		views.NewShowBuilder(c.RenderPartial, locale.Get(r.Context())),
 		searchArgs,
+		"",
+		nil,
 	}))
 }
 
@@ -108,6 +112,8 @@ func (c *Datasets) Publish(w http.ResponseWriter, r *http.Request) {
 	dataset := context.GetDataset(r.Context())
 
 	flashes := make([]views.Flash, 0)
+	var publicationErrors jsonapi.Errors
+	var publicationErrorsTitle string
 
 	savedDataset, err := c.Engine.PublishDataset(dataset)
 	if err != nil {
@@ -116,7 +122,8 @@ func (c *Datasets) Publish(w http.ResponseWriter, r *http.Request) {
 
 		if e, ok := err.(jsonapi.Errors); ok {
 
-			flashes = append(flashes, views.Flash{Type: "error", Message: e[0].Title})
+			publicationErrors = e
+			publicationErrorsTitle = "Unable to publish record due to following errors"
 
 		} else {
 
@@ -154,12 +161,16 @@ func (c *Datasets) Publish(w http.ResponseWriter, r *http.Request) {
 		DatasetPublications []*models.Publication
 		Show                *views.ShowBuilder
 		SearchArgs          *engine.SearchArgs
+		ErrorsTitle         string
+		Errors              jsonapi.Errors
 	}{
 		"Dataset - Biblio",
 		savedDataset,
 		datasetPubs,
 		views.NewShowBuilder(c.RenderPartial, locale.Get(r.Context())),
 		searchArgs,
+		publicationErrorsTitle,
+		publicationErrors,
 	},
 		flashes...,
 	))

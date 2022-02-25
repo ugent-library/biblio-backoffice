@@ -94,6 +94,8 @@ func (c *Publications) Show(w http.ResponseWriter, r *http.Request) {
 		Show                *views.ShowBuilder
 		Vocabularies        map[string][]string
 		SearchArgs          *engine.SearchArgs
+		ErrorsTitle         string
+		Errors              jsonapi.Errors
 	}{
 		"Publication - Biblio",
 		pub,
@@ -101,6 +103,8 @@ func (c *Publications) Show(w http.ResponseWriter, r *http.Request) {
 		views.NewShowBuilder(c.RenderPartial, locale.Get(r.Context())),
 		c.Engine.Vocabularies(),
 		searchArgs,
+		"",
+		nil,
 	}),
 	)
 }
@@ -590,6 +594,8 @@ func (c *Publications) Publish(w http.ResponseWriter, r *http.Request) {
 	savedPub, err := c.Engine.PublishPublication(pub)
 
 	flashes := make([]views.Flash, 0)
+	var publicationErrors jsonapi.Errors
+	var publicationErrorsTitle string
 
 	if err != nil {
 
@@ -597,7 +603,8 @@ func (c *Publications) Publish(w http.ResponseWriter, r *http.Request) {
 
 		if e, ok := err.(jsonapi.Errors); ok {
 
-			flashes = append(flashes, views.Flash{Type: "error", Message: e[0].Title})
+			publicationErrors = e
+			publicationErrorsTitle = "Unable to publish record due to following errors"
 
 		} else {
 
@@ -635,12 +642,16 @@ func (c *Publications) Publish(w http.ResponseWriter, r *http.Request) {
 		PublicationDatasets []*models.Dataset
 		Show                *views.ShowBuilder
 		SearchArgs          *engine.SearchArgs
+		ErrorsTitle			string
+		Errors				jsonapi.Errors
 	}{
 		"Publication - Biblio",
 		savedPub,
 		pubDatasets,
 		views.NewShowBuilder(c.RenderPartial, locale.Get(r.Context())),
 		searchArgs,
+		publicationErrorsTitle,
+		publicationErrors,
 	},
 		flashes...,
 	))
