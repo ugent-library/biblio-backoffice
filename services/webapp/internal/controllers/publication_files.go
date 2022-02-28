@@ -222,9 +222,6 @@ func (c *PublicationFiles) Update(w http.ResponseWriter, r *http.Request) {
 		file.Embargo = ""
 	}
 
-	log.Printf("%+v", r.Form)
-	log.Printf("%+v", file)
-
 	err = c.Engine.UpdatePublicationFile(pub.ID, file)
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {
