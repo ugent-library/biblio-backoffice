@@ -174,12 +174,22 @@
                                 </div>
                             </div>
                         </label>
-                        <select name="cc_license" class="custom-select w-100{{if $ccLicenseError }} is-invalid{{end}}">
-                            <option></option>
-                            {{range .D.Vocabularies.cc_licenses}}
-                            <option{{if eq $.D.File.CCLicense .}} selected{{end}} value="{{.}}">{{$.T "cc_licenses" .}}</option>
-                            {{end}}
-                        </select>
+                        <div class="form-row">
+                            <div class="col-6">
+                            <select name="cc_license" class="custom-select w-100{{if $ccLicenseError }} is-invalid{{end}}">
+                                <option></option>
+                                {{range .D.Vocabularies.cc_licenses}}
+                                <option{{if eq $.D.File.CCLicense .}} selected{{end}} value="{{.}}">{{$.T "cc_licenses" .}}</option>
+                                {{end}}
+                            </select>
+                            </div>
+                            <div class="col-6">
+                                <div class="custom-control custom-checkbox">
+                                    <input class="custom-control-input" type="checkbox" id="no_license" name="no_license" value="true"{{if .D.File.NoLicense}} checked{{end}}>
+                                    <label class="custom-control-label" for="no_license">No license (in copyright)</label>
+                                </div>
+                            </div>
+                        </div>
                         {{if $ccLicenseError }}
                         <div class="invalid-feedback">License is required</div>
                         {{end}}

@@ -26,6 +26,7 @@ type PublicationFile struct {
 	FileSize           int        `json:"file_size,omitempty" form:"-"`
 	ID                 string     `json:"file_id,omitempty" form:"-"`
 	CCLicense          string     `json:"cc_license,omitempty" form:"cc_license"`
+	NoLicense          bool       `json:"no_license,omitempty" form:"no_license"`
 	OtherLicense       string     `json:"other_license,omitempty" form:"other_license"`
 	PublicationVersion string     `json:"publication_version,omitempty" form:"publication_version"`
 	Relation           string     `json:"relation,omitempty" form:"relation"`
