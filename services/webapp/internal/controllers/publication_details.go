@@ -68,6 +68,11 @@ func (c *PublicationDetails) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// TODO handle checkbox boolean values elegantly
+	if r.FormValue("extern") != "true" {
+		pub.Extern = false
+	}
+
 	savedPub, err := c.Engine.UpdatePublication(pub)
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {

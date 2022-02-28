@@ -1,20 +1,22 @@
-<div class="bc-toast bc-toast--{{.Type}}"{{with .DismissAfter}} data-dismiss-after="{{.Milliseconds}}"{{end}}>
-    <div class="bc-toast__left">
-        {{if eq .Type "success"}}
-        <i class="if if-check-circle-fill"></i>
-        {{else if eq .Type "info"}}
-        <i class="if if-info-circle-filled"></i>
-        {{else if eq .Type "warning"}}
-        <i class="if if-alert-fill"></i>
-        {{else if eq .Type "error"}}
-        <i class="if if-alert-fill"></i>
-        {{end}}
-        <span class="bc-toast__message">{{.Message}}</span>
-    </div>
-    <div class="bc-toast__right">
-        <button class="btn btn-link btn-icon-only toast-dismiss" aria-label="Close">
-            <i class="if if-close"></i>
-            <div class="sr-only">Close</div>
-        </button>
+<div>
+    <div class="bc-toast bc-toast--{{.Type}}"{{with .DismissAfter}} data-dismiss-after="{{.Milliseconds}}"{{end}}>
+        <div class="bc-toast__left">
+            {{if eq .Type "success"}}
+            <i class="if if-check-circle-fill"></i>
+            {{else if eq .Type "info"}}
+            <i class="if if-info-circle-filled"></i>
+            {{else if eq .Type "warning"}}
+            <i class="if if-alert-fill"></i>
+            {{else if eq .Type "error"}}
+            <i class="if if-alert-fill"></i>
+            {{end}}
+            <span class="bc-toast__message">{{.Message}}</span>
+        </div>
+        <div class="bc-toast__right">
+            <button class="btn btn-link btn-icon-only toast-dismiss" aria-label="Close">
+                <i class="if if-close"></i>
+                <div class="sr-only">Close</div>
+            </button>
+        </div>
     </div>
 </div>

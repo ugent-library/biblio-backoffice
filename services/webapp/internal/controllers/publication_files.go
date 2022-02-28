@@ -10,8 +10,8 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/views"
-	"github.com/ugent-library/go-web/forms"
 	"github.com/ugent-library/go-locale/locale"
+	"github.com/ugent-library/go-web/forms"
 	"github.com/ugent-library/go-web/jsonapi"
 	"github.com/unrolled/render"
 )
@@ -136,7 +136,7 @@ func (c *PublicationFiles) Upload(w http.ResponseWriter, r *http.Request) {
 		}{
 			pub,
 			pub.File[len(pub.File)-1],
-			len(pub.File)-1,
+			len(pub.File) - 1,
 			views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), nil),
 			c.Engine.Vocabularies(),
 		}),
@@ -211,11 +211,19 @@ func (c *PublicationFiles) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// TODO handle checkbox boolean values elegantly
+	if r.FormValue("no_license") != "true" {
+		file.NoLicense = false
+	}
+
 	// embargo sanity check
 	if file.AccessLevel == "open_access" || file.EmbargoTo == file.AccessLevel {
 		file.EmbargoTo = ""
 		file.Embargo = ""
 	}
+
+	log.Printf("%+v", r.Form)
+	log.Printf("%+v", file)
 
 	err = c.Engine.UpdatePublicationFile(pub.ID, file)
 
@@ -253,7 +261,7 @@ func (c *PublicationFiles) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	c.Render.HTML(w, http.StatusOK, "publication/files/_update", c.ViewData(r, struct {
-		Publication  *models.Publication
+		Publication *models.Publication
 	}{
 		pub,
 	},

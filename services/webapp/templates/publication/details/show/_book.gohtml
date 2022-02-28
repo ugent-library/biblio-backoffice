@@ -10,7 +10,7 @@
 <li class="list-group-item">
     {{.D.Show.List (.D.Show.Label "language") (.D.Show.Values .D.Publication.Language (.D.Show.LanguageName))}}
     {{.D.Show.Text (.D.Show.Label "publication_status") (.D.Show.Value .D.Publication.PublicationStatus (.D.Show.Locale "publication_publishing_statuses"))}}
-    {{.D.Show.Text (.D.Show.Label "extern") (.D.Show.Value (formatBool .D.Publication.Extern "✓" ""))}}
+    {{.D.Show.Text (.D.Show.Label "extern") (.D.Show.Value (formatBool .D.Publication.Extern "✓" "-"))}}
     {{.D.Show.Text (.D.Show.Label "year") (.D.Show.Value .D.Publication.Year) .D.Show.Required}}
     {{.D.Show.Text (.D.Show.Label "place_of_publication") (.D.Show.Value .D.Publication.PlaceOfPublication)}}
     {{.D.Show.Text (.D.Show.Label "publisher") (.D.Show.Value .D.Publication.Publisher)}}

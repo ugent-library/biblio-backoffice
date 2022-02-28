@@ -185,8 +185,21 @@
                             </div>
                             <div class="col-6">
                                 <div class="custom-control custom-checkbox">
-                                    <input class="custom-control-input" type="checkbox" id="no_license" name="no_license" value="true"{{if .D.File.NoLicense}} checked{{end}}>
+                                    <input class="custom-control-input" type="checkbox" id="no_license" name="no_license" value="true"
+                                        {{if .D.File.NoLicense}}checked{{end}}>
                                     <label class="custom-control-label" for="no_license">No license (in copyright)</label>
+                                    <a class="text-muted mx-2" href="#" data-container="body" data-toggle="popover-custom" data-placement="right" data-popover-content="#no-license-tooltip">
+                                        <i class="if if-info-circle if--small"></i>
+                                        <div class="sr-only">More info</div>
+                                    </a>
+                                    <div class="u-hidden" id="no-license-tooltip">
+                                        <div class="popover-body p-0">
+                                            <a class="link-primary" target="_blank" href="https://rightsstatements.org/page/InC/1.0/?language=en">
+                                                <span class="text-decoration-underline">More info</span>
+                                                <i class="if if--small if-external-link"></i>
+                                            </a>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -214,7 +227,7 @@
                 <button class="btn btn-primary modal-close" type="submit"
                     hx-put="{{pathFor "publication_file_update" "id" .D.Publication.ID "file_id" .D.File.ID}}"
                     hx-target="#publication-files-modal"
-                    hx-include=".file-attributes > *"
+                    hx-include=".file-attributes input[type=text], .file-attributes input[type=checkbox]:checked, .file-attributes input[type=radio], .file-attributes input[type=date], .file-attributes select, .file-attributes textarea"
                     hx-indicator=".modal-dialog .spinner-border"
                 >Save</button>
             </div>

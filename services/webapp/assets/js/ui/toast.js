@@ -11,7 +11,5 @@ export default function () {
         })
     }
 
-    htmx.onLoad(function(rootEl) {
-        addEvents(rootEl)
-    })
+    htmx.onLoad(addEvents)
 }
