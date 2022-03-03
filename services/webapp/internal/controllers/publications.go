@@ -9,7 +9,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/biblio-backend/internal/task"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/views"
 	"github.com/ugent-library/go-locale/locale"
@@ -642,8 +641,8 @@ func (c *Publications) Publish(w http.ResponseWriter, r *http.Request) {
 		PublicationDatasets []*models.Dataset
 		Show                *views.ShowBuilder
 		SearchArgs          *engine.SearchArgs
-		ErrorsTitle			string
-		Errors				jsonapi.Errors
+		ErrorsTitle         string
+		Errors              jsonapi.Errors
 	}{
 		"Publication - Biblio",
 		savedPub,
@@ -762,9 +761,11 @@ func (c *Publications) ORCIDAddAll(w http.ResponseWriter, r *http.Request) {
 	}
 
 	c.Render.HTML(w, http.StatusOK, "task/_status", c.ViewData(r, struct {
-		Task task.Task
+		TaskID     string
+		TaskResult string
 	}{
-		task.Task{ID: id},
+		id,
+		"pending...",
 	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)

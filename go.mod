@@ -5,6 +5,7 @@ go 1.16
 require (
 	github.com/Masterminds/sprig/v3 v3.2.2
 	github.com/blevesearch/bleve/v2 v2.3.0
+	github.com/google/uuid v1.3.0 // indirect
 	github.com/gorilla/csrf v1.7.1
 	github.com/gorilla/handlers v1.5.1
 	github.com/gorilla/mux v1.8.0
@@ -24,6 +25,7 @@ require (
 	github.com/ugent-library/go-orcid v0.0.0-20211130191640-1138a344c30b
 	github.com/ugent-library/go-web v0.0.0-20211029075216-2afe6295a285
 	github.com/unrolled/render v1.4.1
+	go.temporal.io/sdk v1.13.1
 	golang.org/x/crypto v0.0.0-20211117183948-ae814b36b871 // indirect
 	golang.org/x/sys v0.0.0-20211124211545-fe61309f8881 // indirect
 	golang.org/x/text v0.3.7

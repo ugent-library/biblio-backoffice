@@ -1,3 +1,17 @@
+<div id="task-{{.D.TaskID}}" class="bc-toast bc-toast--info"
+    hx-target="this"
+    hx-get="{{pathFor "task_status" "id" .D.TaskID}}" 
+    hx-trigger="load delay:300ms" 
+    hx-swap="outerHTML"
+>
+    <div class="bc-toast__left">
+        <i class="if if-info-circle-filled"></i>
+        <span class="bc-toast__message">{{.D.TaskResult}}</span>
+    </div>
+    <div class="bc-toast__right">
+    </div>
+</div>
+{{/*
 {{if .D.Task.Error}}
 <div id="task-{{.D.Task.ID}}" class="bc-toast bc-toast--error">
     <div class="bc-toast__left">
@@ -53,3 +67,4 @@
     </div>
 </div>
 {{end}}
+*/}}

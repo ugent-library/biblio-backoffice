@@ -11,6 +11,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/task"
 	"github.com/ugent-library/go-orcid/orcid"
+	"go.temporal.io/sdk/client"
 )
 
 type DatasetService interface {
@@ -84,6 +85,7 @@ type MediaTypeSearchService interface {
 }
 
 type Config struct {
+	Temporal     client.Client
 	MQ           *amqp091.Connection
 	ORCIDSandbox bool
 	ORCIDClient  *orcid.MemberClient
@@ -109,6 +111,15 @@ type Engine struct {
 
 func New(c Config) (*Engine, error) {
 	e := &Engine{Config: c, Messages: message.NewHub()}
+
+	temporal, err := client.NewClient(client.Options{
+		HostPort: client.DefaultHostPort,
+	})
+	if err != nil {
+		log.Fatalln("Unable to create client", err)
+	}
+	// defer c.Close()
+	e.Temporal = temporal
 
 	mqCh, err := e.MQ.Channel()
 	if err != nil {

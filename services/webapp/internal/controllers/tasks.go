@@ -1,10 +1,11 @@
 package controllers
 
 import (
+	"context"
+	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/ugent-library/biblio-backend/internal/task"
 	"github.com/unrolled/render"
 )
 
@@ -17,11 +18,22 @@ func NewTasks(c Context) *Tasks {
 }
 
 func (c *Tasks) Status(w http.ResponseWriter, r *http.Request) {
-	t, _ := c.Engine.Tasks.Get(mux.Vars(r)["id"])
+	taskID := mux.Vars(r)["id"]
+	resp, err := c.Engine.Temporal.QueryWorkflow(context.Background(), taskID, "", "state")
+	if err != nil {
+		log.Fatalln("Unable to query workflow", err)
+	}
+	var result string
+	if err := resp.Get(&result); err != nil {
+		log.Fatalln("Unable to decode query result", err)
+	}
+
 	c.Render.HTML(w, http.StatusOK, "task/_status", c.ViewData(r, struct {
-		Task task.Task
+		TaskID     string
+		TaskResult string
 	}{
-		t,
+		taskID,
+		result,
 	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
