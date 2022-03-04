@@ -761,11 +761,11 @@ func (c *Publications) ORCIDAddAll(w http.ResponseWriter, r *http.Request) {
 	}
 
 	c.Render.HTML(w, http.StatusOK, "task/_status", c.ViewData(r, struct {
-		TaskID     string
-		TaskResult string
+		TaskID    string
+		TaskState models.TaskState
 	}{
 		id,
-		"pending...",
+		models.TaskState{Status: models.Waiting},
 	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)

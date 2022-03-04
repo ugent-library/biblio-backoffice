@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/unrolled/render"
 )
 
@@ -23,17 +24,17 @@ func (c *Tasks) Status(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatalln("Unable to query workflow", err)
 	}
-	var result string
-	if err := resp.Get(&result); err != nil {
+	var taskState models.TaskState
+	if err := resp.Get(&taskState); err != nil {
 		log.Fatalln("Unable to decode query result", err)
 	}
 
-	c.Render.HTML(w, http.StatusOK, "task/_status", c.ViewData(r, struct {
-		TaskID     string
-		TaskResult string
+	c.Render.HTML(w, http.StatusOK, "task/_flash_message", c.ViewData(r, struct {
+		TaskID    string
+		TaskState models.TaskState
 	}{
 		taskID,
-		result,
+		taskState,
 	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)

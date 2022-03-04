@@ -2,7 +2,6 @@ package orcid
 
 import (
 	"fmt"
-	"log"
 	"strings"
 	"time"
 
@@ -36,25 +35,27 @@ func AddPublicationsWorkflow(e *engine.Engine) func(workflow.Context, string, st
 		}
 		ctx = workflow.WithActivityOptions(ctx, ao)
 
-		queryResult := "started"
+		taskState := models.TaskState{
+			Message: "Adding publications to your ORCID works",
+			Status:  models.Waiting,
+		}
+
 		logger := workflow.GetLogger(ctx)
-		logger.Info("Workflow started")
 		// setup query handler for query type "state"
-		err := workflow.SetQueryHandler(ctx, "state", func(input []byte) (string, error) {
-			return queryResult, nil
+		err := workflow.SetQueryHandler(ctx, "state", func(input []byte) (models.TaskState, error) {
+			return taskState, nil
 		})
 		if err != nil {
 			logger.Info("SetQueryHandler failed: " + err.Error())
 			return err
 		}
 
-		queryResult = "pending"
+		taskState.Status = models.Running
 
-		// to simulate workflow been blocked on something, in reality, workflow could wait on anything like activity, signal or timer
-		// _ = workflow.NewTimer(ctx, time.Minute*2).Get(ctx, nil)
-		// logger.Info("Timer fired")
 		for {
 			hits, _ := e.UserPublications(userID, &args)
+
+			taskState.Denominator = hits.Total
 
 			logger.Info("execute activity")
 
@@ -64,20 +65,22 @@ func AddPublicationsWorkflow(e *engine.Engine) func(workflow.Context, string, st
 				Hits:       *hits,
 			}).Get(ctx, nil)
 			if err != nil {
+				taskState.Message = "Adding publications to your ORCID works failed"
+				taskState.Status = models.Failed
 				logger.Error("AddPublicationsToORCID failed.", "Error", err)
 				return err
 			}
 
-			queryResult = fmt.Sprintf("page: %d", hits.Page)
+			taskState.Numerator += len(hits.Hits)
 
 			if !hits.NextPage {
+				taskState.Message = fmt.Sprintf("Added %d publications to your ORCID works", hits.Total)
+				taskState.Status = models.Done
 				break
 			}
 			args.Page = args.Page + 1
 		}
 
-		queryResult = "done"
-		logger.Info("Workflow completed")
 		return nil
 	}
 }
@@ -216,8 +219,6 @@ func publicationToORCID(p *models.Publication) *orcid.Work {
 			w.LanguageCode = tag.String()
 		}
 	}
-
-	log.Printf("%+v", w)
 
 	return w
 }
