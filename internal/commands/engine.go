@@ -3,19 +3,21 @@ package commands
 import (
 	"log"
 
-	"github.com/rabbitmq/amqp091-go"
 	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/backends/ianamedia"
 	"github.com/ugent-library/biblio-backend/internal/backends/librecat"
 	"github.com/ugent-library/biblio-backend/internal/backends/spdxlicenses"
 	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/go-orcid/orcid"
+	"go.temporal.io/sdk/client"
 )
 
 func newEngine() *engine.Engine {
-	mqConn, err := amqp091.Dial(viper.GetString("amqp-conn"))
+	temporal, err := client.NewClient(client.Options{
+		HostPort: client.DefaultHostPort,
+	})
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln("Unable to create Temporal client", err)
 	}
 
 	librecatClient := librecat.New(librecat.Config{
@@ -23,6 +25,7 @@ func newEngine() *engine.Engine {
 		Username: viper.GetString("librecat-username"),
 		Password: viper.GetString("librecat-password"),
 	})
+
 	orcidConfig := orcid.Config{
 		ClientID:     viper.GetString("orcid-client-id"),
 		ClientSecret: viper.GetString("orcid-client-secret"),
@@ -31,7 +34,7 @@ func newEngine() *engine.Engine {
 	orcidClient := orcid.NewMemberClient(orcidConfig)
 
 	e, err := engine.New(engine.Config{
-		MQ:                        mqConn,
+		Temporal:                  temporal,
 		ORCIDSandbox:              orcidConfig.Sandbox,
 		ORCIDClient:               orcidClient,
 		DatasetService:            librecatClient,

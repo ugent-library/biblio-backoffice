@@ -27,7 +27,6 @@ func Register(c controllers.Context) {
 
 	homeController := controllers.NewHome(c)
 	authController := controllers.NewAuth(c)
-	wsController := controllers.NewWebSockets(c)
 	usersController := controllers.NewUsers(c)
 	tasksController := controllers.NewTasks(c)
 
@@ -93,13 +92,6 @@ func Register(c controllers.Context) {
 	r.HandleFunc("/logout", authController.Logout).
 		Methods("GET").
 		Name("logout")
-
-	// websockets
-	wsRouter := r.PathPrefix("/ws").Subrouter()
-	wsRouter.Use(requireUser)
-	wsRouter.HandleFunc("", wsController.Connect).
-		Methods("GET").
-		Name("ws")
 
 	// tasks
 	taskRouter := r.PathPrefix("/task").Subrouter()
