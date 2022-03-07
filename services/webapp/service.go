@@ -8,12 +8,14 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/Masterminds/sprig/v3"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/controllers"
@@ -30,6 +32,44 @@ import (
 
 type service struct {
 	server *http.Server
+}
+
+func AddCommands(cmd *cobra.Command, e *engine.Engine) {
+	cmd.AddCommand(&cobra.Command{
+		Use:   "routes",
+		Short: "print routes",
+		Run: func(cmd *cobra.Command, args []string) {
+			router := buildRouter(e)
+			router.Walk(func(route *mux.Route, router *mux.Router, ancestors []*mux.Route) error {
+				hostTemplate, err := route.GetHostTemplate()
+				if err == nil {
+					fmt.Println("HOST:", hostTemplate)
+				}
+				pathTemplate, err := route.GetPathTemplate()
+				if err == nil {
+					fmt.Println("ROUTE:", pathTemplate)
+				}
+				pathRegexp, err := route.GetPathRegexp()
+				if err == nil {
+					fmt.Println("Path regexp:", pathRegexp)
+				}
+				queriesTemplates, err := route.GetQueriesTemplates()
+				if err == nil {
+					fmt.Println("Queries templates:", strings.Join(queriesTemplates, ","))
+				}
+				queriesRegexps, err := route.GetQueriesRegexp()
+				if err == nil {
+					fmt.Println("Queries regexps:", strings.Join(queriesRegexps, ","))
+				}
+				methods, err := route.GetMethods()
+				if err == nil {
+					fmt.Println("Methods:", strings.Join(methods, ","))
+				}
+				fmt.Println()
+				return nil
+			})
+		},
+	})
 }
 
 func New(e *engine.Engine) (*service, error) {

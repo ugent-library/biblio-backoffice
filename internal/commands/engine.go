@@ -12,6 +12,12 @@ import (
 	"go.temporal.io/sdk/client"
 )
 
+var Engine *engine.Engine
+
+func init() {
+	Engine = newEngine()
+}
+
 func newEngine() *engine.Engine {
 	temporal, err := client.NewClient(client.Options{
 		HostPort: client.DefaultHostPort,

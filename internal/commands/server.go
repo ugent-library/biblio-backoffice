@@ -20,7 +20,7 @@ func init() {
 	serverStartCmd.Flags().String("csrf-name", "", "csrf cookie name")
 	serverStartCmd.Flags().String("csrf-secret", "", "csrf cookie secret")
 
-	// serverCmd.AddCommand(serverRoutesCmd)
+	webapp.AddCommands(serverCmd, Engine)
 	serverCmd.AddCommand(serverStartCmd)
 	rootCmd.AddCommand(serverCmd)
 }
@@ -30,49 +30,11 @@ var serverCmd = &cobra.Command{
 	Short: "The biblio-backend HTTP server",
 }
 
-// var serverRoutesCmd = &cobra.Command{
-// 	Use:   "routes",
-// 	Short: "print routes",
-// 	Run: func(cmd *cobra.Command, args []string) {
-// 		router := buildRouter()
-// 		router.Walk(func(route *mux.Route, router *mux.Router, ancestors []*mux.Route) error {
-// 			hostTemplate, err := route.GetHostTemplate()
-// 			if err == nil {
-// 				fmt.Println("HOST:", hostTemplate)
-// 			}
-// 			pathTemplate, err := route.GetPathTemplate()
-// 			if err == nil {
-// 				fmt.Println("ROUTE:", pathTemplate)
-// 			}
-// 			pathRegexp, err := route.GetPathRegexp()
-// 			if err == nil {
-// 				fmt.Println("Path regexp:", pathRegexp)
-// 			}
-// 			queriesTemplates, err := route.GetQueriesTemplates()
-// 			if err == nil {
-// 				fmt.Println("Queries templates:", strings.Join(queriesTemplates, ","))
-// 			}
-// 			queriesRegexps, err := route.GetQueriesRegexp()
-// 			if err == nil {
-// 				fmt.Println("Queries regexps:", strings.Join(queriesRegexps, ","))
-// 			}
-// 			methods, err := route.GetMethods()
-// 			if err == nil {
-// 				fmt.Println("Methods:", strings.Join(methods, ","))
-// 			}
-// 			fmt.Println()
-// 			return nil
-// 		})
-// 	},
-// }
-
 var serverStartCmd = &cobra.Command{
 	Use:   "start",
 	Short: "start the http server",
 	Run: func(cmd *cobra.Command, args []string) {
-		e := newEngine()
-
-		wa, err := webapp.New(e)
+		wa, err := webapp.New(Engine)
 		if err != nil {
 			log.Fatal(err)
 		}
