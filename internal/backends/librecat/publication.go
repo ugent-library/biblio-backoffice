@@ -9,12 +9,11 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/go-web/forms"
 )
 
-func (e *Client) Publications(args *engine.SearchArgs) (*models.PublicationHits, error) {
+func (e *Client) Publications(args *models.SearchArgs) (*models.PublicationHits, error) {
 	qp, err := forms.Encode(args)
 	if err != nil {
 		return nil, err
@@ -26,7 +25,7 @@ func (e *Client) Publications(args *engine.SearchArgs) (*models.PublicationHits,
 	return hits, nil
 }
 
-func (e *Client) UserPublications(userID string, args *engine.SearchArgs) (*models.PublicationHits, error) {
+func (e *Client) UserPublications(userID string, args *models.SearchArgs) (*models.PublicationHits, error) {
 	qp, err := forms.Encode(args)
 	if err != nil {
 		return nil, err
@@ -158,7 +157,7 @@ func (e *Client) PublishPublication(pub *models.Publication) (*models.Publicatio
 	return updatedPub, err
 }
 
-func (e *Client) BatchPublishPublications(userID string, args *engine.SearchArgs) (err error) {
+func (e *Client) BatchPublishPublications(userID string, args *models.SearchArgs) (err error) {
 	var hits *models.PublicationHits
 	for {
 		hits, err = e.UserPublications(userID, args)

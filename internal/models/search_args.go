@@ -1,4 +1,4 @@
-package engine
+package models
 
 type SearchArgs struct {
 	Query   string              `form:"q,omitempty"`

@@ -20,7 +20,7 @@ func init() {
 	serverStartCmd.Flags().String("csrf-name", "", "csrf cookie name")
 	serverStartCmd.Flags().String("csrf-secret", "", "csrf cookie secret")
 
-	webapp.AddCommands(serverCmd, Engine)
+	webapp.AddCommands(serverCmd, Engine())
 	serverCmd.AddCommand(serverStartCmd)
 	rootCmd.AddCommand(serverCmd)
 }
@@ -34,7 +34,7 @@ var serverStartCmd = &cobra.Command{
 	Use:   "start",
 	Short: "start the http server",
 	Run: func(cmd *cobra.Command, args []string) {
-		wa, err := webapp.New(Engine)
+		wa, err := webapp.New(Engine())
 		if err != nil {
 			log.Fatal(err)
 		}

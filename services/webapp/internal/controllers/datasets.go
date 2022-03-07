@@ -6,7 +6,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/views"
@@ -17,7 +16,7 @@ import (
 )
 
 type DatasetListVars struct {
-	SearchArgs       *engine.SearchArgs
+	SearchArgs       *models.SearchArgs
 	Hits             *models.DatasetHits
 	PublicationSorts []string
 }
@@ -39,7 +38,7 @@ func NewDatasets(c Context) *Datasets {
 }
 
 func (c *Datasets) List(w http.ResponseWriter, r *http.Request) {
-	args := engine.NewSearchArgs()
+	args := models.NewSearchArgs()
 	if err := forms.Decode(args, r.URL.Query()); err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -58,7 +57,7 @@ func (c *Datasets) List(w http.ResponseWriter, r *http.Request) {
 	c.Render.HTML(w, http.StatusOK, "dataset/list", c.ViewData(r, struct {
 		PageTitle        string
 		SearchURL        *url.URL
-		SearchArgs       *engine.SearchArgs
+		SearchArgs       *models.SearchArgs
 		Hits             *models.DatasetHits
 		PublicationSorts []string
 	}{
@@ -80,7 +79,7 @@ func (c *Datasets) Show(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	searchArgs := engine.NewSearchArgs()
+	searchArgs := models.NewSearchArgs()
 	if err := forms.Decode(searchArgs, r.URL.Query()); err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -94,7 +93,7 @@ func (c *Datasets) Show(w http.ResponseWriter, r *http.Request) {
 		Dataset             *models.Dataset
 		DatasetPublications []*models.Publication
 		Show                *views.ShowBuilder
-		SearchArgs          *engine.SearchArgs
+		SearchArgs          *models.SearchArgs
 		ErrorsTitle         string
 		Errors              jsonapi.Errors
 	}{
@@ -146,7 +145,7 @@ func (c *Datasets) Publish(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	searchArgs := engine.NewSearchArgs()
+	searchArgs := models.NewSearchArgs()
 	if err := forms.Decode(searchArgs, r.URL.Query()); err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -160,7 +159,7 @@ func (c *Datasets) Publish(w http.ResponseWriter, r *http.Request) {
 		Dataset             *models.Dataset
 		DatasetPublications []*models.Publication
 		Show                *views.ShowBuilder
-		SearchArgs          *engine.SearchArgs
+		SearchArgs          *models.SearchArgs
 		ErrorsTitle         string
 		Errors              jsonapi.Errors
 	}{
@@ -191,7 +190,7 @@ func (c *Datasets) AddImportConfirm(w http.ResponseWriter, r *http.Request) {
 
 	// check for duplicates
 	if source == "datacite" {
-		if existing, _ := c.Engine.Datasets(engine.NewSearchArgs().WithFilter("doi", identifier).WithFilter("status", "public")); existing.Total > 0 {
+		if existing, _ := c.Engine.Datasets(models.NewSearchArgs().WithFilter("doi", identifier).WithFilter("status", "public")); existing.Total > 0 {
 			c.Render.HTML(w, http.StatusOK, "dataset/add", c.ViewData(r, DatasetAddVars{
 				PageTitle:        "Add - Datasets - Biblio",
 				Step:             1,
@@ -328,7 +327,7 @@ func (c *Datasets) AddPublish(w http.ResponseWriter, r *http.Request) {
 func (c *Datasets) ConfirmDelete(w http.ResponseWriter, r *http.Request) {
 	dataset := context.GetDataset(r.Context())
 
-	searchArgs := engine.NewSearchArgs()
+	searchArgs := models.NewSearchArgs()
 	if err := forms.Decode(searchArgs, r.URL.Query()); err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -337,7 +336,7 @@ func (c *Datasets) ConfirmDelete(w http.ResponseWriter, r *http.Request) {
 
 	c.Render.HTML(w, http.StatusOK, "dataset/_confirm_delete", c.ViewData(r, struct {
 		Dataset    *models.Dataset
-		SearchArgs *engine.SearchArgs
+		SearchArgs *models.SearchArgs
 	}{
 		dataset,
 		searchArgs,
@@ -350,7 +349,7 @@ func (c *Datasets) Delete(w http.ResponseWriter, r *http.Request) {
 	dataset := context.GetDataset(r.Context())
 
 	r.ParseForm()
-	searchArgs := engine.NewSearchArgs()
+	searchArgs := models.NewSearchArgs()
 	if err := forms.Decode(searchArgs, r.Form); err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -373,7 +372,7 @@ func (c *Datasets) Delete(w http.ResponseWriter, r *http.Request) {
 	c.Render.HTML(w, http.StatusOK, "dataset/list", c.ViewData(r, struct {
 		PageTitle        string
 		SearchURL        *url.URL
-		SearchArgs       *engine.SearchArgs
+		SearchArgs       *models.SearchArgs
 		Hits             *models.DatasetHits
 		PublicationSorts []string
 	}{

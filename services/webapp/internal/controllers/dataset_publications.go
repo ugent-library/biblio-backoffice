@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 	"github.com/unrolled/render"
@@ -33,7 +32,7 @@ func (c *DatasetPublications) Choose(w http.ResponseWriter, r *http.Request) {
 		datasetPubIDs[i] = d.ID
 	}
 
-	searchArgs := engine.NewSearchArgs()
+	searchArgs := models.NewSearchArgs()
 	searchArgs.Filters["exclude"] = datasetPubIDs
 
 	hits, err := c.Engine.UserPublications(context.GetUser(r.Context()).ID, searchArgs)
@@ -73,7 +72,7 @@ func (c *DatasetPublications) ActiveSearch(w http.ResponseWriter, r *http.Reques
 		datasetPubIDs[i] = d.ID
 	}
 
-	searchArgs := engine.NewSearchArgs()
+	searchArgs := models.NewSearchArgs()
 	searchArgs.Query = r.Form["search"][0]
 	searchArgs.Filters["exclude"] = datasetPubIDs
 

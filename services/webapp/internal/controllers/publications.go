@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/views"
@@ -35,7 +34,7 @@ func NewPublications(c Context) *Publications {
 }
 
 func (c *Publications) List(w http.ResponseWriter, r *http.Request) {
-	searchArgs := engine.NewSearchArgs()
+	searchArgs := models.NewSearchArgs()
 	if err := forms.Decode(searchArgs, r.URL.Query()); err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -54,7 +53,7 @@ func (c *Publications) List(w http.ResponseWriter, r *http.Request) {
 	c.Render.HTML(w, http.StatusOK, "publication/list", c.ViewData(r, struct {
 		PageTitle        string
 		SearchURL        *url.URL
-		SearchArgs       *engine.SearchArgs
+		SearchArgs       *models.SearchArgs
 		Hits             *models.PublicationHits
 		PublicationSorts []string
 	}{
@@ -77,7 +76,7 @@ func (c *Publications) Show(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	searchArgs := engine.NewSearchArgs()
+	searchArgs := models.NewSearchArgs()
 	if err := forms.Decode(searchArgs, r.URL.Query()); err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -92,7 +91,7 @@ func (c *Publications) Show(w http.ResponseWriter, r *http.Request) {
 		PublicationDatasets []*models.Dataset
 		Show                *views.ShowBuilder
 		Vocabularies        map[string][]string
-		SearchArgs          *engine.SearchArgs
+		SearchArgs          *models.SearchArgs
 		ErrorsTitle         string
 		Errors              jsonapi.Errors
 	}{
@@ -153,7 +152,7 @@ func (c *Publications) AddSingleImportConfirm(w http.ResponseWriter, r *http.Req
 
 	// check for duplicates
 	if source == "crossref" && identifier != "" {
-		if existing, _ := c.Engine.Publications(engine.NewSearchArgs().WithFilter("doi", identifier).WithFilter("status", "public")); existing.Total > 0 {
+		if existing, _ := c.Engine.Publications(models.NewSearchArgs().WithFilter("doi", identifier).WithFilter("status", "public")); existing.Total > 0 {
 			c.Render.HTML(w, http.StatusOK, "publication/add_single_start", c.ViewData(r, PublicationAddSingleVars{
 				PageTitle:            "Add - Publications - Biblio",
 				Step:                 1,
@@ -365,7 +364,7 @@ func (c *Publications) AddMultipleImport(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	args := engine.NewSearchArgs()
+	args := models.NewSearchArgs()
 
 	hits, err := c.Engine.UserPublications(userID, args.Clone().WithFilter("batch_id", batchID))
 	if err != nil {
@@ -380,7 +379,7 @@ func (c *Publications) AddMultipleImport(w http.ResponseWriter, r *http.Request)
 		PageTitle        string
 		Step             int
 		SearchURL        *url.URL
-		SearchArgs       *engine.SearchArgs
+		SearchArgs       *models.SearchArgs
 		Hits             *models.PublicationHits
 		PublicationSorts []string
 		BatchID          string
@@ -400,7 +399,7 @@ func (c *Publications) AddMultipleDescription(w http.ResponseWriter, r *http.Req
 	userID := context.GetUser(r.Context()).ID
 	batchID := mux.Vars(r)["batch_id"]
 
-	args := engine.NewSearchArgs()
+	args := models.NewSearchArgs()
 	if err := forms.Decode(args, r.URL.Query()); err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -420,7 +419,7 @@ func (c *Publications) AddMultipleDescription(w http.ResponseWriter, r *http.Req
 		PageTitle        string
 		Step             int
 		SearchURL        *url.URL
-		SearchArgs       *engine.SearchArgs
+		SearchArgs       *models.SearchArgs
 		Hits             *models.PublicationHits
 		PublicationSorts []string
 		BatchID          string
@@ -447,7 +446,7 @@ func (c *Publications) AddMultipleShow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	searchArgs := engine.NewSearchArgs()
+	searchArgs := models.NewSearchArgs()
 	if err := forms.Decode(searchArgs, r.URL.Query()); err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -463,7 +462,7 @@ func (c *Publications) AddMultipleShow(w http.ResponseWriter, r *http.Request) {
 		PublicationDatasets []*models.Dataset
 		Show                *views.ShowBuilder
 		Vocabularies        map[string][]string
-		SearchArgs          *engine.SearchArgs
+		SearchArgs          *models.SearchArgs
 		BatchID             string
 	}{
 		"Add - Publications - Biblio",
@@ -482,7 +481,7 @@ func (c *Publications) AddMultipleConfirm(w http.ResponseWriter, r *http.Request
 	userID := context.GetUser(r.Context()).ID
 	batchID := mux.Vars(r)["batch_id"]
 
-	args := engine.NewSearchArgs()
+	args := models.NewSearchArgs()
 
 	hits, err := c.Engine.UserPublications(userID, args.Clone().WithFilter("batch_id", batchID))
 	if err != nil {
@@ -497,7 +496,7 @@ func (c *Publications) AddMultipleConfirm(w http.ResponseWriter, r *http.Request
 		PageTitle        string
 		Step             int
 		SearchURL        *url.URL
-		SearchArgs       *engine.SearchArgs
+		SearchArgs       *models.SearchArgs
 		Hits             *models.PublicationHits
 		PublicationSorts []string
 		BatchID          string
@@ -550,7 +549,7 @@ func (c *Publications) AddMultiplePublish(w http.ResponseWriter, r *http.Request
 	userID := context.GetUser(r.Context()).ID
 	batchID := mux.Vars(r)["batch_id"]
 
-	batchFilter := engine.NewSearchArgs().WithFilter("batch_id", batchID)
+	batchFilter := models.NewSearchArgs().WithFilter("batch_id", batchID)
 
 	if err := c.Engine.BatchPublishPublications(userID, batchFilter); err != nil {
 		log.Println(err)
@@ -571,7 +570,7 @@ func (c *Publications) AddMultiplePublish(w http.ResponseWriter, r *http.Request
 		PageTitle        string
 		Step             int
 		SearchURL        *url.URL
-		SearchArgs       *engine.SearchArgs
+		SearchArgs       *models.SearchArgs
 		Hits             *models.PublicationHits
 		PublicationSorts []string
 		BatchID          string
@@ -579,7 +578,7 @@ func (c *Publications) AddMultiplePublish(w http.ResponseWriter, r *http.Request
 		"Add - Publications - Biblio",
 		5,
 		searchURL,
-		engine.NewSearchArgs(),
+		models.NewSearchArgs(),
 		hits,
 		c.Engine.Vocabularies()["publication_sorts"],
 		batchID,
@@ -626,7 +625,7 @@ func (c *Publications) Publish(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	searchArgs := engine.NewSearchArgs()
+	searchArgs := models.NewSearchArgs()
 	if err := forms.Decode(searchArgs, r.URL.Query()); err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -640,7 +639,7 @@ func (c *Publications) Publish(w http.ResponseWriter, r *http.Request) {
 		Publication         *models.Publication
 		PublicationDatasets []*models.Dataset
 		Show                *views.ShowBuilder
-		SearchArgs          *engine.SearchArgs
+		SearchArgs          *models.SearchArgs
 		ErrorsTitle         string
 		Errors              jsonapi.Errors
 	}{
@@ -659,7 +658,7 @@ func (c *Publications) Publish(w http.ResponseWriter, r *http.Request) {
 func (c *Publications) ConfirmDelete(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
-	searchArgs := engine.NewSearchArgs()
+	searchArgs := models.NewSearchArgs()
 	if err := forms.Decode(searchArgs, r.URL.Query()); err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -668,7 +667,7 @@ func (c *Publications) ConfirmDelete(w http.ResponseWriter, r *http.Request) {
 
 	c.Render.HTML(w, http.StatusOK, "publication/_confirm_delete", c.ViewData(r, struct {
 		Publication *models.Publication
-		SearchArgs  *engine.SearchArgs
+		SearchArgs  *models.SearchArgs
 	}{
 		pub,
 		searchArgs,
@@ -681,7 +680,7 @@ func (c *Publications) Delete(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
 	r.ParseForm()
-	searchArgs := engine.NewSearchArgs()
+	searchArgs := models.NewSearchArgs()
 	if err := forms.Decode(searchArgs, r.Form); err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -704,7 +703,7 @@ func (c *Publications) Delete(w http.ResponseWriter, r *http.Request) {
 	c.Render.HTML(w, http.StatusOK, "publication/list", c.ViewData(r, struct {
 		PageTitle        string
 		SearchURL        *url.URL
-		SearchArgs       *engine.SearchArgs
+		SearchArgs       *models.SearchArgs
 		Hits             *models.PublicationHits
 		PublicationSorts []string
 	}{
@@ -753,7 +752,7 @@ func (c *Publications) ORCIDAddAll(w http.ResponseWriter, r *http.Request) {
 	// TODO handle error
 	id, err := c.Engine.AddPublicationsToORCID(
 		context.GetUser(r.Context()).ID,
-		engine.NewSearchArgs().WithFilter("status", "public"),
+		models.NewSearchArgs().WithFilter("status", "public"),
 	)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

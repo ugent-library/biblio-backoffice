@@ -39,7 +39,7 @@ var workerStartCmd = &cobra.Command{
 		w.RegisterWorkflowWithOptions(orcid.AddPublicationsWorkflow(e), workflow.RegisterOptions{
 			Name: "AddPublicationsToORCIDWorkflow",
 		})
-		w.RegisterActivityWithOptions(orcid.AddPublications(e), activity.RegisterOptions{
+		w.RegisterActivityWithOptions(orcid.AddPublications(e, e.ORCIDSandbox), activity.RegisterOptions{
 			Name: "AddPublicationsToORCID",
 		})
 

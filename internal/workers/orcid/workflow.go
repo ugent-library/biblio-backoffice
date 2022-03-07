@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ugent-library/biblio-backend/internal/engine"
+	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/go-orcid/orcid"
 	"go.temporal.io/sdk/temporal"
@@ -13,14 +13,21 @@ import (
 	"golang.org/x/text/language"
 )
 
-type AddArgs struct {
+type AddpublicationsWorkflowArgs struct {
+	UserID     string
+	ORCID      string
+	ORCIDToken string
+	SearchArgs models.SearchArgs
+}
+
+type AddpublicationsArgs struct {
 	ORCID      string
 	ORCIDToken string
 	Hits       models.PublicationHits
 }
 
-func AddPublicationsWorkflow(e *engine.Engine) func(workflow.Context, string, string, string, engine.SearchArgs) error {
-	return func(ctx workflow.Context, userID, orcidID, orcidToken string, args engine.SearchArgs) error {
+func AddPublicationsWorkflow(publicationSearchService backends.PublicationSearchService) func(workflow.Context, AddpublicationsWorkflowArgs) error {
+	return func(ctx workflow.Context, args AddpublicationsWorkflowArgs) error {
 		exportRetrypolicy := &temporal.RetryPolicy{
 			InitialInterval:    time.Second,
 			BackoffCoefficient: 1.0,
@@ -29,11 +36,10 @@ func AddPublicationsWorkflow(e *engine.Engine) func(workflow.Context, string, st
 			//NonRetryableErrorTypes: []string, // empty
 		}
 
-		ao := workflow.ActivityOptions{
+		ctx = workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
 			StartToCloseTimeout: 10 * time.Second,
 			RetryPolicy:         exportRetrypolicy,
-		}
-		ctx = workflow.WithActivityOptions(ctx, ao)
+		})
 
 		taskState := models.TaskState{
 			Message: "Adding publications to your ORCID works",
@@ -52,16 +58,18 @@ func AddPublicationsWorkflow(e *engine.Engine) func(workflow.Context, string, st
 
 		taskState.Status = models.Running
 
+		searchArgs := args.SearchArgs
+
 		for {
-			hits, _ := e.UserPublications(userID, &args)
+			hits, _ := publicationSearchService.UserPublications(args.UserID, &searchArgs)
 
 			taskState.Denominator = hits.Total
 
 			logger.Info("execute activity")
 
-			err = workflow.ExecuteActivity(ctx, "AddPublicationsToORCID", AddArgs{
-				ORCID:      orcidID,
-				ORCIDToken: orcidToken,
+			err = workflow.ExecuteActivity(ctx, "AddPublicationsToORCID", AddpublicationsArgs{
+				ORCID:      args.ORCID,
+				ORCIDToken: args.ORCIDToken,
 				Hits:       *hits,
 			}).Get(ctx, nil)
 			if err != nil {
@@ -78,21 +86,21 @@ func AddPublicationsWorkflow(e *engine.Engine) func(workflow.Context, string, st
 				taskState.Status = models.Done
 				break
 			}
-			args.Page = args.Page + 1
+			searchArgs.Page = searchArgs.Page + 1
 		}
 
 		return nil
 	}
 }
 
-func AddPublications(e *engine.Engine) func(AddArgs) error {
-	return func(args AddArgs) error {
+func AddPublications(publicationService backends.PublicationService, orcidSandbox bool) func(AddpublicationsArgs) error {
+	return func(args AddpublicationsArgs) error {
 		// logger := workflow.GetLogger(ctx)
 		// logger.Info("sending pubs to orcid")
 
 		orcidClient := orcid.NewMemberClient(orcid.Config{
 			Token:   args.ORCIDToken,
-			Sandbox: e.ORCIDSandbox,
+			Sandbox: orcidSandbox,
 		})
 
 		for _, pub := range args.Hits.Hits {
@@ -119,7 +127,7 @@ func AddPublications(e *engine.Engine) func(AddArgs) error {
 				PutCode: putCode,
 			})
 
-			if _, err := e.UpdatePublication(pub); err != nil {
+			if _, err := publicationService.UpdatePublication(pub); err != nil {
 				return err
 			}
 		}

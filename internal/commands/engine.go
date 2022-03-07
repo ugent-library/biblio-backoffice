@@ -2,6 +2,7 @@ package commands
 
 import (
 	"log"
+	"sync"
 
 	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/backends/ianamedia"
@@ -12,10 +13,16 @@ import (
 	"go.temporal.io/sdk/client"
 )
 
-var Engine *engine.Engine
+var (
+	_engine     *engine.Engine
+	_engineOnce sync.Once
+)
 
-func init() {
-	Engine = newEngine()
+func Engine() *engine.Engine {
+	_engineOnce.Do(func() {
+		_engine = newEngine()
+	})
+	return _engine
 }
 
 func newEngine() *engine.Engine {

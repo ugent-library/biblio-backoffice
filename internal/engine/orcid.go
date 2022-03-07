@@ -9,6 +9,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/ugent-library/biblio-backend/internal/models"
+	orcidworker "github.com/ugent-library/biblio-backend/internal/workers/orcid"
 	"github.com/ugent-library/go-orcid/orcid"
 	"go.temporal.io/sdk/client"
 	"golang.org/x/text/language"
@@ -31,7 +32,7 @@ import (
 // 	return res.NumFound > 0
 // }
 
-func (e *Engine) AddPublicationsToORCID(userID string, s *SearchArgs) (string, error) {
+func (e *Engine) AddPublicationsToORCID(userID string, s *models.SearchArgs) (string, error) {
 	user, err := e.GetUser(userID)
 	if err != nil {
 		return "", err
@@ -43,13 +44,17 @@ func (e *Engine) AddPublicationsToORCID(userID string, s *SearchArgs) (string, e
 	}
 
 	we, err := e.Temporal.ExecuteWorkflow(context.Background(), workflowOptions, "AddPublicationsToORCIDWorkflow",
-		userID, user.ORCID, user.ORCIDToken, *s)
+		orcidworker.AddpublicationsWorkflowArgs{
+			UserID:     userID,
+			ORCID:      user.ORCID,
+			ORCIDToken: user.ORCIDToken,
+			SearchArgs: *s,
+		})
 	if err != nil {
 		return "", err
 	}
 	log.Println("Started workflow", "WorkflowID", we.GetID(), "RunID", we.GetRunID())
 	return we.GetID(), err
-	// return e.Tasks.Add("orcid.add", userID, s)
 }
 
 func (e *Engine) AddPublicationToORCID(orcidID, orcidToken string, p *models.Publication) (*models.Publication, error) {
