@@ -3,7 +3,6 @@ package commands
 import (
 	"log"
 
-	"github.com/rabbitmq/amqp091-go"
 	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/backends/ianamedia"
 	"github.com/ugent-library/biblio-backend/internal/backends/librecat"
@@ -13,11 +12,6 @@ import (
 )
 
 func newEngine() *engine.Engine {
-	mqConn, err := amqp091.Dial(viper.GetString("amqp-conn"))
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	librecatClient := librecat.New(librecat.Config{
 		URL:      viper.GetString("librecat-url"),
 		Username: viper.GetString("librecat-username"),
@@ -31,7 +25,6 @@ func newEngine() *engine.Engine {
 	orcidClient := orcid.NewMemberClient(orcidConfig)
 
 	e, err := engine.New(engine.Config{
-		MQ:                        mqConn,
 		ORCIDSandbox:              orcidConfig.Sandbox,
 		ORCIDClient:               orcidClient,
 		DatasetService:            librecatClient,

@@ -27,9 +27,7 @@ func Register(c controllers.Context) {
 
 	homeController := controllers.NewHome(c)
 	authController := controllers.NewAuth(c)
-	wsController := controllers.NewWebSockets(c)
 	usersController := controllers.NewUsers(c)
-	tasksController := controllers.NewTasks(c)
 
 	publicationsController := controllers.NewPublications(c)
 	publicationFilesController := controllers.NewPublicationFiles(c)
@@ -94,20 +92,6 @@ func Register(c controllers.Context) {
 		Methods("GET").
 		Name("logout")
 
-	// websockets
-	wsRouter := r.PathPrefix("/ws").Subrouter()
-	wsRouter.Use(requireUser)
-	wsRouter.HandleFunc("", wsController.Connect).
-		Methods("GET").
-		Name("ws")
-
-	// tasks
-	taskRouter := r.PathPrefix("/task").Subrouter()
-	taskRouter.Use(requireUser)
-	taskRouter.HandleFunc("/{id}/status", tasksController.Status).
-		Methods("GET").
-		Name("task_status")
-
 	// users
 	userRouter := r.PathPrefix("/user").Subrouter()
 	userRouter.Use(requireUser)
@@ -159,9 +143,6 @@ func Register(c controllers.Context) {
 	pubsRouter.HandleFunc("/add-multiple/{batch_id}/publish", publicationsController.AddMultiplePublish).
 		Methods("POST").
 		Name("publication_add_multiple_publish")
-	pubsRouter.HandleFunc("/orcid", publicationsController.ORCIDAddAll).
-		Methods("POST").
-		Name("publication_orcid_add_all")
 
 	pubRouter := pubsRouter.PathPrefix("/{id}").Subrouter()
 	pubRouter.Use(middleware.SetPublication(c.Engine))

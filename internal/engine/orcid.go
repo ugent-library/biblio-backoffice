@@ -28,10 +28,6 @@ import (
 // 	return res.NumFound > 0
 // }
 
-func (e *Engine) AddPublicationsToORCID(userID string, s *SearchArgs) (string, error) {
-	return e.Tasks.Add("orcid.add", userID, s)
-}
-
 func (e *Engine) AddPublicationToORCID(orcidID, orcidToken string, p *models.Publication) (*models.Publication, error) {
 	client := orcid.NewMemberClient(orcid.Config{
 		Token:   orcidToken,

@@ -9,7 +9,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/biblio-backend/internal/task"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/views"
 	"github.com/ugent-library/go-locale/locale"
@@ -642,8 +641,8 @@ func (c *Publications) Publish(w http.ResponseWriter, r *http.Request) {
 		PublicationDatasets []*models.Dataset
 		Show                *views.ShowBuilder
 		SearchArgs          *engine.SearchArgs
-		ErrorsTitle			string
-		Errors				jsonapi.Errors
+		ErrorsTitle         string
+		Errors              jsonapi.Errors
 	}{
 		"Publication - Biblio",
 		savedPub,
@@ -746,26 +745,6 @@ func (c *Publications) ORCIDAdd(w http.ResponseWriter, r *http.Request) {
 	},
 		flash,
 	),
-		render.HTMLOptions{Layout: "layouts/htmx"},
-	)
-}
-
-func (c *Publications) ORCIDAddAll(w http.ResponseWriter, r *http.Request) {
-	// TODO handle error
-	id, err := c.Engine.AddPublicationsToORCID(
-		context.GetUser(r.Context()).ID,
-		engine.NewSearchArgs().WithFilter("status", "public"),
-	)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	c.Render.HTML(w, http.StatusOK, "task/_status", c.ViewData(r, struct {
-		Task task.Task
-	}{
-		task.Task{ID: id},
-	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
 }

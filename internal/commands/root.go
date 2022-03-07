@@ -54,8 +54,6 @@ func init() {
 	rootCmd.PersistentFlags().String("oidc-url", "", "openid connect url")
 	rootCmd.PersistentFlags().String("oidc-client-id", "", "openid connect client id")
 	rootCmd.PersistentFlags().String("oidc-client-secret", "", "openid connect client secret")
-
-	rootCmd.PersistentFlags().String("amqp-conn", "", "amqp connection")
 }
 
 func Execute() {
