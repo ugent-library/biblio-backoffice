@@ -12,7 +12,8 @@ import (
 )
 
 func init() {
-	workerCmd.AddCommand(workerStartCmd)
+	startWorkerCmd.AddCommand(startORCIDWorkerCmd)
+	workerCmd.AddCommand(startWorkerCmd)
 	rootCmd.AddCommand(workerCmd)
 }
 
@@ -21,11 +22,16 @@ var workerCmd = &cobra.Command{
 	Short: "biblio-backend Temporal workers",
 }
 
-var workerStartCmd = &cobra.Command{
-	Use:   "start",
-	Short: "start a Temporal worker",
+var startWorkerCmd = &cobra.Command{
+	Use:   "start [command]",
+	Short: "start biblio-backend Temporal worker",
+}
+
+var startORCIDWorkerCmd = &cobra.Command{
+	Use:   "orcid",
+	Short: "start biblio-backend orcid Temporal worker",
 	Run: func(cmd *cobra.Command, args []string) {
-		e := newEngine()
+		e := Engine()
 		c, err := client.NewClient(client.Options{
 			HostPort: client.DefaultHostPort,
 		})
