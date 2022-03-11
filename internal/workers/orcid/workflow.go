@@ -1,6 +1,7 @@
 package orcid
 
 import (
+	"context"
 	"fmt"
 	"strings"
 	"time"
@@ -8,106 +9,67 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/go-orcid/orcid"
+	"go.temporal.io/sdk/activity"
 	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
 	"golang.org/x/text/language"
 )
 
-type AddpublicationsWorkflowArgs struct {
+type Activities struct {
+	PublicationSearchService backends.PublicationSearchService
+	PublicationService       backends.PublicationService
+	OrcidSandbox             bool
+}
+
+type Args struct {
 	UserID     string
 	ORCID      string
 	ORCIDToken string
 	SearchArgs models.SearchArgs
 }
 
-type AddpublicationsArgs struct {
-	ORCID      string
-	ORCIDToken string
-	Hits       models.PublicationHits
-}
-
-func AddPublicationsWorkflow(publicationSearchService backends.PublicationSearchService) func(workflow.Context, AddpublicationsWorkflowArgs) error {
-	return func(ctx workflow.Context, args AddpublicationsWorkflowArgs) error {
-		exportRetrypolicy := &temporal.RetryPolicy{
+func SendPublicationsToORCIDWorkflow(ctx workflow.Context, args Args) (err error) {
+	ctx = workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
+		StartToCloseTimeout: 10 * time.Minute,
+		HeartbeatTimeout:    10 * time.Second, // needs to be set for heartbeat based progress to work well
+		RetryPolicy: &temporal.RetryPolicy{
 			InitialInterval:    time.Second,
 			BackoffCoefficient: 1.0,
-			MaximumInterval:    time.Second * 10, // 10 * InitialInterval
-			MaximumAttempts:    3,                // Do it for a minute
-			//NonRetryableErrorTypes: []string, // empty
-		}
+			MaximumInterval:    time.Second * 10,
+			MaximumAttempts:    3,
+		},
+	})
 
-		ctx = workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
-			StartToCloseTimeout: 10 * time.Second,
-			RetryPolicy:         exportRetrypolicy,
-		})
+	var a *Activities
 
-		taskState := models.TaskState{
-			Message: "Adding publications to your ORCID works",
-			Status:  models.Waiting,
-		}
-
-		logger := workflow.GetLogger(ctx)
-		// setup query handler for query type "state"
-		err := workflow.SetQueryHandler(ctx, "state", func(input []byte) (models.TaskState, error) {
-			return taskState, nil
-		})
-		if err != nil {
-			logger.Info("SetQueryHandler failed: " + err.Error())
-			return err
-		}
-
-		taskState.Status = models.Running
-
-		searchArgs := args.SearchArgs
-
-		for {
-			hits, _ := publicationSearchService.UserPublications(args.UserID, &searchArgs)
-
-			taskState.Denominator = hits.Total
-
-			logger.Info("execute activity")
-
-			err = workflow.ExecuteActivity(ctx, "AddPublicationsToORCID", AddpublicationsArgs{
-				ORCID:      args.ORCID,
-				ORCIDToken: args.ORCIDToken,
-				Hits:       *hits,
-			}).Get(ctx, nil)
-			if err != nil {
-				taskState.Message = "Adding publications to your ORCID works failed"
-				taskState.Status = models.Failed
-				logger.Error("AddPublicationsToORCID failed.", "Error", err)
-				return err
-			}
-
-			taskState.Numerator += len(hits.Hits)
-
-			if !hits.NextPage {
-				taskState.Message = fmt.Sprintf("Added %d publications to your ORCID works", hits.Total)
-				taskState.Status = models.Done
-				break
-			}
-			searchArgs.Page = searchArgs.Page + 1
-		}
-
-		return nil
+	if err = workflow.ExecuteActivity(ctx, a.SendPublicationsToORCID, args).Get(ctx, nil); err != nil {
+		return err
 	}
+
+	return
 }
 
-func AddPublications(publicationService backends.PublicationService, orcidSandbox bool) func(AddpublicationsArgs) error {
-	return func(args AddpublicationsArgs) error {
-		// logger := workflow.GetLogger(ctx)
-		// logger.Info("sending pubs to orcid")
+func (a *Activities) SendPublicationsToORCID(ctx context.Context, args Args) error {
+	orcidClient := orcid.NewMemberClient(orcid.Config{
+		Token:   args.ORCIDToken,
+		Sandbox: a.OrcidSandbox,
+	})
 
-		orcidClient := orcid.NewMemberClient(orcid.Config{
-			Token:   args.ORCIDToken,
-			Sandbox: orcidSandbox,
-		})
+	searchArgs := args.SearchArgs
 
-		for _, pub := range args.Hits.Hits {
+	var numDone int
+
+	for {
+		hits, _ := a.PublicationSearchService.UserPublications(args.UserID, &searchArgs)
+
+		for _, pub := range hits.Hits {
+			numDone++
+
 			var done bool
 			for _, ow := range pub.ORCIDWork {
 				if ow.ORCID == args.ORCID { // already sent to orcid
 					done = true
+					break
 				}
 			}
 			if done {
@@ -127,13 +89,20 @@ func AddPublications(publicationService backends.PublicationService, orcidSandbo
 				PutCode: putCode,
 			})
 
-			if _, err := publicationService.UpdatePublication(pub); err != nil {
+			if _, err := a.PublicationService.UpdatePublication(pub); err != nil {
 				return err
 			}
 		}
 
-		return nil
+		activity.RecordHeartbeat(ctx, models.Progress{Numerator: numDone, Denominator: hits.Total})
+
+		if !hits.NextPage {
+			break
+		}
+		searchArgs.Page = searchArgs.Page + 1
 	}
+
+	return nil
 }
 
 func publicationToORCID(p *models.Publication) *orcid.Work {

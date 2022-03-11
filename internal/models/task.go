@@ -11,11 +11,21 @@ const (
 	Failed
 )
 
+type Progress struct {
+	Numerator, Denominator int
+}
+
+func (p Progress) Percent() int {
+	if p.Denominator == 0 {
+		return 0
+	}
+	return int(math.Round((float64(p.Numerator) * float64(100)) / float64(p.Denominator)))
+}
+
 type TaskState struct {
-	Status      TaskStatus
-	Message     string
-	Numerator   int
-	Denominator int
+	Status  TaskStatus
+	Message string
+	Progress
 }
 
 func (t TaskState) Waiting() bool {
@@ -32,11 +42,4 @@ func (t TaskState) Done() bool {
 
 func (t TaskState) Failed() bool {
 	return t.Status == Failed
-}
-
-func (t TaskState) Percent() int {
-	if t.Denominator == 0 {
-		return 0
-	}
-	return int(math.Round((float64(t.Numerator) * float64(100)) / float64(t.Denominator)))
 }

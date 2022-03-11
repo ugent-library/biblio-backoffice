@@ -43,8 +43,8 @@ func (e *Engine) AddPublicationsToORCID(userID string, s *models.SearchArgs) (st
 		TaskQueue: "orcid",
 	}
 
-	we, err := e.Temporal.ExecuteWorkflow(context.Background(), workflowOptions, "AddPublicationsToORCIDWorkflow",
-		orcidworker.AddpublicationsWorkflowArgs{
+	we, err := e.Temporal.ExecuteWorkflow(context.Background(), workflowOptions, orcidworker.SendPublicationsToORCIDWorkflow,
+		orcidworker.Args{
 			UserID:     userID,
 			ORCID:      user.ORCID,
 			ORCIDToken: user.ORCIDToken,
