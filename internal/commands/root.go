@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
+	"go.temporal.io/sdk/client"
 )
 
 const (
@@ -42,10 +43,13 @@ func init() {
 	viper.SetDefault("session-name", defaultSessionName)
 	viper.SetDefault("session-max-age", defaultSessionMaxAge)
 	viper.SetDefault("csrf-name", defaultCSRFName)
+	viper.SetDefault("temporal-host-port", client.DefaultHostPort)
 
 	rootCmd.PersistentFlags().String("librecat-url", "", "librecat rest api url")
 	rootCmd.PersistentFlags().String("librecat-username", "", "librecat rest api username")
 	rootCmd.PersistentFlags().String("librecat-password", "", "librecat rest api password")
+
+	rootCmd.PersistentFlags().String("temporal-host-port", client.DefaultHostPort, "temporal server host and port")
 
 	rootCmd.PersistentFlags().String("orcid-client-id", "", "orcid client id")
 	rootCmd.PersistentFlags().String("orcid-client-secret", "", "orcid client secret")
