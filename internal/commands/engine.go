@@ -27,7 +27,7 @@ func Engine() *engine.Engine {
 
 func newEngine() *engine.Engine {
 	temporal, err := client.NewClient(client.Options{
-		HostPort: client.DefaultHostPort,
+		HostPort: viper.GetString("temporal-host-port"),
 	})
 	if err != nil {
 		log.Fatalln("Unable to create Temporal client", err)
