@@ -11,6 +11,7 @@ import (
 )
 
 const (
+	defaultPgConn        = "host=localhost dbname=biblio-backend sslmode=disable"
 	defaultMode          = "production"
 	defaultHost          = ""
 	defaultPort          = 3000
@@ -37,6 +38,7 @@ func init() {
 	viper.SetEnvPrefix("biblio-backend")
 	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
 	viper.AutomaticEnv()
+	viper.SetDefault("pg-conn", defaultPgConn)
 	viper.SetDefault("mode", defaultMode)
 	viper.SetDefault("host", defaultHost)
 	viper.SetDefault("port", defaultPort)
@@ -48,6 +50,8 @@ func init() {
 	rootCmd.PersistentFlags().String("librecat-url", "", "librecat rest api url")
 	rootCmd.PersistentFlags().String("librecat-username", "", "librecat rest api username")
 	rootCmd.PersistentFlags().String("librecat-password", "", "librecat rest api password")
+
+	rootCmd.PersistentFlags().String("pg-conn", defaultPgConn, "postgres connection string")
 
 	rootCmd.PersistentFlags().String("temporal-host-port", client.DefaultHostPort, "temporal server host and port")
 

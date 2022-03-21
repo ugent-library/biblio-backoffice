@@ -26,7 +26,7 @@ type DatasetProject struct {
 type Dataset struct {
 	Abstract                []Text              `json:"abstract,omitempty" form:"abstract"`
 	AccessLevel             string              `json:"access_level,omitempty" form:"access_level"`
-	Author                  []*Contributor      `json:"author,omitempty" form:"-"`
+	Author                  []*Contributor      `json:"author,omitempty" form:"-"` // TODO rename to Creator
 	CompletenessScore       int                 `json:"completeness_score,omitempty" form:"-"`
 	Contributor             []*Contributor      `json:"contributor,omitempty" form:"-"`
 	CreationContext         string              `json:"creation_context,omitempty" form:"-"`
@@ -51,7 +51,6 @@ type Dataset struct {
 	ReviewerTags            []string            `json:"reviewer_tags,omitempty" form:"-"`
 	Status                  string              `json:"status,omitempty" form:"-"`
 	Title                   string              `json:"title,omitempty" form:"title"`
-	Type                    string              `json:"type,omitempty" form:"-"`
 	URL                     string              `json:"url,omitempty" form:"url"`
 	UserID                  string              `json:"user_id,omitempty" form:"-"`
 	Version                 int                 `json:"_version,omitempty" form:"-"`

@@ -7,12 +7,14 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/models"
 )
 
+type DatasetSource interface {
+	GetDataset(string) (*models.Dataset, error)
+}
+
 type DatasetService interface {
 	GetDataset(string) (*models.Dataset, error)
-	GetDatasetPublications(string) ([]*models.Publication, error)
-	ImportUserDatasetByIdentifier(string, string, string) (*models.Dataset, error)
+	CreateDataset(*models.Dataset) (*models.Dataset, error)
 	UpdateDataset(*models.Dataset) (*models.Dataset, error)
-	PublishDataset(*models.Dataset) (*models.Dataset, error)
 	DeleteDataset(string) error
 }
 
@@ -24,6 +26,7 @@ type DatasetSearchService interface {
 type PublicationService interface {
 	GetPublication(string) (*models.Publication, error)
 	GetPublicationDatasets(string) ([]*models.Dataset, error)
+	GetDatasetPublications(string) ([]*models.Publication, error)
 	CreateUserPublication(string, string) (*models.Publication, error)
 	ImportUserPublicationByIdentifier(string, string, string) (*models.Publication, error)
 	ImportUserPublications(string, string, io.Reader) (string, error)

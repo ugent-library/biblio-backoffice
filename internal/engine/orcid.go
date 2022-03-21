@@ -172,7 +172,7 @@ func publicationToORCID(p *models.Publication) *orcid.Work {
 		}
 	}
 
-	log.Printf("%+v", w)
+	// log.Printf("%+v", w)
 
 	return w
 }

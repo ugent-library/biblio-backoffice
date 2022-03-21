@@ -6,7 +6,7 @@ type Contributor struct {
 	UGentID    []string `json:"ugent_id,omitempty" form:"-"`
 	FirstName  string   `json:"first_name,omitempty" form:"first_name"`
 	LastName   string   `json:"last_name,omitempty" form:"last_name"`
-	FullName   string   `json:"full_name,omitempty" form:"-"`
+	FullName   string   `json:"full_name,omitempty" form:"-"` // TODO rename to Name
 	CreditRole []string `json:"credit_role,omitempty" form:"credit_role"`
 }
 
