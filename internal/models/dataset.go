@@ -1,35 +1,39 @@
 package models
 
-import "time"
+import (
+	"strings"
+	"time"
+)
 
 type DatasetHits struct {
-	Total        int                `json:"total"`
-	Page         int                `json:"page"`
-	LastPage     int                `json:"last_page"`
-	PreviousPage bool               `json:"previous_page"`
-	NextPage     bool               `json:"next_page"`
-	FirstOnPage  int                `json:"first_on_page"`
-	LastOnPage   int                `json:"last_on_page"`
-	Hits         []*Dataset         `json:"hits"`
-	Facets       map[string][]Facet `json:"facets"`
+	Pagination
+	// Total        int                `json:"total"`
+	// Page         int                `json:"page"`
+	// LastPage     int                `json:"last_page"`
+	// PreviousPage bool               `json:"previous_page"`
+	// NextPage     bool               `json:"next_page"`
+	// FirstOnPage  int                `json:"first_on_page"`
+	// LastOnPage   int                `json:"last_on_page"`
+	Hits   []*Dataset         `json:"hits"`
+	Facets map[string][]Facet `json:"facets"`
 }
 
 type DatasetDepartment struct {
-	ID string `json:"_id,omitempty"`
+	ID string `json:"id,omitempty"`
 }
 
 type DatasetProject struct {
-	ID   string `json:"_id,omitempty"`
+	ID   string `json:"id,omitempty"`
 	Name string `json:"name,omitempty"`
 }
 
 type Dataset struct {
-	Abstract                []Text              `json:"abstract,omitempty" form:"abstract"`
-	AccessLevel             string              `json:"access_level,omitempty" form:"access_level"`
-	Author                  []*Contributor      `json:"author,omitempty" form:"-"` // TODO rename to Creator
-	CompletenessScore       int                 `json:"completeness_score,omitempty" form:"-"`
-	Contributor             []*Contributor      `json:"contributor,omitempty" form:"-"`
-	CreationContext         string              `json:"creation_context,omitempty" form:"-"`
+	Abstract          []Text         `json:"abstract,omitempty" form:"abstract"`
+	AccessLevel       string         `json:"access_level,omitempty" form:"access_level"`
+	Author            []*Contributor `json:"author,omitempty" form:"-"` // TODO rename to Creator
+	CompletenessScore int            `json:"completeness_score,omitempty" form:"-"`
+	Contributor       []*Contributor `json:"contributor,omitempty" form:"-"`
+	// CreationContext         string              `json:"creation_context,omitempty" form:"-"`
 	CreatorID               string              `json:"creator_id,omitempty" form:"-"`
 	DateCreated             *time.Time          `json:"date_created,omitempty" form:"-"`
 	DateUpdated             *time.Time          `json:"date_updated,omitempty" form:"-"`
@@ -38,7 +42,7 @@ type Dataset struct {
 	Embargo                 string              `json:"embargo,omitempty" form:"embargo"`
 	EmbargoTo               string              `json:"embargo_to,omitempty" form:"embargo_to"`
 	Format                  []string            `json:"format,omitempty" form:"format"`
-	ID                      string              `json:"_id,omitempty" form:"-"`
+	ID                      string              `json:"id,omitempty" form:"-"`
 	Keyword                 []string            `json:"keyword,omitempty" form:"keyword"`
 	License                 string              `json:"license,omitempty" form:"license"`
 	Locked                  bool                `json:"locked,omitempty" form:"-"`
@@ -53,8 +57,8 @@ type Dataset struct {
 	Title                   string              `json:"title,omitempty" form:"title"`
 	URL                     string              `json:"url,omitempty" form:"url"`
 	UserID                  string              `json:"user_id,omitempty" form:"-"`
-	Version                 int                 `json:"_version,omitempty" form:"-"`
-	Year                    string              `json:"year,omitempty" form:"year"`
+	// Version                 int                 `json:"_version,omitempty" form:"-"`
+	Year string `json:"year,omitempty" form:"year"`
 }
 
 func (d *Dataset) Contributors(role string) []*Contributor {
@@ -102,4 +106,29 @@ func (d *Dataset) ResolveDOI() string {
 
 	}
 	return ""
+}
+
+func (d *Dataset) Vacuum() {
+	d.AccessLevel = strings.TrimSpace(d.AccessLevel)
+	d.Embargo = strings.TrimSpace(d.Embargo)
+	d.EmbargoTo = strings.TrimSpace(d.EmbargoTo)
+	d.Format = vacuumStringSlice(d.Format)
+	d.Keyword = vacuumStringSlice(d.Keyword)
+	d.License = strings.TrimSpace(d.License)
+	d.OtherLicense = strings.TrimSpace(d.OtherLicense)
+	d.Publisher = strings.TrimSpace(d.Publisher)
+	d.Title = strings.TrimSpace(d.Title)
+	d.URL = strings.TrimSpace(d.URL)
+	d.Year = strings.TrimSpace(d.Year)
+}
+
+func vacuumStringSlice(vals []string) []string {
+	newVals := []string{}
+	for _, v := range vals {
+		v = strings.TrimSpace(v)
+		if v != "" {
+			newVals = append(newVals, v)
+		}
+	}
+	return newVals
 }

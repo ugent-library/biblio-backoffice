@@ -15,12 +15,11 @@ type DatasetService interface {
 	GetDataset(string) (*models.Dataset, error)
 	CreateDataset(*models.Dataset) (*models.Dataset, error)
 	UpdateDataset(*models.Dataset) (*models.Dataset, error)
-	DeleteDataset(string) error
 }
 
 type DatasetSearchService interface {
-	Datasets(*models.SearchArgs) (*models.DatasetHits, error)
-	UserDatasets(string, *models.SearchArgs) (*models.DatasetHits, error)
+	SearchDatasets(*models.SearchArgs) (*models.DatasetHits, error)
+	IndexDataset(*models.Dataset) error
 }
 
 type PublicationService interface {

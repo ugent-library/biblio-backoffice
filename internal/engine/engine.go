@@ -1,17 +1,20 @@
 package engine
 
 import (
+	"log"
+
+	"github.com/santhosh-tekuri/jsonschema/v5"
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/go-orcid/orcid"
 	"go.temporal.io/sdk/client"
 )
 
 type Config struct {
-	Temporal     client.Client
-	ORCIDSandbox bool
-	ORCIDClient  *orcid.MemberClient
-	backends.DatasetService
-	backends.DatasetSearchService
+	Temporal             client.Client
+	ORCIDSandbox         bool
+	ORCIDClient          *orcid.MemberClient
+	DatasetService       backends.DatasetService
+	DatasetSearchService backends.DatasetSearchService
 	backends.PersonService
 	backends.ProjectService
 	backends.PublicationService
@@ -27,9 +30,21 @@ type Config struct {
 
 type Engine struct {
 	Config
+	datasetSchema *jsonschema.Schema
 }
 
 func New(c Config) (*Engine, error) {
-	e := &Engine{Config: c}
+	e := &Engine{
+		Config:        c,
+		datasetSchema: newDatasetSchema(),
+	}
 	return e, nil
+}
+
+func newDatasetSchema() *jsonschema.Schema {
+	schema, err := jsonschema.Compile("etc/jsonschema/dataset.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+	return schema
 }

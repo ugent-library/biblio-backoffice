@@ -1,14 +1,15 @@
 package models
 
 type SearchArgs struct {
-	Query   string              `form:"q,omitempty"`
-	Filters map[string][]string `form:"f,omitempty"`
-	Page    int                 `form:"page"`
-	Sort    []string            `form:"sort,omitempty"`
+	Query    string              `form:"q,omitempty"`
+	Filters  map[string][]string `form:"f,omitempty"`
+	Page     int                 `form:"page"`
+	Sort     []string            `form:"sort,omitempty"`
+	PageSize int                 `form:"page-size"`
 }
 
 func NewSearchArgs() *SearchArgs {
-	return &SearchArgs{Filters: map[string][]string{}, Page: 1}
+	return &SearchArgs{Filters: map[string][]string{}, Page: 1, PageSize: 20}
 }
 
 func (s *SearchArgs) Clone() *SearchArgs {
@@ -23,10 +24,11 @@ func (s *SearchArgs) Clone() *SearchArgs {
 	copy(sort, s.Sort)
 
 	return &SearchArgs{
-		Query:   s.Query,
-		Filters: filters,
-		Page:    s.Page,
-		Sort:    sort,
+		Query:    s.Query,
+		Filters:  filters,
+		Page:     s.Page,
+		Sort:     sort,
+		PageSize: s.PageSize,
 	}
 }
 
@@ -89,4 +91,20 @@ func (s *SearchArgs) HasSort(sort string) bool {
 
 func (s *SearchArgs) FiltersFor(field string) []string {
 	return s.Filters[field]
+}
+
+func (s *SearchArgs) FilterFor(field string) string {
+	filters := s.Filters[field]
+	if len(filters) > 0 {
+		return filters[0]
+	}
+	return ""
+}
+
+func (s *SearchArgs) Limit() int {
+	return s.PageSize
+}
+
+func (s *SearchArgs) Offset() int {
+	return (s.Page - 1) * s.PageSize
 }

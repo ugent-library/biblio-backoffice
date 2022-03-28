@@ -1,15 +1,19 @@
 package commands
 
 import (
+	"io/ioutil"
 	"log"
+	"strings"
 	"sync"
 
+	"github.com/elastic/go-elasticsearch/v6"
 	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/backends/datacite"
-	"github.com/ugent-library/biblio-backend/internal/backends/fc6"
+	"github.com/ugent-library/biblio-backend/internal/backends/es6"
 	"github.com/ugent-library/biblio-backend/internal/backends/ianamedia"
 	"github.com/ugent-library/biblio-backend/internal/backends/librecat"
+	"github.com/ugent-library/biblio-backend/internal/backends/pg"
 	"github.com/ugent-library/biblio-backend/internal/backends/spdxlicenses"
 	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/go-orcid/orcid"
@@ -42,7 +46,10 @@ func newEngine() *engine.Engine {
 		Password: viper.GetString("librecat-password"),
 	})
 
-	fc6Client := fc6.New(fc6.Config{})
+	pgClient, err := pg.New(viper.GetString("pg-conn"))
+	if err != nil {
+		log.Fatalln("Unable to create Postgres client", err)
+	}
 
 	orcidConfig := orcid.Config{
 		ClientID:     viper.GetString("orcid-client-id"),
@@ -55,8 +62,8 @@ func newEngine() *engine.Engine {
 		Temporal:                  temporal,
 		ORCIDSandbox:              orcidConfig.Sandbox,
 		ORCIDClient:               orcidClient,
-		DatasetService:            fc6Client,
-		DatasetSearchService:      librecatClient,
+		DatasetService:            pgClient,
+		DatasetSearchService:      newEs6Client(),
 		PublicationService:        librecatClient,
 		PublicationSearchService:  librecatClient,
 		PersonService:             librecatClient,
@@ -77,4 +84,22 @@ func newEngine() *engine.Engine {
 	}
 
 	return e
+}
+
+func newEs6Client() *es6.Client {
+	datasetSettings, err := ioutil.ReadFile("etc/es6/dataset.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+	client, err := es6.New(es6.Config{
+		ClientConfig: elasticsearch.Config{
+			Addresses: strings.Split(viper.GetString("es6-url"), ","),
+		},
+		DatasetIndex:    viper.GetString("dataset-index"),
+		DatasetSettings: string(datasetSettings),
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	return client
 }

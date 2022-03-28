@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/santhosh-tekuri/jsonschema/v5"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/views"
@@ -119,9 +120,13 @@ func (c *Datasets) Publish(w http.ResponseWriter, r *http.Request) {
 
 		savedDataset = dataset
 
-		if e, ok := err.(jsonapi.Errors); ok {
+		if e, ok := err.(*jsonschema.ValidationError); ok {
+			formErrors := jsonapi.Errors{jsonapi.Error{
+				Detail: e.Message,
+				Title:  e.Message,
+			}}
 
-			publicationErrors = e
+			publicationErrors = formErrors
 			publicationErrorsTitle = "Unable to publish record due to following errors"
 
 		} else {
@@ -292,8 +297,7 @@ func (c *Datasets) AddPublish(w http.ResponseWriter, r *http.Request) {
 		   TODO: return to dataset - add_confirm with flash in session instead of rendering this in the wrong path
 		   We only use one error, as publishing can only fail on attribute title
 		*/
-		if e, ok := err.(jsonapi.Errors); ok {
-
+		if e, ok := err.(*jsonschema.ValidationError); ok {
 			c.Render.HTML(w, http.StatusOK, "dataset/add_confirm", c.ViewData(r, struct {
 				PageTitle string
 				Step      int
@@ -303,7 +307,7 @@ func (c *Datasets) AddPublish(w http.ResponseWriter, r *http.Request) {
 				3,
 				dataset,
 			},
-				views.Flash{Type: "error", Message: e[0].Title},
+				views.Flash{Type: "error", Message: e.Message},
 			))
 			return
 		}
@@ -355,7 +359,7 @@ func (c *Datasets) Delete(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	if err := c.Engine.DeleteDataset(dataset.ID); err != nil {
+	if err := c.Engine.DeleteDataset(dataset); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

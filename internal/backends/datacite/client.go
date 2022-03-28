@@ -78,7 +78,7 @@ func (c *Client) GetDataset(id string) (*models.Dataset, error) {
 	if res := attrs.Get("subjects.#.subject"); res.Exists() {
 		for _, r := range res.Array() {
 			keywords := whitespace.Split(r.String(), -1)
-			d.Keyword = append(d.Format, keywords...)
+			d.Keyword = append(d.Keyword, keywords...)
 		}
 	}
 	if res := attrs.Get("creators"); res.Exists() {

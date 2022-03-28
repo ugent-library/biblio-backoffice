@@ -1,0 +1,262 @@
+package es6
+
+import (
+	"bytes"
+	"context"
+	"encoding/json"
+	"io"
+	"strings"
+	"time"
+
+	"github.com/elastic/go-elasticsearch/v6/esapi"
+	"github.com/pkg/errors"
+	"github.com/ugent-library/biblio-backend/internal/models"
+)
+
+func (c *Client) SearchDatasets(args *models.SearchArgs) (*models.DatasetHits, error) {
+	// query, queryFilter, termsFilters := buildQuery(args)
+	query, _, _ := buildQuery(args)
+
+	query["size"] = args.Limit()
+	query["from"] = args.Offset()
+
+	// if args.Highlight {
+	// 	query["highlight"] = M{
+	// 		"require_field_match": false,
+	// 		"pre_tags":            []string{"<mark>"},
+	// 		"post_tags":           []string{"</mark>"},
+	// 		"fields": M{
+	// 			"metadata.title.ngram":       M{},
+	// 			"metadata.author.name.ngram": M{},
+	// 		},
+	// 	}
+	// }
+
+	// if len(args.Facets) > 0 {
+	// 	query["aggs"] = M{
+	// 		"facets": M{
+	// 			"global": M{},
+	// 			"aggs":   M{},
+	// 		},
+	// 	}
+
+	// 	// facet filter contains all query and all filters except itself
+	// 	for _, field := range args.Facets {
+	// 		filters := []M{queryFilter}
+
+	// 		for _, filter := range termsFilters {
+	// 			if _, found := filter["terms"].(M)[field]; found {
+	// 				continue
+	// 			} else {
+	// 				filters = append(filters, filter)
+	// 			}
+	// 		}
+
+	// 		query["aggs"].(M)["facets"].(M)["aggs"].(M)[field] = M{
+	// 			"filter": M{"bool": M{"must": filters}},
+	// 			"aggs": M{
+	// 				"facet": M{
+	// 					"terms": M{
+	// 						"field":         field,
+	// 						"min_doc_count": 1,
+	// 						"order":         M{"_key": "asc"},
+	// 						"size":          200,
+	// 					},
+	// 				},
+	// 			},
+	// 		}
+	// 	}
+	// }
+
+	sorts := []string{"date_updated:desc", "year:desc"}
+	if len(args.Sort) > 0 {
+		switch args.Sort[0] {
+		case "date-updated-desc":
+			// sorts = []string{"date_updated:desc", "year:desc"}
+		case "date-created-desc":
+			sorts = []string{"date_created:desc", "year:desc"}
+		case "year-desc":
+			sorts = []string{"year:desc"}
+		}
+	}
+
+	opts := []func(*esapi.SearchRequest){
+		c.es.Search.WithContext(context.Background()),
+		c.es.Search.WithIndex(c.DatasetIndex),
+		c.es.Search.WithTrackTotalHits(true),
+		c.es.Search.WithSort(sorts...),
+	}
+
+	// if args.Cursor {
+	// 	opts = append(opts, s.client.Search.WithScroll(time.Minute))
+	// }
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(query); err != nil {
+		return nil, err
+	}
+
+	opts = append(opts, c.es.Search.WithBody(&buf))
+
+	res, err := c.es.Search(opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	hits, err := decodeRes(res)
+	if err != nil {
+		return nil, err
+	}
+
+	hits.Limit = args.Limit()
+	hits.Offset = args.Offset()
+
+	return hits, nil
+}
+
+func buildQuery(args *models.SearchArgs) (M, M, []M) {
+	var query M
+	var queryFilter M
+	var termsFilters []M
+
+	if len(args.Query) == 0 {
+		queryFilter = M{
+			"match_all": M{},
+		}
+	} else {
+		queryFilter = M{
+			"multi_match": M{
+				"query":    args.Query,
+				"fields":   []string{"doi^50", "all"},
+				"operator": "and",
+			},
+		}
+	}
+
+	if args.Filters == nil {
+		query = M{"query": queryFilter}
+	} else {
+		for field, terms := range args.Filters {
+			orFields := strings.Split(field, "|")
+			if len(orFields) > 1 {
+				orFilters := []M{}
+				for _, orField := range orFields {
+					orFilters = append(orFilters, M{"terms": M{orField: terms}})
+				}
+				termsFilters = append(termsFilters, M{"bool": M{"should": orFilters}})
+			} else {
+				termsFilters = append(termsFilters, M{"terms": M{field: terms}})
+			}
+		}
+
+		query = M{
+			"query": M{
+				"bool": M{
+					"must": queryFilter,
+					"filter": M{
+						"bool": M{
+							"must": termsFilters,
+						},
+					},
+				},
+			},
+		}
+	}
+
+	query["size"] = 20
+	query["from"] = (args.Page - 1) * 20
+
+	return query, queryFilter, termsFilters
+}
+
+type resEnvelope struct {
+	// ScrollID string `json:"_scroll_id"`
+	Hits struct {
+		Total int
+		Hits  []struct {
+			Source    json.RawMessage `json:"_source"`
+			Highlight json.RawMessage
+		}
+	}
+	// Aggregations json.RawMessage
+}
+
+func decodeRes(res *esapi.Response) (*models.DatasetHits, error) {
+	defer res.Body.Close()
+
+	if res.IsError() {
+		buf := new(strings.Builder)
+		if _, err := io.Copy(buf, res.Body); err != nil {
+			return nil, err
+		}
+		return nil, errors.New("Es6 error response: " + buf.String())
+	}
+
+	var r resEnvelope
+	if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
+		return nil, errors.Wrap(err, "Error parsing the response body")
+	}
+
+	hits := models.DatasetHits{}
+	hits.Total = r.Hits.Total
+
+	// if len(r.Aggregations) > 0 {
+	// 	hits.RawAggregation = r.Aggregations
+	// }
+
+	for _, h := range r.Hits.Hits {
+		var hit models.Dataset
+
+		if err := json.Unmarshal(h.Source, &hit); err != nil {
+			return nil, err
+		}
+
+		// if len(h.Highlight) > 0 {
+		// 	hit.RawHighlight = h.Highlight
+		// }
+
+		hits.Hits = append(hits.Hits, &hit)
+	}
+
+	return &hits, nil
+}
+
+func (c *Client) IndexDataset(d *models.Dataset) error {
+	body := M{
+		"doc": struct {
+			*models.Dataset
+			DateCreated string `json:"date_created"`
+			DateUpdated string `json:"date_updated"`
+		}{
+			Dataset:     d,
+			DateCreated: d.DateCreated.Format(time.RFC3339),
+			DateUpdated: d.DateUpdated.Format(time.RFC3339),
+		},
+		"doc_as_upsert": true,
+	}
+
+	payload, err := json.Marshal(body)
+	if err != nil {
+		return err
+	}
+	ctx := context.Background()
+	res, err := esapi.UpdateRequest{
+		Index:      c.DatasetIndex,
+		DocumentID: d.ID,
+		Body:       bytes.NewReader(payload),
+	}.Do(ctx, c.es)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+
+	if res.IsError() {
+		buf := new(strings.Builder)
+		if _, err := io.Copy(buf, res.Body); err != nil {
+			return err
+		}
+		return errors.New("Es6 error response: " + buf.String())
+	}
+
+	return nil
+}

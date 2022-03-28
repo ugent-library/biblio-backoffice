@@ -11,7 +11,9 @@ import (
 )
 
 const (
-	defaultPgConn        = "host=localhost dbname=biblio-backend sslmode=disable"
+	defaultPgConn        = "postgres://localhost:5432/biblio_backend?sslmode=disable"
+	defaultEs6URL        = "http://localhost:9200"
+	defaultDatasetIndex  = "biblio_backend_datasets"
 	defaultMode          = "production"
 	defaultHost          = ""
 	defaultPort          = 3000
@@ -39,6 +41,8 @@ func init() {
 	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
 	viper.AutomaticEnv()
 	viper.SetDefault("pg-conn", defaultPgConn)
+	viper.SetDefault("es6-url", defaultEs6URL)
+	viper.SetDefault("dataset-index", defaultDatasetIndex)
 	viper.SetDefault("mode", defaultMode)
 	viper.SetDefault("host", defaultHost)
 	viper.SetDefault("port", defaultPort)
@@ -52,6 +56,8 @@ func init() {
 	rootCmd.PersistentFlags().String("librecat-password", "", "librecat rest api password")
 
 	rootCmd.PersistentFlags().String("pg-conn", defaultPgConn, "postgres connection string")
+	rootCmd.PersistentFlags().String("es6-url", defaultEs6URL, "elasticsearch 6.x url, separate multiple with comma")
+	rootCmd.PersistentFlags().String("dataset-index", defaultDatasetIndex, "dataset index name")
 
 	rootCmd.PersistentFlags().String("temporal-host-port", client.DefaultHostPort, "temporal server host and port")
 

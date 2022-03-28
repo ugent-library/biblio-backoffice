@@ -4,11 +4,11 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/santhosh-tekuri/jsonschema/v5"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/views"
 	"github.com/ugent-library/go-locale/locale"
-	"github.com/ugent-library/go-web/forms"
 	"github.com/ugent-library/go-web/jsonapi"
 	"github.com/unrolled/render"
 )
@@ -62,14 +62,20 @@ func (c *DatasetDetails) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := forms.Decode(dataset, r.Form); err != nil {
+	if err := DecodeForm(dataset, r.Form); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	dataset.Vacuum()
 
 	savedDataset, err := c.Engine.UpdateDataset(dataset)
 
-	if formErrors, ok := err.(jsonapi.Errors); ok {
+	if schemaErrors, ok := err.(*jsonschema.ValidationError); ok {
+		formErrors := jsonapi.Errors{jsonapi.Error{
+			Detail: schemaErrors.Message,
+			Title:  schemaErrors.Message,
+		}}
+
 		c.Render.HTML(w, http.StatusOK, "dataset/details/_edit", c.ViewData(r, struct {
 			Dataset      *models.Dataset
 			Show         *views.ShowBuilder
@@ -86,6 +92,9 @@ func (c *DatasetDetails) Update(w http.ResponseWriter, r *http.Request) {
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
 
+		return
+	} else if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
