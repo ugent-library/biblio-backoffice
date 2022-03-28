@@ -15,6 +15,7 @@ type DatasetService interface {
 	GetDataset(string) (*models.Dataset, error)
 	CreateDataset(*models.Dataset) (*models.Dataset, error)
 	UpdateDataset(*models.Dataset) (*models.Dataset, error)
+	EachDataset(func(*models.Dataset) bool) error
 }
 
 type DatasetSearchService interface {

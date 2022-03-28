@@ -14,8 +14,7 @@ import (
 )
 
 func (c *Client) SearchDatasets(args *models.SearchArgs) (*models.DatasetHits, error) {
-	// query, queryFilter, termsFilters := buildQuery(args)
-	query, _, _ := buildQuery(args)
+	query, queryFilter, termsFilters := buildQuery(args)
 
 	query["size"] = args.Limit()
 	query["from"] = args.Offset()
@@ -32,41 +31,44 @@ func (c *Client) SearchDatasets(args *models.SearchArgs) (*models.DatasetHits, e
 	// 	}
 	// }
 
-	// if len(args.Facets) > 0 {
-	// 	query["aggs"] = M{
-	// 		"facets": M{
-	// 			"global": M{},
-	// 			"aggs":   M{},
-	// 		},
-	// 	}
+	query["aggs"] = M{
+		"facets": M{
+			"global": M{},
+			"aggs":   M{},
+		},
+	}
 
-	// 	// facet filter contains all query and all filters except itself
-	// 	for _, field := range args.Facets {
-	// 		filters := []M{queryFilter}
+	// facet filter contains all query and all filters except itself
+	for _, field := range []string{"status"} {
+		filters := []M{queryFilter}
 
-	// 		for _, filter := range termsFilters {
-	// 			if _, found := filter["terms"].(M)[field]; found {
-	// 				continue
-	// 			} else {
-	// 				filters = append(filters, filter)
-	// 			}
-	// 		}
+		for _, filter := range termsFilters {
+			terms := filter["terms"]
+			if terms == nil {
+				continue
+			}
+			if _, found := terms.(M)[field]; found {
+				continue
+			} else {
+				filters = append(filters, filter)
+			}
+		}
 
-	// 		query["aggs"].(M)["facets"].(M)["aggs"].(M)[field] = M{
-	// 			"filter": M{"bool": M{"must": filters}},
-	// 			"aggs": M{
-	// 				"facet": M{
-	// 					"terms": M{
-	// 						"field":         field,
-	// 						"min_doc_count": 1,
-	// 						"order":         M{"_key": "asc"},
-	// 						"size":          200,
-	// 					},
-	// 				},
-	// 			},
-	// 		}
-	// 	}
-	// }
+		// TODO add faculty facet
+		query["aggs"].(M)["facets"].(M)["aggs"].(M)[field] = M{
+			"filter": M{"bool": M{"must": filters}},
+			"aggs": M{
+				"facet": M{
+					"terms": M{
+						"field":         field,
+						"min_doc_count": 1,
+						"order":         M{"_key": "asc"},
+						"size":          200,
+					},
+				},
+			},
+		}
+	}
 
 	sorts := []string{"date_updated:desc", "year:desc"}
 	if len(args.Sort) > 0 {
@@ -178,7 +180,14 @@ type resEnvelope struct {
 			Highlight json.RawMessage
 		}
 	}
-	// Aggregations json.RawMessage
+	Aggregations struct {
+		Facets M
+	}
+}
+
+type resFacet struct {
+	DocCount int
+	Key      string
 }
 
 func decodeRes(res *esapi.Response) (*models.DatasetHits, error) {
@@ -200,9 +209,20 @@ func decodeRes(res *esapi.Response) (*models.DatasetHits, error) {
 	hits := models.DatasetHits{}
 	hits.Total = r.Hits.Total
 
-	// if len(r.Aggregations) > 0 {
-	// 	hits.RawAggregation = r.Aggregations
-	// }
+	hits.Facets = make(map[string][]models.Facet)
+	for _, facet := range []string{"status"} {
+		if _, found := r.Aggregations.Facets[facet]; !found {
+			continue
+		}
+
+		for _, f := range r.Aggregations.Facets[facet].(map[string]interface{})["facet"].(map[string]interface{})["buckets"].([]interface{}) {
+			fv := f.(map[string]interface{})
+			hits.Facets[facet] = append(hits.Facets[facet], models.Facet{
+				Value: fv["key"].(string),
+				Count: int(fv["doc_count"].(float64)),
+			})
+		}
+	}
 
 	for _, h := range r.Hits.Hits {
 		var hit models.Dataset

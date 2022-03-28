@@ -46,11 +46,6 @@ func newEngine() *engine.Engine {
 		Password: viper.GetString("librecat-password"),
 	})
 
-	pgClient, err := pg.New(viper.GetString("pg-conn"))
-	if err != nil {
-		log.Fatalln("Unable to create Postgres client", err)
-	}
-
 	orcidConfig := orcid.Config{
 		ClientID:     viper.GetString("orcid-client-id"),
 		ClientSecret: viper.GetString("orcid-client-secret"),
@@ -62,7 +57,7 @@ func newEngine() *engine.Engine {
 		Temporal:                  temporal,
 		ORCIDSandbox:              orcidConfig.Sandbox,
 		ORCIDClient:               orcidClient,
-		DatasetService:            pgClient,
+		DatasetService:            newDatasetService(),
 		DatasetSearchService:      newEs6Client(),
 		PublicationService:        librecatClient,
 		PublicationSearchService:  librecatClient,
@@ -84,6 +79,14 @@ func newEngine() *engine.Engine {
 	}
 
 	return e
+}
+
+func newDatasetService() backends.DatasetService {
+	client, err := pg.New(viper.GetString("pg-conn"))
+	if err != nil {
+		log.Fatalln("unable to create pg dataset service", err)
+	}
+	return client
 }
 
 func newEs6Client() *es6.Client {

@@ -80,3 +80,30 @@ func (c *Client) UpdateDataset(d *models.Dataset) (*models.Dataset, error) {
 
 	return d, nil
 }
+
+func (c *Client) EachDataset(fn func(*models.Dataset) bool) error {
+	rows, err := c.db.Query(context.Background(), "select data from datasets where data_to is null")
+	if err != nil {
+		return err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var data json.RawMessage
+		if err := rows.Scan(&data); err != nil {
+			return err
+		}
+
+		d := &models.Dataset{}
+		if err := json.Unmarshal(data, d); err != nil {
+			return err
+		}
+
+		if ok := fn(d); !ok {
+			return nil
+		}
+	}
+
+	return rows.Err()
+}
