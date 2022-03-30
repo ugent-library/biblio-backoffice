@@ -255,6 +255,17 @@ func (p *Publication) RemoveContributor(role string, i int) {
 	p.SetContributors(role, append(cc[:i], cc[i+1:]...))
 }
 
+func (p *Publication) UsesLaySummary() bool {
+
+	switch p.Type {
+		case "dissertation":
+			return true
+		default:
+			return false
+	}
+
+}
+
 func (p *Publication) UsesConference() bool {
 	switch p.Type {
 	case "book_chapter", "book_editor", "conference", "issue_editor", "journal_article":
