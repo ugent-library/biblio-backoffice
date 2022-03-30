@@ -11,7 +11,7 @@ import (
 func SetPublication(e *engine.Engine) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			pub, err := e.GetPublication(mux.Vars(r)["id"])
+			pub, err := e.StorageService.GetPublication(mux.Vars(r)["id"])
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusNotFound)
 				return

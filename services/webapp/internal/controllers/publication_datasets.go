@@ -99,7 +99,7 @@ func (c *PublicationDatasets) Add(w http.ResponseWriter, r *http.Request) {
 
 	pub := context.GetPublication(r.Context())
 
-	_, err := c.Engine.GetDataset(datasetID)
+	_, err := c.Engine.StorageService.GetDataset(datasetID)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)

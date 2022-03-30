@@ -267,7 +267,7 @@ func (c *PublicationFiles) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//reload publication
-	pub, err = c.Engine.GetPublication(pub.ID)
+	pub, err = c.Engine.StorageService.GetPublication(pub.ID)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)

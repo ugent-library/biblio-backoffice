@@ -15,10 +15,6 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/models"
 )
 
-func (e *Engine) GetPublication(id string) (*models.Publication, error) {
-	return e.StorageService.GetPublication(id)
-}
-
 func (e *Engine) UpdatePublication(p *models.Publication) (*models.Publication, error) {
 	p.Vacuum()
 

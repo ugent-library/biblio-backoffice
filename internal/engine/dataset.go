@@ -51,10 +51,6 @@ func (e *Engine) ImportUserDatasetByIdentifier(userID, source, identifier string
 	return d, nil
 }
 
-func (e *Engine) GetDataset(id string) (*models.Dataset, error) {
-	return e.StorageService.GetDataset(id)
-}
-
 func (e *Engine) UpdateDataset(d *models.Dataset) (*models.Dataset, error) {
 	d.Vacuum()
 
