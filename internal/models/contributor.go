@@ -39,3 +39,19 @@ func (p *Contributor) CreditRoleChoices() []string {
 		"writing_review_editing",
 	}
 }
+
+func (c *Contributor) Validate() (errs ValidationErrors) {
+	if c.FirstName == "" {
+		errs = append(errs, ValidationError{
+			Pointer: "/first_name",
+			Code:    "required",
+		})
+	}
+	if c.LastName == "" {
+		errs = append(errs, ValidationError{
+			Pointer: "/last_name",
+			Code:    "required",
+		})
+	}
+	return
+}

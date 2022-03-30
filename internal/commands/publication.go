@@ -10,25 +10,25 @@ import (
 )
 
 func init() {
-	datasetCmd.AddCommand(datasetGetCmd)
-	datasetCmd.AddCommand(datasetAllCmd)
-	rootCmd.AddCommand(datasetCmd)
+	publicationCmd.AddCommand(publicationGetCmd)
+	publicationCmd.AddCommand(publicationAllCmd)
+	rootCmd.AddCommand(publicationCmd)
 }
 
-var datasetCmd = &cobra.Command{
-	Use:   "dataset [command]",
-	Short: "Dataset commands",
+var publicationCmd = &cobra.Command{
+	Use:   "publication [command]",
+	Short: "Publication commands",
 }
 
-var datasetGetCmd = &cobra.Command{
+var publicationGetCmd = &cobra.Command{
 	Use:   "get [id]",
-	Short: "Get datasets by id",
+	Short: "Get publications by id",
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		s := newStorageService()
 		e := json.NewEncoder(os.Stdout)
 		for _, id := range args {
-			d, err := s.GetDataset(id)
+			d, err := s.GetPublication(id)
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -37,13 +37,13 @@ var datasetGetCmd = &cobra.Command{
 	},
 }
 
-var datasetAllCmd = &cobra.Command{
+var publicationAllCmd = &cobra.Command{
 	Use:   "all",
-	Short: "Get all datasets",
+	Short: "Get all publications",
 	Run: func(cmd *cobra.Command, args []string) {
 		s := newStorageService()
 		e := json.NewEncoder(os.Stdout)
-		s.EachDataset(func(d *models.Dataset) bool {
+		s.EachPublication(func(d *models.Publication) bool {
 			e.Encode(d)
 			return true
 		})

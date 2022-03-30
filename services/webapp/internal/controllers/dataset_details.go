@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/santhosh-tekuri/jsonschema/v5"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/views"
@@ -70,10 +69,10 @@ func (c *DatasetDetails) Update(w http.ResponseWriter, r *http.Request) {
 
 	savedDataset, err := c.Engine.UpdateDataset(dataset)
 
-	if schemaErrors, ok := err.(*jsonschema.ValidationError); ok {
+	if schemaErrors, ok := err.(models.ValidationErrors); ok {
 		formErrors := jsonapi.Errors{jsonapi.Error{
-			Detail: schemaErrors.Message,
-			Title:  schemaErrors.Message,
+			Detail: schemaErrors.Error(),
+			Title:  schemaErrors.Error(),
 		}}
 
 		c.Render.HTML(w, http.StatusOK, "dataset/details/_edit", c.ViewData(r, struct {

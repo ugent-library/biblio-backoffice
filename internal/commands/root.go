@@ -11,15 +11,16 @@ import (
 )
 
 const (
-	defaultPgConn        = "postgres://localhost:5432/biblio_backend?sslmode=disable"
-	defaultEs6URL        = "http://localhost:9200"
-	defaultDatasetIndex  = "biblio_backend_datasets"
-	defaultMode          = "production"
-	defaultHost          = ""
-	defaultPort          = 3000
-	defaultSessionName   = "biblio-backend"
-	defaultSessionMaxAge = 86400 * 30 // 30 days
-	defaultCSRFName      = "biblio-backend.csrf-token"
+	defaultPgConn           = "postgres://localhost:5432/biblio_backend?sslmode=disable"
+	defaultEs6URL           = "http://localhost:9200"
+	defaultDatasetIndex     = "biblio_backend_datasets"
+	defaultPublicationIndex = "biblio_backend_publications"
+	defaultMode             = "production"
+	defaultHost             = ""
+	defaultPort             = 3000
+	defaultSessionName      = "biblio-backend"
+	defaultSessionMaxAge    = 86400 * 30 // 30 days
+	defaultCSRFName         = "biblio-backend.csrf-token"
 )
 
 var rootCmd = &cobra.Command{
@@ -43,6 +44,7 @@ func init() {
 	viper.SetDefault("pg-conn", defaultPgConn)
 	viper.SetDefault("es6-url", defaultEs6URL)
 	viper.SetDefault("dataset-index", defaultDatasetIndex)
+	viper.SetDefault("publication-index", defaultPublicationIndex)
 	viper.SetDefault("mode", defaultMode)
 	viper.SetDefault("host", defaultHost)
 	viper.SetDefault("port", defaultPort)
@@ -58,6 +60,7 @@ func init() {
 	rootCmd.PersistentFlags().String("pg-conn", defaultPgConn, "postgres connection string")
 	rootCmd.PersistentFlags().String("es6-url", defaultEs6URL, "elasticsearch 6.x url, separate multiple with comma")
 	rootCmd.PersistentFlags().String("dataset-index", defaultDatasetIndex, "dataset index name")
+	rootCmd.PersistentFlags().String("publication-index", defaultPublicationIndex, "publication index name")
 
 	rootCmd.PersistentFlags().String("temporal-host-port", client.DefaultHostPort, "temporal server host and port")
 

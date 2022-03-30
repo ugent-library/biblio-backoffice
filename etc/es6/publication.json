@@ -1,0 +1,133 @@
+{
+    "settings": {
+        "index": {
+            "number_of_replicas": 0,
+            "number_of_shards": 1,
+            "analysis": {
+                "tokenizer": {
+                    "ngram": {
+                        "type": "edge_ngram",
+                        "min_gram": 1,
+                        "max_gram": 20,
+                        "token_chars": [
+                            "letter"
+                        ]
+                    }
+                },
+                "analyzer": {
+                    "ngram": {
+                        "tokenizer": "ngram",
+                        "filter": [
+                            "lowercase"
+                        ]
+                    },
+                    "lowercase": {
+                        "tokenizer": "lowercase"
+                    }
+                }
+            }
+        }
+    },
+    "mappings": {
+        "_doc": {
+            "dynamic": false,
+            "properties": {
+                "all": {
+                    "type": "text"
+                },
+                "abstract": {
+                    "properties": {
+                        "lang": {
+                            "type": "keyword"
+                        },
+                        "text": {
+                            "type": "text",
+                            "copy_to": "all"
+                        }
+                    }
+                },
+                "author": {
+                    "properties": {
+                        "id": {
+                            "type": "keyword"
+                        },
+                        "orcid": {
+                            "type": "keyword"
+                        },
+                        "ugent_id": {
+                            "type": "keyword"
+                        },
+                        "first_name": {
+                            "type": "text"
+                        },
+                        "last_name": {
+                            "type": "text"
+                        },
+                        "full_name": {
+                            "type": "text",
+                            "copy_to": "all",
+                            "fields": {
+                                "ngram": {
+                                    "type": "text",
+                                    "analyzer": "ngram",
+                                    "search_analyzer": "lowercase"
+                                }
+                            }
+                        },
+                        "credit_role": {
+                            "type": "keyword"
+                        }
+                    }
+                },
+                "completeness_score": {
+                    "type": "integer"
+                },
+                "creator_id": {
+                    "type": "keyword"
+                },
+                "date_created": {
+                    "type": "date"
+                },
+                "date_updated": {
+                    "type": "date"
+                },
+                "department": {
+                    "properties": {
+                        "_id": {
+                            "type": "keyword"
+                        }
+                    }
+                },
+                "doi": {
+                    "type": "keyword"
+                },
+                "id": {
+                    "type": "keyword"
+                },
+                "keyword": {
+                    "type": "keyword",
+                    "copy_to": "all"
+                },
+                "publisher": {
+                    "type": "text",
+                    "copy_to": "all"
+                },
+                "status": {
+                    "type": "keyword"
+                },
+                "title": {
+                    "type": "text",
+                    "copy_to": "all"
+                },
+                "type": {
+                    "type": "keyword"
+                },
+                "year": {
+                    "type": "date",
+                    "format": "year",
+                    "copy_to": "all"
+                }
+            }
+        }
+    }
+}

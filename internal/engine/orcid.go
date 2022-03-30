@@ -32,12 +32,7 @@ import (
 // 	return res.NumFound > 0
 // }
 
-func (e *Engine) AddPublicationsToORCID(userID string, s *models.SearchArgs) (string, error) {
-	user, err := e.GetUser(userID)
-	if err != nil {
-		return "", err
-	}
-
+func (e *Engine) AddPublicationsToORCID(user *models.User, s *models.SearchArgs) (string, error) {
 	workflowOptions := client.StartWorkflowOptions{
 		ID:        "orcid_workflow_" + uuid.New().String(),
 		TaskQueue: "orcid",
@@ -45,10 +40,9 @@ func (e *Engine) AddPublicationsToORCID(userID string, s *models.SearchArgs) (st
 
 	we, err := e.Temporal.ExecuteWorkflow(context.Background(), workflowOptions, orcidworker.SendPublicationsToORCIDWorkflow,
 		orcidworker.Args{
-			UserID:     userID,
 			ORCID:      user.ORCID,
 			ORCIDToken: user.ORCIDToken,
-			SearchArgs: *s,
+			SearchArgs: s,
 		})
 	if err != nil {
 		return "", err

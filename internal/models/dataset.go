@@ -1,19 +1,13 @@
 package models
 
 import (
+	"fmt"
 	"strings"
 	"time"
 )
 
 type DatasetHits struct {
 	Pagination
-	// Total        int                `json:"total"`
-	// Page         int                `json:"page"`
-	// LastPage     int                `json:"last_page"`
-	// PreviousPage bool               `json:"previous_page"`
-	// NextPage     bool               `json:"next_page"`
-	// FirstOnPage  int                `json:"first_on_page"`
-	// LastOnPage   int                `json:"last_on_page"`
 	Hits   []*Dataset         `json:"hits"`
 	Facets map[string][]Facet `json:"facets"`
 }
@@ -106,6 +100,74 @@ func (d *Dataset) ResolveDOI() string {
 
 	}
 	return ""
+}
+
+func (d *Dataset) Validate() (errs ValidationErrors) {
+	if d.ID == "" {
+		errs = append(errs, ValidationError{
+			Pointer: "/id",
+			Code:    "required",
+		})
+	}
+	if d.Status == "" {
+		errs = append(errs, ValidationError{
+			Pointer: "/status",
+			Code:    "required",
+		})
+	}
+	if d.Status == "public" && d.AccessLevel == "" {
+		errs = append(errs, ValidationError{
+			Pointer: "/access_level",
+			Code:    "required",
+		})
+	}
+	if d.Status == "public" && d.DOI == "" {
+		errs = append(errs, ValidationError{
+			Pointer: "/doi",
+			Code:    "required",
+		})
+	}
+	if d.Status == "public" && len(d.Format) == 0 {
+		errs = append(errs, ValidationError{
+			Pointer: "/format",
+			Code:    "required",
+		})
+	}
+	if d.Status == "public" && d.Publisher == "" {
+		errs = append(errs, ValidationError{
+			Pointer: "/publisher",
+			Code:    "required",
+		})
+	}
+	if d.Status == "public" && d.Title == "" {
+		errs = append(errs, ValidationError{
+			Pointer: "/title",
+			Code:    "required",
+		})
+	}
+	if d.Status == "public" && d.Year == "" {
+		errs = append(errs, ValidationError{
+			Pointer: "/year",
+			Code:    "required",
+		})
+	}
+	if d.Status == "public" && len(d.Author) == 0 {
+		errs = append(errs, ValidationError{
+			Pointer: "/author",
+			Code:    "required",
+		})
+	}
+
+	for i, c := range d.Author {
+		for _, err := range c.Validate() {
+			errs = append(errs, ValidationError{
+				Pointer: fmt.Sprintf("/author/%d/%s", i, err.Pointer),
+				Code:    err.Code,
+			})
+		}
+	}
+
+	return
 }
 
 func (d *Dataset) Vacuum() {

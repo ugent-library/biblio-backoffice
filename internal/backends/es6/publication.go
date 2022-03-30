@@ -13,8 +13,8 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/models"
 )
 
-func (c *Client) SearchDatasets(args *models.SearchArgs) (*models.DatasetHits, error) {
-	query, queryFilter, termsFilters := buildDatasetQuery(args)
+func (c *Client) SearchPublications(args *models.SearchArgs) (*models.PublicationHits, error) {
+	query, queryFilter, termsFilters := buildPublicationQuery(args)
 
 	query["size"] = args.Limit()
 	query["from"] = args.Offset()
@@ -84,7 +84,7 @@ func (c *Client) SearchDatasets(args *models.SearchArgs) (*models.DatasetHits, e
 
 	opts := []func(*esapi.SearchRequest){
 		c.es.Search.WithContext(context.Background()),
-		c.es.Search.WithIndex(c.DatasetIndex),
+		c.es.Search.WithIndex(c.PublicationIndex),
 		c.es.Search.WithTrackTotalHits(true),
 		c.es.Search.WithSort(sorts...),
 	}
@@ -105,7 +105,7 @@ func (c *Client) SearchDatasets(args *models.SearchArgs) (*models.DatasetHits, e
 		return nil, err
 	}
 
-	hits, err := decodeDatasetRes(res)
+	hits, err := decodePublicationRes(res)
 	if err != nil {
 		return nil, err
 	}
@@ -116,7 +116,7 @@ func (c *Client) SearchDatasets(args *models.SearchArgs) (*models.DatasetHits, e
 	return hits, nil
 }
 
-func buildDatasetQuery(args *models.SearchArgs) (M, M, []M) {
+func buildPublicationQuery(args *models.SearchArgs) (M, M, []M) {
 	var query M
 	var queryFilter M
 	var termsFilters []M
@@ -171,7 +171,7 @@ func buildDatasetQuery(args *models.SearchArgs) (M, M, []M) {
 	return query, queryFilter, termsFilters
 }
 
-type datasetResEnvelope struct {
+type publicationResEnvelope struct {
 	// ScrollID string `json:"_scroll_id"`
 	Hits struct {
 		Total int
@@ -185,12 +185,7 @@ type datasetResEnvelope struct {
 	}
 }
 
-type resFacet struct {
-	DocCount int
-	Key      string
-}
-
-func decodeDatasetRes(res *esapi.Response) (*models.DatasetHits, error) {
+func decodePublicationRes(res *esapi.Response) (*models.PublicationHits, error) {
 	defer res.Body.Close()
 
 	if res.IsError() {
@@ -201,12 +196,12 @@ func decodeDatasetRes(res *esapi.Response) (*models.DatasetHits, error) {
 		return nil, errors.New("Es6 error response: " + buf.String())
 	}
 
-	var r datasetResEnvelope
+	var r publicationResEnvelope
 	if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
 		return nil, errors.Wrap(err, "Error parsing the response body")
 	}
 
-	hits := models.DatasetHits{}
+	hits := models.PublicationHits{}
 	hits.Total = r.Hits.Total
 
 	hits.Facets = make(map[string][]models.Facet)
@@ -225,7 +220,7 @@ func decodeDatasetRes(res *esapi.Response) (*models.DatasetHits, error) {
 	}
 
 	for _, h := range r.Hits.Hits {
-		var hit models.Dataset
+		var hit models.Publication
 
 		if err := json.Unmarshal(h.Source, &hit); err != nil {
 			return nil, err
@@ -241,14 +236,14 @@ func decodeDatasetRes(res *esapi.Response) (*models.DatasetHits, error) {
 	return &hits, nil
 }
 
-func (c *Client) IndexDataset(d *models.Dataset) error {
+func (c *Client) IndexPublication(d *models.Publication) error {
 	body := M{
 		"doc": struct {
-			*models.Dataset
+			*models.Publication
 			DateCreated string `json:"date_created"`
 			DateUpdated string `json:"date_updated"`
 		}{
-			Dataset:     d,
+			Publication: d,
 			DateCreated: d.DateCreated.Format(time.RFC3339),
 			DateUpdated: d.DateUpdated.Format(time.RFC3339),
 		},
@@ -261,7 +256,7 @@ func (c *Client) IndexDataset(d *models.Dataset) error {
 	}
 	ctx := context.Background()
 	res, err := esapi.UpdateRequest{
-		Index:      c.DatasetIndex,
+		Index:      c.PublicationIndex,
 		DocumentID: d.ID,
 		Body:       bytes.NewReader(payload),
 	}.Do(ctx, c.es)

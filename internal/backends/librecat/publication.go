@@ -62,7 +62,7 @@ func (c *Client) ServePublicationFile(fileURL string, w http.ResponseWriter, r *
 }
 
 func (e *Client) CreateUserPublication(userID, pubType string) (*models.Publication, error) {
-	pub := &models.Publication{Type: pubType, Status: "private", CreationContext: "biblio-backend"}
+	pub := &models.Publication{Type: pubType, Status: "private"}
 	resPub := &models.Publication{}
 	if _, err := e.post(fmt.Sprintf("/user/%s/publication", userID), pub, resPub); err != nil {
 		return nil, err
@@ -167,7 +167,7 @@ func (e *Client) BatchPublishPublications(userID string, args *models.SearchArgs
 				break
 			}
 		}
-		if !hits.NextPage {
+		if !hits.NextPage() {
 			break
 		}
 		args.Page = args.Page + 1

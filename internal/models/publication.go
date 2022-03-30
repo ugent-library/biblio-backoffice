@@ -1,17 +1,15 @@
 package models
 
-import "time"
+import (
+	"fmt"
+	"strings"
+	"time"
+)
 
 type PublicationHits struct {
-	Total        int                `json:"total"`
-	Page         int                `json:"page"`
-	LastPage     int                `json:"last_page"`
-	PreviousPage bool               `json:"previous_page"`
-	NextPage     bool               `json:"next_page"`
-	FirstOnPage  int                `json:"first_on_page"`
-	LastOnPage   int                `json:"last_on_page"`
-	Hits         []*Publication     `json:"hits"`
-	Facets       map[string][]Facet `json:"facets"`
+	Pagination
+	Hits   []*Publication     `json:"hits"`
+	Facets map[string][]Facet `json:"facets"`
 }
 
 type PublicationFile struct {
@@ -64,18 +62,18 @@ type PublicationORCIDWork struct {
 }
 
 type Publication struct {
-	Abstract                []Text                  `json:"abstract,omitempty" form:"abstract"`
-	AdditionalInfo          string                  `json:"additional_info,omitempty" form:"additional_info"`
-	AlternativeTitle        []string                `json:"alternative_title,omitempty" form:"alternative_title"`
-	ArticleNumber           string                  `json:"article_number,omitempty" form:"article_number"`
-	ArxivID                 string                  `json:"arxiv_id,omitempty" form:"arxiv_id"`
-	Author                  []*Contributor          `json:"author,omitempty" form:"-"`
-	BatchID                 string                  `json:"batch_id,omitempty" form:"-"`
-	Classification          string                  `json:"classification,omitempty" form:"classification"`
-	CompletenessScore       int                     `json:"completeness_score,omitempty" form:"-"`
-	Conference              PublicationConference   `json:"conference,omitempty" form:"conference"`
-	ConferenceType          string                  `json:"conference_type,omitempty" form:"conference_type"`
-	CreationContext         string                  `json:"creation_context,omitempty" form:"-"`
+	Abstract          []Text                `json:"abstract,omitempty" form:"abstract"`
+	AdditionalInfo    string                `json:"additional_info,omitempty" form:"additional_info"`
+	AlternativeTitle  []string              `json:"alternative_title,omitempty" form:"alternative_title"`
+	ArticleNumber     string                `json:"article_number,omitempty" form:"article_number"`
+	ArxivID           string                `json:"arxiv_id,omitempty" form:"arxiv_id"`
+	Author            []*Contributor        `json:"author,omitempty" form:"-"`
+	BatchID           string                `json:"batch_id,omitempty" form:"-"`
+	Classification    string                `json:"classification,omitempty" form:"classification"`
+	CompletenessScore int                   `json:"completeness_score,omitempty" form:"-"`
+	Conference        PublicationConference `json:"conference,omitempty" form:"conference"`
+	ConferenceType    string                `json:"conference_type,omitempty" form:"conference_type"`
+	// CreationContext         string                  `json:"creation_context,omitempty" form:"-"`
 	CreatorID               string                  `json:"creator_id,omitempty" form:"-"`
 	DateCreated             *time.Time              `json:"date_created,omitempty" form:"-"`
 	DateUpdated             *time.Time              `json:"date_updated,omitempty" form:"-"`
@@ -96,7 +94,7 @@ type Publication struct {
 	HasPatentApplication    string                  `json:"has_patent_application,omitempty" form:"has_patent_application"`
 	HasPublicationsPlanned  string                  `json:"has_publications_planned,omitempty" form:"has_publications_planned"`
 	HasPublishedMaterial    string                  `json:"has_published_material,omitempty" form:"has_published_material"`
-	ID                      string                  `json:"_id,omitempty" form:"-"`
+	ID                      string                  `json:"id,omitempty" form:"-"`
 	ISBN                    []string                `json:"isbn,omitempty" form:"isbn"`
 	ISSN                    []string                `json:"issn,omitempty" form:"issn"`
 	Issue                   string                  `json:"issue,omitempty" form:"issue"`
@@ -135,11 +133,11 @@ type Publication struct {
 	Type                    string                  `json:"type,omitempty" form:"-"`
 	URL                     string                  `json:"url,omitempty" form:"url"`
 	UserID                  string                  `json:"user_id,omitempty" form:"-"`
-	Version                 int                     `json:"_version,omitempty" form:"-"`
-	Volume                  string                  `json:"volume,omitempty" form:"volume"`
-	WOSID                   string                  `json:"wos_id,omitempty" form:"wos_id"`
-	WOSType                 string                  `json:"wos_type,omitempty" form:"-"`
-	Year                    string                  `json:"year,omitempty" form:"year"`
+	// Version                 int                     `json:"_version,omitempty" form:"-"`
+	Volume  string `json:"volume,omitempty" form:"volume"`
+	WOSID   string `json:"wos_id,omitempty" form:"wos_id"`
+	WOSType string `json:"wos_type,omitempty" form:"-"`
+	Year    string `json:"year,omitempty" form:"year"`
 }
 
 func (p *Publication) AccessLevel() string {
@@ -298,4 +296,94 @@ func (p *Publication) InORCIDWorks(orcidID string) bool {
 		}
 	}
 	return false
+}
+
+func (d *Publication) Validate() (errs ValidationErrors) {
+	if d.ID == "" {
+		errs = append(errs, ValidationError{
+			Pointer: "/id",
+			Code:    "required",
+		})
+	}
+	if d.Type == "" {
+		errs = append(errs, ValidationError{
+			Pointer: "/type",
+			Code:    "required",
+		})
+	}
+	if d.Status == "" {
+		errs = append(errs, ValidationError{
+			Pointer: "/status",
+			Code:    "required",
+		})
+	}
+	if d.Status == "public" && d.Title == "" {
+		errs = append(errs, ValidationError{
+			Pointer: "/title",
+			Code:    "required",
+		})
+	}
+
+	for i, c := range d.Author {
+		for _, err := range c.Validate() {
+			errs = append(errs, ValidationError{
+				Pointer: fmt.Sprintf("/author/%d/%s", i, err.Pointer),
+				Code:    err.Code,
+			})
+		}
+	}
+	for i, c := range d.Editor {
+		for _, err := range c.Validate() {
+			errs = append(errs, ValidationError{
+				Pointer: fmt.Sprintf("/editor/%d/%s", i, err.Pointer),
+				Code:    err.Code,
+			})
+		}
+	}
+	for i, c := range d.Supervisor {
+		for _, err := range c.Validate() {
+			errs = append(errs, ValidationError{
+				Pointer: fmt.Sprintf("/supervisor/%d/%s", i, err.Pointer),
+				Code:    err.Code,
+			})
+		}
+	}
+
+	return
+}
+
+func (d *Publication) Vacuum() {
+	d.AdditionalInfo = strings.TrimSpace(d.AdditionalInfo)
+	d.AlternativeTitle = vacuumStringSlice(d.AlternativeTitle)
+	d.ArticleNumber = strings.TrimSpace(d.ArticleNumber)
+	d.ArxivID = strings.TrimSpace(d.ArxivID)
+	d.DefenseDate = strings.TrimSpace(d.DefenseDate)
+	d.DefensePlace = strings.TrimSpace(d.DefensePlace)
+	d.DefenseTime = strings.TrimSpace(d.DefenseTime)
+	d.DOI = strings.TrimSpace(d.DOI)
+	d.Edition = strings.TrimSpace(d.Edition)
+	d.EISBN = vacuumStringSlice(d.EISBN)
+	d.EISSN = vacuumStringSlice(d.EISSN)
+	d.ESCIID = strings.TrimSpace(d.ESCIID)
+	d.ISBN = vacuumStringSlice(d.ISBN)
+	d.ISSN = vacuumStringSlice(d.ISSN)
+	d.Issue = strings.TrimSpace(d.Issue)
+	d.IssueTitle = strings.TrimSpace(d.IssueTitle)
+	d.Keyword = vacuumStringSlice(d.Keyword)
+	d.PageCount = strings.TrimSpace(d.PageCount)
+	d.PageFirst = strings.TrimSpace(d.PageFirst)
+	d.PageLast = strings.TrimSpace(d.PageLast)
+	d.PlaceOfPublication = strings.TrimSpace(d.PlaceOfPublication)
+	d.Publication = strings.TrimSpace(d.Publication)
+	d.PublicationAbbreviation = strings.TrimSpace(d.PublicationAbbreviation)
+	d.Publisher = strings.TrimSpace(d.Publisher)
+	d.PubMedID = strings.TrimSpace(d.PubMedID)
+	d.ReportNumber = strings.TrimSpace(d.ReportNumber)
+	d.ResearchField = vacuumStringSlice(d.ResearchField)
+	d.SeriesTitle = strings.TrimSpace(d.SeriesTitle)
+	d.Title = strings.TrimSpace(d.Title)
+	d.URL = strings.TrimSpace(d.URL)
+	d.Volume = strings.TrimSpace(d.Volume)
+	d.WOSID = strings.TrimSpace(d.WOSID)
+	d.Year = strings.TrimSpace(d.Year)
 }

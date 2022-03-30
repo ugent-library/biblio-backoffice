@@ -40,6 +40,8 @@ func newEngine() *engine.Engine {
 		log.Fatalln("Unable to create Temporal client", err)
 	}
 
+	es6Client := newEs6Client()
+
 	librecatClient := librecat.New(librecat.Config{
 		URL:      viper.GetString("librecat-url"),
 		Username: viper.GetString("librecat-username"),
@@ -54,13 +56,13 @@ func newEngine() *engine.Engine {
 	orcidClient := orcid.NewMemberClient(orcidConfig)
 
 	e, err := engine.New(engine.Config{
-		Temporal:                  temporal,
-		ORCIDSandbox:              orcidConfig.Sandbox,
-		ORCIDClient:               orcidClient,
-		DatasetService:            newDatasetService(),
-		DatasetSearchService:      newEs6Client(),
-		PublicationService:        librecatClient,
-		PublicationSearchService:  librecatClient,
+		Temporal:                 temporal,
+		ORCIDSandbox:             orcidConfig.Sandbox,
+		ORCIDClient:              orcidClient,
+		StorageService:           newStorageService(),
+		DatasetSearchService:     es6Client,
+		PublicationSearchService: es6Client,
+		// PublicationService:        librecatClient,
 		PersonService:             librecatClient,
 		ProjectService:            librecatClient,
 		UserService:               librecatClient,
@@ -81,7 +83,7 @@ func newEngine() *engine.Engine {
 	return e
 }
 
-func newDatasetService() backends.DatasetService {
+func newStorageService() backends.StorageService {
 	client, err := pg.New(viper.GetString("pg-conn"))
 	if err != nil {
 		log.Fatalln("unable to create pg dataset service", err)
@@ -94,12 +96,18 @@ func newEs6Client() *es6.Client {
 	if err != nil {
 		log.Fatal(err)
 	}
+	publicationSettings, err := ioutil.ReadFile("etc/es6/publication.json")
+	if err != nil {
+		log.Fatal(err)
+	}
 	client, err := es6.New(es6.Config{
 		ClientConfig: elasticsearch.Config{
 			Addresses: strings.Split(viper.GetString("es6-url"), ","),
 		},
-		DatasetIndex:    viper.GetString("dataset-index"),
-		DatasetSettings: string(datasetSettings),
+		DatasetIndex:        viper.GetString("dataset-index"),
+		DatasetSettings:     string(datasetSettings),
+		PublicationIndex:    viper.GetString("publication-index"),
+		PublicationSettings: string(publicationSettings),
 	})
 	if err != nil {
 		log.Fatal(err)

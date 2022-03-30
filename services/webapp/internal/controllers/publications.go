@@ -202,7 +202,8 @@ func (c *Publications) AddSingleImport(w http.ResponseWriter, r *http.Request) {
 		pub = p
 	} else {
 		pubType := r.FormValue("publication_type")
-		p, err := c.Engine.CreateUserPublication(userID, pubType)
+		p := &models.Publication{Type: pubType, Status: "private", CreatorID: userID, UserID: userID}
+		p, err := c.Engine.StorageService.CreatePublication(p)
 		if err != nil {
 			log.Println(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -268,7 +269,9 @@ func (c *Publications) AddSingleConfirm(w http.ResponseWriter, r *http.Request) 
 func (c *Publications) AddSinglePublish(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
-	savedPub, err := c.Engine.PublishPublication(pub)
+	pubCopy := *pub
+	pubCopy.Status = "public"
+	savedPub, err := c.Engine.UpdatePublication(&pubCopy)
 	if err != nil {
 
 		/*
@@ -589,7 +592,9 @@ func (c *Publications) AddMultiplePublish(w http.ResponseWriter, r *http.Request
 func (c *Publications) Publish(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
-	savedPub, err := c.Engine.PublishPublication(pub)
+	pubCopy := *pub
+	pubCopy.Status = "public"
+	savedPub, err := c.Engine.UpdatePublication(&pubCopy)
 
 	flashes := make([]views.Flash, 0)
 	var publicationErrors jsonapi.Errors
@@ -686,7 +691,9 @@ func (c *Publications) Delete(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	if err := c.Engine.DeletePublication(pub.ID); err != nil {
+
+	pub.Status = "deleted"
+	if _, err := c.Engine.UpdatePublication(pub); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -749,10 +756,13 @@ func (c *Publications) ORCIDAdd(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Publications) ORCIDAddAll(w http.ResponseWriter, r *http.Request) {
+	user := context.GetUser(r.Context())
 	// TODO handle error
 	id, err := c.Engine.AddPublicationsToORCID(
-		context.GetUser(r.Context()).ID,
-		models.NewSearchArgs().WithFilter("status", "public"),
+		user,
+		models.NewSearchArgs().
+			WithFilter("status", "public").
+			WithFilter("author.id", user.ID),
 	)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

@@ -1,7 +1,6 @@
 package engine
 
 import (
-	"encoding/json"
 	"errors"
 	"log"
 
@@ -39,7 +38,7 @@ func (e *Engine) ImportUserDatasetByIdentifier(userID, source, identifier string
 	d.UserID = userID
 	d.Status = "private"
 
-	d, err = e.DatasetService.CreateDataset(d)
+	d, err = e.StorageService.CreateDataset(d)
 	if err != nil {
 		return nil, err
 	}
@@ -53,16 +52,16 @@ func (e *Engine) ImportUserDatasetByIdentifier(userID, source, identifier string
 }
 
 func (e *Engine) GetDataset(id string) (*models.Dataset, error) {
-	return e.DatasetService.GetDataset(id)
+	return e.StorageService.GetDataset(id)
 }
 
 func (e *Engine) UpdateDataset(d *models.Dataset) (*models.Dataset, error) {
-	if err := e.ValidateDataset(d); err != nil {
+	if err := d.Validate(); err != nil {
 		log.Printf("%#v", err)
 		return nil, err
 	}
 
-	d, err := e.DatasetService.UpdateDataset(d)
+	d, err := e.StorageService.UpdateDataset(d)
 	if err != nil {
 		return nil, err
 	}
@@ -73,17 +72,6 @@ func (e *Engine) UpdateDataset(d *models.Dataset) (*models.Dataset, error) {
 	}
 
 	return d, nil
-}
-
-func (e *Engine) PublishDataset(d *models.Dataset) (*models.Dataset, error) {
-	d.Status = "public"
-	return e.UpdateDataset(d)
-}
-
-func (e *Engine) DeleteDataset(d *models.Dataset) error {
-	d.Status = "deleted"
-	_, err := e.UpdateDataset(d)
-	return err
 }
 
 func (e *Engine) Datasets(args *models.SearchArgs) (*models.DatasetHits, error) {
@@ -105,15 +93,6 @@ func (e *Engine) UserDatasets(userID string, args *models.SearchArgs) (*models.D
 	return e.DatasetSearchService.SearchDatasets(args)
 }
 
-func (e *Engine) ValidateDataset(d *models.Dataset) error {
-	m := make(map[string]interface{})
-	dJSON, err := json.Marshal(d)
-	if err != nil {
-		return err
-	}
-	if err = json.Unmarshal(dJSON, &m); err != nil {
-		return err
-	}
-
-	return e.datasetSchema.Validate(m)
+func (e *Engine) GetDatasetPublications(id string) ([]*models.Publication, error) {
+	return nil, errors.New("not implemented")
 }

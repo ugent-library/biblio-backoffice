@@ -11,16 +11,25 @@ type DatasetSource interface {
 	GetDataset(string) (*models.Dataset, error)
 }
 
-type DatasetService interface {
+type StorageService interface {
 	GetDataset(string) (*models.Dataset, error)
 	CreateDataset(*models.Dataset) (*models.Dataset, error)
 	UpdateDataset(*models.Dataset) (*models.Dataset, error)
 	EachDataset(func(*models.Dataset) bool) error
+	GetPublication(string) (*models.Publication, error)
+	CreatePublication(*models.Publication) (*models.Publication, error)
+	UpdatePublication(*models.Publication) (*models.Publication, error)
+	EachPublication(func(*models.Publication) bool) error
 }
 
 type DatasetSearchService interface {
 	SearchDatasets(*models.SearchArgs) (*models.DatasetHits, error)
 	IndexDataset(*models.Dataset) error
+}
+
+type PublicationSearchService interface {
+	SearchPublications(*models.SearchArgs) (*models.PublicationHits, error)
+	IndexPublication(*models.Publication) error
 }
 
 type PublicationService interface {
@@ -40,11 +49,6 @@ type PublicationService interface {
 	UpdatePublicationFile(string, *models.PublicationFile) error
 	RemovePublicationFile(id, fileID string) error
 	DeletePublication(string) error
-}
-
-type PublicationSearchService interface {
-	Publications(*models.SearchArgs) (*models.PublicationHits, error)
-	UserPublications(string, *models.SearchArgs) (*models.PublicationHits, error)
 }
 
 type PersonService interface {

@@ -17,15 +17,14 @@ import (
 
 type Activities struct {
 	PublicationSearchService backends.PublicationSearchService
-	PublicationService       backends.PublicationService
+	StorageService           backends.StorageService
 	OrcidSandbox             bool
 }
 
 type Args struct {
-	UserID     string
 	ORCID      string
 	ORCIDToken string
-	SearchArgs models.SearchArgs
+	SearchArgs *models.SearchArgs
 }
 
 func SendPublicationsToORCIDWorkflow(ctx workflow.Context, args Args) (err error) {
@@ -60,7 +59,7 @@ func (a *Activities) SendPublicationsToORCID(ctx context.Context, args Args) err
 	var numDone int
 
 	for {
-		hits, _ := a.PublicationSearchService.UserPublications(args.UserID, &searchArgs)
+		hits, _ := a.PublicationSearchService.SearchPublications(searchArgs)
 
 		for _, pub := range hits.Hits {
 			numDone++
@@ -89,14 +88,14 @@ func (a *Activities) SendPublicationsToORCID(ctx context.Context, args Args) err
 				PutCode: putCode,
 			})
 
-			if _, err := a.PublicationService.UpdatePublication(pub); err != nil {
+			if _, err := a.StorageService.UpdatePublication(pub); err != nil {
 				return err
 			}
 		}
 
 		activity.RecordHeartbeat(ctx, models.Progress{Numerator: numDone, Denominator: hits.Total})
 
-		if !hits.NextPage {
+		if !hits.NextPage() {
 			break
 		}
 		searchArgs.Page = searchArgs.Page + 1

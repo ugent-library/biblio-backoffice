@@ -9,9 +9,11 @@ import (
 )
 
 type Config struct {
-	ClientConfig    elasticsearch.Config
-	DatasetIndex    string
-	DatasetSettings string
+	ClientConfig        elasticsearch.Config
+	DatasetIndex        string
+	DatasetSettings     string
+	PublicationIndex    string
+	PublicationSettings string
 }
 
 type Client struct {
@@ -43,6 +45,29 @@ func (c *Client) CreateDatasetIndex() error {
 
 func (c *Client) DeleteDatasetIndex() error {
 	res, err := c.es.Indices.Delete([]string{c.DatasetIndex})
+	if err != nil {
+		return err
+	}
+	if res.IsError() {
+		return fmt.Errorf("error: %s", res)
+	}
+	return nil
+}
+
+func (c *Client) CreatePublicationIndex() error {
+	r := strings.NewReader(c.PublicationSettings)
+	res, err := c.es.Indices.Create(c.PublicationIndex, c.es.Indices.Create.WithBody(r))
+	if err != nil {
+		return err
+	}
+	if res.IsError() {
+		return fmt.Errorf("error: %s", res)
+	}
+	return nil
+}
+
+func (c *Client) DeletePublicationIndex() error {
+	res, err := c.es.Indices.Delete([]string{c.PublicationIndex})
 	if err != nil {
 		return err
 	}
