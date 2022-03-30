@@ -26,24 +26,16 @@ func NewPublicationFiles(c Context) *PublicationFiles {
 }
 
 func (c *PublicationFiles) Download(w http.ResponseWriter, r *http.Request) {
-	fileID := mux.Vars(r)["file_id"]
-
 	pub := context.GetPublication(r.Context())
+	fileID := mux.Vars(r)["file_id"]
+	file := pub.GetFile(fileID)
 
-	var fileURL string
-	for _, file := range pub.File {
-		if file.ID == fileID {
-			fileURL = file.URL
-			break
-		}
-	}
-
-	if fileURL == "" {
+	if file == nil {
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
 
-	c.Engine.ServePublicationFile(fileURL, w, r)
+	http.ServeFile(w, r, c.Engine.FilePath(file.SHA256))
 }
 
 func (c *PublicationFiles) Thumbnail(w http.ResponseWriter, r *http.Request) {
@@ -64,7 +56,7 @@ func (c *PublicationFiles) Thumbnail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.Engine.ServePublicationFile(thumbnailURL, w, r)
+	c.Engine.ServePublicationThumbnail(thumbnailURL, w, r)
 }
 
 func (c *PublicationFiles) Upload(w http.ResponseWriter, r *http.Request) {

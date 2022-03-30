@@ -152,6 +152,15 @@ func (p *Publication) AccessLevel() string {
 	return ""
 }
 
+func (p *Publication) GetFile(id string) *PublicationFile {
+	for _, file := range p.File {
+		if file.ID == id {
+			return file
+		}
+	}
+	return nil
+}
+
 func (p *Publication) ThumbnailURL() string {
 	for _, file := range p.File {
 		if file.ThumbnailURL != "" {

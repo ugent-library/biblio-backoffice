@@ -97,10 +97,6 @@ func (e *Engine) ImportUserPublications(userID, source string, file io.Reader) (
 	return "", errors.New("not implemented")
 }
 
-func (c *Engine) ServePublicationFile(fileURL string, w http.ResponseWriter, r *http.Request) {
-	panic("not implemented")
-}
-
 func (c *Engine) ServePublicationThumbnail(fileURL string, w http.ResponseWriter, r *http.Request) {
 	panic("not implemented")
 }
@@ -125,6 +121,11 @@ func segmentedPath(str string, size int) string {
 	return path.Join(segments...)
 }
 
+func (e *Engine) FilePath(checksum string) string {
+	fnv32 := fmt.Sprintf("%d", fnvHash(checksum))
+	return path.Join("/Users/nsteenla/tmp/biblio_backend/files", segmentedPath(fnv32, 3), checksum)
+}
+
 func (e *Engine) StoreFile(r io.Reader) (string, error) {
 	tmpFile, err := ioutil.TempFile("/Users/nsteenla/tmp/biblio_backend/tmp", "")
 	if err != nil {
@@ -143,13 +144,13 @@ func (e *Engine) StoreFile(r io.Reader) (string, error) {
 	}
 
 	checksum := fmt.Sprintf("%x", hash.Sum(nil))
+	fnv32 := fmt.Sprintf("%d", fnvHash(checksum))
 
 	log.Printf("sha256: %s", checksum)
-	fnv32 := fnvHash(checksum)
-	log.Printf("fnv: %d", fnv32)
-	log.Printf("segmented path: %s", segmentedPath(fmt.Sprintf("%d", fnv32), 3))
+	log.Printf("fnv: %s", fnv32)
+	log.Printf("segmented path: %s", segmentedPath(fnv32, 3))
 
-	pathToDir := path.Join("/Users/nsteenla/tmp/biblio_backend/files", segmentedPath(fmt.Sprintf("%d", fnv32), 3))
+	pathToDir := path.Join("/Users/nsteenla/tmp/biblio_backend/files", segmentedPath(fnv32, 3))
 	pathToFile := path.Join(pathToDir, checksum)
 
 	// file already stored
