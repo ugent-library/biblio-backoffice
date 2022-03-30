@@ -115,7 +115,7 @@ func (c *Publications) Thumbnail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.Engine.ServePublicationFile(pub.ThumbnailURL(), w, r)
+	c.Engine.ServePublicationThumbnail(pub.ThumbnailURL(), w, r)
 }
 
 func (c *Publications) Summary(w http.ResponseWriter, r *http.Request) {

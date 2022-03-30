@@ -14,6 +14,7 @@ type PublicationHits struct {
 
 type PublicationFile struct {
 	AccessLevel        string     `json:"access_level,omitempty" form:"access_level"`
+	CCLicense          string     `json:"cc_license,omitempty" form:"cc_license"`
 	ContentType        string     `json:"content_type,omitempty" form:"-"`
 	DateCreated        *time.Time `json:"date_created,omitempty" form:"-"`
 	DateUpdated        *time.Time `json:"date_updated,omitempty" form:"-"`
@@ -23,7 +24,7 @@ type PublicationFile struct {
 	Filename           string     `json:"file_name,omitempty" form:"-"`
 	FileSize           int        `json:"file_size,omitempty" form:"-"`
 	ID                 string     `json:"file_id,omitempty" form:"-"`
-	CCLicense          string     `json:"cc_license,omitempty" form:"cc_license"`
+	SHA256             string     `json:"sha256,omitempty" form:"-"`
 	NoLicense          bool       `json:"no_license,omitempty" form:"no_license"`
 	OtherLicense       string     `json:"other_license,omitempty" form:"other_license"`
 	PublicationVersion string     `json:"publication_version,omitempty" form:"publication_version"`

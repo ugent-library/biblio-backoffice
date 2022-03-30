@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
@@ -67,8 +68,6 @@ func (c *PublicationFiles) Thumbnail(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *PublicationFiles) Upload(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
-
 	// 2GB limit on request body
 	r.Body = http.MaxBytesReader(w, r.Body, 2000000000)
 
@@ -100,13 +99,11 @@ func (c *PublicationFiles) Upload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pubFile := &models.PublicationFile{
-		Filename:    handler.Filename,
-		FileSize:    int(handler.Size),
-		ContentType: filetype,
-	}
+	pub := context.GetPublication(r.Context())
 
-	if err = c.Engine.AddPublicationFile(id, pubFile, file); err != nil {
+	checksum, err := c.Engine.StoreFile(file)
+
+	if err != nil {
 		flash := views.Flash{Type: "error", Message: "There was a problem adding your file"}
 		if apiErrors, ok := err.(jsonapi.Errors); ok && apiErrors[0].Code == "api.create_publication_file.file_already_present" {
 			flash = views.Flash{Type: "warning", Message: "A file with the same name is already attached to this publication"}
@@ -115,7 +112,7 @@ func (c *PublicationFiles) Upload(w http.ResponseWriter, r *http.Request) {
 			c.ViewData(r, struct {
 				Publication *models.Publication
 			}{
-				context.GetPublication(r.Context()),
+				pub,
 			},
 				flash,
 			),
@@ -124,7 +121,35 @@ func (c *PublicationFiles) Upload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pub, _ := c.Engine.GetPublication(id)
+	// TODO check if file with same checksum is already present
+	pubCopy := *pub
+	now := time.Now()
+	pubFile := &models.PublicationFile{
+		ID:          uuid.New().String(),
+		Filename:    handler.Filename,
+		FileSize:    int(handler.Size),
+		ContentType: filetype,
+		SHA256:      checksum,
+		DateCreated: &now,
+		DateUpdated: &now,
+	}
+	pubCopy.File = append(pubCopy.File, pubFile)
+	savedPub, err := c.Engine.UpdatePublication(&pubCopy)
+
+	if err != nil {
+		flash := views.Flash{Type: "error", Message: "There was a problem adding your file"}
+		c.Render.HTML(w, http.StatusCreated, "publication/files/_list",
+			c.ViewData(r, struct {
+				Publication *models.Publication
+			}{
+				pub,
+			},
+				flash,
+			),
+			render.HTMLOptions{Layout: "layouts/htmx"},
+		)
+		return
+	}
 
 	c.Render.HTML(w, http.StatusCreated, "publication/files/_upload_edit",
 		c.ViewData(r, struct {
@@ -134,9 +159,9 @@ func (c *PublicationFiles) Upload(w http.ResponseWriter, r *http.Request) {
 			Form         *views.FormBuilder
 			Vocabularies map[string][]string
 		}{
-			pub,
-			pub.File[len(pub.File)-1],
-			len(pub.File) - 1,
+			savedPub,
+			savedPub.File[len(savedPub.File)-1],
+			len(savedPub.File) - 1,
 			views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), nil),
 			c.Engine.Vocabularies(),
 		}),
@@ -222,7 +247,7 @@ func (c *PublicationFiles) Update(w http.ResponseWriter, r *http.Request) {
 		file.Embargo = ""
 	}
 
-	err = c.Engine.UpdatePublicationFile(pub.ID, file)
+	_, err = c.Engine.UpdatePublication(pub)
 
 	if formErrors, ok := err.(jsonapi.Errors); ok {
 		c.Render.HTML(w, http.StatusOK, "publication/files/_edit", c.ViewData(r, struct {
@@ -284,15 +309,21 @@ func (c *PublicationFiles) ConfirmRemove(w http.ResponseWriter, r *http.Request)
 }
 
 func (c *PublicationFiles) Remove(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
+	pub := context.GetPublication(r.Context())
 	fileID := mux.Vars(r)["file_id"]
+	newFile := []*models.PublicationFile{}
+	for _, f := range pub.File {
+		if f.ID != fileID {
+			newFile = append(newFile, f)
+		}
+	}
+	pub.File = newFile
 
-	if err := c.Engine.RemovePublicationFile(id, fileID); err != nil {
+	pub, err := c.Engine.UpdatePublication(pub)
+	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	pub, _ := c.Engine.GetPublication(id)
 
 	c.Render.HTML(w, http.StatusCreated, "publication/files/_list", c.ViewData(r, struct {
 		Publication *models.Publication
