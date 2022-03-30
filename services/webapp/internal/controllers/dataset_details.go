@@ -65,7 +65,6 @@ func (c *DatasetDetails) Update(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	dataset.Vacuum()
 
 	savedDataset, err := c.Engine.UpdateDataset(dataset)
 

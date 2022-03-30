@@ -56,6 +56,8 @@ func (e *Engine) GetDataset(id string) (*models.Dataset, error) {
 }
 
 func (e *Engine) UpdateDataset(d *models.Dataset) (*models.Dataset, error) {
+	d.Vacuum()
+
 	if err := d.Validate(); err != nil {
 		log.Printf("%#v", err)
 		return nil, err

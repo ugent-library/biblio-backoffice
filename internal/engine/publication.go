@@ -19,23 +19,25 @@ func (e *Engine) GetPublication(id string) (*models.Publication, error) {
 	return e.StorageService.GetPublication(id)
 }
 
-func (e *Engine) UpdatePublication(d *models.Publication) (*models.Publication, error) {
-	if err := d.Validate(); err != nil {
+func (e *Engine) UpdatePublication(p *models.Publication) (*models.Publication, error) {
+	p.Vacuum()
+
+	if err := p.Validate(); err != nil {
 		log.Printf("%#v", err)
 		return nil, err
 	}
 
-	d, err := e.StorageService.UpdatePublication(d)
+	p, err := e.StorageService.UpdatePublication(p)
 	if err != nil {
 		return nil, err
 	}
 
-	if err := e.PublicationSearchService.IndexPublication(d); err != nil {
+	if err := e.PublicationSearchService.IndexPublication(p); err != nil {
 		log.Printf("error indexing publication %+v", err)
 		return nil, err
 	}
 
-	return d, nil
+	return p, nil
 }
 
 func (e *Engine) Publications(args *models.SearchArgs) (*models.PublicationHits, error) {
