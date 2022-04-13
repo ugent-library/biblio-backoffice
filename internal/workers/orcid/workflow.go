@@ -88,7 +88,7 @@ func (a *Activities) SendPublicationsToORCID(ctx context.Context, args Args) err
 				PutCode: putCode,
 			})
 
-			if _, err := a.StorageService.UpdatePublication(pub); err != nil {
+			if _, err := a.StorageService.SavePublication(pub); err != nil {
 				return err
 			}
 		}

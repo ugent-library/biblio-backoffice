@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"sync"
 
 	"github.com/ugent-library/biblio-backend/internal/models"
 )
@@ -23,7 +24,7 @@ func (e *Engine) UpdatePublication(p *models.Publication) (*models.Publication, 
 		return nil, err
 	}
 
-	p, err := e.StorageService.UpdatePublication(p)
+	p, err := e.StorageService.SavePublication(p)
 	if err != nil {
 		return nil, err
 	}
@@ -73,16 +74,82 @@ func (e *Engine) BatchPublishPublications(userID string, args *models.SearchArgs
 	return
 }
 
-func (e *Engine) GetPublicationDatasets(id string) ([]*models.Dataset, error) {
-	return nil, nil
+func (e *Engine) GetPublicationDatasets(p *models.Publication) ([]*models.Dataset, error) {
+	datasetIds := make([]string, len(p.RelatedDataset))
+	for _, rd := range p.RelatedDataset {
+		datasetIds = append(datasetIds, rd.ID)
+	}
+	return e.StorageService.GetDatasets(datasetIds)
 }
 
-func (e *Engine) AddPublicationDataset(id, datasetID string) error {
-	return errors.New("not implemented")
+func (e *Engine) AddPublicationDataset(p *models.Publication, d *models.Dataset) (*models.Publication, error) {
+	tx, err := e.StorageService.Begin()
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+
+	if !p.HasRelatedDataset(d.ID) {
+		p.RelatedDataset = append(p.RelatedDataset, models.RelatedDataset{ID: d.ID})
+		savedP, err := tx.UpdatePublication(p)
+		if err != nil {
+			return nil, err
+		}
+		p = savedP
+	}
+	if !d.HasRelatedPublication(p.ID) {
+		d.RelatedPublication = append(d.RelatedPublication, models.RelatedPublication{ID: p.ID})
+		if _, err := tx.UpdateDataset(d); err != nil {
+			return nil, err
+		}
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
+	return p, nil
 }
 
-func (e *Engine) RemovePublicationDataset(id, datasetID string) error {
-	return errors.New("not implemented")
+func (e *Engine) RemovePublicationDataset(p *models.Publication, d *models.Dataset) (*models.Publication, error) {
+	tx, err := e.StorageService.Begin()
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+
+	if p.HasRelatedDataset(d.ID) {
+		var newRelatedDatasets []models.RelatedDataset
+		for _, rd := range p.RelatedDataset {
+			if rd.ID != d.ID {
+				newRelatedDatasets = append(newRelatedDatasets, rd)
+			}
+		}
+		p.RelatedDataset = newRelatedDatasets
+		savedP, err := tx.UpdatePublication(p)
+		if err != nil {
+			return nil, err
+		}
+		p = savedP
+	}
+	if d.HasRelatedPublication(p.ID) {
+		var newRelatedPublications []models.RelatedPublication
+		for _, rd := range d.RelatedPublication {
+			if rd.ID != d.ID {
+				newRelatedPublications = append(newRelatedPublications, rd)
+			}
+		}
+		d.RelatedPublication = newRelatedPublications
+		if _, err := tx.UpdateDataset(d); err != nil {
+			return nil, err
+		}
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
+	return p, nil
 }
 
 func (e *Engine) ImportUserPublicationByIdentifier(userID, source, identifier string) (*models.Publication, error) {
@@ -94,7 +161,7 @@ func (e *Engine) ImportUserPublications(userID, source string, file io.Reader) (
 }
 
 func (c *Engine) ServePublicationThumbnail(fileURL string, w http.ResponseWriter, r *http.Request) {
-	panic("not implemented")
+	// panic("not implemented")
 }
 
 func fnvHash(s string) uint32 {
@@ -163,4 +230,30 @@ func (e *Engine) StoreFile(r io.Reader) (string, error) {
 	}
 
 	return checksum, nil
+}
+
+func (e *Engine) IndexAllPublications() (err error) {
+	var indexWG sync.WaitGroup
+
+	// indexing channel
+	indexC := make(chan *models.Publication)
+
+	go func() {
+		indexWG.Add(1)
+		defer indexWG.Done()
+		e.PublicationSearchService.IndexPublications(indexC)
+	}()
+
+	// send recs to indexer
+	e.StorageService.EachPublication(func(p *models.Publication) bool {
+		indexC <- p
+		return true
+	})
+
+	close(indexC)
+
+	// wait for indexing to finish
+	indexWG.Wait()
+
+	return
 }

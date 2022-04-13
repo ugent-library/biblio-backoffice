@@ -85,10 +85,10 @@
                                         <div class="list-group-item-meta-item">
                                             <span class="text-muted c-body-small">Biblio ID: {{.ID}}</span>
                                         </div>
-                                        {{with .RelatedPublicationCount}}
-                                        <div class="list-group-item-meta-item" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="{{.}} related publications">
+                                        {{if .RelatedPublication}}
+                                        <div class="list-group-item-meta-item" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="{{len .RelatedPublication}} related publications">
                                             <span class="text-muted c-body-small">
-                                                <i class="if if-article if--muted if--small"></i>{{.}}
+                                                <i class="if if-article if--muted if--small"></i>{{len .RelatedPublication}}
                                             </span>
                                         </div>
                                         {{end}}

@@ -73,10 +73,10 @@
                             <span class="text-muted c-body-small">Biblio ID: {{$p.ID}}</span>
                         </div>
                         {{template "publication/_orcid_status" .}}
-                        {{with $p.RelatedDatasetCount}}
-                        <div class="list-group-item-meta-item" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="{{$p.RelatedDatasetCount}} related datasets">
+                        {{if $p.RelatedDataset}}
+                        <div class="list-group-item-meta-item" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="{{len $p.RelatedDataset}} related datasets">
                             <span class="text-muted c-body-small">
-                                <i class="if if-database if--muted if--small"></i>{{$p.RelatedDatasetCount}}
+                                <i class="if if-database if--muted if--small"></i>{{len $p.RelatedDataset}}
                             </span>
                         </div>
                         {{end}}

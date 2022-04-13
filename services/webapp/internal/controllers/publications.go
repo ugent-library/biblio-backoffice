@@ -69,7 +69,7 @@ func (c *Publications) List(w http.ResponseWriter, r *http.Request) {
 func (c *Publications) Show(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
-	datasets, err := c.Engine.GetPublicationDatasets(pub.ID)
+	datasets, err := c.Engine.GetPublicationDatasets(pub)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -83,7 +83,7 @@ func (c *Publications) Show(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pub.RelatedDatasetCount = len(datasets)
+	// pub.RelatedDatasetCount = len(datasets)
 
 	c.Render.HTML(w, http.StatusOK, "publication/show", c.ViewData(r, struct {
 		PageTitle           string
@@ -203,7 +203,7 @@ func (c *Publications) AddSingleImport(w http.ResponseWriter, r *http.Request) {
 	} else {
 		pubType := r.FormValue("publication_type")
 		p := &models.Publication{Type: pubType, Status: "private", CreatorID: userID, UserID: userID}
-		p, err := c.Engine.StorageService.CreatePublication(p)
+		p, err := c.Engine.StorageService.SavePublication(p)
 		if err != nil {
 			log.Println(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -228,14 +228,14 @@ func (c *Publications) AddSingleImport(w http.ResponseWriter, r *http.Request) {
 func (c *Publications) AddSingleDescription(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
-	datasets, err := c.Engine.GetPublicationDatasets(pub.ID)
+	datasets, err := c.Engine.GetPublicationDatasets(pub)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	pub.RelatedDatasetCount = len(datasets)
+	// pub.RelatedDatasetCount = len(datasets)
 
 	c.Render.HTML(w, http.StatusOK, "publication/add_single_description", c.ViewData(r, struct {
 		PageTitle           string
@@ -442,7 +442,7 @@ func (c *Publications) AddMultipleShow(w http.ResponseWriter, r *http.Request) {
 	batchID := mux.Vars(r)["batch_id"]
 	pub := context.GetPublication(r.Context())
 
-	datasets, err := c.Engine.GetPublicationDatasets(pub.ID)
+	datasets, err := c.Engine.GetPublicationDatasets(pub)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -456,7 +456,7 @@ func (c *Publications) AddMultipleShow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pub.RelatedDatasetCount = len(datasets)
+	// pub.RelatedDatasetCount = len(datasets)
 
 	c.Render.HTML(w, http.StatusOK, "publication/add_multiple_show", c.ViewData(r, struct {
 		PageTitle           string
@@ -519,14 +519,14 @@ func (c *Publications) AddMultipleConfirmShow(w http.ResponseWriter, r *http.Req
 	batchID := mux.Vars(r)["batch_id"]
 	pub := context.GetPublication(r.Context())
 
-	datasets, err := c.Engine.GetPublicationDatasets(pub.ID)
+	datasets, err := c.Engine.GetPublicationDatasets(pub)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	pub.RelatedDatasetCount = len(datasets)
+	// pub.RelatedDatasetCount = len(datasets)
 
 	c.Render.HTML(w, http.StatusOK, "publication/add_multiple_confirm_show", c.ViewData(r, struct {
 		PageTitle           string
@@ -623,7 +623,7 @@ func (c *Publications) Publish(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	pubDatasets, err := c.Engine.GetPublicationDatasets(pub.ID)
+	pubDatasets, err := c.Engine.GetPublicationDatasets(pub)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -637,7 +637,7 @@ func (c *Publications) Publish(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	savedPub.RelatedDatasetCount = len(pubDatasets)
+	// savedPub.RelatedDatasetCount = len(pubDatasets)
 
 	c.Render.HTML(w, http.StatusOK, "publication/show", c.ViewData(r, struct {
 		PageTitle           string

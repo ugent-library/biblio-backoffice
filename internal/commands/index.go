@@ -9,9 +9,11 @@ import (
 func init() {
 	indexDatasetCmd.AddCommand(indexDatasetCreateCmd)
 	indexDatasetCmd.AddCommand(indexDatasetDeleteCmd)
+	indexDatasetCmd.AddCommand(indexDatasetAllCmd)
 	indexCmd.AddCommand(indexDatasetCmd)
 	indexPublicationCmd.AddCommand(indexPublicationCreateCmd)
 	indexPublicationCmd.AddCommand(indexPublicationDeleteCmd)
+	indexPublicationCmd.AddCommand(indexPublicationAllCmd)
 	indexCmd.AddCommand(indexPublicationCmd)
 	rootCmd.AddCommand(indexCmd)
 }
@@ -46,6 +48,16 @@ var indexDatasetDeleteCmd = &cobra.Command{
 	},
 }
 
+var indexDatasetAllCmd = &cobra.Command{
+	Use:   "all",
+	Short: "Reindex all datasets",
+	Run: func(cmd *cobra.Command, args []string) {
+		if err := newEngine().IndexAllDatasets(); err != nil {
+			log.Fatal(err)
+		}
+	},
+}
+
 var indexPublicationCmd = &cobra.Command{
 	Use:   "publication [command]",
 	Short: "Publication index commands",
@@ -66,6 +78,16 @@ var indexPublicationDeleteCmd = &cobra.Command{
 	Short: "Delete publication index",
 	Run: func(cmd *cobra.Command, args []string) {
 		if err := newEs6Client().DeletePublicationIndex(); err != nil {
+			log.Fatal(err)
+		}
+	},
+}
+
+var indexPublicationAllCmd = &cobra.Command{
+	Use:   "all",
+	Short: "Reindex all datasets",
+	Run: func(cmd *cobra.Command, args []string) {
+		if err := newEngine().IndexAllPublications(); err != nil {
 			log.Fatal(err)
 		}
 	},

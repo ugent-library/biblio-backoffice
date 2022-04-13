@@ -56,20 +56,19 @@ func newEngine() *engine.Engine {
 	orcidClient := orcid.NewMemberClient(orcidConfig)
 
 	e, err := engine.New(engine.Config{
-		Temporal:                 temporal,
-		ORCIDSandbox:             orcidConfig.Sandbox,
-		ORCIDClient:              orcidClient,
-		StorageService:           newStorageService(),
-		DatasetSearchService:     es6Client,
-		PublicationSearchService: es6Client,
-		// PublicationService:        librecatClient,
+		Temporal:                  temporal,
+		ORCIDSandbox:              orcidConfig.Sandbox,
+		ORCIDClient:               orcidClient,
+		StorageService:            newStorageService(),
+		DatasetSearchService:      es6Client,
+		PublicationSearchService:  es6Client,
 		PersonService:             librecatClient,
 		ProjectService:            librecatClient,
 		UserService:               librecatClient,
 		OrganizationSearchService: librecatClient,
 		PersonSearchService:       librecatClient,
 		ProjectSearchService:      librecatClient,
-		DatasetSources: map[string]backends.DatasetSource{
+		DatasetSources: map[string]backends.DatasetGetter{
 			"datacite": datacite.New(),
 		},
 		LicenseSearchService:   spdxlicenses.New(),

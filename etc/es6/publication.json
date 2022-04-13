@@ -112,6 +112,13 @@
                     "type": "text",
                     "copy_to": "all"
                 },
+                "related_dataset": {
+                    "properties": {
+                        "id": {
+                            "type": "keyword"
+                        }
+                    }
+                },
                 "status": {
                     "type": "keyword"
                 },

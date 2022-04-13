@@ -15,14 +15,13 @@ type Config struct {
 	PublicationSearchService backends.PublicationSearchService
 	backends.PersonService
 	backends.ProjectService
-	// backends.PublicationService
 	backends.UserService
 	backends.OrganizationSearchService
 	backends.PersonSearchService
 	backends.ProjectSearchService
 	backends.LicenseSearchService
 	backends.MediaTypeSearchService
-	DatasetSources map[string]backends.DatasetSource
+	DatasetSources map[string]backends.DatasetGetter
 }
 
 type Engine struct {

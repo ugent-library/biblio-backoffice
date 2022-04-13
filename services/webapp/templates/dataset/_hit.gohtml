@@ -68,11 +68,11 @@
                         <div class="list-group-item-meta-item">
                             <span class="text-muted c-body-small">Biblio ID: {{$d.ID}}</span>
                         </div>
-                        {{with $d.RelatedPublicationCount}}
+                        {{if $d.RelatedPublication}}
                         <div class="list-group-item-meta-item" data-toggle="tooltip"
-                            title="{{$d.RelatedPublicationCount}} related publications" data-placement="bottom">
+                            title="{{len $d.RelatedPublication}} related publications" data-placement="bottom">
                             <span class="text-muted c-body-small">
-                                <i class="if if-article if--muted if--small"></i>{{$d.RelatedPublicationCount}}
+                                <i class="if if-article if--muted if--small"></i>{{len $d.RelatedPublication}}
                             </span>
                         </div>
                         {{end}}

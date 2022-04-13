@@ -62,6 +62,10 @@ type PublicationORCIDWork struct {
 	PutCode int    `json:"put_code,omitempty"`
 }
 
+type RelatedDataset struct {
+	ID string `json:"id,omitempty"`
+}
+
 type Publication struct {
 	Abstract          []Text                `json:"abstract,omitempty" form:"abstract"`
 	AdditionalInfo    string                `json:"additional_info,omitempty" form:"additional_info"`
@@ -119,21 +123,22 @@ type Publication struct {
 	PublicationStatus       string                  `json:"publication_status,omitempty" form:"publication_status"`
 	Publisher               string                  `json:"publisher,omitempty" form:"publisher"`
 	PubMedID                string                  `json:"pubmed_id,omitempty" form:"pubmed_id"`
-	RelatedDatasetCount     int                     `json:"related_dataset_count" form:"-"`
-	ReportNumber            string                  `json:"report_number,omitempty" form:"report_number"`
-	ResearchField           []string                `json:"research_field,omitempty" form:"research_field"`
-	ReviewerNote            string                  `json:"reviewer_note,omitempty" form:"-"`
-	ReviewerTags            []string                `json:"reviewer_tags,omitempty" form:"-"`
-	SeriesTitle             string                  `json:"series_title,omitempty" form:"series_title"`
-	SourceDB                string                  `json:"source_db,omitempty" form:"-"`
-	SourceID                string                  `json:"source_id,omitempty" form:"-"`
-	SourceRecord            string                  `json:"source_record,omitempty" form:"-"`
-	Status                  string                  `json:"status,omitempty" form:"-"`
-	Supervisor              []*Contributor          `json:"supervisor,omitempty" form:"-"`
-	Title                   string                  `json:"title,omitempty" form:"title"`
-	Type                    string                  `json:"type,omitempty" form:"-"`
-	URL                     string                  `json:"url,omitempty" form:"url"`
-	UserID                  string                  `json:"user_id,omitempty" form:"-"`
+	RelatedDataset          []RelatedDataset        `json:"related_dataset,omitempty" form:"-"`
+	// RelatedDatasetCount     int                     `json:"related_dataset_count" form:"-"`
+	ReportNumber  string         `json:"report_number,omitempty" form:"report_number"`
+	ResearchField []string       `json:"research_field,omitempty" form:"research_field"`
+	ReviewerNote  string         `json:"reviewer_note,omitempty" form:"-"`
+	ReviewerTags  []string       `json:"reviewer_tags,omitempty" form:"-"`
+	SeriesTitle   string         `json:"series_title,omitempty" form:"series_title"`
+	SourceDB      string         `json:"source_db,omitempty" form:"-"`
+	SourceID      string         `json:"source_id,omitempty" form:"-"`
+	SourceRecord  string         `json:"source_record,omitempty" form:"-"`
+	Status        string         `json:"status,omitempty" form:"-"`
+	Supervisor    []*Contributor `json:"supervisor,omitempty" form:"-"`
+	Title         string         `json:"title,omitempty" form:"title"`
+	Type          string         `json:"type,omitempty" form:"-"`
+	URL           string         `json:"url,omitempty" form:"url"`
+	UserID        string         `json:"user_id,omitempty" form:"-"`
 	// Version                 int                     `json:"_version,omitempty" form:"-"`
 	Volume  string `json:"volume,omitempty" form:"volume"`
 	WOSID   string `json:"wos_id,omitempty" form:"wos_id"`
@@ -150,6 +155,15 @@ func (p *Publication) AccessLevel() string {
 		}
 	}
 	return ""
+}
+
+func (p *Publication) HasRelatedDataset(id string) bool {
+	for _, r := range p.RelatedDataset {
+		if r.ID == id {
+			return true
+		}
+	}
+	return false
 }
 
 func (p *Publication) GetFile(id string) *PublicationFile {

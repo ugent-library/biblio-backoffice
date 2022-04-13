@@ -72,7 +72,7 @@ func (c *Datasets) List(w http.ResponseWriter, r *http.Request) {
 func (c *Datasets) Show(w http.ResponseWriter, r *http.Request) {
 	dataset := context.GetDataset(r.Context())
 
-	datasetPubs, err := c.Engine.GetDatasetPublications(dataset.ID)
+	datasetPubs, err := c.Engine.GetDatasetPublications(dataset)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -86,7 +86,7 @@ func (c *Datasets) Show(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	dataset.RelatedPublicationCount = len(datasetPubs)
+	// dataset.RelatedPublicationCount = len(datasetPubs)
 
 	c.Render.HTML(w, http.StatusOK, "dataset/show", c.ViewData(r, struct {
 		PageTitle           string
@@ -143,7 +143,7 @@ func (c *Datasets) Publish(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	datasetPubs, err := c.Engine.GetDatasetPublications(dataset.ID)
+	datasetPubs, err := c.Engine.GetDatasetPublications(dataset)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -157,7 +157,7 @@ func (c *Datasets) Publish(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	savedDataset.RelatedPublicationCount = len(datasetPubs)
+	// savedDataset.RelatedPublicationCount = len(datasetPubs)
 
 	c.Render.HTML(w, http.StatusOK, "dataset/show", c.ViewData(r, struct {
 		PageTitle           string

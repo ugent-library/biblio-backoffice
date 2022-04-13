@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgtype"
 	"github.com/ugent-library/biblio-backend/internal/models"
 )
 
@@ -23,29 +24,50 @@ func (c *Client) GetDataset(id string) (*models.Dataset, error) {
 	return d, nil
 }
 
-func (c *Client) CreateDataset(d *models.Dataset) (*models.Dataset, error) {
-	now := time.Now()
-	d.ID = uuid.NewString()
-	d.DateUpdated = &now
-	d.DateCreated = &now
+func (c *Client) GetDatasets(ids []string) ([]*models.Dataset, error) {
+	var datasets []*models.Dataset
 
-	data, err := json.Marshal(d)
+	pgIds := &pgtype.TextArray{}
+	pgIds.Set(ids)
+	rows, err := c.db.Query(context.Background(), "select data from datasets where data_to is null and id=any($1)", pgIds)
 	if err != nil {
 		return nil, err
 	}
 
-	ctx := context.Background()
-	_, err = c.db.Exec(ctx, "insert into datasets(id, data, data_from) values ($1, $2, $3)", d.ID, data, now)
-	if err != nil {
-		return nil, err
+	defer rows.Close()
+
+	for rows.Next() {
+		var data json.RawMessage
+		if err := rows.Scan(&data); err != nil {
+			return nil, err
+		}
+
+		d := &models.Dataset{}
+		if err := json.Unmarshal(data, d); err != nil {
+			return nil, err
+		}
+
+		datasets = append(datasets, d)
 	}
 
-	return d, nil
+	if rows.Err() != nil {
+		return nil, rows.Err()
+	}
+
+	return datasets, nil
 }
 
-func (c *Client) UpdateDataset(d *models.Dataset) (*models.Dataset, error) {
+func (c *Client) SaveDataset(d *models.Dataset) (*models.Dataset, error) {
 	now := time.Now()
+
+	if d.DateCreated == nil {
+		d.DateCreated = &now
+	}
 	d.DateUpdated = &now
+
+	if d.ID == "" {
+		d.ID = uuid.NewString()
+	}
 
 	data, err := json.Marshal(d)
 	if err != nil {

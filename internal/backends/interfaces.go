@@ -7,29 +7,51 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/models"
 )
 
-type DatasetSource interface {
+type DatasetGetter interface {
 	GetDataset(string) (*models.Dataset, error)
 }
 
+// type DatasetIterator interface {
+// 	EachDataset(func(*models.Dataset) bool) error
+// }
+
+type PublicationGetter interface {
+	GetPublication(string) (*models.Publication, error)
+}
+
+// type PublicationIterator interface {
+// 	EachPublication(func(*models.Publication) bool) error
+// }
+
+type Transaction interface {
+	Rollback() error
+	Commit() error
+	UpdatePublication(p *models.Publication) (*models.Publication, error)
+	UpdateDataset(d *models.Dataset) (*models.Dataset, error)
+}
+
 type StorageService interface {
+	Begin() (Transaction, error)
 	GetDataset(string) (*models.Dataset, error)
-	CreateDataset(*models.Dataset) (*models.Dataset, error)
-	UpdateDataset(*models.Dataset) (*models.Dataset, error)
+	GetDatasets([]string) ([]*models.Dataset, error)
+	SaveDataset(*models.Dataset) (*models.Dataset, error)
 	EachDataset(func(*models.Dataset) bool) error
 	GetPublication(string) (*models.Publication, error)
-	CreatePublication(*models.Publication) (*models.Publication, error)
-	UpdatePublication(*models.Publication) (*models.Publication, error)
+	GetPublications([]string) ([]*models.Publication, error)
+	SavePublication(*models.Publication) (*models.Publication, error)
 	EachPublication(func(*models.Publication) bool) error
 }
 
 type DatasetSearchService interface {
 	SearchDatasets(*models.SearchArgs) (*models.DatasetHits, error)
 	IndexDataset(*models.Dataset) error
+	IndexDatasets(<-chan *models.Dataset)
 }
 
 type PublicationSearchService interface {
 	SearchPublications(*models.SearchArgs) (*models.PublicationHits, error)
 	IndexPublication(*models.Publication) error
+	IndexPublications(<-chan *models.Publication)
 }
 
 type PublicationService interface {

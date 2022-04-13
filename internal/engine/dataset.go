@@ -3,6 +3,7 @@ package engine
 import (
 	"errors"
 	"log"
+	"sync"
 
 	"github.com/ugent-library/biblio-backend/internal/models"
 )
@@ -38,7 +39,7 @@ func (e *Engine) ImportUserDatasetByIdentifier(userID, source, identifier string
 	d.UserID = userID
 	d.Status = "private"
 
-	d, err = e.StorageService.CreateDataset(d)
+	d, err = e.StorageService.SaveDataset(d)
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +60,7 @@ func (e *Engine) UpdateDataset(d *models.Dataset) (*models.Dataset, error) {
 		return nil, err
 	}
 
-	d, err := e.StorageService.UpdateDataset(d)
+	d, err := e.StorageService.SaveDataset(d)
 	if err != nil {
 		return nil, err
 	}
@@ -91,6 +92,36 @@ func (e *Engine) UserDatasets(userID string, args *models.SearchArgs) (*models.D
 	return e.DatasetSearchService.SearchDatasets(args)
 }
 
-func (e *Engine) GetDatasetPublications(id string) ([]*models.Publication, error) {
-	return nil, errors.New("not implemented")
+func (e *Engine) GetDatasetPublications(d *models.Dataset) ([]*models.Publication, error) {
+	publicationIds := make([]string, len(d.RelatedPublication))
+	for _, rp := range d.RelatedPublication {
+		publicationIds = append(publicationIds, rp.ID)
+	}
+	return e.StorageService.GetPublications(publicationIds)
+}
+
+func (e *Engine) IndexAllDatasets() (err error) {
+	var indexWG sync.WaitGroup
+
+	// indexing channel
+	indexC := make(chan *models.Dataset)
+
+	go func() {
+		indexWG.Add(1)
+		defer indexWG.Done()
+		e.DatasetSearchService.IndexDatasets(indexC)
+	}()
+
+	// send recs to indexer
+	e.StorageService.EachDataset(func(d *models.Dataset) bool {
+		indexC <- d
+		return true
+	})
+
+	close(indexC)
+
+	// wait for indexing to finish
+	indexWG.Wait()
+
+	return
 }

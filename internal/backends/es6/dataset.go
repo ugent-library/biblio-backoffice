@@ -5,10 +5,12 @@ import (
 	"context"
 	"encoding/json"
 	"io"
+	"log"
 	"strings"
 	"time"
 
 	"github.com/elastic/go-elasticsearch/v6/esapi"
+	"github.com/elastic/go-elasticsearch/v6/esutil"
 	"github.com/pkg/errors"
 	"github.com/ugent-library/biblio-backend/internal/models"
 )
@@ -243,6 +245,7 @@ func decodeDatasetRes(res *esapi.Response) (*models.DatasetHits, error) {
 
 func (c *Client) IndexDataset(d *models.Dataset) error {
 	body := M{
+		// not needed anymore in es7 with date nano type
 		"doc": struct {
 			*models.Dataset
 			DateCreated string `json:"date_created"`
@@ -279,4 +282,61 @@ func (c *Client) IndexDataset(d *models.Dataset) error {
 	}
 
 	return nil
+}
+
+func (c *Client) IndexDatasets(inCh <-chan *models.Dataset) {
+	bi, err := esutil.NewBulkIndexer(esutil.BulkIndexerConfig{
+		Index:  c.DatasetIndex,
+		Client: c.es,
+		OnError: func(c context.Context, e error) {
+			log.Fatalf("ERROR: %s", e)
+		},
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for p := range inCh {
+		// not needed anymore in es7 with date nano type
+		doc := struct {
+			*models.Dataset
+			DateCreated string `json:"date_created"`
+			DateUpdated string `json:"date_updated"`
+		}{
+			Dataset:     p,
+			DateCreated: p.DateCreated.Format(time.RFC3339),
+			DateUpdated: p.DateUpdated.Format(time.RFC3339),
+		}
+
+		payload, err := json.Marshal(&doc)
+		if err != nil {
+			log.Panic(err)
+		}
+
+		err = bi.Add(
+			context.Background(),
+			esutil.BulkIndexerItem{
+				Action:       "index",
+				DocumentID:   doc.ID,
+				DocumentType: "_doc",
+				Body:         bytes.NewReader(payload),
+				OnFailure: func(ctx context.Context, item esutil.BulkIndexerItem, res esutil.BulkIndexerResponseItem, err error) {
+					if err != nil {
+						log.Panicf("ERROR: %s", err)
+					} else {
+						log.Panicf("ERROR: %s: %s", res.Error.Type, res.Error.Reason)
+					}
+				},
+			},
+		)
+
+		if err != nil {
+			log.Panicf("Unexpected error: %s", err)
+		}
+	}
+
+	// Close the indexer
+	if err := bi.Close(context.Background()); err != nil {
+		log.Panicf("Unexpected error: %s", err)
+	}
 }

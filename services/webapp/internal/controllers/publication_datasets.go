@@ -21,7 +21,7 @@ func NewPublicationDatasets(c Context) *PublicationDatasets {
 func (c *PublicationDatasets) Choose(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
-	pubDatasets, err := c.Engine.GetPublicationDatasets(pub.ID)
+	pubDatasets, err := c.Engine.GetPublicationDatasets(pub)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -61,7 +61,7 @@ func (c *PublicationDatasets) ActiveSearch(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	pubDatasets, err := c.Engine.GetPublicationDatasets(pub.ID)
+	pubDatasets, err := c.Engine.GetPublicationDatasets(pub)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -99,21 +99,21 @@ func (c *PublicationDatasets) Add(w http.ResponseWriter, r *http.Request) {
 
 	pub := context.GetPublication(r.Context())
 
-	_, err := c.Engine.StorageService.GetDataset(datasetID)
+	dataset, err := c.Engine.StorageService.GetDataset(datasetID)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
-	err = c.Engine.AddPublicationDataset(pub.ID, datasetID)
+	_, err = c.Engine.AddPublicationDataset(pub, dataset)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	datasets, err := c.Engine.GetPublicationDatasets(pub.ID)
+	datasets, err := c.Engine.GetPublicationDatasets(pub)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -151,14 +151,21 @@ func (c *PublicationDatasets) Remove(w http.ResponseWriter, r *http.Request) {
 
 	pub := context.GetPublication(r.Context())
 
-	err := c.Engine.RemovePublicationDataset(pub.ID, datasetID)
+	dataset, err := c.Engine.StorageService.GetDataset(datasetID)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	datasets, err := c.Engine.GetPublicationDatasets(pub.ID)
+	savedPub, err := c.Engine.RemovePublicationDataset(pub, dataset)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	datasets, err := c.Engine.GetPublicationDatasets(savedPub)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -169,7 +176,7 @@ func (c *PublicationDatasets) Remove(w http.ResponseWriter, r *http.Request) {
 		Publication         *models.Publication
 		PublicationDatasets []*models.Dataset
 	}{
-		pub,
+		savedPub,
 		datasets,
 	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},

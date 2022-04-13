@@ -83,10 +83,10 @@
                                         <div class="list-group-item-meta-item">
                                             <span class="text-muted c-body-small">Biblio ID: {{.ID}}</span>
                                         </div>
-                                        {{with .RelatedDatasetCount}}
-                                        <div class="list-group-item-meta-item" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="{{.}} related datasets">
+                                        {{if .RelatedDataset}}
+                                        <div class="list-group-item-meta-item" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="{{len .RelatedDataset}} related datasets">
                                             <span class="text-muted c-body-small">
-                                                <i class="if if-database if--muted if--small"></i>{{.}}
+                                                <i class="if if-database if--muted if--small"></i>{{len .RelatedDataset}}
                                             </span>
                                         </div>
                                         {{end}}

@@ -21,7 +21,7 @@ func NewDatasetPublications(c Context) *DatasetPublications {
 func (c *DatasetPublications) Choose(w http.ResponseWriter, r *http.Request) {
 	dataset := context.GetDataset(r.Context())
 
-	datasetPubs, err := c.Engine.GetDatasetPublications(dataset.ID)
+	datasetPubs, err := c.Engine.GetDatasetPublications(dataset)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -61,7 +61,7 @@ func (c *DatasetPublications) ActiveSearch(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	datasetPubs, err := c.Engine.GetDatasetPublications(dataset.ID)
+	datasetPubs, err := c.Engine.GetDatasetPublications(dataset)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -99,21 +99,21 @@ func (c *DatasetPublications) Add(w http.ResponseWriter, r *http.Request) {
 
 	dataset := context.GetDataset(r.Context())
 
-	_, err := c.Engine.StorageService.GetPublication(pubID)
+	pub, err := c.Engine.StorageService.GetPublication(pubID)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
-	err = c.Engine.AddPublicationDataset(pubID, dataset.ID)
+	_, err = c.Engine.AddPublicationDataset(pub, dataset)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	publications, err := c.Engine.GetDatasetPublications(dataset.ID)
+	publications, err := c.Engine.GetDatasetPublications(dataset)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -151,14 +151,19 @@ func (c *DatasetPublications) Remove(w http.ResponseWriter, r *http.Request) {
 
 	dataset := context.GetDataset(r.Context())
 
-	err := c.Engine.RemovePublicationDataset(pubID, dataset.ID)
+	pub, err := c.Engine.StorageService.GetPublication(pubID)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	if _, err = c.Engine.RemovePublicationDataset(pub, dataset); err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
-	publications, err := c.Engine.GetDatasetPublications(dataset.ID)
+	publications, err := c.Engine.GetDatasetPublications(dataset)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
