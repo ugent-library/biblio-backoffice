@@ -1,9 +1,10 @@
 package datacite
 
 import (
+	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
+	"net/url"
 	"regexp"
 	"time"
 
@@ -37,7 +38,7 @@ func (c *Client) GetDataset(id string) (*models.Dataset, error) {
 		return nil, err
 	}
 
-	req, err := http.NewRequest(http.MethodGet, c.url+doi, nil)
+	req, err := http.NewRequest(http.MethodGet, c.url+url.PathEscape(doi), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -51,8 +52,11 @@ func (c *Client) GetDataset(id string) (*models.Dataset, error) {
 	if err != nil {
 		return nil, err
 	}
+	if res.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("can't import dataset: %s", src)
+	}
 
-	log.Printf("import dataset src: %s", src)
+	// log.Printf("import dataset src: %s", src)
 
 	attrs := gjson.ParseBytes(src)
 
@@ -115,7 +119,7 @@ func (c *Client) GetDataset(id string) (*models.Dataset, error) {
 		d.AccessLevel = res.String()
 	}
 
-	log.Printf("import dataset: %+v", d)
+	// log.Printf("import dataset: %+v", d)
 
 	return d, nil
 }

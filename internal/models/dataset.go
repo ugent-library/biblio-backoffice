@@ -48,14 +48,13 @@ type Dataset struct {
 	OtherLicense       string               `json:"other_license,omitempty" form:"other_license"`
 	Project            []DatasetProject     `json:"project,omitempty" form:"-"`
 	Publisher          string               `json:"publisher,omitempty" form:"publisher"`
-	RelatedPublication []RelatedPublication `json:"related_publication" form:"-"`
-	// RelatedPublicationCount int                 `json:"related_publication_count" form:"-"`
-	ReviewerNote string   `json:"reviewer_note,omitempty" form:"-"`
-	ReviewerTags []string `json:"reviewer_tags,omitempty" form:"-"`
-	Status       string   `json:"status,omitempty" form:"-"`
-	Title        string   `json:"title,omitempty" form:"title"`
-	URL          string   `json:"url,omitempty" form:"url"`
-	UserID       string   `json:"user_id,omitempty" form:"-"`
+	RelatedPublication []RelatedPublication `json:"related_publication,omitempty" form:"-"`
+	ReviewerNote       string               `json:"reviewer_note,omitempty" form:"-"`
+	ReviewerTags       []string             `json:"reviewer_tags,omitempty" form:"-"`
+	Status             string               `json:"status,omitempty" form:"-"`
+	Title              string               `json:"title,omitempty" form:"title"`
+	URL                string               `json:"url,omitempty" form:"url"`
+	UserID             string               `json:"user_id,omitempty" form:"-"`
 	// Version                 int                 `json:"_version,omitempty" form:"-"`
 	Year string `json:"year,omitempty" form:"year"`
 }

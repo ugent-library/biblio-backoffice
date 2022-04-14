@@ -153,7 +153,30 @@ func (e *Engine) RemovePublicationDataset(p *models.Publication, d *models.Datas
 }
 
 func (e *Engine) ImportUserPublicationByIdentifier(userID, source, identifier string) (*models.Publication, error) {
-	return nil, errors.New("not implemented")
+	s, ok := e.PublicationSources[source]
+	if !ok {
+		return nil, errors.New("unknown dataset source")
+	}
+	p, err := s.GetPublication(identifier)
+	if err != nil {
+		return nil, err
+	}
+	p.Vacuum()
+	p.CreatorID = userID
+	p.UserID = userID
+	p.Status = "private"
+
+	p, err = e.StorageService.SavePublication(p)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := e.PublicationSearchService.IndexPublication(p); err != nil {
+		log.Printf("error indexing publication %+v", err)
+		return nil, err
+	}
+
+	return p, nil
 }
 
 func (e *Engine) ImportUserPublications(userID, source string, file io.Reader) (string, error) {

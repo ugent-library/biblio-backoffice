@@ -86,8 +86,6 @@ func (c *Datasets) Show(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// dataset.RelatedPublicationCount = len(datasetPubs)
-
 	c.Render.HTML(w, http.StatusOK, "dataset/show", c.ViewData(r, struct {
 		PageTitle           string
 		Dataset             *models.Dataset
@@ -156,8 +154,6 @@ func (c *Datasets) Publish(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
-	// savedDataset.RelatedPublicationCount = len(datasetPubs)
 
 	c.Render.HTML(w, http.StatusOK, "dataset/show", c.ViewData(r, struct {
 		PageTitle           string

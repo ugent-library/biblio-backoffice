@@ -83,8 +83,6 @@ func (c *Publications) Show(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// pub.RelatedDatasetCount = len(datasets)
-
 	c.Render.HTML(w, http.StatusOK, "publication/show", c.ViewData(r, struct {
 		PageTitle           string
 		Publication         *models.Publication
@@ -234,8 +232,6 @@ func (c *Publications) AddSingleDescription(w http.ResponseWriter, r *http.Reque
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	// pub.RelatedDatasetCount = len(datasets)
 
 	c.Render.HTML(w, http.StatusOK, "publication/add_single_description", c.ViewData(r, struct {
 		PageTitle           string
@@ -456,8 +452,6 @@ func (c *Publications) AddMultipleShow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// pub.RelatedDatasetCount = len(datasets)
-
 	c.Render.HTML(w, http.StatusOK, "publication/add_multiple_show", c.ViewData(r, struct {
 		PageTitle           string
 		Step                int
@@ -525,8 +519,6 @@ func (c *Publications) AddMultipleConfirmShow(w http.ResponseWriter, r *http.Req
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	// pub.RelatedDatasetCount = len(datasets)
 
 	c.Render.HTML(w, http.StatusOK, "publication/add_multiple_confirm_show", c.ViewData(r, struct {
 		PageTitle           string
@@ -636,8 +628,6 @@ func (c *Publications) Publish(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
-	// savedPub.RelatedDatasetCount = len(pubDatasets)
 
 	c.Render.HTML(w, http.StatusOK, "publication/show", c.ViewData(r, struct {
 		PageTitle           string

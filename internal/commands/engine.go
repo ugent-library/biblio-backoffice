@@ -9,6 +9,7 @@ import (
 	"github.com/elastic/go-elasticsearch/v6"
 	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/backends"
+	"github.com/ugent-library/biblio-backend/internal/backends/crossref"
 	"github.com/ugent-library/biblio-backend/internal/backends/datacite"
 	"github.com/ugent-library/biblio-backend/internal/backends/es6"
 	"github.com/ugent-library/biblio-backend/internal/backends/ianamedia"
@@ -70,6 +71,9 @@ func newEngine() *engine.Engine {
 		ProjectSearchService:      librecatClient,
 		DatasetSources: map[string]backends.DatasetGetter{
 			"datacite": datacite.New(),
+		},
+		PublicationSources: map[string]backends.PublicationGetter{
+			"crossref": crossref.New(),
 		},
 		LicenseSearchService:   spdxlicenses.New(),
 		MediaTypeSearchService: ianamedia.New(),

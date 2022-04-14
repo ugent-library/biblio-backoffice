@@ -21,7 +21,8 @@ type Config struct {
 	backends.ProjectSearchService
 	backends.LicenseSearchService
 	backends.MediaTypeSearchService
-	DatasetSources map[string]backends.DatasetGetter
+	PublicationSources map[string]backends.PublicationGetter
+	DatasetSources     map[string]backends.DatasetGetter
 }
 
 type Engine struct {
