@@ -148,6 +148,8 @@ func buildPublicationQuery(args *models.SearchArgs) (M, M, []M) {
 					orFilters = append(orFilters, M{"terms": M{orField: terms}})
 				}
 				termsFilters = append(termsFilters, M{"bool": M{"should": orFilters}})
+			} else if strings.HasPrefix(field, "!") {
+				termsFilters = append(termsFilters, M{"bool": M{"must_not": M{"terms": M{field[1:]: terms}}}})
 			} else {
 				termsFilters = append(termsFilters, M{"terms": M{field: terms}})
 			}

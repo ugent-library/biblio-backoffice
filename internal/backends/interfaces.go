@@ -26,8 +26,8 @@ type PublicationGetter interface {
 type Transaction interface {
 	Rollback() error
 	Commit() error
-	UpdatePublication(p *models.Publication) (*models.Publication, error)
-	UpdateDataset(d *models.Dataset) (*models.Dataset, error)
+	SavePublication(p *models.Publication) (*models.Publication, error)
+	SaveDataset(d *models.Dataset) (*models.Dataset, error)
 }
 
 type StorageService interface {

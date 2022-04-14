@@ -2,8 +2,10 @@ package commands
 
 import (
 	"encoding/json"
+	"io"
 	"log"
 	"os"
+	"sync"
 
 	"github.com/spf13/cobra"
 	"github.com/ugent-library/biblio-backend/internal/models"
@@ -12,6 +14,7 @@ import (
 func init() {
 	publicationCmd.AddCommand(publicationGetCmd)
 	publicationCmd.AddCommand(publicationAllCmd)
+	publicationCmd.AddCommand(publicationAddCmd)
 	rootCmd.AddCommand(publicationCmd)
 }
 
@@ -47,5 +50,51 @@ var publicationAllCmd = &cobra.Command{
 			e.Encode(d)
 			return true
 		})
+	},
+}
+
+var publicationAddCmd = &cobra.Command{
+	Use:   "add",
+	Short: "Add publications",
+	Run: func(cmd *cobra.Command, args []string) {
+		e := newEngine()
+
+		var indexWG sync.WaitGroup
+
+		// indexing channel
+		indexC := make(chan *models.Publication)
+
+		// start bulk indexer
+		go func() {
+			indexWG.Add(1)
+			defer indexWG.Done()
+			e.PublicationSearchService.IndexPublications(indexC)
+		}()
+
+		dec := json.NewDecoder(os.Stdin)
+		for {
+			var p models.Publication
+			if err := dec.Decode(&p); err == io.EOF {
+				break
+			} else if err != nil {
+				log.Fatal(err)
+			}
+
+			if err := p.Validate(); err != nil {
+				log.Fatal(err)
+			}
+
+			savedP, err := e.StorageService.SavePublication(&p)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			indexC <- savedP
+		}
+
+		// close indexing channel when all recs are stored
+		close(indexC)
+		// wait for indexing to finish
+		indexWG.Wait()
 	},
 }

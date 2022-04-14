@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/ugent-library/biblio-backend/internal/backends"
@@ -32,9 +33,17 @@ func (t *Tx) Commit() error {
 	return t.tx.Commit(context.Background())
 }
 
-func (t *Tx) UpdatePublication(p *models.Publication) (*models.Publication, error) {
+func (t *Tx) SavePublication(p *models.Publication) (*models.Publication, error) {
 	now := time.Now()
+
+	if p.DateCreated == nil {
+		p.DateCreated = &now
+	}
 	p.DateUpdated = &now
+
+	if p.ID == "" {
+		p.ID = uuid.NewString()
+	}
 
 	data, err := json.Marshal(p)
 	if err != nil {
@@ -52,10 +61,17 @@ func (t *Tx) UpdatePublication(p *models.Publication) (*models.Publication, erro
 	return p, nil
 }
 
-func (t *Tx) UpdateDataset(d *models.Dataset) (*models.Dataset, error) {
+func (t *Tx) SaveDataset(d *models.Dataset) (*models.Dataset, error) {
 	now := time.Now()
+
+	if d.DateCreated == nil {
+		d.DateCreated = &now
+	}
 	d.DateUpdated = &now
 
+	if d.ID == "" {
+		d.ID = uuid.NewString()
+	}
 	data, err := json.Marshal(d)
 	if err != nil {
 		return nil, err

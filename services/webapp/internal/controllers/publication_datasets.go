@@ -33,7 +33,7 @@ func (c *PublicationDatasets) Choose(w http.ResponseWriter, r *http.Request) {
 	}
 
 	searchArgs := models.NewSearchArgs()
-	searchArgs.Filters["exclude"] = pubDatasetIDs
+	searchArgs.Filters["!id"] = pubDatasetIDs
 
 	hits, err := c.Engine.UserDatasets(context.GetUser(r.Context()).ID, searchArgs)
 	if err != nil {

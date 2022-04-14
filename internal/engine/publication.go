@@ -91,7 +91,7 @@ func (e *Engine) AddPublicationDataset(p *models.Publication, d *models.Dataset)
 
 	if !p.HasRelatedDataset(d.ID) {
 		p.RelatedDataset = append(p.RelatedDataset, models.RelatedDataset{ID: d.ID})
-		savedP, err := tx.UpdatePublication(p)
+		savedP, err := tx.SavePublication(p)
 		if err != nil {
 			return nil, err
 		}
@@ -99,7 +99,7 @@ func (e *Engine) AddPublicationDataset(p *models.Publication, d *models.Dataset)
 	}
 	if !d.HasRelatedPublication(p.ID) {
 		d.RelatedPublication = append(d.RelatedPublication, models.RelatedPublication{ID: p.ID})
-		if _, err := tx.UpdateDataset(d); err != nil {
+		if _, err := tx.SaveDataset(d); err != nil {
 			return nil, err
 		}
 	}
@@ -126,7 +126,7 @@ func (e *Engine) RemovePublicationDataset(p *models.Publication, d *models.Datas
 			}
 		}
 		p.RelatedDataset = newRelatedDatasets
-		savedP, err := tx.UpdatePublication(p)
+		savedP, err := tx.SavePublication(p)
 		if err != nil {
 			return nil, err
 		}
@@ -140,7 +140,7 @@ func (e *Engine) RemovePublicationDataset(p *models.Publication, d *models.Datas
 			}
 		}
 		d.RelatedPublication = newRelatedPublications
-		if _, err := tx.UpdateDataset(d); err != nil {
+		if _, err := tx.SaveDataset(d); err != nil {
 			return nil, err
 		}
 	}
