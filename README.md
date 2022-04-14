@@ -71,6 +71,18 @@ npx mix --production
 
 Laravel Mix [documentation](https://laravel.com/docs/8.x).
 
+## Database migrations
+
+```
+go install github.com/jackc/tern@latest
+cd etc/pg/migrations
+PGDATABASE=biblio_backend tern migrate
+```
+
+More info [here](https://github.com/jackc/tern).
+
+List of PG env variables [here](https://www.postgresql.org/docs/current/libpq-envars.html).
+
 ## Start server
 
 Install node dependencies:
