@@ -58,8 +58,7 @@ func (c *Client) GetPublication(id string) (*models.Publication, error) {
 	// log.Printf("import publication src: %s", src)
 
 	p := &models.Publication{
-		Type:              "journal_article",
-		PublicationStatus: "published",
+		Type: "journal_article",
 	}
 
 	attrs := gjson.ParseBytes(src)

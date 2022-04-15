@@ -9,6 +9,7 @@ import (
 	"github.com/elastic/go-elasticsearch/v6"
 	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/backends"
+	"github.com/ugent-library/biblio-backend/internal/backends/arxiv"
 	"github.com/ugent-library/biblio-backend/internal/backends/crossref"
 	"github.com/ugent-library/biblio-backend/internal/backends/datacite"
 	"github.com/ugent-library/biblio-backend/internal/backends/es6"
@@ -76,6 +77,7 @@ func newEngine() *engine.Engine {
 		PublicationSources: map[string]backends.PublicationGetter{
 			"crossref": crossref.New(),
 			"pubmed":   pubmed.New(),
+			"arxiv":    arxiv.New(),
 		},
 		LicenseSearchService:   spdxlicenses.New(),
 		MediaTypeSearchService: ianamedia.New(),
