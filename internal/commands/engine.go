@@ -15,6 +15,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/backends/ianamedia"
 	"github.com/ugent-library/biblio-backend/internal/backends/librecat"
 	"github.com/ugent-library/biblio-backend/internal/backends/pg"
+	"github.com/ugent-library/biblio-backend/internal/backends/pubmed"
 	"github.com/ugent-library/biblio-backend/internal/backends/spdxlicenses"
 	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/go-orcid/orcid"
@@ -74,6 +75,7 @@ func newEngine() *engine.Engine {
 		},
 		PublicationSources: map[string]backends.PublicationGetter{
 			"crossref": crossref.New(),
+			"pubmed":   pubmed.New(),
 		},
 		LicenseSearchService:   spdxlicenses.New(),
 		MediaTypeSearchService: ianamedia.New(),
