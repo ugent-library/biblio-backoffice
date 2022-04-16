@@ -39,6 +39,7 @@ func Engine() *engine.Engine {
 func newEngine() *engine.Engine {
 	temporal, err := client.NewClient(client.Options{
 		HostPort: viper.GetString("temporal-host-port"),
+		Logger:   &temporalLogger{},
 	})
 	if err != nil {
 		log.Fatalln("Unable to create Temporal client", err)
@@ -124,4 +125,22 @@ func newEs6Client() *es6.Client {
 		log.Fatal(err)
 	}
 	return client
+}
+
+type temporalLogger struct{}
+
+func (l *temporalLogger) Debug(msg string, keyvals ...interface{}) {
+	log.Println(append([]interface{}{"DEBUG", "TEMPORAL", msg}, keyvals...)...)
+}
+
+func (l *temporalLogger) Info(msg string, keyvals ...interface{}) {
+	log.Println(append([]interface{}{"INFO", "TEMPORAL", msg}, keyvals...)...)
+}
+
+func (l *temporalLogger) Warn(msg string, keyvals ...interface{}) {
+	log.Println(append([]interface{}{"WARN", "TEMPORAL", msg}, keyvals...)...)
+}
+
+func (l *temporalLogger) Error(msg string, keyvals ...interface{}) {
+	log.Println(append([]interface{}{"ERROR", "TEMPORAL", msg}, keyvals...)...)
 }
