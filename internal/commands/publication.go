@@ -8,10 +8,13 @@ import (
 	"sync"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/models"
 )
 
 func init() {
+	publicationGetCmd.Flags().StringP("format", "f", "", "export format")
+
 	publicationCmd.AddCommand(publicationGetCmd)
 	publicationCmd.AddCommand(publicationAllCmd)
 	publicationCmd.AddCommand(publicationAddCmd)
@@ -25,18 +28,35 @@ var publicationCmd = &cobra.Command{
 
 var publicationGetCmd = &cobra.Command{
 	Use:   "get [id]",
-	Short: "Get publications by id",
+	Short: "Get publication by id",
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		s := newStorageService()
-		e := json.NewEncoder(os.Stdout)
-		for _, id := range args {
-			d, err := s.GetPublication(id)
+		e := Engine()
+
+		if format := viper.GetString("format"); format != "" {
+			enc, ok := e.PublicationEncoders[format]
+			if !ok {
+				log.Fatalf("Unknown format %s", format)
+			}
+			d, err := e.StorageService.GetPublication(args[0])
 			if err != nil {
 				log.Fatal(err)
 			}
-			e.Encode(d)
+			b, err := enc(d)
+			if err != nil {
+				log.Fatal(err)
+
+			}
+			os.Stdout.Write(b)
+			return
 		}
+
+		enc := json.NewEncoder(os.Stdout)
+		d, err := e.StorageService.GetPublication(args[0])
+		if err != nil {
+			log.Fatal(err)
+		}
+		enc.Encode(d)
 	},
 }
 
@@ -57,7 +77,7 @@ var publicationAddCmd = &cobra.Command{
 	Use:   "add",
 	Short: "Add publications",
 	Run: func(cmd *cobra.Command, args []string) {
-		e := newEngine()
+		e := Engine()
 
 		var indexWG sync.WaitGroup
 

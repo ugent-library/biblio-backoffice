@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/backends/arxiv"
+	"github.com/ugent-library/biblio-backend/internal/backends/citeproc"
 	"github.com/ugent-library/biblio-backend/internal/backends/crossref"
 	"github.com/ugent-library/biblio-backend/internal/backends/datacite"
 	"github.com/ugent-library/biblio-backend/internal/backends/es6"
@@ -71,6 +72,8 @@ func newEngine() *engine.Engine {
 		OrganizationSearchService: librecatClient,
 		PersonSearchService:       librecatClient,
 		ProjectSearchService:      librecatClient,
+		LicenseSearchService:      spdxlicenses.New(),
+		MediaTypeSearchService:    ianamedia.New(),
 		DatasetSources: map[string]backends.DatasetGetter{
 			"datacite": datacite.New(),
 		},
@@ -79,8 +82,9 @@ func newEngine() *engine.Engine {
 			"pubmed":   pubmed.New(),
 			"arxiv":    arxiv.New(),
 		},
-		LicenseSearchService:   spdxlicenses.New(),
-		MediaTypeSearchService: ianamedia.New(),
+		PublicationEncoders: map[string]backends.PublicationEncoder{
+			"cite-mla": citeproc.New("mla").EncodePublication,
+		},
 	})
 
 	if err != nil {

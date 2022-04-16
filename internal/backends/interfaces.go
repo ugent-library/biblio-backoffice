@@ -105,3 +105,5 @@ type LicenseSearchService interface {
 type MediaTypeSearchService interface {
 	SuggestMediaTypes(string) ([]models.Completion, error)
 }
+
+type PublicationEncoder func(*models.Publication) ([]byte, error)

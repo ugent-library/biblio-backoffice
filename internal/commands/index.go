@@ -52,7 +52,7 @@ var indexDatasetAllCmd = &cobra.Command{
 	Use:   "all",
 	Short: "Reindex all datasets",
 	Run: func(cmd *cobra.Command, args []string) {
-		if err := newEngine().IndexAllDatasets(); err != nil {
+		if err := Engine().IndexAllDatasets(); err != nil {
 			log.Fatal(err)
 		}
 	},
@@ -87,7 +87,7 @@ var indexPublicationAllCmd = &cobra.Command{
 	Use:   "all",
 	Short: "Reindex all datasets",
 	Run: func(cmd *cobra.Command, args []string) {
-		if err := newEngine().IndexAllPublications(); err != nil {
+		if err := Engine().IndexAllPublications(); err != nil {
 			log.Fatal(err)
 		}
 	},
