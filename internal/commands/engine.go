@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/backends/arxiv"
+	"github.com/ugent-library/biblio-backend/internal/backends/biblio"
 	"github.com/ugent-library/biblio-backend/internal/backends/citeproc"
 	"github.com/ugent-library/biblio-backend/internal/backends/crossref"
 	"github.com/ugent-library/biblio-backend/internal/backends/datacite"
@@ -53,6 +54,10 @@ func newEngine() *engine.Engine {
 		Password: viper.GetString("librecat-password"),
 	})
 
+	biblioClient := biblio.New(biblio.Config{
+		URL: viper.GetString("frontend-url"),
+	})
+
 	orcidConfig := orcid.Config{
 		ClientID:     viper.GetString("orcid-client-id"),
 		ClientSecret: viper.GetString("orcid-client-secret"),
@@ -67,11 +72,11 @@ func newEngine() *engine.Engine {
 		StorageService:            newStorageService(),
 		DatasetSearchService:      es6Client,
 		PublicationSearchService:  es6Client,
-		PersonService:             librecatClient,
+		PersonService:             biblioClient,
 		ProjectService:            librecatClient,
 		UserService:               librecatClient,
 		OrganizationSearchService: librecatClient,
-		PersonSearchService:       librecatClient,
+		PersonSearchService:       biblioClient,
 		ProjectSearchService:      librecatClient,
 		LicenseSearchService:      spdxlicenses.New(),
 		MediaTypeSearchService:    ianamedia.New(),

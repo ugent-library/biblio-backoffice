@@ -56,6 +56,7 @@ func init() {
 	rootCmd.PersistentFlags().String("librecat-url", "", "librecat rest api url")
 	rootCmd.PersistentFlags().String("librecat-username", "", "librecat rest api username")
 	rootCmd.PersistentFlags().String("librecat-password", "", "librecat rest api password")
+	rootCmd.PersistentFlags().String("frontend-url", "", "biblio frontend url")
 
 	rootCmd.PersistentFlags().String("pg-conn", defaultPgConn, "postgres connection string")
 	rootCmd.PersistentFlags().String("es6-url", defaultEs6URL, "elasticsearch 6.x url, separate multiple with comma")
