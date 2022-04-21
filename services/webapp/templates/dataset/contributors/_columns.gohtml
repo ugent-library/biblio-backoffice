@@ -17,9 +17,9 @@
 <td class="col-2">
     {{if .D.Contributor.ID}}
     <i class="if if-ghent-university"></i>
-    <span>UGent {{.D.Role}}</span>
+    <span>UGent {{.T "dataset.contributor.role" .D.Role}}</span>
     {{else}}
-    External {{.D.Role}}
+    External {{.T "dataset.contributor.role" .D.Role}}
     {{end}}
 </td>
 <td class="pr-4 col-3">
