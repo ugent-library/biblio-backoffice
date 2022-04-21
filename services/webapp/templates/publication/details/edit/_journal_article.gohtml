@@ -37,12 +37,12 @@
 <li class="list-group-item">
     {{.D.Show.Text (.D.Show.Label "wos_type") (.D.Show.Value .D.Publication.WOSType)
         (.D.Show.Tooltip (.T "tooltip.publication" "wos_type"))}}
-    {{.D.Form.Text (.D.Form.Name "wos_id") (.D.Form.Value .D.Publication.WOSID) (.D.Form.Cols 3)}}
-    {{.D.Form.TextRepeat (.D.Form.Name "issn") (.D.Form.Values .D.Publication.ISSN) (.D.Form.Cols 3)}}
-    {{.D.Form.TextRepeat (.D.Form.Name "eissn") (.D.Form.Values .D.Publication.EISSN) (.D.Form.Cols 3)}}
-    {{.D.Form.TextRepeat (.D.Form.Name "isbn") (.D.Form.Values .D.Publication.ISBN) (.D.Form.Cols 3)}}
-    {{.D.Form.TextRepeat (.D.Form.Name "eisbn") (.D.Form.Values .D.Publication.EISBN) (.D.Form.Cols 3)}}
-    {{.D.Form.Text (.D.Form.Name "pubmed_id") (.D.Form.Value .D.Publication.PubMedID) (.D.Form.Cols 3)}}
-    {{.D.Form.Text (.D.Form.Name "arxiv_id") (.D.Form.Value .D.Publication.ArxivID) (.D.Form.Cols 3)}}
-    {{.D.Form.Text (.D.Form.Name "esci_id") (.D.Form.Value .D.Publication.ESCIID) (.D.Form.Cols 3)}}
+    {{.D.Form.Text (.D.Form.Name "wos_id") (.D.Form.Value .D.Publication.WOSID) (.D.Form.Cols 3) (.D.Form.Placeholder "e.g. 000503382400004")}}
+    {{.D.Form.TextRepeat (.D.Form.Name "issn") (.D.Form.Values .D.Publication.ISSN) (.D.Form.Cols 3) (.D.Form.Placeholder "e.g. 2049-3630")}}
+    {{.D.Form.TextRepeat (.D.Form.Name "eissn") (.D.Form.Values .D.Publication.EISSN) (.D.Form.Cols 3) (.D.Form.Placeholder "e.g. 2049-3630")}}
+    {{.D.Form.TextRepeat (.D.Form.Name "isbn") (.D.Form.Values .D.Publication.ISBN) (.D.Form.Cols 3) (.D.Form.Placeholder "e.g. 978-3-16-148410-0")}}
+    {{.D.Form.TextRepeat (.D.Form.Name "eisbn") (.D.Form.Values .D.Publication.EISBN) (.D.Form.Cols 3) (.D.Form.Placeholder "e.g. 978-3-16-148410-0")}}
+    {{.D.Form.Text (.D.Form.Name "pubmed_id") (.D.Form.Value .D.Publication.PubMedID) (.D.Form.Cols 3) (.D.Form.Placeholder "e.g. 35172674")}}
+    {{.D.Form.Text (.D.Form.Name "arxiv_id") (.D.Form.Value .D.Publication.ArxivID) (.D.Form.Cols 3) (.D.Form.Placeholder "e.g. 0706.0001")}}
+    {{.D.Form.Text (.D.Form.Name "esci_id") (.D.Form.Value .D.Publication.ESCIID) (.D.Form.Cols 3) (.D.Form.Placeholder "e.g. 000752820200004")}}
 </li>
