@@ -23,7 +23,7 @@
                         hx-target="#{{ $.Name }}-{{$i}}-autocomplete" data-tmpl-hx-target="#{{ $.Name }}-{i}-autocomplete"
                         hx-vals='{"input": "{{ $.Name }}[{{ $i }}]"}' data-tmpl-hx-vals='{"input": "{{ $.Name }}[{i}]"}'
                         {{ end }}
-                        {{ if .Placeholder }} placeholder="{{ .Placeholder }}"{{ end }}
+                        {{ if $.Placeholder }} placeholder="{{ $.Placeholder }}"{{ end }}
                     >
                 {{ if $.AutocompleteURL }}
                 <div class="autocomplete-hits" id="{{ $.Name }}-{{ $i }}-autocomplete" data-tmpl-id="{{ $.Name }}-{i}-autocomplete"></div>
