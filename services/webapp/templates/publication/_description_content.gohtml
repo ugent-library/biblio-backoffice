@@ -8,6 +8,9 @@
         {{end}}
         {{template "publication/abstracts/_show" .}}
         {{template "publication/links/_show" .}}
+        {{if .D.Publication.UsesLaySummary}}
+            {{template "publication/lay_summaries/_show" .}}
+        {{end}}
         {{template "publication/additional_info/_show" .}}
     </div>
 
