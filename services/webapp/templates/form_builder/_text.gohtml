@@ -17,6 +17,7 @@
             hx-target="#{{ .Name }}-autocomplete"
             hx-vals='{"input": {{ .Name | quote }}}'
             {{end}}
+            {{ if .Placeholder }} placeholder="{{ .Placeholder }}"{{ end }}
         >
         {{ if .AutocompleteURL }}<div class="autocomplete-hits" id="{{ .Name }}-autocomplete"></div>{{ end }}
         {{ if .Error }}<div class="invalid-feedback">{{ .Error }}</div>{{ end }}
