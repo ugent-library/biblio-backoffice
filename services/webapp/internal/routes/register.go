@@ -41,6 +41,7 @@ func Register(c controllers.Context) {
 	publicationContributorsController := controllers.NewPublicationContributors(c)
 	publicationDatasetsController := controllers.NewPublicationDatasets(c)
 	publicationAdditionalInfoController := controllers.NewPublicationAdditionalInfo(c)
+	publicationLaySummariesController := controllers.NewPublicationLaySummaries(c)
 
 	datasetsController := controllers.NewDatasets(c)
 	datasetDetailsController := controllers.NewDatasetDetails(c)
@@ -305,6 +306,27 @@ func Register(c controllers.Context) {
 	pubEditRouter.HandleFunc("/htmx/abstracts/remove/{delta}", publicationAbstractsController.Remove).
 		Methods("DELETE").
 		Name("publication_abstracts_remove_abstract")
+
+	// Publication lay summaries HTMX fragments
+	pubEditRouter.HandleFunc("/htmx/lay_summaries/add", publicationLaySummariesController.Add).
+		Methods("GET").
+		Name("publication_lay_summaries_add_lay_summary")
+	pubEditRouter.HandleFunc("/htmx/lay_summaries/create", publicationLaySummariesController.Create).
+		Methods("POST").
+		Name("publication_lay_summaries_create_lay_summary")
+	pubEditRouter.HandleFunc("/htmx/lay_summaries/edit/{delta}", publicationLaySummariesController.Edit).
+		Methods("GET").
+		Name("publication_lay_summaries_edit_lay_summary")
+	pubEditRouter.HandleFunc("/htmx/lay_summaries/update/{delta}", publicationLaySummariesController.Update).
+		Methods("PUT").
+		Name("publication_lay_summaries_update_lay_summary")
+	pubEditRouter.HandleFunc("/htmx/lay_summaries/remove/{delta}", publicationLaySummariesController.ConfirmRemove).
+		Methods("GET").
+		Name("publication_lay_summaries_confirm_remove_from_publication")
+	pubEditRouter.HandleFunc("/htmx/lay_summaries/remove/{delta}", publicationLaySummariesController.Remove).
+		Methods("DELETE").
+		Name("publication_lay_summaries_remove_lay_summary")
+
 	// Publication links HTMX fragments
 	pubEditRouter.HandleFunc("/htmx/links/add", publicationLinksController.Add).
 		Methods("GET").

@@ -223,6 +223,9 @@ func init() {
 	message.SetString(language.English, "builder.abstract.text", "Abstract")
 	message.SetString(language.English, "builder.abstract.lang", "Language")
 
+	message.SetString(language.English, "builder.lay_summary.text", "Lay Summary")
+	message.SetString(language.English, "builder.lay_summary.lang", "Language")
+
 	message.SetString(language.English, "builder.link.url", "URL")
 	message.SetString(language.English, "builder.link.relation", "Relation")
 	message.SetString(language.English, "builder.link.description", "Description")
