@@ -27,8 +27,8 @@
     {{.D.Form.Text (.D.Form.Name "series_title") (.D.Form.Value .D.Publication.SeriesTitle) (.D.Form.Cols 9)}}
 </li>
 <li class="list-group-item">
-    {{.D.Form.Text (.D.Form.Name "defense_date") (.D.Form.Value .D.Publication.DefenseDate) (.D.Form.Required) (.D.Form.Cols 3)}}
-    {{.D.Form.Text (.D.Form.Name "defense_time") (.D.Form.Value .D.Publication.DefenseTime) (.D.Form.Required) (.D.Form.Cols 3)}}
+    {{.D.Form.Text (.D.Form.Name "defense_date") (.D.Form.Value .D.Publication.DefenseDate) (.D.Form.Required) (.D.Form.Cols 3) (.D.Form.Placeholder "e.g. 2022-04-30")}}
+    {{.D.Form.Text (.D.Form.Name "defense_time") (.D.Form.Value .D.Publication.DefenseTime) (.D.Form.Required) (.D.Form.Cols 3) (.D.Form.Placeholder "e.g. 11:00")}}
     {{.D.Form.Text (.D.Form.Name "defense_place") (.D.Form.Value .D.Publication.DefensePlace) (.D.Form.Required) (.D.Form.Cols 3)}}
 </li>
 <li class="list-group-item">
