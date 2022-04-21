@@ -70,15 +70,15 @@ func init() {
 	message.SetString(language.English, "publication_types.dissertation", "Dissertation")
 	message.SetString(language.English, "publication_types.miscellaneous", "Miscellaneous")
 
-	message.SetString(language.English, "journal_article_types.original", "Original")
-	message.SetString(language.English, "journal_article_types.review", "Review")
-	message.SetString(language.English, "journal_article_types.letter_note", "Letter note")
+	message.SetString(language.English, "journal_article_types.original", "Original Article")
+	message.SetString(language.English, "journal_article_types.review", "Review Article")
+	message.SetString(language.English, "journal_article_types.letter_note", "Letter / Note")
 	message.SetString(language.English, "journal_article_types.proceedingsPaper", "Proceedings Paper")
 
-	message.SetString(language.English, "conference_types.proceedingsPaper", "Preprint")
-	message.SetString(language.English, "conference_types.abstract", "Abstract")
+	message.SetString(language.English, "conference_types.proceedingsPaper", "Proceedings Paper")
+	message.SetString(language.English, "conference_types.abstract", "Meeting Abstract")
 	message.SetString(language.English, "conference_types.poster", "Poster")
-	message.SetString(language.English, "conference_types.other", "Other")
+	message.SetString(language.English, "conference_types.other", "Other Conference Contribution")
 
 	message.SetString(language.English, "miscellaneous_types.artReview", "Art review")
 	message.SetString(language.English, "miscellaneous_types.artisticWork", "Artistic Work")
