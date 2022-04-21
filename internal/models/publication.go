@@ -277,14 +277,12 @@ func (p *Publication) RemoveContributor(role string, i int) {
 }
 
 func (p *Publication) UsesLaySummary() bool {
-
 	switch p.Type {
-		case "dissertation":
-			return true
-		default:
-			return false
+	case "dissertation":
+		return true
+	default:
+		return false
 	}
-
 }
 
 func (p *Publication) UsesConference() bool {
