@@ -32,6 +32,7 @@ import (
 // 	return res.NumFound > 0
 // }
 
+// TODO move to controller
 func (e *Engine) AddPublicationsToORCID(user *models.User, s *models.SearchArgs) (string, error) {
 	workflowOptions := client.StartWorkflowOptions{
 		ID:        "orcid_workflow_" + uuid.New().String(),
@@ -51,6 +52,7 @@ func (e *Engine) AddPublicationsToORCID(user *models.User, s *models.SearchArgs)
 	return we.GetID(), err
 }
 
+// TODO make workflow
 func (e *Engine) AddPublicationToORCID(orcidID, orcidToken string, p *models.Publication) (*models.Publication, error) {
 	client := orcid.NewMemberClient(orcid.Config{
 		Token:   orcidToken,

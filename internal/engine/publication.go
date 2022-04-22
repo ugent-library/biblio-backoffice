@@ -16,6 +16,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/models"
 )
 
+// TODO move to workflow
 func (e *Engine) UpdatePublication(p *models.Publication) (*models.Publication, error) {
 	p.Vacuum()
 
@@ -37,11 +38,13 @@ func (e *Engine) UpdatePublication(p *models.Publication) (*models.Publication, 
 	return p, nil
 }
 
+// TODO make query dsl package
 func (e *Engine) Publications(args *models.SearchArgs) (*models.PublicationHits, error) {
 	args = args.Clone().WithFilter("status", "private", "public")
 	return e.PublicationSearchService.SearchPublications(args)
 }
 
+// TODO make query dsl package
 func (e *Engine) UserPublications(userID string, args *models.SearchArgs) (*models.PublicationHits, error) {
 	args = args.Clone().WithFilter("status", "private", "public")
 	switch args.FilterFor("scope") {
@@ -56,6 +59,7 @@ func (e *Engine) UserPublications(userID string, args *models.SearchArgs) (*mode
 	return e.PublicationSearchService.SearchPublications(args)
 }
 
+// TODO make workflow
 func (e *Engine) BatchPublishPublications(userID string, args *models.SearchArgs) (err error) {
 	var hits *models.PublicationHits
 	for {
@@ -74,6 +78,7 @@ func (e *Engine) BatchPublishPublications(userID string, args *models.SearchArgs
 	return
 }
 
+// TODO make make controller helper or eliminate
 func (e *Engine) GetPublicationDatasets(p *models.Publication) ([]*models.Dataset, error) {
 	datasetIds := make([]string, len(p.RelatedDataset))
 	for _, rd := range p.RelatedDataset {
@@ -82,6 +87,7 @@ func (e *Engine) GetPublicationDatasets(p *models.Publication) ([]*models.Datase
 	return e.StorageService.GetDatasets(datasetIds)
 }
 
+// TODO make model helper method and move to controller
 func (e *Engine) AddPublicationDataset(p *models.Publication, d *models.Dataset) (*models.Publication, error) {
 	tx, err := e.StorageService.Begin()
 	if err != nil {
@@ -111,6 +117,7 @@ func (e *Engine) AddPublicationDataset(p *models.Publication, d *models.Dataset)
 	return p, nil
 }
 
+// TODO make model helper method and move to controller
 func (e *Engine) RemovePublicationDataset(p *models.Publication, d *models.Dataset) (*models.Publication, error) {
 	tx, err := e.StorageService.Begin()
 	if err != nil {
@@ -152,6 +159,7 @@ func (e *Engine) RemovePublicationDataset(p *models.Publication, d *models.Datas
 	return p, nil
 }
 
+// TODO make workflow
 func (e *Engine) ImportUserPublicationByIdentifier(userID, source, identifier string) (*models.Publication, error) {
 	s, ok := e.PublicationSources[source]
 	if !ok {
@@ -179,14 +187,18 @@ func (e *Engine) ImportUserPublicationByIdentifier(userID, source, identifier st
 	return p, nil
 }
 
+// TODO make workflow
+// TODO translate librecat wos and bibtex code
 func (e *Engine) ImportUserPublications(userID, source string, file io.Reader) (string, error) {
 	return "", errors.New("not implemented")
 }
 
+// TODO point to biblio frontend
 func (c *Engine) ServePublicationThumbnail(fileURL string, w http.ResponseWriter, r *http.Request) {
 	// panic("not implemented")
 }
 
+// TODO make filestore package
 func fnvHash(s string) uint32 {
 	h := fnv.New32a()
 	h.Write([]byte(s))
@@ -255,6 +267,7 @@ func (e *Engine) StoreFile(r io.Reader) (string, error) {
 	return checksum, nil
 }
 
+// TODO make workflow
 func (e *Engine) IndexAllPublications() (err error) {
 	var indexWG sync.WaitGroup
 

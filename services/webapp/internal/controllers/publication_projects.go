@@ -61,7 +61,6 @@ func (c *PublicationProjects) ActiveSearch(w http.ResponseWriter, r *http.Reques
 
 func (c *PublicationProjects) Add(w http.ResponseWriter, r *http.Request) {
 	projectId := mux.Vars(r)["project_id"]
-
 	pub := context.GetPublication(r.Context())
 
 	project, err := c.Engine.GetProject(projectId)
@@ -71,10 +70,9 @@ func (c *PublicationProjects) Add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO: get the project based on the ID from the LibreCat REST API
 	publicationProject := models.PublicationProject{
 		ID:   projectId,
-		Name: project.Name,
+		Name: project.Title,
 	}
 	pub.Project = append(pub.Project, publicationProject)
 

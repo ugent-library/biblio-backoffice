@@ -72,7 +72,7 @@ func (c *DatasetProjects) Add(w http.ResponseWriter, r *http.Request) {
 
 	dataset.Project = append(dataset.Project, models.DatasetProject{
 		ID:   projectId,
-		Name: project.Name,
+		Name: project.Title,
 	})
 
 	savedDataset, err := c.Engine.UpdateDataset(dataset)

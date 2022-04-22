@@ -14,7 +14,6 @@ type requestPayload struct {
 
 type responsePayload struct {
 	Data json.RawMessage `json:"data"`
-	// Errors jsonapi.Errors  `json:"errors"`
 }
 
 func (c *Client) get(path string, qp url.Values, responseData interface{}) (*http.Response, error) {
@@ -25,29 +24,29 @@ func (c *Client) get(path string, qp url.Values, responseData interface{}) (*htt
 	return c.doRequest(req, responseData)
 }
 
-// func (c *Client) post(path string, requestData, responseData interface{}) (*http.Response, error) {
-// 	req, err := c.newRequest("POST", path, nil, requestData)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	return c.doRequest(req, responseData)
-// }
+func (c *Client) post(path string, requestData, responseData interface{}) (*http.Response, error) {
+	req, err := c.newRequest("POST", path, nil, requestData)
+	if err != nil {
+		return nil, err
+	}
+	return c.doRequest(req, responseData)
+}
 
-// func (c *Client) put(path string, requestData, responseData interface{}) (*http.Response, error) {
-// 	req, err := c.newRequest("PUT", path, nil, requestData)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	return c.doRequest(req, responseData)
-// }
+func (c *Client) put(path string, requestData, responseData interface{}) (*http.Response, error) {
+	req, err := c.newRequest("PUT", path, nil, requestData)
+	if err != nil {
+		return nil, err
+	}
+	return c.doRequest(req, responseData)
+}
 
-// func (c *Client) delete(path string, qp url.Values, responseData interface{}) (*http.Response, error) {
-// 	req, err := c.newRequest("DELETE", path, qp, nil)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	return c.doRequest(req, responseData)
-// }
+func (c *Client) delete(path string, qp url.Values, responseData interface{}) (*http.Response, error) {
+	req, err := c.newRequest("DELETE", path, qp, nil)
+	if err != nil {
+		return nil, err
+	}
+	return c.doRequest(req, responseData)
+}
 
 func (c *Client) newRequest(method, path string, vals url.Values, requestData interface{}) (*http.Request, error) {
 	var buf io.ReadWriter
@@ -87,9 +86,7 @@ func (c *Client) doRequest(req *http.Request, responseData interface{}) (*http.R
 	if err = json.NewDecoder(res.Body).Decode(&p); err != nil {
 		return res, err
 	}
-	// if len(p.Errors) > 0 {
-	// 	return res, p.Errors
-	// }
+
 	if responseData != nil {
 		return res, json.Unmarshal(p.Data, responseData)
 	}

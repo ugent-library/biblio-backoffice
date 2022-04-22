@@ -9,7 +9,9 @@ import (
 
 func (c *Client) GetPerson(id string) (*models.Person, error) {
 	p := &models.Person{}
-	if _, err := c.get(fmt.Sprintf("/person/%s?format=json", url.PathEscape(id)), nil, p); err != nil {
+	qp := url.Values{}
+	qp.Set("format", "json")
+	if _, err := c.get(fmt.Sprintf("/person/%s", url.PathEscape(id)), qp, p); err != nil {
 		return nil, err
 	}
 	return p, nil
