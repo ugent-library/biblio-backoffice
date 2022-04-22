@@ -163,6 +163,67 @@
                 </div>
             </div>
         </div>
+
+        <div class="card card-collapsible mb-6">
+            <div class="card-header">
+                <div class="collapse-trigger" data-toggle="collapse" data-target="#importFromWOS" aria-expanded="false" aria-controls="collapse1"></div>
+                <div class="bc-toolbar">
+                    <div class="bc-toolbar-left">
+                        <i class="if if-chevron-right mr-4 text-muted"></i>Import from Web of Science
+                    </div>
+                </div>
+            </div>
+            <div class="collapse" id="importFromWOS">
+                <div class="card-body">
+                    <input type="hidden" name="source" value="wos">
+
+                    <div class="c-file-upload">
+                        <input type="file" name="file">
+                        <div class="c-file-upload__content">
+                            <p>Drag and drop or</p>
+                            <button class="btn btn-outline-primary">Upload file
+                                <div class="spinner-border">
+                                    <span class="sr-only"></span>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <small class="form-text text-muted my-3"><a href="https://onderzoektips.ugent.be/nl/tips/00001667/" target="_blank">Web of Science import instructions</a></small>
+                </div>
+            </div>
+        </div>
+
+        <div class="card card-collapsible mb-6">
+            <div class="card-header">
+                <div class="collapse-trigger" data-toggle="collapse" data-target="#importFromBibTex" aria-expanded="false" aria-controls="collapse1"></div>
+                <div class="bc-toolbar">
+                    <div class="bc-toolbar-left">
+                        <i class="if if-chevron-right mr-4 text-muted"></i>No Web of Science file?
+                    </div>
+                </div>
+            </div>
+            <div class="collapse" id="importFromBibTex">
+                <div class="card-body">
+                    <p class="mb-4">Alternatively, you can upload a BibTex
+                    file to import a single publication.</p>
+                    <input type="hidden" name="source" value="bibtex">
+
+                    <div class="c-file-upload">
+                        <input type="file" name="file">
+                        <div class="c-file-upload__content">
+                            <p>Drag and drop or</p>
+                            <button class="btn btn-outline-primary">Upload file
+                                <div class="spinner-border">
+                                    <span class="sr-only"></span>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </form>
 
