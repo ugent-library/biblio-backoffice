@@ -90,7 +90,11 @@ func newEngine() *engine.Engine {
 		},
 		PublicationEncoders: map[string]backends.PublicationEncoder{
 			"cite-mla": citeproc.New("mla").EncodePublication,
+			"cite-apa": citeproc.New("apa").EncodePublication,
+			"cite-chicago-author-date": citeproc.New("chicago-author-date").EncodePublication,
 			"cite-fwo": citeproc.New("fwo").EncodePublication,
+			"cite-vancouver": citeproc.New("vancouver").EncodePublication,
+			"cite-ieee": citeproc.New("ieee").EncodePublication,
 		},
 	})
 
