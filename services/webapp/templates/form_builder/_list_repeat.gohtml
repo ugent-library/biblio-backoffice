@@ -2,7 +2,7 @@
    <label class="col-3 col-form-label d-flex align-items-stretch" for="{{ .Name }}">
         {{.Label}}{{if .Required}}&nbsp;<abbr class="required" title="Required">*</abbr>{{end}}
         {{ if .Tooltip }}
-        <a class="text-muted mx-2" href="#" data-container="body" data-toggle="popover" data-placement="right" data-content="{{ .Tooltip }}">
+        <a class="text-muted mx-2" href="#" data-container="body" data-toggle="popover" data-trigger="focus" data-placement="right" data-content="{{ .Tooltip }}">
             <i class="if if-info-circle if--small"></i>
             <div class="sr-only">More info</div>
         </a>
