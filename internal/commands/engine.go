@@ -75,7 +75,7 @@ func newEngine() *engine.Engine {
 		PersonService:             biblioClient,
 		ProjectService:            biblioClient,
 		UserService:               librecatClient,
-		OrganizationSearchService: librecatClient,
+		OrganizationSearchService: biblioClient,
 		PersonSearchService:       biblioClient,
 		ProjectSearchService:      biblioClient,
 		LicenseSearchService:      spdxlicenses.New(),
@@ -89,12 +89,12 @@ func newEngine() *engine.Engine {
 			"arxiv":    arxiv.New(),
 		},
 		PublicationEncoders: map[string]backends.PublicationEncoder{
-			"cite-mla": citeproc.New("mla").EncodePublication,
-			"cite-apa": citeproc.New("apa").EncodePublication,
+			"cite-mla":                 citeproc.New("mla").EncodePublication,
+			"cite-apa":                 citeproc.New("apa").EncodePublication,
 			"cite-chicago-author-date": citeproc.New("chicago-author-date").EncodePublication,
-			"cite-fwo": citeproc.New("fwo").EncodePublication,
-			"cite-vancouver": citeproc.New("vancouver").EncodePublication,
-			"cite-ieee": citeproc.New("ieee").EncodePublication,
+			"cite-fwo":                 citeproc.New("fwo").EncodePublication,
+			"cite-vancouver":           citeproc.New("vancouver").EncodePublication,
+			"cite-ieee":                citeproc.New("ieee").EncodePublication,
 		},
 	})
 
