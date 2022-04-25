@@ -77,6 +77,11 @@
                             {{else}}
                             class="c-radio-card" aria-selected="false"
                             {{end}}
+                            hx-put="{{pathFor "publication_file_license" "id" .D.Publication.ID "file_id" .D.File.ID}}"
+                            hx-target="#publication-files-modal"
+                            hx-include=".file-attributes input[type=text], .file-attributes input[type=checkbox]:checked, .file-attributes input[type=radio], .file-attributes input[type=date], .file-attributes select, .file-attributes textarea"
+                            hx-indicator=".modal-dialog .spinner-border"
+                            hx-trigger="click delay:50ms"
                         >
                             <div class="c-radio-card__radio">
                                 <div class="custom-control custom-radio">
@@ -103,6 +108,11 @@
                             {{else}}
                             class="c-radio-card" aria-selected="false"
                             {{end}}
+                            hx-put="{{pathFor "publication_file_license" "id" .D.Publication.ID "file_id" .D.File.ID}}"
+                            hx-target="#publication-files-modal"
+                            hx-include=".file-attributes input[type=text], .file-attributes input[type=checkbox]:checked, .file-attributes input[type=radio], .file-attributes input[type=date], .file-attributes select, .file-attributes textarea"
+                            hx-indicator=".modal-dialog .spinner-border"
+                            hx-trigger="click delay:50ms"
                         >
                             <div class="c-radio-card__radio">
                                 <div class="custom-control custom-radio">
@@ -124,6 +134,11 @@
                             {{else}}
                             class="c-radio-card" aria-selected="false"
                             {{end}}
+                            hx-put="{{pathFor "publication_file_license" "id" .D.Publication.ID "file_id" .D.File.ID}}"
+                            hx-target="#publication-files-modal"
+                            hx-include=".file-attributes input[type=text], .file-attributes input[type=checkbox]:checked, .file-attributes input[type=radio], .file-attributes input[type=date], .file-attributes select, .file-attributes textarea"
+                            hx-indicator=".modal-dialog .spinner-border"
+                            hx-trigger="click delay:50ms"
                         >
                             <div class="c-radio-card__radio">
                                 <div class="custom-control custom-radio">
@@ -150,7 +165,12 @@
                         <div class="col-6">
                             <div class="form-group">
                                 <label class="col-form-label">{{.T "builder" "embargo_to"}}</label>
-                                <select class="custom-select w-10" name="embargo_to">
+                                <select class="custom-select w-10" name="embargo_to"
+                                    hx-put="{{pathFor "publication_file_license" "id" .D.Publication.ID "file_id" .D.File.ID}}"
+                                    hx-target="#publication-files-modal"
+                                    hx-include=".file-attributes input[type=text], .file-attributes input[type=checkbox]:checked, .file-attributes input[type=radio], .file-attributes input[type=date], .file-attributes select, .file-attributes textarea"
+                                    hx-indicator=".modal-dialog .spinner-border"
+                                >
                                     <option></option>
                                     <option value="open_access"{{if eq .D.File.EmbargoTo "open_access"}} selected{{end}}>{{.T "publication_file_access_levels" "open_access"}}</option>
                                     <option value="local"{{if eq .D.File.EmbargoTo "local"}} selected{{end}}{{if eq .D.File.AccessLevel "closed"}} disabled{{end}}>{{.T "publication_file_access_levels" "local"}}</option>
@@ -175,18 +195,30 @@
                             </div>
                         </label>
                         <div class="form-row">
+                            {{if or (eq .D.File.EmbargoTo "open_access") (eq .D.File.AccessLevel "open_access") }}
                             <div class="col-6">
-                            <select name="cc_license" class="custom-select w-100{{if $ccLicenseError }} is-invalid{{end}}">
+                            <select name="cc_license" class="custom-select w-100{{if $ccLicenseError }} is-invalid{{end}}"
+                                hx-put="{{pathFor "publication_file_license" "id" .D.Publication.ID "file_id" .D.File.ID}}"
+                                hx-target="#publication-files-modal"
+                                hx-include=".file-attributes input[type=text], .file-attributes input[type=checkbox]:checked, .file-attributes input[type=radio], .file-attributes input[type=date], .file-attributes select, .file-attributes textarea"
+                                hx-indicator=".modal-dialog .spinner-border"
+                            >
                                 <option></option>
                                 {{range .D.Vocabularies.cc_licenses}}
                                 <option{{if eq $.D.File.CCLicense .}} selected{{end}} value="{{.}}">{{$.T "cc_licenses" .}}</option>
                                 {{end}}
                             </select>
                             </div>
+                            {{ end }}
                             <div class="col-6">
                                 <div class="custom-control custom-checkbox">
                                     <input class="custom-control-input" type="checkbox" id="no_license" name="no_license" value="true"
-                                        {{if .D.File.NoLicense}}checked{{end}}>
+                                        {{if .D.File.NoLicense}}checked{{end}}
+                                        hx-put="{{pathFor "publication_file_license" "id" .D.Publication.ID "file_id" .D.File.ID}}"
+                                        hx-target="#publication-files-modal"
+                                        hx-include=".file-attributes input[type=text], .file-attributes input[type=checkbox]:checked, .file-attributes input[type=radio], .file-attributes input[type=date], .file-attributes select, .file-attributes textarea"
+                                        hx-indicator=".modal-dialog .spinner-border"
+                                    >
                                     <label class="custom-control-label" for="no_license">No license (in copyright)</label>
                                     <a class="text-muted mx-2" href="#" data-container="body" data-toggle="popover-custom" data-placement="right" data-popover-content="#no-license-tooltip">
                                         <i class="if if-info-circle if--small"></i>
