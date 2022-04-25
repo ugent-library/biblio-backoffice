@@ -16,7 +16,6 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/backends/datacite"
 	"github.com/ugent-library/biblio-backend/internal/backends/es6"
 	"github.com/ugent-library/biblio-backend/internal/backends/ianamedia"
-	"github.com/ugent-library/biblio-backend/internal/backends/librecat"
 	"github.com/ugent-library/biblio-backend/internal/backends/pg"
 	"github.com/ugent-library/biblio-backend/internal/backends/pubmed"
 	"github.com/ugent-library/biblio-backend/internal/backends/spdxlicenses"
@@ -48,14 +47,10 @@ func newEngine() *engine.Engine {
 
 	es6Client := newEs6Client()
 
-	librecatClient := librecat.New(librecat.Config{
-		URL:      viper.GetString("librecat-url"),
-		Username: viper.GetString("librecat-username"),
-		Password: viper.GetString("librecat-password"),
-	})
-
 	biblioClient := biblio.New(biblio.Config{
-		URL: viper.GetString("frontend-url"),
+		URL:      viper.GetString("frontend-url"),
+		Username: viper.GetString("frontend-username"),
+		Password: viper.GetString("frontend-password"),
 	})
 
 	orcidConfig := orcid.Config{
@@ -74,7 +69,7 @@ func newEngine() *engine.Engine {
 		PublicationSearchService:  es6Client,
 		PersonService:             biblioClient,
 		ProjectService:            biblioClient,
-		UserService:               librecatClient,
+		UserService:               biblioClient,
 		OrganizationSearchService: biblioClient,
 		PersonSearchService:       biblioClient,
 		ProjectSearchService:      biblioClient,

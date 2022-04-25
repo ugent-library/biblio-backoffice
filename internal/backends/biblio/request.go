@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 type requestPayload struct {
@@ -21,29 +22,8 @@ func (c *Client) get(path string, qp url.Values, responseData interface{}) (*htt
 	if err != nil {
 		return nil, err
 	}
-	return c.doRequest(req, responseData)
-}
-
-func (c *Client) post(path string, requestData, responseData interface{}) (*http.Response, error) {
-	req, err := c.newRequest("POST", path, nil, requestData)
-	if err != nil {
-		return nil, err
-	}
-	return c.doRequest(req, responseData)
-}
-
-func (c *Client) put(path string, requestData, responseData interface{}) (*http.Response, error) {
-	req, err := c.newRequest("PUT", path, nil, requestData)
-	if err != nil {
-		return nil, err
-	}
-	return c.doRequest(req, responseData)
-}
-
-func (c *Client) delete(path string, qp url.Values, responseData interface{}) (*http.Response, error) {
-	req, err := c.newRequest("DELETE", path, qp, nil)
-	if err != nil {
-		return nil, err
+	if strings.Contains(path, "/restricted/") {
+		req.SetBasicAuth(c.config.Username, c.config.Password)
 	}
 	return c.doRequest(req, responseData)
 }
