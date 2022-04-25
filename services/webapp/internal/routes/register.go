@@ -212,6 +212,9 @@ func Register(c controllers.Context) {
 	pubEditRouter.HandleFunc("/htmx/file/{file_id}/edit", publicationFilesController.Edit).
 		Methods("GET").
 		Name("publication_file_edit")
+	pubEditRouter.HandleFunc("/htmx/file/{file_id}/license", publicationFilesController.License).
+		Methods("PUT").
+		Name("publication_file_license")
 	pubEditRouter.HandleFunc("/htmx/file/{file_id}", publicationFilesController.Update).
 		Methods("PUT").
 		Name("publication_file_update")
