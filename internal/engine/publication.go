@@ -13,6 +13,7 @@ import (
 	"path"
 	"sync"
 
+	"github.com/google/uuid"
 	"github.com/ugent-library/biblio-backend/internal/models"
 )
 
@@ -169,29 +170,77 @@ func (e *Engine) ImportUserPublicationByIdentifier(userID, source, identifier st
 	if err != nil {
 		return nil, err
 	}
-	p.Vacuum()
+
 	p.CreatorID = userID
 	p.UserID = userID
 	p.Status = "private"
 	p.Classification = "U"
 
-	p, err = e.StorageService.SavePublication(p)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := e.PublicationSearchService.IndexPublication(p); err != nil {
-		log.Printf("error indexing publication %+v", err)
-		return nil, err
-	}
-
-	return p, nil
+	return e.UpdatePublication(p)
 }
 
 // TODO make workflow
-// TODO translate librecat wos and bibtex code
+// TODO translate librecat bibtex code
 func (e *Engine) ImportUserPublications(userID, source string, file io.Reader) (string, error) {
-	return "", errors.New("not implemented")
+	batchID := uuid.New().String()
+	decFactory, ok := e.PublicationDecoders[source]
+	if !ok {
+		return "", errors.New("unknown publication source")
+	}
+	dec := decFactory(file)
+
+	var indexWG sync.WaitGroup
+
+	// indexing channel
+	indexC := make(chan *models.Publication)
+
+	// start bulk indexer
+	go func() {
+		indexWG.Add(1)
+		defer indexWG.Done()
+		e.PublicationSearchService.IndexPublications(indexC)
+	}()
+
+	var importErr error
+	for {
+		p := models.Publication{
+			ID:             uuid.New().String(),
+			BatchID:        batchID,
+			Status:         "private",
+			Classification: "U",
+			CreatorID:      userID,
+			UserID:         userID,
+		}
+		if err := dec.Decode(&p); err == io.EOF {
+			break
+		} else if err != nil {
+			importErr = err
+			break
+		}
+		if err := p.Validate(); err != nil {
+			importErr = err
+			break
+		}
+		savedP, err := e.StorageService.SavePublication(&p)
+		if err != nil {
+			importErr = err
+			break
+		}
+
+		indexC <- savedP
+	}
+
+	// close indexing channel when all recs are stored
+	close(indexC)
+	// wait for indexing to finish
+	indexWG.Wait()
+
+	// TODO rollback if error
+	if importErr != nil {
+		return "", importErr
+	}
+
+	return batchID, nil
 }
 
 // TODO point to biblio frontend

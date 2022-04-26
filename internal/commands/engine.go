@@ -96,6 +96,7 @@ func newEngine() *engine.Engine {
 		PublicationDecoders: map[string]backends.PublicationDecoderFactory{
 			"jsonl": jsonl.NewDecoder,
 			"ris":   ris.NewDecoder,
+			"wos":   ris.NewDecoder,
 		}})
 
 	if err != nil {

@@ -35,6 +35,9 @@
                 "all": {
                     "type": "text"
                 },
+                "batch_id": {
+                    "type": "keyword"
+                },
                 "abstract": {
                     "properties": {
                         "lang": {

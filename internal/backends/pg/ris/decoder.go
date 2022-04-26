@@ -31,16 +31,20 @@ func (d *Decoder) Decode(p *models.Publication) error {
 
 	for d.scanner.Scan() {
 		line := d.scanner.Text()
-		match := reTag.FindStringSubmatch(line)
 
-		if match == nil {
-			rec[tag] = append(rec[tag], strings.TrimPrefix(line, "  "))
-		} else if match[1] == "ER" {
+		switch line {
+		case "ER", "ER  -":
 			mapRecord(rec, p)
 			return nil
-		} else {
+		case "EF":
+			return io.EOF
+		}
+
+		if match := reTag.FindStringSubmatch(line); match != nil {
 			tag = match[1]
 			rec[tag] = append(rec[tag], match[2])
+		} else {
+			rec[tag] = append(rec[tag], strings.TrimPrefix(line, "  "))
 		}
 	}
 
@@ -109,6 +113,8 @@ func mapRecord(r Record, p *models.Publication) {
 				c := &models.Contributor{FullName: val, LastName: nameParts[0]}
 				if len(nameParts) > 1 {
 					c.FirstName = nameParts[1]
+				} else {
+					c.FirstName = "[missing]" // TODO
 				}
 				p.Author = append(p.Author, c)
 			}
@@ -140,6 +146,10 @@ func mapRecord(r Record, p *models.Publication) {
 			}
 		case "UT":
 			p.WOSID = strings.TrimPrefix(v[0], "WOS:")
+		case "AN":
+			if strings.HasPrefix(v[0], "WOS:") {
+				p.WOSID = strings.TrimPrefix(v[0], "WOS:")
+			}
 		case "PM":
 			p.PubMedID = v[0]
 		case "VL":
@@ -150,7 +160,7 @@ func mapRecord(r Record, p *models.Publication) {
 			p.SeriesTitle = v[0]
 		case "Y1", "PY":
 			p.Year = v[0]
-		case "BP":
+		case "BP", "SP":
 			p.PageFirst = v[0]
 		case "EP":
 			p.PageLast = v[0]
