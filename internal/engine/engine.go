@@ -24,6 +24,7 @@ type Config struct {
 	PublicationSources  map[string]backends.PublicationGetter
 	DatasetSources      map[string]backends.DatasetGetter
 	PublicationEncoders map[string]backends.PublicationEncoder
+	PublicationDecoders map[string]backends.PublicationDecoderFactory
 }
 
 type Engine struct {

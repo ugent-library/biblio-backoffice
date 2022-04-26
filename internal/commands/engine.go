@@ -17,6 +17,8 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/backends/es6"
 	"github.com/ugent-library/biblio-backend/internal/backends/ianamedia"
 	"github.com/ugent-library/biblio-backend/internal/backends/pg"
+	"github.com/ugent-library/biblio-backend/internal/backends/pg/jsonl"
+	"github.com/ugent-library/biblio-backend/internal/backends/pg/ris"
 	"github.com/ugent-library/biblio-backend/internal/backends/pubmed"
 	"github.com/ugent-library/biblio-backend/internal/backends/spdxlicenses"
 	"github.com/ugent-library/biblio-backend/internal/engine"
@@ -91,7 +93,10 @@ func newEngine() *engine.Engine {
 			"cite-vancouver":           citeproc.New("vancouver").EncodePublication,
 			"cite-ieee":                citeproc.New("ieee").EncodePublication,
 		},
-	})
+		PublicationDecoders: map[string]backends.PublicationDecoderFactory{
+			"jsonl": jsonl.NewDecoder,
+			"ris":   ris.NewDecoder,
+		}})
 
 	if err != nil {
 		log.Fatal(err)

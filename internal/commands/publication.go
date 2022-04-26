@@ -7,6 +7,7 @@ import (
 	"os"
 	"sync"
 
+	"github.com/google/uuid"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/models"
@@ -14,6 +15,8 @@ import (
 
 func init() {
 	publicationGetCmd.Flags().StringP("format", "f", "", "export format")
+
+	publicationAddCmd.Flags().StringP("format", "f", "jsonl", "import format")
 
 	publicationCmd.AddCommand(publicationGetCmd)
 	publicationCmd.AddCommand(publicationAllCmd)
@@ -91,24 +94,32 @@ var publicationAddCmd = &cobra.Command{
 			e.PublicationSearchService.IndexPublications(indexC)
 		}()
 
-		dec := json.NewDecoder(os.Stdin)
+		fmt := viper.GetString("format")
+		decFactory, ok := e.PublicationDecoders[fmt]
+		if !ok {
+			log.Fatalf("Unknown format %s", fmt)
+		}
+		dec := decFactory(os.Stdin)
+
 		for {
-			var p models.Publication
+			p := models.Publication{
+				ID:             uuid.New().String(),
+				Status:         "private",
+				Classification: "U",
+			}
 			if err := dec.Decode(&p); err == io.EOF {
 				break
 			} else if err != nil {
 				log.Fatal(err)
 			}
-
 			if err := p.Validate(); err != nil {
 				log.Fatal(err)
 			}
-
 			savedP, err := e.StorageService.SavePublication(&p)
 			if err != nil {
 				log.Fatal(err)
 			}
-
+			// log.Printf("%+v", savedP)
 			indexC <- savedP
 		}
 

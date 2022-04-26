@@ -16,7 +16,7 @@ import (
 
 const ContentType = "application/vnd.datacite.datacite+json"
 
-var whitespace = regexp.MustCompile(`\s*,\s*`)
+var reSplit = regexp.MustCompile(`\s*,\s*`)
 
 type Client struct {
 	url  string
@@ -81,7 +81,7 @@ func (c *Client) GetDataset(id string) (*models.Dataset, error) {
 	}
 	if res := attrs.Get("subjects.#.subject"); res.Exists() {
 		for _, r := range res.Array() {
-			keywords := whitespace.Split(r.String(), -1)
+			keywords := reSplit.Split(r.String(), -1)
 			d.Keyword = append(d.Keyword, keywords...)
 		}
 	}

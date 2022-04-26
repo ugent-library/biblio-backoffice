@@ -173,6 +173,7 @@ func (e *Engine) ImportUserPublicationByIdentifier(userID, source, identifier st
 	p.CreatorID = userID
 	p.UserID = userID
 	p.Status = "private"
+	p.Classification = "U"
 
 	p, err = e.StorageService.SavePublication(p)
 	if err != nil {

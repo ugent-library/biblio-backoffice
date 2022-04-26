@@ -7,21 +7,21 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/models"
 )
 
+type PublicationEncoder func(*models.Publication) ([]byte, error)
+
+type PublicationDecoderFactory func(io.Reader) PublicationDecoder
+
+type PublicationDecoder interface {
+	Decode(*models.Publication) error
+}
+
 type DatasetGetter interface {
 	GetDataset(string) (*models.Dataset, error)
 }
 
-// type DatasetIterator interface {
-// 	EachDataset(func(*models.Dataset) bool) error
-// }
-
 type PublicationGetter interface {
 	GetPublication(string) (*models.Publication, error)
 }
-
-// type PublicationIterator interface {
-// 	EachPublication(func(*models.Publication) bool) error
-// }
 
 type Transaction interface {
 	Rollback() error
@@ -105,5 +105,3 @@ type LicenseSearchService interface {
 type MediaTypeSearchService interface {
 	SuggestMediaTypes(string) ([]models.Completion, error)
 }
-
-type PublicationEncoder func(*models.Publication) ([]byte, error)
