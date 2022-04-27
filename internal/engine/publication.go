@@ -180,7 +180,6 @@ func (e *Engine) ImportUserPublicationByIdentifier(userID, source, identifier st
 }
 
 // TODO make workflow
-// TODO translate librecat bibtex code
 func (e *Engine) ImportUserPublications(userID, source string, file io.Reader) (string, error) {
 	batchID := uuid.New().String()
 	decFactory, ok := e.PublicationDecoders[source]
