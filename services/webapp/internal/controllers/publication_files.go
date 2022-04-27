@@ -118,6 +118,7 @@ func (c *PublicationFiles) Upload(w http.ResponseWriter, r *http.Request) {
 	now := time.Now()
 	pubFile := &models.PublicationFile{
 		ID:          uuid.New().String(),
+		AccessLevel: "local",
 		Filename:    handler.Filename,
 		FileSize:    int(handler.Size),
 		ContentType: filetype,
