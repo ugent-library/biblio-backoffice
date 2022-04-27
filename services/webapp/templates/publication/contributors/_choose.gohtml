@@ -6,9 +6,12 @@
             </div>
             <div class="modal-body">
                 {{if .D.Suggestions}}
+                {{range $.D.CreditRole}}
+                <input type="hidden" name="credit_role" value="{{.}}">
+                {{end}}
                 <ul class="list-group mt-6">
                     {{range .D.Suggestions}}
-                    <li class="list-group-item">
+                    <li class="list-group-item" id="person-{{.ID}}">
                         <div class="d-flex w-100">
                             <div class="w-100">
                                 <div class="d-flex align-items-start">
@@ -24,16 +27,20 @@
                                             {{range .UGentID}}
                                             <div class="text-muted c-body-small">UGent ID: {{.}}</div>
                                             {{end}}
+                                            <input type="hidden" name="first_name" value="{{.FirstName}}">
+                                            <input type="hidden" name="last_name" value="{{.LastName}}">
+                                            <input type="hidden" name="ID" value="{{.ID}}">
                                         </div>
                                         <div class="list-group-item-meta mt-2">
                                             <div class="list-group-item-meta-left">
                                             </div>
                                             <div class="list-group-item-meta-right">
                                                 <button class="btn btn-primary membership-member"
-                                                    data-target="#{{$.D.Role}}-modal"
-                                                    data-id="{{.ID}}"
-                                                    data-first-name="{{.FirstName}}"
-                                                    data-last-name="{{.LastName}}"
+                                                    hx-put="{{pathFor "publication_contributors_promote" "id" $.D.Publication.ID "role" $.D.Role "position" ($.D.Position | toString)}}"
+                                                    hx-target="#{{$.D.Role}}-modal"
+                                                    hx-trigger="click"
+                                                    hx-swap="innerHTML"
+                                                    hx-include='#person-{{.ID}} input[name="ID"], #person-{{.ID}} input[name="first_name"], #person-{{.ID}} input[name="last_name"], .modal-body input[name="credit_role"]'
                                                 >Confirm {{$.D.Role}}</button>
                                             </div>
                                         </div>
@@ -49,7 +56,12 @@
                 {{end}}
             </div>
             <div class="modal-footer">
-                <button class="btn btn-link membership-external" data-target="#{{.D.Role}}-modal" data-dismiss="modal">Cancel</button>
+                <button class="btn btn-link membership-external" data-target="#{{.D.Role}}-modal" data-dismiss="modal"
+                    hx-get="{{pathFor "publication_contributors_edit" "id" .D.Publication.ID "role" .D.Role "position" (.D.Position | toString)}}"
+                    hx-target="#{{.D.Role}}-modal"
+                    hx-trigger="click"
+                    hx-swap="innerHTML"
+                >Cancel</button>
             </div>
         </div>
     </div>

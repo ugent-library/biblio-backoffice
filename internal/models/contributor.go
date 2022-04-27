@@ -1,7 +1,7 @@
 package models
 
 type Contributor struct {
-	ID         string   `json:"id,omitempty" form:"-"`
+	ID         string   `json:"id,omitempty" form:"ID"`
 	ORCID      string   `json:"orcid,omitempty" form:"-"`
 	UGentID    []string `json:"ugent_id,omitempty" form:"-"`
 	FirstName  string   `json:"first_name,omitempty" form:"first_name"`
