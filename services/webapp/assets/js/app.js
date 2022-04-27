@@ -12,7 +12,7 @@ import modalClose from './ui/modal_close.js'
 import modalPopper from './ui/modal_popper.js'
 import tabs from './ui/tabs.js'
 import radioCard from './ui/radio_card.js'
-import membership from './ui/membership.js'
+// import membership from './ui/membership.js'
 import toast from './ui/toast.js'
 import sortable from './ui/sortable.js';
 
@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
     modalClose()
     modalPopper()
     radioCard()
-    membership()
+    // membership()
     toast()
     sortable()
 });
