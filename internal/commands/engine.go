@@ -99,7 +99,8 @@ func newEngine() *engine.Engine {
 			"ris":    ris.NewDecoder,
 			"wos":    ris.NewDecoder,
 			"bibtex": bibtex.NewDecoder,
-		}})
+		},
+	})
 
 	if err != nil {
 		log.Fatal(err)
