@@ -27,14 +27,18 @@
                         {{.D.Form.List (.D.Form.Name "license") (.D.Form.Value .D.Dataset.License) (.D.Form.Cols 3) (.D.Form.Tooltip (.T "tooltip.dataset" "license"))
                             (.D.Form.Choices .D.Vocabularies.cc_licenses (.D.Form.Locale "cc_licenses")) (.D.Form.EmptyChoice) (.D.Form.Required)}}
                         {{.D.Form.Text (.D.Form.Name "other_license") (.D.Form.Value .D.Dataset.OtherLicense) (.D.Form.Cols 9) (.D.Form.Placeholder "e.g. https://creativecommons.org/licenses/by/4.0/")}}
-                        {{.D.Form.List (.D.Form.Name "access_level") (.D.Form.Value .D.Dataset.AccessLevel) (.D.Form.Cols 3)
+                        {{.D.Form.Render "dataset/_access_level" (.D.Form.Name "access_level") (.D.Form.Value .D.Dataset.AccessLevel) (.D.Form.Cols 3)
                             (.D.Form.Tooltip (.T "tooltip.dataset" "access_level"))
                             (.D.Form.Choices .D.Vocabularies.access_levels
-                            (.D.Form.Locale "access_levels")) (.D.Form.EmptyChoice) (.D.Form.Required)}}
-                        {{.D.Form.Date (.D.Form.Name "embargo") (.D.Form.Value .D.Dataset.Embargo) (.D.Form.Cols 3)}}
+                            (.D.Form.Locale "access_levels")) (.D.Form.EmptyChoice) (.D.Form.Required) (.D.Form.ID .D.Dataset.ID)}}
+                        {{ $disabled := false }}
+                        {{if not (eq .D.Dataset.AccessLevel "info:eu-repo/semantics/embargoedAccess")}}
+                            {{ $disabled = true }}
+                        {{end}}
+                        {{.D.Form.Date (.D.Form.Name "embargo") (.D.Form.Value .D.Dataset.Embargo) (.D.Form.Cols 3) (.D.Form.Disabled $disabled)}}
                         {{.D.Form.List (.D.Form.Name "embargo_to") (.D.Form.Value .D.Dataset.EmbargoTo) (.D.Form.Cols 3)
                             (.D.Form.Choices .D.Vocabularies.access_levels
-                            (.D.Form.Locale "access_levels")) (.D.Form.EmptyChoice)}}
+                            (.D.Form.Locale "access_levels")) (.D.Form.EmptyChoice) (.D.Form.Disabled $disabled)}}
                     </li>
                 </ul>
             </div>
