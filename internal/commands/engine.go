@@ -17,6 +17,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/backends/es6"
 	"github.com/ugent-library/biblio-backend/internal/backends/ianamedia"
 	"github.com/ugent-library/biblio-backend/internal/backends/pg"
+	"github.com/ugent-library/biblio-backend/internal/backends/pg/bibtex"
 	"github.com/ugent-library/biblio-backend/internal/backends/pg/jsonl"
 	"github.com/ugent-library/biblio-backend/internal/backends/pg/ris"
 	"github.com/ugent-library/biblio-backend/internal/backends/pubmed"
@@ -94,9 +95,10 @@ func newEngine() *engine.Engine {
 			"cite-ieee":                citeproc.New("ieee").EncodePublication,
 		},
 		PublicationDecoders: map[string]backends.PublicationDecoderFactory{
-			"jsonl": jsonl.NewDecoder,
-			"ris":   ris.NewDecoder,
-			"wos":   ris.NewDecoder,
+			"jsonl":  jsonl.NewDecoder,
+			"ris":    ris.NewDecoder,
+			"wos":    ris.NewDecoder,
+			"bibtex": bibtex.NewDecoder,
 		}})
 
 	if err != nil {
