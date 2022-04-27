@@ -52,6 +52,48 @@ func (c *DatasetDetails) Edit(w http.ResponseWriter, r *http.Request) {
 	)
 }
 
+func (c *DatasetDetails) AccessLevel(w http.ResponseWriter, r *http.Request) {
+	dataset := context.GetDataset(r.Context())
+
+	err := r.ParseForm()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if err := forms.Decode(dataset, r.Form); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Clear embargo and embargoTo fields if access level is not embargo
+	//   @todo Disabled per https://github.com/ugent-library/biblio-backend/issues/217
+	//
+	//   Another issue: the old JS also temporary stored the data in these fields if
+	//   access level changed from embargo to something else. The data would be restored
+	//   into the form fields again if embargo level is chosen again. This feature isn't
+	//   implemented in this solution since state isn't kept across HTTP requests.
+	//
+	// if dataset.AccessLevel != "info:eu-repo/semantics/embargoedAccess" {
+	// 	dataset.Embargo = ""
+	// 	dataset.EmbargoTo = ""
+	// }
+
+	c.Render.HTML(w, http.StatusOK, "dataset/details/_edit", c.ViewData(r, struct {
+		Dataset      *models.Dataset
+		Show         *views.ShowBuilder
+		Form         *views.FormBuilder
+		Vocabularies map[string][]string
+	}{
+		dataset,
+		views.NewShowBuilder(c.RenderPartial, locale.Get(r.Context())),
+		views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), nil),
+		c.Engine.Vocabularies(),
+	}),
+		render.HTMLOptions{Layout: "layouts/htmx"},
+	)
+}
+
 func (c *DatasetDetails) Update(w http.ResponseWriter, r *http.Request) {
 	dataset := context.GetDataset(r.Context())
 

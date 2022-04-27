@@ -9,8 +9,18 @@
         {{ end }}
     </label>
     <div class="col-{{ .Cols }}">
-        <input class="form-control{{ if .Error }} is-invalid{{ end }}" name="{{ .Name }}" type="date"
-            value="{{ .Value }}"{{with .Min}} min="{{.}}"{{end}}{{with .Max}} max="{{.}}"{{end}}{{if .Disabled}} disabled{{end}}>
+        <select class="custom-select form-control{{ if .Error }} is-invalid{{ end }}" name="{{ .Name }}"
+            hx-put="{{pathFor "dataset_details_edit_form_access_level" "id" .ID}}"
+            hx-indicator=".modal-dialog .spinner-border"
+            hx-swap="innerHTML scroll:.modal-body:bottom"
+            hx-target="#dataset-details-modal"
+            hx-include=".modal-body"
+        >
+            {{ if .EmptyChoice }}<option></option>{{end}}
+            {{ range $i, $c := .Choices }}
+            <option value="{{ . }}"{{if eq . $.Value }} selected{{ end }}>{{ index $.ChoicesLabels $i }}</option>
+            {{ end }}
+        </select>
         {{ if .Error }}<div class="invalid-feedback">{{ .Error }}</div>{{ end }}
     </div>
 </div>

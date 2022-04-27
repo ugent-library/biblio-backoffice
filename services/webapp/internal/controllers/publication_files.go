@@ -197,6 +197,86 @@ func (c *PublicationFiles) Edit(w http.ResponseWriter, r *http.Request) {
 	)
 }
 
+func (c *PublicationFiles) License(w http.ResponseWriter, r *http.Request) {
+	fileID := mux.Vars(r)["file_id"]
+	triggerEl := r.Header.Get("HX-Trigger-name")
+
+	pub := context.GetPublication(r.Context())
+
+	var file *models.PublicationFile
+	fileIndex := 0
+	for i, f := range pub.File {
+		if f.ID == fileID {
+			file = f
+			fileIndex = i
+		}
+	}
+
+	if file == nil {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+
+	err := r.ParseForm()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if err := forms.Decode(file, r.Form); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Conditionally voiding licensing fields based on a triggering element
+	// and dependent element inputs
+
+	// Clear embargo fields when Access Level is set to "open access"
+	if triggerEl == "" {
+		if file.AccessLevel == "open_access" {
+			file.Embargo = ""
+			file.EmbargoTo = ""
+		}
+	}
+
+	// Clear CC License when Embargo To is set to "local" or "empty"
+	if triggerEl == "embargo_to" {
+		if (file.EmbargoTo == "" || file.EmbargoTo == "local") && file.CCLicense != "" {
+			file.CCLicense = ""
+		}
+	}
+
+	// Clear No License (Copyright) when CC License is set to a non-empty value
+	if triggerEl == "cc_license" {
+		if file.CCLicense != "" && file.NoLicense == true {
+			file.NoLicense = false
+		}
+	}
+
+	// Clear CC License when No License (Copyright) is checked
+	if triggerEl == "no_license" {
+		if file.CCLicense != "" && file.NoLicense == true {
+			file.CCLicense = ""
+		}
+	}
+
+	c.Render.HTML(w, http.StatusOK, "publication/files/_edit", c.ViewData(r, struct {
+		Publication  *models.Publication
+		File         *models.PublicationFile
+		FileIndex    int
+		Form         *views.FormBuilder
+		Vocabularies map[string][]string
+	}{
+		pub,
+		file,
+		fileIndex,
+		views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), nil),
+		c.Engine.Vocabularies(),
+	}),
+		render.HTMLOptions{Layout: "layouts/htmx"},
+	)
+}
+
 // TODO avoid getting publication multiple times
 func (c *PublicationFiles) Update(w http.ResponseWriter, r *http.Request) {
 	fileID := mux.Vars(r)["file_id"]
@@ -228,12 +308,8 @@ func (c *PublicationFiles) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO handle checkbox boolean values elegantly
-	if r.FormValue("no_license") != "true" {
-		file.NoLicense = false
-	}
-
-	// embargo sanity check
+	// Embargo sanity / paranoia check
+	// Ensure embargo fields are definitely empty when Acces Level is set to "Open Access"
 	if file.AccessLevel == "open_access" || file.EmbargoTo == file.AccessLevel {
 		file.EmbargoTo = ""
 		file.Embargo = ""

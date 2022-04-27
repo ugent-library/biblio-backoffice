@@ -14,13 +14,12 @@ import tabs from './ui/tabs.js'
 import radioCard from './ui/radio_card.js'
 import membership from './ui/membership.js'
 import toast from './ui/toast.js'
-import fileEmbargo from './ui/file_embargo.js'
-import datasetEmbargo from './ui/dataset_embargo.js';
-import fileShowCCLicense from './ui/file_show_cc_license.js';
-import fileLicense from './ui/file_license.js';
 import sortable from './ui/sortable.js';
 
 document.addEventListener('DOMContentLoaded', function () {
+
+    htmx.config.defaultFocusScroll = true
+
     csrf()
     tabs()
     checkbox()
@@ -36,9 +35,5 @@ document.addEventListener('DOMContentLoaded', function () {
     radioCard()
     membership()
     toast()
-    fileEmbargo()
-    datasetEmbargo()
-    fileShowCCLicense()
-    fileLicense()
     sortable()
 });

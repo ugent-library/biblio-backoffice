@@ -212,6 +212,9 @@ func Register(c controllers.Context) {
 	pubEditRouter.HandleFunc("/htmx/file/{file_id}/edit", publicationFilesController.Edit).
 		Methods("GET").
 		Name("publication_file_edit")
+	pubEditRouter.HandleFunc("/htmx/file/{file_id}/license", publicationFilesController.License).
+		Methods("PUT").
+		Name("publication_file_license")
 	pubEditRouter.HandleFunc("/htmx/file/{file_id}", publicationFilesController.Update).
 		Methods("PUT").
 		Name("publication_file_update")
@@ -442,6 +445,9 @@ func Register(c controllers.Context) {
 	datasetEditRouter.HandleFunc("/htmx/details/edit", datasetDetailsController.Edit).
 		Methods("GET").
 		Name("dataset_details_edit_form")
+	datasetEditRouter.HandleFunc("/htmx/details/access_level", datasetDetailsController.AccessLevel).
+		Methods("PUT").
+		Name("dataset_details_edit_form_access_level")
 	datasetEditRouter.HandleFunc("/htmx/details/edit", datasetDetailsController.Update).
 		Methods("PATCH").
 		Name("dataset_details_save_form")
