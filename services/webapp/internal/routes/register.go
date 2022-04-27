@@ -445,6 +445,9 @@ func Register(c controllers.Context) {
 	datasetEditRouter.HandleFunc("/htmx/details/edit", datasetDetailsController.Edit).
 		Methods("GET").
 		Name("dataset_details_edit_form")
+	datasetEditRouter.HandleFunc("/htmx/details/access_level", datasetDetailsController.AccessLevel).
+		Methods("PUT").
+		Name("dataset_details_edit_form_access_level")
 	datasetEditRouter.HandleFunc("/htmx/details/edit", datasetDetailsController.Update).
 		Methods("PATCH").
 		Name("dataset_details_save_form")

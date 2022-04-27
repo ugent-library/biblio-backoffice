@@ -9,7 +9,7 @@
         {{ end }}
     </label>
     <div class="col-{{ .Cols }}">
-        <select class="custom-select form-control{{ if .Error }} is-invalid{{ end }}" name="{{ .Name }}">
+        <select class="custom-select form-control{{ if .Error }} is-invalid{{ end }}" name="{{ .Name }}"{{if .Disabled}} disabled{{end}}>
             {{ if .EmptyChoice }}<option></option>{{end}}
             {{ range $i, $c := .Choices }}
             <option value="{{ . }}"{{if eq . $.Value }} selected{{ end }}>{{ index $.ChoicesLabels $i }}</option>

@@ -14,10 +14,12 @@ import tabs from './ui/tabs.js'
 import radioCard from './ui/radio_card.js'
 import membership from './ui/membership.js'
 import toast from './ui/toast.js'
-import datasetEmbargo from './ui/dataset_embargo.js';
 import sortable from './ui/sortable.js';
 
 document.addEventListener('DOMContentLoaded', function () {
+
+    htmx.config.defaultFocusScroll = true
+
     csrf()
     tabs()
     checkbox()
@@ -33,6 +35,5 @@ document.addEventListener('DOMContentLoaded', function () {
     radioCard()
     membership()
     toast()
-    datasetEmbargo()
     sortable()
 });
