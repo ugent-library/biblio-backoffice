@@ -9,6 +9,7 @@ import (
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/views"
 	"github.com/ugent-library/go-locale/locale"
+	"github.com/ugent-library/go-web/forms"
 	"github.com/ugent-library/go-web/jsonapi"
 	"github.com/unrolled/render"
 )
@@ -267,21 +268,114 @@ func (c *PublicationContributors) Choose(w http.ResponseWriter, r *http.Request)
 	positionVar := mux.Vars(r)["position"]
 	position, _ := strconv.Atoi(positionVar)
 
-	firstName := r.URL.Query().Get("first_name")
-	lastName := r.URL.Query().Get("last_name")
+	// firstName := r.URL.Query().Get("first_name")
+	// lastName := r.URL.Query().Get("last_name")
+
+	err := r.ParseForm()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	firstName := r.FormValue("first_name")
+	lastName := r.FormValue("last_name")
+	creditRole := r.Form["credit_role"]
 
 	suggestions, _ := c.Engine.SuggestPeople(firstName + " " + lastName)
 
 	c.Render.HTML(w, http.StatusOK, "publication/contributors/_choose", c.ViewData(r, struct {
 		Role        string
+		CreditRole  []string
 		Publication *models.Publication
 		Position    int
 		Suggestions []models.Person
 	}{
 		role,
+		creditRole,
 		pub,
 		position,
 		suggestions,
+	}),
+		render.HTMLOptions{Layout: "layouts/htmx"},
+	)
+}
+
+func (c *PublicationContributors) Demote(w http.ResponseWriter, r *http.Request) {
+	pub := context.GetPublication(r.Context())
+	role := mux.Vars(r)["role"]
+	positionVar := mux.Vars(r)["position"]
+	position, _ := strconv.Atoi(positionVar)
+
+	contributor := pub.Contributors(role)[position]
+
+	err := r.ParseForm()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if err := forms.Decode(contributor, r.Form); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Demote contributor from "UGent member" to "External member"
+	// We do this by resetting the ID field to an empty string
+	contributor.ID = ""
+
+	c.Render.HTML(w, http.StatusOK, "publication/contributors/_edit", c.ViewData(r, struct {
+		Role        string
+		Publication *models.Publication
+		Contributor *models.Contributor
+		Position    int
+		Form        *views.FormBuilder
+	}{
+		role,
+		pub,
+		contributor,
+		position,
+		views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), nil),
+	}),
+		render.HTMLOptions{Layout: "layouts/htmx"},
+	)
+}
+
+func (c *PublicationContributors) Promote(w http.ResponseWriter, r *http.Request) {
+	pub := context.GetPublication(r.Context())
+	role := mux.Vars(r)["role"]
+	positionVar := mux.Vars(r)["position"]
+	position, _ := strconv.Atoi(positionVar)
+
+	contributor := pub.Contributors(role)[position]
+
+	err := r.ParseForm()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Promoting the user from "external member" to "UGent member"
+	// The form contains an ID field value pushed from the "choose modal"
+	// This value gets relayed to the edit form via the Contributor model.
+	// UGent FirstName and LastName are interspersed into the Contributor model
+	// as well.
+	if err := forms.Decode(contributor, r.Form); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	c.Render.HTML(w, http.StatusOK, "publication/contributors/_edit", c.ViewData(r, struct {
+		Role        string
+		Publication *models.Publication
+		Contributor *models.Contributor
+		Position    int
+		Form        *views.FormBuilder
+	}{
+		role,
+		pub,
+		contributor,
+		position,
+		views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), nil),
 	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)

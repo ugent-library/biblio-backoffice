@@ -32,10 +32,10 @@
         <div class="custom-control custom-radio custom-control-inline">
             <input class="custom-control-input membership-ugent" id="{{.D.Role}}-{{.D.Position}}-member" type="radio" name="membership"
                 {{if .D.Contributor.ID}} checked{{end}}
-                hx-get="{{pathFor "publication_contributors_choose" "id" .D.Publication.ID "role" .D.Role "position" (.D.Position | toString)}}"
+                hx-put="{{pathFor "publication_contributors_choose" "id" .D.Publication.ID "role" .D.Role "position" (.D.Position | toString)}}"
                 hx-swap="innerHTML"
                 hx-target="#{{.D.Role}}-membership-modal"
-                hx-include='#{{.D.Role}}-modal .contributor-attributes input[name="first_name"], #{{.D.Role}}-modal .contributor-attributes input[name="last_name"]'
+                hx-include='#{{.D.Role}}-modal .contributor-attributes input[name="first_name"], #{{.D.Role}}-modal .contributor-attributes input[name="last_name"], #{{.D.Role}}-modal .contributor-attributes select[name="credit_role"]'
             >
             <label class="custom-control-label custom-control-label-light" for="{{.D.Role}}-{{.D.Position}}-member">
                 <i class="if if-ghent-university if--small"></i>UGent {{.D.Role}}
@@ -45,6 +45,11 @@
             <input class="custom-control-input membership-external" id="{{.D.Role}}-{{.D.Position}}-external" type="radio" name="membership"
                 {{if not .D.Contributor.ID}}checked{{end}}
                 data-target="#{{$.D.Role}}-modal"
+                hx-put="{{pathFor "publication_contributors_demote" "id" .D.Publication.ID "role" .D.Role "position" (.D.Position | toString)}}"
+                hx-target="#{{.D.Role}}-modal"
+                hx-trigger="click"
+                hx-swap="innerHTML"
+                hx-include='#{{.D.Role}}-modal .contributor-attributes input[name="first_name"], #{{.D.Role}}-modal .contributor-attributes input[name="last_name"], #{{.D.Role}}-modal .contributor-attributes select[name="credit_role"]'
             >
             <label class="custom-control-label custom-control-label-light" for="{{.D.Role}}-{{.D.Position}}-external">External {{.D.Role}}</label>
         </div>

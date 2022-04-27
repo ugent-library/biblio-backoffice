@@ -35,6 +35,11 @@
             <input class="custom-control-input membership-external" id="{{.D.Role}}-{{.D.Position}}-external" type="radio" name="membership"
                 {{if not .D.Contributor.ID}}checked{{end}}
                 data-target="#{{$.D.Role}}-modal"
+                hx-put="{{pathFor "dataset_contributors_demote" "id" .D.Dataset.ID "role" .D.Role "position" (.D.Position | toString)}}"
+                hx-target="#{{.D.Role}}-modal"
+                hx-trigger="click"
+                hx-swap="innerHTML"
+                hx-include='#{{.D.Role}}-modal .contributor-attributes input[name="first_name"], #{{.D.Role}}-modal .contributor-attributes input[name="last_name"]'
             >
             <label class="custom-control-label custom-control-label-light" for="{{.D.Role}}-{{.D.Position}}-external">External {{.T "dataset.contributor.role" .D.Role}}</label>
         </div>
