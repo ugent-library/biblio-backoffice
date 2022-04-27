@@ -61,7 +61,7 @@ func (c *DatasetDetails) AccessLevel(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := forms.Decode(dataset, r.Form); err != nil {
+	if err := DecodeForm(dataset, r.Form); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
