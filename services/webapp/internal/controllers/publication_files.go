@@ -35,7 +35,7 @@ func (c *PublicationFiles) Download(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.ServeFile(w, r, c.Engine.FilePath(file.SHA256))
+	http.ServeFile(w, r, c.Engine.FileStore.FilePath(file.SHA256))
 }
 
 func (c *PublicationFiles) Thumbnail(w http.ResponseWriter, r *http.Request) {
@@ -93,7 +93,7 @@ func (c *PublicationFiles) Upload(w http.ResponseWriter, r *http.Request) {
 
 	pub := context.GetPublication(r.Context())
 
-	checksum, err := c.Engine.StoreFile(file)
+	checksum, err := c.Engine.FileStore.Add(file)
 
 	if err != nil {
 		flash := views.Flash{Type: "error", Message: "There was a problem adding your file"}

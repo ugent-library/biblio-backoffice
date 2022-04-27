@@ -15,6 +15,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/backends/crossref"
 	"github.com/ugent-library/biblio-backend/internal/backends/datacite"
 	"github.com/ugent-library/biblio-backend/internal/backends/es6"
+	"github.com/ugent-library/biblio-backend/internal/backends/filestore"
 	"github.com/ugent-library/biblio-backend/internal/backends/ianamedia"
 	"github.com/ugent-library/biblio-backend/internal/backends/pg"
 	"github.com/ugent-library/biblio-backend/internal/backends/pg/bibtex"
@@ -40,6 +41,11 @@ func Engine() *engine.Engine {
 }
 
 func newEngine() *engine.Engine {
+	fs, err := filestore.New(viper.GetString("file-dir"))
+	if err != nil {
+		log.Fatalln("Unable to initialize filestore", err)
+	}
+
 	temporal, err := client.NewClient(client.Options{
 		HostPort: viper.GetString("temporal-host-port"),
 		Logger:   &temporalLogger{},
@@ -64,6 +70,7 @@ func newEngine() *engine.Engine {
 	orcidClient := orcid.NewMemberClient(orcidConfig)
 
 	e, err := engine.New(engine.Config{
+		FileStore:                 fs,
 		Temporal:                  temporal,
 		ORCIDSandbox:              orcidConfig.Sandbox,
 		ORCIDClient:               orcidClient,

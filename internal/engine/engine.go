@@ -2,11 +2,13 @@ package engine
 
 import (
 	"github.com/ugent-library/biblio-backend/internal/backends"
+	"github.com/ugent-library/biblio-backend/internal/backends/filestore"
 	"github.com/ugent-library/go-orcid/orcid"
 	"go.temporal.io/sdk/client"
 )
 
 type Config struct {
+	FileStore                *filestore.Store
 	Temporal                 client.Client
 	ORCIDSandbox             bool
 	ORCIDClient              *orcid.MemberClient

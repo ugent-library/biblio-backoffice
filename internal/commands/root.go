@@ -53,6 +53,8 @@ func init() {
 	viper.SetDefault("csrf-name", defaultCSRFName)
 	viper.SetDefault("temporal-host-port", client.DefaultHostPort)
 
+	rootCmd.PersistentFlags().String("file-dir", "", "file store root directory")
+
 	rootCmd.PersistentFlags().String("frontend-url", "", "biblio frontend url")
 	rootCmd.PersistentFlags().String("frontend-username", "", "biblio frontend username")
 	rootCmd.PersistentFlags().String("frontend-password", "", "biblio frontend password")

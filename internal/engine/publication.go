@@ -1,16 +1,10 @@
 package engine
 
 import (
-	"crypto/sha256"
 	"errors"
-	"fmt"
-	"hash/fnv"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
-	"path"
 	"sync"
 
 	"github.com/google/uuid"
@@ -245,75 +239,6 @@ func (e *Engine) ImportUserPublications(userID, source string, file io.Reader) (
 // TODO point to biblio frontend
 func (c *Engine) ServePublicationThumbnail(fileURL string, w http.ResponseWriter, r *http.Request) {
 	// panic("not implemented")
-}
-
-// TODO make filestore package
-func fnvHash(s string) uint32 {
-	h := fnv.New32a()
-	h.Write([]byte(s))
-	return h.Sum32()
-}
-
-func segmentedPath(str string, size int) string {
-	strLength := len(str)
-	var segments []string
-	var stop int
-	for i := 0; i < strLength; i += size {
-		stop = i + size
-		if stop > strLength {
-			stop = strLength
-		}
-		segments = append(segments, str[i:stop])
-	}
-	return path.Join(segments...)
-}
-
-func (e *Engine) FilePath(checksum string) string {
-	fnv32 := fmt.Sprintf("%d", fnvHash(checksum))
-	return path.Join("/Users/nsteenla/tmp/biblio_backend/files", segmentedPath(fnv32, 3), checksum)
-}
-
-func (e *Engine) StoreFile(r io.Reader) (string, error) {
-	tmpFile, err := ioutil.TempFile("/Users/nsteenla/tmp/biblio_backend/tmp", "")
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Printf("%s\n", tmpFile.Name())
-	defer os.Remove(tmpFile.Name())
-
-	hash := sha256.New()
-
-	w := io.MultiWriter(tmpFile, hash)
-
-	if _, err := io.Copy(w, r); err != nil {
-		log.Println("error copying file", err)
-		return "", err
-	}
-
-	checksum := fmt.Sprintf("%x", hash.Sum(nil))
-	fnv32 := fmt.Sprintf("%d", fnvHash(checksum))
-
-	log.Printf("sha256: %s", checksum)
-	log.Printf("fnv: %s", fnv32)
-	log.Printf("segmented path: %s", segmentedPath(fnv32, 3))
-
-	pathToDir := path.Join("/Users/nsteenla/tmp/biblio_backend/files", segmentedPath(fnv32, 3))
-	pathToFile := path.Join(pathToDir, checksum)
-
-	// file already stored
-	if _, err := os.Stat(pathToFile); !os.IsNotExist(err) {
-		return checksum, nil
-	}
-
-	if err := os.MkdirAll(pathToDir, os.ModePerm); err != nil {
-		return "", err
-	}
-
-	if err := os.Rename(tmpFile.Name(), path.Join(pathToDir, checksum)); err != nil {
-		return "", err
-	}
-
-	return checksum, nil
 }
 
 // TODO make workflow
