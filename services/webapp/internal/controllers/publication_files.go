@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"errors"
 	"io"
 	"log"
 	"net/http"
@@ -9,6 +10,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backend/internal/validation"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/views"
 	"github.com/ugent-library/go-locale/locale"
@@ -318,7 +320,8 @@ func (c *PublicationFiles) Update(w http.ResponseWriter, r *http.Request) {
 
 	_, err = c.Engine.UpdatePublication(pub)
 
-	if formErrors, ok := err.(jsonapi.Errors); ok {
+	var validationErrors validation.Errors
+	if errors.As(err, &validationErrors) {
 		c.Render.HTML(w, http.StatusOK, "publication/files/_edit", c.ViewData(r, struct {
 			Publication  *models.Publication
 			File         *models.PublicationFile
@@ -329,7 +332,7 @@ func (c *PublicationFiles) Update(w http.ResponseWriter, r *http.Request) {
 			pub,
 			file,
 			fileIndex,
-			views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), formErrors),
+			views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), validationErrors),
 			c.Engine.Vocabularies(),
 		},
 			views.Flash{Type: "error", Message: "There are some problems with your input"},

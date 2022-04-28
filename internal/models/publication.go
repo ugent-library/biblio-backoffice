@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strings"
 	"time"
+
+	"github.com/ugent-library/biblio-backend/internal/validation"
 )
 
 type PublicationHits struct {
@@ -330,27 +332,27 @@ func (p *Publication) InORCIDWorks(orcidID string) bool {
 	return false
 }
 
-func (d *Publication) Validate() (errs ValidationErrors) {
+func (d *Publication) Validate() (errs validation.Errors) {
 	if d.ID == "" {
-		errs = append(errs, ValidationError{
+		errs = append(errs, &validation.Error{
 			Pointer: "/id",
 			Code:    "required",
 		})
 	}
 	if d.Type == "" {
-		errs = append(errs, ValidationError{
+		errs = append(errs, &validation.Error{
 			Pointer: "/type",
 			Code:    "required",
 		})
 	}
 	if d.Status == "" {
-		errs = append(errs, ValidationError{
+		errs = append(errs, &validation.Error{
 			Pointer: "/status",
 			Code:    "required",
 		})
 	}
 	if d.Status == "public" && d.Title == "" {
-		errs = append(errs, ValidationError{
+		errs = append(errs, &validation.Error{
 			Pointer: "/title",
 			Code:    "required",
 		})
@@ -358,24 +360,24 @@ func (d *Publication) Validate() (errs ValidationErrors) {
 
 	for i, c := range d.Author {
 		for _, err := range c.Validate() {
-			errs = append(errs, ValidationError{
-				Pointer: fmt.Sprintf("/author/%d/%s", i, err.Pointer),
+			errs = append(errs, &validation.Error{
+				Pointer: fmt.Sprintf("/author/%d%s", i, err.Pointer),
 				Code:    err.Code,
 			})
 		}
 	}
 	for i, c := range d.Editor {
 		for _, err := range c.Validate() {
-			errs = append(errs, ValidationError{
-				Pointer: fmt.Sprintf("/editor/%d/%s", i, err.Pointer),
+			errs = append(errs, &validation.Error{
+				Pointer: fmt.Sprintf("/editor/%d%s", i, err.Pointer),
 				Code:    err.Code,
 			})
 		}
 	}
 	for i, c := range d.Supervisor {
 		for _, err := range c.Validate() {
-			errs = append(errs, ValidationError{
-				Pointer: fmt.Sprintf("/supervisor/%d/%s", i, err.Pointer),
+			errs = append(errs, &validation.Error{
+				Pointer: fmt.Sprintf("/supervisor/%d%s", i, err.Pointer),
 				Code:    err.Code,
 			})
 		}

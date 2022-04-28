@@ -1,13 +1,13 @@
-package models
+package validation
 
-type ValidationErrors []ValidationError
+type Errors []*Error
 
-type ValidationError struct {
+type Error struct {
 	Pointer string
 	Code    string
 }
 
-func (e ValidationError) Error() string {
+func (e *Error) Error() string {
 	msg := e.Code
 	if e.Pointer != "" {
 		msg += "[" + e.Pointer + "]"
@@ -15,7 +15,7 @@ func (e ValidationError) Error() string {
 	return msg
 }
 
-func (errs ValidationErrors) Error() string {
+func (errs Errors) Error() string {
 	msg := ""
 	for i, e := range errs {
 		msg += e.Error()

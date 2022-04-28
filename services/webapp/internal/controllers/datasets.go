@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backend/internal/validation"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/views"
 	"github.com/ugent-library/go-locale/locale"
@@ -118,7 +119,7 @@ func (c *Datasets) Publish(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		savedDataset = dataset
 
-		if e, ok := err.(models.ValidationErrors); ok {
+		if e, ok := err.(validation.Errors); ok {
 			formErrors := jsonapi.Errors{jsonapi.Error{
 				Detail: e.Error(),
 				Title:  e.Error(),
@@ -294,7 +295,7 @@ func (c *Datasets) AddPublish(w http.ResponseWriter, r *http.Request) {
 		   TODO: return to dataset - add_confirm with flash in session instead of rendering this in the wrong path
 		   We only use one error, as publishing can only fail on attribute title
 		*/
-		if e, ok := err.(models.ValidationErrors); ok {
+		if e, ok := err.(validation.Errors); ok {
 			c.Render.HTML(w, http.StatusOK, "dataset/add_confirm", c.ViewData(r, struct {
 				PageTitle string
 				Step      int

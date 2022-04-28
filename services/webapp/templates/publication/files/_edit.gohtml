@@ -1,5 +1,5 @@
 <div id="modal-backdrop" class="modal-backdrop fade show" style="display:block;"></div>
-{{ $ccLicenseError := .D.Form.ErrorFor (printf "/data/file/%d/cc_license" .D.FileIndex) }}
+{{ $ccLicenseError := .D.Form.ErrorFor (printf "/file/%d/cc_license" .D.FileIndex) }}
 <div class="modal show" tabindex="-1" style="display: block;" aria-modal="true" role="dialog">
     <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" role="document">
         <div class="modal-content">

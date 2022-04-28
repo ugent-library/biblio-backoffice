@@ -1,5 +1,7 @@
 package models
 
+import "github.com/ugent-library/biblio-backend/internal/validation"
+
 type Contributor struct {
 	ID         string   `json:"id,omitempty" form:"ID"`
 	ORCID      string   `json:"orcid,omitempty" form:"-"`
@@ -40,15 +42,15 @@ func (p *Contributor) CreditRoleChoices() []string {
 	}
 }
 
-func (c *Contributor) Validate() (errs ValidationErrors) {
+func (c *Contributor) Validate() (errs validation.Errors) {
 	if c.FirstName == "" {
-		errs = append(errs, ValidationError{
+		errs = append(errs, &validation.Error{
 			Pointer: "/first_name",
 			Code:    "required",
 		})
 	}
 	if c.LastName == "" {
-		errs = append(errs, ValidationError{
+		errs = append(errs, &validation.Error{
 			Pointer: "/last_name",
 			Code:    "required",
 		})

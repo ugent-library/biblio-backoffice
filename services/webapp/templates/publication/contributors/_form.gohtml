@@ -1,5 +1,5 @@
-{{$firstNameError := .D.Form.ErrorFor (printf "/data/%s/%d/first_name" .D.Role .D.Position)}}
-{{$lastNameError := .D.Form.ErrorFor (printf "/data/%s/%d/last_name" .D.Role .D.Position)}}
+{{$firstNameError := .D.Form.ErrorFor (printf "/%s/%d/first_name" .D.Role .D.Position)}}
+{{$lastNameError := .D.Form.ErrorFor (printf "/%s/%d/last_name" .D.Role .D.Position)}}
 <div class="contributor-attributes">
     <input type="hidden" name="id" value="{{.D.Contributor.ID}}">
     <div class="form-row">

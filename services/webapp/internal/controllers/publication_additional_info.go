@@ -1,15 +1,16 @@
 package controllers
 
 import (
+	"errors"
 	"net/http"
 	"time"
 
 	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backend/internal/validation"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/views"
 	"github.com/ugent-library/go-locale/locale"
 	"github.com/ugent-library/go-web/forms"
-	"github.com/ugent-library/go-web/jsonapi"
 	"github.com/unrolled/render"
 )
 
@@ -73,7 +74,8 @@ func (c *PublicationAdditionalInfo) Update(w http.ResponseWriter, r *http.Reques
 
 	savedPub, err := c.Engine.UpdatePublication(pub)
 
-	if formErrors, ok := err.(jsonapi.Errors); ok {
+	var validationErrors validation.Errors
+	if errors.As(err, &validationErrors) {
 		c.Render.HTML(w, http.StatusOK,
 			"publication/additional_info/_edit",
 			c.ViewData(r, struct {
@@ -82,7 +84,7 @@ func (c *PublicationAdditionalInfo) Update(w http.ResponseWriter, r *http.Reques
 				Vocabularies map[string][]string
 			}{
 				pub,
-				views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), formErrors),
+				views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), validationErrors),
 				c.Engine.Vocabularies(),
 			},
 				views.Flash{Type: "error", Message: "There are some problems with your input"},

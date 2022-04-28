@@ -1,16 +1,17 @@
 package controllers
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backend/internal/validation"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/views"
 	"github.com/ugent-library/go-locale/locale"
 	"github.com/ugent-library/go-web/forms"
-	"github.com/ugent-library/go-web/jsonapi"
 	"github.com/unrolled/render"
 )
 
@@ -27,14 +28,14 @@ func (c *PublicationLaySummaries) Add(w http.ResponseWriter, r *http.Request) {
 
 	c.Render.HTML(w, http.StatusOK, "publication/lay_summaries/_form", c.ViewData(r, struct {
 		PublicationID string
-		LaySummary      *models.Text
+		LaySummary    *models.Text
 		Form          *views.FormBuilder
 		Vocabularies  map[string][]string
 	}{
 		PublicationID: id,
-		LaySummary: &models.Text{},
-		Form: views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), nil),
-		Vocabularies: c.Engine.Vocabularies(),
+		LaySummary:    &models.Text{},
+		Form:          views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), nil),
+		Vocabularies:  c.Engine.Vocabularies(),
 	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
@@ -65,17 +66,18 @@ func (c *PublicationLaySummaries) Create(w http.ResponseWriter, r *http.Request)
 
 	savedPub, err := c.Engine.UpdatePublication(pub)
 
-	if formErrors, ok := err.(jsonapi.Errors); ok {
+	var validationErrors validation.Errors
+	if errors.As(err, &validationErrors) {
 		c.Render.HTML(w, http.StatusOK, "publication/lay_summaries/_form", c.ViewData(r, struct {
 			PublicationID string
-			LaySummary      *models.Text
+			LaySummary    *models.Text
 			Form          *views.FormBuilder
 			Vocabularies  map[string][]string
 		}{
 			PublicationID: savedPub.ID,
-			LaySummary: lay_summary,
-			Form: views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), formErrors),
-			Vocabularies: c.Engine.Vocabularies(),
+			LaySummary:    lay_summary,
+			Form:          views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), validationErrors),
+			Vocabularies:  c.Engine.Vocabularies(),
 		}),
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
@@ -116,15 +118,15 @@ func (c *PublicationLaySummaries) Edit(w http.ResponseWriter, r *http.Request) {
 	c.Render.HTML(w, http.StatusOK, "publication/lay_summaries/_form_edit", c.ViewData(r, struct {
 		PublicationID string
 		Delta         string
-		LaySummary      *models.Text
+		LaySummary    *models.Text
 		Form          *views.FormBuilder
 		Vocabularies  map[string][]string
 	}{
 		PublicationID: pub.ID,
-		Delta: muxRowDelta,
-		LaySummary: lay_summary,
-		Form: views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), nil),
-		Vocabularies: c.Engine.Vocabularies(),
+		Delta:         muxRowDelta,
+		LaySummary:    lay_summary,
+		Form:          views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), nil),
+		Vocabularies:  c.Engine.Vocabularies(),
 	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
@@ -158,21 +160,22 @@ func (c *PublicationLaySummaries) Update(w http.ResponseWriter, r *http.Request)
 
 	savedPub, err := c.Engine.UpdatePublication(pub)
 
-	if formErrors, ok := err.(jsonapi.Errors); ok {
+	var validationErrors validation.Errors
+	if errors.As(err, &validationErrors) {
 		c.Render.HTML(w, http.StatusOK,
 			"publication/lay_summaries/_form_edit",
 			c.ViewData(r, struct {
 				PublicationID string
 				Delta         string
-				LaySummary      *models.Text
+				LaySummary    *models.Text
 				Form          *views.FormBuilder
 				Vocabularies  map[string][]string
 			}{
 				PublicationID: savedPub.ID,
-				Delta: strconv.Itoa(rowDelta),
-				LaySummary: lay_summary,
-				Form: views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), formErrors),
-				Vocabularies: c.Engine.Vocabularies(),
+				Delta:         strconv.Itoa(rowDelta),
+				LaySummary:    lay_summary,
+				Form:          views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), validationErrors),
+				Vocabularies:  c.Engine.Vocabularies(),
 			}),
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
@@ -202,7 +205,7 @@ func (c *PublicationLaySummaries) ConfirmRemove(w http.ResponseWriter, r *http.R
 		ID  string
 		Key string
 	}{
-		ID: id,
+		ID:  id,
 		Key: muxRowDelta,
 	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
@@ -228,7 +231,7 @@ func (c *PublicationLaySummaries) Remove(w http.ResponseWriter, r *http.Request)
 	c.Render.HTML(w, http.StatusOK, "publication/lay_summaries/_deleted", c.ViewData(r, struct {
 		Publication *models.Publication
 	}{
-			Publication: savedPub,
+		Publication: savedPub,
 	},
 	),
 		render.HTMLOptions{Layout: "layouts/htmx"},

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strings"
 	"time"
+
+	"github.com/ugent-library/biblio-backend/internal/validation"
 )
 
 type DatasetHits struct {
@@ -115,57 +117,57 @@ func (d *Dataset) ResolveDOI() string {
 	return ""
 }
 
-func (d *Dataset) Validate() (errs ValidationErrors) {
+func (d *Dataset) Validate() (errs validation.Errors) {
 	if d.ID == "" {
-		errs = append(errs, ValidationError{
+		errs = append(errs, &validation.Error{
 			Pointer: "/id",
 			Code:    "required",
 		})
 	}
 	if d.Status == "" {
-		errs = append(errs, ValidationError{
+		errs = append(errs, &validation.Error{
 			Pointer: "/status",
 			Code:    "required",
 		})
 	}
 	if d.Status == "public" && d.AccessLevel == "" {
-		errs = append(errs, ValidationError{
+		errs = append(errs, &validation.Error{
 			Pointer: "/access_level",
 			Code:    "required",
 		})
 	}
 	if d.Status == "public" && d.DOI == "" {
-		errs = append(errs, ValidationError{
+		errs = append(errs, &validation.Error{
 			Pointer: "/doi",
 			Code:    "required",
 		})
 	}
 	if d.Status == "public" && len(d.Format) == 0 {
-		errs = append(errs, ValidationError{
+		errs = append(errs, &validation.Error{
 			Pointer: "/format",
 			Code:    "required",
 		})
 	}
 	if d.Status == "public" && d.Publisher == "" {
-		errs = append(errs, ValidationError{
+		errs = append(errs, &validation.Error{
 			Pointer: "/publisher",
 			Code:    "required",
 		})
 	}
 	if d.Status == "public" && d.Title == "" {
-		errs = append(errs, ValidationError{
+		errs = append(errs, &validation.Error{
 			Pointer: "/title",
 			Code:    "required",
 		})
 	}
 	if d.Status == "public" && d.Year == "" {
-		errs = append(errs, ValidationError{
+		errs = append(errs, &validation.Error{
 			Pointer: "/year",
 			Code:    "required",
 		})
 	}
 	if d.Status == "public" && len(d.Author) == 0 {
-		errs = append(errs, ValidationError{
+		errs = append(errs, &validation.Error{
 			Pointer: "/author",
 			Code:    "required",
 		})
@@ -173,8 +175,8 @@ func (d *Dataset) Validate() (errs ValidationErrors) {
 
 	for i, c := range d.Author {
 		for _, err := range c.Validate() {
-			errs = append(errs, ValidationError{
-				Pointer: fmt.Sprintf("/author/%d/%s", i, err.Pointer),
+			errs = append(errs, &validation.Error{
+				Pointer: fmt.Sprintf("/author/%d%s", i, err.Pointer),
 				Code:    err.Code,
 			})
 		}

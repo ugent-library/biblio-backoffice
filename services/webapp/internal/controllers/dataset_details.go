@@ -1,14 +1,15 @@
 package controllers
 
 import (
+	"errors"
 	"net/http"
 	"time"
 
 	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backend/internal/validation"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/views"
 	"github.com/ugent-library/go-locale/locale"
-	"github.com/ugent-library/go-web/jsonapi"
 	"github.com/unrolled/render"
 )
 
@@ -110,12 +111,8 @@ func (c *DatasetDetails) Update(w http.ResponseWriter, r *http.Request) {
 
 	savedDataset, err := c.Engine.UpdateDataset(dataset)
 
-	if schemaErrors, ok := err.(models.ValidationErrors); ok {
-		formErrors := jsonapi.Errors{jsonapi.Error{
-			Detail: schemaErrors.Error(),
-			Title:  schemaErrors.Error(),
-		}}
-
+	var validationErrors validation.Errors
+	if errors.As(err, &validationErrors) {
 		c.Render.HTML(w, http.StatusOK, "dataset/details/_edit", c.ViewData(r, struct {
 			Dataset      *models.Dataset
 			Show         *views.ShowBuilder
@@ -124,7 +121,7 @@ func (c *DatasetDetails) Update(w http.ResponseWriter, r *http.Request) {
 		}{
 			dataset,
 			views.NewShowBuilder(c.RenderPartial, locale.Get(r.Context())),
-			views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), formErrors),
+			views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), validationErrors),
 			c.Engine.Vocabularies(),
 		},
 			views.Flash{Type: "error", Message: "There are some problems with your input"},

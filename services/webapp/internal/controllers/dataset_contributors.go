@@ -1,16 +1,17 @@
 package controllers
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backend/internal/validation"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/views"
 	"github.com/ugent-library/go-locale/locale"
 	"github.com/ugent-library/go-web/forms"
-	"github.com/ugent-library/go-web/jsonapi"
 	"github.com/unrolled/render"
 )
 
@@ -83,7 +84,8 @@ func (c *DatasetContributors) Create(w http.ResponseWriter, r *http.Request) {
 
 	savedDataset, err := c.Engine.UpdateDataset(dataset)
 
-	if formErrors, ok := err.(jsonapi.Errors); ok {
+	var validationErrors validation.Errors
+	if errors.As(err, &validationErrors) {
 		c.Render.HTML(w, http.StatusOK, "dataset/contributors/_add", c.ViewData(r, struct {
 			Role        string
 			Dataset     *models.Dataset
@@ -95,7 +97,7 @@ func (c *DatasetContributors) Create(w http.ResponseWriter, r *http.Request) {
 			dataset,
 			contributor,
 			position,
-			views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), formErrors),
+			views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), validationErrors),
 		}),
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
@@ -178,7 +180,8 @@ func (c *DatasetContributors) Update(w http.ResponseWriter, r *http.Request) {
 
 	savedDataset, err := c.Engine.UpdateDataset(dataset)
 
-	if formErrors, ok := err.(jsonapi.Errors); ok {
+	var validationErrors validation.Errors
+	if errors.As(err, &validationErrors) {
 		c.Render.HTML(w, http.StatusOK, "dataset/contributors/_edit", c.ViewData(r, struct {
 			Role        string
 			Dataset     *models.Dataset
@@ -190,7 +193,7 @@ func (c *DatasetContributors) Update(w http.ResponseWriter, r *http.Request) {
 			dataset,
 			contributor,
 			position,
-			views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), formErrors),
+			views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), validationErrors),
 		}),
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)

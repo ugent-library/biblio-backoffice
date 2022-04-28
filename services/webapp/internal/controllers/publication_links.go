@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -8,11 +9,11 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backend/internal/validation"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/views"
 	"github.com/ugent-library/go-locale/locale"
 	"github.com/ugent-library/go-web/forms"
-	"github.com/ugent-library/go-web/jsonapi"
 	"github.com/unrolled/render"
 )
 
@@ -70,7 +71,8 @@ func (c *PublicationLinks) Create(w http.ResponseWriter, r *http.Request) {
 
 	savedPub, err := c.Engine.UpdatePublication(pub)
 
-	if formErrors, ok := err.(jsonapi.Errors); ok {
+	var validationErrors validation.Errors
+	if errors.As(err, &validationErrors) {
 		c.Render.HTML(w, http.StatusOK, "publication/links/_form", c.ViewData(r, struct {
 			PublicationID string
 			Link          *models.PublicationLink
@@ -79,7 +81,7 @@ func (c *PublicationLinks) Create(w http.ResponseWriter, r *http.Request) {
 		}{
 			savedPub.ID,
 			link,
-			views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), formErrors),
+			views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), validationErrors),
 			c.Engine.Vocabularies(),
 		}),
 			render.HTMLOptions{Layout: "layouts/htmx"},
@@ -158,7 +160,8 @@ func (c *PublicationLinks) Update(w http.ResponseWriter, r *http.Request) {
 
 	savedPub, err := c.Engine.UpdatePublication(pub)
 
-	if formErrors, ok := err.(jsonapi.Errors); ok {
+	var validationErrors validation.Errors
+	if errors.As(err, &validationErrors) {
 		c.Render.HTML(w, http.StatusOK, "publication/links/_form_edit", c.ViewData(r, struct {
 			PublicationID string
 			Delta         string
@@ -169,7 +172,7 @@ func (c *PublicationLinks) Update(w http.ResponseWriter, r *http.Request) {
 			savedPub.ID,
 			strconv.Itoa(rowDelta),
 			link,
-			views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), formErrors),
+			views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), validationErrors),
 			c.Engine.Vocabularies(),
 		}),
 			render.HTMLOptions{Layout: "layouts/htmx"},

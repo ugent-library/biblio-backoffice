@@ -5,8 +5,8 @@ import (
 	"html/template"
 	"strings"
 
+	"github.com/ugent-library/biblio-backend/internal/validation"
 	"github.com/ugent-library/go-locale/locale"
-	"github.com/ugent-library/go-web/jsonapi"
 )
 
 type formData struct {
@@ -51,10 +51,10 @@ type FormBuilder struct {
 	renderPartial func(string, interface{}) (template.HTML, error)
 	locale        *locale.Locale
 	localeScope   string
-	Errors        jsonapi.Errors
+	Errors        validation.Errors
 }
 
-func NewFormBuilder(r func(string, interface{}) (template.HTML, error), l *locale.Locale, e jsonapi.Errors) *FormBuilder {
+func NewFormBuilder(r func(string, interface{}) (template.HTML, error), l *locale.Locale, e validation.Errors) *FormBuilder {
 	return &FormBuilder{
 		renderPartial: r,
 		locale:        l,
@@ -71,20 +71,20 @@ func (b *FormBuilder) newFormData(opts []formOption) *formData {
 	}
 
 	if d.errorPointer == "" {
-		d.errorPointer = "/data/" + strings.ReplaceAll(d.Name, ".", "/")
+		d.errorPointer = "/" + strings.ReplaceAll(d.Name, ".", "/")
 	}
 
 	if formErr := b.ErrorFor(d.errorPointer); formErr != nil {
-		d.Error = formErr.Title
+		d.Error = d.Label + " " + b.locale.Translate("validation", formErr.Code)
 	}
 
 	return d
 }
 
-func (b *FormBuilder) ErrorFor(pointer string) *jsonapi.Error {
+func (b *FormBuilder) ErrorFor(pointer string) *validation.Error {
 	for _, err := range b.Errors {
-		if err.Source.Pointer == pointer {
-			return &err
+		if err.Pointer == pointer {
+			return err
 		}
 	}
 	return nil
@@ -267,35 +267,3 @@ func (b *FormBuilder) RadioButtonGroup(opts ...formOption) (template.HTML, error
 func (b *FormBuilder) Date(opts ...formOption) (template.HTML, error) {
 	return b.Render("_date", opts...)
 }
-
-// func (b *FormBuilder) Text(opts ...formOption) (template.HTML, error) {
-// 	return b.renderPartial("form_builder/_text", b.newFormData(opts))
-// }
-
-// func (b *FormBuilder) TextRepeat(opts ...formOption) (template.HTML, error) {
-// 	return b.renderPartial("form_builder/_text_repeat", b.newFormData(opts))
-// }
-
-// func (b *FormBuilder) TextArea(opts ...formOption) (template.HTML, error) {
-// 	return b.renderPartial("form_builder/_text_area", b.newFormData(opts))
-// }
-
-// func (b *FormBuilder) Checkbox(opts ...formOption) (template.HTML, error) {
-// 	return b.renderPartial("form_builder/_checkbox", b.newFormData(opts))
-// }
-
-// func (b *FormBuilder) List(opts ...formOption) (template.HTML, error) {
-// 	return b.renderPartial("form_builder/_list", b.newFormData(opts))
-// }
-
-// func (b *FormBuilder) ListRepeat(opts ...formOption) (template.HTML, error) {
-// 	return b.renderPartial("form_builder/_list_repeat", b.newFormData(opts))
-// }
-
-// func (b *FormBuilder) RadioButtonGroup(opts ...formOption) (template.HTML, error) {
-// 	return b.renderPartial("form_builder/_radio_button_group", b.newFormData(opts))
-// }
-
-// func (b *FormBuilder) Date(opts ...formOption) (template.HTML, error) {
-// 	return b.renderPartial("form_builder/_date", b.newFormData(opts))
-// }
