@@ -23,8 +23,14 @@
                     },
                     "lowercase": {
                         "tokenizer": "lowercase"
+                    },
+                    "keyword_lowercase": {
+                        "tokenizer": "keyword",
+                        "filter": [
+                            "lowercase"
+                        ]
                     }
-                }
+                }    
             }
         }
     },
@@ -102,13 +108,15 @@
                     }
                 },
                 "doi": {
-                    "type": "keyword"
+                    "type": "text",
+                    "analyzer": "keyword_lowercase"
                 },
                 "id": {
                     "type": "keyword"
                 },
                 "keyword": {
-                    "type": "keyword",
+                    "type": "text",
+                    "analyzer": "keyword_lowercase",
                     "copy_to": "all"
                 },
                 "publisher": {
