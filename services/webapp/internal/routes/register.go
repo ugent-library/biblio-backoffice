@@ -212,6 +212,9 @@ func Register(c controllers.Context) {
 	pubEditRouter.HandleFunc("/htmx/file/{file_id}/edit", publicationFilesController.Edit).
 		Methods("GET").
 		Name("publication_file_edit")
+	pubEditRouter.HandleFunc("/htmx/file/{file_id}/license", publicationFilesController.License).
+		Methods("PUT").
+		Name("publication_file_license")
 	pubEditRouter.HandleFunc("/htmx/file/{file_id}", publicationFilesController.Update).
 		Methods("PUT").
 		Name("publication_file_update")
@@ -366,8 +369,14 @@ func Register(c controllers.Context) {
 		Methods("GET").
 		Name("publication_contributors_edit")
 	pubEditRouter.HandleFunc("/htmx/contributors/{role}/{position}/choose", publicationContributorsController.Choose).
-		Methods("GET").
+		Methods("PUT").
 		Name("publication_contributors_choose")
+	pubEditRouter.HandleFunc("/htmx/contributors/{role}/{position}/demote", publicationContributorsController.Demote).
+		Methods("PUT").
+		Name("publication_contributors_demote")
+	pubEditRouter.HandleFunc("/htmx/contributors/{role}/{position}/promote", publicationContributorsController.Promote).
+		Methods("PUT").
+		Name("publication_contributors_promote")
 	pubEditRouter.HandleFunc("/htmx/contributors/{role}/{position}", publicationContributorsController.Update).
 		Methods("PUT").
 		Name("publication_contributors_update")
@@ -442,6 +451,9 @@ func Register(c controllers.Context) {
 	datasetEditRouter.HandleFunc("/htmx/details/edit", datasetDetailsController.Edit).
 		Methods("GET").
 		Name("dataset_details_edit_form")
+	datasetEditRouter.HandleFunc("/htmx/details/access_level", datasetDetailsController.AccessLevel).
+		Methods("PUT").
+		Name("dataset_details_edit_form_access_level")
 	datasetEditRouter.HandleFunc("/htmx/details/edit", datasetDetailsController.Update).
 		Methods("PATCH").
 		Name("dataset_details_save_form")
@@ -499,6 +511,12 @@ func Register(c controllers.Context) {
 	datasetEditRouter.HandleFunc("/htmx/contributors/{role}/{position}/choose", datasetContributorsController.Choose).
 		Methods("GET").
 		Name("dataset_contributors_choose")
+	datasetEditRouter.HandleFunc("/htmx/contributors/{role}/{position}/demote", datasetContributorsController.Demote).
+		Methods("PUT").
+		Name("dataset_contributors_demote")
+	datasetEditRouter.HandleFunc("/htmx/contributors/{role}/{position}/promote", datasetContributorsController.Promote).
+		Methods("PUT").
+		Name("dataset_contributors_promote")
 	datasetEditRouter.HandleFunc("/htmx/contributors/{role}/{position}", datasetContributorsController.Update).
 		Methods("PUT").
 		Name("dataset_contributors_update")

@@ -1,6 +1,7 @@
 package views
 
 import (
+	"fmt"
 	"html/template"
 	"strings"
 
@@ -27,6 +28,8 @@ type formData struct {
 	AutocompleteURL string
 	Error           string
 	errorPointer    string
+	ID              string
+	Disabled        bool
 }
 
 func (f *formData) Value() string {
@@ -169,6 +172,18 @@ func (b *FormBuilder) Min(v string) formOption {
 	}
 }
 
+func (b *FormBuilder) ID(v string) formOption {
+	return func(d *formData) {
+		d.ID = v
+	}
+}
+
+func (b *FormBuilder) Disabled(v bool) formOption {
+	return func(d *formData) {
+		d.Disabled = v
+	}
+}
+
 func (b *FormBuilder) Choices(choices []string, localeOpts ...formLocaleOption) formOption {
 	return func(d *formData) {
 		d.Choices = make([]string, len(choices))
@@ -217,34 +232,70 @@ func (b *FormBuilder) AutocompleteURL(v string) formOption {
 	}
 }
 
+func (b *FormBuilder) Render(tmpl string, opts ...formOption) (template.HTML, error) {
+	return b.renderPartial(fmt.Sprintf("form_builder/%s", tmpl), b.newFormData(opts))
+}
+
 func (b *FormBuilder) Text(opts ...formOption) (template.HTML, error) {
-	return b.renderPartial("form_builder/_text", b.newFormData(opts))
+	return b.Render("_text", opts...)
 }
 
 func (b *FormBuilder) TextRepeat(opts ...formOption) (template.HTML, error) {
-	return b.renderPartial("form_builder/_text_repeat", b.newFormData(opts))
+	return b.Render("_text_repeat", opts...)
 }
 
 func (b *FormBuilder) TextArea(opts ...formOption) (template.HTML, error) {
-	return b.renderPartial("form_builder/_text_area", b.newFormData(opts))
+	return b.Render("_text_area", opts...)
 }
 
 func (b *FormBuilder) Checkbox(opts ...formOption) (template.HTML, error) {
-	return b.renderPartial("form_builder/_checkbox", b.newFormData(opts))
+	return b.Render("_checkbox", opts...)
 }
 
 func (b *FormBuilder) List(opts ...formOption) (template.HTML, error) {
-	return b.renderPartial("form_builder/_list", b.newFormData(opts))
+	return b.Render("_list", opts...)
 }
 
 func (b *FormBuilder) ListRepeat(opts ...formOption) (template.HTML, error) {
-	return b.renderPartial("form_builder/_list_repeat", b.newFormData(opts))
+	return b.Render("_list_repeat", opts...)
 }
 
 func (b *FormBuilder) RadioButtonGroup(opts ...formOption) (template.HTML, error) {
-	return b.renderPartial("form_builder/_radio_button_group", b.newFormData(opts))
+	return b.Render("_radio_button_group", opts...)
 }
 
 func (b *FormBuilder) Date(opts ...formOption) (template.HTML, error) {
-	return b.renderPartial("form_builder/_date", b.newFormData(opts))
+	return b.Render("_date", opts...)
 }
+
+// func (b *FormBuilder) Text(opts ...formOption) (template.HTML, error) {
+// 	return b.renderPartial("form_builder/_text", b.newFormData(opts))
+// }
+
+// func (b *FormBuilder) TextRepeat(opts ...formOption) (template.HTML, error) {
+// 	return b.renderPartial("form_builder/_text_repeat", b.newFormData(opts))
+// }
+
+// func (b *FormBuilder) TextArea(opts ...formOption) (template.HTML, error) {
+// 	return b.renderPartial("form_builder/_text_area", b.newFormData(opts))
+// }
+
+// func (b *FormBuilder) Checkbox(opts ...formOption) (template.HTML, error) {
+// 	return b.renderPartial("form_builder/_checkbox", b.newFormData(opts))
+// }
+
+// func (b *FormBuilder) List(opts ...formOption) (template.HTML, error) {
+// 	return b.renderPartial("form_builder/_list", b.newFormData(opts))
+// }
+
+// func (b *FormBuilder) ListRepeat(opts ...formOption) (template.HTML, error) {
+// 	return b.renderPartial("form_builder/_list_repeat", b.newFormData(opts))
+// }
+
+// func (b *FormBuilder) RadioButtonGroup(opts ...formOption) (template.HTML, error) {
+// 	return b.renderPartial("form_builder/_radio_button_group", b.newFormData(opts))
+// }
+
+// func (b *FormBuilder) Date(opts ...formOption) (template.HTML, error) {
+// 	return b.renderPartial("form_builder/_date", b.newFormData(opts))
+// }
