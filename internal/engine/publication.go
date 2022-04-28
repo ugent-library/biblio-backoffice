@@ -204,7 +204,7 @@ func (e *Engine) ImportUserPublications(userID, source string, file io.Reader) (
 			CreatorID:      userID,
 			UserID:         userID,
 		}
-		if err := dec.Decode(&p); err == io.EOF {
+		if err := dec.Decode(&p); errors.Is(err, io.EOF) {
 			break
 		} else if err != nil {
 			importErr = err

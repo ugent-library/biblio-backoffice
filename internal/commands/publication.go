@@ -2,6 +2,7 @@ package commands
 
 import (
 	"encoding/json"
+	"errors"
 	"io"
 	"log"
 	"os"
@@ -107,7 +108,7 @@ var publicationAddCmd = &cobra.Command{
 				Status:         "private",
 				Classification: "U",
 			}
-			if err := dec.Decode(&p); err == io.EOF {
+			if err := dec.Decode(&p); errors.Is(err, io.EOF) {
 				break
 			} else if err != nil {
 				log.Fatal(err)
