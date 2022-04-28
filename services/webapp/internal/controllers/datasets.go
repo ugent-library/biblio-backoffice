@@ -17,9 +17,8 @@ import (
 )
 
 type DatasetListVars struct {
-	SearchArgs       *models.SearchArgs
-	Hits             *models.DatasetHits
-	PublicationSorts []string
+	SearchArgs *models.SearchArgs
+	Hits       *models.DatasetHits
 }
 
 type DatasetAddVars struct {
@@ -56,17 +55,15 @@ func (c *Datasets) List(w http.ResponseWriter, r *http.Request) {
 	searchURL, _ := c.Router.Get("datasets").URLPath()
 
 	c.Render.HTML(w, http.StatusOK, "dataset/list", c.ViewData(r, struct {
-		PageTitle        string
-		SearchURL        *url.URL
-		SearchArgs       *models.SearchArgs
-		Hits             *models.DatasetHits
-		PublicationSorts []string
+		PageTitle  string
+		SearchURL  *url.URL
+		SearchArgs *models.SearchArgs
+		Hits       *models.DatasetHits
 	}{
 		"Overview - Datasets - Biblio",
 		searchURL,
 		args,
 		hits,
-		c.Engine.Vocabularies()["publication_sorts"],
 	}))
 }
 
@@ -374,17 +371,15 @@ func (c *Datasets) Delete(w http.ResponseWriter, r *http.Request) {
 	searchURL, _ := c.Router.Get("datasets").URLPath()
 
 	c.Render.HTML(w, http.StatusOK, "dataset/list", c.ViewData(r, struct {
-		PageTitle        string
-		SearchURL        *url.URL
-		SearchArgs       *models.SearchArgs
-		Hits             *models.DatasetHits
-		PublicationSorts []string
+		PageTitle  string
+		SearchURL  *url.URL
+		SearchArgs *models.SearchArgs
+		Hits       *models.DatasetHits
 	}{
 		"Overview - Datasets - Biblio",
 		searchURL,
 		searchArgs,
 		hits,
-		c.Engine.Vocabularies()["publication_sorts"],
 	},
 		views.Flash{Type: "success", Message: "Successfully deleted dataset.", DismissAfter: 5 * time.Second},
 	),

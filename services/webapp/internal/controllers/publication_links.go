@@ -35,12 +35,10 @@ func (c *PublicationLinks) Add(w http.ResponseWriter, r *http.Request) {
 		PublicationID string
 		Link          *models.PublicationLink
 		Form          *views.FormBuilder
-		Vocabularies  map[string][]string
 	}{
 		id,
 		link,
 		views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), nil),
-		c.Engine.Vocabularies(),
 	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
@@ -77,12 +75,10 @@ func (c *PublicationLinks) Create(w http.ResponseWriter, r *http.Request) {
 			PublicationID string
 			Link          *models.PublicationLink
 			Form          *views.FormBuilder
-			Vocabularies  map[string][]string
 		}{
 			savedPub.ID,
 			link,
 			views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), validationErrors),
-			c.Engine.Vocabularies(),
 		}),
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
@@ -118,13 +114,11 @@ func (c *PublicationLinks) Edit(w http.ResponseWriter, r *http.Request) {
 		Delta         string
 		Link          *models.PublicationLink
 		Form          *views.FormBuilder
-		Vocabularies  map[string][]string
 	}{
 		pub.ID,
 		muxRowDelta,
 		link,
 		views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), nil),
-		c.Engine.Vocabularies(),
 	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
@@ -167,13 +161,11 @@ func (c *PublicationLinks) Update(w http.ResponseWriter, r *http.Request) {
 			Delta         string
 			Link          *models.PublicationLink
 			Form          *views.FormBuilder
-			Vocabularies  map[string][]string
 		}{
 			savedPub.ID,
 			strconv.Itoa(rowDelta),
 			link,
 			views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), validationErrors),
-			c.Engine.Vocabularies(),
 		}),
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)

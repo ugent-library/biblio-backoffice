@@ -27,13 +27,11 @@ func (c *PublicationDetails) Show(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
 	c.Render.HTML(w, http.StatusOK, "publication/details/_show", c.ViewData(r, struct {
-		Publication  *models.Publication
-		Show         *views.ShowBuilder
-		Vocabularies map[string][]string
+		Publication *models.Publication
+		Show        *views.ShowBuilder
 	}{
 		pub,
 		views.NewShowBuilder(c.RenderPartial, locale.Get(r.Context())),
-		c.Engine.Vocabularies(),
 	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
@@ -43,15 +41,13 @@ func (c *PublicationDetails) Edit(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
 	c.Render.HTML(w, http.StatusOK, "publication/details/_edit", c.ViewData(r, struct {
-		Publication  *models.Publication
-		Show         *views.ShowBuilder
-		Form         *views.FormBuilder
-		Vocabularies map[string][]string
+		Publication *models.Publication
+		Show        *views.ShowBuilder
+		Form        *views.FormBuilder
 	}{
 		pub,
 		views.NewShowBuilder(c.RenderPartial, locale.Get(r.Context())),
 		views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), nil),
-		c.Engine.Vocabularies(),
 	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
@@ -81,15 +77,13 @@ func (c *PublicationDetails) Update(w http.ResponseWriter, r *http.Request) {
 	if errors.As(err, &validationErrors) {
 		log.Printf("%+v", validationErrors)
 		c.Render.HTML(w, http.StatusOK, "publication/details/_edit", c.ViewData(r, struct {
-			Publication  *models.Publication
-			Show         *views.ShowBuilder
-			Form         *views.FormBuilder
-			Vocabularies map[string][]string
+			Publication *models.Publication
+			Show        *views.ShowBuilder
+			Form        *views.FormBuilder
 		}{
 			pub,
 			views.NewShowBuilder(c.RenderPartial, locale.Get(r.Context())),
 			views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), validationErrors),
-			c.Engine.Vocabularies(),
 		},
 			views.Flash{Type: "error", Message: "There are some problems with your input"},
 		),
@@ -103,13 +97,11 @@ func (c *PublicationDetails) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	c.Render.HTML(w, http.StatusOK, "publication/details/_update", c.ViewData(r, struct {
-		Publication  *models.Publication
-		Show         *views.ShowBuilder
-		Vocabularies map[string][]string
+		Publication *models.Publication
+		Show        *views.ShowBuilder
 	}{
 		savedPub,
 		views.NewShowBuilder(c.RenderPartial, locale.Get(r.Context())),
-		c.Engine.Vocabularies(),
 	},
 		views.Flash{Type: "success", Message: "Details updated succesfully", DismissAfter: 5 * time.Second},
 	),

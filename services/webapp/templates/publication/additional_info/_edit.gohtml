@@ -10,7 +10,7 @@
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item">
                         {{.D.Form.ListRepeat (.D.Form.Name "research_field") (.D.Form.Values .D.Publication.ResearchField)
-                            (.D.Form.Cols 9) (.D.Form.Choices .D.Vocabularies.research_fields) (.D.Form.EmptyChoice)}}
+                            (.D.Form.Cols 9) (.D.Form.Choices .Vocabularies.research_fields) (.D.Form.EmptyChoice)}}
                         {{.D.Form.TextRepeat (.D.Form.Name "keyword") (.D.Form.Values .D.Publication.Keyword) (.D.Form.Cols 9)}}
                         {{.D.Form.TextArea (.D.Form.Name "additional_info") (.D.Form.Value .D.Publication.AdditionalInfo)
                             (.D.Form.Cols 9) (.D.Form.Rows 4)}}

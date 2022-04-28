@@ -12,9 +12,9 @@
 </li>
 <li class="list-group-item">
     {{.D.Form.ListRepeat (.D.Form.Name "language") (.D.Form.Values .D.Publication.Language) (.D.Form.Cols 9)
-        (.D.Form.Choices .D.Vocabularies.language_codes .D.Form.LanguageName) (.D.Form.EmptyChoice)}}
+        (.D.Form.Choices .Vocabularies.language_codes .D.Form.LanguageName) (.D.Form.EmptyChoice)}}
     {{.D.Form.List (.D.Form.Name "publication_status") (.D.Form.Value .D.Publication.PublicationStatus) (.D.Form.Cols 3)
-        (.D.Form.Choices .D.Vocabularies.publication_publishing_statuses
+        (.D.Form.Choices .Vocabularies.publication_publishing_statuses
         (.D.Form.Locale "publication_publishing_statuses")) (.D.Form.EmptyChoice)}}
     {{.D.Form.Checkbox (.D.Form.Name "extern") (.D.Form.Checked .D.Publication.Extern) (.D.Form.Value "true") (.D.Form.Cols 9)}}
     {{.D.Form.Text (.D.Form.Name "year") (.D.Form.Value .D.Publication.Year) (.D.Form.Required) (.D.Form.Cols 3)}}

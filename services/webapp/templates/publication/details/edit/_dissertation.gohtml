@@ -12,9 +12,9 @@
 </li>
 <li class="list-group-item">
     {{.D.Form.ListRepeat (.D.Form.Name "language") (.D.Form.Values .D.Publication.Language) (.D.Form.Cols 9)
-        (.D.Form.Choices .D.Vocabularies.language_codes .D.Form.LanguageName) (.D.Form.EmptyChoice)}}
+        (.D.Form.Choices .Vocabularies.language_codes .D.Form.LanguageName) (.D.Form.EmptyChoice)}}
     {{.D.Form.List (.D.Form.Name "publication_status") (.D.Form.Value .D.Publication.PublicationStatus) (.D.Form.Cols 3)
-        (.D.Form.Choices .D.Vocabularies.publication_publishing_statuses
+        (.D.Form.Choices .Vocabularies.publication_publishing_statuses
         (.D.Form.Locale "publication_publishing_statuses")) (.D.Form.EmptyChoice)}}
     {{.D.Form.Checkbox (.D.Form.Name "extern") (.D.Form.Checked .D.Publication.Extern) (.D.Form.Value "true") (.D.Form.Cols 9)}}
     {{.D.Form.Text (.D.Form.Name "year") (.D.Form.Value .D.Publication.Year) (.D.Form.Required) (.D.Form.Cols 3)}}
@@ -35,19 +35,19 @@
     {{.D.Form.RadioButtonGroup (.D.Form.Name "has_confidential_data")
         (.D.Form.Value .D.Publication.HasConfidentialData)
         (.D.Form.Cols 3)
-        (.D.Form.Choices .D.Vocabularies.confirmations (.D.Form.Locale "confirmations"))}}
+        (.D.Form.Choices .Vocabularies.confirmations (.D.Form.Locale "confirmations"))}}
     {{.D.Form.RadioButtonGroup (.D.Form.Name "has_patent_application")
         (.D.Form.Value .D.Publication.HasPatentApplication)
         (.D.Form.Cols 3)
-        (.D.Form.Choices .D.Vocabularies.confirmations (.D.Form.Locale "confirmations"))}}
+        (.D.Form.Choices .Vocabularies.confirmations (.D.Form.Locale "confirmations"))}}
     {{.D.Form.RadioButtonGroup (.D.Form.Name "has_publications_planned")
         (.D.Form.Value .D.Publication.HasPublicationsPlanned)
         (.D.Form.Cols 3)
-        (.D.Form.Choices .D.Vocabularies.confirmations (.D.Form.Locale "confirmations"))}}
+        (.D.Form.Choices .Vocabularies.confirmations (.D.Form.Locale "confirmations"))}}
     {{.D.Form.RadioButtonGroup (.D.Form.Name "has_published_material")
         (.D.Form.Value .D.Publication.HasPublishedMaterial)
         (.D.Form.Cols 3)
-        (.D.Form.Choices .D.Vocabularies.confirmations (.D.Form.Locale "confirmations"))}}
+        (.D.Form.Choices .Vocabularies.confirmations (.D.Form.Locale "confirmations"))}}
 </li>
 <li class="list-group-item">
     {{.D.Show.Text (.D.Show.Label "wos_type") (.D.Show.Value .D.Publication.WOSType)

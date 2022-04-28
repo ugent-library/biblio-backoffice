@@ -39,15 +39,13 @@ func (c *DatasetDetails) Edit(w http.ResponseWriter, r *http.Request) {
 	dataset := context.GetDataset(r.Context())
 
 	c.Render.HTML(w, http.StatusOK, "dataset/details/_edit", c.ViewData(r, struct {
-		Dataset      *models.Dataset
-		Show         *views.ShowBuilder
-		Form         *views.FormBuilder
-		Vocabularies map[string][]string
+		Dataset *models.Dataset
+		Show    *views.ShowBuilder
+		Form    *views.FormBuilder
 	}{
 		dataset,
 		views.NewShowBuilder(c.RenderPartial, locale.Get(r.Context())),
 		views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), nil),
-		c.Engine.Vocabularies(),
 	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
@@ -81,15 +79,13 @@ func (c *DatasetDetails) AccessLevel(w http.ResponseWriter, r *http.Request) {
 	// }
 
 	c.Render.HTML(w, http.StatusOK, "dataset/details/_edit", c.ViewData(r, struct {
-		Dataset      *models.Dataset
-		Show         *views.ShowBuilder
-		Form         *views.FormBuilder
-		Vocabularies map[string][]string
+		Dataset *models.Dataset
+		Show    *views.ShowBuilder
+		Form    *views.FormBuilder
 	}{
 		dataset,
 		views.NewShowBuilder(c.RenderPartial, locale.Get(r.Context())),
 		views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), nil),
-		c.Engine.Vocabularies(),
 	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
@@ -114,15 +110,13 @@ func (c *DatasetDetails) Update(w http.ResponseWriter, r *http.Request) {
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
 		c.Render.HTML(w, http.StatusOK, "dataset/details/_edit", c.ViewData(r, struct {
-			Dataset      *models.Dataset
-			Show         *views.ShowBuilder
-			Form         *views.FormBuilder
-			Vocabularies map[string][]string
+			Dataset *models.Dataset
+			Show    *views.ShowBuilder
+			Form    *views.FormBuilder
 		}{
 			dataset,
 			views.NewShowBuilder(c.RenderPartial, locale.Get(r.Context())),
 			views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), validationErrors),
-			c.Engine.Vocabularies(),
 		},
 			views.Flash{Type: "error", Message: "There are some problems with your input"},
 		),

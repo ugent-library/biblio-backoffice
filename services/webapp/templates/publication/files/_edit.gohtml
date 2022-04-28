@@ -19,7 +19,7 @@
                                 <label class="col-form-label">Document type</label>
                                 <select class="custom-select w-10" name="relation">
                                     <option></option>
-                                    {{range .D.Vocabularies.publication_file_relations}}
+                                    {{range .Vocabularies.publication_file_relations}}
                                     <option value="{{.}}"{{if eq . $.D.File.Relation}} selected{{end}}>{{$.T "publication_file_relations" .}}</option>
                                     {{end}}
                                 </select>
@@ -44,7 +44,7 @@
                                 </label>
                                 <select class="custom-select w-100" name="publication_version">
                                     <option></option>
-                                    {{range .D.Vocabularies.publication_versions}}
+                                    {{range .Vocabularies.publication_versions}}
                                     <option value="{{.}}"{{if eq . $.D.File.PublicationVersion}} selected{{end}}>{{$.T "publication_versions" .}}</option>
                                     {{end}}
                                 </select>
@@ -204,7 +204,7 @@
                                 hx-indicator=".modal-dialog .spinner-border"
                             >
                                 <option></option>
-                                {{range .D.Vocabularies.cc_licenses}}
+                                {{range .Vocabularies.cc_licenses}}
                                 <option{{if eq $.D.File.CCLicense .}} selected{{end}} value="{{.}}">{{$.T "cc_licenses" .}}</option>
                                 {{end}}
                             </select>

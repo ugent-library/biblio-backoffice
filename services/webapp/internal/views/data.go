@@ -19,6 +19,7 @@ type Data struct {
 	RenderPartialFunc func(string, interface{}) (template.HTML, error)
 	User              *models.User
 	OriginalUser      *models.User
+	Vocabularies      map[string][]string
 	Locale            *locale.Locale
 	Flash             []Flash
 	CSRFToken         string

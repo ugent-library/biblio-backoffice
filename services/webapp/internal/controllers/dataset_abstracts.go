@@ -31,15 +31,13 @@ func (c *DatasetAbstracts) Add(w http.ResponseWriter, r *http.Request) {
 	abstract := &models.Text{}
 
 	c.Render.HTML(w, http.StatusOK, "dataset/abstracts/_form", c.ViewData(r, struct {
-		DatasetID    string
-		Abstract     *models.Text
-		Form         *views.FormBuilder
-		Vocabularies map[string][]string
+		DatasetID string
+		Abstract  *models.Text
+		Form      *views.FormBuilder
 	}{
 		id,
 		abstract,
 		views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), nil),
-		c.Engine.Vocabularies(),
 	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
@@ -73,15 +71,13 @@ func (c *DatasetAbstracts) Create(w http.ResponseWriter, r *http.Request) {
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
 		c.Render.HTML(w, http.StatusOK, "dataset/abstracts/_form", c.ViewData(r, struct {
-			DatasetID    string
-			Abstract     *models.Text
-			Form         *views.FormBuilder
-			Vocabularies map[string][]string
+			DatasetID string
+			Abstract  *models.Text
+			Form      *views.FormBuilder
 		}{
 			savedDataset.ID,
 			abstract,
 			views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), validationErrors),
-			c.Engine.Vocabularies(),
 		}),
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
@@ -115,17 +111,15 @@ func (c *DatasetAbstracts) Edit(w http.ResponseWriter, r *http.Request) {
 	abstract := &dataset.Abstract[rowDelta]
 
 	c.Render.HTML(w, http.StatusOK, "dataset/abstracts/_form_edit", c.ViewData(r, struct {
-		DatasetID    string
-		Delta        string
-		Abstract     *models.Text
-		Form         *views.FormBuilder
-		Vocabularies map[string][]string
+		DatasetID string
+		Delta     string
+		Abstract  *models.Text
+		Form      *views.FormBuilder
 	}{
 		dataset.ID,
 		muxRowDelta,
 		abstract,
 		views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), nil),
-		c.Engine.Vocabularies(),
 	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
@@ -164,17 +158,15 @@ func (c *DatasetAbstracts) Update(w http.ResponseWriter, r *http.Request) {
 		c.Render.HTML(w, http.StatusOK,
 			"dataset/abstracts/_form_edit",
 			c.ViewData(r, struct {
-				DatasetID    string
-				Delta        string
-				Abstract     *models.Text
-				Form         *views.FormBuilder
-				Vocabularies map[string][]string
+				DatasetID string
+				Delta     string
+				Abstract  *models.Text
+				Form      *views.FormBuilder
 			}{
 				savedDataset.ID,
 				strconv.Itoa(rowDelta),
 				abstract,
 				views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), validationErrors),
-				c.Engine.Vocabularies(),
 			}),
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)

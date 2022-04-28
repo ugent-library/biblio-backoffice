@@ -10,6 +10,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"github.com/ugent-library/biblio-backend/internal/engine"
+	"github.com/ugent-library/biblio-backend/internal/vocabularies"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/views"
 	"github.com/ugent-library/go-locale/locale"
@@ -47,6 +48,7 @@ func (c *Context) ViewData(r *http.Request, data interface{}, flash ...views.Fla
 		Mode:              c.Mode,
 		RenderPartialFunc: c.RenderPartial,
 		Locale:            locale.Get(r.Context()),
+		Vocabularies:      vocabularies.Map,
 		User:              context.GetUser(r.Context()),
 		OriginalUser:      context.GetOriginalUser(r.Context()),
 		Data:              data,

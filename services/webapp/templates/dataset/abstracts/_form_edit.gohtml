@@ -8,7 +8,7 @@
             <div class="modal-body">
                 {{.D.Form.TextArea (.D.Form.Name "text" (.D.Form.Locale "builder.abstract")) (.D.Form.Value .D.Abstract.Text) (.D.Form.Cols 12) (.D.Form.Rows 6) (.D.Form.Placeholder "Add abstract text here...")}}
                 {{.D.Form.List (.D.Form.Name "lang" (.D.Form.Locale "builder.abstract")) (.D.Form.Value .D.Abstract.Lang) (.D.Form.Cols 12)
-                    (.D.Form.Choices .D.Vocabularies.language_codes .D.Form.LanguageName)}}
+                    (.D.Form.Choices .Vocabularies.language_codes .D.Form.LanguageName)}}
             </div>
             <div class="modal-footer">
                 <button class="btn btn-link modal-close">Cancel</button>

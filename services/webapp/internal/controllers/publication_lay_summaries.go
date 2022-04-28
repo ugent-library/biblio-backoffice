@@ -30,12 +30,10 @@ func (c *PublicationLaySummaries) Add(w http.ResponseWriter, r *http.Request) {
 		PublicationID string
 		LaySummary    *models.Text
 		Form          *views.FormBuilder
-		Vocabularies  map[string][]string
 	}{
 		PublicationID: id,
 		LaySummary:    &models.Text{},
 		Form:          views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), nil),
-		Vocabularies:  c.Engine.Vocabularies(),
 	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
@@ -72,12 +70,10 @@ func (c *PublicationLaySummaries) Create(w http.ResponseWriter, r *http.Request)
 			PublicationID string
 			LaySummary    *models.Text
 			Form          *views.FormBuilder
-			Vocabularies  map[string][]string
 		}{
 			PublicationID: savedPub.ID,
 			LaySummary:    lay_summary,
 			Form:          views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), validationErrors),
-			Vocabularies:  c.Engine.Vocabularies(),
 		}),
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)
@@ -120,13 +116,11 @@ func (c *PublicationLaySummaries) Edit(w http.ResponseWriter, r *http.Request) {
 		Delta         string
 		LaySummary    *models.Text
 		Form          *views.FormBuilder
-		Vocabularies  map[string][]string
 	}{
 		PublicationID: pub.ID,
 		Delta:         muxRowDelta,
 		LaySummary:    lay_summary,
 		Form:          views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), nil),
-		Vocabularies:  c.Engine.Vocabularies(),
 	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
@@ -169,13 +163,11 @@ func (c *PublicationLaySummaries) Update(w http.ResponseWriter, r *http.Request)
 				Delta         string
 				LaySummary    *models.Text
 				Form          *views.FormBuilder
-				Vocabularies  map[string][]string
 			}{
 				PublicationID: savedPub.ID,
 				Delta:         strconv.Itoa(rowDelta),
 				LaySummary:    lay_summary,
 				Form:          views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), validationErrors),
-				Vocabularies:  c.Engine.Vocabularies(),
 			}),
 			render.HTMLOptions{Layout: "layouts/htmx"},
 		)

@@ -51,17 +51,15 @@ func (c *Publications) List(w http.ResponseWriter, r *http.Request) {
 	searchURL, _ := c.Router.Get("publications").URLPath()
 
 	c.Render.HTML(w, http.StatusOK, "publication/list", c.ViewData(r, struct {
-		PageTitle        string
-		SearchURL        *url.URL
-		SearchArgs       *models.SearchArgs
-		Hits             *models.PublicationHits
-		PublicationSorts []string
+		PageTitle  string
+		SearchURL  *url.URL
+		SearchArgs *models.SearchArgs
+		Hits       *models.PublicationHits
 	}{
 		"Overview - Publications - Biblio",
 		searchURL,
 		searchArgs,
 		hits,
-		c.Engine.Vocabularies()["publication_sorts"],
 	}),
 	)
 }
@@ -88,7 +86,6 @@ func (c *Publications) Show(w http.ResponseWriter, r *http.Request) {
 		Publication         *models.Publication
 		PublicationDatasets []*models.Dataset
 		Show                *views.ShowBuilder
-		Vocabularies        map[string][]string
 		SearchArgs          *models.SearchArgs
 		ErrorsTitle         string
 		Errors              jsonapi.Errors
@@ -97,7 +94,6 @@ func (c *Publications) Show(w http.ResponseWriter, r *http.Request) {
 		pub,
 		datasets,
 		views.NewShowBuilder(c.RenderPartial, locale.Get(r.Context())),
-		c.Engine.Vocabularies(),
 		searchArgs,
 		"",
 		nil,
@@ -375,20 +371,18 @@ func (c *Publications) AddMultipleImport(w http.ResponseWriter, r *http.Request)
 	searchURL, _ := c.Router.Get("publication_add_multiple_description").URLPath("batch_id", batchID)
 
 	c.Render.HTML(w, http.StatusOK, "publication/add_multiple_description", c.ViewData(r, struct {
-		PageTitle        string
-		Step             int
-		SearchURL        *url.URL
-		SearchArgs       *models.SearchArgs
-		Hits             *models.PublicationHits
-		PublicationSorts []string
-		BatchID          string
+		PageTitle  string
+		Step       int
+		SearchURL  *url.URL
+		SearchArgs *models.SearchArgs
+		Hits       *models.PublicationHits
+		BatchID    string
 	}{
 		"Add - Publications - Biblio",
 		3,
 		searchURL,
 		args,
 		hits,
-		c.Engine.Vocabularies()["publication_sorts"],
 		batchID,
 	}),
 	)
@@ -415,20 +409,18 @@ func (c *Publications) AddMultipleDescription(w http.ResponseWriter, r *http.Req
 	searchURL, _ := c.Router.Get("publication_add_multiple_description").URLPath("batch_id", batchID)
 
 	c.Render.HTML(w, http.StatusOK, "publication/add_multiple_description", c.ViewData(r, struct {
-		PageTitle        string
-		Step             int
-		SearchURL        *url.URL
-		SearchArgs       *models.SearchArgs
-		Hits             *models.PublicationHits
-		PublicationSorts []string
-		BatchID          string
+		PageTitle  string
+		Step       int
+		SearchURL  *url.URL
+		SearchArgs *models.SearchArgs
+		Hits       *models.PublicationHits
+		BatchID    string
 	}{
 		"Add - Publications - Biblio",
 		3,
 		searchURL,
 		args,
 		hits,
-		c.Engine.Vocabularies()["publication_sorts"],
 		batchID,
 	}),
 	)
@@ -458,7 +450,6 @@ func (c *Publications) AddMultipleShow(w http.ResponseWriter, r *http.Request) {
 		Publication         *models.Publication
 		PublicationDatasets []*models.Dataset
 		Show                *views.ShowBuilder
-		Vocabularies        map[string][]string
 		SearchArgs          *models.SearchArgs
 		BatchID             string
 	}{
@@ -467,7 +458,6 @@ func (c *Publications) AddMultipleShow(w http.ResponseWriter, r *http.Request) {
 		pub,
 		datasets,
 		views.NewShowBuilder(c.RenderPartial, locale.Get(r.Context())),
-		c.Engine.Vocabularies(),
 		searchArgs,
 		batchID,
 	}),
@@ -490,20 +480,18 @@ func (c *Publications) AddMultipleConfirm(w http.ResponseWriter, r *http.Request
 	searchURL, _ := c.Router.Get("publication_add_multiple_confirm").URLPath("batch_id", batchID)
 
 	c.Render.HTML(w, http.StatusOK, "publication/add_multiple_confirm", c.ViewData(r, struct {
-		PageTitle        string
-		Step             int
-		SearchURL        *url.URL
-		SearchArgs       *models.SearchArgs
-		Hits             *models.PublicationHits
-		PublicationSorts []string
-		BatchID          string
+		PageTitle  string
+		Step       int
+		SearchURL  *url.URL
+		SearchArgs *models.SearchArgs
+		Hits       *models.PublicationHits
+		BatchID    string
 	}{
 		"Add - Publications - Biblio",
 		4,
 		searchURL,
 		args,
 		hits,
-		c.Engine.Vocabularies()["publication_sorts"],
 		batchID,
 	}),
 	)
@@ -526,7 +514,6 @@ func (c *Publications) AddMultipleConfirmShow(w http.ResponseWriter, r *http.Req
 		Publication         *models.Publication
 		PublicationDatasets []*models.Dataset
 		Show                *views.ShowBuilder
-		Vocabularies        map[string][]string
 		BatchID             string
 	}{
 		"Add - Publications - Biblio",
@@ -534,7 +521,6 @@ func (c *Publications) AddMultipleConfirmShow(w http.ResponseWriter, r *http.Req
 		pub,
 		datasets,
 		views.NewShowBuilder(c.RenderPartial, locale.Get(r.Context())),
-		c.Engine.Vocabularies(),
 		batchID,
 	}),
 	)
@@ -562,20 +548,18 @@ func (c *Publications) AddMultiplePublish(w http.ResponseWriter, r *http.Request
 	searchURL, _ := c.Router.Get("publication_add_multiple_publish").URLPath("batch_id", batchID)
 
 	c.Render.HTML(w, http.StatusOK, "publication/add_multiple_finish", c.ViewData(r, struct {
-		PageTitle        string
-		Step             int
-		SearchURL        *url.URL
-		SearchArgs       *models.SearchArgs
-		Hits             *models.PublicationHits
-		PublicationSorts []string
-		BatchID          string
+		PageTitle  string
+		Step       int
+		SearchURL  *url.URL
+		SearchArgs *models.SearchArgs
+		Hits       *models.PublicationHits
+		BatchID    string
 	}{
 		"Add - Publications - Biblio",
 		5,
 		searchURL,
 		models.NewSearchArgs(),
 		hits,
-		c.Engine.Vocabularies()["publication_sorts"],
 		batchID,
 	}),
 	)
@@ -698,17 +682,15 @@ func (c *Publications) Delete(w http.ResponseWriter, r *http.Request) {
 	searchURL, _ := c.Router.Get("publications").URLPath()
 
 	c.Render.HTML(w, http.StatusOK, "publication/list", c.ViewData(r, struct {
-		PageTitle        string
-		SearchURL        *url.URL
-		SearchArgs       *models.SearchArgs
-		Hits             *models.PublicationHits
-		PublicationSorts []string
+		PageTitle  string
+		SearchURL  *url.URL
+		SearchArgs *models.SearchArgs
+		Hits       *models.PublicationHits
 	}{
 		"Overview - Publications - Biblio",
 		searchURL,
 		searchArgs,
 		hits,
-		c.Engine.Vocabularies()["publication_sorts"],
 	},
 		views.Flash{Type: "success", Message: "Successfully deleted publication.", DismissAfter: 5 * time.Second},
 	),

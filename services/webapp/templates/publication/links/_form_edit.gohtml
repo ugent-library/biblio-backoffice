@@ -8,7 +8,7 @@
             <div class="modal-body">
                 {{.D.Form.Text (.D.Form.Name "url" (.D.Form.Locale "builder.link")) (.D.Form.Value .D.Link.URL) (.D.Form.Cols 12)}}
                 {{.D.Form.List (.D.Form.Name "relation" (.D.Form.Locale "builder.link")) (.D.Form.Value .D.Link.Relation) (.D.Form.Cols 12)
-                    (.D.Form.Choices .D.Vocabularies.publication_link_relations (.D.Form.Locale "publication_link_relations"))}}
+                    (.D.Form.Choices .Vocabularies.publication_link_relations (.D.Form.Locale "publication_link_relations"))}}
                 {{.D.Form.Text (.D.Form.Name "description" (.D.Form.Locale "builder.description")) (.D.Form.Value .D.Link.Description) (.D.Form.Cols 12)}}
             </div>
             <div class="modal-footer">

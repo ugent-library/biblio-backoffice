@@ -1,10 +1,6 @@
-package engine
+package vocabularies
 
-func (e *Engine) Vocabularies() map[string][]string {
-	return vocabularies
-}
-
-var vocabularies = map[string][]string{
+var Map = map[string][]string{
 	"cc_licenses": {
 		"CC0-1.0",
 		"CC-BY-4.0",

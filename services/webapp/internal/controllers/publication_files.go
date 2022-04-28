@@ -148,17 +148,15 @@ func (c *PublicationFiles) Upload(w http.ResponseWriter, r *http.Request) {
 
 	c.Render.HTML(w, http.StatusCreated, "publication/files/_upload_edit",
 		c.ViewData(r, struct {
-			Publication  *models.Publication
-			File         *models.PublicationFile
-			FileIndex    int
-			Form         *views.FormBuilder
-			Vocabularies map[string][]string
+			Publication *models.Publication
+			File        *models.PublicationFile
+			FileIndex   int
+			Form        *views.FormBuilder
 		}{
 			savedPub,
 			savedPub.File[len(savedPub.File)-1],
 			len(savedPub.File) - 1,
 			views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), nil),
-			c.Engine.Vocabularies(),
 		}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
@@ -184,17 +182,15 @@ func (c *PublicationFiles) Edit(w http.ResponseWriter, r *http.Request) {
 	}
 
 	c.Render.HTML(w, http.StatusOK, "publication/files/_edit", c.ViewData(r, struct {
-		Publication  *models.Publication
-		File         *models.PublicationFile
-		FileIndex    int
-		Form         *views.FormBuilder
-		Vocabularies map[string][]string
+		Publication *models.Publication
+		File        *models.PublicationFile
+		FileIndex   int
+		Form        *views.FormBuilder
 	}{
 		pub,
 		file,
 		fileIndex,
 		views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), nil),
-		c.Engine.Vocabularies(),
 	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
@@ -264,17 +260,15 @@ func (c *PublicationFiles) License(w http.ResponseWriter, r *http.Request) {
 	}
 
 	c.Render.HTML(w, http.StatusOK, "publication/files/_edit", c.ViewData(r, struct {
-		Publication  *models.Publication
-		File         *models.PublicationFile
-		FileIndex    int
-		Form         *views.FormBuilder
-		Vocabularies map[string][]string
+		Publication *models.Publication
+		File        *models.PublicationFile
+		FileIndex   int
+		Form        *views.FormBuilder
 	}{
 		pub,
 		file,
 		fileIndex,
 		views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), nil),
-		c.Engine.Vocabularies(),
 	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
@@ -323,17 +317,15 @@ func (c *PublicationFiles) Update(w http.ResponseWriter, r *http.Request) {
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
 		c.Render.HTML(w, http.StatusOK, "publication/files/_edit", c.ViewData(r, struct {
-			Publication  *models.Publication
-			File         *models.PublicationFile
-			FileIndex    int
-			Form         *views.FormBuilder
-			Vocabularies map[string][]string
+			Publication *models.Publication
+			File        *models.PublicationFile
+			FileIndex   int
+			Form        *views.FormBuilder
 		}{
 			pub,
 			file,
 			fileIndex,
 			views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), validationErrors),
-			c.Engine.Vocabularies(),
 		},
 			views.Flash{Type: "error", Message: "There are some problems with your input"},
 		),
