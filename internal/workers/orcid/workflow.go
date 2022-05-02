@@ -17,7 +17,7 @@ import (
 
 type Activities struct {
 	PublicationSearchService backends.PublicationSearchService
-	StorageService           backends.StorageService
+	Store                    backends.Store
 	OrcidSandbox             bool
 }
 
@@ -88,7 +88,7 @@ func (a *Activities) SendPublicationsToORCID(ctx context.Context, args Args) err
 				PutCode: putCode,
 			})
 
-			if _, err := a.StorageService.SavePublication(pub); err != nil {
+			if err := a.Store.StorePublication(pub); err != nil {
 				return err
 			}
 		}

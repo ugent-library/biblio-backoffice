@@ -67,7 +67,8 @@ func (c *PublicationLinks) Create(w http.ResponseWriter, r *http.Request) {
 	links = append(links, *link)
 	pub.Link = links
 
-	savedPub, err := c.Engine.UpdatePublication(pub)
+	savedPub := pub.Clone()
+	err = c.Engine.UpdatePublication(pub)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
@@ -152,7 +153,8 @@ func (c *PublicationLinks) Update(w http.ResponseWriter, r *http.Request) {
 
 	log.Println(links)
 
-	savedPub, err := c.Engine.UpdatePublication(pub)
+	savedPub := pub.Clone()
+	err = c.Engine.UpdatePublication(savedPub)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {

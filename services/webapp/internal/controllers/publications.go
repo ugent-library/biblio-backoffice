@@ -197,8 +197,7 @@ func (c *Publications) AddSingleImport(w http.ResponseWriter, r *http.Request) {
 	} else {
 		pubType := r.FormValue("publication_type")
 		p := &models.Publication{Type: pubType, Status: "private", CreatorID: userID, UserID: userID}
-		p, err := c.Engine.StorageService.SavePublication(p)
-		if err != nil {
+		if err := c.Engine.Store.StorePublication(p); err != nil {
 			log.Println(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -261,9 +260,9 @@ func (c *Publications) AddSingleConfirm(w http.ResponseWriter, r *http.Request) 
 func (c *Publications) AddSinglePublish(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
-	pubCopy := *pub
-	pubCopy.Status = "public"
-	savedPub, err := c.Engine.UpdatePublication(&pubCopy)
+	savedPub := pub.Clone()
+	savedPub.Status = "public"
+	err := c.Engine.UpdatePublication(savedPub)
 	if err != nil {
 
 		/*
@@ -568,9 +567,8 @@ func (c *Publications) AddMultiplePublish(w http.ResponseWriter, r *http.Request
 func (c *Publications) Publish(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
-	pubCopy := *pub
-	pubCopy.Status = "public"
-	savedPub, err := c.Engine.UpdatePublication(&pubCopy)
+	savedPub := pub.Clone()
+	err := c.Engine.UpdatePublication(savedPub)
 
 	flashes := make([]views.Flash, 0)
 	var publicationErrors jsonapi.Errors
@@ -667,7 +665,7 @@ func (c *Publications) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	pub.Status = "deleted"
-	if _, err := c.Engine.UpdatePublication(pub); err != nil {
+	if err := c.Engine.UpdatePublication(pub); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

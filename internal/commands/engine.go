@@ -74,7 +74,7 @@ func newEngine() *engine.Engine {
 		Temporal:                  temporal,
 		ORCIDSandbox:              orcidConfig.Sandbox,
 		ORCIDClient:               orcidClient,
-		StorageService:            newStorageService(),
+		Store:                     newStore(),
 		DatasetSearchService:      es6Client,
 		PublicationSearchService:  es6Client,
 		PersonService:             biblioClient,
@@ -116,12 +116,12 @@ func newEngine() *engine.Engine {
 	return e
 }
 
-func newStorageService() backends.StorageService {
-	client, err := store.New(viper.GetString("pg-conn"))
+func newStore() backends.Store {
+	s, err := store.New(viper.GetString("pg-conn"))
 	if err != nil {
 		log.Fatalln("unable to create pg dataset service", err)
 	}
-	return client
+	return s
 }
 
 func newEs6Client() *es6.Client {

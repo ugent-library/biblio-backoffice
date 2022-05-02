@@ -3,13 +3,20 @@ package models
 import "github.com/ugent-library/biblio-backend/internal/validation"
 
 type Contributor struct {
+	CreditRole []string `json:"credit_role,omitempty" form:"credit_role"`
+	FirstName  string   `json:"first_name,omitempty" form:"first_name"`
+	FullName   string   `json:"full_name,omitempty" form:"-"` // TODO rename to Name
 	ID         string   `json:"id,omitempty" form:"ID"`
+	LastName   string   `json:"last_name,omitempty" form:"last_name"`
 	ORCID      string   `json:"orcid,omitempty" form:"-"`
 	UGentID    []string `json:"ugent_id,omitempty" form:"-"`
-	FirstName  string   `json:"first_name,omitempty" form:"first_name"`
-	LastName   string   `json:"last_name,omitempty" form:"last_name"`
-	FullName   string   `json:"full_name,omitempty" form:"-"` // TODO rename to Name
-	CreditRole []string `json:"credit_role,omitempty" form:"credit_role"`
+}
+
+func (p *Contributor) Clone() *Contributor {
+	clone := *p
+	clone.CreditRole = append(clone.CreditRole, p.CreditRole...)
+	clone.UGentID = append(clone.UGentID, p.UGentID...)
+	return &clone
 }
 
 func (p *Contributor) HasCreditRole(role string) bool {

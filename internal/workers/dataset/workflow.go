@@ -10,7 +10,7 @@ import (
 )
 
 type Activities struct {
-	DatasetService backends.StorageService
+	DatasetService backends.Store
 }
 
 func StoreDatasetWorkflow(ctx workflow.Context, dataset *models.Dataset) (err error) {
@@ -32,6 +32,5 @@ func StoreDatasetWorkflow(ctx workflow.Context, dataset *models.Dataset) (err er
 }
 
 func (a *Activities) StoreDatasetInRepository(dataset *models.Dataset) error {
-	_, err := a.DatasetService.SaveDataset(dataset)
-	return err
+	return a.DatasetService.StoreDataset(dataset)
 }

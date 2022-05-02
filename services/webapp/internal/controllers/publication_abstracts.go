@@ -66,7 +66,8 @@ func (c *PublicationAbstracts) Create(w http.ResponseWriter, r *http.Request) {
 	abstracts = append(abstracts, *abstract)
 	pub.Abstract = abstracts
 
-	savedPub, err := c.Engine.UpdatePublication(pub)
+	savedPub := pub.Clone()
+	err = c.Engine.UpdatePublication(savedPub)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
@@ -151,7 +152,8 @@ func (c *PublicationAbstracts) Update(w http.ResponseWriter, r *http.Request) {
 	abstracts[rowDelta] = *abstract
 	pub.Abstract = abstracts
 
-	savedPub, err := c.Engine.UpdatePublication(pub)
+	savedPub := pub.Clone()
+	err = c.Engine.UpdatePublication(savedPub)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {

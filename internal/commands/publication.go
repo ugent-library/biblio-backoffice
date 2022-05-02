@@ -42,7 +42,7 @@ var publicationGetCmd = &cobra.Command{
 			if !ok {
 				log.Fatalf("Unknown format %s", format)
 			}
-			d, err := e.StorageService.GetPublication(args[0])
+			d, err := e.Store.GetPublication(args[0])
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -56,7 +56,7 @@ var publicationGetCmd = &cobra.Command{
 		}
 
 		enc := json.NewEncoder(os.Stdout)
-		d, err := e.StorageService.GetPublication(args[0])
+		d, err := e.Store.GetPublication(args[0])
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -68,7 +68,7 @@ var publicationAllCmd = &cobra.Command{
 	Use:   "all",
 	Short: "Get all publications",
 	Run: func(cmd *cobra.Command, args []string) {
-		s := newStorageService()
+		s := newStore()
 		e := json.NewEncoder(os.Stdout)
 		s.EachPublication(func(d *models.Publication) bool {
 			e.Encode(d)
@@ -117,12 +117,11 @@ var publicationAddCmd = &cobra.Command{
 				log.Print(err)
 				continue
 			}
-			savedP, err := e.StorageService.SavePublication(&p)
-			if err != nil {
+			if err := e.Store.StorePublication(&p); err != nil {
 				log.Fatal(err)
 			}
 			// log.Printf("%+v", savedP)
-			indexC <- savedP
+			indexC <- &p
 		}
 
 		// close indexing channel when all recs are stored

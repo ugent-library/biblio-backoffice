@@ -62,7 +62,8 @@ func (c *PublicationLaySummaries) Create(w http.ResponseWriter, r *http.Request)
 	lay_summaries = append(lay_summaries, *lay_summary)
 	pub.LaySummary = lay_summaries
 
-	savedPub, err := c.Engine.UpdatePublication(pub)
+	savedPub := pub.Clone()
+	err = c.Engine.UpdatePublication(savedPub)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
@@ -152,7 +153,8 @@ func (c *PublicationLaySummaries) Update(w http.ResponseWriter, r *http.Request)
 	lay_summaries[rowDelta] = *lay_summary
 	pub.LaySummary = lay_summaries
 
-	savedPub, err := c.Engine.UpdatePublication(pub)
+	savedPub := pub.Clone()
+	err = c.Engine.UpdatePublication(savedPub)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
@@ -218,7 +220,8 @@ func (c *PublicationLaySummaries) Remove(w http.ResponseWriter, r *http.Request)
 	pub.LaySummary = lay_summaries
 
 	// TODO: error handling
-	savedPub, _ := c.Engine.UpdatePublication(pub)
+	savedPub := pub.Clone()
+	c.Engine.UpdatePublication(savedPub)
 
 	c.Render.HTML(w, http.StatusOK, "publication/lay_summaries/_deleted", c.ViewData(r, struct {
 		Publication *models.Publication

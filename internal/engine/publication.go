@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"context"
 	"errors"
 	"io"
 	"log"
@@ -8,29 +9,29 @@ import (
 	"sync"
 
 	"github.com/google/uuid"
+	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/models"
 )
 
 // TODO move to workflow
-func (e *Engine) UpdatePublication(p *models.Publication) (*models.Publication, error) {
+func (e *Engine) UpdatePublication(p *models.Publication) error {
 	p.Vacuum()
 
 	if err := p.Validate(); err != nil {
 		log.Printf("%#v", err)
-		return nil, err
+		return err
 	}
 
-	p, err := e.StorageService.SavePublication(p)
-	if err != nil {
-		return nil, err
+	if err := e.Store.StorePublication(p); err != nil {
+		return err
 	}
 
 	if err := e.PublicationSearchService.IndexPublication(p); err != nil {
 		log.Printf("error indexing publication %+v", err)
-		return nil, err
+		return err
 	}
 
-	return p, nil
+	return nil
 }
 
 // TODO make query dsl package
@@ -61,7 +62,7 @@ func (e *Engine) BatchPublishPublications(userID string, args *models.SearchArgs
 		hits, err = e.UserPublications(userID, args)
 		for _, pub := range hits.Hits {
 			pub.Status = "public"
-			if _, err = e.UpdatePublication(pub); err != nil {
+			if err = e.UpdatePublication(pub); err != nil {
 				break
 			}
 		}
@@ -79,79 +80,63 @@ func (e *Engine) GetPublicationDatasets(p *models.Publication) ([]*models.Datase
 	for _, rd := range p.RelatedDataset {
 		datasetIds = append(datasetIds, rd.ID)
 	}
-	return e.StorageService.GetDatasets(datasetIds)
+	return e.Store.GetDatasets(datasetIds)
 }
 
 // TODO make model helper method and move to controller
-func (e *Engine) AddPublicationDataset(p *models.Publication, d *models.Dataset) (*models.Publication, error) {
-	tx, err := e.StorageService.Begin()
-	if err != nil {
-		return nil, err
-	}
-	defer tx.Rollback()
-
-	if !p.HasRelatedDataset(d.ID) {
-		p.RelatedDataset = append(p.RelatedDataset, models.RelatedDataset{ID: d.ID})
-		savedP, err := tx.SavePublication(p)
-		if err != nil {
-			return nil, err
+func (e *Engine) AddPublicationDataset(p *models.Publication, d *models.Dataset) error {
+	return e.Store.Atomic(context.Background(), func(s backends.Store) error {
+		if !p.HasRelatedDataset(d.ID) {
+			p.RelatedDataset = append(p.RelatedDataset, models.RelatedDataset{ID: d.ID})
+			if err := s.StorePublication(p); err != nil {
+				return err
+			}
 		}
-		p = savedP
-	}
-	if !d.HasRelatedPublication(p.ID) {
-		d.RelatedPublication = append(d.RelatedPublication, models.RelatedPublication{ID: p.ID})
-		if _, err := tx.SaveDataset(d); err != nil {
-			return nil, err
+		if !d.HasRelatedPublication(p.ID) {
+			d.RelatedPublication = append(d.RelatedPublication, models.RelatedPublication{ID: p.ID})
+			if err := s.StoreDataset(d); err != nil {
+				return err
+			}
 		}
-	}
 
-	if err := tx.Commit(); err != nil {
-		return nil, err
-	}
+		// TODO ensure consistency
+		if err := e.DatasetSearchService.IndexDataset(d); err != nil {
+			log.Printf("error indexing dataset: %v", err)
+		}
+		if err := e.PublicationSearchService.IndexPublication(p); err != nil {
+			log.Printf("error indexing publication: %v", err)
+		}
 
-	return p, nil
+		return nil
+	})
 }
 
 // TODO make model helper method and move to controller
-func (e *Engine) RemovePublicationDataset(p *models.Publication, d *models.Dataset) (*models.Publication, error) {
-	tx, err := e.StorageService.Begin()
-	if err != nil {
-		return nil, err
-	}
-	defer tx.Rollback()
-
-	if p.HasRelatedDataset(d.ID) {
-		var newRelatedDatasets []models.RelatedDataset
-		for _, rd := range p.RelatedDataset {
-			if rd.ID != d.ID {
-				newRelatedDatasets = append(newRelatedDatasets, rd)
+func (e *Engine) RemovePublicationDataset(p *models.Publication, d *models.Dataset) error {
+	return e.Store.Atomic(context.Background(), func(s backends.Store) error {
+		if p.HasRelatedDataset(d.ID) {
+			p.RemoveRelatedDataset(d.ID)
+			if err := s.StorePublication(p); err != nil {
+				return err
 			}
 		}
-		p.RelatedDataset = newRelatedDatasets
-		savedP, err := tx.SavePublication(p)
-		if err != nil {
-			return nil, err
-		}
-		p = savedP
-	}
-	if d.HasRelatedPublication(p.ID) {
-		var newRelatedPublications []models.RelatedPublication
-		for _, rd := range d.RelatedPublication {
-			if rd.ID != d.ID {
-				newRelatedPublications = append(newRelatedPublications, rd)
+		if d.HasRelatedPublication(p.ID) {
+			d.RemoveRelatedPublication(p.ID)
+			if err := s.StoreDataset(d); err != nil {
+				return err
 			}
 		}
-		d.RelatedPublication = newRelatedPublications
-		if _, err := tx.SaveDataset(d); err != nil {
-			return nil, err
+
+		// TODO ensure consistency
+		if err := e.DatasetSearchService.IndexDataset(d); err != nil {
+			log.Printf("error indexing dataset: %v", err)
 		}
-	}
+		if err := e.PublicationSearchService.IndexPublication(p); err != nil {
+			log.Printf("error indexing publication: %v", err)
+		}
 
-	if err := tx.Commit(); err != nil {
-		return nil, err
-	}
-
-	return p, nil
+		return nil
+	})
 }
 
 // TODO make workflow
@@ -170,7 +155,11 @@ func (e *Engine) ImportUserPublicationByIdentifier(userID, source, identifier st
 	p.Status = "private"
 	p.Classification = "U"
 
-	return e.UpdatePublication(p)
+	if err := e.UpdatePublication(p); err != nil {
+		return nil, err
+	}
+
+	return p, nil
 }
 
 // TODO make workflow
@@ -214,13 +203,12 @@ func (e *Engine) ImportUserPublications(userID, source string, file io.Reader) (
 			importErr = err
 			break
 		}
-		savedP, err := e.StorageService.SavePublication(&p)
-		if err != nil {
+		if err := e.Store.StorePublication(&p); err != nil {
 			importErr = err
 			break
 		}
 
-		indexC <- savedP
+		indexC <- &p
 	}
 
 	// close indexing channel when all recs are stored
@@ -255,7 +243,7 @@ func (e *Engine) IndexAllPublications() (err error) {
 	}()
 
 	// send recs to indexer
-	e.StorageService.EachPublication(func(p *models.Publication) bool {
+	e.Store.EachPublication(func(p *models.Publication) bool {
 		indexC <- p
 		return true
 	})

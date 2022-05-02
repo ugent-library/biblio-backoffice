@@ -73,7 +73,11 @@ func (e *Engine) AddPublicationToORCID(orcidID, orcidToken string, p *models.Pub
 		PutCode: putCode,
 	})
 
-	return e.UpdatePublication(p)
+	if err := e.UpdatePublication(p); err != nil {
+		return nil, err
+	}
+
+	return p, nil
 }
 
 func publicationToORCID(p *models.Publication) *orcid.Work {

@@ -61,6 +61,24 @@ type Dataset struct {
 	Year string `json:"year,omitempty" form:"year"`
 }
 
+func (d *Dataset) Clone() *Dataset {
+	clone := *d
+	clone.Abstract = append(clone.Abstract, d.Abstract...)
+	for _, c := range d.Author {
+		clone.Author = append(clone.Author, c.Clone())
+	}
+	for _, c := range d.Contributor {
+		clone.Contributor = append(clone.Contributor, c.Clone())
+	}
+	clone.Department = append(clone.Department, d.Department...)
+	clone.Format = append(clone.Format, d.Format...)
+	clone.Keyword = append(clone.Keyword, d.Keyword...)
+	clone.Project = append(clone.Project, d.Project...)
+	clone.RelatedPublication = append(clone.RelatedPublication, d.RelatedPublication...)
+	clone.ReviewerTags = append(clone.ReviewerTags, d.ReviewerTags...)
+	return &clone
+}
+
 func (d *Dataset) HasRelatedPublication(id string) bool {
 	for _, r := range d.RelatedPublication {
 		if r.ID == id {
@@ -68,6 +86,16 @@ func (d *Dataset) HasRelatedPublication(id string) bool {
 		}
 	}
 	return false
+}
+
+func (d *Dataset) RemoveRelatedPublication(id string) {
+	var publications []RelatedPublication
+	for _, r := range d.RelatedPublication {
+		if r.ID != id {
+			publications = append(publications, r)
+		}
+	}
+	d.RelatedPublication = publications
 }
 
 func (d *Dataset) Contributors(role string) []*Contributor {

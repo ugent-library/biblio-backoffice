@@ -99,15 +99,14 @@ func (c *DatasetPublications) Add(w http.ResponseWriter, r *http.Request) {
 
 	dataset := context.GetDataset(r.Context())
 
-	pub, err := c.Engine.StorageService.GetPublication(pubID)
+	pub, err := c.Engine.Store.GetPublication(pubID)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
-	_, err = c.Engine.AddPublicationDataset(pub, dataset)
-	if err != nil {
+	if err = c.Engine.AddPublicationDataset(pub, dataset); err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -151,13 +150,13 @@ func (c *DatasetPublications) Remove(w http.ResponseWriter, r *http.Request) {
 
 	dataset := context.GetDataset(r.Context())
 
-	pub, err := c.Engine.StorageService.GetPublication(pubID)
+	pub, err := c.Engine.Store.GetPublication(pubID)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	if _, err = c.Engine.RemovePublicationDataset(pub, dataset); err != nil {
+	if err = c.Engine.RemovePublicationDataset(pub, dataset); err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

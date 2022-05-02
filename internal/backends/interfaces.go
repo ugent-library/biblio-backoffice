@@ -1,6 +1,7 @@
 package backends
 
 import (
+	"context"
 	"io"
 	"net/http"
 
@@ -28,6 +29,18 @@ type Transaction interface {
 	Commit() error
 	SavePublication(p *models.Publication) (*models.Publication, error)
 	SaveDataset(d *models.Dataset) (*models.Dataset, error)
+}
+
+type Store interface {
+	Atomic(context.Context, func(Store) error) error
+	GetPublication(string) (*models.Publication, error)
+	GetPublications([]string) ([]*models.Publication, error)
+	StorePublication(*models.Publication) error
+	EachPublication(func(*models.Publication) bool) error
+	GetDataset(string) (*models.Dataset, error)
+	GetDatasets([]string) ([]*models.Dataset, error)
+	StoreDataset(*models.Dataset) error
+	EachDataset(func(*models.Dataset) bool) error
 }
 
 type StorageService interface {

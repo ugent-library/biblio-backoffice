@@ -25,7 +25,7 @@ var datasetGetCmd = &cobra.Command{
 	Short: "Get datasets by id",
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		s := newStorageService()
+		s := newStore()
 		e := json.NewEncoder(os.Stdout)
 		for _, id := range args {
 			d, err := s.GetDataset(id)
@@ -41,7 +41,7 @@ var datasetAllCmd = &cobra.Command{
 	Use:   "all",
 	Short: "Get all datasets",
 	Run: func(cmd *cobra.Command, args []string) {
-		s := newStorageService()
+		s := newStore()
 		e := json.NewEncoder(os.Stdout)
 		s.EachDataset(func(d *models.Dataset) bool {
 			e.Encode(d)

@@ -39,8 +39,7 @@ func (e *Engine) ImportUserDatasetByIdentifier(userID, source, identifier string
 	d.UserID = userID
 	d.Status = "private"
 
-	d, err = e.StorageService.SaveDataset(d)
-	if err != nil {
+	if err = e.Store.StoreDataset(d); err != nil {
 		return nil, err
 	}
 
@@ -60,8 +59,7 @@ func (e *Engine) UpdateDataset(d *models.Dataset) (*models.Dataset, error) {
 		return nil, err
 	}
 
-	d, err := e.StorageService.SaveDataset(d)
-	if err != nil {
+	if err := e.Store.StoreDataset(d); err != nil {
 		return nil, err
 	}
 
@@ -97,7 +95,7 @@ func (e *Engine) GetDatasetPublications(d *models.Dataset) ([]*models.Publicatio
 	for _, rp := range d.RelatedPublication {
 		publicationIds = append(publicationIds, rp.ID)
 	}
-	return e.StorageService.GetPublications(publicationIds)
+	return e.Store.GetPublications(publicationIds)
 }
 
 func (e *Engine) IndexAllDatasets() (err error) {
@@ -113,7 +111,7 @@ func (e *Engine) IndexAllDatasets() (err error) {
 	}()
 
 	// send recs to indexer
-	e.StorageService.EachDataset(func(d *models.Dataset) bool {
+	e.Store.EachDataset(func(d *models.Dataset) bool {
 		indexC <- d
 		return true
 	})

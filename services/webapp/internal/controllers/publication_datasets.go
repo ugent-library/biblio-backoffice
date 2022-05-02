@@ -99,15 +99,14 @@ func (c *PublicationDatasets) Add(w http.ResponseWriter, r *http.Request) {
 
 	pub := context.GetPublication(r.Context())
 
-	dataset, err := c.Engine.StorageService.GetDataset(datasetID)
+	dataset, err := c.Engine.Store.GetDataset(datasetID)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
-	_, err = c.Engine.AddPublicationDataset(pub, dataset)
-	if err != nil {
+	if err = c.Engine.AddPublicationDataset(pub, dataset); err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -151,21 +150,21 @@ func (c *PublicationDatasets) Remove(w http.ResponseWriter, r *http.Request) {
 
 	pub := context.GetPublication(r.Context())
 
-	dataset, err := c.Engine.StorageService.GetDataset(datasetID)
+	dataset, err := c.Engine.Store.GetDataset(datasetID)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	savedPub, err := c.Engine.RemovePublicationDataset(pub, dataset)
-	if err != nil {
+	newPub := pub.Clone()
+	if err := c.Engine.RemovePublicationDataset(newPub, dataset); err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	datasets, err := c.Engine.GetPublicationDatasets(savedPub)
+	datasets, err := c.Engine.GetPublicationDatasets(newPub)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -176,7 +175,7 @@ func (c *PublicationDatasets) Remove(w http.ResponseWriter, r *http.Request) {
 		Publication         *models.Publication
 		PublicationDatasets []*models.Dataset
 	}{
-		savedPub,
+		newPub,
 		datasets,
 	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},

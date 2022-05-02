@@ -8,11 +8,11 @@ import (
 )
 
 type Config struct {
-	FileStore                *filestore.Store
 	Temporal                 client.Client
 	ORCIDSandbox             bool
 	ORCIDClient              *orcid.MemberClient
-	StorageService           backends.StorageService
+	Store                    backends.Store
+	FileStore                *filestore.Store
 	DatasetSearchService     backends.DatasetSearchService
 	PublicationSearchService backends.PublicationSearchService
 	backends.PersonService

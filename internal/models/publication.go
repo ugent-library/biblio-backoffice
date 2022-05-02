@@ -36,6 +36,11 @@ type PublicationFile struct {
 	URL                string     `json:"url,omitempty" form:"-"`
 }
 
+func (f *PublicationFile) Clone() *PublicationFile {
+	clone := *f
+	return &clone
+}
+
 type PublicationLink struct {
 	URL         string `json:"url,omitempty" form:"url"`
 	Relation    string `json:"relation,omitempty" form:"relation"`
@@ -147,6 +152,39 @@ type Publication struct {
 	Year    string `json:"year,omitempty" form:"year"`
 }
 
+func (p *Publication) Clone() *Publication {
+	clone := *p
+	clone.Abstract = append(clone.Abstract, p.Abstract...)
+	clone.AlternativeTitle = append(clone.AlternativeTitle, p.AlternativeTitle...)
+	for _, c := range p.Author {
+		clone.Author = append(clone.Author, c.Clone())
+	}
+	clone.Department = append(clone.Department, p.Department...)
+	for _, c := range p.Editor {
+		clone.Editor = append(clone.Editor, c.Clone())
+	}
+	clone.EISBN = append(clone.EISBN, p.EISBN...)
+	clone.EISSN = append(clone.EISSN, p.EISSN...)
+	for _, f := range p.File {
+		clone.File = append(clone.File, f.Clone())
+	}
+	clone.ISBN = append(clone.ISBN, p.ISBN...)
+	clone.ISSN = append(clone.ISSN, p.ISSN...)
+	clone.Keyword = append(clone.Keyword, p.Keyword...)
+	clone.Language = append(clone.Language, p.Language...)
+	clone.LaySummary = append(clone.LaySummary, p.LaySummary...)
+	clone.Link = append(clone.Link, p.Link...)
+	clone.ORCIDWork = append(clone.ORCIDWork, p.ORCIDWork...)
+	clone.Project = append(clone.Project, p.Project...)
+	clone.RelatedDataset = append(clone.RelatedDataset, p.RelatedDataset...)
+	clone.ResearchField = append(clone.ResearchField, p.ResearchField...)
+	clone.ReviewerTags = append(clone.ReviewerTags, p.ReviewerTags...)
+	for _, c := range p.Supervisor {
+		clone.Supervisor = append(clone.Supervisor, c.Clone())
+	}
+	return &clone
+}
+
 func (p *Publication) AccessLevel() string {
 	for _, a := range []string{"open_access", "local", "closed"} {
 		for _, file := range p.File {
@@ -165,6 +203,16 @@ func (p *Publication) HasRelatedDataset(id string) bool {
 		}
 	}
 	return false
+}
+
+func (p *Publication) RemoveRelatedDataset(id string) {
+	var datasets []RelatedDataset
+	for _, r := range p.RelatedDataset {
+		if r.ID != id {
+			datasets = append(datasets, r)
+		}
+	}
+	p.RelatedDataset = datasets
 }
 
 func (p *Publication) GetFile(id string) *PublicationFile {

@@ -34,7 +34,7 @@ var startORCIDWorkerCmd = &cobra.Command{
 		defer e.Temporal.Close()
 
 		a := &orcid.Activities{
-			StorageService:           e.StorageService,
+			Store:                    e.Store,
 			PublicationSearchService: e.PublicationSearchService,
 			OrcidSandbox:             e.ORCIDSandbox,
 		}
@@ -57,7 +57,7 @@ var startStoreDatasetWorkerCmd = &cobra.Command{
 		defer e.Temporal.Close()
 
 		a := &dataset.Activities{
-			DatasetService: e.StorageService,
+			DatasetService: e.Store,
 		}
 
 		w := worker.New(e.Temporal, "store-dataset", worker.Options{})

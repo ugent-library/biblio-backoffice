@@ -74,7 +74,8 @@ func (c *PublicationDepartments) Add(w http.ResponseWriter, r *http.Request) {
 		ID: departmentId,
 	}
 	pub.Department = append(pub.Department, publicationDepartment)
-	savedPub, err := c.Engine.UpdatePublication(pub)
+	savedPub := pub.Clone()
+	err := c.Engine.UpdatePublication(savedPub)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -123,7 +124,8 @@ func (c *PublicationDepartments) Remove(w http.ResponseWriter, r *http.Request) 
 	departments = append(departments[:removeKey], departments[removeKey+1:]...)
 	pub.Department = departments
 
-	savedPub, err := c.Engine.UpdatePublication(pub)
+	savedPub := pub.Clone()
+	err := c.Engine.UpdatePublication(pub)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

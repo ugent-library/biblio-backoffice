@@ -11,7 +11,7 @@ import (
 func SetDataset(e *engine.Engine) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			dataset, err := e.StorageService.GetDataset(mux.Vars(r)["id"])
+			dataset, err := e.Store.GetDataset(mux.Vars(r)["id"])
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusNotFound)
 				return

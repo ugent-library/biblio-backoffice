@@ -76,7 +76,8 @@ func (c *PublicationProjects) Add(w http.ResponseWriter, r *http.Request) {
 	}
 	pub.Project = append(pub.Project, publicationProject)
 
-	savedPub, err := c.Engine.UpdatePublication(pub)
+	savedPub := pub.Clone()
+	err = c.Engine.UpdatePublication(savedPub)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -126,7 +127,8 @@ func (c *PublicationProjects) Remove(w http.ResponseWriter, r *http.Request) {
 	pub.Project = projects
 
 	// TODO: error handling
-	savedPub, err := c.Engine.UpdatePublication(pub)
+	savedPub := pub.Clone()
+	err := c.Engine.UpdatePublication(savedPub)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

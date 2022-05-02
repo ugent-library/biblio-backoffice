@@ -116,7 +116,7 @@ func (c *PublicationFiles) Upload(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// TODO check if file with same checksum is already present
-	pubCopy := *pub
+	savedPub := pub.Clone()
 	now := time.Now()
 	pubFile := &models.PublicationFile{
 		ID:          uuid.New().String(),
@@ -128,8 +128,8 @@ func (c *PublicationFiles) Upload(w http.ResponseWriter, r *http.Request) {
 		DateCreated: &now,
 		DateUpdated: &now,
 	}
-	pubCopy.File = append(pubCopy.File, pubFile)
-	savedPub, err := c.Engine.UpdatePublication(&pubCopy)
+	savedPub.File = append(savedPub.File, pubFile)
+	err = c.Engine.UpdatePublication(savedPub)
 
 	if err != nil {
 		flash := views.Flash{Type: "error", Message: "There was a problem adding your file"}
@@ -312,7 +312,7 @@ func (c *PublicationFiles) Update(w http.ResponseWriter, r *http.Request) {
 		file.Embargo = ""
 	}
 
-	_, err = c.Engine.UpdatePublication(pub)
+	err = c.Engine.UpdatePublication(pub)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
@@ -339,7 +339,7 @@ func (c *PublicationFiles) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//reload publication
-	pub, err = c.Engine.StorageService.GetPublication(pub.ID)
+	pub, err = c.Engine.Store.GetPublication(pub.ID)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -383,7 +383,7 @@ func (c *PublicationFiles) Remove(w http.ResponseWriter, r *http.Request) {
 	}
 	pub.File = newFile
 
-	pub, err := c.Engine.UpdatePublication(pub)
+	err := c.Engine.UpdatePublication(pub)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
