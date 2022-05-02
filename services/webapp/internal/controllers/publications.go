@@ -130,10 +130,47 @@ func (c *Publications) Summary(w http.ResponseWriter, r *http.Request) {
 	)
 }
 
+// Step 1: Start
+
 func (c *Publications) Add(w http.ResponseWriter, r *http.Request) {
 	c.Render.HTML(w, http.StatusOK, "publication/add", c.ViewData(r, PublicationAddSingleVars{
 		PageTitle: "Add - Publications - Biblio",
 		Step:      1,
+	}))
+}
+
+func (c *Publications) AddSelectMethod(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
+
+	method := r.FormValue("add-method-select")
+
+	template := ""
+
+	switch method {
+	case "wos":
+		template = "publication/add_wos"
+	case "identifier":
+		template = "publication/add_identifier"
+	case "manual":
+		template = "publication/add_manual"
+	case "bibtex":
+		template = "publication/add_bibtex"
+	default:
+		flash := views.Flash{Type: "error"}
+		flash.Message = "You didn't specify how you would like to add a publication."
+
+		c.Render.HTML(w, http.StatusOK, "publication/add", c.ViewData(r, PublicationAddSingleVars{
+			PageTitle: "Add - Publications - Biblio",
+			Step:      1,
+		},
+			flash,
+		))
+		return
+	}
+
+	c.Render.HTML(w, http.StatusOK, template, c.ViewData(r, PublicationAddSingleVars{
+		PageTitle: "Add - Publications - Biblio",
+		Step:      2,
 	}))
 }
 
@@ -247,7 +284,7 @@ func (c *Publications) AddSingleImport(w http.ResponseWriter, r *http.Request) {
 		Show                *views.ShowBuilder
 	}{
 		"Add - Publications - Biblio",
-		2,
+		3,
 		pub,
 		datasets,
 		views.NewShowBuilder(c.RenderPartial, locale.Get(r.Context())),
@@ -274,7 +311,7 @@ func (c *Publications) AddSingleDescription(w http.ResponseWriter, r *http.Reque
 		Show                *views.ShowBuilder
 	}{
 		"Add - Publications - Biblio",
-		2,
+		3,
 		pub,
 		datasets,
 		views.NewShowBuilder(c.RenderPartial, locale.Get(r.Context())),
@@ -358,6 +395,8 @@ func (c *Publications) AddSinglePublish(w http.ResponseWriter, r *http.Request) 
 // 	}))
 // }
 
+// Step 2: Add publications (WOS, BibTex)
+
 func (c *Publications) AddMultipleImport(w http.ResponseWriter, r *http.Request) {
 	// 2GB limit on request body
 	r.Body = http.MaxBytesReader(w, r.Body, 2000000000)
@@ -412,7 +451,7 @@ func (c *Publications) AddMultipleImport(w http.ResponseWriter, r *http.Request)
 		BatchID          string
 	}{
 		"Add - Publications - Biblio",
-		2,
+		3,
 		searchURL,
 		args,
 		hits,
@@ -452,7 +491,7 @@ func (c *Publications) AddMultipleDescription(w http.ResponseWriter, r *http.Req
 		BatchID          string
 	}{
 		"Add - Publications - Biblio",
-		2,
+		3,
 		searchURL,
 		args,
 		hits,
@@ -493,7 +532,7 @@ func (c *Publications) AddMultipleShow(w http.ResponseWriter, r *http.Request) {
 		BatchID             string
 	}{
 		"Add - Publications - Biblio",
-		2,
+		3,
 		pub,
 		datasets,
 		views.NewShowBuilder(c.RenderPartial, locale.Get(r.Context())),
@@ -529,7 +568,7 @@ func (c *Publications) AddMultipleConfirm(w http.ResponseWriter, r *http.Request
 		BatchID          string
 	}{
 		"Add - Publications - Biblio",
-		2,
+		4,
 		searchURL,
 		args,
 		hits,
@@ -562,7 +601,7 @@ func (c *Publications) AddMultipleConfirmShow(w http.ResponseWriter, r *http.Req
 		BatchID             string
 	}{
 		"Add - Publications - Biblio",
-		3,
+		4,
 		pub,
 		datasets,
 		views.NewShowBuilder(c.RenderPartial, locale.Get(r.Context())),
@@ -603,7 +642,7 @@ func (c *Publications) AddMultiplePublish(w http.ResponseWriter, r *http.Request
 		BatchID          string
 	}{
 		"Add - Publications - Biblio",
-		4,
+		5,
 		searchURL,
 		models.NewSearchArgs(),
 		hits,

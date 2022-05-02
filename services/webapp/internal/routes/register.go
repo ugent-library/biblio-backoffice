@@ -125,6 +125,9 @@ func Register(c controllers.Context) {
 	pubsRouter.HandleFunc("/add", publicationsController.Add).
 		Methods("GET").
 		Name("publication_add")
+	pubsRouter.HandleFunc("/add", publicationsController.AddSelectMethod).
+		Methods("POST").
+		Name("publication_add_select_method")
 	// pubsRouter.HandleFunc("/add-single", publicationsController.AddSingle).
 	// 	Methods("GET").
 	// 	Name("publication_add_single")

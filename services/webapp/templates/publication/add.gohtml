@@ -1,290 +1,90 @@
 {{template "publication/_add_sidebar" .}}
 
-<div class="w-100 u-scroll-wrapper">
-    <div class="bc-navbar bc-navbar--xlarge bc-navbar-bordered bc-navbar--white bc-navbar--bordered-bottom">
-        <div class="bc-toolbar">
-            <div class="bc-toolbar-left">
-                <div class="bc-toolbar-item">
-                    <div class="d-flex flex-column">
-                        <span class="text-muted mb-2">Step {{.D.Step}}</span>
-                        <h4 class="bc-toolbar-title">Add publication(s)</h4>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="p-6 u-scroll-wrapper__body">
-        <div class="card card-collapsible mb-6">
-            <div class="card-header">
-                <div class="collapse-trigger" data-toggle="collapse" data-target="#importFromWOS" aria-expanded="true" aria-controls="collapse1"></div>
-                <div class="bc-toolbar">
-                    <div class="bc-toolbar-left">
-                        <i class="if if-chevron-right mr-4 text-muted"></i>Import from Web of Science
-                    </div>
-                </div>
-            </div>
-            <div class="collapse show" id="importFromWOS">
-                <div class="card-body">
-                    <form class="form-change-submit" action="{{pathFor "publication_add_multiple_import"}}" method="POST" enctype="multipart/form-data">
-                        {{.CSRFTag}}
-                        <input type="hidden" name="source" value="wos">
-
-                        <div class="c-file-upload">
-                            <input type="file" name="file">
-                            <div class="c-file-upload__content">
-                                <p>Drag and drop or</p>
-                                <button class="btn btn-outline-primary">Upload file
-                                    <div class="spinner-border">
-                                        <span class="sr-only"></span>
-                                    </div>
-                                </button>
-                            </div>
+<form class="w-100 u-scroll-wrapper" action="{{pathFor "publication_add_select_method"}}" method="POST">
+    {{.CSRFTag}}
+    <div class="w-100 u-scroll-wrapper">
+        <div class="bc-navbar bc-navbar--xlarge bc-navbar-bordered bc-navbar--white bc-navbar--bordered-bottom">
+            <div class="bc-toolbar">
+                <div class="bc-toolbar-left">
+                    <div class="bc-toolbar-item">
+                        <div class="d-flex flex-column">
+                            <span class="text-muted mb-2">Step {{.D.Step}}</span>
+                            <h4 class="bc-toolbar-title">Start</h4>
                         </div>
+                    </div>
+                </div>
 
-                        <small class="form-text text-muted my-3"><a href="https://onderzoektips.ugent.be/nl/tips/00001667/" target="_blank">Web of Science import instructions</a></small>
-                    </form>
+                <div class="bc-toolbar-right">
+                    <div class="bc-toolbar-item">
+                        <button type="submit" class="btn btn-primary">
+                            <div class="btn-text">Add publication(s)</div>
+                            <i class="if if-arrow-right"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="card mb-6">
-            <div class="card-header">
-                <div class="bc-toolbar">
-                    <div class="bc-toolbar-left">Enter identifier of your publication</div>
+        <div class="p-6 u-scroll-wrapper__body">
+            <div class="card">
+                <div class="card-header">
+                    <div class="bc-toolbar">
+                        <div class="bc-toolbar-left">How do you like to add publication(s)?</div>
+                    </div>
                 </div>
-            </div>
-            <div class="card-body">
-                <div classp="card-body">
-                    <form action="{{pathFor "publication_add_single_import_confirm"}}" method="POST">
-                        {{.CSRFTag}}
-                        <p class="mb-4">Enter publication identifier (e.g. DOI, PubMed ID) to import the publication description from an external repository or database.</p>
-                        <div class="form-group">
-                            <div class="form-row">
-                                <div class="col-6">
-                                    <div class="input-group">
-                                        <select name="source" class="custom-select col-2">
-                                            <option value="crossref">DOI</option>
-                                            <option value="pubmed">PubMed</option>
-                                            <option value="arxiv">arXiv</option>
-                                        </select>
-                                        <input class="form-control col-10" type="text" name="identifier" placeholder="e.g. 10.7484/INSPIREHEP.DATA.RF5P.6M3K">
+                <div class="card-body radio-card-group">
+                    <div class="row">
+                        <div class="col">
+                            <label class="c-radio-card">
+                                <div class="c-radio-card__radio" aria-selected="false">
+                                    <div class="custom-control custom-radio">
+                                        <input class="custom-control-input" id="add-select-single" type="radio" name="add-method-select" value="wos">
+                                        <label class="custom-control-label" for="add-select-single"></label>
                                     </div>
                                 </div>
-                            </div>
+                                <div class="c-radio-card__content">Import from Web of Science.</div>
+                            </label>
                         </div>
-
-                        <div class="bc-toolbar">
-                            <div class="bc-toolbar-right">
-                                <div class="bc-toolbar-item">
-                                    <button type="submit" class="btn btn-primary">
-                                        <div class="btn-text">Complete description</div>
-                                        <i class="if if-arrow-right"></i>
-                                    </button>
+                        <div class="col">
+                            <label class="c-radio-card" aria-selected="false">
+                                <div class="c-radio-card__radio">
+                                    <div class="custom-control custom-radio">
+                                        <input class="custom-control-input" id="add-select-multiple" type="radio" name="add-method-select" value="identifier">
+                                        <label class="custom-control-label" for="add-select-multiple"></label>
+                                    </div>
                                 </div>
-                            </div>
+                                <div class="c-radio-card__content">Import your publication via an identifier.</div>
+                            </label>
                         </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <div class="card card-collapsible mb-6">
-            <div class="card-header">
-                <div class="collapse-trigger" data-toggle="collapse" data-target="#notInExternalRepo" aria-expanded="true" aria-controls="collapse1"></div>
-                <div class="bc-toolbar">
-                    <div class="bc-toolbar-left">
-                        <i class="if if-chevron-right mr-4 text-muted"></i>Publication does not have an identifier. Enter manually
                     </div>
-                </div>
-            </div>
-            <div class="collapse show" id="notInExternalRepo">
-                <div class="card-body">
-                    <form action="{{pathFor "publication_add_single_import_confirm"}}" method="POST">
-                        {{.CSRFTag}}
-                        <h4 class="mb-5">As author</h4>
-                        <div class="row mb-5">
-                            <div class="col">
-                                <label class="c-radio-card c-radio-card--selected" aria-selected="true">
-                                    <div class="c-radio-card__radio">
-                                        <div class="custom-control custom-radio">
-                                            <input class="custom-control-input" id="radio-journal-article" type="radio" name="publication_type" value="journal_article" checked="checked">
-                                            <label class="custom-control-label" for="radio-journal-article"></label>
-                                        </div>
-                                    </div>
-                                    <div class="c-radio-card__content">Journal Article</div>
-                                </label>
-                            </div>
-                            <div class="col">
-                                <label class="c-radio-card" aria-selected="false">
-                                    <div class="c-radio-card__radio">
-                                        <div class="custom-control custom-radio">
-                                            <input class="custom-control-input" id="radio-book-chapter" type="radio" name="publication_type" value="book_chapter">
-                                            <label class="custom-control-label" for="radio-book-chapter"></label>
-                                        </div>
-                                    </div>
-                                    <div class="c-radio-card__content">Book Chapter</div>
-                                </label>
-                            </div>
-                        </div>
-                        <div class="row mb-5">
-                            <div class="col">
-                                <label class="c-radio-card" aria-selected="false">
-                                    <div class="c-radio-card__radio">
-                                        <div class="custom-control custom-radio">
-                                            <input class="custom-control-input" id="radio-book" type="radio" name="publication_type" value="book">
-                                            <label class="custom-control-label" for="radio-book"></label>
-                                        </div>
-                                    </div>
-                                    <div class="c-radio-card__content">Book</div>
-                                </label>
-                            </div>
-                            <div class="col">
-                                <label class="c-radio-card" aria-selected="false">
-                                    <div class="c-radio-card__radio">
-                                        <div class="custom-control custom-radio">
-                                            <input class="custom-control-input" id="radio-conference" type="radio" name="publication_type" value="conference">
-                                            <label class="custom-control-label" for="radio-conference"></label>
-                                        </div>
-                                    </div>
-                                    <div class="c-radio-card__content">Conference contribution</div>
-                                </label>
-                            </div>
-                        </div>
-                        <div class="row mb-5">
-                            <div class="col">
-                                <label class="c-radio-card" aria-selected="false">
-                                    <div class="c-radio-card__radio">
-                                        <div class="custom-control custom-radio">
-                                            <input class="custom-control-input" id="radio-dissertation" type="radio" name="publication_type" value="dissertation">
-                                            <label class="custom-control-label" for="radio-dissertation"></label>
-                                        </div>
-                                    </div>
-                                    <div class="c-radio-card__content">Dissertation</div>
-                                </label>
-                            </div>
-                            <div class="col">
-                                <label class="c-radio-card" aria-selected="false">
-                                    <div class="c-radio-card__radio">
-                                        <div class="custom-control custom-radio">
-                                            <input class="custom-control-input" id="radio-miscellaneous" type="radio" name="publication_type" value="miscellaneous">
-                                            <label class="custom-control-label" for="radio-miscellaneous"></label>
-                                        </div>
-                                    </div>
-                                    <div class="c-radio-card__content">Miscellaneous</div>
-                                </label>
-                            </div>
-                        </div>
-                        <h4 class="mb-5">As editor</h4>
-                        <div class="row">
-                            <div class="col">
-                                <label class="c-radio-card" aria-selected="false">
-                                    <div class="c-radio-card__radio">
-                                        <div class="custom-control custom-radio">
-                                            <input class="custom-control-input" id="radio-book-editor" type="radio" name="publication_type" value="book_editor">
-                                            <label class="custom-control-label" for="radio-book-editor"></label>
-                                        </div>
-                                    </div>
-                                    <div class="c-radio-card__content">Book</div>
-                                </label>
-                            </div>
-                            <div class="col">
-                                <label class="c-radio-card" aria-selected="false">
-                                    <div class="c-radio-card__radio">
-                                        <div class="custom-control custom-radio">
-                                            <input class="custom-control-input" id="radio-issue-editor" type="radio" name="publication_type" value="issue_editor">
-                                            <label class="custom-control-label" for="radio-issue-editor"></label>
-                                        </div>
-                                    </div>
-                                    <div class="c-radio-card__content">Issue</div>
-                                </label>
-                            </div>
-                        </div>
 
-                        <div class="bc-toolbar">
-                            <div class="bc-toolbar-right">
-                                <div class="bc-toolbar-item">
-                                    <button type="submit" class="btn btn-primary">
-                                        <div class="btn-text">Complete description</div>
-                                        <i class="if if-arrow-right"></i>
-                                    </button>
+                    <div class="row mt-5">
+                        <div class="col">
+                            <label class="c-radio-card">
+                                <div class="c-radio-card__radio" aria-selected="false">
+                                    <div class="custom-control custom-radio">
+                                        <input class="custom-control-input" id="add-select-single" type="radio" name="add-method-select" value="manual">
+                                        <label class="custom-control-label" for="add-select-single"></label>
+                                    </div>
                                 </div>
-                            </div>
+                                <div class="c-radio-card__content">Enter a publication manually.</div>
+                            </label>
                         </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-
-        <div class="card card-collapsible mb-6">
-            <div class="card-header">
-                <div class="collapse-trigger" data-toggle="collapse" data-target="#importFromBibTex" aria-expanded="false" aria-controls="collapse1"></div>
-                <div class="bc-toolbar">
-                    <div class="bc-toolbar-left">
-                        <i class="if if-chevron-right mr-4 text-muted"></i>No Web of Science file?
-                    </div>
-                </div>
-            </div>
-            <div class="collapse" id="importFromBibTex">
-                <div class="card-body">
-                    <p class="mb-4">Alternatively, you can upload a BibTex
-                    file to import publications in bulk.</p>
-
-                    <form class="form-change-submit" action="{{pathFor "publication_add_multiple_import"}}" method="POST" enctype="multipart/form-data">
-                        {{.CSRFTag}}
-                        <input type="hidden" name="source" value="bibtex">
-
-                        <div class="c-file-upload">
-                            <input type="file" name="file">
-                            <div class="c-file-upload__content">
-                                <p>Drag and drop or</p>
-                                <button class="btn btn-outline-primary">Upload file
-                                    <div class="spinner-border">
-                                        <span class="sr-only"></span>
+                        <div class="col">
+                            <label class="c-radio-card" aria-selected="false">
+                                <div class="c-radio-card__radio">
+                                    <div class="custom-control custom-radio">
+                                        <input class="custom-control-input" id="add-select-multiple" type="radio" name="add-method-select" value="bibtex">
+                                        <label class="custom-control-label" for="add-select-multiple"></label>
                                     </div>
-                                </button>
-                            </div>
+                                </div>
+                                <div class="c-radio-card__content">Import via Bibtex file.</div>
+                            </label>
                         </div>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
 
     </div>
-</div>
-
-{{if .D.DuplicatePublication}}
-<div id="modal-backdrop" class="modal-backdrop fade show" style="display:block;"></div>
-<div class="modal show" tabindex="-1" style="display: block;" aria-modal="true" role="dialog">
-<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">Are you sure you want to import this publication?</h2>
-        </div>
-        <div class="modal-body">
-            <p>Biblio contains another publication with the same DOI:</p>
-            <ul class="list-group mt-6">
-                <li class="list-group-item">
-                    <div class="d-flex w-100">
-                        <div class="w-100">
-                            <div class="d-flex align-items-start">
-                                {{template "publication/_summary_body" (.ViewData (dict "Publication" .D.DuplicatePublication))}}
-                            </div>
-                        </div>
-                    </div>
-                </li>
-            </ul>
-        </div>
-        <div class="modal-footer">
-            <button class="btn btn-link modal-close">Cancel</button>
-            <form action="{{pathFor "publication_add_single_import"}}" method="POST">
-                {{.CSRFTag}}
-                <input type="hidden" name="source" value="{{.D.Source}}">
-                <input type="hidden" name="identifier" value="{{.D.Identifier}}">
-                <button type="submit" class="btn btn-danger">Import anyway</button>
-            </form>
-        </div>
-    </div>
-</div>
-{{end}}
+</form>
