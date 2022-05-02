@@ -19,10 +19,10 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/backends/filestore"
 	"github.com/ugent-library/biblio-backend/internal/backends/ianamedia"
 	"github.com/ugent-library/biblio-backend/internal/backends/jsonl"
-	"github.com/ugent-library/biblio-backend/internal/backends/pg"
 	"github.com/ugent-library/biblio-backend/internal/backends/pubmed"
 	"github.com/ugent-library/biblio-backend/internal/backends/ris"
 	"github.com/ugent-library/biblio-backend/internal/backends/spdxlicenses"
+	"github.com/ugent-library/biblio-backend/internal/backends/store"
 	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/go-orcid/orcid"
 	"go.temporal.io/sdk/client"
@@ -117,7 +117,7 @@ func newEngine() *engine.Engine {
 }
 
 func newStorageService() backends.StorageService {
-	client, err := pg.New(viper.GetString("pg-conn"))
+	client, err := store.New(viper.GetString("pg-conn"))
 	if err != nil {
 		log.Fatalln("unable to create pg dataset service", err)
 	}

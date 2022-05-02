@@ -114,7 +114,8 @@ var publicationAddCmd = &cobra.Command{
 				log.Fatal(err)
 			}
 			if err := p.Validate(); err != nil {
-				log.Fatal(err)
+				log.Print(err)
+				continue
 			}
 			savedP, err := e.StorageService.SavePublication(&p)
 			if err != nil {

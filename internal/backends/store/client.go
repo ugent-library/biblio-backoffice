@@ -1,4 +1,4 @@
-package pg
+package store
 
 import (
 	"context"
