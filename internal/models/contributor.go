@@ -2,6 +2,7 @@ package models
 
 import "github.com/ugent-library/biblio-backend/internal/validation"
 
+// TODO only name should be required (support corporate names)
 type Contributor struct {
 	CreditRole []string `json:"credit_role,omitempty" form:"credit_role"`
 	FirstName  string   `json:"first_name,omitempty" form:"first_name"`
@@ -26,27 +27,6 @@ func (p *Contributor) HasCreditRole(role string) bool {
 		}
 	}
 	return false
-}
-
-func (p *Contributor) CreditRoleChoices() []string {
-	return []string{
-		"first_author",
-		"last_author",
-		"conceptualization",
-		"data_curation",
-		"formal_analysis",
-		"funding_acquisition",
-		"investigation",
-		"methodology",
-		"project_administration",
-		"resources",
-		"software",
-		"supervision",
-		"validation",
-		"visualization",
-		"writing_original_draft",
-		"writing_review_editing",
-	}
 }
 
 func (c *Contributor) Validate() (errs validation.Errors) {

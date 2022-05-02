@@ -18,7 +18,7 @@
     <div class="form-group">
         <label class="col-form-label">Credit roles</label>
         <select class="custom-select form-control" name="credit_role" multiple>
-            {{ range $i, $c := .D.Contributor.CreditRoleChoices }}
+            {{ range $i, $c := .Vocabularies.credit_roles }}
             <option value="{{ . }}"{{if $.D.Contributor.HasCreditRole . }} selected{{ end }}>{{$.T "credit_roles" .}}</option>
             {{ end }}
         </select>
