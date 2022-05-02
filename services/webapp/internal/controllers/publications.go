@@ -130,7 +130,7 @@ func (c *Publications) Summary(w http.ResponseWriter, r *http.Request) {
 	)
 }
 
-// Step 1: Start
+// Step 1: Start: Present selection form with creation modi (WOS, identifier, manual, Bibtex)
 
 func (c *Publications) Add(w http.ResponseWriter, r *http.Request) {
 	c.Render.HTML(w, http.StatusOK, "publication/add", c.ViewData(r, PublicationAddSingleVars{
@@ -138,6 +138,8 @@ func (c *Publications) Add(w http.ResponseWriter, r *http.Request) {
 		Step:      1,
 	}))
 }
+
+// Step 2: Add publication(s): Present WOS, Identifier, Bibtex or Manual input form based on choice from Step 1
 
 func (c *Publications) AddSelectMethod(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
@@ -174,19 +176,9 @@ func (c *Publications) AddSelectMethod(w http.ResponseWriter, r *http.Request) {
 	}))
 }
 
-// func (c *Publications) AddSingle(w http.ResponseWriter, r *http.Request) {
-// 	c.Render.HTML(w, http.StatusOK, "publication/add_single", c.ViewData(r, PublicationAddSingleVars{
-// 		PageTitle: "Add - Publications - Biblio",
-// 		Step:      1,
-// 	}))
-// }
-
-// func (c *Publications) AddSingleStart(w http.ResponseWriter, r *http.Request) {
-// 	c.Render.HTML(w, http.StatusOK, "publication/add_single_start", c.ViewData(r, PublicationAddSingleVars{
-// 		PageTitle: "Add - Publications - Biblio",
-// 		Step:      2,
-// 	}))
-// }
+// Step 3: Complete description: Via DOI identifier
+//   * Process creation of publication via identifier (DOI,...)
+//   * Display detail edit form for single publication
 
 func (c *Publications) AddSingleImportConfirm(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
@@ -197,7 +189,7 @@ func (c *Publications) AddSingleImportConfirm(w http.ResponseWriter, r *http.Req
 	// check for duplicates
 	if source == "crossref" && identifier != "" {
 		if existing, _ := c.Engine.Publications(models.NewSearchArgs().WithFilter("doi", identifier).WithFilter("status", "public")); existing.Total > 0 {
-			c.Render.HTML(w, http.StatusOK, "publication/add", c.ViewData(r, PublicationAddSingleVars{
+			c.Render.HTML(w, http.StatusOK, "publication/add_identifier", c.ViewData(r, PublicationAddSingleVars{
 				PageTitle:            "Add - Publications - Biblio",
 				Step:                 1,
 				Source:               source,
@@ -234,7 +226,7 @@ func (c *Publications) AddSingleImport(w http.ResponseWriter, r *http.Request) {
 				flash.Message = loc.T("publication.single_import", "import_by_id.import_failed")
 			}
 
-			c.Render.HTML(w, http.StatusOK, "publication/add", c.ViewData(r, PublicationAddSingleVars{
+			c.Render.HTML(w, http.StatusOK, "publication/add_identifier", c.ViewData(r, PublicationAddSingleVars{
 				PageTitle: "Add - Publications - Biblio",
 				Step:      2,
 			},
@@ -251,7 +243,7 @@ func (c *Publications) AddSingleImport(w http.ResponseWriter, r *http.Request) {
 			flash := views.Flash{Type: "error"}
 			flash.Message = loc.T("publication.single_import", "import_by_id.string.minLength")
 
-			c.Render.HTML(w, http.StatusOK, "publication/add", c.ViewData(r, PublicationAddSingleVars{
+			c.Render.HTML(w, http.StatusOK, "publication/add_identifier", c.ViewData(r, PublicationAddSingleVars{
 				PageTitle: "Add - Publications - Biblio",
 				Step:      2,
 			},
@@ -291,6 +283,8 @@ func (c *Publications) AddSingleImport(w http.ResponseWriter, r *http.Request) {
 	}))
 }
 
+// Step 3: Complete description: (DOI, Manual flow) Display detail page of the record for editing
+
 func (c *Publications) AddSingleDescription(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
@@ -318,6 +312,8 @@ func (c *Publications) AddSingleDescription(w http.ResponseWriter, r *http.Reque
 	}))
 }
 
+// Step 3: Complete Description: overview of records to be added (single record, DOI / Manual flow)
+
 func (c *Publications) AddSingleConfirm(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
@@ -331,6 +327,8 @@ func (c *Publications) AddSingleConfirm(w http.ResponseWriter, r *http.Request) 
 		pub,
 	}))
 }
+
+// Step 4: Finish publishing to biblio: (Single record, DOI / Manual flow)
 
 func (c *Publications) AddSinglePublish(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
@@ -370,32 +368,14 @@ func (c *Publications) AddSinglePublish(w http.ResponseWriter, r *http.Request) 
 		Publication *models.Publication
 	}{
 		"Add - Publications - Biblio",
-		6,
+		5,
 		savedPub,
 	}))
 }
 
-// func (c *Publications) AddMultiple(w http.ResponseWriter, r *http.Request) {
-// 	c.Render.HTML(w, http.StatusOK, "publication/add_multiple", c.ViewData(r, struct {
-// 		PageTitle string
-// 		Step      int
-// 	}{
-// 		"Add - Publications - Biblio",
-// 		1,
-// 	}))
-// }
-
-// func (c *Publications) AddMultipleStart(w http.ResponseWriter, r *http.Request) {
-// 	c.Render.HTML(w, http.StatusOK, "publication/add_multiple_start", c.ViewData(r, struct {
-// 		PageTitle string
-// 		Step      int
-// 	}{
-// 		"Add - Publications - Biblio",
-// 		2,
-// 	}))
-// }
-
-// Step 2: Add publications (WOS, BibTex)
+// Step 3: Complete description (WOS, Bibtex import file)
+//  * Process upload from a WOS / BibTex import file
+//  * Display a list of imported records
 
 func (c *Publications) AddMultipleImport(w http.ResponseWriter, r *http.Request) {
 	// 2GB limit on request body
@@ -461,6 +441,10 @@ func (c *Publications) AddMultipleImport(w http.ResponseWriter, r *http.Request)
 	)
 }
 
+// Step 3: Complete description (WOS, Bibtex import file)
+//  * Just display the overview of records which were imported for the current batch id
+//    This is used when returning to this step via the sidebar navigation
+
 func (c *Publications) AddMultipleDescription(w http.ResponseWriter, r *http.Request) {
 	userID := context.GetUser(r.Context()).ID
 	batchID := mux.Vars(r)["batch_id"]
@@ -500,6 +484,10 @@ func (c *Publications) AddMultipleDescription(w http.ResponseWriter, r *http.Req
 	}),
 	)
 }
+
+// Step 3: Complete description (WOS, Bibtex import file)
+//  * Show the detail / edit page for a single record from a WOS / BibTex batch
+//    Used for providing the BatchID & allowing returning back to the "Add publication flow"
 
 func (c *Publications) AddMultipleShow(w http.ResponseWriter, r *http.Request) {
 	batchID := mux.Vars(r)["batch_id"]
@@ -543,6 +531,9 @@ func (c *Publications) AddMultipleShow(w http.ResponseWriter, r *http.Request) {
 	)
 }
 
+// Step 4: Publish to Biblio (Multiple record, WOS / BibTex)
+// * Present a list of records ready to be published to Biblio / BibTex
+
 func (c *Publications) AddMultipleConfirm(w http.ResponseWriter, r *http.Request) {
 	userID := context.GetUser(r.Context()).ID
 	batchID := mux.Vars(r)["batch_id"]
@@ -578,6 +569,10 @@ func (c *Publications) AddMultipleConfirm(w http.ResponseWriter, r *http.Request
 	)
 }
 
+// Step 4: Publish to Biblio (Multiple record, WOS / BibTex)
+//  * Show the detail / edit page for a single record from a WOS / BibTex batch
+//    Used for providing the BatchID & allowing returning back to the "Add publication flow"
+
 func (c *Publications) AddMultipleConfirmShow(w http.ResponseWriter, r *http.Request) {
 	batchID := mux.Vars(r)["batch_id"]
 	pub := context.GetPublication(r.Context())
@@ -610,6 +605,10 @@ func (c *Publications) AddMultipleConfirmShow(w http.ResponseWriter, r *http.Req
 	}),
 	)
 }
+
+// Step 4: Publish to Biblio (Multiple record, WOS / BibTex)
+//   * Process the records & publish them to Biblio
+//   * Present a "Congratulations" landing page.
 
 func (c *Publications) AddMultiplePublish(w http.ResponseWriter, r *http.Request) {
 	userID := context.GetUser(r.Context()).ID
@@ -651,6 +650,9 @@ func (c *Publications) AddMultiplePublish(w http.ResponseWriter, r *http.Request
 	}),
 	)
 }
+
+// @todo: Probably a stale controller action. The "publication_publish" route isn't referred
+//   to from anywhere else. Should we remove this?
 
 func (c *Publications) Publish(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
