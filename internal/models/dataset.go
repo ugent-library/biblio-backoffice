@@ -5,11 +5,12 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ugent-library/biblio-backend/internal/pagination"
 	"github.com/ugent-library/biblio-backend/internal/validation"
 )
 
 type DatasetHits struct {
-	Pagination
+	pagination.Pagination
 	Hits   []*Dataset         `json:"hits"`
 	Facets map[string][]Facet `json:"facets"`
 }
