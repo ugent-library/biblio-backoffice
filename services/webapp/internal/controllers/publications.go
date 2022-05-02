@@ -130,19 +130,26 @@ func (c *Publications) Summary(w http.ResponseWriter, r *http.Request) {
 	)
 }
 
-func (c *Publications) AddSingle(w http.ResponseWriter, r *http.Request) {
-	c.Render.HTML(w, http.StatusOK, "publication/add_single", c.ViewData(r, PublicationAddSingleVars{
+func (c *Publications) Add(w http.ResponseWriter, r *http.Request) {
+	c.Render.HTML(w, http.StatusOK, "publication/add", c.ViewData(r, PublicationAddSingleVars{
 		PageTitle: "Add - Publications - Biblio",
 		Step:      1,
 	}))
 }
 
-func (c *Publications) AddSingleStart(w http.ResponseWriter, r *http.Request) {
-	c.Render.HTML(w, http.StatusOK, "publication/add_single_start", c.ViewData(r, PublicationAddSingleVars{
-		PageTitle: "Add - Publications - Biblio",
-		Step:      2,
-	}))
-}
+// func (c *Publications) AddSingle(w http.ResponseWriter, r *http.Request) {
+// 	c.Render.HTML(w, http.StatusOK, "publication/add_single", c.ViewData(r, PublicationAddSingleVars{
+// 		PageTitle: "Add - Publications - Biblio",
+// 		Step:      1,
+// 	}))
+// }
+
+// func (c *Publications) AddSingleStart(w http.ResponseWriter, r *http.Request) {
+// 	c.Render.HTML(w, http.StatusOK, "publication/add_single_start", c.ViewData(r, PublicationAddSingleVars{
+// 		PageTitle: "Add - Publications - Biblio",
+// 		Step:      2,
+// 	}))
+// }
 
 func (c *Publications) AddSingleImportConfirm(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
@@ -153,7 +160,7 @@ func (c *Publications) AddSingleImportConfirm(w http.ResponseWriter, r *http.Req
 	// check for duplicates
 	if source == "crossref" && identifier != "" {
 		if existing, _ := c.Engine.Publications(models.NewSearchArgs().WithFilter("doi", identifier).WithFilter("status", "public")); existing.Total > 0 {
-			c.Render.HTML(w, http.StatusOK, "publication/add_single_start", c.ViewData(r, PublicationAddSingleVars{
+			c.Render.HTML(w, http.StatusOK, "publication/add", c.ViewData(r, PublicationAddSingleVars{
 				PageTitle:            "Add - Publications - Biblio",
 				Step:                 1,
 				Source:               source,
@@ -190,7 +197,7 @@ func (c *Publications) AddSingleImport(w http.ResponseWriter, r *http.Request) {
 				flash.Message = loc.T("publication.single_import", "import_by_id.import_failed")
 			}
 
-			c.Render.HTML(w, http.StatusOK, "publication/add_single_start", c.ViewData(r, PublicationAddSingleVars{
+			c.Render.HTML(w, http.StatusOK, "publication/add", c.ViewData(r, PublicationAddSingleVars{
 				PageTitle: "Add - Publications - Biblio",
 				Step:      2,
 			},
@@ -202,6 +209,20 @@ func (c *Publications) AddSingleImport(w http.ResponseWriter, r *http.Request) {
 		pub = p
 	} else {
 		pubType := r.FormValue("publication_type")
+
+		if pubType == "" {
+			flash := views.Flash{Type: "error"}
+			flash.Message = loc.T("publication.single_import", "import_by_id.string.minLength")
+
+			c.Render.HTML(w, http.StatusOK, "publication/add", c.ViewData(r, PublicationAddSingleVars{
+				PageTitle: "Add - Publications - Biblio",
+				Step:      2,
+			},
+				flash,
+			))
+			return
+		}
+
 		p, err := c.Engine.CreateUserPublication(userID, pubType)
 		if err != nil {
 			log.Println(err)
@@ -211,16 +232,25 @@ func (c *Publications) AddSingleImport(w http.ResponseWriter, r *http.Request) {
 		pub = p
 	}
 
-	c.Render.HTML(w, http.StatusOK, "publication/add_single_files", c.ViewData(r, struct {
-		PageTitle   string
-		Step        int
-		Publication *models.Publication
-		Show        *views.ShowBuilder
+	datasets, err := c.Engine.GetPublicationDatasets(pub.ID)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	c.Render.HTML(w, http.StatusOK, "publication/add_single_description", c.ViewData(r, struct {
+		PageTitle           string
+		Step                int
+		Publication         *models.Publication
+		PublicationDatasets []*models.Dataset
+		Show                *views.ShowBuilder
 	}{
 		"Add - Publications - Biblio",
-		3,
+		2,
 		pub,
-		views.NewShowBuilder(c.RenderPartial, loc),
+		datasets,
+		views.NewShowBuilder(c.RenderPartial, locale.Get(r.Context())),
 	}))
 }
 
@@ -244,7 +274,7 @@ func (c *Publications) AddSingleDescription(w http.ResponseWriter, r *http.Reque
 		Show                *views.ShowBuilder
 	}{
 		"Add - Publications - Biblio",
-		4,
+		2,
 		pub,
 		datasets,
 		views.NewShowBuilder(c.RenderPartial, locale.Get(r.Context())),
@@ -260,7 +290,7 @@ func (c *Publications) AddSingleConfirm(w http.ResponseWriter, r *http.Request) 
 		Publication *models.Publication
 	}{
 		"Add - Publications - Biblio",
-		5,
+		3,
 		pub,
 	}))
 }
@@ -283,7 +313,7 @@ func (c *Publications) AddSinglePublish(w http.ResponseWriter, r *http.Request) 
 				Publication *models.Publication
 			}{
 				"Add - Publications - Biblio",
-				5,
+				4,
 				pub,
 			},
 				views.Flash{Type: "error", Message: e[0].Title},
@@ -308,25 +338,25 @@ func (c *Publications) AddSinglePublish(w http.ResponseWriter, r *http.Request) 
 	}))
 }
 
-func (c *Publications) AddMultiple(w http.ResponseWriter, r *http.Request) {
-	c.Render.HTML(w, http.StatusOK, "publication/add_multiple", c.ViewData(r, struct {
-		PageTitle string
-		Step      int
-	}{
-		"Add - Publications - Biblio",
-		1,
-	}))
-}
+// func (c *Publications) AddMultiple(w http.ResponseWriter, r *http.Request) {
+// 	c.Render.HTML(w, http.StatusOK, "publication/add_multiple", c.ViewData(r, struct {
+// 		PageTitle string
+// 		Step      int
+// 	}{
+// 		"Add - Publications - Biblio",
+// 		1,
+// 	}))
+// }
 
-func (c *Publications) AddMultipleStart(w http.ResponseWriter, r *http.Request) {
-	c.Render.HTML(w, http.StatusOK, "publication/add_multiple_start", c.ViewData(r, struct {
-		PageTitle string
-		Step      int
-	}{
-		"Add - Publications - Biblio",
-		2,
-	}))
-}
+// func (c *Publications) AddMultipleStart(w http.ResponseWriter, r *http.Request) {
+// 	c.Render.HTML(w, http.StatusOK, "publication/add_multiple_start", c.ViewData(r, struct {
+// 		PageTitle string
+// 		Step      int
+// 	}{
+// 		"Add - Publications - Biblio",
+// 		2,
+// 	}))
+// }
 
 func (c *Publications) AddMultipleImport(w http.ResponseWriter, r *http.Request) {
 	// 2GB limit on request body
@@ -352,12 +382,9 @@ func (c *Publications) AddMultipleImport(w http.ResponseWriter, r *http.Request)
 	batchID, err := c.Engine.ImportUserPublications(userID, source, file)
 	if err != nil {
 		log.Println(err)
-		c.Render.HTML(w, http.StatusOK, "publication/add_multiple", c.ViewData(r, struct {
-			PageTitle string
-			Step      int
-		}{
-			"Add - Publications - Biblio",
-			2,
+		c.Render.HTML(w, http.StatusOK, "publication/add", c.ViewData(r, PublicationAddSingleVars{
+			PageTitle: "Add - Publications - Biblio",
+			Step:      1,
 		},
 			views.Flash{Type: "error", Message: "Sorry, something went wrong. Could not import the publications."},
 		))
@@ -385,7 +412,7 @@ func (c *Publications) AddMultipleImport(w http.ResponseWriter, r *http.Request)
 		BatchID          string
 	}{
 		"Add - Publications - Biblio",
-		3,
+		2,
 		searchURL,
 		args,
 		hits,
@@ -425,7 +452,7 @@ func (c *Publications) AddMultipleDescription(w http.ResponseWriter, r *http.Req
 		BatchID          string
 	}{
 		"Add - Publications - Biblio",
-		3,
+		2,
 		searchURL,
 		args,
 		hits,
@@ -466,7 +493,7 @@ func (c *Publications) AddMultipleShow(w http.ResponseWriter, r *http.Request) {
 		BatchID             string
 	}{
 		"Add - Publications - Biblio",
-		3,
+		2,
 		pub,
 		datasets,
 		views.NewShowBuilder(c.RenderPartial, locale.Get(r.Context())),
@@ -502,7 +529,7 @@ func (c *Publications) AddMultipleConfirm(w http.ResponseWriter, r *http.Request
 		BatchID          string
 	}{
 		"Add - Publications - Biblio",
-		4,
+		2,
 		searchURL,
 		args,
 		hits,
@@ -535,7 +562,7 @@ func (c *Publications) AddMultipleConfirmShow(w http.ResponseWriter, r *http.Req
 		BatchID             string
 	}{
 		"Add - Publications - Biblio",
-		4,
+		3,
 		pub,
 		datasets,
 		views.NewShowBuilder(c.RenderPartial, locale.Get(r.Context())),
@@ -576,7 +603,7 @@ func (c *Publications) AddMultiplePublish(w http.ResponseWriter, r *http.Request
 		BatchID          string
 	}{
 		"Add - Publications - Biblio",
-		5,
+		4,
 		searchURL,
 		models.NewSearchArgs(),
 		hits,

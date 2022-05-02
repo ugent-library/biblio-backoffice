@@ -11,7 +11,7 @@ export default function () {
         evt.currentTarget.setAttribute('aria-selected', 'true');
         evt.currentTarget.classList.add('c-radio-card--selected');
     }
-    
+
     let goToURL = function(evt) {
         window.location = this.dataset.url
     }

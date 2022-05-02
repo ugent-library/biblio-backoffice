@@ -122,24 +122,27 @@ func Register(c controllers.Context) {
 	pubsRouter.HandleFunc("", publicationsController.List).
 		Methods("GET").
 		Name("publications")
-	pubsRouter.HandleFunc("/add-single", publicationsController.AddSingle).
+	pubsRouter.HandleFunc("/add", publicationsController.Add).
 		Methods("GET").
-		Name("publication_add_single")
-	pubsRouter.HandleFunc("/add-single/start", publicationsController.AddSingleStart).
-		Methods("GET").
-		Name("publication_add_single_start")
+		Name("publication_add")
+	// pubsRouter.HandleFunc("/add-single", publicationsController.AddSingle).
+	// 	Methods("GET").
+	// 	Name("publication_add_single")
+	// pubsRouter.HandleFunc("/add-single/start", publicationsController.AddSingleStart).
+	// 	Methods("GET").
+	// 	Name("publication_add_single_start")
 	pubsRouter.HandleFunc("/add-single/import/confirm", publicationsController.AddSingleImportConfirm).
 		Methods("POST").
 		Name("publication_add_single_import_confirm")
 	pubsRouter.HandleFunc("/add-single/import", publicationsController.AddSingleImport).
 		Methods("POST").
 		Name("publication_add_single_import")
-	pubsRouter.HandleFunc("/add-multiple", publicationsController.AddMultiple).
-		Methods("GET").
-		Name("publication_add_multiple")
-	pubsRouter.HandleFunc("/add-multiple/start", publicationsController.AddMultipleStart).
-		Methods("GET").
-		Name("publication_add_multiple_start")
+	// pubsRouter.HandleFunc("/add-multiple", publicationsController.AddMultiple).
+	// 	Methods("GET").
+	// 	Name("publication_add_multiple")
+	// pubsRouter.HandleFunc("/add-multiple/start", publicationsController.AddMultipleStart).
+	// 	Methods("GET").
+	// 	Name("publication_add_multiple_start")
 	pubsRouter.HandleFunc("/add-multiple/import", publicationsController.AddMultipleImport).
 		Methods("POST").
 		Name("publication_add_multiple_import")
