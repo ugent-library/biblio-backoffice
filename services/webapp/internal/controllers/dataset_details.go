@@ -67,6 +67,24 @@ func (c *DatasetDetails) AccessLevel(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Band-aid: omit empty values from fields with repeating values (text repeat, list repeat)
+	//   @note: This should be part of "form:,omitEmpty" in the Dataset struct. However,
+	//   go-playground/form doesn't support omitEmpty on lists or nested form structures
+	//   (slices, maps,...)
+	omitEmpty := func(keywords []string) []string {
+		var tmp []string
+		for _, str := range keywords {
+			if str != "" {
+				tmp = append(tmp, str)
+			}
+		}
+
+		return tmp
+	}
+
+	dataset.Keyword = omitEmpty(dataset.Keyword)
+	dataset.Format = omitEmpty(dataset.Format)
+
 	// Clear embargo and embargoTo fields if access level is not embargo
 	//   @todo Disabled per https://github.com/ugent-library/biblio-backend/issues/217
 	//
