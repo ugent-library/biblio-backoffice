@@ -93,10 +93,18 @@ func (c *DatasetDetails) AccessLevel(w http.ResponseWriter, r *http.Request) {
 	//   into the form fields again if embargo level is chosen again. This feature isn't
 	//   implemented in this solution since state isn't kept across HTTP requests.
 	//
-	// if dataset.AccessLevel != "info:eu-repo/semantics/embargoedAccess" {
-	// 	dataset.Embargo = ""
-	// 	dataset.EmbargoTo = ""
-	// }
+	if dataset.AccessLevel != "info:eu-repo/semantics/embargoedAccess" {
+		dataset.Embargo = ""
+		dataset.EmbargoTo = ""
+	} else {
+		if dataset.Embargo != r.FormValue("embargo") {
+			dataset.Embargo = r.FormValue("embargo")
+		}
+
+		if dataset.EmbargoTo != r.FormValue("embargo_to") {
+			dataset.EmbargoTo = r.FormValue("embargo_to")
+		}
+	}
 
 	c.Render.HTML(w, http.StatusOK, "dataset/details/_edit", c.ViewData(r, struct {
 		Dataset      *models.Dataset
@@ -125,6 +133,13 @@ func (c *DatasetDetails) Update(w http.ResponseWriter, r *http.Request) {
 	if err := forms.Decode(dataset, r.Form); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
+	}
+
+	// @note decoding the form into a model omits empty values
+	//   removing "omitempty" in the model doesn't make a difference.
+	if dataset.AccessLevel != "info:eu-repo/semantics/embargoedAccess" {
+		dataset.Embargo = ""
+		dataset.EmbargoTo = ""
 	}
 
 	savedDataset, err := c.Engine.UpdateDataset(dataset)
