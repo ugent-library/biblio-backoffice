@@ -38,7 +38,7 @@
                                                     hx-trigger="click"
                                                     hx-swap="innerHTML"
                                                     hx-include='#person-{{.ID}} input[name="ID"], #person-{{.ID}} input[name="first_name"], #person-{{.ID}} input[name="last_name"]'
-                                                >Confirm {{$.D.Role}}</button>
+                                                >Confirm {{$.T "dataset.contributor.role" $.D.Role}}</button>
                                             </div>
                                         </div>
                                     </div>
