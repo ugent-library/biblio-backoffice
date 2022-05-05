@@ -10,7 +10,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/backends/spdxlicenses"
 	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/go-orcid/orcid"
-	"go.temporal.io/sdk/client"
+	// "go.temporal.io/sdk/client"
 )
 
 var (
@@ -26,12 +26,12 @@ func Engine() *engine.Engine {
 }
 
 func newEngine() *engine.Engine {
-	temporal, err := client.NewClient(client.Options{
-		HostPort: viper.GetString("temporal-host-port"),
-	})
-	if err != nil {
-		log.Fatalln("Unable to create Temporal client", err)
-	}
+	// temporal, err := client.NewClient(client.Options{
+	// 	HostPort: viper.GetString("temporal-host-port"),
+	// })
+	// if err != nil {
+	// 	log.Fatalln("Unable to create Temporal client", err)
+	// }
 
 	librecatClient := librecat.New(librecat.Config{
 		URL:      viper.GetString("librecat-url"),
@@ -47,7 +47,7 @@ func newEngine() *engine.Engine {
 	orcidClient := orcid.NewMemberClient(orcidConfig)
 
 	e, err := engine.New(engine.Config{
-		Temporal:                  temporal,
+		// Temporal:                  temporal,
 		ORCIDSandbox:              orcidConfig.Sandbox,
 		ORCIDClient:               orcidClient,
 		DatasetService:            librecatClient,

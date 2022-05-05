@@ -1,17 +1,13 @@
 package engine
 
 import (
-	"context"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"strings"
 
-	"github.com/google/uuid"
 	"github.com/ugent-library/biblio-backend/internal/models"
-	orcidworker "github.com/ugent-library/biblio-backend/internal/workers/orcid"
 	"github.com/ugent-library/go-orcid/orcid"
-	"go.temporal.io/sdk/client"
 	"golang.org/x/text/language"
 )
 
@@ -32,30 +28,30 @@ import (
 // 	return res.NumFound > 0
 // }
 
-func (e *Engine) AddPublicationsToORCID(userID string, s *models.SearchArgs) (string, error) {
-	user, err := e.GetUser(userID)
-	if err != nil {
-		return "", err
-	}
+// func (e *Engine) AddPublicationsToORCID(userID string, s *models.SearchArgs) (string, error) {
+// 	user, err := e.GetUser(userID)
+// 	if err != nil {
+// 		return "", err
+// 	}
 
-	workflowOptions := client.StartWorkflowOptions{
-		ID:        "orcid_workflow_" + uuid.New().String(),
-		TaskQueue: "orcid",
-	}
+// 	workflowOptions := client.StartWorkflowOptions{
+// 		ID:        "orcid_workflow_" + uuid.New().String(),
+// 		TaskQueue: "orcid",
+// 	}
 
-	we, err := e.Temporal.ExecuteWorkflow(context.Background(), workflowOptions, orcidworker.SendPublicationsToORCIDWorkflow,
-		orcidworker.Args{
-			UserID:     userID,
-			ORCID:      user.ORCID,
-			ORCIDToken: user.ORCIDToken,
-			SearchArgs: *s,
-		})
-	if err != nil {
-		return "", err
-	}
-	log.Println("Started workflow", "WorkflowID", we.GetID(), "RunID", we.GetRunID())
-	return we.GetID(), err
-}
+// 	we, err := e.Temporal.ExecuteWorkflow(context.Background(), workflowOptions, orcidworker.SendPublicationsToORCIDWorkflow,
+// 		orcidworker.Args{
+// 			UserID:     userID,
+// 			ORCID:      user.ORCID,
+// 			ORCIDToken: user.ORCIDToken,
+// 			SearchArgs: *s,
+// 		})
+// 	if err != nil {
+// 		return "", err
+// 	}
+// 	log.Println("Started workflow", "WorkflowID", we.GetID(), "RunID", we.GetRunID())
+// 	return we.GetID(), err
+// }
 
 func (e *Engine) AddPublicationToORCID(orcidID, orcidToken string, p *models.Publication) (*models.Publication, error) {
 	client := orcid.NewMemberClient(orcid.Config{
