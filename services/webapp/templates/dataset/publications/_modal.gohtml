@@ -6,7 +6,10 @@
                 <h2 class="modal-title">Select publications</h2>
             </div>
             <div class="modal-body">
-                <p class="text-muted">Select one or more publications as already registered in Biblio</p>
+                <p class="text-muted">
+                    Select one or more publications as already registered in Biblio
+                    <p class="text-muted">See <a href="https://onderzoektips.ugent.be/en/tips/00002061/" target="_blank">Documentation <i class="if if--small if-external-link"></i></a></p>
+                </p>
                 <label class="sr-only" for="search">Search</label>
                 <input class="form-control" type="text" name="search" placeholder="Search..."
                     hx-post="{{pathFor "dataset_publications_activesearch" "id" .D.Dataset.ID}}"
