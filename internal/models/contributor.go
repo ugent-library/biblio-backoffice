@@ -1,13 +1,13 @@
 package models
 
 type Contributor struct {
+	CreditRole []string `json:"credit_role,omitempty" form:"credit_role"`
+	FirstName  string   `json:"first_name,omitempty" form:"first_name"`
+	FullName   string   `json:"full_name,omitempty" form:"-"`
 	ID         string   `json:"id,omitempty" form:"ID"`
+	LastName   string   `json:"last_name,omitempty" form:"last_name"`
 	ORCID      string   `json:"orcid,omitempty" form:"-"`
 	UGentID    []string `json:"ugent_id,omitempty" form:"-"`
-	FirstName  string   `json:"first_name,omitempty" form:"first_name"`
-	LastName   string   `json:"last_name,omitempty" form:"last_name"`
-	FullName   string   `json:"full_name,omitempty" form:"-"`
-	CreditRole []string `json:"credit_role,omitempty" form:"credit_role"`
 }
 
 func (p *Contributor) HasCreditRole(role string) bool {
