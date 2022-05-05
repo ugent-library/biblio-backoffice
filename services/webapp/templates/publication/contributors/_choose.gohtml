@@ -27,9 +27,7 @@
                                             {{range .UGentID}}
                                             <div class="text-muted c-body-small">UGent ID: {{.}}</div>
                                             {{end}}
-                                            <input type="hidden" name="first_name" value="{{.FirstName}}">
-                                            <input type="hidden" name="last_name" value="{{.LastName}}">
-                                            <input type="hidden" name="ID" value="{{.ID}}">
+                                            <input type="hidden" name="id" value="{{.ID}}">
                                         </div>
                                         <div class="list-group-item-meta mt-2">
                                             <div class="list-group-item-meta-left">
@@ -40,7 +38,7 @@
                                                     hx-target="#{{$.D.Role}}-modal"
                                                     hx-trigger="click"
                                                     hx-swap="innerHTML"
-                                                    hx-include='#person-{{.ID}} input[name="ID"], #person-{{.ID}} input[name="first_name"], #person-{{.ID}} input[name="last_name"], .modal-body input[name="credit_role"]'
+                                                    hx-include='#person-{{.ID}} input[name="id"], .modal-body input[name="credit_role"]'
                                                 >Confirm {{$.D.Role}}</button>
                                             </div>
                                         </div>
@@ -57,7 +55,12 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-link membership-external" data-target="#{{.D.Role}}-modal" data-dismiss="modal"
+                    {{if (gt (len (.D.Publication.Contributors .D.Role)) .D.Position)}}
                     hx-get="{{pathFor "publication_contributors_edit" "id" .D.Publication.ID "role" .D.Role "position" (.D.Position | toString)}}"
+                    {{else}}
+                    hx-get="{{pathFor "publication_contributors_add" "id" .D.Publication.ID "role" .D.Role "position" (.D.Position | toString)}}"
+                    hx-include='.modal-body input[name="first_name"], .modal-body input[name="last_name"], .modal-body input[name="credit_role"]'
+                    {{end}}
                     hx-target="#{{.D.Role}}-modal"
                     hx-trigger="click"
                     hx-swap="innerHTML"
