@@ -24,7 +24,7 @@ func init() {
 	message.SetString(language.English, "publication.contributor.role.author", "author")
 	message.SetString(language.English, "publication.contributor.role.editor", "editor")
 	message.SetString(language.English, "publication.contributor.role.promoter", "promoter")
-	message.SetString(language.English, "dataset.contributor.role.author", "author")
+	message.SetString(language.English, "dataset.contributor.role.author", "creator")
 	message.SetString(language.English, "dataset.contributor.role.creator", "creator")
 	message.SetString(language.English, "dataset.contributor.role.contributor", "contributor")
 
@@ -540,8 +540,8 @@ func init() {
 	message.SetString(language.English, "dataset.single_import.string.minLength", "Not a valid DOI")
 	message.SetString(language.English, "dataset.single_import.import_by_id.import_failed", "Sorry, something went wrong. Could not import the dataset")
 
-  message.SetString(language.English, "tooltip.publication.classification", "The publication will be classified by the Biblio team as part of the bibliographic review process.")
-  message.SetString(language.English, "tooltip.publication.related_datasets", "<a href=\"https://onderzoektips.ugent.be/en/tips/00002061/\" target=\"_blank\">https://onderzoektips.ugent.be/en/tips/00002061/ <i class=\"if if--small if-external-link\"></i></a>")
+	message.SetString(language.English, "tooltip.publication.classification", "The publication will be classified by the Biblio team as part of the bibliographic review process.")
+	message.SetString(language.English, "tooltip.publication.related_datasets", "<a href=\"https://onderzoektips.ugent.be/en/tips/00002061/\" target=\"_blank\">https://onderzoektips.ugent.be/en/tips/00002061/ <i class=\"if if--small if-external-link\"></i></a>")
 	message.SetString(language.English, "tooltip.publication.wos_type", "This is the type assigned by Web of Science when a publication is also registered in Web of Science and can be different from the Biblio type.")
 
 	message.SetString(language.English, "tooltip.dataset.access_level", "Specify the access level that is set in the external data repository. <a href=\"https://onderzoektips.ugent.be/en/tips/00002057/\" target=\"_blank\">See documentation <i class=\"if if--small if-external-link\"></i></a>")
