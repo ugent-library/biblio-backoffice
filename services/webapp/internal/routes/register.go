@@ -146,9 +146,9 @@ func Register(c controllers.Context) {
 	pubsRouter.HandleFunc("/add-multiple/{batch_id}/publish", publicationsController.AddMultiplePublish).
 		Methods("POST").
 		Name("publication_add_multiple_publish")
-	pubsRouter.HandleFunc("/orcid", publicationsController.ORCIDAddAll).
-		Methods("POST").
-		Name("publication_orcid_add_all")
+	// pubsRouter.HandleFunc("/orcid", publicationsController.ORCIDAddAll).
+	// 	Methods("POST").
+	// 	Name("publication_orcid_add_all")
 
 	pubRouter := pubsRouter.PathPrefix("/{id}").Subrouter()
 	pubRouter.Use(middleware.SetPublication(c.Engine))

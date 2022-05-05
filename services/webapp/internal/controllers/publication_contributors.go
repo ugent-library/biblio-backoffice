@@ -9,7 +9,6 @@ import (
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/views"
 	"github.com/ugent-library/go-locale/locale"
-	"github.com/ugent-library/go-web/forms"
 	"github.com/ugent-library/go-web/jsonapi"
 	"github.com/unrolled/render"
 )
@@ -25,12 +24,8 @@ func NewPublicationContributors(c Context) *PublicationContributors {
 func (c *PublicationContributors) Add(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 	role := mux.Vars(r)["role"]
-	positionVar := r.URL.Query().Get("position")
-	contributors := pub.Contributors(role)
-	position := len(contributors)
-	if positionVar != "" {
-		position, _ = strconv.Atoi(positionVar)
-	}
+	position := len(pub.Contributors(role))
+	q := r.URL.Query()
 
 	c.Render.HTML(w, http.StatusOK, "publication/contributors/_add", c.ViewData(r, struct {
 		Role        string
@@ -41,7 +36,11 @@ func (c *PublicationContributors) Add(w http.ResponseWriter, r *http.Request) {
 	}{
 		role,
 		pub,
-		&models.Contributor{},
+		&models.Contributor{
+			CreditRole: q["credit_role"],
+			FirstName:  q.Get("first_name"),
+			LastName:   q.Get("last_name"),
+		},
 		position,
 		views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), nil),
 	}),
@@ -303,27 +302,27 @@ func (c *PublicationContributors) Choose(w http.ResponseWriter, r *http.Request)
 func (c *PublicationContributors) Demote(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 	role := mux.Vars(r)["role"]
-	positionVar := mux.Vars(r)["position"]
-	position, _ := strconv.Atoi(positionVar)
+	position, _ := strconv.Atoi(mux.Vars(r)["position"])
 
-	contributor := pub.Contributors(role)[position]
-
-	err := r.ParseForm()
-	if err != nil {
+	if err := r.ParseForm(); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	if err := forms.Decode(contributor, r.Form); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+	contributor := &models.Contributor{
+		CreditRole: r.Form["credit_role"],
+		FirstName:  r.FormValue("first_name"),
+		LastName:   r.FormValue("last_name"),
 	}
 
-	// Demote contributor from "UGent member" to "External member"
-	// We do this by resetting the ID field to an empty string
-	contributor.ID = ""
+	var tmpl string
+	if len(pub.Contributors(role)) > position {
+		tmpl = "publication/contributors/_edit"
+	} else {
+		tmpl = "publication/contributors/_add"
+	}
 
-	c.Render.HTML(w, http.StatusOK, "publication/contributors/_edit", c.ViewData(r, struct {
+	c.Render.HTML(w, http.StatusOK, tmpl, c.ViewData(r, struct {
 		Role        string
 		Publication *models.Publication
 		Contributor *models.Contributor
@@ -343,28 +342,34 @@ func (c *PublicationContributors) Demote(w http.ResponseWriter, r *http.Request)
 func (c *PublicationContributors) Promote(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 	role := mux.Vars(r)["role"]
-	positionVar := mux.Vars(r)["position"]
-	position, _ := strconv.Atoi(positionVar)
+	position, _ := strconv.Atoi(mux.Vars(r)["position"])
 
-	contributor := pub.Contributors(role)[position]
-
-	err := r.ParseForm()
-	if err != nil {
+	if err := r.ParseForm(); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	// Promoting the user from "external member" to "UGent member"
-	// The form contains an ID field value pushed from the "choose modal"
-	// This value gets relayed to the edit form via the Contributor model.
-	// UGent FirstName and LastName are interspersed into the Contributor model
-	// as well.
-	if err := forms.Decode(contributor, r.Form); err != nil {
+	person, err := c.Engine.GetPerson(r.FormValue("id"))
+	if err != nil || person == nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	c.Render.HTML(w, http.StatusOK, "publication/contributors/_edit", c.ViewData(r, struct {
+	contributor := &models.Contributor{
+		CreditRole: r.Form["credit_role"],
+		FirstName:  person.FirstName,
+		ID:         person.ID,
+		LastName:   person.LastName,
+	}
+
+	var tmpl string
+	if len(pub.Contributors(role)) > position {
+		tmpl = "publication/contributors/_edit"
+	} else {
+		tmpl = "publication/contributors/_add"
+	}
+
+	c.Render.HTML(w, http.StatusOK, tmpl, c.ViewData(r, struct {
 		Role        string
 		Publication *models.Publication
 		Contributor *models.Contributor

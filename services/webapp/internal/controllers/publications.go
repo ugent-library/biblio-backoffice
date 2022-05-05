@@ -816,24 +816,24 @@ func (c *Publications) ORCIDAdd(w http.ResponseWriter, r *http.Request) {
 	)
 }
 
-func (c *Publications) ORCIDAddAll(w http.ResponseWriter, r *http.Request) {
-	// TODO handle error
-	id, err := c.Engine.AddPublicationsToORCID(
-		context.GetUser(r.Context()).ID,
-		models.NewSearchArgs().WithFilter("status", "public"),
-	)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+// func (c *Publications) ORCIDAddAll(w http.ResponseWriter, r *http.Request) {
+// 	// TODO handle error
+// 	id, err := c.Engine.AddPublicationsToORCID(
+// 		context.GetUser(r.Context()).ID,
+// 		models.NewSearchArgs().WithFilter("status", "public"),
+// 	)
+// 	if err != nil {
+// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+// 		return
+// 	}
 
-	c.Render.HTML(w, http.StatusOK, "task/_status", c.ViewData(r, struct {
-		TaskID    string
-		TaskState models.TaskState
-	}{
-		id,
-		models.TaskState{Status: models.Waiting},
-	}),
-		render.HTMLOptions{Layout: "layouts/htmx"},
-	)
-}
+// 	c.Render.HTML(w, http.StatusOK, "task/_status", c.ViewData(r, struct {
+// 		TaskID    string
+// 		TaskState models.TaskState
+// 	}{
+// 		id,
+// 		models.TaskState{Status: models.Waiting},
+// 	}),
+// 		render.HTMLOptions{Layout: "layouts/htmx"},
+// 	)
+// }
