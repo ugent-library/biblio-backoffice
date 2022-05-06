@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ugent-library/biblio-backend/internal/forms"
 	"github.com/ugent-library/biblio-backend/internal/jsonapi"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
@@ -63,7 +62,7 @@ func (c *PublicationDetails) Update(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	if err := forms.Decode(pub, r.Form); err != nil {
+	if err := DecodeForm(pub, r.Form); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

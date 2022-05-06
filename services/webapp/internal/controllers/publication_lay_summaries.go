@@ -5,7 +5,6 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
-	"github.com/ugent-library/biblio-backend/internal/forms"
 	"github.com/ugent-library/biblio-backend/internal/jsonapi"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
@@ -52,7 +51,7 @@ func (c *PublicationLaySummaries) Create(w http.ResponseWriter, r *http.Request)
 
 	lay_summary := &models.Text{}
 
-	if err := forms.Decode(lay_summary, r.Form); err != nil {
+	if err := DecodeForm(lay_summary, r.Form); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -145,7 +144,7 @@ func (c *PublicationLaySummaries) Update(w http.ResponseWriter, r *http.Request)
 
 	lay_summary := &models.Text{}
 
-	if err := forms.Decode(lay_summary, r.Form); err != nil {
+	if err := DecodeForm(lay_summary, r.Form); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

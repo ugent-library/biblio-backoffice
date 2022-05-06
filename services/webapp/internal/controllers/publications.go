@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/ugent-library/biblio-backend/internal/forms"
 	"github.com/ugent-library/biblio-backend/internal/jsonapi"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
@@ -35,7 +34,7 @@ func NewPublications(c Context) *Publications {
 
 func (c *Publications) List(w http.ResponseWriter, r *http.Request) {
 	searchArgs := models.NewSearchArgs()
-	if err := forms.Decode(searchArgs, r.URL.Query()); err != nil {
+	if err := DecodeForm(searchArgs, r.URL.Query()); err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -77,7 +76,7 @@ func (c *Publications) Show(w http.ResponseWriter, r *http.Request) {
 	}
 
 	searchArgs := models.NewSearchArgs()
-	if err := forms.Decode(searchArgs, r.URL.Query()); err != nil {
+	if err := DecodeForm(searchArgs, r.URL.Query()); err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -450,7 +449,7 @@ func (c *Publications) AddMultipleDescription(w http.ResponseWriter, r *http.Req
 	batchID := mux.Vars(r)["batch_id"]
 
 	args := models.NewSearchArgs()
-	if err := forms.Decode(args, r.URL.Query()); err != nil {
+	if err := DecodeForm(args, r.URL.Query()); err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -501,7 +500,7 @@ func (c *Publications) AddMultipleShow(w http.ResponseWriter, r *http.Request) {
 	}
 
 	searchArgs := models.NewSearchArgs()
-	if err := forms.Decode(searchArgs, r.URL.Query()); err != nil {
+	if err := DecodeForm(searchArgs, r.URL.Query()); err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -694,7 +693,7 @@ func (c *Publications) Publish(w http.ResponseWriter, r *http.Request) {
 	}
 
 	searchArgs := models.NewSearchArgs()
-	if err := forms.Decode(searchArgs, r.URL.Query()); err != nil {
+	if err := DecodeForm(searchArgs, r.URL.Query()); err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -727,7 +726,7 @@ func (c *Publications) ConfirmDelete(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
 	searchArgs := models.NewSearchArgs()
-	if err := forms.Decode(searchArgs, r.URL.Query()); err != nil {
+	if err := DecodeForm(searchArgs, r.URL.Query()); err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -749,7 +748,7 @@ func (c *Publications) Delete(w http.ResponseWriter, r *http.Request) {
 
 	r.ParseForm()
 	searchArgs := models.NewSearchArgs()
-	if err := forms.Decode(searchArgs, r.Form); err != nil {
+	if err := DecodeForm(searchArgs, r.Form); err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

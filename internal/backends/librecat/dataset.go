@@ -3,12 +3,11 @@ package librecat
 import (
 	"fmt"
 
-	"github.com/ugent-library/biblio-backend/internal/forms"
 	"github.com/ugent-library/biblio-backend/internal/models"
 )
 
 func (c *Client) Datasets(args *models.SearchArgs) (*models.DatasetHits, error) {
-	qp, err := forms.Encode(args)
+	qp, err := formEncoder.Encode(args)
 	if err != nil {
 		return nil, err
 	}
@@ -20,7 +19,7 @@ func (c *Client) Datasets(args *models.SearchArgs) (*models.DatasetHits, error) 
 }
 
 func (c *Client) UserDatasets(userID string, args *models.SearchArgs) (*models.DatasetHits, error) {
-	qp, err := forms.Encode(args)
+	qp, err := formEncoder.Encode(args)
 	if err != nil {
 		return nil, err
 	}

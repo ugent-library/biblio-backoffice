@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/ugent-library/biblio-backend/internal/forms"
 	"github.com/ugent-library/biblio-backend/internal/jsonapi"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
@@ -206,7 +205,7 @@ func (c *PublicationFiles) License(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := forms.Decode(file, r.Form); err != nil {
+	if err := DecodeForm(file, r.Form); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -286,7 +285,7 @@ func (c *PublicationFiles) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := forms.Decode(file, r.Form); err != nil {
+	if err := DecodeForm(file, r.Form); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

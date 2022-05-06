@@ -7,7 +7,6 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
-	"github.com/ugent-library/biblio-backend/internal/forms"
 	"github.com/ugent-library/biblio-backend/internal/jsonapi"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
@@ -57,7 +56,7 @@ func (c *PublicationLinks) Create(w http.ResponseWriter, r *http.Request) {
 
 	link := &models.PublicationLink{}
 
-	if err := forms.Decode(link, r.Form); err != nil {
+	if err := DecodeForm(link, r.Form); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -143,7 +142,7 @@ func (c *PublicationLinks) Update(w http.ResponseWriter, r *http.Request) {
 
 	link := &models.PublicationLink{}
 
-	if err := forms.Decode(link, r.Form); err != nil {
+	if err := DecodeForm(link, r.Form); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

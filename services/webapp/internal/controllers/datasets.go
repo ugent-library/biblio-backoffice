@@ -6,7 +6,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/ugent-library/biblio-backend/internal/forms"
 	"github.com/ugent-library/biblio-backend/internal/jsonapi"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
@@ -39,7 +38,7 @@ func NewDatasets(c Context) *Datasets {
 
 func (c *Datasets) List(w http.ResponseWriter, r *http.Request) {
 	args := models.NewSearchArgs()
-	if err := forms.Decode(args, r.URL.Query()); err != nil {
+	if err := DecodeForm(args, r.URL.Query()); err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -80,7 +79,7 @@ func (c *Datasets) Show(w http.ResponseWriter, r *http.Request) {
 	}
 
 	searchArgs := models.NewSearchArgs()
-	if err := forms.Decode(searchArgs, r.URL.Query()); err != nil {
+	if err := DecodeForm(searchArgs, r.URL.Query()); err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -146,7 +145,7 @@ func (c *Datasets) Publish(w http.ResponseWriter, r *http.Request) {
 	}
 
 	searchArgs := models.NewSearchArgs()
-	if err := forms.Decode(searchArgs, r.URL.Query()); err != nil {
+	if err := DecodeForm(searchArgs, r.URL.Query()); err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -328,7 +327,7 @@ func (c *Datasets) ConfirmDelete(w http.ResponseWriter, r *http.Request) {
 	dataset := context.GetDataset(r.Context())
 
 	searchArgs := models.NewSearchArgs()
-	if err := forms.Decode(searchArgs, r.URL.Query()); err != nil {
+	if err := DecodeForm(searchArgs, r.URL.Query()); err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -350,7 +349,7 @@ func (c *Datasets) Delete(w http.ResponseWriter, r *http.Request) {
 
 	r.ParseForm()
 	searchArgs := models.NewSearchArgs()
-	if err := forms.Decode(searchArgs, r.Form); err != nil {
+	if err := DecodeForm(searchArgs, r.Form); err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

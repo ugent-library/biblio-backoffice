@@ -9,12 +9,14 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/ugent-library/biblio-backend/internal/forms"
+	"github.com/go-playground/form/v4"
 	"github.com/ugent-library/biblio-backend/internal/models"
 )
 
+var formEncoder = form.NewEncoder()
+
 func (e *Client) Publications(args *models.SearchArgs) (*models.PublicationHits, error) {
-	qp, err := forms.Encode(args)
+	qp, err := formEncoder.Encode(args)
 	if err != nil {
 		return nil, err
 	}
@@ -26,7 +28,7 @@ func (e *Client) Publications(args *models.SearchArgs) (*models.PublicationHits,
 }
 
 func (e *Client) UserPublications(userID string, args *models.SearchArgs) (*models.PublicationHits, error) {
-	qp, err := forms.Encode(args)
+	qp, err := formEncoder.Encode(args)
 	if err != nil {
 		return nil, err
 	}

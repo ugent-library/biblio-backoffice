@@ -5,9 +5,11 @@ import (
 	"html/template"
 	"net/url"
 
+	"github.com/go-playground/form/v4"
 	"github.com/gorilla/mux"
-	"github.com/ugent-library/biblio-backend/internal/forms"
 )
+
+var formEncoder = form.NewEncoder()
 
 func FuncMap(r *mux.Router) template.FuncMap {
 	return template.FuncMap{
@@ -36,7 +38,7 @@ func pathFor(r *mux.Router) func(string, ...string) (*url.URL, error) {
 }
 
 func query(v interface{}, u *url.URL) (*url.URL, error) {
-	vals, err := forms.Encode(v)
+	vals, err := formEncoder.Encode(v)
 	if err != nil {
 		return u, err
 	}
