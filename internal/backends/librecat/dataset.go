@@ -3,8 +3,8 @@ package librecat
 import (
 	"fmt"
 
+	"github.com/ugent-library/biblio-backend/internal/forms"
 	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/go-web/forms"
 )
 
 func (c *Client) Datasets(args *models.SearchArgs) (*models.DatasetHits, error) {

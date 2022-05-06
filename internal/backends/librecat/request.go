@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/ugent-library/go-web/jsonapi"
+	"github.com/ugent-library/biblio-backend/internal/jsonapi"
 )
 
 type requestPayload struct {

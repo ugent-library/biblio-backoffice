@@ -9,8 +9,8 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/ugent-library/biblio-backend/internal/forms"
 	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/go-web/forms"
 )
 
 func (e *Client) Publications(args *models.SearchArgs) (*models.PublicationHits, error) {

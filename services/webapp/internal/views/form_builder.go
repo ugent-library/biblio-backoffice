@@ -5,8 +5,8 @@ import (
 	"html/template"
 	"strings"
 
+	"github.com/ugent-library/biblio-backend/internal/jsonapi"
 	"github.com/ugent-library/go-locale/locale"
-	"github.com/ugent-library/go-web/jsonapi"
 )
 
 type formData struct {

@@ -5,11 +5,11 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/ugent-library/biblio-backend/internal/jsonapi"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/views"
 	"github.com/ugent-library/go-locale/locale"
-	"github.com/ugent-library/go-web/jsonapi"
 	"github.com/unrolled/render"
 )
 
