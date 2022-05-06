@@ -11,7 +11,6 @@ import (
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/views"
 	"github.com/ugent-library/go-locale/locale"
-	"github.com/ugent-library/go-web/forms"
 	"github.com/unrolled/render"
 )
 
@@ -51,7 +50,7 @@ func (c *PublicationLaySummaries) Create(w http.ResponseWriter, r *http.Request)
 
 	lay_summary := &models.Text{}
 
-	if err := forms.Decode(lay_summary, r.Form); err != nil {
+	if err := DecodeForm(lay_summary, r.Form); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -142,7 +141,7 @@ func (c *PublicationLaySummaries) Update(w http.ResponseWriter, r *http.Request)
 
 	lay_summary := &models.Text{}
 
-	if err := forms.Decode(lay_summary, r.Form); err != nil {
+	if err := DecodeForm(lay_summary, r.Form); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

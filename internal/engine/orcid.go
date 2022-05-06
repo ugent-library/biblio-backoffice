@@ -1,17 +1,13 @@
 package engine
 
 import (
-	"context"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"strings"
 
-	"github.com/google/uuid"
 	"github.com/ugent-library/biblio-backend/internal/models"
-	orcidworker "github.com/ugent-library/biblio-backend/internal/workers/orcid"
 	"github.com/ugent-library/go-orcid/orcid"
-	"go.temporal.io/sdk/client"
 	"golang.org/x/text/language"
 )
 
@@ -33,24 +29,30 @@ import (
 // }
 
 // TODO move to controller
-func (e *Engine) AddPublicationsToORCID(user *models.User, s *models.SearchArgs) (string, error) {
-	workflowOptions := client.StartWorkflowOptions{
-		ID:        "orcid_workflow_" + uuid.New().String(),
-		TaskQueue: "orcid",
-	}
+// func (e *Engine) AddPublicationsToORCID(userID string, s *models.SearchArgs) (string, error) {
+// 	user, err := e.GetUser(userID)
+// 	if err != nil {
+// 		return "", err
+// 	}
 
-	we, err := e.Temporal.ExecuteWorkflow(context.Background(), workflowOptions, orcidworker.SendPublicationsToORCIDWorkflow,
-		orcidworker.Args{
-			ORCID:      user.ORCID,
-			ORCIDToken: user.ORCIDToken,
-			SearchArgs: s,
-		})
-	if err != nil {
-		return "", err
-	}
-	log.Println("Started workflow", "WorkflowID", we.GetID(), "RunID", we.GetRunID())
-	return we.GetID(), err
-}
+// 	workflowOptions := client.StartWorkflowOptions{
+// 		ID:        "orcid_workflow_" + uuid.New().String(),
+// 		TaskQueue: "orcid",
+// 	}
+
+// 	we, err := e.Temporal.ExecuteWorkflow(context.Background(), workflowOptions, orcidworker.SendPublicationsToORCIDWorkflow,
+// 		orcidworker.Args{
+// 			UserID:     userID,
+// 			ORCID:      user.ORCID,
+// 			ORCIDToken: user.ORCIDToken,
+// 			SearchArgs: *s,
+// 		})
+// 	if err != nil {
+// 		return "", err
+// 	}
+// 	log.Println("Started workflow", "WorkflowID", we.GetID(), "RunID", we.GetRunID())
+// 	return we.GetID(), err
+// }
 
 // TODO make workflow
 func (e *Engine) AddPublicationToORCID(orcidID, orcidToken string, p *models.Publication) (*models.Publication, error) {

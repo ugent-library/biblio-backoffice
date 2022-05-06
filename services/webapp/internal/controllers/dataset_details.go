@@ -65,6 +65,24 @@ func (c *DatasetDetails) AccessLevel(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Band-aid: omit empty values from fields with repeating values (text repeat, list repeat)
+	//   @note: This should be part of "form:,omitEmpty" in the Dataset struct. However,
+	//   go-playground/form doesn't support omitEmpty on lists or nested form structures
+	//   (slices, maps,...)
+	omitEmpty := func(keywords []string) []string {
+		var tmp []string
+		for _, str := range keywords {
+			if str != "" {
+				tmp = append(tmp, str)
+			}
+		}
+
+		return tmp
+	}
+
+	dataset.Keyword = omitEmpty(dataset.Keyword)
+	dataset.Format = omitEmpty(dataset.Format)
+
 	// Clear embargo and embargoTo fields if access level is not embargo
 	//   @todo Disabled per https://github.com/ugent-library/biblio-backend/issues/217
 	//
@@ -73,10 +91,18 @@ func (c *DatasetDetails) AccessLevel(w http.ResponseWriter, r *http.Request) {
 	//   into the form fields again if embargo level is chosen again. This feature isn't
 	//   implemented in this solution since state isn't kept across HTTP requests.
 	//
-	// if dataset.AccessLevel != "info:eu-repo/semantics/embargoedAccess" {
-	// 	dataset.Embargo = ""
-	// 	dataset.EmbargoTo = ""
-	// }
+	if dataset.AccessLevel != "info:eu-repo/semantics/embargoedAccess" {
+		dataset.Embargo = ""
+		dataset.EmbargoTo = ""
+	} else {
+		if dataset.Embargo != r.FormValue("embargo") {
+			dataset.Embargo = r.FormValue("embargo")
+		}
+
+		if dataset.EmbargoTo != r.FormValue("embargo_to") {
+			dataset.EmbargoTo = r.FormValue("embargo_to")
+		}
+	}
 
 	c.Render.HTML(w, http.StatusOK, "dataset/details/_edit", c.ViewData(r, struct {
 		Dataset *models.Dataset
@@ -103,6 +129,13 @@ func (c *DatasetDetails) Update(w http.ResponseWriter, r *http.Request) {
 	if err := DecodeForm(dataset, r.Form); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
+	}
+
+	// @note decoding the form into a model omits empty values
+	//   removing "omitempty" in the model doesn't make a difference.
+	if dataset.AccessLevel != "info:eu-repo/semantics/embargoedAccess" {
+		dataset.Embargo = ""
+		dataset.EmbargoTo = ""
 	}
 
 	savedDataset, err := c.Engine.UpdateDataset(dataset)

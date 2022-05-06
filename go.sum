@@ -568,8 +568,6 @@ github.com/ugent-library/go-oidc v0.0.0-20210901124208-bda4cc73ba56 h1:y3N5ZTuh2
 github.com/ugent-library/go-oidc v0.0.0-20210901124208-bda4cc73ba56/go.mod h1:tkGlY27D3dQDVc5rNv8wzLaY5e44EHqmnusD/Pv0u4I=
 github.com/ugent-library/go-orcid v0.0.0-20211130191640-1138a344c30b h1:euR8KFPkxuhgI/Qy4UFRhMjZ3gV23wdr+nZPQjHhkjI=
 github.com/ugent-library/go-orcid v0.0.0-20211130191640-1138a344c30b/go.mod h1:NSt374Ru0dUuJanxiKk7fsGCnASjPz3dTBJGSfWll5w=
-github.com/ugent-library/go-web v0.0.0-20211029075216-2afe6295a285 h1:JOBr+X4mHL2LShHlHqe+FgvJ9NGLQbCWH8hpp31JEwQ=
-github.com/ugent-library/go-web v0.0.0-20211029075216-2afe6295a285/go.mod h1:DcyOY8w5IfH6zkDOMfRspxc2uBesMBM2SJqVqIBuPPg=
 github.com/ugorji/go/codec v0.0.0-20181204163529-d75b2dcb6bc8/go.mod h1:VFNgLljTbGfSG7qAOspJ7OScBnGdDN/yBr0sguwnwf0=
 github.com/unrolled/render v1.4.1 h1:VdpMc2YkAOWzbmC/P2yoHhRDXgsaCQHcTJ1KK6SNCA4=
 github.com/unrolled/render v1.4.1/go.mod h1:cK4RSTTVdND5j9EYEc0LAMOvdG11JeiKjyjfyZRvV2w=

@@ -11,8 +11,6 @@ import (
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/views"
 	"github.com/ugent-library/go-locale/locale"
-	"github.com/ugent-library/go-web/forms"
-	"github.com/ugent-library/go-web/jsonapi"
 	"github.com/unrolled/render"
 )
 
@@ -39,7 +37,7 @@ func NewDatasets(c Context) *Datasets {
 
 func (c *Datasets) List(w http.ResponseWriter, r *http.Request) {
 	args := models.NewSearchArgs()
-	if err := forms.Decode(args, r.URL.Query()); err != nil {
+	if err := DecodeForm(args, r.URL.Query()); err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -78,7 +76,7 @@ func (c *Datasets) Show(w http.ResponseWriter, r *http.Request) {
 	}
 
 	searchArgs := models.NewSearchArgs()
-	if err := forms.Decode(searchArgs, r.URL.Query()); err != nil {
+	if err := DecodeForm(searchArgs, r.URL.Query()); err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -91,7 +89,7 @@ func (c *Datasets) Show(w http.ResponseWriter, r *http.Request) {
 		Show                *views.ShowBuilder
 		SearchArgs          *models.SearchArgs
 		ErrorsTitle         string
-		Errors              jsonapi.Errors
+		Errors              validation.Errors
 	}{
 		"Dataset - Biblio",
 		dataset,
@@ -107,7 +105,7 @@ func (c *Datasets) Publish(w http.ResponseWriter, r *http.Request) {
 	dataset := context.GetDataset(r.Context())
 
 	flashes := make([]views.Flash, 0)
-	var publicationErrors jsonapi.Errors
+	var publicationErrors validation.Errors
 	var publicationErrorsTitle string
 
 	datasetCopy := *dataset
@@ -117,12 +115,7 @@ func (c *Datasets) Publish(w http.ResponseWriter, r *http.Request) {
 		savedDataset = dataset
 
 		if e, ok := err.(validation.Errors); ok {
-			formErrors := jsonapi.Errors{jsonapi.Error{
-				Detail: e.Error(),
-				Title:  e.Error(),
-			}}
-
-			publicationErrors = formErrors
+			publicationErrors = e
 			publicationErrorsTitle = "Unable to publish record due to following errors"
 
 		} else {
@@ -147,7 +140,7 @@ func (c *Datasets) Publish(w http.ResponseWriter, r *http.Request) {
 	}
 
 	searchArgs := models.NewSearchArgs()
-	if err := forms.Decode(searchArgs, r.URL.Query()); err != nil {
+	if err := DecodeForm(searchArgs, r.URL.Query()); err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -160,7 +153,7 @@ func (c *Datasets) Publish(w http.ResponseWriter, r *http.Request) {
 		Show                *views.ShowBuilder
 		SearchArgs          *models.SearchArgs
 		ErrorsTitle         string
-		Errors              jsonapi.Errors
+		Errors              validation.Errors
 	}{
 		"Dataset - Biblio",
 		savedDataset,
@@ -214,14 +207,9 @@ func (c *Datasets) AddImport(w http.ResponseWriter, r *http.Request) {
 	dataset, err := c.Engine.ImportUserDatasetByIdentifier(context.GetUser(r.Context()).ID, source, identifier)
 
 	if err != nil {
+		log.Println(err)
 		flash := views.Flash{Type: "error"}
-
-		if e, ok := err.(jsonapi.Errors); ok {
-			flash.Message = loc.T("dataset.single_import", e[0].Code)
-		} else {
-			log.Println(e)
-			flash.Message = loc.T("dataset.single_import", "import_by_id.import_failed")
-		}
+		flash.Message = loc.T("dataset.single_import", "import_by_id.import_failed")
 
 		c.Render.HTML(w, http.StatusOK, "dataset/add", c.ViewData(r, DatasetAddVars{
 			PageTitle:  "Add - Datasets - Biblio",
@@ -327,7 +315,7 @@ func (c *Datasets) ConfirmDelete(w http.ResponseWriter, r *http.Request) {
 	dataset := context.GetDataset(r.Context())
 
 	searchArgs := models.NewSearchArgs()
-	if err := forms.Decode(searchArgs, r.URL.Query()); err != nil {
+	if err := DecodeForm(searchArgs, r.URL.Query()); err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -349,7 +337,7 @@ func (c *Datasets) Delete(w http.ResponseWriter, r *http.Request) {
 
 	r.ParseForm()
 	searchArgs := models.NewSearchArgs()
-	if err := forms.Decode(searchArgs, r.Form); err != nil {
+	if err := DecodeForm(searchArgs, r.Form); err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

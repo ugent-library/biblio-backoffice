@@ -3,6 +3,10 @@
         <div class="bc-toolbar">
             <div class="bc-toolbar-left">
                 <div class="bc-toolbar-title">Related publications</div>
+                <a class="text-muted mx-2" href="#" data-container="body" data-toggle="popover" data-trigger="focus" data-placement="right" data-content="{{ .T "tooltip.dataset" "related_publications" }}">
+                    <i class="if if-info-circle if--small"></i>
+                    <div class="sr-only">More info</div>
+                </a>
             </div>
             <div class="bc-toolbar-right">
                 {{if .User.CanEditDataset .D.Dataset}}

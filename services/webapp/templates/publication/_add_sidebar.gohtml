@@ -19,23 +19,23 @@
             <div class="c-sub-sidebar-menu">
                 <ol class="c-stepper my-6">
                     <li class="c-stepper__item{{if eq .D.Step 1}} c-stepper__item--active{{end}}">
-                        <a href="{{pathFor "publication_add_single"}}">
+                        <a href="{{pathFor "publication_add"}}">
                             {{if gt .D.Step 1}}
                             <div class="c-stepper__step c-stepper__step--complete"><i class="if if-check"></i></div>
                             {{else}}
                             <div class="c-stepper__step{{if eq .D.Step 1}} c-stepper__step--active{{end}}">1</div>
                             {{end}}
-                            <span class="c-stepper__text">Single or multiple</span>
+                            <span class="c-stepper__text">Start</span>
                         </a>
                     </li>
                     <li class="c-stepper__item{{if eq .D.Step 2}} c-stepper__item--active{{end}}">
-                        <a href="#">
+                        <a href="{{pathFor "publication_add"}}">
                             {{if gt .D.Step 2}}
                             <div class="c-stepper__step c-stepper__step--complete"><i class="if if-check"></i></div>
                             {{else}}
                             <div class="c-stepper__step{{if eq .D.Step 2}} c-stepper__step--active{{end}}">2</div>
                             {{end}}
-                            <span class="c-stepper__text">Add reference</span>
+                            <span class="c-stepper__text">Add publication(s)</span>
                         </a>
                     </li>
                     <li class="c-stepper__item{{if eq .D.Step 3}} c-stepper__item--active{{end}}">
@@ -45,7 +45,7 @@
                             {{else}}
                             <div class="c-stepper__step{{if eq .D.Step 3}} c-stepper__step--active{{end}}">3</div>
                             {{end}}
-                            <span class="c-stepper__text">Add full text</span>
+                            <span class="c-stepper__text">Complete description</span>
                         </a>
                     </li>
                     <li class="c-stepper__item{{if eq .D.Step 4}} c-stepper__item--active{{end}}">
@@ -54,16 +54,6 @@
                             <div class="c-stepper__step c-stepper__step--complete"><i class="if if-check"></i></div>
                             {{else}}
                             <div class="c-stepper__step{{if eq .D.Step 4}} c-stepper__step--active{{end}}">4</div>
-                            {{end}}
-                            <span class="c-stepper__text">Complete description</span>
-                        </a>
-                    </li>
-                    <li class="c-stepper__item{{if eq .D.Step 5}} c-stepper__item--active{{end}}">
-                        <a href="#">
-                            {{if gt .D.Step 5}}
-                            <div class="c-stepper__step c-stepper__step--complete"><i class="if if-check"></i></div>
-                            {{else}}
-                            <div class="c-stepper__step{{if eq .D.Step 5}} c-stepper__step--active{{end}}">5</div>
                             {{end}}
                             <span class="c-stepper__text">Publish to Biblio</span>
                         </a>

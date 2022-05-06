@@ -14,8 +14,6 @@ import (
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/views"
 	"github.com/ugent-library/go-locale/locale"
-	"github.com/ugent-library/go-web/forms"
-	"github.com/ugent-library/go-web/jsonapi"
 	"github.com/unrolled/render"
 )
 
@@ -99,9 +97,6 @@ func (c *PublicationFiles) Upload(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		flash := views.Flash{Type: "error", Message: "There was a problem adding your file"}
-		if apiErrors, ok := err.(jsonapi.Errors); ok && apiErrors[0].Code == "api.create_publication_file.file_already_present" {
-			flash = views.Flash{Type: "warning", Message: "A file with the same name is already attached to this publication"}
-		}
 		c.Render.HTML(w, http.StatusCreated, "publication/files/_list",
 			c.ViewData(r, struct {
 				Publication *models.Publication
@@ -222,7 +217,7 @@ func (c *PublicationFiles) License(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := forms.Decode(file, r.Form); err != nil {
+	if err := DecodeForm(file, r.Form); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -300,7 +295,7 @@ func (c *PublicationFiles) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := forms.Decode(file, r.Form); err != nil {
+	if err := DecodeForm(file, r.Form); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

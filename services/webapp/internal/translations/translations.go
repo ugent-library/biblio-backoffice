@@ -25,6 +25,7 @@ func init() {
 	message.SetString(language.English, "publication.contributor.role.editor", "editor")
 	message.SetString(language.English, "publication.contributor.role.promoter", "promoter")
 	message.SetString(language.English, "dataset.contributor.role.author", "creator")
+	message.SetString(language.English, "dataset.contributor.role.creator", "creator")
 	message.SetString(language.English, "dataset.contributor.role.contributor", "contributor")
 
 	message.SetString(language.English, "credit_roles.first_author", "First author")
@@ -534,7 +535,7 @@ func init() {
 	message.SetString(language.English, "validation.required", "is required")
 
 	message.SetString(language.English, "publication.single_import.import_by_id.id_not_found", "Unable to find this DOI")
-	message.SetString(language.English, "publication.single_import.string.minLength", "Not a valid DOI")
+	message.SetString(language.English, "publication.single_import.import_by_id.string.minLength", "Not a valid DOI")
 	message.SetString(language.English, "publication.single_import.import_by_id.import_failed", "Sorry, something went wrong. Could not import the publication")
 
 	message.SetString(language.English, "dataset.single_import.import_by_id.id_not_found", "Unable to find this DOI in DataCite")
@@ -542,11 +543,13 @@ func init() {
 	message.SetString(language.English, "dataset.single_import.import_by_id.import_failed", "Sorry, something went wrong. Could not import the dataset")
 
 	message.SetString(language.English, "tooltip.publication.classification", "The publication will be classified by the Biblio team as part of the bibliographic review process.")
-
+	message.SetString(language.English, "tooltip.publication.related_datasets", "<a href=\"https://onderzoektips.ugent.be/en/tips/00002061/\" target=\"_blank\">https://onderzoektips.ugent.be/en/tips/00002061/ <i class=\"if if--small if-external-link\"></i></a>")
 	message.SetString(language.English, "tooltip.publication.wos_type", "This is the type assigned by Web of Science when a publication is also registered in Web of Science and can be different from the Biblio type.")
 
+	message.SetString(language.English, "tooltip.dataset.access_level", "Specify the access level that is set in the external data repository. <a href=\"https://onderzoektips.ugent.be/en/tips/00002057/\" target=\"_blank\">See documentation <i class=\"if if--small if-external-link\"></i></a>")
+	message.SetString(language.English, "tooltip.dataset.contributors", "<a href=\"https://onderzoektips.ugent.be/en/tips/00002059/\" target=\"_blank\">https://onderzoektips.ugent.be/en/tips/00002059/ <i class=\"if if--small if-external-link\"></i></a>")
+	message.SetString(language.English, "tooltip.dataset.format", "Technical format of the data (select an <a href=\"https://www.iana.org/assignments/media-types/media-types.xhtml\">Internet Media Type</a> from the autocomplete drop-down menu (e.g. text/csv, image/jpeg) or enter <a href=\"https://en.wikipedia.org/wiki/List_of_file_formats\">free text</a>). <a href=\"https://onderzoektips.ugent.be/en/tips/00002058/\" target=\"_blank\">See documentation <i class=\"if if--small if-external-link\"></i></a>")
+	message.SetString(language.English, "tooltip.dataset.license", "Specify the license that is set in the external data repository. This license lets potential users of your data know in advance what they are allowed to do with the data. The supported licenses in the list are harvested from spdx.org/licenses. If you cannot find the license you're looking for, you can add a URL or URI to the license. <a href=\"https://onderzoektips.ugent.be/en/tips/00002057/\" target=\"_blank\">See documentation <i class=\"if if--small if-external-link\"></i></a>")
 	message.SetString(language.English, "tooltip.dataset.publisher", "The name of the entity that holds, archives, publishes prints, distributes, releases, issues, or produces the resource. Typically, the name of the data repository in which the datasets was deposited.")
-	message.SetString(language.English, "tooltip.dataset.format", "Technical format of the data (select an <a href=\"https://www.iana.org/assignments/media-types/media-types.xhtml\">Internet Media Type</a> from the autocomplete drop-down menu (e.g. text/csv, image/jpeg) or enter <a href=\"https://en.wikipedia.org/wiki/List_of_file_formats\">free text</a>)")
-	message.SetString(language.English, "tooltip.dataset.access_level", "Specify the access level that is set in the external data repository.")
-	message.SetString(language.English, "tooltip.dataset.license", "Specify the license that is set in the external data repository. This license lets potential users of your data know in advance what they are allowed to do with the data. The supported licenses in the list are harvested from spdx.org/licenses. If you cannot find the license you're looking for, you can add a URL or URI to the license.")
+	message.SetString(language.English, "tooltip.dataset.related_publications", "<a href=\"https://onderzoektips.ugent.be/en/tips/00002061/\" target=\"_blank\">https://onderzoektips.ugent.be/en/tips/00002061/ <i class=\"if if--small if-external-link\"></i></a>")
 }

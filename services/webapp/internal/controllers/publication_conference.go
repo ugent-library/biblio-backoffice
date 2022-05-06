@@ -10,7 +10,6 @@ import (
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/views"
 	"github.com/ugent-library/go-locale/locale"
-	"github.com/ugent-library/go-web/forms"
 	"github.com/unrolled/render"
 )
 
@@ -63,7 +62,7 @@ func (c *PublicationConference) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := forms.Decode(pub, r.Form); err != nil {
+	if err := DecodeForm(pub, r.Form); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

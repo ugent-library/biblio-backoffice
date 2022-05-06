@@ -12,7 +12,6 @@ import (
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/views"
 	"github.com/ugent-library/go-locale/locale"
-	"github.com/ugent-library/go-web/forms"
 	"github.com/unrolled/render"
 )
 
@@ -55,7 +54,7 @@ func (c *DatasetAbstracts) Create(w http.ResponseWriter, r *http.Request) {
 
 	abstract := &models.Text{}
 
-	if err := forms.Decode(abstract, r.Form); err != nil {
+	if err := DecodeForm(abstract, r.Form); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -140,7 +139,7 @@ func (c *DatasetAbstracts) Update(w http.ResponseWriter, r *http.Request) {
 
 	abstract := &models.Text{}
 
-	if err := forms.Decode(abstract, r.Form); err != nil {
+	if err := DecodeForm(abstract, r.Form); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

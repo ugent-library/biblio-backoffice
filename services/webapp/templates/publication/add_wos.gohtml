@@ -1,0 +1,87 @@
+{{template "publication/_add_sidebar" .}}
+
+<div class="w-100 u-scroll-wrapper">
+    <div class="bc-navbar bc-navbar--xlarge bc-navbar-bordered bc-navbar--white bc-navbar--bordered-bottom">
+        <div class="bc-toolbar">
+            <div class="bc-toolbar-left">
+                <div class="bc-toolbar-item">
+                    <div class="d-flex flex-column">
+                        <span class="text-muted mb-2">Step {{.D.Step}}</span>
+                        <h4 class="bc-toolbar-title">Add publication(s)</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="p-6 u-scroll-wrapper__body">
+        <div class="card card-collapsible mb-6">
+            <div class="card-header">
+                <div class="collapse-trigger" data-toggle="collapse" data-target="#importFromWOS" aria-expanded="true" aria-controls="collapse1"></div>
+                <div class="bc-toolbar">
+                    <div class="bc-toolbar-left">
+                        <i class="if if-chevron-right mr-4 text-muted"></i>Import from Web of Science
+                    </div>
+                </div>
+            </div>
+            <div class="collapse show" id="importFromWOS">
+                <div class="card-body">
+                    <form class="form-change-submit" action="{{pathFor "publication_add_multiple_import"}}" method="POST" enctype="multipart/form-data">
+                        {{.CSRFTag}}
+                        <input type="hidden" name="source" value="wos">
+
+                        <div class="c-file-upload">
+                            <input type="file" name="file">
+                            <div class="c-file-upload__content">
+                                <p>Drag and drop or</p>
+                                <button class="btn btn-outline-primary">Upload file
+                                    <div class="spinner-border">
+                                        <span class="sr-only"></span>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+
+                        <small class="form-text text-muted my-3"><a href="https://onderzoektips.ugent.be/en/tips/00002067/" target="_blank">Web of Science import instructions</a></small>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{{if .D.DuplicatePublication}}
+<div id="modal-backdrop" class="modal-backdrop fade show" style="display:block;"></div>
+<div class="modal show" tabindex="-1" style="display: block;" aria-modal="true" role="dialog">
+<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">Are you sure you want to import this publication?</h2>
+        </div>
+        <div class="modal-body">
+            <p>Biblio contains another publication with the same DOI:</p>
+            <ul class="list-group mt-6">
+                <li class="list-group-item">
+                    <div class="d-flex w-100">
+                        <div class="w-100">
+                            <div class="d-flex align-items-start">
+                                {{template "publication/_summary_body" (.ViewData (dict "Publication" .D.DuplicatePublication))}}
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-link modal-close">Cancel</button>
+            <form action="{{pathFor "publication_add_single_import"}}" method="POST">
+                {{.CSRFTag}}
+                <input type="hidden" name="source" value="{{.D.Source}}">
+                <input type="hidden" name="identifier" value="{{.D.Identifier}}">
+                <button type="submit" class="btn btn-danger">Import anyway</button>
+            </form>
+        </div>
+    </div>
+</div>
+{{end}}

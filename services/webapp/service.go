@@ -20,11 +20,11 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/controllers"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/helpers"
+	"github.com/ugent-library/biblio-backend/services/webapp/internal/mix"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/routes"
+	"github.com/ugent-library/biblio-backend/services/webapp/internal/urls"
 	"github.com/ugent-library/go-locale/locale"
 	"github.com/ugent-library/go-oidc/oidc"
-	"github.com/ugent-library/go-web/mix"
-	"github.com/ugent-library/go-web/urls"
 	"github.com/unrolled/render"
 
 	_ "github.com/ugent-library/biblio-backend/services/webapp/internal/translations"

@@ -122,24 +122,18 @@ func Register(c controllers.Context) {
 	pubsRouter.HandleFunc("", publicationsController.List).
 		Methods("GET").
 		Name("publications")
-	pubsRouter.HandleFunc("/add-single", publicationsController.AddSingle).
+	pubsRouter.HandleFunc("/add", publicationsController.Add).
 		Methods("GET").
-		Name("publication_add_single")
-	pubsRouter.HandleFunc("/add-single/start", publicationsController.AddSingleStart).
-		Methods("GET").
-		Name("publication_add_single_start")
+		Name("publication_add")
+	pubsRouter.HandleFunc("/add", publicationsController.AddSelectMethod).
+		Methods("POST").
+		Name("publication_add_select_method")
 	pubsRouter.HandleFunc("/add-single/import/confirm", publicationsController.AddSingleImportConfirm).
 		Methods("POST").
 		Name("publication_add_single_import_confirm")
 	pubsRouter.HandleFunc("/add-single/import", publicationsController.AddSingleImport).
 		Methods("POST").
 		Name("publication_add_single_import")
-	pubsRouter.HandleFunc("/add-multiple", publicationsController.AddMultiple).
-		Methods("GET").
-		Name("publication_add_multiple")
-	pubsRouter.HandleFunc("/add-multiple/start", publicationsController.AddMultipleStart).
-		Methods("GET").
-		Name("publication_add_multiple_start")
 	pubsRouter.HandleFunc("/add-multiple/import", publicationsController.AddMultipleImport).
 		Methods("POST").
 		Name("publication_add_multiple_import")
@@ -152,9 +146,9 @@ func Register(c controllers.Context) {
 	pubsRouter.HandleFunc("/add-multiple/{batch_id}/publish", publicationsController.AddMultiplePublish).
 		Methods("POST").
 		Name("publication_add_multiple_publish")
-	pubsRouter.HandleFunc("/orcid", publicationsController.ORCIDAddAll).
-		Methods("POST").
-		Name("publication_orcid_add_all")
+	// pubsRouter.HandleFunc("/orcid", publicationsController.ORCIDAddAll).
+	// 	Methods("POST").
+	// 	Name("publication_orcid_add_all")
 
 	pubRouter := pubsRouter.PathPrefix("/{id}").Subrouter()
 	pubRouter.Use(middleware.SetPublication(c.Engine))

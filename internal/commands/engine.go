@@ -25,7 +25,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/backends/store"
 	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/go-orcid/orcid"
-	"go.temporal.io/sdk/client"
+	// "go.temporal.io/sdk/client"
 )
 
 var (
@@ -46,13 +46,12 @@ func newEngine() *engine.Engine {
 		log.Fatalln("Unable to initialize filestore", err)
 	}
 
-	temporal, err := client.NewClient(client.Options{
-		HostPort: viper.GetString("temporal-host-port"),
-		Logger:   &temporalLogger{},
-	})
-	if err != nil {
-		log.Fatalln("Unable to create Temporal client", err)
-	}
+	// temporal, err := client.NewClient(client.Options{
+	// 	HostPort: viper.GetString("temporal-host-port"),
+	// })
+	// if err != nil {
+	// 	log.Fatalln("Unable to create Temporal client", err)
+	// }
 
 	es6Client := newEs6Client()
 
@@ -70,8 +69,8 @@ func newEngine() *engine.Engine {
 	orcidClient := orcid.NewMemberClient(orcidConfig)
 
 	e, err := engine.New(engine.Config{
-		FileStore:                 fs,
-		Temporal:                  temporal,
+		FileStore: fs,
+		// Temporal:                  temporal,
 		ORCIDSandbox:              orcidConfig.Sandbox,
 		ORCIDClient:               orcidClient,
 		Store:                     newStore(),
