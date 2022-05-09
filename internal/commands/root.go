@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
+	_ "github.com/ugent-library/biblio-backend/internal/snapstore"
 	"go.temporal.io/sdk/client"
 )
 
