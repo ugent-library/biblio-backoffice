@@ -7,7 +7,7 @@ begin
     begin
         payload = jsonb_build_object(
             'id', to_jsonb(new.id),
-            'data', to_jsonb(new.data)
+            'data', to_jsonb(new.data),
             'date_from', to_jsonb(new.date_from),
             'date_until', to_jsonb(new.date_until)
         );
