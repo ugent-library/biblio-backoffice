@@ -18,7 +18,7 @@ type User struct {
 	LastName    string           `json:"last_name"`
 	ORCID       string           `json:"orcid"`
 	ORCIDToken  string           `json:"orcid_token"`
-	Role        string           `json:"role"`
+	Role        string           `json:"roles"`
 	UGentID     []string         `json:"ugent_id"`
 	Username    string           `json:"username"`
 }
@@ -27,7 +27,7 @@ func (u *User) CanViewPublication(p *Publication) bool {
 	if p.Status == "deleted" {
 		return false
 	}
-	if u.Role == "admin" {
+	if u.Role == "biblio-admin" {
 		return true
 	}
 	if p.CreatorID == u.ID {
@@ -55,7 +55,7 @@ func (u *User) CanEditPublication(p *Publication) bool {
 	if p.Status == "deleted" {
 		return false
 	}
-	if u.Role == "admin" {
+	if u.Role == "biblio-admin" {
 		return true
 	}
 	if p.Locked {
@@ -90,7 +90,7 @@ func (u *User) CanDeletePublication(p *Publication) bool {
 	if p.Status == "deleted" {
 		return false
 	}
-	if u.Role == "admin" {
+	if u.Role == "biblio-admin" {
 		return true
 	}
 	if p.Locked {
@@ -106,7 +106,7 @@ func (u *User) CanViewDataset(d *Dataset) bool {
 	if d.Status == "deleted" {
 		return false
 	}
-	if u.Role == "admin" {
+	if u.Role == "biblio-admin" {
 		return true
 	}
 	if d.CreatorID == u.ID {
@@ -129,7 +129,7 @@ func (u *User) CanEditDataset(d *Dataset) bool {
 	if d.Status == "deleted" {
 		return false
 	}
-	if u.Role == "admin" {
+	if u.Role == "biblio-admin" {
 		return true
 	}
 	if d.Locked {
@@ -159,7 +159,7 @@ func (u *User) CanDeleteDataset(d *Dataset) bool {
 	if d.Status == "deleted" {
 		return false
 	}
-	if u.Role == "admin" {
+	if u.Role == "biblio-admin" {
 		return true
 	}
 	if d.Locked {
@@ -172,5 +172,5 @@ func (u *User) CanDeleteDataset(d *Dataset) bool {
 }
 
 func (u *User) CanImpersonateUser() bool {
-	return u.Role == "admin"
+	return u.Role == "biblio-admin"
 }
