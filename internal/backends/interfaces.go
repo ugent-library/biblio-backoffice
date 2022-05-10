@@ -32,7 +32,7 @@ type Transaction interface {
 }
 
 type Store interface {
-	Atomic(context.Context, func(Store) error) error
+	Transaction(context.Context, func(Store) error) error
 	GetPublication(string) (*models.Publication, error)
 	GetPublications([]string) ([]*models.Publication, error)
 	StorePublication(*models.Publication) error
@@ -41,18 +41,6 @@ type Store interface {
 	GetDatasets([]string) ([]*models.Dataset, error)
 	StoreDataset(*models.Dataset) error
 	EachDataset(func(*models.Dataset) bool) error
-}
-
-type StorageService interface {
-	Begin() (Transaction, error)
-	GetDataset(string) (*models.Dataset, error)
-	GetDatasets([]string) ([]*models.Dataset, error)
-	SaveDataset(*models.Dataset) (*models.Dataset, error)
-	EachDataset(func(*models.Dataset) bool) error
-	GetPublication(string) (*models.Publication, error)
-	GetPublications([]string) ([]*models.Publication, error)
-	SavePublication(*models.Publication) (*models.Publication, error)
-	EachPublication(func(*models.Publication) bool) error
 }
 
 type DatasetSearchService interface {

@@ -85,7 +85,7 @@ func (e *Engine) GetPublicationDatasets(p *models.Publication) ([]*models.Datase
 
 // TODO make model helper method and move to controller
 func (e *Engine) AddPublicationDataset(p *models.Publication, d *models.Dataset) error {
-	return e.Store.Atomic(context.Background(), func(s backends.Store) error {
+	return e.Store.Transaction(context.Background(), func(s backends.Store) error {
 		if !p.HasRelatedDataset(d.ID) {
 			p.RelatedDataset = append(p.RelatedDataset, models.RelatedDataset{ID: d.ID})
 			if err := s.StorePublication(p); err != nil {
@@ -113,7 +113,7 @@ func (e *Engine) AddPublicationDataset(p *models.Publication, d *models.Dataset)
 
 // TODO make model helper method and move to controller
 func (e *Engine) RemovePublicationDataset(p *models.Publication, d *models.Dataset) error {
-	return e.Store.Atomic(context.Background(), func(s backends.Store) error {
+	return e.Store.Transaction(context.Background(), func(s backends.Store) error {
 		if p.HasRelatedDataset(d.ID) {
 			p.RemoveRelatedDataset(d.ID)
 			if err := s.StorePublication(p); err != nil {

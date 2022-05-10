@@ -3,8 +3,10 @@ package snapstore
 import (
 	"context"
 	"encoding/json"
+	"time"
 
 	"github.com/jackc/pgconn"
+	"github.com/jackc/pgtype"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
 )
@@ -38,7 +40,7 @@ type Options struct {
 }
 
 func New(db *pgxpool.Pool, stores []string) *Client {
-	c := &Client{db: db}
+	c := &Client{db: db, stores: make(map[string]*Store)}
 	for _, name := range stores {
 		c.stores[name] = c.newStore(name)
 	}
@@ -187,14 +189,14 @@ func (s *Store) GetVersion(affinityID, id string, data interface{}, o Options) e
 	order by date_created desc
 	limit 1`
 
-	if err := db.QueryRow(ctx, sql, affinityID, id).Scan(&data); err != nil {
+	if err := db.QueryRow(ctx, sql, affinityID, id).Scan(&d); err != nil {
 		return err
 	}
 
 	return json.Unmarshal(d, data)
 }
 
-func (s *Store) GetSnapshot(id string, data interface{}, o Options) error {
+func (s *Store) Get(id string, data interface{}, o Options) error {
 	var d json.RawMessage
 
 	var (
@@ -214,17 +216,44 @@ func (s *Store) GetSnapshot(id string, data interface{}, o Options) error {
 
 	sql := `
 	select data from ` + s.snapshotsTable + `
-	where date_until is 'infinity'::timezonetz and id=$1
+	where date_until = 'infinity'::timestamptz and id = $1
 	limit 1`
 
-	if err := db.QueryRow(ctx, sql, id).Scan(&data); err != nil {
+	if err := db.QueryRow(ctx, sql, id).Scan(&d); err != nil {
 		return err
 	}
 
 	return json.Unmarshal(d, data)
 }
 
-func (s *Store) AllSnapshots(o Options) *Cursor {
+func (s *Store) GetByID(ids []string, o Options) *Cursor {
+	var (
+		ctx context.Context
+		db  DB
+	)
+	if o.Context == nil {
+		ctx = context.Background()
+	} else {
+		ctx = o.Context
+	}
+	if o.Transaction == nil {
+		db = s.db
+	} else {
+		db = o.Transaction.db
+	}
+
+	pgIds := &pgtype.TextArray{}
+	pgIds.Set(ids)
+	sql := `
+	select data from ` + s.snapshotsTable + `
+	where date_until = 'infinity'::timestamptz and id = any($1)`
+
+	c := &Cursor{}
+	c.rows, c.err = db.Query(ctx, sql, pgIds)
+	return c
+}
+
+func (s *Store) GetAll(o Options) *Cursor {
 	var (
 		ctx context.Context
 		db  DB
@@ -242,7 +271,7 @@ func (s *Store) AllSnapshots(o Options) *Cursor {
 
 	sql := `
 	select data from ` + s.snapshotsTable + `
-	where date_until is 'infinity'::timezonetz`
+	where date_until = 'infinity'::timestamptz`
 
 	c := &Cursor{}
 	c.rows, c.err = db.Query(ctx, sql)
@@ -278,4 +307,11 @@ func (c *Cursor) Err() error {
 		return c.err
 	}
 	return c.rows.Err()
+}
+
+type Snapshot struct {
+	ID        string
+	Data      json.RawMessage
+	DateFrom  time.Time
+	DateUntil time.Time
 }

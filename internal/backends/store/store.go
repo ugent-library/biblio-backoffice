@@ -2,27 +2,18 @@ package store
 
 import (
 	"context"
-	"encoding/json"
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgconn"
-	"github.com/jackc/pgtype"
-	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backend/internal/snapstore"
 )
 
-type dbOrTx interface {
-	Begin(context.Context) (pgx.Tx, error)
-	Exec(context.Context, string, ...interface{}) (pgconn.CommandTag, error)
-	QueryRow(context.Context, string, ...interface{}) pgx.Row
-	Query(context.Context, string, ...interface{}) (pgx.Rows, error)
-}
-
 type Store struct {
-	db dbOrTx
+	client *snapstore.Client
+	opts   snapstore.Options
 }
 
 func New(dsn string) (*Store, error) {
@@ -30,67 +21,38 @@ func New(dsn string) (*Store, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Store{db: db}, nil
+	return &Store{client: snapstore.New(db, []string{"publication", "dataset"})}, nil
 }
 
-func (s *Store) Atomic(ctx context.Context, fn func(backends.Store) error) error {
-	tx, err := s.db.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback(ctx)
-
-	if err := fn(&Store{db: tx}); err == nil {
-		tx.Commit(ctx)
-	}
-
-	return nil
+func (s *Store) Transaction(ctx context.Context, fn func(backends.Store) error) error {
+	return s.client.Transaction(ctx, func(opts snapstore.Options) error {
+		return fn(&Store{client: s.client, opts: opts})
+	})
 }
 
 func (s *Store) GetPublication(id string) (*models.Publication, error) {
-	var data json.RawMessage
-	err := s.db.QueryRow(context.Background(), "select data from publications where data_to is null and id=$1", id).Scan(&data)
-	if err != nil {
+	p := &models.Publication{}
+	if err := s.client.Store("publication").Get(id, p, s.opts); err != nil {
 		return nil, err
 	}
-
-	d := &models.Publication{}
-	if err := json.Unmarshal(data, d); err != nil {
-		return nil, err
-	}
-	return d, nil
+	return p, nil
 }
 
 func (s *Store) GetPublications(ids []string) ([]*models.Publication, error) {
+	c := s.client.Store("publication").GetByID(ids, s.opts)
+	defer c.Close()
 	var publications []*models.Publication
-
-	pgIds := &pgtype.TextArray{}
-	pgIds.Set(ids)
-	rows, err := s.db.Query(context.Background(), "select data from publications where data_to is null and id=any($1)", pgIds)
-	if err != nil {
-		return nil, err
-	}
-
-	defer rows.Close()
-
-	for rows.Next() {
-		var data json.RawMessage
-		if err := rows.Scan(&data); err != nil {
-			return nil, err
-		}
-
+	for c.Next() {
 		d := &models.Publication{}
-		if err := json.Unmarshal(data, d); err != nil {
+		if err := c.Scan(d); err == nil {
+			publications = append(publications, d)
+		} else {
 			return nil, err
 		}
-
-		publications = append(publications, d)
 	}
-
-	if rows.Err() != nil {
-		return nil, rows.Err()
+	if c.Err() != nil {
+		return nil, c.Err()
 	}
-
 	return publications, nil
 }
 
@@ -106,21 +68,12 @@ func (s *Store) StorePublication(p *models.Publication) error {
 		p.ID = uuid.NewString()
 	}
 
-	data, err := json.Marshal(p)
-	if err != nil {
+	affinityID := uuid.NewString()
+	store := s.client.Store("publication")
+	if err := store.AddVersion(affinityID, p.ID, p, s.opts); err != nil {
 		return err
 	}
-
-	ctx := context.Background()
-	tx, err := s.db.Begin(ctx)
-	defer tx.Rollback(ctx)
-	if _, err = tx.Exec(ctx, "update publications set data_to = $2 where id = $1 and data_to is null", p.ID, now); err != nil {
-		return err
-	}
-	if _, err = tx.Exec(ctx, "insert into publications(id, data, data_from) values ($1, $2, $3)", p.ID, data, now); err != nil {
-		return err
-	}
-	if err = tx.Commit(ctx); err != nil {
+	if err := store.AddSnapshot(affinityID, p.ID, snapstore.StrategyMine, s.opts); err != nil {
 		return err
 	}
 
@@ -128,76 +81,44 @@ func (s *Store) StorePublication(p *models.Publication) error {
 }
 
 func (s *Store) EachPublication(fn func(*models.Publication) bool) error {
-	rows, err := s.db.Query(context.Background(), "select data from publications where data_to is null")
-	if err != nil {
-		return err
-	}
-
-	defer rows.Close()
-
-	for rows.Next() {
-		var data json.RawMessage
-		if err := rows.Scan(&data); err != nil {
+	c := s.client.Store("publication").GetAll(s.opts)
+	defer c.Close()
+	for c.Next() {
+		p := &models.Publication{}
+		if err := c.Scan(p); err == nil {
+			if ok := fn(p); !ok {
+				break
+			}
+		} else {
 			return err
 		}
-
-		d := &models.Publication{}
-		if err := json.Unmarshal(data, d); err != nil {
-			return err
-		}
-
-		if ok := fn(d); !ok {
-			return nil
-		}
 	}
-
-	return rows.Err()
+	return c.Err()
 }
 
 func (s *Store) GetDataset(id string) (*models.Dataset, error) {
-	var data json.RawMessage
-	err := s.db.QueryRow(context.Background(), "select data from datasets where data_to is null and id=$1", id).Scan(&data)
-	if err != nil {
-		return nil, err
-	}
-
 	d := &models.Dataset{}
-	if err := json.Unmarshal(data, d); err != nil {
+	if err := s.client.Store("dataset").Get(id, d, s.opts); err != nil {
 		return nil, err
 	}
 	return d, nil
 }
 
 func (s *Store) GetDatasets(ids []string) ([]*models.Dataset, error) {
+	c := s.client.Store("dataset").GetByID(ids, s.opts)
+	defer c.Close()
 	var datasets []*models.Dataset
-
-	pgIds := &pgtype.TextArray{}
-	pgIds.Set(ids)
-	rows, err := s.db.Query(context.Background(), "select data from datasets where data_to is null and id=any($1)", pgIds)
-	if err != nil {
-		return nil, err
-	}
-
-	defer rows.Close()
-
-	for rows.Next() {
-		var data json.RawMessage
-		if err := rows.Scan(&data); err != nil {
-			return nil, err
-		}
-
+	for c.Next() {
 		d := &models.Dataset{}
-		if err := json.Unmarshal(data, d); err != nil {
+		if err := c.Scan(d); err == nil {
+			datasets = append(datasets, d)
+		} else {
 			return nil, err
 		}
-
-		datasets = append(datasets, d)
 	}
-
-	if rows.Err() != nil {
-		return nil, rows.Err()
+	if c.Err() != nil {
+		return nil, c.Err()
 	}
-
 	return datasets, nil
 }
 
@@ -213,21 +134,12 @@ func (s *Store) StoreDataset(d *models.Dataset) error {
 		d.ID = uuid.NewString()
 	}
 
-	data, err := json.Marshal(d)
-	if err != nil {
+	affinityID := uuid.NewString()
+	store := s.client.Store("dataset")
+	if err := store.AddVersion(affinityID, d.ID, d, s.opts); err != nil {
 		return err
 	}
-
-	ctx := context.Background()
-	tx, err := s.db.Begin(ctx)
-	defer tx.Rollback(ctx)
-	if _, err = tx.Exec(ctx, "update datasets set data_to = $2 where id = $1 and data_to is null", d.ID, now); err != nil {
-		return err
-	}
-	if _, err = tx.Exec(ctx, "insert into datasets(id, data, data_from) values ($1, $2, $3)", d.ID, data, now); err != nil {
-		return err
-	}
-	if err = tx.Commit(ctx); err != nil {
+	if err := store.AddSnapshot(affinityID, d.ID, snapstore.StrategyMine, s.opts); err != nil {
 		return err
 	}
 
@@ -235,28 +147,17 @@ func (s *Store) StoreDataset(d *models.Dataset) error {
 }
 
 func (s *Store) EachDataset(fn func(*models.Dataset) bool) error {
-	rows, err := s.db.Query(context.Background(), "select data from datasets where data_to is null")
-	if err != nil {
-		return err
-	}
-
-	defer rows.Close()
-
-	for rows.Next() {
-		var data json.RawMessage
-		if err := rows.Scan(&data); err != nil {
-			return err
-		}
-
+	c := s.client.Store("dataset").GetAll(s.opts)
+	defer c.Close()
+	for c.Next() {
 		d := &models.Dataset{}
-		if err := json.Unmarshal(data, d); err != nil {
+		if err := c.Scan(d); err == nil {
+			if ok := fn(d); !ok {
+				break
+			}
+		} else {
 			return err
 		}
-
-		if ok := fn(d); !ok {
-			return nil
-		}
 	}
-
-	return rows.Err()
+	return c.Err()
 }
