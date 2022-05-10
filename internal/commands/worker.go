@@ -30,7 +30,7 @@ var snapstoreCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal(err)
 		}
-		c := snapstore.New(db)
+		c := snapstore.New(db, []string{"publication", "dataset"})
 		publicationStore := c.Store("publication")
 		datasetStore := c.Store("dataset")
 

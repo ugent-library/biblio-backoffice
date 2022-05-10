@@ -3,16 +3,17 @@ package snapstore
 import (
 	"context"
 	"encoding/json"
-	"errors"
 
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v4/pgxpool"
 )
 
 type Strategy int
 
 const (
 	StrategyMine Strategy = iota
+	StrategyAbort
 )
 
 type DB interface {
@@ -23,7 +24,8 @@ type DB interface {
 }
 
 type Client struct {
-	db DB
+	db     *pgxpool.Pool
+	stores map[string]*Store
 }
 
 type Transaction struct {
@@ -35,17 +37,25 @@ type Options struct {
 	Transaction *Transaction
 }
 
-func New(db DB) *Client {
-	return &Client{db: db}
+func New(db *pgxpool.Pool, stores []string) *Client {
+	c := &Client{db: db}
+	for _, name := range stores {
+		c.stores[name] = c.newStore(name)
+	}
+	return c
 }
 
-func (c *Client) Store(name string) *Store {
+func (c *Client) newStore(name string) *Store {
 	return &Store{
 		db:             c.db,
 		name:           name,
 		versionsTable:  pgx.Identifier.Sanitize([]string{name + "_versions"}),
 		snapshotsTable: pgx.Identifier.Sanitize([]string{name + "_snapshots"}),
 	}
+}
+
+func (c *Client) Store(name string) *Store {
+	return c.stores[name]
 }
 
 func (c *Client) Transaction(ctx context.Context, fn func(Options) error) error {
@@ -120,36 +130,35 @@ func (s *Store) AddSnapshot(affinityID, id string, strategy Strategy, o Options)
 		db = o.Transaction.db
 	}
 
-	switch strategy {
-	case StrategyMine:
-		sql := `
-		with version as (
-			select version_id, id, data 
-			from ` + s.versionsTable + `
-			where affinity_id = $1 and id = $2
-			order by date_created desc
-			limit 1
-		), snapshot as (
-		   insert into ` + s.snapshotsTable + `(id, data)
-		   select id, data
-		   from version
-		   returning snapshot_id, date_from
-		), old_snapshots as (
-			update ` + s.snapshotsTable + `
-			set date_until=snapshot.date_from
-			from snapshot
-			where ` + s.snapshotsTable + `.id = $2 and ` + s.snapshotsTable + `.snapshot_id != snapshot.snapshot_id
-		)
-		update ` + s.versionsTable + `
-		set snapshot_id=snapshot.snapshot_id
-		from version, snapshot
-		where ` + s.versionsTable + `.version_id = version.version_id`
+	if strategy == StrategyAbort {
+		// TODO check if another affinity has already added a version after the last snapshot
+	}
 
-		if _, err := db.Exec(ctx, sql, affinityID, id); err != nil {
-			return err
-		}
-	default:
-		return errors.New("unknown strategy")
+	sql := `
+	with version as (
+		select version_id, id, data 
+		from ` + s.versionsTable + `
+		where affinity_id = $1 and id = $2
+		order by date_created desc
+		limit 1
+	), snapshot as (
+	   insert into ` + s.snapshotsTable + `(id, data)
+	   select id, data
+	   from version
+	   returning snapshot_id, date_from
+	), old_snapshots as (
+		update ` + s.snapshotsTable + `
+		set date_until=snapshot.date_from
+		from snapshot
+		where ` + s.snapshotsTable + `.id = $2 and ` + s.snapshotsTable + `.snapshot_id != snapshot.snapshot_id
+	)
+	update ` + s.versionsTable + `
+	set snapshot_id=snapshot.snapshot_id
+	from version, snapshot
+	where ` + s.versionsTable + `.version_id = version.version_id`
+
+	if _, err := db.Exec(ctx, sql, affinityID, id); err != nil {
+		return err
 	}
 
 	return nil
