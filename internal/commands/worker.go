@@ -1,13 +1,9 @@
 package commands
 
 import (
-	"context"
 	"log"
 
-	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/spf13/cobra"
-	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/biblio-backend/internal/snapstore"
 	"github.com/ugent-library/biblio-backend/internal/workers/dataset"
 	"github.com/ugent-library/biblio-backend/internal/workers/orcid"
 	"go.temporal.io/sdk/worker"
@@ -18,44 +14,6 @@ func init() {
 	startWorkerCmd.AddCommand(startORCIDWorkerCmd)
 	workerCmd.AddCommand(startWorkerCmd)
 	rootCmd.AddCommand(workerCmd)
-	rootCmd.AddCommand(snapstoreCmd)
-}
-
-var snapstoreCmd = &cobra.Command{
-	Use:   "snapstore",
-	Short: "start biblio-backend orcid Temporal worker",
-	Run: func(cmd *cobra.Command, args []string) {
-		dsn := "postgres://nsteenla:@localhost:5432/biblio_snapstore?sslmode=disable"
-		db, err := pgxpool.Connect(context.Background(), dsn)
-		if err != nil {
-			log.Fatal(err)
-		}
-		c := snapstore.New(db, []string{"publication", "dataset"})
-		publicationStore := c.Store("publication")
-		datasetStore := c.Store("dataset")
-
-		pID := "publication-1"
-		dID := "dataset-1"
-		p := &models.Publication{Title: "Test publication"}
-		d := &models.Dataset{Title: "Test dataset"}
-
-		err = c.Transaction(context.Background(), func(o snapstore.Options) error {
-			if err := publicationStore.AddVersion("nsteenla", pID, p, o); err != nil {
-				return err
-			}
-			if err := datasetStore.AddVersion("nsteenla", dID, d, o); err != nil {
-				return err
-			}
-			return nil
-		})
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		if err := publicationStore.AddSnapshot("nsteenla", pID, snapstore.StrategyMine, snapstore.Options{}); err != nil {
-			log.Fatal(err)
-		}
-	},
 }
 
 var workerCmd = &cobra.Command{
