@@ -3,7 +3,6 @@ package backends
 import (
 	"context"
 	"io"
-	"net/http"
 
 	"github.com/ugent-library/biblio-backend/internal/models"
 )
@@ -22,13 +21,6 @@ type DatasetGetter interface {
 
 type PublicationGetter interface {
 	GetPublication(string) (*models.Publication, error)
-}
-
-type Transaction interface {
-	Rollback() error
-	Commit() error
-	SavePublication(p *models.Publication) (*models.Publication, error)
-	SaveDataset(d *models.Dataset) (*models.Dataset, error)
 }
 
 type Store interface {
@@ -53,25 +45,6 @@ type PublicationSearchService interface {
 	SearchPublications(*models.SearchArgs) (*models.PublicationHits, error)
 	IndexPublication(*models.Publication) error
 	IndexPublications(<-chan *models.Publication)
-}
-
-type PublicationService interface {
-	GetPublication(string) (*models.Publication, error)
-	GetPublicationDatasets(string) ([]*models.Dataset, error)
-	GetDatasetPublications(string) ([]*models.Publication, error)
-	CreateUserPublication(string, string) (*models.Publication, error)
-	ImportUserPublicationByIdentifier(string, string, string) (*models.Publication, error)
-	ImportUserPublications(string, string, io.Reader) (string, error)
-	UpdatePublication(*models.Publication) (*models.Publication, error)
-	PublishPublication(*models.Publication) (*models.Publication, error)
-	BatchPublishPublications(string, *models.SearchArgs) error
-	AddPublicationDataset(string, string) error
-	RemovePublicationDataset(string, string) error
-	ServePublicationFile(string, http.ResponseWriter, *http.Request)
-	AddPublicationFile(string, *models.PublicationFile, io.Reader) error
-	UpdatePublicationFile(string, *models.PublicationFile) error
-	RemovePublicationFile(id, fileID string) error
-	DeletePublication(string) error
 }
 
 type PersonService interface {
