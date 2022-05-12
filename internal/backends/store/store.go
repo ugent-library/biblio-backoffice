@@ -21,7 +21,7 @@ func New(dsn string) (*Store, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Store{client: snapstore.New(db, []string{"publication", "dataset"})}, nil
+	return &Store{client: snapstore.New(db, []string{"publications", "datasets"})}, nil
 }
 
 func (s *Store) Transaction(ctx context.Context, fn func(backends.Store) error) error {
@@ -32,14 +32,19 @@ func (s *Store) Transaction(ctx context.Context, fn func(backends.Store) error) 
 
 func (s *Store) GetPublication(id string) (*models.Publication, error) {
 	p := &models.Publication{}
-	if err := s.client.Store("publication").Get(id, p, s.opts); err != nil {
+	snap, err := s.client.Store("publications").Get(id, s.opts)
+	if err != nil {
 		return nil, err
 	}
+	if err := snap.Scan(p); err != nil {
+		return nil, err
+	}
+	p.SnapshotID = snap.SnapshotID
 	return p, nil
 }
 
 func (s *Store) GetPublications(ids []string) ([]*models.Publication, error) {
-	c := s.client.Store("publication").GetByID(ids, s.opts)
+	c := s.client.Store("publications").GetByID(ids, s.opts)
 	defer c.Close()
 	var publications []*models.Publication
 	for c.Next() {
@@ -68,12 +73,17 @@ func (s *Store) StorePublication(p *models.Publication) error {
 		p.ID = uuid.NewString()
 	}
 
-	affinityID := uuid.NewString()
-	store := s.client.Store("publication")
-	if err := store.AddVersion(affinityID, p.ID, p, s.opts); err != nil {
-		return err
+	store := s.client.Store("publications")
+
+	// TODO this needs to be a separate update action
+	if p.SnapshotID != "" {
+		if err := store.UpdateSnapshot(p.SnapshotID, p, s.opts); err != nil {
+			return err
+		}
+		return nil
 	}
-	if err := store.AddSnapshot(affinityID, p.ID, snapstore.StrategyMine, s.opts); err != nil {
+
+	if err := store.Add(p.ID, p, s.opts); err != nil {
 		return err
 	}
 
@@ -81,7 +91,7 @@ func (s *Store) StorePublication(p *models.Publication) error {
 }
 
 func (s *Store) EachPublication(fn func(*models.Publication) bool) error {
-	c := s.client.Store("publication").GetAll(s.opts)
+	c := s.client.Store("publications").GetAll(s.opts)
 	defer c.Close()
 	for c.Next() {
 		p := &models.Publication{}
@@ -98,14 +108,19 @@ func (s *Store) EachPublication(fn func(*models.Publication) bool) error {
 
 func (s *Store) GetDataset(id string) (*models.Dataset, error) {
 	d := &models.Dataset{}
-	if err := s.client.Store("dataset").Get(id, d, s.opts); err != nil {
+	snap, err := s.client.Store("datasets").Get(id, s.opts)
+	if err != nil {
 		return nil, err
 	}
+	if err := snap.Scan(d); err != nil {
+		return nil, err
+	}
+	d.SnapshotID = snap.SnapshotID
 	return d, nil
 }
 
 func (s *Store) GetDatasets(ids []string) ([]*models.Dataset, error) {
-	c := s.client.Store("dataset").GetByID(ids, s.opts)
+	c := s.client.Store("datasets").GetByID(ids, s.opts)
 	defer c.Close()
 	var datasets []*models.Dataset
 	for c.Next() {
@@ -123,6 +138,7 @@ func (s *Store) GetDatasets(ids []string) ([]*models.Dataset, error) {
 }
 
 func (s *Store) StoreDataset(d *models.Dataset) error {
+
 	now := time.Now()
 
 	if d.DateCreated == nil {
@@ -134,12 +150,17 @@ func (s *Store) StoreDataset(d *models.Dataset) error {
 		d.ID = uuid.NewString()
 	}
 
-	affinityID := uuid.NewString()
-	store := s.client.Store("dataset")
-	if err := store.AddVersion(affinityID, d.ID, d, s.opts); err != nil {
-		return err
+	store := s.client.Store("datasets")
+
+	// TODO this needs to be a separate update action
+	if d.SnapshotID != "" {
+		if err := store.UpdateSnapshot(d.SnapshotID, d, s.opts); err != nil {
+			return err
+		}
+		return nil
 	}
-	if err := store.AddSnapshot(affinityID, d.ID, snapstore.StrategyMine, s.opts); err != nil {
+
+	if err := store.Add(d.ID, d, s.opts); err != nil {
 		return err
 	}
 
@@ -147,7 +168,7 @@ func (s *Store) StoreDataset(d *models.Dataset) error {
 }
 
 func (s *Store) EachDataset(fn func(*models.Dataset) bool) error {
-	c := s.client.Store("dataset").GetAll(s.opts)
+	c := s.client.Store("datasets").GetAll(s.opts)
 	defer c.Close()
 	for c.Next() {
 		d := &models.Dataset{}

@@ -25,16 +25,18 @@ func NewDatasetAbstracts(c Context) *DatasetAbstracts {
 
 // Show the "Add abstract" modal
 func (c *DatasetAbstracts) Add(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
+	dataset := context.GetDataset(r.Context())
 
 	abstract := &models.Text{}
 
 	c.Render.HTML(w, http.StatusOK, "dataset/abstracts/_form", c.ViewData(r, struct {
+		ETag      string
 		DatasetID string
 		Abstract  *models.Text
 		Form      *views.FormBuilder
 	}{
-		id,
+		dataset.SnapshotID,
+		dataset.ID,
 		abstract,
 		views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), nil),
 	}),
@@ -44,7 +46,8 @@ func (c *DatasetAbstracts) Add(w http.ResponseWriter, r *http.Request) {
 
 // Save an abstract to Librecat
 func (c *DatasetAbstracts) Create(w http.ResponseWriter, r *http.Request) {
-	dataset := context.GetDataset(r.Context())
+	dataset := context.GetDataset(r.Context()).Clone()
+	dataset.SnapshotID = r.Header.Get("If-Match")
 
 	err := r.ParseForm()
 	if err != nil {
@@ -110,11 +113,13 @@ func (c *DatasetAbstracts) Edit(w http.ResponseWriter, r *http.Request) {
 	abstract := &dataset.Abstract[rowDelta]
 
 	c.Render.HTML(w, http.StatusOK, "dataset/abstracts/_form_edit", c.ViewData(r, struct {
+		ETag      string
 		DatasetID string
 		Delta     string
 		Abstract  *models.Text
 		Form      *views.FormBuilder
 	}{
+		dataset.SnapshotID,
 		dataset.ID,
 		muxRowDelta,
 		abstract,
@@ -129,7 +134,8 @@ func (c *DatasetAbstracts) Update(w http.ResponseWriter, r *http.Request) {
 	muxRowDelta := mux.Vars(r)["delta"]
 	rowDelta, _ := strconv.Atoi(muxRowDelta)
 
-	dataset := context.GetDataset(r.Context())
+	dataset := context.GetDataset(r.Context()).Clone()
+	dataset.SnapshotID = r.Header.Get("If-Match")
 
 	err := r.ParseForm()
 	if err != nil {
@@ -157,11 +163,13 @@ func (c *DatasetAbstracts) Update(w http.ResponseWriter, r *http.Request) {
 		c.Render.HTML(w, http.StatusOK,
 			"dataset/abstracts/_form_edit",
 			c.ViewData(r, struct {
+				ETag      string
 				DatasetID string
 				Delta     string
 				Abstract  *models.Text
 				Form      *views.FormBuilder
 			}{
+				savedDataset.SnapshotID,
 				savedDataset.ID,
 				strconv.Itoa(rowDelta),
 				abstract,
@@ -189,14 +197,16 @@ func (c *DatasetAbstracts) Update(w http.ResponseWriter, r *http.Request) {
 
 // // Show the "Confirm remove" modal
 func (c *DatasetAbstracts) ConfirmRemove(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
+	dataset := context.GetDataset(r.Context())
 	muxRowDelta := mux.Vars(r)["delta"]
 
 	c.Render.HTML(w, http.StatusOK, "dataset/abstracts/_modal_confirm_removal", c.ViewData(r, struct {
-		ID  string
-		Key string
+		ETag string
+		ID   string
+		Key  string
 	}{
-		id,
+		dataset.SnapshotID,
+		dataset.ID,
 		muxRowDelta,
 	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
@@ -209,6 +219,7 @@ func (c *DatasetAbstracts) Remove(w http.ResponseWriter, r *http.Request) {
 	rowDelta, _ := strconv.Atoi(muxRowDelta)
 
 	pub := context.GetDataset(r.Context())
+	pub.SnapshotID = r.Header.Get("If-Match")
 
 	abstracts := make([]models.Text, len(pub.Abstract))
 	copy(abstracts, pub.Abstract)

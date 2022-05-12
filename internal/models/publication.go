@@ -75,18 +75,17 @@ type RelatedDataset struct {
 }
 
 type Publication struct {
-	Abstract          []Text                `json:"abstract,omitempty" form:"abstract"`
-	AdditionalInfo    string                `json:"additional_info,omitempty" form:"additional_info"`
-	AlternativeTitle  []string              `json:"alternative_title,omitempty" form:"alternative_title"`
-	ArticleNumber     string                `json:"article_number,omitempty" form:"article_number"`
-	ArxivID           string                `json:"arxiv_id,omitempty" form:"arxiv_id"`
-	Author            []*Contributor        `json:"author,omitempty" form:"-"`
-	BatchID           string                `json:"batch_id,omitempty" form:"-"`
-	Classification    string                `json:"classification,omitempty" form:"classification"`
-	CompletenessScore int                   `json:"completeness_score,omitempty" form:"-"`
-	Conference        PublicationConference `json:"conference,omitempty" form:"conference"`
-	ConferenceType    string                `json:"conference_type,omitempty" form:"conference_type"`
-	// CreationContext         string                  `json:"creation_context,omitempty" form:"-"`
+	Abstract                []Text                  `json:"abstract,omitempty" form:"abstract"`
+	AdditionalInfo          string                  `json:"additional_info,omitempty" form:"additional_info"`
+	AlternativeTitle        []string                `json:"alternative_title,omitempty" form:"alternative_title"`
+	ArticleNumber           string                  `json:"article_number,omitempty" form:"article_number"`
+	ArxivID                 string                  `json:"arxiv_id,omitempty" form:"arxiv_id"`
+	Author                  []*Contributor          `json:"author,omitempty" form:"-"`
+	BatchID                 string                  `json:"batch_id,omitempty" form:"-"`
+	Classification          string                  `json:"classification,omitempty" form:"classification"`
+	CompletenessScore       int                     `json:"completeness_score,omitempty" form:"-"`
+	Conference              PublicationConference   `json:"conference,omitempty" form:"conference"`
+	ConferenceType          string                  `json:"conference_type,omitempty" form:"conference_type"`
 	CreatorID               string                  `json:"creator_id,omitempty" form:"-"`
 	DateCreated             *time.Time              `json:"date_created,omitempty" form:"-"`
 	DateUpdated             *time.Time              `json:"date_updated,omitempty" form:"-"`
@@ -137,6 +136,7 @@ type Publication struct {
 	ReviewerNote            string                  `json:"reviewer_note,omitempty" form:"-"`
 	ReviewerTags            []string                `json:"reviewer_tags,omitempty" form:"-"`
 	SeriesTitle             string                  `json:"series_title,omitempty" form:"series_title"`
+	SnapshotID              string                  `json:"-" form:"-"`
 	SourceDB                string                  `json:"source_db,omitempty" form:"-"`
 	SourceID                string                  `json:"source_id,omitempty" form:"-"`
 	SourceRecord            string                  `json:"source_record,omitempty" form:"-"`
@@ -146,11 +146,10 @@ type Publication struct {
 	Type                    string                  `json:"type,omitempty" form:"-"`
 	URL                     string                  `json:"url,omitempty" form:"url"`
 	UserID                  string                  `json:"user_id,omitempty" form:"-"`
-	// Version                 int                     `json:"_version,omitempty" form:"-"`
-	Volume  string `json:"volume,omitempty" form:"volume"`
-	WOSID   string `json:"wos_id,omitempty" form:"wos_id"`
-	WOSType string `json:"wos_type,omitempty" form:"-"`
-	Year    string `json:"year,omitempty" form:"year"`
+	Volume                  string                  `json:"volume,omitempty" form:"volume"`
+	WOSID                   string                  `json:"wos_id,omitempty" form:"wos_id"`
+	WOSType                 string                  `json:"wos_type,omitempty" form:"-"`
+	Year                    string                  `json:"year,omitempty" form:"year"`
 }
 
 func (p *Publication) Clone() *Publication {

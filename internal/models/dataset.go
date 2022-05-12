@@ -29,12 +29,11 @@ type RelatedPublication struct {
 }
 
 type Dataset struct {
-	Abstract          []Text         `json:"abstract,omitempty" form:"abstract"`
-	AccessLevel       string         `json:"access_level,omitempty" form:"access_level"`
-	Author            []*Contributor `json:"author,omitempty" form:"-"` // TODO rename to Creator
-	CompletenessScore int            `json:"completeness_score,omitempty" form:"-"`
-	Contributor       []*Contributor `json:"contributor,omitempty" form:"-"`
-	// CreationContext         string              `json:"creation_context,omitempty" form:"-"`
+	Abstract           []Text               `json:"abstract,omitempty" form:"abstract"`
+	AccessLevel        string               `json:"access_level,omitempty" form:"access_level"`
+	Author             []*Contributor       `json:"author,omitempty" form:"-"` // TODO rename to Creator
+	CompletenessScore  int                  `json:"completeness_score,omitempty" form:"-"`
+	Contributor        []*Contributor       `json:"contributor,omitempty" form:"-"`
 	CreatorID          string               `json:"creator_id,omitempty" form:"-"`
 	DateCreated        *time.Time           `json:"date_created,omitempty" form:"-"`
 	DateUpdated        *time.Time           `json:"date_updated,omitempty" form:"-"`
@@ -54,12 +53,12 @@ type Dataset struct {
 	RelatedPublication []RelatedPublication `json:"related_publication,omitempty" form:"-"`
 	ReviewerNote       string               `json:"reviewer_note,omitempty" form:"-"`
 	ReviewerTags       []string             `json:"reviewer_tags,omitempty" form:"-"`
+	SnapshotID         string               `json:"-" form:"-"`
 	Status             string               `json:"status,omitempty" form:"-"`
 	Title              string               `json:"title,omitempty" form:"title"`
 	URL                string               `json:"url,omitempty" form:"url"`
 	UserID             string               `json:"user_id,omitempty" form:"-"`
-	// Version                 int                 `json:"_version,omitempty" form:"-"`
-	Year string `json:"year,omitempty" form:"year"`
+	Year               string               `json:"year,omitempty" form:"year"`
 }
 
 func (d *Dataset) Clone() *Dataset {

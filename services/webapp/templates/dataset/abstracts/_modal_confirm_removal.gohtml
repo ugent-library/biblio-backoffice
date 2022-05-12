@@ -12,6 +12,7 @@
             <button class="btn btn-link modal-close">Cancel</button>
             <button class="btn btn-danger delete-abstract"
                 hx-delete="{{pathFor "dataset_abstracts_remove_abstract" "id" .D.ID "delta" .D.Key}}"
+                hx-headers='{"If-Match": "{{.D.ETag}}"}'
                 hx-target=".row-{{ .D.Key }}"
                 hx-swap="outerHTML swap:.15s"
             >Delete</button>
