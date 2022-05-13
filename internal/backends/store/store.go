@@ -4,7 +4,6 @@ import (
 	"context"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/models"
@@ -12,8 +11,10 @@ import (
 )
 
 type Store struct {
-	client *snapstore.Client
-	opts   snapstore.Options
+	client           *snapstore.Client
+	publicationStore *snapstore.Store
+	datasetStore     *snapstore.Store
+	opts             snapstore.Options
 }
 
 func New(dsn string) (*Store, error) {
@@ -21,7 +22,34 @@ func New(dsn string) (*Store, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Store{client: snapstore.New(db, []string{"publications", "datasets"})}, nil
+
+	client := snapstore.New(db, []string{"publications", "datasets"})
+
+	return &Store{
+		client:           client,
+		publicationStore: client.Store("publications"),
+		datasetStore:     client.Store("datasets"),
+	}, nil
+}
+
+func (s *Store) AddPublicationListener(fn func(*models.Publication)) {
+	s.publicationStore.Listen(func(snap *snapstore.Snapshot) {
+		p := &models.Publication{}
+		if err := snap.Scan(p); err == nil {
+			p.SnapshotID = snap.SnapshotID
+			fn(p)
+		}
+	})
+}
+
+func (s *Store) AddDatasetListener(fn func(*models.Dataset)) {
+	s.datasetStore.Listen(func(snap *snapstore.Snapshot) {
+		d := &models.Dataset{}
+		if err := snap.Scan(d); err == nil {
+			d.SnapshotID = snap.SnapshotID
+			fn(d)
+		}
+	})
 }
 
 func (s *Store) Transaction(ctx context.Context, fn func(backends.Store) error) error {
@@ -32,7 +60,7 @@ func (s *Store) Transaction(ctx context.Context, fn func(backends.Store) error) 
 
 func (s *Store) GetPublication(id string) (*models.Publication, error) {
 	p := &models.Publication{}
-	snap, err := s.client.Store("publications").Get(id, s.opts)
+	snap, err := s.publicationStore.GetCurrentSnapshot(id, s.opts)
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +72,7 @@ func (s *Store) GetPublication(id string) (*models.Publication, error) {
 }
 
 func (s *Store) GetPublications(ids []string) ([]*models.Publication, error) {
-	c := s.client.Store("publications").GetByID(ids, s.opts)
+	c := s.publicationStore.GetByID(ids, s.opts)
 	defer c.Close()
 	var publications []*models.Publication
 	for c.Next() {
@@ -69,21 +97,15 @@ func (s *Store) StorePublication(p *models.Publication) error {
 	}
 	p.DateUpdated = &now
 
-	if p.ID == "" {
-		p.ID = uuid.NewString()
-	}
-
-	store := s.client.Store("publications")
-
 	// TODO this needs to be a separate update action
 	if p.SnapshotID != "" {
-		if err := store.UpdateSnapshot(p.SnapshotID, p, s.opts); err != nil {
+		if err := s.publicationStore.AddAfter(p.SnapshotID, p.ID, p, s.opts); err != nil {
 			return err
 		}
 		return nil
 	}
 
-	if err := store.Add(p.ID, p, s.opts); err != nil {
+	if err := s.publicationStore.Add(p.ID, p, s.opts); err != nil {
 		return err
 	}
 
@@ -91,7 +113,7 @@ func (s *Store) StorePublication(p *models.Publication) error {
 }
 
 func (s *Store) EachPublication(fn func(*models.Publication) bool) error {
-	c := s.client.Store("publications").GetAll(s.opts)
+	c := s.publicationStore.GetAll(s.opts)
 	defer c.Close()
 	for c.Next() {
 		p := &models.Publication{}
@@ -108,7 +130,7 @@ func (s *Store) EachPublication(fn func(*models.Publication) bool) error {
 
 func (s *Store) GetDataset(id string) (*models.Dataset, error) {
 	d := &models.Dataset{}
-	snap, err := s.client.Store("datasets").Get(id, s.opts)
+	snap, err := s.datasetStore.GetCurrentSnapshot(id, s.opts)
 	if err != nil {
 		return nil, err
 	}
@@ -120,7 +142,7 @@ func (s *Store) GetDataset(id string) (*models.Dataset, error) {
 }
 
 func (s *Store) GetDatasets(ids []string) ([]*models.Dataset, error) {
-	c := s.client.Store("datasets").GetByID(ids, s.opts)
+	c := s.datasetStore.GetByID(ids, s.opts)
 	defer c.Close()
 	var datasets []*models.Dataset
 	for c.Next() {
@@ -138,7 +160,6 @@ func (s *Store) GetDatasets(ids []string) ([]*models.Dataset, error) {
 }
 
 func (s *Store) StoreDataset(d *models.Dataset) error {
-
 	now := time.Now()
 
 	if d.DateCreated == nil {
@@ -146,21 +167,15 @@ func (s *Store) StoreDataset(d *models.Dataset) error {
 	}
 	d.DateUpdated = &now
 
-	if d.ID == "" {
-		d.ID = uuid.NewString()
-	}
-
-	store := s.client.Store("datasets")
-
 	// TODO this needs to be a separate update action
 	if d.SnapshotID != "" {
-		if err := store.UpdateSnapshot(d.SnapshotID, d, s.opts); err != nil {
+		if err := s.datasetStore.AddAfter(d.SnapshotID, d.ID, d, s.opts); err != nil {
 			return err
 		}
 		return nil
 	}
 
-	if err := store.Add(d.ID, d, s.opts); err != nil {
+	if err := s.datasetStore.Add(d.ID, d, s.opts); err != nil {
 		return err
 	}
 
@@ -168,7 +183,7 @@ func (s *Store) StoreDataset(d *models.Dataset) error {
 }
 
 func (s *Store) EachDataset(fn func(*models.Dataset) bool) error {
-	c := s.client.Store("datasets").GetAll(s.opts)
+	c := s.datasetStore.GetAll(s.opts)
 	defer c.Close()
 	for c.Next() {
 		d := &models.Dataset{}

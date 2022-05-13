@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/validation"
@@ -240,7 +241,14 @@ func (c *Publications) AddSingleImport(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		p := &models.Publication{Type: pubType, Status: "private", CreatorID: userID, UserID: userID}
+		p := &models.Publication{
+			ID:             uuid.NewString(),
+			Type:           pubType,
+			Status:         "private",
+			Classification: "U",
+			CreatorID:      userID,
+			UserID:         userID,
+		}
 		if err := c.Engine.Store.StorePublication(p); err != nil {
 			log.Println(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)

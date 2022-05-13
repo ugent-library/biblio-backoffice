@@ -26,10 +26,10 @@ func (e *Engine) UpdatePublication(p *models.Publication) error {
 		return err
 	}
 
-	if err := e.PublicationSearchService.IndexPublication(p); err != nil {
-		log.Printf("error indexing publication %+v", err)
-		return err
-	}
+	// if err := e.PublicationSearchService.IndexPublication(p); err != nil {
+	// 	log.Printf("error indexing publication %+v", err)
+	// 	return err
+	// }
 
 	return nil
 }
@@ -100,12 +100,12 @@ func (e *Engine) AddPublicationDataset(p *models.Publication, d *models.Dataset)
 		}
 
 		// TODO ensure consistency
-		if err := e.DatasetSearchService.IndexDataset(d); err != nil {
-			log.Printf("error indexing dataset: %v", err)
-		}
-		if err := e.PublicationSearchService.IndexPublication(p); err != nil {
-			log.Printf("error indexing publication: %v", err)
-		}
+		// if err := e.DatasetSearchService.IndexDataset(d); err != nil {
+		// 	log.Printf("error indexing dataset: %v", err)
+		// }
+		// if err := e.PublicationSearchService.IndexPublication(p); err != nil {
+		// 	log.Printf("error indexing publication: %v", err)
+		// }
 
 		return nil
 	})
@@ -128,12 +128,12 @@ func (e *Engine) RemovePublicationDataset(p *models.Publication, d *models.Datas
 		}
 
 		// TODO ensure consistency
-		if err := e.DatasetSearchService.IndexDataset(d); err != nil {
-			log.Printf("error indexing dataset: %v", err)
-		}
-		if err := e.PublicationSearchService.IndexPublication(p); err != nil {
-			log.Printf("error indexing publication: %v", err)
-		}
+		// if err := e.DatasetSearchService.IndexDataset(d); err != nil {
+		// 	log.Printf("error indexing dataset: %v", err)
+		// }
+		// if err := e.PublicationSearchService.IndexPublication(p); err != nil {
+		// 	log.Printf("error indexing publication: %v", err)
+		// }
 
 		return nil
 	})
@@ -150,6 +150,7 @@ func (e *Engine) ImportUserPublicationByIdentifier(userID, source, identifier st
 		return nil, err
 	}
 
+	p.ID = uuid.NewString()
 	p.CreatorID = userID
 	p.UserID = userID
 	p.Status = "private"
@@ -186,7 +187,7 @@ func (e *Engine) ImportUserPublications(userID, source string, file io.Reader) (
 	var importErr error
 	for {
 		p := models.Publication{
-			ID:             uuid.New().String(),
+			ID:             uuid.NewString(),
 			BatchID:        batchID,
 			Status:         "private",
 			Classification: "U",

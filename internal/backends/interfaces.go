@@ -25,10 +25,12 @@ type PublicationGetter interface {
 
 type Store interface {
 	Transaction(context.Context, func(Store) error) error
+	AddPublicationListener(func(*models.Publication))
 	GetPublication(string) (*models.Publication, error)
 	GetPublications([]string) ([]*models.Publication, error)
 	StorePublication(*models.Publication) error
 	EachPublication(func(*models.Publication) bool) error
+	AddDatasetListener(func(*models.Dataset))
 	GetDataset(string) (*models.Dataset, error)
 	GetDatasets([]string) ([]*models.Dataset, error)
 	StoreDataset(*models.Dataset) error

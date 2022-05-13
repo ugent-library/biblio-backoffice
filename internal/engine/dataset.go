@@ -5,6 +5,7 @@ import (
 	"log"
 	"sync"
 
+	"github.com/google/uuid"
 	"github.com/ugent-library/biblio-backend/internal/models"
 )
 
@@ -12,7 +13,7 @@ import (
 // 	ctx := context.Background()
 
 // 	workflowOptions := client.StartWorkflowOptions{
-// 		ID:        "store-dataset-" + uuid.New().String(),
+// 		ID:        "store-dataset-" + uuid.NewString(),
 // 		TaskQueue: "store-dataset",
 // 	}
 
@@ -35,6 +36,7 @@ func (e *Engine) ImportUserDatasetByIdentifier(userID, source, identifier string
 		return nil, err
 	}
 	d.Vacuum()
+	d.ID = uuid.NewString()
 	d.CreatorID = userID
 	d.UserID = userID
 	d.Status = "private"
@@ -43,10 +45,10 @@ func (e *Engine) ImportUserDatasetByIdentifier(userID, source, identifier string
 		return nil, err
 	}
 
-	if err := e.DatasetSearchService.IndexDataset(d); err != nil {
-		log.Printf("error indexing dataset %+v", err)
-		return nil, err
-	}
+	// if err := e.DatasetSearchService.IndexDataset(d); err != nil {
+	// 	log.Printf("error indexing dataset %+v", err)
+	// 	return nil, err
+	// }
 
 	return d, nil
 }
@@ -63,10 +65,10 @@ func (e *Engine) UpdateDataset(d *models.Dataset) (*models.Dataset, error) {
 		return nil, err
 	}
 
-	if err := e.DatasetSearchService.IndexDataset(d); err != nil {
-		log.Printf("error indexing dataset %+v", err)
-		return nil, err
-	}
+	// if err := e.DatasetSearchService.IndexDataset(d); err != nil {
+	// 	log.Printf("error indexing dataset %+v", err)
+	// 	return nil, err
+	// }
 
 	return d, nil
 }

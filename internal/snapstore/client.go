@@ -3,6 +3,8 @@ package snapstore
 import (
 	"context"
 	"encoding/json"
+	"fmt"
+	"sync"
 	"time"
 
 	"github.com/google/uuid"
@@ -27,7 +29,7 @@ func (s *Snapshot) Scan(data interface{}) error {
 type Conflict struct {
 }
 
-func (c *Conflict) Error() string {
+func (e *Conflict) Error() string {
 	return "version conflict"
 }
 
@@ -41,6 +43,14 @@ type DB interface {
 type Client struct {
 	db     *pgxpool.Pool
 	stores map[string]*Store
+}
+
+type Store struct {
+	db           DB
+	name         string
+	table        string
+	listeners    []func(*Snapshot)
+	listnenersMu sync.RWMutex
 }
 
 type Transaction struct {
@@ -62,10 +72,9 @@ func New(db *pgxpool.Pool, stores []string) *Client {
 
 func (c *Client) newStore(name string) *Store {
 	return &Store{
-		db:   c.db,
-		name: name,
-		// versionsTable:  pgx.Identifier.Sanitize([]string{name + "_versions"}),
-		// snapshotsTable: pgx.Identifier.Sanitize([]string{name + "_snapshots"}),
+		db:    c.db,
+		name:  name,
+		table: pgx.Identifier.Sanitize([]string{name}),
 	}
 }
 
@@ -87,18 +96,31 @@ func (c *Client) Transaction(ctx context.Context, fn func(Options) error) error 
 	return tx.Commit(ctx)
 }
 
-type Store struct {
-	db             DB
-	name           string
-	versionsTable  string
-	snapshotsTable string
-}
-
 func (s *Store) Name() string {
 	return s.name
 }
 
-func (s *Store) UpdateSnapshot(snapshotID string, data interface{}, o Options) error {
+func (s *Store) Listen(fn func(*Snapshot)) {
+	s.listnenersMu.Lock()
+	defer s.listnenersMu.Unlock()
+	s.listeners = append(s.listeners, fn)
+}
+
+func (s *Store) notify(snap *Snapshot) {
+	s.listnenersMu.RLock()
+	defer s.listnenersMu.RUnlock()
+	// TODO do this non-blocking
+	for _, fn := range s.listeners {
+		fn(snap)
+	}
+}
+
+func (s *Store) AddAfter(snapshotID, id string, data interface{}, o Options) error {
+	d, err := json.Marshal(data)
+	if err != nil {
+		return err
+	}
+
 	var (
 		ctx context.Context
 		db  DB
@@ -120,31 +142,55 @@ func (s *Store) UpdateSnapshot(snapshotID string, data interface{}, o Options) e
 	}
 	defer tx.Rollback(ctx)
 
+	snap := Snapshot{}
+	snapSql := `select id, date_from, date_until from ` + s.table + `
+	where snapshot_id = $1
+	limit 1`
+	err = db.QueryRow(ctx, snapSql, snapshotID).Scan(&snap.ID, &snap.DateFrom, &snap.DateUntil)
+
+	if err == pgx.ErrNoRows {
+		return fmt.Errorf("unknown snapshot %s", snapshotID)
+	} else if err != nil {
+		return err
+	}
+
+	if snap.ID != id {
+		return fmt.Errorf("id mismatch: snapshot %s belongs to %s, not %s", snapshotID, snap.ID, id)
+	}
+
+	if snap.DateUntil != nil {
+		// TODO: add info needed to solve the conflict
+		return &Conflict{}
+	}
+
 	now := time.Now()
 
-	var id string
-	sqlUpdate := "update " + s.name + " set date_until = $1 where snapshot_id = $2 and date_until = 'infinity'::timestamptz returning id"
-	if err := tx.QueryRow(ctx, sqlUpdate, now, snapshotID).Scan(&id); err != nil {
-		if err == pgx.ErrNoRows {
-			// TODO include info so that the conflict can be resolved
-			return &Conflict{}
-		} else {
-			return err
-		}
-	}
+	sqlUpdate := "update " + s.table + " set date_until = $1 where id = $2 and date_until is null"
 
-	d, err := json.Marshal(data)
-	if err != nil {
+	if _, err = tx.Exec(ctx, sqlUpdate, now, id); err != nil {
 		return err
 	}
 
-	sqlInsert := `insert into ` + s.name + `(date_from, id, data, snapshot_id) values ($1, $2, $3, $4)`
+	newSnapshotID := uuid.NewString()
 
-	if _, err = tx.Exec(ctx, sqlInsert, now, id, d, uuid.NewString()); err != nil {
+	sqlInsert := `insert into ` + s.table + `(snapshot_id, id, data, date_from) values ($1, $2, $3, $4)`
+
+	if _, err = tx.Exec(ctx, sqlInsert, newSnapshotID, id, d, now); err != nil {
 		return err
 	}
 
-	return tx.Commit(ctx)
+	if err := tx.Commit(ctx); err != nil {
+		return err
+	}
+
+	s.notify(&Snapshot{
+		SnapshotID: newSnapshotID,
+		ID:         id,
+		Data:       json.RawMessage(d),
+		DateFrom:   &now,
+	})
+
+	return nil
 }
 
 func (s *Store) Add(id string, data interface{}, o Options) error {
@@ -176,22 +222,36 @@ func (s *Store) Add(id string, data interface{}, o Options) error {
 
 	now := time.Now()
 
-	sqlUpdate := "update " + s.name + " set date_until = $1 where id = $2 and date_until = 'infinity'::timestamptz"
+	sqlUpdate := "update " + s.table + " set date_until = $1 where id = $2 and date_until is null"
 
 	if _, err = tx.Exec(ctx, sqlUpdate, now, id); err != nil {
 		return err
 	}
 
-	sqlInsert := `insert into ` + s.name + `(date_from, id, data, snapshot_id) values ($1, $2, $3, $4)`
+	sqlInsert := `insert into ` + s.table + `(snapshot_id, id, data, date_from) values ($1, $2, $3, $4)`
 
-	if _, err = tx.Exec(ctx, sqlInsert, now, id, d, uuid.NewString()); err != nil {
+	newSnapshotID := uuid.NewString()
+
+	if _, err = tx.Exec(ctx, sqlInsert, newSnapshotID, id, d, now); err != nil {
 		return err
 	}
 
-	return tx.Commit(ctx)
+	if err := tx.Commit(ctx); err != nil {
+		return err
+	}
+
+	s.notify(&Snapshot{
+		SnapshotID: newSnapshotID,
+		ID:         id,
+		Data:       json.RawMessage(d),
+		DateFrom:   &now,
+	})
+
+	return nil
+
 }
 
-func (s *Store) Get(id string, o Options) (*Snapshot, error) {
+func (s *Store) GetCurrentSnapshot(id string, o Options) (*Snapshot, error) {
 	var (
 		ctx context.Context
 		db  DB
@@ -208,8 +268,8 @@ func (s *Store) Get(id string, o Options) (*Snapshot, error) {
 	}
 
 	sql := `
-	select snapshot_id, data from ` + s.name + `
-	where date_until = 'infinity'::timestamptz and id = $1
+	select snapshot_id, data from ` + s.table + `
+	where date_until is null and id = $1
 	limit 1`
 
 	snap := Snapshot{}
@@ -239,7 +299,7 @@ func (s *Store) GetByID(ids []string, o Options) *Cursor {
 
 	pgIds := &pgtype.TextArray{}
 	pgIds.Set(ids)
-	sql := "select data from " + s.name + " where date_until = 'infinity'::timestamptz and id = any($1)"
+	sql := "select data from " + s.table + " where date_until is null and id = any($1)"
 
 	c := &Cursor{}
 	c.rows, c.err = db.Query(ctx, sql, pgIds)
@@ -262,7 +322,7 @@ func (s *Store) GetAll(o Options) *Cursor {
 		db = o.Transaction.db
 	}
 
-	sql := "select data from " + s.name + " where date_until = 'infinity'::timestamptz"
+	sql := "select data from " + s.table + " where date_until is null"
 
 	c := &Cursor{}
 	c.rows, c.err = db.Query(ctx, sql)

@@ -204,7 +204,7 @@ func (c *Client) GetPublication(id string) (*models.Publication, error) {
 			p.Publication = res.String()
 		}
 	}
-	if res := attrs.Get("short-container-title"); res.Exists() {
+	if res := attrs.Get("short-container-title.0"); res.Exists() {
 		p.PublicationAbbreviation = res.String()
 	}
 
