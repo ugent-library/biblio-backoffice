@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"log"
 	"strings"
 	"time"
 
@@ -154,34 +155,55 @@ type Publication struct {
 
 func (p *Publication) Clone() *Publication {
 	clone := *p
+	log.Printf("before: %+v", clone)
+	clone.Abstract = nil
 	clone.Abstract = append(clone.Abstract, p.Abstract...)
+	clone.AlternativeTitle = nil
 	clone.AlternativeTitle = append(clone.AlternativeTitle, p.AlternativeTitle...)
+	clone.Author = nil
 	for _, c := range p.Author {
 		clone.Author = append(clone.Author, c.Clone())
 	}
+	clone.Department = nil
 	clone.Department = append(clone.Department, p.Department...)
 	for _, c := range p.Editor {
 		clone.Editor = append(clone.Editor, c.Clone())
 	}
+	clone.EISBN = nil
 	clone.EISBN = append(clone.EISBN, p.EISBN...)
+	clone.EISSN = nil
 	clone.EISSN = append(clone.EISSN, p.EISSN...)
+	clone.File = nil
 	for _, f := range p.File {
 		clone.File = append(clone.File, f.Clone())
 	}
+	clone.ISBN = nil
 	clone.ISBN = append(clone.ISBN, p.ISBN...)
+	clone.ISSN = nil
 	clone.ISSN = append(clone.ISSN, p.ISSN...)
+	clone.Keyword = nil
 	clone.Keyword = append(clone.Keyword, p.Keyword...)
+	clone.Language = nil
 	clone.Language = append(clone.Language, p.Language...)
+	clone.LaySummary = nil
 	clone.LaySummary = append(clone.LaySummary, p.LaySummary...)
+	clone.Link = nil
 	clone.Link = append(clone.Link, p.Link...)
+	clone.ORCIDWork = nil
 	clone.ORCIDWork = append(clone.ORCIDWork, p.ORCIDWork...)
+	clone.Project = nil
 	clone.Project = append(clone.Project, p.Project...)
+	clone.RelatedDataset = nil
 	clone.RelatedDataset = append(clone.RelatedDataset, p.RelatedDataset...)
+	clone.ResearchField = nil
 	clone.ResearchField = append(clone.ResearchField, p.ResearchField...)
+	clone.ReviewerTags = nil
 	clone.ReviewerTags = append(clone.ReviewerTags, p.ReviewerTags...)
+	clone.Supervisor = nil
 	for _, c := range p.Supervisor {
 		clone.Supervisor = append(clone.Supervisor, c.Clone())
 	}
+	log.Printf("after: %+v", clone)
 	return &clone
 }
 
@@ -452,6 +474,7 @@ func (d *Publication) Vacuum() {
 	d.Issue = strings.TrimSpace(d.Issue)
 	d.IssueTitle = strings.TrimSpace(d.IssueTitle)
 	d.Keyword = vacuumStringSlice(d.Keyword)
+	d.Language = vacuumStringSlice(d.Language)
 	d.PageCount = strings.TrimSpace(d.PageCount)
 	d.PageFirst = strings.TrimSpace(d.PageFirst)
 	d.PageLast = strings.TrimSpace(d.PageLast)
