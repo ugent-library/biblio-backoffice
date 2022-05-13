@@ -102,7 +102,9 @@ var publicationAddCmd = &cobra.Command{
 		}
 		dec := decFactory(os.Stdin)
 
+		lineNo := 0
 		for {
+			lineNo += 1
 			p := models.Publication{
 				ID:             uuid.New().String(),
 				Status:         "private",
@@ -111,14 +113,14 @@ var publicationAddCmd = &cobra.Command{
 			if err := dec.Decode(&p); errors.Is(err, io.EOF) {
 				break
 			} else if err != nil {
-				log.Fatal(err)
+				log.Fatalf("Unable to decode publication at line %d : %v", err)
 			}
 			if err := p.Validate(); err != nil {
-				log.Print(err)
+				log.Printf("Validation failed for publication at line %d : %v", lineNo, err)
 				continue
 			}
 			if err := e.Store.StorePublication(&p); err != nil {
-				log.Fatal(err)
+				log.Fatalf("Unable to store publication from line %d : %v", lineNo, err)
 			}
 			// log.Printf("%+v", savedP)
 			indexC <- &p
