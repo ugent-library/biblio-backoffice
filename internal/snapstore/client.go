@@ -31,22 +31,6 @@ func (c *Conflict) Error() string {
 	return "version conflict"
 }
 
-// func NewID() (string, error) {
-// 	// use a faster concurrent safe random source (hash/maphash?)
-// 	id, err := ulid.New(ulid.Timestamp(time.Now()), rand.Reader)
-// 	if err != nil {
-// 		return "", err
-// 	}
-// 	return id.String(), nil
-// }
-
-type Strategy int
-
-const (
-	StrategyMine Strategy = iota
-	StrategyAbort
-)
-
 type DB interface {
 	Begin(context.Context) (pgx.Tx, error)
 	Exec(context.Context, string, ...interface{}) (pgconn.CommandTag, error)
@@ -114,116 +98,6 @@ func (s *Store) Name() string {
 	return s.name
 }
 
-// func (s *Store) AddVersion(affinityID, id string, data interface{}, o Options) error {
-// 	d, err := json.Marshal(data)
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	var (
-// 		ctx context.Context
-// 		db  DB
-// 	)
-// 	if o.Context == nil {
-// 		ctx = context.Background()
-// 	} else {
-// 		ctx = o.Context
-// 	}
-// 	if o.Transaction == nil {
-// 		db = s.db
-// 	} else {
-// 		db = o.Transaction.db
-// 	}
-
-// 	sql := `insert into ` + s.versionsTable + `(affinity_id, id, data)
-// 	        values ($1, $2, $3)`
-
-// 	if _, err = db.Exec(ctx, sql, affinityID, id, d); err != nil {
-// 		return err
-// 	}
-
-// 	return nil
-// }
-
-// func (s *Store) AddSnapshot(affinityID, id string, strategy Strategy, o Options) error {
-// 	var (
-// 		ctx context.Context
-// 		db  DB
-// 	)
-// 	if o.Context == nil {
-// 		ctx = context.Background()
-// 	} else {
-// 		ctx = o.Context
-// 	}
-// 	if o.Transaction == nil {
-// 		db = s.db
-// 	} else {
-// 		db = o.Transaction.db
-// 	}
-
-// 	if strategy == StrategyAbort {
-// 		// TODO check if another affinity has already added a version after the last snapshot
-// 	}
-
-// 	sql := `
-// 	with version as (
-// 		select version_id, id, data
-// 		from ` + s.versionsTable + `
-// 		where affinity_id = $1 and id = $2
-// 		order by date_created desc
-// 		limit 1
-// 	), snapshot as (
-// 	   insert into ` + s.snapshotsTable + `(id, data)
-// 	   select id, data
-// 	   from version
-// 	   returning snapshot_id, date_from
-// 	), old_snapshots as (
-// 		update ` + s.snapshotsTable + `
-// 		set date_until=snapshot.date_from
-// 		from snapshot
-// 		where ` + s.snapshotsTable + `.id = $2 and ` + s.snapshotsTable + `.snapshot_id != snapshot.snapshot_id
-// 	)
-// 	update ` + s.versionsTable + `
-// 	set snapshot_id=snapshot.snapshot_id
-// 	from version, snapshot
-// 	where ` + s.versionsTable + `.version_id = version.version_id`
-
-// 	if _, err := db.Exec(ctx, sql, affinityID, id); err != nil {
-// 		return err
-// 	}
-
-// 	return nil
-// }
-
-// func (s *Store) GetVersion(affinityID, id string, data interface{}, o Options) error {
-// 	var d json.RawMessage
-
-// 	var (
-// 		ctx context.Context
-// 		db  DB
-// 	)
-// 	if o.Context == nil {
-// 		ctx = context.Background()
-// 	} else {
-// 		ctx = o.Context
-// 	}
-// 	if o.Transaction == nil {
-// 		db = s.db
-// 	} else {
-// 		db = o.Transaction.db
-// 	}
-
-// 	sql := `select data from ` + s.versionsTable + `
-// 	where affinity_id=$1 and id=$2
-// 	order by date_created desc
-// 	limit 1`
-
-// 	if err := db.QueryRow(ctx, sql, affinityID, id).Scan(&d); err != nil {
-// 		return err
-// 	}
-
-// 	return json.Unmarshal(d, data)
-// }
 func (s *Store) UpdateSnapshot(snapshotID string, data interface{}, o Options) error {
 	var (
 		ctx context.Context
