@@ -623,9 +623,6 @@ func (c *Publications) AddMultiplePublish(w http.ResponseWriter, r *http.Request
 	)
 }
 
-// @todo: Probably a stale controller action. The "publication_publish" route isn't referred
-//   to from anywhere else. Should we remove this?
-
 func (c *Publications) Publish(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
