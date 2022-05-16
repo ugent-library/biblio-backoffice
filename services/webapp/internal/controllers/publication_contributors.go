@@ -83,7 +83,7 @@ func (c *PublicationContributors) Create(w http.ResponseWriter, r *http.Request)
 	pub.AddContributor(role, position, contributor)
 
 	savedPub := pub.Clone()
-	err := c.Engine.Store.StorePublication(savedPub)
+	err := c.Engine.Store.UpdatePublication(savedPub)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
@@ -181,7 +181,7 @@ func (c *PublicationContributors) Update(w http.ResponseWriter, r *http.Request)
 	pub.Contributors(role)[position] = contributor
 
 	savedPub := pub.Clone()
-	err := c.Engine.Store.StorePublication(savedPub)
+	err := c.Engine.Store.UpdatePublication(savedPub)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
@@ -250,7 +250,7 @@ func (c *PublicationContributors) Remove(w http.ResponseWriter, r *http.Request)
 
 	pub.RemoveContributor(role, position)
 
-	if err := c.Engine.Store.StorePublication(pub); err != nil {
+	if err := c.Engine.Store.UpdatePublication(pub); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -406,7 +406,7 @@ func (c *PublicationContributors) Order(w http.ResponseWriter, r *http.Request) 
 
 	publication.SetContributors(role, newContributors)
 
-	if err := c.Engine.Store.StorePublication(publication); err != nil {
+	if err := c.Engine.Store.UpdatePublication(publication); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

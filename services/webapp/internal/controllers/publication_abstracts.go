@@ -66,7 +66,7 @@ func (c *PublicationAbstracts) Create(w http.ResponseWriter, r *http.Request) {
 	pub.Abstract = abstracts
 
 	savedPub := pub.Clone()
-	err = c.Engine.Store.StorePublication(savedPub)
+	err = c.Engine.Store.UpdatePublication(savedPub)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
@@ -152,7 +152,7 @@ func (c *PublicationAbstracts) Update(w http.ResponseWriter, r *http.Request) {
 	pub.Abstract = abstracts
 
 	savedPub := pub.Clone()
-	err = c.Engine.Store.StorePublication(savedPub)
+	err = c.Engine.Store.UpdatePublication(savedPub)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
@@ -219,7 +219,7 @@ func (c *PublicationAbstracts) Remove(w http.ResponseWriter, r *http.Request) {
 	pub.Abstract = abstracts
 
 	// TODO: error handling
-	c.Engine.Store.StorePublication(pub)
+	c.Engine.Store.UpdatePublication(pub)
 
 	w.Header().Set("HX-Trigger", "PublicationRemoveAbstract")
 

@@ -88,7 +88,7 @@ func (a *Activities) SendPublicationsToORCID(ctx context.Context, args Args) err
 				PutCode: putCode,
 			})
 
-			if err := a.Store.StorePublication(pub); err != nil {
+			if err := a.Store.UpdatePublication(pub); err != nil {
 				return err
 			}
 		}

@@ -32,5 +32,5 @@ func StoreDatasetWorkflow(ctx workflow.Context, dataset *models.Dataset) (err er
 }
 
 func (a *Activities) StoreDatasetInRepository(dataset *models.Dataset) error {
-	return a.DatasetService.StoreDataset(dataset)
+	return a.DatasetService.UpdateDataset(dataset)
 }

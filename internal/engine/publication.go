@@ -40,7 +40,7 @@ func (e *Engine) BatchPublishPublications(userID string, args *models.SearchArgs
 		hits, err = e.UserPublications(userID, args)
 		for _, pub := range hits.Hits {
 			pub.Status = "public"
-			if err = e.Store.StorePublication(pub); err != nil {
+			if err = e.Store.UpdatePublication(pub); err != nil {
 				break
 			}
 		}
@@ -66,13 +66,13 @@ func (e *Engine) AddPublicationDataset(p *models.Publication, d *models.Dataset)
 	return e.Store.Transaction(context.Background(), func(s backends.Store) error {
 		if !p.HasRelatedDataset(d.ID) {
 			p.RelatedDataset = append(p.RelatedDataset, models.RelatedDataset{ID: d.ID})
-			if err := s.StorePublication(p); err != nil {
+			if err := s.UpdatePublication(p); err != nil {
 				return err
 			}
 		}
 		if !d.HasRelatedPublication(p.ID) {
 			d.RelatedPublication = append(d.RelatedPublication, models.RelatedPublication{ID: p.ID})
-			if err := s.StoreDataset(d); err != nil {
+			if err := s.UpdateDataset(d); err != nil {
 				return err
 			}
 		}
@@ -94,13 +94,13 @@ func (e *Engine) RemovePublicationDataset(p *models.Publication, d *models.Datas
 	return e.Store.Transaction(context.Background(), func(s backends.Store) error {
 		if p.HasRelatedDataset(d.ID) {
 			p.RemoveRelatedDataset(d.ID)
-			if err := s.StorePublication(p); err != nil {
+			if err := s.UpdatePublication(p); err != nil {
 				return err
 			}
 		}
 		if d.HasRelatedPublication(p.ID) {
 			d.RemoveRelatedPublication(p.ID)
-			if err := s.StoreDataset(d); err != nil {
+			if err := s.UpdateDataset(d); err != nil {
 				return err
 			}
 		}
@@ -134,7 +134,7 @@ func (e *Engine) ImportUserPublicationByIdentifier(userID, source, identifier st
 	p.Status = "private"
 	p.Classification = "U"
 
-	if err := e.Store.StorePublication(p); err != nil {
+	if err := e.Store.UpdatePublication(p); err != nil {
 		return nil, err
 	}
 
@@ -178,7 +178,7 @@ func (e *Engine) ImportUserPublications(userID, source string, file io.Reader) (
 			importErr = err
 			break
 		}
-		if err := e.Store.StorePublication(&p); err != nil {
+		if err := e.Store.UpdatePublication(&p); err != nil {
 			importErr = err
 			break
 		}

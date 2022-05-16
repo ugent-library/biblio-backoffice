@@ -76,7 +76,7 @@ func (c *DatasetProjects) Add(w http.ResponseWriter, r *http.Request) {
 	})
 
 	savedDataset := dataset.Clone()
-	err = c.Engine.Store.StoreDataset(dataset)
+	err = c.Engine.Store.UpdateDataset(dataset)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -126,7 +126,7 @@ func (c *DatasetProjects) Remove(w http.ResponseWriter, r *http.Request) {
 	dataset.Project = projects
 
 	savedDataset := dataset.Clone()
-	err := c.Engine.Store.StoreDataset(dataset)
+	err := c.Engine.Store.UpdateDataset(dataset)
 
 	if err != nil {
 		log.Println(err)

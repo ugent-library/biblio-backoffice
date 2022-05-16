@@ -68,7 +68,7 @@ func (c *PublicationConference) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	savedPub := pub.Clone()
-	err = c.Engine.Store.StorePublication(savedPub)
+	err = c.Engine.Store.UpdatePublication(savedPub)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {

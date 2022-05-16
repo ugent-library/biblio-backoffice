@@ -249,7 +249,7 @@ func (c *Publications) AddSingleImport(w http.ResponseWriter, r *http.Request) {
 			CreatorID:      userID,
 			UserID:         userID,
 		}
-		if err := c.Engine.Store.StorePublication(p); err != nil {
+		if err := c.Engine.Store.UpdatePublication(p); err != nil {
 			log.Println(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -329,7 +329,7 @@ func (c *Publications) AddSinglePublish(w http.ResponseWriter, r *http.Request) 
 
 	savedPub := pub.Clone()
 	savedPub.Status = "public"
-	err := c.Engine.Store.StorePublication(savedPub)
+	err := c.Engine.Store.UpdatePublication(savedPub)
 	if err != nil {
 
 		/*
@@ -635,7 +635,7 @@ func (c *Publications) Publish(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
 	savedPub := pub.Clone()
-	err := c.Engine.Store.StorePublication(savedPub)
+	err := c.Engine.Store.UpdatePublication(savedPub)
 
 	flashes := make([]views.Flash, 0)
 	var publicationErrors validation.Errors
@@ -732,7 +732,7 @@ func (c *Publications) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	pub.Status = "deleted"
-	if err := c.Engine.Store.StorePublication(pub); err != nil {
+	if err := c.Engine.Store.UpdatePublication(pub); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

@@ -89,7 +89,7 @@ func (s *Store) GetPublications(ids []string) ([]*models.Publication, error) {
 	return publications, nil
 }
 
-func (s *Store) StorePublication(p *models.Publication) error {
+func (s *Store) UpdatePublication(p *models.Publication) error {
 	now := time.Now()
 
 	if p.DateCreated == nil {
@@ -163,7 +163,7 @@ func (s *Store) GetDatasets(ids []string) ([]*models.Dataset, error) {
 	return datasets, nil
 }
 
-func (s *Store) StoreDataset(d *models.Dataset) error {
+func (s *Store) UpdateDataset(d *models.Dataset) error {
 	now := time.Now()
 
 	if d.DateCreated == nil {

@@ -23,7 +23,7 @@ func (e *Engine) ImportUserDatasetByIdentifier(userID, source, identifier string
 	d.UserID = userID
 	d.Status = "private"
 
-	if err = e.Store.StoreDataset(d); err != nil {
+	if err = e.Store.UpdateDataset(d); err != nil {
 		return nil, err
 	}
 
