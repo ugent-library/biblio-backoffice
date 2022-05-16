@@ -138,7 +138,8 @@ func (c *DatasetDetails) Update(w http.ResponseWriter, r *http.Request) {
 		dataset.EmbargoTo = ""
 	}
 
-	savedDataset, err := c.Engine.UpdateDataset(dataset)
+	savedDataset := dataset.Clone()
+	err = c.Engine.Store.StoreDataset(dataset)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {

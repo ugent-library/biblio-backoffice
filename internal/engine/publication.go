@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"io"
-	"log"
 	"net/http"
 	"sync"
 
@@ -12,27 +11,6 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/models"
 )
-
-// TODO move to workflow
-func (e *Engine) UpdatePublication(p *models.Publication) error {
-	p.Vacuum()
-
-	if err := p.Validate(); err != nil {
-		log.Printf("%#v", err)
-		return err
-	}
-
-	if err := e.Store.StorePublication(p); err != nil {
-		return err
-	}
-
-	// if err := e.PublicationSearchService.IndexPublication(p); err != nil {
-	// 	log.Printf("error indexing publication %+v", err)
-	// 	return err
-	// }
-
-	return nil
-}
 
 // TODO make query dsl package
 func (e *Engine) Publications(args *models.SearchArgs) (*models.PublicationHits, error) {
@@ -62,7 +40,7 @@ func (e *Engine) BatchPublishPublications(userID string, args *models.SearchArgs
 		hits, err = e.UserPublications(userID, args)
 		for _, pub := range hits.Hits {
 			pub.Status = "public"
-			if err = e.UpdatePublication(pub); err != nil {
+			if err = e.Store.StorePublication(pub); err != nil {
 				break
 			}
 		}
@@ -156,7 +134,7 @@ func (e *Engine) ImportUserPublicationByIdentifier(userID, source, identifier st
 	p.Status = "private"
 	p.Classification = "U"
 
-	if err := e.UpdatePublication(p); err != nil {
+	if err := e.Store.StorePublication(p); err != nil {
 		return nil, err
 	}
 
@@ -197,10 +175,6 @@ func (e *Engine) ImportUserPublications(userID, source string, file io.Reader) (
 		if err := dec.Decode(&p); errors.Is(err, io.EOF) {
 			break
 		} else if err != nil {
-			importErr = err
-			break
-		}
-		if err := p.Validate(); err != nil {
 			importErr = err
 			break
 		}

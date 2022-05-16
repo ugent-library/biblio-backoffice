@@ -68,7 +68,8 @@ func (c *DatasetAbstracts) Create(w http.ResponseWriter, r *http.Request) {
 	abstracts = append(abstracts, *abstract)
 	dataset.Abstract = abstracts
 
-	savedDataset, err := c.Engine.UpdateDataset(dataset)
+	savedDataset := dataset.Clone()
+	err = c.Engine.Store.StoreDataset(savedDataset)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
@@ -156,7 +157,8 @@ func (c *DatasetAbstracts) Update(w http.ResponseWriter, r *http.Request) {
 	abstracts[rowDelta] = *abstract
 	dataset.Abstract = abstracts
 
-	savedDataset, err := c.Engine.UpdateDataset(dataset)
+	savedDataset := dataset.Clone()
+	err = c.Engine.Store.StoreDataset(dataset)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
@@ -218,17 +220,17 @@ func (c *DatasetAbstracts) Remove(w http.ResponseWriter, r *http.Request) {
 	muxRowDelta := mux.Vars(r)["delta"]
 	rowDelta, _ := strconv.Atoi(muxRowDelta)
 
-	pub := context.GetDataset(r.Context())
-	pub.SnapshotID = r.Header.Get("If-Match")
+	dataset := context.GetDataset(r.Context())
+	dataset.SnapshotID = r.Header.Get("If-Match")
 
-	abstracts := make([]models.Text, len(pub.Abstract))
-	copy(abstracts, pub.Abstract)
+	abstracts := make([]models.Text, len(dataset.Abstract))
+	copy(abstracts, dataset.Abstract)
 
 	abstracts = append(abstracts[:rowDelta], abstracts[rowDelta+1:]...)
-	pub.Abstract = abstracts
+	dataset.Abstract = abstracts
 
 	// TODO: error handling
-	c.Engine.UpdateDataset(pub)
+	c.Engine.Store.StoreDataset(dataset)
 
 	w.Header().Set("HX-Trigger", "DatasetRemoveAbstract")
 

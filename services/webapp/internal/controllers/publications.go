@@ -329,7 +329,7 @@ func (c *Publications) AddSinglePublish(w http.ResponseWriter, r *http.Request) 
 
 	savedPub := pub.Clone()
 	savedPub.Status = "public"
-	err := c.Engine.UpdatePublication(savedPub)
+	err := c.Engine.Store.StorePublication(savedPub)
 	if err != nil {
 
 		/*
@@ -635,7 +635,7 @@ func (c *Publications) Publish(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
 	savedPub := pub.Clone()
-	err := c.Engine.UpdatePublication(savedPub)
+	err := c.Engine.Store.StorePublication(savedPub)
 
 	flashes := make([]views.Flash, 0)
 	var publicationErrors validation.Errors
@@ -732,7 +732,7 @@ func (c *Publications) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	pub.Status = "deleted"
-	if err := c.Engine.UpdatePublication(pub); err != nil {
+	if err := c.Engine.Store.StorePublication(pub); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

@@ -97,6 +97,10 @@ func (s *Store) StorePublication(p *models.Publication) error {
 	}
 	p.DateUpdated = &now
 
+	if err := p.Validate(); err != nil {
+		return err
+	}
+
 	// TODO this needs to be a separate update action
 	if p.SnapshotID != "" {
 		if err := s.publicationStore.AddAfter(p.SnapshotID, p.ID, p, s.opts); err != nil {
@@ -166,6 +170,10 @@ func (s *Store) StoreDataset(d *models.Dataset) error {
 		d.DateCreated = &now
 	}
 	d.DateUpdated = &now
+
+	if err := d.Validate(); err != nil {
+		return err
+	}
 
 	// TODO this needs to be a separate update action
 	if d.SnapshotID != "" {

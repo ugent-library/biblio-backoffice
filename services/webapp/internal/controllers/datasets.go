@@ -110,7 +110,8 @@ func (c *Datasets) Publish(w http.ResponseWriter, r *http.Request) {
 
 	datasetCopy := *dataset
 	datasetCopy.Status = "public"
-	savedDataset, err := c.Engine.UpdateDataset(&datasetCopy)
+	savedDataset := datasetCopy.Clone()
+	err := c.Engine.Store.StoreDataset(savedDataset)
 	if err != nil {
 		savedDataset = dataset
 
@@ -273,7 +274,8 @@ func (c *Datasets) AddPublish(w http.ResponseWriter, r *http.Request) {
 	dataset := context.GetDataset(r.Context())
 
 	dataset.Status = "public"
-	savedDataset, err := c.Engine.UpdateDataset(dataset)
+	savedDataset := dataset.Clone()
+	err := c.Engine.Store.StoreDataset(dataset)
 	if err != nil {
 
 		/*
@@ -344,7 +346,7 @@ func (c *Datasets) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	dataset.Status = "deleted"
-	if _, err := c.Engine.UpdateDataset(dataset); err != nil {
+	if err := c.Engine.Store.StoreDataset(dataset); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

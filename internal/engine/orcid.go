@@ -75,7 +75,7 @@ func (e *Engine) AddPublicationToORCID(orcidID, orcidToken string, p *models.Pub
 		PutCode: putCode,
 	})
 
-	if err := e.UpdatePublication(p); err != nil {
+	if err := e.Store.StorePublication(p); err != nil {
 		return nil, err
 	}
 

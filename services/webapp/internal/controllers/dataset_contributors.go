@@ -80,7 +80,8 @@ func (c *DatasetContributors) Create(w http.ResponseWriter, r *http.Request) {
 
 	dataset.AddContributor(role, position, contributor)
 
-	savedDataset, err := c.Engine.UpdateDataset(dataset)
+	savedDataset := dataset.Clone()
+	err := c.Engine.Store.StoreDataset(dataset)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
@@ -176,7 +177,8 @@ func (c *DatasetContributors) Update(w http.ResponseWriter, r *http.Request) {
 
 	dataset.Contributors(role)[position] = contributor
 
-	savedDataset, err := c.Engine.UpdateDataset(dataset)
+	savedDataset := dataset.Clone()
+	err := c.Engine.Store.StoreDataset(dataset)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
@@ -245,7 +247,7 @@ func (c *DatasetContributors) Remove(w http.ResponseWriter, r *http.Request) {
 
 	dataset.RemoveContributor(role, position)
 
-	if _, err := c.Engine.UpdateDataset(dataset); err != nil {
+	if err := c.Engine.Store.StoreDataset(dataset); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -388,7 +390,7 @@ func (c *DatasetContributors) Order(w http.ResponseWriter, r *http.Request) {
 
 	dataset.SetContributors(role, newContributors)
 
-	if _, err := c.Engine.UpdateDataset(dataset); err != nil {
+	if err := c.Engine.Store.StoreDataset(dataset); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
