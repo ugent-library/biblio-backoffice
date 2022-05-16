@@ -3,6 +3,7 @@ package snapstore
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"sync"
 	"time"
@@ -116,6 +117,13 @@ func (s *Store) notify(snap *Snapshot) {
 }
 
 func (s *Store) AddAfter(snapshotID, id string, data interface{}, o Options) error {
+	if snapshotID == "" {
+		return errors.New("snapshot id is empty")
+	}
+	if id == "" {
+		return errors.New("id is empty")
+	}
+
 	d, err := json.Marshal(data)
 	if err != nil {
 		return err
@@ -194,6 +202,10 @@ func (s *Store) AddAfter(snapshotID, id string, data interface{}, o Options) err
 }
 
 func (s *Store) Add(id string, data interface{}, o Options) error {
+	if id == "" {
+		return errors.New("id is empty")
+	}
+
 	d, err := json.Marshal(data)
 	if err != nil {
 		return err
