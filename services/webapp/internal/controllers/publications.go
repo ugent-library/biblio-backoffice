@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backend/internal/tasks"
 	"github.com/ugent-library/biblio-backend/internal/validation"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/views"
@@ -792,24 +793,26 @@ func (c *Publications) ORCIDAdd(w http.ResponseWriter, r *http.Request) {
 	)
 }
 
-// func (c *Publications) ORCIDAddAll(w http.ResponseWriter, r *http.Request) {
-// 	// TODO handle error
-// 	id, err := c.Engine.AddPublicationsToORCID(
-// 		context.GetUser(r.Context()).ID,
-// 		models.NewSearchArgs().WithFilter("status", "public"),
-// 	)
-// 	if err != nil {
-// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-// 		return
-// 	}
+func (c *Publications) ORCIDAddAll(w http.ResponseWriter, r *http.Request) {
+	// TODO handle error
+	id, err := c.Engine.AddPublicationsToORCID(
+		context.GetUser(r.Context()).ID,
+		models.NewSearchArgs().WithFilter("status", "public"),
+	)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
-// 	c.Render.HTML(w, http.StatusOK, "task/_status", c.ViewData(r, struct {
-// 		TaskID    string
-// 		TaskState models.TaskState
-// 	}{
-// 		id,
-// 		models.TaskState{Status: models.Waiting},
-// 	}),
-// 		render.HTMLOptions{Layout: "layouts/htmx"},
-// 	)
-// }
+	c.Render.HTML(w, http.StatusOK, "task/_status", c.ViewData(r, struct {
+		ID      string
+		Status  tasks.Status
+		Message string
+	}{
+		id,
+		tasks.Status{},
+		"",
+	}),
+		render.HTMLOptions{Layout: "layouts/htmx"},
+	)
+}

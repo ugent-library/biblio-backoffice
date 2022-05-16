@@ -4,6 +4,7 @@ go 1.16
 
 require (
 	github.com/Masterminds/sprig/v3 v3.2.2
+	github.com/alitto/pond v1.8.0
 	github.com/blevesearch/bleve/v2 v2.3.2
 	github.com/caltechlibrary/doitools v0.0.1
 	github.com/elastic/go-elasticsearch/v6 v6.8.10
@@ -15,9 +16,9 @@ require (
 	github.com/gorilla/sessions v1.2.1
 	github.com/huandu/xstrings v1.3.2 // indirect
 	github.com/imdario/mergo v0.3.12 // indirect
-	github.com/jackc/pgconn v1.12.0
+	github.com/jackc/pgconn v1.12.1
 	github.com/jackc/pgtype v1.11.0
-	github.com/jackc/pgx/v4 v4.15.0
+	github.com/jackc/pgx/v4 v4.16.1
 	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/nickng/bibtex v1.0.3
 	github.com/pkg/errors v0.9.1
@@ -30,6 +31,5 @@ require (
 	github.com/ugent-library/go-oidc v0.0.0-20210901124208-bda4cc73ba56
 	github.com/ugent-library/go-orcid v0.0.0-20211130191640-1138a344c30b
 	github.com/unrolled/render v1.4.1
-	go.temporal.io/sdk v1.14.0
 	golang.org/x/text v0.3.7
 )

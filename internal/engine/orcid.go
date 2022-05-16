@@ -6,7 +6,9 @@ import (
 	"log"
 	"strings"
 
+	"github.com/google/uuid"
 	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backend/internal/tasks"
 	"github.com/ugent-library/go-orcid/orcid"
 	"golang.org/x/text/language"
 )
@@ -29,30 +31,20 @@ import (
 // }
 
 // TODO move to controller
-// func (e *Engine) AddPublicationsToORCID(userID string, s *models.SearchArgs) (string, error) {
-// 	user, err := e.GetUser(userID)
-// 	if err != nil {
-// 		return "", err
-// 	}
+func (e *Engine) AddPublicationsToORCID(userID string, s *models.SearchArgs) (string, error) {
+	user, err := e.GetUser(userID)
+	if err != nil {
+		return "", err
+	}
 
-// 	workflowOptions := client.StartWorkflowOptions{
-// 		ID:        "orcid_workflow_" + uuid.New().String(),
-// 		TaskQueue: "orcid",
-// 	}
+	taskID := "orcid:" + uuid.NewString()
 
-// 	we, err := e.Temporal.ExecuteWorkflow(context.Background(), workflowOptions, orcidworker.SendPublicationsToORCIDWorkflow,
-// 		orcidworker.Args{
-// 			UserID:     userID,
-// 			ORCID:      user.ORCID,
-// 			ORCIDToken: user.ORCIDToken,
-// 			SearchArgs: *s,
-// 		})
-// 	if err != nil {
-// 		return "", err
-// 	}
-// 	log.Println("Started workflow", "WorkflowID", we.GetID(), "RunID", we.GetRunID())
-// 	return we.GetID(), err
-// }
+	e.Tasks.Add(taskID, func(t tasks.Task) error {
+		return e.sendPublicationsToORCIDTask(t, userID, user.ORCID, user.ORCIDToken, s)
+	})
+
+	return taskID, nil
+}
 
 // TODO make workflow
 func (e *Engine) AddPublicationToORCID(orcidID, orcidToken string, p *models.Publication) (*models.Publication, error) {
@@ -80,6 +72,61 @@ func (e *Engine) AddPublicationToORCID(orcidID, orcidToken string, p *models.Pub
 	}
 
 	return p, nil
+}
+
+// TODO move to workflows
+func (e *Engine) sendPublicationsToORCIDTask(t tasks.Task, userID, orcidID, orcidToken string, searchArgs *models.SearchArgs) error {
+	orcidClient := orcid.NewMemberClient(orcid.Config{
+		Token:   orcidToken,
+		Sandbox: e.ORCIDSandbox,
+	})
+
+	var numDone int
+
+	for {
+		hits, _ := e.PublicationSearchService.SearchPublications(searchArgs)
+
+		for _, pub := range hits.Hits {
+			numDone++
+
+			var done bool
+			for _, ow := range pub.ORCIDWork {
+				if ow.ORCID == orcidID { // already sent to orcid
+					done = true
+					break
+				}
+			}
+			if done {
+				continue
+			}
+
+			work := publicationToORCID(pub)
+			putCode, res, err := orcidClient.AddWork(orcidID, work)
+			if res.StatusCode == 409 { // duplicate
+				continue
+			} else if err != nil {
+				return err
+			}
+
+			pub.ORCIDWork = append(pub.ORCIDWork, models.PublicationORCIDWork{
+				ORCID:   orcidID,
+				PutCode: putCode,
+			})
+
+			if err := e.Store.UpdatePublication(pub); err != nil {
+				return err
+			}
+		}
+
+		t.Progress(numDone, hits.Total)
+
+		if !hits.NextPage() {
+			break
+		}
+		searchArgs.Page = searchArgs.Page + 1
+	}
+
+	return nil
 }
 
 func publicationToORCID(p *models.Publication) *orcid.Work {

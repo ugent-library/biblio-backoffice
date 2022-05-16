@@ -25,7 +25,6 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/backends/store"
 	"github.com/ugent-library/biblio-backend/internal/engine"
 	"github.com/ugent-library/go-orcid/orcid"
-	// "go.temporal.io/sdk/client"
 )
 
 var (
@@ -46,13 +45,6 @@ func newEngine() *engine.Engine {
 		log.Fatalln("Unable to initialize filestore", err)
 	}
 
-	// temporal, err := client.NewClient(client.Options{
-	// 	HostPort: viper.GetString("temporal-host-port"),
-	// })
-	// if err != nil {
-	// 	log.Fatalln("Unable to create Temporal client", err)
-	// }
-
 	es6Client := newEs6Client()
 
 	biblioClient := biblio.New(biblio.Config{
@@ -69,8 +61,7 @@ func newEngine() *engine.Engine {
 	orcidClient := orcid.NewMemberClient(orcidConfig)
 
 	e, err := engine.New(engine.Config{
-		FileStore: fs,
-		// Temporal:                  temporal,
+		FileStore:                 fs,
 		ORCIDSandbox:              orcidConfig.Sandbox,
 		ORCIDClient:               orcidClient,
 		Store:                     newStore(),
@@ -146,21 +137,3 @@ func newEs6Client() *es6.Client {
 	}
 	return client
 }
-
-// type temporalLogger struct{}
-
-// func (l *temporalLogger) Debug(msg string, keyvals ...interface{}) {
-// 	log.Println(append([]interface{}{"DEBUG", "TEMPORAL", msg}, keyvals...)...)
-// }
-
-// func (l *temporalLogger) Info(msg string, keyvals ...interface{}) {
-// 	log.Println(append([]interface{}{"INFO", "TEMPORAL", msg}, keyvals...)...)
-// }
-
-// func (l *temporalLogger) Warn(msg string, keyvals ...interface{}) {
-// 	log.Println(append([]interface{}{"WARN", "TEMPORAL", msg}, keyvals...)...)
-// }
-
-// func (l *temporalLogger) Error(msg string, keyvals ...interface{}) {
-// 	log.Println(append([]interface{}{"ERROR", "TEMPORAL", msg}, keyvals...)...)
-// }
