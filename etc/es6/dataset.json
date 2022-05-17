@@ -14,6 +14,30 @@
                         ]
                     }
                 },
+                "char_filter": {
+                    "equalize_whitespace": {
+                      "type": "pattern_replace",
+                      "pattern": "(\\s{2,})",
+                      "replacement": " "
+                    },
+                    "remove_punctuation": {
+                      "type": "pattern_replace",
+                      "pattern": "\\p{Punct}",
+                      "replacement": " "
+                    }
+                },
+                "filter": {
+                    "token_edge_ngram": {
+                      "type": "edge_ngram",
+                      "min_gram": 2,
+                      "max_gram": 20
+                    },
+                    "phrase_edge_ngram": {
+                      "type": "edge_ngram",
+                      "min_gram": 2,
+                      "max_gram": 50
+                    }
+                },
                 "analyzer": {
                     "ngram": {
                         "tokenizer": "ngram",
@@ -29,6 +53,50 @@
                         "filter": [
                             "lowercase"
                         ]
+                    },
+                    "token_edge_ngram": {
+                      "type": "custom",
+                      "tokenizer": "standard",
+                      "filter": [
+                        "lowercase",
+                        "icu_folding",
+                        "token_edge_ngram"
+                      ]
+                    },
+                    "token_edge_ngram_search": {
+                      "type": "custom",
+                      "tokenizer": "standard",
+                      "filter": [
+                        "lowercase",
+                        "icu_folding"
+                      ]
+                    },
+                    "phrase_edge_ngram": {
+                      "type": "custom",
+                      "char_filter": [
+                        "remove_punctuation",
+                        "equalize_whitespace"
+                      ],
+                      "tokenizer": "keyword",
+                      "filter": [
+                        "lowercase",
+                        "trim",
+                        "icu_folding",
+                        "phrase_edge_ngram"
+                      ]
+                    },
+                    "phrase_edge_ngram_search": {
+                      "type": "custom",
+                      "char_filter": [
+                        "remove_punctuation",
+                        "equalize_whitespace"
+                      ],
+                      "tokenizer": "keyword",
+                      "filter": [
+                        "lowercase",
+                        "trim",
+                        "icu_folding"
+                      ]
                     }
                 }
             }
@@ -78,8 +146,13 @@
                             "fields": {
                                 "ngram": {
                                     "type": "text",
-                                    "analyzer": "ngram",
-                                    "search_analyzer": "lowercase"
+                                    "analyzer": "token_edge_ngram",
+                                    "search_analyzer": "token_edge_ngram_search"
+                                },
+                                "phrase_ngram": {
+                                    "type": "text",
+                                    "analyzer": "phrase_edge_ngram",
+                                    "search_analyzer": "phrase_edge_ngram"
                                 }
                             }
                         },
