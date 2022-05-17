@@ -15,7 +15,9 @@ type Contributor struct {
 
 func (p *Contributor) Clone() *Contributor {
 	clone := *p
+	clone.CreditRole = nil
 	clone.CreditRole = append(clone.CreditRole, p.CreditRole...)
+	clone.UGentID = nil
 	clone.UGentID = append(clone.UGentID, p.UGentID...)
 	return &clone
 }

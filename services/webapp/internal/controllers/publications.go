@@ -794,10 +794,11 @@ func (c *Publications) ORCIDAdd(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Publications) ORCIDAddAll(w http.ResponseWriter, r *http.Request) {
+	userID := context.GetUser(r.Context()).ID
 	// TODO handle error
 	id, err := c.Engine.AddPublicationsToORCID(
-		context.GetUser(r.Context()).ID,
-		models.NewSearchArgs().WithFilter("status", "public"),
+		userID,
+		models.NewSearchArgs().WithFilter("status", "public").WithFilter("author.id", userID),
 	)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

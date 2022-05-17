@@ -2,7 +2,6 @@ package models
 
 import (
 	"fmt"
-	"log"
 	"strings"
 	"time"
 
@@ -85,7 +84,7 @@ type Publication struct {
 	BatchID                 string                  `json:"batch_id,omitempty" form:"-"`
 	Classification          string                  `json:"classification,omitempty" form:"classification"`
 	CompletenessScore       int                     `json:"completeness_score,omitempty" form:"-"`
-	Conference              PublicationConference   `json:"conference,omitempty" form:"conference"`
+	Conference              PublicationConference   `json:"conference,omitempty" form:"conference"` // TODO should be pointer or just fields
 	ConferenceType          string                  `json:"conference_type,omitempty" form:"conference_type"`
 	CreatorID               string                  `json:"creator_id,omitempty" form:"-"`
 	DateCreated             *time.Time              `json:"date_created,omitempty" form:"-"`
@@ -155,7 +154,6 @@ type Publication struct {
 
 func (p *Publication) Clone() *Publication {
 	clone := *p
-	log.Printf("before: %+v", clone)
 	clone.Abstract = nil
 	clone.Abstract = append(clone.Abstract, p.Abstract...)
 	clone.AlternativeTitle = nil
@@ -203,7 +201,6 @@ func (p *Publication) Clone() *Publication {
 	for _, c := range p.Supervisor {
 		clone.Supervisor = append(clone.Supervisor, c.Clone())
 	}
-	log.Printf("after: %+v", clone)
 	return &clone
 }
 

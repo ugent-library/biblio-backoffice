@@ -39,7 +39,7 @@ func New(c Config) (*Engine, error) {
 		Tasks:  tasks.NewHub(),
 	}
 
-	go e.Tasks.Run()
+	e.Tasks.Run()
 
 	return e, nil
 }

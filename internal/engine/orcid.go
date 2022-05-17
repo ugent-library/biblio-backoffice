@@ -56,9 +56,8 @@ func (e *Engine) AddPublicationToORCID(orcidID, orcidToken string, p *models.Pub
 	work := publicationToORCID(p)
 	putCode, res, err := client.AddWork(orcidID, work)
 	if err != nil {
-		log.Println(err)
 		body, _ := ioutil.ReadAll(res.Body)
-		log.Print(string(body))
+		log.Printf("orcid error: %s", body)
 		return p, err
 	}
 
@@ -105,6 +104,8 @@ func (e *Engine) sendPublicationsToORCIDTask(t tasks.Task, userID, orcidID, orci
 			if res.StatusCode == 409 { // duplicate
 				continue
 			} else if err != nil {
+				body, _ := ioutil.ReadAll(res.Body)
+				log.Printf("orcid error: %s", body)
 				return err
 			}
 
@@ -151,7 +152,7 @@ func publicationToORCID(p *models.Publication) *orcid.Work {
 	for _, role := range []string{"author", "editor"} {
 		for _, c := range p.Contributors(role) {
 			wc := orcid.Contributor{
-				CreditName: orcid.String(c.FullName),
+				CreditName: orcid.String(strings.Join([]string{c.FirstName, c.LastName}, " ")),
 				Attributes: &orcid.ContributorAttributes{
 					Role: strings.ToUpper(role),
 				},
@@ -220,8 +221,6 @@ func publicationToORCID(p *models.Publication) *orcid.Work {
 			w.LanguageCode = tag.String()
 		}
 	}
-
-	// log.Printf("%+v", w)
 
 	return w
 }

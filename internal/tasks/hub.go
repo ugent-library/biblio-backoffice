@@ -63,7 +63,7 @@ type statusCmd struct {
 }
 
 type Hub struct {
-	statuses   map[string]Status
+	statuses   map[string]*Status
 	pool       *pond.WorkerPool
 	taskCh     chan taskCmd
 	stateCh    chan stateCmd
@@ -73,7 +73,7 @@ type Hub struct {
 
 func NewHub() *Hub {
 	return &Hub{
-		statuses:   make(map[string]Status),
+		statuses:   make(map[string]*Status),
 		pool:       pond.New(250, 5000),
 		taskCh:     make(chan taskCmd),
 		stateCh:    make(chan stateCmd),
@@ -124,38 +124,46 @@ func (h *Hub) Run() {
 	cleanupTicker := time.NewTicker(retentionTime)
 	defer cleanupTicker.Stop()
 
-	for {
-		select {
-		case now := <-cleanupTicker.C:
-			for id, status := range h.statuses {
-				if (status.State == Done || status.State == Failed) && now.Sub(status.EndTime) > retentionTime {
-					delete(h.statuses, id)
+	go func() {
+		for {
+			select {
+			case now := <-cleanupTicker.C:
+				for id, status := range h.statuses {
+					if (status.State == Done || status.State == Failed) && now.Sub(status.EndTime) > retentionTime {
+						delete(h.statuses, id)
+					}
 				}
-			}
-		case cmd := <-h.taskCh:
-			// no overlapping tasks
-			if _, ok := h.statuses[cmd.id]; !ok {
-				h.statuses[cmd.id] = Status{}
-				h.addTaskToPool(cmd.id, cmd.fn)
-			}
-		case cmd := <-h.progressCh:
-			if s, ok := h.statuses[cmd.id]; ok {
-				s.Progress.Numerator = cmd.num
-				s.Progress.Denominator = cmd.denom
-			}
-		case cmd := <-h.stateCh:
-			if s, ok := h.statuses[cmd.id]; ok {
-				s.State = cmd.state
-				s.Error = cmd.err
-				if !cmd.start.IsZero() {
-					s.StartTime = cmd.start
+			case cmd := <-h.taskCh:
+				// no overlapping tasks
+				if _, ok := h.statuses[cmd.id]; !ok {
+					h.statuses[cmd.id] = &Status{}
+					h.addTaskToPool(cmd.id, cmd.fn)
 				}
-				if !cmd.end.IsZero() {
-					s.EndTime = cmd.end
+			case cmd := <-h.stateCh:
+				if s, ok := h.statuses[cmd.id]; ok {
+					s.State = cmd.state
+					s.Error = cmd.err
+					if !cmd.start.IsZero() {
+						s.StartTime = cmd.start
+					}
+					if !cmd.end.IsZero() {
+						s.EndTime = cmd.end
+					}
+				}
+			case cmd := <-h.progressCh:
+				if s, ok := h.statuses[cmd.id]; ok {
+					s.Progress.Numerator = cmd.num
+					s.Progress.Denominator = cmd.denom
+				}
+			case cmd := <-h.statusCh:
+				if s, ok := h.statuses[cmd.id]; ok {
+					cmd.ch <- *s
+				} else {
+					cmd.ch <- Status{}
 				}
 			}
 		}
-	}
+	}()
 }
 
 func (s Status) Waiting() bool {
