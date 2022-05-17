@@ -57,6 +57,30 @@ func (s *SearchArgs) WithSort(sort string) *SearchArgs {
 	return s
 }
 
+/*
+	does given only contain allowed values?
+	allowed terms must be given as arguments
+*/
+func (s *SearchArgs) FilterInRange(field string, allowedTerms ...string) bool {
+
+	filterTerms, ok := s.Filters[field]
+	if !ok {
+		return true
+	}
+
+	var nFound int = 0
+	for _, filterTerm := range filterTerms {
+		for _, allowedTerm := range allowedTerms {
+			if filterTerm == allowedTerm {
+				nFound += 1
+				break
+			}
+		}
+	}
+
+	return nFound == len(filterTerms)
+}
+
 func (s *SearchArgs) HasFilter(field string, terms ...string) bool {
 	filter, ok := s.Filters[field]
 	if !ok {

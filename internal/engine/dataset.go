@@ -36,12 +36,20 @@ func (e *Engine) ImportUserDatasetByIdentifier(userID, source, identifier string
 }
 
 func (e *Engine) Datasets(args *models.SearchArgs) (*models.DatasetHits, error) {
-	args = args.Clone().WithFilter("status", "private", "public")
+	if args.FilterInRange("status", "private", "public") {
+		args = args.Clone()
+	} else {
+		args = args.Clone().WithFilter("status", "private", "public")
+	}
 	return e.DatasetSearchService.SearchDatasets(args)
 }
 
 func (e *Engine) UserDatasets(userID string, args *models.SearchArgs) (*models.DatasetHits, error) {
-	args = args.Clone().WithFilter("status", "private", "public")
+	if args.FilterInRange("status", "private", "public") {
+		args = args.Clone()
+	} else {
+		args = args.Clone().WithFilter("status", "private", "public")
+	}
 	switch args.FilterFor("scope") {
 	case "created":
 		args.WithFilter("creator_id", userID)
