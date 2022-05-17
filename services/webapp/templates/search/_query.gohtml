@@ -1,6 +1,8 @@
 <form class="mb-4" method="GET" action="{{.D.SearchURL}}">
-    {{range .D.SearchArgs.FiltersFor "scope"}}
-    <input type="hidden" name="f[scope]" value="{{.}}">
+    {{range $field, $values := .D.SearchArgs.Filters}}
+        {{range $values}}
+        <input type="hidden" name="f[{{$field}}]" value="{{.}}">
+        {{end}}
     {{end}}
     <div class="form-row">
         <div class="col input-group">

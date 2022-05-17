@@ -14,13 +14,21 @@ import (
 
 // TODO make query dsl package
 func (e *Engine) Publications(args *models.SearchArgs) (*models.PublicationHits, error) {
-	args = args.Clone().WithFilter("status", "private", "public")
+	if args.FilterInRange("status", "private", "public") {
+		args = args.Clone()
+	} else {
+		args = args.Clone().WithFilter("status", "private", "public")
+	}
 	return e.PublicationSearchService.SearchPublications(args)
 }
 
 // TODO make query dsl package
 func (e *Engine) UserPublications(userID string, args *models.SearchArgs) (*models.PublicationHits, error) {
-	args = args.Clone().WithFilter("status", "private", "public")
+	if args.FilterInRange("status", "private", "public") {
+		args = args.Clone()
+	} else {
+		args = args.Clone().WithFilter("status", "private", "public")
+	}
 	switch args.FilterFor("scope") {
 	case "created":
 		args.WithFilter("creator_id", userID)

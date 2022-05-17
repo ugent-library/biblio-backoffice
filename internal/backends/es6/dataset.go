@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"strings"
@@ -16,8 +17,10 @@ import (
 )
 
 func (c *Client) SearchDatasets(args *models.SearchArgs) (*models.DatasetHits, error) {
-	query, queryFilter, termsFilters := buildDatasetQuery(args)
+	query := buildDatasetQuery(args)
 
+	queryFilters := query["query"].(M)["bool"].(M)["filter"].([]M)
+	queryMust := query["query"].(M)["bool"].(M)["must"].(M)
 	query["size"] = args.Limit()
 	query["from"] = args.Offset()
 
@@ -41,14 +44,19 @@ func (c *Client) SearchDatasets(args *models.SearchArgs) (*models.DatasetHits, e
 	}
 
 	// facet filter contains all query and all filters except itself
-	for _, field := range []string{"status"} {
-		filters := []M{queryFilter}
+	for _, field := range []string{"status", "faculty"} {
+		filters := []M{queryMust}
 
-		for _, filter := range termsFilters {
+		for _, filter := range queryFilters {
 			terms := filter["terms"]
+			// non facet related filters (keep: always)
+			// TODO: make difference between facet filter
+			// and other filters more explicit
 			if terms == nil {
+				filters = append(filters, filter)
 				continue
 			}
+			// facet related filters (keep: if not matching)
 			if _, found := terms.(M)[field]; found {
 				continue
 			} else {
@@ -56,19 +64,37 @@ func (c *Client) SearchDatasets(args *models.SearchArgs) (*models.DatasetHits, e
 			}
 		}
 
-		// TODO add faculty facet
-		query["aggs"].(M)["facets"].(M)["aggs"].(M)[field] = M{
-			"filter": M{"bool": M{"must": filters}},
-			"aggs": M{
-				"facet": M{
-					"terms": M{
-						"field":         field,
-						"min_doc_count": 1,
-						"order":         M{"_key": "asc"},
-						"size":          200,
+		if field == "faculty" {
+
+			query["aggs"].(M)["facets"].(M)["aggs"].(M)[field] = M{
+				"filter": M{"bool": M{"must": filters}},
+				"aggs": M{
+					"facet": M{
+						"terms": M{
+							"field":   field,
+							"order":   M{"_key": "asc"},
+							"size":    200,
+							"include": "^CA|DS|DI|EB|FW|GE|LA|LW|PS|PP|RE|TW|WE|GUK|UZGent|HOART|HOGENT|HOWEST|IBBT|IMEC|VIB$",
+						},
 					},
 				},
-			},
+			}
+
+		} else {
+
+			query["aggs"].(M)["facets"].(M)["aggs"].(M)[field] = M{
+				"filter": M{"bool": M{"must": filters}},
+				"aggs": M{
+					"facet": M{
+						"terms": M{
+							"field": field,
+							"order": M{"_key": "asc"},
+							"size":  200,
+						},
+					},
+				},
+			}
+
 		}
 	}
 
@@ -118,28 +144,82 @@ func (c *Client) SearchDatasets(args *models.SearchArgs) (*models.DatasetHits, e
 	return hits, nil
 }
 
-func buildDatasetQuery(args *models.SearchArgs) (M, M, []M) {
+func buildDatasetQuery(args *models.SearchArgs) M {
 	var query M
-	var queryFilter M
-	var termsFilters []M
+	var queryMust M
+	var queryFilters []M
 
 	if len(args.Query) == 0 {
-		queryFilter = M{
+		queryMust = M{
 			"match_all": M{},
 		}
 	} else {
-		queryFilter = M{
-			"multi_match": M{
-				"query":    args.Query,
-				"fields":   []string{"doi^50", "all"},
-				"operator": "and",
+		// use term based query
+		// regular dis_max or multi_match are query based
+		// and therefore will try to match full query over multiple fields
+		queryMust = M{
+			"simple_query_string": M{
+				"query": args.Query,
+				"fields": []string{
+					"id^100",
+					"doi^50",
+					"title^40",
+					"all",
+					"author.full_name.phrase_ngram^0.05",
+					"author.full_name.ngram^0.01",
+				},
+				"lenient":                             true,
+				"analyze_wildcard":                    false,
+				"default_operator":                    "OR",
+				"minimum_should_match":                "100%",
+				"flags":                               "PHRASE|WHITESPACE",
+				"auto_generate_synonyms_phrase_query": true,
 			},
 		}
 	}
 
-	if args.Filters == nil {
-		query = M{"query": queryFilter}
-	} else {
+	/*
+		query.bool.must: search with score
+		query.bool.should: boost given search results with extra score
+						   make sure minimum_should_match is 0
+	*/
+	queryShould := []M{
+		M{
+			"match_phrase": M{
+				"title": M{
+					"query": args.Query,
+					"boost": 200,
+				},
+			},
+		},
+		M{
+			"match_phrase": M{
+				"author.full_name": M{
+					"query": args.Query,
+					"boost": 200,
+				},
+			},
+		},
+		M{
+			"match_phrase": M{
+				"all": M{
+					"query": args.Query,
+					"boost": 100,
+				},
+			},
+		},
+	}
+	query = M{
+		"query": M{
+			"bool": M{
+				"must":                 queryMust,
+				"minimum_should_match": 0,
+				"should":               queryShould,
+			},
+		},
+	}
+
+	if args.Filters != nil {
 		for field, terms := range args.Filters {
 			orFields := strings.Split(field, "|")
 			if len(orFields) > 1 {
@@ -147,32 +227,21 @@ func buildDatasetQuery(args *models.SearchArgs) (M, M, []M) {
 				for _, orField := range orFields {
 					orFilters = append(orFilters, M{"terms": M{orField: terms}})
 				}
-				termsFilters = append(termsFilters, M{"bool": M{"should": orFilters}})
+				queryFilters = append(queryFilters, M{"bool": M{"should": orFilters, "minimum_should_match": "1"}})
 			} else if strings.HasPrefix(field, "!") {
-				termsFilters = append(termsFilters, M{"bool": M{"must_not": M{"terms": M{field[1:]: terms}}}})
+				queryFilters = append(queryFilters, M{"bool": M{"must_not": M{"terms": M{field[1:]: terms}}}})
 			} else {
-				termsFilters = append(termsFilters, M{"terms": M{field: terms}})
+				queryFilters = append(queryFilters, M{"terms": M{field: terms}})
 			}
 		}
 
-		query = M{
-			"query": M{
-				"bool": M{
-					"must": queryFilter,
-					"filter": M{
-						"bool": M{
-							"must": termsFilters,
-						},
-					},
-				},
-			},
-		}
+		query["query"].(M)["bool"].(M)["filter"] = queryFilters
 	}
 
 	query["size"] = 20
 	query["from"] = (args.Page - 1) * 20
 
-	return query, queryFilter, termsFilters
+	return query
 }
 
 type datasetResEnvelope struct {
@@ -221,8 +290,17 @@ func decodeDatasetRes(res *esapi.Response) (*models.DatasetHits, error) {
 
 		for _, f := range r.Aggregations.Facets[facet].(map[string]interface{})["facet"].(map[string]interface{})["buckets"].([]interface{}) {
 			fv := f.(map[string]interface{})
+			value := ""
+			switch v := fv["key"].(type) {
+			case string:
+				value = v
+			case int:
+				value = fmt.Sprintf("%d", v)
+			case float64:
+				value = fmt.Sprintf("%.2f", v)
+			}
 			hits.Facets[facet] = append(hits.Facets[facet], models.Facet{
-				Value: fv["key"].(string),
+				Value: value,
 				Count: int(fv["doc_count"].(float64)),
 			})
 		}
@@ -293,6 +371,12 @@ func (c *Client) IndexDatasets(inCh <-chan *models.Dataset) {
 		OnError: func(c context.Context, e error) {
 			log.Fatalf("ERROR: %s", e)
 		},
+		/*
+		   TODO: appropriate place for this?
+		   without this a controller may search too soon,
+		   and see no results
+		*/
+		Refresh: "wait_for",
 	})
 	if err != nil {
 		log.Fatal(err)
