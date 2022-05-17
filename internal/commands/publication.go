@@ -119,7 +119,7 @@ var publicationAddCmd = &cobra.Command{
 				log.Printf("Validation failed for publication at line %d : %v", lineNo, err)
 				continue
 			}
-			if err := e.Store.StorePublication(&p); err != nil {
+			if err := e.Store.UpdatePublication(&p); err != nil {
 				log.Fatalf("Unable to store publication from line %d : %v", lineNo, err)
 			}
 			// log.Printf("%+v", savedP)

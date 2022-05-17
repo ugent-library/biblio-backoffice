@@ -2,29 +2,11 @@ package engine
 
 import (
 	"errors"
-	"log"
 	"sync"
 
 	"github.com/google/uuid"
 	"github.com/ugent-library/biblio-backend/internal/models"
 )
-
-// func (e *Engine) StoreDataset(d *models.Dataset) error {
-// 	ctx := context.Background()
-
-// 	workflowOptions := client.StartWorkflowOptions{
-// 		ID:        "store-dataset-" + uuid.NewString(),
-// 		TaskQueue: "store-dataset",
-// 	}
-
-// 	workflowRun, err := e.Temporal.ExecuteWorkflow(ctx, workflowOptions, dataset.StoreDatasetWorkflow, d)
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	// wait for workflow to finish
-// 	return workflowRun.Get(ctx, nil)
-// }
 
 func (e *Engine) ImportUserDatasetByIdentifier(userID, source, identifier string) (*models.Dataset, error) {
 	s, ok := e.DatasetSources[source]
@@ -41,27 +23,7 @@ func (e *Engine) ImportUserDatasetByIdentifier(userID, source, identifier string
 	d.UserID = userID
 	d.Status = "private"
 
-	if err = e.Store.StoreDataset(d); err != nil {
-		return nil, err
-	}
-
-	// if err := e.DatasetSearchService.IndexDataset(d); err != nil {
-	// 	log.Printf("error indexing dataset %+v", err)
-	// 	return nil, err
-	// }
-
-	return d, nil
-}
-
-func (e *Engine) UpdateDataset(d *models.Dataset) (*models.Dataset, error) {
-	d.Vacuum()
-
-	if err := d.Validate(); err != nil {
-		log.Printf("%#v", err)
-		return nil, err
-	}
-
-	if err := e.Store.StoreDataset(d); err != nil {
+	if err = e.Store.UpdateDataset(d); err != nil {
 		return nil, err
 	}
 

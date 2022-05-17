@@ -28,12 +28,12 @@ type Store interface {
 	AddPublicationListener(func(*models.Publication))
 	GetPublication(string) (*models.Publication, error)
 	GetPublications([]string) ([]*models.Publication, error)
-	StorePublication(*models.Publication) error
+	UpdatePublication(*models.Publication) error
 	EachPublication(func(*models.Publication) bool) error
 	AddDatasetListener(func(*models.Dataset))
 	GetDataset(string) (*models.Dataset, error)
 	GetDatasets([]string) ([]*models.Dataset, error)
-	StoreDataset(*models.Dataset) error
+	UpdateDataset(*models.Dataset) error
 	EachDataset(func(*models.Dataset) bool) error
 }
 

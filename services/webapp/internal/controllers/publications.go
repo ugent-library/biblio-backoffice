@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backend/internal/tasks"
 	"github.com/ugent-library/biblio-backend/internal/validation"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/views"
@@ -249,7 +250,7 @@ func (c *Publications) AddSingleImport(w http.ResponseWriter, r *http.Request) {
 			CreatorID:      userID,
 			UserID:         userID,
 		}
-		if err := c.Engine.Store.StorePublication(p); err != nil {
+		if err := c.Engine.Store.UpdatePublication(p); err != nil {
 			log.Println(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -329,7 +330,7 @@ func (c *Publications) AddSinglePublish(w http.ResponseWriter, r *http.Request) 
 
 	savedPub := pub.Clone()
 	savedPub.Status = "public"
-	err := c.Engine.UpdatePublication(savedPub)
+	err := c.Engine.Store.UpdatePublication(savedPub)
 	if err != nil {
 
 		/*
@@ -635,7 +636,7 @@ func (c *Publications) Publish(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
 	savedPub := pub.Clone()
-	err := c.Engine.UpdatePublication(savedPub)
+	err := c.Engine.Store.UpdatePublication(savedPub)
 
 	flashes := make([]views.Flash, 0)
 	var publicationErrors validation.Errors
@@ -732,7 +733,7 @@ func (c *Publications) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	pub.Status = "deleted"
-	if err := c.Engine.UpdatePublication(pub); err != nil {
+	if err := c.Engine.Store.UpdatePublication(pub); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -792,24 +793,26 @@ func (c *Publications) ORCIDAdd(w http.ResponseWriter, r *http.Request) {
 	)
 }
 
-// func (c *Publications) ORCIDAddAll(w http.ResponseWriter, r *http.Request) {
-// 	// TODO handle error
-// 	id, err := c.Engine.AddPublicationsToORCID(
-// 		context.GetUser(r.Context()).ID,
-// 		models.NewSearchArgs().WithFilter("status", "public"),
-// 	)
-// 	if err != nil {
-// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-// 		return
-// 	}
+func (c *Publications) ORCIDAddAll(w http.ResponseWriter, r *http.Request) {
+	// TODO handle error
+	id, err := c.Engine.AddPublicationsToORCID(
+		context.GetUser(r.Context()).ID,
+		models.NewSearchArgs().WithFilter("status", "public"),
+	)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
-// 	c.Render.HTML(w, http.StatusOK, "task/_status", c.ViewData(r, struct {
-// 		TaskID    string
-// 		TaskState models.TaskState
-// 	}{
-// 		id,
-// 		models.TaskState{Status: models.Waiting},
-// 	}),
-// 		render.HTMLOptions{Layout: "layouts/htmx"},
-// 	)
-// }
+	c.Render.HTML(w, http.StatusOK, "task/_status", c.ViewData(r, struct {
+		ID      string
+		Status  tasks.Status
+		Message string
+	}{
+		id,
+		tasks.Status{},
+		"",
+	}),
+		render.HTMLOptions{Layout: "layouts/htmx"},
+	)
+}

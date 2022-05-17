@@ -74,7 +74,8 @@ func (c *DatasetDepartments) Add(w http.ResponseWriter, r *http.Request) {
 		ID: departmentId,
 	}
 	dataset.Department = append(dataset.Department, datasetDepartment)
-	savedDataset, err := c.Engine.UpdateDataset(dataset)
+	savedDataset := dataset.Clone()
+	err := c.Engine.Store.UpdateDataset(dataset)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -123,7 +124,8 @@ func (c *DatasetDepartments) Remove(w http.ResponseWriter, r *http.Request) {
 	departments = append(departments[:removeKey], departments[removeKey+1:]...)
 	dataset.Department = departments
 
-	savedDataset, err := c.Engine.UpdateDataset(dataset)
+	savedDataset := dataset.Clone()
+	err := c.Engine.Store.UpdateDataset(dataset)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

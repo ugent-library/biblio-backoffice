@@ -1,8 +1,8 @@
-{{if .D.TaskState.Failed}}
-<div id="task-{{.D.TaskID}}" class="bc-toast bc-toast--error">
+{{if .D.Status.Failed}}
+<div id="task-{{.D.ID}}" class="bc-toast bc-toast--error">
     <div class="bc-toast__left">
         <i class="if if-alert-fill"></i>
-        <span class="bc-toast__message">{{.D.TaskState.Message}}</span>
+        <span class="bc-toast__message">{{.D.Message}}</span>
     </div>
     <div class="bc-toast__right">
         <button class="btn btn-link btn-icon-only toast-dismiss" aria-label="Close">
@@ -11,25 +11,25 @@
         </button>
     </div>
 </div>
-{{else if .D.TaskState.Running}}
-<div id="task-{{.D.TaskID}}" class="bc-toast bc-toast--info"
+{{else if .D.Status.Running}}
+<div id="task-{{.D.ID}}" class="bc-toast bc-toast--info"
     hx-target="this"
-    hx-get="{{pathFor "task_status" "id" .D.TaskID}}" 
+    hx-get="{{pathFor "task_status" "id" .D.ID}}" 
     hx-trigger="load delay:300ms" 
     hx-swap="outerHTML"
 >
     <div class="bc-toast__left">
         <i class="if if-info-circle-filled"></i>
-        <span class="bc-toast__message">{{.D.TaskState.Message}} ({{.D.TaskState.Percent}}%)</span>
+        <span class="bc-toast__message">{{.D.Message}} ({{.D.Status.Progress.Percent}}%)</span>
     </div>
     <div class="bc-toast__right">
     </div>
 </div>
-{{else if .D.TaskState.Done}}
-<div id="task-{{.D.TaskID}}" class="bc-toast bc-toast--success">
+{{else if .D.Status.Done}}
+<div id="task-{{.D.ID}}" class="bc-toast bc-toast--success">
     <div class="bc-toast__left">
         <i class="if if-check-circle-fill"></i>
-        <span class="bc-toast__message">{{.D.TaskState.Message}}</span>
+        <span class="bc-toast__message">{{.D.Message}}</span>
     </div>
     <div class="bc-toast__right">
         <button class="btn btn-link btn-icon-only toast-dismiss" aria-label="Close">
@@ -39,15 +39,15 @@
     </div>
 </div>
 {{else}}
-<div id="task-{{.D.TaskID}}" class="bc-toast bc-toast--info"
+<div id="task-{{.D.ID}}" class="bc-toast bc-toast--info"
     hx-target="this"
-    hx-get="{{pathFor "task_status" "id" .D.TaskID}}" 
+    hx-get="{{pathFor "task_status" "id" .D.ID}}" 
     hx-trigger="load delay:300ms" 
     hx-swap="outerHTML"
 >
     <div class="bc-toast__left">
         <i class="if if-info-circle-filled"></i>
-        <span class="bc-toast__message">{{.D.TaskState.Message}}</span>
+        <span class="bc-toast__message">{{.D.Message}}</span>
     </div>
     <div class="bc-toast__right">
     </div>

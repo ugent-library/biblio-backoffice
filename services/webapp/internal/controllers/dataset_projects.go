@@ -75,7 +75,8 @@ func (c *DatasetProjects) Add(w http.ResponseWriter, r *http.Request) {
 		Name: project.Title,
 	})
 
-	savedDataset, err := c.Engine.UpdateDataset(dataset)
+	savedDataset := dataset.Clone()
+	err = c.Engine.Store.UpdateDataset(dataset)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -124,7 +125,8 @@ func (c *DatasetProjects) Remove(w http.ResponseWriter, r *http.Request) {
 	projects = append(projects[:removeKey], projects[removeKey+1:]...)
 	dataset.Project = projects
 
-	savedDataset, err := c.Engine.UpdateDataset(dataset)
+	savedDataset := dataset.Clone()
+	err := c.Engine.Store.UpdateDataset(dataset)
 
 	if err != nil {
 		log.Println(err)

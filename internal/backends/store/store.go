@@ -89,13 +89,17 @@ func (s *Store) GetPublications(ids []string) ([]*models.Publication, error) {
 	return publications, nil
 }
 
-func (s *Store) StorePublication(p *models.Publication) error {
+func (s *Store) UpdatePublication(p *models.Publication) error {
 	now := time.Now()
 
 	if p.DateCreated == nil {
 		p.DateCreated = &now
 	}
 	p.DateUpdated = &now
+
+	if err := p.Validate(); err != nil {
+		return err
+	}
 
 	// TODO this needs to be a separate update action
 	if p.SnapshotID != "" {
@@ -159,13 +163,17 @@ func (s *Store) GetDatasets(ids []string) ([]*models.Dataset, error) {
 	return datasets, nil
 }
 
-func (s *Store) StoreDataset(d *models.Dataset) error {
+func (s *Store) UpdateDataset(d *models.Dataset) error {
 	now := time.Now()
 
 	if d.DateCreated == nil {
 		d.DateCreated = &now
 	}
 	d.DateUpdated = &now
+
+	if err := d.Validate(); err != nil {
+		return err
+	}
 
 	// TODO this needs to be a separate update action
 	if d.SnapshotID != "" {

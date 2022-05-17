@@ -8,7 +8,6 @@ import (
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 	_ "github.com/ugent-library/biblio-backend/internal/snapstore"
-	"go.temporal.io/sdk/client"
 )
 
 const (
@@ -52,7 +51,6 @@ func init() {
 	viper.SetDefault("session-name", defaultSessionName)
 	viper.SetDefault("session-max-age", defaultSessionMaxAge)
 	viper.SetDefault("csrf-name", defaultCSRFName)
-	viper.SetDefault("temporal-host-port", client.DefaultHostPort)
 
 	rootCmd.PersistentFlags().String("file-dir", "", "file store root directory")
 
@@ -64,8 +62,6 @@ func init() {
 	rootCmd.PersistentFlags().String("es6-url", defaultEs6URL, "elasticsearch 6.x url, separate multiple with comma")
 	rootCmd.PersistentFlags().String("dataset-index", defaultDatasetIndex, "dataset index name")
 	rootCmd.PersistentFlags().String("publication-index", defaultPublicationIndex, "publication index name")
-
-	rootCmd.PersistentFlags().String("temporal-host-port", client.DefaultHostPort, "temporal server host and port")
 
 	rootCmd.PersistentFlags().String("orcid-client-id", "", "orcid client id")
 	rootCmd.PersistentFlags().String("orcid-client-secret", "", "orcid client secret")
