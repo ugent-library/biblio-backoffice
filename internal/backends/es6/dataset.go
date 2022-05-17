@@ -44,7 +44,7 @@ func (c *Client) SearchDatasets(args *models.SearchArgs) (*models.DatasetHits, e
 	}
 
 	// facet filter contains all query and all filters except itself
-	for _, field := range []string{"status"} {
+	for _, field := range []string{"status", "faculty"} {
 		filters := []M{queryMust}
 
 		for _, filter := range queryFilters {
@@ -64,18 +64,37 @@ func (c *Client) SearchDatasets(args *models.SearchArgs) (*models.DatasetHits, e
 			}
 		}
 
-		// TODO add faculty facet
-		query["aggs"].(M)["facets"].(M)["aggs"].(M)[field] = M{
-			"filter": M{"bool": M{"must": filters}},
-			"aggs": M{
-				"facet": M{
-					"terms": M{
-						"field": field,
-						"order": M{"_key": "asc"},
-						"size":  200,
+		if field == "faculty" {
+
+			query["aggs"].(M)["facets"].(M)["aggs"].(M)[field] = M{
+				"filter": M{"bool": M{"must": filters}},
+				"aggs": M{
+					"facet": M{
+						"terms": M{
+							"field":   field,
+							"order":   M{"_key": "asc"},
+							"size":    200,
+							"include": "^CA|DS|DI|EB|FW|GE|LA|LW|PS|PP|RE|TW|WE|GUK|UZGent|HOART|HOGENT|HOWEST|IBBT|IMEC|VIB$",
+						},
 					},
 				},
-			},
+			}
+
+		} else {
+
+			query["aggs"].(M)["facets"].(M)["aggs"].(M)[field] = M{
+				"filter": M{"bool": M{"must": filters}},
+				"aggs": M{
+					"facet": M{
+						"terms": M{
+							"field": field,
+							"order": M{"_key": "asc"},
+							"size":  200,
+						},
+					},
+				},
+			}
+
 		}
 	}
 

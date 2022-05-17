@@ -46,7 +46,7 @@ func (c *Client) SearchPublications(args *models.SearchArgs) (*models.Publicatio
 	}
 
 	// facet filter contains all query and all filters except itself
-	for _, field := range []string{"status", "type", "completeness_score"} {
+	for _, field := range []string{"status", "type", "completeness_score", "faculty"} {
 		filters := []M{queryMust}
 
 		for _, filter := range queryFilters {
@@ -66,18 +66,37 @@ func (c *Client) SearchPublications(args *models.SearchArgs) (*models.Publicatio
 			}
 		}
 
-		// TODO add faculty facet
-		query["aggs"].(M)["facets"].(M)["aggs"].(M)[field] = M{
-			"filter": M{"bool": M{"must": filters}},
-			"aggs": M{
-				"facet": M{
-					"terms": M{
-						"field": field,
-						"order": M{"_key": "asc"},
-						"size":  200,
+		if field == "faculty" {
+
+			query["aggs"].(M)["facets"].(M)["aggs"].(M)[field] = M{
+				"filter": M{"bool": M{"must": filters}},
+				"aggs": M{
+					"facet": M{
+						"terms": M{
+							"field":   field,
+							"order":   M{"_key": "asc"},
+							"size":    200,
+							"include": "^CA|DS|DI|EB|FW|GE|LA|LW|PS|PP|RE|TW|WE|GUK|UZGent|HOART|HOGENT|HOWEST|IBBT|IMEC|VIB$",
+						},
 					},
 				},
-			},
+			}
+
+		} else {
+
+			query["aggs"].(M)["facets"].(M)["aggs"].(M)[field] = M{
+				"filter": M{"bool": M{"must": filters}},
+				"aggs": M{
+					"facet": M{
+						"terms": M{
+							"field": field,
+							"order": M{"_key": "asc"},
+							"size":  200,
+						},
+					},
+				},
+			}
+
 		}
 	}
 
