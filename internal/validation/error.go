@@ -4,6 +4,7 @@ type Errors []*Error
 
 type Error struct {
 	Pointer string
+	Field   string
 	Code    string
 }
 

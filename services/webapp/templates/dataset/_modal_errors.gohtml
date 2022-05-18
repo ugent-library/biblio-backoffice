@@ -8,7 +8,7 @@
             <div class="modal-body">
             <ul>
             {{ range .D.Errors }}
-                <li>{{ .Title }}</li>
+                <li>{{ $.T "dataset.validation.error" (print .Field "." .Code) }}</li>
             {{ end }}
             </ul>
             </div>
