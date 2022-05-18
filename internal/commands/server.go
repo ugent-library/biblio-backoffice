@@ -22,7 +22,7 @@ func init() {
 	serverStartCmd.Flags().String("csrf-name", "", "csrf cookie name")
 	serverStartCmd.Flags().String("csrf-secret", "", "csrf cookie secret")
 
-	webapp.AddCommands(serverCmd, Engine())
+	webapp.AddCommands(serverCmd, Services())
 	serverCmd.AddCommand(serverStartCmd)
 	rootCmd.AddCommand(serverCmd)
 }
@@ -36,7 +36,7 @@ var serverStartCmd = &cobra.Command{
 	Use:   "start",
 	Short: "start the http server",
 	Run: func(cmd *cobra.Command, args []string) {
-		e := Engine()
+		e := Services()
 		e.Store.AddPublicationListener(func(p *models.Publication) {
 			if err := e.PublicationSearchService.IndexPublication(p); err != nil {
 				log.Println(fmt.Errorf("error indexing publication %s: %w", p.ID, err))

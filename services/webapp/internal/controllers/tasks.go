@@ -21,7 +21,7 @@ func NewTasks(c Base) *Tasks {
 func (c *Tasks) Status(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
-	status := c.Engine.Tasks.Status(id)
+	status := c.Services.Tasks.Status(id)
 
 	var msg string
 

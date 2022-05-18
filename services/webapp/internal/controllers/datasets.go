@@ -70,7 +70,7 @@ func (c *Datasets) List(w http.ResponseWriter, r *http.Request) {
 func (c *Datasets) Show(w http.ResponseWriter, r *http.Request) {
 	dataset := context.GetDataset(r.Context())
 
-	datasetPubs, err := c.Engine.Store.GetDatasetPublications(dataset)
+	datasetPubs, err := c.Services.Store.GetDatasetPublications(dataset)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -113,7 +113,7 @@ func (c *Datasets) Publish(w http.ResponseWriter, r *http.Request) {
 	datasetCopy := *dataset
 	datasetCopy.Status = "public"
 	savedDataset := datasetCopy.Clone()
-	err := c.Engine.Store.UpdateDataset(savedDataset)
+	err := c.Services.Store.UpdateDataset(savedDataset)
 	if err != nil {
 		savedDataset = dataset
 
@@ -135,7 +135,7 @@ func (c *Datasets) Publish(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	datasetPubs, err := c.Engine.Store.GetDatasetPublications(dataset)
+	datasetPubs, err := c.Services.Store.GetDatasetPublications(dataset)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -186,7 +186,7 @@ func (c *Datasets) AddImportConfirm(w http.ResponseWriter, r *http.Request) {
 	// check for duplicates
 	if source == "datacite" {
 		args := models.NewSearchArgs().WithFilter("doi", identifier).WithFilter("status", "public")
-		if existing, _ := c.Engine.DatasetSearchService.SearchDatasets(args); existing.Total > 0 {
+		if existing, _ := c.Services.DatasetSearchService.SearchDatasets(args); existing.Total > 0 {
 			c.Render.HTML(w, http.StatusOK, "dataset/add", c.ViewData(r, DatasetAddVars{
 				PageTitle:        "Add - Datasets - Biblio",
 				Step:             1,
@@ -278,7 +278,7 @@ func (c *Datasets) AddPublish(w http.ResponseWriter, r *http.Request) {
 
 	dataset.Status = "public"
 	savedDataset := dataset.Clone()
-	err := c.Engine.Store.UpdateDataset(dataset)
+	err := c.Services.Store.UpdateDataset(dataset)
 	if err != nil {
 
 		/*
@@ -349,7 +349,7 @@ func (c *Datasets) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	dataset.Status = "deleted"
-	if err := c.Engine.Store.UpdateDataset(dataset); err != nil {
+	if err := c.Services.Store.UpdateDataset(dataset); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -394,11 +394,11 @@ func (c *Datasets) userDatasets(userID string, args *models.SearchArgs) (*models
 		args.WithFilter("creator_id|author.id", userID)
 	}
 	delete(args.Filters, "scope")
-	return c.Engine.DatasetSearchService.SearchDatasets(args)
+	return c.Services.DatasetSearchService.SearchDatasets(args)
 }
 
 func (c *Datasets) importUserDatasetByIdentifier(userID, source, identifier string) (*models.Dataset, error) {
-	s, ok := c.Engine.DatasetSources[source]
+	s, ok := c.Services.DatasetSources[source]
 	if !ok {
 		return nil, errors.New("unknown dataset source")
 	}
@@ -412,7 +412,7 @@ func (c *Datasets) importUserDatasetByIdentifier(userID, source, identifier stri
 	d.UserID = userID
 	d.Status = "private"
 
-	if err = c.Engine.Store.UpdateDataset(d); err != nil {
+	if err = c.Services.Store.UpdateDataset(d); err != nil {
 		return nil, err
 	}
 

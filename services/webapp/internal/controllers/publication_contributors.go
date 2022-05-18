@@ -65,7 +65,7 @@ func (c *PublicationContributors) Create(w http.ResponseWriter, r *http.Request)
 	id := r.FormValue("id")
 	if id != "" {
 		// Check if the user really exists
-		user, err := c.Engine.GetPerson(id)
+		user, err := c.Services.GetPerson(id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -83,7 +83,7 @@ func (c *PublicationContributors) Create(w http.ResponseWriter, r *http.Request)
 	pub.AddContributor(role, position, contributor)
 
 	savedPub := pub.Clone()
-	err := c.Engine.Store.UpdatePublication(savedPub)
+	err := c.Services.Store.UpdatePublication(savedPub)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
@@ -163,7 +163,7 @@ func (c *PublicationContributors) Update(w http.ResponseWriter, r *http.Request)
 	id := r.FormValue("id")
 	if id != "" {
 		// Check if the user really exists
-		user, err := c.Engine.GetPerson(id)
+		user, err := c.Services.GetPerson(id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -181,7 +181,7 @@ func (c *PublicationContributors) Update(w http.ResponseWriter, r *http.Request)
 	pub.Contributors(role)[position] = contributor
 
 	savedPub := pub.Clone()
-	err := c.Engine.Store.UpdatePublication(savedPub)
+	err := c.Services.Store.UpdatePublication(savedPub)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
@@ -250,7 +250,7 @@ func (c *PublicationContributors) Remove(w http.ResponseWriter, r *http.Request)
 
 	pub.RemoveContributor(role, position)
 
-	if err := c.Engine.Store.UpdatePublication(pub); err != nil {
+	if err := c.Services.Store.UpdatePublication(pub); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -285,7 +285,7 @@ func (c *PublicationContributors) Choose(w http.ResponseWriter, r *http.Request)
 	lastName := r.FormValue("last_name")
 	creditRole := r.Form["credit_role"]
 
-	suggestions, _ := c.Engine.SuggestPeople(firstName + " " + lastName)
+	suggestions, _ := c.Services.SuggestPeople(firstName + " " + lastName)
 
 	c.Render.HTML(w, http.StatusOK, "publication/contributors/_choose", c.ViewData(r, struct {
 		Role        string
@@ -354,7 +354,7 @@ func (c *PublicationContributors) Promote(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	person, err := c.Engine.GetPerson(r.FormValue("id"))
+	person, err := c.Services.GetPerson(r.FormValue("id"))
 	if err != nil || person == nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -406,7 +406,7 @@ func (c *PublicationContributors) Order(w http.ResponseWriter, r *http.Request) 
 
 	publication.SetContributors(role, newContributors)
 
-	if err := c.Engine.Store.UpdatePublication(publication); err != nil {
+	if err := c.Services.Store.UpdatePublication(publication); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

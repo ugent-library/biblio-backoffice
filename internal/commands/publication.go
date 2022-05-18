@@ -35,7 +35,7 @@ var publicationGetCmd = &cobra.Command{
 	Short: "Get publication by id",
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		e := Engine()
+		e := Services()
 
 		if format := viper.GetString("format"); format != "" {
 			enc, ok := e.PublicationEncoders[format]
@@ -81,7 +81,7 @@ var publicationAddCmd = &cobra.Command{
 	Use:   "add",
 	Short: "Add publications",
 	Run: func(cmd *cobra.Command, args []string) {
-		e := Engine()
+		e := Services()
 
 		var indexWG sync.WaitGroup
 

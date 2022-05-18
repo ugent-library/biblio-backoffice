@@ -23,7 +23,7 @@ func (c *MediaTypes) Choose(w http.ResponseWriter, r *http.Request) {
 	}
 	q := r.URL.Query().Get(input)
 
-	suggestions, _ := c.Engine.SuggestMediaTypes(q)
+	suggestions, _ := c.Services.SuggestMediaTypes(q)
 
 	c.Render.HTML(w, http.StatusOK, "media_types/_choose", c.ViewData(r, struct {
 		Suggestions []models.Completion

@@ -64,7 +64,7 @@ func (c *DatasetContributors) Create(w http.ResponseWriter, r *http.Request) {
 	id := r.FormValue("id")
 	if id != "" {
 		// Check if the user really exists
-		user, err := c.Engine.GetPerson(id)
+		user, err := c.Services.GetPerson(id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -81,7 +81,7 @@ func (c *DatasetContributors) Create(w http.ResponseWriter, r *http.Request) {
 	dataset.AddContributor(role, position, contributor)
 
 	savedDataset := dataset.Clone()
-	err := c.Engine.Store.UpdateDataset(dataset)
+	err := c.Services.Store.UpdateDataset(dataset)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
@@ -161,7 +161,7 @@ func (c *DatasetContributors) Update(w http.ResponseWriter, r *http.Request) {
 	id := r.FormValue("id")
 	if id != "" {
 		// Check if the user really exists
-		user, err := c.Engine.GetPerson(id)
+		user, err := c.Services.GetPerson(id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -178,7 +178,7 @@ func (c *DatasetContributors) Update(w http.ResponseWriter, r *http.Request) {
 	dataset.Contributors(role)[position] = contributor
 
 	savedDataset := dataset.Clone()
-	err := c.Engine.Store.UpdateDataset(dataset)
+	err := c.Services.Store.UpdateDataset(dataset)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
@@ -247,7 +247,7 @@ func (c *DatasetContributors) Remove(w http.ResponseWriter, r *http.Request) {
 
 	dataset.RemoveContributor(role, position)
 
-	if err := c.Engine.Store.UpdateDataset(dataset); err != nil {
+	if err := c.Services.Store.UpdateDataset(dataset); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -272,7 +272,7 @@ func (c *DatasetContributors) Choose(w http.ResponseWriter, r *http.Request) {
 	firstName := r.URL.Query().Get("first_name")
 	lastName := r.URL.Query().Get("last_name")
 
-	suggestions, _ := c.Engine.SuggestPeople(firstName + " " + lastName)
+	suggestions, _ := c.Services.SuggestPeople(firstName + " " + lastName)
 
 	c.Render.HTML(w, http.StatusOK, "dataset/contributors/_choose", c.ViewData(r, struct {
 		Role        string
@@ -339,7 +339,7 @@ func (c *DatasetContributors) Promote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	person, err := c.Engine.GetPerson(r.FormValue("id"))
+	person, err := c.Services.GetPerson(r.FormValue("id"))
 	if err != nil || person == nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -390,7 +390,7 @@ func (c *DatasetContributors) Order(w http.ResponseWriter, r *http.Request) {
 
 	dataset.SetContributors(role, newContributors)
 
-	if err := c.Engine.Store.UpdateDataset(dataset); err != nil {
+	if err := c.Services.Store.UpdateDataset(dataset); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

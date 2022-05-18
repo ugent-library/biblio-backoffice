@@ -35,7 +35,7 @@ func (c *PublicationFiles) Download(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.ServeFile(w, r, c.Engine.FileStore.FilePath(file.SHA256))
+	http.ServeFile(w, r, c.Services.FileStore.FilePath(file.SHA256))
 }
 
 func (c *PublicationFiles) Thumbnail(w http.ResponseWriter, r *http.Request) {
@@ -93,7 +93,7 @@ func (c *PublicationFiles) Upload(w http.ResponseWriter, r *http.Request) {
 
 	pub := context.GetPublication(r.Context())
 
-	checksum, err := c.Engine.FileStore.Add(file)
+	checksum, err := c.Services.FileStore.Add(file)
 
 	if err != nil {
 		flash := views.Flash{Type: "error", Message: "There was a problem adding your file"}
@@ -124,7 +124,7 @@ func (c *PublicationFiles) Upload(w http.ResponseWriter, r *http.Request) {
 		DateUpdated: &now,
 	}
 	savedPub.File = append(savedPub.File, pubFile)
-	err = c.Engine.Store.UpdatePublication(savedPub)
+	err = c.Services.Store.UpdatePublication(savedPub)
 
 	if err != nil {
 		flash := views.Flash{Type: "error", Message: "There was a problem adding your file"}
@@ -307,7 +307,7 @@ func (c *PublicationFiles) Update(w http.ResponseWriter, r *http.Request) {
 		file.Embargo = ""
 	}
 
-	err = c.Engine.Store.UpdatePublication(pub)
+	err = c.Services.Store.UpdatePublication(pub)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
@@ -334,7 +334,7 @@ func (c *PublicationFiles) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//reload publication
-	pub, err = c.Engine.Store.GetPublication(pub.ID)
+	pub, err = c.Services.Store.GetPublication(pub.ID)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -378,7 +378,7 @@ func (c *PublicationFiles) Remove(w http.ResponseWriter, r *http.Request) {
 	}
 	pub.File = newFile
 
-	err := c.Engine.Store.UpdatePublication(pub)
+	err := c.Services.Store.UpdatePublication(pub)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

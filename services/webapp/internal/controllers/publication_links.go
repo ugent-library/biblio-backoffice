@@ -67,7 +67,7 @@ func (c *PublicationLinks) Create(w http.ResponseWriter, r *http.Request) {
 	pub.Link = links
 
 	savedPub := pub.Clone()
-	err = c.Engine.Store.UpdatePublication(pub)
+	err = c.Services.Store.UpdatePublication(pub)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
@@ -153,7 +153,7 @@ func (c *PublicationLinks) Update(w http.ResponseWriter, r *http.Request) {
 	log.Println(links)
 
 	savedPub := pub.Clone()
-	err = c.Engine.Store.UpdatePublication(savedPub)
+	err = c.Services.Store.UpdatePublication(savedPub)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
@@ -220,7 +220,7 @@ func (c *PublicationLinks) Remove(w http.ResponseWriter, r *http.Request) {
 	pub.Link = links
 
 	// TODO: error handling
-	c.Engine.Store.UpdatePublication(pub)
+	c.Services.Store.UpdatePublication(pub)
 
 	w.Header().Set("HX-Trigger", "PublicationRemoveLink")
 

@@ -139,7 +139,7 @@ func (c *DatasetDetails) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	savedDataset := dataset.Clone()
-	err = c.Engine.Store.UpdateDataset(dataset)
+	err = c.Services.Store.UpdateDataset(dataset)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {

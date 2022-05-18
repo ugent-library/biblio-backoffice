@@ -22,7 +22,7 @@ func (c *PublicationProjects) List(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
 	// Get 20 random projects (no search, init state)
-	hits, _ := c.Engine.SuggestProjects("")
+	hits, _ := c.Services.SuggestProjects("")
 
 	c.Render.HTML(w, http.StatusOK, "publication/projects/_modal", c.ViewData(r, struct {
 		Publication *models.Publication
@@ -46,7 +46,7 @@ func (c *PublicationProjects) ActiveSearch(w http.ResponseWriter, r *http.Reques
 
 	// Get 20 results from the search query
 	query := r.Form["search"]
-	hits, _ := c.Engine.SuggestProjects(query[0])
+	hits, _ := c.Services.SuggestProjects(query[0])
 
 	c.Render.HTML(w, http.StatusOK, "publication/projects/_modal_hits", c.ViewData(r, struct {
 		Publication *models.Publication
@@ -63,7 +63,7 @@ func (c *PublicationProjects) Add(w http.ResponseWriter, r *http.Request) {
 	projectId := mux.Vars(r)["project_id"]
 	pub := context.GetPublication(r.Context())
 
-	project, err := c.Engine.GetProject(projectId)
+	project, err := c.Services.GetProject(projectId)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -77,7 +77,7 @@ func (c *PublicationProjects) Add(w http.ResponseWriter, r *http.Request) {
 	pub.Project = append(pub.Project, publicationProject)
 
 	savedPub := pub.Clone()
-	err = c.Engine.Store.UpdatePublication(savedPub)
+	err = c.Services.Store.UpdatePublication(savedPub)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -128,7 +128,7 @@ func (c *PublicationProjects) Remove(w http.ResponseWriter, r *http.Request) {
 
 	// TODO: error handling
 	savedPub := pub.Clone()
-	err := c.Engine.Store.UpdatePublication(savedPub)
+	err := c.Services.Store.UpdatePublication(savedPub)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

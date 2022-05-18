@@ -27,7 +27,7 @@ func (c *Users) Impersonate(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	username := r.FormValue("username")
 
-	user, err := c.Engine.GetUserByUsername(username)
+	user, err := c.Services.GetUserByUsername(username)
 	if err != nil {
 		log.Printf("impersonate get user error: %s", err)
 		// TODO

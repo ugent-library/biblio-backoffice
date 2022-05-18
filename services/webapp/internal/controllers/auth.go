@@ -33,7 +33,7 @@ func (c *Auth) Callback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := c.Engine.GetUserByUsername(claims.PreferredUsername)
+	user, err := c.Services.GetUserByUsername(claims.PreferredUsername)
 	if err != nil {
 		log.Printf("get user error: %s", err)
 		// TODO

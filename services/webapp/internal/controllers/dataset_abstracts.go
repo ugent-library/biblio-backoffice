@@ -69,7 +69,7 @@ func (c *DatasetAbstracts) Create(w http.ResponseWriter, r *http.Request) {
 	dataset.Abstract = abstracts
 
 	savedDataset := dataset.Clone()
-	err = c.Engine.Store.UpdateDataset(savedDataset)
+	err = c.Services.Store.UpdateDataset(savedDataset)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
@@ -158,7 +158,7 @@ func (c *DatasetAbstracts) Update(w http.ResponseWriter, r *http.Request) {
 	dataset.Abstract = abstracts
 
 	savedDataset := dataset.Clone()
-	err = c.Engine.Store.UpdateDataset(dataset)
+	err = c.Services.Store.UpdateDataset(dataset)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
@@ -230,7 +230,7 @@ func (c *DatasetAbstracts) Remove(w http.ResponseWriter, r *http.Request) {
 	dataset.Abstract = abstracts
 
 	// TODO: error handling
-	c.Engine.Store.UpdateDataset(dataset)
+	c.Services.Store.UpdateDataset(dataset)
 
 	w.Header().Set("HX-Trigger", "DatasetRemoveAbstract")
 

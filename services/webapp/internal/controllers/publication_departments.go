@@ -21,7 +21,7 @@ func (c *PublicationDepartments) List(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
 	// Get 20 random departments (no search, init state)
-	hits, _ := c.Engine.SuggestOrganizations("")
+	hits, _ := c.Services.SuggestOrganizations("")
 
 	c.Render.HTML(w, http.StatusOK, "publication/departments/_modal", c.ViewData(r, struct {
 		Publication *models.Publication
@@ -45,7 +45,7 @@ func (c *PublicationDepartments) ActiveSearch(w http.ResponseWriter, r *http.Req
 
 	// Get 20 results from the search query
 	query := r.Form["search"]
-	hits, _ := c.Engine.SuggestOrganizations(query[0])
+	hits, _ := c.Services.SuggestOrganizations(query[0])
 
 	c.Render.HTML(w, http.StatusOK, "publication/departments/_modal_hits", c.ViewData(r, struct {
 		Publication *models.Publication
@@ -75,7 +75,7 @@ func (c *PublicationDepartments) Add(w http.ResponseWriter, r *http.Request) {
 	}
 	pub.Department = append(pub.Department, publicationDepartment)
 	savedPub := pub.Clone()
-	err := c.Engine.Store.UpdatePublication(savedPub)
+	err := c.Services.Store.UpdatePublication(savedPub)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -125,7 +125,7 @@ func (c *PublicationDepartments) Remove(w http.ResponseWriter, r *http.Request) 
 	pub.Department = departments
 
 	savedPub := pub.Clone()
-	err := c.Engine.Store.UpdatePublication(pub)
+	err := c.Services.Store.UpdatePublication(pub)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

@@ -4,8 +4,33 @@ import (
 	"context"
 	"io"
 
+	"github.com/ugent-library/biblio-backend/internal/backends/filestore"
 	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backend/internal/tasks"
+	"github.com/ugent-library/go-orcid/orcid"
 )
+
+type Services struct {
+	ORCIDSandbox             bool
+	ORCIDClient              *orcid.MemberClient
+	Store                    Store
+	FileStore                *filestore.Store
+	DatasetSearchService     DatasetSearchService
+	PublicationSearchService PublicationSearchService
+	PersonService
+	ProjectService
+	UserService
+	OrganizationSearchService
+	PersonSearchService
+	ProjectSearchService
+	LicenseSearchService
+	MediaTypeSearchService
+	PublicationSources  map[string]PublicationGetter
+	DatasetSources      map[string]DatasetGetter
+	PublicationEncoders map[string]PublicationEncoder
+	PublicationDecoders map[string]PublicationDecoderFactory
+	Tasks               *tasks.Hub
+}
 
 type PublicationEncoder func(*models.Publication) ([]byte, error)
 

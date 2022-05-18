@@ -23,7 +23,7 @@ func (c *Licenses) Choose(w http.ResponseWriter, r *http.Request) {
 	}
 	q := r.URL.Query().Get(input)
 
-	suggestions, _ := c.Engine.SuggestLicenses(q)
+	suggestions, _ := c.Services.SuggestLicenses(q)
 
 	c.Render.HTML(w, http.StatusOK, "licenses/_choose", c.ViewData(r, struct {
 		Suggestions []models.Completion

@@ -4,14 +4,14 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/ugent-library/biblio-backend/internal/engine"
+	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 )
 
-func SetPublication(e *engine.Engine) func(next http.Handler) http.Handler {
+func SetPublication(store backends.Store) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			pub, err := e.Store.GetPublication(mux.Vars(r)["id"])
+			pub, err := store.GetPublication(mux.Vars(r)["id"])
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusNotFound)
 				return

@@ -22,7 +22,7 @@ func (c *DatasetProjects) Choose(w http.ResponseWriter, r *http.Request) {
 	dataset := context.GetDataset(r.Context())
 
 	// Get 20 random projects (no search, init state)
-	hits, _ := c.Engine.SuggestProjects("")
+	hits, _ := c.Services.SuggestProjects("")
 
 	c.Render.HTML(w, http.StatusOK, "dataset/projects/_modal", c.ViewData(r, struct {
 		Dataset *models.Dataset
@@ -46,7 +46,7 @@ func (c *DatasetProjects) ActiveSearch(w http.ResponseWriter, r *http.Request) {
 
 	// Get 20 results from the search query
 	query := r.Form["search"]
-	hits, _ := c.Engine.SuggestProjects(query[0])
+	hits, _ := c.Services.SuggestProjects(query[0])
 
 	c.Render.HTML(w, http.StatusOK, "dataset/projects/_modal_hits", c.ViewData(r, struct {
 		Dataset *models.Dataset
@@ -64,7 +64,7 @@ func (c *DatasetProjects) Add(w http.ResponseWriter, r *http.Request) {
 
 	dataset := context.GetDataset(r.Context())
 
-	project, err := c.Engine.GetProject(projectId)
+	project, err := c.Services.GetProject(projectId)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
@@ -76,7 +76,7 @@ func (c *DatasetProjects) Add(w http.ResponseWriter, r *http.Request) {
 	})
 
 	savedDataset := dataset.Clone()
-	err = c.Engine.Store.UpdateDataset(dataset)
+	err = c.Services.Store.UpdateDataset(dataset)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -126,7 +126,7 @@ func (c *DatasetProjects) Remove(w http.ResponseWriter, r *http.Request) {
 	dataset.Project = projects
 
 	savedDataset := dataset.Clone()
-	err := c.Engine.Store.UpdateDataset(dataset)
+	err := c.Services.Store.UpdateDataset(dataset)
 
 	if err != nil {
 		log.Println(err)

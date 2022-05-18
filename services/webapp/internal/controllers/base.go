@@ -9,7 +9,7 @@ import (
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
-	"github.com/ugent-library/biblio-backend/internal/engine"
+	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/vocabularies"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/views"
@@ -19,7 +19,7 @@ import (
 )
 
 type Base struct {
-	Engine       *engine.Engine
+	Services       *backends.Services
 	Mode         string
 	BaseURL      *url.URL
 	Router       *mux.Router

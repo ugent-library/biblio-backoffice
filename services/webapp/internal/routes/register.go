@@ -23,7 +23,7 @@ func Register(base controllers.Base) {
 	router.PathPrefix(basePath + "/static/").Handler(http.StripPrefix(basePath+"/static/", http.FileServer(http.Dir("./services/webapp/static"))))
 
 	requireUser := middleware.RequireUser(base.BaseURL.Path + "/login")
-	setUser := middleware.SetUser(base.Engine, base.SessionName, base.SessionStore)
+	setUser := middleware.SetUser(base.Services.UserService, base.SessionName, base.SessionStore)
 
 	homeController := controllers.NewHome(base)
 	authController := controllers.NewAuth(base)
@@ -151,7 +151,7 @@ func Register(base controllers.Base) {
 		Name("publication_orcid_add_all")
 
 	pubRouter := pubsRouter.PathPrefix("/{id}").Subrouter()
-	pubRouter.Use(middleware.SetPublication(base.Engine))
+	pubRouter.Use(middleware.SetPublication(base.Services.Store))
 	pubRouter.Use(middleware.RequireCanViewPublication)
 	pubEditRouter := pubRouter.PathPrefix("").Subrouter()
 	pubEditRouter.Use(middleware.RequireCanEditPublication)
@@ -409,7 +409,7 @@ func Register(base controllers.Base) {
 		Name("dataset_add_import")
 
 	datasetRouter := datasetsRouter.PathPrefix("/{id}").Subrouter()
-	datasetRouter.Use(middleware.SetDataset(base.Engine))
+	datasetRouter.Use(middleware.SetDataset(base.Services.Store))
 	datasetRouter.Use(middleware.RequireCanViewDataset)
 	datasetEditRouter := datasetRouter.PathPrefix("").Subrouter()
 	datasetEditRouter.Use(middleware.RequireCanEditDataset)

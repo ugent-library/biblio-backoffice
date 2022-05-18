@@ -5,11 +5,11 @@ import (
 	"net/http"
 
 	"github.com/gorilla/sessions"
-	"github.com/ugent-library/biblio-backend/internal/engine"
+	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 )
 
-func SetUser(e *engine.Engine, sessionName string, sessionStore sessions.Store) func(next http.Handler) http.Handler {
+func SetUser(users backends.UserService, sessionName string, sessionStore sessions.Store) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			session, err := sessionStore.Get(r, sessionName)
@@ -24,7 +24,7 @@ func SetUser(e *engine.Engine, sessionName string, sessionStore sessions.Store) 
 				return
 			}
 
-			user, err := e.GetUser(userID.(string))
+			user, err := users.GetUser(userID.(string))
 			if err != nil {
 				// TODO
 				http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -33,7 +33,7 @@ func SetUser(e *engine.Engine, sessionName string, sessionStore sessions.Store) 
 
 			originalUserID := session.Values["original_user_id"]
 			if originalUserID != nil {
-				originalUser, err := e.GetUser(originalUserID.(string))
+				originalUser, err := users.GetUser(originalUserID.(string))
 				if err != nil {
 					log.Printf("get user error: %s", err)
 					// TODO
