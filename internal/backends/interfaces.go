@@ -35,6 +35,10 @@ type Store interface {
 	GetDatasets([]string) ([]*models.Dataset, error)
 	UpdateDataset(*models.Dataset) error
 	EachDataset(func(*models.Dataset) bool) error
+	GetPublicationDatasets(*models.Publication) ([]*models.Dataset, error)
+	GetDatasetPublications(*models.Dataset) ([]*models.Publication, error)
+	AddPublicationDataset(*models.Publication, *models.Dataset) error
+	RemovePublicationDataset(*models.Publication, *models.Dataset) error
 }
 
 type DatasetSearchService interface {

@@ -56,7 +56,7 @@ func (c *PublicationFiles) Thumbnail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.Engine.ServePublicationThumbnail(thumbnailURL, w, r)
+	// TODO implement
 }
 
 func (c *PublicationFiles) Upload(w http.ResponseWriter, r *http.Request) {

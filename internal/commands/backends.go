@@ -24,6 +24,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/backends/spdxlicenses"
 	"github.com/ugent-library/biblio-backend/internal/backends/store"
 	"github.com/ugent-library/biblio-backend/internal/engine"
+	"github.com/ugent-library/biblio-backend/internal/tasks"
 	"github.com/ugent-library/go-orcid/orcid"
 )
 
@@ -97,6 +98,7 @@ func newEngine() *engine.Engine {
 			"wos":    ris.NewDecoder,
 			"bibtex": bibtex.NewDecoder,
 		},
+		Tasks: tasks.NewHub(),
 	})
 
 	if err != nil {

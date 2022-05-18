@@ -26,18 +26,15 @@ type Config struct {
 	DatasetSources      map[string]backends.DatasetGetter
 	PublicationEncoders map[string]backends.PublicationEncoder
 	PublicationDecoders map[string]backends.PublicationDecoderFactory
+	Tasks               *tasks.Hub
 }
 
 type Engine struct {
 	Config
-	Tasks *tasks.Hub
 }
 
 func New(c Config) (*Engine, error) {
-	e := &Engine{
-		Config: c,
-		Tasks:  tasks.NewHub(),
-	}
+	e := &Engine{c}
 
 	return e, nil
 }

@@ -2,8 +2,10 @@ package commands
 
 import (
 	"log"
+	"sync"
 
 	"github.com/spf13/cobra"
+	"github.com/ugent-library/biblio-backend/internal/models"
 )
 
 func init() {
@@ -52,9 +54,29 @@ var indexDatasetAllCmd = &cobra.Command{
 	Use:   "all",
 	Short: "Reindex all datasets",
 	Run: func(cmd *cobra.Command, args []string) {
-		if err := Engine().IndexAllDatasets(); err != nil {
-			log.Fatal(err)
-		}
+		es := newEs6Client()
+		store := newStore()
+		var indexWG sync.WaitGroup
+
+		// indexing channel
+		indexC := make(chan *models.Dataset)
+
+		go func() {
+			indexWG.Add(1)
+			defer indexWG.Done()
+			es.IndexDatasets(indexC)
+		}()
+
+		// send recs to indexer
+		store.EachDataset(func(p *models.Dataset) bool {
+			indexC <- p
+			return true
+		})
+
+		close(indexC)
+
+		// wait for indexing to finish
+		indexWG.Wait()
 	},
 }
 
@@ -85,10 +107,30 @@ var indexPublicationDeleteCmd = &cobra.Command{
 
 var indexPublicationAllCmd = &cobra.Command{
 	Use:   "all",
-	Short: "Reindex all datasets",
+	Short: "Reindex all publications",
 	Run: func(cmd *cobra.Command, args []string) {
-		if err := Engine().IndexAllPublications(); err != nil {
-			log.Fatal(err)
-		}
+		es := newEs6Client()
+		store := newStore()
+		var indexWG sync.WaitGroup
+
+		// indexing channel
+		indexC := make(chan *models.Publication)
+
+		go func() {
+			indexWG.Add(1)
+			defer indexWG.Done()
+			es.IndexPublications(indexC)
+		}()
+
+		// send recs to indexer
+		store.EachPublication(func(p *models.Publication) bool {
+			indexC <- p
+			return true
+		})
+
+		close(indexC)
+
+		// wait for indexing to finish
+		indexWG.Wait()
 	},
 }

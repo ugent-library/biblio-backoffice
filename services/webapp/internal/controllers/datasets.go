@@ -1,11 +1,13 @@
 package controllers
 
 import (
+	"errors"
 	"log"
 	"net/http"
 	"net/url"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/validation"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
@@ -43,7 +45,7 @@ func (c *Datasets) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	hits, err := c.Engine.UserDatasets(context.GetUser(r.Context()).ID, args)
+	hits, err := c.userDatasets(context.GetUser(r.Context()).ID, args)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -68,7 +70,7 @@ func (c *Datasets) List(w http.ResponseWriter, r *http.Request) {
 func (c *Datasets) Show(w http.ResponseWriter, r *http.Request) {
 	dataset := context.GetDataset(r.Context())
 
-	datasetPubs, err := c.Engine.GetDatasetPublications(dataset)
+	datasetPubs, err := c.Engine.Store.GetDatasetPublications(dataset)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -133,7 +135,7 @@ func (c *Datasets) Publish(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	datasetPubs, err := c.Engine.GetDatasetPublications(dataset)
+	datasetPubs, err := c.Engine.Store.GetDatasetPublications(dataset)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -183,7 +185,8 @@ func (c *Datasets) AddImportConfirm(w http.ResponseWriter, r *http.Request) {
 
 	// check for duplicates
 	if source == "datacite" {
-		if existing, _ := c.Engine.Datasets(models.NewSearchArgs().WithFilter("doi", identifier).WithFilter("status", "public")); existing.Total > 0 {
+		args := models.NewSearchArgs().WithFilter("doi", identifier).WithFilter("status", "public")
+		if existing, _ := c.Engine.DatasetSearchService.SearchDatasets(args); existing.Total > 0 {
 			c.Render.HTML(w, http.StatusOK, "dataset/add", c.ViewData(r, DatasetAddVars{
 				PageTitle:        "Add - Datasets - Biblio",
 				Step:             1,
@@ -205,7 +208,7 @@ func (c *Datasets) AddImport(w http.ResponseWriter, r *http.Request) {
 	identifier := r.FormValue("identifier")
 	loc := locale.Get(r.Context())
 
-	dataset, err := c.Engine.ImportUserDatasetByIdentifier(context.GetUser(r.Context()).ID, source, identifier)
+	dataset, err := c.importUserDatasetByIdentifier(context.GetUser(r.Context()).ID, source, identifier)
 
 	if err != nil {
 		log.Println(err)
@@ -351,7 +354,7 @@ func (c *Datasets) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	hits, err := c.Engine.UserDatasets(context.GetUser(r.Context()).ID, searchArgs)
+	hits, err := c.userDatasets(context.GetUser(r.Context()).ID, searchArgs)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -374,4 +377,44 @@ func (c *Datasets) Delete(w http.ResponseWriter, r *http.Request) {
 		views.Flash{Type: "success", Message: "Successfully deleted dataset.", DismissAfter: 5 * time.Second},
 	),
 	)
+}
+
+func (c *Datasets) userDatasets(userID string, args *models.SearchArgs) (*models.DatasetHits, error) {
+	if args.FilterInRange("status", "private", "public") {
+		args = args.Clone()
+	} else {
+		args = args.Clone().WithFilter("status", "private", "public")
+	}
+	switch args.FilterFor("scope") {
+	case "created":
+		args.WithFilter("creator_id", userID)
+	case "contributed":
+		args.WithFilter("author.id", userID)
+	default:
+		args.WithFilter("creator_id|author.id", userID)
+	}
+	delete(args.Filters, "scope")
+	return c.Engine.DatasetSearchService.SearchDatasets(args)
+}
+
+func (c *Datasets) importUserDatasetByIdentifier(userID, source, identifier string) (*models.Dataset, error) {
+	s, ok := c.Engine.DatasetSources[source]
+	if !ok {
+		return nil, errors.New("unknown dataset source")
+	}
+	d, err := s.GetDataset(identifier)
+	if err != nil {
+		return nil, err
+	}
+	d.Vacuum()
+	d.ID = uuid.NewString()
+	d.CreatorID = userID
+	d.UserID = userID
+	d.Status = "private"
+
+	if err = c.Engine.Store.UpdateDataset(d); err != nil {
+		return nil, err
+	}
+
+	return d, nil
 }
