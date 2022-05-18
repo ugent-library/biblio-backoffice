@@ -104,7 +104,7 @@ func newServices() *backends.Services {
 func newStore() backends.Store {
 	s, err := store.New(viper.GetString("pg-conn"))
 	if err != nil {
-		log.Fatalln("unable to create pg dataset service", err)
+		log.Fatalln("unable to create store", err)
 	}
 	return s
 }
