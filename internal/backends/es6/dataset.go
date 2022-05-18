@@ -184,7 +184,7 @@ func buildDatasetQuery(args *models.SearchArgs) M {
 						   make sure minimum_should_match is 0
 	*/
 	queryShould := []M{
-		M{
+		{
 			"match_phrase": M{
 				"title": M{
 					"query": args.Query,
@@ -192,7 +192,7 @@ func buildDatasetQuery(args *models.SearchArgs) M {
 				},
 			},
 		},
-		M{
+		{
 			"match_phrase": M{
 				"author.full_name": M{
 					"query": args.Query,
@@ -200,7 +200,7 @@ func buildDatasetQuery(args *models.SearchArgs) M {
 				},
 			},
 		},
-		M{
+		{
 			"match_phrase": M{
 				"all": M{
 					"query": args.Query,
