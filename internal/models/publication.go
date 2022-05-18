@@ -404,24 +404,28 @@ func (d *Publication) Validate() (errs validation.Errors) {
 		errs = append(errs, &validation.Error{
 			Pointer: "/id",
 			Code:    "required",
+			Field:   "id",
 		})
 	}
 	if d.Type == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/type",
 			Code:    "required",
+			Field:   "type",
 		})
 	}
 	if d.Status == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/status",
 			Code:    "required",
+			Field:   "status",
 		})
 	}
 	if d.Status == "public" && d.Title == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/title",
 			Code:    "required",
+			Field:   "title",
 		})
 	}
 
@@ -430,6 +434,7 @@ func (d *Publication) Validate() (errs validation.Errors) {
 			errs = append(errs, &validation.Error{
 				Pointer: fmt.Sprintf("/author/%d%s", i, err.Pointer),
 				Code:    err.Code,
+				Field:   "author." + err.Field,
 			})
 		}
 	}
@@ -438,6 +443,7 @@ func (d *Publication) Validate() (errs validation.Errors) {
 			errs = append(errs, &validation.Error{
 				Pointer: fmt.Sprintf("/editor/%d%s", i, err.Pointer),
 				Code:    err.Code,
+				Field:   "editor." + err.Field,
 			})
 		}
 	}
@@ -446,6 +452,7 @@ func (d *Publication) Validate() (errs validation.Errors) {
 			errs = append(errs, &validation.Error{
 				Pointer: fmt.Sprintf("/supervisor/%d%s", i, err.Pointer),
 				Code:    err.Code,
+				Field:   "supervisor." + err.Field,
 			})
 		}
 	}
