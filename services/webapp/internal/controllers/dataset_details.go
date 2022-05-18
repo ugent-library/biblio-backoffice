@@ -14,10 +14,10 @@ import (
 )
 
 type DatasetDetails struct {
-	Context
+	Base
 }
 
-func NewDatasetDetails(c Context) *DatasetDetails {
+func NewDatasetDetails(c Base) *DatasetDetails {
 	return &DatasetDetails{c}
 }
 

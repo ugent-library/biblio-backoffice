@@ -15,10 +15,10 @@ import (
 )
 
 type PublicationLaySummaries struct {
-	Context
+	Base
 }
 
-func NewPublicationLaySummaries(c Context) *PublicationLaySummaries {
+func NewPublicationLaySummaries(c Base) *PublicationLaySummaries {
 	return &PublicationLaySummaries{c}
 }
 

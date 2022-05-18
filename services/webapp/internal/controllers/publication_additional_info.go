@@ -14,10 +14,10 @@ import (
 )
 
 type PublicationAdditionalInfo struct {
-	Context
+	Base
 }
 
-func NewPublicationAdditionalInfo(c Context) *PublicationAdditionalInfo {
+func NewPublicationAdditionalInfo(c Base) *PublicationAdditionalInfo {
 	return &PublicationAdditionalInfo{c}
 }
 

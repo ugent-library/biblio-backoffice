@@ -8,10 +8,10 @@ import (
 )
 
 type Auth struct {
-	Context
+	Base
 }
 
-func NewAuth(c Context) *Auth {
+func NewAuth(c Base) *Auth {
 	return &Auth{c}
 }
 

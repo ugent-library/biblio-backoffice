@@ -10,10 +10,10 @@ import (
 )
 
 type DatasetDepartments struct {
-	Context
+	Base
 }
 
-func NewDatasetDepartments(c Context) *DatasetDepartments {
+func NewDatasetDepartments(c Base) *DatasetDepartments {
 	return &DatasetDepartments{c}
 }
 

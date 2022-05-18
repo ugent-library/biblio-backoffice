@@ -11,9 +11,9 @@ import (
 	"github.com/ugent-library/go-locale/locale"
 )
 
-func Register(c controllers.Context) {
-	router := c.Router
-	basePath := c.BaseURL.Path
+func Register(base controllers.Base) {
+	router := base.Router
+	basePath := base.BaseURL.Path
 
 	router.StrictSlash(true)
 	router.UseEncodedPath()
@@ -22,37 +22,37 @@ func Register(c controllers.Context) {
 	// static files
 	router.PathPrefix(basePath + "/static/").Handler(http.StripPrefix(basePath+"/static/", http.FileServer(http.Dir("./services/webapp/static"))))
 
-	requireUser := middleware.RequireUser(c.BaseURL.Path + "/login")
-	setUser := middleware.SetUser(c.Engine, c.SessionName, c.SessionStore)
+	requireUser := middleware.RequireUser(base.BaseURL.Path + "/login")
+	setUser := middleware.SetUser(base.Engine, base.SessionName, base.SessionStore)
 
-	homeController := controllers.NewHome(c)
-	authController := controllers.NewAuth(c)
-	usersController := controllers.NewUsers(c)
-	tasksController := controllers.NewTasks(c)
+	homeController := controllers.NewHome(base)
+	authController := controllers.NewAuth(base)
+	usersController := controllers.NewUsers(base)
+	tasksController := controllers.NewTasks(base)
 
-	publicationsController := controllers.NewPublications(c)
-	publicationFilesController := controllers.NewPublicationFiles(c)
-	publicationDetailsController := controllers.NewPublicationDetails(c)
-	publicationConferenceController := controllers.NewPublicationConference(c)
-	publicationProjectsController := controllers.NewPublicationProjects(c)
-	publicationDepartmentsController := controllers.NewPublicationDepartments(c)
-	publicationAbstractsController := controllers.NewPublicationAbstracts(c)
-	publicationLinksController := controllers.NewPublicationLinks(c)
-	publicationContributorsController := controllers.NewPublicationContributors(c)
-	publicationDatasetsController := controllers.NewPublicationDatasets(c)
-	publicationAdditionalInfoController := controllers.NewPublicationAdditionalInfo(c)
-	publicationLaySummariesController := controllers.NewPublicationLaySummaries(c)
+	publicationsController := controllers.NewPublications(base)
+	publicationFilesController := controllers.NewPublicationFiles(base)
+	publicationDetailsController := controllers.NewPublicationDetails(base)
+	publicationConferenceController := controllers.NewPublicationConference(base)
+	publicationProjectsController := controllers.NewPublicationProjects(base)
+	publicationDepartmentsController := controllers.NewPublicationDepartments(base)
+	publicationAbstractsController := controllers.NewPublicationAbstracts(base)
+	publicationLinksController := controllers.NewPublicationLinks(base)
+	publicationContributorsController := controllers.NewPublicationContributors(base)
+	publicationDatasetsController := controllers.NewPublicationDatasets(base)
+	publicationAdditionalInfoController := controllers.NewPublicationAdditionalInfo(base)
+	publicationLaySummariesController := controllers.NewPublicationLaySummaries(base)
 
-	datasetsController := controllers.NewDatasets(c)
-	datasetDetailsController := controllers.NewDatasetDetails(c)
-	datasetProjectsController := controllers.NewDatasetProjects(c)
-	datasetDepartmentsController := controllers.NewDatasetDepartments(c)
-	datasetAbstractsController := controllers.NewDatasetAbstracts(c)
-	datasetContributorsController := controllers.NewDatasetContributors(c)
-	datasetPublicationsController := controllers.NewDatasetPublications(c)
+	datasetsController := controllers.NewDatasets(base)
+	datasetDetailsController := controllers.NewDatasetDetails(base)
+	datasetProjectsController := controllers.NewDatasetProjects(base)
+	datasetDepartmentsController := controllers.NewDatasetDepartments(base)
+	datasetAbstractsController := controllers.NewDatasetAbstracts(base)
+	datasetContributorsController := controllers.NewDatasetContributors(base)
+	datasetPublicationsController := controllers.NewDatasetPublications(base)
 
-	licensesController := controllers.NewLicenses(c)
-	mediaTypesController := controllers.NewMediaTypes(c)
+	licensesController := controllers.NewLicenses(base)
+	mediaTypesController := controllers.NewMediaTypes(base)
 
 	// TODO fix absolute url generation
 	// var schemes []string
@@ -69,7 +69,7 @@ func Register(c controllers.Context) {
 		[]byte(viper.GetString("csrf-secret")),
 		csrf.CookieName(viper.GetString("csrf-name")),
 		csrf.Path(basePath),
-		csrf.Secure(c.BaseURL.Scheme == "https"),
+		csrf.Secure(base.BaseURL.Scheme == "https"),
 		csrf.SameSite(csrf.SameSiteStrictMode),
 		csrf.FieldName("csrf-token"),
 	)
@@ -77,7 +77,7 @@ func Register(c controllers.Context) {
 	r.Use(csrfMiddleware)
 
 	// r.Use(handlers.HTTPMethodOverrideHandler)
-	r.Use(locale.Detect(c.Localizer))
+	r.Use(locale.Detect(base.Localizer))
 
 	r.Use(setUser)
 
@@ -151,7 +151,7 @@ func Register(c controllers.Context) {
 		Name("publication_orcid_add_all")
 
 	pubRouter := pubsRouter.PathPrefix("/{id}").Subrouter()
-	pubRouter.Use(middleware.SetPublication(c.Engine))
+	pubRouter.Use(middleware.SetPublication(base.Engine))
 	pubRouter.Use(middleware.RequireCanViewPublication)
 	pubEditRouter := pubRouter.PathPrefix("").Subrouter()
 	pubEditRouter.Use(middleware.RequireCanEditPublication)
@@ -409,7 +409,7 @@ func Register(c controllers.Context) {
 		Name("dataset_add_import")
 
 	datasetRouter := datasetsRouter.PathPrefix("/{id}").Subrouter()
-	datasetRouter.Use(middleware.SetDataset(c.Engine))
+	datasetRouter.Use(middleware.SetDataset(base.Engine))
 	datasetRouter.Use(middleware.RequireCanViewDataset)
 	datasetEditRouter := datasetRouter.PathPrefix("").Subrouter()
 	datasetEditRouter.Use(middleware.RequireCanEditDataset)

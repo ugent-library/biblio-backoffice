@@ -15,10 +15,10 @@ import (
 )
 
 type PublicationContributors struct {
-	Context
+	Base
 }
 
-func NewPublicationContributors(c Context) *PublicationContributors {
+func NewPublicationContributors(c Base) *PublicationContributors {
 	return &PublicationContributors{c}
 }
 

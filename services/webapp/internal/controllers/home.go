@@ -5,10 +5,10 @@ import (
 )
 
 type Home struct {
-	Context
+	Base
 }
 
-func NewHome(c Context) *Auth {
+func NewHome(c Base) *Auth {
 	return &Auth{c}
 }
 

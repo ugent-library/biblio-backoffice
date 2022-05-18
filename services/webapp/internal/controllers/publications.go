@@ -34,10 +34,10 @@ type PublicationAddSingleVars struct {
 }
 
 type Publications struct {
-	Context
+	Base
 }
 
-func NewPublications(c Context) *Publications {
+func NewPublications(c Base) *Publications {
 	return &Publications{c}
 }
 

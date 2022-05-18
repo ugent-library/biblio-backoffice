@@ -17,10 +17,10 @@ import (
 )
 
 type PublicationLinks struct {
-	Context
+	Base
 }
 
-func NewPublicationLinks(c Context) *PublicationLinks {
+func NewPublicationLinks(c Base) *PublicationLinks {
 	return &PublicationLinks{c}
 }
 

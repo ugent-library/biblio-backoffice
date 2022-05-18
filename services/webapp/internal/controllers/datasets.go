@@ -30,10 +30,10 @@ type DatasetAddVars struct {
 }
 
 type Datasets struct {
-	Context
+	Base
 }
 
-func NewDatasets(c Context) *Datasets {
+func NewDatasets(c Base) *Datasets {
 	return &Datasets{c}
 }
 

@@ -9,10 +9,10 @@ import (
 )
 
 type Users struct {
-	Context
+	Base
 }
 
-func NewUsers(c Context) *Users {
+func NewUsers(c Base) *Users {
 	return &Users{c}
 }
 

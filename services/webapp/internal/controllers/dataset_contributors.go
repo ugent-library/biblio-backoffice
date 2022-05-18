@@ -15,10 +15,10 @@ import (
 )
 
 type DatasetContributors struct {
-	Context
+	Base
 }
 
-func NewDatasetContributors(c Context) *DatasetContributors {
+func NewDatasetContributors(c Base) *DatasetContributors {
 	return &DatasetContributors{c}
 }
 

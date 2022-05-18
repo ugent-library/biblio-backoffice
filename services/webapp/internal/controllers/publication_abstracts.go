@@ -16,10 +16,10 @@ import (
 )
 
 type PublicationAbstracts struct {
-	Context
+	Base
 }
 
-func NewPublicationAbstracts(c Context) *PublicationAbstracts {
+func NewPublicationAbstracts(c Base) *PublicationAbstracts {
 	return &PublicationAbstracts{c}
 }
 

@@ -16,10 +16,10 @@ import (
 )
 
 type DatasetAbstracts struct {
-	Context
+	Base
 }
 
-func NewDatasetAbstracts(c Context) *DatasetAbstracts {
+func NewDatasetAbstracts(c Base) *DatasetAbstracts {
 	return &DatasetAbstracts{c}
 }
 

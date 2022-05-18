@@ -18,10 +18,10 @@ import (
 )
 
 type PublicationFiles struct {
-	Context
+	Base
 }
 
-func NewPublicationFiles(c Context) *PublicationFiles {
+func NewPublicationFiles(c Base) *PublicationFiles {
 	return &PublicationFiles{c}
 }
 

@@ -14,10 +14,10 @@ import (
 )
 
 type PublicationConference struct {
-	Context
+	Base
 }
 
-func NewPublicationConference(c Context) *PublicationConference {
+func NewPublicationConference(c Base) *PublicationConference {
 	return &PublicationConference{c}
 }
 

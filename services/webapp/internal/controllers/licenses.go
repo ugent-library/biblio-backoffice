@@ -8,10 +8,10 @@ import (
 )
 
 type Licenses struct {
-	Context
+	Base
 }
 
-func NewLicenses(c Context) *Licenses {
+func NewLicenses(c Base) *Licenses {
 	return &Licenses{c}
 }
 

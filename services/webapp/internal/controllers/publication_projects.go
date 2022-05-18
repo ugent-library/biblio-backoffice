@@ -11,10 +11,10 @@ import (
 )
 
 type PublicationProjects struct {
-	Context
+	Base
 }
 
-func NewPublicationProjects(c Context) *PublicationProjects {
+func NewPublicationProjects(c Base) *PublicationProjects {
 	return &PublicationProjects{c}
 }
 

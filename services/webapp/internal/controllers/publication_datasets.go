@@ -11,10 +11,10 @@ import (
 )
 
 type PublicationDatasets struct {
-	Context
+	Base
 }
 
-func NewPublicationDatasets(c Context) *PublicationDatasets {
+func NewPublicationDatasets(c Base) *PublicationDatasets {
 	return &PublicationDatasets{c}
 }
 

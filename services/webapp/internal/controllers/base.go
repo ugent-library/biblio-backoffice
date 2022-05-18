@@ -18,7 +18,7 @@ import (
 	"github.com/unrolled/render"
 )
 
-type Context struct {
+type Base struct {
 	Engine       *engine.Engine
 	Mode         string
 	BaseURL      *url.URL
@@ -30,11 +30,11 @@ type Context struct {
 	OIDC         *oidc.Client
 }
 
-func (c *Context) Session(r *http.Request) (*sessions.Session, error) {
+func (c *Base) Session(r *http.Request) (*sessions.Session, error) {
 	return c.SessionStore.Get(r, c.SessionName)
 }
 
-func (c *Context) RenderPartial(tmpl string, data interface{}) (template.HTML, error) {
+func (c *Base) RenderPartial(tmpl string, data interface{}) (template.HTML, error) {
 	buf := &bytes.Buffer{}
 	var err error
 	if t := c.Render.TemplateLookup(tmpl); t != nil {
@@ -43,7 +43,7 @@ func (c *Context) RenderPartial(tmpl string, data interface{}) (template.HTML, e
 	return template.HTML(buf.String()), err
 }
 
-func (c *Context) ViewData(r *http.Request, data interface{}, flash ...views.Flash) *views.Data {
+func (c *Base) ViewData(r *http.Request, data interface{}, flash ...views.Flash) *views.Data {
 	return &views.Data{
 		Mode:              c.Mode,
 		RenderPartialFunc: c.RenderPartial,

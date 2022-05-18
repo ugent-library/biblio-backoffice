@@ -11,10 +11,10 @@ import (
 )
 
 type Tasks struct {
-	Context
+	Base
 }
 
-func NewTasks(c Context) *Tasks {
+func NewTasks(c Base) *Tasks {
 	return &Tasks{c}
 }
 

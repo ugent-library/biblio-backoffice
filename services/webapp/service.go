@@ -167,8 +167,8 @@ func buildRouter(e *engine.Engine) *mux.Router {
 		log.Fatal(err)
 	}
 
-	// controller config
-	config := controllers.Context{
+	// controller base
+	base := controllers.Base{
 		Engine:       e,
 		Mode:         viper.GetString("mode"),
 		BaseURL:      baseURL,
@@ -181,7 +181,7 @@ func buildRouter(e *engine.Engine) *mux.Router {
 	}
 
 	// add routes
-	routes.Register(config)
+	routes.Register(base)
 
 	return router
 }

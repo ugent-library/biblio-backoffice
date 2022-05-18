@@ -8,10 +8,10 @@ import (
 )
 
 type MediaTypes struct {
-	Context
+	Base
 }
 
-func NewMediaTypes(c Context) *MediaTypes {
+func NewMediaTypes(c Base) *MediaTypes {
 	return &MediaTypes{c}
 }
 
