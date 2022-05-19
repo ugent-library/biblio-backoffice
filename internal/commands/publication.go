@@ -10,15 +10,12 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/models"
 )
 
 func init() {
-	publicationGetCmd.Flags().StringP("format", "f", "", "export format")
-
+	publicationGetCmd.Flags().StringP("format", "f", "jsonl", "export format")
 	publicationAddCmd.Flags().StringP("format", "f", "jsonl", "import format")
-
 	publicationCmd.AddCommand(publicationGetCmd)
 	publicationCmd.AddCommand(publicationAllCmd)
 	publicationCmd.AddCommand(publicationAddCmd)
@@ -37,10 +34,12 @@ var publicationGetCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		e := Services()
 
-		if format := viper.GetString("format"); format != "" {
-			enc, ok := e.PublicationEncoders[format]
+		fmt, _ := cmd.Flags().GetString("format")
+
+		if fmt != "jsonl" {
+			enc, ok := e.PublicationEncoders[fmt]
 			if !ok {
-				log.Fatalf("Unknown format %s", format)
+				log.Fatalf("Unknown format %s", fmt)
 			}
 			d, err := e.Store.GetPublication(args[0])
 			if err != nil {
@@ -95,7 +94,7 @@ var publicationAddCmd = &cobra.Command{
 			e.PublicationSearchService.IndexPublications(indexC)
 		}()
 
-		fmt := viper.GetString("format")
+		fmt, _ := cmd.Flags().GetString("format")
 		decFactory, ok := e.PublicationDecoders[fmt]
 		if !ok {
 			log.Fatalf("Unknown format %s", fmt)
@@ -122,7 +121,7 @@ var publicationAddCmd = &cobra.Command{
 			if err := e.Store.UpdatePublication(&p); err != nil {
 				log.Fatalf("Unable to store publication from line %d : %v", lineNo, err)
 			}
-			// log.Printf("%+v", savedP)
+
 			indexC <- &p
 		}
 
