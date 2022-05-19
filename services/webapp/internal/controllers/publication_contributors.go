@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/validation"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
@@ -15,11 +16,20 @@ import (
 )
 
 type PublicationContributors struct {
-	Context
+	Base
+	store               backends.Store
+	personSearchService backends.PersonSearchService
+	personService       backends.PersonService
 }
 
-func NewPublicationContributors(c Context) *PublicationContributors {
-	return &PublicationContributors{c}
+func NewPublicationContributors(base Base, store backends.Store, personSearchService backends.PersonSearchService,
+	personService backends.PersonService) *PublicationContributors {
+	return &PublicationContributors{
+		Base:                base,
+		store:               store,
+		personSearchService: personSearchService,
+		personService:       personService,
+	}
 }
 
 func (c *PublicationContributors) Add(w http.ResponseWriter, r *http.Request) {
@@ -65,7 +75,7 @@ func (c *PublicationContributors) Create(w http.ResponseWriter, r *http.Request)
 	id := r.FormValue("id")
 	if id != "" {
 		// Check if the user really exists
-		user, err := c.Engine.GetPerson(id)
+		user, err := c.personService.GetPerson(id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -83,7 +93,7 @@ func (c *PublicationContributors) Create(w http.ResponseWriter, r *http.Request)
 	pub.AddContributor(role, position, contributor)
 
 	savedPub := pub.Clone()
-	err := c.Engine.Store.UpdatePublication(savedPub)
+	err := c.store.UpdatePublication(savedPub)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
@@ -163,7 +173,7 @@ func (c *PublicationContributors) Update(w http.ResponseWriter, r *http.Request)
 	id := r.FormValue("id")
 	if id != "" {
 		// Check if the user really exists
-		user, err := c.Engine.GetPerson(id)
+		user, err := c.personService.GetPerson(id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -181,7 +191,7 @@ func (c *PublicationContributors) Update(w http.ResponseWriter, r *http.Request)
 	pub.Contributors(role)[position] = contributor
 
 	savedPub := pub.Clone()
-	err := c.Engine.Store.UpdatePublication(savedPub)
+	err := c.store.UpdatePublication(savedPub)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
@@ -250,7 +260,7 @@ func (c *PublicationContributors) Remove(w http.ResponseWriter, r *http.Request)
 
 	pub.RemoveContributor(role, position)
 
-	if err := c.Engine.Store.UpdatePublication(pub); err != nil {
+	if err := c.store.UpdatePublication(pub); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -285,7 +295,7 @@ func (c *PublicationContributors) Choose(w http.ResponseWriter, r *http.Request)
 	lastName := r.FormValue("last_name")
 	creditRole := r.Form["credit_role"]
 
-	suggestions, _ := c.Engine.SuggestPeople(firstName + " " + lastName)
+	suggestions, _ := c.personSearchService.SuggestPeople(firstName + " " + lastName)
 
 	c.Render.HTML(w, http.StatusOK, "publication/contributors/_choose", c.ViewData(r, struct {
 		Role        string
@@ -354,7 +364,7 @@ func (c *PublicationContributors) Promote(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	person, err := c.Engine.GetPerson(r.FormValue("id"))
+	person, err := c.personService.GetPerson(r.FormValue("id"))
 	if err != nil || person == nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -406,7 +416,7 @@ func (c *PublicationContributors) Order(w http.ResponseWriter, r *http.Request) 
 
 	publication.SetContributors(role, newContributors)
 
-	if err := c.Engine.Store.UpdatePublication(publication); err != nil {
+	if err := c.store.UpdatePublication(publication); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

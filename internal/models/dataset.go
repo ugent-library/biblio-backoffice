@@ -159,54 +159,63 @@ func (d *Dataset) Validate() (errs validation.Errors) {
 		errs = append(errs, &validation.Error{
 			Pointer: "/id",
 			Code:    "required",
+			Field:   "id",
 		})
 	}
 	if d.Status == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/status",
 			Code:    "required",
+			Field:   "status",
 		})
 	}
 	if d.Status == "public" && d.AccessLevel == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/access_level",
 			Code:    "required",
+			Field:   "access_level",
 		})
 	}
 	if d.Status == "public" && d.DOI == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/doi",
 			Code:    "required",
+			Field:   "doi",
 		})
 	}
 	if d.Status == "public" && len(d.Format) == 0 {
 		errs = append(errs, &validation.Error{
 			Pointer: "/format",
 			Code:    "required",
+			Field:   "format",
 		})
 	}
 	if d.Status == "public" && d.Publisher == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/publisher",
 			Code:    "required",
+			Field:   "publisher",
 		})
 	}
 	if d.Status == "public" && d.Title == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/title",
 			Code:    "required",
+			Field:   "title",
 		})
 	}
 	if d.Status == "public" && d.Year == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/year",
 			Code:    "required",
+			Field:   "year",
 		})
 	}
 	if d.Status == "public" && len(d.Author) == 0 {
 		errs = append(errs, &validation.Error{
 			Pointer: "/author",
 			Code:    "required",
+			Field:   "author",
 		})
 	}
 
@@ -215,6 +224,7 @@ func (d *Dataset) Validate() (errs validation.Errors) {
 			errs = append(errs, &validation.Error{
 				Pointer: fmt.Sprintf("/author/%d%s", i, err.Pointer),
 				Code:    err.Code,
+				Field:   "author." + err.Field,
 			})
 		}
 	}

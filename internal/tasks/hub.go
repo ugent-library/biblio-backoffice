@@ -8,6 +8,7 @@ package tasks
 import (
 	"errors"
 	"math"
+	"sync"
 	"time"
 
 	"github.com/alitto/pond"
@@ -35,8 +36,8 @@ type Status struct {
 }
 
 type Task struct {
-	id         string
-	progressCh chan progressCmd
+	id  string
+	hub *Hub
 }
 
 type taskCmd struct {
@@ -63,107 +64,109 @@ type statusCmd struct {
 }
 
 type Hub struct {
-	statuses   map[string]*Status
-	pool       *pond.WorkerPool
-	taskCh     chan taskCmd
-	stateCh    chan stateCmd
-	progressCh chan progressCmd
-	statusCh   chan statusCmd
+	statuses         map[string]*Status
+	pool             *pond.WorkerPool
+	mu               sync.RWMutex
+	minRetentionTime time.Duration
 }
 
 func NewHub() *Hub {
 	return &Hub{
-		statuses:   make(map[string]*Status),
-		pool:       pond.New(250, 5000),
-		taskCh:     make(chan taskCmd),
-		stateCh:    make(chan stateCmd),
-		progressCh: make(chan progressCmd),
-		statusCh:   make(chan statusCmd),
+		statuses:         make(map[string]*Status),
+		pool:             pond.New(250, 5000),
+		minRetentionTime: 5 * time.Minute,
 	}
 }
 
-func (h *Hub) Add(id string, fn func(Task) error) string {
-	h.taskCh <- taskCmd{id: id, fn: fn}
-	return id
+func (h *Hub) Add(id string, fn func(Task) error) {
+	if h.addTask(id) {
+		h.pool.Submit(func() {
+			h.setRunning(id)
+			defer func() {
+				if r := recover(); r != nil {
+					var err error
+					switch rt := r.(type) {
+					case string:
+						err = errors.New(rt)
+					case error:
+						err = rt
+					default:
+						err = errors.New("unknown panic")
+					}
+					h.setFailed(id, err)
+				}
+			}()
+			if err := fn(Task{hub: h, id: id}); err != nil {
+				h.setFailed(id, err)
+				return
+			}
+			h.setDone(id)
+		})
+	}
 }
 
 func (h *Hub) Status(id string) Status {
-	ch := make(chan Status)
-	defer close(ch)
-	h.statusCh <- statusCmd{id: id, ch: ch}
-	return <-ch
+	h.mu.RLock()
+	defer h.mu.RUnlock()
+	if s, ok := h.statuses[id]; ok {
+		return *s
+	}
+	return Status{}
 }
 
-func (h *Hub) addTaskToPool(id string, fn func(Task) error) {
-	h.pool.Submit(func() {
-		h.stateCh <- stateCmd{id: id, state: Running, start: time.Now()}
-		defer func() {
-			if r := recover(); r != nil {
-				var err error
-				switch rt := r.(type) {
-				case string:
-					err = errors.New(rt)
-				case error:
-					err = rt
-				default:
-					err = errors.New("unknown panic")
-				}
-				h.stateCh <- stateCmd{id: id, state: Failed, err: err, end: time.Now()}
-			}
-		}()
-		if err := fn(Task{id: id, progressCh: h.progressCh}); err != nil {
-			h.stateCh <- stateCmd{id: id, state: Failed, err: err, end: time.Now()}
-			return
-		}
-		h.stateCh <- stateCmd{id: id, state: Done, end: time.Now()}
-	})
+func (h *Hub) addTask(id string) bool {
+	h.cleanup()
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	if _, ok := h.statuses[id]; ok {
+		return false
+	}
+	h.statuses[id] = &Status{}
+	return true
 }
 
-func (h *Hub) Run() {
-	retentionTime := 5 * time.Minute
-	cleanupTicker := time.NewTicker(retentionTime)
-	defer cleanupTicker.Stop()
+func (h *Hub) setRunning(id string) {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	s := h.statuses[id]
+	s.State = Running
+	s.StartTime = time.Now()
+}
 
-	go func() {
-		for {
-			select {
-			case now := <-cleanupTicker.C:
-				for id, status := range h.statuses {
-					if (status.State == Done || status.State == Failed) && now.Sub(status.EndTime) > retentionTime {
-						delete(h.statuses, id)
-					}
-				}
-			case cmd := <-h.taskCh:
-				// no overlapping tasks
-				if _, ok := h.statuses[cmd.id]; !ok {
-					h.statuses[cmd.id] = &Status{}
-					h.addTaskToPool(cmd.id, cmd.fn)
-				}
-			case cmd := <-h.stateCh:
-				if s, ok := h.statuses[cmd.id]; ok {
-					s.State = cmd.state
-					s.Error = cmd.err
-					if !cmd.start.IsZero() {
-						s.StartTime = cmd.start
-					}
-					if !cmd.end.IsZero() {
-						s.EndTime = cmd.end
-					}
-				}
-			case cmd := <-h.progressCh:
-				if s, ok := h.statuses[cmd.id]; ok {
-					s.Progress.Numerator = cmd.num
-					s.Progress.Denominator = cmd.denom
-				}
-			case cmd := <-h.statusCh:
-				if s, ok := h.statuses[cmd.id]; ok {
-					cmd.ch <- *s
-				} else {
-					cmd.ch <- Status{}
-				}
-			}
+func (h *Hub) setDone(id string) {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	s := h.statuses[id]
+	s.State = Done
+	s.EndTime = time.Now()
+}
+
+func (h *Hub) setFailed(id string, err error) {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	s := h.statuses[id]
+	s.State = Failed
+	s.EndTime = time.Now()
+	s.Error = err
+}
+
+func (h *Hub) setProgress(id string, num, denom int) {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	s := h.statuses[id]
+	s.Progress.Numerator = num
+	s.Progress.Denominator = denom
+}
+
+func (h *Hub) cleanup() {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	now := time.Now()
+	for id, status := range h.statuses {
+		if (status.State == Done || status.State == Failed) && now.Sub(status.EndTime) > h.minRetentionTime {
+			delete(h.statuses, id)
 		}
-	}()
+	}
 }
 
 func (s Status) Waiting() bool {
@@ -190,5 +193,5 @@ func (p Progress) Percent() int {
 }
 
 func (t Task) Progress(num int, denom int) {
-	t.progressCh <- progressCmd{id: t.id, num: num, denom: denom}
+	t.hub.setProgress(t.id, num, denom)
 }

@@ -5,14 +5,14 @@ import (
 )
 
 type Home struct {
-	Context
+	Base
 }
 
-func NewHome(c Context) *Auth {
-	return &Auth{c}
+func NewHome(base Base) *Home {
+	return &Home{base}
 }
 
-func (c *Auth) Home(w http.ResponseWriter, r *http.Request) {
+func (c *Home) Home(w http.ResponseWriter, r *http.Request) {
 	c.Render.HTML(w, http.StatusOK, "home/home", c.ViewData(r, struct {
 		PageTitle string
 	}{

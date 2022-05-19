@@ -11,17 +11,21 @@ import (
 )
 
 type Tasks struct {
-	Context
+	Base
+	tasksHub *tasks.Hub
 }
 
-func NewTasks(c Context) *Tasks {
-	return &Tasks{c}
+func NewTasks(base Base, tasksHub *tasks.Hub) *Tasks {
+	return &Tasks{
+		Base:     base,
+		tasksHub: tasksHub,
+	}
 }
 
 func (c *Tasks) Status(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
-	status := c.Engine.Tasks.Status(id)
+	status := c.tasksHub.Status(id)
 
 	var msg string
 

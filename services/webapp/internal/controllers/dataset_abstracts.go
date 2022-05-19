@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/validation"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
@@ -16,11 +17,15 @@ import (
 )
 
 type DatasetAbstracts struct {
-	Context
+	Base
+	store backends.Store
 }
 
-func NewDatasetAbstracts(c Context) *DatasetAbstracts {
-	return &DatasetAbstracts{c}
+func NewDatasetAbstracts(base Base, store backends.Store) *DatasetAbstracts {
+	return &DatasetAbstracts{
+		Base:  base,
+		store: store,
+	}
 }
 
 // Show the "Add abstract" modal
@@ -69,7 +74,7 @@ func (c *DatasetAbstracts) Create(w http.ResponseWriter, r *http.Request) {
 	dataset.Abstract = abstracts
 
 	savedDataset := dataset.Clone()
-	err = c.Engine.Store.UpdateDataset(savedDataset)
+	err = c.store.UpdateDataset(savedDataset)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
@@ -158,7 +163,7 @@ func (c *DatasetAbstracts) Update(w http.ResponseWriter, r *http.Request) {
 	dataset.Abstract = abstracts
 
 	savedDataset := dataset.Clone()
-	err = c.Engine.Store.UpdateDataset(dataset)
+	err = c.store.UpdateDataset(dataset)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
@@ -230,7 +235,7 @@ func (c *DatasetAbstracts) Remove(w http.ResponseWriter, r *http.Request) {
 	dataset.Abstract = abstracts
 
 	// TODO: error handling
-	c.Engine.Store.UpdateDataset(dataset)
+	c.store.UpdateDataset(dataset)
 
 	w.Header().Set("HX-Trigger", "DatasetRemoveAbstract")
 

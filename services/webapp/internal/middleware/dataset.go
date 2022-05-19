@@ -4,14 +4,14 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/ugent-library/biblio-backend/internal/engine"
+	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 )
 
-func SetDataset(e *engine.Engine) func(next http.Handler) http.Handler {
+func SetDataset(store backends.Store) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			dataset, err := e.Store.GetDataset(mux.Vars(r)["id"])
+			dataset, err := store.GetDataset(mux.Vars(r)["id"])
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusNotFound)
 				return

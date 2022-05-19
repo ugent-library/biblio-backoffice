@@ -5,24 +5,34 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 	"github.com/unrolled/render"
 )
 
 type PublicationProjects struct {
-	Context
+	Base
+	store                backends.Store
+	projectSearchService backends.ProjectSearchService
+	projectService       backends.ProjectService
 }
 
-func NewPublicationProjects(c Context) *PublicationProjects {
-	return &PublicationProjects{c}
+func NewPublicationProjects(base Base, store backends.Store,
+	projectSearchService backends.ProjectSearchService,
+	projectSerive backends.ProjectService) *PublicationProjects {
+	return &PublicationProjects{
+		Base:                 base,
+		projectSearchService: projectSearchService,
+		projectService:       projectSerive,
+	}
 }
 
 func (c *PublicationProjects) List(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
 	// Get 20 random projects (no search, init state)
-	hits, _ := c.Engine.SuggestProjects("")
+	hits, _ := c.projectSearchService.SuggestProjects("")
 
 	c.Render.HTML(w, http.StatusOK, "publication/projects/_modal", c.ViewData(r, struct {
 		Publication *models.Publication
@@ -46,7 +56,7 @@ func (c *PublicationProjects) ActiveSearch(w http.ResponseWriter, r *http.Reques
 
 	// Get 20 results from the search query
 	query := r.Form["search"]
-	hits, _ := c.Engine.SuggestProjects(query[0])
+	hits, _ := c.projectSearchService.SuggestProjects(query[0])
 
 	c.Render.HTML(w, http.StatusOK, "publication/projects/_modal_hits", c.ViewData(r, struct {
 		Publication *models.Publication
@@ -63,7 +73,7 @@ func (c *PublicationProjects) Add(w http.ResponseWriter, r *http.Request) {
 	projectId := mux.Vars(r)["project_id"]
 	pub := context.GetPublication(r.Context())
 
-	project, err := c.Engine.GetProject(projectId)
+	project, err := c.projectService.GetProject(projectId)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -77,7 +87,7 @@ func (c *PublicationProjects) Add(w http.ResponseWriter, r *http.Request) {
 	pub.Project = append(pub.Project, publicationProject)
 
 	savedPub := pub.Clone()
-	err = c.Engine.Store.UpdatePublication(savedPub)
+	err = c.store.UpdatePublication(savedPub)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -128,7 +138,7 @@ func (c *PublicationProjects) Remove(w http.ResponseWriter, r *http.Request) {
 
 	// TODO: error handling
 	savedPub := pub.Clone()
-	err := c.Engine.Store.UpdatePublication(savedPub)
+	err := c.store.UpdatePublication(savedPub)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

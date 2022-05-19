@@ -36,12 +36,14 @@ func (c *Contributor) Validate() (errs validation.Errors) {
 		errs = append(errs, &validation.Error{
 			Pointer: "/first_name",
 			Code:    "required",
+			Field:   "first_name",
 		})
 	}
 	if c.LastName == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/last_name",
 			Code:    "required",
+			Field:   "last_name",
 		})
 	}
 	return

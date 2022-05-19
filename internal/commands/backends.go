@@ -23,23 +23,23 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/backends/ris"
 	"github.com/ugent-library/biblio-backend/internal/backends/spdxlicenses"
 	"github.com/ugent-library/biblio-backend/internal/backends/store"
-	"github.com/ugent-library/biblio-backend/internal/engine"
+	"github.com/ugent-library/biblio-backend/internal/tasks"
 	"github.com/ugent-library/go-orcid/orcid"
 )
 
 var (
-	_engine     *engine.Engine
-	_engineOnce sync.Once
+	_services     *backends.Services
+	_servicesOnce sync.Once
 )
 
-func Engine() *engine.Engine {
-	_engineOnce.Do(func() {
-		_engine = newEngine()
+func Services() *backends.Services {
+	_servicesOnce.Do(func() {
+		_services = newServices()
 	})
-	return _engine
+	return _services
 }
 
-func newEngine() *engine.Engine {
+func newServices() *backends.Services {
 	fs, err := filestore.New(viper.GetString("file-dir"))
 	if err != nil {
 		log.Fatalln("Unable to initialize filestore", err)
@@ -58,7 +58,7 @@ func newEngine() *engine.Engine {
 	}
 	orcidClient := orcid.NewMemberClient(orcidConfig)
 
-	e, err := engine.New(engine.Config{
+	return &backends.Services{
 		FileStore:                 fs,
 		ORCIDSandbox:              orcidConfig.Sandbox,
 		ORCIDClient:               orcidClient,
@@ -95,19 +95,14 @@ func newEngine() *engine.Engine {
 			"wos":    ris.NewDecoder,
 			"bibtex": bibtex.NewDecoder,
 		},
-	})
-
-	if err != nil {
-		log.Fatal(err)
+		Tasks: tasks.NewHub(),
 	}
-
-	return e
 }
 
 func newStore() backends.Store {
 	s, err := store.New(viper.GetString("pg-conn"))
 	if err != nil {
-		log.Fatalln("unable to create pg dataset service", err)
+		log.Fatalln("unable to create store", err)
 	}
 	return s
 }

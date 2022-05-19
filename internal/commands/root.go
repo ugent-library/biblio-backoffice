@@ -23,6 +23,7 @@ const (
 	defaultCSRFName         = "biblio-backend.csrf-token"
 )
 
+// TODO we shouldn't do this for all flags, only ones that have a config equivalent
 var rootCmd = &cobra.Command{
 	Use:   "biblio-backend [command]",
 	Short: "The biblio-backend CLI",

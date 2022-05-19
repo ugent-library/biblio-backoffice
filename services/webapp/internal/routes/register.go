@@ -1,19 +1,23 @@
 package routes
 
 import (
+	"crypto/rand"
+	"log"
 	"net/http"
 
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/handlers"
 	"github.com/spf13/viper"
+	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/controllers"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/middleware"
 	"github.com/ugent-library/go-locale/locale"
+	"github.com/ugent-library/go-oidc/oidc"
 )
 
-func Register(c controllers.Context) {
-	router := c.Router
-	basePath := c.BaseURL.Path
+func Register(services *backends.Services, base controllers.Base, oidcClient *oidc.Client) {
+	router := base.Router
+	basePath := base.BaseURL.Path
 
 	router.StrictSlash(true)
 	router.UseEncodedPath()
@@ -22,37 +26,45 @@ func Register(c controllers.Context) {
 	// static files
 	router.PathPrefix(basePath + "/static/").Handler(http.StripPrefix(basePath+"/static/", http.FileServer(http.Dir("./services/webapp/static"))))
 
-	requireUser := middleware.RequireUser(c.BaseURL.Path + "/login")
-	setUser := middleware.SetUser(c.Engine, c.SessionName, c.SessionStore)
+	requireUser := middleware.RequireUser(base.BaseURL.Path + "/login")
+	setUser := middleware.SetUser(services.UserService, base.SessionName, base.SessionStore)
 
-	homeController := controllers.NewHome(c)
-	authController := controllers.NewAuth(c)
-	usersController := controllers.NewUsers(c)
-	tasksController := controllers.NewTasks(c)
+	homeController := controllers.NewHome(base)
+	authController := controllers.NewAuth(base, oidcClient, services.UserService)
+	usersController := controllers.NewUsers(base, services.UserService)
+	tasksController := controllers.NewTasks(base, services.Tasks)
 
-	publicationsController := controllers.NewPublications(c)
-	publicationFilesController := controllers.NewPublicationFiles(c)
-	publicationDetailsController := controllers.NewPublicationDetails(c)
-	publicationConferenceController := controllers.NewPublicationConference(c)
-	publicationProjectsController := controllers.NewPublicationProjects(c)
-	publicationDepartmentsController := controllers.NewPublicationDepartments(c)
-	publicationAbstractsController := controllers.NewPublicationAbstracts(c)
-	publicationLinksController := controllers.NewPublicationLinks(c)
-	publicationContributorsController := controllers.NewPublicationContributors(c)
-	publicationDatasetsController := controllers.NewPublicationDatasets(c)
-	publicationAdditionalInfoController := controllers.NewPublicationAdditionalInfo(c)
-	publicationLaySummariesController := controllers.NewPublicationLaySummaries(c)
+	publicationsController := controllers.NewPublications(
+		base,
+		services.Store,
+		services.PublicationSearchService,
+		services.PublicationDecoders,
+		services.PublicationSources,
+		services.Tasks,
+		services.ORCIDSandbox,
+	)
+	publicationFilesController := controllers.NewPublicationFiles(base, services.Store, services.FileStore)
+	publicationDetailsController := controllers.NewPublicationDetails(base, services.Store)
+	publicationConferenceController := controllers.NewPublicationConference(base, services.Store)
+	publicationProjectsController := controllers.NewPublicationProjects(base, services.Store, services.ProjectSearchService, services.ProjectService)
+	publicationDepartmentsController := controllers.NewPublicationDepartments(base, services.Store, services.OrganizationSearchService)
+	publicationAbstractsController := controllers.NewPublicationAbstracts(base, services.Store)
+	publicationLinksController := controllers.NewPublicationLinks(base, services.Store)
+	publicationContributorsController := controllers.NewPublicationContributors(base, services.Store, services.PersonSearchService, services.PersonService)
+	publicationDatasetsController := controllers.NewPublicationDatasets(base, services.Store, services.DatasetSearchService)
+	publicationAdditionalInfoController := controllers.NewPublicationAdditionalInfo(base, services.Store)
+	publicationLaySummariesController := controllers.NewPublicationLaySummaries(base, services.Store)
 
-	datasetsController := controllers.NewDatasets(c)
-	datasetDetailsController := controllers.NewDatasetDetails(c)
-	datasetProjectsController := controllers.NewDatasetProjects(c)
-	datasetDepartmentsController := controllers.NewDatasetDepartments(c)
-	datasetAbstractsController := controllers.NewDatasetAbstracts(c)
-	datasetContributorsController := controllers.NewDatasetContributors(c)
-	datasetPublicationsController := controllers.NewDatasetPublications(c)
+	datasetsController := controllers.NewDatasets(base, services.Store, services.DatasetSearchService, services.DatasetSources)
+	datasetDetailsController := controllers.NewDatasetDetails(base, services.Store)
+	datasetProjectsController := controllers.NewDatasetProjects(base, services.Store, services.ProjectSearchService, services.ProjectService)
+	datasetDepartmentsController := controllers.NewDatasetDepartments(base, services.Store, services.OrganizationSearchService)
+	datasetAbstractsController := controllers.NewDatasetAbstracts(base, services.Store)
+	datasetContributorsController := controllers.NewDatasetContributors(base, services.Store, services.PersonSearchService, services.PersonService)
+	datasetPublicationsController := controllers.NewDatasetPublications(base, services.Store, services.PublicationSearchService)
 
-	licensesController := controllers.NewLicenses(c)
-	mediaTypesController := controllers.NewMediaTypes(c)
+	licensesController := controllers.NewLicenses(base, services.LicenseSearchService)
+	mediaTypesController := controllers.NewMediaTypes(base, services.MediaTypeSearchService)
 
 	// TODO fix absolute url generation
 	// var schemes []string
@@ -65,11 +77,16 @@ func Register(c controllers.Context) {
 
 	r := router.PathPrefix(basePath).Subrouter()
 
+	csrfSecret := make([]byte, 32)
+	if _, err := rand.Read(csrfSecret); err != nil {
+		log.Fatal(err)
+	}
+
 	csrfMiddleware := csrf.Protect(
-		[]byte(viper.GetString("csrf-secret")),
+		csrfSecret,
 		csrf.CookieName(viper.GetString("csrf-name")),
 		csrf.Path(basePath),
-		csrf.Secure(c.BaseURL.Scheme == "https"),
+		csrf.Secure(base.BaseURL.Scheme == "https"),
 		csrf.SameSite(csrf.SameSiteStrictMode),
 		csrf.FieldName("csrf-token"),
 	)
@@ -77,7 +94,7 @@ func Register(c controllers.Context) {
 	r.Use(csrfMiddleware)
 
 	// r.Use(handlers.HTTPMethodOverrideHandler)
-	r.Use(locale.Detect(c.Localizer))
+	r.Use(locale.Detect(base.Localizer))
 
 	r.Use(setUser)
 
@@ -151,7 +168,7 @@ func Register(c controllers.Context) {
 		Name("publication_orcid_add_all")
 
 	pubRouter := pubsRouter.PathPrefix("/{id}").Subrouter()
-	pubRouter.Use(middleware.SetPublication(c.Engine))
+	pubRouter.Use(middleware.SetPublication(services.Store))
 	pubRouter.Use(middleware.RequireCanViewPublication)
 	pubEditRouter := pubRouter.PathPrefix("").Subrouter()
 	pubEditRouter.Use(middleware.RequireCanEditPublication)
@@ -409,7 +426,7 @@ func Register(c controllers.Context) {
 		Name("dataset_add_import")
 
 	datasetRouter := datasetsRouter.PathPrefix("/{id}").Subrouter()
-	datasetRouter.Use(middleware.SetDataset(c.Engine))
+	datasetRouter.Use(middleware.SetDataset(services.Store))
 	datasetRouter.Use(middleware.RequireCanViewDataset)
 	datasetEditRouter := datasetRouter.PathPrefix("").Subrouter()
 	datasetEditRouter.Use(middleware.RequireCanEditDataset)

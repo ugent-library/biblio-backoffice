@@ -205,3 +205,57 @@ func (s *Store) EachDataset(fn func(*models.Dataset) bool) error {
 	}
 	return c.Err()
 }
+
+func (s *Store) GetPublicationDatasets(p *models.Publication) ([]*models.Dataset, error) {
+	datasetIds := make([]string, len(p.RelatedDataset))
+	for _, rd := range p.RelatedDataset {
+		datasetIds = append(datasetIds, rd.ID)
+	}
+	return s.GetDatasets(datasetIds)
+}
+
+func (s *Store) GetDatasetPublications(d *models.Dataset) ([]*models.Publication, error) {
+	publicationIds := make([]string, len(d.RelatedPublication))
+	for _, rp := range d.RelatedPublication {
+		publicationIds = append(publicationIds, rp.ID)
+	}
+	return s.GetPublications(publicationIds)
+}
+
+func (s *Store) AddPublicationDataset(p *models.Publication, d *models.Dataset) error {
+	return s.Transaction(context.Background(), func(s backends.Store) error {
+		if !p.HasRelatedDataset(d.ID) {
+			p.RelatedDataset = append(p.RelatedDataset, models.RelatedDataset{ID: d.ID})
+			if err := s.UpdatePublication(p); err != nil {
+				return err
+			}
+		}
+		if !d.HasRelatedPublication(p.ID) {
+			d.RelatedPublication = append(d.RelatedPublication, models.RelatedPublication{ID: p.ID})
+			if err := s.UpdateDataset(d); err != nil {
+				return err
+			}
+		}
+
+		return nil
+	})
+}
+
+func (s *Store) RemovePublicationDataset(p *models.Publication, d *models.Dataset) error {
+	return s.Transaction(context.Background(), func(s backends.Store) error {
+		if p.HasRelatedDataset(d.ID) {
+			p.RemoveRelatedDataset(d.ID)
+			if err := s.UpdatePublication(p); err != nil {
+				return err
+			}
+		}
+		if d.HasRelatedPublication(p.ID) {
+			d.RemoveRelatedPublication(p.ID)
+			if err := s.UpdateDataset(d); err != nil {
+				return err
+			}
+		}
+
+		return nil
+	})
+}

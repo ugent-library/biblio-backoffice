@@ -5,24 +5,34 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 	"github.com/unrolled/render"
 )
 
 type DatasetProjects struct {
-	Context
+	Base
+	store                backends.Store
+	projectSearchService backends.ProjectSearchService
+	projectService       backends.ProjectService
 }
 
-func NewDatasetProjects(c Context) *DatasetProjects {
-	return &DatasetProjects{c}
+func NewDatasetProjects(base Base, store backends.Store, projectSearchService backends.ProjectSearchService,
+	projectService backends.ProjectService) *DatasetProjects {
+	return &DatasetProjects{
+		Base:                 base,
+		store:                store,
+		projectSearchService: projectSearchService,
+		projectService:       projectService,
+	}
 }
 
 func (c *DatasetProjects) Choose(w http.ResponseWriter, r *http.Request) {
 	dataset := context.GetDataset(r.Context())
 
 	// Get 20 random projects (no search, init state)
-	hits, _ := c.Engine.SuggestProjects("")
+	hits, _ := c.projectSearchService.SuggestProjects("")
 
 	c.Render.HTML(w, http.StatusOK, "dataset/projects/_modal", c.ViewData(r, struct {
 		Dataset *models.Dataset
@@ -46,7 +56,7 @@ func (c *DatasetProjects) ActiveSearch(w http.ResponseWriter, r *http.Request) {
 
 	// Get 20 results from the search query
 	query := r.Form["search"]
-	hits, _ := c.Engine.SuggestProjects(query[0])
+	hits, _ := c.projectSearchService.SuggestProjects(query[0])
 
 	c.Render.HTML(w, http.StatusOK, "dataset/projects/_modal_hits", c.ViewData(r, struct {
 		Dataset *models.Dataset
@@ -64,7 +74,7 @@ func (c *DatasetProjects) Add(w http.ResponseWriter, r *http.Request) {
 
 	dataset := context.GetDataset(r.Context())
 
-	project, err := c.Engine.GetProject(projectId)
+	project, err := c.projectService.GetProject(projectId)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
@@ -76,7 +86,7 @@ func (c *DatasetProjects) Add(w http.ResponseWriter, r *http.Request) {
 	})
 
 	savedDataset := dataset.Clone()
-	err = c.Engine.Store.UpdateDataset(dataset)
+	err = c.store.UpdateDataset(dataset)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -126,7 +136,7 @@ func (c *DatasetProjects) Remove(w http.ResponseWriter, r *http.Request) {
 	dataset.Project = projects
 
 	savedDataset := dataset.Clone()
-	err := c.Engine.Store.UpdateDataset(dataset)
+	err := c.store.UpdateDataset(dataset)
 
 	if err != nil {
 		log.Println(err)

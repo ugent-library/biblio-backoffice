@@ -17,7 +17,7 @@ import (
 	"github.com/gorilla/sessions"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/ugent-library/biblio-backend/internal/engine"
+	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/controllers"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/helpers"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/mix"
@@ -34,12 +34,12 @@ type service struct {
 	server *http.Server
 }
 
-func AddCommands(cmd *cobra.Command, e *engine.Engine) {
+func AddCommands(cmd *cobra.Command, services *backends.Services) {
 	cmd.AddCommand(&cobra.Command{
 		Use:   "routes",
 		Short: "print routes",
 		Run: func(cmd *cobra.Command, args []string) {
-			router := buildRouter(e)
+			router := buildRouter(services)
 			router.Walk(func(route *mux.Route, router *mux.Router, ancestors []*mux.Route) error {
 				hostTemplate, err := route.GetHostTemplate()
 				if err == nil {
@@ -72,7 +72,7 @@ func AddCommands(cmd *cobra.Command, e *engine.Engine) {
 	})
 }
 
-func New(e *engine.Engine) (*service, error) {
+func New(e *backends.Services) (*service, error) {
 	router := buildRouter(e)
 
 	// logging
@@ -103,7 +103,7 @@ func (s *service) Stop(ctx context.Context) error {
 	return s.server.Shutdown(ctx)
 }
 
-func buildRouter(e *engine.Engine) *mux.Router {
+func buildRouter(services *backends.Services) *mux.Router {
 	host := viper.GetString("host")
 	port := viper.GetInt("port")
 
@@ -167,9 +167,8 @@ func buildRouter(e *engine.Engine) *mux.Router {
 		log.Fatal(err)
 	}
 
-	// controller config
-	config := controllers.Context{
-		Engine:       e,
+	// controller base
+	base := controllers.Base{
 		Mode:         viper.GetString("mode"),
 		BaseURL:      baseURL,
 		Router:       router,
@@ -177,11 +176,10 @@ func buildRouter(e *engine.Engine) *mux.Router {
 		Localizer:    localizer,
 		SessionName:  sessionName,
 		SessionStore: sessionStore,
-		OIDC:         oidcClient,
 	}
 
 	// add routes
-	routes.Register(config)
+	routes.Register(services, base, oidcClient)
 
 	return router
 }

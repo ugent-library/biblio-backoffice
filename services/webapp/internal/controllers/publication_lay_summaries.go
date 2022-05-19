@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/validation"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
@@ -15,11 +16,15 @@ import (
 )
 
 type PublicationLaySummaries struct {
-	Context
+	Base
+	store backends.Store
 }
 
-func NewPublicationLaySummaries(c Context) *PublicationLaySummaries {
-	return &PublicationLaySummaries{c}
+func NewPublicationLaySummaries(base Base, store backends.Store) *PublicationLaySummaries {
+	return &PublicationLaySummaries{
+		Base:  base,
+		store: store,
+	}
 }
 
 func (c *PublicationLaySummaries) Add(w http.ResponseWriter, r *http.Request) {
@@ -62,7 +67,7 @@ func (c *PublicationLaySummaries) Create(w http.ResponseWriter, r *http.Request)
 	pub.LaySummary = lay_summaries
 
 	savedPub := pub.Clone()
-	err = c.Engine.Store.UpdatePublication(savedPub)
+	err = c.store.UpdatePublication(savedPub)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
@@ -153,7 +158,7 @@ func (c *PublicationLaySummaries) Update(w http.ResponseWriter, r *http.Request)
 	pub.LaySummary = lay_summaries
 
 	savedPub := pub.Clone()
-	err = c.Engine.Store.UpdatePublication(savedPub)
+	err = c.store.UpdatePublication(savedPub)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
@@ -220,7 +225,7 @@ func (c *PublicationLaySummaries) Remove(w http.ResponseWriter, r *http.Request)
 
 	// TODO: error handling
 	savedPub := pub.Clone()
-	c.Engine.Store.UpdatePublication(savedPub)
+	c.store.UpdatePublication(savedPub)
 
 	c.Render.HTML(w, http.StatusOK, "publication/lay_summaries/_deleted", c.ViewData(r, struct {
 		Publication *models.Publication

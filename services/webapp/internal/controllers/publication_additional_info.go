@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/validation"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
@@ -14,11 +15,15 @@ import (
 )
 
 type PublicationAdditionalInfo struct {
-	Context
+	Base
+	store backends.Store
 }
 
-func NewPublicationAdditionalInfo(c Context) *PublicationAdditionalInfo {
-	return &PublicationAdditionalInfo{c}
+func NewPublicationAdditionalInfo(base Base, store backends.Store) *PublicationAdditionalInfo {
+	return &PublicationAdditionalInfo{
+		Base:  base,
+		store: store,
+	}
 }
 
 func (c *PublicationAdditionalInfo) Show(w http.ResponseWriter, r *http.Request) {
@@ -68,7 +73,7 @@ func (c *PublicationAdditionalInfo) Update(w http.ResponseWriter, r *http.Reques
 	}
 
 	savedPub := pub.Clone()
-	err = c.Engine.Store.UpdatePublication(savedPub)
+	err = c.store.UpdatePublication(savedPub)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {

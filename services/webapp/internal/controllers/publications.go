@@ -1,13 +1,20 @@
 package controllers
 
 import (
+	"errors"
+	"fmt"
+	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
+	"strings"
+	"sync"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
+	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/tasks"
 	"github.com/ugent-library/biblio-backend/internal/validation"
@@ -16,6 +23,7 @@ import (
 	"github.com/ugent-library/go-locale/locale"
 	"github.com/ugent-library/go-orcid/orcid"
 	"github.com/unrolled/render"
+	"golang.org/x/text/language"
 )
 
 type PublicationAddSingleVars struct {
@@ -27,11 +35,30 @@ type PublicationAddSingleVars struct {
 }
 
 type Publications struct {
-	Context
+	Base
+	store                    backends.Store
+	publicationSearchService backends.PublicationSearchService
+	publicationDecoders      map[string]backends.PublicationDecoderFactory
+	publicationSources       map[string]backends.PublicationGetter
+	tasksHub                 *tasks.Hub
+	orcidSandbox             bool
 }
 
-func NewPublications(c Context) *Publications {
-	return &Publications{c}
+func NewPublications(base Base, store backends.Store,
+	publicationSearchService backends.PublicationSearchService,
+	publicationDecoders map[string]backends.PublicationDecoderFactory,
+	publicationSources map[string]backends.PublicationGetter,
+	tasksHub *tasks.Hub,
+	orcidSandbox bool) *Publications {
+	return &Publications{
+		Base:                     base,
+		store:                    store,
+		publicationSearchService: publicationSearchService,
+		publicationDecoders:      publicationDecoders,
+		publicationSources:       publicationSources,
+		tasksHub:                 tasksHub,
+		orcidSandbox:             orcidSandbox,
+	}
 }
 
 func (c *Publications) List(w http.ResponseWriter, r *http.Request) {
@@ -42,7 +69,7 @@ func (c *Publications) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	hits, err := c.Engine.UserPublications(context.GetUser(r.Context()).ID, searchArgs)
+	hits, err := c.userPublications(context.GetUser(r.Context()).ID, searchArgs)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -68,7 +95,7 @@ func (c *Publications) List(w http.ResponseWriter, r *http.Request) {
 func (c *Publications) Show(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
-	datasets, err := c.Engine.GetPublicationDatasets(pub)
+	datasets, err := c.store.GetPublicationDatasets(pub)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -110,7 +137,7 @@ func (c *Publications) Thumbnail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.Engine.ServePublicationThumbnail(pub.ThumbnailURL(), w, r)
+	// TODO implement
 }
 
 func (c *Publications) Summary(w http.ResponseWriter, r *http.Request) {
@@ -183,7 +210,8 @@ func (c *Publications) AddSingleImportConfirm(w http.ResponseWriter, r *http.Req
 
 	// check for duplicates
 	if source == "crossref" && identifier != "" {
-		if existing, _ := c.Engine.Publications(models.NewSearchArgs().WithFilter("doi", identifier).WithFilter("status", "public")); existing.Total > 0 {
+		args := models.NewSearchArgs().WithFilter("doi", identifier).WithFilter("status", "public")
+		if existing, _ := c.publicationSearchService.Search(args); existing.Total > 0 {
 			c.Render.HTML(w, http.StatusOK, "publication/add_identifier", c.ViewData(r, PublicationAddSingleVars{
 				PageTitle:            "Add - Publications - Biblio",
 				Step:                 1,
@@ -209,7 +237,7 @@ func (c *Publications) AddSingleImport(w http.ResponseWriter, r *http.Request) {
 	if identifier := r.FormValue("identifier"); identifier != "" {
 		var source string = r.FormValue("source")
 
-		p, err := c.Engine.ImportUserPublicationByIdentifier(userID, source, identifier)
+		p, err := c.importUserPublicationByIdentifier(userID, source, identifier)
 
 		if err != nil {
 			log.Println(err)
@@ -250,7 +278,7 @@ func (c *Publications) AddSingleImport(w http.ResponseWriter, r *http.Request) {
 			CreatorID:      userID,
 			UserID:         userID,
 		}
-		if err := c.Engine.Store.UpdatePublication(p); err != nil {
+		if err := c.store.UpdatePublication(p); err != nil {
 			log.Println(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -258,7 +286,7 @@ func (c *Publications) AddSingleImport(w http.ResponseWriter, r *http.Request) {
 		pub = p
 	}
 
-	datasets, err := c.Engine.GetPublicationDatasets(pub)
+	datasets, err := c.store.GetPublicationDatasets(pub)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -285,7 +313,7 @@ func (c *Publications) AddSingleImport(w http.ResponseWriter, r *http.Request) {
 func (c *Publications) AddSingleDescription(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
-	datasets, err := c.Engine.GetPublicationDatasets(pub)
+	datasets, err := c.store.GetPublicationDatasets(pub)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -330,7 +358,7 @@ func (c *Publications) AddSinglePublish(w http.ResponseWriter, r *http.Request) 
 
 	savedPub := pub.Clone()
 	savedPub.Status = "public"
-	err := c.Engine.Store.UpdatePublication(savedPub)
+	err := c.store.UpdatePublication(savedPub)
 	if err != nil {
 
 		/*
@@ -395,7 +423,7 @@ func (c *Publications) AddMultipleImport(w http.ResponseWriter, r *http.Request)
 
 	userID := context.GetUser(r.Context()).ID
 
-	batchID, err := c.Engine.ImportUserPublications(userID, source, file)
+	batchID, err := c.importUserPublications(userID, source, file)
 	if err != nil {
 		log.Println(err)
 		c.Render.HTML(w, http.StatusOK, "publication/add", c.ViewData(r, PublicationAddSingleVars{
@@ -409,7 +437,7 @@ func (c *Publications) AddMultipleImport(w http.ResponseWriter, r *http.Request)
 
 	args := models.NewSearchArgs()
 
-	hits, err := c.Engine.UserPublications(userID, args.Clone().WithFilter("batch_id", batchID))
+	hits, err := c.userPublications(userID, args.Clone().WithFilter("batch_id", batchID))
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -451,7 +479,7 @@ func (c *Publications) AddMultipleDescription(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	hits, err := c.Engine.UserPublications(userID, args.Clone().WithFilter("batch_id", batchID))
+	hits, err := c.userPublications(userID, args.Clone().WithFilter("batch_id", batchID))
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -486,7 +514,7 @@ func (c *Publications) AddMultipleShow(w http.ResponseWriter, r *http.Request) {
 	batchID := mux.Vars(r)["batch_id"]
 	pub := context.GetPublication(r.Context())
 
-	datasets, err := c.Engine.GetPublicationDatasets(pub)
+	datasets, err := c.store.GetPublicationDatasets(pub)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -529,7 +557,7 @@ func (c *Publications) AddMultipleConfirm(w http.ResponseWriter, r *http.Request
 
 	args := models.NewSearchArgs()
 
-	hits, err := c.Engine.UserPublications(userID, args.Clone().WithFilter("batch_id", batchID))
+	hits, err := c.userPublications(userID, args.Clone().WithFilter("batch_id", batchID))
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -564,7 +592,7 @@ func (c *Publications) AddMultipleConfirmShow(w http.ResponseWriter, r *http.Req
 	batchID := mux.Vars(r)["batch_id"]
 	pub := context.GetPublication(r.Context())
 
-	datasets, err := c.Engine.GetPublicationDatasets(pub)
+	datasets, err := c.store.GetPublicationDatasets(pub)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -599,13 +627,13 @@ func (c *Publications) AddMultiplePublish(w http.ResponseWriter, r *http.Request
 
 	batchFilter := models.NewSearchArgs().WithFilter("batch_id", batchID)
 
-	if err := c.Engine.BatchPublishPublications(userID, batchFilter); err != nil {
+	if err := c.batchPublishPublications(userID, batchFilter); err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	hits, err := c.Engine.UserPublications(userID, batchFilter)
+	hits, err := c.userPublications(userID, batchFilter)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -636,7 +664,7 @@ func (c *Publications) Publish(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
 	savedPub := pub.Clone()
-	err := c.Engine.Store.UpdatePublication(savedPub)
+	err := c.store.UpdatePublication(savedPub)
 
 	flashes := make([]views.Flash, 0)
 	var publicationErrors validation.Errors
@@ -665,7 +693,7 @@ func (c *Publications) Publish(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	pubDatasets, err := c.Engine.GetPublicationDatasets(pub)
+	pubDatasets, err := c.store.GetPublicationDatasets(pub)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -733,12 +761,12 @@ func (c *Publications) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	pub.Status = "deleted"
-	if err := c.Engine.Store.UpdatePublication(pub); err != nil {
+	if err := c.store.UpdatePublication(pub); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	hits, err := c.Engine.UserPublications(context.GetUser(r.Context()).ID, searchArgs)
+	hits, err := c.userPublications(context.GetUser(r.Context()).ID, searchArgs)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -771,7 +799,7 @@ func (c *Publications) ORCIDAdd(w http.ResponseWriter, r *http.Request) {
 		flash views.Flash
 	)
 
-	pub, err := c.Engine.AddPublicationToORCID(user.ORCID, user.ORCIDToken, pub)
+	pub, err := c.addPublicationToORCID(user.ORCID, user.ORCIDToken, pub)
 	if err != nil {
 		if err == orcid.ErrDuplicate {
 			flash = views.Flash{Type: "info", Message: "This publication is already part of your ORCID works."}
@@ -794,11 +822,12 @@ func (c *Publications) ORCIDAdd(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Publications) ORCIDAddAll(w http.ResponseWriter, r *http.Request) {
-	userID := context.GetUser(r.Context()).ID
+	user := context.GetUser(r.Context())
+
 	// TODO handle error
-	id, err := c.Engine.AddPublicationsToORCID(
-		userID,
-		models.NewSearchArgs().WithFilter("status", "public").WithFilter("author.id", userID),
+	id, err := c.addPublicationsToORCID(
+		user,
+		models.NewSearchArgs().WithFilter("status", "public").WithFilter("author.id", user.ID),
 	)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -816,4 +845,310 @@ func (c *Publications) ORCIDAddAll(w http.ResponseWriter, r *http.Request) {
 	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
+}
+
+func (c *Publications) userPublications(userID string, args *models.SearchArgs) (*models.PublicationHits, error) {
+	searcher := c.publicationSearchService.WithScope("status", "private", "public")
+
+	switch args.FilterFor("scope") {
+	case "created":
+		searcher = searcher.WithScope("creator_id", userID)
+	case "contributed":
+		searcher = searcher.WithScope("author.id", userID)
+	default:
+		searcher = searcher.WithScope("creator_id|author.id", userID)
+	}
+	delete(args.Filters, "scope")
+
+	return searcher.Search(args)
+}
+
+// TODO should be async task
+func (c *Publications) importUserPublications(userID, source string, file io.Reader) (string, error) {
+	batchID := uuid.New().String()
+	decFactory, ok := c.publicationDecoders[source]
+	if !ok {
+		return "", errors.New("unknown publication source")
+	}
+	dec := decFactory(file)
+
+	var indexWG sync.WaitGroup
+
+	// indexing channel
+	indexC := make(chan *models.Publication)
+
+	// start bulk indexer
+	go func() {
+		indexWG.Add(1)
+		defer indexWG.Done()
+		c.publicationSearchService.IndexMultiple(indexC)
+	}()
+
+	var importErr error
+	for {
+		p := models.Publication{
+			ID:             uuid.NewString(),
+			BatchID:        batchID,
+			Status:         "private",
+			Classification: "U",
+			CreatorID:      userID,
+			UserID:         userID,
+		}
+		if err := dec.Decode(&p); errors.Is(err, io.EOF) {
+			break
+		} else if err != nil {
+			importErr = err
+			break
+		}
+		if err := c.store.UpdatePublication(&p); err != nil {
+			importErr = err
+			break
+		}
+
+		indexC <- &p
+	}
+
+	// close indexing channel when all recs are stored
+	close(indexC)
+	// wait for indexing to finish
+	indexWG.Wait()
+
+	// TODO rollback if error
+	if importErr != nil {
+		return "", importErr
+	}
+
+	return batchID, nil
+}
+
+// TODO should be async task
+func (c *Publications) importUserPublicationByIdentifier(userID, source, identifier string) (*models.Publication, error) {
+	s, ok := c.publicationSources[source]
+	if !ok {
+		return nil, errors.New("unknown dataset source")
+	}
+	p, err := s.GetPublication(identifier)
+	if err != nil {
+		return nil, err
+	}
+
+	p.ID = uuid.NewString()
+	p.CreatorID = userID
+	p.UserID = userID
+	p.Status = "private"
+	p.Classification = "U"
+
+	if err := c.store.UpdatePublication(p); err != nil {
+		return nil, err
+	}
+
+	return p, nil
+}
+
+// TODO should be async task
+func (c *Publications) batchPublishPublications(userID string, args *models.SearchArgs) (err error) {
+	var hits *models.PublicationHits
+	for {
+		hits, err = c.userPublications(userID, args)
+		for _, pub := range hits.Hits {
+			pub.Status = "public"
+			if err = c.store.UpdatePublication(pub); err != nil {
+				break
+			}
+		}
+		if !hits.NextPage() {
+			break
+		}
+		args.Page = args.Page + 1
+	}
+	return
+}
+
+func (c *Publications) addPublicationsToORCID(user *models.User, s *models.SearchArgs) (string, error) {
+	taskID := "orcid:" + uuid.NewString()
+
+	c.tasksHub.Add(taskID, func(t tasks.Task) error {
+		return c.sendPublicationsToORCIDTask(t, user.ID, user.ORCID, user.ORCIDToken, s)
+	})
+
+	return taskID, nil
+}
+
+// TODO make workflow
+func (c *Publications) addPublicationToORCID(orcidID, orcidToken string, p *models.Publication) (*models.Publication, error) {
+	client := orcid.NewMemberClient(orcid.Config{
+		Token:   orcidToken,
+		Sandbox: c.orcidSandbox,
+	})
+
+	work := publicationToORCID(p)
+	putCode, res, err := client.AddWork(orcidID, work)
+	if err != nil {
+		body, _ := ioutil.ReadAll(res.Body)
+		log.Printf("orcid error: %s", body)
+		return p, err
+	}
+
+	p.ORCIDWork = append(p.ORCIDWork, models.PublicationORCIDWork{
+		ORCID:   orcidID,
+		PutCode: putCode,
+	})
+
+	if err := c.store.UpdatePublication(p); err != nil {
+		return nil, err
+	}
+
+	return p, nil
+}
+
+// TODO move to workflows
+func (c *Publications) sendPublicationsToORCIDTask(t tasks.Task, userID, orcidID, orcidToken string, searchArgs *models.SearchArgs) error {
+	orcidClient := orcid.NewMemberClient(orcid.Config{
+		Token:   orcidToken,
+		Sandbox: c.orcidSandbox,
+	})
+
+	var numDone int
+
+	for {
+		hits, _ := c.publicationSearchService.Search(searchArgs)
+
+		for _, pub := range hits.Hits {
+			numDone++
+
+			var done bool
+			for _, ow := range pub.ORCIDWork {
+				if ow.ORCID == orcidID { // already sent to orcid
+					done = true
+					break
+				}
+			}
+			if done {
+				continue
+			}
+
+			work := publicationToORCID(pub)
+			putCode, res, err := orcidClient.AddWork(orcidID, work)
+			if res.StatusCode == 409 { // duplicate
+				continue
+			} else if err != nil {
+				body, _ := ioutil.ReadAll(res.Body)
+				log.Printf("orcid error: %s", body)
+				return err
+			}
+
+			pub.ORCIDWork = append(pub.ORCIDWork, models.PublicationORCIDWork{
+				ORCID:   orcidID,
+				PutCode: putCode,
+			})
+
+			if err := c.store.UpdatePublication(pub); err != nil {
+				return err
+			}
+		}
+
+		t.Progress(numDone, hits.Total)
+
+		if !hits.NextPage() {
+			break
+		}
+		searchArgs.Page = searchArgs.Page + 1
+	}
+
+	return nil
+}
+
+func publicationToORCID(p *models.Publication) *orcid.Work {
+	w := &orcid.Work{
+		URL:     orcid.String(fmt.Sprintf("https://biblio.ugent.be/publication/%s", p.ID)),
+		Country: orcid.String("BE"),
+		ExternalIDs: &orcid.ExternalIDs{
+			ExternalID: []orcid.ExternalID{{
+				Type:         "handle",
+				Relationship: "SELF",
+				Value:        fmt.Sprintf("http://hdl.handle.net/1854/LU-%s", p.ID),
+			}},
+		},
+		Title: &orcid.Title{
+			Title: orcid.String(p.Title),
+		},
+		PublicationDate: &orcid.PublicationDate{
+			Year: orcid.String(p.Year),
+		},
+	}
+
+	for _, role := range []string{"author", "editor"} {
+		for _, c := range p.Contributors(role) {
+			wc := orcid.Contributor{
+				CreditName: orcid.String(strings.Join([]string{c.FirstName, c.LastName}, " ")),
+				Attributes: &orcid.ContributorAttributes{
+					Role: strings.ToUpper(role),
+				},
+			}
+			if c.ORCID != "" {
+				wc.ORCID = &orcid.URI{Path: c.ORCID}
+			}
+			if w.Contributors == nil {
+				w.Contributors = &orcid.Contributors{}
+			}
+			w.Contributors.Contributor = append(w.Contributors.Contributor, wc)
+		}
+	}
+
+	switch p.Type {
+	case "journal_article":
+		w.Type = "JOURNAL_ARTICLE"
+	case "book":
+		w.Type = "BOOK"
+	case "book_chapter":
+		w.Type = "BOOK_CHAPTER"
+	case "book_editor":
+		w.Type = "EDITED_BOOK"
+	case "dissertation":
+		w.Type = "DISSERTATION"
+	case "conference":
+		switch p.ConferenceType {
+		case "meetingAbstract":
+			w.Type = "CONFERENCE_ABSTRACT"
+		case "poster":
+			w.Type = "CONFERENCE_POSTER"
+		default:
+			w.Type = "CONFERENCE_PAPER"
+		}
+	case "miscellaneous":
+		switch p.MiscellaneousType {
+		case "bookReview":
+			w.Type = "BOOK_REVIEW"
+		case "report":
+			w.Type = "REPORT"
+		default:
+			w.Type = "OTHER"
+		}
+	default:
+		w.Type = "OTHER"
+	}
+
+	if len(p.AlternativeTitle) > 0 {
+		w.Title.SubTitle = orcid.String(p.AlternativeTitle[0])
+	}
+
+	if len(p.Abstract) > 0 {
+		w.ShortDescription = p.Abstract[0].Text
+	}
+
+	if p.DOI != "" {
+		w.ExternalIDs.ExternalID = append(w.ExternalIDs.ExternalID, orcid.ExternalID{
+			Type:         "doi",
+			Relationship: "SELF",
+			Value:        p.DOI,
+		})
+	}
+
+	if len(p.Language) > 0 {
+		if tag, err := language.Parse(p.Language[0]); err == nil {
+			w.LanguageCode = tag.String()
+		}
+	}
+
+	return w
 }
