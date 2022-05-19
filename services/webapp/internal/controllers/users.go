@@ -4,16 +4,21 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 	"github.com/unrolled/render"
 )
 
 type Users struct {
 	Base
+	userService backends.UserService
 }
 
-func NewUsers(c Base) *Users {
-	return &Users{c}
+func NewUsers(base Base, userService backends.UserService) *Users {
+	return &Users{
+		Base:        base,
+		userService: userService,
+	}
 }
 
 func (c *Users) ImpersonateChoose(w http.ResponseWriter, r *http.Request) {
@@ -27,7 +32,7 @@ func (c *Users) Impersonate(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	username := r.FormValue("username")
 
-	user, err := c.Services.GetUserByUsername(username)
+	user, err := c.userService.GetUserByUsername(username)
 	if err != nil {
 		log.Printf("impersonate get user error: %s", err)
 		// TODO

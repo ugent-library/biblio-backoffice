@@ -14,6 +14,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
+	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/tasks"
 	"github.com/ugent-library/biblio-backend/internal/validation"
@@ -35,10 +36,29 @@ type PublicationAddSingleVars struct {
 
 type Publications struct {
 	Base
+	store                    backends.Store
+	publicationSearchService backends.PublicationSearchService
+	publicationDecoders      map[string]backends.PublicationDecoderFactory
+	publicationSources       map[string]backends.PublicationGetter
+	tasksHub                 *tasks.Hub
+	orcidSandbox             bool
 }
 
-func NewPublications(c Base) *Publications {
-	return &Publications{c}
+func NewPublications(base Base, store backends.Store,
+	publicationSearchService backends.PublicationSearchService,
+	publicationDecoders map[string]backends.PublicationDecoderFactory,
+	publicationSources map[string]backends.PublicationGetter,
+	tasksHub *tasks.Hub,
+	orcidSandbox bool) *Publications {
+	return &Publications{
+		Base:                     base,
+		store:                    store,
+		publicationSearchService: publicationSearchService,
+		publicationDecoders:      publicationDecoders,
+		publicationSources:       publicationSources,
+		tasksHub:                 tasksHub,
+		orcidSandbox:             orcidSandbox,
+	}
 }
 
 func (c *Publications) List(w http.ResponseWriter, r *http.Request) {
@@ -75,7 +95,7 @@ func (c *Publications) List(w http.ResponseWriter, r *http.Request) {
 func (c *Publications) Show(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
-	datasets, err := c.Services.Store.GetPublicationDatasets(pub)
+	datasets, err := c.store.GetPublicationDatasets(pub)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -191,7 +211,7 @@ func (c *Publications) AddSingleImportConfirm(w http.ResponseWriter, r *http.Req
 	// check for duplicates
 	if source == "crossref" && identifier != "" {
 		args := models.NewSearchArgs().WithFilter("doi", identifier).WithFilter("status", "public")
-		if existing, _ := c.Services.PublicationSearchService.SearchPublications(args); existing.Total > 0 {
+		if existing, _ := c.publicationSearchService.SearchPublications(args); existing.Total > 0 {
 			c.Render.HTML(w, http.StatusOK, "publication/add_identifier", c.ViewData(r, PublicationAddSingleVars{
 				PageTitle:            "Add - Publications - Biblio",
 				Step:                 1,
@@ -258,7 +278,7 @@ func (c *Publications) AddSingleImport(w http.ResponseWriter, r *http.Request) {
 			CreatorID:      userID,
 			UserID:         userID,
 		}
-		if err := c.Services.Store.UpdatePublication(p); err != nil {
+		if err := c.store.UpdatePublication(p); err != nil {
 			log.Println(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -266,7 +286,7 @@ func (c *Publications) AddSingleImport(w http.ResponseWriter, r *http.Request) {
 		pub = p
 	}
 
-	datasets, err := c.Services.Store.GetPublicationDatasets(pub)
+	datasets, err := c.store.GetPublicationDatasets(pub)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -293,7 +313,7 @@ func (c *Publications) AddSingleImport(w http.ResponseWriter, r *http.Request) {
 func (c *Publications) AddSingleDescription(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
-	datasets, err := c.Services.Store.GetPublicationDatasets(pub)
+	datasets, err := c.store.GetPublicationDatasets(pub)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -338,7 +358,7 @@ func (c *Publications) AddSinglePublish(w http.ResponseWriter, r *http.Request) 
 
 	savedPub := pub.Clone()
 	savedPub.Status = "public"
-	err := c.Services.Store.UpdatePublication(savedPub)
+	err := c.store.UpdatePublication(savedPub)
 	if err != nil {
 
 		/*
@@ -494,7 +514,7 @@ func (c *Publications) AddMultipleShow(w http.ResponseWriter, r *http.Request) {
 	batchID := mux.Vars(r)["batch_id"]
 	pub := context.GetPublication(r.Context())
 
-	datasets, err := c.Services.Store.GetPublicationDatasets(pub)
+	datasets, err := c.store.GetPublicationDatasets(pub)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -572,7 +592,7 @@ func (c *Publications) AddMultipleConfirmShow(w http.ResponseWriter, r *http.Req
 	batchID := mux.Vars(r)["batch_id"]
 	pub := context.GetPublication(r.Context())
 
-	datasets, err := c.Services.Store.GetPublicationDatasets(pub)
+	datasets, err := c.store.GetPublicationDatasets(pub)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -644,7 +664,7 @@ func (c *Publications) Publish(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
 	savedPub := pub.Clone()
-	err := c.Services.Store.UpdatePublication(savedPub)
+	err := c.store.UpdatePublication(savedPub)
 
 	flashes := make([]views.Flash, 0)
 	var publicationErrors validation.Errors
@@ -673,7 +693,7 @@ func (c *Publications) Publish(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	pubDatasets, err := c.Services.Store.GetPublicationDatasets(pub)
+	pubDatasets, err := c.store.GetPublicationDatasets(pub)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -741,7 +761,7 @@ func (c *Publications) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	pub.Status = "deleted"
-	if err := c.Services.Store.UpdatePublication(pub); err != nil {
+	if err := c.store.UpdatePublication(pub); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -802,11 +822,12 @@ func (c *Publications) ORCIDAdd(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Publications) ORCIDAddAll(w http.ResponseWriter, r *http.Request) {
-	userID := context.GetUser(r.Context()).ID
+	user := context.GetUser(r.Context())
+
 	// TODO handle error
 	id, err := c.addPublicationsToORCID(
-		userID,
-		models.NewSearchArgs().WithFilter("status", "public").WithFilter("author.id", userID),
+		user,
+		models.NewSearchArgs().WithFilter("status", "public").WithFilter("author.id", user.ID),
 	)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -841,13 +862,13 @@ func (c *Publications) userPublications(userID string, args *models.SearchArgs) 
 		args.WithFilter("creator_id|author.id", userID)
 	}
 	delete(args.Filters, "scope")
-	return c.Services.PublicationSearchService.SearchPublications(args)
+	return c.publicationSearchService.SearchPublications(args)
 }
 
 // TODO should be async task
 func (c *Publications) importUserPublications(userID, source string, file io.Reader) (string, error) {
 	batchID := uuid.New().String()
-	decFactory, ok := c.Services.PublicationDecoders[source]
+	decFactory, ok := c.publicationDecoders[source]
 	if !ok {
 		return "", errors.New("unknown publication source")
 	}
@@ -862,7 +883,7 @@ func (c *Publications) importUserPublications(userID, source string, file io.Rea
 	go func() {
 		indexWG.Add(1)
 		defer indexWG.Done()
-		c.Services.PublicationSearchService.IndexPublications(indexC)
+		c.publicationSearchService.IndexPublications(indexC)
 	}()
 
 	var importErr error
@@ -881,7 +902,7 @@ func (c *Publications) importUserPublications(userID, source string, file io.Rea
 			importErr = err
 			break
 		}
-		if err := c.Services.Store.UpdatePublication(&p); err != nil {
+		if err := c.store.UpdatePublication(&p); err != nil {
 			importErr = err
 			break
 		}
@@ -904,7 +925,7 @@ func (c *Publications) importUserPublications(userID, source string, file io.Rea
 
 // TODO should be async task
 func (c *Publications) importUserPublicationByIdentifier(userID, source, identifier string) (*models.Publication, error) {
-	s, ok := c.Services.PublicationSources[source]
+	s, ok := c.publicationSources[source]
 	if !ok {
 		return nil, errors.New("unknown dataset source")
 	}
@@ -919,7 +940,7 @@ func (c *Publications) importUserPublicationByIdentifier(userID, source, identif
 	p.Status = "private"
 	p.Classification = "U"
 
-	if err := c.Services.Store.UpdatePublication(p); err != nil {
+	if err := c.store.UpdatePublication(p); err != nil {
 		return nil, err
 	}
 
@@ -933,7 +954,7 @@ func (c *Publications) batchPublishPublications(userID string, args *models.Sear
 		hits, err = c.userPublications(userID, args)
 		for _, pub := range hits.Hits {
 			pub.Status = "public"
-			if err = c.Services.Store.UpdatePublication(pub); err != nil {
+			if err = c.store.UpdatePublication(pub); err != nil {
 				break
 			}
 		}
@@ -945,16 +966,11 @@ func (c *Publications) batchPublishPublications(userID string, args *models.Sear
 	return
 }
 
-func (c *Publications) addPublicationsToORCID(userID string, s *models.SearchArgs) (string, error) {
-	user, err := c.Services.GetUser(userID)
-	if err != nil {
-		return "", err
-	}
-
+func (c *Publications) addPublicationsToORCID(user *models.User, s *models.SearchArgs) (string, error) {
 	taskID := "orcid:" + uuid.NewString()
 
-	c.Services.Tasks.Add(taskID, func(t tasks.Task) error {
-		return c.sendPublicationsToORCIDTask(t, userID, user.ORCID, user.ORCIDToken, s)
+	c.tasksHub.Add(taskID, func(t tasks.Task) error {
+		return c.sendPublicationsToORCIDTask(t, user.ID, user.ORCID, user.ORCIDToken, s)
 	})
 
 	return taskID, nil
@@ -964,7 +980,7 @@ func (c *Publications) addPublicationsToORCID(userID string, s *models.SearchArg
 func (c *Publications) addPublicationToORCID(orcidID, orcidToken string, p *models.Publication) (*models.Publication, error) {
 	client := orcid.NewMemberClient(orcid.Config{
 		Token:   orcidToken,
-		Sandbox: c.Services.ORCIDSandbox,
+		Sandbox: c.orcidSandbox,
 	})
 
 	work := publicationToORCID(p)
@@ -980,7 +996,7 @@ func (c *Publications) addPublicationToORCID(orcidID, orcidToken string, p *mode
 		PutCode: putCode,
 	})
 
-	if err := c.Services.Store.UpdatePublication(p); err != nil {
+	if err := c.store.UpdatePublication(p); err != nil {
 		return nil, err
 	}
 
@@ -991,13 +1007,13 @@ func (c *Publications) addPublicationToORCID(orcidID, orcidToken string, p *mode
 func (c *Publications) sendPublicationsToORCIDTask(t tasks.Task, userID, orcidID, orcidToken string, searchArgs *models.SearchArgs) error {
 	orcidClient := orcid.NewMemberClient(orcid.Config{
 		Token:   orcidToken,
-		Sandbox: c.Services.ORCIDSandbox,
+		Sandbox: c.orcidSandbox,
 	})
 
 	var numDone int
 
 	for {
-		hits, _ := c.Services.PublicationSearchService.SearchPublications(searchArgs)
+		hits, _ := c.publicationSearchService.SearchPublications(searchArgs)
 
 		for _, pub := range hits.Hits {
 			numDone++
@@ -1028,7 +1044,7 @@ func (c *Publications) sendPublicationsToORCIDTask(t tasks.Task, userID, orcidID
 				PutCode: putCode,
 			})
 
-			if err := c.Services.Store.UpdatePublication(pub); err != nil {
+			if err := c.store.UpdatePublication(pub); err != nil {
 				return err
 			}
 		}

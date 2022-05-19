@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/validation"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
@@ -17,10 +18,14 @@ import (
 
 type PublicationAbstracts struct {
 	Base
+	store backends.Store
 }
 
-func NewPublicationAbstracts(c Base) *PublicationAbstracts {
-	return &PublicationAbstracts{c}
+func NewPublicationAbstracts(base Base, store backends.Store) *PublicationAbstracts {
+	return &PublicationAbstracts{
+		Base:  base,
+		store: store,
+	}
 }
 
 // Show the "Add abstract" modal
@@ -66,7 +71,7 @@ func (c *PublicationAbstracts) Create(w http.ResponseWriter, r *http.Request) {
 	pub.Abstract = abstracts
 
 	savedPub := pub.Clone()
-	err = c.Services.Store.UpdatePublication(savedPub)
+	err = c.store.UpdatePublication(savedPub)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
@@ -152,7 +157,7 @@ func (c *PublicationAbstracts) Update(w http.ResponseWriter, r *http.Request) {
 	pub.Abstract = abstracts
 
 	savedPub := pub.Clone()
-	err = c.Services.Store.UpdatePublication(savedPub)
+	err = c.store.UpdatePublication(savedPub)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
@@ -219,7 +224,7 @@ func (c *PublicationAbstracts) Remove(w http.ResponseWriter, r *http.Request) {
 	pub.Abstract = abstracts
 
 	// TODO: error handling
-	c.Services.Store.UpdatePublication(pub)
+	c.store.UpdatePublication(pub)
 
 	w.Header().Set("HX-Trigger", "PublicationRemoveAbstract")
 

@@ -31,32 +31,40 @@ func Register(services *backends.Services, base controllers.Base, oidcClient *oi
 
 	homeController := controllers.NewHome(base)
 	authController := controllers.NewAuth(base, oidcClient, services.UserService)
-	usersController := controllers.NewUsers(base)
-	tasksController := controllers.NewTasks(base)
+	usersController := controllers.NewUsers(base, services.UserService)
+	tasksController := controllers.NewTasks(base, services.Tasks)
 
-	publicationsController := controllers.NewPublications(base)
-	publicationFilesController := controllers.NewPublicationFiles(base)
-	publicationDetailsController := controllers.NewPublicationDetails(base)
-	publicationConferenceController := controllers.NewPublicationConference(base)
-	publicationProjectsController := controllers.NewPublicationProjects(base)
-	publicationDepartmentsController := controllers.NewPublicationDepartments(base)
-	publicationAbstractsController := controllers.NewPublicationAbstracts(base)
-	publicationLinksController := controllers.NewPublicationLinks(base)
-	publicationContributorsController := controllers.NewPublicationContributors(base)
-	publicationDatasetsController := controllers.NewPublicationDatasets(base)
-	publicationAdditionalInfoController := controllers.NewPublicationAdditionalInfo(base)
-	publicationLaySummariesController := controllers.NewPublicationLaySummaries(base)
+	publicationsController := controllers.NewPublications(
+		base,
+		services.Store,
+		services.PublicationSearchService,
+		services.PublicationDecoders,
+		services.PublicationSources,
+		services.Tasks,
+		services.ORCIDSandbox,
+	)
+	publicationFilesController := controllers.NewPublicationFiles(base, services.Store, services.FileStore)
+	publicationDetailsController := controllers.NewPublicationDetails(base, services.Store)
+	publicationConferenceController := controllers.NewPublicationConference(base, services.Store)
+	publicationProjectsController := controllers.NewPublicationProjects(base, services.Store, services.ProjectSearchService, services.ProjectService)
+	publicationDepartmentsController := controllers.NewPublicationDepartments(base, services.Store, services.OrganizationSearchService)
+	publicationAbstractsController := controllers.NewPublicationAbstracts(base, services.Store)
+	publicationLinksController := controllers.NewPublicationLinks(base, services.Store)
+	publicationContributorsController := controllers.NewPublicationContributors(base, services.Store, services.PersonSearchService, services.PersonService)
+	publicationDatasetsController := controllers.NewPublicationDatasets(base, services.Store, services.DatasetSearchService)
+	publicationAdditionalInfoController := controllers.NewPublicationAdditionalInfo(base, services.Store)
+	publicationLaySummariesController := controllers.NewPublicationLaySummaries(base, services.Store)
 
-	datasetsController := controllers.NewDatasets(base)
-	datasetDetailsController := controllers.NewDatasetDetails(base)
-	datasetProjectsController := controllers.NewDatasetProjects(base)
-	datasetDepartmentsController := controllers.NewDatasetDepartments(base)
-	datasetAbstractsController := controllers.NewDatasetAbstracts(base)
-	datasetContributorsController := controllers.NewDatasetContributors(base)
-	datasetPublicationsController := controllers.NewDatasetPublications(base)
+	datasetsController := controllers.NewDatasets(base, services.Store, services.DatasetSearchService, services.DatasetSources)
+	datasetDetailsController := controllers.NewDatasetDetails(base, services.Store)
+	datasetProjectsController := controllers.NewDatasetProjects(base, services.Store, services.ProjectSearchService, services.ProjectService)
+	datasetDepartmentsController := controllers.NewDatasetDepartments(base, services.Store, services.OrganizationSearchService)
+	datasetAbstractsController := controllers.NewDatasetAbstracts(base, services.Store)
+	datasetContributorsController := controllers.NewDatasetContributors(base, services.Store, services.PersonSearchService, services.PersonService)
+	datasetPublicationsController := controllers.NewDatasetPublications(base, services.Store, services.PublicationSearchService)
 
-	licensesController := controllers.NewLicenses(base)
-	mediaTypesController := controllers.NewMediaTypes(base)
+	licensesController := controllers.NewLicenses(base, services.LicenseSearchService)
+	mediaTypesController := controllers.NewMediaTypes(base, services.MediaTypeSearchService)
 
 	// TODO fix absolute url generation
 	// var schemes []string

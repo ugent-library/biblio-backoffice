@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 	"github.com/unrolled/render"
@@ -12,16 +13,23 @@ import (
 
 type DatasetPublications struct {
 	Base
+	store                    backends.Store
+	publicationSearchService backends.PublicationSearchService
 }
 
-func NewDatasetPublications(c Base) *DatasetPublications {
-	return &DatasetPublications{c}
+func NewDatasetPublications(base Base, store backends.Store,
+	publicationSearchService backends.PublicationSearchService) *DatasetPublications {
+	return &DatasetPublications{
+		Base:                     base,
+		store:                    store,
+		publicationSearchService: publicationSearchService,
+	}
 }
 
 func (c *DatasetPublications) Choose(w http.ResponseWriter, r *http.Request) {
 	dataset := context.GetDataset(r.Context())
 
-	datasetPubs, err := c.Services.Store.GetDatasetPublications(dataset)
+	datasetPubs, err := c.store.GetDatasetPublications(dataset)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -61,7 +69,7 @@ func (c *DatasetPublications) ActiveSearch(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	datasetPubs, err := c.Services.Store.GetDatasetPublications(dataset)
+	datasetPubs, err := c.store.GetDatasetPublications(dataset)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -99,20 +107,20 @@ func (c *DatasetPublications) Add(w http.ResponseWriter, r *http.Request) {
 
 	dataset := context.GetDataset(r.Context())
 
-	pub, err := c.Services.Store.GetPublication(pubID)
+	pub, err := c.store.GetPublication(pubID)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
-	if err = c.Services.Store.AddPublicationDataset(pub, dataset); err != nil {
+	if err = c.store.AddPublicationDataset(pub, dataset); err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	publications, err := c.Services.Store.GetDatasetPublications(dataset)
+	publications, err := c.store.GetDatasetPublications(dataset)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -150,19 +158,19 @@ func (c *DatasetPublications) Remove(w http.ResponseWriter, r *http.Request) {
 
 	dataset := context.GetDataset(r.Context())
 
-	pub, err := c.Services.Store.GetPublication(pubID)
+	pub, err := c.store.GetPublication(pubID)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	if err = c.Services.Store.RemovePublicationDataset(pub, dataset); err != nil {
+	if err = c.store.RemovePublicationDataset(pub, dataset); err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	publications, err := c.Services.Store.GetDatasetPublications(dataset)
+	publications, err := c.store.GetDatasetPublications(dataset)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -191,5 +199,5 @@ func (c *DatasetPublications) userPublications(userID string, args *models.Searc
 		args.WithFilter("creator_id|author.id", userID)
 	}
 	delete(args.Filters, "scope")
-	return c.Services.PublicationSearchService.SearchPublications(args)
+	return c.publicationSearchService.SearchPublications(args)
 }

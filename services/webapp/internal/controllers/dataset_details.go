@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/validation"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
@@ -15,10 +16,14 @@ import (
 
 type DatasetDetails struct {
 	Base
+	store backends.Store
 }
 
-func NewDatasetDetails(c Base) *DatasetDetails {
-	return &DatasetDetails{c}
+func NewDatasetDetails(base Base, store backends.Store) *DatasetDetails {
+	return &DatasetDetails{
+		Base:  base,
+		store: store,
+	}
 }
 
 func (c *DatasetDetails) Show(w http.ResponseWriter, r *http.Request) {
@@ -139,7 +144,7 @@ func (c *DatasetDetails) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	savedDataset := dataset.Clone()
-	err = c.Services.Store.UpdateDataset(dataset)
+	err = c.store.UpdateDataset(dataset)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {

@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 	"github.com/unrolled/render"
@@ -11,17 +12,24 @@ import (
 
 type PublicationDepartments struct {
 	Base
+	store                     backends.Store
+	organizationSearchService backends.OrganizationSearchService
 }
 
-func NewPublicationDepartments(c Base) *PublicationDepartments {
-	return &PublicationDepartments{c}
+func NewPublicationDepartments(base Base, store backends.Store,
+	organizationSearchService backends.OrganizationSearchService) *PublicationDepartments {
+	return &PublicationDepartments{
+		Base:                      base,
+		store:                     store,
+		organizationSearchService: organizationSearchService,
+	}
 }
 
 func (c *PublicationDepartments) List(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
 	// Get 20 random departments (no search, init state)
-	hits, _ := c.Services.SuggestOrganizations("")
+	hits, _ := c.organizationSearchService.SuggestOrganizations("")
 
 	c.Render.HTML(w, http.StatusOK, "publication/departments/_modal", c.ViewData(r, struct {
 		Publication *models.Publication
@@ -45,7 +53,7 @@ func (c *PublicationDepartments) ActiveSearch(w http.ResponseWriter, r *http.Req
 
 	// Get 20 results from the search query
 	query := r.Form["search"]
-	hits, _ := c.Services.SuggestOrganizations(query[0])
+	hits, _ := c.organizationSearchService.SuggestOrganizations(query[0])
 
 	c.Render.HTML(w, http.StatusOK, "publication/departments/_modal_hits", c.ViewData(r, struct {
 		Publication *models.Publication
@@ -75,7 +83,7 @@ func (c *PublicationDepartments) Add(w http.ResponseWriter, r *http.Request) {
 	}
 	pub.Department = append(pub.Department, publicationDepartment)
 	savedPub := pub.Clone()
-	err := c.Services.Store.UpdatePublication(savedPub)
+	err := c.store.UpdatePublication(savedPub)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -125,7 +133,7 @@ func (c *PublicationDepartments) Remove(w http.ResponseWriter, r *http.Request) 
 	pub.Department = departments
 
 	savedPub := pub.Clone()
-	err := c.Services.Store.UpdatePublication(pub)
+	err := c.store.UpdatePublication(pub)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

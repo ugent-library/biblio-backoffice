@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/validation"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
@@ -18,10 +19,14 @@ import (
 
 type PublicationLinks struct {
 	Base
+	store backends.Store
 }
 
-func NewPublicationLinks(c Base) *PublicationLinks {
-	return &PublicationLinks{c}
+func NewPublicationLinks(base Base, store backends.Store) *PublicationLinks {
+	return &PublicationLinks{
+		Base:  base,
+		store: store,
+	}
 }
 
 // Show the "Add link" modal
@@ -67,7 +72,7 @@ func (c *PublicationLinks) Create(w http.ResponseWriter, r *http.Request) {
 	pub.Link = links
 
 	savedPub := pub.Clone()
-	err = c.Services.Store.UpdatePublication(pub)
+	err = c.store.UpdatePublication(pub)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
@@ -153,7 +158,7 @@ func (c *PublicationLinks) Update(w http.ResponseWriter, r *http.Request) {
 	log.Println(links)
 
 	savedPub := pub.Clone()
-	err = c.Services.Store.UpdatePublication(savedPub)
+	err = c.store.UpdatePublication(savedPub)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
@@ -220,7 +225,7 @@ func (c *PublicationLinks) Remove(w http.ResponseWriter, r *http.Request) {
 	pub.Link = links
 
 	// TODO: error handling
-	c.Services.Store.UpdatePublication(pub)
+	c.store.UpdatePublication(pub)
 
 	w.Header().Set("HX-Trigger", "PublicationRemoveLink")
 

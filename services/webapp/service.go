@@ -169,7 +169,6 @@ func buildRouter(services *backends.Services) *mux.Router {
 
 	// controller base
 	base := controllers.Base{
-		Services:     services,
 		Mode:         viper.GetString("mode"),
 		BaseURL:      baseURL,
 		Router:       router,

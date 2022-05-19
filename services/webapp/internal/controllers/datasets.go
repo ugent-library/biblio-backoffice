@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/validation"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
@@ -31,10 +32,19 @@ type DatasetAddVars struct {
 
 type Datasets struct {
 	Base
+	store                backends.Store
+	datasetSearchService backends.DatasetSearchService
+	datasetSources       map[string]backends.DatasetGetter
 }
 
-func NewDatasets(c Base) *Datasets {
-	return &Datasets{c}
+func NewDatasets(base Base, store backends.Store, datasetSearchService backends.DatasetSearchService,
+	datasetSources map[string]backends.DatasetGetter) *Datasets {
+	return &Datasets{
+		Base:                 base,
+		store:                store,
+		datasetSearchService: datasetSearchService,
+		datasetSources:       datasetSources,
+	}
 }
 
 func (c *Datasets) List(w http.ResponseWriter, r *http.Request) {
@@ -70,7 +80,7 @@ func (c *Datasets) List(w http.ResponseWriter, r *http.Request) {
 func (c *Datasets) Show(w http.ResponseWriter, r *http.Request) {
 	dataset := context.GetDataset(r.Context())
 
-	datasetPubs, err := c.Services.Store.GetDatasetPublications(dataset)
+	datasetPubs, err := c.store.GetDatasetPublications(dataset)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -113,7 +123,7 @@ func (c *Datasets) Publish(w http.ResponseWriter, r *http.Request) {
 	datasetCopy := *dataset
 	datasetCopy.Status = "public"
 	savedDataset := datasetCopy.Clone()
-	err := c.Services.Store.UpdateDataset(savedDataset)
+	err := c.store.UpdateDataset(savedDataset)
 	if err != nil {
 		savedDataset = dataset
 
@@ -135,7 +145,7 @@ func (c *Datasets) Publish(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	datasetPubs, err := c.Services.Store.GetDatasetPublications(dataset)
+	datasetPubs, err := c.store.GetDatasetPublications(dataset)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -186,7 +196,7 @@ func (c *Datasets) AddImportConfirm(w http.ResponseWriter, r *http.Request) {
 	// check for duplicates
 	if source == "datacite" {
 		args := models.NewSearchArgs().WithFilter("doi", identifier).WithFilter("status", "public")
-		if existing, _ := c.Services.DatasetSearchService.SearchDatasets(args); existing.Total > 0 {
+		if existing, _ := c.datasetSearchService.SearchDatasets(args); existing.Total > 0 {
 			c.Render.HTML(w, http.StatusOK, "dataset/add", c.ViewData(r, DatasetAddVars{
 				PageTitle:        "Add - Datasets - Biblio",
 				Step:             1,
@@ -278,7 +288,7 @@ func (c *Datasets) AddPublish(w http.ResponseWriter, r *http.Request) {
 
 	dataset.Status = "public"
 	savedDataset := dataset.Clone()
-	err := c.Services.Store.UpdateDataset(dataset)
+	err := c.store.UpdateDataset(dataset)
 	if err != nil {
 
 		/*
@@ -349,7 +359,7 @@ func (c *Datasets) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	dataset.Status = "deleted"
-	if err := c.Services.Store.UpdateDataset(dataset); err != nil {
+	if err := c.store.UpdateDataset(dataset); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -394,11 +404,11 @@ func (c *Datasets) userDatasets(userID string, args *models.SearchArgs) (*models
 		args.WithFilter("creator_id|author.id", userID)
 	}
 	delete(args.Filters, "scope")
-	return c.Services.DatasetSearchService.SearchDatasets(args)
+	return c.datasetSearchService.SearchDatasets(args)
 }
 
 func (c *Datasets) importUserDatasetByIdentifier(userID, source, identifier string) (*models.Dataset, error) {
-	s, ok := c.Services.DatasetSources[source]
+	s, ok := c.datasetSources[source]
 	if !ok {
 		return nil, errors.New("unknown dataset source")
 	}
@@ -412,7 +422,7 @@ func (c *Datasets) importUserDatasetByIdentifier(userID, source, identifier stri
 	d.UserID = userID
 	d.Status = "private"
 
-	if err = c.Services.Store.UpdateDataset(d); err != nil {
+	if err = c.store.UpdateDataset(d); err != nil {
 		return nil, err
 	}
 

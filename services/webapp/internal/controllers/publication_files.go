@@ -9,6 +9,8 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
+	"github.com/ugent-library/biblio-backend/internal/backends"
+	"github.com/ugent-library/biblio-backend/internal/backends/filestore"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/validation"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
@@ -19,10 +21,16 @@ import (
 
 type PublicationFiles struct {
 	Base
+	store     backends.Store
+	fileStore *filestore.Store
 }
 
-func NewPublicationFiles(c Base) *PublicationFiles {
-	return &PublicationFiles{c}
+func NewPublicationFiles(base Base, store backends.Store, fileStore *filestore.Store) *PublicationFiles {
+	return &PublicationFiles{
+		Base:      base,
+		store:     store,
+		fileStore: fileStore,
+	}
 }
 
 func (c *PublicationFiles) Download(w http.ResponseWriter, r *http.Request) {
@@ -35,7 +43,7 @@ func (c *PublicationFiles) Download(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.ServeFile(w, r, c.Services.FileStore.FilePath(file.SHA256))
+	http.ServeFile(w, r, c.fileStore.FilePath(file.SHA256))
 }
 
 func (c *PublicationFiles) Thumbnail(w http.ResponseWriter, r *http.Request) {
@@ -93,7 +101,7 @@ func (c *PublicationFiles) Upload(w http.ResponseWriter, r *http.Request) {
 
 	pub := context.GetPublication(r.Context())
 
-	checksum, err := c.Services.FileStore.Add(file)
+	checksum, err := c.fileStore.Add(file)
 
 	if err != nil {
 		flash := views.Flash{Type: "error", Message: "There was a problem adding your file"}
@@ -124,7 +132,7 @@ func (c *PublicationFiles) Upload(w http.ResponseWriter, r *http.Request) {
 		DateUpdated: &now,
 	}
 	savedPub.File = append(savedPub.File, pubFile)
-	err = c.Services.Store.UpdatePublication(savedPub)
+	err = c.store.UpdatePublication(savedPub)
 
 	if err != nil {
 		flash := views.Flash{Type: "error", Message: "There was a problem adding your file"}
@@ -307,7 +315,7 @@ func (c *PublicationFiles) Update(w http.ResponseWriter, r *http.Request) {
 		file.Embargo = ""
 	}
 
-	err = c.Services.Store.UpdatePublication(pub)
+	err = c.store.UpdatePublication(pub)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
@@ -334,7 +342,7 @@ func (c *PublicationFiles) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//reload publication
-	pub, err = c.Services.Store.GetPublication(pub.ID)
+	pub, err = c.store.GetPublication(pub.ID)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -378,7 +386,7 @@ func (c *PublicationFiles) Remove(w http.ResponseWriter, r *http.Request) {
 	}
 	pub.File = newFile
 
-	err := c.Services.Store.UpdatePublication(pub)
+	err := c.store.UpdatePublication(pub)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

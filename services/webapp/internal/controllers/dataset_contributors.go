@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/validation"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
@@ -16,10 +17,19 @@ import (
 
 type DatasetContributors struct {
 	Base
+	store               backends.Store
+	personSearchService backends.PersonSearchService
+	personService       backends.PersonService
 }
 
-func NewDatasetContributors(c Base) *DatasetContributors {
-	return &DatasetContributors{c}
+func NewDatasetContributors(base Base, store backends.Store, personSearchService backends.PersonSearchService,
+	personService backends.PersonService) *DatasetContributors {
+	return &DatasetContributors{
+		Base:                base,
+		store:               store,
+		personSearchService: personSearchService,
+		personService:       personService,
+	}
 }
 
 func (c *DatasetContributors) Add(w http.ResponseWriter, r *http.Request) {
@@ -64,7 +74,7 @@ func (c *DatasetContributors) Create(w http.ResponseWriter, r *http.Request) {
 	id := r.FormValue("id")
 	if id != "" {
 		// Check if the user really exists
-		user, err := c.Services.GetPerson(id)
+		user, err := c.personService.GetPerson(id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -81,7 +91,7 @@ func (c *DatasetContributors) Create(w http.ResponseWriter, r *http.Request) {
 	dataset.AddContributor(role, position, contributor)
 
 	savedDataset := dataset.Clone()
-	err := c.Services.Store.UpdateDataset(dataset)
+	err := c.store.UpdateDataset(dataset)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
@@ -161,7 +171,7 @@ func (c *DatasetContributors) Update(w http.ResponseWriter, r *http.Request) {
 	id := r.FormValue("id")
 	if id != "" {
 		// Check if the user really exists
-		user, err := c.Services.GetPerson(id)
+		user, err := c.personService.GetPerson(id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -178,7 +188,7 @@ func (c *DatasetContributors) Update(w http.ResponseWriter, r *http.Request) {
 	dataset.Contributors(role)[position] = contributor
 
 	savedDataset := dataset.Clone()
-	err := c.Services.Store.UpdateDataset(dataset)
+	err := c.store.UpdateDataset(dataset)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
@@ -247,7 +257,7 @@ func (c *DatasetContributors) Remove(w http.ResponseWriter, r *http.Request) {
 
 	dataset.RemoveContributor(role, position)
 
-	if err := c.Services.Store.UpdateDataset(dataset); err != nil {
+	if err := c.store.UpdateDataset(dataset); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -272,7 +282,7 @@ func (c *DatasetContributors) Choose(w http.ResponseWriter, r *http.Request) {
 	firstName := r.URL.Query().Get("first_name")
 	lastName := r.URL.Query().Get("last_name")
 
-	suggestions, _ := c.Services.SuggestPeople(firstName + " " + lastName)
+	suggestions, _ := c.personSearchService.SuggestPeople(firstName + " " + lastName)
 
 	c.Render.HTML(w, http.StatusOK, "dataset/contributors/_choose", c.ViewData(r, struct {
 		Role        string
@@ -339,7 +349,7 @@ func (c *DatasetContributors) Promote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	person, err := c.Services.GetPerson(r.FormValue("id"))
+	person, err := c.personService.GetPerson(r.FormValue("id"))
 	if err != nil || person == nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -390,7 +400,7 @@ func (c *DatasetContributors) Order(w http.ResponseWriter, r *http.Request) {
 
 	dataset.SetContributors(role, newContributors)
 
-	if err := c.Services.Store.UpdateDataset(dataset); err != nil {
+	if err := c.store.UpdateDataset(dataset); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

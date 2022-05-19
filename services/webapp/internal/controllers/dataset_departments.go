@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 	"github.com/unrolled/render"
@@ -11,17 +12,24 @@ import (
 
 type DatasetDepartments struct {
 	Base
+	store                     backends.Store
+	organizationSearchService backends.OrganizationSearchService
 }
 
-func NewDatasetDepartments(c Base) *DatasetDepartments {
-	return &DatasetDepartments{c}
+func NewDatasetDepartments(base Base, store backends.Store,
+	organizationSearchService backends.OrganizationSearchService) *DatasetDepartments {
+	return &DatasetDepartments{
+		Base:                      base,
+		store:                     store,
+		organizationSearchService: organizationSearchService,
+	}
 }
 
 func (c *DatasetDepartments) List(w http.ResponseWriter, r *http.Request) {
 	dataset := context.GetDataset(r.Context())
 
 	// Get 20 random departments (no search, init state)
-	hits, _ := c.Services.SuggestOrganizations("")
+	hits, _ := c.organizationSearchService.SuggestOrganizations("")
 
 	c.Render.HTML(w, http.StatusOK, "dataset/departments/_modal", c.ViewData(r, struct {
 		Dataset *models.Dataset
@@ -45,7 +53,7 @@ func (c *DatasetDepartments) ActiveSearch(w http.ResponseWriter, r *http.Request
 
 	// Get 20 results from the search query
 	query := r.Form["search"]
-	hits, _ := c.Services.SuggestOrganizations(query[0])
+	hits, _ := c.organizationSearchService.SuggestOrganizations(query[0])
 
 	c.Render.HTML(w, http.StatusOK, "dataset/departments/_modal_hits", c.ViewData(r, struct {
 		Dataset *models.Dataset
@@ -75,7 +83,7 @@ func (c *DatasetDepartments) Add(w http.ResponseWriter, r *http.Request) {
 	}
 	dataset.Department = append(dataset.Department, datasetDepartment)
 	savedDataset := dataset.Clone()
-	err := c.Services.Store.UpdateDataset(dataset)
+	err := c.store.UpdateDataset(dataset)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -125,7 +133,7 @@ func (c *DatasetDepartments) Remove(w http.ResponseWriter, r *http.Request) {
 	dataset.Department = departments
 
 	savedDataset := dataset.Clone()
-	err := c.Services.Store.UpdateDataset(dataset)
+	err := c.store.UpdateDataset(dataset)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
