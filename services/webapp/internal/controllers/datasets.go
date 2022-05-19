@@ -414,7 +414,6 @@ func (c *Datasets) importUserDatasetByIdentifier(userID, source, identifier stri
 	if err != nil {
 		return nil, err
 	}
-	d.Vacuum()
 	d.ID = uuid.NewString()
 	d.CreatorID = userID
 	d.UserID = userID

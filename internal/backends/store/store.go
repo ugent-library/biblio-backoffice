@@ -97,6 +97,8 @@ func (s *Store) UpdatePublication(p *models.Publication) error {
 	}
 	p.DateUpdated = &now
 
+	p.Vacuum()
+
 	if err := p.Validate(); err != nil {
 		return err
 	}
@@ -170,6 +172,8 @@ func (s *Store) UpdateDataset(d *models.Dataset) error {
 		d.DateCreated = &now
 	}
 	d.DateUpdated = &now
+
+	d.Vacuum()
 
 	if err := d.Validate(); err != nil {
 		return err
