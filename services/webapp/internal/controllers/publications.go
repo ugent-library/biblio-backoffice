@@ -211,7 +211,7 @@ func (c *Publications) AddSingleImportConfirm(w http.ResponseWriter, r *http.Req
 	// check for duplicates
 	if source == "crossref" && identifier != "" {
 		args := models.NewSearchArgs().WithFilter("doi", identifier).WithFilter("status", "public")
-		if existing, _ := c.publicationSearchService.SearchPublications(args); existing.Total > 0 {
+		if existing, _ := c.publicationSearchService.Search(args); existing.Total > 0 {
 			c.Render.HTML(w, http.StatusOK, "publication/add_identifier", c.ViewData(r, PublicationAddSingleVars{
 				PageTitle:            "Add - Publications - Biblio",
 				Step:                 1,
@@ -848,21 +848,19 @@ func (c *Publications) ORCIDAddAll(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Publications) userPublications(userID string, args *models.SearchArgs) (*models.PublicationHits, error) {
-	if args.FilterInRange("status", "private", "public") {
-		args = args.Clone()
-	} else {
-		args = args.Clone().WithFilter("status", "private", "public")
-	}
+	searcher := c.publicationSearchService.WithScope("status", "private", "public")
+
 	switch args.FilterFor("scope") {
 	case "created":
-		args.WithFilter("creator_id", userID)
+		searcher = searcher.WithScope("creator_id", userID)
 	case "contributed":
-		args.WithFilter("author.id", userID)
+		searcher = searcher.WithScope("author.id", userID)
 	default:
-		args.WithFilter("creator_id|author.id", userID)
+		searcher = searcher.WithScope("creator_id|author.id", userID)
 	}
 	delete(args.Filters, "scope")
-	return c.publicationSearchService.SearchPublications(args)
+
+	return searcher.Search(args)
 }
 
 // TODO should be async task
@@ -883,7 +881,7 @@ func (c *Publications) importUserPublications(userID, source string, file io.Rea
 	go func() {
 		indexWG.Add(1)
 		defer indexWG.Done()
-		c.publicationSearchService.IndexPublications(indexC)
+		c.publicationSearchService.IndexMultiple(indexC)
 	}()
 
 	var importErr error
@@ -1013,7 +1011,7 @@ func (c *Publications) sendPublicationsToORCIDTask(t tasks.Task, userID, orcidID
 	var numDone int
 
 	for {
-		hits, _ := c.publicationSearchService.SearchPublications(searchArgs)
+		hits, _ := c.publicationSearchService.Search(searchArgs)
 
 		for _, pub := range hits.Hits {
 			numDone++

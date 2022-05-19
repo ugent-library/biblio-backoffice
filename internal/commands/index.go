@@ -34,7 +34,7 @@ var indexDatasetCreateCmd = &cobra.Command{
 	Use:   "create",
 	Short: "Create dataset index",
 	Run: func(cmd *cobra.Command, args []string) {
-		if err := newEs6Client().CreateDatasetIndex(); err != nil {
+		if err := newDatasetSearchService().CreateIndex(); err != nil {
 			log.Fatal(err)
 		}
 	},
@@ -44,7 +44,7 @@ var indexDatasetDeleteCmd = &cobra.Command{
 	Use:   "delete",
 	Short: "Delete dataset index",
 	Run: func(cmd *cobra.Command, args []string) {
-		if err := newEs6Client().DeleteDatasetIndex(); err != nil {
+		if err := newDatasetSearchService().DeleteIndex(); err != nil {
 			log.Fatal(err)
 		}
 	},
@@ -54,7 +54,7 @@ var indexDatasetAllCmd = &cobra.Command{
 	Use:   "all",
 	Short: "Reindex all datasets",
 	Run: func(cmd *cobra.Command, args []string) {
-		es := newEs6Client()
+		es := newDatasetSearchService()
 		store := newStore()
 		var indexWG sync.WaitGroup
 
@@ -64,7 +64,7 @@ var indexDatasetAllCmd = &cobra.Command{
 		go func() {
 			indexWG.Add(1)
 			defer indexWG.Done()
-			es.IndexDatasets(indexC)
+			es.IndexMultiple(indexC)
 		}()
 
 		// send recs to indexer
@@ -89,7 +89,7 @@ var indexPublicationCreateCmd = &cobra.Command{
 	Use:   "create",
 	Short: "Create publication index",
 	Run: func(cmd *cobra.Command, args []string) {
-		if err := newEs6Client().CreatePublicationIndex(); err != nil {
+		if err := newPublicationSearchService().CreateIndex(); err != nil {
 			log.Fatal(err)
 		}
 	},
@@ -99,7 +99,7 @@ var indexPublicationDeleteCmd = &cobra.Command{
 	Use:   "delete",
 	Short: "Delete publication index",
 	Run: func(cmd *cobra.Command, args []string) {
-		if err := newEs6Client().DeletePublicationIndex(); err != nil {
+		if err := newPublicationSearchService().DeleteIndex(); err != nil {
 			log.Fatal(err)
 		}
 	},
@@ -109,7 +109,7 @@ var indexPublicationAllCmd = &cobra.Command{
 	Use:   "all",
 	Short: "Reindex all publications",
 	Run: func(cmd *cobra.Command, args []string) {
-		es := newEs6Client()
+		es := newPublicationSearchService()
 		store := newStore()
 		var indexWG sync.WaitGroup
 
@@ -119,7 +119,7 @@ var indexPublicationAllCmd = &cobra.Command{
 		go func() {
 			indexWG.Add(1)
 			defer indexWG.Done()
-			es.IndexPublications(indexC)
+			es.IndexMultiple(indexC)
 		}()
 
 		// send recs to indexer

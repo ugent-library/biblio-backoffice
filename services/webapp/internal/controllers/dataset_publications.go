@@ -189,15 +189,17 @@ func (c *DatasetPublications) Remove(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *DatasetPublications) userPublications(userID string, args *models.SearchArgs) (*models.PublicationHits, error) {
-	args = args.Clone().WithFilter("status", "private", "public")
+	searcher := c.publicationSearchService.WithScope("status", "private", "public")
+
 	switch args.FilterFor("scope") {
 	case "created":
-		args.WithFilter("creator_id", userID)
+		searcher = searcher.WithScope("creator_id", userID)
 	case "contributed":
-		args.WithFilter("author.id", userID)
+		searcher = searcher.WithScope("author.id", userID)
 	default:
-		args.WithFilter("creator_id|author.id", userID)
+		searcher = searcher.WithScope("creator_id|author.id", userID)
 	}
 	delete(args.Filters, "scope")
-	return c.publicationSearchService.SearchPublications(args)
+
+	return searcher.Search(args)
 }

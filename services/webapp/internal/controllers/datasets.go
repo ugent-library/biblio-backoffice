@@ -196,7 +196,7 @@ func (c *Datasets) AddImportConfirm(w http.ResponseWriter, r *http.Request) {
 	// check for duplicates
 	if source == "datacite" {
 		args := models.NewSearchArgs().WithFilter("doi", identifier).WithFilter("status", "public")
-		if existing, _ := c.datasetSearchService.SearchDatasets(args); existing.Total > 0 {
+		if existing, _ := c.datasetSearchService.Search(args); existing.Total > 0 {
 			c.Render.HTML(w, http.StatusOK, "dataset/add", c.ViewData(r, DatasetAddVars{
 				PageTitle:        "Add - Datasets - Biblio",
 				Step:             1,
@@ -390,21 +390,19 @@ func (c *Datasets) Delete(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Datasets) userDatasets(userID string, args *models.SearchArgs) (*models.DatasetHits, error) {
-	if args.FilterInRange("status", "private", "public") {
-		args = args.Clone()
-	} else {
-		args = args.Clone().WithFilter("status", "private", "public")
-	}
+	searcher := c.datasetSearchService.WithScope("status", "private", "public")
+
 	switch args.FilterFor("scope") {
 	case "created":
-		args.WithFilter("creator_id", userID)
+		searcher = searcher.WithScope("creator_id", userID)
 	case "contributed":
-		args.WithFilter("author.id", userID)
+		searcher = searcher.WithScope("author.id", userID)
 	default:
-		args.WithFilter("creator_id|author.id", userID)
+		searcher = searcher.WithScope("creator_id|author.id", userID)
 	}
 	delete(args.Filters, "scope")
-	return c.datasetSearchService.SearchDatasets(args)
+
+	return searcher.Search(args)
 }
 
 func (c *Datasets) importUserDatasetByIdentifier(userID, source, identifier string) (*models.Dataset, error) {
