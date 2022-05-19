@@ -1,6 +1,8 @@
 package routes
 
 import (
+	"crypto/rand"
+	"log"
 	"net/http"
 
 	"github.com/gorilla/csrf"
@@ -65,8 +67,13 @@ func Register(base controllers.Base) {
 
 	r := router.PathPrefix(basePath).Subrouter()
 
+	csrfSecret := make([]byte, 32)
+	if _, err := rand.Read(csrfSecret); err != nil {
+		log.Fatal(err)
+	}
+
 	csrfMiddleware := csrf.Protect(
-		[]byte(viper.GetString("csrf-secret")),
+		csrfSecret,
 		csrf.CookieName(viper.GetString("csrf-name")),
 		csrf.Path(basePath),
 		csrf.Secure(base.BaseURL.Scheme == "https"),
