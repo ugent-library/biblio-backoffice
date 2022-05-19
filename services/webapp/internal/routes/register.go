@@ -8,12 +8,14 @@ import (
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/handlers"
 	"github.com/spf13/viper"
+	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/controllers"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/middleware"
 	"github.com/ugent-library/go-locale/locale"
+	"github.com/ugent-library/go-oidc/oidc"
 )
 
-func Register(base controllers.Base) {
+func Register(services *backends.Services, base controllers.Base, oidcClient *oidc.Client) {
 	router := base.Router
 	basePath := base.BaseURL.Path
 
@@ -25,10 +27,10 @@ func Register(base controllers.Base) {
 	router.PathPrefix(basePath + "/static/").Handler(http.StripPrefix(basePath+"/static/", http.FileServer(http.Dir("./services/webapp/static"))))
 
 	requireUser := middleware.RequireUser(base.BaseURL.Path + "/login")
-	setUser := middleware.SetUser(base.Services.UserService, base.SessionName, base.SessionStore)
+	setUser := middleware.SetUser(services.UserService, base.SessionName, base.SessionStore)
 
 	homeController := controllers.NewHome(base)
-	authController := controllers.NewAuth(base)
+	authController := controllers.NewAuth(base, oidcClient, services.UserService)
 	usersController := controllers.NewUsers(base)
 	tasksController := controllers.NewTasks(base)
 
@@ -158,7 +160,7 @@ func Register(base controllers.Base) {
 		Name("publication_orcid_add_all")
 
 	pubRouter := pubsRouter.PathPrefix("/{id}").Subrouter()
-	pubRouter.Use(middleware.SetPublication(base.Services.Store))
+	pubRouter.Use(middleware.SetPublication(services.Store))
 	pubRouter.Use(middleware.RequireCanViewPublication)
 	pubEditRouter := pubRouter.PathPrefix("").Subrouter()
 	pubEditRouter.Use(middleware.RequireCanEditPublication)
@@ -416,7 +418,7 @@ func Register(base controllers.Base) {
 		Name("dataset_add_import")
 
 	datasetRouter := datasetsRouter.PathPrefix("/{id}").Subrouter()
-	datasetRouter.Use(middleware.SetDataset(base.Services.Store))
+	datasetRouter.Use(middleware.SetDataset(services.Store))
 	datasetRouter.Use(middleware.RequireCanViewDataset)
 	datasetEditRouter := datasetRouter.PathPrefix("").Subrouter()
 	datasetEditRouter.Use(middleware.RequireCanEditDataset)

@@ -103,7 +103,7 @@ func (s *service) Stop(ctx context.Context) error {
 	return s.server.Shutdown(ctx)
 }
 
-func buildRouter(e *backends.Services) *mux.Router {
+func buildRouter(services *backends.Services) *mux.Router {
 	host := viper.GetString("host")
 	port := viper.GetInt("port")
 
@@ -169,7 +169,7 @@ func buildRouter(e *backends.Services) *mux.Router {
 
 	// controller base
 	base := controllers.Base{
-		Services:       e,
+		Services:     services,
 		Mode:         viper.GetString("mode"),
 		BaseURL:      baseURL,
 		Router:       router,
@@ -177,11 +177,10 @@ func buildRouter(e *backends.Services) *mux.Router {
 		Localizer:    localizer,
 		SessionName:  sessionName,
 		SessionStore: sessionStore,
-		OIDC:         oidcClient,
 	}
 
 	// add routes
-	routes.Register(base)
+	routes.Register(services, base, oidcClient)
 
 	return router
 }

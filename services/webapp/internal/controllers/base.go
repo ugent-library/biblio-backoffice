@@ -14,7 +14,6 @@ import (
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/views"
 	"github.com/ugent-library/go-locale/locale"
-	"github.com/ugent-library/go-oidc/oidc"
 	"github.com/unrolled/render"
 )
 
@@ -27,7 +26,6 @@ type Base struct {
 	Localizer    *locale.Localizer
 	SessionName  string
 	SessionStore sessions.Store
-	OIDC         *oidc.Client
 }
 
 func (c *Base) Session(r *http.Request) (*sessions.Session, error) {
