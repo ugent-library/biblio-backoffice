@@ -38,15 +38,21 @@ type Store interface {
 }
 
 type DatasetSearchService interface {
-	SearchDatasets(*models.SearchArgs) (*models.DatasetHits, error)
-	IndexDataset(*models.Dataset) error
-	IndexDatasets(<-chan *models.Dataset)
+	Search(*models.SearchArgs) (*models.DatasetHits, error)
+	Index(*models.Dataset) error
+	IndexMultiple(<-chan *models.Dataset)
+	WithScope(string, ...string) DatasetSearchService
+	CreateIndex() error
+	DeleteIndex() error
 }
 
 type PublicationSearchService interface {
-	SearchPublications(*models.SearchArgs) (*models.PublicationHits, error)
-	IndexPublication(*models.Publication) error
-	IndexPublications(<-chan *models.Publication)
+	Search(*models.SearchArgs) (*models.PublicationHits, error)
+	Index(*models.Publication) error
+	IndexMultiple(<-chan *models.Publication)
+	WithScope(string, ...string) PublicationSearchService
+	CreateIndex() error
+	DeleteIndex() error
 }
 
 type PersonService interface {

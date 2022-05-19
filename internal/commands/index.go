@@ -32,7 +32,7 @@ var indexDatasetCreateCmd = &cobra.Command{
 	Use:   "create",
 	Short: "Create dataset index",
 	Run: func(cmd *cobra.Command, args []string) {
-		if err := newEs6Client().CreateDatasetIndex(); err != nil {
+		if err := newDatasetSearchService().CreateIndex(); err != nil {
 			log.Fatal(err)
 		}
 	},
@@ -42,7 +42,7 @@ var indexDatasetDeleteCmd = &cobra.Command{
 	Use:   "delete",
 	Short: "Delete dataset index",
 	Run: func(cmd *cobra.Command, args []string) {
-		if err := newEs6Client().DeleteDatasetIndex(); err != nil {
+		if err := newDatasetSearchService().DeleteIndex(); err != nil {
 			log.Fatal(err)
 		}
 	},
@@ -67,7 +67,7 @@ var indexPublicationCreateCmd = &cobra.Command{
 	Use:   "create",
 	Short: "Create publication index",
 	Run: func(cmd *cobra.Command, args []string) {
-		if err := newEs6Client().CreatePublicationIndex(); err != nil {
+		if err := newPublicationSearchService().CreateIndex(); err != nil {
 			log.Fatal(err)
 		}
 	},
@@ -77,7 +77,7 @@ var indexPublicationDeleteCmd = &cobra.Command{
 	Use:   "delete",
 	Short: "Delete publication index",
 	Run: func(cmd *cobra.Command, args []string) {
-		if err := newEs6Client().DeletePublicationIndex(); err != nil {
+		if err := newPublicationSearchService().DeleteIndex(); err != nil {
 			log.Fatal(err)
 		}
 	},

@@ -92,7 +92,7 @@ var publicationAddCmd = &cobra.Command{
 		go func() {
 			indexWG.Add(1)
 			defer indexWG.Done()
-			e.PublicationSearchService.IndexPublications(indexC)
+			e.PublicationSearchService.IndexMultiple(indexC)
 		}()
 
 		fmt := viper.GetString("format")

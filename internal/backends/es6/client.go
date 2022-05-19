@@ -9,11 +9,9 @@ import (
 )
 
 type Config struct {
-	ClientConfig        elasticsearch.Config
-	DatasetIndex        string
-	DatasetSettings     string
-	PublicationIndex    string
-	PublicationSettings string
+	ClientConfig elasticsearch.Config
+	Index        string
+	Settings     string
 }
 
 type Client struct {
@@ -28,12 +26,12 @@ func New(c Config) (*Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Client{c, client}, nil
+	return &Client{Config: c, es: client}, nil
 }
 
-func (c *Client) CreateDatasetIndex() error {
-	r := strings.NewReader(c.DatasetSettings)
-	res, err := c.es.Indices.Create(c.DatasetIndex, c.es.Indices.Create.WithBody(r))
+func (c *Client) CreateIndex() error {
+	r := strings.NewReader(c.Settings)
+	res, err := c.es.Indices.Create(c.Index, c.es.Indices.Create.WithBody(r))
 	if err != nil {
 		return err
 	}
@@ -43,31 +41,8 @@ func (c *Client) CreateDatasetIndex() error {
 	return nil
 }
 
-func (c *Client) DeleteDatasetIndex() error {
-	res, err := c.es.Indices.Delete([]string{c.DatasetIndex})
-	if err != nil {
-		return err
-	}
-	if res.IsError() {
-		return fmt.Errorf("error: %s", res)
-	}
-	return nil
-}
-
-func (c *Client) CreatePublicationIndex() error {
-	r := strings.NewReader(c.PublicationSettings)
-	res, err := c.es.Indices.Create(c.PublicationIndex, c.es.Indices.Create.WithBody(r))
-	if err != nil {
-		return err
-	}
-	if res.IsError() {
-		return fmt.Errorf("error: %s", res)
-	}
-	return nil
-}
-
-func (c *Client) DeletePublicationIndex() error {
-	res, err := c.es.Indices.Delete([]string{c.PublicationIndex})
+func (c *Client) DeleteIndex() error {
+	res, err := c.es.Indices.Delete([]string{c.Index})
 	if err != nil {
 		return err
 	}

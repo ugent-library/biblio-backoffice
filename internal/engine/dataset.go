@@ -36,30 +36,24 @@ func (e *Engine) ImportUserDatasetByIdentifier(userID, source, identifier string
 }
 
 func (e *Engine) Datasets(args *models.SearchArgs) (*models.DatasetHits, error) {
-	if args.FilterInRange("status", "private", "public") {
-		args = args.Clone()
-	} else {
-		args = args.Clone().WithFilter("status", "private", "public")
-	}
-	return e.DatasetSearchService.SearchDatasets(args)
+	searcher := e.DatasetSearchService
+	searcher = searcher.WithScope("status", "private", "public")
+	return searcher.Search(args)
 }
 
 func (e *Engine) UserDatasets(userID string, args *models.SearchArgs) (*models.DatasetHits, error) {
-	if args.FilterInRange("status", "private", "public") {
-		args = args.Clone()
-	} else {
-		args = args.Clone().WithFilter("status", "private", "public")
-	}
+	searcher := e.DatasetSearchService
+	searcher = searcher.WithScope("status", "private", "public")
 	switch args.FilterFor("scope") {
 	case "created":
-		args.WithFilter("creator_id", userID)
+		searcher = searcher.WithScope("creator_id", userID)
 	case "contributed":
-		args.WithFilter("author.id", userID)
+		searcher = searcher.WithScope("author.id", userID)
 	default:
-		args.WithFilter("creator_id|author.id", userID)
+		searcher = searcher.WithScope("creator_id|author.id", userID)
 	}
 	delete(args.Filters, "scope")
-	return e.DatasetSearchService.SearchDatasets(args)
+	return searcher.Search(args)
 }
 
 func (e *Engine) GetDatasetPublications(d *models.Dataset) ([]*models.Publication, error) {
@@ -79,7 +73,7 @@ func (e *Engine) IndexAllDatasets() (err error) {
 	go func() {
 		indexWG.Add(1)
 		defer indexWG.Done()
-		e.DatasetSearchService.IndexDatasets(indexC)
+		e.DatasetSearchService.IndexMultiple(indexC)
 	}()
 
 	// send recs to indexer

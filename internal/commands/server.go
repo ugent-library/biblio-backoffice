@@ -38,12 +38,12 @@ var serverStartCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		e := Engine()
 		e.Store.AddPublicationListener(func(p *models.Publication) {
-			if err := e.PublicationSearchService.IndexPublication(p); err != nil {
+			if err := e.PublicationSearchService.Index(p); err != nil {
 				log.Println(fmt.Errorf("error indexing publication %s: %w", p.ID, err))
 			}
 		})
 		e.Store.AddDatasetListener(func(d *models.Dataset) {
-			if err := e.DatasetSearchService.IndexDataset(d); err != nil {
+			if err := e.DatasetSearchService.Index(d); err != nil {
 				log.Println(fmt.Errorf("error indexing dataset %s: %w", d.ID, err))
 			}
 		})

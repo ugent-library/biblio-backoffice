@@ -45,8 +45,6 @@ func newEngine() *engine.Engine {
 		log.Fatalln("Unable to initialize filestore", err)
 	}
 
-	es6Client := newEs6Client()
-
 	biblioClient := biblio.New(biblio.Config{
 		URL:      viper.GetString("frontend-url"),
 		Username: viper.GetString("frontend-username"),
@@ -65,8 +63,8 @@ func newEngine() *engine.Engine {
 		ORCIDSandbox:              orcidConfig.Sandbox,
 		ORCIDClient:               orcidClient,
 		Store:                     newStore(),
-		DatasetSearchService:      es6Client,
-		PublicationSearchService:  es6Client,
+		DatasetSearchService:      newDatasetSearchService(),
+		PublicationSearchService:  newPublicationSearchService(),
 		PersonService:             biblioClient,
 		ProjectService:            biblioClient,
 		UserService:               biblioClient,
@@ -114,12 +112,8 @@ func newStore() backends.Store {
 	return s
 }
 
-func newEs6Client() *es6.Client {
-	datasetSettings, err := ioutil.ReadFile("etc/es6/dataset.json")
-	if err != nil {
-		log.Fatal(err)
-	}
-	publicationSettings, err := ioutil.ReadFile("etc/es6/publication.json")
+func newEs6Client(t string) *es6.Client {
+	settings, err := ioutil.ReadFile("etc/es6/" + t + ".json")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -127,13 +121,25 @@ func newEs6Client() *es6.Client {
 		ClientConfig: elasticsearch.Config{
 			Addresses: strings.Split(viper.GetString("es6-url"), ","),
 		},
-		DatasetIndex:        viper.GetString("dataset-index"),
-		DatasetSettings:     string(datasetSettings),
-		PublicationIndex:    viper.GetString("publication-index"),
-		PublicationSettings: string(publicationSettings),
+		Index:    viper.GetString(t + "-index"),
+		Settings: string(settings),
 	})
 	if err != nil {
 		log.Fatal(err)
 	}
 	return client
+}
+
+func newPublicationSearchService() backends.PublicationSearchService {
+
+	es6Client := newEs6Client("publication")
+	return es6.NewPublications(*es6Client)
+
+}
+
+func newDatasetSearchService() backends.DatasetSearchService {
+
+	es6Client := newEs6Client("dataset")
+	return es6.NewDatasets(*es6Client)
+
 }

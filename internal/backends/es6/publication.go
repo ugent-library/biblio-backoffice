@@ -13,31 +13,31 @@ import (
 	"github.com/elastic/go-elasticsearch/v6/esapi"
 	"github.com/elastic/go-elasticsearch/v6/esutil"
 	"github.com/pkg/errors"
+	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/models"
 )
 
-func (c *Client) SearchPublications(args *models.SearchArgs) (*models.PublicationHits, error) {
-	query := buildPublicationQuery(args)
+type Publications struct {
+	Client
+	scopes []M
+}
+
+func NewPublications(c Client) *Publications {
+	return &Publications{Client: c}
+}
+
+func (publications *Publications) Search(args *models.SearchArgs) (*models.PublicationHits, error) {
+	// BUILD QUERY AND FILTERS FROM USER INPUT
+	query := publications.buildUserQuery(args)
 
 	queryFilters := query["query"].(M)["bool"].(M)["filter"].([]M)
 	queryMust := query["query"].(M)["bool"].(M)["must"].(M)
 	query["size"] = args.Limit()
 	query["from"] = args.Offset()
 
-	// if args.Highlight {
-	// 	query["highlight"] = M{
-	// 		"require_field_match": false,
-	// 		"pre_tags":            []string{"<mark>"},
-	// 		"post_tags":           []string{"</mark>"},
-	// 		"fields": M{
-	// 			"metadata.title.ngram":       M{},
-	// 			"metadata.author.name.ngram": M{},
-	// 		},
-	// 	}
-	// }
-
-	// create global bucket so that not all buckets are influenced by query and filters
-	// name "facets" is not important
+	// ADD FACETS
+	// 	create global bucket so that not all buckets are influenced by query and filters
+	// 	name "facets" is not important
 	query["aggs"] = M{
 		"facets": M{
 			"global": M{},
@@ -47,18 +47,19 @@ func (c *Client) SearchPublications(args *models.SearchArgs) (*models.Publicatio
 
 	// facet filter contains all query and all filters except itself
 	for _, field := range []string{"status", "type", "completeness_score", "faculty"} {
-		filters := []M{queryMust}
 
+		filters := make([]M, 0, len(publications.scopes)+1)
+
+		// add all internal filters
+		filters = append(filters, queryMust)
+		filters = append(filters, publications.scopes...)
+
+		// add external filters only if not matching
 		for _, filter := range queryFilters {
 			terms := filter["terms"]
-			// non facet related filters (keep: always)
-			// TODO: make difference between facet filter
-			// and other filters more explicit
 			if terms == nil {
-				filters = append(filters, filter)
 				continue
 			}
-			// facet related filters (keep: if not matching)
 			if _, found := terms.(M)[field]; found {
 				continue
 			} else {
@@ -100,6 +101,11 @@ func (c *Client) SearchPublications(args *models.SearchArgs) (*models.Publicatio
 		}
 	}
 
+	// ADD QUERY FILTERS
+	queryFilters = append(queryFilters, publications.scopes...)
+	query["query"].(M)["bool"].(M)["filter"] = queryFilters
+
+	// ADD SORTS
 	sorts := []string{"date_updated:desc", "year:desc"}
 	if len(args.Sort) > 0 {
 		switch args.Sort[0] {
@@ -112,28 +118,26 @@ func (c *Client) SearchPublications(args *models.SearchArgs) (*models.Publicatio
 		}
 	}
 
+	// SEND QUERY TO ES
 	opts := []func(*esapi.SearchRequest){
-		c.es.Search.WithContext(context.Background()),
-		c.es.Search.WithIndex(c.PublicationIndex),
-		c.es.Search.WithTrackTotalHits(true),
-		c.es.Search.WithSort(sorts...),
+		publications.Client.es.Search.WithContext(context.Background()),
+		publications.Client.es.Search.WithIndex(publications.Client.Index),
+		publications.Client.es.Search.WithTrackTotalHits(true),
+		publications.Client.es.Search.WithSort(sorts...),
 	}
-
-	// if args.Cursor {
-	// 	opts = append(opts, s.client.Search.WithScroll(time.Minute))
-	// }
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(query); err != nil {
 		return nil, err
 	}
-	opts = append(opts, c.es.Search.WithBody(&buf))
+	opts = append(opts, publications.Client.es.Search.WithBody(&buf))
 
-	res, err := c.es.Search(opts...)
+	res, err := publications.Client.es.Search(opts...)
 	if err != nil {
 		return nil, err
 	}
 
+	// READ RESPONSE FROM ES
 	hits, err := decodePublicationRes(res)
 	if err != nil {
 		return nil, err
@@ -145,7 +149,7 @@ func (c *Client) SearchPublications(args *models.SearchArgs) (*models.Publicatio
 	return hits, nil
 }
 
-func buildPublicationQuery(args *models.SearchArgs) M {
+func (publications *Publications) buildUserQuery(args *models.SearchArgs) M {
 	var query M
 	var queryMust M
 	var queryFilters []M
@@ -185,7 +189,7 @@ func buildPublicationQuery(args *models.SearchArgs) M {
 						   make sure minimum_should_match is 0
 	*/
 	queryShould := []M{
-		M{
+		{
 			"match_phrase": M{
 				"title": M{
 					"query": args.Query,
@@ -193,7 +197,7 @@ func buildPublicationQuery(args *models.SearchArgs) M {
 				},
 			},
 		},
-		M{
+		{
 			"match_phrase": M{
 				"author.full_name": M{
 					"query": args.Query,
@@ -201,7 +205,7 @@ func buildPublicationQuery(args *models.SearchArgs) M {
 				},
 			},
 		},
-		M{
+		{
 			"match_phrase": M{
 				"all": M{
 					"query": args.Query,
@@ -223,20 +227,8 @@ func buildPublicationQuery(args *models.SearchArgs) M {
 	// query.bool.filter: search without score
 	if args.Filters != nil {
 		for field, terms := range args.Filters {
-			orFields := strings.Split(field, "|")
-			if len(orFields) > 1 {
-				orFilters := []M{}
-				for _, orField := range orFields {
-					orFilters = append(orFilters, M{"terms": M{orField: terms}})
-				}
-				queryFilters = append(queryFilters, M{"bool": M{"should": orFilters, "minimum_should_match": "1"}})
-			} else if strings.HasPrefix(field, "!") {
-				queryFilters = append(queryFilters, M{"bool": M{"must_not": M{"terms": M{field[1:]: terms}}}})
-			} else {
-				queryFilters = append(queryFilters, M{"terms": M{field: terms}})
-			}
+			queryFilters = append(queryFilters, ParseScope(field, terms...))
 		}
-
 		query["query"].(M)["bool"].(M)["filter"] = queryFilters
 	}
 
@@ -311,17 +303,13 @@ func decodePublicationRes(res *esapi.Response) (*models.PublicationHits, error) 
 			return nil, err
 		}
 
-		// if len(h.Highlight) > 0 {
-		// 	hit.RawHighlight = h.Highlight
-		// }
-
 		hits.Hits = append(hits.Hits, &hit)
 	}
 
 	return &hits, nil
 }
 
-func (c *Client) IndexPublication(d *models.Publication) error {
+func (publications *Publications) Index(d *models.Publication) error {
 	body := M{
 		// not needed anymore in es7 with date nano type
 		"doc": struct {
@@ -342,10 +330,10 @@ func (c *Client) IndexPublication(d *models.Publication) error {
 	}
 	ctx := context.Background()
 	res, err := esapi.UpdateRequest{
-		Index:      c.PublicationIndex,
+		Index:      publications.Client.Index,
 		DocumentID: d.ID,
 		Body:       bytes.NewReader(payload),
-	}.Do(ctx, c.es)
+	}.Do(ctx, publications.Client.es)
 	if err != nil {
 		return err
 	}
@@ -362,10 +350,10 @@ func (c *Client) IndexPublication(d *models.Publication) error {
 	return nil
 }
 
-func (c *Client) IndexPublications(inCh <-chan *models.Publication) {
+func (publications *Publications) IndexMultiple(inCh <-chan *models.Publication) {
 	bi, err := esutil.NewBulkIndexer(esutil.BulkIndexerConfig{
-		Index:  c.PublicationIndex,
-		Client: c.es,
+		Index:  publications.Client.Index,
+		Client: publications.Client.es,
 		OnError: func(c context.Context, e error) {
 			log.Fatalf("ERROR: %s", e)
 		},
@@ -422,5 +410,15 @@ func (c *Client) IndexPublications(inCh <-chan *models.Publication) {
 	// Close the indexer
 	if err := bi.Close(context.Background()); err != nil {
 		log.Panicf("Unexpected error: %s", err)
+	}
+}
+
+func (publications *Publications) WithScope(field string, terms ...string) backends.PublicationSearchService {
+	newScopes := make([]M, 0, len(publications.scopes)+1)
+	newScopes = append(newScopes, publications.scopes...)
+	newScopes = append(newScopes, ParseScope(field, terms...))
+	return &Publications{
+		Client: publications.Client,
+		scopes: newScopes,
 	}
 }

@@ -14,31 +14,26 @@ import (
 
 // TODO make query dsl package
 func (e *Engine) Publications(args *models.SearchArgs) (*models.PublicationHits, error) {
-	if args.FilterInRange("status", "private", "public") {
-		args = args.Clone()
-	} else {
-		args = args.Clone().WithFilter("status", "private", "public")
-	}
-	return e.PublicationSearchService.SearchPublications(args)
+	searcher := e.PublicationSearchService
+	searcher = searcher.WithScope("status", "private", "public")
+	return searcher.Search(args)
 }
 
 // TODO make query dsl package
 func (e *Engine) UserPublications(userID string, args *models.SearchArgs) (*models.PublicationHits, error) {
-	if args.FilterInRange("status", "private", "public") {
-		args = args.Clone()
-	} else {
-		args = args.Clone().WithFilter("status", "private", "public")
-	}
+	searcher := e.PublicationSearchService
+	searcher = searcher.WithScope("status", "private", "public")
+
 	switch args.FilterFor("scope") {
 	case "created":
-		args.WithFilter("creator_id", userID)
+		searcher = searcher.WithScope("creator_id", userID)
 	case "contributed":
-		args.WithFilter("author.id", userID)
+		searcher = searcher.WithScope("author.id", userID)
 	default:
-		args.WithFilter("creator_id|author.id", userID)
+		searcher = searcher.WithScope("creator_id|author.id", userID)
 	}
 	delete(args.Filters, "scope")
-	return e.PublicationSearchService.SearchPublications(args)
+	return searcher.Search(args)
 }
 
 // TODO make workflow
@@ -167,7 +162,7 @@ func (e *Engine) ImportUserPublications(userID, source string, file io.Reader) (
 	go func() {
 		indexWG.Add(1)
 		defer indexWG.Done()
-		e.PublicationSearchService.IndexPublications(indexC)
+		e.PublicationSearchService.IndexMultiple(indexC)
 	}()
 
 	var importErr error
@@ -222,7 +217,7 @@ func (e *Engine) IndexAllPublications() (err error) {
 	go func() {
 		indexWG.Add(1)
 		defer indexWG.Done()
-		e.PublicationSearchService.IndexPublications(indexC)
+		e.PublicationSearchService.IndexMultiple(indexC)
 	}()
 
 	// send recs to indexer

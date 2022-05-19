@@ -83,7 +83,7 @@ func (e *Engine) sendPublicationsToORCIDTask(t tasks.Task, userID, orcidID, orci
 	var numDone int
 
 	for {
-		hits, _ := e.PublicationSearchService.SearchPublications(searchArgs)
+		hits, _ := e.PublicationSearchService.Search(searchArgs)
 
 		for _, pub := range hits.Hits {
 			numDone++
