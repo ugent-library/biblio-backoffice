@@ -2,7 +2,6 @@ package models
 
 import (
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/ugent-library/biblio-backend/internal/pagination"
@@ -458,41 +457,4 @@ func (d *Publication) Validate() (errs validation.Errors) {
 	}
 
 	return
-}
-
-func (d *Publication) Vacuum() {
-	d.AdditionalInfo = strings.TrimSpace(d.AdditionalInfo)
-	d.AlternativeTitle = vacuumStringSlice(d.AlternativeTitle)
-	d.ArticleNumber = strings.TrimSpace(d.ArticleNumber)
-	d.ArxivID = strings.TrimSpace(d.ArxivID)
-	d.DefenseDate = strings.TrimSpace(d.DefenseDate)
-	d.DefensePlace = strings.TrimSpace(d.DefensePlace)
-	d.DefenseTime = strings.TrimSpace(d.DefenseTime)
-	d.DOI = strings.TrimSpace(d.DOI)
-	d.Edition = strings.TrimSpace(d.Edition)
-	d.EISBN = vacuumStringSlice(d.EISBN)
-	d.EISSN = vacuumStringSlice(d.EISSN)
-	d.ESCIID = strings.TrimSpace(d.ESCIID)
-	d.ISBN = vacuumStringSlice(d.ISBN)
-	d.ISSN = vacuumStringSlice(d.ISSN)
-	d.Issue = strings.TrimSpace(d.Issue)
-	d.IssueTitle = strings.TrimSpace(d.IssueTitle)
-	d.Keyword = vacuumStringSlice(d.Keyword)
-	d.Language = vacuumStringSlice(d.Language)
-	d.PageCount = strings.TrimSpace(d.PageCount)
-	d.PageFirst = strings.TrimSpace(d.PageFirst)
-	d.PageLast = strings.TrimSpace(d.PageLast)
-	d.PlaceOfPublication = strings.TrimSpace(d.PlaceOfPublication)
-	d.Publication = strings.TrimSpace(d.Publication)
-	d.PublicationAbbreviation = strings.TrimSpace(d.PublicationAbbreviation)
-	d.Publisher = strings.TrimSpace(d.Publisher)
-	d.PubMedID = strings.TrimSpace(d.PubMedID)
-	d.ReportNumber = strings.TrimSpace(d.ReportNumber)
-	d.ResearchField = vacuumStringSlice(d.ResearchField)
-	d.SeriesTitle = strings.TrimSpace(d.SeriesTitle)
-	d.Title = strings.TrimSpace(d.Title)
-	d.URL = strings.TrimSpace(d.URL)
-	d.Volume = strings.TrimSpace(d.Volume)
-	d.WOSID = strings.TrimSpace(d.WOSID)
-	d.Year = strings.TrimSpace(d.Year)
 }

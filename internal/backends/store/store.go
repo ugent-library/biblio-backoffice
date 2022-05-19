@@ -7,6 +7,7 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backend/internal/publications"
 	"github.com/ugent-library/biblio-backend/internal/snapstore"
 )
 
@@ -97,7 +98,8 @@ func (s *Store) UpdatePublication(p *models.Publication) error {
 	}
 	p.DateUpdated = &now
 
-	p.Vacuum()
+	// TODO move outside of store
+	publications.DefaultPipeline.Process(p)
 
 	if err := p.Validate(); err != nil {
 		return err
