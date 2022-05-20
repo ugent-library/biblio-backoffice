@@ -860,6 +860,8 @@ func (c *Publications) userPublications(userID string, args *models.SearchArgs) 
 	}
 	delete(args.Filters, "scope")
 
+	searcher = searcher.IncludeFacets(true)
+
 	return searcher.Search(args)
 }
 

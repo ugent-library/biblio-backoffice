@@ -402,6 +402,8 @@ func (c *Datasets) userDatasets(userID string, args *models.SearchArgs) (*models
 	}
 	delete(args.Filters, "scope")
 
+	searcher = searcher.IncludeFacets(true)
+
 	return searcher.Search(args)
 }
 

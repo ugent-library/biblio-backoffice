@@ -19,7 +19,8 @@ import (
 
 type Datasets struct {
 	Client
-	scopes []M
+	scopes        []M
+	includeFacets bool
 }
 
 func NewDatasets(c Client) *Datasets {
@@ -38,66 +39,68 @@ func (datasets *Datasets) Search(args *models.SearchArgs) (*models.DatasetHits, 
 	// FACETS
 	// 	create global bucket so that not all buckets are influenced by query and filters
 	// 	name "facets" is not important
-	query["aggs"] = M{
-		"facets": M{
-			"global": M{},
-			"aggs":   M{},
-		},
-	}
-
-	// facet filter contains all query and all filters except itself
-	for _, field := range []string{"status", "faculty"} {
-
-		filters := make([]M, 0, len(datasets.scopes)+1)
-
-		// add all internal filters
-		filters = append(filters, queryMust)
-		filters = append(filters, datasets.scopes...)
-
-		// add external filter only if not matching
-		for _, filter := range queryFilters {
-			terms := filter["terms"]
-			if terms == nil {
-				continue
-			}
-			if _, found := terms.(M)[field]; found {
-				continue
-			} else {
-				filters = append(filters, filter)
-			}
+	if datasets.includeFacets {
+		query["aggs"] = M{
+			"facets": M{
+				"global": M{},
+				"aggs":   M{},
+			},
 		}
 
-		if field == "faculty" {
+		// facet filter contains all query and all filters except itself
+		for _, field := range []string{"status", "faculty"} {
 
-			query["aggs"].(M)["facets"].(M)["aggs"].(M)[field] = M{
-				"filter": M{"bool": M{"must": filters}},
-				"aggs": M{
-					"facet": M{
-						"terms": M{
-							"field":   field,
-							"order":   M{"_key": "asc"},
-							"size":    200,
-							"include": "^CA|DS|DI|EB|FW|GE|LA|LW|PS|PP|RE|TW|WE|GUK|UZGent|HOART|HOGENT|HOWEST|IBBT|IMEC|VIB$",
-						},
-					},
-				},
+			filters := make([]M, 0, len(datasets.scopes)+1)
+
+			// add all internal filters
+			filters = append(filters, queryMust)
+			filters = append(filters, datasets.scopes...)
+
+			// add external filter only if not matching
+			for _, filter := range queryFilters {
+				terms := filter["terms"]
+				if terms == nil {
+					continue
+				}
+				if _, found := terms.(M)[field]; found {
+					continue
+				} else {
+					filters = append(filters, filter)
+				}
 			}
 
-		} else {
+			if field == "faculty" {
 
-			query["aggs"].(M)["facets"].(M)["aggs"].(M)[field] = M{
-				"filter": M{"bool": M{"must": filters}},
-				"aggs": M{
-					"facet": M{
-						"terms": M{
-							"field": field,
-							"order": M{"_key": "asc"},
-							"size":  200,
+				query["aggs"].(M)["facets"].(M)["aggs"].(M)[field] = M{
+					"filter": M{"bool": M{"must": filters}},
+					"aggs": M{
+						"facet": M{
+							"terms": M{
+								"field":   field,
+								"order":   M{"_key": "asc"},
+								"size":    200,
+								"include": "^CA|DS|DI|EB|FW|GE|LA|LW|PS|PP|RE|TW|WE|GUK|UZGent|HOART|HOGENT|HOWEST|IBBT|IMEC|VIB$",
+							},
 						},
 					},
-				},
-			}
+				}
 
+			} else {
+
+				query["aggs"].(M)["facets"].(M)["aggs"].(M)[field] = M{
+					"filter": M{"bool": M{"must": filters}},
+					"aggs": M{
+						"facet": M{
+							"terms": M{
+								"field": field,
+								"order": M{"_key": "asc"},
+								"size":  200,
+							},
+						},
+					},
+				}
+
+			}
 		}
 	}
 
@@ -419,11 +422,23 @@ func (datasets *Datasets) IndexMultiple(inCh <-chan *models.Dataset) {
 }
 
 func (datasets *Datasets) WithScope(field string, terms ...string) backends.DatasetSearchService {
-	newScopes := make([]M, 0, len(datasets.scopes)+1)
+	d := datasets.Clone()
+	d.scopes = append(d.scopes, ParseScope(field, terms...))
+	return d
+}
+
+func (datasets *Datasets) IncludeFacets(includeFacets bool) backends.DatasetSearchService {
+	d := datasets.Clone()
+	d.includeFacets = includeFacets
+	return d
+}
+
+func (datasets *Datasets) Clone() *Datasets {
+	newScopes := make([]M, 0, len(datasets.scopes))
 	newScopes = append(newScopes, datasets.scopes...)
-	newScopes = append(newScopes, ParseScope(field, terms...))
 	return &Datasets{
-		Client: datasets.Client,
-		scopes: newScopes,
+		Client:        datasets.Client,
+		scopes:        newScopes,
+		includeFacets: datasets.includeFacets,
 	}
 }
