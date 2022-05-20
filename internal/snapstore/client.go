@@ -154,7 +154,7 @@ func (s *Store) AddAfter(snapshotID, id string, data interface{}, o Options) err
 	snapSql := `select id, date_from, date_until from ` + s.table + `
 	where snapshot_id = $1
 	limit 1`
-	err = db.QueryRow(ctx, snapSql, snapshotID).Scan(&snap.ID, &snap.DateFrom, &snap.DateUntil)
+	err = tx.QueryRow(ctx, snapSql, snapshotID).Scan(&snap.ID, &snap.DateFrom, &snap.DateUntil)
 
 	if err == pgx.ErrNoRows {
 		return fmt.Errorf("unknown snapshot %s", snapshotID)

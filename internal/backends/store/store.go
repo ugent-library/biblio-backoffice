@@ -99,7 +99,7 @@ func (s *Store) UpdatePublication(p *models.Publication) error {
 	p.DateUpdated = &now
 
 	// TODO move outside of store
-	publications.DefaultPipeline.Process(p)
+	p = publications.DefaultPipeline.Process(p)
 
 	if err := p.Validate(); err != nil {
 		return err
