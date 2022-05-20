@@ -10,16 +10,16 @@
                         <div class="text-muted c-body-small">Project ID: {{ .ID }}</div>
                     </div>
                     <div class="list-group-item-meta mt-2">
-                    <div class="list-group-item-meta-left">
+                        <div class="list-group-item-meta-left">
+                        </div>
+                        <div class="list-group-item-meta-right">
+                            <button class="btn btn-primary"
+                                hx-patch="{{pathFor "dataset_projects_add" "id" $.D.Dataset.ID "project_id" .ID}}"
+                                hx-swap="innerHTML"
+                                hx-target=".dataset-projects"
+                            >Add Project</button>
+                        </div>
                     </div>
-                    <div class="list-group-item-meta-right">
-                        <button class="btn btn-primary"
-                            hx-patch="{{pathFor "dataset_projects_add" "id" $.D.Dataset.ID "project_id" .ID}}"
-                            hx-swap="innerHTML"
-                            hx-target=".dataset-projects"
-                        >Add Project</button>
-                    </div>
-                </div>
                 </div>
             </div>
         </div>
