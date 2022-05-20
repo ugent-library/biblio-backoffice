@@ -19,7 +19,8 @@ import (
 
 type Publications struct {
 	Client
-	scopes []M
+	scopes        []M
+	includeFacets bool
 }
 
 func NewPublications(c Client) *Publications {
@@ -38,66 +39,69 @@ func (publications *Publications) Search(args *models.SearchArgs) (*models.Publi
 	// ADD FACETS
 	// 	create global bucket so that not all buckets are influenced by query and filters
 	// 	name "facets" is not important
-	query["aggs"] = M{
-		"facets": M{
-			"global": M{},
-			"aggs":   M{},
-		},
-	}
+	if publications.includeFacets {
 
-	// facet filter contains all query and all filters except itself
-	for _, field := range []string{"status", "type", "completeness_score", "faculty"} {
-
-		filters := make([]M, 0, len(publications.scopes)+1)
-
-		// add all internal filters
-		filters = append(filters, queryMust)
-		filters = append(filters, publications.scopes...)
-
-		// add external filters only if not matching
-		for _, filter := range queryFilters {
-			terms := filter["terms"]
-			if terms == nil {
-				continue
-			}
-			if _, found := terms.(M)[field]; found {
-				continue
-			} else {
-				filters = append(filters, filter)
-			}
+		query["aggs"] = M{
+			"facets": M{
+				"global": M{},
+				"aggs":   M{},
+			},
 		}
 
-		if field == "faculty" {
+		// facet filter contains all query and all filters except itself
+		for _, field := range []string{"status", "type", "completeness_score", "faculty"} {
 
-			query["aggs"].(M)["facets"].(M)["aggs"].(M)[field] = M{
-				"filter": M{"bool": M{"must": filters}},
-				"aggs": M{
-					"facet": M{
-						"terms": M{
-							"field":   field,
-							"order":   M{"_key": "asc"},
-							"size":    200,
-							"include": "^CA|DS|DI|EB|FW|GE|LA|LW|PS|PP|RE|TW|WE|GUK|UZGent|HOART|HOGENT|HOWEST|IBBT|IMEC|VIB$",
-						},
-					},
-				},
+			filters := make([]M, 0, len(publications.scopes)+1)
+
+			// add all internal filters
+			filters = append(filters, queryMust)
+			filters = append(filters, publications.scopes...)
+
+			// add external filters only if not matching
+			for _, filter := range queryFilters {
+				terms := filter["terms"]
+				if terms == nil {
+					continue
+				}
+				if _, found := terms.(M)[field]; found {
+					continue
+				} else {
+					filters = append(filters, filter)
+				}
 			}
 
-		} else {
+			if field == "faculty" {
 
-			query["aggs"].(M)["facets"].(M)["aggs"].(M)[field] = M{
-				"filter": M{"bool": M{"must": filters}},
-				"aggs": M{
-					"facet": M{
-						"terms": M{
-							"field": field,
-							"order": M{"_key": "asc"},
-							"size":  200,
+				query["aggs"].(M)["facets"].(M)["aggs"].(M)[field] = M{
+					"filter": M{"bool": M{"must": filters}},
+					"aggs": M{
+						"facet": M{
+							"terms": M{
+								"field":   field,
+								"order":   M{"_key": "asc"},
+								"size":    200,
+								"include": "^CA|DS|DI|EB|FW|GE|LA|LW|PS|PP|RE|TW|WE|GUK|UZGent|HOART|HOGENT|HOWEST|IBBT|IMEC|VIB$",
+							},
 						},
 					},
-				},
-			}
+				}
 
+			} else {
+
+				query["aggs"].(M)["facets"].(M)["aggs"].(M)[field] = M{
+					"filter": M{"bool": M{"must": filters}},
+					"aggs": M{
+						"facet": M{
+							"terms": M{
+								"field": field,
+								"order": M{"_key": "asc"},
+								"size":  200,
+							},
+						},
+					},
+				}
+
+			}
 		}
 	}
 
@@ -414,11 +418,23 @@ func (publications *Publications) IndexMultiple(inCh <-chan *models.Publication)
 }
 
 func (publications *Publications) WithScope(field string, terms ...string) backends.PublicationSearchService {
-	newScopes := make([]M, 0, len(publications.scopes)+1)
+	p := publications.Clone()
+	p.scopes = append(p.scopes, ParseScope(field, terms...))
+	return p
+}
+
+func (publications *Publications) IncludeFacets(includeFacets bool) backends.PublicationSearchService {
+	p := publications.Clone()
+	p.includeFacets = includeFacets
+	return p
+}
+
+func (publications *Publications) Clone() *Publications {
+	newScopes := make([]M, 0, len(publications.scopes))
 	newScopes = append(newScopes, publications.scopes...)
-	newScopes = append(newScopes, ParseScope(field, terms...))
 	return &Publications{
-		Client: publications.Client,
-		scopes: newScopes,
+		Client:        publications.Client, //no need to clone this?
+		scopes:        newScopes,
+		includeFacets: publications.includeFacets,
 	}
 }
