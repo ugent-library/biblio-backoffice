@@ -71,6 +71,7 @@ type DatasetSearchService interface {
 	Index(*models.Dataset) error
 	IndexMultiple(<-chan *models.Dataset)
 	WithScope(string, ...string) DatasetSearchService
+	IncludeFacets(bool) DatasetSearchService
 	CreateIndex() error
 	DeleteIndex() error
 }
@@ -80,6 +81,7 @@ type PublicationSearchService interface {
 	Index(*models.Publication) error
 	IndexMultiple(<-chan *models.Publication)
 	WithScope(string, ...string) PublicationSearchService
+	IncludeFacets(bool) PublicationSearchService
 	CreateIndex() error
 	DeleteIndex() error
 }

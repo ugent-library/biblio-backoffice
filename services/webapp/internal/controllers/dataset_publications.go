@@ -41,7 +41,10 @@ func (c *DatasetPublications) Choose(w http.ResponseWriter, r *http.Request) {
 	}
 
 	searchArgs := models.NewSearchArgs()
-	searchArgs.Filters["!id"] = datasetPubIDs
+	// empty es exclude filter leads to empty results
+	if len(datasetPubIDs) > 0 {
+		searchArgs.Filters["!id"] = datasetPubIDs
+	}
 
 	hits, err := c.userPublications(context.GetUser(r.Context()).ID, searchArgs)
 	if err != nil {
@@ -82,7 +85,10 @@ func (c *DatasetPublications) ActiveSearch(w http.ResponseWriter, r *http.Reques
 
 	searchArgs := models.NewSearchArgs()
 	searchArgs.Query = r.Form["search"][0]
-	searchArgs.Filters["exclude"] = datasetPubIDs
+	// empty es exclude filter leads to empty results
+	if len(datasetPubIDs) > 0 {
+		searchArgs.Filters["exclude"] = datasetPubIDs
+	}
 
 	hits, err := c.userPublications(context.GetUser(r.Context()).ID, searchArgs)
 	if err != nil {
