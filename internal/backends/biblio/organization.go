@@ -8,13 +8,13 @@ import (
 )
 
 func (c *Client) GetOrganization(id string) (*models.Organization, error) {
-	p := &models.Organization{}
+	org := &models.Organization{}
 	qp := url.Values{}
 	qp.Set("format", "json")
-	if _, err := c.get(fmt.Sprintf("/organization/%s", url.PathEscape(id)), qp, p); err != nil {
+	if _, err := c.get(fmt.Sprintf("/organization/%s", url.PathEscape(id)), qp, org); err != nil {
 		return nil, err
 	}
-	return p, nil
+	return org, nil
 }
 
 func (c *Client) SuggestOrganizations(q string) ([]models.Completion, error) {

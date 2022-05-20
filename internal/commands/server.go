@@ -20,6 +20,7 @@ func init() {
 	serverStartCmd.Flags().String("session-secret", "", "session secret")
 	serverStartCmd.Flags().Int("session-max-age", defaultSessionMaxAge, "session lifetime")
 	serverStartCmd.Flags().String("csrf-name", "", "csrf cookie name")
+	serverStartCmd.Flags().String("csrf-secret", "", "csrf cookie secret")
 
 	webapp.AddCommands(serverCmd, Services())
 	serverCmd.AddCommand(serverStartCmd)

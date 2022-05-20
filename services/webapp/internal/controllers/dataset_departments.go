@@ -86,7 +86,7 @@ func (c *DatasetDepartments) Add(w http.ResponseWriter, r *http.Request) {
 		ID: departmentID,
 	}
 	for _, o := range org.Tree {
-		datasetDepartment.Tree = append(datasetDepartment.Tree, models.DatasetDepartment{ID: o.ID})
+		datasetDepartment.Tree = append(datasetDepartment.Tree, models.DatasetDepartmentRef{ID: o.ID})
 	}
 	dataset.Department = append(dataset.Department, datasetDepartment)
 	savedDataset := dataset.Clone()

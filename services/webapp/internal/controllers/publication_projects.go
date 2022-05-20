@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -23,6 +22,7 @@ func NewPublicationProjects(base Base, store backends.Store,
 	projectSerive backends.ProjectService) *PublicationProjects {
 	return &PublicationProjects{
 		Base:                 base,
+		store:                store,
 		projectSearchService: projectSearchService,
 		projectService:       projectSerive,
 	}
@@ -71,20 +71,19 @@ func (c *PublicationProjects) ActiveSearch(w http.ResponseWriter, r *http.Reques
 
 func (c *PublicationProjects) Add(w http.ResponseWriter, r *http.Request) {
 	projectId := mux.Vars(r)["project_id"]
+
 	pub := context.GetPublication(r.Context())
 
 	project, err := c.projectService.GetProject(projectId)
 	if err != nil {
-		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
-	publicationProject := models.PublicationProject{
+	pub.Project = append(pub.Project, models.PublicationProject{
 		ID:   projectId,
 		Name: project.Title,
-	}
-	pub.Project = append(pub.Project, publicationProject)
+	})
 
 	savedPub := pub.Clone()
 	err = c.store.UpdatePublication(savedPub)

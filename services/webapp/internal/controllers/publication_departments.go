@@ -86,7 +86,7 @@ func (c *PublicationDepartments) Add(w http.ResponseWriter, r *http.Request) {
 		ID: org.ID,
 	}
 	for _, o := range org.Tree {
-		pubDepartment.Tree = append(pubDepartment.Tree, models.PublicationDepartment{ID: o.ID})
+		pubDepartment.Tree = append(pubDepartment.Tree, models.PublicationDepartmentRef{ID: o.ID})
 	}
 	pub.Department = append(pub.Department, pubDepartment)
 	savedPub := pub.Clone()

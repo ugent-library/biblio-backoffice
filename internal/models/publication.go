@@ -55,9 +55,13 @@ type PublicationConference struct {
 	EndDate   string `json:"end_date,omitempty" form:"end_date"`
 }
 
+type PublicationDepartmentRef struct {
+	ID string `json:"_id,omitempty"`
+}
+
 type PublicationDepartment struct {
-	ID   string                  `json:"_id,omitempty"`
-	Tree []PublicationDepartment `json:"tree,omitempty"`
+	ID   string                     `json:"_id,omitempty"`
+	Tree []PublicationDepartmentRef `json:"tree,omitempty"`
 }
 
 type PublicationProject struct {
@@ -164,6 +168,7 @@ func (p *Publication) Clone() *Publication {
 	}
 	clone.Department = nil
 	clone.Department = append(clone.Department, p.Department...)
+	clone.Editor = nil
 	for _, c := range p.Editor {
 		clone.Editor = append(clone.Editor, c.Clone())
 	}

@@ -14,6 +14,7 @@
         hx-target="#{{.D.Role}}-table"
         hx-swap="outerHTML"
         hx-include="#{{.D.Role}}-table [name='position']"
+        hx-disinherit="*"
         {{end}}
     >
         {{range $i, $c := (.D.Dataset.Contributors .D.Role)}}

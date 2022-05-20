@@ -86,7 +86,7 @@ func (c *DatasetProjects) Add(w http.ResponseWriter, r *http.Request) {
 	})
 
 	savedDataset := dataset.Clone()
-	err = c.store.UpdateDataset(dataset)
+	err = c.store.UpdateDataset(savedDataset)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

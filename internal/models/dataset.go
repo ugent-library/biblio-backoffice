@@ -15,9 +15,13 @@ type DatasetHits struct {
 	Facets map[string][]Facet `json:"facets"`
 }
 
+type DatasetDepartmentRef struct {
+	ID string `json:"id,omitempty"`
+}
+
 type DatasetDepartment struct {
-	ID   string              `json:"id,omitempty"`
-	Tree []DatasetDepartment `json:"tree,omitempty"`
+	ID   string                 `json:"id,omitempty"`
+	Tree []DatasetDepartmentRef `json:"tree,omitempty"`
 }
 
 type DatasetProject struct {
