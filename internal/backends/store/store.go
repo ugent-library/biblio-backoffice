@@ -55,7 +55,12 @@ func (s *Store) AddDatasetListener(fn func(*models.Dataset)) {
 
 func (s *Store) Transaction(ctx context.Context, fn func(backends.Store) error) error {
 	return s.client.Transaction(ctx, func(opts snapstore.Options) error {
-		return fn(&Store{client: s.client, opts: opts})
+		return fn(&Store{
+			client:           s.client,
+			publicationStore: s.publicationStore,
+			datasetStore:     s.datasetStore,
+			opts:             opts,
+		})
 	})
 }
 
