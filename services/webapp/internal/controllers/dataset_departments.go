@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -14,14 +15,17 @@ type DatasetDepartments struct {
 	Base
 	store                     backends.Store
 	organizationSearchService backends.OrganizationSearchService
+	organizationService       backends.OrganizationService
 }
 
 func NewDatasetDepartments(base Base, store backends.Store,
-	organizationSearchService backends.OrganizationSearchService) *DatasetDepartments {
+	organizationSearchService backends.OrganizationSearchService,
+	organizationService backends.OrganizationService) *DatasetDepartments {
 	return &DatasetDepartments{
 		Base:                      base,
 		store:                     store,
 		organizationSearchService: organizationSearchService,
+		organizationService:       organizationService,
 	}
 }
 
@@ -67,25 +71,27 @@ func (c *DatasetDepartments) ActiveSearch(w http.ResponseWriter, r *http.Request
 }
 
 func (c *DatasetDepartments) Add(w http.ResponseWriter, r *http.Request) {
-	departmentId := mux.Vars(r)["department_id"]
+	departmentID := mux.Vars(r)["department_id"]
 
 	dataset := context.GetDataset(r.Context())
 
-	// department, err := p.engine.GetDepartment(departmentId)
-	// if err != nil {
-	// 	log.Println(err)
-	// 	http.Error(w, err.Error(), http.StatusNotFound)
-	// 	return
-	// }
+	org, err := c.organizationService.GetOrganization(departmentID)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
 
 	datasetDepartment := models.DatasetDepartment{
-		ID: departmentId,
+		ID: departmentID,
+	}
+	for _, o := range org.Tree {
+		datasetDepartment.Tree = append(datasetDepartment.Tree, models.DatasetDepartment{ID: o.ID})
 	}
 	dataset.Department = append(dataset.Department, datasetDepartment)
 	savedDataset := dataset.Clone()
-	err := c.store.UpdateDataset(dataset)
 
-	if err != nil {
+	if err := c.store.UpdateDataset(dataset); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

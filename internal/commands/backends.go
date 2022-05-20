@@ -65,6 +65,7 @@ func newServices() *backends.Services {
 		Store:                     newStore(),
 		DatasetSearchService:      newDatasetSearchService(),
 		PublicationSearchService:  newPublicationSearchService(),
+		OrganizationService:       biblioClient,
 		PersonService:             biblioClient,
 		ProjectService:            biblioClient,
 		UserService:               biblioClient,

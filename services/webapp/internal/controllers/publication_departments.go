@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -14,14 +15,17 @@ type PublicationDepartments struct {
 	Base
 	store                     backends.Store
 	organizationSearchService backends.OrganizationSearchService
+	organizationService       backends.OrganizationService
 }
 
 func NewPublicationDepartments(base Base, store backends.Store,
-	organizationSearchService backends.OrganizationSearchService) *PublicationDepartments {
+	organizationSearchService backends.OrganizationSearchService,
+	organizationService backends.OrganizationService) *PublicationDepartments {
 	return &PublicationDepartments{
 		Base:                      base,
 		store:                     store,
 		organizationSearchService: organizationSearchService,
+		organizationService:       organizationService,
 	}
 }
 
@@ -67,25 +71,27 @@ func (c *PublicationDepartments) ActiveSearch(w http.ResponseWriter, r *http.Req
 }
 
 func (c *PublicationDepartments) Add(w http.ResponseWriter, r *http.Request) {
-	departmentId := mux.Vars(r)["department_id"]
+	departmentID := mux.Vars(r)["department_id"]
 
 	pub := context.GetPublication(r.Context())
 
-	// department, err := p.engine.GetDepartment(departmentId)
-	// if err != nil {
-	// 	log.Println(err)
-	// 	http.Error(w, err.Error(), http.StatusNotFound)
-	// 	return
-	// }
-
-	publicationDepartment := models.PublicationDepartment{
-		ID: departmentId,
-	}
-	pub.Department = append(pub.Department, publicationDepartment)
-	savedPub := pub.Clone()
-	err := c.store.UpdatePublication(savedPub)
-
+	org, err := c.organizationService.GetOrganization(departmentID)
 	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	pubDepartment := models.PublicationDepartment{
+		ID: org.ID,
+	}
+	for _, o := range org.Tree {
+		pubDepartment.Tree = append(pubDepartment.Tree, models.PublicationDepartment{ID: o.ID})
+	}
+	pub.Department = append(pub.Department, pubDepartment)
+	savedPub := pub.Clone()
+
+	if err := c.store.UpdatePublication(savedPub); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

@@ -56,7 +56,8 @@ type PublicationConference struct {
 }
 
 type PublicationDepartment struct {
-	ID string `json:"_id,omitempty"`
+	ID   string                  `json:"_id,omitempty"`
+	Tree []PublicationDepartment `json:"tree,omitempty"`
 }
 
 type PublicationProject struct {

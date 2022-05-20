@@ -16,7 +16,8 @@ type DatasetHits struct {
 }
 
 type DatasetDepartment struct {
-	ID string `json:"id,omitempty"`
+	ID   string              `json:"id,omitempty"`
+	Tree []DatasetDepartment `json:"tree,omitempty"`
 }
 
 type DatasetProject struct {

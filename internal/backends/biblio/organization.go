@@ -1,10 +1,21 @@
 package biblio
 
 import (
+	"fmt"
 	"net/url"
 
 	"github.com/ugent-library/biblio-backend/internal/models"
 )
+
+func (c *Client) GetOrganization(id string) (*models.Organization, error) {
+	p := &models.Organization{}
+	qp := url.Values{}
+	qp.Set("format", "json")
+	if _, err := c.get(fmt.Sprintf("/organization/%s", url.PathEscape(id)), qp, p); err != nil {
+		return nil, err
+	}
+	return p, nil
+}
 
 func (c *Client) SuggestOrganizations(q string) ([]models.Completion, error) {
 	hits := make([]models.Completion, 0)

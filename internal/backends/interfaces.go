@@ -17,6 +17,7 @@ type Services struct {
 	FileStore                *filestore.Store
 	DatasetSearchService     DatasetSearchService
 	PublicationSearchService PublicationSearchService
+	OrganizationService
 	PersonService
 	ProjectService
 	UserService
@@ -84,6 +85,10 @@ type PublicationSearchService interface {
 	IncludeFacets(bool) PublicationSearchService
 	CreateIndex() error
 	DeleteIndex() error
+}
+
+type OrganizationService interface {
+	GetOrganization(string) (*models.Organization, error)
 }
 
 type PersonService interface {

@@ -177,6 +177,13 @@
                     "properties": {
                         "_id": {
                             "type": "keyword"
+                        },
+                        "tree": {
+                            "properties": {
+                                "_id": {
+                                    "type": "keyword"
+                                }
+                            }
                         }
                     }
                 },
