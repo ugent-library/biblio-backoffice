@@ -46,9 +46,13 @@ func segmentedPath(str string, size int) string {
 	return path.Join(segments...)
 }
 
-func (s *Store) FilePath(checksum string) string {
+func (s *Store) RelativeFilePath(checksum string) string {
 	fnv32 := fmt.Sprintf("%d", fnvHash(checksum))
-	return path.Join(s.rootPath, segmentedPath(fnv32, 3), checksum)
+	return path.Join(segmentedPath(fnv32, 3), checksum)
+}
+
+func (s *Store) FilePath(checksum string) string {
+	return path.Join(s.rootPath, s.RelativeFilePath(checksum))
 }
 
 func (s *Store) Add(r io.Reader) (string, error) {

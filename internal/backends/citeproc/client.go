@@ -20,8 +20,8 @@ type Client struct {
 	http  *http.Client
 }
 
-func New(style string) *Client {
-	u, _ := url.Parse("http://localhost:8085")
+func New(baseURL, style string) *Client {
+	u, _ := url.Parse(baseURL)
 	q := u.Query()
 	q.Set("style", style)
 	u.RawQuery = q.Encode()

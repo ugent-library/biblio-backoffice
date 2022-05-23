@@ -12,9 +12,12 @@ import (
 	"sync"
 	"time"
 
+	"github.com/cshum/imagor/imagorpath"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
+	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/backends"
+	"github.com/ugent-library/biblio-backend/internal/backends/filestore"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/tasks"
 	"github.com/ugent-library/biblio-backend/internal/validation"
@@ -37,6 +40,7 @@ type PublicationAddSingleVars struct {
 type Publications struct {
 	Base
 	store                    backends.Store
+	fileStore                *filestore.Store
 	publicationSearchService backends.PublicationSearchService
 	publicationDecoders      map[string]backends.PublicationDecoderFactory
 	publicationSources       map[string]backends.PublicationGetter
@@ -44,7 +48,7 @@ type Publications struct {
 	orcidSandbox             bool
 }
 
-func NewPublications(base Base, store backends.Store,
+func NewPublications(base Base, store backends.Store, fileStore *filestore.Store,
 	publicationSearchService backends.PublicationSearchService,
 	publicationDecoders map[string]backends.PublicationDecoderFactory,
 	publicationSources map[string]backends.PublicationGetter,
@@ -53,6 +57,7 @@ func NewPublications(base Base, store backends.Store,
 	return &Publications{
 		Base:                     base,
 		store:                    store,
+		fileStore:                fileStore,
 		publicationSearchService: publicationSearchService,
 		publicationDecoders:      publicationDecoders,
 		publicationSources:       publicationSources,
@@ -77,6 +82,10 @@ func (c *Publications) List(w http.ResponseWriter, r *http.Request) {
 	}
 
 	searchURL, _ := c.Router.Get("publications").URLPath()
+
+	for _, p := range hits.Hits {
+		c.addThumbnailURLs(p)
+	}
 
 	c.Render.HTML(w, http.StatusOK, "publication/list", c.ViewData(r, struct {
 		PageTitle  string
@@ -109,6 +118,8 @@ func (c *Publications) Show(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	c.addThumbnailURLs(pub)
+
 	c.Render.HTML(w, http.StatusOK, "publication/show", c.ViewData(r, struct {
 		PageTitle           string
 		Publication         *models.Publication
@@ -127,17 +138,6 @@ func (c *Publications) Show(w http.ResponseWriter, r *http.Request) {
 		nil,
 	}),
 	)
-}
-
-func (c *Publications) Thumbnail(w http.ResponseWriter, r *http.Request) {
-	pub := context.GetPublication(r.Context())
-
-	if pub.ThumbnailURL() == "" {
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-		return
-	}
-
-	// TODO implement
 }
 
 func (c *Publications) Summary(w http.ResponseWriter, r *http.Request) {
@@ -1153,4 +1153,22 @@ func publicationToORCID(p *models.Publication) *orcid.Work {
 	}
 
 	return w
+}
+
+// TODO clean this up
+func (c *Publications) addThumbnailURLs(p *models.Publication) {
+	var u string
+	for _, f := range p.File {
+		if f.ContentType == "application/pdf" && f.FileSize <= 25000000 {
+			params := imagorpath.Params{
+				Image:  c.fileStore.RelativeFilePath(f.SHA256),
+				FitIn:  true,
+				Width:  156,
+				Height: 156,
+			}
+			p := imagorpath.Generate(params, viper.GetString("imagor-secret"))
+			u = viper.GetString("imagor-url") + "/" + p
+			f.ThumbnailURL = u
+		}
+	}
 }

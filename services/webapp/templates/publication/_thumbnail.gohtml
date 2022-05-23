@@ -1,6 +1,6 @@
 {{ with .D.ShowPublicationUrl }}<a href="{{ . }}">{{end}}
 {{if .D.Publication.ThumbnailURL}}
-<img class="list-group-item-thumbnail" src="{{pathFor "publication_thumbnail" "id" .D.Publication.ID}}" height="156">
+<img class="list-group-item-thumbnail" src="{{.D.Publication.ThumbnailURL}}" height="156">
 {{else}}
 <div class="list-group-item-thumbnail">
     <div class="c-thumbnail c-thumbnail--publication c-thumbnail--medium">

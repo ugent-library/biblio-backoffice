@@ -6,7 +6,7 @@
             <div class="d-flex align-items-center w-100">
                 <div class="position-relative">
                     {{if .ThumbnailURL}}
-                    <img class="list-group-item-thumbnail" src="{{pathFor "publication_file_thumbnail" "id" $.D.Publication.ID "file_id" .ID}}" height="156">
+                    <img class="list-group-item-thumbnail" src="{{.ThumbnailURL}}" height="156">
                     {{else}}
                     <div class="list-group-item-thumbnail">
                         <div class="c-thumbnail c-thumbnail--publication c-thumbnail--medium">
@@ -19,7 +19,7 @@
                     <div class="list-group-item-subline">
                         <div class="list-group-item-subline-left">
                             <span class="pr-5">
-                                {{$.T "publication_file_relations" .Relation}}
+                                {{with .Relation}}{{$.T "publication_file_relations" .}}{{end}}
                                 {{with .PublicationVersion}}<span class="ml-3 pl-3 border-left">{{$.T "publication_versions" .}}</span>{{end}}
                             </span>
                             <div class="dropdown">

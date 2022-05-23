@@ -58,6 +58,8 @@ func newServices() *backends.Services {
 	}
 	orcidClient := orcid.NewMemberClient(orcidConfig)
 
+	citeprocURL := viper.GetString("citeproc-url")
+
 	return &backends.Services{
 		FileStore:                 fs,
 		ORCIDSandbox:              orcidConfig.Sandbox,
@@ -83,12 +85,12 @@ func newServices() *backends.Services {
 			"arxiv":    arxiv.New(),
 		},
 		PublicationEncoders: map[string]backends.PublicationEncoder{
-			"cite-mla":                 citeproc.New("mla").EncodePublication,
-			"cite-apa":                 citeproc.New("apa").EncodePublication,
-			"cite-chicago-author-date": citeproc.New("chicago-author-date").EncodePublication,
-			"cite-fwo":                 citeproc.New("fwo").EncodePublication,
-			"cite-vancouver":           citeproc.New("vancouver").EncodePublication,
-			"cite-ieee":                citeproc.New("ieee").EncodePublication,
+			"cite-mla":                 citeproc.New(citeprocURL, "mla").EncodePublication,
+			"cite-apa":                 citeproc.New(citeprocURL, "apa").EncodePublication,
+			"cite-chicago-author-date": citeproc.New(citeprocURL, "chicago-author-date").EncodePublication,
+			"cite-fwo":                 citeproc.New(citeprocURL, "fwo").EncodePublication,
+			"cite-vancouver":           citeproc.New(citeprocURL, "vancouver").EncodePublication,
+			"cite-ieee":                citeproc.New(citeprocURL, "ieee").EncodePublication,
 		},
 		PublicationDecoders: map[string]backends.PublicationDecoderFactory{
 			"jsonl":  jsonl.NewDecoder,

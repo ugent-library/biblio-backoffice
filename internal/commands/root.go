@@ -71,6 +71,11 @@ func init() {
 	rootCmd.PersistentFlags().String("oidc-url", "", "openid connect url")
 	rootCmd.PersistentFlags().String("oidc-client-id", "", "openid connect client id")
 	rootCmd.PersistentFlags().String("oidc-client-secret", "", "openid connect client secret")
+
+	rootCmd.PersistentFlags().String("citeproc-url", "", "citeproc url")
+
+	rootCmd.PersistentFlags().String("imagor-url", "", "imagor url")
+	rootCmd.PersistentFlags().String("imagor-secret", "", "imagor secret")
 }
 
 func Execute() {

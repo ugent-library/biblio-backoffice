@@ -9,8 +9,10 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/cshum/imagor/imagorpath"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
+	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/backends/filestore"
 	"github.com/ugent-library/biblio-backend/internal/models"
@@ -47,27 +49,6 @@ func (c *PublicationFiles) Download(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename*=UTF-8''%s", url.PathEscape(file.Filename)))
 	http.ServeFile(w, r, c.fileStore.FilePath(file.SHA256))
-}
-
-func (c *PublicationFiles) Thumbnail(w http.ResponseWriter, r *http.Request) {
-	fileID := mux.Vars(r)["file_id"]
-
-	pub := context.GetPublication(r.Context())
-
-	var thumbnailURL string
-	for _, file := range pub.File {
-		if file.ID == fileID {
-			thumbnailURL = file.ThumbnailURL
-			break
-		}
-	}
-
-	if thumbnailURL == "" {
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-		return
-	}
-
-	// TODO implement
 }
 
 func (c *PublicationFiles) Upload(w http.ResponseWriter, r *http.Request) {
@@ -138,6 +119,8 @@ func (c *PublicationFiles) Upload(w http.ResponseWriter, r *http.Request) {
 	err = c.store.UpdatePublication(savedPub)
 
 	if err != nil {
+		c.addThumbnailURLs(pub)
+
 		flash := views.Flash{Type: "error", Message: "There was a problem adding your file"}
 		c.Render.HTML(w, http.StatusCreated, "publication/files/_list",
 			c.ViewData(r, struct {
@@ -152,6 +135,7 @@ func (c *PublicationFiles) Upload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	c.addThumbnailURLs(savedPub)
 	c.Render.HTML(w, http.StatusCreated, "publication/files/_upload_edit",
 		c.ViewData(r, struct {
 			Publication *models.Publication
@@ -352,6 +336,7 @@ func (c *PublicationFiles) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	c.addThumbnailURLs(pub)
 	c.Render.HTML(w, http.StatusOK, "publication/files/_update", c.ViewData(r, struct {
 		Publication *models.Publication
 	}{
@@ -395,6 +380,8 @@ func (c *PublicationFiles) Remove(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	c.addThumbnailURLs(pub)
+
 	c.Render.HTML(w, http.StatusCreated, "publication/files/_list", c.ViewData(r, struct {
 		Publication *models.Publication
 	}{
@@ -402,4 +389,22 @@ func (c *PublicationFiles) Remove(w http.ResponseWriter, r *http.Request) {
 	}),
 		render.HTMLOptions{Layout: "layouts/htmx"},
 	)
+}
+
+// TODO clean this up
+func (c *PublicationFiles) addThumbnailURLs(p *models.Publication) {
+	var u string
+	for _, f := range p.File {
+		if f.ContentType == "application/pdf" && f.FileSize <= 25000000 {
+			params := imagorpath.Params{
+				Image:  c.fileStore.RelativeFilePath(f.SHA256),
+				FitIn:  true,
+				Width:  156,
+				Height: 156,
+			}
+			p := imagorpath.Generate(params, viper.GetString("imagor-secret"))
+			u = viper.GetString("imagor-url") + "/" + p
+			f.ThumbnailURL = u
+		}
+	}
 }

@@ -35,6 +35,7 @@ func Register(services *backends.Services, base controllers.Base, oidcClient *oi
 	publicationsController := controllers.NewPublications(
 		base,
 		services.Store,
+		services.FileStore,
 		services.PublicationSearchService,
 		services.PublicationDecoders,
 		services.PublicationSources,
@@ -178,9 +179,6 @@ func Register(services *backends.Services, base controllers.Base, oidcClient *oi
 	pubDeleteRouter.HandleFunc("/delete", publicationsController.Delete).
 		Methods("POST").
 		Name("publication_delete")
-	pubRouter.HandleFunc("/thumbnail", publicationsController.Thumbnail).
-		Methods("GET").
-		Name("publication_thumbnail")
 	pubRouter.HandleFunc("/orcid", publicationsController.ORCIDAdd).
 		Methods("POST").
 		Name("publication_orcid_add")
@@ -206,9 +204,6 @@ func Register(services *backends.Services, base controllers.Base, oidcClient *oi
 	pubRouter.HandleFunc("/file/{file_id}", publicationFilesController.Download).
 		Methods("GET").
 		Name("publication_file")
-	pubRouter.HandleFunc("/file/{file_id}/thumbnail", publicationFilesController.Thumbnail).
-		Methods("GET").
-		Name("publication_file_thumbnail")
 	pubEditRouter.HandleFunc("/htmx/file", publicationFilesController.Upload).
 		Methods("POST").
 		Name("upload_publication_file")
