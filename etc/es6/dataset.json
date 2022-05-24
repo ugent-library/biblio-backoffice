@@ -173,15 +173,17 @@
                 "date_updated": {
                     "type": "date"
                 },
+                "faculty": { "type": "keyword" },
                 "department": {
                     "properties": {
-                        "_id": {
+                        "id": {
                             "type": "keyword"
                         },
                         "tree": {
                             "properties": {
-                                "_id": {
-                                    "type": "keyword"
+                                "id": {
+                                    "type": "keyword",
+                                    "copy_to": ["faculty"]
                                 }
                             }
                         }
