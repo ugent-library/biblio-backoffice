@@ -76,10 +76,18 @@ func (datasets *Datasets) Search(args *models.SearchArgs) (*models.DatasetHits, 
 					"aggs": M{
 						"facet": M{
 							"terms": M{
-								"field":   field,
-								"order":   M{"_key": "asc"},
-								"size":    200,
-								"include": "^CA|DS|DI|EB|FW|GE|LA|LW|PS|PP|RE|TW|WE|GUK|UZGent|HOART|HOGENT|HOWEST|IBBT|IMEC|VIB$",
+								"field": field,
+								"order": M{"_key": "asc"},
+								"size":  200,
+								//weird, regex not working with carets..
+								//"include": "^CA|DS|DI|EB|FW|GE|LA|LW|PS|PP|RE|TW|WE|GUK|UZGent|HOART|HOGENT|HOWEST|IBBT|IMEC|VIB$",
+								"include": []string{
+									"CA", "DS", "DI", "EB", "FW",
+									"GE", "LA", "LW", "PS", "PP",
+									"RE", "TW", "WE", "GUK", "UZGent",
+									"HOART", "HOGENT", "HOWEST",
+									"IBBT", "IMEC", "VIB",
+								},
 							},
 						},
 					},
@@ -133,7 +141,6 @@ func (datasets *Datasets) Search(args *models.SearchArgs) (*models.DatasetHits, 
 	if err := json.NewEncoder(&buf).Encode(query); err != nil {
 		return nil, err
 	}
-
 	opts = append(opts, datasets.Client.es.Search.WithBody(&buf))
 
 	res, err := datasets.Client.es.Search(opts...)
@@ -281,7 +288,7 @@ func decodeDatasetRes(res *esapi.Response) (*models.DatasetHits, error) {
 	hits.Total = r.Hits.Total
 
 	hits.Facets = make(map[string][]models.Facet)
-	for _, facet := range []string{"status"} {
+	for _, facet := range []string{"status", "faculty"} {
 		if _, found := r.Aggregations.Facets[facet]; !found {
 			continue
 		}
