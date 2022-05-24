@@ -9,6 +9,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/publications"
 	"github.com/ugent-library/biblio-backend/internal/snapstore"
+	"github.com/ugent-library/biblio-backend/internal/ulid"
 )
 
 type Store struct {
@@ -24,7 +25,9 @@ func New(dsn string) (*Store, error) {
 		return nil, err
 	}
 
-	client := snapstore.New(db, []string{"publications", "datasets"})
+	client := snapstore.New(db, []string{"publications", "datasets"},
+		snapstore.WithIDGenerator(ulid.Generate),
+	)
 
 	return &Store{
 		client:           client,

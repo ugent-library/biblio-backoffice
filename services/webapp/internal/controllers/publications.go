@@ -13,13 +13,13 @@ import (
 	"time"
 
 	"github.com/cshum/imagor/imagorpath"
-	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/backends/filestore"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/tasks"
+	"github.com/ugent-library/biblio-backend/internal/ulid"
 	"github.com/ugent-library/biblio-backend/internal/validation"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/views"
@@ -271,7 +271,7 @@ func (c *Publications) AddSingleImport(w http.ResponseWriter, r *http.Request) {
 		}
 
 		p := &models.Publication{
-			ID:             uuid.NewString(),
+			ID:             ulid.MustGenerate(),
 			Type:           pubType,
 			Status:         "private",
 			Classification: "U",
@@ -867,7 +867,7 @@ func (c *Publications) userPublications(userID string, args *models.SearchArgs) 
 
 // TODO should be async task
 func (c *Publications) importUserPublications(userID, source string, file io.Reader) (string, error) {
-	batchID := uuid.New().String()
+	batchID := ulid.MustGenerate()
 	decFactory, ok := c.publicationDecoders[source]
 	if !ok {
 		return "", errors.New("unknown publication source")
@@ -889,7 +889,7 @@ func (c *Publications) importUserPublications(userID, source string, file io.Rea
 	var importErr error
 	for {
 		p := models.Publication{
-			ID:             uuid.NewString(),
+			ID:             ulid.MustGenerate(),
 			BatchID:        batchID,
 			Status:         "private",
 			Classification: "U",
@@ -934,7 +934,7 @@ func (c *Publications) importUserPublicationByIdentifier(userID, source, identif
 		return nil, err
 	}
 
-	p.ID = uuid.NewString()
+	p.ID = ulid.MustGenerate()
 	p.CreatorID = userID
 	p.UserID = userID
 	p.Status = "private"
@@ -967,7 +967,7 @@ func (c *Publications) batchPublishPublications(userID string, args *models.Sear
 }
 
 func (c *Publications) addPublicationsToORCID(user *models.User, s *models.SearchArgs) (string, error) {
-	taskID := "orcid:" + uuid.NewString()
+	taskID := "orcid:" + ulid.MustGenerate()
 
 	c.tasksHub.Add(taskID, func(t tasks.Task) error {
 		return c.sendPublicationsToORCIDTask(t, user.ID, user.ORCID, user.ORCIDToken, s)

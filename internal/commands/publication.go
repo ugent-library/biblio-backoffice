@@ -8,9 +8,9 @@ import (
 	"os"
 	"sync"
 
-	"github.com/google/uuid"
 	"github.com/spf13/cobra"
 	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backend/internal/ulid"
 )
 
 func init() {
@@ -105,7 +105,7 @@ var publicationAddCmd = &cobra.Command{
 		for {
 			lineNo += 1
 			p := models.Publication{
-				ID:             uuid.New().String(),
+				ID:             ulid.MustGenerate(),
 				Status:         "private",
 				Classification: "U",
 			}

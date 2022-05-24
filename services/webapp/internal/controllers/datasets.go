@@ -7,9 +7,9 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backend/internal/ulid"
 	"github.com/ugent-library/biblio-backend/internal/validation"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/views"
@@ -416,7 +416,7 @@ func (c *Datasets) importUserDatasetByIdentifier(userID, source, identifier stri
 	if err != nil {
 		return nil, err
 	}
-	d.ID = uuid.NewString()
+	d.ID = ulid.MustGenerate()
 	d.CreatorID = userID
 	d.UserID = userID
 	d.Status = "private"

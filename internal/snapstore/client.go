@@ -42,8 +42,9 @@ type DB interface {
 }
 
 type Client struct {
-	db     *pgxpool.Pool
-	stores map[string]*Store
+	db         *pgxpool.Pool
+	stores     map[string]*Store
+	generateID func() (string, error)
 }
 
 type Store struct {
@@ -52,6 +53,7 @@ type Store struct {
 	table        string
 	listeners    []func(*Snapshot)
 	listnenersMu sync.RWMutex
+	generateID   func() (string, error)
 }
 
 type Transaction struct {
@@ -63,19 +65,34 @@ type Options struct {
 	Transaction *Transaction
 }
 
-func New(db *pgxpool.Pool, stores []string) *Client {
+func WithIDGenerator(fn func() (string, error)) func(*Client) {
+	return func(c *Client) {
+		c.generateID = fn
+	}
+}
+
+func New(db *pgxpool.Pool, stores []string, opts ...func(*Client)) *Client {
 	c := &Client{db: db, stores: make(map[string]*Store)}
+	for _, opt := range opts {
+		opt(c)
+	}
 	for _, name := range stores {
 		c.stores[name] = c.newStore(name)
 	}
+
+	if c.generateID == nil {
+		c.generateID = generateUUID
+	}
+
 	return c
 }
 
 func (c *Client) newStore(name string) *Store {
 	return &Store{
-		db:    c.db,
-		name:  name,
-		table: pgx.Identifier.Sanitize([]string{name}),
+		db:         c.db,
+		generateID: c.generateID,
+		name:       name,
+		table:      pgx.Identifier.Sanitize([]string{name}),
 	}
 }
 
@@ -179,7 +196,10 @@ func (s *Store) AddAfter(snapshotID, id string, data interface{}, o Options) err
 		return err
 	}
 
-	newSnapshotID := uuid.NewString()
+	newSnapshotID, err := s.generateID()
+	if err != nil {
+		return err
+	}
 
 	sqlInsert := `insert into ` + s.table + `(snapshot_id, id, data, date_from) values ($1, $2, $3, $4)`
 
@@ -242,7 +262,10 @@ func (s *Store) Add(id string, data interface{}, o Options) error {
 
 	sqlInsert := `insert into ` + s.table + `(snapshot_id, id, data, date_from) values ($1, $2, $3, $4)`
 
-	newSnapshotID := uuid.NewString()
+	newSnapshotID, err := s.generateID()
+	if err != nil {
+		return err
+	}
 
 	if _, err = tx.Exec(ctx, sqlInsert, newSnapshotID, id, d, now); err != nil {
 		return err
@@ -370,4 +393,8 @@ func (c *Cursor) Err() error {
 		return c.err
 	}
 	return c.rows.Err()
+}
+
+func generateUUID() (string, error) {
+	return uuid.NewString(), nil
 }

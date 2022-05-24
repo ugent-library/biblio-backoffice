@@ -10,12 +10,12 @@ import (
 	"time"
 
 	"github.com/cshum/imagor/imagorpath"
-	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/backends/filestore"
 	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backend/internal/ulid"
 	"github.com/ugent-library/biblio-backend/internal/validation"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/views"
@@ -106,7 +106,7 @@ func (c *PublicationFiles) Upload(w http.ResponseWriter, r *http.Request) {
 	savedPub := pub.Clone()
 	now := time.Now()
 	pubFile := &models.PublicationFile{
-		ID:          uuid.New().String(),
+		ID:          ulid.MustGenerate(),
 		AccessLevel: "local",
 		Filename:    handler.Filename,
 		FileSize:    int(handler.Size),
