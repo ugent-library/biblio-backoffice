@@ -303,20 +303,20 @@ func (s *Store) GetCurrentSnapshot(id string, o Options) (*Snapshot, error) {
 	}
 
 	sql := `
-	select snapshot_id, data from ` + s.table + `
+	select snapshot_id, data, date_from from ` + s.table + `
 	where date_until is null and id = $1
 	limit 1`
 
 	snap := Snapshot{}
 
-	if err := db.QueryRow(ctx, sql, id).Scan(&snap.SnapshotID, &snap.Data); err != nil {
+	if err := db.QueryRow(ctx, sql, id).Scan(&snap.SnapshotID, &snap.Data, &snap.DateFrom); err != nil {
 		return nil, err
 	}
 
 	return &snap, nil
 }
 
-func (s *Store) GetByID(ids []string, o Options) *Cursor {
+func (s *Store) GetByID(ids []string, o Options) (*Cursor, error) {
 	var (
 		ctx context.Context
 		db  DB
@@ -334,14 +334,17 @@ func (s *Store) GetByID(ids []string, o Options) *Cursor {
 
 	pgIds := &pgtype.TextArray{}
 	pgIds.Set(ids)
-	sql := "select data from " + s.table + " where date_until is null and id = any($1)"
+	sql := "select snapshot_id, id, data, date_from, date_until from " + s.table +
+		" where date_until is null and id = any($1)"
 
-	c := &Cursor{}
-	c.rows, c.err = db.Query(ctx, sql, pgIds)
-	return c
+	rows, err := db.Query(ctx, sql, pgIds)
+	if err != nil {
+		return nil, err
+	}
+	return &Cursor{rows}, nil
 }
 
-func (s *Store) GetAll(o Options) *Cursor {
+func (s *Store) GetAll(o Options) (*Cursor, error) {
 	var (
 		ctx context.Context
 		db  DB
@@ -357,31 +360,28 @@ func (s *Store) GetAll(o Options) *Cursor {
 		db = o.Transaction.db
 	}
 
-	sql := "select data from " + s.table + " where date_until is null"
+	sql := "select snapshot_id, id, data, date_from, date_until from " + s.table +
+		" where date_until is null"
 
-	c := &Cursor{}
-	c.rows, c.err = db.Query(ctx, sql)
-	return c
+	rows, err := db.Query(ctx, sql)
+	if err != nil {
+		return nil, err
+	}
+	return &Cursor{rows}, nil
 }
 
 type Cursor struct {
-	err  error
 	rows pgx.Rows
 }
 
-func (c *Cursor) Next() bool {
-	return c.err == nil && c.rows.Next()
+func (c *Cursor) HasNext() bool {
+	return c.rows.Next()
 }
 
-func (c *Cursor) Scan(data interface{}) error {
-	if c.err != nil {
-		return c.err
-	}
-	var d json.RawMessage
-	if c.err = c.rows.Scan(&d); c.err == nil {
-		c.err = json.Unmarshal(d, data)
-	}
-	return c.err
+func (c *Cursor) Next() (*Snapshot, error) {
+	s := Snapshot{}
+	err := c.rows.Scan(&s.SnapshotID, &s.ID, &s.Data, &s.DateFrom, &s.DateUntil)
+	return &s, err
 }
 
 func (c *Cursor) Close() {
@@ -389,9 +389,6 @@ func (c *Cursor) Close() {
 }
 
 func (c *Cursor) Err() error {
-	if c.err != nil {
-		return c.err
-	}
 	return c.rows.Err()
 }
 

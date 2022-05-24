@@ -81,16 +81,22 @@ func (s *Store) GetPublication(id string) (*models.Publication, error) {
 }
 
 func (s *Store) GetPublications(ids []string) ([]*models.Publication, error) {
-	c := s.publicationStore.GetByID(ids, s.opts)
+	c, err := s.publicationStore.GetByID(ids, s.opts)
+	if err != nil {
+		return nil, err
+	}
 	defer c.Close()
 	var publications []*models.Publication
-	for c.Next() {
-		d := &models.Publication{}
-		if err := c.Scan(d); err == nil {
-			publications = append(publications, d)
-		} else {
+	for c.HasNext() {
+		snap, err := c.Next()
+		if err != nil {
 			return nil, err
 		}
+		p := &models.Publication{}
+		if err := snap.Scan(p); err != nil {
+			return nil, err
+		}
+		publications = append(publications, p)
 	}
 	if c.Err() != nil {
 		return nil, c.Err()
@@ -129,16 +135,22 @@ func (s *Store) UpdatePublication(p *models.Publication) error {
 }
 
 func (s *Store) EachPublication(fn func(*models.Publication) bool) error {
-	c := s.publicationStore.GetAll(s.opts)
+	c, err := s.publicationStore.GetAll(s.opts)
+	if err != nil {
+		return err
+	}
 	defer c.Close()
-	for c.Next() {
-		p := &models.Publication{}
-		if err := c.Scan(p); err == nil {
-			if ok := fn(p); !ok {
-				break
-			}
-		} else {
+	for c.HasNext() {
+		snap, err := c.Next()
+		if err != nil {
 			return err
+		}
+		p := &models.Publication{}
+		if err := snap.Scan(p); err != nil {
+			return err
+		}
+		if ok := fn(p); !ok {
+			break
 		}
 	}
 	return c.Err()
@@ -158,16 +170,22 @@ func (s *Store) GetDataset(id string) (*models.Dataset, error) {
 }
 
 func (s *Store) GetDatasets(ids []string) ([]*models.Dataset, error) {
-	c := s.datasetStore.GetByID(ids, s.opts)
+	c, err := s.datasetStore.GetByID(ids, s.opts)
+	if err != nil {
+		return nil, err
+	}
 	defer c.Close()
 	var datasets []*models.Dataset
-	for c.Next() {
-		d := &models.Dataset{}
-		if err := c.Scan(d); err == nil {
-			datasets = append(datasets, d)
-		} else {
+	for c.HasNext() {
+		snap, err := c.Next()
+		if err != nil {
 			return nil, err
 		}
+		d := &models.Dataset{}
+		if err := snap.Scan(d); err != nil {
+			return nil, err
+		}
+		datasets = append(datasets, d)
 	}
 	if c.Err() != nil {
 		return nil, c.Err()
@@ -205,16 +223,22 @@ func (s *Store) UpdateDataset(d *models.Dataset) error {
 }
 
 func (s *Store) EachDataset(fn func(*models.Dataset) bool) error {
-	c := s.datasetStore.GetAll(s.opts)
+	c, err := s.datasetStore.GetAll(s.opts)
+	if err != nil {
+		return err
+	}
 	defer c.Close()
-	for c.Next() {
-		d := &models.Dataset{}
-		if err := c.Scan(d); err == nil {
-			if ok := fn(d); !ok {
-				break
-			}
-		} else {
+	for c.HasNext() {
+		snap, err := c.Next()
+		if err != nil {
 			return err
+		}
+		d := &models.Dataset{}
+		if err := snap.Scan(d); err != nil {
+			return err
+		}
+		if ok := fn(d); !ok {
+			break
 		}
 	}
 	return c.Err()
