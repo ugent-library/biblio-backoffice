@@ -664,6 +664,7 @@ func (c *Publications) Publish(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
 	savedPub := pub.Clone()
+	savedPub.Status = "public"
 	err := c.store.UpdatePublication(savedPub)
 
 	flashes := make([]views.Flash, 0)
