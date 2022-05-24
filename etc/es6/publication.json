@@ -173,6 +173,7 @@
                 "date_updated": {
                     "type": "date"
                 },
+                "faculty": { "type": "keyword" },
                 "department": {
                     "properties": {
                         "_id": {
@@ -181,7 +182,8 @@
                         "tree": {
                             "properties": {
                                 "_id": {
-                                    "type": "keyword"
+                                    "type": "keyword",
+                                    "copy_to": ["faculty"]
                                 }
                             }
                         }

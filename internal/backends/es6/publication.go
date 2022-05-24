@@ -77,10 +77,18 @@ func (publications *Publications) Search(args *models.SearchArgs) (*models.Publi
 					"aggs": M{
 						"facet": M{
 							"terms": M{
-								"field":   field,
-								"order":   M{"_key": "asc"},
-								"size":    200,
-								"include": "^CA|DS|DI|EB|FW|GE|LA|LW|PS|PP|RE|TW|WE|GUK|UZGent|HOART|HOGENT|HOWEST|IBBT|IMEC|VIB$",
+								"field": field,
+								"order": M{"_key": "asc"},
+								"size":  200,
+								//weird, regex not working with carets..
+								//"include": "^CA|DS|DI|EB|FW|GE|LA|LW|PS|PP|RE|TW|WE|GUK|UZGent|HOART|HOGENT|HOWEST|IBBT|IMEC|VIB$",
+								"include": []string{
+									"CA", "DS", "DI", "EB", "FW",
+									"GE", "LA", "LW", "PS", "PP",
+									"RE", "TW", "WE", "GUK", "UZGent",
+									"HOART", "HOGENT", "HOWEST",
+									"IBBT", "IMEC", "VIB",
+								},
 							},
 						},
 					},
@@ -276,7 +284,7 @@ func decodePublicationRes(res *esapi.Response) (*models.PublicationHits, error) 
 	hits.Total = r.Hits.Total
 
 	hits.Facets = make(map[string][]models.Facet)
-	for _, facet := range []string{"status", "type", "completeness_score"} {
+	for _, facet := range []string{"status", "type", "completeness_score", "faculty"} {
 
 		if _, found := r.Aggregations.Facets[facet]; !found {
 			continue
