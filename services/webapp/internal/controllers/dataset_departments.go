@@ -3,6 +3,7 @@ package controllers
 import (
 	"log"
 	"net/http"
+	"net/url"
 
 	"github.com/gorilla/mux"
 	"github.com/ugent-library/biblio-backend/internal/backends"
@@ -73,6 +74,9 @@ func (c *DatasetDepartments) ActiveSearch(w http.ResponseWriter, r *http.Request
 func (c *DatasetDepartments) Add(w http.ResponseWriter, r *http.Request) {
 	departmentID := mux.Vars(r)["department_id"]
 
+	// because mux var {department_id} is not properly decoded
+	// i.e. LW06%2A remains LW06%2A instead of LW06*
+	departmentID, _ = url.PathUnescape(departmentID)
 	dataset := context.GetDataset(r.Context())
 
 	org, err := c.organizationService.GetOrganization(departmentID)
@@ -108,6 +112,9 @@ func (c *DatasetDepartments) Add(w http.ResponseWriter, r *http.Request) {
 func (c *DatasetDepartments) ConfirmRemove(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	departmentId := mux.Vars(r)["department_id"]
+	// because mux var {department_id} is not properly decoded
+	// i.e. LW06%2A remains LW06%2A instead of LW06*
+	departmentId, _ = url.PathUnescape(departmentId)
 
 	c.Render.HTML(w, http.StatusOK, "dataset/departments/_modal_confirm_removal", c.ViewData(r, struct {
 		ID           string
@@ -122,20 +129,24 @@ func (c *DatasetDepartments) ConfirmRemove(w http.ResponseWriter, r *http.Reques
 
 func (c *DatasetDepartments) Remove(w http.ResponseWriter, r *http.Request) {
 	departmentId := mux.Vars(r)["department_id"]
+	// because mux var {department_id} is not properly decoded
+	// i.e. LW06%2A remains LW06%2A instead of LW06*
+	departmentId, _ = url.PathUnescape(departmentId)
 
 	dataset := context.GetDataset(r.Context())
 
 	departments := make([]models.DatasetDepartment, len(dataset.Department))
 	copy(departments, dataset.Department)
 
-	var removeKey int
+	var removeKey int = -1
 	for key, department := range departments {
 		if department.ID == departmentId {
 			removeKey = key
 		}
 	}
-
-	departments = append(departments[:removeKey], departments[removeKey+1:]...)
+	if removeKey >= 0 {
+		departments = append(departments[:removeKey], departments[removeKey+1:]...)
+	}
 	dataset.Department = departments
 
 	savedDataset := dataset.Clone()
