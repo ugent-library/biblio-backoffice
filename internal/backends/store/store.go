@@ -41,6 +41,8 @@ func (s *Store) AddPublicationListener(fn func(*models.Publication)) {
 		p := &models.Publication{}
 		if err := snap.Scan(p); err == nil {
 			p.SnapshotID = snap.SnapshotID
+			p.DateFrom = snap.DateFrom
+			p.DateUntil = snap.DateUntil
 			fn(p)
 		}
 	})
@@ -51,6 +53,8 @@ func (s *Store) AddDatasetListener(fn func(*models.Dataset)) {
 		d := &models.Dataset{}
 		if err := snap.Scan(d); err == nil {
 			d.SnapshotID = snap.SnapshotID
+			d.DateFrom = snap.DateFrom
+			d.DateUntil = snap.DateUntil
 			fn(d)
 		}
 	})
@@ -77,6 +81,8 @@ func (s *Store) GetPublication(id string) (*models.Publication, error) {
 		return nil, err
 	}
 	p.SnapshotID = snap.SnapshotID
+	p.DateFrom = snap.DateFrom
+	p.DateUntil = snap.DateUntil
 	return p, nil
 }
 
@@ -96,6 +102,9 @@ func (s *Store) GetPublications(ids []string) ([]*models.Publication, error) {
 		if err := snap.Scan(p); err != nil {
 			return nil, err
 		}
+		p.SnapshotID = snap.SnapshotID
+		p.DateFrom = snap.DateFrom
+		p.DateUntil = snap.DateUntil
 		publications = append(publications, p)
 	}
 	if c.Err() != nil {
@@ -149,6 +158,9 @@ func (s *Store) EachPublication(fn func(*models.Publication) bool) error {
 		if err := snap.Scan(p); err != nil {
 			return err
 		}
+		p.SnapshotID = snap.SnapshotID
+		p.DateFrom = snap.DateFrom
+		p.DateUntil = snap.DateUntil
 		if ok := fn(p); !ok {
 			break
 		}
@@ -166,6 +178,8 @@ func (s *Store) GetDataset(id string) (*models.Dataset, error) {
 		return nil, err
 	}
 	d.SnapshotID = snap.SnapshotID
+	d.DateFrom = snap.DateFrom
+	d.DateUntil = snap.DateUntil
 	return d, nil
 }
 
@@ -185,6 +199,9 @@ func (s *Store) GetDatasets(ids []string) ([]*models.Dataset, error) {
 		if err := snap.Scan(d); err != nil {
 			return nil, err
 		}
+		d.SnapshotID = snap.SnapshotID
+		d.DateFrom = snap.DateFrom
+		d.DateUntil = snap.DateUntil
 		datasets = append(datasets, d)
 	}
 	if c.Err() != nil {
@@ -235,8 +252,12 @@ func (s *Store) EachDataset(fn func(*models.Dataset) bool) error {
 		}
 		d := &models.Dataset{}
 		if err := snap.Scan(d); err != nil {
+
 			return err
 		}
+		d.SnapshotID = snap.SnapshotID
+		d.DateFrom = snap.DateFrom
+		d.DateUntil = snap.DateUntil
 		if ok := fn(d); !ok {
 			break
 		}
