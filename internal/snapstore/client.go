@@ -1,5 +1,10 @@
 package snapstore
 
+// tx := client.BeginTx(ctx)
+// tx.Store("publications").Add(ctx, id, &models.Publication{})
+// tx.Commit()
+// or builder style
+
 import (
 	"context"
 	"encoding/json"
@@ -146,20 +151,7 @@ func (s *Store) AddAfter(snapshotID, id string, data interface{}, o Options) err
 		return err
 	}
 
-	var (
-		ctx context.Context
-		db  DB
-	)
-	if o.Context == nil {
-		ctx = context.Background()
-	} else {
-		ctx = o.Context
-	}
-	if o.Transaction == nil {
-		db = s.db
-	} else {
-		db = o.Transaction.db
-	}
+	ctx, db := s.ctxAndDb(o)
 
 	tx, err := db.Begin(ctx)
 	if err != nil {
@@ -231,20 +223,7 @@ func (s *Store) Add(id string, data interface{}, o Options) error {
 		return err
 	}
 
-	var (
-		ctx context.Context
-		db  DB
-	)
-	if o.Context == nil {
-		ctx = context.Background()
-	} else {
-		ctx = o.Context
-	}
-	if o.Transaction == nil {
-		db = s.db
-	} else {
-		db = o.Transaction.db
-	}
+	ctx, db := s.ctxAndDb(o)
 
 	tx, err := db.Begin(ctx)
 	if err != nil {
@@ -287,20 +266,7 @@ func (s *Store) Add(id string, data interface{}, o Options) error {
 }
 
 func (s *Store) GetCurrentSnapshot(id string, o Options) (*Snapshot, error) {
-	var (
-		ctx context.Context
-		db  DB
-	)
-	if o.Context == nil {
-		ctx = context.Background()
-	} else {
-		ctx = o.Context
-	}
-	if o.Transaction == nil {
-		db = s.db
-	} else {
-		db = o.Transaction.db
-	}
+	ctx, db := s.ctxAndDb(o)
 
 	sql := `
 	select snapshot_id, data, date_from from ` + s.table + `
@@ -317,20 +283,7 @@ func (s *Store) GetCurrentSnapshot(id string, o Options) (*Snapshot, error) {
 }
 
 func (s *Store) GetByID(ids []string, o Options) (*Cursor, error) {
-	var (
-		ctx context.Context
-		db  DB
-	)
-	if o.Context == nil {
-		ctx = context.Background()
-	} else {
-		ctx = o.Context
-	}
-	if o.Transaction == nil {
-		db = s.db
-	} else {
-		db = o.Transaction.db
-	}
+	ctx, db := s.ctxAndDb(o)
 
 	pgIds := &pgtype.TextArray{}
 	pgIds.Set(ids)
@@ -345,6 +298,39 @@ func (s *Store) GetByID(ids []string, o Options) (*Cursor, error) {
 }
 
 func (s *Store) GetAll(o Options) (*Cursor, error) {
+	ctx, db := s.ctxAndDb(o)
+
+	sql := "select snapshot_id, id, data, date_from, date_until from " + s.table +
+		" where date_until is null"
+
+	rows, err := db.Query(ctx, sql)
+	if err != nil {
+		return nil, err
+	}
+	return &Cursor{rows}, nil
+}
+
+func (s *Store) Purge(id string, o Options) error {
+	ctx, db := s.ctxAndDb(o)
+
+	sql := "delete from " + s.table + " where id = $1"
+
+	_, err := db.Exec(ctx, sql, id)
+
+	return err
+}
+
+func (s *Store) PurgeAll(o Options) error {
+	ctx, db := s.ctxAndDb(o)
+
+	sql := "truncate " + s.table
+
+	_, err := db.Exec(ctx, sql)
+
+	return err
+}
+
+func (s *Store) ctxAndDb(o Options) (context.Context, DB) {
 	var (
 		ctx context.Context
 		db  DB
@@ -359,15 +345,7 @@ func (s *Store) GetAll(o Options) (*Cursor, error) {
 	} else {
 		db = o.Transaction.db
 	}
-
-	sql := "select snapshot_id, id, data, date_from, date_until from " + s.table +
-		" where date_until is null"
-
-	rows, err := db.Query(ctx, sql)
-	if err != nil {
-		return nil, err
-	}
-	return &Cursor{rows}, nil
+	return ctx, db
 }
 
 type Cursor struct {
