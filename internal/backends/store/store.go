@@ -168,6 +168,31 @@ func (s *Store) EachPublication(fn func(*models.Publication) bool) error {
 	return c.Err()
 }
 
+func (s *Store) EachPublicationSnapshot(fn func(*models.Publication) bool) error {
+	c, err := s.publicationStore.GetAllSnapshots(s.opts)
+	if err != nil {
+		return err
+	}
+	defer c.Close()
+	for c.HasNext() {
+		snap, err := c.Next()
+		if err != nil {
+			return err
+		}
+		p := &models.Publication{}
+		if err := snap.Scan(p); err != nil {
+			return err
+		}
+		p.SnapshotID = snap.SnapshotID
+		p.DateFrom = snap.DateFrom
+		p.DateUntil = snap.DateUntil
+		if ok := fn(p); !ok {
+			break
+		}
+	}
+	return c.Err()
+}
+
 func (s *Store) GetDataset(id string) (*models.Dataset, error) {
 	d := &models.Dataset{}
 	snap, err := s.datasetStore.GetCurrentSnapshot(id, s.opts)
@@ -241,6 +266,32 @@ func (s *Store) UpdateDataset(d *models.Dataset) error {
 
 func (s *Store) EachDataset(fn func(*models.Dataset) bool) error {
 	c, err := s.datasetStore.GetAll(s.opts)
+	if err != nil {
+		return err
+	}
+	defer c.Close()
+	for c.HasNext() {
+		snap, err := c.Next()
+		if err != nil {
+			return err
+		}
+		d := &models.Dataset{}
+		if err := snap.Scan(d); err != nil {
+
+			return err
+		}
+		d.SnapshotID = snap.SnapshotID
+		d.DateFrom = snap.DateFrom
+		d.DateUntil = snap.DateUntil
+		if ok := fn(d); !ok {
+			break
+		}
+	}
+	return c.Err()
+}
+
+func (s *Store) EachDatasetSnapshot(fn func(*models.Dataset) bool) error {
+	c, err := s.datasetStore.GetAllSnapshots(s.opts)
 	if err != nil {
 		return err
 	}

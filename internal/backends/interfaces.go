@@ -56,11 +56,13 @@ type Store interface {
 	GetPublications([]string) ([]*models.Publication, error)
 	UpdatePublication(*models.Publication) error
 	EachPublication(func(*models.Publication) bool) error
+	EachPublicationSnapshot(func(*models.Publication) bool) error
 	AddDatasetListener(func(*models.Dataset))
 	GetDataset(string) (*models.Dataset, error)
 	GetDatasets([]string) ([]*models.Dataset, error)
 	UpdateDataset(*models.Dataset) error
 	EachDataset(func(*models.Dataset) bool) error
+	EachDatasetSnapshot(func(*models.Dataset) bool) error
 	GetPublicationDatasets(*models.Publication) ([]*models.Dataset, error)
 	GetDatasetPublications(*models.Dataset) ([]*models.Publication, error)
 	AddPublicationDataset(*models.Publication, *models.Dataset) error

@@ -36,6 +36,19 @@ func (publications *Publications) Search(args *models.SearchArgs) (*models.Publi
 	query["size"] = args.Limit()
 	query["from"] = args.Offset()
 
+	// extra internal filters
+	internalFilters := []M{
+		M{
+			"bool": M{
+				"must_not": M{
+					"exists": M{
+						"field": "date_until",
+					},
+				},
+			},
+		},
+	}
+
 	// ADD FACETS
 	// 	create global bucket so that not all buckets are influenced by query and filters
 	// 	name "facets" is not important
@@ -56,6 +69,7 @@ func (publications *Publications) Search(args *models.SearchArgs) (*models.Publi
 			// add all internal filters
 			filters = append(filters, queryMust)
 			filters = append(filters, publications.scopes...)
+			filters = append(filters, internalFilters...)
 
 			// add external filters only if not matching
 			for _, filter := range queryFilters {
@@ -115,6 +129,7 @@ func (publications *Publications) Search(args *models.SearchArgs) (*models.Publi
 
 	// ADD QUERY FILTERS
 	queryFilters = append(queryFilters, publications.scopes...)
+	queryFilters = append(queryFilters, internalFilters...)
 	query["query"].(M)["bool"].(M)["filter"] = queryFilters
 
 	// ADD SORTS
@@ -343,7 +358,7 @@ func (publications *Publications) Index(d *models.Publication) error {
 	ctx := context.Background()
 	res, err := esapi.UpdateRequest{
 		Index:      publications.Client.Index,
-		DocumentID: d.ID,
+		DocumentID: d.SnapshotID,
 		Body:       bytes.NewReader(payload),
 	}.Do(ctx, publications.Client.es)
 	if err != nil {
@@ -401,7 +416,7 @@ func (publications *Publications) IndexMultiple(inCh <-chan *models.Publication)
 			context.Background(),
 			esutil.BulkIndexerItem{
 				Action:       "index",
-				DocumentID:   doc.ID,
+				DocumentID:   doc.SnapshotID,
 				DocumentType: "_doc",
 				Body:         bytes.NewReader(payload),
 				OnFailure: func(ctx context.Context, item esutil.BulkIndexerItem, res esutil.BulkIndexerResponseItem, err error) {
