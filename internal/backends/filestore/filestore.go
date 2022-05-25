@@ -15,10 +15,13 @@ type Store struct {
 	tmpPath  string
 }
 
-func New(rootPath string) (*Store, error) {
+func New(basePath string) (*Store, error) {
 	s := &Store{
-		rootPath: rootPath,
-		tmpPath:  path.Join(rootPath, "tmp"),
+		rootPath: path.Join(basePath, "root"),
+		tmpPath:  path.Join(basePath, "tmp"),
+	}
+	if err := os.MkdirAll(s.rootPath, os.ModePerm); err != nil {
+		return nil, err
 	}
 	if err := os.MkdirAll(s.tmpPath, os.ModePerm); err != nil {
 		return nil, err
@@ -96,4 +99,27 @@ func (s *Store) Add(r io.Reader) (string, error) {
 	}
 
 	return checksum, nil
+}
+
+// TODO remove empty intermediate directories
+func (s *Store) Purge(checksum string) error {
+	return os.Remove(s.FilePath(checksum))
+}
+
+func (s *Store) PurgeAll() error {
+	dir, err := os.Open(s.rootPath)
+	if err != nil {
+		return err
+	}
+	defer dir.Close()
+	names, err := dir.Readdirnames(-1)
+	if err != nil {
+		return err
+	}
+	for _, name := range names {
+		if err := os.RemoveAll(path.Join(s.rootPath, name)); err != nil {
+			return err
+		}
+	}
+	return nil
 }

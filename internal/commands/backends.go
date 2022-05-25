@@ -40,11 +40,6 @@ func Services() *backends.Services {
 }
 
 func newServices() *backends.Services {
-	fs, err := filestore.New(viper.GetString("file-dir"))
-	if err != nil {
-		log.Fatalln("Unable to initialize filestore", err)
-	}
-
 	biblioClient := biblio.New(biblio.Config{
 		URL:      viper.GetString("frontend-url"),
 		Username: viper.GetString("frontend-username"),
@@ -61,7 +56,7 @@ func newServices() *backends.Services {
 	citeprocURL := viper.GetString("citeproc-url")
 
 	return &backends.Services{
-		FileStore:                 fs,
+		FileStore:                 newFileStore(),
 		ORCIDSandbox:              orcidConfig.Sandbox,
 		ORCIDClient:               orcidClient,
 		Store:                     newStore(),
@@ -108,6 +103,14 @@ func newStore() backends.Store {
 		log.Fatalln("unable to create store", err)
 	}
 	return s
+}
+
+func newFileStore() *filestore.Store {
+	fs, err := filestore.New(viper.GetString("file-dir"))
+	if err != nil {
+		log.Fatalln("Unable to initialize filestore", err)
+	}
+	return fs
 }
 
 func newEs6Client(t string) *es6.Client {

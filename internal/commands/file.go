@@ -6,7 +6,6 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/backends/filestore"
 )
 
@@ -14,14 +13,6 @@ func init() {
 	fileCmd.AddCommand(fileAddCmd)
 	fileCmd.AddCommand((fileAddManyCmd))
 	rootCmd.AddCommand(fileCmd)
-}
-
-func newFileStore() (*filestore.Store, error) {
-	fs, fsErr := filestore.New(viper.GetString("file-dir"))
-	if fsErr != nil {
-		return nil, fmt.Errorf("unable to initialize filestore: %s", fsErr)
-	}
-	return fs, nil
 }
 
 func addFile(fs *filestore.Store, path string) (string, error) {
@@ -60,11 +51,7 @@ var fileAddCmd = &cobra.Command{
 	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		path := args[0]
-		fs, fsErr := newFileStore()
-		if fsErr != nil {
-			fmt.Fprintf(os.Stderr, "unable to add file %s: %s\n", path, fsErr.Error())
-			os.Exit(1)
-		}
+		fs := newFileStore()
 		id, addErr := addFile(fs, path)
 		if addErr != nil {
 			fmt.Fprintf(os.Stderr, "unable to add file %s: %s\n", path, addErr.Error())
@@ -103,11 +90,7 @@ var fileAddManyCmd = &cobra.Command{
 			}
 		}
 
-		fs, fsErr := newFileStore()
-		if fsErr != nil {
-			fmt.Fprint(os.Stderr, fsErr.Error())
-			os.Exit(1)
-		}
+		fs := newFileStore()
 
 		scanner := bufio.NewScanner(fhIn)
 		for scanner.Scan() {

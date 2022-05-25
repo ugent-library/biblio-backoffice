@@ -1,9 +1,18 @@
 package snapstore
 
+// IDEAS:
+// - add a method to get all snapshots for a given id
+// - add a method to view a store at a given date
+// - add date_created column to the table
+// - store canonical json and make snapshot id a hash of that
+// - improve the api:
+
 // tx := client.BeginTx(ctx)
 // tx.Store("publications").Add(ctx, id, &models.Publication{})
 // tx.Commit()
 // or builder style
+// client.Store("publications").WithTx(tx).Get(id).Scan(&models.Publication{})
+// client.Store("publications").WithTx(tx).Get(id).Snapshot()
 
 import (
 	"context"

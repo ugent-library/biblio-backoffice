@@ -369,3 +369,19 @@ func (s *Store) RemovePublicationDataset(p *models.Publication, d *models.Datase
 		return nil
 	})
 }
+
+func (s *Store) PurgeAllPublications() error {
+	return s.publicationStore.PurgeAll(s.opts)
+}
+
+func (s *Store) PurgePublication(id string) error {
+	return s.publicationStore.Purge(id, s.opts)
+}
+
+func (s *Store) PurgeAllDatasets() error {
+	return s.datasetStore.PurgeAll(s.opts)
+}
+
+func (s *Store) PurgeDataset(id string) error {
+	return s.datasetStore.Purge(id, s.opts)
+}
