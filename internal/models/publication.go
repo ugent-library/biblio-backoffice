@@ -93,6 +93,8 @@ type Publication struct {
 	CreatorID               string                  `json:"creator_id,omitempty" form:"-"`
 	DateCreated             *time.Time              `json:"date_created,omitempty" form:"-"`
 	DateUpdated             *time.Time              `json:"date_updated,omitempty" form:"-"`
+	DateFrom                *time.Time              `json:"date_from,omitempty" form:"-"`
+	DateUntil               *time.Time              `json:"date_until,omitempty" form:"-"`
 	DefenseDate             string                  `json:"defense_date,omitempty" form:"defense_date"`
 	DefensePlace            string                  `json:"defense_place,omitempty" form:"defense_place"`
 	DefenseTime             string                  `json:"defense_time,omitempty" form:"defense_time"`

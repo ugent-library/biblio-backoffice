@@ -42,6 +42,8 @@ type Dataset struct {
 	CreatorID          string               `json:"creator_id,omitempty" form:"-"`
 	DateCreated        *time.Time           `json:"date_created,omitempty" form:"-"`
 	DateUpdated        *time.Time           `json:"date_updated,omitempty" form:"-"`
+	DateFrom           *time.Time           `json:"date_from,omitempty" form:"-"`
+	DateUntil          *time.Time           `json:"date_until,omitempty" form:"-"`
 	Department         []DatasetDepartment  `json:"department,omitempty" form:"-"`
 	DOI                string               `json:"doi,omitempty" form:"-"`
 	Embargo            string               `json:"embargo,omitempty" form:"embargo"`
