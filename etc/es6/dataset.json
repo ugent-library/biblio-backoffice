@@ -173,6 +173,12 @@
                 "date_updated": {
                     "type": "date"
                 },
+                "date_from": {
+                    "type": "date"
+                },
+                "date_until": {
+                    "type": "date"
+                },
                 "faculty": { "type": "keyword" },
                 "department": {
                     "properties": {

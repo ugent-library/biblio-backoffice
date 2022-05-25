@@ -56,6 +56,7 @@ type Store interface {
 	GetPublications([]string) ([]*models.Publication, error)
 	UpdatePublication(*models.Publication) error
 	EachPublication(func(*models.Publication) bool) error
+	EachPublicationSnapshot(func(*models.Publication) bool) error
 	PurgeAllPublications() error
 	PurgePublication(string) error
 	AddDatasetListener(func(*models.Dataset))
@@ -63,6 +64,7 @@ type Store interface {
 	GetDatasets([]string) ([]*models.Dataset, error)
 	UpdateDataset(*models.Dataset) error
 	EachDataset(func(*models.Dataset) bool) error
+	EachDatasetSnapshot(func(*models.Dataset) bool) error
 	PurgeAllDatasets() error
 	PurgeDataset(string) error
 	GetPublicationDatasets(*models.Publication) ([]*models.Dataset, error)

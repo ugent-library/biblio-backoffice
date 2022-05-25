@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/cshum/imagor/imagorpath"
@@ -875,18 +874,6 @@ func (c *Publications) importUserPublications(userID, source string, file io.Rea
 	}
 	dec := decFactory(file)
 
-	var indexWG sync.WaitGroup
-
-	// indexing channel
-	indexC := make(chan *models.Publication)
-
-	// start bulk indexer
-	go func() {
-		indexWG.Add(1)
-		defer indexWG.Done()
-		c.publicationSearchService.IndexMultiple(indexC)
-	}()
-
 	var importErr error
 	for {
 		p := models.Publication{
@@ -903,18 +890,12 @@ func (c *Publications) importUserPublications(userID, source string, file io.Rea
 			importErr = err
 			break
 		}
+		// Note: index updated asynchronously by notify from snapstore client
 		if err := c.store.UpdatePublication(&p); err != nil {
 			importErr = err
 			break
 		}
-
-		indexC <- &p
 	}
-
-	// close indexing channel when all recs are stored
-	close(indexC)
-	// wait for indexing to finish
-	indexWG.Wait()
 
 	// TODO rollback if error
 	if importErr != nil {

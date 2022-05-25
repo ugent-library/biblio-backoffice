@@ -191,10 +191,22 @@ func (s *Store) AddAfter(snapshotID, id string, data interface{}, o Options) err
 
 	now := time.Now()
 
-	sqlUpdate := "update " + s.table + " set date_until = $1 where id = $2 and date_until is null"
+	sqlUpdate := `update ` + s.table + ` set date_until = $1
+	where id = $2 and date_until is null
+	returning snapshot_id,id,data,date_until,date_from`
 
-	if _, err = tx.Exec(ctx, sqlUpdate, now, id); err != nil {
+	updatedRows, err := tx.Query(ctx, sqlUpdate, now, id)
+	if err != nil {
 		return err
+	}
+	cursorUpdatedRows := &Cursor{updatedRows}
+	oldSnapshots := []*Snapshot{}
+	for cursorUpdatedRows.HasNext() {
+		snap, e := cursorUpdatedRows.Next()
+		if e != nil {
+			return e
+		}
+		oldSnapshots = append(oldSnapshots, snap)
 	}
 
 	newSnapshotID, err := s.generateID()
@@ -212,6 +224,9 @@ func (s *Store) AddAfter(snapshotID, id string, data interface{}, o Options) err
 		return err
 	}
 
+	for _, snap := range oldSnapshots {
+		s.notify(snap)
+	}
 	s.notify(&Snapshot{
 		SnapshotID: newSnapshotID,
 		ID:         id,
@@ -242,10 +257,22 @@ func (s *Store) Add(id string, data interface{}, o Options) error {
 
 	now := time.Now()
 
-	sqlUpdate := "update " + s.table + " set date_until = $1 where id = $2 and date_until is null"
+	sqlUpdate := `update ` + s.table + ` set date_until = $1
+	where id = $2 and date_until is null
+	returning snapshot_id,id,data,date_until,date_from`
 
-	if _, err = tx.Exec(ctx, sqlUpdate, now, id); err != nil {
+	updatedRows, err := tx.Query(ctx, sqlUpdate, now, id)
+	if err != nil {
 		return err
+	}
+	cursorUpdatedRows := &Cursor{updatedRows}
+	oldSnapshots := []*Snapshot{}
+	for cursorUpdatedRows.HasNext() {
+		snap, e := cursorUpdatedRows.Next()
+		if e != nil {
+			return e
+		}
+		oldSnapshots = append(oldSnapshots, snap)
 	}
 
 	sqlInsert := `insert into ` + s.table + `(snapshot_id, id, data, date_from) values ($1, $2, $3, $4)`
@@ -263,6 +290,9 @@ func (s *Store) Add(id string, data interface{}, o Options) error {
 		return err
 	}
 
+	for _, snap := range oldSnapshots {
+		s.notify(snap)
+	}
 	s.notify(&Snapshot{
 		SnapshotID: newSnapshotID,
 		ID:         id,
@@ -355,6 +385,31 @@ func (s *Store) ctxAndDb(o Options) (context.Context, DB) {
 		db = o.Transaction.db
 	}
 	return ctx, db
+}
+
+func (s *Store) GetAllSnapshots(o Options) (*Cursor, error) {
+	var (
+		ctx context.Context
+		db  DB
+	)
+	if o.Context == nil {
+		ctx = context.Background()
+	} else {
+		ctx = o.Context
+	}
+	if o.Transaction == nil {
+		db = s.db
+	} else {
+		db = o.Transaction.db
+	}
+
+	sql := "select snapshot_id, id, data, date_from, date_until from " + s.table
+
+	rows, err := db.Query(ctx, sql)
+	if err != nil {
+		return nil, err
+	}
+	return &Cursor{rows}, nil
 }
 
 type Cursor struct {
