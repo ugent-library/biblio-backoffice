@@ -8,6 +8,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/controllers"
+	"github.com/ugent-library/biblio-backend/services/webapp/internal/dataset"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/middleware"
 	"github.com/ugent-library/go-locale/locale"
 	"github.com/ugent-library/go-oidc/oidc"
@@ -64,6 +65,9 @@ func Register(services *backends.Services, base controllers.Base, oidcClient *oi
 
 	licensesController := controllers.NewLicenses(base, services.LicenseSearchService)
 	mediaTypesController := controllers.NewMediaTypes(base, services.MediaTypeSearchService)
+
+	// NEW CONTROLLERS
+	datasetC := dataset.NewController(services.Store)
 
 	// TODO fix absolute url generation
 	// var schemes []string
@@ -519,9 +523,9 @@ func Register(services *backends.Services, base controllers.Base, oidcClient *oi
 		Methods("PUT").
 		Name("dataset_contributors_update")
 	// Dataset abstracts HTMX fragments
-	datasetEditRouter.HandleFunc("/htmx/abstracts/add", datasetAbstractsController.Add).
+	datasetEditRouter.HandleFunc("/htmx/abstracts/add", datasetC.WithContext(datasetC.AddAbstract)).
 		Methods("GET").
-		Name("dataset_abstracts_add_abstract")
+		Name("dataset_add_abstract")
 	datasetEditRouter.HandleFunc("/htmx/abstracts/create", datasetAbstractsController.Create).
 		Methods("POST").
 		Name("dataset_abstracts_create_abstract")

@@ -21,11 +21,12 @@ import (
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/controllers"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/helpers"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/mix"
+	"github.com/ugent-library/biblio-backend/services/webapp/internal/render"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/routes"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/urls"
 	"github.com/ugent-library/go-locale/locale"
 	"github.com/ugent-library/go-oidc/oidc"
-	"github.com/unrolled/render"
+	unrolledrender "github.com/unrolled/render"
 
 	_ "github.com/ugent-library/biblio-backend/services/webapp/internal/translations"
 )
@@ -127,21 +128,25 @@ func buildRouter(services *backends.Services) *mux.Router {
 	router := mux.NewRouter()
 
 	// renderer
-	r := render.New(render.Options{
+	funcMaps := []template.FuncMap{
+		sprig.FuncMap(),
+		mix.FuncMap(mix.Config{
+			ManifestFile: "services/webapp/static/mix-manifest.json",
+			PublicPath:   baseURL.Path + "/static/",
+		}),
+		urls.FuncMap(router),
+		helpers.FuncMap(),
+	}
+
+	r := unrolledrender.New(unrolledrender.Options{
 		Directory:                   "services/webapp/templates",
 		Extensions:                  []string{".gohtml"},
 		Layout:                      "layouts/layout",
 		RenderPartialsWithoutPrefix: true,
-		Funcs: []template.FuncMap{
-			sprig.FuncMap(),
-			mix.FuncMap(mix.Config{
-				ManifestFile: "services/webapp/static/mix-manifest.json",
-				PublicPath:   baseURL.Path + "/static/",
-			}),
-			urls.FuncMap(router),
-			helpers.FuncMap(),
-		},
+		Funcs:                       funcMaps,
 	})
+
+	render.FuncMaps = funcMaps
 
 	// localizer
 	localizer := locale.NewLocalizer("en")

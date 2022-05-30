@@ -1,0 +1,27 @@
+{{define "add-abstract"}}
+<div id="modal-backdrop" class="d-block modal-backdrop fade show"></div>
+<div class="d-block modal show" tabindex="-1" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Add Abstract</h2>
+            </div>
+            <div class="modal-body">
+                {{.Form.RenderHTML}}
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-link modal-close">Cancel</button>
+                <button type="button" name="create" class="btn btn-primary"
+                    hx-post="{{pathFor "dataset_abstracts_create_abstract" "id" .ID }}"
+                    hx-headers='{"If-Match": "{{.SnapshotID}}"}'
+                    hx-target="#abstracts-table tbody"
+                    hx-include=".modal-body"
+                    hx-swap="innerHTML settle:.15s"
+                >
+                    Add abstract
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{{end}}

@@ -222,6 +222,7 @@ func init() {
 	message.SetString(language.English, "builder.conference.end_date", "Conference end date")
 
 	message.SetString(language.English, "builder.abstract.text", "Abstract")
+	message.SetString(language.English, "builder.abstract.text.placeholder", "Add abstract here...")
 	message.SetString(language.English, "builder.abstract.lang", "Language")
 
 	message.SetString(language.English, "builder.lay_summary.text", "Lay Summary")

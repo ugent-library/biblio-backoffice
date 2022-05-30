@@ -1,4 +1,4 @@
-package publications
+package publication
 
 import (
 	"strings"

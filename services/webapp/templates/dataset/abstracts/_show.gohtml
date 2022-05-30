@@ -8,7 +8,7 @@
             <div class="bc-toolbar-right">
                 {{if .User.CanEditDataset .D.Dataset}}
                 <button class="btn btn-outline-primary" type="button"
-                    hx-get="{{pathFor "dataset_abstracts_add_abstract" "id" .D.Dataset.ID }}"
+                    hx-get="{{pathFor "dataset_add_abstract" "id" .D.Dataset.ID }}"
                     hx-swap="innerHTML"
                     hx-target="#abstract-modals"
                 >
