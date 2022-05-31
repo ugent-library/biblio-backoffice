@@ -35,13 +35,21 @@
                                     {{if $canEditPublication}}<i class="if if-caret-down"></i>{{end}}
                                 </span>
                                 {{if $canEditPublication}}
+                                <!--
+                                    hx-target must not be publication-files (but publication-files-modal)
+                                    as the resulting html swaps publication-files
+                                    out of band using hx-swap-oob, leaving publication-files
+                                    eventually empty (contradictory statements).
+                                    Anyway, if there is a validation error (in the future),
+                                    the file modal will show it
+                                -->
                                 <div class="dropdown-menu">
                                     <button
                                         class="dropdown-item{{if eq .AccessLevel "open_access"}} dropdown-item--selected{{end}}"
                                         {{ if not (eq .AccessLevel "open_access") }}
                                         hx-put="{{pathFor "publication_file_update" "id" $.D.Publication.ID "file_id" .ID}}"
                                         hx-vals='{ "access_level": "open_access" }'
-                                        hx-target="#publication-files"
+                                        hx-target="#publication-files-modal"
                                         {{ end }}
                                     >
                                         <i class="if if-download text-success"></i>
@@ -58,7 +66,7 @@
                                         {{ if not (eq .AccessLevel "local") }}
                                         hx-put="{{pathFor "publication_file_update" "id" $.D.Publication.ID "file_id" .ID}}"
                                         hx-vals='{ "access_level": "local" }'
-                                        hx-target="#publication-files"
+                                        hx-target="#publication-files-modal"
                                         {{ end }}
                                     >
                                         <i class="if if-ghent-university text-primary"></i>
@@ -75,7 +83,7 @@
                                         {{ if not (eq .AccessLevel "closed") }}
                                         hx-put="{{pathFor "publication_file_update" "id" $.D.Publication.ID "file_id" .ID}}"
                                         hx-vals='{ "access_level": "closed" }'
-                                        hx-target="#publication-files"
+                                        hx-target="#publication-files-modal"
                                         {{ end }}
                                     >
                                         <i class="if if-eye-off text-muted"></i>
