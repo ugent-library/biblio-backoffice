@@ -1,0 +1,11 @@
+{{define "create-abstract"}}
+    {{template "abstracts-table" .}}
+    <div class="modals" id="abstract-modals"></div>
+{{end}}
+
+{{define "create-abstract-failed"}}
+    {{template "abstracts-table" .}}
+    <div class="modals" id="abstract-modals">
+        {{template "add-abstract" .}}
+    </div>
+{{end}}
