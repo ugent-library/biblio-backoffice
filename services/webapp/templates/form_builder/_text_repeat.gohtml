@@ -61,6 +61,10 @@
                 </button>
             </div>
         </div>
-        {{ if .Error }}<div class="invalid-feedback">{{ .Error }}</div>{{ end }}
+        <!--
+            invalid-feedback not appearing because needs
+            to be preceded by is-invalid as sibling
+        -->
+        {{ if .Error }}<div class="invalid-feedback" style="display:block">{{ .Error }}</div>{{ end }}
     </div>
 </div>
