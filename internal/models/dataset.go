@@ -7,6 +7,7 @@ import (
 
 	"github.com/ugent-library/biblio-backend/internal/pagination"
 	"github.com/ugent-library/biblio-backend/internal/validation"
+	"github.com/ugent-library/biblio-backend/internal/vocabularies"
 )
 
 type DatasetHits struct {
@@ -175,13 +176,27 @@ func (d *Dataset) Validate() (errs validation.Errors) {
 			Code:    "required",
 			Field:   "status",
 		})
-	}
-	if d.Status == "public" && d.AccessLevel == "" {
+	} else if !validation.IsStatus(d.Status) {
 		errs = append(errs, &validation.Error{
-			Pointer: "/access_level",
-			Code:    "required",
-			Field:   "access_level",
+			Pointer: "/status",
+			Code:    "invalid",
+			Field:   "status",
 		})
+	}
+	if d.Status == "public" {
+		if d.AccessLevel == "" {
+			errs = append(errs, &validation.Error{
+				Pointer: "/access_level",
+				Code:    "required",
+				Field:   "access_level",
+			})
+		} else if !validation.IsDatasetAccessLevel(d.AccessLevel) {
+			errs = append(errs, &validation.Error{
+				Pointer: "/access_level",
+				Code:    "invalid",
+				Field:   "access_level",
+			})
+		}
 	}
 	if d.Status == "public" && d.DOI == "" {
 		errs = append(errs, &validation.Error{
@@ -190,12 +205,23 @@ func (d *Dataset) Validate() (errs validation.Errors) {
 			Field:   "doi",
 		})
 	}
-	if d.Status == "public" && len(d.Format) == 0 {
-		errs = append(errs, &validation.Error{
-			Pointer: "/format",
-			Code:    "required",
-			Field:   "format",
-		})
+	if d.Status == "public" {
+		if len(d.Format) == 0 {
+			errs = append(errs, &validation.Error{
+				Pointer: "/format",
+				Code:    "required",
+				Field:   "format",
+			})
+		}
+		for i, f := range d.Format {
+			if f == "" {
+				errs = append(errs, &validation.Error{
+					Pointer: fmt.Sprintf("/format/%d", i),
+					Code:    "required",
+					Field:   "format",
+				})
+			}
+		}
 	}
 	if d.Status == "public" && d.Publisher == "" {
 		errs = append(errs, &validation.Error{
@@ -211,12 +237,22 @@ func (d *Dataset) Validate() (errs validation.Errors) {
 			Field:   "title",
 		})
 	}
-	if d.Status == "public" && d.Year == "" {
-		errs = append(errs, &validation.Error{
-			Pointer: "/year",
-			Code:    "required",
-			Field:   "year",
-		})
+
+	if d.Status == "public" {
+		// year =~ /^\d{4}$/
+		if d.Year == "" {
+			errs = append(errs, &validation.Error{
+				Pointer: "/year",
+				Code:    "required",
+				Field:   "year",
+			})
+		} else if !validation.IsYear(d.Year) {
+			errs = append(errs, &validation.Error{
+				Pointer: "/year",
+				Code:    "invalid",
+				Field:   "year",
+			})
+		}
 	}
 	if d.Status == "public" && len(d.Author) == 0 {
 		errs = append(errs, &validation.Error{
@@ -233,6 +269,111 @@ func (d *Dataset) Validate() (errs validation.Errors) {
 				Code:    err.Code,
 				Field:   "author." + err.Field,
 			})
+		}
+	}
+
+	// at least one ugent author
+	if d.Status == "public" {
+		var hasUgentAuthors bool = false
+		for _, a := range d.Author {
+			if a.ID != "" {
+				hasUgentAuthors = true
+				break
+			}
+		}
+		if !hasUgentAuthors {
+			errs = append(errs, &validation.Error{
+				Pointer: "/author",
+				Code:    "min_ugent_authors",
+				Field:   "author",
+			})
+		}
+	}
+
+	// license or other_license -> TODO: base error?
+	// now "fixed" by (incorrectly) pointing at license
+	if d.Status == "public" && d.License == "" && d.OtherLicense == "" {
+		errs = append(errs, &validation.Error{
+			Pointer: "/license",
+			Code:    "required",
+			Field:   "license",
+		})
+	}
+
+	for i, rp := range d.RelatedPublication {
+		if rp.ID == "" {
+			errs = append(errs, &validation.Error{
+				Pointer: fmt.Sprintf("/related_publication/%d/id", i),
+				Code:    "required",
+				Field:   "related_publication",
+			})
+		}
+	}
+
+	for i, pr := range d.Project {
+		if pr.ID == "" {
+			errs = append(errs, &validation.Error{
+				Pointer: fmt.Sprintf("/project/%d/id", i),
+				Code:    "required",
+				Field:   "project",
+			})
+		}
+	}
+
+	for i, dep := range d.Department {
+		if dep.ID == "" {
+			errs = append(errs, &validation.Error{
+				Pointer: fmt.Sprintf("/department/%d/id", i),
+				Code:    "required",
+				Field:   "department",
+			})
+		}
+	}
+
+	if d.Status == "public" && d.AccessLevel == vocabularies.EmbargoedAccess {
+		if d.Embargo == "" {
+			errs = append(errs, &validation.Error{
+				Pointer: "/embargo",
+				Code:    "required",
+				Field:   "embargo",
+			})
+		} else if !validation.IsDate(d.Embargo) {
+			errs = append(errs, &validation.Error{
+				Pointer: "/embargo",
+				Code:    "invalid",
+				Field:   "embargo",
+			})
+		}
+		if d.EmbargoTo == "" {
+			errs = append(errs, &validation.Error{
+				Pointer: "/embargo_to",
+				Code:    "required",
+				Field:   "embargo_to",
+			})
+		} else if d.AccessLevel == d.EmbargoTo {
+			errs = append(errs, &validation.Error{
+				Pointer: "/embargo_to",
+				Code:    "invalid", //TODO: better code
+				Field:   "embargo_to",
+			})
+		} else if !validation.IsDatasetAccessLevel(d.EmbargoTo) {
+			errs = append(errs, &validation.Error{
+				Pointer: "/embargo_to",
+				Code:    "invalid", //TODO: better code
+				Field:   "embargo_to",
+			})
+		}
+	}
+
+	if d.Status == "public" {
+		for i, abstract := range d.Abstract {
+			for _, err := range abstract.Validate() {
+				errs = append(errs, &validation.Error{
+					Pointer: fmt.Sprintf("/abstract/%d%s", i, err.Pointer),
+					Code:    err.Code,
+					Field:   "abstract." + err.Field,
+				})
+			}
 		}
 	}
 
