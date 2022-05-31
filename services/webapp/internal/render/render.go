@@ -15,21 +15,21 @@ var (
 	FuncMaps    = []template.FuncMap{}
 )
 
-type Partial struct {
+type View struct {
 	Template *template.Template
 }
 
-func NewPartial(files ...string) Partial {
+func NewView(files ...string) View {
 	addTemplateDirExt(files)
 	tmpl := template.New("")
 	for _, funcs := range FuncMaps {
 		tmpl.Funcs(funcs)
 	}
 	tmpl = template.Must(tmpl.ParseFiles(files...))
-	return Partial{Template: tmpl}
+	return View{Template: tmpl}
 }
 
-func (p Partial) Render(w http.ResponseWriter, name string, data interface{}) {
+func (p View) Render(w http.ResponseWriter, name string, data interface{}) {
 	w.Header().Set("Content-Type", "text/html")
 
 	var buf bytes.Buffer

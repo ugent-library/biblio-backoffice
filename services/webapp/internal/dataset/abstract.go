@@ -24,7 +24,7 @@ type BindAbstract struct {
 func (c *Controller) AddAbstract(w http.ResponseWriter, r *http.Request, ctx Context) {
 	c.abstractView.Render(w, "add-abstract", YieldAbstract{
 		Context: ctx,
-		Form:    c.abstractForm(ctx),
+		Form:    c.abstractForm(ctx, nil),
 	})
 }
 
@@ -46,7 +46,7 @@ func (c *Controller) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx 
 	if errors.As(err, &validationErrors) {
 		c.abstractView.Render(w, "create-abstract-failed", YieldAbstract{
 			Context: ctx,
-			Form:    c.abstractForm(ctx),
+			Form:    c.abstractForm(ctx, validationErrors),
 		})
 		return
 	}
@@ -62,7 +62,12 @@ func (c *Controller) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx 
 	})
 }
 
-func (c *Controller) abstractForm(ctx Context) *render.Form {
+func (c *Controller) abstractForm(ctx Context, errors validation.Errors) *render.Form {
+	formErrors := make([]string, len(errors))
+	for i, err := range errors {
+		formErrors[i] = err.Error()
+	}
+
 	langOpts := []render.SelectOption{}
 	for _, lang := range vocabularies.Map["language_codes"] {
 		langOpts = append(langOpts, render.SelectOption{
@@ -72,6 +77,7 @@ func (c *Controller) abstractForm(ctx Context) *render.Form {
 	}
 
 	return &render.Form{
+		Errors: formErrors,
 		Fields: []render.FormField{
 			&render.TextArea{
 				Name:        "text",

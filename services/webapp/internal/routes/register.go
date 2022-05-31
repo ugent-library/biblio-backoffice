@@ -526,9 +526,9 @@ func Register(services *backends.Services, base controllers.Base, oidcClient *oi
 	datasetEditRouter.HandleFunc("/htmx/abstracts/add", datasetC.WithContext(datasetC.AddAbstract)).
 		Methods("GET").
 		Name("dataset_add_abstract")
-	datasetEditRouter.HandleFunc("/htmx/abstracts/create", datasetAbstractsController.Create).
+	datasetEditRouter.HandleFunc("/htmx/abstracts/create", datasetC.WithContext(datasetC.CreateAbstract)).
 		Methods("POST").
-		Name("dataset_abstracts_create_abstract")
+		Name("dataset_create_abstract")
 	datasetEditRouter.HandleFunc("/htmx/abstracts/edit/{delta}", datasetAbstractsController.Edit).
 		Methods("GET").
 		Name("dataset_abstracts_edit_abstract")

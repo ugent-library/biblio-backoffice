@@ -365,15 +365,13 @@ func (d *Dataset) Validate() (errs validation.Errors) {
 		}
 	}
 
-	if d.Status == "public" {
-		for i, abstract := range d.Abstract {
-			for _, err := range abstract.Validate() {
-				errs = append(errs, &validation.Error{
-					Pointer: fmt.Sprintf("/abstract/%d%s", i, err.Pointer),
-					Code:    err.Code,
-					Field:   "abstract." + err.Field,
-				})
-			}
+	for i, abstract := range d.Abstract {
+		for _, err := range abstract.Validate() {
+			errs = append(errs, &validation.Error{
+				Pointer: fmt.Sprintf("/abstract/%d%s", i, err.Pointer),
+				Code:    err.Code,
+				Field:   "abstract." + err.Field,
+			})
 		}
 	}
 

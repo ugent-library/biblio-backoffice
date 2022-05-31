@@ -18,13 +18,13 @@ type Context struct {
 
 type Controller struct {
 	store        backends.Store
-	abstractView render.Partial
+	abstractView render.View
 }
 
 func NewController(store backends.Store) *Controller {
 	return &Controller{
 		store: store,
-		abstractView: render.NewPartial(
+		abstractView: render.NewView(
 			"dataset/_add_abstract",
 			"dataset/_create_abstract",
 			"dataset/_abstracts_table",

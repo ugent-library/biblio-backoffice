@@ -12,7 +12,7 @@
                 <div class="modal-footer">
                     <button class="btn btn-link modal-close">Cancel</button>
                     <button type="button" name="create" class="btn btn-primary"
-                        hx-post="{{pathFor "dataset_abstracts_create_abstract" "id" .Context.Dataset.ID}}"
+                        hx-post="{{pathFor "dataset_create_abstract" "id" .Context.Dataset.ID}}"
                         hx-headers='{"If-Match": "{{.Context.Dataset.SnapshotID}}"}'
                         hx-target="#abstracts-body"
                         hx-include=".modal-body"

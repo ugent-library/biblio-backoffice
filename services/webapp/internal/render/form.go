@@ -11,6 +11,7 @@ var (
 )
 
 type Form struct {
+	Errors []string
 	Fields []FormField
 }
 
@@ -20,11 +21,19 @@ type FormField interface {
 
 func (f *Form) RenderHTML() (template.HTML, error) {
 	var buf strings.Builder
+
+	if len(f.Errors) > 0 {
+		if err := formTemplates.ExecuteTemplate(&buf, "errors", f); err != nil {
+			return "", err
+		}
+	}
+
 	for _, field := range f.Fields {
 		if err := field.Render(&buf); err != nil {
 			return "", err
 		}
 	}
+
 	return template.HTML(buf.String()), nil
 }
 
