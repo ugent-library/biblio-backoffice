@@ -1,6 +1,11 @@
 package models
 
-import "github.com/ugent-library/biblio-backend/internal/validation"
+import (
+	"fmt"
+
+	"github.com/ugent-library/biblio-backend/internal/validation"
+	"github.com/ugent-library/biblio-backend/internal/vocabularies"
+)
 
 // TODO only name should be required (support corporate names)
 type Contributor struct {
@@ -31,6 +36,10 @@ func (p *Contributor) HasCreditRole(role string) bool {
 	return false
 }
 
+func IsValidCreditRole(role string) bool {
+	return validation.InArray(vocabularies.Map["credit_roles"], role)
+}
+
 func (c *Contributor) Validate() (errs validation.Errors) {
 	if c.FirstName == "" {
 		errs = append(errs, &validation.Error{
@@ -46,5 +55,15 @@ func (c *Contributor) Validate() (errs validation.Errors) {
 			Field:   "last_name",
 		})
 	}
+	for i, cr := range c.CreditRole {
+		if !IsValidCreditRole(cr) {
+			errs = append(errs, &validation.Error{
+				Pointer: fmt.Sprintf("/credit_role/%d", i),
+				Code:    "invalid",
+				Field:   "credit_role",
+			})
+		}
+	}
+
 	return
 }

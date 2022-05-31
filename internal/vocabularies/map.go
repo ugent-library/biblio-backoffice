@@ -1,5 +1,10 @@
 package vocabularies
 
+const ClosedAccess = "info:eu-repo/semantics/closedAccess"
+const EmbargoedAccess = "info:eu-repo/semantics/embargoedAccess"
+const RestrictedAccess = "info:eu-repo/semantics/restrictedAccess"
+const OpenAccess = "info:eu-repo/semantics/openAccess"
+
 var Map = map[string][]string{
 	"cc_licenses": {
 		"CC0-1.0",
@@ -34,10 +39,10 @@ var Map = map[string][]string{
 		"writing_review_editing",
 	},
 	"access_levels": {
-		"info:eu-repo/semantics/openAccess",
-		"info:eu-repo/semantics/restrictedAccess",
-		"info:eu-repo/semantics/embargoedAccess",
-		"info:eu-repo/semantics/closedAccess",
+		OpenAccess,
+		RestrictedAccess,
+		EmbargoedAccess,
+		ClosedAccess,
 	},
 	"publication_types": {
 		"journal_article",
