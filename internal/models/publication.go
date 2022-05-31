@@ -6,6 +6,7 @@ import (
 
 	"github.com/ugent-library/biblio-backend/internal/pagination"
 	"github.com/ugent-library/biblio-backend/internal/validation"
+	"github.com/ugent-library/biblio-backend/internal/vocabularies"
 )
 
 type PublicationHits struct {
@@ -420,11 +421,23 @@ func (d *Publication) Validate() (errs validation.Errors) {
 			Code:    "required",
 			Field:   "type",
 		})
+	} else if !validation.IsPublicationType(d.Type) {
+		errs = append(errs, &validation.Error{
+			Pointer: "/type",
+			Code:    "invalid",
+			Field:   "type",
+		})
 	}
 	if d.Status == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/status",
 			Code:    "required",
+			Field:   "status",
+		})
+	} else if !validation.IsStatus(d.Status) {
+		errs = append(errs, &validation.Error{
+			Pointer: "/status",
+			Code:    "invalid",
 			Field:   "status",
 		})
 	}
@@ -434,6 +447,42 @@ func (d *Publication) Validate() (errs validation.Errors) {
 			Code:    "required",
 			Field:   "title",
 		})
+	}
+
+	if d.Status == "public" {
+		if d.Year == "" {
+			errs = append(errs, &validation.Error{
+				Pointer: "/year",
+				Code:    "required",
+				Field:   "year",
+			})
+		} else if !validation.IsYear(d.Year) {
+			errs = append(errs, &validation.Error{
+				Pointer: "/year",
+				Code:    "invalid",
+				Field:   "year",
+			})
+		}
+	}
+
+	for i, a := range d.Abstract {
+		for _, err := range a.Validate() {
+			errs = append(errs, &validation.Error{
+				Pointer: fmt.Sprintf("/abstract/%d%s", i, err.Pointer),
+				Code:    err.Code,
+				Field:   "abstract." + err.Field,
+			})
+		}
+	}
+
+	for i, l := range d.LaySummary {
+		for _, err := range l.Validate() {
+			errs = append(errs, &validation.Error{
+				Pointer: fmt.Sprintf("/lay_summary/%d%s", i, err.Pointer),
+				Code:    err.Code,
+				Field:   "lay_summary." + err.Field,
+			})
+		}
 	}
 
 	for i, c := range d.Author {
@@ -464,5 +513,250 @@ func (d *Publication) Validate() (errs validation.Errors) {
 		}
 	}
 
+	for i, pr := range d.Project {
+		if pr.ID == "" {
+			errs = append(errs, &validation.Error{
+				Pointer: fmt.Sprintf("/project/%d/id", i),
+				Code:    "required",
+				Field:   "project",
+			})
+		}
+	}
+
+	for i, dep := range d.Department {
+		if dep.ID == "" {
+			errs = append(errs, &validation.Error{
+				Pointer: fmt.Sprintf("/department/%d/id", i),
+				Code:    "required",
+				Field:   "department",
+			})
+		}
+	}
+
+	for i, rd := range d.RelatedDataset {
+		if rd.ID == "" {
+			errs = append(errs, &validation.Error{
+				Pointer: fmt.Sprintf("/related_dataset/%d/id", i),
+				Code:    "required",
+				Field:   "related_dataset",
+			})
+		}
+	}
+
+	for i, f := range d.File {
+		for _, err := range f.Validate() {
+			errs = append(errs, &validation.Error{
+				Pointer: fmt.Sprintf("/file/%d%s", i, err.Pointer),
+				Code:    err.Code,
+				Field:   "file." + err.Field,
+			})
+		}
+	}
+
+	for i, pl := range d.Link {
+		for _, err := range pl.Validate() {
+			errs = append(errs, &validation.Error{
+				Pointer: fmt.Sprintf("/link/%d%s", i, err.Pointer),
+				Code:    err.Code,
+				Field:   "link." + err.Field,
+			})
+		}
+	}
+
+	// type specific validation
+	switch d.Type {
+	case "dissertation":
+		errs = append(errs, d.validateDissertation()...)
+	case "journal_article":
+		errs = append(errs, d.validateJournalArticle()...)
+	case "miscellaneous":
+		errs = append(errs, d.validateMiscellaneous()...)
+	case "book":
+		errs = append(errs, d.validateBook()...)
+	case "book_chapter":
+		errs = append(errs, d.validateBookChapter()...)
+	case "conference":
+		errs = append(errs, d.validateConference()...)
+	case "book_editor":
+		errs = append(errs, d.validateBookEditor()...)
+	case "issue_editor":
+		errs = append(errs, d.validateIssueEditor()...)
+	}
+
+	return
+}
+
+func (p *Publication) validateBookEditor() (errs validation.Errors) {
+	return
+}
+
+func (p *Publication) validateIssueEditor() (errs validation.Errors) {
+	return
+}
+
+func (p *Publication) validateJournalArticle() (errs validation.Errors) {
+	// TODO: confusing: gui shows select without empty element
+	// but first creation sets this value to empty
+	if p.JournalArticleType != "" && !validation.InArray(vocabularies.Map["journal_article_types"], p.JournalArticleType) {
+		errs = append(errs, &validation.Error{
+			Pointer: "/journal_article_type",
+			Code:    "invalid",
+			Field:   "journal_article_type",
+		})
+	}
+	if p.Status != "public" {
+		return
+	}
+	if p.Publication == "" {
+		errs = append(errs, &validation.Error{
+			Pointer: "/publication",
+			Code:    "required",
+			Field:   "publication",
+		})
+	}
+	return
+}
+
+func (p *Publication) validateBook() (errs validation.Errors) {
+	return
+}
+
+func (p *Publication) validateConference() (errs validation.Errors) {
+	return
+}
+
+func (p *Publication) validateBookChapter() (errs validation.Errors) {
+	return
+}
+
+func (p *Publication) validateDissertation() (errs validation.Errors) {
+	if p.Status != "public" {
+		return
+	}
+	if p.DefensePlace == "" {
+		errs = append(errs, &validation.Error{
+			Pointer: "/defense_place",
+			Code:    "required",
+			Field:   "defense_place",
+		})
+	}
+	if p.DefenseDate == "" {
+		errs = append(errs, &validation.Error{
+			Pointer: "/defense_date",
+			Code:    "required",
+			Field:   "defense_date",
+		})
+	} else if !validation.IsDate(p.DefenseDate) {
+		errs = append(errs, &validation.Error{
+			Pointer: "/defense_date",
+			Code:    "invalid",
+			Field:   "defense_date",
+		})
+	}
+	if p.DefenseTime == "" {
+		errs = append(errs, &validation.Error{
+			Pointer: "/defense_time",
+			Code:    "required",
+			Field:   "defense_time",
+		})
+	} else if !validation.IsTime(p.DefenseTime) {
+		errs = append(errs, &validation.Error{
+			Pointer: "/defense_time",
+			Code:    "invalid",
+			Field:   "defense_time",
+		})
+	}
+	return
+}
+
+func (p *Publication) validateMiscellaneous() (errs validation.Errors) {
+	// TODO: confusing: gui shows select without empty element
+	// but first creation sets this value to empty
+	if p.MiscellaneousType != "" && !validation.InArray(vocabularies.Map["miscellaneous_types"], p.MiscellaneousType) {
+		errs = append(errs, &validation.Error{
+			Pointer: "/miscellaneous_type",
+			Code:    "invalid",
+			Field:   "miscellaneous_type",
+		})
+	}
+	return
+}
+
+func (pf *PublicationFile) Validate() (errs validation.Errors) {
+
+	if !validation.InArray(vocabularies.Map["publication_file_access_levels"], pf.AccessLevel) {
+		errs = append(errs, &validation.Error{
+			Pointer: "/access_level",
+			Code:    "invalid",
+			Field:   "access_level",
+		})
+	}
+
+	if pf.ContentType == "" {
+		errs = append(errs, &validation.Error{
+			Pointer: "/content_type",
+			Code:    "required",
+			Field:   "content_type",
+		})
+	}
+
+	if pf.ID == "" {
+		errs = append(errs, &validation.Error{
+			Pointer: "/file_id", // TODO: change to id?
+			Code:    "required",
+			Field:   "file_id",
+		})
+	}
+
+	if pf.Relation != "" && !validation.InArray(vocabularies.Map["publication_file_relations"], pf.Relation) {
+		errs = append(errs, &validation.Error{
+			Pointer: "/relation",
+			Code:    "invalid",
+			Field:   "relation",
+		})
+	}
+
+	if pf.Embargo != "" {
+		if !validation.IsDate(pf.Embargo) {
+			errs = append(errs, &validation.Error{
+				Pointer: "/embargo",
+				Code:    "invalid",
+				Field:   "embargo",
+			})
+		}
+		if pf.EmbargoTo == pf.AccessLevel {
+			errs = append(errs, &validation.Error{
+				Pointer: "/embargo_to",
+				Code:    "invalid", // TODO: better code
+				Field:   "embargo_to",
+			})
+		} else if !validation.InArray(vocabularies.Map["publication_file_access_levels"], pf.EmbargoTo) {
+			errs = append(errs, &validation.Error{
+				Pointer: "/embargo_to",
+				Code:    "invalid", // TODO: better code
+				Field:   "embargo_to",
+			})
+		}
+	}
+
+	if pf.PublicationVersion != "" && !validation.InArray(vocabularies.Map["publication_versions"], pf.PublicationVersion) {
+		errs = append(errs, &validation.Error{
+			Pointer: "/publication_version",
+			Code:    "invalid",
+			Field:   "publication_version",
+		})
+	}
+
+	return
+}
+
+func (pl *PublicationLink) Validate() (errs validation.Errors) {
+	if !validation.InArray(vocabularies.Map["publication_link_relations"], pl.Relation) {
+		errs = append(errs, &validation.Error{
+			Pointer: "/relation",
+			Code:    "invalid",
+			Field:   "relation",
+		})
+	}
 	return
 }

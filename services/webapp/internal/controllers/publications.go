@@ -364,8 +364,7 @@ func (c *Publications) AddSinglePublish(w http.ResponseWriter, r *http.Request) 
 			TODO: return to /add-single/confirm with flash in session instead of rendering this in the wrong path
 			TODO: replace hardcoded error by validation errors report
 		*/
-		if _, ok := err.(validation.Errors); ok {
-
+		if validationErrors, ok := err.(validation.Errors); ok {
 			c.Render.HTML(w, http.StatusOK, "publication/add_single_confirm", c.ViewData(r, struct {
 				PageTitle   string
 				Step        int
@@ -375,7 +374,7 @@ func (c *Publications) AddSinglePublish(w http.ResponseWriter, r *http.Request) 
 				4,
 				pub,
 			},
-				views.Flash{Type: "error", Message: "Title is required"},
+				views.Flash{Type: "error", Message: validationErrors.Error()},
 			))
 			return
 		}
