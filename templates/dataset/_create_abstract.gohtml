@@ -1,11 +1,12 @@
 {{define "create-abstract"}}
-    {{template "abstracts-table" .}}
-    <div class="modals" id="abstract-modals"></div>
+    <div hx-swap-oob="innerHTML:#abstract-modals"></div>
+    <div hx-swap-oob="innerHTML:#abstracts-body">
+        {{template "abstracts-table" .}}
+    </div>
 {{end}}
 
 {{define "create-abstract-failed"}}
-    {{template "abstracts-table" .}}
-    <div class="modals" id="abstract-modals">
+    <div hx-swap-oob="innerHTML:#abstract-modals">
         {{template "add-abstract" .}}
     </div>
 {{end}}

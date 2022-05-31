@@ -57,6 +57,8 @@ func (c *Controller) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
+	ctx.Dataset = d
+
 	c.abstractView.Render(w, "create-abstract", YieldAbstract{
 		Context: ctx,
 	})

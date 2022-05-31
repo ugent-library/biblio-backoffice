@@ -14,9 +14,8 @@
                     <button type="button" name="create" class="btn btn-primary"
                         hx-post="{{pathFor "dataset_create_abstract" "id" .Context.Dataset.ID}}"
                         hx-headers='{"If-Match": "{{.Context.Dataset.SnapshotID}}"}'
-                        hx-target="#abstracts-body"
                         hx-include=".modal-body"
-                        hx-swap="innerHTML settle:.15s"
+                        hx-swap="none"
                     >
                         Add abstract
                     </button>
