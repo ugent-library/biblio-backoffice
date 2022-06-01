@@ -9,10 +9,10 @@ import (
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
+	"github.com/ugent-library/biblio-backend/internal/locale"
 	"github.com/ugent-library/biblio-backend/internal/vocabularies"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/views"
-	"github.com/ugent-library/go-locale/locale"
 	"github.com/unrolled/render"
 )
 

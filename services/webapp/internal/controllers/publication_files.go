@@ -14,12 +14,12 @@ import (
 	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/backends/filestore"
+	"github.com/ugent-library/biblio-backend/internal/locale"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/ulid"
 	"github.com/ugent-library/biblio-backend/internal/validation"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/views"
-	"github.com/ugent-library/go-locale/locale"
 	"github.com/unrolled/render"
 )
 
@@ -402,7 +402,7 @@ func (c *PublicationFiles) addThumbnailURLs(p *models.Publication) {
 				Width:  156,
 				Height: 156,
 			}
-			p := imagorpath.Generate(params, viper.GetString("imagor-secret"))
+			p := imagorpath.Generate(params, imagorpath.NewDefaultSigner(viper.GetString("imagor-secret")))
 			u = viper.GetString("imagor-url") + "/" + p
 			f.ThumbnailURL = u
 		}

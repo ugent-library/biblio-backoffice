@@ -4,8 +4,8 @@ import (
 	"html/template"
 	"time"
 
+	"github.com/ugent-library/biblio-backend/internal/locale"
 	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/go-locale/locale"
 )
 
 type Flash struct {

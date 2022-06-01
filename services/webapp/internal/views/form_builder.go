@@ -5,8 +5,8 @@ import (
 	"html/template"
 	"strings"
 
+	"github.com/ugent-library/biblio-backend/internal/locale"
 	"github.com/ugent-library/biblio-backend/internal/validation"
-	"github.com/ugent-library/go-locale/locale"
 )
 
 type formData struct {

@@ -49,6 +49,14 @@ func Must(w http.ResponseWriter, err error) bool {
 	return true
 }
 
+func MustRender(w http.ResponseWriter, name string, data interface{}, err error) bool {
+	if Must(w, err) {
+		Render(w, name, data)
+		return true
+	}
+	return false
+}
+
 func parseTemplates(rootDir, ext string, funcMaps []template.FuncMap) (*template.Template, error) {
 	cleanRootDir := filepath.Clean(rootDir)
 	pathStart := len(cleanRootDir) + 1

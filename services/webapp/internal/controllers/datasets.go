@@ -8,12 +8,12 @@ import (
 	"time"
 
 	"github.com/ugent-library/biblio-backend/internal/backends"
+	"github.com/ugent-library/biblio-backend/internal/locale"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/ulid"
 	"github.com/ugent-library/biblio-backend/internal/validation"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/views"
-	"github.com/ugent-library/go-locale/locale"
 	"github.com/unrolled/render"
 )
 

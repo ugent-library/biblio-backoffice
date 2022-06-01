@@ -7,10 +7,10 @@ import (
 	"github.com/gorilla/handlers"
 	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/backends"
+	"github.com/ugent-library/biblio-backend/internal/locale"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/controllers"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/dataset"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/middleware"
-	"github.com/ugent-library/go-locale/locale"
 	"github.com/ugent-library/go-oidc/oidc"
 )
 

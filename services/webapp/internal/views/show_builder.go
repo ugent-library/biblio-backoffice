@@ -3,7 +3,7 @@ package views
 import (
 	"html/template"
 
-	"github.com/ugent-library/go-locale/locale"
+	"github.com/ugent-library/biblio-backend/internal/locale"
 )
 
 type showData struct {

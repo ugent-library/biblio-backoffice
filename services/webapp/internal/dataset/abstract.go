@@ -44,11 +44,9 @@ func (c *Controller) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	if render.Must(w, err) {
-		render.Render(w, "dataset/create_abstract", YieldAbstract{
-			Context: ctx.WithDataset(d),
-		})
-	}
+	render.MustRender(w, "dataset/create_abstract", YieldAbstract{
+		Context: ctx.WithDataset(d),
+	}, err)
 }
 
 func (c *Controller) abstractForm(ctx Context, errors validation.Errors) *render.Form {
