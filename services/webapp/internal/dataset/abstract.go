@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/ugent-library/biblio-backend/internal/localize"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
 	"github.com/ugent-library/biblio-backend/internal/validation"
-	"github.com/ugent-library/biblio-backend/internal/vocabularies"
 )
 
 type BindAbstract struct {
@@ -54,32 +54,8 @@ func (c *Controller) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx 
 }
 
 func abstractForm(ctx EditContext, bind BindAbstract, index int, errors validation.Errors) *render.Form {
-	formErrors := make([]string, len(errors))
-	for i, e := range errors {
-		formErrors[i] = ctx.Locale.TS("validation", e.Code)
-	}
-
-	var (
-		textErr string
-		langErr string
-	)
-	if e := errors.At(fmt.Sprintf("/abstract/%d/text", index)); e != nil {
-		textErr = ctx.Locale.TS("validation", e.Code)
-	}
-	if e := errors.At(fmt.Sprintf("/abstract/%d/lang", index)); e != nil {
-		langErr = ctx.Locale.TS("validation", e.Code)
-	}
-
-	langOpts := []render.SelectOption{}
-	for _, lang := range vocabularies.Map["language_codes"] {
-		langOpts = append(langOpts, render.SelectOption{
-			Value: lang,
-			Label: ctx.Locale.LanguageName(lang),
-		})
-	}
-
 	return &render.Form{
-		Errors: formErrors,
+		Errors: localize.ValidationErrors(ctx.Locale, errors),
 		Fields: []render.FormField{
 			&render.TextArea{
 				Name:        "text",
@@ -88,15 +64,15 @@ func abstractForm(ctx EditContext, bind BindAbstract, index int, errors validati
 				Cols:        12,
 				Rows:        6,
 				Placeholder: ctx.Locale.T("builder.abstract.text.placeholder"),
-				Error:       textErr,
+				Error:       localize.ValidationErrorAt(ctx.Locale, errors, fmt.Sprintf("/abstract/%d/text", index)),
 			},
 			&render.Select{
 				Name:    "lang",
 				Value:   bind.Lang,
 				Label:   ctx.Locale.T("builder.abstract.lang"),
-				Options: langOpts,
+				Options: localize.LanguageSelectOptions(ctx.Locale),
 				Cols:    12,
-				Error:   langErr,
+				Error:   localize.ValidationErrorAt(ctx.Locale, errors, fmt.Sprintf("/abstract/%d/lang", index)),
 			},
 		},
 	}
