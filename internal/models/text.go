@@ -11,14 +11,14 @@ func (t *Text) Validate() (errs validation.Errors) {
 	if t.Lang == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/lang",
-			Code:    "required",
+			Code:    "lang.required",
 			Field:   "lang",
 		})
 	}
 	if t.Text == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/text",
-			Code:    "required",
+			Code:    "text.required",
 			Field:   "text",
 		})
 	}

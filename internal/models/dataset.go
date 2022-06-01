@@ -369,7 +369,7 @@ func (d *Dataset) Validate() (errs validation.Errors) {
 		for _, err := range abstract.Validate() {
 			errs = append(errs, &validation.Error{
 				Pointer: fmt.Sprintf("/abstract/%d%s", i, err.Pointer),
-				Code:    err.Code,
+				Code:    "dataset.abstract." + err.Code,
 				Field:   "abstract." + err.Field,
 			})
 		}

@@ -29,6 +29,15 @@ func (errs Errors) Error() string {
 	return msg
 }
 
+func (errs Errors) At(ptr string) *Error {
+	for _, e := range errs {
+		if e.Pointer == ptr {
+			return e
+		}
+	}
+	return nil
+}
+
 func (e *Error) Error() string {
 	msg := e.Code
 	if e.Pointer != "" {

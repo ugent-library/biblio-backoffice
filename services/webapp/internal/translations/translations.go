@@ -585,6 +585,7 @@ func init() {
 	message.SetString(language.English, "tooltip.dataset.publisher", "The name of the entity that holds, archives, publishes prints, distributes, releases, issues, or produces the resource. Typically, the name of the data repository in which the datasets was deposited.")
 	message.SetString(language.English, "tooltip.dataset.related_publications", "<a href=\"https://onderzoektips.ugent.be/en/tips/00002061/\" target=\"_blank\">https://onderzoektips.ugent.be/en/tips/00002061/ <i class=\"if if--small if-external-link\"></i></a>")
 
+	// OLD
 	message.SetString(language.English, "dataset.validation.error.id.required", "ID is required")
 	message.SetString(language.English, "dataset.validation.error.title.required", "Title is required")
 	message.SetString(language.English, "dataset.validation.error.status.required", "Status is required")
@@ -607,4 +608,7 @@ func init() {
 	message.SetString(language.English, "dataset.validation.error.editor.last_name.required", "Last name is required")
 	message.SetString(language.English, "dataset.validation.error.supervisor.first_name.required", "First name is required")
 	message.SetString(language.English, "dataset.validation.error.supervisor.last_name.required", "Last name is required")
+
+	// NEW
+	message.SetString(language.English, "validation.dataset.abstract.text.required", "abstract text can't be empty")
 }
