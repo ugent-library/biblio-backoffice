@@ -1,18 +1,25 @@
 package render
 
 import (
-	"net/url"
+	"net/http"
 
 	"github.com/gorilla/schema"
 )
 
-var decoder = schema.NewDecoder()
+var formDecoder = schema.NewDecoder()
 
 func init() {
-	decoder.SetAliasTag("form")
-	decoder.IgnoreUnknownKeys(true)
+	formDecoder.SetAliasTag("form")
+	formDecoder.IgnoreUnknownKeys(true)
 }
 
-func Bind(v interface{}, vals url.Values) error {
-	return decoder.Decode(v, vals)
+func MustBindForm(w http.ResponseWriter, r *http.Request, v interface{}) bool {
+	r.ParseForm()
+
+	if err := formDecoder.Decode(v, r.Form); err != nil {
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return false
+	}
+
+	return true
 }

@@ -1,4 +1,3 @@
-{{define "text-area-field"}}
 <div class="form-group row{{if .Error}} is-invalid{{end}}">
     <label class="col-3 col-form-label" for="{{.Name}}">
         {{.Label}}{{if .Required}}&nbsp;<abbr class="required" title="Required">*</abbr>{{end}}
@@ -14,4 +13,3 @@
         <textarea class="form-control{{if .Error}} is-invalid{{end}}" name="{{.Name}}"{{if .Placeholder}} placeholder="{{.Placeholder}}"{{end}} rows="{{.Rows}}">{{.Value}}</textarea>
     </div>
 </div>
-{{end}}

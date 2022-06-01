@@ -6,7 +6,6 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
-	"github.com/ugent-library/biblio-backend/services/webapp/internal/render"
 	"github.com/ugent-library/go-locale/locale"
 )
 
@@ -16,19 +15,18 @@ type Context struct {
 	CanEdit bool
 }
 
+func (c Context) WithDataset(d *models.Dataset) Context {
+	c.Dataset = d
+	return c
+}
+
 type Controller struct {
-	store        backends.Store
-	abstractView render.View
+	store backends.Store
 }
 
 func NewController(store backends.Store) *Controller {
 	return &Controller{
 		store: store,
-		abstractView: render.NewView(
-			"dataset/_add_abstract",
-			"dataset/_create_abstract",
-			"dataset/_abstracts_table",
-		),
 	}
 }
 

@@ -6,10 +6,6 @@ import (
 	"strings"
 )
 
-var (
-	formTemplates = template.Must(template.New("").ParseGlob("templates/form/*.gohtml"))
-)
-
 type Form struct {
 	Errors []string
 	Fields []FormField
@@ -23,7 +19,7 @@ func (f *Form) RenderHTML() (template.HTML, error) {
 	var buf strings.Builder
 
 	if len(f.Errors) > 0 {
-		if err := formTemplates.ExecuteTemplate(&buf, "errors", f); err != nil {
+		if err := Templates().ExecuteTemplate(&buf, "form/errors", f); err != nil {
 			return "", err
 		}
 	}
@@ -50,7 +46,7 @@ type TextArea struct {
 }
 
 func (f *TextArea) Render(w io.Writer) error {
-	return formTemplates.ExecuteTemplate(w, "text-area-field", f)
+	return Templates().ExecuteTemplate(w, "form/text_area", f)
 }
 
 type Select struct {
@@ -72,5 +68,5 @@ type SelectOption struct {
 }
 
 func (f *Select) Render(w io.Writer) error {
-	return formTemplates.ExecuteTemplate(w, "select-field", f)
+	return Templates().ExecuteTemplate(w, "form/select", f)
 }

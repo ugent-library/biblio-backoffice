@@ -4,36 +4,35 @@ import (
 	"bytes"
 	"html/template"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
-	"path"
+	"os"
+	"path/filepath"
+	"strings"
+	"sync"
 )
 
 var (
 	TemplateDir = "templates/"
 	TemplateExt = ".gohtml"
 	FuncMaps    = []template.FuncMap{}
+	templates   *template.Template
+	parseOnce   sync.Once
 )
 
-type View struct {
-	Template *template.Template
+func Templates() *template.Template {
+	parseOnce.Do(func() {
+		templates = template.Must(parseTemplates(TemplateDir, TemplateExt, FuncMaps))
+	})
+	return templates
 }
 
-func NewView(files ...string) View {
-	addTemplateDirExt(files)
-	tmpl := template.New("")
-	for _, funcs := range FuncMaps {
-		tmpl.Funcs(funcs)
-	}
-	tmpl = template.Must(tmpl.ParseFiles(files...))
-	return View{Template: tmpl}
-}
-
-func (p View) Render(w http.ResponseWriter, name string, data interface{}) {
+func Render(w http.ResponseWriter, name string, data interface{}) {
 	w.Header().Set("Content-Type", "text/html")
 
 	var buf bytes.Buffer
-	if err := p.Template.ExecuteTemplate(&buf, name, data); err != nil {
+	if err := Templates().ExecuteTemplate(&buf, name, data); err != nil {
 		log.Println(err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
@@ -41,8 +40,44 @@ func (p View) Render(w http.ResponseWriter, name string, data interface{}) {
 	io.Copy(w, &buf)
 }
 
-func addTemplateDirExt(files []string) {
-	for i, f := range files {
-		files[i] = path.Join(TemplateDir, f+TemplateExt)
+func Must(w http.ResponseWriter, err error) bool {
+	if err != nil {
+		log.Println(err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return false
 	}
+	return true
+}
+
+func parseTemplates(rootDir, ext string, funcMaps []template.FuncMap) (*template.Template, error) {
+	cleanRootDir := filepath.Clean(rootDir)
+	pathStart := len(cleanRootDir) + 1
+	tmpl := template.New("")
+
+	err := filepath.Walk(cleanRootDir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if !info.IsDir() && strings.HasSuffix(path, ext) {
+			b, err := ioutil.ReadFile(path)
+			if err != nil {
+				return err
+			}
+
+			pathEnd := len(path) - len(ext)
+			name := path[pathStart:pathEnd]
+			t := tmpl.New(name)
+			for _, funcs := range funcMaps {
+				t.Funcs(funcs)
+			}
+			if _, err := t.Parse(string(b)); err != nil {
+				return err
+			}
+		}
+
+		return nil
+	})
+
+	return tmpl, err
 }

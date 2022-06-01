@@ -1,8 +1,6 @@
 package dataset
 
 import (
-	"errors"
-	"log"
 	"net/http"
 
 	"github.com/ugent-library/biblio-backend/internal/models"
@@ -22,46 +20,35 @@ type BindAbstract struct {
 }
 
 func (c *Controller) AddAbstract(w http.ResponseWriter, r *http.Request, ctx Context) {
-	c.abstractView.Render(w, "add-abstract", YieldAbstract{
+	render.Render(w, "dataset/add_abstract", YieldAbstract{
 		Context: ctx,
 		Form:    c.abstractForm(ctx, nil),
 	})
 }
 
 func (c *Controller) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx Context) {
-	r.ParseForm()
-
 	var bind BindAbstract
-	if err := render.Bind(&bind, r.Form); err != nil {
-		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+	if !render.MustBindForm(w, r, &bind) {
 		return
 	}
 
 	d := ctx.Dataset.Clone()
 	d.Abstract = append(d.Abstract, models.Text{Text: bind.Text, Lang: bind.Lang})
-
 	err := c.store.UpdateDataset(d)
 
-	var validationErrors validation.Errors
-	if errors.As(err, &validationErrors) {
-		c.abstractView.Render(w, "create-abstract-failed", YieldAbstract{
+	if err := validation.As(err); err != nil {
+		render.Render(w, "dataset/create_abstract_failed", YieldAbstract{
 			Context: ctx,
-			Form:    c.abstractForm(ctx, validationErrors),
+			Form:    c.abstractForm(ctx, err),
 		})
 		return
 	}
 
-	if err != nil {
-		log.Println(err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
+	if render.Must(w, err) {
+		render.Render(w, "dataset/create_abstract", YieldAbstract{
+			Context: ctx.WithDataset(d),
+		})
 	}
-
-	ctx.Dataset = d
-
-	c.abstractView.Render(w, "create-abstract", YieldAbstract{
-		Context: ctx,
-	})
 }
 
 func (c *Controller) abstractForm(ctx Context, errors validation.Errors) *render.Form {
