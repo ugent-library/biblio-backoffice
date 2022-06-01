@@ -223,7 +223,7 @@ func (c *Datasets) AddImport(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println(err)
 		flash := views.Flash{Type: "error"}
-		flash.Message = loc.T("dataset.single_import", "import_by_id.import_failed")
+		flash.Message = loc.TS("dataset.single_import", "import_by_id.import_failed")
 
 		c.Render.HTML(w, http.StatusOK, "dataset/add", c.ViewData(r, DatasetAddVars{
 			PageTitle:  "Add - Datasets - Biblio",

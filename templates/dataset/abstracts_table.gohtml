@@ -7,15 +7,15 @@
         </tr>
     </thead>
     <tbody>
-    {{range $i, $a := .Context.Dataset.Abstract}}
+    {{range $i, $a := .Yield.Dataset.Abstract}}
         {{$pos := $i | toString}}
         <tr class="row-{{$pos}}">
             <td class="pl-6">
                 <p>{{$a.Text}}</p>
             </td>
-            <td>{{$.Context.Locale.LanguageName $a.Lang}}</td>
+            <td>{{$.Locale.LanguageName $a.Lang}}</td>
             <td class="pr-6">
-                {{if $.Context.CanEdit}}
+                {{if $.CanEdit}}
                 <div class="c-button-toolbar">
                     <div class="dropdown">
                         <button class="btn btn-link btn-icon-only btn-link-muted" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -23,7 +23,7 @@
                         </button>
                         <div class="dropdown-menu">
                             <button class="dropdown-item" type="button"
-                                hx-get="{{pathFor "dataset_abstracts_edit_abstract" "id" $.Context.Dataset.ID "delta" $pos}}"
+                                hx-get="{{pathFor "dataset_abstracts_edit_abstract" "id" $.Yield.Dataset.ID "delta" $pos}}"
                                 hx-target="#abstract-body"
                                 hx-swap="innerHTML"
                             >
@@ -32,7 +32,7 @@
                             </button>
 
                             <button class="dropdown-item" type="button"
-                                hx-get="{{pathFor "dataset_abstracts_confirm_remove_from_dataset" "id" $.Context.Dataset.ID "delta" $pos}}"
+                                hx-get="{{pathFor "dataset_abstracts_confirm_remove_from_dataset" "id" $.Yield.Dataset.ID "delta" $pos}}"
                                 hx-target="#abstract-body"
                                 hx-swap="innerHTML"
                             >

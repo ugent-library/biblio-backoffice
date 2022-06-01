@@ -241,7 +241,7 @@ func (c *Publications) AddSingleImport(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println(err)
 			flash := views.Flash{Type: "error"}
-			flash.Message = loc.T("publication.single_import", "import_by_id.import_failed")
+			flash.Message = loc.TS("publication.single_import", "import_by_id.import_failed")
 
 			c.Render.HTML(w, http.StatusOK, "publication/add_identifier", c.ViewData(r, PublicationAddSingleVars{
 				PageTitle: "Add - Publications - Biblio",
@@ -258,7 +258,7 @@ func (c *Publications) AddSingleImport(w http.ResponseWriter, r *http.Request) {
 
 		if pubType == "" {
 			flash := views.Flash{Type: "error"}
-			flash.Message = loc.T("publication.single_import", "import_by_id.string.minLength")
+			flash.Message = loc.TS("publication.single_import", "import_by_id.string.minLength")
 
 			c.Render.HTML(w, http.StatusOK, "publication/add_identifier", c.ViewData(r, PublicationAddSingleVars{
 				PageTitle: "Add - Publications - Biblio",

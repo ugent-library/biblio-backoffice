@@ -40,7 +40,7 @@ func (d *Data) D() interface{} {
 }
 
 func (d *Data) T(scope, key string, args ...interface{}) string {
-	return d.Locale.Translate(scope, key, args...)
+	return d.Locale.TranslateScope(scope, key, args...)
 }
 
 func (d *Data) RenderPartial(tmpl string, data interface{}) (template.HTML, error) {

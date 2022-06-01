@@ -523,10 +523,10 @@ func Register(services *backends.Services, base controllers.Base, oidcClient *oi
 		Methods("PUT").
 		Name("dataset_contributors_update")
 	// Dataset abstracts HTMX fragments
-	datasetEditRouter.HandleFunc("/htmx/abstracts/add", datasetC.WithContext(datasetC.AddAbstract)).
+	datasetEditRouter.HandleFunc("/htmx/abstracts/add", datasetC.WithEditContext(datasetC.AddAbstract)).
 		Methods("GET").
 		Name("dataset_add_abstract")
-	datasetEditRouter.HandleFunc("/htmx/abstracts/create", datasetC.WithContext(datasetC.CreateAbstract)).
+	datasetEditRouter.HandleFunc("/htmx/abstracts/create", datasetC.WithEditContext(datasetC.CreateAbstract)).
 		Methods("POST").
 		Name("dataset_create_abstract")
 	datasetEditRouter.HandleFunc("/htmx/abstracts/edit/{delta}", datasetAbstractsController.Edit).

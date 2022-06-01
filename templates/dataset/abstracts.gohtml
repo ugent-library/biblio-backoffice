@@ -6,9 +6,9 @@
                 <i class="if if-chevron-right mr-4 text-muted"></i>Abstract
             </div>
             <div class="bc-toolbar-right">
-                {{if .Context.CanEdit}}
+                {{if .CanEdit}}
                 <button class="btn btn-outline-primary" type="button"
-                    hx-get="{{pathFor "dataset_add_abstract" "id" .Context.Dataset.ID}}"
+                    hx-get="{{pathFor "dataset_add_abstract" "id" .Yield.Dataset.ID}}"
                     hx-target="#abstract-modals"
                 >
                     <i class="if if-add"></i>

@@ -10,7 +10,7 @@ type Error struct {
 	Code    string
 }
 
-func As(err error) Errors {
+func From(err error) Errors {
 	var e Errors
 	if errors.As(err, &e) {
 		return e

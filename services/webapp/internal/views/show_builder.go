@@ -70,7 +70,7 @@ func (b *ShowBuilder) newShowData(opts []showOption) *showData {
 
 func (b *ShowBuilder) Locale(scope string) showLocaleOption {
 	return func(str string) string {
-		return b.locale.Translate(scope, str)
+		return b.locale.TranslateScope(scope, str)
 	}
 }
 
@@ -89,7 +89,7 @@ func (b *ShowBuilder) Label(v string, localeOpts ...showLocaleOption) showOption
 			}
 		}
 		if d.Label == "" {
-			d.Label = b.locale.Translate(b.localeScope, v)
+			d.Label = b.locale.TranslateScope(b.localeScope, v)
 		}
 	}
 }

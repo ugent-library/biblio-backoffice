@@ -75,7 +75,7 @@ func (b *FormBuilder) newFormData(opts []formOption) *formData {
 	}
 
 	if formErr := b.ErrorFor(d.errorPointer); formErr != nil {
-		d.Error = d.Label + " " + b.locale.Translate("validation", formErr.Code)
+		d.Error = d.Label + " " + b.locale.TranslateScope("validation", formErr.Code)
 	}
 
 	return d
@@ -92,7 +92,7 @@ func (b *FormBuilder) ErrorFor(pointer string) *validation.Error {
 
 func (b *FormBuilder) Locale(scope string) formLocaleOption {
 	return func(str string) string {
-		return b.locale.Translate(scope, str)
+		return b.locale.TranslateScope(scope, str)
 	}
 }
 
@@ -113,7 +113,7 @@ func (b *FormBuilder) Name(name string, localeOpts ...formLocaleOption) formOpti
 			}
 		}
 		if d.Label == "" {
-			d.Label = b.locale.Translate(b.localeScope, d.Name)
+			d.Label = b.locale.TranslateScope(b.localeScope, d.Name)
 		}
 	}
 }

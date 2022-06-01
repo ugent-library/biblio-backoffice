@@ -6,18 +6,26 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/locale"
 	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backend/internal/render"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 )
 
-type Context struct {
+type EditContext struct {
 	Locale  *locale.Locale
 	Dataset *models.Dataset
 	CanEdit bool
 }
 
-func (c Context) WithDataset(d *models.Dataset) Context {
-	c.Dataset = d
-	return c
+func (c EditContext) RenderYield(w http.ResponseWriter, tmpl string, yield interface{}) {
+	render.Render(w, tmpl, struct {
+		Locale  *locale.Locale
+		CanEdit bool
+		Yield   interface{}
+	}{
+		Locale:  c.Locale,
+		CanEdit: c.CanEdit,
+		Yield:   yield,
+	})
 }
 
 type Controller struct {
@@ -30,13 +38,13 @@ func NewController(store backends.Store) *Controller {
 	}
 }
 
-func (c *Controller) WithContext(fn func(http.ResponseWriter, *http.Request, Context)) http.HandlerFunc {
+func (c *Controller) WithEditContext(fn func(http.ResponseWriter, *http.Request, EditContext)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		loc := locale.Get(r.Context())
 		user := context.GetUser(r.Context())
 		dataset := context.GetDataset(r.Context())
 
-		fn(w, r, Context{
+		fn(w, r, EditContext{
 			Locale:  loc,
 			Dataset: dataset,
 			CanEdit: user.CanEditDataset(dataset),
