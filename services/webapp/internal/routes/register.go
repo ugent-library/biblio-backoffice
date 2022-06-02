@@ -532,7 +532,7 @@ func Register(services *backends.Services, base controllers.Base, oidcClient *oi
 	datasetEditRouter.HandleFunc("/htmx/abstracts/{position}/edit", datasetC.WithEditContext(datasetC.EditAbstract)).
 		Methods("GET").
 		Name("dataset_edit_abstract")
-	datasetEditRouter.HandleFunc("/htmx/abstracts/{position}", datasetAbstractsController.Update).
+	datasetEditRouter.HandleFunc("/htmx/abstracts/{position}", datasetC.WithEditContext(datasetC.UpdateAbstract)).
 		Methods("PUT").
 		Name("dataset_update_abstract")
 	datasetEditRouter.HandleFunc("/htmx/abstracts/remove/{delta}", datasetAbstractsController.ConfirmRemove).

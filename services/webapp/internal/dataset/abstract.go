@@ -71,6 +71,7 @@ func (c *Controller) EditAbstract(w http.ResponseWriter, r *http.Request, ctx Ed
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
+
 	bind.Lang = ctx.Dataset.Abstract[bind.Position].Lang
 	bind.Text = ctx.Dataset.Abstract[bind.Position].Text
 
@@ -79,6 +80,44 @@ func (c *Controller) EditAbstract(w http.ResponseWriter, r *http.Request, ctx Ed
 		Form:     abstractForm(ctx, bind, nil),
 		Position: bind.Position,
 	})
+}
+
+func (c *Controller) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx EditContext) {
+	var bind BindAbstract
+	r.ParseForm()
+	if !render.MustBindForm(w, r.Form, &bind) {
+		return
+	}
+	if !render.MustBindPath(w, ctx.PathParams, &bind) {
+		return
+	}
+
+	if bind.Position >= len(ctx.Dataset.Abstract) {
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	d := ctx.Dataset.Clone()
+	d.SnapshotID = r.Header.Get("If-Match")
+	d.Abstract[bind.Position].Lang = bind.Lang
+	d.Abstract[bind.Position].Text = bind.Text
+	err := c.store.UpdateDataset(d)
+
+	if validationErrors := validation.From(err); validationErrors != nil {
+		ctx.RenderYield(w, "dataset/update_abstract_failed", YieldAbstract{
+			Dataset:  d,
+			Position: bind.Position,
+			Form:     abstractForm(ctx, bind, validationErrors),
+		})
+		return
+	}
+
+	if render.Must(w, err) {
+		ctx.RenderYield(w, "dataset/update_abstract", YieldAbstract{
+			Dataset:  d,
+			Position: bind.Position,
+		})
+	}
 }
 
 func abstractForm(ctx EditContext, bind BindAbstract, errors validation.Errors) *render.Form {
