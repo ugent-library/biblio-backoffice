@@ -8,8 +8,7 @@
     </thead>
     <tbody>
     {{range $i, $a := .Yield.Dataset.Abstract}}
-        {{$pos := $i | toString}}
-        <tr class="row-{{$pos}}">
+        <tr class="row-{{$i}}">
             <td class="pl-6">
                 <p>{{$a.Text}}</p>
             </td>
@@ -23,7 +22,7 @@
                         </button>
                         <div class="dropdown-menu">
                             <button class="dropdown-item" type="button"
-                                hx-get="{{pathFor "dataset_abstracts_edit_abstract" "id" $.Yield.Dataset.ID "delta" $pos}}"
+                                hx-get="{{pathFor "dataset_edit_abstract" "id" $.Yield.Dataset.ID "position" ($i|toString)}}"
                                 hx-target="#abstract-body"
                                 hx-swap="innerHTML"
                             >
@@ -32,7 +31,7 @@
                             </button>
 
                             <button class="dropdown-item" type="button"
-                                hx-get="{{pathFor "dataset_abstracts_confirm_remove_from_dataset" "id" $.Yield.Dataset.ID "delta" $pos}}"
+                                hx-get="{{pathFor "dataset_abstracts_confirm_remove_from_dataset" "id" $.Yield.Dataset.ID "delta" ($i|toString)}}"
                                 hx-target="#abstract-body"
                                 hx-swap="innerHTML"
                             >

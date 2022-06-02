@@ -11,25 +11,33 @@ import (
 )
 
 type BindAbstract struct {
-	Text string `form:"text"`
-	Lang string `form:"lang"`
+	Position int    `path:"position"`
+	Text     string `form:"text"`
+	Lang     string `form:"lang"`
 }
 
-type YieldAbstract struct {
+type YieldNewAbstract struct {
 	Dataset *models.Dataset
 	Form    *render.Form
 }
 
+type YieldAbstract struct {
+	Dataset  *models.Dataset
+	Position int
+	Form     *render.Form
+}
+
 func (c *Controller) AddAbstract(w http.ResponseWriter, r *http.Request, ctx EditContext) {
-	ctx.RenderYield(w, "dataset/add_abstract", YieldAbstract{
+	ctx.RenderYield(w, "dataset/add_abstract", YieldNewAbstract{
 		Dataset: ctx.Dataset,
-		Form:    abstractForm(ctx, BindAbstract{}, len(ctx.Dataset.Abstract), nil),
+		Form:    abstractForm(ctx, BindAbstract{Position: len(ctx.Dataset.Abstract)}, nil),
 	})
 }
 
 func (c *Controller) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx EditContext) {
 	var bind BindAbstract
-	if !render.MustBindForm(w, r, &bind) {
+	r.ParseForm()
+	if !render.MustBindForm(w, r.Form, &bind) {
 		return
 	}
 
@@ -39,21 +47,41 @@ func (c *Controller) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx 
 	err := c.store.UpdateDataset(d)
 
 	if validationErrors := validation.From(err); validationErrors != nil {
-		ctx.RenderYield(w, "dataset/create_abstract_failed", YieldAbstract{
+		ctx.RenderYield(w, "dataset/create_abstract_failed", YieldNewAbstract{
 			Dataset: d,
-			Form:    abstractForm(ctx, bind, len(d.Abstract)-1, validationErrors),
+			Form:    abstractForm(ctx, bind, validationErrors),
 		})
 		return
 	}
 
 	if render.Must(w, err) {
-		ctx.RenderYield(w, "dataset/create_abstract", YieldAbstract{
+		ctx.RenderYield(w, "dataset/create_abstract", YieldNewAbstract{
 			Dataset: d,
 		})
 	}
 }
 
-func abstractForm(ctx EditContext, bind BindAbstract, index int, errors validation.Errors) *render.Form {
+func (c *Controller) EditAbstract(w http.ResponseWriter, r *http.Request, ctx EditContext) {
+	var bind BindAbstract
+	if !render.MustBindPath(w, ctx.PathParams, &bind) {
+		return
+	}
+
+	if bind.Position >= len(ctx.Dataset.Abstract) {
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+	bind.Lang = ctx.Dataset.Abstract[bind.Position].Lang
+	bind.Text = ctx.Dataset.Abstract[bind.Position].Text
+
+	ctx.RenderYield(w, "dataset/edit_abstract", YieldAbstract{
+		Dataset:  ctx.Dataset,
+		Form:     abstractForm(ctx, bind, nil),
+		Position: bind.Position,
+	})
+}
+
+func abstractForm(ctx EditContext, bind BindAbstract, errors validation.Errors) *render.Form {
 	return &render.Form{
 		Errors: localize.ValidationErrors(ctx.Locale, errors),
 		Fields: []render.FormField{
@@ -64,7 +92,7 @@ func abstractForm(ctx EditContext, bind BindAbstract, index int, errors validati
 				Cols:        12,
 				Rows:        6,
 				Placeholder: ctx.Locale.T("builder.abstract.text.placeholder"),
-				Error:       localize.ValidationErrorAt(ctx.Locale, errors, fmt.Sprintf("/abstract/%d/text", index)),
+				Error:       localize.ValidationErrorAt(ctx.Locale, errors, fmt.Sprintf("/abstract/%d/text", bind.Position)),
 			},
 			&render.Select{
 				Name:    "lang",
@@ -72,7 +100,7 @@ func abstractForm(ctx EditContext, bind BindAbstract, index int, errors validati
 				Label:   ctx.Locale.T("builder.abstract.lang"),
 				Options: localize.LanguageSelectOptions(ctx.Locale),
 				Cols:    12,
-				Error:   localize.ValidationErrorAt(ctx.Locale, errors, fmt.Sprintf("/abstract/%d/lang", index)),
+				Error:   localize.ValidationErrorAt(ctx.Locale, errors, fmt.Sprintf("/abstract/%d/lang", bind.Position)),
 			},
 		},
 	}

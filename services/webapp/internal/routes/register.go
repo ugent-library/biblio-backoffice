@@ -526,15 +526,15 @@ func Register(services *backends.Services, base controllers.Base, oidcClient *oi
 	datasetEditRouter.HandleFunc("/htmx/abstracts/add", datasetC.WithEditContext(datasetC.AddAbstract)).
 		Methods("GET").
 		Name("dataset_add_abstract")
-	datasetEditRouter.HandleFunc("/htmx/abstracts/create", datasetC.WithEditContext(datasetC.CreateAbstract)).
+	datasetEditRouter.HandleFunc("/htmx/abstracts", datasetC.WithEditContext(datasetC.CreateAbstract)).
 		Methods("POST").
 		Name("dataset_create_abstract")
-	datasetEditRouter.HandleFunc("/htmx/abstracts/edit/{delta}", datasetAbstractsController.Edit).
+	datasetEditRouter.HandleFunc("/htmx/abstracts/{position}/edit", datasetC.WithEditContext(datasetC.EditAbstract)).
 		Methods("GET").
-		Name("dataset_abstracts_edit_abstract")
-	datasetEditRouter.HandleFunc("/htmx/abstracts/update/{delta}", datasetAbstractsController.Update).
+		Name("dataset_edit_abstract")
+	datasetEditRouter.HandleFunc("/htmx/abstracts/{position}", datasetAbstractsController.Update).
 		Methods("PUT").
-		Name("dataset_abstracts_update_abstract")
+		Name("dataset_update_abstract")
 	datasetEditRouter.HandleFunc("/htmx/abstracts/remove/{delta}", datasetAbstractsController.ConfirmRemove).
 		Methods("GET").
 		Name("dataset_abstracts_confirm_remove_from_dataset")
