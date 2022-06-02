@@ -29,85 +29,85 @@ func NewDatasetAbstracts(base Base, store backends.Store) *DatasetAbstracts {
 }
 
 // Show the "Add abstract" modal
-func (c *DatasetAbstracts) Add(w http.ResponseWriter, r *http.Request) {
-	dataset := context.GetDataset(r.Context())
+// func (c *DatasetAbstracts) Add(w http.ResponseWriter, r *http.Request) {
+// 	dataset := context.GetDataset(r.Context())
 
-	abstract := &models.Text{}
+// 	abstract := &models.Text{}
 
-	c.Render.HTML(w, http.StatusOK, "dataset/abstracts/_form", c.ViewData(r, struct {
-		ETag      string
-		DatasetID string
-		Abstract  *models.Text
-		Form      *views.FormBuilder
-	}{
-		dataset.SnapshotID,
-		dataset.ID,
-		abstract,
-		views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), nil),
-	}),
-		render.HTMLOptions{Layout: "layouts/htmx"},
-	)
-}
+// 	c.Render.HTML(w, http.StatusOK, "dataset/abstracts/_form", c.ViewData(r, struct {
+// 		ETag      string
+// 		DatasetID string
+// 		Abstract  *models.Text
+// 		Form      *views.FormBuilder
+// 	}{
+// 		dataset.SnapshotID,
+// 		dataset.ID,
+// 		abstract,
+// 		views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), nil),
+// 	}),
+// 		render.HTMLOptions{Layout: "layouts/htmx"},
+// 	)
+// }
 
 // Save an abstract to Librecat
-func (c *DatasetAbstracts) Create(w http.ResponseWriter, r *http.Request) {
-	dataset := context.GetDataset(r.Context()).Clone()
-	dataset.SnapshotID = r.Header.Get("If-Match")
+// func (c *DatasetAbstracts) Create(w http.ResponseWriter, r *http.Request) {
+// 	dataset := context.GetDataset(r.Context()).Clone()
+// 	dataset.SnapshotID = r.Header.Get("If-Match")
 
-	err := r.ParseForm()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+// 	err := r.ParseForm()
+// 	if err != nil {
+// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+// 		return
+// 	}
 
-	abstract := &models.Text{}
+// 	abstract := &models.Text{}
 
-	if err := DecodeForm(abstract, r.Form); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+// 	if err := DecodeForm(abstract, r.Form); err != nil {
+// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+// 		return
+// 	}
 
-	abstracts := make([]models.Text, len(dataset.Abstract))
-	copy(abstracts, dataset.Abstract)
+// 	abstracts := make([]models.Text, len(dataset.Abstract))
+// 	copy(abstracts, dataset.Abstract)
 
-	abstracts = append(abstracts, *abstract)
-	dataset.Abstract = abstracts
+// 	abstracts = append(abstracts, *abstract)
+// 	dataset.Abstract = abstracts
 
-	savedDataset := dataset.Clone()
-	err = c.store.UpdateDataset(savedDataset)
+// 	savedDataset := dataset.Clone()
+// 	err = c.store.UpdateDataset(savedDataset)
 
-	var validationErrors validation.Errors
-	if errors.As(err, &validationErrors) {
-		c.Render.HTML(w, http.StatusOK, "dataset/abstracts/_form", c.ViewData(r, struct {
-			DatasetID string
-			Abstract  *models.Text
-			Form      *views.FormBuilder
-		}{
-			savedDataset.ID,
-			abstract,
-			views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), validationErrors),
-		}),
-			render.HTMLOptions{Layout: "layouts/htmx"},
-		)
+// 	var validationErrors validation.Errors
+// 	if errors.As(err, &validationErrors) {
+// 		c.Render.HTML(w, http.StatusOK, "dataset/abstracts/_form", c.ViewData(r, struct {
+// 			DatasetID string
+// 			Abstract  *models.Text
+// 			Form      *views.FormBuilder
+// 		}{
+// 			savedDataset.ID,
+// 			abstract,
+// 			views.NewFormBuilder(c.RenderPartial, locale.Get(r.Context()), validationErrors),
+// 		}),
+// 			render.HTMLOptions{Layout: "layouts/htmx"},
+// 		)
 
-		return
-	} else if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+// 		return
+// 	} else if err != nil {
+// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+// 		return
+// 	}
 
-	w.Header().Set("HX-Trigger", "DatasetCreateAbstract")
+// 	w.Header().Set("HX-Trigger", "DatasetCreateAbstract")
 
-	c.Render.HTML(w, http.StatusOK,
-		"dataset/abstracts/_table_body",
-		c.ViewData(r, struct {
-			Dataset *models.Dataset
-		}{
-			savedDataset,
-		}),
-		render.HTMLOptions{Layout: "layouts/htmx"},
-	)
-}
+// 	c.Render.HTML(w, http.StatusOK,
+// 		"dataset/abstracts/_table_body",
+// 		c.ViewData(r, struct {
+// 			Dataset *models.Dataset
+// 		}{
+// 			savedDataset,
+// 		}),
+// 		render.HTMLOptions{Layout: "layouts/htmx"},
+// 	)
+// }
 
 // Show the "Edit abstract" modal
 func (c *DatasetAbstracts) Edit(w http.ResponseWriter, r *http.Request) {
