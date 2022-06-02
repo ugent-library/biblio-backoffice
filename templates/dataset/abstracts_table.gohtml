@@ -24,7 +24,6 @@
                             <button class="dropdown-item" type="button"
                                 hx-get="{{pathFor "dataset_edit_abstract" "id" $.Yield.Dataset.ID "position" ($i|toString)}}"
                                 hx-target="#abstract-body"
-                                hx-swap="innerHTML"
                             >
                                 <i class="if if-edit"></i>
                                 <span>Edit</span>
@@ -32,8 +31,7 @@
 
                             <button class="dropdown-item" type="button"
                                 hx-get="{{pathFor "dataset_abstracts_confirm_remove_from_dataset" "id" $.Yield.Dataset.ID "delta" ($i|toString)}}"
-                                hx-target="#abstract-body"
-                                hx-swap="innerHTML"
+                                hx-target="#abstract-modals"
                             >
                                 <i class="if if-delete"></i>
                                 <span>Delete</span>

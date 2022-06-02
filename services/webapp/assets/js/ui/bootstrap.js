@@ -10,7 +10,7 @@ import BSN from "bootstrap.native/dist/bootstrap-native-v4";
  * This function re-initializes Bootstrap Native on the updated DOM.
  */
 export default function() {
-    htmx.on("htmx:afterSettle", function(evt) {
+    htmx.onLoad(function(el) {
         BSN.initCallback()
     });
 }
