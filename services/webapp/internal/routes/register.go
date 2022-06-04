@@ -59,7 +59,6 @@ func Register(services *backends.Services, base controllers.Base, oidcClient *oi
 	datasetDetailsController := controllers.NewDatasetDetails(base, services.Store)
 	datasetProjectsController := controllers.NewDatasetProjects(base, services.Store, services.ProjectSearchService, services.ProjectService)
 	datasetDepartmentsController := controllers.NewDatasetDepartments(base, services.Store, services.OrganizationSearchService, services.OrganizationService)
-	datasetAbstractsController := controllers.NewDatasetAbstracts(base, services.Store)
 	datasetContributorsController := controllers.NewDatasetContributors(base, services.Store, services.PersonSearchService, services.PersonService)
 	datasetPublicationsController := controllers.NewDatasetPublications(base, services.Store, services.PublicationSearchService)
 
@@ -535,12 +534,12 @@ func Register(services *backends.Services, base controllers.Base, oidcClient *oi
 	datasetEditRouter.HandleFunc("/htmx/abstracts/{position}", datasetC.WithEditContext(datasetC.UpdateAbstract)).
 		Methods("PUT").
 		Name("dataset_update_abstract")
-	datasetEditRouter.HandleFunc("/htmx/abstracts/remove/{delta}", datasetAbstractsController.ConfirmRemove).
+	datasetEditRouter.HandleFunc("/htmx/abstracts/{position}/confirm-delete", datasetC.WithEditContext(datasetC.ConfirmDeleteAbstract)).
 		Methods("GET").
-		Name("dataset_abstracts_confirm_remove_from_dataset")
-	datasetEditRouter.HandleFunc("/htmx/abstracts/remove/{delta}", datasetAbstractsController.Remove).
+		Name("dataset_confirm_delete_abstract")
+	datasetEditRouter.HandleFunc("/htmx/abstracts/{position}", datasetC.WithEditContext(datasetC.DeleteAbstract)).
 		Methods("DELETE").
-		Name("dataset_abstracts_remove_abstract")
+		Name("dataset_delete_abstract")
 	// Dataset publications HTMX fragments
 	datasetEditRouter.HandleFunc("/htmx/publications/choose", datasetPublicationsController.Choose).
 		Methods("GET").
