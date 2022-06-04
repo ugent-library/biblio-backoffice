@@ -1,4 +1,4 @@
-package render
+package bind
 
 import (
 	"net/http"
@@ -24,48 +24,48 @@ func init() {
 	queryDecoder.IgnoreUnknownKeys(true)
 }
 
-func GetPathValues(r *http.Request) url.Values {
+func PathValues(r *http.Request) url.Values {
 	if PathValuesFunc == nil {
 		return nil
 	}
 	return PathValuesFunc(r)
 }
 
-func BindPath(r *http.Request, v interface{}) error {
-	return BindPathValues(GetPathValues(r), v)
+func RequestPath(r *http.Request, v interface{}) error {
+	return Path(PathValues(r), v)
 }
 
-func BindPathValues(vals url.Values, v interface{}) error {
+func Path(vals url.Values, v interface{}) error {
 	return pathDecoder.Decode(v, vals)
 }
 
-func BindQuery(r *http.Request, v interface{}) error {
-	return BindQueryValues(r.URL.Query(), v)
+func RequestQuery(r *http.Request, v interface{}) error {
+	return Query(r.URL.Query(), v)
 }
 
-func BindQueryValues(vals url.Values, v interface{}) error {
+func Query(vals url.Values, v interface{}) error {
 	return queryDecoder.Decode(v, vals)
 }
 
-func BindForm(r *http.Request, v interface{}) error {
+func RequestForm(r *http.Request, v interface{}) error {
 	r.ParseForm()
-	return BindFormValues(r.Form, v)
+	return Form(r.Form, v)
 }
 
-func BindFormValues(vals url.Values, v interface{}) error {
+func Form(vals url.Values, v interface{}) error {
 	return formDecoder.Decode(v, vals)
 }
 
-func Bind(r *http.Request, v interface{}) error {
-	if err := BindPath(r, v); err != nil {
+func Request(r *http.Request, v interface{}) error {
+	if err := RequestPath(r, v); err != nil {
 		return err
 	}
 
-	if err := BindQueryValues(r.URL.Query(), v); err != nil {
+	if err := Query(r.URL.Query(), v); err != nil {
 		return err
 	}
 
 	r.ParseForm()
 
-	return BindFormValues(r.Form, v)
+	return Form(r.Form, v)
 }

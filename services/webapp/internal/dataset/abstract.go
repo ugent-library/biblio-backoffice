@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/ugent-library/biblio-backend/internal/bind"
 	"github.com/ugent-library/biblio-backend/internal/localize"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
@@ -35,20 +36,20 @@ func (c *Controller) AddAbstract(w http.ResponseWriter, r *http.Request, ctx Edi
 }
 
 func (c *Controller) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx EditContext) {
-	var bind BindAbstract
-	if render.BadRequest(w, render.BindForm(r, &bind)) {
+	var b BindAbstract
+	if render.BadRequest(w, bind.RequestForm(r, &b)) {
 		return
 	}
 
 	d := ctx.Dataset
 	d.SnapshotID = r.Header.Get("If-Match")
-	d.Abstract = append(d.Abstract, models.Text{Text: bind.Text, Lang: bind.Lang})
+	d.Abstract = append(d.Abstract, models.Text{Text: b.Text, Lang: b.Lang})
 	err := c.store.UpdateDataset(d)
 
 	if validationErrors := validation.From(err); validationErrors != nil {
 		ctx.RenderYield(w, "dataset/create_abstract_failed", YieldNewAbstract{
 			Dataset: d,
-			Form:    abstractForm(ctx, bind, validationErrors),
+			Form:    abstractForm(ctx, b, validationErrors),
 		})
 		return
 	}
@@ -61,48 +62,48 @@ func (c *Controller) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx 
 }
 
 func (c *Controller) EditAbstract(w http.ResponseWriter, r *http.Request, ctx EditContext) {
-	var bind BindAbstract
-	if render.BadRequest(w, render.BindPath(r, &bind)) {
+	var b BindAbstract
+	if render.BadRequest(w, bind.RequestPath(r, &b)) {
 		return
 	}
 
-	if bind.Position >= len(ctx.Dataset.Abstract) {
+	if b.Position >= len(ctx.Dataset.Abstract) {
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
 
-	bind.Lang = ctx.Dataset.Abstract[bind.Position].Lang
-	bind.Text = ctx.Dataset.Abstract[bind.Position].Text
+	b.Lang = ctx.Dataset.Abstract[b.Position].Lang
+	b.Text = ctx.Dataset.Abstract[b.Position].Text
 
 	ctx.RenderYield(w, "dataset/edit_abstract", YieldAbstract{
 		Dataset:  ctx.Dataset,
-		Form:     abstractForm(ctx, bind, nil),
-		Position: bind.Position,
+		Form:     abstractForm(ctx, b, nil),
+		Position: b.Position,
 	})
 }
 
 func (c *Controller) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx EditContext) {
-	var bind BindAbstract
-	if render.BadRequest(w, render.Bind(r, &bind)) {
+	var b BindAbstract
+	if render.BadRequest(w, bind.Request(r, &b)) {
 		return
 	}
 
-	if bind.Position >= len(ctx.Dataset.Abstract) {
+	if b.Position >= len(ctx.Dataset.Abstract) {
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
 
 	d := ctx.Dataset
 	d.SnapshotID = r.Header.Get("If-Match")
-	d.Abstract[bind.Position].Lang = bind.Lang
-	d.Abstract[bind.Position].Text = bind.Text
+	d.Abstract[b.Position].Lang = b.Lang
+	d.Abstract[b.Position].Text = b.Text
 	err := c.store.UpdateDataset(d)
 
 	if validationErrors := validation.From(err); validationErrors != nil {
 		ctx.RenderYield(w, "dataset/update_abstract_failed", YieldAbstract{
 			Dataset:  d,
-			Position: bind.Position,
-			Form:     abstractForm(ctx, bind, validationErrors),
+			Position: b.Position,
+			Form:     abstractForm(ctx, b, validationErrors),
 		})
 		return
 	}
@@ -110,31 +111,31 @@ func (c *Controller) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx 
 	if !render.InternalServerError(w, err) {
 		ctx.RenderYield(w, "dataset/update_abstract", YieldAbstract{
 			Dataset:  d,
-			Position: bind.Position,
+			Position: b.Position,
 		})
 	}
 }
 
-func abstractForm(ctx EditContext, bind BindAbstract, errors validation.Errors) *render.Form {
+func abstractForm(ctx EditContext, b BindAbstract, errors validation.Errors) *render.Form {
 	return &render.Form{
 		Errors: localize.ValidationErrors(ctx.Locale, errors),
 		Fields: []render.FormField{
 			&render.TextArea{
 				Name:        "text",
-				Value:       bind.Text,
+				Value:       b.Text,
 				Label:       ctx.Locale.T("builder.abstract.text"),
 				Cols:        12,
 				Rows:        6,
 				Placeholder: ctx.Locale.T("builder.abstract.text.placeholder"),
-				Error:       localize.ValidationErrorAt(ctx.Locale, errors, fmt.Sprintf("/abstract/%d/text", bind.Position)),
+				Error:       localize.ValidationErrorAt(ctx.Locale, errors, fmt.Sprintf("/abstract/%d/text", b.Position)),
 			},
 			&render.Select{
 				Name:    "lang",
-				Value:   bind.Lang,
+				Value:   b.Lang,
 				Label:   ctx.Locale.T("builder.abstract.lang"),
 				Options: localize.LanguageSelectOptions(ctx.Locale),
 				Cols:    12,
-				Error:   localize.ValidationErrorAt(ctx.Locale, errors, fmt.Sprintf("/abstract/%d/lang", bind.Position)),
+				Error:   localize.ValidationErrorAt(ctx.Locale, errors, fmt.Sprintf("/abstract/%d/lang", b.Position)),
 			},
 		},
 	}

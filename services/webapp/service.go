@@ -18,6 +18,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/backends"
+	"github.com/ugent-library/biblio-backend/internal/bind"
 	"github.com/ugent-library/biblio-backend/internal/locale"
 	"github.com/ugent-library/biblio-backend/internal/render"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/controllers"
@@ -146,9 +147,11 @@ func buildRouter(services *backends.Services) *mux.Router {
 		Funcs:                       funcMaps,
 	})
 
-	// init renderer
+	// init render
 	render.FuncMaps = funcMaps
-	render.PathValuesFunc = func(r *http.Request) url.Values {
+
+	// init bind
+	bind.PathValuesFunc = func(r *http.Request) url.Values {
 		p := url.Values{}
 		for k, v := range mux.Vars(r) {
 			p.Set(k, v)
