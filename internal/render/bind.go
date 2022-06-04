@@ -24,63 +24,48 @@ func init() {
 	queryDecoder.IgnoreUnknownKeys(true)
 }
 
-func PathValues(r *http.Request) url.Values {
+func GetPathValues(r *http.Request) url.Values {
 	if PathValuesFunc == nil {
 		return nil
 	}
 	return PathValuesFunc(r)
 }
 
-func MustBindPath(w http.ResponseWriter, r *http.Request, v interface{}) bool {
-	return MustBindPathValues(w, PathValues(r), v)
+func BindPath(r *http.Request, v interface{}) error {
+	return BindPathValues(GetPathValues(r), v)
 }
 
-func MustBindPathValues(w http.ResponseWriter, vals url.Values, v interface{}) bool {
-	if err := pathDecoder.Decode(v, vals); err != nil {
-		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
-		return false
-	}
-
-	return true
+func BindPathValues(vals url.Values, v interface{}) error {
+	return pathDecoder.Decode(v, vals)
 }
 
-func MustBindQuery(w http.ResponseWriter, r *http.Request, v interface{}) bool {
-	return MustBindQueryValues(w, r.URL.Query(), v)
+func BindQuery(r *http.Request, v interface{}) error {
+	return BindQueryValues(r.URL.Query(), v)
 }
 
-func MustBindQueryValues(w http.ResponseWriter, vals url.Values, v interface{}) bool {
-	if err := queryDecoder.Decode(v, vals); err != nil {
-		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
-		return false
-	}
-
-	return true
+func BindQueryValues(vals url.Values, v interface{}) error {
+	return queryDecoder.Decode(v, vals)
 }
 
-func MustBindForm(w http.ResponseWriter, r *http.Request, v interface{}) bool {
+func BindForm(r *http.Request, v interface{}) error {
 	r.ParseForm()
-	return MustBindFormValues(w, r.Form, v)
+	return BindFormValues(r.Form, v)
 }
 
-func MustBindFormValues(w http.ResponseWriter, vals url.Values, v interface{}) bool {
-	if err := formDecoder.Decode(v, vals); err != nil {
-		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
-		return false
-	}
-
-	return true
+func BindFormValues(vals url.Values, v interface{}) error {
+	return formDecoder.Decode(v, vals)
 }
 
-func MustBind(w http.ResponseWriter, r *http.Request, v interface{}) bool {
-	if !MustBindPath(w, r, v) {
-		return false
+func Bind(r *http.Request, v interface{}) error {
+	if err := BindPath(r, v); err != nil {
+		return err
 	}
 
-	if !MustBindQueryValues(w, r.URL.Query(), v) {
-		return false
+	if err := BindQueryValues(r.URL.Query(), v); err != nil {
+		return err
 	}
 
 	r.ParseForm()
 
-	return MustBindFormValues(w, r.Form, v)
+	return BindFormValues(r.Form, v)
 }

@@ -40,15 +40,6 @@ func Render(w http.ResponseWriter, name string, data interface{}) {
 	io.Copy(w, &buf)
 }
 
-func Must(w http.ResponseWriter, err error) bool {
-	if err != nil {
-		log.Println(err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return false
-	}
-	return true
-}
-
 func parseTemplates(rootDir, ext string, funcMaps []template.FuncMap) (*template.Template, error) {
 	cleanRootDir := filepath.Clean(rootDir)
 	pathStart := len(cleanRootDir) + 1

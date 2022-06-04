@@ -36,7 +36,7 @@ func (c *Controller) AddAbstract(w http.ResponseWriter, r *http.Request, ctx Edi
 
 func (c *Controller) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx EditContext) {
 	var bind BindAbstract
-	if !render.MustBindForm(w, r, &bind) {
+	if render.BadRequest(w, render.BindForm(r, &bind)) {
 		return
 	}
 
@@ -53,7 +53,7 @@ func (c *Controller) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	if render.Must(w, err) {
+	if !render.InternalServerError(w, err) {
 		ctx.RenderYield(w, "dataset/create_abstract", YieldNewAbstract{
 			Dataset: d,
 		})
@@ -62,7 +62,7 @@ func (c *Controller) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx 
 
 func (c *Controller) EditAbstract(w http.ResponseWriter, r *http.Request, ctx EditContext) {
 	var bind BindAbstract
-	if !render.MustBindPath(w, r, &bind) {
+	if render.BadRequest(w, render.BindPath(r, &bind)) {
 		return
 	}
 
@@ -83,7 +83,7 @@ func (c *Controller) EditAbstract(w http.ResponseWriter, r *http.Request, ctx Ed
 
 func (c *Controller) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx EditContext) {
 	var bind BindAbstract
-	if !render.MustBind(w, r, &bind) {
+	if render.BadRequest(w, render.Bind(r, &bind)) {
 		return
 	}
 
@@ -107,7 +107,7 @@ func (c *Controller) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	if render.Must(w, err) {
+	if !render.InternalServerError(w, err) {
 		ctx.RenderYield(w, "dataset/update_abstract", YieldAbstract{
 			Dataset:  d,
 			Position: bind.Position,
