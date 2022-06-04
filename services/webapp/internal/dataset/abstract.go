@@ -36,12 +36,11 @@ func (c *Controller) AddAbstract(w http.ResponseWriter, r *http.Request, ctx Edi
 
 func (c *Controller) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx EditContext) {
 	var bind BindAbstract
-	r.ParseForm()
-	if !render.MustBindForm(w, r.Form, &bind) {
+	if !render.MustBindForm(w, r, &bind) {
 		return
 	}
 
-	d := ctx.Dataset.Clone()
+	d := ctx.Dataset
 	d.SnapshotID = r.Header.Get("If-Match")
 	d.Abstract = append(d.Abstract, models.Text{Text: bind.Text, Lang: bind.Lang})
 	err := c.store.UpdateDataset(d)
@@ -63,7 +62,7 @@ func (c *Controller) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx 
 
 func (c *Controller) EditAbstract(w http.ResponseWriter, r *http.Request, ctx EditContext) {
 	var bind BindAbstract
-	if !render.MustBindPath(w, ctx.PathParams, &bind) {
+	if !render.MustBindPath(w, r, &bind) {
 		return
 	}
 
@@ -84,11 +83,7 @@ func (c *Controller) EditAbstract(w http.ResponseWriter, r *http.Request, ctx Ed
 
 func (c *Controller) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx EditContext) {
 	var bind BindAbstract
-	r.ParseForm()
-	if !render.MustBindForm(w, r.Form, &bind) {
-		return
-	}
-	if !render.MustBindPath(w, ctx.PathParams, &bind) {
+	if !render.MustBind(w, r, &bind) {
 		return
 	}
 
@@ -97,7 +92,7 @@ func (c *Controller) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	d := ctx.Dataset.Clone()
+	d := ctx.Dataset
 	d.SnapshotID = r.Header.Get("If-Match")
 	d.Abstract[bind.Position].Lang = bind.Lang
 	d.Abstract[bind.Position].Text = bind.Text

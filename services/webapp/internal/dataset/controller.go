@@ -2,9 +2,7 @@ package dataset
 
 import (
 	"net/http"
-	"net/url"
 
-	"github.com/gorilla/mux"
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/locale"
 	"github.com/ugent-library/biblio-backend/internal/models"
@@ -13,10 +11,9 @@ import (
 )
 
 type EditContext struct {
-	PathParams url.Values
-	Locale     *locale.Locale
-	Dataset    *models.Dataset
-	CanEdit    bool
+	Locale  *locale.Locale
+	Dataset *models.Dataset
+	CanEdit bool
 }
 
 func (c EditContext) RenderYield(w http.ResponseWriter, tmpl string, yield interface{}) {
@@ -43,17 +40,12 @@ func NewController(store backends.Store) *Controller {
 
 func (c *Controller) WithEditContext(fn func(http.ResponseWriter, *http.Request, EditContext)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		p := url.Values{}
-		for k, v := range mux.Vars(r) {
-			p.Set(k, v)
-		}
 		user := context.GetUser(r.Context())
 		dataset := context.GetDataset(r.Context())
 		fn(w, r, EditContext{
-			PathParams: p,
-			Locale:     locale.Get(r.Context()),
-			Dataset:    dataset,
-			CanEdit:    user.CanEditDataset(dataset),
+			Locale:  locale.Get(r.Context()),
+			Dataset: dataset,
+			CanEdit: user.CanEditDataset(dataset),
 		})
 	}
 }

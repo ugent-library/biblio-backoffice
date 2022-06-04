@@ -146,7 +146,15 @@ func buildRouter(services *backends.Services) *mux.Router {
 		Funcs:                       funcMaps,
 	})
 
+	// init renderer
 	render.FuncMaps = funcMaps
+	render.PathValuesFunc = func(r *http.Request) url.Values {
+		p := url.Values{}
+		for k, v := range mux.Vars(r) {
+			p.Set(k, v)
+		}
+		return p
+	}
 
 	// localizer
 	localizer := locale.NewLocalizer("en")
