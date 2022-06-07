@@ -19,7 +19,7 @@ var resetCmd = &cobra.Command{
 			return
 		}
 
-		store := newStore()
+		store := newRepository()
 		if err := store.PurgeAllPublications(); err != nil {
 			log.Fatal(err)
 		}

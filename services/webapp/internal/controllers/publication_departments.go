@@ -14,12 +14,12 @@ import (
 
 type PublicationDepartments struct {
 	Base
-	store                     backends.Store
+	store                     backends.Repository
 	organizationSearchService backends.OrganizationSearchService
 	organizationService       backends.OrganizationService
 }
 
-func NewPublicationDepartments(base Base, store backends.Store,
+func NewPublicationDepartments(base Base, store backends.Repository,
 	organizationSearchService backends.OrganizationSearchService,
 	organizationService backends.OrganizationService) *PublicationDepartments {
 	return &PublicationDepartments{
@@ -95,7 +95,7 @@ func (c *PublicationDepartments) Add(w http.ResponseWriter, r *http.Request) {
 	pub.Department = append(pub.Department, pubDepartment)
 	savedPub := pub.Clone()
 
-	if err := c.store.UpdatePublication(savedPub); err != nil {
+	if err := c.store.SavePublication(savedPub); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -150,7 +150,7 @@ func (c *PublicationDepartments) Remove(w http.ResponseWriter, r *http.Request) 
 	pub.Department = departments
 
 	savedPub := pub.Clone()
-	err := c.store.UpdatePublication(pub)
+	err := c.store.SavePublication(pub)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

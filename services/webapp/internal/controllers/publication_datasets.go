@@ -13,11 +13,11 @@ import (
 
 type PublicationDatasets struct {
 	Base
-	store                backends.Store
+	store                backends.Repository
 	datasetSearchService backends.DatasetSearchService
 }
 
-func NewPublicationDatasets(base Base, store backends.Store,
+func NewPublicationDatasets(base Base, store backends.Repository,
 	datasetSearchService backends.DatasetSearchService) *PublicationDatasets {
 	return &PublicationDatasets{
 		Base:                 base,

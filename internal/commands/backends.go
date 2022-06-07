@@ -20,9 +20,9 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/backends/ianamedia"
 	"github.com/ugent-library/biblio-backend/internal/backends/jsonl"
 	"github.com/ugent-library/biblio-backend/internal/backends/pubmed"
+	"github.com/ugent-library/biblio-backend/internal/backends/repository"
 	"github.com/ugent-library/biblio-backend/internal/backends/ris"
 	"github.com/ugent-library/biblio-backend/internal/backends/spdxlicenses"
-	"github.com/ugent-library/biblio-backend/internal/backends/store"
 	"github.com/ugent-library/biblio-backend/internal/tasks"
 	"github.com/ugent-library/go-orcid/orcid"
 )
@@ -59,7 +59,7 @@ func newServices() *backends.Services {
 		FileStore:                 newFileStore(),
 		ORCIDSandbox:              orcidConfig.Sandbox,
 		ORCIDClient:               orcidClient,
-		Store:                     newStore(),
+		Store:                     newRepository(),
 		DatasetSearchService:      newDatasetSearchService(),
 		PublicationSearchService:  newPublicationSearchService(),
 		OrganizationService:       biblioClient,
@@ -97,8 +97,8 @@ func newServices() *backends.Services {
 	}
 }
 
-func newStore() backends.Store {
-	s, err := store.New(viper.GetString("pg-conn"))
+func newRepository() backends.Repository {
+	s, err := repository.New(viper.GetString("pg-conn"))
 	if err != nil {
 		log.Fatalln("unable to create store", err)
 	}

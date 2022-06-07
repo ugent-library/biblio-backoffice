@@ -17,12 +17,12 @@ import (
 
 type DatasetContributors struct {
 	Base
-	store               backends.Store
+	store               backends.Repository
 	personSearchService backends.PersonSearchService
 	personService       backends.PersonService
 }
 
-func NewDatasetContributors(base Base, store backends.Store, personSearchService backends.PersonSearchService,
+func NewDatasetContributors(base Base, store backends.Repository, personSearchService backends.PersonSearchService,
 	personService backends.PersonService) *DatasetContributors {
 	return &DatasetContributors{
 		Base:                base,
@@ -91,7 +91,7 @@ func (c *DatasetContributors) Create(w http.ResponseWriter, r *http.Request) {
 	dataset.AddContributor(role, position, contributor)
 
 	savedDataset := dataset.Clone()
-	err := c.store.UpdateDataset(dataset)
+	err := c.store.SaveDataset(dataset)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
@@ -188,7 +188,7 @@ func (c *DatasetContributors) Update(w http.ResponseWriter, r *http.Request) {
 	dataset.Contributors(role)[position] = contributor
 
 	savedDataset := dataset.Clone()
-	err := c.store.UpdateDataset(dataset)
+	err := c.store.SaveDataset(dataset)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
@@ -257,7 +257,7 @@ func (c *DatasetContributors) Remove(w http.ResponseWriter, r *http.Request) {
 
 	dataset.RemoveContributor(role, position)
 
-	if err := c.store.UpdateDataset(dataset); err != nil {
+	if err := c.store.SaveDataset(dataset); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -400,7 +400,7 @@ func (c *DatasetContributors) Order(w http.ResponseWriter, r *http.Request) {
 
 	dataset.SetContributors(role, newContributors)
 
-	if err := c.store.UpdateDataset(dataset); err != nil {
+	if err := c.store.SaveDataset(dataset); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

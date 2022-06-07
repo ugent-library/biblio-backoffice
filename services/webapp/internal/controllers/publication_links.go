@@ -19,10 +19,10 @@ import (
 
 type PublicationLinks struct {
 	Base
-	store backends.Store
+	store backends.Repository
 }
 
-func NewPublicationLinks(base Base, store backends.Store) *PublicationLinks {
+func NewPublicationLinks(base Base, store backends.Repository) *PublicationLinks {
 	return &PublicationLinks{
 		Base:  base,
 		store: store,
@@ -72,7 +72,7 @@ func (c *PublicationLinks) Create(w http.ResponseWriter, r *http.Request) {
 	pub.Link = links
 
 	savedPub := pub.Clone()
-	err = c.store.UpdatePublication(pub)
+	err = c.store.SavePublication(pub)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
@@ -158,7 +158,7 @@ func (c *PublicationLinks) Update(w http.ResponseWriter, r *http.Request) {
 	log.Println(links)
 
 	savedPub := pub.Clone()
-	err = c.store.UpdatePublication(savedPub)
+	err = c.store.SavePublication(savedPub)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
@@ -225,7 +225,7 @@ func (c *PublicationLinks) Remove(w http.ResponseWriter, r *http.Request) {
 	pub.Link = links
 
 	// TODO: error handling
-	c.store.UpdatePublication(pub)
+	c.store.SavePublication(pub)
 
 	w.Header().Set("HX-Trigger", "PublicationRemoveLink")
 

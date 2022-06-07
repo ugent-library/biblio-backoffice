@@ -38,7 +38,7 @@ type PublicationAddSingleVars struct {
 
 type Publications struct {
 	Base
-	store                    backends.Store
+	store                    backends.Repository
 	fileStore                *filestore.Store
 	publicationSearchService backends.PublicationSearchService
 	publicationDecoders      map[string]backends.PublicationDecoderFactory
@@ -47,7 +47,7 @@ type Publications struct {
 	orcidSandbox             bool
 }
 
-func NewPublications(base Base, store backends.Store, fileStore *filestore.Store,
+func NewPublications(base Base, store backends.Repository, fileStore *filestore.Store,
 	publicationSearchService backends.PublicationSearchService,
 	publicationDecoders map[string]backends.PublicationDecoderFactory,
 	publicationSources map[string]backends.PublicationGetter,
@@ -277,7 +277,7 @@ func (c *Publications) AddSingleImport(w http.ResponseWriter, r *http.Request) {
 			CreatorID:      userID,
 			UserID:         userID,
 		}
-		if err := c.store.UpdatePublication(p); err != nil {
+		if err := c.store.SavePublication(p); err != nil {
 			log.Println(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -357,7 +357,7 @@ func (c *Publications) AddSinglePublish(w http.ResponseWriter, r *http.Request) 
 
 	savedPub := pub.Clone()
 	savedPub.Status = "public"
-	err := c.store.UpdatePublication(savedPub)
+	err := c.store.SavePublication(savedPub)
 	if err != nil {
 
 		/*
@@ -663,7 +663,7 @@ func (c *Publications) Publish(w http.ResponseWriter, r *http.Request) {
 
 	savedPub := pub.Clone()
 	savedPub.Status = "public"
-	err := c.store.UpdatePublication(savedPub)
+	err := c.store.SavePublication(savedPub)
 
 	flashes := make([]views.Flash, 0)
 	var publicationErrors validation.Errors
@@ -760,7 +760,7 @@ func (c *Publications) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	pub.Status = "deleted"
-	if err := c.store.UpdatePublication(pub); err != nil {
+	if err := c.store.SavePublication(pub); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -890,7 +890,7 @@ func (c *Publications) importUserPublications(userID, source string, file io.Rea
 			break
 		}
 		// Note: index updated asynchronously by notify from snapstore client
-		if err := c.store.UpdatePublication(&p); err != nil {
+		if err := c.store.SavePublication(&p); err != nil {
 			importErr = err
 			break
 		}
@@ -921,7 +921,7 @@ func (c *Publications) importUserPublicationByIdentifier(userID, source, identif
 	p.Status = "private"
 	p.Classification = "U"
 
-	if err := c.store.UpdatePublication(p); err != nil {
+	if err := c.store.SavePublication(p); err != nil {
 		return nil, err
 	}
 
@@ -935,7 +935,7 @@ func (c *Publications) batchPublishPublications(userID string, args *models.Sear
 		hits, err = c.userPublications(userID, args)
 		for _, pub := range hits.Hits {
 			pub.Status = "public"
-			if err = c.store.UpdatePublication(pub); err != nil {
+			if err = c.store.SavePublication(pub); err != nil {
 				break
 			}
 		}
@@ -977,7 +977,7 @@ func (c *Publications) addPublicationToORCID(orcidID, orcidToken string, p *mode
 		PutCode: putCode,
 	})
 
-	if err := c.store.UpdatePublication(p); err != nil {
+	if err := c.store.SavePublication(p); err != nil {
 		return nil, err
 	}
 
@@ -1025,7 +1025,7 @@ func (c *Publications) sendPublicationsToORCIDTask(t tasks.Task, userID, orcidID
 				PutCode: putCode,
 			})
 
-			if err := c.store.UpdatePublication(pub); err != nil {
+			if err := c.store.SavePublication(pub); err != nil {
 				return err
 			}
 		}

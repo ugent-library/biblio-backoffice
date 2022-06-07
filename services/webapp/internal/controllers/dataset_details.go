@@ -16,10 +16,10 @@ import (
 
 type DatasetDetails struct {
 	Base
-	store backends.Store
+	store backends.Repository
 }
 
-func NewDatasetDetails(base Base, store backends.Store) *DatasetDetails {
+func NewDatasetDetails(base Base, store backends.Repository) *DatasetDetails {
 	return &DatasetDetails{
 		Base:  base,
 		store: store,
@@ -144,7 +144,7 @@ func (c *DatasetDetails) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	savedDataset := dataset.Clone()
-	err = c.store.UpdateDataset(dataset)
+	err = c.store.SaveDataset(dataset)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {

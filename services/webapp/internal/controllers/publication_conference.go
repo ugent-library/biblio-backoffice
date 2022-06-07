@@ -16,10 +16,10 @@ import (
 
 type PublicationConference struct {
 	Base
-	store backends.Store
+	store backends.Repository
 }
 
-func NewPublicationConference(base Base, store backends.Store) *PublicationConference {
+func NewPublicationConference(base Base, store backends.Repository) *PublicationConference {
 	return &PublicationConference{
 		Base:  base,
 		store: store,
@@ -73,7 +73,7 @@ func (c *PublicationConference) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	savedPub := pub.Clone()
-	err = c.store.UpdatePublication(savedPub)
+	err = c.store.SavePublication(savedPub)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {

@@ -17,12 +17,12 @@ import (
 
 type PublicationContributors struct {
 	Base
-	store               backends.Store
+	store               backends.Repository
 	personSearchService backends.PersonSearchService
 	personService       backends.PersonService
 }
 
-func NewPublicationContributors(base Base, store backends.Store, personSearchService backends.PersonSearchService,
+func NewPublicationContributors(base Base, store backends.Repository, personSearchService backends.PersonSearchService,
 	personService backends.PersonService) *PublicationContributors {
 	return &PublicationContributors{
 		Base:                base,
@@ -93,7 +93,7 @@ func (c *PublicationContributors) Create(w http.ResponseWriter, r *http.Request)
 	pub.AddContributor(role, position, contributor)
 
 	savedPub := pub.Clone()
-	err := c.store.UpdatePublication(savedPub)
+	err := c.store.SavePublication(savedPub)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
@@ -191,7 +191,7 @@ func (c *PublicationContributors) Update(w http.ResponseWriter, r *http.Request)
 	pub.Contributors(role)[position] = contributor
 
 	savedPub := pub.Clone()
-	err := c.store.UpdatePublication(savedPub)
+	err := c.store.SavePublication(savedPub)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
@@ -260,7 +260,7 @@ func (c *PublicationContributors) Remove(w http.ResponseWriter, r *http.Request)
 
 	pub.RemoveContributor(role, position)
 
-	if err := c.store.UpdatePublication(pub); err != nil {
+	if err := c.store.SavePublication(pub); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -416,7 +416,7 @@ func (c *PublicationContributors) Order(w http.ResponseWriter, r *http.Request) 
 
 	publication.SetContributors(role, newContributors)
 
-	if err := c.store.UpdatePublication(publication); err != nil {
+	if err := c.store.SavePublication(publication); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

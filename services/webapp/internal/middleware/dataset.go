@@ -8,7 +8,7 @@ import (
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 )
 
-func SetDataset(store backends.Store) func(next http.Handler) http.Handler {
+func SetDataset(store backends.Repository) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			dataset, err := store.GetDataset(mux.Vars(r)["id"])

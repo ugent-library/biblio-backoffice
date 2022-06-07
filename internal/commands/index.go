@@ -55,7 +55,7 @@ var indexDatasetAllCmd = &cobra.Command{
 	Short: "Reindex all datasets",
 	Run: func(cmd *cobra.Command, args []string) {
 		es := newDatasetSearchService()
-		store := newStore()
+		store := newRepository()
 		var indexWG sync.WaitGroup
 
 		// indexing channel
@@ -110,7 +110,7 @@ var indexPublicationAllCmd = &cobra.Command{
 	Short: "Reindex all publications",
 	Run: func(cmd *cobra.Command, args []string) {
 		es := newPublicationSearchService()
-		store := newStore()
+		store := newRepository()
 		var indexWG sync.WaitGroup
 
 		// indexing channel

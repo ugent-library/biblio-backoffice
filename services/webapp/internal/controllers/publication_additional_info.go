@@ -16,10 +16,10 @@ import (
 
 type PublicationAdditionalInfo struct {
 	Base
-	store backends.Store
+	store backends.Repository
 }
 
-func NewPublicationAdditionalInfo(base Base, store backends.Store) *PublicationAdditionalInfo {
+func NewPublicationAdditionalInfo(base Base, store backends.Repository) *PublicationAdditionalInfo {
 	return &PublicationAdditionalInfo{
 		Base:  base,
 		store: store,
@@ -73,7 +73,7 @@ func (c *PublicationAdditionalInfo) Update(w http.ResponseWriter, r *http.Reques
 	}
 
 	savedPub := pub.Clone()
-	err = c.store.UpdatePublication(savedPub)
+	err = c.store.SavePublication(savedPub)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {

@@ -13,7 +13,7 @@ import (
 type Services struct {
 	ORCIDSandbox             bool
 	ORCIDClient              *orcid.MemberClient
-	Store                    Store
+	Store                    Repository
 	FileStore                *filestore.Store
 	DatasetSearchService     DatasetSearchService
 	PublicationSearchService PublicationSearchService
@@ -49,11 +49,12 @@ type PublicationGetter interface {
 	GetPublication(string) (*models.Publication, error)
 }
 
-type Store interface {
-	Transaction(context.Context, func(Store) error) error
+type Repository interface {
+	Transaction(context.Context, func(Repository) error) error
 	AddPublicationListener(func(*models.Publication))
 	GetPublication(string) (*models.Publication, error)
 	GetPublications([]string) ([]*models.Publication, error)
+	SavePublication(*models.Publication) error
 	UpdatePublication(*models.Publication) error
 	EachPublication(func(*models.Publication) bool) error
 	EachPublicationSnapshot(func(*models.Publication) bool) error
@@ -62,6 +63,7 @@ type Store interface {
 	AddDatasetListener(func(*models.Dataset))
 	GetDataset(string) (*models.Dataset, error)
 	GetDatasets([]string) ([]*models.Dataset, error)
+	SaveDataset(*models.Dataset) error
 	UpdateDataset(*models.Dataset) error
 	EachDataset(func(*models.Dataset) bool) error
 	EachDatasetSnapshot(func(*models.Dataset) bool) error

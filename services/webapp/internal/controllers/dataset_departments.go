@@ -14,12 +14,12 @@ import (
 
 type DatasetDepartments struct {
 	Base
-	store                     backends.Store
+	store                     backends.Repository
 	organizationSearchService backends.OrganizationSearchService
 	organizationService       backends.OrganizationService
 }
 
-func NewDatasetDepartments(base Base, store backends.Store,
+func NewDatasetDepartments(base Base, store backends.Repository,
 	organizationSearchService backends.OrganizationSearchService,
 	organizationService backends.OrganizationService) *DatasetDepartments {
 	return &DatasetDepartments{
@@ -95,7 +95,7 @@ func (c *DatasetDepartments) Add(w http.ResponseWriter, r *http.Request) {
 	dataset.Department = append(dataset.Department, datasetDepartment)
 	savedDataset := dataset.Clone()
 
-	if err := c.store.UpdateDataset(dataset); err != nil {
+	if err := c.store.SaveDataset(dataset); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -150,7 +150,7 @@ func (c *DatasetDepartments) Remove(w http.ResponseWriter, r *http.Request) {
 	dataset.Department = departments
 
 	savedDataset := dataset.Clone()
-	err := c.store.UpdateDataset(dataset)
+	err := c.store.SaveDataset(dataset)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

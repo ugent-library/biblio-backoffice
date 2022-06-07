@@ -1,4 +1,4 @@
-package store
+package repository
 
 import (
 	"context"
@@ -12,14 +12,14 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/ulid"
 )
 
-type Store struct {
+type Repository struct {
 	client           *snapstore.Client
 	publicationStore *snapstore.Store
 	datasetStore     *snapstore.Store
 	opts             snapstore.Options
 }
 
-func New(dsn string) (*Store, error) {
+func New(dsn string) (*Repository, error) {
 	db, err := pgxpool.Connect(context.Background(), dsn)
 	if err != nil {
 		return nil, err
@@ -29,14 +29,14 @@ func New(dsn string) (*Store, error) {
 		snapstore.WithIDGenerator(ulid.Generate),
 	)
 
-	return &Store{
+	return &Repository{
 		client:           client,
 		publicationStore: client.Store("publications"),
 		datasetStore:     client.Store("datasets"),
 	}, nil
 }
 
-func (s *Store) AddPublicationListener(fn func(*models.Publication)) {
+func (s *Repository) AddPublicationListener(fn func(*models.Publication)) {
 	s.publicationStore.Listen(func(snap *snapstore.Snapshot) {
 		p := &models.Publication{}
 		if err := snap.Scan(p); err == nil {
@@ -48,7 +48,7 @@ func (s *Store) AddPublicationListener(fn func(*models.Publication)) {
 	})
 }
 
-func (s *Store) AddDatasetListener(fn func(*models.Dataset)) {
+func (s *Repository) AddDatasetListener(fn func(*models.Dataset)) {
 	s.datasetStore.Listen(func(snap *snapstore.Snapshot) {
 		d := &models.Dataset{}
 		if err := snap.Scan(d); err == nil {
@@ -60,9 +60,9 @@ func (s *Store) AddDatasetListener(fn func(*models.Dataset)) {
 	})
 }
 
-func (s *Store) Transaction(ctx context.Context, fn func(backends.Store) error) error {
+func (s *Repository) Transaction(ctx context.Context, fn func(backends.Repository) error) error {
 	return s.client.Transaction(ctx, func(opts snapstore.Options) error {
-		return fn(&Store{
+		return fn(&Repository{
 			client:           s.client,
 			publicationStore: s.publicationStore,
 			datasetStore:     s.datasetStore,
@@ -71,7 +71,7 @@ func (s *Store) Transaction(ctx context.Context, fn func(backends.Store) error) 
 	})
 }
 
-func (s *Store) GetPublication(id string) (*models.Publication, error) {
+func (s *Repository) GetPublication(id string) (*models.Publication, error) {
 	p := &models.Publication{}
 	snap, err := s.publicationStore.GetCurrentSnapshot(id, s.opts)
 	if err != nil {
@@ -86,7 +86,7 @@ func (s *Store) GetPublication(id string) (*models.Publication, error) {
 	return p, nil
 }
 
-func (s *Store) GetPublications(ids []string) ([]*models.Publication, error) {
+func (s *Repository) GetPublications(ids []string) ([]*models.Publication, error) {
 	c, err := s.publicationStore.GetByID(ids, s.opts)
 	if err != nil {
 		return nil, err
@@ -113,7 +113,7 @@ func (s *Store) GetPublications(ids []string) ([]*models.Publication, error) {
 	return publications, nil
 }
 
-func (s *Store) UpdatePublication(p *models.Publication) error {
+func (s *Repository) SavePublication(p *models.Publication) error {
 	now := time.Now()
 
 	if p.DateCreated == nil {
@@ -128,22 +128,16 @@ func (s *Store) UpdatePublication(p *models.Publication) error {
 		return err
 	}
 
-	// TODO this needs to be a separate update action
-	if p.SnapshotID != "" {
-		if err := s.publicationStore.AddAfter(p.SnapshotID, p.ID, p, s.opts); err != nil {
-			return err
-		}
-		return nil
-	}
-
-	if err := s.publicationStore.Add(p.ID, p, s.opts); err != nil {
-		return err
-	}
-
-	return nil
+	return s.publicationStore.Add(p.ID, p, s.opts)
 }
 
-func (s *Store) EachPublication(fn func(*models.Publication) bool) error {
+func (s *Repository) UpdatePublication(d *models.Publication) error {
+	now := time.Now()
+	d.DateUpdated = &now
+	return s.publicationStore.AddAfter(d.SnapshotID, d.ID, d, s.opts)
+}
+
+func (s *Repository) EachPublication(fn func(*models.Publication) bool) error {
 	c, err := s.publicationStore.GetAll(s.opts)
 	if err != nil {
 		return err
@@ -168,7 +162,7 @@ func (s *Store) EachPublication(fn func(*models.Publication) bool) error {
 	return c.Err()
 }
 
-func (s *Store) EachPublicationSnapshot(fn func(*models.Publication) bool) error {
+func (s *Repository) EachPublicationSnapshot(fn func(*models.Publication) bool) error {
 	c, err := s.publicationStore.GetAllSnapshots(s.opts)
 	if err != nil {
 		return err
@@ -193,7 +187,7 @@ func (s *Store) EachPublicationSnapshot(fn func(*models.Publication) bool) error
 	return c.Err()
 }
 
-func (s *Store) GetDataset(id string) (*models.Dataset, error) {
+func (s *Repository) GetDataset(id string) (*models.Dataset, error) {
 	d := &models.Dataset{}
 	snap, err := s.datasetStore.GetCurrentSnapshot(id, s.opts)
 	if err != nil {
@@ -208,7 +202,7 @@ func (s *Store) GetDataset(id string) (*models.Dataset, error) {
 	return d, nil
 }
 
-func (s *Store) GetDatasets(ids []string) ([]*models.Dataset, error) {
+func (s *Repository) GetDatasets(ids []string) ([]*models.Dataset, error) {
 	c, err := s.datasetStore.GetByID(ids, s.opts)
 	if err != nil {
 		return nil, err
@@ -235,7 +229,7 @@ func (s *Store) GetDatasets(ids []string) ([]*models.Dataset, error) {
 	return datasets, nil
 }
 
-func (s *Store) UpdateDataset(d *models.Dataset) error {
+func (s *Repository) SaveDataset(d *models.Dataset) error {
 	now := time.Now()
 
 	if d.DateCreated == nil {
@@ -249,22 +243,16 @@ func (s *Store) UpdateDataset(d *models.Dataset) error {
 		return err
 	}
 
-	// TODO this needs to be a separate update action
-	if d.SnapshotID != "" {
-		if err := s.datasetStore.AddAfter(d.SnapshotID, d.ID, d, s.opts); err != nil {
-			return err
-		}
-		return nil
-	}
-
-	if err := s.datasetStore.Add(d.ID, d, s.opts); err != nil {
-		return err
-	}
-
-	return nil
+	return s.datasetStore.Add(d.ID, d, s.opts)
 }
 
-func (s *Store) EachDataset(fn func(*models.Dataset) bool) error {
+func (s *Repository) UpdateDataset(d *models.Dataset) error {
+	now := time.Now()
+	d.DateUpdated = &now
+	return s.datasetStore.AddAfter(d.SnapshotID, d.ID, d, s.opts)
+}
+
+func (s *Repository) EachDataset(fn func(*models.Dataset) bool) error {
 	c, err := s.datasetStore.GetAll(s.opts)
 	if err != nil {
 		return err
@@ -290,7 +278,7 @@ func (s *Store) EachDataset(fn func(*models.Dataset) bool) error {
 	return c.Err()
 }
 
-func (s *Store) EachDatasetSnapshot(fn func(*models.Dataset) bool) error {
+func (s *Repository) EachDatasetSnapshot(fn func(*models.Dataset) bool) error {
 	c, err := s.datasetStore.GetAllSnapshots(s.opts)
 	if err != nil {
 		return err
@@ -316,7 +304,7 @@ func (s *Store) EachDatasetSnapshot(fn func(*models.Dataset) bool) error {
 	return c.Err()
 }
 
-func (s *Store) GetPublicationDatasets(p *models.Publication) ([]*models.Dataset, error) {
+func (s *Repository) GetPublicationDatasets(p *models.Publication) ([]*models.Dataset, error) {
 	datasetIds := make([]string, len(p.RelatedDataset))
 	for _, rd := range p.RelatedDataset {
 		datasetIds = append(datasetIds, rd.ID)
@@ -324,7 +312,7 @@ func (s *Store) GetPublicationDatasets(p *models.Publication) ([]*models.Dataset
 	return s.GetDatasets(datasetIds)
 }
 
-func (s *Store) GetDatasetPublications(d *models.Dataset) ([]*models.Publication, error) {
+func (s *Repository) GetDatasetPublications(d *models.Dataset) ([]*models.Publication, error) {
 	publicationIds := make([]string, len(d.RelatedPublication))
 	for _, rp := range d.RelatedPublication {
 		publicationIds = append(publicationIds, rp.ID)
@@ -332,17 +320,17 @@ func (s *Store) GetDatasetPublications(d *models.Dataset) ([]*models.Publication
 	return s.GetPublications(publicationIds)
 }
 
-func (s *Store) AddPublicationDataset(p *models.Publication, d *models.Dataset) error {
-	return s.Transaction(context.Background(), func(s backends.Store) error {
+func (s *Repository) AddPublicationDataset(p *models.Publication, d *models.Dataset) error {
+	return s.Transaction(context.Background(), func(s backends.Repository) error {
 		if !p.HasRelatedDataset(d.ID) {
 			p.RelatedDataset = append(p.RelatedDataset, models.RelatedDataset{ID: d.ID})
-			if err := s.UpdatePublication(p); err != nil {
+			if err := s.SavePublication(p); err != nil {
 				return err
 			}
 		}
 		if !d.HasRelatedPublication(p.ID) {
 			d.RelatedPublication = append(d.RelatedPublication, models.RelatedPublication{ID: p.ID})
-			if err := s.UpdateDataset(d); err != nil {
+			if err := s.SaveDataset(d); err != nil {
 				return err
 			}
 		}
@@ -351,17 +339,17 @@ func (s *Store) AddPublicationDataset(p *models.Publication, d *models.Dataset) 
 	})
 }
 
-func (s *Store) RemovePublicationDataset(p *models.Publication, d *models.Dataset) error {
-	return s.Transaction(context.Background(), func(s backends.Store) error {
+func (s *Repository) RemovePublicationDataset(p *models.Publication, d *models.Dataset) error {
+	return s.Transaction(context.Background(), func(s backends.Repository) error {
 		if p.HasRelatedDataset(d.ID) {
 			p.RemoveRelatedDataset(d.ID)
-			if err := s.UpdatePublication(p); err != nil {
+			if err := s.SavePublication(p); err != nil {
 				return err
 			}
 		}
 		if d.HasRelatedPublication(p.ID) {
 			d.RemoveRelatedPublication(p.ID)
-			if err := s.UpdateDataset(d); err != nil {
+			if err := s.SaveDataset(d); err != nil {
 				return err
 			}
 		}
@@ -370,18 +358,18 @@ func (s *Store) RemovePublicationDataset(p *models.Publication, d *models.Datase
 	})
 }
 
-func (s *Store) PurgeAllPublications() error {
+func (s *Repository) PurgeAllPublications() error {
 	return s.publicationStore.PurgeAll(s.opts)
 }
 
-func (s *Store) PurgePublication(id string) error {
+func (s *Repository) PurgePublication(id string) error {
 	return s.publicationStore.Purge(id, s.opts)
 }
 
-func (s *Store) PurgeAllDatasets() error {
+func (s *Repository) PurgeAllDatasets() error {
 	return s.datasetStore.PurgeAll(s.opts)
 }
 
-func (s *Store) PurgeDataset(id string) error {
+func (s *Repository) PurgeDataset(id string) error {
 	return s.datasetStore.Purge(id, s.opts)
 }

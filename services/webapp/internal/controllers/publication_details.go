@@ -17,10 +17,10 @@ import (
 
 type PublicationDetails struct {
 	Base
-	store backends.Store
+	store backends.Repository
 }
 
-func NewPublicationDetails(base Base, store backends.Store) *PublicationDetails {
+func NewPublicationDetails(base Base, store backends.Repository) *PublicationDetails {
 	return &PublicationDetails{
 		Base:  base,
 		store: store,
@@ -76,7 +76,7 @@ func (c *PublicationDetails) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	savedPub := pub.Clone()
-	err = c.store.UpdatePublication(pub)
+	err = c.store.SavePublication(pub)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {

@@ -17,10 +17,10 @@ import (
 
 type PublicationLaySummaries struct {
 	Base
-	store backends.Store
+	store backends.Repository
 }
 
-func NewPublicationLaySummaries(base Base, store backends.Store) *PublicationLaySummaries {
+func NewPublicationLaySummaries(base Base, store backends.Repository) *PublicationLaySummaries {
 	return &PublicationLaySummaries{
 		Base:  base,
 		store: store,
@@ -67,7 +67,7 @@ func (c *PublicationLaySummaries) Create(w http.ResponseWriter, r *http.Request)
 	pub.LaySummary = lay_summaries
 
 	savedPub := pub.Clone()
-	err = c.store.UpdatePublication(savedPub)
+	err = c.store.SavePublication(savedPub)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
@@ -158,7 +158,7 @@ func (c *PublicationLaySummaries) Update(w http.ResponseWriter, r *http.Request)
 	pub.LaySummary = lay_summaries
 
 	savedPub := pub.Clone()
-	err = c.store.UpdatePublication(savedPub)
+	err = c.store.SavePublication(savedPub)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
@@ -225,7 +225,7 @@ func (c *PublicationLaySummaries) Remove(w http.ResponseWriter, r *http.Request)
 
 	// TODO: error handling
 	savedPub := pub.Clone()
-	c.store.UpdatePublication(savedPub)
+	c.store.SavePublication(savedPub)
 
 	c.Render.HTML(w, http.StatusOK, "publication/lay_summaries/_deleted", c.ViewData(r, struct {
 		Publication *models.Publication

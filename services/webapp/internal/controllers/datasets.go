@@ -32,12 +32,12 @@ type DatasetAddVars struct {
 
 type Datasets struct {
 	Base
-	store                backends.Store
+	store                backends.Repository
 	datasetSearchService backends.DatasetSearchService
 	datasetSources       map[string]backends.DatasetGetter
 }
 
-func NewDatasets(base Base, store backends.Store, datasetSearchService backends.DatasetSearchService,
+func NewDatasets(base Base, store backends.Repository, datasetSearchService backends.DatasetSearchService,
 	datasetSources map[string]backends.DatasetGetter) *Datasets {
 	return &Datasets{
 		Base:                 base,
@@ -123,7 +123,7 @@ func (c *Datasets) Publish(w http.ResponseWriter, r *http.Request) {
 	datasetCopy := *dataset
 	datasetCopy.Status = "public"
 	savedDataset := datasetCopy.Clone()
-	err := c.store.UpdateDataset(savedDataset)
+	err := c.store.SaveDataset(savedDataset)
 	if err != nil {
 		savedDataset = dataset
 
@@ -288,7 +288,7 @@ func (c *Datasets) AddPublish(w http.ResponseWriter, r *http.Request) {
 
 	dataset.Status = "public"
 	savedDataset := dataset.Clone()
-	err := c.store.UpdateDataset(dataset)
+	err := c.store.SaveDataset(dataset)
 	if err != nil {
 
 		/*
@@ -359,7 +359,7 @@ func (c *Datasets) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	dataset.Status = "deleted"
-	if err := c.store.UpdateDataset(dataset); err != nil {
+	if err := c.store.SaveDataset(dataset); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -421,7 +421,7 @@ func (c *Datasets) importUserDatasetByIdentifier(userID, source, identifier stri
 	d.UserID = userID
 	d.Status = "private"
 
-	if err = c.store.UpdateDataset(d); err != nil {
+	if err = c.store.SaveDataset(d); err != nil {
 		return nil, err
 	}
 

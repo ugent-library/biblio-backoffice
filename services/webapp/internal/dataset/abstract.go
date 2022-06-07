@@ -39,15 +39,17 @@ func (c *Controller) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx 
 	d := ctx.Dataset
 	d.SnapshotID = r.Header.Get("If-Match")
 	d.Abstract = append(d.Abstract, models.Text{Text: b.Text, Lang: b.Lang})
-	err := c.store.UpdateDataset(d)
 
-	if validationErrors := validation.From(err); validationErrors != nil {
+	if validationErrs := d.Validate(); validationErrs != nil {
 		ctx.RenderYield(w, "dataset/create_abstract_failed", YieldAbstract{
 			Dataset: d,
-			Form:    abstractForm(ctx, b, validationErrors),
+			Form:    abstractForm(ctx, b, validationErrs),
 		})
 		return
 	}
+
+	err := c.store.UpdateDataset(d)
+	// TODO handle conflict errors
 
 	if !render.InternalServerError(w, err) {
 		ctx.RenderYield(w, "dataset/create_abstract", YieldAbstract{
@@ -92,18 +94,18 @@ func (c *Controller) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx 
 	d.SnapshotID = r.Header.Get("If-Match")
 	d.Abstract[b.Position].Lang = b.Lang
 	d.Abstract[b.Position].Text = b.Text
-	err := c.store.UpdateDataset(d)
 
-	if validationErrors := validation.From(err); validationErrors != nil {
+	if validationErrs := d.Validate(); validationErrs != nil {
 		ctx.RenderYield(w, "dataset/update_abstract_failed", YieldAbstract{
 			Dataset:  d,
 			Position: b.Position,
-			Form:     abstractForm(ctx, b, validationErrors),
+			Form:     abstractForm(ctx, b, validationErrs),
 		})
 		return
 	}
 
-	// TOOD handle conflict errors
+	err := c.store.UpdateDataset(d)
+	// TODO handle conflict errors
 
 	if !render.InternalServerError(w, err) {
 		ctx.RenderYield(w, "dataset/update_abstract", YieldAbstract{
@@ -144,8 +146,8 @@ func (c *Controller) DeleteAbstract(w http.ResponseWriter, r *http.Request, ctx 
 	d := ctx.Dataset
 	d.SnapshotID = r.Header.Get("If-Match")
 	d.Abstract = append(d.Abstract[:b.Position], d.Abstract[b.Position+1:]...)
-	err := c.store.UpdateDataset(d)
 
+	err := c.store.UpdateDataset(d)
 	// TODO handle validation errors
 	// TOOD handle conflict errors
 

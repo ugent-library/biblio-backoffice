@@ -25,11 +25,11 @@ import (
 
 type PublicationFiles struct {
 	Base
-	store     backends.Store
+	store     backends.Repository
 	fileStore *filestore.Store
 }
 
-func NewPublicationFiles(base Base, store backends.Store, fileStore *filestore.Store) *PublicationFiles {
+func NewPublicationFiles(base Base, store backends.Repository, fileStore *filestore.Store) *PublicationFiles {
 	return &PublicationFiles{
 		Base:      base,
 		store:     store,
@@ -116,7 +116,7 @@ func (c *PublicationFiles) Upload(w http.ResponseWriter, r *http.Request) {
 		DateUpdated: &now,
 	}
 	savedPub.File = append(savedPub.File, pubFile)
-	err = c.store.UpdatePublication(savedPub)
+	err = c.store.SavePublication(savedPub)
 
 	if err != nil {
 		c.addThumbnailURLs(pub)
@@ -302,7 +302,7 @@ func (c *PublicationFiles) Update(w http.ResponseWriter, r *http.Request) {
 		file.Embargo = ""
 	}
 
-	err = c.store.UpdatePublication(pub)
+	err = c.store.SavePublication(pub)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
@@ -374,7 +374,7 @@ func (c *PublicationFiles) Remove(w http.ResponseWriter, r *http.Request) {
 	}
 	pub.File = newFile
 
-	err := c.store.UpdatePublication(pub)
+	err := c.store.SavePublication(pub)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

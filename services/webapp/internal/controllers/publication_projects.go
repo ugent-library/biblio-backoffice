@@ -12,12 +12,12 @@ import (
 
 type PublicationProjects struct {
 	Base
-	store                backends.Store
+	store                backends.Repository
 	projectSearchService backends.ProjectSearchService
 	projectService       backends.ProjectService
 }
 
-func NewPublicationProjects(base Base, store backends.Store,
+func NewPublicationProjects(base Base, store backends.Repository,
 	projectSearchService backends.ProjectSearchService,
 	projectSerive backends.ProjectService) *PublicationProjects {
 	return &PublicationProjects{
@@ -86,7 +86,7 @@ func (c *PublicationProjects) Add(w http.ResponseWriter, r *http.Request) {
 	})
 
 	savedPub := pub.Clone()
-	err = c.store.UpdatePublication(savedPub)
+	err = c.store.SavePublication(savedPub)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -137,7 +137,7 @@ func (c *PublicationProjects) Remove(w http.ResponseWriter, r *http.Request) {
 
 	// TODO: error handling
 	savedPub := pub.Clone()
-	err := c.store.UpdatePublication(savedPub)
+	err := c.store.SavePublication(savedPub)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

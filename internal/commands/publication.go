@@ -67,7 +67,7 @@ var publicationAllCmd = &cobra.Command{
 	Use:   "all",
 	Short: "Get all publications",
 	Run: func(cmd *cobra.Command, args []string) {
-		s := newStore()
+		s := newRepository()
 		e := json.NewEncoder(os.Stdout)
 		s.EachPublication(func(d *models.Publication) bool {
 			e.Encode(d)
@@ -118,7 +118,7 @@ var publicationAddCmd = &cobra.Command{
 				log.Printf("Validation failed for publication at line %d : %v", lineNo, err)
 				continue
 			}
-			if err := e.Store.UpdatePublication(&p); err != nil {
+			if err := e.Store.SavePublication(&p); err != nil {
 				log.Fatalf("Unable to store publication from line %d : %v", lineNo, err)
 			}
 

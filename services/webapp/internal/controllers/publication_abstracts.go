@@ -18,10 +18,10 @@ import (
 
 type PublicationAbstracts struct {
 	Base
-	store backends.Store
+	store backends.Repository
 }
 
-func NewPublicationAbstracts(base Base, store backends.Store) *PublicationAbstracts {
+func NewPublicationAbstracts(base Base, store backends.Repository) *PublicationAbstracts {
 	return &PublicationAbstracts{
 		Base:  base,
 		store: store,
@@ -71,7 +71,7 @@ func (c *PublicationAbstracts) Create(w http.ResponseWriter, r *http.Request) {
 	pub.Abstract = abstracts
 
 	savedPub := pub.Clone()
-	err = c.store.UpdatePublication(savedPub)
+	err = c.store.SavePublication(savedPub)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
@@ -157,7 +157,7 @@ func (c *PublicationAbstracts) Update(w http.ResponseWriter, r *http.Request) {
 	pub.Abstract = abstracts
 
 	savedPub := pub.Clone()
-	err = c.store.UpdatePublication(savedPub)
+	err = c.store.SavePublication(savedPub)
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
@@ -224,7 +224,7 @@ func (c *PublicationAbstracts) Remove(w http.ResponseWriter, r *http.Request) {
 	pub.Abstract = abstracts
 
 	// TODO: error handling
-	c.store.UpdatePublication(pub)
+	c.store.SavePublication(pub)
 
 	w.Header().Set("HX-Trigger", "PublicationRemoveAbstract")
 
