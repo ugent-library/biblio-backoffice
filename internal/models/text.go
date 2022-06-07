@@ -7,7 +7,7 @@ type Text struct {
 	Lang string `json:"lang,omitempty" form:"lang"`
 }
 
-func (t *Text) Validate() (errs validation.Errors) {
+func (t Text) Validate() (errs validation.Errors) {
 	if t.Lang == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/lang",
