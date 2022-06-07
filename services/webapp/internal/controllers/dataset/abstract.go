@@ -36,41 +36,39 @@ func (c *Controller) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	d := ctx.Dataset
-	d.SnapshotID = r.Header.Get("If-Match")
-	d.Abstract = append(d.Abstract, models.Text{Text: b.Text, Lang: b.Lang})
+	ctx.Dataset.Abstract = append(ctx.Dataset.Abstract, models.Text{Text: b.Text, Lang: b.Lang})
 
-	if validationErrs := d.Validate(); validationErrs != nil {
+	if validationErrs := ctx.Dataset.Validate(); validationErrs != nil {
 		ctx.RenderYield(w, "dataset/create_abstract_failed", YieldAbstract{
-			Dataset: d,
+			Dataset: ctx.Dataset,
 			Form:    abstractForm(ctx, b, validationErrs),
 		})
 		return
 	}
 
-	err := c.store.UpdateDataset(d)
+	err := c.store.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
 	// TODO handle conflict errors
 
 	if !render.InternalServerError(w, err) {
 		ctx.RenderYield(w, "dataset/create_abstract", YieldAbstract{
-			Dataset: d,
+			Dataset: ctx.Dataset,
 		})
 	}
 }
 
 func (c *Controller) EditAbstract(w http.ResponseWriter, r *http.Request, ctx EditContext) {
-	var b BindAbstract
+	b := BindAbstract{}
 	if render.BadRequest(w, bind.RequestPath(r, &b)) {
 		return
 	}
 
-	if b.Position >= len(ctx.Dataset.Abstract) {
-		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+	a, err := ctx.Dataset.GetAbstract(b.Position)
+	if render.BadRequest(w, err) {
 		return
 	}
 
-	b.Lang = ctx.Dataset.Abstract[b.Position].Lang
-	b.Text = ctx.Dataset.Abstract[b.Position].Text
+	b.Lang = a.Lang
+	b.Text = a.Text
 
 	ctx.RenderYield(w, "dataset/edit_abstract", YieldAbstract{
 		Dataset:  ctx.Dataset,
@@ -80,36 +78,31 @@ func (c *Controller) EditAbstract(w http.ResponseWriter, r *http.Request, ctx Ed
 }
 
 func (c *Controller) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx EditContext) {
-	var b BindAbstract
+	b := BindAbstract{}
 	if render.BadRequest(w, bind.Request(r, &b)) {
 		return
 	}
 
-	if b.Position >= len(ctx.Dataset.Abstract) {
-		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+	a := models.Text{Text: b.Text, Lang: b.Lang}
+	if render.BadRequest(w, ctx.Dataset.SetAbstract(b.Position, a)) {
 		return
 	}
 
-	d := ctx.Dataset
-	d.SnapshotID = r.Header.Get("If-Match")
-	d.Abstract[b.Position].Lang = b.Lang
-	d.Abstract[b.Position].Text = b.Text
-
-	if validationErrs := d.Validate(); validationErrs != nil {
+	if validationErrs := ctx.Dataset.Validate(); validationErrs != nil {
 		ctx.RenderYield(w, "dataset/update_abstract_failed", YieldAbstract{
-			Dataset:  d,
+			Dataset:  ctx.Dataset,
 			Position: b.Position,
 			Form:     abstractForm(ctx, b, validationErrs),
 		})
 		return
 	}
 
-	err := c.store.UpdateDataset(d)
+	err := c.store.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
 	// TODO handle conflict errors
 
 	if !render.InternalServerError(w, err) {
 		ctx.RenderYield(w, "dataset/update_abstract", YieldAbstract{
-			Dataset:  d,
+			Dataset:  ctx.Dataset,
 			Position: b.Position,
 		})
 	}
@@ -121,8 +114,7 @@ func (c *Controller) ConfirmDeleteAbstract(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	if b.Position >= len(ctx.Dataset.Abstract) {
-		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+	if _, err := ctx.Dataset.GetAbstract(b.Position); render.BadRequest(w, err) {
 		return
 	}
 
@@ -138,22 +130,16 @@ func (c *Controller) DeleteAbstract(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	if b.Position >= len(ctx.Dataset.Abstract) {
-		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+	if render.BadRequest(w, ctx.Dataset.RemoveAbstract(b.Position)) {
 		return
 	}
 
-	d := ctx.Dataset
-	d.SnapshotID = r.Header.Get("If-Match")
-	d.Abstract = append(d.Abstract[:b.Position], d.Abstract[b.Position+1:]...)
-
-	err := c.store.UpdateDataset(d)
-	// TODO handle validation errors
-	// TOOD handle conflict errors
+	err := c.store.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
+	// TODO handle conflict errors
 
 	if !render.InternalServerError(w, err) {
 		ctx.RenderYield(w, "dataset/delete_abstract", YieldAbstract{
-			Dataset: d,
+			Dataset: ctx.Dataset,
 		})
 	}
 }

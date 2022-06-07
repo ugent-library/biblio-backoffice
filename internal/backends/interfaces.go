@@ -55,7 +55,7 @@ type Repository interface {
 	GetPublication(string) (*models.Publication, error)
 	GetPublications([]string) ([]*models.Publication, error)
 	SavePublication(*models.Publication) error
-	UpdatePublication(*models.Publication) error
+	UpdatePublication(string, *models.Publication) error
 	EachPublication(func(*models.Publication) bool) error
 	EachPublicationSnapshot(func(*models.Publication) bool) error
 	PurgeAllPublications() error
@@ -64,7 +64,7 @@ type Repository interface {
 	GetDataset(string) (*models.Dataset, error)
 	GetDatasets([]string) ([]*models.Dataset, error)
 	SaveDataset(*models.Dataset) error
-	UpdateDataset(*models.Dataset) error
+	UpdateDataset(string, *models.Dataset) error
 	EachDataset(func(*models.Dataset) bool) error
 	EachDatasetSnapshot(func(*models.Dataset) bool) error
 	PurgeAllDatasets() error

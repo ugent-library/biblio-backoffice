@@ -131,10 +131,10 @@ func (s *Repository) SavePublication(p *models.Publication) error {
 	return s.publicationStore.Add(p.ID, p, s.opts)
 }
 
-func (s *Repository) UpdatePublication(d *models.Publication) error {
+func (s *Repository) UpdatePublication(snapshotID string, d *models.Publication) error {
 	now := time.Now()
 	d.DateUpdated = &now
-	return s.publicationStore.AddAfter(d.SnapshotID, d.ID, d, s.opts)
+	return s.publicationStore.AddAfter(snapshotID, d.ID, d, s.opts)
 }
 
 func (s *Repository) EachPublication(fn func(*models.Publication) bool) error {
@@ -246,10 +246,10 @@ func (s *Repository) SaveDataset(d *models.Dataset) error {
 	return s.datasetStore.Add(d.ID, d, s.opts)
 }
 
-func (s *Repository) UpdateDataset(d *models.Dataset) error {
+func (s *Repository) UpdateDataset(snapshotID string, d *models.Dataset) error {
 	now := time.Now()
 	d.DateUpdated = &now
-	return s.datasetStore.AddAfter(d.SnapshotID, d.ID, d, s.opts)
+	return s.datasetStore.AddAfter(snapshotID, d.ID, d, s.opts)
 }
 
 func (s *Repository) EachDataset(fn func(*models.Dataset) bool) error {

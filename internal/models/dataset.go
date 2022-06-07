@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -152,6 +153,34 @@ func (p *Dataset) RemoveContributor(role string, i int) {
 	cc := p.Contributors(role)
 
 	p.SetContributors(role, append(cc[:i], cc[i+1:]...))
+}
+
+func (d *Dataset) GetAbstract(i int) (Text, error) {
+	if i >= len(d.Abstract) {
+		return Text{}, errors.New("index out of bounds")
+	}
+
+	return d.Abstract[i], nil
+}
+
+func (d *Dataset) SetAbstract(i int, t Text) error {
+	if i >= len(d.Abstract) {
+		return errors.New("index out of bounds")
+	}
+
+	d.Abstract[i] = t
+
+	return nil
+}
+
+func (d *Dataset) RemoveAbstract(i int) error {
+	if i >= len(d.Abstract) {
+		return errors.New("index out of bounds")
+	}
+
+	d.Abstract = append(d.Abstract[:i], d.Abstract[i+1:]...)
+
+	return nil
 }
 
 func (d *Dataset) ResolveDOI() string {
