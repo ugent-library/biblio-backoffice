@@ -1,21 +1,11 @@
 package validation
 
-import "errors"
-
 type Errors []*Error
 
 type Error struct {
 	Pointer string
 	Field   string
 	Code    string
-}
-
-func From(err error) Errors {
-	var e Errors
-	if errors.As(err, &e) {
-		return e
-	}
-	return nil
 }
 
 func (errs Errors) Error() string {
