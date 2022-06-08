@@ -104,7 +104,7 @@
     },
     "mappings": {
         "_doc": {
-            "dynamic": false,
+            "dynamic": "strict",
             "properties": {
                 "all": {
                     "type": "text"
@@ -164,6 +164,44 @@
                 "completeness_score": {
                     "type": "integer"
                 },
+                "contributor": {
+                    "properties": {
+                        "id": {
+                            "type": "keyword"
+                        },
+                        "orcid": {
+                            "type": "keyword"
+                        },
+                        "ugent_id": {
+                            "type": "keyword"
+                        },
+                        "first_name": {
+                            "type": "text"
+                        },
+                        "last_name": {
+                            "type": "text"
+                        },
+                        "full_name": {
+                            "type": "text",
+                            "copy_to": "all",
+                            "fields": {
+                                "ngram": {
+                                    "type": "text",
+                                    "analyzer": "token_edge_ngram",
+                                    "search_analyzer": "token_edge_ngram_search"
+                                },
+                                "phrase_ngram": {
+                                    "type": "text",
+                                    "analyzer": "phrase_edge_ngram",
+                                    "search_analyzer": "phrase_edge_ngram"
+                                }
+                            }
+                        },
+                        "credit_role": {
+                            "type": "keyword"
+                        }
+                    }
+                },
                 "creator_id": {
                     "type": "keyword"
                 },
@@ -199,6 +237,13 @@
                     "type": "text",
                     "analyzer": "keyword_lowercase"
                 },
+                "embargo": {
+                    "type": "date",
+                    "format": "yyyy-MM-dd"
+                },
+                "embargo_to": {
+                    "type": "keyword"
+                },
                 "format": {
                     "type": "keyword"
                 },
@@ -213,9 +258,47 @@
                 "license": {
                     "type": "keyword"
                 },
+                "locked": {
+                    "type": "boolean"
+                },
+                "message": {
+                    "type": "text",
+                    "index": false
+                },
+                "other_license": {
+                    "type": "text"
+                },
+                "project": {
+                    "properties": {
+                        "id": {
+                            "type": "keyword"
+                        },
+                        "_id": {
+                            "type": "keyword"
+                        },
+                        "name": {
+                            "type": "text"
+                        }
+                    }
+                },
                 "publisher": {
                     "type": "text",
                     "copy_to": "all"
+                },
+                "related_publication": {
+                    "properties": {
+                        "id": {
+                            "type": "keyword"
+                        }
+                    }
+                },
+                "reviewer_note": {
+                    "type": "text",
+                    "index": false
+                },
+                "reviewer_tags": {
+                    "type": "text",
+                    "analyzer": "keyword_lowercase"
                 },
                 "status": {
                     "type": "keyword"
@@ -223,6 +306,13 @@
                 "title": {
                     "type": "text",
                     "copy_to": "all"
+                },
+                "url": {
+                    "type": "text",
+                    "index": false
+                },
+                "user_id": {
+                    "type": "keyword"
                 },
                 "year": {
                     "type": "date",
