@@ -1,4 +1,5 @@
 import htmx from 'htmx.org';
+import 'htmx.org/dist/ext/remove-me.js';
 import csrf from './ui/csrf.js'
 import checkbox from './ui/checkbox.js'
 import bootstrap from './ui/bootstrap.js'
@@ -16,7 +17,6 @@ import toast from './ui/toast.js'
 import sortable from './ui/sortable.js';
 
 document.addEventListener('DOMContentLoaded', function () {
-
     htmx.config.defaultFocusScroll = true
 
     csrf()

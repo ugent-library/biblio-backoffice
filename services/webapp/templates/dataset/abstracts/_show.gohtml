@@ -9,8 +9,7 @@
                 {{if .User.CanEditDataset .D.Dataset}}
                 <button class="btn btn-outline-primary" type="button"
                     hx-get="{{pathFor "dataset_add_abstract" "id" .D.Dataset.ID }}"
-                    hx-swap="innerHTML"
-                    hx-target="#abstract-modals"
+                    hx-target="#modals"
                 >
                     <i class="if if-add"></i>
                     <div class="btn-text">Add Abstract</div>
@@ -36,4 +35,3 @@
         </div>
     </div>
 </div>
-<div id="abstract-modals" class="modals"></div>

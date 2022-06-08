@@ -1,5 +1,5 @@
-<div>
-    <div class="bc-toast bc-toast--{{.Type}}"{{with .DismissAfter}} data-dismiss-after="{{.Milliseconds}}"{{end}}>
+<div{{if .DismissAfter}} hx-ext="remove-me"{{end}}>
+    <div class="bc-toast bc-toast--{{.Type}}"{{with .DismissAfter}} remove-me="{{.Milliseconds}}ms"{{end}}>
         <div class="bc-toast__left">
             {{if eq .Type "success"}}
             <i class="if if-check-circle-fill"></i>

@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/url"
 	"regexp"
+	"strings"
 	"time"
 
 	"github.com/caltechlibrary/doitools"
@@ -113,7 +114,7 @@ func (c *Client) GetDataset(id string) (*models.Dataset, error) {
 		}
 	}
 	if res := attrs.Get(`rightsList.#(rightsIdentifierScheme="SPDX").rightsIdentifier`); res.Exists() {
-		d.License = res.String()
+		d.License = strings.ToUpper(res.String())
 	}
 	if res := attrs.Get(`rightsList.#(rightsUri%"info:eu-repo/semantics/*").rightsUri`); res.Exists() {
 		d.AccessLevel = res.String()

@@ -16,7 +16,7 @@
                     <div class="dropdown-menu">
                         <button class="dropdown-item" type="button"
                             hx-get="{{pathFor "dataset_edit_abstract" "id" $.D.Dataset.ID "position" $k}}"
-                            hx-target="#abstract-modals"
+                            hx-target="#modals"
                         >
                             <i class="if if-edit"></i>
                             <span>Edit</span>
@@ -24,7 +24,7 @@
 
                         <button class="dropdown-item" type="button"
                             hx-get="{{pathFor "dataset_confirm_delete_abstract" "id" $.D.Dataset.ID "position" $k}}"
-                            hx-target="#abstract-modals"
+                            hx-target="#modals"
                         >
                             <i class="if if-delete"></i>
                             <span>Delete</span>
