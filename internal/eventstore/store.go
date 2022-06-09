@@ -3,7 +3,6 @@ package eventstore
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"sync"
 	"time"
@@ -13,7 +12,7 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
-var StreamNotFound = errors.New("stream not found")
+// var StreamNotFound = errors.New("stream not found")
 
 type PgConn interface {
 	Begin(context.Context) (pgx.Tx, error)
@@ -52,6 +51,7 @@ func Connect(ctx context.Context, dsn string) (*Store, error) {
 	if err != nil {
 		return nil, fmt.Errorf("eventstore: failed to connect: %w", err)
 	}
+
 	return New(conn), nil
 }
 
@@ -61,13 +61,13 @@ func New(conn PgConn) *Store {
 	}
 }
 
-func (s *Store) AddProcessor(streamType string, processor Processor) {
+func (s *Store) AddProcessor(streamType string, p Processor) {
 	s.processorsMu.Lock()
 	defer s.processorsMu.Unlock()
 	if s.processors == nil {
 		s.processors = make(map[string]Processor)
 	}
-	s.processors[streamType] = processor
+	s.processors[streamType] = p
 }
 
 func (s *Store) Append(ctx context.Context, events ...Event) error {

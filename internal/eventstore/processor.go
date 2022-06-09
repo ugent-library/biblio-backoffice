@@ -16,21 +16,25 @@ type Processor interface {
 	RawApply(json.RawMessage, []Event) (any, error)
 }
 
-type ProcessorFor[T any] struct {
+type processor[T any] struct {
 	handlers   map[string]func(T, any) (T, error)
 	handlersMu sync.RWMutex
 }
 
-func (p *ProcessorFor[T]) AddHandler(eventType string, handler func(T, any) (T, error)) {
+func NewProcessor[T any]() *processor[T] {
+	return &processor[T]{}
+}
+
+func (p *processor[T]) AddHandler(eventType string, h func(T, any) (T, error)) {
 	p.handlersMu.Lock()
 	defer p.handlersMu.Unlock()
 	if p.handlers == nil {
 		p.handlers = make(map[string]func(T, any) (T, error))
 	}
-	p.handlers[eventType] = handler
+	p.handlers[eventType] = h
 }
 
-func (p *ProcessorFor[T]) RawApply(d json.RawMessage, events []Event) (any, error) {
+func (p *processor[T]) RawApply(d json.RawMessage, events []Event) (any, error) {
 	var data T
 	if d != nil {
 		if err := json.Unmarshal(d, data); err != nil {
@@ -41,7 +45,7 @@ func (p *ProcessorFor[T]) RawApply(d json.RawMessage, events []Event) (any, erro
 	return p.Apply(data, events...)
 }
 
-func (p *ProcessorFor[T]) Apply(data T, events ...Event) (T, error) {
+func (p *processor[T]) Apply(data T, events ...Event) (T, error) {
 	var err error
 
 	for _, e := range events {

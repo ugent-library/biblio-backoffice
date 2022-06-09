@@ -23,7 +23,8 @@ var testEventstoreCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		datasetProcessor := &eventstore.ProcessorFor[*models.Dataset]{}
+		datasetProcessor := eventstore.NewProcessor[*models.Dataset]()
+
 		datasetProcessor.AddHandler("Set", eventstore.Handler(func(data *models.Dataset, eventData *models.Dataset) (*models.Dataset, error) {
 			return eventData, nil
 		}))
