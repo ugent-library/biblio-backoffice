@@ -71,5 +71,21 @@ var testEventstoreCmd = &cobra.Command{
 		}
 		log.Printf("%+v", p)
 		log.Printf("%+v", p.Data)
+
+		c, err := datasetRepository.GetAll(context.Background())
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer c.Close()
+		for c.HasNext() {
+			p, err := c.Next()
+			if err != nil {
+				log.Fatal(err)
+			}
+			log.Printf("iterated id %s", p.StreamID)
+		}
+		if err := c.Error(); err != nil {
+			log.Fatal(err)
+		}
 	},
 }
