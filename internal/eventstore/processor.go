@@ -12,10 +12,6 @@ func Handler[T, TT any](fn func(T, TT) (T, error)) func(T, any) (T, error) {
 	}
 }
 
-type Processor interface {
-	RawApply(json.RawMessage, []Event) (any, error)
-}
-
 type processor[T any] struct {
 	handlers   map[string]func(T, any) (T, error)
 	handlersMu sync.RWMutex
@@ -34,15 +30,27 @@ func (p *processor[T]) AddHandler(eventType string, h func(T, any) (T, error)) {
 	p.handlers[eventType] = h
 }
 
-func (p *processor[T]) RawApply(d json.RawMessage, events []Event) (any, error) {
-	var data T
+func (p *processor[T]) RawApply(d json.RawMessage, events []Event) (json.RawMessage, error) {
+	var (
+		data T
+		err  error
+	)
+
 	if d != nil {
-		if err := json.Unmarshal(d, data); err != nil {
-			return nil, fmt.Errorf("eventstore: can't deserialize into %T: %w", data, err)
+		if err = json.Unmarshal(d, data); err != nil {
+			return nil, fmt.Errorf("eventstore: failed to deserialize into %T: %w", data, err)
 		}
 	}
 
-	return p.Apply(data, events...)
+	if data, err = p.Apply(data, events...); err != nil {
+		return nil, err
+	}
+
+	if d, err = json.Marshal(data); err != nil {
+		return nil, fmt.Errorf("eventstore: failed to serialize %T: %w", data, err)
+	}
+
+	return d, nil
 }
 
 func (p *processor[T]) Apply(data T, events ...Event) (T, error) {

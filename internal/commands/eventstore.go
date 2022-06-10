@@ -35,6 +35,8 @@ var testEventstoreCmd = &cobra.Command{
 
 		store.AddProcessor("Dataset", datasetProcessor)
 
+		datasetRepository := eventstore.NewRepository[*models.Dataset](store, "Dataset")
+
 		streamID := ulid.MustGenerate()
 
 		err = store.Append(context.Background(),
@@ -62,5 +64,12 @@ var testEventstoreCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal(err)
 		}
+
+		p, err := datasetRepository.Get(context.Background(), streamID)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("%+v", p)
+		log.Printf("%+v", p.Data)
 	},
 }

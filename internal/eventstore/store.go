@@ -3,6 +3,7 @@ package eventstore
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"sync"
 	"time"
@@ -12,7 +13,7 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
-// var StreamNotFound = errors.New("stream not found")
+var NotFound = errors.New("stream not found")
 
 type PgConn interface {
 	Begin(context.Context) (pgx.Tx, error)
@@ -21,9 +22,13 @@ type PgConn interface {
 	Query(context.Context, string, ...interface{}) (pgx.Rows, error)
 }
 
+type RawProcessor interface {
+	RawApply(json.RawMessage, []Event) (json.RawMessage, error)
+}
+
 type Store struct {
 	conn         PgConn
-	processors   map[string]Processor
+	processors   map[string]RawProcessor
 	processorsMu sync.RWMutex
 }
 
@@ -37,7 +42,7 @@ type Event struct {
 	DateCreated time.Time
 }
 
-type Snapshot struct {
+type RawSnapshot struct {
 	StreamID    string
 	StreamType  string
 	EventID     string
@@ -61,11 +66,11 @@ func New(conn PgConn) *Store {
 	}
 }
 
-func (s *Store) AddProcessor(streamType string, p Processor) {
+func (s *Store) AddProcessor(streamType string, p RawProcessor) {
 	s.processorsMu.Lock()
 	defer s.processorsMu.Unlock()
 	if s.processors == nil {
-		s.processors = make(map[string]Processor)
+		s.processors = make(map[string]RawProcessor)
 	}
 	s.processors[streamType] = p
 }
@@ -127,28 +132,23 @@ func (s *Store) Append(ctx context.Context, events ...Event) error {
 		if snap != nil {
 			rawData = snap.Data
 		}
-		data, err := p.RawApply(rawData, events)
-		if err != nil {
+		if rawData, err = p.RawApply(rawData, events); err != nil {
 			return err
-		}
-		d, err := json.Marshal(data)
-		if err != nil {
-			return fmt.Errorf("eventstore: failed to serialize snapshot data: %w", err)
 		}
 
 		// TODO set date_updated to last date_created of events
 		now := time.Now()
 		if snap == nil {
-			sql := `insert into snapshots(stream_id, stream_type, event_id, data, date_created, date_updated)
+			sql := `insert into projections(stream_id, stream_type, event_id, data, date_created, date_updated)
 		values($1, $2, $3, $4, $5, $6)`
-			if _, err = tx.Exec(ctx, sql, streamID, streamType, lastEventID, d, now, now); err != nil {
-				return fmt.Errorf("eventstore: failed to insert snapshot: %w", err)
+			if _, err = tx.Exec(ctx, sql, streamID, streamType, lastEventID, rawData, now, now); err != nil {
+				return fmt.Errorf("eventstore: failed to insert projection: %w", err)
 			}
 		} else {
 			// TODO check row count or use one on conflict statement
-			sql := `update snapshots set event_id = $1, data = $2, date_updated = $3 where stream_id = $4`
-			if _, err = tx.Exec(ctx, sql, lastEventID, d, now, streamID); err != nil {
-				return fmt.Errorf("eventstore: failed to update snapshot: %w", err)
+			sql := `update projections set event_id = $1, data = $2, date_updated = $3 where stream_id = $4`
+			if _, err = tx.Exec(ctx, sql, lastEventID, rawData, now, streamID); err != nil {
+				return fmt.Errorf("eventstore: failed to update projection: %w", err)
 			}
 		}
 	}
@@ -160,10 +160,10 @@ func (s *Store) Append(ctx context.Context, events ...Event) error {
 	return nil
 }
 
-func (s *Store) getSnapshot(ctx context.Context, tx PgConn, streamID string) (*Snapshot, error) {
-	snap := Snapshot{StreamID: streamID}
+func (s *Store) getSnapshot(ctx context.Context, tx PgConn, streamID string) (*RawSnapshot, error) {
+	snap := RawSnapshot{StreamID: streamID}
 
-	sql := `select stream_type, event_id, data, date_created, date_updated from snapshots
+	sql := `select stream_type, event_id, data, date_created, date_updated from projections
 	where stream_id = $1
 	limit 1`
 	err := tx.QueryRow(ctx, sql, streamID).Scan(&snap.StreamType, &snap.EventID, &snap.Data, &snap.DateCreated, &snap.DateUpdated)
@@ -171,7 +171,7 @@ func (s *Store) getSnapshot(ctx context.Context, tx PgConn, streamID string) (*S
 	if err == pgx.ErrNoRows {
 		return nil, nil
 	} else if err != nil {
-		return nil, fmt.Errorf("snapstore: failed to get snapshot: %w", err)
+		return nil, fmt.Errorf("eventstore: failed to get projection: %w", err)
 	}
 
 	return &snap, nil
