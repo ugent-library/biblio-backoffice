@@ -5,15 +5,21 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"sync"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
+// TODO add data factory for ex nihilo creation of stream and event data and remove nil check
+
 var NotFound = errors.New("stream not found")
+
+var DefaultIDGenerator = func() (string, error) {
+	return uuid.NewString(), nil
+}
 
 type PgConn interface {
 	Begin(context.Context) (pgx.Tx, error)
@@ -22,24 +28,16 @@ type PgConn interface {
 	Query(context.Context, string, ...interface{}) (pgx.Rows, error)
 }
 
-type RawProcessor interface {
-	RawApply(json.RawMessage, []Event) (json.RawMessage, error)
-}
+// type StreamEventHandler interface {
+// 	StreamType() string
+// 	Handle(string, any, any) (any, error)
+// }
 
 type Store struct {
-	conn         PgConn
-	processors   map[string]RawProcessor
-	processorsMu sync.RWMutex
-}
-
-type Event struct {
-	ID          string
-	StreamID    string
-	StreamType  string
-	Type        string
-	Data        any
-	Meta        map[string]string
-	DateCreated time.Time
+	conn        PgConn
+	idGenerator func() (string, error)
+	// handlers    map[string]StreamEventHandler
+	// handlersMu  sync.RWMutex
 }
 
 type RawSnapshot struct {
@@ -51,29 +49,38 @@ type RawSnapshot struct {
 	DateUpdated time.Time
 }
 
-func Connect(ctx context.Context, dsn string) (*Store, error) {
+func Connect(ctx context.Context, dsn string, opts ...func(*Store)) (*Store, error) {
 	conn, err := pgxpool.Connect(ctx, dsn)
 	if err != nil {
 		return nil, fmt.Errorf("eventstore: failed to connect: %w", err)
 	}
 
-	return New(conn), nil
+	return New(conn, opts...), nil
 }
 
-func New(conn PgConn) *Store {
-	return &Store{
-		conn: conn,
+func New(conn PgConn, opts ...func(*Store)) *Store {
+	s := &Store{
+		conn:        conn,
+		idGenerator: DefaultIDGenerator,
+		// handlers:    make(map[string]StreamEventHandler),
+	}
+	for _, opt := range opts {
+		opt(s)
+	}
+	return s
+}
+
+func WithIDGenerator(fn func() (string, error)) func(*Store) {
+	return func(s *Store) {
+		s.idGenerator = fn
 	}
 }
 
-func (s *Store) AddProcessor(streamType string, p RawProcessor) {
-	s.processorsMu.Lock()
-	defer s.processorsMu.Unlock()
-	if s.processors == nil {
-		s.processors = make(map[string]RawProcessor)
-	}
-	s.processors[streamType] = p
-}
+// func (s *Store) AddHandler(h StreamEventHandler) {
+// 	s.handlersMu.Lock()
+// 	defer s.handlersMu.Unlock()
+// 	s.handlers[h.StreamType()] = h
+// }
 
 func (s *Store) Append(ctx context.Context, events ...Event) error {
 	if len(events) == 0 {
@@ -81,9 +88,10 @@ func (s *Store) Append(ctx context.Context, events ...Event) error {
 	}
 
 	// TODO avoid allocating
+	// TODO refactor, stream id is only unique per stream type
 	eventMap := make(map[string][]Event)
 	for _, event := range events {
-		eventMap[event.StreamID] = append(eventMap[event.StreamID], event)
+		eventMap[event.StreamID()] = append(eventMap[event.StreamID()], event)
 	}
 
 	tx, err := s.conn.Begin(ctx)
@@ -92,48 +100,65 @@ func (s *Store) Append(ctx context.Context, events ...Event) error {
 	}
 	defer tx.Rollback(ctx)
 
+	var lastEventID string
+
 	for _, e := range events {
 		var rawData, rawMeta json.RawMessage
-		if e.Data != nil {
-			if rawData, err = json.Marshal(e.Data); err != nil {
+		if e.Data() != nil {
+			if rawData, err = json.Marshal(e.Data()); err != nil {
 				return fmt.Errorf("eventstore: failed to serialize event data: %w", err)
 			}
 		}
-		if e.Meta != nil {
-			if rawMeta, err = json.Marshal(e.Meta); err != nil {
+		if e.Meta() != nil {
+			if rawMeta, err = json.Marshal(e.Meta()); err != nil {
 				return fmt.Errorf("eventstore: failed to serialize event meta: %w", err)
 			}
 		}
 
-		sql := `insert into events(id, stream_id, stream_type, type, data, meta)
+		// generate event id
+		id, err := s.idGenerator()
+		if err != nil {
+			return fmt.Errorf("eventstore: failed to generate id: %w", err)
+		}
+
+		lastEventID = id
+
+		sql := `insert into events(id, stream_id, stream_type, name, data, meta)
 		values ($1, $2, $3, $4, $5, $6)`
 
-		if _, err = tx.Exec(ctx, sql, e.ID, e.StreamID, e.StreamType, e.Type, rawData, rawMeta); err != nil {
+		if _, err = tx.Exec(ctx, sql, id, e.StreamID(), e.StreamType(), e.Name(), rawData, rawMeta); err != nil {
 			return fmt.Errorf("eventstore: failed to insert event: %w", err)
 		}
 	}
 
 	for streamID, events := range eventMap {
-		// TODO check stream types all match
-		streamType := events[0].StreamType
-		lastEventID := events[len(events)-1].ID
+		streamType := events[0].StreamType()
 		snap, err := s.getSnapshot(ctx, tx, streamID)
 		if err != nil {
 			return err
 		}
-		s.processorsMu.RLock()
-		p, ok := s.processors[streamType]
-		s.processorsMu.RUnlock()
-		if !ok {
-			return fmt.Errorf("eventstore: no processor for %s", streamType)
-		}
-		// TODO pass context
-		var rawData json.RawMessage
+		// s.handlersMu.RLock()
+		// p, ok := s.handlers[streamType]
+		// s.handlersMu.RUnlock()
+		// if !ok {
+		// 	return fmt.Errorf("eventstore: no stream handler for %s", streamType)
+		// }
+
+		// TODO use factory
+		var d any
 		if snap != nil {
-			rawData = snap.Data
+			d = snap.Data
 		}
-		if rawData, err = p.RawApply(rawData, events); err != nil {
-			return err
+
+		for _, e := range events {
+			if d, err = e.Apply(d); err != nil {
+				return fmt.Errorf("eventstore: failed to handle event: %w", err)
+			}
+		}
+
+		rawData, err := json.Marshal(d)
+		if err != nil {
+			return fmt.Errorf("eventstore: failed to serialize projection data: %w", err)
 		}
 
 		// TODO set date_updated to last date_created of events

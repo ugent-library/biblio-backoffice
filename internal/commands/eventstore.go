@@ -15,51 +15,49 @@ func init() {
 	rootCmd.AddCommand(testEventstoreCmd)
 }
 
+var SetHandler = eventstore.NewEventHandler("Set", SetDataset)
+
+var AddAbstractHandler = eventstore.NewEventHandler("AddAbstract", AddAbstract)
+
+func SetDataset(data *models.Dataset, newData *models.Dataset) (*models.Dataset, error) {
+	return newData, nil
+}
+
+func AddAbstract(data *models.Dataset, a models.Text) (*models.Dataset, error) {
+	data.Abstract = append(data.Abstract, a)
+	return data, nil
+}
+
 var testEventstoreCmd = &cobra.Command{
 	Use: "test-eventstore",
 	Run: func(cmd *cobra.Command, args []string) {
-		store, err := eventstore.Connect(context.Background(), viper.GetString("pg-conn"))
+		store, err := eventstore.Connect(context.Background(), viper.GetString("pg-conn"),
+			eventstore.WithIDGenerator(ulid.Generate),
+		)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		datasetProcessor := eventstore.NewProcessor[*models.Dataset]()
-
-		datasetProcessor.AddHandler("Set", eventstore.Handler(func(data *models.Dataset, eventData *models.Dataset) (*models.Dataset, error) {
-			return eventData, nil
-		}))
-		datasetProcessor.AddHandler("AddAbstract", eventstore.Handler(func(data *models.Dataset, eventData *models.Text) (*models.Dataset, error) {
-			data.Abstract = append(data.Abstract, *eventData)
-			return data, nil
-		}))
-
-		store.AddProcessor("Dataset", datasetProcessor)
-
 		datasetRepository := eventstore.NewRepository[*models.Dataset](store, "Dataset")
+		// datasetRepository.AddEventHandlers(
+		// 	SetHandler,
+		// 	AddAbstractHandler,
+		// )
 
 		streamID := ulid.MustGenerate()
 
 		err = store.Append(context.Background(),
-			eventstore.Event{
-				ID:         ulid.MustGenerate(),
-				StreamID:   streamID,
-				StreamType: "Dataset",
-				Type:       "Set",
-				Data:       &models.Dataset{Title: "Test dataset", Publisher: "Test publisher"},
-				Meta: map[string]string{
-					"UserID": "123",
-				},
-			},
-			eventstore.Event{
-				ID:         ulid.MustGenerate(),
-				StreamID:   streamID,
-				StreamType: "Dataset",
-				Type:       "AddAbstract",
-				Data:       &models.Text{Lang: "eng", Text: "Test abstract"},
-				Meta: map[string]string{
-					"UserID": "123",
-				},
-			},
+			SetHandler.NewEvent(
+				datasetRepository.StreamType(),
+				streamID,
+				&models.Dataset{Title: "Test dataset", Publisher: "Test publisher"},
+			),
+			AddAbstractHandler.NewEvent(
+				datasetRepository.StreamType(),
+				streamID,
+				models.Text{Lang: "eng", Text: "Test abstract"},
+				map[string]string{"UserID": "123"},
+			),
 		)
 		if err != nil {
 			log.Fatal(err)

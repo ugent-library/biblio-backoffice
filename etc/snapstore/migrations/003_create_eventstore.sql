@@ -1,4 +1,4 @@
-create extension btree_gist;
+create extension if not exists btree_gist;
 
 create table events (
     id text primary key,
@@ -6,7 +6,7 @@ create table events (
     stream_id text not null,
     stream_type text not null,
     exclude using gist (stream_id with =, stream_type with <>),
-    type text not null,
+    name text not null,
     data jsonb,
     meta jsonb,
     date_created timestamptz not null default now()
