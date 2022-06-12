@@ -59,7 +59,6 @@ func (h *eventHandler[T, TT]) NewEvent(streamType, streamID string, data TT, met
 		for k, v := range meta {
 			e.meta[k] = v
 		}
-
 	}
 	return e
 }
