@@ -26,24 +26,24 @@ func (h *eventHandler[T, TT]) Name() string {
 	return h.name
 }
 
-func (h *eventHandler[T, TT]) Apply(data T, d any) (T, error) {
-	var eventData TT
+// func (h *eventHandler[T, TT]) Apply(data T, d any) (T, error) {
+// 	var eventData TT
 
-	switch t := d.(type) {
-	case nil:
-		// do nothing
-	case TT:
-		eventData = t
-	case json.RawMessage:
-		if err := json.Unmarshal(t, eventData); err != nil {
-			return data, fmt.Errorf("eventstore: failed to deserialize event data into %T: %w", eventData, err)
-		}
-	default:
-		return data, fmt.Errorf("eventstore: invalid event data type %T", t)
-	}
+// 	switch t := d.(type) {
+// 	case nil:
+// 		// do nothing
+// 	case TT:
+// 		eventData = t
+// 	case json.RawMessage:
+// 		if err := json.Unmarshal(t, eventData); err != nil {
+// 			return data, fmt.Errorf("eventstore: failed to deserialize event data into %T: %w", eventData, err)
+// 		}
+// 	default:
+// 		return data, fmt.Errorf("eventstore: invalid event data type %T", t)
+// 	}
 
-	return h.fn(data, eventData)
-}
+// 	return h.fn(data, eventData)
+// }
 
 func (h *eventHandler[T, TT]) NewEvent(streamType, streamID string, data TT, meta ...map[string]string) *event[T, TT] {
 	e := &event[T, TT]{
