@@ -54,12 +54,12 @@ func (h *eventHandler[T, TT]) NewEvent(streamType, streamID string, data TT, met
 	}
 	for _, meta := range meta {
 		if e.meta == nil {
-			e.meta = meta
-		} else {
-			for k, v := range meta {
-				e.meta[k] = v
-			}
+			e.meta = make(map[string]string)
 		}
+		for k, v := range meta {
+			e.meta[k] = v
+		}
+
 	}
 	return e
 }
