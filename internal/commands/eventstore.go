@@ -15,15 +15,17 @@ func init() {
 	rootCmd.AddCommand(testEventstoreCmd)
 }
 
-var SetHandler = eventstore.NewEventHandler("Set", SetDataset)
+// TODO clearer distinction between event and command
 
-var AddAbstractHandler = eventstore.NewEventHandler("AddAbstract", AddAbstract)
+var ReplaceDatasetHandler = eventstore.NewEventHandler("Dataset", "Replaced", ReplaceDataset)
 
-func SetDataset(data *models.Dataset, newData *models.Dataset) (*models.Dataset, error) {
+var AddDatasetAbstractHandler = eventstore.NewEventHandler("Dataset", "AbstractAdded", AddDatasetAbstract)
+
+func ReplaceDataset(data *models.Dataset, newData *models.Dataset) (*models.Dataset, error) {
 	return newData, nil
 }
 
-func AddAbstract(data *models.Dataset, a models.Text) (*models.Dataset, error) {
+func AddDatasetAbstract(data *models.Dataset, a models.Text) (*models.Dataset, error) {
 	data.Abstract = append(data.Abstract, a)
 	return data, nil
 }
@@ -38,7 +40,6 @@ var testEventstoreCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		datasetRepository := eventstore.NewRepository[*models.Dataset](store, "Dataset")
 		// datasetRepository.AddEventHandlers(
 		// 	SetHandler,
 		// 	AddAbstractHandler,
@@ -47,21 +48,22 @@ var testEventstoreCmd = &cobra.Command{
 		streamID := ulid.MustGenerate()
 
 		err = store.Append(context.Background(),
-			SetHandler.NewEvent(
-				datasetRepository.StreamType(),
+			ReplaceDatasetHandler.NewEvent(
 				streamID,
 				&models.Dataset{Title: "Test dataset", Publisher: "Test publisher"},
 			),
-			AddAbstractHandler.NewEvent(
-				datasetRepository.StreamType(),
+			AddDatasetAbstractHandler.NewEvent(
 				streamID,
 				models.Text{Lang: "eng", Text: "Test abstract"},
-				map[string]string{"UserID": "123"},
+				eventstore.Meta{"UserID": "123"},
 			),
 		)
 		if err != nil {
 			log.Fatal(err)
 		}
+
+		// TEST REPOSITORY
+		datasetRepository := eventstore.NewRepository[*models.Dataset](store, "Dataset")
 
 		p, err := datasetRepository.Get(context.Background(), streamID)
 		if err != nil {

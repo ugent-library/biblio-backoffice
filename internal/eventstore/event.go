@@ -5,56 +5,78 @@ import (
 	"fmt"
 )
 
-type EventHandler[T any] interface {
+type EventHandler interface {
+	StreamType() string
 	Name() string
-	// Apply(T, any) (T, error)
+	Apply(any, any) (any, error)
 }
 
 type eventHandler[T, TT any] struct {
-	name string
-	fn   func(T, TT) (T, error)
+	streamType string
+	name       string
+	fn         func(T, TT) (T, error)
 }
 
-func NewEventHandler[T, TT any](name string, fn func(T, TT) (T, error)) *eventHandler[T, TT] {
+func NewEventHandler[T, TT any](streamtype, name string, fn func(T, TT) (T, error)) *eventHandler[T, TT] {
 	return &eventHandler[T, TT]{
-		name: name,
-		fn:   fn,
+		streamType: streamtype,
+		name:       name,
+		fn:         fn,
 	}
+}
+
+func (h *eventHandler[T, TT]) StreamType() string {
+	return h.streamType
 }
 
 func (h *eventHandler[T, TT]) Name() string {
 	return h.name
 }
 
-// func (h *eventHandler[T, TT]) Apply(data T, d any) (T, error) {
-// 	var eventData TT
+func (h *eventHandler[T, TT]) Apply(d, ed any) (any, error) {
+	var (
+		data      T
+		eventData TT
+	)
 
-// 	switch t := d.(type) {
-// 	case nil:
-// 		// do nothing
-// 	case TT:
-// 		eventData = t
-// 	case json.RawMessage:
-// 		if err := json.Unmarshal(t, eventData); err != nil {
-// 			return data, fmt.Errorf("eventstore: failed to deserialize event data into %T: %w", eventData, err)
-// 		}
-// 	default:
-// 		return data, fmt.Errorf("eventstore: invalid event data type %T", t)
-// 	}
+	switch t := d.(type) {
+	case nil:
+		// TODO remove this when we have a factory for nil data
+	case T:
+		data = t
+	case json.RawMessage:
+		if err := json.Unmarshal(t, data); err != nil {
+			return data, fmt.Errorf("eventstore: failed to deserialize projection data into %T: %w", data, err)
+		}
+	default:
+		return data, fmt.Errorf("eventstore: invalid projection data type %T", t)
+	}
 
-// 	return h.fn(data, eventData)
-// }
+	switch t := ed.(type) {
+	case nil:
+		// do nothing
+	case TT:
+		eventData = t
+	case json.RawMessage:
+		if err := json.Unmarshal(t, eventData); err != nil {
+			return data, fmt.Errorf("eventstore: failed to deserialize event data into %T: %w", eventData, err)
+		}
+	default:
+		return data, fmt.Errorf("eventstore: invalid event data type %T", t)
+	}
 
-func (h *eventHandler[T, TT]) NewEvent(streamType, streamID string, data TT, meta ...map[string]string) *event[T, TT] {
+	return h.fn(data, eventData)
+}
+
+func (h *eventHandler[T, TT]) NewEvent(streamID string, data TT, meta ...Meta) *event[T, TT] {
 	e := &event[T, TT]{
-		streamType: streamType,
-		streamID:   streamID,
-		data:       data,
-		handler:    h,
+		streamID: streamID,
+		data:     data,
+		handler:  h,
 	}
 	for _, meta := range meta {
 		if e.meta == nil {
-			e.meta = make(map[string]string)
+			e.meta = make(Meta)
 		}
 		for k, v := range meta {
 			e.meta[k] = v
@@ -63,21 +85,22 @@ func (h *eventHandler[T, TT]) NewEvent(streamType, streamID string, data TT, met
 	return e
 }
 
+type Meta map[string]string
+
 type Event interface {
 	StreamID() string
 	StreamType() string
 	Name() string
 	Data() any
-	Meta() map[string]string
+	Meta() Meta
 	Apply(any) (any, error)
 }
 
 type event[T, TT any] struct {
-	streamID   string
-	streamType string
-	data       TT
-	meta       map[string]string
-	handler    *eventHandler[T, TT]
+	streamID string
+	data     TT
+	meta     Meta
+	handler  *eventHandler[T, TT]
 }
 
 func (e *event[T, TT]) StreamID() string {
@@ -85,7 +108,7 @@ func (e *event[T, TT]) StreamID() string {
 }
 
 func (e *event[T, TT]) StreamType() string {
-	return e.streamType
+	return e.handler.streamType
 }
 
 func (e *event[T, TT]) Name() string {
@@ -96,7 +119,7 @@ func (e *event[T, TT]) Data() any {
 	return e.data
 }
 
-func (e *event[T, TT]) Meta() map[string]string {
+func (e *event[T, TT]) Meta() Meta {
 	return e.meta
 }
 

@@ -13,7 +13,7 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
-// TODO add data factory for ex nihilo creation of stream and event data and remove nil check
+// TODO add data factory for ex nihilo creation of projection and remove nil check
 
 var NotFound = errors.New("stream not found")
 
