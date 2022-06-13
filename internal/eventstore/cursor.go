@@ -37,5 +37,8 @@ func (c Cursor[T]) Close() {
 }
 
 func (c Cursor[T]) Error() error {
-	return c.rows.Err()
+	if err := c.rows.Err(); err != nil {
+		return fmt.Errorf("eventstore: %w", err)
+	}
+	return nil
 }

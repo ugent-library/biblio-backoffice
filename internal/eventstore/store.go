@@ -85,6 +85,17 @@ func (s *Store) AddEventHandlers(handlers ...EventHandler) {
 	}
 }
 
+func (s *Store) GetEventHandler(streamType, name string) EventHandler {
+	s.eventHandlersMu.RLock()
+	defer s.eventHandlersMu.RUnlock()
+	if handlers, ok := s.eventHandlers[streamType]; ok {
+		if h, ok := handlers[name]; ok {
+			return h
+		}
+	}
+	return nil
+}
+
 func (s *Store) Append(ctx context.Context, events ...Event) error {
 	if len(events) == 0 {
 		return nil

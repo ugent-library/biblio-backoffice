@@ -15,10 +15,11 @@ func init() {
 	rootCmd.AddCommand(testEventstoreCmd)
 }
 
+// TODO use stream type everywhere
+var DatasetType = eventstore.NewStreamType("Dataset", func() *models.Dataset { return &models.Dataset{} })
+
 // TODO clearer distinction between event and command
-
 var ReplaceDatasetHandler = eventstore.NewEventHandler("Dataset", "Replaced", ReplaceDataset)
-
 var AddDatasetAbstractHandler = eventstore.NewEventHandler("Dataset", "AbstractAdded", AddDatasetAbstract)
 
 func ReplaceDataset(data *models.Dataset, newData *models.Dataset) (*models.Dataset, error) {
@@ -33,6 +34,7 @@ func AddDatasetAbstract(data *models.Dataset, a models.Text) (*models.Dataset, e
 var testEventstoreCmd = &cobra.Command{
 	Use: "test-eventstore",
 	Run: func(cmd *cobra.Command, args []string) {
+		// TEST STORE
 		store, err := eventstore.Connect(context.Background(), viper.GetString("pg-conn"),
 			eventstore.WithIDGenerator(ulid.Generate),
 		)
@@ -45,6 +47,7 @@ var testEventstoreCmd = &cobra.Command{
 			AddDatasetAbstractHandler,
 		)
 
+		// test Append
 		streamID := ulid.MustGenerate()
 
 		err = store.Append(context.Background(),
@@ -63,8 +66,9 @@ var testEventstoreCmd = &cobra.Command{
 		}
 
 		// TEST REPOSITORY
-		datasetRepository := eventstore.NewRepository[*models.Dataset](store, "Dataset")
+		datasetRepository := eventstore.NewRepository(store, DatasetType)
 
+		// test Get
 		p, err := datasetRepository.Get(context.Background(), streamID)
 		if err != nil {
 			log.Fatal(err)
@@ -72,6 +76,7 @@ var testEventstoreCmd = &cobra.Command{
 		log.Printf("%+v", p)
 		log.Printf("%+v", p.Data)
 
+		// test GetAll
 		c, err := datasetRepository.GetAll(context.Background())
 		if err != nil {
 			log.Fatal(err)
@@ -87,5 +92,13 @@ var testEventstoreCmd = &cobra.Command{
 		if err := c.Error(); err != nil {
 			log.Fatal(err)
 		}
+
+		// test GetAt
+		// p, err = datasetRepository.GetAt(context.Background(), "01G5E2D1HYK531S6G48PM9WBW8", "01G5E2D1HYM158TRFZJBAWJ22Q")
+		// if err != nil {
+		// 	log.Fatal(err)
+		// }
+		// log.Printf("%+v", p)
+		// log.Printf("%+v", p.Data)
 	},
 }
