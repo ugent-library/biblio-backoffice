@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/google/uuid"
@@ -28,16 +29,11 @@ type PgConn interface {
 	Query(context.Context, string, ...interface{}) (pgx.Rows, error)
 }
 
-// type StreamEventHandler interface {
-// 	StreamType() string
-// 	Handle(string, any, any) (any, error)
-// }
-
 type Store struct {
-	conn        PgConn
-	idGenerator func() (string, error)
-	// handlers    map[string]StreamEventHandler
-	// handlersMu  sync.RWMutex
+	conn            PgConn
+	idGenerator     func() (string, error)
+	eventHandlers   map[string]map[string]EventHandler
+	eventHandlersMu sync.RWMutex
 }
 
 type RawSnapshot struct {
@@ -62,7 +58,6 @@ func New(conn PgConn, opts ...func(*Store)) *Store {
 	s := &Store{
 		conn:        conn,
 		idGenerator: DefaultIDGenerator,
-		// handlers:    make(map[string]StreamEventHandler),
 	}
 	for _, opt := range opts {
 		opt(s)
@@ -76,11 +71,19 @@ func WithIDGenerator(fn func() (string, error)) func(*Store) {
 	}
 }
 
-// func (s *Store) AddHandler(h StreamEventHandler) {
-// 	s.handlersMu.Lock()
-// 	defer s.handlersMu.Unlock()
-// 	s.handlers[h.StreamType()] = h
-// }
+func (s *Store) AddEventHandlers(handlers ...EventHandler) {
+	s.eventHandlersMu.Lock()
+	defer s.eventHandlersMu.Unlock()
+	for _, h := range handlers {
+		if s.eventHandlers == nil {
+			s.eventHandlers = make(map[string]map[string]EventHandler)
+		}
+		if s.eventHandlers[h.StreamType()] == nil {
+			s.eventHandlers[h.StreamType()] = make(map[string]EventHandler)
+		}
+		s.eventHandlers[h.StreamType()][h.Name()] = h
+	}
+}
 
 func (s *Store) Append(ctx context.Context, events ...Event) error {
 	if len(events) == 0 {
@@ -137,12 +140,6 @@ func (s *Store) Append(ctx context.Context, events ...Event) error {
 		if err != nil {
 			return err
 		}
-		// s.handlersMu.RLock()
-		// p, ok := s.handlers[streamType]
-		// s.handlersMu.RUnlock()
-		// if !ok {
-		// 	return fmt.Errorf("eventstore: no stream handler for %s", streamType)
-		// }
 
 		// TODO use factory
 		var d any

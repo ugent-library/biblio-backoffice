@@ -40,10 +40,10 @@ var testEventstoreCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		// datasetRepository.AddEventHandlers(
-		// 	SetHandler,
-		// 	AddAbstractHandler,
-		// )
+		store.AddEventHandlers(
+			ReplaceDatasetHandler,
+			AddDatasetAbstractHandler,
+		)
 
 		streamID := ulid.MustGenerate()
 
