@@ -14,7 +14,7 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
-var NotFound = errors.New("not found")
+var ErrNotFound = errors.New("not found")
 
 var DefaultIDGenerator = func() (string, error) {
 	return uuid.NewString(), nil

@@ -39,7 +39,7 @@ func (r *Repository[T]) Get(ctx context.Context, id string) (Projection[T], erro
 		Scan(&p.MutationID, &rawData, &p.DateCreated, &p.DateUpdated)
 
 	if errors.Is(err, pgx.ErrNoRows) {
-		return p, NotFound
+		return p, ErrNotFound
 	} else if err != nil {
 		return p, fmt.Errorf("mutantdb: failed to scan projection: %w", err)
 	}

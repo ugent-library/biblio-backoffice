@@ -11,29 +11,29 @@ type Mutator interface {
 	Apply(any, any) (any, error)
 }
 
-type mutator[T, TT any] struct {
+type mutator[T, M any] struct {
 	entityType *entityType[T]
 	name       string
-	fn         func(T, TT) (T, error)
+	fn         func(T, M) (T, error)
 }
 
-func NewMutator[T, TT any](t *entityType[T], name string, fn func(T, TT) (T, error)) *mutator[T, TT] {
-	return &mutator[T, TT]{
+func NewMutator[T, M any](t *entityType[T], name string, fn func(T, M) (T, error)) *mutator[T, M] {
+	return &mutator[T, M]{
 		entityType: t,
 		name:       name,
 		fn:         fn,
 	}
 }
 
-func (m *mutator[T, TT]) EntityName() string {
+func (m *mutator[T, M]) EntityName() string {
 	return m.entityType.name
 }
 
-func (m *mutator[T, TT]) Name() string {
+func (m *mutator[T, M]) Name() string {
 	return m.name
 }
 
-func (m *mutator[T, TT]) Apply(d, dd any) (any, error) {
+func (m *mutator[T, M]) Apply(d, dd any) (any, error) {
 	entityData, err := m.entityType.convert(d)
 	if err != nil {
 		return entityData, err
@@ -47,11 +47,11 @@ func (m *mutator[T, TT]) Apply(d, dd any) (any, error) {
 	return m.fn(entityData, mutationData)
 }
 
-func (m *mutator[T, TT]) convert(d any) (data TT, err error) {
+func (m *mutator[T, M]) convert(d any) (data M, err error) {
 	switch t := d.(type) {
 	case nil:
 		// do nothing
-	case TT:
+	case M:
 		data = t
 	case json.RawMessage:
 		if err = json.Unmarshal(t, &data); err != nil {
@@ -64,8 +64,8 @@ func (m *mutator[T, TT]) convert(d any) (data TT, err error) {
 	return
 }
 
-func (h *mutator[T, TT]) New(entityID string, data TT, meta ...Meta) *mutation[T, TT] {
-	e := &mutation[T, TT]{
+func (h *mutator[T, M]) New(entityID string, data M, meta ...Meta) *mutation[T, M] {
+	e := &mutation[T, M]{
 		entityID: entityID,
 		data:     data,
 		mutator:  h,
@@ -92,34 +92,34 @@ type Mutation interface {
 	Apply(any) (any, error)
 }
 
-type mutation[T, TT any] struct {
+type mutation[T, M any] struct {
 	entityID string
-	data     TT
+	data     M
 	meta     Meta
-	mutator  *mutator[T, TT]
+	mutator  *mutator[T, M]
 }
 
-func (m *mutation[T, TT]) EntityID() string {
+func (m *mutation[T, M]) EntityID() string {
 	return m.entityID
 }
 
-func (m *mutation[T, TT]) EntityType() EntityType {
+func (m *mutation[T, M]) EntityType() EntityType {
 	return m.mutator.entityType
 }
 
-func (m *mutation[T, TT]) Name() string {
+func (m *mutation[T, M]) Name() string {
 	return m.mutator.name
 }
 
-func (m *mutation[T, TT]) Data() any {
+func (m *mutation[T, M]) Data() any {
 	return m.data
 }
 
-func (m *mutation[T, TT]) Meta() Meta {
+func (m *mutation[T, M]) Meta() Meta {
 	return m.meta
 }
 
-func (m *mutation[T, TT]) Apply(d any) (any, error) {
+func (m *mutation[T, M]) Apply(d any) (any, error) {
 	entityData, err := m.mutator.entityType.convert(d)
 	if err != nil {
 		return entityData, err
