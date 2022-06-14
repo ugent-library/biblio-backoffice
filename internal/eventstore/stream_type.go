@@ -1,5 +1,7 @@
 package eventstore
 
+// TODO add (de)serialization
+
 type StreamType interface {
 	Name() string
 	New() any

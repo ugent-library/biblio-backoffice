@@ -16,11 +16,17 @@ func init() {
 }
 
 // TODO use stream type everywhere
-var DatasetType = eventstore.NewStreamType("Dataset", func() *models.Dataset { return &models.Dataset{} })
+var DatasetType = eventstore.NewStreamType("Dataset", NewDataset)
 
 // TODO clearer distinction between event and command
-var ReplaceDatasetHandler = eventstore.NewEventHandler("Dataset", "Replaced", ReplaceDataset)
-var AddDatasetAbstractHandler = eventstore.NewEventHandler("Dataset", "AbstractAdded", AddDatasetAbstract)
+var ReplaceDatasetHandler = eventstore.NewEventHandler(DatasetType, "Replaced", ReplaceDataset)
+var AddDatasetAbstractHandler = eventstore.NewEventHandler(DatasetType, "AbstractAdded", AddDatasetAbstract)
+
+func NewDataset() *models.Dataset {
+	return &models.Dataset{
+		Status: "private",
+	}
+}
 
 func ReplaceDataset(data *models.Dataset, newData *models.Dataset) (*models.Dataset, error) {
 	return newData, nil

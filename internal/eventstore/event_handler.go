@@ -5,6 +5,8 @@ import (
 	"fmt"
 )
 
+// TODO add (de)serialization
+
 type EventHandler interface {
 	StreamType() string
 	Name() string
@@ -12,21 +14,21 @@ type EventHandler interface {
 }
 
 type eventHandler[T, TT any] struct {
-	streamType string
+	streamType *streamType[T]
 	name       string
 	fn         func(T, TT) (T, error)
 }
 
-func NewEventHandler[T, TT any](streamtype, name string, fn func(T, TT) (T, error)) *eventHandler[T, TT] {
+func NewEventHandler[T, TT any](t *streamType[T], name string, fn func(T, TT) (T, error)) *eventHandler[T, TT] {
 	return &eventHandler[T, TT]{
-		streamType: streamtype,
+		streamType: t,
 		name:       name,
 		fn:         fn,
 	}
 }
 
 func (h *eventHandler[T, TT]) StreamType() string {
-	return h.streamType
+	return h.streamType.name
 }
 
 func (h *eventHandler[T, TT]) Name() string {

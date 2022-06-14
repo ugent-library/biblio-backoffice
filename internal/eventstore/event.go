@@ -28,7 +28,7 @@ func (e *event[T, TT]) StreamID() string {
 }
 
 func (e *event[T, TT]) StreamType() string {
-	return e.handler.streamType
+	return e.handler.streamType.name
 }
 
 func (e *event[T, TT]) Name() string {
