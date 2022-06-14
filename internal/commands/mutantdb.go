@@ -39,7 +39,9 @@ var testEventstoreCmd = &cobra.Command{
 	Use: "test-mutantdb",
 	Run: func(cmd *cobra.Command, args []string) {
 		// TEST STORE
-		store, err := mutantdb.Connect(context.Background(), viper.GetString("pg-conn"),
+		ctx := context.Background()
+
+		store, err := mutantdb.Connect(ctx, viper.GetString("pg-conn"),
 			mutantdb.WithIDGenerator(ulid.Generate),
 			mutantdb.WithMutators(
 				DatasetReplacer,
@@ -53,7 +55,7 @@ var testEventstoreCmd = &cobra.Command{
 		// test Append
 		entityID := ulid.MustGenerate()
 
-		err = store.Append(context.Background(),
+		err = store.Append(ctx,
 			DatasetReplacer.New(
 				entityID,
 				&models.Dataset{Title: "Test dataset", Publisher: "Test publisher"},
@@ -72,7 +74,7 @@ var testEventstoreCmd = &cobra.Command{
 		datasetRepository := mutantdb.NewRepository(store, DatasetType)
 
 		// test Get
-		p, err := datasetRepository.Get(context.Background(), entityID)
+		p, err := datasetRepository.Get(ctx, entityID)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -80,7 +82,7 @@ var testEventstoreCmd = &cobra.Command{
 		log.Printf("%+v", p.Data)
 
 		// test GetAll
-		c, err := datasetRepository.GetAll(context.Background())
+		c, err := datasetRepository.GetAll(ctx)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -97,7 +99,7 @@ var testEventstoreCmd = &cobra.Command{
 		}
 
 		// test GetAt
-		p, err = datasetRepository.GetAt(context.Background(), "01G5E2D1HYK531S6G48PM9WBW8", "01G5E2D1HYM158TRFZJBAWJ22Q")
+		p, err = datasetRepository.GetAt(ctx, "01G5E2D1HYK531S6G48PM9WBW8", "01G5E2D1HYM158TRFZJBAWJ22Q")
 		if err != nil {
 			log.Fatal(err)
 		}

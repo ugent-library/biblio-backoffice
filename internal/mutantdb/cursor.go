@@ -26,7 +26,7 @@ func (c Cursor[T]) Next() (Projection[T], error) {
 	}
 
 	if err := json.Unmarshal(rawData, &p.Data); err != nil {
-		return p, fmt.Errorf("mutantdb: failed to deserialize projection data: %w", err)
+		return p, fmt.Errorf("mutantdb: failed to deserialize entity data: %w", err)
 	}
 
 	return p, nil

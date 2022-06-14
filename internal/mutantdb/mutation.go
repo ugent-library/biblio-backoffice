@@ -25,45 +25,43 @@ func NewMutator[T, TT any](t *entityType[T], name string, fn func(T, TT) (T, err
 	}
 }
 
-func (h *mutator[T, TT]) EntityName() string {
-	return h.entityType.name
+func (m *mutator[T, TT]) EntityName() string {
+	return m.entityType.name
 }
 
-func (h *mutator[T, TT]) Name() string {
-	return h.name
+func (m *mutator[T, TT]) Name() string {
+	return m.name
 }
 
-func (h *mutator[T, TT]) Apply(d, ed any) (any, error) {
-	var (
-		data         T
-		mutationData TT
-	)
-
-	switch t := d.(type) {
-	case T:
-		data = t
-	case json.RawMessage:
-		if err := json.Unmarshal(t, &data); err != nil {
-			return data, fmt.Errorf("mutantdb: failed to deserialize projection data into %T: %w", data, err)
-		}
-	default:
-		return data, fmt.Errorf("mutantdb: invalid projection data type %T", t)
+func (m *mutator[T, TT]) Apply(d, dd any) (any, error) {
+	entityData, err := m.entityType.convert(d)
+	if err != nil {
+		return entityData, err
 	}
 
-	switch t := ed.(type) {
+	mutationData, err := m.convert(dd)
+	if err != nil {
+		return entityData, err
+	}
+
+	return m.fn(entityData, mutationData)
+}
+
+func (m *mutator[T, TT]) convert(d any) (data TT, err error) {
+	switch t := d.(type) {
 	case nil:
 		// do nothing
 	case TT:
-		mutationData = t
+		data = t
 	case json.RawMessage:
-		if err := json.Unmarshal(t, &mutationData); err != nil {
-			return data, fmt.Errorf("mutantdb: failed to deserialize mutation data into %T: %w", mutationData, err)
+		if err := json.Unmarshal(t, &data); err != nil {
+			err = fmt.Errorf("mutantdb: failed to deserialize mutation data into %T: %w", data, err)
 		}
 	default:
-		return data, fmt.Errorf("mutantdb: invalid mutation data type %T", t)
+		err = fmt.Errorf("mutantdb: invalid mutation data type %T", t)
 	}
 
-	return h.fn(data, mutationData)
+	return
 }
 
 func (h *mutator[T, TT]) New(entityID string, data TT, meta ...Meta) *mutation[T, TT] {
@@ -101,39 +99,31 @@ type mutation[T, TT any] struct {
 	mutator  *mutator[T, TT]
 }
 
-func (e *mutation[T, TT]) EntityID() string {
-	return e.entityID
+func (m *mutation[T, TT]) EntityID() string {
+	return m.entityID
 }
 
-func (e *mutation[T, TT]) EntityType() EntityType {
-	return e.mutator.entityType
+func (m *mutation[T, TT]) EntityType() EntityType {
+	return m.mutator.entityType
 }
 
-func (e *mutation[T, TT]) Name() string {
-	return e.mutator.name
+func (m *mutation[T, TT]) Name() string {
+	return m.mutator.name
 }
 
-func (e *mutation[T, TT]) Data() any {
-	return e.data
+func (m *mutation[T, TT]) Data() any {
+	return m.data
 }
 
-func (e *mutation[T, TT]) Meta() Meta {
-	return e.meta
+func (m *mutation[T, TT]) Meta() Meta {
+	return m.meta
 }
 
-func (e *mutation[T, TT]) Apply(d any) (any, error) {
-	var data T
-
-	switch t := d.(type) {
-	case T:
-		data = t
-	case json.RawMessage:
-		if err := json.Unmarshal(t, &data); err != nil {
-			return data, fmt.Errorf("mutantdb: failed to deserialize projection data into %T: %w", data, err)
-		}
-	default:
-		return data, fmt.Errorf("mutantdb: invalid projection data type %T", t)
+func (m *mutation[T, TT]) Apply(d any) (any, error) {
+	entityData, err := m.mutator.entityType.convert(d)
+	if err != nil {
+		return entityData, err
 	}
 
-	return e.mutator.fn(data, e.data)
+	return m.mutator.fn(entityData, m.data)
 }

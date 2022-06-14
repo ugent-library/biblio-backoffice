@@ -165,7 +165,7 @@ func (s *Store) Append(ctx context.Context, mutations ...Mutation) error {
 
 		rawData, err := json.Marshal(d)
 		if err != nil {
-			return fmt.Errorf("mutantdb: failed to serialize projection data: %w", err)
+			return fmt.Errorf("mutantdb: failed to serialize entity data: %w", err)
 		}
 
 		// TODO set date_updated to last date_created of mutations

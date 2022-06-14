@@ -1,6 +1,9 @@
 package mutantdb
 
-// TODO add (de)serialization
+import (
+	"encoding/json"
+	"fmt"
+)
 
 type EntityType interface {
 	Name() string
@@ -25,4 +28,19 @@ func (s *entityType[T]) Name() string {
 
 func (s *entityType[T]) New() any {
 	return s.factory()
+}
+
+func (s *entityType[T]) convert(d any) (data T, err error) {
+	switch t := d.(type) {
+	case T:
+		data = t
+	case json.RawMessage:
+		if err = json.Unmarshal(t, &data); err != nil {
+			err = fmt.Errorf("mutantdb: failed to deserialize entity data into %T: %w", data, err)
+		}
+	default:
+		err = fmt.Errorf("mutantdb: invalid entity data type %T", t)
+	}
+
+	return
 }

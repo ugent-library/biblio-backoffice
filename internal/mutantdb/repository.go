@@ -45,7 +45,7 @@ func (r *Repository[T]) Get(ctx context.Context, id string) (Projection[T], erro
 	}
 
 	if err := json.Unmarshal(rawData, &p.Data); err != nil {
-		return p, fmt.Errorf("mutantdb: failed to deserialize projection data: %w", err)
+		return p, fmt.Errorf("mutantdb: failed to deserialize entity data: %w", err)
 	}
 
 	return p, nil
@@ -94,7 +94,7 @@ func (r *Repository[T]) GetAt(ctx context.Context, id, mutationID string) (Proje
 		if t, ok := d.(T); ok {
 			p.Data = t
 		} else {
-			return p, fmt.Errorf("mutantdb: invalid projection data type %T", t)
+			return p, fmt.Errorf("mutantdb: invalid entity data type %T", t)
 		}
 	}
 
