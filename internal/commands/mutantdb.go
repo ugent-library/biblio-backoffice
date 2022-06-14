@@ -6,8 +6,8 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/ugent-library/biblio-backend/internal/eventstore"
 	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backend/internal/mutantdb"
 	"github.com/ugent-library/biblio-backend/internal/ulid"
 )
 
@@ -15,12 +15,10 @@ func init() {
 	rootCmd.AddCommand(testEventstoreCmd)
 }
 
-// TODO use stream type everywhere
-var DatasetType = eventstore.NewStreamType("Dataset", NewDataset)
+var DatasetType = mutantdb.NewType("Dataset", NewDataset)
 
-// TODO clearer distinction between event and command
-var ReplaceDatasetHandler = eventstore.NewEventHandler(DatasetType, "Replaced", ReplaceDataset)
-var AddDatasetAbstractHandler = eventstore.NewEventHandler(DatasetType, "AbstractAdded", AddDatasetAbstract)
+var DatasetReplacer = mutantdb.NewMutator(DatasetType, "Replace", ReplaceDataset)
+var DatasetAbstractAdder = mutantdb.NewMutator(DatasetType, "AddAbstract", AddDatasetAbstract)
 
 func NewDataset() *models.Dataset {
 	return &models.Dataset{
@@ -38,33 +36,32 @@ func AddDatasetAbstract(data *models.Dataset, a models.Text) (*models.Dataset, e
 }
 
 var testEventstoreCmd = &cobra.Command{
-	Use: "test-eventstore",
+	Use: "test-mutantdb",
 	Run: func(cmd *cobra.Command, args []string) {
 		// TEST STORE
-		store, err := eventstore.Connect(context.Background(), viper.GetString("pg-conn"),
-			eventstore.WithIDGenerator(ulid.Generate),
+		store, err := mutantdb.Connect(context.Background(), viper.GetString("pg-conn"),
+			mutantdb.WithIDGenerator(ulid.Generate),
+			mutantdb.WithMutators(
+				DatasetReplacer,
+				DatasetAbstractAdder,
+			),
 		)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		store.AddEventHandlers(
-			ReplaceDatasetHandler,
-			AddDatasetAbstractHandler,
-		)
-
 		// test Append
-		streamID := ulid.MustGenerate()
+		entityID := ulid.MustGenerate()
 
 		err = store.Append(context.Background(),
-			ReplaceDatasetHandler.NewEvent(
-				streamID,
+			DatasetReplacer.New(
+				entityID,
 				&models.Dataset{Title: "Test dataset", Publisher: "Test publisher"},
 			),
-			AddDatasetAbstractHandler.NewEvent(
-				streamID,
+			DatasetAbstractAdder.New(
+				entityID,
 				models.Text{Lang: "eng", Text: "Test abstract"},
-				eventstore.Meta{"UserID": "123"},
+				mutantdb.Meta{"UserID": "123"},
 			),
 		)
 		if err != nil {
@@ -72,10 +69,10 @@ var testEventstoreCmd = &cobra.Command{
 		}
 
 		// TEST REPOSITORY
-		datasetRepository := eventstore.NewRepository(store, DatasetType)
+		datasetRepository := mutantdb.NewRepository(store, DatasetType)
 
 		// test Get
-		p, err := datasetRepository.Get(context.Background(), streamID)
+		p, err := datasetRepository.Get(context.Background(), entityID)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -93,18 +90,18 @@ var testEventstoreCmd = &cobra.Command{
 			if err != nil {
 				log.Fatal(err)
 			}
-			log.Printf("iterated id %s", p.StreamID)
+			log.Printf("iterated id %s", p.ID)
 		}
 		if err := c.Error(); err != nil {
 			log.Fatal(err)
 		}
 
 		// test GetAt
-		// p, err = datasetRepository.GetAt(context.Background(), "01G5E2D1HYK531S6G48PM9WBW8", "01G5E2D1HYM158TRFZJBAWJ22Q")
-		// if err != nil {
-		// 	log.Fatal(err)
-		// }
-		// log.Printf("%+v", p)
-		// log.Printf("%+v", p.Data)
+		p, err = datasetRepository.GetAt(context.Background(), "01G5E2D1HYK531S6G48PM9WBW8", "01G5E2D1HYM158TRFZJBAWJ22Q")
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("%+v", p)
+		log.Printf("%+v", p.Data)
 	},
 }
