@@ -54,7 +54,7 @@ func (m *mutator[T, TT]) convert(d any) (data TT, err error) {
 	case TT:
 		data = t
 	case json.RawMessage:
-		if err := json.Unmarshal(t, &data); err != nil {
+		if err = json.Unmarshal(t, &data); err != nil {
 			err = fmt.Errorf("mutantdb: failed to deserialize mutation data into %T: %w", data, err)
 		}
 	default:
