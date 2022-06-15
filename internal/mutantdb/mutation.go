@@ -64,11 +64,10 @@ func (m *mutator[T, M]) convert(d any) (data M, err error) {
 	return
 }
 
-func (h *mutator[T, M]) New(entityID string, data M, meta ...Meta) *mutation[T, M] {
+func (h *mutator[T, M]) New(data M, meta ...Meta) *mutation[T, M] {
 	e := &mutation[T, M]{
-		entityID: entityID,
-		data:     data,
-		mutator:  h,
+		data:    data,
+		mutator: h,
 	}
 	for _, meta := range meta {
 		if e.meta == nil {
@@ -84,7 +83,6 @@ func (h *mutator[T, M]) New(entityID string, data M, meta ...Meta) *mutation[T, 
 type Meta map[string]string
 
 type Mutation interface {
-	EntityID() string
 	EntityType() EntityType
 	Name() string
 	Data() any
@@ -93,14 +91,9 @@ type Mutation interface {
 }
 
 type mutation[T, M any] struct {
-	entityID string
-	data     M
-	meta     Meta
-	mutator  *mutator[T, M]
-}
-
-func (m *mutation[T, M]) EntityID() string {
-	return m.entityID
+	data    M
+	meta    Meta
+	mutator *mutator[T, M]
 }
 
 func (m *mutation[T, M]) EntityType() EntityType {

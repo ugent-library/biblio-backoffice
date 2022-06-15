@@ -93,6 +93,27 @@ func (s *Store) GetMutator(entityType, name string) Mutator {
 	return nil
 }
 
-func (s *Store) Append(mutations ...Mutation) *Append {
-	return NewAppend(s, mutations...)
+func (s *Store) BeginTx(ctx context.Context) (*Tx, error) {
+	pgTx, err := s.conn.Begin(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("mutantdb: failed to begin transaction: %w", err)
+	}
+
+	return s.WithTx(pgTx), nil
+}
+
+func (s *Store) WithTx(pgTx pgx.Tx) *Tx {
+	return &Tx{
+		pgTx:        pgTx,
+		idGenerator: s.idGenerator,
+	}
+}
+
+func (s *Store) Append(entityID string, mutations ...Mutation) *Append {
+	return &Append{
+		conn:        s.conn,
+		idGenerator: s.idGenerator,
+		entityID:    entityID,
+		mutations:   mutations,
+	}
 }
