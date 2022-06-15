@@ -50,9 +50,9 @@ func (op *Append) Do(ctx context.Context) error {
 	//--- get current projection data
 
 	err = tx.QueryRow(ctx,
-		`select mutation_id, entity_data from projections where entity_id = $1 and entity_type = $2 limit 1`,
+		`select mutation_id, entity_data, date_created from projections where entity_id = $1 and entity_type = $2 limit 1`,
 		op.entityID, entityName,
-	).Scan(&op.lastMutID, &rawEntityData)
+	).Scan(&op.lastMutID, &rawEntityData, &op.firstMutDateCreated)
 
 	if err == pgx.ErrNoRows {
 		newEntity = true

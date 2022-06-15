@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/jackc/pgx/v4"
 	"golang.org/x/net/context"
@@ -52,14 +53,13 @@ func (r *Repository[T]) Get(ctx context.Context, id string) (Projection[T], erro
 }
 
 func (r *Repository[T]) GetAt(ctx context.Context, id, mutationID string) (Projection[T], error) {
-	// TODO: set timestamp fields
 	p := Projection[T]{
 		ID:         id,
 		MutationID: mutationID,
 		Data:       r.entityType.factory(),
 	}
 
-	sql := `select mutation_name, mutation_data
+	sql := `select mutation_name, mutation_data, date_created
 	from mutations
 	where entity_id = $1 and entity_type = $2 and
 	seq <= (select seq from mutations where entity_id = $1 and entity_type = $2 and mutation_id = $3)`
@@ -73,13 +73,19 @@ func (r *Repository[T]) GetAt(ctx context.Context, id, mutationID string) (Proje
 
 	for rows.Next() {
 		var (
-			name string
-			data json.RawMessage
+			name        string
+			data        json.RawMessage
+			dateCreated time.Time
 		)
 
-		if err := rows.Scan(&name, &data); err != nil {
+		if err := rows.Scan(&name, &data, &dateCreated); err != nil {
 			return p, fmt.Errorf("mutantdb: failed to scan mutation: %w", err)
 		}
+
+		if p.DateCreated.IsZero() {
+			p.DateCreated = dateCreated
+		}
+		p.DateUpdated = dateCreated
 
 		h := r.store.GetMutator(r.entityType.name, name)
 		if h == nil {
