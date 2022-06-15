@@ -157,7 +157,7 @@ var testEventstoreCmd = &cobra.Command{
 		// TEST conflict detection
 		err = datasetStore.Append(datasetID,
 			DatasetAbstractAdder.New(models.Text{Lang: "eng", Text: "Test abstract"}),
-		).AfterMutation(pBeforeTx.MutationID).Do(ctx)
+		).After(pBeforeTx.MutationID).Do(ctx)
 		if err != nil {
 			log.Printf("invalid AfterMutation gives conflict error: %s", err)
 		}

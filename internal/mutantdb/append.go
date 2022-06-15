@@ -32,7 +32,7 @@ func (op *Append[T]) Tx(tx pgx.Tx) *Append[T] {
 	return op
 }
 
-func (op *Append[T]) AfterMutation(mutID string) *Append[T] {
+func (op *Append[T]) After(mutID string) *Append[T] {
 	op.expectedMutID = mutID
 	return op
 }
