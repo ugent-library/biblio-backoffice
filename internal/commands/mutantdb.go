@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 
+	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/models"
@@ -18,11 +19,11 @@ func init() {
 var DatasetType = mutantdb.NewType("Dataset", NewDataset)
 var PublicationType = mutantdb.NewType("Publication", NewPublication)
 
-var DatasetReplacer = mutantdb.NewMutator(DatasetType, "Replace", ReplaceDataset)
-var DatasetAbstractAdder = mutantdb.NewMutator(DatasetType, "AddAbstract", AddDatasetAbstract)
-var DatasetPublicationAdder = mutantdb.NewMutator(DatasetType, "AddPublication", AddDatasetPublication)
+var DatasetReplacer = mutantdb.NewMutator("Replace", ReplaceDataset)
+var DatasetAbstractAdder = mutantdb.NewMutator("AddAbstract", AddDatasetAbstract)
+var DatasetPublicationAdder = mutantdb.NewMutator("AddPublication", AddDatasetPublication)
 
-var PublicationDatasetAdder = mutantdb.NewMutator(PublicationType, "AddDataset", AddPublicationDataset)
+var PublicationDatasetAdder = mutantdb.NewMutator("AddDataset", AddPublicationDataset)
 
 func NewDataset() *models.Dataset {
 	return &models.Dataset{
@@ -58,27 +59,31 @@ func AddPublicationDataset(data *models.Publication, datasetID string) (*models.
 var testEventstoreCmd = &cobra.Command{
 	Use: "test-mutantdb",
 	Run: func(cmd *cobra.Command, args []string) {
-		// TEST STORE
 		ctx := context.Background()
 
-		store, err := mutantdb.Connect(ctx, viper.GetString("pg-conn"),
-			mutantdb.WithIDGenerator(ulid.Generate),
-			mutantdb.WithMutators(
-				DatasetReplacer,
-				DatasetAbstractAdder,
-				DatasetPublicationAdder,
-				PublicationDatasetAdder,
-			),
-		)
+		conn, err := pgxpool.Connect(ctx, viper.GetString("pg-conn"))
 		if err != nil {
 			log.Fatal(err)
 		}
+
+		datasetStore := mutantdb.NewStore(conn, DatasetType).
+			WithIDGenerator(ulid.Generate).
+			WithMutators(
+				DatasetReplacer,
+				DatasetAbstractAdder,
+				DatasetPublicationAdder,
+			)
+		pubStore := mutantdb.NewStore(conn, PublicationType).
+			WithIDGenerator(ulid.Generate).
+			WithMutators(
+				PublicationDatasetAdder,
+			)
 
 		// TEST Append
 		datasetID := ulid.MustGenerate()
 		pubID := ulid.MustGenerate()
 
-		err = store.Append(datasetID,
+		err = datasetStore.Append(datasetID,
 			DatasetReplacer.New(
 				&models.Dataset{Title: "Test dataset", Publisher: "Test publisher"},
 			),
@@ -91,24 +96,25 @@ var testEventstoreCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		datasetRepository := mutantdb.NewRepository(store, DatasetType)
-		pBeforeTx, err := datasetRepository.Get(ctx, datasetID)
+		pBeforeTx, err := datasetStore.Get(ctx, datasetID)
 		if err != nil {
 			log.Fatal(err)
 		}
 		log.Printf("%+v", pBeforeTx.Data)
 
 		// TEST TRANSACTIONS
-		tx, err := store.BeginTx(ctx)
+		tx, err := conn.Begin(ctx)
 		if err != nil {
 			log.Fatal(err)
 		}
 		defer tx.Rollback(ctx)
 
-		if err = tx.Append(datasetID, DatasetPublicationAdder.New(pubID)).Do(ctx); err != nil {
+		err = datasetStore.Append(datasetID, DatasetPublicationAdder.New(pubID)).Tx(tx).Do(ctx)
+		if err != nil {
 			log.Fatal(err)
 		}
-		if err = tx.Append(pubID, PublicationDatasetAdder.New(datasetID)).Do(ctx); err != nil {
+		err = pubStore.Append(pubID, PublicationDatasetAdder.New(datasetID)).Tx(tx).Do(ctx)
+		if err != nil {
 			log.Fatal(err)
 		}
 
@@ -117,14 +123,14 @@ var testEventstoreCmd = &cobra.Command{
 		}
 
 		// test repository Get
-		p, err := datasetRepository.Get(ctx, datasetID)
+		p, err := datasetStore.Get(ctx, datasetID)
 		if err != nil {
 			log.Fatal(err)
 		}
 		log.Printf("projection data after tx: %+v", p.Data)
 
-		// test repository GetAll
-		c, err := datasetRepository.GetAll(ctx)
+		// // test repository GetAll
+		c, err := datasetStore.GetAll(ctx)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -141,39 +147,24 @@ var testEventstoreCmd = &cobra.Command{
 		}
 
 		// test repository GetAt
-		p, err = datasetRepository.GetAt(ctx, datasetID, pBeforeTx.MutationID)
+		p, err = datasetStore.GetAt(ctx, datasetID, pBeforeTx.MutationID)
 		if err != nil {
 			log.Fatal(err)
 		}
 		log.Printf("projection before tx: %+v", p)
 		log.Printf("projection data before tx: %+v", p.Data)
 
-		// TEST invalid Append
-		err = store.Append(datasetID,
-			DatasetAbstractAdder.New(
-				models.Text{Lang: "eng", Text: "Another test abstract"},
-			),
-			PublicationDatasetAdder.New(datasetID),
-		).Do(ctx)
-		if err != nil {
-			log.Printf("invalid append gives error: %s", err)
-		}
-
 		// TEST conflict detection
-		err = store.Append(datasetID,
-			DatasetAbstractAdder.New(
-				models.Text{Lang: "eng", Text: "Test abstract"},
-			),
+		err = datasetStore.Append(datasetID,
+			DatasetAbstractAdder.New(models.Text{Lang: "eng", Text: "Test abstract"}),
 		).AfterMutation(pBeforeTx.MutationID).Do(ctx)
 		if err != nil {
 			log.Printf("invalid AfterMutation gives conflict error: %s", err)
 		}
 
 		// TEST Append & Get
-		anyP, err := store.Append(datasetID,
-			DatasetAbstractAdder.New(
-				models.Text{Lang: "eng", Text: "Another test abstract"},
-			),
+		anyP, err := datasetStore.Append(datasetID,
+			DatasetAbstractAdder.New(models.Text{Lang: "eng", Text: "Another test abstract"}),
 		).Get(ctx)
 		if err != nil {
 			log.Printf("invalid AfterMutation gives conflict error: %s", err)
