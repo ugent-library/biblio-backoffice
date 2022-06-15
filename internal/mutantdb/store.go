@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	DefaultIDGenerator = func() (string, error) { return uuid.NewString(), nil }
+	DefaultIDGenerator = generateUUID
 
 	ErrNotFound = errors.New("not found")
 )
@@ -124,4 +124,12 @@ func (s *Store) Append(entityID string, mutations ...Mutation) *Append {
 		entityID:    entityID,
 		mutations:   mutations,
 	}
+}
+
+func generateUUID() (string, error) {
+	id, err := uuid.NewRandom()
+	if err != nil {
+		return "", err
+	}
+	return id.String(), nil
 }
