@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	DefaultIDGenerator = func() string { return uuid.NewString() }
+	DefaultIDGenerator = func() (string, error) { return uuid.NewString(), nil }
 
 	ErrNotFound = errors.New("not found")
 )
@@ -35,7 +35,7 @@ type PgConn interface {
 
 type Store struct {
 	conn        PgConn
-	idGenerator func() string
+	idGenerator func() (string, error)
 	mutators    map[string]map[string]Mutator
 	mutatorsMu  sync.RWMutex
 }
@@ -60,7 +60,7 @@ func New(conn PgConn, opts ...func(*Store)) *Store {
 	return s
 }
 
-func WithIDGenerator(fn func() string) func(*Store) {
+func WithIDGenerator(fn func() (string, error)) func(*Store) {
 	return func(s *Store) {
 		s.idGenerator = fn
 	}

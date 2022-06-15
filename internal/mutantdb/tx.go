@@ -7,7 +7,7 @@ import (
 
 type Tx struct {
 	pgTx        pgx.Tx
-	idGenerator func() string
+	idGenerator func() (string, error)
 }
 
 func (tx *Tx) Rollback(ctx context.Context) (err error) {

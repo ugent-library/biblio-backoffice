@@ -11,7 +11,7 @@ import (
 
 type Append struct {
 	conn          PgConn
-	idGenerator   func() string
+	idGenerator   func() (string, error)
 	mutations     []Mutation
 	entityID      string
 	expectedMutID string
@@ -91,7 +91,10 @@ func (op *Append) Do(ctx context.Context) error {
 		}
 
 		// generate mutation id
-		op.lastMutID = op.idGenerator()
+		op.lastMutID, err = op.idGenerator()
+		if err != nil {
+			return fmt.Errorf("mutantdb: failed to generate id: %w", err)
+		}
 
 		// TODO insert all mutations in one statement
 		if err = tx.QueryRow(ctx,
