@@ -10,15 +10,21 @@ import (
 )
 
 type Append struct {
-	conn            PgConn
-	idGenerator     func() (string, error)
-	entityID        string
-	mutations       []Mutation
-	afterMutationID string
+	conn          PgConn
+	idGenerator   func() (string, error)
+	mutations     []Mutation
+	entityID      string
+	expectedMutID string
+
+	// data needed to return projections
+	entityData          any
+	firstMutDateCreated time.Time
+	lastMutID           string
+	lastMutDateCreated  time.Time
 }
 
 func (op *Append) AfterMutation(mutID string) *Append {
-	op.afterMutationID = mutID
+	op.expectedMutID = mutID
 	return op
 }
 
@@ -34,14 +40,11 @@ func (op *Append) Do(ctx context.Context) error {
 	defer tx.Rollback(ctx)
 
 	var (
-		entityName         = op.mutations[0].EntityType().Name()
-		rawMutData         json.RawMessage
-		rawMutMeta         json.RawMessage
-		lastMutDateCreated time.Time
-		lastMutID          string
-		newEntity          bool
-		rawEntityData      json.RawMessage
-		entityData         any
+		entityName    = op.mutations[0].EntityType().Name()
+		rawMutData    json.RawMessage
+		rawMutMeta    json.RawMessage
+		newEntity     bool
+		rawEntityData json.RawMessage
 	)
 
 	//--- get current projection data
@@ -49,23 +52,23 @@ func (op *Append) Do(ctx context.Context) error {
 	err = tx.QueryRow(ctx,
 		`select mutation_id, entity_data from projections where entity_id = $1 and entity_type = $2 limit 1`,
 		op.entityID, entityName,
-	).Scan(&lastMutID, &rawEntityData)
+	).Scan(&op.lastMutID, &rawEntityData)
 
 	if err == pgx.ErrNoRows {
 		newEntity = true
-		entityData = op.mutations[0].EntityType().New()
+		op.entityData = op.mutations[0].EntityType().New()
 	} else if err != nil {
 		return fmt.Errorf("mutantdb: failed to get projection: %w", err)
 	} else {
-		entityData = rawEntityData
+		op.entityData = rawEntityData
 	}
 
 	//--- detect conflicts
 
-	if op.afterMutationID != "" && op.afterMutationID != lastMutID {
+	if op.expectedMutID != "" && op.expectedMutID != op.lastMutID {
 		return &ErrConflict{
-			CurrentMutationID:  lastMutID,
-			ExpectedMutationID: op.afterMutationID,
+			CurrentMutationID:  op.lastMutID,
+			ExpectedMutationID: op.expectedMutID,
 		}
 	}
 
@@ -88,7 +91,7 @@ func (op *Append) Do(ctx context.Context) error {
 		}
 
 		// generate mutation id
-		lastMutID, err = op.idGenerator()
+		op.lastMutID, err = op.idGenerator()
 		if err != nil {
 			return fmt.Errorf("mutantdb: failed to generate id: %w", err)
 		}
@@ -98,8 +101,8 @@ func (op *Append) Do(ctx context.Context) error {
 			`insert into mutations (mutation_id, entity_id, entity_type, mutation_name, mutation_data, mutation_meta)
 		values ($1, $2, $3, $4, $5, $6)
 		returning date_created`,
-			lastMutID, op.entityID, entityName, mut.Name(), rawMutData, rawMutMeta,
-		).Scan(&lastMutDateCreated); err != nil {
+			op.lastMutID, op.entityID, entityName, mut.Name(), rawMutData, rawMutMeta,
+		).Scan(&op.lastMutDateCreated); err != nil {
 			return fmt.Errorf("mutantdb: failed to insert mutation: %w", err)
 		}
 	}
@@ -107,14 +110,14 @@ func (op *Append) Do(ctx context.Context) error {
 	//--- apply mutations
 
 	for _, mut := range op.mutations {
-		if entityData, err = mut.Apply(entityData); err != nil {
+		if op.entityData, err = mut.Apply(op.entityData); err != nil {
 			return fmt.Errorf("mutantdb: failed to apply mutation %s: %w", mut.EntityType().Name(), err)
 		}
 	}
 
 	//--- upsert projection
 
-	rawEntityData, err = json.Marshal(entityData)
+	rawEntityData, err = json.Marshal(op.entityData)
 	if err != nil {
 		return fmt.Errorf("mutantdb: failed to serialize projection data: %w", err)
 	}
@@ -122,13 +125,13 @@ func (op *Append) Do(ctx context.Context) error {
 	if newEntity {
 		sql := `insert into projections (entity_id, entity_type, mutation_id, entity_data, date_created, date_updated)
 		values ($1, $2, $3, $4, $5, $6)`
-		if _, err = tx.Exec(ctx, sql, op.entityID, entityName, lastMutID, rawEntityData,
-			lastMutDateCreated, lastMutDateCreated); err != nil {
+		if _, err = tx.Exec(ctx, sql, op.entityID, entityName, op.lastMutID, rawEntityData,
+			op.lastMutDateCreated, op.lastMutDateCreated); err != nil {
 			return fmt.Errorf("mutantdb: failed to insert projection: %w", err)
 		}
 	} else {
 		sql := `update projections set mutation_id = $1, entity_data = $2, date_updated = $3 where entity_id = $4 and entity_type = $5`
-		if _, err = tx.Exec(ctx, sql, lastMutID, rawEntityData, lastMutDateCreated, op.entityID, entityName); err != nil {
+		if _, err = tx.Exec(ctx, sql, op.lastMutID, rawEntityData, op.lastMutDateCreated, op.entityID, entityName); err != nil {
 			return fmt.Errorf("mutantdb: failed to update projection: %w", err)
 		}
 	}
@@ -138,4 +141,21 @@ func (op *Append) Do(ctx context.Context) error {
 	}
 
 	return nil
+}
+
+func (op *Append) Get(ctx context.Context) (Projection[any], error) {
+	p := Projection[any]{
+		ID: op.entityID,
+	}
+
+	if err := op.Do(ctx); err != nil {
+		return p, err
+	}
+
+	p.Data = op.entityData
+	p.MutationID = op.lastMutID
+	p.DateCreated = op.firstMutDateCreated
+	p.DateUpdated = op.lastMutDateCreated
+
+	return p, nil
 }

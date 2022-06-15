@@ -163,11 +163,22 @@ var testEventstoreCmd = &cobra.Command{
 		err = store.Append(datasetID,
 			DatasetAbstractAdder.New(
 				models.Text{Lang: "eng", Text: "Test abstract"},
-				mutantdb.Meta{"UserID": "123"},
 			),
 		).AfterMutation(pBeforeTx.MutationID).Do(ctx)
 		if err != nil {
 			log.Printf("invalid AfterMutation gives conflict error: %s", err)
 		}
+
+		// TEST Append & Get
+		anyP, err := store.Append(datasetID,
+			DatasetAbstractAdder.New(
+				models.Text{Lang: "eng", Text: "Another test abstract"},
+			),
+		).Get(ctx)
+		if err != nil {
+			log.Printf("invalid AfterMutation gives conflict error: %s", err)
+		}
+		log.Printf("get projection after append: %+v", anyP)
+		log.Printf("get projection data after append: %+v", anyP.Data)
 	},
 }
