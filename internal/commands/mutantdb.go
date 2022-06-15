@@ -62,7 +62,7 @@ var testEventstoreCmd = &cobra.Command{
 		ctx := context.Background()
 
 		store, err := mutantdb.Connect(ctx, viper.GetString("pg-conn"),
-			mutantdb.WithIDGenerator(ulid.Generate),
+			mutantdb.WithIDGenerator(ulid.MustGenerate),
 			mutantdb.WithMutators(
 				DatasetReplacer,
 				DatasetAbstractAdder,
