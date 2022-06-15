@@ -10,10 +10,16 @@ import (
 )
 
 type Append struct {
-	conn        PgConn
-	idGenerator func() (string, error)
-	entityID    string
-	mutations   []Mutation
+	conn            PgConn
+	idGenerator     func() (string, error)
+	entityID        string
+	mutations       []Mutation
+	afterMutationID string
+}
+
+func (op *Append) AfterMutation(mutID string) *Append {
+	op.afterMutationID = mutID
+	return op
 }
 
 func (op *Append) Do(ctx context.Context) error {
@@ -37,6 +43,30 @@ func (op *Append) Do(ctx context.Context) error {
 		rawEntityData      json.RawMessage
 		entityData         any
 	)
+
+	//--- get current projection data
+
+	err = tx.QueryRow(ctx,
+		`select mutation_id, entity_data from projections where entity_id = $1 and entity_type = $2 limit 1`,
+		op.entityID, entityName,
+	).Scan(&lastMutID, &rawEntityData)
+
+	if err == pgx.ErrNoRows {
+		newEntity = true
+		entityData = op.mutations[0].EntityType().New()
+	} else if err != nil {
+		return fmt.Errorf("mutantdb: failed to get projection: %w", err)
+	} else {
+		entityData = rawEntityData
+	}
+
+	//--- detect conflicts
+	if op.afterMutationID != "" && op.afterMutationID != lastMutID {
+		return &ErrConflict{
+			CurrentMutationID:  lastMutID,
+			ExpectedMutationID: op.afterMutationID,
+		}
+	}
 
 	//--- insert mutations
 
@@ -71,22 +101,6 @@ func (op *Append) Do(ctx context.Context) error {
 		).Scan(&lastMutDateCreated); err != nil {
 			return fmt.Errorf("mutantdb: failed to insert mutation: %w", err)
 		}
-	}
-
-	//--- get current projection data
-
-	err = tx.QueryRow(ctx,
-		`select entity_data from projections where entity_id = $1 and entity_type = $2 limit 1`,
-		op.entityID, entityName,
-	).Scan(&rawEntityData)
-
-	if err == pgx.ErrNoRows {
-		newEntity = true
-		entityData = op.mutations[0].EntityType().New()
-	} else if err != nil {
-		return fmt.Errorf("mutantdb: failed to get projection: %w", err)
-	} else {
-		entityData = rawEntityData
 	}
 
 	//--- apply mutations

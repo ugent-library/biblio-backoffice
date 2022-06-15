@@ -151,13 +151,23 @@ var testEventstoreCmd = &cobra.Command{
 		// TEST invalid Append
 		err = store.Append(datasetID,
 			DatasetAbstractAdder.New(
-				models.Text{Lang: "eng", Text: "Test abstract"},
-				mutantdb.Meta{"UserID": "123"},
+				models.Text{Lang: "eng", Text: "Another test abstract"},
 			),
 			PublicationDatasetAdder.New(datasetID),
 		).Do(ctx)
 		if err != nil {
 			log.Printf("invalid append gives error: %s", err)
+		}
+
+		// TEST conflict detection
+		err = store.Append(datasetID,
+			DatasetAbstractAdder.New(
+				models.Text{Lang: "eng", Text: "Test abstract"},
+				mutantdb.Meta{"UserID": "123"},
+			),
+		).AfterMutation(pBeforeTx.MutationID).Do(ctx)
+		if err != nil {
+			log.Printf("invalid AfterMutation gives conflict error: %s", err)
 		}
 	},
 }

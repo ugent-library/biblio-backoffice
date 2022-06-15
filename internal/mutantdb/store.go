@@ -12,10 +12,18 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
-var ErrNotFound = errors.New("not found")
+var (
+	DefaultIDGenerator = func() (string, error) { return uuid.NewString(), nil }
 
-var DefaultIDGenerator = func() (string, error) {
-	return uuid.NewString(), nil
+	ErrNotFound = errors.New("not found")
+)
+
+type ErrConflict struct {
+	CurrentMutationID, ExpectedMutationID string
+}
+
+func (e *ErrConflict) Error() string {
+	return "conflict detected"
 }
 
 type PgConn interface {
