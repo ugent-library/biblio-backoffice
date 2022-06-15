@@ -55,7 +55,7 @@ var testEventstoreCmd = &cobra.Command{
 		// test Append
 		entityID := ulid.MustGenerate()
 
-		err = store.Append(ctx,
+		err = store.Append(
 			DatasetReplacer.New(
 				entityID,
 				&models.Dataset{Title: "Test dataset", Publisher: "Test publisher"},
@@ -65,7 +65,7 @@ var testEventstoreCmd = &cobra.Command{
 				models.Text{Lang: "eng", Text: "Test abstract"},
 				mutantdb.Meta{"UserID": "123"},
 			),
-		)
+		).Do(ctx)
 		if err != nil {
 			log.Fatal(err)
 		}
