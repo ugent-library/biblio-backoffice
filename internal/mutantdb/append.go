@@ -61,6 +61,7 @@ func (op *Append) Do(ctx context.Context) error {
 	}
 
 	//--- detect conflicts
+
 	if op.afterMutationID != "" && op.afterMutationID != lastMutID {
 		return &ErrConflict{
 			CurrentMutationID:  lastMutID,
