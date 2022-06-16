@@ -109,12 +109,30 @@ func (c *Client) GetPublication(id string) (*models.Publication, error) {
 			p.AlternativeTitle = append(p.AlternativeTitle, r.String())
 		}
 	}
-	if res := attrs.Get("ISBN"); res.Exists() {
+	if res := attrs.Get("isbn-type"); res.Exists() {
+		for _, r := range res.Array() {
+			switch r.Get("type").String() {
+			case "print":
+				p.ISBN = append(p.ISBN, r.Get("value").String())
+			case "electronic":
+				p.EISBN = append(p.EISBN, r.Get("value").String())
+			}
+		}
+	} else if res := attrs.Get("ISBN"); res.Exists() {
 		for _, r := range res.Array() {
 			p.ISBN = append(p.ISBN, r.String())
 		}
 	}
-	if res := attrs.Get("ISSN"); res.Exists() {
+	if res := attrs.Get("issn-type"); res.Exists() {
+		for _, r := range res.Array() {
+			switch r.Get("type").String() {
+			case "print":
+				p.ISSN = append(p.ISSN, r.Get("value").String())
+			case "electronic":
+				p.EISSN = append(p.EISSN, r.Get("value").String())
+			}
+		}
+	} else if res := attrs.Get("ISSN"); res.Exists() {
 		for _, r := range res.Array() {
 			p.ISSN = append(p.ISSN, r.String())
 		}
