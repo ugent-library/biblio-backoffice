@@ -9,7 +9,7 @@ create function notify_projection_changed() returns trigger as $$
         payload = row_to_json(NEW)::text;
         size = length(payload);
 
-        -- send payload in chunks of a 4000 bytes
+        -- send payload in chunks of 4000 bytes
         while n <= size loop
             -- append counter to ensure non-identical payload strings
             perform pg_notify(
