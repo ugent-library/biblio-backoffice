@@ -23,7 +23,7 @@ func (e *ErrConflict) Error() string {
 	return "conflict detected"
 }
 
-type PgConn interface {
+type Conn interface {
 	Begin(context.Context) (pgx.Tx, error)
 	Exec(context.Context, string, ...interface{}) (pgconn.CommandTag, error)
 	QueryRow(context.Context, string, ...interface{}) pgx.Row
@@ -38,21 +38,50 @@ type Projection[T any] struct {
 	DateUpdated time.Time
 }
 
-type Store[T any] struct {
-	conn        PgConn
-	entityType  *Type[T]
-	idGenerator func() (string, error)
-	mutators    map[string]Mutator[T]
-	mutatorsMu  sync.RWMutex
+type mutatorMap[T any] struct {
+	data map[string]Mutator[T]
+	mu   sync.RWMutex
 }
 
-func NewStore[T any](conn PgConn, t *Type[T]) *Store[T] {
-	s := &Store[T]{
+func (mm *mutatorMap[T]) Add(m Mutator[T]) {
+	mm.mu.Lock()
+	defer mm.mu.Unlock()
+
+	if mm.data == nil {
+		mm.data = make(map[string]Mutator[T])
+	}
+
+	mm.data[m.Name()] = m
+}
+
+func (mm *mutatorMap[T]) Get(name string) Mutator[T] {
+	mm.mu.RLock()
+	defer mm.mu.RUnlock()
+
+	if m, ok := mm.data[name]; ok {
+		return m
+	}
+	return nil
+}
+
+type store[T any] struct {
+	conn        Conn
+	idGenerator func() (string, error)
+	entityType  *Type[T]
+	mutators    *mutatorMap[T]
+}
+
+type Store[T any] struct {
+	store[T]
+}
+
+func NewStore[T any](conn Conn, t *Type[T]) *Store[T] {
+	return &Store[T]{store[T]{
 		conn:        conn,
 		entityType:  t,
 		idGenerator: generateUUID,
-	}
-	return s
+		mutators:    &mutatorMap[T]{},
+	}}
 }
 
 func (s *Store[T]) WithIDGenerator(fn func() (string, error)) *Store[T] {
@@ -61,31 +90,26 @@ func (s *Store[T]) WithIDGenerator(fn func() (string, error)) *Store[T] {
 }
 
 func (s *Store[T]) WithMutators(mutators ...Mutator[T]) *Store[T] {
-	s.mutatorsMu.Lock()
-	defer s.mutatorsMu.Unlock()
-
-	if s.mutators == nil {
-		s.mutators = make(map[string]Mutator[T])
-	}
-
 	for _, m := range mutators {
-		s.mutators[m.Name()] = m
+		s.mutators.Add(m)
 	}
-
 	return s
 }
 
-func (s *Store[T]) GetMutator(name string) Mutator[T] {
-	s.mutatorsMu.RLock()
-	defer s.mutatorsMu.RUnlock()
-
-	if m, ok := s.mutators[name]; ok {
-		return m
-	}
-	return nil
+func (s *store[T]) Conn() Conn {
+	return s.conn
 }
 
-func (s *Store[T]) Append(entityID string, mutations ...Mutation[T]) *Append[T] {
+func (s *store[T]) Tx(tx pgx.Tx) *store[T] {
+	return &store[T]{
+		conn:        tx,
+		entityType:  s.entityType,
+		idGenerator: s.idGenerator,
+		mutators:    s.mutators,
+	}
+}
+
+func (s *store[T]) Append(entityID string, mutations ...Mutation[T]) *Append[T] {
 	return &Append[T]{
 		conn:        s.conn,
 		idGenerator: s.idGenerator,
@@ -95,7 +119,7 @@ func (s *Store[T]) Append(entityID string, mutations ...Mutation[T]) *Append[T] 
 	}
 }
 
-func (r *Store[T]) Get(ctx context.Context, id string) (Projection[T], error) {
+func (s *store[T]) Get(ctx context.Context, id string) (Projection[T], error) {
 	var (
 		p       Projection[T]
 		rawData json.RawMessage
@@ -108,8 +132,8 @@ func (r *Store[T]) Get(ctx context.Context, id string) (Projection[T], error) {
 	where entity_id = $1 and entity_type = $2
 	limit 1`
 
-	err := r.conn.
-		QueryRow(ctx, sql, id, r.entityType.Name()).
+	err := s.conn.
+		QueryRow(ctx, sql, id, s.entityType.Name()).
 		Scan(&p.MutationID, &rawData, &p.DateCreated, &p.DateUpdated)
 
 	if errors.Is(err, pgx.ErrNoRows) {
@@ -125,11 +149,11 @@ func (r *Store[T]) Get(ctx context.Context, id string) (Projection[T], error) {
 	return p, nil
 }
 
-func (r *Store[T]) GetAt(ctx context.Context, id, mutationID string) (Projection[T], error) {
+func (s *store[T]) GetAt(ctx context.Context, id, mutationID string) (Projection[T], error) {
 	p := Projection[T]{
 		ID:         id,
 		MutationID: mutationID,
-		Data:       r.entityType.New(),
+		Data:       s.entityType.New(),
 	}
 
 	sql := `select mutation_name, mutation_data, date_created
@@ -137,7 +161,7 @@ func (r *Store[T]) GetAt(ctx context.Context, id, mutationID string) (Projection
 	where entity_id = $1 and entity_type = $2 and
 	seq <= (select seq from mutations where entity_id = $1 and entity_type = $2 and mutation_id = $3)`
 
-	rows, err := r.conn.Query(ctx, sql, id, r.entityType.Name(), mutationID)
+	rows, err := s.conn.Query(ctx, sql, id, s.entityType.Name(), mutationID)
 	if err != nil {
 		return p, fmt.Errorf("mutantdb: failed to query mutations: %w", err)
 	}
@@ -161,9 +185,9 @@ func (r *Store[T]) GetAt(ctx context.Context, id, mutationID string) (Projection
 		}
 		p.DateUpdated = dateCreated
 
-		m := r.GetMutator(name)
+		m := s.mutators.Get(name)
 		if m == nil {
-			return p, fmt.Errorf("mutantdb: mutator %s %s not found", r.entityType.Name(), name)
+			return p, fmt.Errorf("mutantdb: mutator %s %s not found", s.entityType.Name(), name)
 		}
 
 		p.Data, err = m.Apply(p.Data, mutData)
@@ -179,7 +203,7 @@ func (r *Store[T]) GetAt(ctx context.Context, id, mutationID string) (Projection
 	return p, nil
 }
 
-func (r *Store[T]) GetAll(ctx context.Context) (Cursor[T], error) {
+func (s *store[T]) GetAll(ctx context.Context) (Cursor[T], error) {
 	sql := `select entity_id, mutation_id, entity_data, date_created, date_updated
 	from projections
 	where entity_type = $1`
@@ -189,7 +213,7 @@ func (r *Store[T]) GetAll(ctx context.Context) (Cursor[T], error) {
 		err error
 	)
 
-	c.rows, err = r.conn.Query(ctx, sql, r.entityType.Name())
+	c.rows, err = s.conn.Query(ctx, sql, s.entityType.Name())
 	if err != nil {
 		return c, fmt.Errorf("mutantdb: failed to query projections: %w", err)
 	}

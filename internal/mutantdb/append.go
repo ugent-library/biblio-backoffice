@@ -10,14 +10,13 @@ import (
 )
 
 type Append[T any] struct {
-	conn        PgConn
+	conn        Conn
 	idGenerator func() (string, error)
 	entityID    string
 	entityType  *Type[T]
 	mutations   []Mutation[T]
 
 	// options
-	tx            pgx.Tx
 	expectedMutID string
 
 	// data needed to return projections
@@ -25,11 +24,6 @@ type Append[T any] struct {
 	firstMutDateCreated time.Time
 	lastMutID           string
 	lastMutDateCreated  time.Time
-}
-
-func (op *Append[T]) Tx(tx pgx.Tx) *Append[T] {
-	op.tx = tx
-	return op
 }
 
 func (op *Append[T]) After(mutID string) *Append[T] {
@@ -42,11 +36,7 @@ func (op *Append[T]) Do(ctx context.Context) error {
 		return fmt.Errorf("mutantdb: no mutations to append")
 	}
 
-	conn := op.conn
-	if op.tx != nil {
-		conn = op.tx
-	}
-	tx, err := conn.Begin(ctx)
+	tx, err := op.conn.Begin(ctx)
 	if err != nil {
 		return fmt.Errorf("mutantdb: failed to begin transaction: %w", err)
 	}

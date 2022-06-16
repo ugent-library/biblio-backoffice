@@ -103,17 +103,44 @@ var testEventstoreCmd = &cobra.Command{
 		log.Printf("%+v", pBeforeTx.Data)
 
 		// TEST TRANSACTIONS
+
+		// rollback
 		tx, err := conn.Begin(ctx)
 		if err != nil {
 			log.Fatal(err)
 		}
 		defer tx.Rollback(ctx)
 
-		err = datasetStore.Append(datasetID, DatasetPublicationAdder.New(pubID)).Tx(tx).Do(ctx)
+		err = datasetStore.Tx(tx).Append(datasetID, DatasetPublicationAdder.New(pubID)).Do(ctx)
 		if err != nil {
 			log.Fatal(err)
 		}
-		err = pubStore.Append(pubID, PublicationDatasetAdder.New(datasetID)).Tx(tx).Do(ctx)
+		err = pubStore.Tx(tx).Append(pubID, PublicationDatasetAdder.New(datasetID)).Do(ctx)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		if err = tx.Rollback(ctx); err != nil {
+			log.Fatal(err)
+		}
+
+		pAfterTx, err := datasetStore.Get(ctx, datasetID)
+		if pAfterTx.MutationID != pBeforeTx.MutationID {
+			log.Fatalf("Rollback failed, mutation id changed from %s, to %s", pBeforeTx.MutationID, pAfterTx.MutationID)
+		}
+
+		// success
+		tx, err = conn.Begin(ctx)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer tx.Rollback(ctx)
+
+		err = datasetStore.Tx(tx).Append(datasetID, DatasetPublicationAdder.New(pubID)).Do(ctx)
+		if err != nil {
+			log.Fatal(err)
+		}
+		err = pubStore.Tx(tx).Append(pubID, PublicationDatasetAdder.New(datasetID)).Do(ctx)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -122,14 +149,16 @@ var testEventstoreCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		// test repository Get
+		// TEST Get
+
 		p, err := datasetStore.Get(ctx, datasetID)
 		if err != nil {
 			log.Fatal(err)
 		}
 		log.Printf("projection data after tx: %+v", p.Data)
 
-		// // test repository GetAll
+		// TEST GetAll
+
 		c, err := datasetStore.GetAll(ctx)
 		if err != nil {
 			log.Fatal(err)
@@ -146,7 +175,8 @@ var testEventstoreCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		// test repository GetAt
+		// TEST GetAt
+
 		p, err = datasetStore.GetAt(ctx, datasetID, pBeforeTx.MutationID)
 		if err != nil {
 			log.Fatal(err)
@@ -158,11 +188,14 @@ var testEventstoreCmd = &cobra.Command{
 		err = datasetStore.Append(datasetID,
 			DatasetAbstractAdder.New(models.Text{Lang: "eng", Text: "Test abstract"}),
 		).After(pBeforeTx.MutationID).Do(ctx)
-		if err != nil {
+		if err == nil {
+			log.Fatal("conflict detection failed")
+		} else {
 			log.Printf("invalid AfterMutation gives conflict error: %s", err)
 		}
 
 		// TEST Append & Get
+
 		anyP, err := datasetStore.Append(datasetID,
 			DatasetAbstractAdder.New(models.Text{Lang: "eng", Text: "Another test abstract"}),
 		).Get(ctx)
