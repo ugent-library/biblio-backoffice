@@ -109,14 +109,12 @@ func (s *store[T]) Tx(tx pgx.Tx) *store[T] {
 	}
 }
 
-func (s *store[T]) Append(entityID string, mutations ...Mutation[T]) *Append[T] {
-	return &Append[T]{
-		conn:        s.conn,
-		idGenerator: s.idGenerator,
-		entityID:    entityID,
-		entityType:  s.entityType,
-		mutations:   mutations,
-	}
+func (s *store[T]) AppendAfter(ctx context.Context, entityID, mutationID string, mutations ...Mutation[T]) (Projection[T], error) {
+	return s.append(ctx, entityID, mutationID, mutations)
+}
+
+func (s *store[T]) Append(ctx context.Context, entityID string, mutations ...Mutation[T]) (Projection[T], error) {
+	return s.append(ctx, entityID, "", mutations)
 }
 
 func (s *store[T]) Get(ctx context.Context, id string) (Projection[T], error) {
@@ -219,6 +217,144 @@ func (s *store[T]) GetAll(ctx context.Context) (Cursor[T], error) {
 	}
 
 	return c, nil
+}
+
+func (s *store[T]) append(ctx context.Context, entityID, expectedMutID string, mutations []Mutation[T]) (Projection[T], error) {
+	//--- projection to return
+
+	p := Projection[T]{
+		ID: entityID,
+	}
+
+	//--- check args
+
+	if len(mutations) == 0 {
+		return p, fmt.Errorf("mutantdb: no mutations to append")
+	}
+
+	//--- start tx
+
+	tx, err := s.conn.Begin(ctx)
+	if err != nil {
+		return p, fmt.Errorf("mutantdb: failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback(ctx)
+
+	//--- tmp vars
+
+	var (
+		newEntity           bool
+		rawEntityData       json.RawMessage
+		entityData          T
+		firstMutDateCreated time.Time
+		lastMutID           string
+		lastMutDateCreated  time.Time
+	)
+
+	//--- get current projection data
+
+	err = tx.QueryRow(ctx,
+		`select mutation_id, entity_data, date_created from projections where entity_id = $1 and entity_type = $2 limit 1`,
+		entityID, s.entityType.Name(),
+	).Scan(&lastMutID, &rawEntityData, &firstMutDateCreated)
+
+	if err == pgx.ErrNoRows {
+		newEntity = true
+		entityData = s.entityType.New()
+	} else if err != nil {
+		return p, fmt.Errorf("mutantdb: failed to get projection: %w", err)
+	} else {
+		if err := json.Unmarshal(rawEntityData, &entityData); err != nil {
+			return p, fmt.Errorf("mutantdb: failed to deserialize entity data: %w", err)
+		}
+	}
+
+	//--- detect conflicts
+
+	if expectedMutID != "" && expectedMutID != lastMutID {
+		return p, &ErrConflict{
+			CurrentMutationID:  lastMutID,
+			ExpectedMutationID: expectedMutID,
+		}
+	}
+
+	//--- insert mutations
+
+	for _, mut := range mutations {
+		var rawMutData, rawMutMeta json.RawMessage
+
+		if mut.Data() != nil {
+			if rawMutData, err = json.Marshal(mut.Data()); err != nil {
+				return p, fmt.Errorf("mutantdb: failed to serialize mutation data: %w", err)
+			}
+		}
+		if mut.Meta() != nil {
+			if rawMutMeta, err = json.Marshal(mut.Meta()); err != nil {
+				return p, fmt.Errorf("mutantdb: failed to serialize mutation meta: %w", err)
+			}
+		}
+
+		// generate mutation id
+		lastMutID, err = s.idGenerator()
+		if err != nil {
+			return p, fmt.Errorf("mutantdb: failed to generate id: %w", err)
+		}
+
+		// TODO insert all mutations in one statement
+		if err = tx.QueryRow(ctx,
+			`insert into mutations (mutation_id, entity_id, entity_type, mutation_name, mutation_data, mutation_meta)
+		values ($1, $2, $3, $4, $5, $6)
+		returning date_created`,
+			lastMutID, entityID, s.entityType.Name(), mut.Name(), rawMutData, rawMutMeta,
+		).Scan(&lastMutDateCreated); err != nil {
+			return p, fmt.Errorf("mutantdb: failed to insert mutation: %w", err)
+		}
+	}
+
+	//--- apply mutations
+
+	for _, mut := range mutations {
+		if entityData, err = mut.Apply(entityData); err != nil {
+			return p, fmt.Errorf("mutantdb: failed to apply mutation %s: %w", mut.Name(), err)
+		}
+	}
+
+	//--- upsert projection
+
+	rawEntityData, err = json.Marshal(entityData)
+	if err != nil {
+		return p, fmt.Errorf("mutantdb: failed to serialize projection data: %w", err)
+	}
+
+	if newEntity {
+		sql := `insert into projections (entity_id, entity_type, mutation_id, entity_data, date_created, date_updated)
+		values ($1, $2, $3, $4, $5, $6)`
+		if _, err = tx.Exec(ctx, sql, entityID, s.entityType.Name(), lastMutID, rawEntityData,
+			lastMutDateCreated, lastMutDateCreated); err != nil {
+			return p, fmt.Errorf("mutantdb: failed to insert projection: %w", err)
+		}
+	} else {
+		sql := `update projections set mutation_id = $1, entity_data = $2, date_updated = $3 where entity_id = $4 and entity_type = $5`
+		if _, err = tx.Exec(ctx, sql, lastMutID, rawEntityData, lastMutDateCreated,
+			entityID, s.entityType.Name()); err != nil {
+			return p, fmt.Errorf("mutantdb: failed to update projection: %w", err)
+		}
+	}
+
+	//--- commit tx
+
+	if err = tx.Commit(ctx); err != nil {
+		return p, fmt.Errorf("mutantdb: failed to commit transaction: %w", err)
+	}
+
+	//--- return projection
+
+	p.Data = entityData
+	p.MutationID = lastMutID
+	p.DateCreated = firstMutDateCreated
+	p.DateUpdated = lastMutDateCreated
+
+	return p, nil
 }
 
 func generateUUID() (string, error) {
