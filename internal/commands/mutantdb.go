@@ -16,7 +16,7 @@ func init() {
 	rootCmd.AddCommand(testEventstoreCmd)
 }
 
-var DatasetType = mutantdb.NewType("Dataset", NewDataset)
+var DatasetType = mutantdb.NewType("Dataset", NewDataset).WithValidator(func(d *models.Dataset) error { return d.Validate() })
 var PublicationType = mutantdb.NewType("Publication", NewPublication)
 
 var DatasetReplacer = mutantdb.NewMutator("Replace", ReplaceDataset)
@@ -85,7 +85,7 @@ var testEventstoreCmd = &cobra.Command{
 
 		_, err = datasetStore.Append(ctx, datasetID,
 			DatasetReplacer.New(
-				&models.Dataset{Title: "Test dataset", Publisher: "Test publisher"},
+				&models.Dataset{Status: "private", Title: "Test dataset"},
 			),
 			DatasetAbstractAdder.New(
 				models.Text{Lang: "eng", Text: "Test abstract"},

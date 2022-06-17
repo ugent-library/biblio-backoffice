@@ -66,8 +66,8 @@ func (mm *mutatorMap[T]) Get(name string) Mutator[T] {
 
 type store[T any] struct {
 	conn        Conn
-	idGenerator func() (string, error)
 	entityType  *Type[T]
+	idGenerator func() (string, error)
 	mutators    *mutatorMap[T]
 }
 
@@ -278,6 +278,20 @@ func (s *store[T]) append(ctx context.Context, entityID, expectedMutID string, m
 		}
 	}
 
+	//--- apply mutations
+
+	for _, mut := range mutations {
+		if entityData, err = mut.Apply(entityData); err != nil {
+			return p, fmt.Errorf("mutantdb: failed to apply mutation %s: %w", mut.Name(), err)
+		}
+	}
+
+	//--- validate entity data
+
+	if err := s.entityType.Validate(entityData); err != nil {
+		return p, fmt.Errorf("mutantdb: invalid entity data: %w", err)
+	}
+
 	//--- insert mutations
 
 	for _, mut := range mutations {
@@ -308,14 +322,6 @@ func (s *store[T]) append(ctx context.Context, entityID, expectedMutID string, m
 			lastMutID, entityID, s.entityType.Name(), mut.Name(), rawMutData, rawMutMeta,
 		).Scan(&lastMutDateCreated); err != nil {
 			return p, fmt.Errorf("mutantdb: failed to insert mutation: %w", err)
-		}
-	}
-
-	//--- apply mutations
-
-	for _, mut := range mutations {
-		if entityData, err = mut.Apply(entityData); err != nil {
-			return p, fmt.Errorf("mutantdb: failed to apply mutation %s: %w", mut.Name(), err)
 		}
 	}
 

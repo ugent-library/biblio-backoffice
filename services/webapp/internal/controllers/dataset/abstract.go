@@ -54,7 +54,7 @@ func (c *Controller) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx 
 	if validationErrs := ctx.Dataset.Validate(); validationErrs != nil {
 		ctx.RenderYield(w, "dataset/refresh_add_abstract", YieldAddAbstract{
 			Dataset: ctx.Dataset,
-			Form:    abstractForm(ctx, b, validationErrs),
+			Form:    abstractForm(ctx, b, validationErrs.(validation.Errors)),
 		})
 		return
 	}
@@ -110,7 +110,7 @@ func (c *Controller) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx 
 		ctx.RenderYield(w, "dataset/refresh_edit_abstract", YieldEditAbstract{
 			Dataset:  ctx.Dataset,
 			Position: b.Position,
-			Form:     abstractForm(ctx, b, validationErrs),
+			Form:     abstractForm(ctx, b, validationErrs.(validation.Errors)),
 		})
 		return
 	}

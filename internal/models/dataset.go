@@ -191,14 +191,16 @@ func (d *Dataset) ResolveDOI() string {
 	return ""
 }
 
-func (d *Dataset) Validate() (errs validation.Errors) {
-	if d.ID == "" {
-		errs = append(errs, &validation.Error{
-			Pointer: "/id",
-			Code:    "required",
-			Field:   "id",
-		})
-	}
+func (d *Dataset) Validate() error {
+	var errs validation.Errors
+
+	// if d.ID == "" {
+	// 	errs = append(errs, &validation.Error{
+	// 		Pointer: "/id",
+	// 		Code:    "required",
+	// 		Field:   "id",
+	// 	})
+	// }
 	if d.Status == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/status",
@@ -403,7 +405,11 @@ func (d *Dataset) Validate() (errs validation.Errors) {
 		}
 	}
 
-	return
+	// TODO: why is the nil slice validationErrors(nil) != nil in mutantdb validation?
+	if len(errs) > 0 {
+		return errs
+	}
+	return nil
 }
 
 func (d *Dataset) Vacuum() {

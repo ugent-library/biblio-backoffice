@@ -70,6 +70,17 @@ type Mutation[T any] interface {
 	Apply(T) (T, error)
 }
 
+// Apply is a convenience function that applies mutations to a value.
+func Apply[T any](d T, mutations ...Mutation[T]) (T, error) {
+	for _, m := range mutations {
+		d, err := m.Apply(d)
+		if err != nil {
+			return d, err
+		}
+	}
+	return d, nil
+}
+
 type mutation[T, M any] struct {
 	data    M
 	meta    Meta
