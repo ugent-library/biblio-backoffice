@@ -1,3 +1,4 @@
+{{with .Wrapped}}
 <!DOCTYPE html>
 <html class="u-maximize-height" dir="ltr" lang="en">
 
@@ -7,30 +8,30 @@
     <meta name="robots" content="noindex">
     <link rel="stylesheet" href="{{assetPath "/css/app.css"}}">
     <link rel="icon" href="{{assetPath "/favicon.ico"}}">
-    <title>{{.D.PageTitle}}</title>
+    <title>{{.PageTitle}}</title>
     <meta name="htmx-config" content='{"useTemplateFragments":true}'>
-    <meta name="csrf-token" content='{{.CSRFToken}}'>
+    <meta name="csrf-token" content='{{.Ctx.CSRFToken}}'>
 </head>
 
 <body class="u-maximize-height overflow-hidden u-scroll-wrapper">
     <header>
-        {{if eq .Mode "development"}}
-        <div class="alert alert-warning" role="alert">
+        {{if eq appMode "development"}}
+        <div class="alert alert-warning mb-0" role="alert">
             <strong>Warning!</strong>&nbsp;This is the&nbsp;<strong>development</strong>&nbsp;version of the Biblio
             backend. Features may not work correctly and data entered here will
             not be retained.
         </div>
-        {{else if eq .Mode "staging"}}
-        <div class="alert alert-warning" role="alert">
+        {{else if eq appMode "staging"}}
+        <div class="alert alert-warning mb-0" role="alert">
             <strong>Warning!</strong>&nbsp;This is the&nbsp;<strong>test</strong>&nbsp;version of the Biblio
             backend. Data entered here will not be retained.
         </div>
         {{end}}
-        {{with .OriginalUser}}
-        <div class="alert alert-danger" role="alert">
+        {{with .Ctx.OriginalUser}}
+        <div class="alert alert-danger mb-0" role="alert">
             <form class="form-inline" action="{{pathFor "user_impersonate_remove"}}" method="POST">
-                {{$.CSRFTag}}
-                <label class="my-1 mr-2 font-weight-bold">Viewing the perspective of {{$.User.FullName}}.</label>
+                {{$.Ctx.CSRFTag}}
+                <label class="my-1 mr-2 font-weight-bold">Viewing the perspective of {{$.Ctx.User.FullName}}.</label>
                 <button type="submit" class="btn btn-danger my-1">return to {{.FullName}}</button>.
             </form>
         </div>
@@ -43,13 +44,7 @@
                     </div>
                 </div>
                 <div class="bc-toolbar-right">
-                    {{if .User}}
-                    <!-- <div class="bc-toolbar-item">
-                        <button class="btn btn-link btn-icon-only btn-link-muted mr-4">
-                            <i class="if if-notification"></i>
-                            <div class="sr-only">Notifications</div>
-                        </button>
-                    </div> -->
+                    {{if .Ctx.User}}
                     <div class="bc-toolbar-item">
                         <div class="dropdown">
                             <a class="dropdown-toggle d-flex align-items-center text-body" type="button"
@@ -58,11 +53,11 @@
                                     <div class="bc-avatar bc-avatar-icon bc-avatar">
                                         <i class="if if-user"></i>
                                     </div>
-                                    <div class="bc-avatar-text font-weight-bold">{{.User.FullName}}</div>
+                                    <div class="bc-avatar-text font-weight-bold">{{.Ctx.User.FullName}}</div>
                                 </div>
                             </a>
                             <div class="dropdown-menu">
-                                {{if .User.CanImpersonateUser}}
+                                {{if .Ctx.User.CanImpersonateUser}}
                                 <a class="dropdown-item" href="#"
                                     hx-get="{{pathFor "user_impersonate_choose"}}"
                                     hx-target="#user-impersonate-modal"
@@ -111,21 +106,20 @@
                     <img src="{{assetPath "/images/logo-ugent-white.svg"}}" alt="Logo UGent" height="48px" width="auto">
                 </div>
             </div>
-            {{yield}}
+            {{$.WrappedHTML}}
         </div>
     </main>
 
-    <div id="user-impersonate-modal" class="modals"></div>
-
     <div id="modals"></div>
 
-    <div id="flash-messages">
-        {{range .Flash}}
+    {{/*<div id="flash-messages">
+        {{range .Ctx.Flash}}
         {{template "layouts/_flash_message" .}}
         {{end}}
-    </div>
+    </div>*/}}
 
     <script type="application/javascript" src="{{assetPath "/js/app.js"}}"></script>
 </body>
 
 </html>
+{{end}}

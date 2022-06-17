@@ -28,16 +28,50 @@ func Templates() *template.Template {
 	return templates
 }
 
-func Render(w http.ResponseWriter, name string, data interface{}) {
+func Render(w http.ResponseWriter, tmpl string, data any) {
 	w.Header().Set("Content-Type", "text/html")
 
 	var buf bytes.Buffer
-	if err := Templates().ExecuteTemplate(&buf, name, data); err != nil {
+
+	if err := Templates().ExecuteTemplate(&buf, tmpl, data); err != nil {
 		log.Println(err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
+
 	io.Copy(w, &buf)
+
+}
+
+func Wrap(w http.ResponseWriter, wrapperTmpl, tmpl string, data any) {
+	w.Header().Set("Content-Type", "text/html")
+
+	var (
+		buf        strings.Builder
+		wrapperBuf bytes.Buffer
+	)
+
+	if err := Templates().ExecuteTemplate(&buf, tmpl, data); err != nil {
+		log.Println(err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	wrapperData := struct {
+		Wrapped     any
+		WrappedHTML template.HTML
+	}{
+		Wrapped:     data,
+		WrappedHTML: template.HTML(buf.String()),
+	}
+
+	if err := Templates().ExecuteTemplate(&wrapperBuf, wrapperTmpl, wrapperData); err != nil {
+		log.Println(err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	io.Copy(w, &wrapperBuf)
 }
 
 func parseTemplates(rootDir, ext string, funcMaps []template.FuncMap) (*template.Template, error) {

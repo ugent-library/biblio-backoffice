@@ -424,7 +424,7 @@ func Register(services *backends.Services, base controllers.Base, oidcClient *oi
 	datasetPublishRouter.Use(middleware.RequireCanPublishDataset)
 	datasetDeleteRouter := datasetRouter.PathPrefix("").Subrouter()
 	datasetDeleteRouter.Use(middleware.RequireCanDeleteDataset)
-	datasetRouter.HandleFunc("", datasetsController.Show).
+	datasetRouter.HandleFunc("", datasetC.WithViewContext(datasetC.Show)).
 		Methods("GET").
 		Name("dataset")
 	datasetRouter.HandleFunc("/delete", datasetsController.ConfirmDelete).

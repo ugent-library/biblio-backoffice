@@ -1,31 +1,36 @@
 package datasets
 
 import (
+	"html/template"
 	"net/http"
 
+	"github.com/gorilla/csrf"
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/locale"
 	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/biblio-backend/internal/render"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/context"
 )
 
-type EditContext struct {
-	Locale  *locale.Locale
+// TODO make base context
+type ViewContext struct {
+	// base context
+	Locale       *locale.Locale
+	User         *models.User
+	OriginalUser *models.User
+	CSRFToken    string
+	CSRFTag      template.HTML
+	// specific to context
 	Dataset *models.Dataset
-	CanEdit bool
 }
-
-func (c EditContext) RenderYield(w http.ResponseWriter, tmpl string, yield interface{}) {
-	render.Render(w, tmpl, struct {
-		Locale  *locale.Locale
-		CanEdit bool
-		Yield   interface{}
-	}{
-		Locale:  c.Locale,
-		CanEdit: c.CanEdit,
-		Yield:   yield,
-	})
+type EditContext struct {
+	// base context
+	Locale       *locale.Locale
+	User         *models.User
+	OriginalUser *models.User
+	CSRFToken    string
+	CSRFTag      template.HTML
+	// specific to context
+	Dataset *models.Dataset
 }
 
 type Controller struct {
@@ -38,14 +43,35 @@ func NewController(store backends.Repository) *Controller {
 	}
 }
 
+func (c *Controller) WithViewContext(fn func(http.ResponseWriter, *http.Request, ViewContext)) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		user := context.GetUser(r.Context())
+		dataset := context.GetDataset(r.Context())
+		fn(w, r, ViewContext{
+			// base context
+			Locale:       locale.Get(r.Context()),
+			User:         user,
+			OriginalUser: context.GetOriginalUser(r.Context()),
+			CSRFToken:    csrf.Token(r),
+			CSRFTag:      csrf.TemplateField(r),
+			// specific to context
+			Dataset: dataset,
+		})
+	}
+}
 func (c *Controller) WithEditContext(fn func(http.ResponseWriter, *http.Request, EditContext)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user := context.GetUser(r.Context())
 		dataset := context.GetDataset(r.Context())
 		fn(w, r, EditContext{
-			Locale:  locale.Get(r.Context()),
+			// base context
+			Locale:       locale.Get(r.Context()),
+			User:         user,
+			OriginalUser: context.GetOriginalUser(r.Context()),
+			CSRFToken:    csrf.Token(r),
+			CSRFTag:      csrf.TemplateField(r),
+			// specific to context
 			Dataset: dataset,
-			CanEdit: user.CanEditDataset(dataset),
 		})
 	}
 }

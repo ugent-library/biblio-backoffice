@@ -20,26 +20,28 @@ type BindAbstract struct {
 }
 
 type YieldAbstracts struct {
-	Dataset *models.Dataset
+	Ctx EditContext
 }
 type YieldAddAbstract struct {
-	Dataset *models.Dataset
-	Form    *render.Form
+	Ctx  EditContext
+	Form *render.Form
 }
 type YieldEditAbstract struct {
-	Dataset  *models.Dataset
+	Ctx      EditContext
 	Position int
 	Form     *render.Form
 }
 type YieldDeleteAbstract struct {
-	Dataset  *models.Dataset
+	Ctx      EditContext
 	Position int
 }
 
 func (c *Controller) AddAbstract(w http.ResponseWriter, r *http.Request, ctx EditContext) {
-	ctx.RenderYield(w, "dataset/add_abstract", YieldAddAbstract{
-		Dataset: ctx.Dataset,
-		Form:    abstractForm(ctx, BindAbstract{Position: len(ctx.Dataset.Abstract)}, nil),
+	form := abstractForm(ctx, BindAbstract{Position: len(ctx.Dataset.Abstract)}, nil)
+
+	render.Render(w, "dataset/add_abstract", YieldAddAbstract{
+		Ctx:  ctx,
+		Form: form,
 	})
 }
 
@@ -52,9 +54,9 @@ func (c *Controller) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx 
 	ctx.Dataset.Abstract = append(ctx.Dataset.Abstract, models.Text{Text: b.Text, Lang: b.Lang})
 
 	if validationErrs := ctx.Dataset.Validate(); validationErrs != nil {
-		ctx.RenderYield(w, "dataset/refresh_add_abstract", YieldAddAbstract{
-			Dataset: ctx.Dataset,
-			Form:    abstractForm(ctx, b, validationErrs.(validation.Errors)),
+		render.Render(w, "dataset/refresh_add_abstract", YieldAddAbstract{
+			Ctx:  ctx,
+			Form: abstractForm(ctx, b, validationErrs.(validation.Errors)),
 		})
 		return
 	}
@@ -68,8 +70,8 @@ func (c *Controller) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx 
 	}
 
 	if !render.InternalServerError(w, err) {
-		ctx.RenderYield(w, "dataset/refresh_abstracts", YieldAbstracts{
-			Dataset: ctx.Dataset,
+		render.Render(w, "dataset/refresh_abstracts", YieldAbstracts{
+			Ctx: ctx,
 		})
 	}
 }
@@ -88,8 +90,8 @@ func (c *Controller) EditAbstract(w http.ResponseWriter, r *http.Request, ctx Ed
 	b.Lang = a.Lang
 	b.Text = a.Text
 
-	ctx.RenderYield(w, "dataset/edit_abstract", YieldEditAbstract{
-		Dataset:  ctx.Dataset,
+	render.Render(w, "dataset/edit_abstract", YieldEditAbstract{
+		Ctx:      ctx,
 		Position: b.Position,
 		Form:     abstractForm(ctx, b, nil),
 	})
@@ -107,10 +109,12 @@ func (c *Controller) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx 
 	}
 
 	if validationErrs := ctx.Dataset.Validate(); validationErrs != nil {
-		ctx.RenderYield(w, "dataset/refresh_edit_abstract", YieldEditAbstract{
-			Dataset:  ctx.Dataset,
+		form := abstractForm(ctx, b, validationErrs.(validation.Errors))
+
+		render.Render(w, "dataset/refresh_edit_abstract", YieldEditAbstract{
+			Ctx:      ctx,
 			Position: b.Position,
-			Form:     abstractForm(ctx, b, validationErrs.(validation.Errors)),
+			Form:     form,
 		})
 		return
 	}
@@ -124,8 +128,8 @@ func (c *Controller) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx 
 	}
 
 	if !render.InternalServerError(w, err) {
-		ctx.RenderYield(w, "dataset/refresh_abstracts", YieldAbstracts{
-			Dataset: ctx.Dataset,
+		render.Render(w, "dataset/refresh_abstracts", YieldAbstracts{
+			Ctx: ctx,
 		})
 	}
 }
@@ -140,8 +144,8 @@ func (c *Controller) ConfirmDeleteAbstract(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	ctx.RenderYield(w, "dataset/confirm_delete_abstract", YieldDeleteAbstract{
-		Dataset:  ctx.Dataset,
+	render.Render(w, "dataset/confirm_delete_abstract", YieldDeleteAbstract{
+		Ctx:      ctx,
 		Position: b.Position,
 	})
 }
@@ -165,8 +169,8 @@ func (c *Controller) DeleteAbstract(w http.ResponseWriter, r *http.Request, ctx 
 	}
 
 	if !render.InternalServerError(w, err) {
-		ctx.RenderYield(w, "dataset/refresh_abstracts", YieldAbstracts{
-			Dataset: ctx.Dataset,
+		render.Render(w, "dataset/refresh_abstracts", YieldAbstracts{
+			Ctx: ctx,
 		})
 	}
 }

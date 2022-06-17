@@ -137,6 +137,11 @@ func buildRouter(services *backends.Services) *mux.Router {
 		}),
 		urls.FuncMap(router),
 		helpers.FuncMap(),
+		{
+			"appMode": func() string { // TODO eliminate this
+				return viper.GetString("mode")
+			},
+		},
 	}
 
 	r := unrolledrender.New(unrolledrender.Options{
