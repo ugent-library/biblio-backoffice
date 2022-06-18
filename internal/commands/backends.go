@@ -59,7 +59,7 @@ func newServices() *backends.Services {
 		FileStore:                 newFileStore(),
 		ORCIDSandbox:              orcidConfig.Sandbox,
 		ORCIDClient:               orcidClient,
-		Store:                     newRepository(),
+		Repository:                newRepository(),
 		DatasetSearchService:      newDatasetSearchService(),
 		PublicationSearchService:  newPublicationSearchService(),
 		OrganizationService:       biblioClient,

@@ -41,7 +41,7 @@ var publicationGetCmd = &cobra.Command{
 			if !ok {
 				log.Fatalf("Unknown format %s", fmt)
 			}
-			d, err := e.Store.GetPublication(args[0])
+			d, err := e.Repository.GetPublication(args[0])
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -55,7 +55,7 @@ var publicationGetCmd = &cobra.Command{
 		}
 
 		enc := json.NewEncoder(os.Stdout)
-		d, err := e.Store.GetPublication(args[0])
+		d, err := e.Repository.GetPublication(args[0])
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -118,7 +118,7 @@ var publicationAddCmd = &cobra.Command{
 				log.Printf("Validation failed for publication at line %d : %v", lineNo, err)
 				continue
 			}
-			if err := e.Store.SavePublication(&p); err != nil {
+			if err := e.Repository.SavePublication(&p); err != nil {
 				log.Fatalf("Unable to store publication from line %d : %v", lineNo, err)
 			}
 

@@ -6,8 +6,8 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/biblio-backend/services"
-	"github.com/ugent-library/biblio-backend/services/webapp"
+	"github.com/ugent-library/biblio-backend/internal/services"
+	"github.com/ugent-library/biblio-backend/internal/services/webapp"
 )
 
 func init() {
@@ -37,12 +37,12 @@ var serverStartCmd = &cobra.Command{
 	Short: "start the http server",
 	Run: func(cmd *cobra.Command, args []string) {
 		e := Services()
-		e.Store.AddPublicationListener(func(p *models.Publication) {
+		e.Repository.AddPublicationListener(func(p *models.Publication) {
 			if err := e.PublicationSearchService.Index(p); err != nil {
 				log.Println(fmt.Errorf("error indexing publication %s: %w", p.ID, err))
 			}
 		})
-		e.Store.AddDatasetListener(func(d *models.Dataset) {
+		e.Repository.AddDatasetListener(func(d *models.Dataset) {
 			if err := e.DatasetSearchService.Index(d); err != nil {
 				log.Println(fmt.Errorf("error indexing dataset %s: %w", d.ID, err))
 			}

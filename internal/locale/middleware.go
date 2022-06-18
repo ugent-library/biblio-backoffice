@@ -4,8 +4,7 @@ import (
 	"net/http"
 )
 
-// Detect is a middleware that sets the locale based on the Accept-Language header
-// if not already set.
+// DEPRECATED
 func Detect(l *Localizer) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

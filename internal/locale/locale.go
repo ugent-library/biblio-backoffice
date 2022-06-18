@@ -12,7 +12,7 @@ type Locale struct {
 	printer       *message.Printer
 }
 
-// TODO depricate this
+// DEPRECATED
 func (l *Locale) TranslateScope(scope, key string, args ...interface{}) string {
 	if scope != "" {
 		key = scope + "." + key
@@ -20,7 +20,7 @@ func (l *Locale) TranslateScope(scope, key string, args ...interface{}) string {
 	return l.printer.Sprintf(key, args...)
 }
 
-// TODO depricate this
+// DEPRECATED
 func (l *Locale) TS(scope, key string, args ...interface{}) string {
 	return l.TranslateScope(scope, key, args...)
 }

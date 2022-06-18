@@ -7,14 +7,14 @@
         </tr>
     </thead>
     <tbody>
-    {{range $i, $a := .Ctx.Dataset.Abstract}}
+    {{range $i, $a := .Dataset.Abstract}}
         <tr class="row-{{$i}}">
             <td class="pl-6">
                 <p>{{$a.Text}}</p>
             </td>
-            <td>{{$.Ctx.Locale.LanguageName $a.Lang}}</td>
+            <td>{{$.Locale.LanguageName $a.Lang}}</td>
             <td class="pr-6">
-                {{if $.Ctx.User.CanEditDataset $.Ctx.Dataset}}
+                {{if $.User.CanEditDataset $.Dataset}}
                 <div class="c-button-toolbar">
                     <div class="dropdown">
                         <button class="btn btn-link btn-icon-only btn-link-muted" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -22,7 +22,7 @@
                         </button>
                         <div class="dropdown-menu">
                             <button class="dropdown-item" type="button"
-                                hx-get="{{pathFor "dataset_edit_abstract" "id" $.Ctx.Dataset.ID "position" ($i|toString)}}"
+                                hx-get="{{pathFor "dataset_edit_abstract" "id" $.Dataset.ID "position" ($i|toString)}}"
                                 hx-target="#modals"
                             >
                                 <i class="if if-edit"></i>
@@ -30,7 +30,7 @@
                             </button>
 
                             <button class="dropdown-item" type="button"
-                                hx-get="{{pathFor "dataset_confirm_delete_abstract" "id" $.Ctx.Dataset.ID "position" ($i|toString)}}"
+                                hx-get="{{pathFor "dataset_confirm_delete_abstract" "id" $.Dataset.ID "position" ($i|toString)}}"
                                 hx-target="#modals"
                             >
                                 <i class="if if-delete"></i>

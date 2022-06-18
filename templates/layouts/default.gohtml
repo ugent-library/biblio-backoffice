@@ -10,7 +10,7 @@
     <link rel="icon" href="{{assetPath "/favicon.ico"}}">
     <title>{{.PageTitle}}</title>
     <meta name="htmx-config" content='{"useTemplateFragments":true}'>
-    <meta name="csrf-token" content='{{.Ctx.CSRFToken}}'>
+    <meta name="csrf-token" content='{{.CSRFToken}}'>
 </head>
 
 <body class="u-maximize-height overflow-hidden u-scroll-wrapper">
@@ -27,11 +27,11 @@
             backend. Data entered here will not be retained.
         </div>
         {{end}}
-        {{with .Ctx.OriginalUser}}
+        {{with .OriginalUser}}
         <div class="alert alert-danger mb-0" role="alert">
             <form class="form-inline" action="{{pathFor "user_impersonate_remove"}}" method="POST">
-                {{$.Ctx.CSRFTag}}
-                <label class="my-1 mr-2 font-weight-bold">Viewing the perspective of {{$.Ctx.User.FullName}}.</label>
+                {{$.CSRFTag}}
+                <label class="my-1 mr-2 font-weight-bold">Viewing the perspective of {{$.User.FullName}}.</label>
                 <button type="submit" class="btn btn-danger my-1">return to {{.FullName}}</button>.
             </form>
         </div>
@@ -44,7 +44,7 @@
                     </div>
                 </div>
                 <div class="bc-toolbar-right">
-                    {{if .Ctx.User}}
+                    {{if .User}}
                     <div class="bc-toolbar-item">
                         <div class="dropdown">
                             <a class="dropdown-toggle d-flex align-items-center text-body" type="button"
@@ -53,11 +53,11 @@
                                     <div class="bc-avatar bc-avatar-icon bc-avatar">
                                         <i class="if if-user"></i>
                                     </div>
-                                    <div class="bc-avatar-text font-weight-bold">{{.Ctx.User.FullName}}</div>
+                                    <div class="bc-avatar-text font-weight-bold">{{.User.FullName}}</div>
                                 </div>
                             </a>
                             <div class="dropdown-menu">
-                                {{if .Ctx.User.CanImpersonateUser}}
+                                {{if .User.CanImpersonateUser}}
                                 <a class="dropdown-item" href="#"
                                     hx-get="{{pathFor "user_impersonate_choose"}}"
                                     hx-target="#user-impersonate-modal"
@@ -113,7 +113,7 @@
     <div id="modals"></div>
 
     {{/*<div id="flash-messages">
-        {{range .Ctx.Flash}}
+        {{range .Flash}}
         {{template "layouts/_flash_message" .}}
         {{end}}
     </div>*/}}

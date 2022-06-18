@@ -13,7 +13,7 @@ import (
 type Services struct {
 	ORCIDSandbox             bool
 	ORCIDClient              *orcid.MemberClient
-	Store                    Repository
+	Repository               Repository
 	FileStore                *filestore.Store
 	DatasetSearchService     DatasetSearchService
 	PublicationSearchService PublicationSearchService

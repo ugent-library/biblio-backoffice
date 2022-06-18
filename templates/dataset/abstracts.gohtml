@@ -5,9 +5,9 @@
                 <h1 class="bc-toolbar-title">Abstract</h1>
             </div>
             <div class="bc-toolbar-right">
-                {{if .Ctx.User.CanEditDataset .Ctx.Dataset}}
+                {{if .User.CanEditDataset .Dataset}}
                 <button class="btn btn-outline-primary" type="button"
-                    hx-get="{{pathFor "dataset_add_abstract" "id" .Ctx.Dataset.ID}}"
+                    hx-get="{{pathFor "dataset_add_abstract" "id" .Dataset.ID}}"
                     hx-target="#modals"
                 >
                     <i class="if if-add"></i>

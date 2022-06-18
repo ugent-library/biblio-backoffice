@@ -11,10 +11,10 @@
                     </div>
                 </div>
                 <div class="bc-toolbar-right">
-                    {{if .Ctx.User.CanPublishDataset .Ctx.Dataset}}
+                    {{if .User.CanPublishDataset .Dataset}}
                     <div class="bc-toolbar-item">
-                        <form action="{{pathFor "dataset_publish" "id" .Ctx.Dataset.ID}}" method="POST">
-                            {{.Ctx.CSRFTag}}
+                        <form action="{{pathFor "dataset_publish" "id" .Dataset.ID}}" method="POST">
+                            {{.CSRFTag}}
                             <button type="submit" class="btn btn-success">
                                 <div class="btn-text">Publish to Biblio</div>
                             </button>
@@ -29,9 +29,9 @@
                                 <i class="if if-more"></i>
                             </button>
                             <div class="dropdown-menu">
-                                {{if .Ctx.User.CanDeleteDataset .Ctx.Dataset}}
+                                {{if .User.CanDeleteDataset .Dataset}}
                                 <button class="dropdown-item"
-                                    hx-get="{{pathFor "dataset_confirm_delete" "id" .Ctx.Dataset.ID | query .SearchArgs}}"
+                                    hx-get="{{pathFor "dataset_confirm_delete" "id" .Dataset.ID | query .SearchArgs}}"
                                     hx-target="#modals"
                                 >
                                     <i class="if if-delete"></i>
@@ -47,7 +47,7 @@
         <div class="c-divider mt-0 mx-6"></div>
         <div id="publication-summary">
             <div class="mx-6">
-                <h4 class="h4">{{.Ctx.Dataset.Title}}</h4>
+                <h4 class="h4">{{.Dataset.Title}}</h4>
              </div>
         </div>
         <div class="c-divider mb-2 mx-6"></div>
