@@ -49,28 +49,28 @@ BIBLIO_BACKEND_CSRF_NAME
 Install node dependencies:
 
 ```
-cd services/webapp/
+cd internal/services/webapp/
 npm install
 ```
 
 Build assets:
 
 ```
-cd services/webapp/
+cd internal/services/webapp/
 npx mix
 ```
 
 Watch file changes in development:
 
 ```
-cd services/webapp/
+cd internal/services/webapp/
 npx mix watch
 ```
 
 Build production assets:
 
 ```
-cd services/webapp/
+cd internal/services/webapp/
 npx mix --production
 ```
 
