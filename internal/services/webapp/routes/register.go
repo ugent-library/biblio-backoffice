@@ -69,7 +69,9 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 
 	// NEW CONTROLLERS
 	base := handlers.Base{
-		Localizer: oldBase.Localizer,
+		SessionStore: oldBase.SessionStore,
+		SessionName:  oldBase.SessionName,
+		Localizer:    oldBase.Localizer,
 	}
 	datasetViewingHandler := &datasetviewing.Handler{
 		Base: base,
@@ -436,9 +438,22 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	datasetPublishRouter.Use(middleware.RequireCanPublishDataset)
 	datasetDeleteRouter := datasetRouter.PathPrefix("").Subrouter()
 	datasetDeleteRouter.Use(middleware.RequireCanDeleteDataset)
-	datasetRouter.HandleFunc("", datasetViewingHandler.Wrap(datasetViewingHandler.Show)).
+	datasetRouter.HandleFunc("",
+		datasetViewingHandler.Wrap(datasetViewingHandler.Show)).
 		Methods("GET").
 		Name("dataset")
+	datasetRouter.HandleFunc("/description",
+		datasetViewingHandler.Wrap(datasetViewingHandler.ShowDescription)).
+		Methods("GET").
+		Name("dataset_description")
+	datasetRouter.HandleFunc("/contributors",
+		datasetViewingHandler.Wrap(datasetViewingHandler.ShowContributors)).
+		Methods("GET").
+		Name("dataset_contributors")
+	datasetRouter.HandleFunc("/publications",
+		datasetViewingHandler.Wrap(datasetViewingHandler.ShowPublications)).
+		Methods("GET").
+		Name("dataset_publications")
 	datasetRouter.HandleFunc("/delete", datasetsController.ConfirmDelete).
 		Methods("GET").
 		Name("dataset_confirm_delete")

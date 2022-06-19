@@ -10,6 +10,11 @@ import (
 // https://www.alexedwards.net/blog/i18n-managing-translations
 // https://phrase.com/blog/posts/internationalization-i18n-go/#Manually_setting_the_translation_strings
 func init() {
+	message.SetString(language.English, "dataset.subnav.description", "Description")
+	message.SetString(language.English, "dataset.subnav.contributors", "Contributors")
+	message.SetString(language.English, "dataset.subnav.publications", "Publications")
+	message.SetString(language.English, "dataset.page.show.title", "Dataset - Biblio")
+
 	message.SetString(language.English, "confirmations.yes", "Yes")
 	message.SetString(language.English, "confirmations.no", "No")
 	message.SetString(language.English, "confirmations.dontknow", "Don't know")

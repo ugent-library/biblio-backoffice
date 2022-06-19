@@ -12,7 +12,14 @@ type Locale struct {
 	printer       *message.Printer
 }
 
-// DEPRECATED
+func (l *Locale) Translate(key string, args ...interface{}) string {
+	return l.printer.Sprintf(key, args...)
+}
+
+func (l *Locale) T(key string, args ...interface{}) string {
+	return l.printer.Sprintf(key, args...)
+}
+
 func (l *Locale) TranslateScope(scope, key string, args ...interface{}) string {
 	if scope != "" {
 		key = scope + "." + key
@@ -20,17 +27,8 @@ func (l *Locale) TranslateScope(scope, key string, args ...interface{}) string {
 	return l.printer.Sprintf(key, args...)
 }
 
-// DEPRECATED
 func (l *Locale) TS(scope, key string, args ...interface{}) string {
 	return l.TranslateScope(scope, key, args...)
-}
-
-func (l *Locale) Translate(key string, args ...interface{}) string {
-	return l.printer.Sprintf(key, args...)
-}
-
-func (l *Locale) T(key string, args ...interface{}) string {
-	return l.printer.Sprintf(key, args...)
 }
 
 func (l *Locale) LanguageName(code string) string {

@@ -77,41 +77,41 @@ func (c *Datasets) List(w http.ResponseWriter, r *http.Request) {
 	}))
 }
 
-func (c *Datasets) Show(w http.ResponseWriter, r *http.Request) {
-	dataset := context.GetDataset(r.Context())
+// func (c *Datasets) Show(w http.ResponseWriter, r *http.Request) {
+// 	dataset := context.GetDataset(r.Context())
 
-	datasetPubs, err := c.store.GetDatasetPublications(dataset)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+// 	datasetPubs, err := c.store.GetDatasetPublications(dataset)
+// 	if err != nil {
+// 		log.Println(err)
+// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+// 		return
+// 	}
 
-	searchArgs := models.NewSearchArgs()
-	if err := DecodeForm(searchArgs, r.URL.Query()); err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
+// 	searchArgs := models.NewSearchArgs()
+// 	if err := DecodeForm(searchArgs, r.URL.Query()); err != nil {
+// 		log.Println(err)
+// 		http.Error(w, err.Error(), http.StatusBadRequest)
+// 		return
+// 	}
 
-	c.Render.HTML(w, http.StatusOK, "dataset/show", c.ViewData(r, struct {
-		PageTitle           string
-		Dataset             *models.Dataset
-		DatasetPublications []*models.Publication
-		Show                *views.ShowBuilder
-		SearchArgs          *models.SearchArgs
-		ErrorsTitle         string
-		Errors              validation.Errors
-	}{
-		"Dataset - Biblio",
-		dataset,
-		datasetPubs,
-		views.NewShowBuilder(c.RenderPartial, locale.Get(r.Context())),
-		searchArgs,
-		"",
-		nil,
-	}))
-}
+// 	c.Render.HTML(w, http.StatusOK, "dataset/show", c.ViewData(r, struct {
+// 		PageTitle           string
+// 		Dataset             *models.Dataset
+// 		DatasetPublications []*models.Publication
+// 		Show                *views.ShowBuilder
+// 		SearchArgs          *models.SearchArgs
+// 		ErrorsTitle         string
+// 		Errors              validation.Errors
+// 	}{
+// 		"Dataset - Biblio",
+// 		dataset,
+// 		datasetPubs,
+// 		views.NewShowBuilder(c.RenderPartial, locale.Get(r.Context())),
+// 		searchArgs,
+// 		"",
+// 		nil,
+// 	}))
+// }
 
 func (c *Datasets) Publish(w http.ResponseWriter, r *http.Request) {
 	dataset := context.GetDataset(r.Context())

@@ -13,9 +13,10 @@ var formEncoder = form.NewEncoder()
 
 func FuncMap(r *mux.Router) template.FuncMap {
 	return template.FuncMap{
-		"urlFor":  urlFor(r),
-		"pathFor": pathFor(r),
-		"query":   query,
+		"urlFor":   urlFor(r),
+		"pathFor":  pathFor(r),
+		"query":    query,
+		"querySet": querySet,
 	}
 }
 
@@ -55,5 +56,12 @@ func query(v interface{}, u *url.URL) (*url.URL, error) {
 	}
 	u.RawQuery = q.Encode()
 
+	return u, nil
+}
+
+func querySet(k, v string, u *url.URL) (*url.URL, error) {
+	q := u.Query()
+	q.Set(k, v)
+	u.RawQuery = q.Encode()
 	return u, nil
 }
