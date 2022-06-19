@@ -2,7 +2,7 @@ package localize
 
 import (
 	"github.com/ugent-library/biblio-backend/internal/locale"
-	render "github.com/ugent-library/biblio-backend/internal/render"
+	"github.com/ugent-library/biblio-backend/internal/render/form"
 	"github.com/ugent-library/biblio-backend/internal/validation"
 	"github.com/ugent-library/biblio-backend/internal/vocabularies"
 )
@@ -23,11 +23,11 @@ func ValidationErrorAt(loc *locale.Locale, errs validation.Errors, ptr string) s
 	return loc.TranslateScope("validation", err.Code)
 }
 
-func LanguageSelectOptions(loc *locale.Locale) []render.SelectOption {
+func LanguageSelectOptions(loc *locale.Locale) []form.SelectOption {
 	codes := vocabularies.Map["language_codes"]
-	opts := make([]render.SelectOption, len(codes))
+	opts := make([]form.SelectOption, len(codes))
 	for i, code := range codes {
-		opts[i] = render.SelectOption{
+		opts[i] = form.SelectOption{
 			Value: code,
 			Label: loc.LanguageName(code),
 		}

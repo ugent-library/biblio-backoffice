@@ -9,6 +9,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/localize"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
+	"github.com/ugent-library/biblio-backend/internal/render/form"
 	"github.com/ugent-library/biblio-backend/internal/snapstore"
 	"github.com/ugent-library/biblio-backend/internal/validation"
 )
@@ -24,12 +25,12 @@ type YieldAbstracts struct {
 }
 type YieldAddAbstract struct {
 	Context
-	Form *render.Form
+	Form *form.Form
 }
 type YieldEditAbstract struct {
 	Context
 	Position int
-	Form     *render.Form
+	Form     *form.Form
 }
 type YieldDeleteAbstract struct {
 	Context
@@ -175,11 +176,12 @@ func (h *Handler) DeleteAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 	}
 }
 
-func abstractForm(ctx Context, b BindAbstract, errors validation.Errors) *render.Form {
-	return &render.Form{
+func abstractForm(ctx Context, b BindAbstract, errors validation.Errors) *form.Form {
+	return &form.Form{
+		Theme:  "default",
 		Errors: localize.ValidationErrors(ctx.Locale, errors),
-		Fields: []render.FormField{
-			&render.TextArea{
+		Fields: []form.Field{
+			&form.TextArea{
 				Name:        "text",
 				Value:       b.Text,
 				Label:       ctx.T("builder.abstract.text"),
@@ -188,7 +190,7 @@ func abstractForm(ctx Context, b BindAbstract, errors validation.Errors) *render
 				Placeholder: ctx.T("builder.abstract.text.placeholder"),
 				Error:       localize.ValidationErrorAt(ctx.Locale, errors, fmt.Sprintf("/abstract/%d/text", b.Position)),
 			},
-			&render.Select{
+			&form.Select{
 				Name:    "lang",
 				Value:   b.Lang,
 				Label:   ctx.T("builder.abstract.lang"),
