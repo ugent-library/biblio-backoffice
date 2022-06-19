@@ -1,4 +1,4 @@
-package render
+package flash
 
 import (
 	"html/template"
