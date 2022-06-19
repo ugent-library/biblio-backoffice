@@ -9,13 +9,17 @@
         {{ end }}
     </label>
     <div class="col-sm-9">
-        {{if .Values}}
+    {{if and .Values .List}}
         <ul class="list-unstyled">
         {{range .Values}}
             <li>{{.}}</li>
         {{end}}
         </ul>
-        {{else}}
+    {{else if .Values}}
+        {{range .Values}}
+            {{.}}
+        {{end}}
+    {{else}}
         <span>-</span>
         {{end}}
     </div>

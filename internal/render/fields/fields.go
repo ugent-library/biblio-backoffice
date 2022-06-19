@@ -32,20 +32,27 @@ func (f *Fields) RenderHTML() (template.HTML, error) {
 
 type Text struct {
 	Label         string
+	List          bool
 	Required      bool
 	Tooltip       string
+	Value         string
 	Values        []string
 	ValueTemplate string
 }
 
 type yieldHTML struct {
 	Label    string
+	List     bool
 	Required bool
 	Tooltip  string
 	Values   []template.HTML
 }
 
 func (f *Text) RenderHTML(fields *Fields, w io.Writer) error {
+	if f.Value != "" {
+		f.Values = []string{f.Value}
+	}
+
 	if f.ValueTemplate != "" {
 		return f.renderWithValueTemplate(fields, w)
 	}
@@ -56,6 +63,7 @@ func (f *Text) RenderHTML(fields *Fields, w io.Writer) error {
 func (f *Text) renderWithValueTemplate(fields *Fields, w io.Writer) error {
 	y := yieldHTML{
 		Label:    f.Label,
+		List:     f.List,
 		Required: f.Required,
 		Tooltip:  f.Tooltip,
 	}

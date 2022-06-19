@@ -102,14 +102,50 @@ func detailFields(ctx Context) []*fields.Fields {
 			Fields: []fields.Field{
 				&fields.Text{
 					Label:    ctx.T("builder.title"),
-					Values:   []string{ctx.Dataset.Title},
+					Value:    ctx.Dataset.Title,
 					Required: true,
 				},
 				&fields.Text{
 					Label:         ctx.T("builder.doi"),
-					Values:        []string{ctx.Dataset.DOI},
+					Value:         ctx.Dataset.DOI,
 					Required:      true,
 					ValueTemplate: "format/doi",
+				},
+				&fields.Text{
+					Label:         ctx.T("builder.url"),
+					Value:         ctx.Dataset.URL,
+					ValueTemplate: "format/link",
+				},
+			},
+		},
+		{
+			Theme: "default",
+			Fields: []fields.Field{
+				&fields.Text{
+					Label:    ctx.T("builder.publisher"),
+					Value:    ctx.Dataset.Publisher,
+					Required: true,
+				},
+				&fields.Text{
+					Label:    ctx.T("builder.year"),
+					Value:    ctx.Dataset.Year,
+					Required: true,
+				},
+			},
+		},
+		{
+			Theme: "default",
+			Fields: []fields.Field{
+				&fields.Text{
+					Label:    ctx.T("builder.format"),
+					Values:   ctx.Dataset.Format,
+					List:     true,
+					Required: true,
+				},
+				&fields.Text{
+					Label:         ctx.T("builder.keyword"),
+					Values:        ctx.Dataset.Keyword,
+					ValueTemplate: "format/badge",
 				},
 			},
 		},
