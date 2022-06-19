@@ -5,6 +5,7 @@ import (
 
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
+	"github.com/ugent-library/biblio-backend/internal/render/fields"
 )
 
 type YieldShow struct {
@@ -19,6 +20,7 @@ type YieldShowDescription struct {
 	Context
 	ActiveSubNav string
 	SearchArgs   *models.SearchArgs
+	DetailFields []*fields.Fields
 }
 
 type YieldShowContributors struct {
@@ -61,6 +63,7 @@ func (h *Handler) ShowDescription(w http.ResponseWriter, r *http.Request, ctx Co
 		Context:      ctx,
 		ActiveSubNav: "description",
 		SearchArgs:   searchArgs,
+		DetailFields: detailFields(ctx),
 	})
 }
 
@@ -90,4 +93,25 @@ func (h *Handler) ShowPublications(w http.ResponseWriter, r *http.Request, ctx C
 		SearchArgs:          searchArgs,
 		RelatedPublications: relatedPublications,
 	})
+}
+
+func detailFields(ctx Context) []*fields.Fields {
+	return []*fields.Fields{
+		{
+			Theme: "default",
+			Fields: []fields.Field{
+				&fields.Text{
+					Label:    ctx.T("builder.title"),
+					Values:   []string{ctx.Dataset.Title},
+					Required: true,
+				},
+				&fields.Text{
+					Label:         ctx.T("builder.doi"),
+					Values:        []string{ctx.Dataset.DOI},
+					Required:      true,
+					ValueTemplate: "format/doi",
+				},
+			},
+		},
+	}
 }

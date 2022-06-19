@@ -478,10 +478,10 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		Name("dataset_details")
 	datasetEditRouter.HandleFunc("/htmx/details/edit", datasetDetailsController.Edit).
 		Methods("GET").
-		Name("dataset_details_edit_form")
+		Name("dataset_edit_details")
 	datasetEditRouter.HandleFunc("/htmx/details/access_level", datasetDetailsController.AccessLevel).
 		Methods("PUT").
-		Name("dataset_details_edit_form_access_level")
+		Name("dataset_edit_details_access_level")
 	datasetEditRouter.HandleFunc("/htmx/details/edit", datasetDetailsController.Update).
 		Methods("PATCH").
 		Name("dataset_details_save_form")

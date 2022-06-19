@@ -2,6 +2,7 @@ package form
 
 import (
 	"html/template"
+	"io"
 	"path"
 	"strings"
 
@@ -15,7 +16,7 @@ type Form struct {
 }
 
 type Field interface {
-	FieldTemplate() string
+	RenderHTML(*Form, io.Writer) error
 }
 
 func (f *Form) RenderHTML() (template.HTML, error) {
@@ -28,8 +29,7 @@ func (f *Form) RenderHTML() (template.HTML, error) {
 	}
 
 	for _, field := range f.Fields {
-		tmpl := path.Join("form", f.Theme, field.FieldTemplate())
-		if err := render.Templates().ExecuteTemplate(&buf, tmpl, field); err != nil {
+		if err := field.RenderHTML(f, &buf); err != nil {
 			return "", err
 		}
 	}
@@ -49,8 +49,8 @@ type TextArea struct {
 	Value       string
 }
 
-func (f *TextArea) FieldTemplate() string {
-	return "text_area"
+func (f *TextArea) RenderHTML(form *Form, w io.Writer) error {
+	return render.Templates().ExecuteTemplate(w, path.Join("form", form.Theme, "text_area"), f)
 }
 
 type Select struct {
@@ -71,6 +71,6 @@ type SelectOption struct {
 	Value string
 }
 
-func (f *Select) FieldTemplate() string {
-	return "select"
+func (f *Select) RenderHTML(form *Form, w io.Writer) error {
+	return render.Templates().ExecuteTemplate(w, path.Join("form", form.Theme, "select"), f)
 }

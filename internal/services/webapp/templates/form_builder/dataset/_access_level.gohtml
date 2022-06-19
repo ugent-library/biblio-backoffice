@@ -10,10 +10,10 @@
     </label>
     <div class="col-{{ .Cols }}">
         <select class="custom-select form-control{{ if .Error }} is-invalid{{ end }}" name="{{ .Name }}"
-            hx-put="{{pathFor "dataset_details_edit_form_access_level" "id" .ID}}"
+            hx-put="{{pathFor "dataset_edit_details_access_level" "id" .ID}}"
             hx-indicator=".modal-dialog .spinner-border"
             hx-swap="innerHTML scroll:.modal-body:bottom"
-            hx-target="#dataset-details-modal"
+            hx-target="#modals"
             hx-include=".modal-body"
         >
             {{ if .EmptyChoice }}<option></option>{{end}}

@@ -9,9 +9,9 @@
                 {{if .User.CanEditDataset .D.Dataset}}
                 <div class="c-button-toolbar" data-panel-state="read">
                     <button class="btn btn-outline-primary"
-                        hx-get="{{pathFor "dataset_details_edit_form" "id" .D.Dataset.ID}}"
+                        hx-get="{{pathFor "dataset_edit_details" "id" .D.Dataset.ID}}"
                         hx-swap="innerHTML"
-                        hx-target="#dataset-details-modal"
+                        hx-target="#modals"
                     >
                         <i class="if if-edit"></i>
                         <div class="btn-text">Edit</div>
@@ -51,4 +51,4 @@
     </div>
 {{ if not .IsHTMXRequest }}</div>{{ end }}
 
-{{ if not .IsHTMXRequest }}<div id="dataset-details-modal" class="modals"></div>{{ end }}
+{{ if not .IsHTMXRequest }}<div id="modals" class="modals"></div>{{ end }}
