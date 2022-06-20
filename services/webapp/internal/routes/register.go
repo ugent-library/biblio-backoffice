@@ -9,7 +9,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/locale"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/controllers"
-	"github.com/ugent-library/biblio-backend/services/webapp/internal/controllers/dataset"
+	"github.com/ugent-library/biblio-backend/services/webapp/internal/controllers/datasets"
 	"github.com/ugent-library/biblio-backend/services/webapp/internal/middleware"
 	"github.com/ugent-library/go-oidc/oidc"
 )
@@ -65,7 +65,7 @@ func Register(services *backends.Services, base controllers.Base, oidcClient *oi
 	mediaTypesController := controllers.NewMediaTypes(base, services.MediaTypeSearchService)
 
 	// NEW CONTROLLERS
-	datasetC := dataset.NewController(services.Store, services.ProjectSearchService, services.ProjectService)
+	datasetC := datasets.NewController(services.Store, services.ProjectSearchService, services.ProjectService)
 
 	// TODO fix absolute url generation
 	// var schemes []string

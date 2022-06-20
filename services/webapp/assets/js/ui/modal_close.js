@@ -74,18 +74,6 @@ export default function() {
         modalClose();
     });
 
-    htmx.on("DatasetCreateAbstract", function(evt) {
-        modalClose();
-    });
-
-    htmx.on("DatasetUpdateAbstract", function(evt) {
-        modalClose();
-    });
-
-    htmx.on("DatasetRemoveAbstract", function(evt) {
-        modalClose();
-    });
-
     htmx.onLoad(function(el) {
         el.querySelectorAll(".modal-close").forEach( function (btn) {
             btn.addEventListener("click", modalClose);

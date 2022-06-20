@@ -407,14 +407,16 @@ func (p *Publication) InORCIDWorks(orcidID string) bool {
 	return false
 }
 
-func (d *Publication) Validate() (errs validation.Errors) {
-	if d.ID == "" {
-		errs = append(errs, &validation.Error{
-			Pointer: "/id",
-			Code:    "required",
-			Field:   "id",
-		})
-	}
+func (d *Publication) Validate() error {
+	var errs validation.Errors
+
+	// if d.ID == "" {
+	// 	errs = append(errs, &validation.Error{
+	// 		Pointer: "/id",
+	// 		Code:    "required",
+	// 		Field:   "id",
+	// 	})
+	// }
 	if d.Type == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/type",
@@ -583,7 +585,11 @@ func (d *Publication) Validate() (errs validation.Errors) {
 		errs = append(errs, d.validateIssueEditor()...)
 	}
 
-	return
+	// TODO: why is the nil slice validationErrors(nil) != nil in mutantdb validation?
+	if len(errs) > 0 {
+		return errs
+	}
+	return nil
 }
 
 func (p *Publication) validateBookEditor() (errs validation.Errors) {

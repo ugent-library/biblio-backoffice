@@ -1,15 +1,14 @@
-<div class="card card-collapsible mb-6">
+<div class="card mb-6">
     <div class="card-header">
-        <div class="collapse-trigger collapsed" data-toggle="collapse" data-target="#collapse3" aria-expanded="false" aria-controls="collapse3"></div>
         <div class="bc-toolbar">
             <div class="bc-toolbar-left">
-                <i class="if if-chevron-right mr-4 text-muted"></i>Abstract
+                <h1 class="bc-toolbar-title">Abstract</h1>
             </div>
             <div class="bc-toolbar-right">
                 {{if .CanEdit}}
                 <button class="btn btn-outline-primary" type="button"
                     hx-get="{{pathFor "dataset_add_abstract" "id" .Yield.Dataset.ID}}"
-                    hx-target="#abstract-modals"
+                    hx-target="#modals"
                 >
                     <i class="if if-add"></i>
                     <div class="btn-text">Add Abstract</div>
@@ -18,10 +17,7 @@
             </div>
         </div>
     </div>
-    <div class="collapse" id="collapse3">
-        <div class="card-body p-0" id="abstract-body">
-            {{template "dataset/abstracts_table" .}}
-        </div>
+    <div class="card-body p-0" id="abstract-body">
+        {{template "dataset/abstracts_table" .}}
     </div>
 </div>
-<div class="modals" id="abstract-modals"></div>

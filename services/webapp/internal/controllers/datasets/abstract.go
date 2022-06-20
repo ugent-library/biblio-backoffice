@@ -1,6 +1,7 @@
-package dataset
+package datasets
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -8,6 +9,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/localize"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
+	"github.com/ugent-library/biblio-backend/internal/snapstore"
 	"github.com/ugent-library/biblio-backend/internal/validation"
 )
 
@@ -52,13 +54,18 @@ func (c *Controller) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx 
 	if validationErrs := ctx.Dataset.Validate(); validationErrs != nil {
 		ctx.RenderYield(w, "dataset/refresh_add_abstract", YieldAddAbstract{
 			Dataset: ctx.Dataset,
-			Form:    abstractForm(ctx, b, validationErrs),
+			Form:    abstractForm(ctx, b, validationErrs.(validation.Errors)),
 		})
 		return
 	}
 
 	err := c.store.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
-	// TODO handle conflict errors
+
+	var conflict *snapstore.Conflict
+	if errors.As(err, &conflict) {
+		render.Render(w, "error_dialog", ctx.Locale.T("dataset.conflict_error"))
+		return
+	}
 
 	if !render.InternalServerError(w, err) {
 		ctx.RenderYield(w, "dataset/refresh_abstracts", YieldAbstracts{
@@ -103,13 +110,18 @@ func (c *Controller) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx 
 		ctx.RenderYield(w, "dataset/refresh_edit_abstract", YieldEditAbstract{
 			Dataset:  ctx.Dataset,
 			Position: b.Position,
-			Form:     abstractForm(ctx, b, validationErrs),
+			Form:     abstractForm(ctx, b, validationErrs.(validation.Errors)),
 		})
 		return
 	}
 
 	err := c.store.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
-	// TODO handle conflict errors
+
+	var conflict *snapstore.Conflict
+	if errors.As(err, &conflict) {
+		render.Render(w, "error_dialog", ctx.Locale.T("dataset.conflict_error"))
+		return
+	}
 
 	if !render.InternalServerError(w, err) {
 		ctx.RenderYield(w, "dataset/refresh_abstracts", YieldAbstracts{
@@ -145,7 +157,12 @@ func (c *Controller) DeleteAbstract(w http.ResponseWriter, r *http.Request, ctx 
 	}
 
 	err := c.store.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
-	// TODO handle conflict errors
+
+	var conflict *snapstore.Conflict
+	if errors.As(err, &conflict) {
+		render.Render(w, "error_dialog", ctx.Locale.T("dataset.conflict_error"))
+		return
+	}
 
 	if !render.InternalServerError(w, err) {
 		ctx.RenderYield(w, "dataset/refresh_abstracts", YieldAbstracts{

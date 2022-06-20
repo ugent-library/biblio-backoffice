@@ -611,4 +611,7 @@ func init() {
 
 	// NEW
 	message.SetString(language.English, "validation.dataset.abstract.text.required", "abstract text can't be empty")
+
+	message.SetString(language.English, "dataset.conflict_error", "Dataset has been modified by another user. Please reload the page.")
+
 }
