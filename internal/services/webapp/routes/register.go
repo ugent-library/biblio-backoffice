@@ -68,18 +68,18 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	mediaTypesController := controllers.NewMediaTypes(oldBase, services.MediaTypeSearchService)
 
 	// NEW HANDLERS
-	base := handlers.BaseHandler{
+	baseHandler := handlers.BaseHandler{
 		SessionStore: oldBase.SessionStore,
 		SessionName:  oldBase.SessionName,
 		Localizer:    oldBase.Localizer,
 		UserService:  services.UserService,
 	}
 	datasetViewingHandler := &datasetviewing.Handler{
-		BaseHandler: base,
+		BaseHandler: baseHandler,
 		Repo:        services.Repository,
 	}
 	datasetEditingHandler := &datasetediting.Handler{
-		BaseHandler: base,
+		BaseHandler: baseHandler,
 		Repo:        services.Repository,
 	}
 
