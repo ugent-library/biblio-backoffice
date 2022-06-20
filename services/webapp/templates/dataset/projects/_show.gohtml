@@ -1,16 +1,14 @@
-<div class="card card-collapsible mb-6">
+<div class="card mb-6">
     <div class="card-header">
-        <div class="collapse-trigger collapsed" data-toggle="collapse" data-target="#dataset-projects" aria-expanded="false" aria-controls="dataset-projects"></div>
         <div class="bc-toolbar">
             <div class="bc-toolbar-left">
-                <i class="if if-chevron-right mr-4 text-muted"></i>Projects
+                <h1 class="bc-toolbar-title">Projects</h1>
             </div>
             <div class="bc-toolbar-right">
                 {{if .User.CanEditDataset .D.Dataset}}
                 <button class="btn btn-outline-primary" type="button"
                     hx-get="{{pathFor "dataset_choose_project" "id" .D.Dataset.ID }}"
-                    hx-swap="innerHTML"
-                    hx-target="#project-modals"
+                    hx-target="#modals"
                 >
                     <i class="if if-add"></i>
                     <div class="btn-text">Add Project</div>
@@ -19,14 +17,12 @@
             </div>
         </div>
     </div>
-    <div class="collapse" id="dataset-projects">
-        <div class="card-body p-0" id="project-body">
-            <table class="table" id="projects-table">
-                <tbody>
-                    {{ template "dataset/projects/_table_body" . }}
-                </tbody>
-            </table>
-        </div>
+    <div class="card-body p-0" id="project-body">
+        <table class="table" id="projects-table">
+            <tbody>
+                {{ template "dataset/projects/_table_body" . }}
+            </tbody>
+        </table>
     </div>
 </div>
 <div id="project-modals" class="modals"></div>
