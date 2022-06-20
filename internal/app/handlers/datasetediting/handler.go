@@ -12,7 +12,9 @@ import (
 
 type Handler struct {
 	handlers.BaseHandler
-	Repo backends.Repository
+	Repository           backends.Repository
+	ProjectSearchService backends.ProjectSearchService
+	ProjectService       backends.ProjectService
 }
 
 type Context struct {
@@ -27,7 +29,7 @@ func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) htt
 			return
 		}
 
-		d, err := h.Repo.GetDataset(bind.PathValues(r).Get("id"))
+		d, err := h.Repository.GetDataset(bind.PathValues(r).Get("id"))
 		if err != nil {
 			render.InternalServerError(w, r, err)
 			return

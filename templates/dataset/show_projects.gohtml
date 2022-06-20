@@ -2,21 +2,22 @@
     <div class="card-header">
         <div class="bc-toolbar">
             <div class="bc-toolbar-left">
-                <h1 class="bc-toolbar-title">Abstract</h1>
+                <h1 class="bc-toolbar-title">Project</h1>
             </div>
             <div class="bc-toolbar-right">
                 {{if .User.CanEditDataset .Dataset}}
                 <button class="btn btn-outline-primary" type="button"
-                    hx-get="{{pathFor "dataset_add_abstract" "id" .Dataset.ID}}"
+                    hx-get="{{pathFor "dataset_add_project" "id" .Dataset.ID}}"
                     hx-target="#modals"
                 >
-                    <i class="if if-add"></i><div class="btn-text">Add Abstract</div>
+                    <i class="if if-add"></i>
+                    <div class="btn-text">Add Project</div>
                 </button>
                 {{end}}
             </div>
         </div>
     </div>
-    <div class="card-body p-0" id="abstracts-body">
-        {{template "dataset/abstracts_table" .}}
+    <div class="card-body p-0" id="projects-body">
+        {{template "dataset/projects_table" .}}
     </div>
 </div>

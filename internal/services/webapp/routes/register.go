@@ -59,7 +59,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 
 	datasetsController := controllers.NewDatasets(oldBase, services.Repository, services.DatasetSearchService, services.DatasetSources)
 	datasetDetailsController := controllers.NewDatasetDetails(oldBase, services.Repository)
-	datasetProjectsController := controllers.NewDatasetProjects(oldBase, services.Repository, services.ProjectSearchService, services.ProjectService)
 	datasetDepartmentsController := controllers.NewDatasetDepartments(oldBase, services.Repository, services.OrganizationSearchService, services.OrganizationService)
 	datasetEditingHandlerontributorsController := controllers.NewDatasetContributors(oldBase, services.Repository, services.PersonSearchService, services.PersonService)
 	datasetPublicationsController := controllers.NewDatasetPublications(oldBase, services.Repository, services.PublicationSearchService)
@@ -76,11 +75,13 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	}
 	datasetViewingHandler := &datasetviewing.Handler{
 		BaseHandler: baseHandler,
-		Repo:        services.Repository,
+		Repository:  services.Repository,
 	}
 	datasetEditingHandler := &datasetediting.Handler{
-		BaseHandler: baseHandler,
-		Repo:        services.Repository,
+		BaseHandler:          baseHandler,
+		Repository:           services.Repository,
+		ProjectService:       services.ProjectService,
+		ProjectSearchService: services.ProjectSearchService,
 	}
 
 	// TODO fix absolute url generation
@@ -122,7 +123,7 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		datasetViewingHandler.Wrap(datasetViewingHandler.ShowPublications)).
 		Methods("GET").
 		Name("dataset_publications")
-	// edit dataset
+	// edit dataset abstracts
 	r.HandleFunc("/dataset/{id}/abstracts/add", datasetEditingHandler.Wrap(datasetEditingHandler.AddAbstract)).
 		Methods("GET").
 		Name("dataset_add_abstract")
@@ -141,6 +142,22 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	r.HandleFunc("/dataset/{id}/abstracts/{position}", datasetEditingHandler.Wrap(datasetEditingHandler.DeleteAbstract)).
 		Methods("DELETE").
 		Name("dataset_delete_abstract")
+	// edit dataset projects
+	r.HandleFunc("/dataset/{id}/projects/add", datasetEditingHandler.Wrap(datasetEditingHandler.AddProject)).
+		Methods("GET").
+		Name("dataset_add_project")
+	r.HandleFunc("/dataset/{id}/projects/suggestions", datasetEditingHandler.Wrap(datasetEditingHandler.ProjectSuggestions)).
+		Methods("GET").
+		Name("dataset_project_suggestions")
+	r.HandleFunc("/dataset/{id}/projects", datasetEditingHandler.Wrap(datasetEditingHandler.CreateProject)).
+		Methods("POST").
+		Name("dataset_create_project")
+	r.HandleFunc("/dataset/{id}/projects/{position}/confirm-delete", datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmDeleteProject)).
+		Methods("GET").
+		Name("dataset_confirm_delete_project")
+	r.HandleFunc("/dataset/{id}/projects/{position}", datasetEditingHandler.Wrap(datasetEditingHandler.DeleteProject)).
+		Methods("DELETE").
+		Name("dataset_delete_project")
 
 	// r.Use(handlers.HTTPMethodOverrideHandler)
 	r.Use(locale.Detect(oldBase.Localizer))
@@ -508,22 +525,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	datasetEditRouter.HandleFunc("/htmx/details/edit", datasetDetailsController.Update).
 		Methods("PATCH").
 		Name("dataset_details_save_form")
-	// Dataset projects HTMX fragments
-	datasetEditRouter.HandleFunc("/htmx/projects/list", datasetProjectsController.Choose).
-		Methods("GET").
-		Name("dataset_projects")
-	datasetEditRouter.HandleFunc("/htmx/projects/list/activesearch", datasetProjectsController.ActiveSearch).
-		Methods("POST").
-		Name("dataset_projects_activesearch")
-	datasetEditRouter.HandleFunc("/htmx/projects/add/{project_id:[a-zA-Z0-9].*}", datasetProjectsController.Add).
-		Methods("PATCH").
-		Name("dataset_projects_add")
-	datasetEditRouter.HandleFunc("/htmx/projects/remove/{project_id:[a-zA-Z0-9].*}", datasetProjectsController.ConfirmRemove).
-		Methods("GET").
-		Name("dataset_projects_confirm_remove")
-	datasetEditRouter.HandleFunc("/htmx/projects/remove/{project_id:[a-zA-Z0-9].*}", datasetProjectsController.Remove).
-		Methods("PATCH").
-		Name("dataset_projects_remove")
 	// Dataset departments HTMX fragments
 	datasetEditRouter.HandleFunc("/htmx/departments/list", datasetDepartmentsController.List).
 		Methods("GET").

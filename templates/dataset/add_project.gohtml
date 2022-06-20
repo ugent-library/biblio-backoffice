@@ -1,0 +1,28 @@
+<div id="modal-backdrop" class="d-block modal-backdrop fade show"></div>
+<div class="d-block modal show" tabindex="-1" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Select projects</h2>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted">Select one or more projects as known in GISMO and Research Explorer. </p>
+                <p class="text-muted">
+                    See <a href="https://onderzoektips.ugent.be/en/tips/00002060/" target="_blank">Documentation
+                    <i class="if if--small if-external-link"></i></a></p>
+                <label class="sr-only" for="search">Search</label>
+                <input class="form-control" type="text" name="q" placeholder="Search..."
+                    hx-get="{{pathFor "dataset_project_suggestions" "id" .Dataset.ID}}"
+                    hx-trigger="keyup changed delay:500ms"
+                    hx-target="#project-suggestions"
+                >
+                <div id="project-suggestions">
+                     {{template "dataset/project_suggestions" .}}
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-link modal-close" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>

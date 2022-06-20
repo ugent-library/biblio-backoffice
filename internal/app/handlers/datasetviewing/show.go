@@ -95,7 +95,7 @@ func (h *Handler) ShowPublications(w http.ResponseWriter, r *http.Request, ctx C
 		return
 	}
 
-	relatedPublications, err := h.Repo.GetDatasetPublications(ctx.Dataset)
+	relatedPublications, err := h.Repository.GetDatasetPublications(ctx.Dataset)
 	if err != nil {
 		render.InternalServerError(w, r, err)
 		return
