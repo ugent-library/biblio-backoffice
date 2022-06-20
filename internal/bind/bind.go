@@ -4,31 +4,31 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/gorilla/schema"
+	"github.com/go-playground/form/v4"
 )
 
 var (
 	PathValuesFunc func(r *http.Request) url.Values
 
-	pathDecoder  = schema.NewDecoder()
-	formDecoder  = schema.NewDecoder()
-	queryDecoder = schema.NewDecoder()
+	pathDecoder  = form.NewDecoder()
+	formDecoder  = form.NewDecoder()
+	queryDecoder = form.NewDecoder()
 )
 
 func init() {
-	pathDecoder.SetAliasTag("path")
-	pathDecoder.IgnoreUnknownKeys(true)
-	formDecoder.SetAliasTag("form")
-	formDecoder.IgnoreUnknownKeys(true)
-	queryDecoder.SetAliasTag("query")
-	queryDecoder.IgnoreUnknownKeys(true)
+	pathDecoder.SetTagName("path")
+	pathDecoder.SetMode(form.ModeExplicit)
+	formDecoder.SetTagName("form")
+	formDecoder.SetMode(form.ModeExplicit)
+	queryDecoder.SetTagName("query")
+	queryDecoder.SetMode(form.ModeExplicit)
 }
 
 func PathValues(r *http.Request) url.Values {
-	if PathValuesFunc == nil {
-		return nil
+	if PathValuesFunc != nil {
+		return PathValuesFunc(r)
 	}
-	return PathValuesFunc(r)
+	return nil
 }
 
 func RequestPath(r *http.Request, v interface{}) error {
