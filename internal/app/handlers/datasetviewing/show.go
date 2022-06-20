@@ -149,5 +149,32 @@ func detailFields(ctx Context) []*fields.Fields {
 				},
 			},
 		},
+		{
+			Theme: "default",
+			Fields: []fields.Field{
+				&fields.Text{
+					Label:    ctx.T("builder.license"),
+					Value:    ctx.TS("cc_licenses", ctx.Dataset.License),
+					Required: true,
+				},
+				&fields.Text{
+					Label: ctx.T("builder.other_license"),
+					Value: ctx.Dataset.OtherLicense,
+				},
+				&fields.Text{
+					Label:    ctx.T("builder.access_level"),
+					Value:    ctx.TS("access_levels", ctx.Dataset.AccessLevel),
+					Required: true,
+				},
+				&fields.Text{
+					Label: ctx.T("builder.embargo"),
+					Value: ctx.Dataset.Embargo,
+				},
+				&fields.Text{
+					Label: ctx.T("builder.embargo_to"),
+					Value: ctx.TS("access_levels", ctx.Dataset.EmbargoTo),
+				},
+			},
+		},
 	}
 }

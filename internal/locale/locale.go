@@ -13,18 +13,21 @@ type Locale struct {
 }
 
 func (l *Locale) Translate(key string, args ...interface{}) string {
+	if key == "" {
+		return ""
+	}
 	return l.printer.Sprintf(key, args...)
 }
 
 func (l *Locale) T(key string, args ...interface{}) string {
-	return l.printer.Sprintf(key, args...)
+	return l.Translate(key, args...)
 }
 
 func (l *Locale) TranslateScope(scope, key string, args ...interface{}) string {
-	if scope != "" {
-		key = scope + "." + key
+	if scope == "" || key == "" {
+		return ""
 	}
-	return l.printer.Sprintf(key, args...)
+	return l.Translate(scope+"."+key, args...)
 }
 
 func (l *Locale) TS(scope, key string, args ...interface{}) string {
@@ -33,5 +36,9 @@ func (l *Locale) TS(scope, key string, args ...interface{}) string {
 
 func (l *Locale) LanguageName(code string) string {
 	tag := language.Make(code)
-	return l.languageNamer.Name(tag)
+	if name := l.languageNamer.Name(tag); name != "" {
+		return name
+	}
+	return code
+
 }

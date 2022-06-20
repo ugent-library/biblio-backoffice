@@ -57,7 +57,8 @@ func (f *Text) RenderHTML(fields *Fields, w io.Writer) error {
 		return f.renderWithValueTemplate(fields, w)
 	}
 
-	return render.Templates().ExecuteTemplate(w, path.Join("fields", fields.Theme, "text"), f)
+	tmpl := path.Join("fields", fields.Theme, "text")
+	return render.Templates().ExecuteTemplate(w, tmpl, f)
 }
 
 func (f *Text) renderWithValueTemplate(fields *Fields, w io.Writer) error {
@@ -76,5 +77,6 @@ func (f *Text) renderWithValueTemplate(fields *Fields, w io.Writer) error {
 		y.Values = append(y.Values, template.HTML(buf.String()))
 	}
 
-	return render.Templates().ExecuteTemplate(w, path.Join("fields", fields.Theme, "text"), y)
+	tmpl := path.Join("fields", fields.Theme, "text")
+	return render.Templates().ExecuteTemplate(w, tmpl, y)
 }
