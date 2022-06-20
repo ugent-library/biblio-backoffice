@@ -6,10 +6,9 @@
                 <i class="if if-chevron-right mr-4 text-muted"></i>Projects
             </div>
             <div class="bc-toolbar-right">
-                {{if .User.CanEditDataset .D.Dataset}}
+                {{if .CanEdit}}
                 <button class="btn btn-outline-primary" type="button"
                     hx-get="{{pathFor "dataset_choose_project" "id" .D.Dataset.ID }}"
-                    hx-swap="innerHTML"
                     hx-target="#project-modals"
                 >
                     <i class="if if-add"></i>
@@ -21,11 +20,7 @@
     </div>
     <div class="collapse" id="dataset-projects">
         <div class="card-body p-0" id="project-body">
-            <table class="table" id="projects-table">
-                <tbody>
-                    {{ template "dataset/projects/_table_body" . }}
-                </tbody>
-            </table>
+            {{ template "dataset/projects/projects_table" . }}
         </div>
     </div>
 </div>

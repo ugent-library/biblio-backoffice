@@ -29,12 +29,16 @@ func (c EditContext) RenderYield(w http.ResponseWriter, tmpl string, yield inter
 }
 
 type Controller struct {
-	store backends.Repository
+	store                backends.Repository
+	projectSearchService backends.ProjectSearchService
+	projectService       backends.ProjectService
 }
 
-func NewController(store backends.Repository) *Controller {
+func NewController(store backends.Repository, projectSearchService backends.ProjectSearchService, projectService backends.ProjectService) *Controller {
 	return &Controller{
-		store: store,
+		store:                store,
+		projectSearchService: projectSearchService,
+		projectService:       projectService,
 	}
 }
 

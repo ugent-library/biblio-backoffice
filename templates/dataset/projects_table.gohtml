@@ -1,0 +1,44 @@
+<table class="table">
+    <tbody>
+        {{range $k, $p := .Yield.Dataset.Project}}
+            <tr class="row-{{ $k }}">
+                <td class="pl-6">
+                    <div class="d-flex w-100">
+                        <div class="w-100">
+                            <div class="d-flex align-items-start">
+                                <div class="list-group-item-content">
+                                    <div class="list-group-item-text">
+                                        <h4 class="c-h4">{{ $p.Name }}</h4>
+                                        <div class="c-body-small text-muted">Description</div>
+                                        <div class="text-muted c-body-small">Project ID: {{ $p.ID }}</div>
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td class="pr-6">
+                    {{if $.CanEdit}}
+                    <div class="c-button-toolbar">
+                        <div class="dropdown">
+                            <button class="btn btn-link btn-icon-only btn-link-muted" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="if if-more"></i>
+                            </button>
+                            <div class="dropdown-menu">
+                                <button class="dropdown-item" type="button"
+                                    hx-get="{{pathFor "dataset_confirm_delete_project" "id" $.Yield.Dataset.ID "position" ($k|toString)}}"
+                                    hx-target="#project-modals"
+                                >
+                                    <i class="if if-delete"></i>
+                                    <span>Delete</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {{ end }}
+                </td>
+            </tr>
+        {{end}}
+    </tbody>
+</table>

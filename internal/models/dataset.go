@@ -183,6 +183,24 @@ func (d *Dataset) RemoveAbstract(i int) error {
 	return nil
 }
 
+func (d *Dataset) GetProject(i int) (DatasetProject, error) {
+	if i >= len(d.Project) {
+		return DatasetProject{}, errors.New("index out of bounds")
+	}
+
+	return d.Project[i], nil
+}
+
+func (d *Dataset) RemoveProject(i int) error {
+	if i >= len(d.Project) {
+		return errors.New("index out of bounds")
+	}
+
+	d.Project = append(d.Project[:i], d.Project[i+1:]...)
+
+	return nil
+}
+
 func (d *Dataset) ResolveDOI() string {
 	if d.DOI != "" {
 		return "https://doi.org/" + d.DOI
