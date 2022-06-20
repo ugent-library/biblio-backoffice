@@ -12,16 +12,16 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/render"
 )
 
-type Base struct {
+type BaseHandler struct {
 	SessionName  string
 	SessionStore sessions.Store
 	UserService  backends.UserService
 	Localizer    *locale.Localizer
 }
 
-func (b Base) Wrap(fn func(http.ResponseWriter, *http.Request, BaseContext)) http.HandlerFunc {
+func (h BaseHandler) Wrap(fn func(http.ResponseWriter, *http.Request, BaseContext)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		ctx, err := b.NewContext(r)
+		ctx, err := h.NewContext(r)
 		if err != nil {
 			render.InternalServerError(w, r, err)
 			return
@@ -30,19 +30,19 @@ func (b Base) Wrap(fn func(http.ResponseWriter, *http.Request, BaseContext)) htt
 	}
 }
 
-func (b Base) NewContext(r *http.Request) (BaseContext, error) {
-	user, err := b.getUserFromSession(r, "user_id")
+func (h BaseHandler) NewContext(r *http.Request) (BaseContext, error) {
+	user, err := h.getUserFromSession(r, "user_id")
 	if err != nil {
 		return BaseContext{}, err
 	}
 
-	originalUser, err := b.getUserFromSession(r, "original_user_id")
+	originalUser, err := h.getUserFromSession(r, "original_user_id")
 	if err != nil {
 		return BaseContext{}, err
 	}
 
 	return BaseContext{
-		Locale:       b.Localizer.GetLocale(r.Header.Get("Accept-Language")),
+		Locale:       h.Localizer.GetLocale(r.Header.Get("Accept-Language")),
 		User:         user,
 		OriginalUser: originalUser,
 		CSRFToken:    csrf.Token(r),
@@ -50,8 +50,8 @@ func (b Base) NewContext(r *http.Request) (BaseContext, error) {
 	}, nil
 }
 
-func (b Base) getUserFromSession(r *http.Request, sessionKey string) (*models.User, error) {
-	session, err := b.SessionStore.Get(r, b.SessionName)
+func (h BaseHandler) getUserFromSession(r *http.Request, sessionKey string) (*models.User, error) {
+	session, err := h.SessionStore.Get(r, h.SessionName)
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +60,7 @@ func (b Base) getUserFromSession(r *http.Request, sessionKey string) (*models.Us
 		return nil, nil
 	}
 
-	user, err := b.UserService.GetUser(userID.(string))
+	user, err := h.UserService.GetUser(userID.(string))
 	if err != nil {
 		return nil, err
 	}

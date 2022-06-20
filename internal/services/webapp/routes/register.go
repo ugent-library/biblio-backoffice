@@ -68,19 +68,19 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	mediaTypesController := controllers.NewMediaTypes(oldBase, services.MediaTypeSearchService)
 
 	// NEW HANDLERS
-	base := handlers.Base{
+	base := handlers.BaseHandler{
 		SessionStore: oldBase.SessionStore,
 		SessionName:  oldBase.SessionName,
 		Localizer:    oldBase.Localizer,
 		UserService:  services.UserService,
 	}
 	datasetViewingHandler := &datasetviewing.Handler{
-		Base: base,
-		Repo: services.Repository,
+		BaseHandler: base,
+		Repo:        services.Repository,
 	}
 	datasetEditingHandler := &datasetediting.Handler{
-		Base: base,
-		Repo: services.Repository,
+		BaseHandler: base,
+		Repo:        services.Repository,
 	}
 
 	// TODO fix absolute url generation
