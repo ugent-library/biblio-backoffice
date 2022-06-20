@@ -48,7 +48,8 @@ func (h *Handler) AddAbstract(w http.ResponseWriter, r *http.Request, ctx Contex
 
 func (h *Handler) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindAbstract{Position: len(ctx.Dataset.Abstract)}
-	if render.BadRequest(w, bind.RequestForm(r, &b)) {
+	if err := bind.RequestForm(r, &b); err != nil {
+		render.BadRequest(w, r, err)
 		return
 	}
 
@@ -70,21 +71,26 @@ func (h *Handler) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 		return
 	}
 
-	if !render.InternalServerError(w, err) {
-		render.Render(w, "dataset/refresh_abstracts", YieldAbstracts{
-			Context: ctx,
-		})
+	if err != nil {
+		render.InternalServerError(w, r, err)
+		return
 	}
+
+	render.Render(w, "dataset/refresh_abstracts", YieldAbstracts{
+		Context: ctx,
+	})
 }
 
 func (h *Handler) EditAbstract(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindAbstract{}
-	if render.BadRequest(w, bind.RequestPath(r, &b)) {
+	if err := bind.RequestPath(r, &b); err != nil {
+		render.BadRequest(w, r, err)
 		return
 	}
 
 	a, err := ctx.Dataset.GetAbstract(b.Position)
-	if render.BadRequest(w, err) {
+	if err != nil {
+		render.BadRequest(w, r, err)
 		return
 	}
 
@@ -100,12 +106,14 @@ func (h *Handler) EditAbstract(w http.ResponseWriter, r *http.Request, ctx Conte
 
 func (h *Handler) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindAbstract{}
-	if render.BadRequest(w, bind.Request(r, &b)) {
+	if err := bind.Request(r, &b); err != nil {
+		render.BadRequest(w, r, err)
 		return
 	}
 
 	a := models.Text{Text: b.Text, Lang: b.Lang}
-	if render.BadRequest(w, ctx.Dataset.SetAbstract(b.Position, a)) {
+	if err := ctx.Dataset.SetAbstract(b.Position, a); err != nil {
+		render.BadRequest(w, r, err)
 		return
 	}
 
@@ -128,20 +136,25 @@ func (h *Handler) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 		return
 	}
 
-	if !render.InternalServerError(w, err) {
-		render.Render(w, "dataset/refresh_abstracts", YieldAbstracts{
-			Context: ctx,
-		})
+	if err != nil {
+		render.InternalServerError(w, r, err)
+		return
 	}
+
+	render.Render(w, "dataset/refresh_abstracts", YieldAbstracts{
+		Context: ctx,
+	})
 }
 
 func (h *Handler) ConfirmDeleteAbstract(w http.ResponseWriter, r *http.Request, ctx Context) {
 	var b BindAbstract
-	if render.BadRequest(w, bind.RequestPath(r, &b)) {
+	if err := bind.RequestPath(r, &b); err != nil {
+		render.BadRequest(w, r, err)
 		return
 	}
 
-	if _, err := ctx.Dataset.GetAbstract(b.Position); render.BadRequest(w, err) {
+	if _, err := ctx.Dataset.GetAbstract(b.Position); err != nil {
+		render.BadRequest(w, r, err)
 		return
 	}
 
@@ -153,11 +166,13 @@ func (h *Handler) ConfirmDeleteAbstract(w http.ResponseWriter, r *http.Request, 
 
 func (h *Handler) DeleteAbstract(w http.ResponseWriter, r *http.Request, ctx Context) {
 	var b BindAbstract
-	if render.BadRequest(w, bind.Request(r, &b)) {
+	if err := bind.Request(r, &b); err != nil {
+		render.BadRequest(w, r, err)
 		return
 	}
 
-	if render.BadRequest(w, ctx.Dataset.RemoveAbstract(b.Position)) {
+	if err := ctx.Dataset.RemoveAbstract(b.Position); err != nil {
+		render.BadRequest(w, r, err)
 		return
 	}
 
@@ -169,11 +184,14 @@ func (h *Handler) DeleteAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 		return
 	}
 
-	if !render.InternalServerError(w, err) {
-		render.Render(w, "dataset/refresh_abstracts", YieldAbstracts{
-			Context: ctx,
-		})
+	if err != nil {
+		render.InternalServerError(w, r, err)
+		return
 	}
+
+	render.Render(w, "dataset/refresh_abstracts", YieldAbstracts{
+		Context: ctx,
+	})
 }
 
 func abstractForm(ctx Context, b BindAbstract, errors validation.Errors) *form.Form {

@@ -154,6 +154,7 @@ func buildRouter(services *backends.Services) *mux.Router {
 
 	// init render
 	render.FuncMaps = funcMaps
+	render.AuthURL = baseURL.Path + "/login"
 
 	// init bind
 	bind.PathValuesFunc = func(r *http.Request) url.Values {

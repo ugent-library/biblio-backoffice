@@ -1,7 +1,6 @@
 package datasetviewing
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/ugent-library/biblio-backend/internal/bind"
@@ -40,7 +39,8 @@ type YieldShowPublications struct {
 
 func (h *Handler) Show(w http.ResponseWriter, r *http.Request, ctx Context) {
 	searchArgs := models.NewSearchArgs()
-	if render.BadRequest(w, bind.RequestQuery(r, searchArgs)) {
+	if err := bind.RequestQuery(r, searchArgs); err != nil {
+		render.BadRequest(w, r, err)
 		return
 	}
 
@@ -61,10 +61,11 @@ func (h *Handler) Show(w http.ResponseWriter, r *http.Request, ctx Context) {
 
 func (h *Handler) ShowDescription(w http.ResponseWriter, r *http.Request, ctx Context) {
 	searchArgs := models.NewSearchArgs()
-	if render.BadRequest(w, bind.Request(r, searchArgs)) {
+	if err := bind.Request(r, searchArgs); err != nil {
+		render.BadRequest(w, r, err)
 		return
 	}
-	log.Printf("%#v", searchArgs)
+
 	render.Render(w, "dataset/show_description", YieldShowDescription{
 		Context:      ctx,
 		ActiveSubNav: "description",
@@ -75,10 +76,11 @@ func (h *Handler) ShowDescription(w http.ResponseWriter, r *http.Request, ctx Co
 
 func (h *Handler) ShowContributors(w http.ResponseWriter, r *http.Request, ctx Context) {
 	searchArgs := models.NewSearchArgs()
-	if render.BadRequest(w, bind.Request(r, searchArgs)) {
+	if err := bind.Request(r, searchArgs); err != nil {
+		render.BadRequest(w, r, err)
 		return
 	}
-	log.Printf("%#v", searchArgs)
+
 	render.Render(w, "dataset/show_contributors", YieldShowContributors{
 		Context:      ctx,
 		ActiveSubNav: "contributors",
@@ -88,12 +90,14 @@ func (h *Handler) ShowContributors(w http.ResponseWriter, r *http.Request, ctx C
 
 func (h *Handler) ShowPublications(w http.ResponseWriter, r *http.Request, ctx Context) {
 	searchArgs := models.NewSearchArgs()
-	if render.BadRequest(w, bind.Request(r, searchArgs)) {
+	if err := bind.Request(r, searchArgs); err != nil {
+		render.BadRequest(w, r, err)
 		return
 	}
-	log.Printf("%#v", searchArgs)
+
 	relatedPublications, err := h.Repo.GetDatasetPublications(ctx.Dataset)
-	if render.InternalServerError(w, err) {
+	if err != nil {
+		render.InternalServerError(w, r, err)
 		return
 	}
 

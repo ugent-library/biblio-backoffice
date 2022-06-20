@@ -7,7 +7,7 @@ require (
 	github.com/alitto/pond v1.8.0
 	github.com/blevesearch/bleve/v2 v2.3.2
 	github.com/caltechlibrary/doitools v0.0.1
-	github.com/cshum/imagor v0.8.29
+	github.com/cshum/imagor v0.9.5
 	github.com/elastic/go-elasticsearch/v6 v6.8.10
 	github.com/go-playground/form/v4 v4.2.0
 	github.com/google/uuid v1.3.0
@@ -29,14 +29,14 @@ require (
 	github.com/ugent-library/go-oidc v0.0.0-20210901124208-bda4cc73ba56
 	github.com/ugent-library/go-orcid v0.0.0-20211130191640-1138a344c30b
 	github.com/unrolled/render v1.4.1
-	golang.org/x/net v0.0.0-20220607020251-c690dde0001d
+	golang.org/x/net v0.0.0-20220617184016-355a448f1bc9
 	golang.org/x/text v0.3.7
 )
 
 require (
 	github.com/Masterminds/goutils v1.1.1 // indirect
 	github.com/Masterminds/semver/v3 v3.1.1 // indirect
-	github.com/RoaringBitmap/roaring v1.2.0 // indirect
+	github.com/RoaringBitmap/roaring v1.2.1 // indirect
 	github.com/bits-and-blooms/bitset v1.2.2 // indirect
 	github.com/blevesearch/bleve_index_api v1.0.2 // indirect
 	github.com/blevesearch/go-porterstemmer v1.0.3 // indirect
@@ -85,7 +85,7 @@ require (
 	go.etcd.io/bbolt v1.3.6 // indirect
 	golang.org/x/crypto v0.0.0-20220525230936-793ad666bf5e // indirect
 	golang.org/x/oauth2 v0.0.0-20220608161450-d0670ef3b1eb // indirect
-	golang.org/x/sys v0.0.0-20220608164250-635b8c9b7f68 // indirect
+	golang.org/x/sys v0.0.0-20220615213510-4f61da869c0c // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
 	gopkg.in/ini.v1 v1.66.6 // indirect

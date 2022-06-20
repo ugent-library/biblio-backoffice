@@ -5,8 +5,9 @@ import (
 
 	"github.com/ugent-library/biblio-backend/internal/app/handlers"
 	"github.com/ugent-library/biblio-backend/internal/backends"
+	"github.com/ugent-library/biblio-backend/internal/bind"
 	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/biblio-backend/internal/services/webapp/context"
+	"github.com/ugent-library/biblio-backend/internal/render"
 )
 
 type Handler struct {
@@ -19,13 +20,27 @@ type Context struct {
 	Dataset *models.Dataset
 }
 
-// TODO check edit rights
 func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		d := context.GetDataset(r.Context())
+	return h.Base.Wrap(func(w http.ResponseWriter, r *http.Request, ctx handlers.BaseContext) {
+		if ctx.User == nil {
+			render.Unauthorized(w, r)
+			return
+		}
+
+		d, err := h.Repo.GetDataset(bind.PathValues(r).Get("id"))
+		if err != nil {
+			render.InternalServerError(w, r, err)
+			return
+		}
+
+		if !ctx.User.CanViewDataset(d) {
+			render.Forbidden(w, r)
+			return
+		}
+
 		fn(w, r, Context{
-			BaseContext: handlers.NewBaseContext(h.Base, r),
+			BaseContext: ctx,
 			Dataset:     d,
 		})
-	}
+	})
 }

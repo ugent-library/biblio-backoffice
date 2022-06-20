@@ -67,11 +67,12 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	licensesController := controllers.NewLicenses(oldBase, services.LicenseSearchService)
 	mediaTypesController := controllers.NewMediaTypes(oldBase, services.MediaTypeSearchService)
 
-	// NEW CONTROLLERS
+	// NEW HANDLERS
 	base := handlers.Base{
 		SessionStore: oldBase.SessionStore,
 		SessionName:  oldBase.SessionName,
 		Localizer:    oldBase.Localizer,
+		UserService:  services.UserService,
 	}
 	datasetViewingHandler := &datasetviewing.Handler{
 		Base: base,
@@ -102,6 +103,44 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		csrf.FieldName("csrf-token"),
 	)
 	r.Use(csrfMiddleware)
+
+	// NEW ROUTES
+	// view dataset
+	r.HandleFunc("/dataset/{id}",
+		datasetViewingHandler.Wrap(datasetViewingHandler.Show)).
+		Methods("GET").
+		Name("dataset")
+	r.HandleFunc("/dataset/{id}/description",
+		datasetViewingHandler.Wrap(datasetViewingHandler.ShowDescription)).
+		Methods("GET").
+		Name("dataset_description")
+	r.HandleFunc("/dataset/{id}/contributors",
+		datasetViewingHandler.Wrap(datasetViewingHandler.ShowContributors)).
+		Methods("GET").
+		Name("dataset_contributors")
+	r.HandleFunc("/dataset/{id}/publications",
+		datasetViewingHandler.Wrap(datasetViewingHandler.ShowPublications)).
+		Methods("GET").
+		Name("dataset_publications")
+	// edit dataset
+	r.HandleFunc("/dataset/{id}/abstracts/add", datasetEditingHandler.Wrap(datasetEditingHandler.AddAbstract)).
+		Methods("GET").
+		Name("dataset_add_abstract")
+	r.HandleFunc("/dataset/{id}/abstracts", datasetEditingHandler.Wrap(datasetEditingHandler.CreateAbstract)).
+		Methods("POST").
+		Name("dataset_create_abstract")
+	r.HandleFunc("/dataset/{id}/abstracts/{position}/edit", datasetEditingHandler.Wrap(datasetEditingHandler.EditAbstract)).
+		Methods("GET").
+		Name("dataset_edit_abstract")
+	r.HandleFunc("/dataset/{id}/abstracts/{position}", datasetEditingHandler.Wrap(datasetEditingHandler.UpdateAbstract)).
+		Methods("PUT").
+		Name("dataset_update_abstract")
+	r.HandleFunc("/dataset/{id}/abstracts/{position}/confirm-delete", datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmDeleteAbstract)).
+		Methods("GET").
+		Name("dataset_confirm_delete_abstract")
+	r.HandleFunc("/dataset/{id}/abstracts/{position}", datasetEditingHandler.Wrap(datasetEditingHandler.DeleteAbstract)).
+		Methods("DELETE").
+		Name("dataset_delete_abstract")
 
 	// r.Use(handlers.HTTPMethodOverrideHandler)
 	r.Use(locale.Detect(oldBase.Localizer))
@@ -438,22 +477,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	datasetPublishRouter.Use(middleware.RequireCanPublishDataset)
 	datasetDeleteRouter := datasetRouter.PathPrefix("").Subrouter()
 	datasetDeleteRouter.Use(middleware.RequireCanDeleteDataset)
-	datasetRouter.HandleFunc("",
-		datasetViewingHandler.Wrap(datasetViewingHandler.Show)).
-		Methods("GET").
-		Name("dataset")
-	datasetRouter.HandleFunc("/description",
-		datasetViewingHandler.Wrap(datasetViewingHandler.ShowDescription)).
-		Methods("GET").
-		Name("dataset_description")
-	datasetRouter.HandleFunc("/contributors",
-		datasetViewingHandler.Wrap(datasetViewingHandler.ShowContributors)).
-		Methods("GET").
-		Name("dataset_contributors")
-	datasetRouter.HandleFunc("/publications",
-		datasetViewingHandler.Wrap(datasetViewingHandler.ShowPublications)).
-		Methods("GET").
-		Name("dataset_publications")
 	datasetRouter.HandleFunc("/delete", datasetsController.ConfirmDelete).
 		Methods("GET").
 		Name("dataset_confirm_delete")
@@ -548,25 +571,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	datasetEditRouter.HandleFunc("/htmx/contributors/{role}/{position}", datasetEditingHandlerontributorsController.Update).
 		Methods("PUT").
 		Name("dataset_contributors_update")
-	// Dataset abstracts HTMX fragments
-	datasetEditRouter.HandleFunc("/htmx/abstracts/add", datasetEditingHandler.Wrap(datasetEditingHandler.AddAbstract)).
-		Methods("GET").
-		Name("dataset_add_abstract")
-	datasetEditRouter.HandleFunc("/htmx/abstracts", datasetEditingHandler.Wrap(datasetEditingHandler.CreateAbstract)).
-		Methods("POST").
-		Name("dataset_create_abstract")
-	datasetEditRouter.HandleFunc("/htmx/abstracts/{position}/edit", datasetEditingHandler.Wrap(datasetEditingHandler.EditAbstract)).
-		Methods("GET").
-		Name("dataset_edit_abstract")
-	datasetEditRouter.HandleFunc("/htmx/abstracts/{position}", datasetEditingHandler.Wrap(datasetEditingHandler.UpdateAbstract)).
-		Methods("PUT").
-		Name("dataset_update_abstract")
-	datasetEditRouter.HandleFunc("/htmx/abstracts/{position}/confirm-delete", datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmDeleteAbstract)).
-		Methods("GET").
-		Name("dataset_confirm_delete_abstract")
-	datasetEditRouter.HandleFunc("/htmx/abstracts/{position}", datasetEditingHandler.Wrap(datasetEditingHandler.DeleteAbstract)).
-		Methods("DELETE").
-		Name("dataset_delete_abstract")
 	// Dataset publications HTMX fragments
 	datasetEditRouter.HandleFunc("/htmx/publications/choose", datasetPublicationsController.Choose).
 		Methods("GET").
