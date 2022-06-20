@@ -4,25 +4,17 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/go-playground/form/v4"
+	"github.com/monoculum/formam/v3"
 )
 
 var (
 	PathValuesFunc func(r *http.Request) url.Values
-
-	pathDecoder  = form.NewDecoder()
-	formDecoder  = form.NewDecoder()
-	queryDecoder = form.NewDecoder()
+	// TODO the go-playground/form decoder doesn't seem to handle structs with multiple tags
+	// for a single slice field (like in SearchArgs) well so use formam for now
+	pathDecoder  = formam.NewDecoder(&formam.DecoderOptions{TagName: "path", IgnoreUnknownKeys: true})
+	formDecoder  = formam.NewDecoder(&formam.DecoderOptions{TagName: "form", IgnoreUnknownKeys: true})
+	queryDecoder = formam.NewDecoder(&formam.DecoderOptions{TagName: "query", IgnoreUnknownKeys: true})
 )
-
-func init() {
-	pathDecoder.SetTagName("path")
-	pathDecoder.SetMode(form.ModeExplicit)
-	formDecoder.SetTagName("form")
-	formDecoder.SetMode(form.ModeExplicit)
-	queryDecoder.SetTagName("query")
-	queryDecoder.SetMode(form.ModeExplicit)
-}
 
 func PathValues(r *http.Request) url.Values {
 	if PathValuesFunc != nil {
@@ -36,15 +28,7 @@ func RequestPath(r *http.Request, v interface{}) error {
 }
 
 func Path(vals url.Values, v interface{}) error {
-	return pathDecoder.Decode(v, vals)
-}
-
-func RequestQuery(r *http.Request, v interface{}) error {
-	return Query(r.URL.Query(), v)
-}
-
-func Query(vals url.Values, v interface{}) error {
-	return queryDecoder.Decode(v, vals)
+	return pathDecoder.Decode(vals, v)
 }
 
 func RequestForm(r *http.Request, v interface{}) error {
@@ -53,7 +37,15 @@ func RequestForm(r *http.Request, v interface{}) error {
 }
 
 func Form(vals url.Values, v interface{}) error {
-	return formDecoder.Decode(v, vals)
+	return formDecoder.Decode(vals, v)
+}
+
+func RequestQuery(r *http.Request, v interface{}) error {
+	return Query(r.URL.Query(), v)
+}
+
+func Query(vals url.Values, v interface{}) error {
+	return queryDecoder.Decode(vals, v)
 }
 
 func Request(r *http.Request, v interface{}) error {

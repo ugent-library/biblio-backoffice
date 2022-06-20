@@ -9,7 +9,12 @@ import (
 	"github.com/gorilla/mux"
 )
 
-var formEncoder = form.NewEncoder()
+var queryEncoder = form.NewEncoder()
+
+func init() {
+	queryEncoder.SetTagName("query")
+	queryEncoder.SetMode(form.ModeExplicit)
+}
 
 func FuncMap(r *mux.Router) template.FuncMap {
 	return template.FuncMap{
@@ -39,22 +44,12 @@ func pathFor(r *mux.Router) func(string, ...string) (*url.URL, error) {
 }
 
 func query(v interface{}, u *url.URL) (*url.URL, error) {
-	vals, err := formEncoder.Encode(v)
+	vals, err := queryEncoder.Encode(v)
 	if err != nil {
 		return u, err
 	}
 
-	q := u.Query()
-	for k, vv := range vals {
-		for i, v := range vv {
-			if i == 0 {
-				q.Set(k, v)
-			} else {
-				q.Add(k, v)
-			}
-		}
-	}
-	u.RawQuery = q.Encode()
+	u.RawQuery = vals.Encode()
 
 	return u, nil
 }
@@ -63,5 +58,6 @@ func querySet(k, v string, u *url.URL) (*url.URL, error) {
 	q := u.Query()
 	q.Set(k, v)
 	u.RawQuery = q.Encode()
+
 	return u, nil
 }

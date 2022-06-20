@@ -1,11 +1,11 @@
 package models
 
 type SearchArgs struct {
-	Query    string              `form:"q,omitempty"`
-	Filters  map[string][]string `form:"f,omitempty"`
-	Page     int                 `form:"page"`
-	Sort     []string            `form:"sort,omitempty"`
-	PageSize int                 `form:"page-size"`
+	Query    string              `form:"q,omitempty" query:"q,omitempty"`
+	Filters  map[string][]string `form:"f,omitempty" query:"f,omitempty"`
+	Page     int                 `form:"page" query:"page"`
+	Sort     []string            `form:"sort,omitempty" query:"sort,omitempty"`
+	PageSize int                 `form:"page-size" query:"page-size"`
 }
 
 func NewSearchArgs() *SearchArgs {

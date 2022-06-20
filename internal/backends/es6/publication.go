@@ -38,7 +38,7 @@ func (publications *Publications) Search(args *models.SearchArgs) (*models.Publi
 
 	// extra internal filters
 	internalFilters := []M{
-		M{
+		{
 			"bool": M{
 				"must_not": M{
 					"exists": M{

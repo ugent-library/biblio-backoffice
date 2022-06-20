@@ -64,7 +64,7 @@
         </div>
     </div>
     <div class="u-scroll-wrapper__body p-6" id="show-content"
-        hx-get="{{pathFor (print "dataset_" .ActiveSubNav) "id" .Dataset.ID}}"
+        hx-get="{{pathFor (print "dataset_" .ActiveSubNav) "id" .Dataset.ID | query .SearchArgs}}"
         hx-trigger="load delay:100ms"
         hx-target="#show-content"
     >

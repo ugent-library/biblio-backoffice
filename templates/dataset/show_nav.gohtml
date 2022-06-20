@@ -4,7 +4,7 @@
     <li class="nav-item">
         <a class="nav-link{{if eq $.ActiveSubNav .}} active{{end}}"
             href="{{$u}}"
-            hx-get="{{pathFor (print "dataset_" .) "id" $.Dataset.ID}}"
+            hx-get="{{pathFor (print "dataset_" .) "id" $.Dataset.ID | query $.SearchArgs}}"
             hx-target="#show-content"
             hx-push-url="{{$u}}"
             role="tab"

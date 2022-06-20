@@ -1,8 +1,10 @@
 package datasetviewing
 
 import (
+	"log"
 	"net/http"
 
+	"github.com/ugent-library/biblio-backend/internal/bind"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
 	"github.com/ugent-library/biblio-backend/internal/render/fields"
@@ -37,8 +39,10 @@ type YieldShowPublications struct {
 }
 
 func (h *Handler) Show(w http.ResponseWriter, r *http.Request, ctx Context) {
-	// TODO bind search args
 	searchArgs := models.NewSearchArgs()
+	if render.BadRequest(w, bind.RequestQuery(r, searchArgs)) {
+		return
+	}
 
 	// TODO bind and validate
 	activeSubNav := "description"
@@ -56,9 +60,11 @@ func (h *Handler) Show(w http.ResponseWriter, r *http.Request, ctx Context) {
 }
 
 func (h *Handler) ShowDescription(w http.ResponseWriter, r *http.Request, ctx Context) {
-	// TODO bind search args
 	searchArgs := models.NewSearchArgs()
-
+	if render.BadRequest(w, bind.Request(r, searchArgs)) {
+		return
+	}
+	log.Printf("%#v", searchArgs)
 	render.Render(w, "dataset/show_description", YieldShowDescription{
 		Context:      ctx,
 		ActiveSubNav: "description",
@@ -68,9 +74,11 @@ func (h *Handler) ShowDescription(w http.ResponseWriter, r *http.Request, ctx Co
 }
 
 func (h *Handler) ShowContributors(w http.ResponseWriter, r *http.Request, ctx Context) {
-	// TODO bind search args
 	searchArgs := models.NewSearchArgs()
-
+	if render.BadRequest(w, bind.Request(r, searchArgs)) {
+		return
+	}
+	log.Printf("%#v", searchArgs)
 	render.Render(w, "dataset/show_contributors", YieldShowContributors{
 		Context:      ctx,
 		ActiveSubNav: "contributors",
@@ -79,9 +87,11 @@ func (h *Handler) ShowContributors(w http.ResponseWriter, r *http.Request, ctx C
 }
 
 func (h *Handler) ShowPublications(w http.ResponseWriter, r *http.Request, ctx Context) {
-	// TODO bind search args
 	searchArgs := models.NewSearchArgs()
-
+	if render.BadRequest(w, bind.Request(r, searchArgs)) {
+		return
+	}
+	log.Printf("%#v", searchArgs)
 	relatedPublications, err := h.Repo.GetDatasetPublications(ctx.Dataset)
 	if render.InternalServerError(w, err) {
 		return

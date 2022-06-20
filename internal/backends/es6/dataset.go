@@ -38,7 +38,7 @@ func (datasets *Datasets) Search(args *models.SearchArgs) (*models.DatasetHits, 
 
 	// extra internal filters
 	internalFilters := []M{
-		M{
+		{
 			"bool": M{
 				"must_not": M{
 					"exists": M{
