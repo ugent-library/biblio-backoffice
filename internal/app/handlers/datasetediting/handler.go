@@ -12,9 +12,11 @@ import (
 
 type Handler struct {
 	handlers.BaseHandler
-	Repository           backends.Repository
-	ProjectSearchService backends.ProjectSearchService
-	ProjectService       backends.ProjectService
+	Repository                backends.Repository
+	ProjectSearchService      backends.ProjectSearchService
+	ProjectService            backends.ProjectService
+	OrganizationSearchService backends.OrganizationSearchService
+	OrganizationService       backends.OrganizationService
 }
 
 type Context struct {
