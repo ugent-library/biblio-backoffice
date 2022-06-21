@@ -1,19 +1,23 @@
 package datasetediting
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/ugent-library/biblio-backend/internal/bind"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
+	"github.com/ugent-library/biblio-backend/internal/snapstore"
 )
 
 type BindDepartmentSuggestions struct {
 	Query string `query:"q"`
 }
+
 type BindDepartment struct {
 	DepartmentID string `form:"department_id"`
 }
+
 type BindDeleteDepartment struct {
 	Position int `path:"position"`
 }
@@ -21,10 +25,12 @@ type BindDeleteDepartment struct {
 type YieldDepartments struct {
 	Context
 }
+
 type YieldAddDepartment struct {
 	Context
 	Hits []models.Completion
 }
+
 type YieldDeleteDepartment struct {
 	Context
 	Position int
@@ -80,15 +86,20 @@ func (h *Handler) CreateDepartment(w http.ResponseWriter, r *http.Request, ctx C
 	}
 
 	for _, d := range department.Tree {
-		// datasetDepartment.Tree = append(datasetDepartment.Tree, models.DatasetDepartmentRef{ID: d.ID})
 		datasetDepartment.Tree = append(datasetDepartment.Tree, models.DatasetDepartmentRef(d))
 	}
 
 	ctx.Dataset.Department = append(ctx.Dataset.Department, datasetDepartment)
 
-	err = h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
-	// TODO handle conflict errors
 	// TODO handle validation errors
+
+	err = h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
+
+	var conflict *snapstore.Conflict
+	if errors.As(err, &conflict) {
+		render.Render(w, "error_dialog", ctx.T("dataset.conflict_error"))
+		return
+	}
 
 	if err != nil {
 		render.InternalServerError(w, r, err)
@@ -130,9 +141,20 @@ func (h *Handler) DeleteDepartment(w http.ResponseWriter, r *http.Request, ctx C
 		return
 	}
 
-	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
-	// TODO handle conflict errors
 	// TODO handle validation errors
+
+	// if validationErrs := ctx.Dataset.Validate(); validationErrs != nil {
+	// 	render.Render(w, "error_dialog", ctx.T("dataset.conflict_error"))
+	// 	return
+	// }
+
+	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
+
+	var conflict *snapstore.Conflict
+	if errors.As(err, &conflict) {
+		render.Render(w, "error_dialog", ctx.T("dataset.conflict_error"))
+		return
+	}
 
 	if err != nil {
 		render.InternalServerError(w, r, err)
