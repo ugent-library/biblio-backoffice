@@ -1,5 +1,4 @@
 import htmx from 'htmx.org';
-// import 'htmx.org/dist/ext/remove-me.js';
 import csrf from './ui/csrf.js'
 import checkbox from './ui/checkbox.js'
 import bootstrap from './ui/bootstrap.js'
@@ -15,6 +14,11 @@ import modalPopper from './ui/modal_popper.js'
 import radioCard from './ui/radio_card.js'
 import toast from './ui/toast.js'
 import sortable from './ui/sortable.js';
+
+
+htmx.config.defaultFocusScroll = true
+window.htmx = htmx
+require('htmx.org/dist/ext/remove-me.js');
 
 document.addEventListener('DOMContentLoaded', function () {
     htmx.config.defaultFocusScroll = true
