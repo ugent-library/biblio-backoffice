@@ -2,8 +2,7 @@ import Popper from 'popper.js'
 import htmx from 'htmx.org';
 
 // Wire in popper.js support. This ensure popups stay within the viewport.
-//
-// Bootstrap Native doesn't incorporate Popper.js. We have to wire everything ourselves.
+// Bootstrap Native doesn't incorporate Popper.js, we have to wire everything ourselves.
 // See: https://github.com/thednp/bootstrap.native/issues/211
 export default function() {
     let popper = function() {
@@ -29,8 +28,7 @@ export default function() {
 
     popper();
 
-    htmx.on("htmx:afterSettle", function(evt) {
+    htmx.onLoad(function(el) {
         popper();
     });
-
 }
