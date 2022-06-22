@@ -59,7 +59,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 
 	datasetsController := controllers.NewDatasets(oldBase, services.Repository, services.DatasetSearchService, services.DatasetSources)
 	datasetDetailsController := controllers.NewDatasetDetails(oldBase, services.Repository)
-	datasetDepartmentsController := controllers.NewDatasetDepartments(oldBase, services.Repository, services.OrganizationSearchService, services.OrganizationService)
 	datasetEditingHandlerontributorsController := controllers.NewDatasetContributors(oldBase, services.Repository, services.PersonSearchService, services.PersonService)
 	datasetPublicationsController := controllers.NewDatasetPublications(oldBase, services.Repository, services.PublicationSearchService)
 
@@ -543,22 +542,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	datasetEditRouter.HandleFunc("/htmx/details/edit", datasetDetailsController.Update).
 		Methods("PATCH").
 		Name("dataset_details_save_form")
-	// Dataset departments HTMX fragments
-	datasetEditRouter.HandleFunc("/htmx/departments/list", datasetDepartmentsController.List).
-		Methods("GET").
-		Name("datasetDepartments")
-	datasetEditRouter.HandleFunc("/htmx/departments/list/activesearch", datasetDepartmentsController.ActiveSearch).
-		Methods("POST").
-		Name("datasetDepartments_activesearch")
-	datasetEditRouter.HandleFunc("/htmx/departments/add/{department_id}", datasetDepartmentsController.Add).
-		Methods("PATCH").
-		Name("datasetDepartments_add_to_dataset")
-	datasetEditRouter.HandleFunc("/htmx/departments/remove/{department_id}", datasetDepartmentsController.ConfirmRemove).
-		Methods("GET").
-		Name("datasetDepartments_confirm_remove_from_dataset")
-	datasetEditRouter.HandleFunc("/htmx/departments/remove/{department_id}", datasetDepartmentsController.Remove).
-		Methods("PATCH").
-		Name("datasetDepartments_remove_from_dataset")
 	// Dataset contributors HTMX fragments
 	datasetEditRouter.HandleFunc("/htmx/contributors/{role}/add", datasetEditingHandlerontributorsController.Add).
 		Methods("GET").
