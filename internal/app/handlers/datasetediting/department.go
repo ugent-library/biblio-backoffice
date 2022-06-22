@@ -143,11 +143,6 @@ func (h *Handler) DeleteDepartment(w http.ResponseWriter, r *http.Request, ctx C
 
 	// TODO handle validation errors
 
-	// if validationErrs := ctx.Dataset.Validate(); validationErrs != nil {
-	// 	render.Render(w, "error_dialog", ctx.T("dataset.conflict_error"))
-	// 	return
-	// }
-
 	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
 
 	var conflict *snapstore.Conflict

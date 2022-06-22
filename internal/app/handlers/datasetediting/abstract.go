@@ -154,7 +154,7 @@ func (h *Handler) ConfirmDeleteAbstract(w http.ResponseWriter, r *http.Request, 
 	}
 
 	if _, err := ctx.Dataset.GetAbstract(b.Position); err != nil {
-		render.BadRequest(w, r, err)
+		render.InternalServerError(w, r, err)
 		return
 	}
 
@@ -172,7 +172,7 @@ func (h *Handler) DeleteAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 	}
 
 	if err := ctx.Dataset.RemoveAbstract(b.Position); err != nil {
-		render.BadRequest(w, r, err)
+		render.InternalServerError(w, r, err)
 		return
 	}
 

@@ -1,4 +1,5 @@
-{{ if .Dataset.Department }}
+{{if .Dataset.Department}}
+<div class="card-body p-0">
     <table class="table">
         <tbody>
             {{range $k, $d := .Dataset.Department}}
@@ -9,8 +10,8 @@
                                 <div class="d-flex align-items-start">
                                     <div class="list-group-item-content">
                                         <div class="list-group-item-text">
-                                            <h4 class="c-h4">{{ $.TS "organization" $d.ID }}</h4>
-                                            <div class="text-muted c-body-small">Department ID: {{ $d.ID }}</div>
+                                            <h4 class="c-h4">{{$.TS "organization" $d.ID}}</h4>
+                                            <div class="text-muted c-body-small">Department ID: {{$d.ID}}</div>
                                         </div>
                                     </div>
                                     </div>
@@ -40,15 +41,12 @@
                         {{end}}
                     </td>
                 </tr>
-            {{ end }}
+            {{end }}
         </tbody>
     </table>
-{{ else }}
-    <ul class="list-group list-group-flush" data-panel-state="read">
-        <li class="list-group-item">
-            <div class="row">
-                <p>No departments.</p>
-            </div>
-        </li>
-    </ul>
+</div>
+{{else}}
+<div class="card-body">
+    <span class="text-muted">No departments</span>
+</div>
 {{end}}
