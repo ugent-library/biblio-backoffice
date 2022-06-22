@@ -3,9 +3,10 @@ package mutantdb_test
 import (
 	"errors"
 	"os"
-	"strconv"
+	"strings"
 	"testing"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v4"
 	"github.com/ugent-library/biblio-backend/internal/mutantdb"
 	"golang.org/x/net/context"
@@ -52,10 +53,9 @@ func TestMutantDB(t *testing.T) {
 		return a, nil
 	})
 
-	nextID := 0
 	idGenerator := func() (string, error) {
-		nextID += 1
-		return strconv.Itoa(nextID), nil
+		id := uuid.NewString()
+		return "custom:" + id, nil
 	}
 
 	pgURL, ok := os.LookupEnv("PG_URL")
@@ -78,7 +78,7 @@ func TestMutantDB(t *testing.T) {
 		WithIDGenerator(idGenerator).
 		WithMutators(nameAdder)
 
-	bookID := "book1"
+	bookID := uuid.NewString()
 	bookTitle := "My Title"
 	authorID := "author1"
 	authorName := "Mr Smith"
@@ -145,6 +145,15 @@ func TestMutantDB(t *testing.T) {
 	}
 	if bookProjectionAfterTx.MutationID == bookProjectionBeforeTx.MutationID {
 		t.Errorf("commit failed")
+	}
+
+	// test custom id generator
+	authorProjection, err := authorStore.Get(ctx, authorID)
+	if err != nil {
+		t.Errorf("got error, want nil: %s", err)
+	}
+	if !strings.HasPrefix(authorProjection.MutationID, "custom:") {
+		t.Error("got default id, want custom id")
 	}
 
 	// test GetAll
