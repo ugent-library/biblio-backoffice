@@ -78,10 +78,12 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		Repository:  services.Repository,
 	}
 	datasetEditingHandler := &datasetediting.Handler{
-		BaseHandler:          baseHandler,
-		Repository:           services.Repository,
-		ProjectService:       services.ProjectService,
-		ProjectSearchService: services.ProjectSearchService,
+		BaseHandler:               baseHandler,
+		Repository:                services.Repository,
+		ProjectService:            services.ProjectService,
+		ProjectSearchService:      services.ProjectSearchService,
+		OrganizationSearchService: services.OrganizationSearchService,
+		OrganizationService:       services.OrganizationService,
 	}
 
 	// TODO fix absolute url generation
@@ -123,6 +125,38 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		datasetViewingHandler.Wrap(datasetViewingHandler.ShowPublications)).
 		Methods("GET").
 		Name("dataset_publications")
+	// edit dataset projects
+	r.HandleFunc("/dataset/{id}/projects/add", datasetEditingHandler.Wrap(datasetEditingHandler.AddProject)).
+		Methods("GET").
+		Name("dataset_add_project")
+	r.HandleFunc("/dataset/{id}/projects/suggestions", datasetEditingHandler.Wrap(datasetEditingHandler.ProjectSuggestions)).
+		Methods("GET").
+		Name("dataset_project_suggestions")
+	r.HandleFunc("/dataset/{id}/projects", datasetEditingHandler.Wrap(datasetEditingHandler.CreateProject)).
+		Methods("POST").
+		Name("dataset_create_project")
+	r.HandleFunc("/dataset/{id}/projects/{position}/confirm-delete", datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmDeleteProject)).
+		Methods("GET").
+		Name("dataset_confirm_delete_project")
+	r.HandleFunc("/dataset/{id}/projects/{position}", datasetEditingHandler.Wrap(datasetEditingHandler.DeleteProject)).
+		Methods("DELETE").
+		Name("dataset_delete_project")
+	// edit dataset departments
+	r.HandleFunc("/dataset/{id}/departments/add", datasetEditingHandler.Wrap(datasetEditingHandler.AddDepartment)).
+		Methods("GET").
+		Name("dataset_add_department")
+	r.HandleFunc("/dataset/{id}/departments/suggestions", datasetEditingHandler.Wrap(datasetEditingHandler.DepartmentSuggestions)).
+		Methods("GET").
+		Name("dataset_department_suggestions")
+	r.HandleFunc("/dataset/{id}/departments", datasetEditingHandler.Wrap(datasetEditingHandler.CreateDepartment)).
+		Methods("POST").
+		Name("dataset_create_department")
+	r.HandleFunc("/dataset/{id}/departments/{position}/confirm-delete", datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmDeleteDepartment)).
+		Methods("GET").
+		Name("dataset_confirm_delete_department")
+	r.HandleFunc("/dataset/{id}/departments/{position}", datasetEditingHandler.Wrap(datasetEditingHandler.DeleteDepartment)).
+		Methods("DELETE").
+		Name("dataset_delete_department")
 	// edit dataset abstracts
 	r.HandleFunc("/dataset/{id}/abstracts/add", datasetEditingHandler.Wrap(datasetEditingHandler.AddAbstract)).
 		Methods("GET").
@@ -142,22 +176,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	r.HandleFunc("/dataset/{id}/abstracts/{position}", datasetEditingHandler.Wrap(datasetEditingHandler.DeleteAbstract)).
 		Methods("DELETE").
 		Name("dataset_delete_abstract")
-	// edit dataset projects
-	r.HandleFunc("/dataset/{id}/projects/add", datasetEditingHandler.Wrap(datasetEditingHandler.AddProject)).
-		Methods("GET").
-		Name("dataset_add_project")
-	r.HandleFunc("/dataset/{id}/projects/suggestions", datasetEditingHandler.Wrap(datasetEditingHandler.ProjectSuggestions)).
-		Methods("GET").
-		Name("dataset_project_suggestions")
-	r.HandleFunc("/dataset/{id}/projects", datasetEditingHandler.Wrap(datasetEditingHandler.CreateProject)).
-		Methods("POST").
-		Name("dataset_create_project")
-	r.HandleFunc("/dataset/{id}/projects/{position}/confirm-delete", datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmDeleteProject)).
-		Methods("GET").
-		Name("dataset_confirm_delete_project")
-	r.HandleFunc("/dataset/{id}/projects/{position}", datasetEditingHandler.Wrap(datasetEditingHandler.DeleteProject)).
-		Methods("DELETE").
-		Name("dataset_delete_project")
 
 	// r.Use(handlers.HTTPMethodOverrideHandler)
 	r.Use(locale.Detect(oldBase.Localizer))
