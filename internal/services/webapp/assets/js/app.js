@@ -15,14 +15,14 @@ import radioCard from './ui/radio_card.js'
 import toast from './ui/toast.js'
 import sortable from './ui/sortable.js';
 
-
+// configure htmx
 htmx.config.defaultFocusScroll = true
+// load htmx extensions
 window.htmx = htmx
 require('htmx.org/dist/ext/remove-me.js');
 
+// initialize everyting
 document.addEventListener('DOMContentLoaded', function () {
-    htmx.config.defaultFocusScroll = true
-
     csrf()
     // tabs()
     checkbox()
