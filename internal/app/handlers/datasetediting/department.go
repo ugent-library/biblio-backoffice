@@ -81,9 +81,7 @@ func (h *Handler) CreateDepartment(w http.ResponseWriter, r *http.Request, ctx C
 		return
 	}
 
-	datasetDepartment := models.DatasetDepartment{
-		ID: department.ID,
-	}
+	datasetDepartment := models.DatasetDepartment{ID: department.ID}
 
 	for _, d := range department.Tree {
 		datasetDepartment.Tree = append(datasetDepartment.Tree, models.DatasetDepartmentRef(d))

@@ -1,11 +1,13 @@
 package datasetediting
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/ugent-library/biblio-backend/internal/bind"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
+	"github.com/ugent-library/biblio-backend/internal/snapstore"
 )
 
 type BindProjectSuggestions struct {
@@ -80,9 +82,15 @@ func (h *Handler) CreateProject(w http.ResponseWriter, r *http.Request, ctx Cont
 		Name: project.Title,
 	})
 
-	err = h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
-	// TODO handle conflict errors
 	// TODO handle validation errors
+
+	err = h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
+
+	var conflict *snapstore.Conflict
+	if errors.As(err, &conflict) {
+		render.Render(w, "error_dialog", ctx.T("dataset.conflict_error"))
+		return
+	}
 
 	if err != nil {
 		render.InternalServerError(w, r, err)
@@ -124,9 +132,15 @@ func (h *Handler) DeleteProject(w http.ResponseWriter, r *http.Request, ctx Cont
 		return
 	}
 
-	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
-	// TODO handle conflict errors
 	// TODO handle validation errors
+
+	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
+
+	var conflict *snapstore.Conflict
+	if errors.As(err, &conflict) {
+		render.Render(w, "error_dialog", ctx.T("dataset.conflict_error"))
+		return
+	}
 
 	if err != nil {
 		render.InternalServerError(w, r, err)
