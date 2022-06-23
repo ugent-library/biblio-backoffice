@@ -36,38 +36,38 @@ type RelatedPublication struct {
 }
 
 type Dataset struct {
-	Abstract           []Text               `json:"abstract,omitempty" form:"abstract"`
-	AccessLevel        string               `json:"access_level,omitempty" form:"access_level"`
-	Author             []*Contributor       `json:"author,omitempty" form:"-"` // TODO rename to Creator
-	CompletenessScore  int                  `json:"completeness_score,omitempty" form:"-"`
-	Contributor        []*Contributor       `json:"contributor,omitempty" form:"-"`
-	CreatorID          string               `json:"creator_id,omitempty" form:"-"`
-	DateCreated        *time.Time           `json:"date_created,omitempty" form:"-"`
-	DateUpdated        *time.Time           `json:"date_updated,omitempty" form:"-"`
-	DateFrom           *time.Time           `json:"date_from,omitempty" form:"-"`
-	DateUntil          *time.Time           `json:"date_until,omitempty" form:"-"`
-	Department         []DatasetDepartment  `json:"department,omitempty" form:"-"`
-	DOI                string               `json:"doi,omitempty" form:"-"`
-	Embargo            string               `json:"embargo,omitempty" form:"embargo"`
-	EmbargoTo          string               `json:"embargo_to,omitempty" form:"embargo_to"`
-	Format             []string             `json:"format,omitempty" form:"format"`
-	ID                 string               `json:"id,omitempty" form:"-"`
-	Keyword            []string             `json:"keyword,omitempty" form:"keyword"`
-	License            string               `json:"license,omitempty" form:"license"`
-	Locked             bool                 `json:"locked,omitempty" form:"-"`
-	Message            string               `json:"message,omitempty" form:"-"`
-	OtherLicense       string               `json:"other_license,omitempty" form:"other_license"`
-	Project            []DatasetProject     `json:"project,omitempty" form:"-"`
-	Publisher          string               `json:"publisher,omitempty" form:"publisher"`
-	RelatedPublication []RelatedPublication `json:"related_publication,omitempty" form:"-"`
-	ReviewerNote       string               `json:"reviewer_note,omitempty" form:"-"`
-	ReviewerTags       []string             `json:"reviewer_tags,omitempty" form:"-"`
-	SnapshotID         string               `json:"-" form:"-"`
-	Status             string               `json:"status,omitempty" form:"-"`
-	Title              string               `json:"title,omitempty" form:"title"`
-	URL                string               `json:"url,omitempty" form:"url"`
-	UserID             string               `json:"user_id,omitempty" form:"-"`
-	Year               string               `json:"year,omitempty" form:"year"`
+	Abstract           []Text               `json:"abstract,omitempty"`
+	AccessLevel        string               `json:"access_level,omitempty"`
+	Author             []*Contributor       `json:"author,omitempty"` // TODO rename to Creator
+	CompletenessScore  int                  `json:"completeness_score,omitempty"`
+	Contributor        []*Contributor       `json:"contributor,omitempty"`
+	CreatorID          string               `json:"creator_id,omitempty"`
+	DateCreated        *time.Time           `json:"date_created,omitempty"`
+	DateUpdated        *time.Time           `json:"date_updated,omitempty"`
+	DateFrom           *time.Time           `json:"date_from,omitempty"`
+	DateUntil          *time.Time           `json:"date_until,omitempty"`
+	Department         []DatasetDepartment  `json:"department,omitempty"`
+	DOI                string               `json:"doi,omitempty"`
+	Embargo            string               `json:"embargo,omitempty"`
+	EmbargoTo          string               `json:"embargo_to,omitempty"`
+	Format             []string             `json:"format,omitempty"`
+	ID                 string               `json:"id,omitempty"`
+	Keyword            []string             `json:"keyword,omitempty"`
+	License            string               `json:"license,omitempty"`
+	Locked             bool                 `json:"locked,omitempty"`
+	Message            string               `json:"message,omitempty"`
+	OtherLicense       string               `json:"other_license,omitempty"`
+	Project            []DatasetProject     `json:"project,omitempty"`
+	Publisher          string               `json:"publisher,omitempty"`
+	RelatedPublication []RelatedPublication `json:"related_publication,omitempty"`
+	ReviewerNote       string               `json:"reviewer_note,omitempty"`
+	ReviewerTags       []string             `json:"reviewer_tags,omitempty"`
+	SnapshotID         string               `json:"-"`
+	Status             string               `json:"status,omitempty"`
+	Title              string               `json:"title,omitempty"`
+	URL                string               `json:"url,omitempty"`
+	UserID             string               `json:"user_id,omitempty"`
+	Year               string               `json:"year,omitempty"`
 }
 
 func (d *Dataset) Clone() *Dataset {
