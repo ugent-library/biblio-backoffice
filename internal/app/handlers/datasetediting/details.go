@@ -218,7 +218,7 @@ func detailsForm(ctx Context, b BindDetails, errors validation.Errors) *form.For
 		Placeholder: ctx.T("builder.details.publisher.placeholder"),
 		Error:       localize.ValidationErrorAt(ctx.Locale, errors, "/publisher"),
 		Required:    true,
-		// Tooltip
+		Tooltip:     ctx.T("tooltip.dataset.publisher"),
 	}
 
 	year := &form.Text{
@@ -241,6 +241,7 @@ func detailsForm(ctx Context, b BindDetails, errors validation.Errors) *form.For
 		Error:           localize.ValidationErrorAt(ctx.Locale, errors, "/format"),
 		Required:        true,
 		AutocompleteURL: "media_type_choose",
+		Tooltip:         ctx.T("tooltip.dataset.format"),
 	}
 
 	keyword := &form.TextRepeat{
@@ -260,6 +261,7 @@ func detailsForm(ctx Context, b BindDetails, errors validation.Errors) *form.For
 		Options: localize.LicenseSelectOptions(ctx.Locale),
 		Cols:    3,
 		Error:   localize.ValidationErrorAt(ctx.Locale, errors, "/license"),
+		Tooltip: ctx.T("tooltip.dataset.license"),
 	}
 
 	otherLicense := &form.Text{
@@ -267,7 +269,7 @@ func detailsForm(ctx Context, b BindDetails, errors validation.Errors) *form.For
 		Value:       b.OtherLicense,
 		Label:       ctx.T("builder.other_license"),
 		Cols:        9,
-		Placeholder: ctx.T("builder.details.other_license.placeholder"),
+		Placeholder: "e.g. https://creativecommons.org/licenses/by/4.0/",
 		Error:       localize.ValidationErrorAt(ctx.Locale, errors, "/other_license"),
 		Required:    true,
 	}
@@ -282,8 +284,8 @@ func detailsForm(ctx Context, b BindDetails, errors validation.Errors) *form.For
 		Error:       localize.ValidationErrorAt(ctx.Locale, errors, "/access_level"),
 		Required:    true,
 		EmptyChoice: true,
-		// Tooltip
-		Vars: struct{ ID string }{ID: b.ID},
+		Tooltip:     ctx.T("tooltip.dataset.access_level"),
+		Vars:        struct{ ID string }{ID: b.ID},
 	}
 
 	disabled := false
