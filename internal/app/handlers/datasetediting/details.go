@@ -247,7 +247,7 @@ func detailsForm(ctx Context, b BindDetails, errors validation.Errors) *form.For
 	keyword := &form.TextRepeat{
 		Name:   "keyword",
 		Values: b.Keyword,
-		Label:  ctx.T("builder.details.keyword"),
+		Label:  ctx.T("builder.keyword"),
 		Cols:   9,
 		Error:  localize.ValidationErrorAt(ctx.Locale, errors, "/keyword"),
 	}
