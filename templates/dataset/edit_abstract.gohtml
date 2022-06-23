@@ -6,7 +6,10 @@
                 <h2 class="modal-title">Edit Abstract</h2>
             </div>
             <div class="modal-body">
-                {{.Form.RenderHTML}}
+                {{.Form.RenderErrors}}
+                {{range .Form.Sections}}
+                    {{.Render}}
+                {{end}}
             </div>
             <div class="modal-footer">
                 <button class="btn btn-link modal-close">Cancel</button>

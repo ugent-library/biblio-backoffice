@@ -9,7 +9,13 @@
         {{end}}
     </label>
     <div class="col-{{.Cols}}">
-        <select class="custom-select form-control{{if .Error}} is-invalid{{end}}" name="{{.Name}}"{{if .Disabled}} disabled{{end}}>
+        <select class="custom-select form-control{{if .Error}} is-invalid{{end}}" name="{{.Name}}"{{if .Disabled}} disabled{{end}}
+            hx-put="{{pathFor "dataset_edit_details_access_level" "id" .Vars.ID}}"
+            hx-include=".modal-body"
+            hx-swap="innerHTML scroll:.modal-body:bottom"
+            hx-target="#modals"
+            hx-include=".modal-body"
+        >
             {{if .EmptyChoice }}<option></option>{{end}}
             {{range .Options}}
             <option value="{{.Value}}"{{if eq .Value $.Value}} selected{{end}}>{{.Label}}</option>
