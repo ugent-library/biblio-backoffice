@@ -1,10 +1,14 @@
 package handlers
 
 import (
+	"fmt"
 	"html/template"
+	"log"
 	"net/http"
+	"net/url"
 
 	"github.com/gorilla/csrf"
+	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/locale"
@@ -12,7 +16,10 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/render"
 )
 
+// TODO handlers should only have access to a url builder,
+// the session and maybe the localizer
 type BaseHandler struct {
+	Router       *mux.Router
 	SessionName  string
 	SessionStore sessions.Store
 	UserService  backends.UserService
@@ -31,12 +38,12 @@ func (h BaseHandler) Wrap(fn func(http.ResponseWriter, *http.Request, BaseContex
 }
 
 func (h BaseHandler) NewContext(r *http.Request) (BaseContext, error) {
-	user, err := h.getUserFromSession(r, "user_id")
+	user, err := h.getUserFromSession(r, UserSessionKey)
 	if err != nil {
 		return BaseContext{}, err
 	}
 
-	originalUser, err := h.getUserFromSession(r, "original_user_id")
+	originalUser, err := h.getUserFromSession(r, OriginalUserSessionKey)
 	if err != nil {
 		return BaseContext{}, err
 	}
@@ -66,6 +73,31 @@ func (h BaseHandler) getUserFromSession(r *http.Request, sessionKey string) (*mo
 	}
 
 	return user, nil
+}
+
+func (h BaseHandler) PathFor(name string, vars ...string) *url.URL {
+	if route := h.Router.Get(name); route != nil {
+		u, err := route.URLPath(vars...)
+		if err != nil {
+			log.Panic(fmt.Errorf("can't reverse route %s: %w", name, err))
+		}
+		return u
+	}
+	log.Panic(fmt.Errorf("route %s not found", name))
+	return nil
+
+}
+
+func (h BaseHandler) URLFor(name string, vars ...string) *url.URL {
+	if route := h.Router.Get(name); route != nil {
+		u, err := route.URL(vars...)
+		if err != nil {
+			log.Panic(fmt.Errorf("can't reverse route %s: %w", name, err))
+		}
+		return u
+	}
+	log.Panic(fmt.Errorf("route %s not found", name))
+	return nil
 }
 
 type BaseContext struct {

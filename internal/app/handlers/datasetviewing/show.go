@@ -39,7 +39,7 @@ type YieldShowPublications struct {
 
 func (h *Handler) Show(w http.ResponseWriter, r *http.Request, ctx Context) {
 	searchArgs := models.NewSearchArgs()
-	if err := bind.RequestQuery(r, searchArgs); err != nil {
+	if err := bind.Request(r, searchArgs); err != nil {
 		render.BadRequest(w, r, err)
 		return
 	}

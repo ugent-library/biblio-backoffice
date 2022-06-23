@@ -9,6 +9,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/app/handlers"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/datasetediting"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/datasetviewing"
+	"github.com/ugent-library/biblio-backend/internal/app/handlers/impersonating"
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/locale"
 	"github.com/ugent-library/biblio-backend/internal/services/webapp/controllers"
@@ -22,7 +23,7 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 
 	router.StrictSlash(true)
 	router.UseEncodedPath()
-	router.Use(mw.RecoveryHandler())
+	router.Use(mw.RecoveryHandler(mw.PrintRecoveryStack(true)))
 
 	// static files
 	router.PathPrefix(basePath + "/static/").Handler(http.StripPrefix(basePath+"/static/", http.FileServer(http.Dir("./internal/services/webapp/static"))))
@@ -32,7 +33,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 
 	homeController := controllers.NewHome(oldBase)
 	authController := controllers.NewAuth(oldBase, oidcClient, services.UserService)
-	usersController := controllers.NewUsers(oldBase, services.UserService)
 	tasksController := controllers.NewTasks(oldBase, services.Tasks)
 
 	publicationsController := controllers.NewPublications(
@@ -59,19 +59,21 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 
 	datasetsController := controllers.NewDatasets(oldBase, services.Repository, services.DatasetSearchService, services.DatasetSources)
 	// datasetDetailsController := controllers.NewDatasetDetails(oldBase, services.Repository)
-	datasetDepartmentsController := controllers.NewDatasetDepartments(oldBase, services.Repository, services.OrganizationSearchService, services.OrganizationService)
 	datasetEditingHandlerontributorsController := controllers.NewDatasetContributors(oldBase, services.Repository, services.PersonSearchService, services.PersonService)
-	datasetPublicationsController := controllers.NewDatasetPublications(oldBase, services.Repository, services.PublicationSearchService)
 
 	licensesController := controllers.NewLicenses(oldBase, services.LicenseSearchService)
 	mediaTypesController := controllers.NewMediaTypes(oldBase, services.MediaTypeSearchService)
 
 	// NEW HANDLERS
 	baseHandler := handlers.BaseHandler{
+		Router:       oldBase.Router,
 		SessionStore: oldBase.SessionStore,
 		SessionName:  oldBase.SessionName,
 		Localizer:    oldBase.Localizer,
 		UserService:  services.UserService,
+	}
+	impersonatingHandler := &impersonating.Handler{
+		BaseHandler: baseHandler,
 	}
 	datasetViewingHandler := &datasetviewing.Handler{
 		BaseHandler: baseHandler,
@@ -84,6 +86,7 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		ProjectSearchService:      services.ProjectSearchService,
 		OrganizationSearchService: services.OrganizationSearchService,
 		OrganizationService:       services.OrganizationService,
+		PublicationSearchService:  services.PublicationSearchService,
 	}
 
 	// TODO fix absolute url generation
@@ -96,18 +99,31 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	// r = r.Schemes(schemes...).Host(u.Host).PathPrefix(u.Path).Subrouter()
 
 	r := router.PathPrefix(basePath).Subrouter()
-
-	csrfMiddleware := csrf.Protect(
+	r.Use(csrf.Protect(
 		[]byte(viper.GetString("csrf-secret")),
 		csrf.CookieName(viper.GetString("csrf-name")),
 		csrf.Path(basePath),
 		csrf.Secure(oldBase.BaseURL.Scheme == "https"),
 		csrf.SameSite(csrf.SameSiteStrictMode),
 		csrf.FieldName("csrf-token"),
-	)
-	r.Use(csrfMiddleware)
+	))
 
 	// NEW ROUTES
+	// impersonate user
+	r.HandleFunc("/impersonation/add",
+		impersonatingHandler.Wrap(impersonatingHandler.AddImpersonation)).
+		Methods("GET").
+		Name("add_impersonation")
+	r.HandleFunc("/impersonation",
+		impersonatingHandler.Wrap(impersonatingHandler.CreateImpersonation)).
+		Methods("POST").
+		Name("create_impersonation")
+	// TODO why doesn't a DELETE with methodoverride work here?
+	r.HandleFunc("/delete-impersonation",
+		impersonatingHandler.Wrap(impersonatingHandler.DeleteImpersonation)).
+		Methods("POST").
+		Name("delete_impersonation")
+
 	// view dataset
 	r.HandleFunc("/dataset/{id}",
 		datasetViewingHandler.Wrap(datasetViewingHandler.Show)).
@@ -136,56 +152,96 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		Methods("POST").
 		Name("dataset_save_details")
 	// edit dataset projects
-	r.HandleFunc("/dataset/{id}/projects/add", datasetEditingHandler.Wrap(datasetEditingHandler.AddProject)).
+	r.HandleFunc("/dataset/{id}/projects/add",
+		datasetEditingHandler.Wrap(datasetEditingHandler.AddProject)).
 		Methods("GET").
 		Name("dataset_add_project")
-	r.HandleFunc("/dataset/{id}/projects/suggestions", datasetEditingHandler.Wrap(datasetEditingHandler.ProjectSuggestions)).
+	r.HandleFunc("/dataset/{id}/projects/suggestions",
+		datasetEditingHandler.Wrap(datasetEditingHandler.SuggestProjects)).
 		Methods("GET").
 		Name("dataset_project_suggestions")
-	r.HandleFunc("/dataset/{id}/projects", datasetEditingHandler.Wrap(datasetEditingHandler.CreateProject)).
+	r.HandleFunc("/dataset/{id}/projects",
+		datasetEditingHandler.Wrap(datasetEditingHandler.CreateProject)).
 		Methods("POST").
 		Name("dataset_create_project")
-	r.HandleFunc("/dataset/{id}/projects/{position}/confirm-delete", datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmDeleteProject)).
+	r.HandleFunc("/dataset/{id}/projects/{position}/confirm-delete",
+		datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmDeleteProject)).
 		Methods("GET").
 		Name("dataset_confirm_delete_project")
-	r.HandleFunc("/dataset/{id}/projects/{position}", datasetEditingHandler.Wrap(datasetEditingHandler.DeleteProject)).
+	r.HandleFunc("/dataset/{id}/projects/{position}",
+		datasetEditingHandler.Wrap(datasetEditingHandler.DeleteProject)).
 		Methods("DELETE").
 		Name("dataset_delete_project")
+
 	// edit dataset departments
-	r.HandleFunc("/dataset/{id}/departments/add", datasetEditingHandler.Wrap(datasetEditingHandler.AddDepartment)).
+	r.HandleFunc("/dataset/{id}/departments/add",
+		datasetEditingHandler.Wrap(datasetEditingHandler.AddDepartment)).
 		Methods("GET").
 		Name("dataset_add_department")
-	r.HandleFunc("/dataset/{id}/departments/suggestions", datasetEditingHandler.Wrap(datasetEditingHandler.DepartmentSuggestions)).
+	r.HandleFunc("/dataset/{id}/departments/suggestions",
+		datasetEditingHandler.Wrap(datasetEditingHandler.SuggestDepartments)).
 		Methods("GET").
 		Name("dataset_department_suggestions")
-	r.HandleFunc("/dataset/{id}/departments", datasetEditingHandler.Wrap(datasetEditingHandler.CreateDepartment)).
+	r.HandleFunc("/dataset/{id}/departments",
+		datasetEditingHandler.Wrap(datasetEditingHandler.CreateDepartment)).
 		Methods("POST").
 		Name("dataset_create_department")
-	r.HandleFunc("/dataset/{id}/departments/{position}/confirm-delete", datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmDeleteDepartment)).
+	r.HandleFunc("/dataset/{id}/departments/{position}/confirm-delete",
+		datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmDeleteDepartment)).
 		Methods("GET").
 		Name("dataset_confirm_delete_department")
-	r.HandleFunc("/dataset/{id}/departments/{position}", datasetEditingHandler.Wrap(datasetEditingHandler.DeleteDepartment)).
+	r.HandleFunc("/dataset/{id}/departments/{position}",
+		datasetEditingHandler.Wrap(datasetEditingHandler.DeleteDepartment)).
 		Methods("DELETE").
 		Name("dataset_delete_department")
+
 	// edit dataset abstracts
-	r.HandleFunc("/dataset/{id}/abstracts/add", datasetEditingHandler.Wrap(datasetEditingHandler.AddAbstract)).
+	r.HandleFunc("/dataset/{id}/abstracts/add",
+		datasetEditingHandler.Wrap(datasetEditingHandler.AddAbstract)).
 		Methods("GET").
 		Name("dataset_add_abstract")
-	r.HandleFunc("/dataset/{id}/abstracts", datasetEditingHandler.Wrap(datasetEditingHandler.CreateAbstract)).
+	r.HandleFunc("/dataset/{id}/abstracts",
+		datasetEditingHandler.Wrap(datasetEditingHandler.CreateAbstract)).
 		Methods("POST").
 		Name("dataset_create_abstract")
-	r.HandleFunc("/dataset/{id}/abstracts/{position}/edit", datasetEditingHandler.Wrap(datasetEditingHandler.EditAbstract)).
+	r.HandleFunc("/dataset/{id}/abstracts/{position}/edit",
+		datasetEditingHandler.Wrap(datasetEditingHandler.EditAbstract)).
 		Methods("GET").
 		Name("dataset_edit_abstract")
-	r.HandleFunc("/dataset/{id}/abstracts/{position}", datasetEditingHandler.Wrap(datasetEditingHandler.UpdateAbstract)).
+	r.HandleFunc("/dataset/{id}/abstracts/{position}",
+		datasetEditingHandler.Wrap(datasetEditingHandler.UpdateAbstract)).
 		Methods("PUT").
 		Name("dataset_update_abstract")
-	r.HandleFunc("/dataset/{id}/abstracts/{position}/confirm-delete", datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmDeleteAbstract)).
+	r.HandleFunc("/dataset/{id}/abstracts/{position}/confirm-delete",
+		datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmDeleteAbstract)).
 		Methods("GET").
 		Name("dataset_confirm_delete_abstract")
-	r.HandleFunc("/dataset/{id}/abstracts/{position}", datasetEditingHandler.Wrap(datasetEditingHandler.DeleteAbstract)).
+	r.HandleFunc("/dataset/{id}/abstracts/{position}",
+		datasetEditingHandler.Wrap(datasetEditingHandler.DeleteAbstract)).
 		Methods("DELETE").
 		Name("dataset_delete_abstract")
+
+	// edit dataset publications
+	r.HandleFunc("/dataset/{id}/publications/add",
+		datasetEditingHandler.Wrap(datasetEditingHandler.AddPublication)).
+		Methods("GET").
+		Name("dataset_add_publication")
+	r.HandleFunc("/dataset/{id}/publications/suggestions",
+		datasetEditingHandler.Wrap(datasetEditingHandler.SuggestPublications)).
+		Methods("GET").
+		Name("dataset_publication_suggestions")
+	r.HandleFunc("/dataset/{id}/publications",
+		datasetEditingHandler.Wrap(datasetEditingHandler.CreatePublication)).
+		Methods("POST").
+		Name("dataset_create_publication")
+	r.HandleFunc("/dataset/{id}/publications/{publication_id}/confirm-delete",
+		datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmDeletePublication)).
+		Methods("GET").
+		Name("dataset_confirm_delete_publication")
+	r.HandleFunc("/dataset/{id}/publications/{publication_id}",
+		datasetEditingHandler.Wrap(datasetEditingHandler.DeletePublication)).
+		Methods("DELETE").
+		Name("dataset_delete_publication")
 
 	// r.Use(handlers.HTTPMethodOverrideHandler)
 	r.Use(locale.Detect(oldBase.Localizer))
@@ -211,20 +267,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	taskRouter.HandleFunc("/{id}/status", tasksController.Status).
 		Methods("GET").
 		Name("task_status")
-
-	// users
-	userRouter := r.PathPrefix("/user").Subrouter()
-	userRouter.Use(requireUser)
-	userRouter.HandleFunc("/htmx/impersonate/choose", usersController.ImpersonateChoose).
-		Methods("GET").
-		Name("user_impersonate_choose")
-	userRouter.HandleFunc("/impersonate", usersController.Impersonate).
-		Methods("POST").
-		Name("user_impersonate")
-	// TODO why doesn't a DELETE with methodoverride work with CAS?
-	userRouter.HandleFunc("/impersonate/remove", usersController.ImpersonateRemove).
-		Methods("POST").
-		Name("user_impersonate_remove")
 
 	// publications
 	pubsRouter := r.PathPrefix("/publication").Subrouter()
@@ -554,21 +596,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	// 	Methods("PATCH").
 	// 	Name("dataset_details_save_form")
 	// Dataset departments HTMX fragments
-	datasetEditRouter.HandleFunc("/htmx/departments/list", datasetDepartmentsController.List).
-		Methods("GET").
-		Name("datasetDepartments")
-	datasetEditRouter.HandleFunc("/htmx/departments/list/activesearch", datasetDepartmentsController.ActiveSearch).
-		Methods("POST").
-		Name("datasetDepartments_activesearch")
-	datasetEditRouter.HandleFunc("/htmx/departments/add/{department_id}", datasetDepartmentsController.Add).
-		Methods("PATCH").
-		Name("datasetDepartments_add_to_dataset")
-	datasetEditRouter.HandleFunc("/htmx/departments/remove/{department_id}", datasetDepartmentsController.ConfirmRemove).
-		Methods("GET").
-		Name("datasetDepartments_confirm_remove_from_dataset")
-	datasetEditRouter.HandleFunc("/htmx/departments/remove/{department_id}", datasetDepartmentsController.Remove).
-		Methods("PATCH").
-		Name("datasetDepartments_remove_from_dataset")
 	// Dataset contributors HTMX fragments
 	datasetEditRouter.HandleFunc("/htmx/contributors/{role}/add", datasetEditingHandlerontributorsController.Add).
 		Methods("GET").
@@ -600,22 +627,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	datasetEditRouter.HandleFunc("/htmx/contributors/{role}/{position}", datasetEditingHandlerontributorsController.Update).
 		Methods("PUT").
 		Name("dataset_contributors_update")
-	// Dataset publications HTMX fragments
-	datasetEditRouter.HandleFunc("/htmx/publications/choose", datasetPublicationsController.Choose).
-		Methods("GET").
-		Name("dataset_publications_choose")
-	datasetEditRouter.HandleFunc("/htmx/publications/activesearch", datasetPublicationsController.ActiveSearch).
-		Methods("POST").
-		Name("dataset_publications_activesearch")
-	datasetEditRouter.HandleFunc("/htmx/publications/add/{publication_id}", datasetPublicationsController.Add).
-		Methods("PATCH").
-		Name("dataset_publications_add")
-	datasetEditRouter.HandleFunc("/htmx/publications/remove/{publication_id}", datasetPublicationsController.ConfirmRemove).
-		Methods("GET").
-		Name("dataset_publications_confirm_remove")
-	datasetEditRouter.HandleFunc("/htmx/publications/remove/{publication_id}", datasetPublicationsController.Remove).
-		Methods("PATCH").
-		Name("dataset_publications_remove")
 
 	licensesRouter := r.PathPrefix("/license").Subrouter()
 	licensesRouter.HandleFunc("/htmx/choose", licensesController.Choose).

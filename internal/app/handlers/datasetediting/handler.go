@@ -17,6 +17,7 @@ type Handler struct {
 	ProjectService            backends.ProjectService
 	OrganizationSearchService backends.OrganizationSearchService
 	OrganizationService       backends.OrganizationService
+	PublicationSearchService  backends.PublicationSearchService
 }
 
 type Context struct {

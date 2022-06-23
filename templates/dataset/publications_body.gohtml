@@ -1,0 +1,50 @@
+{{if .RelatedPublications}}
+<div class="card-body p-0">
+    <ul class="list-group list-group-flush">
+        {{range .RelatedPublications}}
+        <li class="list-group-item">
+            <div class="d-flex w-100">
+                <div class="w-100">
+                    <div class="d-flex align-items-start">
+                        {{template "publication/thumbnail" .}}
+                        <div class="list-group-item-content">
+                            <div class="list-group-item-subline">
+                                <div class="list-group-item-subline-left">
+                                </div>
+                                <div class="list-group-item-subline-right">
+                                    <div class="dropdown">
+                                        <button class="btn btn-link btn-icon-only btn-link-muted" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <i class="if if-more"></i>
+                                        </button>
+                                        <div class="dropdown-menu">
+                                            <a class="dropdown-item" href="{{pathFor "publication" "id" .ID}}">
+                                                <i class="if if-file-text"></i>
+                                                <span>View details</span>
+                                            </a>
+                                            {{if $.User.CanEditDataset $.Dataset}}
+                                            <button class="dropdown-item" type="button"
+                                                hx-get="{{pathFor "dataset_confirm_delete_publication" "id" $.Dataset.ID "publication_id" .ID}}"
+                                                hx-target="#modals"
+                                            >
+                                                <i class="if if-delete"></i>
+                                                <span>Remove from dataset</span>
+                                            </button>
+                                            {{end}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {{template "dataset/publication_summary" .}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+        {{end}}
+    </ul>
+</div>
+{{else}}
+<div class="card-body">
+    <span class="text-muted">No publications</span>
+</div>
+{{end}}

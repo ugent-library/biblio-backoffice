@@ -2,4 +2,33 @@
     {{template "dataset/show_nav" .}}
 </div>
 
-publications
+<div class="card mb-6">
+    <div class="card-header">
+        <div class="bc-toolbar">
+            <div class="bc-toolbar-left">
+                <h1 class="bc-toolbar-title">Related publications</h1>
+                <a class="text-muted mx-2" href="#" data-container="body" data-toggle="popover" data-trigger="focus"
+                    data-placement="right" data-content="{{ .T "tooltip.dataset.related_publications" }}">
+                    <i class="if if-info-circle if--small"></i>
+                    <div class="sr-only">More info</div>
+                </a>
+            </div>
+            <div class="bc-toolbar-right">
+                {{if .User.CanEditDataset .Dataset}}
+                <div class="c-button-toolbar" data-panel-state="read">
+                    <button class="btn btn-outline-primary"
+                        hx-get="{{pathFor "dataset_add_publication" "id" .Dataset.ID}}"
+                        hx-target="#modals"
+                    >
+                        <i class="if if-add"></i>
+                        <div class="btn-text">Add publication</div>
+                    </button>
+                </div>
+                {{end}}
+            </div>
+        </div>
+    </div>
+    <div id="publications-body">
+        {{template "dataset/publications_body" .}}
+    </div>
+</div>
