@@ -171,7 +171,6 @@ type SelectRepeat struct {
 	Rows            int
 	AutocompleteURL string
 	Error           string
-	errorPointer    string
 	ID              string
 	Disabled        bool
 }
