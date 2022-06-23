@@ -58,7 +58,7 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	publicationLaySummariesController := controllers.NewPublicationLaySummaries(oldBase, services.Repository)
 
 	datasetsController := controllers.NewDatasets(oldBase, services.Repository, services.DatasetSearchService, services.DatasetSources)
-	datasetDetailsController := controllers.NewDatasetDetails(oldBase, services.Repository)
+	// datasetDetailsController := controllers.NewDatasetDetails(oldBase, services.Repository)
 	datasetDepartmentsController := controllers.NewDatasetDepartments(oldBase, services.Repository, services.OrganizationSearchService, services.OrganizationService)
 	datasetEditingHandlerontributorsController := controllers.NewDatasetContributors(oldBase, services.Repository, services.PersonSearchService, services.PersonService)
 	datasetPublicationsController := controllers.NewDatasetPublications(oldBase, services.Repository, services.PublicationSearchService)
@@ -125,6 +125,16 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		datasetViewingHandler.Wrap(datasetViewingHandler.ShowPublications)).
 		Methods("GET").
 		Name("dataset_publications")
+	// edit dataset details
+	r.HandleFunc("/dataset/{id}/details/edit", datasetEditingHandler.Wrap(datasetEditingHandler.EditDetails)).
+		Methods("GET").
+		Name("dataset_edit_details")
+	r.HandleFunc("/dataset/{id}/details/edit/access-level", datasetEditingHandler.Wrap(datasetEditingHandler.EditDetailsAccessLevel)).
+		Methods("POST").
+		Name("dataset_edit_details_access_level")
+	r.HandleFunc("/dataset/{id}/details", datasetEditingHandler.Wrap(datasetEditingHandler.SaveDetails)).
+		Methods("POST").
+		Name("dataset_save_details")
 	// edit dataset projects
 	r.HandleFunc("/dataset/{id}/projects/add", datasetEditingHandler.Wrap(datasetEditingHandler.AddProject)).
 		Methods("GET").
@@ -531,18 +541,18 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		Methods("POST").
 		Name("dataset_add_publish")
 	// Dataset details HTMX fragments
-	datasetEditRouter.HandleFunc("/htmx/details", datasetDetailsController.Show).
-		Methods("GET").
-		Name("dataset_details")
-	datasetEditRouter.HandleFunc("/htmx/details/edit", datasetDetailsController.Edit).
-		Methods("GET").
-		Name("dataset_edit_details")
-	datasetEditRouter.HandleFunc("/htmx/details/access_level", datasetDetailsController.AccessLevel).
-		Methods("PUT").
-		Name("dataset_edit_details_access_level")
-	datasetEditRouter.HandleFunc("/htmx/details/edit", datasetDetailsController.Update).
-		Methods("PATCH").
-		Name("dataset_details_save_form")
+	// datasetEditRouter.HandleFunc("/htmx/details", datasetDetailsController.Show).
+	// 	Methods("GET").
+	// 	Name("dataset_details")
+	// datasetEditRouter.HandleFunc("/htmx/details/edit", datasetDetailsController.Edit).
+	// 	Methods("GET").
+	// 	Name("dataset_edit_details")
+	// datasetEditRouter.HandleFunc("/htmx/details/access_level", datasetDetailsController.AccessLevel).
+	// 	Methods("PUT").
+	// 	Name("dataset_edit_details_access_level")
+	// datasetEditRouter.HandleFunc("/htmx/details/edit", datasetDetailsController.Update).
+	// 	Methods("PATCH").
+	// 	Name("dataset_details_save_form")
 	// Dataset departments HTMX fragments
 	datasetEditRouter.HandleFunc("/htmx/departments/list", datasetDepartmentsController.List).
 		Methods("GET").

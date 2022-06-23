@@ -19,13 +19,7 @@
         </div>
     </div>
 
-    <div class="card-body p-0">
-        <ul class="list-group list-group-flush" data-panel-state="read">
-            {{range .DetailFields}}
-            <li class="list-group-item">
-                {{.RenderHTML}}
-            </li>
-            {{end}}
-        </ul>
+    <div id="details-body">
+        {{template "dataset/details_body" .}}
     </div>
 </div>

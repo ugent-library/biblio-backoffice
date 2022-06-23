@@ -1,0 +1,31 @@
+<div id="modal-backdrop" class="d-block modal-backdrop fade show"></div>
+<div class="d-block modal show" tabindex="-1" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Edit dataset details</h2>
+            </div>
+            <div class="modal-body">
+                {{.Form.RenderErrors}}
+                <ul class="list-group list-group-flush" data-panel-state="edit">
+                    {{range .Form.Sections}}
+                    <li class="list-group-item">
+                        {{.Render}}
+                    </li>
+                    {{end}}
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-link modal-close">Cancel</button>
+                <button type="button" name="create" class="btn btn-primary"
+                    hx-post="{{pathFor "dataset_save_details" "id" .Dataset.ID }}"
+                    hx-headers='{"If-Match": "{{.Dataset.SnapshotID}}"}'
+                    hx-include=".modal-body"
+                    hx-swap="none"
+                >
+                    Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
