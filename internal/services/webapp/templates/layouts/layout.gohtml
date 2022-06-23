@@ -14,20 +14,20 @@
 <body class="u-maximize-height overflow-hidden u-scroll-wrapper">
     <header>
         {{if eq .Mode "development"}}
-        <div class="alert alert-warning" role="alert">
+        <div class="alert alert-warning mb-0" role="alert">
             <strong>Warning!</strong>&nbsp;This is the&nbsp;<strong>development</strong>&nbsp;version of the Biblio
             backend. Features may not work correctly and data entered here will
             not be retained.
         </div>
         {{else if eq .Mode "staging"}}
-        <div class="alert alert-warning" role="alert">
+        <div class="alert alert-warning mb-0" role="alert">
             <strong>Warning!</strong>&nbsp;This is the&nbsp;<strong>test</strong>&nbsp;version of the Biblio
             backend. Data entered here will not be retained.
         </div>
         {{end}}
         {{with .OriginalUser}}
-        <div class="alert alert-danger" role="alert">
-            <form class="form-inline" action="{{pathFor "user_impersonate_remove"}}" method="POST">
+        <div class="alert alert-danger mb-0" role="alert">
+            <form class="form-inline" action="{{pathFor "delete_impersonation"}}" method="POST">
                 {{$.CSRFTag}}
                 <label class="my-1 mr-2 font-weight-bold">Viewing the perspective of {{$.User.FullName}}.</label>
                 <button type="submit" class="btn btn-danger my-1">return to {{.FullName}}</button>.
@@ -61,11 +61,10 @@
                                 </div>
                             </a>
                             <div class="dropdown-menu">
-                                {{if .User.CanImpersonateUser}}
+                                {{if and .User.CanImpersonateUser (not .OriginalUser)}}
                                 <a class="dropdown-item" href="#"
-                                    hx-get="{{pathFor "user_impersonate_choose"}}"
-                                    hx-target="#user-impersonate-modal"
-                                    hx-trigger="click"
+                                    hx-get="{{pathFor "add_impersonation"}}"
+                                    hx-target="#modals"
                                 >View as other user</a>
                                 {{end}}
                                 <a class="dropdown-item" href="{{pathFor "logout"}}">Logout</a>
@@ -113,8 +112,6 @@
             {{yield}}
         </div>
     </main>
-
-    <div id="user-impersonate-modal" class="modals"></div>
 
     <div id="modals"></div>
 

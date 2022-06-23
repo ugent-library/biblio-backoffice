@@ -9,6 +9,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/app/handlers"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/datasetediting"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/datasetviewing"
+	"github.com/ugent-library/biblio-backend/internal/app/handlers/impersonating"
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/locale"
 	"github.com/ugent-library/biblio-backend/internal/services/webapp/controllers"
@@ -22,7 +23,7 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 
 	router.StrictSlash(true)
 	router.UseEncodedPath()
-	router.Use(mw.RecoveryHandler())
+	router.Use(mw.RecoveryHandler(mw.PrintRecoveryStack(true)))
 
 	// static files
 	router.PathPrefix(basePath + "/static/").Handler(http.StripPrefix(basePath+"/static/", http.FileServer(http.Dir("./internal/services/webapp/static"))))
@@ -32,7 +33,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 
 	homeController := controllers.NewHome(oldBase)
 	authController := controllers.NewAuth(oldBase, oidcClient, services.UserService)
-	usersController := controllers.NewUsers(oldBase, services.UserService)
 	tasksController := controllers.NewTasks(oldBase, services.Tasks)
 
 	publicationsController := controllers.NewPublications(
@@ -66,10 +66,14 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 
 	// NEW HANDLERS
 	baseHandler := handlers.BaseHandler{
+		Router:       oldBase.Router,
 		SessionStore: oldBase.SessionStore,
 		SessionName:  oldBase.SessionName,
 		Localizer:    oldBase.Localizer,
 		UserService:  services.UserService,
+	}
+	impersonatingHandler := &impersonating.Handler{
+		BaseHandler: baseHandler,
 	}
 	datasetViewingHandler := &datasetviewing.Handler{
 		BaseHandler: baseHandler,
@@ -95,18 +99,31 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	// r = r.Schemes(schemes...).Host(u.Host).PathPrefix(u.Path).Subrouter()
 
 	r := router.PathPrefix(basePath).Subrouter()
-
-	csrfMiddleware := csrf.Protect(
+	r.Use(csrf.Protect(
 		[]byte(viper.GetString("csrf-secret")),
 		csrf.CookieName(viper.GetString("csrf-name")),
 		csrf.Path(basePath),
 		csrf.Secure(oldBase.BaseURL.Scheme == "https"),
 		csrf.SameSite(csrf.SameSiteStrictMode),
 		csrf.FieldName("csrf-token"),
-	)
-	r.Use(csrfMiddleware)
+	))
 
 	// NEW ROUTES
+	// impersonate user
+	r.HandleFunc("/impersonation/add",
+		impersonatingHandler.Wrap(impersonatingHandler.AddImpersonation)).
+		Methods("GET").
+		Name("add_impersonation")
+	r.HandleFunc("/impersonation",
+		impersonatingHandler.Wrap(impersonatingHandler.CreateImpersonation)).
+		Methods("POST").
+		Name("create_impersonation")
+	// TODO why doesn't a DELETE with methodoverride work here?
+	r.HandleFunc("/delete-impersonation",
+		impersonatingHandler.Wrap(impersonatingHandler.DeleteImpersonation)).
+		Methods("POST").
+		Name("delete_impersonation")
+
 	// view dataset
 	r.HandleFunc("/dataset/{id}",
 		datasetViewingHandler.Wrap(datasetViewingHandler.Show)).
@@ -241,20 +258,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	taskRouter.HandleFunc("/{id}/status", tasksController.Status).
 		Methods("GET").
 		Name("task_status")
-
-	// users
-	userRouter := r.PathPrefix("/user").Subrouter()
-	userRouter.Use(requireUser)
-	userRouter.HandleFunc("/htmx/impersonate/choose", usersController.ImpersonateChoose).
-		Methods("GET").
-		Name("user_impersonate_choose")
-	userRouter.HandleFunc("/impersonate", usersController.Impersonate).
-		Methods("POST").
-		Name("user_impersonate")
-	// TODO why doesn't a DELETE with methodoverride work with CAS?
-	userRouter.HandleFunc("/impersonate/remove", usersController.ImpersonateRemove).
-		Methods("POST").
-		Name("user_impersonate_remove")
 
 	// publications
 	pubsRouter := r.PathPrefix("/publication").Subrouter()

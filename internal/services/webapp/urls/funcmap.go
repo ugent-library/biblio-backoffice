@@ -28,7 +28,11 @@ func FuncMap(r *mux.Router) template.FuncMap {
 func urlFor(r *mux.Router) func(string, ...string) (*url.URL, error) {
 	return func(name string, vars ...string) (*url.URL, error) {
 		if route := r.Get(name); route != nil {
-			return route.URL(vars...)
+			u, err := route.URL(vars...)
+			if err != nil {
+				return nil, fmt.Errorf("can't reverse route %s: %w", name, err)
+			}
+			return u, nil
 		}
 		return nil, fmt.Errorf("route %s not found", name)
 	}
@@ -37,7 +41,11 @@ func urlFor(r *mux.Router) func(string, ...string) (*url.URL, error) {
 func pathFor(r *mux.Router) func(string, ...string) (*url.URL, error) {
 	return func(name string, vars ...string) (*url.URL, error) {
 		if route := r.Get(name); route != nil {
-			return route.URLPath(vars...)
+			u, err := route.URLPath(vars...)
+			if err != nil {
+				return nil, fmt.Errorf("can't reverse route %s: %w", name, err)
+			}
+			return u, nil
 		}
 		return nil, fmt.Errorf("route %s not found", name)
 	}
