@@ -10,7 +10,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/snapstore"
 )
 
-type BindDepartmentSuggestions struct {
+type BindSuggestDepartments struct {
 	Query string `query:"q"`
 }
 
@@ -49,9 +49,9 @@ func (h *Handler) AddDepartment(w http.ResponseWriter, r *http.Request, ctx Cont
 	})
 }
 
-func (h *Handler) DepartmentSuggestions(w http.ResponseWriter, r *http.Request, ctx Context) {
-	b := BindDepartmentSuggestions{}
-	if err := bind.RequestQuery(r, &b); err != nil {
+func (h *Handler) SuggestDepartments(w http.ResponseWriter, r *http.Request, ctx Context) {
+	b := BindSuggestDepartments{}
+	if err := bind.Request(r, &b); err != nil {
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -70,7 +70,7 @@ func (h *Handler) DepartmentSuggestions(w http.ResponseWriter, r *http.Request, 
 
 func (h *Handler) CreateDepartment(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindDepartment{}
-	if err := bind.RequestForm(r, &b); err != nil {
+	if err := bind.Request(r, &b); err != nil {
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -111,13 +111,8 @@ func (h *Handler) CreateDepartment(w http.ResponseWriter, r *http.Request, ctx C
 
 func (h *Handler) ConfirmDeleteDepartment(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindDeleteDepartment{}
-	if err := bind.RequestPath(r, &b); err != nil {
+	if err := bind.Request(r, &b); err != nil {
 		render.BadRequest(w, r, err)
-		return
-	}
-
-	if _, err := ctx.Dataset.GetDepartment(b.Position); err != nil {
-		render.InternalServerError(w, r, err)
 		return
 	}
 
@@ -128,7 +123,7 @@ func (h *Handler) ConfirmDeleteDepartment(w http.ResponseWriter, r *http.Request
 }
 
 func (h *Handler) DeleteDepartment(w http.ResponseWriter, r *http.Request, ctx Context) {
-	var b BindAbstract
+	var b BindDeleteDepartment
 	if err := bind.Request(r, &b); err != nil {
 		render.BadRequest(w, r, err)
 		return

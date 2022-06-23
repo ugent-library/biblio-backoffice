@@ -19,6 +19,9 @@ type BindAbstract struct {
 	Text     string `form:"text"`
 	Lang     string `form:"lang"`
 }
+type BindDeleteAbstract struct {
+	Position int `path:"position"`
+}
 
 type YieldAbstracts struct {
 	Context
@@ -48,7 +51,7 @@ func (h *Handler) AddAbstract(w http.ResponseWriter, r *http.Request, ctx Contex
 
 func (h *Handler) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindAbstract{Position: len(ctx.Dataset.Abstract)}
-	if err := bind.RequestForm(r, &b); err != nil {
+	if err := bind.Request(r, &b); err != nil {
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -83,7 +86,7 @@ func (h *Handler) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 
 func (h *Handler) EditAbstract(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindAbstract{}
-	if err := bind.RequestPath(r, &b); err != nil {
+	if err := bind.Request(r, &b); err != nil {
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -147,14 +150,9 @@ func (h *Handler) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 }
 
 func (h *Handler) ConfirmDeleteAbstract(w http.ResponseWriter, r *http.Request, ctx Context) {
-	var b BindAbstract
-	if err := bind.RequestPath(r, &b); err != nil {
+	var b BindDeleteAbstract
+	if err := bind.Request(r, &b); err != nil {
 		render.BadRequest(w, r, err)
-		return
-	}
-
-	if _, err := ctx.Dataset.GetAbstract(b.Position); err != nil {
-		render.InternalServerError(w, r, err)
 		return
 	}
 
@@ -165,7 +163,7 @@ func (h *Handler) ConfirmDeleteAbstract(w http.ResponseWriter, r *http.Request, 
 }
 
 func (h *Handler) DeleteAbstract(w http.ResponseWriter, r *http.Request, ctx Context) {
-	var b BindAbstract
+	var b BindDeleteAbstract
 	if err := bind.Request(r, &b); err != nil {
 		render.BadRequest(w, r, err)
 		return

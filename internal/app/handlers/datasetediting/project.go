@@ -10,7 +10,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/snapstore"
 )
 
-type BindProjectSuggestions struct {
+type BindSuggestProjects struct {
 	Query string `query:"q"`
 }
 type BindProject struct {
@@ -45,9 +45,9 @@ func (h *Handler) AddProject(w http.ResponseWriter, r *http.Request, ctx Context
 	})
 }
 
-func (h *Handler) ProjectSuggestions(w http.ResponseWriter, r *http.Request, ctx Context) {
-	b := BindProjectSuggestions{}
-	if err := bind.RequestQuery(r, &b); err != nil {
+func (h *Handler) SuggestProjects(w http.ResponseWriter, r *http.Request, ctx Context) {
+	b := BindSuggestProjects{}
+	if err := bind.Request(r, &b); err != nil {
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -66,7 +66,7 @@ func (h *Handler) ProjectSuggestions(w http.ResponseWriter, r *http.Request, ctx
 
 func (h *Handler) CreateProject(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindProject{}
-	if err := bind.RequestForm(r, &b); err != nil {
+	if err := bind.Request(r, &b); err != nil {
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -104,13 +104,8 @@ func (h *Handler) CreateProject(w http.ResponseWriter, r *http.Request, ctx Cont
 
 func (h *Handler) ConfirmDeleteProject(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindDeleteProject{}
-	if err := bind.RequestPath(r, &b); err != nil {
+	if err := bind.Request(r, &b); err != nil {
 		render.BadRequest(w, r, err)
-		return
-	}
-
-	if _, err := ctx.Dataset.GetProject(b.Position); err != nil {
-		render.InternalServerError(w, r, err)
 		return
 	}
 
@@ -121,7 +116,7 @@ func (h *Handler) ConfirmDeleteProject(w http.ResponseWriter, r *http.Request, c
 }
 
 func (h *Handler) DeleteProject(w http.ResponseWriter, r *http.Request, ctx Context) {
-	var b BindAbstract
+	var b BindDeleteProject
 	if err := bind.Request(r, &b); err != nil {
 		render.BadRequest(w, r, err)
 		return

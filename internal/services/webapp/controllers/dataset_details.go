@@ -26,20 +26,6 @@ func NewDatasetDetails(base Base, store backends.Repository) *DatasetDetails {
 	}
 }
 
-func (c *DatasetDetails) Show(w http.ResponseWriter, r *http.Request) {
-	dataset := context.GetDataset(r.Context())
-
-	c.Render.HTML(w, http.StatusOK, "dataset/details/_show", c.ViewData(r, struct {
-		Dataset *models.Dataset
-		Show    *views.ShowBuilder
-	}{
-		dataset,
-		views.NewShowBuilder(c.RenderPartial, locale.Get(r.Context())),
-	}),
-		render.HTMLOptions{Layout: "layouts/htmx"},
-	)
-}
-
 func (c *DatasetDetails) Edit(w http.ResponseWriter, r *http.Request) {
 	dataset := context.GetDataset(r.Context())
 

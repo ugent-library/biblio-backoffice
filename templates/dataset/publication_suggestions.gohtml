@@ -1,0 +1,28 @@
+<ul class="list-group mt-6">
+{{range .Hits.Hits}}
+    <li class="list-group-item">
+        <div class="d-flex w-100">
+            <div class="w-100">
+                <div class="d-flex align-items-start">
+                    {{template "publication/thumbnail" .}}
+                    <div class="list-group-item-content">
+                        <div class="list-group-item-subline">
+                            <div class="list-group-item-subline-left">
+                            </div>
+                            <div class="list-group-item-subline-right">
+                                <button class="btn btn-primary"
+                                hx-post="{{pathFor "dataset_create_publication" "id" $.Dataset.ID}}"
+                                hx-headers='{"If-Match": "{{$.Dataset.SnapshotID}}"}'
+                                hx-vals='{"publication_id": "{{.ID}}"}'
+                                hx-swap="none"
+                                >Add Publication</button>
+                            </div>
+                        </div>
+                        {{template "dataset/publication_summary" .}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </li>
+{{end}}
+</ul>
