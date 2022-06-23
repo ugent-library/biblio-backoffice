@@ -165,8 +165,7 @@ type SelectRepeat struct {
 	Placeholder     string
 	Required        bool
 	Checked         bool
-	Choices         []string
-	ChoicesLabels   []string
+	Options         []SelectOption
 	EmptyChoice     bool
 	Cols            int
 	Rows            int
@@ -189,8 +188,7 @@ type RadioButtonGroup struct {
 	Placeholder     string
 	Required        bool
 	Checked         bool
-	Choices         []string
-	ChoicesLabels   []string
+	Options         []SelectOption
 	EmptyChoice     bool
 	Cols            int
 	Rows            int
@@ -233,8 +231,7 @@ type Checkbox struct {
 	Placeholder     string
 	Required        bool
 	Checked         bool
-	Choices         []string
-	ChoicesLabels   []string
+	Options         []SelectOption
 	EmptyChoice     bool
 	Cols            int
 	Rows            int
