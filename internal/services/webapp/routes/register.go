@@ -7,6 +7,7 @@ import (
 	mw "github.com/gorilla/handlers"
 	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers"
+	"github.com/ugent-library/biblio-backend/internal/app/handlers/authenticating"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/datasetediting"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/datasetviewing"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/impersonating"
@@ -32,7 +33,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	setUser := middleware.SetUser(services.UserService, oldBase.SessionName, oldBase.SessionStore)
 
 	homeController := controllers.NewHome(oldBase)
-	authController := controllers.NewAuth(oldBase, oidcClient, services.UserService)
 	tasksController := controllers.NewTasks(oldBase, services.Tasks)
 
 	publicationsController := controllers.NewPublications(
@@ -72,6 +72,10 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		Localizer:    oldBase.Localizer,
 		UserService:  services.UserService,
 	}
+	authenticatingHandler := &authenticating.Handler{
+		BaseHandler: baseHandler,
+		OIDCClient:  oidcClient,
+	}
 	impersonatingHandler := &impersonating.Handler{
 		BaseHandler: baseHandler,
 	}
@@ -109,6 +113,19 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	))
 
 	// NEW ROUTES
+	// authenticate user
+	r.HandleFunc("/auth/openid-connect/callback",
+		authenticatingHandler.Wrap(authenticatingHandler.Callback)).
+		Methods("GET")
+	r.HandleFunc("/login",
+		authenticatingHandler.Wrap(authenticatingHandler.Login)).
+		Methods("GET").
+		Name("login")
+	r.HandleFunc("/logout",
+		authenticatingHandler.Wrap(authenticatingHandler.Logout)).
+		Methods("GET").
+		Name("logout")
+
 	// impersonate user
 	r.HandleFunc("/impersonation/add",
 		impersonatingHandler.Wrap(impersonatingHandler.AddImpersonation)).
@@ -241,16 +258,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 
 	// home
 	r.HandleFunc("/", homeController.Home).Methods("GET").Name("home")
-
-	// auth
-	r.HandleFunc("/login", authController.Login).
-		Methods("GET").
-		Name("login")
-	r.HandleFunc("/auth/openid-connect/callback", authController.Callback).
-		Methods("GET")
-	r.HandleFunc("/logout", authController.Logout).
-		Methods("GET").
-		Name("logout")
 
 	// tasks
 	taskRouter := r.PathPrefix("/task").Subrouter()
