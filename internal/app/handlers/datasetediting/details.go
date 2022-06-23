@@ -196,7 +196,7 @@ func detailsForm(ctx Context, b BindDetails, errors validation.Errors) *form.For
 		Label:       ctx.T("builder.title"),
 		Cols:        9,
 		Placeholder: ctx.T("builder.details.title.placeholder"),
-		Error:       localize.ValidationErrorAt(ctx.Locale, errors, "/details/title"),
+		Error:       localize.ValidationErrorAt(ctx.Locale, errors, "/title"),
 		Required:    true,
 	}
 
@@ -205,7 +205,7 @@ func detailsForm(ctx Context, b BindDetails, errors validation.Errors) *form.For
 		Value: b.URL,
 		Label: ctx.T("builder.url"),
 		Cols:  3,
-		Error: localize.ValidationErrorAt(ctx.Locale, errors, "/details/url"),
+		Error: localize.ValidationErrorAt(ctx.Locale, errors, "/url"),
 	}
 
 	detailsForm.AddSection(title, url)
@@ -216,7 +216,7 @@ func detailsForm(ctx Context, b BindDetails, errors validation.Errors) *form.For
 		Label:       ctx.T("builder.publisher"),
 		Cols:        9,
 		Placeholder: ctx.T("builder.details.publisher.placeholder"),
-		Error:       localize.ValidationErrorAt(ctx.Locale, errors, "/details/publisher"),
+		Error:       localize.ValidationErrorAt(ctx.Locale, errors, "/publisher"),
 		Required:    true,
 		// Tooltip
 	}
@@ -227,7 +227,7 @@ func detailsForm(ctx Context, b BindDetails, errors validation.Errors) *form.For
 		Label:       ctx.T("builder.year"),
 		Cols:        3,
 		Placeholder: ctx.T("builder.year.placeholder"),
-		Error:       localize.ValidationErrorAt(ctx.Locale, errors, "/details/year"),
+		Error:       localize.ValidationErrorAt(ctx.Locale, errors, "/year"),
 		Required:    true,
 	}
 
@@ -238,7 +238,7 @@ func detailsForm(ctx Context, b BindDetails, errors validation.Errors) *form.For
 		Values:          b.Format,
 		Label:           ctx.T("builder.format"),
 		Cols:            9,
-		Error:           localize.ValidationErrorAt(ctx.Locale, errors, "/details/format"),
+		Error:           localize.ValidationErrorAt(ctx.Locale, errors, "/format"),
 		Required:        true,
 		AutocompleteURL: "media_type_choose",
 	}
@@ -248,7 +248,7 @@ func detailsForm(ctx Context, b BindDetails, errors validation.Errors) *form.For
 		Values: b.Keyword,
 		Label:  ctx.T("builder.details.keyword"),
 		Cols:   9,
-		Error:  localize.ValidationErrorAt(ctx.Locale, errors, "/details/keyword"),
+		Error:  localize.ValidationErrorAt(ctx.Locale, errors, "/keyword"),
 	}
 
 	detailsForm.AddSection(format, keyword)
@@ -259,7 +259,7 @@ func detailsForm(ctx Context, b BindDetails, errors validation.Errors) *form.For
 		Label:   ctx.T("builder.license"),
 		Options: localize.LicenseSelectOptions(ctx.Locale),
 		Cols:    3,
-		Error:   localize.ValidationErrorAt(ctx.Locale, errors, "/details/license"),
+		Error:   localize.ValidationErrorAt(ctx.Locale, errors, "/license"),
 	}
 
 	otherLicense := &form.Text{
@@ -268,7 +268,7 @@ func detailsForm(ctx Context, b BindDetails, errors validation.Errors) *form.For
 		Label:       ctx.T("builder.other_license"),
 		Cols:        9,
 		Placeholder: ctx.T("builder.details.other_license.placeholder"),
-		Error:       localize.ValidationErrorAt(ctx.Locale, errors, "/details/other_license"),
+		Error:       localize.ValidationErrorAt(ctx.Locale, errors, "/other_license"),
 		Required:    true,
 	}
 
@@ -279,7 +279,7 @@ func detailsForm(ctx Context, b BindDetails, errors validation.Errors) *form.For
 		Value:       b.AccessLevel,
 		Options:     localize.AccessLevelSelectOptions(ctx.Locale),
 		Cols:        3,
-		Error:       localize.ValidationErrorAt(ctx.Locale, errors, "/details/access_level"),
+		Error:       localize.ValidationErrorAt(ctx.Locale, errors, "/access_level"),
 		Required:    true,
 		EmptyChoice: true,
 		// Tooltip
@@ -296,7 +296,7 @@ func detailsForm(ctx Context, b BindDetails, errors validation.Errors) *form.For
 		Value:    b.Embargo,
 		Label:    ctx.T("builder.embargo"),
 		Cols:     3,
-		Error:    localize.ValidationErrorAt(ctx.Locale, errors, "/details/embargo"),
+		Error:    localize.ValidationErrorAt(ctx.Locale, errors, "/embargo"),
 		Disabled: disabled,
 	}
 
@@ -306,7 +306,7 @@ func detailsForm(ctx Context, b BindDetails, errors validation.Errors) *form.For
 		Value:       b.EmbargoTo,
 		Options:     localize.AccessLevelSelectOptions(ctx.Locale),
 		Cols:        3,
-		Error:       localize.ValidationErrorAt(ctx.Locale, errors, "/details/embargo_to"),
+		Error:       localize.ValidationErrorAt(ctx.Locale, errors, "/embargo_to"),
 		EmptyChoice: true,
 		Disabled:    disabled,
 	}
