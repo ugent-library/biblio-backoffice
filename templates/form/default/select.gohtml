@@ -10,7 +10,7 @@
     </label>
     <div class="col-{{.Cols}}">
         <select class="custom-select form-control{{if .Error}} is-invalid{{end}}" name="{{.Name}}"{{if .Disabled}} disabled{{end}}>
-            {{if .EmptyChoice }}<option></option>{{end}}
+            {{if .EmptyOption }}<option></option>{{end}}
             {{range .Options}}
             <option value="{{.Value}}"{{if eq .Value $.Value}} selected{{end}}>{{.Label}}</option>
             {{end}}

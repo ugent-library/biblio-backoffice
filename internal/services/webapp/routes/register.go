@@ -158,16 +158,19 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		Methods("GET").
 		Name("dataset_publications")
 
-		// edit dataset details
-	r.HandleFunc("/dataset/{id}/details/edit", datasetEditingHandler.Wrap(datasetEditingHandler.EditDetails)).
+	// edit dataset details
+	r.HandleFunc("/dataset/{id}/details/edit",
+		datasetEditingHandler.Wrap(datasetEditingHandler.EditDetails)).
 		Methods("GET").
 		Name("dataset_edit_details")
-	r.HandleFunc("/dataset/{id}/details/edit/access-level", datasetEditingHandler.Wrap(datasetEditingHandler.EditDetailsAccessLevel)).
+	r.HandleFunc("/dataset/{id}/details/edit/access-level",
+		datasetEditingHandler.Wrap(datasetEditingHandler.EditDetailsAccessLevel)).
 		Methods("PUT").
 		Name("dataset_edit_details_access_level")
-	r.HandleFunc("/dataset/{id}/details", datasetEditingHandler.Wrap(datasetEditingHandler.SaveDetails)).
+	r.HandleFunc("/dataset/{id}/details",
+		datasetEditingHandler.Wrap(datasetEditingHandler.UpdateDetails)).
 		Methods("PUT").
-		Name("dataset_save_details")
+		Name("dataset_update_details")
 
 	// edit dataset projects
 	r.HandleFunc("/dataset/{id}/projects/add",

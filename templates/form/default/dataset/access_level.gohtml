@@ -16,7 +16,7 @@
             hx-target="#modals"
             hx-include=".modal-body"
         >
-            {{if .EmptyChoice }}<option></option>{{end}}
+            {{if .EmptyOption }}<option></option>{{end}}
             {{range .Options}}
             <option value="{{.Value}}"{{if eq .Value $.Value}} selected{{end}}>{{.Label}}</option>
             {{end}}

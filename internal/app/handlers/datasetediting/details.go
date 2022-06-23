@@ -111,7 +111,7 @@ func (h *Handler) EditDetailsAccessLevel(w http.ResponseWriter, r *http.Request,
 	})
 }
 
-func (h *Handler) SaveDetails(w http.ResponseWriter, r *http.Request, ctx Context) {
+func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindDetails{}
 	if err := bind.Request(r, &b); err != nil {
 		render.BadRequest(w, r, err)
@@ -283,7 +283,7 @@ func detailsForm(ctx Context, b BindDetails, errors validation.Errors) *form.For
 		Cols:        3,
 		Error:       localize.ValidationErrorAt(ctx.Locale, errors, "/access_level"),
 		Required:    true,
-		EmptyChoice: true,
+		EmptyOption: true,
 		Tooltip:     ctx.T("tooltip.dataset.access_level"),
 		Vars:        struct{ ID string }{ID: b.ID},
 	}
@@ -309,7 +309,7 @@ func detailsForm(ctx Context, b BindDetails, errors validation.Errors) *form.For
 		Options:     localize.AccessLevelSelectOptions(ctx.Locale),
 		Cols:        3,
 		Error:       localize.ValidationErrorAt(ctx.Locale, errors, "/embargo_to"),
-		EmptyChoice: true,
+		EmptyOption: true,
 		Disabled:    disabled,
 	}
 

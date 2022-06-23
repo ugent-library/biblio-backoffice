@@ -32,11 +32,10 @@ func (f *Form) WithErrors(errors []string) *Form {
 }
 
 func (f *Form) AddSection(fields ...Field) *Form {
-	section := Section{
+	f.Sections = append(f.Sections, Section{
 		Fields: fields,
 		Form:   f,
-	}
-	f.Sections = append(f.Sections, section)
+	})
 
 	return f
 }
@@ -133,7 +132,7 @@ type Select struct {
 	Error       string
 	Label       string
 	Name        string
-	EmptyChoice bool
+	EmptyOption bool
 	Options     []SelectOption
 	Placeholder string
 	Required    bool
@@ -148,12 +147,13 @@ type SelectOption struct {
 }
 
 func (f *Select) Render(form *Form, w io.Writer) error {
-	template := path.Join("form", form.Theme, "select")
+	t := "select"
 	if f.Template != "" {
-		template = path.Join("form", form.Theme, f.Template)
+		t = f.Template
 	}
 
-	return render.Templates().ExecuteTemplate(w, template, f)
+	tmpl := path.Join("form", form.Theme, t)
+	return render.Templates().ExecuteTemplate(w, tmpl, f)
 }
 
 type SelectRepeat struct {
@@ -164,7 +164,7 @@ type SelectRepeat struct {
 	Placeholder     string
 	Required        bool
 	Options         []SelectOption
-	EmptyChoice     bool
+	EmptyOption     bool
 	Cols            int
 	Rows            int
 	AutocompleteURL string
@@ -185,7 +185,7 @@ type RadioButtonGroup struct {
 	Placeholder     string
 	Required        bool
 	Options         []SelectOption
-	EmptyChoice     bool
+	EmptyOption     bool
 	Cols            int
 	Rows            int
 	AutocompleteURL string
@@ -228,7 +228,7 @@ type Checkbox struct {
 	Required        bool
 	Checked         bool
 	Options         []SelectOption
-	EmptyChoice     bool
+	EmptyOption     bool
 	Cols            int
 	Rows            int
 	AutocompleteURL string
