@@ -58,7 +58,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	publicationLaySummariesController := controllers.NewPublicationLaySummaries(oldBase, services.Repository)
 
 	datasetsController := controllers.NewDatasets(oldBase, services.Repository, services.DatasetSearchService, services.DatasetSources)
-	// datasetDetailsController := controllers.NewDatasetDetails(oldBase, services.Repository)
 	datasetEditingHandlerontributorsController := controllers.NewDatasetContributors(oldBase, services.Repository, services.PersonSearchService, services.PersonService)
 
 	licensesController := controllers.NewLicenses(oldBase, services.LicenseSearchService)
@@ -582,21 +581,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	datasetEditRouter.HandleFunc("/add/publish", datasetsController.AddPublish).
 		Methods("POST").
 		Name("dataset_add_publish")
-	// Dataset details HTMX fragments
-	// datasetEditRouter.HandleFunc("/htmx/details", datasetDetailsController.Show).
-	// 	Methods("GET").
-	// 	Name("dataset_details")
-	// datasetEditRouter.HandleFunc("/htmx/details/edit", datasetDetailsController.Edit).
-	// 	Methods("GET").
-	// 	Name("dataset_edit_details")
-	// datasetEditRouter.HandleFunc("/htmx/details/access_level", datasetDetailsController.AccessLevel).
-	// 	Methods("PUT").
-	// 	Name("dataset_edit_details_access_level")
-	// datasetEditRouter.HandleFunc("/htmx/details/edit", datasetDetailsController.Update).
-	// 	Methods("PATCH").
-	// 	Name("dataset_details_save_form")
-	// Dataset departments HTMX fragments
-	// Dataset contributors HTMX fragments
 	datasetEditRouter.HandleFunc("/htmx/contributors/{role}/add", datasetEditingHandlerontributorsController.Add).
 		Methods("GET").
 		Name("dataset_contributors_add")
