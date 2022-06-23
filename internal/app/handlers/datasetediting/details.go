@@ -4,10 +4,11 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/ugent-library/biblio-backend/internal/app/displays"
 	"github.com/ugent-library/biblio-backend/internal/bind"
 	"github.com/ugent-library/biblio-backend/internal/localize"
 	"github.com/ugent-library/biblio-backend/internal/render"
-	"github.com/ugent-library/biblio-backend/internal/render/fields"
+	"github.com/ugent-library/biblio-backend/internal/render/display"
 	"github.com/ugent-library/biblio-backend/internal/render/form"
 	"github.com/ugent-library/biblio-backend/internal/snapstore"
 	"github.com/ugent-library/biblio-backend/internal/validation"
@@ -31,7 +32,7 @@ type BindDetails struct {
 
 type YieldDetails struct {
 	Context
-	DetailFields []*fields.Fields
+	DisplayDetails *display.Display
 }
 
 type YieldEditDetails struct {
@@ -180,13 +181,13 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 	}
 
 	render.Render(w, "dataset/refresh_details", YieldDetails{
-		Context:      ctx,
-		DetailFields: detailFields(ctx),
+		Context:        ctx,
+		DisplayDetails: displays.DatasetDetails(ctx.Locale, ctx.Dataset),
 	})
 }
 
 func detailsForm(ctx Context, b BindDetails, errors validation.Errors) *form.Form {
-	detailsForm := form.NewForm().
+	detailsForm := form.New().
 		WithTheme("default").
 		WithErrors(localize.ValidationErrors(ctx.Locale, errors))
 
@@ -288,18 +289,13 @@ func detailsForm(ctx Context, b BindDetails, errors validation.Errors) *form.For
 		Vars:        struct{ ID string }{ID: b.ID},
 	}
 
-	disabled := false
-	if b.AccessLevel != "info:eu-repo/semantics/embargoedAccess" {
-		disabled = true
-	}
-
 	embargo := &form.Date{
 		Name:     "embargo",
 		Value:    b.Embargo,
 		Label:    ctx.T("builder.embargo"),
 		Cols:     3,
 		Error:    localize.ValidationErrorAt(ctx.Locale, errors, "/embargo"),
-		Disabled: disabled,
+		Disabled: b.AccessLevel != "info:eu-repo/semantics/embargoedAccess",
 	}
 
 	embargoTo := &form.Select{
@@ -310,94 +306,10 @@ func detailsForm(ctx Context, b BindDetails, errors validation.Errors) *form.For
 		Cols:        3,
 		Error:       localize.ValidationErrorAt(ctx.Locale, errors, "/embargo_to"),
 		EmptyOption: true,
-		Disabled:    disabled,
+		Disabled:    b.AccessLevel != "info:eu-repo/semantics/embargoedAccess",
 	}
 
 	detailsForm.AddSection(license, otherLicense, accessLevel, embargo, embargoTo)
 
 	return detailsForm
-}
-
-func detailFields(ctx Context) []*fields.Fields {
-	return []*fields.Fields{
-		{
-			Theme: "default",
-			Fields: []fields.Field{
-				&fields.Text{
-					Label:    ctx.T("builder.title"),
-					Value:    ctx.Dataset.Title,
-					Required: true,
-				},
-				&fields.Text{
-					Label:         ctx.T("builder.doi"),
-					Value:         ctx.Dataset.DOI,
-					Required:      true,
-					ValueTemplate: "format/doi",
-				},
-				&fields.Text{
-					Label:         ctx.T("builder.url"),
-					Value:         ctx.Dataset.URL,
-					ValueTemplate: "format/link",
-				},
-			},
-		},
-		{
-			Theme: "default",
-			Fields: []fields.Field{
-				&fields.Text{
-					Label:    ctx.T("builder.publisher"),
-					Value:    ctx.Dataset.Publisher,
-					Required: true,
-				},
-				&fields.Text{
-					Label:    ctx.T("builder.year"),
-					Value:    ctx.Dataset.Year,
-					Required: true,
-				},
-			},
-		},
-		{
-			Theme: "default",
-			Fields: []fields.Field{
-				&fields.Text{
-					Label:    ctx.T("builder.format"),
-					Values:   ctx.Dataset.Format,
-					List:     true,
-					Required: true,
-				},
-				&fields.Text{
-					Label:         ctx.T("builder.keyword"),
-					Values:        ctx.Dataset.Keyword,
-					ValueTemplate: "format/badge",
-				},
-			},
-		},
-		{
-			Theme: "default",
-			Fields: []fields.Field{
-				&fields.Text{
-					Label:    ctx.T("builder.license"),
-					Value:    ctx.TS("cc_licenses", ctx.Dataset.License),
-					Required: true,
-				},
-				&fields.Text{
-					Label: ctx.T("builder.other_license"),
-					Value: ctx.Dataset.OtherLicense,
-				},
-				&fields.Text{
-					Label:    ctx.T("builder.access_level"),
-					Value:    ctx.TS("access_levels", ctx.Dataset.AccessLevel),
-					Required: true,
-				},
-				&fields.Text{
-					Label: ctx.T("builder.embargo"),
-					Value: ctx.Dataset.Embargo,
-				},
-				&fields.Text{
-					Label: ctx.T("builder.embargo_to"),
-					Value: ctx.TS("access_levels", ctx.Dataset.EmbargoTo),
-				},
-			},
-		},
-	}
 }

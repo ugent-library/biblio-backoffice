@@ -193,7 +193,7 @@ func (h *Handler) DeleteAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 }
 
 func abstractForm(ctx Context, b BindAbstract, errors validation.Errors) *form.Form {
-	abstractForm := form.NewForm().WithTheme("default").WithErrors(localize.ValidationErrors(ctx.Locale, errors))
+	abstractForm := form.New().WithTheme("default").WithErrors(localize.ValidationErrors(ctx.Locale, errors))
 
 	text := &form.TextArea{
 		Name:        "text",

@@ -15,7 +15,7 @@ type Form struct {
 	Sections []Section
 }
 
-func NewForm() *Form {
+func New() *Form {
 	return &Form{}
 }
 

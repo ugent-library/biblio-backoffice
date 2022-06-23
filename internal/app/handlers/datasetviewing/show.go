@@ -3,10 +3,11 @@ package datasetviewing
 import (
 	"net/http"
 
+	"github.com/ugent-library/biblio-backend/internal/app/displays"
 	"github.com/ugent-library/biblio-backend/internal/bind"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
-	"github.com/ugent-library/biblio-backend/internal/render/fields"
+	"github.com/ugent-library/biblio-backend/internal/render/display"
 )
 
 type YieldShow struct {
@@ -19,9 +20,9 @@ type YieldShow struct {
 
 type YieldShowDescription struct {
 	Context
-	ActiveSubNav string
-	SearchArgs   *models.SearchArgs
-	DetailFields []*fields.Fields
+	ActiveSubNav   string
+	SearchArgs     *models.SearchArgs
+	DisplayDetails *display.Display
 }
 
 type YieldShowContributors struct {
@@ -67,10 +68,10 @@ func (h *Handler) ShowDescription(w http.ResponseWriter, r *http.Request, ctx Co
 	}
 
 	render.Render(w, "dataset/show_description", YieldShowDescription{
-		Context:      ctx,
-		ActiveSubNav: "description",
-		SearchArgs:   searchArgs,
-		DetailFields: detailFields(ctx),
+		Context:        ctx,
+		ActiveSubNav:   "description",
+		SearchArgs:     searchArgs,
+		DisplayDetails: displays.DatasetDetails(ctx.Locale, ctx.Dataset),
 	})
 }
 
@@ -107,88 +108,4 @@ func (h *Handler) ShowPublications(w http.ResponseWriter, r *http.Request, ctx C
 		SearchArgs:          searchArgs,
 		RelatedPublications: relatedPublications,
 	})
-}
-
-func detailFields(ctx Context) []*fields.Fields {
-	return []*fields.Fields{
-		{
-			Theme: "default",
-			Fields: []fields.Field{
-				&fields.Text{
-					Label:    ctx.T("builder.title"),
-					Value:    ctx.Dataset.Title,
-					Required: true,
-				},
-				&fields.Text{
-					Label:         ctx.T("builder.doi"),
-					Value:         ctx.Dataset.DOI,
-					Required:      true,
-					ValueTemplate: "format/doi",
-				},
-				&fields.Text{
-					Label:         ctx.T("builder.url"),
-					Value:         ctx.Dataset.URL,
-					ValueTemplate: "format/link",
-				},
-			},
-		},
-		{
-			Theme: "default",
-			Fields: []fields.Field{
-				&fields.Text{
-					Label:    ctx.T("builder.publisher"),
-					Value:    ctx.Dataset.Publisher,
-					Required: true,
-				},
-				&fields.Text{
-					Label:    ctx.T("builder.year"),
-					Value:    ctx.Dataset.Year,
-					Required: true,
-				},
-			},
-		},
-		{
-			Theme: "default",
-			Fields: []fields.Field{
-				&fields.Text{
-					Label:    ctx.T("builder.format"),
-					Values:   ctx.Dataset.Format,
-					List:     true,
-					Required: true,
-				},
-				&fields.Text{
-					Label:         ctx.T("builder.keyword"),
-					Values:        ctx.Dataset.Keyword,
-					ValueTemplate: "format/badge",
-				},
-			},
-		},
-		{
-			Theme: "default",
-			Fields: []fields.Field{
-				&fields.Text{
-					Label:    ctx.T("builder.license"),
-					Value:    ctx.TS("cc_licenses", ctx.Dataset.License),
-					Required: true,
-				},
-				&fields.Text{
-					Label: ctx.T("builder.other_license"),
-					Value: ctx.Dataset.OtherLicense,
-				},
-				&fields.Text{
-					Label:    ctx.T("builder.access_level"),
-					Value:    ctx.TS("access_levels", ctx.Dataset.AccessLevel),
-					Required: true,
-				},
-				&fields.Text{
-					Label: ctx.T("builder.embargo"),
-					Value: ctx.Dataset.Embargo,
-				},
-				&fields.Text{
-					Label: ctx.T("builder.embargo_to"),
-					Value: ctx.TS("access_levels", ctx.Dataset.EmbargoTo),
-				},
-			},
-		},
-	}
 }

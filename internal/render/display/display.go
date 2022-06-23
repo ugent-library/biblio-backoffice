@@ -23,7 +23,7 @@ type Field interface {
 	Render(*Display, io.Writer) error
 }
 
-func NewDisplay() *Display {
+func New() *Display {
 	return &Display{}
 }
 
