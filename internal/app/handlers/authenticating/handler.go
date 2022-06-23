@@ -26,8 +26,9 @@ func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) htt
 }
 
 func (h *Handler) Callback(w http.ResponseWriter, r *http.Request, ctx Context) {
+	code := r.URL.Query().Get("code")
 	claims := &oidc.Claims{}
-	if err := h.OIDCClient.Exchange(r.URL.Query().Get("code"), claims); err != nil {
+	if err := h.OIDCClient.Exchange(code, claims); err != nil {
 		render.InternalServerError(w, r, err)
 	}
 
