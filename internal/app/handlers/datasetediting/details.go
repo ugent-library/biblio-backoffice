@@ -74,7 +74,7 @@ func (h *Handler) EditDetailsAccessLevel(w http.ResponseWriter, r *http.Request,
 	}
 
 	// Band-aid: omit empty values from fields with repeating values (text repeat, list repeat)
-	//   @note: This should be part of "form:,omitEmpty" in the Dataset struct. However,
+	//   TODO: This should be part of "form:,omitEmpty" in the Dataset struct. However,
 	//   go-playground/form doesn't support omitEmpty on lists or nested form structures
 	//   (slices, maps,...)
 	omitEmpty := func(keywords []string) []string {
@@ -93,7 +93,7 @@ func (h *Handler) EditDetailsAccessLevel(w http.ResponseWriter, r *http.Request,
 	b.ID = ctx.Dataset.ID
 
 	// Clear embargo and embargoTo fields if access level is not embargo
-	//   @todo Disabled per https://github.com/ugent-library/biblio-backend/issues/217
+	//   TODO Disabled per https://github.com/ugent-library/biblio-backend/issues/217
 	//
 	//   Another issue: the old JS also temporary stored the data in these fields if
 	//   access level changed from embargo to something else. The data would be restored
@@ -126,7 +126,7 @@ func (h *Handler) SaveDetails(w http.ResponseWriter, r *http.Request, ctx Contex
 	}
 
 	// Band-aid: omit empty values from fields with repeating values (text repeat, list repeat)
-	//   @note: This should be part of "form:,omitEmpty" in the Dataset struct. However,
+	//   TODO: This should be part of "form:,omitEmpty" in the Dataset struct. However,
 	//   go-playground/form doesn't support omitEmpty on lists or nested form structures
 	//   (slices, maps,...)
 	omitEmpty := func(keywords []string) []string {
