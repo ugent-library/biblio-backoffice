@@ -164,7 +164,6 @@ type SelectRepeat struct {
 	Tooltip         string
 	Placeholder     string
 	Required        bool
-	Checked         bool
 	Options         []SelectOption
 	EmptyChoice     bool
 	Cols            int
@@ -186,7 +185,6 @@ type RadioButtonGroup struct {
 	Tooltip         string
 	Placeholder     string
 	Required        bool
-	Checked         bool
 	Options         []SelectOption
 	EmptyChoice     bool
 	Cols            int
