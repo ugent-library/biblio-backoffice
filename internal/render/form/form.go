@@ -12,7 +12,6 @@ import (
 type Form struct {
 	Theme    string
 	Errors   []string
-	Fields   []Field
 	Sections []Section
 }
 
