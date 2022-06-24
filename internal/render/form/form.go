@@ -73,7 +73,28 @@ type Field interface {
 	Render(*Form, io.Writer) error
 }
 
+type Value struct {
+	Template string
+	Name     string
+	Value    string
+	Label    string
+	Tooltip  string
+	Required bool
+	Cols     int
+}
+
+func (f *Value) Render(form *Form, w io.Writer) error {
+	t := "value"
+	if f.Template != "" {
+		t = f.Template
+	}
+
+	tmpl := path.Join("form", form.Theme, t)
+	return render.Templates().ExecuteTemplate(w, tmpl, f)
+}
+
 type Text struct {
+	Template        string
 	Name            string
 	Value           string
 	Label           string
