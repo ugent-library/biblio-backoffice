@@ -3,6 +3,7 @@ package datasetediting
 import (
 	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/ugent-library/biblio-backend/internal/app/displays"
 	"github.com/ugent-library/biblio-backend/internal/bind"
@@ -15,9 +16,7 @@ import (
 )
 
 type BindDetails struct {
-	ID           string   `form:"-"`
 	AccessLevel  string   `form:"access_level"`
-	DOI          string   `form:"-"`
 	Embargo      string   `form:"embargo"`
 	EmbargoTo    string   `form:"embargo_to"`
 	Format       []string `form:"format"`
@@ -28,6 +27,21 @@ type BindDetails struct {
 	Title        string   `form:"title"`
 	URL          string   `form:"url"`
 	Year         string   `form:"year"`
+}
+
+func (b *BindDetails) Clean() {
+	b.AccessLevel = strings.TrimSpace(b.AccessLevel)
+	b.Embargo = strings.TrimSpace(b.Embargo)
+	b.EmbargoTo = strings.TrimSpace(b.Embargo)
+	b.Format = cleanStringSlice(b.Format)
+	b.Keyword = cleanStringSlice(b.Keyword)
+	b.License = strings.TrimSpace(b.License)
+	b.OtherLicense = strings.TrimSpace(b.OtherLicense)
+	b.Publisher = strings.TrimSpace(b.Publisher)
+	b.Year = strings.TrimSpace(b.Year)
+	b.Title = strings.TrimSpace(b.Title)
+	b.URL = strings.TrimSpace(b.URL)
+	b.Year = strings.TrimSpace(b.Year)
 }
 
 type YieldDetails struct {
@@ -42,14 +56,7 @@ type YieldEditDetails struct {
 
 func (h *Handler) EditDetails(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindDetails{}
-	if err := bind.RequestPath(r, &b); err != nil {
-		render.BadRequest(w, r, err)
-		return
-	}
-
-	b.ID = ctx.Dataset.ID
 	b.AccessLevel = ctx.Dataset.AccessLevel
-	b.DOI = ctx.Dataset.DOI
 	b.Embargo = ctx.Dataset.Embargo
 	b.EmbargoTo = ctx.Dataset.EmbargoTo
 	b.Format = ctx.Dataset.Format
@@ -69,29 +76,12 @@ func (h *Handler) EditDetails(w http.ResponseWriter, r *http.Request, ctx Contex
 
 func (h *Handler) EditDetailsAccessLevel(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindDetails{}
-	if err := bind.RequestForm(r, &b); err != nil {
+	if err := bind.Request(r, &b); err != nil {
 		render.BadRequest(w, r, err)
 		return
 	}
 
-	// Band-aid: omit empty values from fields with repeating values (text repeat, list repeat)
-	//   TODO: This should be part of "form:,omitEmpty" in the Dataset struct. However,
-	//   go-playground/form doesn't support omitEmpty on lists or nested form structures
-	//   (slices, maps,...)
-	omitEmpty := func(keywords []string) []string {
-		var tmp []string
-		for _, str := range keywords {
-			if str != "" {
-				tmp = append(tmp, str)
-			}
-		}
-
-		return tmp
-	}
-
-	b.Keyword = omitEmpty(b.Keyword)
-	b.Format = omitEmpty(b.Format)
-	b.ID = ctx.Dataset.ID
+	b.Clean()
 
 	// Clear embargo and embargoTo fields if access level is not embargo
 	//   TODO Disabled per https://github.com/ugent-library/biblio-backend/issues/217
@@ -119,6 +109,8 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 		return
 	}
 
+	b.Clean()
+
 	// @note decoding the form into a model omits empty values
 	//   removing "omitempty" in the model doesn't make a difference.
 	if b.AccessLevel != "info:eu-repo/semantics/embargoedAccess" {
@@ -126,26 +118,7 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 		b.EmbargoTo = ""
 	}
 
-	// Band-aid: omit empty values from fields with repeating values (text repeat, list repeat)
-	//   TODO: This should be part of "form:,omitEmpty" in the Dataset struct. However,
-	//   go-playground/form doesn't support omitEmpty on lists or nested form structures
-	//   (slices, maps,...)
-	omitEmpty := func(keywords []string) []string {
-		var tmp []string
-		for _, str := range keywords {
-			if str != "" {
-				tmp = append(tmp, str)
-			}
-		}
-
-		return tmp
-	}
-
-	b.Keyword = omitEmpty(b.Keyword)
-	b.Format = omitEmpty(b.Format)
-
 	ctx.Dataset.AccessLevel = b.AccessLevel
-	ctx.Dataset.DOI = b.DOI
 	ctx.Dataset.Embargo = b.Embargo
 	ctx.Dataset.EmbargoTo = b.EmbargoTo
 	ctx.Dataset.Format = b.Format
@@ -286,7 +259,7 @@ func detailsForm(ctx Context, b BindDetails, errors validation.Errors) *form.For
 		Required:    true,
 		EmptyOption: true,
 		Tooltip:     ctx.T("tooltip.dataset.access_level"),
-		Vars:        struct{ ID string }{ID: b.ID},
+		Vars:        struct{ ID string }{ID: ctx.Dataset.ID},
 	}
 
 	embargo := &form.Date{
@@ -312,4 +285,15 @@ func detailsForm(ctx Context, b BindDetails, errors validation.Errors) *form.For
 	detailsForm.AddSection(license, otherLicense, accessLevel, embargo, embargoTo)
 
 	return detailsForm
+}
+
+func cleanStringSlice(vals []string) []string {
+	var tmp []string
+	for _, str := range vals {
+		str = strings.TrimSpace(str)
+		if str != "" {
+			tmp = append(tmp, str)
+		}
+	}
+	return tmp
 }
