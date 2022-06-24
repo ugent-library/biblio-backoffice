@@ -34,3 +34,27 @@ func LanguageSelectOptions(loc *locale.Locale) []form.SelectOption {
 	}
 	return opts
 }
+
+func LicenseSelectOptions(loc *locale.Locale) []form.SelectOption {
+	codes := vocabularies.Map["cc_licenses"]
+	opts := make([]form.SelectOption, len(codes))
+	for i, code := range codes {
+		opts[i] = form.SelectOption{
+			Value: code,
+			Label: loc.TranslateScope("cc_licenses", code),
+		}
+	}
+	return opts
+}
+
+func AccessLevelSelectOptions(loc *locale.Locale) []form.SelectOption {
+	codes := vocabularies.Map["access_levels"]
+	opts := make([]form.SelectOption, len(codes))
+	for i, code := range codes {
+		opts[i] = form.SelectOption{
+			Value: code,
+			Label: loc.TranslateScope("access_levels", code),
+		}
+	}
+	return opts
+}

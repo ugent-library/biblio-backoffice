@@ -1,4 +1,4 @@
-package fields
+package display
 
 import (
 	"html/template"
@@ -9,20 +9,44 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/render"
 )
 
-type Fields struct {
-	Theme  string
-	Fields []Field
+type Display struct {
+	Theme    string
+	Sections []Section
+}
+
+type Section struct {
+	Display *Display
+	Fields  []Field
 }
 
 type Field interface {
-	RenderHTML(*Fields, io.Writer) error
+	Render(*Display, io.Writer) error
 }
 
-func (f *Fields) RenderHTML() (template.HTML, error) {
+func New() *Display {
+	return &Display{}
+}
+
+func (d *Display) WithTheme(theme string) *Display {
+	d.Theme = theme
+
+	return d
+}
+
+func (d *Display) AddSection(fields ...Field) *Display {
+	d.Sections = append(d.Sections, Section{
+		Fields:  fields,
+		Display: d,
+	})
+
+	return d
+}
+
+func (s Section) Render() (template.HTML, error) {
 	var buf strings.Builder
 
-	for _, field := range f.Fields {
-		if err := field.RenderHTML(f, &buf); err != nil {
+	for _, field := range s.Fields {
+		if err := field.Render(s.Display, &buf); err != nil {
 			return "", err
 		}
 	}
@@ -48,20 +72,20 @@ type yieldHTML struct {
 	Values   []template.HTML
 }
 
-func (f *Text) RenderHTML(fields *Fields, w io.Writer) error {
+func (f *Text) Render(d *Display, w io.Writer) error {
 	if f.Value != "" {
 		f.Values = []string{f.Value}
 	}
 
 	if f.ValueTemplate != "" {
-		return f.renderWithValueTemplate(fields, w)
+		return f.renderWithValueTemplate(d, w)
 	}
 
-	tmpl := path.Join("fields", fields.Theme, "text")
+	tmpl := path.Join("display", d.Theme, "text")
 	return render.Templates().ExecuteTemplate(w, tmpl, f)
 }
 
-func (f *Text) renderWithValueTemplate(fields *Fields, w io.Writer) error {
+func (f *Text) renderWithValueTemplate(d *Display, w io.Writer) error {
 	y := yieldHTML{
 		Label:    f.Label,
 		List:     f.List,
@@ -77,6 +101,6 @@ func (f *Text) renderWithValueTemplate(fields *Fields, w io.Writer) error {
 		y.Values = append(y.Values, template.HTML(buf.String()))
 	}
 
-	tmpl := path.Join("fields", fields.Theme, "text")
+	tmpl := path.Join("display", d.Theme, "text")
 	return render.Templates().ExecuteTemplate(w, tmpl, y)
 }

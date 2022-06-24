@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="{{assetPath "/css/app.css"}}">
     <link rel="icon" href="{{assetPath "/favicon.ico"}}">
     <title>{{.PageTitle}}</title>
-    <meta name="htmx-config" content='{"useTemplateFragments":true}'>
     <meta name="csrf-token" content='{{.CSRFToken}}'>
 </head>
 
@@ -29,7 +28,7 @@
         {{end}}
         {{with .OriginalUser}}
         <div class="alert alert-danger mb-0" role="alert">
-            <form class="form-inline" action="{{pathFor "user_impersonate_remove"}}" method="POST">
+            <form class="form-inline" action="{{pathFor "delete_impersonation"}}" method="POST">
                 {{$.CSRFTag}}
                 <label class="my-1 mr-2 font-weight-bold">Viewing the perspective of {{$.User.FullName}}.</label>
                 <button type="submit" class="btn btn-danger my-1">return to {{.FullName}}</button>.
@@ -57,11 +56,10 @@
                                 </div>
                             </a>
                             <div class="dropdown-menu">
-                                {{if .User.CanImpersonateUser}}
+                                {{if and .User.CanImpersonateUser (not .OriginalUser)}}
                                 <a class="dropdown-item" href="#"
-                                    hx-get="{{pathFor "user_impersonate_choose"}}"
-                                    hx-target="#user-impersonate-modal"
-                                    hx-trigger="click"
+                                    hx-get="{{pathFor "add_impersonation"}}"
+                                    hx-target="#modals"
                                 >View as other user</a>
                                 {{end}}
                                 <a class="dropdown-item" href="{{pathFor "logout"}}">Logout</a>

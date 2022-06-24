@@ -1,0 +1,26 @@
+<div class="form-group row">
+    <label class="col-sm-3 col-form-label align-self-start">
+        {{.Label}}{{if .Required}}&nbsp;<abbr class="required" title="Required">*</abbr>{{end}}
+        {{ if .Tooltip }}
+        <a class="text-muted mx-2" href="#" data-container="body" data-toggle="popover" data-trigger="focus" data-placement="right" data-content="{{ .Tooltip }}">
+            <i class="if if-info-circle if--small"></i>
+            <div class="sr-only">More info</div>
+        </a>
+        {{ end }}
+    </label>
+    <div class="col-sm-9">
+    {{if and .Values .List}}
+        <ul class="list-unstyled">
+        {{range .Values}}
+            <li>{{.}}</li>
+        {{end}}
+        </ul>
+    {{else if .Values}}
+        {{range .Values}}
+            {{.}}
+        {{end}}
+    {{else}}
+        <span>-</span>
+        {{end}}
+    </div>
+</div>

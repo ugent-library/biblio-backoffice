@@ -9,12 +9,8 @@
         {{end}}
     </label>
     <div class="col-{{.Cols}}">
-        <select class="custom-select form-control{{if .Error}} is-invalid{{end}}" name="{{.Name}}"{{if .Disabled}} disabled{{end}}>
-            {{if .EmptyOption }}<option></option>{{end}}
-            {{range .Options}}
-            <option value="{{.Value}}"{{if eq .Value $.Value}} selected{{end}}>{{.Label}}</option>
-            {{end}}
-        </select>
-        {{with .Error}}<div class="invalid-feedback">{{.}}</div>{{end}}
+        <input class="form-control{{if .Error}} is-invalid{{end}}" name="{{.Name}}" type="date"
+            value="{{.Value}}"{{with .Min}} min="{{.}}"{{end}}{{with .Max}} max="{{.}}"{{end}}{{if .Disabled}} disabled{{end}}>
+        {{if .Error}}<div class="invalid-feedback">{{.Error}}</div>{{end}}
     </div>
 </div>

@@ -3,10 +3,11 @@ package publicationviewing
 import (
 	"net/http"
 
+	"github.com/ugent-library/biblio-backend/internal/app/displays"
 	"github.com/ugent-library/biblio-backend/internal/bind"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
-	"github.com/ugent-library/biblio-backend/internal/render/fields"
+	"github.com/ugent-library/biblio-backend/internal/render/display"
 	"github.com/ugent-library/biblio-backend/internal/validation"
 )
 
@@ -20,9 +21,9 @@ type YieldShow struct {
 
 type YieldShowDescription struct {
 	Context
-	ActiveSubNav string
-	SearchArgs   *models.SearchArgs
-	DetailFields []*fields.Fields
+	ActiveSubNav   string
+	SearchArgs     *models.SearchArgs
+	DisplayDetails *display.Display
 }
 
 type YieldShowContributors struct {
@@ -75,10 +76,10 @@ func (h *Handler) ShowDescription(w http.ResponseWriter, r *http.Request, ctx Co
 	}
 
 	render.Render(w, "publication/show_description", YieldShowDescription{
-		Context:      ctx,
-		ActiveSubNav: "description",
-		SearchArgs:   searchArgs,
-		DetailFields: detailFields(ctx),
+		Context:        ctx,
+		ActiveSubNav:   "description",
+		SearchArgs:     searchArgs,
+		DisplayDetails: displayDetails(ctx),
 	})
 }
 
@@ -131,27 +132,27 @@ func (h *Handler) ShowDatasets(w http.ResponseWriter, r *http.Request, ctx Conte
 	})
 }
 
-func detailFields(ctx Context) []*fields.Fields {
+func displayDetails(ctx Context) *display.Display {
 
 	switch ctx.Publication.Type {
 	case "book_chapter":
-		return detailFieldsBookChapter(ctx)
+		return displays.DisplayBookChapter(ctx.Locale, ctx.Publication)
 	case "book_editor":
-		return detailFieldsBookEditor(ctx)
+		return displays.DisplayBookEditor(ctx.Locale, ctx.Publication)
 	case "book":
-		return detailFieldsBook(ctx)
+		return displays.DisplayBook(ctx.Locale, ctx.Publication)
 	case "conference":
-		return detailFieldsConference(ctx)
+		return displays.DisplayConference(ctx.Locale, ctx.Publication)
 	case "dissertation":
-		return detailFieldsDissertation(ctx)
+		return displays.DisplayDissertation(ctx.Locale, ctx.Publication)
 	case "issue_editor":
-		return detailFieldsIssueEditor(ctx)
+		return displays.DisplayIssueEditor(ctx.Locale, ctx.Publication)
 	case "journal_article":
-		return detailFieldsJournalArticle(ctx)
+		return displays.DisplayJournalArticle(ctx.Locale, ctx.Publication)
 	case "miscellaneous":
-		return detailFieldsMiscellaneous(ctx)
+		return displays.DisplayMiscellaneous(ctx.Locale, ctx.Publication)
 	default:
-		return []*fields.Fields{}
+		return display.New()
 	}
 
 }

@@ -7,8 +7,10 @@ import (
 	mw "github.com/gorilla/handlers"
 	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers"
+	"github.com/ugent-library/biblio-backend/internal/app/handlers/authenticating"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/datasetediting"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/datasetviewing"
+	"github.com/ugent-library/biblio-backend/internal/app/handlers/impersonating"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/publicationviewing"
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/locale"
@@ -23,7 +25,7 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 
 	router.StrictSlash(true)
 	router.UseEncodedPath()
-	router.Use(mw.RecoveryHandler())
+	router.Use(mw.RecoveryHandler(mw.PrintRecoveryStack(true)))
 
 	// static files
 	router.PathPrefix(basePath + "/static/").Handler(http.StripPrefix(basePath+"/static/", http.FileServer(http.Dir("./internal/services/webapp/static"))))
@@ -32,8 +34,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	setUser := middleware.SetUser(services.UserService, oldBase.SessionName, oldBase.SessionStore)
 
 	homeController := controllers.NewHome(oldBase)
-	authController := controllers.NewAuth(oldBase, oidcClient, services.UserService)
-	usersController := controllers.NewUsers(oldBase, services.UserService)
 	tasksController := controllers.NewTasks(oldBase, services.Tasks)
 
 	publicationsController := controllers.NewPublications(
@@ -59,7 +59,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	publicationLaySummariesController := controllers.NewPublicationLaySummaries(oldBase, services.Repository)
 
 	datasetsController := controllers.NewDatasets(oldBase, services.Repository, services.DatasetSearchService, services.DatasetSources)
-	datasetDetailsController := controllers.NewDatasetDetails(oldBase, services.Repository)
 	datasetEditingHandlerontributorsController := controllers.NewDatasetContributors(oldBase, services.Repository, services.PersonSearchService, services.PersonService)
 
 	licensesController := controllers.NewLicenses(oldBase, services.LicenseSearchService)
@@ -67,10 +66,18 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 
 	// NEW HANDLERS
 	baseHandler := handlers.BaseHandler{
+		Router:       oldBase.Router,
 		SessionStore: oldBase.SessionStore,
 		SessionName:  oldBase.SessionName,
 		Localizer:    oldBase.Localizer,
 		UserService:  services.UserService,
+	}
+	authenticatingHandler := &authenticating.Handler{
+		BaseHandler: baseHandler,
+		OIDCClient:  oidcClient,
+	}
+	impersonatingHandler := &impersonating.Handler{
+		BaseHandler: baseHandler,
 	}
 	datasetViewingHandler := &datasetviewing.Handler{
 		BaseHandler: baseHandler,
@@ -100,18 +107,44 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	// r = r.Schemes(schemes...).Host(u.Host).PathPrefix(u.Path).Subrouter()
 
 	r := router.PathPrefix(basePath).Subrouter()
-
-	csrfMiddleware := csrf.Protect(
+	r.Use(csrf.Protect(
 		[]byte(viper.GetString("csrf-secret")),
 		csrf.CookieName(viper.GetString("csrf-name")),
 		csrf.Path(basePath),
 		csrf.Secure(oldBase.BaseURL.Scheme == "https"),
 		csrf.SameSite(csrf.SameSiteStrictMode),
 		csrf.FieldName("csrf-token"),
-	)
-	r.Use(csrfMiddleware)
+	))
 
 	// NEW ROUTES
+	// authenticate user
+	r.HandleFunc("/auth/openid-connect/callback",
+		authenticatingHandler.Wrap(authenticatingHandler.Callback)).
+		Methods("GET")
+	r.HandleFunc("/login",
+		authenticatingHandler.Wrap(authenticatingHandler.Login)).
+		Methods("GET").
+		Name("login")
+	r.HandleFunc("/logout",
+		authenticatingHandler.Wrap(authenticatingHandler.Logout)).
+		Methods("GET").
+		Name("logout")
+
+	// impersonate user
+	r.HandleFunc("/impersonation/add",
+		impersonatingHandler.Wrap(impersonatingHandler.AddImpersonation)).
+		Methods("GET").
+		Name("add_impersonation")
+	r.HandleFunc("/impersonation",
+		impersonatingHandler.Wrap(impersonatingHandler.CreateImpersonation)).
+		Methods("POST").
+		Name("create_impersonation")
+	// TODO why doesn't a DELETE with methodoverride work here?
+	r.HandleFunc("/delete-impersonation",
+		impersonatingHandler.Wrap(impersonatingHandler.DeleteImpersonation)).
+		Methods("POST").
+		Name("delete_impersonation")
+
 	// view dataset
 	r.HandleFunc("/dataset/{id}",
 		datasetViewingHandler.Wrap(datasetViewingHandler.Show)).
@@ -129,6 +162,20 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		datasetViewingHandler.Wrap(datasetViewingHandler.ShowPublications)).
 		Methods("GET").
 		Name("dataset_publications")
+
+	// edit dataset details
+	r.HandleFunc("/dataset/{id}/details/edit",
+		datasetEditingHandler.Wrap(datasetEditingHandler.EditDetails)).
+		Methods("GET").
+		Name("dataset_edit_details")
+	r.HandleFunc("/dataset/{id}/details/edit/access-level",
+		datasetEditingHandler.Wrap(datasetEditingHandler.EditDetailsAccessLevel)).
+		Methods("PUT").
+		Name("dataset_edit_details_access_level")
+	r.HandleFunc("/dataset/{id}/details",
+		datasetEditingHandler.Wrap(datasetEditingHandler.UpdateDetails)).
+		Methods("PUT").
+		Name("dataset_update_details")
 
 	// edit dataset projects
 	r.HandleFunc("/dataset/{id}/projects/add",
@@ -230,36 +277,12 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	// home
 	r.HandleFunc("/", homeController.Home).Methods("GET").Name("home")
 
-	// auth
-	r.HandleFunc("/login", authController.Login).
-		Methods("GET").
-		Name("login")
-	r.HandleFunc("/auth/openid-connect/callback", authController.Callback).
-		Methods("GET")
-	r.HandleFunc("/logout", authController.Logout).
-		Methods("GET").
-		Name("logout")
-
 	// tasks
 	taskRouter := r.PathPrefix("/task").Subrouter()
 	taskRouter.Use(requireUser)
 	taskRouter.HandleFunc("/{id}/status", tasksController.Status).
 		Methods("GET").
 		Name("task_status")
-
-	// users
-	userRouter := r.PathPrefix("/user").Subrouter()
-	userRouter.Use(requireUser)
-	userRouter.HandleFunc("/htmx/impersonate/choose", usersController.ImpersonateChoose).
-		Methods("GET").
-		Name("user_impersonate_choose")
-	userRouter.HandleFunc("/impersonate", usersController.Impersonate).
-		Methods("POST").
-		Name("user_impersonate")
-	// TODO why doesn't a DELETE with methodoverride work with CAS?
-	userRouter.HandleFunc("/impersonate/remove", usersController.ImpersonateRemove).
-		Methods("POST").
-		Name("user_impersonate_remove")
 
 	// publications
 	pubsRouter := r.PathPrefix("/publication").Subrouter()
@@ -592,17 +615,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	datasetEditRouter.HandleFunc("/add/publish", datasetsController.AddPublish).
 		Methods("POST").
 		Name("dataset_add_publish")
-	// Dataset details HTMX fragments
-	datasetEditRouter.HandleFunc("/htmx/details/edit", datasetDetailsController.Edit).
-		Methods("GET").
-		Name("dataset_edit_details")
-	datasetEditRouter.HandleFunc("/htmx/details/access_level", datasetDetailsController.AccessLevel).
-		Methods("PUT").
-		Name("dataset_edit_details_access_level")
-	datasetEditRouter.HandleFunc("/htmx/details/edit", datasetDetailsController.Update).
-		Methods("PATCH").
-		Name("dataset_details_save_form")
-	// Dataset contributors HTMX fragments
 	datasetEditRouter.HandleFunc("/htmx/contributors/{role}/add", datasetEditingHandlerontributorsController.Add).
 		Methods("GET").
 		Name("dataset_contributors_add")
