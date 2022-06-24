@@ -264,6 +264,12 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		Methods("DELETE").
 		Name("dataset_delete_publication")
 
+	// publish a dataset
+	r.HandleFunc("/dataset/{id}/publish",
+		datasetEditingHandler.Wrap(datasetEditingHandler.Publish)).
+		Methods("POST").
+		Name("dataset_publish")
+
 	// r.Use(handlers.HTTPMethodOverrideHandler)
 	r.Use(locale.Detect(oldBase.Localizer))
 
@@ -581,9 +587,9 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	datasetDeleteRouter.HandleFunc("/delete", datasetsController.Delete).
 		Methods("POST").
 		Name("dataset_delete")
-	datasetEditRouter.HandleFunc("/publish", datasetsController.Publish).
-		Methods("POST").
-		Name("dataset_publish")
+	// datasetEditRouter.HandleFunc("/publish", datasetsController.Publish).
+	// 	Methods("POST").
+	// 	Name("dataset_publish")
 	datasetEditRouter.HandleFunc("/add/description", datasetsController.AddDescription).
 		Methods("GET").
 		Name("dataset_add_description")

@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/go-playground/form/v4"
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
@@ -15,6 +16,8 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
 )
+
+var queryEncoder = form.NewEncoder()
 
 // TODO handlers should only have access to a url builder,
 // the session and maybe the localizer
@@ -98,6 +101,26 @@ func (h BaseHandler) URLFor(name string, vars ...string) *url.URL {
 	}
 	log.Panic(fmt.Errorf("route %s not found", name))
 	return nil
+}
+
+func (h BaseHandler) Query(v interface{}, u *url.URL) (*url.URL, error) {
+	vals, err := queryEncoder.Encode(v)
+
+	if err != nil {
+		return u, err
+	}
+
+	u.RawQuery = vals.Encode()
+
+	return u, nil
+}
+
+func (h BaseHandler) QuerySet(k, v string, u *url.URL) (*url.URL, error) {
+	q := u.Query()
+	q.Set(k, v)
+	u.RawQuery = q.Encode()
+
+	return u, nil
 }
 
 type BaseContext struct {
