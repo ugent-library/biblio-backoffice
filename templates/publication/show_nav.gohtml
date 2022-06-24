@@ -1,0 +1,15 @@
+<ul class="nav" role="tablist">
+{{range (list "description" "files" "contributors" "datasets")}}
+    {{$u := pathFor "publication" "id" $.Publication.ID | query $.SearchArgs | querySet "show" .}} 
+    <li class="nav-item">
+        <a class="nav-link{{if eq $.ActiveSubNav .}} active{{end}}"
+            href="{{$u}}"
+            hx-get="{{pathFor (print "publication_" .) "id" $.Publication.ID | query $.SearchArgs}}"
+            hx-target="#show-content"
+            hx-push-url="{{$u}}"
+            role="tab"
+            aria-controls="{{.}}"
+            aria-selected="{{if eq $.ActiveSubNav .}}true{{else}}false{{end}}">{{$.TS "publication.subnav" .}}</a>
+    </li>
+{{end}}
+</ul>
