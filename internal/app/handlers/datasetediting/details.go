@@ -174,6 +174,14 @@ func detailsForm(ctx Context, b BindDetails, errors validation.Errors) *form.For
 				Required:    true,
 			},
 
+			&form.Value{
+				Template: "dataset/doi",
+				Value:    ctx.Dataset.DOI,
+				Label:    ctx.T("builder.doi"),
+				Cols:     9,
+				Required: true,
+			},
+
 			&form.Text{
 				Name:  "url",
 				Value: b.URL,
