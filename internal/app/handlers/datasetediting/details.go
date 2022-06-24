@@ -29,7 +29,7 @@ type BindDetails struct {
 	Year         string   `form:"year"`
 }
 
-func (b *BindDetails) Clean() {
+func (b *BindDetails) CleanValues() {
 	b.AccessLevel = strings.TrimSpace(b.AccessLevel)
 	b.Embargo = strings.TrimSpace(b.Embargo)
 	b.EmbargoTo = strings.TrimSpace(b.Embargo)
@@ -81,7 +81,7 @@ func (h *Handler) EditDetailsAccessLevel(w http.ResponseWriter, r *http.Request,
 		return
 	}
 
-	b.Clean()
+	b.CleanValues()
 
 	// Clear embargo and embargoTo fields if access level is not embargo
 	//   TODO Disabled per https://github.com/ugent-library/biblio-backend/issues/217
@@ -109,7 +109,7 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 		return
 	}
 
-	b.Clean()
+	b.CleanValues()
 
 	// @note decoding the form into a model omits empty values
 	//   removing "omitempty" in the model doesn't make a difference.

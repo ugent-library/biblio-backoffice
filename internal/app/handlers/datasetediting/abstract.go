@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/ugent-library/biblio-backend/internal/bind"
 	"github.com/ugent-library/biblio-backend/internal/localize"
@@ -19,6 +20,12 @@ type BindAbstract struct {
 	Text     string `form:"text"`
 	Lang     string `form:"lang"`
 }
+
+func (b *BindAbstract) CleanValues() {
+	b.Text = strings.TrimSpace(b.Text)
+	b.Lang = strings.TrimSpace(b.Lang)
+}
+
 type BindDeleteAbstract struct {
 	Position int `path:"position"`
 }
@@ -56,6 +63,8 @@ func (h *Handler) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 		return
 	}
 
+	b.CleanValues()
+
 	ctx.Dataset.Abstract = append(ctx.Dataset.Abstract, models.Text{Text: b.Text, Lang: b.Lang})
 
 	if validationErrs := ctx.Dataset.Validate(); validationErrs != nil {
@@ -90,6 +99,8 @@ func (h *Handler) EditAbstract(w http.ResponseWriter, r *http.Request, ctx Conte
 		render.BadRequest(w, r, err)
 		return
 	}
+
+	b.CleanValues()
 
 	a, err := ctx.Dataset.GetAbstract(b.Position)
 	if err != nil {
