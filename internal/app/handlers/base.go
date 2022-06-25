@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/gob"
 	"fmt"
 	"html/template"
 	"log"
@@ -15,9 +16,16 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/locale"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
+	"github.com/ugent-library/biblio-backend/internal/render/flash"
 )
 
 var queryEncoder = form.NewEncoder()
+
+func init() {
+	// Register []flashFlash as a gob Type to make SecureCookieStore happy
+	// SEE https://github.com/gin-contrib/sessions/issues/39
+	gob.Register([]flash.Flash{})
+}
 
 // TODO handlers should only have access to a url builder,
 // the session and maybe the localizer
@@ -31,7 +39,7 @@ type BaseHandler struct {
 
 func (h BaseHandler) Wrap(fn func(http.ResponseWriter, *http.Request, BaseContext)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		ctx, err := h.NewContext(r)
+		ctx, err := h.NewContext(r, w)
 		if err != nil {
 			render.InternalServerError(w, r, err)
 			return
@@ -40,7 +48,7 @@ func (h BaseHandler) Wrap(fn func(http.ResponseWriter, *http.Request, BaseContex
 	}
 }
 
-func (h BaseHandler) NewContext(r *http.Request) (BaseContext, error) {
+func (h BaseHandler) NewContext(r *http.Request, w http.ResponseWriter) (BaseContext, error) {
 	user, err := h.getUserFromSession(r, UserSessionKey)
 	if err != nil {
 		return BaseContext{}, err
@@ -51,13 +59,58 @@ func (h BaseHandler) NewContext(r *http.Request) (BaseContext, error) {
 		return BaseContext{}, err
 	}
 
+	flash, err := h.getFlashFromSession(r, w)
+	if err != nil {
+		return BaseContext{}, err
+	}
+
 	return BaseContext{
+		Flash:        flash,
 		Locale:       h.Localizer.GetLocale(r.Header.Get("Accept-Language")),
 		User:         user,
 		OriginalUser: originalUser,
 		CSRFToken:    csrf.Token(r),
 		CSRFTag:      csrf.TemplateField(r),
 	}, nil
+}
+
+func (h BaseHandler) SetSessionFlash(r *http.Request, w http.ResponseWriter, f flash.Flash) error {
+	session, err := h.SessionStore.Get(r, h.SessionName)
+	if err != nil {
+		return err
+	}
+
+	if session.Values[FlashSessionKey] == nil {
+		session.Values[FlashSessionKey] = []flash.Flash{f}
+	} else {
+		session.Values[FlashSessionKey] = append(session.Values[FlashSessionKey].([]flash.Flash), f)
+	}
+
+	if err := session.Save(r, w); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (h BaseHandler) getFlashFromSession(r *http.Request, w http.ResponseWriter) ([]flash.Flash, error) {
+	session, err := h.SessionStore.Get(r, h.SessionName)
+	if err != nil {
+		return nil, err
+	}
+
+	flashes := session.Values[FlashSessionKey]
+
+	delete(session.Values, FlashSessionKey)
+	if err := session.Save(r, w); err != nil {
+		return []flash.Flash{}, err
+	}
+
+	if flashes == nil {
+		return []flash.Flash{}, nil
+	}
+
+	return flashes.([]flash.Flash), nil
 }
 
 func (h BaseHandler) getUserFromSession(r *http.Request, sessionKey string) (*models.User, error) {
@@ -124,6 +177,7 @@ func (h BaseHandler) QuerySet(k, v string, u *url.URL) (*url.URL, error) {
 }
 
 type BaseContext struct {
+	Flash        []flash.Flash
 	Locale       *locale.Locale
 	User         *models.User
 	OriginalUser *models.User

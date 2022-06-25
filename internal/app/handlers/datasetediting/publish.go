@@ -3,9 +3,11 @@ package datasetediting
 import (
 	"errors"
 	"net/http"
+	"time"
 
 	"github.com/ugent-library/biblio-backend/internal/localize"
 	"github.com/ugent-library/biblio-backend/internal/render"
+	"github.com/ugent-library/biblio-backend/internal/render/flash"
 	"github.com/ugent-library/biblio-backend/internal/render/form"
 	"github.com/ugent-library/biblio-backend/internal/snapstore"
 	"github.com/ugent-library/biblio-backend/internal/validation"
@@ -39,6 +41,8 @@ func (h *Handler) Publish(w http.ResponseWriter, r *http.Request, ctx Context) {
 		render.InternalServerError(w, r, err)
 		return
 	}
+
+	h.SetSessionFlash(r, w, flash.Flash{Type: "success", Body: "Dataset was succesfully published", DismissAfter: 5 * time.Second})
 
 	destUrl := h.PathFor("dataset", "id", ctx.Dataset.ID)
 	destUrl.RawQuery = r.URL.Query().Encode()
