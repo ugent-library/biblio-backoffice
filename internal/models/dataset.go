@@ -3,7 +3,6 @@ package models
 import (
 	"errors"
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/ugent-library/biblio-backend/internal/pagination"
@@ -446,29 +445,4 @@ func (d *Dataset) Validate() error {
 		return errs
 	}
 	return nil
-}
-
-func (d *Dataset) Vacuum() {
-	d.AccessLevel = strings.TrimSpace(d.AccessLevel)
-	d.Embargo = strings.TrimSpace(d.Embargo)
-	d.EmbargoTo = strings.TrimSpace(d.EmbargoTo)
-	d.Format = vacuumStringSlice(d.Format)
-	d.Keyword = vacuumStringSlice(d.Keyword)
-	d.License = strings.TrimSpace(d.License)
-	d.OtherLicense = strings.TrimSpace(d.OtherLicense)
-	d.Publisher = strings.TrimSpace(d.Publisher)
-	d.Title = strings.TrimSpace(d.Title)
-	d.URL = strings.TrimSpace(d.URL)
-	d.Year = strings.TrimSpace(d.Year)
-}
-
-func vacuumStringSlice(vals []string) []string {
-	newVals := []string{}
-	for _, v := range vals {
-		v = strings.TrimSpace(v)
-		if v != "" {
-			newVals = append(newVals, v)
-		}
-	}
-	return newVals
 }
