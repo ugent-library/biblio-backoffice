@@ -239,52 +239,45 @@ func (d *Dataset) Validate() error {
 	if d.Status == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/status",
-			Code:    "required",
-			Field:   "status",
+			Code:    "dataset.status.required",
 		})
 	} else if !validation.IsStatus(d.Status) {
 		errs = append(errs, &validation.Error{
 			Pointer: "/status",
-			Code:    "invalid",
-			Field:   "status",
+			Code:    "dataset.status.invalid",
 		})
 	}
 	if d.Status == "public" {
 		if d.AccessLevel == "" {
 			errs = append(errs, &validation.Error{
 				Pointer: "/access_level",
-				Code:    "required",
-				Field:   "access_level",
+				Code:    "dataset.access_level.required",
 			})
 		} else if !validation.IsDatasetAccessLevel(d.AccessLevel) {
 			errs = append(errs, &validation.Error{
 				Pointer: "/access_level",
-				Code:    "invalid",
-				Field:   "access_level",
+				Code:    "dataset.access_level.invalid",
 			})
 		}
 	}
 	if d.Status == "public" && d.DOI == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/doi",
-			Code:    "required",
-			Field:   "doi",
+			Code:    "dataset.doi.required",
 		})
 	}
 	if d.Status == "public" {
 		if len(d.Format) == 0 {
 			errs = append(errs, &validation.Error{
 				Pointer: "/format",
-				Code:    "required",
-				Field:   "format",
+				Code:    "dataset.format.required",
 			})
 		}
 		for i, f := range d.Format {
 			if f == "" {
 				errs = append(errs, &validation.Error{
 					Pointer: fmt.Sprintf("/format/%d", i),
-					Code:    "required",
-					Field:   "format",
+					Code:    "dataset.format.required",
 				})
 			}
 		}
@@ -292,15 +285,13 @@ func (d *Dataset) Validate() error {
 	if d.Status == "public" && d.Publisher == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/publisher",
-			Code:    "required",
-			Field:   "publisher",
+			Code:    "dataset.publisher.required",
 		})
 	}
 	if d.Status == "public" && d.Title == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/title",
-			Code:    "required",
-			Field:   "title",
+			Code:    "dataset.title.required",
 		})
 	}
 
@@ -309,22 +300,19 @@ func (d *Dataset) Validate() error {
 		if d.Year == "" {
 			errs = append(errs, &validation.Error{
 				Pointer: "/year",
-				Code:    "required",
-				Field:   "year",
+				Code:    "dataset.year.required",
 			})
 		} else if !validation.IsYear(d.Year) {
 			errs = append(errs, &validation.Error{
 				Pointer: "/year",
-				Code:    "invalid",
-				Field:   "year",
+				Code:    "dataset.year.invalid",
 			})
 		}
 	}
 	if d.Status == "public" && len(d.Author) == 0 {
 		errs = append(errs, &validation.Error{
 			Pointer: "/author",
-			Code:    "required",
-			Field:   "author",
+			Code:    "dataset.author.required",
 		})
 	}
 
@@ -332,8 +320,7 @@ func (d *Dataset) Validate() error {
 		for _, err := range c.Validate() {
 			errs = append(errs, &validation.Error{
 				Pointer: fmt.Sprintf("/author/%d%s", i, err.Pointer),
-				Code:    err.Code,
-				Field:   "author." + err.Field,
+				Code:    "dataset.author" + err.Code,
 			})
 		}
 	}
@@ -350,8 +337,7 @@ func (d *Dataset) Validate() error {
 		if !hasUgentAuthors {
 			errs = append(errs, &validation.Error{
 				Pointer: "/author",
-				Code:    "min_ugent_authors",
-				Field:   "author",
+				Code:    "dataset.author.min_ugent_authors",
 			})
 		}
 	}
@@ -361,8 +347,7 @@ func (d *Dataset) Validate() error {
 	if d.Status == "public" && d.License == "" && d.OtherLicense == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/license",
-			Code:    "required",
-			Field:   "license",
+			Code:    "dataset.license.required",
 		})
 	}
 
@@ -370,8 +355,7 @@ func (d *Dataset) Validate() error {
 		if rp.ID == "" {
 			errs = append(errs, &validation.Error{
 				Pointer: fmt.Sprintf("/related_publication/%d/id", i),
-				Code:    "required",
-				Field:   "related_publication",
+				Code:    "dataset.related_publication.required",
 			})
 		}
 	}
@@ -380,8 +364,7 @@ func (d *Dataset) Validate() error {
 		if pr.ID == "" {
 			errs = append(errs, &validation.Error{
 				Pointer: fmt.Sprintf("/project/%d/id", i),
-				Code:    "required",
-				Field:   "project",
+				Code:    "dataset.project.required",
 			})
 		}
 	}
@@ -390,8 +373,7 @@ func (d *Dataset) Validate() error {
 		if dep.ID == "" {
 			errs = append(errs, &validation.Error{
 				Pointer: fmt.Sprintf("/department/%d/id", i),
-				Code:    "required",
-				Field:   "department",
+				Code:    "dataset.department.required",
 			})
 		}
 	}
@@ -400,33 +382,28 @@ func (d *Dataset) Validate() error {
 		if d.Embargo == "" {
 			errs = append(errs, &validation.Error{
 				Pointer: "/embargo",
-				Code:    "required",
-				Field:   "embargo",
+				Code:    "dataset.embargo.required",
 			})
 		} else if !validation.IsDate(d.Embargo) {
 			errs = append(errs, &validation.Error{
 				Pointer: "/embargo",
-				Code:    "invalid",
-				Field:   "embargo",
+				Code:    "dataset.embargo.invalid",
 			})
 		}
 		if d.EmbargoTo == "" {
 			errs = append(errs, &validation.Error{
 				Pointer: "/embargo_to",
-				Code:    "required",
-				Field:   "embargo_to",
+				Code:    "dataset.embargo_to.required",
 			})
 		} else if d.AccessLevel == d.EmbargoTo {
 			errs = append(errs, &validation.Error{
 				Pointer: "/embargo_to",
-				Code:    "invalid", //TODO: better code
-				Field:   "embargo_to",
+				Code:    "dataset.embarg_to.invalid", //TODO: better code
 			})
 		} else if !validation.IsDatasetAccessLevel(d.EmbargoTo) {
 			errs = append(errs, &validation.Error{
 				Pointer: "/embargo_to",
-				Code:    "invalid", //TODO: better code
-				Field:   "embargo_to",
+				Code:    "dataset.embargo_to.invalid", //TODO: better code
 			})
 		}
 	}
