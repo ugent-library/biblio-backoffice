@@ -39,6 +39,11 @@ func (h *Handler) Publish(w http.ResponseWriter, r *http.Request, ctx Context) {
 		render.InternalServerError(w, r, err)
 		return
 	}
+
+	destUrl := h.PathFor("dataset", "id", ctx.Dataset.ID)
+	destUrl.RawQuery = r.URL.Query().Encode()
+
+	w.Header().Set("HX-Redirect", destUrl.String())
 }
 
 func publishForm(ctx Context, errors validation.Errors) *form.Form {
