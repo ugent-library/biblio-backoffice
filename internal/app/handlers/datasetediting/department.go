@@ -62,7 +62,7 @@ func (h *Handler) SuggestDepartments(w http.ResponseWriter, r *http.Request, ctx
 		return
 	}
 
-	render.Render(w, "dataset/department_suggestions", YieldAddDepartment{
+	render.Render(w, "dataset/suggest_departments", YieldAddDepartment{
 		Context: ctx,
 		Hits:    hits,
 	})

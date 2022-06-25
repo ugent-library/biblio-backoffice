@@ -1,0 +1,32 @@
+{{if .Dataset.Contributors .Role}}
+<table class="table" id="contributors-{{.Role}}-table">
+    <thead>
+        <tr>
+            <th class="pl-6 col-5">Name</th>
+            <th class="col-2">UGent {{.TS "dataset.contributor.role" .Role}}</th>
+            <th class="pr-6 col-3"></th>
+        </tr>
+    </thead>
+    <tbody
+        {{if .User.CanEditDataset .Dataset}}
+        class="sortable"
+        hx-post="{{pathFor "dataset_order_contributors" "id" .Dataset.ID "role" .Role}}"
+        hx-trigger="end"
+        hx-swap="none"
+        hx-headers='{"If-Match": "{{.Dataset.SnapshotID}}"}'
+        hx-include="#contributors-{{.Role}}-table [name='position']"
+        hx-disinherit="*"
+        {{end}}
+    >
+        {{range $i, $c := (.Dataset.Contributors .Role)}}
+        <tr id="{{$.Role}}-{{$i}}">
+            {{template "dataset/contributors_columns" (dict "User" $.User "Locale" $.Locale "Dataset" $.Dataset "Contributor" $c "Position" $i "Role" $.Role)}}
+        </tr>
+        {{end}}
+    </tbody>
+</table>
+{{else}}
+<div class="card-body">
+    <span class="text-muted">No {{.TS "dataset.contributor.role" .Role}}s</span>
+</div>
+{{end}}

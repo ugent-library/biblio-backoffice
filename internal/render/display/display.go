@@ -20,7 +20,7 @@ type Section struct {
 }
 
 type Field interface {
-	Render(*Display, io.Writer) error
+	Render(string, io.Writer) error
 }
 
 func New() *Display {
@@ -46,7 +46,7 @@ func (s Section) Render() (template.HTML, error) {
 	var buf strings.Builder
 
 	for _, field := range s.Fields {
-		if err := field.Render(s.Display, &buf); err != nil {
+		if err := field.Render(s.Display.Theme, &buf); err != nil {
 			return "", err
 		}
 	}
@@ -72,20 +72,20 @@ type yieldHTML struct {
 	Values   []template.HTML
 }
 
-func (f *Text) Render(d *Display, w io.Writer) error {
+func (f *Text) Render(theme string, w io.Writer) error {
 	if f.Value != "" {
 		f.Values = []string{f.Value}
 	}
 
 	if f.ValueTemplate != "" {
-		return f.renderWithValueTemplate(d, w)
+		return f.renderWithValueTemplate(theme, w)
 	}
 
-	tmpl := path.Join("display", d.Theme, "text")
+	tmpl := path.Join("display", theme, "text")
 	return render.Templates().ExecuteTemplate(w, tmpl, f)
 }
 
-func (f *Text) renderWithValueTemplate(d *Display, w io.Writer) error {
+func (f *Text) renderWithValueTemplate(theme string, w io.Writer) error {
 	y := yieldHTML{
 		Label:    f.Label,
 		List:     f.List,
@@ -101,6 +101,6 @@ func (f *Text) renderWithValueTemplate(d *Display, w io.Writer) error {
 		y.Values = append(y.Values, template.HTML(buf.String()))
 	}
 
-	tmpl := path.Join("display", d.Theme, "text")
+	tmpl := path.Join("display", theme, "text")
 	return render.Templates().ExecuteTemplate(w, tmpl, y)
 }

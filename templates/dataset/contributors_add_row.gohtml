@@ -1,0 +1,15 @@
+<div hx-swap-oob="innerHTML:#modals"></div>
+
+{{if .Dataset.Contributors .Role}}
+<table>
+    <tbody hx-swap-oob="afterend:#{{.Role}}-{{sub .Position 1}}">
+        <tr id="{{.Role}}-{{.Position}}">
+            {{template "dataset/contributors_columns" .}}
+        </tr>
+    </tbody>
+</table>
+{{else}}
+<div hx-swap-oob="innerHTML:#contributors-{{.Role}}-body">
+    {{template "dataset/contributors_body" .}}
+</div>
+{{end}}

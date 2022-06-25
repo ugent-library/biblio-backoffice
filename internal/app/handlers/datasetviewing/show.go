@@ -31,6 +31,15 @@ type YieldShowContributors struct {
 	SearchArgs   *models.SearchArgs
 }
 
+type YieldShowContributorsRole struct {
+	YieldShowContributors
+	Role string
+}
+
+func (y YieldShowContributors) YieldRole(role string) YieldShowContributorsRole {
+	return YieldShowContributorsRole{y, role}
+}
+
 type YieldShowPublications struct {
 	Context
 	ActiveSubNav        string

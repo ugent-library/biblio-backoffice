@@ -173,15 +173,12 @@ func detailsForm(ctx Context, b BindDetails, errors validation.Errors) *form.For
 				Error:       localize.ValidationErrorAt(ctx.Locale, errors, "/title"),
 				Required:    true,
 			},
-
-			&form.Value{
-				Template: "dataset/doi",
-				Value:    ctx.Dataset.DOI,
-				Label:    ctx.T("builder.doi"),
-				Cols:     9,
-				Required: true,
+			&display.Text{
+				Label:         ctx.T("builder.doi"),
+				Value:         ctx.Dataset.DOI,
+				Required:      true,
+				ValueTemplate: "format/doi",
 			},
-
 			&form.Text{
 				Name:  "url",
 				Value: b.URL,
@@ -201,7 +198,6 @@ func detailsForm(ctx Context, b BindDetails, errors validation.Errors) *form.For
 				Required:    true,
 				Tooltip:     ctx.T("tooltip.dataset.publisher"),
 			},
-
 			&form.Text{
 				Name:        "year",
 				Value:       b.Year,

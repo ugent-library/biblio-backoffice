@@ -135,23 +135,41 @@ func (p *Dataset) SetContributors(role string, c []*Contributor) {
 	}
 }
 
-func (p *Dataset) AddContributor(role string, i int, c *Contributor) {
+func (p *Dataset) GetContributor(role string, i int) (*Contributor, error) {
 	cc := p.Contributors(role)
+	if i >= len(cc) {
+		return nil, errors.New("index out of bounds")
+	}
 
-	if len(cc) == i {
-		p.SetContributors(role, append(cc, c))
-		return
+	return cc[i], nil
+}
+
+func (p *Dataset) AddContributor(role string, c *Contributor) {
+	p.SetContributors(role, append(p.Contributors(role), c))
+}
+
+func (p *Dataset) SetContributor(role string, i int, c *Contributor) error {
+	cc := p.Contributors(role)
+	if i >= len(cc) {
+		return errors.New("index out of bounds")
 	}
 
 	newCC := append(cc[:i+1], cc[i:]...)
 	newCC[i] = c
 	p.SetContributors(role, newCC)
+
+	return nil
 }
 
-func (p *Dataset) RemoveContributor(role string, i int) {
+func (p *Dataset) RemoveContributor(role string, i int) error {
 	cc := p.Contributors(role)
+	if i >= len(cc) {
+		return errors.New("index out of bounds")
+	}
 
 	p.SetContributors(role, append(cc[:i], cc[i+1:]...))
+
+	return nil
 }
 
 func (d *Dataset) GetAbstract(i int) (Text, error) {

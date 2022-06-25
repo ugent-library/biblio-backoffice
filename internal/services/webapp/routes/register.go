@@ -10,6 +10,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/authenticating"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/datasetediting"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/datasetviewing"
+	"github.com/ugent-library/biblio-backend/internal/app/handlers/home"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/impersonating"
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/locale"
@@ -32,7 +33,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	requireUser := middleware.RequireUser(oldBase.BaseURL.Path + "/login")
 	setUser := middleware.SetUser(services.UserService, oldBase.SessionName, oldBase.SessionStore)
 
-	homeController := controllers.NewHome(oldBase)
 	tasksController := controllers.NewTasks(oldBase, services.Tasks)
 
 	publicationsController := controllers.NewPublications(
@@ -58,7 +58,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	publicationLaySummariesController := controllers.NewPublicationLaySummaries(oldBase, services.Repository)
 
 	datasetsController := controllers.NewDatasets(oldBase, services.Repository, services.DatasetSearchService, services.DatasetSources)
-	datasetEditingHandlerontributorsController := controllers.NewDatasetContributors(oldBase, services.Repository, services.PersonSearchService, services.PersonService)
 
 	licensesController := controllers.NewLicenses(oldBase, services.LicenseSearchService)
 	mediaTypesController := controllers.NewMediaTypes(oldBase, services.MediaTypeSearchService)
@@ -70,6 +69,9 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		SessionName:  oldBase.SessionName,
 		Localizer:    oldBase.Localizer,
 		UserService:  services.UserService,
+	}
+	homeHandler := &home.Handler{
+		BaseHandler: baseHandler,
 	}
 	authenticatingHandler := &authenticating.Handler{
 		BaseHandler: baseHandler,
@@ -89,6 +91,8 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		ProjectSearchService:      services.ProjectSearchService,
 		OrganizationSearchService: services.OrganizationSearchService,
 		OrganizationService:       services.OrganizationService,
+		PersonSearchService:       services.PersonSearchService,
+		PersonService:             services.PersonService,
 		PublicationSearchService:  services.PublicationSearchService,
 	}
 
@@ -112,6 +116,12 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	))
 
 	// NEW ROUTES
+	// home
+	r.HandleFunc("/",
+		homeHandler.Wrap(homeHandler.Home)).
+		Methods("GET").
+		Name("home")
+
 	// authenticate user
 	r.HandleFunc("/auth/openid-connect/callback",
 		authenticatingHandler.Wrap(authenticatingHandler.Callback)).
@@ -180,7 +190,7 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	r.HandleFunc("/dataset/{id}/projects/suggestions",
 		datasetEditingHandler.Wrap(datasetEditingHandler.SuggestProjects)).
 		Methods("GET").
-		Name("dataset_project_suggestions")
+		Name("dataset_suggest_projects")
 	r.HandleFunc("/dataset/{id}/projects",
 		datasetEditingHandler.Wrap(datasetEditingHandler.CreateProject)).
 		Methods("POST").
@@ -202,7 +212,7 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	r.HandleFunc("/dataset/{id}/departments/suggestions",
 		datasetEditingHandler.Wrap(datasetEditingHandler.SuggestDepartments)).
 		Methods("GET").
-		Name("dataset_department_suggestions")
+		Name("dataset_suggest_departments")
 	r.HandleFunc("/dataset/{id}/departments",
 		datasetEditingHandler.Wrap(datasetEditingHandler.CreateDepartment)).
 		Methods("POST").
@@ -250,7 +260,7 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	r.HandleFunc("/dataset/{id}/publications/suggestions",
 		datasetEditingHandler.Wrap(datasetEditingHandler.SuggestPublications)).
 		Methods("GET").
-		Name("dataset_publication_suggestions")
+		Name("dataset_suggest_publications")
 	r.HandleFunc("/dataset/{id}/publications",
 		datasetEditingHandler.Wrap(datasetEditingHandler.CreatePublication)).
 		Methods("POST").
@@ -264,13 +274,52 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		Methods("DELETE").
 		Name("dataset_delete_publication")
 
+	// edit dataset contributors
+	r.HandleFunc("/dataset/{id}/contributors/{role}/order",
+		datasetEditingHandler.Wrap(datasetEditingHandler.OrderContributors)).
+		Methods("POST").
+		Name("dataset_order_contributors")
+	r.HandleFunc("/dataset/{id}/contributors/{role}/add",
+		datasetEditingHandler.Wrap(datasetEditingHandler.AddContributor)).
+		Methods("GET").
+		Name("dataset_add_contributor")
+	r.HandleFunc("/dataset/{id}/contributors/{role}/{position}/suggestions",
+		datasetEditingHandler.Wrap(datasetEditingHandler.SuggestContributors)).
+		Methods("GET").
+		Name("dataset_suggest_contributors")
+	r.HandleFunc("/dataset/{id}/contributors/{role}/{position}/confirm",
+		datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmContributor)).
+		Methods("POST").
+		Name("dataset_confirm_contributor")
+	r.HandleFunc("/dataset/{id}/contributors/{role}/{position}/unconfirm",
+		datasetEditingHandler.Wrap(datasetEditingHandler.UnconfirmContributor)).
+		Methods("POST").
+		Name("dataset_unconfirm_contributor")
+	r.HandleFunc("/dataset/{id}/contributors/{role}",
+		datasetEditingHandler.Wrap(datasetEditingHandler.CreateContributor)).
+		Methods("POST").
+		Name("dataset_create_contributor")
+	r.HandleFunc("/dataset/{id}/contributors/{role}/{position}/edit",
+		datasetEditingHandler.Wrap(datasetEditingHandler.EditContributor)).
+		Methods("GET").
+		Name("dataset_edit_contributor")
+	r.HandleFunc("/dataset/{id}/contributors/{role}/{position}",
+		datasetEditingHandler.Wrap(datasetEditingHandler.UpdateContributor)).
+		Methods("PUT").
+		Name("dataset_update_contributor")
+	r.HandleFunc("/dataset/{id}/contributors/{role}/{position}/confirm-delete",
+		datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmDeleteContributor)).
+		Methods("GET").
+		Name("dataset_confirm_delete_contributor")
+	r.HandleFunc("/dataset/{id}/contributors/{role}/{position}",
+		datasetEditingHandler.Wrap(datasetEditingHandler.DeleteContributor)).
+		Methods("DELETE").
+		Name("dataset_delete_contributor")
+
 	// r.Use(handlers.HTTPMethodOverrideHandler)
 	r.Use(locale.Detect(oldBase.Localizer))
 
 	r.Use(setUser)
-
-	// home
-	r.HandleFunc("/", homeController.Home).Methods("GET").Name("home")
 
 	// tasks
 	taskRouter := r.PathPrefix("/task").Subrouter()
@@ -593,36 +642,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	datasetEditRouter.HandleFunc("/add/publish", datasetsController.AddPublish).
 		Methods("POST").
 		Name("dataset_add_publish")
-	datasetEditRouter.HandleFunc("/htmx/contributors/{role}/add", datasetEditingHandlerontributorsController.Add).
-		Methods("GET").
-		Name("dataset_contributors_add")
-	datasetEditRouter.HandleFunc("/htmx/contributors/{role}", datasetEditingHandlerontributorsController.Create).
-		Methods("POST").
-		Name("dataset_contributors_create")
-	datasetEditRouter.HandleFunc("/htmx/contributors/{role}/order", datasetEditingHandlerontributorsController.Order).
-		Methods("POST").
-		Name("dataset_contributors_order")
-	datasetEditRouter.HandleFunc("/htmx/contributors/{role}/{position}/remove", datasetEditingHandlerontributorsController.ConfirmRemove).
-		Methods("GET").
-		Name("dataset_contributors_confirm_remove")
-	datasetEditRouter.HandleFunc("/htmx/contributors/{role}/{position}", datasetEditingHandlerontributorsController.Remove).
-		Methods("DELETE").
-		Name("dataset_contributors_remove")
-	datasetEditRouter.HandleFunc("/htmx/contributors/{role}/{position}/edit", datasetEditingHandlerontributorsController.Edit).
-		Methods("GET").
-		Name("dataset_contributors_edit")
-	datasetEditRouter.HandleFunc("/htmx/contributors/{role}/{position}/choose", datasetEditingHandlerontributorsController.Choose).
-		Methods("GET").
-		Name("dataset_contributors_choose")
-	datasetEditRouter.HandleFunc("/htmx/contributors/{role}/{position}/demote", datasetEditingHandlerontributorsController.Demote).
-		Methods("PUT").
-		Name("dataset_contributors_demote")
-	datasetEditRouter.HandleFunc("/htmx/contributors/{role}/{position}/promote", datasetEditingHandlerontributorsController.Promote).
-		Methods("PUT").
-		Name("dataset_contributors_promote")
-	datasetEditRouter.HandleFunc("/htmx/contributors/{role}/{position}", datasetEditingHandlerontributorsController.Update).
-		Methods("PUT").
-		Name("dataset_contributors_update")
 
 	licensesRouter := r.PathPrefix("/license").Subrouter()
 	licensesRouter.HandleFunc("/htmx/choose", licensesController.Choose).

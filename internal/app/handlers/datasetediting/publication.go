@@ -57,7 +57,7 @@ func (h *Handler) SuggestPublications(w http.ResponseWriter, r *http.Request, ct
 		return
 	}
 
-	render.Render(w, "dataset/publication_suggestions", YieldAddPublication{
+	render.Render(w, "dataset/suggest_publications", YieldAddPublication{
 		Context: ctx,
 		Hits:    hits,
 	})
