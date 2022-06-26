@@ -229,13 +229,15 @@ func detailsForm(ctx Context, b BindDetails, errors validation.Errors) *form.For
 		).
 		AddSection(
 			&form.Select{
-				Name:    "license",
-				Value:   b.License,
-				Label:   ctx.T("builder.license"),
-				Options: localize.LicenseSelectOptions(ctx.Locale),
-				Cols:    3,
-				Error:   localize.ValidationErrorAt(ctx.Locale, errors, "/license"),
-				Tooltip: ctx.T("tooltip.dataset.license"),
+				Name:        "license",
+				Value:       b.License,
+				Label:       ctx.T("builder.license"),
+				Options:     localize.LicenseSelectOptions(ctx.Locale),
+				Cols:        3,
+				Error:       localize.ValidationErrorAt(ctx.Locale, errors, "/license"),
+				Tooltip:     ctx.T("tooltip.dataset.license"),
+				EmptyOption: true,
+				Required:    true,
 			},
 			&form.Text{
 				Name:        "other_license",
