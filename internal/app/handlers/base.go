@@ -71,7 +71,7 @@ func (h BaseHandler) NewContext(r *http.Request, w http.ResponseWriter) (BaseCon
 	}, nil
 }
 
-func (h BaseHandler) SetSessionFlash(r *http.Request, w http.ResponseWriter, f flash.Flash) error {
+func (h BaseHandler) AddSessionFlash(r *http.Request, w http.ResponseWriter, f flash.Flash) error {
 	session, err := h.SessionStore.Get(r, h.SessionName)
 	if err != nil {
 		return err

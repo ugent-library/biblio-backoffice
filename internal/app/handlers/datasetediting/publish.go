@@ -42,7 +42,7 @@ func (h *Handler) Publish(w http.ResponseWriter, r *http.Request, ctx Context) {
 		return
 	}
 
-	h.SetSessionFlash(r, w, flash.Flash{Type: "success", Body: "Dataset was succesfully published", DismissAfter: 5 * time.Second})
+	h.AddSessionFlash(r, w, flash.Flash{Type: "success", Body: "Dataset was succesfully published", DismissAfter: 5 * time.Second})
 
 	destUrl := h.PathFor("dataset", "id", ctx.Dataset.ID)
 	destUrl.RawQuery = r.URL.Query().Encode()
