@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/go-playground/form/v4"
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
@@ -19,11 +18,9 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/render/flash"
 )
 
-var queryEncoder = form.NewEncoder()
-
 func init() {
-	// Register []flashFlash as a gob Type to make SecureCookieStore happy
-	// SEE https://github.com/gin-contrib/sessions/issues/39
+	// register flash.Flash as a gob Type to make SecureCookieStore happy
+	// see https://github.com/gin-contrib/sessions/issues/39
 	gob.Register(flash.Flash{})
 }
 
