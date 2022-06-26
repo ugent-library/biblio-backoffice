@@ -24,7 +24,7 @@ var queryEncoder = form.NewEncoder()
 func init() {
 	// Register []flashFlash as a gob Type to make SecureCookieStore happy
 	// SEE https://github.com/gin-contrib/sessions/issues/39
-	gob.Register([]flash.Flash{})
+	gob.Register(flash.Flash{})
 }
 
 // TODO handlers should only have access to a url builder,
@@ -80,11 +80,7 @@ func (h BaseHandler) SetSessionFlash(r *http.Request, w http.ResponseWriter, f f
 		return err
 	}
 
-	if session.Values[FlashSessionKey] == nil {
-		session.Values[FlashSessionKey] = []flash.Flash{f}
-	} else {
-		session.Values[FlashSessionKey] = append(session.Values[FlashSessionKey].([]flash.Flash), f)
-	}
+	session.AddFlash(f, FlashSessionKey)
 
 	if err := session.Save(r, w); err != nil {
 		return err
@@ -99,18 +95,18 @@ func (h BaseHandler) getFlashFromSession(r *http.Request, w http.ResponseWriter)
 		return nil, err
 	}
 
-	flashes := session.Values[FlashSessionKey]
+	sessionFlashes := session.Flashes(FlashSessionKey)
 
-	delete(session.Values, FlashSessionKey)
 	if err := session.Save(r, w); err != nil {
 		return []flash.Flash{}, err
 	}
 
-	if flashes == nil {
-		return []flash.Flash{}, nil
+	flashes := []flash.Flash{}
+	for _, f := range sessionFlashes {
+		flashes = append(flashes, f.(flash.Flash))
 	}
 
-	return flashes.([]flash.Flash), nil
+	return flashes, nil
 }
 
 func (h BaseHandler) getUserFromSession(r *http.Request, sessionKey string) (*models.User, error) {
