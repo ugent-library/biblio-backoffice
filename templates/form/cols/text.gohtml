@@ -1,5 +1,5 @@
-<div class="form-group row">
-    <label class="col-3 col-form-label">
+<div class="form-group col{{if .Error}} is-invalid{{end}}">
+    <label class="col-form-label" for="{{.Name}}">
         {{.Label}}{{if .Required}}&nbsp;<abbr class="required" title="Required">*</abbr>{{end}}
         {{with .Tooltip}}
         <a class="text-muted mx-2" href="#" data-container="body" data-toggle="popover" data-trigger="focus" data-placement="right" data-content="{{.}}">
@@ -8,10 +8,9 @@
         </a>
         {{end}}
     </label>
-    <div class="col-{{.Cols}}">
-        <a href="https://doi.org/{{.Value}}" target="_blank">
-            {{.Value}}
-            <i class="if if--small if-external-link"></i>
-        </a>
-    </div>
+    <input class="form-control{{if .Error}} is-invalid{{end}}" name="{{.Name}}" type="text" value="{{.Value}}"
+        {{if .Placeholder}}placeholder="{{.Placeholder}}"{{end}}
+        {{if .Readonly}}readonly{{end}}
+    >
+    {{with .Error}}<div class="invalid-feedback">{{.}}</div>{{end}}
 </div>

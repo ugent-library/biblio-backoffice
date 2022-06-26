@@ -12,12 +12,12 @@
                 </p>
                 <label class="sr-only" for="publication-q">Search</label>
                 <input class="form-control" type="text" id="publication-q" name="q" placeholder="Search..."
-                    hx-get="{{pathFor "dataset_publication_suggestions" "id" .Dataset.ID}}"
+                    hx-get="{{pathFor "dataset_suggest_publications" "id" .Dataset.ID}}"
                     hx-trigger="keyup changed delay:500ms"
                     hx-target="#publication-suggestions"
                 >
                 <div id="publication-suggestions">
-                     {{template "dataset/publication_suggestions" .}}
+                     {{template "dataset/suggest_publications" .}}
                 </div>
             </div>
             <div class="modal-footer">

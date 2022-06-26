@@ -15,6 +15,8 @@ type Handler struct {
 	Repository                backends.Repository
 	ProjectSearchService      backends.ProjectSearchService
 	ProjectService            backends.ProjectService
+	PersonService             backends.PersonService
+	PersonSearchService       backends.PersonSearchService
 	OrganizationSearchService backends.OrganizationSearchService
 	OrganizationService       backends.OrganizationService
 	PublicationSearchService  backends.PublicationSearchService

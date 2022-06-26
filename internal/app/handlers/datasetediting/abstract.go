@@ -204,28 +204,26 @@ func (h *Handler) DeleteAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 }
 
 func abstractForm(ctx Context, b BindAbstract, errors validation.Errors) *form.Form {
-	abstractForm := form.New().WithTheme("default").WithErrors(localize.ValidationErrors(ctx.Locale, errors))
-
-	text := &form.TextArea{
-		Name:        "text",
-		Value:       b.Text,
-		Label:       ctx.T("builder.abstract.text"),
-		Cols:        12,
-		Rows:        6,
-		Placeholder: ctx.T("builder.abstract.text.placeholder"),
-		Error:       localize.ValidationErrorAt(ctx.Locale, errors, fmt.Sprintf("/abstract/%d/text", b.Position)),
-	}
-
-	lang := &form.Select{
-		Name:    "lang",
-		Value:   b.Lang,
-		Label:   ctx.T("builder.abstract.lang"),
-		Options: localize.LanguageSelectOptions(ctx.Locale),
-		Cols:    12,
-		Error:   localize.ValidationErrorAt(ctx.Locale, errors, fmt.Sprintf("/abstract/%d/lang", b.Position)),
-	}
-
-	abstractForm.AddSection(text, lang)
-
-	return abstractForm
+	return form.New().
+		WithTheme("default").
+		WithErrors(localize.ValidationErrors(ctx.Locale, errors)).
+		AddSection(
+			&form.TextArea{
+				Name:        "text",
+				Value:       b.Text,
+				Label:       ctx.T("builder.abstract.text"),
+				Cols:        12,
+				Rows:        6,
+				Placeholder: ctx.T("builder.abstract.text.placeholder"),
+				Error:       localize.ValidationErrorAt(ctx.Locale, errors, fmt.Sprintf("/abstract/%d/text", b.Position)),
+			},
+			&form.Select{
+				Name:    "lang",
+				Value:   b.Lang,
+				Label:   ctx.T("builder.abstract.lang"),
+				Options: localize.LanguageSelectOptions(ctx.Locale),
+				Cols:    12,
+				Error:   localize.ValidationErrorAt(ctx.Locale, errors, fmt.Sprintf("/abstract/%d/lang", b.Position)),
+			},
+		)
 }

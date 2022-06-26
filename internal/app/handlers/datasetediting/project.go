@@ -58,7 +58,7 @@ func (h *Handler) SuggestProjects(w http.ResponseWriter, r *http.Request, ctx Co
 		return
 	}
 
-	render.Render(w, "dataset/project_suggestions", YieldAddProject{
+	render.Render(w, "dataset/suggest_projects", YieldAddProject{
 		Context: ctx,
 		Hits:    hits,
 	})
