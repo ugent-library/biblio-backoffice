@@ -152,26 +152,6 @@ func (h BaseHandler) URLFor(name string, vars ...string) *url.URL {
 	return nil
 }
 
-func (h BaseHandler) Query(v interface{}, u *url.URL) (*url.URL, error) {
-	vals, err := queryEncoder.Encode(v)
-
-	if err != nil {
-		return u, err
-	}
-
-	u.RawQuery = vals.Encode()
-
-	return u, nil
-}
-
-func (h BaseHandler) QuerySet(k, v string, u *url.URL) (*url.URL, error) {
-	q := u.Query()
-	q.Set(k, v)
-	u.RawQuery = q.Encode()
-
-	return u, nil
-}
-
 type BaseContext struct {
 	Flash        []flash.Flash
 	Locale       *locale.Locale
