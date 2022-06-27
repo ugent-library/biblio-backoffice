@@ -14,6 +14,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/home"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/impersonating"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/publicationviewing"
+	"github.com/ugent-library/biblio-backend/internal/app/handlers/tasks"
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/locale"
 	"github.com/ugent-library/biblio-backend/internal/services/webapp/controllers"
@@ -34,8 +35,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 
 	requireUser := middleware.RequireUser(oldBase.BaseURL.Path + "/login")
 	setUser := middleware.SetUser(services.UserService, oldBase.SessionName, oldBase.SessionStore)
-
-	tasksController := controllers.NewTasks(oldBase, services.Tasks)
 
 	publicationsController := controllers.NewPublications(
 		oldBase,
@@ -81,6 +80,10 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	}
 	impersonatingHandler := &impersonating.Handler{
 		BaseHandler: baseHandler,
+	}
+	tasksHandler := &tasks.Handler{
+		BaseHandler: baseHandler,
+		Tasks:       services.Tasks,
 	}
 	datasetSearchingHandler := &datasetsearching.Handler{
 		BaseHandler:          baseHandler,
@@ -159,6 +162,11 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		impersonatingHandler.Wrap(impersonatingHandler.DeleteImpersonation)).
 		Methods("POST").
 		Name("delete_impersonation")
+
+	// tasks
+	r.HandleFunc("/task/{id}/status", tasksHandler.Wrap(tasksHandler.Status)).
+		Methods("GET").
+		Name("task_status")
 
 	// search dataset
 	r.HandleFunc("/dataset",
@@ -368,13 +376,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	r.Use(locale.Detect(oldBase.Localizer))
 
 	r.Use(setUser)
-
-	// tasks
-	taskRouter := r.PathPrefix("/task").Subrouter()
-	taskRouter.Use(requireUser)
-	taskRouter.HandleFunc("/{id}/status", tasksController.Status).
-		Methods("GET").
-		Name("task_status")
 
 	// publications
 	pubsRouter := r.PathPrefix("/publication").Subrouter()
