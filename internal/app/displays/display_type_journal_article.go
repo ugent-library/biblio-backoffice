@@ -7,13 +7,21 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/services/webapp/helpers"
 )
 
-func DisplayIssueEditor(l *locale.Locale, p *models.Publication) *display.Display {
+func DisplayTypeJournalArticle(l *locale.Locale, p *models.Publication) *display.Display {
+	trLangs := []string{}
+	for _, lang := range p.Language {
+		trLangs = append(trLangs, l.LanguageName(lang))
+	}
 	return display.New().
 		WithTheme("default").
 		AddSection(
 			&display.Text{
 				Label: l.T("builder.type"),
 				Value: l.TS("publication_types", p.Type),
+			},
+			&display.Text{
+				Label: l.T("builder.journal_article_type"),
+				Value: l.TS("journal_article_types", p.JournalArticleType),
 			},
 			&display.Text{
 				Label:         l.T("builder.doi"),
@@ -50,7 +58,7 @@ func DisplayIssueEditor(l *locale.Locale, p *models.Publication) *display.Displa
 			&display.Text{
 				Label:  l.T("builder.language"),
 				List:   true,
-				Values: p.Language,
+				Values: trLangs,
 			},
 			&display.Text{
 				Label: l.T("builder.publication_status"),
@@ -84,8 +92,20 @@ func DisplayIssueEditor(l *locale.Locale, p *models.Publication) *display.Displa
 				Value: p.Issue,
 			},
 			&display.Text{
+				Label: l.T("builder.pages"),
+				Value: helpers.FormatRange(p.PageFirst, p.PageLast),
+			},
+			&display.Text{
 				Label: l.T("builder.page_count"),
 				Value: p.PageCount,
+			},
+			&display.Text{
+				Label: l.T("builder.article_number"),
+				Value: p.ArticleNumber,
+			},
+			&display.Text{
+				Label: l.T("builder.issue_title"),
+				Value: p.IssueTitle,
 			},
 		).
 		AddSection(
@@ -116,6 +136,18 @@ func DisplayIssueEditor(l *locale.Locale, p *models.Publication) *display.Displa
 				Label:  l.T("builder.eisbn"),
 				List:   true,
 				Values: p.EISBN,
+			},
+			&display.Text{
+				Label: l.T("builder.pubmed_id"),
+				Value: p.PubMedID,
+			},
+			&display.Text{
+				Label: l.T("builder.arxiv_id"),
+				Value: p.ArxivID,
+			},
+			&display.Text{
+				Label: l.T("builder.esci_id"),
+				Value: p.ESCIID,
 			},
 		)
 }

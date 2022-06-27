@@ -7,7 +7,11 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/services/webapp/helpers"
 )
 
-func DisplayBook(l *locale.Locale, p *models.Publication) *display.Display {
+func DisplayTypeIssueEditor(l *locale.Locale, p *models.Publication) *display.Display {
+	trLangs := []string{}
+	for _, lang := range p.Language {
+		trLangs = append(trLangs, l.LanguageName(lang))
+	}
 	return display.New().
 		WithTheme("default").
 		AddSection(
@@ -36,12 +40,21 @@ func DisplayBook(l *locale.Locale, p *models.Publication) *display.Display {
 				List:   true,
 				Values: p.AlternativeTitle,
 			},
+			&display.Text{
+				Label:    l.T("builder.journal_article.publication"),
+				Value:    p.Publication,
+				Required: true,
+			},
+			&display.Text{
+				Label: l.T("builder.journal_article.publication_abbreviation"),
+				Value: p.PublicationAbbreviation,
+			},
 		).
 		AddSection(
 			&display.Text{
 				Label:  l.T("builder.language"),
 				List:   true,
-				Values: p.Language,
+				Values: trLangs,
 			},
 			&display.Text{
 				Label: l.T("builder.publication_status"),
@@ -66,6 +79,14 @@ func DisplayBook(l *locale.Locale, p *models.Publication) *display.Display {
 			},
 		).
 		AddSection(
+			&display.Text{
+				Label: l.T("builder.volume"),
+				Value: p.Volume,
+			},
+			&display.Text{
+				Label: l.T("builder.issue"),
+				Value: p.Issue,
+			},
 			&display.Text{
 				Label: l.T("builder.page_count"),
 				Value: p.PageCount,

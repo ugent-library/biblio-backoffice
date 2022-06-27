@@ -7,7 +7,11 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/services/webapp/helpers"
 )
 
-func DisplayDissertation(l *locale.Locale, p *models.Publication) *display.Display {
+func DisplayTypeBookChapter(l *locale.Locale, p *models.Publication) *display.Display {
+	trLangs := []string{}
+	for _, lang := range p.Language {
+		trLangs = append(trLangs, l.LanguageName(lang))
+	}
 	return display.New().
 		WithTheme("default").
 		AddSection(
@@ -37,15 +41,16 @@ func DisplayDissertation(l *locale.Locale, p *models.Publication) *display.Displ
 				Values: p.AlternativeTitle,
 			},
 			&display.Text{
-				Label: l.T("builder.publication_abbreviation"),
-				Value: p.PublicationAbbreviation,
+				Label:    l.T("builder.book_chapter.publication"),
+				Value:    p.Publication,
+				Required: true,
 			},
 		).
 		AddSection(
 			&display.Text{
 				Label:  l.T("builder.language"),
 				List:   true,
-				Values: p.Language,
+				Values: trLangs,
 			},
 			&display.Text{
 				Label: l.T("builder.publication_status"),
@@ -71,51 +76,12 @@ func DisplayDissertation(l *locale.Locale, p *models.Publication) *display.Displ
 		).
 		AddSection(
 			&display.Text{
-				Label: l.T("builder.volume"),
-				Value: p.Volume,
+				Label: l.T("builder.pages"),
+				Value: helpers.FormatRange(p.PageFirst, p.PageLast),
 			},
 			&display.Text{
 				Label: l.T("builder.page_count"),
 				Value: p.PageCount,
-			},
-			&display.Text{
-				Label: l.T("builder.series_title"),
-				Value: p.SeriesTitle,
-			},
-		).
-		AddSection(
-			&display.Text{
-				Label:    l.T("builder.defense_date"),
-				Value:    p.DefenseDate,
-				Required: true,
-			},
-			&display.Text{
-				Label:    l.T("builder.defense_time"),
-				Value:    p.DefenseTime,
-				Required: true,
-			},
-			&display.Text{
-				Label:    l.T("builder.defense_place"),
-				Value:    p.DefensePlace,
-				Required: true,
-			},
-		).
-		AddSection(
-			&display.Text{
-				Label: l.T("builder.has_confidential_data"),
-				Value: l.TS("confirmations", p.HasConfidentialData),
-			},
-			&display.Text{
-				Label: l.T("builder.has_patent_application"),
-				Value: l.TS("confirmations", p.HasPatentApplication),
-			},
-			&display.Text{
-				Label: l.T("builder.has_publications_planned"),
-				Value: l.TS("confirmations", p.HasPublicationsPlanned),
-			},
-			&display.Text{
-				Label: l.T("builder.has_published_material"),
-				Value: l.TS("confirmations", p.HasPublishedMaterial),
 			},
 		).
 		AddSection(

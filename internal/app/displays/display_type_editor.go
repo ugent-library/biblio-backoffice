@@ -7,7 +7,11 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/services/webapp/helpers"
 )
 
-func DisplayBookEditor(l *locale.Locale, p *models.Publication) *display.Display {
+func DisplayTypeBookEditor(l *locale.Locale, p *models.Publication) *display.Display {
+	trLangs := []string{}
+	for _, lang := range p.Language {
+		trLangs = append(trLangs, l.LanguageName(lang))
+	}
 	return display.New().
 		WithTheme("default").
 		AddSection(
@@ -45,7 +49,7 @@ func DisplayBookEditor(l *locale.Locale, p *models.Publication) *display.Display
 			&display.Text{
 				Label:  l.T("builder.language"),
 				List:   true,
-				Values: p.Language,
+				Values: trLangs,
 			},
 			&display.Text{
 				Label: l.T("builder.publication_status"),

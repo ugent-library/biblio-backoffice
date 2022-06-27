@@ -21,9 +21,11 @@ type YieldShow struct {
 
 type YieldShowDescription struct {
 	Context
-	ActiveSubNav   string
-	SearchArgs     *models.SearchArgs
-	DisplayDetails *display.Display
+	ActiveSubNav          string
+	SearchArgs            *models.SearchArgs
+	DisplayDetails        *display.Display
+	DisplayConference     *display.Display
+	DisplayAdditionalInfo *display.Display
 }
 
 type YieldShowContributors struct {
@@ -76,10 +78,12 @@ func (h *Handler) ShowDescription(w http.ResponseWriter, r *http.Request, ctx Co
 	}
 
 	render.Render(w, "publication/show_description", YieldShowDescription{
-		Context:        ctx,
-		ActiveSubNav:   "description",
-		SearchArgs:     searchArgs,
-		DisplayDetails: displayDetails(ctx),
+		Context:               ctx,
+		ActiveSubNav:          "description",
+		SearchArgs:            searchArgs,
+		DisplayDetails:        displayDetails(ctx),
+		DisplayConference:     displays.DisplayConference(ctx.Locale, ctx.Publication),
+		DisplayAdditionalInfo: displays.DisplayAdditionalInfo(ctx.Locale, ctx.Publication),
 	})
 }
 
@@ -136,21 +140,21 @@ func displayDetails(ctx Context) *display.Display {
 
 	switch ctx.Publication.Type {
 	case "book_chapter":
-		return displays.DisplayBookChapter(ctx.Locale, ctx.Publication)
+		return displays.DisplayTypeBookChapter(ctx.Locale, ctx.Publication)
 	case "book_editor":
-		return displays.DisplayBookEditor(ctx.Locale, ctx.Publication)
+		return displays.DisplayTypeBookEditor(ctx.Locale, ctx.Publication)
 	case "book":
-		return displays.DisplayBook(ctx.Locale, ctx.Publication)
+		return displays.DisplayTypeBook(ctx.Locale, ctx.Publication)
 	case "conference":
-		return displays.DisplayConference(ctx.Locale, ctx.Publication)
+		return displays.DisplayTypeConference(ctx.Locale, ctx.Publication)
 	case "dissertation":
-		return displays.DisplayDissertation(ctx.Locale, ctx.Publication)
+		return displays.DisplayTypeDissertation(ctx.Locale, ctx.Publication)
 	case "issue_editor":
-		return displays.DisplayIssueEditor(ctx.Locale, ctx.Publication)
+		return displays.DisplayTypeIssueEditor(ctx.Locale, ctx.Publication)
 	case "journal_article":
-		return displays.DisplayJournalArticle(ctx.Locale, ctx.Publication)
+		return displays.DisplayTypeJournalArticle(ctx.Locale, ctx.Publication)
 	case "miscellaneous":
-		return displays.DisplayMiscellaneous(ctx.Locale, ctx.Publication)
+		return displays.DisplayTypeMiscellaneous(ctx.Locale, ctx.Publication)
 	default:
 		return display.New()
 	}

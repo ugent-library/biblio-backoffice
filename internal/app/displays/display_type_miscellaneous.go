@@ -7,7 +7,12 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/services/webapp/helpers"
 )
 
-func DisplayJournalArticle(l *locale.Locale, p *models.Publication) *display.Display {
+func DisplayTypeMiscellaneous(l *locale.Locale, p *models.Publication) *display.Display {
+	//TODO: better way to do this?
+	trLangs := []string{}
+	for _, lang := range p.Language {
+		trLangs = append(trLangs, l.LanguageName(lang))
+	}
 	return display.New().
 		WithTheme("default").
 		AddSection(
@@ -16,8 +21,8 @@ func DisplayJournalArticle(l *locale.Locale, p *models.Publication) *display.Dis
 				Value: l.TS("publication_types", p.Type),
 			},
 			&display.Text{
-				Label: l.T("builder.journal_article_type"),
-				Value: l.TS("journal_article_types", p.JournalArticleType),
+				Label: l.T("builder.miscellaneous_type"),
+				Value: l.TS("miscellaneous_types", p.MiscellaneousType),
 			},
 			&display.Text{
 				Label:         l.T("builder.doi"),
@@ -41,12 +46,12 @@ func DisplayJournalArticle(l *locale.Locale, p *models.Publication) *display.Dis
 				Values: p.AlternativeTitle,
 			},
 			&display.Text{
-				Label:    l.T("builder.journal_article.publication"),
+				Label:    l.T("builder.publication"),
 				Value:    p.Publication,
 				Required: true,
 			},
 			&display.Text{
-				Label: l.T("builder.journal_article.publication_abbreviation"),
+				Label: l.T("builder.publication_abbreviation"),
 				Value: p.PublicationAbbreviation,
 			},
 		).
@@ -54,7 +59,7 @@ func DisplayJournalArticle(l *locale.Locale, p *models.Publication) *display.Dis
 			&display.Text{
 				Label:  l.T("builder.language"),
 				List:   true,
-				Values: p.Language,
+				Values: trLangs,
 			},
 			&display.Text{
 				Label: l.T("builder.publication_status"),
@@ -80,12 +85,20 @@ func DisplayJournalArticle(l *locale.Locale, p *models.Publication) *display.Dis
 		).
 		AddSection(
 			&display.Text{
+				Label: l.T("builder.series_title"),
+				Value: p.SeriesTitle,
+			},
+			&display.Text{
 				Label: l.T("builder.volume"),
 				Value: p.Volume,
 			},
 			&display.Text{
 				Label: l.T("builder.issue"),
 				Value: p.Issue,
+			},
+			&display.Text{
+				Label: l.T("builder.edition"),
+				Value: p.Edition,
 			},
 			&display.Text{
 				Label: l.T("builder.pages"),
@@ -102,6 +115,10 @@ func DisplayJournalArticle(l *locale.Locale, p *models.Publication) *display.Dis
 			&display.Text{
 				Label: l.T("builder.issue_title"),
 				Value: p.IssueTitle,
+			},
+			&display.Text{
+				Label: l.T("builder.report_number"),
+				Value: p.ReportNumber,
 			},
 		).
 		AddSection(
@@ -132,18 +149,6 @@ func DisplayJournalArticle(l *locale.Locale, p *models.Publication) *display.Dis
 				Label:  l.T("builder.eisbn"),
 				List:   true,
 				Values: p.EISBN,
-			},
-			&display.Text{
-				Label: l.T("builder.pubmed_id"),
-				Value: p.PubMedID,
-			},
-			&display.Text{
-				Label: l.T("builder.arxiv_id"),
-				Value: p.ArxivID,
-			},
-			&display.Text{
-				Label: l.T("builder.esci_id"),
-				Value: p.ESCIID,
 			},
 		)
 }

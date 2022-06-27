@@ -12,122 +12,20 @@ func DisplayConference(l *locale.Locale, p *models.Publication) *display.Display
 		WithTheme("default").
 		AddSection(
 			&display.Text{
-				Label: l.T("builder.type"),
-				Value: l.TS("publication_types", p.Type),
+				Label: l.T("builder.conference.name"),
+				Value: p.Conference.Name,
 			},
 			&display.Text{
-				Label: l.T("builder.conference_type"),
-				Value: l.TS("conference_types", p.ConferenceType),
+				Label: l.T("builder.conference.location"),
+				Value: p.Conference.Location,
 			},
 			&display.Text{
-				Label:         l.T("builder.doi"),
-				Value:         p.DOI,
-				ValueTemplate: "format/doi",
+				Label: l.T("builder.conference.organizer"),
+				Value: p.Conference.Organizer,
 			},
 			&display.Text{
-				Label: l.T("builder.classification"),
-				Value: l.TS("publication_classifications", p.Classification),
-			},
-		).
-		AddSection(
-			&display.Text{
-				Label:    l.T("builder.title"),
-				Value:    p.Title,
-				Required: true,
-			},
-			&display.Text{
-				Label:  l.T("builder.alternative_title"),
-				List:   true,
-				Values: p.AlternativeTitle,
-			},
-			&display.Text{
-				Label:    l.T("builder.conference.publication"),
-				Value:    p.Publication,
-				Required: true,
-			},
-			&display.Text{
-				Label: l.T("builder.publication_abbreviation"),
-				Value: p.PublicationAbbreviation,
-			},
-		).
-		AddSection(
-			&display.Text{
-				Label:  l.T("builder.language"),
-				List:   true,
-				Values: p.Language,
-			},
-			&display.Text{
-				Label: l.T("builder.publication_status"),
-				Value: l.TS("publication_publishing_statuses", p.PublicationStatus),
-			},
-			&display.Text{
-				Label: l.T("builder.extern"),
-				Value: helpers.FormatBool(p.Extern, "✓", "-"),
-			},
-			&display.Text{
-				Label:    l.T("builder.year"),
-				Value:    p.Year,
-				Required: true,
-			},
-			&display.Text{
-				Label: l.T("builder.place_of_publication"),
-				Value: p.PlaceOfPublication,
-			},
-			&display.Text{
-				Label: l.T("builder.publisher"),
-				Value: p.Publisher,
-			},
-		).
-		AddSection(
-			&display.Text{
-				Label: l.T("builder.volume"),
-				Value: p.Volume,
-			},
-			&display.Text{
-				Label: l.T("builder.issue"),
-				Value: p.Issue,
-			},
-			&display.Text{
-				Label: l.T("builder.pages"),
-				Value: helpers.FormatRange(p.PageFirst, p.PageLast),
-			},
-			&display.Text{
-				Label: l.T("builder.page_count"),
-				Value: p.PageCount,
-			},
-			&display.Text{
-				Label: l.T("builder.conference.series_title"),
-				Value: p.SeriesTitle,
-			},
-		).
-		AddSection(
-			&display.Text{
-				Label: l.T("builder.wos_type"),
-				Value: p.WOSType,
-			},
-			&display.Text{
-				Label: l.T("builder.wos_id"),
-				Value: p.WOSID,
-			},
-			&display.Text{
-				Label:  l.T("builder.issn"),
-				List:   true,
-				Values: p.ISSN,
-			},
-			&display.Text{
-				Label:  l.T("builder.eissn"),
-				List:   true,
-				Values: p.EISSN,
-			},
-			&display.Text{
-				Label:  l.T("builder.isbn"),
-				List:   true,
-				Values: p.ISBN,
-			},
-			&display.Text{
-				Label:  l.T("builder.eisbn"),
-				List:   true,
-				Values: p.EISBN,
+				Label: l.T("builder.conference.date"),
+				Value: helpers.FormatRange(p.Conference.StartDate, p.Conference.EndDate),
 			},
 		)
 }

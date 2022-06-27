@@ -1,0 +1,22 @@
+<div class="card mb-6">
+    <div class="card-header">
+        <div class="bc-toolbar">
+            <div class="bc-toolbar-left">
+                <h1 class="bc-toolbar-title">Abstract</h1>
+            </div>
+            <div class="bc-toolbar-right">
+            {{if .User.CanEditPublication .Publication}}
+            <button class="btn btn-outline-primary" type="button"
+                hx-get="{{pathFor "publication_abstracts_add_abstract" "id" .Publication.ID}}"
+                hx-target="#modals"
+            >
+                <i class="if if-add"></i><div class="btn-text">Add Abstract</div>
+            </button>
+            {{end}}
+            </div>
+        </div>
+    </div>
+    <div id="publication-abstracts-body">
+    {{template "publication/abstracts_body" .}}
+    </div>
+</div>

@@ -3,3 +3,14 @@
 </div>
 
 {{template "publication/show_details" .}}
+{{template "publication/show_projects" .}}
+{{template "publication/show_departments" .}}
+{{if .Publication.UsesConference}}
+    {{template "publication/show_conference" .}}
+{{end}}
+{{template "publication/show_abstracts" .}}
+{{template "publication/show_links" .}}
+{{if .Publication.UsesLaySummary}}
+    {{template "publication/show_lay_summaries" .}}
+{{end}}
+{{template "publication/show_additional_info" .}}

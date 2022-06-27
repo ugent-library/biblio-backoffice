@@ -435,7 +435,7 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	// Publication projects HTMX fragments
 	pubEditRouter.HandleFunc("/htmx/projects/list", publicationProjectsController.List).
 		Methods("GET").
-		Name("publication_projects")
+		Name("publication_add_project")
 	pubEditRouter.HandleFunc("/htmx/projects/list/activesearch", publicationProjectsController.ActiveSearch).
 		Methods("POST").
 		Name("publication_projects_activesearch")
@@ -451,7 +451,7 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	// Publication departments HTMX fragments
 	pubEditRouter.HandleFunc("/htmx/departments/list", publicationDepartmentsController.List).
 		Methods("GET").
-		Name("publicationDepartments")
+		Name("publication_add_department")
 	pubEditRouter.HandleFunc("/htmx/departments/list/activesearch", publicationDepartmentsController.ActiveSearch).
 		Methods("POST").
 		Name("publicationDepartments_activesearch")

@@ -2,23 +2,23 @@
     <div class="card-header">
         <div class="bc-toolbar">
             <div class="bc-toolbar-left">
-                <h1 class="bc-toolbar-title">Publication details</h1>
+                <h1 class="bc-toolbar-title">Additional information</h1>
             </div>
             <div class="bc-toolbar-right">
                 {{if .User.CanEditPublication .Publication}}
-                <div class="c-button-toolbar" data-panel-state="read">
                     <button class="btn btn-outline-primary"
-                        hx-get="{{pathFor "publication_details_edit_form" "id" .Publication.ID}}"
+                        hx-get="{{pathFor "publication_additional_info_edit_form" "id" .Publication.ID}}"
+                        hx-swap="innerHTML"
                         hx-target="#modals"
                     >
-                        <i class="if if-edit"></i><div class="btn-text">Edit</div>
+                        <i class="if if-edit"></i>
+                        <div class="btn-text">Edit</div>
                     </button>
-                </div>
                 {{end}}
             </div>
         </div>
     </div>
-    <div id="publication-details-body">
-    {{template "publication/details_body" .}}
+    <div id="publication-additional-info-body">
+    {{template "publication/additional_info_body" .}}
     </div>
 </div>
