@@ -19,6 +19,11 @@ type YieldPublishDataset struct {
 }
 
 func (h *Handler) Publish(w http.ResponseWriter, r *http.Request, ctx Context) {
+	if !ctx.User.CanPublishDataset(ctx.Dataset) {
+		render.Forbidden(w, r)
+		return
+	}
+
 	ctx.Dataset.Status = "public"
 
 	if validationErrs := ctx.Dataset.Validate(); validationErrs != nil {
