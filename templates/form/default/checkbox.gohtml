@@ -1,0 +1,10 @@
+<div class="form-group row{{if .Error}} is-invalid{{end}}">
+    <div class="col-{{.Cols}} offset-3">
+      <div class="custom-control custom-checkbox">
+        <input class="custom-control-input{{if .Error}} is-invalid{{end}}" type="checkbox" id="{{.Name}}" name="{{.Name}}"
+          {{if .Checked}}checked{{end}} value="{{.Value}}">
+        <label class="custom-control-label" for="{{.Name}}">{{.Label}}</label>
+        {{if .Error}}<div class="invalid-feedback">{{.Error}}</div>{{end}}
+      </div>
+    </div>
+  </div>

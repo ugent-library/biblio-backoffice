@@ -225,21 +225,12 @@ func (f *Date) Render(theme string, w io.Writer) error {
 }
 
 type Checkbox struct {
-	Name            string
-	values          []string
-	Label           string
-	Tooltip         string
-	Placeholder     string
-	Required        bool
-	Checked         bool
-	Options         []SelectOption
-	EmptyOption     bool
-	Cols            int
-	Rows            int
-	AutocompleteURL string
-	Error           string
-	ID              string
-	Disabled        bool
+	Name    string
+	Value   string
+	Label   string
+	Checked bool
+	Cols    int
+	Error   string
 }
 
 func (f *Checkbox) Render(theme string, w io.Writer) error {
