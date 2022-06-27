@@ -13,6 +13,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/datasetviewing"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/home"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/impersonating"
+	"github.com/ugent-library/biblio-backend/internal/app/handlers/mediatypes"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/orcid"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/publicationviewing"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/tasks"
@@ -60,8 +61,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	publicationLaySummariesController := controllers.NewPublicationLaySummaries(oldBase, services.Repository)
 
 	datasetsController := controllers.NewDatasets(oldBase, services.Repository, services.DatasetSearchService, services.DatasetSources)
-
-	mediaTypesController := controllers.NewMediaTypes(oldBase, services.MediaTypeSearchService)
 
 	// NEW HANDLERS
 	baseHandler := handlers.BaseHandler{
@@ -114,6 +113,10 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		Repository:               services.Repository,
 		PublicationSearchService: services.PublicationSearchService,
 		Sandbox:                  services.ORCIDSandbox,
+	}
+	mediaTypesHandler := &mediatypes.Handler{
+		BaseHandler:            baseHandler,
+		MediaTypeSearchService: services.MediaTypeSearchService,
 	}
 
 	// TODO fix absolute url generation
@@ -380,12 +383,20 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		Name("publication_datasets")
 
 	// orcid
-	r.HandleFunc("/publication/orcid", orcidHandler.Wrap(orcidHandler.AddAll)).
+	r.HandleFunc("/publication/orcid",
+		orcidHandler.Wrap(orcidHandler.AddAll)).
 		Methods("POST").
 		Name("publication_orcid_add_all")
-	r.HandleFunc("/publication/{id}/orcid", orcidHandler.Wrap(orcidHandler.Add)).
+	r.HandleFunc("/publication/{id}/orcid",
+		orcidHandler.Wrap(orcidHandler.Add)).
 		Methods("POST").
 		Name("publication_orcid_add")
+
+	// media types
+	r.HandleFunc("/media_type/suggestions",
+		mediaTypesHandler.Wrap(mediaTypesHandler.Suggest)).
+		Methods("GET").
+		Name("suggest_media_types")
 
 	// r.Use(handlers.HTTPMethodOverrideHandler)
 	r.Use(locale.Detect(oldBase.Localizer))
@@ -691,9 +702,4 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	datasetEditRouter.HandleFunc("/add/publish", datasetsController.AddPublish).
 		Methods("POST").
 		Name("dataset_add_publish")
-
-	mediaTypesRouter := r.PathPrefix("/media_types").Subrouter()
-	mediaTypesRouter.HandleFunc("/htmx/choose", mediaTypesController.Choose).
-		Methods("GET").
-		Name("media_type_choose")
 }
