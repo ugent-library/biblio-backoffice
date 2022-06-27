@@ -2,13 +2,10 @@ package controllers
 
 import (
 	"errors"
-	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
-	"strings"
 	"time"
 
 	"github.com/cshum/imagor/imagorpath"
@@ -23,9 +20,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/tasks"
 	"github.com/ugent-library/biblio-backend/internal/ulid"
 	"github.com/ugent-library/biblio-backend/internal/validation"
-	"github.com/ugent-library/go-orcid/orcid"
 	"github.com/unrolled/render"
-	"golang.org/x/text/language"
 )
 
 type PublicationAddSingleVars struct {
@@ -790,62 +785,6 @@ func (c *Publications) Delete(w http.ResponseWriter, r *http.Request) {
 	)
 }
 
-func (c *Publications) ORCIDAdd(w http.ResponseWriter, r *http.Request) {
-	user := context.GetUser(r.Context())
-	pub := context.GetPublication(r.Context())
-
-	var (
-		flash views.Flash
-	)
-
-	pub, err := c.addPublicationToORCID(user.ORCID, user.ORCIDToken, pub)
-	if err != nil {
-		if err == orcid.ErrDuplicate {
-			flash = views.Flash{Type: "info", Message: "This publication is already part of your ORCID works."}
-		} else {
-			flash = views.Flash{Type: "error", Message: "Couldn't add this publication to your ORCID works."}
-		}
-	} else {
-		flash = views.Flash{Type: "success", Message: "Successfully added the publication to your ORCID works.", DismissAfter: 5 * time.Second}
-	}
-
-	c.Render.HTML(w, http.StatusOK, "publication/_orcid_status", c.ViewData(r, struct {
-		Publication *models.Publication
-	}{
-		pub,
-	},
-		flash,
-	),
-		render.HTMLOptions{Layout: "layouts/htmx"},
-	)
-}
-
-func (c *Publications) ORCIDAddAll(w http.ResponseWriter, r *http.Request) {
-	user := context.GetUser(r.Context())
-
-	// TODO handle error
-	id, err := c.addPublicationsToORCID(
-		user,
-		models.NewSearchArgs().WithFilter("status", "public").WithFilter("author.id", user.ID),
-	)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	c.Render.HTML(w, http.StatusOK, "task/_status", c.ViewData(r, struct {
-		ID      string
-		Status  tasks.Status
-		Message string
-	}{
-		id,
-		tasks.Status{},
-		"",
-	}),
-		render.HTMLOptions{Layout: "layouts/htmx"},
-	)
-}
-
 func (c *Publications) userPublications(userID string, args *models.SearchArgs) (*models.PublicationHits, error) {
 	searcher := c.publicationSearchService.WithScope("status", "private", "public")
 
@@ -945,195 +884,6 @@ func (c *Publications) batchPublishPublications(userID string, args *models.Sear
 		args.Page = args.Page + 1
 	}
 	return
-}
-
-func (c *Publications) addPublicationsToORCID(user *models.User, s *models.SearchArgs) (string, error) {
-	taskID := "orcid:" + ulid.MustGenerate()
-
-	c.tasksHub.Add(taskID, func(t tasks.Task) error {
-		return c.sendPublicationsToORCIDTask(t, user.ID, user.ORCID, user.ORCIDToken, s)
-	})
-
-	return taskID, nil
-}
-
-// TODO make workflow
-func (c *Publications) addPublicationToORCID(orcidID, orcidToken string, p *models.Publication) (*models.Publication, error) {
-	client := orcid.NewMemberClient(orcid.Config{
-		Token:   orcidToken,
-		Sandbox: c.orcidSandbox,
-	})
-
-	work := publicationToORCID(p)
-	putCode, res, err := client.AddWork(orcidID, work)
-	if err != nil {
-		body, _ := ioutil.ReadAll(res.Body)
-		log.Printf("orcid error: %s", body)
-		return p, err
-	}
-
-	p.ORCIDWork = append(p.ORCIDWork, models.PublicationORCIDWork{
-		ORCID:   orcidID,
-		PutCode: putCode,
-	})
-
-	if err := c.store.SavePublication(p); err != nil {
-		return nil, err
-	}
-
-	return p, nil
-}
-
-// TODO move to workflows
-func (c *Publications) sendPublicationsToORCIDTask(t tasks.Task, userID, orcidID, orcidToken string, searchArgs *models.SearchArgs) error {
-	orcidClient := orcid.NewMemberClient(orcid.Config{
-		Token:   orcidToken,
-		Sandbox: c.orcidSandbox,
-	})
-
-	var numDone int
-
-	for {
-		hits, _ := c.publicationSearchService.Search(searchArgs)
-
-		for _, pub := range hits.Hits {
-			numDone++
-
-			var done bool
-			for _, ow := range pub.ORCIDWork {
-				if ow.ORCID == orcidID { // already sent to orcid
-					done = true
-					break
-				}
-			}
-			if done {
-				continue
-			}
-
-			work := publicationToORCID(pub)
-			putCode, res, err := orcidClient.AddWork(orcidID, work)
-			if res.StatusCode == 409 { // duplicate
-				continue
-			} else if err != nil {
-				body, _ := ioutil.ReadAll(res.Body)
-				log.Printf("orcid error: %s", body)
-				return err
-			}
-
-			pub.ORCIDWork = append(pub.ORCIDWork, models.PublicationORCIDWork{
-				ORCID:   orcidID,
-				PutCode: putCode,
-			})
-
-			if err := c.store.SavePublication(pub); err != nil {
-				return err
-			}
-		}
-
-		t.Progress(numDone, hits.Total)
-
-		if !hits.NextPage() {
-			break
-		}
-		searchArgs.Page = searchArgs.Page + 1
-	}
-
-	return nil
-}
-
-func publicationToORCID(p *models.Publication) *orcid.Work {
-	w := &orcid.Work{
-		URL:     orcid.String(fmt.Sprintf("https://biblio.ugent.be/publication/%s", p.ID)),
-		Country: orcid.String("BE"),
-		ExternalIDs: &orcid.ExternalIDs{
-			ExternalID: []orcid.ExternalID{{
-				Type:         "handle",
-				Relationship: "SELF",
-				Value:        fmt.Sprintf("http://hdl.handle.net/1854/LU-%s", p.ID),
-			}},
-		},
-		Title: &orcid.Title{
-			Title: orcid.String(p.Title),
-		},
-		PublicationDate: &orcid.PublicationDate{
-			Year: orcid.String(p.Year),
-		},
-	}
-
-	for _, role := range []string{"author", "editor"} {
-		for _, c := range p.Contributors(role) {
-			wc := orcid.Contributor{
-				CreditName: orcid.String(strings.Join([]string{c.FirstName, c.LastName}, " ")),
-				Attributes: &orcid.ContributorAttributes{
-					Role: strings.ToUpper(role),
-				},
-			}
-			if c.ORCID != "" {
-				wc.ORCID = &orcid.URI{Path: c.ORCID}
-			}
-			if w.Contributors == nil {
-				w.Contributors = &orcid.Contributors{}
-			}
-			w.Contributors.Contributor = append(w.Contributors.Contributor, wc)
-		}
-	}
-
-	switch p.Type {
-	case "journal_article":
-		w.Type = "JOURNAL_ARTICLE"
-	case "book":
-		w.Type = "BOOK"
-	case "book_chapter":
-		w.Type = "BOOK_CHAPTER"
-	case "book_editor":
-		w.Type = "EDITED_BOOK"
-	case "dissertation":
-		w.Type = "DISSERTATION"
-	case "conference":
-		switch p.ConferenceType {
-		case "meetingAbstract":
-			w.Type = "CONFERENCE_ABSTRACT"
-		case "poster":
-			w.Type = "CONFERENCE_POSTER"
-		default:
-			w.Type = "CONFERENCE_PAPER"
-		}
-	case "miscellaneous":
-		switch p.MiscellaneousType {
-		case "bookReview":
-			w.Type = "BOOK_REVIEW"
-		case "report":
-			w.Type = "REPORT"
-		default:
-			w.Type = "OTHER"
-		}
-	default:
-		w.Type = "OTHER"
-	}
-
-	if len(p.AlternativeTitle) > 0 {
-		w.Title.SubTitle = orcid.String(p.AlternativeTitle[0])
-	}
-
-	if len(p.Abstract) > 0 {
-		w.ShortDescription = p.Abstract[0].Text
-	}
-
-	if p.DOI != "" {
-		w.ExternalIDs.ExternalID = append(w.ExternalIDs.ExternalID, orcid.ExternalID{
-			Type:         "doi",
-			Relationship: "SELF",
-			Value:        p.DOI,
-		})
-	}
-
-	if len(p.Language) > 0 {
-		if tag, err := language.Parse(p.Language[0]); err == nil {
-			w.LanguageCode = tag.String()
-		}
-	}
-
-	return w
 }
 
 // TODO clean this up

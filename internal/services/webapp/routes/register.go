@@ -13,6 +13,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/datasetviewing"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/home"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/impersonating"
+	"github.com/ugent-library/biblio-backend/internal/app/handlers/orcid"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/publicationviewing"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/tasks"
 	"github.com/ugent-library/biblio-backend/internal/backends"
@@ -60,7 +61,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 
 	datasetsController := controllers.NewDatasets(oldBase, services.Repository, services.DatasetSearchService, services.DatasetSources)
 
-	licensesController := controllers.NewLicenses(oldBase, services.LicenseSearchService)
 	mediaTypesController := controllers.NewMediaTypes(oldBase, services.MediaTypeSearchService)
 
 	// NEW HANDLERS
@@ -107,6 +107,13 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	publicationViewingHandler := &publicationviewing.Handler{
 		BaseHandler: baseHandler,
 		Repository:  services.Repository,
+	}
+	orcidHandler := &orcid.Handler{
+		BaseHandler:              baseHandler,
+		Tasks:                    services.Tasks,
+		Repository:               services.Repository,
+		PublicationSearchService: services.PublicationSearchService,
+		Sandbox:                  services.ORCIDSandbox,
 	}
 
 	// TODO fix absolute url generation
@@ -372,6 +379,14 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		Methods("GET").
 		Name("publication_datasets")
 
+	// orcid
+	r.HandleFunc("/publication/orcid", orcidHandler.Wrap(orcidHandler.AddAll)).
+		Methods("POST").
+		Name("publication_orcid_add_all")
+	r.HandleFunc("/publication/{id}/orcid", orcidHandler.Wrap(orcidHandler.Add)).
+		Methods("POST").
+		Name("publication_orcid_add")
+
 	// r.Use(handlers.HTTPMethodOverrideHandler)
 	r.Use(locale.Detect(oldBase.Localizer))
 
@@ -408,9 +423,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	pubsRouter.HandleFunc("/add-multiple/{batch_id}/publish", publicationsController.AddMultiplePublish).
 		Methods("POST").
 		Name("publication_add_multiple_publish")
-	pubsRouter.HandleFunc("/orcid", publicationsController.ORCIDAddAll).
-		Methods("POST").
-		Name("publication_orcid_add_all")
 
 	pubRouter := pubsRouter.PathPrefix("/{id}").Subrouter()
 	pubRouter.Use(middleware.SetPublication(services.Repository))
@@ -428,9 +440,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	pubDeleteRouter.HandleFunc("/delete", publicationsController.Delete).
 		Methods("POST").
 		Name("publication_delete")
-	pubRouter.HandleFunc("/orcid", publicationsController.ORCIDAdd).
-		Methods("POST").
-		Name("publication_orcid_add")
 	pubPublishRouter.HandleFunc("/publish", publicationsController.Publish).
 		Methods("POST").
 		Name("publication_publish")
@@ -682,11 +691,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	datasetEditRouter.HandleFunc("/add/publish", datasetsController.AddPublish).
 		Methods("POST").
 		Name("dataset_add_publish")
-
-	licensesRouter := r.PathPrefix("/license").Subrouter()
-	licensesRouter.HandleFunc("/htmx/choose", licensesController.Choose).
-		Methods("GET").
-		Name("license_choose")
 
 	mediaTypesRouter := r.PathPrefix("/media_types").Subrouter()
 	mediaTypesRouter.HandleFunc("/htmx/choose", mediaTypesController.Choose).
