@@ -1,0 +1,81 @@
+{{$d := .Dataset}}
+<div class="d-flex w-100">
+    <div class="w-100">
+        <div class="d-flex align-items-start">
+            <a href="{{pathFor "dataset" "id" $d.ID | query .SearchArgs}}">
+            <div class="list-group-item-thumbnail">
+                <div class="c-thumbnail c-thumbnail--dataset c-thumbnail--medium">
+                    <i class="if if-database"></i>
+                </div>
+            </div>
+            </a>
+            <div class="list-group-item-content">
+                <div class="list-group-item-subline">
+                    <div class="list-group-item-subline-left">
+                    </div>
+                    <div class="list-group-item-subline-right">
+                        <div class="dropdown">
+                            <button class="btn btn-link btn-icon-only btn-link-muted"
+                                type="button" data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false">
+                                <i class="if if-more"></i>
+                            </button>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item"
+                                    href="{{pathFor "dataset" "id" $d.ID | query .SearchArgs}}">
+                                    <i class="if if-file-text"></i>
+                                    <span>View details</span>
+                                </a>
+                                {{if .User.CanDeleteDataset $d}}
+                                <a class="dropdown-item" href="#"
+                                    hx-get="{{pathFor "dataset_confirm_delete" "id" $d.ID | query .SearchArgs}}"
+                                    hx-target="#modals"
+                                >
+                                    <i class="if if-delete"></i>
+                                    <span>Delete</span>
+                                </a>
+                                {{end}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="list-group-item-text">
+                    <a href="{{pathFor "dataset" "id" $d.ID | query .SearchArgs}}">
+                        <h4 class="c-h4">{{$d.Title}}</h4>
+                    </a>
+                    {{with $d.Author}}{{template "shared/contributors" .}}{{end}}
+                    <span class="c-body-small text-muted">
+                        {{$d.Year}},
+                        <a class="link-primary" target="_blank" href="{{$d.ResolveDOI}}">
+                            <span class="text-decoration-underline"> View in external repository</span>
+                            <i class="if if--small if-external-link"></i>
+                        </a>
+                    </span>
+                </div>
+                <div class="list-group-item-meta mt-5">
+                    <div class="list-group-item-meta-left">
+                        <div class="list-group-item-meta-item">
+                            {{template "shared/status" $d}}
+                        </div>
+                    </div>
+                    <div class="list-group-item-meta-right">
+                        <div class="list-group-item-meta-item">
+                            <span class="text-muted c-body-small">Biblio ID: {{$d.ID}}</span>
+                        </div>
+                        {{if $d.RelatedPublication}}
+                        <div class="list-group-item-meta-item" data-toggle="tooltip"
+                            title="{{len $d.RelatedPublication}} related publications" data-placement="bottom">
+                            <span class="text-muted c-body-small">
+                                <i class="if if-article if--muted if--small"></i>{{len $d.RelatedPublication}}
+                            </span>
+                        </div>
+                        {{end}}
+                        <div class="list-group-item-meta-item">
+                            <span class="text-muted c-body-small">Created {{timeElapsed $d.DateCreated "en"}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

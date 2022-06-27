@@ -17,10 +17,10 @@ import (
 	"github.com/unrolled/render"
 )
 
-type DatasetListVars struct {
-	SearchArgs *models.SearchArgs
-	Hits       *models.DatasetHits
-}
+// type DatasetListVars struct {
+// 	SearchArgs *models.SearchArgs
+// 	Hits       *models.DatasetHits
+// }
 
 type DatasetAddVars struct {
 	PageTitle        string
@@ -47,35 +47,35 @@ func NewDatasets(base Base, store backends.Repository, datasetSearchService back
 	}
 }
 
-func (c *Datasets) List(w http.ResponseWriter, r *http.Request) {
-	args := models.NewSearchArgs()
-	if err := DecodeQuery(args, r.URL.Query()); err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
+// func (c *Datasets) List(w http.ResponseWriter, r *http.Request) {
+// 	args := models.NewSearchArgs()
+// 	if err := DecodeQuery(args, r.URL.Query()); err != nil {
+// 		log.Println(err)
+// 		http.Error(w, err.Error(), http.StatusBadRequest)
+// 		return
+// 	}
 
-	hits, err := c.userDatasets(context.GetUser(r.Context()).ID, args)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+// 	hits, err := c.userDatasets(context.GetUser(r.Context()).ID, args)
+// 	if err != nil {
+// 		log.Println(err)
+// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+// 		return
+// 	}
 
-	searchURL, _ := c.Router.Get("datasets").URLPath()
+// 	searchURL, _ := c.Router.Get("datasets").URLPath()
 
-	c.Render.HTML(w, http.StatusOK, "dataset/list", c.ViewData(r, struct {
-		PageTitle  string
-		SearchURL  *url.URL
-		SearchArgs *models.SearchArgs
-		Hits       *models.DatasetHits
-	}{
-		"Overview - Datasets - Biblio",
-		searchURL,
-		args,
-		hits,
-	}))
-}
+// 	c.Render.HTML(w, http.StatusOK, "dataset/list", c.ViewData(r, struct {
+// 		PageTitle  string
+// 		SearchURL  *url.URL
+// 		SearchArgs *models.SearchArgs
+// 		Hits       *models.DatasetHits
+// 	}{
+// 		"Overview - Datasets - Biblio",
+// 		searchURL,
+// 		args,
+// 		hits,
+// 	}))
+// }
 
 func (c *Datasets) Add(w http.ResponseWriter, r *http.Request) {
 	c.Render.HTML(w, http.StatusOK, "dataset/add", c.ViewData(r, DatasetAddVars{

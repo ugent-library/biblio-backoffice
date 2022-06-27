@@ -9,6 +9,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/app/handlers"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/authenticating"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/datasetediting"
+	"github.com/ugent-library/biblio-backend/internal/app/handlers/datasetsearching"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/datasetviewing"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/home"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/impersonating"
@@ -80,6 +81,10 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	}
 	impersonatingHandler := &impersonating.Handler{
 		BaseHandler: baseHandler,
+	}
+	datasetSearchingHandler := &datasetsearching.Handler{
+		BaseHandler:          baseHandler,
+		DatasetSearchService: services.DatasetSearchService,
 	}
 	datasetViewingHandler := &datasetviewing.Handler{
 		BaseHandler: baseHandler,
@@ -154,6 +159,12 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		impersonatingHandler.Wrap(impersonatingHandler.DeleteImpersonation)).
 		Methods("POST").
 		Name("delete_impersonation")
+
+	// search dataset
+	r.HandleFunc("/dataset",
+		datasetSearchingHandler.Wrap(datasetSearchingHandler.Search)).
+		Methods("GET").
+		Name("datasets")
 
 	// view dataset
 	r.HandleFunc("/dataset/{id}",
@@ -636,9 +647,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	datasetsRouter := r.PathPrefix("/dataset").Subrouter()
 	datasetsRouter.Use(middleware.SetActiveMenu("datasets"))
 	datasetsRouter.Use(requireUser)
-	datasetsRouter.HandleFunc("", datasetsController.List).
-		Methods("GET").
-		Name("datasets")
 	datasetsRouter.HandleFunc("/add", datasetsController.Add).
 		Methods("GET").
 		Name("dataset_add")

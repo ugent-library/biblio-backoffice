@@ -1,0 +1,28 @@
+<form class="mb-4" method="GET" action="{{.SearchURL}}">
+    {{range $field, $values := .SearchArgs.Filters}}
+        {{range $values}}
+        <input type="hidden" name="f[{{$field}}]" value="{{.}}">
+        {{end}}
+    {{end}}
+    <div class="form-row">
+        <div class="col input-group">
+            <label class="sr-only" for="q">Search</label>
+            <input class="form-control" type="text" name="q" value="{{.SearchArgs.Query}}" placeholder="Search..."
+                autocomplete="off">
+            <div class="input-group-append">
+                <button type="submit" class="btn btn-outline-primary" type="button">Search</button>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="d-flex">
+                <label class="col-form-label pr-3" for="sort" style="white-space: nowrap">Sort
+                    by</label>
+                <select class="custom-select form-change-submit" name="sort">
+                    {{range vocabulary "publication_sorts"}}
+                    <option value="{{.}}"{{if $.SearchArgs.HasSort .}} selected{{end}}>{{$.TS "publication_sorts" .}}</option>
+                    {{end}}
+                </select>
+            </div>
+        </div>
+    </div>
+</form>

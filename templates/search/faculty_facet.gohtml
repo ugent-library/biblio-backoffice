@@ -1,0 +1,46 @@
+<div class="dropdown mt-4">
+    <a class="badge badge-pill badge-default mr-3" data-toggle="dropdown" data-persist="true" aria-haspopup="true"
+        aria-expanded="false" role="button">
+        <span class="badge-text">Faculty</span>
+        <div class="c-counter c-counter--small">{{len (.SearchArgs.FiltersFor "faculty")}}</div>
+        <i class="if if-caret-down"></i>
+    </a>
+    <form class="mb-4 dropdown-menu" method="GET" action="{{.SearchURL}}">
+        <div class="dropdown-header">
+            <div class="bc-toolbar">
+                <div class="bc-toolbar__left">
+                    <div class="bc-toolbar__item">
+                        <h6>Faculty</h6>
+                    </div>
+                </div>
+                <div class="bc-toolbar__right">
+                    <div class="bc-toolbar__item">
+                        <button type="button" class="btn btn-link form-check-all">Select all</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" name="q" value="{{.SearchArgs.Query}}">
+        {{range .SearchArgs.Sort}}
+        <input type="hidden" name="sort" value="{{.}}">
+        {{end}}
+        {{range $f, $vals := .SearchArgs.Filters}}
+        {{if ne $f "faculty"}}
+        {{range $vals}}
+        <input type="hidden" name="f[{{$f}}]" value="{{.}}">
+        {{end}}
+        {{end}}
+        {{end}}
+        <div class="dropdown-body">
+            {{range .Hits.Facets.faculty}}
+            <div class="custom-control custom-checkbox mb-4">
+                <input class="custom-control-input" id="filter-type-{{.Value}}" type="checkbox" name="f[faculty]" value="{{.Value}}"{{if $.SearchArgs.HasFilter "faculty" .Value}} checked{{end}}>
+                <label class="custom-control-label" for="filter-type-{{.Value}}">{{$.TS "organization" .Value}}</label>
+            </div>
+            {{end}}
+        </div>
+        <div class="dropdown-footer">
+            <button class="btn btn-primary btn-block" type="submit">Apply filter</button>
+        </div>
+    </form>
+</div>

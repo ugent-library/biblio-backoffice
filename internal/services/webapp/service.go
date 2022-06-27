@@ -26,6 +26,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/services/webapp/mix"
 	"github.com/ugent-library/biblio-backend/internal/services/webapp/routes"
 	"github.com/ugent-library/biblio-backend/internal/services/webapp/urls"
+	"github.com/ugent-library/biblio-backend/internal/vocabularies"
 	"github.com/ugent-library/go-oidc/oidc"
 	unrolledrender "github.com/unrolled/render"
 
@@ -138,8 +139,11 @@ func buildRouter(services *backends.Services) *mux.Router {
 		urls.FuncMap(router),
 		helpers.FuncMap(),
 		{
-			"appMode": func() string { // TODO eliminate this
+			"appMode": func() string { // TODO eliminate need for this?
 				return viper.GetString("mode")
+			},
+			"vocabulary": func(k string) []string { // TODO eliminate need for this?
+				return vocabularies.Map[k]
 			},
 		},
 	}
