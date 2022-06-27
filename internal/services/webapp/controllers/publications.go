@@ -676,7 +676,7 @@ func (c *Publications) Publish(w http.ResponseWriter, r *http.Request) {
 		if e, ok := err.(validation.Errors); ok {
 
 			publicationErrors = e
-			publicationErrorsTitle = "Unable to publish record due to following errors"
+			publicationErrorsTitle = "Unable to publish record due to the following errors"
 
 		} else {
 

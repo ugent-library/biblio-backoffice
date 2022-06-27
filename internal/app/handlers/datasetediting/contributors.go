@@ -3,6 +3,7 @@ package datasetediting
 import (
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
 
@@ -335,7 +336,7 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 		c.FirstName = b.FirstName
 		c.LastName = b.LastName
 	}
-
+	log.Printf("%+v", b)
 	if err := ctx.Dataset.SetContributor(b.Role, b.Position, c); err != nil {
 		render.InternalServerError(w, r, err)
 		return
@@ -343,7 +344,7 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 
 	if validationErrs := ctx.Dataset.Validate(); validationErrs != nil {
 		f := contributorForm(ctx, b.Role, b.Position, c, validationErrs.(validation.Errors))
-		render.Render(w, "dataset/refresh_add_contributor", YieldContributorForm{
+		render.Render(w, "dataset/refresh_edit_contributor", YieldContributorForm{
 			Context:     ctx,
 			Role:        b.Role,
 			Position:    b.Position,
@@ -400,7 +401,17 @@ func (h *Handler) DeleteContributor(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	// TODO validation
+	if err := ctx.Dataset.Validate(); err != nil {
+		errors := form.Errors(localize.ValidationErrors(ctx.Locale, err.(validation.Errors)))
+		render.Render(w, "form_errors_dialog", struct {
+			Title  string
+			Errors form.Errors
+		}{
+			Title:  "Can't delete this contributor due to the following errors",
+			Errors: errors,
+		})
+		return
+	}
 
 	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
 
@@ -438,8 +449,6 @@ func (h *Handler) OrderContributors(w http.ResponseWriter, r *http.Request, ctx 
 		newContributors[i] = contributors[pos]
 	}
 	ctx.Dataset.SetContributors(b.Role, newContributors)
-
-	// TODO validation
 
 	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
 

@@ -27,7 +27,7 @@ func (h *Handler) Publish(w http.ResponseWriter, r *http.Request, ctx Context) {
 			Title  string
 			Errors form.Errors
 		}{
-			Title:  "Unable to publish this dataset due to following errors",
+			Title:  "Unable to publish this dataset due to the following errors",
 			Errors: errors,
 		})
 		return

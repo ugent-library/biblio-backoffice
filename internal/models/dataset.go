@@ -69,6 +69,7 @@ type Dataset struct {
 	Year               string               `json:"year,omitempty"`
 }
 
+// TODO still needed?
 func (d *Dataset) Clone() *Dataset {
 	clone := *d
 	clone.Abstract = nil
@@ -154,9 +155,7 @@ func (p *Dataset) SetContributor(role string, i int, c *Contributor) error {
 		return errors.New("index out of bounds")
 	}
 
-	newCC := append(cc[:i+1], cc[i:]...)
-	newCC[i] = c
-	p.SetContributors(role, newCC)
+	cc[i] = c
 
 	return nil
 }
