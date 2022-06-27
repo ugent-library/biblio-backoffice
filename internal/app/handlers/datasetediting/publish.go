@@ -13,11 +13,6 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/validation"
 )
 
-type YieldPublishDataset struct {
-	Context
-	Errors form.Errors
-}
-
 func (h *Handler) Publish(w http.ResponseWriter, r *http.Request, ctx Context) {
 	if !ctx.User.CanPublishDataset(ctx.Dataset) {
 		render.Forbidden(w, r)
@@ -28,9 +23,12 @@ func (h *Handler) Publish(w http.ResponseWriter, r *http.Request, ctx Context) {
 
 	if err := ctx.Dataset.Validate(); err != nil {
 		errors := form.Errors(localize.ValidationErrors(ctx.Locale, err.(validation.Errors)))
-		render.Render(w, "dataset/refresh_publish_dataset", YieldPublishDataset{
-			Context: ctx,
-			Errors:  errors,
+		render.Render(w, "form_errors_dialog", struct {
+			Title  string
+			Errors form.Errors
+		}{
+			Title:  "Unable to publish this dataset due to following errors",
+			Errors: errors,
 		})
 		return
 	}
@@ -48,10 +46,14 @@ func (h *Handler) Publish(w http.ResponseWriter, r *http.Request, ctx Context) {
 		return
 	}
 
-	h.AddSessionFlash(r, w, flash.Flash{Type: "success", Body: "Dataset was succesfully published", DismissAfter: 5 * time.Second})
+	h.AddSessionFlash(r, w, flash.Flash{
+		Type:         "success",
+		Body:         "Dataset was succesfully published",
+		DismissAfter: 5 * time.Second,
+	})
 
-	destUrl := h.PathFor("dataset", "id", ctx.Dataset.ID)
-	destUrl.RawQuery = r.URL.Query().Encode()
+	redirectURL := h.PathFor("dataset", "id", ctx.Dataset.ID)
+	redirectURL.RawQuery = r.URL.Query().Encode()
 
-	w.Header().Set("HX-Redirect", destUrl.String())
+	w.Header().Set("HX-Redirect", redirectURL.String())
 }
