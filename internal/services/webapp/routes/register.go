@@ -275,6 +275,10 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		Name("dataset_delete_publication")
 
 	// Publish dataset
+	r.HandleFunc("/dataset/{id}/publish/confirm",
+		datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmPublishDataset)).
+		Methods("GET").
+		Name("dataset_confirm_publish")
 	r.HandleFunc("/dataset/{id}/publish",
 		datasetEditingHandler.Wrap(datasetEditingHandler.Publish)).
 		Methods("POST").

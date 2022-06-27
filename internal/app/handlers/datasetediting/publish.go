@@ -13,6 +13,16 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/validation"
 )
 
+type YieldPublishDataset struct {
+	Context
+}
+
+func (h *Handler) ConfirmPublishDataset(w http.ResponseWriter, r *http.Request, ctx Context) {
+	render.Render(w, "dataset/confirm_publish_dataset", YieldPublishDataset{
+		Context: ctx,
+	})
+}
+
 func (h *Handler) Publish(w http.ResponseWriter, r *http.Request, ctx Context) {
 	if !ctx.User.CanPublishDataset(ctx.Dataset) {
 		render.Forbidden(w, r)

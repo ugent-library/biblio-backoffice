@@ -16,9 +16,8 @@
                         <form action="{{pathFor "dataset_publish" "id" .Dataset.ID}}" method="POST">
                             {{.CSRFTag}}
                             <button class="btn btn-success"
-                                hx-post="{{pathFor "dataset_publish" "id" .Dataset.ID | query .SearchArgs}}"
-                                hx-headers='{"If-Match": "{{.Dataset.SnapshotID}}"}'
-                                hx-swap="none"
+                                hx-get="{{pathFor "dataset_confirm_publish" "id" .Dataset.ID | query .SearchArgs}}"
+                                hx-target="#modals"
                             >
                                 <div class="btn-text">Publish to Biblio</div>
                             </button>
