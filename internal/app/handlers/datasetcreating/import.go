@@ -1,0 +1,210 @@
+package datasetcreating
+
+import (
+	"errors"
+	"net/http"
+
+	"github.com/ugent-library/biblio-backend/internal/app/displays"
+	"github.com/ugent-library/biblio-backend/internal/bind"
+	"github.com/ugent-library/biblio-backend/internal/localize"
+	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backend/internal/render"
+	"github.com/ugent-library/biblio-backend/internal/render/display"
+	"github.com/ugent-library/biblio-backend/internal/render/form"
+	"github.com/ugent-library/biblio-backend/internal/snapstore"
+	"github.com/ugent-library/biblio-backend/internal/ulid"
+	"github.com/ugent-library/biblio-backend/internal/validation"
+)
+
+type BindImport struct {
+	Source     string `form:"source"`
+	Identifier string `form:"identifier"`
+}
+
+type YieldAddDataset struct {
+	Context
+	PageTitle           string
+	Step                int
+	Source              string
+	Identifier          string
+	Dataset             *models.Dataset
+	DuplicateDataset    bool
+	DatasetPublications []*models.Publication
+	ActiveNav           string
+	ActiveSubNav        string
+	DisplayDetails      *display.Display
+}
+
+func (h *Handler) Add(w http.ResponseWriter, r *http.Request, ctx Context) {
+	render.Wrap(w, "layouts/default", "dataset/add", YieldAddDataset{
+		Context:   ctx,
+		PageTitle: "Add - Datasets - Biblio",
+		Step:      1,
+		ActiveNav: "datasets",
+	})
+}
+
+func (h *Handler) ConfirmImportDataset(w http.ResponseWriter, r *http.Request, ctx Context) {
+	b := BindImport{}
+	if err := bind.Request(r, &b); err != nil {
+		render.BadRequest(w, r, err)
+		return
+	}
+
+	// Check for duplicates
+	if b.Source == "datacite" {
+		args := models.NewSearchArgs().
+			WithFilter("doi", b.Identifier)
+			// WithFilter("status", "public")
+
+		if existing, _ := h.DatasetSearchService.Search(args); existing.Total > 0 {
+			render.Wrap(w, "layouts/default", "dataset/add", YieldAddDataset{
+				Context:          ctx,
+				PageTitle:        "Add - Datasets - Biblio",
+				Step:             1,
+				ActiveNav:        "datasets",
+				Source:           b.Source,
+				Identifier:       b.Identifier,
+				Dataset:          existing.Hits[0],
+				DuplicateDataset: true,
+			})
+			return
+		}
+	}
+
+	h.AddImport(w, r, ctx)
+}
+
+func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context) {
+	b := BindImport{}
+	if err := bind.Request(r, &b); err != nil {
+		render.BadRequest(w, r, err)
+		return
+	}
+
+	s, ok := h.DatasetSources[b.Source]
+	if !ok {
+		// TODO implement an error for an unkown data source
+		// return nil, errors.New("unknown dataset source")
+		render.Render(w, "error_dialog", ctx.T("dataset.unknown_dataset_source"))
+	}
+
+	d, err := s.GetDataset(b.Identifier)
+	if err != nil {
+		// TODO implement a message if the identifier wasn't found
+		// 		log.Println(err)
+		// 		flash := views.Flash{Type: "error"}
+		// 		flash.Message = loc.TS("dataset.single_import", "import_by_id.import_failed")
+		return
+	}
+
+	d.ID = ulid.MustGenerate()
+	d.CreatorID = ctx.User.ID
+	d.UserID = ctx.User.ID
+	d.Status = "private"
+
+	// if validationErrs := d.Validate(); validationErrs != nil {
+	// 	// TODO fix validaton errors when a dataset is first created
+	// 	// form := detailsForm(ctx, b, validationErrs.(validation.Errors))
+
+	// 	// render.Render(w, "dataset/refresh_edit_details", YieldEditDetails{
+	// 	// 	Context: ctx,
+	// 	// 	Form:    form,
+	// 	// })
+	// 	// return
+	// 	return
+	// }
+	err = h.Repository.SaveDataset(d)
+
+	if err != nil {
+		render.InternalServerError(w, r, err)
+		return
+	}
+
+	render.Wrap(w, "layouts/default", "dataset/add_description", YieldAddDataset{
+		Context:        ctx,
+		PageTitle:      "Add - Datasets - Biblio",
+		Step:           2,
+		ActiveNav:      "datasets",
+		ActiveSubNav:   "description",
+		Dataset:        d,
+		DisplayDetails: displays.DatasetDetails(ctx.Locale, d),
+	})
+}
+
+func (h *Handler) AddDescription(w http.ResponseWriter, r *http.Request, ctx Context) {
+	// TODO bind and validate
+	activeSubNav := "description"
+	if r.URL.Query().Get("show") == "contributors" || r.URL.Query().Get("show") == "description" {
+		activeSubNav = r.URL.Query().Get("show")
+	}
+
+	render.Wrap(w, "layouts/default", "dataset/add_description", YieldAddDataset{
+		Context:        ctx,
+		PageTitle:      "Add - Datasets - Biblio",
+		Step:           2,
+		ActiveNav:      "datasets",
+		ActiveSubNav:   activeSubNav,
+		Dataset:        ctx.Dataset,
+		DisplayDetails: displays.DatasetDetails(ctx.Locale, ctx.Dataset),
+	})
+}
+
+func (h *Handler) AddConfirm(w http.ResponseWriter, r *http.Request, ctx Context) {
+	render.Wrap(w, "layouts/default", "dataset/add_confirm_import", YieldAddDataset{
+		Context:   ctx,
+		PageTitle: "Add - Datasets - Biblio",
+		Step:      3,
+		ActiveNav: "datasets",
+		Dataset:   ctx.Dataset,
+	})
+}
+
+func (h *Handler) AddPublish(w http.ResponseWriter, r *http.Request, ctx Context) {
+	if !ctx.User.CanPublishDataset(ctx.Dataset) {
+		render.Forbidden(w, r)
+		return
+	}
+
+	ctx.Dataset.Status = "public"
+
+	if err := ctx.Dataset.Validate(); err != nil {
+		errors := form.Errors(localize.ValidationErrors(ctx.Locale, err.(validation.Errors)))
+		render.Render(w, "form_errors_dialog", struct {
+			Title  string
+			Errors form.Errors
+		}{
+			Title:  "Unable to publish this dataset due to the following errors",
+			Errors: errors,
+		})
+		return
+	}
+
+	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
+
+	var conflict *snapstore.Conflict
+	if errors.As(err, &conflict) {
+		render.Render(w, "error_dialog", ctx.T("dataset.conflict_error"))
+		return
+	}
+
+	if err != nil {
+		render.InternalServerError(w, r, err)
+		return
+	}
+
+	redirectURL := h.PathFor("dataset_add_finish", "id", ctx.Dataset.ID)
+	redirectURL.RawQuery = r.URL.Query().Encode()
+
+	w.Header().Set("HX-Redirect", redirectURL.String())
+}
+
+func (h *Handler) AddFinish(w http.ResponseWriter, r *http.Request, ctx Context) {
+	render.Wrap(w, "layouts/default", "dataset/add_finish", YieldAddDataset{
+		Context:   ctx,
+		PageTitle: "Add - Datasets - Biblio",
+		Step:      4,
+		ActiveNav: "datasets",
+		Dataset:   ctx.Dataset,
+	})
+}
