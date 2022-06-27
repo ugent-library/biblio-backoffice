@@ -8,6 +8,7 @@ import (
 )
 
 func DisplayTypeJournalArticle(l *locale.Locale, p *models.Publication) *display.Display {
+	//TODO: better way to do this?
 	trLangs := []string{}
 	for _, lang := range p.Language {
 		trLangs = append(trLangs, l.LanguageName(lang))
