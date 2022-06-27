@@ -15,7 +15,7 @@ import (
 
 type YieldPublishDataset struct {
 	Context
-	Form *form.Form
+	Errors form.Errors
 }
 
 func (h *Handler) Publish(w http.ResponseWriter, r *http.Request, ctx Context) {
@@ -26,10 +26,11 @@ func (h *Handler) Publish(w http.ResponseWriter, r *http.Request, ctx Context) {
 
 	ctx.Dataset.Status = "public"
 
-	if validationErrs := ctx.Dataset.Validate(); validationErrs != nil {
+	if err := ctx.Dataset.Validate(); err != nil {
+		errors := form.Errors(localize.ValidationErrors(ctx.Locale, err.(validation.Errors)))
 		render.Render(w, "dataset/refresh_publish_dataset", YieldPublishDataset{
 			Context: ctx,
-			Form:    publishForm(ctx, validationErrs.(validation.Errors)),
+			Errors:  errors,
 		})
 		return
 	}
@@ -53,8 +54,4 @@ func (h *Handler) Publish(w http.ResponseWriter, r *http.Request, ctx Context) {
 	destUrl.RawQuery = r.URL.Query().Encode()
 
 	w.Header().Set("HX-Redirect", destUrl.String())
-}
-
-func publishForm(ctx Context, errors validation.Errors) *form.Form {
-	return form.New().WithTheme("default").WithErrors(localize.ValidationErrors(ctx.Locale, errors))
 }

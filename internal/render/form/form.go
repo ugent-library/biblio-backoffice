@@ -9,9 +9,23 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/render"
 )
 
+type Errors []string
+
+func (e Errors) Render() (template.HTML, error) {
+	var buf strings.Builder
+
+	if len(e) > 0 {
+		if err := render.Templates().ExecuteTemplate(&buf, "form/errors", e); err != nil {
+			return "", err
+		}
+	}
+
+	return template.HTML(buf.String()), nil
+}
+
 type Form struct {
 	Theme    string
-	Errors   []string
+	Errors   Errors
 	Sections []Section
 }
 
@@ -38,18 +52,6 @@ func (f *Form) AddSection(fields ...Field) *Form {
 	})
 
 	return f
-}
-
-func (f *Form) RenderErrors() (template.HTML, error) {
-	var buf strings.Builder
-
-	if len(f.Errors) > 0 {
-		if err := render.Templates().ExecuteTemplate(&buf, "form/errors", f); err != nil {
-			return "", err
-		}
-	}
-
-	return template.HTML(buf.String()), nil
 }
 
 type Section struct {

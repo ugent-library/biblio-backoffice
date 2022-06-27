@@ -6,7 +6,7 @@
                 <h2 class="modal-title">Edit Abstract</h2>
             </div>
             <div class="modal-body">
-                {{.Form.RenderErrors}}
+                {{.Form.Errors.Render}}
                 {{range .Form.Sections}}
                     {{.Render}}
                 {{end}}

@@ -14,20 +14,17 @@ type YieldShow struct {
 	PageTitle    string
 	ActiveNav    string
 	ActiveSubNav string
-	SearchArgs   *models.SearchArgs
 }
 
 type YieldShowDescription struct {
 	Context
 	ActiveSubNav   string
-	SearchArgs     *models.SearchArgs
 	DisplayDetails *display.Display
 }
 
 type YieldShowContributors struct {
 	Context
 	ActiveSubNav string
-	SearchArgs   *models.SearchArgs
 }
 
 type YieldShowContributorsRole struct {
@@ -42,7 +39,6 @@ func (y YieldShowContributors) YieldRole(role string) YieldShowContributorsRole 
 type YieldShowPublications struct {
 	Context
 	ActiveSubNav        string
-	SearchArgs          *models.SearchArgs
 	RelatedPublications []*models.Publication
 }
 
