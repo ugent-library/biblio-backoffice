@@ -279,7 +279,7 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		Methods("DELETE").
 		Name("dataset_delete_publication")
 
-	// Publish dataset
+	// publish dataset
 	r.HandleFunc("/dataset/{id}/publish/confirm",
 		datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmPublishDataset)).
 		Methods("GET").
@@ -330,6 +330,28 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		datasetEditingHandler.Wrap(datasetEditingHandler.DeleteContributor)).
 		Methods("DELETE").
 		Name("dataset_delete_contributor")
+
+	// view publication
+	r.HandleFunc("/publication/{id}",
+		publicationViewingHandler.Wrap(publicationViewingHandler.Show)).
+		Methods("GET").
+		Name("publication")
+	r.HandleFunc("/publication/{id}/description",
+		publicationViewingHandler.Wrap(publicationViewingHandler.ShowDescription)).
+		Methods("GET").
+		Name("publication_description")
+	r.HandleFunc("/publication/{id}/files",
+		publicationViewingHandler.Wrap(publicationViewingHandler.ShowFiles)).
+		Methods("GET").
+		Name("publication_files")
+	r.HandleFunc("/publication/{id}/contributors",
+		publicationViewingHandler.Wrap(publicationViewingHandler.ShowContributors)).
+		Methods("GET").
+		Name("publication_contributors")
+	r.HandleFunc("/publication/{id}/datasets",
+		publicationViewingHandler.Wrap(publicationViewingHandler.ShowDatasets)).
+		Methods("GET").
+		Name("publication_datasets")
 
 	// r.Use(handlers.HTTPMethodOverrideHandler)
 	r.Use(locale.Detect(oldBase.Localizer))
@@ -387,26 +409,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	pubPublishRouter.Use(middleware.RequireCanPublishPublication)
 	pubDeleteRouter := pubRouter.PathPrefix("").Subrouter()
 	pubDeleteRouter.Use(middleware.RequireCanDeletePublication)
-	r.HandleFunc("/publication/{id}",
-		publicationViewingHandler.Wrap(publicationViewingHandler.Show)).
-		Methods("GET").
-		Name("publication")
-	r.HandleFunc("/publication/{id}/description",
-		publicationViewingHandler.Wrap(publicationViewingHandler.ShowDescription)).
-		Methods("GET").
-		Name("publication_description")
-	r.HandleFunc("/publication/{id}/files",
-		publicationViewingHandler.Wrap(publicationViewingHandler.ShowFiles)).
-		Methods("GET").
-		Name("publication_files")
-	r.HandleFunc("/publication/{id}/contributors",
-		publicationViewingHandler.Wrap(publicationViewingHandler.ShowContributors)).
-		Methods("GET").
-		Name("publication_contributors")
-	r.HandleFunc("/publication/{id}/datasets",
-		publicationViewingHandler.Wrap(publicationViewingHandler.ShowDatasets)).
-		Methods("GET").
-		Name("publication_datasets")
 	pubRouter.HandleFunc("/delete", publicationsController.ConfirmDelete).
 		Methods("GET").
 		Name("publication_confirm_delete")

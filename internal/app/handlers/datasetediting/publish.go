@@ -5,7 +5,9 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/ugent-library/biblio-backend/internal/bind"
 	"github.com/ugent-library/biblio-backend/internal/localize"
+	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
 	"github.com/ugent-library/biblio-backend/internal/render/flash"
 	"github.com/ugent-library/biblio-backend/internal/render/form"
@@ -15,11 +17,19 @@ import (
 
 type YieldPublishDataset struct {
 	Context
+	SearchArgs *models.SearchArgs
 }
 
 func (h *Handler) ConfirmPublishDataset(w http.ResponseWriter, r *http.Request, ctx Context) {
+	searchArgs := models.NewSearchArgs()
+	if err := bind.Request(r, searchArgs); err != nil {
+		render.BadRequest(w, r, err)
+		return
+	}
+
 	render.Render(w, "dataset/confirm_publish_dataset", YieldPublishDataset{
-		Context: ctx,
+		Context:    ctx,
+		SearchArgs: searchArgs,
 	})
 }
 

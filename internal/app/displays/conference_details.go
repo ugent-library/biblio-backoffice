@@ -2,17 +2,13 @@ package displays
 
 import (
 	"github.com/ugent-library/biblio-backend/internal/locale"
+	"github.com/ugent-library/biblio-backend/internal/localize"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render/display"
 	"github.com/ugent-library/biblio-backend/internal/services/webapp/helpers"
 )
 
-func DisplayTypeMiscellaneous(l *locale.Locale, p *models.Publication) *display.Display {
-	//TODO: better way to do this?
-	trLangs := []string{}
-	for _, lang := range p.Language {
-		trLangs = append(trLangs, l.LanguageName(lang))
-	}
+func conferenceDetails(l *locale.Locale, p *models.Publication) *display.Display {
 	return display.New().
 		WithTheme("default").
 		AddSection(
@@ -21,8 +17,8 @@ func DisplayTypeMiscellaneous(l *locale.Locale, p *models.Publication) *display.
 				Value: l.TS("publication_types", p.Type),
 			},
 			&display.Text{
-				Label: l.T("builder.miscellaneous_type"),
-				Value: l.TS("miscellaneous_types", p.MiscellaneousType),
+				Label: l.T("builder.conference_type"),
+				Value: l.TS("conference_types", p.ConferenceType),
 			},
 			&display.Text{
 				Label:         l.T("builder.doi"),
@@ -46,7 +42,7 @@ func DisplayTypeMiscellaneous(l *locale.Locale, p *models.Publication) *display.
 				Values: p.AlternativeTitle,
 			},
 			&display.Text{
-				Label:    l.T("builder.publication"),
+				Label:    l.T("builder.conference.publication"),
 				Value:    p.Publication,
 				Required: true,
 			},
@@ -59,7 +55,7 @@ func DisplayTypeMiscellaneous(l *locale.Locale, p *models.Publication) *display.
 			&display.Text{
 				Label:  l.T("builder.language"),
 				List:   true,
-				Values: trLangs,
+				Values: localize.LanguageNames(l, p.Language),
 			},
 			&display.Text{
 				Label: l.T("builder.publication_status"),
@@ -85,20 +81,12 @@ func DisplayTypeMiscellaneous(l *locale.Locale, p *models.Publication) *display.
 		).
 		AddSection(
 			&display.Text{
-				Label: l.T("builder.series_title"),
-				Value: p.SeriesTitle,
-			},
-			&display.Text{
 				Label: l.T("builder.volume"),
 				Value: p.Volume,
 			},
 			&display.Text{
 				Label: l.T("builder.issue"),
 				Value: p.Issue,
-			},
-			&display.Text{
-				Label: l.T("builder.edition"),
-				Value: p.Edition,
 			},
 			&display.Text{
 				Label: l.T("builder.pages"),
@@ -109,16 +97,8 @@ func DisplayTypeMiscellaneous(l *locale.Locale, p *models.Publication) *display.
 				Value: p.PageCount,
 			},
 			&display.Text{
-				Label: l.T("builder.article_number"),
-				Value: p.ArticleNumber,
-			},
-			&display.Text{
-				Label: l.T("builder.issue_title"),
-				Value: p.IssueTitle,
-			},
-			&display.Text{
-				Label: l.T("builder.report_number"),
-				Value: p.ReportNumber,
+				Label: l.T("builder.conference.series_title"),
+				Value: p.SeriesTitle,
 			},
 		).
 		AddSection(

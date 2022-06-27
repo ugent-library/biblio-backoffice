@@ -2,16 +2,13 @@ package displays
 
 import (
 	"github.com/ugent-library/biblio-backend/internal/locale"
+	"github.com/ugent-library/biblio-backend/internal/localize"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render/display"
 	"github.com/ugent-library/biblio-backend/internal/services/webapp/helpers"
 )
 
-func DisplayTypeBook(l *locale.Locale, p *models.Publication) *display.Display {
-	trLangs := []string{}
-	for _, lang := range p.Language {
-		trLangs = append(trLangs, l.LanguageName(lang))
-	}
+func bookChapterDetails(l *locale.Locale, p *models.Publication) *display.Display {
 	return display.New().
 		WithTheme("default").
 		AddSection(
@@ -40,13 +37,17 @@ func DisplayTypeBook(l *locale.Locale, p *models.Publication) *display.Display {
 				List:   true,
 				Values: p.AlternativeTitle,
 			},
+			&display.Text{
+				Label:    l.T("builder.book_chapter.publication"),
+				Value:    p.Publication,
+				Required: true,
+			},
 		).
 		AddSection(
 			&display.Text{
 				Label:  l.T("builder.language"),
 				List:   true,
-				Values: trLangs,
-			},
+				Values: localize.LanguageNames(l, p.Language)},
 			&display.Text{
 				Label: l.T("builder.publication_status"),
 				Value: l.TS("publication_publishing_statuses", p.PublicationStatus),
@@ -70,6 +71,10 @@ func DisplayTypeBook(l *locale.Locale, p *models.Publication) *display.Display {
 			},
 		).
 		AddSection(
+			&display.Text{
+				Label: l.T("builder.pages"),
+				Value: helpers.FormatRange(p.PageFirst, p.PageLast),
+			},
 			&display.Text{
 				Label: l.T("builder.page_count"),
 				Value: p.PageCount,
