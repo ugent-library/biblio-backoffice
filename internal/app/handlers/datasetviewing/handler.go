@@ -17,7 +17,8 @@ type Handler struct {
 
 type Context struct {
 	handlers.BaseContext
-	Dataset *models.Dataset
+	Dataset    *models.Dataset
+	SearchArgs *models.SearchArgs
 }
 
 func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) http.HandlerFunc {
@@ -38,9 +39,16 @@ func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) htt
 			return
 		}
 
+		searchArgs := models.NewSearchArgs()
+		if err := bind.Request(r, searchArgs); err != nil {
+			render.BadRequest(w, r, err)
+			return
+		}
+
 		fn(w, r, Context{
 			BaseContext: ctx,
 			Dataset:     d,
+			SearchArgs:  searchArgs,
 		})
 	})
 }
