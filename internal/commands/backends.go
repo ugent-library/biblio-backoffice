@@ -23,7 +23,6 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/backends/repository"
 	"github.com/ugent-library/biblio-backend/internal/backends/ris"
 
-	// "github.com/ugent-library/biblio-backend/internal/backends/spdxlicenses"
 	"github.com/ugent-library/biblio-backend/internal/tasks"
 	"github.com/ugent-library/go-orcid/orcid"
 )
