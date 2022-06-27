@@ -12,6 +12,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/datasetviewing"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/home"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/impersonating"
+	"github.com/ugent-library/biblio-backend/internal/app/handlers/publicationviewing"
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/locale"
 	"github.com/ugent-library/biblio-backend/internal/services/webapp/controllers"
@@ -94,6 +95,10 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		PersonSearchService:       services.PersonSearchService,
 		PersonService:             services.PersonService,
 		PublicationSearchService:  services.PublicationSearchService,
+	}
+	publicationViewingHandler := &publicationviewing.Handler{
+		BaseHandler: baseHandler,
+		Repository:  services.Repository,
 	}
 
 	// TODO fix absolute url generation
@@ -382,9 +387,26 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	pubPublishRouter.Use(middleware.RequireCanPublishPublication)
 	pubDeleteRouter := pubRouter.PathPrefix("").Subrouter()
 	pubDeleteRouter.Use(middleware.RequireCanDeletePublication)
-	pubRouter.HandleFunc("", publicationsController.Show).
+	r.HandleFunc("/publication/{id}",
+		publicationViewingHandler.Wrap(publicationViewingHandler.Show)).
 		Methods("GET").
 		Name("publication")
+	r.HandleFunc("/publication/{id}/description",
+		publicationViewingHandler.Wrap(publicationViewingHandler.ShowDescription)).
+		Methods("GET").
+		Name("publication_description")
+	r.HandleFunc("/publication/{id}/files",
+		publicationViewingHandler.Wrap(publicationViewingHandler.ShowFiles)).
+		Methods("GET").
+		Name("publication_files")
+	r.HandleFunc("/publication/{id}/contributors",
+		publicationViewingHandler.Wrap(publicationViewingHandler.ShowContributors)).
+		Methods("GET").
+		Name("publication_contributors")
+	r.HandleFunc("/publication/{id}/datasets",
+		publicationViewingHandler.Wrap(publicationViewingHandler.ShowDatasets)).
+		Methods("GET").
+		Name("publication_datasets")
 	pubRouter.HandleFunc("/delete", publicationsController.ConfirmDelete).
 		Methods("GET").
 		Name("publication_confirm_delete")
@@ -472,7 +494,7 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	// Publication projects HTMX fragments
 	pubEditRouter.HandleFunc("/htmx/projects/list", publicationProjectsController.List).
 		Methods("GET").
-		Name("publication_projects")
+		Name("publication_add_project")
 	pubEditRouter.HandleFunc("/htmx/projects/list/activesearch", publicationProjectsController.ActiveSearch).
 		Methods("POST").
 		Name("publication_projects_activesearch")
@@ -488,7 +510,7 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	// Publication departments HTMX fragments
 	pubEditRouter.HandleFunc("/htmx/departments/list", publicationDepartmentsController.List).
 		Methods("GET").
-		Name("publicationDepartments")
+		Name("publication_add_department")
 	pubEditRouter.HandleFunc("/htmx/departments/list/activesearch", publicationDepartmentsController.ActiveSearch).
 		Methods("POST").
 		Name("publicationDepartments_activesearch")

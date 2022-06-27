@@ -1,0 +1,24 @@
+<div class="card mb-6">
+    <div class="card-header">
+        <div class="bc-toolbar">
+            <div class="bc-toolbar-left">
+                <h1 class="bc-toolbar-title">Lay Summary</h1>
+            </div>
+            <div class="bc-toolbar-right">
+                {{if .User.CanEditPublication .Publication}}
+                <button class="btn btn-outline-primary" type="button"
+                    hx-get="{{pathFor "publication_lay_summaries_add_lay_summary" "id" .Publication.ID }}"
+                    hx-swap="innerHTML"
+                    hx-target="#modals"
+                >
+                    <i class="if if-add"></i>
+                    <div class="btn-text">Add Lay Summary</div>
+                </button>
+                {{end}}
+            </div>
+        </div>
+    </div>
+    <div id="publication-lay-summaries-body">
+    {{template "publication/lay_summaries_body" .}}
+    </div>
+</div>
