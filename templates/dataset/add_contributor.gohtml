@@ -3,24 +3,19 @@
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title">Add Abstract</h2>
+                <h2 class="modal-title">Add {{.TS "dataset.contributor.role" .Role}}</h2>
             </div>
             <div class="modal-body">
-                {{.Form.Errors.Render}}
-                {{range .Form.Sections}}
-                    {{.Render}}
-                {{end}}
+                {{template "dataset/contributors_form" .}}
             </div>
             <div class="modal-footer">
-                <button class="btn btn-link modal-close">Cancel</button>
-                <button type="button" name="create" class="btn btn-primary"
-                    hx-post="{{pathFor "dataset_create_abstract" "id" .Dataset.ID}}"
+                <button class="btn btn-link modal-close" data-dismiss="modal">Cancel</button>
+                <button class="btn btn-primary modal-close" data-dismiss="modal"
+                    hx-post="{{pathFor "dataset_create_contributor" "id" .Dataset.ID "role" .Role}}"
                     hx-headers='{"If-Match": "{{.Dataset.SnapshotID}}"}'
-                    hx-include=".modal-body"
+                    hx-include=".modal-body .contributor-attributes"
                     hx-swap="none"
-                >
-                    Add abstract
-                </button>
+                >Add</button>
             </div>
         </div>
     </div>

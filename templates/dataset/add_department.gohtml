@@ -8,12 +8,12 @@
             <div class="modal-body">
                 <label class="sr-only" for="department-q">Search</label>
                 <input class="form-control" type="text" id="department-q" name="q" placeholder="Search..."
-                    hx-get="{{pathFor "dataset_department_suggestions" "id" .Dataset.ID}}"
+                    hx-get="{{pathFor "dataset_suggest_departments" "id" .Dataset.ID}}"
                     hx-trigger="keyup changed delay:500ms"
                     hx-target="#department-suggestions"
                 >
                 <div id="department-suggestions">
-                     {{template "dataset/department_suggestions" .}}
+                     {{template "dataset/suggest_departments" .}}
                 </div>
             </div>
             <div class="modal-footer">

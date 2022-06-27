@@ -9,9 +9,23 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/render"
 )
 
+type Errors []string
+
+func (e Errors) Render() (template.HTML, error) {
+	var buf strings.Builder
+
+	if len(e) > 0 {
+		if err := render.Templates().ExecuteTemplate(&buf, "form/errors", e); err != nil {
+			return "", err
+		}
+	}
+
+	return template.HTML(buf.String()), nil
+}
+
 type Form struct {
 	Theme    string
-	Errors   []string
+	Errors   Errors
 	Sections []Section
 }
 
@@ -40,18 +54,6 @@ func (f *Form) AddSection(fields ...Field) *Form {
 	return f
 }
 
-func (f *Form) RenderErrors() (template.HTML, error) {
-	var buf strings.Builder
-
-	if len(f.Errors) > 0 {
-		if err := render.Templates().ExecuteTemplate(&buf, "form/errors", f); err != nil {
-			return "", err
-		}
-	}
-
-	return template.HTML(buf.String()), nil
-}
-
 type Section struct {
 	Fields []Field
 	Form   *Form
@@ -61,7 +63,7 @@ func (s *Section) Render() (template.HTML, error) {
 	var buf strings.Builder
 
 	for _, field := range s.Fields {
-		if err := field.Render(s.Form, &buf); err != nil {
+		if err := field.Render(s.Form.Theme, &buf); err != nil {
 			return "", err
 		}
 	}
@@ -70,43 +72,46 @@ func (s *Section) Render() (template.HTML, error) {
 }
 
 type Field interface {
-	Render(*Form, io.Writer) error
+	Render(string, io.Writer) error
 }
 
 type Text struct {
-	Name            string
-	Value           string
-	Label           string
-	Tooltip         string
-	Placeholder     string
-	Required        bool
-	Cols            int
 	AutocompleteURL string
+	Cols            int
+	Disabled        bool
 	Error           string
 	ID              string
-	Disabled        bool
+	Label           string
+	Name            string
+	Placeholder     string
+	Readonly        bool
+	Required        bool
+	Template        string
+	Tooltip         string
+	Value           string
 }
 
-func (f *Text) Render(form *Form, w io.Writer) error {
-	return render.Templates().ExecuteTemplate(w, path.Join("form", form.Theme, "text"), f)
+func (f *Text) Render(theme string, w io.Writer) error {
+	return render.Templates().ExecuteTemplate(w, path.Join("form", theme, "text"), f)
 }
 
 type TextRepeat struct {
-	Name            string
-	Values          []string
-	Label           string
-	Tooltip         string
-	Placeholder     string
-	Required        bool
-	Cols            int
 	AutocompleteURL string
+	Cols            int
+	Disabled        bool
 	Error           string
 	ID              string
-	Disabled        bool
+	Label           string
+	Name            string
+	Placeholder     string
+	Readonly        bool
+	Required        bool
+	Tooltip         string
+	Values          []string
 }
 
-func (f *TextRepeat) Render(form *Form, w io.Writer) error {
-	return render.Templates().ExecuteTemplate(w, path.Join("form", form.Theme, "text_repeat"), f)
+func (f *TextRepeat) Render(theme string, w io.Writer) error {
+	return render.Templates().ExecuteTemplate(w, path.Join("form", theme, "text_repeat"), f)
 }
 
 type TextArea struct {
@@ -121,8 +126,8 @@ type TextArea struct {
 	Value       string
 }
 
-func (f *TextArea) Render(form *Form, w io.Writer) error {
-	return render.Templates().ExecuteTemplate(w, path.Join("form", form.Theme, "text_area"), f)
+func (f *TextArea) Render(theme string, w io.Writer) error {
+	return render.Templates().ExecuteTemplate(w, path.Join("form", theme, "text_area"), f)
 }
 
 type Select struct {
@@ -146,13 +151,13 @@ type SelectOption struct {
 	Value string
 }
 
-func (f *Select) Render(form *Form, w io.Writer) error {
+func (f *Select) Render(theme string, w io.Writer) error {
 	t := "select"
 	if f.Template != "" {
 		t = f.Template
 	}
 
-	tmpl := path.Join("form", form.Theme, t)
+	tmpl := path.Join("form", theme, t)
 	return render.Templates().ExecuteTemplate(w, tmpl, f)
 }
 
@@ -173,8 +178,8 @@ type SelectRepeat struct {
 	Disabled        bool
 }
 
-func (f *SelectRepeat) Render(form *Form, w io.Writer) error {
-	return render.Templates().ExecuteTemplate(w, path.Join("form", form.Theme, "select_repeat"), f)
+func (f *SelectRepeat) Render(theme string, w io.Writer) error {
+	return render.Templates().ExecuteTemplate(w, path.Join("form", theme, "select_repeat"), f)
 }
 
 type RadioButtonGroup struct {
@@ -194,8 +199,8 @@ type RadioButtonGroup struct {
 	Disabled        bool
 }
 
-func (f *RadioButtonGroup) Render(form *Form, w io.Writer) error {
-	return render.Templates().ExecuteTemplate(w, path.Join("form", form.Theme, "radio_button_group"), f)
+func (f *RadioButtonGroup) Render(theme string, w io.Writer) error {
+	return render.Templates().ExecuteTemplate(w, path.Join("form", theme, "radio_button_group"), f)
 }
 
 type Date struct {
@@ -215,8 +220,8 @@ type Date struct {
 	Disabled        bool
 }
 
-func (f *Date) Render(form *Form, w io.Writer) error {
-	return render.Templates().ExecuteTemplate(w, path.Join("form", form.Theme, "date"), f)
+func (f *Date) Render(theme string, w io.Writer) error {
+	return render.Templates().ExecuteTemplate(w, path.Join("form", theme, "date"), f)
 }
 
 type Checkbox struct {
@@ -237,6 +242,17 @@ type Checkbox struct {
 	Disabled        bool
 }
 
-func (f *Checkbox) Render(form *Form, w io.Writer) error {
-	return render.Templates().ExecuteTemplate(w, path.Join("form", form.Theme, "checkbox"), f)
+func (f *Checkbox) Render(theme string, w io.Writer) error {
+	return render.Templates().ExecuteTemplate(w, path.Join("form", theme, "checkbox"), f)
+}
+
+var HiddenFieldTemplate = template.Must(template.New("").Parse(`<input type="hidden" name="{{.Name}}" value="{{.Value}}">`))
+
+type Hidden struct {
+	Name  string
+	Value string
+}
+
+func (f *Hidden) Render(theme string, w io.Writer) error {
+	return HiddenFieldTemplate.Execute(w, f)
 }

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/ugent-library/biblio-backend/internal/bind"
 	"github.com/ugent-library/biblio-backend/internal/localize"
@@ -19,6 +20,12 @@ type BindAbstract struct {
 	Text     string `form:"text"`
 	Lang     string `form:"lang"`
 }
+
+func (b *BindAbstract) CleanValues() {
+	b.Text = strings.TrimSpace(b.Text)
+	b.Lang = strings.TrimSpace(b.Lang)
+}
+
 type BindDeleteAbstract struct {
 	Position int `path:"position"`
 }
@@ -56,6 +63,8 @@ func (h *Handler) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 		return
 	}
 
+	b.CleanValues()
+
 	ctx.Dataset.Abstract = append(ctx.Dataset.Abstract, models.Text{Text: b.Text, Lang: b.Lang})
 
 	if validationErrs := ctx.Dataset.Validate(); validationErrs != nil {
@@ -90,6 +99,8 @@ func (h *Handler) EditAbstract(w http.ResponseWriter, r *http.Request, ctx Conte
 		render.BadRequest(w, r, err)
 		return
 	}
+
+	b.CleanValues()
 
 	a, err := ctx.Dataset.GetAbstract(b.Position)
 	if err != nil {
@@ -193,28 +204,26 @@ func (h *Handler) DeleteAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 }
 
 func abstractForm(ctx Context, b BindAbstract, errors validation.Errors) *form.Form {
-	abstractForm := form.New().WithTheme("default").WithErrors(localize.ValidationErrors(ctx.Locale, errors))
-
-	text := &form.TextArea{
-		Name:        "text",
-		Value:       b.Text,
-		Label:       ctx.T("builder.abstract.text"),
-		Cols:        12,
-		Rows:        6,
-		Placeholder: ctx.T("builder.abstract.text.placeholder"),
-		Error:       localize.ValidationErrorAt(ctx.Locale, errors, fmt.Sprintf("/abstract/%d/text", b.Position)),
-	}
-
-	lang := &form.Select{
-		Name:    "lang",
-		Value:   b.Lang,
-		Label:   ctx.T("builder.abstract.lang"),
-		Options: localize.LanguageSelectOptions(ctx.Locale),
-		Cols:    12,
-		Error:   localize.ValidationErrorAt(ctx.Locale, errors, fmt.Sprintf("/abstract/%d/lang", b.Position)),
-	}
-
-	abstractForm.AddSection(text, lang)
-
-	return abstractForm
+	return form.New().
+		WithTheme("default").
+		WithErrors(localize.ValidationErrors(ctx.Locale, errors)).
+		AddSection(
+			&form.TextArea{
+				Name:        "text",
+				Value:       b.Text,
+				Label:       ctx.T("builder.abstract.text"),
+				Cols:        12,
+				Rows:        6,
+				Placeholder: ctx.T("builder.abstract.text.placeholder"),
+				Error:       localize.ValidationErrorAt(ctx.Locale, errors, fmt.Sprintf("/abstract/%d/text", b.Position)),
+			},
+			&form.Select{
+				Name:    "lang",
+				Value:   b.Lang,
+				Label:   ctx.T("builder.abstract.lang"),
+				Options: localize.LanguageSelectOptions(ctx.Locale),
+				Cols:    12,
+				Error:   localize.ValidationErrorAt(ctx.Locale, errors, fmt.Sprintf("/abstract/%d/lang", b.Position)),
+			},
+		)
 }

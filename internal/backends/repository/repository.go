@@ -237,8 +237,6 @@ func (s *Repository) SaveDataset(d *models.Dataset) error {
 	}
 	d.DateUpdated = &now
 
-	d.Vacuum()
-
 	if err := d.Validate(); err != nil {
 		return err
 	}

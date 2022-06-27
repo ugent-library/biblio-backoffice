@@ -3,6 +3,7 @@ package datasetediting
 import (
 	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/ugent-library/biblio-backend/internal/app/displays"
 	"github.com/ugent-library/biblio-backend/internal/bind"
@@ -15,9 +16,7 @@ import (
 )
 
 type BindDetails struct {
-	ID           string   `form:"-"`
 	AccessLevel  string   `form:"access_level"`
-	DOI          string   `form:"-"`
 	Embargo      string   `form:"embargo"`
 	EmbargoTo    string   `form:"embargo_to"`
 	Format       []string `form:"format"`
@@ -28,6 +27,21 @@ type BindDetails struct {
 	Title        string   `form:"title"`
 	URL          string   `form:"url"`
 	Year         string   `form:"year"`
+}
+
+func (b *BindDetails) CleanValues() {
+	b.AccessLevel = strings.TrimSpace(b.AccessLevel)
+	b.Embargo = strings.TrimSpace(b.Embargo)
+	b.EmbargoTo = strings.TrimSpace(b.Embargo)
+	b.Format = cleanStringSlice(b.Format)
+	b.Keyword = cleanStringSlice(b.Keyword)
+	b.License = strings.TrimSpace(b.License)
+	b.OtherLicense = strings.TrimSpace(b.OtherLicense)
+	b.Publisher = strings.TrimSpace(b.Publisher)
+	b.Year = strings.TrimSpace(b.Year)
+	b.Title = strings.TrimSpace(b.Title)
+	b.URL = strings.TrimSpace(b.URL)
+	b.Year = strings.TrimSpace(b.Year)
 }
 
 type YieldDetails struct {
@@ -42,14 +56,7 @@ type YieldEditDetails struct {
 
 func (h *Handler) EditDetails(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindDetails{}
-	if err := bind.RequestPath(r, &b); err != nil {
-		render.BadRequest(w, r, err)
-		return
-	}
-
-	b.ID = ctx.Dataset.ID
 	b.AccessLevel = ctx.Dataset.AccessLevel
-	b.DOI = ctx.Dataset.DOI
 	b.Embargo = ctx.Dataset.Embargo
 	b.EmbargoTo = ctx.Dataset.EmbargoTo
 	b.Format = ctx.Dataset.Format
@@ -69,29 +76,12 @@ func (h *Handler) EditDetails(w http.ResponseWriter, r *http.Request, ctx Contex
 
 func (h *Handler) EditDetailsAccessLevel(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindDetails{}
-	if err := bind.RequestForm(r, &b); err != nil {
+	if err := bind.Request(r, &b); err != nil {
 		render.BadRequest(w, r, err)
 		return
 	}
 
-	// Band-aid: omit empty values from fields with repeating values (text repeat, list repeat)
-	//   TODO: This should be part of "form:,omitEmpty" in the Dataset struct. However,
-	//   go-playground/form doesn't support omitEmpty on lists or nested form structures
-	//   (slices, maps,...)
-	omitEmpty := func(keywords []string) []string {
-		var tmp []string
-		for _, str := range keywords {
-			if str != "" {
-				tmp = append(tmp, str)
-			}
-		}
-
-		return tmp
-	}
-
-	b.Keyword = omitEmpty(b.Keyword)
-	b.Format = omitEmpty(b.Format)
-	b.ID = ctx.Dataset.ID
+	b.CleanValues()
 
 	// Clear embargo and embargoTo fields if access level is not embargo
 	//   TODO Disabled per https://github.com/ugent-library/biblio-backend/issues/217
@@ -119,6 +109,8 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 		return
 	}
 
+	b.CleanValues()
+
 	// @note decoding the form into a model omits empty values
 	//   removing "omitempty" in the model doesn't make a difference.
 	if b.AccessLevel != "info:eu-repo/semantics/embargoedAccess" {
@@ -126,26 +118,7 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 		b.EmbargoTo = ""
 	}
 
-	// Band-aid: omit empty values from fields with repeating values (text repeat, list repeat)
-	//   TODO: This should be part of "form:,omitEmpty" in the Dataset struct. However,
-	//   go-playground/form doesn't support omitEmpty on lists or nested form structures
-	//   (slices, maps,...)
-	omitEmpty := func(keywords []string) []string {
-		var tmp []string
-		for _, str := range keywords {
-			if str != "" {
-				tmp = append(tmp, str)
-			}
-		}
-
-		return tmp
-	}
-
-	b.Keyword = omitEmpty(b.Keyword)
-	b.Format = omitEmpty(b.Format)
-
 	ctx.Dataset.AccessLevel = b.AccessLevel
-	ctx.Dataset.DOI = b.DOI
 	ctx.Dataset.Embargo = b.Embargo
 	ctx.Dataset.EmbargoTo = b.EmbargoTo
 	ctx.Dataset.Format = b.Format
@@ -187,129 +160,135 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 }
 
 func detailsForm(ctx Context, b BindDetails, errors validation.Errors) *form.Form {
-	detailsForm := form.New().
+	return form.New().
 		WithTheme("default").
-		WithErrors(localize.ValidationErrors(ctx.Locale, errors))
+		WithErrors(localize.ValidationErrors(ctx.Locale, errors)).
+		AddSection(
+			&form.Text{
+				Name:        "title",
+				Value:       b.Title,
+				Label:       ctx.T("builder.title"),
+				Cols:        9,
+				Placeholder: ctx.T("builder.details.title.placeholder"),
+				Error:       localize.ValidationErrorAt(ctx.Locale, errors, "/title"),
+				Required:    true,
+			},
+			&display.Text{
+				Label:         ctx.T("builder.doi"),
+				Value:         ctx.Dataset.DOI,
+				Required:      true,
+				ValueTemplate: "format/doi",
+			},
+			&form.Text{
+				Name:  "url",
+				Value: b.URL,
+				Label: ctx.T("builder.url"),
+				Cols:  3,
+				Error: localize.ValidationErrorAt(ctx.Locale, errors, "/url"),
+			},
+		).
+		AddSection(
+			&form.Text{
+				Name:        "publisher",
+				Value:       b.Publisher,
+				Label:       ctx.T("builder.publisher"),
+				Cols:        9,
+				Placeholder: ctx.T("builder.details.publisher.placeholder"),
+				Error:       localize.ValidationErrorAt(ctx.Locale, errors, "/publisher"),
+				Required:    true,
+				Tooltip:     ctx.T("tooltip.dataset.publisher"),
+			},
+			&form.Text{
+				Name:        "year",
+				Value:       b.Year,
+				Label:       ctx.T("builder.year"),
+				Cols:        3,
+				Placeholder: ctx.T("builder.year.placeholder"),
+				Error:       localize.ValidationErrorAt(ctx.Locale, errors, "/year"),
+				Required:    true,
+			},
+		).
+		AddSection(
+			&form.TextRepeat{
+				Name:            "format",
+				Values:          b.Format,
+				Label:           ctx.T("builder.format"),
+				Cols:            9,
+				Error:           localize.ValidationErrorAt(ctx.Locale, errors, "/format"),
+				Required:        true,
+				AutocompleteURL: "media_type_choose",
+				Tooltip:         ctx.T("tooltip.dataset.format"),
+			},
+			&form.TextRepeat{
+				Name:   "keyword",
+				Values: b.Keyword,
+				Label:  ctx.T("builder.keyword"),
+				Cols:   9,
+				Error:  localize.ValidationErrorAt(ctx.Locale, errors, "/keyword"),
+			},
+		).
+		AddSection(
+			&form.Select{
+				Name:        "license",
+				Value:       b.License,
+				Label:       ctx.T("builder.license"),
+				Options:     localize.LicenseSelectOptions(ctx.Locale),
+				Cols:        3,
+				Error:       localize.ValidationErrorAt(ctx.Locale, errors, "/license"),
+				Tooltip:     ctx.T("tooltip.dataset.license"),
+				EmptyOption: true,
+				Required:    true,
+			},
+			&form.Text{
+				Name:        "other_license",
+				Value:       b.OtherLicense,
+				Label:       ctx.T("builder.other_license"),
+				Cols:        9,
+				Placeholder: "e.g. https://creativecommons.org/licenses/by/4.0/",
+				Error:       localize.ValidationErrorAt(ctx.Locale, errors, "/other_license"),
+				Required:    true,
+			},
+			&form.Select{
+				Template:    "dataset/access_level",
+				Name:        "access_level",
+				Label:       ctx.T("builder.access_level"),
+				Value:       b.AccessLevel,
+				Options:     localize.AccessLevelSelectOptions(ctx.Locale),
+				Cols:        3,
+				Error:       localize.ValidationErrorAt(ctx.Locale, errors, "/access_level"),
+				Required:    true,
+				EmptyOption: true,
+				Tooltip:     ctx.T("tooltip.dataset.access_level"),
+				Vars:        struct{ ID string }{ID: ctx.Dataset.ID},
+			},
+			&form.Date{
+				Name:     "embargo",
+				Value:    b.Embargo,
+				Label:    ctx.T("builder.embargo"),
+				Cols:     3,
+				Error:    localize.ValidationErrorAt(ctx.Locale, errors, "/embargo"),
+				Disabled: b.AccessLevel != "info:eu-repo/semantics/embargoedAccess",
+			},
+			&form.Select{
+				Name:        "embargo_to",
+				Label:       ctx.T("builder.embargo_to"),
+				Value:       b.EmbargoTo,
+				Options:     localize.AccessLevelSelectOptions(ctx.Locale),
+				Cols:        3,
+				Error:       localize.ValidationErrorAt(ctx.Locale, errors, "/embargo_to"),
+				EmptyOption: true,
+				Disabled:    b.AccessLevel != "info:eu-repo/semantics/embargoedAccess",
+			},
+		)
+}
 
-	title := &form.Text{
-		Name:        "title",
-		Value:       b.Title,
-		Label:       ctx.T("builder.title"),
-		Cols:        9,
-		Placeholder: ctx.T("builder.details.title.placeholder"),
-		Error:       localize.ValidationErrorAt(ctx.Locale, errors, "/title"),
-		Required:    true,
+func cleanStringSlice(vals []string) []string {
+	var tmp []string
+	for _, str := range vals {
+		str = strings.TrimSpace(str)
+		if str != "" {
+			tmp = append(tmp, str)
+		}
 	}
-
-	url := &form.Text{
-		Name:  "url",
-		Value: b.URL,
-		Label: ctx.T("builder.url"),
-		Cols:  3,
-		Error: localize.ValidationErrorAt(ctx.Locale, errors, "/url"),
-	}
-
-	detailsForm.AddSection(title, url)
-
-	publisher := &form.Text{
-		Name:        "publisher",
-		Value:       b.Publisher,
-		Label:       ctx.T("builder.publisher"),
-		Cols:        9,
-		Placeholder: ctx.T("builder.details.publisher.placeholder"),
-		Error:       localize.ValidationErrorAt(ctx.Locale, errors, "/publisher"),
-		Required:    true,
-		Tooltip:     ctx.T("tooltip.dataset.publisher"),
-	}
-
-	year := &form.Text{
-		Name:        "year",
-		Value:       b.Year,
-		Label:       ctx.T("builder.year"),
-		Cols:        3,
-		Placeholder: ctx.T("builder.year.placeholder"),
-		Error:       localize.ValidationErrorAt(ctx.Locale, errors, "/year"),
-		Required:    true,
-	}
-
-	detailsForm.AddSection(publisher, year)
-
-	format := &form.TextRepeat{
-		Name:            "format",
-		Values:          b.Format,
-		Label:           ctx.T("builder.format"),
-		Cols:            9,
-		Error:           localize.ValidationErrorAt(ctx.Locale, errors, "/format"),
-		Required:        true,
-		AutocompleteURL: "media_type_choose",
-		Tooltip:         ctx.T("tooltip.dataset.format"),
-	}
-
-	keyword := &form.TextRepeat{
-		Name:   "keyword",
-		Values: b.Keyword,
-		Label:  ctx.T("builder.keyword"),
-		Cols:   9,
-		Error:  localize.ValidationErrorAt(ctx.Locale, errors, "/keyword"),
-	}
-
-	detailsForm.AddSection(format, keyword)
-
-	license := &form.Select{
-		Name:    "license",
-		Value:   b.License,
-		Label:   ctx.T("builder.license"),
-		Options: localize.LicenseSelectOptions(ctx.Locale),
-		Cols:    3,
-		Error:   localize.ValidationErrorAt(ctx.Locale, errors, "/license"),
-		Tooltip: ctx.T("tooltip.dataset.license"),
-	}
-
-	otherLicense := &form.Text{
-		Name:        "other_license",
-		Value:       b.OtherLicense,
-		Label:       ctx.T("builder.other_license"),
-		Cols:        9,
-		Placeholder: "e.g. https://creativecommons.org/licenses/by/4.0/",
-		Error:       localize.ValidationErrorAt(ctx.Locale, errors, "/other_license"),
-		Required:    true,
-	}
-
-	accessLevel := &form.Select{
-		Template:    "dataset/access_level",
-		Name:        "access_level",
-		Label:       ctx.T("builder.access_level"),
-		Value:       b.AccessLevel,
-		Options:     localize.AccessLevelSelectOptions(ctx.Locale),
-		Cols:        3,
-		Error:       localize.ValidationErrorAt(ctx.Locale, errors, "/access_level"),
-		Required:    true,
-		EmptyOption: true,
-		Tooltip:     ctx.T("tooltip.dataset.access_level"),
-		Vars:        struct{ ID string }{ID: b.ID},
-	}
-
-	embargo := &form.Date{
-		Name:     "embargo",
-		Value:    b.Embargo,
-		Label:    ctx.T("builder.embargo"),
-		Cols:     3,
-		Error:    localize.ValidationErrorAt(ctx.Locale, errors, "/embargo"),
-		Disabled: b.AccessLevel != "info:eu-repo/semantics/embargoedAccess",
-	}
-
-	embargoTo := &form.Select{
-		Name:        "embargo_to",
-		Label:       ctx.T("builder.embargo_to"),
-		Value:       b.EmbargoTo,
-		Options:     localize.AccessLevelSelectOptions(ctx.Locale),
-		Cols:        3,
-		Error:       localize.ValidationErrorAt(ctx.Locale, errors, "/embargo_to"),
-		EmptyOption: true,
-		Disabled:    b.AccessLevel != "info:eu-repo/semantics/embargoedAccess",
-	}
-
-	detailsForm.AddSection(license, otherLicense, accessLevel, embargo, embargoTo)
-
-	return detailsForm
+	return tmp
 }
