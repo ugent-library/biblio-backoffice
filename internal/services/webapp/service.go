@@ -139,7 +139,7 @@ func buildRouter(services *backends.Services) *mux.Router {
 		urls.FuncMap(router),
 		helpers.FuncMap(),
 		{
-			"appMode": func() string { // TODO eliminate need for this?
+			"appMode": func() string { // TODO eliminate need for this
 				return viper.GetString("mode")
 			},
 			"vocabulary": func(k string) []string { // TODO eliminate need for this?
