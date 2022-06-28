@@ -211,32 +211,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		Methods("GET").
 		Name("dataset_add_finish")
 
-	// datasetsRouter := r.PathPrefix("/dataset").Subrouter()
-	// datasetsRouter.Use(middleware.SetActiveMenu("datasets"))
-	// datasetsRouter.Use(requireUser)
-	// datasetsRouter.HandleFunc("", datasetsController.List).
-	// 	Methods("GET").
-	// 	Name("datasets")
-	// datasetsRouter.HandleFunc("/add", datasetsController.Add).
-	// 	Methods("GET").
-	// 	Name("dataset_add")
-	// datasetsRouter.HandleFunc("/add/import/confirm", datasetsController.AddImportConfirm).
-	// 	Methods("POST").
-	// 	Name("dataset_add_import_confirm")
-	// datasetsRouter.HandleFunc("/add/import", datasetsController.AddImport).
-	// 	Methods("POST").
-	// 	Name("dataset_add_import")
-
-	// datasetEditRouter.HandleFunc("/add/description", datasetsController.AddDescription).
-	// 	Methods("GET").
-	// 	Name("dataset_add_description")
-	// datasetEditRouter.HandleFunc("/add/confirm", datasetsController.AddConfirm).
-	// 	Methods("GET").
-	// 	Name("dataset_add_confirm")
-	// datasetEditRouter.HandleFunc("/add/publish", datasetsController.AddPublish).
-	// 	Methods("POST").
-	// 	Name("dataset_add_publish")
-
 	// tasks
 	r.HandleFunc("/task/{id}/status", tasksHandler.Wrap(tasksHandler.Status)).
 		Methods("GET").
@@ -732,30 +706,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	datasetsRouter := r.PathPrefix("/dataset").Subrouter()
 	datasetsRouter.Use(middleware.SetActiveMenu("datasets"))
 	datasetsRouter.Use(requireUser)
-<<<<<<< HEAD:internal/services/webapp/routes/register.go
-	datasetsRouter.HandleFunc("", datasetsController.List).
-		Methods("GET").
-		Name("datasets")
-	// datasetsRouter.HandleFunc("/add", datasetsController.Add).
-	// 	Methods("GET").
-	// 	Name("dataset_add")
-	// datasetsRouter.HandleFunc("/add/import/confirm", datasetsController.AddImportConfirm).
-	// 	Methods("POST").
-	// 	Name("dataset_add_import_confirm")
-	// datasetsRouter.HandleFunc("/add/import", datasetsController.AddImport).
-	// 	Methods("POST").
-	// 	Name("dataset_add_import")
-=======
-	datasetsRouter.HandleFunc("/add", datasetsController.Add).
-		Methods("GET").
-		Name("dataset_add")
-	datasetsRouter.HandleFunc("/add/import/confirm", datasetsController.AddImportConfirm).
-		Methods("POST").
-		Name("dataset_add_import_confirm")
-	datasetsRouter.HandleFunc("/add/import", datasetsController.AddImport).
-		Methods("POST").
-		Name("dataset_add_import")
->>>>>>> handlers:internal/routes/register.go
 
 	datasetRouter := datasetsRouter.PathPrefix("/{id}").Subrouter()
 	datasetRouter.Use(middleware.SetDataset(services.Repository))
@@ -772,35 +722,4 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	datasetDeleteRouter.HandleFunc("/delete", datasetsController.Delete).
 		Methods("POST").
 		Name("dataset_delete")
-<<<<<<< HEAD:internal/services/webapp/routes/register.go
-	// datasetEditRouter.HandleFunc("/add/description", datasetsController.AddDescription).
-	// 	Methods("GET").
-	// 	Name("dataset_add_description")
-	// datasetEditRouter.HandleFunc("/add/confirm", datasetsController.AddConfirm).
-	// 	Methods("GET").
-	// 	Name("dataset_add_confirm")
-	// datasetEditRouter.HandleFunc("/add/publish", datasetsController.AddPublish).
-	// 	Methods("POST").
-	// 	Name("dataset_add_publish")
-
-	licensesRouter := r.PathPrefix("/license").Subrouter()
-	licensesRouter.HandleFunc("/htmx/choose", licensesController.Choose).
-		Methods("GET").
-		Name("license_choose")
-
-	mediaTypesRouter := r.PathPrefix("/media_types").Subrouter()
-	mediaTypesRouter.HandleFunc("/htmx/choose", mediaTypesController.Choose).
-		Methods("GET").
-		Name("media_type_choose")
-=======
-	datasetEditRouter.HandleFunc("/add/description", datasetsController.AddDescription).
-		Methods("GET").
-		Name("dataset_add_description")
-	datasetEditRouter.HandleFunc("/add/confirm", datasetsController.AddConfirm).
-		Methods("GET").
-		Name("dataset_add_confirm")
-	datasetEditRouter.HandleFunc("/add/publish", datasetsController.AddPublish).
-		Methods("POST").
-		Name("dataset_add_publish")
->>>>>>> handlers:internal/routes/register.go
 }
