@@ -38,12 +38,6 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request, ctx Context) {
 		return
 	}
 
-	searchArgs := models.NewSearchArgs()
-	if err := bind.Request(r, searchArgs); err != nil {
-		render.BadRequest(w, r, err)
-		return
-	}
-
 	ctx.Dataset.Status = "deleted"
 
 	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
@@ -67,5 +61,6 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request, ctx Context) {
 
 	redirectURL := h.PathFor("datasets")
 	redirectURL.RawQuery = r.URL.RawQuery
+
 	w.Header().Set("HX-Redirect", redirectURL.String())
 }
