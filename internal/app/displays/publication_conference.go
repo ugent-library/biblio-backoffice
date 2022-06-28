@@ -1,7 +1,7 @@
 package displays
 
 import (
-	"github.com/ugent-library/biblio-backend/internal/helpers"
+	"github.com/ugent-library/biblio-backend/internal/app/helpers"
 	"github.com/ugent-library/biblio-backend/internal/locale"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render/display"
