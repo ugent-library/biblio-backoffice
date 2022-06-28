@@ -13,6 +13,9 @@ var (
 	pathDecoder  = form.NewDecoder()
 	formDecoder  = form.NewDecoder()
 	queryDecoder = form.NewDecoder()
+	pathEncoder  = form.NewEncoder()
+	formEncoder  = form.NewEncoder()
+	queryEncoder = form.NewEncoder()
 )
 
 func init() {
@@ -22,6 +25,12 @@ func init() {
 	formDecoder.SetMode(form.ModeExplicit)
 	queryDecoder.SetTagName("query")
 	queryDecoder.SetMode(form.ModeExplicit)
+	pathEncoder.SetTagName("path")
+	pathEncoder.SetMode(form.ModeExplicit)
+	formEncoder.SetTagName("form")
+	formEncoder.SetMode(form.ModeExplicit)
+	queryEncoder.SetTagName("query")
+	queryEncoder.SetMode(form.ModeExplicit)
 }
 
 func PathValues(r *http.Request) url.Values {
@@ -68,4 +77,18 @@ func Request(r *http.Request, v interface{}) error {
 	r.ParseForm()
 
 	return Form(r.Form, v)
+}
+
+// include encoding helpers as a convenience
+
+func EncodePath(v interface{}) (url.Values, error) {
+	return pathEncoder.Encode(v)
+}
+
+func EncodeForm(v interface{}) (url.Values, error) {
+	return formEncoder.Encode(v)
+}
+
+func EncodeQuery(v interface{}) (url.Values, error) {
+	return queryEncoder.Encode(v)
 }

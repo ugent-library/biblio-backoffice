@@ -61,8 +61,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	publicationAdditionalInfoController := controllers.NewPublicationAdditionalInfo(oldBase, services.Repository)
 	publicationLaySummariesController := controllers.NewPublicationLaySummaries(oldBase, services.Repository)
 
-	datasetsController := controllers.NewDatasets(oldBase, services.Repository, services.DatasetSearchService, services.DatasetSources)
-
 	// NEW HANDLERS
 	baseHandler := handlers.BaseHandler{
 		Router:       oldBase.Router,
@@ -216,11 +214,21 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		Methods("GET").
 		Name("task_status")
 
-	// search dataset
+	// search datasets
 	r.HandleFunc("/dataset",
 		datasetSearchingHandler.Wrap(datasetSearchingHandler.Search)).
 		Methods("GET").
 		Name("datasets")
+
+	// dataset delete
+	r.HandleFunc("/dataset/{id}/confirm-delete",
+		datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmDelete)).
+		Methods("GET").
+		Name("dataset_confirm_delete")
+	r.HandleFunc("/dataset/{id}",
+		datasetEditingHandler.Wrap(datasetEditingHandler.Delete)).
+		Methods("DELETE").
+		Name("dataset_delete")
 
 	// view dataset
 	r.HandleFunc("/dataset/{id}",
@@ -348,7 +356,7 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 
 	// publish dataset
 	r.HandleFunc("/dataset/{id}/publish/confirm",
-		datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmPublishDataset)).
+		datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmPublish)).
 		Methods("GET").
 		Name("dataset_confirm_publish")
 	r.HandleFunc("/dataset/{id}/publish",
@@ -701,25 +709,4 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	pubEditRouter.HandleFunc("/htmx/datasets/remove/{dataset_id}", publicationDatasetsController.Remove).
 		Methods("PATCH").
 		Name("publication_datasets_remove")
-
-	// datasets
-	datasetsRouter := r.PathPrefix("/dataset").Subrouter()
-	datasetsRouter.Use(middleware.SetActiveMenu("datasets"))
-	datasetsRouter.Use(requireUser)
-
-	datasetRouter := datasetsRouter.PathPrefix("/{id}").Subrouter()
-	datasetRouter.Use(middleware.SetDataset(services.Repository))
-	datasetRouter.Use(middleware.RequireCanViewDataset)
-	datasetEditRouter := datasetRouter.PathPrefix("").Subrouter()
-	datasetEditRouter.Use(middleware.RequireCanEditDataset)
-	datasetPublishRouter := datasetRouter.PathPrefix("").Subrouter()
-	datasetPublishRouter.Use(middleware.RequireCanPublishDataset)
-	datasetDeleteRouter := datasetRouter.PathPrefix("").Subrouter()
-	datasetDeleteRouter.Use(middleware.RequireCanDeleteDataset)
-	datasetRouter.HandleFunc("/delete", datasetsController.ConfirmDelete).
-		Methods("GET").
-		Name("dataset_confirm_delete")
-	datasetDeleteRouter.HandleFunc("/delete", datasetsController.Delete).
-		Methods("POST").
-		Name("dataset_delete")
 }
