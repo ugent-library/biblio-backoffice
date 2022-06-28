@@ -1,11 +1,11 @@
 package displays
 
 import (
+	"github.com/ugent-library/biblio-backend/internal/helpers"
 	"github.com/ugent-library/biblio-backend/internal/locale"
 	"github.com/ugent-library/biblio-backend/internal/localize"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render/display"
-	"github.com/ugent-library/biblio-backend/internal/services/webapp/helpers"
 )
 
 func miscellaneousDetails(l *locale.Locale, p *models.Publication) *display.Display {

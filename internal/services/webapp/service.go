@@ -19,18 +19,18 @@ import (
 	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/bind"
+	"github.com/ugent-library/biblio-backend/internal/helpers"
 	"github.com/ugent-library/biblio-backend/internal/locale"
+	"github.com/ugent-library/biblio-backend/internal/mix"
 	"github.com/ugent-library/biblio-backend/internal/render"
+	"github.com/ugent-library/biblio-backend/internal/routes"
 	"github.com/ugent-library/biblio-backend/internal/services/webapp/controllers"
-	"github.com/ugent-library/biblio-backend/internal/services/webapp/helpers"
-	"github.com/ugent-library/biblio-backend/internal/services/webapp/mix"
-	"github.com/ugent-library/biblio-backend/internal/services/webapp/routes"
-	"github.com/ugent-library/biblio-backend/internal/services/webapp/urls"
+	"github.com/ugent-library/biblio-backend/internal/urls"
 	"github.com/ugent-library/biblio-backend/internal/vocabularies"
 	"github.com/ugent-library/go-oidc/oidc"
 	unrolledrender "github.com/unrolled/render"
 
-	_ "github.com/ugent-library/biblio-backend/internal/services/webapp/translations"
+	_ "github.com/ugent-library/biblio-backend/internal/translations"
 )
 
 type service struct {
