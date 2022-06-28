@@ -11,7 +11,7 @@
             {{if not (.User.CanEditDataset $d)}}<i class="if if-no-edit if--small ml-3 text-muted" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Locked for editing"></i>{{end}}
         </h4>
         {{with $d.Author}}
-            {{template "dataset/summary_body_contributors_short" .}}
+            {{template "shared/contributors" .}}
         {{end}}
         <span class="c-body-small text-muted">
             {{$d.Year}},
@@ -24,13 +24,8 @@
     <div class="list-group-item-meta mt-5">
         <div class="list-group-item-meta-left">
             <div class="list-group-item-meta-item">
-                {{template "dataset/status" $d}}
+                {{template "shared/status" $d}}
             </div>
-            {{/*
-            <div class="list-group-item-meta-item">
-                {{template "publication/_completeness" $d}}
-            </div>
-            */}}
         </div>
         <div class="list-group-item-meta-right">
             <div class="list-group-item-meta-item">
