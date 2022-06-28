@@ -23,6 +23,14 @@ func ValidationErrorAt(loc *locale.Locale, errs validation.Errors, ptr string) s
 	return loc.TranslateScope("validation", err.Code)
 }
 
+func LanguageNames(loc *locale.Locale, codes []string) []string {
+	names := make([]string, len(codes))
+	for i, code := range codes {
+		names[i] = loc.LanguageName(code)
+	}
+	return names
+}
+
 func LanguageSelectOptions(loc *locale.Locale) []form.SelectOption {
 	codes := vocabularies.Map["language_codes"]
 	opts := make([]form.SelectOption, len(codes))

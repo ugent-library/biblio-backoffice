@@ -216,7 +216,7 @@ func detailsForm(ctx Context, b BindDetails, errors validation.Errors) *form.For
 				Cols:            9,
 				Error:           localize.ValidationErrorAt(ctx.Locale, errors, "/format"),
 				Required:        true,
-				AutocompleteURL: "media_type_choose",
+				AutocompleteURL: "suggest_media_types",
 				Tooltip:         ctx.T("tooltip.dataset.format"),
 			},
 			&form.TextRepeat{

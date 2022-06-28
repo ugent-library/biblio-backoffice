@@ -10,9 +10,14 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/authenticating"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/datasetcreating"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/datasetediting"
+	"github.com/ugent-library/biblio-backend/internal/app/handlers/datasetsearching"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/datasetviewing"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/home"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/impersonating"
+	"github.com/ugent-library/biblio-backend/internal/app/handlers/mediatypes"
+	"github.com/ugent-library/biblio-backend/internal/app/handlers/orcid"
+	"github.com/ugent-library/biblio-backend/internal/app/handlers/publicationviewing"
+	"github.com/ugent-library/biblio-backend/internal/app/handlers/tasks"
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/locale"
 	"github.com/ugent-library/biblio-backend/internal/services/webapp/controllers"
@@ -33,8 +38,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 
 	requireUser := middleware.RequireUser(oldBase.BaseURL.Path + "/login")
 	setUser := middleware.SetUser(services.UserService, oldBase.SessionName, oldBase.SessionStore)
-
-	tasksController := controllers.NewTasks(oldBase, services.Tasks)
 
 	publicationsController := controllers.NewPublications(
 		oldBase,
@@ -60,9 +63,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 
 	datasetsController := controllers.NewDatasets(oldBase, services.Repository, services.DatasetSearchService, services.DatasetSources)
 
-	licensesController := controllers.NewLicenses(oldBase, services.LicenseSearchService)
-	mediaTypesController := controllers.NewMediaTypes(oldBase, services.MediaTypeSearchService)
-
 	// NEW HANDLERS
 	baseHandler := handlers.BaseHandler{
 		Router:       oldBase.Router,
@@ -80,6 +80,14 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	}
 	impersonatingHandler := &impersonating.Handler{
 		BaseHandler: baseHandler,
+	}
+	tasksHandler := &tasks.Handler{
+		BaseHandler: baseHandler,
+		Tasks:       services.Tasks,
+	}
+	datasetSearchingHandler := &datasetsearching.Handler{
+		BaseHandler:          baseHandler,
+		DatasetSearchService: services.DatasetSearchService,
 	}
 	datasetViewingHandler := &datasetviewing.Handler{
 		BaseHandler: baseHandler,
@@ -101,6 +109,21 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		PersonSearchService:       services.PersonSearchService,
 		PersonService:             services.PersonService,
 		PublicationSearchService:  services.PublicationSearchService,
+	}
+	publicationViewingHandler := &publicationviewing.Handler{
+		BaseHandler: baseHandler,
+		Repository:  services.Repository,
+	}
+	orcidHandler := &orcid.Handler{
+		BaseHandler:              baseHandler,
+		Tasks:                    services.Tasks,
+		Repository:               services.Repository,
+		PublicationSearchService: services.PublicationSearchService,
+		Sandbox:                  services.ORCIDSandbox,
+	}
+	mediaTypesHandler := &mediatypes.Handler{
+		BaseHandler:            baseHandler,
+		MediaTypeSearchService: services.MediaTypeSearchService,
 	}
 
 	// TODO fix absolute url generation
@@ -213,6 +236,17 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	// datasetEditRouter.HandleFunc("/add/publish", datasetsController.AddPublish).
 	// 	Methods("POST").
 	// 	Name("dataset_add_publish")
+
+	// tasks
+	r.HandleFunc("/task/{id}/status", tasksHandler.Wrap(tasksHandler.Status)).
+		Methods("GET").
+		Name("task_status")
+
+	// search dataset
+	r.HandleFunc("/dataset",
+		datasetSearchingHandler.Wrap(datasetSearchingHandler.Search)).
+		Methods("GET").
+		Name("datasets")
 
 	// view dataset
 	r.HandleFunc("/dataset/{id}",
@@ -338,7 +372,11 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		Methods("DELETE").
 		Name("dataset_delete_publication")
 
-	// Publish dataset
+	// publish dataset
+	r.HandleFunc("/dataset/{id}/publish/confirm",
+		datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmPublishDataset)).
+		Methods("GET").
+		Name("dataset_confirm_publish")
 	r.HandleFunc("/dataset/{id}/publish",
 		datasetEditingHandler.Wrap(datasetEditingHandler.Publish)).
 		Methods("POST").
@@ -386,17 +424,48 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		Methods("DELETE").
 		Name("dataset_delete_contributor")
 
+	// view publication
+	r.HandleFunc("/publication/{id}",
+		publicationViewingHandler.Wrap(publicationViewingHandler.Show)).
+		Methods("GET").
+		Name("publication")
+	r.HandleFunc("/publication/{id}/description",
+		publicationViewingHandler.Wrap(publicationViewingHandler.ShowDescription)).
+		Methods("GET").
+		Name("publication_description")
+	r.HandleFunc("/publication/{id}/files",
+		publicationViewingHandler.Wrap(publicationViewingHandler.ShowFiles)).
+		Methods("GET").
+		Name("publication_files")
+	r.HandleFunc("/publication/{id}/contributors",
+		publicationViewingHandler.Wrap(publicationViewingHandler.ShowContributors)).
+		Methods("GET").
+		Name("publication_contributors")
+	r.HandleFunc("/publication/{id}/datasets",
+		publicationViewingHandler.Wrap(publicationViewingHandler.ShowDatasets)).
+		Methods("GET").
+		Name("publication_datasets")
+
+	// orcid
+	r.HandleFunc("/publication/orcid",
+		orcidHandler.Wrap(orcidHandler.AddAll)).
+		Methods("POST").
+		Name("publication_orcid_add_all")
+	r.HandleFunc("/publication/{id}/orcid",
+		orcidHandler.Wrap(orcidHandler.Add)).
+		Methods("POST").
+		Name("publication_orcid_add")
+
+	// media types
+	r.HandleFunc("/media_type/suggestions",
+		mediaTypesHandler.Wrap(mediaTypesHandler.Suggest)).
+		Methods("GET").
+		Name("suggest_media_types")
+
 	// r.Use(handlers.HTTPMethodOverrideHandler)
 	r.Use(locale.Detect(oldBase.Localizer))
 
 	r.Use(setUser)
-
-	// tasks
-	taskRouter := r.PathPrefix("/task").Subrouter()
-	taskRouter.Use(requireUser)
-	taskRouter.HandleFunc("/{id}/status", tasksController.Status).
-		Methods("GET").
-		Name("task_status")
 
 	// publications
 	pubsRouter := r.PathPrefix("/publication").Subrouter()
@@ -429,9 +498,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	pubsRouter.HandleFunc("/add-multiple/{batch_id}/publish", publicationsController.AddMultiplePublish).
 		Methods("POST").
 		Name("publication_add_multiple_publish")
-	pubsRouter.HandleFunc("/orcid", publicationsController.ORCIDAddAll).
-		Methods("POST").
-		Name("publication_orcid_add_all")
 
 	pubRouter := pubsRouter.PathPrefix("/{id}").Subrouter()
 	pubRouter.Use(middleware.SetPublication(services.Repository))
@@ -442,9 +508,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	pubPublishRouter.Use(middleware.RequireCanPublishPublication)
 	pubDeleteRouter := pubRouter.PathPrefix("").Subrouter()
 	pubDeleteRouter.Use(middleware.RequireCanDeletePublication)
-	pubRouter.HandleFunc("", publicationsController.Show).
-		Methods("GET").
-		Name("publication")
 	pubRouter.HandleFunc("/delete", publicationsController.ConfirmDelete).
 		Methods("GET").
 		Name("publication_confirm_delete")
@@ -452,9 +515,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	pubDeleteRouter.HandleFunc("/delete", publicationsController.Delete).
 		Methods("POST").
 		Name("publication_delete")
-	pubRouter.HandleFunc("/orcid", publicationsController.ORCIDAdd).
-		Methods("POST").
-		Name("publication_orcid_add")
 	pubPublishRouter.HandleFunc("/publish", publicationsController.Publish).
 		Methods("POST").
 		Name("publication_publish")
@@ -532,7 +592,7 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	// Publication projects HTMX fragments
 	pubEditRouter.HandleFunc("/htmx/projects/list", publicationProjectsController.List).
 		Methods("GET").
-		Name("publication_projects")
+		Name("publication_add_project")
 	pubEditRouter.HandleFunc("/htmx/projects/list/activesearch", publicationProjectsController.ActiveSearch).
 		Methods("POST").
 		Name("publication_projects_activesearch")
@@ -548,7 +608,7 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	// Publication departments HTMX fragments
 	pubEditRouter.HandleFunc("/htmx/departments/list", publicationDepartmentsController.List).
 		Methods("GET").
-		Name("publicationDepartments")
+		Name("publication_add_department")
 	pubEditRouter.HandleFunc("/htmx/departments/list/activesearch", publicationDepartmentsController.ActiveSearch).
 		Methods("POST").
 		Name("publicationDepartments_activesearch")
@@ -672,6 +732,7 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	datasetsRouter := r.PathPrefix("/dataset").Subrouter()
 	datasetsRouter.Use(middleware.SetActiveMenu("datasets"))
 	datasetsRouter.Use(requireUser)
+<<<<<<< HEAD:internal/services/webapp/routes/register.go
 	datasetsRouter.HandleFunc("", datasetsController.List).
 		Methods("GET").
 		Name("datasets")
@@ -684,6 +745,17 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	// datasetsRouter.HandleFunc("/add/import", datasetsController.AddImport).
 	// 	Methods("POST").
 	// 	Name("dataset_add_import")
+=======
+	datasetsRouter.HandleFunc("/add", datasetsController.Add).
+		Methods("GET").
+		Name("dataset_add")
+	datasetsRouter.HandleFunc("/add/import/confirm", datasetsController.AddImportConfirm).
+		Methods("POST").
+		Name("dataset_add_import_confirm")
+	datasetsRouter.HandleFunc("/add/import", datasetsController.AddImport).
+		Methods("POST").
+		Name("dataset_add_import")
+>>>>>>> handlers:internal/routes/register.go
 
 	datasetRouter := datasetsRouter.PathPrefix("/{id}").Subrouter()
 	datasetRouter.Use(middleware.SetDataset(services.Repository))
@@ -700,6 +772,7 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	datasetDeleteRouter.HandleFunc("/delete", datasetsController.Delete).
 		Methods("POST").
 		Name("dataset_delete")
+<<<<<<< HEAD:internal/services/webapp/routes/register.go
 	// datasetEditRouter.HandleFunc("/add/description", datasetsController.AddDescription).
 	// 	Methods("GET").
 	// 	Name("dataset_add_description")
@@ -719,4 +792,15 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	mediaTypesRouter.HandleFunc("/htmx/choose", mediaTypesController.Choose).
 		Methods("GET").
 		Name("media_type_choose")
+=======
+	datasetEditRouter.HandleFunc("/add/description", datasetsController.AddDescription).
+		Methods("GET").
+		Name("dataset_add_description")
+	datasetEditRouter.HandleFunc("/add/confirm", datasetsController.AddConfirm).
+		Methods("GET").
+		Name("dataset_add_confirm")
+	datasetEditRouter.HandleFunc("/add/publish", datasetsController.AddPublish).
+		Methods("POST").
+		Name("dataset_add_publish")
+>>>>>>> handlers:internal/routes/register.go
 }

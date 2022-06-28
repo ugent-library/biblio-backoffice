@@ -22,7 +22,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/backends/pubmed"
 	"github.com/ugent-library/biblio-backend/internal/backends/repository"
 	"github.com/ugent-library/biblio-backend/internal/backends/ris"
-	"github.com/ugent-library/biblio-backend/internal/backends/spdxlicenses"
+
 	"github.com/ugent-library/biblio-backend/internal/tasks"
 	"github.com/ugent-library/go-orcid/orcid"
 )
@@ -69,8 +69,8 @@ func newServices() *backends.Services {
 		OrganizationSearchService: biblioClient,
 		PersonSearchService:       biblioClient,
 		ProjectSearchService:      biblioClient,
-		LicenseSearchService:      spdxlicenses.New(),
-		MediaTypeSearchService:    ianamedia.New(),
+		// LicenseSearchService:      spdxlicenses.New(),
+		MediaTypeSearchService: ianamedia.New(),
 		DatasetSources: map[string]backends.DatasetGetter{
 			"datacite": datacite.New(),
 		},

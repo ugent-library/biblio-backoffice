@@ -139,7 +139,6 @@ type Select struct {
 	Name        string
 	EmptyOption bool
 	Options     []SelectOption
-	Placeholder string
 	Required    bool
 	Tooltip     string
 	Value       string
@@ -162,62 +161,32 @@ func (f *Select) Render(theme string, w io.Writer) error {
 }
 
 type SelectRepeat struct {
-	Name            string
-	values          []string
-	Label           string
-	Tooltip         string
-	Placeholder     string
-	Required        bool
-	Options         []SelectOption
-	EmptyOption     bool
-	Cols            int
-	Rows            int
-	AutocompleteURL string
-	Error           string
-	ID              string
-	Disabled        bool
+	Name        string
+	Values      []string
+	Label       string
+	Tooltip     string
+	Required    bool
+	Options     []SelectOption
+	EmptyOption bool
+	Cols        int
+	Error       string
 }
 
 func (f *SelectRepeat) Render(theme string, w io.Writer) error {
 	return render.Templates().ExecuteTemplate(w, path.Join("form", theme, "select_repeat"), f)
 }
 
-type RadioButtonGroup struct {
-	Name            string
-	values          []string
-	Label           string
-	Tooltip         string
-	Placeholder     string
-	Required        bool
-	Options         []SelectOption
-	EmptyOption     bool
-	Cols            int
-	Rows            int
-	AutocompleteURL string
-	Error           string
-	ID              string
-	Disabled        bool
-}
-
-func (f *RadioButtonGroup) Render(theme string, w io.Writer) error {
-	return render.Templates().ExecuteTemplate(w, path.Join("form", theme, "radio_button_group"), f)
-}
-
 type Date struct {
-	Name            string
-	Value           string
-	Label           string
-	Tooltip         string
-	Placeholder     string
-	Required        bool
-	Cols            int
-	Rows            int
-	Min             int
-	Max             int
-	AutocompleteURL string
-	Error           string
-	ID              string
-	Disabled        bool
+	Name     string
+	Value    string
+	Label    string
+	Tooltip  string
+	Required bool
+	Cols     int
+	Min      int
+	Max      int
+	Error    string
+	Disabled bool
 }
 
 func (f *Date) Render(theme string, w io.Writer) error {
@@ -225,21 +194,12 @@ func (f *Date) Render(theme string, w io.Writer) error {
 }
 
 type Checkbox struct {
-	Name            string
-	values          []string
-	Label           string
-	Tooltip         string
-	Placeholder     string
-	Required        bool
-	Checked         bool
-	Options         []SelectOption
-	EmptyOption     bool
-	Cols            int
-	Rows            int
-	AutocompleteURL string
-	Error           string
-	ID              string
-	Disabled        bool
+	Name    string
+	Value   string
+	Label   string
+	Checked bool
+	Cols    int
+	Error   string
 }
 
 func (f *Checkbox) Render(theme string, w io.Writer) error {

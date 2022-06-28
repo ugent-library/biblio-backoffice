@@ -1,0 +1,24 @@
+<div class="card mb-6">
+    <div class="card-header">
+        <div class="bc-toolbar">
+            <div class="bc-toolbar-left">
+                <h1 class="bc-toolbar-title">Additional information</h1>
+            </div>
+            <div class="bc-toolbar-right">
+                {{if .User.CanEditPublication .Publication}}
+                    <button class="btn btn-outline-primary"
+                        hx-get="{{pathFor "publication_additional_info_edit_form" "id" .Publication.ID}}"
+                        hx-swap="innerHTML"
+                        hx-target="#modals"
+                    >
+                        <i class="if if-edit"></i>
+                        <div class="btn-text">Edit</div>
+                    </button>
+                {{end}}
+            </div>
+        </div>
+    </div>
+    <div id="publication-additional-info-body">
+    {{template "publication/additional_info_body" .}}
+    </div>
+</div>

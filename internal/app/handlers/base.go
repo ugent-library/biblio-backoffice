@@ -46,17 +46,22 @@ func (h BaseHandler) Wrap(fn func(http.ResponseWriter, *http.Request, BaseContex
 }
 
 func (h BaseHandler) NewContext(r *http.Request, w http.ResponseWriter) (BaseContext, error) {
-	user, err := h.getUserFromSession(r, UserSessionKey)
+	session, err := h.SessionStore.Get(r, h.SessionName)
 	if err != nil {
 		return BaseContext{}, err
 	}
 
-	originalUser, err := h.getUserFromSession(r, OriginalUserSessionKey)
+	user, err := h.getUserFromSession(session, r, UserSessionKey)
 	if err != nil {
 		return BaseContext{}, err
 	}
 
-	flash, err := h.getFlashFromSession(r, w)
+	originalUser, err := h.getUserFromSession(session, r, OriginalUserSessionKey)
+	if err != nil {
+		return BaseContext{}, err
+	}
+
+	flash, err := h.getFlashFromSession(session, r, w)
 	if err != nil {
 		return BaseContext{}, err
 	}
@@ -86,12 +91,7 @@ func (h BaseHandler) AddSessionFlash(r *http.Request, w http.ResponseWriter, f f
 	return nil
 }
 
-func (h BaseHandler) getFlashFromSession(r *http.Request, w http.ResponseWriter) ([]flash.Flash, error) {
-	session, err := h.SessionStore.Get(r, h.SessionName)
-	if err != nil {
-		return nil, err
-	}
-
+func (h BaseHandler) getFlashFromSession(session *sessions.Session, r *http.Request, w http.ResponseWriter) ([]flash.Flash, error) {
 	sessionFlashes := session.Flashes(FlashSessionKey)
 
 	if err := session.Save(r, w); err != nil {
@@ -106,11 +106,7 @@ func (h BaseHandler) getFlashFromSession(r *http.Request, w http.ResponseWriter)
 	return flashes, nil
 }
 
-func (h BaseHandler) getUserFromSession(r *http.Request, sessionKey string) (*models.User, error) {
-	session, err := h.SessionStore.Get(r, h.SessionName)
-	if err != nil {
-		return nil, err
-	}
+func (h BaseHandler) getUserFromSession(session *sessions.Session, r *http.Request, sessionKey string) (*models.User, error) {
 	userID := session.Values[sessionKey]
 	if userID == nil {
 		return nil, nil

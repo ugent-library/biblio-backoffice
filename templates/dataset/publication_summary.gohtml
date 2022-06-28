@@ -1,12 +1,12 @@
 <div class="list-group-item-text">
     <h4 class="c-h4">{{.Title}}</h4>
-    {{with .Author}}{{template "publication/contributors" .}}{{end}}
+    {{with .Author}}{{template "shared/contributors" .}}{{end}}
     <span class="c-body-small text-muted">{{.Year}}{{with .Publication}}, {{.}}{{end}}</span>
 </div>
 <div class="list-group-item-meta mt-5">
     <div class="list-group-item-meta-left">
         <div class="list-group-item-meta-item">
-            {{template "publication/status" .}}
+            {{template "shared/status" .}}
         </div>
     </div>
     <div class="list-group-item-meta-right">

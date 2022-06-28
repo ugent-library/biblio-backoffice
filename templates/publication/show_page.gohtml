@@ -1,0 +1,88 @@
+<div class="w-100 u-scroll-wrapper">
+    <div class="c-header-collapsible bg-white" data-collapsed="true">
+        <div class="bc-navbar bc-navbar--large bc-navbar--white">
+            <div class="bc-toolbar">
+                <div class="bc-toolbar-left">
+                    <div class="bc-toolbar-item">
+                        <a class="btn btn-link btn-link-muted" href="{{pathFor "publications" | query .SearchArgs}}">
+                            <i class="if if-arrow-left"></i>
+                            <div class="btn-text">Publications overview</div>
+                        </a>
+                    </div>
+                </div>
+                <div class="bc-toolbar-right">
+                    {{if .User.CanPublishPublication .Publication}}
+                    <div class="bc-toolbar-item">
+                        <form action="{{pathFor "publication_publish" "id" .Publication.ID}}" method="POST">
+                            {{.CSRFTag}}
+                            <button type="submit" class="btn btn-success">
+                                <div class="btn-text">Publish to Biblio</div>
+                            </button>
+                        </form>
+                    </div>
+                    {{end}}
+                    <div class="bc-toolbar-item">
+                        <div class="dropdown dropleft">
+                            <button class="btn btn-outline-primary btn-icon-only"
+                                type="button" data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false">
+                                <i class="if if-more"></i>
+                            </button>
+                            <div class="dropdown-menu">
+                                {{if and (eq .Publication.Status "public") .User.ORCID .User.ORCIDToken}}
+                                <button class="dropdown-item"
+                                    hx-post="{{pathFor "publication_orcid_add" "id" .Publication.ID}}"
+                                    hx-target="#publication-{{.Publication.ID}}-orcid-status"
+                                    hx-swap="outerHTML"
+                                >
+                                    <i class="if if-orcid" style="color: #A6CE39"></i>
+                                    <span>Send to ORCID</span>
+                                </button>
+                                {{end}}
+                                {{if .User.CanDeletePublication .Publication}}
+                                <a class="dropdown-item" href="#"
+                                    hx-get="{{pathFor "publication_confirm_delete" "id" .Publication.ID | query .SearchArgs}}"
+                                    hx-target="#publication-{{.Publication.ID}}-modal"
+                                    hx-trigger="click"
+                                >
+                                    <i class="if if-delete"></i>
+                                    <span>Delete</span>
+                                </a>
+                                {{end}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="c-divider mt-0 mx-6"></div>
+        
+        <div id="publication-summary">
+            <div class="mx-6">
+                <h4 class="h4">{{.Publication.Title}}</h4>
+            </div>
+        </div>
+
+        <div class="c-divider mb-2 mx-6"></div>
+
+        <div class="bc-navbar bc-navbar--white bc-navbar--bordered-bottom">
+            <div class="bc-toolbar">
+                <div class="bc-toolbar-left">
+                    <div class="bc-toolbar-item">
+                        {{template "publication/show_nav" .}}
+                    </div>
+                </div>
+                <div class="bc-toolbar-right">   
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="u-scroll-wrapper__body p-6" id="show-content"
+        hx-get="{{pathFor (print "publication_" .ActiveSubNav) "id" .Publication.ID | query .SearchArgs}}"
+        hx-trigger="load delay:100ms"
+        hx-target="#show-content"
+    >
+    </div>
+</div>
