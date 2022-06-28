@@ -200,7 +200,7 @@ func buildRouter(services *backends.Services) *mux.Router {
 	funcMaps := []template.FuncMap{
 		sprig.FuncMap(),
 		mix.FuncMap(mix.Config{
-			ManifestFile: "internal/services/webapp/static/mix-manifest.json",
+			ManifestFile: "static/mix-manifest.json",
 			PublicPath:   baseURL.Path + "/static/",
 		}),
 		urls.FuncMap(router),

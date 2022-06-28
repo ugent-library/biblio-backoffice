@@ -4,7 +4,23 @@
         "dev": "npx nodemon"
     },
     "devDependencies": {
-        "nodemon": "^2.0.7"
+        "laravel-mix": "^6.0.11",
+        "nodemon": "^2.0.7",
+        "resolve-url-loader": "^4.0.0",
+        "sass": "^1.35.1",
+        "sass-loader": "^12.1.0",
+        "uglify-js": "^3.14.2"
+    },
+    "dependencies": {
+        "autosize": "^4.0.2",
+        "bootstrap": "^4.6.0",
+        "bootstrap.native": "4.1.0",
+        "flatpickr": "^4.6.3",
+        "htmx.org": "^1.7.0",
+        "jquery": "^3.6.0",
+        "node-sass": "^4.14.1",
+        "popper.js": "^1.16.1",
+        "sortablejs": "^1.14.0"
     },
     "nodemonConfig": {
         "exec": "go run main.go server start --host localhost --port 3001 || exit 1",

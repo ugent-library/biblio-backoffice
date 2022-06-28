@@ -27,8 +27,7 @@ export default function () {
 
     addEvents()
 
-    // TODO don't use afterSettle
-    htmx.on("htmx:afterSettle", function(evt) {
+    htmx.onLoad(function(el) {
         addEvents()
     });
 }

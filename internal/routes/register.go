@@ -33,7 +33,7 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	router.Use(mw.RecoveryHandler(mw.PrintRecoveryStack(true)))
 
 	// static files
-	router.PathPrefix(basePath + "/static/").Handler(http.StripPrefix(basePath+"/static/", http.FileServer(http.Dir("./internal/services/webapp/static"))))
+	router.PathPrefix(basePath + "/static/").Handler(http.StripPrefix(basePath+"/static/", http.FileServer(http.Dir("./static"))))
 
 	requireUser := middleware.RequireUser(oldBase.BaseURL.Path + "/login")
 	setUser := middleware.SetUser(services.UserService, oldBase.SessionName, oldBase.SessionStore)

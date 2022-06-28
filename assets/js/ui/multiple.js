@@ -80,7 +80,5 @@ export default function() {
         )
     };
 
-    htmx.onLoad(function(el) {
-        addEvents(el)
-    });
+    htmx.onLoad(addEvents);
 }

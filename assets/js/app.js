@@ -8,9 +8,7 @@ import header from './ui/header.js'
 import multiple from './ui/multiple.js'
 import changeSubmit from './ui/form_change_submit.js'
 import autocomplete from './ui/autocomplete.js';
-import submit from './ui/form_submit.js'
 import modalClose from './ui/modal_close.js'
-// import tabs from './ui/tabs.js'
 import radioCard from './ui/radio_card.js'
 import toast from './ui/toast.js'
 import sortable from './ui/sortable.js';
@@ -24,7 +22,6 @@ require('htmx.org/dist/ext/remove-me.js');
 // initialize everyting
 document.addEventListener('DOMContentLoaded', function () {
     csrf()
-    // tabs()
     checkbox()
     bootstrap()
     bootstrapPopper()
@@ -33,7 +30,6 @@ document.addEventListener('DOMContentLoaded', function () {
     multiple()
     changeSubmit()
     autocomplete()
-    submit()
     modalClose()
     radioCard()
     toast()

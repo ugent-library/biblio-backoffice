@@ -14,7 +14,5 @@ export default function () {
         }
     }
 
-    htmx.onLoad(function(content) {
-        addEvents(content)
-    })
+    htmx.onLoad(addEvents)
 }
