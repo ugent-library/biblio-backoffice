@@ -90,3 +90,7 @@
 {{if .DuplicateDataset}}
     {{template "dataset/add_duplicate_dataset" .}}
 {{end}}
+
+{{if .Errors}}
+    {{template "error_dialog" .Errors}}
+{{end}}

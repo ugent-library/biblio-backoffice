@@ -2,7 +2,11 @@ package datasetcreating
 
 import (
 	"errors"
+	"fmt"
+	"html/template"
+	"log"
 	"net/http"
+	"time"
 
 	"github.com/ugent-library/biblio-backend/internal/app/displays"
 	"github.com/ugent-library/biblio-backend/internal/bind"
@@ -10,6 +14,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
 	"github.com/ugent-library/biblio-backend/internal/render/display"
+	"github.com/ugent-library/biblio-backend/internal/render/flash"
 	"github.com/ugent-library/biblio-backend/internal/render/form"
 	"github.com/ugent-library/biblio-backend/internal/snapstore"
 	"github.com/ugent-library/biblio-backend/internal/ulid"
@@ -33,6 +38,12 @@ type YieldAddDataset struct {
 	ActiveNav           string
 	ActiveSubNav        string
 	DisplayDetails      *display.Display
+	Errors              *YieldValidationErrors
+}
+
+type YieldValidationErrors struct {
+	Title  string
+	Errors form.Errors
 }
 
 func (h *Handler) Add(w http.ResponseWriter, r *http.Request, ctx Context) {
@@ -41,6 +52,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request, ctx Context) {
 		PageTitle: "Add - Datasets - Biblio",
 		Step:      1,
 		ActiveNav: "datasets",
+		Errors:    nil,
 	})
 }
 
@@ -82,19 +94,25 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 		return
 	}
 
-	s, ok := h.DatasetSources[b.Source]
-	if !ok {
-		// TODO implement an error for an unkown data source
-		// return nil, errors.New("unknown dataset source")
-		render.Render(w, "error_dialog", ctx.T("dataset.unknown_dataset_source"))
-	}
-
-	d, err := s.GetDataset(b.Identifier)
+	d, err := h.FetchDatasetByIdentifier(b.Source, b.Identifier)
 	if err != nil {
-		// TODO implement a message if the identifier wasn't found
-		// 		log.Println(err)
-		// 		flash := views.Flash{Type: "error"}
-		// 		flash.Message = loc.TS("dataset.single_import", "import_by_id.import_failed")
+		log.Println(err)
+		flash := flash.Flash{
+			Type:         "error",
+			Body:         template.HTML(ctx.TS("dataset.single_import", "import_by_id.import_failed")),
+			DismissAfter: 5 * time.Second,
+		}
+
+		ctx.Flash = append(ctx.Flash, flash)
+
+		render.Wrap(w, "layouts/default", "dataset/add", YieldAddDataset{
+			Context:    ctx,
+			PageTitle:  "Add - Datasets - Biblio",
+			Step:       1,
+			ActiveNav:  "datasets",
+			Source:     b.Source,
+			Identifier: b.Identifier,
+		})
 		return
 	}
 
@@ -103,17 +121,27 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 	d.UserID = ctx.User.ID
 	d.Status = "private"
 
-	// if validationErrs := d.Validate(); validationErrs != nil {
-	// 	// TODO fix validaton errors when a dataset is first created
-	// 	// form := detailsForm(ctx, b, validationErrs.(validation.Errors))
-
-	// 	// render.Render(w, "dataset/refresh_edit_details", YieldEditDetails{
-	// 	// 	Context: ctx,
-	// 	// 	Form:    form,
-	// 	// })
-	// 	// return
-	// 	return
-	// }
+	// TODO This block implements validation on import. This implies that a record imported
+	//   from a source (e.g. DataCite) should at least have the minimum set of fields as
+	//   required by Biblio. There's no guarantee that this is the case, though. If a record
+	//   lacks crucial Biblio fields in DataCite, it's impossible to import in Biblio until fixed in
+	//   DataCite.
+	if validationErrs := d.Validate(); validationErrs != nil {
+		errors := form.Errors(localize.ValidationErrors(ctx.Locale, err.(validation.Errors)))
+		render.Wrap(w, "layouts/default", "dataset/add", YieldAddDataset{
+			Context:    ctx,
+			PageTitle:  "Add - Datasets - Biblio",
+			Step:       1,
+			ActiveNav:  "datasets",
+			Source:     b.Source,
+			Identifier: b.Identifier,
+			Errors: &YieldValidationErrors{
+				Title:  "Unable to publish this dataset due to the following errors",
+				Errors: errors,
+			},
+		})
+		return
+	}
 	err = h.Repository.SaveDataset(d)
 
 	if err != nil {
@@ -207,4 +235,19 @@ func (h *Handler) AddFinish(w http.ResponseWriter, r *http.Request, ctx Context)
 		ActiveNav: "datasets",
 		Dataset:   ctx.Dataset,
 	})
+}
+
+func (h *Handler) FetchDatasetByIdentifier(source, identifier string) (*models.Dataset, error) {
+	s, ok := h.DatasetSources[source]
+
+	if !ok {
+		return nil, fmt.Errorf("unkown dataset source: %s", source)
+	}
+
+	d, err := s.GetDataset(identifier)
+	if err != nil {
+		return nil, err
+	}
+
+	return d, nil
 }
