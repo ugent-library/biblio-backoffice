@@ -1,0 +1,15 @@
+<div class="list-group-item-authors">
+    {{if gt (len .) 3}}
+        {{range (slice . 0 3)}}
+            {{template "dataset/contributor" .}}
+        {{end}}
+        <div class="list-group-item-author">
+            <span>{{sub (len .) 3}} more author{{if gt (sub (len .) 3) 1}}s{{end}}</span>
+            <i class="if if-more ml-2"></i>
+        </div>
+    {{else}}
+        {{range .}}
+            {{template "dataset/contributor" .}}
+        {{end}}
+    {{end}}
+</div>

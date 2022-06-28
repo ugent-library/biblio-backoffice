@@ -1,0 +1,55 @@
+{{$d := .Dataset}}
+<div class="list-group-item-thumbnail">
+    <div class="c-thumbnail c-thumbnail--dataset c-thumbnail--medium">
+        <i class="if if-database"></i>
+    </div>
+</div>
+<div class="list-group-item-content">
+    <div class="list-group-item-text">
+        <h4 class="c-h4">
+            {{$d.Title}}
+            {{if not (.User.CanEditDataset $d)}}<i class="if if-no-edit if--small ml-3 text-muted" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Locked for editing"></i>{{end}}
+        </h4>
+        {{with $d.Author}}
+            {{template "dataset/summary_body_contributors_short" .}}
+        {{end}}
+        <span class="c-body-small text-muted">
+            {{$d.Year}},
+            <a class="link-primary" target="_blank" href="{{$d.ResolveDOI}}">
+                <span class="text-decoration-underline"> View in external repository</span>
+                <i class="if if--small if-external-link"></i>
+            </a>
+        </span>
+    </div>
+    <div class="list-group-item-meta mt-5">
+        <div class="list-group-item-meta-left">
+            <div class="list-group-item-meta-item">
+                {{template "dataset/status" $d}}
+            </div>
+            {{/*
+            <div class="list-group-item-meta-item">
+                {{template "publication/_completeness" $d}}
+            </div>
+            */}}
+        </div>
+        <div class="list-group-item-meta-right">
+            <div class="list-group-item-meta-item">
+                <span class="text-muted c-body-small">Biblio ID: {{$d.ID}}</span>
+            </div>
+            {{if .Dataset.RelatedPublication}}
+            <div class="list-group-item-meta-item" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="{{len .Dataset.RelatedPublication}} related publications">
+                <span class="text-muted c-body-small">
+                    <i class="if if-article if--muted if--small"></i>{{len .Dataset.RelatedPublication}}
+                </span>
+            </div>
+            {{end}}
+            <div class="list-group-item-meta-item" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Sent to Orcid">
+                <i class="if if-orcid if--muted if--small"></i>
+                <i class="if if-check text-success if--small"></i>
+            </div>
+            <div class="list-group-item-meta-item">
+                <span class="text-muted c-body-small">Created {{timeElapsed $d.DateCreated "en"}}</span>
+            </div>
+        </div>
+    </div>
+</div>

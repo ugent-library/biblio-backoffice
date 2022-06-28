@@ -8,6 +8,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/authenticating"
+	"github.com/ugent-library/biblio-backend/internal/app/handlers/datasetcreating"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/datasetediting"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/datasetsearching"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/datasetviewing"
@@ -92,6 +93,12 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		BaseHandler: baseHandler,
 		Repository:  services.Repository,
 	}
+	datasetCreatingHandler := &datasetcreating.Handler{
+		BaseHandler:          baseHandler,
+		Repository:           services.Repository,
+		DatasetSearchService: services.DatasetSearchService,
+		DatasetSources:       services.DatasetSources,
+	}
 	datasetEditingHandler := &datasetediting.Handler{
 		BaseHandler:               baseHandler,
 		Repository:                services.Repository,
@@ -172,6 +179,37 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		impersonatingHandler.Wrap(impersonatingHandler.DeleteImpersonation)).
 		Methods("POST").
 		Name("delete_impersonation")
+
+	// Add a dataset
+	r.HandleFunc("/dataset/add",
+		datasetCreatingHandler.Wrap(datasetCreatingHandler.Add)).
+		Methods("GET").
+		Name("dataset_add")
+	r.HandleFunc("/dataset/import",
+		datasetCreatingHandler.Wrap(datasetCreatingHandler.AddImport)).
+		Methods("POST").
+		Name("dataset_add_import")
+	r.HandleFunc("/dataset/import/confirm",
+		datasetCreatingHandler.Wrap(datasetCreatingHandler.ConfirmImportDataset)).
+		Methods("POST").
+		Name("dataset_confirm_import")
+
+	r.HandleFunc("/dataset/{id}/add/description",
+		datasetCreatingHandler.Wrap(datasetCreatingHandler.AddDescription)).
+		Methods("GET").
+		Name("dataset_add_description")
+	r.HandleFunc("/dataset/{id}/add/confirm",
+		datasetCreatingHandler.Wrap(datasetCreatingHandler.AddConfirm)).
+		Methods("GET").
+		Name("dataset_add_confirm")
+	r.HandleFunc("/dataset/{id}/add/publish",
+		datasetCreatingHandler.Wrap(datasetCreatingHandler.AddPublish)).
+		Methods("POST").
+		Name("dataset_add_publish")
+	r.HandleFunc("/dataset/{id}/add/finish",
+		datasetCreatingHandler.Wrap(datasetCreatingHandler.AddFinish)).
+		Methods("GET").
+		Name("dataset_add_finish")
 
 	// tasks
 	r.HandleFunc("/task/{id}/status", tasksHandler.Wrap(tasksHandler.Status)).
@@ -668,15 +706,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	datasetsRouter := r.PathPrefix("/dataset").Subrouter()
 	datasetsRouter.Use(middleware.SetActiveMenu("datasets"))
 	datasetsRouter.Use(requireUser)
-	datasetsRouter.HandleFunc("/add", datasetsController.Add).
-		Methods("GET").
-		Name("dataset_add")
-	datasetsRouter.HandleFunc("/add/import/confirm", datasetsController.AddImportConfirm).
-		Methods("POST").
-		Name("dataset_add_import_confirm")
-	datasetsRouter.HandleFunc("/add/import", datasetsController.AddImport).
-		Methods("POST").
-		Name("dataset_add_import")
 
 	datasetRouter := datasetsRouter.PathPrefix("/{id}").Subrouter()
 	datasetRouter.Use(middleware.SetDataset(services.Repository))
@@ -693,13 +722,4 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	datasetDeleteRouter.HandleFunc("/delete", datasetsController.Delete).
 		Methods("POST").
 		Name("dataset_delete")
-	datasetEditRouter.HandleFunc("/add/description", datasetsController.AddDescription).
-		Methods("GET").
-		Name("dataset_add_description")
-	datasetEditRouter.HandleFunc("/add/confirm", datasetsController.AddConfirm).
-		Methods("GET").
-		Name("dataset_add_confirm")
-	datasetEditRouter.HandleFunc("/add/publish", datasetsController.AddPublish).
-		Methods("POST").
-		Name("dataset_add_publish")
 }
