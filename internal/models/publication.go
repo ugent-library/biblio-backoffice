@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
@@ -351,6 +352,34 @@ func (p *Publication) RemoveContributor(role string, i int) {
 	cc := p.Contributors(role)
 
 	p.SetContributors(role, append(cc[:i], cc[i+1:]...))
+}
+
+func (p *Publication) GetAbstract(i int) (Text, error) {
+	if i >= len(p.Abstract) {
+		return Text{}, errors.New("index out of bounds")
+	}
+
+	return p.Abstract[i], nil
+}
+
+func (p *Publication) SetAbstract(i int, t Text) error {
+	if i >= len(p.Abstract) {
+		return errors.New("index out of bounds")
+	}
+
+	p.Abstract[i] = t
+
+	return nil
+}
+
+func (p *Publication) RemoveAbstract(i int) error {
+	if i >= len(p.Abstract) {
+		return errors.New("index out of bounds")
+	}
+
+	p.Abstract = append(p.Abstract[:i], p.Abstract[i+1:]...)
+
+	return nil
 }
 
 func (p *Publication) UsesLaySummary() bool {

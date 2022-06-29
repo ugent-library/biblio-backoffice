@@ -1,6 +1,6 @@
 {{if .Publication.Abstract}}
 <div class="card-body p-0">
-    <table class="table" id="abstracts-table">
+    <table class="table">
         <thead>
             <tr>
                 <th class="pl-6">Abstract</th>
@@ -9,13 +9,12 @@
             </tr>
         </thead>
         <tbody>
-        {{range $k, $a := .Publication.Abstract}}
-            {{ $k = $k | toString }}
-            <tr class="row-{{ $k }}">
+        {{range $i, $a := .Publication.Abstract}}
+            <tr class="row-{{$i}}">
                 <td class="pl-6">
-                    <p>{{ $a.Text }}</p>
+                    <p>{{$a.Text}}</p>
                 </td>
-                <td>{{ $.Locale.LanguageName $a.Lang }}</td>
+                <td>{{$.Locale.LanguageName $a.Lang}}</td>
                 <td class="pr-6">
                     {{if $.User.CanEditPublication $.Publication}}
                     <div class="c-button-toolbar">
@@ -25,18 +24,16 @@
                             </button>
                             <div class="dropdown-menu">
                                 <button class="dropdown-item" type="button"
-                                    hx-get="{{pathFor "publication_abstracts_edit_abstract" "id" $.Publication.ID "delta" $k}}"
+                                    hx-get="{{pathFor "publication_edit_abstract" "id" $.Publication.ID "position" ($i|toString)}}"
                                     hx-target="#modals"
-                                    hx-swap="innerHTML"
                                 >
                                     <i class="if if-edit"></i>
                                     <span>Edit</span>
                                 </button>
 
                                 <button class="dropdown-item" type="button"
-                                    hx-get="{{pathFor "publication_abstracts_confirm_remove_from_publication" "id" $.Publication.ID "delta" $k}}"
+                                    hx-get="{{pathFor "publication_confirm_delete_abstract" "id" $.Publication.ID "position" ($i|toString)}}"
                                     hx-target="#modals"
-                                    hx-swap="innerHTML"
                                 >
                                     <i class="if if-delete"></i>
                                     <span>Delete</span>
