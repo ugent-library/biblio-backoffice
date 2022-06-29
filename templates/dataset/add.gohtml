@@ -1,0 +1,96 @@
+{{template "dataset/add_sidebar" .}}
+
+<div class="w-100 u-scroll-wrapper">
+    <div class="dataset-import-form">
+    <form action="{{pathFor "dataset_confirm_import"}}" method="POST">
+        {{.CSRFTag}}
+        <div class="w-100">
+            <div class="bc-navbar bc-navbar--xlarge bc-navbar-bordered bc-navbar--white bc-navbar--bordered-bottom">
+                <div class="bc-toolbar">
+                    <div class="bc-toolbar-left">
+                        <div class="bc-toolbar-item">
+                            <div class="d-flex flex-column">
+                                <span class="text-muted mb-2">Step {{.Step}}</span>
+                                <h4 class="bc-toolbar-title">Add reference</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bc-toolbar-right">
+                        <div class="bc-toolbar-item">
+                            <button type="submit" class="btn btn-primary">
+                                <div class="btn-text">Complete description</div>
+                                <i class="if if-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6 u-scroll-wrapper__body">
+                <div class="card mb-6">
+                    <div class="card-header">
+                        <div class="bc-toolbar">
+                            <div class="bc-toolbar-left">Enter dataset identifier from external repository</div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-4">Enter dataset identifier to import the
+                        metadata of the dataset from an external repository or
+                        database.  Currently, only DOIs (Digital Object
+                        Identifier) are accepted. Alternative identifiers will
+                        be enabled in the near future.</p>
+                        <div class="form-row">
+                            <div class="col-6">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">DOI</span>
+                                    </div>
+                                    <input type="hidden" name="source" value="datacite">
+                                    <input class="form-control" type="text" name="identifier" value="{{.Identifier}}" placeholder="e.g. 10.7484/INSPIREHEP.DATA.RF5P.6M3K">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-6">
+                    <div class="card-header">
+                        <div class="bc-toolbar">
+                            <div class="bc-toolbar-left">
+                                Dataset not yet in external repository?
+                            </div>
+                        </div>
+                    </div>
+                    <div id="notInExternalRepo">
+                        <div class="card-body">
+                            <p>If your dataset is not yet in an external repository, have a look at <a href="https://onderzoektips.ugent.be/en/tips/00002071/" target="_blank">our research tip on sharing data in a data repository</a></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card mb-6">
+                    <div class="card-header">
+                        <div class="bc-toolbar">
+                            <div class="bc-toolbar-left">
+                                More information needed?
+                            </div>
+                        </div>
+                    </div>
+                    <div id="moreInfo">
+                        <div class="card-body">
+                            <p>For more information regarding dataset registration see <a href="https://onderzoektips.ugent.be/en/tips/00002054/" target="_blank">https://onderzoektips.ugent.be/en/tips/00002054/</a></p>
+                            <p>For a step by step guide see <a href="https://onderzoektips.ugent.be/en/tips/00002055/" target="_blank">https://onderzoektips.ugent.be/en/tips/00002055/</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+{{if .DuplicateDataset}}
+    {{template "dataset/add_duplicate" .}}
+{{end}}
+
+{{if .Errors}}
+    {{template "error_dialog" .Errors}}
+{{end}}

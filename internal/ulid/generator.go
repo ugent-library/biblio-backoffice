@@ -11,7 +11,7 @@ import (
 
 var defaultGenerator = NewGenerator()
 
-type Generator struct {
+type generator struct {
 	mu sync.Mutex
 	r  io.Reader
 }
@@ -24,13 +24,13 @@ func MustGenerate() string {
 	return defaultGenerator.MustGenerate()
 }
 
-func NewGenerator() *Generator {
-	return &Generator{
+func NewGenerator() *generator {
+	return &generator{
 		r: rand.New(rand.NewSource(time.Now().UTC().UnixNano())),
 	}
 }
 
-func (g *Generator) Generate() (string, error) {
+func (g *generator) Generate() (string, error) {
 	g.mu.Lock()
 	defer g.mu.Unlock()
 	id, err := ulid.New(ulid.Now(), g.r)
@@ -40,7 +40,7 @@ func (g *Generator) Generate() (string, error) {
 	return id.String(), nil
 }
 
-func (g *Generator) MustGenerate() string {
+func (g *generator) MustGenerate() string {
 	id, err := g.Generate()
 	if err != nil {
 		panic(err)

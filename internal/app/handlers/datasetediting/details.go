@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/ugent-library/biblio-backend/internal/app/displays"
+	"github.com/ugent-library/biblio-backend/internal/app/localize"
 	"github.com/ugent-library/biblio-backend/internal/bind"
-	"github.com/ugent-library/biblio-backend/internal/localize"
 	"github.com/ugent-library/biblio-backend/internal/render"
 	"github.com/ugent-library/biblio-backend/internal/render/display"
 	"github.com/ugent-library/biblio-backend/internal/render/form"
@@ -216,7 +216,7 @@ func detailsForm(ctx Context, b BindDetails, errors validation.Errors) *form.For
 				Cols:            9,
 				Error:           localize.ValidationErrorAt(ctx.Locale, errors, "/format"),
 				Required:        true,
-				AutocompleteURL: "media_type_choose",
+				AutocompleteURL: "suggest_media_types",
 				Tooltip:         ctx.T("tooltip.dataset.format"),
 			},
 			&form.TextRepeat{

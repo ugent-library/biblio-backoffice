@@ -28,13 +28,13 @@ func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) htt
 			return
 		}
 
-		pub, err := h.Repository.GetPublication(bind.PathValues(r).Get("id"))
+		p, err := h.Repository.GetPublication(bind.PathValues(r).Get("id"))
 		if err != nil {
 			render.InternalServerError(w, r, err)
 			return
 		}
 
-		if !ctx.User.CanViewPublication(pub) {
+		if !ctx.User.CanViewPublication(p) {
 			render.Forbidden(w, r)
 			return
 		}
@@ -47,7 +47,7 @@ func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) htt
 
 		fn(w, r, Context{
 			BaseContext: ctx,
-			Publication: pub,
+			Publication: p,
 			SearchArgs:  searchArgs,
 		})
 	})

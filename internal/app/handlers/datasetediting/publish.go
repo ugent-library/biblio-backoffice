@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/ugent-library/biblio-backend/internal/app/localize"
 	"github.com/ugent-library/biblio-backend/internal/bind"
-	"github.com/ugent-library/biblio-backend/internal/localize"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
 	"github.com/ugent-library/biblio-backend/internal/render/flash"
@@ -15,19 +15,19 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/validation"
 )
 
-type YieldPublishDataset struct {
+type YieldPublish struct {
 	Context
 	SearchArgs *models.SearchArgs
 }
 
-func (h *Handler) ConfirmPublishDataset(w http.ResponseWriter, r *http.Request, ctx Context) {
+func (h *Handler) ConfirmPublish(w http.ResponseWriter, r *http.Request, ctx Context) {
 	searchArgs := models.NewSearchArgs()
 	if err := bind.Request(r, searchArgs); err != nil {
 		render.BadRequest(w, r, err)
 		return
 	}
 
-	render.Render(w, "dataset/confirm_publish_dataset", YieldPublishDataset{
+	render.Render(w, "dataset/confirm_publish", YieldPublish{
 		Context:    ctx,
 		SearchArgs: searchArgs,
 	})
@@ -73,7 +73,7 @@ func (h *Handler) Publish(w http.ResponseWriter, r *http.Request, ctx Context) {
 	})
 
 	redirectURL := h.PathFor("dataset", "id", ctx.Dataset.ID)
-	redirectURL.RawQuery = r.URL.Query().Encode()
+	redirectURL.RawQuery = r.URL.RawQuery
 
 	w.Header().Set("HX-Redirect", redirectURL.String())
 }

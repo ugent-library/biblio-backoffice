@@ -58,14 +58,3 @@ func GetPublication(c context.Context) *models.Publication {
 func WithPublication(c context.Context, pub *models.Publication) context.Context {
 	return context.WithValue(c, publicationKey, pub)
 }
-
-func GetDataset(c context.Context) *models.Dataset {
-	if v := c.Value(publicationKey); v != nil {
-		return v.(*models.Dataset)
-	}
-	return nil
-}
-
-func WithDataset(c context.Context, pub *models.Dataset) context.Context {
-	return context.WithValue(c, publicationKey, pub)
-}

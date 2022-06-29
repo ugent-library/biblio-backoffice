@@ -1,10 +1,10 @@
 package displays
 
 import (
+	"github.com/ugent-library/biblio-backend/internal/app/helpers"
 	"github.com/ugent-library/biblio-backend/internal/locale"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render/display"
-	"github.com/ugent-library/biblio-backend/internal/services/webapp/helpers"
 )
 
 func PublicationConference(l *locale.Locale, c models.PublicationConference) *display.Display {

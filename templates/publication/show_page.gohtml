@@ -33,7 +33,6 @@
                                 <button class="dropdown-item"
                                     hx-post="{{pathFor "publication_orcid_add" "id" .Publication.ID}}"
                                     hx-target="#publication-{{.Publication.ID}}-orcid-status"
-                                    hx-trigger="click"
                                     hx-swap="outerHTML"
                                 >
                                     <i class="if if-orcid" style="color: #A6CE39"></i>
@@ -59,7 +58,7 @@
 
         <div class="c-divider mt-0 mx-6"></div>
         
-        <div id="publication-summary">
+        <div id="summary">
             <div class="mx-6">
                 <h4 class="h4">{{.Publication.Title}}</h4>
             </div>
