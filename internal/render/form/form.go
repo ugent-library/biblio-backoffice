@@ -216,3 +216,24 @@ type Hidden struct {
 func (f *Hidden) Render(theme string, w io.Writer) error {
 	return HiddenFieldTemplate.Execute(w, f)
 }
+
+type RadioButtonGroup struct {
+	Cols     int
+	Error    string
+	Label    string
+	Name     string
+	Options  []SelectOption
+	Required bool
+	Tooltip  string
+	Value    string
+}
+
+func (f *RadioButtonGroup) Render(theme string, w io.Writer) error {
+	return render.
+		Templates().
+		ExecuteTemplate(
+			w,
+			path.Join("form", theme, "radio_button_group"),
+			f,
+		)
+}
