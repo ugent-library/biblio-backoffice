@@ -10,15 +10,21 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/validation"
 )
 
+var (
+	subNavs = []string{"description", "files", "contributors", "datasets"}
+)
+
 type YieldShow struct {
 	Context
 	PageTitle    string
+	SubNavs      []string
 	ActiveNav    string
 	ActiveSubNav string
 }
 
 type YieldShowDescription struct {
 	Context
+	SubNavs               []string
 	ActiveSubNav          string
 	DisplayDetails        *display.Display
 	DisplayConference     *display.Display
@@ -27,32 +33,27 @@ type YieldShowDescription struct {
 
 type YieldShowContributors struct {
 	Context
+	SubNavs      []string
 	ActiveSubNav string
 }
 
 type YieldShowDatasets struct {
 	Context
+	SubNavs         []string
 	ActiveSubNav    string
 	RelatedDatasets []*models.Dataset
 }
 
-var allowedSubNavs = []string{
-	"description",
-	"files",
-	"contributors",
-	"datasets",
-}
-
 func (h *Handler) Show(w http.ResponseWriter, r *http.Request, ctx Context) {
-	// TODO bind and validate
 	activeSubNav := r.URL.Query().Get("show")
-	if !validation.InArray(allowedSubNavs, activeSubNav) {
+	if !validation.InArray(subNavs, activeSubNav) {
 		activeSubNav = "description"
 	}
 
 	render.Wrap(w, "layouts/default", "publication/show_page", YieldShow{
 		Context:      ctx,
 		PageTitle:    ctx.T("publication.page.show.title"),
+		SubNavs:      subNavs,
 		ActiveNav:    "publications",
 		ActiveSubNav: activeSubNav,
 	})
@@ -61,6 +62,7 @@ func (h *Handler) Show(w http.ResponseWriter, r *http.Request, ctx Context) {
 func (h *Handler) ShowDescription(w http.ResponseWriter, r *http.Request, ctx Context) {
 	render.Render(w, "publication/show_description", YieldShowDescription{
 		Context:               ctx,
+		SubNavs:               subNavs,
 		ActiveSubNav:          "description",
 		DisplayDetails:        displays.PublicationDetails(ctx.Locale, ctx.Publication),
 		DisplayConference:     displays.PublicationConference(ctx.Locale, ctx.Publication.Conference),
@@ -71,6 +73,7 @@ func (h *Handler) ShowDescription(w http.ResponseWriter, r *http.Request, ctx Co
 func (h *Handler) ShowFiles(w http.ResponseWriter, r *http.Request, ctx Context) {
 	render.Render(w, "publication/show_files", YieldShowContributors{
 		Context:      ctx,
+		SubNavs:      subNavs,
 		ActiveSubNav: "files",
 	})
 }
@@ -78,6 +81,7 @@ func (h *Handler) ShowFiles(w http.ResponseWriter, r *http.Request, ctx Context)
 func (h *Handler) ShowContributors(w http.ResponseWriter, r *http.Request, ctx Context) {
 	render.Render(w, "publication/show_contributors", YieldShowContributors{
 		Context:      ctx,
+		SubNavs:      subNavs,
 		ActiveSubNav: "contributors",
 	})
 }
@@ -91,6 +95,7 @@ func (h *Handler) ShowDatasets(w http.ResponseWriter, r *http.Request, ctx Conte
 
 	render.Render(w, "publication/show_datasets", YieldShowDatasets{
 		Context:         ctx,
+		SubNavs:         subNavs,
 		ActiveSubNav:    "datasets",
 		RelatedDatasets: relatedDatasets,
 	})
