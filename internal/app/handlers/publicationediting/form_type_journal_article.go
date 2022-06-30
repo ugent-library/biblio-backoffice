@@ -8,7 +8,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/validation"
 )
 
-func FormTypeJournalArticle(l *locale.Locale, b BindDetails, errors validation.Errors) *form.Form {
+func FormTypeJournalArticle(l *locale.Locale, b *BindDetails, errors validation.Errors) *form.Form {
 
 	return form.New().
 		WithTheme("default").
@@ -22,15 +22,15 @@ func FormTypeJournalArticle(l *locale.Locale, b BindDetails, errors validation.E
 				Label:   l.T("builder.journal_article_type"),
 				Options: optionsForVocabulary(l, "journal_article_types"),
 				Value:   b.JournalArticleType,
+				Cols:    3,
 				Error:   localize.ValidationErrorAt(l, errors, "/journal_article_type"),
 			},
 			&form.Text{
-				Name:        "doi",
-				Label:       l.T("builder.doi"),
-				Value:       b.DOI,
-				Cols:        9,
-				Placeholder: l.T("builder.details.doi.placeholder"),
-				Error:       localize.ValidationErrorAt(l, errors, "/doi"),
+				Name:  "doi",
+				Label: l.T("builder.doi"),
+				Value: b.DOI,
+				Cols:  9,
+				Error: localize.ValidationErrorAt(l, errors, "/doi"),
 			},
 			&display.Text{
 				Label:   l.T("builder.classification"),
@@ -40,13 +40,12 @@ func FormTypeJournalArticle(l *locale.Locale, b BindDetails, errors validation.E
 		).
 		AddSection(
 			&form.Text{
-				Name:        "title",
-				Label:       l.T("builder.title"),
-				Value:       b.Title,
-				Cols:        9,
-				Placeholder: l.T("builder.publication.title.placeholder"),
-				Error:       localize.ValidationErrorAt(l, errors, "/title"),
-				Required:    true,
+				Name:     "title",
+				Label:    l.T("builder.title"),
+				Value:    b.Title,
+				Cols:     9,
+				Error:    localize.ValidationErrorAt(l, errors, "/title"),
+				Required: true,
 			},
 			&form.TextRepeat{
 				Name:   "alternative_title",
@@ -175,8 +174,8 @@ func FormTypeJournalArticle(l *locale.Locale, b BindDetails, errors validation.E
 		AddSection(
 			&display.Text{
 				Label:   l.T("builder.wos_type"),
-				Value:   b.WOSType,
-				Tooltip: l.TS("tooltip.publication", b.WOSType),
+				Value:   l.TS("tooltip.publication", b.WOSType),
+				Tooltip: l.T("tooltip.publication.wos_type"),
 			},
 			&form.Text{
 				Name:        "wos_id",

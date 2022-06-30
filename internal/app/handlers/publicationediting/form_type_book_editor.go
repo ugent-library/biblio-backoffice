@@ -8,7 +8,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/validation"
 )
 
-func FormTypeBookEditor(l *locale.Locale, b BindDetails, errors validation.Errors) *form.Form {
+func FormTypeBookEditor(l *locale.Locale, b *BindDetails, errors validation.Errors) *form.Form {
 
 	return form.New().
 		WithTheme("default").
@@ -18,12 +18,11 @@ func FormTypeBookEditor(l *locale.Locale, b BindDetails, errors validation.Error
 				Value: l.TS("publication_types", b.Type),
 			},
 			&form.Text{
-				Name:        "doi",
-				Label:       l.T("builder.doi"),
-				Value:       b.DOI,
-				Cols:        9,
-				Placeholder: l.T("builder.details.doi.placeholder"),
-				Error:       localize.ValidationErrorAt(l, errors, "/doi"),
+				Name:  "doi",
+				Label: l.T("builder.doi"),
+				Value: b.DOI,
+				Cols:  9,
+				Error: localize.ValidationErrorAt(l, errors, "/doi"),
 			},
 			&display.Text{
 				Label:   l.T("builder.classification"),
@@ -33,13 +32,12 @@ func FormTypeBookEditor(l *locale.Locale, b BindDetails, errors validation.Error
 		).
 		AddSection(
 			&form.Text{
-				Name:        "title",
-				Label:       l.T("builder.title"),
-				Value:       b.Title,
-				Cols:        9,
-				Placeholder: l.T("builder.publication.title.placeholder"),
-				Error:       localize.ValidationErrorAt(l, errors, "/title"),
-				Required:    true,
+				Name:     "title",
+				Label:    l.T("builder.title"),
+				Value:    b.Title,
+				Cols:     9,
+				Error:    localize.ValidationErrorAt(l, errors, "/title"),
+				Required: true,
 			},
 			&form.TextRepeat{
 				Name:   "alternative_title",
@@ -117,8 +115,9 @@ func FormTypeBookEditor(l *locale.Locale, b BindDetails, errors validation.Error
 		).
 		AddSection(
 			&display.Text{
-				Label: l.T("builder.wos_type"),
-				Value: b.WOSType,
+				Label:   l.T("builder.wos_type"),
+				Value:   l.TS("tooltip.publication", b.WOSType),
+				Tooltip: l.T("tooltip.publication.wos_type"),
 			},
 			&form.Text{
 				Name:        "wos_id",

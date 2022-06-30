@@ -47,7 +47,7 @@ func conferenceDetails(l *locale.Locale, p *models.Publication) *display.Display
 				Required: true,
 			},
 			&display.Text{
-				Label: l.T("builder.publication_abbreviation"),
+				Label: l.T("builder.journal_article.publication_abbreviation"),
 				Value: p.PublicationAbbreviation,
 			},
 		).

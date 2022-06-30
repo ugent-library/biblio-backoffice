@@ -16,6 +16,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/impersonating"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/mediatypes"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/orcid"
+	"github.com/ugent-library/biblio-backend/internal/app/handlers/publicationediting"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/publicationviewing"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/tasks"
 	"github.com/ugent-library/biblio-backend/internal/backends"
@@ -111,6 +112,17 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	publicationViewingHandler := &publicationviewing.Handler{
 		BaseHandler: baseHandler,
 		Repository:  services.Repository,
+	}
+	publicationEditingHandler := &publicationediting.Handler{
+		BaseHandler:               baseHandler,
+		Repository:                services.Repository,
+		ProjectService:            services.ProjectService,
+		ProjectSearchService:      services.ProjectSearchService,
+		OrganizationSearchService: services.OrganizationSearchService,
+		OrganizationService:       services.OrganizationService,
+		PersonSearchService:       services.PersonSearchService,
+		PersonService:             services.PersonService,
+		PublicationSearchService:  services.PublicationSearchService,
 	}
 	orcidHandler := &orcid.Handler{
 		BaseHandler:              baseHandler,
@@ -427,6 +439,16 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		publicationViewingHandler.Wrap(publicationViewingHandler.ShowDatasets)).
 		Methods("GET").
 		Name("publication_datasets")
+
+	// edit publication details
+	r.HandleFunc("/publication/{id}/details/edit",
+		publicationEditingHandler.Wrap(publicationEditingHandler.EditDetails)).
+		Methods("GET").
+		Name("publication_edit_details")
+	r.HandleFunc("/publication/{id}/details",
+		publicationEditingHandler.Wrap(publicationEditingHandler.UpdateDetails)).
+		Methods("PUT").
+		Name("publication_update_details")
 
 	// orcid
 	r.HandleFunc("/publication/orcid",

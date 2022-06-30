@@ -8,7 +8,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/validation"
 )
 
-func FormTypeDissertation(l *locale.Locale, b BindDetails, errors validation.Errors) *form.Form {
+func FormTypeDissertation(l *locale.Locale, b *BindDetails, errors validation.Errors) *form.Form {
 
 	confirmationOptions := optionsForVocabulary(l, "confirmations")
 
@@ -20,12 +20,11 @@ func FormTypeDissertation(l *locale.Locale, b BindDetails, errors validation.Err
 				Value: l.TS("publication_types", b.Type),
 			},
 			&form.Text{
-				Name:        "doi",
-				Label:       l.T("builder.doi"),
-				Value:       b.DOI,
-				Cols:        9,
-				Placeholder: l.T("builder.details.doi.placeholder"),
-				Error:       localize.ValidationErrorAt(l, errors, "/doi"),
+				Name:  "doi",
+				Label: l.T("builder.doi"),
+				Value: b.DOI,
+				Cols:  9,
+				Error: localize.ValidationErrorAt(l, errors, "/doi"),
 			},
 			&display.Text{
 				Label:   l.T("builder.classification"),
@@ -35,13 +34,12 @@ func FormTypeDissertation(l *locale.Locale, b BindDetails, errors validation.Err
 		).
 		AddSection(
 			&form.Text{
-				Name:        "title",
-				Label:       l.T("builder.title"),
-				Value:       b.Title,
-				Cols:        9,
-				Placeholder: l.T("builder.publication.title.placeholder"),
-				Error:       localize.ValidationErrorAt(l, errors, "/title"),
-				Required:    true,
+				Name:     "title",
+				Label:    l.T("builder.title"),
+				Value:    b.Title,
+				Cols:     9,
+				Error:    localize.ValidationErrorAt(l, errors, "/title"),
+				Required: true,
 			},
 			&form.TextRepeat{
 				Name:   "alternative_title",
@@ -133,6 +131,7 @@ func FormTypeDissertation(l *locale.Locale, b BindDetails, errors validation.Err
 		).
 		AddSection(
 			&form.Text{
+				Name:        "defense_date",
 				Label:       l.T("builder.defense_date"),
 				Value:       b.DefenseDate,
 				Required:    true,
@@ -141,6 +140,7 @@ func FormTypeDissertation(l *locale.Locale, b BindDetails, errors validation.Err
 				Error:       localize.ValidationErrorAt(l, errors, "/defense_date"),
 			},
 			&form.Text{
+				Name:        "defense_time",
 				Label:       l.T("builder.defense_time"),
 				Value:       b.DefenseTime,
 				Required:    true,
@@ -149,6 +149,7 @@ func FormTypeDissertation(l *locale.Locale, b BindDetails, errors validation.Err
 				Error:       localize.ValidationErrorAt(l, errors, "/defense_time"),
 			},
 			&form.Text{
+				Name:     "defense_place",
 				Label:    l.T("builder.defense_place"),
 				Value:    b.DefensePlace,
 				Required: true,
@@ -188,8 +189,9 @@ func FormTypeDissertation(l *locale.Locale, b BindDetails, errors validation.Err
 		).
 		AddSection(
 			&display.Text{
-				Label: l.T("builder.wos_type"),
-				Value: b.WOSType,
+				Label:   l.T("builder.wos_type"),
+				Value:   l.TS("tooltip.publication", b.WOSType),
+				Tooltip: l.T("tooltip.publication.wos_type"),
 			},
 			&form.Text{
 				Name:        "wos_id",

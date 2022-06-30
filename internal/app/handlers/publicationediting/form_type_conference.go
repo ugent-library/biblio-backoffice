@@ -8,7 +8,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/validation"
 )
 
-func FormTypeConference(l *locale.Locale, b BindDetails, errors validation.Errors) *form.Form {
+func FormTypeConference(l *locale.Locale, b *BindDetails, errors validation.Errors) *form.Form {
 
 	return form.New().
 		WithTheme("default").
@@ -26,12 +26,11 @@ func FormTypeConference(l *locale.Locale, b BindDetails, errors validation.Error
 				Error:   localize.ValidationErrorAt(l, errors, "/conference_type"),
 			},
 			&form.Text{
-				Name:        "doi",
-				Label:       l.T("builder.doi"),
-				Value:       b.DOI,
-				Cols:        9,
-				Placeholder: l.T("builder.details.doi.placeholder"),
-				Error:       localize.ValidationErrorAt(l, errors, "/doi"),
+				Name:  "doi",
+				Label: l.T("builder.doi"),
+				Value: b.DOI,
+				Cols:  9,
+				Error: localize.ValidationErrorAt(l, errors, "/doi"),
 			},
 			&display.Text{
 				Label:   l.T("builder.classification"),
@@ -41,13 +40,12 @@ func FormTypeConference(l *locale.Locale, b BindDetails, errors validation.Error
 		).
 		AddSection(
 			&form.Text{
-				Name:        "title",
-				Label:       l.T("builder.title"),
-				Value:       b.Title,
-				Cols:        9,
-				Placeholder: l.T("builder.publication.title.placeholder"),
-				Error:       localize.ValidationErrorAt(l, errors, "/title"),
-				Required:    true,
+				Name:     "title",
+				Label:    l.T("builder.title"),
+				Value:    b.Title,
+				Cols:     9,
+				Error:    localize.ValidationErrorAt(l, errors, "/title"),
+				Required: true,
 			},
 			&form.TextRepeat{
 				Name:   "alternative_title",
@@ -66,7 +64,7 @@ func FormTypeConference(l *locale.Locale, b BindDetails, errors validation.Error
 			},
 			&form.Text{
 				Name:  "publication_abbreviation",
-				Label: l.T("builder.publication_abbreviation"),
+				Label: l.T("builder.journal_article.publication_abbreviation"),
 				Value: b.PublicationAbbreviation,
 				Cols:  3,
 				Error: localize.ValidationErrorAt(l, errors, "/publication_abbreviation"),
@@ -169,8 +167,8 @@ func FormTypeConference(l *locale.Locale, b BindDetails, errors validation.Error
 		AddSection(
 			&display.Text{
 				Label:   l.T("builder.wos_type"),
-				Value:   b.WOSType,
-				Tooltip: l.TS("tooltip.publication", b.WOSType),
+				Value:   l.TS("tooltip.publication", b.WOSType),
+				Tooltip: l.T("tooltip.publication.wos_type"),
 			},
 			&form.Text{
 				Name:        "wos_id",

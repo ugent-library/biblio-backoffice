@@ -6,7 +6,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/validation"
 )
 
-func FormPublicationDetails(l *locale.Locale, b BindDetails, errors validation.Errors) *form.Form {
+func FormPublicationDetails(l *locale.Locale, b *BindDetails, errors validation.Errors) *form.Form {
 	switch b.Type {
 	case "book_chapter":
 		return FormTypeBookChapter(l, b, errors)
