@@ -77,8 +77,9 @@ func bookEditorDetails(l *locale.Locale, p *models.Publication) *display.Display
 		).
 		AddSection(
 			&display.Text{
-				Label: l.T("builder.wos_type"),
-				Value: p.WOSType,
+				Label:   l.T("builder.wos_type"),
+				Value:   l.TS("tooltip.publication", p.WOSType),
+				Tooltip: l.T("tooltip.publication.wos_type"),
 			},
 			&display.Text{
 				Label: l.T("builder.wos_id"),

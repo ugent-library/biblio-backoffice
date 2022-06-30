@@ -457,6 +457,15 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		Methods("GET").
 		Name("publication_datasets")
 
+	// edit publication details
+	r.HandleFunc("/publication/{id}/details/edit",
+		publicationEditingHandler.Wrap(publicationEditingHandler.EditDetails)).
+		Methods("GET").
+		Name("publication_edit_details")
+	r.HandleFunc("/publication/{id}/details",
+		publicationEditingHandler.Wrap(publicationEditingHandler.UpdateDetails)).
+		Methods("PUT").
+		Name("publication_update_details")
 	// edit publication projects
 	r.HandleFunc("/publication/{id}/projects/add",
 		publicationEditingHandler.Wrap(publicationEditingHandler.AddProject)).
