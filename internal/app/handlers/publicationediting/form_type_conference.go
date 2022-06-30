@@ -7,7 +7,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/validation"
 )
 
-func FormTypeConference(ctx Context, b *BindDetails, errors validation.Errors) *form.Form {
+func formTypeConference(ctx Context, b *BindDetails, errors validation.Errors) *form.Form {
 	l := ctx.Locale
 	p := ctx.Publication
 	return form.New().

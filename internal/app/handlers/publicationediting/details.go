@@ -59,7 +59,7 @@ type BindDetails struct {
 	Year                    string   `form:"year"`
 }
 
-func BindToPublication(b *BindDetails, p *models.Publication) {
+func bindToPublication(b *BindDetails, p *models.Publication) {
 	p.AlternativeTitle = b.AlternativeTitle
 	p.ArticleNumber = b.ArticleNumber
 	p.ArxivID = b.ArxivID
@@ -101,7 +101,7 @@ func BindToPublication(b *BindDetails, p *models.Publication) {
 	p.Year = b.Year
 }
 
-func PublicationToBind(p *models.Publication, b *BindDetails) {
+func publicationToBind(p *models.Publication, b *BindDetails) {
 	b.AlternativeTitle = p.AlternativeTitle
 	b.ArticleNumber = p.ArticleNumber
 	b.ArxivID = p.ArxivID
@@ -143,7 +143,7 @@ func PublicationToBind(p *models.Publication, b *BindDetails) {
 	b.Year = p.Year
 }
 
-func (b *BindDetails) CleanValues() {
+func (b *BindDetails) cleanValues() {
 	/*
 		Remove empty values introduced by GUI
 		added to the end
@@ -180,11 +180,11 @@ func (h *Handler) EditDetails(w http.ResponseWriter, r *http.Request, ctx Contex
 
 	b := &BindDetails{}
 	// copy attributes from (current) publication to bind
-	PublicationToBind(ctx.Publication, b)
+	publicationToBind(ctx.Publication, b)
 
 	render.Render(w, "publication/edit_details", YieldEditDetails{
 		Context: ctx,
-		Form:    FormPublicationDetails(ctx, b, nil),
+		Form:    formPublicationDetails(ctx, b, nil),
 	})
 }
 
@@ -196,16 +196,16 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 	}
 
 	// cleanup values from form
-	b.CleanValues()
+	b.cleanValues()
 
 	/*
 		copy attributes from bind to (current) publication
 		in order to validate publication
 	*/
-	BindToPublication(b, ctx.Publication)
+	bindToPublication(b, ctx.Publication)
 
 	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
-		form := FormPublicationDetails(ctx, b, validationErrs.(validation.Errors))
+		form := formPublicationDetails(ctx, b, validationErrs.(validation.Errors))
 
 		render.Render(w, "publication/refresh_edit_details", YieldEditDetails{
 			Context: ctx,

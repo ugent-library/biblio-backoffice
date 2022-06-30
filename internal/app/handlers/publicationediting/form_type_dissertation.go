@@ -7,7 +7,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/validation"
 )
 
-func FormTypeDissertation(ctx Context, b *BindDetails, errors validation.Errors) *form.Form {
+func formTypeDissertation(ctx Context, b *BindDetails, errors validation.Errors) *form.Form {
 	l := ctx.Locale
 	p := ctx.Publication
 	confirmationOptions := optionsForVocabulary(l, "confirmations")
