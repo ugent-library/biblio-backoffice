@@ -21,7 +21,6 @@ type BindDetails struct {
 	AlternativeTitle        []string `form:"alternative_title"`
 	ArticleNumber           string   `form:"article_number"`
 	ArxivID                 string   `form:"arxiv_id"`
-	Classification          string   `form:"-"`
 	ConferenceType          string   `form:"conference_type"`
 	DefenseDate             string   `form:"defense_date"`
 	DefensePlace            string   `form:"defense_place"`
@@ -55,10 +54,8 @@ type BindDetails struct {
 	ReportNumber            string   `form:"report_number"`
 	SeriesTitle             string   `form:"series_title"`
 	Title                   string   `form:"title"`
-	Type                    string   `form:"-"`
 	Volume                  string   `form:"volume"`
 	WOSID                   string   `form:"wos_id"`
-	WOSType                 string   `form:"-"`
 	Year                    string   `form:"year"`
 }
 
@@ -66,7 +63,6 @@ func BindToPublication(b *BindDetails, p *models.Publication) {
 	p.AlternativeTitle = b.AlternativeTitle
 	p.ArticleNumber = b.ArticleNumber
 	p.ArxivID = b.ArxivID
-	//p.Classification = b.Classification
 	p.ConferenceType = b.ConferenceType
 	p.DefenseDate = b.DefenseDate
 	p.DefensePlace = b.DefensePlace
@@ -100,10 +96,8 @@ func BindToPublication(b *BindDetails, p *models.Publication) {
 	p.ReportNumber = b.ReportNumber
 	p.SeriesTitle = b.SeriesTitle
 	p.Title = b.Title
-	//p.Type = b.Type //IMPORTANT: do not set
 	p.Volume = b.Volume
 	p.WOSID = b.WOSID
-	//p.WOSType = b.WOSType
 	p.Year = b.Year
 }
 
@@ -111,7 +105,6 @@ func PublicationToBind(p *models.Publication, b *BindDetails) {
 	b.AlternativeTitle = p.AlternativeTitle
 	b.ArticleNumber = p.ArticleNumber
 	b.ArxivID = p.ArxivID
-	b.Classification = p.Classification
 	b.ConferenceType = p.ConferenceType
 	b.DefenseDate = p.DefenseDate
 	b.DefensePlace = p.DefensePlace
@@ -145,17 +138,9 @@ func PublicationToBind(p *models.Publication, b *BindDetails) {
 	b.ReportNumber = p.ReportNumber
 	b.SeriesTitle = p.SeriesTitle
 	b.Title = p.Title
-	b.Type = p.Type
 	b.Volume = p.Volume
 	b.WOSID = p.WOSID
-	b.WOSType = p.WOSType
 	b.Year = p.Year
-}
-
-func (b *BindDetails) RestoreROFields(p *models.Publication) {
-	b.Type = p.Type
-	b.WOSType = p.WOSType
-	b.Classification = p.Classification
 }
 
 func (b *BindDetails) CleanValues() {
@@ -199,7 +184,7 @@ func (h *Handler) EditDetails(w http.ResponseWriter, r *http.Request, ctx Contex
 
 	render.Render(w, "publication/edit_details", YieldEditDetails{
 		Context: ctx,
-		Form:    FormPublicationDetails(ctx.Locale, b, nil),
+		Form:    FormPublicationDetails(ctx, b, nil),
 	})
 }
 
@@ -213,9 +198,6 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 	// cleanup values from form
 	b.CleanValues()
 
-	// restore read only fields
-	b.RestoreROFields(ctx.Publication)
-
 	/*
 		copy attributes from bind to (current) publication
 		in order to validate publication
@@ -223,7 +205,7 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 	BindToPublication(b, ctx.Publication)
 
 	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
-		form := FormPublicationDetails(ctx.Locale, b, validationErrs.(validation.Errors))
+		form := FormPublicationDetails(ctx, b, validationErrs.(validation.Errors))
 
 		render.Render(w, "publication/refresh_edit_details", YieldEditDetails{
 			Context: ctx,

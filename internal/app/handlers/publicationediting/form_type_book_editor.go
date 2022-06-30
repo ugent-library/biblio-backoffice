@@ -2,20 +2,20 @@ package publicationediting
 
 import (
 	"github.com/ugent-library/biblio-backend/internal/app/localize"
-	"github.com/ugent-library/biblio-backend/internal/locale"
 	"github.com/ugent-library/biblio-backend/internal/render/display"
 	"github.com/ugent-library/biblio-backend/internal/render/form"
 	"github.com/ugent-library/biblio-backend/internal/validation"
 )
 
-func FormTypeBookEditor(l *locale.Locale, b *BindDetails, errors validation.Errors) *form.Form {
-
+func FormTypeBookEditor(ctx Context, b *BindDetails, errors validation.Errors) *form.Form {
+	l := ctx.Locale
+	p := ctx.Publication
 	return form.New().
 		WithTheme("default").
 		AddSection(
 			&display.Text{
 				Label: l.T("builder.type"),
-				Value: l.TS("publication_types", b.Type),
+				Value: l.TS("publication_types", p.Type),
 			},
 			&form.Text{
 				Name:  "doi",
@@ -26,7 +26,7 @@ func FormTypeBookEditor(l *locale.Locale, b *BindDetails, errors validation.Erro
 			},
 			&display.Text{
 				Label:   l.T("builder.classification"),
-				Value:   l.TS("publication_classifications", b.Classification),
+				Value:   l.TS("publication_classifications", p.Classification),
 				Tooltip: l.T("tooltip.publication.classification"),
 			},
 		).
@@ -116,7 +116,7 @@ func FormTypeBookEditor(l *locale.Locale, b *BindDetails, errors validation.Erro
 		AddSection(
 			&display.Text{
 				Label:   l.T("builder.wos_type"),
-				Value:   l.TS("tooltip.publication", b.WOSType),
+				Value:   l.TS("tooltip.publication", p.WOSType),
 				Tooltip: l.T("tooltip.publication.wos_type"),
 			},
 			&form.Text{
