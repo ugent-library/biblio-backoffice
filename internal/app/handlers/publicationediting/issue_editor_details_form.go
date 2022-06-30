@@ -12,6 +12,7 @@ func issueEditorDetailsForm(ctx Context, b *BindDetails, errors validation.Error
 	p := ctx.Publication
 	return form.New().
 		WithTheme("default").
+		WithErrors(localize.ValidationErrors(l, errors)).
 		AddSection(
 			&display.Text{
 				Label: l.T("builder.type"),

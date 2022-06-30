@@ -485,44 +485,45 @@ func (p *Publication) InORCIDWorks(orcidID string) bool {
 func (d *Publication) Validate() error {
 	var errs validation.Errors
 
-	// if d.ID == "" {
-	// 	errs = append(errs, &validation.Error{
-	// 		Pointer: "/id",
-	// 		Code:    "required",
-	// 		Field:   "id",
-	// 	})
-	// }
+	if d.ID == "" {
+		errs = append(errs, &validation.Error{
+			Pointer: "/id",
+			Code:    "publication.id.required",
+		})
+	}
 	if d.Type == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/type",
-			Code:    "required",
-			Field:   "type",
+			Code:    "publication.type.required",
 		})
 	} else if !validation.IsPublicationType(d.Type) {
 		errs = append(errs, &validation.Error{
 			Pointer: "/type",
-			Code:    "invalid",
-			Field:   "type",
+			Code:    "publication.type.invalid",
+		})
+	}
+	// TODO check classification validity
+	if d.Classification == "" {
+		errs = append(errs, &validation.Error{
+			Pointer: "/classification",
+			Code:    "publication.classification.required",
 		})
 	}
 	if d.Status == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/status",
-			Code:    "required",
-			Field:   "status",
+			Code:    "publication.status.required",
 		})
 	} else if !validation.IsStatus(d.Status) {
 		errs = append(errs, &validation.Error{
 			Pointer: "/status",
-			Code:    "invalid",
-			Field:   "status",
+			Code:    "publication.status.invalid",
 		})
 	}
 	if d.Status == "public" && d.Title == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/title",
-			Code:    "required",
-			Field:   "title",
+			Code:    "publication.title.required",
 		})
 	}
 
@@ -530,14 +531,12 @@ func (d *Publication) Validate() error {
 		if d.Year == "" {
 			errs = append(errs, &validation.Error{
 				Pointer: "/year",
-				Code:    "required",
-				Field:   "year",
+				Code:    "publication.year.required",
 			})
 		} else if !validation.IsYear(d.Year) {
 			errs = append(errs, &validation.Error{
 				Pointer: "/year",
-				Code:    "invalid",
-				Field:   "year",
+				Code:    "publication.year.invalid",
 			})
 		}
 	}
@@ -546,8 +545,7 @@ func (d *Publication) Validate() error {
 		for _, err := range a.Validate() {
 			errs = append(errs, &validation.Error{
 				Pointer: fmt.Sprintf("/abstract/%d%s", i, err.Pointer),
-				Code:    err.Code,
-				Field:   "abstract." + err.Field,
+				Code:    "publication.abstract." + err.Code,
 			})
 		}
 	}
@@ -556,8 +554,7 @@ func (d *Publication) Validate() error {
 		for _, err := range l.Validate() {
 			errs = append(errs, &validation.Error{
 				Pointer: fmt.Sprintf("/lay_summary/%d%s", i, err.Pointer),
-				Code:    err.Code,
-				Field:   "lay_summary." + err.Field,
+				Code:    "publication.lay_summary." + err.Code,
 			})
 		}
 	}
@@ -566,8 +563,7 @@ func (d *Publication) Validate() error {
 		for _, err := range c.Validate() {
 			errs = append(errs, &validation.Error{
 				Pointer: fmt.Sprintf("/author/%d%s", i, err.Pointer),
-				Code:    err.Code,
-				Field:   "author." + err.Field,
+				Code:    "publication.author." + err.Code,
 			})
 		}
 	}
@@ -575,8 +571,7 @@ func (d *Publication) Validate() error {
 		for _, err := range c.Validate() {
 			errs = append(errs, &validation.Error{
 				Pointer: fmt.Sprintf("/editor/%d%s", i, err.Pointer),
-				Code:    err.Code,
-				Field:   "editor." + err.Field,
+				Code:    "publication.editor." + err.Code,
 			})
 		}
 	}
@@ -584,8 +579,7 @@ func (d *Publication) Validate() error {
 		for _, err := range c.Validate() {
 			errs = append(errs, &validation.Error{
 				Pointer: fmt.Sprintf("/supervisor/%d%s", i, err.Pointer),
-				Code:    err.Code,
-				Field:   "supervisor." + err.Field,
+				Code:    "publication.supervisor." + err.Code,
 			})
 		}
 	}
@@ -594,8 +588,7 @@ func (d *Publication) Validate() error {
 		if pr.ID == "" {
 			errs = append(errs, &validation.Error{
 				Pointer: fmt.Sprintf("/project/%d/id", i),
-				Code:    "required",
-				Field:   "project",
+				Code:    "publication.project.id.required",
 			})
 		}
 	}
@@ -604,8 +597,7 @@ func (d *Publication) Validate() error {
 		if dep.ID == "" {
 			errs = append(errs, &validation.Error{
 				Pointer: fmt.Sprintf("/department/%d/id", i),
-				Code:    "required",
-				Field:   "department",
+				Code:    "publication.department.id.required",
 			})
 		}
 	}
@@ -614,8 +606,7 @@ func (d *Publication) Validate() error {
 		if rd.ID == "" {
 			errs = append(errs, &validation.Error{
 				Pointer: fmt.Sprintf("/related_dataset/%d/id", i),
-				Code:    "required",
-				Field:   "related_dataset",
+				Code:    "publication.related_dataset.id.required",
 			})
 		}
 	}
@@ -624,8 +615,7 @@ func (d *Publication) Validate() error {
 		for _, err := range f.Validate() {
 			errs = append(errs, &validation.Error{
 				Pointer: fmt.Sprintf("/file/%d%s", i, err.Pointer),
-				Code:    err.Code,
-				Field:   "file." + err.Field,
+				Code:    "publication.file" + err.Code,
 			})
 		}
 	}
@@ -634,8 +624,7 @@ func (d *Publication) Validate() error {
 		for _, err := range pl.Validate() {
 			errs = append(errs, &validation.Error{
 				Pointer: fmt.Sprintf("/link/%d%s", i, err.Pointer),
-				Code:    err.Code,
-				Field:   "link." + err.Field,
+				Code:    "publication.link" + err.Code,
 			})
 		}
 	}
@@ -681,8 +670,7 @@ func (p *Publication) validateJournalArticle() (errs validation.Errors) {
 	if p.JournalArticleType != "" && !validation.InArray(vocabularies.Map["journal_article_types"], p.JournalArticleType) {
 		errs = append(errs, &validation.Error{
 			Pointer: "/journal_article_type",
-			Code:    "invalid",
-			Field:   "journal_article_type",
+			Code:    "publication.journal_article_type.invalid",
 		})
 	}
 	if p.Status != "public" {
@@ -691,8 +679,7 @@ func (p *Publication) validateJournalArticle() (errs validation.Errors) {
 	if p.Publication == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/publication",
-			Code:    "required",
-			Field:   "publication",
+			Code:    "publication.journal_article.publication.required",
 		})
 	}
 	return
@@ -717,83 +704,72 @@ func (p *Publication) validateDissertation() (errs validation.Errors) {
 	if p.DefensePlace == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/defense_place",
-			Code:    "required",
-			Field:   "defense_place",
+			Code:    "publication.defense_place.required",
 		})
 	}
 	if p.DefenseDate == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/defense_date",
-			Code:    "required",
-			Field:   "defense_date",
+			Code:    "publication.defense_date.required",
 		})
 	} else if !validation.IsDate(p.DefenseDate) {
 		errs = append(errs, &validation.Error{
 			Pointer: "/defense_date",
-			Code:    "invalid",
-			Field:   "defense_date",
+			Code:    "publication.defense_date.invalid",
 		})
 	}
 	if p.DefenseTime == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/defense_time",
-			Code:    "required",
-			Field:   "defense_time",
+			Code:    "publication.defense_time.required",
 		})
 	} else if !validation.IsTime(p.DefenseTime) {
 		errs = append(errs, &validation.Error{
 			Pointer: "/defense_time",
-			Code:    "invalid",
-			Field:   "defense_time",
+			Code:    "publication.defense_time.invalid",
 		})
 	}
 	return
 }
 
 func (p *Publication) validateMiscellaneous() (errs validation.Errors) {
-	// TODO: confusing: gui shows select without empty element
+	// TODO confusing: gui shows select without empty element
 	// but first creation sets this value to empty
 	if p.MiscellaneousType != "" && !validation.InArray(vocabularies.Map["miscellaneous_types"], p.MiscellaneousType) {
 		errs = append(errs, &validation.Error{
 			Pointer: "/miscellaneous_type",
-			Code:    "invalid",
-			Field:   "miscellaneous_type",
+			Code:    "publication.miscellaneous_type.invalid",
 		})
 	}
 	return
 }
 
 func (pf *PublicationFile) Validate() (errs validation.Errors) {
-
 	if !validation.InArray(vocabularies.Map["publication_file_access_levels"], pf.AccessLevel) {
 		errs = append(errs, &validation.Error{
 			Pointer: "/access_level",
-			Code:    "invalid",
-			Field:   "access_level",
+			Code:    "access_level.invalid",
 		})
 	}
 
 	if pf.ContentType == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/content_type",
-			Code:    "required",
-			Field:   "content_type",
+			Code:    "content_type.required",
 		})
 	}
 
 	if pf.ID == "" {
 		errs = append(errs, &validation.Error{
-			Pointer: "/file_id", // TODO: change to id?
-			Code:    "required",
-			Field:   "file_id",
+			Pointer: "/file_id",
+			Code:    "file_id.required",
 		})
 	}
 
 	if pf.Relation != "" && !validation.InArray(vocabularies.Map["publication_file_relations"], pf.Relation) {
 		errs = append(errs, &validation.Error{
 			Pointer: "/relation",
-			Code:    "invalid",
-			Field:   "relation",
+			Code:    "relation.invalid",
 		})
 	}
 
@@ -801,21 +777,18 @@ func (pf *PublicationFile) Validate() (errs validation.Errors) {
 		if !validation.IsDate(pf.Embargo) {
 			errs = append(errs, &validation.Error{
 				Pointer: "/embargo",
-				Code:    "invalid",
-				Field:   "embargo",
+				Code:    "embargo.invalid",
 			})
 		}
 		if pf.EmbargoTo == pf.AccessLevel {
 			errs = append(errs, &validation.Error{
 				Pointer: "/embargo_to",
-				Code:    "invalid", // TODO: better code
-				Field:   "embargo_to",
+				Code:    "embargo_to.invalid", // TODO better code
 			})
 		} else if !validation.InArray(vocabularies.Map["publication_file_access_levels"], pf.EmbargoTo) {
 			errs = append(errs, &validation.Error{
 				Pointer: "/embargo_to",
-				Code:    "invalid", // TODO: better code
-				Field:   "embargo_to",
+				Code:    "embargo_to.invalid", // TODO better code
 			})
 		}
 	}
@@ -823,8 +796,7 @@ func (pf *PublicationFile) Validate() (errs validation.Errors) {
 	if pf.PublicationVersion != "" && !validation.InArray(vocabularies.Map["publication_versions"], pf.PublicationVersion) {
 		errs = append(errs, &validation.Error{
 			Pointer: "/publication_version",
-			Code:    "invalid",
-			Field:   "publication_version",
+			Code:    "publication_version.invalid",
 		})
 	}
 
@@ -835,8 +807,7 @@ func (pl *PublicationLink) Validate() (errs validation.Errors) {
 	if !validation.InArray(vocabularies.Map["publication_link_relations"], pl.Relation) {
 		errs = append(errs, &validation.Error{
 			Pointer: "/relation",
-			Code:    "invalid",
-			Field:   "relation",
+			Code:    "relation.invalid",
 		})
 	}
 	return

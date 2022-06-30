@@ -14,6 +14,7 @@ func dissertationDetailsForm(ctx Context, b *BindDetails, errors validation.Erro
 
 	return form.New().
 		WithTheme("default").
+		WithErrors(localize.ValidationErrors(l, errors)).
 		AddSection(
 			&display.Text{
 				Label: l.T("builder.type"),

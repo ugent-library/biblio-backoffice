@@ -246,13 +246,12 @@ func (d *Dataset) ResolveDOI() string {
 func (d *Dataset) Validate() error {
 	var errs validation.Errors
 
-	// if d.ID == "" {
-	// 	errs = append(errs, &validation.Error{
-	// 		Pointer: "/id",
-	// 		Code:    "required",
-	// 		Field:   "id",
-	// 	})
-	// }
+	if d.ID == "" {
+		errs = append(errs, &validation.Error{
+			Pointer: "/id",
+			Code:    "dataset.id.required",
+		})
+	}
 	if d.Status == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/status",
@@ -381,7 +380,7 @@ func (d *Dataset) Validate() error {
 		if pr.ID == "" {
 			errs = append(errs, &validation.Error{
 				Pointer: fmt.Sprintf("/project/%d/id", i),
-				Code:    "dataset.project.required",
+				Code:    "dataset.project.id.required",
 			})
 		}
 	}
@@ -390,7 +389,7 @@ func (d *Dataset) Validate() error {
 		if dep.ID == "" {
 			errs = append(errs, &validation.Error{
 				Pointer: fmt.Sprintf("/department/%d/id", i),
-				Code:    "dataset.department.required",
+				Code:    "dataset.department.id.required",
 			})
 		}
 	}
