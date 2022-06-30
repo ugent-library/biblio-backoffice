@@ -4,7 +4,7 @@
             <div class="bc-toolbar">
                 <div class="bc-toolbar-left">
                     <div class="bc-toolbar-item">
-                        <a class="btn btn-link btn-link-muted" href="{{pathFor "datasets" | query .SearchArgs}}">
+                        <a class="btn btn-link btn-link-muted" href="{{.RedirectURL}}">
                             <i class="if if-arrow-left"></i>
                             <div class="btn-text">Datasets overview</div>
                         </a>
@@ -13,15 +13,12 @@
                 <div class="bc-toolbar-right">
                     {{if .User.CanPublishDataset .Dataset}}
                     <div class="bc-toolbar-item">
-                        <form action="{{pathFor "dataset_publish" "id" .Dataset.ID}}" method="POST">
-                            {{.CSRFTag}}
-                            <button class="btn btn-success"
-                                hx-get="{{pathFor "dataset_confirm_publish" "id" .Dataset.ID | query .SearchArgs}}"
-                                hx-target="#modals"
-                            >
-                                <div class="btn-text">Publish to Biblio</div>
-                            </button>
-                        </form>
+                        <button class="btn btn-success"
+                            hx-get="{{pathFor "dataset_confirm_publish" "id" .Dataset.ID|querySet "redirect-url" .RedirectURL}}"
+                            hx-target="#modals"
+                        >
+                            <div class="btn-text">Publish to Biblio</div>
+                        </button>
                     </div>
                     {{end}}
                     <div class="bc-toolbar-item">
@@ -34,7 +31,7 @@
                             <div class="dropdown-menu">
                                 {{if .User.CanDeleteDataset .Dataset}}
                                 <button class="dropdown-item"
-                                    hx-get="{{pathFor "dataset_confirm_delete" "id" .Dataset.ID | query .SearchArgs}}"
+                                    hx-get="{{pathFor "dataset_confirm_delete" "id" .Dataset.ID|querySet "redirect-url" .RedirectURL}}"
                                     hx-target="#modals"
                                 >
                                     <i class="if if-delete"></i>
@@ -67,7 +64,7 @@
         </div>
     </div>
     <div class="u-scroll-wrapper__body p-6" id="show-content"
-        hx-get="{{pathFor (print "dataset_" .ActiveSubNav) "id" .Dataset.ID | query .SearchArgs}}"
+        hx-get="{{pathFor (print "dataset_" .ActiveSubNav) "id" .Dataset.ID}}"
         hx-trigger="load delay:100ms"
         hx-target="#show-content"
     >

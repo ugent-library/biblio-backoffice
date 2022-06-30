@@ -67,6 +67,7 @@ func (h BaseHandler) NewContext(r *http.Request, w http.ResponseWriter) (BaseCon
 	}
 
 	return BaseContext{
+		CurrentURL:   r.URL,
 		Flash:        flash,
 		Locale:       h.Localizer.GetLocale(r.Header.Get("Accept-Language")),
 		User:         user,
@@ -146,6 +147,7 @@ func (h BaseHandler) URLFor(name string, vars ...string) *url.URL {
 }
 
 type BaseContext struct {
+	CurrentURL   *url.URL
 	Flash        []flash.Flash
 	Locale       *locale.Locale
 	User         *models.User

@@ -10,6 +10,14 @@ import (
 // https://www.alexedwards.net/blog/i18n-managing-translations
 // https://phrase.com/blog/posts/internationalization-i18n-go/#Manually_setting_the_translation_strings
 func init() {
+	message.SetString(language.English, "publication.search.scopes.all", "All")
+	message.SetString(language.English, "publication.search.scopes.contributed", "My publications")
+	message.SetString(language.English, "publication.search.scopes.created", "Registered by me")
+
+	message.SetString(language.English, "dataset.search.scopes.all", "All")
+	message.SetString(language.English, "dataset.search.scopes.contributed", "My datasets")
+	message.SetString(language.English, "dataset.search.scopes.created", "Registered by me")
+
 	message.SetString(language.English, "publication.subnav.description", "Description")
 	message.SetString(language.English, "publication.subnav.contributors", "Authors & Editors")
 	message.SetString(language.English, "publication.subnav.datasets", "Datasets")
@@ -236,7 +244,8 @@ func init() {
 	message.SetString(language.English, "builder.abstract.text.placeholder", "Add abstract here...")
 	message.SetString(language.English, "builder.abstract.lang", "Language")
 
-	message.SetString(language.English, "builder.lay_summary.text", "Lay Summary")
+	message.SetString(language.English, "builder.lay_summary.text", "Lay summary")
+	message.SetString(language.English, "builder.lay_summary.text.placeholder", "Add lay summary here...")
 	message.SetString(language.English, "builder.lay_summary.lang", "Language")
 
 	message.SetString(language.English, "builder.link.url", "URL")

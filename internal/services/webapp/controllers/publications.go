@@ -60,40 +60,40 @@ func NewPublications(base Base, store backends.Repository, fileStore *filestore.
 	}
 }
 
-func (c *Publications) List(w http.ResponseWriter, r *http.Request) {
-	searchArgs := models.NewSearchArgs()
-	if err := DecodeQuery(searchArgs, r.URL.Query()); err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
+// func (c *Publications) List(w http.ResponseWriter, r *http.Request) {
+// 	searchArgs := models.NewSearchArgs()
+// 	if err := DecodeQuery(searchArgs, r.URL.Query()); err != nil {
+// 		log.Println(err)
+// 		http.Error(w, err.Error(), http.StatusBadRequest)
+// 		return
+// 	}
 
-	hits, err := c.userPublications(context.GetUser(r.Context()).ID, searchArgs)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+// 	hits, err := c.userPublications(context.GetUser(r.Context()).ID, searchArgs)
+// 	if err != nil {
+// 		log.Println(err)
+// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+// 		return
+// 	}
 
-	searchURL, _ := c.Router.Get("publications").URLPath()
+// 	searchURL, _ := c.Router.Get("publications").URLPath()
 
-	for _, p := range hits.Hits {
-		c.addThumbnailURLs(p)
-	}
+// 	for _, p := range hits.Hits {
+// 		c.addThumbnailURLs(p)
+// 	}
 
-	c.Render.HTML(w, http.StatusOK, "publication/list", c.ViewData(r, struct {
-		PageTitle  string
-		SearchURL  *url.URL
-		SearchArgs *models.SearchArgs
-		Hits       *models.PublicationHits
-	}{
-		"Overview - Publications - Biblio",
-		searchURL,
-		searchArgs,
-		hits,
-	}),
-	)
-}
+// 	c.Render.HTML(w, http.StatusOK, "publication/list", c.ViewData(r, struct {
+// 		PageTitle  string
+// 		SearchURL  *url.URL
+// 		SearchArgs *models.SearchArgs
+// 		Hits       *models.PublicationHits
+// 	}{
+// 		"Overview - Publications - Biblio",
+// 		searchURL,
+// 		searchArgs,
+// 		hits,
+// 	}),
+// 	)
+// }
 
 func (c *Publications) Show(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())

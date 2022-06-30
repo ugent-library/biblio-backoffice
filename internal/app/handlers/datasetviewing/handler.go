@@ -17,8 +17,8 @@ type Handler struct {
 
 type Context struct {
 	handlers.BaseContext
-	Dataset    *models.Dataset
-	SearchArgs *models.SearchArgs
+	Dataset     *models.Dataset
+	RedirectURL string
 }
 
 func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) http.HandlerFunc {
@@ -39,16 +39,15 @@ func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) htt
 			return
 		}
 
-		searchArgs := models.NewSearchArgs()
-		if err := bind.Request(r, searchArgs); err != nil {
-			render.BadRequest(w, r, err)
-			return
+		redirectURL := r.URL.Query().Get("redirect-url")
+		if redirectURL == "" {
+			redirectURL = h.PathFor("datasets").String()
 		}
 
 		fn(w, r, Context{
 			BaseContext: ctx,
 			Dataset:     d,
-			SearchArgs:  searchArgs,
+			RedirectURL: redirectURL,
 		})
 	})
 }

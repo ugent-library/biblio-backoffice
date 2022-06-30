@@ -16,12 +16,16 @@ func init() {
 	queryEncoder.SetMode(form.ModeExplicit)
 }
 
+// TODO split into mux and query packages
 func FuncMap(r *mux.Router) template.FuncMap {
 	return template.FuncMap{
-		"urlFor":   urlFor(r),
-		"pathFor":  pathFor(r),
-		"query":    query,
-		"querySet": querySet,
+		"urlFor":     urlFor(r),
+		"pathFor":    pathFor(r),
+		"query":      query,
+		"querySet":   querySet,
+		"queryAdd":   queryAdd,
+		"queryDel":   queryDel,
+		"queryClear": queryClear,
 	}
 }
 
@@ -57,15 +61,42 @@ func query(v interface{}, u *url.URL) (*url.URL, error) {
 		return u, err
 	}
 
-	u.RawQuery = vals.Encode()
+	newU := *u
+	newU.RawQuery = vals.Encode()
 
-	return u, nil
+	return &newU, nil
 }
 
 func querySet(k, v string, u *url.URL) (*url.URL, error) {
+	newU := *u
 	q := u.Query()
 	q.Set(k, v)
-	u.RawQuery = q.Encode()
+	newU.RawQuery = q.Encode()
 
-	return u, nil
+	return &newU, nil
+}
+
+func queryAdd(k, v string, u *url.URL) (*url.URL, error) {
+	newU := *u
+	q := u.Query()
+	q.Add(k, v)
+	newU.RawQuery = q.Encode()
+
+	return &newU, nil
+}
+
+func queryDel(k string, u *url.URL) (*url.URL, error) {
+	newU := *u
+	q := u.Query()
+	q.Del(k)
+	newU.RawQuery = q.Encode()
+
+	return &newU, nil
+}
+
+func queryClear(u *url.URL) (*url.URL, error) {
+	newU := *u
+	newU.RawQuery = ""
+
+	return &newU, nil
 }
