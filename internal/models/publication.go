@@ -520,6 +520,7 @@ func (d *Publication) Validate() error {
 			Code:    "publication.status.invalid",
 		})
 	}
+
 	if d.Status == "public" && d.Title == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/title",
