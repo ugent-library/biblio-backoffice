@@ -410,6 +410,24 @@ func (p *Publication) RemoveLaySummary(i int) error {
 	return nil
 }
 
+func (p *Publication) GetProject(i int) (PublicationProject, error) {
+	if i >= len(p.Project) {
+		return PublicationProject{}, errors.New("index out of bounds")
+	}
+
+	return p.Project[i], nil
+}
+
+func (p *Publication) RemoveProject(i int) error {
+	if i >= len(p.Project) {
+		return errors.New("index out of bounds")
+	}
+
+	p.Project = append(p.Project[:i], p.Project[i+1:]...)
+
+	return nil
+}
+
 func (p *Publication) UsesLaySummary() bool {
 	switch p.Type {
 	case "dissertation":

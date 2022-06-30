@@ -54,7 +54,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	publicationFilesController := controllers.NewPublicationFiles(oldBase, services.Repository, services.FileStore)
 	publicationDetailsController := controllers.NewPublicationDetails(oldBase, services.Repository)
 	publicationConferenceController := controllers.NewPublicationConference(oldBase, services.Repository)
-	publicationProjectsController := controllers.NewPublicationProjects(oldBase, services.Repository, services.ProjectSearchService, services.ProjectService)
 	publicationDepartmentsController := controllers.NewPublicationDepartments(oldBase, services.Repository, services.OrganizationSearchService, services.OrganizationService)
 	publicationLinksController := controllers.NewPublicationLinks(oldBase, services.Repository)
 	publicationContributorsController := controllers.NewPublicationContributors(oldBase, services.Repository, services.PersonSearchService, services.PersonService)
@@ -194,7 +193,7 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		Methods("POST").
 		Name("delete_impersonation")
 
-	// Add a dataset
+	// add dataset
 	r.HandleFunc("/dataset/add",
 		datasetCreatingHandler.Wrap(datasetCreatingHandler.Add)).
 		Methods("GET").
@@ -240,7 +239,7 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		Methods("GET").
 		Name("datasets")
 
-	// dataset delete
+	// delete dataset
 	r.HandleFunc("/dataset/{id}/confirm-delete",
 		datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmDelete)).
 		Methods("GET").
@@ -458,6 +457,28 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		Methods("GET").
 		Name("publication_datasets")
 
+	// edit publication projects
+	r.HandleFunc("/publication/{id}/projects/add",
+		publicationEditingHandler.Wrap(publicationEditingHandler.AddProject)).
+		Methods("GET").
+		Name("publication_add_project")
+	r.HandleFunc("/publication/{id}/projects/suggestions",
+		publicationEditingHandler.Wrap(publicationEditingHandler.SuggestProjects)).
+		Methods("GET").
+		Name("publication_suggest_projects")
+	r.HandleFunc("/publication/{id}/projects",
+		publicationEditingHandler.Wrap(publicationEditingHandler.CreateProject)).
+		Methods("POST").
+		Name("publication_create_project")
+	r.HandleFunc("/publication/{id}/projects/{position}/confirm-delete",
+		publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDeleteProject)).
+		Methods("GET").
+		Name("publication_confirm_delete_project")
+	r.HandleFunc("/publication/{id}/projects/{position}",
+		publicationEditingHandler.Wrap(publicationEditingHandler.DeleteProject)).
+		Methods("DELETE").
+		Name("publication_delete_project")
+
 	// edit publication abstracts
 	r.HandleFunc("/publication/{id}/abstracts/add",
 		publicationEditingHandler.Wrap(publicationEditingHandler.AddAbstract)).
@@ -650,22 +671,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	pubEditRouter.HandleFunc("/htmx/additional_info/edit", publicationAdditionalInfoController.Update).
 		Methods("PATCH").
 		Name("publication_additional_info_save_form")
-	// Publication projects HTMX fragments
-	pubEditRouter.HandleFunc("/htmx/projects/list", publicationProjectsController.List).
-		Methods("GET").
-		Name("publication_add_project")
-	pubEditRouter.HandleFunc("/htmx/projects/list/activesearch", publicationProjectsController.ActiveSearch).
-		Methods("POST").
-		Name("publication_projects_activesearch")
-	pubEditRouter.HandleFunc("/htmx/projects/add/{project_id:[a-zA-Z0-9].*}", publicationProjectsController.Add).
-		Methods("PATCH").
-		Name("publication_projects_add_to_publication")
-	pubEditRouter.HandleFunc("/htmx/projects/remove/{project_id:[a-zA-Z0-9].*}", publicationProjectsController.ConfirmRemove).
-		Methods("GET").
-		Name("publication_projects_confirm_remove_from_publication")
-	pubEditRouter.HandleFunc("/htmx/projects/remove/{project_id:[a-zA-Z0-9].*}", publicationProjectsController.Remove).
-		Methods("PATCH").
-		Name("publication_projects_remove_from_publication")
 	// Publication departments HTMX fragments
 	pubEditRouter.HandleFunc("/htmx/departments/list", publicationDepartmentsController.List).
 		Methods("GET").
