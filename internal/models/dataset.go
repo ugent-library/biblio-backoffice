@@ -217,14 +217,6 @@ func (d *Dataset) RemoveProject(i int) error {
 	return nil
 }
 
-func (d *Dataset) GetDepartment(i int) (DatasetDepartment, error) {
-	if i >= len(d.Department) {
-		return DatasetDepartment{}, errors.New("index out of bounds")
-	}
-
-	return d.Department[i], nil
-}
-
 func (d *Dataset) RemoveDepartment(i int) error {
 	if i >= len(d.Department) {
 		return errors.New("index out of bounds")
