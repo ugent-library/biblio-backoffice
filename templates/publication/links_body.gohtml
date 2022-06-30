@@ -10,8 +10,8 @@
         </thead>
         <tbody>
         {{range $k, $a := .Publication.Link}}
-            {{ $k = $k | toString }}
-            <tr class="row-{{ $k }}">
+            {{$k = $k|toString}}
+            <tr class="row-{{$k}}">
                 <td class="pl-6">
                     <a href="{{.URL}}">{{.URL}}</a>
                     <p class="c-body-small text-muted m-0">{{.Description}}</p>

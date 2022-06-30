@@ -6,8 +6,6 @@ import (
 	"time"
 
 	"github.com/ugent-library/biblio-backend/internal/app/localize"
-	"github.com/ugent-library/biblio-backend/internal/bind"
-	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
 	"github.com/ugent-library/biblio-backend/internal/render/flash"
 	"github.com/ugent-library/biblio-backend/internal/render/form"
@@ -17,19 +15,13 @@ import (
 
 type YieldPublish struct {
 	Context
-	SearchArgs *models.SearchArgs
+	RedirectURL string
 }
 
 func (h *Handler) ConfirmPublish(w http.ResponseWriter, r *http.Request, ctx Context) {
-	searchArgs := models.NewSearchArgs()
-	if err := bind.Request(r, searchArgs); err != nil {
-		render.BadRequest(w, r, err)
-		return
-	}
-
 	render.Render(w, "dataset/confirm_publish", YieldPublish{
-		Context:    ctx,
-		SearchArgs: searchArgs,
+		Context:     ctx,
+		RedirectURL: r.URL.Query().Get("redirect-url"),
 	})
 }
 
@@ -72,8 +64,5 @@ func (h *Handler) Publish(w http.ResponseWriter, r *http.Request, ctx Context) {
 		DismissAfter: 5 * time.Second,
 	})
 
-	redirectURL := h.PathFor("dataset", "id", ctx.Dataset.ID)
-	redirectURL.RawQuery = r.URL.RawQuery
-
-	w.Header().Set("HX-Redirect", redirectURL.String())
+	w.Header().Set("HX-Redirect", r.URL.Query().Get("redirect-url"))
 }

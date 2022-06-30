@@ -1,8 +1,9 @@
 {{$d := .Dataset}}
+{{$dURL := pathFor "dataset" "id" $d.ID|querySet "redirect-url" .CurrentURL.String}}
 <div class="d-flex w-100">
     <div class="w-100">
         <div class="d-flex align-items-start">
-            <a href="{{pathFor "dataset" "id" $d.ID | query .SearchArgs}}">
+            <a href="{{$dURL}}">
             <div class="list-group-item-thumbnail">
                 <div class="c-thumbnail c-thumbnail--dataset c-thumbnail--medium">
                     <i class="if if-database"></i>
@@ -22,25 +23,25 @@
                             </button>
                             <div class="dropdown-menu">
                                 <a class="dropdown-item"
-                                    href="{{pathFor "dataset" "id" $d.ID | query .SearchArgs}}">
+                                    href="{{$dURL}}">
                                     <i class="if if-file-text"></i>
                                     <span>View details</span>
                                 </a>
                                 {{if .User.CanDeleteDataset $d}}
-                                <a class="dropdown-item" href="#"
-                                    hx-get="{{pathFor "dataset_confirm_delete" "id" $d.ID | query .SearchArgs}}"
+                                <button class="dropdown-item"
+                                    hx-get="{{pathFor "dataset_confirm_delete" "id" $d.ID|querySet "redirect-url" .CurrentURL.String}}"
                                     hx-target="#modals"
                                 >
                                     <i class="if if-delete"></i>
                                     <span>Delete</span>
-                                </a>
+                                </button>
                                 {{end}}
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="list-group-item-text">
-                    <a href="{{pathFor "dataset" "id" $d.ID | query .SearchArgs}}">
+                    <a href="{{$dURL}}">
                         <h4 class="c-h4">{{$d.Title}}</h4>
                     </a>
                     {{with $d.Author}}{{template "shared/contributors" .}}{{end}}

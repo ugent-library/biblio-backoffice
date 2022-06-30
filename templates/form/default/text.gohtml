@@ -15,7 +15,7 @@
             hx-get="{{.AutocompleteURL}}"
             hx-trigger="keyup changed delay:100ms"
             hx-target="#{{.Name}}-autocomplete"
-            hx-vals='{"input": {{.Name | quote}}}'
+            hx-vals='{"input": {{.Name|quote}}}'
             {{end}}
             {{if .Placeholder}}placeholder="{{.Placeholder}}"{{end}}
             {{if .Readonly}}readonly{{end}}

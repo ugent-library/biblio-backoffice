@@ -25,7 +25,7 @@
             <div class="custom-control custom-radio custom-control-inline">
                 <input class="custom-control-input" id="{{.Role}}-{{.Position}}-unconfirmed" type="radio" name="confirmed"
                     {{if not .Contributor.ID}}checked{{end}}
-                    hx-post="{{pathFor "dataset_unconfirm_contributor" "id" $.Dataset.ID "role" $.Role "position" ($.Position | toString)}}"
+                    hx-post="{{pathFor "dataset_unconfirm_contributor" "id" $.Dataset.ID "role" $.Role "position" ($.Position|toString)}}"
                     hx-target="#modals"
                     hx-include='.contributor-attributes input[name="first_name"], .contributor-attributes input[name="last_name"]'
                 >

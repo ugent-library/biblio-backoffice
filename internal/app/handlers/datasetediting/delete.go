@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ugent-library/biblio-backend/internal/bind"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
 	"github.com/ugent-library/biblio-backend/internal/render/flash"
@@ -14,21 +13,15 @@ import (
 
 type YieldConfirmDelete struct {
 	Context
-	Dataset    *models.Dataset
-	SearchArgs *models.SearchArgs
+	Dataset     *models.Dataset
+	RedirectURL string
 }
 
 func (h *Handler) ConfirmDelete(w http.ResponseWriter, r *http.Request, ctx Context) {
-	searchArgs := models.NewSearchArgs()
-	if err := bind.Request(r, searchArgs); err != nil {
-		render.BadRequest(w, r, err)
-		return
-	}
-
 	render.Render(w, "dataset/confirm_delete", YieldConfirmDelete{
-		Context:    ctx,
-		Dataset:    ctx.Dataset,
-		SearchArgs: searchArgs,
+		Context:     ctx,
+		Dataset:     ctx.Dataset,
+		RedirectURL: r.URL.Query().Get("redirect-url"),
 	})
 }
 
@@ -59,8 +52,5 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request, ctx Context) {
 		DismissAfter: 5 * time.Second,
 	})
 
-	redirectURL := h.PathFor("datasets")
-	redirectURL.RawQuery = r.URL.RawQuery
-
-	w.Header().Set("HX-Redirect", redirectURL.String())
+	w.Header().Set("HX-Redirect", r.URL.Query().Get("redirect-url"))
 }

@@ -3,7 +3,7 @@
         <div class="bc-toolbar">
             <div class="bc-toolbar-left">
                 <div class="bc-toolbar-item">
-                    <h4 class="bc-toolbar-title">Datasets</h4>
+                    <h4 class="bc-toolbar-title">Publications</h4>
                 </div>
             </div>
         </div>
@@ -12,7 +12,7 @@
         <nav>
             <ul class="c-sub-sidebar-menu">
                 <li class="c-sub-sidebar__item c-sub-sidebar__item--active">
-                    <a href="{{pathFor "datasets"}}">
+                    <a href="{{pathFor "publications"}}">
                         <span class="c-sidebar__label">Overview</span>
                     </a>
                 </li>
@@ -27,15 +27,33 @@
             <div class="bc-toolbar">
                 <div class="bc-toolbar-left">
                     <div class="bc-toolbar-item">
-                        <h4 class="bc-toolbar-title">Overview datasets</h4>
+                        <h4 class="bc-toolbar-title">Overview publications</h4>
                     </div>
                 </div>
                 <div class="bc-toolbar-right">
                     <div class="bc-toolbar-item">
-                        <a class="btn btn-primary" href="{{pathFor "dataset_add"}}">
+                        <a class="btn btn-primary" href="{{pathFor "publication_add"}}">
                             <i class="if if-add"></i>
-                            <div class="btn-text">Add Dataset</div>
+                            <div class="btn-text">Add Publication</div>
                         </a>
+                    </div>
+                    <div class="bc-toolbar-item">
+                        <div class="dropdown dropleft">
+                            <button class="btn btn-outline-primary btn-icon-only" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="if if-more"></i>
+                            </button>
+                            <div class="dropdown-menu">
+                                {{if and .User.ORCID .User.ORCIDToken}}
+                                <button class="dropdown-item"
+                                    hx-post="{{pathFor "publication_orcid_add_all"}}"
+                                    hx-swap="none"
+                                >
+                                    <i class="if if-orcid" style="color: #A6CE39"></i>
+                                    <span>Send my publications to ORCID</span>
+                                </button>
+                                {{end}}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -46,8 +64,8 @@
             <ul class="nav">
                 {{range .Scopes}}
                 <li class="nav-item">
-                    <a class="nav-link{{if $.SearchArgs.HasFilter "scope" .}} active{{end}}" href="{{pathFor "datasets"|query $.SearchArgs}}">
-                        {{$.TS "dataset.search.scopes" .}}
+                    <a class="nav-link{{if $.SearchArgs.HasFilter "scope" .}} active{{end}}" href="{{pathFor "publications"|query $.SearchArgs}}">
+                        {{$.TS "publication.search.scopes" .}}
                     </a>
                 </li>
                 {{end}}
@@ -58,20 +76,21 @@
     <div class="u-scroll-wrapper__body p-6">
         {{template "search/query" .}}
         <div class="d-flex flex-wrap mb-6">
+            {{template "search/type_facet" .}}
             {{template "search/status_facet" .}}
             {{template "search/faculty_facet" .}}
         </div>
 
         <div class="card mb-6">
             <div class="card-header">
-                <h4 class="mr-5 d-inline">Datasets</h4>
+                <h4 class="mr-5 d-inline">Publications</h4>
                 {{template "search/count" .}}
             </div>
             <div class="card-body p-0">
                 <ul class="list-group list-group-flush">
                     {{range .Hits.Hits}}
                     <li class="list-group-item">
-                        {{template "dataset/search_hit" ($.YieldHit .)}}
+                        {{template "publication/search_hit" ($.YieldHit .)}}
                     </li>
                     {{end}}
                 </ul>

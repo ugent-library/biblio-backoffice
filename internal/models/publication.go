@@ -382,6 +382,34 @@ func (p *Publication) RemoveAbstract(i int) error {
 	return nil
 }
 
+func (p *Publication) GetLaySummary(i int) (Text, error) {
+	if i >= len(p.LaySummary) {
+		return Text{}, errors.New("index out of bounds")
+	}
+
+	return p.LaySummary[i], nil
+}
+
+func (p *Publication) SetLaySummary(i int, t Text) error {
+	if i >= len(p.LaySummary) {
+		return errors.New("index out of bounds")
+	}
+
+	p.LaySummary[i] = t
+
+	return nil
+}
+
+func (p *Publication) RemoveLaySummary(i int) error {
+	if i >= len(p.LaySummary) {
+		return errors.New("index out of bounds")
+	}
+
+	p.LaySummary = append(p.LaySummary[:i], p.LaySummary[i+1:]...)
+
+	return nil
+}
+
 func (p *Publication) UsesLaySummary() bool {
 	switch p.Type {
 	case "dissertation":

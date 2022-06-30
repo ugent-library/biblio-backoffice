@@ -11,7 +11,7 @@
         <div class="modal-footer">
             <button class="btn btn-link modal-close">Cancel</button>
             <button class="btn btn-danger"
-                hx-delete="{{pathFor "dataset_delete" "id" .Dataset.ID | query .SearchArgs}}"
+                hx-delete="{{pathFor "dataset_delete" "id" .Dataset.ID|querySet "redirect-url" .RedirectURL}}"
                 hx-headers='{"If-Match": "{{.Dataset.SnapshotID}}"}'
                 hx-swap="none"
             >Delete</button>

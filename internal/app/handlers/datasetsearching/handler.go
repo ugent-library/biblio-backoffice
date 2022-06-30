@@ -2,7 +2,6 @@ package datasetsearching
 
 import (
 	"net/http"
-	"net/url"
 
 	"github.com/ugent-library/biblio-backend/internal/app/handlers"
 	"github.com/ugent-library/biblio-backend/internal/backends"
@@ -18,7 +17,6 @@ type Handler struct {
 
 type Context struct {
 	handlers.BaseContext
-	SearchURL  *url.URL
 	SearchArgs *models.SearchArgs
 }
 
@@ -37,7 +35,6 @@ func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) htt
 
 		fn(w, r, Context{
 			BaseContext: ctx,
-			SearchURL:   h.PathFor("datasets"),
 			SearchArgs:  searchArgs,
 		})
 	})

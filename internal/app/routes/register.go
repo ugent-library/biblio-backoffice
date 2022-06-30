@@ -17,6 +17,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/mediatypes"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/orcid"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/publicationediting"
+	"github.com/ugent-library/biblio-backend/internal/app/handlers/publicationsearching"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/publicationviewing"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/tasks"
 	"github.com/ugent-library/biblio-backend/internal/backends"
@@ -59,7 +60,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	publicationContributorsController := controllers.NewPublicationContributors(oldBase, services.Repository, services.PersonSearchService, services.PersonService)
 	publicationDatasetsController := controllers.NewPublicationDatasets(oldBase, services.Repository, services.DatasetSearchService)
 	publicationAdditionalInfoController := controllers.NewPublicationAdditionalInfo(oldBase, services.Repository)
-	publicationLaySummariesController := controllers.NewPublicationLaySummaries(oldBase, services.Repository)
 
 	// NEW HANDLERS
 	baseHandler := handlers.BaseHandler{
@@ -107,6 +107,11 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		PersonSearchService:       services.PersonSearchService,
 		PersonService:             services.PersonService,
 		PublicationSearchService:  services.PublicationSearchService,
+	}
+	publicationSearchingHandler := &publicationsearching.Handler{
+		BaseHandler:              baseHandler,
+		PublicationSearchService: services.PublicationSearchService,
+		FileStore:                services.FileStore,
 	}
 	publicationViewingHandler := &publicationviewing.Handler{
 		BaseHandler: baseHandler,
@@ -226,6 +231,10 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		Name("task_status")
 
 	// search datasets
+	r.HandleFunc("/curation/dataset",
+		datasetSearchingHandler.Wrap(datasetSearchingHandler.CurationSearch)).
+		Methods("GET").
+		Name("cureation_datasets")
 	r.HandleFunc("/dataset",
 		datasetSearchingHandler.Wrap(datasetSearchingHandler.Search)).
 		Methods("GET").
@@ -417,6 +426,16 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		Methods("DELETE").
 		Name("dataset_delete_contributor")
 
+	// search publications
+	r.HandleFunc("/curation/publication",
+		publicationSearchingHandler.Wrap(publicationSearchingHandler.CurationSearch)).
+		Methods("GET").
+		Name("cureation_publications")
+	r.HandleFunc("/publication",
+		publicationSearchingHandler.Wrap(publicationSearchingHandler.Search)).
+		Methods("GET").
+		Name("publications")
+
 	// view publication
 	r.HandleFunc("/publication/{id}",
 		publicationViewingHandler.Wrap(publicationViewingHandler.Show)).
@@ -465,7 +484,33 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		Methods("DELETE").
 		Name("publication_delete_abstract")
 
-	// orcid
+	// edit publication lay summaries
+	r.HandleFunc("/publication/{id}/lay_summaries/add",
+		publicationEditingHandler.Wrap(publicationEditingHandler.AddLaySummary)).
+		Methods("GET").
+		Name("publication_add_lay_summary")
+	r.HandleFunc("/publication/{id}/lay_summaries",
+		publicationEditingHandler.Wrap(publicationEditingHandler.CreateLaySummary)).
+		Methods("POST").
+		Name("publication_create_lay_summary")
+	r.HandleFunc("/publication/{id}/lay_summaries/{position}/edit",
+		publicationEditingHandler.Wrap(publicationEditingHandler.EditLaySummary)).
+		Methods("GET").
+		Name("publication_edit_lay_summary")
+	r.HandleFunc("/publication/{id}/lay_summaries/{position}",
+		publicationEditingHandler.Wrap(publicationEditingHandler.UpdateLaySummary)).
+		Methods("PUT").
+		Name("publication_update_lay_summary")
+	r.HandleFunc("/publication/{id}/lay_summaries/{position}/confirm-delete",
+		publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDeleteLaySummary)).
+		Methods("GET").
+		Name("publication_confirm_delete_lay_summary")
+	r.HandleFunc("/publication/{id}/lay_summaries/{position}",
+		publicationEditingHandler.Wrap(publicationEditingHandler.DeleteLaySummary)).
+		Methods("DELETE").
+		Name("publication_delete_lay_summary")
+
+		// orcid
 	r.HandleFunc("/publication/orcid",
 		orcidHandler.Wrap(orcidHandler.AddAll)).
 		Methods("POST").
@@ -490,9 +535,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	pubsRouter := r.PathPrefix("/publication").Subrouter()
 	pubsRouter.Use(middleware.SetActiveMenu("publications"))
 	pubsRouter.Use(requireUser)
-	pubsRouter.HandleFunc("", publicationsController.List).
-		Methods("GET").
-		Name("publications")
 	pubsRouter.HandleFunc("/add", publicationsController.Add).
 		Methods("GET").
 		Name("publication_add")
@@ -640,26 +682,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	pubEditRouter.HandleFunc("/htmx/departments/remove/{department_id}", publicationDepartmentsController.Remove).
 		Methods("PATCH").
 		Name("publicationDepartments_remove_from_publication")
-
-	// Publication lay summaries HTMX fragments
-	pubEditRouter.HandleFunc("/htmx/lay_summaries/add", publicationLaySummariesController.Add).
-		Methods("GET").
-		Name("publication_lay_summaries_add_lay_summary")
-	pubEditRouter.HandleFunc("/htmx/lay_summaries/create", publicationLaySummariesController.Create).
-		Methods("POST").
-		Name("publication_lay_summaries_create_lay_summary")
-	pubEditRouter.HandleFunc("/htmx/lay_summaries/edit/{delta}", publicationLaySummariesController.Edit).
-		Methods("GET").
-		Name("publication_lay_summaries_edit_lay_summary")
-	pubEditRouter.HandleFunc("/htmx/lay_summaries/update/{delta}", publicationLaySummariesController.Update).
-		Methods("PUT").
-		Name("publication_lay_summaries_update_lay_summary")
-	pubEditRouter.HandleFunc("/htmx/lay_summaries/remove/{delta}", publicationLaySummariesController.ConfirmRemove).
-		Methods("GET").
-		Name("publication_lay_summaries_confirm_remove_from_publication")
-	pubEditRouter.HandleFunc("/htmx/lay_summaries/remove/{delta}", publicationLaySummariesController.Remove).
-		Methods("DELETE").
-		Name("publication_lay_summaries_remove_lay_summary")
 
 	// Publication links HTMX fragments
 	pubEditRouter.HandleFunc("/htmx/links/add", publicationLinksController.Add).
