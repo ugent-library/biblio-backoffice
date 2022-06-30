@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	"net/url"
-	"time"
 
 	"github.com/cshum/imagor/imagorpath"
 	"github.com/gorilla/mux"
@@ -616,75 +615,6 @@ func (c *Publications) AddMultiplePublish(w http.ResponseWriter, r *http.Request
 		batchID,
 	}),
 	)
-}
-
-func (c *Publications) Publish(w http.ResponseWriter, r *http.Request) {
-	pub := context.GetPublication(r.Context())
-
-	savedPub := pub.Clone()
-	savedPub.Status = "public"
-	err := c.store.SavePublication(savedPub)
-
-	flashes := make([]views.Flash, 0)
-	var publicationErrors validation.Errors
-	var publicationErrorsTitle string
-
-	if err != nil {
-
-		savedPub = pub
-
-		if e, ok := err.(validation.Errors); ok {
-
-			publicationErrors = e
-			publicationErrorsTitle = "Unable to publish record due to the following errors"
-
-		} else {
-
-			log.Println(err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-
-		}
-
-	} else {
-
-		flashes = append(flashes, views.Flash{Type: "success", Message: "Successfully published to Biblio.", DismissAfter: 5 * time.Second})
-
-	}
-
-	pubDatasets, err := c.store.GetPublicationDatasets(pub)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	searchArgs := models.NewSearchArgs()
-	if err := DecodeQuery(searchArgs, r.URL.Query()); err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	c.Render.HTML(w, http.StatusOK, "publication/show", c.ViewData(r, struct {
-		PageTitle           string
-		Publication         *models.Publication
-		PublicationDatasets []*models.Dataset
-		Show                *views.ShowBuilder
-		SearchArgs          *models.SearchArgs
-		ErrorsTitle         string
-		Errors              validation.Errors
-	}{
-		"Publication - Biblio",
-		savedPub,
-		pubDatasets,
-		views.NewShowBuilder(c.RenderPartial, locale.Get(r.Context())),
-		searchArgs,
-		publicationErrorsTitle,
-		publicationErrors,
-	},
-		flashes...,
-	))
 }
 
 func (c *Publications) userPublications(userID string, args *models.SearchArgs) (*models.PublicationHits, error) {

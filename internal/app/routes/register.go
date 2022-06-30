@@ -255,6 +255,16 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		Methods("GET").
 		Name("dataset_publications")
 
+	// publish dataset
+	r.HandleFunc("/dataset/{id}/publish/confirm",
+		datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmPublish)).
+		Methods("GET").
+		Name("dataset_confirm_publish")
+	r.HandleFunc("/dataset/{id}/publish",
+		datasetEditingHandler.Wrap(datasetEditingHandler.Publish)).
+		Methods("POST").
+		Name("dataset_publish")
+
 	// delete dataset
 	r.HandleFunc("/dataset/{id}/confirm-delete",
 		datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmDelete)).
@@ -371,16 +381,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		Methods("DELETE").
 		Name("dataset_delete_publication")
 
-	// publish dataset
-	r.HandleFunc("/dataset/{id}/publish/confirm",
-		datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmPublish)).
-		Methods("GET").
-		Name("dataset_confirm_publish")
-	r.HandleFunc("/dataset/{id}/publish",
-		datasetEditingHandler.Wrap(datasetEditingHandler.Publish)).
-		Methods("POST").
-		Name("dataset_publish")
-
 	// edit dataset contributors
 	r.HandleFunc("/dataset/{id}/contributors/{role}/order",
 		datasetEditingHandler.Wrap(datasetEditingHandler.OrderContributors)).
@@ -454,6 +454,16 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		publicationViewingHandler.Wrap(publicationViewingHandler.ShowDatasets)).
 		Methods("GET").
 		Name("publication_datasets")
+
+	// publish publication
+	r.HandleFunc("/publication/{id}/publish/confirm",
+		publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmPublish)).
+		Methods("GET").
+		Name("publication_confirm_publish")
+	r.HandleFunc("/publication/{id}/publish",
+		publicationEditingHandler.Wrap(publicationEditingHandler.Publish)).
+		Methods("POST").
+		Name("publication_publish")
 
 	// delete publication
 	r.HandleFunc("/publication/{id}/confirm-delete",
@@ -625,11 +635,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	pubRouter.Use(middleware.RequireCanViewPublication)
 	pubEditRouter := pubRouter.PathPrefix("").Subrouter()
 	pubEditRouter.Use(middleware.RequireCanEditPublication)
-	pubPublishRouter := pubRouter.PathPrefix("").Subrouter()
-	pubPublishRouter.Use(middleware.RequireCanPublishPublication)
-	pubPublishRouter.HandleFunc("/publish", publicationsController.Publish).
-		Methods("POST").
-		Name("publication_publish")
 	pubEditRouter.HandleFunc("/add-single/description", publicationsController.AddSingleDescription).
 		Methods("GET").
 		Name("publication_add_single_description")

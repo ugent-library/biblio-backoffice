@@ -13,12 +13,12 @@
                 <div class="bc-toolbar-right">
                     {{if .User.CanPublishPublication .Publication}}
                     <div class="bc-toolbar-item">
-                        <form action="{{pathFor "publication_publish" "id" .Publication.ID}}" method="POST">
-                            {{.CSRFTag}}
-                            <button type="submit" class="btn btn-success">
-                                <div class="btn-text">Publish to Biblio</div>
-                            </button>
-                        </form>
+                        <button class="btn btn-success"
+                            hx-get="{{pathFor "publication_confirm_publish" "id" .Publication.ID|querySet "redirect-url" .RedirectURL}}"
+                            hx-target="#modals"
+                        >
+                            <div class="btn-text">Publish to Biblio</div>
+                        </button>
                     </div>
                     {{end}}
                     <div class="bc-toolbar-item">
