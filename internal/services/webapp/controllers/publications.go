@@ -60,41 +60,6 @@ func NewPublications(base Base, store backends.Repository, fileStore *filestore.
 	}
 }
 
-// func (c *Publications) List(w http.ResponseWriter, r *http.Request) {
-// 	searchArgs := models.NewSearchArgs()
-// 	if err := DecodeQuery(searchArgs, r.URL.Query()); err != nil {
-// 		log.Println(err)
-// 		http.Error(w, err.Error(), http.StatusBadRequest)
-// 		return
-// 	}
-
-// 	hits, err := c.userPublications(context.GetUser(r.Context()).ID, searchArgs)
-// 	if err != nil {
-// 		log.Println(err)
-// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-// 		return
-// 	}
-
-// 	searchURL, _ := c.Router.Get("publications").URLPath()
-
-// 	for _, p := range hits.Hits {
-// 		c.addThumbnailURLs(p)
-// 	}
-
-// 	c.Render.HTML(w, http.StatusOK, "publication/list", c.ViewData(r, struct {
-// 		PageTitle  string
-// 		SearchURL  *url.URL
-// 		SearchArgs *models.SearchArgs
-// 		Hits       *models.PublicationHits
-// 	}{
-// 		"Overview - Publications - Biblio",
-// 		searchURL,
-// 		searchArgs,
-// 		hits,
-// 	}),
-// 	)
-// }
-
 func (c *Publications) Show(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
 
@@ -720,69 +685,6 @@ func (c *Publications) Publish(w http.ResponseWriter, r *http.Request) {
 	},
 		flashes...,
 	))
-}
-
-func (c *Publications) ConfirmDelete(w http.ResponseWriter, r *http.Request) {
-	pub := context.GetPublication(r.Context())
-
-	searchArgs := models.NewSearchArgs()
-	if err := DecodeQuery(searchArgs, r.URL.Query()); err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	c.Render.HTML(w, http.StatusOK, "publication/_confirm_delete", c.ViewData(r, struct {
-		Publication *models.Publication
-		SearchArgs  *models.SearchArgs
-	}{
-		pub,
-		searchArgs,
-	}),
-		render.HTMLOptions{Layout: "layouts/htmx"},
-	)
-}
-
-func (c *Publications) Delete(w http.ResponseWriter, r *http.Request) {
-	pub := context.GetPublication(r.Context())
-
-	r.ParseForm()
-	searchArgs := models.NewSearchArgs()
-	if err := DecodeQuery(searchArgs, r.Form); err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	pub.Status = "deleted"
-	if err := c.store.SavePublication(pub); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	hits, err := c.userPublications(context.GetUser(r.Context()).ID, searchArgs)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	searchURL, _ := c.Router.Get("publications").URLPath()
-
-	c.Render.HTML(w, http.StatusOK, "publication/list", c.ViewData(r, struct {
-		PageTitle  string
-		SearchURL  *url.URL
-		SearchArgs *models.SearchArgs
-		Hits       *models.PublicationHits
-	}{
-		"Overview - Publications - Biblio",
-		searchURL,
-		searchArgs,
-		hits,
-	},
-		views.Flash{Type: "success", Message: "Successfully deleted publication.", DismissAfter: 5 * time.Second},
-	),
-	)
 }
 
 func (c *Publications) userPublications(userID string, args *models.SearchArgs) (*models.PublicationHits, error) {

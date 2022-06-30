@@ -237,16 +237,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		Methods("GET").
 		Name("datasets")
 
-	// delete dataset
-	r.HandleFunc("/dataset/{id}/confirm-delete",
-		datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmDelete)).
-		Methods("GET").
-		Name("dataset_confirm_delete")
-	r.HandleFunc("/dataset/{id}",
-		datasetEditingHandler.Wrap(datasetEditingHandler.Delete)).
-		Methods("DELETE").
-		Name("dataset_delete")
-
 	// view dataset
 	r.HandleFunc("/dataset/{id}",
 		datasetViewingHandler.Wrap(datasetViewingHandler.Show)).
@@ -264,6 +254,16 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		datasetViewingHandler.Wrap(datasetViewingHandler.ShowPublications)).
 		Methods("GET").
 		Name("dataset_publications")
+
+	// delete dataset
+	r.HandleFunc("/dataset/{id}/confirm-delete",
+		datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmDelete)).
+		Methods("GET").
+		Name("dataset_confirm_delete")
+	r.HandleFunc("/dataset/{id}",
+		datasetEditingHandler.Wrap(datasetEditingHandler.Delete)).
+		Methods("DELETE").
+		Name("dataset_delete")
 
 	// edit dataset details
 	r.HandleFunc("/dataset/{id}/details/edit",
@@ -455,6 +455,16 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		Methods("GET").
 		Name("publication_datasets")
 
+	// delete publication
+	r.HandleFunc("/publication/{id}/confirm-delete",
+		publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDelete)).
+		Methods("GET").
+		Name("publication_confirm_delete")
+	r.HandleFunc("/publication/{id}",
+		publicationEditingHandler.Wrap(publicationEditingHandler.Delete)).
+		Methods("DELETE").
+		Name("publication_delete")
+
 	// edit publication details
 	r.HandleFunc("/publication/{id}/details/edit",
 		publicationEditingHandler.Wrap(publicationEditingHandler.EditDetails)).
@@ -560,7 +570,7 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		Methods("DELETE").
 		Name("publication_delete_lay_summary")
 
-		// orcid
+	// orcid
 	r.HandleFunc("/publication/orcid",
 		orcidHandler.Wrap(orcidHandler.AddAll)).
 		Methods("POST").
@@ -617,15 +627,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	pubEditRouter.Use(middleware.RequireCanEditPublication)
 	pubPublishRouter := pubRouter.PathPrefix("").Subrouter()
 	pubPublishRouter.Use(middleware.RequireCanPublishPublication)
-	pubDeleteRouter := pubRouter.PathPrefix("").Subrouter()
-	pubDeleteRouter.Use(middleware.RequireCanDeletePublication)
-	pubRouter.HandleFunc("/delete", publicationsController.ConfirmDelete).
-		Methods("GET").
-		Name("publication_confirm_delete")
-	// TODO why doesn't a DELETE with methodoverride work with CAS?
-	pubDeleteRouter.HandleFunc("/delete", publicationsController.Delete).
-		Methods("POST").
-		Name("publication_delete")
 	pubPublishRouter.HandleFunc("/publish", publicationsController.Publish).
 		Methods("POST").
 		Name("publication_publish")
