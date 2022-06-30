@@ -7,7 +7,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/validation"
 )
 
-func formTypeJournalArticle(ctx Context, b *BindDetails, errors validation.Errors) *form.Form {
+func bookDetailsForm(ctx Context, b *BindDetails, errors validation.Errors) *form.Form {
 	l := ctx.Locale
 	p := ctx.Publication
 	return form.New().
@@ -16,14 +16,6 @@ func formTypeJournalArticle(ctx Context, b *BindDetails, errors validation.Error
 			&display.Text{
 				Label: l.T("builder.type"),
 				Value: l.TS("publication_types", p.Type),
-			},
-			&form.Select{
-				Name:    "journal_article_type",
-				Label:   l.T("builder.journal_article_type"),
-				Options: optionsForVocabulary(l, "journal_article_types"),
-				Value:   b.JournalArticleType,
-				Cols:    3,
-				Error:   localize.ValidationErrorAt(l, errors, "/journal_article_type"),
 			},
 			&form.Text{
 				Name:  "doi",
@@ -53,21 +45,6 @@ func formTypeJournalArticle(ctx Context, b *BindDetails, errors validation.Error
 				Values: b.AlternativeTitle,
 				Cols:   9,
 				Error:  localize.ValidationErrorAt(l, errors, "/alternative_title"),
-			},
-			&form.Text{
-				Name:     "publication",
-				Label:    l.T("builder.journal_article.publication"),
-				Value:    b.Publication,
-				Required: true,
-				Cols:     9,
-				Error:    localize.ValidationErrorAt(l, errors, "/publication"),
-			},
-			&form.Text{
-				Name:  "publication_abbreviation",
-				Label: l.T("builder.journal_article.publication_abbreviation"),
-				Value: b.PublicationAbbreviation,
-				Cols:  3,
-				Error: localize.ValidationErrorAt(l, errors, "/publication_abbreviation"),
 			},
 		).
 		AddSection(
@@ -122,53 +99,11 @@ func formTypeJournalArticle(ctx Context, b *BindDetails, errors validation.Error
 		).
 		AddSection(
 			&form.Text{
-				Name:  "volume",
-				Label: l.T("builder.volume"),
-				Value: b.Volume,
-				Cols:  3,
-				Error: localize.ValidationErrorAt(l, errors, "/volume"),
-			},
-			&form.Text{
-				Name:  "issue",
-				Label: l.T("builder.issue"),
-				Value: b.Issue,
-				Cols:  3,
-				Error: localize.ValidationErrorAt(l, errors, "/issue"),
-			},
-			&form.Text{
-				Name:  "page_first",
-				Label: l.T("builder.page_first"),
-				Value: b.PageFirst,
-				Cols:  3,
-				Error: localize.ValidationErrorAt(l, errors, "/page_first"),
-			},
-			&form.Text{
-				Name:  "page_last",
-				Label: l.T("builder.page_last"),
-				Value: b.PageLast,
-				Cols:  3,
-				Error: localize.ValidationErrorAt(l, errors, "/page_last"),
-			},
-			&form.Text{
 				Name:  "page_count",
 				Label: l.T("builder.page_count"),
 				Value: b.PageCount,
 				Cols:  3,
 				Error: localize.ValidationErrorAt(l, errors, "/page_count"),
-			},
-			&form.Text{
-				Name:  "article_number",
-				Label: l.T("builder.article_number"),
-				Value: b.ArticleNumber,
-				Cols:  3,
-				Error: localize.ValidationErrorAt(l, errors, "/article_number"),
-			},
-			&form.Text{
-				Name:  "issue_title",
-				Label: l.T("builder.issue_title"),
-				Value: b.IssueTitle,
-				Cols:  9,
-				Error: localize.ValidationErrorAt(l, errors, "/issue_title"),
 			},
 		).
 		AddSection(
@@ -216,30 +151,6 @@ func formTypeJournalArticle(ctx Context, b *BindDetails, errors validation.Error
 				Cols:        3,
 				Placeholder: "e.g. 978-3-16-148410-0",
 				Error:       localize.ValidationErrorAt(l, errors, "/eisbn"),
-			},
-			&form.Text{
-				Name:        "pubmed_id",
-				Label:       l.T("builder.pubmed_id"),
-				Value:       b.PubMedID,
-				Cols:        3,
-				Placeholder: "e.g. 35172674",
-				Error:       localize.ValidationErrorAt(l, errors, "/pubmed_id"),
-			},
-			&form.Text{
-				Name:        "arxiv_id",
-				Label:       l.T("builder.arxiv_id"),
-				Value:       b.ArxivID,
-				Cols:        3,
-				Placeholder: "e.g. 0706.0001",
-				Error:       localize.ValidationErrorAt(l, errors, "/arxiv_id"),
-			},
-			&form.Text{
-				Name:        "esci_id",
-				Label:       l.T("builder.esci_id"),
-				Value:       b.ESCIID,
-				Cols:        3,
-				Placeholder: "e.g. 000752820200004",
-				Error:       localize.ValidationErrorAt(l, errors, "/esci_id"),
 			},
 		)
 }

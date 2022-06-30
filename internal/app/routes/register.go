@@ -52,7 +52,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		services.ORCIDSandbox,
 	)
 	publicationFilesController := controllers.NewPublicationFiles(oldBase, services.Repository, services.FileStore)
-	publicationDetailsController := controllers.NewPublicationDetails(oldBase, services.Repository)
 	publicationConferenceController := controllers.NewPublicationConference(oldBase, services.Repository)
 	publicationDepartmentsController := controllers.NewPublicationDepartments(oldBase, services.Repository, services.OrganizationSearchService, services.OrganizationService)
 	publicationLinksController := controllers.NewPublicationLinks(oldBase, services.Repository)
@@ -650,16 +649,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	pubEditRouter.HandleFunc("/htmx/summary", publicationsController.Summary).
 		Methods("GET").
 		Name("publication_summary")
-	// Publication details HTMX fragments
-	pubEditRouter.HandleFunc("/htmx", publicationDetailsController.Show).
-		Methods("GET").
-		Name("publication_details")
-	pubEditRouter.HandleFunc("/htmx/edit", publicationDetailsController.Edit).
-		Methods("GET").
-		Name("publication_details_edit_form")
-	pubEditRouter.HandleFunc("/htmx/edit", publicationDetailsController.Update).
-		Methods("PATCH").
-		Name("publication_details_save_form")
 	// Publication conference HTMX fragments
 	pubEditRouter.HandleFunc("/htmx/conference", publicationConferenceController.Show).
 		Methods("GET").

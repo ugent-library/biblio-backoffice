@@ -7,9 +7,11 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/validation"
 )
 
-func formTypeBookChapter(ctx Context, b *BindDetails, errors validation.Errors) *form.Form {
+func dissertationDetailsForm(ctx Context, b *BindDetails, errors validation.Errors) *form.Form {
 	l := ctx.Locale
 	p := ctx.Publication
+	confirmationOptions := optionsForVocabulary(l, "confirmations")
+
 	return form.New().
 		WithTheme("default").
 		AddSection(
@@ -47,12 +49,11 @@ func formTypeBookChapter(ctx Context, b *BindDetails, errors validation.Errors) 
 				Error:  localize.ValidationErrorAt(l, errors, "/alternative_title"),
 			},
 			&form.Text{
-				Name:     "publication",
-				Label:    l.T("builder.book_chapter.publication"),
-				Value:    b.Publication,
-				Cols:     9,
-				Required: true,
-				Error:    localize.ValidationErrorAt(l, errors, "/publication"),
+				Name:  "publication_abbreviation",
+				Label: l.T("builder.publication_abbreviation"),
+				Value: b.PublicationAbbreviation,
+				Error: localize.ValidationErrorAt(l, errors, "/publication_abbreviation"),
+				Cols:  3,
 			},
 		).
 		AddSection(
@@ -107,18 +108,11 @@ func formTypeBookChapter(ctx Context, b *BindDetails, errors validation.Errors) 
 		).
 		AddSection(
 			&form.Text{
-				Name:  "page_first",
-				Label: l.T("builder.page_first"),
-				Value: b.PageFirst,
+				Name:  "volume",
+				Label: l.T("builder.volume"),
+				Value: b.Volume,
 				Cols:  3,
-				Error: localize.ValidationErrorAt(l, errors, "/page_first"),
-			},
-			&form.Text{
-				Name:  "page_last",
-				Label: l.T("builder.page_last"),
-				Value: b.PageLast,
-				Cols:  3,
-				Error: localize.ValidationErrorAt(l, errors, "/page_last"),
+				Error: localize.ValidationErrorAt(l, errors, "/volume"),
 			},
 			&form.Text{
 				Name:  "page_count",
@@ -126,6 +120,71 @@ func formTypeBookChapter(ctx Context, b *BindDetails, errors validation.Errors) 
 				Value: b.PageCount,
 				Cols:  3,
 				Error: localize.ValidationErrorAt(l, errors, "/page_count"),
+			},
+			&form.Text{
+				Name:  "series_title",
+				Label: l.T("builder.series_title"),
+				Value: b.SeriesTitle,
+				Cols:  9,
+				Error: localize.ValidationErrorAt(l, errors, "/series_title"),
+			},
+		).
+		AddSection(
+			&form.Text{
+				Name:        "defense_date",
+				Label:       l.T("builder.defense_date"),
+				Value:       b.DefenseDate,
+				Required:    true,
+				Cols:        3,
+				Placeholder: "e.g. 2022-04-30",
+				Error:       localize.ValidationErrorAt(l, errors, "/defense_date"),
+			},
+			&form.Text{
+				Name:        "defense_time",
+				Label:       l.T("builder.defense_time"),
+				Value:       b.DefenseTime,
+				Required:    true,
+				Cols:        3,
+				Placeholder: "e.g. 11:00",
+				Error:       localize.ValidationErrorAt(l, errors, "/defense_time"),
+			},
+			&form.Text{
+				Name:     "defense_place",
+				Label:    l.T("builder.defense_place"),
+				Value:    b.DefensePlace,
+				Required: true,
+				Cols:     3,
+				Error:    localize.ValidationErrorAt(l, errors, "/defense_place"),
+			},
+		).
+		AddSection(
+			&form.RadioButtonGroup{
+				Name:    "has_confidential_data",
+				Label:   l.T("builder.has_confidential_data"),
+				Value:   b.HasConfidentialData,
+				Options: confirmationOptions,
+				Error:   localize.ValidationErrorAt(l, errors, "/has_confidential_data"),
+			},
+			&form.RadioButtonGroup{
+				Name:    "has_patent_application",
+				Label:   l.T("builder.has_patent_application"),
+				Value:   b.HasPatentApplication,
+				Options: confirmationOptions,
+				Error:   localize.ValidationErrorAt(l, errors, "/has_patent_application"),
+			},
+			&form.RadioButtonGroup{
+				Name:    "has_publications_planned",
+				Label:   l.T("builder.has_publications_planned"),
+				Value:   b.HasPublicationsPlanned,
+				Options: confirmationOptions,
+				Error:   localize.ValidationErrorAt(l, errors, "/has_publications_planned"),
+			},
+			&form.RadioButtonGroup{
+				Name:    "has_published_material",
+				Label:   l.T("builder.has_published_material"),
+				Value:   b.HasPublishedMaterial,
+				Options: confirmationOptions,
+				Error:   localize.ValidationErrorAt(l, errors, "/has_published_material"),
 			},
 		).
 		AddSection(

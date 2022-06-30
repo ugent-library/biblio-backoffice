@@ -144,24 +144,18 @@ func publicationToBind(p *models.Publication, b *BindDetails) {
 }
 
 func (b *BindDetails) cleanValues() {
-	/*
-		Remove empty values introduced by GUI
-		added to the end
-	*/
 	b.AlternativeTitle = cleanStringSlice(b.AlternativeTitle)
-	b.EISBN = cleanStringSlice(b.EISBN)
-	b.EISSN = cleanStringSlice(b.EISSN)
-	b.ISBN = cleanStringSlice(b.ISBN)
-	b.ISSN = cleanStringSlice(b.ISSN)
-	b.Language = cleanStringSlice(b.Language)
-
-	// trim spaces (TODO: other?)
 	b.ArxivID = strings.TrimSpace(b.ArxivID)
-	b.DOI = strings.TrimSpace(b.DOI)
 	b.DefenseDate = strings.TrimSpace(b.DefenseDate)
 	b.DefensePlace = strings.TrimSpace(b.DefensePlace)
 	b.DefenseTime = strings.TrimSpace(b.DefenseTime)
+	b.DOI = strings.TrimSpace(b.DOI)
+	b.EISBN = cleanStringSlice(b.EISBN)
+	b.EISSN = cleanStringSlice(b.EISSN)
 	b.ESCIID = strings.TrimSpace(b.ESCIID)
+	b.ISBN = cleanStringSlice(b.ISBN)
+	b.ISSN = cleanStringSlice(b.ISSN)
+	b.Language = cleanStringSlice(b.Language)
 	b.PubMedID = strings.TrimSpace(b.PubMedID)
 	b.Year = strings.TrimSpace(b.Year)
 }
@@ -177,14 +171,13 @@ type YieldEditDetails struct {
 }
 
 func (h *Handler) EditDetails(w http.ResponseWriter, r *http.Request, ctx Context) {
-
 	b := &BindDetails{}
-	// copy attributes from (current) publication to bind
+
 	publicationToBind(ctx.Publication, b)
 
 	render.Render(w, "publication/edit_details", YieldEditDetails{
 		Context: ctx,
-		Form:    formPublicationDetails(ctx, b, nil),
+		Form:    detailsForm(ctx, b, nil),
 	})
 }
 
@@ -195,17 +188,12 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 		return
 	}
 
-	// cleanup values from form
 	b.cleanValues()
 
-	/*
-		copy attributes from bind to (current) publication
-		in order to validate publication
-	*/
 	bindToPublication(b, ctx.Publication)
 
 	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
-		form := formPublicationDetails(ctx, b, validationErrs.(validation.Errors))
+		form := detailsForm(ctx, b, validationErrs.(validation.Errors))
 
 		render.Render(w, "publication/refresh_edit_details", YieldEditDetails{
 			Context: ctx,
@@ -245,7 +233,6 @@ func cleanStringSlice(vals []string) []string {
 }
 
 func optionsForVocabulary(locale *locale.Locale, key string) []form.SelectOption {
-
 	options := []form.SelectOption{}
 	values, ok := vocabularies.Map[key]
 
