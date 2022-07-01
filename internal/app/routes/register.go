@@ -54,7 +54,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	publicationFilesController := controllers.NewPublicationFiles(oldBase, services.Repository, services.FileStore)
 	publicationConferenceController := controllers.NewPublicationConference(oldBase, services.Repository)
 	publicationDatasetsController := controllers.NewPublicationDatasets(oldBase, services.Repository, services.DatasetSearchService)
-	publicationAdditionalInfoController := controllers.NewPublicationAdditionalInfo(oldBase, services.Repository)
 
 	// NEW HANDLERS
 	baseHandler := handlers.BaseHandler{
@@ -483,6 +482,16 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		Methods("PUT").
 		Name("publication_update_details")
 
+	// edit publication additional info
+	r.HandleFunc("/publication/{id}/additional-info/edit", publicationEditingHandler.Wrap(
+		publicationEditingHandler.EditAdditionalInfo)).
+		Methods("GET").
+		Name("publication_edit_additional_info")
+	r.HandleFunc("/publication/{id}/additional-info", publicationEditingHandler.Wrap(
+		publicationEditingHandler.UpdateAdditionalInfo)).
+		Methods("PUT").
+		Name("publication_update_additional_info")
+
 	// edit publication projects
 	r.HandleFunc("/publication/{id}/projects/add",
 		publicationEditingHandler.Wrap(publicationEditingHandler.AddProject)).
@@ -531,7 +540,7 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		Methods("DELETE").
 		Name("publication_delete_link")
 
-		// edit publication departments
+	// edit publication departments
 	r.HandleFunc("/publication/{id}/departments/add",
 		publicationEditingHandler.Wrap(publicationEditingHandler.AddDepartment)).
 		Methods("GET").
@@ -753,16 +762,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	pubEditRouter.HandleFunc("/htmx/conference/edit", publicationConferenceController.Update).
 		Methods("PATCH").
 		Name("publication_conference_save_form")
-	// Publication additional info HTMX fragments
-	pubEditRouter.HandleFunc("/htmx/additional_info", publicationAdditionalInfoController.Show).
-		Methods("GET").
-		Name("publication_additional_info")
-	pubEditRouter.HandleFunc("/htmx/additional_info/edit", publicationAdditionalInfoController.Edit).
-		Methods("GET").
-		Name("publication_additional_info_edit_form")
-	pubEditRouter.HandleFunc("/htmx/additional_info/edit", publicationAdditionalInfoController.Update).
-		Methods("PATCH").
-		Name("publication_additional_info_save_form")
 	// Publication datasets HTMX fragments
 	pubEditRouter.HandleFunc("/htmx/datasets/choose", publicationDatasetsController.Choose).
 		Methods("GET").
