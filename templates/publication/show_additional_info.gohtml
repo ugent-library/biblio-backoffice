@@ -7,7 +7,7 @@
             <div class="bc-toolbar-right">
                 {{if .User.CanEditPublication .Publication}}
                     <button class="btn btn-outline-primary"
-                        hx-get="{{pathFor "publication_additional_info_edit_form" "id" .Publication.ID}}"
+                        hx-get="{{pathFor "publication_edit_additional_info" "id" .Publication.ID}}"
                         hx-swap="innerHTML"
                         hx-target="#modals"
                     >
