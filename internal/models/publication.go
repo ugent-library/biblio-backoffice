@@ -354,6 +354,31 @@ func (p *Publication) RemoveContributor(role string, i int) {
 	p.SetContributors(role, append(cc[:i], cc[i+1:]...))
 }
 
+func (p *Publication) GetLink(i int) (PublicationLink, error) {
+	if i >= len(p.Link) || i < 0 {
+		return PublicationLink{}, errors.New("index out of bounds")
+	}
+	return p.Link[i], nil
+}
+
+func (p *Publication) SetLink(i int, l PublicationLink) error {
+	if i >= len(p.Link) || i < 0 {
+		return errors.New("index out of bounds")
+	}
+	p.Link[i] = l
+	return nil
+}
+
+func (p *Publication) RemoveLink(i int) error {
+	if i >= len(p.Link) || i < 0 {
+		return errors.New("index out of bounds")
+	}
+
+	p.Link = append(p.Link[:i], p.Link[i+1:]...)
+
+	return nil
+}
+
 func (p *Publication) GetAbstract(i int) (Text, error) {
 	if i >= len(p.Abstract) {
 		return Text{}, errors.New("index out of bounds")
