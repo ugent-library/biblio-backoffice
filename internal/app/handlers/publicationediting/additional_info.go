@@ -47,7 +47,7 @@ func (h *Handler) EditAdditionalInfo(w http.ResponseWriter, r *http.Request, ctx
 
 func (h *Handler) UpdateAdditionalInfo(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindAdditionalInfo{}
-	if err := bind.RequestForm(r, &b, bind.Vacuum); err != nil {
+	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
 		render.BadRequest(w, r, err)
 		return
 	}

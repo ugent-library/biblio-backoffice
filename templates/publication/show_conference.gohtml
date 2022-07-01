@@ -8,7 +8,7 @@
                 {{if .User.CanEditPublication .Publication}}
                 <div class="c-button-toolbar" data-panel-state="read">
                     <button class="btn btn-outline-primary"
-                        hx-get="{{pathFor "publication_conference_edit_form" "id" .Publication.ID}}"
+                        hx-get="{{pathFor "publication_edit_conference" "id" .Publication.ID}}"
                         hx-target="#modals"
                     >
                         <i class="if if-edit"></i><div class="btn-text">Edit</div>
@@ -19,6 +19,6 @@
         </div>
     </div>
     <div id="conference-body">
-    {{template "publication/conference_body" .}}
+        {{template "publication/conference_body" .}}
     </div>
 </div>
