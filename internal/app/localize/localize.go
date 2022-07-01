@@ -31,38 +31,20 @@ func LanguageNames(loc *locale.Locale, codes []string) []string {
 	return names
 }
 
-func LanguageSelectOptions(loc *locale.Locale) []form.SelectOption {
-	codes := vocabularies.Map["language_codes"]
-	opts := make([]form.SelectOption, len(codes))
-	for i, code := range codes {
-		opts[i] = form.SelectOption{
-			Value: code,
-			Label: loc.LanguageName(code),
-		}
+func VocabularySelectOptions(locale *locale.Locale, key string) []form.SelectOption {
+	vals, ok := vocabularies.Map[key]
+	if !ok {
+		return nil
 	}
-	return opts
-}
 
-func LicenseSelectOptions(loc *locale.Locale) []form.SelectOption {
-	codes := vocabularies.Map["cc_licenses"]
-	opts := make([]form.SelectOption, len(codes))
-	for i, code := range codes {
-		opts[i] = form.SelectOption{
-			Value: code,
-			Label: loc.TranslateScope("cc_licenses", code),
-		}
-	}
-	return opts
-}
+	opts := make([]form.SelectOption, len(vals))
 
-func AccessLevelSelectOptions(loc *locale.Locale) []form.SelectOption {
-	codes := vocabularies.Map["access_levels"]
-	opts := make([]form.SelectOption, len(codes))
-	for i, code := range codes {
+	for i, v := range vals {
 		opts[i] = form.SelectOption{
-			Value: code,
-			Label: loc.TranslateScope("access_levels", code),
+			Value: v,
+			Label: locale.TS(key, v),
 		}
 	}
+
 	return opts
 }

@@ -127,17 +127,17 @@ func (d *Dataset) Contributors(role string) []*Contributor {
 	}
 }
 
-func (p *Dataset) SetContributors(role string, c []*Contributor) {
+func (d *Dataset) SetContributors(role string, c []*Contributor) {
 	switch role {
 	case "author":
-		p.Author = c
+		d.Author = c
 	case "contributor":
-		p.Contributor = c
+		d.Contributor = c
 	}
 }
 
-func (p *Dataset) GetContributor(role string, i int) (*Contributor, error) {
-	cc := p.Contributors(role)
+func (d *Dataset) GetContributor(role string, i int) (*Contributor, error) {
+	cc := d.Contributors(role)
 	if i >= len(cc) {
 		return nil, errors.New("index out of bounds")
 	}
@@ -145,12 +145,12 @@ func (p *Dataset) GetContributor(role string, i int) (*Contributor, error) {
 	return cc[i], nil
 }
 
-func (p *Dataset) AddContributor(role string, c *Contributor) {
-	p.SetContributors(role, append(p.Contributors(role), c))
+func (d *Dataset) AddContributor(role string, c *Contributor) {
+	d.SetContributors(role, append(d.Contributors(role), c))
 }
 
-func (p *Dataset) SetContributor(role string, i int, c *Contributor) error {
-	cc := p.Contributors(role)
+func (d *Dataset) SetContributor(role string, i int, c *Contributor) error {
+	cc := d.Contributors(role)
 	if i >= len(cc) {
 		return errors.New("index out of bounds")
 	}
@@ -160,13 +160,13 @@ func (p *Dataset) SetContributor(role string, i int, c *Contributor) error {
 	return nil
 }
 
-func (p *Dataset) RemoveContributor(role string, i int) error {
-	cc := p.Contributors(role)
+func (d *Dataset) RemoveContributor(role string, i int) error {
+	cc := d.Contributors(role)
 	if i >= len(cc) {
 		return errors.New("index out of bounds")
 	}
 
-	p.SetContributors(role, append(cc[:i], cc[i+1:]...))
+	d.SetContributors(role, append(cc[:i], cc[i+1:]...))
 
 	return nil
 }

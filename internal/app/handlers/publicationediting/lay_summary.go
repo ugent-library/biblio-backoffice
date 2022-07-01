@@ -221,7 +221,7 @@ func laySummaryForm(ctx Context, b BindLaySummary, errors validation.Errors) *fo
 				Name:    "lang",
 				Value:   b.Lang,
 				Label:   ctx.T("builder.lay_summary.lang"),
-				Options: localize.LanguageSelectOptions(ctx.Locale),
+				Options: localize.VocabularySelectOptions(ctx.Locale, "language_codes"),
 				Cols:    12,
 				Error:   localize.ValidationErrorAt(ctx.Locale, errors, fmt.Sprintf("/lay_summary/%d/lang", b.Position)),
 			},

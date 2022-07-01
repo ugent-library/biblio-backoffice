@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"strings"
 
 	"github.com/ugent-library/biblio-backend/internal/app/localize"
 	"github.com/ugent-library/biblio-backend/internal/bind"
@@ -20,11 +19,6 @@ type BindLink struct {
 	URL         string `form:"url"`
 	Relation    string `form:"relation"`
 	Description string `form:"description"`
-}
-
-func (b *BindLink) cleanValues() {
-	b.URL = strings.TrimSpace(b.URL)
-	b.Description = strings.TrimSpace(b.Description)
 }
 
 type BindDeleteLink struct {
@@ -53,7 +47,7 @@ func (h *Handler) AddLink(w http.ResponseWriter, r *http.Request, ctx Context) {
 		Position: len(ctx.Publication.Link),
 	}, nil)
 
-	render.Render(w, "publication/add_link", YieldAddAbstract{
+	render.Render(w, "publication/add_link", YieldAddLink{
 		Context: ctx,
 		Form:    form,
 	})
@@ -61,12 +55,10 @@ func (h *Handler) AddLink(w http.ResponseWriter, r *http.Request, ctx Context) {
 
 func (h *Handler) CreateLink(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindLink{Position: len(ctx.Publication.Link)}
-	if err := bind.Request(r, &b); err != nil {
+	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
 		render.BadRequest(w, r, err)
 		return
 	}
-
-	b.cleanValues()
 
 	ctx.Publication.Link = append(
 		ctx.Publication.Link,
@@ -78,7 +70,7 @@ func (h *Handler) CreateLink(w http.ResponseWriter, r *http.Request, ctx Context
 	)
 
 	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
-		render.Render(w, "publication/refresh_add_link", YieldAddAbstract{
+		render.Render(w, "publication/refresh_add_link", YieldAddLink{
 			Context: ctx,
 			Form:    linkForm(ctx, b, validationErrs.(validation.Errors)),
 		})
@@ -98,7 +90,7 @@ func (h *Handler) CreateLink(w http.ResponseWriter, r *http.Request, ctx Context
 		return
 	}
 
-	render.Render(w, "publication/refresh_links", YieldAbstracts{
+	render.Render(w, "publication/refresh_links", YieldLinks{
 		Context: ctx,
 	})
 }
@@ -120,7 +112,7 @@ func (h *Handler) EditLink(w http.ResponseWriter, r *http.Request, ctx Context) 
 	b.Description = link.Description
 	b.Relation = link.Relation
 
-	render.Render(w, "publication/edit_link", YieldEditAbstract{
+	render.Render(w, "publication/edit_link", YieldEditLink{
 		Context:  ctx,
 		Position: b.Position,
 		Form:     linkForm(ctx, b, nil),
@@ -129,16 +121,17 @@ func (h *Handler) EditLink(w http.ResponseWriter, r *http.Request, ctx Context) 
 
 func (h *Handler) UpdateLink(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindLink{}
-	if err := bind.Request(r, &b); err != nil {
+	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
 		render.BadRequest(w, r, err)
 		return
 	}
-	b.cleanValues()
+
 	link := models.PublicationLink{
 		URL:         b.URL,
 		Description: b.Description,
 		Relation:    b.Relation,
 	}
+
 	if err := ctx.Publication.SetLink(b.Position, link); err != nil {
 		render.BadRequest(w, r, err)
 		return
@@ -147,7 +140,7 @@ func (h *Handler) UpdateLink(w http.ResponseWriter, r *http.Request, ctx Context
 	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
 		form := linkForm(ctx, b, validationErrs.(validation.Errors))
 
-		render.Render(w, "publication/refresh_edit_link", YieldEditAbstract{
+		render.Render(w, "publication/refresh_edit_link", YieldEditLink{
 			Context:  ctx,
 			Position: b.Position,
 			Form:     form,
@@ -168,7 +161,7 @@ func (h *Handler) UpdateLink(w http.ResponseWriter, r *http.Request, ctx Context
 		return
 	}
 
-	render.Render(w, "publication/refresh_links", YieldAbstracts{
+	render.Render(w, "publication/refresh_links", YieldLinks{
 		Context: ctx,
 	})
 }
@@ -237,7 +230,7 @@ func linkForm(ctx Context, b BindLink, errors validation.Errors) *form.Form {
 				Name:    "relation",
 				Value:   b.Relation,
 				Label:   l.T("builder.link.relation"),
-				Options: optionsForVocabulary(l, "publication_link_relations"),
+				Options: localize.VocabularySelectOptions(l, "publication_link_relations"),
 				Cols:    12,
 				Error: localize.ValidationErrorAt(
 					l,
