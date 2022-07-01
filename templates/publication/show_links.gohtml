@@ -7,7 +7,7 @@
             <div class="bc-toolbar-right">
                 {{if .User.CanEditPublication .Publication}}
                 <button class="btn btn-outline-primary" type="button"
-                    hx-get="{{pathFor "publication_links_add_link" "id" .Publication.ID}}"
+                    hx-get="{{pathFor "publication_add_link" "id" .Publication.ID}}"
                     hx-swap="innerHTML"
                     hx-target="#modals"
                 >

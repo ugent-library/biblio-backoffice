@@ -506,7 +506,33 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		Methods("DELETE").
 		Name("publication_delete_project")
 
-	// edit publication departments
+	// edit publication links
+	r.HandleFunc("/publicaton/{id}/links/add",
+		publicationEditingHandler.Wrap(publicationEditingHandler.AddLink)).
+		Methods("GET").
+		Name("publication_add_link")
+	r.HandleFunc("/publication/{id}/links",
+		publicationEditingHandler.Wrap(publicationEditingHandler.CreateLink)).
+		Methods("POST").
+		Name("publication_create_link")
+	r.HandleFunc("/publication/{id}/links/{position}/edit",
+		publicationEditingHandler.Wrap(publicationEditingHandler.EditLink)).
+		Methods("GET").
+		Name("publication_edit_link")
+	r.HandleFunc("/publication/{id}/links/{position}",
+		publicationEditingHandler.Wrap(publicationEditingHandler.UpdateLink)).
+		Methods("PUT").
+		Name("publication_update_link")
+	r.HandleFunc("/publication/{id}/links/{position}/confirm-delete",
+		publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDeleteLink)).
+		Methods("GET").
+		Name("publication_confirm_delete_link")
+	r.HandleFunc("/publication/{id}/links/{position}",
+		publicationEditingHandler.Wrap(publicationEditingHandler.DeleteLink)).
+		Methods("DELETE").
+		Name("publication_delete_link")
+
+  // edit publication departments
 	r.HandleFunc("/publication/{id}/departments/add",
 		publicationEditingHandler.Wrap(publicationEditingHandler.AddDepartment)).
 		Methods("GET").
