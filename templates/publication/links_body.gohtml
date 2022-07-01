@@ -28,7 +28,6 @@
                                 <button class="dropdown-item" type="button"
                                     hx-get="{{pathFor "publication_edit_link" "id" $.Publication.ID "position" $k}}"
                                     hx-target="#modals"
-                                    hx-swap="innerHTML"
                                 >
                                     <i class="if if-edit"></i>
                                     <span>Edit</span>
@@ -36,7 +35,6 @@
                                 <button class="dropdown-item" type="button"
                                     hx-get="{{pathFor "publication_confirm_delete_link" "id" $.Publication.ID "position" $k}}"
                                     hx-target="#modals"
-                                    hx-swap="innerHTML"
                                 >
                                     <i class="if if-delete"></i>
                                     <span>Delete</span>

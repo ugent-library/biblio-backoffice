@@ -8,7 +8,6 @@
                 {{if .User.CanEditPublication .Publication}}
                     <button class="btn btn-outline-primary"
                         hx-get="{{pathFor "publication_additional_info_edit_form" "id" .Publication.ID}}"
-                        hx-swap="innerHTML"
                         hx-target="#modals"
                     >
                         <i class="if if-edit"></i>
