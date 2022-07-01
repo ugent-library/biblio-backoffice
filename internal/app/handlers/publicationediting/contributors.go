@@ -1,4 +1,4 @@
-package datasetediting
+package publicationediting
 
 import (
 	"errors"
@@ -15,36 +15,41 @@ import (
 )
 
 type BindAddContributor struct {
-	Role      string `path:"role"`
-	FirstName string `query:"first_name"`
-	LastName  string `query:"last_name"`
+	Role       string   `path:"role"`
+	CreditRole []string `query:"credit_role"`
+	FirstName  string   `query:"first_name"`
+	LastName   string   `query:"last_name"`
 }
 
 type BindSuggestContributors struct {
-	Role      string `path:"role"`
-	Position  int    `path:"position"`
-	FirstName string `query:"first_name"`
-	LastName  string `query:"last_name"`
+	Role       string   `path:"role"`
+	Position   int      `path:"position"`
+	CreditRole []string `query:"credit_role"`
+	FirstName  string   `query:"first_name"`
+	LastName   string   `query:"last_name"`
 }
 
 type BindConfirmContributor struct {
-	Role     string `path:"role"`
-	Position int    `path:"position"`
-	ID       string `form:"id"`
+	Role       string   `path:"role"`
+	Position   int      `path:"position"`
+	ID         string   `form:"id"`
+	CreditRole []string `form:"credit_role"`
 }
 
 type BindUnconfirmContributor struct {
-	Role      string `path:"role"`
-	Position  int    `path:"position"`
-	FirstName string `form:"first_name"`
-	LastName  string `form:"last_name"`
+	Role       string   `path:"role"`
+	Position   int      `path:"position"`
+	CreditRole []string `form:"credit_role"`
+	FirstName  string   `form:"first_name"`
+	LastName   string   `form:"last_name"`
 }
 
 type BindCreateContributor struct {
-	Role      string `path:"role"`
-	ID        string `form:"id"`
-	FirstName string `form:"first_name"`
-	LastName  string `form:"last_name"`
+	Role       string   `path:"role"`
+	ID         string   `form:"id"`
+	CreditRole []string `form:"credit_role"`
+	FirstName  string   `form:"first_name"`
+	LastName   string   `form:"last_name"`
 }
 
 type BindEditContributor struct {
@@ -53,11 +58,12 @@ type BindEditContributor struct {
 }
 
 type BindUpdateContributor struct {
-	Role      string `path:"role"`
-	Position  int    `path:"position"`
-	ID        string `form:"id"`
-	FirstName string `form:"first_name"`
-	LastName  string `form:"last_name"`
+	Role       string   `path:"role"`
+	Position   int      `path:"position"`
+	ID         string   `form:"id"`
+	CreditRole []string `form:"credit_role"`
+	FirstName  string   `form:"first_name"`
+	LastName   string   `form:"last_name"`
 }
 
 type BindDeleteContributor struct {
@@ -111,16 +117,17 @@ func (h *Handler) AddContributor(w http.ResponseWriter, r *http.Request, ctx Con
 		return
 	}
 
-	position := len(ctx.Dataset.Contributors(b.Role))
+	position := len(ctx.Publication.Contributors(b.Role))
 
 	c := &models.Contributor{
-		FirstName: b.FirstName,
-		LastName:  b.LastName,
+		CreditRole: b.CreditRole,
+		FirstName:  b.FirstName,
+		LastName:   b.LastName,
 	}
 
 	f := contributorForm(ctx, b.Role, position, c, nil)
 
-	render.Render(w, "dataset/add_contributor", YieldContributorForm{
+	render.Render(w, "publication/add_contributor", YieldContributorForm{
 		Context:     ctx,
 		Role:        b.Role,
 		Position:    position,
@@ -143,11 +150,12 @@ func (h *Handler) SuggestContributors(w http.ResponseWriter, r *http.Request, ct
 	}
 
 	c := &models.Contributor{
-		FirstName: b.FirstName,
-		LastName:  b.LastName,
+		CreditRole: b.CreditRole,
+		FirstName:  b.FirstName,
+		LastName:   b.LastName,
 	}
 
-	render.Render(w, "dataset/suggest_contributors", YieldSuggestContributors{
+	render.Render(w, "publication/suggest_contributors", YieldSuggestContributors{
 		Context:     ctx,
 		Role:        b.Role,
 		Position:    b.Position,
@@ -170,18 +178,19 @@ func (h *Handler) ConfirmContributor(w http.ResponseWriter, r *http.Request, ctx
 	}
 
 	c := &models.Contributor{
-		ID:        p.ID,
-		FirstName: p.FirstName,
-		LastName:  p.LastName,
+		ID:         p.ID,
+		CreditRole: b.CreditRole,
+		FirstName:  p.FirstName,
+		LastName:   p.LastName,
 	}
 
 	f := contributorForm(ctx, b.Role, b.Position, c, nil)
 
 	var tmpl string
-	if len(ctx.Dataset.Contributors(b.Role)) > b.Position {
-		tmpl = "dataset/edit_contributor"
+	if len(ctx.Publication.Contributors(b.Role)) > b.Position {
+		tmpl = "publication/edit_contributor"
 	} else {
-		tmpl = "dataset/add_contributor"
+		tmpl = "publication/add_contributor"
 	}
 
 	render.Render(w, tmpl, YieldContributorForm{
@@ -201,17 +210,18 @@ func (h *Handler) UnconfirmContributor(w http.ResponseWriter, r *http.Request, c
 	}
 
 	c := &models.Contributor{
-		FirstName: b.FirstName,
-		LastName:  b.LastName,
+		CreditRole: b.CreditRole,
+		FirstName:  b.FirstName,
+		LastName:   b.LastName,
 	}
 
 	f := contributorForm(ctx, b.Role, b.Position, c, nil)
 
 	var tmpl string
-	if len(ctx.Dataset.Contributors(b.Role)) > b.Position {
-		tmpl = "dataset/edit_contributor"
+	if len(ctx.Publication.Contributors(b.Role)) > b.Position {
+		tmpl = "publication/edit_contributor"
 	} else {
-		tmpl = "dataset/add_contributor"
+		tmpl = "publication/add_contributor"
 	}
 
 	render.Render(w, tmpl, YieldContributorForm{
@@ -230,9 +240,9 @@ func (h *Handler) CreateContributor(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	position := len(ctx.Dataset.Contributors(b.Role))
+	position := len(ctx.Publication.Contributors(b.Role))
 
-	c := &models.Contributor{}
+	c := &models.Contributor{CreditRole: b.CreditRole}
 	if b.ID != "" {
 		p, err := h.PersonService.GetPerson(b.ID)
 		if err != nil {
@@ -247,11 +257,11 @@ func (h *Handler) CreateContributor(w http.ResponseWriter, r *http.Request, ctx 
 		c.LastName = b.LastName
 	}
 
-	ctx.Dataset.AddContributor(b.Role, c)
+	ctx.Publication.AddContributor(b.Role, c)
 
-	if validationErrs := ctx.Dataset.Validate(); validationErrs != nil {
+	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
 		f := contributorForm(ctx, b.Role, position, c, validationErrs.(validation.Errors))
-		render.Render(w, "dataset/refresh_add_contributor", YieldContributorForm{
+		render.Render(w, "publication/refresh_add_contributor", YieldContributorForm{
 			Context:     ctx,
 			Role:        b.Role,
 			Position:    position,
@@ -261,11 +271,11 @@ func (h *Handler) CreateContributor(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
+	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Render(w, "error_dialog", ctx.T("dataset.conflict_error"))
+		render.Render(w, "error_dialog", ctx.T("publication.conflict_error"))
 		return
 	}
 
@@ -274,7 +284,7 @@ func (h *Handler) CreateContributor(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	render.Render(w, "dataset/contributors_add_row", YieldContributor{
+	render.Render(w, "publication/contributors_add_row", YieldContributor{
 		Context:     ctx,
 		Role:        b.Role,
 		Position:    position,
@@ -289,7 +299,7 @@ func (h *Handler) EditContributor(w http.ResponseWriter, r *http.Request, ctx Co
 		return
 	}
 
-	c, err := ctx.Dataset.GetContributor(b.Role, b.Position)
+	c, err := ctx.Publication.GetContributor(b.Role, b.Position)
 	if err != nil {
 		render.InternalServerError(w, r, err)
 		return
@@ -297,7 +307,7 @@ func (h *Handler) EditContributor(w http.ResponseWriter, r *http.Request, ctx Co
 
 	f := contributorForm(ctx, b.Role, b.Position, c, nil)
 
-	render.Render(w, "dataset/edit_contributor", YieldContributorForm{
+	render.Render(w, "publication/edit_contributor", YieldContributorForm{
 		Context:     ctx,
 		Role:        b.Role,
 		Position:    b.Position,
@@ -313,7 +323,7 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	c := &models.Contributor{}
+	c := &models.Contributor{CreditRole: b.CreditRole}
 	if b.ID != "" {
 		p, err := h.PersonService.GetPerson(b.ID)
 		if err != nil {
@@ -328,14 +338,14 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 		c.LastName = b.LastName
 	}
 
-	if err := ctx.Dataset.SetContributor(b.Role, b.Position, c); err != nil {
+	if err := ctx.Publication.SetContributor(b.Role, b.Position, c); err != nil {
 		render.InternalServerError(w, r, err)
 		return
 	}
 
-	if validationErrs := ctx.Dataset.Validate(); validationErrs != nil {
+	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
 		f := contributorForm(ctx, b.Role, b.Position, c, validationErrs.(validation.Errors))
-		render.Render(w, "dataset/refresh_edit_contributor", YieldContributorForm{
+		render.Render(w, "publication/refresh_edit_contributor", YieldContributorForm{
 			Context:     ctx,
 			Role:        b.Role,
 			Position:    b.Position,
@@ -345,11 +355,11 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
+	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Render(w, "error_dialog", ctx.T("dataset.conflict_error"))
+		render.Render(w, "error_dialog", ctx.T("publication.conflict_error"))
 		return
 	}
 
@@ -358,7 +368,7 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	render.Render(w, "dataset/contributors_update_row", YieldContributor{
+	render.Render(w, "publication/contributors_update_row", YieldContributor{
 		Context:     ctx,
 		Role:        b.Role,
 		Position:    b.Position,
@@ -373,7 +383,7 @@ func (h *Handler) ConfirmDeleteContributor(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	render.Render(w, "dataset/confirm_delete_contributor", YieldDeleteContributor{
+	render.Render(w, "publication/confirm_delete_contributor", YieldDeleteContributor{
 		Context:  ctx,
 		Role:     b.Role,
 		Position: b.Position,
@@ -387,12 +397,12 @@ func (h *Handler) DeleteContributor(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	if err := ctx.Dataset.RemoveContributor(b.Role, b.Position); err != nil {
+	if err := ctx.Publication.RemoveContributor(b.Role, b.Position); err != nil {
 		render.InternalServerError(w, r, err)
 		return
 	}
 
-	if err := ctx.Dataset.Validate(); err != nil {
+	if err := ctx.Publication.Validate(); err != nil {
 		errors := form.Errors(localize.ValidationErrors(ctx.Locale, err.(validation.Errors)))
 		render.Render(w, "form_errors_dialog", struct {
 			Title  string
@@ -404,11 +414,11 @@ func (h *Handler) DeleteContributor(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
+	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Render(w, "error_dialog", ctx.T("dataset.conflict_error"))
+		render.Render(w, "error_dialog", ctx.T("publication.conflict_error"))
 		return
 	}
 
@@ -417,7 +427,7 @@ func (h *Handler) DeleteContributor(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	render.Render(w, "dataset/refresh_contributors", YieldContributors{
+	render.Render(w, "publication/refresh_contributors", YieldContributors{
 		Context: ctx,
 		Role:    b.Role,
 	})
@@ -430,7 +440,7 @@ func (h *Handler) OrderContributors(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	contributors := ctx.Dataset.Contributors(b.Role)
+	contributors := ctx.Publication.Contributors(b.Role)
 	if len(b.Positions) != len(contributors) {
 		render.BadRequest(w, r, errors.New("positions don't match number of contributors"))
 		return
@@ -439,13 +449,13 @@ func (h *Handler) OrderContributors(w http.ResponseWriter, r *http.Request, ctx 
 	for i, pos := range b.Positions {
 		newContributors[i] = contributors[pos]
 	}
-	ctx.Dataset.SetContributors(b.Role, newContributors)
+	ctx.Publication.SetContributors(b.Role, newContributors)
 
-	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
+	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Render(w, "error_dialog", ctx.T("dataset.conflict_error"))
+		render.Render(w, "error_dialog", ctx.T("publication.conflict_error"))
 		return
 	}
 
@@ -454,14 +464,14 @@ func (h *Handler) OrderContributors(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	render.Render(w, "dataset/refresh_contributors", YieldContributors{
+	render.Render(w, "publication/refresh_contributors", YieldContributors{
 		Context: ctx,
 		Role:    b.Role,
 	})
 }
 
 func contributorForm(ctx Context, role string, position int, c *models.Contributor, errors validation.Errors) *form.Form {
-	return form.New().
+	f := form.New().
 		WithTheme("cols").
 		WithErrors(localize.ValidationErrors(ctx.Locale, errors)).
 		AddSection(
@@ -484,4 +494,16 @@ func contributorForm(ctx Context, role string, position int, c *models.Contribut
 				Error:    localize.ValidationErrorAt(ctx.Locale, errors, fmt.Sprintf("/%s/%d/last_name", role, position)),
 			},
 		)
+
+	if role == "author" {
+		f.AddSection(&form.SelectRepeat{
+			Name:        "credit_role",
+			Label:       "Credit roles",
+			Options:     localize.VocabularySelectOptions(ctx.Locale, "credit_roles"),
+			Values:      c.CreditRole,
+			EmptyOption: true,
+		})
+	}
+
+	return f
 }

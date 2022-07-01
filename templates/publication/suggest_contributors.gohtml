@@ -2,12 +2,15 @@
     <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title">Assign UGent membership to {{.TS "dataset.contributor.role" .Role}}</h2>
+                <h2 class="modal-title">Assign UGent membership to {{.TS "publication.contributor.role" .Role}}</h2>
             </div>
             <div class="modal-body">
                 <div class="contributor-attributes">
                     <input type="hidden" name="first_name" value="{{.Contributor.FirstName}}">
                     <input type="hidden" name="last_name" value="{{.Contributor.LastName}}">
+                    {{range $i, $r := .Contributor.CreditRole}}
+                    <input type="hidden" name="credit_role[{{$i}}]" value="{{$r}}">
+                    {{end}}
                 </div>
                 {{if .Hits}}
                 <ul class="list-group mt-6">
@@ -35,10 +38,10 @@
                                             </div>
                                             <div class="list-group-item-meta-right">
                                                 <button class="btn btn-primary membership-member"
-                                                    hx-post="{{pathFor "dataset_confirm_contributor" "id" $.Dataset.ID "role" $.Role "position" ($.Position|toString)}}"
+                                                    hx-post="{{pathFor "publication_confirm_contributor" "id" $.Publication.ID "role" $.Role "position" ($.Position|toString)}}"
+                                                    hx-include='#person-{{.ID}} input[name="id"], .contributor-attributes input[name^=credit_role]'
                                                     hx-target="#modals"
-                                                    hx-include='#person-{{.ID}} input[name="id"]'
-                                                    >Confirm {{$.TS "dataset.contributor.role" $.Role}}</button>
+                                                    >Confirm {{$.TS "publication.contributor.role" $.Role}}</button>
                                             </div>
                                         </div>
                                     </div>
@@ -49,15 +52,15 @@
                     {{end}}
                 </ul>
                 {{else}}
-                This {{.TS "dataset.contributor.role" .Role}} is not a UGent employee or student.
+                This {{.TS "publication.contributor.role" .Role}} is not a UGent employee or student.
                 {{end}}
             </div>
             <div class="modal-footer">
                 <button class="btn btn-link membership-external" data-target="#modals" data-dismiss="modal"
-                    {{if (gt (len (.Dataset.Contributors .Role)) .Position)}}
-                    hx-get="{{pathFor "dataset_edit_contributor" "id" .Dataset.ID "role" .Role "position" (.Position|toString)}}"
+                    {{if (gt (len (.Publication.Contributors .Role)) .Position)}}
+                    hx-get="{{pathFor "publication_edit_contributor" "id" .Publication.ID "role" .Role "position" (.Position|toString)}}"
                     {{else}}
-                    hx-get="{{pathFor "dataset_add_contributor" "id" .Dataset.ID "role" .Role}}"
+                    hx-get="{{pathFor "publication_add_contributor" "id" .Publication.ID "role" .Role}}"
                     {{end}}
                     hx-include=".contributor-attributes input"
                     hx-target="#modals"

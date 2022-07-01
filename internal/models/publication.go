@@ -335,23 +335,39 @@ func (p *Publication) SetContributors(role string, c []*Contributor) {
 	}
 }
 
-func (p *Publication) AddContributor(role string, i int, c *Contributor) {
+func (p *Publication) GetContributor(role string, i int) (*Contributor, error) {
 	cc := p.Contributors(role)
-
-	if len(cc) == i {
-		p.SetContributors(role, append(cc, c))
-		return
+	if i >= len(cc) {
+		return nil, errors.New("index out of bounds")
 	}
 
-	newCC := append(cc[:i+1], cc[i:]...)
-	newCC[i] = c
-	p.SetContributors(role, newCC)
+	return cc[i], nil
 }
 
-func (p *Publication) RemoveContributor(role string, i int) {
+func (p *Publication) AddContributor(role string, c *Contributor) {
+	p.SetContributors(role, append(p.Contributors(role), c))
+}
+
+func (p *Publication) SetContributor(role string, i int, c *Contributor) error {
 	cc := p.Contributors(role)
+	if i >= len(cc) {
+		return errors.New("index out of bounds")
+	}
+
+	cc[i] = c
+
+	return nil
+}
+
+func (p *Publication) RemoveContributor(role string, i int) error {
+	cc := p.Contributors(role)
+	if i >= len(cc) {
+		return errors.New("index out of bounds")
+	}
 
 	p.SetContributors(role, append(cc[:i], cc[i+1:]...))
+
+	return nil
 }
 
 func (p *Publication) GetAbstract(i int) (Text, error) {
@@ -451,6 +467,19 @@ func (p *Publication) UsesConference() bool {
 	switch p.Type {
 	case "book_chapter", "book_editor", "conference", "issue_editor", "journal_article":
 		return true
+	default:
+		return false
+	}
+}
+
+func (p *Publication) UsesContributors(role string) bool {
+	switch role {
+	case "author":
+		return p.UsesAuthor()
+	case "editor":
+		return p.UsesEditor()
+	case "supervisor":
+		return p.UsesSupervisor()
 	default:
 		return false
 	}

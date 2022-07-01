@@ -67,7 +67,7 @@ func issueEditorDetailsForm(ctx Context, b *BindDetails, errors validation.Error
 			&form.SelectRepeat{
 				Name:        "language",
 				Label:       l.T("builder.language"),
-				Options:     localize.LanguageSelectOptions(l),
+				Options:     localize.VocabularySelectOptions(l, "language_codes"),
 				Values:      b.Language,
 				EmptyOption: true,
 				Cols:        9,
@@ -77,7 +77,7 @@ func issueEditorDetailsForm(ctx Context, b *BindDetails, errors validation.Error
 				Name:        "publication_status",
 				Label:       l.T("builder.publication_status"),
 				EmptyOption: true,
-				Options:     optionsForVocabulary(l, "publication_publishing_statuses"),
+				Options:     localize.VocabularySelectOptions(l, "publication_publishing_statuses"),
 				Value:       b.PublicationStatus,
 				Cols:        3,
 				Error:       localize.ValidationErrorAt(l, errors, "/publication_status"),
