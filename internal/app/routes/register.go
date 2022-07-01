@@ -53,7 +53,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	)
 	publicationFilesController := controllers.NewPublicationFiles(oldBase, services.Repository, services.FileStore)
 	publicationConferenceController := controllers.NewPublicationConference(oldBase, services.Repository)
-	publicationLinksController := controllers.NewPublicationLinks(oldBase, services.Repository)
 	publicationDatasetsController := controllers.NewPublicationDatasets(oldBase, services.Repository, services.DatasetSearchService)
 	publicationAdditionalInfoController := controllers.NewPublicationAdditionalInfo(oldBase, services.Repository)
 
@@ -532,7 +531,7 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		Methods("DELETE").
 		Name("publication_delete_link")
 
-  // edit publication departments
+		// edit publication departments
 	r.HandleFunc("/publication/{id}/departments/add",
 		publicationEditingHandler.Wrap(publicationEditingHandler.AddDepartment)).
 		Methods("GET").
@@ -764,25 +763,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	pubEditRouter.HandleFunc("/htmx/additional_info/edit", publicationAdditionalInfoController.Update).
 		Methods("PATCH").
 		Name("publication_additional_info_save_form")
-	// Publication links HTMX fragments
-	pubEditRouter.HandleFunc("/htmx/links/add", publicationLinksController.Add).
-		Methods("GET").
-		Name("publication_links_add_link")
-	pubEditRouter.HandleFunc("/htmx/links/create", publicationLinksController.Create).
-		Methods("POST").
-		Name("publication_links_create_link")
-	pubEditRouter.HandleFunc("/htmx/links/edit/{delta}", publicationLinksController.Edit).
-		Methods("GET").
-		Name("publication_links_edit_link")
-	pubEditRouter.HandleFunc("/htmx/links/update/{delta}", publicationLinksController.Update).
-		Methods("PUT").
-		Name("publication_links_update_link")
-	pubEditRouter.HandleFunc("/htmx/links/remove/{delta}", publicationLinksController.ConfirmRemove).
-		Methods("GET").
-		Name("publication_links_confirm_remove_from_publication")
-	pubEditRouter.HandleFunc("/htmx/links/remove/{delta}", publicationLinksController.Remove).
-		Methods("DELETE").
-		Name("publication_links_remove_link")
 	// Publication datasets HTMX fragments
 	pubEditRouter.HandleFunc("/htmx/datasets/choose", publicationDatasetsController.Choose).
 		Methods("GET").
