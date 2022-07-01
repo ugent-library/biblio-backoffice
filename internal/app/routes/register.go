@@ -53,7 +53,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	)
 	publicationFilesController := controllers.NewPublicationFiles(oldBase, services.Repository, services.FileStore)
 	publicationConferenceController := controllers.NewPublicationConference(oldBase, services.Repository)
-	publicationDatasetsController := controllers.NewPublicationDatasets(oldBase, services.Repository, services.DatasetSearchService)
 
 	// NEW HANDLERS
 	baseHandler := handlers.BaseHandler{
@@ -614,6 +613,28 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		Methods("DELETE").
 		Name("publication_delete_lay_summary")
 
+	// edit publication datasets
+	r.HandleFunc("/publication/{id}/datasets/add",
+		publicationEditingHandler.Wrap(publicationEditingHandler.AddDataset)).
+		Methods("GET").
+		Name("publication_add_dataset")
+	r.HandleFunc("/publication/{id}/datasets/suggestions",
+		publicationEditingHandler.Wrap(publicationEditingHandler.SuggestDatasets)).
+		Methods("GET").
+		Name("publication_suggest_datasets")
+	r.HandleFunc("/publication/{id}/datasets",
+		publicationEditingHandler.Wrap(publicationEditingHandler.CreateDataset)).
+		Methods("POST").
+		Name("publication_create_dataset")
+	r.HandleFunc("/publication/{id}/datasets/{dataset_id}/confirm-delete",
+		publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDeleteDataset)).
+		Methods("GET").
+		Name("publication_confirm_delete_dataset")
+	r.HandleFunc("/publication/{id}/datasets/{dataset_id}",
+		publicationEditingHandler.Wrap(publicationEditingHandler.DeleteDataset)).
+		Methods("DELETE").
+		Name("publication_delete_dataset")
+
 	// edit publication contributors
 	r.HandleFunc("/publication/{id}/contributors/{role}/order",
 		publicationEditingHandler.Wrap(publicationEditingHandler.OrderContributors)).
@@ -762,20 +783,4 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	pubEditRouter.HandleFunc("/htmx/conference/edit", publicationConferenceController.Update).
 		Methods("PATCH").
 		Name("publication_conference_save_form")
-	// Publication datasets HTMX fragments
-	pubEditRouter.HandleFunc("/htmx/datasets/choose", publicationDatasetsController.Choose).
-		Methods("GET").
-		Name("publication_datasets_choose")
-	pubEditRouter.HandleFunc("/htmx/datasets/activesearch", publicationDatasetsController.ActiveSearch).
-		Methods("POST").
-		Name("publication_datasets_activesearch")
-	pubEditRouter.HandleFunc("/htmx/datasets/add/{dataset_id}", publicationDatasetsController.Add).
-		Methods("PATCH").
-		Name("publication_datasets_add")
-	pubEditRouter.HandleFunc("/htmx/datasets/remove/{dataset_id}", publicationDatasetsController.ConfirmRemove).
-		Methods("GET").
-		Name("publication_datasets_confirm_remove")
-	pubEditRouter.HandleFunc("/htmx/datasets/remove/{dataset_id}", publicationDatasetsController.Remove).
-		Methods("PATCH").
-		Name("publication_datasets_remove")
 }
