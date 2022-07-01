@@ -2,4 +2,35 @@
     {{template "publication/show_nav" .}}
 </div>
 
-Show contributors
+{{range $role := (list "author" "editor" "supervisor")}}
+{{if $.Publication.UsesContributors $role}}
+<div class="card mb-6">
+    <div class="card-header">
+        <div class="bc-toolbar">
+            <div class="bc-toolbar-left">
+                <h1 class="bc-toolbar-title">{{$.TS "publication.contributor.title" $role}}</h1>
+                <a class="text-muted mx-2" href="#" data-container="body" data-toggle="popover"
+                    data-trigger="focus" data-placement="right" data-content="{{$.T "tooltip.publication.contributors"}}">
+                    <i class="if if-info-circle if--small"></i>
+                    <div class="sr-only">More info</div>
+                </a>
+            </div>
+            <div class="bc-toolbar-right">
+                {{if $.User.CanEditPublication $.Publication}}
+                <button type="button" class="btn btn-outline-primary"
+                    hx-get="{{pathFor "publication_add_contributor" "id" $.Publication.ID "role" $role}}"
+                    hx-target="#modals"
+                >
+                    <i class="if if-add"></i>
+                    <div class="btn-text">Add {{$.TS "publication.contributor.role" $role}}</div>
+                </button>
+                {{end}}
+            </div>
+        </div>
+    </div>
+    <div id="contributors-{{$role}}-body">
+        {{template "publication/contributors_body" ($.YieldRole $role)}}
+    </div>
+</div>
+{{end}}
+{{end}}

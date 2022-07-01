@@ -7,14 +7,12 @@ import (
 
 	"github.com/ugent-library/biblio-backend/internal/app/displays"
 	"github.com/ugent-library/biblio-backend/internal/bind"
-	"github.com/ugent-library/biblio-backend/internal/locale"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
 	"github.com/ugent-library/biblio-backend/internal/render/display"
 	"github.com/ugent-library/biblio-backend/internal/render/form"
 	"github.com/ugent-library/biblio-backend/internal/snapstore"
 	"github.com/ugent-library/biblio-backend/internal/validation"
-	"github.com/ugent-library/biblio-backend/internal/vocabularies"
 )
 
 type BindDetails struct {
@@ -230,22 +228,4 @@ func cleanStringSlice(vals []string) []string {
 		}
 	}
 	return tmp
-}
-
-func optionsForVocabulary(locale *locale.Locale, key string) []form.SelectOption {
-	options := []form.SelectOption{}
-	values, ok := vocabularies.Map[key]
-
-	if !ok {
-		return options
-	}
-
-	for _, v := range values {
-		o := form.SelectOption{}
-		o.Label = locale.TS(key, v)
-		o.Value = v
-		options = append(options, o)
-	}
-
-	return options
 }

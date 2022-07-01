@@ -54,7 +54,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	publicationFilesController := controllers.NewPublicationFiles(oldBase, services.Repository, services.FileStore)
 	publicationConferenceController := controllers.NewPublicationConference(oldBase, services.Repository)
 	publicationLinksController := controllers.NewPublicationLinks(oldBase, services.Repository)
-	publicationContributorsController := controllers.NewPublicationContributors(oldBase, services.Repository, services.PersonSearchService, services.PersonService)
 	publicationDatasetsController := controllers.NewPublicationDatasets(oldBase, services.Repository, services.DatasetSearchService)
 	publicationAdditionalInfoController := controllers.NewPublicationAdditionalInfo(oldBase, services.Repository)
 
@@ -484,6 +483,7 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		publicationEditingHandler.Wrap(publicationEditingHandler.UpdateDetails)).
 		Methods("PUT").
 		Name("publication_update_details")
+
 	// edit publication projects
 	r.HandleFunc("/publication/{id}/projects/add",
 		publicationEditingHandler.Wrap(publicationEditingHandler.AddProject)).
@@ -531,7 +531,8 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		publicationEditingHandler.Wrap(publicationEditingHandler.DeleteLink)).
 		Methods("DELETE").
 		Name("publication_delete_link")
-	// edit dataset departments
+
+  // edit publication departments
 	r.HandleFunc("/publication/{id}/departments/add",
 		publicationEditingHandler.Wrap(publicationEditingHandler.AddDepartment)).
 		Methods("GET").
@@ -604,6 +605,48 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		publicationEditingHandler.Wrap(publicationEditingHandler.DeleteLaySummary)).
 		Methods("DELETE").
 		Name("publication_delete_lay_summary")
+
+	// edit publication contributors
+	r.HandleFunc("/publication/{id}/contributors/{role}/order",
+		publicationEditingHandler.Wrap(publicationEditingHandler.OrderContributors)).
+		Methods("POST").
+		Name("publication_order_contributors")
+	r.HandleFunc("/publication/{id}/contributors/{role}/add",
+		publicationEditingHandler.Wrap(publicationEditingHandler.AddContributor)).
+		Methods("GET").
+		Name("publication_add_contributor")
+	r.HandleFunc("/publication/{id}/contributors/{role}/{position}/suggestions",
+		publicationEditingHandler.Wrap(publicationEditingHandler.SuggestContributors)).
+		Methods("GET").
+		Name("publication_suggest_contributors")
+	r.HandleFunc("/publication/{id}/contributors/{role}/{position}/confirm",
+		publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmContributor)).
+		Methods("POST").
+		Name("publication_confirm_contributor")
+	r.HandleFunc("/publication/{id}/contributors/{role}/{position}/unconfirm",
+		publicationEditingHandler.Wrap(publicationEditingHandler.UnconfirmContributor)).
+		Methods("POST").
+		Name("publication_unconfirm_contributor")
+	r.HandleFunc("/publication/{id}/contributors/{role}",
+		publicationEditingHandler.Wrap(publicationEditingHandler.CreateContributor)).
+		Methods("POST").
+		Name("publication_create_contributor")
+	r.HandleFunc("/publication/{id}/contributors/{role}/{position}/edit",
+		publicationEditingHandler.Wrap(publicationEditingHandler.EditContributor)).
+		Methods("GET").
+		Name("publication_edit_contributor")
+	r.HandleFunc("/publication/{id}/contributors/{role}/{position}",
+		publicationEditingHandler.Wrap(publicationEditingHandler.UpdateContributor)).
+		Methods("PUT").
+		Name("publication_update_contributor")
+	r.HandleFunc("/publication/{id}/contributors/{role}/{position}/confirm-delete",
+		publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDeleteContributor)).
+		Methods("GET").
+		Name("publication_confirm_delete_contributor")
+	r.HandleFunc("/publication/{id}/contributors/{role}/{position}",
+		publicationEditingHandler.Wrap(publicationEditingHandler.DeleteContributor)).
+		Methods("DELETE").
+		Name("publication_delete_contributor")
 
 	// orcid
 	r.HandleFunc("/publication/orcid",
@@ -740,37 +783,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	pubEditRouter.HandleFunc("/htmx/links/remove/{delta}", publicationLinksController.Remove).
 		Methods("DELETE").
 		Name("publication_links_remove_link")
-	// Publication contributors HTMX fragments
-	pubEditRouter.HandleFunc("/htmx/contributors/{role}/add", publicationContributorsController.Add).
-		Methods("GET").
-		Name("publication_contributors_add")
-	pubEditRouter.HandleFunc("/htmx/contributors/{role}", publicationContributorsController.Create).
-		Methods("POST").
-		Name("publication_contributors_create")
-	pubEditRouter.HandleFunc("/htmx/contributors/{role}/order", publicationContributorsController.Order).
-		Methods("POST").
-		Name("publication_contributors_order")
-	pubEditRouter.HandleFunc("/htmx/contributors/{role}/{position}/remove", publicationContributorsController.ConfirmRemove).
-		Methods("GET").
-		Name("publication_contributors_confirm_remove")
-	pubEditRouter.HandleFunc("/htmx/contributors/{role}/{position}", publicationContributorsController.Remove).
-		Methods("DELETE").
-		Name("publication_contributors_remove")
-	pubEditRouter.HandleFunc("/htmx/contributors/{role}/{position}/edit", publicationContributorsController.Edit).
-		Methods("GET").
-		Name("publication_contributors_edit")
-	pubEditRouter.HandleFunc("/htmx/contributors/{role}/{position}/choose", publicationContributorsController.Choose).
-		Methods("PUT").
-		Name("publication_contributors_choose")
-	pubEditRouter.HandleFunc("/htmx/contributors/{role}/{position}/demote", publicationContributorsController.Demote).
-		Methods("PUT").
-		Name("publication_contributors_demote")
-	pubEditRouter.HandleFunc("/htmx/contributors/{role}/{position}/promote", publicationContributorsController.Promote).
-		Methods("PUT").
-		Name("publication_contributors_promote")
-	pubEditRouter.HandleFunc("/htmx/contributors/{role}/{position}", publicationContributorsController.Update).
-		Methods("PUT").
-		Name("publication_contributors_update")
 	// Publication datasets HTMX fragments
 	pubEditRouter.HandleFunc("/htmx/datasets/choose", publicationDatasetsController.Choose).
 		Methods("GET").
