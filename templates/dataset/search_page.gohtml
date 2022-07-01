@@ -46,7 +46,8 @@
             <ul class="nav">
                 {{range .Scopes}}
                 <li class="nav-item">
-                    <a class="nav-link{{if $.SearchArgs.HasFilter "scope" .}} active{{end}}" href="{{pathFor "datasets"|query $.SearchArgs}}">
+                    <a class="nav-link{{if $.SearchArgs.HasFilter "scope" .}} active{{end}}"
+                        href="{{pathFor "datasets"|query ($.SearchArgs.WithFilter "scope" .)}}">
                         {{$.TS "dataset.search.scopes" .}}
                     </a>
                 </li>

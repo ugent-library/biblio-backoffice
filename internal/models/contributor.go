@@ -44,23 +44,20 @@ func (c *Contributor) Validate() (errs validation.Errors) {
 	if c.FirstName == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/first_name",
-			Code:    "required",
-			Field:   "first_name",
+			Code:    "first_name.required",
 		})
 	}
 	if c.LastName == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/last_name",
-			Code:    "required",
-			Field:   "last_name",
+			Code:    "last_name.required",
 		})
 	}
 	for i, cr := range c.CreditRole {
 		if !IsValidCreditRole(cr) {
 			errs = append(errs, &validation.Error{
 				Pointer: fmt.Sprintf("/credit_role/%d", i),
-				Code:    "invalid",
-				Field:   "credit_role",
+				Code:    "credit_role.invalid",
 			})
 		}
 	}

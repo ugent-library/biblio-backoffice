@@ -7,23 +7,24 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/validation"
 )
 
-func formTypeJournalArticle(ctx Context, b *BindDetails, errors validation.Errors) *form.Form {
+func conferenceDetailsForm(ctx Context, b *BindDetails, errors validation.Errors) *form.Form {
 	l := ctx.Locale
 	p := ctx.Publication
 	return form.New().
 		WithTheme("default").
+		WithErrors(localize.ValidationErrors(l, errors)).
 		AddSection(
 			&display.Text{
 				Label: l.T("builder.type"),
 				Value: l.TS("publication_types", p.Type),
 			},
 			&form.Select{
-				Name:    "journal_article_type",
-				Label:   l.T("builder.journal_article_type"),
-				Options: optionsForVocabulary(l, "journal_article_types"),
-				Value:   b.JournalArticleType,
+				Name:    "conference_type",
+				Label:   l.T("builder.conference_type"),
+				Value:   b.ConferenceType,
+				Options: optionsForVocabulary(l, "conference_types"),
 				Cols:    3,
-				Error:   localize.ValidationErrorAt(l, errors, "/journal_article_type"),
+				Error:   localize.ValidationErrorAt(l, errors, "/conference_type"),
 			},
 			&form.Text{
 				Name:  "doi",
@@ -56,7 +57,7 @@ func formTypeJournalArticle(ctx Context, b *BindDetails, errors validation.Error
 			},
 			&form.Text{
 				Name:     "publication",
-				Label:    l.T("builder.journal_article.publication"),
+				Label:    l.T("builder.conference.publication"),
 				Value:    b.Publication,
 				Required: true,
 				Cols:     9,
@@ -157,18 +158,11 @@ func formTypeJournalArticle(ctx Context, b *BindDetails, errors validation.Error
 				Error: localize.ValidationErrorAt(l, errors, "/page_count"),
 			},
 			&form.Text{
-				Name:  "article_number",
-				Label: l.T("builder.article_number"),
-				Value: b.ArticleNumber,
-				Cols:  3,
-				Error: localize.ValidationErrorAt(l, errors, "/article_number"),
-			},
-			&form.Text{
-				Name:  "issue_title",
-				Label: l.T("builder.issue_title"),
-				Value: b.IssueTitle,
+				Name:  "series_title",
+				Label: l.T("builder.conference.series_title"),
+				Value: b.SeriesTitle,
 				Cols:  9,
-				Error: localize.ValidationErrorAt(l, errors, "/issue_title"),
+				Error: localize.ValidationErrorAt(l, errors, "/series_title"),
 			},
 		).
 		AddSection(
@@ -216,30 +210,6 @@ func formTypeJournalArticle(ctx Context, b *BindDetails, errors validation.Error
 				Cols:        3,
 				Placeholder: "e.g. 978-3-16-148410-0",
 				Error:       localize.ValidationErrorAt(l, errors, "/eisbn"),
-			},
-			&form.Text{
-				Name:        "pubmed_id",
-				Label:       l.T("builder.pubmed_id"),
-				Value:       b.PubMedID,
-				Cols:        3,
-				Placeholder: "e.g. 35172674",
-				Error:       localize.ValidationErrorAt(l, errors, "/pubmed_id"),
-			},
-			&form.Text{
-				Name:        "arxiv_id",
-				Label:       l.T("builder.arxiv_id"),
-				Value:       b.ArxivID,
-				Cols:        3,
-				Placeholder: "e.g. 0706.0001",
-				Error:       localize.ValidationErrorAt(l, errors, "/arxiv_id"),
-			},
-			&form.Text{
-				Name:        "esci_id",
-				Label:       l.T("builder.esci_id"),
-				Value:       b.ESCIID,
-				Cols:        3,
-				Placeholder: "e.g. 000752820200004",
-				Error:       localize.ValidationErrorAt(l, errors, "/esci_id"),
 			},
 		)
 }

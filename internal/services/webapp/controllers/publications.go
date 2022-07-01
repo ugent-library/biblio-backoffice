@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	"net/url"
-	"time"
 
 	"github.com/cshum/imagor/imagorpath"
 	"github.com/gorilla/mux"
@@ -59,41 +58,6 @@ func NewPublications(base Base, store backends.Repository, fileStore *filestore.
 		orcidSandbox:             orcidSandbox,
 	}
 }
-
-// func (c *Publications) List(w http.ResponseWriter, r *http.Request) {
-// 	searchArgs := models.NewSearchArgs()
-// 	if err := DecodeQuery(searchArgs, r.URL.Query()); err != nil {
-// 		log.Println(err)
-// 		http.Error(w, err.Error(), http.StatusBadRequest)
-// 		return
-// 	}
-
-// 	hits, err := c.userPublications(context.GetUser(r.Context()).ID, searchArgs)
-// 	if err != nil {
-// 		log.Println(err)
-// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-// 		return
-// 	}
-
-// 	searchURL, _ := c.Router.Get("publications").URLPath()
-
-// 	for _, p := range hits.Hits {
-// 		c.addThumbnailURLs(p)
-// 	}
-
-// 	c.Render.HTML(w, http.StatusOK, "publication/list", c.ViewData(r, struct {
-// 		PageTitle  string
-// 		SearchURL  *url.URL
-// 		SearchArgs *models.SearchArgs
-// 		Hits       *models.PublicationHits
-// 	}{
-// 		"Overview - Publications - Biblio",
-// 		searchURL,
-// 		searchArgs,
-// 		hits,
-// 	}),
-// 	)
-// }
 
 func (c *Publications) Show(w http.ResponseWriter, r *http.Request) {
 	pub := context.GetPublication(r.Context())
@@ -650,138 +614,6 @@ func (c *Publications) AddMultiplePublish(w http.ResponseWriter, r *http.Request
 		hits,
 		batchID,
 	}),
-	)
-}
-
-func (c *Publications) Publish(w http.ResponseWriter, r *http.Request) {
-	pub := context.GetPublication(r.Context())
-
-	savedPub := pub.Clone()
-	savedPub.Status = "public"
-	err := c.store.SavePublication(savedPub)
-
-	flashes := make([]views.Flash, 0)
-	var publicationErrors validation.Errors
-	var publicationErrorsTitle string
-
-	if err != nil {
-
-		savedPub = pub
-
-		if e, ok := err.(validation.Errors); ok {
-
-			publicationErrors = e
-			publicationErrorsTitle = "Unable to publish record due to the following errors"
-
-		} else {
-
-			log.Println(err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-
-		}
-
-	} else {
-
-		flashes = append(flashes, views.Flash{Type: "success", Message: "Successfully published to Biblio.", DismissAfter: 5 * time.Second})
-
-	}
-
-	pubDatasets, err := c.store.GetPublicationDatasets(pub)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	searchArgs := models.NewSearchArgs()
-	if err := DecodeQuery(searchArgs, r.URL.Query()); err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	c.Render.HTML(w, http.StatusOK, "publication/show", c.ViewData(r, struct {
-		PageTitle           string
-		Publication         *models.Publication
-		PublicationDatasets []*models.Dataset
-		Show                *views.ShowBuilder
-		SearchArgs          *models.SearchArgs
-		ErrorsTitle         string
-		Errors              validation.Errors
-	}{
-		"Publication - Biblio",
-		savedPub,
-		pubDatasets,
-		views.NewShowBuilder(c.RenderPartial, locale.Get(r.Context())),
-		searchArgs,
-		publicationErrorsTitle,
-		publicationErrors,
-	},
-		flashes...,
-	))
-}
-
-func (c *Publications) ConfirmDelete(w http.ResponseWriter, r *http.Request) {
-	pub := context.GetPublication(r.Context())
-
-	searchArgs := models.NewSearchArgs()
-	if err := DecodeQuery(searchArgs, r.URL.Query()); err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	c.Render.HTML(w, http.StatusOK, "publication/_confirm_delete", c.ViewData(r, struct {
-		Publication *models.Publication
-		SearchArgs  *models.SearchArgs
-	}{
-		pub,
-		searchArgs,
-	}),
-		render.HTMLOptions{Layout: "layouts/htmx"},
-	)
-}
-
-func (c *Publications) Delete(w http.ResponseWriter, r *http.Request) {
-	pub := context.GetPublication(r.Context())
-
-	r.ParseForm()
-	searchArgs := models.NewSearchArgs()
-	if err := DecodeQuery(searchArgs, r.Form); err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	pub.Status = "deleted"
-	if err := c.store.SavePublication(pub); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	hits, err := c.userPublications(context.GetUser(r.Context()).ID, searchArgs)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	searchURL, _ := c.Router.Get("publications").URLPath()
-
-	c.Render.HTML(w, http.StatusOK, "publication/list", c.ViewData(r, struct {
-		PageTitle  string
-		SearchURL  *url.URL
-		SearchArgs *models.SearchArgs
-		Hits       *models.PublicationHits
-	}{
-		"Overview - Publications - Biblio",
-		searchURL,
-		searchArgs,
-		hits,
-	},
-		views.Flash{Type: "success", Message: "Successfully deleted publication.", DismissAfter: 5 * time.Second},
-	),
 	)
 }
 

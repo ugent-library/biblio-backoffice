@@ -7,11 +7,12 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/validation"
 )
 
-func formTypeIssueEditor(ctx Context, b *BindDetails, errors validation.Errors) *form.Form {
+func bookChapterDetailsForm(ctx Context, b *BindDetails, errors validation.Errors) *form.Form {
 	l := ctx.Locale
 	p := ctx.Publication
 	return form.New().
 		WithTheme("default").
+		WithErrors(localize.ValidationErrors(l, errors)).
 		AddSection(
 			&display.Text{
 				Label: l.T("builder.type"),
@@ -48,18 +49,11 @@ func formTypeIssueEditor(ctx Context, b *BindDetails, errors validation.Errors) 
 			},
 			&form.Text{
 				Name:     "publication",
-				Label:    l.T("builder.journal_article.publication"),
+				Label:    l.T("builder.book_chapter.publication"),
 				Value:    b.Publication,
-				Required: true,
 				Cols:     9,
+				Required: true,
 				Error:    localize.ValidationErrorAt(l, errors, "/publication"),
-			},
-			&form.Text{
-				Name:  "publication_abbreviation",
-				Label: l.T("builder.journal_article.publication_abbreviation"),
-				Value: b.PublicationAbbreviation,
-				Cols:  3,
-				Error: localize.ValidationErrorAt(l, errors, "/publication_abbreviation"),
 			},
 		).
 		AddSection(
@@ -114,18 +108,18 @@ func formTypeIssueEditor(ctx Context, b *BindDetails, errors validation.Errors) 
 		).
 		AddSection(
 			&form.Text{
-				Name:  "volume",
-				Label: l.T("builder.volume"),
-				Value: b.Volume,
+				Name:  "page_first",
+				Label: l.T("builder.page_first"),
+				Value: b.PageFirst,
 				Cols:  3,
-				Error: localize.ValidationErrorAt(l, errors, "/volume"),
+				Error: localize.ValidationErrorAt(l, errors, "/page_first"),
 			},
 			&form.Text{
-				Name:  "issue",
-				Label: l.T("builder.issue"),
-				Value: b.Issue,
+				Name:  "page_last",
+				Label: l.T("builder.page_last"),
+				Value: b.PageLast,
 				Cols:  3,
-				Error: localize.ValidationErrorAt(l, errors, "/issue"),
+				Error: localize.ValidationErrorAt(l, errors, "/page_last"),
 			},
 			&form.Text{
 				Name:  "page_count",

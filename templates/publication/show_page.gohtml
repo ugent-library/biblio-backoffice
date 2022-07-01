@@ -13,12 +13,12 @@
                 <div class="bc-toolbar-right">
                     {{if .User.CanPublishPublication .Publication}}
                     <div class="bc-toolbar-item">
-                        <form action="{{pathFor "publication_publish" "id" .Publication.ID}}" method="POST">
-                            {{.CSRFTag}}
-                            <button type="submit" class="btn btn-success">
-                                <div class="btn-text">Publish to Biblio</div>
-                            </button>
-                        </form>
+                        <button class="btn btn-success"
+                            hx-get="{{pathFor "publication_confirm_publish" "id" .Publication.ID|querySet "redirect-url" .RedirectURL}}"
+                            hx-target="#modals"
+                        >
+                            <div class="btn-text">Publish to Biblio</div>
+                        </button>
                     </div>
                     {{end}}
                     <div class="bc-toolbar-item">
@@ -42,8 +42,7 @@
                                 {{if .User.CanDeletePublication .Publication}}
                                 <a class="dropdown-item" href="#"
                                     hx-get="{{pathFor "publication_confirm_delete" "id" .Publication.ID|querySet "redirect-url" .RedirectURL}}"
-                                    hx-target="#publication-{{.Publication.ID}}-modal"
-                                    hx-trigger="click"
+                                    hx-target="#modals"
                                 >
                                     <i class="if if-delete"></i>
                                     <span>Delete</span>
@@ -69,7 +68,7 @@
         <div class="bc-navbar bc-navbar--white bc-navbar--bordered-bottom">
             <div class="bc-toolbar">
                 <div class="bc-toolbar-left">
-                    <div class="bc-toolbar-item">
+                    <div class="bc-toolbar-item" id="show-nav">
                         {{template "publication/show_nav" .}}
                     </div>
                 </div>

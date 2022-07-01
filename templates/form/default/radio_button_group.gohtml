@@ -10,11 +10,11 @@
     </label>
     <div class="col-{{.Cols}}">
         <div class="btn-group btn-group-toggle" data-toggle="buttons">
-            {{ range $c := .Options }}
+            {{range $c := .Options}}
             <label class="btn btn-secondary active">
-                <input type="radio" name="{{ $.Name }}"{{ if eq $c.Value $.Value }} checked{{ end }} value="{{ $c.Value }}"> {{ $c.Label }}
+                <input type="radio" name="{{$.Name}}"{{if eq $c.Value $.Value}} checked{{end}} value="{{$c.Value}}"> {{$c.Label}}
             </label>
-            {{ end }}
+            {{end}}
         </div>
         {{with .Error}}<div class="invalid-feedback">{{.}}</div>{{end}}
     </div>

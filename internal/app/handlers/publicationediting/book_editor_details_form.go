@@ -7,23 +7,16 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/validation"
 )
 
-func formTypeConference(ctx Context, b *BindDetails, errors validation.Errors) *form.Form {
+func bookEditorDetailsForm(ctx Context, b *BindDetails, errors validation.Errors) *form.Form {
 	l := ctx.Locale
 	p := ctx.Publication
 	return form.New().
 		WithTheme("default").
+		WithErrors(localize.ValidationErrors(l, errors)).
 		AddSection(
 			&display.Text{
 				Label: l.T("builder.type"),
 				Value: l.TS("publication_types", p.Type),
-			},
-			&form.Select{
-				Name:    "conference_type",
-				Label:   l.T("builder.conference_type"),
-				Value:   b.ConferenceType,
-				Options: optionsForVocabulary(l, "conference_types"),
-				Cols:    3,
-				Error:   localize.ValidationErrorAt(l, errors, "/conference_type"),
 			},
 			&form.Text{
 				Name:  "doi",
@@ -53,14 +46,6 @@ func formTypeConference(ctx Context, b *BindDetails, errors validation.Errors) *
 				Values: b.AlternativeTitle,
 				Cols:   9,
 				Error:  localize.ValidationErrorAt(l, errors, "/alternative_title"),
-			},
-			&form.Text{
-				Name:     "publication",
-				Label:    l.T("builder.conference.publication"),
-				Value:    b.Publication,
-				Required: true,
-				Cols:     9,
-				Error:    localize.ValidationErrorAt(l, errors, "/publication"),
 			},
 			&form.Text{
 				Name:  "publication_abbreviation",
@@ -122,46 +107,11 @@ func formTypeConference(ctx Context, b *BindDetails, errors validation.Errors) *
 		).
 		AddSection(
 			&form.Text{
-				Name:  "volume",
-				Label: l.T("builder.volume"),
-				Value: b.Volume,
-				Cols:  3,
-				Error: localize.ValidationErrorAt(l, errors, "/volume"),
-			},
-			&form.Text{
-				Name:  "issue",
-				Label: l.T("builder.issue"),
-				Value: b.Issue,
-				Cols:  3,
-				Error: localize.ValidationErrorAt(l, errors, "/issue"),
-			},
-			&form.Text{
-				Name:  "page_first",
-				Label: l.T("builder.page_first"),
-				Value: b.PageFirst,
-				Cols:  3,
-				Error: localize.ValidationErrorAt(l, errors, "/page_first"),
-			},
-			&form.Text{
-				Name:  "page_last",
-				Label: l.T("builder.page_last"),
-				Value: b.PageLast,
-				Cols:  3,
-				Error: localize.ValidationErrorAt(l, errors, "/page_last"),
-			},
-			&form.Text{
 				Name:  "page_count",
 				Label: l.T("builder.page_count"),
 				Value: b.PageCount,
 				Cols:  3,
 				Error: localize.ValidationErrorAt(l, errors, "/page_count"),
-			},
-			&form.Text{
-				Name:  "series_title",
-				Label: l.T("builder.conference.series_title"),
-				Value: b.SeriesTitle,
-				Cols:  9,
-				Error: localize.ValidationErrorAt(l, errors, "/series_title"),
 			},
 		).
 		AddSection(
@@ -199,7 +149,7 @@ func formTypeConference(ctx Context, b *BindDetails, errors validation.Errors) *
 				Label:       l.T("builder.isbn"),
 				Values:      b.ISBN,
 				Cols:        3,
-				Placeholder: "e.g. 978-3-16-148410-0",
+				Placeholder: "e.g. 2049-3630",
 				Error:       localize.ValidationErrorAt(l, errors, "/isbn"),
 			},
 			&form.TextRepeat{
@@ -207,7 +157,7 @@ func formTypeConference(ctx Context, b *BindDetails, errors validation.Errors) *
 				Label:       l.T("builder.eisbn"),
 				Values:      b.EISBN,
 				Cols:        3,
-				Placeholder: "e.g. 978-3-16-148410-0",
+				Placeholder: "e.g. 2049-3630",
 				Error:       localize.ValidationErrorAt(l, errors, "/eisbn"),
 			},
 		)

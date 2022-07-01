@@ -52,9 +52,7 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		services.ORCIDSandbox,
 	)
 	publicationFilesController := controllers.NewPublicationFiles(oldBase, services.Repository, services.FileStore)
-	publicationDetailsController := controllers.NewPublicationDetails(oldBase, services.Repository)
 	publicationConferenceController := controllers.NewPublicationConference(oldBase, services.Repository)
-	publicationDepartmentsController := controllers.NewPublicationDepartments(oldBase, services.Repository, services.OrganizationSearchService, services.OrganizationService)
 	publicationLinksController := controllers.NewPublicationLinks(oldBase, services.Repository)
 	publicationContributorsController := controllers.NewPublicationContributors(oldBase, services.Repository, services.PersonSearchService, services.PersonService)
 	publicationDatasetsController := controllers.NewPublicationDatasets(oldBase, services.Repository, services.DatasetSearchService)
@@ -239,16 +237,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		Methods("GET").
 		Name("datasets")
 
-	// delete dataset
-	r.HandleFunc("/dataset/{id}/confirm-delete",
-		datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmDelete)).
-		Methods("GET").
-		Name("dataset_confirm_delete")
-	r.HandleFunc("/dataset/{id}",
-		datasetEditingHandler.Wrap(datasetEditingHandler.Delete)).
-		Methods("DELETE").
-		Name("dataset_delete")
-
 	// view dataset
 	r.HandleFunc("/dataset/{id}",
 		datasetViewingHandler.Wrap(datasetViewingHandler.Show)).
@@ -266,6 +254,26 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		datasetViewingHandler.Wrap(datasetViewingHandler.ShowPublications)).
 		Methods("GET").
 		Name("dataset_publications")
+
+	// publish dataset
+	r.HandleFunc("/dataset/{id}/publish/confirm",
+		datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmPublish)).
+		Methods("GET").
+		Name("dataset_confirm_publish")
+	r.HandleFunc("/dataset/{id}/publish",
+		datasetEditingHandler.Wrap(datasetEditingHandler.Publish)).
+		Methods("POST").
+		Name("dataset_publish")
+
+	// delete dataset
+	r.HandleFunc("/dataset/{id}/confirm-delete",
+		datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmDelete)).
+		Methods("GET").
+		Name("dataset_confirm_delete")
+	r.HandleFunc("/dataset/{id}",
+		datasetEditingHandler.Wrap(datasetEditingHandler.Delete)).
+		Methods("DELETE").
+		Name("dataset_delete")
 
 	// edit dataset details
 	r.HandleFunc("/dataset/{id}/details/edit",
@@ -373,16 +381,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		Methods("DELETE").
 		Name("dataset_delete_publication")
 
-	// publish dataset
-	r.HandleFunc("/dataset/{id}/publish/confirm",
-		datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmPublish)).
-		Methods("GET").
-		Name("dataset_confirm_publish")
-	r.HandleFunc("/dataset/{id}/publish",
-		datasetEditingHandler.Wrap(datasetEditingHandler.Publish)).
-		Methods("POST").
-		Name("dataset_publish")
-
 	// edit dataset contributors
 	r.HandleFunc("/dataset/{id}/contributors/{role}/order",
 		datasetEditingHandler.Wrap(datasetEditingHandler.OrderContributors)).
@@ -457,6 +455,26 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		Methods("GET").
 		Name("publication_datasets")
 
+	// publish publication
+	r.HandleFunc("/publication/{id}/publish/confirm",
+		publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmPublish)).
+		Methods("GET").
+		Name("publication_confirm_publish")
+	r.HandleFunc("/publication/{id}/publish",
+		publicationEditingHandler.Wrap(publicationEditingHandler.Publish)).
+		Methods("POST").
+		Name("publication_publish")
+
+	// delete publication
+	r.HandleFunc("/publication/{id}/confirm-delete",
+		publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDelete)).
+		Methods("GET").
+		Name("publication_confirm_delete")
+	r.HandleFunc("/publication/{id}",
+		publicationEditingHandler.Wrap(publicationEditingHandler.Delete)).
+		Methods("DELETE").
+		Name("publication_delete")
+
 	// edit publication details
 	r.HandleFunc("/publication/{id}/details/edit",
 		publicationEditingHandler.Wrap(publicationEditingHandler.EditDetails)).
@@ -513,6 +531,28 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		publicationEditingHandler.Wrap(publicationEditingHandler.DeleteLink)).
 		Methods("DELETE").
 		Name("publication_delete_link")
+	// edit dataset departments
+	r.HandleFunc("/publication/{id}/departments/add",
+		publicationEditingHandler.Wrap(publicationEditingHandler.AddDepartment)).
+		Methods("GET").
+		Name("publication_add_department")
+	r.HandleFunc("/publication/{id}/departments/suggestions",
+		publicationEditingHandler.Wrap(publicationEditingHandler.SuggestDepartments)).
+		Methods("GET").
+		Name("publication_suggest_departments")
+	r.HandleFunc("/publication/{id}/departments",
+		publicationEditingHandler.Wrap(publicationEditingHandler.CreateDepartment)).
+		Methods("POST").
+		Name("publication_create_department")
+	r.HandleFunc("/publication/{id}/departments/{position}/confirm-delete",
+		publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDeleteDepartment)).
+		Methods("GET").
+		Name("publication_confirm_delete_department")
+	r.HandleFunc("/publication/{id}/departments/{position}",
+		publicationEditingHandler.Wrap(publicationEditingHandler.DeleteDepartment)).
+		Methods("DELETE").
+		Name("publication_delete_department")
+
 	// edit publication abstracts
 	r.HandleFunc("/publication/{id}/abstracts/add",
 		publicationEditingHandler.Wrap(publicationEditingHandler.AddAbstract)).
@@ -565,7 +605,7 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		Methods("DELETE").
 		Name("publication_delete_lay_summary")
 
-		// orcid
+	// orcid
 	r.HandleFunc("/publication/orcid",
 		orcidHandler.Wrap(orcidHandler.AddAll)).
 		Methods("POST").
@@ -620,20 +660,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	pubRouter.Use(middleware.RequireCanViewPublication)
 	pubEditRouter := pubRouter.PathPrefix("").Subrouter()
 	pubEditRouter.Use(middleware.RequireCanEditPublication)
-	pubPublishRouter := pubRouter.PathPrefix("").Subrouter()
-	pubPublishRouter.Use(middleware.RequireCanPublishPublication)
-	pubDeleteRouter := pubRouter.PathPrefix("").Subrouter()
-	pubDeleteRouter.Use(middleware.RequireCanDeletePublication)
-	pubRouter.HandleFunc("/delete", publicationsController.ConfirmDelete).
-		Methods("GET").
-		Name("publication_confirm_delete")
-	// TODO why doesn't a DELETE with methodoverride work with CAS?
-	pubDeleteRouter.HandleFunc("/delete", publicationsController.Delete).
-		Methods("POST").
-		Name("publication_delete")
-	pubPublishRouter.HandleFunc("/publish", publicationsController.Publish).
-		Methods("POST").
-		Name("publication_publish")
 	pubEditRouter.HandleFunc("/add-single/description", publicationsController.AddSingleDescription).
 		Methods("GET").
 		Name("publication_add_single_description")
@@ -675,16 +701,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	pubEditRouter.HandleFunc("/htmx/summary", publicationsController.Summary).
 		Methods("GET").
 		Name("publication_summary")
-	// Publication details HTMX fragments
-	pubEditRouter.HandleFunc("/htmx", publicationDetailsController.Show).
-		Methods("GET").
-		Name("publication_details")
-	pubEditRouter.HandleFunc("/htmx/edit", publicationDetailsController.Edit).
-		Methods("GET").
-		Name("publication_details_edit_form")
-	pubEditRouter.HandleFunc("/htmx/edit", publicationDetailsController.Update).
-		Methods("PATCH").
-		Name("publication_details_save_form")
 	// Publication conference HTMX fragments
 	pubEditRouter.HandleFunc("/htmx/conference", publicationConferenceController.Show).
 		Methods("GET").
@@ -705,23 +721,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	pubEditRouter.HandleFunc("/htmx/additional_info/edit", publicationAdditionalInfoController.Update).
 		Methods("PATCH").
 		Name("publication_additional_info_save_form")
-	// Publication departments HTMX fragments
-	pubEditRouter.HandleFunc("/htmx/departments/list", publicationDepartmentsController.List).
-		Methods("GET").
-		Name("publication_add_department")
-	pubEditRouter.HandleFunc("/htmx/departments/list/activesearch", publicationDepartmentsController.ActiveSearch).
-		Methods("POST").
-		Name("publicationDepartments_activesearch")
-	pubEditRouter.HandleFunc("/htmx/departments/add/{department_id}", publicationDepartmentsController.Add).
-		Methods("PATCH").
-		Name("publicationDepartments_add_to_publication")
-	pubEditRouter.HandleFunc("/htmx/departments/remove/{department_id}", publicationDepartmentsController.ConfirmRemove).
-		Methods("GET").
-		Name("publicationDepartments_confirm_remove_from_publication")
-	pubEditRouter.HandleFunc("/htmx/departments/remove/{department_id}", publicationDepartmentsController.Remove).
-		Methods("PATCH").
-		Name("publicationDepartments_remove_from_publication")
-
 	// Publication links HTMX fragments
 	pubEditRouter.HandleFunc("/htmx/links/add", publicationLinksController.Add).
 		Methods("GET").

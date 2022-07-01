@@ -7,15 +7,24 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/validation"
 )
 
-func formTypeBookChapter(ctx Context, b *BindDetails, errors validation.Errors) *form.Form {
+func miscellaneousDetailsForm(ctx Context, b *BindDetails, errors validation.Errors) *form.Form {
 	l := ctx.Locale
 	p := ctx.Publication
 	return form.New().
 		WithTheme("default").
+		WithErrors(localize.ValidationErrors(l, errors)).
 		AddSection(
 			&display.Text{
 				Label: l.T("builder.type"),
 				Value: l.TS("publication_types", p.Type),
+			},
+			&form.Select{
+				Name:    "miscellaneous_type",
+				Label:   l.T("builder.miscellaneous_type"),
+				Value:   b.MiscellaneousType,
+				Options: optionsForVocabulary(l, "miscellaneous_types"),
+				Cols:    3,
+				Error:   localize.ValidationErrorAt(l, errors, "/miscellaneous_type"),
 			},
 			&form.Text{
 				Name:  "doi",
@@ -48,11 +57,18 @@ func formTypeBookChapter(ctx Context, b *BindDetails, errors validation.Errors) 
 			},
 			&form.Text{
 				Name:     "publication",
-				Label:    l.T("builder.book_chapter.publication"),
+				Label:    l.T("builder.miscellaneous.publication"),
 				Value:    b.Publication,
-				Cols:     9,
 				Required: true,
+				Cols:     9,
 				Error:    localize.ValidationErrorAt(l, errors, "/publication"),
+			},
+			&form.Text{
+				Name:  "publication_abbreviation",
+				Label: l.T("builder.miscellaneous.publication_abbreviation"),
+				Value: b.PublicationAbbreviation,
+				Cols:  3,
+				Error: localize.ValidationErrorAt(l, errors, "/publication_abbreviation"),
 			},
 		).
 		AddSection(
@@ -107,6 +123,34 @@ func formTypeBookChapter(ctx Context, b *BindDetails, errors validation.Errors) 
 		).
 		AddSection(
 			&form.Text{
+				Name:  "series_title",
+				Label: l.T("builder.series_title"),
+				Value: b.SeriesTitle,
+				Cols:  9,
+				Error: localize.ValidationErrorAt(l, errors, "/series_title"),
+			},
+			&form.Text{
+				Name:  "volume",
+				Label: l.T("builder.volume"),
+				Value: b.Volume,
+				Cols:  3,
+				Error: localize.ValidationErrorAt(l, errors, "/volume"),
+			},
+			&form.Text{
+				Name:  "issue",
+				Label: l.T("builder.issue"),
+				Value: b.Issue,
+				Cols:  3,
+				Error: localize.ValidationErrorAt(l, errors, "/issue"),
+			},
+			&form.Text{
+				Name:  "edition",
+				Label: l.T("builder.edition"),
+				Value: b.Edition,
+				Cols:  3,
+				Error: localize.ValidationErrorAt(l, errors, "/edition"),
+			},
+			&form.Text{
 				Name:  "page_first",
 				Label: l.T("builder.page_first"),
 				Value: b.PageFirst,
@@ -126,6 +170,27 @@ func formTypeBookChapter(ctx Context, b *BindDetails, errors validation.Errors) 
 				Value: b.PageCount,
 				Cols:  3,
 				Error: localize.ValidationErrorAt(l, errors, "/page_count"),
+			},
+			&form.Text{
+				Name:  "article_number",
+				Label: l.T("builder.article_number"),
+				Value: b.ArticleNumber,
+				Cols:  3,
+				Error: localize.ValidationErrorAt(l, errors, "/article_number"),
+			},
+			&form.Text{
+				Name:  "issue_title",
+				Label: l.T("builder.issue_title"),
+				Value: b.IssueTitle,
+				Cols:  9,
+				Error: localize.ValidationErrorAt(l, errors, "/issue_title"),
+			},
+			&form.Text{
+				Name:  "report_number",
+				Label: l.T("builder.report_number"),
+				Value: b.ReportNumber,
+				Cols:  3,
+				Error: localize.ValidationErrorAt(l, errors, "/report_number"),
 			},
 		).
 		AddSection(
@@ -163,7 +228,7 @@ func formTypeBookChapter(ctx Context, b *BindDetails, errors validation.Errors) 
 				Label:       l.T("builder.isbn"),
 				Values:      b.ISBN,
 				Cols:        3,
-				Placeholder: "e.g. 2049-3630",
+				Placeholder: "e.g. 978-3-16-148410-0",
 				Error:       localize.ValidationErrorAt(l, errors, "/isbn"),
 			},
 			&form.TextRepeat{
@@ -171,7 +236,7 @@ func formTypeBookChapter(ctx Context, b *BindDetails, errors validation.Errors) 
 				Label:       l.T("builder.eisbn"),
 				Values:      b.EISBN,
 				Cols:        3,
-				Placeholder: "e.g. 2049-3630",
+				Placeholder: "e.g. 978-3-16-148410-0",
 				Error:       localize.ValidationErrorAt(l, errors, "/eisbn"),
 			},
 		)
