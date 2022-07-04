@@ -26,7 +26,7 @@ type BindImport struct {
 	Identifier string `form:"identifier"`
 }
 
-type YieldAddDataset struct {
+type YieldAdd struct {
 	Context
 	PageTitle           string
 	Step                int
@@ -49,7 +49,7 @@ type YieldValidationErrors struct {
 }
 
 func (h *Handler) Add(w http.ResponseWriter, r *http.Request, ctx Context) {
-	render.Wrap(w, "layouts/default", "dataset/add", YieldAddDataset{
+	render.Wrap(w, "layouts/default", "dataset/add", YieldAdd{
 		Context:   ctx,
 		PageTitle: "Add - Datasets - Biblio",
 		Step:      1,
@@ -76,7 +76,7 @@ func (h *Handler) ConfirmImport(w http.ResponseWriter, r *http.Request, ctx Cont
 		}
 
 		if existing.Total > 0 {
-			render.Wrap(w, "layouts/default", "dataset/add", YieldAddDataset{
+			render.Wrap(w, "layouts/default", "dataset/add", YieldAdd{
 				Context:          ctx,
 				PageTitle:        "Add - Datasets - Biblio",
 				Step:             1,
@@ -111,7 +111,7 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 
 		ctx.Flash = append(ctx.Flash, flash)
 
-		render.Wrap(w, "layouts/default", "dataset/add", YieldAddDataset{
+		render.Wrap(w, "layouts/default", "dataset/add", YieldAdd{
 			Context:    ctx,
 			PageTitle:  "Add - Datasets - Biblio",
 			Step:       1,
@@ -129,7 +129,7 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 
 	if validationErrs := d.Validate(); validationErrs != nil {
 		errors := form.Errors(localize.ValidationErrors(ctx.Locale, err.(validation.Errors)))
-		render.Wrap(w, "layouts/default", "dataset/add", YieldAddDataset{
+		render.Wrap(w, "layouts/default", "dataset/add", YieldAdd{
 			Context:    ctx,
 			PageTitle:  "Add - Datasets - Biblio",
 			Step:       1,
@@ -151,7 +151,7 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 		return
 	}
 
-	render.Wrap(w, "layouts/default", "dataset/add_description", YieldAddDataset{
+	render.Wrap(w, "layouts/default", "dataset/add_description", YieldAdd{
 		Context:        ctx,
 		PageTitle:      "Add - Datasets - Biblio",
 		Step:           2,
@@ -164,7 +164,7 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 }
 
 func (h *Handler) AddDescription(w http.ResponseWriter, r *http.Request, ctx Context) {
-	render.Wrap(w, "layouts/default", "dataset/add_description", YieldAddDataset{
+	render.Wrap(w, "layouts/default", "dataset/add_description", YieldAdd{
 		Context:        ctx,
 		PageTitle:      "Add - Datasets - Biblio",
 		Step:           2,
@@ -177,7 +177,7 @@ func (h *Handler) AddDescription(w http.ResponseWriter, r *http.Request, ctx Con
 }
 
 func (h *Handler) AddConfirm(w http.ResponseWriter, r *http.Request, ctx Context) {
-	render.Wrap(w, "layouts/default", "dataset/add_confirm", YieldAddDataset{
+	render.Wrap(w, "layouts/default", "dataset/add_confirm", YieldAdd{
 		Context:   ctx,
 		PageTitle: "Add - Datasets - Biblio",
 		Step:      3,
@@ -226,10 +226,10 @@ func (h *Handler) AddPublish(w http.ResponseWriter, r *http.Request, ctx Context
 }
 
 func (h *Handler) AddFinish(w http.ResponseWriter, r *http.Request, ctx Context) {
-	render.Wrap(w, "layouts/default", "dataset/add_finish", YieldAddDataset{
+	render.Wrap(w, "layouts/default", "dataset/add_finish", YieldAdd{
 		Context:   ctx,
 		PageTitle: "Add - Datasets - Biblio",
-		Step:      3,
+		Step:      4,
 		ActiveNav: "datasets",
 		Dataset:   ctx.Dataset,
 	})

@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"strings"
 
 	"github.com/ugent-library/biblio-backend/internal/app/localize"
 	"github.com/ugent-library/biblio-backend/internal/bind"
@@ -19,11 +18,6 @@ type BindLaySummary struct {
 	Position int    `path:"position"`
 	Text     string `form:"text"`
 	Lang     string `form:"lang"`
-}
-
-func (b *BindLaySummary) CleanValues() {
-	b.Text = strings.TrimSpace(b.Text)
-	b.Lang = strings.TrimSpace(b.Lang)
 }
 
 type BindDeleteLaySummary struct {
@@ -58,12 +52,10 @@ func (h *Handler) AddLaySummary(w http.ResponseWriter, r *http.Request, ctx Cont
 
 func (h *Handler) CreateLaySummary(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindLaySummary{Position: len(ctx.Publication.LaySummary)}
-	if err := bind.Request(r, &b); err != nil {
+	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
 		render.BadRequest(w, r, err)
 		return
 	}
-
-	b.CleanValues()
 
 	ctx.Publication.LaySummary = append(ctx.Publication.LaySummary, models.Text{Text: b.Text, Lang: b.Lang})
 
@@ -95,12 +87,10 @@ func (h *Handler) CreateLaySummary(w http.ResponseWriter, r *http.Request, ctx C
 
 func (h *Handler) EditLaySummary(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindLaySummary{}
-	if err := bind.Request(r, &b); err != nil {
+	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
 		render.BadRequest(w, r, err)
 		return
 	}
-
-	b.CleanValues()
 
 	a, err := ctx.Publication.GetLaySummary(b.Position)
 	if err != nil {

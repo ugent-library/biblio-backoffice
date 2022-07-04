@@ -3,7 +3,6 @@ package publicationediting
 import (
 	"errors"
 	"net/http"
-	"strings"
 
 	"github.com/ugent-library/biblio-backend/internal/app/displays"
 	"github.com/ugent-library/biblio-backend/internal/bind"
@@ -141,23 +140,6 @@ func publicationToBind(p *models.Publication, b *BindDetails) {
 	b.Year = p.Year
 }
 
-func (b *BindDetails) cleanValues() {
-	b.AlternativeTitle = cleanStringSlice(b.AlternativeTitle)
-	b.ArxivID = strings.TrimSpace(b.ArxivID)
-	b.DefenseDate = strings.TrimSpace(b.DefenseDate)
-	b.DefensePlace = strings.TrimSpace(b.DefensePlace)
-	b.DefenseTime = strings.TrimSpace(b.DefenseTime)
-	b.DOI = strings.TrimSpace(b.DOI)
-	b.EISBN = cleanStringSlice(b.EISBN)
-	b.EISSN = cleanStringSlice(b.EISSN)
-	b.ESCIID = strings.TrimSpace(b.ESCIID)
-	b.ISBN = cleanStringSlice(b.ISBN)
-	b.ISSN = cleanStringSlice(b.ISSN)
-	b.Language = cleanStringSlice(b.Language)
-	b.PubMedID = strings.TrimSpace(b.PubMedID)
-	b.Year = strings.TrimSpace(b.Year)
-}
-
 type YieldDetails struct {
 	Context
 	DisplayDetails *display.Display
@@ -181,12 +163,10 @@ func (h *Handler) EditDetails(w http.ResponseWriter, r *http.Request, ctx Contex
 
 func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := &BindDetails{}
-	if err := bind.Request(r, b); err != nil {
+	if err := bind.Request(r, b, bind.Vacuum); err != nil {
 		render.BadRequest(w, r, err)
 		return
 	}
-
-	b.cleanValues()
 
 	bindToPublication(b, ctx.Publication)
 
@@ -217,15 +197,4 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 		Context:        ctx,
 		DisplayDetails: displays.PublicationDetails(ctx.Locale, ctx.Publication),
 	})
-}
-
-func cleanStringSlice(vals []string) []string {
-	var tmp []string
-	for _, str := range vals {
-		str = strings.TrimSpace(str)
-		if str != "" {
-			tmp = append(tmp, str)
-		}
-	}
-	return tmp
 }

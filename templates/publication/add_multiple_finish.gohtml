@@ -1,0 +1,51 @@
+{{template "publication/add_sidebar" .}}
+
+<div class="w-100 u-scroll-wrapper">
+    <div class="bc-navbar bc-navbar--xlarge bc-navbar-bordered bc-navbar--white bc-navbar--bordered-bottom">
+        <div class="bc-toolbar">
+            <div class="bc-toolbar-left">
+                <div class="bc-toolbar-item">
+                    <div class="d-flex flex-column">
+                        <h4 class="bc-toolbar-title">Congratulations!</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="bc-toolbar-right">
+            </div>
+        </div>
+    </div>
+
+    <div class="p-6 u-scroll-wrapper__body">
+        <div class="card mb-6">
+            <div class="card-header">Next steps</div>
+            <div class="card-body">
+                <p class="mb-6">Your publications are published in Biblio and sent
+                for review to the Biblio team. The Biblio reviewer team will
+                process your publications as soon as possible, taking into
+                account reporting deadlines. For questions or to indicate
+                deadlines, the Biblio team can be contacted at
+                <a href="mailto:biblio@ugent.be">biblio@ugent.be</a>.</p>
+                <a class="btn btn-outline-primary" href="{{pathFor "publications"}}">Continue to overview</a>
+            </div>
+        </div>
+
+        <div class="card mb-6">
+            <div class="card-header">
+                <h4 class="mr-5 d-inline">Imported publications</h4>
+                {{template "search/count" .}}
+            </div>
+            <div class="card-body p-0">
+                <ul class="list-group list-group-flush">
+                    {{range .Hits.Hits}}
+                    <li class="list-group-item">
+                        {{template "publication/search_hit" ($.YieldHit .)}}
+                    </li>
+                    {{end}}
+                </ul>
+            </div>
+            <nav aria-label="Page navigation">
+                {{template "search/pagination" .}}
+            </nav>
+        </div>
+    </div>
+</div>

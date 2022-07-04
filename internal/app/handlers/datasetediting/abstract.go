@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"strings"
 
 	"github.com/ugent-library/biblio-backend/internal/app/localize"
 	"github.com/ugent-library/biblio-backend/internal/bind"
@@ -19,11 +18,6 @@ type BindAbstract struct {
 	Position int    `path:"position"`
 	Text     string `form:"text"`
 	Lang     string `form:"lang"`
-}
-
-func (b *BindAbstract) CleanValues() {
-	b.Text = strings.TrimSpace(b.Text)
-	b.Lang = strings.TrimSpace(b.Lang)
 }
 
 type BindDeleteAbstract struct {
@@ -58,12 +52,10 @@ func (h *Handler) AddAbstract(w http.ResponseWriter, r *http.Request, ctx Contex
 
 func (h *Handler) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindAbstract{Position: len(ctx.Dataset.Abstract)}
-	if err := bind.Request(r, &b); err != nil {
+	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
 		render.BadRequest(w, r, err)
 		return
 	}
-
-	b.CleanValues()
 
 	ctx.Dataset.Abstract = append(ctx.Dataset.Abstract, models.Text{Text: b.Text, Lang: b.Lang})
 
@@ -95,12 +87,10 @@ func (h *Handler) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 
 func (h *Handler) EditAbstract(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindAbstract{}
-	if err := bind.Request(r, &b); err != nil {
+	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
 		render.BadRequest(w, r, err)
 		return
 	}
-
-	b.CleanValues()
 
 	a, err := ctx.Dataset.GetAbstract(b.Position)
 	if err != nil {

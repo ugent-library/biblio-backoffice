@@ -3,7 +3,7 @@
 <div class="list-group-item-content">
     <div class="list-group-item-subline">
         <div class="list-group-item-subline-left">
-            <span class="mr-3 pr-3 border-right">{{.TS "publication_types" $p.Type}}{{with $p.Classification}}: {{.}}{{end}}</span>
+            <span class="mr-3 pr-3 border-right">{{.Locale.TS "publication_types" $p.Type}}{{with $p.Classification}}: {{.}}{{end}}</span>
             {{template "publication/access_level" $p}}
         </div>
     </div>

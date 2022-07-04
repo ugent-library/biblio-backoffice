@@ -546,59 +546,59 @@ func (p *Publication) InORCIDWorks(orcidID string) bool {
 	return false
 }
 
-func (d *Publication) Validate() error {
+func (p *Publication) Validate() error {
 	var errs validation.Errors
 
-	if d.ID == "" {
+	if p.ID == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/id",
 			Code:    "publication.id.required",
 		})
 	}
-	if d.Type == "" {
+	if p.Type == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/type",
 			Code:    "publication.type.required",
 		})
-	} else if !validation.IsPublicationType(d.Type) {
+	} else if !validation.IsPublicationType(p.Type) {
 		errs = append(errs, &validation.Error{
 			Pointer: "/type",
 			Code:    "publication.type.invalid",
 		})
 	}
 	// TODO check classification validity
-	if d.Classification == "" {
+	if p.Classification == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/classification",
 			Code:    "publication.classification.required",
 		})
 	}
-	if d.Status == "" {
+	if p.Status == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/status",
 			Code:    "publication.status.required",
 		})
-	} else if !validation.IsStatus(d.Status) {
+	} else if !validation.IsStatus(p.Status) {
 		errs = append(errs, &validation.Error{
 			Pointer: "/status",
 			Code:    "publication.status.invalid",
 		})
 	}
 
-	if d.Status == "public" && d.Title == "" {
+	if p.Status == "public" && p.Title == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/title",
 			Code:    "publication.title.required",
 		})
 	}
 
-	if d.Status == "public" {
-		if d.Year == "" {
+	if p.Status == "public" {
+		if p.Year == "" {
 			errs = append(errs, &validation.Error{
 				Pointer: "/year",
 				Code:    "publication.year.required",
 			})
-		} else if !validation.IsYear(d.Year) {
+		} else if !validation.IsYear(p.Year) {
 			errs = append(errs, &validation.Error{
 				Pointer: "/year",
 				Code:    "publication.year.invalid",
@@ -606,7 +606,7 @@ func (d *Publication) Validate() error {
 		}
 	}
 
-	for i, a := range d.Abstract {
+	for i, a := range p.Abstract {
 		for _, err := range a.Validate() {
 			errs = append(errs, &validation.Error{
 				Pointer: fmt.Sprintf("/abstract/%d%s", i, err.Pointer),
@@ -615,7 +615,7 @@ func (d *Publication) Validate() error {
 		}
 	}
 
-	for i, l := range d.LaySummary {
+	for i, l := range p.LaySummary {
 		for _, err := range l.Validate() {
 			errs = append(errs, &validation.Error{
 				Pointer: fmt.Sprintf("/lay_summary/%d%s", i, err.Pointer),
@@ -624,40 +624,41 @@ func (d *Publication) Validate() error {
 		}
 	}
 
-	if d.Status == "public" && d.UsesAuthor() && len(d.Author) == 0 {
+	if p.Status == "public" && p.UsesAuthor() && len(p.Author) == 0 {
 		errs = append(errs, &validation.Error{
 			Pointer: "/author",
 			Code:    "publication.author.required",
 		})
 
-		// at least one ugent author if not external
-		if !d.Extern {
-			var hasUgentAuthors bool = false
-			for _, a := range d.Author {
-				if a.ID != "" {
-					hasUgentAuthors = true
-					break
-				}
+	}
+
+	// at least one ugent author if not external
+	if p.Status == "public" && p.UsesAuthor() && !p.Extern {
+		var hasUgentAuthors bool = false
+		for _, a := range p.Author {
+			if a.ID != "" {
+				hasUgentAuthors = true
+				break
 			}
-			if !hasUgentAuthors {
-				errs = append(errs, &validation.Error{
-					Pointer: "/author",
-					Code:    "publication.author.min_ugent_authors",
-				})
-			}
+		}
+		if !hasUgentAuthors {
+			errs = append(errs, &validation.Error{
+				Pointer: "/author",
+				Code:    "publication.author.min_ugent_authors",
+			})
 		}
 	}
 
-	if d.Status == "public" && d.UsesEditor() && !d.UsesAuthor() && len(d.Editor) == 0 {
+	if p.Status == "public" && p.UsesEditor() && !p.UsesAuthor() && len(p.Editor) == 0 {
 		errs = append(errs, &validation.Error{
 			Pointer: "/editor",
 			Code:    "publication.editor.required",
 		})
 
 		// at least one ugent editor if not external
-		if !d.Extern {
+		if !p.Extern {
 			var hasUgentEditors bool = false
-			for _, a := range d.Editor {
+			for _, a := range p.Editor {
 				if a.ID != "" {
 					hasUgentEditors = true
 					break
@@ -672,14 +673,31 @@ func (d *Publication) Validate() error {
 		}
 	}
 
-	if d.Status == "public" && d.UsesSupervisor() && len(d.Supervisor) == 0 {
+	// at least one ugent editor for editor types if not external
+	if p.Status == "public" && p.UsesEditor() && !p.UsesAuthor() && !p.Extern {
+		var hasUgentEditors bool = false
+		for _, a := range p.Editor {
+			if a.ID != "" {
+				hasUgentEditors = true
+				break
+			}
+		}
+		if !hasUgentEditors {
+			errs = append(errs, &validation.Error{
+				Pointer: "/editor",
+				Code:    "publication.editor.min_ugent_editors",
+			})
+		}
+	}
+
+	if p.Status == "public" && p.UsesSupervisor() && len(p.Supervisor) == 0 {
 		errs = append(errs, &validation.Error{
 			Pointer: "/supervisor",
 			Code:    "publication.supervisor.required",
 		})
 	}
 
-	for i, c := range d.Author {
+	for i, c := range p.Author {
 		for _, err := range c.Validate() {
 			errs = append(errs, &validation.Error{
 				Pointer: fmt.Sprintf("/author/%d%s", i, err.Pointer),
@@ -687,7 +705,7 @@ func (d *Publication) Validate() error {
 			})
 		}
 	}
-	for i, c := range d.Editor {
+	for i, c := range p.Editor {
 		for _, err := range c.Validate() {
 			errs = append(errs, &validation.Error{
 				Pointer: fmt.Sprintf("/editor/%d%s", i, err.Pointer),
@@ -695,7 +713,7 @@ func (d *Publication) Validate() error {
 			})
 		}
 	}
-	for i, c := range d.Supervisor {
+	for i, c := range p.Supervisor {
 		for _, err := range c.Validate() {
 			errs = append(errs, &validation.Error{
 				Pointer: fmt.Sprintf("/supervisor/%d%s", i, err.Pointer),
@@ -704,7 +722,7 @@ func (d *Publication) Validate() error {
 		}
 	}
 
-	for i, pr := range d.Project {
+	for i, pr := range p.Project {
 		if pr.ID == "" {
 			errs = append(errs, &validation.Error{
 				Pointer: fmt.Sprintf("/project/%d/id", i),
@@ -713,7 +731,7 @@ func (d *Publication) Validate() error {
 		}
 	}
 
-	for i, dep := range d.Department {
+	for i, dep := range p.Department {
 		if dep.ID == "" {
 			errs = append(errs, &validation.Error{
 				Pointer: fmt.Sprintf("/department/%d/id", i),
@@ -722,7 +740,7 @@ func (d *Publication) Validate() error {
 		}
 	}
 
-	for i, rd := range d.RelatedDataset {
+	for i, rd := range p.RelatedDataset {
 		if rd.ID == "" {
 			errs = append(errs, &validation.Error{
 				Pointer: fmt.Sprintf("/related_dataset/%d/id", i),
@@ -731,7 +749,7 @@ func (d *Publication) Validate() error {
 		}
 	}
 
-	for i, f := range d.File {
+	for i, f := range p.File {
 		for _, err := range f.Validate() {
 			errs = append(errs, &validation.Error{
 				Pointer: fmt.Sprintf("/file/%d%s", i, err.Pointer),
@@ -740,7 +758,7 @@ func (d *Publication) Validate() error {
 		}
 	}
 
-	for i, pl := range d.Link {
+	for i, pl := range p.Link {
 		for _, err := range pl.Validate() {
 			errs = append(errs, &validation.Error{
 				Pointer: fmt.Sprintf("/link/%d%s", i, err.Pointer),
@@ -750,23 +768,23 @@ func (d *Publication) Validate() error {
 	}
 
 	// type specific validation
-	switch d.Type {
+	switch p.Type {
 	case "dissertation":
-		errs = append(errs, d.validateDissertation()...)
+		errs = append(errs, p.validateDissertation()...)
 	case "journal_article":
-		errs = append(errs, d.validateJournalArticle()...)
+		errs = append(errs, p.validateJournalArticle()...)
 	case "miscellaneous":
-		errs = append(errs, d.validateMiscellaneous()...)
+		errs = append(errs, p.validateMiscellaneous()...)
 	case "book":
-		errs = append(errs, d.validateBook()...)
+		errs = append(errs, p.validateBook()...)
 	case "book_chapter":
-		errs = append(errs, d.validateBookChapter()...)
+		errs = append(errs, p.validateBookChapter()...)
 	case "conference":
-		errs = append(errs, d.validateConference()...)
+		errs = append(errs, p.validateConference()...)
 	case "book_editor":
-		errs = append(errs, d.validateBookEditor()...)
+		errs = append(errs, p.validateBookEditor()...)
 	case "issue_editor":
-		errs = append(errs, d.validateIssueEditor()...)
+		errs = append(errs, p.validateIssueEditor()...)
 	}
 
 	// TODO: why is the nil slice validationErrors(nil) != nil in mutantdb validation?

@@ -3,7 +3,6 @@ package datasetediting
 import (
 	"errors"
 	"net/http"
-	"strings"
 
 	"github.com/ugent-library/biblio-backend/internal/app/displays"
 	"github.com/ugent-library/biblio-backend/internal/app/localize"
@@ -27,21 +26,6 @@ type BindDetails struct {
 	Title        string   `form:"title"`
 	URL          string   `form:"url"`
 	Year         string   `form:"year"`
-}
-
-func (b *BindDetails) CleanValues() {
-	b.AccessLevel = strings.TrimSpace(b.AccessLevel)
-	b.Embargo = strings.TrimSpace(b.Embargo)
-	b.EmbargoTo = strings.TrimSpace(b.Embargo)
-	b.Format = cleanStringSlice(b.Format)
-	b.Keyword = cleanStringSlice(b.Keyword)
-	b.License = strings.TrimSpace(b.License)
-	b.OtherLicense = strings.TrimSpace(b.OtherLicense)
-	b.Publisher = strings.TrimSpace(b.Publisher)
-	b.Year = strings.TrimSpace(b.Year)
-	b.Title = strings.TrimSpace(b.Title)
-	b.URL = strings.TrimSpace(b.URL)
-	b.Year = strings.TrimSpace(b.Year)
 }
 
 type YieldDetails struct {
@@ -76,12 +60,10 @@ func (h *Handler) EditDetails(w http.ResponseWriter, r *http.Request, ctx Contex
 
 func (h *Handler) EditDetailsAccessLevel(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindDetails{}
-	if err := bind.Request(r, &b); err != nil {
+	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
 		render.BadRequest(w, r, err)
 		return
 	}
-
-	b.CleanValues()
 
 	// Clear embargo and embargoTo fields if access level is not embargo
 	//   TODO Disabled per https://github.com/ugent-library/biblio-backend/issues/217
@@ -104,12 +86,10 @@ func (h *Handler) EditDetailsAccessLevel(w http.ResponseWriter, r *http.Request,
 
 func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindDetails{}
-	if err := bind.Request(r, &b); err != nil {
+	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
 		render.BadRequest(w, r, err)
 		return
 	}
-
-	b.CleanValues()
 
 	// @note decoding the form into a model omits empty values
 	//   removing "omitempty" in the model doesn't make a difference.
@@ -280,15 +260,4 @@ func detailsForm(ctx Context, b BindDetails, errors validation.Errors) *form.For
 				Disabled:    b.AccessLevel != "info:eu-repo/semantics/embargoedAccess",
 			},
 		)
-}
-
-func cleanStringSlice(vals []string) []string {
-	var tmp []string
-	for _, str := range vals {
-		str = strings.TrimSpace(str)
-		if str != "" {
-			tmp = append(tmp, str)
-		}
-	}
-	return tmp
 }

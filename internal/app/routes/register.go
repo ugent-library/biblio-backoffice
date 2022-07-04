@@ -42,16 +42,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	requireUser := middleware.RequireUser(oldBase.BaseURL.Path + "/login")
 	setUser := middleware.SetUser(services.UserService, oldBase.SessionName, oldBase.SessionStore)
 
-	// publicationsController := controllers.NewPublications(
-	// 	oldBase,
-	// 	services.Repository,
-	// 	services.FileStore,
-	// 	services.PublicationSearchService,
-	// 	services.PublicationDecoders,
-	// 	services.PublicationSources,
-	// 	services.Tasks,
-	// 	services.ORCIDSandbox,
-	// )
 	publicationFilesController := controllers.NewPublicationFiles(oldBase, services.Repository, services.FileStore)
 
 	// NEW HANDLERS
@@ -115,6 +105,7 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		Repository:               services.Repository,
 		PublicationSearchService: services.PublicationSearchService,
 		PublicationSources:       services.PublicationSources,
+		PublicationDecoders:      services.PublicationDecoders,
 	}
 	publicationEditingHandler := &publicationediting.Handler{
 		BaseHandler:               baseHandler,
@@ -453,6 +444,30 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		publicationCreatingHandler.Wrap(publicationCreatingHandler.AddSingleFinish)).
 		Methods("GET").
 		Name("publication_add_single_finish")
+	r.HandleFunc("/publication/add-multiple/import",
+		publicationCreatingHandler.Wrap(publicationCreatingHandler.AddMultipleImport)).
+		Methods("POST").
+		Name("publication_add_multiple_import")
+	r.HandleFunc("/publication/add-multiple/{batch_id}/description",
+		publicationCreatingHandler.Wrap(publicationCreatingHandler.AddMultipleDescription)).
+		Methods("GET").
+		Name("publication_add_multiple_description")
+	r.HandleFunc("/publication/add-multiple/{batch_id}/confirm",
+		publicationCreatingHandler.Wrap(publicationCreatingHandler.AddMultipleConfirm)).
+		Methods("GET").
+		Name("publication_add_multiple_confirm")
+	r.HandleFunc("/publication/add-multiple/{batch_id}/publication/{id}",
+		publicationCreatingHandler.Wrap(publicationCreatingHandler.AddMultipleShow)).
+		Methods("GET").
+		Name("publication_add_multiple_show")
+	r.HandleFunc("/publication/add-multiple/{batch_id}/publish",
+		publicationCreatingHandler.Wrap(publicationCreatingHandler.AddMultiplePublish)).
+		Methods("POST").
+		Name("publication_add_multiple_publish")
+	r.HandleFunc("/publication/add-multiple/{batch_id}/finish",
+		publicationCreatingHandler.Wrap(publicationCreatingHandler.AddMultipleFinish)).
+		Methods("GET").
+		Name("publication_add_multiple_finish")
 
 	// search publications
 	r.HandleFunc("/curation/publication",
@@ -517,22 +532,22 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		Name("publication_update_details")
 
 	// edit publication conference
-	r.HandleFunc("/publication/{id}/conference/edit", publicationEditingHandler.Wrap(
-		publicationEditingHandler.EditConference)).
+	r.HandleFunc("/publication/{id}/conference/edit",
+		publicationEditingHandler.Wrap(publicationEditingHandler.EditConference)).
 		Methods("GET").
 		Name("publication_edit_conference")
-	r.HandleFunc("/publication/{id}/conference", publicationEditingHandler.Wrap(
-		publicationEditingHandler.UpdateConference)).
+	r.HandleFunc("/publication/{id}/conference",
+		publicationEditingHandler.Wrap(publicationEditingHandler.UpdateConference)).
 		Methods("PUT").
 		Name("publication_update_conference")
 
 	// edit publication additional info
-	r.HandleFunc("/publication/{id}/additional-info/edit", publicationEditingHandler.Wrap(
-		publicationEditingHandler.EditAdditionalInfo)).
+	r.HandleFunc("/publication/{id}/additional-info/edit",
+		publicationEditingHandler.Wrap(publicationEditingHandler.EditAdditionalInfo)).
 		Methods("GET").
 		Name("publication_edit_additional_info")
-	r.HandleFunc("/publication/{id}/additional-info", publicationEditingHandler.Wrap(
-		publicationEditingHandler.UpdateAdditionalInfo)).
+	r.HandleFunc("/publication/{id}/additional-info",
+		publicationEditingHandler.Wrap(publicationEditingHandler.UpdateAdditionalInfo)).
 		Methods("PUT").
 		Name("publication_update_additional_info")
 
@@ -747,51 +762,12 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	pubsRouter := r.PathPrefix("/publication").Subrouter()
 	pubsRouter.Use(middleware.SetActiveMenu("publications"))
 	pubsRouter.Use(requireUser)
-	// pubsRouter.HandleFunc("/add", publicationsController.Add).
-	// 	Methods("GET").
-	// 	Name("publication_add")
-	// pubsRouter.HandleFunc("/add", publicationsController.AddSelectMethod).
-	// 	Methods("POST").
-	// 	Name("publication_add_select_method")
-	// pubsRouter.HandleFunc("/add-single/import/confirm", publicationsController.AddSingleImportConfirm).
-	// 	Methods("POST").
-	// 	Name("publication_add_single_import_confirm")
-	// pubsRouter.HandleFunc("/add-single/import", publicationsController.AddSingleImport).
-	// 	Methods("POST").
-	// 	Name("publication_add_single_import")
-	// pubsRouter.HandleFunc("/add-multiple/import", publicationsController.AddMultipleImport).
-	// 	Methods("POST").
-	// 	Name("publication_add_multiple_import")
-	// pubsRouter.HandleFunc("/add-multiple/{batch_id}/description", publicationsController.AddMultipleDescription).
-	// 	Methods("GET").
-	// 	Name("publication_add_multiple_description")
-	// pubsRouter.HandleFunc("/add-multiple/{batch_id}/confirm", publicationsController.AddMultipleConfirm).
-	// 	Methods("GET").
-	// 	Name("publication_add_multiple_confirm")
-	// pubsRouter.HandleFunc("/add-multiple/{batch_id}/publish", publicationsController.AddMultiplePublish).
-	// 	Methods("POST").
-	// 	Name("publication_add_multiple_publish")
 
 	pubRouter := pubsRouter.PathPrefix("/{id}").Subrouter()
 	pubRouter.Use(middleware.SetPublication(services.Repository))
 	pubRouter.Use(middleware.RequireCanViewPublication)
 	pubEditRouter := pubRouter.PathPrefix("").Subrouter()
 	pubEditRouter.Use(middleware.RequireCanEditPublication)
-	// pubEditRouter.HandleFunc("/add-single/description", publicationsController.AddSingleDescription).
-	// 	Methods("GET").
-	// 	Name("publication_add_single_description")
-	// pubEditRouter.HandleFunc("/add-single/confirm", publicationsController.AddSingleConfirm).
-	// 	Methods("GET").
-	// 	Name("publication_add_single_confirm")
-	// pubEditRouter.HandleFunc("/add-single/publish", publicationsController.AddSinglePublish).
-	// 	Methods("POST").
-	// 	Name("publication_add_single_publish")
-	// pubRouter.HandleFunc("/add-multiple/{batch_id}", publicationsController.AddMultipleShow).
-	// 	Methods("GET").
-	// 	Name("publication_add_multiple_show")
-	// pubRouter.HandleFunc("/add-multiple/{batch_id}/confirm", publicationsController.AddMultipleConfirmShow).
-	// 	Methods("GET").
-	// 	Name("publication_add_multiple_confirm_show")
 	// Publication files
 	pubRouter.HandleFunc("/file/{file_id}", publicationFilesController.Download).
 		Methods("GET").
@@ -814,8 +790,4 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	pubEditRouter.HandleFunc("/htmx/file/{file_id}/remove", publicationFilesController.Remove).
 		Methods("PATCH").
 		Name("publication_file_remove")
-	// Publication HTMX fragments
-	// pubEditRouter.HandleFunc("/htmx/summary", publicationsController.Summary).
-	// 	Methods("GET").
-	// 	Name("publication_summary")
 }

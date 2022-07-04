@@ -1,6 +1,6 @@
 <div hx-swap-oob="innerHTML:#modals"></div>
 
-{{if .Dataset.Contributors .Role}}
+{{if gt (len (.Dataset.Contributors .Role)) 1}}
 <table>
     <tbody hx-swap-oob="afterend:#{{.Role}}-{{sub .Position 1}}">
         <tr id="{{.Role}}-{{.Position}}">
