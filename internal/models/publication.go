@@ -160,6 +160,7 @@ type Publication struct {
 	Year                    string                  `json:"year,omitempty" form:"year"`
 }
 
+// TODO
 func (p *Publication) Clone() *Publication {
 	clone := *p
 	clone.Abstract = nil

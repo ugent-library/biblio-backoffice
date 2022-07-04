@@ -18,6 +18,7 @@ type Contributor struct {
 	UGentID    []string `json:"ugent_id,omitempty" form:"-"`
 }
 
+// TODO remove
 func (p *Contributor) Clone() *Contributor {
 	clone := *p
 	clone.CreditRole = nil

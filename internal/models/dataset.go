@@ -69,34 +69,6 @@ type Dataset struct {
 	Year               string               `json:"year,omitempty"`
 }
 
-// TODO still needed?
-func (d *Dataset) Clone() *Dataset {
-	clone := *d
-	clone.Abstract = nil
-	clone.Abstract = append(clone.Abstract, d.Abstract...)
-	clone.Author = nil
-	for _, c := range d.Author {
-		clone.Author = append(clone.Author, c.Clone())
-	}
-	clone.Contributor = nil
-	for _, c := range d.Contributor {
-		clone.Contributor = append(clone.Contributor, c.Clone())
-	}
-	clone.Department = nil
-	clone.Department = append(clone.Department, d.Department...)
-	clone.Format = nil
-	clone.Format = append(clone.Format, d.Format...)
-	clone.Keyword = nil
-	clone.Keyword = append(clone.Keyword, d.Keyword...)
-	clone.Project = nil
-	clone.Project = append(clone.Project, d.Project...)
-	clone.RelatedPublication = nil
-	clone.RelatedPublication = append(clone.RelatedPublication, d.RelatedPublication...)
-	clone.ReviewerTags = nil
-	clone.ReviewerTags = append(clone.ReviewerTags, d.ReviewerTags...)
-	return &clone
-}
-
 func (d *Dataset) HasRelatedPublication(id string) bool {
 	for _, r := range d.RelatedPublication {
 		if r.ID == id {
