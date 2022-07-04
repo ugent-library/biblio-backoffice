@@ -1,4 +1,4 @@
-package datasetcreating
+package publicationcreating
 
 import (
 	"net/http"
@@ -12,14 +12,14 @@ import (
 
 type Handler struct {
 	handlers.BaseHandler
-	Repository           backends.Repository
-	DatasetSearchService backends.DatasetSearchService
-	DatasetSources       map[string]backends.DatasetGetter
+	Repository               backends.Repository
+	PublicationSearchService backends.PublicationSearchService
+	PublicationSources       map[string]backends.PublicationGetter
 }
 
 type Context struct {
 	handlers.BaseContext
-	Dataset *models.Dataset
+	Publication *models.Publication
 }
 
 func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) http.HandlerFunc {
@@ -34,18 +34,18 @@ func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) htt
 		}
 
 		if id := bind.PathValues(r).Get("id"); id != "" {
-			d, err := h.Repository.GetDataset(id)
+			d, err := h.Repository.GetPublication(id)
 			if err != nil {
 				render.InternalServerError(w, r, err)
 				return
 			}
 
-			if !ctx.User.CanEditDataset(d) {
+			if !ctx.User.CanEditPublication(d) {
 				render.Forbidden(w, r)
 				return
 			}
 
-			context.Dataset = d
+			context.Publication = d
 		}
 
 		fn(w, r, context)

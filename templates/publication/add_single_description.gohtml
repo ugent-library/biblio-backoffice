@@ -1,0 +1,59 @@
+{{template "publication/add_sidebar" .}}
+
+<div class="w-100 u-scroll-wrapper">
+    <div class="c-header-collapsible bg-white">
+        <div class="bc-navbar bc-navbar--xlarge bc-navbar--white">
+            <div class="bc-toolbar">
+                <div class="bc-toolbar-left">
+                    <div class="bc-toolbar-item">
+                        <div class="d-flex flex-column">
+                            <span class="text-muted mb-2">Step {{.Step}}</span>
+                            <h4 class="bc-toolbar-title">Complete Description</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="bc-toolbar-right">
+                    <div class="bc-toolbar-item">
+                        <a class="btn btn-primary btn-submit-description" href="{{pathFor "publication_add_single_confirm" "id" .Publication.ID}}">
+                            <div class="btn-text">Publish to Biblio</div>
+                            <i class="if if-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="c-divider mt-0 mx-6"></div>
+
+        <div id="summary">
+            <div class="c-header-collapsible mx-6">
+                <div class="d-flex w-100">
+                    <div class="w-100">
+                        <div class="d-flex align-items-start">
+                            <h4 class="h4">{{.Publication.Title}}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="c-divider mb-2 mx-6"></div>
+
+        <div class="bc-navbar bc-navbar--white bc-navbar--bordered-bottom">
+            <div class="bc-toolbar">
+                <div class="bc-toolbar-left">
+                    <div class="bc-toolbar-item" id="show-nav">
+                        {{template "publication/show_nav" .}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="u-scroll-wrapper__body p-6" id="show-content"
+        hx-get="{{pathFor (print "publication_" .ActiveSubNav) "id" .Publication.ID}}"
+        hx-trigger="load delay:100ms"
+        hx-target="#show-content"
+    >
+    </div>
+</div>

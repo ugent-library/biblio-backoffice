@@ -624,6 +624,61 @@ func (d *Publication) Validate() error {
 		}
 	}
 
+	if d.Status == "public" && d.UsesAuthor() && len(d.Author) == 0 {
+		errs = append(errs, &validation.Error{
+			Pointer: "/author",
+			Code:    "publication.author.required",
+		})
+
+		// at least one ugent author if not external
+		if !d.Extern {
+			var hasUgentAuthors bool = false
+			for _, a := range d.Author {
+				if a.ID != "" {
+					hasUgentAuthors = true
+					break
+				}
+			}
+			if !hasUgentAuthors {
+				errs = append(errs, &validation.Error{
+					Pointer: "/author",
+					Code:    "publication.author.min_ugent_authors",
+				})
+			}
+		}
+	}
+
+	if d.Status == "public" && d.UsesEditor() && !d.UsesAuthor() && len(d.Editor) == 0 {
+		errs = append(errs, &validation.Error{
+			Pointer: "/editor",
+			Code:    "publication.editor.required",
+		})
+
+		// at least one ugent editor if not external
+		if !d.Extern {
+			var hasUgentEditors bool = false
+			for _, a := range d.Editor {
+				if a.ID != "" {
+					hasUgentEditors = true
+					break
+				}
+			}
+			if !hasUgentEditors {
+				errs = append(errs, &validation.Error{
+					Pointer: "/editor",
+					Code:    "publication.editor.min_ugent_editors",
+				})
+			}
+		}
+	}
+
+	if d.Status == "public" && d.UsesSupervisor() && len(d.Supervisor) == 0 {
+		errs = append(errs, &validation.Error{
+			Pointer: "/supervisor",
+			Code:    "publication.supervisor.required",
+		})
+	}
+
 	for i, c := range d.Author {
 		for _, err := range c.Validate() {
 			errs = append(errs, &validation.Error{

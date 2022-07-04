@@ -1,14 +1,13 @@
-{{template "publication/_add_sidebar" .}}
+{{template "publication/add_sidebar" .}}
 
-<form class="w-100 u-scroll-wrapper" action="{{pathFor "publication_add_select_method"}}" method="POST">
-    {{.CSRFTag}}
-    <div class="w-100 u-scroll-wrapper">
+<form class="w-100" action="{{pathFor "publication_add"}}" method="GET">
+    <div class="u-scroll-wrapper">
         <div class="bc-navbar bc-navbar--xlarge bc-navbar-bordered bc-navbar--white bc-navbar--bordered-bottom">
             <div class="bc-toolbar">
                 <div class="bc-toolbar-left">
                     <div class="bc-toolbar-item">
                         <div class="d-flex flex-column">
-                            <span class="text-muted mb-2">Step {{.D.Step}}</span>
+                            <span class="text-muted mb-2">Step {{.Step}}</span>
                             <h4 class="bc-toolbar-title">Start</h4>
                         </div>
                     </div>
@@ -38,8 +37,8 @@
                             <label class="c-radio-card">
                                 <div class="c-radio-card__radio" aria-selected="false">
                                     <div class="custom-control custom-radio">
-                                        <input class="custom-control-input" id="add-select-single" type="radio" name="add-method-select" value="wos">
-                                        <label class="custom-control-label" for="add-select-single"></label>
+                                        <input class="custom-control-input" id="add-method-wos" type="radio" name="method" value="wos">
+                                        <label class="custom-control-label" for="add-method-wos"></label>
                                     </div>
                                 </div>
                                 <div class="c-radio-card__content">Import from Web of Science.</div>
@@ -49,8 +48,8 @@
                             <label class="c-radio-card" aria-selected="false">
                                 <div class="c-radio-card__radio">
                                     <div class="custom-control custom-radio">
-                                        <input class="custom-control-input" id="add-select-multiple" type="radio" name="add-method-select" value="identifier">
-                                        <label class="custom-control-label" for="add-select-multiple"></label>
+                                        <input class="custom-control-input" id="add-method-identifier" type="radio" name="method" value="identifier">
+                                        <label class="custom-control-label" for="add-method-identifier"></label>
                                     </div>
                                 </div>
                                 <div class="c-radio-card__content">Import your publication via an identifier.</div>
@@ -63,8 +62,8 @@
                             <label class="c-radio-card">
                                 <div class="c-radio-card__radio" aria-selected="false">
                                     <div class="custom-control custom-radio">
-                                        <input class="custom-control-input" id="add-select-single" type="radio" name="add-method-select" value="manual">
-                                        <label class="custom-control-label" for="add-select-single"></label>
+                                        <input class="custom-control-input" id="add-method-manual" type="radio" name="method" value="manual">
+                                        <label class="custom-control-label" for="add-method-manual"></label>
                                     </div>
                                 </div>
                                 <div class="c-radio-card__content">Enter a publication manually.</div>
@@ -74,8 +73,8 @@
                             <label class="c-radio-card" aria-selected="false">
                                 <div class="c-radio-card__radio">
                                     <div class="custom-control custom-radio">
-                                        <input class="custom-control-input" id="add-select-multiple" type="radio" name="add-method-select" value="bibtex">
-                                        <label class="custom-control-label" for="add-select-multiple"></label>
+                                        <input class="custom-control-input" id="add-method-bibtex" type="radio" name="method" value="bibtex">
+                                        <label class="custom-control-label" for="add-method-bibtex"></label>
                                     </div>
                                 </div>
                                 <div class="c-radio-card__content">Import via Bibtex file.</div>
@@ -85,12 +84,11 @@
                 </div>
             </div>
 
-            <div class="card card-collapsible mb-6">
+            <div class="card mb-6">
                 <div class="card-header">
-                    <div class="collapse-trigger" data-toggle="collapse" data-target="#moreInfo" aria-expanded="false" aria-controls="collapse1"></div>
                     <div class="bc-toolbar">
                         <div class="bc-toolbar-left">
-                            <i class="if if-chevron-right mr-4 text-muted"></i>More information needed?
+                            More information needed?
                         </div>
                     </div>
                 </div>

@@ -1,0 +1,53 @@
+{{template "publication/add_sidebar" .}}
+
+<div class="w-100 u-scroll-wrapper">
+    <div class="bc-navbar bc-navbar--xlarge bc-navbar-bordered bc-navbar--white bc-navbar--bordered-bottom">
+        <div class="bc-toolbar">
+            <div class="bc-toolbar-left">
+                <div class="bc-toolbar-item">
+                    <div class="d-flex flex-column">
+                        <span class="text-muted mb-2">Step {{.Step}}</span>
+                        <h4 class="bc-toolbar-title">Add publication(s)</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="p-6 u-scroll-wrapper__body">
+        <div class="card card-collapsible mb-6">
+            <div class="card-header">
+                <div class="collapse-trigger" data-toggle="collapse" data-target="#importFromBibTex" aria-expanded="true" aria-controls="collapse1"></div>
+                <div class="bc-toolbar">
+                    <div class="bc-toolbar-left">
+                        <i class="if if-chevron-right mr-4 text-muted"></i>No Web of Science file?
+                    </div>
+                </div>
+            </div>
+            <div class="collapsed" id="importFromBibTex">
+                <div class="card-body">
+                    <p class="mb-4">Alternatively, you can upload a BibTex
+                    file to import publications in bulk.</p>
+
+                    <form class="form-change-submit" action="{{pathFor "publication_add_multiple_import"}}" method="POST" enctype="multipart/form-data">
+                        {{.CSRFTag}}
+                        <input type="hidden" name="source" value="bibtex">
+
+                        <div class="c-file-upload">
+                            <input type="file" name="file">
+                            <div class="c-file-upload__content">
+                                <p>Drag and drop or</p>
+                                <button class="btn btn-outline-primary">Upload file
+                                    <div class="spinner-border">
+                                        <span class="sr-only"></span>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                        <small class="form-text text-muted my-3"><a href="https://onderzoektips.ugent.be/en/tips/00002068/" target="_blank">BIBtex import instructions</a></small>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

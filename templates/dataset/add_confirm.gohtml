@@ -56,7 +56,7 @@
                                     {{template "dataset/summary_body" .}}
                                 </div>
                                 <div class="list-group mt-6">
-                                    <a class="list-group-item list-group-item-action" href="{{pathFor "dataset_add_description" "id" .Dataset.ID}}?show=description">
+                                    <a class="list-group-item list-group-item-action" href="{{pathFor "dataset_add_description" "id" .Dataset.ID|querySet "show" "description"}}">
                                         <div class="d-flex justify-content-between align-items-center">
                                             <div class="d-flex align-items-center">
                                                 <i class="if if-check-circle-fill if--success"></i>
@@ -65,7 +65,7 @@
                                             <i class="if if-chevron-right"></i>
                                         </div>
                                     </a>
-                                    <a class="list-group-item list-group-item-action" href="{{pathFor "dataset_add_description" "id" .Dataset.ID}}?show=contributors">
+                                    <a class="list-group-item list-group-item-action" href="{{pathFor "dataset_add_description" "id" .Dataset.ID|querySet "show" "contributors"}}">
                                         <div class="d-flex justify-content-between align-items-center">
                                             <div class="d-flex align-items-center">
                                                 <i class="if if-check-circle-fill if--success"></i>

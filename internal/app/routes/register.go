@@ -16,6 +16,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/impersonating"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/mediatypes"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/orcid"
+	"github.com/ugent-library/biblio-backend/internal/app/handlers/publicationcreating"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/publicationediting"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/publicationsearching"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/publicationviewing"
@@ -41,16 +42,16 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	requireUser := middleware.RequireUser(oldBase.BaseURL.Path + "/login")
 	setUser := middleware.SetUser(services.UserService, oldBase.SessionName, oldBase.SessionStore)
 
-	publicationsController := controllers.NewPublications(
-		oldBase,
-		services.Repository,
-		services.FileStore,
-		services.PublicationSearchService,
-		services.PublicationDecoders,
-		services.PublicationSources,
-		services.Tasks,
-		services.ORCIDSandbox,
-	)
+	// publicationsController := controllers.NewPublications(
+	// 	oldBase,
+	// 	services.Repository,
+	// 	services.FileStore,
+	// 	services.PublicationSearchService,
+	// 	services.PublicationDecoders,
+	// 	services.PublicationSources,
+	// 	services.Tasks,
+	// 	services.ORCIDSandbox,
+	// )
 	publicationFilesController := controllers.NewPublicationFiles(oldBase, services.Repository, services.FileStore)
 
 	// NEW HANDLERS
@@ -108,6 +109,12 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	publicationViewingHandler := &publicationviewing.Handler{
 		BaseHandler: baseHandler,
 		Repository:  services.Repository,
+	}
+	publicationCreatingHandler := &publicationcreating.Handler{
+		BaseHandler:              baseHandler,
+		Repository:               services.Repository,
+		PublicationSearchService: services.PublicationSearchService,
+		PublicationSources:       services.PublicationSources,
 	}
 	publicationEditingHandler := &publicationediting.Handler{
 		BaseHandler:               baseHandler,
@@ -186,6 +193,21 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		Methods("POST").
 		Name("delete_impersonation")
 
+	// tasks
+	r.HandleFunc("/task/{id}/status", tasksHandler.Wrap(tasksHandler.Status)).
+		Methods("GET").
+		Name("task_status")
+
+	// search datasets
+	r.HandleFunc("/curation/dataset",
+		datasetSearchingHandler.Wrap(datasetSearchingHandler.CurationSearch)).
+		Methods("GET").
+		Name("cureation_datasets")
+	r.HandleFunc("/dataset",
+		datasetSearchingHandler.Wrap(datasetSearchingHandler.Search)).
+		Methods("GET").
+		Name("datasets")
+
 	// add dataset
 	r.HandleFunc("/dataset/add",
 		datasetCreatingHandler.Wrap(datasetCreatingHandler.Add)).
@@ -196,10 +218,9 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		Methods("POST").
 		Name("dataset_add_import")
 	r.HandleFunc("/dataset/import/confirm",
-		datasetCreatingHandler.Wrap(datasetCreatingHandler.ConfirmImportDataset)).
+		datasetCreatingHandler.Wrap(datasetCreatingHandler.ConfirmImport)).
 		Methods("POST").
 		Name("dataset_confirm_import")
-
 	r.HandleFunc("/dataset/{id}/add/description",
 		datasetCreatingHandler.Wrap(datasetCreatingHandler.AddDescription)).
 		Methods("GET").
@@ -216,21 +237,6 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		datasetCreatingHandler.Wrap(datasetCreatingHandler.AddFinish)).
 		Methods("GET").
 		Name("dataset_add_finish")
-
-	// tasks
-	r.HandleFunc("/task/{id}/status", tasksHandler.Wrap(tasksHandler.Status)).
-		Methods("GET").
-		Name("task_status")
-
-	// search datasets
-	r.HandleFunc("/curation/dataset",
-		datasetSearchingHandler.Wrap(datasetSearchingHandler.CurationSearch)).
-		Methods("GET").
-		Name("cureation_datasets")
-	r.HandleFunc("/dataset",
-		datasetSearchingHandler.Wrap(datasetSearchingHandler.Search)).
-		Methods("GET").
-		Name("datasets")
 
 	// view dataset
 	r.HandleFunc("/dataset/{id}",
@@ -417,6 +423,36 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		datasetEditingHandler.Wrap(datasetEditingHandler.DeleteContributor)).
 		Methods("DELETE").
 		Name("dataset_delete_contributor")
+
+	// add publication
+	r.HandleFunc("/publication/add",
+		publicationCreatingHandler.Wrap(publicationCreatingHandler.Add)).
+		Methods("GET").
+		Name("publication_add")
+	r.HandleFunc("/publication/add-single/import",
+		publicationCreatingHandler.Wrap(publicationCreatingHandler.AddSingleImport)).
+		Methods("POST").
+		Name("publication_add_single_import")
+	r.HandleFunc("/publication/add-single/import/confirm",
+		publicationCreatingHandler.Wrap(publicationCreatingHandler.AddSingleImportConfirm)).
+		Methods("POST").
+		Name("publication_add_single_import_confirm")
+	r.HandleFunc("/publication/{id}/add/description",
+		publicationCreatingHandler.Wrap(publicationCreatingHandler.AddSingleDescription)).
+		Methods("GET").
+		Name("publication_add_single_description")
+	r.HandleFunc("/publication/{id}/add/confirm",
+		publicationCreatingHandler.Wrap(publicationCreatingHandler.AddSingleConfirm)).
+		Methods("GET").
+		Name("publication_add_single_confirm")
+	r.HandleFunc("/publication/{id}/add/publish",
+		publicationCreatingHandler.Wrap(publicationCreatingHandler.AddSinglePublish)).
+		Methods("POST").
+		Name("publication_add_single_publish")
+	r.HandleFunc("/publication/{id}/add/finish",
+		publicationCreatingHandler.Wrap(publicationCreatingHandler.AddSingleFinish)).
+		Methods("GET").
+		Name("publication_add_single_finish")
 
 	// search publications
 	r.HandleFunc("/curation/publication",
@@ -711,51 +747,51 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	pubsRouter := r.PathPrefix("/publication").Subrouter()
 	pubsRouter.Use(middleware.SetActiveMenu("publications"))
 	pubsRouter.Use(requireUser)
-	pubsRouter.HandleFunc("/add", publicationsController.Add).
-		Methods("GET").
-		Name("publication_add")
-	pubsRouter.HandleFunc("/add", publicationsController.AddSelectMethod).
-		Methods("POST").
-		Name("publication_add_select_method")
-	pubsRouter.HandleFunc("/add-single/import/confirm", publicationsController.AddSingleImportConfirm).
-		Methods("POST").
-		Name("publication_add_single_import_confirm")
-	pubsRouter.HandleFunc("/add-single/import", publicationsController.AddSingleImport).
-		Methods("POST").
-		Name("publication_add_single_import")
-	pubsRouter.HandleFunc("/add-multiple/import", publicationsController.AddMultipleImport).
-		Methods("POST").
-		Name("publication_add_multiple_import")
-	pubsRouter.HandleFunc("/add-multiple/{batch_id}/description", publicationsController.AddMultipleDescription).
-		Methods("GET").
-		Name("publication_add_multiple_description")
-	pubsRouter.HandleFunc("/add-multiple/{batch_id}/confirm", publicationsController.AddMultipleConfirm).
-		Methods("GET").
-		Name("publication_add_multiple_confirm")
-	pubsRouter.HandleFunc("/add-multiple/{batch_id}/publish", publicationsController.AddMultiplePublish).
-		Methods("POST").
-		Name("publication_add_multiple_publish")
+	// pubsRouter.HandleFunc("/add", publicationsController.Add).
+	// 	Methods("GET").
+	// 	Name("publication_add")
+	// pubsRouter.HandleFunc("/add", publicationsController.AddSelectMethod).
+	// 	Methods("POST").
+	// 	Name("publication_add_select_method")
+	// pubsRouter.HandleFunc("/add-single/import/confirm", publicationsController.AddSingleImportConfirm).
+	// 	Methods("POST").
+	// 	Name("publication_add_single_import_confirm")
+	// pubsRouter.HandleFunc("/add-single/import", publicationsController.AddSingleImport).
+	// 	Methods("POST").
+	// 	Name("publication_add_single_import")
+	// pubsRouter.HandleFunc("/add-multiple/import", publicationsController.AddMultipleImport).
+	// 	Methods("POST").
+	// 	Name("publication_add_multiple_import")
+	// pubsRouter.HandleFunc("/add-multiple/{batch_id}/description", publicationsController.AddMultipleDescription).
+	// 	Methods("GET").
+	// 	Name("publication_add_multiple_description")
+	// pubsRouter.HandleFunc("/add-multiple/{batch_id}/confirm", publicationsController.AddMultipleConfirm).
+	// 	Methods("GET").
+	// 	Name("publication_add_multiple_confirm")
+	// pubsRouter.HandleFunc("/add-multiple/{batch_id}/publish", publicationsController.AddMultiplePublish).
+	// 	Methods("POST").
+	// 	Name("publication_add_multiple_publish")
 
 	pubRouter := pubsRouter.PathPrefix("/{id}").Subrouter()
 	pubRouter.Use(middleware.SetPublication(services.Repository))
 	pubRouter.Use(middleware.RequireCanViewPublication)
 	pubEditRouter := pubRouter.PathPrefix("").Subrouter()
 	pubEditRouter.Use(middleware.RequireCanEditPublication)
-	pubEditRouter.HandleFunc("/add-single/description", publicationsController.AddSingleDescription).
-		Methods("GET").
-		Name("publication_add_single_description")
-	pubEditRouter.HandleFunc("/add-single/confirm", publicationsController.AddSingleConfirm).
-		Methods("GET").
-		Name("publication_add_single_confirm")
-	pubEditRouter.HandleFunc("/add-single/publish", publicationsController.AddSinglePublish).
-		Methods("POST").
-		Name("publication_add_single_publish")
-	pubRouter.HandleFunc("/add-multiple/{batch_id}", publicationsController.AddMultipleShow).
-		Methods("GET").
-		Name("publication_add_multiple_show")
-	pubRouter.HandleFunc("/add-multiple/{batch_id}/confirm", publicationsController.AddMultipleConfirmShow).
-		Methods("GET").
-		Name("publication_add_multiple_confirm_show")
+	// pubEditRouter.HandleFunc("/add-single/description", publicationsController.AddSingleDescription).
+	// 	Methods("GET").
+	// 	Name("publication_add_single_description")
+	// pubEditRouter.HandleFunc("/add-single/confirm", publicationsController.AddSingleConfirm).
+	// 	Methods("GET").
+	// 	Name("publication_add_single_confirm")
+	// pubEditRouter.HandleFunc("/add-single/publish", publicationsController.AddSinglePublish).
+	// 	Methods("POST").
+	// 	Name("publication_add_single_publish")
+	// pubRouter.HandleFunc("/add-multiple/{batch_id}", publicationsController.AddMultipleShow).
+	// 	Methods("GET").
+	// 	Name("publication_add_multiple_show")
+	// pubRouter.HandleFunc("/add-multiple/{batch_id}/confirm", publicationsController.AddMultipleConfirmShow).
+	// 	Methods("GET").
+	// 	Name("publication_add_multiple_confirm_show")
 	// Publication files
 	pubRouter.HandleFunc("/file/{file_id}", publicationFilesController.Download).
 		Methods("GET").
@@ -779,7 +815,7 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		Methods("PATCH").
 		Name("publication_file_remove")
 	// Publication HTMX fragments
-	pubEditRouter.HandleFunc("/htmx/summary", publicationsController.Summary).
-		Methods("GET").
-		Name("publication_summary")
+	// pubEditRouter.HandleFunc("/htmx/summary", publicationsController.Summary).
+	// 	Methods("GET").
+	// 	Name("publication_summary")
 }

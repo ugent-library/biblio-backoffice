@@ -669,6 +669,9 @@ func init() {
 
 	message.SetString(language.English, "validation.publication.author.min_ugent_authors", "At least one UGent author is required")
 	message.SetString(language.English, "validation.publication.author.required", "One or more authors are required")
+	message.SetString(language.English, "validation.publication.editor.min_ugent_editors", "At least one UGent editor is required")
+	message.SetString(language.English, "validation.publication.editor.required", "One or more editors are required")
+	message.SetString(language.English, "validation.publication.supervisor.required", "One or more supervisors are required")
 	message.SetString(language.English, "validation.publication.author.first_name.required", "First name is required")
 	message.SetString(language.English, "validation.publication.author.last_name.required", "Last name is required")
 	message.SetString(language.English, "validation.publication.editor.first_name.required", "First name is required")

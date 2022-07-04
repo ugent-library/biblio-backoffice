@@ -36,7 +36,9 @@ type YieldAddDataset struct {
 	DuplicateDataset    bool
 	DatasetPublications []*models.Publication
 	ActiveNav           string
-	ActiveSubNav        string
+	SubNavs             []string // needed to render show_description
+	ActiveSubNav        string   // needed to render show_description
+	RedirectURL         string   // needed to render show_description
 	DisplayDetails      *display.Display
 	Errors              *YieldValidationErrors
 }
@@ -52,24 +54,28 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request, ctx Context) {
 		PageTitle: "Add - Datasets - Biblio",
 		Step:      1,
 		ActiveNav: "datasets",
-		Errors:    nil,
 	})
 }
 
-func (h *Handler) ConfirmImportDataset(w http.ResponseWriter, r *http.Request, ctx Context) {
+func (h *Handler) ConfirmImport(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindImport{}
 	if err := bind.Request(r, &b); err != nil {
 		render.BadRequest(w, r, err)
 		return
 	}
 
-	// Check for duplicates
+	// check for duplicates
 	if b.Source == "datacite" {
-		args := models.NewSearchArgs().
-			WithFilter("doi", b.Identifier)
-			// WithFilter("status", "public")
+		args := models.NewSearchArgs().WithFilter("doi", b.Identifier)
 
-		if existing, _ := h.DatasetSearchService.Search(args); existing.Total > 0 {
+		existing, err := h.DatasetSearchService.Search(args)
+
+		if err != nil {
+			render.InternalServerError(w, r, err)
+			return
+		}
+
+		if existing.Total > 0 {
 			render.Wrap(w, "layouts/default", "dataset/add", YieldAddDataset{
 				Context:          ctx,
 				PageTitle:        "Add - Datasets - Biblio",
@@ -94,7 +100,7 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 		return
 	}
 
-	d, err := h.FetchDatasetByIdentifier(b.Source, b.Identifier)
+	d, err := h.fetchDatasetByIdentifier(b.Source, b.Identifier)
 	if err != nil {
 		log.Println(err)
 		flash := flash.Flash{
@@ -121,11 +127,6 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 	d.UserID = ctx.User.ID
 	d.Status = "private"
 
-	// TODO This block implements validation on import. This implies that a record imported
-	//   from a source (e.g. DataCite) should at least have the minimum set of fields as
-	//   required by Biblio. There's no guarantee that this is the case, though. If a record
-	//   lacks crucial Biblio fields in DataCite, it's impossible to import in Biblio until fixed in
-	//   DataCite.
 	if validationErrs := d.Validate(); validationErrs != nil {
 		errors := form.Errors(localize.ValidationErrors(ctx.Locale, err.(validation.Errors)))
 		render.Wrap(w, "layouts/default", "dataset/add", YieldAddDataset{
@@ -136,12 +137,13 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 			Source:     b.Source,
 			Identifier: b.Identifier,
 			Errors: &YieldValidationErrors{
-				Title:  "Unable to publish this dataset due to the following errors",
+				Title:  "Unable to import this dataset due to the following errors",
 				Errors: errors,
 			},
 		})
 		return
 	}
+
 	err = h.Repository.SaveDataset(d)
 
 	if err != nil {
@@ -154,6 +156,7 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 		PageTitle:      "Add - Datasets - Biblio",
 		Step:           2,
 		ActiveNav:      "datasets",
+		SubNavs:        []string{"description", "contributors", "publications"},
 		ActiveSubNav:   "description",
 		Dataset:        d,
 		DisplayDetails: displays.DatasetDetails(ctx.Locale, d),
@@ -161,25 +164,20 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 }
 
 func (h *Handler) AddDescription(w http.ResponseWriter, r *http.Request, ctx Context) {
-	// TODO bind and validate
-	activeSubNav := "description"
-	if r.URL.Query().Get("show") == "contributors" || r.URL.Query().Get("show") == "description" {
-		activeSubNav = r.URL.Query().Get("show")
-	}
-
 	render.Wrap(w, "layouts/default", "dataset/add_description", YieldAddDataset{
 		Context:        ctx,
 		PageTitle:      "Add - Datasets - Biblio",
 		Step:           2,
 		ActiveNav:      "datasets",
-		ActiveSubNav:   activeSubNav,
+		SubNavs:        []string{"description", "contributors", "publications"},
+		ActiveSubNav:   "description",
 		Dataset:        ctx.Dataset,
 		DisplayDetails: displays.DatasetDetails(ctx.Locale, ctx.Dataset),
 	})
 }
 
 func (h *Handler) AddConfirm(w http.ResponseWriter, r *http.Request, ctx Context) {
-	render.Wrap(w, "layouts/default", "dataset/add_confirm_import", YieldAddDataset{
+	render.Wrap(w, "layouts/default", "dataset/add_confirm", YieldAddDataset{
 		Context:   ctx,
 		PageTitle: "Add - Datasets - Biblio",
 		Step:      3,
@@ -231,13 +229,13 @@ func (h *Handler) AddFinish(w http.ResponseWriter, r *http.Request, ctx Context)
 	render.Wrap(w, "layouts/default", "dataset/add_finish", YieldAddDataset{
 		Context:   ctx,
 		PageTitle: "Add - Datasets - Biblio",
-		Step:      4,
+		Step:      3,
 		ActiveNav: "datasets",
 		Dataset:   ctx.Dataset,
 	})
 }
 
-func (h *Handler) FetchDatasetByIdentifier(source, identifier string) (*models.Dataset, error) {
+func (h *Handler) fetchDatasetByIdentifier(source, identifier string) (*models.Dataset, error) {
 	s, ok := h.DatasetSources[source]
 
 	if !ok {
