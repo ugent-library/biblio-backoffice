@@ -38,7 +38,7 @@
             <div class="card-body p-0">
                 <ul class="list-group list-group-flush">
                     {{range .Hits.Hits}}
-                    {{$pubURL := pathFor "publication_add_multiple_show" "batch_id" $.BatchID "id" .ID|querySet "redirect_url" $.RedirectURL}}
+                    {{$pubURL := pathFor "publication_add_multiple_show" "batch_id" $.BatchID "id" .ID|querySet "redirect-url" $.RedirectURL}}
                     <li class="list-group-item">
                         <div class="d-flex w-100">
                             <div class="w-100">

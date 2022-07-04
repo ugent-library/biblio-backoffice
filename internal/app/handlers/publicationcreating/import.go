@@ -417,7 +417,7 @@ func (h *Handler) AddMultipleShow(w http.ResponseWriter, r *http.Request, ctx Co
 		ActiveNav:    "publications",
 		SubNavs:      []string{"description", "files", "contributors", "datasets"},
 		ActiveSubNav: subNav,
-		RedirectURL:  r.URL.Query().Get("redirect_url"),
+		RedirectURL:  r.URL.Query().Get("redirect-url"),
 		BatchID:      batchID,
 	})
 }
