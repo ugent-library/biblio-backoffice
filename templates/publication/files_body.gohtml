@@ -1,0 +1,80 @@
+{{ $canEditPublication := .User.CanEditPublication .Publication }}
+<ul class="list-group list-group-flush">
+    {{range .Publication.File}}
+    <li class="list-group-item">
+        <div class="d-flex">
+            <div class="d-flex align-items-center w-100">
+                <div class="position-relative">
+                    {{if .ThumbnailURL}}
+                    <img class="list-group-item-thumbnail" src="{{.ThumbnailURL}}" height="156">
+                    {{else}}
+                    <div class="list-group-item-thumbnail">
+                        <div class="c-thumbnail c-thumbnail--publication c-thumbnail--medium">
+                            <i class="if if-article"></i>
+                        </div>
+                    </div>
+                    {{end}}
+                </div>
+                <div class="list-group-item-content">
+                    <div class="list-group-item-subline">
+                        <div class="list-group-item-subline-left">
+                            <span class="pr-5">
+                                {{with .Relation}}{{$.TS "publication_file_relations" .}}{{end}}
+                                {{with .PublicationVersion}}<span class="ml-3 pl-3 border-left">{{$.TS "publication_versions" .}}</span>{{end}}
+                            </span>
+                            <span class="badge badge-pill badge-outline-success">
+                                {{if eq .AccessLevel "open_access"}}
+                                <i class="if if-download text-success"></i>
+                                {{else if eq .AccessLevel "local"}}
+                                <i class="if if-ghent-university text-primary"></i>
+                                {{else if eq .AccessLevel "closed"}}
+                                <i class="if if-eye-off text-muted"></i>
+                                {{end}}
+                                <span class="badge-text">{{$.TS "publication_file_access_levels" .AccessLevel}}</span>
+                            </span>
+                            {{if .EmbargoTo}}
+                            <span class="text-muted c-body-small pl-5">Changes to {{$.TS "publication_file_access_levels" .EmbargoTo}} on {{.Embargo}}</span>
+                            {{end}}
+                        </div>
+                        <div class="list-group-item-subline-right">
+                            {{if $canEditPublication}}
+                            <div class="c-button-toolbar">
+                                <button class="btn btn-default" type="button"
+                                    hx-get="{{pathFor "publication_edit_file" "id" $.Publication.ID "file_id" .ID}}"
+                                    hx-headers='{"If-Match": "{{$.Publication.SnapshotID}}"}'
+                                    hx-swap="innerHTML"
+                                    hx-target="#modals"
+                                >
+                                    <i class="if if-edit"></i>
+                                </button>
+                                <button class="btn btn-default" type="button"
+                                    hx-get="{{pathFor "publication_confirm_delete_file" "id" $.Publication.ID "file_id" .ID}}"
+                                    hx-headers='{"If-Match": "{{$.Publication.SnapshotID}}"}'
+                                    hx-target="#modals"
+                                    hx-trigger="click"
+                                >
+                                    <i class="if if-delete"></i>
+                                </button>
+                            </div>
+                            {{end}}
+                        </div>
+                    </div>
+                    <div class="list-group-item-text">
+                        <a href="{{pathFor "publication_download_file" "id" $.Publication.ID "file_id" .ID}}">
+                            <h4 class="c-h4">{{.Filename}}</h4>
+                        </a>
+                        {{with .Description}}<p class="text-muted c-body-small">{{.}}</p>{{end}}
+                    </div>
+                    <div class="list-group-item-meta">
+                        <div class="list-group-item-meta-left">
+                            <div class="list-group-item-meta-item">
+                                <span class="text-muted c-body-small">Uploaded {{.DateCreated | date "02-01-2006 at 15:04"}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </li>
+    {{end}}
+</ul>

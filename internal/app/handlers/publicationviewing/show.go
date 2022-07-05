@@ -37,6 +37,12 @@ type YieldShowContributors struct {
 	ActiveSubNav string
 }
 
+type YieldShowFiles struct {
+	Context
+	SubNavs      []string
+	ActiveSubNav string
+}
+
 type YieldShowContributorsRole struct {
 	YieldShowContributors
 	Role string
@@ -80,7 +86,7 @@ func (h *Handler) ShowDescription(w http.ResponseWriter, r *http.Request, ctx Co
 }
 
 func (h *Handler) ShowFiles(w http.ResponseWriter, r *http.Request, ctx Context) {
-	render.Render(w, "publication/show_files", YieldShowContributors{
+	render.Render(w, "publication/show_files", YieldShowFiles{
 		Context:      ctx,
 		SubNavs:      subNavs,
 		ActiveSubNav: "files",
