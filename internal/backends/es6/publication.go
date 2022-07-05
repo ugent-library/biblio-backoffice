@@ -37,17 +37,17 @@ func (publications *Publications) Search(args *models.SearchArgs) (*models.Publi
 	query["from"] = args.Offset()
 
 	// extra internal filters
-	internalFilters := []M{
-		{
-			"bool": M{
-				"must_not": M{
-					"exists": M{
-						"field": "date_until",
-					},
-				},
-			},
-		},
-	}
+	// internalFilters := []M{
+	// 	{
+	// 		"bool": M{
+	// 			"must_not": M{
+	// 				"exists": M{
+	// 					"field": "date_until",
+	// 				},
+	// 			},
+	// 		},
+	// 	},
+	// }
 
 	// ADD FACETS
 	// 	create global bucket so that not all buckets are influenced by query and filters
@@ -69,7 +69,7 @@ func (publications *Publications) Search(args *models.SearchArgs) (*models.Publi
 			// add all internal filters
 			filters = append(filters, queryMust)
 			filters = append(filters, publications.scopes...)
-			filters = append(filters, internalFilters...)
+			// filters = append(filters, internalFilters...)
 
 			// add external filters only if not matching
 			for _, filter := range queryFilters {
@@ -129,7 +129,7 @@ func (publications *Publications) Search(args *models.SearchArgs) (*models.Publi
 
 	// ADD QUERY FILTERS
 	queryFilters = append(queryFilters, publications.scopes...)
-	queryFilters = append(queryFilters, internalFilters...)
+	// queryFilters = append(queryFilters, internalFilters...)
 	query["query"].(M)["bool"].(M)["filter"] = queryFilters
 
 	// ADD SORTS
@@ -357,8 +357,9 @@ func (publications *Publications) Index(d *models.Publication) error {
 	}
 	ctx := context.Background()
 	res, err := esapi.UpdateRequest{
-		Index:      publications.Client.Index,
-		DocumentID: d.SnapshotID,
+		Index: publications.Client.Index,
+		// DocumentID: d.SnapshotID,
+		DocumentID: d.ID,
 		Body:       bytes.NewReader(payload),
 	}.Do(ctx, publications.Client.es)
 	if err != nil {
@@ -415,8 +416,9 @@ func (publications *Publications) IndexMultiple(inCh <-chan *models.Publication)
 		err = bi.Add(
 			context.Background(),
 			esutil.BulkIndexerItem{
-				Action:       "index",
-				DocumentID:   doc.SnapshotID,
+				Action: "index",
+				// DocumentID:   doc.SnapshotID,
+				DocumentID:   doc.ID,
 				DocumentType: "_doc",
 				Body:         bytes.NewReader(payload),
 				OnFailure: func(ctx context.Context, item esutil.BulkIndexerItem, res esutil.BulkIndexerResponseItem, err error) {
@@ -456,7 +458,7 @@ func (publications *Publications) Clone() *Publications {
 	newScopes := make([]M, 0, len(publications.scopes))
 	newScopes = append(newScopes, publications.scopes...)
 	return &Publications{
-		Client:        publications.Client, //no need to clone this?
+		Client:        publications.Client,
 		scopes:        newScopes,
 		includeFacets: publications.includeFacets,
 	}
