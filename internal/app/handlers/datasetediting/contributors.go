@@ -75,13 +75,6 @@ type YieldContributors struct {
 	Role string
 }
 
-type YieldContributor struct {
-	Context
-	Role        string
-	Position    int
-	Contributor *models.Contributor
-}
-
 type YieldContributorForm struct {
 	Context
 	Role        string
@@ -274,11 +267,9 @@ func (h *Handler) CreateContributor(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	render.Render(w, "dataset/contributors_add_row", YieldContributor{
-		Context:     ctx,
-		Role:        b.Role,
-		Position:    position,
-		Contributor: c,
+	render.Render(w, "dataset/refresh_contributors", YieldContributors{
+		Context: ctx,
+		Role:    b.Role,
 	})
 }
 
@@ -358,11 +349,9 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	render.Render(w, "dataset/contributors_update_row", YieldContributor{
-		Context:     ctx,
-		Role:        b.Role,
-		Position:    b.Position,
-		Contributor: c,
+	render.Render(w, "dataset/refresh_contributors", YieldContributors{
+		Context: ctx,
+		Role:    b.Role,
 	})
 }
 
