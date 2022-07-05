@@ -28,7 +28,8 @@ func (l *Listener[T]) WaitForProjection(ctx context.Context) (Projection[T], err
 	p := Projection[T]{}
 
 	if !l.listening {
-		if _, err := l.conn.Exec(ctx, "listen projections"); err != nil {
+		chanName := l.entityType.Name() + "_projections"
+		if _, err := l.conn.Exec(ctx, "listen $1", chanName); err != nil {
 			return p, err
 		}
 		l.listening = true

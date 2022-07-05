@@ -1,11 +1,13 @@
 create function notify_projection_changed() returns trigger as $$
     declare
         payload_id text;
+        chan text;
         payload text;
         size int;
         n int = 0;
     begin
         payload_id = NEW.mutation_id;
+        chan = concat(NEW.entity_type, '_projections');
         payload = row_to_json(NEW)::text;
         size = length(payload);
 
@@ -13,13 +15,13 @@ create function notify_projection_changed() returns trigger as $$
         while n <= size loop
             -- append counter to ensure non-identical payload strings
             perform pg_notify(
-                'projections',
+                chan,
                 concat(payload_id, ':', n::text, ':', substr(payload, n, 4000))
             );
             n = n + 4000;
 	    end loop;
 
-        perform pg_notify('projections', concat(payload_id, ':EOF:'));
+        perform pg_notify(chan, concat(payload_id, ':EOF:'));
 
         return null;
     end;
