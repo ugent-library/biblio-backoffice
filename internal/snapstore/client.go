@@ -147,24 +147,24 @@ func (s *Store) notify(snap *Snapshot) {
 	}
 }
 
-func (s *Store) AddAfter(snapshotID, id string, data interface{}, o Options) error {
+func (s *Store) AddAfter(snapshotID, id string, data interface{}, o Options) (string, error) {
 	if snapshotID == "" {
-		return errors.New("snapshot id is empty")
+		return "", errors.New("snapshot id is empty")
 	}
 	if id == "" {
-		return errors.New("id is empty")
+		return "", errors.New("id is empty")
 	}
 
 	d, err := json.Marshal(data)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	ctx, db := s.ctxAndDb(o)
 
 	tx, err := db.Begin(ctx)
 	if err != nil {
-		return err
+		return "", err
 	}
 	defer tx.Rollback(ctx)
 
@@ -175,18 +175,18 @@ func (s *Store) AddAfter(snapshotID, id string, data interface{}, o Options) err
 	err = tx.QueryRow(ctx, snapSql, snapshotID).Scan(&snap.ID, &snap.DateFrom, &snap.DateUntil)
 
 	if err == pgx.ErrNoRows {
-		return fmt.Errorf("unknown snapshot %s", snapshotID)
+		return "", fmt.Errorf("unknown snapshot %s", snapshotID)
 	} else if err != nil {
-		return err
+		return "", err
 	}
 
 	if snap.ID != id {
-		return fmt.Errorf("id mismatch: snapshot %s belongs to %s, not %s", snapshotID, snap.ID, id)
+		return "", fmt.Errorf("id mismatch: snapshot %s belongs to %s, not %s", snapshotID, snap.ID, id)
 	}
 
 	if snap.DateUntil != nil {
 		// TODO: add info needed to solve the conflict
-		return &Conflict{}
+		return "", &Conflict{}
 	}
 
 	now := time.Now()
@@ -197,31 +197,31 @@ func (s *Store) AddAfter(snapshotID, id string, data interface{}, o Options) err
 
 	updatedRows, err := tx.Query(ctx, sqlUpdate, now, id)
 	if err != nil {
-		return err
+		return "", err
 	}
 	cursorUpdatedRows := &Cursor{updatedRows}
 	oldSnapshots := []*Snapshot{}
 	for cursorUpdatedRows.HasNext() {
 		snap, e := cursorUpdatedRows.Next()
 		if e != nil {
-			return e
+			return "", e
 		}
 		oldSnapshots = append(oldSnapshots, snap)
 	}
 
 	newSnapshotID, err := s.generateID()
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	sqlInsert := `insert into ` + s.table + `(snapshot_id, id, data, date_from) values ($1, $2, $3, $4)`
 
 	if _, err = tx.Exec(ctx, sqlInsert, newSnapshotID, id, d, now); err != nil {
-		return err
+		return "", err
 	}
 
 	if err := tx.Commit(ctx); err != nil {
-		return err
+		return "", err
 	}
 
 	for _, snap := range oldSnapshots {
@@ -234,7 +234,7 @@ func (s *Store) AddAfter(snapshotID, id string, data interface{}, o Options) err
 		DateFrom:   &now,
 	})
 
-	return nil
+	return newSnapshotID, nil
 }
 
 func (s *Store) Add(id string, data interface{}, o Options) error {

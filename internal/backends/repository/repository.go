@@ -131,10 +131,17 @@ func (s *Repository) SavePublication(p *models.Publication) error {
 	return s.publicationStore.Add(p.ID, p, s.opts)
 }
 
-func (s *Repository) UpdatePublication(snapshotID string, d *models.Publication) error {
+func (s *Repository) UpdatePublication(snapshotID string, p *models.Publication) error {
+	oldDateUpdated := p.DateUpdated
 	now := time.Now()
-	d.DateUpdated = &now
-	return s.publicationStore.AddAfter(snapshotID, d.ID, d, s.opts)
+	p.DateUpdated = &now
+	snapshotID, err := s.publicationStore.AddAfter(snapshotID, p.ID, p, s.opts)
+	if err != nil {
+		p.DateUpdated = oldDateUpdated
+		return err
+	}
+	p.SnapshotID = snapshotID
+	return nil
 }
 
 func (s *Repository) EachPublication(fn func(*models.Publication) bool) error {
@@ -245,9 +252,16 @@ func (s *Repository) SaveDataset(d *models.Dataset) error {
 }
 
 func (s *Repository) UpdateDataset(snapshotID string, d *models.Dataset) error {
+	oldDateUpdated := d.DateUpdated
 	now := time.Now()
 	d.DateUpdated = &now
-	return s.datasetStore.AddAfter(snapshotID, d.ID, d, s.opts)
+	snapshotID, err := s.datasetStore.AddAfter(snapshotID, d.ID, d, s.opts)
+	if err != nil {
+		d.DateUpdated = oldDateUpdated
+		return err
+	}
+	d.SnapshotID = snapshotID
+	return nil
 }
 
 func (s *Repository) EachDataset(fn func(*models.Dataset) bool) error {
