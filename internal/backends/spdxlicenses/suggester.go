@@ -24,10 +24,6 @@ type localSuggester struct {
 }
 
 func New() *localSuggester {
-	l := &licenseEnv{}
-	file, _ := ioutil.ReadFile("etc/spdx-licenses.json")
-	_ = json.Unmarshal([]byte(file), l)
-
 	indexMapping := bleve.NewIndexMapping()
 	docMapping := bleve.NewDocumentMapping()
 	textFieldMapping := bleve.NewTextFieldMapping()
@@ -39,18 +35,32 @@ func New() *localSuggester {
 		log.Fatal(err)
 	}
 
-	for _, license := range l.Licenses {
-		if err := index.Index(license.LicenceID, license); err != nil {
+	return &localSuggester{index: index}
+}
+
+func (s *localSuggester) IndexAll() error {
+	env := &licenseEnv{}
+
+	file, err := ioutil.ReadFile("etc/spdx-licenses.json")
+	if err != nil {
+		return err
+	}
+	if err := json.Unmarshal([]byte(file), &env); err != nil {
+		return err
+	}
+
+	for _, license := range env.Licenses {
+		if err := s.index.Index(license.LicenceID, license); err != nil {
 			log.Fatal(err)
 		}
 	}
 
-	return &localSuggester{index: index}
+	return nil
 }
 
 // simulate matchphraseprefix query
 // https://github.com/blevesearch/bleve/issues/377
-func (c *localSuggester) SuggestLicenses(q string) ([]models.Completion, error) {
+func (s *localSuggester) SuggestLicenses(q string) ([]models.Completion, error) {
 	if q == "" {
 		return nil, nil
 	}
@@ -66,7 +76,7 @@ func (c *localSuggester) SuggestLicenses(q string) ([]models.Completion, error) 
 		)
 		search := bleve.NewSearchRequest(bq)
 		search.Fields = []string{"name"}
-		searchResults, err = c.index.Search(search)
+		searchResults, err = s.index.Search(search)
 		if err != nil {
 			return nil, err
 		}
@@ -87,7 +97,7 @@ func (c *localSuggester) SuggestLicenses(q string) ([]models.Completion, error) 
 		)
 		search := bleve.NewSearchRequest(bq)
 		search.Fields = []string{"name"}
-		searchResults, err = c.index.Search(search)
+		searchResults, err = s.index.Search(search)
 		if err != nil {
 			return nil, err
 		}
@@ -95,7 +105,7 @@ func (c *localSuggester) SuggestLicenses(q string) ([]models.Completion, error) 
 		if len(searchResults.Hits) == 0 {
 			search := bleve.NewSearchRequest(bleve.NewMatchQuery(prefix))
 			search.Fields = []string{"name"}
-			searchResults, err = c.index.Search(search)
+			searchResults, err = s.index.Search(search)
 			if err != nil {
 				return nil, err
 			}

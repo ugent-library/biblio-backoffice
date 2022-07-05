@@ -21,10 +21,6 @@ type localSuggester struct {
 }
 
 func New() *localSuggester {
-	env := make(ianaEnv)
-	file, _ := ioutil.ReadFile("etc/iana-media-types.json")
-	_ = json.Unmarshal([]byte(file), &env)
-
 	indexMapping := bleve.NewIndexMapping()
 	docMapping := bleve.NewDocumentMapping()
 	textFieldMapping := bleve.NewTextFieldMapping()
@@ -36,6 +32,20 @@ func New() *localSuggester {
 		log.Fatal(err)
 	}
 
+	return &localSuggester{index: index}
+}
+
+func (s *localSuggester) IndexAll() error {
+	env := make(ianaEnv)
+
+	file, err := ioutil.ReadFile("etc/iana-media-types.json")
+	if err != nil {
+		return err
+	}
+	if err := json.Unmarshal([]byte(file), &env); err != nil {
+		return err
+	}
+
 	for k, mt := range env {
 		doc := struct {
 			MediaType  string   `json:"mediaType"`
@@ -44,17 +54,17 @@ func New() *localSuggester {
 			k,
 			mt.Extensions,
 		}
-		if err := index.Index(k, doc); err != nil {
+		if err := s.index.Index(k, doc); err != nil {
 			log.Fatal(err)
 		}
 	}
 
-	return &localSuggester{index: index}
+	return nil
 }
 
 // simulate matchphraseprefix query
 // https://github.com/blevesearch/bleve/issues/377
-func (c *localSuggester) SuggestMediaTypes(q string) ([]models.Completion, error) {
+func (s *localSuggester) SuggestMediaTypes(q string) ([]models.Completion, error) {
 	if q == "" {
 		return nil, nil
 	}
@@ -70,7 +80,7 @@ func (c *localSuggester) SuggestMediaTypes(q string) ([]models.Completion, error
 		)
 		search := bleve.NewSearchRequest(bq)
 		search.Fields = []string{"extensions"}
-		searchResults, err = c.index.Search(search)
+		searchResults, err = s.index.Search(search)
 		if err != nil {
 			return nil, err
 		}
@@ -91,7 +101,7 @@ func (c *localSuggester) SuggestMediaTypes(q string) ([]models.Completion, error
 		)
 		search := bleve.NewSearchRequest(bq)
 		search.Fields = []string{"extensions"}
-		searchResults, err = c.index.Search(search)
+		searchResults, err = s.index.Search(search)
 		if err != nil {
 			return nil, err
 		}
@@ -99,7 +109,7 @@ func (c *localSuggester) SuggestMediaTypes(q string) ([]models.Completion, error
 		if len(searchResults.Hits) == 0 {
 			search := bleve.NewSearchRequest(bleve.NewMatchQuery(prefix))
 			search.Fields = []string{"extensions"}
-			searchResults, err = c.index.Search(search)
+			searchResults, err = s.index.Search(search)
 			if err != nil {
 				return nil, err
 			}

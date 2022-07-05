@@ -125,9 +125,11 @@ type ProjectSearchService interface {
 }
 
 type LicenseSearchService interface {
+	IndexAll() error
 	SuggestLicenses(string) ([]models.Completion, error)
 }
 
 type MediaTypeSearchService interface {
+	IndexAll() error
 	SuggestMediaTypes(string) ([]models.Completion, error)
 }

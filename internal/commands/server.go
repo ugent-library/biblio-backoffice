@@ -100,6 +100,10 @@ var serverStartCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		// setup services
 		e := Services()
+
+		e.MediaTypeSearchService.IndexAll()
+		// e.LicenseSearchService.IndexAll()
+
 		e.Repository.AddPublicationListener(func(p *models.Publication) {
 			if err := e.PublicationSearchService.Index(p); err != nil {
 				log.Println(fmt.Errorf("error indexing publication %s: %w", p.ID, err))
