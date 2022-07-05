@@ -7,6 +7,7 @@ import (
 	"html/template"
 	"io"
 	"net/http"
+	"time"
 
 	"github.com/ugent-library/biblio-backend/internal/app/displays"
 	"github.com/ugent-library/biblio-backend/internal/app/localize"
@@ -344,11 +345,15 @@ func (h *Handler) AddMultipleImport(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	searchArgs := models.NewSearchArgs().WithFilter("batch_id", batchID)
+	// TODO wait for index refresh, do something more elegant
+	time.Sleep(time.Second)
+
+	searchArgs := models.NewSearchArgs()
 
 	hits, err := h.PublicationSearchService.
 		WithScope("status", "private", "public").
 		WithScope("creator_id", ctx.User.ID).
+		WithScope("batch_id", batchID).
 		IncludeFacets(true).
 		Search(searchArgs)
 
