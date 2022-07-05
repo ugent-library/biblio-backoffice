@@ -3,8 +3,8 @@ package models
 import "github.com/ugent-library/biblio-backend/internal/validation"
 
 type Text struct {
-	Text string `json:"text,omitempty" form:"text"`
-	Lang string `json:"lang,omitempty" form:"lang"`
+	Text string `json:"text,omitempty"`
+	Lang string `json:"lang,omitempty"`
 }
 
 func (t Text) Validate() (errs validation.Errors) {
