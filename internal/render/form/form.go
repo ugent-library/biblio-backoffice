@@ -183,8 +183,8 @@ type Date struct {
 	Tooltip  string
 	Required bool
 	Cols     int
-	Min      int
-	Max      int
+	Min      string
+	Max      string
 	Error    string
 	Disabled bool
 }
