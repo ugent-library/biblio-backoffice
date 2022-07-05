@@ -31,11 +31,11 @@ type Conn interface {
 }
 
 type Projection[T any] struct {
-	ID          string
-	Data        T
-	MutationID  string
-	DateCreated time.Time
-	DateUpdated time.Time
+	ID          string    `json:"entity_id"`
+	Data        T         `json:"entity_data"`
+	MutationID  string    `json:"mutation_id"`
+	DateCreated time.Time `json:"date_created"`
+	DateUpdated time.Time `json:"date_updated"`
 }
 
 type mutatorMap[T any] struct {

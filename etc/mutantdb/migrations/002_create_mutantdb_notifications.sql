@@ -14,12 +14,12 @@ create function notify_projection_changed() returns trigger as $$
             -- append counter to ensure non-identical payload strings
             perform pg_notify(
                 'projections',
-                concat(payload_id, n::text, ':', substr(payload, n, 4000))
+                concat(payload_id, ':', n::text, ':', substr(payload, n, 4000))
             );
             n = n + 4000;
 	    end loop;
 
-        perform pg_notify('projections', concat(payload_id, 'EOF'));
+        perform pg_notify('projections', concat(payload_id, ':EOF:'));
 
         return null;
     end;
