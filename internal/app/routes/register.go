@@ -117,6 +117,7 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		PersonSearchService:       services.PersonSearchService,
 		PersonService:             services.PersonService,
 		DatasetSearchService:      services.DatasetSearchService,
+		FileStore:                 services.FileStore,
 	}
 	orcidHandler := &orcid.Handler{
 		BaseHandler:              baseHandler,
@@ -736,6 +737,36 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		publicationEditingHandler.Wrap(publicationEditingHandler.DeleteContributor)).
 		Methods("DELETE").
 		Name("publication_delete_contributor")
+
+	// edit publication files
+	r.HandleFunc("/publication/{id}/files",
+		publicationEditingHandler.Wrap(publicationEditingHandler.UploadFile)).
+		Methods("POST").
+		Name("publication_upload_file")
+	r.HandleFunc("/publication/{id}/files/{file_id}",
+		publicationEditingHandler.Wrap(publicationEditingHandler.DownloadFile)).
+		Methods("GET").
+		Name("publication_download_file")
+	r.HandleFunc("/publication/{id}/files/{file_id}/edit",
+		publicationEditingHandler.Wrap(publicationEditingHandler.EditFile)).
+		Methods("GET").
+		Name("publication_edit_file")
+	r.HandleFunc("/publication/{id}/files/{file_id}",
+		publicationEditingHandler.Wrap(publicationEditingHandler.UpdateFile)).
+		Methods("PUT").
+		Name("publication_update_file")
+	r.HandleFunc("/publication/{id}/files/{file_id}/edit-by-license",
+		publicationEditingHandler.Wrap(publicationEditingHandler.SwitchEditFileByLicense)).
+		Methods("PUT").
+		Name("publication_edit_file_by_license")
+	r.HandleFunc("/publication/{id}/files/{file_id}/confirm-delete",
+		publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDeleteFile)).
+		Methods("GET").
+		Name("publication_confirm_delete_file")
+	r.HandleFunc("/publication/{id}/files/{file_id}",
+		publicationEditingHandler.Wrap(publicationEditingHandler.DeleteFile)).
+		Methods("DELETE").
+		Name("publication_delete_file")
 
 	// orcid
 	r.HandleFunc("/publication/orcid",

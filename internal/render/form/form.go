@@ -183,8 +183,8 @@ type Date struct {
 	Tooltip  string
 	Required bool
 	Cols     int
-	Min      int
-	Max      int
+	Min      string
+	Max      string
 	Error    string
 	Disabled bool
 }
@@ -194,16 +194,24 @@ func (f *Date) Render(theme string, w io.Writer) error {
 }
 
 type Checkbox struct {
-	Name    string
-	Value   string
-	Label   string
-	Checked bool
-	Cols    int
-	Error   string
+	Template string
+	Name     string
+	Value    string
+	Label    string
+	Checked  bool
+	Cols     int
+	Error    string
+	Vars     any
 }
 
 func (f *Checkbox) Render(theme string, w io.Writer) error {
-	return render.Templates().ExecuteTemplate(w, path.Join("form", theme, "checkbox"), f)
+	t := "checkbox"
+	if f.Template != "" {
+		t = f.Template
+	}
+	tmpl := path.Join("form", theme, t)
+
+	return render.Templates().ExecuteTemplate(w, tmpl, f)
 }
 
 var HiddenFieldTemplate = template.Must(template.New("").Parse(`<input type="hidden" name="{{.Name}}" value="{{.Value}}">`))

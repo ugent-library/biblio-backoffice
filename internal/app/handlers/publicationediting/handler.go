@@ -5,6 +5,7 @@ import (
 
 	"github.com/ugent-library/biblio-backend/internal/app/handlers"
 	"github.com/ugent-library/biblio-backend/internal/backends"
+	"github.com/ugent-library/biblio-backend/internal/backends/filestore"
 	"github.com/ugent-library/biblio-backend/internal/bind"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
@@ -20,6 +21,7 @@ type Handler struct {
 	OrganizationSearchService backends.OrganizationSearchService
 	OrganizationService       backends.OrganizationService
 	DatasetSearchService      backends.DatasetSearchService
+	FileStore                 *filestore.Store
 }
 
 type Context struct {

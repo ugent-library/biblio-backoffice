@@ -680,4 +680,14 @@ func init() {
 	message.SetString(language.English, "validation.publication.supervisor.last_name.required", "Last name is required")
 
 	message.SetString(language.English, "publication.conflict_error", "Publication has been modified by another user. Please reload the page.")
+	message.SetString(language.English, "builder.file.title", "Title")
+	message.SetString(language.English, "builder.file.relation", "Document type")
+	message.SetString(language.English, "builder.file.publication_version", "Publication version")
+	message.SetString(language.English, "builder.file.access_level", "Access level")
+	message.SetString(language.English, "builder.file.embargo", "Embargo period")
+	message.SetString(language.English, "builder.file.embargo_to", "Access level after embargo period")
+	message.SetString(language.English, "builder.file.cc_license", "License")
+	message.SetString(language.English, "builder.file.no_license", "No license (in copyright)")
+	message.SetString(language.English, "builder.file.other_license", "Other license")
+	message.SetString(language.English, "builder.file.description", "Description")
 }
