@@ -2,7 +2,6 @@
     {{template "publication/show_nav" .}}
 </div>
 
-{{ $canEditPublication := .User.CanEditPublication .Publication }}
 <div class="card mb-6">
     <div class="card-header">
         <div class="bc-toolbar">
@@ -11,37 +10,7 @@
             </div>
         </div>
     </div>
-    <div class="card-body p-0">
-        {{if $canEditPublication}}
-        <form class="p-6"
-            hx-post="{{pathFor "publication_upload_file" "id" .Publication.ID}}"
-            hx-encoding="multipart/form-data"
-            hx-headers='{"If-Match": "{{.Publication.SnapshotID}}"}'
-            hx-swap="none"
-            hx-trigger="change"
-	        hx-indicator=".c-file-upload .spinner-border"
-        >
-            {{.CSRFTag}}
-
-            <div class="c-file-upload">
-                <input type="file" name="file">
-                <div class="c-file-upload__content">
-                    <p>Drag and drop or</p>
-                    <button class="btn btn-outline-primary">Upload file
-                        <div class="spinner-border">
-                            <span class="sr-only"></span>
-                        </div>
-                    </button>
-                </div>
-            </div>
-
-            <small class="form-text text-muted my-3"><a href="https://onderzoektips.ugent.be/en/tips/00002065/#Step3:Addfulltext" target="_blank">Which document format or version should I use?</a></small>
-        </form>
-        <hr>
-        {{end}}
-
-        <div id="files-body">
-            {{template "publication/files_body" .}}
-        </div>
+    <div id="files-body">
+        {{template "publication/files_body" .}}
     </div>
 </div>
