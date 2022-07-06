@@ -43,7 +43,7 @@ func (l *Listener[T]) WaitForProjection(ctx context.Context) (Projection[T], err
 		}
 
 		// characters before first colon are notification id
-		// characters between first to second colon are chunk counter
+		// characters between first and second colon are chunk counter
 		// characters after second colon are up to 4000 bytes of json
 		colon1 := strings.Index(n.Payload, ":")
 		colon2 := strings.Index(n.Payload[colon1+1:], ":") + colon1 + 1
