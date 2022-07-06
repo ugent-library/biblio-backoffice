@@ -70,6 +70,7 @@ func init() {
 	message.SetString(language.English, "cc_licenses.CC-BY-ND-4.0", "CC BY-ND (4.0)")
 	message.SetString(language.English, "cc_licenses.CC-BY-NC-SA-4.0", "CC BY-NC-SA (4.0)")
 	message.SetString(language.English, "cc_licenses.CC-BY-NC-ND-4.0", "CC BY-NC-ND (4.0)")
+	message.SetString(language.English, "cc_licenses.InC", "No license (in copyright)")
 
 	message.SetString(language.English, "access_levels.info:eu-repo/semantics/closedAccess", "Closed access")
 	message.SetString(language.English, "access_levels.info:eu-repo/semantics/embargoedAccess", "Embargoed access")

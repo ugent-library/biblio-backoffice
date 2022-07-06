@@ -6,6 +6,7 @@ const RestrictedAccess = "info:eu-repo/semantics/restrictedAccess"
 const OpenAccess = "info:eu-repo/semantics/openAccess"
 
 var Map = map[string][]string{
+	// TODO rename to licenses
 	"cc_licenses": {
 		"CC0-1.0",
 		"CC-BY-4.0",
@@ -14,6 +15,7 @@ var Map = map[string][]string{
 		"CC-BY-ND-4.0",
 		"CC-BY-NC-SA-4.0",
 		"CC-BY-NC-ND-4.0",
+		"InC",
 	},
 	"confirmations": {
 		"yes",

@@ -131,15 +131,15 @@ func (f *TextArea) Render(theme string, w io.Writer) error {
 }
 
 type Select struct {
-	Template    string
 	Cols        int
 	Disabled    bool
+	EmptyOption bool
 	Error       string
 	Label       string
 	Name        string
-	EmptyOption bool
 	Options     []SelectOption
 	Required    bool
+	Template    string
 	Tooltip     string
 	Value       string
 	Vars        any
@@ -161,15 +161,15 @@ func (f *Select) Render(theme string, w io.Writer) error {
 }
 
 type SelectRepeat struct {
-	Name        string
-	Values      []string
-	Label       string
-	Tooltip     string
-	Required    bool
-	Options     []SelectOption
-	EmptyOption bool
 	Cols        int
+	EmptyOption bool
 	Error       string
+	Label       string
+	Name        string
+	Options     []SelectOption
+	Required    bool
+	Tooltip     string
+	Values      []string
 }
 
 func (f *SelectRepeat) Render(theme string, w io.Writer) error {
@@ -177,16 +177,16 @@ func (f *SelectRepeat) Render(theme string, w io.Writer) error {
 }
 
 type Date struct {
-	Name     string
-	Value    string
-	Label    string
-	Tooltip  string
-	Required bool
 	Cols     int
-	Min      string
-	Max      string
-	Error    string
 	Disabled bool
+	Error    string
+	Label    string
+	Max      string
+	Min      string
+	Name     string
+	Required bool
+	Tooltip  string
+	Value    string
 }
 
 func (f *Date) Render(theme string, w io.Writer) error {
@@ -194,13 +194,13 @@ func (f *Date) Render(theme string, w io.Writer) error {
 }
 
 type Checkbox struct {
-	Template string
-	Name     string
-	Value    string
-	Label    string
 	Checked  bool
 	Cols     int
 	Error    string
+	Label    string
+	Name     string
+	Template string
+	Value    string
 	Vars     any
 }
 
@@ -232,16 +232,18 @@ type RadioButtonGroup struct {
 	Name     string
 	Options  []SelectOption
 	Required bool
+	Template string
 	Tooltip  string
 	Value    string
+	Vars     any
 }
 
 func (f *RadioButtonGroup) Render(theme string, w io.Writer) error {
-	return render.
-		Templates().
-		ExecuteTemplate(
-			w,
-			path.Join("form", theme, "radio_button_group"),
-			f,
-		)
+	t := "radio_button_group"
+	if f.Template != "" {
+		t = f.Template
+	}
+	tmpl := path.Join("form", theme, t)
+
+	return render.Templates().ExecuteTemplate(w, tmpl, f)
 }

@@ -8,10 +8,15 @@
             <div class="modal-body file-attributes">
                 {{.Form.Errors.Render}}
                 {{range .Form.Sections}}
+                <div class="form-row">
                     {{.Render}}
+                </div>
                 {{end}}
             </div>
             <div class="modal-footer">
+                <div class="spinner-border">
+                    <span class="sr-only"></span>
+                </div>
                 <button class="btn btn-link modal-close">Cancel</button>
                 <button class="btn btn-primary modal-close" type="submit"
                     hx-put="{{pathFor "publication_update_file" "id" .Publication.ID "file_id" .File.ID}}"

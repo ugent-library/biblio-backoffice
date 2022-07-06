@@ -22,9 +22,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/publicationviewing"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/tasks"
 	"github.com/ugent-library/biblio-backend/internal/backends"
-	"github.com/ugent-library/biblio-backend/internal/locale"
 	"github.com/ugent-library/biblio-backend/internal/services/webapp/controllers"
-	"github.com/ugent-library/biblio-backend/internal/services/webapp/middleware"
 	"github.com/ugent-library/go-oidc/oidc"
 )
 
@@ -39,10 +37,8 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	// static files
 	router.PathPrefix(basePath + "/static/").Handler(http.StripPrefix(basePath+"/static/", http.FileServer(http.Dir("./static"))))
 
-	requireUser := middleware.RequireUser(oldBase.BaseURL.Path + "/login")
-	setUser := middleware.SetUser(services.UserService, oldBase.SessionName, oldBase.SessionStore)
-
-	publicationFilesController := controllers.NewPublicationFiles(oldBase, services.Repository, services.FileStore)
+	// requireUser := middleware.RequireUser(oldBase.BaseURL.Path + "/login")
+	// setUser := middleware.SetUser(services.UserService, oldBase.SessionName, oldBase.SessionStore)
 
 	// NEW HANDLERS
 	baseHandler := handlers.BaseHandler{
@@ -751,14 +747,14 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		publicationEditingHandler.Wrap(publicationEditingHandler.EditFile)).
 		Methods("GET").
 		Name("publication_edit_file")
+	r.HandleFunc("/publication/{id}/files/{file_id}/edit/license",
+		publicationEditingHandler.Wrap(publicationEditingHandler.EditFileLicense)).
+		Methods("PUT").
+		Name("publication_edit_file_license")
 	r.HandleFunc("/publication/{id}/files/{file_id}",
 		publicationEditingHandler.Wrap(publicationEditingHandler.UpdateFile)).
 		Methods("PUT").
 		Name("publication_update_file")
-	r.HandleFunc("/publication/{id}/files/{file_id}/edit-by-license",
-		publicationEditingHandler.Wrap(publicationEditingHandler.SwitchEditFileByLicense)).
-		Methods("PUT").
-		Name("publication_edit_file_by_license")
 	r.HandleFunc("/publication/{id}/files/{file_id}/confirm-delete",
 		publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDeleteFile)).
 		Methods("GET").
@@ -785,40 +781,40 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 		Name("suggest_media_types")
 
 	// r.Use(handlers.HTTPMethodOverrideHandler)
-	r.Use(locale.Detect(oldBase.Localizer))
+	// r.Use(locale.Detect(oldBase.Localizer))
 
-	r.Use(setUser)
+	// r.Use(setUser)
 
 	// publications
-	pubsRouter := r.PathPrefix("/publication").Subrouter()
-	pubsRouter.Use(middleware.SetActiveMenu("publications"))
-	pubsRouter.Use(requireUser)
+	// pubsRouter := r.PathPrefix("/publication").Subrouter()
+	// pubsRouter.Use(middleware.SetActiveMenu("publications"))
+	// pubsRouter.Use(requireUser)
 
-	pubRouter := pubsRouter.PathPrefix("/{id}").Subrouter()
-	pubRouter.Use(middleware.SetPublication(services.Repository))
-	pubRouter.Use(middleware.RequireCanViewPublication)
-	pubEditRouter := pubRouter.PathPrefix("").Subrouter()
-	pubEditRouter.Use(middleware.RequireCanEditPublication)
+	// pubRouter := pubsRouter.PathPrefix("/{id}").Subrouter()
+	// pubRouter.Use(middleware.SetPublication(services.Repository))
+	// pubRouter.Use(middleware.RequireCanViewPublication)
+	// pubEditRouter := pubRouter.PathPrefix("").Subrouter()
+	// pubEditRouter.Use(middleware.RequireCanEditPublication)
 	// Publication files
-	pubRouter.HandleFunc("/file/{file_id}", publicationFilesController.Download).
-		Methods("GET").
-		Name("publication_file")
-	pubEditRouter.HandleFunc("/htmx/file", publicationFilesController.Upload).
-		Methods("POST").
-		Name("upload_publication_file")
-	pubEditRouter.HandleFunc("/htmx/file/{file_id}/edit", publicationFilesController.Edit).
-		Methods("GET").
-		Name("publication_file_edit")
-	pubEditRouter.HandleFunc("/htmx/file/{file_id}/license", publicationFilesController.License).
-		Methods("PUT").
-		Name("publication_file_license")
-	pubEditRouter.HandleFunc("/htmx/file/{file_id}", publicationFilesController.Update).
-		Methods("PUT").
-		Name("publication_file_update")
-	pubEditRouter.HandleFunc("/htmx/file/{file_id}/remove", publicationFilesController.ConfirmRemove).
-		Methods("GET").
-		Name("publication_file_confirm_remove")
-	pubEditRouter.HandleFunc("/htmx/file/{file_id}/remove", publicationFilesController.Remove).
-		Methods("PATCH").
-		Name("publication_file_remove")
+	// pubRouter.HandleFunc("/file/{file_id}", publicationFilesController.Download).
+	// 	Methods("GET").
+	// 	Name("publication_file")
+	// pubEditRouter.HandleFunc("/htmx/file", publicationFilesController.Upload).
+	// 	Methods("POST").
+	// 	Name("upload_publication_file")
+	// pubEditRouter.HandleFunc("/htmx/file/{file_id}/edit", publicationFilesController.Edit).
+	// 	Methods("GET").
+	// 	Name("publication_file_edit")
+	// pubEditRouter.HandleFunc("/htmx/file/{file_id}/license", publicationFilesController.License).
+	// 	Methods("PUT").
+	// 	Name("publication_file_license")
+	// pubEditRouter.HandleFunc("/htmx/file/{file_id}", publicationFilesController.Update).
+	// 	Methods("PUT").
+	// 	Name("publication_file_update")
+	// pubEditRouter.HandleFunc("/htmx/file/{file_id}/remove", publicationFilesController.ConfirmRemove).
+	// 	Methods("GET").
+	// 	Name("publication_file_confirm_remove")
+	// pubEditRouter.HandleFunc("/htmx/file/{file_id}/remove", publicationFilesController.Remove).
+	// 	Methods("PATCH").
+	// 	Name("publication_file_remove")
 }

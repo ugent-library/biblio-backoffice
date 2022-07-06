@@ -17,25 +17,25 @@ type PublicationHits struct {
 }
 
 type PublicationFile struct {
-	AccessLevel        string     `json:"access_level,omitempty"`
-	CCLicense          string     `json:"cc_license,omitempty"`
-	ContentType        string     `json:"content_type,omitempty"`
-	DateCreated        *time.Time `json:"date_created,omitempty"`
-	DateUpdated        *time.Time `json:"date_updated,omitempty"`
-	Description        string     `json:"description,omitempty"`
-	Embargo            string     `json:"embargo,omitempty"`
-	EmbargoTo          string     `json:"embargo_to,omitempty"`
-	Filename           string     `json:"file_name,omitempty"`
-	FileSize           int        `json:"file_size,omitempty"`
-	ID                 string     `json:"file_id,omitempty"`
-	SHA256             string     `json:"sha256,omitempty"`
-	NoLicense          bool       `json:"no_license,omitempty"`
-	OtherLicense       string     `json:"other_license,omitempty"`
-	PublicationVersion string     `json:"publication_version,omitempty"`
-	Relation           string     `json:"relation,omitempty"`
-	ThumbnailURL       string     `json:"thumbnail_url,omitempty"`
-	Title              string     `json:"title,omitempty"`
-	URL                string     `json:"url,omitempty"`
+	AccessLevel string     `json:"access_level,omitempty"`
+	CCLicense   string     `json:"cc_license,omitempty"` // TODO rename to license
+	ContentType string     `json:"content_type,omitempty"`
+	DateCreated *time.Time `json:"date_created,omitempty"`
+	DateUpdated *time.Time `json:"date_updated,omitempty"`
+	Description string     `json:"description,omitempty"`
+	Embargo     string     `json:"embargo,omitempty"`
+	EmbargoTo   string     `json:"embargo_to,omitempty"`
+	Filename    string     `json:"file_name,omitempty"`
+	FileSize    int        `json:"file_size,omitempty"`
+	ID          string     `json:"file_id,omitempty"`
+	SHA256      string     `json:"sha256,omitempty"`
+	// NoLicense          bool       `json:"no_license,omitempty"`
+	OtherLicense       string `json:"other_license,omitempty"`
+	PublicationVersion string `json:"publication_version,omitempty"`
+	Relation           string `json:"relation,omitempty"`
+	ThumbnailURL       string `json:"thumbnail_url,omitempty"`
+	Title              string `json:"title,omitempty"`
+	URL                string `json:"url,omitempty"`
 }
 
 func (f *PublicationFile) Clone() *PublicationFile {

@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"net/url"
 	"time"
@@ -15,28 +14,24 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/bind"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
-	"github.com/ugent-library/biblio-backend/internal/render/flash"
 	"github.com/ugent-library/biblio-backend/internal/render/form"
 	"github.com/ugent-library/biblio-backend/internal/ulid"
 	"github.com/ugent-library/biblio-backend/internal/validation"
-	"github.com/ugent-library/biblio-backend/internal/vocabularies"
 )
 
 type BindFile struct {
+	FileID string `path:"file_id"`
+
 	AccessLevel        string `form:"access_level"`
 	CCLicense          string `form:"cc_license"`
 	Description        string `form:"description"`
 	Embargo            string `form:"embargo"`
 	EmbargoTo          string `form:"embargo_to"`
-	NoLicense          bool   `form:"no_license"`
 	OtherLicense       string `form:"other_license"`
 	PublicationVersion string `form:"publication_version"`
 	Relation           string `form:"relation"`
 	Title              string `form:"title"`
-
-	// for extraction from URL
-	ID string `path:"file_id"`
-	// for error extraction after validation
+	// TODO this should be an argument to fileForm
 	Index int
 }
 
@@ -62,7 +57,7 @@ func (h *Handler) DownloadFile(w http.ResponseWriter, r *http.Request, ctx Conte
 		return
 	}
 
-	file := ctx.Publication.GetFile(b.ID)
+	file := ctx.Publication.GetFile(b.FileID)
 
 	if file == nil {
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
@@ -77,7 +72,6 @@ func (h *Handler) DownloadFile(w http.ResponseWriter, r *http.Request, ctx Conte
 }
 
 func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context) {
-
 	// 2GB limit on request body
 	r.Body = http.MaxBytesReader(w, r.Body, 2000000000)
 
@@ -89,7 +83,7 @@ func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context
 
 	file, handler, err := r.FormFile("file")
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		render.BadRequest(w, r, err)
 		return
 	}
 	defer file.Close()
@@ -98,7 +92,7 @@ func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context
 	buff := make([]byte, 512)
 	_, err = file.Read(buff)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		render.InternalServerError(w, r, err)
 		return
 	}
 	filetype := http.DetectContentType(buff)
@@ -106,32 +100,20 @@ func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context
 	// rewind
 	_, err = file.Seek(0, io.SeekStart)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		render.InternalServerError(w, r, err)
 		return
 	}
-
-	pub := ctx.Publication
 
 	// add file to filestore
 	checksum, err := h.FileStore.Add(file)
 
 	if err != nil {
-		// TODO: render flash
-		log.Print(err.Error())
-		ctx.Flash = append(ctx.Flash, flash.Flash{
-			Type:         "error",
-			Body:         "There was a problem adding your file",
-			DismissAfter: 5 * time.Second,
-		})
-		render.Render(w, "publication/refresh_files", YieldShowFiles{
-			Context: ctx,
-		})
+		render.InternalServerError(w, r, err)
 		return
 	}
 
 	// save publication
 	// TODO check if file with same checksum is already present
-	savedPub := pub.Clone()
 	now := time.Now()
 	pubFile := &models.PublicationFile{
 		ID:          ulid.MustGenerate(),
@@ -143,32 +125,23 @@ func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context
 		DateCreated: &now,
 		DateUpdated: &now,
 	}
-	savedPub.File = append(savedPub.File, pubFile)
+	ctx.Publication.File = append(ctx.Publication.File, pubFile)
 
+	// TODO don't store thumbnail url's
 	// add thumbnail(s)
-	h.addThumbnailURLs(savedPub)
+	h.addThumbnailURLs(ctx.Publication)
 
-	if e := h.Repository.SavePublication(savedPub); e != nil {
-		// TODO: render flash
-		log.Print(e.Error())
-		ctx.Flash = append(ctx.Flash, flash.Flash{
-			Type:         "error",
-			Body:         "There was a problem adding your file",
-			DismissAfter: 5 * time.Second,
-		})
-		render.Render(w, "publication/refresh_files", YieldShowFiles{
-			Context: ctx,
-		})
+	// TODO conflict handling
+	if err := h.Repository.SavePublication(ctx.Publication); err != nil {
+		render.InternalServerError(w, r, err)
 		return
 	}
 
-	// update publication in context
-	ctx.Publication = savedPub
-
+	// TODO just pass file to form builder, no bind needed
 	// populate bind with stored publication file
 	bindFile := BindFile{}
 	publicationFileToBind(pubFile, &bindFile)
-	bindFile.Index = len(savedPub.File) - 1
+	bindFile.Index = len(ctx.Publication.File) - 1
 
 	// render edit file form
 	render.Render(w, "publication/refresh_edit_file", YieldEditFile{
@@ -190,7 +163,7 @@ func (h *Handler) EditFile(w http.ResponseWriter, r *http.Request, ctx Context) 
 	var file *models.PublicationFile
 
 	for i, f := range ctx.Publication.File {
-		if f.ID == b.ID {
+		if f.ID == b.FileID {
 			file = f
 			b.Index = i
 			break
@@ -212,6 +185,43 @@ func (h *Handler) EditFile(w http.ResponseWriter, r *http.Request, ctx Context) 
 	})
 }
 
+// TODO add more rules
+func (h *Handler) EditFileLicense(w http.ResponseWriter, r *http.Request, ctx Context) {
+	b := BindFile{}
+	if err := bind.Request(r, &b); err != nil {
+		render.BadRequest(w, r, err)
+		return
+	}
+
+	var file *models.PublicationFile
+	for i, f := range ctx.Publication.File {
+		if f.ID == b.FileID {
+			b.Index = i
+			file = f
+			break
+		}
+	}
+
+	if file == nil {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+
+	// clear embargo fields when access level is set to open access
+	if b.AccessLevel == "open_access" {
+		b.Embargo = ""
+		b.EmbargoTo = ""
+	}
+
+	render.Render(w, "publication/edit_file", YieldEditFile{
+		Context:   ctx,
+		File:      file,
+		FileIndex: b.Index,
+		Form:      fileForm(ctx, b, nil),
+	})
+
+}
+
 func (h *Handler) DeleteFile(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindFile{}
 	if err := bind.Request(r, &b); err != nil {
@@ -219,26 +229,22 @@ func (h *Handler) DeleteFile(w http.ResponseWriter, r *http.Request, ctx Context
 		return
 	}
 
-	pub := ctx.Publication.Clone()
 	newFile := []*models.PublicationFile{}
-	for _, f := range pub.File {
-		if f.ID != b.ID {
+	for _, f := range ctx.Publication.File {
+		if f.ID != b.FileID {
 			newFile = append(newFile, f)
 		}
 	}
-	pub.File = newFile
+	ctx.Publication.File = newFile
 
 	// add thumbnail urls
-	h.addThumbnailURLs(pub)
+	h.addThumbnailURLs(ctx.Publication)
 
 	// save publication
-	if err := h.Repository.SavePublication(pub); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	if err := h.Repository.SavePublication(ctx.Publication); err != nil {
+		render.InternalServerError(w, r, err)
 		return
 	}
-
-	// update publication in context
-	ctx.Publication = pub
 
 	// render
 	render.Render(w, "publication/refresh_files", YieldShowFiles{
@@ -255,7 +261,7 @@ func (h *Handler) ConfirmDeleteFile(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	file := ctx.Publication.GetFile(b.ID)
+	file := ctx.Publication.GetFile(b.FileID)
 
 	if file == nil {
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
@@ -265,69 +271,6 @@ func (h *Handler) ConfirmDeleteFile(w http.ResponseWriter, r *http.Request, ctx 
 	render.Render(w, "publication/confirm_delete_file", YieldDeleteFile{
 		Context: ctx,
 		File:    file,
-	})
-
-}
-
-func (h *Handler) SwitchEditFileByLicense(w http.ResponseWriter, r *http.Request, ctx Context) {
-	b := BindFile{}
-	if err := bind.Request(r, &b); err != nil {
-		render.BadRequest(w, r, err)
-		return
-	}
-
-	triggerEl := r.Header.Get("HX-Trigger-name")
-	var file *models.PublicationFile
-	for i, f := range ctx.Publication.File {
-		if f.ID == b.ID {
-			b.Index = i
-			file = f
-			break
-		}
-	}
-
-	if file == nil {
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-		return
-	}
-
-	// Conditionally voiding licensing fields based on a triggering element
-	// and dependent element inputs
-
-	// Clear embargo fields when Access Level is set to "open access"
-	if triggerEl == "" {
-		if b.AccessLevel == "open_access" {
-			b.Embargo = ""
-			b.EmbargoTo = ""
-		}
-	}
-
-	// Clear CC License when Embargo To is set to "local" or "empty"
-	if triggerEl == "embargo_to" {
-		if (b.EmbargoTo == "" || b.EmbargoTo == "local") && b.CCLicense != "" {
-			b.CCLicense = ""
-		}
-	}
-
-	// Clear No License (Copyright) when CC License is set to a non-empty value
-	if triggerEl == "cc_license" {
-		if b.CCLicense != "" && b.NoLicense {
-			b.NoLicense = false
-		}
-	}
-
-	// Clear CC License when No License (Copyright) is checked
-	if triggerEl == "no_license" {
-		if b.CCLicense != "" && b.NoLicense {
-			b.CCLicense = ""
-		}
-	}
-
-	render.Render(w, "publication/switch_edit_file_by_license", YieldEditFile{
-		Context:   ctx,
-		File:      file,
-		FileIndex: b.Index,
-		Form:      fileForm(ctx, b, nil),
 	})
 
 }
@@ -342,7 +285,7 @@ func (h *Handler) UpdateFile(w http.ResponseWriter, r *http.Request, ctx Context
 	pub := ctx.Publication
 	var file *models.PublicationFile
 	for i, f := range pub.File {
-		if f.ID == b.ID {
+		if f.ID == b.FileID {
 			b.Index = i
 			file = f
 			break
@@ -354,19 +297,13 @@ func (h *Handler) UpdateFile(w http.ResponseWriter, r *http.Request, ctx Context
 		return
 	}
 
-	// Embargo sanity / paranoia check
-	// Ensure embargo fields are definitely empty when Acces Level is set to "Open Access"
-	if b.AccessLevel == "open_access" || b.EmbargoTo == b.AccessLevel {
-		b.EmbargoTo = ""
-		b.Embargo = ""
-	}
-
 	// copy attributes from bind to file
 	bindToPublicationFile(&b, file)
 
 	// add thumbnails (changes record!)
 	h.addThumbnailURLs(pub)
 
+	// TODO conflict detection
 	// save publication
 	err := h.Repository.SavePublication(pub)
 
@@ -380,53 +317,44 @@ func (h *Handler) UpdateFile(w http.ResponseWriter, r *http.Request, ctx Context
 		})
 		return
 	} else if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		render.InternalServerError(w, r, err)
 		return
 	}
 
+	// TODO why?
 	// load publication again
-	pub, err = h.Repository.GetPublication(pub.ID)
+	ctx.Publication, err = h.Repository.GetPublication(pub.ID)
 	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		render.InternalServerError(w, r, err)
 		return
 	}
 
-	// update publication in context
-	ctx.Publication = pub
-
-	// TODO: render success
-	ctx.Flash = append(ctx.Flash, flash.Flash{
-		Type:         "success",
-		Body:         "File was updated successfully",
-		DismissAfter: 5 * time.Second,
-	})
 	render.Render(w, "publication/refresh_files", YieldShowFiles{
 		Context: ctx,
 	})
 }
 
 func fileForm(ctx Context, b BindFile, errors validation.Errors) *form.Form {
-
 	l := ctx.Locale
-	optsAccessLevels := []form.SelectOption{}
-	for _, acl := range vocabularies.Map["publication_file_access_levels"] {
-		optsAccessLevels = append(optsAccessLevels, form.SelectOption{
-			Label: l.TS("publication_file_access_levels", acl),
-			Value: acl,
-		})
-	}
 
-	fields := []form.Field{
+	f := form.New().
+		WithTheme("cols").
+		WithErrors(localize.ValidationErrors(l, errors))
+
+	f.AddSection(
 		&form.Text{
 			Name:  "title",
 			Value: b.Title,
 			Label: ctx.T("builder.file.title"),
 			Cols:  12,
 			Error: localize.ValidationErrorAt(
-				ctx.Locale, errors,
+				l,
+				errors,
 				fmt.Sprintf("/file/%d/title", b.Index)),
 		},
+	)
+
+	f.AddSection(
 		&form.Select{
 			Name:        "relation",
 			Value:       b.Relation,
@@ -449,28 +377,35 @@ func fileForm(ctx Context, b BindFile, errors validation.Errors) *form.Form {
 			Options:     localize.VocabularySelectOptions(l, "publication_versions"),
 			Cols:        12,
 			Error: localize.ValidationErrorAt(
-				ctx.Locale,
+				l,
 				errors,
 				fmt.Sprintf("/file/%d/publication_version", b.Index)),
 		},
+	)
+
+	f.AddSection(
 		&form.RadioButtonGroup{
-			Name:    "access_level",
-			Value:   b.AccessLevel,
-			Label:   l.T("builder.file.access_level"),
-			Options: optsAccessLevels,
-			Cols:    9,
+			Template: "publication/file_access_level",
+			Name:     "access_level",
+			Value:    b.AccessLevel,
+			Label:    l.T("builder.file.access_level"),
+			Options:  localize.VocabularySelectOptions(l, "publication_file_access_levels"),
+			Cols:     9,
 			Error: localize.ValidationErrorAt(
-				ctx.Locale,
+				l,
 				errors,
 				fmt.Sprintf("/file/%d/access_level", b.Index)),
+			Vars: struct {
+				ID     string
+				FileID string
+			}{
+				ID:     ctx.Publication.ID,
+				FileID: b.FileID,
+			},
 		},
-	}
+	)
 
-	// TODO: make license switch work
-	// based on certain conditions add certain fields
-	// e.g. do not add embargo and embargo_to if access_level == "open_access"
-
-	fields = append(fields,
+	f.AddSection(
 		&form.Date{
 			Name:  "embargo",
 			Value: b.Embargo,
@@ -478,23 +413,25 @@ func fileForm(ctx Context, b BindFile, errors validation.Errors) *form.Form {
 			Min:   time.Now().Format("2006-01-02"),
 			Cols:  9,
 			Error: localize.ValidationErrorAt(
-				ctx.Locale,
+				l,
 				errors,
 				fmt.Sprintf("/file/%d/embargo", b.Index)),
 		},
 		&form.Select{
-			Name:    "embargo_to",
-			Value:   b.EmbargoTo,
-			Label:   l.T("builder.file.embargo_to"),
-			Options: optsAccessLevels,
-			Cols:    9,
+			Name:        "embargo_to",
+			Value:       b.EmbargoTo,
+			Label:       l.T("builder.file.embargo_to"),
+			EmptyOption: true,
+			Options:     localize.VocabularySelectOptions(l, "publication_file_access_levels"),
+			Cols:        9,
 			Error: localize.ValidationErrorAt(
-				ctx.Locale,
+				l,
 				errors,
 				fmt.Sprintf("/file/%d/embargo_to", b.Index)),
-		})
+		},
+	)
 
-	fields = append(fields,
+	f.AddSection(
 		&form.Select{
 			Name:        "cc_license",
 			Value:       b.CCLicense,
@@ -503,38 +440,26 @@ func fileForm(ctx Context, b BindFile, errors validation.Errors) *form.Form {
 			Options:     localize.VocabularySelectOptions(l, "cc_licenses"),
 			Cols:        9,
 			Error: localize.ValidationErrorAt(
-				ctx.Locale,
+				l,
 				errors,
 				fmt.Sprintf("/file/%d/cc_license", b.Index)),
 		},
-		&form.Checkbox{
-			Template: "publication/checkbox_no_license",
-			Name:     "no_license",
-			Value:    "true",
-			Label:    l.T("builder.file.no_license"),
-			Checked:  b.NoLicense,
-			Error: localize.ValidationErrorAt(
-				ctx.Locale,
-				errors,
-				fmt.Sprintf("/file/%d/no_license", b.Index)),
-			Vars: struct {
-				ID     string
-				FileID string
-			}{
-				ID:     ctx.Publication.ID,
-				FileID: b.ID,
-			},
-		},
+	)
+
+	f.AddSection(
 		&form.Text{
 			Name:  "other_license",
 			Value: b.OtherLicense,
 			Label: l.T("builder.file.other_license"),
 			Cols:  12,
 			Error: localize.ValidationErrorAt(
-				ctx.Locale,
+				l,
 				errors,
 				fmt.Sprintf("/file/%d/other_license", b.Index)),
 		},
+	)
+
+	f.AddSection(
 		&form.TextArea{
 			Name:  "description",
 			Value: b.Description,
@@ -542,16 +467,13 @@ func fileForm(ctx Context, b BindFile, errors validation.Errors) *form.Form {
 			Rows:  4,
 			Cols:  12,
 			Error: localize.ValidationErrorAt(
-				ctx.Locale,
+				l,
 				errors,
 				fmt.Sprintf("/file/%d/description", b.Index)),
-		})
+		},
+	)
 
-	return form.New().
-		WithTheme("default").
-		WithErrors(localize.ValidationErrors(l, errors)).
-		AddSection(fields...)
-
+	return f
 }
 
 // TODO clean this up
@@ -578,12 +500,11 @@ func publicationFileToBind(f *models.PublicationFile, b *BindFile) {
 	b.Description = f.Description
 	b.Embargo = f.Embargo
 	b.EmbargoTo = f.EmbargoTo
-	b.NoLicense = f.NoLicense
 	b.OtherLicense = f.OtherLicense
 	b.PublicationVersion = f.PublicationVersion
 	b.Relation = f.Relation
 	b.Title = f.Title
-	b.ID = f.ID
+	b.FileID = f.ID
 }
 
 func bindToPublicationFile(b *BindFile, f *models.PublicationFile) {
@@ -592,10 +513,9 @@ func bindToPublicationFile(b *BindFile, f *models.PublicationFile) {
 	f.Description = b.Description
 	f.Embargo = b.Embargo
 	f.EmbargoTo = b.EmbargoTo
-	f.NoLicense = b.NoLicense
 	f.OtherLicense = b.OtherLicense
 	f.PublicationVersion = b.PublicationVersion
 	f.Relation = b.Relation
 	f.Title = b.Title
-	f.ID = b.ID
+	f.ID = b.FileID
 }
