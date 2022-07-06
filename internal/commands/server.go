@@ -27,11 +27,9 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/mix"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
-	"github.com/ugent-library/biblio-backend/internal/services/webapp/controllers"
 	"github.com/ugent-library/biblio-backend/internal/urls"
 	"github.com/ugent-library/biblio-backend/internal/vocabularies"
 	"github.com/ugent-library/go-oidc/oidc"
-	unrolledrender "github.com/unrolled/render"
 
 	_ "github.com/ugent-library/biblio-backend/internal/translations"
 )
@@ -178,6 +176,8 @@ var serverStartCmd = &cobra.Command{
 }
 
 func buildRouter(services *backends.Services) *mux.Router {
+	mode := viper.GetString("mode")
+
 	host := viper.GetString("host")
 	port := viper.GetInt("port")
 
@@ -211,21 +211,13 @@ func buildRouter(services *backends.Services) *mux.Router {
 		helpers.FuncMap(),
 		{
 			"appMode": func() string { // TODO eliminate need for this
-				return viper.GetString("mode")
+				return mode
 			},
 			"vocabulary": func(k string) []string { // TODO eliminate need for this?
 				return vocabularies.Map[k]
 			},
 		},
 	}
-
-	r := unrolledrender.New(unrolledrender.Options{
-		Directory:                   "internal/services/webapp/templates",
-		Extensions:                  []string{".gohtml"},
-		Layout:                      "layouts/layout",
-		RenderPartialsWithoutPrefix: true,
-		Funcs:                       funcMaps,
-	})
 
 	// init render
 	render.FuncMaps = funcMaps
@@ -264,19 +256,8 @@ func buildRouter(services *backends.Services) *mux.Router {
 		log.Fatal(err)
 	}
 
-	// controller base
-	base := controllers.Base{
-		Mode:         viper.GetString("mode"),
-		BaseURL:      baseURL,
-		Router:       router,
-		Render:       r,
-		Localizer:    localizer,
-		SessionName:  sessionName,
-		SessionStore: sessionStore,
-	}
-
 	// add routes
-	routes.Register(services, base, oidcClient)
+	routes.Register(services, baseURL, router, sessionStore, sessionName, localizer, oidcClient)
 
 	return router
 }

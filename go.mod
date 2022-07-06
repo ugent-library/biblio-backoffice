@@ -28,7 +28,6 @@ require (
 	github.com/tidwall/gjson v1.14.1
 	github.com/ugent-library/go-oidc v0.0.0-20210901124208-bda4cc73ba56
 	github.com/ugent-library/go-orcid v0.0.0-20211130191640-1138a344c30b
-	github.com/unrolled/render v1.4.1
 	golang.org/x/net v0.0.0-20220617184016-355a448f1bc9
 	golang.org/x/text v0.3.7
 )

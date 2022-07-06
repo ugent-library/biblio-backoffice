@@ -2,9 +2,12 @@ package routes
 
 import (
 	"net/http"
+	"net/url"
 
 	"github.com/gorilla/csrf"
 	mw "github.com/gorilla/handlers"
+	"github.com/gorilla/mux"
+	"github.com/gorilla/sessions"
 	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/authenticating"
@@ -22,13 +25,13 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/publicationviewing"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/tasks"
 	"github.com/ugent-library/biblio-backend/internal/backends"
-	"github.com/ugent-library/biblio-backend/internal/services/webapp/controllers"
+	"github.com/ugent-library/biblio-backend/internal/locale"
 	"github.com/ugent-library/go-oidc/oidc"
 )
 
-func Register(services *backends.Services, oldBase controllers.Base, oidcClient *oidc.Client) {
-	router := oldBase.Router
-	basePath := oldBase.BaseURL.Path
+func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
+	sessionStore sessions.Store, sessionName string, localizer *locale.Localizer, oidcClient *oidc.Client) {
+	basePath := baseURL.Path
 
 	router.StrictSlash(true)
 	router.UseEncodedPath()
@@ -37,12 +40,11 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 	// static files
 	router.PathPrefix(basePath + "/static/").Handler(http.StripPrefix(basePath+"/static/", http.FileServer(http.Dir("./static"))))
 
-	// NEW HANDLERS
 	baseHandler := handlers.BaseHandler{
-		Router:       oldBase.Router,
-		SessionStore: oldBase.SessionStore,
-		SessionName:  oldBase.SessionName,
-		Localizer:    oldBase.Localizer,
+		Router:       router,
+		SessionStore: sessionStore,
+		SessionName:  sessionName,
+		Localizer:    localizer,
 		UserService:  services.UserService,
 	}
 	homeHandler := &home.Handler{
@@ -135,10 +137,10 @@ func Register(services *backends.Services, oldBase controllers.Base, oidcClient 
 
 	r := router.PathPrefix(basePath).Subrouter()
 	r.Use(csrf.Protect(
-		[]byte(viper.GetString("csrf-secret")),
-		csrf.CookieName(viper.GetString("csrf-name")),
+		[]byte(viper.GetString("csrf-secret")),        // TODO pass as argument
+		csrf.CookieName(viper.GetString("csrf-name")), // TODO pass as argument
 		csrf.Path(basePath),
-		csrf.Secure(oldBase.BaseURL.Scheme == "https"),
+		csrf.Secure(baseURL.Scheme == "https"),
 		csrf.SameSite(csrf.SameSiteStrictMode),
 		csrf.FieldName("csrf-token"),
 	))
