@@ -12,12 +12,10 @@
         "uglify-js": "^3.14.2"
     },
     "dependencies": {
-        "autosize": "^4.0.2",
         "bootstrap": "^4.6.0",
         "bootstrap.native": "4.1.0",
         "flatpickr": "^4.6.3",
         "htmx.org": "^1.7.0",
-        "jquery": "^3.6.0",
         "node-sass": "^4.14.1",
         "popper.js": "^1.16.1",
         "sortablejs": "^1.14.0"
