@@ -42,14 +42,15 @@ func (l *Listener[T]) WaitForProjection(ctx context.Context) (Projection[T], err
 			return p, err
 		}
 
-		// characters before first colon are notification id
-		// characters between first and second colon are chunk counter
-		// characters after second colon are up to 4000 bytes of json
-		colon1 := strings.Index(n.Payload, ":")
-		colon2 := strings.Index(n.Payload[colon1+1:], ":") + colon1 + 1
-		id := n.Payload[:colon1]
-		counter := n.Payload[colon1+1 : colon2]
-		chunk := n.Payload[colon2+1:]
+		// characters before first pipe are notification id
+		// characters between first and second pipe are chunk counter
+		// characters after second pipe are up to 4000 bytes of json
+		// payload is complete if counter is EOF
+		pipe1 := strings.Index(n.Payload, "|")
+		pipe2 := strings.Index(n.Payload[pipe1+1:], "|") + pipe1 + 1
+		id := n.Payload[:pipe1]
+		counter := n.Payload[pipe1+1 : pipe2]
+		chunk := n.Payload[pipe2+1:]
 
 		buf, ok := l.chunks[id]
 		if !ok {

@@ -4,7 +4,7 @@ import checkbox from './ui/checkbox.js'
 import bootstrap from './ui/bootstrap.js'
 import bootstrapPopper from './ui/bootstrap_popper.js'
 import popover from './ui/popover.js'
-import header from './ui/header.js'
+import header from './ui/header.js' // TODO is this still needed?
 import multiple from './ui/multiple.js'
 import changeSubmit from './ui/form_change_submit.js'
 import autocomplete from './ui/autocomplete.js';

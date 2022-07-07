@@ -6,6 +6,8 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/models"
 )
 
+// TODO eliminate need for this
+
 type PipelineFunc func(*models.Publication) *models.Publication
 
 type Pipeline []PipelineFunc
