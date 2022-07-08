@@ -1,0 +1,21 @@
+{{if and (eq .Status "public") .Locked}}
+<span class="badge badge-pill badge-success">
+    <span class="badge-text">Biblio Validated</span>
+</span>
+{{else if eq .Status "public"}}
+<span class="badge badge-pill badge-default">
+    <span class="badge-text">Biblio Public</span>
+</span>
+{{else if eq .Status "returned"}}
+<span class="badge badge-pill badge-warning">
+    <span class="badge-text">Biblio Returned</span>
+</span>
+{{else if eq .Status "private"}}
+<span class="badge badge-pill badge-secondary">
+    <span class="badge-text">Biblio Draft</span>
+</span>
+{{else if eq .Status "new"}}
+<span class="badge badge-pill badge-secondary">
+    <span class="badge-text">Biblio New</span>
+</span>
+{{end}}
