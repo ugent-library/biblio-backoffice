@@ -18,7 +18,7 @@ type YieldConfirmDelete struct {
 }
 
 func (h *Handler) ConfirmDelete(w http.ResponseWriter, r *http.Request, ctx Context) {
-	render.Render(w, "dataset/confirm_delete", YieldConfirmDelete{
+	render.MustRenderLayout(w, "show_modal", "dataset/confirm_delete", YieldConfirmDelete{
 		Context:     ctx,
 		Dataset:     ctx.Dataset,
 		RedirectURL: r.URL.Query().Get("redirect-url"),
@@ -37,7 +37,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request, ctx Context) {
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Render(w, "error_dialog", ctx.T("dataset.conflict_error"))
+		render.MustRenderLayout(w, "refresh_modal", "error_dialog", ctx.T("dataset.conflict_error"))
 		return
 	}
 

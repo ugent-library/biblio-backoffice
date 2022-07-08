@@ -45,7 +45,7 @@ func New() *Renderer {
 			}
 			return template.HTML(b.String()), nil
 		},
-		"wrap": func(partial, view string, data any) (template.HTML, error) {
+		"layout": func(partial, view string, data any) (template.HTML, error) {
 			var b strings.Builder
 			if err := r.ExecuteLayout(&b, partial, view, data); err != nil {
 				return "", err
