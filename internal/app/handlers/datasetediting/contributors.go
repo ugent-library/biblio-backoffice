@@ -340,7 +340,7 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Render(w, "error_dialog", ctx.T("dataset.conflict_error"))
+		render.MustRenderLayout(w, "refresh_modal", "error_dialog", ctx.T("dataset.conflict_error"))
 		return
 	}
 
@@ -349,7 +349,7 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	render.Render(w, "dataset/refresh_contributors", YieldContributors{
+	render.MustRenderView(w, "dataset/refresh_contributors", YieldContributors{
 		Context: ctx,
 		Role:    b.Role,
 	})

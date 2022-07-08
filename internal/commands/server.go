@@ -220,7 +220,6 @@ func buildRouter(services *backends.Services) *mux.Router {
 	}
 
 	// init render
-	render.FuncMaps = funcMaps
 	render.AuthURL = baseURL.Path + "/login"
 
 	render.AddDir("views/").AddExt(".gohtml")

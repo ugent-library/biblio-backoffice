@@ -82,7 +82,7 @@ func (f *Text) Render(theme string, w io.Writer) error {
 	}
 
 	tmpl := path.Join("display", theme, "text")
-	return render.Templates().ExecuteTemplate(w, tmpl, f)
+	return render.ExecuteView(w, tmpl, f)
 }
 
 func (f *Text) renderWithValueTemplate(theme string, w io.Writer) error {
@@ -95,12 +95,12 @@ func (f *Text) renderWithValueTemplate(theme string, w io.Writer) error {
 
 	for _, v := range f.Values {
 		var buf strings.Builder
-		if err := render.Templates().ExecuteTemplate(&buf, f.ValueTemplate, v); err != nil {
+		if err := render.ExecuteView(&buf, f.ValueTemplate, v); err != nil {
 			return err
 		}
 		y.Values = append(y.Values, template.HTML(buf.String()))
 	}
 
 	tmpl := path.Join("display", theme, "text")
-	return render.Templates().ExecuteTemplate(w, tmpl, y)
+	return render.ExecuteView(w, tmpl, y)
 }

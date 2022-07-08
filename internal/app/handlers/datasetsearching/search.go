@@ -78,7 +78,7 @@ func (h *Handler) CurationSearch(w http.ResponseWriter, r *http.Request, ctx Con
 		return
 	}
 
-	render.Wrap(w, "layouts/default", "dataset/search_page", YieldSearch{
+	render.MustRenderLayout(w, "layouts/default", "dataset/search_page", YieldSearch{
 		Context:   ctx,
 		PageTitle: "Overview - Datasets - Biblio",
 		ActiveNav: "datasets",

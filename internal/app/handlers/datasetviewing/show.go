@@ -67,7 +67,7 @@ func (h *Handler) Show(w http.ResponseWriter, r *http.Request, ctx Context) {
 }
 
 func (h *Handler) ShowDescription(w http.ResponseWriter, r *http.Request, ctx Context) {
-	render.Render(w, "dataset/show_description", YieldShowDescription{
+	render.MustRenderView(w, "dataset/show_description", YieldShowDescription{
 		Context:        ctx,
 		SubNavs:        subNavs,
 		ActiveSubNav:   "description",
@@ -76,7 +76,7 @@ func (h *Handler) ShowDescription(w http.ResponseWriter, r *http.Request, ctx Co
 }
 
 func (h *Handler) ShowContributors(w http.ResponseWriter, r *http.Request, ctx Context) {
-	render.Render(w, "dataset/show_contributors", YieldShowContributors{
+	render.MustRenderView(w, "dataset/show_contributors", YieldShowContributors{
 		Context:      ctx,
 		SubNavs:      subNavs,
 		ActiveSubNav: "contributors",
@@ -90,7 +90,7 @@ func (h *Handler) ShowPublications(w http.ResponseWriter, r *http.Request, ctx C
 		return
 	}
 
-	render.Render(w, "dataset/show_publications", YieldShowPublications{
+	render.MustRenderView(w, "dataset/show_publications", YieldShowPublications{
 		Context:             ctx,
 		SubNavs:             subNavs,
 		ActiveSubNav:        "publications",
