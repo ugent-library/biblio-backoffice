@@ -1,3 +1,4 @@
+{{define "page_content"}}
 {{template "dataset/add_sidebar" .}}
 
 <form class="w-100" action="{{pathFor "dataset_confirm_import"}}" method="POST">
@@ -87,5 +88,6 @@
 {{end}}
 
 {{if .Errors}}
-    {{template "error_dialog" .Errors}}
+    {{layout "show_modal" "error_dialog" .Errors}}
+{{end}}
 {{end}}

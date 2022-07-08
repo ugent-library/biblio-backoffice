@@ -1,3 +1,4 @@
+{{define "page_content"}}
 {{template "dataset/add_sidebar" .}}
 
 <div class="w-100 u-scroll-wrapper">
@@ -21,7 +22,7 @@
                     <button class="btn btn-success"
                         hx-post="{{pathFor "dataset_add_publish" "id" .Dataset.ID}}"
                         hx-headers='{"If-Match": "{{.Dataset.SnapshotID}}"}'
-                        hx-swap="none"
+                        hx-target="#modals"
                     >
                         <div class="btn-text">Publish to Biblio</div>
                     </button>
@@ -83,3 +84,4 @@
         </div>
     </div>
 </div>
+{{end}}
