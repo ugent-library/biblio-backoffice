@@ -35,7 +35,7 @@ type YieldEditConference struct {
 }
 
 func (h *Handler) EditConference(w http.ResponseWriter, r *http.Request, ctx Context) {
-	render.MustRenderLayout(w, "show_modal", "publication/edit_conference", YieldEditConference{
+	render.Layout(w, "show_modal", "publication/edit_conference", YieldEditConference{
 		Context: ctx,
 		Form:    conferenceForm(ctx.Locale, ctx.Publication, nil),
 	})
@@ -58,7 +58,7 @@ func (h *Handler) UpdateConference(w http.ResponseWriter, r *http.Request, ctx C
 
 	if validationErrs := p.Validate(); validationErrs != nil {
 		form := conferenceForm(ctx.Locale, p, validationErrs.(validation.Errors))
-		render.MustRenderLayout(w, "refresh_modal", "publication/edit_conference", YieldEditConference{
+		render.Layout(w, "refresh_modal", "publication/edit_conference", YieldEditConference{
 			Context: ctx,
 			Form:    form,
 		})
@@ -69,7 +69,7 @@ func (h *Handler) UpdateConference(w http.ResponseWriter, r *http.Request, ctx C
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.MustRenderLayout(w, "refresh_modal", "error_dialog", ctx.T("publication.conflict_error"))
+		render.Layout(w, "refresh_modal", "error_dialog", ctx.T("publication.conflict_error"))
 		return
 	}
 
@@ -78,7 +78,7 @@ func (h *Handler) UpdateConference(w http.ResponseWriter, r *http.Request, ctx C
 		return
 	}
 
-	render.MustRenderView(w, "publication/refresh_conference", YieldConference{
+	render.View(w, "publication/refresh_conference", YieldConference{
 		Context:           ctx,
 		DisplayConference: displays.PublicationConference(ctx.Locale, p.Conference),
 	})

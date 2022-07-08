@@ -49,7 +49,7 @@ type YieldValidationErrors struct {
 }
 
 func (h *Handler) Add(w http.ResponseWriter, r *http.Request, ctx Context) {
-	render.MustRenderLayout(w, "layouts/default", "dataset/pages/add", YieldAdd{
+	render.Layout(w, "layouts/default", "dataset/pages/add", YieldAdd{
 		Context:   ctx,
 		PageTitle: "Add - Datasets - Biblio",
 		Step:      1,
@@ -76,7 +76,7 @@ func (h *Handler) ConfirmImport(w http.ResponseWriter, r *http.Request, ctx Cont
 		}
 
 		if existing.Total > 0 {
-			render.MustRenderLayout(w, "layouts/default", "dataset/pages/add", YieldAdd{
+			render.Layout(w, "layouts/default", "dataset/pages/add", YieldAdd{
 				Context:          ctx,
 				PageTitle:        "Add - Datasets - Biblio",
 				Step:             1,
@@ -111,7 +111,7 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 
 		ctx.Flash = append(ctx.Flash, flash)
 
-		render.MustRenderLayout(w, "layouts/default", "dataset/pages/add", YieldAdd{
+		render.Layout(w, "layouts/default", "dataset/pages/add", YieldAdd{
 			Context:    ctx,
 			PageTitle:  "Add - Datasets - Biblio",
 			Step:       1,
@@ -129,7 +129,7 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 
 	if validationErrs := d.Validate(); validationErrs != nil {
 		errors := form.Errors(localize.ValidationErrors(ctx.Locale, err.(validation.Errors)))
-		render.MustRenderLayout(w, "layouts/default", "dataset/pages/add", YieldAdd{
+		render.Layout(w, "layouts/default", "dataset/pages/add", YieldAdd{
 			Context:    ctx,
 			PageTitle:  "Add - Datasets - Biblio",
 			Step:       1,
@@ -151,7 +151,7 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 		return
 	}
 
-	render.MustRenderLayout(w, "layouts/default", "dataset/pages/add_description", YieldAdd{
+	render.Layout(w, "layouts/default", "dataset/pages/add_description", YieldAdd{
 		Context:        ctx,
 		PageTitle:      "Add - Datasets - Biblio",
 		Step:           2,
@@ -164,7 +164,7 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 }
 
 func (h *Handler) AddDescription(w http.ResponseWriter, r *http.Request, ctx Context) {
-	render.MustRenderLayout(w, "layouts/default", "dataset/pages/add_description", YieldAdd{
+	render.Layout(w, "layouts/default", "dataset/pages/add_description", YieldAdd{
 		Context:        ctx,
 		PageTitle:      "Add - Datasets - Biblio",
 		Step:           2,
@@ -177,7 +177,7 @@ func (h *Handler) AddDescription(w http.ResponseWriter, r *http.Request, ctx Con
 }
 
 func (h *Handler) AddConfirm(w http.ResponseWriter, r *http.Request, ctx Context) {
-	render.MustRenderLayout(w, "layouts/default", "dataset/pages/add_confirm", YieldAdd{
+	render.Layout(w, "layouts/default", "dataset/pages/add_confirm", YieldAdd{
 		Context:   ctx,
 		PageTitle: "Add - Datasets - Biblio",
 		Step:      3,
@@ -196,7 +196,7 @@ func (h *Handler) AddPublish(w http.ResponseWriter, r *http.Request, ctx Context
 
 	if err := ctx.Dataset.Validate(); err != nil {
 		errors := form.Errors(localize.ValidationErrors(ctx.Locale, err.(validation.Errors)))
-		render.MustRenderLayout(w, "show_modal", "form_errors_dialog", struct {
+		render.Layout(w, "show_modal", "form_errors_dialog", struct {
 			Title  string
 			Errors form.Errors
 		}{
@@ -210,7 +210,7 @@ func (h *Handler) AddPublish(w http.ResponseWriter, r *http.Request, ctx Context
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.MustRenderLayout(w, "show_modal", "error_dialog", ctx.T("dataset.conflict_error"))
+		render.Layout(w, "show_modal", "error_dialog", ctx.T("dataset.conflict_error"))
 		return
 	}
 
@@ -226,7 +226,7 @@ func (h *Handler) AddPublish(w http.ResponseWriter, r *http.Request, ctx Context
 }
 
 func (h *Handler) AddFinish(w http.ResponseWriter, r *http.Request, ctx Context) {
-	render.MustRenderLayout(w, "layouts/default", "dataset/pages/add_finish", YieldAdd{
+	render.Layout(w, "layouts/default", "dataset/pages/add_finish", YieldAdd{
 		Context:   ctx,
 		PageTitle: "Add - Datasets - Biblio",
 		Step:      4,

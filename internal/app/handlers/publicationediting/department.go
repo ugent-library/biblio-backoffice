@@ -43,7 +43,7 @@ func (h *Handler) AddDepartment(w http.ResponseWriter, r *http.Request, ctx Cont
 		return
 	}
 
-	render.MustRenderLayout(w, "show_modal", "publication/add_department", YieldAddDepartment{
+	render.Layout(w, "show_modal", "publication/add_department", YieldAddDepartment{
 		Context: ctx,
 		Hits:    hits,
 	})
@@ -62,7 +62,7 @@ func (h *Handler) SuggestDepartments(w http.ResponseWriter, r *http.Request, ctx
 		return
 	}
 
-	render.MustRenderPartial(w, "publication/suggest_departments", YieldAddDepartment{
+	render.Partial(w, "publication/suggest_departments", YieldAddDepartment{
 		Context: ctx,
 		Hits:    hits,
 	})
@@ -95,7 +95,7 @@ func (h *Handler) CreateDepartment(w http.ResponseWriter, r *http.Request, ctx C
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.MustRenderLayout(w, "refresh_modal", "error_dialog", ctx.T("publication.conflict_error"))
+		render.Layout(w, "refresh_modal", "error_dialog", ctx.T("publication.conflict_error"))
 		return
 	}
 
@@ -104,7 +104,7 @@ func (h *Handler) CreateDepartment(w http.ResponseWriter, r *http.Request, ctx C
 		return
 	}
 
-	render.MustRenderView(w, "publication/refresh_departments", YieldDepartments{
+	render.View(w, "publication/refresh_departments", YieldDepartments{
 		Context: ctx,
 	})
 }
@@ -116,7 +116,7 @@ func (h *Handler) ConfirmDeleteDepartment(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	render.MustRenderLayout(w, "show_modal", "publication/confirm_delete_department", YieldDeleteDepartment{
+	render.Layout(w, "show_modal", "publication/confirm_delete_department", YieldDeleteDepartment{
 		Context:  ctx,
 		Position: b.Position,
 	})
@@ -140,7 +140,7 @@ func (h *Handler) DeleteDepartment(w http.ResponseWriter, r *http.Request, ctx C
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.MustRenderLayout(w, "refresh_modal", "error_dialog", ctx.T("publication.conflict_error"))
+		render.Layout(w, "refresh_modal", "error_dialog", ctx.T("publication.conflict_error"))
 		return
 	}
 
@@ -149,7 +149,7 @@ func (h *Handler) DeleteDepartment(w http.ResponseWriter, r *http.Request, ctx C
 		return
 	}
 
-	render.MustRenderView(w, "publication/refresh_departments", YieldDepartments{
+	render.View(w, "publication/refresh_departments", YieldDepartments{
 		Context: ctx,
 	})
 }

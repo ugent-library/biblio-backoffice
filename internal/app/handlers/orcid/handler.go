@@ -92,7 +92,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request, ctx Context) {
 			DismissAfter: 5 * time.Second}
 	}
 
-	render.MustRenderView(w, "publication/refresh_orcid_status", YieldAdd{
+	render.View(w, "publication/refresh_orcid_status", YieldAdd{
 		Context:     ctx,
 		Publication: p,
 		Flash:       f,
@@ -109,7 +109,7 @@ func (h *Handler) AddAll(w http.ResponseWriter, r *http.Request, ctx Context) {
 		return
 	}
 
-	render.MustRenderView(w, "task/add_status", YieldAddAll{
+	render.View(w, "task/add_status", YieldAddAll{
 		ID:      id,
 		Status:  tasks.Status{},
 		Message: "",

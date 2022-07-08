@@ -113,7 +113,7 @@ func (h *Handler) AddContributor(w http.ResponseWriter, r *http.Request, ctx Con
 
 	f := contributorForm(ctx, b.Role, position, c, nil)
 
-	render.MustRenderLayout(w, "show_modal", "dataset/add_contributor", YieldContributorForm{
+	render.Layout(w, "show_modal", "dataset/add_contributor", YieldContributorForm{
 		Context:     ctx,
 		Role:        b.Role,
 		Position:    position,
@@ -140,7 +140,7 @@ func (h *Handler) SuggestContributors(w http.ResponseWriter, r *http.Request, ct
 		LastName:  b.LastName,
 	}
 
-	render.MustRenderLayout(w, "refresh_modal", "dataset/suggest_contributors", YieldSuggestContributors{
+	render.Layout(w, "refresh_modal", "dataset/suggest_contributors", YieldSuggestContributors{
 		Context:     ctx,
 		Role:        b.Role,
 		Position:    b.Position,
@@ -177,7 +177,7 @@ func (h *Handler) ConfirmContributor(w http.ResponseWriter, r *http.Request, ctx
 		tmpl = "dataset/add_contributor"
 	}
 
-	render.MustRenderLayout(w, "refresh_modal", tmpl, YieldContributorForm{
+	render.Layout(w, "refresh_modal", tmpl, YieldContributorForm{
 		Context:     ctx,
 		Role:        b.Role,
 		Position:    b.Position,
@@ -207,7 +207,7 @@ func (h *Handler) UnconfirmContributor(w http.ResponseWriter, r *http.Request, c
 		tmpl = "dataset/add_contributor"
 	}
 
-	render.MustRenderLayout(w, "refresh_modal", tmpl, YieldContributorForm{
+	render.Layout(w, "refresh_modal", tmpl, YieldContributorForm{
 		Context:     ctx,
 		Role:        b.Role,
 		Position:    b.Position,
@@ -244,7 +244,7 @@ func (h *Handler) CreateContributor(w http.ResponseWriter, r *http.Request, ctx 
 
 	if validationErrs := ctx.Dataset.Validate(); validationErrs != nil {
 		f := contributorForm(ctx, b.Role, position, c, validationErrs.(validation.Errors))
-		render.MustRenderLayout(w, "refresh_modal", "dataset/add_contributor", YieldContributorForm{
+		render.Layout(w, "refresh_modal", "dataset/add_contributor", YieldContributorForm{
 			Context:     ctx,
 			Role:        b.Role,
 			Position:    position,
@@ -258,7 +258,7 @@ func (h *Handler) CreateContributor(w http.ResponseWriter, r *http.Request, ctx 
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.MustRenderLayout(w, "refresh_modal", "error_dialog", ctx.T("dataset.conflict_error"))
+		render.Layout(w, "refresh_modal", "error_dialog", ctx.T("dataset.conflict_error"))
 		return
 	}
 
@@ -267,7 +267,7 @@ func (h *Handler) CreateContributor(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	render.MustRenderView(w, "dataset/refresh_contributors", YieldContributors{
+	render.View(w, "dataset/refresh_contributors", YieldContributors{
 		Context: ctx,
 		Role:    b.Role,
 	})
@@ -288,7 +288,7 @@ func (h *Handler) EditContributor(w http.ResponseWriter, r *http.Request, ctx Co
 
 	f := contributorForm(ctx, b.Role, b.Position, c, nil)
 
-	render.MustRenderLayout(w, "show_modal", "dataset/edit_contributor", YieldContributorForm{
+	render.Layout(w, "show_modal", "dataset/edit_contributor", YieldContributorForm{
 		Context:     ctx,
 		Role:        b.Role,
 		Position:    b.Position,
@@ -326,7 +326,7 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 
 	if validationErrs := ctx.Dataset.Validate(); validationErrs != nil {
 		f := contributorForm(ctx, b.Role, b.Position, c, validationErrs.(validation.Errors))
-		render.MustRenderLayout(w, "refresh_modal", "dataset/edit_contributor", YieldContributorForm{
+		render.Layout(w, "refresh_modal", "dataset/edit_contributor", YieldContributorForm{
 			Context:     ctx,
 			Role:        b.Role,
 			Position:    b.Position,
@@ -340,7 +340,7 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.MustRenderLayout(w, "refresh_modal", "error_dialog", ctx.T("dataset.conflict_error"))
+		render.Layout(w, "refresh_modal", "error_dialog", ctx.T("dataset.conflict_error"))
 		return
 	}
 
@@ -349,7 +349,7 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	render.MustRenderView(w, "dataset/refresh_contributors", YieldContributors{
+	render.View(w, "dataset/refresh_contributors", YieldContributors{
 		Context: ctx,
 		Role:    b.Role,
 	})
@@ -362,7 +362,7 @@ func (h *Handler) ConfirmDeleteContributor(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	render.MustRenderLayout(w, "show_modal", "dataset/confirm_delete_contributor", YieldDeleteContributor{
+	render.Layout(w, "show_modal", "dataset/confirm_delete_contributor", YieldDeleteContributor{
 		Context:  ctx,
 		Role:     b.Role,
 		Position: b.Position,
@@ -383,7 +383,7 @@ func (h *Handler) DeleteContributor(w http.ResponseWriter, r *http.Request, ctx 
 
 	if err := ctx.Dataset.Validate(); err != nil {
 		errors := form.Errors(localize.ValidationErrors(ctx.Locale, err.(validation.Errors)))
-		render.MustRenderLayout(w, "refresh_modal", "form_errors_dialog", struct {
+		render.Layout(w, "refresh_modal", "form_errors_dialog", struct {
 			Title  string
 			Errors form.Errors
 		}{
@@ -397,7 +397,7 @@ func (h *Handler) DeleteContributor(w http.ResponseWriter, r *http.Request, ctx 
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.MustRenderLayout(w, "refresh_modal", "error_dialog", ctx.T("dataset.conflict_error"))
+		render.Layout(w, "refresh_modal", "error_dialog", ctx.T("dataset.conflict_error"))
 		return
 	}
 
@@ -406,7 +406,7 @@ func (h *Handler) DeleteContributor(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	render.MustRenderView(w, "dataset/refresh_contributors", YieldContributors{
+	render.View(w, "dataset/refresh_contributors", YieldContributors{
 		Context: ctx,
 		Role:    b.Role,
 	})
@@ -434,7 +434,7 @@ func (h *Handler) OrderContributors(w http.ResponseWriter, r *http.Request, ctx 
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.MustRenderLayout(w, "show_modal", "error_dialog", ctx.T("dataset.conflict_error"))
+		render.Layout(w, "show_modal", "error_dialog", ctx.T("dataset.conflict_error"))
 		return
 	}
 
@@ -443,7 +443,7 @@ func (h *Handler) OrderContributors(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	render.MustRenderView(w, "dataset/refresh_contributors", YieldContributors{
+	render.View(w, "dataset/refresh_contributors", YieldContributors{
 		Context: ctx,
 		Role:    b.Role,
 	})

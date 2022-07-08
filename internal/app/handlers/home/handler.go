@@ -30,7 +30,7 @@ type YieldHome struct {
 }
 
 func (h *Handler) Home(w http.ResponseWriter, r *http.Request, ctx Context) {
-	render.MustRenderLayout(w, "layouts/default", "pages/home", YieldHome{
+	render.Layout(w, "layouts/default", "pages/home", YieldHome{
 		Context:   ctx,
 		PageTitle: "Biblio",
 	})

@@ -38,7 +38,7 @@ func (h *Handler) AddPublication(w http.ResponseWriter, r *http.Request, ctx Con
 		return
 	}
 
-	render.MustRenderLayout(w, "show_modal", "dataset/add_publication", YieldAddPublication{
+	render.Layout(w, "show_modal", "dataset/add_publication", YieldAddPublication{
 		Context: ctx,
 		Hits:    hits,
 	})
@@ -57,7 +57,7 @@ func (h *Handler) SuggestPublications(w http.ResponseWriter, r *http.Request, ct
 		return
 	}
 
-	render.MustRenderPartial(w, "dataset/suggest_publications", YieldAddPublication{
+	render.Partial(w, "dataset/suggest_publications", YieldAddPublication{
 		Context: ctx,
 		Hits:    hits,
 	})
@@ -94,7 +94,7 @@ func (h *Handler) CreatePublication(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	render.MustRenderView(w, "dataset/refresh_publications", YieldPublications{
+	render.View(w, "dataset/refresh_publications", YieldPublications{
 		Context:             ctx,
 		RelatedPublications: relatedPublications,
 	})
@@ -107,7 +107,7 @@ func (h *Handler) ConfirmDeletePublication(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	render.MustRenderLayout(w, "show_modal", "dataset/confirm_delete_publication", YieldDeletePublication{
+	render.Layout(w, "show_modal", "dataset/confirm_delete_publication", YieldDeletePublication{
 		Context:       ctx,
 		PublicationID: b.PublicationID,
 	})
@@ -144,7 +144,7 @@ func (h *Handler) DeletePublication(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	render.MustRenderView(w, "dataset/refresh_publications", YieldPublications{
+	render.View(w, "dataset/refresh_publications", YieldPublications{
 		Context:             ctx,
 		RelatedPublications: relatedPublications,
 	})

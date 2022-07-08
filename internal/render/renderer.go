@@ -4,10 +4,12 @@ package render
 // TODO use buffer pool
 
 import (
+	"bytes"
 	"fmt"
 	"html/template"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"path"
@@ -185,68 +187,74 @@ func (r *Renderer) parseDir(rootDir string) error {
 	})
 }
 
-func (r *Renderer) MustRenderView(w http.ResponseWriter, view string, data any) {
-	if err := r.RenderView(w, view, data); err != nil {
-		panic(err)
-	}
-}
+func (r *Renderer) View(w http.ResponseWriter, view string, data any) {
+	var b bytes.Buffer
 
-func (r *Renderer) RenderView(w http.ResponseWriter, view string, data any) error {
+	if err := r.ExecuteView(&b, view, data); err != nil {
+		log.Println(err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
 	r.SetContentType(w)
-	return r.ExecuteView(w, view, data)
+	io.Copy(w, &b)
 }
 
 func (r *Renderer) ExecuteView(w io.Writer, view string, data any) error {
 	tmpl, ok := r.viewTemplates[view]
 	if !ok {
-		return fmt.Errorf("render: view '%v' not found", view)
+		return fmt.Errorf("render: view '%s' not found", view)
 	}
 
 	if err := tmpl.Execute(w, data); err != nil {
-		return errors.Wrapf(err, "render: Execute error, view '%v'", view)
+		return errors.Wrapf(err, "render: Execute error, view '%s'", view)
 	}
 
 	return nil
 }
 
-func (r *Renderer) MustRenderLayout(w http.ResponseWriter, partial, view string, data any) {
-	if err := r.RenderLayout(w, partial, view, data); err != nil {
-		panic(err)
-	}
-}
+func (r *Renderer) Layout(w http.ResponseWriter, partial, view string, data any) {
+	var b bytes.Buffer
 
-func (r *Renderer) RenderLayout(w http.ResponseWriter, partial, view string, data any) error {
+	if err := r.ExecuteLayout(&b, partial, view, data); err != nil {
+		log.Println(err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
 	r.SetContentType(w)
-	return r.ExecuteLayout(w, partial, view, data)
+	io.Copy(w, &b)
 }
 
 func (r *Renderer) ExecuteLayout(w io.Writer, partial, view string, data any) error {
 	tmpl, ok := r.viewTemplates[view]
 	if !ok {
-		return fmt.Errorf("render: view '%v' not found", view)
+		return fmt.Errorf("render: view '%s' not found", view)
 	}
 
 	if err := tmpl.ExecuteTemplate(w, partial, data); err != nil {
-		return errors.Wrapf(err, "render: ExecuteTemplate error, partial '%v' view '%v'", partial, view)
+		return errors.Wrapf(err, "render: ExecuteTemplate error, partial '%s' view '%s'", partial, view)
 	}
 
 	return nil
 }
 
-func (r *Renderer) MustRenderPartial(w http.ResponseWriter, partial string, data any) {
-	if err := r.RenderPartial(w, partial, data); err != nil {
-		panic(err)
-	}
-}
+func (r *Renderer) Partial(w http.ResponseWriter, partial string, data any) {
+	var b bytes.Buffer
 
-func (r *Renderer) RenderPartial(w http.ResponseWriter, partial string, data any) error {
+	if err := r.ExecutePartial(&b, partial, data); err != nil {
+		log.Println(err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
 	r.SetContentType(w)
-	return r.ExecutePartial(w, partial, data)
+	io.Copy(w, &b)
 }
 
 func (r *Renderer) ExecutePartial(w io.Writer, partial string, data any) error {
 	if err := r.partialsTemplate.ExecuteTemplate(w, partial, data); err != nil {
-		return errors.Wrapf(err, "render: ExecuteTemplate error, partial '%v'", partial)
+		return errors.Wrapf(err, "render: ExecuteTemplate error, partial '%s'", partial)
 	}
 
 	return nil
@@ -292,36 +300,24 @@ func Parse() (*Renderer, error) {
 	return defaultRenderer.Parse()
 }
 
-func MustRenderView(w http.ResponseWriter, view string, data any) {
-	defaultRenderer.MustRenderView(w, view, data)
-}
-
-func RenderView(w http.ResponseWriter, view string, data any) error {
-	return defaultRenderer.RenderView(w, view, data)
+func View(w http.ResponseWriter, view string, data any) {
+	defaultRenderer.View(w, view, data)
 }
 
 func ExecuteView(w io.Writer, view string, data any) error {
 	return defaultRenderer.ExecuteView(w, view, data)
 }
 
-func MustRenderLayout(w http.ResponseWriter, partial, view string, data any) {
-	defaultRenderer.MustRenderLayout(w, partial, view, data)
-}
-
-func RenderLayout(w http.ResponseWriter, partial, view string, data any) error {
-	return defaultRenderer.RenderLayout(w, partial, view, data)
+func Layout(w http.ResponseWriter, partial, view string, data any) {
+	defaultRenderer.Layout(w, partial, view, data)
 }
 
 func ExecuteLayout(w io.Writer, partial, view string, data any) error {
 	return defaultRenderer.ExecuteLayout(w, partial, view, data)
 }
 
-func MustRenderPartial(w http.ResponseWriter, partial string, data any) {
-	defaultRenderer.MustRenderPartial(w, partial, data)
-}
-
-func RenderPartial(w http.ResponseWriter, partial string, data any) error {
-	return defaultRenderer.RenderPartial(w, partial, data)
+func Partial(w http.ResponseWriter, partial string, data any) {
+	defaultRenderer.Partial(w, partial, data)
 }
 
 func ExecutePartial(w io.Writer, partial string, data any) error {

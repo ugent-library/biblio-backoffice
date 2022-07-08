@@ -144,7 +144,7 @@ func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context
 	bindFile.Index = len(ctx.Publication.File) - 1
 
 	// render edit file form
-	render.MustRenderLayout(w, "show_modal", "publication/edit_file", YieldEditFile{
+	render.Layout(w, "show_modal", "publication/edit_file", YieldEditFile{
 		Context:   ctx,
 		File:      pubFile,
 		FileIndex: bindFile.Index,
@@ -177,7 +177,7 @@ func (h *Handler) EditFile(w http.ResponseWriter, r *http.Request, ctx Context) 
 
 	publicationFileToBind(file, &b)
 
-	render.MustRenderLayout(w, "show_modal", "publication/edit_file", YieldEditFile{
+	render.Layout(w, "show_modal", "publication/edit_file", YieldEditFile{
 		Context:   ctx,
 		File:      file,
 		FileIndex: b.Index,
@@ -213,7 +213,7 @@ func (h *Handler) EditFileLicense(w http.ResponseWriter, r *http.Request, ctx Co
 		b.EmbargoTo = ""
 	}
 
-	render.MustRenderLayout(w, "refresh_modal", "publication/edit_file", YieldEditFile{
+	render.Layout(w, "refresh_modal", "publication/edit_file", YieldEditFile{
 		Context:   ctx,
 		File:      file,
 		FileIndex: b.Index,
@@ -256,7 +256,7 @@ func (h *Handler) UpdateFile(w http.ResponseWriter, r *http.Request, ctx Context
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
-		render.MustRenderLayout(w, "refresh_modal", "publication/edit_file", YieldEditFile{
+		render.Layout(w, "refresh_modal", "publication/edit_file", YieldEditFile{
 			Context:   ctx,
 			File:      file,
 			FileIndex: b.Index,
@@ -276,7 +276,7 @@ func (h *Handler) UpdateFile(w http.ResponseWriter, r *http.Request, ctx Context
 		return
 	}
 
-	render.MustRenderView(w, "publication/refresh_files", YieldShowFiles{
+	render.View(w, "publication/refresh_files", YieldShowFiles{
 		Context: ctx,
 	})
 }
@@ -296,7 +296,7 @@ func (h *Handler) ConfirmDeleteFile(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	render.MustRenderLayout(w, "show_modal", "publication/confirm_delete_file", YieldDeleteFile{
+	render.Layout(w, "show_modal", "publication/confirm_delete_file", YieldDeleteFile{
 		Context: ctx,
 		File:    file,
 	})
@@ -328,7 +328,7 @@ func (h *Handler) DeleteFile(w http.ResponseWriter, r *http.Request, ctx Context
 	}
 
 	// render
-	render.MustRenderView(w, "publication/refresh_files", YieldShowFiles{
+	render.View(w, "publication/refresh_files", YieldShowFiles{
 		Context: ctx,
 	})
 

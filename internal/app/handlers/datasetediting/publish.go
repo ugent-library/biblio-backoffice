@@ -19,7 +19,7 @@ type YieldPublish struct {
 }
 
 func (h *Handler) ConfirmPublish(w http.ResponseWriter, r *http.Request, ctx Context) {
-	render.MustRenderLayout(w, "show_modal", "dataset/confirm_publish", YieldPublish{
+	render.Layout(w, "show_modal", "dataset/confirm_publish", YieldPublish{
 		Context:     ctx,
 		RedirectURL: r.URL.Query().Get("redirect-url"),
 	})
@@ -35,7 +35,7 @@ func (h *Handler) Publish(w http.ResponseWriter, r *http.Request, ctx Context) {
 
 	if err := ctx.Dataset.Validate(); err != nil {
 		errors := form.Errors(localize.ValidationErrors(ctx.Locale, err.(validation.Errors)))
-		render.MustRenderLayout(w, "refresh_modal", "form_errors_dialog", struct {
+		render.Layout(w, "refresh_modal", "form_errors_dialog", struct {
 			Title  string
 			Errors form.Errors
 		}{
@@ -49,7 +49,7 @@ func (h *Handler) Publish(w http.ResponseWriter, r *http.Request, ctx Context) {
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.MustRenderLayout(w, "refresh_modal", "error_dialog", ctx.T("dataset.conflict_error"))
+		render.Layout(w, "refresh_modal", "error_dialog", ctx.T("dataset.conflict_error"))
 		return
 	}
 

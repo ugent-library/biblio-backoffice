@@ -44,7 +44,7 @@ type YieldDeleteAbstract struct {
 func (h *Handler) AddAbstract(w http.ResponseWriter, r *http.Request, ctx Context) {
 	form := abstractForm(ctx, BindAbstract{Position: len(ctx.Publication.Abstract)}, nil)
 
-	render.MustRenderLayout(w, "show_modal", "publication/add_abstract", YieldAddAbstract{
+	render.Layout(w, "show_modal", "publication/add_abstract", YieldAddAbstract{
 		Context: ctx,
 		Form:    form,
 	})
@@ -60,7 +60,7 @@ func (h *Handler) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 	ctx.Publication.Abstract = append(ctx.Publication.Abstract, models.Text{Text: b.Text, Lang: b.Lang})
 
 	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
-		render.MustRenderLayout(w, "refresh_modal", "publication/add_abstract", YieldAddAbstract{
+		render.Layout(w, "refresh_modal", "publication/add_abstract", YieldAddAbstract{
 			Context: ctx,
 			Form:    abstractForm(ctx, b, validationErrs.(validation.Errors)),
 		})
@@ -71,7 +71,7 @@ func (h *Handler) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.MustRenderLayout(w, "refresh_modal", "error_dialog", ctx.T("publication.conflict_error"))
+		render.Layout(w, "refresh_modal", "error_dialog", ctx.T("publication.conflict_error"))
 		return
 	}
 
@@ -80,7 +80,7 @@ func (h *Handler) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 		return
 	}
 
-	render.MustRenderView(w, "publication/refresh_abstracts", YieldAbstracts{
+	render.View(w, "publication/refresh_abstracts", YieldAbstracts{
 		Context: ctx,
 	})
 }
@@ -101,7 +101,7 @@ func (h *Handler) EditAbstract(w http.ResponseWriter, r *http.Request, ctx Conte
 	b.Lang = a.Lang
 	b.Text = a.Text
 
-	render.MustRenderLayout(w, "show_modal", "publication/edit_abstract", YieldEditAbstract{
+	render.Layout(w, "show_modal", "publication/edit_abstract", YieldEditAbstract{
 		Context:  ctx,
 		Position: b.Position,
 		Form:     abstractForm(ctx, b, nil),
@@ -124,7 +124,7 @@ func (h *Handler) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
 		form := abstractForm(ctx, b, validationErrs.(validation.Errors))
 
-		render.MustRenderLayout(w, "refresh_modal", "publication/edit_abstract", YieldEditAbstract{
+		render.Layout(w, "refresh_modal", "publication/edit_abstract", YieldEditAbstract{
 			Context:  ctx,
 			Position: b.Position,
 			Form:     form,
@@ -136,7 +136,7 @@ func (h *Handler) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.MustRenderLayout(w, "refresh_modal", "error_dialog", ctx.T("publication.conflict_error"))
+		render.Layout(w, "refresh_modal", "error_dialog", ctx.T("publication.conflict_error"))
 		return
 	}
 
@@ -145,7 +145,7 @@ func (h *Handler) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 		return
 	}
 
-	render.MustRenderView(w, "publication/refresh_abstracts", YieldAbstracts{
+	render.View(w, "publication/refresh_abstracts", YieldAbstracts{
 		Context: ctx,
 	})
 }
@@ -157,7 +157,7 @@ func (h *Handler) ConfirmDeleteAbstract(w http.ResponseWriter, r *http.Request, 
 		return
 	}
 
-	render.MustRenderLayout(w, "show_modal", "publication/confirm_delete_abstract", YieldDeleteAbstract{
+	render.Layout(w, "show_modal", "publication/confirm_delete_abstract", YieldDeleteAbstract{
 		Context:  ctx,
 		Position: b.Position,
 	})
@@ -179,7 +179,7 @@ func (h *Handler) DeleteAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.MustRenderLayout(w, "refresh_modal", "error_dialog", ctx.T("publication.conflict_error"))
+		render.Layout(w, "refresh_modal", "error_dialog", ctx.T("publication.conflict_error"))
 		return
 	}
 
@@ -188,7 +188,7 @@ func (h *Handler) DeleteAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 		return
 	}
 
-	render.MustRenderView(w, "publication/refresh_abstracts", YieldAbstracts{
+	render.View(w, "publication/refresh_abstracts", YieldAbstracts{
 		Context: ctx,
 	})
 }

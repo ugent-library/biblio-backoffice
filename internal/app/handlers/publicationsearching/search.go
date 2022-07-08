@@ -62,7 +62,7 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request, ctx Context) {
 		h.addThumbnailURLs(p)
 	}
 
-	render.MustRenderLayout(w, "layouts/default", "publication/pages/search", YieldSearch{
+	render.Layout(w, "layouts/default", "publication/pages/search", YieldSearch{
 		Context:   ctx,
 		PageTitle: "Overview - Publications - Biblio",
 		ActiveNav: "publications",
@@ -88,7 +88,7 @@ func (h *Handler) CurationSearch(w http.ResponseWriter, r *http.Request, ctx Con
 		h.addThumbnailURLs(p)
 	}
 
-	render.MustRenderLayout(w, "layouts/default", "publication/pages/search", YieldSearch{
+	render.Layout(w, "layouts/default", "publication/pages/search", YieldSearch{
 		Context:   ctx,
 		PageTitle: "Overview - Publications - Biblio",
 		ActiveNav: "publications",
