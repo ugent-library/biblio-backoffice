@@ -1,0 +1,56 @@
+<td class="pl-8 col-5">
+    {{if .User.CanEditPublication .Publication}}
+    <input type="hidden" name="position" value="{{.Position}}">
+    {{end}}
+    <div class="bc-avatar-and-text">
+        <div class="bc-avatar bc-avatar-icon bc-avatar--muted">
+            <i class="if if-user"></i>
+        </div>
+        <div class="bc-avatar-text">
+            {{.Contributor.FirstName}} {{.Contributor.LastName}}
+            {{with .Contributor.ORCID}}
+            <span class="text-muted c-body-small ml-4"><i class="if if-orcid if--muted if--small"></i> {{.}}</span>
+            {{end}}
+        </div>
+    </div>
+</td>
+{{if eq .Role "author"}}
+<td class="col-2">
+    {{if .Contributor.CreditRole}}
+    <ul class="list-unstyled">
+        {{range .Contributor.CreditRole}}
+        <li>{{$.Locale.TS "credit_roles" .}}</li>
+        {{end}}
+    </ul>
+    {{else}}
+    <span>-</span>
+    {{end}}
+</td>
+{{end}}
+<td class="col-2">
+    {{if .Contributor.ID}}
+    <i class="if if-ghent-university"></i>
+    <span>UGent {{.Locale.TS "publication.contributor.role" .Role}}</span>
+    {{else}}
+    External {{.Locale.TS "publication.contributor.role" .Role}}
+    {{end}}
+</td>
+<td class="pr-4 col-3">
+    {{if .User.CanEditPublication .Publication}}
+    <div class="c-button-toolbar">
+        <button type="button" class="btn btn-default"
+            hx-get="{{pathFor "publication_edit_contributor" "id" .Publication.ID "role" .Role "position" (.Position|toString)}}"
+            hx-target="#modals"
+        >
+            <i class="if if-edit"></i>
+        </button>
+        <button type="button" class="btn btn-default"
+            hx-get="{{pathFor "publication_confirm_delete_contributor" "id" .Publication.ID "role" .Role "position" (.Position|toString)}}"
+            hx-target="#modals"
+        >
+            <i class="if if-delete"></i>
+        </button>
+        <button class="sortable-handle btn btn-text"><b>::</b></button>
+    </div>
+    {{end}}
+</td>

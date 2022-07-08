@@ -1,0 +1,16 @@
+<div hx-swap-oob="innerHTML:#show-nav">
+    {{template "publication/show_nav" .}}
+</div>
+
+<div class="card mb-6">
+    <div class="card-header">
+        <div class="bc-toolbar">
+            <div class="bc-toolbar-left">
+                <div class="bc-toolbar-title">Full text documents</div>
+            </div>
+        </div>
+    </div>
+    <div id="files-body">
+        {{template "publication/files_body" .}}
+    </div>
+</div>

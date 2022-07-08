@@ -211,7 +211,7 @@ func abstractForm(ctx Context, b BindAbstract, errors validation.Errors) *form.F
 				Name:    "lang",
 				Value:   b.Lang,
 				Label:   ctx.T("builder.abstract.lang"),
-				Options: localize.VocabularySelectOptions(ctx.Locale, "language_codes"),
+				Options: localize.LanguageSelectOptions(ctx.Locale),
 				Cols:    12,
 				Error:   localize.ValidationErrorAt(ctx.Locale, errors, fmt.Sprintf("/abstract/%d/lang", b.Position)),
 			},

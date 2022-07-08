@@ -1,0 +1,23 @@
+<div id="modal-backdrop" class="d-block modal-backdrop fade show"></div>
+<div class="d-block modal show" tabindex="-1" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">View as other user</h2>
+            </div>
+            <div class="modal-body">
+                <form action="{{pathFor "create_impersonation"}}" method="POST">
+	                {{.CSRFTag}}
+                    <div class="form-group">
+                      <label for="impersonation-username">Username</label>
+                      <input type="text" class="form-control" id="impersonation-username" name="username">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Change user</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-link modal-close" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,21 @@
+{{define "modal_dialog"}}
+<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">Edit {{.TS "dataset.contributor.role" .Role}}</h2>
+        </div>
+        <div class="modal-body">
+            {{template "dataset/contributors_form" .}}
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-link modal-close">Cancel</button>
+            <button class="btn btn-primary modal-close"
+                hx-put="{{pathFor "dataset_update_contributor" "id" .Dataset.ID "role" .Role "position" (.Position|toString)}}"
+                hx-headers='{"If-Match": "{{.Dataset.SnapshotID}}"}'
+                hx-include=".modal-body .contributor-attributes"
+                hx-swap="none"
+            >Done</button>
+        </div>
+    </div>
+</div>
+{{end}}

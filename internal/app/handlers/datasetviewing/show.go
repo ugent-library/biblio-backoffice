@@ -57,7 +57,7 @@ func (h *Handler) Show(w http.ResponseWriter, r *http.Request, ctx Context) {
 		activeSubNav = "description"
 	}
 
-	render.Wrap(w, "layouts/default", "dataset/show_page", YieldShow{
+	render.MustRenderLayout(w, "layouts/default", "dataset/pages/show", YieldShow{
 		Context:      ctx,
 		PageTitle:    ctx.T("dataset.page.show.title"),
 		SubNavs:      subNavs,

@@ -12,25 +12,25 @@ type Locale struct {
 	printer       *message.Printer
 }
 
-func (l *Locale) Translate(key string, args ...interface{}) string {
+func (l *Locale) Translate(key string, args ...any) string {
 	if key == "" {
 		return ""
 	}
 	return l.printer.Sprintf(key, args...)
 }
 
-func (l *Locale) T(key string, args ...interface{}) string {
+func (l *Locale) T(key string, args ...any) string {
 	return l.Translate(key, args...)
 }
 
-func (l *Locale) TranslateScope(scope, key string, args ...interface{}) string {
+func (l *Locale) TranslateScope(scope, key string, args ...any) string {
 	if scope == "" || key == "" {
 		return ""
 	}
 	return l.Translate(scope+"."+key, args...)
 }
 
-func (l *Locale) TS(scope, key string, args ...interface{}) string {
+func (l *Locale) TS(scope, key string, args ...any) string {
 	return l.TranslateScope(scope, key, args...)
 }
 

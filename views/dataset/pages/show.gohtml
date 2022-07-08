@@ -1,0 +1,74 @@
+{{define "page_content"}}
+<div class="w-100 u-scroll-wrapper">
+    <div class="c-header-collapsible bg-white" data-collapsed="true">
+        <div class="bc-navbar bc-navbar--large bc-navbar--white">
+            <div class="bc-toolbar">
+                <div class="bc-toolbar-left">
+                    <div class="bc-toolbar-item">
+                        <a class="btn btn-link btn-link-muted" href="{{.RedirectURL}}">
+                            <i class="if if-arrow-left"></i>
+                            <div class="btn-text">Datasets overview</div>
+                        </a>
+                    </div>
+                </div>
+                <div class="bc-toolbar-right">
+                    {{if .User.CanPublishDataset .Dataset}}
+                    <div class="bc-toolbar-item">
+                        <button class="btn btn-success"
+                            hx-get="{{pathFor "dataset_confirm_publish" "id" .Dataset.ID|querySet "redirect-url" .RedirectURL}}"
+                            hx-target="#modals"
+                        >
+                            <div class="btn-text">Publish to Biblio</div>
+                        </button>
+                    </div>
+                    {{end}}
+                    <div class="bc-toolbar-item">
+                        <div class="dropdown">
+                            <button class="btn btn-outline-primary btn-icon-only"
+                                type="button" data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false">
+                                <i class="if if-more"></i>
+                            </button>
+                            <div class="dropdown-menu">
+                                {{if .User.CanDeleteDataset .Dataset}}
+                                <button class="dropdown-item"
+                                    hx-get="{{pathFor "dataset_confirm_delete" "id" .Dataset.ID|querySet "redirect-url" .RedirectURL}}"
+                                    hx-target="#modals"
+                                >
+                                    <i class="if if-delete"></i>
+                                    <span>Delete</span>
+                                </button>
+                                {{end}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="c-divider mt-0 mx-6"></div>
+        <div id="summary">
+            <div class="mx-6">
+                <h4 class="h4">{{.Dataset.Title}}</h4>
+             </div>
+        </div>
+        <div class="c-divider mb-2 mx-6"></div>
+        <div class="bc-navbar bc-navbar--white bc-navbar--bordered-bottom">
+            <div class="bc-toolbar">
+                <div class="bc-toolbar-left">
+                    <div class="bc-toolbar-item" id="show-nav">
+                        {{template "dataset/show_nav" .}}
+                    </div>
+                </div>
+                <div class="bc-toolbar-right">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="u-scroll-wrapper__body p-6" id="show-content"
+        hx-get="{{pathFor (print "dataset_" .ActiveSubNav) "id" .Dataset.ID}}"
+        hx-trigger="load delay:100ms"
+        hx-target="#show-content"
+    >
+    </div>
+</div>
+{{end}}

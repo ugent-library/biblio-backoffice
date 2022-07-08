@@ -55,7 +55,7 @@ func pathFor(r *mux.Router) func(string, ...string) (*url.URL, error) {
 	}
 }
 
-func query(v interface{}, u *url.URL) (*url.URL, error) {
+func query(v any, u *url.URL) (*url.URL, error) {
 	vals, err := queryEncoder.Encode(v)
 	if err != nil {
 		return u, err
