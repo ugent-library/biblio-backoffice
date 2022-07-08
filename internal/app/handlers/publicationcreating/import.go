@@ -85,18 +85,18 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request, ctx Context) {
 	tmpl := ""
 	switch r.URL.Query().Get("method") {
 	case "identifier":
-		tmpl = "publication/add_identifier"
+		tmpl = "publication/pages/add_identifier"
 	case "manual":
-		tmpl = "publication/add_manual"
+		tmpl = "publication/pages/add_manual"
 	case "wos":
-		tmpl = "publication/add_wos"
+		tmpl = "publication/pages/add_wos"
 	case "bibtex":
-		tmpl = "publication/add_bibtex"
+		tmpl = "publication/pages/add_bibtex"
 	default:
-		tmpl = "publication/add"
+		tmpl = "publication/pages/add"
 	}
 
-	render.Wrap(w, "layouts/default", tmpl, YieldAddSingle{
+	render.MustRenderLayout(w, "layouts/default", tmpl, YieldAddSingle{
 		Context:   ctx,
 		PageTitle: "Add - Publications - Biblio",
 		Step:      1,
@@ -124,7 +124,7 @@ func (h *Handler) AddSingleImportConfirm(w http.ResponseWriter, r *http.Request,
 		}
 
 		if existing.Total > 0 {
-			render.Wrap(w, "layouts/default", "publication/add_identifier", YieldAddSingle{
+			render.MustRenderLayout(w, "layouts/default", "publication/pages/add_identifier", YieldAddSingle{
 				Context:              ctx,
 				PageTitle:            "Add - Publications - Biblio",
 				Step:                 1,
@@ -162,7 +162,7 @@ func (h *Handler) AddSingleImport(w http.ResponseWriter, r *http.Request, ctx Co
 				Body: template.HTML(ctx.T("publication.single_import.import_by_id.import_failed")),
 			})
 
-			render.Wrap(w, "layouts/default", "publication/add_identifier", YieldAddSingle{
+			render.MustRenderLayout(w, "layouts/default", "publication/pages/add_identifier", YieldAddSingle{
 				Context:    ctx,
 				PageTitle:  "Add - Publications - Biblio",
 				Step:       1,
@@ -185,7 +185,7 @@ func (h *Handler) AddSingleImport(w http.ResponseWriter, r *http.Request, ctx Co
 
 	if validationErrs := p.Validate(); validationErrs != nil {
 		errors := form.Errors(localize.ValidationErrors(ctx.Locale, err.(validation.Errors)))
-		render.Wrap(w, "layouts/default", "publication/add_identifier", YieldAddSingle{
+		render.MustRenderLayout(w, "layouts/default", "publication/pages/add_identifier", YieldAddSingle{
 			Context:    ctx,
 			PageTitle:  "Add - Publications - Biblio",
 			Step:       1,
@@ -212,7 +212,7 @@ func (h *Handler) AddSingleImport(w http.ResponseWriter, r *http.Request, ctx Co
 		subNav = "description"
 	}
 
-	render.Wrap(w, "layouts/default", "publication/add_single_description", YieldAddSingle{
+	render.MustRenderLayout(w, "layouts/default", "publication/pages/add_single_description", YieldAddSingle{
 		Context:        ctx,
 		PageTitle:      "Add - Publications - Biblio",
 		Step:           2,
@@ -230,7 +230,7 @@ func (h *Handler) AddSingleDescription(w http.ResponseWriter, r *http.Request, c
 		subNav = "description"
 	}
 
-	render.Wrap(w, "layouts/default", "publication/add_single_description", YieldAddSingle{
+	render.MustRenderLayout(w, "layouts/default", "publication/pages/add_single_description", YieldAddSingle{
 		Context:        ctx,
 		PageTitle:      "Add - Publications - Biblio",
 		Step:           2,
@@ -243,7 +243,7 @@ func (h *Handler) AddSingleDescription(w http.ResponseWriter, r *http.Request, c
 }
 
 func (h *Handler) AddSingleConfirm(w http.ResponseWriter, r *http.Request, ctx Context) {
-	render.Wrap(w, "layouts/default", "publication/add_single_confirm", YieldAddSingle{
+	render.MustRenderLayout(w, "layouts/default", "publication/pages/add_single_confirm", YieldAddSingle{
 		Context:     ctx,
 		PageTitle:   "Add - Publications - Biblio",
 		Step:        3,
@@ -262,7 +262,7 @@ func (h *Handler) AddSinglePublish(w http.ResponseWriter, r *http.Request, ctx C
 
 	if err := ctx.Publication.Validate(); err != nil {
 		errors := form.Errors(localize.ValidationErrors(ctx.Locale, err.(validation.Errors)))
-		render.Render(w, "form_errors_dialog", struct {
+		render.MustRenderLayout(w, "show_modal", "form_errors_dialog", struct {
 			Title  string
 			Errors form.Errors
 		}{
@@ -276,7 +276,7 @@ func (h *Handler) AddSinglePublish(w http.ResponseWriter, r *http.Request, ctx C
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Render(w, "error_dialog", ctx.T("publication.conflict_error"))
+		render.MustRenderLayout(w, "show_modal", "error_dialog", ctx.T("publication.conflict_error"))
 		return
 	}
 
@@ -292,7 +292,7 @@ func (h *Handler) AddSinglePublish(w http.ResponseWriter, r *http.Request, ctx C
 }
 
 func (h *Handler) AddSingleFinish(w http.ResponseWriter, r *http.Request, ctx Context) {
-	render.Wrap(w, "layouts/default", "publication/add_single_finish", YieldAddSingle{
+	render.MustRenderLayout(w, "layouts/default", "publication/pages/add_single_finish", YieldAddSingle{
 		Context:     ctx,
 		PageTitle:   "Add - Publications - Biblio",
 		Step:        4,
@@ -330,12 +330,12 @@ func (h *Handler) AddMultipleImport(w http.ResponseWriter, r *http.Request, ctx 
 		tmpl := ""
 		switch source {
 		case "wos":
-			tmpl = "publication/add_wos"
+			tmpl = "publication/pages/add_wos"
 		case "bibtext":
-			tmpl = "publication/add_bibtex"
+			tmpl = "publication/pages/add_bibtex"
 		}
 
-		render.Wrap(w, "layouts/default", tmpl, YieldAddSingle{
+		render.MustRenderLayout(w, "layouts/default", tmpl, YieldAddSingle{
 			Context:   ctx,
 			PageTitle: "Add - Publications - Biblio",
 			Step:      1,
@@ -362,7 +362,7 @@ func (h *Handler) AddMultipleImport(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	render.Wrap(w, "layouts/default", "publication/add_multiple_description", YieldAddMultiple{
+	render.MustRenderLayout(w, "layouts/default", "publication/pages/add_multiple_description", YieldAddMultiple{
 		Context:     ctx,
 		PageTitle:   "Add - Publications - Biblio",
 		Step:        2,
@@ -395,7 +395,7 @@ func (h *Handler) AddMultipleDescription(w http.ResponseWriter, r *http.Request,
 		return
 	}
 
-	render.Wrap(w, "layouts/default", "publication/add_multiple_description", YieldAddMultiple{
+	render.MustRenderLayout(w, "layouts/default", "publication/pages/add_multiple_description", YieldAddMultiple{
 		Context:     ctx,
 		PageTitle:   "Add - Publications - Biblio",
 		Step:        2,
@@ -415,7 +415,7 @@ func (h *Handler) AddMultipleShow(w http.ResponseWriter, r *http.Request, ctx Co
 		subNav = "description"
 	}
 
-	render.Wrap(w, "layouts/default", "publication/add_multiple_show", YieldAddMultipleShow{
+	render.MustRenderLayout(w, "layouts/default", "publication/pages/add_multiple_show", YieldAddMultipleShow{
 		Context:      ctx,
 		PageTitle:    "Add - Publications - Biblio",
 		Step:         2,
@@ -448,7 +448,7 @@ func (h *Handler) AddMultipleConfirm(w http.ResponseWriter, r *http.Request, ctx
 		return
 	}
 
-	render.Wrap(w, "layouts/default", "publication/add_multiple_confirm", YieldAddMultiple{
+	render.MustRenderLayout(w, "layouts/default", "publication/pages/add_multiple_confirm", YieldAddMultiple{
 		Context:     ctx,
 		PageTitle:   "Add - Publications - Biblio",
 		Step:        3,
@@ -470,7 +470,7 @@ func (h *Handler) AddMultiplePublish(w http.ResponseWriter, r *http.Request, ctx
 	var validationErrs validation.Errors
 	if errors.As(err, &validationErrs) {
 		errors := form.Errors(localize.ValidationErrors(ctx.Locale, validationErrs))
-		render.Render(w, "form_errors_dialog", struct {
+		render.MustRenderLayout(w, "show_modal", "form_errors_dialog", struct {
 			Title  string
 			Errors form.Errors
 		}{
@@ -511,7 +511,7 @@ func (h *Handler) AddMultipleFinish(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	render.Wrap(w, "layouts/default", "publication/add_multiple_finish", YieldAddMultiple{
+	render.MustRenderLayout(w, "layouts/default", "publication/pages/add_multiple_finish", YieldAddMultiple{
 		Context:     ctx,
 		PageTitle:   "Add - Publications - Biblio",
 		Step:        4,

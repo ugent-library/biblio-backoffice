@@ -1,3 +1,4 @@
+{{define "page_content"}}
 {{template "publication/add_sidebar" .}}
 
 <div class="w-100 u-scroll-wrapper">
@@ -14,7 +15,7 @@
                 </div>
                 <div class="bc-toolbar-right">
                     <div class="bc-toolbar-item">
-                        <a class="btn btn-primary" href="{{pathFor "publication_add_multiple_confirm" "batch_id" .BatchID "id" .Publication.ID}}">
+                        <a class="btn btn-primary btn-submit-description" href="{{pathFor "publication_add_single_confirm" "id" .Publication.ID}}">
                             <div class="btn-text">Publish to Biblio</div>
                             <i class="if if-arrow-right"></i>
                         </a>
@@ -26,8 +27,14 @@
         <div class="c-divider mt-0 mx-6"></div>
 
         <div id="summary">
-            <div class="mx-6">
-                <h4 class="h4">{{.Publication.Title}}</h4>
+            <div class="c-header-collapsible mx-6">
+                <div class="d-flex w-100">
+                    <div class="w-100">
+                        <div class="d-flex align-items-start">
+                            <h4 class="h4">{{.Publication.Title}}</h4>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -45,9 +52,10 @@
     </div>
 
     <div class="u-scroll-wrapper__body p-6" id="show-content"
-        hx-get="{{pathFor (print "publication_" .ActiveSubNav) "id" .Publication.ID|querySet "redirect-url" .RedirectURL}}"
+        hx-get="{{pathFor (print "publication_" .ActiveSubNav) "id" .Publication.ID}}"
         hx-trigger="load delay:100ms"
         hx-target="#show-content"
     >
     </div>
 </div>
+{{end}}

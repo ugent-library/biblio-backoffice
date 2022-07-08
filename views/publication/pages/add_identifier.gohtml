@@ -1,3 +1,4 @@
+{{define "page_content"}}
 {{template "publication/add_sidebar" .}}
 
 <form class="w-100 u-scroll-wrapper" action="{{pathFor "publication_add_single_import_confirm"}}" method="POST">
@@ -89,4 +90,5 @@
         </div>
     </div>
 </div>
+{{end}}
 {{end}}

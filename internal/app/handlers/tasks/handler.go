@@ -68,7 +68,7 @@ func (h *Handler) Status(w http.ResponseWriter, r *http.Request, ctx Context) {
 		}
 	}
 
-	render.Render(w, "task/status", YieldStatus{
+	render.MustRenderPartial(w, "task/status", YieldStatus{
 		ID:      b.ID,
 		Status:  status,
 		Message: msg,

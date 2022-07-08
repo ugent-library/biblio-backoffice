@@ -1,30 +1,29 @@
-<div id="modal-backdrop" class="d-block modal-backdrop fade show"></div>
-<div class="d-block modal show" tabindex="-1" aria-modal="true" role="dialog">
-    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">Edit file {{.File.Filename}}</h2>
+{{define "modal_dialog"}}
+<div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">Edit file {{.File.Filename}}</h2>
+        </div>
+        <div class="modal-body file-attributes">
+            {{.Form.Errors.Render}}
+            {{range .Form.Sections}}
+            <div class="form-row">
+                {{.Render}}
             </div>
-            <div class="modal-body file-attributes">
-                {{.Form.Errors.Render}}
-                {{range .Form.Sections}}
-                <div class="form-row">
-                    {{.Render}}
-                </div>
-                {{end}}
+            {{end}}
+        </div>
+        <div class="modal-footer">
+            <div class="spinner-border">
+                <span class="sr-only"></span>
             </div>
-            <div class="modal-footer">
-                <div class="spinner-border">
-                    <span class="sr-only"></span>
-                </div>
-                <button class="btn btn-link modal-close">Cancel</button>
-                <button class="btn btn-primary modal-close" type="submit"
-                    hx-put="{{pathFor "publication_update_file" "id" .Publication.ID "file_id" .File.ID}}"
-                    hx-headers='{"If-Match": "{{.Publication.SnapshotID}}"}'
-                    hx-include=".file-attributes"
-                    hx-swap="none"
-                >Save</button>
-            </div>
+            <button class="btn btn-link modal-close">Cancel</button>
+            <button class="btn btn-primary modal-close" type="submit"
+                hx-put="{{pathFor "publication_update_file" "id" .Publication.ID "file_id" .File.ID}}"
+                hx-headers='{"If-Match": "{{.Publication.SnapshotID}}"}'
+                hx-include=".file-attributes"
+                hx-swap="none"
+            >Save</button>
         </div>
     </div>
 </div>
+{{end}}

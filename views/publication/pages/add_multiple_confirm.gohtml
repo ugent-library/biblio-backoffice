@@ -1,3 +1,4 @@
+{{define "page_content"}}
 {{template "publication/add_sidebar" .}}
 
 <div class="w-100 u-scroll-wrapper">
@@ -20,7 +21,7 @@
                 <div class="bc-toolbar-item">
                     <button class="btn btn-success btn-add-multiple-publish"
                         hx-post="{{pathFor "publication_add_multiple_publish" "batch_id" .BatchID}}"
-                        hx-swap="none"
+                        hx-target="#modals"
                         hx-indicator=".btn-add-multiple-publish .spinner-border"
                     >
                         <div class="btn-text">Publish all to Biblio</div>
@@ -156,3 +157,4 @@
         </nav>
     </div>
 </div>
+{{end}}

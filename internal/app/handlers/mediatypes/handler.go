@@ -50,7 +50,7 @@ func (h *Handler) Suggest(w http.ResponseWriter, r *http.Request, ctx Context) {
 		return
 	}
 
-	render.Render(w, "media_types/suggest", YieldSuggest{
+	render.MustRenderView(w, "media_types/suggest", YieldSuggest{
 		Context: ctx,
 		Hits:    hits,
 	})

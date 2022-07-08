@@ -1,3 +1,4 @@
+{{define "page_content"}}
 {{template "publication/add_sidebar" .}}
 
 <div class="w-100 u-scroll-wrapper">
@@ -17,16 +18,16 @@
     <div class="p-6 u-scroll-wrapper__body">
         <div class="card card-collapsible mb-6">
             <div class="card-header">
-                <div class="collapse-trigger" data-toggle="collapse" data-target="#importFromWOS" aria-expanded="true" aria-controls="collapse1"></div>
+                <div class="collapse-trigger" data-toggle="collapse" data-target="#importFromBibTex" aria-expanded="true" aria-controls="collapse1"></div>
                 <div class="bc-toolbar">
-                    <div class="bc-toolbar-left">Import from Web of Science</div>
+                    <div class="bc-toolbar-left">Import via BibTeX file</div>
                 </div>
             </div>
-            <div class="collapse show" id="importFromWOS">
+            <div class="collapsed" id="importFromBibTex">
                 <div class="card-body">
                     <form class="form-change-submit" action="{{pathFor "publication_add_multiple_import"}}" method="POST" enctype="multipart/form-data">
                         {{.CSRFTag}}
-                        <input type="hidden" name="source" value="wos">
+                        <input type="hidden" name="source" value="bibtex">
 
                         <div class="c-file-upload">
                             <input type="file" name="file">
@@ -39,12 +40,11 @@
                                 </button>
                             </div>
                         </div>
-
-                        <small class="form-text text-muted my-3"><a href="https://onderzoektips.ugent.be/en/tips/00002067/" target="_blank">Web of Science import instructions</a></small>
+                        <small class="form-text text-muted my-3"><a href="https://onderzoektips.ugent.be/en/tips/00002068/" target="_blank">BIBtex import instructions</a></small>
                     </form>
                 </div>
             </div>
         </div>
-
     </div>
 </div>
+{{end}}

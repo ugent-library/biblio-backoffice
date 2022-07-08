@@ -65,7 +65,7 @@ func (h *Handler) Show(w http.ResponseWriter, r *http.Request, ctx Context) {
 		activeSubNav = "description"
 	}
 
-	render.Wrap(w, "layouts/default", "publication/show_page", YieldShow{
+	render.MustRenderLayout(w, "layouts/default", "publication/pages/show", YieldShow{
 		Context:      ctx,
 		PageTitle:    ctx.T("publication.page.show.title"),
 		SubNavs:      subNavs,
@@ -75,7 +75,7 @@ func (h *Handler) Show(w http.ResponseWriter, r *http.Request, ctx Context) {
 }
 
 func (h *Handler) ShowDescription(w http.ResponseWriter, r *http.Request, ctx Context) {
-	render.Render(w, "publication/show_description", YieldShowDescription{
+	render.MustRenderView(w, "publication/show_description", YieldShowDescription{
 		Context:               ctx,
 		SubNavs:               subNavs,
 		ActiveSubNav:          "description",
@@ -86,7 +86,7 @@ func (h *Handler) ShowDescription(w http.ResponseWriter, r *http.Request, ctx Co
 }
 
 func (h *Handler) ShowFiles(w http.ResponseWriter, r *http.Request, ctx Context) {
-	render.Render(w, "publication/show_files", YieldShowFiles{
+	render.MustRenderView(w, "publication/show_files", YieldShowFiles{
 		Context:      ctx,
 		SubNavs:      subNavs,
 		ActiveSubNav: "files",
@@ -94,7 +94,7 @@ func (h *Handler) ShowFiles(w http.ResponseWriter, r *http.Request, ctx Context)
 }
 
 func (h *Handler) ShowContributors(w http.ResponseWriter, r *http.Request, ctx Context) {
-	render.Render(w, "publication/show_contributors", YieldShowContributors{
+	render.MustRenderView(w, "publication/show_contributors", YieldShowContributors{
 		Context:      ctx,
 		SubNavs:      subNavs,
 		ActiveSubNav: "contributors",
@@ -108,7 +108,7 @@ func (h *Handler) ShowDatasets(w http.ResponseWriter, r *http.Request, ctx Conte
 		return
 	}
 
-	render.Render(w, "publication/show_datasets", YieldShowDatasets{
+	render.MustRenderView(w, "publication/show_datasets", YieldShowDatasets{
 		Context:         ctx,
 		SubNavs:         subNavs,
 		ActiveSubNav:    "datasets",
