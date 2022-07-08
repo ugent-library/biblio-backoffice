@@ -9,7 +9,7 @@
         </div>
         <div class="modal-footer">
             <button class="btn btn-link modal-close">Cancel</button>
-            <button class="btn btn-primary modal-close"
+            <button class="btn btn-primary"
                 hx-put="{{pathFor "dataset_update_contributor" "id" .Dataset.ID "role" .Role "position" (.Position|toString)}}"
                 hx-headers='{"If-Match": "{{.Dataset.SnapshotID}}"}'
                 hx-include=".modal-body .contributor-attributes"

@@ -38,7 +38,7 @@ func (h *Handler) AddDataset(w http.ResponseWriter, r *http.Request, ctx Context
 		return
 	}
 
-	render.Render(w, "publication/add_dataset", YieldAddDataset{
+	render.MustRenderLayout(w, "show_modal", "publication/add_dataset", YieldAddDataset{
 		Context: ctx,
 		Hits:    hits,
 	})
@@ -57,7 +57,7 @@ func (h *Handler) SuggestDatasets(w http.ResponseWriter, r *http.Request, ctx Co
 		return
 	}
 
-	render.Render(w, "publication/suggest_datasets", YieldAddDataset{
+	render.MustRenderPartial(w, "publication/suggest_datasets", YieldAddDataset{
 		Context: ctx,
 		Hits:    hits,
 	})
@@ -94,7 +94,7 @@ func (h *Handler) CreateDataset(w http.ResponseWriter, r *http.Request, ctx Cont
 		return
 	}
 
-	render.Render(w, "publication/refresh_datasets", YieldDatasets{
+	render.MustRenderView(w, "publication/refresh_datasets", YieldDatasets{
 		Context:         ctx,
 		RelatedDatasets: relatedDatasets,
 	})
@@ -107,7 +107,7 @@ func (h *Handler) ConfirmDeleteDataset(w http.ResponseWriter, r *http.Request, c
 		return
 	}
 
-	render.Render(w, "publication/confirm_delete_dataset", YieldDeleteDataset{
+	render.MustRenderLayout(w, "show_modal", "publication/confirm_delete_dataset", YieldDeleteDataset{
 		Context:   ctx,
 		DatasetID: b.DatasetID,
 	})
@@ -144,7 +144,7 @@ func (h *Handler) DeleteDataset(w http.ResponseWriter, r *http.Request, ctx Cont
 		return
 	}
 
-	render.Render(w, "publication/refresh_datasets", YieldDatasets{
+	render.MustRenderView(w, "publication/refresh_datasets", YieldDatasets{
 		Context:         ctx,
 		RelatedDatasets: relatedDatasets,
 	})

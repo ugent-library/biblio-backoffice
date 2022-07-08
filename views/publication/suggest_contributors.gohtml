@@ -40,7 +40,7 @@
                                             <button class="btn btn-primary membership-member"
                                                 hx-post="{{pathFor "publication_confirm_contributor" "id" $.Publication.ID "role" $.Role "position" ($.Position|toString)}}"
                                                 hx-include='#person-{{.ID}} input[name="id"], .contributor-attributes input[name^=credit_role]'
-                                                hx-target="#modals"
+                                                hx-swap="none"
                                                 >Confirm {{$.TS "publication.contributor.role" $.Role}}</button>
                                         </div>
                                     </div>

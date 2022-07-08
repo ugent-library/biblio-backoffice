@@ -35,7 +35,7 @@ type YieldEditConference struct {
 }
 
 func (h *Handler) EditConference(w http.ResponseWriter, r *http.Request, ctx Context) {
-	render.Render(w, "publication/edit_conference", YieldEditConference{
+	render.MustRenderLayout(w, "show_modal", "publication/edit_conference", YieldEditConference{
 		Context: ctx,
 		Form:    conferenceForm(ctx.Locale, ctx.Publication, nil),
 	})
@@ -58,7 +58,7 @@ func (h *Handler) UpdateConference(w http.ResponseWriter, r *http.Request, ctx C
 
 	if validationErrs := p.Validate(); validationErrs != nil {
 		form := conferenceForm(ctx.Locale, p, validationErrs.(validation.Errors))
-		render.Render(w, "publication/refresh_edit_conference", YieldEditConference{
+		render.MustRenderLayout(w, "refresh_modal", "publication/edit_conference", YieldEditConference{
 			Context: ctx,
 			Form:    form,
 		})
@@ -78,7 +78,7 @@ func (h *Handler) UpdateConference(w http.ResponseWriter, r *http.Request, ctx C
 		return
 	}
 
-	render.Render(w, "publication/refresh_conference", YieldConference{
+	render.MustRenderView(w, "publication/refresh_conference", YieldConference{
 		Context:           ctx,
 		DisplayConference: displays.PublicationConference(ctx.Locale, p.Conference),
 	})

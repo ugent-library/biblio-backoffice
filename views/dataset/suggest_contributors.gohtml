@@ -36,8 +36,8 @@
                                         <div class="list-group-item-meta-right">
                                             <button class="btn btn-primary membership-member"
                                                 hx-post="{{pathFor "dataset_confirm_contributor" "id" $.Dataset.ID "role" $.Role "position" ($.Position|toString)}}"
-                                                hx-target="#modals"
                                                 hx-include='#person-{{.ID}} input[name="id"]'
+                                                hx-swap="none"
                                                 >Confirm {{$.TS "dataset.contributor.role" $.Role}}</button>
                                         </div>
                                     </div>

@@ -179,7 +179,7 @@ func (h *Handler) DeleteAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Render(w, "error_dialog", ctx.T("publication.conflict_error"))
+		render.MustRenderLayout(w, "refresh_modal", "error_dialog", ctx.T("publication.conflict_error"))
 		return
 	}
 
@@ -188,7 +188,7 @@ func (h *Handler) DeleteAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 		return
 	}
 
-	render.Render(w, "publication/refresh_abstracts", YieldAbstracts{
+	render.MustRenderView(w, "publication/refresh_abstracts", YieldAbstracts{
 		Context: ctx,
 	})
 }

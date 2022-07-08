@@ -9,7 +9,7 @@
         </div>
         <div class="modal-footer">
             <button class="btn btn-link modal-close" data-dismiss="modal">Cancel</button>
-            <button class="btn btn-primary modal-close" data-dismiss="modal"
+            <button class="btn btn-primary"
                 hx-post="{{pathFor "publication_create_contributor" "id" .Publication.ID "role" .Role}}"
                 hx-headers='{"If-Match": "{{.Publication.SnapshotID}}"}'
                 hx-include=".modal-body .contributor-attributes"

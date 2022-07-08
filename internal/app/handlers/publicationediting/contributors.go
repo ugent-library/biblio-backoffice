@@ -120,7 +120,7 @@ func (h *Handler) AddContributor(w http.ResponseWriter, r *http.Request, ctx Con
 
 	f := contributorForm(ctx, b.Role, position, c, nil)
 
-	render.Render(w, "publication/add_contributor", YieldContributorForm{
+	render.MustRenderLayout(w, "show_modal", "publication/add_contributor", YieldContributorForm{
 		Context:     ctx,
 		Role:        b.Role,
 		Position:    position,
@@ -148,7 +148,7 @@ func (h *Handler) SuggestContributors(w http.ResponseWriter, r *http.Request, ct
 		LastName:   b.LastName,
 	}
 
-	render.Render(w, "publication/suggest_contributors", YieldSuggestContributors{
+	render.MustRenderLayout(w, "refresh_modal", "publication/suggest_contributors", YieldSuggestContributors{
 		Context:     ctx,
 		Role:        b.Role,
 		Position:    b.Position,
@@ -186,7 +186,7 @@ func (h *Handler) ConfirmContributor(w http.ResponseWriter, r *http.Request, ctx
 		tmpl = "publication/add_contributor"
 	}
 
-	render.Render(w, tmpl, YieldContributorForm{
+	render.MustRenderLayout(w, "refresh_modal", tmpl, YieldContributorForm{
 		Context:     ctx,
 		Role:        b.Role,
 		Position:    b.Position,
@@ -217,7 +217,7 @@ func (h *Handler) UnconfirmContributor(w http.ResponseWriter, r *http.Request, c
 		tmpl = "publication/add_contributor"
 	}
 
-	render.Render(w, tmpl, YieldContributorForm{
+	render.MustRenderLayout(w, "refresh_modal", tmpl, YieldContributorForm{
 		Context:     ctx,
 		Role:        b.Role,
 		Position:    b.Position,
@@ -254,7 +254,7 @@ func (h *Handler) CreateContributor(w http.ResponseWriter, r *http.Request, ctx 
 
 	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
 		f := contributorForm(ctx, b.Role, position, c, validationErrs.(validation.Errors))
-		render.Render(w, "publication/refresh_add_contributor", YieldContributorForm{
+		render.MustRenderLayout(w, "refresh_modal", "publication/add_contributor", YieldContributorForm{
 			Context:     ctx,
 			Role:        b.Role,
 			Position:    position,
@@ -268,7 +268,7 @@ func (h *Handler) CreateContributor(w http.ResponseWriter, r *http.Request, ctx 
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Render(w, "error_dialog", ctx.T("publication.conflict_error"))
+		render.MustRenderLayout(w, "refresh_modal", "error_dialog", ctx.T("publication.conflict_error"))
 		return
 	}
 
@@ -277,7 +277,7 @@ func (h *Handler) CreateContributor(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	render.Render(w, "publication/refresh_contributors", YieldContributors{
+	render.MustRenderView(w, "publication/refresh_contributors", YieldContributors{
 		Context: ctx,
 		Role:    b.Role,
 	})
@@ -298,7 +298,7 @@ func (h *Handler) EditContributor(w http.ResponseWriter, r *http.Request, ctx Co
 
 	f := contributorForm(ctx, b.Role, b.Position, c, nil)
 
-	render.Render(w, "publication/edit_contributor", YieldContributorForm{
+	render.MustRenderLayout(w, "show_modal", "publication/edit_contributor", YieldContributorForm{
 		Context:     ctx,
 		Role:        b.Role,
 		Position:    b.Position,
@@ -336,7 +336,7 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 
 	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
 		f := contributorForm(ctx, b.Role, b.Position, c, validationErrs.(validation.Errors))
-		render.Render(w, "publication/refresh_edit_contributor", YieldContributorForm{
+		render.MustRenderLayout(w, "refresh_modal", "publication/edit_contributor", YieldContributorForm{
 			Context:     ctx,
 			Role:        b.Role,
 			Position:    b.Position,
@@ -350,7 +350,7 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Render(w, "error_dialog", ctx.T("publication.conflict_error"))
+		render.MustRenderLayout(w, "refresh_modal", "error_dialog", ctx.T("publication.conflict_error"))
 		return
 	}
 
@@ -359,7 +359,7 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	render.Render(w, "publication/refresh_contributors", YieldContributors{
+	render.MustRenderView(w, "publication/refresh_contributors", YieldContributors{
 		Context: ctx,
 		Role:    b.Role,
 	})
@@ -372,7 +372,7 @@ func (h *Handler) ConfirmDeleteContributor(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	render.Render(w, "publication/confirm_delete_contributor", YieldDeleteContributor{
+	render.MustRenderLayout(w, "show_modal", "publication/confirm_delete_contributor", YieldDeleteContributor{
 		Context:  ctx,
 		Role:     b.Role,
 		Position: b.Position,
@@ -393,7 +393,7 @@ func (h *Handler) DeleteContributor(w http.ResponseWriter, r *http.Request, ctx 
 
 	if err := ctx.Publication.Validate(); err != nil {
 		errors := form.Errors(localize.ValidationErrors(ctx.Locale, err.(validation.Errors)))
-		render.Render(w, "form_errors_dialog", struct {
+		render.MustRenderLayout(w, "refresh_modal", "form_errors_dialog", struct {
 			Title  string
 			Errors form.Errors
 		}{
@@ -407,7 +407,7 @@ func (h *Handler) DeleteContributor(w http.ResponseWriter, r *http.Request, ctx 
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Render(w, "error_dialog", ctx.T("publication.conflict_error"))
+		render.MustRenderLayout(w, "refresh_modal", "error_dialog", ctx.T("publication.conflict_error"))
 		return
 	}
 
@@ -416,7 +416,7 @@ func (h *Handler) DeleteContributor(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	render.Render(w, "publication/refresh_contributors", YieldContributors{
+	render.MustRenderView(w, "publication/refresh_contributors", YieldContributors{
 		Context: ctx,
 		Role:    b.Role,
 	})
@@ -444,7 +444,7 @@ func (h *Handler) OrderContributors(w http.ResponseWriter, r *http.Request, ctx 
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Render(w, "error_dialog", ctx.T("publication.conflict_error"))
+		render.MustRenderLayout(w, "show_modal", "error_dialog", ctx.T("publication.conflict_error"))
 		return
 	}
 
@@ -453,7 +453,7 @@ func (h *Handler) OrderContributors(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	render.Render(w, "publication/refresh_contributors", YieldContributors{
+	render.MustRenderView(w, "publication/refresh_contributors", YieldContributors{
 		Context: ctx,
 		Role:    b.Role,
 	})
