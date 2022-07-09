@@ -97,6 +97,11 @@ func (r *Renderer) Parse() (*Renderer, error) {
 		viewTemplates    = map[string]*template.Template{}
 	)
 
+	// add funcs
+	for _, funcs := range r.funcMaps {
+		partialsTemplate.Funcs(funcs)
+	}
+
 	// read template files
 	for _, dir := range r.dirs {
 		if err := r.parseDir(dir, views, partials); err != nil {
@@ -106,11 +111,8 @@ func (r *Renderer) Parse() (*Renderer, error) {
 
 	// create template that contains every partial
 	for name, content := range partials {
-		t := partialsTemplate.New(name)
-		for _, funcs := range r.funcMaps {
-			t.Funcs(funcs)
-		}
-		if _, err := t.Parse(content); err != nil {
+		t, err := partialsTemplate.New(name).Parse(content)
+		if err != nil {
 			return r, err
 		}
 		partialsTemplate = t
@@ -122,11 +124,7 @@ func (r *Renderer) Parse() (*Renderer, error) {
 		if err != nil {
 			return r, err
 		}
-		t = t.New(name)
-		for _, funcs := range r.funcMaps {
-			t.Funcs(funcs)
-		}
-		if _, err := t.Parse(content); err != nil {
+		if t, err = t.New(name).Parse(content); err != nil {
 			return r, err
 		}
 		viewTemplates[name] = t
