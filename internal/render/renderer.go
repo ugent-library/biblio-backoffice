@@ -88,6 +88,7 @@ func (r *Renderer) MustParse() *Renderer {
 	return r
 }
 
+// TODO we don't need top keep all views in memory during parsing
 func (r *Renderer) Parse() (*Renderer, error) {
 	var (
 		views            = map[string]string{}
