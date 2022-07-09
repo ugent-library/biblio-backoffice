@@ -1,6 +1,5 @@
 package render
 
-// derived from https://github.com/biz/templates
 // TODO use buffer pool
 
 import (
@@ -26,8 +25,6 @@ type Renderer struct {
 	funcMaps         []template.FuncMap
 	partialsTemplate *template.Template
 	viewTemplates    map[string]*template.Template
-	views            map[string]string
-	partials         map[string]string
 }
 
 func New() *Renderer {
@@ -35,8 +32,6 @@ func New() *Renderer {
 		contentType:      "text/html; charset=utf-8",
 		partialsTemplate: template.New(""),
 		viewTemplates:    map[string]*template.Template{},
-		views:            map[string]string{},
-		partials:         map[string]string{},
 	}
 
 	r.AddFuncs(template.FuncMap{
@@ -71,16 +66,6 @@ func (r *Renderer) ContentType(contentType string) *Renderer {
 	return r
 }
 
-func (r *Renderer) AddView(name string, content string) *Renderer {
-	r.views[name] = content
-	return r
-}
-
-func (r *Renderer) AddPartial(name string, content string) *Renderer {
-	r.partials[name] = content
-	return r
-}
-
 func (r *Renderer) AddExt(ext string) *Renderer {
 	r.exts = append(r.exts, ext)
 	return r
@@ -104,46 +89,55 @@ func (r *Renderer) MustParse() *Renderer {
 }
 
 func (r *Renderer) Parse() (*Renderer, error) {
-	// reset templates
-	r.partialsTemplate = template.New("")
-	r.viewTemplates = map[string]*template.Template{}
+	var (
+		views            = map[string]string{}
+		partials         = map[string]string{}
+		partialsTemplate = template.New("")
+		viewTemplates    = map[string]*template.Template{}
+	)
 
 	// read template files
 	for _, dir := range r.dirs {
-		if err := r.parseDir(dir); err != nil {
+		if err := r.parseDir(dir, views, partials); err != nil {
 			return r, err
 		}
 	}
 
 	// create template that contains every partial
-	for _, funcs := range r.funcMaps {
-		r.partialsTemplate.Funcs(funcs)
-	}
-	for name, content := range r.partials {
-		t, err := r.partialsTemplate.New(name).Parse(content)
-		if err != nil {
+	for name, content := range partials {
+		t := partialsTemplate.New(name)
+		for _, funcs := range r.funcMaps {
+			t.Funcs(funcs)
+		}
+		if _, err := t.Parse(content); err != nil {
 			return r, err
 		}
-		r.partialsTemplate = t
+		partialsTemplate = t
 	}
 
 	// clone partials template to create view templates
-	for name, content := range r.views {
-		t, err := r.partialsTemplate.Clone()
+	for name, content := range views {
+		t, err := partialsTemplate.Clone()
 		if err != nil {
 			return r, err
 		}
-		t, err = t.Parse(content)
-		if err != nil {
+		t = t.New(name)
+		for _, funcs := range r.funcMaps {
+			t.Funcs(funcs)
+		}
+		if _, err := t.Parse(content); err != nil {
 			return r, err
 		}
-		r.viewTemplates[name] = t
+		viewTemplates[name] = t
 	}
+
+	r.partialsTemplate = partialsTemplate
+	r.viewTemplates = viewTemplates
 
 	return r, nil
 }
 
-func (r *Renderer) parseDir(rootDir string) error {
+func (r *Renderer) parseDir(rootDir string, views, partials map[string]string) error {
 	rootDir = filepath.Clean(rootDir)
 
 	return filepath.Walk(rootDir, func(f string, info os.FileInfo, err error) error {
@@ -178,9 +172,9 @@ func (r *Renderer) parseDir(rootDir string) error {
 		// if template name starts with an underscore it's a partial
 		if strings.HasPrefix(file, "_") {
 			name = path.Join(dir, file[1:])
-			r.partials[name] = string(content)
+			partials[name] = string(content)
 		} else {
-			r.views[name] = string(content)
+			views[name] = string(content)
 		}
 
 		return nil
@@ -206,7 +200,7 @@ func (r *Renderer) ExecuteView(w io.Writer, view string, data any) error {
 		return fmt.Errorf("render: view '%s' not found", view)
 	}
 
-	if err := tmpl.Execute(w, data); err != nil {
+	if err := tmpl.ExecuteTemplate(w, view, data); err != nil {
 		return errors.Wrapf(err, "render: Execute error, view '%s'", view)
 	}
 
@@ -270,14 +264,6 @@ var defaultRenderer = New()
 
 func ContentType(contentType string) *Renderer {
 	return defaultRenderer.ContentType(contentType)
-}
-
-func AddView(name, content string) *Renderer {
-	return defaultRenderer.AddView(name, content)
-}
-
-func AddPartial(name, content string) *Renderer {
-	return defaultRenderer.AddPartial(name, content)
 }
 
 func AddExt(ext string) *Renderer {
