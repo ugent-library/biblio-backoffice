@@ -88,11 +88,8 @@ func (r *Renderer) MustParse() *Renderer {
 	return r
 }
 
-// TODO we don't need top keep all views in memory during parsing
 func (r *Renderer) Parse() (*Renderer, error) {
 	var (
-		views            = map[string]string{}
-		partials         = map[string]string{}
 		partialsTemplate = template.New("")
 		viewTemplates    = map[string]*template.Template{}
 	)
@@ -102,82 +99,116 @@ func (r *Renderer) Parse() (*Renderer, error) {
 		partialsTemplate.Funcs(funcs)
 	}
 
-	// read template files
+	// parse partials
 	for _, dir := range r.dirs {
-		if err := r.parseDir(dir, views, partials); err != nil {
+		rootDir := filepath.Clean(dir)
+
+		err := filepath.Walk(rootDir, func(f string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+
+			if info.IsDir() {
+				return nil
+			}
+
+			var ext string
+			for _, e := range r.exts {
+				if strings.HasSuffix(f, e) {
+					ext = e
+					break
+				}
+			}
+
+			if ext == "" {
+				return nil
+			}
+
+			name := f[len(rootDir)+1 : len(f)-len(ext)]
+			dir, file := path.Split(name)
+
+			// if template name starts with an underscore it's a partial
+			if strings.HasPrefix(file, "_") {
+				name = path.Join(dir, file[1:])
+
+				content, err := ioutil.ReadFile(f)
+				if err != nil {
+					return err
+				}
+
+				t, err := partialsTemplate.New(name).Parse(string(content))
+				if err != nil {
+					return err
+				}
+				partialsTemplate = t
+			}
+
+			return nil
+		})
+
+		if err != nil {
 			return r, err
 		}
 	}
 
-	// create template that contains every partial
-	for name, content := range partials {
-		t, err := partialsTemplate.New(name).Parse(content)
-		if err != nil {
-			return r, err
-		}
-		partialsTemplate = t
-	}
+	// parse views
+	for _, dir := range r.dirs {
+		rootDir := filepath.Clean(dir)
 
-	// clone partials template to create view templates
-	for name, content := range views {
-		t, err := partialsTemplate.Clone()
+		err := filepath.Walk(rootDir, func(f string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+
+			if info.IsDir() {
+				return nil
+			}
+
+			var ext string
+			for _, e := range r.exts {
+				if strings.HasSuffix(f, e) {
+					ext = e
+					break
+				}
+			}
+
+			if ext == "" {
+				return nil
+			}
+
+			name := f[len(rootDir)+1 : len(f)-len(ext)]
+			_, file := path.Split(name)
+
+			// if template name doesn't with an underscore it's a view
+			if !strings.HasPrefix(file, "_") {
+				content, err := ioutil.ReadFile(f)
+				if err != nil {
+					return err
+				}
+
+				t, err := partialsTemplate.Clone()
+				if err != nil {
+					return err
+				}
+				if t, err = t.New(name).Parse(string(content)); err != nil {
+					return err
+				}
+
+				viewTemplates[name] = t
+			}
+
+			return nil
+		})
+
 		if err != nil {
 			return r, err
 		}
-		if t, err = t.New(name).Parse(content); err != nil {
-			return r, err
-		}
-		viewTemplates[name] = t
 	}
 
 	r.partialsTemplate = partialsTemplate
 	r.viewTemplates = viewTemplates
 
 	return r, nil
-}
-
-func (r *Renderer) parseDir(rootDir string, views, partials map[string]string) error {
-	rootDir = filepath.Clean(rootDir)
-
-	return filepath.Walk(rootDir, func(f string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-
-		if info.IsDir() {
-			return nil
-		}
-
-		var ext string
-		for _, e := range r.exts {
-			if strings.HasSuffix(f, e) {
-				ext = e
-				break
-			}
-		}
-
-		if ext == "" {
-			return nil
-		}
-
-		content, err := ioutil.ReadFile(f)
-		if err != nil {
-			return err
-		}
-
-		name := f[len(rootDir)+1 : len(f)-len(ext)]
-		dir, file := path.Split(name)
-
-		// if template name starts with an underscore it's a partial
-		if strings.HasPrefix(file, "_") {
-			name = path.Join(dir, file[1:])
-			partials[name] = string(content)
-		} else {
-			views[name] = string(content)
-		}
-
-		return nil
-	})
 }
 
 func (r *Renderer) View(w http.ResponseWriter, view string, data any) {
