@@ -1,5 +1,5 @@
 {{define "page_content"}}
-{{template "publication/add_sidebar" .}}
+{{partial "publication/add_sidebar" .}}
 
 <div class="w-100 u-scroll-wrapper">
     <div class="bc-navbar bc-navbar--xlarge bc-navbar-bordered bc-navbar--white bc-navbar--bordered-bottom">
@@ -54,7 +54,7 @@
         <div class="card mb-6">
             <div class="card-header">
                 <h4 class="mr-5 d-inline">Imported publications</h4>
-                {{template "search/count" .}}
+                {{partial "search/count" .}}
             </div>
             <div class="card-body p-0">
                 <ul class="list-group list-group-flush">
@@ -65,13 +65,13 @@
                             <div class="w-100">
                                 <div class="d-flex align-items-start">
                                     <a href="{{$pubURL}}">
-                                        {{template "publication/thumbnail" .}}
+                                        {{partial "publication/thumbnail" .}}
                                     </a>
                                     <div class="list-group-item-content">
                                         <div class="list-group-item-subline">
                                             <div class="list-group-item-subline-left">
                                                 <span class="mr-3 pr-3 border-right">{{$.TS "publication_types" .Type}}{{with .Classification}}: {{.}}{{end}}</span>
-                                                {{template "publication/access_level" .}}
+                                                {{partial "publication/access_level" .}}
                                             </div>
                                             <div class="list-group-item-subline-right">
                                                 <div class="dropdown dropleft">
@@ -94,7 +94,7 @@
                                             <a href="{{$pubURL}}">
                                                 <h4 class="c-h4">{{.Title}}</h4>
                                             </a>
-                                            {{with .Author}}{{template "shared/contributors" .}}{{end}}
+                                            {{with .Author}}{{partial "shared/contributors" .}}{{end}}
                                             <span class="c-body-small text-muted">
                                                 {{.Year}}{{with .Publication}}, {{.}}{{end}}
                                             </span>
@@ -102,7 +102,7 @@
                                         <div class="list-group-item-meta mt-5">
                                             <div class="list-group-item-meta-left">
                                                 <div class="list-group-item-meta-item">
-                                                    {{template "shared/status" .}}
+                                                    {{partial "shared/status" .}}
                                                 </div>
                                             </div>
                                             <div class="list-group-item-meta-right">
@@ -153,7 +153,7 @@
             </div>
         </div>
         <nav aria-label="Page navigation">
-            {{template "search/pagination" .}}
+            {{partial "search/pagination" .}}
         </nav>
     </div>
 </div>

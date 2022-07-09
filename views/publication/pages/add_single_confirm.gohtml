@@ -1,5 +1,5 @@
 {{define "page_content"}}
-{{template "publication/add_sidebar" .}}
+{{partial "publication/add_sidebar" .}}
 
 <div class="w-100 u-scroll-wrapper">
     <div class="bc-navbar bc-navbar--xlarge bc-navbar-bordered bc-navbar--white bc-navbar--bordered-bottom">
@@ -55,7 +55,7 @@
                         <div class="d-flex w-100">
                             <div class="w-100">
                                 <div class="d-flex align-items-start">
-                                    {{template "publication/summary_body" .}}
+                                    {{partial "publication/summary_body" .}}
                                 </div>
                                 <div class="list-group mt-6">
                                     <a class="list-group-item list-group-item-action" href="{{pathFor "publication_add_single_description" "id" .Publication.ID|querySet "show" "description"}}">

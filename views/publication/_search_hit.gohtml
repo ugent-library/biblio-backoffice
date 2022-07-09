@@ -4,13 +4,13 @@
     <div class="w-100">
         <div class="d-flex align-items-start">
             <a href="{{$pURL}}">
-                {{template "publication/thumbnail" .Publication}}
+                {{partial "publication/thumbnail" .Publication}}
             </a>
             <div class="list-group-item-content">
                 <div class="list-group-item-subline">
                     <div class="list-group-item-subline-left">
                         <span class="mr-3 pr-3 border-right">{{.TS "publication_types" $p.Type}}{{with $p.Classification}}: {{.}}{{end}}</span>
-                        {{template "publication/access_level" $p}}
+                        {{partial "publication/access_level" $p}}
                     </div>
                     <div class="list-group-item-subline-right">
                         <div class="dropdown">
@@ -53,7 +53,7 @@
                     <a href="{{$pURL}}">
                         <h4 class="c-h4">{{$p.Title}}</h4>
                     </a>
-                    {{with $p.Author}}{{template "shared/contributors" .}}{{end}}
+                    {{with $p.Author}}{{partial "shared/contributors" .}}{{end}}
                     <span class="c-body-small text-muted">
                         {{$p.Year}}{{with $p.Publication}}, {{.}}{{end}}
                     </span>
@@ -61,14 +61,14 @@
                 <div class="list-group-item-meta mt-5">
                     <div class="list-group-item-meta-left">
                         <div class="list-group-item-meta-item">
-                            {{template "shared/status" $p}}
+                            {{partial "shared/status" $p}}
                         </div>
                     </div>
                     <div class="list-group-item-meta-right">
                         <div class="list-group-item-meta-item">
                             <span class="text-muted c-body-small">Biblio ID: {{$p.ID}}</span>
                         </div>
-                        {{template "publication/orcid_status" .}}
+                        {{partial "publication/orcid_status" .}}
                         {{if $p.RelatedDataset}}
                         <div class="list-group-item-meta-item" data-toggle="tooltip"
                             title="{{len $p.RelatedDataset}} related datasets" data-placement="bottom">

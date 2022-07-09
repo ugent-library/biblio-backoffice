@@ -18,10 +18,17 @@ import (
 	"github.com/pkg/errors"
 )
 
+var (
+	DefaultDir       = "views"
+	DefaultExt       = ".gohtml"
+	DefaultLayoutExt = ".layout"
+)
+
 type Renderer struct {
+	dir              string
+	ext              string
+	layoutExt        string
 	contentType      string
-	dirs             []string
-	exts             []string
 	funcMaps         []template.FuncMap
 	partialsTemplate *template.Template
 	viewTemplates    map[string]*template.Template
@@ -29,12 +36,14 @@ type Renderer struct {
 
 func New() *Renderer {
 	r := &Renderer{
+		dir:              filepath.Clean(DefaultDir),
+		ext:              DefaultExt,
+		layoutExt:        DefaultLayoutExt,
 		contentType:      "text/html; charset=utf-8",
 		partialsTemplate: template.New(""),
-		viewTemplates:    map[string]*template.Template{},
 	}
 
-	r.AddFuncs(template.FuncMap{
+	r.Funcs(template.FuncMap{
 		"view": func(view string, data any) (template.HTML, error) {
 			var b strings.Builder
 			if err := r.ExecuteView(&b, view, data); err != nil {
@@ -66,17 +75,17 @@ func (r *Renderer) ContentType(contentType string) *Renderer {
 	return r
 }
 
-func (r *Renderer) AddExt(ext string) *Renderer {
-	r.exts = append(r.exts, ext)
+func (r *Renderer) Ext(ext string) *Renderer {
+	r.ext = ext
 	return r
 }
 
-func (r *Renderer) AddDir(dir string) *Renderer {
-	r.dirs = append(r.dirs, dir)
+func (r *Renderer) Dir(dir string) *Renderer {
+	r.dir = filepath.Clean(dir)
 	return r
 }
 
-func (r *Renderer) AddFuncs(funcMap template.FuncMap) *Renderer {
+func (r *Renderer) Funcs(funcMap template.FuncMap) *Renderer {
 	r.funcMaps = append(r.funcMaps, funcMap)
 	return r
 }
@@ -90,119 +99,90 @@ func (r *Renderer) MustParse() *Renderer {
 
 func (r *Renderer) Parse() (*Renderer, error) {
 	var (
+		layoutsTemplate  = template.New("")
 		partialsTemplate = template.New("")
 		viewTemplates    = map[string]*template.Template{}
 	)
 
-	// add funcs
 	for _, funcs := range r.funcMaps {
+		layoutsTemplate.Funcs(funcs)
 		partialsTemplate.Funcs(funcs)
 	}
 
-	// parse partials
-	for _, dir := range r.dirs {
-		rootDir := filepath.Clean(dir)
-
-		err := filepath.Walk(rootDir, func(f string, info os.FileInfo, err error) error {
-			if err != nil {
-				return err
-			}
-
-			if info.IsDir() {
-				return nil
-			}
-
-			var ext string
-			for _, e := range r.exts {
-				if strings.HasSuffix(f, e) {
-					ext = e
-					break
-				}
-			}
-
-			if ext == "" {
-				return nil
-			}
-
-			name := f[len(rootDir)+1 : len(f)-len(ext)]
-			dir, file := path.Split(name)
-
-			// if template name starts with an underscore it's a partial
-			if strings.HasPrefix(file, "_") {
-				name = path.Join(dir, file[1:])
-
-				content, err := ioutil.ReadFile(f)
-				if err != nil {
-					return err
-				}
-
-				t, err := partialsTemplate.New(name).Parse(string(content))
-				if err != nil {
-					return err
-				}
-				partialsTemplate = t
-			}
-
-			return nil
-		})
-
+	// parse layouts
+	err := filepath.Walk(r.dir, func(f string, info os.FileInfo, err error) error {
 		if err != nil {
-			return r, err
+			return err
 		}
+		if info.IsDir() || !strings.HasSuffix(f, r.layoutExt+r.ext) {
+			return nil
+		}
+
+		content, err := ioutil.ReadFile(f)
+		if err != nil {
+			return err
+		}
+
+		name := f[len(r.dir)+1 : len(f)-len(r.layoutExt+r.ext)]
+
+		t, err := layoutsTemplate.New(name).Parse(string(content))
+		if err != nil {
+			return err
+		}
+		layoutsTemplate = t
+
+		return nil
+	})
+
+	if err != nil {
+		return r, err
 	}
 
-	// parse views
-	for _, dir := range r.dirs {
-		rootDir := filepath.Clean(dir)
+	// parse views and partials
+	err = filepath.Walk(r.dir, func(f string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if info.IsDir() || strings.HasSuffix(f, r.layoutExt+r.ext) || !strings.HasSuffix(f, r.ext) {
+			return nil
+		}
 
-		err := filepath.Walk(rootDir, func(f string, info os.FileInfo, err error) error {
+		content, err := ioutil.ReadFile(f)
+		if err != nil {
+			return err
+		}
+
+		name := f[len(r.dir)+1 : len(f)-len(r.ext)]
+		dir, file := path.Split(name)
+
+		// if template name starts with an underscore it's a partial
+		if strings.HasPrefix(file, "_") {
+			name = path.Join(dir, file[1:])
+
+			t, err := partialsTemplate.New(name).Parse(string(content))
+			if err != nil {
+				return err
+			}
+			partialsTemplate = t
+		} else {
+			t, err := layoutsTemplate.Clone()
 			if err != nil {
 				return err
 			}
 
-			if info.IsDir() {
-				return nil
+			t, err = t.New(name).Parse(string(content))
+			if err != nil {
+				return err
 			}
 
-			var ext string
-			for _, e := range r.exts {
-				if strings.HasSuffix(f, e) {
-					ext = e
-					break
-				}
-			}
-
-			if ext == "" {
-				return nil
-			}
-
-			name := f[len(rootDir)+1 : len(f)-len(ext)]
-			_, file := path.Split(name)
-
-			// if template name doesn't with an underscore it's a view
-			if !strings.HasPrefix(file, "_") {
-				content, err := ioutil.ReadFile(f)
-				if err != nil {
-					return err
-				}
-
-				t, err := partialsTemplate.Clone()
-				if err != nil {
-					return err
-				}
-				if t, err = t.New(name).Parse(string(content)); err != nil {
-					return err
-				}
-
-				viewTemplates[name] = t
-			}
-
-			return nil
-		})
-
-		if err != nil {
-			return r, err
+			viewTemplates[name] = t
 		}
+
+		return nil
+	})
+
+	if err != nil {
+		return r, err
 	}
 
 	r.partialsTemplate = partialsTemplate
@@ -255,7 +235,6 @@ func (r *Renderer) ExecuteLayout(w io.Writer, partial, view string, data any) er
 	if !ok {
 		return fmt.Errorf("render: view '%s' not found", view)
 	}
-
 	if err := tmpl.ExecuteTemplate(w, partial, data); err != nil {
 		return errors.Wrapf(err, "render: ExecuteTemplate error, partial '%s' view '%s'", partial, view)
 	}
@@ -296,16 +275,16 @@ func ContentType(contentType string) *Renderer {
 	return defaultRenderer.ContentType(contentType)
 }
 
-func AddExt(ext string) *Renderer {
-	return defaultRenderer.AddExt(ext)
+func Ext(ext string) *Renderer {
+	return defaultRenderer.Ext(ext)
 }
 
-func AddDir(dir string) *Renderer {
-	return defaultRenderer.AddDir(dir)
+func Dir(dir string) *Renderer {
+	return defaultRenderer.Dir(dir)
 }
 
-func AddFuncs(funcs template.FuncMap) *Renderer {
-	return defaultRenderer.AddFuncs(funcs)
+func Funcs(funcs template.FuncMap) *Renderer {
+	return defaultRenderer.Funcs(funcs)
 }
 
 func MustParse() *Renderer {

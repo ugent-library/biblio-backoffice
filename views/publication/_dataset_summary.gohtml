@@ -1,6 +1,6 @@
 <div class="list-group-item-text">
     <h4 class="c-h4">{{.Title}}</h4>
-    {{with .Author}}{{template "shared/contributors" .}}{{end}}
+    {{with .Author}}{{partial "shared/contributors" .}}{{end}}
     <span class="c-body-small text-muted">
         {{.Year}},
         <a class="link-primary" target="_blank" href="{{.ResolveDOI}}">
@@ -12,7 +12,7 @@
 <div class="list-group-item-meta mt-5">
     <div class="list-group-item-meta-left">
         <div class="list-group-item-meta-item">
-            {{template "shared/status" .}}
+            {{partial "shared/status" .}}
         </div>
     </div>
     <div class="list-group-item-meta-right">

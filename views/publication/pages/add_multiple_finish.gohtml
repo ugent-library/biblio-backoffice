@@ -1,5 +1,5 @@
 {{define "page_content"}}
-{{template "publication/add_sidebar" .}}
+{{partial "publication/add_sidebar" .}}
 
 <div class="w-100 u-scroll-wrapper">
     <div class="bc-navbar bc-navbar--xlarge bc-navbar-bordered bc-navbar--white bc-navbar--bordered-bottom">
@@ -33,19 +33,19 @@
         <div class="card mb-6">
             <div class="card-header">
                 <h4 class="mr-5 d-inline">Imported publications</h4>
-                {{template "search/count" .}}
+                {{partial "search/count" .}}
             </div>
             <div class="card-body p-0">
                 <ul class="list-group list-group-flush">
                     {{range .Hits.Hits}}
                     <li class="list-group-item">
-                        {{template "publication/search_hit" ($.YieldHit .)}}
+                        {{partial "publication/search_hit" ($.YieldHit .)}}
                     </li>
                     {{end}}
                 </ul>
             </div>
             <nav aria-label="Page navigation">
-                {{template "search/pagination" .}}
+                {{partial "search/pagination" .}}
             </nav>
         </div>
     </div>

@@ -1,5 +1,5 @@
 {{define "page_content"}}
-{{template "dataset/add_sidebar" .}}
+{{partial "dataset/add_sidebar" .}}
 
 <form class="w-100" action="{{pathFor "dataset_confirm_import"}}" method="POST">
     {{.CSRFTag}}
@@ -84,7 +84,7 @@
 </form>
 
 {{if .DuplicateDataset}}
-    {{template "dataset/add_duplicate" .}}
+    {{partial "dataset/add_duplicate" .}}
 {{end}}
 
 {{if .Errors}}

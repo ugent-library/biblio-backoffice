@@ -1,10 +1,10 @@
 {{$p := .Publication}}
-{{template "publication/thumbnail" $p}}
+{{partial "publication/thumbnail" $p}}
 <div class="list-group-item-content">
     <div class="list-group-item-subline">
         <div class="list-group-item-subline-left">
             <span class="mr-3 pr-3 border-right">{{.Locale.TS "publication_types" $p.Type}}{{with $p.Classification}}: {{.}}{{end}}</span>
-            {{template "publication/access_level" $p}}
+            {{partial "publication/access_level" $p}}
         </div>
     </div>
     <div class="list-group-item-text">
@@ -13,21 +13,21 @@
             {{if not (.User.CanEditPublication $p)}}<i class="if if-no-edit if--small ml-3 text-muted" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Locked for editing"></i>{{end}}
         </h4>
         {{with $p.Author}}
-            {{template "shared/contributors" .}}
+            {{partial "shared/contributors" .}}
         {{end}}
         <span class="c-body-small text-muted">{{$p.Year}}{{with $p.Publication}}, {{.}}{{end}}</span>
     </div>
     <div class="list-group-item-meta mt-5">
         <div class="list-group-item-meta-left">
             <div class="list-group-item-meta-item">
-                {{template "shared/status" $p}}
+                {{partial "shared/status" $p}}
             </div>
         </div>
         <div class="list-group-item-meta-right">
             <div class="list-group-item-meta-item">
                 <span class="text-muted c-body-small">Biblio ID: {{$p.ID}}</span>
             </div>
-            {{template "publication/orcid_status" .}}
+            {{partial "publication/orcid_status" .}}
             {{if $p.RelatedDataset}}
             <div class="list-group-item-meta-item" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="{{len $p.RelatedDataset}} related datasets">
                 <span class="text-muted c-body-small">

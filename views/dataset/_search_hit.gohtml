@@ -44,7 +44,7 @@
                     <a href="{{$dURL}}">
                         <h4 class="c-h4">{{$d.Title}}</h4>
                     </a>
-                    {{with $d.Author}}{{template "shared/contributors" .}}{{end}}
+                    {{with $d.Author}}{{partial "shared/contributors" .}}{{end}}
                     <span class="c-body-small text-muted">
                         {{$d.Year}},
                         <a class="link-primary" target="_blank" href="{{$d.ResolveDOI}}">
@@ -56,7 +56,7 @@
                 <div class="list-group-item-meta mt-5">
                     <div class="list-group-item-meta-left">
                         <div class="list-group-item-meta-item">
-                            {{template "shared/status" $d}}
+                            {{partial "shared/status" $d}}
                         </div>
                     </div>
                     <div class="list-group-item-meta-right">

@@ -1,5 +1,5 @@
 {{define "page_content"}}
-{{template "publication/add_sidebar" .}}
+{{partial "publication/add_sidebar" .}}
 
 <form class="w-100 u-scroll-wrapper" action="{{pathFor "publication_add_single_import_confirm"}}" method="POST">
     {{.CSRFTag}}
@@ -72,7 +72,7 @@
                     <div class="d-flex w-100">
                         <div class="w-100">
                             <div class="d-flex align-items-start">
-                                {{template "publication/summary_body" .}}
+                                {{partial "publication/summary_body" .}}
                             </div>
                         </div>
                     </div>

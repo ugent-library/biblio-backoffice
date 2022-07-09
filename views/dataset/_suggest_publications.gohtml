@@ -4,7 +4,7 @@
         <div class="d-flex w-100">
             <div class="w-100">
                 <div class="d-flex align-items-start">
-                    {{template "publication/thumbnail" .}}
+                    {{partial "publication/thumbnail" .}}
                     <div class="list-group-item-content">
                         <div class="list-group-item-subline">
                             <div class="list-group-item-subline-left">
@@ -18,7 +18,7 @@
                                 >Add publication</button>
                             </div>
                         </div>
-                        {{template "dataset/publication_summary" .}}
+                        {{partial "dataset/publication_summary" .}}
                     </div>
                 </div>
             </div>

@@ -1,5 +1,5 @@
 <div hx-swap-oob="innerHTML:#show-nav">
-    {{template "dataset/show_nav" .}}
+    {{partial "dataset/show_nav" .}}
 </div>
 
 {{with $role := "author"}}
@@ -28,7 +28,7 @@
         </div>
     </div>
     <div id="contributors-{{$role}}-body">
-        {{template "dataset/contributors_body" ($.YieldRole $role)}}
+        {{partial "dataset/contributors_body" ($.YieldRole $role)}}
     </div>
 </div>
 {{end}}

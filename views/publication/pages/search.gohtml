@@ -76,30 +76,30 @@
         {{end}}
     </div>
     <div class="u-scroll-wrapper__body p-6">
-        {{template "search/query" .}}
+        {{partial "search/query" .}}
         <div class="d-flex flex-wrap mb-6">
-            {{template "search/type_facet" .}}
-            {{template "search/status_facet" .}}
-            {{template "search/faculty_facet" .}}
+            {{partial "search/type_facet" .}}
+            {{partial "search/status_facet" .}}
+            {{partial "search/faculty_facet" .}}
         </div>
 
         <div class="card mb-6">
             <div class="card-header">
                 <h4 class="mr-5 d-inline">Publications</h4>
-                {{template "search/count" .}}
+                {{partial "search/count" .}}
             </div>
             <div class="card-body p-0">
                 <ul class="list-group list-group-flush">
                     {{range .Hits.Hits}}
                     <li class="list-group-item">
-                        {{template "publication/search_hit" ($.YieldHit .)}}
+                        {{partial "publication/search_hit" ($.YieldHit .)}}
                     </li>
                     {{end}}
                 </ul>
             </div>
         </div>
         <nav aria-label="Page navigation">
-            {{template "search/pagination" .}}
+            {{partial "search/pagination" .}}
         </nav>
     </div>
 </div>

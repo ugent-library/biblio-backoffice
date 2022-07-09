@@ -1,4 +1,4 @@
-{{template "close_modal" .}}
+{{partial "close_modal" .}}
 <div hx-swap-oob="innerHTML:#contributors-{{.Role}}-body">
-    {{template "dataset/contributors_body" .}}
+    {{partial "dataset/contributors_body" .}}
 </div>

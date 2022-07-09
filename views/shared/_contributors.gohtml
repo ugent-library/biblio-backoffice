@@ -1,7 +1,7 @@
 <div class="list-group-item-authors">
     {{if gt (len .) 3}}
         {{range (slice . 0 3)}}
-            {{template "shared/contributor" .}}
+            {{partial "shared/contributor" .}}
         {{end}}
         <div class="list-group-item-author">
             <span>{{sub (len .) 3}} more author{{if gt (sub (len .) 3) 1}}s{{end}}</span>
@@ -9,7 +9,7 @@
         </div>
     {{else}}
         {{range .}}
-            {{template "shared/contributor" .}}
+            {{partial "shared/contributor" .}}
         {{end}}
     {{end}}
 </div>

@@ -1,5 +1,5 @@
 {{define "page_content"}}
-{{template "dataset/add_sidebar" .}}
+{{partial "dataset/add_sidebar" .}}
 
 <div class="w-100 u-scroll-wrapper">
     <div class="bc-navbar bc-navbar--xlarge bc-navbar-bordered bc-navbar--white bc-navbar--bordered-bottom">
@@ -38,7 +38,7 @@
                         <div class="d-flex w-100">
                             <div class="w-100">
                                 <div class="d-flex align-items-start">
-                                    {{template "dataset/summary_body" .}}
+                                    {{partial "dataset/summary_body" .}}
                                 </div>
                             </div>
                         </div>

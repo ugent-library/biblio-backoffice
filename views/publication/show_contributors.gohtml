@@ -1,5 +1,5 @@
 <div hx-swap-oob="innerHTML:#show-nav">
-    {{template "publication/show_nav" .}}
+    {{partial "publication/show_nav" .}}
 </div>
 
 {{range $role := (list "author" "editor" "supervisor")}}
@@ -29,7 +29,7 @@
         </div>
     </div>
     <div id="contributors-{{$role}}-body">
-        {{template "publication/contributors_body" ($.YieldRole $role)}}
+        {{partial "publication/contributors_body" ($.YieldRole $role)}}
     </div>
 </div>
 {{end}}
