@@ -1,10 +1,10 @@
 package form
 
 import (
+	"bytes"
 	"html/template"
 	"io"
 	"path"
-	"strings"
 
 	"github.com/ugent-library/biblio-backend/internal/render"
 )
@@ -12,15 +12,15 @@ import (
 type Errors []string
 
 func (e Errors) Render() (template.HTML, error) {
-	var buf strings.Builder
+	b := &bytes.Buffer{}
 
 	if len(e) > 0 {
-		if err := render.ExecuteView(&buf, "form/errors", e); err != nil {
+		if err := render.ExecuteView(b, "form/errors", e); err != nil {
 			return "", err
 		}
 	}
 
-	return template.HTML(buf.String()), nil
+	return template.HTML(b.String()), nil
 }
 
 type Form struct {
@@ -60,15 +60,15 @@ type Section struct {
 }
 
 func (s *Section) Render() (template.HTML, error) {
-	var buf strings.Builder
+	b := &bytes.Buffer{}
 
 	for _, field := range s.Fields {
-		if err := field.Render(s.Form.Theme, &buf); err != nil {
+		if err := field.Render(s.Form.Theme, b); err != nil {
 			return "", err
 		}
 	}
 
-	return template.HTML(buf.String()), nil
+	return template.HTML(b.String()), nil
 }
 
 type Field interface {

@@ -1,10 +1,10 @@
 package display
 
 import (
+	"bytes"
 	"html/template"
 	"io"
 	"path"
-	"strings"
 
 	"github.com/ugent-library/biblio-backend/internal/render"
 )
@@ -43,15 +43,15 @@ func (d *Display) AddSection(fields ...Field) *Display {
 }
 
 func (s Section) Render() (template.HTML, error) {
-	var buf strings.Builder
+	b := &bytes.Buffer{}
 
 	for _, field := range s.Fields {
-		if err := field.Render(s.Display.Theme, &buf); err != nil {
+		if err := field.Render(s.Display.Theme, b); err != nil {
 			return "", err
 		}
 	}
 
-	return template.HTML(buf.String()), nil
+	return template.HTML(b.String()), nil
 }
 
 type Text struct {
@@ -94,11 +94,11 @@ func (f *Text) renderWithValueTemplate(theme string, w io.Writer) error {
 	}
 
 	for _, v := range f.Values {
-		var buf strings.Builder
-		if err := render.ExecuteView(&buf, f.ValueTemplate, v); err != nil {
+		b := &bytes.Buffer{}
+		if err := render.ExecuteView(b, f.ValueTemplate, v); err != nil {
 			return err
 		}
-		y.Values = append(y.Values, template.HTML(buf.String()))
+		y.Values = append(y.Values, template.HTML(b.String()))
 	}
 
 	tmpl := path.Join("display", theme, "text")

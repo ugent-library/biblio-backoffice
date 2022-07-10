@@ -1,7 +1,5 @@
 package render
 
-// TODO use buffer pool
-
 import (
 	"bytes"
 	"fmt"
@@ -14,6 +12,7 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"github.com/pkg/errors"
 )
@@ -32,6 +31,7 @@ type Renderer struct {
 	funcMaps         []template.FuncMap
 	partialsTemplate *template.Template
 	viewTemplates    map[string]*template.Template
+	bufPool          sync.Pool
 }
 
 func New() *Renderer {
@@ -41,26 +41,46 @@ func New() *Renderer {
 		layoutExt:        DefaultLayoutExt,
 		contentType:      "text/html; charset=utf-8",
 		partialsTemplate: template.New(""),
+		bufPool: sync.Pool{
+			New: func() interface{} {
+				return &bytes.Buffer{}
+			},
+		},
 	}
 
 	r.Funcs(template.FuncMap{
 		"view": func(view string, data any) (template.HTML, error) {
-			var b strings.Builder
-			if err := r.ExecuteView(&b, view, data); err != nil {
+			b := r.bufPool.Get().(*bytes.Buffer)
+			defer func() {
+				b.Reset()
+				r.bufPool.Put(b)
+			}()
+
+			if err := r.ExecuteView(b, view, data); err != nil {
 				return "", err
 			}
 			return template.HTML(b.String()), nil
 		},
 		"layout": func(partial, view string, data any) (template.HTML, error) {
-			var b strings.Builder
-			if err := r.ExecuteLayout(&b, partial, view, data); err != nil {
+			b := r.bufPool.Get().(*bytes.Buffer)
+			defer func() {
+				b.Reset()
+				r.bufPool.Put(b)
+			}()
+
+			if err := r.ExecuteLayout(b, partial, view, data); err != nil {
 				return "", err
 			}
 			return template.HTML(b.String()), nil
 		},
 		"partial": func(partial string, data any) (template.HTML, error) {
-			var b strings.Builder
-			if err := r.ExecutePartial(&b, partial, data); err != nil {
+			b := r.bufPool.Get().(*bytes.Buffer)
+			defer func() {
+				b.Reset()
+				r.bufPool.Put(b)
+			}()
+
+			if err := r.ExecutePartial(b, partial, data); err != nil {
 				return "", err
 			}
 			return template.HTML(b.String()), nil
@@ -156,6 +176,8 @@ func (r *Renderer) Parse() (*Renderer, error) {
 		dir, file := path.Split(name)
 
 		// if template name starts with an underscore it's a partial
+		// partials share one template
+		// views have their own template but have access to layouts
 		if strings.HasPrefix(file, "_") {
 			name = path.Join(dir, file[1:])
 
@@ -192,16 +214,20 @@ func (r *Renderer) Parse() (*Renderer, error) {
 }
 
 func (r *Renderer) View(w http.ResponseWriter, view string, data any) {
-	var b bytes.Buffer
+	b := r.bufPool.Get().(*bytes.Buffer)
+	defer func() {
+		b.Reset()
+		r.bufPool.Put(b)
+	}()
 
-	if err := r.ExecuteView(&b, view, data); err != nil {
+	if err := r.ExecuteView(b, view, data); err != nil {
 		log.Println(err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
 	r.SetContentType(w)
-	io.Copy(w, &b)
+	io.Copy(w, b)
 }
 
 func (r *Renderer) ExecuteView(w io.Writer, view string, data any) error {
@@ -218,16 +244,20 @@ func (r *Renderer) ExecuteView(w io.Writer, view string, data any) error {
 }
 
 func (r *Renderer) Layout(w http.ResponseWriter, partial, view string, data any) {
-	var b bytes.Buffer
+	b := r.bufPool.Get().(*bytes.Buffer)
+	defer func() {
+		b.Reset()
+		r.bufPool.Put(b)
+	}()
 
-	if err := r.ExecuteLayout(&b, partial, view, data); err != nil {
+	if err := r.ExecuteLayout(b, partial, view, data); err != nil {
 		log.Println(err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
 	r.SetContentType(w)
-	io.Copy(w, &b)
+	io.Copy(w, b)
 }
 
 func (r *Renderer) ExecuteLayout(w io.Writer, partial, view string, data any) error {
@@ -243,16 +273,20 @@ func (r *Renderer) ExecuteLayout(w io.Writer, partial, view string, data any) er
 }
 
 func (r *Renderer) Partial(w http.ResponseWriter, partial string, data any) {
-	var b bytes.Buffer
+	b := r.bufPool.Get().(*bytes.Buffer)
+	defer func() {
+		b.Reset()
+		r.bufPool.Put(b)
+	}()
 
-	if err := r.ExecutePartial(&b, partial, data); err != nil {
+	if err := r.ExecutePartial(b, partial, data); err != nil {
 		log.Println(err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
 	r.SetContentType(w)
-	io.Copy(w, &b)
+	io.Copy(w, b)
 }
 
 func (r *Renderer) ExecutePartial(w io.Writer, partial string, data any) error {

@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"strings"
 	"time"
 
 	"github.com/elastic/go-elasticsearch/v6/esapi"
@@ -287,7 +286,7 @@ func decodeDatasetRes(res *esapi.Response) (*models.DatasetHits, error) {
 	defer res.Body.Close()
 
 	if res.IsError() {
-		buf := new(strings.Builder)
+		buf := &bytes.Buffer{}
 		if _, err := io.Copy(buf, res.Body); err != nil {
 			return nil, err
 		}
@@ -371,7 +370,7 @@ func (publications *Datasets) Index(d *models.Dataset) error {
 	defer res.Body.Close()
 
 	if res.IsError() {
-		buf := new(strings.Builder)
+		buf := &bytes.Buffer{}
 		if _, err := io.Copy(buf, res.Body); err != nil {
 			return err
 		}
