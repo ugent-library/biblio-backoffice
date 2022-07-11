@@ -32,9 +32,8 @@ func issueEditorDetails(l *locale.Locale, p *models.Publication) *display.Displa
 				Value:    p.Title,
 				Required: true,
 			},
-			&display.Text{
+			&display.List{
 				Label:  l.T("builder.alternative_title"),
-				List:   true,
 				Values: p.AlternativeTitle,
 			},
 			&display.Text{
@@ -48,9 +47,8 @@ func issueEditorDetails(l *locale.Locale, p *models.Publication) *display.Displa
 			},
 		).
 		AddSection(
-			&display.Text{
+			&display.List{
 				Label:  l.T("builder.language"),
-				List:   true,
 				Values: localize.LanguageNames(l, p.Language)},
 			&display.Text{
 				Label: l.T("builder.publication_status"),
@@ -98,24 +96,20 @@ func issueEditorDetails(l *locale.Locale, p *models.Publication) *display.Displa
 				Label: l.T("builder.wos_id"),
 				Value: p.WOSID,
 			},
-			&display.Text{
+			&display.List{
 				Label:  l.T("builder.issn"),
-				List:   true,
 				Values: p.ISSN,
 			},
-			&display.Text{
+			&display.List{
 				Label:  l.T("builder.eissn"),
-				List:   true,
 				Values: p.EISSN,
 			},
-			&display.Text{
+			&display.List{
 				Label:  l.T("builder.isbn"),
-				List:   true,
 				Values: p.ISBN,
 			},
-			&display.Text{
+			&display.List{
 				Label:  l.T("builder.eisbn"),
-				List:   true,
 				Values: p.EISBN,
 			},
 		)

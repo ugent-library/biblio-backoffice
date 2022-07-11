@@ -40,13 +40,13 @@ func DatasetDetails(l *locale.Locale, d *models.Dataset) *display.Display {
 			},
 		).
 		AddSection(
-			&display.Text{
+			&display.List{
 				Label:    l.T("builder.format"),
 				Values:   d.Format,
-				List:     true,
 				Required: true,
 			},
-			&display.Text{
+			&display.List{
+				Inline:        true,
 				Label:         l.T("builder.keyword"),
 				Values:        d.Keyword,
 				ValueTemplate: "format/badge",

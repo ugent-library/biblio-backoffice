@@ -56,11 +56,9 @@ func (s Section) Render() (template.HTML, error) {
 
 type Text struct {
 	Label         string
-	List          bool
 	Required      bool
 	Tooltip       string
 	Value         string
-	Values        []string
 	ValueTemplate string
 }
 
@@ -69,14 +67,10 @@ type yieldHTML struct {
 	List     bool
 	Required bool
 	Tooltip  string
-	Values   []template.HTML
+	Value    template.HTML
 }
 
 func (f *Text) Render(theme string, w io.Writer) error {
-	if f.Value != "" {
-		f.Values = []string{f.Value}
-	}
-
 	if f.ValueTemplate != "" {
 		return f.renderWithValueTemplate(theme, w)
 	}
@@ -88,7 +82,50 @@ func (f *Text) Render(theme string, w io.Writer) error {
 func (f *Text) renderWithValueTemplate(theme string, w io.Writer) error {
 	y := yieldHTML{
 		Label:    f.Label,
-		List:     f.List,
+		Required: f.Required,
+		Tooltip:  f.Tooltip,
+	}
+
+	b := &bytes.Buffer{}
+	if err := render.ExecuteView(b, f.ValueTemplate, f.Value); err != nil {
+		return err
+	}
+	y.Value = template.HTML(b.String())
+
+	tmpl := path.Join("display", theme, "text")
+	return render.ExecuteView(w, tmpl, y)
+}
+
+type List struct {
+	Inline        bool
+	Label         string
+	Required      bool
+	Tooltip       string
+	Values        []string
+	ValueTemplate string
+}
+
+type yieldListHTML struct {
+	Inline   bool
+	Label    string
+	Required bool
+	Tooltip  string
+	Values   []template.HTML
+}
+
+func (f *List) Render(theme string, w io.Writer) error {
+	if f.ValueTemplate != "" {
+		return f.renderWithValueTemplate(theme, w)
+	}
+
+	tmpl := path.Join("display", theme, "list")
+	return render.ExecuteView(w, tmpl, f)
+}
+
+func (f *List) renderWithValueTemplate(theme string, w io.Writer) error {
+	y := yieldListHTML{
+		Inline:   f.Inline,
+		Label:    f.Label,
 		Required: f.Required,
 		Tooltip:  f.Tooltip,
 	}
@@ -101,6 +138,6 @@ func (f *Text) renderWithValueTemplate(theme string, w io.Writer) error {
 		y.Values = append(y.Values, template.HTML(b.String()))
 	}
 
-	tmpl := path.Join("display", theme, "text")
+	tmpl := path.Join("display", theme, "list")
 	return render.ExecuteView(w, tmpl, y)
 }
