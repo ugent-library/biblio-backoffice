@@ -2,7 +2,7 @@
 <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" role="document">
     <div class="modal-content">
         <div class="modal-header">
-            <h2 class="modal-title">Assign UGent membership to {{.TS "dataset.contributor.role" .Role}}</h2>
+            <h2 class="modal-title">Assign UGent membership to {{.Locale.TS "dataset.contributor.role" .Role}}</h2>
         </div>
         <div class="modal-body">
             <div class="contributor-attributes">
@@ -20,7 +20,7 @@
                                     <div class="list-group-item-text">
                                         <h4 class="c-h4">{{.FullName}}</h4>
                                         {{range .Department}}
-                                        <div class="text-muted c-body-small">{{$.TS "organization" .ID}}</div>
+                                        <div class="text-muted c-body-small">{{$.Locale.TS "organization" .ID}}</div>
                                         {{end}}
                                         {{with .ORCID}}
                                         <div class="text-muted c-body-small">ORCID: {{.}}</div>
@@ -38,7 +38,7 @@
                                                 hx-post="{{pathFor "dataset_confirm_contributor" "id" $.Dataset.ID "role" $.Role "position" ($.Position|toString)}}"
                                                 hx-include='#person-{{.ID}} input[name="id"]'
                                                 hx-swap="none"
-                                                >Confirm {{$.TS "dataset.contributor.role" $.Role}}</button>
+                                                >Confirm {{$.Locale.TS "dataset.contributor.role" $.Role}}</button>
                                         </div>
                                     </div>
                                 </div>
@@ -49,7 +49,7 @@
                 {{end}}
             </ul>
             {{else}}
-            This {{.TS "dataset.contributor.role" .Role}} is not a UGent employee or student.
+            This {{.Locale.TS "dataset.contributor.role" .Role}} is not a UGent employee or student.
             {{end}}
         </div>
         <div class="modal-footer">

@@ -124,7 +124,7 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "refresh_modal", "error_dialog", ctx.T("dataset.conflict_error"))
+		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("dataset.conflict_error"))
 		return
 	}
 
@@ -147,14 +147,14 @@ func detailsForm(ctx Context, b BindDetails, errors validation.Errors) *form.For
 			&form.Text{
 				Name:        "title",
 				Value:       b.Title,
-				Label:       ctx.T("builder.title"),
+				Label:       ctx.Locale.T("builder.title"),
 				Cols:        9,
-				Placeholder: ctx.T("builder.details.title.placeholder"),
+				Placeholder: ctx.Locale.T("builder.details.title.placeholder"),
 				Error:       localize.ValidationErrorAt(ctx.Locale, errors, "/title"),
 				Required:    true,
 			},
 			&display.Text{
-				Label:         ctx.T("builder.doi"),
+				Label:         ctx.Locale.T("builder.doi"),
 				Value:         ctx.Dataset.DOI,
 				Required:      true,
 				ValueTemplate: "format/doi",
@@ -162,7 +162,7 @@ func detailsForm(ctx Context, b BindDetails, errors validation.Errors) *form.For
 			&form.Text{
 				Name:  "url",
 				Value: b.URL,
-				Label: ctx.T("builder.url"),
+				Label: ctx.Locale.T("builder.url"),
 				Cols:  3,
 				Error: localize.ValidationErrorAt(ctx.Locale, errors, "/url"),
 			},
@@ -171,19 +171,19 @@ func detailsForm(ctx Context, b BindDetails, errors validation.Errors) *form.For
 			&form.Text{
 				Name:        "publisher",
 				Value:       b.Publisher,
-				Label:       ctx.T("builder.publisher"),
+				Label:       ctx.Locale.T("builder.publisher"),
 				Cols:        9,
-				Placeholder: ctx.T("builder.details.publisher.placeholder"),
+				Placeholder: ctx.Locale.T("builder.details.publisher.placeholder"),
 				Error:       localize.ValidationErrorAt(ctx.Locale, errors, "/publisher"),
 				Required:    true,
-				Tooltip:     ctx.T("tooltip.dataset.publisher"),
+				Tooltip:     ctx.Locale.T("tooltip.dataset.publisher"),
 			},
 			&form.Text{
 				Name:        "year",
 				Value:       b.Year,
-				Label:       ctx.T("builder.year"),
+				Label:       ctx.Locale.T("builder.year"),
 				Cols:        3,
-				Placeholder: ctx.T("builder.year.placeholder"),
+				Placeholder: ctx.Locale.T("builder.year.placeholder"),
 				Error:       localize.ValidationErrorAt(ctx.Locale, errors, "/year"),
 				Required:    true,
 			},
@@ -192,17 +192,17 @@ func detailsForm(ctx Context, b BindDetails, errors validation.Errors) *form.For
 			&form.TextRepeat{
 				Name:            "format",
 				Values:          b.Format,
-				Label:           ctx.T("builder.format"),
+				Label:           ctx.Locale.T("builder.format"),
 				Cols:            9,
 				Error:           localize.ValidationErrorAt(ctx.Locale, errors, "/format"),
 				Required:        true,
 				AutocompleteURL: "suggest_media_types",
-				Tooltip:         ctx.T("tooltip.dataset.format"),
+				Tooltip:         ctx.Locale.T("tooltip.dataset.format"),
 			},
 			&form.TextRepeat{
 				Name:   "keyword",
 				Values: b.Keyword,
-				Label:  ctx.T("builder.keyword"),
+				Label:  ctx.Locale.T("builder.keyword"),
 				Cols:   9,
 				Error:  localize.ValidationErrorAt(ctx.Locale, errors, "/keyword"),
 			},
@@ -211,18 +211,18 @@ func detailsForm(ctx Context, b BindDetails, errors validation.Errors) *form.For
 			&form.Select{
 				Name:        "license",
 				Value:       b.License,
-				Label:       ctx.T("builder.license"),
+				Label:       ctx.Locale.T("builder.license"),
 				Options:     localize.VocabularySelectOptions(ctx.Locale, "cc_licenses"),
 				Cols:        3,
 				Error:       localize.ValidationErrorAt(ctx.Locale, errors, "/license"),
-				Tooltip:     ctx.T("tooltip.dataset.license"),
+				Tooltip:     ctx.Locale.T("tooltip.dataset.license"),
 				EmptyOption: true,
 				Required:    true,
 			},
 			&form.Text{
 				Name:        "other_license",
 				Value:       b.OtherLicense,
-				Label:       ctx.T("builder.other_license"),
+				Label:       ctx.Locale.T("builder.other_license"),
 				Cols:        9,
 				Placeholder: "e.g. https://creativecommons.org/licenses/by/4.0/",
 				Error:       localize.ValidationErrorAt(ctx.Locale, errors, "/other_license"),
@@ -231,27 +231,27 @@ func detailsForm(ctx Context, b BindDetails, errors validation.Errors) *form.For
 			&form.Select{
 				Template:    "dataset/access_level",
 				Name:        "access_level",
-				Label:       ctx.T("builder.access_level"),
+				Label:       ctx.Locale.T("builder.access_level"),
 				Value:       b.AccessLevel,
 				Options:     localize.VocabularySelectOptions(ctx.Locale, "access_levels"),
 				Cols:        3,
 				Error:       localize.ValidationErrorAt(ctx.Locale, errors, "/access_level"),
 				Required:    true,
 				EmptyOption: true,
-				Tooltip:     ctx.T("tooltip.dataset.access_level"),
+				Tooltip:     ctx.Locale.T("tooltip.dataset.access_level"),
 				Vars:        struct{ ID string }{ID: ctx.Dataset.ID},
 			},
 			&form.Date{
 				Name:     "embargo",
 				Value:    b.Embargo,
-				Label:    ctx.T("builder.embargo"),
+				Label:    ctx.Locale.T("builder.embargo"),
 				Cols:     3,
 				Error:    localize.ValidationErrorAt(ctx.Locale, errors, "/embargo"),
 				Disabled: b.AccessLevel != "info:eu-repo/semantics/embargoedAccess",
 			},
 			&form.Select{
 				Name:        "embargo_to",
-				Label:       ctx.T("builder.embargo_to"),
+				Label:       ctx.Locale.T("builder.embargo_to"),
 				Value:       b.EmbargoTo,
 				Options:     localize.VocabularySelectOptions(ctx.Locale, "access_levels"),
 				Cols:        3,

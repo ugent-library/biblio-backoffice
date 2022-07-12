@@ -47,8 +47,8 @@
                         <div class="list-group-item-subline">
                             <div class="list-group-item-subline-left">
                                 <span class="pr-5">
-                                    {{with .Relation}}{{$.TS "publication_file_relations" .}}{{end}}
-                                    {{with .PublicationVersion}}<span class="ml-3 pl-3 border-left">{{$.TS "publication_versions" .}}</span>{{end}}
+                                    {{with .Relation}}{{$.Locale.TS "publication_file_relations" .}}{{end}}
+                                    {{with .PublicationVersion}}<span class="ml-3 pl-3 border-left">{{$.Locale.TS "publication_versions" .}}</span>{{end}}
                                 </span>
                                 <span class="badge badge-pill badge-outline-success">
                                     {{if eq .AccessLevel "open_access"}}
@@ -58,10 +58,10 @@
                                     {{else if eq .AccessLevel "closed"}}
                                     <i class="if if-eye-off text-muted"></i>
                                     {{end}}
-                                    <span class="badge-text">{{$.TS "publication_file_access_levels" .AccessLevel}}</span>
+                                    <span class="badge-text">{{$.Locale.TS "publication_file_access_levels" .AccessLevel}}</span>
                                 </span>
                                 {{if .EmbargoTo}}
-                                <span class="text-muted c-body-small pl-5">Changes to {{$.TS "publication_file_access_levels" .EmbargoTo}} on {{.Embargo}}</span>
+                                <span class="text-muted c-body-small pl-5">Changes to {{$.Locale.TS "publication_file_access_levels" .EmbargoTo}} on {{.Embargo}}</span>
                                 {{end}}
                             </div>
                             <div class="list-group-item-subline-right">

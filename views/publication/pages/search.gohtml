@@ -67,7 +67,7 @@
                 <li class="nav-item">
                     <a class="nav-link{{if $.SearchArgs.HasFilter "scope" .}} active{{end}}"
                         href="{{pathFor "publications"|query ($.SearchArgs.WithFilter "scope" .)}}">
-                        {{$.TS "publication.search.scopes" .}}
+                        {{$.Locale.TS "publication.search.scopes" .}}
                     </a>
                 </li>
                 {{end}}

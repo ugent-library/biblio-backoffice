@@ -8,9 +8,9 @@
     <div class="card-header">
         <div class="bc-toolbar">
             <div class="bc-toolbar-left">
-                <h1 class="bc-toolbar-title">{{$.TS "publication.contributor.title" $role}}</h1>
+                <h1 class="bc-toolbar-title">{{$.Locale.TS "publication.contributor.title" $role}}</h1>
                 <a class="text-muted mx-2" href="#" data-container="body" data-toggle="popover"
-                    data-trigger="focus" data-placement="right" data-content="{{$.T "tooltip.publication.contributors"}}">
+                    data-trigger="focus" data-placement="right" data-content="{{$.Locale.T "tooltip.publication.contributors"}}">
                     <i class="if if-info-circle if--small"></i>
                     <div class="sr-only">More info</div>
                 </a>
@@ -22,7 +22,7 @@
                     hx-target="#modals"
                 >
                     <i class="if if-add"></i>
-                    <div class="btn-text">Add {{$.TS "publication.contributor.role" $role}}</div>
+                    <div class="btn-text">Add {{$.Locale.TS "publication.contributor.role" $role}}</div>
                 </button>
                 {{end}}
             </div>

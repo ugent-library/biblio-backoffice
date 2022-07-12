@@ -105,7 +105,7 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 		log.Println(err)
 		flash := flash.Flash{
 			Type:         "error",
-			Body:         template.HTML(ctx.TS("dataset.single_import", "import_by_id.import_failed")),
+			Body:         template.HTML(ctx.Locale.TS("dataset.single_import", "import_by_id.import_failed")),
 			DismissAfter: 5 * time.Second,
 		}
 
@@ -210,7 +210,7 @@ func (h *Handler) AddPublish(w http.ResponseWriter, r *http.Request, ctx Context
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "show_modal", "error_dialog", ctx.T("dataset.conflict_error"))
+		render.Layout(w, "show_modal", "error_dialog", ctx.Locale.T("dataset.conflict_error"))
 		return
 	}
 

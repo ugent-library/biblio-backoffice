@@ -3,7 +3,7 @@
     <thead>
         <tr>
             <th class="pl-6 col-5">Name</th>
-            <th class="col-2">UGent {{.TS "dataset.contributor.role" .Role}}</th>
+            <th class="col-2">UGent {{.Locale.TS "dataset.contributor.role" .Role}}</th>
             <th class="pr-6 col-3"></th>
         </tr>
     </thead>
@@ -27,6 +27,6 @@
 </table>
 {{else}}
 <div class="card-body">
-    <span class="text-muted">No {{.TS "dataset.contributor.role" .Role}}s</span>
+    <span class="text-muted">No {{.Locale.TS "dataset.contributor.role" .Role}}s</span>
 </div>
 {{end}}

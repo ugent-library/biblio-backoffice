@@ -345,7 +345,7 @@ func fileForm(ctx Context, b BindFile, errors validation.Errors) *form.Form {
 		&form.Text{
 			Name:  "title",
 			Value: b.Title,
-			Label: ctx.T("builder.file.title"),
+			Label: ctx.Locale.T("builder.file.title"),
 			Cols:  12,
 			Error: localize.ValidationErrorAt(
 				l,

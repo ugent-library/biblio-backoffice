@@ -67,7 +67,7 @@ func (h *Handler) Show(w http.ResponseWriter, r *http.Request, ctx Context) {
 
 	render.Layout(w, "layouts/default", "publication/pages/show", YieldShow{
 		Context:      ctx,
-		PageTitle:    ctx.T("publication.page.show.title"),
+		PageTitle:    ctx.Locale.T("publication.page.show.title"),
 		SubNavs:      subNavs,
 		ActiveNav:    "publications",
 		ActiveSubNav: activeSubNav,

@@ -19,7 +19,7 @@
                     by</label>
                 <select class="custom-select form-change-submit" name="sort">
                     {{range vocabulary "publication_sorts"}}
-                    <option value="{{.}}"{{if $.SearchArgs.HasSort .}} selected{{end}}>{{$.TS "publication_sorts" .}}</option>
+                    <option value="{{.}}"{{if $.SearchArgs.HasSort .}} selected{{end}}>{{$.Locale.TS "publication_sorts" .}}</option>
                     {{end}}
                 </select>
             </div>

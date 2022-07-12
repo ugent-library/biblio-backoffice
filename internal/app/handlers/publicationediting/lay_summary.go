@@ -71,7 +71,7 @@ func (h *Handler) CreateLaySummary(w http.ResponseWriter, r *http.Request, ctx C
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "refresh_modal", "error_dialog", ctx.T("publication.conflict_error"))
+		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("publication.conflict_error"))
 		return
 	}
 
@@ -136,7 +136,7 @@ func (h *Handler) UpdateLaySummary(w http.ResponseWriter, r *http.Request, ctx C
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "refresh_modal", "error_dialog", ctx.T("publication.conflict_error"))
+		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("publication.conflict_error"))
 		return
 	}
 
@@ -179,7 +179,7 @@ func (h *Handler) DeleteLaySummary(w http.ResponseWriter, r *http.Request, ctx C
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "refresh_modal", "error_dialog", ctx.T("publication.conflict_error"))
+		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("publication.conflict_error"))
 		return
 	}
 
@@ -201,16 +201,16 @@ func laySummaryForm(ctx Context, b BindLaySummary, errors validation.Errors) *fo
 			&form.TextArea{
 				Name:        "text",
 				Value:       b.Text,
-				Label:       ctx.T("builder.lay_summary.text"),
+				Label:       ctx.Locale.T("builder.lay_summary.text"),
 				Cols:        12,
 				Rows:        6,
-				Placeholder: ctx.T("builder.lay_summary.text.placeholder"),
+				Placeholder: ctx.Locale.T("builder.lay_summary.text.placeholder"),
 				Error:       localize.ValidationErrorAt(ctx.Locale, errors, fmt.Sprintf("/lay_summary/%d/text", b.Position)),
 			},
 			&form.Select{
 				Name:    "lang",
 				Value:   b.Lang,
-				Label:   ctx.T("builder.lay_summary.lang"),
+				Label:   ctx.Locale.T("builder.lay_summary.lang"),
 				Options: localize.LanguageSelectOptions(ctx.Locale),
 				Cols:    12,
 				Error:   localize.ValidationErrorAt(ctx.Locale, errors, fmt.Sprintf("/lay_summary/%d/lang", b.Position)),

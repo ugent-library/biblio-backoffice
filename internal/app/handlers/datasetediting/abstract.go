@@ -71,7 +71,7 @@ func (h *Handler) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "refresh_modal", "error_dialog", ctx.T("dataset.conflict_error"))
+		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("dataset.conflict_error"))
 		return
 	}
 
@@ -136,7 +136,7 @@ func (h *Handler) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "show_modal", "error_dialog", ctx.T("dataset.conflict_error"))
+		render.Layout(w, "show_modal", "error_dialog", ctx.Locale.T("dataset.conflict_error"))
 		return
 	}
 
@@ -179,7 +179,7 @@ func (h *Handler) DeleteAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "show_modal", "error_dialog", ctx.T("dataset.conflict_error"))
+		render.Layout(w, "show_modal", "error_dialog", ctx.Locale.T("dataset.conflict_error"))
 		return
 	}
 
@@ -201,16 +201,16 @@ func abstractForm(ctx Context, b BindAbstract, errors validation.Errors) *form.F
 			&form.TextArea{
 				Name:        "text",
 				Value:       b.Text,
-				Label:       ctx.T("builder.abstract.text"),
+				Label:       ctx.Locale.T("builder.abstract.text"),
 				Cols:        12,
 				Rows:        6,
-				Placeholder: ctx.T("builder.abstract.text.placeholder"),
+				Placeholder: ctx.Locale.T("builder.abstract.text.placeholder"),
 				Error:       localize.ValidationErrorAt(ctx.Locale, errors, fmt.Sprintf("/abstract/%d/text", b.Position)),
 			},
 			&form.Select{
 				Name:    "lang",
 				Value:   b.Lang,
-				Label:   ctx.T("builder.abstract.lang"),
+				Label:   ctx.Locale.T("builder.abstract.lang"),
 				Options: localize.LanguageSelectOptions(ctx.Locale),
 				Cols:    12,
 				Error:   localize.ValidationErrorAt(ctx.Locale, errors, fmt.Sprintf("/abstract/%d/lang", b.Position)),
