@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"html/template"
 	"io"
+	"io/fs"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 	"path"
 	"path/filepath"
 	"strings"
@@ -130,11 +130,11 @@ func (r *Renderer) Parse() (*Renderer, error) {
 	}
 
 	// parse layouts
-	err := filepath.Walk(r.dir, func(f string, info os.FileInfo, err error) error {
+	err := filepath.WalkDir(r.dir, func(f string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
-		if info.IsDir() || !strings.HasSuffix(f, r.layoutExt+r.ext) {
+		if d.IsDir() || !strings.HasSuffix(f, r.layoutExt+r.ext) {
 			return nil
 		}
 
@@ -159,11 +159,11 @@ func (r *Renderer) Parse() (*Renderer, error) {
 	}
 
 	// parse views and partials
-	err = filepath.Walk(r.dir, func(f string, info os.FileInfo, err error) error {
+	err = filepath.WalkDir(r.dir, func(f string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
-		if info.IsDir() || strings.HasSuffix(f, r.layoutExt+r.ext) || !strings.HasSuffix(f, r.ext) {
+		if d.IsDir() || strings.HasSuffix(f, r.layoutExt+r.ext) || !strings.HasSuffix(f, r.ext) {
 			return nil
 		}
 
@@ -260,13 +260,13 @@ func (r *Renderer) Layout(w http.ResponseWriter, partial, view string, data any)
 	io.Copy(w, b)
 }
 
-func (r *Renderer) ExecuteLayout(w io.Writer, partial, view string, data any) error {
+func (r *Renderer) ExecuteLayout(w io.Writer, layout, view string, data any) error {
 	tmpl, ok := r.viewTemplates[view]
 	if !ok {
 		return fmt.Errorf("render: view '%s' not found", view)
 	}
-	if err := tmpl.ExecuteTemplate(w, partial, data); err != nil {
-		return errors.Wrapf(err, "render: ExecuteTemplate error, partial '%s' view '%s'", partial, view)
+	if err := tmpl.ExecuteTemplate(w, layout, data); err != nil {
+		return errors.Wrapf(err, "render: ExecuteTemplate error, partial '%s' view '%s'", layout, view)
 	}
 
 	return nil
