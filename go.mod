@@ -8,6 +8,7 @@ require (
 	github.com/blevesearch/bleve/v2 v2.3.2
 	github.com/caltechlibrary/doitools v0.0.1
 	github.com/cshum/imagor v0.9.5
+	github.com/dimchansky/utfbom v1.1.1
 	github.com/elastic/go-elasticsearch/v6 v6.8.10
 	github.com/go-playground/form/v4 v4.2.0
 	github.com/google/uuid v1.3.0
@@ -52,7 +53,6 @@ require (
 	github.com/blevesearch/zapx/v14 v14.3.4 // indirect
 	github.com/blevesearch/zapx/v15 v15.3.4 // indirect
 	github.com/coreos/go-oidc/v3 v3.2.0 // indirect
-	github.com/dimchansky/utfbom v1.1.1 // indirect
 	github.com/felixge/httpsnoop v1.0.3 // indirect
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect

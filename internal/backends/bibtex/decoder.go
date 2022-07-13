@@ -51,7 +51,7 @@ func (d *Decoder) Decode(p *models.Publication) error {
 func mapEntry(e *bibtex.BibEntry, p *models.Publication) {
 	p.Type = "journal_article"
 
-	//fix keys: may have capital letters
+	// field names may have capitals
 	entries := map[string]string{}
 	for key, val := range e.Fields {
 		entries[strings.ToLower(key)] = val.String()
