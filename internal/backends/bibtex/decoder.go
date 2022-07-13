@@ -5,6 +5,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/dimchansky/utfbom"
 	"github.com/nickng/bibtex"
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/models"
@@ -22,7 +23,8 @@ type Decoder struct {
 }
 
 func NewDecoder(r io.Reader) backends.PublicationDecoder {
-	return &Decoder{r: r}
+	// bibtex fails on utf8 bom
+	return &Decoder{r: utfbom.SkipOnly(r)}
 }
 
 func (d *Decoder) Decode(p *models.Publication) error {
@@ -49,6 +51,12 @@ func (d *Decoder) Decode(p *models.Publication) error {
 func mapEntry(e *bibtex.BibEntry, p *models.Publication) {
 	p.Type = "journal_article"
 
+	//fix keys: may have capital letters
+	entries := map[string]string{}
+	for key, val := range e.Fields {
+		entries[strings.ToLower(key)] = val.String()
+	}
+
 	switch e.Type {
 	case "article":
 		p.Type = "journal_article"
@@ -68,60 +76,60 @@ func mapEntry(e *bibtex.BibEntry, p *models.Publication) {
 		p.MiscellaneousType = "report"
 	}
 
-	if f, ok := e.Fields["title"]; ok {
-		p.Title = f.String()
+	if f, ok := entries["title"]; ok {
+		p.Title = f
 	}
-	if f, ok := e.Fields["year"]; ok {
-		p.Year = f.String()
+	if f, ok := entries["year"]; ok {
+		p.Year = f
 	}
-	if f, ok := e.Fields["pages"]; ok {
-		pageParts := reSplitPages.Split(f.String(), -1)
+	if f, ok := entries["pages"]; ok {
+		pageParts := reSplitPages.Split(f, -1)
 		p.PageFirst = pageParts[0]
 		if len(pageParts) > 1 {
 			p.PageLast = pageParts[1]
 		}
 	}
-	if f, ok := e.Fields["keywords"]; ok {
-		p.Keyword = reSplit.Split(f.String(), -1)
+	if f, ok := entries["keywords"]; ok {
+		p.Keyword = reSplit.Split(f, -1)
 	}
-	if f, ok := e.Fields["abstract"]; ok {
-		p.Abstract = []models.Text{{Text: f.String(), Lang: "und"}}
+	if f, ok := entries["abstract"]; ok {
+		p.Abstract = []models.Text{{Text: f, Lang: "und"}}
 	}
-	if f, ok := e.Fields["volume"]; ok {
-		p.Volume = f.String()
+	if f, ok := entries["volume"]; ok {
+		p.Volume = f
 	}
-	if f, ok := e.Fields["number"]; ok {
-		p.Issue = f.String()
+	if f, ok := entries["number"]; ok {
+		p.Issue = f
 	}
-	if f, ok := e.Fields["address"]; ok {
-		p.PlaceOfPublication = f.String()
+	if f, ok := entries["address"]; ok {
+		p.PlaceOfPublication = f
 	}
-	if f, ok := e.Fields["doi"]; ok {
-		p.DOI = f.String()
+	if f, ok := entries["doi"]; ok {
+		p.DOI = f
 	}
-	if f, ok := e.Fields["issn"]; ok {
-		p.ISSN = []string{f.String()}
+	if f, ok := entries["issn"]; ok {
+		p.ISSN = []string{f}
 	}
-	if f, ok := e.Fields["isbn"]; ok {
-		p.ISBN = []string{f.String()}
+	if f, ok := entries["isbn"]; ok {
+		p.ISBN = []string{f}
 	}
-	if f, ok := e.Fields["series"]; ok {
-		p.SeriesTitle = f.String()
+	if f, ok := entries["series"]; ok {
+		p.SeriesTitle = f
 	}
-	if f, ok := e.Fields["journal"]; ok {
-		p.Publication = f.String()
+	if f, ok := entries["journal"]; ok {
+		p.Publication = f
 	}
-	if f, ok := e.Fields["booktitle"]; ok {
-		p.Publication = f.String()
+	if f, ok := entries["booktitle"]; ok {
+		p.Publication = f
 	}
-	if f, ok := e.Fields["school"]; ok {
-		p.Publisher = f.String()
+	if f, ok := entries["school"]; ok {
+		p.Publisher = f
 	}
-	if f, ok := e.Fields["publisher"]; ok {
-		p.Publisher = f.String()
+	if f, ok := entries["publisher"]; ok {
+		p.Publisher = f
 	}
-	if f, ok := e.Fields["author"]; ok {
-		for _, v := range strings.Split(f.String(), " and ") {
+	if f, ok := entries["author"]; ok {
+		for _, v := range strings.Split(f, " and ") {
 			nameParts := reSplit.Split(v, -1)
 			c := &models.Contributor{FullName: v, LastName: nameParts[0]}
 			if len(nameParts) > 1 {
@@ -132,8 +140,8 @@ func mapEntry(e *bibtex.BibEntry, p *models.Publication) {
 			p.Author = append(p.Author, c)
 		}
 	}
-	if f, ok := e.Fields["editor"]; ok {
-		for _, v := range strings.Split(f.String(), " and ") {
+	if f, ok := entries["editor"]; ok {
+		for _, v := range strings.Split(f, " and ") {
 			nameParts := reSplit.Split(v, -1)
 			c := &models.Contributor{FullName: v, LastName: nameParts[0]}
 			if len(nameParts) > 1 {
@@ -146,15 +154,15 @@ func mapEntry(e *bibtex.BibEntry, p *models.Publication) {
 	}
 
 	// WoS bibtex records
-	if f, ok := e.Fields["journal-iso"]; ok {
-		p.PublicationAbbreviation = f.String()
+	if f, ok := entries["journal-iso"]; ok {
+		p.PublicationAbbreviation = f
 	}
-	if f, ok := e.Fields["keywords-plus"]; ok {
-		p.Keyword = append(p.Keyword, reSplit.Split(f.String(), -1)...)
+	if f, ok := entries["keywords-plus"]; ok {
+		p.Keyword = append(p.Keyword, reSplit.Split(f, -1)...)
 	}
-	if f, ok := e.Fields["unique-id"]; ok {
-		if strings.HasPrefix(f.String(), "ISI:") {
-			p.WOSID = strings.TrimPrefix(f.String(), "ISI:")
+	if f, ok := entries["unique-id"]; ok {
+		if strings.HasPrefix(f, "ISI:") {
+			p.WOSID = strings.TrimPrefix(f, "ISI:")
 		}
 	}
 }
