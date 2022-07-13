@@ -44,7 +44,7 @@ func (h *Handler) AddImpersonation(w http.ResponseWriter, r *http.Request, ctx C
 		return
 	}
 
-	render.Render(w, "impersonation/add", ctx)
+	render.Layout(w, "show_modal", "impersonation/add", ctx)
 }
 
 func (h *Handler) CreateImpersonation(w http.ResponseWriter, r *http.Request, ctx Context) {

@@ -52,7 +52,7 @@ func bookDetailsForm(ctx Context, b *BindDetails, errors validation.Errors) *for
 			&form.SelectRepeat{
 				Name:        "language",
 				Label:       l.T("builder.language"),
-				Options:     localize.VocabularySelectOptions(l, "language_codes"),
+				Options:     localize.LanguageSelectOptions(l),
 				Values:      b.Language,
 				EmptyOption: true,
 				Cols:        9,

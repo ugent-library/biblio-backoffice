@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"strings"
 	"time"
 
 	"github.com/elastic/go-elasticsearch/v6/esapi"
@@ -283,7 +282,7 @@ func decodePublicationRes(res *esapi.Response) (*models.PublicationHits, error) 
 	defer res.Body.Close()
 
 	if res.IsError() {
-		buf := new(strings.Builder)
+		buf := &bytes.Buffer{}
 		if _, err := io.Copy(buf, res.Body); err != nil {
 			return nil, err
 		}
@@ -305,8 +304,8 @@ func decodePublicationRes(res *esapi.Response) (*models.PublicationHits, error) 
 			continue
 		}
 
-		for _, f := range r.Aggregations.Facets[facet].(map[string]interface{})["facet"].(map[string]interface{})["buckets"].([]interface{}) {
-			fv := f.(map[string]interface{})
+		for _, f := range r.Aggregations.Facets[facet].(map[string]any)["facet"].(map[string]any)["buckets"].([]any) {
+			fv := f.(map[string]any)
 			value := ""
 			switch v := fv["key"].(type) {
 			case string:
@@ -368,7 +367,7 @@ func (publications *Publications) Index(d *models.Publication) error {
 	defer res.Body.Close()
 
 	if res.IsError() {
-		buf := new(strings.Builder)
+		buf := &bytes.Buffer{}
 		if _, err := io.Copy(buf, res.Body); err != nil {
 			return err
 		}

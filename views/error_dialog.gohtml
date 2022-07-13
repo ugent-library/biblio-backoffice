@@ -1,0 +1,14 @@
+{{define "modal_dialog"}}
+<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+        <div class="modal-body">                    
+            <div class="alert alert-danger">
+                {{.}}
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-link modal-close">Close</button>
+        </div>
+    </div>
+</div>
+{{end}}

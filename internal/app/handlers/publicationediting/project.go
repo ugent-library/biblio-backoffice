@@ -39,7 +39,7 @@ func (h *Handler) AddProject(w http.ResponseWriter, r *http.Request, ctx Context
 		return
 	}
 
-	render.Render(w, "publication/add_project", YieldAddProject{
+	render.Layout(w, "show_modal", "publication/add_project", YieldAddProject{
 		Context: ctx,
 		Hits:    hits,
 	})
@@ -58,7 +58,7 @@ func (h *Handler) SuggestProjects(w http.ResponseWriter, r *http.Request, ctx Co
 		return
 	}
 
-	render.Render(w, "publication/suggest_projects", YieldAddProject{
+	render.Partial(w, "publication/suggest_projects", YieldAddProject{
 		Context: ctx,
 		Hits:    hits,
 	})
@@ -88,7 +88,7 @@ func (h *Handler) CreateProject(w http.ResponseWriter, r *http.Request, ctx Cont
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Render(w, "error_dialog", ctx.T("publication.conflict_error"))
+		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("publication.conflict_error"))
 		return
 	}
 
@@ -97,7 +97,7 @@ func (h *Handler) CreateProject(w http.ResponseWriter, r *http.Request, ctx Cont
 		return
 	}
 
-	render.Render(w, "publication/refresh_projects", YieldProjects{
+	render.View(w, "publication/refresh_projects", YieldProjects{
 		Context: ctx,
 	})
 }
@@ -109,7 +109,7 @@ func (h *Handler) ConfirmDeleteProject(w http.ResponseWriter, r *http.Request, c
 		return
 	}
 
-	render.Render(w, "publication/confirm_delete_project", YieldDeleteProject{
+	render.Layout(w, "show_modal", "publication/confirm_delete_project", YieldDeleteProject{
 		Context:  ctx,
 		Position: b.Position,
 	})
@@ -133,7 +133,7 @@ func (h *Handler) DeleteProject(w http.ResponseWriter, r *http.Request, ctx Cont
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Render(w, "error_dialog", ctx.T("publication.conflict_error"))
+		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("publication.conflict_error"))
 		return
 	}
 
@@ -142,7 +142,7 @@ func (h *Handler) DeleteProject(w http.ResponseWriter, r *http.Request, ctx Cont
 		return
 	}
 
-	render.Render(w, "publication/refresh_projects", YieldProjects{
+	render.View(w, "publication/refresh_projects", YieldProjects{
 		Context: ctx,
 	})
 }

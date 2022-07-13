@@ -37,7 +37,7 @@ type Snapshot struct {
 	DateUntil  *time.Time
 }
 
-func (s *Snapshot) Scan(data interface{}) error {
+func (s *Snapshot) Scan(data any) error {
 	return json.Unmarshal(s.Data, data)
 }
 
@@ -50,9 +50,9 @@ func (e *Conflict) Error() string {
 
 type DB interface {
 	Begin(context.Context) (pgx.Tx, error)
-	Exec(context.Context, string, ...interface{}) (pgconn.CommandTag, error)
-	QueryRow(context.Context, string, ...interface{}) pgx.Row
-	Query(context.Context, string, ...interface{}) (pgx.Rows, error)
+	Exec(context.Context, string, ...any) (pgconn.CommandTag, error)
+	QueryRow(context.Context, string, ...any) pgx.Row
+	Query(context.Context, string, ...any) (pgx.Rows, error)
 }
 
 type Client struct {
@@ -147,7 +147,7 @@ func (s *Store) notify(snap *Snapshot) {
 	}
 }
 
-func (s *Store) AddAfter(snapshotID, id string, data interface{}, o Options) (string, error) {
+func (s *Store) AddAfter(snapshotID, id string, data any, o Options) (string, error) {
 	if snapshotID == "" {
 		return "", errors.New("snapshot id is empty")
 	}
@@ -237,7 +237,7 @@ func (s *Store) AddAfter(snapshotID, id string, data interface{}, o Options) (st
 	return newSnapshotID, nil
 }
 
-func (s *Store) Add(id string, data interface{}, o Options) error {
+func (s *Store) Add(id string, data any, o Options) error {
 	if id == "" {
 		return errors.New("id is empty")
 	}

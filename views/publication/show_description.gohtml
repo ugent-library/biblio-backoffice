@@ -1,0 +1,16 @@
+<div hx-swap-oob="innerHTML:#show-nav">
+    {{partial "publication/show_nav" .}}
+</div>
+
+{{partial "publication/show_details" .}}
+{{partial "publication/show_projects" .}}
+{{partial "publication/show_departments" .}}
+{{if .Publication.UsesConference}}
+    {{partial "publication/show_conference" .}}
+{{end}}
+{{partial "publication/show_abstracts" .}}
+{{partial "publication/show_links" .}}
+{{if .Publication.UsesLaySummary}}
+    {{partial "publication/show_lay_summaries" .}}
+{{end}}
+{{partial "publication/show_additional_info" .}}

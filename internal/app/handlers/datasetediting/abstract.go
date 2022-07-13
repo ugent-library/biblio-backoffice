@@ -44,7 +44,7 @@ type YieldDeleteAbstract struct {
 func (h *Handler) AddAbstract(w http.ResponseWriter, r *http.Request, ctx Context) {
 	form := abstractForm(ctx, BindAbstract{Position: len(ctx.Dataset.Abstract)}, nil)
 
-	render.Render(w, "dataset/add_abstract", YieldAddAbstract{
+	render.Layout(w, "show_modal", "dataset/add_abstract", YieldAddAbstract{
 		Context: ctx,
 		Form:    form,
 	})
@@ -60,7 +60,7 @@ func (h *Handler) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 	ctx.Dataset.Abstract = append(ctx.Dataset.Abstract, models.Text{Text: b.Text, Lang: b.Lang})
 
 	if validationErrs := ctx.Dataset.Validate(); validationErrs != nil {
-		render.Render(w, "dataset/refresh_add_abstract", YieldAddAbstract{
+		render.Layout(w, "refresh_modal", "dataset/add_abstract", YieldAddAbstract{
 			Context: ctx,
 			Form:    abstractForm(ctx, b, validationErrs.(validation.Errors)),
 		})
@@ -71,7 +71,7 @@ func (h *Handler) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Render(w, "error_dialog", ctx.T("dataset.conflict_error"))
+		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("dataset.conflict_error"))
 		return
 	}
 
@@ -80,7 +80,7 @@ func (h *Handler) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 		return
 	}
 
-	render.Render(w, "dataset/refresh_abstracts", YieldAbstracts{
+	render.View(w, "dataset/refresh_abstracts", YieldAbstracts{
 		Context: ctx,
 	})
 }
@@ -101,7 +101,7 @@ func (h *Handler) EditAbstract(w http.ResponseWriter, r *http.Request, ctx Conte
 	b.Lang = a.Lang
 	b.Text = a.Text
 
-	render.Render(w, "dataset/edit_abstract", YieldEditAbstract{
+	render.Layout(w, "show_modal", "dataset/edit_abstract", YieldEditAbstract{
 		Context:  ctx,
 		Position: b.Position,
 		Form:     abstractForm(ctx, b, nil),
@@ -124,7 +124,7 @@ func (h *Handler) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 	if validationErrs := ctx.Dataset.Validate(); validationErrs != nil {
 		form := abstractForm(ctx, b, validationErrs.(validation.Errors))
 
-		render.Render(w, "dataset/refresh_edit_abstract", YieldEditAbstract{
+		render.Layout(w, "refresh_modal", "dataset/edit_abstract", YieldEditAbstract{
 			Context:  ctx,
 			Position: b.Position,
 			Form:     form,
@@ -136,7 +136,7 @@ func (h *Handler) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Render(w, "error_dialog", ctx.T("dataset.conflict_error"))
+		render.Layout(w, "show_modal", "error_dialog", ctx.Locale.T("dataset.conflict_error"))
 		return
 	}
 
@@ -145,7 +145,7 @@ func (h *Handler) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 		return
 	}
 
-	render.Render(w, "dataset/refresh_abstracts", YieldAbstracts{
+	render.View(w, "dataset/refresh_abstracts", YieldAbstracts{
 		Context: ctx,
 	})
 }
@@ -157,7 +157,7 @@ func (h *Handler) ConfirmDeleteAbstract(w http.ResponseWriter, r *http.Request, 
 		return
 	}
 
-	render.Render(w, "dataset/confirm_delete_abstract", YieldDeleteAbstract{
+	render.Layout(w, "show_modal", "dataset/confirm_delete_abstract", YieldDeleteAbstract{
 		Context:  ctx,
 		Position: b.Position,
 	})
@@ -179,7 +179,7 @@ func (h *Handler) DeleteAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Render(w, "error_dialog", ctx.T("dataset.conflict_error"))
+		render.Layout(w, "show_modal", "error_dialog", ctx.Locale.T("dataset.conflict_error"))
 		return
 	}
 
@@ -188,7 +188,7 @@ func (h *Handler) DeleteAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 		return
 	}
 
-	render.Render(w, "dataset/refresh_abstracts", YieldAbstracts{
+	render.View(w, "dataset/refresh_abstracts", YieldAbstracts{
 		Context: ctx,
 	})
 }
@@ -201,17 +201,17 @@ func abstractForm(ctx Context, b BindAbstract, errors validation.Errors) *form.F
 			&form.TextArea{
 				Name:        "text",
 				Value:       b.Text,
-				Label:       ctx.T("builder.abstract.text"),
+				Label:       ctx.Locale.T("builder.abstract.text"),
 				Cols:        12,
 				Rows:        6,
-				Placeholder: ctx.T("builder.abstract.text.placeholder"),
+				Placeholder: ctx.Locale.T("builder.abstract.text.placeholder"),
 				Error:       localize.ValidationErrorAt(ctx.Locale, errors, fmt.Sprintf("/abstract/%d/text", b.Position)),
 			},
 			&form.Select{
 				Name:    "lang",
 				Value:   b.Lang,
-				Label:   ctx.T("builder.abstract.lang"),
-				Options: localize.VocabularySelectOptions(ctx.Locale, "language_codes"),
+				Label:   ctx.Locale.T("builder.abstract.lang"),
+				Options: localize.LanguageSelectOptions(ctx.Locale),
 				Cols:    12,
 				Error:   localize.ValidationErrorAt(ctx.Locale, errors, fmt.Sprintf("/abstract/%d/lang", b.Position)),
 			},

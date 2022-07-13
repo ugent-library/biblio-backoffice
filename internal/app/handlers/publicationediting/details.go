@@ -155,7 +155,7 @@ func (h *Handler) EditDetails(w http.ResponseWriter, r *http.Request, ctx Contex
 
 	publicationToBind(ctx.Publication, b)
 
-	render.Render(w, "publication/edit_details", YieldEditDetails{
+	render.Layout(w, "show_modal", "publication/edit_details", YieldEditDetails{
 		Context: ctx,
 		Form:    detailsForm(ctx, b, nil),
 	})
@@ -173,7 +173,7 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
 		form := detailsForm(ctx, b, validationErrs.(validation.Errors))
 
-		render.Render(w, "publication/refresh_edit_details", YieldEditDetails{
+		render.Layout(w, "refresh_modal", "publication/edit_details", YieldEditDetails{
 			Context: ctx,
 			Form:    form,
 		})
@@ -184,7 +184,7 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Render(w, "error_dialog", ctx.T("publication.conflict_error"))
+		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("publication.conflict_error"))
 		return
 	}
 
@@ -193,7 +193,7 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 		return
 	}
 
-	render.Render(w, "publication/refresh_details", YieldDetails{
+	render.View(w, "publication/refresh_details", YieldDetails{
 		Context:        ctx,
 		DisplayDetails: displays.PublicationDetails(ctx.Locale, ctx.Publication),
 	})

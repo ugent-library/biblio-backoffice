@@ -10,12 +10,12 @@ func PublicationAdditionalInfo(l *locale.Locale, p *models.Publication) *display
 	return display.New().
 		WithTheme("default").
 		AddSection(
-			&display.Text{
+			&display.List{
 				Label:  l.T("builder.research_field"),
-				List:   true,
 				Values: p.ResearchField,
 			},
-			&display.Text{
+			&display.List{
+				Inline:        true,
 				Label:         l.T("builder.keyword"),
 				Values:        p.Keyword,
 				ValueTemplate: "format/badge",

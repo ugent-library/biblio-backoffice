@@ -47,7 +47,7 @@ func (h *Handler) AddLink(w http.ResponseWriter, r *http.Request, ctx Context) {
 		Position: len(ctx.Publication.Link),
 	}, nil)
 
-	render.Render(w, "publication/add_link", YieldAddLink{
+	render.Layout(w, "show_modal", "publication/add_link", YieldAddLink{
 		Context: ctx,
 		Form:    form,
 	})
@@ -70,7 +70,7 @@ func (h *Handler) CreateLink(w http.ResponseWriter, r *http.Request, ctx Context
 	)
 
 	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
-		render.Render(w, "publication/refresh_add_link", YieldAddLink{
+		render.Layout(w, "refresh_modal", "publication/add_link", YieldAddLink{
 			Context: ctx,
 			Form:    linkForm(ctx, b, validationErrs.(validation.Errors)),
 		})
@@ -81,7 +81,7 @@ func (h *Handler) CreateLink(w http.ResponseWriter, r *http.Request, ctx Context
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Render(w, "error_dialog", ctx.T("publication.conflict_error"))
+		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("publication.conflict_error"))
 		return
 	}
 
@@ -90,7 +90,7 @@ func (h *Handler) CreateLink(w http.ResponseWriter, r *http.Request, ctx Context
 		return
 	}
 
-	render.Render(w, "publication/refresh_links", YieldLinks{
+	render.View(w, "publication/refresh_links", YieldLinks{
 		Context: ctx,
 	})
 }
@@ -112,7 +112,7 @@ func (h *Handler) EditLink(w http.ResponseWriter, r *http.Request, ctx Context) 
 	b.Description = link.Description
 	b.Relation = link.Relation
 
-	render.Render(w, "publication/edit_link", YieldEditLink{
+	render.Layout(w, "show_modal", "publication/edit_link", YieldEditLink{
 		Context:  ctx,
 		Position: b.Position,
 		Form:     linkForm(ctx, b, nil),
@@ -140,7 +140,7 @@ func (h *Handler) UpdateLink(w http.ResponseWriter, r *http.Request, ctx Context
 	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
 		form := linkForm(ctx, b, validationErrs.(validation.Errors))
 
-		render.Render(w, "publication/refresh_edit_link", YieldEditLink{
+		render.Layout(w, "refresh_modal", "publication/edit_link", YieldEditLink{
 			Context:  ctx,
 			Position: b.Position,
 			Form:     form,
@@ -152,7 +152,7 @@ func (h *Handler) UpdateLink(w http.ResponseWriter, r *http.Request, ctx Context
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Render(w, "error_dialog", ctx.T("publication.conflict_error"))
+		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("publication.conflict_error"))
 		return
 	}
 
@@ -161,7 +161,7 @@ func (h *Handler) UpdateLink(w http.ResponseWriter, r *http.Request, ctx Context
 		return
 	}
 
-	render.Render(w, "publication/refresh_links", YieldLinks{
+	render.View(w, "publication/refresh_links", YieldLinks{
 		Context: ctx,
 	})
 }
@@ -173,7 +173,7 @@ func (h *Handler) ConfirmDeleteLink(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	render.Render(w, "publication/confirm_delete_link", YieldDeleteLink{
+	render.Layout(w, "show_modal", "publication/confirm_delete_link", YieldDeleteLink{
 		Context:  ctx,
 		Position: b.Position,
 	})
@@ -195,7 +195,7 @@ func (h *Handler) DeleteLink(w http.ResponseWriter, r *http.Request, ctx Context
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Render(w, "error_dialog", ctx.T("publication.conflict_error"))
+		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("publication.conflict_error"))
 		return
 	}
 
@@ -204,7 +204,7 @@ func (h *Handler) DeleteLink(w http.ResponseWriter, r *http.Request, ctx Context
 		return
 	}
 
-	render.Render(w, "publication/refresh_links", YieldLinks{
+	render.View(w, "publication/refresh_links", YieldLinks{
 		Context: ctx,
 	})
 }

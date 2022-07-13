@@ -1,0 +1,21 @@
+{{define "modal_dialog"}}
+<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">Add {{.Locale.TS "dataset.contributor.role" .Role}}</h2>
+        </div>
+        <div class="modal-body">
+            {{partial "dataset/contributors_form" .}}
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-link modal-close" data-dismiss="modal">Cancel</button>
+            <button class="btn btn-primary"
+                hx-post="{{pathFor "dataset_create_contributor" "id" .Dataset.ID "role" .Role}}"
+                hx-headers='{"If-Match": "{{.Dataset.SnapshotID}}"}'
+                hx-include=".modal-body .contributor-attributes"
+                hx-swap="none"
+            >Add</button>
+        </div>
+    </div>
+</div>
+{{end}}

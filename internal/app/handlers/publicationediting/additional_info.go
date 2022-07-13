@@ -39,7 +39,7 @@ func (h *Handler) EditAdditionalInfo(w http.ResponseWriter, r *http.Request, ctx
 		ResearchField:  p.ResearchField,
 	}
 
-	render.Render(w, "publication/edit_additional_info", YieldEditAdditionalInfo{
+	render.Layout(w, "show_modal", "publication/edit_additional_info", YieldEditAdditionalInfo{
 		Context: ctx,
 		Form:    additionalInfoForm(ctx, b, nil),
 	})
@@ -60,7 +60,7 @@ func (h *Handler) UpdateAdditionalInfo(w http.ResponseWriter, r *http.Request, c
 	if validationErrs := p.Validate(); validationErrs != nil {
 		form := additionalInfoForm(ctx, b, validationErrs.(validation.Errors))
 
-		render.Render(w, "publication/refresh_edit_additional_info", YieldEditAdditionalInfo{
+		render.Layout(w, "refresh_modal", "publication/edit_additional_info", YieldEditAdditionalInfo{
 			Context: ctx,
 			Form:    form,
 		})
@@ -71,7 +71,7 @@ func (h *Handler) UpdateAdditionalInfo(w http.ResponseWriter, r *http.Request, c
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Render(w, "error_dialog", ctx.T("publication.conflict_error"))
+		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("publication.conflict_error"))
 		return
 	}
 
@@ -80,7 +80,7 @@ func (h *Handler) UpdateAdditionalInfo(w http.ResponseWriter, r *http.Request, c
 		return
 	}
 
-	render.Render(w, "publication/refresh_additional_info", YieldAdditionalInfo{
+	render.View(w, "publication/refresh_additional_info", YieldAdditionalInfo{
 		Context:               ctx,
 		DisplayAdditionalInfo: displays.PublicationAdditionalInfo(ctx.Locale, p),
 	})

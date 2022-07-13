@@ -56,7 +56,7 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request, ctx Context) {
 		return
 	}
 
-	render.Wrap(w, "layouts/default", "dataset/search_page", YieldSearch{
+	render.Layout(w, "layouts/default", "dataset/pages/search", YieldSearch{
 		Context:   ctx,
 		PageTitle: "Overview - Datasets - Biblio",
 		ActiveNav: "datasets",
@@ -78,7 +78,7 @@ func (h *Handler) CurationSearch(w http.ResponseWriter, r *http.Request, ctx Con
 		return
 	}
 
-	render.Wrap(w, "layouts/default", "dataset/search_page", YieldSearch{
+	render.Layout(w, "layouts/default", "dataset/search_page", YieldSearch{
 		Context:   ctx,
 		PageTitle: "Overview - Datasets - Biblio",
 		ActiveNav: "datasets",

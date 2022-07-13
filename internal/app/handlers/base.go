@@ -155,15 +155,3 @@ type BaseContext struct {
 	CSRFToken    string
 	CSRFTag      template.HTML
 }
-
-// TODO maybe better to remove this
-// templates are more predictable without this
-func (c BaseContext) T(key string, args ...any) string {
-	return c.Locale.T(key, args...)
-}
-
-// TODO maybe better to remove this
-// templates are more predictable without this
-func (c BaseContext) TS(scope, key string, args ...any) string {
-	return c.Locale.TS(scope, key, args...)
-}

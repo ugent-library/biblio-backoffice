@@ -31,6 +31,24 @@ func LanguageNames(loc *locale.Locale, codes []string) []string {
 	return names
 }
 
+func LanguageSelectOptions(locale *locale.Locale) []form.SelectOption {
+	vals, ok := vocabularies.Map["language_codes"]
+	if !ok {
+		return nil
+	}
+
+	opts := make([]form.SelectOption, len(vals))
+
+	for i, v := range vals {
+		opts[i] = form.SelectOption{
+			Value: v,
+			Label: locale.LanguageName(v),
+		}
+	}
+
+	return opts
+}
+
 func VocabularySelectOptions(locale *locale.Locale, key string) []form.SelectOption {
 	vals, ok := vocabularies.Map[key]
 	if !ok {

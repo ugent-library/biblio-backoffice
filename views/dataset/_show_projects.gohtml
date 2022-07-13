@@ -1,0 +1,23 @@
+<div class="card mb-6">
+    <div class="card-header">
+        <div class="bc-toolbar">
+            <div class="bc-toolbar-left">
+                <h1 class="bc-toolbar-title">Project</h1>
+            </div>
+            <div class="bc-toolbar-right">
+                {{if .User.CanEditDataset .Dataset}}
+                <button class="btn btn-outline-primary" type="button"
+                    hx-get="{{pathFor "dataset_add_project" "id" .Dataset.ID}}"
+                    hx-target="#modals"
+                >
+                    <i class="if if-add"></i>
+                    <div class="btn-text">Add project</div>
+                </button>
+                {{end}}
+            </div>
+        </div>
+    </div>
+    <div id="projects-body">
+        {{partial "dataset/projects_body" .}}
+    </div>
+</div>

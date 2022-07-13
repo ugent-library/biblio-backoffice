@@ -1,10 +1,10 @@
 package form
 
 import (
+	"bytes"
 	"html/template"
 	"io"
 	"path"
-	"strings"
 
 	"github.com/ugent-library/biblio-backend/internal/render"
 )
@@ -12,15 +12,15 @@ import (
 type Errors []string
 
 func (e Errors) Render() (template.HTML, error) {
-	var buf strings.Builder
+	b := &bytes.Buffer{}
 
 	if len(e) > 0 {
-		if err := render.Templates().ExecuteTemplate(&buf, "form/errors", e); err != nil {
+		if err := render.ExecuteView(b, "form/errors", e); err != nil {
 			return "", err
 		}
 	}
 
-	return template.HTML(buf.String()), nil
+	return template.HTML(b.String()), nil
 }
 
 type Form struct {
@@ -60,15 +60,15 @@ type Section struct {
 }
 
 func (s *Section) Render() (template.HTML, error) {
-	var buf strings.Builder
+	b := &bytes.Buffer{}
 
 	for _, field := range s.Fields {
-		if err := field.Render(s.Form.Theme, &buf); err != nil {
+		if err := field.Render(s.Form.Theme, b); err != nil {
 			return "", err
 		}
 	}
 
-	return template.HTML(buf.String()), nil
+	return template.HTML(b.String()), nil
 }
 
 type Field interface {
@@ -92,7 +92,7 @@ type Text struct {
 }
 
 func (f *Text) Render(theme string, w io.Writer) error {
-	return render.Templates().ExecuteTemplate(w, path.Join("form", theme, "text"), f)
+	return render.ExecuteView(w, path.Join("form", theme, "text"), f)
 }
 
 type TextRepeat struct {
@@ -111,7 +111,7 @@ type TextRepeat struct {
 }
 
 func (f *TextRepeat) Render(theme string, w io.Writer) error {
-	return render.Templates().ExecuteTemplate(w, path.Join("form", theme, "text_repeat"), f)
+	return render.ExecuteView(w, path.Join("form", theme, "text_repeat"), f)
 }
 
 type TextArea struct {
@@ -127,7 +127,7 @@ type TextArea struct {
 }
 
 func (f *TextArea) Render(theme string, w io.Writer) error {
-	return render.Templates().ExecuteTemplate(w, path.Join("form", theme, "text_area"), f)
+	return render.ExecuteView(w, path.Join("form", theme, "text_area"), f)
 }
 
 type Select struct {
@@ -157,7 +157,7 @@ func (f *Select) Render(theme string, w io.Writer) error {
 	}
 
 	tmpl := path.Join("form", theme, t)
-	return render.Templates().ExecuteTemplate(w, tmpl, f)
+	return render.ExecuteView(w, tmpl, f)
 }
 
 type SelectRepeat struct {
@@ -173,7 +173,7 @@ type SelectRepeat struct {
 }
 
 func (f *SelectRepeat) Render(theme string, w io.Writer) error {
-	return render.Templates().ExecuteTemplate(w, path.Join("form", theme, "select_repeat"), f)
+	return render.ExecuteView(w, path.Join("form", theme, "select_repeat"), f)
 }
 
 type Date struct {
@@ -190,7 +190,7 @@ type Date struct {
 }
 
 func (f *Date) Render(theme string, w io.Writer) error {
-	return render.Templates().ExecuteTemplate(w, path.Join("form", theme, "date"), f)
+	return render.ExecuteView(w, path.Join("form", theme, "date"), f)
 }
 
 type Checkbox struct {
@@ -211,7 +211,7 @@ func (f *Checkbox) Render(theme string, w io.Writer) error {
 	}
 	tmpl := path.Join("form", theme, t)
 
-	return render.Templates().ExecuteTemplate(w, tmpl, f)
+	return render.ExecuteView(w, tmpl, f)
 }
 
 var HiddenFieldTemplate = template.Must(template.New("").Parse(`<input type="hidden" name="{{.Name}}" value="{{.Value}}">`))
@@ -245,5 +245,5 @@ func (f *RadioButtonGroup) Render(theme string, w io.Writer) error {
 	}
 	tmpl := path.Join("form", theme, t)
 
-	return render.Templates().ExecuteTemplate(w, tmpl, f)
+	return render.ExecuteView(w, tmpl, f)
 }

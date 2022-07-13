@@ -144,7 +144,7 @@ func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context
 	bindFile.Index = len(ctx.Publication.File) - 1
 
 	// render edit file form
-	render.Render(w, "publication/refresh_edit_file", YieldEditFile{
+	render.Layout(w, "show_modal", "publication/edit_file", YieldEditFile{
 		Context:   ctx,
 		File:      pubFile,
 		FileIndex: bindFile.Index,
@@ -177,7 +177,7 @@ func (h *Handler) EditFile(w http.ResponseWriter, r *http.Request, ctx Context) 
 
 	publicationFileToBind(file, &b)
 
-	render.Render(w, "publication/edit_file", YieldEditFile{
+	render.Layout(w, "show_modal", "publication/edit_file", YieldEditFile{
 		Context:   ctx,
 		File:      file,
 		FileIndex: b.Index,
@@ -213,64 +213,11 @@ func (h *Handler) EditFileLicense(w http.ResponseWriter, r *http.Request, ctx Co
 		b.EmbargoTo = ""
 	}
 
-	render.Render(w, "publication/edit_file", YieldEditFile{
+	render.Layout(w, "refresh_modal", "publication/edit_file", YieldEditFile{
 		Context:   ctx,
 		File:      file,
 		FileIndex: b.Index,
 		Form:      fileForm(ctx, b, nil),
-	})
-
-}
-
-func (h *Handler) DeleteFile(w http.ResponseWriter, r *http.Request, ctx Context) {
-	b := BindFile{}
-	if err := bind.Request(r, &b); err != nil {
-		render.BadRequest(w, r, err)
-		return
-	}
-
-	newFile := []*models.PublicationFile{}
-	for _, f := range ctx.Publication.File {
-		if f.ID != b.FileID {
-			newFile = append(newFile, f)
-		}
-	}
-	ctx.Publication.File = newFile
-
-	// add thumbnail urls
-	h.addThumbnailURLs(ctx.Publication)
-
-	// save publication
-	if err := h.Repository.SavePublication(ctx.Publication); err != nil {
-		render.InternalServerError(w, r, err)
-		return
-	}
-
-	// render
-	render.Render(w, "publication/refresh_files", YieldShowFiles{
-		Context: ctx,
-	})
-
-}
-
-func (h *Handler) ConfirmDeleteFile(w http.ResponseWriter, r *http.Request, ctx Context) {
-
-	b := BindFile{}
-	if err := bind.Request(r, &b); err != nil {
-		render.BadRequest(w, r, err)
-		return
-	}
-
-	file := ctx.Publication.GetFile(b.FileID)
-
-	if file == nil {
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-		return
-	}
-
-	render.Render(w, "publication/confirm_delete_file", YieldDeleteFile{
-		Context: ctx,
-		File:    file,
 	})
 
 }
@@ -309,7 +256,7 @@ func (h *Handler) UpdateFile(w http.ResponseWriter, r *http.Request, ctx Context
 
 	var validationErrors validation.Errors
 	if errors.As(err, &validationErrors) {
-		render.Render(w, "publication/refresh_edit_file", YieldEditFile{
+		render.Layout(w, "refresh_modal", "publication/edit_file", YieldEditFile{
 			Context:   ctx,
 			File:      file,
 			FileIndex: b.Index,
@@ -329,9 +276,62 @@ func (h *Handler) UpdateFile(w http.ResponseWriter, r *http.Request, ctx Context
 		return
 	}
 
-	render.Render(w, "publication/refresh_files", YieldShowFiles{
+	render.View(w, "publication/refresh_files", YieldShowFiles{
 		Context: ctx,
 	})
+}
+
+func (h *Handler) ConfirmDeleteFile(w http.ResponseWriter, r *http.Request, ctx Context) {
+
+	b := BindFile{}
+	if err := bind.Request(r, &b); err != nil {
+		render.BadRequest(w, r, err)
+		return
+	}
+
+	file := ctx.Publication.GetFile(b.FileID)
+
+	if file == nil {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+
+	render.Layout(w, "show_modal", "publication/confirm_delete_file", YieldDeleteFile{
+		Context: ctx,
+		File:    file,
+	})
+
+}
+
+func (h *Handler) DeleteFile(w http.ResponseWriter, r *http.Request, ctx Context) {
+	b := BindFile{}
+	if err := bind.Request(r, &b); err != nil {
+		render.BadRequest(w, r, err)
+		return
+	}
+
+	newFile := []*models.PublicationFile{}
+	for _, f := range ctx.Publication.File {
+		if f.ID != b.FileID {
+			newFile = append(newFile, f)
+		}
+	}
+	ctx.Publication.File = newFile
+
+	// add thumbnail urls
+	h.addThumbnailURLs(ctx.Publication)
+
+	// save publication
+	if err := h.Repository.SavePublication(ctx.Publication); err != nil {
+		render.InternalServerError(w, r, err)
+		return
+	}
+
+	// render
+	render.View(w, "publication/refresh_files", YieldShowFiles{
+		Context: ctx,
+	})
+
 }
 
 func fileForm(ctx Context, b BindFile, errors validation.Errors) *form.Form {
@@ -345,7 +345,7 @@ func fileForm(ctx Context, b BindFile, errors validation.Errors) *form.Form {
 		&form.Text{
 			Name:  "title",
 			Value: b.Title,
-			Label: ctx.T("builder.file.title"),
+			Label: ctx.Locale.T("builder.file.title"),
 			Cols:  12,
 			Error: localize.ValidationErrorAt(
 				l,

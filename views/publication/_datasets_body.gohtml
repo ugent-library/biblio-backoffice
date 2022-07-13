@@ -1,0 +1,54 @@
+{{if .RelatedDatasets}}
+<div class="card-body p-0">
+    <ul class="list-group list-group-flush">
+        {{range .RelatedDatasets}}
+        <li class="list-group-item">
+            <div class="d-flex w-100">
+                <div class="w-100">
+                    <div class="d-flex align-items-start">
+                        <div class="list-group-item-thumbnail">
+                            <div class="c-thumbnail c-thumbnail--dataset c-thumbnail--medium">
+                                <i class="if if-database"></i>
+                            </div>
+                        </div>
+                        <div class="list-group-item-content">
+                            <div class="list-group-item-subline">
+                                <div class="list-group-item-subline-left">
+                                </div>
+                                <div class="list-group-item-subline-right">
+                                    <div class="dropdown">
+                                        <button class="btn btn-link btn-icon-only btn-link-muted" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <i class="if if-more"></i>
+                                        </button>
+                                        <div class="dropdown-menu">
+                                            <a class="dropdown-item" href="{{pathFor "dataset" "id" .ID}}">
+                                                <i class="if if-file-text"></i>
+                                                <span>View details</span>
+                                            </a>
+                                            {{if $.User.CanEditPublication $.Publication}}
+                                            <button class="dropdown-item" type="button"
+                                                hx-get="{{pathFor "publication_confirm_delete_dataset" "id" $.Publication.ID "dataset_id" .ID}}"
+                                                hx-target="#modals"
+                                            >
+                                                <i class="if if-delete"></i>
+                                                <span>Remove from publication</span>
+                                            </button>
+                                            {{end}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {{partial "publication/dataset_summary" .}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+        {{end}}
+    </ul>
+</div>
+{{else}}
+<div class="card-body">
+    <span class="text-muted">No datasets</span>
+</div>
+{{end}}

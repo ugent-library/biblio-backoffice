@@ -10,14 +10,14 @@ import (
 )
 
 type requestPayload struct {
-	Data interface{} `json:"data"`
+	Data any `json:"data"`
 }
 
 type responsePayload struct {
 	Data json.RawMessage `json:"data"`
 }
 
-func (c *Client) get(path string, qp url.Values, responseData interface{}) (*http.Response, error) {
+func (c *Client) get(path string, qp url.Values, responseData any) (*http.Response, error) {
 	req, err := c.newRequest("GET", path, qp, nil)
 	if err != nil {
 		return nil, err
@@ -28,7 +28,7 @@ func (c *Client) get(path string, qp url.Values, responseData interface{}) (*htt
 	return c.doRequest(req, responseData)
 }
 
-func (c *Client) newRequest(method, path string, vals url.Values, requestData interface{}) (*http.Request, error) {
+func (c *Client) newRequest(method, path string, vals url.Values, requestData any) (*http.Request, error) {
 	var buf io.ReadWriter
 	if requestData != nil {
 		buf = new(bytes.Buffer)
@@ -55,7 +55,7 @@ func (c *Client) newRequest(method, path string, vals url.Values, requestData in
 	return req, nil
 }
 
-func (c *Client) doRequest(req *http.Request, responseData interface{}) (*http.Response, error) {
+func (c *Client) doRequest(req *http.Request, responseData any) (*http.Response, error) {
 	res, err := c.http.Do(req)
 	if err != nil {
 		return res, err

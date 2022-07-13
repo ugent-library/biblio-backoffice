@@ -1,0 +1,52 @@
+{{define "page_content"}}
+{{partial "publication/add_sidebar" .}}
+
+<div class="w-100 u-scroll-wrapper">
+    <div class="bc-navbar bc-navbar--xlarge bc-navbar-bordered bc-navbar--white bc-navbar--bordered-bottom">
+        <div class="bc-toolbar">
+            <div class="bc-toolbar-left">
+                <div class="bc-toolbar-item">
+                    <div class="d-flex flex-column">
+                        <span class="text-muted mb-2">Step {{.Step}}</span>
+                        <h4 class="bc-toolbar-title">Add publication(s)</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="p-6 u-scroll-wrapper__body">
+        <div class="card card-collapsible mb-6">
+            <div class="card-header">
+                <div class="collapse-trigger" data-toggle="collapse" data-target="#importFromWOS" aria-expanded="true" aria-controls="collapse1"></div>
+                <div class="bc-toolbar">
+                    <div class="bc-toolbar-left">Import from Web of Science</div>
+                </div>
+            </div>
+            <div class="collapse show" id="importFromWOS">
+                <div class="card-body">
+                    <form class="form-change-submit" action="{{pathFor "publication_add_multiple_import"}}" method="POST" enctype="multipart/form-data">
+                        {{.CSRFTag}}
+                        <input type="hidden" name="source" value="wos">
+
+                        <div class="c-file-upload">
+                            <input type="file" name="file">
+                            <div class="c-file-upload__content">
+                                <p>Drag and drop or</p>
+                                <button class="btn btn-outline-primary">Upload file
+                                    <div class="spinner-border">
+                                        <span class="sr-only"></span>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+
+                        <small class="form-text text-muted my-3"><a href="https://onderzoektips.ugent.be/en/tips/00002067/" target="_blank">Web of Science import instructions</a></small>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{{end}}

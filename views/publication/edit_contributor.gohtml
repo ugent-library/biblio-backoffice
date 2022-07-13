@@ -1,0 +1,21 @@
+{{define "modal_dialog"}}
+<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">Edit {{.Locale.TS "publication.contributor.role" .Role}}</h2>
+        </div>
+        <div class="modal-body">
+            {{partial "publication/contributors_form" .}}
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-link modal-close">Cancel</button>
+            <button class="btn btn-primary"
+                hx-put="{{pathFor "publication_update_contributor" "id" .Publication.ID "role" .Role "position" (.Position|toString)}}"
+                hx-headers='{"If-Match": "{{.Publication.SnapshotID}}"}'
+                hx-include=".modal-body .contributor-attributes"
+                hx-swap="none"
+            >Done</button>
+        </div>
+    </div>
+</div>
+{{end}}
