@@ -320,6 +320,9 @@ func (h *Handler) AddMultipleImport(w http.ResponseWriter, r *http.Request, ctx 
 	}
 	defer file.Close()
 
+	//TODO: why does the code imports zero entries without this?
+	_, _ = file.Seek(0, io.SeekStart)
+
 	batchID, err := h.importPublications(ctx.User.ID, source, file)
 	if err != nil {
 		ctx.Flash = append(ctx.Flash, flash.Flash{
@@ -331,7 +334,7 @@ func (h *Handler) AddMultipleImport(w http.ResponseWriter, r *http.Request, ctx 
 		switch source {
 		case "wos":
 			tmpl = "publication/pages/add_wos"
-		case "bibtext":
+		case "bibtex":
 			tmpl = "publication/pages/add_bibtex"
 		}
 
