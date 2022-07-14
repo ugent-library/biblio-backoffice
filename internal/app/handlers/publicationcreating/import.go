@@ -320,7 +320,7 @@ func (h *Handler) AddMultipleImport(w http.ResponseWriter, r *http.Request, ctx 
 	}
 	defer file.Close()
 
-	//TODO: why does the code imports zero entries without this?
+	// TODO why does the code imports zero entries without this?
 	_, _ = file.Seek(0, io.SeekStart)
 
 	batchID, err := h.importPublications(ctx.User.ID, source, file)

@@ -378,12 +378,12 @@ func (d *Dataset) Validate() error {
 		} else if d.AccessLevel == d.EmbargoTo {
 			errs = append(errs, &validation.Error{
 				Pointer: "/embargo_to",
-				Code:    "dataset.embarg_to.invalid", //TODO: better code
+				Code:    "dataset.embarg_to.invalid", // TODO better code
 			})
 		} else if !validation.IsDatasetAccessLevel(d.EmbargoTo) {
 			errs = append(errs, &validation.Error{
 				Pointer: "/embargo_to",
-				Code:    "dataset.embargo_to.invalid", //TODO: better code
+				Code:    "dataset.embargo_to.invalid", // TODO better code
 			})
 		}
 	}
