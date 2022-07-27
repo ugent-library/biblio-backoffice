@@ -110,7 +110,7 @@ func (c *Client) GetDataset(id string) (*models.Dataset, error) {
 				}
 
 			}
-			d.Abstract = append(d.Abstract, t)
+			d.AddAbstract(&t)
 		}
 	}
 	if res := attrs.Get(`rightsList.#(rightsIdentifierScheme="SPDX").rightsIdentifier`); res.Exists() {

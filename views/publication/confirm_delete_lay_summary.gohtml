@@ -10,7 +10,7 @@
         <div class="modal-footer">
             <button class="btn btn-link modal-close">Cancel</button>
             <button class="btn btn-danger"
-                hx-delete="{{pathFor "publication_delete_lay_summary" "id" .Publication.ID "position" (.Position|toString)}}"
+                hx-delete="{{pathFor "publication_delete_lay_summary" "id" .Publication.ID "lay_summary_id" .LaySummaryID}}"
                 hx-headers='{"If-Match": "{{.Publication.SnapshotID}}"}'
                 hx-swap="none"
             >Delete</button>

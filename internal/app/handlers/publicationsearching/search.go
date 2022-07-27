@@ -100,7 +100,7 @@ func (h *Handler) CurationSearch(w http.ResponseWriter, r *http.Request, ctx Con
 func (h *Handler) addThumbnailURLs(p *models.Publication) {
 	var u string
 	for _, f := range p.File {
-		if f.ContentType == "application/pdf" && f.FileSize <= 25000000 {
+		if f.ContentType == "application/pdf" && f.Size <= 25000000 {
 			params := imagorpath.Params{
 				Image:  h.FileStore.RelativeFilePath(f.SHA256),
 				FitIn:  true,

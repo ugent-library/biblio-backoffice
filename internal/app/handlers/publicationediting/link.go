@@ -7,6 +7,7 @@ import (
 
 	"github.com/ugent-library/biblio-backend/internal/app/localize"
 	"github.com/ugent-library/biblio-backend/internal/bind"
+	"github.com/ugent-library/biblio-backend/internal/locale"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
 	"github.com/ugent-library/biblio-backend/internal/render/form"
@@ -15,14 +16,14 @@ import (
 )
 
 type BindLink struct {
-	Position    int    `path:"position"`
+	LinkID      string `path:"link_id"`
 	URL         string `form:"url"`
 	Relation    string `form:"relation"`
 	Description string `form:"description"`
 }
 
 type BindDeleteLink struct {
-	Position int `path:"position"`
+	LinkID string `path:"link_id"`
 }
 
 type YieldLinks struct {
@@ -34,19 +35,16 @@ type YieldAddLink struct {
 }
 type YieldEditLink struct {
 	Context
-	Position int
-	Form     *form.Form
+	LinkID string
+	Form   *form.Form
 }
 type YieldDeleteLink struct {
 	Context
-	Position int
+	LinkID string
 }
 
 func (h *Handler) AddLink(w http.ResponseWriter, r *http.Request, ctx Context) {
-	form := linkForm(ctx, BindLink{
-		Position: len(ctx.Publication.Link),
-	}, nil)
-
+	form := linkForm(ctx.Locale, ctx.Publication, &models.PublicationLink{}, nil)
 	render.Layout(w, "show_modal", "publication/add_link", YieldAddLink{
 		Context: ctx,
 		Form:    form,
@@ -54,25 +52,23 @@ func (h *Handler) AddLink(w http.ResponseWriter, r *http.Request, ctx Context) {
 }
 
 func (h *Handler) CreateLink(w http.ResponseWriter, r *http.Request, ctx Context) {
-	b := BindLink{Position: len(ctx.Publication.Link)}
+	b := BindLink{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
 		render.BadRequest(w, r, err)
 		return
 	}
 
-	ctx.Publication.Link = append(
-		ctx.Publication.Link,
-		models.PublicationLink{
-			URL:         b.URL,
-			Relation:    b.Relation,
-			Description: b.Description,
-		},
-	)
+	publicationLink := models.PublicationLink{
+		URL:         b.URL,
+		Relation:    b.Relation,
+		Description: b.Description,
+	}
+	ctx.Publication.AddLink(&publicationLink)
 
 	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
 		render.Layout(w, "refresh_modal", "publication/add_link", YieldAddLink{
 			Context: ctx,
-			Form:    linkForm(ctx, b, validationErrs.(validation.Errors)),
+			Form:    linkForm(ctx.Locale, ctx.Publication, &publicationLink, validationErrs.(validation.Errors)),
 		})
 		return
 	}
@@ -102,20 +98,20 @@ func (h *Handler) EditLink(w http.ResponseWriter, r *http.Request, ctx Context) 
 		return
 	}
 
-	link, err := ctx.Publication.GetLink(b.Position)
-	if err != nil {
-		render.BadRequest(w, r, err)
+	link := ctx.Publication.GetLink(b.LinkID)
+	if link == nil {
+		render.BadRequest(
+			w,
+			r,
+			fmt.Errorf("no link found for %s in publication %s", b.LinkID, ctx.Publication.ID),
+		)
 		return
 	}
 
-	b.URL = link.URL
-	b.Description = link.Description
-	b.Relation = link.Relation
-
 	render.Layout(w, "show_modal", "publication/edit_link", YieldEditLink{
-		Context:  ctx,
-		Position: b.Position,
-		Form:     linkForm(ctx, b, nil),
+		Context: ctx,
+		LinkID:  b.LinkID,
+		Form:    linkForm(ctx.Locale, ctx.Publication, link, nil),
 	})
 }
 
@@ -126,24 +122,30 @@ func (h *Handler) UpdateLink(w http.ResponseWriter, r *http.Request, ctx Context
 		return
 	}
 
-	link := models.PublicationLink{
-		URL:         b.URL,
-		Description: b.Description,
-		Relation:    b.Relation,
-	}
-
-	if err := ctx.Publication.SetLink(b.Position, link); err != nil {
-		render.BadRequest(w, r, err)
+	/*
+		TODO: throw a conflict error when
+		trying to update a non existing id?
+	*/
+	link := ctx.Publication.GetLink(b.LinkID)
+	if link == nil {
+		render.BadRequest(
+			w,
+			r,
+			fmt.Errorf("no link found for %s in publication %s", b.LinkID, ctx.Publication.ID),
+		)
 		return
 	}
+	link.URL = b.URL
+	link.Description = b.Description
+	link.Relation = b.Relation
 
 	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
-		form := linkForm(ctx, b, validationErrs.(validation.Errors))
+		form := linkForm(ctx.Locale, ctx.Publication, link, validationErrs.(validation.Errors))
 
 		render.Layout(w, "refresh_modal", "publication/edit_link", YieldEditLink{
-			Context:  ctx,
-			Position: b.Position,
-			Form:     form,
+			Context: ctx,
+			LinkID:  b.LinkID,
+			Form:    form,
 		})
 		return
 	}
@@ -174,8 +176,8 @@ func (h *Handler) ConfirmDeleteLink(w http.ResponseWriter, r *http.Request, ctx 
 	}
 
 	render.Layout(w, "show_modal", "publication/confirm_delete_link", YieldDeleteLink{
-		Context:  ctx,
-		Position: b.Position,
+		Context: ctx,
+		LinkID:  b.LinkID,
 	})
 }
 
@@ -186,10 +188,11 @@ func (h *Handler) DeleteLink(w http.ResponseWriter, r *http.Request, ctx Context
 		return
 	}
 
-	if err := ctx.Publication.RemoveLink(b.Position); err != nil {
-		render.InternalServerError(w, r, err)
-		return
-	}
+	/*
+		Note: link possibly already removed:
+		conflict resolving will solve this
+	*/
+	ctx.Publication.RemoveLink(b.LinkID)
 
 	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication)
 
@@ -209,44 +212,50 @@ func (h *Handler) DeleteLink(w http.ResponseWriter, r *http.Request, ctx Context
 	})
 }
 
-func linkForm(ctx Context, b BindLink, errors validation.Errors) *form.Form {
-	l := ctx.Locale
+func linkForm(l *locale.Locale, publication *models.Publication, link *models.PublicationLink, errors validation.Errors) *form.Form {
+	idx := -1
+	for i, l := range publication.Link {
+		if l.ID == link.ID {
+			idx = i
+			break
+		}
+	}
 	return form.New().
 		WithTheme("default").
-		WithErrors(localize.ValidationErrors(ctx.Locale, errors)).
+		WithErrors(localize.ValidationErrors(l, errors)).
 		AddSection(
 			&form.Text{
 				Name:  "url",
-				Value: b.URL,
+				Value: link.URL,
 				Label: l.T("builder.link.url"),
 				Cols:  12,
 				Error: localize.ValidationErrorAt(
 					l,
 					errors,
-					fmt.Sprintf("/link/%d/url", b.Position),
+					fmt.Sprintf("/link/%d/url", idx),
 				),
 			},
 			&form.Select{
 				Name:    "relation",
-				Value:   b.Relation,
+				Value:   link.Relation,
 				Label:   l.T("builder.link.relation"),
 				Options: localize.VocabularySelectOptions(l, "publication_link_relations"),
 				Cols:    12,
 				Error: localize.ValidationErrorAt(
 					l,
 					errors,
-					fmt.Sprintf("/link/%d/relation", b.Position),
+					fmt.Sprintf("/link/%d/relation", idx),
 				),
 			},
 			&form.Text{
 				Name:  "description",
-				Value: b.Description,
+				Value: link.Description,
 				Label: l.T("builder.link.description"),
 				Cols:  12,
 				Error: localize.ValidationErrorAt(
 					l,
 					errors,
-					fmt.Sprintf("/link/%d/description", b.Position),
+					fmt.Sprintf("/link/%d/description", idx),
 				),
 			},
 		)

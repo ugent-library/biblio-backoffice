@@ -17,7 +17,7 @@ type BindProject struct {
 	ProjectID string `form:"project_id"`
 }
 type BindDeleteProject struct {
-	Position int `path:"position"`
+	ProjectID string `path:"project_id"`
 }
 
 type YieldProjects struct {
@@ -29,7 +29,7 @@ type YieldAddProject struct {
 }
 type YieldDeleteProject struct {
 	Context
-	Position int
+	ProjectID string
 }
 
 func (h *Handler) AddProject(w http.ResponseWriter, r *http.Request, ctx Context) {
@@ -76,8 +76,7 @@ func (h *Handler) CreateProject(w http.ResponseWriter, r *http.Request, ctx Cont
 		render.InternalServerError(w, r, err)
 		return
 	}
-
-	ctx.Publication.Project = append(ctx.Publication.Project, models.PublicationProject{
+	ctx.Publication.AddProject(&models.PublicationProject{
 		ID:   project.ID,
 		Name: project.Title,
 	})
@@ -110,8 +109,8 @@ func (h *Handler) ConfirmDeleteProject(w http.ResponseWriter, r *http.Request, c
 	}
 
 	render.Layout(w, "show_modal", "publication/confirm_delete_project", YieldDeleteProject{
-		Context:  ctx,
-		Position: b.Position,
+		Context:   ctx,
+		ProjectID: b.ProjectID,
 	})
 }
 
@@ -122,10 +121,7 @@ func (h *Handler) DeleteProject(w http.ResponseWriter, r *http.Request, ctx Cont
 		return
 	}
 
-	if err := ctx.Publication.RemoveProject(b.Position); err != nil {
-		render.InternalServerError(w, r, err)
-		return
-	}
+	ctx.Publication.RemoveProject(b.ProjectID)
 
 	// TODO handle validation errors
 

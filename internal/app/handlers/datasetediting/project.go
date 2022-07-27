@@ -17,7 +17,7 @@ type BindProject struct {
 	ProjectID string `form:"project_id"`
 }
 type BindDeleteProject struct {
-	Position int `path:"position"`
+	ProjectID string `path:"project_id"`
 }
 
 type YieldProjects struct {
@@ -29,7 +29,7 @@ type YieldAddProject struct {
 }
 type YieldDeleteProject struct {
 	Context
-	Position int
+	ProjectID string
 }
 
 func (h *Handler) AddProject(w http.ResponseWriter, r *http.Request, ctx Context) {
@@ -73,11 +73,15 @@ func (h *Handler) CreateProject(w http.ResponseWriter, r *http.Request, ctx Cont
 
 	project, err := h.ProjectService.GetProject(b.ProjectID)
 	if err != nil {
-		render.InternalServerError(w, r, err)
+		render.BadRequest(w, r, err)
 		return
 	}
 
-	ctx.Dataset.Project = append(ctx.Dataset.Project, models.DatasetProject{
+	/*
+		Note: AddProject removes potential existing project
+		and adds a new one at the end
+	*/
+	ctx.Dataset.AddProject(&models.DatasetProject{
 		ID:   project.ID,
 		Name: project.Title,
 	})
@@ -110,8 +114,8 @@ func (h *Handler) ConfirmDeleteProject(w http.ResponseWriter, r *http.Request, c
 	}
 
 	render.Layout(w, "show_modal", "dataset/confirm_delete_project", YieldDeleteProject{
-		Context:  ctx,
-		Position: b.Position,
+		Context:   ctx,
+		ProjectID: b.ProjectID,
 	})
 }
 
@@ -122,10 +126,11 @@ func (h *Handler) DeleteProject(w http.ResponseWriter, r *http.Request, ctx Cont
 		return
 	}
 
-	if err := ctx.Dataset.RemoveProject(b.Position); err != nil {
-		render.InternalServerError(w, r, err)
-		return
-	}
+	/*
+		ignore possibility that project is already removed:
+		conflict resolving will solve this anyway
+	*/
+	ctx.Dataset.RemoveProject(b.ProjectID)
 
 	// TODO handle validation errors
 

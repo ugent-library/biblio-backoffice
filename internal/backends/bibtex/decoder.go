@@ -93,7 +93,7 @@ func mapEntry(e *bibtex.BibEntry, p *models.Publication) {
 		p.Keyword = reSplit.Split(f, -1)
 	}
 	if f, ok := entries["abstract"]; ok {
-		p.Abstract = []models.Text{{Text: f, Lang: "und"}}
+		p.AddAbstract(&models.Text{Text: f, Lang: "und"})
 	}
 	if f, ok := entries["volume"]; ok {
 		p.Volume = f

@@ -155,10 +155,10 @@ func (c *Client) GetPublication(id string) (*models.Publication, error) {
 		}
 	}
 	if res := attrs.Get("abstract"); res.Exists() {
-		p.Abstract = []models.Text{{
+		p.AddAbstract(&models.Text{
 			Text: res.String(),
 			Lang: "und",
-		}}
+		})
 	}
 	if res := attrs.Get("language"); res.Exists() {
 		if tag, err := language.Parse(res.String()); err == nil {

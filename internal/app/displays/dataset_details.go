@@ -55,7 +55,7 @@ func DatasetDetails(l *locale.Locale, d *models.Dataset) *display.Display {
 		AddSection(
 			&display.Text{
 				Label:    l.T("builder.license"),
-				Value:    l.TS("cc_licenses", d.License),
+				Value:    l.TS("licenses", d.License),
 				Required: true,
 			},
 			&display.Text{
