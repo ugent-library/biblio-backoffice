@@ -88,8 +88,8 @@ var publicationAddCmd = &cobra.Command{
 		indexC := make(chan *models.Publication)
 
 		// start bulk indexer
+		indexWG.Add(1)
 		go func() {
-			indexWG.Add(1)
 			defer indexWG.Done()
 			e.PublicationSearchService.IndexMultiple(indexC)
 		}()

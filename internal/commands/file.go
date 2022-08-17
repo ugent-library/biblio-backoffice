@@ -17,10 +17,10 @@ func init() {
 
 func addFile(fs *filestore.Store, path string) (string, error) {
 	fh, fhErr := os.Open(path)
-	defer fh.Close()
 	if fhErr != nil {
 		return "", fmt.Errorf("unable to %s for reading: %v", path, fhErr)
 	}
+	defer fh.Close()
 	id, addErr := fs.Add(fh)
 	if addErr != nil {
 		return "", fmt.Errorf("unable to add file %s: %v", path, addErr)

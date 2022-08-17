@@ -67,8 +67,8 @@ var datasetAddCmd = &cobra.Command{
 		indexC := make(chan *models.Dataset)
 
 		// start bulk indexer
+		indexWG.Add(1)
 		go func() {
-			indexWG.Add(1)
 			defer indexWG.Done()
 			e.DatasetSearchService.IndexMultiple(indexC)
 		}()

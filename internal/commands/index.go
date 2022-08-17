@@ -61,8 +61,8 @@ var indexDatasetAllCmd = &cobra.Command{
 		// indexing channel
 		indexC := make(chan *models.Dataset)
 
+		indexWG.Add(1)
 		go func() {
-			indexWG.Add(1)
 			defer indexWG.Done()
 			es.IndexMultiple(indexC)
 		}()
@@ -116,8 +116,8 @@ var indexPublicationAllCmd = &cobra.Command{
 		// indexing channel
 		indexC := make(chan *models.Publication)
 
+		indexWG.Add(1)
 		go func() {
-			indexWG.Add(1)
 			defer indexWG.Done()
 			es.IndexMultiple(indexC)
 		}()

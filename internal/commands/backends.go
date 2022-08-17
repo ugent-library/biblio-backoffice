@@ -1,8 +1,8 @@
 package commands
 
 import (
-	"io/ioutil"
 	"log"
+	"os"
 	"strings"
 	"sync"
 
@@ -115,7 +115,7 @@ func newFileStore() *filestore.Store {
 }
 
 func newEs6Client(t string) *es6.Client {
-	settings, err := ioutil.ReadFile("etc/es6/" + t + ".json")
+	settings, err := os.ReadFile("etc/es6/" + t + ".json")
 	if err != nil {
 		log.Fatal(err)
 	}
