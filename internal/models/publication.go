@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/ugent-library/biblio-backend/internal/pagination"
+	"github.com/ugent-library/biblio-backend/internal/ulid"
 	"github.com/ugent-library/biblio-backend/internal/validation"
 	"github.com/ugent-library/biblio-backend/internal/vocabularies"
 )
@@ -17,52 +18,44 @@ type PublicationHits struct {
 }
 
 type PublicationFile struct {
-	AccessLevel string     `json:"access_level,omitempty"`
-	CCLicense   string     `json:"cc_license,omitempty"` // TODO rename to license
-	ContentType string     `json:"content_type,omitempty"`
-	DateCreated *time.Time `json:"date_created,omitempty"`
-	DateUpdated *time.Time `json:"date_updated,omitempty"`
-	Description string     `json:"description,omitempty"`
-	Embargo     string     `json:"embargo,omitempty"`
-	EmbargoTo   string     `json:"embargo_to,omitempty"`
-	Filename    string     `json:"file_name,omitempty"`
-	FileSize    int        `json:"file_size,omitempty"`
-	ID          string     `json:"file_id,omitempty"`
-	SHA256      string     `json:"sha256,omitempty"`
-	// NoLicense          bool       `json:"no_license,omitempty"`
-	OtherLicense       string `json:"other_license,omitempty"`
-	PublicationVersion string `json:"publication_version,omitempty"`
-	Relation           string `json:"relation,omitempty"`
-	ThumbnailURL       string `json:"thumbnail_url,omitempty"`
-	Title              string `json:"title,omitempty"`
-	URL                string `json:"url,omitempty"`
+	AccessLevel        string     `json:"access_level,omitempty"`
+	License            string     `json:"license,omitempty"`
+	ContentType        string     `json:"content_type,omitempty"`
+	DateCreated        *time.Time `json:"date_created,omitempty"`
+	DateUpdated        *time.Time `json:"date_updated,omitempty"`
+	Description        string     `json:"description,omitempty"`
+	Embargo            string     `json:"embargo,omitempty"`
+	EmbargoTo          string     `json:"embargo_to,omitempty"`
+	Name               string     `json:"name,omitempty"`
+	Size               int        `json:"size,omitempty"`
+	ID                 string     `json:"id,omitempty"`
+	SHA256             string     `json:"sha256,omitempty"`
+	OtherLicense       string     `json:"other_license,omitempty"`
+	PublicationVersion string     `json:"publication_version,omitempty"`
+	Relation           string     `json:"relation,omitempty"`
+	ThumbnailURL       string     `json:"thumbnail_url,omitempty"`
+	Title              string     `json:"title,omitempty"`
+	URL                string     `json:"url,omitempty"`
 }
 
 type PublicationLink struct {
+	ID          string `json:"id,omitempty"`
 	URL         string `json:"url,omitempty"`
 	Relation    string `json:"relation,omitempty"`
 	Description string `json:"description,omitempty"`
 }
 
-type PublicationConference struct {
-	Name      string `json:"name,omitempty"`
-	Location  string `json:"location,omitempty"`
-	Organizer string `json:"organizer,omitempty"`
-	StartDate string `json:"start_date,omitempty"`
-	EndDate   string `json:"end_date,omitempty"`
-}
-
 type PublicationDepartmentRef struct {
-	ID string `json:"_id,omitempty"`
+	ID string `json:"id,omitempty"`
 }
 
 type PublicationDepartment struct {
-	ID   string                     `json:"_id,omitempty"`
+	ID   string                     `json:"id,omitempty"`
 	Tree []PublicationDepartmentRef `json:"tree,omitempty"`
 }
 
 type PublicationProject struct {
-	ID   string `json:"_id,omitempty"`
+	ID   string `json:"id,omitempty"`
 	Name string `json:"name,omitempty"`
 }
 
@@ -85,7 +78,11 @@ type Publication struct {
 	BatchID                 string                  `json:"batch_id,omitempty"`
 	Classification          string                  `json:"classification,omitempty"`
 	CompletenessScore       int                     `json:"completeness_score,omitempty"`
-	Conference              PublicationConference   `json:"conference,omitempty"` // TODO should be pointer or just fields
+	ConferenceName          string                  `json:"conference_name,omitempty"`
+	ConferenceLocation      string                  `json:"conference_location,omitempty"`
+	ConferenceOrganizer     string                  `json:"conference_organizer,omitempty"`
+	ConferenceStartDate     string                  `json:"conference_start_date,omitempty"`
+	ConferenceEndDate       string                  `json:"conference_end_date,omitempty"`
 	ConferenceType          string                  `json:"conference_type,omitempty"`
 	CreatorID               string                  `json:"creator_id,omitempty"`
 	DateCreated             *time.Time              `json:"date_created,omitempty"`
@@ -312,113 +309,142 @@ func (p *Publication) RemoveContributor(role string, i int) error {
 	return nil
 }
 
-func (p *Publication) GetLink(i int) (PublicationLink, error) {
-	if i >= len(p.Link) || i < 0 {
-		return PublicationLink{}, errors.New("index out of bounds")
+func (p *Publication) GetLink(id string) *PublicationLink {
+	for _, pl := range p.Link {
+		if pl.ID == id {
+			return &pl
+		}
 	}
-	return p.Link[i], nil
-}
-
-func (p *Publication) SetLink(i int, l PublicationLink) error {
-	if i >= len(p.Link) || i < 0 {
-		return errors.New("index out of bounds")
-	}
-	p.Link[i] = l
 	return nil
 }
 
-func (p *Publication) RemoveLink(i int) error {
-	if i >= len(p.Link) || i < 0 {
-		return errors.New("index out of bounds")
+func (p *Publication) AddLink(l *PublicationLink) {
+	l.ID = ulid.MustGenerate()
+	p.Link = append(p.Link, *l)
+}
+
+func (p *Publication) RemoveLink(id string) {
+	links := make([]PublicationLink, 0)
+	for _, pl := range p.Link {
+		if pl.ID != id {
+			links = append(links, pl)
+		}
 	}
+	p.Link = links
+}
 
-	p.Link = append(p.Link[:i], p.Link[i+1:]...)
-
+func (p *Publication) GetAbstract(id string) *Text {
+	for _, abstract := range p.Abstract {
+		if abstract.ID == id {
+			return &abstract
+		}
+	}
 	return nil
 }
 
-func (p *Publication) GetAbstract(i int) (Text, error) {
-	if i >= len(p.Abstract) {
-		return Text{}, errors.New("index out of bounds")
-	}
-
-	return p.Abstract[i], nil
+func (p *Publication) AddAbstract(t *Text) {
+	t.ID = ulid.MustGenerate()
+	p.Abstract = append(p.Abstract, *t)
 }
 
-func (p *Publication) SetAbstract(i int, t Text) error {
-	if i >= len(p.Abstract) {
-		return errors.New("index out of bounds")
+func (p *Publication) RemoveAbstract(id string) {
+	abstracts := make([]Text, 0)
+	for _, abstract := range p.Abstract {
+		if abstract.ID != id {
+			abstracts = append(abstracts, abstract)
+		}
 	}
+	p.Abstract = abstracts
+}
 
-	p.Abstract[i] = t
-
+func (p *Publication) GetLaySummary(id string) *Text {
+	for _, ls := range p.LaySummary {
+		if ls.ID == id {
+			return &ls
+		}
+	}
 	return nil
 }
 
-func (p *Publication) RemoveAbstract(i int) error {
-	if i >= len(p.Abstract) {
-		return errors.New("index out of bounds")
+func (p *Publication) AddLaySummary(t *Text) {
+	t.ID = ulid.MustGenerate()
+	p.LaySummary = append(p.LaySummary, *t)
+}
+
+func (p *Publication) RemoveLaySummary(id string) {
+	lay_summaries := make([]Text, 0)
+	for _, ls := range p.LaySummary {
+		if ls.ID != id {
+			lay_summaries = append(lay_summaries, ls)
+		}
 	}
+	p.LaySummary = lay_summaries
+}
 
-	p.Abstract = append(p.Abstract[:i], p.Abstract[i+1:]...)
-
+func (p *Publication) GetProject(id string) *PublicationProject {
+	for _, p := range p.Project {
+		if p.ID == id {
+			return &p
+		}
+	}
 	return nil
 }
 
-func (p *Publication) GetLaySummary(i int) (Text, error) {
-	if i >= len(p.LaySummary) {
-		return Text{}, errors.New("index out of bounds")
+func (p *Publication) RemoveProject(id string) {
+	projects := make([]PublicationProject, 0)
+	for _, pl := range p.Project {
+		if pl.ID != id {
+			projects = append(projects, pl)
+		}
 	}
-
-	return p.LaySummary[i], nil
+	p.Project = projects
 }
 
-func (p *Publication) SetLaySummary(i int, t Text) error {
-	if i >= len(p.LaySummary) {
-		return errors.New("index out of bounds")
-	}
-
-	p.LaySummary[i] = t
-
-	return nil
+func (p *Publication) AddProject(pr *PublicationProject) {
+	p.RemoveProject(pr.ID)
+	p.Project = append(p.Project, *pr)
 }
 
-func (p *Publication) RemoveLaySummary(i int) error {
-	if i >= len(p.LaySummary) {
-		return errors.New("index out of bounds")
+func (p *Publication) RemoveDepartment(id string) {
+	deps := make([]PublicationDepartment, 0)
+	for _, dep := range p.Department {
+		if dep.ID != id {
+			deps = append(deps, dep)
+		}
 	}
-
-	p.LaySummary = append(p.LaySummary[:i], p.LaySummary[i+1:]...)
-
-	return nil
+	p.Department = deps
 }
 
-func (p *Publication) GetProject(i int) (PublicationProject, error) {
-	if i >= len(p.Project) {
-		return PublicationProject{}, errors.New("index out of bounds")
-	}
+func (p *Publication) AddDepartmentByOrg(org *Organization) {
+	// remove if added before
+	p.RemoveDepartment(org.ID)
 
-	return p.Project[i], nil
+	publicationDepartment := PublicationDepartment{ID: org.ID}
+	for _, d := range org.Tree {
+		publicationDepartment.Tree = append(publicationDepartment.Tree, PublicationDepartmentRef(d))
+	}
+	p.Department = append(p.Department, publicationDepartment)
 }
 
-func (p *Publication) RemoveProject(i int) error {
-	if i >= len(p.Project) {
-		return errors.New("index out of bounds")
+func (p *Publication) AddFile(file *PublicationFile) {
+	file.ID = ulid.MustGenerate()
+	now := time.Now()
+	file.DateCreated = &now
+	file.DateUpdated = &now
+	if file.AccessLevel == "" {
+		file.AccessLevel = "local"
 	}
-
-	p.Project = append(p.Project[:i], p.Project[i+1:]...)
-
-	return nil
+	p.File = append(p.File, file)
 }
 
-func (p *Publication) RemoveDepartment(i int) error {
-	if i >= len(p.Department) {
-		return errors.New("index out of bounds")
+func (p *Publication) RemoveFile(id string) {
+	newFile := []*PublicationFile{}
+	for _, f := range p.File {
+		if f.ID != id {
+			newFile = append(newFile, f)
+		}
 	}
-
-	p.Department = append(p.Department[:i], p.Department[i+1:]...)
-
-	return nil
+	p.File = newFile
 }
 
 func (p *Publication) UsesLaySummary() bool {
@@ -548,21 +574,25 @@ func (p *Publication) Validate() error {
 		}
 	}
 
-	for i, a := range p.Abstract {
-		for _, err := range a.Validate() {
-			errs = append(errs, &validation.Error{
-				Pointer: fmt.Sprintf("/abstract/%d%s", i, err.Pointer),
-				Code:    "publication.abstract." + err.Code,
-			})
+	if p.Status == "public" {
+		for i, a := range p.Abstract {
+			for _, err := range a.Validate() {
+				errs = append(errs, &validation.Error{
+					Pointer: fmt.Sprintf("/abstract/%d%s", i, err.Pointer),
+					Code:    "publication.abstract." + err.Code,
+				})
+			}
 		}
 	}
 
-	for i, l := range p.LaySummary {
-		for _, err := range l.Validate() {
-			errs = append(errs, &validation.Error{
-				Pointer: fmt.Sprintf("/lay_summary/%d%s", i, err.Pointer),
-				Code:    "publication.lay_summary." + err.Code,
-			})
+	if p.Status == "public" && p.UsesLaySummary() {
+		for i, l := range p.LaySummary {
+			for _, err := range l.Validate() {
+				errs = append(errs, &validation.Error{
+					Pointer: fmt.Sprintf("/lay_summary/%d%s", i, err.Pointer),
+					Code:    "publication.lay_summary." + err.Code,
+				})
+			}
 		}
 	}
 
@@ -700,12 +730,14 @@ func (p *Publication) Validate() error {
 		}
 	}
 
-	for i, pl := range p.Link {
-		for _, err := range pl.Validate() {
-			errs = append(errs, &validation.Error{
-				Pointer: fmt.Sprintf("/link/%d%s", i, err.Pointer),
-				Code:    "publication.link" + err.Code,
-			})
+	if p.Status == "public" {
+		for i, pl := range p.Link {
+			for _, err := range pl.Validate() {
+				errs = append(errs, &validation.Error{
+					Pointer: fmt.Sprintf("/link/%d%s", i, err.Pointer),
+					Code:    "publication.link" + err.Code,
+				})
+			}
 		}
 	}
 
@@ -841,8 +873,8 @@ func (pf *PublicationFile) Validate() (errs validation.Errors) {
 
 	if pf.ID == "" {
 		errs = append(errs, &validation.Error{
-			Pointer: "/file_id",
-			Code:    "file_id.required",
+			Pointer: "/id",
+			Code:    "id.required",
 		})
 	}
 

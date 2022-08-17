@@ -2,32 +2,32 @@ package publicationediting
 
 import (
 	"github.com/ugent-library/biblio-backend/internal/app/localize"
+	"github.com/ugent-library/biblio-backend/internal/locale"
+	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render/display"
 	"github.com/ugent-library/biblio-backend/internal/render/form"
 	"github.com/ugent-library/biblio-backend/internal/validation"
 )
 
-func bookEditorDetailsForm(ctx Context, b *BindDetails, errors validation.Errors) *form.Form {
-	l := ctx.Locale
-	p := ctx.Publication
+func bookEditorDetailsForm(l *locale.Locale, publication *models.Publication, errors validation.Errors) *form.Form {
 	return form.New().
 		WithTheme("default").
 		WithErrors(localize.ValidationErrors(l, errors)).
 		AddSection(
 			&display.Text{
 				Label: l.T("builder.type"),
-				Value: l.TS("publication_types", p.Type),
+				Value: l.TS("publication_types", publication.Type),
 			},
 			&form.Text{
 				Name:  "doi",
 				Label: l.T("builder.doi"),
-				Value: b.DOI,
+				Value: publication.DOI,
 				Cols:  9,
 				Error: localize.ValidationErrorAt(l, errors, "/doi"),
 			},
 			&display.Text{
 				Label:   l.T("builder.classification"),
-				Value:   l.TS("publication_classifications", p.Classification),
+				Value:   l.TS("publication_classifications", publication.Classification),
 				Tooltip: l.T("tooltip.publication.classification"),
 			},
 		).
@@ -35,7 +35,7 @@ func bookEditorDetailsForm(ctx Context, b *BindDetails, errors validation.Errors
 			&form.Text{
 				Name:     "title",
 				Label:    l.T("builder.title"),
-				Value:    b.Title,
+				Value:    publication.Title,
 				Cols:     9,
 				Error:    localize.ValidationErrorAt(l, errors, "/title"),
 				Required: true,
@@ -43,14 +43,14 @@ func bookEditorDetailsForm(ctx Context, b *BindDetails, errors validation.Errors
 			&form.TextRepeat{
 				Name:   "alternative_title",
 				Label:  l.T("builder.alternative_title"),
-				Values: b.AlternativeTitle,
+				Values: publication.AlternativeTitle,
 				Cols:   9,
 				Error:  localize.ValidationErrorAt(l, errors, "/alternative_title"),
 			},
 			&form.Text{
 				Name:  "publication_abbreviation",
 				Label: l.T("builder.journal_article.publication_abbreviation"),
-				Value: b.PublicationAbbreviation,
+				Value: publication.PublicationAbbreviation,
 				Cols:  3,
 				Error: localize.ValidationErrorAt(l, errors, "/publication_abbreviation"),
 			},
@@ -60,7 +60,7 @@ func bookEditorDetailsForm(ctx Context, b *BindDetails, errors validation.Errors
 				Name:        "language",
 				Label:       l.T("builder.language"),
 				Options:     localize.LanguageSelectOptions(l),
-				Values:      b.Language,
+				Values:      publication.Language,
 				EmptyOption: true,
 				Cols:        9,
 				Error:       localize.ValidationErrorAt(l, errors, "/language"),
@@ -70,7 +70,7 @@ func bookEditorDetailsForm(ctx Context, b *BindDetails, errors validation.Errors
 				Label:       l.T("builder.publication_status"),
 				EmptyOption: true,
 				Options:     localize.VocabularySelectOptions(l, "publication_publishing_statuses"),
-				Value:       b.PublicationStatus,
+				Value:       publication.PublicationStatus,
 				Cols:        3,
 				Error:       localize.ValidationErrorAt(l, errors, "/publication_status"),
 			},
@@ -78,14 +78,14 @@ func bookEditorDetailsForm(ctx Context, b *BindDetails, errors validation.Errors
 				Name:    "extern",
 				Label:   l.T("builder.extern"),
 				Value:   "true",
-				Checked: b.Extern,
+				Checked: publication.Extern,
 				Cols:    9,
 				Error:   localize.ValidationErrorAt(l, errors, "/extern"),
 			},
 			&form.Text{
 				Name:     "year",
 				Label:    l.T("builder.year"),
-				Value:    b.Year,
+				Value:    publication.Year,
 				Required: true,
 				Cols:     3,
 				Error:    localize.ValidationErrorAt(l, errors, "/year"),
@@ -93,14 +93,14 @@ func bookEditorDetailsForm(ctx Context, b *BindDetails, errors validation.Errors
 			&form.Text{
 				Name:  "place_of_publication",
 				Label: l.T("builder.place_of_publication"),
-				Value: b.PlaceOfPublication,
+				Value: publication.PlaceOfPublication,
 				Cols:  9,
 				Error: localize.ValidationErrorAt(l, errors, "/place_of_publication"),
 			},
 			&form.Text{
 				Name:  "publisher",
 				Label: l.T("builder.publisher"),
-				Value: b.Publisher,
+				Value: publication.Publisher,
 				Cols:  9,
 				Error: localize.ValidationErrorAt(l, errors, "/publisher"),
 			},
@@ -109,7 +109,7 @@ func bookEditorDetailsForm(ctx Context, b *BindDetails, errors validation.Errors
 			&form.Text{
 				Name:  "page_count",
 				Label: l.T("builder.page_count"),
-				Value: b.PageCount,
+				Value: publication.PageCount,
 				Cols:  3,
 				Error: localize.ValidationErrorAt(l, errors, "/page_count"),
 			},
@@ -117,13 +117,13 @@ func bookEditorDetailsForm(ctx Context, b *BindDetails, errors validation.Errors
 		AddSection(
 			&display.Text{
 				Label:   l.T("builder.wos_type"),
-				Value:   l.TS("tooltip.publication", p.WOSType),
+				Value:   l.TS("tooltip.publication", publication.WOSType),
 				Tooltip: l.T("tooltip.publication.wos_type"),
 			},
 			&form.Text{
 				Name:        "wos_id",
 				Label:       l.T("builder.wos_id"),
-				Value:       b.WOSID,
+				Value:       publication.WOSID,
 				Cols:        3,
 				Placeholder: "e.g. 000503382400004",
 				Error:       localize.ValidationErrorAt(l, errors, "/wos_id"),
@@ -131,7 +131,7 @@ func bookEditorDetailsForm(ctx Context, b *BindDetails, errors validation.Errors
 			&form.TextRepeat{
 				Name:        "issn",
 				Label:       l.T("builder.issn"),
-				Values:      b.ISSN,
+				Values:      publication.ISSN,
 				Cols:        3,
 				Placeholder: "e.g. 2049-3630",
 				Error:       localize.ValidationErrorAt(l, errors, "/issn"),
@@ -139,7 +139,7 @@ func bookEditorDetailsForm(ctx Context, b *BindDetails, errors validation.Errors
 			&form.TextRepeat{
 				Name:        "eissn",
 				Label:       l.T("builder.eissn"),
-				Values:      b.EISSN,
+				Values:      publication.EISSN,
 				Cols:        3,
 				Placeholder: "e.g. 2049-3630",
 				Error:       localize.ValidationErrorAt(l, errors, "/eissn"),
@@ -147,7 +147,7 @@ func bookEditorDetailsForm(ctx Context, b *BindDetails, errors validation.Errors
 			&form.TextRepeat{
 				Name:        "isbn",
 				Label:       l.T("builder.isbn"),
-				Values:      b.ISBN,
+				Values:      publication.ISBN,
 				Cols:        3,
 				Placeholder: "e.g. 2049-3630",
 				Error:       localize.ValidationErrorAt(l, errors, "/isbn"),
@@ -155,7 +155,7 @@ func bookEditorDetailsForm(ctx Context, b *BindDetails, errors validation.Errors
 			&form.TextRepeat{
 				Name:        "eisbn",
 				Label:       l.T("builder.eisbn"),
-				Values:      b.EISBN,
+				Values:      publication.EISBN,
 				Cols:        3,
 				Placeholder: "e.g. 2049-3630",
 				Error:       localize.ValidationErrorAt(l, errors, "/eisbn"),

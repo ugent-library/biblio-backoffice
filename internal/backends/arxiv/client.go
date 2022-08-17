@@ -99,10 +99,10 @@ func (c *Client) GetPublication(id string) (*models.Publication, error) {
 	}
 
 	if feed.Entry.Summary != "" {
-		p.Abstract = []models.Text{{
+		p.AddAbstract(&models.Text{
 			Text: feed.Entry.Summary,
 			Lang: "und",
-		}}
+		})
 	}
 
 	if len(feed.Entry.Published) > 4 {

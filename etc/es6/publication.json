@@ -114,6 +114,9 @@
                 },
                 "abstract": {
                     "properties": {
+                        "id": {
+                            "type": "keyword"
+                        },
                         "lang": {
                             "type": "keyword"
                         },
@@ -122,6 +125,19 @@
                             "copy_to": "all"
                         }
                     }
+                },
+                "additional_info": {
+                    "type": "text"
+                },
+                "alternative_title": {
+                    "type": "text"
+                },
+                "article_number": {
+                    "type": "text"
+                },
+                "arxiv_id": {
+                    "type": "text",
+                    "analyzer": "keyword_lowercase"
                 },
                 "author": {
                     "properties": {
@@ -161,8 +177,29 @@
                         }
                     }
                 },
+                "classification": {
+                    "type": "keyword"
+                },
+                "conference_name": {
+                    "type": "text"
+                },
+                "conference_location": {
+                    "type": "text"
+                },
+                "conference_organizer": {
+                    "type": "text"
+                },
+                "conference_start_date": {
+                    "type": "keyword"
+                },
+                "conference_end_date": {
+                    "type": "keyword"
+                },
                 "completeness_score": {
                     "type": "integer"
+                },
+                "conference_type": {
+                    "type": "keyword"
                 },
                 "creator_id": {
                     "type": "keyword"
@@ -179,15 +216,24 @@
                 "date_until": {
                     "type": "date"
                 },
+                "defense_place": {
+                    "type": "text"
+                },
+                "defense_date": {
+                    "type": "keyword"
+                },
+                "defense_time": {
+                    "type": "keyword"
+                },
                 "faculty": { "type": "keyword" },
                 "department": {
                     "properties": {
-                        "_id": {
+                        "id": {
                             "type": "keyword"
                         },
                         "tree": {
                             "properties": {
-                                "_id": {
+                                "id": {
                                     "type": "keyword",
                                     "copy_to": ["faculty"]
                                 }
@@ -195,11 +241,122 @@
                         }
                     }
                 },
+                "editor": {
+                    "properties": {
+                        "id": {
+                            "type": "keyword"
+                        },
+                        "orcid": {
+                            "type": "keyword"
+                        },
+                        "ugent_id": {
+                            "type": "keyword"
+                        },
+                        "first_name": {
+                            "type": "text"
+                        },
+                        "last_name": {
+                            "type": "text"
+                        },
+                        "full_name": {
+                            "type": "text",
+                            "copy_to": "all",
+                            "fields": {
+                                "ngram": {
+                                    "type": "text",
+                                    "analyzer": "token_edge_ngram",
+                                    "search_analyzer": "token_edge_ngram_search"
+                                },
+                                "phrase_ngram": {
+                                    "type": "text",
+                                    "analyzer": "phrase_edge_ngram",
+                                    "search_analyzer": "phrase_edge_ngram"
+                                }
+                            }
+                        },
+                        "credit_role": {
+                            "type": "keyword"
+                        }
+                    }
+                },
+                "project": {
+                    "properties": {
+                        "id": {
+                            "type": "keyword"
+                        },
+                        "name": {
+                            "type": "text"
+                        }
+                    }
+                },
                 "doi": {
                     "type": "text",
                     "analyzer": "keyword_lowercase"
                 },
+                "edition": {
+                    "type": "text"
+                },
+                "extern": {
+                    "type": "boolean"
+                },
                 "id": {
+                    "type": "keyword"
+                },
+                "isbn": {
+                    "type": "text",
+                    "analyzer": "keyword_lowercase"
+                },
+                "eisbn": {
+                    "type": "text",
+                    "analyzer": "keyword_lowercase"
+                },
+                "issn": {
+                    "type": "text",
+                    "analyzer": "keyword_lowercase"
+                },
+                "eissn": {
+                    "type": "text",
+                    "analyzer": "keyword_lowercase"
+                },
+                "issue": {
+                    "type": "text"
+                },
+                "issue_title": {
+                    "type": "text"
+                },
+                "journal_article_type": {
+                    "type": "keyword"
+                },
+                "handle": {
+                    "type": "text",
+                    "index": false
+                },
+                "has_confidential_data": {
+                    "type": "keyword"
+                },
+                "has_patent_application": {
+                    "type": "keyword"
+                },
+                "has_publications_planned": {
+                    "type": "keyword"
+                },
+                "has_published_material": {
+                    "type": "keyword"
+                },
+                "lay_summary": {
+                    "properties": {
+                        "id": {
+                            "type": "keyword"
+                        },
+                        "lang": {
+                            "type": "keyword"
+                        },
+                        "text": {
+                            "type": "text"
+                        }
+                    }
+                },
+                "language": {
                     "type": "keyword"
                 },
                 "keyword": {
@@ -232,6 +389,171 @@
                     "type": "date",
                     "format": "year",
                     "copy_to": "all"
+                },
+                "link": {
+                    "properties": {
+                        "id": { "type": "keyword" },
+                        "url": { "type": "keyword" },
+                        "relation": { "type": "keyword" },
+                        "description": { "type": "text" }
+                    }
+                },
+                "file": {
+                    "properties": {
+                        "id": { "type": "keyword" },
+                        "date_created": { "type": "date" },
+                        "date_updated": { "type": "date" },
+                        "sha256": { "type": "keyword" },
+                        "name": { "type": "keyword" },
+                        "relation": { "type": "keyword" },
+                        "access_level": { "type": "keyword" },
+                        "license": { "type": "keyword" },
+                        "other_license": { "type": "text" },
+                        "publication_version": { "type": "keyword" },
+                        "content_type": { "type": "keyword" },
+                        "embargo": { "type": "keyword" },
+                        "embargo_to": { "type": "keyword" },
+                        "title": { "type": "text" },
+                        "description": { "type": "text" },
+                        "url": { "type": "text", "index": false },
+                        "thumbnail_url": { "type": "text", "index": false }
+                    }
+                },
+                "publication_link": {
+                    "properties": {
+                        "id": { "type": "keyword" },
+                        "relation": { "type": "keyword" },
+                        "url": { "type": "text" },
+                        "description": { "type": "text" }
+                    }
+                },
+                "locked": {
+                    "type": "boolean"
+                },
+                "message": {
+                    "type": "text"
+                },
+                "miscellaneous_type": {
+                    "type": "keyword"
+                },
+                "orcid_work": {
+                    "properties": {
+                        "orcid": { "type": "keyword" },
+                        "put_code": { "type": "keyword" }
+                    }
+                },
+                "page_count": {
+                    "type": "text",
+                    "index": false
+                },
+                "page_first": {
+                    "type": "text",
+                    "index": false
+                },
+                "page_last": {
+                    "type": "text",
+                    "index": false
+                },
+                "place_of_publication": {
+                    "type": "text"
+                },
+                "publication": {
+                    "type": "text"
+                },
+                "publication_abbreviation": {
+                    "type": "text"
+                },
+                "publication_status": {
+                    "type": "keyword"
+                },
+                "pubmed_id": {
+                    "type": "text",
+                    "analyzer": "keyword_lowercase"
+                },
+                "report_number": {
+                    "type": "text",
+                    "index": false
+                },
+                "research_field": {
+                    "type": "text",
+                    "analyzer": "keyword_lowercase"
+                },
+                "reviewer_note": {
+                    "type": "text",
+                    "index": false
+                },
+                "reviewer_tags": {
+                    "type": "text",
+                    "analyzer": "keyword_lowercase"
+                },
+                "series_title": {
+                    "type": "text"
+                },
+                "source_db": {
+                    "type": "keyword"
+                },
+                "source_id": {
+                    "type": "keyword"
+                },
+                "source_record": {
+                    "type": "text",
+                    "index": false
+                },
+                "supervisor": {
+                    "properties": {
+                        "id": {
+                            "type": "keyword"
+                        },
+                        "orcid": {
+                            "type": "keyword"
+                        },
+                        "ugent_id": {
+                            "type": "keyword"
+                        },
+                        "first_name": {
+                            "type": "text"
+                        },
+                        "last_name": {
+                            "type": "text"
+                        },
+                        "full_name": {
+                            "type": "text",
+                            "copy_to": "all",
+                            "fields": {
+                                "ngram": {
+                                    "type": "text",
+                                    "analyzer": "token_edge_ngram",
+                                    "search_analyzer": "token_edge_ngram_search"
+                                },
+                                "phrase_ngram": {
+                                    "type": "text",
+                                    "analyzer": "phrase_edge_ngram",
+                                    "search_analyzer": "phrase_edge_ngram"
+                                }
+                            }
+                        },
+                        "credit_role": {
+                            "type": "keyword"
+                        }
+                    }
+                },
+                "url": {
+                    "type": "text",
+                    "index": false
+                },
+                "user_id": {
+                    "type": "keyword"
+                },
+                "volume": {
+                    "type": "text",
+                    "index": false
+                },
+                "wos_id": {
+                    "type": "text",
+                    "analyzer": "keyword_lowercase"
+                },
+                "wos_type": {
+                    "type": "keyword"
                 }
             }
         }

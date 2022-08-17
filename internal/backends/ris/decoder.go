@@ -121,7 +121,7 @@ func mapRecord(r Record, p *models.Publication) {
 		case "TI", "T1":
 			p.Title = v[0]
 		case "AB", "N2":
-			p.Abstract = []models.Text{{Text: v[0], Lang: "und"}}
+			p.AddAbstract(&models.Text{Text: v[0], Lang: "und"})
 		case "KW", "DW", "ID", "DE":
 			for _, val := range v {
 				p.Keyword = append(p.Keyword, reSplit.Split(val, -1)...)
@@ -173,9 +173,9 @@ func mapRecord(r Record, p *models.Publication) {
 		case "CY", "PI":
 			p.PlaceOfPublication = v[0]
 		case "CT":
-			p.Conference.Name = v[0]
+			p.ConferenceName = v[0]
 		case "CL":
-			p.Conference.Location = v[0]
+			p.ConferenceLocation = v[0]
 		}
 	}
 }

@@ -50,11 +50,11 @@ func (h *Handler) UpdateConference(w http.ResponseWriter, r *http.Request, ctx C
 
 	p := ctx.Publication
 
-	p.Conference.Name = b.Name
-	p.Conference.Location = b.Location
-	p.Conference.Organizer = b.Organizer
-	p.Conference.StartDate = b.StartDate
-	p.Conference.EndDate = b.EndDate
+	p.ConferenceName = b.Name
+	p.ConferenceLocation = b.Location
+	p.ConferenceOrganizer = b.Organizer
+	p.ConferenceStartDate = b.StartDate
+	p.ConferenceEndDate = b.EndDate
 
 	if validationErrs := p.Validate(); validationErrs != nil {
 		form := conferenceForm(ctx.Locale, p, validationErrs.(validation.Errors))
@@ -80,68 +80,68 @@ func (h *Handler) UpdateConference(w http.ResponseWriter, r *http.Request, ctx C
 
 	render.View(w, "publication/refresh_conference", YieldConference{
 		Context:           ctx,
-		DisplayConference: displays.PublicationConference(ctx.Locale, p.Conference),
+		DisplayConference: displays.PublicationConference(ctx.Locale, p),
 	})
 }
 
-func conferenceForm(l *locale.Locale, p *models.Publication, errors validation.Errors) *form.Form {
+func conferenceForm(l *locale.Locale, publication *models.Publication, errors validation.Errors) *form.Form {
 	return form.New().
 		WithTheme("default").
 		WithErrors(localize.ValidationErrors(l, errors)).
 		AddSection(
 			&form.Text{
 				Name:  "name",
-				Value: p.Conference.Name,
+				Value: publication.ConferenceName,
 				Label: l.T("builder.conference.name"),
 				Cols:  9,
 				Error: localize.ValidationErrorAt(
 					l,
 					errors,
-					"/conference/name",
+					"/conference_name",
 				),
 			},
 			&form.Text{
 				Name:  "location",
-				Value: p.Conference.Location,
+				Value: publication.ConferenceLocation,
 				Label: l.T("builder.conference.location"),
 				Cols:  9,
 				Error: localize.ValidationErrorAt(
 					l,
 					errors,
-					"/conference/location",
+					"/conference_location",
 				),
 			},
 			&form.Text{
 				Name:  "organizer",
-				Value: p.Conference.Organizer,
+				Value: publication.ConferenceOrganizer,
 				Label: l.T("builder.conference.organizer"),
 				Cols:  9,
 				Error: localize.ValidationErrorAt(
 					l,
 					errors,
-					"/conference/organizer",
+					"/conference_organizer",
 				),
 			},
 			&form.Text{
 				Name:  "start_date",
-				Value: p.Conference.StartDate,
+				Value: publication.ConferenceStartDate,
 				Label: l.T("builder.conference.start_date"),
 				Cols:  3,
 				Error: localize.ValidationErrorAt(
 					l,
 					errors,
-					"/conference/start_date",
+					"/conference_start_date",
 				),
 			},
 			&form.Text{
 				Name:  "end_date",
-				Value: p.Conference.EndDate,
+				Value: publication.ConferenceEndDate,
 				Label: l.T("builder.conference.end_date"),
 				Cols:  3,
 				Error: localize.ValidationErrorAt(
 					l,
 					errors,
-					"/conference/end_date",
+					"/conference_end_date",
 				),
 			},
 		)

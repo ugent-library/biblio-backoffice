@@ -128,7 +128,7 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 	d.Status = "private"
 
 	if validationErrs := d.Validate(); validationErrs != nil {
-		errors := form.Errors(localize.ValidationErrors(ctx.Locale, err.(validation.Errors)))
+		errors := form.Errors(localize.ValidationErrors(ctx.Locale, validationErrs.(validation.Errors)))
 		render.Layout(w, "layouts/default", "dataset/pages/add", YieldAdd{
 			Context:    ctx,
 			PageTitle:  "Add - Datasets - Biblio",

@@ -19,7 +19,7 @@ type BindDepartment struct {
 }
 
 type BindDeleteDepartment struct {
-	Position int `path:"position"`
+	DepartmentID string `path:"department_id"`
 }
 
 type YieldDepartments struct {
@@ -33,7 +33,7 @@ type YieldAddDepartment struct {
 
 type YieldDeleteDepartment struct {
 	Context
-	Position int
+	DepartmentID string
 }
 
 func (h *Handler) AddDepartment(w http.ResponseWriter, r *http.Request, ctx Context) {
@@ -75,19 +75,17 @@ func (h *Handler) CreateDepartment(w http.ResponseWriter, r *http.Request, ctx C
 		return
 	}
 
-	department, err := h.OrganizationService.GetOrganization(b.DepartmentID)
+	org, err := h.OrganizationService.GetOrganization(b.DepartmentID)
 	if err != nil {
 		render.InternalServerError(w, r, err)
 		return
 	}
 
-	publicationDepartment := models.PublicationDepartment{ID: department.ID}
-
-	for _, d := range department.Tree {
-		publicationDepartment.Tree = append(publicationDepartment.Tree, models.PublicationDepartmentRef(d))
-	}
-
-	ctx.Publication.Department = append(ctx.Publication.Department, publicationDepartment)
+	/*
+		Note: AddDepartmentByOrg removes potential existing department
+		and then adds the new one at the end
+	*/
+	ctx.Publication.AddDepartmentByOrg(org)
 
 	// TODO handle validation errors
 
@@ -117,8 +115,8 @@ func (h *Handler) ConfirmDeleteDepartment(w http.ResponseWriter, r *http.Request
 	}
 
 	render.Layout(w, "show_modal", "publication/confirm_delete_department", YieldDeleteDepartment{
-		Context:  ctx,
-		Position: b.Position,
+		Context:      ctx,
+		DepartmentID: b.DepartmentID,
 	})
 }
 
@@ -129,10 +127,11 @@ func (h *Handler) DeleteDepartment(w http.ResponseWriter, r *http.Request, ctx C
 		return
 	}
 
-	if err := ctx.Publication.RemoveDepartment(b.Position); err != nil {
-		render.InternalServerError(w, r, err)
-		return
-	}
+	/*
+		Ignore fact that department is removed in the mean time:
+		conflict resolving will solve this
+	*/
+	ctx.Publication.RemoveDepartment(b.DepartmentID)
 
 	// TODO handle validation errors
 

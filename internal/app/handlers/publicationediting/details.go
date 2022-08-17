@@ -98,48 +98,6 @@ func bindToPublication(b *BindDetails, p *models.Publication) {
 	p.Year = b.Year
 }
 
-func publicationToBind(p *models.Publication, b *BindDetails) {
-	b.AlternativeTitle = p.AlternativeTitle
-	b.ArticleNumber = p.ArticleNumber
-	b.ArxivID = p.ArxivID
-	b.ConferenceType = p.ConferenceType
-	b.DefenseDate = p.DefenseDate
-	b.DefensePlace = p.DefensePlace
-	b.DefenseTime = p.DefenseTime
-	b.DOI = p.DOI
-	b.Edition = p.Edition
-	b.EISBN = p.EISBN
-	b.EISSN = p.EISSN
-	b.ESCIID = p.ESCIID
-	b.Extern = p.Extern
-	b.HasConfidentialData = p.HasConfidentialData
-	b.HasPatentApplication = p.HasPatentApplication
-	b.HasPublicationsPlanned = p.HasPublicationsPlanned
-	b.HasPublishedMaterial = p.HasPublishedMaterial
-	b.ISBN = p.ISBN
-	b.ISSN = p.ISSN
-	b.Issue = p.Issue
-	b.IssueTitle = p.IssueTitle
-	b.JournalArticleType = p.JournalArticleType
-	b.Language = p.Language
-	b.MiscellaneousType = p.MiscellaneousType
-	b.PageCount = p.PageCount
-	b.PageFirst = p.PageFirst
-	b.PageLast = p.PageLast
-	b.PlaceOfPublication = p.PlaceOfPublication
-	b.Publication = p.Publication
-	b.PublicationAbbreviation = p.PublicationAbbreviation
-	b.PublicationStatus = p.PublicationStatus
-	b.Publisher = p.Publisher
-	b.PubMedID = p.PubMedID
-	b.ReportNumber = p.ReportNumber
-	b.SeriesTitle = p.SeriesTitle
-	b.Title = p.Title
-	b.Volume = p.Volume
-	b.WOSID = p.WOSID
-	b.Year = p.Year
-}
-
 type YieldDetails struct {
 	Context
 	DisplayDetails *display.Display
@@ -151,13 +109,9 @@ type YieldEditDetails struct {
 }
 
 func (h *Handler) EditDetails(w http.ResponseWriter, r *http.Request, ctx Context) {
-	b := &BindDetails{}
-
-	publicationToBind(ctx.Publication, b)
-
 	render.Layout(w, "show_modal", "publication/edit_details", YieldEditDetails{
 		Context: ctx,
-		Form:    detailsForm(ctx, b, nil),
+		Form:    detailsForm(ctx.Locale, ctx.Publication, nil),
 	})
 }
 
@@ -171,7 +125,7 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 	bindToPublication(b, ctx.Publication)
 
 	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
-		form := detailsForm(ctx, b, validationErrs.(validation.Errors))
+		form := detailsForm(ctx.Locale, ctx.Publication, validationErrs.(validation.Errors))
 
 		render.Layout(w, "refresh_modal", "publication/edit_details", YieldEditDetails{
 			Context: ctx,

@@ -1,28 +1,30 @@
 package publicationediting
 
 import (
+	"github.com/ugent-library/biblio-backend/internal/locale"
+	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render/form"
 	"github.com/ugent-library/biblio-backend/internal/validation"
 )
 
-func detailsForm(ctx Context, b *BindDetails, errors validation.Errors) *form.Form {
-	switch ctx.Publication.Type {
+func detailsForm(l *locale.Locale, publication *models.Publication, errors validation.Errors) *form.Form {
+	switch publication.Type {
 	case "book_chapter":
-		return bookChapterDetailsForm(ctx, b, errors)
+		return bookChapterDetailsForm(l, publication, errors)
 	case "book_editor":
-		return bookEditorDetailsForm(ctx, b, errors)
+		return bookEditorDetailsForm(l, publication, errors)
 	case "book":
-		return bookDetailsForm(ctx, b, errors)
+		return bookDetailsForm(l, publication, errors)
 	case "conference":
-		return conferenceDetailsForm(ctx, b, errors)
+		return conferenceDetailsForm(l, publication, errors)
 	case "dissertation":
-		return dissertationDetailsForm(ctx, b, errors)
+		return dissertationDetailsForm(l, publication, errors)
 	case "issue_editor":
-		return issueEditorDetailsForm(ctx, b, errors)
+		return issueEditorDetailsForm(l, publication, errors)
 	case "journal_article":
-		return journalArticleDetailsForm(ctx, b, errors)
+		return journalArticleDetailsForm(l, publication, errors)
 	case "miscellaneous":
-		return miscellaneousDetailsForm(ctx, b, errors)
+		return miscellaneousDetailsForm(l, publication, errors)
 	default:
 		return form.New()
 	}

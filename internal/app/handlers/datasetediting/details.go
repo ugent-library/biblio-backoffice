@@ -7,6 +7,8 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/app/displays"
 	"github.com/ugent-library/biblio-backend/internal/app/localize"
 	"github.com/ugent-library/biblio-backend/internal/bind"
+	"github.com/ugent-library/biblio-backend/internal/locale"
+	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
 	"github.com/ugent-library/biblio-backend/internal/render/display"
 	"github.com/ugent-library/biblio-backend/internal/render/form"
@@ -39,32 +41,13 @@ type YieldEditDetails struct {
 }
 
 func (h *Handler) EditDetails(w http.ResponseWriter, r *http.Request, ctx Context) {
-	b := BindDetails{}
-	b.AccessLevel = ctx.Dataset.AccessLevel
-	b.Embargo = ctx.Dataset.Embargo
-	b.EmbargoTo = ctx.Dataset.EmbargoTo
-	b.Format = ctx.Dataset.Format
-	b.Keyword = ctx.Dataset.Keyword
-	b.License = ctx.Dataset.License
-	b.OtherLicense = ctx.Dataset.OtherLicense
-	b.Publisher = ctx.Dataset.Publisher
-	b.Title = ctx.Dataset.Title
-	b.URL = ctx.Dataset.URL
-	b.Year = ctx.Dataset.Year
-
 	render.Layout(w, "show_modal", "dataset/edit_details", YieldEditDetails{
 		Context: ctx,
-		Form:    detailsForm(ctx, b, nil),
+		Form:    detailsForm(ctx.Locale, ctx.Dataset, nil),
 	})
 }
 
 func (h *Handler) EditDetailsAccessLevel(w http.ResponseWriter, r *http.Request, ctx Context) {
-	b := BindDetails{}
-	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		render.BadRequest(w, r, err)
-		return
-	}
-
 	// Clear embargo and embargoTo fields if access level is not embargo
 	//   TODO Disabled per https://github.com/ugent-library/biblio-backend/issues/217
 	//
@@ -73,14 +56,15 @@ func (h *Handler) EditDetailsAccessLevel(w http.ResponseWriter, r *http.Request,
 	//   into the form fields again if embargo level is chosen again. This feature isn't
 	//   implemented in this solution since state isn't kept across HTTP requests.
 	//
-	if b.AccessLevel != "info:eu-repo/semantics/embargoedAccess" {
-		b.Embargo = ""
-		b.EmbargoTo = ""
+	dataset := ctx.Dataset
+	if dataset.AccessLevel != "info:eu-repo/semantics/embargoedAccess" {
+		dataset.Embargo = ""
+		dataset.EmbargoTo = ""
 	}
 
 	render.Layout(w, "refresh_modal", "dataset/edit_details", YieldEditDetails{
 		Context: ctx,
-		Form:    detailsForm(ctx, b, nil),
+		Form:    detailsForm(ctx.Locale, dataset, nil),
 	})
 }
 
@@ -111,7 +95,7 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 	ctx.Dataset.Year = b.Year
 
 	if validationErrs := ctx.Dataset.Validate(); validationErrs != nil {
-		form := detailsForm(ctx, b, validationErrs.(validation.Errors))
+		form := detailsForm(ctx.Locale, ctx.Dataset, validationErrs.(validation.Errors))
 
 		render.Layout(w, "refresh_modal", "dataset/edit_details", YieldEditDetails{
 			Context: ctx,
@@ -139,125 +123,125 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 	})
 }
 
-func detailsForm(ctx Context, b BindDetails, errors validation.Errors) *form.Form {
+func detailsForm(l *locale.Locale, dataset *models.Dataset, errors validation.Errors) *form.Form {
 	return form.New().
 		WithTheme("default").
-		WithErrors(localize.ValidationErrors(ctx.Locale, errors)).
+		WithErrors(localize.ValidationErrors(l, errors)).
 		AddSection(
 			&form.Text{
 				Name:        "title",
-				Value:       b.Title,
-				Label:       ctx.Locale.T("builder.title"),
+				Value:       dataset.Title,
+				Label:       l.T("builder.title"),
 				Cols:        9,
-				Placeholder: ctx.Locale.T("builder.details.title.placeholder"),
-				Error:       localize.ValidationErrorAt(ctx.Locale, errors, "/title"),
+				Placeholder: l.T("builder.details.title.placeholder"),
+				Error:       localize.ValidationErrorAt(l, errors, "/title"),
 				Required:    true,
 			},
 			&display.Text{
-				Label:         ctx.Locale.T("builder.doi"),
-				Value:         ctx.Dataset.DOI,
+				Label:         l.T("builder.doi"),
+				Value:         dataset.DOI,
 				Required:      true,
 				ValueTemplate: "format/doi",
 			},
 			&form.Text{
 				Name:  "url",
-				Value: b.URL,
-				Label: ctx.Locale.T("builder.url"),
+				Value: dataset.URL,
+				Label: l.T("builder.url"),
 				Cols:  3,
-				Error: localize.ValidationErrorAt(ctx.Locale, errors, "/url"),
+				Error: localize.ValidationErrorAt(l, errors, "/url"),
 			},
 		).
 		AddSection(
 			&form.Text{
 				Name:        "publisher",
-				Value:       b.Publisher,
-				Label:       ctx.Locale.T("builder.publisher"),
+				Value:       dataset.Publisher,
+				Label:       l.T("builder.publisher"),
 				Cols:        9,
-				Placeholder: ctx.Locale.T("builder.details.publisher.placeholder"),
-				Error:       localize.ValidationErrorAt(ctx.Locale, errors, "/publisher"),
+				Placeholder: l.T("builder.details.publisher.placeholder"),
+				Error:       localize.ValidationErrorAt(l, errors, "/publisher"),
 				Required:    true,
-				Tooltip:     ctx.Locale.T("tooltip.dataset.publisher"),
+				Tooltip:     l.T("tooltip.dataset.publisher"),
 			},
 			&form.Text{
 				Name:        "year",
-				Value:       b.Year,
-				Label:       ctx.Locale.T("builder.year"),
+				Value:       dataset.Year,
+				Label:       l.T("builder.year"),
 				Cols:        3,
-				Placeholder: ctx.Locale.T("builder.year.placeholder"),
-				Error:       localize.ValidationErrorAt(ctx.Locale, errors, "/year"),
+				Placeholder: l.T("builder.year.placeholder"),
+				Error:       localize.ValidationErrorAt(l, errors, "/year"),
 				Required:    true,
 			},
 		).
 		AddSection(
 			&form.TextRepeat{
 				Name:            "format",
-				Values:          b.Format,
-				Label:           ctx.Locale.T("builder.format"),
+				Values:          dataset.Format,
+				Label:           l.T("builder.format"),
 				Cols:            9,
-				Error:           localize.ValidationErrorAt(ctx.Locale, errors, "/format"),
+				Error:           localize.ValidationErrorAt(l, errors, "/format"),
 				Required:        true,
 				AutocompleteURL: "suggest_media_types",
-				Tooltip:         ctx.Locale.T("tooltip.dataset.format"),
+				Tooltip:         l.T("tooltip.dataset.format"),
 			},
 			&form.TextRepeat{
 				Name:   "keyword",
-				Values: b.Keyword,
-				Label:  ctx.Locale.T("builder.keyword"),
+				Values: dataset.Keyword,
+				Label:  l.T("builder.keyword"),
 				Cols:   9,
-				Error:  localize.ValidationErrorAt(ctx.Locale, errors, "/keyword"),
+				Error:  localize.ValidationErrorAt(l, errors, "/keyword"),
 			},
 		).
 		AddSection(
 			&form.Select{
 				Name:        "license",
-				Value:       b.License,
-				Label:       ctx.Locale.T("builder.license"),
-				Options:     localize.VocabularySelectOptions(ctx.Locale, "cc_licenses"),
+				Value:       dataset.License,
+				Label:       l.T("builder.license"),
+				Options:     localize.VocabularySelectOptions(l, "licenses"),
 				Cols:        3,
-				Error:       localize.ValidationErrorAt(ctx.Locale, errors, "/license"),
-				Tooltip:     ctx.Locale.T("tooltip.dataset.license"),
+				Error:       localize.ValidationErrorAt(l, errors, "/license"),
+				Tooltip:     l.T("tooltip.dataset.license"),
 				EmptyOption: true,
 				Required:    true,
 			},
 			&form.Text{
 				Name:        "other_license",
-				Value:       b.OtherLicense,
-				Label:       ctx.Locale.T("builder.other_license"),
+				Value:       dataset.OtherLicense,
+				Label:       l.T("builder.other_license"),
 				Cols:        9,
 				Placeholder: "e.g. https://creativecommons.org/licenses/by/4.0/",
-				Error:       localize.ValidationErrorAt(ctx.Locale, errors, "/other_license"),
+				Error:       localize.ValidationErrorAt(l, errors, "/other_license"),
 				Required:    true,
 			},
 			&form.Select{
 				Template:    "dataset/access_level",
 				Name:        "access_level",
-				Label:       ctx.Locale.T("builder.access_level"),
-				Value:       b.AccessLevel,
-				Options:     localize.VocabularySelectOptions(ctx.Locale, "access_levels"),
+				Label:       l.T("builder.access_level"),
+				Value:       dataset.AccessLevel,
+				Options:     localize.VocabularySelectOptions(l, "access_levels"),
 				Cols:        3,
-				Error:       localize.ValidationErrorAt(ctx.Locale, errors, "/access_level"),
+				Error:       localize.ValidationErrorAt(l, errors, "/access_level"),
 				Required:    true,
 				EmptyOption: true,
-				Tooltip:     ctx.Locale.T("tooltip.dataset.access_level"),
-				Vars:        struct{ ID string }{ID: ctx.Dataset.ID},
+				Tooltip:     l.T("tooltip.dataset.access_level"),
+				Vars:        struct{ ID string }{ID: dataset.ID},
 			},
 			&form.Date{
 				Name:     "embargo",
-				Value:    b.Embargo,
-				Label:    ctx.Locale.T("builder.embargo"),
+				Value:    dataset.Embargo,
+				Label:    l.T("builder.embargo"),
 				Cols:     3,
-				Error:    localize.ValidationErrorAt(ctx.Locale, errors, "/embargo"),
-				Disabled: b.AccessLevel != "info:eu-repo/semantics/embargoedAccess",
+				Error:    localize.ValidationErrorAt(l, errors, "/embargo"),
+				Disabled: dataset.AccessLevel != "info:eu-repo/semantics/embargoedAccess",
 			},
 			&form.Select{
 				Name:        "embargo_to",
-				Label:       ctx.Locale.T("builder.embargo_to"),
-				Value:       b.EmbargoTo,
-				Options:     localize.VocabularySelectOptions(ctx.Locale, "access_levels"),
+				Label:       l.T("builder.embargo_to"),
+				Value:       dataset.EmbargoTo,
+				Options:     localize.VocabularySelectOptions(l, "access_levels"),
 				Cols:        3,
-				Error:       localize.ValidationErrorAt(ctx.Locale, errors, "/embargo_to"),
+				Error:       localize.ValidationErrorAt(l, errors, "/embargo_to"),
 				EmptyOption: true,
-				Disabled:    b.AccessLevel != "info:eu-repo/semantics/embargoedAccess",
+				Disabled:    dataset.AccessLevel != "info:eu-repo/semantics/embargoedAccess",
 			},
 		)
 }

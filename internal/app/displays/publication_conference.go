@@ -7,25 +7,25 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/render/display"
 )
 
-func PublicationConference(l *locale.Locale, c models.PublicationConference) *display.Display {
+func PublicationConference(l *locale.Locale, p *models.Publication) *display.Display {
 	return display.New().
 		WithTheme("default").
 		AddSection(
 			&display.Text{
 				Label: l.T("builder.conference.name"),
-				Value: c.Name,
+				Value: p.ConferenceName,
 			},
 			&display.Text{
 				Label: l.T("builder.conference.location"),
-				Value: c.Location,
+				Value: p.ConferenceLocation,
 			},
 			&display.Text{
 				Label: l.T("builder.conference.organizer"),
-				Value: c.Organizer,
+				Value: p.ConferenceOrganizer,
 			},
 			&display.Text{
 				Label: l.T("builder.conference.date"),
-				Value: helpers.FormatRange(c.StartDate, c.EndDate),
+				Value: helpers.FormatRange(p.ConferenceStartDate, p.ConferenceEndDate),
 			},
 		)
 }

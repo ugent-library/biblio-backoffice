@@ -80,7 +80,7 @@ func (h *Handler) ShowDescription(w http.ResponseWriter, r *http.Request, ctx Co
 		SubNavs:               subNavs,
 		ActiveSubNav:          "description",
 		DisplayDetails:        displays.PublicationDetails(ctx.Locale, ctx.Publication),
-		DisplayConference:     displays.PublicationConference(ctx.Locale, ctx.Publication.Conference),
+		DisplayConference:     displays.PublicationConference(ctx.Locale, ctx.Publication),
 		DisplayAdditionalInfo: displays.PublicationAdditionalInfo(ctx.Locale, ctx.Publication),
 	})
 }

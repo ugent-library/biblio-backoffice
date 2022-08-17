@@ -289,11 +289,12 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		datasetEditingHandler.Wrap(datasetEditingHandler.CreateProject)).
 		Methods("POST").
 		Name("dataset_create_project")
-	r.HandleFunc("/dataset/{id}/projects/{position}/confirm-delete",
+	// TODO: weird project_id's not problematic in urls?
+	r.HandleFunc("/dataset/{id}/projects/{project_id}/confirm-delete",
 		datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmDeleteProject)).
 		Methods("GET").
 		Name("dataset_confirm_delete_project")
-	r.HandleFunc("/dataset/{id}/projects/{position}",
+	r.HandleFunc("/dataset/{id}/projects/{project_id}",
 		datasetEditingHandler.Wrap(datasetEditingHandler.DeleteProject)).
 		Methods("DELETE").
 		Name("dataset_delete_project")
@@ -311,11 +312,11 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		datasetEditingHandler.Wrap(datasetEditingHandler.CreateDepartment)).
 		Methods("POST").
 		Name("dataset_create_department")
-	r.HandleFunc("/dataset/{id}/departments/{position}/confirm-delete",
+	r.HandleFunc("/dataset/{id}/departments/{department_id}/confirm-delete",
 		datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmDeleteDepartment)).
 		Methods("GET").
 		Name("dataset_confirm_delete_department")
-	r.HandleFunc("/dataset/{id}/departments/{position}",
+	r.HandleFunc("/dataset/{id}/departments/{department_id}",
 		datasetEditingHandler.Wrap(datasetEditingHandler.DeleteDepartment)).
 		Methods("DELETE").
 		Name("dataset_delete_department")
@@ -329,19 +330,19 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		datasetEditingHandler.Wrap(datasetEditingHandler.CreateAbstract)).
 		Methods("POST").
 		Name("dataset_create_abstract")
-	r.HandleFunc("/dataset/{id}/abstracts/{position}/edit",
+	r.HandleFunc("/dataset/{id}/abstracts/{abstract_id}/edit",
 		datasetEditingHandler.Wrap(datasetEditingHandler.EditAbstract)).
 		Methods("GET").
 		Name("dataset_edit_abstract")
-	r.HandleFunc("/dataset/{id}/abstracts/{position}",
+	r.HandleFunc("/dataset/{id}/abstracts/{abstract_id}",
 		datasetEditingHandler.Wrap(datasetEditingHandler.UpdateAbstract)).
 		Methods("PUT").
 		Name("dataset_update_abstract")
-	r.HandleFunc("/dataset/{id}/abstracts/{position}/confirm-delete",
+	r.HandleFunc("/dataset/{id}/abstracts/{abstract_id}/confirm-delete",
 		datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmDeleteAbstract)).
 		Methods("GET").
 		Name("dataset_confirm_delete_abstract")
-	r.HandleFunc("/dataset/{id}/abstracts/{position}",
+	r.HandleFunc("/dataset/{id}/abstracts/{abstract_id}",
 		datasetEditingHandler.Wrap(datasetEditingHandler.DeleteAbstract)).
 		Methods("DELETE").
 		Name("dataset_delete_abstract")
@@ -559,11 +560,11 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		publicationEditingHandler.Wrap(publicationEditingHandler.CreateProject)).
 		Methods("POST").
 		Name("publication_create_project")
-	r.HandleFunc("/publication/{id}/projects/{position}/confirm-delete",
+	r.HandleFunc("/publication/{id}/projects/{project_id}/confirm-delete",
 		publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDeleteProject)).
 		Methods("GET").
 		Name("publication_confirm_delete_project")
-	r.HandleFunc("/publication/{id}/projects/{position}",
+	r.HandleFunc("/publication/{id}/projects/{project_id}",
 		publicationEditingHandler.Wrap(publicationEditingHandler.DeleteProject)).
 		Methods("DELETE").
 		Name("publication_delete_project")
@@ -577,19 +578,19 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		publicationEditingHandler.Wrap(publicationEditingHandler.CreateLink)).
 		Methods("POST").
 		Name("publication_create_link")
-	r.HandleFunc("/publication/{id}/links/{position}/edit",
+	r.HandleFunc("/publication/{id}/links/{link_id}/edit",
 		publicationEditingHandler.Wrap(publicationEditingHandler.EditLink)).
 		Methods("GET").
 		Name("publication_edit_link")
-	r.HandleFunc("/publication/{id}/links/{position}",
+	r.HandleFunc("/publication/{id}/links/{link_id}",
 		publicationEditingHandler.Wrap(publicationEditingHandler.UpdateLink)).
 		Methods("PUT").
 		Name("publication_update_link")
-	r.HandleFunc("/publication/{id}/links/{position}/confirm-delete",
+	r.HandleFunc("/publication/{id}/links/{link_id}/confirm-delete",
 		publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDeleteLink)).
 		Methods("GET").
 		Name("publication_confirm_delete_link")
-	r.HandleFunc("/publication/{id}/links/{position}",
+	r.HandleFunc("/publication/{id}/links/{link_id}",
 		publicationEditingHandler.Wrap(publicationEditingHandler.DeleteLink)).
 		Methods("DELETE").
 		Name("publication_delete_link")
@@ -607,11 +608,11 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		publicationEditingHandler.Wrap(publicationEditingHandler.CreateDepartment)).
 		Methods("POST").
 		Name("publication_create_department")
-	r.HandleFunc("/publication/{id}/departments/{position}/confirm-delete",
+	r.HandleFunc("/publication/{id}/departments/{department_id}/confirm-delete",
 		publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDeleteDepartment)).
 		Methods("GET").
 		Name("publication_confirm_delete_department")
-	r.HandleFunc("/publication/{id}/departments/{position}",
+	r.HandleFunc("/publication/{id}/departments/{department_id}",
 		publicationEditingHandler.Wrap(publicationEditingHandler.DeleteDepartment)).
 		Methods("DELETE").
 		Name("publication_delete_department")
@@ -625,19 +626,19 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		publicationEditingHandler.Wrap(publicationEditingHandler.CreateAbstract)).
 		Methods("POST").
 		Name("publication_create_abstract")
-	r.HandleFunc("/publication/{id}/abstracts/{position}/edit",
+	r.HandleFunc("/publication/{id}/abstracts/{abstract_id}/edit",
 		publicationEditingHandler.Wrap(publicationEditingHandler.EditAbstract)).
 		Methods("GET").
 		Name("publication_edit_abstract")
-	r.HandleFunc("/publication/{id}/abstracts/{position}",
+	r.HandleFunc("/publication/{id}/abstracts/{abstract_id}",
 		publicationEditingHandler.Wrap(publicationEditingHandler.UpdateAbstract)).
 		Methods("PUT").
 		Name("publication_update_abstract")
-	r.HandleFunc("/publication/{id}/abstracts/{position}/confirm-delete",
+	r.HandleFunc("/publication/{id}/abstracts/{abstract_id}/confirm-delete",
 		publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDeleteAbstract)).
 		Methods("GET").
 		Name("publication_confirm_delete_abstract")
-	r.HandleFunc("/publication/{id}/abstracts/{position}",
+	r.HandleFunc("/publication/{id}/abstracts/{abstract_id}",
 		publicationEditingHandler.Wrap(publicationEditingHandler.DeleteAbstract)).
 		Methods("DELETE").
 		Name("publication_delete_abstract")
@@ -651,19 +652,19 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		publicationEditingHandler.Wrap(publicationEditingHandler.CreateLaySummary)).
 		Methods("POST").
 		Name("publication_create_lay_summary")
-	r.HandleFunc("/publication/{id}/lay_summaries/{position}/edit",
+	r.HandleFunc("/publication/{id}/lay_summaries/{lay_summary_id}/edit",
 		publicationEditingHandler.Wrap(publicationEditingHandler.EditLaySummary)).
 		Methods("GET").
 		Name("publication_edit_lay_summary")
-	r.HandleFunc("/publication/{id}/lay_summaries/{position}",
+	r.HandleFunc("/publication/{id}/lay_summaries/{lay_summary_id}",
 		publicationEditingHandler.Wrap(publicationEditingHandler.UpdateLaySummary)).
 		Methods("PUT").
 		Name("publication_update_lay_summary")
-	r.HandleFunc("/publication/{id}/lay_summaries/{position}/confirm-delete",
+	r.HandleFunc("/publication/{id}/lay_summaries/{lay_summary_id}/confirm-delete",
 		publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDeleteLaySummary)).
 		Methods("GET").
 		Name("publication_confirm_delete_lay_summary")
-	r.HandleFunc("/publication/{id}/lay_summaries/{position}",
+	r.HandleFunc("/publication/{id}/lay_summaries/{lay_summary_id}",
 		publicationEditingHandler.Wrap(publicationEditingHandler.DeleteLaySummary)).
 		Methods("DELETE").
 		Name("publication_delete_lay_summary")

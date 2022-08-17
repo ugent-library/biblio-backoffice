@@ -7,6 +7,7 @@ import (
 
 	"github.com/ugent-library/biblio-backend/internal/app/localize"
 	"github.com/ugent-library/biblio-backend/internal/bind"
+	"github.com/ugent-library/biblio-backend/internal/locale"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
 	"github.com/ugent-library/biblio-backend/internal/render/form"
@@ -15,13 +16,13 @@ import (
 )
 
 type BindAbstract struct {
-	Position int    `path:"position"`
-	Text     string `form:"text"`
-	Lang     string `form:"lang"`
+	AbstractID string `path:"abstract_id"`
+	Text       string `form:"text"`
+	Lang       string `form:"lang"`
 }
 
 type BindDeleteAbstract struct {
-	Position int `path:"position"`
+	AbstractID string `path:"abstract_id"`
 }
 
 type YieldAbstracts struct {
@@ -33,16 +34,16 @@ type YieldAddAbstract struct {
 }
 type YieldEditAbstract struct {
 	Context
-	Position int
-	Form     *form.Form
+	AbstractID string
+	Form       *form.Form
 }
 type YieldDeleteAbstract struct {
 	Context
-	Position int
+	AbstractID string
 }
 
 func (h *Handler) AddAbstract(w http.ResponseWriter, r *http.Request, ctx Context) {
-	form := abstractForm(ctx, BindAbstract{Position: len(ctx.Dataset.Abstract)}, nil)
+	form := abstractForm(ctx.Locale, ctx.Dataset, &models.Text{}, nil)
 
 	render.Layout(w, "show_modal", "dataset/add_abstract", YieldAddAbstract{
 		Context: ctx,
@@ -51,18 +52,23 @@ func (h *Handler) AddAbstract(w http.ResponseWriter, r *http.Request, ctx Contex
 }
 
 func (h *Handler) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx Context) {
-	b := BindAbstract{Position: len(ctx.Dataset.Abstract)}
+	b := BindAbstract{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
 		render.BadRequest(w, r, err)
 		return
 	}
 
-	ctx.Dataset.Abstract = append(ctx.Dataset.Abstract, models.Text{Text: b.Text, Lang: b.Lang})
+	abstract := models.Text{
+		Lang: b.Lang,
+		Text: b.Text,
+	}
+
+	ctx.Dataset.AddAbstract(&abstract)
 
 	if validationErrs := ctx.Dataset.Validate(); validationErrs != nil {
 		render.Layout(w, "refresh_modal", "dataset/add_abstract", YieldAddAbstract{
 			Context: ctx,
-			Form:    abstractForm(ctx, b, validationErrs.(validation.Errors)),
+			Form:    abstractForm(ctx.Locale, ctx.Dataset, &abstract, validationErrs.(validation.Errors)),
 		})
 		return
 	}
@@ -92,19 +98,21 @@ func (h *Handler) EditAbstract(w http.ResponseWriter, r *http.Request, ctx Conte
 		return
 	}
 
-	a, err := ctx.Dataset.GetAbstract(b.Position)
-	if err != nil {
-		render.BadRequest(w, r, err)
+	abstract := ctx.Dataset.GetAbstract(b.AbstractID)
+	// TODO: it this a non existing id, or a preliminary conflict error?
+	if abstract == nil {
+		render.BadRequest(
+			w,
+			r,
+			fmt.Errorf("no abstract found for %s in dataset %s", b.AbstractID, ctx.Dataset.ID),
+		)
 		return
 	}
 
-	b.Lang = a.Lang
-	b.Text = a.Text
-
 	render.Layout(w, "show_modal", "dataset/edit_abstract", YieldEditAbstract{
-		Context:  ctx,
-		Position: b.Position,
-		Form:     abstractForm(ctx, b, nil),
+		Context:    ctx,
+		AbstractID: b.AbstractID,
+		Form:       abstractForm(ctx.Locale, ctx.Dataset, abstract, nil),
 	})
 }
 
@@ -115,19 +123,26 @@ func (h *Handler) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 		return
 	}
 
-	a := models.Text{Text: b.Text, Lang: b.Lang}
-	if err := ctx.Dataset.SetAbstract(b.Position, a); err != nil {
-		render.BadRequest(w, r, err)
+	// get pointer to abstract and manipulate in place
+	abstract := ctx.Dataset.GetAbstract(b.AbstractID)
+	if abstract == nil {
+		render.BadRequest(
+			w,
+			r,
+			fmt.Errorf("no abstract found for %s in dataset %s", b.AbstractID, ctx.Dataset.ID),
+		)
 		return
 	}
+	abstract.Text = b.Text
+	abstract.Lang = b.Lang
 
 	if validationErrs := ctx.Dataset.Validate(); validationErrs != nil {
-		form := abstractForm(ctx, b, validationErrs.(validation.Errors))
+		form := abstractForm(ctx.Locale, ctx.Dataset, abstract, validationErrs.(validation.Errors))
 
 		render.Layout(w, "refresh_modal", "dataset/edit_abstract", YieldEditAbstract{
-			Context:  ctx,
-			Position: b.Position,
-			Form:     form,
+			Context:    ctx,
+			AbstractID: b.AbstractID,
+			Form:       form,
 		})
 		return
 	}
@@ -158,8 +173,8 @@ func (h *Handler) ConfirmDeleteAbstract(w http.ResponseWriter, r *http.Request, 
 	}
 
 	render.Layout(w, "show_modal", "dataset/confirm_delete_abstract", YieldDeleteAbstract{
-		Context:  ctx,
-		Position: b.Position,
+		Context:    ctx,
+		AbstractID: b.AbstractID,
 	})
 }
 
@@ -170,10 +185,11 @@ func (h *Handler) DeleteAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 		return
 	}
 
-	if err := ctx.Dataset.RemoveAbstract(b.Position); err != nil {
-		render.InternalServerError(w, r, err)
-		return
-	}
+	/*
+		ignore possibility that abstract id is already removed:
+		conflict resolving will solve this anyway
+	*/
+	ctx.Dataset.RemoveAbstract(b.AbstractID)
 
 	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
 
@@ -193,27 +209,36 @@ func (h *Handler) DeleteAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 	})
 }
 
-func abstractForm(ctx Context, b BindAbstract, errors validation.Errors) *form.Form {
+func abstractForm(l *locale.Locale, dataset *models.Dataset, abstract *models.Text, errors validation.Errors) *form.Form {
+
+	idx := -1
+	for i, a := range dataset.Abstract {
+		if a.ID == abstract.ID {
+			idx = i
+			break
+		}
+	}
+
 	return form.New().
 		WithTheme("default").
-		WithErrors(localize.ValidationErrors(ctx.Locale, errors)).
+		WithErrors(localize.ValidationErrors(l, errors)).
 		AddSection(
 			&form.TextArea{
 				Name:        "text",
-				Value:       b.Text,
-				Label:       ctx.Locale.T("builder.abstract.text"),
+				Value:       abstract.Text,
+				Label:       l.T("builder.abstract.text"),
 				Cols:        12,
 				Rows:        6,
-				Placeholder: ctx.Locale.T("builder.abstract.text.placeholder"),
-				Error:       localize.ValidationErrorAt(ctx.Locale, errors, fmt.Sprintf("/abstract/%d/text", b.Position)),
+				Placeholder: l.T("builder.abstract.text.placeholder"),
+				Error:       localize.ValidationErrorAt(l, errors, fmt.Sprintf("/abstract/%d/text", idx)),
 			},
 			&form.Select{
 				Name:    "lang",
-				Value:   b.Lang,
-				Label:   ctx.Locale.T("builder.abstract.lang"),
-				Options: localize.LanguageSelectOptions(ctx.Locale),
+				Value:   abstract.Lang,
+				Label:   l.T("builder.abstract.lang"),
+				Options: localize.LanguageSelectOptions(l),
 				Cols:    12,
-				Error:   localize.ValidationErrorAt(ctx.Locale, errors, fmt.Sprintf("/abstract/%d/lang", b.Position)),
+				Error:   localize.ValidationErrorAt(l, errors, fmt.Sprintf("/abstract/%d/lang", idx)),
 			},
 		)
 }

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/ugent-library/biblio-backend/internal/pagination"
+	"github.com/ugent-library/biblio-backend/internal/ulid"
 	"github.com/ugent-library/biblio-backend/internal/validation"
 	"github.com/ugent-library/biblio-backend/internal/vocabularies"
 )
@@ -143,60 +144,82 @@ func (d *Dataset) RemoveContributor(role string, i int) error {
 	return nil
 }
 
-func (d *Dataset) GetAbstract(i int) (Text, error) {
-	if i >= len(d.Abstract) {
-		return Text{}, errors.New("index out of bounds")
+func (d *Dataset) GetAbstract(id string) *Text {
+	for _, abstract := range d.Abstract {
+		if abstract.ID == id {
+			return &abstract
+		}
 	}
-
-	return d.Abstract[i], nil
-}
-
-func (d *Dataset) SetAbstract(i int, t Text) error {
-	if i >= len(d.Abstract) {
-		return errors.New("index out of bounds")
-	}
-
-	d.Abstract[i] = t
-
 	return nil
 }
 
-func (d *Dataset) RemoveAbstract(i int) error {
-	if i >= len(d.Abstract) {
-		return errors.New("index out of bounds")
+func (d *Dataset) AddAbstract(t *Text) {
+	t.ID = ulid.MustGenerate()
+	d.Abstract = append(d.Abstract, *t)
+}
+
+func (d *Dataset) RemoveAbstract(id string) {
+	abstracts := make([]Text, 0)
+	for _, abstract := range d.Abstract {
+		if abstract.ID != id {
+			abstracts = append(abstracts, abstract)
+		}
 	}
+	d.Abstract = abstracts
+}
 
-	d.Abstract = append(d.Abstract[:i], d.Abstract[i+1:]...)
-
+func (d *Dataset) GetProject(id string) *DatasetProject {
+	for _, project := range d.Project {
+		if project.ID == id {
+			return &project
+		}
+	}
 	return nil
 }
 
-func (d *Dataset) GetProject(i int) (DatasetProject, error) {
-	if i >= len(d.Project) {
-		return DatasetProject{}, errors.New("index out of bounds")
+func (d *Dataset) RemoveProject(id string) {
+	projects := make([]DatasetProject, 0)
+	for _, project := range d.Project {
+		if project.ID != id {
+			projects = append(projects, project)
+		}
 	}
-
-	return d.Project[i], nil
+	d.Project = projects
 }
 
-func (d *Dataset) RemoveProject(i int) error {
-	if i >= len(d.Project) {
-		return errors.New("index out of bounds")
+func (d *Dataset) AddProject(pr *DatasetProject) {
+	d.RemoveProject(pr.ID)
+	d.Project = append(d.Project, *pr)
+}
+
+func (d *Dataset) GetDepartment(id string) *DatasetDepartment {
+	for _, department := range d.Department {
+		if department.ID == id {
+			return &department
+		}
 	}
-
-	d.Project = append(d.Project[:i], d.Project[i+1:]...)
-
 	return nil
 }
 
-func (d *Dataset) RemoveDepartment(i int) error {
-	if i >= len(d.Department) {
-		return errors.New("index out of bounds")
+func (d *Dataset) RemoveDepartment(id string) {
+	departments := make([]DatasetDepartment, 0)
+	for _, department := range d.Department {
+		if department.ID != id {
+			departments = append(departments, department)
+		}
 	}
+	d.Department = departments
+}
 
-	d.Department = append(d.Department[:i], d.Department[i+1:]...)
+func (d *Dataset) AddDepartmentByOrg(org *Organization) {
+	// remove if added before
+	d.RemoveDepartment(org.ID)
 
-	return nil
+	datasetDepartment := DatasetDepartment{ID: org.ID}
+	for _, d := range org.Tree {
+		datasetDepartment.Tree = append(datasetDepartment.Tree, DatasetDepartmentRef(d))
+	}
+	d.Department = append(d.Department, datasetDepartment)
 }
 
 func (d *Dataset) ResolveDOI() string {

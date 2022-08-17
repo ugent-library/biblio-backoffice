@@ -26,14 +26,14 @@
                             </button>
                             <div class="dropdown-menu">
                                 <button class="dropdown-item" type="button"
-                                    hx-get="{{pathFor "publication_edit_link" "id" $.Publication.ID "position" $k}}"
+                                    hx-get="{{pathFor "publication_edit_link" "id" $.Publication.ID "link_id" $a.ID}}"
                                     hx-target="#modals"
                                 >
                                     <i class="if if-edit"></i>
                                     <span>Edit</span>
                                 </button>
                                 <button class="dropdown-item" type="button"
-                                    hx-get="{{pathFor "publication_confirm_delete_link" "id" $.Publication.ID "position" $k}}"
+                                    hx-get="{{pathFor "publication_confirm_delete_link" "id" $.Publication.ID "link_id" $a.ID}}"
                                     hx-target="#modals"
                                 >
                                     <i class="if if-delete"></i>

@@ -7,6 +7,8 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/app/displays"
 	"github.com/ugent-library/biblio-backend/internal/app/localize"
 	"github.com/ugent-library/biblio-backend/internal/bind"
+	"github.com/ugent-library/biblio-backend/internal/locale"
+	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
 	"github.com/ugent-library/biblio-backend/internal/render/display"
 	"github.com/ugent-library/biblio-backend/internal/render/form"
@@ -32,16 +34,9 @@ type YieldEditAdditionalInfo struct {
 }
 
 func (h *Handler) EditAdditionalInfo(w http.ResponseWriter, r *http.Request, ctx Context) {
-	p := ctx.Publication
-	b := BindAdditionalInfo{
-		AdditionalInfo: p.AdditionalInfo,
-		Keyword:        p.Keyword,
-		ResearchField:  p.ResearchField,
-	}
-
 	render.Layout(w, "show_modal", "publication/edit_additional_info", YieldEditAdditionalInfo{
 		Context: ctx,
-		Form:    additionalInfoForm(ctx, b, nil),
+		Form:    additionalInfoForm(ctx.Locale, ctx.Publication, nil),
 	})
 }
 
@@ -58,7 +53,7 @@ func (h *Handler) UpdateAdditionalInfo(w http.ResponseWriter, r *http.Request, c
 	p.ResearchField = b.ResearchField
 
 	if validationErrs := p.Validate(); validationErrs != nil {
-		form := additionalInfoForm(ctx, b, validationErrs.(validation.Errors))
+		form := additionalInfoForm(ctx.Locale, p, validationErrs.(validation.Errors))
 
 		render.Layout(w, "refresh_modal", "publication/edit_additional_info", YieldEditAdditionalInfo{
 			Context: ctx,
@@ -86,8 +81,7 @@ func (h *Handler) UpdateAdditionalInfo(w http.ResponseWriter, r *http.Request, c
 	})
 }
 
-func additionalInfoForm(ctx Context, b BindAdditionalInfo, errors validation.Errors) *form.Form {
-	l := ctx.Locale
+func additionalInfoForm(l *locale.Locale, publication *models.Publication, errors validation.Errors) *form.Form {
 
 	researchFieldOptions := make([]form.SelectOption, len(vocabularies.Map["research_fields"]))
 	for i, v := range vocabularies.Map["research_fields"] {
@@ -97,12 +91,12 @@ func additionalInfoForm(ctx Context, b BindAdditionalInfo, errors validation.Err
 
 	return form.New().
 		WithTheme("default").
-		WithErrors(localize.ValidationErrors(ctx.Locale, errors)).
+		WithErrors(localize.ValidationErrors(l, errors)).
 		AddSection(
 			&form.SelectRepeat{
 				Name:        "research_field",
 				Options:     researchFieldOptions,
-				Values:      b.ResearchField,
+				Values:      publication.ResearchField,
 				EmptyOption: true,
 				Label:       l.T("builder.research_field"),
 				Cols:        9,
@@ -114,7 +108,7 @@ func additionalInfoForm(ctx Context, b BindAdditionalInfo, errors validation.Err
 			},
 			&form.TextRepeat{
 				Name:   "keyword",
-				Values: b.Keyword,
+				Values: publication.Keyword,
 				Label:  l.T("builder.keyword"),
 				Cols:   9,
 				Error: localize.ValidationErrorAt(
@@ -125,7 +119,7 @@ func additionalInfoForm(ctx Context, b BindAdditionalInfo, errors validation.Err
 			},
 			&form.TextArea{
 				Name:  "additional_info",
-				Value: b.AdditionalInfo,
+				Value: publication.AdditionalInfo,
 				Label: l.T("builder.additional_info"),
 				Cols:  9,
 				Rows:  4,

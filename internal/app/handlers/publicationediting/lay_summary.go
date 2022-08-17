@@ -7,6 +7,7 @@ import (
 
 	"github.com/ugent-library/biblio-backend/internal/app/localize"
 	"github.com/ugent-library/biblio-backend/internal/bind"
+	"github.com/ugent-library/biblio-backend/internal/locale"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
 	"github.com/ugent-library/biblio-backend/internal/render/form"
@@ -15,13 +16,13 @@ import (
 )
 
 type BindLaySummary struct {
-	Position int    `path:"position"`
-	Text     string `form:"text"`
-	Lang     string `form:"lang"`
+	LaySummaryID string `path:"lay_summary_id"`
+	Text         string `form:"text"`
+	Lang         string `form:"lang"`
 }
 
 type BindDeleteLaySummary struct {
-	Position int `path:"position"`
+	LaySummaryID string `path:"lay_summary_id"`
 }
 
 type YieldLaySummaries struct {
@@ -33,16 +34,16 @@ type YieldAddLaySummary struct {
 }
 type YieldEditLaySummary struct {
 	Context
-	Position int
-	Form     *form.Form
+	LaySummaryID string
+	Form         *form.Form
 }
 type YieldDeleteLaySummary struct {
 	Context
-	Position int
+	LaySummaryID string
 }
 
 func (h *Handler) AddLaySummary(w http.ResponseWriter, r *http.Request, ctx Context) {
-	form := laySummaryForm(ctx, BindLaySummary{Position: len(ctx.Publication.LaySummary)}, nil)
+	form := laySummaryForm(ctx.Locale, ctx.Publication, &models.Text{}, nil)
 
 	render.Layout(w, "show_modal", "publication/add_lay_summary", YieldAddLaySummary{
 		Context: ctx,
@@ -51,18 +52,22 @@ func (h *Handler) AddLaySummary(w http.ResponseWriter, r *http.Request, ctx Cont
 }
 
 func (h *Handler) CreateLaySummary(w http.ResponseWriter, r *http.Request, ctx Context) {
-	b := BindLaySummary{Position: len(ctx.Publication.LaySummary)}
+	b := BindLaySummary{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
 		render.BadRequest(w, r, err)
 		return
 	}
 
-	ctx.Publication.LaySummary = append(ctx.Publication.LaySummary, models.Text{Text: b.Text, Lang: b.Lang})
+	laySummary := models.Text{
+		Lang: b.Lang,
+		Text: b.Text,
+	}
+	ctx.Publication.AddLaySummary(&laySummary)
 
 	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
 		render.Layout(w, "refresh_modal", "publication/add_lay_summary", YieldAddLaySummary{
 			Context: ctx,
-			Form:    laySummaryForm(ctx, b, validationErrs.(validation.Errors)),
+			Form:    laySummaryForm(ctx.Locale, ctx.Publication, &laySummary, validationErrs.(validation.Errors)),
 		})
 		return
 	}
@@ -92,19 +97,20 @@ func (h *Handler) EditLaySummary(w http.ResponseWriter, r *http.Request, ctx Con
 		return
 	}
 
-	a, err := ctx.Publication.GetLaySummary(b.Position)
-	if err != nil {
-		render.BadRequest(w, r, err)
+	laySummary := ctx.Publication.GetLaySummary(b.LaySummaryID)
+	if laySummary == nil {
+		render.BadRequest(
+			w,
+			r,
+			fmt.Errorf("no lay summary found for %s in publication %s", b.LaySummaryID, ctx.Publication.ID),
+		)
 		return
 	}
 
-	b.Lang = a.Lang
-	b.Text = a.Text
-
 	render.Layout(w, "show_modal", "publication/edit_lay_summary", YieldEditLaySummary{
-		Context:  ctx,
-		Position: b.Position,
-		Form:     laySummaryForm(ctx, b, nil),
+		Context:      ctx,
+		LaySummaryID: b.LaySummaryID,
+		Form:         laySummaryForm(ctx.Locale, ctx.Publication, laySummary, nil),
 	})
 }
 
@@ -115,19 +121,30 @@ func (h *Handler) UpdateLaySummary(w http.ResponseWriter, r *http.Request, ctx C
 		return
 	}
 
-	a := models.Text{Text: b.Text, Lang: b.Lang}
-	if err := ctx.Publication.SetLaySummary(b.Position, a); err != nil {
-		render.BadRequest(w, r, err)
+	/*
+		TODO: this may throw a "bad request"
+		when it should be throwing a conflict error.
+		Always throw a conflict error (no one just "knows" an invalid id)?
+	*/
+	laySummary := ctx.Publication.GetLaySummary(b.LaySummaryID)
+	if laySummary == nil {
+		render.BadRequest(
+			w,
+			r,
+			fmt.Errorf("no lay summary found for %s in publication %s", b.LaySummaryID, ctx.Publication.ID),
+		)
 		return
 	}
+	laySummary.Text = b.Text
+	laySummary.Lang = b.Lang
 
 	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
-		form := laySummaryForm(ctx, b, validationErrs.(validation.Errors))
+		form := laySummaryForm(ctx.Locale, ctx.Publication, laySummary, validationErrs.(validation.Errors))
 
 		render.Layout(w, "refresh_modal", "publication/edit_lay_summary", YieldEditLaySummary{
-			Context:  ctx,
-			Position: b.Position,
-			Form:     form,
+			Context:      ctx,
+			LaySummaryID: b.LaySummaryID,
+			Form:         form,
 		})
 		return
 	}
@@ -158,8 +175,8 @@ func (h *Handler) ConfirmDeleteLaySummary(w http.ResponseWriter, r *http.Request
 	}
 
 	render.Layout(w, "show_modal", "publication/confirm_delete_lay_summary", YieldDeleteLaySummary{
-		Context:  ctx,
-		Position: b.Position,
+		Context:      ctx,
+		LaySummaryID: b.LaySummaryID,
 	})
 }
 
@@ -170,10 +187,11 @@ func (h *Handler) DeleteLaySummary(w http.ResponseWriter, r *http.Request, ctx C
 		return
 	}
 
-	if err := ctx.Publication.RemoveLaySummary(b.Position); err != nil {
-		render.InternalServerError(w, r, err)
-		return
-	}
+	/*
+		Note: ignore fact that lay summary is already removed:
+		conflicting resolving will solve this
+	*/
+	ctx.Publication.RemoveLaySummary(b.LaySummaryID)
 
 	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication)
 
@@ -193,27 +211,34 @@ func (h *Handler) DeleteLaySummary(w http.ResponseWriter, r *http.Request, ctx C
 	})
 }
 
-func laySummaryForm(ctx Context, b BindLaySummary, errors validation.Errors) *form.Form {
+func laySummaryForm(l *locale.Locale, publication *models.Publication, laySummary *models.Text, errors validation.Errors) *form.Form {
+	idx := -1
+	for i, ls := range publication.LaySummary {
+		if ls.ID == laySummary.ID {
+			idx = i
+			break
+		}
+	}
 	return form.New().
 		WithTheme("default").
-		WithErrors(localize.ValidationErrors(ctx.Locale, errors)).
+		WithErrors(localize.ValidationErrors(l, errors)).
 		AddSection(
 			&form.TextArea{
 				Name:        "text",
-				Value:       b.Text,
-				Label:       ctx.Locale.T("builder.lay_summary.text"),
+				Value:       laySummary.Text,
+				Label:       l.T("builder.lay_summary.text"),
 				Cols:        12,
 				Rows:        6,
-				Placeholder: ctx.Locale.T("builder.lay_summary.text.placeholder"),
-				Error:       localize.ValidationErrorAt(ctx.Locale, errors, fmt.Sprintf("/lay_summary/%d/text", b.Position)),
+				Placeholder: l.T("builder.lay_summary.text.placeholder"),
+				Error:       localize.ValidationErrorAt(l, errors, fmt.Sprintf("/lay_summary/%d/text", idx)),
 			},
 			&form.Select{
 				Name:    "lang",
-				Value:   b.Lang,
-				Label:   ctx.Locale.T("builder.lay_summary.lang"),
-				Options: localize.LanguageSelectOptions(ctx.Locale),
+				Value:   laySummary.Lang,
+				Label:   l.T("builder.lay_summary.lang"),
+				Options: localize.LanguageSelectOptions(l),
 				Cols:    12,
-				Error:   localize.ValidationErrorAt(ctx.Locale, errors, fmt.Sprintf("/lay_summary/%d/lang", b.Position)),
+				Error:   localize.ValidationErrorAt(l, errors, fmt.Sprintf("/lay_summary/%d/lang", idx)),
 			},
 		)
 }
