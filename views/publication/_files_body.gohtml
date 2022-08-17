@@ -5,7 +5,7 @@
         hx-post="{{pathFor "publication_upload_file" "id" .Publication.ID}}"
         hx-encoding="multipart/form-data"
         hx-headers='{"If-Match": "{{.Publication.SnapshotID}}"}'
-        hx-swap="none"
+        hx-target="#modals"
         hx-trigger="change"
         hx-indicator=".c-file-upload .spinner-border"
     >

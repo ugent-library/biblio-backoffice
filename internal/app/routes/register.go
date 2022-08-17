@@ -748,7 +748,7 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		Name("publication_edit_file")
 	r.HandleFunc("/publication/{id}/files/{file_id}/edit/license",
 		publicationEditingHandler.Wrap(publicationEditingHandler.EditFileLicense)).
-		Methods("PUT").
+		Methods("GET").
 		Name("publication_edit_file_license")
 	r.HandleFunc("/publication/{id}/files/{file_id}",
 		publicationEditingHandler.Wrap(publicationEditingHandler.UpdateFile)).

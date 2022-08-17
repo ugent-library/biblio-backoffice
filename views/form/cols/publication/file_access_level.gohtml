@@ -25,8 +25,8 @@
             {{else}}
             class="c-radio-card" aria-selected="false"
             {{end}}
-            hx-put="{{pathFor "publication_edit_file_license" "id" $.Vars.ID "file_id" $.Vars.FileID}}"
-            hx-target="#modals"
+            hx-get="{{pathFor "publication_edit_file_license" "id" $.Vars.ID "file_id" $.Vars.FileID}}"
+            hx-swap="none"
             hx-include=".file-attributes"
             hx-indicator=".modal-dialog .spinner-border"
             hx-trigger="click delay:50ms"

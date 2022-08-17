@@ -198,6 +198,11 @@ func (h *Handler) EditFileLicense(w http.ResponseWriter, r *http.Request, ctx Co
 		b.EmbargoTo = ""
 	}
 
+	// TODO apply other license && access level related rules
+
+	// copy attributes from bind to file
+	bindToPublicationFile(&b, file)
+
 	render.Layout(w, "refresh_modal", "publication/edit_file", YieldEditFile{
 		Context: ctx,
 		File:    file,
