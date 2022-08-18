@@ -1,5 +1,9 @@
-{{if .ThumbnailURL}}
-<img class="list-group-item-thumbnail" src="{{.ThumbnailURL}}" height="156">
+{{$thumbnailURL := ""}}
+{{range .File}}
+    {{$thumbnailURL = (pathFor "publication_file_thumbnail" "id" $.ID "file_id" .ID).String}}
+{{end}}
+{{if $thumbnailURL}}
+<img class="list-group-item-thumbnail" src="{{$thumbnailURL}}" height="156">
 {{else}}
 <div class="list-group-item-thumbnail">
     <div class="c-thumbnail c-thumbnail--publication c-thumbnail--medium">

@@ -94,6 +94,7 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 	publicationViewingHandler := &publicationviewing.Handler{
 		BaseHandler: baseHandler,
 		Repository:  services.Repository,
+		FileStore:   services.FileStore,
 	}
 	publicationCreatingHandler := &publicationcreating.Handler{
 		BaseHandler:              baseHandler,
@@ -496,6 +497,14 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		publicationViewingHandler.Wrap(publicationViewingHandler.ShowDatasets)).
 		Methods("GET").
 		Name("publication_datasets")
+	r.HandleFunc("/publication/{id}/files/{file_id}",
+		publicationViewingHandler.Wrap(publicationViewingHandler.DownloadFile)).
+		Methods("GET").
+		Name("publication_download_file")
+	r.HandleFunc("/publication/{id}/files/{file_id}/thumbnail",
+		publicationViewingHandler.Wrap(publicationViewingHandler.FileThumbnail)).
+		Methods("GET").
+		Name("publication_file_thumbnail")
 
 	// publish publication
 	r.HandleFunc("/publication/{id}/publish/confirm",
@@ -738,10 +747,6 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		publicationEditingHandler.Wrap(publicationEditingHandler.UploadFile)).
 		Methods("POST").
 		Name("publication_upload_file")
-	r.HandleFunc("/publication/{id}/files/{file_id}",
-		publicationEditingHandler.Wrap(publicationEditingHandler.DownloadFile)).
-		Methods("GET").
-		Name("publication_download_file")
 	r.HandleFunc("/publication/{id}/files/{file_id}/edit",
 		publicationEditingHandler.Wrap(publicationEditingHandler.EditFile)).
 		Methods("GET").

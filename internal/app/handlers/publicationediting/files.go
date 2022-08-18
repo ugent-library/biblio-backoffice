@@ -5,11 +5,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"net/url"
 	"time"
 
-	"github.com/cshum/imagor/imagorpath"
-	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/app/localize"
 	"github.com/ugent-library/biblio-backend/internal/bind"
 	"github.com/ugent-library/biblio-backend/internal/locale"
@@ -45,27 +42,6 @@ type YieldShowFiles struct {
 type YieldDeleteFile struct {
 	Context
 	File *models.PublicationFile
-}
-
-func (h *Handler) DownloadFile(w http.ResponseWriter, r *http.Request, ctx Context) {
-	b := BindFile{}
-	if err := bind.Request(r, &b); err != nil {
-		render.BadRequest(w, r, err)
-		return
-	}
-
-	file := ctx.Publication.GetFile(b.FileID)
-
-	if file == nil {
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-		return
-	}
-
-	w.Header().Set(
-		"Content-Disposition",
-		fmt.Sprintf("attachment; filename*=UTF-8''%s", url.PathEscape(file.Name)),
-	)
-	http.ServeFile(w, r, h.FileStore.FilePath(file.SHA256))
 }
 
 func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context) {
@@ -123,10 +99,6 @@ func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context
 		id, date_created, date_updated
 	*/
 	ctx.Publication.AddFile(&pubFile)
-
-	// TODO don't store thumbnail url's
-	// add thumbnail(s)
-	h.addThumbnailURLs(ctx.Publication)
 
 	// TODO conflict handling
 	if err := h.Repository.SavePublication(ctx.Publication); err != nil {
@@ -235,9 +207,6 @@ func (h *Handler) UpdateFile(w http.ResponseWriter, r *http.Request, ctx Context
 	// copy attributes from bind to file
 	bindToPublicationFile(&b, file)
 
-	// add thumbnails (changes record!)
-	h.addThumbnailURLs(pub)
-
 	// TODO conflict detection
 	// save publication
 	err := h.Repository.SavePublication(pub)
@@ -298,9 +267,6 @@ func (h *Handler) DeleteFile(w http.ResponseWriter, r *http.Request, ctx Context
 	}
 
 	ctx.Publication.RemoveFile(b.FileID)
-
-	// add thumbnail urls
-	h.addThumbnailURLs(ctx.Publication)
 
 	// save publication
 	if err := h.Repository.SavePublication(ctx.Publication); err != nil {
@@ -461,24 +427,6 @@ func fileForm(l *locale.Locale, publication *models.Publication, file *models.Pu
 	)
 
 	return f
-}
-
-// TODO clean this up
-func (h *Handler) addThumbnailURLs(p *models.Publication) {
-	var u string
-	for _, f := range p.File {
-		if f.ContentType == "application/pdf" && f.Size <= 25000000 {
-			params := imagorpath.Params{
-				Image:  h.FileStore.RelativeFilePath(f.SHA256),
-				FitIn:  true,
-				Width:  156,
-				Height: 156,
-			}
-			p := imagorpath.Generate(params, imagorpath.NewDefaultSigner(viper.GetString("imagor-secret")))
-			u = viper.GetString("imagor-url") + "/" + p
-			f.ThumbnailURL = u
-		}
-	}
 }
 
 func bindToPublicationFile(b *BindFile, f *models.PublicationFile) {

@@ -33,7 +33,6 @@ type PublicationFile struct {
 	OtherLicense       string     `json:"other_license,omitempty"`
 	PublicationVersion string     `json:"publication_version,omitempty"`
 	Relation           string     `json:"relation,omitempty"`
-	ThumbnailURL       string     `json:"thumbnail_url,omitempty"`
 	Title              string     `json:"title,omitempty"`
 	URL                string     `json:"url,omitempty"`
 }
@@ -189,15 +188,6 @@ func (p *Publication) GetFile(id string) *PublicationFile {
 		}
 	}
 	return nil
-}
-
-func (p *Publication) ThumbnailURL() string {
-	for _, file := range p.File {
-		if file.ThumbnailURL != "" {
-			return file.ThumbnailURL
-		}
-	}
-	return ""
 }
 
 func (p *Publication) ClassificationChoices() []string {

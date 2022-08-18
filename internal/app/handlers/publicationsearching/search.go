@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/cshum/imagor/imagorpath"
-	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
 )
@@ -58,10 +56,6 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request, ctx Context) {
 		return
 	}
 
-	for _, p := range hits.Hits {
-		h.addThumbnailURLs(p)
-	}
-
 	render.Layout(w, "layouts/default", "publication/pages/search", YieldSearch{
 		Context:   ctx,
 		PageTitle: "Overview - Publications - Biblio",
@@ -84,32 +78,10 @@ func (h *Handler) CurationSearch(w http.ResponseWriter, r *http.Request, ctx Con
 		return
 	}
 
-	for _, p := range hits.Hits {
-		h.addThumbnailURLs(p)
-	}
-
 	render.Layout(w, "layouts/default", "publication/pages/search", YieldSearch{
 		Context:   ctx,
 		PageTitle: "Overview - Publications - Biblio",
 		ActiveNav: "publications",
 		Hits:      hits,
 	})
-}
-
-// TODO clean this up
-func (h *Handler) addThumbnailURLs(p *models.Publication) {
-	var u string
-	for _, f := range p.File {
-		if f.ContentType == "application/pdf" && f.Size <= 25000000 {
-			params := imagorpath.Params{
-				Image:  h.FileStore.RelativeFilePath(f.SHA256),
-				FitIn:  true,
-				Width:  156,
-				Height: 156,
-			}
-			p := imagorpath.Generate(params, imagorpath.NewDefaultSigner(viper.GetString("imagor-secret")))
-			u = viper.GetString("imagor-url") + "/" + p
-			f.ThumbnailURL = u
-		}
-	}
 }
