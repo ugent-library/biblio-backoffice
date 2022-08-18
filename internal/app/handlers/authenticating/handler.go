@@ -30,6 +30,7 @@ func (h *Handler) Callback(w http.ResponseWriter, r *http.Request, ctx Context) 
 	claims := &oidc.Claims{}
 	if err := h.OIDCClient.Exchange(code, claims); err != nil {
 		render.InternalServerError(w, r, err)
+		return
 	}
 
 	user, err := h.UserService.GetUserByUsername(claims.PreferredUsername)
