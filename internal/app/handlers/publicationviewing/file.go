@@ -2,7 +2,6 @@ package publicationviewing
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -42,7 +41,7 @@ func (h *Handler) FileThumbnail(w http.ResponseWriter, r *http.Request, ctx Cont
 	}
 
 	filePath := h.FileStore.RelativeFilePath(f.SHA256)
-	log.Printf("img: %s", filePath)
+
 	params := imagorpath.Params{
 		Image:  filePath,
 		FitIn:  true,
