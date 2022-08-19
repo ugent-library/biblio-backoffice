@@ -53,7 +53,6 @@ func (h *Handler) FileThumbnail(w http.ResponseWriter, r *http.Request, ctx Cont
 	imgURL, _ := url.Parse(viper.GetString("imagor-url"))
 	imgURL.Path = imgPath
 
-	// update the headers to allow for SSL redirection
 	r.URL.Host = imgURL.Host
 	r.URL.Scheme = imgURL.Scheme
 	r.URL.Path = strings.Replace(imgURL.Path, imagorURL.Path, "", 1)
