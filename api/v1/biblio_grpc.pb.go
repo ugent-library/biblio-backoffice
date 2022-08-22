@@ -23,6 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type BiblioClient interface {
 	GetPublication(ctx context.Context, in *GetPublicationRequest, opts ...grpc.CallOption) (*GetPublicationResponse, error)
+	GetAllPublications(ctx context.Context, in *GetAllPublicationsRequest, opts ...grpc.CallOption) (Biblio_GetAllPublicationsClient, error)
 }
 
 type biblioClient struct {
@@ -42,11 +43,44 @@ func (c *biblioClient) GetPublication(ctx context.Context, in *GetPublicationReq
 	return out, nil
 }
 
+func (c *biblioClient) GetAllPublications(ctx context.Context, in *GetAllPublicationsRequest, opts ...grpc.CallOption) (Biblio_GetAllPublicationsClient, error) {
+	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[0], "/biblio.v1.Biblio/GetAllPublications", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &biblioGetAllPublicationsClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type Biblio_GetAllPublicationsClient interface {
+	Recv() (*GetAllPublicationsResponse, error)
+	grpc.ClientStream
+}
+
+type biblioGetAllPublicationsClient struct {
+	grpc.ClientStream
+}
+
+func (x *biblioGetAllPublicationsClient) Recv() (*GetAllPublicationsResponse, error) {
+	m := new(GetAllPublicationsResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // BiblioServer is the server API for Biblio service.
 // All implementations must embed UnimplementedBiblioServer
 // for forward compatibility
 type BiblioServer interface {
 	GetPublication(context.Context, *GetPublicationRequest) (*GetPublicationResponse, error)
+	GetAllPublications(*GetAllPublicationsRequest, Biblio_GetAllPublicationsServer) error
 	mustEmbedUnimplementedBiblioServer()
 }
 
@@ -56,6 +90,9 @@ type UnimplementedBiblioServer struct {
 
 func (UnimplementedBiblioServer) GetPublication(context.Context, *GetPublicationRequest) (*GetPublicationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPublication not implemented")
+}
+func (UnimplementedBiblioServer) GetAllPublications(*GetAllPublicationsRequest, Biblio_GetAllPublicationsServer) error {
+	return status.Errorf(codes.Unimplemented, "method GetAllPublications not implemented")
 }
 func (UnimplementedBiblioServer) mustEmbedUnimplementedBiblioServer() {}
 
@@ -88,6 +125,27 @@ func _Biblio_GetPublication_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Biblio_GetAllPublications_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(GetAllPublicationsRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(BiblioServer).GetAllPublications(m, &biblioGetAllPublicationsServer{stream})
+}
+
+type Biblio_GetAllPublicationsServer interface {
+	Send(*GetAllPublicationsResponse) error
+	grpc.ServerStream
+}
+
+type biblioGetAllPublicationsServer struct {
+	grpc.ServerStream
+}
+
+func (x *biblioGetAllPublicationsServer) Send(m *GetAllPublicationsResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
 // Biblio_ServiceDesc is the grpc.ServiceDesc for Biblio service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -100,6 +158,12 @@ var Biblio_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Biblio_GetPublication_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "GetAllPublications",
+			Handler:       _Biblio_GetAllPublications_Handler,
+			ServerStreams: true,
+		},
+	},
 	Metadata: "api/v1/biblio.proto",
 }

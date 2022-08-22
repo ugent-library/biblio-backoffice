@@ -15,6 +15,7 @@ import "google/protobuf/timestamp.proto";
 
 service Biblio {
     rpc GetPublication(GetPublicationRequest) returns (GetPublicationResponse);
+    rpc GetAllPublications(GetAllPublicationsRequest) returns (stream GetAllPublicationsResponse);
 }
 
 message Text {
@@ -103,5 +104,12 @@ message GetPublicationRequest {
 }
   
 message GetPublicationResponse {
+    Publication publication = 1;
+}
+
+message GetAllPublicationsRequest {
+}
+  
+message GetAllPublicationsResponse {
     Publication publication = 1;
 }

@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"io"
 	"log"
 	"strings"
 	"time"
@@ -34,6 +35,7 @@ func main() {
 
 	rootCmd.AddCommand(publicationCmd)
 	publicationCmd.AddCommand(publicationGetCmd)
+	publicationCmd.AddCommand(publicationGetAllCmd)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
@@ -88,5 +90,29 @@ var publicationGetCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 		log.Printf("%+v", res)
+	},
+}
+
+var publicationGetAllCmd = &cobra.Command{
+	Use:   "get-all",
+	Short: "Get all publications",
+	Run: func(cmd *cobra.Command, args []string) {
+		req := &api.GetAllPublicationsRequest{}
+		stream, err := client.GetAllPublications(context.Background(), req)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		for {
+			res, err := stream.Recv()
+			if err == io.EOF {
+				break
+			}
+			if err != nil {
+				log.Fatalf("error while reading stream: %v", err)
+			}
+
+			log.Printf("%+v", res)
+		}
 	},
 }
