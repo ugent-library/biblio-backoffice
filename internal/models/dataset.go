@@ -36,10 +36,10 @@ type RelatedPublication struct {
 }
 
 type Dataset struct {
-	Abstract           []Text               `json:"abstract,omitempty"`
-	AccessLevel        string               `json:"access_level,omitempty"`
-	Author             []*Contributor       `json:"author,omitempty"` // TODO rename to Creator
-	CompletenessScore  int                  `json:"completeness_score,omitempty"`
+	Abstract    []Text         `json:"abstract,omitempty"`
+	AccessLevel string         `json:"access_level,omitempty"`
+	Author      []*Contributor `json:"author,omitempty"` // TODO rename to Creator
+	// CompletenessScore  int                  `json:"completeness_score,omitempty"`
 	Contributor        []*Contributor       `json:"contributor,omitempty"`
 	CreatorID          string               `json:"creator_id,omitempty"`
 	DateCreated        *time.Time           `json:"date_created,omitempty"`

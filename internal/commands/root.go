@@ -15,6 +15,8 @@ const (
 	defaultEs6URL           = "http://localhost:9200"
 	defaultDatasetIndex     = "biblio_backend_datasets"
 	defaultPublicationIndex = "biblio_backend_publications"
+	defaultAPIHost          = ""
+	defaultAPIPort          = 30000
 	defaultMode             = "production"
 	defaultHost             = ""
 	defaultPort             = 3000
@@ -46,6 +48,8 @@ func init() {
 	viper.SetDefault("es6-url", defaultEs6URL)
 	viper.SetDefault("dataset-index", defaultDatasetIndex)
 	viper.SetDefault("publication-index", defaultPublicationIndex)
+	viper.SetDefault("api-host", defaultAPIHost)
+	viper.SetDefault("api-port", defaultAPIPort)
 	viper.SetDefault("mode", defaultMode)
 	viper.SetDefault("host", defaultHost)
 	viper.SetDefault("port", defaultPort)

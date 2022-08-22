@@ -1,0 +1,107 @@
+// make sure you have the protoc compiler
+// and install the go plugins with
+// go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+// go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+// then generate with
+// protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative api/v1/biblio.proto
+
+syntax = "proto3";
+
+package biblio.v1;
+
+option go_package = "github.com/ugent-library/biblio-backend/api/v1";
+
+import "google/protobuf/timestamp.proto";
+
+service Biblio {
+    rpc GetPublication(GetPublicationRequest) returns (GetPublicationResponse);
+}
+
+message Text {
+    string lang = 1;
+    string text = 2;
+}
+
+message Id {
+    string id = 1;
+}
+
+message Contributor {
+    string id = 1;
+    string orcid = 2;
+    repeated string local_id = 3;
+    repeated string credit_role = 4;
+    string first_name = 5;
+    string last_name = 6;
+    string full_name = 7;
+}
+
+message Organization {
+    string id = 1;
+    repeated Id tree = 2;
+}
+
+message Publication {
+    enum Type {
+		JOURNAL_ARTICLE = 0;
+		BOOK = 1;
+		BOOK_CHAPTER = 2;
+		BOOK_EDITOR = 3;
+		ISSUE_EDITOR = 4;
+		CONFERENCE = 5;
+		DISSERTATION = 6;
+		MISCELLANEOUS = 7;
+    };
+
+    enum Status {
+		PRIVATE = 0;
+		PUBLIC = 1;
+		DELETED = 2;
+		RETURNED = 3;
+    };
+
+    enum Classification {
+		U = 0;
+        A1 = 1;
+        A2 = 2;
+        A3 = 3;
+        A4 = 4;
+        B1 = 5;
+        B2 = 6;
+        B3 = 7;
+        C1 = 8;
+        C3 = 9;
+        D1 = 10;
+        D2 = 11;
+        P1 = 12;
+        V = 13;
+    };
+
+    string id = 1;
+    Type type = 2;
+    Status status = 3;
+    repeated Text abstract = 4;
+    string additional_info = 5;
+    repeated string alternative_title = 6;
+    string article_number = 7;
+    string arxiv_id = 8;
+    repeated Contributor author = 9;
+    string batch_id = 10;
+    Classification classification = 11;
+    google.protobuf.Timestamp date_created = 12;
+    google.protobuf.Timestamp date_updated = 13;
+    google.protobuf.Timestamp date_from = 14;
+    google.protobuf.Timestamp date_until = 15;
+    string defense_place = 16;
+    string defense_date = 17;
+    string defense_time = 18;
+    bool extern = 19;
+}
+
+message GetPublicationRequest {
+    string id = 1;
+}
+  
+message GetPublicationResponse {
+    Publication publication = 1;
+}

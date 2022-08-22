@@ -68,15 +68,15 @@ type RelatedDataset struct {
 }
 
 type Publication struct {
-	Abstract                []Text                  `json:"abstract,omitempty"`
-	AdditionalInfo          string                  `json:"additional_info,omitempty"`
-	AlternativeTitle        []string                `json:"alternative_title,omitempty"`
-	ArticleNumber           string                  `json:"article_number,omitempty"`
-	ArxivID                 string                  `json:"arxiv_id,omitempty"`
-	Author                  []*Contributor          `json:"author,omitempty"`
-	BatchID                 string                  `json:"batch_id,omitempty"`
-	Classification          string                  `json:"classification,omitempty"`
-	CompletenessScore       int                     `json:"completeness_score,omitempty"`
+	Abstract         []Text         `json:"abstract,omitempty"`
+	AdditionalInfo   string         `json:"additional_info,omitempty"`
+	AlternativeTitle []string       `json:"alternative_title,omitempty"`
+	ArticleNumber    string         `json:"article_number,omitempty"`
+	ArxivID          string         `json:"arxiv_id,omitempty"`
+	Author           []*Contributor `json:"author,omitempty"`
+	BatchID          string         `json:"batch_id,omitempty"`
+	Classification   string         `json:"classification,omitempty"`
+	// CompletenessScore       int                     `json:"completeness_score,omitempty"`
 	ConferenceName          string                  `json:"conference_name,omitempty"`
 	ConferenceLocation      string                  `json:"conference_location,omitempty"`
 	ConferenceOrganizer     string                  `json:"conference_organizer,omitempty"`
