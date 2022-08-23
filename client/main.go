@@ -14,6 +14,7 @@ import (
 	api "github.com/ugent-library/biblio-backend/api/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 const (
@@ -103,6 +104,10 @@ var publicationGetAllCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
+		marshaller := protojson.MarshalOptions{
+			UseProtoNames: true,
+		}
+
 		for {
 			res, err := stream.Recv()
 			if err == io.EOF {
@@ -112,7 +117,11 @@ var publicationGetAllCmd = &cobra.Command{
 				log.Fatalf("error while reading stream: %v", err)
 			}
 
-			log.Printf("%+v", res)
+			j, err := marshaller.Marshal(res.Publication)
+			if err != nil {
+				log.Fatal(err)
+			}
+			fmt.Printf("%s\n", j)
 		}
 	},
 }

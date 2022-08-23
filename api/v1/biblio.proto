@@ -19,8 +19,9 @@ service Biblio {
 }
 
 message Text {
-    string lang = 1;
-    string text = 2;
+    string id = 1;
+    string lang = 2;
+    string text = 3;
 }
 
 message Id {
@@ -93,10 +94,19 @@ message Publication {
     google.protobuf.Timestamp date_updated = 13;
     google.protobuf.Timestamp date_from = 14;
     google.protobuf.Timestamp date_until = 15;
-    string defense_place = 16;
-    string defense_date = 17;
-    string defense_time = 18;
-    bool extern = 19;
+    bool extern = 16;
+    string title = 17;
+    string defense_place = 18;
+    string defense_date = 19;
+    string defense_time = 20;
+    string conference_name = 21;
+    string conference_location = 22;
+    string conference_organizer = 23;
+    string conference_start_date = 24;
+    string conference_end_date = 25;
+    repeated Organization organization = 26;
+    string creator_id = 27;
+    string user_id = 28;
 }
 
 message GetPublicationRequest {
