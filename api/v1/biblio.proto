@@ -18,66 +18,182 @@ service Biblio {
     rpc GetAllPublications(GetAllPublicationsRequest) returns (stream GetAllPublicationsResponse);
 }
 
+enum Confirmation {
+    CONFIRMATION_YES = 0;
+    CONFIRMATION_NO = 1;
+    CONFIRMATION_DONT_KNOW = 2;
+}
+
 message Text {
     string id = 1;
     string lang = 2;
     string text = 3;
 }
 
-message Id {
-    string id = 1;
-}
-
 message Contributor {
     string id = 1;
     string orcid = 2;
     repeated string local_id = 3;
-    repeated string credit_role = 4;
+    repeated string credit_role = 4; // TODO should be enum
     string first_name = 5;
     string last_name = 6;
     string full_name = 7;
 }
 
-message Organization {
+message RelatedOrganization {
     string id = 1;
-    repeated Id tree = 2;
+}
+
+message RelatedProject {
+    string id = 1;
+}
+
+message RelatedDataset {
+    string id = 1;
+}
+
+message OrcidWork {
+    string orcid = 1;
+    int32 put_code = 2;
+}
+
+message Link {
+    enum Relation {
+        RELATION_DATA_MANAGEMENT_PLAN = 0;
+        RELATION_HOME_PAGE = 1;
+        RELATION_PEER_REVIEW_REPORT = 2;
+        RELATION_RELATED_INFORMATION = 3;
+        RELATION_SOFTWARE = 4;
+        RELATION_TABLE_OF_CONTENTS = 5;
+        RELATION_MAIN_FILE = 6;
+    }
+
+    string id  = 1;
+    string url = 2;
+    Relation relation = 3;
+    string description = 4;
+}
+
+message File {
+    enum AccessLevel {
+        ACCESS_LEVEL_OPEN_ACCESS = 0;
+        ACCESS_LEVEL_LOCAL = 1;
+        ACCESS_LEVEL_CLOSED = 2;
+    }
+
+    enum PublicationVersion {
+        PUBLICATION_VERSION_PUBLISHED_VERSION = 0;
+        PUBLICATION_VERSION_AUTHOR_VERSION = 1;
+        PUBLICATION_VERSION_ACCEPTED_VERSION = 2;
+        PUBLICATION_VERSION_UPDATED_VERSION = 3;
+    }
+
+    enum Relation {
+        RELATION_MAIN_FILE = 0;
+        RELATION_COLOPHON = 1;
+        RELATION_DATA_FACT_SHEET = 2;
+        RELATION_PEER_REVIEW_REPORT = 3;
+        RELATION_TABLE_OF_CONTENTS = 4;
+        RELATION_AGREEMENT = 5;
+    }
+
+    string id = 1;
+    AccessLevel access_level = 2;
+    string license = 3;
+    string content_type = 4;
+    google.protobuf.Timestamp date_created = 5;
+    google.protobuf.Timestamp date_updated = 6;
+    string embargo = 7;
+    AccessLevel embargo_to = 8;
+    string name = 9;
+    int32 size = 10;
+    string sha256 = 11;
+    string other_license = 12;
+    PublicationVersion publication_version = 13;
+    Relation relation = 14;
 }
 
 message Publication {
     enum Type {
-		JOURNAL_ARTICLE = 0;
-		BOOK = 1;
-		BOOK_CHAPTER = 2;
-		BOOK_EDITOR = 3;
-		ISSUE_EDITOR = 4;
-		CONFERENCE = 5;
-		DISSERTATION = 6;
-		MISCELLANEOUS = 7;
-    };
+	   TYPE_JOURNAL_ARTICLE = 0;
+	   TYPE_BOOK = 1;
+	   TYPE_BOOK_CHAPTER = 2;
+	   TYPE_BOOK_EDITOR = 3;
+	   TYPE_ISSUE_EDITOR = 4;
+	   TYPE_CONFERENCE = 5;
+	   TYPE_DISSERTATION = 6;
+	   TYPE_MISCELLANEOUS = 7;
+    }
+
+    enum JournalArticleType {
+       JOURNAL_ARTICLE_TYPE_ORIGINAL = 0;
+       JOURNAL_ARTICLE_TYPE_REVIEW = 1;
+       JOURNAL_ARTICLE_TYPE_LETTER_NOTE = 2;
+       JOURNAL_ARTICLE_TYPE_PROCEEDINGS_PAPER = 3;
+    }
+
+    enum ConferenceType {
+        CONFERENCE_TYPE_PROCEEDINGS_PAPER = 0;
+        CONFERENCE_TYPE_ABSTRACT = 1;
+        CONFERENCE_TYPE_POSTER = 2;
+        CONFERENCE_TYPE_OTHER = 3;
+    }
+
+    enum MiscellaneousType {
+        MISCELLANEOUS_TYPE_ART_REVIEW = 0;
+        MISCELLANEOUS_TYPE_ARTISTIC_WORK = 1;
+        MISCELLANEOUS_TYPE_BIBLIOGRAPHY = 2;
+        MISCELLANEOUS_TYPE_BIOGRAPHY = 3;
+        MISCELLANEOUS_TYPE_BLOG_POST = 4;
+        MISCELLANEOUS_TYPE_BOOK_REVIEW = 5;
+        MISCELLANEOUS_TYPE_CORRECTION = 6;
+        MISCELLANEOUS_TYPE_DICTIONARY_ENTRY = 7;
+        MISCELLANEOUS_TYPE_EDITIORIAL_MATERIAL = 8;
+        MISCELLANEOUS_TYPE_ENCYCLOPEDIA_ENTRY = 9;
+        MISCELLANEOUS_TYPE_EXHIBITION_REVIEW = 10;
+        MISCELLANEOUS_TYPE_FILM_REVIEW = 11;
+        MISCELLANEOUS_TYPE_LECTURE_SPEECH = 12;
+        MISCELLANEOUS_TYPE_LEMMA = 13;
+        MISCELLANEOUS_TYPE_MAGAZINE_PIECE = 14;
+        MISCELLANEOUS_TYPE_MANUAL = 15;
+        MISCELLANEOUS_TYPE_MUSIC_EDITION = 16;
+        MISCELLANEOUS_TYPE_MUSIC_REVIEW = 17;
+        MISCELLANEOUS_TYPE_NEWS_ARTICLE = 18;
+        MISCELLANEOUS_TYPE_NEWSPAPER_PIECE = 19;
+        MISCELLANEOUS_TYPE_OTHER = 20;
+        MISCELLANEOUS_TYPE_PREPRINT = 21;
+        MISCELLANEOUS_TYPE_PRODUCT_REVIEW = 22;
+        MISCELLANEOUS_TYPE_REPORT = 23;
+        MISCELLANEOUS_TYPE_TECHNICAL_STANDARD = 24;
+        MISCELLANEOUS_TYPE_TEXT_EDITION = 25;
+        MISCELLANEOUS_TYPE_TEXT_TRANSLATION = 26;
+        MISCELLANEOUS_TYPE_THEATRE_REVIEW = 27;
+        MISCELLANEOUS_TYPE_WORKING_PAPER = 28;
+    }
 
     enum Status {
-		PRIVATE = 0;
-		PUBLIC = 1;
-		DELETED = 2;
-		RETURNED = 3;
-    };
+	    STATUS_PRIVATE = 0;
+	    STATUS_PUBLIC = 1;
+	    STATUS_DELETED = 2;
+	    STATUS_RETURNED = 3;
+    }
 
     enum Classification {
-		U = 0;
-        A1 = 1;
-        A2 = 2;
-        A3 = 3;
-        A4 = 4;
-        B1 = 5;
-        B2 = 6;
-        B3 = 7;
-        C1 = 8;
-        C3 = 9;
-        D1 = 10;
-        D2 = 11;
-        P1 = 12;
-        V = 13;
-    };
+        CLASSIFICATION_U = 0;
+        CLASSIFICATION_A1 = 1;
+        CLASSIFICATION_A2 = 2;
+        CLASSIFICATION_A3 = 3;
+        CLASSIFICATION_A4 = 4;
+        CLASSIFICATION_B1 = 5;
+        CLASSIFICATION_B2 = 6;
+        CLASSIFICATION_B3 = 7;
+        CLASSIFICATION_C1 = 8;
+        CLASSIFICATION_C3 = 9;
+        CLASSIFICATION_D1 = 10;
+        CLASSIFICATION_D2 = 11;
+        CLASSIFICATION_P1 = 12;
+        CLASSIFICATION_V = 13;
+    }
 
     string id = 1;
     Type type = 2;
@@ -104,9 +220,60 @@ message Publication {
     string conference_organizer = 23;
     string conference_start_date = 24;
     string conference_end_date = 25;
-    repeated Organization organization = 26;
+    repeated RelatedOrganization organization = 26;
     string creator_id = 27;
     string user_id = 28;
+    string doi = 29;
+    string edition = 30;
+    repeated Contributor editor = 31;
+    repeated string eisbn = 32;
+    repeated string eissn = 33;
+    string esci_id = 34;
+    repeated File file = 35;
+    string handle  = 36;
+    Confirmation has_confidential_data = 37;
+    Confirmation has_patent_application = 38;
+    Confirmation has_publications_planned = 39;
+    Confirmation has_published_material = 40;
+    repeated string isbn = 41;
+    repeated string issn = 42;
+    string issue = 43;
+    string issue_title = 44;
+    repeated string keyword = 45;
+    repeated string language = 46;
+    repeated Text lay_summary = 47;
+    repeated Contributor supervisor = 48;
+    string url = 49;
+    string volume = 50;
+    string wos_id = 51;
+    string wos_type = 52;
+    string year = 53;
+    string report_number = 54;
+    repeated string research_field = 55;
+    string reviewer_note = 56;
+    repeated string reviewer_tags = 57;
+    string series_title = 58;
+    string snapshot_id = 59;
+    string source_db = 60;
+    string source_id = 61;
+    string source_record = 62;
+    bool locked = 63;
+    string message = 64;
+    string page_count = 65;
+    string page_first = 66;
+    string page_last = 67;
+    string place_of_publication = 68;
+    string publication = 69;
+    string publication_abbreviation = 70;
+    string publisher = 71;
+    string pubmed_id = 72;
+    JournalArticleType journal_article_type = 73; // use Oneof
+    ConferenceType conference_type = 74; // use Oneof
+    MiscellaneousType miscellaneous_type = 75; // use Oneof
+    repeated RelatedProject project = 76;
+    repeated RelatedDataset dataset = 77;
+    repeated Link link = 78;
+    repeated OrcidWork orcid_work = 79;
 }
 
 message GetPublicationRequest {
