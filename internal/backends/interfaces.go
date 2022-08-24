@@ -12,6 +12,7 @@ import (
 )
 
 type Services struct {
+	Logger                   Logger
 	ORCIDSandbox             bool
 	ORCIDClient              *orcid.MemberClient
 	Repository               Repository
@@ -32,6 +33,33 @@ type Services struct {
 	PublicationEncoders map[string]PublicationEncoder
 	PublicationDecoders map[string]PublicationDecoderFactory
 	Tasks               *tasks.Hub
+}
+
+type Logger interface {
+	Debug(args ...interface{})
+	Info(args ...interface{})
+	Warn(args ...interface{})
+	Error(args ...interface{})
+	Fatal(args ...interface{})
+	Panic(args ...interface{})
+	Debugf(template string, args ...interface{})
+	Infof(template string, args ...interface{})
+	Warnf(template string, args ...interface{})
+	Errorf(template string, args ...interface{})
+	Fatalf(template string, args ...interface{})
+	Panicf(template string, args ...interface{})
+	Debugw(msg string, keysAndValues ...interface{})
+	Infow(msg string, keysAndValues ...interface{})
+	Warnw(msg string, keysAndValues ...interface{})
+	Errorw(msg string, keysAndValues ...interface{})
+	Fatalw(msg string, keysAndValues ...interface{})
+	Panicw(msg string, keysAndValues ...interface{})
+	Debugln(args ...interface{})
+	Infoln(args ...interface{})
+	Warnln(args ...interface{})
+	Errorln(args ...interface{})
+	Fatalln(args ...interface{})
+	Panicln(args ...interface{})
 }
 
 type PublicationEncoder func(*models.Publication) ([]byte, error)

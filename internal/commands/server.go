@@ -14,7 +14,6 @@ import (
 	"time"
 
 	"github.com/Masterminds/sprig/v3"
-	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"github.com/spf13/cobra"
@@ -24,6 +23,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/bind"
 	"github.com/ugent-library/biblio-backend/internal/locale"
+	"github.com/ugent-library/biblio-backend/internal/logging"
 	"github.com/ugent-library/biblio-backend/internal/mix"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
@@ -104,12 +104,12 @@ var serverStartCmd = &cobra.Command{
 
 		e.Repository.AddPublicationListener(func(p *models.Publication) {
 			if err := e.PublicationSearchService.Index(p); err != nil {
-				log.Println(fmt.Errorf("error indexing publication %s: %w", p.ID, err))
+				e.Logger.Errorf("error indexing publication %s: %w", p.ID, err)
 			}
 		})
 		e.Repository.AddDatasetListener(func(d *models.Dataset) {
 			if err := e.DatasetSearchService.Index(d); err != nil {
-				log.Println(fmt.Errorf("error indexing dataset %s: %w", d.ID, err))
+				e.Logger.Errorf("error indexing dataset %s: %w", d.ID, err)
 			}
 		})
 
@@ -117,7 +117,8 @@ var serverStartCmd = &cobra.Command{
 		router := buildRouter(e)
 
 		// setup logging
-		handler := handlers.LoggingHandler(os.Stdout, router)
+		// handler := handlers.LoggingHandler(os.Stdout, router)
+		handler := logging.HTTPHandler(e.Logger, router)
 
 		// setup server
 		addr := fmt.Sprintf("%s:%d", viper.GetString("host"), viper.GetInt("port"))
@@ -142,7 +143,7 @@ var serverStartCmd = &cobra.Command{
 		go func() {
 			<-ctx.Done()
 
-			log.Println("Stopping gracefully...")
+			e.Logger.Infof("Stopping gracefully...")
 
 			timeoutCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 
@@ -159,18 +160,18 @@ var serverStartCmd = &cobra.Command{
 				errC <- err
 			}
 
-			log.Println("Stopped")
+			e.Logger.Infof("Stopped")
 		}()
 
 		go func() {
-			log.Printf("Listening at %s", addr)
+			e.Logger.Infof("Listening at %s", addr)
 			if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 				errC <- err
 			}
 		}()
 
 		if err := <-errC; err != nil {
-			log.Fatalf("Error while running: %s", err)
+			e.Logger.Fatalf("Error while running: %s", err)
 		}
 	},
 }
