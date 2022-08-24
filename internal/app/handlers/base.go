@@ -4,7 +4,6 @@ import (
 	"encoding/gob"
 	"fmt"
 	"html/template"
-	"log"
 	"net/http"
 	"net/url"
 
@@ -28,6 +27,7 @@ func init() {
 // the session and maybe the localizer
 type BaseHandler struct {
 	Router       *mux.Router
+	Logger       backends.Logger
 	SessionName  string
 	SessionStore sessions.Store
 	UserService  backends.UserService
@@ -38,6 +38,7 @@ func (h BaseHandler) Wrap(fn func(http.ResponseWriter, *http.Request, BaseContex
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx, err := h.NewContext(r, w)
 		if err != nil {
+			h.Logger.Errorw("could not create new context.", err)
 			render.InternalServerError(w, r, err)
 			return
 		}
@@ -53,17 +54,17 @@ func (h BaseHandler) NewContext(r *http.Request, w http.ResponseWriter) (BaseCon
 
 	user, err := h.getUserFromSession(session, r, UserSessionKey)
 	if err != nil {
-		return BaseContext{}, err
+		return BaseContext{}, fmt.Errorf("could not get user from session: %w", err)
 	}
 
 	originalUser, err := h.getUserFromSession(session, r, OriginalUserSessionKey)
 	if err != nil {
-		return BaseContext{}, err
+		return BaseContext{}, fmt.Errorf("could not get original user from session: %w", err)
 	}
 
 	flash, err := h.getFlashFromSession(session, r, w)
 	if err != nil {
-		return BaseContext{}, err
+		return BaseContext{}, fmt.Errorf("could not get flash message from session: %w", err)
 	}
 
 	return BaseContext{
@@ -80,13 +81,13 @@ func (h BaseHandler) NewContext(r *http.Request, w http.ResponseWriter) (BaseCon
 func (h BaseHandler) AddSessionFlash(r *http.Request, w http.ResponseWriter, f flash.Flash) error {
 	session, err := h.SessionStore.Get(r, h.SessionName)
 	if err != nil {
-		return err
+		return fmt.Errorf("could not get session from store: %w", err)
 	}
 
 	session.AddFlash(f, FlashSessionKey)
 
 	if err := session.Save(r, w); err != nil {
-		return err
+		return fmt.Errorf("could not save data to session: %w", err)
 	}
 
 	return nil
@@ -96,7 +97,7 @@ func (h BaseHandler) getFlashFromSession(session *sessions.Session, r *http.Requ
 	sessionFlashes := session.Flashes(FlashSessionKey)
 
 	if err := session.Save(r, w); err != nil {
-		return []flash.Flash{}, err
+		return []flash.Flash{}, fmt.Errorf("could not save data to session: %w", err)
 	}
 
 	flashes := []flash.Flash{}
@@ -125,11 +126,11 @@ func (h BaseHandler) PathFor(name string, vars ...string) *url.URL {
 	if route := h.Router.Get(name); route != nil {
 		u, err := route.URLPath(vars...)
 		if err != nil {
-			log.Panic(fmt.Errorf("can't reverse route %s: %w", name, err))
+			h.Logger.Panic("Could not reverse route %s: %w", name, err)
 		}
 		return u
 	}
-	log.Panic(fmt.Errorf("route %s not found", name))
+	h.Logger.Panicf("Could not find route named %s", name)
 	return nil
 
 }
@@ -138,11 +139,11 @@ func (h BaseHandler) URLFor(name string, vars ...string) *url.URL {
 	if route := h.Router.Get(name); route != nil {
 		u, err := route.URL(vars...)
 		if err != nil {
-			log.Panic(fmt.Errorf("can't reverse route %s: %w", name, err))
+			h.Logger.Panic("Could not reverse route %s: %w", name, err)
 		}
 		return u
 	}
-	log.Panic(fmt.Errorf("route %s not found", name))
+	h.Logger.Panic("Could not find route named %s", name)
 	return nil
 }
 
