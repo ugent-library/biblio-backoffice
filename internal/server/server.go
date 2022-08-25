@@ -81,6 +81,11 @@ func (s *server) GetAllPublications(req *api.GetAllPublicationsRequest, stream a
 
 func (s *server) UpdatePublication(ctx context.Context, req *api.UpdatePublicationRequest) (*api.UpdatePublicationResponse, error) {
 	pub := messageToPublication(req.Publication)
+
+	if err := pub.Validate(); err != nil {
+		return nil, err
+	}
+
 	if err := s.services.Repository.UpdatePublication(req.Publication.SnapshotId, pub); err != nil {
 		return nil, err
 	}
