@@ -1,14 +1,12 @@
 package render
 
 import (
-	"log"
 	"net/http"
 )
 
 var AuthURL string
 
 func InternalServerError(w http.ResponseWriter, r *http.Request, err error) {
-	log.Println(err)
 	http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 }
 

@@ -23,6 +23,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/backends/repository"
 	"github.com/ugent-library/biblio-backend/internal/backends/ris"
 	"github.com/ugent-library/biblio-backend/internal/backends/spdxlicenses"
+	"go.uber.org/zap"
 
 	"github.com/ugent-library/biblio-backend/internal/tasks"
 	"github.com/ugent-library/go-orcid/orcid"
@@ -96,6 +97,27 @@ func newServices() *backends.Services {
 		},
 		Tasks: tasks.NewHub(),
 	}
+}
+
+func newLogger() *zap.SugaredLogger {
+	logEnv := viper.GetString("mode")
+
+	var logger *zap.Logger
+	var err error
+
+	if logEnv == "production" {
+		logger, err = zap.NewProduction()
+	} else {
+		logger, err = zap.NewDevelopment()
+	}
+
+	if err != nil {
+		log.Fatalln("Unable to initialize logger", err)
+	}
+
+	sugar := logger.Sugar()
+
+	return sugar
 }
 
 func newRepository() backends.Repository {

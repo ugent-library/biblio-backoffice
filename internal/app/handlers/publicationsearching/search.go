@@ -45,7 +45,9 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request, ctx Context) {
 	case "all":
 		searcher = searcher.WithScope("creator_id|author.id", ctx.User.ID)
 	default:
-		render.BadRequest(w, r, fmt.Errorf("unknown scope %s", args.FilterFor("scope")))
+		errorUnkownScope := fmt.Errorf("unknown scope: %s", args.FilterFor("scope"))
+		h.Logger.Errorw("could not create search with passed filters", "error", errorUnkownScope)
+		render.BadRequest(w, r, errorUnkownScope)
 		return
 	}
 	delete(args.Filters, "scope")

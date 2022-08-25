@@ -27,10 +27,11 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/locale"
 	"github.com/ugent-library/go-oidc/oidc"
+	"go.uber.org/zap"
 )
 
 func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
-	sessionStore sessions.Store, sessionName string, localizer *locale.Localizer, oidcClient *oidc.Client) {
+	sessionStore sessions.Store, sessionName string, localizer *locale.Localizer, logger *zap.SugaredLogger, oidcClient *oidc.Client) {
 	basePath := baseURL.Path
 
 	router.StrictSlash(true)
@@ -41,6 +42,7 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 	router.PathPrefix(basePath + "/static/").Handler(http.StripPrefix(basePath+"/static/", http.FileServer(http.Dir("./static"))))
 
 	baseHandler := handlers.BaseHandler{
+		Logger:       logger,
 		Router:       router,
 		SessionStore: sessionStore,
 		SessionName:  sessionName,
