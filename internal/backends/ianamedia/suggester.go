@@ -118,7 +118,7 @@ func (s *localSuggester) SuggestMediaTypes(q string) ([]models.Completion, error
 	// log.Printf("%+v", searchResults)
 	hits := make([]models.Completion, 0, len(searchResults.Hits))
 	for _, hit := range searchResults.Hits {
-		log.Printf("%+v", hit.Fields)
+		// log.Printf("%+v", hit.Fields)
 		desc := ""
 		if ext, ok := hit.Fields["extensions"].(string); ok {
 			desc = "." + ext
