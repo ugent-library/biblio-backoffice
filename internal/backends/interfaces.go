@@ -6,7 +6,6 @@ import (
 
 	"github.com/ugent-library/biblio-backend/internal/backends/filestore"
 	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/biblio-backend/internal/snapstore"
 	"github.com/ugent-library/biblio-backend/internal/tasks"
 	"github.com/ugent-library/go-orcid/orcid"
 )
@@ -56,7 +55,6 @@ type Repository interface {
 	GetPublication(string) (*models.Publication, error)
 	GetPublications([]string) ([]*models.Publication, error)
 	SavePublication(*models.Publication) error
-	GetAllPublications() (*snapstore.Cursor, error)
 	UpdatePublication(string, *models.Publication) error
 	EachPublication(func(*models.Publication) bool) error
 	EachPublicationSnapshot(func(*models.Publication) bool) error
@@ -67,7 +65,6 @@ type Repository interface {
 	GetDatasets([]string) ([]*models.Dataset, error)
 	SaveDataset(*models.Dataset) error
 	UpdateDataset(string, *models.Dataset) error
-	GetAllDatasets() (*snapstore.Cursor, error)
 	EachDataset(func(*models.Dataset) bool) error
 	EachDatasetSnapshot(func(*models.Dataset) bool) error
 	PurgeAllDatasets() error

@@ -25,6 +25,7 @@ type BiblioClient interface {
 	GetPublication(ctx context.Context, in *GetPublicationRequest, opts ...grpc.CallOption) (*GetPublicationResponse, error)
 	GetAllPublications(ctx context.Context, in *GetAllPublicationsRequest, opts ...grpc.CallOption) (Biblio_GetAllPublicationsClient, error)
 	UpdatePublication(ctx context.Context, in *UpdatePublicationRequest, opts ...grpc.CallOption) (*UpdatePublicationResponse, error)
+	AddPublications(ctx context.Context, opts ...grpc.CallOption) (Biblio_AddPublicationsClient, error)
 }
 
 type biblioClient struct {
@@ -85,6 +86,40 @@ func (c *biblioClient) UpdatePublication(ctx context.Context, in *UpdatePublicat
 	return out, nil
 }
 
+func (c *biblioClient) AddPublications(ctx context.Context, opts ...grpc.CallOption) (Biblio_AddPublicationsClient, error) {
+	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[1], "/biblio.v1.Biblio/AddPublications", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &biblioAddPublicationsClient{stream}
+	return x, nil
+}
+
+type Biblio_AddPublicationsClient interface {
+	Send(*AddPublicationsRequest) error
+	CloseAndRecv() (*AddPublicationsResponse, error)
+	grpc.ClientStream
+}
+
+type biblioAddPublicationsClient struct {
+	grpc.ClientStream
+}
+
+func (x *biblioAddPublicationsClient) Send(m *AddPublicationsRequest) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *biblioAddPublicationsClient) CloseAndRecv() (*AddPublicationsResponse, error) {
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	m := new(AddPublicationsResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // BiblioServer is the server API for Biblio service.
 // All implementations must embed UnimplementedBiblioServer
 // for forward compatibility
@@ -92,6 +127,7 @@ type BiblioServer interface {
 	GetPublication(context.Context, *GetPublicationRequest) (*GetPublicationResponse, error)
 	GetAllPublications(*GetAllPublicationsRequest, Biblio_GetAllPublicationsServer) error
 	UpdatePublication(context.Context, *UpdatePublicationRequest) (*UpdatePublicationResponse, error)
+	AddPublications(Biblio_AddPublicationsServer) error
 	mustEmbedUnimplementedBiblioServer()
 }
 
@@ -107,6 +143,9 @@ func (UnimplementedBiblioServer) GetAllPublications(*GetAllPublicationsRequest, 
 }
 func (UnimplementedBiblioServer) UpdatePublication(context.Context, *UpdatePublicationRequest) (*UpdatePublicationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdatePublication not implemented")
+}
+func (UnimplementedBiblioServer) AddPublications(Biblio_AddPublicationsServer) error {
+	return status.Errorf(codes.Unimplemented, "method AddPublications not implemented")
 }
 func (UnimplementedBiblioServer) mustEmbedUnimplementedBiblioServer() {}
 
@@ -178,6 +217,32 @@ func _Biblio_UpdatePublication_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Biblio_AddPublications_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(BiblioServer).AddPublications(&biblioAddPublicationsServer{stream})
+}
+
+type Biblio_AddPublicationsServer interface {
+	SendAndClose(*AddPublicationsResponse) error
+	Recv() (*AddPublicationsRequest, error)
+	grpc.ServerStream
+}
+
+type biblioAddPublicationsServer struct {
+	grpc.ServerStream
+}
+
+func (x *biblioAddPublicationsServer) SendAndClose(m *AddPublicationsResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *biblioAddPublicationsServer) Recv() (*AddPublicationsRequest, error) {
+	m := new(AddPublicationsRequest)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // Biblio_ServiceDesc is the grpc.ServiceDesc for Biblio service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -199,6 +264,11 @@ var Biblio_ServiceDesc = grpc.ServiceDesc{
 			StreamName:    "GetAllPublications",
 			Handler:       _Biblio_GetAllPublications_Handler,
 			ServerStreams: true,
+		},
+		{
+			StreamName:    "AddPublications",
+			Handler:       _Biblio_AddPublications_Handler,
+			ClientStreams: true,
 		},
 	},
 	Metadata: "api/v1/biblio.proto",
