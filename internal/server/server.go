@@ -2,8 +2,9 @@ package server
 
 import (
 	"context"
-	"log"
 
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
+	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	api "github.com/ugent-library/biblio-backend/api/v1"
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/models"
@@ -17,7 +18,14 @@ type server struct {
 }
 
 func New(services *backends.Services) *grpc.Server {
-	gsrv := grpc.NewServer()
+	gsrv := grpc.NewServer(
+		grpc.StreamInterceptor(grpc_middleware.ChainStreamServer(
+			grpc_recovery.StreamServerInterceptor(),
+		)),
+		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
+			grpc_recovery.UnaryServerInterceptor(),
+		)),
+	)
 	srv := &server{services: services}
 	api.RegisterBiblioServer(gsrv, srv)
 	return gsrv
@@ -72,11 +80,7 @@ func (s *server) GetAllPublications(req *api.GetAllPublicationsRequest, stream a
 }
 
 func (s *server) UpdatePublication(ctx context.Context, req *api.UpdatePublicationRequest) (*api.UpdatePublicationResponse, error) {
-	log.Printf("%+v", req.Publication)
-	log.Printf("%+v", req.Publication.Status)
-
 	pub := messageToPublication(req.Publication)
-	log.Printf("%+v", pub)
 	if err := s.services.Repository.UpdatePublication(req.Publication.SnapshotId, pub); err != nil {
 		return nil, err
 	}
