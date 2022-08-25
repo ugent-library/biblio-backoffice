@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"fmt"
 
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
@@ -88,6 +89,9 @@ func (s *server) UpdatePublication(ctx context.Context, req *api.UpdatePublicati
 
 	if err := s.services.Repository.UpdatePublication(req.Publication.SnapshotId, pub); err != nil {
 		return nil, err
+	}
+	if err := s.services.PublicationSearchService.Index(pub); err != nil {
+		return nil, fmt.Errorf("error indexing publication %s: %w", pub.ID, err)
 	}
 
 	return &api.UpdatePublicationResponse{}, nil
