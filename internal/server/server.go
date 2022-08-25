@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"log"
 
 	api "github.com/ugent-library/biblio-backend/api/v1"
 	"github.com/ugent-library/biblio-backend/internal/backends"
@@ -68,6 +69,19 @@ func (s *server) GetAllPublications(req *api.GetAllPublicationsRequest, stream a
 			}
 		}
 	}
+}
+
+func (s *server) UpdatePublication(ctx context.Context, req *api.UpdatePublicationRequest) (*api.UpdatePublicationResponse, error) {
+	log.Printf("%+v", req.Publication)
+	log.Printf("%+v", req.Publication.Status)
+
+	pub := messageToPublication(req.Publication)
+	log.Printf("%+v", pub)
+	if err := s.services.Repository.UpdatePublication(req.Publication.SnapshotId, pub); err != nil {
+		return nil, err
+	}
+
+	return &api.UpdatePublicationResponse{}, nil
 }
 
 func publicationToMessage(p *models.Publication) *api.Publication {

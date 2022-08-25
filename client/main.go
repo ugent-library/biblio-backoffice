@@ -1,10 +1,12 @@
 package main
 
 import (
+	"bufio"
 	"context"
 	"fmt"
 	"io"
 	"log"
+	"os"
 	"strings"
 	"time"
 
@@ -22,7 +24,15 @@ const (
 	defaultAPIPort = 30000
 )
 
-var client api.BiblioClient
+var (
+	client api.BiblioClient
+
+	marshaller = protojson.MarshalOptions{
+		UseProtoNames: true,
+	}
+
+	unmarshaller = protojson.UnmarshalOptions{}
+)
 
 func main() {
 	viper.SetEnvPrefix("biblio-backend")
@@ -37,6 +47,7 @@ func main() {
 	rootCmd.AddCommand(publicationCmd)
 	publicationCmd.AddCommand(publicationGetCmd)
 	publicationCmd.AddCommand(publicationGetAllCmd)
+	publicationCmd.AddCommand(publicationUpdateCmd)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
@@ -90,7 +101,12 @@ var publicationGetCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal(err)
 		}
-		log.Printf("%+v", res)
+
+		j, err := marshaller.Marshal(res.Publication)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Printf("%s\n", j)
 	},
 }
 
@@ -102,10 +118,6 @@ var publicationGetAllCmd = &cobra.Command{
 		stream, err := client.GetAllPublications(context.Background(), req)
 		if err != nil {
 			log.Fatal(err)
-		}
-
-		marshaller := protojson.MarshalOptions{
-			UseProtoNames: true,
 		}
 
 		for {
@@ -122,6 +134,31 @@ var publicationGetAllCmd = &cobra.Command{
 				log.Fatal(err)
 			}
 			fmt.Printf("%s\n", j)
+		}
+	},
+}
+
+var publicationUpdateCmd = &cobra.Command{
+	Use:   "update",
+	Short: "Update publication",
+	Run: func(cmd *cobra.Command, args []string) {
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		defer cancel()
+
+		reader := bufio.NewReader(os.Stdin)
+		line, err := reader.ReadBytes('\n')
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		pub := &api.Publication{}
+		if err := unmarshaller.Unmarshal(line, pub); err != nil {
+			log.Fatal(err)
+		}
+
+		req := &api.UpdatePublicationRequest{Publication: pub}
+		if _, err = client.UpdatePublication(ctx, req); err != nil {
+			log.Fatal(err)
 		}
 	},
 }

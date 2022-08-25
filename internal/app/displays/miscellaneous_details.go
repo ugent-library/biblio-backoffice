@@ -117,7 +117,7 @@ func miscellaneousDetails(l *locale.Locale, p *models.Publication) *display.Disp
 		AddSection(
 			&display.Text{
 				Label:   l.T("builder.wos_type"),
-				Value:   l.TS("tooltip.publication", p.WOSType),
+				Value:   p.WOSType,
 				Tooltip: l.T("tooltip.publication.wos_type"),
 			},
 			&display.Text{
