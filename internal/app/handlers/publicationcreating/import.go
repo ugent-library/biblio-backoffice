@@ -351,30 +351,12 @@ func (h *Handler) AddMultipleImport(w http.ResponseWriter, r *http.Request, ctx 
 	// TODO wait for index refresh, do something more elegant
 	time.Sleep(time.Second)
 
-	searchArgs := models.NewSearchArgs()
-
-	hits, err := h.PublicationSearchService.
-		WithScope("status", "private", "public").
-		WithScope("creator_id", ctx.User.ID).
-		WithScope("batch_id", batchID).
-		IncludeFacets(true).
-		Search(searchArgs)
-
-	if err != nil {
-		render.InternalServerError(w, r, err)
-		return
-	}
-
-	render.Layout(w, "layouts/default", "publication/pages/add_multiple_description", YieldAddMultiple{
-		Context:     ctx,
-		PageTitle:   "Add - Publications - Biblio",
-		Step:        2,
-		ActiveNav:   "publications",
-		RedirectURL: h.PathFor("publication_add_multiple_description", "batch_id", batchID).String(),
-		BatchID:     batchID,
-		SearchArgs:  searchArgs,
-		Hits:        hits,
-	})
+	// redirect to batch page so that pagination links work
+	http.Redirect(
+		w,
+		r,
+		h.PathFor("publication_add_multiple_description", "batch_id", batchID).String(),
+		http.StatusFound)
 }
 
 func (h *Handler) AddMultipleDescription(w http.ResponseWriter, r *http.Request, ctx Context) {
