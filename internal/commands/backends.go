@@ -58,7 +58,6 @@ func newServices() *backends.Services {
 	citeprocURL := viper.GetString("citeproc-url")
 
 	return &backends.Services{
-		Logger:                    newLogger(),
 		FileStore:                 newFileStore(),
 		ORCIDSandbox:              orcidConfig.Sandbox,
 		ORCIDClient:               orcidClient,
@@ -100,7 +99,7 @@ func newServices() *backends.Services {
 	}
 }
 
-func newLogger() backends.Logger {
+func newLogger() *zap.SugaredLogger {
 	logEnv := viper.GetString("mode")
 
 	var logger *zap.Logger

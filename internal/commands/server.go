@@ -30,6 +30,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/urls"
 	"github.com/ugent-library/biblio-backend/internal/vocabularies"
 	"github.com/ugent-library/go-oidc/oidc"
+	"go.uber.org/zap"
 
 	_ "github.com/ugent-library/biblio-backend/internal/translations"
 )
@@ -60,7 +61,7 @@ var serverRoutesCmd = &cobra.Command{
 	Use:   "routes",
 	Short: "print routes",
 	Run: func(cmd *cobra.Command, args []string) {
-		router := buildRouter(Services())
+		router := buildRouter(Services(), newLogger())
 		router.Walk(func(route *mux.Route, router *mux.Router, ancestors []*mux.Route) error {
 			hostTemplate, err := route.GetHostTemplate()
 			if err == nil {
@@ -96,6 +97,9 @@ var serverStartCmd = &cobra.Command{
 	Use:   "start",
 	Short: "start the http server",
 	Run: func(cmd *cobra.Command, args []string) {
+		// setup logger
+		logger := newLogger()
+
 		// setup services
 		e := Services()
 
@@ -104,21 +108,21 @@ var serverStartCmd = &cobra.Command{
 
 		e.Repository.AddPublicationListener(func(p *models.Publication) {
 			if err := e.PublicationSearchService.Index(p); err != nil {
-				e.Logger.Errorf("error indexing publication %s: %w", p.ID, err)
+				logger.Errorf("error indexing publication %s: %w", p.ID, err)
 			}
 		})
 		e.Repository.AddDatasetListener(func(d *models.Dataset) {
 			if err := e.DatasetSearchService.Index(d); err != nil {
-				e.Logger.Errorf("error indexing dataset %s: %w", d.ID, err)
+				logger.Errorf("error indexing dataset %s: %w", d.ID, err)
 			}
 		})
 
 		// setup router
-		router := buildRouter(e)
+		router := buildRouter(e, logger)
 
 		// setup logging
 		// handler := handlers.LoggingHandler(os.Stdout, router)
-		handler := logging.HTTPHandler(e.Logger, router)
+		handler := logging.HTTPHandler(logger, router)
 
 		// setup server
 		addr := fmt.Sprintf("%s:%d", viper.GetString("host"), viper.GetInt("port"))
@@ -143,7 +147,7 @@ var serverStartCmd = &cobra.Command{
 		go func() {
 			<-ctx.Done()
 
-			e.Logger.Infof("Stopping gracefully...")
+			logger.Infof("Stopping gracefully...")
 
 			timeoutCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 
@@ -160,23 +164,23 @@ var serverStartCmd = &cobra.Command{
 				errC <- err
 			}
 
-			e.Logger.Infof("Stopped")
+			logger.Infof("Stopped")
 		}()
 
 		go func() {
-			e.Logger.Infof("Listening at %s", addr)
+			logger.Infof("Listening at %s", addr)
 			if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 				errC <- err
 			}
 		}()
 
 		if err := <-errC; err != nil {
-			e.Logger.Fatalf("Error while running: %s", err)
+			logger.Fatalf("Error while running: %s", err)
 		}
 	},
 }
 
-func buildRouter(services *backends.Services) *mux.Router {
+func buildRouter(services *backends.Services, logger *zap.SugaredLogger) *mux.Router {
 	mode := viper.GetString("mode")
 
 	host := viper.GetString("host")
@@ -262,7 +266,7 @@ func buildRouter(services *backends.Services) *mux.Router {
 	}
 
 	// add routes
-	routes.Register(services, baseURL, router, sessionStore, sessionName, localizer, oidcClient)
+	routes.Register(services, baseURL, router, sessionStore, sessionName, localizer, logger, oidcClient)
 
 	return router
 }

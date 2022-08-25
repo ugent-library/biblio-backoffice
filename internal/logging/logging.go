@@ -4,11 +4,11 @@ import (
 	"net/http"
 
 	"github.com/felixge/httpsnoop"
-	"github.com/ugent-library/biblio-backend/internal/backends"
+	"go.uber.org/zap"
 )
 
 type MiddleWareLoggingHandler struct {
-	logger  backends.Logger
+	logger  *zap.SugaredLogger
 	handler http.Handler
 }
 
@@ -28,6 +28,6 @@ func (h MiddleWareLoggingHandler) ServeHTTP(w http.ResponseWriter, req *http.Req
 	)
 }
 
-func HTTPHandler(logger backends.Logger, h http.Handler) http.Handler {
+func HTTPHandler(logger *zap.SugaredLogger, h http.Handler) http.Handler {
 	return MiddleWareLoggingHandler{logger, h}
 }

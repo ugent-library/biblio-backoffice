@@ -15,6 +15,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
 	"github.com/ugent-library/biblio-backend/internal/render/flash"
+	"go.uber.org/zap"
 )
 
 func init() {
@@ -27,7 +28,7 @@ func init() {
 // the session and maybe the localizer
 type BaseHandler struct {
 	Router       *mux.Router
-	Logger       backends.Logger
+	Logger       *zap.SugaredLogger
 	SessionName  string
 	SessionStore sessions.Store
 	UserService  backends.UserService
