@@ -16,6 +16,7 @@ import "google/protobuf/timestamp.proto";
 service Biblio {
     rpc GetPublication(GetPublicationRequest) returns (GetPublicationResponse);
     rpc GetAllPublications(GetAllPublicationsRequest) returns (stream GetAllPublicationsResponse);
+    rpc UpdatePublication(UpdatePublicationRequest) returns (UpdatePublicationResponse);
 }
 
 enum Confirmation {
@@ -267,9 +268,9 @@ message Publication {
     string publication_abbreviation = 70;
     string publisher = 71;
     string pubmed_id = 72;
-    JournalArticleType journal_article_type = 73; // use Oneof
-    ConferenceType conference_type = 74; // use Oneof
-    MiscellaneousType miscellaneous_type = 75; // use Oneof
+    JournalArticleType journal_article_type = 73; // TODO use Oneof
+    ConferenceType conference_type = 74; // TODO use Oneof
+    MiscellaneousType miscellaneous_type = 75; // TODO use Oneof
     repeated RelatedProject project = 76;
     repeated RelatedDataset dataset = 77;
     repeated Link link = 78;
@@ -279,14 +280,21 @@ message Publication {
 message GetPublicationRequest {
     string id = 1;
 }
-  
+
 message GetPublicationResponse {
     Publication publication = 1;
 }
 
 message GetAllPublicationsRequest {
 }
-  
+
 message GetAllPublicationsResponse {
     Publication publication = 1;
+}
+
+message UpdatePublicationRequest {
+    Publication publication = 1;
+}
+
+message UpdatePublicationResponse {
 }

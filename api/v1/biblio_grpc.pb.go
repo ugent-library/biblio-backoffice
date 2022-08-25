@@ -24,6 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type BiblioClient interface {
 	GetPublication(ctx context.Context, in *GetPublicationRequest, opts ...grpc.CallOption) (*GetPublicationResponse, error)
 	GetAllPublications(ctx context.Context, in *GetAllPublicationsRequest, opts ...grpc.CallOption) (Biblio_GetAllPublicationsClient, error)
+	UpdatePublication(ctx context.Context, in *UpdatePublicationRequest, opts ...grpc.CallOption) (*UpdatePublicationResponse, error)
 }
 
 type biblioClient struct {
@@ -75,12 +76,22 @@ func (x *biblioGetAllPublicationsClient) Recv() (*GetAllPublicationsResponse, er
 	return m, nil
 }
 
+func (c *biblioClient) UpdatePublication(ctx context.Context, in *UpdatePublicationRequest, opts ...grpc.CallOption) (*UpdatePublicationResponse, error) {
+	out := new(UpdatePublicationResponse)
+	err := c.cc.Invoke(ctx, "/biblio.v1.Biblio/UpdatePublication", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // BiblioServer is the server API for Biblio service.
 // All implementations must embed UnimplementedBiblioServer
 // for forward compatibility
 type BiblioServer interface {
 	GetPublication(context.Context, *GetPublicationRequest) (*GetPublicationResponse, error)
 	GetAllPublications(*GetAllPublicationsRequest, Biblio_GetAllPublicationsServer) error
+	UpdatePublication(context.Context, *UpdatePublicationRequest) (*UpdatePublicationResponse, error)
 	mustEmbedUnimplementedBiblioServer()
 }
 
@@ -93,6 +104,9 @@ func (UnimplementedBiblioServer) GetPublication(context.Context, *GetPublication
 }
 func (UnimplementedBiblioServer) GetAllPublications(*GetAllPublicationsRequest, Biblio_GetAllPublicationsServer) error {
 	return status.Errorf(codes.Unimplemented, "method GetAllPublications not implemented")
+}
+func (UnimplementedBiblioServer) UpdatePublication(context.Context, *UpdatePublicationRequest) (*UpdatePublicationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdatePublication not implemented")
 }
 func (UnimplementedBiblioServer) mustEmbedUnimplementedBiblioServer() {}
 
@@ -146,6 +160,24 @@ func (x *biblioGetAllPublicationsServer) Send(m *GetAllPublicationsResponse) err
 	return x.ServerStream.SendMsg(m)
 }
 
+func _Biblio_UpdatePublication_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdatePublicationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BiblioServer).UpdatePublication(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/biblio.v1.Biblio/UpdatePublication",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BiblioServer).UpdatePublication(ctx, req.(*UpdatePublicationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Biblio_ServiceDesc is the grpc.ServiceDesc for Biblio service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -156,6 +188,10 @@ var Biblio_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetPublication",
 			Handler:    _Biblio_GetPublication_Handler,
+		},
+		{
+			MethodName: "UpdatePublication",
+			Handler:    _Biblio_UpdatePublication_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
