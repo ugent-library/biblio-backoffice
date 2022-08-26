@@ -16,6 +16,7 @@ import "google/protobuf/timestamp.proto";
 service Biblio {
     rpc GetPublication(GetPublicationRequest) returns (GetPublicationResponse);
     rpc GetAllPublications(GetAllPublicationsRequest) returns (stream GetAllPublicationsResponse);
+    rpc SearchPublications(SearchPublicationsRequest) returns (SearchPublicationsResponse);
     rpc UpdatePublication(UpdatePublicationRequest) returns (UpdatePublicationResponse);
     rpc AddPublications(stream AddPublicationsRequest) returns (stream AddPublicationsResponse);
 }
@@ -28,7 +29,7 @@ enum Confirmation {
 
 message Text {
     string id = 1;
-    string lang = 2;
+    string lang = 2; // TODO should be enum
     string text = 3;
 }
 
@@ -242,7 +243,7 @@ message Publication {
     string issue = 43;
     string issue_title = 44;
     repeated string keyword = 45;
-    repeated string language = 46;
+    repeated string language = 46; // TODO should be enum
     repeated Text lay_summary = 47;
     repeated Contributor supervisor = 48;
     string url = 49;
@@ -291,6 +292,19 @@ message GetAllPublicationsRequest {
 
 message GetAllPublicationsResponse {
     Publication publication = 1;
+}
+
+message SearchPublicationsRequest {
+    string query = 1;
+    int32 offset = 2;
+    int32 limit = 3;
+}
+
+message SearchPublicationsResponse {
+    repeated Publication hits = 1;
+    int32 offset = 2;
+    int32 limit = 3;
+    int32 total = 4;
 }
 
 message UpdatePublicationRequest {

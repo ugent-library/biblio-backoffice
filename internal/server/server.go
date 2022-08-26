@@ -47,14 +47,37 @@ func (s *server) GetPublication(ctx context.Context, req *api.GetPublicationRequ
 }
 
 func (s *server) GetAllPublications(req *api.GetAllPublicationsRequest, stream api.Biblio_GetAllPublicationsServer) (err error) {
-	s.services.Repository.EachPublication(func(p *models.Publication) bool {
+	return s.services.Repository.EachPublication(func(p *models.Publication) bool {
 		res := &api.GetAllPublicationsResponse{Publication: publicationToMessage(p)}
 		if err = stream.Send(res); err != nil {
 			return false
 		}
 		return true
 	})
-	return
+}
+
+func (s *server) SearchPublications(ctx context.Context, req *api.SearchPublicationsRequest) (*api.SearchPublicationsResponse, error) {
+	page := 1
+	if req.Limit > 0 {
+		page = int(req.Offset)/int(req.Limit) + 1
+	}
+	args := models.NewSearchArgs().WithQuery(req.Query).WithPage(page)
+	hits, err := s.services.PublicationSearchService.Search(args)
+	if err != nil {
+		return nil, err
+	}
+
+	res := &api.SearchPublicationsResponse{
+		Limit:  int32(hits.Limit),
+		Offset: int32(hits.Offset),
+		Total:  int32(hits.Total),
+		Hits:   make([]*api.Publication, len(hits.Hits)),
+	}
+	for i, p := range hits.Hits {
+		res.Hits[i] = publicationToMessage(p)
+	}
+
+	return res, nil
 }
 
 func (s *server) UpdatePublication(ctx context.Context, req *api.UpdatePublicationRequest) (*api.UpdatePublicationResponse, error) {

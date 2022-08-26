@@ -24,6 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type BiblioClient interface {
 	GetPublication(ctx context.Context, in *GetPublicationRequest, opts ...grpc.CallOption) (*GetPublicationResponse, error)
 	GetAllPublications(ctx context.Context, in *GetAllPublicationsRequest, opts ...grpc.CallOption) (Biblio_GetAllPublicationsClient, error)
+	SearchPublications(ctx context.Context, in *SearchPublicationsRequest, opts ...grpc.CallOption) (*SearchPublicationsResponse, error)
 	UpdatePublication(ctx context.Context, in *UpdatePublicationRequest, opts ...grpc.CallOption) (*UpdatePublicationResponse, error)
 	AddPublications(ctx context.Context, opts ...grpc.CallOption) (Biblio_AddPublicationsClient, error)
 }
@@ -77,6 +78,15 @@ func (x *biblioGetAllPublicationsClient) Recv() (*GetAllPublicationsResponse, er
 	return m, nil
 }
 
+func (c *biblioClient) SearchPublications(ctx context.Context, in *SearchPublicationsRequest, opts ...grpc.CallOption) (*SearchPublicationsResponse, error) {
+	out := new(SearchPublicationsResponse)
+	err := c.cc.Invoke(ctx, "/biblio.v1.Biblio/SearchPublications", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *biblioClient) UpdatePublication(ctx context.Context, in *UpdatePublicationRequest, opts ...grpc.CallOption) (*UpdatePublicationResponse, error) {
 	out := new(UpdatePublicationResponse)
 	err := c.cc.Invoke(ctx, "/biblio.v1.Biblio/UpdatePublication", in, out, opts...)
@@ -123,6 +133,7 @@ func (x *biblioAddPublicationsClient) Recv() (*AddPublicationsResponse, error) {
 type BiblioServer interface {
 	GetPublication(context.Context, *GetPublicationRequest) (*GetPublicationResponse, error)
 	GetAllPublications(*GetAllPublicationsRequest, Biblio_GetAllPublicationsServer) error
+	SearchPublications(context.Context, *SearchPublicationsRequest) (*SearchPublicationsResponse, error)
 	UpdatePublication(context.Context, *UpdatePublicationRequest) (*UpdatePublicationResponse, error)
 	AddPublications(Biblio_AddPublicationsServer) error
 	mustEmbedUnimplementedBiblioServer()
@@ -137,6 +148,9 @@ func (UnimplementedBiblioServer) GetPublication(context.Context, *GetPublication
 }
 func (UnimplementedBiblioServer) GetAllPublications(*GetAllPublicationsRequest, Biblio_GetAllPublicationsServer) error {
 	return status.Errorf(codes.Unimplemented, "method GetAllPublications not implemented")
+}
+func (UnimplementedBiblioServer) SearchPublications(context.Context, *SearchPublicationsRequest) (*SearchPublicationsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SearchPublications not implemented")
 }
 func (UnimplementedBiblioServer) UpdatePublication(context.Context, *UpdatePublicationRequest) (*UpdatePublicationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdatePublication not implemented")
@@ -196,6 +210,24 @@ func (x *biblioGetAllPublicationsServer) Send(m *GetAllPublicationsResponse) err
 	return x.ServerStream.SendMsg(m)
 }
 
+func _Biblio_SearchPublications_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchPublicationsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BiblioServer).SearchPublications(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/biblio.v1.Biblio/SearchPublications",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BiblioServer).SearchPublications(ctx, req.(*SearchPublicationsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Biblio_UpdatePublication_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdatePublicationRequest)
 	if err := dec(in); err != nil {
@@ -250,6 +282,10 @@ var Biblio_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetPublication",
 			Handler:    _Biblio_GetPublication_Handler,
+		},
+		{
+			MethodName: "SearchPublications",
+			Handler:    _Biblio_SearchPublications_Handler,
 		},
 		{
 			MethodName: "UpdatePublication",

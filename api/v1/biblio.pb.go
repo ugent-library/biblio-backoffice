@@ -732,7 +732,7 @@ type Text struct {
 	unknownFields protoimpl.UnknownFields
 
 	Id   string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Lang string `protobuf:"bytes,2,opt,name=lang,proto3" json:"lang,omitempty"`
+	Lang string `protobuf:"bytes,2,opt,name=lang,proto3" json:"lang,omitempty"` // TODO should be enum
 	Text string `protobuf:"bytes,3,opt,name=text,proto3" json:"text,omitempty"`
 }
 
@@ -1352,7 +1352,7 @@ type Publication struct {
 	Issue                   string                         `protobuf:"bytes,43,opt,name=issue,proto3" json:"issue,omitempty"`
 	IssueTitle              string                         `protobuf:"bytes,44,opt,name=issue_title,json=issueTitle,proto3" json:"issue_title,omitempty"`
 	Keyword                 []string                       `protobuf:"bytes,45,rep,name=keyword,proto3" json:"keyword,omitempty"`
-	Language                []string                       `protobuf:"bytes,46,rep,name=language,proto3" json:"language,omitempty"`
+	Language                []string                       `protobuf:"bytes,46,rep,name=language,proto3" json:"language,omitempty"` // TODO should be enum
 	LaySummary              []*Text                        `protobuf:"bytes,47,rep,name=lay_summary,json=laySummary,proto3" json:"lay_summary,omitempty"`
 	Supervisor              []*Contributor                 `protobuf:"bytes,48,rep,name=supervisor,proto3" json:"supervisor,omitempty"`
 	Url                     string                         `protobuf:"bytes,49,opt,name=url,proto3" json:"url,omitempty"`
@@ -2152,6 +2152,140 @@ func (x *GetAllPublicationsResponse) GetPublication() *Publication {
 	return nil
 }
 
+type SearchPublicationsRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Query  string `protobuf:"bytes,1,opt,name=query,proto3" json:"query,omitempty"`
+	Offset int32  `protobuf:"varint,2,opt,name=offset,proto3" json:"offset,omitempty"`
+	Limit  int32  `protobuf:"varint,3,opt,name=limit,proto3" json:"limit,omitempty"`
+}
+
+func (x *SearchPublicationsRequest) Reset() {
+	*x = SearchPublicationsRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_api_v1_biblio_proto_msgTypes[13]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SearchPublicationsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SearchPublicationsRequest) ProtoMessage() {}
+
+func (x *SearchPublicationsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_v1_biblio_proto_msgTypes[13]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SearchPublicationsRequest.ProtoReflect.Descriptor instead.
+func (*SearchPublicationsRequest) Descriptor() ([]byte, []int) {
+	return file_api_v1_biblio_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *SearchPublicationsRequest) GetQuery() string {
+	if x != nil {
+		return x.Query
+	}
+	return ""
+}
+
+func (x *SearchPublicationsRequest) GetOffset() int32 {
+	if x != nil {
+		return x.Offset
+	}
+	return 0
+}
+
+func (x *SearchPublicationsRequest) GetLimit() int32 {
+	if x != nil {
+		return x.Limit
+	}
+	return 0
+}
+
+type SearchPublicationsResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Hits   []*Publication `protobuf:"bytes,1,rep,name=hits,proto3" json:"hits,omitempty"`
+	Offset int32          `protobuf:"varint,2,opt,name=offset,proto3" json:"offset,omitempty"`
+	Limit  int32          `protobuf:"varint,3,opt,name=limit,proto3" json:"limit,omitempty"`
+	Total  int32          `protobuf:"varint,4,opt,name=total,proto3" json:"total,omitempty"`
+}
+
+func (x *SearchPublicationsResponse) Reset() {
+	*x = SearchPublicationsResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_api_v1_biblio_proto_msgTypes[14]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SearchPublicationsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SearchPublicationsResponse) ProtoMessage() {}
+
+func (x *SearchPublicationsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_v1_biblio_proto_msgTypes[14]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SearchPublicationsResponse.ProtoReflect.Descriptor instead.
+func (*SearchPublicationsResponse) Descriptor() ([]byte, []int) {
+	return file_api_v1_biblio_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *SearchPublicationsResponse) GetHits() []*Publication {
+	if x != nil {
+		return x.Hits
+	}
+	return nil
+}
+
+func (x *SearchPublicationsResponse) GetOffset() int32 {
+	if x != nil {
+		return x.Offset
+	}
+	return 0
+}
+
+func (x *SearchPublicationsResponse) GetLimit() int32 {
+	if x != nil {
+		return x.Limit
+	}
+	return 0
+}
+
+func (x *SearchPublicationsResponse) GetTotal() int32 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
+}
+
 type UpdatePublicationRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2163,7 +2297,7 @@ type UpdatePublicationRequest struct {
 func (x *UpdatePublicationRequest) Reset() {
 	*x = UpdatePublicationRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_api_v1_biblio_proto_msgTypes[13]
+		mi := &file_api_v1_biblio_proto_msgTypes[15]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2176,7 +2310,7 @@ func (x *UpdatePublicationRequest) String() string {
 func (*UpdatePublicationRequest) ProtoMessage() {}
 
 func (x *UpdatePublicationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_biblio_proto_msgTypes[13]
+	mi := &file_api_v1_biblio_proto_msgTypes[15]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2189,7 +2323,7 @@ func (x *UpdatePublicationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdatePublicationRequest.ProtoReflect.Descriptor instead.
 func (*UpdatePublicationRequest) Descriptor() ([]byte, []int) {
-	return file_api_v1_biblio_proto_rawDescGZIP(), []int{13}
+	return file_api_v1_biblio_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *UpdatePublicationRequest) GetPublication() *Publication {
@@ -2208,7 +2342,7 @@ type UpdatePublicationResponse struct {
 func (x *UpdatePublicationResponse) Reset() {
 	*x = UpdatePublicationResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_api_v1_biblio_proto_msgTypes[14]
+		mi := &file_api_v1_biblio_proto_msgTypes[16]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2221,7 +2355,7 @@ func (x *UpdatePublicationResponse) String() string {
 func (*UpdatePublicationResponse) ProtoMessage() {}
 
 func (x *UpdatePublicationResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_biblio_proto_msgTypes[14]
+	mi := &file_api_v1_biblio_proto_msgTypes[16]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2234,7 +2368,7 @@ func (x *UpdatePublicationResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdatePublicationResponse.ProtoReflect.Descriptor instead.
 func (*UpdatePublicationResponse) Descriptor() ([]byte, []int) {
-	return file_api_v1_biblio_proto_rawDescGZIP(), []int{14}
+	return file_api_v1_biblio_proto_rawDescGZIP(), []int{16}
 }
 
 type AddPublicationsRequest struct {
@@ -2248,7 +2382,7 @@ type AddPublicationsRequest struct {
 func (x *AddPublicationsRequest) Reset() {
 	*x = AddPublicationsRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_api_v1_biblio_proto_msgTypes[15]
+		mi := &file_api_v1_biblio_proto_msgTypes[17]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2261,7 +2395,7 @@ func (x *AddPublicationsRequest) String() string {
 func (*AddPublicationsRequest) ProtoMessage() {}
 
 func (x *AddPublicationsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_biblio_proto_msgTypes[15]
+	mi := &file_api_v1_biblio_proto_msgTypes[17]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2274,7 +2408,7 @@ func (x *AddPublicationsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddPublicationsRequest.ProtoReflect.Descriptor instead.
 func (*AddPublicationsRequest) Descriptor() ([]byte, []int) {
-	return file_api_v1_biblio_proto_rawDescGZIP(), []int{15}
+	return file_api_v1_biblio_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *AddPublicationsRequest) GetPublication() *Publication {
@@ -2295,7 +2429,7 @@ type AddPublicationsResponse struct {
 func (x *AddPublicationsResponse) Reset() {
 	*x = AddPublicationsResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_api_v1_biblio_proto_msgTypes[16]
+		mi := &file_api_v1_biblio_proto_msgTypes[18]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2308,7 +2442,7 @@ func (x *AddPublicationsResponse) String() string {
 func (*AddPublicationsResponse) ProtoMessage() {}
 
 func (x *AddPublicationsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_biblio_proto_msgTypes[16]
+	mi := &file_api_v1_biblio_proto_msgTypes[18]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2321,7 +2455,7 @@ func (x *AddPublicationsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddPublicationsResponse.ProtoReflect.Descriptor instead.
 func (*AddPublicationsResponse) Descriptor() ([]byte, []int) {
-	return file_api_v1_biblio_proto_rawDescGZIP(), []int{16}
+	return file_api_v1_biblio_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *AddPublicationsResponse) GetMesssage() string {
@@ -2799,7 +2933,22 @@ var file_api_v1_biblio_proto_rawDesc = []byte{
 	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x38, 0x0a, 0x0b, 0x70, 0x75, 0x62, 0x6c, 0x69, 0x63, 0x61, 0x74,
 	0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x16, 0x2e, 0x62, 0x69, 0x62, 0x6c,
 	0x69, 0x6f, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x75, 0x62, 0x6c, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x52, 0x0b, 0x70, 0x75, 0x62, 0x6c, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x54,
+	0x6e, 0x52, 0x0b, 0x70, 0x75, 0x62, 0x6c, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x5f,
+	0x0a, 0x19, 0x53, 0x65, 0x61, 0x72, 0x63, 0x68, 0x50, 0x75, 0x62, 0x6c, 0x69, 0x63, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x14, 0x0a, 0x05, 0x71,
+	0x75, 0x65, 0x72, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x71, 0x75, 0x65, 0x72,
+	0x79, 0x12, 0x16, 0x0a, 0x06, 0x6f, 0x66, 0x66, 0x73, 0x65, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x05, 0x52, 0x06, 0x6f, 0x66, 0x66, 0x73, 0x65, 0x74, 0x12, 0x14, 0x0a, 0x05, 0x6c, 0x69, 0x6d,
+	0x69, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x05, 0x52, 0x05, 0x6c, 0x69, 0x6d, 0x69, 0x74, 0x22,
+	0x8c, 0x01, 0x0a, 0x1a, 0x53, 0x65, 0x61, 0x72, 0x63, 0x68, 0x50, 0x75, 0x62, 0x6c, 0x69, 0x63,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2a,
+	0x0a, 0x04, 0x68, 0x69, 0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x16, 0x2e, 0x62,
+	0x69, 0x62, 0x6c, 0x69, 0x6f, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x75, 0x62, 0x6c, 0x69, 0x63, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x52, 0x04, 0x68, 0x69, 0x74, 0x73, 0x12, 0x16, 0x0a, 0x06, 0x6f, 0x66,
+	0x66, 0x73, 0x65, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x06, 0x6f, 0x66, 0x66, 0x73,
+	0x65, 0x74, 0x12, 0x14, 0x0a, 0x05, 0x6c, 0x69, 0x6d, 0x69, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28,
+	0x05, 0x52, 0x05, 0x6c, 0x69, 0x6d, 0x69, 0x74, 0x12, 0x14, 0x0a, 0x05, 0x74, 0x6f, 0x74, 0x61,
+	0x6c, 0x18, 0x04, 0x20, 0x01, 0x28, 0x05, 0x52, 0x05, 0x74, 0x6f, 0x74, 0x61, 0x6c, 0x22, 0x54,
 	0x0a, 0x18, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x75, 0x62, 0x6c, 0x69, 0x63, 0x61, 0x74,
 	0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x38, 0x0a, 0x0b, 0x70, 0x75,
 	0x62, 0x6c, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32,
@@ -2821,7 +2970,7 @@ var file_api_v1_biblio_proto_rawDesc = []byte{
 	0x10, 0x00, 0x12, 0x13, 0x0a, 0x0f, 0x43, 0x4f, 0x4e, 0x46, 0x49, 0x52, 0x4d, 0x41, 0x54, 0x49,
 	0x4f, 0x4e, 0x5f, 0x4e, 0x4f, 0x10, 0x01, 0x12, 0x1a, 0x0a, 0x16, 0x43, 0x4f, 0x4e, 0x46, 0x49,
 	0x52, 0x4d, 0x41, 0x54, 0x49, 0x4f, 0x4e, 0x5f, 0x44, 0x4f, 0x4e, 0x54, 0x5f, 0x4b, 0x4e, 0x4f,
-	0x57, 0x10, 0x02, 0x32, 0x82, 0x03, 0x0a, 0x06, 0x42, 0x69, 0x62, 0x6c, 0x69, 0x6f, 0x12, 0x55,
+	0x57, 0x10, 0x02, 0x32, 0xe5, 0x03, 0x0a, 0x06, 0x42, 0x69, 0x62, 0x6c, 0x69, 0x6f, 0x12, 0x55,
 	0x0a, 0x0e, 0x47, 0x65, 0x74, 0x50, 0x75, 0x62, 0x6c, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e,
 	0x12, 0x20, 0x2e, 0x62, 0x69, 0x62, 0x6c, 0x69, 0x6f, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65, 0x74,
 	0x50, 0x75, 0x62, 0x6c, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65,
@@ -2833,23 +2982,29 @@ var file_api_v1_biblio_proto_rawDesc = []byte{
 	0x62, 0x6c, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
 	0x74, 0x1a, 0x25, 0x2e, 0x62, 0x69, 0x62, 0x6c, 0x69, 0x6f, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65,
 	0x74, 0x41, 0x6c, 0x6c, 0x50, 0x75, 0x62, 0x6c, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x30, 0x01, 0x12, 0x5e, 0x0a, 0x11, 0x55, 0x70,
-	0x64, 0x61, 0x74, 0x65, 0x50, 0x75, 0x62, 0x6c, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12,
-	0x23, 0x2e, 0x62, 0x69, 0x62, 0x6c, 0x69, 0x6f, 0x2e, 0x76, 0x31, 0x2e, 0x55, 0x70, 0x64, 0x61,
-	0x74, 0x65, 0x50, 0x75, 0x62, 0x6c, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71,
-	0x75, 0x65, 0x73, 0x74, 0x1a, 0x24, 0x2e, 0x62, 0x69, 0x62, 0x6c, 0x69, 0x6f, 0x2e, 0x76, 0x31,
-	0x2e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x75, 0x62, 0x6c, 0x69, 0x63, 0x61, 0x74, 0x69,
-	0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5c, 0x0a, 0x0f, 0x41, 0x64,
-	0x64, 0x50, 0x75, 0x62, 0x6c, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x12, 0x21, 0x2e,
-	0x62, 0x69, 0x62, 0x6c, 0x69, 0x6f, 0x2e, 0x76, 0x31, 0x2e, 0x41, 0x64, 0x64, 0x50, 0x75, 0x62,
-	0x6c, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
-	0x1a, 0x22, 0x2e, 0x62, 0x69, 0x62, 0x6c, 0x69, 0x6f, 0x2e, 0x76, 0x31, 0x2e, 0x41, 0x64, 0x64,
-	0x50, 0x75, 0x62, 0x6c, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x28, 0x01, 0x30, 0x01, 0x42, 0x30, 0x5a, 0x2e, 0x67, 0x69, 0x74, 0x68,
-	0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x75, 0x67, 0x65, 0x6e, 0x74, 0x2d, 0x6c, 0x69, 0x62,
-	0x72, 0x61, 0x72, 0x79, 0x2f, 0x62, 0x69, 0x62, 0x6c, 0x69, 0x6f, 0x2d, 0x62, 0x61, 0x63, 0x6b,
-	0x65, 0x6e, 0x64, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x33,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x30, 0x01, 0x12, 0x61, 0x0a, 0x12, 0x53, 0x65,
+	0x61, 0x72, 0x63, 0x68, 0x50, 0x75, 0x62, 0x6c, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73,
+	0x12, 0x24, 0x2e, 0x62, 0x69, 0x62, 0x6c, 0x69, 0x6f, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x65, 0x61,
+	0x72, 0x63, 0x68, 0x50, 0x75, 0x62, 0x6c, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x25, 0x2e, 0x62, 0x69, 0x62, 0x6c, 0x69, 0x6f, 0x2e,
+	0x76, 0x31, 0x2e, 0x53, 0x65, 0x61, 0x72, 0x63, 0x68, 0x50, 0x75, 0x62, 0x6c, 0x69, 0x63, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5e, 0x0a,
+	0x11, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x75, 0x62, 0x6c, 0x69, 0x63, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x12, 0x23, 0x2e, 0x62, 0x69, 0x62, 0x6c, 0x69, 0x6f, 0x2e, 0x76, 0x31, 0x2e, 0x55,
+	0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x75, 0x62, 0x6c, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x24, 0x2e, 0x62, 0x69, 0x62, 0x6c, 0x69, 0x6f,
+	0x2e, 0x76, 0x31, 0x2e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x75, 0x62, 0x6c, 0x69, 0x63,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5c, 0x0a,
+	0x0f, 0x41, 0x64, 0x64, 0x50, 0x75, 0x62, 0x6c, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73,
+	0x12, 0x21, 0x2e, 0x62, 0x69, 0x62, 0x6c, 0x69, 0x6f, 0x2e, 0x76, 0x31, 0x2e, 0x41, 0x64, 0x64,
+	0x50, 0x75, 0x62, 0x6c, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x1a, 0x22, 0x2e, 0x62, 0x69, 0x62, 0x6c, 0x69, 0x6f, 0x2e, 0x76, 0x31, 0x2e,
+	0x41, 0x64, 0x64, 0x50, 0x75, 0x62, 0x6c, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x28, 0x01, 0x30, 0x01, 0x42, 0x30, 0x5a, 0x2e, 0x67,
+	0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x75, 0x67, 0x65, 0x6e, 0x74, 0x2d,
+	0x6c, 0x69, 0x62, 0x72, 0x61, 0x72, 0x79, 0x2f, 0x62, 0x69, 0x62, 0x6c, 0x69, 0x6f, 0x2d, 0x62,
+	0x61, 0x63, 0x6b, 0x65, 0x6e, 0x64, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x62, 0x06, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -2865,7 +3020,7 @@ func file_api_v1_biblio_proto_rawDescGZIP() []byte {
 }
 
 var file_api_v1_biblio_proto_enumTypes = make([]protoimpl.EnumInfo, 11)
-var file_api_v1_biblio_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
+var file_api_v1_biblio_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
 var file_api_v1_biblio_proto_goTypes = []interface{}{
 	(Confirmation)(0),                   // 0: biblio.v1.Confirmation
 	(Link_Relation)(0),                  // 1: biblio.v1.Link.Relation
@@ -2891,17 +3046,19 @@ var file_api_v1_biblio_proto_goTypes = []interface{}{
 	(*GetPublicationResponse)(nil),      // 21: biblio.v1.GetPublicationResponse
 	(*GetAllPublicationsRequest)(nil),   // 22: biblio.v1.GetAllPublicationsRequest
 	(*GetAllPublicationsResponse)(nil),  // 23: biblio.v1.GetAllPublicationsResponse
-	(*UpdatePublicationRequest)(nil),    // 24: biblio.v1.UpdatePublicationRequest
-	(*UpdatePublicationResponse)(nil),   // 25: biblio.v1.UpdatePublicationResponse
-	(*AddPublicationsRequest)(nil),      // 26: biblio.v1.AddPublicationsRequest
-	(*AddPublicationsResponse)(nil),     // 27: biblio.v1.AddPublicationsResponse
-	(*timestamppb.Timestamp)(nil),       // 28: google.protobuf.Timestamp
+	(*SearchPublicationsRequest)(nil),   // 24: biblio.v1.SearchPublicationsRequest
+	(*SearchPublicationsResponse)(nil),  // 25: biblio.v1.SearchPublicationsResponse
+	(*UpdatePublicationRequest)(nil),    // 26: biblio.v1.UpdatePublicationRequest
+	(*UpdatePublicationResponse)(nil),   // 27: biblio.v1.UpdatePublicationResponse
+	(*AddPublicationsRequest)(nil),      // 28: biblio.v1.AddPublicationsRequest
+	(*AddPublicationsResponse)(nil),     // 29: biblio.v1.AddPublicationsResponse
+	(*timestamppb.Timestamp)(nil),       // 30: google.protobuf.Timestamp
 }
 var file_api_v1_biblio_proto_depIdxs = []int32{
 	1,  // 0: biblio.v1.Link.relation:type_name -> biblio.v1.Link.Relation
 	2,  // 1: biblio.v1.File.access_level:type_name -> biblio.v1.File.AccessLevel
-	28, // 2: biblio.v1.File.date_created:type_name -> google.protobuf.Timestamp
-	28, // 3: biblio.v1.File.date_updated:type_name -> google.protobuf.Timestamp
+	30, // 2: biblio.v1.File.date_created:type_name -> google.protobuf.Timestamp
+	30, // 3: biblio.v1.File.date_updated:type_name -> google.protobuf.Timestamp
 	2,  // 4: biblio.v1.File.embargo_to:type_name -> biblio.v1.File.AccessLevel
 	3,  // 5: biblio.v1.File.publication_version:type_name -> biblio.v1.File.PublicationVersion
 	4,  // 6: biblio.v1.File.relation:type_name -> biblio.v1.File.Relation
@@ -2910,10 +3067,10 @@ var file_api_v1_biblio_proto_depIdxs = []int32{
 	11, // 9: biblio.v1.Publication.abstract:type_name -> biblio.v1.Text
 	12, // 10: biblio.v1.Publication.author:type_name -> biblio.v1.Contributor
 	10, // 11: biblio.v1.Publication.classification:type_name -> biblio.v1.Publication.Classification
-	28, // 12: biblio.v1.Publication.date_created:type_name -> google.protobuf.Timestamp
-	28, // 13: biblio.v1.Publication.date_updated:type_name -> google.protobuf.Timestamp
-	28, // 14: biblio.v1.Publication.date_from:type_name -> google.protobuf.Timestamp
-	28, // 15: biblio.v1.Publication.date_until:type_name -> google.protobuf.Timestamp
+	30, // 12: biblio.v1.Publication.date_created:type_name -> google.protobuf.Timestamp
+	30, // 13: biblio.v1.Publication.date_updated:type_name -> google.protobuf.Timestamp
+	30, // 14: biblio.v1.Publication.date_from:type_name -> google.protobuf.Timestamp
+	30, // 15: biblio.v1.Publication.date_until:type_name -> google.protobuf.Timestamp
 	13, // 16: biblio.v1.Publication.organization:type_name -> biblio.v1.RelatedOrganization
 	12, // 17: biblio.v1.Publication.editor:type_name -> biblio.v1.Contributor
 	18, // 18: biblio.v1.Publication.file:type_name -> biblio.v1.File
@@ -2932,21 +3089,24 @@ var file_api_v1_biblio_proto_depIdxs = []int32{
 	16, // 31: biblio.v1.Publication.orcid_work:type_name -> biblio.v1.OrcidWork
 	19, // 32: biblio.v1.GetPublicationResponse.publication:type_name -> biblio.v1.Publication
 	19, // 33: biblio.v1.GetAllPublicationsResponse.publication:type_name -> biblio.v1.Publication
-	19, // 34: biblio.v1.UpdatePublicationRequest.publication:type_name -> biblio.v1.Publication
-	19, // 35: biblio.v1.AddPublicationsRequest.publication:type_name -> biblio.v1.Publication
-	20, // 36: biblio.v1.Biblio.GetPublication:input_type -> biblio.v1.GetPublicationRequest
-	22, // 37: biblio.v1.Biblio.GetAllPublications:input_type -> biblio.v1.GetAllPublicationsRequest
-	24, // 38: biblio.v1.Biblio.UpdatePublication:input_type -> biblio.v1.UpdatePublicationRequest
-	26, // 39: biblio.v1.Biblio.AddPublications:input_type -> biblio.v1.AddPublicationsRequest
-	21, // 40: biblio.v1.Biblio.GetPublication:output_type -> biblio.v1.GetPublicationResponse
-	23, // 41: biblio.v1.Biblio.GetAllPublications:output_type -> biblio.v1.GetAllPublicationsResponse
-	25, // 42: biblio.v1.Biblio.UpdatePublication:output_type -> biblio.v1.UpdatePublicationResponse
-	27, // 43: biblio.v1.Biblio.AddPublications:output_type -> biblio.v1.AddPublicationsResponse
-	40, // [40:44] is the sub-list for method output_type
-	36, // [36:40] is the sub-list for method input_type
-	36, // [36:36] is the sub-list for extension type_name
-	36, // [36:36] is the sub-list for extension extendee
-	0,  // [0:36] is the sub-list for field type_name
+	19, // 34: biblio.v1.SearchPublicationsResponse.hits:type_name -> biblio.v1.Publication
+	19, // 35: biblio.v1.UpdatePublicationRequest.publication:type_name -> biblio.v1.Publication
+	19, // 36: biblio.v1.AddPublicationsRequest.publication:type_name -> biblio.v1.Publication
+	20, // 37: biblio.v1.Biblio.GetPublication:input_type -> biblio.v1.GetPublicationRequest
+	22, // 38: biblio.v1.Biblio.GetAllPublications:input_type -> biblio.v1.GetAllPublicationsRequest
+	24, // 39: biblio.v1.Biblio.SearchPublications:input_type -> biblio.v1.SearchPublicationsRequest
+	26, // 40: biblio.v1.Biblio.UpdatePublication:input_type -> biblio.v1.UpdatePublicationRequest
+	28, // 41: biblio.v1.Biblio.AddPublications:input_type -> biblio.v1.AddPublicationsRequest
+	21, // 42: biblio.v1.Biblio.GetPublication:output_type -> biblio.v1.GetPublicationResponse
+	23, // 43: biblio.v1.Biblio.GetAllPublications:output_type -> biblio.v1.GetAllPublicationsResponse
+	25, // 44: biblio.v1.Biblio.SearchPublications:output_type -> biblio.v1.SearchPublicationsResponse
+	27, // 45: biblio.v1.Biblio.UpdatePublication:output_type -> biblio.v1.UpdatePublicationResponse
+	29, // 46: biblio.v1.Biblio.AddPublications:output_type -> biblio.v1.AddPublicationsResponse
+	42, // [42:47] is the sub-list for method output_type
+	37, // [37:42] is the sub-list for method input_type
+	37, // [37:37] is the sub-list for extension type_name
+	37, // [37:37] is the sub-list for extension extendee
+	0,  // [0:37] is the sub-list for field type_name
 }
 
 func init() { file_api_v1_biblio_proto_init() }
@@ -3112,7 +3272,7 @@ func file_api_v1_biblio_proto_init() {
 			}
 		}
 		file_api_v1_biblio_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*UpdatePublicationRequest); i {
+			switch v := v.(*SearchPublicationsRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -3124,7 +3284,7 @@ func file_api_v1_biblio_proto_init() {
 			}
 		}
 		file_api_v1_biblio_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*UpdatePublicationResponse); i {
+			switch v := v.(*SearchPublicationsResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -3136,7 +3296,7 @@ func file_api_v1_biblio_proto_init() {
 			}
 		}
 		file_api_v1_biblio_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*AddPublicationsRequest); i {
+			switch v := v.(*UpdatePublicationRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -3148,6 +3308,30 @@ func file_api_v1_biblio_proto_init() {
 			}
 		}
 		file_api_v1_biblio_proto_msgTypes[16].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*UpdatePublicationResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_api_v1_biblio_proto_msgTypes[17].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*AddPublicationsRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_api_v1_biblio_proto_msgTypes[18].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*AddPublicationsResponse); i {
 			case 0:
 				return &v.state
@@ -3166,7 +3350,7 @@ func file_api_v1_biblio_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_api_v1_biblio_proto_rawDesc,
 			NumEnums:      11,
-			NumMessages:   17,
+			NumMessages:   19,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
