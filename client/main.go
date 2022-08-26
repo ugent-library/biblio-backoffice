@@ -44,10 +44,16 @@ func main() {
 	rootCmd.Flags().String("api-host", defaultAPIHost, "api server host")
 	rootCmd.Flags().Int("api-port", defaultAPIPort, "api server port")
 
+	searchPublicationsCmd.Flags().StringP("query", "q", "", "")
+	searchPublicationsCmd.Flags().StringP("limit", "", "", "")
+	searchPublicationsCmd.Flags().StringP("offset", "", "", "")
+
 	rootCmd.AddCommand(publicationCmd)
-	publicationCmd.AddCommand(publicationGetCmd)
-	publicationCmd.AddCommand(publicationGetAllCmd)
-	publicationCmd.AddCommand(publicationUpdateCmd)
+	publicationCmd.AddCommand(getPublicationCmd)
+	publicationCmd.AddCommand(getAllPublicationsCmd)
+	publicationCmd.AddCommand(searchPublicationsCmd)
+	publicationCmd.AddCommand(updatePublicationCmd)
+	publicationCmd.AddCommand(addPublicationsCmd)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
@@ -87,7 +93,7 @@ var publicationCmd = &cobra.Command{
 	Short: "Publication commands",
 }
 
-var publicationGetCmd = &cobra.Command{
+var getPublicationCmd = &cobra.Command{
 	Use:   "get [id]",
 	Short: "Get publication by id",
 	Args:  cobra.MinimumNArgs(1),
@@ -110,7 +116,7 @@ var publicationGetCmd = &cobra.Command{
 	},
 }
 
-var publicationGetAllCmd = &cobra.Command{
+var getAllPublicationsCmd = &cobra.Command{
 	Use:   "get-all",
 	Short: "Get all publications",
 	Run: func(cmd *cobra.Command, args []string) {
@@ -138,7 +144,36 @@ var publicationGetAllCmd = &cobra.Command{
 	},
 }
 
-var publicationUpdateCmd = &cobra.Command{
+var searchPublicationsCmd = &cobra.Command{
+	Use:   "search",
+	Short: "Search publications",
+	Run: func(cmd *cobra.Command, args []string) {
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		defer cancel()
+
+		query, _ := cmd.Flags().GetString("query")
+		limit, _ := cmd.Flags().GetInt32("limit")
+		offset, _ := cmd.Flags().GetInt32("offset")
+
+		req := &api.SearchPublicationsRequest{
+			Query:  query,
+			Limit:  limit,
+			Offset: offset,
+		}
+		res, err := client.SearchPublications(ctx, req)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		j, err := marshaller.Marshal(res)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Printf("%s\n", j)
+	},
+}
+
+var updatePublicationCmd = &cobra.Command{
 	Use:   "update",
 	Short: "Update publication",
 	Run: func(cmd *cobra.Command, args []string) {
@@ -160,5 +195,56 @@ var publicationUpdateCmd = &cobra.Command{
 		if _, err = client.UpdatePublication(ctx, req); err != nil {
 			log.Fatal(err)
 		}
+	},
+}
+
+var addPublicationsCmd = &cobra.Command{
+	Use:   "add",
+	Short: "Add publications",
+	Run: func(cmd *cobra.Command, args []string) {
+		stream, err := client.AddPublications(context.Background())
+		if err != nil {
+			log.Fatal(err)
+		}
+		waitc := make(chan struct{})
+
+		go func() {
+			for {
+				res, err := stream.Recv()
+				if err == io.EOF {
+					// read done.
+					close(waitc)
+					return
+				}
+				if err != nil {
+					log.Fatal(err)
+				}
+				log.Println(res.Messsage)
+			}
+		}()
+
+		reader := bufio.NewReader(os.Stdin)
+		for {
+			line, err := reader.ReadBytes('\n')
+			if err == io.EOF {
+				break
+			}
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			pub := &api.Publication{}
+			if err := unmarshaller.Unmarshal(line, pub); err != nil {
+				log.Fatal(err)
+			}
+
+			req := &api.AddPublicationsRequest{Publication: pub}
+			if err := stream.Send(req); err != nil {
+				log.Fatal(err)
+			}
+		}
+
+		stream.CloseSend()
+		<-waitc
 	},
 }

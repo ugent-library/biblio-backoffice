@@ -144,10 +144,6 @@ func (s *Repository) UpdatePublication(snapshotID string, p *models.Publication)
 	return nil
 }
 
-func (s *Repository) GetAllPublications() (*snapstore.Cursor, error) {
-	return s.publicationStore.GetAll(s.opts)
-}
-
 func (s *Repository) EachPublication(fn func(*models.Publication) bool) error {
 	c, err := s.publicationStore.GetAll(s.opts)
 	if err != nil {
@@ -266,10 +262,6 @@ func (s *Repository) UpdateDataset(snapshotID string, d *models.Dataset) error {
 	}
 	d.SnapshotID = snapshotID
 	return nil
-}
-
-func (s *Repository) GetAllDatasets() (*snapstore.Cursor, error) {
-	return s.datasetStore.GetAll(s.opts)
 }
 
 func (s *Repository) EachDataset(fn func(*models.Dataset) bool) error {

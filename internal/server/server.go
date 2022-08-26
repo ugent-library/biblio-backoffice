@@ -3,12 +3,15 @@ package server
 import (
 	"context"
 	"fmt"
+	"io"
+	"sync"
 
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	api "github.com/ugent-library/biblio-backend/api/v1"
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backend/internal/ulid"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -43,58 +46,139 @@ func (s *server) GetPublication(ctx context.Context, req *api.GetPublicationRequ
 	return res, nil
 }
 
-// TODO keep checking if new publications become available? (see Distributed services with Go)
-func (s *server) GetAllPublications(req *api.GetAllPublicationsRequest, stream api.Biblio_GetAllPublicationsServer) error {
-	c, err := s.services.Repository.GetAllPublications()
-	if err != nil {
-		return err
-	}
-	defer c.Close()
-
-	for {
-		select {
-		case <-stream.Context().Done():
-			return nil
-		default:
-			if !c.HasNext() {
-				return nil
-			}
-			snap, err := c.Next()
-			if err != nil {
-				return err
-			}
-			p := &models.Publication{}
-			if err := snap.Scan(p); err != nil {
-				return err
-			}
-			p.SnapshotID = snap.SnapshotID
-			p.DateFrom = snap.DateFrom
-			p.DateUntil = snap.DateUntil
-
-			res := &api.GetAllPublicationsResponse{Publication: publicationToMessage(p)}
-
-			if err = stream.Send(res); err != nil {
-				return err
-			}
+func (s *server) GetAllPublications(req *api.GetAllPublicationsRequest, stream api.Biblio_GetAllPublicationsServer) (err error) {
+	return s.services.Repository.EachPublication(func(p *models.Publication) bool {
+		res := &api.GetAllPublicationsResponse{Publication: publicationToMessage(p)}
+		if err = stream.Send(res); err != nil {
+			return false
 		}
+		return true
+	})
+}
+
+func (s *server) SearchPublications(ctx context.Context, req *api.SearchPublicationsRequest) (*api.SearchPublicationsResponse, error) {
+	page := 1
+	if req.Limit > 0 {
+		page = int(req.Offset)/int(req.Limit) + 1
 	}
+	args := models.NewSearchArgs().WithQuery(req.Query).WithPage(page)
+	hits, err := s.services.PublicationSearchService.Search(args)
+	if err != nil {
+		return nil, err
+	}
+
+	res := &api.SearchPublicationsResponse{
+		Limit:  int32(hits.Limit),
+		Offset: int32(hits.Offset),
+		Total:  int32(hits.Total),
+		Hits:   make([]*api.Publication, len(hits.Hits)),
+	}
+	for i, p := range hits.Hits {
+		res.Hits[i] = publicationToMessage(p)
+	}
+
+	return res, nil
 }
 
 func (s *server) UpdatePublication(ctx context.Context, req *api.UpdatePublicationRequest) (*api.UpdatePublicationResponse, error) {
-	pub := messageToPublication(req.Publication)
+	p := messageToPublication(req.Publication)
 
-	if err := pub.Validate(); err != nil {
-		return nil, err
+	if err := p.Validate(); err != nil {
+		return nil, fmt.Errorf("validation failed for publication %s: %w", p.ID, err)
 	}
 
-	if err := s.services.Repository.UpdatePublication(req.Publication.SnapshotId, pub); err != nil {
-		return nil, err
+	if err := s.services.Repository.UpdatePublication(req.Publication.SnapshotId, p); err != nil {
+		return nil, fmt.Errorf("failed to store publication %s: %w", p.ID, err)
 	}
-	if err := s.services.PublicationSearchService.Index(pub); err != nil {
-		return nil, fmt.Errorf("error indexing publication %s: %w", pub.ID, err)
+	if err := s.services.PublicationSearchService.Index(p); err != nil {
+		return nil, fmt.Errorf("failed to index publication %s: %w", p.ID, err)
 	}
 
 	return &api.UpdatePublicationResponse{}, nil
+}
+
+// TODO catch indexing errors
+func (s *server) AddPublications(stream api.Biblio_AddPublicationsServer) error {
+	// indexing channel
+	indexC := make(chan *models.Publication)
+
+	var indexWG sync.WaitGroup
+
+	// start bulk indexer
+	indexWG.Add(1)
+	go func() {
+		defer indexWG.Done()
+		s.services.PublicationSearchService.IndexMultiple(indexC)
+	}()
+
+	defer func() {
+		// close indexing channel when all recs are stored
+		close(indexC)
+		// wait for indexing to finish
+		indexWG.Wait()
+	}()
+
+	var lineNum int
+
+	for {
+		lineNum++
+
+		res, err := stream.Recv()
+		if err == io.EOF {
+			return nil
+		}
+		if err != nil {
+			return err
+		}
+
+		p := messageToPublication(res.Publication)
+
+		if p.ID == "" {
+			p.ID = ulid.MustGenerate()
+		}
+		if p.Status == "" {
+			p.Status = "private"
+		}
+		if p.Classification == "" {
+			p.Classification = "U"
+		}
+		for i, val := range p.Abstract {
+			if val.ID == "" {
+				val.ID = ulid.MustGenerate()
+			}
+			p.Abstract[i] = val
+		}
+		for i, val := range p.LaySummary {
+			if val.ID == "" {
+				val.ID = ulid.MustGenerate()
+			}
+			p.Abstract[i] = val
+		}
+		for i, val := range p.Link {
+			if val.ID == "" {
+				val.ID = ulid.MustGenerate()
+			}
+			p.Link[i] = val
+		}
+
+		if err := p.Validate(); err != nil {
+			msg := fmt.Errorf("validation failed for publication %s at line %d: %w", p.ID, lineNum, err).Error()
+			if err = stream.Send(&api.AddPublicationsResponse{Messsage: msg}); err != nil {
+				return err
+			}
+			continue
+		}
+
+		if err := s.services.Repository.SavePublication(p); err != nil {
+			msg := fmt.Errorf("failed to store publication %s at line %d: %w", p.ID, lineNum, err).Error()
+			if err = stream.Send(&api.AddPublicationsResponse{Messsage: msg}); err != nil {
+				return err
+			}
+			continue
+		}
+
+		indexC <- p
+	}
 }
 
 func publicationToMessage(p *models.Publication) *api.Publication {
