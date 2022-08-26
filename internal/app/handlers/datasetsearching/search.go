@@ -45,13 +45,16 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request, ctx Context) {
 	case "all":
 		searcher = searcher.WithScope("creator_id|author.id", ctx.User.ID)
 	default:
-		render.BadRequest(w, r, fmt.Errorf("unknown scope %s", args.FilterFor("scope")))
+		errorUnkownScope := fmt.Errorf("unknown scope: %s", args.FilterFor("scope"))
+		h.Logger.Warnw("dataset search: could not create searcher with passed filters", "error", errorUnkownScope)
+		render.BadRequest(w, r, errorUnkownScope)
 		return
 	}
 	delete(args.Filters, "scope")
 
 	hits, err := searcher.IncludeFacets(true).Search(args)
 	if err != nil {
+		h.Logger.Errorw("dataset search: could not execute search", "error", err)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -74,6 +77,7 @@ func (h *Handler) CurationSearch(w http.ResponseWriter, r *http.Request, ctx Con
 	searcher := h.DatasetSearchService.WithScope("status", "private", "public")
 	hits, err := searcher.IncludeFacets(true).Search(ctx.SearchArgs)
 	if err != nil {
+		h.Logger.Errorw("dataset search: could not execute search", "error", err)
 		render.InternalServerError(w, r, err)
 		return
 	}

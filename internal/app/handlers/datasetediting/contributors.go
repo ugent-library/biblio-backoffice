@@ -100,6 +100,7 @@ type YieldDeleteContributor struct {
 func (h *Handler) AddContributor(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindAddContributor{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
+		h.Logger.Warnw("add dataset contributor: could not bind request arguments", "error", err, "request", r)
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -125,12 +126,14 @@ func (h *Handler) AddContributor(w http.ResponseWriter, r *http.Request, ctx Con
 func (h *Handler) SuggestContributors(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindSuggestContributors{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
+		h.Logger.Warnw("suggest dataset contributor: could not bind request arguments", "error", err, "request", r)
 		render.BadRequest(w, r, err)
 		return
 	}
 
 	hits, err := h.PersonSearchService.SuggestPeople(b.FirstName + " " + b.LastName)
 	if err != nil {
+		h.Logger.Errorw("suggest dataset contributor: could not suggest people", "error", err, "request", r)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -152,12 +155,14 @@ func (h *Handler) SuggestContributors(w http.ResponseWriter, r *http.Request, ct
 func (h *Handler) ConfirmContributor(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindConfirmContributor{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
+		h.Logger.Warnw("confirm dataset contributor: could not bind request arguments", "error", err, "request", r)
 		render.BadRequest(w, r, err)
 		return
 	}
 
 	p, err := h.PersonService.GetPerson(b.ID)
 	if err != nil {
+		h.Logger.Errorw("confirm dataset contributor: could not find person", "error", err, "identifier", b.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -189,6 +194,7 @@ func (h *Handler) ConfirmContributor(w http.ResponseWriter, r *http.Request, ctx
 func (h *Handler) UnconfirmContributor(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindUnconfirmContributor{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
+		h.Logger.Warnw("unconfirm dataset contributor: could not bind request arguments", "error", err, "request", r)
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -219,6 +225,7 @@ func (h *Handler) UnconfirmContributor(w http.ResponseWriter, r *http.Request, c
 func (h *Handler) CreateContributor(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindCreateContributor{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
+		h.Logger.Warnw("create dataset contributor: could not bind request arguments", "error", err, "request", r)
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -243,6 +250,7 @@ func (h *Handler) CreateContributor(w http.ResponseWriter, r *http.Request, ctx 
 	ctx.Dataset.AddContributor(b.Role, c)
 
 	if validationErrs := ctx.Dataset.Validate(); validationErrs != nil {
+		h.Logger.Warnw("create dataset contributor: could not validate contributor:", "errors", validationErrs, "identifier", ctx.Dataset.ID)
 		f := contributorForm(ctx, b.Role, position, c, validationErrs.(validation.Errors))
 		render.Layout(w, "refresh_modal", "dataset/add_contributor", YieldContributorForm{
 			Context:     ctx,
@@ -258,11 +266,13 @@ func (h *Handler) CreateContributor(w http.ResponseWriter, r *http.Request, ctx 
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
+		h.Logger.Warnf("create dataset contributor: snapstore detected a conflicting dataset:", "errors", errors.As(err, &conflict), "identifier", ctx.Dataset.ID)
 		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("dataset.conflict_error"))
 		return
 	}
 
 	if err != nil {
+		h.Logger.Errorf("create dataset contributor: Could not save the dataset:", "error", err, "identifier", ctx.Dataset.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -276,12 +286,14 @@ func (h *Handler) CreateContributor(w http.ResponseWriter, r *http.Request, ctx 
 func (h *Handler) EditContributor(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindEditContributor{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
+		h.Logger.Warnw("edit dataset contributor: could not bind request arguments", "error", err, "request", r)
 		render.BadRequest(w, r, err)
 		return
 	}
 
 	c, err := ctx.Dataset.GetContributor(b.Role, b.Position)
 	if err != nil {
+		h.Logger.Errorw("edit dataset contributor: could not get the contributor", "error", err, "dataset", ctx.Dataset.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -300,6 +312,7 @@ func (h *Handler) EditContributor(w http.ResponseWriter, r *http.Request, ctx Co
 func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindUpdateContributor{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
+		h.Logger.Warnw("update dataset contributor: could not bind request arguments", "error", err, "request", r)
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -308,6 +321,7 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 	if b.ID != "" {
 		p, err := h.PersonService.GetPerson(b.ID)
 		if err != nil {
+			h.Logger.Errorw("update dataset contributor: could not fetch person", "error", err, "personid", b.ID, "dataset", ctx.Dataset.ID)
 			render.InternalServerError(w, r, err)
 			return
 		}
@@ -320,11 +334,13 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 	}
 
 	if err := ctx.Dataset.SetContributor(b.Role, b.Position, c); err != nil {
+		h.Logger.Errorw("update dataset contributor: could not set the contributor", "error", err, "dataset", ctx.Dataset.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
 
 	if validationErrs := ctx.Dataset.Validate(); validationErrs != nil {
+		h.Logger.Warnw("update dataset contributor: could not validate contributor:", "errors", validationErrs, "identifier", ctx.Dataset.ID)
 		f := contributorForm(ctx, b.Role, b.Position, c, validationErrs.(validation.Errors))
 		render.Layout(w, "refresh_modal", "dataset/edit_contributor", YieldContributorForm{
 			Context:     ctx,
@@ -340,11 +356,13 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
+		h.Logger.Warnf("update dataset contributor: snapstore detected a conflicting dataset:", "errors", errors.As(err, &conflict), "identifier", ctx.Dataset.ID)
 		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("dataset.conflict_error"))
 		return
 	}
 
 	if err != nil {
+		h.Logger.Errorf("update dataset contributor: Could not save the dataset:", "error", err, "identifier", ctx.Dataset.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -358,6 +376,7 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 func (h *Handler) ConfirmDeleteContributor(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindDeleteContributor{}
 	if err := bind.Request(r, &b); err != nil {
+		h.Logger.Warnw("confirm delete dataset contributor: could not bind request arguments", "error", err, "request", r)
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -372,17 +391,20 @@ func (h *Handler) ConfirmDeleteContributor(w http.ResponseWriter, r *http.Reques
 func (h *Handler) DeleteContributor(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindDeleteContributor{}
 	if err := bind.Request(r, &b); err != nil {
+		h.Logger.Warnw("delete dataset contributor: could not bind request arguments", "error", err, "request", r)
 		render.BadRequest(w, r, err)
 		return
 	}
 
 	if err := ctx.Dataset.RemoveContributor(b.Role, b.Position); err != nil {
+		h.Logger.Warnw("delete dataset contributor: could not remove contributor", "error", err, "dataset", ctx.Dataset.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
 
-	if err := ctx.Dataset.Validate(); err != nil {
-		errors := form.Errors(localize.ValidationErrors(ctx.Locale, err.(validation.Errors)))
+	if validationErrs := ctx.Dataset.Validate(); validationErrs != nil {
+		h.Logger.Warnw("delete dataset contributor: could not validate contributor:", "errors", validationErrs, "identifier", ctx.Dataset.ID)
+		errors := form.Errors(localize.ValidationErrors(ctx.Locale, validationErrs.(validation.Errors)))
 		render.Layout(w, "refresh_modal", "form_errors_dialog", struct {
 			Title  string
 			Errors form.Errors
@@ -397,11 +419,13 @@ func (h *Handler) DeleteContributor(w http.ResponseWriter, r *http.Request, ctx 
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
+		h.Logger.Warnf("delete dataset contributor: snapstore detected a conflicting dataset:", "errors", errors.As(err, &conflict), "identifier", ctx.Dataset.ID)
 		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("dataset.conflict_error"))
 		return
 	}
 
 	if err != nil {
+		h.Logger.Errorf("delete dataset contributor: Could not save the dataset:", "error", err, "identifier", ctx.Dataset.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -415,13 +439,16 @@ func (h *Handler) DeleteContributor(w http.ResponseWriter, r *http.Request, ctx 
 func (h *Handler) OrderContributors(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindOrderContributors{}
 	if err := bind.Request(r, &b); err != nil {
+		h.Logger.Warnw("order dataset contributors: could not bind request arguments", "error", err, "request", r)
 		render.BadRequest(w, r, err)
 		return
 	}
 
 	contributors := ctx.Dataset.Contributors(b.Role)
 	if len(b.Positions) != len(contributors) {
-		render.BadRequest(w, r, errors.New("positions don't match number of contributors"))
+		err := fmt.Errorf("positions don't match number of contributors")
+		h.Logger.Warnw("order dataset contributors: could not order contributors", "error", err, "request", r)
+		render.BadRequest(w, r, err)
 		return
 	}
 	newContributors := make([]*models.Contributor, len(contributors))
@@ -434,11 +461,13 @@ func (h *Handler) OrderContributors(w http.ResponseWriter, r *http.Request, ctx 
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
+		h.Logger.Warnf("order dataset contributors: snapstore detected a conflicting dataset:", "errors", errors.As(err, &conflict), "identifier", ctx.Dataset.ID)
 		render.Layout(w, "show_modal", "error_dialog", ctx.Locale.T("dataset.conflict_error"))
 		return
 	}
 
 	if err != nil {
+		h.Logger.Errorf("order dataset contributors: Could not save the dataset:", "error", err, "identifier", ctx.Dataset.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}

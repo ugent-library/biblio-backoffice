@@ -71,6 +71,7 @@ func (h *Handler) EditDetailsAccessLevel(w http.ResponseWriter, r *http.Request,
 func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindDetails{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
+		h.Logger.Warnw("update dataset details: could not bind request arguments", "error", err, "request", r)
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -95,6 +96,7 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 	ctx.Dataset.Year = b.Year
 
 	if validationErrs := ctx.Dataset.Validate(); validationErrs != nil {
+		h.Logger.Warnw("update dataset details: could not validate contributor:", "errors", validationErrs, "identifier", ctx.Dataset.ID)
 		form := detailsForm(ctx.Locale, ctx.Dataset, validationErrs.(validation.Errors))
 
 		render.Layout(w, "refresh_modal", "dataset/edit_details", YieldEditDetails{
@@ -108,11 +110,13 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
+		h.Logger.Warnf("update dataset details: snapstore detected a conflicting dataset:", "errors", errors.As(err, &conflict), "identifier", ctx.Dataset.ID)
 		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("dataset.conflict_error"))
 		return
 	}
 
 	if err != nil {
+		h.Logger.Errorf("update dataset details: Could not save the dataset:", "error", err, "identifier", ctx.Dataset.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}

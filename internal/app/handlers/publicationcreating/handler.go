@@ -37,11 +37,13 @@ func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) htt
 		if id := bind.PathValues(r).Get("id"); id != "" {
 			d, err := h.Repository.GetPublication(id)
 			if err != nil {
-				render.InternalServerError(w, r, err)
+				h.Logger.Warn("create publication: could not find publication with id:", "error", err, "id", id)
+				render.NotFoundError(w, r, err)
 				return
 			}
 
 			if !ctx.User.CanEditPublication(d) {
+				h.Logger.Warn("create publication: user isn't allowed to edit the publication:", "error", err, "id", id, "user", ctx.User.ID)
 				render.Forbidden(w, r)
 				return
 			}

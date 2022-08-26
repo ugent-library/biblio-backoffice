@@ -27,14 +27,16 @@ func (h *Handler) ConfirmPublish(w http.ResponseWriter, r *http.Request, ctx Con
 
 func (h *Handler) Publish(w http.ResponseWriter, r *http.Request, ctx Context) {
 	if !ctx.User.CanPublishPublication(ctx.Publication) {
+		h.Logger.Warnw("publish dataset: user has no permission to publish", "user", ctx.User.ID, "dataset", ctx.Publication.ID)
 		render.Forbidden(w, r)
 		return
 	}
 
 	ctx.Publication.Status = "public"
 
-	if err := ctx.Publication.Validate(); err != nil {
-		errors := form.Errors(localize.ValidationErrors(ctx.Locale, err.(validation.Errors)))
+	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
+		h.Logger.Warnw("publish dataset: could not validate dataset:", "errors", validationErrs, "identifier", ctx.Publication.ID)
+		errors := form.Errors(localize.ValidationErrors(ctx.Locale, validationErrs.(validation.Errors)))
 		render.Layout(w, "refresh_modal", "form_errors_dialog", struct {
 			Title  string
 			Errors form.Errors
@@ -49,11 +51,13 @@ func (h *Handler) Publish(w http.ResponseWriter, r *http.Request, ctx Context) {
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
+		h.Logger.Warnf("publish dataset: snapstore detected a conflicting dataset:", "errors", errors.As(err, &conflict), "identifier", ctx.Publication.ID)
 		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("publication.conflict_error"))
 		return
 	}
 
 	if err != nil {
+		h.Logger.Errorf("publish dataset: could not save the dataset:", "error", err, "identifier", ctx.Publication.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}

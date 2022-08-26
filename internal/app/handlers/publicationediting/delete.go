@@ -27,6 +27,7 @@ func (h *Handler) ConfirmDelete(w http.ResponseWriter, r *http.Request, ctx Cont
 
 func (h *Handler) Delete(w http.ResponseWriter, r *http.Request, ctx Context) {
 	if !ctx.User.CanDeletePublication(ctx.Publication) {
+		h.Logger.Warnw("delete publication: user is unauthorized", "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.Forbidden(w, r)
 		return
 	}
@@ -37,11 +38,13 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request, ctx Context) {
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
+		h.Logger.Warnf("delete publication: snapstore detected a conflicting publication:", "errors", errors.As(err, &conflict), "identifier", ctx.Publication.ID)
 		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("publication.conflict_error"))
 		return
 	}
 
 	if err != nil {
+		h.Logger.Errorf("delete publication: Could not save the publication:", "error", err, "identifier", ctx.Publication.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}

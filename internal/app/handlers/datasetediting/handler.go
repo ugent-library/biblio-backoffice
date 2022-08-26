@@ -34,13 +34,16 @@ func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) htt
 			return
 		}
 
-		d, err := h.Repository.GetDataset(bind.PathValues(r).Get("id"))
+		id := bind.PathValues(r).Get("id")
+		d, err := h.Repository.GetDataset(id)
 		if err != nil {
-			render.InternalServerError(w, r, err)
+			h.Logger.Warn("edit dataset: could not find dataset with id:", "error", err, "id", id)
+			render.NotFoundError(w, r, err)
 			return
 		}
 
 		if !ctx.User.CanEditDataset(d) {
+			h.Logger.Warn("edit dataset: user isn't allowed to edit the dataset:", "error", err, "id", id, "user", ctx.User.ID)
 			render.Forbidden(w, r)
 			return
 		}

@@ -44,6 +44,7 @@ func (h *Handler) EditConference(w http.ResponseWriter, r *http.Request, ctx Con
 func (h *Handler) UpdateConference(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindConference{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
+		h.Logger.Warnw("update publication conference: could not bind request arguments", "error", err, "request", r)
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -57,6 +58,7 @@ func (h *Handler) UpdateConference(w http.ResponseWriter, r *http.Request, ctx C
 	p.ConferenceEndDate = b.EndDate
 
 	if validationErrs := p.Validate(); validationErrs != nil {
+		h.Logger.Warnw("update publicationce conference: could not validate conference:", "errors", validationErrs, "identifier", ctx.Publication.ID)
 		form := conferenceForm(ctx.Locale, p, validationErrs.(validation.Errors))
 		render.Layout(w, "refresh_modal", "publication/edit_conference", YieldEditConference{
 			Context: ctx,
@@ -69,11 +71,13 @@ func (h *Handler) UpdateConference(w http.ResponseWriter, r *http.Request, ctx C
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
+		h.Logger.Warnf("update publication conference: snapstore detected a conflicting publication:", "errors", errors.As(err, &conflict), "identifier", ctx.Publication.ID)
 		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("publication.conflict_error"))
 		return
 	}
 
 	if err != nil {
+		h.Logger.Errorf("update publication conference: could not save the publication:", "error", err, "identifier", ctx.Publication.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}

@@ -43,6 +43,7 @@ func (h *Handler) EditAdditionalInfo(w http.ResponseWriter, r *http.Request, ctx
 func (h *Handler) UpdateAdditionalInfo(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindAdditionalInfo{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
+		h.Logger.Warnw("update publication additional info: could not bind request arguments", "error", err, "request", r)
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -53,6 +54,7 @@ func (h *Handler) UpdateAdditionalInfo(w http.ResponseWriter, r *http.Request, c
 	p.ResearchField = b.ResearchField
 
 	if validationErrs := p.Validate(); validationErrs != nil {
+		h.Logger.Warnw("update publication additional info: could not validate additional info:", "errors", validationErrs, "identifier", ctx.Publication.ID)
 		form := additionalInfoForm(ctx.Locale, p, validationErrs.(validation.Errors))
 
 		render.Layout(w, "refresh_modal", "publication/edit_additional_info", YieldEditAdditionalInfo{
@@ -66,11 +68,13 @@ func (h *Handler) UpdateAdditionalInfo(w http.ResponseWriter, r *http.Request, c
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
+		h.Logger.Warnf("update publication additional info: snapstore detected a conflicting publication:", "errors", errors.As(err, &conflict), "identifier", ctx.Publication.ID)
 		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("publication.conflict_error"))
 		return
 	}
 
 	if err != nil {
+		h.Logger.Errorf("update publication additional info: could not save the publication:", "error", err, "identifier", ctx.Publication.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
