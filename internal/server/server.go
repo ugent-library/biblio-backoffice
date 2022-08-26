@@ -74,6 +74,7 @@ func (s *server) UpdatePublication(ctx context.Context, req *api.UpdatePublicati
 	return &api.UpdatePublicationResponse{}, nil
 }
 
+// TODO catch indexing errors
 func (s *server) AddPublications(stream api.Biblio_AddPublicationsServer) error {
 	// indexing channel
 	indexC := make(chan *models.Publication)
@@ -101,7 +102,7 @@ func (s *server) AddPublications(stream api.Biblio_AddPublicationsServer) error 
 
 		res, err := stream.Recv()
 		if err == io.EOF {
-			return stream.SendAndClose(&api.AddPublicationsResponse{})
+			return nil
 		}
 		if err != nil {
 			return err
@@ -118,14 +119,39 @@ func (s *server) AddPublications(stream api.Biblio_AddPublicationsServer) error 
 		if p.Classification == "" {
 			p.Classification = "U"
 		}
+		for i, val := range p.Abstract {
+			if val.ID == "" {
+				val.ID = ulid.MustGenerate()
+			}
+			p.Abstract[i] = val
+		}
+		for i, val := range p.LaySummary {
+			if val.ID == "" {
+				val.ID = ulid.MustGenerate()
+			}
+			p.Abstract[i] = val
+		}
+		for i, val := range p.Link {
+			if val.ID == "" {
+				val.ID = ulid.MustGenerate()
+			}
+			p.Link[i] = val
+		}
 
-		// TODO skip to next
 		if err := p.Validate(); err != nil {
-			return fmt.Errorf("validation failed for publication %s at line %d: %w", p.ID, lineNum, err)
+			msg := fmt.Errorf("validation failed for publication %s at line %d: %w", p.ID, lineNum, err).Error()
+			if err = stream.Send(&api.AddPublicationsResponse{Messsage: msg}); err != nil {
+				return err
+			}
+			continue
 		}
 
 		if err := s.services.Repository.SavePublication(p); err != nil {
-			return fmt.Errorf("failed to store publication %s at line %d: %w", p.ID, lineNum, err)
+			msg := fmt.Errorf("failed to store publication %s at line %d: %w", p.ID, lineNum, err).Error()
+			if err = stream.Send(&api.AddPublicationsResponse{Messsage: msg}); err != nil {
+				return err
+			}
+			continue
 		}
 
 		indexC <- p

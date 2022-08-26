@@ -17,7 +17,7 @@ service Biblio {
     rpc GetPublication(GetPublicationRequest) returns (GetPublicationResponse);
     rpc GetAllPublications(GetAllPublicationsRequest) returns (stream GetAllPublicationsResponse);
     rpc UpdatePublication(UpdatePublicationRequest) returns (UpdatePublicationResponse);
-    rpc AddPublications(stream AddPublicationsRequest) returns (AddPublicationsResponse);
+    rpc AddPublications(stream AddPublicationsRequest) returns (stream AddPublicationsResponse);
 }
 
 enum Confirmation {
@@ -305,4 +305,5 @@ message AddPublicationsRequest {
 }
 
 message AddPublicationsResponse {
+    string messsage = 1;
 }

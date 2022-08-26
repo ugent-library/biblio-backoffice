@@ -97,7 +97,7 @@ func (c *biblioClient) AddPublications(ctx context.Context, opts ...grpc.CallOpt
 
 type Biblio_AddPublicationsClient interface {
 	Send(*AddPublicationsRequest) error
-	CloseAndRecv() (*AddPublicationsResponse, error)
+	Recv() (*AddPublicationsResponse, error)
 	grpc.ClientStream
 }
 
@@ -109,10 +109,7 @@ func (x *biblioAddPublicationsClient) Send(m *AddPublicationsRequest) error {
 	return x.ClientStream.SendMsg(m)
 }
 
-func (x *biblioAddPublicationsClient) CloseAndRecv() (*AddPublicationsResponse, error) {
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
+func (x *biblioAddPublicationsClient) Recv() (*AddPublicationsResponse, error) {
 	m := new(AddPublicationsResponse)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
@@ -222,7 +219,7 @@ func _Biblio_AddPublications_Handler(srv interface{}, stream grpc.ServerStream) 
 }
 
 type Biblio_AddPublicationsServer interface {
-	SendAndClose(*AddPublicationsResponse) error
+	Send(*AddPublicationsResponse) error
 	Recv() (*AddPublicationsRequest, error)
 	grpc.ServerStream
 }
@@ -231,7 +228,7 @@ type biblioAddPublicationsServer struct {
 	grpc.ServerStream
 }
 
-func (x *biblioAddPublicationsServer) SendAndClose(m *AddPublicationsResponse) error {
+func (x *biblioAddPublicationsServer) Send(m *AddPublicationsResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
@@ -268,6 +265,7 @@ var Biblio_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "AddPublications",
 			Handler:       _Biblio_AddPublications_Handler,
+			ServerStreams: true,
 			ClientStreams: true,
 		},
 	},
