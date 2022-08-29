@@ -118,6 +118,7 @@ func (h *Handler) EditDetails(w http.ResponseWriter, r *http.Request, ctx Contex
 func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := &BindDetails{}
 	if err := bind.Request(r, b, bind.Vacuum); err != nil {
+		h.Logger.Warnw("update publication details: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -143,6 +144,7 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 	}
 
 	if err != nil {
+		h.Logger.Errorf("update publication details: Could not save the publication:", "error", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}

@@ -36,13 +36,16 @@ func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) htt
 			return
 		}
 
-		pub, err := h.Repository.GetPublication(bind.PathValues(r).Get("id"))
+		id := bind.PathValues(r).Get("id")
+		pub, err := h.Repository.GetPublication(id)
 		if err != nil {
+			h.Logger.Warn("edit dataset: could not find dataset with id:", "errors", err, "id", id, "user", ctx.User.ID)
 			render.InternalServerError(w, r, err)
 			return
 		}
 
 		if !ctx.User.CanEditPublication(pub) {
+			h.Logger.Warn("edit dataset: user isn't allowed to edit the dataset:", "errors", err, "publication", id, "user", ctx.User.ID)
 			render.Forbidden(w, r)
 			return
 		}

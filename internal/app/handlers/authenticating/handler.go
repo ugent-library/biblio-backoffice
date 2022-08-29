@@ -29,24 +29,28 @@ func (h *Handler) Callback(w http.ResponseWriter, r *http.Request, ctx Context) 
 	code := r.URL.Query().Get("code")
 	claims := &oidc.Claims{}
 	if err := h.OIDCClient.Exchange(code, claims); err != nil {
+		h.Logger.Errorw("authentication: OIDC client could not complete exchange:", "errors", err)
 		render.InternalServerError(w, r, err)
 		return
 	}
 
 	user, err := h.UserService.GetUserByUsername(claims.PreferredUsername)
 	if err != nil {
-		render.InternalServerError(w, r, err)
+		h.Logger.Warnw("authentication: No user with that name could be found:", "errors", err, "user", claims.PreferredUsername)
+		render.NotFoundError(w, r, err)
 		return
 	}
 
 	session, err := h.SessionStore.Get(r, h.SessionName)
 	if err != nil {
+		h.Logger.Errorw("authentication: session could not be retrieved:", "errors", err)
 		render.InternalServerError(w, r, err)
 		return
 	}
 
 	session.Values[handlers.UserSessionKey] = user.ID
 	if err := session.Save(r, w); err != nil {
+		h.Logger.Errorw("authentication: session could not be saved:", "errors", err)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -61,6 +65,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request, ctx Context) {
 func (h *Handler) Logout(w http.ResponseWriter, r *http.Request, ctx Context) {
 	session, err := h.SessionStore.Get(r, h.SessionName)
 	if err != nil {
+		h.Logger.Errorw("authentication: session could not be retrieved:", "errors", err)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -68,6 +73,7 @@ func (h *Handler) Logout(w http.ResponseWriter, r *http.Request, ctx Context) {
 	delete(session.Values, handlers.UserSessionKey)
 	delete(session.Values, handlers.OriginalUserSessionKey)
 	if err := session.Save(r, w); err != nil {
+		h.Logger.Errorw("authentication: session could not be saved:", "errors", err)
 		render.InternalServerError(w, r, err)
 		return
 	}

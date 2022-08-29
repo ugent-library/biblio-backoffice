@@ -43,6 +43,7 @@ func (h *Handler) EditAdditionalInfo(w http.ResponseWriter, r *http.Request, ctx
 func (h *Handler) UpdateAdditionalInfo(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindAdditionalInfo{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
+		h.Logger.Warnw("update publication additional info: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -53,6 +54,7 @@ func (h *Handler) UpdateAdditionalInfo(w http.ResponseWriter, r *http.Request, c
 	p.ResearchField = b.ResearchField
 
 	if validationErrs := p.Validate(); validationErrs != nil {
+		h.Logger.Warnw("update publication additional info: could not validate additional info:", "errors", validationErrs, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		form := additionalInfoForm(ctx.Locale, p, validationErrs.(validation.Errors))
 
 		render.Layout(w, "refresh_modal", "publication/edit_additional_info", YieldEditAdditionalInfo{
@@ -71,6 +73,7 @@ func (h *Handler) UpdateAdditionalInfo(w http.ResponseWriter, r *http.Request, c
 	}
 
 	if err != nil {
+		h.Logger.Errorf("update publication additional info: could not save the publication:", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}

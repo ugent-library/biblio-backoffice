@@ -50,12 +50,14 @@ func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context
 
 	// buffer limit of 32MB
 	if err := r.ParseMultipartForm(32 << 20); err != nil {
+		h.Logger.Errorf("publication upload file: exceeded buffer limit:", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	file, handler, err := r.FormFile("file")
 	if err != nil {
+		h.Logger.Errorf("publication upload file: could not process file", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -65,6 +67,7 @@ func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context
 	buff := make([]byte, 512)
 	_, err = file.Read(buff)
 	if err != nil {
+		h.Logger.Errorf("publication upload file: could not read file", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -73,6 +76,7 @@ func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context
 	// rewind
 	_, err = file.Seek(0, io.SeekStart)
 	if err != nil {
+		h.Logger.Errorf("publication upload file: could not read file", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -81,6 +85,7 @@ func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context
 	checksum, err := h.FileStore.Add(file)
 
 	if err != nil {
+		h.Logger.Errorf("publication upload file: could not save file", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -102,6 +107,7 @@ func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context
 
 	// TODO conflict handling
 	if err := h.Repository.SavePublication(ctx.Publication); err != nil {
+		h.Logger.Errorf("publication upload file: could not save publication", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -132,6 +138,7 @@ func (h *Handler) EditFile(w http.ResponseWriter, r *http.Request, ctx Context) 
 	}
 
 	if file == nil {
+		h.Logger.Warnw("publication upload file: could not find file", "fileid", b.FileID, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
@@ -160,6 +167,7 @@ func (h *Handler) EditFileLicense(w http.ResponseWriter, r *http.Request, ctx Co
 	}
 
 	if file == nil {
+		h.Logger.Warnw("publication upload file: could not find file", "fileid", b.FileID, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
@@ -200,6 +208,7 @@ func (h *Handler) UpdateFile(w http.ResponseWriter, r *http.Request, ctx Context
 	}
 
 	if file == nil {
+		h.Logger.Warnw("publication edit file license: could not find file", "fileid", b.FileID, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
@@ -220,6 +229,7 @@ func (h *Handler) UpdateFile(w http.ResponseWriter, r *http.Request, ctx Context
 		})
 		return
 	} else if err != nil {
+		h.Logger.Errorf("publication edit file license: could not save file", "fileid", b.FileID, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -228,6 +238,7 @@ func (h *Handler) UpdateFile(w http.ResponseWriter, r *http.Request, ctx Context
 	// load publication again
 	ctx.Publication, err = h.Repository.GetPublication(pub.ID)
 	if err != nil {
+		h.Logger.Warnw("publication edit file: could not get publication", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -241,6 +252,7 @@ func (h *Handler) ConfirmDeleteFile(w http.ResponseWriter, r *http.Request, ctx 
 
 	b := BindFile{}
 	if err := bind.Request(r, &b); err != nil {
+		h.Logger.Warnw("confirm delete publication file: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -248,6 +260,7 @@ func (h *Handler) ConfirmDeleteFile(w http.ResponseWriter, r *http.Request, ctx 
 	file := ctx.Publication.GetFile(b.FileID)
 
 	if file == nil {
+		h.Logger.Warnw("confirm delete publication file: could not find file", "fileid", b.FileID, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
@@ -262,6 +275,7 @@ func (h *Handler) ConfirmDeleteFile(w http.ResponseWriter, r *http.Request, ctx 
 func (h *Handler) DeleteFile(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindFile{}
 	if err := bind.Request(r, &b); err != nil {
+		h.Logger.Warnw("delete publication file: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -270,6 +284,7 @@ func (h *Handler) DeleteFile(w http.ResponseWriter, r *http.Request, ctx Context
 
 	// save publication
 	if err := h.Repository.SavePublication(ctx.Publication); err != nil {
+		h.Logger.Errorw("delete publication file: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}

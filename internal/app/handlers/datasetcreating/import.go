@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
-	"log"
 	"net/http"
 	"time"
 
@@ -60,6 +59,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request, ctx Context) {
 func (h *Handler) ConfirmImport(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindImport{}
 	if err := bind.Request(r, &b); err != nil {
+		h.Logger.Warnw("confirm import dataset: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -71,6 +71,7 @@ func (h *Handler) ConfirmImport(w http.ResponseWriter, r *http.Request, ctx Cont
 		existing, err := h.DatasetSearchService.Search(args)
 
 		if err != nil {
+			h.Logger.Errorw("confirm import dataset: could not execute search", "errors", err, "user", ctx.User.ID)
 			render.InternalServerError(w, r, err)
 			return
 		}
@@ -96,13 +97,13 @@ func (h *Handler) ConfirmImport(w http.ResponseWriter, r *http.Request, ctx Cont
 func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindImport{}
 	if err := bind.Request(r, &b); err != nil {
+		h.Logger.Warnw("add import dataset: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
 
 	d, err := h.fetchDatasetByIdentifier(b.Source, b.Identifier)
 	if err != nil {
-		log.Println(err)
 		flash := flash.Flash{
 			Type:         "error",
 			Body:         template.HTML(ctx.Locale.TS("dataset.single_import", "import_by_id.import_failed")),
@@ -147,6 +148,7 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 	err = h.Repository.SaveDataset(d)
 
 	if err != nil {
+		h.Logger.Warnw("add import dataset: could not save dataset:", "errors", err, "dataset", b.Identifier, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -188,6 +190,7 @@ func (h *Handler) AddConfirm(w http.ResponseWriter, r *http.Request, ctx Context
 
 func (h *Handler) AddPublish(w http.ResponseWriter, r *http.Request, ctx Context) {
 	if !ctx.User.CanPublishDataset(ctx.Dataset) {
+		h.Logger.Warn("publish dataset: user isn't allowed to edit the dataset:", "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
 		render.Forbidden(w, r)
 		return
 	}
@@ -216,6 +219,7 @@ func (h *Handler) AddPublish(w http.ResponseWriter, r *http.Request, ctx Context
 
 	if err != nil {
 		render.InternalServerError(w, r, err)
+		h.Logger.Warnf("create dataset: Could not save the dataset:", "error", err, "identifier", ctx.Dataset.ID)
 		return
 	}
 

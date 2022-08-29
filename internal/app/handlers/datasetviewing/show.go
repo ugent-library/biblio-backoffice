@@ -86,6 +86,7 @@ func (h *Handler) ShowContributors(w http.ResponseWriter, r *http.Request, ctx C
 func (h *Handler) ShowPublications(w http.ResponseWriter, r *http.Request, ctx Context) {
 	relatedPublications, err := h.Repository.GetDatasetPublications(ctx.Dataset)
 	if err != nil {
+		h.Logger.Errorw("show dataset publications: could not get publications", "errors", err, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}

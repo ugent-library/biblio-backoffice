@@ -33,17 +33,6 @@ var DefaultPipeline = NewPipeline(
 	EnsureFullName,
 )
 
-func vacuumStringSlice(vals []string) []string {
-	newVals := []string{}
-	for _, v := range vals {
-		v = strings.TrimSpace(v)
-		if v != "" {
-			newVals = append(newVals, v)
-		}
-	}
-	return newVals
-}
-
 func EnsureFullName(p *models.Publication) *models.Publication {
 	for _, c := range p.Author {
 		if c.FullName == "" {

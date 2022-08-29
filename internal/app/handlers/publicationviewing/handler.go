@@ -32,11 +32,12 @@ func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) htt
 
 		p, err := h.Repository.GetPublication(bind.PathValues(r).Get("id"))
 		if err != nil {
-			render.InternalServerError(w, r, err)
+			render.NotFoundError(w, r, err)
 			return
 		}
 
 		if !ctx.User.CanViewPublication(p) {
+			h.Logger.Warn("publication viewing: user isn't allowed to ivew the publication:", "errors", err, "publication", p.ID, "user", ctx.User.ID)
 			render.Forbidden(w, r)
 			return
 		}

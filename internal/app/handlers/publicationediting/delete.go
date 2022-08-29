@@ -27,6 +27,7 @@ func (h *Handler) ConfirmDelete(w http.ResponseWriter, r *http.Request, ctx Cont
 
 func (h *Handler) Delete(w http.ResponseWriter, r *http.Request, ctx Context) {
 	if !ctx.User.CanDeletePublication(ctx.Publication) {
+		h.Logger.Warnw("delete publication: user is unauthorized", "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.Forbidden(w, r)
 		return
 	}
@@ -42,6 +43,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request, ctx Context) {
 	}
 
 	if err != nil {
+		h.Logger.Errorf("delete publication: Could not save the publication:", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}

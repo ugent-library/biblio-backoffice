@@ -1,6 +1,7 @@
 package bibtex
 
 import (
+	"bufio"
 	"io"
 	"regexp"
 	"strings"
@@ -28,8 +29,21 @@ func NewDecoder(r io.Reader) backends.PublicationDecoder {
 }
 
 func (d *Decoder) Decode(p *models.Publication) error {
+	// skip file preambles, comments, etc until we encounter the first entry
+	b := bufio.NewReader(d.r)
+	for {
+		c, _, err := b.ReadRune()
+		if err != nil {
+			return err
+		}
+		if c == '@' {
+			b.UnreadRune()
+			break
+		}
+	}
+
 	if d.bibtex == nil {
-		b, err := bibtex.Parse(d.r)
+		b, err := bibtex.Parse(b)
 		if err != nil {
 			return err
 		}

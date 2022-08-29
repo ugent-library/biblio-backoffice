@@ -54,6 +54,7 @@ func (h *Handler) AddAbstract(w http.ResponseWriter, r *http.Request, ctx Contex
 func (h *Handler) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindAbstract{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
+		h.Logger.Warnw("create publication abstract: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -81,6 +82,7 @@ func (h *Handler) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 	}
 
 	if err != nil {
+		h.Logger.Errorf("create publication abstract: could not save the publication:", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -93,12 +95,14 @@ func (h *Handler) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 func (h *Handler) EditAbstract(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindAbstract{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
+		h.Logger.Warnw("edit publication abstract: could not bind request arguments", "error", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
 
 	abstract := ctx.Publication.GetAbstract(b.AbstractID)
 	if abstract == nil {
+		h.Logger.Warnf("edit publication abstract: Could not fetch the abstract:", "publication", ctx.Publication.ID, "abstract", b.AbstractID, "user", ctx.User.ID)
 		render.BadRequest(
 			w,
 			r,
@@ -117,6 +121,7 @@ func (h *Handler) EditAbstract(w http.ResponseWriter, r *http.Request, ctx Conte
 func (h *Handler) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindAbstract{}
 	if err := bind.Request(r, &b); err != nil {
+		h.Logger.Warnw("update publication abstract: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -130,6 +135,7 @@ func (h *Handler) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 	*/
 	abstract := ctx.Publication.GetAbstract(b.AbstractID)
 	if abstract == nil {
+		h.Logger.Warnf("update publication abstract: Could not fetch the abstract:", "publication", ctx.Publication.ID, "abstract", b.AbstractID, "user", ctx.User.ID)
 		render.BadRequest(
 			w,
 			r,
@@ -160,6 +166,7 @@ func (h *Handler) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 	}
 
 	if err != nil {
+		h.Logger.Errorf("update publication abstract: could not save the publication:", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -172,6 +179,7 @@ func (h *Handler) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 func (h *Handler) ConfirmDeleteAbstract(w http.ResponseWriter, r *http.Request, ctx Context) {
 	var b BindDeleteAbstract
 	if err := bind.Request(r, &b); err != nil {
+		h.Logger.Warnw("confirm delete publication abstract: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -185,6 +193,7 @@ func (h *Handler) ConfirmDeleteAbstract(w http.ResponseWriter, r *http.Request, 
 func (h *Handler) DeleteAbstract(w http.ResponseWriter, r *http.Request, ctx Context) {
 	var b BindDeleteAbstract
 	if err := bind.Request(r, &b); err != nil {
+		h.Logger.Warnw("delete publication abstract: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -200,6 +209,7 @@ func (h *Handler) DeleteAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 	}
 
 	if err != nil {
+		h.Logger.Errorf("create publication abstract: could not save the publication:", "error", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}

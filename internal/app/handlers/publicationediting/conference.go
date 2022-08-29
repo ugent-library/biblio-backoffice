@@ -44,6 +44,7 @@ func (h *Handler) EditConference(w http.ResponseWriter, r *http.Request, ctx Con
 func (h *Handler) UpdateConference(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindConference{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
+		h.Logger.Warnw("update publication conference: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -74,6 +75,7 @@ func (h *Handler) UpdateConference(w http.ResponseWriter, r *http.Request, ctx C
 	}
 
 	if err != nil {
+		h.Logger.Errorf("update publication conference: could not save the publication:", "error", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}

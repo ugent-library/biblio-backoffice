@@ -377,6 +377,7 @@ func (publications *Publications) Index(d *models.Publication) error {
 	return nil
 }
 
+// TODO error chan
 func (publications *Publications) IndexMultiple(inCh <-chan *models.Publication) {
 	bi, err := esutil.NewBulkIndexer(esutil.BulkIndexerConfig{
 		Index:  publications.Client.Index,

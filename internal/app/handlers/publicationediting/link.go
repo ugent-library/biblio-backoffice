@@ -54,6 +54,7 @@ func (h *Handler) AddLink(w http.ResponseWriter, r *http.Request, ctx Context) {
 func (h *Handler) CreateLink(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindLink{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
+		h.Logger.Warnw("add publication link: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -82,6 +83,7 @@ func (h *Handler) CreateLink(w http.ResponseWriter, r *http.Request, ctx Context
 	}
 
 	if err != nil {
+		h.Logger.Errorf("add publication link: Could not save the publication:", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -94,12 +96,14 @@ func (h *Handler) CreateLink(w http.ResponseWriter, r *http.Request, ctx Context
 func (h *Handler) EditLink(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindLink{}
 	if err := bind.Request(r, &b); err != nil {
+		h.Logger.Warnw("edit publication link: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
 
 	link := ctx.Publication.GetLink(b.LinkID)
 	if link == nil {
+		h.Logger.Warnw("edit publication link: could not get link", "link", b.LinkID, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.BadRequest(
 			w,
 			r,
@@ -118,6 +122,7 @@ func (h *Handler) EditLink(w http.ResponseWriter, r *http.Request, ctx Context) 
 func (h *Handler) UpdateLink(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindLink{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
+		h.Logger.Warnw("update publication link: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -128,6 +133,7 @@ func (h *Handler) UpdateLink(w http.ResponseWriter, r *http.Request, ctx Context
 	*/
 	link := ctx.Publication.GetLink(b.LinkID)
 	if link == nil {
+		h.Logger.Warnw("update publication link: could not get link", "link", b.LinkID, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.BadRequest(
 			w,
 			r,
@@ -159,6 +165,7 @@ func (h *Handler) UpdateLink(w http.ResponseWriter, r *http.Request, ctx Context
 	}
 
 	if err != nil {
+		h.Logger.Errorf("update publication link: Could not save the publication:", "errors", err, "identifier", ctx.Publication.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -171,6 +178,7 @@ func (h *Handler) UpdateLink(w http.ResponseWriter, r *http.Request, ctx Context
 func (h *Handler) ConfirmDeleteLink(w http.ResponseWriter, r *http.Request, ctx Context) {
 	var b BindDeleteLink
 	if err := bind.Request(r, &b); err != nil {
+		h.Logger.Errorw("confirm delete publication link: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -184,6 +192,7 @@ func (h *Handler) ConfirmDeleteLink(w http.ResponseWriter, r *http.Request, ctx 
 func (h *Handler) DeleteLink(w http.ResponseWriter, r *http.Request, ctx Context) {
 	var b BindDeleteLink
 	if err := bind.Request(r, &b); err != nil {
+		h.Logger.Warnw("delete publication link: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -203,6 +212,7 @@ func (h *Handler) DeleteLink(w http.ResponseWriter, r *http.Request, ctx Context
 	}
 
 	if err != nil {
+		h.Logger.Errorf("delete publication link: Could not save the publication:", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}

@@ -46,6 +46,7 @@ type YieldStatus struct {
 func (h *Handler) Status(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindStatus{}
 	if err := bind.Request(r, &b); err != nil {
+		h.Logger.Warnw("tasks: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}

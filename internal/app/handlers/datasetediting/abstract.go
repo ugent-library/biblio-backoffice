@@ -54,6 +54,7 @@ func (h *Handler) AddAbstract(w http.ResponseWriter, r *http.Request, ctx Contex
 func (h *Handler) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindAbstract{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
+		h.Logger.Warnw("create dataset abstract: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -82,6 +83,7 @@ func (h *Handler) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 	}
 
 	if err != nil {
+		h.Logger.Errorf("create dataset abstract: could not save the dataset:", "errors", err, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -94,6 +96,7 @@ func (h *Handler) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 func (h *Handler) EditAbstract(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindAbstract{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
+		h.Logger.Warnw("edit dataset abstract: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -101,7 +104,8 @@ func (h *Handler) EditAbstract(w http.ResponseWriter, r *http.Request, ctx Conte
 	abstract := ctx.Dataset.GetAbstract(b.AbstractID)
 	// TODO: it this a non existing id, or a preliminary conflict error?
 	if abstract == nil {
-		render.BadRequest(
+		h.Logger.Warnf("edit dataset abstract: Could not fetch the abstract:", "dataset", ctx.Dataset.ID, "abstract", b.AbstractID, "user", ctx.User.ID)
+		render.NotFoundError(
 			w,
 			r,
 			fmt.Errorf("no abstract found for %s in dataset %s", b.AbstractID, ctx.Dataset.ID),
@@ -119,6 +123,7 @@ func (h *Handler) EditAbstract(w http.ResponseWriter, r *http.Request, ctx Conte
 func (h *Handler) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindAbstract{}
 	if err := bind.Request(r, &b); err != nil {
+		h.Logger.Warnw("update dataset abstract: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -126,7 +131,8 @@ func (h *Handler) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 	// get pointer to abstract and manipulate in place
 	abstract := ctx.Dataset.GetAbstract(b.AbstractID)
 	if abstract == nil {
-		render.BadRequest(
+		h.Logger.Warnf("update dataset abstract: Could not fetch the abstract:", "dataset", ctx.Dataset.ID, "abstract", b.AbstractID, "user", ctx.User.ID)
+		render.NotFoundError(
 			w,
 			r,
 			fmt.Errorf("no abstract found for %s in dataset %s", b.AbstractID, ctx.Dataset.ID),
@@ -156,6 +162,7 @@ func (h *Handler) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 	}
 
 	if err != nil {
+		h.Logger.Warnf("update dataset abstract: Could not save the dataset:", "errors", err, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -168,6 +175,7 @@ func (h *Handler) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 func (h *Handler) ConfirmDeleteAbstract(w http.ResponseWriter, r *http.Request, ctx Context) {
 	var b BindDeleteAbstract
 	if err := bind.Request(r, &b); err != nil {
+		h.Logger.Warnw("confirm delete dataset: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -181,6 +189,7 @@ func (h *Handler) ConfirmDeleteAbstract(w http.ResponseWriter, r *http.Request, 
 func (h *Handler) DeleteAbstract(w http.ResponseWriter, r *http.Request, ctx Context) {
 	var b BindDeleteAbstract
 	if err := bind.Request(r, &b); err != nil {
+		h.Logger.Warnw("delete datase abstract: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -200,6 +209,7 @@ func (h *Handler) DeleteAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 	}
 
 	if err != nil {
+		h.Logger.Warnf("delete dataset abstract: Could not save the dataset:", "errors", err, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
