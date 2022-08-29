@@ -5,11 +5,15 @@ import (
 	"io"
 	"regexp"
 	"strings"
+	"unicode"
 
 	"github.com/dimchansky/utfbom"
 	"github.com/nickng/bibtex"
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/models"
+	"golang.org/x/text/runes"
+	"golang.org/x/text/transform"
+	"golang.org/x/text/unicode/norm"
 )
 
 var (
@@ -24,13 +28,19 @@ type Decoder struct {
 }
 
 func NewDecoder(r io.Reader) backends.PublicationDecoder {
-	// bibtex fails on utf8 bom
-	return &Decoder{r: utfbom.SkipOnly(r)}
+	return &Decoder{r: r}
 }
 
-func (d *Decoder) Decode(p *models.Publication) error {
+func (d *Decoder) parse() error {
+	// cleanup
+	var r io.Reader
+	// remove utf8 bom
+	r = utfbom.SkipOnly(d.r)
+	// remove unicode non spacing marks
+	// note that the parser doens't actually fail on combined grave, acute, circumflex, umlaut accents in field values
+	r = transform.NewReader(r, transform.Chain(norm.NFD, runes.Remove(runes.In(unicode.Mn)), norm.NFC))
 	// skip file preambles, comments, etc until we encounter the first entry
-	b := bufio.NewReader(d.r)
+	b := bufio.NewReader(r)
 	for {
 		c, _, err := b.ReadRune()
 		if err != nil {
@@ -42,12 +52,20 @@ func (d *Decoder) Decode(p *models.Publication) error {
 		}
 	}
 
+	bib, err := bibtex.Parse(b)
+	if err != nil {
+		return err
+	}
+	d.bibtex = bib
+
+	return nil
+}
+
+func (d *Decoder) Decode(p *models.Publication) error {
 	if d.bibtex == nil {
-		b, err := bibtex.Parse(b)
-		if err != nil {
+		if err := d.parse(); err != nil {
 			return err
 		}
-		d.bibtex = b
 	}
 
 	if len(d.bibtex.Entries) == 0 || d.i >= len(d.bibtex.Entries) {
