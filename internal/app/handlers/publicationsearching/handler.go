@@ -31,7 +31,7 @@ func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) htt
 
 		searchArgs := models.NewSearchArgs()
 		if err := bind.Request(r, searchArgs); err != nil {
-			h.Logger.Warnw("publication search: could not bind search arguments", "error", err, "request", r)
+			h.Logger.Warnw("publication search: could not bind search arguments", "errors", err, "request", r, "user", ctx.User.ID)
 			render.BadRequest(w, r, err)
 			return
 		}

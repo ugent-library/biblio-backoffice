@@ -35,6 +35,7 @@ func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) htt
 		}
 
 		if !ctx.User.CanViewDataset(d) {
+			h.Logger.Warn("view dataset: user isn't allowed to view the dataset:", "error", err, "dataset", d.ID, "user", ctx.User.ID)
 			render.Forbidden(w, r)
 			return
 		}

@@ -63,7 +63,7 @@ func (h *Handler) CreateImpersonation(w http.ResponseWriter, r *http.Request, ct
 
 	b := BindImpersonation{}
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("create impersonation: could not bind request arguments", "error", err, "request", r)
+		h.Logger.Warnw("create impersonation: could not bind request arguments", "errors", err, "request", r)
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -78,7 +78,7 @@ func (h *Handler) CreateImpersonation(w http.ResponseWriter, r *http.Request, ct
 
 	session, err := h.SessionStore.Get(r, h.SessionName)
 	if err != nil {
-		h.Logger.Errorw("create impersonation: session could not be retrieved:", "error", err)
+		h.Logger.Errorw("create impersonation: session could not be retrieved:", "errors", err, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -87,7 +87,7 @@ func (h *Handler) CreateImpersonation(w http.ResponseWriter, r *http.Request, ct
 	session.Values[handlers.UserSessionKey] = user.ID
 
 	if err = session.Save(r, w); err != nil {
-		h.Logger.Errorw("create impersonation: session could not be saved:", "error", err)
+		h.Logger.Errorw("create impersonation: session could not be saved:", "errors", err, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -102,7 +102,7 @@ func (h *Handler) DeleteImpersonation(w http.ResponseWriter, r *http.Request, ct
 
 	session, err := h.SessionStore.Get(r, h.SessionName)
 	if err != nil {
-		h.Logger.Errorw("delete impersonation: session could not be retrieved:", "error", err)
+		h.Logger.Errorw("delete impersonation: session could not be retrieved:", "errors", err, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -112,7 +112,7 @@ func (h *Handler) DeleteImpersonation(w http.ResponseWriter, r *http.Request, ct
 		session.Values[handlers.UserSessionKey] = origUserID
 
 		if err = session.Save(r, w); err != nil {
-			h.Logger.Errorw("delete impersonation: session could not be saved:", "error", err)
+			h.Logger.Errorw("delete impersonation: session could not be saved:", "errors", err, "user", ctx.User.ID)
 			render.InternalServerError(w, r, err)
 			return
 		}

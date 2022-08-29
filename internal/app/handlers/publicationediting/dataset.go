@@ -34,6 +34,7 @@ type YieldDeleteDataset struct {
 func (h *Handler) AddDataset(w http.ResponseWriter, r *http.Request, ctx Context) {
 	hits, err := h.searchRelatedDatasets(ctx.User.ID, ctx.Publication, "")
 	if err != nil {
+		h.Logger.Errorw("add dataset publication: could not execute search", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -47,12 +48,14 @@ func (h *Handler) AddDataset(w http.ResponseWriter, r *http.Request, ctx Context
 func (h *Handler) SuggestDatasets(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindSuggestDatasets{}
 	if err := bind.Request(r, &b); err != nil {
+		h.Logger.Warnw("suggest publication datasets: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
 
 	hits, err := h.searchRelatedDatasets(ctx.User.ID, ctx.Publication, b.Query)
 	if err != nil {
+		h.Logger.Errorw("add dataset publication: could not execute search", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -66,6 +69,7 @@ func (h *Handler) SuggestDatasets(w http.ResponseWriter, r *http.Request, ctx Co
 func (h *Handler) CreateDataset(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindDataset{}
 	if err := bind.Request(r, &b); err != nil {
+		h.Logger.Warnw("create publication dataset: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -73,6 +77,7 @@ func (h *Handler) CreateDataset(w http.ResponseWriter, r *http.Request, ctx Cont
 	// TODO reduce calls to repository
 	d, err := h.Repository.GetDataset(b.DatasetID)
 	if err != nil {
+		h.Logger.Errorw("create dataset publication: could not get dataset", "errors", err, "publication", ctx.Publication.ID, "dataset", b.DatasetID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -84,12 +89,14 @@ func (h *Handler) CreateDataset(w http.ResponseWriter, r *http.Request, ctx Cont
 	// TODO handle conflict
 
 	if err != nil {
+		h.Logger.Errorw("create publication dataset: could not add dataset to publication", "errors", err, "publication", ctx.Publication.ID, "dataset", b.DatasetID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
 
 	relatedDatasets, err := h.Repository.GetPublicationDatasets(ctx.Publication)
 	if err != nil {
+		h.Logger.Errorw("create dataset publication: could not get related datasets", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -103,6 +110,7 @@ func (h *Handler) CreateDataset(w http.ResponseWriter, r *http.Request, ctx Cont
 func (h *Handler) ConfirmDeleteDataset(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindDeleteDataset{}
 	if err := bind.Request(r, &b); err != nil {
+		h.Logger.Warnw("confirm delete publication dataset: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -116,6 +124,7 @@ func (h *Handler) ConfirmDeleteDataset(w http.ResponseWriter, r *http.Request, c
 func (h *Handler) DeleteDataset(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindDeleteDataset{}
 	if err := bind.Request(r, &b); err != nil {
+		h.Logger.Warnw("delete publication dataset: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -123,6 +132,7 @@ func (h *Handler) DeleteDataset(w http.ResponseWriter, r *http.Request, ctx Cont
 	// TODO reduce calls to repository
 	d, err := h.Repository.GetDataset(b.DatasetID)
 	if err != nil {
+		h.Logger.Errorw("delete dataset publication: could not get dataset", "errors", err, "publication", ctx.Publication.ID, "dataset", b.DatasetID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -134,12 +144,14 @@ func (h *Handler) DeleteDataset(w http.ResponseWriter, r *http.Request, ctx Cont
 	// TODO handle conflict
 
 	if err != nil {
+		h.Logger.Errorw("delete dataset publication: could not remove dataset", "errors", err, "publication", ctx.Publication.ID, "dataset", b.DatasetID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
 
 	relatedDatasets, err := h.Repository.GetPublicationDatasets(ctx.Publication)
 	if err != nil {
+		h.Logger.Errorw("create dataset publication: could not get related datasets", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}

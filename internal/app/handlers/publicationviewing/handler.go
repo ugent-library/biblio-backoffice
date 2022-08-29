@@ -37,6 +37,7 @@ func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) htt
 		}
 
 		if !ctx.User.CanViewPublication(p) {
+			h.Logger.Warn("publication viewing: user isn't allowed to ivew the publication:", "errors", err, "publication", p.ID, "user", ctx.User.ID)
 			render.Forbidden(w, r)
 			return
 		}

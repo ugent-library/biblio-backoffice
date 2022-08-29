@@ -27,7 +27,7 @@ func (h *Handler) ConfirmDelete(w http.ResponseWriter, r *http.Request, ctx Cont
 
 func (h *Handler) Delete(w http.ResponseWriter, r *http.Request, ctx Context) {
 	if !ctx.User.CanDeleteDataset(ctx.Dataset) {
-		h.Logger.Warnw("delete dataset: user is unauthorized", "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
+		h.Logger.Warnw("delete dataset: user isn't allowed to delete dataset", "dataset", ctx.Dataset.ID, "user", ctx.User.ID, "user", ctx.User.ID)
 		render.Forbidden(w, r)
 		return
 	}
@@ -38,13 +38,12 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request, ctx Context) {
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		h.Logger.Warnf("delete dataset: snapstore detected a conflicting dataset:", "errors", errors.As(err, &conflict), "identifier", ctx.Dataset.ID)
 		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("dataset.conflict_error"))
 		return
 	}
 
 	if err != nil {
-		h.Logger.Errorf("delete dataset: Could not save the dataset:", "error", err, "identifier", ctx.Dataset.ID)
+		h.Logger.Errorf("delete dataset: Could not save the dataset:", "error", err, "identifier", ctx.Dataset.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}

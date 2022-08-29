@@ -46,7 +46,7 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request, ctx Context) {
 		searcher = searcher.WithScope("creator_id|author.id", ctx.User.ID)
 	default:
 		errorUnkownScope := fmt.Errorf("unknown scope: %s", args.FilterFor("scope"))
-		h.Logger.Warnw("publication search: could not create searcher with passed filters", "error", errorUnkownScope)
+		h.Logger.Warnw("publication search: could not create searcher with passed filters", "errors", errorUnkownScope, "user", ctx.User.ID)
 		render.BadRequest(w, r, errorUnkownScope)
 		return
 	}
@@ -54,7 +54,7 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request, ctx Context) {
 
 	hits, err := searcher.IncludeFacets(true).Search(args)
 	if err != nil {
-		h.Logger.Errorw("publication search: could not execute search", "error", err)
+		h.Logger.Errorw("publication search: could not execute search", "errors", err, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -77,7 +77,7 @@ func (h *Handler) CurationSearch(w http.ResponseWriter, r *http.Request, ctx Con
 	searcher := h.PublicationSearchService.WithScope("status", "private", "public")
 	hits, err := searcher.IncludeFacets(true).Search(ctx.SearchArgs)
 	if err != nil {
-		h.Logger.Errorw("publication search: could not execute search", "error", err)
+		h.Logger.Errorw("publication search: could not execute search", "errors", err, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}

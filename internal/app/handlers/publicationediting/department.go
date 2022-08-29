@@ -39,7 +39,7 @@ type YieldDeleteDepartment struct {
 func (h *Handler) AddDepartment(w http.ResponseWriter, r *http.Request, ctx Context) {
 	hits, err := h.OrganizationSearchService.SuggestOrganizations("")
 	if err != nil {
-		h.Logger.Errorw("add publication department: could not suggest organization", "error", err)
+		h.Logger.Errorw("add publication department: could not suggest organization", "errors", err, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -53,14 +53,14 @@ func (h *Handler) AddDepartment(w http.ResponseWriter, r *http.Request, ctx Cont
 func (h *Handler) SuggestDepartments(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindSuggestDepartments{}
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("suggest publication departments could not bind request arguments", "error", err, "request", r)
+		h.Logger.Warnw("suggest publication departments could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
 
 	hits, err := h.OrganizationSearchService.SuggestOrganizations(b.Query)
 	if err != nil {
-		h.Logger.Errorw("add publication department: could not suggest organization", "error", err)
+		h.Logger.Errorw("add publication department: could not suggest organization", "errors", err, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -74,14 +74,14 @@ func (h *Handler) SuggestDepartments(w http.ResponseWriter, r *http.Request, ctx
 func (h *Handler) CreateDepartment(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindDepartment{}
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("create publication department: could not bind request arguments", "error", err, "request", r)
+		h.Logger.Warnw("create publication department: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
 
 	org, err := h.OrganizationService.GetOrganization(b.DepartmentID)
 	if err != nil {
-		h.Logger.Errorw("create publication department: could not find organization", "error", err, "request", r)
+		h.Logger.Errorw("create publication department: could not find organization", "errors", err, "request", r, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -98,13 +98,12 @@ func (h *Handler) CreateDepartment(w http.ResponseWriter, r *http.Request, ctx C
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		h.Logger.Warnf("create publication department: snapstore detected a conflicting publication:", "errors", errors.As(err, &conflict), "identifier", ctx.Publication.ID)
 		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("publication.conflict_error"))
 		return
 	}
 
 	if err != nil {
-		h.Logger.Errorf("create publication department: Could not save the publication:", "error", err, "identifier", ctx.Publication.ID)
+		h.Logger.Errorf("create publication department: Could not save the publication:", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -117,7 +116,7 @@ func (h *Handler) CreateDepartment(w http.ResponseWriter, r *http.Request, ctx C
 func (h *Handler) ConfirmDeleteDepartment(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindDeleteDepartment{}
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("confirm delete publication department: could not bind request arguments", "error", err, "request", r)
+		h.Logger.Warnw("confirm delete publication department: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -131,7 +130,7 @@ func (h *Handler) ConfirmDeleteDepartment(w http.ResponseWriter, r *http.Request
 func (h *Handler) DeleteDepartment(w http.ResponseWriter, r *http.Request, ctx Context) {
 	var b BindDeleteDepartment
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("delete publication department: could not bind request arguments", "error", err, "request", r)
+		h.Logger.Warnw("delete publication department: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -148,13 +147,12 @@ func (h *Handler) DeleteDepartment(w http.ResponseWriter, r *http.Request, ctx C
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		h.Logger.Warnf("delete publication department: snapstore detected a conflicting publication:", "errors", errors.As(err, &conflict), "identifier", ctx.Publication.ID)
 		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("publication.conflict_error"))
 		return
 	}
 
 	if err != nil {
-		h.Logger.Errorf("delete publication department: Could not save the publication:", "error", err, "identifier", ctx.Publication.ID)
+		h.Logger.Errorf("delete publication department: Could not save the publication:", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}

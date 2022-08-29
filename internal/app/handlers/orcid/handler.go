@@ -35,7 +35,7 @@ type Context struct {
 func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) http.HandlerFunc {
 	return h.BaseHandler.Wrap(func(w http.ResponseWriter, r *http.Request, ctx handlers.BaseContext) {
 		if ctx.User == nil {
-			h.Logger.Warnw("orcid: user is not authorized:")
+			h.Logger.Warnw("orcid: user is not authorized to access this resource", "user", ctx.User.ID)
 			render.Unauthorized(w, r)
 			return
 		}
@@ -65,19 +65,19 @@ type YieldAddAll struct {
 func (h *Handler) Add(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindAdd{}
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("add orcid: could not bind request arguments", "error", err, "request", r)
+		h.Logger.Warnw("add orcid: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
 
 	p, err := h.Repository.GetPublication(b.PublicationID)
 	if err != nil {
-		h.Logger.Errorw("add orcid: could not get publication", "error", err, "publication", b.PublicationID)
+		h.Logger.Errorw("add orcid: could not get publication", "errors", err, "publication", b.PublicationID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
 	if !ctx.User.CanViewPublication(p) {
-		h.Logger.Warnw("add orcid: user has no permission to view this publication", "user", ctx.User.ID, "publication", b.PublicationID)
+		h.Logger.Warnw("add orcid: user has no permission to view this publication", "publication", b.PublicationID, "user", ctx.User.ID)
 		render.Forbidden(w, r)
 		return
 	}
@@ -87,10 +87,10 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request, ctx Context) {
 	p, err = h.addPublicationToORCID(ctx.User.ORCID, ctx.User.ORCIDToken, p)
 	if err != nil {
 		if err == orcid.ErrDuplicate {
-			h.Logger.Warnw("add orcid: this publicaton is already part of the users orcid works", "user", ctx.User.ID, "publication", b.PublicationID)
+			h.Logger.Warnw("add orcid: this publicaton is already part of the users orcid works", "publication", b.PublicationID, "user", ctx.User.ID)
 			f = flash.Flash{Type: "info", Body: "This publication is already part of your ORCID works."}
 		} else {
-			h.Logger.Warnw("add orcid: could not add this publication to the users orcid works", "user", ctx.User.ID, "publication", b.PublicationID)
+			h.Logger.Warnw("add orcid: could not add this publication to the users orcid works", "user", "publication", b.PublicationID, "user", ctx.User.ID)
 			f = flash.Flash{Type: "error", Body: "Couldn't add this publication to your ORCID works."}
 		}
 	} else {

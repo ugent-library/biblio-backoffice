@@ -34,7 +34,7 @@ type YieldDeletePublication struct {
 func (h *Handler) AddPublication(w http.ResponseWriter, r *http.Request, ctx Context) {
 	hits, err := h.searchRelatedPublications(ctx.User.ID, ctx.Dataset, "")
 	if err != nil {
-		h.Logger.Errorf("add dataset publication: Could find related publications:", "error", err, "identifier", ctx.Dataset.ID)
+		h.Logger.Errorf("add dataset publication: Could find related publications:", "errors", err, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -48,14 +48,14 @@ func (h *Handler) AddPublication(w http.ResponseWriter, r *http.Request, ctx Con
 func (h *Handler) SuggestPublications(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindSuggestPublications{}
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("suggest dataset publications: could not bind request arguments", "error", err, "request", r)
+		h.Logger.Warnw("suggest dataset publications: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
 
 	hits, err := h.searchRelatedPublications(ctx.User.ID, ctx.Dataset, b.Query)
 	if err != nil {
-		h.Logger.Errorf("add dataset publication: Could find related publications:", "error", err, "identifier", ctx.Dataset.ID)
+		h.Logger.Errorf("add dataset publication: Could find related publications:", "errors", err, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -69,7 +69,7 @@ func (h *Handler) SuggestPublications(w http.ResponseWriter, r *http.Request, ct
 func (h *Handler) CreatePublication(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindPublication{}
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("create dataset publication: could not bind request arguments", "error", err, "request", r)
+		h.Logger.Warnw("create dataset publication: could not bind request arguments", "errors", err, "request", r)
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -77,7 +77,7 @@ func (h *Handler) CreatePublication(w http.ResponseWriter, r *http.Request, ctx 
 	// TODO reduce calls to repository
 	p, err := h.Repository.GetPublication(b.PublicationID)
 	if err != nil {
-		h.Logger.Errorw("create dataset publication: could not get the publication", "error", err, "dataset", ctx.Dataset.ID)
+		h.Logger.Errorw("create dataset publication: could not get the publication", "errors", err, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -96,7 +96,7 @@ func (h *Handler) CreatePublication(w http.ResponseWriter, r *http.Request, ctx 
 
 	relatedPublications, err := h.Repository.GetDatasetPublications(ctx.Dataset)
 	if err != nil {
-		h.Logger.Errorw("create dataset publication: could not get dataset publications", "error", err, "dataset", ctx.Dataset.ID)
+		h.Logger.Errorw("create dataset publication: could not get dataset publications", "errors", err, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -110,7 +110,7 @@ func (h *Handler) CreatePublication(w http.ResponseWriter, r *http.Request, ctx 
 func (h *Handler) ConfirmDeletePublication(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindDeletePublication{}
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("confirm delete dataset publication: could not bind request arguments", "error", err, "request", r)
+		h.Logger.Warnw("confirm delete dataset publication: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -124,7 +124,7 @@ func (h *Handler) ConfirmDeletePublication(w http.ResponseWriter, r *http.Reques
 func (h *Handler) DeletePublication(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindDeletePublication{}
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("delete dataset publication: could not bind request arguments", "error", err, "request", r)
+		h.Logger.Warnw("delete dataset publication: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -132,7 +132,7 @@ func (h *Handler) DeletePublication(w http.ResponseWriter, r *http.Request, ctx 
 	// TODO reduce calls to repository
 	p, err := h.Repository.GetPublication(b.PublicationID)
 	if err != nil {
-		h.Logger.Errorw("delete dataset publication: could not get the publication", "error", err, "dataset", ctx.Dataset.ID)
+		h.Logger.Errorw("delete dataset publication: could not get the publication", "errors", err, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -144,14 +144,14 @@ func (h *Handler) DeletePublication(w http.ResponseWriter, r *http.Request, ctx 
 	// TODO handle conflict
 
 	if err != nil {
-		h.Logger.Errorw("delete dataset publication: could not delete the publication", "error", err, "dataset", ctx.Dataset.ID)
+		h.Logger.Errorw("delete dataset publication: could not delete the publication", "errors", err, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
 
 	relatedPublications, err := h.Repository.GetDatasetPublications(ctx.Dataset)
 	if err != nil {
-		h.Logger.Errorw("create dataset publication: could not get dataset publications", "error", err, "dataset", ctx.Dataset.ID)
+		h.Logger.Errorw("create dataset publication: could not get dataset publications", "errors", err, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}

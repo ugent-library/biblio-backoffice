@@ -59,7 +59,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request, ctx Context) {
 func (h *Handler) ConfirmImport(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindImport{}
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("create dataset: could not bind request arguments", "error", err, "request", r)
+		h.Logger.Warnw("confirm import dataset: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -71,7 +71,7 @@ func (h *Handler) ConfirmImport(w http.ResponseWriter, r *http.Request, ctx Cont
 		existing, err := h.DatasetSearchService.Search(args)
 
 		if err != nil {
-			h.Logger.Errorw("create dataset: could not execute search", "error", err)
+			h.Logger.Errorw("confirm import dataset: could not execute search", "errors", err, "user", ctx.User.ID)
 			render.InternalServerError(w, r, err)
 			return
 		}
@@ -97,14 +97,13 @@ func (h *Handler) ConfirmImport(w http.ResponseWriter, r *http.Request, ctx Cont
 func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindImport{}
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("create dataset: could not bind request arguments", "error", err, "request", r)
+		h.Logger.Warnw("add import dataset: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
 
 	d, err := h.fetchDatasetByIdentifier(b.Source, b.Identifier)
 	if err != nil {
-		h.Logger.Warnw("create dataset: could not fetch dataset:", "error", err, "identifier", b.Identifier)
 		flash := flash.Flash{
 			Type:         "error",
 			Body:         template.HTML(ctx.Locale.TS("dataset.single_import", "import_by_id.import_failed")),
@@ -130,7 +129,6 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 	d.Status = "private"
 
 	if validationErrs := d.Validate(); validationErrs != nil {
-		h.Logger.Warnw("create dataset: could not validate dataset:", "errors", validationErrs, "identifier", b.Identifier)
 		errors := form.Errors(localize.ValidationErrors(ctx.Locale, validationErrs.(validation.Errors)))
 		render.Layout(w, "layouts/default", "dataset/pages/add", YieldAdd{
 			Context:    ctx,
@@ -150,7 +148,7 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 	err = h.Repository.SaveDataset(d)
 
 	if err != nil {
-		h.Logger.Warnw("create dataset: could not save dataset:", "error", err, "identifier", b.Identifier)
+		h.Logger.Warnw("add import dataset: could not save dataset:", "errors", err, "dataset", b.Identifier, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -192,6 +190,7 @@ func (h *Handler) AddConfirm(w http.ResponseWriter, r *http.Request, ctx Context
 
 func (h *Handler) AddPublish(w http.ResponseWriter, r *http.Request, ctx Context) {
 	if !ctx.User.CanPublishDataset(ctx.Dataset) {
+		h.Logger.Warn("publish dataset: user isn't allowed to edit the dataset:", "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
 		render.Forbidden(w, r)
 		return
 	}
@@ -199,7 +198,6 @@ func (h *Handler) AddPublish(w http.ResponseWriter, r *http.Request, ctx Context
 	ctx.Dataset.Status = "public"
 
 	if err := ctx.Dataset.Validate(); err != nil {
-		h.Logger.Warnw("create dataset: could not validate dataset:", "errors", err, "identifier", ctx.Dataset.ID)
 		errors := form.Errors(localize.ValidationErrors(ctx.Locale, err.(validation.Errors)))
 		render.Layout(w, "show_modal", "form_errors_dialog", struct {
 			Title  string
@@ -215,7 +213,6 @@ func (h *Handler) AddPublish(w http.ResponseWriter, r *http.Request, ctx Context
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		h.Logger.Warnf("create dataset: snapstore detected a conflicting dataset:", "errors", errors.As(err, &conflict), "identifier", ctx.Dataset.ID)
 		render.Layout(w, "show_modal", "error_dialog", ctx.Locale.T("dataset.conflict_error"))
 		return
 	}

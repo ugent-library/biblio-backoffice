@@ -122,7 +122,7 @@ func (h *Handler) EditLaySummary(w http.ResponseWriter, r *http.Request, ctx Con
 func (h *Handler) UpdateLaySummary(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindLaySummary{}
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("update publication lay summary: could not bind request arguments", "error", err, "request", r)
+		h.Logger.Warnw("update publication lay summary: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -134,7 +134,7 @@ func (h *Handler) UpdateLaySummary(w http.ResponseWriter, r *http.Request, ctx C
 	*/
 	laySummary := ctx.Publication.GetLaySummary(b.LaySummaryID)
 	if laySummary == nil {
-		h.Logger.Warnw("update publication lay summary: could not get lay summary", "laysummaryid", b.LaySummaryID, "publication", ctx.Publication.ID)
+		h.Logger.Warnw("update publication lay summary: could not get lay summary", "laysummary", b.LaySummaryID, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.BadRequest(
 			w,
 			r,
@@ -146,7 +146,6 @@ func (h *Handler) UpdateLaySummary(w http.ResponseWriter, r *http.Request, ctx C
 	laySummary.Lang = b.Lang
 
 	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
-		h.Logger.Warnw("update publication lay summary: could not validate lay summary:", "errors", validationErrs, "publication", ctx.Publication.ID)
 		form := laySummaryForm(ctx.Locale, ctx.Publication, laySummary, validationErrs.(validation.Errors))
 
 		render.Layout(w, "refresh_modal", "publication/edit_lay_summary", YieldEditLaySummary{
@@ -161,13 +160,12 @@ func (h *Handler) UpdateLaySummary(w http.ResponseWriter, r *http.Request, ctx C
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		h.Logger.Warnf("update publication lay summary: snapstore detected a conflicting publication:", "errors", errors.As(err, &conflict), "publication", ctx.Publication.ID)
 		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("publication.conflict_error"))
 		return
 	}
 
 	if err != nil {
-		h.Logger.Errorf("update publication details: Could not save the publication:", "error", err, "publication", ctx.Publication.ID)
+		h.Logger.Errorf("update publication details: Could not save the publication:", "error", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -180,7 +178,7 @@ func (h *Handler) UpdateLaySummary(w http.ResponseWriter, r *http.Request, ctx C
 func (h *Handler) ConfirmDeleteLaySummary(w http.ResponseWriter, r *http.Request, ctx Context) {
 	var b BindDeleteLaySummary
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("confirm delete publication lay summary: could not bind request arguments", "error", err, "request", r)
+		h.Logger.Warnw("confirm delete publication lay summary: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -194,7 +192,7 @@ func (h *Handler) ConfirmDeleteLaySummary(w http.ResponseWriter, r *http.Request
 func (h *Handler) DeleteLaySummary(w http.ResponseWriter, r *http.Request, ctx Context) {
 	var b BindDeleteLaySummary
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("delete publication lay summary: could not bind request arguments", "error", err, "request", r)
+		h.Logger.Warnw("delete publication lay summary: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -209,13 +207,12 @@ func (h *Handler) DeleteLaySummary(w http.ResponseWriter, r *http.Request, ctx C
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		h.Logger.Warnf("delete publication lay summary: snapstore detected a conflicting publication:", "errors", errors.As(err, &conflict), "publication", ctx.Publication.ID)
 		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("publication.conflict_error"))
 		return
 	}
 
 	if err != nil {
-		h.Logger.Errorf("delete publication lay summary: Could not save the publication:", "error", err, "publication", ctx.Publication.ID)
+		h.Logger.Errorf("delete publication lay summary: Could not save the publication:", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}

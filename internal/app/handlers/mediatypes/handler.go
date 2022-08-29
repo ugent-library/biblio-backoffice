@@ -21,7 +21,7 @@ type Context struct {
 func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) http.HandlerFunc {
 	return h.BaseHandler.Wrap(func(w http.ResponseWriter, r *http.Request, ctx handlers.BaseContext) {
 		if ctx.User == nil {
-			h.Logger.Warnw("mediatypes: user is not authorized:")
+			h.Logger.Warnw("mediatypes: user is not authorized to access this resource:", "user", ctx.User.ID)
 			render.Unauthorized(w, r)
 			return
 		}
@@ -47,7 +47,7 @@ func (h *Handler) Suggest(w http.ResponseWriter, r *http.Request, ctx Context) {
 
 	hits, err := h.MediaTypeSearchService.SuggestMediaTypes(q)
 	if err != nil {
-		h.Logger.Errorw("suggest mediatype: could not suggest mediatypes:", "error", err, "query", q)
+		h.Logger.Errorw("suggest mediatype: could not suggest mediatypes:", "errors", err, "query", q, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
