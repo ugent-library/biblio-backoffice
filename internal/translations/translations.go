@@ -92,7 +92,7 @@ func init() {
 
 	message.SetString(language.English, "journal_article_types.original", "Original Article")
 	message.SetString(language.English, "journal_article_types.review", "Review Article")
-	message.SetString(language.English, "journal_article_types.letter_note", "Letter / Note")
+	message.SetString(language.English, "journal_article_types.letterNote", "Letter / Note")
 	message.SetString(language.English, "journal_article_types.proceedingsPaper", "Proceedings Paper")
 
 	message.SetString(language.English, "conference_types.proceedingsPaper", "Proceedings Paper")
