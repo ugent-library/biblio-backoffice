@@ -108,6 +108,27 @@ func bookChapterDetailsForm(l *locale.Locale, publication *models.Publication, e
 		).
 		AddSection(
 			&form.Text{
+				Name:  "series_title",
+				Label: l.T("builder.series_title"),
+				Value: publication.SeriesTitle,
+				Cols:  9,
+				Error: localize.ValidationErrorAt(l, errors, "/series_title"),
+			},
+			&form.Text{
+				Name:  "volume",
+				Label: l.T("builder.volume"),
+				Value: publication.Volume,
+				Cols:  3,
+				Error: localize.ValidationErrorAt(l, errors, "/volume"),
+			},
+			&form.Text{
+				Name:  "edition",
+				Label: l.T("builder.edition"),
+				Value: publication.Edition,
+				Cols:  3,
+				Error: localize.ValidationErrorAt(l, errors, "/edition"),
+			},
+			&form.Text{
 				Name:  "page_first",
 				Label: l.T("builder.page_first"),
 				Value: publication.PageFirst,
