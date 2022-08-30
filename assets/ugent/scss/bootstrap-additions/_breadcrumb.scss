@@ -1,0 +1,20 @@
+//
+// Additions to Bootstrap `_breadcrumb.scss`
+//
+
+.breadcrumb {
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+.breadcrumb-item {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 500;
+}
+
+.breadcrumb-item + .breadcrumb-item {
+  padding-left: 1.6rem;
+  margin-left: 1.6rem;
+  border-left: 1px solid $border;
+}

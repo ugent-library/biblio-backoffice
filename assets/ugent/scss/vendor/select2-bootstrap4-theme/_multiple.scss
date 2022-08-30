@@ -3,7 +3,7 @@
 
     // height of input box
     min-height: $input-height !important; // stylelint-disable-line declaration-no-important
-    padding: 0.4rem 0;
+    padding: 0.1rem 0;
     // input box
     .select2-selection__rendered {
       box-sizing: border-box;
@@ -18,23 +18,22 @@
       height: 2.4rem;
       display: inline-flex;
       align-items: center;
+      flex-direction: row-reverse;
       line-height: 2.4rem;
-      background-color: $light-blue;
-      color: $blue;
-      padding-right: $badge-pill-padding-x;
-      padding-left: .4rem;
+      background-color: $gray-50;
+      color: $gray-600;
+      padding-left: $badge-pill-padding-x;
+      padding-right: .4rem;
+      margin: 0.4rem;
       font-size: 1.3rem;
       font-weight: 500;
-      @include border-radius($badge-pill-border-radius);
-    }
-
-    .select2-selection__choice + .select2-selection__choice {
-      margin-left: 0.8rem;
+      border-radius: 0.3rem;
     }
 
     // search field
     .select2-search__field {
       color: $input-color;
+      background-color: transparent;
     }
 
     // fixes placeholder width
@@ -44,28 +43,39 @@
 
     // x button of each selected item in input box
     .select2-selection__choice__remove {
-      float: left;
       background: transparent;
-      color: $blue;
       font-size: 1.6rem;
-      border: 1px solid transparent;
-      margin-right: 0.4rem;
-      font-weight: 700;
+      border-color: transparent;
+      margin-left: 0.6rem;
       appearance: none;
-      opacity: 0.5;
-      &:hover {
-        color: $dark-blue;
+      height: 100%;
+      background-image: url("data:image/svg+xml,%0A%3Csvg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7.99999 7.05732L11.3 3.75732L12.2427 4.69999L8.94266 7.99999L12.2427 11.3L11.3 12.2427L7.99999 8.94266L4.69999 12.2427L3.75732 11.3L7.05732 7.99999L3.75732 4.69999L4.69999 3.75732L7.99999 7.05732Z' fill='%23999999'/%3E%3C/svg%3E%0A");
+      background-position: right 0 center;
+      background-size: 1.6rem 1.6rem;
+
+      span {
+        display: none;
       }
     }
 
     // all clear button
     .select2-selection__clear {
       position: absolute !important; // stylelint-disable-line declaration-no-important
-      top: 0;
-      right: .7em;
+      top: 0rem;
+      height: 1.6rem;
+      width: 1.6rem;
+      right: 1.2rem;
+      background-color: $gray-300;
+      background-image: url("data:image/svg+xml,%0A%3Csvg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7.99999 7.05732L11.3 3.75732L12.2427 4.69999L8.94266 7.99999L12.2427 11.3L11.3 12.2427L7.99999 8.94266L4.69999 12.2427L3.75732 11.3L7.05732 7.99999L3.75732 4.69999L4.69999 3.75732L7.99999 7.05732Z' fill='%23FFFFFF'/%3E%3C/svg%3E%0A");
+      background-position: right 0 center;
+      background-size: 1.6rem 1.6rem;
       // overwrite layout.scss
       float: none;
       margin-right: 0;
+
+      span {
+        display: none;
+      }
     }
   }
 

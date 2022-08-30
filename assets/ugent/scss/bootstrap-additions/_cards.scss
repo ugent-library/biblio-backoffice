@@ -22,6 +22,16 @@
   }
 }
 
+.card-title {
+  font-size: 1.6rem;
+}
+
+.card-footer {
+  height: 6.4rem;
+  display: flex;
+  align-items: center;
+}
+
 .card-collapsible .collapse-trigger[aria-expanded="false"] {
   border-bottom: none;
 }
@@ -30,8 +40,8 @@
   border-bottom: .1rem solid $border;
 }
 
-.card-collapsible .collapse-trigger[aria-expanded="true"] ~ .if-chevron-right,
-.card-collapsible .collapse-trigger[aria-expanded="true"] ~ .bc-toolbar .if-chevron-right{
+.card-collapsible .collapse-trigger[aria-expanded="true"]~.if-chevron-right,
+.card-collapsible .collapse-trigger[aria-expanded="true"]~.bc-toolbar .if-chevron-right {
   transform: rotate(90deg);
 }
 
@@ -50,6 +60,31 @@
   position: relative;
 }
 
-.card-collapsible .bc-toolbar-right .c-button-toolbar {
-  z-index: 10001;
+.card-body,
+.card-body .table-responsive {
+  // Padding for tables inside of cards
+  >.table tr td:first-child,
+  >.table tr th:first-child {
+    padding-left: 2.4rem;
+  }
+
+  >.table tr td:last-child,
+  >.table tr th:last-child {
+    padding-right: 2.4rem;
+  }
+
+  // Fix bordered tables within cards
+  >.table-bordered tr td:first-child,
+  >.table-bordered tr th:first-child {
+    border-left: none;
+  }
+
+  >.table-bordered tr td:last-child,
+  >.table-bordered tr th:last-child {
+    border-right: none;
+  }
+
+  >.table-bordered tr:last-child td {
+    border-bottom: none;
+  }
 }

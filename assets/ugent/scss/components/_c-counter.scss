@@ -1,22 +1,30 @@
 .c-counter {
-  background-color: $blue;
-  color: $white;
+  background-color: $gray-50;
+  color: $gray-600;
   border-radius: 3rem;
   font-size: 1.3rem;
   font-weight: 500;
-  height: 2.4rem;
+  height: 2rem;
+  min-width: 2rem;
   text-align: center;
-  line-height: 2.4rem;
+  line-height: 2rem;
   display: inline-block;
-  padding: 0 .8rem;
+  padding: 0 .6rem;
+}
+
+.c-counter--primary {
+  background-color: $blue;
+  color: $white;
 }
 
 .c-counter--danger {
   background-color: $danger;
+  color: $white;
 }
 
 .c-counter--small {
   height: 1.6rem;
+  min-width: 1.6rem;
   line-height: 1.6rem;
   padding: 0 .5rem;
   font-size: 1.1rem;

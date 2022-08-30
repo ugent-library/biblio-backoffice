@@ -32,14 +32,21 @@ $bc-toolbar-height: 6.4rem !default;
   align-items: center;
 }
 
-.bc-toolbar-bordered {
-  background-color: white;
-  border-bottom: 1px solid $border;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+
+.bc-toolbar--auto {
+  height: auto;
 }
 
+/* Bordered variants
+   ========================================================================== */
+
+.bc-toolbar--bordered-top {
+  border-top: 0.1rem solid $border;
+}
+
+.bc-toolbar--bordered-bottom {
+  border-bottom: 0.1rem solid $border;
+}
 
 /* Standard titles and text
   ========================================================================== */
@@ -50,6 +57,10 @@ $bc-toolbar-height: 6.4rem !default;
   font-weight: 500;
   margin: 0;
   color: $header;
+}
+
+.bc-toolbar-title-sm {
+  font-size: 1.8rem;
 }
 
 .bc-toolbar-title,
@@ -70,7 +81,7 @@ $bc-toolbar-height: 6.4rem !default;
   height: $bc-toolbar-sm-height;
 }
 
-.bc-toolbar-auto {
+.bc-toolbar--auto {
   height: auto;
 }
 
@@ -127,14 +138,14 @@ $bc-toolbar-height: 6.4rem !default;
 }
 
 .bc-toolbar-left .bc-toolbar-item {
-  padding-right: 1rem;
+  padding-right: 1.6rem;
   &:last-child {
     padding-right: 0;
   }
 }
 
 .bc-toolbar-right .bc-toolbar-item {
-  padding-left: 1rem;
+  padding-left: 1.6rem;
   &:first-child {
     padding-left: 0;
   }
@@ -163,4 +174,20 @@ $bc-toolbar-height: 6.4rem !default;
   &:first-child {
     padding-left: 0;
   }
+}
+
+.bc-toolbar-responsive {
+  @include media-breakpoint-down(md) {
+    flex-wrap: wrap;
+    .bc-toolbar-left,
+    .bc-toolbar-right {
+      width: 100%;
+    }
+
+    .bc-toolbar-right {
+      justify-content: flex-start;
+    }
+  }
+
+  height: auto;
 }

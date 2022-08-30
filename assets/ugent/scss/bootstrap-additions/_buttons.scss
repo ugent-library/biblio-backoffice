@@ -4,7 +4,6 @@
 
 .btn {
   align-self: center;
-  padding: 0 1.6rem;
   line-height: 3.4rem;
   white-space: nowrap;
 
@@ -14,8 +13,8 @@
 
   .if {
     position: relative;
-    top: 3px;
-    font-size: 2.4rem;
+    top: 1.5px;
+    font-size: 2rem;
     line-height: 1;
   }
 }
@@ -25,11 +24,11 @@
   padding-left: .4rem;
 }
 
-.btn:not(.btn-icon-only) .if:first-child {
+.btn:not(.btn-icon-only):not(.btn-link-p-0) .if:first-child {
   margin-left: -.8rem;
 }
 
-.btn:not(.btn-icon-only) .if:last-child {
+.btn:not(.btn-icon-only):not(.btn-link-p-0) .if:last-child {
   margin-right: -.8rem;
 }
 
@@ -37,6 +36,9 @@
   font-weight: 500;
 }
 
+.btn-link-p-0 {
+  padding-left: 0;
+}
 // Skins
 
 .btn-warning {
@@ -101,8 +103,8 @@
 .btn-outline-light {
   &:hover,
   &:focus {
-    background-color: $gray-25;
-    color: $gray-200;
+    background-color: rgba($white, .1);
+    color: $white;
   }
 }
 
@@ -141,9 +143,9 @@
 }
 
 .btn-sm {
-  height: 2.4rem;
+  height: 2.8rem;
   font-size: 1.3rem;
-  line-height: 2.4rem;
+  line-height: 2.8rem;
   .if {
     font-size: 1.6rem;
   }
@@ -175,3 +177,16 @@
     top: 0;
   }
 }
+
+.btn-file {
+  position: relative;
+  input[type="file"] {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    opacity: 0.0001;
+  }
+}
+

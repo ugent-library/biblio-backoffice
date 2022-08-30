@@ -1,0 +1,54 @@
+/* ==========================================================================
+    Component: Definition list
+   ========================================================================== */
+
+.c-dl {
+  margin: 0;
+  align-items: flex-start;
+}
+
+.c-dl-term {
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
+}
+
+.c-dl-term {
+  font-weight: 500;
+  color: $gray-600;
+  display: flex;
+}
+
+.c-dl-term:not(:first-of-type) {
+  margin-top: 1.6rem;
+}
+
+
+.c-dl.row {
+
+  [class^='col-md-'].c-dl-term {
+    @include media-breakpoint-up(md) {
+      justify-content: flex-end;
+      margin-top: 0;
+    }
+  }
+
+  [class^='col-md-'].c-dl-desc {
+    @include media-breakpoint-up(md) {
+      padding-top: 0.4rem;
+      padding-bottom: 0.4rem;
+    }
+  }
+
+  [class^='col-md-'].c-dl-term,
+  [class^='col-md-'].c-dl-desc {
+    @include media-breakpoint-up(md) {
+      margin-bottom: 0.8rem;
+    }
+  }
+
+  .c-dl-desc {
+    padding-top: 0.4rem;
+    padding-bottom: 0.4rem;
+  }
+
+}

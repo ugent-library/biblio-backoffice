@@ -1,0 +1,38 @@
+/* ==========================================================================
+    Component: Meta
+   ========================================================================== */
+
+.c-meta-list {
+  padding-left: 0;
+  margin-bottom: 0;
+}
+
+.c-meta-list-horizontal {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  .c-meta-item:not(:last-child) {
+    margin-right: 1.6rem;
+    margin-bottom: 0.6rem;
+  }
+}
+
+.c-meta-item:not(:last-child) {
+  margin-bottom: 1.2rem;
+}
+
+.c-meta-item {
+  font-size: 1.3rem;
+  line-height: 1.2;
+  display: flex;
+  align-items: center;
+  color: $text-muted;
+  margin: 0.6rem 0;
+
+  > .if {
+    color: $icon-muted;
+    font-size: 1.6rem;
+    padding-right: 0.4rem;
+  }
+}

@@ -1,17 +1,20 @@
-.c-header-collapsible[data-collapsed="true"] {
+.c-header-collapsible {
+  z-index: $zindex-fixed;
+}
+.c-header-collapsible {
   .c-header-collapsible__expanded {
-    display: none;
+    display: block;
   }
   .c-header-collapsible__collapsed {
-    display: block;
+    display: none;
   }
 }
 
-.c-header-collapsible[data-collapsed="false"] {
+.c-header-collapsible.collapsed {
   .c-header-collapsible__expanded {
-    display: block;
+    display: none;
   }
   .c-header-collapsible__collapsed {
-    display: none;
+    display: block;
   }
 }

@@ -1,0 +1,40 @@
+.c-side-panel {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  right: 0;
+  top: 4.8rem;
+  width: 40rem;
+  height: calc(100% - 4.8rem);
+  background: #FFF;
+  box-shadow: $box-shadow;
+  overflow: hidden;
+  z-index: 1035;
+}
+
+.c-side-panel__header {
+  border-bottom: 1px solid $border;
+  display: flex;
+  align-items: center;
+  height: 6.4rem;
+  padding: 0 2.4rem;
+}
+
+.c-side-panel__footer {
+  border-top: 1px solid $border;
+  display: flex;
+  align-items: center;
+  height: 6.4rem;
+  padding: 0 2.4rem;
+}
+
+.c-side-panel__title {
+  font-size: 1.8rem;
+  margin-bottom: 0;
+}
+
+.c-side-panel__body {
+  padding: 2.4rem;
+  overflow: scroll;
+  flex: 1;
+}
