@@ -1,11 +1,15 @@
 {{$p := .Publication}}
 {{$pURL := pathFor "publication" "id" $p.ID|querySet "redirect-url" .CurrentURL.String}}
-<div class="d-flex w-100">
-    <div class="w-100">
-        <div class="d-flex align-items-start">
-            <a href="{{$pURL}}">
-                {{partial "publication/thumbnail" .Publication}}
-            </a>
+<div class="list-group-item-main u-min-w-0">
+    <div class="c-thumbnail-and-text align-items-start d-block d-lg-flex">
+        <div class="c-thumbnail c-thumbnail-5-4 c-thumbnail-small c-thumbnail-lg-large mb-6 mb-lg-0 flex-shrink-0 c-thumbnail-img">
+            <div class="c-thumbnail-inner">
+                <a href="{{$pURL}}">
+                    {{partial "publication/thumbnail" .Publication}}
+                </a>
+            </div>
+        </div>
+        <div class="c-thumbnail-text u-min-w-0">
             <div class="list-group-item-content">
                 <div class="list-group-item-subline">
                     <div class="list-group-item-subline-left">
@@ -83,23 +87,23 @@
                     </div>
                 </div>
             </div>
-        </div>
-        {{with $p.Message}}
-        <div class="list-group-item-comment">
-            <div class="d-flex">
-                <div class="bc-avatar bc-avatar-icon bc-avatar--muted">
-                    <i class="if if-user"></i>
-                </div>
-                <div class="ml-5 w-100">
-                    <div class="d-flex w-100 justify-content-between">
-                        <div>
-                            <h4 class="c-h4">Reviewer</h4>
-                        </div>
+            {{with $p.Message}}
+            <div class="list-group-item-comment">
+                <div class="d-flex">
+                    <div class="bc-avatar bc-avatar-icon bc-avatar--muted">
+                        <i class="if if-user"></i>
                     </div>
-                    <p class="mb-0 mt-3">{{.}}</p>
+                    <div class="ml-5 w-100">
+                        <div class="d-flex w-100 justify-content-between">
+                            <div>
+                                <h4 class="c-h4">Reviewer</h4>
+                            </div>
+                        </div>
+                        <p class="mb-0 mt-3">{{.}}</p>
+                    </div>
                 </div>
             </div>
+            {{end}}
         </div>
-        {{end}}
     </div>
 </div>
