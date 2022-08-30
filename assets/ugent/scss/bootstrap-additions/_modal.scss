@@ -12,6 +12,13 @@
   padding: 0 1.6rem;
 }
 
+.modal-header {
+  height: 6.4rem;
+  display: flex;
+  align-items: center;
+  padding: 0 1.6rem;
+}
+
 .modal-footer > * {
   margin: 0;
 }
@@ -29,4 +36,18 @@
   .modal-body {
     height: 100%;
   }
+}
+
+.modal-dialog,
+.modal-open {
+  overflow-y: hidden;
+}
+
+.modal-content {
+  max-height: calc(100vh - 6.4rem);
+}
+
+.modal-header,
+.modal-footer {
+  flex: 0 0 auto;
 }

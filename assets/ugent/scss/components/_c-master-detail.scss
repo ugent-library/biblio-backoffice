@@ -1,0 +1,33 @@
+.c-master-detail {
+  position: relative;
+
+  [data-detail],
+  [data-master] {
+    transform: translateX(-100%);
+    position: absolute;
+    width: 100%;
+    top: 0;
+  }
+
+  .active {
+    transform: translateX(0%);
+  }
+}
+
+.c-master-detail-responsive {
+  @include media-breakpoint-down(md) {
+    position: relative;
+
+    [data-detail],
+    [data-master] {
+      transform: translateX(-100%);
+      position: absolute;
+      width: 100%;
+      top: 0;
+    }
+
+    .active {
+      transform: translateX(0%);
+    }
+  }
+}

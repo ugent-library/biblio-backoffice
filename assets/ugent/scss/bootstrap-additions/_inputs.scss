@@ -18,20 +18,31 @@
 }
 
 .custom-switch .custom-control-label::after {
-  top: .4rem;
+  top: .5rem;
   left: calc(-4.4rem + 2px);
   background-color: $white;
 }
 
 .custom-switch .custom-control-input:checked ~ .custom-control-label::after {
-  transform: translateX(1.8rem);
+  transform: translateX(1.6rem);
 }
 
 .custom-control-input[disabled] ~ .custom-control-label::before, .custom-control-input:disabled ~ .custom-control-label::before {
   background-color: $gray-100 !important;
-  border-color: $gray-100;
 }
 
-.custom-control-input[disabled] ~ .custom-control-label::before, .custom-control-input:disabled ~ .custom-control-label::after {
-  background-color: $gray-50;
+
+.custom-checkbox-no-label {
+  padding-left: 0;
+
+  .custom-control-label {
+    // set same width/height as before and after
+    width: 1em;
+    height: 1em;
+
+    &::before,
+    &::after {
+      left: 0;
+    }
+  }
 }

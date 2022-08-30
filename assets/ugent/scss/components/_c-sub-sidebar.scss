@@ -24,7 +24,6 @@
   min-width: $c-sub-sidebar-width;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
 }
 
 .c-sub-sidebar__menu {
@@ -87,4 +86,24 @@
 .c-sub-sidebar__item-sub--active a {
   background: $c-sub-sidebar-active-background-color;
   color: $c-sub-sidebar-active-color;
+}
+
+.c-sub-sidebar.collapsed {
+  min-width: 7.2rem;
+  width: 7.2rem;
+
+  .c-sub-sidebar__content {
+    display: none;
+  }
+}
+
+.c-sub-sidebar--responsive {
+  @include media-breakpoint-down(md) {
+    max-width: 7.2rem;
+    min-width: 7.2rem;
+  }
+}
+
+.c-sub-sidebar--bordered {
+  border-right: .1rem solid $border-color;
 }

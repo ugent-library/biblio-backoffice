@@ -3,45 +3,79 @@
    ========================================================================== */
 
 .c-thumbnail {
+  width: 9.6rem;
+}
+
+.c-thumbnail-small {
+  width: 6.4rem;
+}
+
+
+.c-thumbnail-large {
+  width: 11.2rem;
+}
+
+.c-thumbnail-lg-large {
+  @include media-breakpoint-up(lg) {
+    width: 11.2rem;
+  }
+}
+
+.c-thumbnail-5-4 {
+  .c-thumbnail-inner {
+    padding-bottom: 125%;
+  }
+}
+
+.c-thumbnail-1-1 {
+  .c-thumbnail-inner {
+    padding-bottom: 100%;
+  }
+}
+
+.c-thumbnail-img {
+  .c-thumbnail-inner {
+    border: 0.1rem solid $border;
+  }
+
+  img {
+    border-radius: 0.3rem;
+  }
+}
+
+.c-thumbnail-inner {
   background: $light-blue;
-  border: 0.1rem solid $border;
-  width: 100%;
+  height: 0;
   position: relative;
+  border-radius: 0.3rem;
   .if {
     color: $blue;
     position: absolute;
     top: calc(50% - 1.2rem);
     left: calc(50% - 1.2rem);
   }
-}
 
-.c-thumbnail--publication {
-  padding-top: 125%;
-  &.c-thumbnail--small {
-    width: 10.8rem;
-  }
-  &.c-thumbnail--medium {
-    width: 12.4rem;
-  }
-  &.c-thumbnail--xsmall {
-    width: 6.4rem;
-  }
-}
-
-.c-thumbnail--dataset {
-  padding-top: 100%;
-  &.c-thumbnail--medium {
-    width: 9.6rem;
+  img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 }
 
-.c-thumbnail--small,
-.c-thumbnail--xsmall {
-  .if {
-    font-size: 1.6rem;
-    line-height: 1.6rem;
-    top: calc(50% - 0.8rem);
-    left: calc(50% - 0.8rem);
+.c-thumbnail-and-text {
+  display: flex;
+  align-items: center;
+
+  .c-thumbnail {
+    margin-right: 2rem;
+  }
+
+  .c-thumbnail-text {
+    flex: 1;
   }
 }
-

@@ -1,4 +1,4 @@
-<ul class="nav" role="tablist">
+<ul class="nav nav-tabs" role="tablist">
 {{range .SubNavs}}
     {{$u := pathFor "dataset" "id" $.Dataset.ID|querySet "redirect-url" $.RedirectURL|querySet "show" .}} 
     <li class="nav-item">

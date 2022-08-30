@@ -6,6 +6,7 @@
 
 $bc-avatar-dimensions: 3.2rem !default;
 $bc-avatar-md-dimensions: 4.8rem !default;
+$bc-avatar-xl-dimensions: 9.6rem !default;
 $bc-avatar-lg-dimensions: 6.4rem !default;
 $bc-avatar-sm-dimensions: 2.4rem !default;
 $bc-avatar-tiny-dimensions: 1.6rem !default;
@@ -27,10 +28,10 @@ $bc-avatar-tiny-dimensions: 1.6rem !default;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-}
 
-.bc-avatar--muted {
-  background-color: $gray-300;
+  .if {
+    font-size: 2rem;
+  }
 }
 
 .bc-avatar--img {
@@ -53,6 +54,9 @@ $bc-avatar-tiny-dimensions: 1.6rem !default;
   min-height: $bc-avatar-tiny-dimensions;
   line-height: $bc-avatar-tiny-dimensions;
   font-size: 1rem;
+  .if {
+    font-size: 1.2rem;
+  }
 }
 
 .bc-avatar--small {
@@ -62,6 +66,9 @@ $bc-avatar-tiny-dimensions: 1.6rem !default;
   min-height: $bc-avatar-sm-dimensions;
   line-height: $bc-avatar-sm-dimensions;
   font-size: 1rem;
+  .if {
+    font-size: 1.6rem;
+  }
 }
 
 .bc-avatar--medium {
@@ -71,6 +78,9 @@ $bc-avatar-tiny-dimensions: 1.6rem !default;
   min-height: $bc-avatar-md-dimensions;
   line-height: $bc-avatar-md-dimensions;
   font-size: 2rem;
+  .if {
+    font-size: 2.4rem;
+  }
 }
 
 .bc-avatar--large {
@@ -80,6 +90,21 @@ $bc-avatar-tiny-dimensions: 1.6rem !default;
   min-height: $bc-avatar-lg-dimensions;
   line-height: $bc-avatar-lg-dimensions;
   font-size: 2.4rem;
+  .if {
+    font-size: 2.8rem;
+  }
+}
+
+.bc-avatar--xlarge {
+  width: $bc-avatar-xl-dimensions;
+  height: $bc-avatar-xl-dimensions;
+  min-width: $bc-avatar-xl-dimensions;
+  min-height: $bc-avatar-xl-dimensions;
+  line-height: $bc-avatar-xl-dimensions;
+  font-size: 2.8rem;
+  .if {
+    font-size: 3.2rem;
+  }
 }
 
 .bc-avatar-and-text {
@@ -87,7 +112,7 @@ $bc-avatar-tiny-dimensions: 1.6rem !default;
   align-items: center;
 
   .bc-avatar {
-    margin-right: .8rem;
+    margin-right: 1.6rem;
   }
 
   &__text {
@@ -97,4 +122,56 @@ $bc-avatar-tiny-dimensions: 1.6rem !default;
 
 .bc-avatar-icon .if{
   font-size: 1.6rem;
+}
+
+.bc-avatar--rounded {
+  border-radius: 0.3rem;
+}
+
+
+.bc-avatar--muted {
+  background-color: $gray-300;
+}
+
+.bc-avatar--turquoise {
+  background: $turquoise;
+}
+
+.bc-avatar--orange {
+  background: $orange;
+}
+
+.bc-avatar--green {
+  background: $green;
+}
+
+.bc-avatar--grey-blue {
+  background: $grey-blue;
+}
+
+.bc-avatar--light-purple {
+  background: $light-purple;
+}
+
+.bc-avatar--warm-orange {
+  background: $warm-orange;
+}
+
+.bc-avatar--salmon-pink {
+  background: $salmon-pink;
+}
+
+.bc-avatar--light-blue {
+  background: $light-blue;
+  color: $blue;
+}
+
+.bc-avatar--light-danger {
+  background-color: $light-warm-red;
+  color: $warm-red;
+}
+
+.bc-avatar--danger {
+  background-color: $warm-red;
+  color: $white;
 }
