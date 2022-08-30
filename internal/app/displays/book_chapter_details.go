@@ -70,6 +70,18 @@ func bookChapterDetails(l *locale.Locale, p *models.Publication) *display.Displa
 		).
 		AddSection(
 			&display.Text{
+				Label: l.T("builder.series_title"),
+				Value: p.SeriesTitle,
+			},
+			&display.Text{
+				Label: l.T("builder.volume"),
+				Value: p.Volume,
+			},
+			&display.Text{
+				Label: l.T("builder.edition"),
+				Value: p.Edition,
+			},
+			&display.Text{
 				Label: l.T("builder.pages"),
 				Value: helpers.FormatRange(p.PageFirst, p.PageLast),
 			},
