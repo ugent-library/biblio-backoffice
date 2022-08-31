@@ -162,6 +162,7 @@ func (s *Repository) EachPublication(fn func(*models.Publication) bool) error {
 		p.SnapshotID = snap.SnapshotID
 		p.DateFrom = snap.DateFrom
 		p.DateUntil = snap.DateUntil
+		// TODO catch errors from fn() and pass them upstream
 		if ok := fn(p); !ok {
 			break
 		}
@@ -187,6 +188,7 @@ func (s *Repository) EachPublicationSnapshot(fn func(*models.Publication) bool) 
 		p.SnapshotID = snap.SnapshotID
 		p.DateFrom = snap.DateFrom
 		p.DateUntil = snap.DateUntil
+		// TODO catch errors from fn() and pass them upstream
 		if ok := fn(p); !ok {
 			break
 		}
@@ -283,6 +285,7 @@ func (s *Repository) EachDataset(fn func(*models.Dataset) bool) error {
 		d.SnapshotID = snap.SnapshotID
 		d.DateFrom = snap.DateFrom
 		d.DateUntil = snap.DateUntil
+		// TODO catch errors from fn() and pass them upstream
 		if ok := fn(d); !ok {
 			break
 		}
@@ -309,6 +312,7 @@ func (s *Repository) EachDatasetSnapshot(fn func(*models.Dataset) bool) error {
 		d.SnapshotID = snap.SnapshotID
 		d.DateFrom = snap.DateFrom
 		d.DateUntil = snap.DateUntil
+		// TODO catch errors from fn() and pass them upstream
 		if ok := fn(d); !ok {
 			break
 		}
