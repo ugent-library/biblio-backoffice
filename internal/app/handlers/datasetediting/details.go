@@ -131,13 +131,12 @@ func detailsForm(l *locale.Locale, dataset *models.Dataset, errors validation.Er
 		WithErrors(localize.ValidationErrors(l, errors)).
 		AddSection(
 			&form.Text{
-				Name:        "title",
-				Value:       dataset.Title,
-				Label:       l.T("builder.title"),
-				Cols:        9,
-				Placeholder: l.T("builder.details.title.placeholder"),
-				Error:       localize.ValidationErrorAt(l, errors, "/title"),
-				Required:    true,
+				Name:     "title",
+				Value:    dataset.Title,
+				Label:    l.T("builder.title"),
+				Cols:     9,
+				Error:    localize.ValidationErrorAt(l, errors, "/title"),
+				Required: true,
 			},
 			&display.Text{
 				Label:         l.T("builder.doi"),
@@ -155,23 +154,22 @@ func detailsForm(l *locale.Locale, dataset *models.Dataset, errors validation.Er
 		).
 		AddSection(
 			&form.Text{
-				Name:        "publisher",
-				Value:       dataset.Publisher,
-				Label:       l.T("builder.publisher"),
-				Cols:        9,
-				Placeholder: l.T("builder.details.publisher.placeholder"),
-				Error:       localize.ValidationErrorAt(l, errors, "/publisher"),
-				Required:    true,
-				Tooltip:     l.T("tooltip.dataset.publisher"),
+				Name:     "publisher",
+				Value:    dataset.Publisher,
+				Label:    l.T("builder.publisher"),
+				Cols:     9,
+				Error:    localize.ValidationErrorAt(l, errors, "/publisher"),
+				Required: true,
+				Tooltip:  l.T("tooltip.dataset.publisher"),
 			},
 			&form.Text{
-				Name:        "year",
-				Value:       dataset.Year,
-				Label:       l.T("builder.year"),
-				Cols:        3,
-				Placeholder: l.T("builder.year.placeholder"),
-				Error:       localize.ValidationErrorAt(l, errors, "/year"),
-				Required:    true,
+				Name:     "year",
+				Value:    dataset.Year,
+				Label:    l.T("builder.year"),
+				Cols:     3,
+				Help:     l.T("builder.year.help"),
+				Error:    localize.ValidationErrorAt(l, errors, "/year"),
+				Required: true,
 			},
 		).
 		AddSection(
@@ -206,13 +204,13 @@ func detailsForm(l *locale.Locale, dataset *models.Dataset, errors validation.Er
 				Required:    true,
 			},
 			&form.Text{
-				Name:        "other_license",
-				Value:       dataset.OtherLicense,
-				Label:       l.T("builder.other_license"),
-				Cols:        9,
-				Placeholder: "e.g. https://creativecommons.org/licenses/by/4.0/",
-				Error:       localize.ValidationErrorAt(l, errors, "/other_license"),
-				Required:    true,
+				Name:     "other_license",
+				Value:    dataset.OtherLicense,
+				Label:    l.T("builder.other_license"),
+				Cols:     9,
+				Help:     l.T("builder.other_license.help"),
+				Error:    localize.ValidationErrorAt(l, errors, "/other_license"),
+				Required: true,
 			},
 			&form.Select{
 				Template:    "dataset/access_level",

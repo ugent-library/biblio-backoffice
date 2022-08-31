@@ -9,8 +9,8 @@
         {{end}}
     </label>
     <input class="form-control{{if .Error}} is-invalid{{end}}" name="{{.Name}}" type="text" value="{{.Value}}"
-        {{if .Placeholder}}placeholder="{{.Placeholder}}"{{end}}
         {{if .Readonly}}readonly{{end}}
     >
     {{with .Error}}<div class="invalid-feedback">{{.}}</div>{{end}}
+    {{with .Help}}<small class="form-text text-muted">{{.}}</small>{{end}}
 </div>
