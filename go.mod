@@ -19,7 +19,7 @@ require (
 	github.com/jackc/pgconn v1.12.1
 	github.com/jackc/pgtype v1.11.0
 	github.com/jackc/pgx/v4 v4.16.1
-	github.com/nickng/bibtex v1.1.0
+	github.com/nickng/bibtex v1.2.0
 	github.com/oklog/ulid v1.3.1
 	github.com/pkg/errors v0.9.1
 	github.com/rvflash/elapsed v0.2.0
