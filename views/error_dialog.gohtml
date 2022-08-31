@@ -1,9 +1,12 @@
 {{define "modal_dialog"}}
-<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+<div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
-        <div class="modal-body">                    
-            <div class="alert alert-danger">
-                {{.}}
+        <div class="modal-body">
+            <div class="c-blank-slate c-blank-slate-danger">
+                <div class="bc-avatar">
+                    <i class="if if-error-circle"></i>
+                </div>
+                <p>{{.}}</p>
             </div>
         </div>
         <div class="modal-footer">
