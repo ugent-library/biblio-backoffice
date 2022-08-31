@@ -3,10 +3,14 @@
     <ul class="list-group list-group-flush">
         {{range .RelatedPublications}}
         <li class="list-group-item">
-            <div class="d-flex w-100">
-                <div class="w-100">
-                    <div class="d-flex align-items-start">
-                        {{partial "publication/thumbnail" .}}
+            <div class="list-group-item-main u-min-w-0">
+                <div class="c-thumbnail-and-text align-items-start d-block d-lg-flex">
+                    <div class="c-thumbnail c-thumbnail-5-4 c-thumbnail-small c-thumbnail-lg-large mb-6 mb-lg-0 flex-shrink-0 c-thumbnail-img">
+                        <div class="c-thumbnail-inner">
+                            {{partial "publication/thumbnail" .}}
+                        </div>
+                    </div>
+                    <div class="c-thumbnail-text u-min-w-0">
                         <div class="list-group-item-content">
                             <div class="list-group-item-subline">
                                 <div class="list-group-item-subline-left">

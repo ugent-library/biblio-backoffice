@@ -241,11 +241,9 @@ func init() {
 	message.SetString(language.English, "builder.conference.end_date", "Conference end date")
 
 	message.SetString(language.English, "builder.abstract.text", "Abstract")
-	message.SetString(language.English, "builder.abstract.text.placeholder", "Add abstract here...")
 	message.SetString(language.English, "builder.abstract.lang", "Language")
 
 	message.SetString(language.English, "builder.lay_summary.text", "Lay summary")
-	message.SetString(language.English, "builder.lay_summary.text.placeholder", "Add lay summary here...")
 	message.SetString(language.English, "builder.lay_summary.lang", "Language")
 
 	message.SetString(language.English, "builder.link.url", "URL")
@@ -691,4 +689,21 @@ func init() {
 	message.SetString(language.English, "builder.file.no_license", "No license (in copyright)")
 	message.SetString(language.English, "builder.file.other_license", "Other license")
 	message.SetString(language.English, "builder.file.description", "Description")
+
+	//help texts
+	message.SetString(language.English, "builder.doi.help", "e.g. 10.1093/plcell/koc126")
+	message.SetString(language.English, "builder.year.help", "e.g. 2022")
+	message.SetString(language.English, "builder.other_license.help", "e.g. https://creativecommons.org/licenses/publicdomain/")
+	message.SetString(language.English, "builder.file.other_license.help", "e.g. https://creativecommons.org/licenses/publicdomain/")
+	message.SetString(language.English, "builder.wos_id.help", "e.g. 000503382400004")
+	message.SetString(language.English, "builder.issn.help", "e.g. 2049-3630")
+	message.SetString(language.English, "builder.eissn.help", "e.g. 2049-3630")
+	message.SetString(language.English, "builder.isbn.help", "e.g. 978-3-16-148410-0")
+	message.SetString(language.English, "builder.eisbn.help", "e.g. 978-3-16-148410-0")
+	message.SetString(language.English, "builder.defense_date.help", "e.g. 2022-04-30. Formatted as YYYY-mm-dd")
+	message.SetString(language.English, "builder.defense_time.help", "e.g. 11:30. Formatted as HH:MM")
+	message.SetString(language.English, "builder.pubmed_id.help", "e.g. 35172674")
+	message.SetString(language.English, "builder.arxiv_id.help", "e.g. 0706.0001")
+	message.SetString(language.English, "builder.esci_id.help", "e.g. 000752820200004")
+
 }

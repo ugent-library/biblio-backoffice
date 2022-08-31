@@ -348,8 +348,8 @@ github.com/mitchellh/reflectwalk v1.0.2 h1:G2LzWKi524PWgd3mLHV8Y5k7s6XUvT0Gef6zx
 github.com/mitchellh/reflectwalk v1.0.2/go.mod h1:mSTlrgnPZtwu0c4WaC2kGObEpuNDbx0jmZXqmk4esnw=
 github.com/mschoch/smat v0.2.0 h1:8imxQsjDm8yFEAVBe7azKmKSgzSkZXDuKkSq9374khM=
 github.com/mschoch/smat v0.2.0/go.mod h1:kc9mz7DoBKqDyiRL7VZN8KvXQMWeTaVnttLRXOlotKw=
-github.com/nickng/bibtex v1.1.0 h1:CumceSenk4+TAY11CJeSUCUOjpicu9teVe5OBqANUz4=
-github.com/nickng/bibtex v1.1.0/go.mod h1:4BJ3ka/ZjGVXcHOlkzlRonex6U17L3kW6ICEsygP2bg=
+github.com/nickng/bibtex v1.2.0 h1:b+buRQja8xk27I9nCd3o+OujB8E8CRKbubAgHsrd4Kk=
+github.com/nickng/bibtex v1.2.0/go.mod h1:4BJ3ka/ZjGVXcHOlkzlRonex6U17L3kW6ICEsygP2bg=
 github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e h1:fD57ERR4JtEqsWbfPhv4DMiApHyliiK5xCTNVSPiaAs=
 github.com/oklog/ulid v1.3.1 h1:EGfNDEx6MqHz8B3uNV6QAib1UR2Lm97sHi3ocA6ESJ4=
 github.com/oklog/ulid v1.3.1/go.mod h1:CirwcVhetQ6Lv90oh/F+FBtV6XMibvdAFo93nm5qn4U=

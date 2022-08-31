@@ -235,13 +235,12 @@ func laySummaryForm(l *locale.Locale, publication *models.Publication, laySummar
 		WithErrors(localize.ValidationErrors(l, errors)).
 		AddSection(
 			&form.TextArea{
-				Name:        "text",
-				Value:       laySummary.Text,
-				Label:       l.T("builder.lay_summary.text"),
-				Cols:        12,
-				Rows:        6,
-				Placeholder: l.T("builder.lay_summary.text.placeholder"),
-				Error:       localize.ValidationErrorAt(l, errors, fmt.Sprintf("/lay_summary/%d/text", idx)),
+				Name:  "text",
+				Value: laySummary.Text,
+				Label: l.T("builder.lay_summary.text"),
+				Cols:  12,
+				Rows:  6,
+				Error: localize.ValidationErrorAt(l, errors, fmt.Sprintf("/lay_summary/%d/text", idx)),
 			},
 			&form.Select{
 				Name:    "lang",

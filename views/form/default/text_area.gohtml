@@ -9,7 +9,8 @@
         {{end}}
     </label>
     <div class="col-{{.Cols}}">
-        <textarea class="form-control{{if .Error}} is-invalid{{end}}" name="{{.Name}}"{{if .Placeholder}} placeholder="{{.Placeholder}}"{{end}} rows="{{.Rows}}">{{.Value}}</textarea>
+        <textarea class="form-control{{if .Error}} is-invalid{{end}}" name="{{.Name}}" rows="{{.Rows}}">{{.Value}}</textarea>
         {{with .Error}}<div class="invalid-feedback">{{.}}</div>{{end}}
+        {{with .Help}}<small class="form-text text-muted">{{.}}</small>{{end}}
     </div>
 </div>

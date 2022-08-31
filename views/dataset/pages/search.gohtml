@@ -73,7 +73,7 @@
                 <ul class="list-group list-group-flush">
                     {{range .Hits.Hits}}
                     <li class="list-group-item">
-                        {{layout "shared/summary" "dataset/search_hit" ($.YieldHit .)}}
+                        {{partial "dataset/search_hit" ($.YieldHit .)}}
                     </li>
                     {{end}}
                 </ul>
