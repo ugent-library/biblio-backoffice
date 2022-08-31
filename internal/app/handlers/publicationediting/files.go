@@ -419,6 +419,7 @@ func fileForm(l *locale.Locale, publication *models.Publication, file *models.Pu
 			Name:  "other_license",
 			Value: file.OtherLicense,
 			Label: l.T("builder.file.other_license"),
+			Help:  l.T("builder.file.other_license.help"),
 			Cols:  12,
 			Error: localize.ValidationErrorAt(
 				l,

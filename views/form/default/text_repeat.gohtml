@@ -23,7 +23,6 @@
                         hx-target="#{{$.Name}}-{{$i}}-autocomplete" data-tmpl-hx-target="#{{$.Name}}-{i}-autocomplete"
                         hx-vals='{"input": "{{$.Name}}[{{$i}}]"}' data-tmpl-hx-vals='{"input": "{{$.Name}}[{i}]"}'
                         {{end}}
-                        {{if $.Placeholder}}placeholder="{{$.Placeholder}}"{{end}}
                         {{if $.Readonly}}readonly{{end}}
                     >
                 {{if $.AutocompleteURL}}
@@ -50,7 +49,6 @@
                         hx-target="#{{.Name}}-{{len .Values}}-autocomplete" data-tmpl-hx-target="#{{.Name}}-{i}-autocomplete"
                         hx-vals='{"input": "{{.Name}}[{{len .Values}}]"}' data-tmpl-hx-vals='{"input": "{{.Name}}[{i}]"}'
                         {{end}}
-                        {{if .Placeholder}} placeholder="{{.Placeholder}}"{{end}}
                     >
                 {{if .AutocompleteURL}}
                 <div class="autocomplete-hits" id="{{.Name}}-{{len .Values}}-autocomplete" data-tmpl-id="{{.Name}}-{i}-autocomplete"></div>
@@ -67,5 +65,6 @@
             to be preceded by is-invalid as sibling
         -->
         {{if .Error}}<div class="invalid-feedback" style="display:block">{{.Error}}</div>{{end}}
+        {{with .Help}}<small class="form-text text-muted">{{.}}</small>{{end}}
     </div>
 </div>
