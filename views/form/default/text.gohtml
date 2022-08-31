@@ -17,10 +17,10 @@
             hx-target="#{{.Name}}-autocomplete"
             hx-vals='{"input": {{.Name|quote}}}'
             {{end}}
-            {{if .Placeholder}}placeholder="{{.Placeholder}}"{{end}}
             {{if .Readonly}}readonly{{end}}
         >
         {{if .AutocompleteURL}}<div class="autocomplete-hits" id="{{.Name}}-autocomplete"></div>{{end}}
         {{with .Error}}<div class="invalid-feedback">{{.}}</div>{{end}}
+        {{with .Help}}<small class="form-text text-muted">{{.}}</small>{{end}}
     </div>
 </div>

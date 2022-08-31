@@ -83,7 +83,7 @@ type Text struct {
 	ID              string
 	Label           string
 	Name            string
-	Placeholder     string
+	Help            string
 	Readonly        bool
 	Required        bool
 	Template        string
@@ -103,7 +103,7 @@ type TextRepeat struct {
 	ID              string
 	Label           string
 	Name            string
-	Placeholder     string
+	Help            string
 	Readonly        bool
 	Required        bool
 	Tooltip         string
@@ -115,15 +115,15 @@ func (f *TextRepeat) Render(theme string, w io.Writer) error {
 }
 
 type TextArea struct {
-	Cols        int
-	Error       string
-	Label       string
-	Name        string
-	Placeholder string
-	Required    bool
-	Rows        int
-	Tooltip     string
-	Value       string
+	Cols     int
+	Error    string
+	Label    string
+	Name     string
+	Help     string
+	Required bool
+	Rows     int
+	Tooltip  string
+	Value    string
 }
 
 func (f *TextArea) Render(theme string, w io.Writer) error {
