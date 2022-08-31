@@ -155,7 +155,7 @@
                                 "phrase_ngram": {
                                     "type": "text",
                                     "analyzer": "phrase_edge_ngram",
-                                    "search_analyzer": "phrase_edge_ngram"
+                                    "search_analyzer": "phrase_edge_ngram_search"
                                 }
                             }
                         },
@@ -196,7 +196,7 @@
                                 "phrase_ngram": {
                                     "type": "text",
                                     "analyzer": "phrase_edge_ngram",
-                                    "search_analyzer": "phrase_edge_ngram"
+                                    "search_analyzer": "phrase_edge_ngram_search"
                                 }
                             }
                         },
