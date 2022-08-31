@@ -9,13 +9,16 @@ import (
 	api "github.com/ugent-library/biblio-backend/api/v1"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/ulid"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func (s *server) GetDataset(ctx context.Context, req *api.GetDatasetRequest) (*api.GetDatasetResponse, error) {
 	dataset, err := s.services.Repository.GetDataset(req.Id)
 	if err != nil {
-		return nil, err
+		// TODO How do we differentiate between errors? e.g. NotFound vs. Internal (database unavailable,...)
+		return nil, status.Errorf(codes.Internal, "Could not get dataset with id %d: %w", req.Id, err)
 	}
 
 	res := &api.GetDatasetResponse{Dataset: datasetToMessage(dataset)}
@@ -27,6 +30,7 @@ func (s *server) GetAllDatasets(req *api.GetAllDatasetsRequest, stream api.Bibli
 	return s.services.Repository.EachDataset(func(p *models.Dataset) bool {
 		res := &api.GetAllDatasetsResponse{Dataset: datasetToMessage(p)}
 		if err = stream.Send(res); err != nil {
+			// TODO error handling
 			return false
 		}
 		return true
@@ -41,7 +45,8 @@ func (s *server) SearchDatasets(ctx context.Context, req *api.SearchDatasetsRequ
 	args := models.NewSearchArgs().WithQuery(req.Query).WithPage(page)
 	hits, err := s.services.DatasetSearchService.Search(args)
 	if err != nil {
-		return nil, err
+		// TODO How do we differentiate between errors?
+		return nil, status.Errorf(codes.Internal, "Could not search datasets: %s", req.Query, err)
 	}
 
 	res := &api.SearchDatasetsResponse{
@@ -65,10 +70,12 @@ func (s *server) UpdataDataset(ctx context.Context, req *api.UpdateDatasetReques
 	}
 
 	if err := s.services.Repository.UpdateDataset(req.Dataset.SnapshotId, p); err != nil {
-		return nil, fmt.Errorf("failed to store dataset %s: %w", p.ID, err)
+		// TODO How do we differentiate between errors?
+		return nil, status.Errorf(codes.Internal, "failed to store dataset %s, %w", p.ID, err)
 	}
 	if err := s.services.DatasetSearchService.Index(p); err != nil {
-		return nil, fmt.Errorf("failed to index dataset %s: %w", p.ID, err)
+		// TODO How do we differentiate between errors
+		return nil, status.Errorf(codes.Internal, "failed to index dataset %s, %w", p.ID, err)
 	}
 
 	return &api.UpdateDatasetResponse{}, nil
@@ -105,7 +112,7 @@ func (s *server) AddDatasets(stream api.Biblio_AddDatasetsServer) error {
 			return nil
 		}
 		if err != nil {
-			return err
+			return status.Errorf(codes.Internal, "failed to read stream: %w", err)
 		}
 
 		d := messageToDataset(res.Dataset)
@@ -136,7 +143,7 @@ func (s *server) AddDatasets(stream api.Biblio_AddDatasetsServer) error {
 		if err := s.services.Repository.SaveDataset(d); err != nil {
 			msg := fmt.Errorf("failed to store dataset %s at line %d: %w", d.ID, lineNum, err).Error()
 			if err = stream.Send(&api.AddDatasetsResponse{Messsage: msg}); err != nil {
-				return err
+				return status.Errorf(codes.Internal, msg)
 			}
 			continue
 		}

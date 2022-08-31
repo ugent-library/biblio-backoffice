@@ -9,13 +9,16 @@ import (
 	api "github.com/ugent-library/biblio-backend/api/v1"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/ulid"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func (s *server) GetPublication(ctx context.Context, req *api.GetPublicationRequest) (*api.GetPublicationResponse, error) {
 	pub, err := s.services.Repository.GetPublication(req.Id)
 	if err != nil {
-		return nil, err
+		// TODO How do we differentiate between errors? e.g. NotFound vs. Internal (database unavailable,...)
+		return nil, status.Errorf(codes.Internal, "Could not get publication with id %d: %w", req.Id, err)
 	}
 
 	res := &api.GetPublicationResponse{Publication: publicationToMessage(pub)}
@@ -41,7 +44,8 @@ func (s *server) SearchPublications(ctx context.Context, req *api.SearchPublicat
 	args := models.NewSearchArgs().WithQuery(req.Query).WithPage(page)
 	hits, err := s.services.PublicationSearchService.Search(args)
 	if err != nil {
-		return nil, err
+		// TODO How do we differentiate between errors?
+		return nil, status.Errorf(codes.Internal, "Could not search publications: %s", req.Query, err)
 	}
 
 	res := &api.SearchPublicationsResponse{
@@ -65,10 +69,12 @@ func (s *server) UpdatePublication(ctx context.Context, req *api.UpdatePublicati
 	}
 
 	if err := s.services.Repository.UpdatePublication(req.Publication.SnapshotId, p); err != nil {
-		return nil, fmt.Errorf("failed to store publication %s: %w", p.ID, err)
+		// TODO How do we differentiate between errors?
+		return nil, status.Errorf(codes.Internal, "failed to store publication %s, %w", p.ID, err)
 	}
 	if err := s.services.PublicationSearchService.Index(p); err != nil {
-		return nil, fmt.Errorf("failed to index publication %s: %w", p.ID, err)
+		// TODO How do we differentiate between errors
+		return nil, status.Errorf(codes.Internal, "failed to index publication %s, %w", p.ID, err)
 	}
 
 	return &api.UpdatePublicationResponse{}, nil
@@ -105,7 +111,7 @@ func (s *server) AddPublications(stream api.Biblio_AddPublicationsServer) error 
 			return nil
 		}
 		if err != nil {
-			return err
+			return status.Errorf(codes.Internal, "failed to read stream: %w", err)
 		}
 
 		p := messageToPublication(res.Publication)
@@ -149,7 +155,7 @@ func (s *server) AddPublications(stream api.Biblio_AddPublicationsServer) error 
 		if err := s.services.Repository.SavePublication(p); err != nil {
 			msg := fmt.Errorf("failed to store publication %s at line %d: %w", p.ID, lineNum, err).Error()
 			if err = stream.Send(&api.AddPublicationsResponse{Messsage: msg}); err != nil {
-				return err
+				return status.Errorf(codes.Internal, msg)
 			}
 			continue
 		}
