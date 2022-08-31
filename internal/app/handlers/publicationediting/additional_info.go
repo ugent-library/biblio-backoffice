@@ -21,6 +21,7 @@ type BindAdditionalInfo struct {
 	AdditionalInfo string   `form:"additional_info"`
 	Keyword        []string `form:"keyword"`
 	ResearchField  []string `form:"research_field"`
+	Message        string   `form:"message"`
 }
 
 type YieldAdditionalInfo struct {
@@ -36,7 +37,7 @@ type YieldEditAdditionalInfo struct {
 func (h *Handler) EditAdditionalInfo(w http.ResponseWriter, r *http.Request, ctx Context) {
 	render.Layout(w, "show_modal", "publication/edit_additional_info", YieldEditAdditionalInfo{
 		Context: ctx,
-		Form:    additionalInfoForm(ctx.Locale, ctx.Publication, nil),
+		Form:    additionalInfoForm(ctx.User, ctx.Locale, ctx.Publication, nil),
 	})
 }
 
@@ -52,10 +53,13 @@ func (h *Handler) UpdateAdditionalInfo(w http.ResponseWriter, r *http.Request, c
 	p.AdditionalInfo = b.AdditionalInfo
 	p.Keyword = b.Keyword
 	p.ResearchField = b.ResearchField
+	if ctx.User.CanCuratePublications() {
+		p.Message = b.Message
+	}
 
 	if validationErrs := p.Validate(); validationErrs != nil {
 		h.Logger.Warnw("update publication additional info: could not validate additional info:", "errors", validationErrs, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		form := additionalInfoForm(ctx.Locale, p, validationErrs.(validation.Errors))
+		form := additionalInfoForm(ctx.User, ctx.Locale, p, validationErrs.(validation.Errors))
 
 		render.Layout(w, "refresh_modal", "publication/edit_additional_info", YieldEditAdditionalInfo{
 			Context: ctx,
@@ -84,22 +88,21 @@ func (h *Handler) UpdateAdditionalInfo(w http.ResponseWriter, r *http.Request, c
 	})
 }
 
-func additionalInfoForm(l *locale.Locale, publication *models.Publication, errors validation.Errors) *form.Form {
-
+func additionalInfoForm(user *models.User, l *locale.Locale, p *models.Publication, errors validation.Errors) *form.Form {
 	researchFieldOptions := make([]form.SelectOption, len(vocabularies.Map["research_fields"]))
 	for i, v := range vocabularies.Map["research_fields"] {
 		researchFieldOptions[i].Label = v
 		researchFieldOptions[i].Value = v
 	}
 
-	return form.New().
+	f := form.New().
 		WithTheme("default").
 		WithErrors(localize.ValidationErrors(l, errors)).
 		AddSection(
 			&form.SelectRepeat{
 				Name:        "research_field",
 				Options:     researchFieldOptions,
-				Values:      publication.ResearchField,
+				Values:      p.ResearchField,
 				EmptyOption: true,
 				Label:       l.T("builder.research_field"),
 				Cols:        9,
@@ -111,7 +114,7 @@ func additionalInfoForm(l *locale.Locale, publication *models.Publication, error
 			},
 			&form.TextRepeat{
 				Name:   "keyword",
-				Values: publication.Keyword,
+				Values: p.Keyword,
 				Label:  l.T("builder.keyword"),
 				Cols:   9,
 				Error: localize.ValidationErrorAt(
@@ -122,7 +125,7 @@ func additionalInfoForm(l *locale.Locale, publication *models.Publication, error
 			},
 			&form.TextArea{
 				Name:  "additional_info",
-				Value: publication.AdditionalInfo,
+				Value: p.AdditionalInfo,
 				Label: l.T("builder.additional_info"),
 				Cols:  9,
 				Rows:  4,
@@ -133,4 +136,30 @@ func additionalInfoForm(l *locale.Locale, publication *models.Publication, error
 				),
 			},
 		)
+
+	if user.CanCuratePublications() {
+		f.AddSection(
+			&form.TextArea{
+				Name:  "message",
+				Value: p.Message,
+				Label: l.T("builder.message"),
+				Cols:  9,
+				Rows:  4,
+				Error: localize.ValidationErrorAt(
+					l,
+					errors,
+					"/message",
+				),
+			},
+		)
+	} else {
+		f.AddSection(
+			&display.Text{
+				Label: l.T("builder.message"),
+				Value: p.Message,
+			},
+		)
+	}
+
+	return f
 }

@@ -24,5 +24,11 @@ func PublicationAdditionalInfo(l *locale.Locale, p *models.Publication) *display
 				Label: l.T("builder.additional_info"),
 				Value: p.AdditionalInfo,
 			},
+		).
+		AddSection(
+			&display.Text{
+				Label: l.T("builder.message"),
+				Value: p.Message,
+			},
 		)
 }

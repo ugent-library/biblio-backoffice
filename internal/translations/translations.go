@@ -209,6 +209,7 @@ func init() {
 	message.SetString(language.English, "builder.keyword", "Keywords")
 	message.SetString(language.English, "builder.language", "Languages")
 	message.SetString(language.English, "builder.license", "License")
+	message.SetString(language.English, "builder.message", "Message")
 	message.SetString(language.English, "builder.miscellaneous_type", "Miscellaneous type")
 	message.SetString(language.English, "builder.other_license", "Other license")
 	message.SetString(language.English, "builder.page_first", "First page")
