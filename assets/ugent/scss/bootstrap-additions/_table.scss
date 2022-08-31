@@ -6,7 +6,7 @@
   color: $gray-700;
   font-weight: 500;
   max-height: 4.8rem;
-  padding: 1.5rem 1.2rem;
+  padding: 1.6rem;
   line-height: 1.8rem;
   border-top: none;
 }
@@ -14,7 +14,7 @@
 .table td {
   height: 6.4rem;
   vertical-align: middle;
-  padding: 1.2rem;
+  padding: 1.2rem 1.6rem;
 }
 
 
@@ -23,3 +23,124 @@
   align-items: center;
   justify-content: flex-end;
 }
+
+.table-nowrap {
+  th,
+  td {
+    white-space: nowrap;
+  }
+}
+
+.table-col-lg {
+  max-width: 48rem;
+  //min-width: 48rem;
+}
+
+.table-col-sm {
+  width: 12rem;
+  min-width: 12rem;
+}
+
+.table-col-xs {
+  width: 5.6rem;
+}
+
+.table-col-auto {
+  width: 1%;
+}
+
+.table-sm {
+  td {
+    padding: 0.4rem 1.6rem;
+    height: 4.8rem;
+  }
+}
+
+.table-row-disabled {
+  td {
+    background-color: $gray-25;
+    color: $gray-500;
+  }
+}
+
+
+/* Table with clickable rows
+   ========================================================================== */
+
+.table tr[data-href]:hover,
+.table tr[data-toggle]:hover,
+.table tr[data-href]:hover .table-col-sm-fixed,
+.table tr[data-toggle]:hover .table-col-sm-fixed,
+.table tr[data-href]:hover .table-col-lg-fixed,
+.table tr[data-toggle]:hover .table-col-lg-fixed {
+  background: $gray-25;
+  cursor: pointer;
+}
+
+
+/* Fixed table columns
+   ========================================================================== */
+
+.table-col-lg-fixed {
+  @include media-breakpoint-up(lg) {
+    position: sticky;
+    background-color: #fff;
+    outline: 1px solid $border;
+    outline-offset: -0.5px;
+    z-index: $zindex-dropdown;
+  }
+  &.table-col-sm-fixed-left,
+  &.table-col-sm-fixed-right {
+    @include media-breakpoint-down(md) {
+      filter: unset;
+  }
+}
+}
+@include media-breakpoint-up(sm) {
+  .table-col-sm-fixed {
+    position: sticky;
+    background-color: #fff;
+    outline: 1px solid $border;
+    outline-offset: -0.5px;
+    z-index: $zindex-dropdown;
+  }
+
+  .table-col-sm-fixed-left {
+    left: 0;
+    filter: drop-shadow(2px 0px 2px rgba(0, 0, 0, 0.03));
+  }
+
+  .table-col-sm-fixed-right {
+    right: 0;
+    filter: drop-shadow(-2px 0px 2px rgba(0, 0, 0, 0.03));
+  }
+
+  .table-col-checkbox.table-col-sm-fixed-left + .table-col-sm-fixed-left {
+    left: 63.5px;
+  }
+
+
+  .table-col-sm-fixed.dropdown-active {
+    z-index: $zindex-sticky;
+  }
+}
+
+.table .table-col-checkbox {
+  padding-left: 2.4rem;
+  padding-right: 2.4rem;
+}
+
+
+/* Table section headers
+   ========================================================================== */
+
+.table-section-header {
+  td {
+    background-color: $gray-50;
+    font-weight: 500;
+    font-size: 1.3rem;
+    color: $text-muted;
+    height: 4rem;
+  }
+}
+

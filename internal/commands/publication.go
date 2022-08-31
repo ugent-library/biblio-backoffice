@@ -115,7 +115,7 @@ var publicationAddCmd = &cobra.Command{
 				log.Fatalf("Unable to decode publication at line %d : %v", lineNo, err)
 			}
 			if err := p.Validate(); err != nil {
-				log.Printf("Validation failed for publication at line %d : %v", lineNo, err)
+				log.Printf("Validation failed for publication [id: %s] at line %d : %v", p.ID, lineNo, err)
 				continue
 			}
 			if err := e.Repository.SavePublication(&p); err != nil {

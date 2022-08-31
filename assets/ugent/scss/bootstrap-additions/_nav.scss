@@ -3,12 +3,77 @@
 /* Variables
    ========================================================================== */
 
-.nav {
-  .nav-item {
-    margin-right: 2.4rem;
+button.nav-link {
+  appearance: none;
+  background-color: transparent;
+  border: none;
+}
+
+.nav.nav-main {
+  flex-wrap: nowrap;
+
+  .nav-link {
+    color: $text;
+    display: flex;
     font-weight: 500;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 0 1.6rem;
+    border-right: 1px solid $border;
+  }
+
+  .nav-item:last-child .nav-link {
+    border: none;
+  }
+
+  @include media-breakpoint-down(md) {
+    .nav-link > .btn-text,
+    .nav-link > .bc-avatar-and-text .bc-avatar-text {
+      position: absolute;
+      left: -10000px;
+      top: auto;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+    }
+  }
+}
+
+.nav.nav-list {
+
+  .nav-item {
+    padding: 0.6rem 0;
+  }
+
+  .nav-link {
+    display: inline-flex;
+    border-bottom: 1px solid $primary;
+    padding: 0;
+  }
+}
+
+.nav.nav-pills {
+  .nav-link {
+    font-weight: 500;
+    padding: 0.8rem 1.2rem;
     color: $text-muted;
-    height: 4.8rem;
+    display: flex;
+    align-items: center;
+
+    &.active {
+      background: $light-blue;
+      mix-blend-mode: multiply;
+      color: $primary
+    }
+  }
+}
+
+.nav.nav-tabs {
+  margin-bottom: -0.1rem;
+
+  .nav-text {
+    max-width: 18rem;
   }
 
   .nav-link{
@@ -17,7 +82,13 @@
     align-items: center;
     justify-content: center;
     height: 100%;
+    border: none;
+    background: none;
     border-bottom: 2px solid transparent;
+    margin-right: 2.4rem;
+    font-weight: 500;
+    color: $text-muted;
+    height: 4.8rem;
 
     .c-counter {
       margin-left: .8rem;
@@ -36,5 +107,13 @@
     &.disabled {
       color: $gray-200;
     }
+  }
+}
+
+.nav-tabs-scrollable {
+  overflow: auto;
+  flex-wrap: nowrap;
+  .nav-link {
+    white-space: nowrap;
   }
 }

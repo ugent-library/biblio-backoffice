@@ -1,6 +1,6 @@
 @font-face {
     font-family: "icon-font";
-    src: url("../fonts/icon-font.woff2") format("woff2"), url("../fonts/icon-font.woff") format("woff");
+    src: url("../fonts/icon-font.woff") format("woff"), url("../fonts/icon-font.woff2") format("woff2");
 }
 
 i[class^="if-"]:before, i[class*=" if-"]:before {
@@ -89,165 +89,195 @@ i[class^="if-"]:before, i[class*=" if-"]:before {
 .if-check-circle:before {
     content: "\f119";
 }
-.if-check:before {
+.if-check-double:before {
     content: "\f11a";
 }
-.if-chevron-down:before {
+.if-check:before {
     content: "\f11b";
 }
-.if-chevron-left:before {
+.if-chevron-down:before {
     content: "\f11c";
 }
-.if-chevron-right:before {
+.if-chevron-left:before {
     content: "\f11d";
 }
-.if-chevron-up:before {
+.if-chevron-right:before {
     content: "\f11e";
 }
-.if-close:before {
+.if-chevron-up:before {
     content: "\f11f";
 }
-.if-copy:before {
+.if-close-circle-fill:before {
     content: "\f120";
 }
-.if-database:before {
+.if-close:before {
     content: "\f121";
 }
-.if-delete:before {
+.if-copy:before {
     content: "\f122";
 }
-.if-double-quotes:before {
+.if-database:before {
     content: "\f123";
 }
-.if-download:before {
+.if-delete:before {
     content: "\f124";
 }
-.if-draft-fill:before {
+.if-double-quotes:before {
     content: "\f125";
 }
-.if-draft:before {
+.if-download:before {
     content: "\f126";
 }
-.if-edit:before {
+.if-draft-fill:before {
     content: "\f127";
 }
-.if-empty:before {
+.if-draft:before {
     content: "\f128";
 }
-.if-error-circle-fill:before {
+.if-drag:before {
     content: "\f129";
 }
-.if-error-circle:before {
+.if-edit:before {
     content: "\f12a";
 }
-.if-external-link:before {
+.if-empty:before {
     content: "\f12b";
 }
-.if-eye-fill:before {
+.if-error-circle-fill:before {
     content: "\f12c";
 }
-.if-eye-off:before {
+.if-error-circle:before {
     content: "\f12d";
 }
-.if-eye:before {
+.if-external-link:before {
     content: "\f12e";
 }
-.if-feedback-fill:before {
+.if-eye-fill:before {
     content: "\f12f";
 }
-.if-file-pdf:before {
+.if-eye-off:before {
     content: "\f130";
 }
-.if-file-text:before {
+.if-eye:before {
     content: "\f131";
 }
-.if-file-word:before {
+.if-feedback-fill:before {
     content: "\f132";
 }
-.if-file:before {
+.if-file-pdf:before {
     content: "\f133";
 }
-.if-forbid:before {
+.if-file-text:before {
     content: "\f134";
 }
-.if-ghent-university:before {
+.if-file-word:before {
     content: "\f135";
 }
-.if-grid:before {
+.if-file:before {
     content: "\f136";
 }
-.if-home:before {
+.if-forbid:before {
     content: "\f137";
 }
-.if-info-circle-filled:before {
+.if-ghent-university:before {
     content: "\f138";
 }
-.if-info-circle:before {
+.if-global:before {
     content: "\f139";
 }
-.if-list-check:before {
+.if-grid:before {
     content: "\f13a";
 }
-.if-list-unordered:before {
+.if-home:before {
     content: "\f13b";
 }
-.if-lock-unlock:before {
+.if-info-circle-filled:before {
     content: "\f13c";
 }
-.if-lock:before {
+.if-info-circle:before {
     content: "\f13d";
 }
-.if-menu:before {
+.if-list-check:before {
     content: "\f13e";
 }
-.if-message:before {
+.if-list-unordered:before {
     content: "\f13f";
 }
-.if-more:before {
+.if-lock-unlock:before {
     content: "\f140";
 }
-.if-no-edit:before {
+.if-lock:before {
     content: "\f141";
 }
-.if-notification:before {
+.if-log-out:before {
     content: "\f142";
 }
-.if-orcid:before {
+.if-mail:before {
     content: "\f143";
 }
-.if-pin:before {
+.if-menu:before {
     content: "\f144";
 }
-.if-request-change:before {
+.if-message:before {
     content: "\f145";
 }
-.if-search:before {
+.if-messages:before {
     content: "\f146";
 }
-.if-service:before {
+.if-more:before {
     content: "\f147";
 }
-.if-settings:before {
+.if-move-bottom:before {
     content: "\f148";
 }
-.if-share:before {
+.if-move-top:before {
     content: "\f149";
 }
-.if-start:before {
+.if-no-edit:before {
     content: "\f14a";
 }
-.if-subtract:before {
+.if-notification:before {
     content: "\f14b";
 }
-.if-tume:before {
+.if-orcid:before {
     content: "\f14c";
 }
-.if-user-add:before {
+.if-pin:before {
     content: "\f14d";
 }
-.if-user:before {
+.if-request-change:before {
     content: "\f14e";
 }
-.if-zoom-in:before {
+.if-search:before {
     content: "\f14f";
+}
+.if-service:before {
+    content: "\f150";
+}
+.if-settings:before {
+    content: "\f151";
+}
+.if-share:before {
+    content: "\f152";
+}
+.if-start:before {
+    content: "\f153";
+}
+.if-subtract:before {
+    content: "\f154";
+}
+.if-table:before {
+    content: "\f155";
+}
+.if-time:before {
+    content: "\f156";
+}
+.if-user-add:before {
+    content: "\f157";
+}
+.if-user:before {
+    content: "\f158";
+}
+.if-zoom-in:before {
+    content: "\f159";
 }

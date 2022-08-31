@@ -25,6 +25,17 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  padding: 0.8rem 0;
+}
+
+.c-sidebar--dark-gray {
+  background: $gray;
+
+  .c-sidebar__menu .c-sidebar__item--active a,
+  .c-sidebar__menu .c-sidebar__item a:hover,
+  .c-sidebar__menu .c-sidebar__item a:focus {
+    background: $dark-gray;
+  }
 }
 
 .c-sidebar--bordered {
@@ -49,9 +60,9 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 0 .8rem;
+    padding: 1.2rem .8rem;
     color: $c-sidebar-color;
-    height: 8.8rem;
+    min-height: 7.2rem;
     font-size: 1.3rem;
     font-weight: 500;
 

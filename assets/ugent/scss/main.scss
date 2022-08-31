@@ -58,6 +58,8 @@
 @import "bootstrap-additions/alerts";
 @import "bootstrap-additions/background-variant";
 @import "bootstrap-additions/badges";
+@import "bootstrap-additions/borders";
+@import "bootstrap-additions/breadcrumb";
 @import "bootstrap-additions/button-groups";
 @import "bootstrap-additions/buttons";
 @import "bootstrap-additions/cards";
@@ -69,7 +71,9 @@
 @import "bootstrap-additions/nav";
 @import "bootstrap-additions/pagination";
 @import "bootstrap-additions/popover";
+@import "bootstrap-additions/reboot";
 @import "bootstrap-additions/table";
+@import "bootstrap-additions/toasts";
 @import "bootstrap-additions/tooltip";
 
 /* Bootstrap custom components (based on Bootstrap variables)
@@ -81,22 +85,30 @@
 
 // Custom components written from scratch
 
+@import "components/c-activity-list";
+@import "components/c-author";
+@import "components/c-bullet";
 @import "components/c-button-toolbar";
+@import "components/c-comment";
 @import "components/c-content";
 @import "components/c-counter";
 @import "components/c-divider";
+@import "components/c-dl";
+@import "components/c-blank-slate";
 @import "components/c-file-upload";
 @import "components/c-flatpickr";
 @import "components/c-header-collapsible";
+@import "components/c-master-detail";
+@import "components/c-meta-list";
 @import "components/c-progress-bar";
 @import "components/c-publication-card";
 @import "components/c-radio-card";
 @import "components/c-requested-change";
 @import "components/c-sidebar";
 @import "components/c-stepper";
+@import "components/c-side-panel";
 @import "components/c-sub-sidebar";
 @import "components/c-thumbnail";
-
 
 
 /* Third-party additions
@@ -113,16 +125,19 @@ html {
   font-size: 62.5%; // Base 10
 }
 
-body {
-  min-width: 102.4rem;
-}
-
 main {
   width: 100%;
   height: calc(100% - 4.8rem);
   // max-height: calc(100% - 4.8rem);
   overflow: hidden;
   background-color: $gray-25;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  color: $header;
 }
 
 h1 {
@@ -142,8 +157,11 @@ h4 {
 }
 
 .if {
-  font-size: 2.4rem;
-  line-height: 2.4rem
+  font-size: 2rem;
+  line-height: 2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .if--small {

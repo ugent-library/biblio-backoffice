@@ -1,0 +1,88 @@
+.c-blank-slate {
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  align-items: center;
+  justify-content: center;
+  color: $text-muted;
+  max-width: 40rem;
+  padding: 4rem 0;
+  text-align: center;
+
+  .bc-avatar {
+    margin-bottom: 1.2rem;
+  }
+
+  .c-button-toolbar {
+    margin-top: 1.6rem;
+  }
+
+  p {
+    margin-bottom: 0;
+  }
+
+  p + p {
+    margin-top: 1.6rem;
+  }
+}
+
+.c-blank-slate-title {
+  color: $header;
+  font-size: 1.8rem;
+  margin-bottom: 0.8rem;
+}
+
+
+.c-blank-slate-large {
+  padding: 6.4rem 0;
+  height: 100%;
+
+  .bc-avatar {
+    margin-bottom: 2.4rem;
+  }
+}
+
+.c-blank-slate-default {
+  .bc-avatar {
+    background-color: $light-blue;
+    color: $blue;
+    mix-blend-mode: multiply;
+  }
+}
+
+.c-blank-slate-muted {
+  .bc-avatar {
+    background-color: $gray-50;
+    color: $gray-500;
+    mix-blend-mode: multiply;
+  }
+}
+
+.c-blank-slate-primary {
+  .bc-avatar {
+    background-color: $blue;
+    color: $white;
+  }
+}
+
+.c-blank-slate-success {
+  .bc-avatar {
+    background-color: $success;
+    color: $white;
+  }
+}
+
+.c-blank-slate-danger {
+  .bc-avatar {
+    background-color: $danger;
+    color: $white;
+  }
+}
+
+.c-blank-slate-warning {
+  .bc-avatar {
+    background-color: $orange;
+    color: $white;
+  }
+}
+

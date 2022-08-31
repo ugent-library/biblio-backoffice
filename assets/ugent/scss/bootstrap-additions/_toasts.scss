@@ -1,0 +1,48 @@
+.toast {
+  position: relative;
+
+  .close {
+    position: absolute;
+    top: 0.8rem;
+    right: 1.6rem;
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .c-button-toolbar {
+    margin-top: 1.6rem;
+  }
+}
+
+.toast-body {
+  .close {
+    top: 2rem;
+  }
+
+  p:last-child {
+    margin-bottom: 0;
+  }
+
+  > .if {
+    margin-top: 0.1rem;
+  }
+}
+
+.toast-title {
+  font-size: 1.5rem;
+  color: $header;
+}
+
+.if + .toast-content {
+  margin-left: 1.6rem;
+}
+
+.toast-header {
+  padding: 0.8rem 3.6rem 0.8rem 2rem;
+}
+
+.toast-body {
+  padding-right: 3.2rem;
+  display: flex;
+  align-items: flex-start;
+}

@@ -11,12 +11,12 @@ $bc-navbar-xlarge-height         : 8rem !default;
   align-items: center;
 }
 
-.bc-navbar--auto {
-  height: auto;
+.bc-navbar > .bc-toolbar {
+  flex: 1 0 auto;
 }
 
 .bc-navbar--white {
-  background: #FFF;
+  background: $white;
 }
 
 .bc-navbar--fixed {
@@ -27,7 +27,13 @@ $bc-navbar-xlarge-height         : 8rem !default;
   border-bottom: 1px solid $border;
 }
 
-/* Bordered equivalents
+.bc-navbar--scrollable {
+  overflow-x: auto;
+  overflow-y: hidden;
+  position: static;
+}
+
+/* Bordered variants
    ========================================================================== */
 
 .bc-navbar--bordered-top {
@@ -51,4 +57,8 @@ $bc-navbar-xlarge-height         : 8rem !default;
 
 .bc-navbar--xlarge {
   height: $bc-navbar-xlarge-height;
+}
+
+.bc-navbar--auto {
+  height: auto;
 }

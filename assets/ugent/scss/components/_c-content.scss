@@ -7,6 +7,10 @@
 .c-content {
   height: calc(100% - 4.5rem);
   margin: auto 0;
+
+  p + p {
+    margin-top: 1.6rem;
+  }
 }
 
 .c-content pre {
@@ -27,4 +31,50 @@
 
 .c-body-small {
   font-size: 1.3rem;
+}
+
+.c-link {
+  color: $primary;
+  text-decoration: none;
+  border-bottom: 1px solid $blue;
+
+  &:hover,
+  &:active {
+    border-color: transparent;
+  }
+}
+
+.c-link-muted {
+  color: $text-muted;
+  border-bottom: 1px solid $gray-200;
+
+  &:hover {
+    color: $gray-600;
+  }
+}
+
+.c-link-small {
+  font-size: 1.3rem;
+}
+
+.c-subline {
+   color: $text-muted;
+   font-weight: 500;
+   font-size: 1.3rem;
+}
+
+.c-label {
+  font-weight: 500;
+  color: $gray-600;
+}
+
+
+.c-code {
+  display: inline-block;
+  background-color: $gray-25;
+  color: $text-muted;
+  border: 1px solid $border;
+  font-size: 1.2rem;
+  border-radius: 0.3rem;
+  padding: 0.1rem 0.6rem;
 }

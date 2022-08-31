@@ -62,7 +62,7 @@
         {{if .Scopes}}
         <div class="c-divider my-0 mx-6"></div>
         <div class="bc-navbar bc-navbar--bordered-bottom bc-navbar--white">
-            <ul class="nav">
+            <ul class="nav nav-tabs">
                 {{range .Scopes}}
                 <li class="nav-item">
                     <a class="nav-link{{if $.SearchArgs.HasFilter "scope" .}} active{{end}}"
@@ -92,7 +92,7 @@
                 <ul class="list-group list-group-flush">
                     {{range .Hits.Hits}}
                     <li class="list-group-item">
-                        {{partial "publication/search_hit" ($.YieldHit .)}}
+                        {{layout "shared/summary" "publication/search_hit" ($.YieldHit .)}}
                     </li>
                     {{end}}
                 </ul>
