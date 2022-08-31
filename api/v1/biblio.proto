@@ -19,6 +19,11 @@ service Biblio {
     rpc SearchPublications(SearchPublicationsRequest) returns (SearchPublicationsResponse);
     rpc UpdatePublication(UpdatePublicationRequest) returns (UpdatePublicationResponse);
     rpc AddPublications(stream AddPublicationsRequest) returns (stream AddPublicationsResponse);
+    rpc GetDataset(GetDatasetRequest) returns (GetDatasetResponse);
+    rpc GetAllDatasets(GetAllDatasetsRequest) returns (stream GetAllDatasetsResponse);
+    rpc SearchDatasets(SearchDatasetsRequest) returns (SearchDatasetsResponse);
+    rpc UpdataDataset(UpdateDatasetRequest) returns (UpdateDatasetResponse);
+    rpc AddDatasets(stream AddDatasetsRequest) returns (stream AddDatasetsResponse);
 }
 
 enum Confirmation {
@@ -41,6 +46,10 @@ message Contributor {
     string first_name = 5;
     string last_name = 6;
     string full_name = 7;
+}
+
+message RelatedPublication {
+    string id = 1;
 }
 
 message RelatedOrganization {
@@ -279,6 +288,48 @@ message Publication {
     repeated OrcidWork orcid_work = 79;
 }
 
+message Dataset {
+    enum Status {
+	    STATUS_PRIVATE = 0;
+	    STATUS_PUBLIC = 1;
+	    STATUS_DELETED = 2;
+	    STATUS_RETURNED = 3;
+    }
+
+    string id = 1;
+    Status status = 2;
+    repeated Text abstract = 3;
+    repeated Contributor author = 4;
+    string batch_id = 5;
+    google.protobuf.Timestamp date_created = 6;
+    google.protobuf.Timestamp date_updated = 7;
+    google.protobuf.Timestamp date_from = 8;
+    google.protobuf.Timestamp date_until = 9;
+    string title = 10;
+    string creator_id = 11;
+    string user_id = 12;
+    string doi = 13;
+    repeated string keyword = 14;
+    string url = 15;
+    string year = 16;
+    string reviewer_note = 17;
+    repeated string reviewer_tags = 18;
+    string snapshot_id = 19;
+    string message = 20;
+    string publisher = 21;
+    repeated RelatedProject project = 22;
+    repeated RelatedPublication publication = 23;
+    string access_level = 24;
+    repeated Contributor contributor = 25;
+    string embargo = 26;
+    string embargo_to = 27;
+    repeated string format = 28;
+    string license = 29;
+    bool locked = 30;
+    string other_license = 31;
+    repeated RelatedOrganization organization = 32;
+}
+
 message GetPublicationRequest {
     string id = 1;
 }
@@ -319,5 +370,48 @@ message AddPublicationsRequest {
 }
 
 message AddPublicationsResponse {
+    string messsage = 1;
+}
+
+message GetDatasetRequest {
+    string id = 1;
+}
+
+message GetDatasetResponse {
+    Dataset dataset = 1;
+}
+
+message GetAllDatasetsRequest {
+}
+
+message GetAllDatasetsResponse {
+    Dataset dataset = 1;
+}
+
+message SearchDatasetsRequest {
+    string query = 1;
+    int32 offset = 2;
+    int32 limit = 3;
+}
+
+message SearchDatasetsResponse {
+    repeated Dataset hits = 1;
+    int32 offset = 2;
+    int32 limit = 3;
+    int32 total = 4;
+}
+
+message UpdateDatasetRequest {
+    Dataset dataset = 1;
+}
+
+message UpdateDatasetResponse {
+}
+
+message AddDatasetsRequest {
+    Dataset dataset = 1;
+}
+
+message AddDatasetsResponse {
     string messsage = 1;
 }

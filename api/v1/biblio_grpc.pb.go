@@ -27,6 +27,11 @@ type BiblioClient interface {
 	SearchPublications(ctx context.Context, in *SearchPublicationsRequest, opts ...grpc.CallOption) (*SearchPublicationsResponse, error)
 	UpdatePublication(ctx context.Context, in *UpdatePublicationRequest, opts ...grpc.CallOption) (*UpdatePublicationResponse, error)
 	AddPublications(ctx context.Context, opts ...grpc.CallOption) (Biblio_AddPublicationsClient, error)
+	GetDataset(ctx context.Context, in *GetDatasetRequest, opts ...grpc.CallOption) (*GetDatasetResponse, error)
+	GetAllDatasets(ctx context.Context, in *GetAllDatasetsRequest, opts ...grpc.CallOption) (Biblio_GetAllDatasetsClient, error)
+	SearchDatasets(ctx context.Context, in *SearchDatasetsRequest, opts ...grpc.CallOption) (*SearchDatasetsResponse, error)
+	UpdataDataset(ctx context.Context, in *UpdateDatasetRequest, opts ...grpc.CallOption) (*UpdateDatasetResponse, error)
+	AddDatasets(ctx context.Context, opts ...grpc.CallOption) (Biblio_AddDatasetsClient, error)
 }
 
 type biblioClient struct {
@@ -127,6 +132,96 @@ func (x *biblioAddPublicationsClient) Recv() (*AddPublicationsResponse, error) {
 	return m, nil
 }
 
+func (c *biblioClient) GetDataset(ctx context.Context, in *GetDatasetRequest, opts ...grpc.CallOption) (*GetDatasetResponse, error) {
+	out := new(GetDatasetResponse)
+	err := c.cc.Invoke(ctx, "/biblio.v1.Biblio/GetDataset", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *biblioClient) GetAllDatasets(ctx context.Context, in *GetAllDatasetsRequest, opts ...grpc.CallOption) (Biblio_GetAllDatasetsClient, error) {
+	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[2], "/biblio.v1.Biblio/GetAllDatasets", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &biblioGetAllDatasetsClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type Biblio_GetAllDatasetsClient interface {
+	Recv() (*GetAllDatasetsResponse, error)
+	grpc.ClientStream
+}
+
+type biblioGetAllDatasetsClient struct {
+	grpc.ClientStream
+}
+
+func (x *biblioGetAllDatasetsClient) Recv() (*GetAllDatasetsResponse, error) {
+	m := new(GetAllDatasetsResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *biblioClient) SearchDatasets(ctx context.Context, in *SearchDatasetsRequest, opts ...grpc.CallOption) (*SearchDatasetsResponse, error) {
+	out := new(SearchDatasetsResponse)
+	err := c.cc.Invoke(ctx, "/biblio.v1.Biblio/SearchDatasets", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *biblioClient) UpdataDataset(ctx context.Context, in *UpdateDatasetRequest, opts ...grpc.CallOption) (*UpdateDatasetResponse, error) {
+	out := new(UpdateDatasetResponse)
+	err := c.cc.Invoke(ctx, "/biblio.v1.Biblio/UpdataDataset", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *biblioClient) AddDatasets(ctx context.Context, opts ...grpc.CallOption) (Biblio_AddDatasetsClient, error) {
+	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[3], "/biblio.v1.Biblio/AddDatasets", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &biblioAddDatasetsClient{stream}
+	return x, nil
+}
+
+type Biblio_AddDatasetsClient interface {
+	Send(*AddDatasetsRequest) error
+	Recv() (*AddDatasetsResponse, error)
+	grpc.ClientStream
+}
+
+type biblioAddDatasetsClient struct {
+	grpc.ClientStream
+}
+
+func (x *biblioAddDatasetsClient) Send(m *AddDatasetsRequest) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *biblioAddDatasetsClient) Recv() (*AddDatasetsResponse, error) {
+	m := new(AddDatasetsResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // BiblioServer is the server API for Biblio service.
 // All implementations must embed UnimplementedBiblioServer
 // for forward compatibility
@@ -136,6 +231,11 @@ type BiblioServer interface {
 	SearchPublications(context.Context, *SearchPublicationsRequest) (*SearchPublicationsResponse, error)
 	UpdatePublication(context.Context, *UpdatePublicationRequest) (*UpdatePublicationResponse, error)
 	AddPublications(Biblio_AddPublicationsServer) error
+	GetDataset(context.Context, *GetDatasetRequest) (*GetDatasetResponse, error)
+	GetAllDatasets(*GetAllDatasetsRequest, Biblio_GetAllDatasetsServer) error
+	SearchDatasets(context.Context, *SearchDatasetsRequest) (*SearchDatasetsResponse, error)
+	UpdataDataset(context.Context, *UpdateDatasetRequest) (*UpdateDatasetResponse, error)
+	AddDatasets(Biblio_AddDatasetsServer) error
 	mustEmbedUnimplementedBiblioServer()
 }
 
@@ -157,6 +257,21 @@ func (UnimplementedBiblioServer) UpdatePublication(context.Context, *UpdatePubli
 }
 func (UnimplementedBiblioServer) AddPublications(Biblio_AddPublicationsServer) error {
 	return status.Errorf(codes.Unimplemented, "method AddPublications not implemented")
+}
+func (UnimplementedBiblioServer) GetDataset(context.Context, *GetDatasetRequest) (*GetDatasetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetDataset not implemented")
+}
+func (UnimplementedBiblioServer) GetAllDatasets(*GetAllDatasetsRequest, Biblio_GetAllDatasetsServer) error {
+	return status.Errorf(codes.Unimplemented, "method GetAllDatasets not implemented")
+}
+func (UnimplementedBiblioServer) SearchDatasets(context.Context, *SearchDatasetsRequest) (*SearchDatasetsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SearchDatasets not implemented")
+}
+func (UnimplementedBiblioServer) UpdataDataset(context.Context, *UpdateDatasetRequest) (*UpdateDatasetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdataDataset not implemented")
+}
+func (UnimplementedBiblioServer) AddDatasets(Biblio_AddDatasetsServer) error {
+	return status.Errorf(codes.Unimplemented, "method AddDatasets not implemented")
 }
 func (UnimplementedBiblioServer) mustEmbedUnimplementedBiblioServer() {}
 
@@ -272,6 +387,107 @@ func (x *biblioAddPublicationsServer) Recv() (*AddPublicationsRequest, error) {
 	return m, nil
 }
 
+func _Biblio_GetDataset_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetDatasetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BiblioServer).GetDataset(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/biblio.v1.Biblio/GetDataset",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BiblioServer).GetDataset(ctx, req.(*GetDatasetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Biblio_GetAllDatasets_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(GetAllDatasetsRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(BiblioServer).GetAllDatasets(m, &biblioGetAllDatasetsServer{stream})
+}
+
+type Biblio_GetAllDatasetsServer interface {
+	Send(*GetAllDatasetsResponse) error
+	grpc.ServerStream
+}
+
+type biblioGetAllDatasetsServer struct {
+	grpc.ServerStream
+}
+
+func (x *biblioGetAllDatasetsServer) Send(m *GetAllDatasetsResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func _Biblio_SearchDatasets_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchDatasetsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BiblioServer).SearchDatasets(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/biblio.v1.Biblio/SearchDatasets",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BiblioServer).SearchDatasets(ctx, req.(*SearchDatasetsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Biblio_UpdataDataset_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateDatasetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BiblioServer).UpdataDataset(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/biblio.v1.Biblio/UpdataDataset",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BiblioServer).UpdataDataset(ctx, req.(*UpdateDatasetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Biblio_AddDatasets_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(BiblioServer).AddDatasets(&biblioAddDatasetsServer{stream})
+}
+
+type Biblio_AddDatasetsServer interface {
+	Send(*AddDatasetsResponse) error
+	Recv() (*AddDatasetsRequest, error)
+	grpc.ServerStream
+}
+
+type biblioAddDatasetsServer struct {
+	grpc.ServerStream
+}
+
+func (x *biblioAddDatasetsServer) Send(m *AddDatasetsResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *biblioAddDatasetsServer) Recv() (*AddDatasetsRequest, error) {
+	m := new(AddDatasetsRequest)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // Biblio_ServiceDesc is the grpc.ServiceDesc for Biblio service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -291,6 +507,18 @@ var Biblio_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "UpdatePublication",
 			Handler:    _Biblio_UpdatePublication_Handler,
 		},
+		{
+			MethodName: "GetDataset",
+			Handler:    _Biblio_GetDataset_Handler,
+		},
+		{
+			MethodName: "SearchDatasets",
+			Handler:    _Biblio_SearchDatasets_Handler,
+		},
+		{
+			MethodName: "UpdataDataset",
+			Handler:    _Biblio_UpdataDataset_Handler,
+		},
 	},
 	Streams: []grpc.StreamDesc{
 		{
@@ -301,6 +529,17 @@ var Biblio_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "AddPublications",
 			Handler:       _Biblio_AddPublications_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
+		},
+		{
+			StreamName:    "GetAllDatasets",
+			Handler:       _Biblio_GetAllDatasets_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "AddDatasets",
+			Handler:       _Biblio_AddDatasets_Handler,
 			ServerStreams: true,
 			ClientStreams: true,
 		},

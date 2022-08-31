@@ -48,6 +48,13 @@ func main() {
 	searchPublicationsCmd.Flags().StringP("limit", "", "", "")
 	searchPublicationsCmd.Flags().StringP("offset", "", "", "")
 
+	rootCmd.AddCommand(datasetCmd)
+	datasetCmd.AddCommand(getDatasetCmd)
+	datasetCmd.AddCommand(getAllDatasetsCmd)
+	datasetCmd.AddCommand(searchDatasetsCmd)
+	datasetCmd.AddCommand(updateDatasetCmd)
+	datasetCmd.AddCommand(addDatasetsCmd)
+
 	rootCmd.AddCommand(publicationCmd)
 	publicationCmd.AddCommand(getPublicationCmd)
 	publicationCmd.AddCommand(getAllPublicationsCmd)
@@ -58,6 +65,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	addr := fmt.Sprintf("%s:%d", viper.GetString("api-host"), viper.GetInt("api-port"))
+	log.Println(addr)
 	conn, err := grpc.DialContext(ctx, addr,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithBlock(),
@@ -85,6 +93,167 @@ var rootCmd = &cobra.Command{
 			}
 		})
 		return nil
+	},
+}
+
+var datasetCmd = &cobra.Command{
+	Use:   "dataset [command]",
+	Short: "Dataset commands",
+}
+
+var getDatasetCmd = &cobra.Command{
+	Use:   "get [id]",
+	Short: "Get dataset by id",
+	Args:  cobra.MinimumNArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		defer cancel()
+
+		id := args[0]
+		req := &api.GetDatasetRequest{Id: id}
+		res, err := client.GetDataset(ctx, req)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		j, err := marshaller.Marshal(res.Dataset)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Printf("%s\n", j)
+	},
+}
+
+var getAllDatasetsCmd = &cobra.Command{
+	Use:   "get-all",
+	Short: "Get all datasets",
+	Run: func(cmd *cobra.Command, args []string) {
+		req := &api.GetAllDatasetsRequest{}
+		stream, err := client.GetAllDatasets(context.Background(), req)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		for {
+			res, err := stream.Recv()
+			if err == io.EOF {
+				break
+			}
+			if err != nil {
+				log.Fatalf("error while reading stream: %v", err)
+			}
+
+			j, err := marshaller.Marshal(res.Dataset)
+			if err != nil {
+				log.Fatal(err)
+			}
+			fmt.Printf("%s\n", j)
+		}
+	},
+}
+
+var searchDatasetsCmd = &cobra.Command{
+	Use:   "search",
+	Short: "Search datasets",
+	Run: func(cmd *cobra.Command, args []string) {
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		defer cancel()
+
+		query, _ := cmd.Flags().GetString("query")
+		limit, _ := cmd.Flags().GetInt32("limit")
+		offset, _ := cmd.Flags().GetInt32("offset")
+
+		req := &api.SearchDatasetsRequest{
+			Query:  query,
+			Limit:  limit,
+			Offset: offset,
+		}
+		res, err := client.SearchDatasets(ctx, req)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		j, err := marshaller.Marshal(res)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Printf("%s\n", j)
+	},
+}
+
+var updateDatasetCmd = &cobra.Command{
+	Use:   "update",
+	Short: "Update dataset",
+	Run: func(cmd *cobra.Command, args []string) {
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		defer cancel()
+
+		reader := bufio.NewReader(os.Stdin)
+		line, err := reader.ReadBytes('\n')
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		dataset := &api.Dataset{}
+		if err := unmarshaller.Unmarshal(line, dataset); err != nil {
+			log.Fatal(err)
+		}
+
+		req := &api.UpdateDatasetRequest{Dataset: dataset}
+		if _, err = client.UpdataDataset(ctx, req); err != nil {
+			log.Fatal(err)
+		}
+	},
+}
+
+var addDatasetsCmd = &cobra.Command{
+	Use:   "add",
+	Short: "Add datasets",
+	Run: func(cmd *cobra.Command, args []string) {
+		stream, err := client.AddDatasets(context.Background())
+		if err != nil {
+			log.Fatal(err)
+		}
+		waitc := make(chan struct{})
+
+		go func() {
+			for {
+				res, err := stream.Recv()
+				if err == io.EOF {
+					// read done.
+					close(waitc)
+					return
+				}
+				if err != nil {
+					log.Fatal(err)
+				}
+				log.Println(res.Messsage)
+			}
+		}()
+
+		reader := bufio.NewReader(os.Stdin)
+		for {
+			line, err := reader.ReadBytes('\n')
+			if err == io.EOF {
+				break
+			}
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			dataset := &api.Dataset{}
+			if err := unmarshaller.Unmarshal(line, dataset); err != nil {
+				log.Fatal(err)
+			}
+
+			req := &api.AddDatasetsRequest{Dataset: dataset}
+			if err := stream.Send(req); err != nil {
+				log.Fatal(err)
+			}
+		}
+
+		stream.CloseSend()
+		<-waitc
 	},
 }
 
