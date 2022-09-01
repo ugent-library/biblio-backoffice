@@ -22,6 +22,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type BiblioClient interface {
+	GetFile(ctx context.Context, in *GetFileRequest, opts ...grpc.CallOption) (Biblio_GetFileClient, error)
 	GetPublication(ctx context.Context, in *GetPublicationRequest, opts ...grpc.CallOption) (*GetPublicationResponse, error)
 	GetAllPublications(ctx context.Context, in *GetAllPublicationsRequest, opts ...grpc.CallOption) (Biblio_GetAllPublicationsClient, error)
 	SearchPublications(ctx context.Context, in *SearchPublicationsRequest, opts ...grpc.CallOption) (*SearchPublicationsResponse, error)
@@ -42,6 +43,38 @@ func NewBiblioClient(cc grpc.ClientConnInterface) BiblioClient {
 	return &biblioClient{cc}
 }
 
+func (c *biblioClient) GetFile(ctx context.Context, in *GetFileRequest, opts ...grpc.CallOption) (Biblio_GetFileClient, error) {
+	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[0], "/biblio.v1.Biblio/GetFile", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &biblioGetFileClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type Biblio_GetFileClient interface {
+	Recv() (*GetFileResponse, error)
+	grpc.ClientStream
+}
+
+type biblioGetFileClient struct {
+	grpc.ClientStream
+}
+
+func (x *biblioGetFileClient) Recv() (*GetFileResponse, error) {
+	m := new(GetFileResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 func (c *biblioClient) GetPublication(ctx context.Context, in *GetPublicationRequest, opts ...grpc.CallOption) (*GetPublicationResponse, error) {
 	out := new(GetPublicationResponse)
 	err := c.cc.Invoke(ctx, "/biblio.v1.Biblio/GetPublication", in, out, opts...)
@@ -52,7 +85,7 @@ func (c *biblioClient) GetPublication(ctx context.Context, in *GetPublicationReq
 }
 
 func (c *biblioClient) GetAllPublications(ctx context.Context, in *GetAllPublicationsRequest, opts ...grpc.CallOption) (Biblio_GetAllPublicationsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[0], "/biblio.v1.Biblio/GetAllPublications", opts...)
+	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[1], "/biblio.v1.Biblio/GetAllPublications", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -102,7 +135,7 @@ func (c *biblioClient) UpdatePublication(ctx context.Context, in *UpdatePublicat
 }
 
 func (c *biblioClient) AddPublications(ctx context.Context, opts ...grpc.CallOption) (Biblio_AddPublicationsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[1], "/biblio.v1.Biblio/AddPublications", opts...)
+	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[2], "/biblio.v1.Biblio/AddPublications", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -142,7 +175,7 @@ func (c *biblioClient) GetDataset(ctx context.Context, in *GetDatasetRequest, op
 }
 
 func (c *biblioClient) GetAllDatasets(ctx context.Context, in *GetAllDatasetsRequest, opts ...grpc.CallOption) (Biblio_GetAllDatasetsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[2], "/biblio.v1.Biblio/GetAllDatasets", opts...)
+	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[3], "/biblio.v1.Biblio/GetAllDatasets", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -192,7 +225,7 @@ func (c *biblioClient) UpdataDataset(ctx context.Context, in *UpdateDatasetReque
 }
 
 func (c *biblioClient) AddDatasets(ctx context.Context, opts ...grpc.CallOption) (Biblio_AddDatasetsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[3], "/biblio.v1.Biblio/AddDatasets", opts...)
+	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[4], "/biblio.v1.Biblio/AddDatasets", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -226,6 +259,7 @@ func (x *biblioAddDatasetsClient) Recv() (*AddDatasetsResponse, error) {
 // All implementations must embed UnimplementedBiblioServer
 // for forward compatibility
 type BiblioServer interface {
+	GetFile(*GetFileRequest, Biblio_GetFileServer) error
 	GetPublication(context.Context, *GetPublicationRequest) (*GetPublicationResponse, error)
 	GetAllPublications(*GetAllPublicationsRequest, Biblio_GetAllPublicationsServer) error
 	SearchPublications(context.Context, *SearchPublicationsRequest) (*SearchPublicationsResponse, error)
@@ -243,6 +277,9 @@ type BiblioServer interface {
 type UnimplementedBiblioServer struct {
 }
 
+func (UnimplementedBiblioServer) GetFile(*GetFileRequest, Biblio_GetFileServer) error {
+	return status.Errorf(codes.Unimplemented, "method GetFile not implemented")
+}
 func (UnimplementedBiblioServer) GetPublication(context.Context, *GetPublicationRequest) (*GetPublicationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPublication not implemented")
 }
@@ -284,6 +321,27 @@ type UnsafeBiblioServer interface {
 
 func RegisterBiblioServer(s grpc.ServiceRegistrar, srv BiblioServer) {
 	s.RegisterService(&Biblio_ServiceDesc, srv)
+}
+
+func _Biblio_GetFile_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(GetFileRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(BiblioServer).GetFile(m, &biblioGetFileServer{stream})
+}
+
+type Biblio_GetFileServer interface {
+	Send(*GetFileResponse) error
+	grpc.ServerStream
+}
+
+type biblioGetFileServer struct {
+	grpc.ServerStream
+}
+
+func (x *biblioGetFileServer) Send(m *GetFileResponse) error {
+	return x.ServerStream.SendMsg(m)
 }
 
 func _Biblio_GetPublication_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -521,6 +579,11 @@ var Biblio_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "GetFile",
+			Handler:       _Biblio_GetFile_Handler,
+			ServerStreams: true,
+		},
 		{
 			StreamName:    "GetAllPublications",
 			Handler:       _Biblio_GetAllPublications_Handler,

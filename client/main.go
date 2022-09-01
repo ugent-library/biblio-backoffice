@@ -41,12 +41,15 @@ func main() {
 	viper.SetDefault("api-host", defaultAPIHost)
 	viper.SetDefault("api-port", defaultAPIPort)
 
-	rootCmd.Flags().String("api-host", defaultAPIHost, "api server host")
-	rootCmd.Flags().Int("api-port", defaultAPIPort, "api server port")
+	rootCmd.PersistentFlags().String("api-host", defaultAPIHost, "api server host")
+	rootCmd.PersistentFlags().Int("api-port", defaultAPIPort, "api server port")
 
 	searchPublicationsCmd.Flags().StringP("query", "q", "", "")
 	searchPublicationsCmd.Flags().StringP("limit", "", "", "")
 	searchPublicationsCmd.Flags().StringP("offset", "", "", "")
+
+	rootCmd.AddCommand(fileCmd)
+	fileCmd.AddCommand(getFileCmd)
 
 	rootCmd.AddCommand(datasetCmd)
 	datasetCmd.AddCommand(getDatasetCmd)
@@ -93,6 +96,38 @@ var rootCmd = &cobra.Command{
 			}
 		})
 		return nil
+	},
+}
+
+var fileCmd = &cobra.Command{
+	Use:   "file [command]",
+	Short: "File commands",
+}
+
+var getFileCmd = &cobra.Command{
+	Use:   "get [sha256]",
+	Short: "Get file",
+	Args:  cobra.MinimumNArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		req := &api.GetFileRequest{Sha256: args[0]}
+		stream, err := client.GetFile(context.Background(), req)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		for {
+			res, err := stream.Recv()
+			if err == io.EOF {
+				break
+			}
+			if err != nil {
+				log.Fatalf("error while reading stream: %v", err)
+			}
+
+			if _, err := os.Stdout.Write(res.Chunk); err != nil {
+				log.Fatal(err)
+			}
+		}
 	},
 }
 
