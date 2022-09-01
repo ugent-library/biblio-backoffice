@@ -53,10 +53,11 @@ type BindDetails struct {
 	Title                   string   `form:"title"`
 	Volume                  string   `form:"volume"`
 	WOSID                   string   `form:"wos_id"`
+	WOSType                 string   `form:"wos_type"`
 	Year                    string   `form:"year"`
 }
 
-func bindToPublication(b *BindDetails, p *models.Publication) {
+func bindToPublication(b *BindDetails, p *models.Publication, user *models.User) {
 	p.AlternativeTitle = b.AlternativeTitle
 	p.ArticleNumber = b.ArticleNumber
 	p.ArxivID = b.ArxivID
@@ -96,6 +97,9 @@ func bindToPublication(b *BindDetails, p *models.Publication) {
 	p.Volume = b.Volume
 	p.WOSID = b.WOSID
 	p.Year = b.Year
+	if user.CanCuratePublications() {
+		p.WOSType = b.WOSType
+	}
 }
 
 type YieldDetails struct {
@@ -111,7 +115,7 @@ type YieldEditDetails struct {
 func (h *Handler) EditDetails(w http.ResponseWriter, r *http.Request, ctx Context) {
 	render.Layout(w, "show_modal", "publication/edit_details", YieldEditDetails{
 		Context: ctx,
-		Form:    detailsForm(ctx.Locale, ctx.Publication, nil),
+		Form:    detailsForm(ctx.User, ctx.Locale, ctx.Publication, nil),
 	})
 }
 
@@ -123,10 +127,10 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 		return
 	}
 
-	bindToPublication(b, ctx.Publication)
+	bindToPublication(b, ctx.Publication, ctx.User)
 
 	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
-		form := detailsForm(ctx.Locale, ctx.Publication, validationErrs.(validation.Errors))
+		form := detailsForm(ctx.User, ctx.Locale, ctx.Publication, validationErrs.(validation.Errors))
 
 		render.Layout(w, "refresh_modal", "publication/edit_details", YieldEditDetails{
 			Context: ctx,

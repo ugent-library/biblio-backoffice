@@ -7,24 +7,24 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/validation"
 )
 
-func detailsForm(l *locale.Locale, publication *models.Publication, errors validation.Errors) *form.Form {
+func detailsForm(user *models.User, l *locale.Locale, publication *models.Publication, errors validation.Errors) *form.Form {
 	switch publication.Type {
 	case "book_chapter":
-		return bookChapterDetailsForm(l, publication, errors)
+		return bookChapterDetailsForm(user, l, publication, errors)
 	case "book_editor":
-		return bookEditorDetailsForm(l, publication, errors)
+		return bookEditorDetailsForm(user, l, publication, errors)
 	case "book":
-		return bookDetailsForm(l, publication, errors)
+		return bookDetailsForm(user, l, publication, errors)
 	case "conference":
-		return conferenceDetailsForm(l, publication, errors)
+		return conferenceDetailsForm(user, l, publication, errors)
 	case "dissertation":
-		return dissertationDetailsForm(l, publication, errors)
+		return dissertationDetailsForm(user, l, publication, errors)
 	case "issue_editor":
-		return issueEditorDetailsForm(l, publication, errors)
+		return issueEditorDetailsForm(user, l, publication, errors)
 	case "journal_article":
-		return journalArticleDetailsForm(l, publication, errors)
+		return journalArticleDetailsForm(user, l, publication, errors)
 	case "miscellaneous":
-		return miscellaneousDetailsForm(l, publication, errors)
+		return miscellaneousDetailsForm(user, l, publication, errors)
 	default:
 		return form.New()
 	}

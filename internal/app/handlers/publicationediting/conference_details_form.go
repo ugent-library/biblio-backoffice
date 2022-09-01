@@ -9,7 +9,23 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/validation"
 )
 
-func conferenceDetailsForm(l *locale.Locale, publication *models.Publication, errors validation.Errors) *form.Form {
+func conferenceDetailsForm(user *models.User, l *locale.Locale, publication *models.Publication, errors validation.Errors) *form.Form {
+	var wosTypeField form.Field
+	if user.CanCuratePublications() {
+		wosTypeField = &form.Text{
+			Name:    "wos_type",
+			Label:   l.T("builder.wos_type"),
+			Value:   publication.WOSType,
+			Tooltip: l.T("tooltip.publication.wos_type"),
+		}
+	} else {
+		wosTypeField = &display.Text{
+			Label:   l.T("builder.wos_type"),
+			Value:   publication.WOSType,
+			Tooltip: l.T("tooltip.publication.wos_type"),
+		}
+	}
+
 	return form.New().
 		WithTheme("default").
 		WithErrors(localize.ValidationErrors(l, errors)).
@@ -182,11 +198,7 @@ func conferenceDetailsForm(l *locale.Locale, publication *models.Publication, er
 			},
 		).
 		AddSection(
-			&display.Text{
-				Label:   l.T("builder.wos_type"),
-				Value:   l.TS("tooltip.publication", publication.WOSType),
-				Tooltip: l.T("tooltip.publication.wos_type"),
-			},
+			wosTypeField,
 			&form.Text{
 				Name:  "wos_id",
 				Label: l.T("builder.wos_id"),
