@@ -46,7 +46,7 @@ func conferenceDetails(l *locale.Locale, p *models.Publication) *display.Display
 				Required: true,
 			},
 			&display.Text{
-				Label: l.T("builder.journal_article.publication_abbreviation"),
+				Label: l.T("builder.publication_abbreviation"),
 				Value: p.PublicationAbbreviation,
 			},
 		).
@@ -79,6 +79,10 @@ func conferenceDetails(l *locale.Locale, p *models.Publication) *display.Display
 		).
 		AddSection(
 			&display.Text{
+				Label: l.T("builder.conference.series_title"),
+				Value: p.SeriesTitle,
+			},
+			&display.Text{
 				Label: l.T("builder.volume"),
 				Value: p.Volume,
 			},
@@ -95,8 +99,12 @@ func conferenceDetails(l *locale.Locale, p *models.Publication) *display.Display
 				Value: p.PageCount,
 			},
 			&display.Text{
-				Label: l.T("builder.conference.series_title"),
-				Value: p.SeriesTitle,
+				Label: l.T("builder.article_number"),
+				Value: p.ArticleNumber,
+			},
+			&display.Text{
+				Label: l.T("builder.issue_title"),
+				Value: p.IssueTitle,
 			},
 		).
 		AddSection(
