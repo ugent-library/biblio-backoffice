@@ -55,17 +55,22 @@ func (s *server) AddFile(stream api.Biblio_AddFileServer) error {
 		close(waitc)
 	}()
 
-	// TODO break if fileStore add returns an error (use select)
+recv:
 	for {
-		req, err := stream.Recv()
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			return err
-		}
-		if _, err := pw.Write(req.Chunk); err != nil {
-			return err
+		select {
+		case <-waitc:
+			break recv
+		default:
+			req, err := stream.Recv()
+			if err == io.EOF {
+				break recv
+			}
+			if err != nil {
+				return err
+			}
+			if _, err := pw.Write(req.Chunk); err != nil {
+				return err
+			}
 		}
 	}
 
