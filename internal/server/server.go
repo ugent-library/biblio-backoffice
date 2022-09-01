@@ -18,7 +18,7 @@ type server struct {
 }
 
 func New(services *backends.Services, logger *zap.SugaredLogger) *grpc.Server {
-	zap_opt := grpc_zap.WithLevels( // --- ②
+	zap_opt := grpc_zap.WithLevels(
 		func(c codes.Code) zapcore.Level {
 			var l zapcore.Level
 			switch c {
@@ -36,9 +36,10 @@ func New(services *backends.Services, logger *zap.SugaredLogger) *grpc.Server {
 	)
 
 	gsrv := grpc.NewServer(
-		grpc.StreamInterceptor(grpc_middleware.ChainStreamServer(
+		grpc_middleware.WithStreamServerChain(
 			grpc_recovery.StreamServerInterceptor(),
-		)),
+			grpc_zap.StreamServerInterceptor(logger.Desugar(), zap_opt),
+		),
 		grpc_middleware.WithUnaryServerChain(
 			grpc_recovery.UnaryServerInterceptor(),
 			grpc_zap.UnaryServerInterceptor(logger.Desugar(), zap_opt),

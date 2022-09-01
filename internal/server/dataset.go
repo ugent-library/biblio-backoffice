@@ -27,14 +27,21 @@ func (s *server) GetDataset(ctx context.Context, req *api.GetDatasetRequest) (*a
 }
 
 func (s *server) GetAllDatasets(req *api.GetAllDatasetsRequest, stream api.Biblio_GetAllDatasetsServer) (err error) {
-	return s.services.Repository.EachDataset(func(p *models.Dataset) bool {
+	// TODO errors in EachDataset aren't caught and pushed upstream. Returning 'false' in the callback
+	//   breaks the loop, but EachDataset will return 'nil'.
+	ErrorStream := s.services.Repository.EachDataset(func(p *models.Dataset) bool {
 		res := &api.GetAllDatasetsResponse{Dataset: datasetToMessage(p)}
 		if err = stream.Send(res); err != nil {
-			// TODO error handling
 			return false
 		}
 		return true
 	})
+
+	if ErrorStream != nil {
+		return status.Errorf(codes.Internal, "could not get all datasets: %w", ErrorStream)
+	}
+
+	return nil
 }
 
 func (s *server) SearchDatasets(ctx context.Context, req *api.SearchDatasetsRequest) (*api.SearchDatasetsResponse, error) {

@@ -18,7 +18,7 @@ func (s *server) GetPublication(ctx context.Context, req *api.GetPublicationRequ
 	pub, err := s.services.Repository.GetPublication(req.Id)
 	if err != nil {
 		// TODO How do we differentiate between errors? e.g. NotFound vs. Internal (database unavailable,...)
-		return nil, status.Errorf(codes.Internal, "Could not get publication with id %d: %w", req.Id, err)
+		return nil, status.Errorf(codes.Internal, "could not get publication with id %d: %w", req.Id, err)
 	}
 
 	res := &api.GetPublicationResponse{Publication: publicationToMessage(pub)}
@@ -27,13 +27,24 @@ func (s *server) GetPublication(ctx context.Context, req *api.GetPublicationRequ
 }
 
 func (s *server) GetAllPublications(req *api.GetAllPublicationsRequest, stream api.Biblio_GetAllPublicationsServer) (err error) {
-	return s.services.Repository.EachPublication(func(p *models.Publication) bool {
+	// TODO errors in EachPublication aren't caught and pushed upstream. Returning 'false' in the callback
+	//   breaks the loop, but EachPublication will return 'nil'.
+	//
+	//   Logging during streaming doesn't work / isn't possible. The grpc_zap interceptor is only called when
+	// 	 GetAllPublication returns an error.
+	ErrorStream := s.services.Repository.EachPublication(func(p *models.Publication) bool {
 		res := &api.GetAllPublicationsResponse{Publication: publicationToMessage(p)}
 		if err = stream.Send(res); err != nil {
 			return false
 		}
 		return true
 	})
+
+	if ErrorStream != nil {
+		return status.Errorf(codes.Internal, "could not get all publications: %w", ErrorStream)
+	}
+
+	return nil
 }
 
 func (s *server) SearchPublications(ctx context.Context, req *api.SearchPublicationsRequest) (*api.SearchPublicationsResponse, error) {
