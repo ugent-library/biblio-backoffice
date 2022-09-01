@@ -125,6 +125,13 @@ func conferenceDetailsForm(l *locale.Locale, publication *models.Publication, er
 		).
 		AddSection(
 			&form.Text{
+				Name:  "series_title",
+				Label: l.T("builder.conference.series_title"),
+				Value: publication.SeriesTitle,
+				Cols:  9,
+				Error: localize.ValidationErrorAt(l, errors, "/series_title"),
+			},
+			&form.Text{
 				Name:  "volume",
 				Label: l.T("builder.volume"),
 				Value: publication.Volume,
@@ -160,11 +167,18 @@ func conferenceDetailsForm(l *locale.Locale, publication *models.Publication, er
 				Error: localize.ValidationErrorAt(l, errors, "/page_count"),
 			},
 			&form.Text{
-				Name:  "series_title",
-				Label: l.T("builder.conference.series_title"),
-				Value: publication.SeriesTitle,
-				Cols:  9,
-				Error: localize.ValidationErrorAt(l, errors, "/series_title"),
+				Name:  "article_number",
+				Label: l.T("builder.article_number"),
+				Value: publication.ArticleNumber,
+				Cols:  3,
+				Error: localize.ValidationErrorAt(l, errors, "/article_number"),
+			},
+			&form.Text{
+				Name:  "issue_title",
+				Label: l.T("builder.issue_title"),
+				Value: publication.IssueTitle,
+				Cols:  3,
+				Error: localize.ValidationErrorAt(l, errors, "/issue_title"),
 			},
 		).
 		AddSection(

@@ -111,6 +111,13 @@ func dissertationDetailsForm(l *locale.Locale, publication *models.Publication, 
 		).
 		AddSection(
 			&form.Text{
+				Name:  "series_title",
+				Label: l.T("builder.series_title"),
+				Value: publication.SeriesTitle,
+				Cols:  9,
+				Error: localize.ValidationErrorAt(l, errors, "/series_title"),
+			},
+			&form.Text{
 				Name:  "volume",
 				Label: l.T("builder.volume"),
 				Value: publication.Volume,
@@ -123,13 +130,6 @@ func dissertationDetailsForm(l *locale.Locale, publication *models.Publication, 
 				Value: publication.PageCount,
 				Cols:  3,
 				Error: localize.ValidationErrorAt(l, errors, "/page_count"),
-			},
-			&form.Text{
-				Name:  "series_title",
-				Label: l.T("builder.series_title"),
-				Value: publication.SeriesTitle,
-				Cols:  9,
-				Error: localize.ValidationErrorAt(l, errors, "/series_title"),
 			},
 		).
 		AddSection(

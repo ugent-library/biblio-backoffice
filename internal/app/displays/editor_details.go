@@ -36,10 +36,6 @@ func bookEditorDetails(l *locale.Locale, p *models.Publication) *display.Display
 				Label:  l.T("builder.alternative_title"),
 				Values: p.AlternativeTitle,
 			},
-			&display.Text{
-				Label: l.T("builder.journal_article.publication_abbreviation"),
-				Value: p.PublicationAbbreviation,
-			},
 		).
 		AddSection(
 			&display.List{

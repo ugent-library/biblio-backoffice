@@ -48,13 +48,6 @@ func bookEditorDetailsForm(l *locale.Locale, publication *models.Publication, er
 				Cols:   9,
 				Error:  localize.ValidationErrorAt(l, errors, "/alternative_title"),
 			},
-			&form.Text{
-				Name:  "publication_abbreviation",
-				Label: l.T("builder.journal_article.publication_abbreviation"),
-				Value: publication.PublicationAbbreviation,
-				Cols:  3,
-				Error: localize.ValidationErrorAt(l, errors, "/publication_abbreviation"),
-			},
 		).
 		AddSection(
 			&form.SelectRepeat{
