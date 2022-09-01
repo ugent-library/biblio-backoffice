@@ -15,6 +15,7 @@ import "google/protobuf/timestamp.proto";
 
 service Biblio {
     rpc GetFile(GetFileRequest) returns (stream GetFileResponse);
+    rpc AddFile(stream AddFileRequest) returns (AddFileResponse);
     rpc GetPublication(GetPublicationRequest) returns (GetPublicationResponse);
     rpc GetAllPublications(GetAllPublicationsRequest) returns (stream GetAllPublicationsResponse);
     rpc SearchPublications(SearchPublicationsRequest) returns (SearchPublicationsResponse);
@@ -23,7 +24,7 @@ service Biblio {
     rpc GetDataset(GetDatasetRequest) returns (GetDatasetResponse);
     rpc GetAllDatasets(GetAllDatasetsRequest) returns (stream GetAllDatasetsResponse);
     rpc SearchDatasets(SearchDatasetsRequest) returns (SearchDatasetsResponse);
-    rpc UpdataDataset(UpdateDatasetRequest) returns (UpdateDatasetResponse);
+    rpc UpdateDataset(UpdateDatasetRequest) returns (UpdateDatasetResponse);
     rpc AddDatasets(stream AddDatasetsRequest) returns (stream AddDatasetsResponse);
 }
 
@@ -337,6 +338,14 @@ message GetFileRequest {
 
 message GetFileResponse {
     bytes chunk = 1;
+}
+
+message AddFileRequest {
+    bytes chunk = 1;
+}
+
+message AddFileResponse {
+    string sha256 = 1;
 }
 
 message GetPublicationRequest {

@@ -22,6 +22,7 @@ import (
 const (
 	defaultAPIHost = ""
 	defaultAPIPort = 30000
+	fileBufSize    = 524288
 )
 
 var (
@@ -50,6 +51,7 @@ func main() {
 
 	rootCmd.AddCommand(fileCmd)
 	fileCmd.AddCommand(getFileCmd)
+	fileCmd.AddCommand(addFileCmd)
 
 	rootCmd.AddCommand(datasetCmd)
 	datasetCmd.AddCommand(getDatasetCmd)
@@ -128,6 +130,42 @@ var getFileCmd = &cobra.Command{
 				log.Fatal(err)
 			}
 		}
+	},
+}
+
+var addFileCmd = &cobra.Command{
+	Use:   "add",
+	Short: "Add file",
+	Run: func(cmd *cobra.Command, args []string) {
+		stream, err := client.AddFile(context.Background())
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		r := bufio.NewReader(os.Stdin)
+		buf := make([]byte, fileBufSize)
+
+		for {
+			n, err := r.Read(buf)
+			if err == io.EOF {
+				break
+			}
+			if err != nil {
+				log.Fatal("cannot read chunk to buffer: ", err)
+			}
+
+			req := &api.AddFileRequest{Chunk: buf[:n]}
+
+			if err = stream.Send(req); err != nil {
+				log.Fatal("cannot send chunk to server: ", err)
+			}
+		}
+
+		res, err := stream.CloseAndRecv()
+		if err != nil {
+			log.Fatal(err)
+		}
+		os.Stdout.WriteString(res.Sha256 + "\n")
 	},
 }
 
@@ -235,7 +273,7 @@ var updateDatasetCmd = &cobra.Command{
 		}
 
 		req := &api.UpdateDatasetRequest{Dataset: dataset}
-		if _, err = client.UpdataDataset(ctx, req); err != nil {
+		if _, err = client.UpdateDataset(ctx, req); err != nil {
 			log.Fatal(err)
 		}
 	},
