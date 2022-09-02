@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	subNavs = []string{"description", "contributors", "publications"}
+	subNavs = []string{"description", "contributors", "publications", "activity"}
 )
 
 type YieldShow struct {
@@ -49,6 +49,12 @@ type YieldShowPublications struct {
 	SubNavs             []string
 	ActiveSubNav        string
 	RelatedPublications []*models.Publication
+}
+
+type YieldShowActivity struct {
+	Context
+	SubNavs      []string
+	ActiveSubNav string
 }
 
 func (h *Handler) Show(w http.ResponseWriter, r *http.Request, ctx Context) {
@@ -96,5 +102,13 @@ func (h *Handler) ShowPublications(w http.ResponseWriter, r *http.Request, ctx C
 		SubNavs:             subNavs,
 		ActiveSubNav:        "publications",
 		RelatedPublications: relatedPublications,
+	})
+}
+
+func (h *Handler) ShowActivity(w http.ResponseWriter, r *http.Request, ctx Context) {
+	render.View(w, "dataset/show_activity", YieldShowActivity{
+		Context:      ctx,
+		SubNavs:      subNavs,
+		ActiveSubNav: "activity",
 	})
 }

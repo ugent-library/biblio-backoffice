@@ -53,9 +53,7 @@ func (h *Handler) UpdateAdditionalInfo(w http.ResponseWriter, r *http.Request, c
 	p.AdditionalInfo = b.AdditionalInfo
 	p.Keyword = b.Keyword
 	p.ResearchField = b.ResearchField
-	if ctx.User.CanCuratePublications() {
-		p.Message = b.Message
-	}
+	p.Message = b.Message
 
 	if validationErrs := p.Validate(); validationErrs != nil {
 		h.Logger.Warnw("update publication additional info: could not validate additional info:", "errors", validationErrs, "publication", ctx.Publication.ID, "user", ctx.User.ID)
@@ -95,7 +93,7 @@ func additionalInfoForm(user *models.User, l *locale.Locale, p *models.Publicati
 		researchFieldOptions[i].Value = v
 	}
 
-	f := form.New().
+	return form.New().
 		WithTheme("default").
 		WithErrors(localize.ValidationErrors(l, errors)).
 		AddSection(
@@ -135,10 +133,8 @@ func additionalInfoForm(user *models.User, l *locale.Locale, p *models.Publicati
 					"/additional_info",
 				),
 			},
-		)
-
-	if user.CanCuratePublications() {
-		f.AddSection(
+		).
+		AddSection(
 			&form.TextArea{
 				Name:  "message",
 				Value: p.Message,
@@ -152,14 +148,4 @@ func additionalInfoForm(user *models.User, l *locale.Locale, p *models.Publicati
 				),
 			},
 		)
-	} else {
-		f.AddSection(
-			&display.Text{
-				Label: l.T("builder.message"),
-				Value: p.Message,
-			},
-		)
-	}
-
-	return f
 }
