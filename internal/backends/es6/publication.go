@@ -61,7 +61,7 @@ func (publications *Publications) Search(args *models.SearchArgs) (*models.Publi
 		}
 
 		// facet filter contains all query and all filters except itself
-		for _, field := range []string{"status", "type", "completeness_score", "faculty"} {
+		for _, field := range publicationFacetFields {
 
 			filters := make([]M, 0, len(publications.scopes)+1)
 
@@ -83,46 +83,25 @@ func (publications *Publications) Search(args *models.SearchArgs) (*models.Publi
 				}
 			}
 
-			if field == "faculty" {
-
-				query["aggs"].(M)["facets"].(M)["aggs"].(M)[field] = M{
-					"filter": M{"bool": M{"must": filters}},
-					"aggs": M{
-						"facet": M{
-							"terms": M{
-								"field": field,
-								"order": M{"_key": "asc"},
-								"size":  200,
-								//weird, regex not working with carets..
-								//"include": "^CA|DS|DI|EB|FW|GE|LA|LW|PS|PP|RE|TW|WE|GUK|UZGent|HOART|HOGENT|HOWEST|IBBT|IMEC|VIB$",
-								"include": []string{
-									"CA", "DS", "DI", "EB", "FW",
-									"GE", "LA", "LW", "PS", "PP",
-									"RE", "TW", "WE", "GUK", "UZGent",
-									"HOART", "HOGENT", "HOWEST",
-									"IBBT", "IMEC", "VIB",
-								},
-							},
+			facet := M{
+				"filter": M{"bool": M{"must": filters}},
+				"aggs": M{
+					"facet": M{
+						"terms": M{
+							"field":         field,
+							"order":         M{"_key": "asc"},
+							"size":          200,
+							"min_doc_count": 0,
 						},
 					},
-				}
-
-			} else {
-
-				query["aggs"].(M)["facets"].(M)["aggs"].(M)[field] = M{
-					"filter": M{"bool": M{"must": filters}},
-					"aggs": M{
-						"facet": M{
-							"terms": M{
-								"field": field,
-								"order": M{"_key": "asc"},
-								"size":  200,
-							},
-						},
-					},
-				}
-
+				},
 			}
+
+			if includeFields, e := fixedFacetValues[field]; e {
+				facet["aggs"].(M)["facet"].(M)["terms"].(M)["include"] = includeFields
+			}
+
+			query["aggs"].(M)["facets"].(M)["aggs"].(M)[field] = facet
 		}
 	}
 
@@ -298,7 +277,7 @@ func decodePublicationRes(res *esapi.Response) (*models.PublicationHits, error) 
 	hits.Total = r.Hits.Total
 
 	hits.Facets = make(map[string][]models.Facet)
-	for _, facet := range []string{"status", "type", "completeness_score", "faculty"} {
+	for _, facet := range publicationFacetFields {
 
 		if _, found := r.Aggregations.Facets[facet]; !found {
 			continue
@@ -320,6 +299,11 @@ func decodePublicationRes(res *esapi.Response) (*models.PublicationHits, error) 
 				Count: int(fv["doc_count"].(float64)),
 			})
 		}
+	}
+
+	//reorder facet values, if applicable
+	for facetName, facets := range hits.Facets {
+		hits.Facets[facetName] = reorderFacets(facetName, facets)
 	}
 
 	for _, h := range r.Hits.Hits {
