@@ -35,7 +35,7 @@
             {{range .Hits.Facets.status}}
             <div class="custom-control custom-checkbox mb-4">
                 <input class="custom-control-input" id="filter-type-{{.Value}}" type="checkbox" name="f[status]" value="{{.Value}}"{{if $.SearchArgs.HasFilter "status" .Value}} checked{{end}}>
-                <label class="custom-control-label" for="filter-type-{{.Value}}">{{$.Locale.TS "publication_statuses" .Value}}</label>
+                <label class="custom-control-label" for="filter-type-{{.Value}}">{{$.Locale.TS "publication_statuses" .Value}} ({{.Count}})</label>
             </div>
             {{end}}
         </div>
