@@ -1,49 +1,17 @@
 package es6
 
-import "github.com/ugent-library/biblio-backend/internal/models"
+import (
+	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backend/internal/vocabularies"
+)
 
 var publicationFacetFields []string = []string{"status", "type", "faculty"}
 var datasetFacetFields []string = []string{"status", "faculty"}
 var fixedFacetValues = map[string][]string{
-	"status": {
-		"new",
-		"private",
-		"public",
-		"returned",
-	},
-	"type": {
-		"book",
-		"book_chapter",
-		"book_editor",
-		"conference",
-		"dissertation",
-		"issue_editor",
-		"journal_article",
-		"miscellaneous",
-	},
-	"faculty": {
-		"CA",
-		"DS",
-		"DI",
-		"EB",
-		"FW",
-		"GE",
-		"LA",
-		"LW",
-		"PS",
-		"PP",
-		"RE",
-		"TW",
-		"WE",
-		"GUK",
-		"UZGent",
-		"HOART",
-		"HOGENT",
-		"HOWEST",
-		"IBBT",
-		"IMEC",
-		"VIB",
-	},
+	//"publication_statuses" includes "deleted"
+	"status":  vocabularies.Map["visible_publication_statuses"],
+	"type":    vocabularies.Map["publication_types"],
+	"faculty": vocabularies.Map["faculties"],
 }
 
 func reorderFacets(t string, facets []models.Facet) []models.Facet {
