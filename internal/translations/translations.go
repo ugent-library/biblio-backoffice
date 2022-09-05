@@ -707,4 +707,6 @@ func init() {
 	message.SetString(language.English, "builder.arxiv_id.help", "e.g. 0706.0001")
 	message.SetString(language.English, "builder.esci_id.help", "e.g. 000752820200004")
 
+	message.SetString(language.English, "extern.true", "UGent")
+	message.SetString(language.English, "extern.false", "non UGent")
 }

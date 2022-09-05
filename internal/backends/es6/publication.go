@@ -286,13 +286,19 @@ func decodePublicationRes(res *esapi.Response) (*models.PublicationHits, error) 
 		for _, f := range r.Aggregations.Facets[facet].(map[string]any)["facet"].(map[string]any)["buckets"].([]any) {
 			fv := f.(map[string]any)
 			value := ""
-			switch v := fv["key"].(type) {
-			case string:
-				value = v
-			case int:
-				value = fmt.Sprintf("%d", v)
-			case float64:
-				value = fmt.Sprintf("%.2f", v)
+
+			//boolean returned 0 and 1, so not to be distinguished from integers
+			if v, e := fv["key_as_string"]; e {
+				value = v.(string)
+			} else {
+				switch v := fv["key"].(type) {
+				case string:
+					value = v
+				case int:
+					value = fmt.Sprintf("%d", v)
+				case float64:
+					value = fmt.Sprintf("%.2f", v)
+				}
 			}
 			hits.Facets[facet] = append(hits.Facets[facet], models.Facet{
 				Value: value,
