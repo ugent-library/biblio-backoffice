@@ -269,6 +269,32 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		Methods("DELETE").
 		Name("dataset_delete")
 
+	// edit dataset activity
+	r.HandleFunc("/dataset/{id}/message/edit",
+		datasetEditingHandler.Wrap(datasetEditingHandler.EditMessage)).
+		Methods("GET").
+		Name("dataset_edit_message")
+	r.HandleFunc("/dataset/{id}/message",
+		datasetEditingHandler.Wrap(datasetEditingHandler.UpdateMessage)).
+		Methods("PUT").
+		Name("dataset_update_message")
+	r.HandleFunc("/dataset/{id}/reviewer-tags/edit",
+		datasetEditingHandler.Wrap(datasetEditingHandler.EditReviewerTags)).
+		Methods("GET").
+		Name("dataset_edit_reviewer_tags")
+	r.HandleFunc("/dataset/{id}/reviewer-tags",
+		datasetEditingHandler.Wrap(datasetEditingHandler.UpdateReviewerTags)).
+		Methods("PUT").
+		Name("dataset_update_reviewer_tags")
+	r.HandleFunc("/dataset/{id}/reviewer-note/edit",
+		datasetEditingHandler.Wrap(datasetEditingHandler.EditReviewerNote)).
+		Methods("GET").
+		Name("dataset_edit_reviewer_note")
+	r.HandleFunc("/dataset/{id}/reviewer-note",
+		datasetEditingHandler.Wrap(datasetEditingHandler.UpdateReviewerNote)).
+		Methods("PUT").
+		Name("dataset_update_reviewer_note")
+
 	// edit dataset details
 	r.HandleFunc("/dataset/{id}/details/edit",
 		datasetEditingHandler.Wrap(datasetEditingHandler.EditDetails)).
@@ -537,6 +563,14 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		Name("publication_delete")
 
 	// edit publication activity
+	r.HandleFunc("/publication/{id}/message/edit",
+		publicationEditingHandler.Wrap(publicationEditingHandler.EditMessage)).
+		Methods("GET").
+		Name("publication_edit_message")
+	r.HandleFunc("/publication/{id}/message",
+		publicationEditingHandler.Wrap(publicationEditingHandler.UpdateMessage)).
+		Methods("PUT").
+		Name("publication_update_message")
 	r.HandleFunc("/publication/{id}/reviewer-tags/edit",
 		publicationEditingHandler.Wrap(publicationEditingHandler.EditReviewerTags)).
 		Methods("GET").
