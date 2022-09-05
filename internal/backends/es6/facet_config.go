@@ -13,6 +13,7 @@ var publicationFacetFields []string = []string{
 	"publication_status",
 	"locked",
 	"wos_type",
+	"classification",
 }
 var datasetFacetFields []string = []string{
 	"status",
