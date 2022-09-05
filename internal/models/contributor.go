@@ -7,15 +7,21 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/vocabularies"
 )
 
+type ContributorDepartment struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
 // TODO only name should be required (support corporate names)
 type Contributor struct {
-	CreditRole []string `json:"credit_role,omitempty"`
-	FirstName  string   `json:"first_name,omitempty"`
-	FullName   string   `json:"full_name,omitempty"` // TODO rename to Name
-	ID         string   `json:"id,omitempty"`
-	LastName   string   `json:"last_name,omitempty"`
-	ORCID      string   `json:"orcid,omitempty"`
-	UGentID    []string `json:"ugent_id,omitempty"`
+	CreditRole []string                `json:"credit_role,omitempty"`
+	FirstName  string                  `json:"first_name,omitempty"`
+	FullName   string                  `json:"full_name,omitempty"` // TODO rename to Name
+	ID         string                  `json:"id,omitempty"`
+	LastName   string                  `json:"last_name,omitempty"`
+	ORCID      string                  `json:"orcid,omitempty"`
+	UGentID    []string                `json:"ugent_id,omitempty"`
+	Department []ContributorDepartment `json:"department,omitempty"`
 }
 
 func (p *Contributor) HasCreditRole(role string) bool {
