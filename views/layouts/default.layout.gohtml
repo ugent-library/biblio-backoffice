@@ -35,42 +35,72 @@
             </form>
         </div>
         {{end}}
-        <div class="bc-navbar bc-navbar--bordered-bottom bc-navbar--white bc-navbar--fixed shadow-sm">
+        <div class="bc-navbar bc-navbar--bordered-bottom bc-navbar--white bc-navbar--fixed bc-navbar--scrollable shadow-sm px-4">
             <div class="bc-toolbar bc-toolbar-sm">
                 <div class="bc-toolbar-left">
                     <div class="bc-toolbar-item">
-                        <a href="{{pathFor "home"}}"><img class="mr-2" src="{{assetPath "/images/biblio-logo.svg"}}"></a>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item">
+                                    <a href="{{pathFor "home"}}">
+                                        <img class="d-none d-lg-inline-block" src="{{assetPath "/images/ghent-university-library-logo.svg"}}" alt="Ghent University Library">
+                                        <img class="d-inline-block d-lg-none" src="{{assetPath "/images/ghent-university-library-mark.svg"}}" alt="Ghent University Library">
+                                    </a>
+                                </li>
+                            </ol>
+                        </nav>
                     </div>
                 </div>
                 <div class="bc-toolbar-right">
-                    {{if .User}}
                     <div class="bc-toolbar-item">
-                        <div class="dropdown">
-                            <a class="dropdown-toggle d-flex align-items-center text-body" type="button"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <div class="bc-avatar-and-text mr-2">
-                                    <div class="bc-avatar bc-avatar-icon bc-avatar">
-                                        <i class="if if-user"></i>
+                        <ul class="nav nav-main">
+                            <li class="nav-item">
+                                {{if .User}}
+                                    <div class="dropdown position-static">
+                                        <button class="nav-link dropdown-toggle" role="button"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <div class="bc-avatar-and-text">
+                                                <div class="bc-avatar bc-avatar-icon bc-avatar--small">
+                                                    <i class="if if-user"></i>
+                                                </div>
+                                                <div class="bc-avatar-text">{{.User.FullName}}</div>
+                                            </div>
+                                        </button>
+                                        <div class="dropdown-menu mt-8">
+                                            <div class="bc-avatar-and-text m-4">
+                                                <div class="bc-avatar bc-avatar-icon bc-avatar--small">
+                                                    <i class="if if-user"></i>
+                                                </div>
+                                                <div class="bc-avatar-text">
+                                                    <h4>{{.User.FullName}}</h4>
+                                                    <p class="text-muted c-body-small">{{.User.Email}}</p>
+                                                </div>
+                                            </div>
+                                            <hr class="dropdown-divider">
+                                            {{if and .User.CanImpersonateUser (not .OriginalUser)}}
+                                            <a class="dropdown-item" href="#"
+                                                hx-get="{{pathFor "add_impersonation"}}"
+                                                hx-target="#modals"
+                                            >
+                                                <i class="if if-eye"></i>
+                                                View as
+                                            </a>
+                                            {{end}}
+                                            <a class="dropdown-item" href="{{pathFor "logout"}}">
+                                                <i class="if if-log-out"></i>
+                                                Logout
+                                            </a>
+                                        </div>
                                     </div>
-                                    <div class="bc-avatar-text font-weight-bold">{{.User.FullName}}</div>
-                                </div>
-                            </a>
-                            <div class="dropdown-menu">
-                                {{if and .User.CanImpersonateUser (not .OriginalUser)}}
-                                <a class="dropdown-item" href="#"
-                                    hx-get="{{pathFor "add_impersonation"}}"
-                                    hx-target="#modals"
-                                >View as other user</a>
+                                {{else}}
+                                    <a class="btn btn-primary" href="{{pathFor "login"}}">
+                                        <i class="if if-log-in"></i>
+                                        Login
+                                    </a>
                                 {{end}}
-                                <a class="dropdown-item" href="{{pathFor "logout"}}">Logout</a>
-                            </div>
-                        </div>
+                            </li>
+                        </ul>
                     </div>
-                    {{else}}
-                    <div class="bc-toolbar-item">
-                        <a class="btn btn-primary" href="{{pathFor "login"}}">Login</a>
-                    </div>
-                    {{end}}
                 </div>
             </div>
         </div>
