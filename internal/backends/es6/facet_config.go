@@ -5,14 +5,21 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/vocabularies"
 )
 
-var publicationFacetFields []string = []string{"status", "type", "faculty", "extern"}
+var publicationFacetFields []string = []string{
+	"status",
+	"type",
+	"faculty",
+	"extern",
+	"publication_status",
+}
 var datasetFacetFields []string = []string{"status", "faculty"}
 var fixedFacetValues = map[string][]string{
 	//"publication_statuses" includes "deleted"
-	"status":  vocabularies.Map["visible_publication_statuses"],
-	"type":    vocabularies.Map["publication_types"],
-	"faculty": vocabularies.Map["faculties"],
-	"extern":  {"true", "false"},
+	"status":             vocabularies.Map["visible_publication_statuses"],
+	"type":               vocabularies.Map["publication_types"],
+	"faculty":            vocabularies.Map["faculties"],
+	"extern":             {"true", "false"},
+	"publication_status": vocabularies.Map["publication_publishing_statuses"],
 }
 
 func reorderFacets(t string, facets []models.Facet) []models.Facet {
