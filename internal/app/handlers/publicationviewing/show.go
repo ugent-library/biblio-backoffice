@@ -10,6 +10,8 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/validation"
 )
 
+var subNavs = []string{"description", "files", "contributors", "datasets", "activity"}
+
 type YieldShow struct {
 	Context
 	PageTitle    string
@@ -61,24 +63,16 @@ type YieldShowActivity struct {
 	ActiveSubNav string
 }
 
-func (h *Handler) subNavs(ctx Context) []string {
-	if ctx.User.CanCuratePublications() {
-		return []string{"description", "files", "contributors", "datasets", "activity"}
-	} else {
-		return []string{"description", "files", "contributors", "datasets"}
-	}
-}
-
 func (h *Handler) Show(w http.ResponseWriter, r *http.Request, ctx Context) {
 	activeSubNav := r.URL.Query().Get("show")
-	if !validation.InArray(h.subNavs(ctx), activeSubNav) {
+	if !validation.InArray(subNavs, activeSubNav) {
 		activeSubNav = "description"
 	}
 
 	render.Layout(w, "layouts/default", "publication/pages/show", YieldShow{
 		Context:      ctx,
 		PageTitle:    ctx.Locale.T("publication.page.show.title"),
-		SubNavs:      h.subNavs(ctx),
+		SubNavs:      subNavs,
 		ActiveNav:    "publications",
 		ActiveSubNav: activeSubNav,
 	})
@@ -87,7 +81,7 @@ func (h *Handler) Show(w http.ResponseWriter, r *http.Request, ctx Context) {
 func (h *Handler) ShowDescription(w http.ResponseWriter, r *http.Request, ctx Context) {
 	render.View(w, "publication/show_description", YieldShowDescription{
 		Context:               ctx,
-		SubNavs:               h.subNavs(ctx),
+		SubNavs:               subNavs,
 		ActiveSubNav:          "description",
 		DisplayDetails:        displays.PublicationDetails(ctx.Locale, ctx.Publication),
 		DisplayConference:     displays.PublicationConference(ctx.Locale, ctx.Publication),
@@ -98,7 +92,7 @@ func (h *Handler) ShowDescription(w http.ResponseWriter, r *http.Request, ctx Co
 func (h *Handler) ShowFiles(w http.ResponseWriter, r *http.Request, ctx Context) {
 	render.View(w, "publication/show_files", YieldShowFiles{
 		Context:      ctx,
-		SubNavs:      h.subNavs(ctx),
+		SubNavs:      subNavs,
 		ActiveSubNav: "files",
 	})
 }
@@ -106,7 +100,7 @@ func (h *Handler) ShowFiles(w http.ResponseWriter, r *http.Request, ctx Context)
 func (h *Handler) ShowContributors(w http.ResponseWriter, r *http.Request, ctx Context) {
 	render.View(w, "publication/show_contributors", YieldShowContributors{
 		Context:      ctx,
-		SubNavs:      h.subNavs(ctx),
+		SubNavs:      subNavs,
 		ActiveSubNav: "contributors",
 	})
 }
@@ -121,7 +115,7 @@ func (h *Handler) ShowDatasets(w http.ResponseWriter, r *http.Request, ctx Conte
 
 	render.View(w, "publication/show_datasets", YieldShowDatasets{
 		Context:         ctx,
-		SubNavs:         h.subNavs(ctx),
+		SubNavs:         subNavs,
 		ActiveSubNav:    "datasets",
 		RelatedDatasets: relatedDatasets,
 	})
@@ -130,7 +124,7 @@ func (h *Handler) ShowDatasets(w http.ResponseWriter, r *http.Request, ctx Conte
 func (h *Handler) ShowActivity(w http.ResponseWriter, r *http.Request, ctx Context) {
 	render.View(w, "publication/show_activity", YieldShowActivity{
 		Context:      ctx,
-		SubNavs:      h.subNavs(ctx),
+		SubNavs:      subNavs,
 		ActiveSubNav: "activity",
 	})
 }

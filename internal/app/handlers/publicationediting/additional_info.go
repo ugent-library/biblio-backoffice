@@ -21,7 +21,6 @@ type BindAdditionalInfo struct {
 	AdditionalInfo string   `form:"additional_info"`
 	Keyword        []string `form:"keyword"`
 	ResearchField  []string `form:"research_field"`
-	Message        string   `form:"message"`
 }
 
 type YieldAdditionalInfo struct {
@@ -53,7 +52,6 @@ func (h *Handler) UpdateAdditionalInfo(w http.ResponseWriter, r *http.Request, c
 	p.AdditionalInfo = b.AdditionalInfo
 	p.Keyword = b.Keyword
 	p.ResearchField = b.ResearchField
-	p.Message = b.Message
 
 	if validationErrs := p.Validate(); validationErrs != nil {
 		h.Logger.Warnw("update publication additional info: could not validate additional info:", "errors", validationErrs, "publication", ctx.Publication.ID, "user", ctx.User.ID)
@@ -131,20 +129,6 @@ func additionalInfoForm(user *models.User, l *locale.Locale, p *models.Publicati
 					l,
 					errors,
 					"/additional_info",
-				),
-			},
-		).
-		AddSection(
-			&form.TextArea{
-				Name:  "message",
-				Value: p.Message,
-				Label: l.T("builder.message"),
-				Cols:  9,
-				Rows:  4,
-				Error: localize.ValidationErrorAt(
-					l,
-					errors,
-					"/message",
 				),
 			},
 		)
