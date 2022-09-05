@@ -213,7 +213,8 @@ func detailsForm(l *locale.Locale, dataset *models.Dataset, errors validation.Er
 				Required: true,
 			},
 			&form.Select{
-				Template:    "dataset/access_level",
+				//TODO: closes modal because controller reuses full edit view
+				//Template:    "dataset/access_level",
 				Name:        "access_level",
 				Label:       l.T("builder.access_level"),
 				Value:       dataset.AccessLevel,
