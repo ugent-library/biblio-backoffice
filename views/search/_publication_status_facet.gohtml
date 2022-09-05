@@ -1,8 +1,8 @@
 <div class="dropdown mt-4">
     <a class="badge badge-pill badge-default mr-3" data-toggle="dropdown" data-persist="true" aria-haspopup="true"
         aria-expanded="false" role="button">
-        <span class="badge-text">Biblio status</span>
-        <div class="c-counter c-counter--small">{{len (.SearchArgs.FiltersFor "status")}}</div>
+        <span class="badge-text">Publication status</span>
+        <div class="c-counter c-counter--small">{{len (.SearchArgs.FiltersFor "publication_status")}}</div>
         <i class="if if-caret-down"></i>
     </a>
     <form class="mb-4 dropdown-menu" method="GET" action="{{.CurrentURL|queryClear}}">
@@ -10,7 +10,7 @@
             <div class="bc-toolbar">
                 <div class="bc-toolbar__left">
                     <div class="bc-toolbar__item">
-                        <h6>Biblio status</h6>
+                        <h6>Publication status</h6>
                     </div>
                 </div>
                 <div class="bc-toolbar__right">
@@ -25,17 +25,17 @@
         <input type="hidden" name="sort" value="{{.}}">
         {{end}}
         {{range $f, $vals := .SearchArgs.Filters}}
-        {{if ne $f "status"}}
+        {{if ne $f "publication_status"}}
         {{range $vals}}
         <input type="hidden" name="f[{{$f}}]" value="{{.}}">
         {{end}}
         {{end}}
         {{end}}
         <div class="dropdown-body">
-            {{range .Hits.Facets.status}}
+            {{range .Hits.Facets.publication_status}}
             <div class="custom-control custom-checkbox mb-4">
-                <input class="custom-control-input" id="filter-status-{{.Value}}" type="checkbox" name="f[status]" value="{{.Value}}"{{if $.SearchArgs.HasFilter "status" .Value}} checked{{end}}>
-                <label class="custom-control-label" for="filter-status-{{.Value}}">{{$.Locale.TS "publication_statuses" .Value}} ({{.Count}})</label>
+                <input class="custom-control-input" id="filter-publication-status-{{.Value}}" type="checkbox" name="f[publication_status]" value="{{.Value}}"{{if $.SearchArgs.HasFilter "publication_status" .Value}} checked{{end}}>
+                <label class="custom-control-label" for="filter-publication-status-{{.Value}}">{{$.Locale.TS "publication_publishing_statuses" .Value}} ({{.Count}})</label>
             </div>
             {{end}}
         </div>

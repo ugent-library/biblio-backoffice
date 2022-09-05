@@ -1,8 +1,8 @@
 <div class="dropdown mt-4">
     <a class="badge badge-pill badge-default mr-3" data-toggle="dropdown" data-persist="true" aria-haspopup="true"
         aria-expanded="false" role="button">
-        <span class="badge-text">Biblio status</span>
-        <div class="c-counter c-counter--small">{{len (.SearchArgs.FiltersFor "status")}}</div>
+        <span class="badge-text">WOS Type</span>
+        <div class="c-counter c-counter--small">{{len (.SearchArgs.FiltersFor "wos_type")}}</div>
         <i class="if if-caret-down"></i>
     </a>
     <form class="mb-4 dropdown-menu" method="GET" action="{{.CurrentURL|queryClear}}">
@@ -10,7 +10,7 @@
             <div class="bc-toolbar">
                 <div class="bc-toolbar__left">
                     <div class="bc-toolbar__item">
-                        <h6>Biblio status</h6>
+                        <h6>WOS Type</h6>
                     </div>
                 </div>
                 <div class="bc-toolbar__right">
@@ -25,17 +25,17 @@
         <input type="hidden" name="sort" value="{{.}}">
         {{end}}
         {{range $f, $vals := .SearchArgs.Filters}}
-        {{if ne $f "status"}}
+        {{if ne $f "wos_type"}}
         {{range $vals}}
         <input type="hidden" name="f[{{$f}}]" value="{{.}}">
         {{end}}
         {{end}}
         {{end}}
-        <div class="dropdown-body">
-            {{range .Hits.Facets.status}}
+        <div class="dropdown-body">{{/* wos_type contains spaces, so do not use its values in id's */}}
+            {{range $i, $v := .Hits.Facets.wos_type}}
             <div class="custom-control custom-checkbox mb-4">
-                <input class="custom-control-input" id="filter-status-{{.Value}}" type="checkbox" name="f[status]" value="{{.Value}}"{{if $.SearchArgs.HasFilter "status" .Value}} checked{{end}}>
-                <label class="custom-control-label" for="filter-status-{{.Value}}">{{$.Locale.TS "publication_statuses" .Value}} ({{.Count}})</label>
+                <input class="custom-control-input" id="filter-wos-type-{{$i}}" type="checkbox" name="f[wos_type]" value="{{$v.Value}}"{{if $.SearchArgs.HasFilter "wos_type" $v.Value}} checked{{end}}>
+                <label class="custom-control-label" for="filter-wos-type-{{$i}}">{{$v.Value}} ({{$v.Count}})</label>
             </div>
             {{end}}
         </div>

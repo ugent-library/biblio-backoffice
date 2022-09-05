@@ -713,4 +713,6 @@ func init() {
 
 	message.SetString(language.English, "extern.true", "UGent")
 	message.SetString(language.English, "extern.false", "non UGent")
+	message.SetString(language.English, "locked.true", "locked")
+	message.SetString(language.English, "locked.false", "unlocked")
 }
