@@ -1,0 +1,30 @@
+{{define "modal_dialog"}}
+<div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">Edit Librarian tags</h2>
+        </div>
+        <div class="modal-body">
+            {{.Form.Errors.Render}}
+            <ul class="list-group list-group-flush" data-panel-state="edit">
+                {{range .Form.Sections}}
+                <li class="list-group-item">
+                    {{.Render}}
+                </li>
+                {{end}}
+            </ul>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-link modal-close">Cancel</button>
+            <button type="button" name="create" class="btn btn-primary"
+                hx-put="{{pathFor "publication_update_reviewer_tags" "id" .Publication.ID}}"
+                hx-headers='{"If-Match": "{{.Publication.SnapshotID}}"}'
+                hx-include=".modal-body"
+                hx-swap="none"
+            >
+                Save
+            </button>
+        </div>
+    </div>
+</div>
+{{end}}
