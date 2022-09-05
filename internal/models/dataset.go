@@ -54,7 +54,7 @@ type Dataset struct {
 	ID                 string               `json:"id,omitempty"`
 	Keyword            []string             `json:"keyword,omitempty"`
 	License            string               `json:"license,omitempty"`
-	Locked             bool                 `json:"locked,omitempty"`
+	Locked             bool                 `json:"locked"`
 	Message            string               `json:"message,omitempty"`
 	OtherLicense       string               `json:"other_license,omitempty"`
 	Project            []DatasetProject     `json:"project,omitempty"`
