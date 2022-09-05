@@ -35,6 +35,20 @@
     External {{.Locale.TS "publication.contributor.role" .Role}}
     {{end}}
 </td>
+<td class="col-2">
+    {{range $i, $cd := .Contributor.Department}}
+        {{$cd.ID}}
+        {{with $cd.Name}}
+            <a class="text-muted mx-2" href="#" data-container="body" data-toggle="popover" data-trigger="focus" data-placement="right" data-content="{{.}}">
+                <i class="if if-info-circle if--small"></i>
+                <div class="sr-only">More info</div>
+            </a>
+        {{end}}
+        {{if (eq $i 0)}}
+            {{break}}
+        {{end}}
+    {{end}}
+</td>
 <td class="pr-4 col-3">
     {{if .User.CanEditPublication .Publication}}
     <div class="c-button-toolbar">
