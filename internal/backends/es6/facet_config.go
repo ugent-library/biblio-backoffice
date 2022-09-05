@@ -11,8 +11,13 @@ var publicationFacetFields []string = []string{
 	"faculty",
 	"extern",
 	"publication_status",
+	"locked",
 }
-var datasetFacetFields []string = []string{"status", "faculty"}
+var datasetFacetFields []string = []string{
+	"status",
+	"faculty",
+	"locked",
+}
 var fixedFacetValues = map[string][]string{
 	//"publication_statuses" includes "deleted"
 	"status":             vocabularies.Map["visible_publication_statuses"],
@@ -20,6 +25,7 @@ var fixedFacetValues = map[string][]string{
 	"faculty":            vocabularies.Map["faculties"],
 	"extern":             {"true", "false"},
 	"publication_status": vocabularies.Map["publication_publishing_statuses"],
+	"locked":             {"true", "false"},
 }
 
 func reorderFacets(t string, facets []models.Facet) []models.Facet {
