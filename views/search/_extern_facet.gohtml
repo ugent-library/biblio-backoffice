@@ -34,8 +34,8 @@
         <div class="dropdown-body">
             {{range .Hits.Facets.extern}}
             <div class="custom-control custom-checkbox mb-4">
-                <input class="custom-control-input" id="filter-type-{{.Value}}" type="checkbox" name="f[extern]" value="{{.Value}}"{{if $.SearchArgs.HasFilter "extern" .Value}} checked{{end}}>
-                <label class="custom-control-label" for="filter-type-{{.Value}}">{{$.Locale.TS "extern" .Value}} ({{.Count}})</label>
+                <input class="custom-control-input" id="filter-extern-{{.Value}}" type="checkbox" name="f[extern]" value="{{.Value}}"{{if $.SearchArgs.HasFilter "extern" .Value}} checked{{end}}>
+                <label class="custom-control-label" for="filter-extern-{{.Value}}">{{$.Locale.TS "extern" .Value}} ({{.Count}})</label>
             </div>
             {{end}}
         </div>
