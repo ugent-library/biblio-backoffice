@@ -66,7 +66,7 @@
                 {{range .Scopes}}
                 <li class="nav-item">
                     <a class="nav-link{{if $.SearchArgs.HasFilter "scope" .}} active{{end}}"
-                        href="{{pathFor "publications"|query ($.SearchArgs.WithFilter "scope" .)}}">
+                        href="{{pathFor "publications"|query ($.SearchArgs.Clone.WithFilter "scope" .)}}">
                         {{$.Locale.TS "publication.search.scopes" .}}
                     </a>
                 </li>
