@@ -15,11 +15,13 @@ var publicationFacetFields []string = []string{
 	"wos_type",
 	"classification",
 	"file.relation",
+	"year",
 }
 var datasetFacetFields []string = []string{
 	"status",
 	"faculty",
 	"locked",
+	"year",
 }
 var fixedFacetValues = map[string][]string{
 	//"publication_statuses" includes "deleted"
