@@ -66,7 +66,7 @@
                 {{range .Scopes}}
                 <li class="nav-item">
                     <a class="nav-link{{if $.SearchArgs.HasFilter "scope" .}} active{{end}}"
-                        href="{{pathFor "publications"|query ($.SearchArgs.WithFilter "scope" .)}}">
+                        href="{{pathFor "publications"|query ($.SearchArgs.Clone.WithFilter "scope" .)}}">
                         {{$.Locale.TS "publication.search.scopes" .}}
                     </a>
                 </li>
@@ -85,6 +85,8 @@
             {{partial "search/publication_status_facet" .}}
             {{partial "search/locked_facet" .}}
             {{partial "search/wos_type_facet" .}}
+            {{partial "search/classification_facet" .}}
+            {{partial "search/file_relation_facet" .}}
         </div>
 
         <div class="card mb-6">
