@@ -28,6 +28,7 @@ var fixedFacetValues = map[string][]string{
 	"extern":             {"true", "false"},
 	"publication_status": vocabularies.Map["publication_publishing_statuses"],
 	"locked":             {"true", "false"},
+	"classification":     vocabularies.Map["publication_classifications"],
 }
 
 func reorderFacets(t string, facets []models.Facet) []models.Facet {
