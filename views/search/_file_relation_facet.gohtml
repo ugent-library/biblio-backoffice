@@ -2,7 +2,7 @@
     <a class="badge badge-pill badge-default mr-3" data-toggle="dropdown" data-persist="true" aria-haspopup="true"
         aria-expanded="false" role="button">
         <span class="badge-text">File type</span>
-        <div class="c-counter c-counter--small">{{len (.SearchArgs.FiltersFor "file_relation")}}</div>
+        <div class="c-counter c-counter--small">{{len (.SearchArgs.FiltersFor "file.relation")}}</div>
         <i class="if if-caret-down"></i>
     </a>
     <form class="mb-4 dropdown-menu" method="GET" action="{{.CurrentURL|queryClear}}">
@@ -25,16 +25,16 @@
         <input type="hidden" name="sort" value="{{.}}">
         {{end}}
         {{range $f, $vals := .SearchArgs.Filters}}
-        {{if ne $f "file_relation"}}
+        {{if ne $f "file.relation"}}
         {{range $vals}}
         <input type="hidden" name="f[{{$f}}]" value="{{.}}">
         {{end}}
         {{end}}
         {{end}}
         <div class="dropdown-body">
-            {{range .Hits.Facets.file_relation}}
+            {{range (index .Hits.Facets "file.relation")}}
             <div class="custom-control custom-checkbox mb-4">
-                <input class="custom-control-input" id="filter-file-relation-{{.Value}}" type="checkbox" name="f[file_relation]" value="{{.Value}}"{{if $.SearchArgs.HasFilter "file_relation" .Value}} checked{{end}}>
+                <input class="custom-control-input" id="filter-file-relation-{{.Value}}" type="checkbox" name="f[file.relation]" value="{{.Value}}"{{if $.SearchArgs.HasFilter "file.relation" .Value}} checked{{end}}>
                 <label class="custom-control-label" for="filter-file-relation-{{.Value}}">{{$.Locale.TS "publication_file_relations" .Value}} ({{.Count}})</label>
             </div>
             {{end}}

@@ -425,7 +425,7 @@
                         "date_updated": { "type": "date" },
                         "sha256": { "type": "keyword" },
                         "name": { "type": "keyword" },
-                        "relation": { "type": "keyword", "copy_to": "file_relation" },
+                        "relation": { "type": "keyword" },
                         "access_level": { "type": "keyword" },
                         "license": { "type": "keyword" },
                         "other_license": { "type": "text" },
@@ -438,9 +438,6 @@
                         "url": { "type": "text", "index": false },
                         "thumbnail_url": { "type": "text", "index": false }
                     }
-                },
-                "file_relation": {
-                  "type": "keyword"
                 },
                 "publication_link": {
                     "properties": {
