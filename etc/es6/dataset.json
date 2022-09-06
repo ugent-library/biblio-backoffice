@@ -161,6 +161,16 @@
                         },
                         "credit_role": {
                             "type": "keyword"
+                        },
+                        "department": {
+                          "properties": {
+                            "id": {
+                              "type": "keyword"
+                            },
+                            "name": {
+                              "type": "text"
+                            }
+                          }
                         }
                     }
                 },
@@ -202,6 +212,16 @@
                         },
                         "credit_role": {
                             "type": "keyword"
+                        },
+                        "department": {
+                          "properties": {
+                            "id": {
+                              "type": "keyword"
+                            },
+                            "name": {
+                              "type": "text"
+                            }
+                          }
                         }
                     }
                 },

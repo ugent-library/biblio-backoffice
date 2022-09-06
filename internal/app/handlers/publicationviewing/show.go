@@ -10,9 +10,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/validation"
 )
 
-var (
-	subNavs = []string{"description", "files", "contributors", "datasets"}
-)
+var subNavs = []string{"description", "files", "contributors", "datasets", "activity"}
 
 type YieldShow struct {
 	Context
@@ -57,6 +55,12 @@ type YieldShowDatasets struct {
 	SubNavs         []string
 	ActiveSubNav    string
 	RelatedDatasets []*models.Dataset
+}
+
+type YieldShowActivity struct {
+	Context
+	SubNavs      []string
+	ActiveSubNav string
 }
 
 func (h *Handler) Show(w http.ResponseWriter, r *http.Request, ctx Context) {
@@ -114,5 +118,13 @@ func (h *Handler) ShowDatasets(w http.ResponseWriter, r *http.Request, ctx Conte
 		SubNavs:         subNavs,
 		ActiveSubNav:    "datasets",
 		RelatedDatasets: relatedDatasets,
+	})
+}
+
+func (h *Handler) ShowActivity(w http.ResponseWriter, r *http.Request, ctx Context) {
+	render.View(w, "publication/show_activity", YieldShowActivity{
+		Context:      ctx,
+		SubNavs:      subNavs,
+		ActiveSubNav: "activity",
 	})
 }

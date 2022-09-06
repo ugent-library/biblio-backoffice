@@ -35,6 +35,7 @@ type YieldEditFile struct {
 	File *models.PublicationFile
 	Form *form.Form
 }
+
 type YieldShowFiles struct {
 	Context
 }

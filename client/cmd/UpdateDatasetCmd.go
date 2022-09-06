@@ -45,7 +45,7 @@ func (c *UpdateDatasetCmd) Run(args []string) {
 	}
 
 	req := &api.UpdateDatasetRequest{Dataset: dataset}
-	if _, err = c.Client.UpdataDataset(ctx, req); err != nil {
+	if _, err = c.Client.UpdateDataset(ctx, req); err != nil {
 		log.Fatal(err)
 	}
 }

@@ -22,11 +22,13 @@ func init() {
 	message.SetString(language.English, "publication.subnav.contributors", "Authors & Editors")
 	message.SetString(language.English, "publication.subnav.datasets", "Datasets")
 	message.SetString(language.English, "publication.subnav.files", "Full text")
+	message.SetString(language.English, "publication.subnav.activity", "Biblio Messages")
 	message.SetString(language.English, "publication.page.show.title", "Publication - Biblio")
 
 	message.SetString(language.English, "dataset.subnav.description", "Description")
 	message.SetString(language.English, "dataset.subnav.contributors", "Contributors")
 	message.SetString(language.English, "dataset.subnav.publications", "Publications")
+	message.SetString(language.English, "dataset.subnav.activity", "Biblio Messages")
 	message.SetString(language.English, "dataset.page.show.title", "Dataset - Biblio")
 
 	message.SetString(language.English, "confirmations.yes", "Yes")
@@ -225,6 +227,8 @@ func init() {
 	message.SetString(language.English, "builder.wos_id", "Web of Science ID")
 	message.SetString(language.English, "builder.report_number", "Report number")
 	message.SetString(language.English, "builder.research_field", "Research field")
+	message.SetString(language.English, "builder.reviewer_tags", "Librarian tags")
+	message.SetString(language.English, "builder.reviewer_note", "Librarian note")
 	message.SetString(language.English, "builder.series_title", "Series title")
 	message.SetString(language.English, "builder.title", "Title")
 	message.SetString(language.English, "builder.type", "Publication type")
@@ -707,4 +711,8 @@ func init() {
 	message.SetString(language.English, "builder.arxiv_id.help", "e.g. 0706.0001")
 	message.SetString(language.English, "builder.esci_id.help", "e.g. 000752820200004")
 
+	message.SetString(language.English, "extern.true", "UGent")
+	message.SetString(language.English, "extern.false", "non UGent")
+	message.SetString(language.English, "locked.true", "locked")
+	message.SetString(language.English, "locked.false", "unlocked")
 }

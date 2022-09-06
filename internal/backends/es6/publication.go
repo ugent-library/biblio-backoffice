@@ -61,7 +61,7 @@ func (publications *Publications) Search(args *models.SearchArgs) (*models.Publi
 		}
 
 		// facet filter contains all query and all filters except itself
-		for _, field := range []string{"status", "type", "completeness_score", "faculty"} {
+		for _, field := range publicationFacetFields {
 
 			filters := make([]M, 0, len(publications.scopes)+1)
 
@@ -83,46 +83,25 @@ func (publications *Publications) Search(args *models.SearchArgs) (*models.Publi
 				}
 			}
 
-			if field == "faculty" {
-
-				query["aggs"].(M)["facets"].(M)["aggs"].(M)[field] = M{
-					"filter": M{"bool": M{"must": filters}},
-					"aggs": M{
-						"facet": M{
-							"terms": M{
-								"field": field,
-								"order": M{"_key": "asc"},
-								"size":  200,
-								//weird, regex not working with carets..
-								//"include": "^CA|DS|DI|EB|FW|GE|LA|LW|PS|PP|RE|TW|WE|GUK|UZGent|HOART|HOGENT|HOWEST|IBBT|IMEC|VIB$",
-								"include": []string{
-									"CA", "DS", "DI", "EB", "FW",
-									"GE", "LA", "LW", "PS", "PP",
-									"RE", "TW", "WE", "GUK", "UZGent",
-									"HOART", "HOGENT", "HOWEST",
-									"IBBT", "IMEC", "VIB",
-								},
-							},
+			facet := M{
+				"filter": M{"bool": M{"must": filters}},
+				"aggs": M{
+					"facet": M{
+						"terms": M{
+							"field":         field,
+							"order":         M{"_key": "asc"},
+							"size":          200,
+							"min_doc_count": 0,
 						},
 					},
-				}
-
-			} else {
-
-				query["aggs"].(M)["facets"].(M)["aggs"].(M)[field] = M{
-					"filter": M{"bool": M{"must": filters}},
-					"aggs": M{
-						"facet": M{
-							"terms": M{
-								"field": field,
-								"order": M{"_key": "asc"},
-								"size":  200,
-							},
-						},
-					},
-				}
-
+				},
 			}
+
+			if includeFields, e := fixedFacetValues[field]; e {
+				facet["aggs"].(M)["facet"].(M)["terms"].(M)["include"] = includeFields
+			}
+
+			query["aggs"].(M)["facets"].(M)["aggs"].(M)[field] = facet
 		}
 	}
 
@@ -214,40 +193,50 @@ func (publications *Publications) buildUserQuery(args *models.SearchArgs) M {
 		query.bool.should: boost given search results with extra score
 						   make sure minimum_should_match is 0
 	*/
-	queryShould := []M{
-		{
-			"match_phrase": M{
-				"title": M{
-					"query": args.Query,
-					"boost": 200,
+	if len(args.Query) > 0 {
+		queryShould := []M{
+			{
+				"match_phrase": M{
+					"title": M{
+						"query": args.Query,
+						"boost": 200,
+					},
 				},
 			},
-		},
-		{
-			"match_phrase": M{
-				"author.full_name": M{
-					"query": args.Query,
-					"boost": 200,
+			{
+				"match_phrase": M{
+					"author.full_name": M{
+						"query": args.Query,
+						"boost": 200,
+					},
 				},
 			},
-		},
-		{
-			"match_phrase": M{
-				"all": M{
-					"query": args.Query,
-					"boost": 100,
+			{
+				"match_phrase": M{
+					"all": M{
+						"query": args.Query,
+						"boost": 100,
+					},
 				},
 			},
-		},
-	}
-	query = M{
-		"query": M{
-			"bool": M{
-				"must":                 queryMust,
-				"minimum_should_match": "0",
-				"should":               queryShould,
+		}
+		query = M{
+			"query": M{
+				"bool": M{
+					"must":                 queryMust,
+					"minimum_should_match": "0",
+					"should":               queryShould,
+				},
 			},
-		},
+		}
+	} else {
+		query = M{
+			"query": M{
+				"bool": M{
+					"must": queryMust,
+				},
+			},
+		}
 	}
 
 	// query.bool.filter: search without score
@@ -298,7 +287,7 @@ func decodePublicationRes(res *esapi.Response) (*models.PublicationHits, error) 
 	hits.Total = r.Hits.Total
 
 	hits.Facets = make(map[string][]models.Facet)
-	for _, facet := range []string{"status", "type", "completeness_score", "faculty"} {
+	for _, facet := range publicationFacetFields {
 
 		if _, found := r.Aggregations.Facets[facet]; !found {
 			continue
@@ -307,19 +296,30 @@ func decodePublicationRes(res *esapi.Response) (*models.PublicationHits, error) 
 		for _, f := range r.Aggregations.Facets[facet].(map[string]any)["facet"].(map[string]any)["buckets"].([]any) {
 			fv := f.(map[string]any)
 			value := ""
-			switch v := fv["key"].(type) {
-			case string:
-				value = v
-			case int:
-				value = fmt.Sprintf("%d", v)
-			case float64:
-				value = fmt.Sprintf("%.2f", v)
+
+			//boolean returned 0 and 1, so not to be distinguished from integers
+			if v, e := fv["key_as_string"]; e {
+				value = v.(string)
+			} else {
+				switch v := fv["key"].(type) {
+				case string:
+					value = v
+				case int:
+					value = fmt.Sprintf("%d", v)
+				case float64:
+					value = fmt.Sprintf("%.2f", v)
+				}
 			}
 			hits.Facets[facet] = append(hits.Facets[facet], models.Facet{
 				Value: value,
 				Count: int(fv["doc_count"].(float64)),
 			})
 		}
+	}
+
+	//reorder facet values, if applicable
+	for facetName, facets := range hits.Facets {
+		hits.Facets[facetName] = reorderFacets(facetName, facets)
 	}
 
 	for _, h := range r.Hits.Hits {

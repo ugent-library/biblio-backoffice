@@ -98,7 +98,7 @@ type Publication struct {
 	EISBN                   []string                `json:"eisbn,omitempty"`
 	EISSN                   []string                `json:"eissn,omitempty"`
 	ESCIID                  string                  `json:"esci_id,omitempty"`
-	Extern                  bool                    `json:"extern,omitempty"`
+	Extern                  bool                    `json:"extern"`
 	File                    []*PublicationFile      `json:"file,omitempty"`
 	Handle                  string                  `json:"handle,omitempty"`
 	HasConfidentialData     string                  `json:"has_confidential_data,omitempty"`
@@ -115,7 +115,7 @@ type Publication struct {
 	Language                []string                `json:"language,omitempty"`
 	LaySummary              []Text                  `json:"lay_summary,omitempty"`
 	Link                    []PublicationLink       `json:"link,omitempty"`
-	Locked                  bool                    `json:"locked,omitempty"`
+	Locked                  bool                    `json:"locked"`
 	Message                 string                  `json:"message,omitempty"`
 	MiscellaneousType       string                  `json:"miscellaneous_type,omitempty"`
 	ORCIDWork               []PublicationORCIDWork  `json:"orcid_work,omitempty"`
@@ -529,6 +529,11 @@ func (p *Publication) Validate() error {
 		errs = append(errs, &validation.Error{
 			Pointer: "/classification",
 			Code:    "publication.classification.required",
+		})
+	} else if !validation.InArray(p.ClassificationChoices(), p.Classification) {
+		errs = append(errs, &validation.Error{
+			Pointer: "/classification",
+			Code:    "publication.classification.invalid",
 		})
 	}
 	if p.Status == "" {

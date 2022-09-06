@@ -29,6 +29,14 @@ func main() {
 	rootCmd.PersistentFlags().String("api-username", "ddd", "api server user username")
 	rootCmd.PersistentFlags().String("api-password", "", "api server user password")
 
+	// searchPublicationsCmd.Flags().StringP("query", "q", "", "")
+	// searchPublicationsCmd.Flags().StringP("limit", "", "", "")
+	// searchPublicationsCmd.Flags().StringP("offset", "", "", "")
+
+	fileCmd := (&cmd.FileCmd{}).Command()
+	fileCmd.AddCommand((&cmd.GetFileCMd{}).Command())
+	fileCmd.AddCommand((&cmd.AddFileCMd{}).Command())
+
 	datasetCmd := (&cmd.DatasetCmd{}).Command()
 	rootCmd.AddCommand(datasetCmd)
 	datasetCmd.AddCommand((&cmd.GetDatasetCmd{}).Command())

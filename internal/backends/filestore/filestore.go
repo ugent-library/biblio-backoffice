@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"hash/fnv"
 	"io"
-	"io/ioutil"
 	"os"
 	"path"
 )
@@ -59,7 +58,7 @@ func (s *Store) FilePath(checksum string) string {
 }
 
 func (s *Store) Add(r io.Reader) (string, error) {
-	tmpFile, err := ioutil.TempFile(s.tmpPath, "")
+	tmpFile, err := os.CreateTemp(s.tmpPath, "")
 	if err != nil {
 		return "", err
 	}

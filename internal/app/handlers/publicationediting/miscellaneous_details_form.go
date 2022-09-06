@@ -9,7 +9,23 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/validation"
 )
 
-func miscellaneousDetailsForm(l *locale.Locale, publication *models.Publication, errors validation.Errors) *form.Form {
+func miscellaneousDetailsForm(user *models.User, l *locale.Locale, publication *models.Publication, errors validation.Errors) *form.Form {
+	var wosTypeField form.Field
+	if user.CanCuratePublications() {
+		wosTypeField = &form.Text{
+			Name:    "wos_type",
+			Label:   l.T("builder.wos_type"),
+			Value:   publication.WOSType,
+			Tooltip: l.T("tooltip.publication.wos_type"),
+		}
+	} else {
+		wosTypeField = &display.Text{
+			Label:   l.T("builder.wos_type"),
+			Value:   publication.WOSType,
+			Tooltip: l.T("tooltip.publication.wos_type"),
+		}
+	}
+
 	return form.New().
 		WithTheme("default").
 		WithErrors(localize.ValidationErrors(l, errors)).
@@ -19,12 +35,13 @@ func miscellaneousDetailsForm(l *locale.Locale, publication *models.Publication,
 				Value: l.TS("publication_types", publication.Type),
 			},
 			&form.Select{
-				Name:    "miscellaneous_type",
-				Label:   l.T("builder.miscellaneous_type"),
-				Value:   publication.MiscellaneousType,
-				Options: localize.VocabularySelectOptions(l, "miscellaneous_types"),
-				Cols:    3,
-				Error:   localize.ValidationErrorAt(l, errors, "/miscellaneous_type"),
+				Name:        "miscellaneous_type",
+				Label:       l.T("builder.miscellaneous_type"),
+				Value:       publication.MiscellaneousType,
+				EmptyOption: true,
+				Options:     localize.VocabularySelectOptions(l, "miscellaneous_types"),
+				Cols:        3,
+				Error:       localize.ValidationErrorAt(l, errors, "/miscellaneous_type"),
 			},
 			&form.Text{
 				Name:  "doi",
@@ -196,11 +213,7 @@ func miscellaneousDetailsForm(l *locale.Locale, publication *models.Publication,
 			},
 		).
 		AddSection(
-			&display.Text{
-				Label:   l.T("builder.wos_type"),
-				Value:   l.TS("tooltip.publication", publication.WOSType),
-				Tooltip: l.T("tooltip.publication.wos_type"),
-			},
+			wosTypeField,
 			&form.Text{
 				Name:  "wos_id",
 				Label: l.T("builder.wos_id"),

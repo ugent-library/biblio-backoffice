@@ -9,7 +9,23 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/validation"
 )
 
-func journalArticleDetailsForm(l *locale.Locale, publication *models.Publication, errors validation.Errors) *form.Form {
+func journalArticleDetailsForm(user *models.User, l *locale.Locale, publication *models.Publication, errors validation.Errors) *form.Form {
+	var wosTypeField form.Field
+	if user.CanCuratePublications() {
+		wosTypeField = &form.Text{
+			Name:    "wos_type",
+			Label:   l.T("builder.wos_type"),
+			Value:   publication.WOSType,
+			Tooltip: l.T("tooltip.publication.wos_type"),
+		}
+	} else {
+		wosTypeField = &display.Text{
+			Label:   l.T("builder.wos_type"),
+			Value:   publication.WOSType,
+			Tooltip: l.T("tooltip.publication.wos_type"),
+		}
+	}
+
 	return form.New().
 		WithTheme("default").
 		WithErrors(localize.ValidationErrors(l, errors)).
@@ -19,12 +35,13 @@ func journalArticleDetailsForm(l *locale.Locale, publication *models.Publication
 				Value: l.TS("publication_types", publication.Type),
 			},
 			&form.Select{
-				Name:    "journal_article_type",
-				Label:   l.T("builder.journal_article_type"),
-				Options: localize.VocabularySelectOptions(l, "journal_article_types"),
-				Value:   publication.JournalArticleType,
-				Cols:    3,
-				Error:   localize.ValidationErrorAt(l, errors, "/journal_article_type"),
+				Name:        "journal_article_type",
+				Label:       l.T("builder.journal_article_type"),
+				Options:     localize.VocabularySelectOptions(l, "journal_article_types"),
+				EmptyOption: true,
+				Value:       publication.JournalArticleType,
+				Cols:        3,
+				Error:       localize.ValidationErrorAt(l, errors, "/journal_article_type"),
 			},
 			&form.Text{
 				Name:  "doi",
@@ -175,11 +192,7 @@ func journalArticleDetailsForm(l *locale.Locale, publication *models.Publication
 			},
 		).
 		AddSection(
-			&display.Text{
-				Label:   l.T("builder.wos_type"),
-				Value:   l.TS("tooltip.publication", publication.WOSType),
-				Tooltip: l.T("tooltip.publication.wos_type"),
-			},
+			wosTypeField,
 			&form.Text{
 				Name:  "wos_id",
 				Label: l.T("builder.wos_id"),
