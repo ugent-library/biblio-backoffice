@@ -192,40 +192,50 @@ func (datasets *Datasets) buildUserQuery(args *models.SearchArgs) M {
 		query.bool.should: boost given search results with extra score
 						   make sure minimum_should_match is 0
 	*/
-	queryShould := []M{
-		{
-			"match_phrase": M{
-				"title": M{
-					"query": args.Query,
-					"boost": 200,
+	if len(args.Query) > 0 {
+		queryShould := []M{
+			{
+				"match_phrase": M{
+					"title": M{
+						"query": args.Query,
+						"boost": 200,
+					},
 				},
 			},
-		},
-		{
-			"match_phrase": M{
-				"author.full_name": M{
-					"query": args.Query,
-					"boost": 200,
+			{
+				"match_phrase": M{
+					"author.full_name": M{
+						"query": args.Query,
+						"boost": 200,
+					},
 				},
 			},
-		},
-		{
-			"match_phrase": M{
-				"all": M{
-					"query": args.Query,
-					"boost": 100,
+			{
+				"match_phrase": M{
+					"all": M{
+						"query": args.Query,
+						"boost": 100,
+					},
 				},
 			},
-		},
-	}
-	query = M{
-		"query": M{
-			"bool": M{
-				"must":                 queryMust,
-				"minimum_should_match": 0,
-				"should":               queryShould,
+		}
+		query = M{
+			"query": M{
+				"bool": M{
+					"must":                 queryMust,
+					"minimum_should_match": 0,
+					"should":               queryShould,
+				},
 			},
-		},
+		}
+	} else {
+		query = M{
+			"query": M{
+				"bool": M{
+					"must": queryMust,
+				},
+			},
+		}
 	}
 
 	if args.Filters != nil {
