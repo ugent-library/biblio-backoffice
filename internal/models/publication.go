@@ -530,6 +530,11 @@ func (p *Publication) Validate() error {
 			Pointer: "/classification",
 			Code:    "publication.classification.required",
 		})
+	} else if !validation.InArray(p.ClassificationChoices(), p.Classification) {
+		errs = append(errs, &validation.Error{
+			Pointer: "/classification",
+			Code:    "publication.classification.invalid",
+		})
 	}
 	if p.Status == "" {
 		errs = append(errs, &validation.Error{
