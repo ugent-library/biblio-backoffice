@@ -35,7 +35,7 @@
             {{range .Hits.Facets.classification}}
             <div class="custom-control custom-checkbox mb-4">
                 <input class="custom-control-input" id="filter-classification-{{.Value}}" type="checkbox" name="f[classification]" value="{{.Value}}"{{if $.SearchArgs.HasFilter "classification" .Value}} checked{{end}}>
-                <label class="custom-control-label" for="filter-classification-{{.Value}}">{{.Value}} ({{.Count}})</label>
+                <label class="custom-control-label" for="filter-classification-{{.Value}}">{{$.Locale.TS "publication_classifications" .Value}} ({{.Count}})</label>
             </div>
             {{end}}
         </div>
