@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"context"
+	"encoding/base64"
 	"fmt"
 	"io"
 	"log"
@@ -18,6 +19,23 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/protobuf/encoding/protojson"
 )
+
+type basicAuth struct {
+	username string
+	password string
+}
+
+func (b basicAuth) GetRequestMetadata(ctx context.Context, in ...string) (map[string]string, error) {
+	auth := b.username + ":" + b.password
+	enc := base64.StdEncoding.EncodeToString([]byte(auth))
+	return map[string]string{
+		"authorization": "Basic " + enc,
+	}, nil
+}
+
+func (basicAuth) RequireTransportSecurity() bool {
+	return false
+}
 
 const (
 	defaultAPIHost = ""
@@ -40,9 +58,13 @@ func main() {
 	viper.AutomaticEnv()
 	viper.SetDefault("api-host", defaultAPIHost)
 	viper.SetDefault("api-port", defaultAPIPort)
+	viper.SetDefault("api-username", "dddd")
+	viper.SetDefault("api-password", "")
 
-	rootCmd.Flags().String("api-host", defaultAPIHost, "api server host")
-	rootCmd.Flags().Int("api-port", defaultAPIPort, "api server port")
+	rootCmd.PersistentFlags().String("api-host", defaultAPIHost, "api server host")
+	rootCmd.PersistentFlags().Int("api-port", defaultAPIPort, "api server port")
+	rootCmd.PersistentFlags().String("api-username", "ddd", "api server user username")
+	rootCmd.PersistentFlags().String("api-password", "", "api server user password")
 
 	searchPublicationsCmd.Flags().StringP("query", "q", "", "")
 	searchPublicationsCmd.Flags().StringP("limit", "", "", "")
@@ -68,6 +90,10 @@ func main() {
 	log.Println(addr)
 	conn, err := grpc.DialContext(ctx, addr,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithPerRPCCredentials(basicAuth{
+			username: viper.GetString("api-username"),
+			password: viper.GetString("api-password"),
+		}),
 		grpc.WithBlock(),
 	)
 	if err != nil {
@@ -83,8 +109,8 @@ func main() {
 
 // TODO we shouldn't do this for all flags, only ones that have a config equivalent
 var rootCmd = &cobra.Command{
-	Use:   "biblio [command]",
-	Short: "biblio client",
+	Use:   "api [command]",
+	Short: "biblio api client",
 	// flags override env vars
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		cmd.Flags().VisitAll(func(f *pflag.Flag) {
@@ -92,6 +118,7 @@ var rootCmd = &cobra.Command{
 				viper.Set(f.Name, f.Value.String())
 			}
 		})
+		log.Println("RUN IT!")
 		return nil
 	},
 }
@@ -267,6 +294,9 @@ var getPublicationCmd = &cobra.Command{
 	Short: "Get publication by id",
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
+
+		log.Println("PUB CMD")
+
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 		defer cancel()
 

@@ -2,6 +2,7 @@ package server
 
 import (
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
+	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
 	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	api "github.com/ugent-library/biblio-backend/api/v1"
@@ -43,6 +44,7 @@ func New(services *backends.Services, logger *zap.SugaredLogger) *grpc.Server {
 		grpc_middleware.WithUnaryServerChain(
 			grpc_recovery.UnaryServerInterceptor(),
 			grpc_zap.UnaryServerInterceptor(logger.Desugar(), zap_opt),
+			grpc_auth.UnaryServerInterceptor(auth),
 		),
 	)
 	srv := &server{services: services}
