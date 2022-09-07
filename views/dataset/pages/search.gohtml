@@ -59,11 +59,13 @@
     </div>
     <div class="u-scroll-wrapper__body p-6">
         {{partial "search/query" .}}
+        {{with .SearchArgs.Facets}}
         <div class="d-flex flex-wrap mb-6">
-            {{partial "search/status_facet" .}}
-            {{partial "search/faculty_facet" .}}
-            {{partial "search/locked_facet" .}}
+            {{range .}}
+            {{partial (printf "search/%s_facet" (. | replace "." "_")) $}}
+            {{end}}
         </div>
+        {{end}}
 
         <div class="card mb-6">
             <div class="card-header">
