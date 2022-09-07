@@ -57,7 +57,7 @@
                     <a href="{{$pURL}}">
                         <h4 class="c-h4">{{$p.Title}}</h4>
                     </a>
-                    {{with $p.Author}}{{partial "shared/contributors" .}}{{end}}
+                    {{with $p.Author}}{{partial "shared/contributors" (dict "Contributors" . "ContributorsURL" ($pURL | querySet "show" "contributors"))}}{{end}}
                     <span class="c-body-small text-muted">
                         {{$p.Year}}{{with $p.Publication}}, {{.}}{{end}}
                     </span>
