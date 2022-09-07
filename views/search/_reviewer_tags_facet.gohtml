@@ -2,7 +2,7 @@
     <a class="badge badge-pill badge-default mr-3" data-toggle="dropdown" data-persist="true" aria-haspopup="true"
         aria-expanded="false" role="button">
         <span class="badge-text">Librarian tags</span>
-        <div class="c-counter c-counter--small">{{len (.SearchArgs.FiltersFor "librarian_tags")}}</div>
+        <div class="c-counter c-counter--small">{{len (.SearchArgs.FiltersFor "review_tags")}}</div>
         <i class="if if-caret-down"></i>
     </a>
     <form class="mb-4 dropdown-menu" method="GET" action="{{.CurrentURL|queryClear}}">
@@ -22,7 +22,7 @@
         <input type="hidden" name="sort" value="{{.}}">
         {{end}}
         {{range $f, $vals := .SearchArgs.Filters}}
-        {{if ne $f "librarian_tags"}}
+        {{if ne $f "review_tags"}}
         {{range $vals}}
         <input type="hidden" name="f[{{$f}}]" value="{{.}}">
         {{end}}
@@ -31,8 +31,8 @@
         <div class="dropdown-body">
             {{range .Hits.Facets.reviewer_tags}}
             <div class="custom-control custom-checkbox mb-4">
-                <input class="custom-control-input" id="filter-librarian_tags-{{.Value}}" type="checkbox" name="f[librarian_tags]" value="{{.Value}}"{{if $.SearchArgs.HasFilter "librarian_tags" .Value}} checked{{end}}>
-                <label class="custom-control-label" for="filter-librarian_tags-{{.Value}}">{{.Value}} ({{.Count}})</label>
+                <input class="custom-control-input" id="filter-review_tags-{{.Value}}" type="checkbox" name="f[review_tags]" value="{{.Value}}"{{if $.SearchArgs.HasFilter "review_tags" .Value}} checked{{end}}>
+                <label class="custom-control-label" for="filter-review_tags-{{.Value}}">{{.Value}} ({{.Count}})</label>
             </div>
             {{end}}
         </div>
