@@ -7,17 +7,18 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	api "github.com/ugent-library/biblio-backend/api/v1"
 )
 
-type SearchPublicationsCmd struct {
+type SearchDatasetsCmd struct {
 	RootCmd
 }
 
-func (c *SearchPublicationsCmd) Command() *cobra.Command {
+func (c *SearchDatasetsCmd) Command() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "search",
-		Short: "Search publications",
+		Short: "Search datasets",
 		Run: func(_ *cobra.Command, args []string) {
 			c.Wrap(func() {
 				c.Run(args)
@@ -25,24 +26,27 @@ func (c *SearchPublicationsCmd) Command() *cobra.Command {
 		},
 	}
 
+	cmd.Flags().StringP("query", "q", "", "")
+	cmd.Flags().StringP("limit", "", "", "")
+	cmd.Flags().StringP("offset", "", "", "")
+
 	return cmd
 }
 
-func (c *SearchPublicationsCmd) Run(args []string) {
+func (c *SearchDatasetsCmd) Run(args []string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	// TODO Fix me
-	query, _ := c.Command().Flags().GetString("query")
-	limit, _ := c.Command().Flags().GetInt32("limit")
-	offset, _ := c.Command().Flags().GetInt32("offset")
+	query := viper.GetString("query")
+	limit := viper.GetInt32("limit")
+	offset := viper.GetInt32("offset")
 
-	req := &api.SearchPublicationsRequest{
+	req := &api.SearchDatasetsRequest{
 		Query:  query,
 		Limit:  limit,
 		Offset: offset,
 	}
-	res, err := c.Client.SearchPublications(ctx, req)
+	res, err := c.Client.SearchDatasets(ctx, req)
 	if err != nil {
 		log.Fatal(err)
 	}

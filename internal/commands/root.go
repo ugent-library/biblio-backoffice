@@ -17,6 +17,8 @@ const (
 	defaultPublicationIndex = "biblio_backend_publications"
 	defaultAPIHost          = ""
 	defaultAPIPort          = 30000
+	defaultAPIAdminUsername = "admin"
+	defaultAPIAdminPassword = "admin"
 	defaultMode             = "production"
 	defaultHost             = ""
 	defaultPort             = 3000
@@ -50,6 +52,8 @@ func init() {
 	viper.SetDefault("publication-index", defaultPublicationIndex)
 	viper.SetDefault("api-host", defaultAPIHost)
 	viper.SetDefault("api-port", defaultAPIPort)
+	viper.SetDefault("api-admin-username", defaultAPIAdminUsername)
+	viper.SetDefault("api-admin-password", defaultAPIAdminPassword)
 	viper.SetDefault("mode", defaultMode)
 	viper.SetDefault("host", defaultHost)
 	viper.SetDefault("port", defaultPort)
