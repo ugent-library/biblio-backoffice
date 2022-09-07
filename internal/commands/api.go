@@ -15,6 +15,8 @@ const ()
 func init() {
 	apiStartCmd.Flags().String("api-host", defaultAPIHost, "api server host")
 	apiStartCmd.Flags().Int("api-port", defaultAPIPort, "api server port")
+	apiStartCmd.Flags().String("api-admin-username", "", "api server administrator username")
+	apiStartCmd.Flags().String("api-admin-password", "", "api server administrator password")
 
 	apiCmd.AddCommand(apiStartCmd)
 	rootCmd.AddCommand(apiCmd)
