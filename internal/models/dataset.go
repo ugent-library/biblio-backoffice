@@ -17,6 +17,11 @@ type DatasetHits struct {
 	Facets map[string][]Facet `json:"facets"`
 }
 
+type DatasetUser struct {
+	ID   string `json:"id,omitempty"`
+	Name string `json:"name,omitempty"`
+}
+
 type DatasetDepartmentRef struct {
 	ID string `json:"id,omitempty"`
 }
@@ -41,7 +46,7 @@ type Dataset struct {
 	Author      []*Contributor `json:"author,omitempty"` // TODO rename to Creator
 	// CompletenessScore  int                  `json:"completeness_score,omitempty"`
 	Contributor        []*Contributor       `json:"contributor,omitempty"`
-	CreatorID          string               `json:"creator_id,omitempty"`
+	Creator            *DatasetUser         `json:"creator,omitempty"`
 	DateCreated        *time.Time           `json:"date_created,omitempty"`
 	DateUpdated        *time.Time           `json:"date_updated,omitempty"`
 	DateFrom           *time.Time           `json:"date_from,omitempty"`
@@ -66,7 +71,7 @@ type Dataset struct {
 	Status             string               `json:"status,omitempty"`
 	Title              string               `json:"title,omitempty"`
 	URL                string               `json:"url,omitempty"`
-	UserID             string               `json:"user_id,omitempty"`
+	User               *DatasetUser         `json:"user,omitempty"`
 	Year               string               `json:"year,omitempty"`
 }
 

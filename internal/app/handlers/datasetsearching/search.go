@@ -41,11 +41,11 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request, ctx Context) {
 
 	switch args.FilterFor("scope") {
 	case "created":
-		searcher = searcher.WithScope("creator_id", ctx.User.ID)
+		searcher = searcher.WithScope("creator.id", ctx.User.ID)
 	case "contributed":
 		searcher = searcher.WithScope("author.id", ctx.User.ID)
 	case "all":
-		searcher = searcher.WithScope("creator_id|author.id", ctx.User.ID)
+		searcher = searcher.WithScope("creator.id|author.id", ctx.User.ID)
 	default:
 		errorUnkownScope := fmt.Errorf("unknown scope: %s", args.FilterFor("scope"))
 		h.Logger.Warnw("dataset search: could not create searcher with passed filters", "errors", errorUnkownScope, "user", ctx.User.ID)

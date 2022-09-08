@@ -30,7 +30,7 @@ func (u *User) CanViewPublication(p *Publication) bool {
 	if u.Role == "admin" {
 		return true
 	}
-	if p.CreatorID == u.ID {
+	if p.Creator != nil && p.Creator.ID == u.ID {
 		return true
 	}
 	for _, c := range p.Author {
@@ -61,7 +61,7 @@ func (u *User) CanEditPublication(p *Publication) bool {
 	if p.Locked {
 		return false
 	}
-	if p.CreatorID == u.ID {
+	if p.Creator != nil && p.Creator.ID == u.ID {
 		return true
 	}
 	for _, c := range p.Author {
@@ -96,7 +96,7 @@ func (u *User) CanDeletePublication(p *Publication) bool {
 	if p.Locked {
 		return false
 	}
-	if p.Status == "private" && p.CreatorID == u.ID {
+	if p.Status == "private" && p.Creator != nil && p.Creator.ID == u.ID {
 		return true
 	}
 	return false
@@ -109,7 +109,7 @@ func (u *User) CanViewDataset(d *Dataset) bool {
 	if u.Role == "admin" {
 		return true
 	}
-	if d.CreatorID == u.ID {
+	if d.Creator != nil && d.Creator.ID == u.ID {
 		return true
 	}
 	for _, c := range d.Author {
@@ -135,7 +135,7 @@ func (u *User) CanEditDataset(d *Dataset) bool {
 	if d.Locked {
 		return false
 	}
-	if d.CreatorID == u.ID {
+	if d.Creator != nil && d.Creator.ID == u.ID {
 		return true
 	}
 	for _, c := range d.Author {
@@ -165,7 +165,7 @@ func (u *User) CanDeleteDataset(d *Dataset) bool {
 	if d.Locked {
 		return false
 	}
-	if d.Status == "private" && d.CreatorID == u.ID {
+	if d.Status == "private" && d.Creator != nil && d.Creator.ID == u.ID {
 		return true
 	}
 	return false

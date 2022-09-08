@@ -17,6 +17,11 @@ type PublicationHits struct {
 	Facets map[string][]Facet `json:"facets"`
 }
 
+type PublicationUser struct {
+	ID   string `json:"id,omitempty"`
+	Name string `json:"name,omitempty"`
+}
+
 type PublicationFile struct {
 	AccessLevel        string     `json:"access_level,omitempty"`
 	License            string     `json:"license,omitempty"`
@@ -83,7 +88,7 @@ type Publication struct {
 	ConferenceStartDate     string                  `json:"conference_start_date,omitempty"`
 	ConferenceEndDate       string                  `json:"conference_end_date,omitempty"`
 	ConferenceType          string                  `json:"conference_type,omitempty"`
-	CreatorID               string                  `json:"creator_id,omitempty"`
+	Creator                 *PublicationUser        `json:"creator,omitempty"`
 	DateCreated             *time.Time              `json:"date_created,omitempty"`
 	DateUpdated             *time.Time              `json:"date_updated,omitempty"`
 	DateFrom                *time.Time              `json:"date_from,omitempty"`
@@ -144,7 +149,7 @@ type Publication struct {
 	Title                   string                  `json:"title,omitempty"`
 	Type                    string                  `json:"type,omitempty"`
 	URL                     string                  `json:"url,omitempty"`
-	UserID                  string                  `json:"user_id,omitempty"`
+	User                    *PublicationUser        `json:"user,omitempty"`
 	Volume                  string                  `json:"volume,omitempty"`
 	WOSID                   string                  `json:"wos_id,omitempty"`
 	WOSType                 string                  `json:"wos_type,omitempty"`
