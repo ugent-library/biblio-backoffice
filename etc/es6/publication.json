@@ -453,6 +453,9 @@
                 "message": {
                     "type": "text"
                 },
+                "has_message": {
+                    "type": "boolean"
+                },
                 "miscellaneous_type": {
                     "type": "keyword"
                 },

@@ -289,6 +289,9 @@
                 "message": {
                     "type": "text"
                 },
+                "has_message": {
+                    "type": "boolean"
+                },
                 "publisher": {
                     "type": "text",
                     "copy_to": "all"

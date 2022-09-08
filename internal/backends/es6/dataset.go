@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"time"
 
 	"github.com/elastic/go-elasticsearch/v6/esapi"
 	"github.com/elastic/go-elasticsearch/v6/esutil"
@@ -338,16 +337,7 @@ func decodeDatasetRes(res *esapi.Response) (*models.DatasetHits, error) {
 
 func (publications *Datasets) Index(d *models.Dataset) error {
 	body := M{
-		// not needed anymore in es7 with date nano type
-		"doc": struct {
-			*models.Dataset
-			DateCreated string `json:"date_created"`
-			DateUpdated string `json:"date_updated"`
-		}{
-			Dataset:     d,
-			DateCreated: d.DateCreated.Format(time.RFC3339),
-			DateUpdated: d.DateUpdated.Format(time.RFC3339),
-		},
+		"doc":           NewIndexedDataset(d),
 		"doc_as_upsert": true,
 	}
 
@@ -396,19 +386,10 @@ func (datasets *Datasets) IndexMultiple(inCh <-chan *models.Dataset) {
 		log.Fatal(err)
 	}
 
-	for p := range inCh {
-		// not needed anymore in es7 with date nano type
-		doc := struct {
-			*models.Dataset
-			DateCreated string `json:"date_created"`
-			DateUpdated string `json:"date_updated"`
-		}{
-			Dataset:     p,
-			DateCreated: p.DateCreated.Format(time.RFC3339),
-			DateUpdated: p.DateUpdated.Format(time.RFC3339),
-		}
+	for d := range inCh {
+		doc := NewIndexedDataset(d)
 
-		payload, err := json.Marshal(&doc)
+		payload, err := json.Marshal(doc)
 		if err != nil {
 			log.Panic(err)
 		}
