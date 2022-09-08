@@ -1,22 +1,18 @@
-<div class="dropdown mt-4">
+<div class="dropdown">
     <a class="badge badge-pill badge-default mr-3" data-toggle="dropdown" data-persist="true" aria-haspopup="true"
         aria-expanded="false" role="button">
         <span class="badge-text">Completeness</span>
         <div class="c-counter c-counter--small">{{len (.SearchArgs.FiltersFor "completeness_score")}}</div>
         <i class="if if-caret-down"></i>
     </a>
-    <form class="mb-4 dropdown-menu" method="GET" action="{{.CurrentURL|queryClear}}">
-        <div class="dropdown-header">
-            <div class="bc-toolbar">
-                <div class="bc-toolbar__left">
-                    <div class="bc-toolbar__item">
-                        <h6>Completeness</h6>
-                    </div>
+    <form class="dropdown-menu" method="GET" action="{{.CurrentURL|queryClear}}">
+        <div class="bc-navbar bc-navbar--bordered-bottom">
+            <div class="bc-toolbar bc-toolbar--auto">
+                <div class="bc-toolbar-left">
+                    <h4 class="text-nowrap">Completeness</h4>
                 </div>
-                <div class="bc-toolbar__right">
-                    <div class="bc-toolbar__item">
-                        <button type="button" class="btn btn-link form-check-all">Select all</button>
-                    </div>
+                <div class="bc-toolbar-right">
+                    <button type="button" class="btn btn-link form-check-all">Select all</button>
                 </div>
             </div>
         </div>
@@ -31,23 +27,24 @@
         {{end}}
         {{end}}
         {{end}}
-        <div class="dropdown-body">
-            {{range .Hits.Facets.completeness_score}}
-            <div class="custom-control custom-checkbox mb-4">
-                <input class="custom-control-input" id="filter-completeness_score-{{.Value}}" type="checkbox" name="f[completeness_score]" value="{{.Value}}"{{if $.SearchArgs.HasFilter "completeness_score" .Value}} checked{{end}}>
-                <label class="custom-control-label" for="filter-completeness_score-{{.Value}}">
-                    {{if eq .Value "3"}}
+        <div class="p-6">
+            {{$last := sub (len .Hits.Facets.completeness_score) 1}}
+            {{range $i, $f := .Hits.Facets.completeness_score}}
+            <div class="custom-control custom-checkbox{{if lt $i $last}} mb-4{{end}}">
+                <input class="custom-control-input" id="filter-completeness_score-{{$i}}" type="checkbox" name="f[completeness_score]" value="{{$f.Value}}"{{if $.SearchArgs.HasFilter "completeness_score" $f.Value}} checked{{end}}>
+                <label class="custom-control-label" for="filter-completeness_score-{{$i}}">
+                    {{if eq $f.Value "3"}}
                         Completed
-                    {{else if eq .Value "2"}}
+                    {{else if eq $f.Value "2"}}
                         Good
-                    {{else if eq .Value "1"}}
+                    {{else if eq $f.Value "1"}}
                         Missing fields
                     {{end}}                    
                 </label>
             </div>
             {{end}}
         </div>
-        <div class="dropdown-footer">
+        <div class="bc-navbar bc-navbar--large">
             <button class="btn btn-primary btn-block" type="submit">Apply filter</button>
         </div>
     </form>
