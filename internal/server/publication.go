@@ -391,6 +391,8 @@ func publicationToMessage(p *models.Publication) *api.Publication {
 			f.Relation = api.File_RELATION_TABLE_OF_CONTENTS
 		case "agreement":
 			f.Relation = api.File_RELATION_AGREEMENT
+		case "supplementary_material":
+			f.Relation = api.File_RELATION_SUPPLEMENTARY_MATERIAL
 		}
 
 		msg.File = append(msg.File, f)
@@ -862,6 +864,8 @@ func messageToPublication(msg *api.Publication) *models.Publication {
 			f.Relation = "table_of_contents"
 		case api.File_RELATION_AGREEMENT:
 			f.Relation = "agreement"
+		case api.File_RELATION_SUPPLEMENTARY_MATERIAL:
+			f.Relation = "supplementary_material"
 		}
 
 		p.File = append(p.File, f)

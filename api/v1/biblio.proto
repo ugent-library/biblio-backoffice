@@ -113,6 +113,7 @@ message File {
         RELATION_PEER_REVIEW_REPORT = 3;
         RELATION_TABLE_OF_CONTENTS = 4;
         RELATION_AGREEMENT = 5;
+        RELATION_SUPPLEMENTARY_MATERIAL = 6;
     }
 
     string id = 1;
