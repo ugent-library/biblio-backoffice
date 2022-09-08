@@ -1,22 +1,18 @@
-<div class="dropdown mt-4">
+<div class="dropdown">
     <a class="badge badge-pill badge-default mr-3" data-toggle="dropdown" data-persist="true" aria-haspopup="true"
         aria-expanded="false" role="button">
         <span class="badge-text">File type</span>
         <div class="c-counter c-counter--small">{{len (.SearchArgs.FiltersFor "file.relation")}}</div>
         <i class="if if-caret-down"></i>
     </a>
-    <form class="mb-4 dropdown-menu" method="GET" action="{{.CurrentURL|queryClear}}">
-        <div class="dropdown-header">
-            <div class="bc-toolbar">
-                <div class="bc-toolbar__left">
-                    <div class="bc-toolbar__item">
-                        <h6>File type</h6>
-                    </div>
+    <form class="dropdown-menu" method="GET" action="{{.CurrentURL|queryClear}}">
+        <div class="bc-navbar bc-navbar--bordered-bottom">
+            <div class="bc-toolbar bc-toolbar--auto">
+                <div class="bc-toolbar-left">
+                    <h4 class="text-nowrap">File type</h4>
                 </div>
-                <div class="bc-toolbar__right">
-                    <div class="bc-toolbar__item">
-                        <button type="button" class="btn btn-link form-check-all">Select all</button>
-                    </div>
+                <div class="bc-toolbar-right">
+                    <button type="button" class="btn btn-link form-check-all">Select all</button>
                 </div>
             </div>
         </div>
@@ -31,15 +27,17 @@
         {{end}}
         {{end}}
         {{end}}
-        <div class="dropdown-body">
-            {{range (index .Hits.Facets "file.relation")}}
-            <div class="custom-control custom-checkbox mb-4">
-                <input class="custom-control-input" id="filter-file-relation-{{.Value}}" type="checkbox" name="f[file.relation]" value="{{.Value}}"{{if $.SearchArgs.HasFilter "file.relation" .Value}} checked{{end}}>
-                <label class="custom-control-label" for="filter-file-relation-{{.Value}}">{{$.Locale.TS "publication_file_relations" .Value}} ({{.Count}})</label>
+        <div class="p-6">
+            {{$vals := index .Hits.Facets "file.relation"}}
+            {{$last := sub (len $vals) 1}}
+            {{range $i, $f := $vals}}
+            <div class="custom-control custom-checkbox{{if lt $i $last}} mb-4{{end}}">
+                <input class="custom-control-input" id="filter-file-relation-{{$i}}" type="checkbox" name="f[file.relation]" value="{{$f.Value}}"{{if $.SearchArgs.HasFilter "file.relation" $f.Value}} checked{{end}}>
+                <label class="custom-control-label" for="filter-file-relation-{{$i}}}">{{$.Locale.TS "publication_file_relations" $f.Value}} ({{$f.Count}})</label>
             </div>
             {{end}}
         </div>
-        <div class="dropdown-footer">
+        <div class="bc-navbar bc-navbar--large">
             <button class="btn btn-primary btn-block" type="submit">Apply filter</button>
         </div>
     </form>

@@ -1,14 +1,19 @@
 <div class="list-group-item-authors">
-    {{if gt (len .) 3}}
-        {{range (slice . 0 3)}}
+    {{if gt (len .Contributors) 3}}
+        {{range (slice .Contributors 0 3)}}
             {{partial "shared/contributor" .}}
         {{end}}
-        <div class="list-group-item-author">
-            <span>{{sub (len .) 3}} more author{{if gt (sub (len .) 3) 1}}s{{end}}</span>
-            <i class="if if-more ml-2"></i>
+        <div class="list-group-item-author text-muted">
+            {{if .ContributorsURL}}
+            <a class="c-link c-link-muted" href="{{.ContributorsURL}}">
+            {{end}}
+            {{sub (len $.Contributors) 3}} more author{{if gt (sub (len $.Contributors) 3) 1}}s{{end}}
+            {{if .ContributorsURL}}
+            </a>
+            {{end}}
         </div>
     {{else}}
-        {{range .}}
+        {{range .Contributors}}
             {{partial "shared/contributor" .}}
         {{end}}
     {{end}}

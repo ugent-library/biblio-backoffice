@@ -503,8 +503,7 @@
                     "index": false
                 },
                 "reviewer_tags": {
-                    "type": "text",
-                    "analyzer": "keyword_lowercase"
+                    "type": "keyword"
                 },
                 "series_title": {
                     "type": "text"

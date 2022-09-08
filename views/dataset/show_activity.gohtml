@@ -60,13 +60,15 @@
                         <h3 class="card-title">Message</h3>
                     </div>
                     <div class="bc-toolbar-right">
+                        {{if .User.CanEditDataset .Dataset}}
                         <button class="btn btn-outline-primary" type="button"
                             hx-get="{{pathFor "dataset_edit_message" "id" .Dataset.ID}}"
                             hx-target="#modals"
                         >
-                            <i class="if if-edit"></I>
+                            <i class="if if-edit"></i>
                             <div class="btn-text">Edit</div>
                         </button>
+                        {{end}}
                     </div>
                 </div>
             </div>

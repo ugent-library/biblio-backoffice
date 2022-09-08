@@ -44,7 +44,7 @@
                     <a href="{{$dURL}}">
                         <h4 class="c-h4">{{$d.Title}}</h4>
                     </a>
-                    {{with $d.Author}}{{partial "shared/contributors" .}}{{end}}
+                    {{with $d.Author}}{{partial "shared/contributors" (dict "Contributors" . "ContributorsURL" ($dURL | querySet "show" "contributors"))}}{{end}}
                     <span class="c-body-small text-muted">
                         {{$d.Year}},
                         <a class="link-primary" target="_blank" href="{{$d.ResolveDOI}}">

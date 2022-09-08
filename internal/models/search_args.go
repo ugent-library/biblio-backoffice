@@ -6,6 +6,7 @@ type SearchArgs struct {
 	Page     int                 `query:"page"`
 	Sort     []string            `query:"sort,omitempty"`
 	PageSize int                 `query:"page-size"`
+	Facets   []string            `query:"-"`
 }
 
 func NewSearchArgs() *SearchArgs {
@@ -23,12 +24,16 @@ func (s *SearchArgs) Clone() *SearchArgs {
 	sort := make([]string, len(s.Sort))
 	copy(sort, s.Sort)
 
+	facets := make([]string, len(s.Facets))
+	copy(facets, s.Facets)
+
 	return &SearchArgs{
 		Query:    s.Query,
 		Filters:  filters,
 		Page:     s.Page,
 		Sort:     sort,
 		PageSize: s.PageSize,
+		Facets:   facets,
 	}
 }
 
@@ -42,6 +47,11 @@ func (s *SearchArgs) WithFilter(field string, terms ...string) *SearchArgs {
 		s.Filters = map[string][]string{}
 	}
 	s.Filters[field] = terms
+	return s
+}
+
+func (s *SearchArgs) WithFacets(facets ...string) *SearchArgs {
+	s.Facets = facets
 	return s
 }
 

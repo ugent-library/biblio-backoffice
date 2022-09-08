@@ -18,8 +18,7 @@ import (
 
 type Publications struct {
 	Client
-	scopes        []M
-	includeFacets bool
+	scopes []M
 }
 
 func NewPublications(c Client) *Publications {
@@ -51,7 +50,7 @@ func (publications *Publications) Search(args *models.SearchArgs) (*models.Publi
 	// ADD FACETS
 	// 	create global bucket so that not all buckets are influenced by query and filters
 	// 	name "facets" is not important
-	if publications.includeFacets {
+	if args.Facets != nil {
 
 		query["aggs"] = M{
 			"facets": M{
@@ -61,7 +60,7 @@ func (publications *Publications) Search(args *models.SearchArgs) (*models.Publi
 		}
 
 		// facet filter contains all query and all filters except itself
-		for _, field := range publicationFacetFields {
+		for _, field := range args.Facets {
 
 			filters := make([]M, 0, len(publications.scopes)+1)
 
@@ -83,6 +82,7 @@ func (publications *Publications) Search(args *models.SearchArgs) (*models.Publi
 				}
 			}
 
+			// TODO make configurable for each facet
 			facet := M{
 				"filter": M{"bool": M{"must": filters}},
 				"aggs": M{
@@ -143,7 +143,7 @@ func (publications *Publications) Search(args *models.SearchArgs) (*models.Publi
 	}
 
 	// READ RESPONSE FROM ES
-	hits, err := decodePublicationRes(res)
+	hits, err := decodePublicationRes(res, args.Facets)
 	if err != nil {
 		return nil, err
 	}
@@ -267,7 +267,7 @@ type publicationResEnvelope struct {
 	}
 }
 
-func decodePublicationRes(res *esapi.Response) (*models.PublicationHits, error) {
+func decodePublicationRes(res *esapi.Response, facets []string) (*models.PublicationHits, error) {
 	defer res.Body.Close()
 
 	if res.IsError() {
@@ -287,7 +287,7 @@ func decodePublicationRes(res *esapi.Response) (*models.PublicationHits, error) 
 	hits.Total = r.Hits.Total
 
 	hits.Facets = make(map[string][]models.Facet)
-	for _, facet := range publicationFacetFields {
+	for _, facet := range facets {
 
 		if _, found := r.Aggregations.Facets[facet]; !found {
 			continue
@@ -448,18 +448,11 @@ func (publications *Publications) WithScope(field string, terms ...string) backe
 	return p
 }
 
-func (publications *Publications) IncludeFacets(includeFacets bool) backends.PublicationSearchService {
-	p := publications.Clone()
-	p.includeFacets = includeFacets
-	return p
-}
-
 func (publications *Publications) Clone() *Publications {
 	newScopes := make([]M, 0, len(publications.scopes))
 	newScopes = append(newScopes, publications.scopes...)
 	return &Publications{
-		Client:        publications.Client,
-		scopes:        newScopes,
-		includeFacets: publications.includeFacets,
+		Client: publications.Client,
+		scopes: newScopes,
 	}
 }

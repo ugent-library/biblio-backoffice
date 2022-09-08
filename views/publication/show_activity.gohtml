@@ -60,6 +60,7 @@
                         <h3 class="card-title">Message</h3>
                     </div>
                     <div class="bc-toolbar-right">
+                        {{if .User.CanEditPublication .Publication}}
                         <button class="btn btn-outline-primary" type="button"
                             hx-get="{{pathFor "publication_edit_message" "id" .Publication.ID}}"
                             hx-target="#modals"
@@ -67,6 +68,7 @@
                             <i class="if if-edit"></I>
                             <div class="btn-text">Edit</div>
                         </button>
+                        {{end}}
                     </div>
                 </div>
             </div>
