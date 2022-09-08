@@ -1,6 +1,6 @@
 <div class="list-group-item-text">
     <h4 class="c-h4">{{.Title}}</h4>
-    {{with .Author}}{{partial "shared/contributors" .}}{{end}}
+    {{with .Author}}{{partial "shared/contributors" (dict "Contributors" . "ContributorsURL" (pathFor "dataset" "id" $.ID | querySet "show" "contributors"))}}{{end}}
     <span class="c-body-small text-muted">
         {{.Year}},
         <a class="link-primary" target="_blank" href="{{.ResolveDOI}}">

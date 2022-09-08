@@ -1,6 +1,6 @@
 <div class="list-group-item-text">
     <h4 class="c-h4">{{.Title}}</h4>
-    {{with .Author}}{{partial "shared/contributors" .}}{{end}}
+    {{with .Author}}{{partial "shared/contributors" (dict "Contributors" . "ContributorsURL" (pathFor "publication" "id" $.ID | querySet "show" "contributors"))}}{{end}}
     <span class="c-body-small text-muted">{{.Year}}{{with .Publication}}, {{.}}{{end}}</span>
 </div>
 <div class="list-group-item-meta mt-5">

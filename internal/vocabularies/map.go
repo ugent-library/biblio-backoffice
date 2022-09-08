@@ -6,6 +6,46 @@ const RestrictedAccess = "info:eu-repo/semantics/restrictedAccess"
 const OpenAccess = "info:eu-repo/semantics/openAccess"
 
 var Map = map[string][]string{
+	"publication_facets": {
+		"status",
+		"faculty",
+		"type",
+		"wos_type",
+		"classification",
+		"year",
+	},
+	"publication_curation_facets": {
+		"status",
+		"publication_status",
+		"locked",
+		"extern",
+		"faculty",
+		"type",
+		"wos_type",
+		"classification",
+		"year",
+		"file.relation",
+		"reviewer_tags",
+	},
+	"dataset_facets": {
+		"status",
+		"faculty",
+		"type",
+		"wos_type",
+		"classification",
+	},
+	"dataset_curation_facets": {
+		"status",
+		"publication_status",
+		"locked",
+		"extern",
+		"faculty",
+		"type",
+		"wos_type",
+		"classification",
+		"file.relation",
+		"reviewer_tags",
+	},
 	"licenses": {
 		"CC0-1.0",
 		"CC-BY-4.0",

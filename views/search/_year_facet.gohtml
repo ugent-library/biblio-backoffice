@@ -1,15 +1,15 @@
 <div class="dropdown">
     <a class="badge badge-pill badge-default mr-3" data-toggle="dropdown" data-persist="true" aria-haspopup="true"
         aria-expanded="false" role="button">
-        <span class="badge-text">Publication status</span>
-        <div class="c-counter c-counter--small">{{len (.SearchArgs.FiltersFor "publication_status")}}</div>
+        <span class="badge-text">Publishing year</span>
+        <div class="c-counter c-counter--small">{{len (.SearchArgs.FiltersFor "year")}}</div>
         <i class="if if-caret-down"></i>
     </a>
     <form class="dropdown-menu" method="GET" action="{{.CurrentURL|queryClear}}">
         <div class="bc-navbar bc-navbar--bordered-bottom">
             <div class="bc-toolbar bc-toolbar--auto">
                 <div class="bc-toolbar-left">
-                    <h4 class="text-nowrap">Publication status</h4>
+                    <h4 class="text-nowrap">Publishing year</h4>
                 </div>
                 <div class="bc-toolbar-right">
                     <button type="button" class="btn btn-link form-check-all">Select all</button>
@@ -21,18 +21,18 @@
         <input type="hidden" name="sort" value="{{.}}">
         {{end}}
         {{range $f, $vals := .SearchArgs.Filters}}
-        {{if ne $f "publication_status"}}
+        {{if ne $f "year"}}
         {{range $vals}}
         <input type="hidden" name="f[{{$f}}]" value="{{.}}">
         {{end}}
         {{end}}
         {{end}}
         <div class="p-6">
-            {{$last := sub (len .Hits.Facets.publication_status) 1}}
-            {{range $i, $f := .Hits.Facets.publication_status}}
+            {{$last := sub (len .Hits.Facets.year) 1}}
+            {{range $i, $f := .Hits.Facets.year}}
             <div class="custom-control custom-checkbox{{if lt $i $last}} mb-4{{end}}">
-                <input class="custom-control-input" id="filter-publication-status-{{$i}}" type="checkbox" name="f[publication_status]" value="{{$f.Value}}"{{if $.SearchArgs.HasFilter "publication_status" $f.Value}} checked{{end}}>
-                <label class="custom-control-label" for="filter-publication-status-{{$i}}">{{$.Locale.TS "publication_publishing_statuses" $f.Value}} ({{$f.Count}})</label>
+                <input class="custom-control-input" id="filter-year-{{$i}}" type="checkbox" name="f[year]" value="{{$f.Value}}"{{if $.SearchArgs.HasFilter "year" $f.Value}} checked{{end}}>
+                <label class="custom-control-label" for="filter-year-{{$i}}">{{$f.Value}} ({{$f.Count}})</label>
             </div>
             {{end}}
         </div>

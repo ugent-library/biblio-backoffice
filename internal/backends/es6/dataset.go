@@ -17,8 +17,7 @@ import (
 
 type Datasets struct {
 	Client
-	scopes        []M
-	includeFacets bool
+	scopes []M
 }
 
 func NewDatasets(c Client) *Datasets {
@@ -50,7 +49,7 @@ func (datasets *Datasets) Search(args *models.SearchArgs) (*models.DatasetHits, 
 	// FACETS
 	// 	create global bucket so that not all buckets are influenced by query and filters
 	// 	name "facets" is not important
-	if datasets.includeFacets {
+	if args.Facets != nil {
 		query["aggs"] = M{
 			"facets": M{
 				"global": M{},
@@ -59,7 +58,7 @@ func (datasets *Datasets) Search(args *models.SearchArgs) (*models.DatasetHits, 
 		}
 
 		// facet filter contains all query and all filters except itself
-		for _, field := range datasetFacetFields {
+		for _, field := range args.Facets {
 
 			filters := make([]M, 0, len(datasets.scopes)+1)
 
@@ -141,7 +140,7 @@ func (datasets *Datasets) Search(args *models.SearchArgs) (*models.DatasetHits, 
 	}
 
 	// READ RESPONSE FROM ES
-	hits, err := decodeDatasetRes(res)
+	hits, err := decodeDatasetRes(res, args.Facets)
 	if err != nil {
 		return nil, err
 	}
@@ -270,7 +269,7 @@ type resFacet struct {
 	Key      string
 }*/
 
-func decodeDatasetRes(res *esapi.Response) (*models.DatasetHits, error) {
+func decodeDatasetRes(res *esapi.Response, facets []string) (*models.DatasetHits, error) {
 	defer res.Body.Close()
 
 	if res.IsError() {
@@ -290,7 +289,7 @@ func decodeDatasetRes(res *esapi.Response) (*models.DatasetHits, error) {
 	hits.Total = r.Hits.Total
 
 	hits.Facets = make(map[string][]models.Facet)
-	for _, facet := range datasetFacetFields {
+	for _, facet := range facets {
 		if _, found := r.Aggregations.Facets[facet]; !found {
 			continue
 		}
@@ -429,18 +428,11 @@ func (datasets *Datasets) WithScope(field string, terms ...string) backends.Data
 	return d
 }
 
-func (datasets *Datasets) IncludeFacets(includeFacets bool) backends.DatasetSearchService {
-	d := datasets.Clone()
-	d.includeFacets = includeFacets
-	return d
-}
-
 func (datasets *Datasets) Clone() *Datasets {
 	newScopes := make([]M, 0, len(datasets.scopes))
 	newScopes = append(newScopes, datasets.scopes...)
 	return &Datasets{
-		Client:        datasets.Client,
-		scopes:        newScopes,
-		includeFacets: datasets.includeFacets,
+		Client: datasets.Client,
+		scopes: newScopes,
 	}
 }

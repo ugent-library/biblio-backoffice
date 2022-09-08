@@ -1,22 +1,18 @@
-<div class="dropdown mt-4">
+<div class="dropdown">
     <a class="badge badge-pill badge-default mr-3" data-toggle="dropdown" data-persist="true" aria-haspopup="true"
         aria-expanded="false" role="button">
         <span class="badge-text">Publication type</span>
         <div class="c-counter c-counter--small">{{len (.SearchArgs.FiltersFor "type")}}</div>
         <i class="if if-caret-down"></i>
     </a>
-    <form class="mb-4 dropdown-menu" method="GET" action="{{.CurrentURL|queryClear}}">
-        <div class="dropdown-header">
-            <div class="bc-toolbar">
-                <div class="bc-toolbar__left">
-                    <div class="bc-toolbar__item">
-                        <h6>Publication type</h6>
-                    </div>
+    <form class="dropdown-menu" method="GET" action="{{.CurrentURL|queryClear}}">
+        <div class="bc-navbar bc-navbar--bordered-bottom">
+            <div class="bc-toolbar bc-toolbar--auto">
+                <div class="bc-toolbar-left">
+                    <h4 class="text-nowrap">Publication type</h4>
                 </div>
-                <div class="bc-toolbar__right">
-                    <div class="bc-toolbar__item">
-                        <button type="button" class="btn btn-link form-check-all">Select all</button>
-                    </div>
+                <div class="bc-toolbar-right">
+                    <button type="button" class="btn btn-link form-check-all">Select all</button>
                 </div>
             </div>
         </div>
@@ -31,15 +27,16 @@
         {{end}}
         {{end}}
         {{end}}
-        <div class="dropdown-body">
-            {{range .Hits.Facets.type}}
-            <div class="custom-control custom-checkbox mb-4">
-                <input class="custom-control-input" id="filter-type-{{.Value}}" type="checkbox" name="f[type]" value="{{.Value}}"{{if $.SearchArgs.HasFilter "type" .Value}} checked{{end}}>
-                <label class="custom-control-label" for="filter-type-{{.Value}}">{{$.Locale.TS "publication_types" .Value}} ({{.Count}})</label>
+        <div class="p-6">
+            {{$last := sub (len .Hits.Facets.type) 1}}
+            {{range $i, $f := .Hits.Facets.type}}
+            <div class="custom-control custom-checkbox{{if lt $i $last}} mb-4{{end}}">
+                <input class="custom-control-input" id="filter-type-{{$i}}" type="checkbox" name="f[type]" value="{{$f.Value}}"{{if $.SearchArgs.HasFilter "type" $f.Value}} checked{{end}}>
+                <label class="custom-control-label" for="filter-type-{{$i}}">{{$.Locale.TS "publication_types" $f.Value}} ({{$f.Count}})</label>
             </div>
             {{end}}
         </div>
-        <div class="dropdown-footer">
+        <div class="bc-navbar bc-navbar--large">
             <button class="btn btn-primary btn-block" type="submit">Apply filter</button>
         </div>
     </form>

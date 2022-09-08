@@ -1,4 +1,4 @@
-<form class="mb-4" method="GET" action="{{.CurrentURL|queryClear}}">
+<form class="mb-6" method="GET" action="{{.CurrentURL|queryClear}}">
     {{range $field, $values := .SearchArgs.Filters}}
         {{range $values}}
         <input type="hidden" name="f[{{$field}}]" value="{{.}}">

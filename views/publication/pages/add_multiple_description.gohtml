@@ -35,6 +35,7 @@
             {{partial "search/wos_type_facet" .}}
             {{partial "search/classification_facet" .}}
             {{partial "search/file_relation_facet" .}}
+            {{partial "search/year_facet" .}}
         </div>
 
         <div class="card mb-6">
@@ -80,7 +81,7 @@
                                             <a href="{{$pubURL}}">
                                                 <h4 class="c-h4">{{.Title}}</h4>
                                             </a>
-                                            {{with .Author}}{{partial "shared/contributors" .}}{{end}}
+                                            {{with .Author}}{{partial "shared/contributors" (dict "Contributors" . "ContributorsURL" ($pubURL | querySet "show" "contributors"))}}{{end}}
                                             <span class="c-body-small text-muted">
                                                 {{.Year}}{{with .Publication}}, {{.}}{{end}}
                                             </span>
