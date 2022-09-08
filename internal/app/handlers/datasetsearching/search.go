@@ -6,6 +6,7 @@ import (
 
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
+	"github.com/ugent-library/biblio-backend/internal/vocabularies"
 )
 
 var (
@@ -30,6 +31,7 @@ func (y YieldSearch) YieldHit(d *models.Dataset) YieldHit {
 }
 
 func (h *Handler) Search(w http.ResponseWriter, r *http.Request, ctx Context) {
+	ctx.SearchArgs.WithFacets(vocabularies.Map["dataset_facets"]...)
 	if ctx.SearchArgs.FilterFor("scope") == "" {
 		ctx.SearchArgs.WithFilter("scope", "all")
 	}
@@ -52,7 +54,7 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request, ctx Context) {
 	}
 	delete(args.Filters, "scope")
 
-	hits, err := searcher.IncludeFacets(true).Search(args)
+	hits, err := searcher.Search(args)
 	if err != nil {
 		h.Logger.Errorw("dataset search: could not execute search", "errors", err, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
@@ -74,15 +76,17 @@ func (h *Handler) CurationSearch(w http.ResponseWriter, r *http.Request, ctx Con
 		return
 	}
 
+	ctx.SearchArgs.WithFacets(vocabularies.Map["dataset_curation_facets"]...)
+
 	searcher := h.DatasetSearchService.WithScope("status", "private", "public")
-	hits, err := searcher.IncludeFacets(true).Search(ctx.SearchArgs)
+	hits, err := searcher.Search(ctx.SearchArgs)
 	if err != nil {
 		h.Logger.Errorw("dataset search: could not execute search", "errors", err, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
 
-	render.Layout(w, "layouts/default", "dataset/search_page", YieldSearch{
+	render.Layout(w, "layouts/default", "dataset/pages/search", YieldSearch{
 		Context:   ctx,
 		PageTitle: "Overview - Datasets - Biblio",
 		ActiveNav: "datasets",

@@ -315,8 +315,7 @@
                     "index": false
                 },
                 "reviewer_tags": {
-                    "type": "text",
-                    "analyzer": "keyword_lowercase"
+                    "type": "keyword"
                 },
                 "status": {
                     "type": "keyword"

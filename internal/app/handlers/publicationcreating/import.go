@@ -20,6 +20,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/snapstore"
 	"github.com/ugent-library/biblio-backend/internal/ulid"
 	"github.com/ugent-library/biblio-backend/internal/validation"
+	"github.com/ugent-library/biblio-backend/internal/vocabularies"
 )
 
 type BindImportSingle struct {
@@ -377,13 +378,14 @@ func (h *Handler) AddMultipleDescription(w http.ResponseWriter, r *http.Request,
 		return
 	}
 
+	searchArgs.WithFacets(vocabularies.Map["publication_facets"]...)
+
 	batchID := bind.PathValues(r).Get("batch_id")
 
 	hits, err := h.PublicationSearchService.
 		WithScope("status", "private", "public").
 		WithScope("creator_id", ctx.User.ID).
 		WithScope("batch_id", batchID).
-		IncludeFacets(true).
 		Search(searchArgs)
 
 	if err != nil {
@@ -432,13 +434,14 @@ func (h *Handler) AddMultipleConfirm(w http.ResponseWriter, r *http.Request, ctx
 		return
 	}
 
+	searchArgs.WithFacets(vocabularies.Map["publication_facets"]...)
+
 	batchID := bind.PathValues(r).Get("batch_id")
 
 	hits, err := h.PublicationSearchService.
 		WithScope("status", "private", "public").
 		WithScope("creator_id", ctx.User.ID).
 		WithScope("batch_id", batchID).
-		IncludeFacets(true).
 		Search(searchArgs)
 
 	if err != nil {
@@ -499,13 +502,14 @@ func (h *Handler) AddMultipleFinish(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
+	searchArgs.WithFacets(vocabularies.Map["publication_facets"]...)
+
 	batchID := bind.PathValues(r).Get("batch_id")
 
 	hits, err := h.PublicationSearchService.
 		WithScope("status", "private", "public").
 		WithScope("creator_id", ctx.User.ID).
 		WithScope("batch_id", batchID).
-		IncludeFacets(true).
 		Search(searchArgs)
 
 	if err != nil {
