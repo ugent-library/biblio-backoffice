@@ -317,8 +317,8 @@ func decodePublicationRes(res *esapi.Response, facets []string) (*models.Publica
 	}
 
 	//reorder facet values, if applicable
-	for facetName, facets := range hits.Facets {
-		hits.Facets[facetName] = reorderFacets(facetName, facets)
+	for _, facetName := range facets {
+		hits.Facets[facetName] = reorderFacets(facetName, hits.Facets[facetName])
 	}
 
 	for _, h := range r.Hits.Hits {
