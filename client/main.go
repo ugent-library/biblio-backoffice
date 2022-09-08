@@ -23,11 +23,15 @@ func main() {
 	viper.SetDefault("api-port", defaultAPIPort)
 	viper.SetDefault("api-username", "")
 	viper.SetDefault("api-password", "")
+	viper.SetDefault("api-tls-disabled", false)
+	viper.SetDefault("api-ca-cert", "")
 
 	rootCmd.PersistentFlags().String("api-host", defaultAPIHost, "api server host")
 	rootCmd.PersistentFlags().Int("api-port", defaultAPIPort, "api server port")
 	rootCmd.PersistentFlags().String("api-username", "ddd", "api server user username")
 	rootCmd.PersistentFlags().String("api-password", "", "api server user password")
+	rootCmd.PersistentFlags().Bool("api-tls-disabled", false, "api client TLS enabled")
+	rootCmd.PersistentFlags().String("api-tls-ca-cert", "", "api client location of the CA certificate")
 
 	fileCmd := (&cmd.FileCmd{}).Command()
 	fileCmd.AddCommand((&cmd.GetFileCMd{}).Command())

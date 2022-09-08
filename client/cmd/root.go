@@ -9,6 +9,7 @@ import (
 	"github.com/spf13/viper"
 	api "github.com/ugent-library/biblio-backend/api/v1"
 	"github.com/ugent-library/biblio-backend/client/auth"
+	"github.com/ugent-library/biblio-backend/client/tls"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -29,15 +30,24 @@ func (c *RootCmd) Wrap(fn func()) {
 	// Set Unmarshaller
 	c.Unmarshaller = protojson.UnmarshalOptions{}
 
+	dialOptionSecureConn := grpc.WithTransportCredentials(insecure.NewCredentials())
+	if !viper.GetBool("api-tls-disabled") {
+		tlsCredentials, err := tls.LoadTLSCredentials()
+		if err != nil {
+			log.Fatal("cannot load TLS credentials: ", err)
+		}
+		dialOptionSecureConn = grpc.WithTransportCredentials(tlsCredentials)
+	}
+
 	// Set up the connection and the API client
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
 	addr := fmt.Sprintf("%s:%d", viper.GetString("api-host"), viper.GetInt("api-port"))
 	log.Println(addr)
 
 	conn, err := grpc.DialContext(ctx, addr,
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		dialOptionSecureConn,
 		grpc.WithPerRPCCredentials(auth.BasicAuth{
 			User:     viper.GetString("api-username"),
 			Password: viper.GetString("api-password"),
