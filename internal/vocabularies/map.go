@@ -159,6 +159,7 @@ var Map = map[string][]string{
 		"peer_review_report",
 		"table_of_contents",
 		"agreement",
+		"supplementary_material",
 	},
 	"publication_link_relations": {
 		"data_management_plan",
