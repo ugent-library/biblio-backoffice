@@ -12,6 +12,7 @@ var Map = map[string][]string{
 		"type",
 		"wos_type",
 		"classification",
+		"year",
 	},
 	"publication_curation_facets": {
 		"status",
@@ -22,6 +23,7 @@ var Map = map[string][]string{
 		"type",
 		"wos_type",
 		"classification",
+		"year",
 		"file.relation",
 		"reviewer_tags",
 	},
