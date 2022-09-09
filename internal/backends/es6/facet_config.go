@@ -15,6 +15,7 @@ var fixedFacetValues = map[string][]string{
 	"locked":             {"true", "false"},
 	"file.relation":      vocabularies.Map["publication_file_relations"],
 	"classification":     vocabularies.Map["publication_classifications"],
+	"has_message":        {"true", "false"},
 }
 
 func reorderFacets(t string, facets []models.Facet) []models.Facet {

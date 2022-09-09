@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"time"
 
 	"github.com/elastic/go-elasticsearch/v6/esapi"
 	"github.com/elastic/go-elasticsearch/v6/esutil"
@@ -290,6 +289,12 @@ func decodeDatasetRes(res *esapi.Response, facets []string) (*models.DatasetHits
 	hits.Total = r.Hits.Total
 
 	hits.Facets = make(map[string][]models.Facet)
+
+	//preallocate to ensure non zero slices
+	for _, facet := range facets {
+		hits.Facets[facet] = []models.Facet{}
+	}
+
 	for _, facet := range facets {
 		if _, found := r.Aggregations.Facets[facet]; !found {
 			continue
@@ -318,8 +323,8 @@ func decodeDatasetRes(res *esapi.Response, facets []string) (*models.DatasetHits
 	}
 
 	//reorder facet values, if applicable
-	for facetName, facets := range hits.Facets {
-		hits.Facets[facetName] = reorderFacets(facetName, facets)
+	for _, facetName := range facets {
+		hits.Facets[facetName] = reorderFacets(facetName, hits.Facets[facetName])
 	}
 
 	for _, h := range r.Hits.Hits {
@@ -337,16 +342,7 @@ func decodeDatasetRes(res *esapi.Response, facets []string) (*models.DatasetHits
 
 func (publications *Datasets) Index(d *models.Dataset) error {
 	body := M{
-		// not needed anymore in es7 with date nano type
-		"doc": struct {
-			*models.Dataset
-			DateCreated string `json:"date_created"`
-			DateUpdated string `json:"date_updated"`
-		}{
-			Dataset:     d,
-			DateCreated: d.DateCreated.Format(time.RFC3339),
-			DateUpdated: d.DateUpdated.Format(time.RFC3339),
-		},
+		"doc":           NewIndexedDataset(d),
 		"doc_as_upsert": true,
 	}
 
@@ -395,19 +391,10 @@ func (datasets *Datasets) IndexMultiple(inCh <-chan *models.Dataset) {
 		log.Fatal(err)
 	}
 
-	for p := range inCh {
-		// not needed anymore in es7 with date nano type
-		doc := struct {
-			*models.Dataset
-			DateCreated string `json:"date_created"`
-			DateUpdated string `json:"date_updated"`
-		}{
-			Dataset:     p,
-			DateCreated: p.DateCreated.Format(time.RFC3339),
-			DateUpdated: p.DateUpdated.Format(time.RFC3339),
-		}
+	for d := range inCh {
+		doc := NewIndexedDataset(d)
 
-		payload, err := json.Marshal(&doc)
+		payload, err := json.Marshal(doc)
 		if err != nil {
 			log.Panic(err)
 		}
