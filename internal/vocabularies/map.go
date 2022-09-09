@@ -6,6 +6,13 @@ const RestrictedAccess = "info:eu-repo/semantics/restrictedAccess"
 const OpenAccess = "info:eu-repo/semantics/openAccess"
 
 var Map = map[string][]string{
+	"publication_vabb_types": {
+		"VABB-1",
+		"VABB-2",
+		"VABB-3",
+		"VABB-4",
+		"VABB-5",
+	},
 	"publication_facets": {
 		"status",
 		"faculty",
@@ -24,6 +31,7 @@ var Map = map[string][]string{
 		"wos_type",
 		"classification",
 		"year",
+		"vabb_type",
 		"file.relation",
 		"reviewer_tags",
 	},
