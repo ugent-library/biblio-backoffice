@@ -54,5 +54,9 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request, ctx Context) {
 		DismissAfter: 5 * time.Second,
 	})
 
+	// TODO temporary fix until we can figure out a way let ES notify this handler that it did its thing.
+	// see: https://github.com/ugent-library/biblio-backend/issues/590
+	time.Sleep(1250 * time.Millisecond)
+
 	w.Header().Set("HX-Redirect", r.URL.Query().Get("redirect-url"))
 }
