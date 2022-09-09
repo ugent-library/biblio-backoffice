@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"time"
 
 	"github.com/elastic/go-elasticsearch/v6/esapi"
 	"github.com/elastic/go-elasticsearch/v6/esutil"
@@ -287,6 +286,12 @@ func decodePublicationRes(res *esapi.Response, facets []string) (*models.Publica
 	hits.Total = r.Hits.Total
 
 	hits.Facets = make(map[string][]models.Facet)
+
+	//preallocate to ensure non zero slices
+	for _, facet := range facets {
+		hits.Facets[facet] = []models.Facet{}
+	}
+
 	for _, facet := range facets {
 
 		if _, found := r.Aggregations.Facets[facet]; !found {
@@ -318,8 +323,8 @@ func decodePublicationRes(res *esapi.Response, facets []string) (*models.Publica
 	}
 
 	//reorder facet values, if applicable
-	for facetName, facets := range hits.Facets {
-		hits.Facets[facetName] = reorderFacets(facetName, facets)
+	for _, facetName := range facets {
+		hits.Facets[facetName] = reorderFacets(facetName, hits.Facets[facetName])
 	}
 
 	for _, h := range r.Hits.Hits {
@@ -335,18 +340,10 @@ func decodePublicationRes(res *esapi.Response, facets []string) (*models.Publica
 	return &hits, nil
 }
 
-func (publications *Publications) Index(d *models.Publication) error {
+func (publications *Publications) Index(p *models.Publication) error {
+	doc := NewIndexedPublication(p)
 	body := M{
-		// not needed anymore in es7 with date nano type
-		"doc": struct {
-			*models.Publication
-			DateCreated string `json:"date_created"`
-			DateUpdated string `json:"date_updated"`
-		}{
-			Publication: d,
-			DateCreated: d.DateCreated.Format(time.RFC3339),
-			DateUpdated: d.DateUpdated.Format(time.RFC3339),
-		},
+		"doc":           doc,
 		"doc_as_upsert": true,
 	}
 
@@ -358,7 +355,7 @@ func (publications *Publications) Index(d *models.Publication) error {
 	res, err := esapi.UpdateRequest{
 		Index: publications.Client.Index,
 		// DocumentID: d.SnapshotID,
-		DocumentID: d.ID,
+		DocumentID: p.ID,
 		Body:       bytes.NewReader(payload),
 	}.Do(ctx, publications.Client.es)
 	if err != nil {
@@ -397,18 +394,9 @@ func (publications *Publications) IndexMultiple(inCh <-chan *models.Publication)
 	}
 
 	for p := range inCh {
-		// not needed anymore in es7 with date nano type
-		doc := struct {
-			*models.Publication
-			DateCreated string `json:"date_created"`
-			DateUpdated string `json:"date_updated"`
-		}{
-			Publication: p,
-			DateCreated: p.DateCreated.Format(time.RFC3339),
-			DateUpdated: p.DateUpdated.Format(time.RFC3339),
-		}
+		doc := NewIndexedPublication(p)
 
-		payload, err := json.Marshal(&doc)
+		payload, err := json.Marshal(doc)
 		if err != nil {
 			log.Panic(err)
 		}
