@@ -552,6 +552,16 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		Methods("POST").
 		Name("publication_publish")
 
+	// change publication type
+	r.HandleFunc("/publication/{id}/change-type/confirm",
+		publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmChangeType)).
+		Methods("GET").
+		Name("publication_confirm_change_type")
+	r.HandleFunc("/publication/{id}/change-type",
+		publicationEditingHandler.Wrap(publicationEditingHandler.ChangeType)).
+		Methods("POST").
+		Name("publication_change_type")
+
 	// delete publication
 	r.HandleFunc("/publication/{id}/confirm-delete",
 		publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDelete)).
