@@ -1,22 +1,18 @@
-<div class="dropdown mt-4">
+<div class="dropdown">
     <a class="badge badge-pill badge-default mr-3" data-toggle="dropdown" data-persist="true" aria-haspopup="true"
         aria-expanded="false" role="button">
         <span class="badge-text">Message</span>
         <div class="c-counter c-counter--small">{{len (.SearchArgs.FiltersFor "has_message")}}</div>
         <i class="if if-caret-down"></i>
     </a>
-    <form class="mb-4 dropdown-menu" method="GET" action="{{.CurrentURL|queryClear}}">
-        <div class="dropdown-header">
-            <div class="bc-toolbar">
-                <div class="bc-toolbar__left">
-                    <div class="bc-toolbar__item">
-                        <h6>Message</h6>
-                    </div>
+    <form class="dropdown-menu" method="GET" action="{{.CurrentURL|queryClear}}">
+        <div class="bc-navbar bc-navbar--bordered-bottom">
+            <div class="bc-toolbar bc-toolbar--auto">
+                <div class="bc-toolbar-left">
+                    <h4 class="text-nowrap">Message</h4>
                 </div>
-                <div class="bc-toolbar__right">
-                    <div class="bc-toolbar__item">
-                        <button type="button" class="btn btn-link form-check-all">Select all</button>
-                    </div>
+                <div class="bc-toolbar-right">
+                    <button type="button" class="btn btn-link form-check-all">Select all</button>
                 </div>
             </div>
         </div>
@@ -31,15 +27,16 @@
         {{end}}
         {{end}}
         {{end}}
-        <div class="dropdown-body">
-            {{range .Hits.Facets.has_message}}
-            <div class="custom-control custom-checkbox mb-4">
-                <input class="custom-control-input" id="filter-has-message-{{.Value}}" type="checkbox" name="f[has_message]" value="{{.Value}}"{{if $.SearchArgs.HasFilter "has_message" .Value}} checked{{end}}>
-                <label class="custom-control-label" for="filter-has-message-{{.Value}}">{{$.Locale.TS "has_message" .Value}} ({{.Count}})</label>
+        <div class="p-6">
+            {{$last := sub (len .Hits.Facets.has_message) 1}}
+            {{range $i, $f := .Hits.Facets.has_message}}
+            <div class="custom-control custom-checkbox{{if lt $i $last}} mb-4{{end}}">
+                <input class="custom-control-input" id="filter-has-message-{{$i}}" type="checkbox" name="f[has_message]" value="{{$f.Value}}"{{if $.SearchArgs.HasFilter "has_message" $f.Value}} checked{{end}}>
+                <label class="custom-control-label" for="filter-has-message-{{$i}}">{{$.Locale.TS "has_message" $f.Value}} ({{$f.Count}})</label>
             </div>
             {{end}}
         </div>
-        <div class="dropdown-footer">
+        <div class="bc-navbar bc-navbar--large">
             <button class="btn btn-primary btn-block" type="submit">Apply filter</button>
         </div>
     </form>

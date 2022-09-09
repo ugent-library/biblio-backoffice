@@ -26,6 +26,7 @@ var Map = map[string][]string{
 		"year",
 		"file.relation",
 		"reviewer_tags",
+		"has_message",
 	},
 	"dataset_facets": {
 		"status",
@@ -45,6 +46,7 @@ var Map = map[string][]string{
 		"classification",
 		"file.relation",
 		"reviewer_tags",
+		"has_message",
 	},
 	"licenses": {
 		"CC0-1.0",
