@@ -20,6 +20,7 @@ var Map = map[string][]string{
 		"wos_type",
 		"classification",
 		"year",
+		"vabb_type",
 	},
 	"publication_curation_facets": {
 		"status",
