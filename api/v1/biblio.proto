@@ -50,6 +50,10 @@ message Contributor {
     string full_name = 7;
 }
 
+message RelatedUser {
+    string id = 1;
+}
+
 message RelatedPublication {
     string id = 1;
 }
@@ -109,6 +113,7 @@ message File {
         RELATION_PEER_REVIEW_REPORT = 3;
         RELATION_TABLE_OF_CONTENTS = 4;
         RELATION_AGREEMENT = 5;
+        RELATION_SUPPLEMENTARY_MATERIAL = 6;
     }
 
     string id = 1;
@@ -235,8 +240,8 @@ message Publication {
     string conference_start_date = 24;
     string conference_end_date = 25;
     repeated RelatedOrganization organization = 26;
-    string creator_id = 27;
-    string user_id = 28;
+    RelatedUser creator = 27;
+    RelatedUser user = 28;
     string doi = 29;
     string edition = 30;
     repeated Contributor editor = 31;
@@ -308,8 +313,8 @@ message Dataset {
     google.protobuf.Timestamp date_from = 8;
     google.protobuf.Timestamp date_until = 9;
     string title = 10;
-    string creator_id = 11;
-    string user_id = 12;
+    RelatedUser creator = 11;
+    RelatedUser user = 12;
     string doi = 13;
     repeated string keyword = 14;
     string url = 15;

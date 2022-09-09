@@ -218,9 +218,13 @@ func datasetToMessage(d *models.Dataset) *api.Dataset {
 		})
 	}
 
-	msg.CreatorId = d.CreatorID
+	if d.Creator != nil {
+		msg.Creator = &api.RelatedUser{Id: d.Creator.ID}
+	}
 
-	msg.UserId = d.UserID
+	if d.User != nil {
+		msg.User = &api.RelatedUser{Id: d.User.ID}
+	}
 
 	msg.Doi = d.DOI
 
@@ -328,9 +332,13 @@ func messageToDataset(msg *api.Dataset) *models.Dataset {
 		})
 	}
 
-	d.CreatorID = msg.CreatorId
+	if msg.Creator != nil {
+		d.Creator = &models.DatasetUser{ID: msg.Creator.Id}
+	}
 
-	d.UserID = msg.UserId
+	if msg.User != nil {
+		d.User = &models.DatasetUser{ID: msg.User.Id}
+	}
 
 	d.DOI = msg.Doi
 

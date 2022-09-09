@@ -183,8 +183,8 @@ func (h *Handler) AddSingleImport(w http.ResponseWriter, r *http.Request, ctx Co
 	}
 
 	p.ID = ulid.MustGenerate()
-	p.CreatorID = ctx.User.ID
-	p.UserID = ctx.User.ID
+	p.Creator = &models.PublicationUser{ID: ctx.User.ID, Name: ctx.User.FullName}
+	p.User = &models.PublicationUser{ID: ctx.User.ID, Name: ctx.User.FullName}
 	p.Status = "private"
 	p.Classification = "U"
 
@@ -333,7 +333,7 @@ func (h *Handler) AddMultipleImport(w http.ResponseWriter, r *http.Request, ctx 
 	// TODO why does the code imports zero entries without this?
 	_, _ = file.Seek(0, io.SeekStart)
 
-	batchID, err := h.importPublications(ctx.User.ID, source, file)
+	batchID, err := h.importPublications(ctx.User, source, file)
 	if err != nil {
 		h.Logger.Warnw("add multiple import publication: could not import publications", "errors", err, "batch", batchID, "user", ctx.User.ID)
 		ctx.Flash = append(ctx.Flash, flash.Flash{
@@ -384,7 +384,7 @@ func (h *Handler) AddMultipleDescription(w http.ResponseWriter, r *http.Request,
 
 	hits, err := h.PublicationSearchService.
 		WithScope("status", "private", "public").
-		WithScope("creator_id", ctx.User.ID).
+		WithScope("creator.id", ctx.User.ID).
 		WithScope("batch_id", batchID).
 		Search(searchArgs)
 
@@ -440,7 +440,7 @@ func (h *Handler) AddMultipleConfirm(w http.ResponseWriter, r *http.Request, ctx
 
 	hits, err := h.PublicationSearchService.
 		WithScope("status", "private", "public").
-		WithScope("creator_id", ctx.User.ID).
+		WithScope("creator.id", ctx.User.ID).
 		WithScope("batch_id", batchID).
 		Search(searchArgs)
 
@@ -508,7 +508,7 @@ func (h *Handler) AddMultipleFinish(w http.ResponseWriter, r *http.Request, ctx 
 
 	hits, err := h.PublicationSearchService.
 		WithScope("status", "private", "public").
-		WithScope("creator_id", ctx.User.ID).
+		WithScope("creator.id", ctx.User.ID).
 		WithScope("batch_id", batchID).
 		Search(searchArgs)
 
@@ -545,7 +545,7 @@ func (h *Handler) fetchPublicationByIdentifier(source, identifier string) (*mode
 	return d, nil
 }
 
-func (h *Handler) importPublications(userID, source string, file io.Reader) (string, error) {
+func (h *Handler) importPublications(user *models.User, source string, file io.Reader) (string, error) {
 	batchID := ulid.MustGenerate()
 
 	decFactory, ok := h.PublicationDecoders[source]
@@ -561,8 +561,8 @@ func (h *Handler) importPublications(userID, source string, file io.Reader) (str
 			BatchID:        batchID,
 			Status:         "private",
 			Classification: "U",
-			CreatorID:      userID,
-			UserID:         userID,
+			Creator:        &models.PublicationUser{ID: user.ID, Name: user.FullName},
+			User:           &models.PublicationUser{ID: user.ID, Name: user.FullName},
 		}
 		if err := dec.Decode(&p); errors.Is(err, io.EOF) {
 			break
@@ -589,7 +589,7 @@ func (h *Handler) importPublications(userID, source string, file io.Reader) (str
 func (h *Handler) batchPublishPublications(batchID, userID string) (err error) {
 	searcher := h.PublicationSearchService.
 		WithScope("status", "private", "public").
-		WithScope("creator_id", userID).
+		WithScope("creator.id", userID).
 		WithScope("batch_id", batchID)
 	args := models.NewSearchArgs()
 

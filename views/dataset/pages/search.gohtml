@@ -60,7 +60,7 @@
     <div class="u-scroll-wrapper__body p-6">
         {{partial "search/query" .}}
         {{with .SearchArgs.Facets}}
-        <div class="d-flex flex-wrap mb-6">
+        <div class="d-flex flex-wrap mb-6 badge-list">
             {{range .}}
             {{partial (printf "search/%s_facet" (. | replace "." "_")) $}}
             {{end}}

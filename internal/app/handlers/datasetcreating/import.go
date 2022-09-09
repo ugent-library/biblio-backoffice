@@ -124,8 +124,8 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 	}
 
 	d.ID = ulid.MustGenerate()
-	d.CreatorID = ctx.User.ID
-	d.UserID = ctx.User.ID
+	d.Creator = &models.DatasetUser{ID: ctx.User.ID, Name: ctx.User.FullName}
+	d.User = &models.DatasetUser{ID: ctx.User.ID, Name: ctx.User.FullName}
 	d.Status = "private"
 
 	if validationErrs := d.Validate(); validationErrs != nil {

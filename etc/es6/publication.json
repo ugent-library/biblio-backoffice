@@ -211,8 +211,16 @@
                 "conference_type": {
                     "type": "keyword"
                 },
-                "creator_id": {
-                    "type": "keyword"
+                "creator": {
+                    "properties": {
+                        "id": {
+                            "type": "keyword"
+                        },
+                        "name": {
+                            "type": "text",
+                            "index": false
+                        }
+                    }
                 },
                 "date_created": {
                     "type": "date"
@@ -573,8 +581,16 @@
                     "type": "text",
                     "index": false
                 },
-                "user_id": {
-                    "type": "keyword"
+                "user": {
+                    "properties": {
+                        "id": {
+                            "type": "keyword"
+                        },
+                        "name": {
+                            "type": "text",
+                            "index": false
+                        }
+                    }
                 },
                 "volume": {
                     "type": "text",

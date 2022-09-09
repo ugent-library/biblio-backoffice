@@ -171,6 +171,7 @@ func init() {
 	message.SetString(language.English, "publication_file_relations.peer_review_report", "Peer review report")
 	message.SetString(language.English, "publication_file_relations.table_of_contents", "Table of contents")
 	message.SetString(language.English, "publication_file_relations.agreement", "Contract/Agreement")
+	message.SetString(language.English, "publication_file_relations.supplementary_material", "Supplementary material")
 
 	message.SetString(language.English, "publication_link_relations.data_management_plan", "Data management plan")
 	message.SetString(language.English, "publication_link_relations.homepage", "Accompanying website")

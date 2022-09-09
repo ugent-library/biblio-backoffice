@@ -303,9 +303,13 @@ func publicationToMessage(p *models.Publication) *api.Publication {
 		})
 	}
 
-	msg.CreatorId = p.CreatorID
+	if p.Creator != nil {
+		msg.Creator = &api.RelatedUser{Id: p.Creator.ID}
+	}
 
-	msg.UserId = p.UserID
+	if p.User != nil {
+		msg.User = &api.RelatedUser{Id: p.User.ID}
+	}
 
 	msg.Doi = p.DOI
 
@@ -387,6 +391,8 @@ func publicationToMessage(p *models.Publication) *api.Publication {
 			f.Relation = api.File_RELATION_TABLE_OF_CONTENTS
 		case "agreement":
 			f.Relation = api.File_RELATION_AGREEMENT
+		case "supplementary_material":
+			f.Relation = api.File_RELATION_SUPPLEMENTARY_MATERIAL
 		}
 
 		msg.File = append(msg.File, f)
@@ -768,9 +774,13 @@ func messageToPublication(msg *api.Publication) *models.Publication {
 		})
 	}
 
-	p.CreatorID = msg.CreatorId
+	if msg.Creator != nil {
+		p.Creator = &models.PublicationUser{ID: msg.Creator.Id}
+	}
 
-	p.UserID = msg.UserId
+	if msg.User != nil {
+		p.User = &models.PublicationUser{ID: msg.User.Id}
+	}
 
 	p.DOI = msg.Doi
 
@@ -854,6 +864,8 @@ func messageToPublication(msg *api.Publication) *models.Publication {
 			f.Relation = "table_of_contents"
 		case api.File_RELATION_AGREEMENT:
 			f.Relation = "agreement"
+		case api.File_RELATION_SUPPLEMENTARY_MATERIAL:
+			f.Relation = "supplementary_material"
 		}
 
 		p.File = append(p.File, f)
