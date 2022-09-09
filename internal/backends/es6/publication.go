@@ -286,6 +286,12 @@ func decodePublicationRes(res *esapi.Response, facets []string) (*models.Publica
 	hits.Total = r.Hits.Total
 
 	hits.Facets = make(map[string][]models.Facet)
+
+	//preallocate to ensure non zero slices
+	for _, facet := range facets {
+		hits.Facets[facet] = []models.Facet{}
+	}
+
 	for _, facet := range facets {
 
 		if _, found := r.Aggregations.Facets[facet]; !found {
