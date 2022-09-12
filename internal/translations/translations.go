@@ -718,5 +718,5 @@ func init() {
 	message.SetString(language.English, "locked.false", "unlocked")
 	message.SetString(language.English, "has_message.true", "with message")
 	message.SetString(language.English, "has_message.false", "without message")
-	message.SetString(language.English, "suggest_custom_data_format", "Add custom data format")
+	message.SetString(language.English, "suggest_custom_data_format", "Use custom data format")
 }
