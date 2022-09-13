@@ -602,6 +602,19 @@
                 },
                 "wos_type": {
                     "type": "keyword"
+                },
+                "vabb_type": {
+                    "type": "keyword"
+                },
+                "vabb_id": {
+                    "type": "keyword"
+                },
+                "vabb_approved": {
+                    "type": "boolean"
+                },
+                "vabb_year": {
+                    "type": "date",
+                    "format": "year"
                 }
             }
         }

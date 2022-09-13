@@ -15,6 +15,7 @@ var fixedFacetValues = map[string][]string{
 	"locked":             {"true", "false"},
 	"file.relation":      vocabularies.Map["publication_file_relations"],
 	"classification":     vocabularies.Map["publication_classifications"],
+	"vabb_type":          vocabularies.Map["publication_vabb_types"],
 	"has_message":        {"true", "false"},
 }
 

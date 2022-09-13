@@ -151,6 +151,10 @@ type Publication struct {
 	URL                     string                  `json:"url,omitempty"`
 	User                    *PublicationUser        `json:"user,omitempty"`
 	Volume                  string                  `json:"volume,omitempty"`
+	VABBType                string                  `json:"vabb_type,omitempty"`
+	VABBID                  string                  `json:"vabb_id,omitempty"`
+	VABBApproved            bool                    `json:"vabb_approved"`
+	VABBYear                []string                `json:"vabb_year,omitempty"`
 	WOSID                   string                  `json:"wos_id,omitempty"`
 	WOSType                 string                  `json:"wos_type,omitempty"`
 	Year                    string                  `json:"year,omitempty"`
