@@ -34,7 +34,8 @@ func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) htt
 
 type YieldSuggest struct {
 	Context
-	Hits []models.Completion
+	Hits  []models.Completion
+	Query string
 }
 
 func (h *Handler) Suggest(w http.ResponseWriter, r *http.Request, ctx Context) {
@@ -55,5 +56,6 @@ func (h *Handler) Suggest(w http.ResponseWriter, r *http.Request, ctx Context) {
 	render.View(w, "media_types/suggest", YieldSuggest{
 		Context: ctx,
 		Hits:    hits,
+		Query:   q,
 	})
 }
