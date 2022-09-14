@@ -91,6 +91,7 @@
                 {{partial "search/count" .}}
             </div>
             <div class="card-body p-0">
+                {{if gt (len .Hits.Hits) 0}}
                 <ul class="list-group list-group-flush">
                     {{range .Hits.Hits}}
                     <li class="list-group-item">
@@ -98,6 +99,15 @@
                     </li>
                     {{end}}
                 </ul>
+                {{else}}
+                <div class="c-blank-slate c-blank-slate-large c-blank-slate-muted">
+                    <div class="bc-avatar bc-avatar--medium">
+                        <i class="if if-info-circle"></I>
+                    </div>
+                    <h1>No records found.</h1>
+                    <p>Adjust your search to find what you are looking for.</p>
+                </div>
+                {{end}}
             </div>
         </div>
         <nav aria-label="Page navigation">
