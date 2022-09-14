@@ -104,8 +104,8 @@
                     <div class="bc-avatar bc-avatar--medium">
                         <i class="if if-info-circle"></i>
                     </div>
-                    <h3 class="c-blank-slate-title">No publications yet</h3>
-                    <p>Add your first publication to get started.</p>
+                    <h3 class="c-blank-slate-title">{{$.Locale.TS "publication.search.empty.title" $.CurrentScope}}</h3>
+                    <p>{{$.Locale.TS "publication.search.empty.description" $.CurrentScope}}</p>
                     <div class="c-button-toolbar">
                         <a class="btn btn-outline-primary" href="{{pathFor "publication_add"}}">
                             <i class="if if-add"></i>

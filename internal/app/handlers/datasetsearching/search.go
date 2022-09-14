@@ -16,11 +16,12 @@ var (
 
 type YieldSearch struct {
 	Context
-	PageTitle  string
-	ActiveNav  string
-	Scopes     []string
-	Hits       *models.DatasetHits
-	IsFirstUse bool
+	PageTitle    string
+	ActiveNav    string
+	Scopes       []string
+	Hits         *models.DatasetHits
+	IsFirstUse   bool
+	CurrentScope string
 }
 
 type YieldHit struct {
@@ -40,14 +41,18 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request, ctx Context) {
 
 	searcher := h.DatasetSearchService.WithScope("status", "private", "public")
 	args := ctx.SearchArgs.Clone()
+	var currentScope string
 
 	switch args.FilterFor("scope") {
 	case "created":
 		searcher = searcher.WithScope("creator.id", ctx.User.ID)
+		currentScope = "created"
 	case "contributed":
 		searcher = searcher.WithScope("author.id", ctx.User.ID)
+		currentScope = "contributed"
 	case "all":
 		searcher = searcher.WithScope("creator.id|author.id", ctx.User.ID)
+		currentScope = "all"
 	default:
 		errorUnkownScope := fmt.Errorf("unknown scope: %s", args.FilterFor("scope"))
 		h.Logger.Warnw("dataset search: could not create searcher with passed filters", "errors", errorUnkownScope, "user", ctx.User.ID)
@@ -80,12 +85,13 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request, ctx Context) {
 	}
 
 	render.Layout(w, "layouts/default", "dataset/pages/search", YieldSearch{
-		Context:    ctx,
-		PageTitle:  "Overview - Datasets - Biblio",
-		ActiveNav:  "datasets",
-		Scopes:     userScopes,
-		Hits:       hits,
-		IsFirstUse: isFirstUse,
+		Context:      ctx,
+		PageTitle:    "Overview - Datasets - Biblio",
+		ActiveNav:    "datasets",
+		Scopes:       userScopes,
+		Hits:         hits,
+		IsFirstUse:   isFirstUse,
+		CurrentScope: currentScope,
 	})
 }
 

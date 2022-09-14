@@ -86,8 +86,8 @@
                     <div class="bc-avatar bc-avatar--medium">
                         <i class="if if-info-circle"></i>
                     </div>
-                    <h3 class="c-blank-slate-title">No datasets yet</h3>
-                    <p>Add your first dataset to get started.</p>
+                    <h3 class="c-blank-slate-title">{{$.Locale.TS "dataset.search.empty.title" $.CurrentScope}}</h3>
+                    <p>{{$.Locale.TS "dataset.search.empty.description" $.CurrentScope}}</p>
                     <div class="c-button-toolbar">
                         <a class="btn btn-outline-primary" href="{{pathFor "dataset_add"}}">
                             <i class="if if-add"></i>
