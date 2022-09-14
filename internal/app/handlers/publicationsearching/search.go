@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
 	"github.com/ugent-library/biblio-backend/internal/vocabularies"
@@ -15,10 +16,11 @@ var (
 
 type YieldSearch struct {
 	Context
-	PageTitle string
-	ActiveNav string
-	Scopes    []string
-	Hits      *models.PublicationHits
+	PageTitle  string
+	ActiveNav  string
+	Scopes     []string
+	IsFirstUse bool
+	Hits       *models.PublicationHits
 }
 
 type YieldHit struct {
@@ -61,13 +63,46 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request, ctx Context) {
 		return
 	}
 
+	/*
+		first use search
+		when more applicable, always execute this
+		now only when no results are found
+	*/
+	var isFirstUse bool = false
+	if hits.Total == 0 {
+		globalHits, globalHitsErr := globalSearch(searcher)
+		if globalHitsErr != nil {
+			h.Logger.Errorw("publication search: could not execute global search", "errors", globalHitsErr, "user", ctx.User.ID)
+			render.InternalServerError(w, r, globalHitsErr)
+			return
+		}
+		isFirstUse = globalHits.Total == 0
+	}
+
 	render.Layout(w, "layouts/default", "publication/pages/search", YieldSearch{
-		Context:   ctx,
-		PageTitle: "Overview - Publications - Biblio",
-		ActiveNav: "publications",
-		Scopes:    userScopes,
-		Hits:      hits,
+		Context:    ctx,
+		PageTitle:  "Overview - Publications - Biblio",
+		ActiveNav:  "publications",
+		Scopes:     userScopes,
+		Hits:       hits,
+		IsFirstUse: isFirstUse,
 	})
+}
+
+/*
+	globalSearch(searcher)
+		returns total number of search hits
+		for scoped searcher, regardless of choosen filters
+		Used to determine wether user has any records
+*/
+func globalSearch(searcher backends.PublicationSearchService) (*models.PublicationHits, error) {
+	globalArgs := models.NewSearchArgs()
+	globalArgs.Query = ""
+	globalArgs.Facets = nil
+	globalArgs.Filters = map[string][]string{}
+	globalArgs.PageSize = 0
+	globalArgs.Page = 1
+	return searcher.Search(globalArgs)
 }
 
 func (h *Handler) CurationSearch(w http.ResponseWriter, r *http.Request, ctx Context) {

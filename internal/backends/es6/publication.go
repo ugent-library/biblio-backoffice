@@ -246,8 +246,8 @@ func (publications *Publications) buildUserQuery(args *models.SearchArgs) M {
 		query["query"].(M)["bool"].(M)["filter"] = queryFilters
 	}
 
-	query["size"] = 20
-	query["from"] = (args.Page - 1) * 20
+	query["size"] = args.Limit()
+	query["from"] = args.Offset()
 
 	return query
 }
