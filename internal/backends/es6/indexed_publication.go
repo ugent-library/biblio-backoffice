@@ -4,7 +4,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/models"
 )
 
-type IndexedPublication struct {
+type indexedPublication struct {
 	models.Publication
 	// not needed anymore in es7 with date nano type
 	DateCreated string `json:"date_created"`
@@ -14,8 +14,8 @@ type IndexedPublication struct {
 	HasMessage  bool   `json:"has_message"`
 }
 
-func NewIndexedPublication(publication *models.Publication) *IndexedPublication {
-	ipub := &IndexedPublication{
+func NewIndexedPublication(publication *models.Publication) *indexedPublication {
+	ipub := &indexedPublication{
 		Publication: *publication,
 		DateCreated: FormatTimeUTC(publication.DateCreated),
 		DateUpdated: FormatTimeUTC(publication.DateUpdated),

@@ -47,7 +47,7 @@ func main() {
 
 	publicationCmd := (&cmd.PublicationCmd{}).Command()
 	rootCmd.AddCommand(publicationCmd)
-	publicationCmd.AddCommand((&cmd.GetPublicationCmd{}).Command())
+	publicationCmd.AddCommand((&cmd.PurgePublicationCmd{}).Command())
 	publicationCmd.AddCommand((&cmd.GetAllPublicationsCmd{}).Command())
 	publicationCmd.AddCommand((&cmd.SearchPublicationsCmd{}).Command())
 	publicationCmd.AddCommand((&cmd.UpdatePublicationCmd{}).Command())
