@@ -5,6 +5,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/vocabularies"
 )
 
+//facets that also work as filters
 var fixedFacetValues = map[string][]string{
 	//"publication_statuses" includes "deleted"
 	"status":             vocabularies.Map["visible_publication_statuses"],
@@ -17,6 +18,50 @@ var fixedFacetValues = map[string][]string{
 	"classification":     vocabularies.Map["publication_classifications"],
 	"vabb_type":          vocabularies.Map["publication_vabb_types"],
 	"has_message":        {"true", "false"},
+}
+
+//filter without facet values
+var RegularPublicationFilters = []map[string]string{
+	{
+		"name":  "created_since",
+		"field": "date_created",
+		"type":  "date_since",
+	},
+	{
+		"name":  "updated_since",
+		"field": "date_updated",
+		"type":  "date_since",
+	},
+}
+
+var RegularDatasetFilters = []map[string]string{
+	{
+		"name":  "created_since",
+		"field": "date_created",
+		"type":  "date_since",
+	},
+	{
+		"name":  "updated_since",
+		"field": "date_updated",
+		"type":  "date_since",
+	},
+}
+
+func getRegularPublicationFilter(name string, values ...string) models.Filterable {
+	for _, cf := range RegularPublicationFilters {
+		if cf["name"] == name {
+			return ToTypeFilter(cf["type"], cf["name"], cf["field"], values...)
+		}
+	}
+	return nil
+}
+func getRegularDatasetFilter(name string, values ...string) models.Filterable {
+	for _, cf := range RegularPublicationFilters {
+		if cf["name"] == name {
+			return ToTypeFilter(cf["type"], cf["name"], cf["field"], values...)
+		}
+	}
+	return nil
 }
 
 func reorderFacets(t string, facets []models.Facet) []models.Facet {
