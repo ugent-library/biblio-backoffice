@@ -3,7 +3,6 @@ package cmd
 import (
 	"context"
 	"log"
-	"time"
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backend/api/v1"
@@ -29,12 +28,9 @@ func (c *PurgeDatasetCmd) Command() *cobra.Command {
 }
 
 func (c *PurgeDatasetCmd) Run(args []string) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
-
 	id := args[0]
 	req := &api.PurgeDatasetRequest{Id: id}
-	if _, err := c.Client.PurgeDataset(ctx, req); err != nil {
+	if _, err := c.Client.PurgeDataset(context.Background(), req); err != nil {
 		log.Fatal(err)
 	}
 }

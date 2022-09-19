@@ -34,6 +34,7 @@ func main() {
 	rootCmd.PersistentFlags().String("api-tls-ca-cert", "", "api client location of the CA certificate")
 
 	fileCmd := (&cmd.FileCmd{}).Command()
+	rootCmd.AddCommand(fileCmd)
 	fileCmd.AddCommand((&cmd.GetFileCMd{}).Command())
 	fileCmd.AddCommand((&cmd.AddFileCMd{}).Command())
 
@@ -47,11 +48,12 @@ func main() {
 
 	publicationCmd := (&cmd.PublicationCmd{}).Command()
 	rootCmd.AddCommand(publicationCmd)
-	publicationCmd.AddCommand((&cmd.PurgePublicationCmd{}).Command())
+	publicationCmd.AddCommand((&cmd.GetPublicationCmd{}).Command())
 	publicationCmd.AddCommand((&cmd.GetAllPublicationsCmd{}).Command())
 	publicationCmd.AddCommand((&cmd.SearchPublicationsCmd{}).Command())
 	publicationCmd.AddCommand((&cmd.UpdatePublicationCmd{}).Command())
 	publicationCmd.AddCommand((&cmd.AddPublicationsCmd{}).Command())
+	publicationCmd.AddCommand((&cmd.PurgePublicationCmd{}).Command())
 
 	if err := rootCmd.Execute(); err != nil {
 		log.Fatal(err)
@@ -60,8 +62,8 @@ func main() {
 
 // TODO we shouldn't do this for all flags, only ones that have a config equivalent
 var rootCmd = &cobra.Command{
-	Use:   "api [command]",
-	Short: "biblio api client",
+	Use:   "biblio-client [command]",
+	Short: "biblio client",
 	// flags override env vars
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		cmd.Flags().VisitAll(func(f *pflag.Flag) {
