@@ -29,11 +29,13 @@ type BiblioClient interface {
 	SearchPublications(ctx context.Context, in *SearchPublicationsRequest, opts ...grpc.CallOption) (*SearchPublicationsResponse, error)
 	UpdatePublication(ctx context.Context, in *UpdatePublicationRequest, opts ...grpc.CallOption) (*UpdatePublicationResponse, error)
 	AddPublications(ctx context.Context, opts ...grpc.CallOption) (Biblio_AddPublicationsClient, error)
+	PurgePublication(ctx context.Context, in *PurgePublicationRequest, opts ...grpc.CallOption) (*PurgePublicationResponse, error)
 	GetDataset(ctx context.Context, in *GetDatasetRequest, opts ...grpc.CallOption) (*GetDatasetResponse, error)
 	GetAllDatasets(ctx context.Context, in *GetAllDatasetsRequest, opts ...grpc.CallOption) (Biblio_GetAllDatasetsClient, error)
 	SearchDatasets(ctx context.Context, in *SearchDatasetsRequest, opts ...grpc.CallOption) (*SearchDatasetsResponse, error)
 	UpdateDataset(ctx context.Context, in *UpdateDatasetRequest, opts ...grpc.CallOption) (*UpdateDatasetResponse, error)
 	AddDatasets(ctx context.Context, opts ...grpc.CallOption) (Biblio_AddDatasetsClient, error)
+	PurgeDataset(ctx context.Context, in *PurgeDatasetRequest, opts ...grpc.CallOption) (*PurgeDatasetResponse, error)
 }
 
 type biblioClient struct {
@@ -200,6 +202,15 @@ func (x *biblioAddPublicationsClient) Recv() (*AddPublicationsResponse, error) {
 	return m, nil
 }
 
+func (c *biblioClient) PurgePublication(ctx context.Context, in *PurgePublicationRequest, opts ...grpc.CallOption) (*PurgePublicationResponse, error) {
+	out := new(PurgePublicationResponse)
+	err := c.cc.Invoke(ctx, "/biblio.v1.Biblio/PurgePublication", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *biblioClient) GetDataset(ctx context.Context, in *GetDatasetRequest, opts ...grpc.CallOption) (*GetDatasetResponse, error) {
 	out := new(GetDatasetResponse)
 	err := c.cc.Invoke(ctx, "/biblio.v1.Biblio/GetDataset", in, out, opts...)
@@ -290,6 +301,15 @@ func (x *biblioAddDatasetsClient) Recv() (*AddDatasetsResponse, error) {
 	return m, nil
 }
 
+func (c *biblioClient) PurgeDataset(ctx context.Context, in *PurgeDatasetRequest, opts ...grpc.CallOption) (*PurgeDatasetResponse, error) {
+	out := new(PurgeDatasetResponse)
+	err := c.cc.Invoke(ctx, "/biblio.v1.Biblio/PurgeDataset", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // BiblioServer is the server API for Biblio service.
 // All implementations must embed UnimplementedBiblioServer
 // for forward compatibility
@@ -301,11 +321,13 @@ type BiblioServer interface {
 	SearchPublications(context.Context, *SearchPublicationsRequest) (*SearchPublicationsResponse, error)
 	UpdatePublication(context.Context, *UpdatePublicationRequest) (*UpdatePublicationResponse, error)
 	AddPublications(Biblio_AddPublicationsServer) error
+	PurgePublication(context.Context, *PurgePublicationRequest) (*PurgePublicationResponse, error)
 	GetDataset(context.Context, *GetDatasetRequest) (*GetDatasetResponse, error)
 	GetAllDatasets(*GetAllDatasetsRequest, Biblio_GetAllDatasetsServer) error
 	SearchDatasets(context.Context, *SearchDatasetsRequest) (*SearchDatasetsResponse, error)
 	UpdateDataset(context.Context, *UpdateDatasetRequest) (*UpdateDatasetResponse, error)
 	AddDatasets(Biblio_AddDatasetsServer) error
+	PurgeDataset(context.Context, *PurgeDatasetRequest) (*PurgeDatasetResponse, error)
 	mustEmbedUnimplementedBiblioServer()
 }
 
@@ -334,6 +356,9 @@ func (UnimplementedBiblioServer) UpdatePublication(context.Context, *UpdatePubli
 func (UnimplementedBiblioServer) AddPublications(Biblio_AddPublicationsServer) error {
 	return status.Errorf(codes.Unimplemented, "method AddPublications not implemented")
 }
+func (UnimplementedBiblioServer) PurgePublication(context.Context, *PurgePublicationRequest) (*PurgePublicationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PurgePublication not implemented")
+}
 func (UnimplementedBiblioServer) GetDataset(context.Context, *GetDatasetRequest) (*GetDatasetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetDataset not implemented")
 }
@@ -348,6 +373,9 @@ func (UnimplementedBiblioServer) UpdateDataset(context.Context, *UpdateDatasetRe
 }
 func (UnimplementedBiblioServer) AddDatasets(Biblio_AddDatasetsServer) error {
 	return status.Errorf(codes.Unimplemented, "method AddDatasets not implemented")
+}
+func (UnimplementedBiblioServer) PurgeDataset(context.Context, *PurgeDatasetRequest) (*PurgeDatasetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PurgeDataset not implemented")
 }
 func (UnimplementedBiblioServer) mustEmbedUnimplementedBiblioServer() {}
 
@@ -510,6 +538,24 @@ func (x *biblioAddPublicationsServer) Recv() (*AddPublicationsRequest, error) {
 	return m, nil
 }
 
+func _Biblio_PurgePublication_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PurgePublicationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BiblioServer).PurgePublication(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/biblio.v1.Biblio/PurgePublication",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BiblioServer).PurgePublication(ctx, req.(*PurgePublicationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Biblio_GetDataset_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetDatasetRequest)
 	if err := dec(in); err != nil {
@@ -611,6 +657,24 @@ func (x *biblioAddDatasetsServer) Recv() (*AddDatasetsRequest, error) {
 	return m, nil
 }
 
+func _Biblio_PurgeDataset_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PurgeDatasetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BiblioServer).PurgeDataset(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/biblio.v1.Biblio/PurgeDataset",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BiblioServer).PurgeDataset(ctx, req.(*PurgeDatasetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Biblio_ServiceDesc is the grpc.ServiceDesc for Biblio service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -631,6 +695,10 @@ var Biblio_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Biblio_UpdatePublication_Handler,
 		},
 		{
+			MethodName: "PurgePublication",
+			Handler:    _Biblio_PurgePublication_Handler,
+		},
+		{
 			MethodName: "GetDataset",
 			Handler:    _Biblio_GetDataset_Handler,
 		},
@@ -641,6 +709,10 @@ var Biblio_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateDataset",
 			Handler:    _Biblio_UpdateDataset_Handler,
+		},
+		{
+			MethodName: "PurgeDataset",
+			Handler:    _Biblio_PurgeDataset_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

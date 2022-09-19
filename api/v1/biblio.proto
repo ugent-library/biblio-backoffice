@@ -21,11 +21,13 @@ service Biblio {
     rpc SearchPublications(SearchPublicationsRequest) returns (SearchPublicationsResponse);
     rpc UpdatePublication(UpdatePublicationRequest) returns (UpdatePublicationResponse);
     rpc AddPublications(stream AddPublicationsRequest) returns (stream AddPublicationsResponse);
+    rpc PurgePublication(PurgePublicationRequest) returns (PurgePublicationResponse);
     rpc GetDataset(GetDatasetRequest) returns (GetDatasetResponse);
     rpc GetAllDatasets(GetAllDatasetsRequest) returns (stream GetAllDatasetsResponse);
     rpc SearchDatasets(SearchDatasetsRequest) returns (SearchDatasetsResponse);
     rpc UpdateDataset(UpdateDatasetRequest) returns (UpdateDatasetResponse);
     rpc AddDatasets(stream AddDatasetsRequest) returns (stream AddDatasetsResponse);
+    rpc PurgeDataset(PurgeDatasetRequest) returns (PurgeDatasetResponse);
 }
 
 enum Confirmation {
@@ -396,6 +398,13 @@ message AddPublicationsResponse {
     string messsage = 1;
 }
 
+message PurgePublicationRequest {
+    string id = 1;
+}
+
+message PurgePublicationResponse {
+}
+
 message GetDatasetRequest {
     string id = 1;
 }
@@ -437,4 +446,11 @@ message AddDatasetsRequest {
 
 message AddDatasetsResponse {
     string messsage = 1;
+}
+
+message PurgeDatasetRequest {
+    string id = 1;
+}
+
+message PurgeDatasetResponse {
 }

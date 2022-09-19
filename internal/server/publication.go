@@ -175,6 +175,14 @@ func (s *server) AddPublications(stream api.Biblio_AddPublicationsServer) error 
 	}
 }
 
+func (s *server) PurgePublication(ctx context.Context, req *api.PurgePublicationRequest) (*api.PurgePublicationResponse, error) {
+	if err := s.services.Repository.PurgePublication(req.Id); err != nil {
+		return nil, status.Errorf(codes.Internal, "could not purge publication with id %d: %w", req.Id, err)
+	}
+
+	return &api.PurgePublicationResponse{}, nil
+}
+
 func publicationToMessage(p *models.Publication) *api.Publication {
 	msg := &api.Publication{}
 
