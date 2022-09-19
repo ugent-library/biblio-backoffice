@@ -2,13 +2,32 @@ package flash
 
 import (
 	"html/template"
-	"time"
 )
 
 type Flash struct {
 	Type         string
-	Header       template.HTML
+	Application  string
+	Level        string
+	Title        string
 	Body         template.HTML
 	Dismissable  bool
-	DismissAfter time.Duration
+	DismissAfter uint
+}
+
+func SimpleFlash() Flash {
+	return Flash{
+		Type:         "simple",
+		Application:  "Biblio",
+		Level:        "info",
+		DismissAfter: 1000,
+	}
+}
+
+func ComplexFlash() Flash {
+	return Flash{
+		Type:         "complex",
+		Application:  "Biblio",
+		Level:        "info",
+		DismissAfter: 1000,
+	}
 }

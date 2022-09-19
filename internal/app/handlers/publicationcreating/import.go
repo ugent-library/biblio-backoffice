@@ -406,6 +406,17 @@ func (h *Handler) AddMultipleDescription(w http.ResponseWriter, r *http.Request,
 	})
 }
 
+func (h *Handler) AddMultipleSave(w http.ResponseWriter, r *http.Request, ctx Context) {
+	h.AddSessionFlash(r, w, flash.Flash{
+		Type:         "success",
+		Body:         "Publications succesfully saved as draft",
+		DismissAfter: 5000,
+	})
+
+	redirectURL := h.PathFor("publications")
+	w.Header().Set("HX-Redirect", redirectURL.String())
+}
+
 // TODO after changing tabs, the wrong url is pushed in the history
 func (h *Handler) AddMultipleShow(w http.ResponseWriter, r *http.Request, ctx Context) {
 	batchID := bind.PathValues(r).Get("batch_id")

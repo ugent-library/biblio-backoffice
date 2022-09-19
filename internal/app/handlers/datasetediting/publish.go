@@ -3,7 +3,6 @@ package datasetediting
 import (
 	"errors"
 	"net/http"
-	"time"
 
 	"github.com/ugent-library/biblio-backend/internal/app/localize"
 	"github.com/ugent-library/biblio-backend/internal/render"
@@ -63,7 +62,7 @@ func (h *Handler) Publish(w http.ResponseWriter, r *http.Request, ctx Context) {
 	h.AddSessionFlash(r, w, flash.Flash{
 		Type:         "success",
 		Body:         "Dataset was succesfully published",
-		DismissAfter: 5 * time.Second,
+		DismissAfter: 5000,
 	})
 
 	w.Header().Set("HX-Redirect", r.URL.Query().Get("redirect-url"))

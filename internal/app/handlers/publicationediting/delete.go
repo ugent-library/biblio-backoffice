@@ -51,7 +51,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request, ctx Context) {
 	h.AddSessionFlash(r, w, flash.Flash{
 		Type:         "success",
 		Body:         "Publication was succesfully deleted",
-		DismissAfter: 5 * time.Second,
+		DismissAfter: 5000,
 	})
 
 	// TODO temporary fix until we can figure out a way let ES notify this handler that it did its thing.

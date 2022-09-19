@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/ugent-library/biblio-backend/internal/app/handlers"
 	"github.com/ugent-library/biblio-backend/internal/backends"
@@ -95,7 +94,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request, ctx Context) {
 		}
 	} else {
 		f = flash.Flash{Type: "success", Body: "Successfully added the publication to your ORCID works.",
-			DismissAfter: 5 * time.Second}
+			DismissAfter: 5000}
 	}
 
 	render.View(w, "publication/refresh_orcid_status", YieldAdd{

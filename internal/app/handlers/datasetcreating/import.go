@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
-	"time"
 
 	"github.com/ugent-library/biblio-backend/internal/app/displays"
 	"github.com/ugent-library/biblio-backend/internal/app/localize"
@@ -105,9 +104,10 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 	d, err := h.fetchDatasetByIdentifier(b.Source, b.Identifier)
 	if err != nil {
 		flash := flash.Flash{
-			Type:         "error",
+			Type:         "simple",
+			Level:        "error",
 			Body:         template.HTML(ctx.Locale.TS("dataset.single_import", "import_by_id.import_failed")),
-			DismissAfter: 5 * time.Second,
+			DismissAfter: 5000,
 		}
 
 		ctx.Flash = append(ctx.Flash, flash)
