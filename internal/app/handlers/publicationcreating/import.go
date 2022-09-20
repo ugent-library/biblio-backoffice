@@ -413,7 +413,7 @@ func (h *Handler) AddMultipleDescription(w http.ResponseWriter, r *http.Request,
 func (h *Handler) AddMultipleSave(w http.ResponseWriter, r *http.Request, ctx Context) {
 	flash := flash.SimpleFlash().
 		WithLevel("success").
-		WithBody(template.HTML("<p>Publications subccessfully saved as draft.</p>"))
+		WithBody(template.HTML("<p>Publications successfully saved as draft.</p>"))
 
 	h.AddSessionFlash(r, w, *flash)
 
