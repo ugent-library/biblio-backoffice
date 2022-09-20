@@ -2,11 +2,11 @@ package orcid
 
 import (
 	"fmt"
+	"html/template"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/ugent-library/biblio-backend/internal/app/handlers"
 	"github.com/ugent-library/biblio-backend/internal/backends"
@@ -82,26 +82,31 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request, ctx Context) {
 		return
 	}
 
-	var f flash.Flash
+	flash := flash.SimpleFlash()
 
 	p, err = h.addPublicationToORCID(ctx.User.ORCID, ctx.User.ORCIDToken, p)
 	if err != nil {
 		if err == orcid.ErrDuplicate {
 			h.Logger.Warnw("add orcid: this publicaton is already part of the users orcid works", "publication", b.PublicationID, "user", ctx.User.ID)
-			f = flash.Flash{Type: "info", Body: "This publication is already part of your ORCID works."}
+			flash.
+				WithLevel("info").
+				WithBody(template.HTML("<p>This publication is already part of your ORCID works.</p>"))
 		} else {
 			h.Logger.Warnw("add orcid: could not add this publication to the users orcid works", "user", "publication", b.PublicationID, "user", ctx.User.ID)
-			f = flash.Flash{Type: "error", Body: "Couldn't add this publication to your ORCID works."}
+			flash.
+				WithLevel("error").
+				WithBody(template.HTML("<p>Couldn't add this publication to your ORCID works.</p>"))
 		}
 	} else {
-		f = flash.Flash{Type: "success", Body: "Successfully added the publication to your ORCID works.",
-			DismissAfter: 5 * time.Second}
+		flash.
+			WithLevel("success").
+			WithBody(template.HTML("<p>Successfully added the publication to your ORCID works.</p>"))
 	}
 
 	render.View(w, "publication/refresh_orcid_status", YieldAdd{
 		Context:     ctx,
 		Publication: p,
-		Flash:       f,
+		Flash:       *flash,
 	})
 }
 

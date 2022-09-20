@@ -1,5 +1,7 @@
 .toast {
   position: relative;
+  flex-basis: 0;
+  width: 400px;
 
   .close {
     position: absolute;

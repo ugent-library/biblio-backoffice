@@ -14,9 +14,14 @@
             </div>
             <div class="bc-toolbar-right">
                 <div class="bc-toolbar-item">
-                    <a class="btn btn-outline-primary" href="{{pathFor "publications"}}">
+                    <button class="btn btn-outline-primary"
+                        hx-post="{{pathFor "publication_add_multiple_save_draft" "batch_id" .BatchID}}"
+                    >
                         <div class="btn-text">Save all as draft</div>
-                    </a>
+                    </button>
+                    {{/* <a class="btn btn-outline-primary" href="{{pathFor "publications"}}">
+                        <div class="btn-text">Save all as draft</div>
+                    </a> */}}
                 </div>
                 <div class="bc-toolbar-item">
                     <button class="btn btn-success btn-add-multiple-publish"
