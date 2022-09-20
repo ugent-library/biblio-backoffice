@@ -108,13 +108,6 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 			WithTitle("Failed to save draft").
 			WithBody(template.HTML(ctx.Locale.TS("dataset.single_import", "import_by_id.import_failed")))
 
-		// flash := flash.Flash{
-		// 	Type:         "simple",
-		// 	Level:        "error",
-		// 	Body:         template.HTML(ctx.Locale.TS("dataset.single_import", "import_by_id.import_failed")),
-		// 	DismissAfter: 5000,
-		// }
-
 		ctx.Flash = append(ctx.Flash, *flash)
 
 		render.Layout(w, "layouts/default", "dataset/pages/add", YieldAdd{
