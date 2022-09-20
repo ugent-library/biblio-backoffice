@@ -141,17 +141,6 @@
     <div id="modals"></div>
 
     <div id="flash-messages">
-        <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="false">
-            <div class="toast-body">
-                <i class="if if--primary if-info-circle-filled"></i>
-                <div class="toast-content">
-                    <p>This is a simple toast.</p>
-                </div>
-                <button class="close" type="button" data-dismiss="toast" aria-label="Close">
-                    <i class="if if-close"></i>
-                </button>
-            </div>
-        </div>
         {{range .Flash}}
         {{partial "flash" .}}
         {{end}}

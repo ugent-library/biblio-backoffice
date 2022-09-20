@@ -29,16 +29,18 @@
     <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="false"{{if .DismissAfter}} remove-me="{{.DismissAfter}}ms"{{end}}>
         <div class="toast-body">
             {{if eq .Level "success"}}
-            <i class="if if--primary if-check-circle-filled"></i>
+            <i class="if if--success if-check-circle-fill"></i>
             {{else if eq .Level "info"}}
             <i class="if if--primary if-info-circle-filled"></i>
             {{else if eq .Level "warning"}}
-            <i class="if if--primary if-alert-circle-filled"></i>
+            <i class="if if--warning if-alert-fill"></i>
             {{else if eq .Level "error"}}
-            <i class="if if--primary if-alert-circle-filled"></i>
+            <i class="if if--error if-error-circle-fill"></i>
             {{end}}
-            <i class="if if--primary if-alert-circle-filled"></i>
             <div class="toast-content">
+                {{if ne .Title "" }}
+                <h3 class="alert-title">{{.Title}}</h3>
+                {{end}}
                 {{.Body}}
             </div>
             {{if .Dismissable}}
@@ -64,16 +66,16 @@
         </div>
         <div class="toast-body">
             {{if eq .Level "success"}}
-            <i class="if if--primary if-check-circle-filled"></i>
+            <i class="if if--success if-check-circle-fill"></i>
             {{else if eq .Level "info"}}
             <i class="if if--primary if-info-circle-filled"></i>
             {{else if eq .Level "warning"}}
-            <i class="if if--primary if-alert-circle-filled"></i>
+            <i class="if if--warning if-alert-fill"></i>
             {{else if eq .Level "error"}}
-            <i class="if if--primary if-alert-circle-filled"></i>
+            <i class="if if--error if-error-circle-fill"></i>
             {{end}}
             <div class="toast-content">
-                {{if .Title ne "" }}
+                {{if ne .Title "" }}
                 <h3 class="alert-title">{{.Title}}</h3>
                 {{end}}
                 {{.Body}}

@@ -2,6 +2,7 @@ package datasetediting
 
 import (
 	"errors"
+	"html/template"
 	"net/http"
 	"time"
 
@@ -48,11 +49,11 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request, ctx Context) {
 		return
 	}
 
-	h.AddSessionFlash(r, w, flash.Flash{
-		Type:         "success",
-		Body:         "Dataset was succesfully deleted",
-		DismissAfter: 5000,
-	})
+	flash := flash.SimpleFlash().
+		WithLevel("success").
+		WithBody(template.HTML("<p>Dataset was successfully deleted.</p>"))
+
+	h.AddSessionFlash(r, w, *flash)
 
 	// TODO temporary fix until we can figure out a way let ES notify this handler that it did its thing.
 	// see: https://github.com/ugent-library/biblio-backend/issues/590

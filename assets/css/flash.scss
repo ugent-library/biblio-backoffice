@@ -1,9 +1,9 @@
 #flash-messages {
     position: absolute;
-    bottom: 0; 
-    right: 0;
+    top: 2rem;
+    right: 2rem;
     display: flex;
-    flex-direction: column-reverse; 
+    flex-direction: column-reverse;
     background-color: transparent;
 
     .bc-toast {

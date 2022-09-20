@@ -11944,6 +11944,8 @@ ul {
 
 .toast {
   position: relative;
+  flex-basis: 0;
+  width: 400px;
 }
 .toast .close {
   position: absolute;
@@ -14441,8 +14443,8 @@ h4 {
 
 #flash-messages {
   position: absolute;
-  bottom: 0;
-  right: 0;
+  top: 2rem;
+  right: 2rem;
   display: flex;
   flex-direction: column-reverse;
   background-color: transparent;

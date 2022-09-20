@@ -103,14 +103,19 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 
 	d, err := h.fetchDatasetByIdentifier(b.Source, b.Identifier)
 	if err != nil {
-		flash := flash.Flash{
-			Type:         "simple",
-			Level:        "error",
-			Body:         template.HTML(ctx.Locale.TS("dataset.single_import", "import_by_id.import_failed")),
-			DismissAfter: 5000,
-		}
+		flash := flash.SimpleFlash().
+			WithLevel("error").
+			WithTitle("Failed to save draft").
+			WithBody(template.HTML(ctx.Locale.TS("dataset.single_import", "import_by_id.import_failed")))
 
-		ctx.Flash = append(ctx.Flash, flash)
+		// flash := flash.Flash{
+		// 	Type:         "simple",
+		// 	Level:        "error",
+		// 	Body:         template.HTML(ctx.Locale.TS("dataset.single_import", "import_by_id.import_failed")),
+		// 	DismissAfter: 5000,
+		// }
+
+		ctx.Flash = append(ctx.Flash, *flash)
 
 		render.Layout(w, "layouts/default", "dataset/pages/add", YieldAdd{
 			Context:    ctx,
