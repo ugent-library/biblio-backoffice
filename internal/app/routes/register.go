@@ -497,7 +497,6 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		publicationCreatingHandler.Wrap(publicationCreatingHandler.AddMultipleSave)).
 		Methods("POST").
 		Name("publication_add_multiple_save_draft")
-
 	r.HandleFunc("/publication/add-multiple/{batch_id}/publish",
 		publicationCreatingHandler.Wrap(publicationCreatingHandler.AddMultiplePublish)).
 		Methods("POST").
