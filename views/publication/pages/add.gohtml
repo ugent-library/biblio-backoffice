@@ -29,59 +29,63 @@
             <div class="card mb-6">
                 <div class="card-header">
                     <div class="bc-toolbar">
-                        <div class="bc-toolbar-left">How do you like to add publication(s)?</div>
+                        <div class="bc-toolbar-left">
+                            <h5>How do you like to add publication(s)?</h5>
+                        </div>
                     </div>
                 </div>
                 <div class="card-body radio-card-group">
-                    <div class="row">
-                        <div class="col">
-                            <label class="c-radio-card">
-                                <div class="c-radio-card__radio" aria-selected="false">
-                                    <div class="custom-control custom-radio">
-                                        <input class="custom-control-input" id="add-method-wos" type="radio" name="method" value="wos">
-                                        <label class="custom-control-label" for="add-method-wos"></label>
-                                    </div>
-                                </div>
-                                <div class="c-radio-card__content">Import from Web of Science</div>
-                            </label>
+                    <label class="c-radio-card">
+                        <div class="c-radio-card__radio" aria-selected="false">
+                            <div class="custom-control custom-radio">
+                                <input class="custom-control-input" id="add-method-wos" type="radio" name="method" value="wos">
+                                <label class="custom-control-label" for="add-method-wos"></label>
+                            </div>
                         </div>
-                        <div class="col">
-                            <label class="c-radio-card" aria-selected="false">
-                                <div class="c-radio-card__radio">
-                                    <div class="custom-control custom-radio">
-                                        <input class="custom-control-input" id="add-method-identifier" type="radio" name="method" value="identifier">
-                                        <label class="custom-control-label" for="add-method-identifier"></label>
-                                    </div>
-                                </div>
-                                <div class="c-radio-card__content">Import your publication via an identifier</div>
-                            </label>
+                        <div class="c-radio-card__content">
+                            <h6>
+                                Import from Web of Science
+                                <span class="badge badge-pill badge-success ml-3">Recommended</span>
+                            </h6>
+                            <p class="text-muted">Import one or more publications. This option will give you the most complete results.</p>
                         </div>
-                    </div>
-
-                    <div class="row mt-5">
-                        <div class="col">
-                            <label class="c-radio-card">
-                                <div class="c-radio-card__radio" aria-selected="false">
-                                    <div class="custom-control custom-radio">
-                                        <input class="custom-control-input" id="add-method-manual" type="radio" name="method" value="manual">
-                                        <label class="custom-control-label" for="add-method-manual"></label>
-                                    </div>
-                                </div>
-                                <div class="c-radio-card__content">Enter a publication manually</div>
-                            </label>
+                    </label>
+                    <label class="c-radio-card" aria-selected="false">
+                        <div class="c-radio-card__radio">
+                            <div class="custom-control custom-radio">
+                                <input class="custom-control-input" id="add-method-identifier" type="radio" name="method" value="identifier">
+                                <label class="custom-control-label" for="add-method-identifier"></label>
+                            </div>
                         </div>
-                        <div class="col">
-                            <label class="c-radio-card" aria-selected="false">
-                                <div class="c-radio-card__radio">
-                                    <div class="custom-control custom-radio">
-                                        <input class="custom-control-input" id="add-method-bibtex" type="radio" name="method" value="bibtex">
-                                        <label class="custom-control-label" for="add-method-bibtex"></label>
-                                    </div>
-                                </div>
-                                <div class="c-radio-card__content">Import via BibTeX file</div>
-                            </label>
+                        <div class="c-radio-card__content">
+                            <h6>Import your publication via an identifier</h6>
+                            <p class="text-muted">You can use DOI, PubMed ID or arXiv ID. A good second option.</p>
                         </div>
-                    </div>
+                    </label>
+                    <label class="c-radio-card">
+                        <div class="c-radio-card__radio" aria-selected="false">
+                            <div class="custom-control custom-radio">
+                                <input class="custom-control-input" id="add-method-manual" type="radio" name="method" value="manual">
+                                <label class="custom-control-label" for="add-method-manual"></label>
+                            </div>
+                        </div>
+                        <div class="c-radio-card__content">
+                            <h6>Enter a publication manually</h6>
+                            <p class="text-muted">Create a publication record from scratch using a template. Recommended for publications such as dissertations.</p>
+                        </div>
+                    </label>
+                    <label class="c-radio-card" aria-selected="false">
+                        <div class="c-radio-card__radio">
+                            <div class="custom-control custom-radio">
+                                <input class="custom-control-input" id="add-method-bibtex" type="radio" name="method" value="bibtex">
+                                <label class="custom-control-label" for="add-method-bibtex"></label>
+                            </div>
+                        </div>
+                        <div class="c-radio-card__content">
+                            <h6>Import via BibTeX file</h6>
+                            <p class="text-muted">Can import multiple publications via library files. Use this option if there is no Web of Science import or identifier import is available.</p>
+                        </div>
+                    </label>
                 </div>
             </div>
 
