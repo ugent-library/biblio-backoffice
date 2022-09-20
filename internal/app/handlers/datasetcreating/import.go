@@ -176,6 +176,17 @@ func (h *Handler) AddDescription(w http.ResponseWriter, r *http.Request, ctx Con
 	})
 }
 
+func (h *Handler) AddSaveDraft(w http.ResponseWriter, r *http.Request, ctx Context) {
+	flash := flash.SimpleFlash().
+		WithLevel("success").
+		WithBody(template.HTML("<p>Dataset successfully saved as a draft.</p>"))
+
+	h.AddSessionFlash(r, w, *flash)
+
+	redirectURL := h.PathFor("datasets")
+	w.Header().Set("HX-Redirect", redirectURL.String())
+}
+
 func (h *Handler) AddConfirm(w http.ResponseWriter, r *http.Request, ctx Context) {
 	render.Layout(w, "layouts/default", "dataset/pages/add_confirm", YieldAdd{
 		Context:   ctx,

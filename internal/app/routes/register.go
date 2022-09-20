@@ -218,6 +218,10 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		datasetCreatingHandler.Wrap(datasetCreatingHandler.AddConfirm)).
 		Methods("GET").
 		Name("dataset_add_confirm")
+	r.HandleFunc("/dataset/{id}/save",
+		datasetCreatingHandler.Wrap(datasetCreatingHandler.AddSaveDraft)).
+		Methods("POST").
+		Name("dataset_add_save_draft")
 	r.HandleFunc("/dataset/{id}/add/publish",
 		datasetCreatingHandler.Wrap(datasetCreatingHandler.AddPublish)).
 		Methods("POST").
