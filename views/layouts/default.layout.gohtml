@@ -127,6 +127,16 @@
                                     <span class="c-sidebar__label">Biblio Datasets</span>
                                 </a>
                             </li>
+                            {{if .User.CanSeeDashboard}}
+                            <li class="c-sidebar__item{{if eq .ActiveNav "dashboard"}} c-sidebar__item--active{{end}}">
+                                <a href="{{pathFor "dashboard"}}">
+                                    <span class="c-sidebar__icon">
+                                        <i class="if if-grid"></i>
+                                    </span>
+                                    <span class="c-sidebar__label">Dashboard</span>
+                                </a>
+                            </li>
+                            {{end}}
                         </ul>
                     </nav>
                 </div>
