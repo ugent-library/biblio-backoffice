@@ -26,7 +26,7 @@ func NewDatasets(c Client) *Datasets {
 
 func (datasets *Datasets) Search(args *models.SearchArgs) (*models.DatasetHits, error) {
 	// BUILD QUERY AND FILTERS FROM USER INPUT
-	query := datasets.buildUserQuery(args)
+	query := buildDatasetUserQuery(args)
 
 	queryFilters := query["query"].(M)["bool"].(M)["filter"].([]M)
 	queryMust := query["query"].(M)["bool"].(M)["must"].(M)
@@ -151,7 +151,7 @@ func (datasets *Datasets) Search(args *models.SearchArgs) (*models.DatasetHits, 
 	return hits, nil
 }
 
-func (datasets *Datasets) buildUserQuery(args *models.SearchArgs) M {
+func buildDatasetUserQuery(args *models.SearchArgs) M {
 	var query M
 	var queryMust M
 	var queryFilters []M

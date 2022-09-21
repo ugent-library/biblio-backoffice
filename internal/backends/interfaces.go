@@ -26,11 +26,15 @@ type Services struct {
 	ProjectSearchService
 	LicenseSearchService
 	MediaTypeSearchService
-	PublicationSources  map[string]PublicationGetter
-	DatasetSources      map[string]DatasetGetter
-	PublicationEncoders map[string]PublicationEncoder
-	PublicationDecoders map[string]PublicationDecoderFactory
-	Tasks               *tasks.Hub
+	PublicationSources         map[string]PublicationGetter
+	DatasetSources             map[string]DatasetGetter
+	PublicationEncoders        map[string]PublicationEncoder
+	PublicationDecoders        map[string]PublicationDecoderFactory
+	Tasks                      *tasks.Hub
+	PublicationListExporters   map[string]PublicationListExporterFactory
+	PublicationSearcherService PublicationSearcherService
+	DatasetListExporters       map[string]DatasetListExporterFactory
+	DatasetSearcherService     DatasetSearcherService
 }
 
 type PublicationEncoder func(*models.Publication) ([]byte, error)
@@ -93,6 +97,20 @@ type PublicationSearchService interface {
 	DeleteIndex() error
 }
 
+type PublicationSearcherService interface {
+	GetMaxSize() int
+	SetMaxSize(int)
+	WithScope(string, ...string) PublicationSearcherService
+	Searcher(*models.SearchArgs, func(*models.Publication)) error
+}
+
+type DatasetSearcherService interface {
+	GetMaxSize() int
+	SetMaxSize(int)
+	WithScope(string, ...string) DatasetSearcherService
+	Searcher(*models.SearchArgs, func(*models.Dataset)) error
+}
+
 type OrganizationService interface {
 	GetOrganization(string) (*models.Organization, error)
 }
@@ -131,3 +149,21 @@ type MediaTypeSearchService interface {
 	IndexAll() error
 	SuggestMediaTypes(string) ([]models.Completion, error)
 }
+
+type PublicationListExporter interface {
+	GetContentType() string
+	Add(*models.Publication)
+	Write() error
+	Close() error
+}
+
+type PublicationListExporterFactory func(io.Writer) PublicationListExporter
+
+type DatasetListExporter interface {
+	GetContentType() string
+	Add(*models.Dataset)
+	Write() error
+	Close() error
+}
+
+type DatasetListExporterFactory func(io.Writer) DatasetListExporter
