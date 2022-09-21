@@ -2,7 +2,9 @@ package dashboard
 
 import (
 	"net/http"
+	"sync"
 
+	"github.com/alitto/pond"
 	"github.com/ugent-library/biblio-backend/internal/app/localize"
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/models"
@@ -21,7 +23,7 @@ type YieldPublications struct {
 }
 
 func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Context) {
-	faculties := vocabularies.Map["faculties"]
+	faculties := vocabularies.Map["dashboard_faculties"]
 	ptypes := vocabularies.Map["publication_types"]
 
 	faculties = append([]string{"all"}, faculties...)
@@ -74,6 +76,10 @@ func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Conte
 func generateDashboard(faculties []string, ptypes []string, searcher backends.PublicationSearchService, fn func(args *models.SearchArgs) *models.SearchArgs) (error, map[string]map[string]int) {
 	var publications = make(map[string]map[string]int)
 
+	pool := pond.New(100, 300)
+	defer pool.StopAndWait()
+	group := pool.Group()
+
 	for _, fac := range faculties {
 		publications[fac] = map[string]int{}
 
@@ -90,14 +96,26 @@ func generateDashboard(faculties []string, ptypes []string, searcher backends.Pu
 
 			searchArgs = fn(searchArgs)
 
-			hits, err := searcher.Search(searchArgs)
-			if err != nil {
-				return err, nil
-			}
+			f := fac
+			p := ptype
 
-			publications[fac][ptype] = hits.Total
+			var lock sync.Mutex
+			group.Submit(func(f string, pt string, p map[string]map[string]int) func() {
+				return func() {
+					lock.Lock()
+					hits, err := searcher.Search(searchArgs)
+					if err != nil {
+						p[f][pt] = -1 // If search errors: display -1 in the dashboard
+					} else {
+						p[f][pt] = hits.Total
+					}
+					lock.Unlock()
+				}
+			}(f, p, publications))
 		}
 	}
+
+	group.Wait()
 
 	return nil, publications
 }
