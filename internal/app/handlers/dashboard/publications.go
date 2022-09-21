@@ -42,7 +42,7 @@ func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Conte
 	})
 
 	if err != nil {
-		h.Logger.Errorw("publication search: could not execute search", "errors", err, "user", ctx.User.ID)
+		h.Logger.Errorw("Dashboard: could not execute search", "errors", err, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -57,7 +57,7 @@ func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Conte
 	})
 
 	if err != nil {
-		h.Logger.Errorw("publication search: could not execute search", "errors", err, "user", ctx.User.ID)
+		h.Logger.Errorw("Dashboard: could not execute search", "errors", err, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -105,7 +105,7 @@ func generateDashboard(faculties []string, ptypes []string, searcher backends.Pu
 					lock.Lock()
 					hits, err := searcher.Search(searchArgs)
 					if err != nil {
-						p[f][pt] = -1 // If search errors: display -1 in the dashboard
+						p[f][pt] = -1 // TODO If search errors: display -1 in the dashboard
 					} else {
 						p[f][pt] = hits.Total
 					}
