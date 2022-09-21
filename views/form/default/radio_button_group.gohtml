@@ -1,5 +1,5 @@
 <div class="form-group row{{if .Error}} is-invalid{{end}}">
-    <label class="col-3 col-form-label" for="{{.Name}}">
+    <label class="col-md-3 col-form-label" for="{{.Name}}">
         {{.Label}}{{if .Required}}&nbsp;<abbr class="required" title="Required">*</abbr>{{end}}
         {{with .Tooltip}}
         <a class="text-muted mx-2" href="#" data-container="body" data-toggle="popover" data-trigger="focus" data-placement="right" data-content="{{.}}">
@@ -8,7 +8,7 @@
         </a>
         {{end}}
     </label>
-    <div class="col-{{.Cols}}">
+    <div class="col-md-{{.Cols}}">
         <div class="btn-group btn-group-toggle" data-toggle="buttons">
             {{range .Options}}
             <label class="btn btn-secondary active">
