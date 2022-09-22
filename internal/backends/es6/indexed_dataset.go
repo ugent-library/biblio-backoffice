@@ -2,6 +2,7 @@ package es6
 
 import (
 	"github.com/ugent-library/biblio-backend/internal/models"
+	internal_time "github.com/ugent-library/biblio-backend/internal/time"
 )
 
 type indexedDataset struct {
@@ -17,15 +18,15 @@ type indexedDataset struct {
 func NewIndexedDataset(dataset *models.Dataset) *indexedDataset {
 	idataset := &indexedDataset{
 		Dataset:     *dataset,
-		DateCreated: FormatTimeUTC(dataset.DateCreated),
-		DateUpdated: FormatTimeUTC(dataset.DateUpdated),
+		DateCreated: internal_time.FormatTimeUTC(dataset.DateCreated),
+		DateUpdated: internal_time.FormatTimeUTC(dataset.DateUpdated),
 		HasMessage:  len(dataset.Message) > 0,
 	}
 	if dataset.DateFrom != nil {
-		idataset.DateFrom = FormatTimeUTC(dataset.DateFrom)
+		idataset.DateFrom = internal_time.FormatTimeUTC(dataset.DateFrom)
 	}
 	if dataset.DateUntil != nil {
-		idataset.DateUntil = FormatTimeUTC(dataset.DateUntil)
+		idataset.DateUntil = internal_time.FormatTimeUTC(dataset.DateUntil)
 	}
 	return idataset
 }

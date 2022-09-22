@@ -1,0 +1,37 @@
+<div class="dropdown">
+    <a class="badge badge-pill badge-default mr-3" data-toggle="dropdown" data-persist="true" aria-haspopup="true"
+        aria-expanded="false" role="button">
+        <span class="badge-text">Created since</span>
+        <div class="c-counter c-counter--small">{{len (.SearchArgs.FiltersFor "created_since")}}</div>
+        <i class="if if-caret-down"></i>
+    </a>
+    <form class="dropdown-menu" method="GET" action="{{.CurrentURL|queryClear}}">
+        <div class="bc-navbar bc-navbar--bordered-bottom">
+            <div class="bc-toolbar bc-toolbar--auto">
+                <div class="bc-toolbar-left">
+                    <h4 class="text-nowrap">Created since</h4>
+                </div>
+            </div>
+        </div>
+        <div class="p-6">
+            <label class="col-form-label">Show records created since</label>
+            <input class="form-control" type="text" name="f[created_since]" value="{{.SearchArgs.FilterFor "created_since"}}">
+            <small class="form-text text-muted">Type a date (DD/MM/YYYY), year (YYYY) or timing (today, yesterday).</small>
+        </div>
+        <div class="bc-navbar bc-navbar--large">
+            <button class="btn btn-primary btn-block" type="submit">Apply filter</button>
+        </div>
+
+        <input type="hidden" name="q" value="{{.SearchArgs.Query}}">
+        {{range .SearchArgs.Sort}}
+          <input type="hidden" name="sort" value="{{.}}">
+        {{end}}
+        {{range $f, $vals := .SearchArgs.Filters}}
+          {{if ne $f "created_since"}}
+              {{range $vals}}
+                  <input type="hidden" name="f[{{$f}}]" value="{{.}}">
+              {{end}}
+          {{end}}
+        {{end}}
+    </form>
+</div>

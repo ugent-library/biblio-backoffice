@@ -26,7 +26,7 @@ func NewPublications(c Client) *Publications {
 
 func (publications *Publications) Search(args *models.SearchArgs) (*models.PublicationHits, error) {
 	// BUILD QUERY AND FILTERS FROM USER INPUT
-	query := publications.buildUserQuery(args)
+	query := buildPublicationUserQuery(args)
 
 	queryFilters := query["query"].(M)["bool"].(M)["filter"].([]M)
 	queryMust := query["query"].(M)["bool"].(M)["must"].(M)
@@ -68,12 +68,16 @@ func (publications *Publications) Search(args *models.SearchArgs) (*models.Publi
 			filters = append(filters, publications.scopes...)
 			// filters = append(filters, internalFilters...)
 
-			// add external filters only if not matching
+			// TODO: cleanup messy difference between regular filters and
+			// facet based filters (based on the existence of "terms")
 			for _, filter := range queryFilters {
 				terms := filter["terms"]
+				//regular filter
 				if terms == nil {
+					filters = append(filters, filter)
 					continue
 				}
+				//facet based filter: add filter only if not matching
 				if _, found := terms.(M)[field]; found {
 					continue
 				} else {
@@ -153,7 +157,7 @@ func (publications *Publications) Search(args *models.SearchArgs) (*models.Publi
 	return hits, nil
 }
 
-func (publications *Publications) buildUserQuery(args *models.SearchArgs) M {
+func buildPublicationUserQuery(args *models.SearchArgs) M {
 	var query M
 	var queryMust M
 	var queryFilters []M
@@ -241,6 +245,20 @@ func (publications *Publications) buildUserQuery(args *models.SearchArgs) M {
 	// query.bool.filter: search without score
 	if args.Filters != nil {
 		for field, terms := range args.Filters {
+
+			if qf := getRegularPublicationFilter(field, terms...); qf != nil {
+				if len(terms) == 0 {
+					continue
+				}
+				/*
+					TODO: invalid syntax is now solved by creating
+					queries that cannot return any results.
+					Error should be returned
+				*/
+				queryFilters = append(queryFilters, qf.ToQuery())
+				continue
+			}
+
 			queryFilters = append(queryFilters, ParseScope(field, terms...))
 		}
 		query["query"].(M)["bool"].(M)["filter"] = queryFilters
@@ -428,6 +446,28 @@ func (publications *Publications) IndexMultiple(inCh <-chan *models.Publication)
 	if err := bi.Close(context.Background()); err != nil {
 		log.Panicf("Unexpected error: %s", err)
 	}
+}
+
+func (publications *Publications) Delete(id string) error {
+	ctx := context.Background()
+	res, err := esapi.DeleteRequest{
+		Index:      publications.Client.Index,
+		DocumentID: id,
+	}.Do(ctx, publications.Client.es)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+
+	if res.IsError() {
+		buf := &bytes.Buffer{}
+		if _, err := io.Copy(buf, res.Body); err != nil {
+			return err
+		}
+		return errors.New("Es6 error response: " + buf.String())
+	}
+
+	return nil
 }
 
 func (publications *Publications) WithScope(field string, terms ...string) backends.PublicationSearchService {

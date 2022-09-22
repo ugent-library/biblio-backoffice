@@ -14,6 +14,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/dashboard"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/datasetcreating"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/datasetediting"
+	"github.com/ugent-library/biblio-backend/internal/app/handlers/datasetexporting"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/datasetsearching"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/datasetviewing"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/home"
@@ -22,6 +23,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/orcid"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/publicationcreating"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/publicationediting"
+	"github.com/ugent-library/biblio-backend/internal/app/handlers/publicationexporting"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/publicationsearching"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/publicationviewing"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/tasks"
@@ -73,6 +75,11 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		BaseHandler:          baseHandler,
 		DatasetSearchService: services.DatasetSearchService,
 	}
+	datasetExportingHandler := &datasetexporting.Handler{
+		BaseHandler:            baseHandler,
+		DatasetListExporters:   services.DatasetListExporters,
+		DatasetSearcherService: services.DatasetSearcherService,
+	}
 	datasetViewingHandler := &datasetviewing.Handler{
 		BaseHandler: baseHandler,
 		Repository:  services.Repository,
@@ -98,6 +105,11 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		BaseHandler:              baseHandler,
 		PublicationSearchService: services.PublicationSearchService,
 		FileStore:                services.FileStore,
+	}
+	publicationExportingHandler := &publicationexporting.Handler{
+		BaseHandler:                baseHandler,
+		PublicationListExporters:   services.PublicationListExporters,
+		PublicationSearcherService: services.PublicationSearcherService,
 	}
 	publicationViewingHandler := &publicationviewing.Handler{
 		BaseHandler: baseHandler,
@@ -241,6 +253,12 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		datasetCreatingHandler.Wrap(datasetCreatingHandler.AddFinish)).
 		Methods("GET").
 		Name("dataset_add_finish")
+
+	// export datasets
+	r.HandleFunc("/curation/dataset.{format}",
+		datasetExportingHandler.Wrap(datasetExportingHandler.ExportByCurationSearch)).
+		Methods("GET").
+		Name("export_curation_datasets")
 
 	// view dataset
 	r.HandleFunc("/dataset/{id}",
@@ -527,6 +545,12 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		Methods("GET").
 		Name("publications")
 
+	// export publications
+	r.HandleFunc("/curation/publication.{format}",
+		publicationExportingHandler.Wrap(publicationExportingHandler.ExportByCurationSearch)).
+		Methods("GET").
+		Name("export_curation_publications")
+
 	// view publication
 	r.HandleFunc("/publication/{id}",
 		publicationViewingHandler.Wrap(publicationViewingHandler.Show)).
@@ -626,6 +650,16 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		publicationEditingHandler.Wrap(publicationEditingHandler.UpdateDetails)).
 		Methods("PUT").
 		Name("publication_update_details")
+
+	// edit publication type
+	r.HandleFunc("/publication/{id}/type/confirm",
+		publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmUpdateType)).
+		Methods("GET").
+		Name("publication_confirm_update_type")
+	r.HandleFunc("/publication/{id}/type",
+		publicationEditingHandler.Wrap(publicationEditingHandler.UpdateType)).
+		Methods("PUT").
+		Name("publication_update_type")
 
 	// edit publication conference
 	r.HandleFunc("/publication/{id}/conference/edit",

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/ugent-library/biblio-backend/internal/bind"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
 	"github.com/ugent-library/biblio-backend/internal/vocabularies"
@@ -15,10 +16,11 @@ var (
 
 type YieldSearch struct {
 	Context
-	PageTitle string
-	ActiveNav string
-	Scopes    []string
-	Hits      *models.DatasetHits
+	PageTitle   string
+	ActiveNav   string
+	Scopes      []string
+	Hits        *models.DatasetHits
+	ActionItems []*models.ActionItem
 }
 
 type YieldHit struct {
@@ -62,11 +64,12 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request, ctx Context) {
 	}
 
 	render.Layout(w, "layouts/default", "dataset/pages/search", YieldSearch{
-		Context:   ctx,
-		PageTitle: "Overview - Datasets - Biblio",
-		ActiveNav: "datasets",
-		Scopes:    userScopes,
-		Hits:      hits,
+		Context:     ctx,
+		PageTitle:   "Overview - Datasets - Biblio",
+		ActiveNav:   "datasets",
+		Scopes:      userScopes,
+		Hits:        hits,
+		ActionItems: h.getDatasetActions(ctx),
 	})
 }
 
@@ -87,9 +90,27 @@ func (h *Handler) CurationSearch(w http.ResponseWriter, r *http.Request, ctx Con
 	}
 
 	render.Layout(w, "layouts/default", "dataset/pages/search", YieldSearch{
-		Context:   ctx,
-		PageTitle: "Overview - Datasets - Biblio",
-		ActiveNav: "datasets",
-		Hits:      hits,
+		Context:     ctx,
+		PageTitle:   "Overview - Datasets - Biblio",
+		ActiveNav:   "datasets",
+		Hits:        hits,
+		ActionItems: h.getCurationDatasetActions(ctx),
 	})
+}
+
+func (h *Handler) getDatasetActions(ctx Context) []*models.ActionItem {
+	return []*models.ActionItem{}
+}
+
+func (h *Handler) getCurationDatasetActions(ctx Context) []*models.ActionItem {
+	actionItems := make([]*models.ActionItem, 0)
+	u := h.PathFor("export_curation_datasets", "format", "xlsx")
+	q, _ := bind.EncodeQuery(ctx.SearchArgs)
+	u.RawQuery = q.Encode()
+	actionItems = append(actionItems, &models.ActionItem{
+		Label:    ctx.Locale.T("export_to.xlsx"),
+		URL:      u,
+		Template: "actions/export",
+	})
+	return actionItems
 }

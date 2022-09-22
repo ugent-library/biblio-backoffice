@@ -179,6 +179,9 @@ func (s *server) PurgePublication(ctx context.Context, req *api.PurgePublication
 	if err := s.services.Repository.PurgePublication(req.Id); err != nil {
 		return nil, status.Errorf(codes.Internal, "could not purge publication with id %d: %w", req.Id, err)
 	}
+	if err := s.services.PublicationSearchService.Delete(req.Id); err != nil {
+		return nil, status.Errorf(codes.Internal, "could not purge publication from index with id %d: %w", req.Id, err)
+	}
 
 	return &api.PurgePublicationResponse{}, nil
 }
@@ -470,8 +473,6 @@ func publicationToMessage(p *models.Publication) *api.Publication {
 			FullName:  val.FullName,
 		})
 	}
-
-	msg.Url = p.URL
 
 	msg.Volume = p.Volume
 
@@ -943,8 +944,6 @@ func messageToPublication(msg *api.Publication) *models.Publication {
 			FullName:  val.FullName,
 		})
 	}
-
-	p.URL = msg.Url
 
 	p.Volume = msg.Volume
 
