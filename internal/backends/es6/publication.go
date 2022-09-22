@@ -448,6 +448,28 @@ func (publications *Publications) IndexMultiple(inCh <-chan *models.Publication)
 	}
 }
 
+func (publications *Publications) Delete(id string) error {
+	ctx := context.Background()
+	res, err := esapi.DeleteRequest{
+		Index:      publications.Client.Index,
+		DocumentID: id,
+	}.Do(ctx, publications.Client.es)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+
+	if res.IsError() {
+		buf := &bytes.Buffer{}
+		if _, err := io.Copy(buf, res.Body); err != nil {
+			return err
+		}
+		return errors.New("Es6 error response: " + buf.String())
+	}
+
+	return nil
+}
+
 func (publications *Publications) WithScope(field string, terms ...string) backends.PublicationSearchService {
 	p := publications.Clone()
 	p.scopes = append(p.scopes, ParseScope(field, terms...))
