@@ -471,8 +471,6 @@ func publicationToMessage(p *models.Publication) *api.Publication {
 		})
 	}
 
-	msg.Url = p.URL
-
 	msg.Volume = p.Volume
 
 	msg.WosId = p.WOSID
@@ -943,8 +941,6 @@ func messageToPublication(msg *api.Publication) *models.Publication {
 			FullName:  val.FullName,
 		})
 	}
-
-	p.URL = msg.Url
 
 	p.Volume = msg.Volume
 

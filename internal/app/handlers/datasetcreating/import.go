@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
-	"time"
 
 	"github.com/ugent-library/biblio-backend/internal/app/displays"
 	"github.com/ugent-library/biblio-backend/internal/app/localize"
@@ -104,13 +103,12 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 
 	d, err := h.fetchDatasetByIdentifier(b.Source, b.Identifier)
 	if err != nil {
-		flash := flash.Flash{
-			Type:         "error",
-			Body:         template.HTML(ctx.Locale.TS("dataset.single_import", "import_by_id.import_failed")),
-			DismissAfter: 5 * time.Second,
-		}
+		flash := flash.SimpleFlash().
+			WithLevel("error").
+			WithTitle("Failed to save draft").
+			WithBody(template.HTML(ctx.Locale.TS("dataset.single_import", "import_by_id.import_failed")))
 
-		ctx.Flash = append(ctx.Flash, flash)
+		ctx.Flash = append(ctx.Flash, *flash)
 
 		render.Layout(w, "layouts/default", "dataset/pages/add", YieldAdd{
 			Context:    ctx,
@@ -176,6 +174,17 @@ func (h *Handler) AddDescription(w http.ResponseWriter, r *http.Request, ctx Con
 		Dataset:        ctx.Dataset,
 		DisplayDetails: displays.DatasetDetails(ctx.Locale, ctx.Dataset),
 	})
+}
+
+func (h *Handler) AddSaveDraft(w http.ResponseWriter, r *http.Request, ctx Context) {
+	flash := flash.SimpleFlash().
+		WithLevel("success").
+		WithBody(template.HTML("<p>Dataset successfully saved as a draft.</p>"))
+
+	h.AddSessionFlash(r, w, *flash)
+
+	redirectURL := h.PathFor("datasets")
+	w.Header().Set("HX-Redirect", redirectURL.String())
 }
 
 func (h *Handler) AddConfirm(w http.ResponseWriter, r *http.Request, ctx Context) {

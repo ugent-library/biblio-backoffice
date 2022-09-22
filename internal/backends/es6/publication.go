@@ -68,12 +68,16 @@ func (publications *Publications) Search(args *models.SearchArgs) (*models.Publi
 			filters = append(filters, publications.scopes...)
 			// filters = append(filters, internalFilters...)
 
-			// add external filters only if not matching
+			// TODO: cleanup messy difference between regular filters and
+			// facet based filters (based on the existence of "terms")
 			for _, filter := range queryFilters {
 				terms := filter["terms"]
+				//regular filter
 				if terms == nil {
+					filters = append(filters, filter)
 					continue
 				}
+				//facet based filter: add filter only if not matching
 				if _, found := terms.(M)[field]; found {
 					continue
 				} else {
@@ -241,6 +245,20 @@ func buildPublicationUserQuery(args *models.SearchArgs) M {
 	// query.bool.filter: search without score
 	if args.Filters != nil {
 		for field, terms := range args.Filters {
+
+			if qf := getRegularPublicationFilter(field, terms...); qf != nil {
+				if len(terms) == 0 {
+					continue
+				}
+				/*
+					TODO: invalid syntax is now solved by creating
+					queries that cannot return any results.
+					Error should be returned
+				*/
+				queryFilters = append(queryFilters, qf.ToQuery())
+				continue
+			}
+
 			queryFilters = append(queryFilters, ParseScope(field, terms...))
 		}
 		query["query"].(M)["bool"].(M)["filter"] = queryFilters

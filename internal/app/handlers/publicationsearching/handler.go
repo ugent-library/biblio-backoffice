@@ -35,6 +35,7 @@ func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) htt
 			render.BadRequest(w, r, err)
 			return
 		}
+		searchArgs.Cleanup()
 
 		fn(w, r, Context{
 			BaseContext: ctx,

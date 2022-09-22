@@ -14,9 +14,11 @@
             </div>
             <div class="bc-toolbar-right">
                 <div class="bc-toolbar-item">
-                    <a class="btn btn-outline-primary" href="{{pathFor "datasets"}}">
+                    <button class="btn btn-outline-primary"
+                        hx-post="{{pathFor "dataset_add_save_draft" "id" .Dataset.ID}}"
+                    >
                         <div class="btn-text">Save as draft</div>
-                    </a>
+                    </button>
                 </div>
                 <div class="bc-toolbar-item">
                     <button class="btn btn-success"

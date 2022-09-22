@@ -118,3 +118,28 @@ func (s *SearchArgs) Limit() int {
 func (s *SearchArgs) Offset() int {
 	return (s.Page - 1) * s.PageSize
 }
+
+func (s *SearchArgs) Cleanup() {
+
+	//remove filters with empty values
+	cleanupParams(s.Filters)
+}
+
+func cleanupParams(m map[string][]string) {
+	deleteKeys := make([]string, 0)
+	for key, values := range m {
+		nonEmptyValues := make([]string, 0, len(values))
+		for _, v := range values {
+			if v != "" {
+				nonEmptyValues = append(nonEmptyValues, v)
+			}
+		}
+		m[key] = nonEmptyValues
+		if len(nonEmptyValues) == 0 {
+			deleteKeys = append(deleteKeys, key)
+		}
+	}
+	for _, key := range deleteKeys {
+		delete(m, key)
+	}
+}
