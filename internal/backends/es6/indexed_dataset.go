@@ -4,7 +4,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/models"
 )
 
-type IndexedDataset struct {
+type indexedDataset struct {
 	models.Dataset
 	// not needed anymore in es7 with date nano type
 	DateCreated string `json:"date_created,omitempty"`
@@ -14,8 +14,8 @@ type IndexedDataset struct {
 	HasMessage  bool   `json:"has_message"`
 }
 
-func NewIndexedDataset(dataset *models.Dataset) *IndexedDataset {
-	idataset := &IndexedDataset{
+func NewIndexedDataset(dataset *models.Dataset) *indexedDataset {
+	idataset := &indexedDataset{
 		Dataset:     *dataset,
 		DateCreated: FormatTimeUTC(dataset.DateCreated),
 		DateUpdated: FormatTimeUTC(dataset.DateUpdated),

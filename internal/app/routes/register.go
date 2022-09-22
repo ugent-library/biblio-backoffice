@@ -218,6 +218,10 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		datasetCreatingHandler.Wrap(datasetCreatingHandler.AddConfirm)).
 		Methods("GET").
 		Name("dataset_add_confirm")
+	r.HandleFunc("/dataset/{id}/save",
+		datasetCreatingHandler.Wrap(datasetCreatingHandler.AddSaveDraft)).
+		Methods("POST").
+		Name("dataset_add_save_draft")
 	r.HandleFunc("/dataset/{id}/add/publish",
 		datasetCreatingHandler.Wrap(datasetCreatingHandler.AddPublish)).
 		Methods("POST").
@@ -489,6 +493,10 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		publicationCreatingHandler.Wrap(publicationCreatingHandler.AddMultipleShow)).
 		Methods("GET").
 		Name("publication_add_multiple_show")
+	r.HandleFunc("/publication/add-multiple/{batch_id}/save",
+		publicationCreatingHandler.Wrap(publicationCreatingHandler.AddMultipleSave)).
+		Methods("POST").
+		Name("publication_add_multiple_save_draft")
 	r.HandleFunc("/publication/add-multiple/{batch_id}/publish",
 		publicationCreatingHandler.Wrap(publicationCreatingHandler.AddMultiplePublish)).
 		Methods("POST").
@@ -607,6 +615,16 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		publicationEditingHandler.Wrap(publicationEditingHandler.UpdateDetails)).
 		Methods("PUT").
 		Name("publication_update_details")
+
+	// edit publication type
+	r.HandleFunc("/publication/{id}/type/confirm",
+		publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmUpdateType)).
+		Methods("GET").
+		Name("publication_confirm_update_type")
+	r.HandleFunc("/publication/{id}/type",
+		publicationEditingHandler.Wrap(publicationEditingHandler.UpdateType)).
+		Methods("PUT").
+		Name("publication_update_type")
 
 	// edit publication conference
 	r.HandleFunc("/publication/{id}/conference/edit",

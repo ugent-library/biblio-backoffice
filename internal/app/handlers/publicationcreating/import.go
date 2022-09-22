@@ -162,10 +162,12 @@ func (h *Handler) AddSingleImport(w http.ResponseWriter, r *http.Request, ctx Co
 		p, err = h.fetchPublicationByIdentifier(b.Source, b.Identifier)
 		if err != nil {
 			h.Logger.Warnw("import single publication: could not fetch publication", "errors", err, "publication", b.Identifier, "user", ctx.User.ID)
-			ctx.Flash = append(ctx.Flash, flash.Flash{
-				Type: "error",
-				Body: template.HTML(ctx.Locale.T("publication.single_import.import_by_id.import_failed")),
-			})
+
+			flash := flash.SimpleFlash().
+				WithLevel("error").
+				WithBody(template.HTML(ctx.Locale.T("publication.single_import.import_by_id.import_failed")))
+
+			ctx.Flash = append(ctx.Flash, *flash)
 
 			render.Layout(w, "layouts/default", "publication/pages/add_identifier", YieldAddSingle{
 				Context:    ctx,
@@ -336,10 +338,12 @@ func (h *Handler) AddMultipleImport(w http.ResponseWriter, r *http.Request, ctx 
 	batchID, err := h.importPublications(ctx.User, source, file)
 	if err != nil {
 		h.Logger.Warnw("add multiple import publication: could not import publications", "errors", err, "batch", batchID, "user", ctx.User.ID)
-		ctx.Flash = append(ctx.Flash, flash.Flash{
-			Type: "error",
-			Body: "Sorry, something went wrong. Could not import the publications.",
-		})
+
+		flash := flash.SimpleFlash().
+			WithLevel("error").
+			WithBody(template.HTML("<p>Sorry, something went wrong. Could not import the publications.</p>"))
+
+		ctx.Flash = append(ctx.Flash, *flash)
 
 		tmpl := ""
 		switch source {
@@ -404,6 +408,17 @@ func (h *Handler) AddMultipleDescription(w http.ResponseWriter, r *http.Request,
 		SearchArgs:  searchArgs,
 		Hits:        hits,
 	})
+}
+
+func (h *Handler) AddMultipleSave(w http.ResponseWriter, r *http.Request, ctx Context) {
+	flash := flash.SimpleFlash().
+		WithLevel("success").
+		WithBody(template.HTML("<p>Publications successfully saved as draft.</p>"))
+
+	h.AddSessionFlash(r, w, *flash)
+
+	redirectURL := h.PathFor("publications")
+	w.Header().Set("HX-Redirect", redirectURL.String())
 }
 
 // TODO after changing tabs, the wrong url is pushed in the history

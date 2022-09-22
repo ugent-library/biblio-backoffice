@@ -697,6 +697,7 @@ func init() {
 	message.SetString(language.English, "builder.file.description", "Description")
 
 	//help texts
+	message.SetString(language.English, "builder.type.help", "Changing the publication type might result in data loss")
 	message.SetString(language.English, "builder.doi.help", "e.g. 10.1093/plcell/koc126")
 	message.SetString(language.English, "builder.year.help", "e.g. 2022")
 	message.SetString(language.English, "builder.other_license.help", "e.g. https://creativecommons.org/licenses/publicdomain/")

@@ -159,6 +159,14 @@ func (s *server) AddDatasets(stream api.Biblio_AddDatasetsServer) error {
 	}
 }
 
+func (s *server) PurgeDataset(ctx context.Context, req *api.PurgeDatasetRequest) (*api.PurgeDatasetResponse, error) {
+	if err := s.services.Repository.PurgeDataset(req.Id); err != nil {
+		return nil, status.Errorf(codes.Internal, "could not purge dataset with id %d: %w", req.Id, err)
+	}
+
+	return &api.PurgeDatasetResponse{}, nil
+}
+
 func datasetToMessage(d *models.Dataset) *api.Dataset {
 	msg := &api.Dataset{}
 
