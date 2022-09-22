@@ -6,6 +6,8 @@ import (
 
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
+
+	"github.com/ugent-library/biblio-backend/internal/urls"
 	"github.com/ugent-library/biblio-backend/internal/vocabularies"
 )
 
@@ -15,10 +17,11 @@ var (
 
 type YieldSearch struct {
 	Context
-	PageTitle string
-	ActiveNav string
-	Scopes    []string
-	Hits      *models.PublicationHits
+	PageTitle   string
+	ActiveNav   string
+	Scopes      []string
+	Hits        *models.PublicationHits
+	ActionItems []*models.ActionItem
 }
 
 type YieldHit struct {
@@ -62,11 +65,12 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request, ctx Context) {
 	}
 
 	render.Layout(w, "layouts/default", "publication/pages/search", YieldSearch{
-		Context:   ctx,
-		PageTitle: "Overview - Publications - Biblio",
-		ActiveNav: "publications",
-		Scopes:    userScopes,
-		Hits:      hits,
+		Context:     ctx,
+		PageTitle:   "Overview - Publications - Biblio",
+		ActiveNav:   "publications",
+		Scopes:      userScopes,
+		Hits:        hits,
+		ActionItems: h.getSearchActions(ctx),
 	})
 }
 
@@ -87,9 +91,46 @@ func (h *Handler) CurationSearch(w http.ResponseWriter, r *http.Request, ctx Con
 	}
 
 	render.Layout(w, "layouts/default", "publication/pages/search", YieldSearch{
-		Context:   ctx,
-		PageTitle: "Overview - Publications - Biblio",
-		ActiveNav: "publications",
-		Hits:      hits,
+		Context:     ctx,
+		PageTitle:   "Overview - Publications - Biblio",
+		ActiveNav:   "publications",
+		Hits:        hits,
+		ActionItems: h.getCurationSearchActions(ctx),
 	})
+}
+
+func (h *Handler) getCurationSearchActions(ctx Context) []*models.ActionItem {
+	actionItems := make([]*models.ActionItem, 0)
+	if oa := h.getOrcidAction(ctx); oa != nil {
+		actionItems = append(actionItems, oa)
+	}
+	xlsxUrl, _ := urls.Query(
+		ctx.SearchArgs,
+		h.PathFor("export_curation_publications", "format", "xlsx"),
+	)
+	actionItems = append(actionItems, &models.ActionItem{
+		Label:    ctx.Locale.T("export_to.xlsx"),
+		URL:      xlsxUrl,
+		Template: "actions/export",
+	})
+	return actionItems
+}
+
+func (h *Handler) getSearchActions(ctx Context) []*models.ActionItem {
+	actionItems := make([]*models.ActionItem, 0)
+	if oa := h.getOrcidAction(ctx); oa != nil {
+		actionItems = append(actionItems, oa)
+	}
+	return actionItems
+}
+
+func (h *Handler) getOrcidAction(ctx Context) *models.ActionItem {
+	if ctx.User.ORCID == "" || ctx.User.ORCIDToken == "" {
+		return nil
+	}
+	return &models.ActionItem{
+		Label:    "Send my publications to ORCID",
+		URL:      h.PathFor("publication_orcid_add_all"),
+		Template: "actions/publication_orcid_add_all",
+	}
 }
