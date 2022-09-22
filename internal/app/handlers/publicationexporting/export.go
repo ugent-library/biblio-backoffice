@@ -59,7 +59,7 @@ func (h *Handler) ExportByCurationSearch(w http.ResponseWriter, r *http.Request,
 	w.Header().Set("Content-Type", exporter.GetContentType())
 	w.Header().Set("Content-Disposition", contentDisposition)
 
-	if err := exporter.Write(); err != nil {
+	if err := exporter.Flush(); err != nil {
 		h.Logger.Errorw("publication search: could not export search", "errors", err, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return

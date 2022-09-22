@@ -54,12 +54,11 @@ func (x *BaseExporter) Add(row []string) {
 	x.addRow(row)
 }
 
-func (x *BaseExporter) Write() error {
-	//TODO: use streamwriter (https://xuri.me/excelize/en/stream.html?h=stream)
-	return x.xlsxFile.Write(x.writer)
-}
-
-func (x *BaseExporter) Close() error {
+func (x *BaseExporter) Flush() error {
+	e := x.xlsxFile.Write(x.writer)
+	if e != nil {
+		return e
+	}
 	return x.xlsxFile.Close()
 }
 

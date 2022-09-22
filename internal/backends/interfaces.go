@@ -153,8 +153,7 @@ type MediaTypeSearchService interface {
 type PublicationListExporter interface {
 	GetContentType() string
 	Add(*models.Publication)
-	Write() error
-	Close() error
+	Flush() error
 }
 
 type PublicationListExporterFactory func(io.Writer) PublicationListExporter
@@ -162,8 +161,7 @@ type PublicationListExporterFactory func(io.Writer) PublicationListExporter
 type DatasetListExporter interface {
 	GetContentType() string
 	Add(*models.Dataset)
-	Write() error
-	Close() error
+	Flush() error
 }
 
 type DatasetListExporterFactory func(io.Writer) DatasetListExporter
