@@ -135,6 +135,7 @@ type Select struct {
 	Disabled    bool
 	EmptyOption bool
 	Error       string
+	Help        string
 	Label       string
 	Name        string
 	Options     []SelectOption

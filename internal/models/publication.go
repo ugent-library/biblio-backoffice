@@ -148,7 +148,6 @@ type Publication struct {
 	Supervisor              []*Contributor          `json:"supervisor,omitempty"`
 	Title                   string                  `json:"title,omitempty"`
 	Type                    string                  `json:"type,omitempty"`
-	URL                     string                  `json:"url,omitempty"`
 	User                    *PublicationUser        `json:"user,omitempty"`
 	Volume                  string                  `json:"volume,omitempty"`
 	VABBType                string                  `json:"vabb_type,omitempty"`
@@ -446,9 +445,30 @@ func (p *Publication) RemoveFile(id string) {
 	p.File = newFile
 }
 
-func (p *Publication) UsesLaySummary() bool {
+func (p *Publication) UsesAbstract() bool {
+	return true
+}
+
+func (p *Publication) UsesAdditionalInfo() bool {
+	return true
+}
+
+func (p *Publication) UsesAlternativeTitle() bool {
+	return true
+}
+
+func (p *Publication) UsesArticleNumber() bool {
 	switch p.Type {
-	case "dissertation":
+	case "conference", "journal_article", "miscellaneous":
+		return true
+	default:
+		return false
+	}
+}
+
+func (p *Publication) UsesArxivID() bool {
+	switch p.Type {
+	case "journal_article":
 		return true
 	default:
 		return false
@@ -458,6 +478,205 @@ func (p *Publication) UsesLaySummary() bool {
 func (p *Publication) UsesConference() bool {
 	switch p.Type {
 	case "book_chapter", "book_editor", "conference", "issue_editor", "journal_article":
+		return true
+	default:
+		return false
+	}
+}
+
+func (p *Publication) UsesDefense() bool {
+	switch p.Type {
+	case "dissertation":
+		return true
+	default:
+		return false
+	}
+}
+
+func (p *Publication) UsesDOI() bool {
+	return true
+}
+
+func (p *Publication) UsesEdition() bool {
+	switch p.Type {
+	case "book_chapter", "book", "book_editor", "issue_editor", "miscellaneous":
+		return true
+	default:
+		return false
+	}
+}
+
+func (p *Publication) UsesISBN() bool {
+	return true
+}
+
+func (p *Publication) UsesISSN() bool {
+	return true
+}
+
+func (p *Publication) UsesESCIID() bool {
+	switch p.Type {
+	case "journal_article":
+		return true
+	default:
+		return false
+	}
+}
+
+func (p *Publication) UsesConfirmations() bool {
+	switch p.Type {
+	case "dissertation":
+		return true
+	default:
+		return false
+	}
+}
+
+func (p *Publication) UsesIssue() bool {
+	switch p.Type {
+	case "conference", "issue_editor", "journal_article", "miscellaneous":
+		return true
+	default:
+		return false
+	}
+}
+
+func (p *Publication) UsesKeyword() bool {
+	return true
+}
+
+func (p *Publication) UsesLanguage() bool {
+	return true
+}
+
+func (p *Publication) UsesLaySummary() bool {
+	switch p.Type {
+	case "dissertation":
+		return true
+	default:
+		return false
+	}
+}
+
+func (p *Publication) UsesLink() bool {
+	return false
+}
+
+func (p *Publication) UsesPageCount() bool {
+	return true
+}
+
+func (p *Publication) UsesPage() bool {
+	switch p.Type {
+	case "book_chapter", "conference", "journal_article", "miscellaneous":
+		return true
+	default:
+		return false
+	}
+}
+
+func (p *Publication) UsesProject() bool {
+	return true
+}
+
+func (p *Publication) UsesPublication() bool {
+	switch p.Type {
+	case "book_chapter", "conference", "issue_editor", "journal_article", "miscellaneous":
+		return true
+	default:
+		return false
+	}
+}
+
+func (p *Publication) UsesPublicationAbbreviation() bool {
+	switch p.Type {
+	case "conference", "issue_editor", "journal_article", "miscellaneous":
+		return true
+	default:
+		return false
+	}
+}
+
+func (p *Publication) UsesPublicationStatus() bool {
+	return true
+}
+
+func (p *Publication) UsesPublisher() bool {
+	return true
+}
+
+func (p *Publication) UsesPubMedID() bool {
+	switch p.Type {
+	case "journal_article":
+		return true
+	default:
+		return false
+	}
+}
+
+func (p *Publication) UsesReportNumber() bool {
+	switch p.Type {
+	case "miscellaneous":
+		return true
+	default:
+		return false
+	}
+}
+
+func (p *Publication) UsesResearchField() bool {
+	return true
+}
+
+func (p *Publication) UsesSeriesTitle() bool {
+	switch p.Type {
+	case "book_chapter", "book", "book_editor", "conference", "dissertation", "miscellaneous":
+		return true
+	default:
+		return false
+	}
+}
+
+func (p *Publication) UsesTitle() bool {
+	return true
+}
+
+func (p *Publication) UsesURL() bool {
+	return true
+}
+
+func (p *Publication) UsesVolume() bool {
+	return true
+}
+
+func (p *Publication) UsesWOS() bool {
+	return true
+}
+
+func (p *Publication) UsesYear() bool {
+	return true
+}
+
+func (p *Publication) UsesJournalArticleType() bool {
+	switch p.Type {
+	case "journal_article":
+		return true
+	default:
+		return false
+	}
+}
+
+func (p *Publication) UsesMiscellaneousType() bool {
+	switch p.Type {
+	case "miscellaneous":
+		return true
+	default:
+		return false
+	}
+}
+
+func (p *Publication) UsesConferenceType() bool {
+	switch p.Type {
+	case "conference":
 		return true
 	default:
 		return false
@@ -927,4 +1146,171 @@ func (pl *PublicationLink) Validate() (errs validation.Errors) {
 		})
 	}
 	return
+}
+
+func (p *Publication) ChangeType(newType string) error {
+	usedAuthor := p.UsesAuthor()
+	usedEditor := p.UsesEditor()
+
+	p.Type = newType
+
+	if !validation.InArray(p.ClassificationChoices(), p.Classification) {
+		p.Classification = "U"
+	}
+
+	if !p.UsesAbstract() {
+		p.Abstract = nil
+	}
+
+	if !p.UsesAdditionalInfo() {
+		p.AdditionalInfo = ""
+	}
+
+	if !p.UsesAlternativeTitle() {
+		p.AlternativeTitle = nil
+	}
+
+	if !p.UsesArticleNumber() {
+		p.ArticleNumber = ""
+	}
+
+	if !p.UsesArxivID() {
+		p.ArxivID = ""
+	}
+
+	if !p.UsesConference() {
+		p.ConferenceName = ""
+		p.ConferenceLocation = ""
+		p.ConferenceOrganizer = ""
+		p.ConferenceStartDate = ""
+		p.ConferenceEndDate = ""
+	}
+
+	if !p.UsesDefense() {
+		p.DefenseDate = ""
+		p.DefensePlace = ""
+	}
+
+	if !p.UsesDOI() {
+		p.DOI = ""
+	}
+
+	if !p.UsesEdition() {
+		p.Edition = ""
+	}
+
+	if !p.UsesISBN() {
+		p.ISBN = nil
+		p.EISBN = nil
+	}
+
+	if !p.UsesISSN() {
+		p.ISSN = nil
+		p.EISSN = nil
+	}
+
+	if !p.UsesESCIID() {
+		p.ESCIID = ""
+	}
+
+	if !p.UsesConfirmations() {
+		p.HasConfidentialData = ""
+		p.HasPatentApplication = ""
+		p.HasPublicationsPlanned = ""
+		p.HasPublishedMaterial = ""
+	}
+
+	if !p.UsesIssue() {
+		p.Issue = ""
+		p.IssueTitle = ""
+	}
+
+	if !p.UsesKeyword() {
+		p.Keyword = nil
+	}
+
+	if !p.UsesLanguage() {
+		p.Language = nil
+	}
+
+	if !p.UsesLaySummary() {
+		p.LaySummary = nil
+	}
+
+	if !p.UsesLink() {
+		p.Link = nil
+	}
+
+	if !p.UsesPageCount() {
+		p.PageCount = ""
+	}
+
+	if !p.UsesPage() {
+		p.PageFirst = ""
+		p.PageLast = ""
+	}
+
+	if !p.UsesProject() {
+		p.Project = nil
+	}
+
+	if !p.UsesPublication() {
+		p.Publication = ""
+	}
+
+	if !p.UsesPublicationAbbreviation() {
+		p.PublicationAbbreviation = ""
+	}
+
+	if !p.UsesPublicationStatus() {
+		p.PublicationStatus = ""
+	}
+
+	if !p.UsesPubMedID() {
+		p.PubMedID = ""
+	}
+
+	if !p.UsesReportNumber() {
+		p.ReportNumber = ""
+	}
+
+	if !p.UsesPublisher() {
+		p.Publisher = ""
+		p.PlaceOfPublication = ""
+	}
+
+	if !p.UsesResearchField() {
+		p.ResearchField = nil
+	}
+
+	if !p.UsesSeriesTitle() {
+		p.SeriesTitle = ""
+	}
+
+	if !p.UsesTitle() {
+		p.Title = ""
+	}
+
+	if !p.UsesAuthor() {
+		if usedAuthor && p.UsesEditor() && p.Editor == nil {
+			p.Editor = p.Author
+			for _, c := range p.Editor {
+				c.CreditRole = nil
+			}
+		}
+		p.Author = nil
+	}
+
+	if !p.UsesEditor() {
+		if usedEditor && p.UsesAuthor() && p.Author == nil {
+			p.Author = p.Editor
+		}
+		p.Editor = nil
+	}
+
+	if !p.UsesSupervisor() {
+		p.Supervisor = nil
+	}
+
+	return nil
 }
