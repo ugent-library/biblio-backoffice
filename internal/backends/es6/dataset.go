@@ -26,7 +26,7 @@ func NewDatasets(c Client) *Datasets {
 
 func (datasets *Datasets) Search(args *models.SearchArgs) (*models.DatasetHits, error) {
 	// BUILD QUERY AND FILTERS FROM USER INPUT
-	query := datasets.buildUserQuery(args)
+	query := buildDatasetUserQuery(args)
 
 	queryFilters := query["query"].(M)["bool"].(M)["filter"].([]M)
 	queryMust := query["query"].(M)["bool"].(M)["must"].(M)
@@ -155,7 +155,7 @@ func (datasets *Datasets) Search(args *models.SearchArgs) (*models.DatasetHits, 
 	return hits, nil
 }
 
-func (datasets *Datasets) buildUserQuery(args *models.SearchArgs) M {
+func buildDatasetUserQuery(args *models.SearchArgs) M {
 	var query M
 	var queryMust M
 	var queryFilters []M
@@ -444,6 +444,28 @@ func (datasets *Datasets) IndexMultiple(inCh <-chan *models.Dataset) {
 	if err := bi.Close(context.Background()); err != nil {
 		log.Panicf("Unexpected error: %s", err)
 	}
+}
+
+func (datasets *Datasets) Delete(id string) error {
+	ctx := context.Background()
+	res, err := esapi.DeleteRequest{
+		Index:      datasets.Client.Index,
+		DocumentID: id,
+	}.Do(ctx, datasets.Client.es)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+
+	if res.IsError() {
+		buf := &bytes.Buffer{}
+		if _, err := io.Copy(buf, res.Body); err != nil {
+			return err
+		}
+		return errors.New("Es6 error response: " + buf.String())
+	}
+
+	return nil
 }
 
 func (datasets *Datasets) WithScope(field string, terms ...string) backends.DatasetSearchService {

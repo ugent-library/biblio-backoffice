@@ -26,7 +26,7 @@ func NewPublications(c Client) *Publications {
 
 func (publications *Publications) Search(args *models.SearchArgs) (*models.PublicationHits, error) {
 	// BUILD QUERY AND FILTERS FROM USER INPUT
-	query := publications.buildUserQuery(args)
+	query := buildPublicationUserQuery(args)
 
 	queryFilters := query["query"].(M)["bool"].(M)["filter"].([]M)
 	queryMust := query["query"].(M)["bool"].(M)["must"].(M)
@@ -157,7 +157,7 @@ func (publications *Publications) Search(args *models.SearchArgs) (*models.Publi
 	return hits, nil
 }
 
-func (publications *Publications) buildUserQuery(args *models.SearchArgs) M {
+func buildPublicationUserQuery(args *models.SearchArgs) M {
 	var query M
 	var queryMust M
 	var queryFilters []M
@@ -446,6 +446,28 @@ func (publications *Publications) IndexMultiple(inCh <-chan *models.Publication)
 	if err := bi.Close(context.Background()); err != nil {
 		log.Panicf("Unexpected error: %s", err)
 	}
+}
+
+func (publications *Publications) Delete(id string) error {
+	ctx := context.Background()
+	res, err := esapi.DeleteRequest{
+		Index:      publications.Client.Index,
+		DocumentID: id,
+	}.Do(ctx, publications.Client.es)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+
+	if res.IsError() {
+		buf := &bytes.Buffer{}
+		if _, err := io.Copy(buf, res.Body); err != nil {
+			return err
+		}
+		return errors.New("Es6 error response: " + buf.String())
+	}
+
+	return nil
 }
 
 func (publications *Publications) WithScope(field string, terms ...string) backends.PublicationSearchService {

@@ -5,8 +5,10 @@ import (
 	"net/http"
 
 	"github.com/ugent-library/biblio-backend/internal/backends"
+	"github.com/ugent-library/biblio-backend/internal/bind"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
+
 	"github.com/ugent-library/biblio-backend/internal/vocabularies"
 )
 
@@ -22,6 +24,7 @@ type YieldSearch struct {
 	CurrentScope string
 	IsFirstUse   bool
 	Hits         *models.PublicationHits
+	ActionItems  []*models.ActionItem
 }
 
 type YieldHit struct {
@@ -92,6 +95,7 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request, ctx Context) {
 		Hits:         hits,
 		IsFirstUse:   isFirstUse,
 		CurrentScope: currentScope,
+		ActionItems:  h.getSearchActions(ctx),
 	})
 }
 
@@ -150,5 +154,41 @@ func (h *Handler) CurationSearch(w http.ResponseWriter, r *http.Request, ctx Con
 		Hits:         hits,
 		IsFirstUse:   isFirstUse,
 		CurrentScope: "all", //only here to translate first use
+		ActionItems:  h.getCurationSearchActions(ctx),
 	})
+}
+
+func (h *Handler) getCurationSearchActions(ctx Context) []*models.ActionItem {
+	actionItems := make([]*models.ActionItem, 0)
+	if oa := h.getOrcidAction(ctx); oa != nil {
+		actionItems = append(actionItems, oa)
+	}
+	u := h.PathFor("export_curation_publications", "format", "xlsx")
+	q, _ := bind.EncodeQuery(ctx.SearchArgs)
+	u.RawQuery = q.Encode()
+	actionItems = append(actionItems, &models.ActionItem{
+		Label:    ctx.Locale.T("export_to.xlsx"),
+		URL:      u,
+		Template: "actions/export",
+	})
+	return actionItems
+}
+
+func (h *Handler) getSearchActions(ctx Context) []*models.ActionItem {
+	actionItems := make([]*models.ActionItem, 0)
+	if oa := h.getOrcidAction(ctx); oa != nil {
+		actionItems = append(actionItems, oa)
+	}
+	return actionItems
+}
+
+func (h *Handler) getOrcidAction(ctx Context) *models.ActionItem {
+	if ctx.User.ORCID == "" || ctx.User.ORCIDToken == "" {
+		return nil
+	}
+	return &models.ActionItem{
+		Label:    "Send my publications to ORCID",
+		URL:      h.PathFor("publication_orcid_add_all"),
+		Template: "actions/publication_orcid_add_all",
+	}
 }

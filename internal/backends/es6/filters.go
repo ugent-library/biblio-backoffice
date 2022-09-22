@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/ugent-library/biblio-backend/internal/models"
+	internal_time "github.com/ugent-library/biblio-backend/internal/time"
 )
 
 //regular field filter: accepts syntax in the filter value
@@ -57,10 +58,10 @@ func parseTimeSince(v string) string {
 
 	if v == "today" {
 		t := time.Now().UTC().Truncate(time.Hour * 24)
-		return FormatTimeUTC(&t)
+		return internal_time.FormatTimeUTC(&t)
 	} else if v == "yesterday" {
 		t := time.Now().UTC().Add(time.Hour * (-24)).Truncate(time.Hour * 24)
-		return FormatTimeUTC(&t)
+		return internal_time.FormatTimeUTC(&t)
 	} else if isYear(v) {
 		return v + "-01-01T00:00:00Z"
 	} else if isDate(v) {
@@ -69,7 +70,7 @@ func parseTimeSince(v string) string {
 
 	//invalid time: search for time in the future in order to return 0 results
 	t := time.Now().UTC().AddDate(100, 0, 0).Truncate(time.Hour * 24)
-	return FormatTimeUTC(&t)
+	return internal_time.FormatTimeUTC(&t)
 }
 
 func ToTypeFilter(t string, name string, field string, values ...string) models.Filterable {

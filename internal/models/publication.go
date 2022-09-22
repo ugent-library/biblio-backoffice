@@ -28,7 +28,6 @@ type PublicationFile struct {
 	ContentType        string     `json:"content_type,omitempty"`
 	DateCreated        *time.Time `json:"date_created,omitempty"`
 	DateUpdated        *time.Time `json:"date_updated,omitempty"`
-	Description        string     `json:"description,omitempty"`
 	Embargo            string     `json:"embargo,omitempty"`
 	EmbargoTo          string     `json:"embargo_to,omitempty"`
 	Name               string     `json:"name,omitempty"`
@@ -38,7 +37,6 @@ type PublicationFile struct {
 	OtherLicense       string     `json:"other_license,omitempty"`
 	PublicationVersion string     `json:"publication_version,omitempty"`
 	Relation           string     `json:"relation,omitempty"`
-	Title              string     `json:"title,omitempty"`
 	URL                string     `json:"url,omitempty"`
 }
 

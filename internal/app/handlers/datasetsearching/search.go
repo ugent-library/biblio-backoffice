@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/ugent-library/biblio-backend/internal/backends"
+	"github.com/ugent-library/biblio-backend/internal/bind"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
 	"github.com/ugent-library/biblio-backend/internal/vocabularies"
@@ -22,6 +23,7 @@ type YieldSearch struct {
 	Hits         *models.DatasetHits
 	IsFirstUse   bool
 	CurrentScope string
+	ActionItems  []*models.ActionItem
 }
 
 type YieldHit struct {
@@ -92,6 +94,7 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request, ctx Context) {
 		Hits:         hits,
 		IsFirstUse:   isFirstUse,
 		CurrentScope: currentScope,
+		ActionItems:  h.getDatasetActions(ctx),
 	})
 }
 
@@ -150,5 +153,23 @@ func (h *Handler) CurationSearch(w http.ResponseWriter, r *http.Request, ctx Con
 		Hits:         hits,
 		IsFirstUse:   isFirstUse,
 		CurrentScope: "all", //only here to translate first use
+		ActionItems:  h.getCurationDatasetActions(ctx),
 	})
+}
+
+func (h *Handler) getDatasetActions(ctx Context) []*models.ActionItem {
+	return []*models.ActionItem{}
+}
+
+func (h *Handler) getCurationDatasetActions(ctx Context) []*models.ActionItem {
+	actionItems := make([]*models.ActionItem, 0)
+	u := h.PathFor("export_curation_datasets", "format", "xlsx")
+	q, _ := bind.EncodeQuery(ctx.SearchArgs)
+	u.RawQuery = q.Encode()
+	actionItems = append(actionItems, &models.ActionItem{
+		Label:    ctx.Locale.T("export_to.xlsx"),
+		URL:      u,
+		Template: "actions/export",
+	})
+	return actionItems
 }

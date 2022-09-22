@@ -234,14 +234,12 @@ func (h *Handler) CreateContributor(w http.ResponseWriter, r *http.Request, ctx 
 
 	c := &models.Contributor{}
 	if b.ID != "" {
-		p, err := h.PersonService.GetPerson(b.ID)
+		newC, err := h.generateContributorFromPersonId(b.ID)
 		if err != nil {
 			render.InternalServerError(w, r, err)
 			return
 		}
-		c.ID = p.ID
-		c.FirstName = p.FirstName
-		c.LastName = p.LastName
+		c = newC
 	} else {
 		c.FirstName = b.FirstName
 		c.LastName = b.LastName
@@ -317,15 +315,13 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 
 	c := &models.Contributor{}
 	if b.ID != "" {
-		p, err := h.PersonService.GetPerson(b.ID)
+		newC, err := h.generateContributorFromPersonId(b.ID)
 		if err != nil {
 			h.Logger.Errorw("update dataset contributor: could not fetch person", "errors", err, "person", b.ID, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
 			render.InternalServerError(w, r, err)
 			return
 		}
-		c.ID = p.ID
-		c.FirstName = p.FirstName
-		c.LastName = p.LastName
+		c = newC
 	} else {
 		c.FirstName = b.FirstName
 		c.LastName = b.LastName
@@ -495,4 +491,28 @@ func contributorForm(ctx Context, role string, position int, c *models.Contribut
 				Error:    localize.ValidationErrorAt(ctx.Locale, errors, fmt.Sprintf("/%s/%d/last_name", role, position)),
 			},
 		)
+}
+
+func (h *Handler) generateContributorFromPersonId(id string) (*models.Contributor, error) {
+	p, err := h.PersonService.GetPerson(id)
+	if err != nil {
+		return nil, err
+	}
+	c := &models.Contributor{}
+	c.ID = p.ID
+	c.FirstName = p.FirstName
+	c.LastName = p.LastName
+	c.FullName = p.FullName
+	c.UGentID = p.UGentID
+	c.ORCID = p.ORCID
+	for _, pd := range p.Department {
+		newDep := models.ContributorDepartment{ID: pd.ID}
+		org, orgErr := h.OrganizationService.GetOrganization(pd.ID)
+		if orgErr != nil {
+			return nil, orgErr
+		}
+		newDep.Name = org.Name
+		c.Department = append(c.Department, newDep)
+	}
+	return c, nil
 }

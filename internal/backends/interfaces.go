@@ -26,11 +26,15 @@ type Services struct {
 	ProjectSearchService
 	LicenseSearchService
 	MediaTypeSearchService
-	PublicationSources  map[string]PublicationGetter
-	DatasetSources      map[string]DatasetGetter
-	PublicationEncoders map[string]PublicationEncoder
-	PublicationDecoders map[string]PublicationDecoderFactory
-	Tasks               *tasks.Hub
+	PublicationSources         map[string]PublicationGetter
+	DatasetSources             map[string]DatasetGetter
+	PublicationEncoders        map[string]PublicationEncoder
+	PublicationDecoders        map[string]PublicationDecoderFactory
+	Tasks                      *tasks.Hub
+	PublicationListExporters   map[string]PublicationListExporterFactory
+	PublicationSearcherService PublicationSearcherService
+	DatasetListExporters       map[string]DatasetListExporterFactory
+	DatasetSearcherService     DatasetSearcherService
 }
 
 type PublicationEncoder func(*models.Publication) ([]byte, error)
@@ -79,6 +83,7 @@ type DatasetSearchService interface {
 	Search(*models.SearchArgs) (*models.DatasetHits, error)
 	Index(*models.Dataset) error
 	IndexMultiple(<-chan *models.Dataset)
+	Delete(id string) error
 	WithScope(string, ...string) DatasetSearchService
 	CreateIndex() error
 	DeleteIndex() error
@@ -88,9 +93,24 @@ type PublicationSearchService interface {
 	Search(*models.SearchArgs) (*models.PublicationHits, error)
 	Index(*models.Publication) error
 	IndexMultiple(<-chan *models.Publication)
+	Delete(id string) error
 	WithScope(string, ...string) PublicationSearchService
 	CreateIndex() error
 	DeleteIndex() error
+}
+
+type PublicationSearcherService interface {
+	GetMaxSize() int
+	SetMaxSize(int)
+	WithScope(string, ...string) PublicationSearcherService
+	Searcher(*models.SearchArgs, func(*models.Publication)) error
+}
+
+type DatasetSearcherService interface {
+	GetMaxSize() int
+	SetMaxSize(int)
+	WithScope(string, ...string) DatasetSearcherService
+	Searcher(*models.SearchArgs, func(*models.Dataset)) error
 }
 
 type OrganizationService interface {
@@ -131,3 +151,19 @@ type MediaTypeSearchService interface {
 	IndexAll() error
 	SuggestMediaTypes(string) ([]models.Completion, error)
 }
+
+type PublicationListExporter interface {
+	GetContentType() string
+	Add(*models.Publication)
+	Flush() error
+}
+
+type PublicationListExporterFactory func(io.Writer) PublicationListExporter
+
+type DatasetListExporter interface {
+	GetContentType() string
+	Add(*models.Dataset)
+	Flush() error
+}
+
+type DatasetListExporterFactory func(io.Writer) DatasetListExporter

@@ -2,6 +2,7 @@ package es6
 
 import (
 	"github.com/ugent-library/biblio-backend/internal/models"
+	internal_time "github.com/ugent-library/biblio-backend/internal/time"
 )
 
 type indexedPublication struct {
@@ -17,15 +18,15 @@ type indexedPublication struct {
 func NewIndexedPublication(publication *models.Publication) *indexedPublication {
 	ipub := &indexedPublication{
 		Publication: *publication,
-		DateCreated: FormatTimeUTC(publication.DateCreated),
-		DateUpdated: FormatTimeUTC(publication.DateUpdated),
+		DateCreated: internal_time.FormatTimeUTC(publication.DateCreated),
+		DateUpdated: internal_time.FormatTimeUTC(publication.DateUpdated),
 		HasMessage:  len(publication.Message) > 0,
 	}
 	if publication.DateFrom != nil {
-		ipub.DateFrom = FormatTimeUTC(publication.DateFrom)
+		ipub.DateFrom = internal_time.FormatTimeUTC(publication.DateFrom)
 	}
 	if publication.DateUntil != nil {
-		ipub.DateUntil = FormatTimeUTC(publication.DateUntil)
+		ipub.DateUntil = internal_time.FormatTimeUTC(publication.DateUntil)
 	}
 
 	return ipub

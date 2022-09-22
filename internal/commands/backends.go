@@ -16,6 +16,9 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/backends/crossref"
 	"github.com/ugent-library/biblio-backend/internal/backends/datacite"
 	"github.com/ugent-library/biblio-backend/internal/backends/es6"
+	excel_dataset "github.com/ugent-library/biblio-backend/internal/backends/excel/dataset"
+	excel_publication "github.com/ugent-library/biblio-backend/internal/backends/excel/publication"
+
 	"github.com/ugent-library/biblio-backend/internal/backends/filestore"
 	"github.com/ugent-library/biblio-backend/internal/backends/ianamedia"
 	"github.com/ugent-library/biblio-backend/internal/backends/jsonl"
@@ -96,6 +99,14 @@ func newServices() *backends.Services {
 			"bibtex": bibtex.NewDecoder,
 		},
 		Tasks: tasks.NewHub(),
+		PublicationListExporters: map[string]backends.PublicationListExporterFactory{
+			"xlsx": excel_publication.NewExporter,
+		},
+		PublicationSearcherService: newPublicationSearcherService(),
+		DatasetListExporters: map[string]backends.DatasetListExporterFactory{
+			"xlsx": excel_dataset.NewExporter,
+		},
+		DatasetSearcherService: newDatasetSearcherService(),
 	}
 }
 
@@ -164,4 +175,16 @@ func newDatasetSearchService() backends.DatasetSearchService {
 	es6Client := newEs6Client("dataset")
 	return es6.NewDatasets(*es6Client)
 
+}
+
+func newPublicationSearcherService() backends.PublicationSearcherService {
+	es6Client := newEs6Client("publication")
+	//max size of exportable records is now 10K. Make configurable
+	return es6.NewPublicationSearcher(*es6Client, 10000)
+}
+
+func newDatasetSearcherService() backends.DatasetSearcherService {
+	es6Client := newEs6Client("dataset")
+	//max size of exportable records is now 10K. Make configurable
+	return es6.NewDatasetSearcher(*es6Client, 10000)
 }

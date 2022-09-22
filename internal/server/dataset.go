@@ -163,6 +163,9 @@ func (s *server) PurgeDataset(ctx context.Context, req *api.PurgeDatasetRequest)
 	if err := s.services.Repository.PurgeDataset(req.Id); err != nil {
 		return nil, status.Errorf(codes.Internal, "could not purge dataset with id %d: %w", req.Id, err)
 	}
+	if err := s.services.DatasetSearchService.Delete(req.Id); err != nil {
+		return nil, status.Errorf(codes.Internal, "could not purge dataset from index with id %d: %w", req.Id, err)
+	}
 
 	return &api.PurgeDatasetResponse{}, nil
 }

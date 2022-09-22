@@ -734,4 +734,5 @@ func init() {
 	message.SetString(language.English, "dataset.search.empty.description.contributed", "Register your first dataset")
 	message.SetString(language.English, "dataset.search.empty.title.created", "No registered datasets yet")
 	message.SetString(language.English, "dataset.search.empty.description.created", "Register a first datasets")
+	message.SetString(language.English, "export_to.xlsx", "Export to Excel")
 }
