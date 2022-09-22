@@ -127,10 +127,28 @@ func (h *Handler) CurationSearch(w http.ResponseWriter, r *http.Request, ctx Con
 		return
 	}
 
+	/*
+		first use search
+		when more applicable, always execute this
+		now only when no results are found
+	*/
+	var isFirstUse bool = false
+	if hits.Total == 0 {
+		globalHits, globalHitsErr := globalSearch(searcher)
+		if globalHitsErr != nil {
+			h.Logger.Errorw("publication search: could not execute global search", "errors", globalHitsErr, "user", ctx.User.ID)
+			render.InternalServerError(w, r, globalHitsErr)
+			return
+		}
+		isFirstUse = globalHits.Total == 0
+	}
+
 	render.Layout(w, "layouts/default", "dataset/pages/search", YieldSearch{
-		Context:   ctx,
-		PageTitle: "Overview - Datasets - Biblio",
-		ActiveNav: "datasets",
-		Hits:      hits,
+		Context:      ctx,
+		PageTitle:    "Overview - Datasets - Biblio",
+		ActiveNav:    "datasets",
+		Hits:         hits,
+		IsFirstUse:   isFirstUse,
+		CurrentScope: "all", //only here to translate first use
 	})
 }
