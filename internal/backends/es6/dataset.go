@@ -446,6 +446,28 @@ func (datasets *Datasets) IndexMultiple(inCh <-chan *models.Dataset) {
 	}
 }
 
+func (datasets *Datasets) Delete(id string) error {
+	ctx := context.Background()
+	res, err := esapi.DeleteRequest{
+		Index:      datasets.Client.Index,
+		DocumentID: id,
+	}.Do(ctx, datasets.Client.es)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+
+	if res.IsError() {
+		buf := &bytes.Buffer{}
+		if _, err := io.Copy(buf, res.Body); err != nil {
+			return err
+		}
+		return errors.New("Es6 error response: " + buf.String())
+	}
+
+	return nil
+}
+
 func (datasets *Datasets) WithScope(field string, terms ...string) backends.DatasetSearchService {
 	d := datasets.Clone()
 	d.scopes = append(d.scopes, ParseScope(field, terms...))

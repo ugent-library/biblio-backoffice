@@ -179,6 +179,9 @@ func (s *server) PurgePublication(ctx context.Context, req *api.PurgePublication
 	if err := s.services.Repository.PurgePublication(req.Id); err != nil {
 		return nil, status.Errorf(codes.Internal, "could not purge publication with id %d: %w", req.Id, err)
 	}
+	if err := s.services.PublicationSearchService.Delete(req.Id); err != nil {
+		return nil, status.Errorf(codes.Internal, "could not purge publication from index with id %d: %w", req.Id, err)
+	}
 
 	return &api.PurgePublicationResponse{}, nil
 }
