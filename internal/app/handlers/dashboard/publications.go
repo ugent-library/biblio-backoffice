@@ -1,7 +1,9 @@
 package dashboard
 
 import (
+	"fmt"
 	"net/http"
+	"net/url"
 	"sync"
 
 	"github.com/alitto/pond"
@@ -16,8 +18,8 @@ type YieldPublications struct {
 	Context
 	PageTitle     string
 	ActiveNav     string
-	UPublications map[string]map[string]int
-	APublications map[string]map[string]int
+	UPublications map[string]map[string][]string
+	APublications map[string]map[string][]string
 	Faculties     []string
 	PTypes        map[string]string
 }
@@ -34,9 +36,10 @@ func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Conte
 
 	// Publications with classification U
 
-	var searcher = h.PublicationSearchService.WithScope("status", "public")
+	searcher := h.PublicationSearchService.WithScope("status", "public")
+	baseSearchUrl := h.PathFor("publications")
 
-	err, uPublications := generateDashboard(faculties, ptypes, searcher, func(args *models.SearchArgs) *models.SearchArgs {
+	uPublications, err := generateDashboard(faculties, ptypes, searcher, baseSearchUrl, func(args *models.SearchArgs) *models.SearchArgs {
 		args.WithFilter("classification", "U")
 		return args
 	})
@@ -51,7 +54,7 @@ func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Conte
 
 	searcher = h.PublicationSearchService
 
-	err, aPublications := generateDashboard(faculties, ptypes, searcher, func(args *models.SearchArgs) *models.SearchArgs {
+	aPublications, err := generateDashboard(faculties, ptypes, searcher, baseSearchUrl, func(args *models.SearchArgs) *models.SearchArgs {
 		args.WithFilter("publication_status", "accepted")
 		return args
 	})
@@ -73,18 +76,20 @@ func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Conte
 	})
 }
 
-func generateDashboard(faculties []string, ptypes []string, searcher backends.PublicationSearchService, fn func(args *models.SearchArgs) *models.SearchArgs) (error, map[string]map[string]int) {
-	var publications = make(map[string]map[string]int)
+func generateDashboard(faculties []string, ptypes []string, searcher backends.PublicationSearchService, baseSearchUrl *url.URL, fn func(args *models.SearchArgs) *models.SearchArgs) (map[string]map[string][]string, error) {
+	var publications = make(map[string]map[string][]string)
 
 	pool := pond.New(100, 300)
 	defer pool.StopAndWait()
 	group := pool.Group()
 
 	for _, fac := range faculties {
-		publications[fac] = map[string]int{}
+		publications[fac] = map[string][]string{}
 
 		for _, ptype := range ptypes {
+			searchUrl := *baseSearchUrl
 			searchArgs := models.NewSearchArgs()
+			queryVals := searchUrl.Query()
 
 			if fac != "all" {
 				searchArgs.WithFilter("faculty", fac)
@@ -96,26 +101,34 @@ func generateDashboard(faculties []string, ptypes []string, searcher backends.Pu
 
 			searchArgs = fn(searchArgs)
 
+			for f, varr := range searchArgs.Filters {
+				for _, v := range varr {
+					queryVals.Add(fmt.Sprintf("f[%s]", f), v)
+				}
+			}
+
+			searchUrl.RawQuery = queryVals.Encode()
+
 			f := fac
 			p := ptype
 
 			var lock sync.Mutex
-			group.Submit(func(f string, pt string, p map[string]map[string]int) func() {
+			group.Submit(func(f string, pt string, p map[string]map[string][]string, searchUrl string) func() {
 				return func() {
 					lock.Lock()
 					hits, err := searcher.Search(searchArgs)
 					if err != nil {
-						p[f][pt] = -1 // TODO If search errors: display -1 in the dashboard
+						p[f][pt] = []string{"Error", ""}
 					} else {
-						p[f][pt] = hits.Total
+						p[f][pt] = []string{fmt.Sprint(hits.Total), searchUrl}
 					}
 					lock.Unlock()
 				}
-			}(f, p, publications))
+			}(f, p, publications, searchUrl.String()))
 		}
 	}
 
 	group.Wait()
 
-	return nil, publications
+	return publications, nil
 }

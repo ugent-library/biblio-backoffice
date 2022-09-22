@@ -60,9 +60,15 @@
                             <tr>
                                 <th class="table-col-sm-fixed table-col-sm-fixed-left" scope="col">{{$pt}}</th>
                                 {{range $fi,$f := $.Faculties}}
+                                {{with $cell := (index $.UPublications $f $pti)}}
                                 <td>
-                                    <span>{{index $.UPublications $f $pti}}<span>
+                                    {{if eq (index $cell 1) ""}}
+                                    <span>{{index $cell 0}}<span>
+                                    {{else}}
+                                    <a href="{{index $cell 1}}">{{index $cell 0}}</a>
+                                    {{end}}
                                 </td>
+                                {{end}}
                                 {{end}}
                             </tr>
                         {{end}}
@@ -96,9 +102,15 @@
                             <tr>
                                 <th class="table-col-sm-fixed table-col-sm-fixed-left" scope="col">{{$pt}}</th>
                                 {{range $fi,$f := $.Faculties}}
+                                {{with $cell := (index $.APublications $f $pti)}}
                                 <td>
-                                    <span>{{index $.APublications $f $pti}}<span>
+                                    {{if eq (index $cell 1) ""}}
+                                    <span>{{index $cell 0}}<span>
+                                    {{else}}
+                                    <a href="{{index $cell 1}}">{{index $cell 0}}</a>
+                                    {{end}}
                                 </td>
+                                {{end}}
                                 {{end}}
                             </tr>
                         {{end}}
