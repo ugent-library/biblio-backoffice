@@ -311,19 +311,6 @@ func fileForm(l *locale.Locale, publication *models.Publication, file *models.Pu
 		WithErrors(localize.ValidationErrors(l, errors))
 
 	f.AddSection(
-		&form.Text{
-			Name:  "title",
-			Value: file.Title,
-			Label: l.T("builder.file.title"),
-			Cols:  12,
-			Error: localize.ValidationErrorAt(
-				l,
-				errors,
-				fmt.Sprintf("/file/%d/title", idx)),
-		},
-	)
-
-	f.AddSection(
 		&form.Select{
 			Name:        "relation",
 			Value:       file.Relation,
@@ -429,32 +416,16 @@ func fileForm(l *locale.Locale, publication *models.Publication, file *models.Pu
 		},
 	)
 
-	f.AddSection(
-		&form.TextArea{
-			Name:  "description",
-			Value: file.Description,
-			Label: l.T("builder.file.description"),
-			Rows:  4,
-			Cols:  12,
-			Error: localize.ValidationErrorAt(
-				l,
-				errors,
-				fmt.Sprintf("/file/%d/description", idx)),
-		},
-	)
-
 	return f
 }
 
 func bindToPublicationFile(b *BindFile, f *models.PublicationFile) {
 	f.AccessLevel = b.AccessLevel
 	f.License = b.License
-	f.Description = b.Description
 	f.Embargo = b.Embargo
 	f.EmbargoTo = b.EmbargoTo
 	f.OtherLicense = b.OtherLicense
 	f.PublicationVersion = b.PublicationVersion
 	f.Relation = b.Relation
-	f.Title = b.Title
 	f.ID = b.FileID
 }
