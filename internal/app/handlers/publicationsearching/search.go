@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/ugent-library/biblio-backend/internal/bind"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
 
-	"github.com/ugent-library/biblio-backend/internal/urls"
 	"github.com/ugent-library/biblio-backend/internal/vocabularies"
 )
 
@@ -104,13 +104,12 @@ func (h *Handler) getCurationSearchActions(ctx Context) []*models.ActionItem {
 	if oa := h.getOrcidAction(ctx); oa != nil {
 		actionItems = append(actionItems, oa)
 	}
-	xlsxUrl, _ := urls.Query(
-		ctx.SearchArgs,
-		h.PathFor("export_curation_publications", "format", "xlsx"),
-	)
+	u := h.PathFor("export_curation_publications", "format", "xlsx")
+	q, _ := bind.EncodeQuery(ctx.SearchArgs)
+	u.RawQuery = q.Encode()
 	actionItems = append(actionItems, &models.ActionItem{
 		Label:    ctx.Locale.T("export_to.xlsx"),
-		URL:      xlsxUrl,
+		URL:      u,
 		Template: "actions/export",
 	})
 	return actionItems

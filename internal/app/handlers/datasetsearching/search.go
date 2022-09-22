@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/ugent-library/biblio-backend/internal/bind"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
-	"github.com/ugent-library/biblio-backend/internal/urls"
 	"github.com/ugent-library/biblio-backend/internal/vocabularies"
 )
 
@@ -104,13 +104,12 @@ func (h *Handler) getDatasetActions(ctx Context) []*models.ActionItem {
 
 func (h *Handler) getCurationDatasetActions(ctx Context) []*models.ActionItem {
 	actionItems := make([]*models.ActionItem, 0)
-	xlsxUrl, _ := urls.Query(
-		ctx.SearchArgs,
-		h.PathFor("export_curation_datasets", "format", "xlsx"),
-	)
+	u := h.PathFor("export_curation_datasets", "format", "xlsx")
+	q, _ := bind.EncodeQuery(ctx.SearchArgs)
+	u.RawQuery = q.Encode()
 	actionItems = append(actionItems, &models.ActionItem{
 		Label:    ctx.Locale.T("export_to.xlsx"),
-		URL:      xlsxUrl,
+		URL:      u,
 		Template: "actions/export",
 	})
 	return actionItems

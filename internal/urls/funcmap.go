@@ -21,7 +21,7 @@ func FuncMap(r *mux.Router) template.FuncMap {
 	return template.FuncMap{
 		"urlFor":     urlFor(r),
 		"pathFor":    pathFor(r),
-		"query":      Query,
+		"query":      query,
 		"querySet":   querySet,
 		"queryAdd":   queryAdd,
 		"queryDel":   queryDel,
@@ -55,7 +55,7 @@ func pathFor(r *mux.Router) func(string, ...string) (*url.URL, error) {
 	}
 }
 
-func Query(v any, u *url.URL) (*url.URL, error) {
+func query(v any, u *url.URL) (*url.URL, error) {
 	vals, err := queryEncoder.Encode(v)
 	if err != nil {
 		return u, err
