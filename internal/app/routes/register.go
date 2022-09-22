@@ -616,6 +616,16 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		Methods("PUT").
 		Name("publication_update_details")
 
+	// edit publication type
+	r.HandleFunc("/publication/{id}/type/confirm",
+		publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmUpdateType)).
+		Methods("GET").
+		Name("publication_confirm_update_type")
+	r.HandleFunc("/publication/{id}/type",
+		publicationEditingHandler.Wrap(publicationEditingHandler.UpdateType)).
+		Methods("PUT").
+		Name("publication_update_type")
+
 	// edit publication conference
 	r.HandleFunc("/publication/{id}/conference/edit",
 		publicationEditingHandler.Wrap(publicationEditingHandler.EditConference)).
