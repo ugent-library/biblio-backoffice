@@ -10,8 +10,7 @@ import (
 )
 
 func (h *Handler) ExportByCurationSearch(w http.ResponseWriter, r *http.Request, ctx Context) {
-
-	if !ctx.User.CanCuratePublications() {
+	if !ctx.User.CanCurate() {
 		render.Forbidden(w, r)
 		return
 	}

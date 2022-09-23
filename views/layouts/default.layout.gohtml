@@ -107,6 +107,17 @@
     </header>
     <main>
         <div class="d-flex u-maximize-height">
+            {{if .User.CanCurate}}
+            <div class="dropdown mx-4 mt-1 mb-5">
+                <button class="btn btn-outline-light btn-sm btn-block dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <span class="text-truncate">Librarian</span>
+                </button>
+                <div class="dropdown-menu">
+                  <a class="dropdown-item" href="{{pathFor "publications"}}">Researcher</a>
+                  <a class="dropdown-item" href="{{pathFor "curate_publications"}}">Librarian</a>
+                </div>
+            </div>
+            {{end}}
             <div class="c-sidebar">
                 <div class="c-sidebar__menu">
                     <nav>

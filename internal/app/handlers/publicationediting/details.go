@@ -97,7 +97,7 @@ func bindToPublication(b *BindDetails, p *models.Publication, user *models.User)
 	p.Volume = b.Volume
 	p.WOSID = b.WOSID
 	p.Year = b.Year
-	if user.CanCuratePublications() {
+	if user.CanCurate() {
 		p.WOSType = b.WOSType
 	}
 }

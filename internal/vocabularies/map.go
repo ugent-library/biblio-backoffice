@@ -6,6 +6,10 @@ const RestrictedAccess = "info:eu-repo/semantics/restrictedAccess"
 const OpenAccess = "info:eu-repo/semantics/openAccess"
 
 var Map = map[string][]string{
+	"user_roles": {
+		"user",
+		"curator",
+	},
 	"publication_vabb_types": {
 		"VABB-1",
 		"VABB-2",

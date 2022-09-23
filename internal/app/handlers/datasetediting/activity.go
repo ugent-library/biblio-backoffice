@@ -88,7 +88,7 @@ func (h *Handler) UpdateMessage(w http.ResponseWriter, r *http.Request, ctx Cont
 }
 
 func (h *Handler) EditReviewerTags(w http.ResponseWriter, r *http.Request, ctx Context) {
-	if !ctx.User.CanCurateDatasets() {
+	if !ctx.User.CanCurate() {
 		render.Unauthorized(w, r)
 		return
 	}
@@ -100,7 +100,7 @@ func (h *Handler) EditReviewerTags(w http.ResponseWriter, r *http.Request, ctx C
 }
 
 func (h *Handler) UpdateReviewerTags(w http.ResponseWriter, r *http.Request, ctx Context) {
-	if !ctx.User.CanCurateDatasets() {
+	if !ctx.User.CanCurate() {
 		render.Unauthorized(w, r)
 		return
 	}
@@ -144,7 +144,7 @@ func (h *Handler) UpdateReviewerTags(w http.ResponseWriter, r *http.Request, ctx
 }
 
 func (h *Handler) EditReviewerNote(w http.ResponseWriter, r *http.Request, ctx Context) {
-	if !ctx.User.CanCurateDatasets() {
+	if !ctx.User.CanCurate() {
 		render.Unauthorized(w, r)
 		return
 	}
@@ -156,7 +156,7 @@ func (h *Handler) EditReviewerNote(w http.ResponseWriter, r *http.Request, ctx C
 }
 
 func (h *Handler) UpdateReviewerNote(w http.ResponseWriter, r *http.Request, ctx Context) {
-	if !ctx.User.CanCurateDatasets() {
+	if !ctx.User.CanCurate() {
 		render.Unauthorized(w, r)
 		return
 	}

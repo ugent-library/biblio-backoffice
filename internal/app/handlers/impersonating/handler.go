@@ -83,8 +83,9 @@ func (h *Handler) CreateImpersonation(w http.ResponseWriter, r *http.Request, ct
 		return
 	}
 
-	session.Values[handlers.OriginalUserSessionKey] = ctx.User.ID
-	session.Values[handlers.UserSessionKey] = user.ID
+	session.Values[handlers.OriginalUserIDKey] = ctx.User.ID
+	session.Values[handlers.OriginalUserRoleKey] = ctx.UserRole
+	session.Values[handlers.UserIDKey] = user.ID
 
 	if err = session.Save(r, w); err != nil {
 		h.Logger.Errorw("create impersonation: session could not be saved:", "errors", err, "user", ctx.User.ID)
@@ -107,15 +108,15 @@ func (h *Handler) DeleteImpersonation(w http.ResponseWriter, r *http.Request, ct
 		return
 	}
 
-	if origUserID := session.Values[handlers.OriginalUserSessionKey]; origUserID != nil {
-		delete(session.Values, handlers.OriginalUserSessionKey)
-		session.Values[handlers.UserSessionKey] = origUserID
+	session.Values[handlers.UserIDKey] = session.Values[handlers.OriginalUserIDKey]
+	session.Values[handlers.UserRoleKey] = session.Values[handlers.OriginalUserRoleKey]
+	delete(session.Values, handlers.OriginalUserIDKey)
+	delete(session.Values, handlers.OriginalUserRoleKey)
 
-		if err = session.Save(r, w); err != nil {
-			h.Logger.Errorw("delete impersonation: session could not be saved:", "errors", err, "user", ctx.User.ID)
-			render.InternalServerError(w, r, err)
-			return
-		}
+	if err = session.Save(r, w); err != nil {
+		h.Logger.Errorw("delete impersonation: session could not be saved:", "errors", err, "user", ctx.User.ID)
+		render.InternalServerError(w, r, err)
+		return
 	}
 
 	http.Redirect(w, r, h.PathFor("home").String(), http.StatusFound)

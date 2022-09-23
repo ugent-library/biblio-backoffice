@@ -1,10 +1,14 @@
 package authenticating
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/ugent-library/biblio-backend/internal/app/handlers"
+	"github.com/ugent-library/biblio-backend/internal/bind"
 	"github.com/ugent-library/biblio-backend/internal/render"
+	"github.com/ugent-library/biblio-backend/internal/validation"
+	"github.com/ugent-library/biblio-backend/internal/vocabularies"
 	"github.com/ugent-library/go-oidc/oidc"
 )
 
@@ -48,7 +52,11 @@ func (h *Handler) Callback(w http.ResponseWriter, r *http.Request, ctx Context) 
 		return
 	}
 
-	session.Values[handlers.UserSessionKey] = user.ID
+	session.Values[handlers.UserIDKey] = user.ID
+	if _, ok := session.Values[handlers.UserRoleKey]; !ok {
+		session.Values[handlers.UserRoleKey] = "user"
+	}
+
 	if err := session.Save(r, w); err != nil {
 		h.Logger.Errorw("authentication: session could not be saved:", "errors", err)
 		render.InternalServerError(w, r, err)
@@ -70,8 +78,41 @@ func (h *Handler) Logout(w http.ResponseWriter, r *http.Request, ctx Context) {
 		return
 	}
 
-	delete(session.Values, handlers.UserSessionKey)
-	delete(session.Values, handlers.OriginalUserSessionKey)
+	// only remember user role
+	delete(session.Values, handlers.UserIDKey)
+	delete(session.Values, handlers.OriginalUserIDKey)
+	delete(session.Values, handlers.OriginalUserRoleKey)
+	if err := session.Save(r, w); err != nil {
+		h.Logger.Errorw("authentication: session could not be saved:", "errors", err)
+		render.InternalServerError(w, r, err)
+		return
+	}
+
+	http.Redirect(w, r, h.PathFor("home").String(), http.StatusFound)
+}
+
+func (h *Handler) UpdateRole(w http.ResponseWriter, r *http.Request, ctx Context) {
+	if ctx.User == nil || (!ctx.User.CanCurate()) {
+		render.Unauthorized(w, r)
+		return
+	}
+
+	role := bind.PathValues(r).Get("role")
+
+	if !validation.InArray(vocabularies.Map["user_roles"], role) {
+		render.BadRequest(w, r, fmt.Errorf("%s is not a valid role", role))
+		return
+	}
+
+	session, err := h.SessionStore.Get(r, h.SessionName)
+	if err != nil {
+		h.Logger.Errorw("authentication: session could not be retrieved:", "errors", err)
+		render.InternalServerError(w, r, err)
+		return
+	}
+
+	session.Values[handlers.UserRoleKey] = role
+
 	if err := session.Save(r, w); err != nil {
 		h.Logger.Errorw("authentication: session could not be saved:", "errors", err)
 		render.InternalServerError(w, r, err)

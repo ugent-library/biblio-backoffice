@@ -378,7 +378,7 @@ func detailsForm(user *models.User, l *locale.Locale, p *models.Publication, err
 	section5 := []form.Field{}
 
 	if p.UsesWOS() {
-		if user.CanCuratePublications() {
+		if user.CanCurate() {
 			section5 = append(section5, &form.Text{
 				Name:    "wos_type",
 				Label:   l.T("builder.wos_type"),

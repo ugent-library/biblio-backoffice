@@ -175,10 +175,6 @@ func (u *User) CanImpersonateUser() bool {
 	return u.Role == "admin"
 }
 
-func (u *User) CanCuratePublications() bool {
-	return u.Role == "admin"
-}
-
-func (u *User) CanCurateDatasets() bool {
+func (u *User) CanCurate() bool {
 	return u.Role == "admin"
 }

@@ -35,6 +35,17 @@ type BaseHandler struct {
 	Localizer    *locale.Localizer
 }
 
+type BaseContext struct {
+	CurrentURL   *url.URL
+	Flash        []flash.Flash
+	Locale       *locale.Locale
+	User         *models.User
+	UserRole     string
+	OriginalUser *models.User
+	CSRFToken    string
+	CSRFTag      template.HTML
+}
+
 func (h BaseHandler) Wrap(fn func(http.ResponseWriter, *http.Request, BaseContext)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx, err := h.NewContext(r, w)
@@ -53,12 +64,12 @@ func (h BaseHandler) NewContext(r *http.Request, w http.ResponseWriter) (BaseCon
 		return BaseContext{}, err
 	}
 
-	user, err := h.getUserFromSession(session, r, UserSessionKey)
+	user, err := h.getUserFromSession(session, r, UserIDKey)
 	if err != nil {
 		return BaseContext{}, fmt.Errorf("could not get user from session: %w", err)
 	}
 
-	originalUser, err := h.getUserFromSession(session, r, OriginalUserSessionKey)
+	originalUser, err := h.getUserFromSession(session, r, OriginalUserIDKey)
 	if err != nil {
 		return BaseContext{}, fmt.Errorf("could not get original user from session: %w", err)
 	}
@@ -73,6 +84,7 @@ func (h BaseHandler) NewContext(r *http.Request, w http.ResponseWriter) (BaseCon
 		Flash:        flash,
 		Locale:       h.Localizer.GetLocale(r.Header.Get("Accept-Language")),
 		User:         user,
+		UserRole:     h.getUserRoleFromSession(session),
 		OriginalUser: originalUser,
 		CSRFToken:    csrf.Token(r),
 		CSRFTag:      csrf.TemplateField(r),
@@ -85,7 +97,7 @@ func (h BaseHandler) AddSessionFlash(r *http.Request, w http.ResponseWriter, f f
 		return fmt.Errorf("could not get session from store: %w", err)
 	}
 
-	session.AddFlash(f, FlashSessionKey)
+	session.AddFlash(f, FlashKey)
 
 	if err := session.Save(r, w); err != nil {
 		return fmt.Errorf("could not save data to session: %w", err)
@@ -95,7 +107,7 @@ func (h BaseHandler) AddSessionFlash(r *http.Request, w http.ResponseWriter, f f
 }
 
 func (h BaseHandler) getFlashFromSession(session *sessions.Session, r *http.Request, w http.ResponseWriter) ([]flash.Flash, error) {
-	sessionFlashes := session.Flashes(FlashSessionKey)
+	sessionFlashes := session.Flashes(FlashKey)
 
 	if err := session.Save(r, w); err != nil {
 		return []flash.Flash{}, fmt.Errorf("could not save data to session: %w", err)
@@ -123,6 +135,14 @@ func (h BaseHandler) getUserFromSession(session *sessions.Session, r *http.Reque
 	return user, nil
 }
 
+func (h BaseHandler) getUserRoleFromSession(session *sessions.Session) string {
+	role := session.Values[UserRoleKey]
+	if role == nil {
+		return ""
+	}
+	return role.(string)
+}
+
 func (h BaseHandler) PathFor(name string, vars ...string) *url.URL {
 	if route := h.Router.Get(name); route != nil {
 		u, err := route.URLPath(vars...)
@@ -146,14 +166,4 @@ func (h BaseHandler) URLFor(name string, vars ...string) *url.URL {
 	}
 	h.Logger.Panic("Could not find route named %s", name)
 	return nil
-}
-
-type BaseContext struct {
-	CurrentURL   *url.URL
-	Flash        []flash.Flash
-	Locale       *locale.Locale
-	User         *models.User
-	OriginalUser *models.User
-	CSRFToken    string
-	CSRFTag      template.HTML
 }

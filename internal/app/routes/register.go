@@ -178,6 +178,11 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		authenticatingHandler.Wrap(authenticatingHandler.Logout)).
 		Methods("GET").
 		Name("logout")
+	// change user role
+	r.HandleFunc("/role/:role",
+		authenticatingHandler.Wrap(authenticatingHandler.UpdateRole)).
+		Methods("PUT").
+		Name("update_role")
 
 	// impersonate user
 	r.HandleFunc("/impersonation/add",

@@ -75,7 +75,7 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request, ctx Context) {
 }
 
 func (h *Handler) CurationSearch(w http.ResponseWriter, r *http.Request, ctx Context) {
-	if !ctx.User.CanCuratePublications() {
+	if !ctx.User.CanCurate() {
 		render.Forbidden(w, r)
 		return
 	}

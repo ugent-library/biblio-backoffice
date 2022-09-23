@@ -1,7 +1,9 @@
 package handlers
 
 const (
-	UserSessionKey         = "user_id"
-	OriginalUserSessionKey = "original_user_id"
-	FlashSessionKey        = "flash"
+	UserIDKey           = "user_id"
+	OriginalUserIDKey   = "original_user_id"
+	UserRoleKey         = "user_role"
+	OriginalUserRoleKey = "original_user_role"
+	FlashKey            = "flash"
 )
