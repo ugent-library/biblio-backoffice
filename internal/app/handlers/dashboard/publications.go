@@ -53,9 +53,9 @@ func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Conte
 
 	// Publications with publication status "accepted"
 
-	searcher = h.PublicationSearchService
+	aSearcher := h.PublicationSearchService.WithScope("status", "private", "public")
 
-	aPublications, err := generateDashboard(faculties, ptypes, searcher, baseSearchUrl, func(args *models.SearchArgs) *models.SearchArgs {
+	aPublications, err := generateDashboard(faculties, ptypes, aSearcher, baseSearchUrl, func(args *models.SearchArgs) *models.SearchArgs {
 		args.WithFilter("publication_status", "accepted")
 		return args
 	})
