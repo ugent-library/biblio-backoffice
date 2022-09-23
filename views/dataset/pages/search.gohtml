@@ -95,6 +95,20 @@
                     </li>
                     {{end}}
                 </ul>
+                {{else if .IsFirstUse}}
+                <div class="c-blank-slate c-blank-slate-default c-blank-slate-large">
+                    <div class="bc-avatar bc-avatar--medium">
+                        <i class="if if-info-circle"></i>
+                    </div>
+                    <h3 class="c-blank-slate-title">{{$.Locale.TS "dataset.search.empty.title" $.CurrentScope}}</h3>
+                    <p>{{$.Locale.TS "dataset.search.empty.description" $.CurrentScope}}</p>
+                    <div class="c-button-toolbar">
+                        <a class="btn btn-outline-primary" href="{{pathFor "dataset_add"}}">
+                            <i class="if if-add"></i>
+                            <div class="btn-text">Add dataset</div>
+                        </a>
+                    </div>
+                </div>
                 {{else}}
                 <div class="c-blank-slate c-blank-slate-large c-blank-slate-muted">
                     <div class="bc-avatar bc-avatar--medium">

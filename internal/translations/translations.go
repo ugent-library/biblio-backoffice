@@ -721,5 +721,18 @@ func init() {
 	message.SetString(language.English, "has_message.false", "without message")
 	message.SetString(language.English, "suggest_custom_data_format", "Use custom data format")
 
+	message.SetString(language.English, "publication.search.empty.title.all", "No registered publications yet")
+	message.SetString(language.English, "publication.search.empty.description.all", "Register a first publication")
+	message.SetString(language.English, "publication.search.empty.title.contributed", "You have not registered any publications of your own")
+	message.SetString(language.English, "publication.search.empty.description.contributed", "Register your first publication")
+	message.SetString(language.English, "publication.search.empty.title.created", "No registered publications yet")
+	message.SetString(language.English, "publication.search.empty.description.created", "Register a first publication")
+
+	message.SetString(language.English, "dataset.search.empty.title.all", "No registered datasets yet")
+	message.SetString(language.English, "dataset.search.empty.description.all", "Register a first dataset")
+	message.SetString(language.English, "dataset.search.empty.title.contributed", "You have not registered any datasets of your own")
+	message.SetString(language.English, "dataset.search.empty.description.contributed", "Register your first dataset")
+	message.SetString(language.English, "dataset.search.empty.title.created", "No registered datasets yet")
+	message.SetString(language.English, "dataset.search.empty.description.created", "Register a first datasets")
 	message.SetString(language.English, "export_to.xlsx", "Export to Excel")
 }
