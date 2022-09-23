@@ -36,11 +36,12 @@ func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Conte
 
 	// Publications with classification U
 
-	searcher := h.PublicationSearchService.WithScope("status", "public")
-	baseSearchUrl := h.PathFor("publications")
+	uSearcher := h.PublicationSearchService.WithScope("status", "public")
+	baseSearchUrl := h.PathFor("curation_publications")
 
-	uPublications, err := generateDashboard(faculties, ptypes, searcher, baseSearchUrl, func(args *models.SearchArgs) *models.SearchArgs {
+	uPublications, err := generateDashboard(faculties, ptypes, uSearcher, baseSearchUrl, func(args *models.SearchArgs) *models.SearchArgs {
 		args.WithFilter("classification", "U")
+		args.WithFilter("status", "public")
 		return args
 	})
 

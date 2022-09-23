@@ -539,7 +539,7 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 	r.HandleFunc("/curation/publication",
 		publicationSearchingHandler.Wrap(publicationSearchingHandler.CurationSearch)).
 		Methods("GET").
-		Name("cureation_publications")
+		Name("curation_publications")
 	r.HandleFunc("/publication",
 		publicationSearchingHandler.Wrap(publicationSearchingHandler.Search)).
 		Methods("GET").
