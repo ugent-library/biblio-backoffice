@@ -178,3 +178,7 @@ func (u *User) CanImpersonateUser() bool {
 func (u *User) CanCurate() bool {
 	return u.Role == "admin"
 }
+
+func (u *User) CanViewDashboard() bool {
+	return u.Role == "admin"
+}

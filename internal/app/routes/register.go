@@ -11,6 +11,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/authenticating"
+	"github.com/ugent-library/biblio-backend/internal/app/handlers/dashboard"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/datasetcreating"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/datasetediting"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/datasetexporting"
@@ -64,6 +65,11 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 	tasksHandler := &tasks.Handler{
 		BaseHandler: baseHandler,
 		Tasks:       services.Tasks,
+	}
+	dashboardHandler := &dashboard.Handler{
+		BaseHandler:              baseHandler,
+		DatasetSearchService:     services.DatasetSearchService,
+		PublicationSearchService: services.PublicationSearchService,
 	}
 	datasetSearchingHandler := &datasetsearching.Handler{
 		BaseHandler:          baseHandler,
@@ -203,6 +209,11 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 	r.HandleFunc("/task/{id}/status", tasksHandler.Wrap(tasksHandler.Status)).
 		Methods("GET").
 		Name("task_status")
+
+	// dashboard
+	r.HandleFunc("/dashboard", dashboardHandler.Wrap(dashboardHandler.Publications)).
+		Methods("GET").
+		Name("dashboard")
 
 	// search datasets
 	r.HandleFunc("/curation/dataset",
@@ -533,7 +544,7 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 	r.HandleFunc("/curation/publication",
 		publicationSearchingHandler.Wrap(publicationSearchingHandler.CurationSearch)).
 		Methods("GET").
-		Name("cureation_publications")
+		Name("curation_publications")
 	r.HandleFunc("/publication",
 		publicationSearchingHandler.Wrap(publicationSearchingHandler.Search)).
 		Methods("GET").

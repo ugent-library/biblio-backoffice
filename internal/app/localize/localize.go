@@ -49,6 +49,21 @@ func LanguageSelectOptions(locale *locale.Locale) []form.SelectOption {
 	return opts
 }
 
+func VocabularyTerms(locale *locale.Locale, key string) map[string]string {
+	vals, ok := vocabularies.Map[key]
+	if !ok {
+		return nil
+	}
+
+	translatedTerms := make(map[string]string, len(vals))
+
+	for _, v := range vals {
+		translatedTerms[v] = locale.TS(key, v)
+	}
+
+	return translatedTerms
+}
+
 func VocabularySelectOptions(locale *locale.Locale, key string) []form.SelectOption {
 	vals, ok := vocabularies.Map[key]
 	if !ok {
