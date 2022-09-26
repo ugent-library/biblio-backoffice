@@ -21,6 +21,12 @@
   }
 }
 
+.c-thumbnail-xl-large {
+  @include media-breakpoint-up(xl) {
+    width: 11.2rem;
+  }
+}
+
 .c-thumbnail-5-4 {
   .c-thumbnail-inner {
     padding-bottom: 125%;

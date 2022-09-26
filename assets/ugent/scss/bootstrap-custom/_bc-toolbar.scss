@@ -177,7 +177,7 @@ $bc-toolbar-height: 6.4rem !default;
 }
 
 .bc-toolbar-responsive {
-  @include media-breakpoint-down(md) {
+  @include media-breakpoint-down(lg) {
     flex-wrap: wrap;
     .bc-toolbar-left,
     .bc-toolbar-right {
