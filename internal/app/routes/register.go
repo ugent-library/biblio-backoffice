@@ -185,7 +185,7 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		Methods("GET").
 		Name("logout")
 	// change user role
-	r.HandleFunc("/role/:role",
+	r.HandleFunc("/role/{role}",
 		authenticatingHandler.Wrap(authenticatingHandler.UpdateRole)).
 		Methods("PUT").
 		Name("update_role")
@@ -216,10 +216,6 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		Name("dashboard")
 
 	// search datasets
-	r.HandleFunc("/curation/dataset",
-		datasetSearchingHandler.Wrap(datasetSearchingHandler.CurationSearch)).
-		Methods("GET").
-		Name("cureation_datasets")
 	r.HandleFunc("/dataset",
 		datasetSearchingHandler.Wrap(datasetSearchingHandler.Search)).
 		Methods("GET").
@@ -260,10 +256,10 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		Name("dataset_add_finish")
 
 	// export datasets
-	r.HandleFunc("/curation/dataset.{format}",
+	r.HandleFunc("/dataset.{format}",
 		datasetExportingHandler.Wrap(datasetExportingHandler.ExportByCurationSearch)).
 		Methods("GET").
-		Name("export_curation_datasets")
+		Name("export_datasets")
 
 	// view dataset
 	r.HandleFunc("/dataset/{id}",
@@ -541,20 +537,16 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		Name("publication_add_multiple_finish")
 
 	// search publications
-	r.HandleFunc("/curation/publication",
-		publicationSearchingHandler.Wrap(publicationSearchingHandler.CurationSearch)).
-		Methods("GET").
-		Name("curation_publications")
 	r.HandleFunc("/publication",
 		publicationSearchingHandler.Wrap(publicationSearchingHandler.Search)).
 		Methods("GET").
 		Name("publications")
 
 	// export publications
-	r.HandleFunc("/curation/publication.{format}",
+	r.HandleFunc("/publication.{format}",
 		publicationExportingHandler.Wrap(publicationExportingHandler.ExportByCurationSearch)).
 		Methods("GET").
-		Name("export_curation_publications")
+		Name("export_publications")
 
 	// view publication
 	r.HandleFunc("/publication/{id}",

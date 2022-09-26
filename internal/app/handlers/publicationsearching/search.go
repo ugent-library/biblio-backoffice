@@ -3,6 +3,7 @@ package publicationsearching
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/bind"
@@ -16,6 +17,12 @@ var (
 	userScopes = []string{"all", "contributed", "created"}
 )
 
+type ActionItem struct {
+	Template string
+	URL      *url.URL
+	Label    string
+}
+
 type YieldSearch struct {
 	Context
 	PageTitle    string
@@ -24,7 +31,7 @@ type YieldSearch struct {
 	CurrentScope string
 	IsFirstUse   bool
 	Hits         *models.PublicationHits
-	ActionItems  []*models.ActionItem
+	ActionItems  []*ActionItem
 }
 
 type YieldHit struct {
@@ -37,6 +44,11 @@ func (y YieldSearch) YieldHit(d *models.Publication) YieldHit {
 }
 
 func (h *Handler) Search(w http.ResponseWriter, r *http.Request, ctx Context) {
+	if ctx.UserRole == "curator" {
+		h.CurationSearch(w, r, ctx)
+		return
+	}
+
 	ctx.SearchArgs.WithFacets(vocabularies.Map["publication_facets"]...)
 	if ctx.SearchArgs.FilterFor("scope") == "" {
 		ctx.SearchArgs.WithFilter("scope", "all")
@@ -100,10 +112,11 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request, ctx Context) {
 }
 
 /*
-	globalSearch(searcher)
-		returns total number of search hits
-		for scoped searcher, regardless of choosen filters
-		Used to determine wether user has any records
+globalSearch(searcher)
+
+	returns total number of search hits
+	for scoped searcher, regardless of choosen filters
+	Used to determine wether user has any records
 */
 func globalSearch(searcher backends.PublicationSearchService) (*models.PublicationHits, error) {
 	globalArgs := models.NewSearchArgs()
@@ -158,15 +171,15 @@ func (h *Handler) CurationSearch(w http.ResponseWriter, r *http.Request, ctx Con
 	})
 }
 
-func (h *Handler) getCurationSearchActions(ctx Context) []*models.ActionItem {
-	actionItems := make([]*models.ActionItem, 0)
+func (h *Handler) getCurationSearchActions(ctx Context) []*ActionItem {
+	actionItems := make([]*ActionItem, 0)
 	if oa := h.getOrcidAction(ctx); oa != nil {
 		actionItems = append(actionItems, oa)
 	}
-	u := h.PathFor("export_curation_publications", "format", "xlsx")
+	u := h.PathFor("export_publications", "format", "xlsx")
 	q, _ := bind.EncodeQuery(ctx.SearchArgs)
 	u.RawQuery = q.Encode()
-	actionItems = append(actionItems, &models.ActionItem{
+	actionItems = append(actionItems, &ActionItem{
 		Label:    ctx.Locale.T("export_to.xlsx"),
 		URL:      u,
 		Template: "actions/export",
@@ -174,19 +187,19 @@ func (h *Handler) getCurationSearchActions(ctx Context) []*models.ActionItem {
 	return actionItems
 }
 
-func (h *Handler) getSearchActions(ctx Context) []*models.ActionItem {
-	actionItems := make([]*models.ActionItem, 0)
+func (h *Handler) getSearchActions(ctx Context) []*ActionItem {
+	actionItems := make([]*ActionItem, 0)
 	if oa := h.getOrcidAction(ctx); oa != nil {
 		actionItems = append(actionItems, oa)
 	}
 	return actionItems
 }
 
-func (h *Handler) getOrcidAction(ctx Context) *models.ActionItem {
+func (h *Handler) getOrcidAction(ctx Context) *ActionItem {
 	if ctx.User.ORCID == "" || ctx.User.ORCIDToken == "" {
 		return nil
 	}
-	return &models.ActionItem{
+	return &ActionItem{
 		Label:    "Send my publications to ORCID",
 		URL:      h.PathFor("publication_orcid_add_all"),
 		Template: "actions/publication_orcid_add_all",

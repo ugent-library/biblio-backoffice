@@ -37,7 +37,7 @@ func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Conte
 	// Publications with classification U
 
 	uSearcher := h.PublicationSearchService.WithScope("status", "public")
-	baseSearchUrl := h.PathFor("curation_publications")
+	baseSearchUrl := h.PathFor("publications")
 
 	uPublications, err := generateDashboard(faculties, ptypes, uSearcher, baseSearchUrl, func(args *models.SearchArgs) *models.SearchArgs {
 		args.WithFilter("classification", "U")

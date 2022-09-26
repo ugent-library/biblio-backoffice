@@ -92,7 +92,7 @@ func (h *Handler) Logout(w http.ResponseWriter, r *http.Request, ctx Context) {
 }
 
 func (h *Handler) UpdateRole(w http.ResponseWriter, r *http.Request, ctx Context) {
-	if ctx.User == nil || (!ctx.User.CanCurate()) {
+	if ctx.User == nil || !ctx.User.CanCurate() {
 		render.Unauthorized(w, r)
 		return
 	}
@@ -119,5 +119,5 @@ func (h *Handler) UpdateRole(w http.ResponseWriter, r *http.Request, ctx Context
 		return
 	}
 
-	http.Redirect(w, r, h.PathFor("home").String(), http.StatusFound)
+	w.Header().Set("HX-Redirect", h.PathFor("publications").String())
 }

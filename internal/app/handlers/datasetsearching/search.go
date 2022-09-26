@@ -3,6 +3,7 @@ package datasetsearching
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/bind"
@@ -15,6 +16,12 @@ var (
 	userScopes = []string{"all", "contributed", "created"}
 )
 
+type ActionItem struct {
+	Template string
+	URL      *url.URL
+	Label    string
+}
+
 type YieldSearch struct {
 	Context
 	PageTitle    string
@@ -23,7 +30,7 @@ type YieldSearch struct {
 	Hits         *models.DatasetHits
 	IsFirstUse   bool
 	CurrentScope string
-	ActionItems  []*models.ActionItem
+	ActionItems  []*ActionItem
 }
 
 type YieldHit struct {
@@ -36,6 +43,11 @@ func (y YieldSearch) YieldHit(d *models.Dataset) YieldHit {
 }
 
 func (h *Handler) Search(w http.ResponseWriter, r *http.Request, ctx Context) {
+	if ctx.UserRole == "curator" {
+		h.CurationSearch(w, r, ctx)
+		return
+	}
+
 	ctx.SearchArgs.WithFacets(vocabularies.Map["dataset_facets"]...)
 	if ctx.SearchArgs.FilterFor("scope") == "" {
 		ctx.SearchArgs.WithFilter("scope", "all")
@@ -99,10 +111,11 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request, ctx Context) {
 }
 
 /*
-	globalSearch(searcher)
-		returns total number of search hits
-		for scoped searcher, regardless of choosen filters
-		Used to determine wether user has any records
+globalSearch(searcher)
+
+	returns total number of search hits
+	for scoped searcher, regardless of choosen filters
+	Used to determine wether user has any records
 */
 func globalSearch(searcher backends.DatasetSearchService) (*models.DatasetHits, error) {
 	globalArgs := models.NewSearchArgs()
@@ -157,16 +170,16 @@ func (h *Handler) CurationSearch(w http.ResponseWriter, r *http.Request, ctx Con
 	})
 }
 
-func (h *Handler) getDatasetActions(ctx Context) []*models.ActionItem {
-	return []*models.ActionItem{}
+func (h *Handler) getDatasetActions(ctx Context) []*ActionItem {
+	return []*ActionItem{}
 }
 
-func (h *Handler) getCurationDatasetActions(ctx Context) []*models.ActionItem {
-	actionItems := make([]*models.ActionItem, 0)
-	u := h.PathFor("export_curation_datasets", "format", "xlsx")
+func (h *Handler) getCurationDatasetActions(ctx Context) []*ActionItem {
+	actionItems := make([]*ActionItem, 0)
+	u := h.PathFor("export_datasets", "format", "xlsx")
 	q, _ := bind.EncodeQuery(ctx.SearchArgs)
 	u.RawQuery = q.Encode()
-	actionItems = append(actionItems, &models.ActionItem{
+	actionItems = append(actionItems, &ActionItem{
 		Label:    ctx.Locale.T("export_to.xlsx"),
 		URL:      u,
 		Template: "actions/export",

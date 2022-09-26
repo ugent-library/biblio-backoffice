@@ -107,18 +107,28 @@
     </header>
     <main>
         <div class="d-flex u-maximize-height">
-            {{if .User.CanCurate}}
-            <div class="dropdown mx-4 mt-1 mb-5">
-                <button class="btn btn-outline-light btn-sm btn-block dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  <span class="text-truncate">Librarian</span>
-                </button>
-                <div class="dropdown-menu">
-                  <a class="dropdown-item" href="{{pathFor "publications"}}">Researcher</a>
-                  <a class="dropdown-item" href="{{pathFor "curate_publications"}}">Librarian</a>
+            <div class="c-sidebar{{if eq .UserRole "curator"}} c-sidebar--dark-gray{{end}}">
+                {{if and .User .User.CanCurate}}
+                <div class="dropdown mx-4 mt-1 mb-5">
+                    <button class="btn btn-outline-light btn-sm btn-block dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="text-truncate">
+                        {{if eq .UserRole "user"}}
+                            Researcher
+                        {{else if eq .UserRole "curator"}}
+                            Librarian
+                        {{end}}
+                      </span>
+                    </button>
+                    <div class="dropdown-menu">
+                        <button class="dropdown-item" hx-put="{{pathFor "update_role" "role" "user"}}" hx-swap="none">
+                            Researcher
+                        </button>
+                        <button class="dropdown-item" hx-put="{{pathFor "update_role" "role" "curator"}}" hx-swap="none">
+                            Librarian
+                        </button>
+                    </div>
                 </div>
-            </div>
-            {{end}}
-            <div class="c-sidebar">
+                {{end}}
                 <div class="c-sidebar__menu">
                     <nav>
                         <ul class="c-sidebar-menu">
@@ -138,7 +148,7 @@
                                     <span class="c-sidebar__label">Biblio Datasets</span>
                                 </a>
                             </li>
-                            {{if .User.CanViewDashboard}}
+                            {{if and .User .User.CanViewDashboard}}
                             <li class="c-sidebar__item{{if eq .ActiveNav "dashboard"}} c-sidebar__item--active{{end}}">
                                 <a href="{{pathFor "dashboard"}}">
                                     <span class="c-sidebar__icon">
