@@ -12,6 +12,27 @@
                     </div>
                 </div>
                 <div class="bc-toolbar-right">
+                   {{if .User.CanWithdrawDataset .Dataset}}
+                    <div class="bc-toolbar-item">
+                        <button class="btn btn-outline-danger"
+                            hx-get="{{pathFor "dataset_confirm_withdraw" "id" .Dataset.ID|querySet "redirect-url" .RedirectURL}}"
+                            hx-target="#modals"
+                        >
+                            <i class="if if-arrow-go-back"></I>
+                            <span class="btn-text">Withdraw</span>
+                        </button>
+                    </div>
+                    {{end}}
+                    {{if .User.CanRepublishDataset .Dataset}}
+                    <div class="bc-toolbar-item">
+                        <button class="btn btn-success"
+                            hx-get="{{pathFor "dataset_confirm_republish" "id" .Dataset.ID|querySet "redirect-url" .RedirectURL}}"
+                            hx-target="#modals"
+                        >
+                            <div class="btn-text">Re-Publish to Biblio</div>
+                        </button>
+                    </div>
+                    {{end}}
                     {{if .User.CanPublishDataset .Dataset}}
                     <div class="bc-toolbar-item">
                         <button class="btn btn-success"

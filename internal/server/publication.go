@@ -217,8 +217,8 @@ func publicationToMessage(p *models.Publication) *api.Publication {
 		msg.Status = api.Publication_STATUS_PUBLIC
 	case "deleted":
 		msg.Status = api.Publication_STATUS_DELETED
-	case "returned":
-		msg.Status = api.Publication_STATUS_RETURNED
+	case "withdrawn":
+		msg.Status = api.Publication_STATUS_WITHDRAWN
 	}
 
 	for _, val := range p.Abstract {
@@ -681,8 +681,8 @@ func messageToPublication(msg *api.Publication) *models.Publication {
 		p.Status = "public"
 	case api.Publication_STATUS_DELETED:
 		p.Status = "deleted"
-	case api.Publication_STATUS_RETURNED:
-		p.Status = "returned"
+	case api.Publication_STATUS_WITHDRAWN:
+		p.Status = "withdrawn"
 	}
 
 	for _, val := range msg.Abstract {
