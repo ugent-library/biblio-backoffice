@@ -1,20 +1,14 @@
-{{if eq .AccessLevel "open_access"}}
-<div class="d-flex align-items-center">
+<div class="d-flex align-items-center overflow-hidden my-2">
+    {{if eq .AccessLevel "open_access"}}
     <i class="if if-download if--small if--success"></i>
     <span class="pl-2 text-muted">Open Access</span>
-</div>
-{{else if eq .AccessLevel "local"}}
-<div class="d-flex align-items-center">
+    {{else if eq .AccessLevel "local"}}
     <i class="if if-ghent-university if--small if--primary"></i>
     <span class="pl-2 text-muted">UGent Access</span>
-</div>
-{{else if eq .AccessLevel "closed"}}
-<div class="d-flex align-items-center">
+    {{else if eq .AccessLevel "closed"}}
     <i class="if if-eye-off if--small if--muted"></i>
     <span class="pl-2 text-muted">Private Access</span>
-</div>
-{{else}}
-<div class="d-flex align-items-center">
+    {{else}}
     <i class="if if-error-circle if--error"></i><span class="pl-2 text-muted">Full text missing</span>
+    {{end}}
 </div>
-{{end}}

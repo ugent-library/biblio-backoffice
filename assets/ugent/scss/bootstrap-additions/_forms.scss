@@ -47,6 +47,11 @@
   }
 }
 
+.form-row .col-form-label {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
 [class^='col-sm-'].col-form-label {
   @include media-breakpoint-up(sm) {
     justify-content: flex-end;

@@ -1,4 +1,5 @@
-<div class="list-group-item-author">
+<div class="c-author">
+	<span class="c-link c-link-muted">{{.FirstName}} {{.LastName}}</span>
 	{{with .ORCID}}
 	<i class="if if-orcid" data-toggle="tooltip"
 		title="Author with ORCID" data-placement="bottom"></i>
@@ -7,5 +8,4 @@
 	<i class="if if-ghent-university" data-toggle="tooltip"
 		title="UGent author" data-placement="bottom"></i>
 	{{end}}
-	<span>{{.FirstName}} {{.LastName}}</span>
 </div>
