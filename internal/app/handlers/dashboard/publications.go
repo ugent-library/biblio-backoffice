@@ -25,7 +25,7 @@ type YieldPublications struct {
 }
 
 func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Context) {
-	faculties := vocabularies.Map["dashboard_faculties"]
+	faculties := vocabularies.Map["faculties"]
 	ptypes := vocabularies.Map["publication_types"]
 
 	faculties = append([]string{"all"}, faculties...)
