@@ -136,6 +136,10 @@ var Map = map[string][]string{
 		"RE",
 		"TW",
 		"WE",
+		"GUK",
+		"IMEC",
+		"UZGent",
+		"VIB",
 	},
 	"publication_types": {
 		"journal_article",
