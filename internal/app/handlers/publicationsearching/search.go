@@ -45,7 +45,7 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request, ctx Context) {
 		ctx.SearchArgs.WithFilter("scope", "all")
 	}
 
-	searcher := h.PublicationSearchService.WithScope("status", "private", "public")
+	searcher := h.PublicationSearchService.WithScope("status", "private", "public", "returned")
 	args := ctx.SearchArgs.Clone()
 	var currentScope string
 

@@ -36,7 +36,7 @@ func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Conte
 
 	// Publications with classification U
 
-	uSearcher := h.PublicationSearchService.WithScope("status", "public")
+	uSearcher := h.PublicationSearchService.WithScope("status", "public", "returned")
 	baseSearchUrl := h.PathFor("publications")
 
 	uPublications, err := generateDashboard(faculties, ptypes, uSearcher, baseSearchUrl, func(args *models.SearchArgs) *models.SearchArgs {
@@ -53,7 +53,7 @@ func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Conte
 
 	// Publications with publication status "accepted"
 
-	aSearcher := h.PublicationSearchService.WithScope("status", "private", "public")
+	aSearcher := h.PublicationSearchService.WithScope("status", "private", "public", "returned")
 
 	aPublications, err := generateDashboard(faculties, ptypes, aSearcher, baseSearchUrl, func(args *models.SearchArgs) *models.SearchArgs {
 		args.WithFilter("publication_status", "accepted")
