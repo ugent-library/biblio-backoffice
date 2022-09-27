@@ -56,7 +56,9 @@
                         <div class="d-flex w-100">
                             <div class="w-100">
                                 <div class="d-flex align-items-start">
-                                    {{partial "dataset/summary_body" .}}
+                                    {{layout "dataset/summary" "dataset/default_summary" (.Yield
+                                        "Dataset" .Dataset
+                                        "DatasetURL" (pathFor "dataset" "id" .Dataset.ID))}}
                                 </div>
                                 <div class="list-group mt-6">
                                     <a class="list-group-item list-group-item-action" href="{{pathFor "dataset_add_description" "id" .Dataset.ID|querySet "show" "description"}}">

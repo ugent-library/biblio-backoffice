@@ -12,25 +12,7 @@
                     </div>
                 </div>
                 <div class="bc-toolbar-right">
-                    {{block "summary_actions" .}}
-                        <div class="bc-toolbar-item ml-auto ml-lg-0">
-                            <div class="c-button-toolbar">
-                                <div class="dropdown dropleft">
-                                    <button class="btn btn-link btn-link-p-0 btn-icon-only"
-                                        type="button" data-toggle="dropdown"
-                                        aria-haspopup="true" aria-expanded="false">
-                                        <i class="if if-more"></i>
-                                    </button>
-                                    <div class="dropdown-menu">
-                                        <a class="dropdown-item" href="{{.PublicationURL}}">
-                                            <i class="if if-file-text"></i>
-                                            <span>View details</span>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    {{end}}
+                    {{block "summary_actions" .}}{{end}}
                 </div>
             </div>
 

@@ -12,7 +12,7 @@
                     <div class="d-flex w-100">
                         <div class="w-100">
                             <div class="d-flex align-items-start">
-                                {{partial "dataset/summary" (.Yield
+                                {{layout "dataset/summary" "dataset/default_summary" (.Yield
                                     "Dataset" .Dataset
                                     "DatasetURL" (pathFor "dataset" "id" .Dataset.ID))}}
                             </div>

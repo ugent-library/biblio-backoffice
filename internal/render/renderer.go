@@ -119,12 +119,14 @@ func (r *Renderer) MustParse() *Renderer {
 
 func (r *Renderer) Parse() (*Renderer, error) {
 	var (
-		layoutsTemplate = template.New("")
-		viewTemplates   = map[string]*template.Template{}
+		layoutsTemplate  = template.New("")
+		partialsTemplate = template.New("")
+		viewTemplates    = map[string]*template.Template{}
 	)
 
 	for _, funcs := range r.funcMaps {
 		layoutsTemplate.Funcs(funcs)
+		partialsTemplate.Funcs(funcs)
 	}
 
 	// parse layouts
@@ -152,11 +154,6 @@ func (r *Renderer) Parse() (*Renderer, error) {
 		return nil
 	})
 
-	if err != nil {
-		return r, err
-	}
-
-	partialsTemplate, err := layoutsTemplate.Clone()
 	if err != nil {
 		return r, err
 	}
