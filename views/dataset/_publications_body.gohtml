@@ -3,43 +3,13 @@
     <ul class="list-group list-group-flush">
         {{range .RelatedPublications}}
         <li class="list-group-item">
-            <div class="list-group-item-main u-min-w-0">
-                <div class="c-thumbnail-and-text align-items-start d-block d-lg-flex">
-                    <div class="c-thumbnail c-thumbnail-5-4 c-thumbnail-small c-thumbnail-lg-large mb-6 mb-lg-0 flex-shrink-0 c-thumbnail-img">
-                        <div class="c-thumbnail-inner">
-                            {{partial "publication/thumbnail" .}}
-                        </div>
-                    </div>
-                    <div class="c-thumbnail-text u-min-w-0">
-                        <div class="list-group-item-content">
-                            <div class="list-group-item-subline">
-                                <div class="list-group-item-subline-left">
-                                </div>
-                                <div class="list-group-item-subline-right">
-                                    <div class="dropdown">
-                                        <button class="btn btn-link btn-icon-only btn-link-muted" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <i class="if if-more"></i>
-                                        </button>
-                                        <div class="dropdown-menu">
-                                            <a class="dropdown-item" href="{{pathFor "publication" "id" .ID}}">
-                                                <i class="if if-file-text"></i>
-                                                <span>View details</span>
-                                            </a>
-                                            {{if $.User.CanEditDataset $.Dataset}}
-                                            <button class="dropdown-item" type="button"
-                                                hx-get="{{pathFor "dataset_confirm_delete_publication" "id" $.Dataset.ID "publication_id" .ID}}"
-                                                hx-target="#modals"
-                                            >
-                                                <i class="if if-delete"></i>
-                                                <span>Remove from dataset</span>
-                                            </button>
-                                            {{end}}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            {{partial "dataset/publication_summary" .}}
-                        </div>
+            <div class="d-flex w-100">
+                <div class="w-100">
+                    <div class="d-flex align-items-start">
+                        {{layout "publication/summary" "dataset/publication_summary" ($.Yield
+                            "Publication" .
+                            "PublicationURL" (pathFor "publication" "id" .ID)
+                            "Dataset" $.Dataset)}}
                     </div>
                 </div>
             </div>

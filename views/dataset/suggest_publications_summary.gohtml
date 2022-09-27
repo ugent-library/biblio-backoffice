@@ -1,0 +1,12 @@
+{{define "summary_actions"}}
+    <div class="bc-toolbar-item ml-auto ml-lg-0">
+        <div class="c-button-toolbar">
+            <button class="btn btn-primary"
+            hx-post="{{pathFor "dataset_create_publication" "id" .Dataset.ID}}"
+            hx-headers='{"If-Match": "{{.Dataset.SnapshotID}}"}'
+            hx-vals='{"publication_id": "{{.Publication.ID}}"}'
+            hx-swap="none"
+            >Add publication</button>
+        </div>
+    </div>
+{{end}}
