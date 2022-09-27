@@ -293,6 +293,26 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		Methods("POST").
 		Name("dataset_publish")
 
+	// withdraw dataset
+	r.HandleFunc("/dataset/{id}/publish/withdraw",
+		datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmWithdraw)).
+		Methods("GET").
+		Name("dataset_confirm_withdraw")
+	r.HandleFunc("/dataset/{id}/withdraw",
+		datasetEditingHandler.Wrap(datasetEditingHandler.Withdraw)).
+		Methods("POST").
+		Name("dataset_withdraw")
+
+	// re-publish dataset
+	r.HandleFunc("/dataset/{id}/republish/confirm",
+		datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmRepublish)).
+		Methods("GET").
+		Name("dataset_confirm_republish")
+	r.HandleFunc("/dataset/{id}/republish",
+		datasetEditingHandler.Wrap(datasetEditingHandler.Republish)).
+		Methods("POST").
+		Name("dataset_republish")
+
 	// delete dataset
 	r.HandleFunc("/dataset/{id}/confirm-delete",
 		datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmDelete)).
@@ -591,6 +611,26 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		publicationEditingHandler.Wrap(publicationEditingHandler.Publish)).
 		Methods("POST").
 		Name("publication_publish")
+
+	// withdraw publication
+	r.HandleFunc("/publication/{id}/publish/withdraw",
+		publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmWithdraw)).
+		Methods("GET").
+		Name("publication_confirm_withdraw")
+	r.HandleFunc("/publication/{id}/withdraw",
+		publicationEditingHandler.Wrap(publicationEditingHandler.Withdraw)).
+		Methods("POST").
+		Name("publication_withdraw")
+
+	// re-publish publication
+	r.HandleFunc("/publication/{id}/republish/confirm",
+		publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmRepublish)).
+		Methods("GET").
+		Name("publication_confirm_republish")
+	r.HandleFunc("/publication/{id}/republish",
+		publicationEditingHandler.Wrap(publicationEditingHandler.Republish)).
+		Methods("POST").
+		Name("publication_republish")
 
 	// change publication type
 	r.HandleFunc("/publication/{id}/change-type/confirm",

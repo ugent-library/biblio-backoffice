@@ -83,7 +83,15 @@ func (u *User) CanEditPublication(p *Publication) bool {
 }
 
 func (u *User) CanPublishPublication(p *Publication) bool {
-	return u.CanEditPublication(p) && p.Status != "public"
+	return u.CanEditPublication(p) && (p.Status != "public" && p.Status != "withdrawn")
+}
+
+func (u *User) CanWithdrawPublication(p *Publication) bool {
+	return u.CanEditPublication(p) && (p.Status != "withdrawn" && !p.Locked)
+}
+
+func (u *User) CanRepublishPublication(p *Publication) bool {
+	return u.CanEditPublication(p) && (p.Status == "withdrawn" && !p.Locked)
 }
 
 func (u *User) CanDeletePublication(p *Publication) bool {
@@ -152,7 +160,15 @@ func (u *User) CanEditDataset(d *Dataset) bool {
 }
 
 func (u *User) CanPublishDataset(d *Dataset) bool {
-	return u.CanEditDataset(d) && d.Status != "public"
+	return u.CanEditDataset(d) && (d.Status != "public" && d.Status != "withdrawn")
+}
+
+func (u *User) CanWithdrawDataset(d *Dataset) bool {
+	return u.CanEditDataset(d) && (d.Status != "withdrawn" && !d.Locked)
+}
+
+func (u *User) CanRepublishDataset(d *Dataset) bool {
+	return u.CanEditDataset(d) && (d.Status == "withdrawn" && !d.Locked)
 }
 
 func (u *User) CanDeleteDataset(d *Dataset) bool {
