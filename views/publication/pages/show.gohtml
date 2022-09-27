@@ -120,6 +120,13 @@
                         <div class="bc-toolbar-item my-2">
                             {{partial "shared/status" .Publication}}
                         </div>
+                        {{if .Publication.Locked}}
+                        <div class="bc-toolbar-item my-2">
+                            <span class="c-meta-item" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Locked for editing">
+                              <i class="if if-lock if--small if--muted"></i>
+                            </span>
+                        </div>
+                        {{end}}
                       </div>
                     </div>
                   </div>
