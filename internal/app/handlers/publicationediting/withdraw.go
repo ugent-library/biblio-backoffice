@@ -33,7 +33,7 @@ func (h *Handler) Withdraw(w http.ResponseWriter, r *http.Request, ctx Context) 
 		return
 	}
 
-	ctx.Publication.Status = "withdrawn"
+	ctx.Publication.Status = "returned"
 
 	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
 		errors := form.Errors(localize.ValidationErrors(ctx.Locale, validationErrs.(validation.Errors)))

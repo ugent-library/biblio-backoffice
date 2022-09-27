@@ -33,7 +33,7 @@ func (h *Handler) Withdraw(w http.ResponseWriter, r *http.Request, ctx Context) 
 		return
 	}
 
-	ctx.Dataset.Status = "withdrawn"
+	ctx.Dataset.Status = "returned"
 
 	if validationErrs := ctx.Dataset.Validate(); validationErrs != nil {
 		errors := form.Errors(localize.ValidationErrors(ctx.Locale, validationErrs.(validation.Errors)))

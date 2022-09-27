@@ -19,3 +19,8 @@ node_modules
 !.gitkeep
 
 go.work
+
+# Air
+.air.toml
+tmp
+root
