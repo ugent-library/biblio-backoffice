@@ -182,8 +182,8 @@ func datasetToMessage(d *models.Dataset) *api.Dataset {
 		msg.Status = api.Dataset_STATUS_PUBLIC
 	case "deleted":
 		msg.Status = api.Dataset_STATUS_DELETED
-	case "withdrawn":
-		msg.Status = api.Dataset_STATUS_WITHDRAWN
+	case "returned":
+		msg.Status = api.Dataset_STATUS_RETURNED
 	}
 
 	for _, val := range d.Abstract {
@@ -292,8 +292,8 @@ func messageToDataset(msg *api.Dataset) *models.Dataset {
 		d.Status = "public"
 	case api.Dataset_STATUS_DELETED:
 		d.Status = "deleted"
-	case api.Dataset_STATUS_WITHDRAWN:
-		d.Status = "withdrawn"
+	case api.Dataset_STATUS_RETURNED:
+		d.Status = "returned"
 	}
 
 	for _, val := range msg.Abstract {

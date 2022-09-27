@@ -196,7 +196,7 @@ message Publication {
 	    STATUS_PRIVATE = 0;
 	    STATUS_PUBLIC = 1;
 	    STATUS_DELETED = 2;
-	    STATUS_WITHDRAWN = 3;
+	    STATUS_RETURNED = 3;
     }
 
     enum Classification {
@@ -301,7 +301,7 @@ message Dataset {
 	    STATUS_PRIVATE = 0;
 	    STATUS_PUBLIC = 1;
 	    STATUS_DELETED = 2;
-	    STATUS_WITHDRAWN = 3;
+	    STATUS_RETURNED = 3;
     }
 
     string id = 1;
