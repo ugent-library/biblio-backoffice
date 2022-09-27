@@ -6,9 +6,9 @@ import (
 	"html/template"
 	"io"
 	"io/fs"
-	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"path"
 	"path/filepath"
 	"strings"
@@ -119,14 +119,12 @@ func (r *Renderer) MustParse() *Renderer {
 
 func (r *Renderer) Parse() (*Renderer, error) {
 	var (
-		layoutsTemplate  = template.New("")
-		partialsTemplate = template.New("")
-		viewTemplates    = map[string]*template.Template{}
+		layoutsTemplate = template.New("")
+		viewTemplates   = map[string]*template.Template{}
 	)
 
 	for _, funcs := range r.funcMaps {
 		layoutsTemplate.Funcs(funcs)
-		partialsTemplate.Funcs(funcs)
 	}
 
 	// parse layouts
@@ -138,7 +136,7 @@ func (r *Renderer) Parse() (*Renderer, error) {
 			return nil
 		}
 
-		content, err := ioutil.ReadFile(f)
+		content, err := os.ReadFile(f)
 		if err != nil {
 			return err
 		}
@@ -158,6 +156,11 @@ func (r *Renderer) Parse() (*Renderer, error) {
 		return r, err
 	}
 
+	partialsTemplate, err := layoutsTemplate.Clone()
+	if err != nil {
+		return r, err
+	}
+
 	// parse views and partials
 	err = filepath.WalkDir(r.dir, func(f string, d fs.DirEntry, err error) error {
 		if err != nil {
@@ -167,7 +170,7 @@ func (r *Renderer) Parse() (*Renderer, error) {
 			return nil
 		}
 
-		content, err := ioutil.ReadFile(f)
+		content, err := os.ReadFile(f)
 		if err != nil {
 			return err
 		}

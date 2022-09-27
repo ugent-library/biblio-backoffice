@@ -91,7 +91,9 @@
                 <ul class="list-group list-group-flush">
                     {{range .Hits.Hits}}
                     <li class="list-group-item">
-                        {{partial "publication/search_hit" ($.YieldHit .)}}
+                        {{layout "publication/summary" "publication/search_hit" ($.Yield
+                            "Publication" . 
+                            "PublicationURL" (pathFor "publication" "id" .ID|querySet "redirect-url" $.CurrentURL.String))}}
                     </li>
                     {{end}}
                 </ul>

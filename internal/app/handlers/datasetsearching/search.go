@@ -33,15 +33,6 @@ type YieldSearch struct {
 	ActionItems  []*ActionItem
 }
 
-type YieldHit struct {
-	Context
-	Dataset *models.Dataset
-}
-
-func (y YieldSearch) YieldHit(d *models.Dataset) YieldHit {
-	return YieldHit{y.Context, d}
-}
-
 func (h *Handler) Search(w http.ResponseWriter, r *http.Request, ctx Context) {
 	if ctx.UserRole == "curator" {
 		h.CurationSearch(w, r, ctx)

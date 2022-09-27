@@ -47,64 +47,10 @@
                         <div class="d-flex w-100">
                             <div class="w-100">
                                 <div class="d-flex align-items-start">
-                                    <a href="{{$pubURL}}">
-                                        {{partial "publication/thumbnail" .}}
-                                    </a>
-                                    <div class="list-group-item-content">
-                                        <div class="list-group-item-subline">
-                                            <div class="list-group-item-subline-left">
-                                                <span class="mr-3 pr-3 border-right">{{$.Locale.TS "publication_types" .Type}}{{with .Classification}}: {{.}}{{end}}</span>
-                                                {{partial "publication/access_level" .}}
-                                            </div>
-                                            <div class="list-group-item-subline-right">
-                                                <div class="dropdown dropleft">
-                                                    <button class="btn btn-link btn-icon-only btn-link-muted"
-                                                        type="button" data-toggle="dropdown"
-                                                        aria-haspopup="true" aria-expanded="false">
-                                                        <i class="if if-more"></i>
-                                                    </button>
-                                                    <div class="dropdown-menu">
-                                                        <a class="dropdown-item"
-                                                            href="{{$pubURL}}">
-                                                            <i class="if if-file-text"></i>
-                                                            <span>View details</span>
-                                                        </a>
-                                                        <button class="dropdown-item"
-                                                            hx-get="{{$pubDeleteURL}}"
-                                                            hx-target="#modals"
-                                                        >
-                                                            <i class="if if-delete"></i>
-                                                            <span>Delete</span>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="list-group-item-text">
-                                            <a href="{{$pubURL}}">
-                                                <h4 class="c-h4">{{.Title}}</h4>
-                                            </a>
-                                            {{with .Author}}{{partial "shared/contributors" (dict "Contributors" . "ContributorsURL" ($pubURL | querySet "show" "contributors"))}}{{end}}
-                                            <span class="c-body-small text-muted">
-                                                {{.Year}}{{with .Publication}}, {{.}}{{end}}
-                                            </span>
-                                        </div>
-                                        <div class="list-group-item-meta mt-5">
-                                            <div class="list-group-item-meta-left">
-                                                <div class="list-group-item-meta-item">
-                                                    {{partial "shared/status" .}}
-                                                </div>
-                                            </div>
-                                            <div class="list-group-item-meta-right">
-                                                <div class="list-group-item-meta-item">
-                                                    <span class="text-muted c-body-small">Biblio ID: {{.ID}}</span>
-                                                </div>
-                                                <div class="list-group-item-meta-item">
-                                                    <span class="text-muted c-body-small">Created {{timeElapsed .DateCreated "en"}}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    {{layout "publication/summary" "publication/add_multiple_summary" ($.Yield
+                                        "Publication" .
+                                        "PublicationURL" $pubURL
+                                        "PublicationDeleteURL" $pubDeleteURL)}}
                                 </div>
                             </div>
                         </div>

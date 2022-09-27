@@ -55,7 +55,7 @@
                         <div class="d-flex w-100">
                             <div class="w-100">
                                 <div class="d-flex align-items-start">
-                                    {{partial "publication/summary_body" .}}
+                                    {{partial "publication/summary" .}}
                                 </div>
                                 <div class="list-group mt-6">
                                     <a class="list-group-item list-group-item-action" href="{{pathFor "publication_add_single_description" "id" .Publication.ID|querySet "show" "description"}}">

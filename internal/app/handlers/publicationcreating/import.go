@@ -57,15 +57,6 @@ type YieldAddMultiple struct {
 	Hits        *models.PublicationHits
 }
 
-type YieldHit struct {
-	Context
-	Publication *models.Publication
-}
-
-func (y YieldAddMultiple) YieldHit(d *models.Publication) YieldHit {
-	return YieldHit{y.Context, d}
-}
-
 type YieldAddMultipleShow struct {
 	Context
 	PageTitle    string

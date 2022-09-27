@@ -29,7 +29,7 @@
         </div>
     </div>
     <div id="contributors-{{$role}}-body">
-        {{partial "publication/contributors_body" ($.YieldRole $role)}}
+        {{partial "publication/contributors_body" ($.Yield "Role" $role)}}
     </div>
 </div>
 {{end}}

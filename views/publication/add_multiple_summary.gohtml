@@ -1,0 +1,26 @@
+{{define "summary_actions"}}
+    <div class="bc-toolbar-item ml-auto ml-lg-0">
+        <div class="c-button-toolbar">
+            <div class="dropdown">
+                <button class="btn btn-link btn-link-p-0 btn-icon-only"
+                    type="button" data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="false">
+                    <i class="if if-more"></i>
+                </button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="{{.PublicationURL}}">
+                        <i class="if if-file-text"></i>
+                        <span>View details</span>
+                    </a>
+                    <button class="dropdown-item"
+                        hx-get="{{.PublicationDeleteURL}}"
+                        hx-target="#modals"
+                    >
+                        <i class="if if-delete"></i>
+                        <span>Delete</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+{{end}}

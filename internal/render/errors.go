@@ -33,11 +33,9 @@ func Unauthorized(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, AuthURL, http.StatusTemporaryRedirect)
-	return
 }
 
 // HTTP 403 error
 func Forbidden(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
-	return
 }

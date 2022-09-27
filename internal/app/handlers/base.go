@@ -35,6 +35,7 @@ type BaseHandler struct {
 	Localizer    *locale.Localizer
 }
 
+// also add fields to Yield method
 type BaseContext struct {
 	CurrentURL   *url.URL
 	Flash        []flash.Flash
@@ -44,6 +45,28 @@ type BaseContext struct {
 	OriginalUser *models.User
 	CSRFToken    string
 	CSRFTag      template.HTML
+}
+
+func (c BaseContext) Yield(pairs ...any) map[string]any {
+	yield := map[string]any{
+		"CurrentURL":   c.CurrentURL,
+		"Flash":        c.Flash,
+		"Locale":       c.Locale,
+		"User":         c.User,
+		"UserRole":     c.UserRole,
+		"OriginalUser": c.OriginalUser,
+		"CSRFToken":    c.CSRFToken,
+		"CSRFTag":      c.CSRFTag,
+	}
+
+	n := len(pairs)
+	for i := 0; i < n; i += 2 {
+		key := pairs[i].(string)
+		val := pairs[i+1]
+		yield[key] = val
+	}
+
+	return yield
 }
 
 func (h BaseHandler) Wrap(fn func(http.ResponseWriter, *http.Request, BaseContext)) http.HandlerFunc {

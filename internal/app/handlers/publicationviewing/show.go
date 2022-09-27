@@ -41,15 +41,6 @@ type YieldShowFiles struct {
 	ActiveSubNav string
 }
 
-type YieldShowContributorsRole struct {
-	YieldShowContributors
-	Role string
-}
-
-func (y YieldShowContributors) YieldRole(role string) YieldShowContributorsRole {
-	return YieldShowContributorsRole{y, role}
-}
-
 type YieldShowDatasets struct {
 	Context
 	SubNavs         []string
