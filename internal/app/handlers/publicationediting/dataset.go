@@ -175,7 +175,7 @@ func (h *Handler) searchRelatedDatasets(userID string, p *models.Publication, q 
 	}
 
 	return h.DatasetSearchService.
-		WithScope("status", "private", "public").
+		WithScope("status", "private", "public", "returned").
 		WithScope("creator.id|author.id", userID).
 		Search(args)
 }
