@@ -28,7 +28,7 @@
         </div>
     </div>
     <div id="contributors-{{$role}}-body">
-        {{partial "dataset/contributors_body" ($.Yield "Role" $role)}}
+        {{partial "dataset/contributors_body" ($.Yield "Dataset" $.Dataset "Role" $role)}}
     </div>
 </div>
 {{end}}

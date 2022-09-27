@@ -1,14 +1,20 @@
 <div class="list-group-item-main u-min-w-0">
     <div class="c-thumbnail-and-text align-items-start d-block d-lg-flex">
-        <a href="{{.PublicationURL}}">
-            {{partial "publication/thumbnail" .Publication}}
-        </a>
+        <div class="c-thumbnail c-thumbnail-1-1 c-thumbnail-small c-thumbnail-xl-large mb-6 mb-xl-0 flex-shrink-0">
+            <div class="c-thumbnail-inner">
+                <a href="{{.DatasetURL}}">
+                    <div class="c-thumbnail c-thumbnail--dataset c-thumbnail--medium">
+                        <i class="if if-database"></i>
+                    </div>
+                </a>
+            </div>
+        </div>
 
         <div class="c-thumbnail-text u-min-w-0">
             <div class="bc-toolbar bc-toolbar--auto mb-3">
                 <div class="bc-toolbar-left">
                     <div class="bc-toolbar-item my-2">
-                        {{partial "shared/status" .Publication}}
+                        {{partial "shared/status" .Dataset}}
                     </div>
                 </div>
                 <div class="bc-toolbar-right">
@@ -22,7 +28,7 @@
                                         <i class="if if-more"></i>
                                     </button>
                                     <div class="dropdown-menu">
-                                        <a class="dropdown-item" href="{{.PublicationURL}}">
+                                        <a class="dropdown-item" href="{{.DatasetURL}}">
                                             <i class="if if-file-text"></i>
                                             <span>View details</span>
                                         </a>
@@ -34,48 +40,44 @@
                 </div>
             </div>
 
-            <div class="bc-toolbar bc-toolbar--auto flex-column-reverse flex-lg-row align-items-stretch align-items-lg-center mt-n3">
-                <div class="bc-toolbar-left overflow-hidden flex-wrap">
-                    <span class="c-subline text-nowrap mr-3 pr-3 my-2 border-right">{{.Locale.TS "publication_types" .Publication.Type}}{{with .Publication.Classification}}: {{.}}{{end}}</span>
-                    {{partial "publication/access_level" .Publication}}
-                </div>
-            </div>
-
-            <a href="{{.PublicationURL}}">
-                <h4 class="list-group-item-title">{{.Publication.Title}}</h4>
+            <a href="{{.DatasetURL}}">
+                <h4 class="list-group-item-title">{{.Dataset.Title}}</h4>
             </a>
 
-            {{with .Publication.Author}}{{partial "shared/contributors" (dict "Contributors" . "ContributorsURL" ($.PublicationURL | querySet "show" "contributors"))}}{{end}}
+            {{with .Dataset.Author}}{{partial "shared/contributors" (dict "Contributors" . "ContributorsURL" ($.DatasetURL | querySet "show" "contributors"))}}{{end}}
 
             <div class="c-body-small text-muted my-2">
-                {{.Publication.Year}}{{with .Publication.Publication}}, {{.}}{{end}}
+                {{.Dataset.Year}},
+                <a class="link-primary" target="_blank" href="{{.Dataset.ResolveDOI}}">
+                    <span class="text-decoration-underline"> View in external repository</span>
+                    <i class="if if--small if-external-link"></i>
+                </a>
             </div>
 
             <div class="text-muted c-body-small text-truncate my-3">
-                Biblio ID:<code class="c-code ml-3">{{.Publication.ID}}</code>
+                Biblio ID:<code class="c-code ml-3">{{.Dataset.ID}}</code>
             </div>
 
             <div class="bc-toolbar bc-toolbar-responsive flex-wrap-reverse">
                 <div class="bc-toolbar-left">
                 </div>
                 <div class="bc-toolbar-right flex-wrap">
-                    <span class="text-muted c-body-small">Updated {{timeElapsed .Publication.DateUpdated "en"}}</span>
+                    <span class="text-muted c-body-small">Updated {{timeElapsed .Dataset.DateUpdated "en"}}</span>
                     <div class="bc-toolbar-item">
                         <ul class="c-meta-list c-meta-list-horizontal flex-nowrap">
-                            {{if .Publication.Locked}}
+                            {{if .Dataset.Locked}}
                             <li class="c-meta-item" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Locked for editing">
                                 <i class="if if-lock if--small if--muted"></i>
                             </li>
                             {{end}}
-                            {{if .Publication.RelatedDataset}}
+                            {{if .Dataset.RelatedPublication}}
                             <li class="c-meta-item" data-toggle="tooltip"
-                                title="{{len .Publication.RelatedDataset}} related datasets" data-placement="bottom">
+                                title="{{len .Dataset.RelatedPublication}} related publications" data-placement="bottom">
                                 <span class="text-muted c-body-small">
-                                    <i class="if if-database if--muted if--small"></i>{{len .Publication.RelatedDataset}}
+                                    <i class="if if-article if--muted if--small"></i>{{len .Dataset.RelatedPublication}}
                                 </span>
                             </li>
                             {{end}}
-                            {{partial "publication/orcid_status" .}}
                         </ul>
                     </div>
                 </div>

@@ -39,7 +39,9 @@
                         <div class="d-flex w-100">
                             <div class="w-100">
                                 <div class="d-flex align-items-start">
-                                    {{partial "publication/summary" .}}
+                                    {{partial "publication/summary" (.Yield
+                                        "Publication" .Publication
+                                        "PublicationURL" (pathFor "publication" "id" .Publication.ID))}}
                                 </div>
                             </div>
                         </div>
