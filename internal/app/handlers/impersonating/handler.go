@@ -86,6 +86,7 @@ func (h *Handler) CreateImpersonation(w http.ResponseWriter, r *http.Request, ct
 	session.Values[handlers.OriginalUserIDKey] = ctx.User.ID
 	session.Values[handlers.OriginalUserRoleKey] = ctx.UserRole
 	session.Values[handlers.UserIDKey] = user.ID
+	session.Values[handlers.UserRoleKey] = "user"
 
 	if err = session.Save(r, w); err != nil {
 		h.Logger.Errorw("create impersonation: session could not be saved:", "errors", err, "user", ctx.User.ID)
