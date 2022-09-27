@@ -74,7 +74,7 @@
                             <div class="d-flex align-items-start">
                                 {{partial "publication/summary" ($.Yield
                                     "Publication" .Publication
-                                    "PublicationURL" (pathFor "publication" "id" .ID|querySet "redirect-url" $.CurrentURL.String))}}
+                                    "PublicationURL" (pathFor "publication" "id" .Publication.ID|querySet "redirect-url" $.CurrentURL.String))}}
                             </div>
                         </div>
                     </div>

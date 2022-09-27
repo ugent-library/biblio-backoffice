@@ -91,7 +91,9 @@
                 <ul class="list-group list-group-flush">
                     {{range .Hits.Hits}}
                     <li class="list-group-item">
-                        {{partial "dataset/search_hit" ($.Yield "Dataset" .)}}
+                        {{layout "dataset/summary" "dataset/search_hit" ($.Yield
+                            "Dataset" .
+                            "DatasetURL" (pathFor "dataset" "id" .ID))}}
                     </li>
                     {{end}}
                 </ul>
