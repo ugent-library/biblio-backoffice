@@ -151,7 +151,6 @@ func init() {
 	message.SetString(language.English, "publication_publishing_statuses.accepted", "Accepted")
 	message.SetString(language.English, "publication_publishing_statuses.published", "Published")
 
-	message.SetString(language.English, "publication_statuses.new", "New")
 	message.SetString(language.English, "publication_statuses.private", "Draft")
 	message.SetString(language.English, "publication_statuses.public", "Public")
 	message.SetString(language.English, "publication_statuses.returned", "Withdrawn")
