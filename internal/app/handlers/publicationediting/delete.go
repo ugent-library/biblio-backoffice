@@ -51,7 +51,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request, ctx Context) {
 
 	flash := flash.SimpleFlash().
 		WithLevel("success").
-		WithBody(template.HTML("<p>Publication was successfully published.</p>"))
+		WithBody(template.HTML("<p>Publication was successfully deleted.</p>"))
 
 	h.AddSessionFlash(r, w, *flash)
 

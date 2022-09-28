@@ -181,6 +181,13 @@ func (h *Handler) AddSingleImport(w http.ResponseWriter, r *http.Request, ctx Co
 	p.Status = "private"
 	p.Classification = "U"
 
+	// Set the first department of the user if the user resides under at least one department
+	if len(ctx.User.Department) > 0 {
+		p.Department = []models.PublicationDepartment{
+			{ID: ctx.User.Department[0].ID},
+		}
+	}
+
 	if validationErrs := p.Validate(); validationErrs != nil {
 		errors := form.Errors(localize.ValidationErrors(ctx.Locale, err.(validation.Errors)))
 		render.Layout(w, "layouts/default", "publication/pages/add_identifier", YieldAddSingle{
@@ -570,6 +577,14 @@ func (h *Handler) importPublications(user *models.User, source string, file io.R
 			Creator:        &models.PublicationUser{ID: user.ID, Name: user.FullName},
 			User:           &models.PublicationUser{ID: user.ID, Name: user.FullName},
 		}
+
+		// Set the department if the user was assigned to at least one department
+		if len(user.Department) > 0 {
+			p.Department = []models.PublicationDepartment{
+				{ID: user.Department[0].ID},
+			}
+		}
+
 		if err := dec.Decode(&p); errors.Is(err, io.EOF) {
 			break
 		} else if err != nil {
