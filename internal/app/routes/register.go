@@ -211,9 +211,12 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		Name("task_status")
 
 	// dashboard
-	r.HandleFunc("/dashboard", dashboardHandler.Wrap(dashboardHandler.Publications)).
+	r.HandleFunc("/dashboard/publications/{type}", dashboardHandler.Wrap(dashboardHandler.Publications)).
 		Methods("GET").
-		Name("dashboard")
+		Name("dashboard_publications")
+	r.HandleFunc("/dashboard/datasets/{type}", dashboardHandler.Wrap(dashboardHandler.Datasets)).
+		Methods("GET").
+		Name("dashboard_datasets")
 
 	// search datasets
 	r.HandleFunc("/dataset",

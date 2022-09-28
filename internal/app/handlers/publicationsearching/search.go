@@ -127,7 +127,7 @@ func (h *Handler) CurationSearch(w http.ResponseWriter, r *http.Request, ctx Con
 
 	ctx.SearchArgs.WithFacets(vocabularies.Map["publication_curation_facets"]...)
 
-	searcher := h.PublicationSearchService.WithScope("status", "private", "public")
+	searcher := h.PublicationSearchService.WithScope("status", "private", "public", "returned")
 	hits, err := searcher.Search(ctx.SearchArgs)
 	if err != nil {
 		h.Logger.Errorw("publication search: could not execute search", "errors", err, "user", ctx.User.ID)

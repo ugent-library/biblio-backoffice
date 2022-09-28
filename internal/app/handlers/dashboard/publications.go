@@ -2,6 +2,7 @@ package dashboard
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"net/url"
 
@@ -23,7 +24,19 @@ type YieldPublications struct {
 }
 
 func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Context) {
-	faculties := vocabularies.Map["faculties"]
+	var faculties []string
+
+	var activeNav string
+
+	switch ctx.Type {
+	case "socs":
+		faculties = vocabularies.Map["faculties_socs"]
+		activeNav = "dashboard_publications_socs"
+	default:
+		faculties = vocabularies.Map["faculties_core"]
+		activeNav = "dashboard_publications_faculties"
+	}
+
 	ptypes := vocabularies.Map["publication_types"]
 
 	faculties = append([]string{"all"}, faculties...)
@@ -37,7 +50,7 @@ func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Conte
 	uSearcher := h.PublicationSearchService.WithScope("status", "public", "returned")
 	baseSearchUrl := h.PathFor("publications")
 
-	uPublications, err := generateDashboard(faculties, ptypes, uSearcher, baseSearchUrl, func(args *models.SearchArgs) *models.SearchArgs {
+	uPublications, err := generatePublicationsDashboard(faculties, ptypes, uSearcher, baseSearchUrl, func(args *models.SearchArgs) *models.SearchArgs {
 		args.WithFilter("classification", "U")
 		args.WithFilter("status", "public")
 		return args
@@ -53,7 +66,7 @@ func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Conte
 
 	aSearcher := h.PublicationSearchService.WithScope("status", "private", "public", "returned")
 
-	aPublications, err := generateDashboard(faculties, ptypes, aSearcher, baseSearchUrl, func(args *models.SearchArgs) *models.SearchArgs {
+	aPublications, err := generatePublicationsDashboard(faculties, ptypes, aSearcher, baseSearchUrl, func(args *models.SearchArgs) *models.SearchArgs {
 		args.WithFilter("publication_status", "accepted")
 		return args
 	})
@@ -64,10 +77,12 @@ func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Conte
 		return
 	}
 
+	log.Println(activeNav)
+
 	render.Layout(w, "layouts/default", "dashboard/pages/publications", YieldPublications{
 		Context:       ctx,
 		PageTitle:     "Dashboard - Publications - Biblio",
-		ActiveNav:     "dashboard",
+		ActiveNav:     activeNav,
 		UPublications: uPublications,
 		APublications: aPublications,
 		Faculties:     faculties,
@@ -75,7 +90,7 @@ func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Conte
 	})
 }
 
-func generateDashboard(faculties []string, ptypes []string, searcher backends.PublicationSearchService, baseSearchUrl *url.URL, fn func(args *models.SearchArgs) *models.SearchArgs) (map[string]map[string][]string, error) {
+func generatePublicationsDashboard(faculties []string, ptypes []string, searcher backends.PublicationSearchService, baseSearchUrl *url.URL, fn func(args *models.SearchArgs) *models.SearchArgs) (map[string]map[string][]string, error) {
 	var publications = make(map[string]map[string][]string)
 
 	// pool := pond.New(100, 300)
@@ -92,6 +107,8 @@ func generateDashboard(faculties []string, ptypes []string, searcher backends.Pu
 
 			if fac != "all" {
 				searchArgs.WithFilter("faculty", fac)
+			} else {
+				searchArgs.WithFilter("faculty", faculties...)
 			}
 
 			if ptype != "all" {
