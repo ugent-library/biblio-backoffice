@@ -126,6 +126,13 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 	d.User = &models.DatasetUser{ID: ctx.User.ID, Name: ctx.User.FullName}
 	d.Status = "private"
 
+	// Set the department if the user was assigned to at least one department
+	if len(ctx.User.Department) > 0 {
+		d.Department = []models.DatasetDepartment{
+			{ID: ctx.User.Department[0].ID},
+		}
+	}
+
 	if validationErrs := d.Validate(); validationErrs != nil {
 		errors := form.Errors(localize.ValidationErrors(ctx.Locale, validationErrs.(validation.Errors)))
 		render.Layout(w, "layouts/default", "dataset/pages/add", YieldAdd{
