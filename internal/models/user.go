@@ -94,6 +94,10 @@ func (u *User) CanRepublishPublication(p *Publication) bool {
 	return u.CanEditPublication(p) && (p.Status == "returned" && !p.Locked)
 }
 
+func (u *User) CanLockPublication(p *Publication) bool {
+	return u.Role == "admin"
+}
+
 func (u *User) CanDeletePublication(p *Publication) bool {
 	if p.Status == "deleted" {
 		return false
@@ -169,6 +173,10 @@ func (u *User) CanWithdrawDataset(d *Dataset) bool {
 
 func (u *User) CanRepublishDataset(d *Dataset) bool {
 	return u.CanEditDataset(d) && (d.Status == "returned" && !d.Locked)
+}
+
+func (u *User) CanLockDataset(d *Dataset) bool {
+	return u.Role == "admin"
 }
 
 func (u *User) CanDeleteDataset(d *Dataset) bool {

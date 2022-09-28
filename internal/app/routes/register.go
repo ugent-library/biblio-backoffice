@@ -316,6 +316,16 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		Methods("POST").
 		Name("dataset_republish")
 
+	// lock dataset
+	r.HandleFunc("/dataset/{id}/lock",
+		datasetEditingHandler.Wrap(datasetEditingHandler.Lock)).
+		Methods("POST").
+		Name("dataset_lock")
+	r.HandleFunc("/dataset/{id}/unlock",
+		datasetEditingHandler.Wrap(datasetEditingHandler.Unlock)).
+		Methods("POST").
+		Name("dataset_unlock")
+
 	// delete dataset
 	r.HandleFunc("/dataset/{id}/confirm-delete",
 		datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmDelete)).
@@ -616,7 +626,7 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		Name("publication_publish")
 
 	// withdraw publication
-	r.HandleFunc("/publication/{id}/publish/withdraw",
+	r.HandleFunc("/publication/{id}/withdraw/confirm",
 		publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmWithdraw)).
 		Methods("GET").
 		Name("publication_confirm_withdraw")
@@ -634,6 +644,16 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		publicationEditingHandler.Wrap(publicationEditingHandler.Republish)).
 		Methods("POST").
 		Name("publication_republish")
+
+	// lock publication
+	r.HandleFunc("/publication/{id}/lock",
+		publicationEditingHandler.Wrap(publicationEditingHandler.Lock)).
+		Methods("POST").
+		Name("publication_lock")
+	r.HandleFunc("/publication/{id}/unlock",
+		publicationEditingHandler.Wrap(publicationEditingHandler.Unlock)).
+		Methods("POST").
+		Name("publication_unlock")
 
 	// change publication type
 	r.HandleFunc("/publication/{id}/change-type/confirm",
