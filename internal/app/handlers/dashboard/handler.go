@@ -5,6 +5,7 @@ import (
 
 	"github.com/ugent-library/biblio-backend/internal/app/handlers"
 	"github.com/ugent-library/biblio-backend/internal/backends"
+	"github.com/ugent-library/biblio-backend/internal/bind"
 	"github.com/ugent-library/biblio-backend/internal/render"
 )
 
@@ -16,6 +17,7 @@ type Handler struct {
 
 type Context struct {
 	handlers.BaseContext
+	Type string
 }
 
 func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) http.HandlerFunc {
@@ -27,6 +29,7 @@ func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) htt
 
 		context := Context{
 			BaseContext: ctx,
+			Type:        bind.PathValues(r).Get("type"),
 		}
 
 		fn(w, r, context)
