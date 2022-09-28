@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
@@ -121,8 +120,6 @@ func generateDatasetsDashboard(faculties []string, ptypes []string, searcher bac
 	}
 
 	// group.Wait()
-
-	spew.Dump(datasets)
 
 	return datasets, nil
 }
