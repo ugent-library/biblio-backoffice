@@ -80,11 +80,31 @@ func detailsForm(user *models.User, l *locale.Locale, p *models.Publication, err
 		})
 	}
 
-	section1 = append(section1, &display.Text{
-		Label:   l.T("builder.classification"),
-		Value:   l.TS("publication_classifications", p.Classification),
-		Tooltip: l.T("tooltip.publication.classification"),
-	})
+	if user.CanCurate() {
+		vals := p.ClassificationChoices()
+		opts := make([]form.SelectOption, len(vals))
+		for i, v := range vals {
+			opts[i] = form.SelectOption{
+				Value: v,
+				Label: l.TS("publication_classifications", v),
+			}
+		}
+
+		section1 = append(section1, &form.Select{
+			Name:    "classification",
+			Label:   l.T("builder.classification"),
+			Options: opts,
+			Value:   p.Classification,
+			Cols:    3,
+			Error:   localize.ValidationErrorAt(l, errors, "/classification"),
+		})
+	} else {
+		section1 = append(section1, &display.Text{
+			Label:   l.T("builder.classification"),
+			Value:   l.TS("publication_classifications", p.Classification),
+			Tooltip: l.T("tooltip.publication.classification"),
+		})
+	}
 
 	if len(section1) > 0 {
 		f.AddSection(section1...)

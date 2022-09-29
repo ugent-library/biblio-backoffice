@@ -18,6 +18,7 @@ type BindDetails struct {
 	AlternativeTitle        []string `form:"alternative_title"`
 	ArticleNumber           string   `form:"article_number"`
 	ArxivID                 string   `form:"arxiv_id"`
+	Classification          string   `form:"classification"`
 	ConferenceType          string   `form:"conference_type"`
 	DefenseDate             string   `form:"defense_date"`
 	DefensePlace            string   `form:"defense_place"`
@@ -98,6 +99,7 @@ func bindToPublication(b *BindDetails, p *models.Publication, user *models.User)
 	p.WOSID = b.WOSID
 	p.Year = b.Year
 	if user.CanCurate() {
+		p.Classification = b.Classification
 		p.WOSType = b.WOSType
 	}
 }
