@@ -17,6 +17,7 @@ type BindDetails struct {
 	AlternativeTitle        []string `form:"alternative_title"`
 	ArticleNumber           string   `form:"article_number"`
 	ArxivID                 string   `form:"arxiv_id"`
+	Classification          string   `form:"classification"`
 	ConferenceType          string   `form:"conference_type"`
 	DefenseDate             string   `form:"defense_date"`
 	DefensePlace            string   `form:"defense_place"`
@@ -126,6 +127,7 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 	p.Year = b.Year
 
 	if ctx.User.CanCurate() {
+		p.Classification = b.Classification
 		p.WOSType = b.WOSType
 	}
 

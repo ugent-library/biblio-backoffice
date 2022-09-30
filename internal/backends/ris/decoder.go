@@ -108,6 +108,13 @@ func mapRecord(r Record, p *models.Publication) {
 				p.Type = "conference"
 			}
 		case "AF", "AU":
+			// give preference to AF over AU
+			if k == "AU" && p.Author != nil {
+				continue
+			}
+			if k == "AF" {
+				p.Author = nil
+			}
 			for _, val := range v {
 				nameParts := reSplit.Split(val, -1)
 				c := &models.Contributor{FullName: val, LastName: nameParts[0]}

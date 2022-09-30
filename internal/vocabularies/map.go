@@ -162,13 +162,11 @@ var Map = map[string][]string{
 		"miscellaneous",
 	},
 	"visible_publication_statuses": {
-		"new",
 		"private",
 		"public",
 		"returned",
 	},
 	"publication_statuses": {
-		"new",
 		"private",
 		"returned",
 		"public",
