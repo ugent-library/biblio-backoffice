@@ -30,24 +30,28 @@ type YieldAbstracts struct {
 }
 type YieldAddAbstract struct {
 	Context
-	Form *form.Form
+	Form     *form.Form
+	Conflict bool
 }
 type YieldEditAbstract struct {
 	Context
 	AbstractID string
 	Form       *form.Form
+	Conflict   bool
 }
 type YieldDeleteAbstract struct {
 	Context
 	AbstractID string
+	Conflict   bool
 }
 
 func (h *Handler) AddAbstract(w http.ResponseWriter, r *http.Request, ctx Context) {
 	form := abstractForm(ctx.Locale, ctx.Dataset, &models.Text{}, nil)
 
 	render.Layout(w, "show_modal", "dataset/add_abstract", YieldAddAbstract{
-		Context: ctx,
-		Form:    form,
+		Context:  ctx,
+		Form:     form,
+		Conflict: false,
 	})
 }
 
@@ -68,8 +72,9 @@ func (h *Handler) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 
 	if validationErrs := ctx.Dataset.Validate(); validationErrs != nil {
 		render.Layout(w, "refresh_modal", "dataset/add_abstract", YieldAddAbstract{
-			Context: ctx,
-			Form:    abstractForm(ctx.Locale, ctx.Dataset, &abstract, validationErrs.(validation.Errors)),
+			Context:  ctx,
+			Form:     abstractForm(ctx.Locale, ctx.Dataset, &abstract, validationErrs.(validation.Errors)),
+			Conflict: false,
 		})
 		return
 	}
@@ -78,7 +83,11 @@ func (h *Handler) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("dataset.conflict_error"))
+		render.Layout(w, "refresh_modal", "dataset/add_abstract", YieldAddAbstract{
+			Context:  ctx,
+			Form:     abstractForm(ctx.Locale, ctx.Dataset, &abstract, nil),
+			Conflict: true,
+		})
 		return
 	}
 
@@ -102,7 +111,8 @@ func (h *Handler) EditAbstract(w http.ResponseWriter, r *http.Request, ctx Conte
 	}
 
 	abstract := ctx.Dataset.GetAbstract(b.AbstractID)
-	// TODO: it this a non existing id, or a preliminary conflict error?
+
+	// TODO catch non-existing item in UI
 	if abstract == nil {
 		h.Logger.Warnf("edit dataset abstract: Could not fetch the abstract:", "dataset", ctx.Dataset.ID, "abstract", b.AbstractID, "user", ctx.User.ID)
 		render.NotFoundError(
@@ -117,6 +127,7 @@ func (h *Handler) EditAbstract(w http.ResponseWriter, r *http.Request, ctx Conte
 		Context:    ctx,
 		AbstractID: b.AbstractID,
 		Form:       abstractForm(ctx.Locale, ctx.Dataset, abstract, nil),
+		Conflict:   false,
 	})
 }
 
@@ -130,25 +141,32 @@ func (h *Handler) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 
 	// get pointer to abstract and manipulate in place
 	abstract := ctx.Dataset.GetAbstract(b.AbstractID)
+
 	if abstract == nil {
-		h.Logger.Warnf("update dataset abstract: Could not fetch the abstract:", "dataset", ctx.Dataset.ID, "abstract", b.AbstractID, "user", ctx.User.ID)
-		render.NotFoundError(
-			w,
-			r,
-			fmt.Errorf("no abstract found for %s in dataset %s", b.AbstractID, ctx.Dataset.ID),
-		)
-		return
-	}
-	abstract.Text = b.Text
-	abstract.Lang = b.Lang
-
-	if validationErrs := ctx.Dataset.Validate(); validationErrs != nil {
-		form := abstractForm(ctx.Locale, ctx.Dataset, abstract, validationErrs.(validation.Errors))
-
+		abstract := &models.Text{
+			Text: b.Text,
+			Lang: b.Lang,
+		}
 		render.Layout(w, "refresh_modal", "dataset/edit_abstract", YieldEditAbstract{
 			Context:    ctx,
 			AbstractID: b.AbstractID,
-			Form:       form,
+			Form:       abstractForm(ctx.Locale, ctx.Dataset, abstract, nil),
+			Conflict:   true,
+		})
+		return
+	}
+
+	abstract.Text = b.Text
+	abstract.Lang = b.Lang
+
+	ctx.Dataset.SetAbstract(abstract)
+
+	if validationErrs := ctx.Dataset.Validate(); validationErrs != nil {
+		render.Layout(w, "refresh_modal", "dataset/edit_abstract", YieldEditAbstract{
+			Context:    ctx,
+			AbstractID: b.AbstractID,
+			Form:       abstractForm(ctx.Locale, ctx.Dataset, abstract, validationErrs.(validation.Errors)),
+			Conflict:   false,
 		})
 		return
 	}
@@ -157,7 +175,12 @@ func (h *Handler) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "show_modal", "error_dialog", ctx.Locale.T("dataset.conflict_error"))
+		render.Layout(w, "refresh_modal", "dataset/edit_abstract", YieldEditAbstract{
+			Context:    ctx,
+			AbstractID: b.AbstractID,
+			Form:       abstractForm(ctx.Locale, ctx.Dataset, abstract, nil),
+			Conflict:   true,
+		})
 		return
 	}
 
@@ -180,9 +203,12 @@ func (h *Handler) ConfirmDeleteAbstract(w http.ResponseWriter, r *http.Request, 
 		return
 	}
 
+	// TODO catch non-existing item in UI
+
 	render.Layout(w, "show_modal", "dataset/confirm_delete_abstract", YieldDeleteAbstract{
 		Context:    ctx,
 		AbstractID: b.AbstractID,
+		Conflict:   false,
 	})
 }
 
@@ -194,17 +220,13 @@ func (h *Handler) DeleteAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 		return
 	}
 
-	/*
-		ignore possibility that abstract id is already removed:
-		conflict resolving will solve this anyway
-	*/
 	ctx.Dataset.RemoveAbstract(b.AbstractID)
 
 	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "show_modal", "error_dialog", ctx.Locale.T("dataset.conflict_error"))
+		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("dataset.conflict_error"))
 		return
 	}
 

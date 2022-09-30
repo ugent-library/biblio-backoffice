@@ -115,6 +115,8 @@ func (h *Handler) ConfirmDeletePublication(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
+	// TODO catch non-existing item in UI
+
 	render.Layout(w, "show_modal", "dataset/confirm_delete_publication", YieldDeletePublication{
 		Context:       ctx,
 		PublicationID: b.PublicationID,

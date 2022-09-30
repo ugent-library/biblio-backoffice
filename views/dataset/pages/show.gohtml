@@ -12,7 +12,7 @@
                     </div>
                 </div>
                 <div class="bc-toolbar-right">
-                   {{if .User.CanWithdrawDataset .Dataset}}
+                   {{if and (.User.CanWithdrawDataset .Dataset) (eq .Dataset.Status "public") (not .Dataset.Locked)}}
                     <div class="bc-toolbar-item">
                         <button class="btn btn-outline-danger"
                             hx-get="{{pathFor "dataset_confirm_withdraw" "id" .Dataset.ID|querySet "redirect-url" .CurrentURL.String}}"
@@ -23,7 +23,7 @@
                         </button>
                     </div>
                     {{end}}
-                    {{if .User.CanRepublishDataset .Dataset}}
+                    {{if and (.User.CanRepublishDataset .Dataset) (eq .Dataset.Status "returned") (not .Dataset.Locked)}}
                     <div class="bc-toolbar-item">
                         <button class="btn btn-success"
                             hx-get="{{pathFor "dataset_confirm_republish" "id" .Dataset.ID|querySet "redirect-url" .CurrentURL.String}}"
@@ -33,7 +33,7 @@
                         </button>
                     </div>
                     {{end}}
-                    {{if .User.CanPublishDataset .Dataset}}
+                    {{if and (.User.CanPublishDataset .Dataset) (ne .Dataset.Status "returned") (ne .Dataset.Status "public") (not .Dataset.Locked)}}
                     <div class="bc-toolbar-item">
                         <button class="btn btn-success"
                             hx-get="{{pathFor "dataset_confirm_publish" "id" .Dataset.ID|querySet "redirect-url" .RedirectURL}}"

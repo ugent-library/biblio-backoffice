@@ -115,6 +115,8 @@ func (h *Handler) ConfirmDeleteDataset(w http.ResponseWriter, r *http.Request, c
 		return
 	}
 
+	// TODO catch non-existing item in UI
+
 	render.Layout(w, "show_modal", "publication/confirm_delete_dataset", YieldDeleteDataset{
 		Context:   ctx,
 		DatasetID: b.DatasetID,

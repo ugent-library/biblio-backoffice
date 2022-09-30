@@ -37,7 +37,8 @@ type YieldDetails struct {
 
 type YieldEditDetails struct {
 	Context
-	Form *form.Form
+	Form     *form.Form
+	Conflict bool
 }
 
 func (h *Handler) EditDetails(w http.ResponseWriter, r *http.Request, ctx Context) {
@@ -63,8 +64,9 @@ func (h *Handler) EditDetailsAccessLevel(w http.ResponseWriter, r *http.Request,
 	}
 
 	render.Layout(w, "refresh_modal", "dataset/edit_details", YieldEditDetails{
-		Context: ctx,
-		Form:    detailsForm(ctx.Locale, dataset, nil),
+		Context:  ctx,
+		Form:     detailsForm(ctx.Locale, dataset, nil),
+		Conflict: false,
 	})
 }
 
@@ -96,11 +98,10 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 	ctx.Dataset.Year = b.Year
 
 	if validationErrs := ctx.Dataset.Validate(); validationErrs != nil {
-		form := detailsForm(ctx.Locale, ctx.Dataset, validationErrs.(validation.Errors))
-
 		render.Layout(w, "refresh_modal", "dataset/edit_details", YieldEditDetails{
-			Context: ctx,
-			Form:    form,
+			Context:  ctx,
+			Form:     detailsForm(ctx.Locale, ctx.Dataset, validationErrs.(validation.Errors)),
+			Conflict: false,
 		})
 		return
 	}
@@ -109,7 +110,11 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("dataset.conflict_error"))
+		render.Layout(w, "refresh_modal", "dataset/edit_details", YieldEditDetails{
+			Context:  ctx,
+			Form:     detailsForm(ctx.Locale, ctx.Dataset, nil),
+			Conflict: true,
+		})
 		return
 	}
 

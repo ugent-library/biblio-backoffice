@@ -158,6 +158,14 @@ func (d *Dataset) GetAbstract(id string) *Text {
 	return nil
 }
 
+func (d *Dataset) SetAbstract(t *Text) {
+	for i, abstract := range d.Abstract {
+		if abstract.ID == t.ID {
+			d.Abstract[i] = *t
+		}
+	}
+}
+
 func (d *Dataset) AddAbstract(t *Text) {
 	t.ID = ulid.MustGenerate()
 	d.Abstract = append(d.Abstract, *t)

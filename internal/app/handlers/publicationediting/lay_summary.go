@@ -30,12 +30,14 @@ type YieldLaySummaries struct {
 }
 type YieldAddLaySummary struct {
 	Context
-	Form *form.Form
+	Form     *form.Form
+	Conflict bool
 }
 type YieldEditLaySummary struct {
 	Context
 	LaySummaryID string
 	Form         *form.Form
+	Conflict     bool
 }
 type YieldDeleteLaySummary struct {
 	Context
@@ -43,16 +45,15 @@ type YieldDeleteLaySummary struct {
 }
 
 func (h *Handler) AddLaySummary(w http.ResponseWriter, r *http.Request, ctx Context) {
-	form := laySummaryForm(ctx.Locale, ctx.Publication, &models.Text{}, nil)
-
 	render.Layout(w, "show_modal", "publication/add_lay_summary", YieldAddLaySummary{
-		Context: ctx,
-		Form:    form,
+		Context:  ctx,
+		Form:     laySummaryForm(ctx.Locale, ctx.Publication, &models.Text{}, nil),
+		Conflict: false,
 	})
 }
 
 func (h *Handler) CreateLaySummary(w http.ResponseWriter, r *http.Request, ctx Context) {
-	b := BindLaySummary{}
+	var b BindLaySummary
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
 		h.Logger.Warnw("create publication lay summary: could not bind request arguments", "error", err, "request", r)
 		render.BadRequest(w, r, err)
@@ -63,13 +64,15 @@ func (h *Handler) CreateLaySummary(w http.ResponseWriter, r *http.Request, ctx C
 		Lang: b.Lang,
 		Text: b.Text,
 	}
+
 	ctx.Publication.AddLaySummary(&laySummary)
 
 	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
 		h.Logger.Warnw("create publication lay summary: could not validate contributor:", "errors", validationErrs, "identifier", ctx.Publication.ID)
 		render.Layout(w, "refresh_modal", "publication/add_lay_summary", YieldAddLaySummary{
-			Context: ctx,
-			Form:    laySummaryForm(ctx.Locale, ctx.Publication, &laySummary, validationErrs.(validation.Errors)),
+			Context:  ctx,
+			Form:     laySummaryForm(ctx.Locale, ctx.Publication, &laySummary, validationErrs.(validation.Errors)),
+			Conflict: false,
 		})
 		return
 	}
@@ -78,8 +81,11 @@ func (h *Handler) CreateLaySummary(w http.ResponseWriter, r *http.Request, ctx C
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		h.Logger.Warnf("create publication lay summary: snapstore detected a conflicting publication:", "errors", errors.As(err, &conflict), "identifier", ctx.Publication.ID)
-		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("publication.conflict_error"))
+		render.Layout(w, "refresh_modal", "publication/add_lay_summary", YieldAddLaySummary{
+			Context:  ctx,
+			Form:     laySummaryForm(ctx.Locale, ctx.Publication, &laySummary, nil),
+			Conflict: true,
+		})
 		return
 	}
 
@@ -95,7 +101,7 @@ func (h *Handler) CreateLaySummary(w http.ResponseWriter, r *http.Request, ctx C
 }
 
 func (h *Handler) EditLaySummary(w http.ResponseWriter, r *http.Request, ctx Context) {
-	b := BindLaySummary{}
+	var b BindLaySummary
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
 		h.Logger.Warnw("edit publication lay summary: could not bind request arguments", "error", err, "request", r)
 		render.BadRequest(w, r, err)
@@ -103,6 +109,8 @@ func (h *Handler) EditLaySummary(w http.ResponseWriter, r *http.Request, ctx Con
 	}
 
 	laySummary := ctx.Publication.GetLaySummary(b.LaySummaryID)
+
+	// TODO catch non-existing item in UI
 	if laySummary == nil {
 		render.BadRequest(
 			w,
@@ -127,31 +135,31 @@ func (h *Handler) UpdateLaySummary(w http.ResponseWriter, r *http.Request, ctx C
 		return
 	}
 
-	/*
-		TODO: this may throw a "bad request"
-		when it should be throwing a conflict error.
-		Always throw a conflict error (no one just "knows" an invalid id)?
-	*/
 	laySummary := ctx.Publication.GetLaySummary(b.LaySummaryID)
+
 	if laySummary == nil {
-		h.Logger.Warnw("update publication lay summary: could not get lay summary", "laysummary", b.LaySummaryID, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.BadRequest(
-			w,
-			r,
-			fmt.Errorf("no lay summary found for %s in publication %s", b.LaySummaryID, ctx.Publication.ID),
-		)
+		laySummary := &models.Text{
+			Text: b.Text,
+			Lang: b.Lang,
+		}
+		render.Layout(w, "refresh_modal", "publication/edit_lay_summary", YieldEditLaySummary{
+			Context:      ctx,
+			LaySummaryID: b.LaySummaryID,
+			Form:         laySummaryForm(ctx.Locale, ctx.Publication, laySummary, nil),
+			Conflict:     true,
+		})
 		return
 	}
+
 	laySummary.Text = b.Text
 	laySummary.Lang = b.Lang
 
 	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
-		form := laySummaryForm(ctx.Locale, ctx.Publication, laySummary, validationErrs.(validation.Errors))
-
 		render.Layout(w, "refresh_modal", "publication/edit_lay_summary", YieldEditLaySummary{
 			Context:      ctx,
 			LaySummaryID: b.LaySummaryID,
-			Form:         form,
+			Form:         laySummaryForm(ctx.Locale, ctx.Publication, laySummary, validationErrs.(validation.Errors)),
+			Conflict:     false,
 		})
 		return
 	}
@@ -160,12 +168,17 @@ func (h *Handler) UpdateLaySummary(w http.ResponseWriter, r *http.Request, ctx C
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("publication.conflict_error"))
+		render.Layout(w, "refresh_modal", "publication/edit_lay_summary", YieldEditLaySummary{
+			Context:      ctx,
+			LaySummaryID: b.LaySummaryID,
+			Form:         laySummaryForm(ctx.Locale, ctx.Publication, laySummary, nil),
+			Conflict:     true,
+		})
 		return
 	}
 
 	if err != nil {
-		h.Logger.Errorf("update publication details: Could not save the publication:", "error", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
+		h.Logger.Errorf("update publication lay summary: Could not save the publication:", "error", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -183,6 +196,8 @@ func (h *Handler) ConfirmDeleteLaySummary(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	// TODO catch non-existing item
+
 	render.Layout(w, "show_modal", "publication/confirm_delete_lay_summary", YieldDeleteLaySummary{
 		Context:      ctx,
 		LaySummaryID: b.LaySummaryID,
@@ -197,10 +212,6 @@ func (h *Handler) DeleteLaySummary(w http.ResponseWriter, r *http.Request, ctx C
 		return
 	}
 
-	/*
-		Note: ignore fact that lay summary is already removed:
-		conflicting resolving will solve this
-	*/
 	ctx.Publication.RemoveLaySummary(b.LaySummaryID)
 
 	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication)

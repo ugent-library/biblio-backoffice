@@ -31,12 +31,14 @@ type YieldLinks struct {
 }
 type YieldAddLink struct {
 	Context
-	Form *form.Form
+	Form     *form.Form
+	Conflict bool
 }
 type YieldEditLink struct {
 	Context
-	LinkID string
-	Form   *form.Form
+	LinkID   string
+	Form     *form.Form
+	Conflict bool
 }
 type YieldDeleteLink struct {
 	Context
@@ -68,8 +70,9 @@ func (h *Handler) CreateLink(w http.ResponseWriter, r *http.Request, ctx Context
 
 	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
 		render.Layout(w, "refresh_modal", "publication/add_link", YieldAddLink{
-			Context: ctx,
-			Form:    linkForm(ctx.Locale, ctx.Publication, &publicationLink, validationErrs.(validation.Errors)),
+			Context:  ctx,
+			Form:     linkForm(ctx.Locale, ctx.Publication, &publicationLink, validationErrs.(validation.Errors)),
+			Conflict: false,
 		})
 		return
 	}
@@ -78,7 +81,11 @@ func (h *Handler) CreateLink(w http.ResponseWriter, r *http.Request, ctx Context
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("publication.conflict_error"))
+		render.Layout(w, "refresh_modal", "publication/add_link", YieldAddLink{
+			Context:  ctx,
+			Form:     linkForm(ctx.Locale, ctx.Publication, &publicationLink, nil),
+			Conflict: true,
+		})
 		return
 	}
 
@@ -101,6 +108,7 @@ func (h *Handler) EditLink(w http.ResponseWriter, r *http.Request, ctx Context) 
 		return
 	}
 
+	// TODO catch non-existing item in UI
 	link := ctx.Publication.GetLink(b.LinkID)
 	if link == nil {
 		h.Logger.Warnw("edit publication link: could not get link", "link", b.LinkID, "publication", ctx.Publication.ID, "user", ctx.User.ID)
@@ -113,9 +121,10 @@ func (h *Handler) EditLink(w http.ResponseWriter, r *http.Request, ctx Context) 
 	}
 
 	render.Layout(w, "show_modal", "publication/edit_link", YieldEditLink{
-		Context: ctx,
-		LinkID:  b.LinkID,
-		Form:    linkForm(ctx.Locale, ctx.Publication, link, nil),
+		Context:  ctx,
+		LinkID:   b.LinkID,
+		Form:     linkForm(ctx.Locale, ctx.Publication, link, nil),
+		Conflict: false,
 	})
 }
 
@@ -146,12 +155,11 @@ func (h *Handler) UpdateLink(w http.ResponseWriter, r *http.Request, ctx Context
 	link.Relation = b.Relation
 
 	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
-		form := linkForm(ctx.Locale, ctx.Publication, link, validationErrs.(validation.Errors))
-
 		render.Layout(w, "refresh_modal", "publication/edit_link", YieldEditLink{
-			Context: ctx,
-			LinkID:  b.LinkID,
-			Form:    form,
+			Context:  ctx,
+			LinkID:   b.LinkID,
+			Form:     linkForm(ctx.Locale, ctx.Publication, link, validationErrs.(validation.Errors)),
+			Conflict: false,
 		})
 		return
 	}
@@ -160,7 +168,12 @@ func (h *Handler) UpdateLink(w http.ResponseWriter, r *http.Request, ctx Context
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("publication.conflict_error"))
+		render.Layout(w, "refresh_modal", "publication/edit_link", YieldEditLink{
+			Context:  ctx,
+			LinkID:   b.LinkID,
+			Form:     linkForm(ctx.Locale, ctx.Publication, link, nil),
+			Conflict: true,
+		})
 		return
 	}
 
@@ -183,6 +196,8 @@ func (h *Handler) ConfirmDeleteLink(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
+	// TODO catch non-existing item in UI
+
 	render.Layout(w, "show_modal", "publication/confirm_delete_link", YieldDeleteLink{
 		Context: ctx,
 		LinkID:  b.LinkID,
@@ -197,10 +212,6 @@ func (h *Handler) DeleteLink(w http.ResponseWriter, r *http.Request, ctx Context
 		return
 	}
 
-	/*
-		Note: link possibly already removed:
-		conflict resolving will solve this
-	*/
 	ctx.Publication.RemoveLink(b.LinkID)
 
 	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication)

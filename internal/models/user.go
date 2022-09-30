@@ -164,15 +164,15 @@ func (u *User) CanEditDataset(d *Dataset) bool {
 }
 
 func (u *User) CanPublishDataset(d *Dataset) bool {
-	return u.CanEditDataset(d) && (d.Status != "public" && d.Status != "returned")
+	return u.CanEditDataset(d)
 }
 
 func (u *User) CanWithdrawDataset(d *Dataset) bool {
-	return u.CanEditDataset(d) && (d.Status != "returned" && !d.Locked)
+	return u.CanEditDataset(d)
 }
 
 func (u *User) CanRepublishDataset(d *Dataset) bool {
-	return u.CanEditDataset(d) && (d.Status == "returned" && !d.Locked)
+	return u.CanEditDataset(d)
 }
 
 func (u *User) CanLockDataset(d *Dataset) bool {

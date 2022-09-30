@@ -5,12 +5,21 @@
             <h2 class="modal-title">Add lay summary</h2>
         </div>
         <div class="modal-body">
+            {{if .Conflict}}
+            <div class="alert alert-danger mb-0" role="alert">
+                <i class="if if--error if-error-circle-fill"></i>
+                The publication you are editing has been changed by someone else. Please copy your edits, then close this form.
+            </div>
+            {{end}}
             {{.Form.Errors.Render}}
             {{range .Form.Sections}}
                 {{.Render}}
             {{end}}
         </div>
         <div class="modal-footer">
+            {{if .Conflict}}
+            <button class="btn btn-primary modal-close">Close</button>
+            {{else}}
             <button class="btn btn-link modal-close">Cancel</button>
             <button type="button" name="create" class="btn btn-primary"
                 hx-post="{{pathFor "publication_create_lay_summary" "id" .Publication.ID}}"
@@ -20,6 +29,7 @@
             >
                 Add lay summary
             </button>
+            {{end}}
         </div>
     </div>
 </div>

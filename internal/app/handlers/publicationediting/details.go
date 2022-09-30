@@ -6,7 +6,6 @@ import (
 
 	"github.com/ugent-library/biblio-backend/internal/app/displays"
 	"github.com/ugent-library/biblio-backend/internal/bind"
-	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
 	"github.com/ugent-library/biblio-backend/internal/render/display"
 	"github.com/ugent-library/biblio-backend/internal/render/form"
@@ -57,7 +56,35 @@ type BindDetails struct {
 	Year                    string   `form:"year"`
 }
 
-func bindToPublication(b *BindDetails, p *models.Publication, user *models.User) {
+type YieldDetails struct {
+	Context
+	DisplayDetails *display.Display
+}
+
+type YieldEditDetails struct {
+	Context
+	Form     *form.Form
+	Conflict bool
+}
+
+func (h *Handler) EditDetails(w http.ResponseWriter, r *http.Request, ctx Context) {
+	render.Layout(w, "show_modal", "publication/edit_details", YieldEditDetails{
+		Context:  ctx,
+		Form:     detailsForm(ctx.User, ctx.Locale, ctx.Publication, nil),
+		Conflict: false,
+	})
+}
+
+func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Context) {
+	var b BindDetails
+	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
+		h.Logger.Warnw("update publication details: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
+		render.BadRequest(w, r, err)
+		return
+	}
+
+	p := ctx.Publication
+
 	p.AlternativeTitle = b.AlternativeTitle
 	p.ArticleNumber = b.ArticleNumber
 	p.ArxivID = b.ArxivID
@@ -97,44 +124,16 @@ func bindToPublication(b *BindDetails, p *models.Publication, user *models.User)
 	p.Volume = b.Volume
 	p.WOSID = b.WOSID
 	p.Year = b.Year
-	if user.CanCurate() {
+
+	if ctx.User.CanCurate() {
 		p.WOSType = b.WOSType
 	}
-}
-
-type YieldDetails struct {
-	Context
-	DisplayDetails *display.Display
-}
-
-type YieldEditDetails struct {
-	Context
-	Form *form.Form
-}
-
-func (h *Handler) EditDetails(w http.ResponseWriter, r *http.Request, ctx Context) {
-	render.Layout(w, "show_modal", "publication/edit_details", YieldEditDetails{
-		Context: ctx,
-		Form:    detailsForm(ctx.User, ctx.Locale, ctx.Publication, nil),
-	})
-}
-
-func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Context) {
-	b := &BindDetails{}
-	if err := bind.Request(r, b, bind.Vacuum); err != nil {
-		h.Logger.Warnw("update publication details: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
-		return
-	}
-
-	bindToPublication(b, ctx.Publication, ctx.User)
 
 	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
-		form := detailsForm(ctx.User, ctx.Locale, ctx.Publication, validationErrs.(validation.Errors))
-
 		render.Layout(w, "refresh_modal", "publication/edit_details", YieldEditDetails{
-			Context: ctx,
-			Form:    form,
+			Context:  ctx,
+			Form:     detailsForm(ctx.User, ctx.Locale, ctx.Publication, validationErrs.(validation.Errors)),
+			Conflict: false,
 		})
 		return
 	}
@@ -143,7 +142,11 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("publication.conflict_error"))
+		render.Layout(w, "refresh_modal", "publication/edit_details", YieldEditDetails{
+			Context:  ctx,
+			Form:     detailsForm(ctx.User, ctx.Locale, ctx.Publication, nil),
+			Conflict: true,
+		})
 		return
 	}
 

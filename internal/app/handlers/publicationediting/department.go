@@ -121,6 +121,8 @@ func (h *Handler) ConfirmDeleteDepartment(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	// TODO catch non-existing item in UI
+
 	render.Layout(w, "show_modal", "publication/confirm_delete_department", YieldDeleteDepartment{
 		Context:      ctx,
 		DepartmentID: b.DepartmentID,
@@ -135,10 +137,6 @@ func (h *Handler) DeleteDepartment(w http.ResponseWriter, r *http.Request, ctx C
 		return
 	}
 
-	/*
-		Ignore fact that department is removed in the mean time:
-		conflict resolving will solve this
-	*/
 	ctx.Publication.RemoveDepartment(b.DepartmentID)
 
 	// TODO handle validation errors

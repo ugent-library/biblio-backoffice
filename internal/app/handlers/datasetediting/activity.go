@@ -28,17 +28,20 @@ type BindReviewerNote struct {
 
 type YieldEditMessage struct {
 	Context
-	Form *form.Form
+	Form     *form.Form
+	Conflict bool
 }
 
 type YieldEditReviewerTags struct {
 	Context
-	Form *form.Form
+	Form     *form.Form
+	Conflict bool
 }
 
 type YieldEditReviewerNote struct {
 	Context
-	Form *form.Form
+	Form     *form.Form
+	Conflict bool
 }
 
 func (h *Handler) EditMessage(w http.ResponseWriter, r *http.Request, ctx Context) {
@@ -61,11 +64,10 @@ func (h *Handler) UpdateMessage(w http.ResponseWriter, r *http.Request, ctx Cont
 
 	if validationErrs := p.Validate(); validationErrs != nil {
 		h.Logger.Warnw("update dataset reviewer note: could not validate message:", "errors", validationErrs, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
-		form := messageForm(ctx.User, ctx.Locale, p, validationErrs.(validation.Errors))
-
 		render.Layout(w, "refresh_modal", "dataset/edit_message", YieldEditMessage{
-			Context: ctx,
-			Form:    form,
+			Context:  ctx,
+			Form:     messageForm(ctx.User, ctx.Locale, p, validationErrs.(validation.Errors)),
+			Conflict: false,
 		})
 		return
 	}
@@ -74,7 +76,11 @@ func (h *Handler) UpdateMessage(w http.ResponseWriter, r *http.Request, ctx Cont
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("dataset.conflict_error"))
+		render.Layout(w, "refresh_modal", "dataset/edit_message", YieldEditMessage{
+			Context:  ctx,
+			Form:     messageForm(ctx.User, ctx.Locale, p, nil),
+			Conflict: true,
+		})
 		return
 	}
 
@@ -117,11 +123,10 @@ func (h *Handler) UpdateReviewerTags(w http.ResponseWriter, r *http.Request, ctx
 
 	if validationErrs := p.Validate(); validationErrs != nil {
 		h.Logger.Warnw("update dataset reviewer tags: could not validate reviewer tags:", "errors", validationErrs, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
-		form := reviewerTagsForm(ctx.User, ctx.Locale, p, validationErrs.(validation.Errors))
-
 		render.Layout(w, "refresh_modal", "dataset/edit_reviewer_tags", YieldEditReviewerTags{
-			Context: ctx,
-			Form:    form,
+			Context:  ctx,
+			Form:     reviewerTagsForm(ctx.User, ctx.Locale, p, validationErrs.(validation.Errors)),
+			Conflict: false,
 		})
 		return
 	}
@@ -130,7 +135,11 @@ func (h *Handler) UpdateReviewerTags(w http.ResponseWriter, r *http.Request, ctx
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("dataset.conflict_error"))
+		render.Layout(w, "refresh_modal", "dataset/edit_reviewer_tags", YieldEditReviewerTags{
+			Context:  ctx,
+			Form:     reviewerTagsForm(ctx.User, ctx.Locale, p, nil),
+			Conflict: true,
+		})
 		return
 	}
 
@@ -150,8 +159,9 @@ func (h *Handler) EditReviewerNote(w http.ResponseWriter, r *http.Request, ctx C
 	}
 
 	render.Layout(w, "show_modal", "dataset/edit_reviewer_note", YieldEditReviewerNote{
-		Context: ctx,
-		Form:    reviewerNoteForm(ctx.User, ctx.Locale, ctx.Dataset, nil),
+		Context:  ctx,
+		Form:     reviewerNoteForm(ctx.User, ctx.Locale, ctx.Dataset, nil),
+		Conflict: false,
 	})
 }
 
@@ -173,11 +183,10 @@ func (h *Handler) UpdateReviewerNote(w http.ResponseWriter, r *http.Request, ctx
 
 	if validationErrs := p.Validate(); validationErrs != nil {
 		h.Logger.Warnw("update dataset reviewer note: could not validate reviewer note:", "errors", validationErrs, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
-		form := reviewerNoteForm(ctx.User, ctx.Locale, p, validationErrs.(validation.Errors))
-
 		render.Layout(w, "refresh_modal", "dataset/edit_reviewer_note", YieldEditReviewerNote{
-			Context: ctx,
-			Form:    form,
+			Context:  ctx,
+			Form:     reviewerNoteForm(ctx.User, ctx.Locale, p, validationErrs.(validation.Errors)),
+			Conflict: false,
 		})
 		return
 	}
@@ -186,7 +195,11 @@ func (h *Handler) UpdateReviewerNote(w http.ResponseWriter, r *http.Request, ctx
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("dataset.conflict_error"))
+		render.Layout(w, "refresh_modal", "dataset/edit_reviewer_note", YieldEditReviewerNote{
+			Context:  ctx,
+			Form:     reviewerNoteForm(ctx.User, ctx.Locale, p, nil),
+			Conflict: true,
+		})
 		return
 	}
 

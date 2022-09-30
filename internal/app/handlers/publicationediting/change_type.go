@@ -1,3 +1,4 @@
+// TODO deprecated code. Clean me up.
 package publicationediting
 
 import (

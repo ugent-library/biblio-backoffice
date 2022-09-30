@@ -30,13 +30,15 @@ type YieldAdditionalInfo struct {
 
 type YieldEditAdditionalInfo struct {
 	Context
-	Form *form.Form
+	Form     *form.Form
+	Conflict bool
 }
 
 func (h *Handler) EditAdditionalInfo(w http.ResponseWriter, r *http.Request, ctx Context) {
 	render.Layout(w, "show_modal", "publication/edit_additional_info", YieldEditAdditionalInfo{
-		Context: ctx,
-		Form:    additionalInfoForm(ctx.User, ctx.Locale, ctx.Publication, nil),
+		Context:  ctx,
+		Form:     additionalInfoForm(ctx.User, ctx.Locale, ctx.Publication, nil),
+		Conflict: false,
 	})
 }
 
@@ -55,11 +57,10 @@ func (h *Handler) UpdateAdditionalInfo(w http.ResponseWriter, r *http.Request, c
 
 	if validationErrs := p.Validate(); validationErrs != nil {
 		h.Logger.Warnw("update publication additional info: could not validate additional info:", "errors", validationErrs, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		form := additionalInfoForm(ctx.User, ctx.Locale, p, validationErrs.(validation.Errors))
-
 		render.Layout(w, "refresh_modal", "publication/edit_additional_info", YieldEditAdditionalInfo{
-			Context: ctx,
-			Form:    form,
+			Context:  ctx,
+			Form:     additionalInfoForm(ctx.User, ctx.Locale, p, validationErrs.(validation.Errors)),
+			Conflict: false,
 		})
 		return
 	}
@@ -68,7 +69,11 @@ func (h *Handler) UpdateAdditionalInfo(w http.ResponseWriter, r *http.Request, c
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("publication.conflict_error"))
+		render.Layout(w, "refresh_modal", "publication/edit_additional_info", YieldEditAdditionalInfo{
+			Context:  ctx,
+			Form:     additionalInfoForm(ctx.User, ctx.Locale, p, nil),
+			Conflict: true,
+		})
 		return
 	}
 

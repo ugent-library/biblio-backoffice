@@ -5,6 +5,12 @@
             <h2 class="modal-title">Edit file {{.File.Name}}</h2>
         </div>
         <div class="modal-body file-attributes">
+            {{if .Conflict}}
+            <div class="alert alert-danger mb-5" role="alert">
+                <i class="if if--error if-error-circle-fill"></i>
+                The publication you are editing has been changed by someone else. Please copy your edits, then close this form.
+            </div>
+            {{end}}
             {{.Form.Errors.Render}}
             {{range .Form.Sections}}
             <div class="form-row">
@@ -16,13 +22,17 @@
             <div class="spinner-border">
                 <span class="sr-only"></span>
             </div>
+            {{if .Conflict}}
+            <button class="btn btn-primary modal-close">Close</button>
+            {{else}}
             <button class="btn btn-link modal-close">Cancel</button>
-            <button class="btn btn-primary modal-close" type="submit"
+            <button type="button" name="create" class="btn btn-primary"
                 hx-put="{{pathFor "publication_update_file" "id" .Publication.ID "file_id" .File.ID}}"
                 hx-headers='{"If-Match": "{{.Publication.SnapshotID}}"}'
                 hx-include=".file-attributes"
                 hx-swap="none"
             >Save</button>
+            {{end}}
         </div>
     </div>
 </div>

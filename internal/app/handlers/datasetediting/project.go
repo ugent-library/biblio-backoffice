@@ -120,6 +120,8 @@ func (h *Handler) ConfirmDeleteProject(w http.ResponseWriter, r *http.Request, c
 		return
 	}
 
+	// TODO catch non-existing item in UI
+
 	render.Layout(w, "show_modal", "dataset/confirm_delete_project", YieldDeleteProject{
 		Context:   ctx,
 		ProjectID: b.ProjectID,
@@ -134,10 +136,6 @@ func (h *Handler) DeleteProject(w http.ResponseWriter, r *http.Request, ctx Cont
 		return
 	}
 
-	/*
-		ignore possibility that project is already removed:
-		conflict resolving will solve this anyway
-	*/
 	ctx.Dataset.RemoveProject(b.ProjectID)
 
 	// TODO handle validation errors

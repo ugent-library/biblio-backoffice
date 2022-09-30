@@ -30,24 +30,25 @@ type YieldAbstracts struct {
 }
 type YieldAddAbstract struct {
 	Context
-	Form *form.Form
+	Form     *form.Form
+	Conflict bool
 }
 type YieldEditAbstract struct {
 	Context
 	AbstractID string
 	Form       *form.Form
+	Conflict   bool
 }
 type YieldDeleteAbstract struct {
 	Context
 	AbstractID string
+	Conflict   bool
 }
 
 func (h *Handler) AddAbstract(w http.ResponseWriter, r *http.Request, ctx Context) {
-	form := abstractForm(ctx.Locale, ctx.Publication, &models.Text{}, nil)
-
 	render.Layout(w, "show_modal", "publication/add_abstract", YieldAddAbstract{
 		Context: ctx,
-		Form:    form,
+		Form:    abstractForm(ctx.Locale, ctx.Publication, &models.Text{}, nil),
 	})
 }
 
@@ -67,8 +68,9 @@ func (h *Handler) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 
 	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
 		render.Layout(w, "refresh_modal", "publication/add_abstract", YieldAddAbstract{
-			Context: ctx,
-			Form:    abstractForm(ctx.Locale, ctx.Publication, &abstract, validationErrs.(validation.Errors)),
+			Context:  ctx,
+			Form:     abstractForm(ctx.Locale, ctx.Publication, &abstract, validationErrs.(validation.Errors)),
+			Conflict: false,
 		})
 		return
 	}
@@ -77,7 +79,11 @@ func (h *Handler) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("publication.conflict_error"))
+		render.Layout(w, "refresh_modal", "publication/add_abstract", YieldAddAbstract{
+			Context:  ctx,
+			Form:     abstractForm(ctx.Locale, ctx.Publication, &abstract, nil),
+			Conflict: true,
+		})
 		return
 	}
 
@@ -101,6 +107,8 @@ func (h *Handler) EditAbstract(w http.ResponseWriter, r *http.Request, ctx Conte
 	}
 
 	abstract := ctx.Publication.GetAbstract(b.AbstractID)
+
+	// TODO catch non-existing item in UI
 	if abstract == nil {
 		h.Logger.Warnf("edit publication abstract: Could not fetch the abstract:", "publication", ctx.Publication.ID, "abstract", b.AbstractID, "user", ctx.User.ID)
 		render.BadRequest(
@@ -126,33 +134,33 @@ func (h *Handler) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 		return
 	}
 
-	/*
-		TODO: when abstract already removed,
-		this code throws a bad request when
-		it should be throwing a conflict error.
-		But at this point, one cannot distinguish
-		between "id never existed" or "id existed before"
-	*/
 	abstract := ctx.Publication.GetAbstract(b.AbstractID)
+
 	if abstract == nil {
-		h.Logger.Warnf("update publication abstract: Could not fetch the abstract:", "publication", ctx.Publication.ID, "abstract", b.AbstractID, "user", ctx.User.ID)
-		render.BadRequest(
-			w,
-			r,
-			fmt.Errorf("no abstract found for %s in publication %s", b.AbstractID, ctx.Publication.ID),
-		)
-		return
-	}
-	abstract.Text = b.Text
-	abstract.Lang = b.Lang
-
-	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
-		form := abstractForm(ctx.Locale, ctx.Publication, abstract, validationErrs.(validation.Errors))
-
+		abstract := &models.Text{
+			Text: b.Text,
+			Lang: b.Lang,
+		}
 		render.Layout(w, "refresh_modal", "publication/edit_abstract", YieldEditAbstract{
 			Context:    ctx,
 			AbstractID: b.AbstractID,
-			Form:       form,
+			Form:       abstractForm(ctx.Locale, ctx.Publication, abstract, nil),
+			Conflict:   true,
+		})
+		return
+	}
+
+	abstract.Text = b.Text
+	abstract.Lang = b.Lang
+
+	ctx.Publication.SetAbstract(abstract)
+
+	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
+		render.Layout(w, "refresh_modal", "publication/edit_abstract", YieldEditAbstract{
+			Context:    ctx,
+			AbstractID: b.AbstractID,
+			Form:       abstractForm(ctx.Locale, ctx.Publication, abstract, validationErrs.(validation.Errors)),
+			Conflict:   false,
 		})
 		return
 	}
@@ -161,7 +169,12 @@ func (h *Handler) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("publication.conflict_error"))
+		render.Layout(w, "refresh_modal", "publication/edit_abstract", YieldEditAbstract{
+			Context:    ctx,
+			AbstractID: b.AbstractID,
+			Form:       abstractForm(ctx.Locale, ctx.Publication, abstract, nil),
+			Conflict:   true,
+		})
 		return
 	}
 
@@ -183,6 +196,8 @@ func (h *Handler) ConfirmDeleteAbstract(w http.ResponseWriter, r *http.Request, 
 		render.BadRequest(w, r, err)
 		return
 	}
+
+	// TODO catch non-existing item
 
 	render.Layout(w, "show_modal", "publication/confirm_delete_abstract", YieldDeleteAbstract{
 		Context:    ctx,

@@ -117,6 +117,8 @@ func (h *Handler) ConfirmDeleteDepartment(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	// TODO catch non-existing item in UI
+
 	render.Layout(w, "show_modal", "dataset/confirm_delete_department", YieldDeleteDepartment{
 		Context:      ctx,
 		DepartmentID: b.DepartmentID,
@@ -131,19 +133,13 @@ func (h *Handler) DeleteDepartment(w http.ResponseWriter, r *http.Request, ctx C
 		return
 	}
 
-	/*
-		ignore possibility that department is already removed:
-		conflict resolving will solve this anyway
-	*/
 	ctx.Dataset.RemoveDepartment(b.DepartmentID)
-
-	// TODO handle validation errors
 
 	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "show_modal", "error_dialog", ctx.Locale.T("dataset.conflict_error"))
+		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("dataset.conflict_error"))
 		return
 	}
 

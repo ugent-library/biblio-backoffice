@@ -31,13 +31,15 @@ type YieldConference struct {
 
 type YieldEditConference struct {
 	Context
-	Form *form.Form
+	Form     *form.Form
+	Conflict bool
 }
 
 func (h *Handler) EditConference(w http.ResponseWriter, r *http.Request, ctx Context) {
 	render.Layout(w, "show_modal", "publication/edit_conference", YieldEditConference{
-		Context: ctx,
-		Form:    conferenceForm(ctx.Locale, ctx.Publication, nil),
+		Context:  ctx,
+		Form:     conferenceForm(ctx.Locale, ctx.Publication, nil),
+		Conflict: false,
 	})
 }
 
@@ -58,10 +60,10 @@ func (h *Handler) UpdateConference(w http.ResponseWriter, r *http.Request, ctx C
 	p.ConferenceEndDate = b.EndDate
 
 	if validationErrs := p.Validate(); validationErrs != nil {
-		form := conferenceForm(ctx.Locale, p, validationErrs.(validation.Errors))
 		render.Layout(w, "refresh_modal", "publication/edit_conference", YieldEditConference{
-			Context: ctx,
-			Form:    form,
+			Context:  ctx,
+			Form:     conferenceForm(ctx.Locale, p, validationErrs.(validation.Errors)),
+			Conflict: false,
 		})
 		return
 	}
@@ -70,7 +72,11 @@ func (h *Handler) UpdateConference(w http.ResponseWriter, r *http.Request, ctx C
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("publication.conflict_error"))
+		render.Layout(w, "refresh_modal", "publication/edit_conference", YieldEditConference{
+			Context:  ctx,
+			Form:     conferenceForm(ctx.Locale, p, nil),
+			Conflict: true,
+		})
 		return
 	}
 

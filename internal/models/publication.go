@@ -196,6 +196,14 @@ func (p *Publication) GetFile(id string) *PublicationFile {
 	return nil
 }
 
+func (p *Publication) SetFile(f *PublicationFile) {
+	for i, file := range p.File {
+		if file.ID == f.ID {
+			p.File[i] = f
+		}
+	}
+}
+
 func (p *Publication) ClassificationChoices() []string {
 	switch p.Type {
 	case "journal_article":
@@ -336,6 +344,14 @@ func (p *Publication) GetAbstract(id string) *Text {
 		}
 	}
 	return nil
+}
+
+func (p *Publication) SetAbstract(t *Text) {
+	for i, abstract := range p.Abstract {
+		if abstract.ID == t.ID {
+			p.Abstract[i] = *t
+		}
+	}
 }
 
 func (p *Publication) AddAbstract(t *Text) {

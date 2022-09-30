@@ -13,27 +13,38 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
 	"github.com/ugent-library/biblio-backend/internal/render/form"
+	"github.com/ugent-library/biblio-backend/internal/snapstore"
 	"github.com/ugent-library/biblio-backend/internal/validation"
 )
 
 type BindFile struct {
-	FileID string `path:"file_id"`
-
+	FileID             string `path:"file_id"`
 	AccessLevel        string `form:"access_level"`
 	License            string `form:"license"`
-	Description        string `form:"description"`
+	ContentType        string `form:"content_type"`
 	Embargo            string `form:"embargo"`
 	EmbargoTo          string `form:"embargo_to"`
+	Name               string `form:"name"`
+	Size               int    `form:"size"`
+	SHA256             string `form:"sha256"`
 	OtherLicense       string `form:"other_license"`
 	PublicationVersion string `form:"publication_version"`
 	Relation           string `form:"relation"`
-	Title              string `form:"title"`
+	URL                string `form:"url"`
+}
+
+type BindDeleteFile struct {
+	Context
+	FileID   string `path:"file_id"`
+	Name     string `form:"name"`
+	Conflict bool
 }
 
 type YieldEditFile struct {
 	Context
-	File *models.PublicationFile
-	Form *form.Form
+	File     *models.PublicationFile
+	Form     *form.Form
+	Conflict bool
 }
 
 type YieldShowFiles struct {
@@ -106,10 +117,11 @@ func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context
 	*/
 	ctx.Publication.AddFile(&pubFile)
 
-	// TODO conflict handling
-	if err := h.Repository.SavePublication(ctx.Publication); err != nil {
-		h.Logger.Errorf("publication upload file: could not save publication", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+	err = h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication)
+
+	var conflict *snapstore.Conflict
+	if errors.As(err, &conflict) {
+		render.Layout(w, "show_modal", "error_dialog", ctx.Locale.T("publication.conflict_error"))
 		return
 	}
 
@@ -123,20 +135,15 @@ func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context
 }
 
 func (h *Handler) EditFile(w http.ResponseWriter, r *http.Request, ctx Context) {
-	b := BindFile{}
+	var b BindFile
 	if err := bind.Request(r, &b); err != nil {
 		render.BadRequest(w, r, err)
 		return
 	}
 
-	var file *models.PublicationFile
+	file := ctx.Publication.GetFile(b.FileID)
 
-	for _, f := range ctx.Publication.File {
-		if f.ID == b.FileID {
-			file = f
-			break
-		}
-	}
+	// TODO catch non-existing item in UI
 
 	if file == nil {
 		h.Logger.Warnw("publication upload file: could not find file", "fileid", b.FileID, "publication", ctx.Publication.ID, "user", ctx.User.ID)
@@ -145,31 +152,40 @@ func (h *Handler) EditFile(w http.ResponseWriter, r *http.Request, ctx Context) 
 	}
 
 	render.Layout(w, "show_modal", "publication/edit_file", YieldEditFile{
-		Context: ctx,
-		File:    file,
-		Form:    fileForm(ctx.Locale, ctx.Publication, file, nil),
+		Context:  ctx,
+		File:     file,
+		Form:     fileForm(ctx.Locale, ctx.Publication, file, nil),
+		Conflict: false,
 	})
 }
 
 // TODO add more rules
 func (h *Handler) EditFileLicense(w http.ResponseWriter, r *http.Request, ctx Context) {
-	b := BindFile{}
+	var b BindFile
 	if err := bind.Request(r, &b); err != nil {
+		h.Logger.Warnw("edit publication file license: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
 
-	var file *models.PublicationFile
-	for _, f := range ctx.Publication.File {
-		if f.ID == b.FileID {
-			file = f
-			break
-		}
-	}
+	file := ctx.Publication.GetFile(b.FileID)
 
+	// TODO catch non-existing item in UI (show message)
 	if file == nil {
-		h.Logger.Warnw("publication upload file: could not find file", "fileid", b.FileID, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		file := &models.PublicationFile{
+			AccessLevel:        b.AccessLevel,
+			License:            b.License,
+			Embargo:            b.Embargo,
+			EmbargoTo:          b.Embargo,
+			OtherLicense:       b.OtherLicense,
+			PublicationVersion: b.PublicationVersion,
+			Relation:           b.Relation,
+		}
+		render.Layout(w, "refresh_modal", "publication/edit_file", YieldEditFile{
+			Context: ctx,
+			File:    file,
+			Form:    fileForm(ctx.Locale, ctx.Publication, file, nil),
+		})
 		return
 	}
 
@@ -181,65 +197,89 @@ func (h *Handler) EditFileLicense(w http.ResponseWriter, r *http.Request, ctx Co
 
 	// TODO apply other license && access level related rules
 
-	// copy attributes from bind to file
-	bindToPublicationFile(&b, file)
+	// Copy everything
+	file.AccessLevel = b.AccessLevel
+	file.License = b.License
+	file.Embargo = b.Embargo
+	file.EmbargoTo = b.EmbargoTo
+	file.OtherLicense = b.OtherLicense
+	file.PublicationVersion = b.PublicationVersion
+	file.Relation = b.Relation
+
+	ctx.Publication.SetFile(file)
 
 	render.Layout(w, "refresh_modal", "publication/edit_file", YieldEditFile{
 		Context: ctx,
 		File:    file,
 		Form:    fileForm(ctx.Locale, ctx.Publication, file, nil),
 	})
-
 }
 
 func (h *Handler) UpdateFile(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindFile{}
 	if err := bind.Request(r, &b); err != nil {
+		h.Logger.Warnw("update publication file: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
 
-	pub := ctx.Publication
-	var file *models.PublicationFile
-	for _, f := range pub.File {
-		if f.ID == b.FileID {
-			file = f
-			break
-		}
-	}
+	file := ctx.Publication.GetFile(b.FileID)
 
+	// TODO catch non-existing item in UI (show message)
 	if file == nil {
-		h.Logger.Warnw("publication edit file license: could not find file", "fileid", b.FileID, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-		return
-	}
-
-	// copy attributes from bind to file
-	bindToPublicationFile(&b, file)
-
-	// TODO conflict detection
-	// save publication
-	err := h.Repository.SavePublication(pub)
-
-	var validationErrors validation.Errors
-	if errors.As(err, &validationErrors) {
+		file := &models.PublicationFile{
+			AccessLevel:        b.AccessLevel,
+			License:            b.License,
+			Embargo:            b.Embargo,
+			EmbargoTo:          b.Embargo,
+			OtherLicense:       b.OtherLicense,
+			PublicationVersion: b.PublicationVersion,
+			Relation:           b.Relation,
+		}
 		render.Layout(w, "refresh_modal", "publication/edit_file", YieldEditFile{
-			Context: ctx,
-			File:    file,
-			Form:    fileForm(ctx.Locale, ctx.Publication, file, validationErrors),
+			Context:  ctx,
+			File:     file,
+			Form:     fileForm(ctx.Locale, ctx.Publication, file, nil),
+			Conflict: false,
 		})
 		return
-	} else if err != nil {
-		h.Logger.Errorf("publication edit file license: could not save file", "fileid", b.FileID, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+	}
+
+	file.AccessLevel = b.AccessLevel
+	file.License = b.License
+	file.Embargo = b.Embargo
+	file.EmbargoTo = b.EmbargoTo
+	file.OtherLicense = b.OtherLicense
+	file.PublicationVersion = b.PublicationVersion
+	file.Relation = b.Relation
+
+	ctx.Publication.SetFile(file)
+
+	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
+		render.Layout(w, "refresh_modal", "publication/edit_file", YieldEditFile{
+			Context:  ctx,
+			File:     file,
+			Form:     fileForm(ctx.Locale, ctx.Publication, file, validationErrs.(validation.Errors)),
+			Conflict: false,
+		})
 		return
 	}
 
-	// TODO why?
-	// load publication again
-	ctx.Publication, err = h.Repository.GetPublication(pub.ID)
+	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication)
+
+	var conflict *snapstore.Conflict
+	if errors.As(err, &conflict) {
+		render.Layout(w, "refresh_modal", "publication/edit_file", YieldEditFile{
+			Context:  ctx,
+			File:     file,
+			Form:     fileForm(ctx.Locale, ctx.Publication, file, nil),
+			Conflict: true,
+		})
+		return
+	}
+
 	if err != nil {
-		h.Logger.Warnw("publication edit file: could not get publication", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
+		h.Logger.Errorf("update publication file: could not save the publication:", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -250,8 +290,7 @@ func (h *Handler) UpdateFile(w http.ResponseWriter, r *http.Request, ctx Context
 }
 
 func (h *Handler) ConfirmDeleteFile(w http.ResponseWriter, r *http.Request, ctx Context) {
-
-	b := BindFile{}
+	var b BindDeleteFile
 	if err := bind.Request(r, &b); err != nil {
 		h.Logger.Warnw("confirm delete publication file: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
@@ -260,21 +299,16 @@ func (h *Handler) ConfirmDeleteFile(w http.ResponseWriter, r *http.Request, ctx 
 
 	file := ctx.Publication.GetFile(b.FileID)
 
-	if file == nil {
-		h.Logger.Warnw("confirm delete publication file: could not find file", "fileid", b.FileID, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-		return
-	}
+	// TODO catch non-existing item in UI
 
 	render.Layout(w, "show_modal", "publication/confirm_delete_file", YieldDeleteFile{
 		Context: ctx,
 		File:    file,
 	})
-
 }
 
 func (h *Handler) DeleteFile(w http.ResponseWriter, r *http.Request, ctx Context) {
-	b := BindFile{}
+	var b BindDeleteFile
 	if err := bind.Request(r, &b); err != nil {
 		h.Logger.Warnw("delete publication file: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
@@ -283,18 +317,23 @@ func (h *Handler) DeleteFile(w http.ResponseWriter, r *http.Request, ctx Context
 
 	ctx.Publication.RemoveFile(b.FileID)
 
-	// save publication
-	if err := h.Repository.SavePublication(ctx.Publication); err != nil {
-		h.Logger.Errorw("delete publication file: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
+	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication)
+
+	var conflict *snapstore.Conflict
+	if errors.As(err, &conflict) {
+		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("publication.conflict_error"))
+		return
+	}
+
+	if err != nil {
+		h.Logger.Errorf("delete publication file: could not save the publication:", "error", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
 
-	// render
-	render.View(w, "publication/refresh_files", YieldShowFiles{
+	render.View(w, "publication/refresh_files", YieldAbstracts{
 		Context: ctx,
 	})
-
 }
 
 func fileForm(l *locale.Locale, publication *models.Publication, file *models.PublicationFile, errors validation.Errors) *form.Form {
@@ -417,15 +456,4 @@ func fileForm(l *locale.Locale, publication *models.Publication, file *models.Pu
 	)
 
 	return f
-}
-
-func bindToPublicationFile(b *BindFile, f *models.PublicationFile) {
-	f.AccessLevel = b.AccessLevel
-	f.License = b.License
-	f.Embargo = b.Embargo
-	f.EmbargoTo = b.EmbargoTo
-	f.OtherLicense = b.OtherLicense
-	f.PublicationVersion = b.PublicationVersion
-	f.Relation = b.Relation
-	f.ID = b.FileID
 }
