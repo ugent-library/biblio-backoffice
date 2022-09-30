@@ -83,15 +83,15 @@ func (u *User) CanEditPublication(p *Publication) bool {
 }
 
 func (u *User) CanPublishPublication(p *Publication) bool {
-	return u.CanEditPublication(p) && (p.Status != "public" && p.Status != "returned")
+	return u.CanEditPublication(p)
 }
 
 func (u *User) CanWithdrawPublication(p *Publication) bool {
-	return u.CanEditPublication(p) && (p.Status != "returned" && !p.Locked)
+	return u.CanEditPublication(p)
 }
 
 func (u *User) CanRepublishPublication(p *Publication) bool {
-	return u.CanEditPublication(p) && (p.Status == "returned" && !p.Locked)
+	return u.CanEditPublication(p)
 }
 
 func (u *User) CanLockPublication(p *Publication) bool {

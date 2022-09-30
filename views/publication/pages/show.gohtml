@@ -12,7 +12,7 @@
                     </div>
                 </div>
                 <div class="bc-toolbar-right">
-                   {{if .User.CanWithdrawPublication .Publication}}
+                   {{if and (.User.CanWithdrawPublication .Publication) (eq .Publication.Status "public") (not .Publication.Locked)}}
                     <div class="bc-toolbar-item">
                         <button class="btn btn-outline-danger"
                             hx-get="{{pathFor "publication_confirm_withdraw" "id" .Publication.ID|querySet "redirect-url" .CurrentURL.String}}"
@@ -23,7 +23,7 @@
                         </button>
                     </div>
                     {{end}}
-                    {{if .User.CanRepublishPublication .Publication}}
+                    {{if and (.User.CanRepublishPublication .Publication) (eq .Publication.Status "returned") (not .Publication.Locked)}}
                     <div class="bc-toolbar-item">
                         <button class="btn btn-success"
                             hx-get="{{pathFor "publication_confirm_republish" "id" .Publication.ID|querySet "redirect-url" .CurrentURL.String}}"
@@ -33,7 +33,7 @@
                         </button>
                     </div>
                     {{end}}
-                    {{if .User.CanPublishPublication .Publication}}
+                    {{if and (.User.CanPublishPublication .Publication) (ne .Publication.Status "returned") (ne .Publication.Status "public") (not .Publication.Locked)}}
                     <div class="bc-toolbar-item">
                         <button class="btn btn-success"
                             hx-get="{{pathFor "publication_confirm_publish" "id" .Publication.ID|querySet "redirect-url" .RedirectURL}}"
