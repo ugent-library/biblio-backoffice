@@ -35,6 +35,11 @@ func (h *Handler) FileThumbnail(w http.ResponseWriter, r *http.Request, ctx Cont
 		return
 	}
 
+	if f.SHA256 == "" {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+
 	if f.ContentType != "application/pdf" || f.Size > 25000000 {
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
