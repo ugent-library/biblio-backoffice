@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/ugent-library/biblio-backend/internal/app/handlers"
 	"github.com/ugent-library/biblio-backend/internal/bind"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
@@ -98,7 +99,9 @@ func (h *Handler) CreateDepartment(w http.ResponseWriter, r *http.Request, ctx C
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("publication.conflict_error"))
+		render.Layout(w, "refresh_modal", "error_dialog", handlers.YieldErrorDialog{
+			Message: ctx.Locale.T("publication.conflict_error"),
+		})
 		return
 	}
 
@@ -145,7 +148,9 @@ func (h *Handler) DeleteDepartment(w http.ResponseWriter, r *http.Request, ctx C
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("publication.conflict_error"))
+		render.Layout(w, "refresh_modal", "error_dialog", handlers.YieldErrorDialog{
+			Message: ctx.Locale.T("publication.conflict_error"),
+		})
 		return
 	}
 

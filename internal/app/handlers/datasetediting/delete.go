@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/ugent-library/biblio-backend/internal/app/handlers"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
 	"github.com/ugent-library/biblio-backend/internal/render/flash"
@@ -39,7 +40,9 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request, ctx Context) {
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("dataset.conflict_error"))
+		render.Layout(w, "refresh_modal", "error_dialog", handlers.YieldErrorDialog{
+			Message: ctx.Locale.T("dataset.conflict_error"),
+		})
 		return
 	}
 

@@ -6,11 +6,15 @@
                 <div class="bc-avatar">
                     <i class="if if-error-circle"></i>
                 </div>
-                <p>{{.}}</p>
+                <p>{{.Message}}</p>
             </div>
         </div>
         <div class="modal-footer">
+            {{if .RedirectURL}}
+            <a class="btn btn-link" href="{{.RedirectURL}}">Close</a>
+            {{else}}
             <button class="btn btn-link modal-close">Close</button>
+            {{end}}
         </div>
     </div>
 </div>

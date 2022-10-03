@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/ugent-library/biblio-backend/internal/app/handlers"
 	"github.com/ugent-library/biblio-backend/internal/bind"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
@@ -97,7 +98,9 @@ func (h *Handler) CreateProject(w http.ResponseWriter, r *http.Request, ctx Cont
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("dataset.conflict_error"))
+		render.Layout(w, "refresh_modal", "error_dialog", handlers.YieldErrorDialog{
+			Message: ctx.Locale.T("dataset.conflict_error"),
+		})
 		return
 	}
 
@@ -144,7 +147,9 @@ func (h *Handler) DeleteProject(w http.ResponseWriter, r *http.Request, ctx Cont
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("dataset.conflict_error"))
+		render.Layout(w, "refresh_modal", "error_dialog", handlers.YieldErrorDialog{
+			Message: ctx.Locale.T("dataset.conflict_error"),
+		})
 		return
 	}
 

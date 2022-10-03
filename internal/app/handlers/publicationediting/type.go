@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/ugent-library/biblio-backend/internal/app/handlers"
 	"github.com/ugent-library/biblio-backend/internal/bind"
 	"github.com/ugent-library/biblio-backend/internal/render"
 	"github.com/ugent-library/biblio-backend/internal/snapstore"
@@ -56,7 +57,9 @@ func (h *Handler) UpdateType(w http.ResponseWriter, r *http.Request, ctx Context
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "refresh_modal", "error_dialog", ctx.Locale.T("publication.conflict_error"))
+		render.Layout(w, "refresh_modal", "error_dialog", handlers.YieldErrorDialog{
+			Message: ctx.Locale.T("publication.conflict_error"),
+		})
 		return
 	}
 
