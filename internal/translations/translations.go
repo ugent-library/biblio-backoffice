@@ -658,6 +658,7 @@ func init() {
 	message.SetString(language.English, "validation.dataset.author.last_name.required", "Last name is required")
 
 	message.SetString(language.English, "dataset.conflict_error", "Dataset has been modified by another user.")
+	message.SetString(language.English, "dataset.conflict_error_reload", "Dataset has been modified by another user. Please reload the page.")
 
 	message.SetString(language.English, "validation.publication.title.required", "Title is required")
 	message.SetString(language.English, "validation.publication.year.required", "Publication year is required")
@@ -685,6 +686,8 @@ func init() {
 	message.SetString(language.English, "validation.publication.supervisor.last_name.required", "Last name is required")
 
 	message.SetString(language.English, "publication.conflict_error", "Publication has been modified by another user.")
+	message.SetString(language.English, "publication.conflict_error_reload", "Publication has been modified by another user. Please reload the page.")
+
 	message.SetString(language.English, "builder.file.title", "Title")
 	message.SetString(language.English, "builder.file.relation", "Document type")
 	message.SetString(language.English, "builder.file.publication_version", "Publication version")

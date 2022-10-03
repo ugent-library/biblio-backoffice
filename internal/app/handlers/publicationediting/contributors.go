@@ -276,7 +276,7 @@ func (h *Handler) CreateContributor(w http.ResponseWriter, r *http.Request, ctx 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
 		render.Layout(w, "refresh_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Locale.T("publication.conflict_error"),
+			Message: ctx.Locale.T("publication.conflict_error_reload"),
 		})
 		return
 	}
@@ -365,7 +365,7 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
 		render.Layout(w, "refresh_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Locale.T("publication.conflict_error"),
+			Message: ctx.Locale.T("publication.conflict_error_reload"),
 		})
 		return
 	}
@@ -428,7 +428,7 @@ func (h *Handler) DeleteContributor(w http.ResponseWriter, r *http.Request, ctx 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
 		render.Layout(w, "refresh_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Locale.T("publication.conflict_error"),
+			Message: ctx.Locale.T("publication.conflict_error_reload"),
 		})
 		return
 	}
@@ -471,7 +471,7 @@ func (h *Handler) OrderContributors(w http.ResponseWriter, r *http.Request, ctx 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
 		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Locale.T("publication.conflict_error"),
+			Message: ctx.Locale.T("publication.conflict_error_reload"),
 		})
 		return
 	}

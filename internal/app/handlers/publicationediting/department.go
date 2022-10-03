@@ -100,7 +100,7 @@ func (h *Handler) CreateDepartment(w http.ResponseWriter, r *http.Request, ctx C
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
 		render.Layout(w, "refresh_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Locale.T("publication.conflict_error"),
+			Message: ctx.Locale.T("publication.conflict_error_reload"),
 		})
 		return
 	}
@@ -149,7 +149,7 @@ func (h *Handler) DeleteDepartment(w http.ResponseWriter, r *http.Request, ctx C
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
 		render.Layout(w, "refresh_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Locale.T("publication.conflict_error"),
+			Message: ctx.Locale.T("publication.conflict_error_reload"),
 		})
 		return
 	}
