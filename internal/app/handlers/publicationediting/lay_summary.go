@@ -245,7 +245,7 @@ func laySummaryForm(l *locale.Locale, publication *models.Publication, laySummar
 		}
 	}
 	return form.New().
-		WithTheme("default").
+		WithTheme("cols").
 		WithErrors(localize.ValidationErrors(l, errors)).
 		AddSection(
 			&form.TextArea{

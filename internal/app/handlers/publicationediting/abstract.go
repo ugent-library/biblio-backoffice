@@ -246,7 +246,7 @@ func abstractForm(l *locale.Locale, publication *models.Publication, abstract *m
 	}
 
 	return form.New().
-		WithTheme("default").
+		WithTheme("cols").
 		WithErrors(localize.ValidationErrors(l, errors)).
 		AddSection(
 			&form.TextArea{

@@ -255,7 +255,7 @@ func abstractForm(l *locale.Locale, dataset *models.Dataset, abstract *models.Te
 	}
 
 	return form.New().
-		WithTheme("default").
+		WithTheme("cols").
 		WithErrors(localize.ValidationErrors(l, errors)).
 		AddSection(
 			&form.TextArea{

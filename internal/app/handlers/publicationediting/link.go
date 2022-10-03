@@ -245,7 +245,7 @@ func linkForm(l *locale.Locale, publication *models.Publication, link *models.Pu
 		}
 	}
 	return form.New().
-		WithTheme("default").
+		WithTheme("cols").
 		WithErrors(localize.ValidationErrors(l, errors)).
 		AddSection(
 			&form.Text{
