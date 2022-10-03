@@ -36,7 +36,7 @@
                     {{if and (.User.CanPublishDataset .Dataset) (ne .Dataset.Status "returned") (ne .Dataset.Status "public") (not .Dataset.Locked)}}
                     <div class="bc-toolbar-item">
                         <button class="btn btn-success"
-                            hx-get="{{pathFor "dataset_confirm_publish" "id" .Dataset.ID|querySet "redirect-url" .RedirectURL}}"
+                            hx-get="{{pathFor "dataset_confirm_publish" "id" .Dataset.ID|querySet "redirect-url" .CurrentURL.String}}"
                             hx-target="#modals"
                         >
                             <div class="btn-text">Publish to Biblio</div>
