@@ -68,7 +68,7 @@ var indexDatasetAllCmd = &cobra.Command{
 		}()
 
 		// send recs to indexer
-		store.EachDatasetSnapshot(func(p *models.Dataset) bool {
+		store.EachDataset(func(p *models.Dataset) bool {
 			indexC <- p
 			return true
 		})
@@ -123,7 +123,7 @@ var indexPublicationAllCmd = &cobra.Command{
 		}()
 
 		// send recs to indexer
-		store.EachPublicationSnapshot(func(p *models.Publication) bool {
+		store.EachPublication(func(p *models.Publication) bool {
 			indexC <- p
 			return true
 		})

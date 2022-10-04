@@ -67,7 +67,7 @@ type Dataset struct {
 	RelatedPublication []RelatedPublication `json:"related_publication,omitempty"`
 	ReviewerNote       string               `json:"reviewer_note,omitempty"`
 	ReviewerTags       []string             `json:"reviewer_tags,omitempty"`
-	SnapshotID         string               `json:"-"`
+	SnapshotID         string               `json:"snapshot_id,omitempty"`
 	Status             string               `json:"status,omitempty"`
 	Title              string               `json:"title,omitempty"`
 	URL                string               `json:"url,omitempty"`

@@ -519,6 +519,9 @@
                 "series_title": {
                     "type": "text"
                 },
+                "snapshot_id": {
+                    "type": "keyword"
+                },
                 "source_db": {
                     "type": "keyword"
                 },

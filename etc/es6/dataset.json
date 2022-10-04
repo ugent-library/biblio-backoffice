@@ -328,6 +328,9 @@
                 "reviewer_tags": {
                     "type": "keyword"
                 },
+                "snapshot_id": {
+                    "type": "keyword"
+                },
                 "status": {
                     "type": "keyword"
                 },

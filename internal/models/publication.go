@@ -138,7 +138,7 @@ type Publication struct {
 	ReviewerNote            string                  `json:"reviewer_note,omitempty"`
 	ReviewerTags            []string                `json:"reviewer_tags,omitempty"`
 	SeriesTitle             string                  `json:"series_title,omitempty"`
-	SnapshotID              string                  `json:"-"`
+	SnapshotID              string                  `json:"snapshot_id,omitempty"`
 	SourceDB                string                  `json:"source_db,omitempty"`
 	SourceID                string                  `json:"source_id,omitempty"`
 	SourceRecord            string                  `json:"source_record,omitempty"`
