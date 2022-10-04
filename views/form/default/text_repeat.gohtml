@@ -64,7 +64,7 @@
             invalid-feedback not appearing because needs
             to be preceded by is-invalid as sibling
         -->
-        {{if .Error}}<div class="invalid-feedback" style="display:block">{{.Error}}</div>{{end}}
+        {{if .Error}}<small class="invalid-feedback" style="display:block">{{.Error}}</small>{{end}}
         {{with .Help}}<small class="form-text text-muted">{{.}}</small>{{end}}
     </div>
 </div>
