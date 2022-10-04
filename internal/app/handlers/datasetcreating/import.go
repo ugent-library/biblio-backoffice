@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"strings"
 
 	"github.com/ugent-library/biblio-backend/internal/app/displays"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers"
@@ -58,7 +59,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request, ctx Context) {
 
 func (h *Handler) ConfirmImport(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindImport{}
-	if err := bind.Request(r, &b); err != nil {
+	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
 		h.Logger.Warnw("confirm import dataset: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
@@ -66,7 +67,7 @@ func (h *Handler) ConfirmImport(w http.ResponseWriter, r *http.Request, ctx Cont
 
 	// check for duplicates
 	if b.Source == "datacite" {
-		args := models.NewSearchArgs().WithFilter("doi", b.Identifier)
+		args := models.NewSearchArgs().WithFilter("doi", strings.ToLower(b.Identifier)).WithFilter("status", "public")
 
 		existing, err := h.DatasetSearchService.Search(args)
 
@@ -96,7 +97,7 @@ func (h *Handler) ConfirmImport(w http.ResponseWriter, r *http.Request, ctx Cont
 
 func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindImport{}
-	if err := bind.Request(r, &b); err != nil {
+	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
 		h.Logger.Warnw("add import dataset: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return

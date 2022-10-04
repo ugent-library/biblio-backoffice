@@ -5,7 +5,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/vocabularies"
 )
 
-//facets that also work as filters
+// facets that also work as filters
 var fixedFacetValues = map[string][]string{
 	//"publication_statuses" includes "deleted"
 	"status":             vocabularies.Map["visible_publication_statuses"],
@@ -20,7 +20,7 @@ var fixedFacetValues = map[string][]string{
 	"has_message":        {"true", "false"},
 }
 
-//filter without facet values
+// filter without facet values
 var RegularPublicationFilters = []map[string]string{
 	{
 		"name":  "created_since",
