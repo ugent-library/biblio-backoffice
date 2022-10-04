@@ -18,20 +18,27 @@ func detailsForm(user *models.User, l *locale.Locale, p *models.Publication, err
 
 	section1 := []form.Field{}
 
-	section1 = append(section1, &form.Select{
-		Template: "publication/type",
-		Name:     "type",
-		Label:    l.T("builder.type"),
-		Options:  localize.VocabularySelectOptions(l, "publication_types"),
-		Value:    p.Type,
-		Cols:     3,
-		Help:     l.T("builder.type.help"),
-		Vars: struct {
-			Publication *models.Publication
-		}{
-			Publication: p,
-		},
-	})
+	if user.CanChangeType(p) {
+		section1 = append(section1, &form.Select{
+			Template: "publication/type",
+			Name:     "type",
+			Label:    l.T("builder.type"),
+			Options:  localize.VocabularySelectOptions(l, "publication_types"),
+			Value:    p.Type,
+			Cols:     3,
+			Help:     l.T("builder.type.help"),
+			Vars: struct {
+				Publication *models.Publication
+			}{
+				Publication: p,
+			},
+		})
+	} else {
+		section1 = append(section1, &display.Text{
+			Label: l.T("builder.type"),
+			Value: l.TS("publication_types", p.Type),
+		})
+	}
 
 	if p.UsesJournalArticleType() {
 		section1 = append(section1, &form.Select{

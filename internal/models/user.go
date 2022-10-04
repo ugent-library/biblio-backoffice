@@ -206,3 +206,7 @@ func (u *User) CanCurate() bool {
 func (u *User) CanViewDashboard() bool {
 	return u.Role == "admin"
 }
+
+func (u *User) CanChangeType(p *Publication) bool {
+	return u.CanEditPublication(p) && p.Status != "public"
+}
