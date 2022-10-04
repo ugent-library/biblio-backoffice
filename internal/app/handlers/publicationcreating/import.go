@@ -7,6 +7,7 @@ import (
 	"html/template"
 	"io"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/ugent-library/biblio-backend/internal/app/displays"
@@ -99,7 +100,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request, ctx Context) {
 
 func (h *Handler) AddSingleImportConfirm(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindImportSingle{}
-	if err := bind.Request(r, &b); err != nil {
+	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
 		h.Logger.Warnw("import confirm single publication: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
@@ -107,8 +108,7 @@ func (h *Handler) AddSingleImportConfirm(w http.ResponseWriter, r *http.Request,
 
 	// check for duplicates
 	if b.Source == "crossref" && b.Identifier != "" {
-		args := models.NewSearchArgs().
-			WithFilter("doi", b.Identifier)
+		args := models.NewSearchArgs().WithFilter("doi", strings.ToLower(b.Identifier)).WithFilter("status", "public")
 
 		existing, err := h.PublicationSearchService.Search(args)
 
@@ -138,7 +138,7 @@ func (h *Handler) AddSingleImportConfirm(w http.ResponseWriter, r *http.Request,
 
 func (h *Handler) AddSingleImport(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindImportSingle{}
-	if err := bind.Request(r, &b); err != nil {
+	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
 		h.Logger.Warnw("import single publication: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
