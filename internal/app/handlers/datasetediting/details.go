@@ -130,28 +130,28 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 	})
 }
 
-func detailsForm(l *locale.Locale, dataset *models.Dataset, errors validation.Errors) *form.Form {
+func detailsForm(l *locale.Locale, d *models.Dataset, errors validation.Errors) *form.Form {
 	return form.New().
 		WithTheme("default").
 		WithErrors(localize.ValidationErrors(l, errors)).
 		AddSection(
 			&form.Text{
 				Name:     "title",
-				Value:    dataset.Title,
+				Value:    d.Title,
 				Label:    l.T("builder.title"),
 				Cols:     9,
 				Error:    localize.ValidationErrorAt(l, errors, "/title"),
-				Required: true,
+				Required: d.FieldIsRequired(),
 			},
 			&display.Text{
 				Label:         l.T("builder.doi"),
-				Value:         dataset.DOI,
-				Required:      true,
+				Value:         d.DOI,
+				Required:      d.FieldIsRequired(),
 				ValueTemplate: "format/doi",
 			},
 			&form.Text{
 				Name:  "url",
-				Value: dataset.URL,
+				Value: d.URL,
 				Label: l.T("builder.url"),
 				Cols:  3,
 				Error: localize.ValidationErrorAt(l, errors, "/url"),
@@ -160,37 +160,37 @@ func detailsForm(l *locale.Locale, dataset *models.Dataset, errors validation.Er
 		AddSection(
 			&form.Text{
 				Name:     "publisher",
-				Value:    dataset.Publisher,
+				Value:    d.Publisher,
 				Label:    l.T("builder.publisher"),
 				Cols:     9,
 				Error:    localize.ValidationErrorAt(l, errors, "/publisher"),
-				Required: true,
+				Required: d.FieldIsRequired(),
 				Tooltip:  l.T("tooltip.dataset.publisher"),
 			},
 			&form.Text{
 				Name:     "year",
-				Value:    dataset.Year,
+				Value:    d.Year,
 				Label:    l.T("builder.year"),
 				Cols:     3,
 				Help:     l.T("builder.year.help"),
 				Error:    localize.ValidationErrorAt(l, errors, "/year"),
-				Required: true,
+				Required: d.FieldIsRequired(),
 			},
 		).
 		AddSection(
 			&form.TextRepeat{
 				Name:            "format",
-				Values:          dataset.Format,
+				Values:          d.Format,
 				Label:           l.T("builder.format"),
 				Cols:            9,
 				Error:           localize.ValidationErrorAt(l, errors, "/format"),
-				Required:        true,
+				Required:        d.FieldIsRequired(),
 				AutocompleteURL: "suggest_media_types",
 				Tooltip:         l.T("tooltip.dataset.format"),
 			},
 			&form.TextRepeat{
 				Name:   "keyword",
-				Values: dataset.Keyword,
+				Values: d.Keyword,
 				Label:  l.T("builder.keyword"),
 				Cols:   9,
 				Error:  localize.ValidationErrorAt(l, errors, "/keyword"),
@@ -199,55 +199,55 @@ func detailsForm(l *locale.Locale, dataset *models.Dataset, errors validation.Er
 		AddSection(
 			&form.Select{
 				Name:        "license",
-				Value:       dataset.License,
+				Value:       d.License,
 				Label:       l.T("builder.license"),
 				Options:     localize.VocabularySelectOptions(l, "licenses"),
 				Cols:        3,
 				Error:       localize.ValidationErrorAt(l, errors, "/license"),
 				Tooltip:     l.T("tooltip.dataset.license"),
 				EmptyOption: true,
-				Required:    true,
+				Required:    d.FieldIsRequired(),
 			},
 			&form.Text{
 				Name:     "other_license",
-				Value:    dataset.OtherLicense,
+				Value:    d.OtherLicense,
 				Label:    l.T("builder.other_license"),
 				Cols:     9,
 				Help:     l.T("builder.other_license.help"),
 				Error:    localize.ValidationErrorAt(l, errors, "/other_license"),
-				Required: true,
+				Required: d.FieldIsRequired(),
 			},
 			&form.Select{
 				//TODO: closes modal because controller reuses full edit view
 				//Template:    "dataset/access_level",
 				Name:        "access_level",
 				Label:       l.T("builder.access_level"),
-				Value:       dataset.AccessLevel,
+				Value:       d.AccessLevel,
 				Options:     localize.VocabularySelectOptions(l, "access_levels"),
 				Cols:        3,
 				Error:       localize.ValidationErrorAt(l, errors, "/access_level"),
-				Required:    true,
+				Required:    d.FieldIsRequired(),
 				EmptyOption: true,
 				Tooltip:     l.T("tooltip.dataset.access_level"),
-				Vars:        struct{ ID string }{ID: dataset.ID},
+				Vars:        struct{ ID string }{ID: d.ID},
 			},
 			&form.Date{
 				Name:     "embargo",
-				Value:    dataset.Embargo,
+				Value:    d.Embargo,
 				Label:    l.T("builder.embargo"),
 				Cols:     3,
 				Error:    localize.ValidationErrorAt(l, errors, "/embargo"),
-				Disabled: dataset.AccessLevel != "info:eu-repo/semantics/embargoedAccess",
+				Disabled: d.AccessLevel != "info:eu-repo/semantics/embargoedAccess",
 			},
 			&form.Select{
 				Name:        "embargo_to",
 				Label:       l.T("builder.embargo_to"),
-				Value:       dataset.EmbargoTo,
+				Value:       d.EmbargoTo,
 				Options:     localize.VocabularySelectOptions(l, "access_levels"),
 				Cols:        3,
 				Error:       localize.ValidationErrorAt(l, errors, "/embargo_to"),
 				EmptyOption: true,
-				Disabled:    dataset.AccessLevel != "info:eu-repo/semantics/embargoedAccess",
+				Disabled:    d.AccessLevel != "info:eu-repo/semantics/embargoedAccess",
 			},
 		)
 }

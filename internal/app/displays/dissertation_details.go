@@ -30,7 +30,7 @@ func dissertationDetails(l *locale.Locale, p *models.Publication) *display.Displ
 			&display.Text{
 				Label:    l.T("builder.title"),
 				Value:    p.Title,
-				Required: true,
+				Required: p.FieldIsRequired(),
 			},
 			&display.List{
 				Label:  l.T("builder.alternative_title"),
@@ -56,7 +56,7 @@ func dissertationDetails(l *locale.Locale, p *models.Publication) *display.Displ
 			&display.Text{
 				Label:    l.T("builder.year"),
 				Value:    p.Year,
-				Required: true,
+				Required: p.FieldIsRequired(),
 			},
 			&display.Text{
 				Label: l.T("builder.place_of_publication"),
@@ -85,17 +85,17 @@ func dissertationDetails(l *locale.Locale, p *models.Publication) *display.Displ
 			&display.Text{
 				Label:    l.T("builder.defense_date"),
 				Value:    p.DefenseDate,
-				Required: true,
+				Required: p.DefenseDateIsRequired(),
 			},
 			&display.Text{
 				Label:    l.T("builder.defense_time"),
 				Value:    p.DefenseTime,
-				Required: true,
+				Required: p.DefenseTimeIsRequired(),
 			},
 			&display.Text{
 				Label:    l.T("builder.defense_place"),
 				Value:    p.DefensePlace,
-				Required: true,
+				Required: p.DefensePlaceIsRequired(),
 			},
 		).
 		AddSection(

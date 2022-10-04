@@ -13,12 +13,12 @@ func DatasetDetails(l *locale.Locale, d *models.Dataset) *display.Display {
 			&display.Text{
 				Label:    l.T("builder.title"),
 				Value:    d.Title,
-				Required: true,
+				Required: d.FieldIsRequired(),
 			},
 			&display.Text{
 				Label:         l.T("builder.doi"),
 				Value:         d.DOI,
-				Required:      true,
+				Required:      d.FieldIsRequired(),
 				ValueTemplate: "format/doi",
 			},
 			&display.Text{
@@ -31,19 +31,19 @@ func DatasetDetails(l *locale.Locale, d *models.Dataset) *display.Display {
 			&display.Text{
 				Label:    l.T("builder.publisher"),
 				Value:    d.Publisher,
-				Required: true,
+				Required: d.FieldIsRequired(),
 			},
 			&display.Text{
 				Label:    l.T("builder.year"),
 				Value:    d.Year,
-				Required: true,
+				Required: d.FieldIsRequired(),
 			},
 		).
 		AddSection(
 			&display.List{
 				Label:    l.T("builder.format"),
 				Values:   d.Format,
-				Required: true,
+				Required: d.FieldIsRequired(),
 			},
 			&display.List{
 				Inline:        true,
@@ -56,7 +56,7 @@ func DatasetDetails(l *locale.Locale, d *models.Dataset) *display.Display {
 			&display.Text{
 				Label:    l.T("builder.license"),
 				Value:    l.TS("licenses", d.License),
-				Required: true,
+				Required: d.FieldIsRequired(),
 			},
 			&display.Text{
 				Label: l.T("builder.other_license"),
@@ -65,7 +65,7 @@ func DatasetDetails(l *locale.Locale, d *models.Dataset) *display.Display {
 			&display.Text{
 				Label:    l.T("builder.access_level"),
 				Value:    l.TS("access_levels", d.AccessLevel),
-				Required: true,
+				Required: d.FieldIsRequired(),
 			},
 			&display.Text{
 				Label: l.T("builder.embargo"),

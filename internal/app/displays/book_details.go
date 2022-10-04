@@ -30,7 +30,7 @@ func bookDetails(l *locale.Locale, p *models.Publication) *display.Display {
 			&display.Text{
 				Label:    l.T("builder.title"),
 				Value:    p.Title,
-				Required: true,
+				Required: p.FieldIsRequired(),
 			},
 			&display.List{
 				Label:  l.T("builder.alternative_title"),
@@ -52,7 +52,7 @@ func bookDetails(l *locale.Locale, p *models.Publication) *display.Display {
 			&display.Text{
 				Label:    l.T("builder.year"),
 				Value:    p.Year,
-				Required: true,
+				Required: p.FieldIsRequired(),
 			},
 			&display.Text{
 				Label: l.T("builder.place_of_publication"),

@@ -746,6 +746,26 @@ func (p *Publication) InORCIDWorks(orcidID string) bool {
 	return false
 }
 
+func (p *Publication) FieldIsRequired() bool {
+	return p.Status == "public"
+}
+
+func (p *Publication) PublicationIsRequired() bool {
+	return p.Type == "journal_article" && p.Status == "public"
+}
+
+func (p *Publication) DefensePlaceIsRequired() bool {
+	return p.Type == "dissertation" && p.Status == "public"
+}
+
+func (p *Publication) DefenseDateIsRequired() bool {
+	return p.Type == "dissertation" && p.Status == "public"
+}
+
+func (p *Publication) DefenseTimeIsRequired() bool {
+	return p.Type == "dissertation" && p.Status == "public"
+}
+
 func (p *Publication) Validate() error {
 	var errs validation.Errors
 

@@ -30,7 +30,7 @@ func issueEditorDetails(l *locale.Locale, p *models.Publication) *display.Displa
 			&display.Text{
 				Label:    l.T("builder.title"),
 				Value:    p.Title,
-				Required: true,
+				Required: p.FieldIsRequired(),
 			},
 			&display.List{
 				Label:  l.T("builder.alternative_title"),
@@ -39,7 +39,7 @@ func issueEditorDetails(l *locale.Locale, p *models.Publication) *display.Displa
 			&display.Text{
 				Label:    l.T("builder.journal_article.publication"),
 				Value:    p.Publication,
-				Required: true,
+				Required: p.PublicationIsRequired(),
 			},
 			&display.Text{
 				Label: l.T("builder.journal_article.publication_abbreviation"),
@@ -61,7 +61,7 @@ func issueEditorDetails(l *locale.Locale, p *models.Publication) *display.Displa
 			&display.Text{
 				Label:    l.T("builder.year"),
 				Value:    p.Year,
-				Required: true,
+				Required: p.FieldIsRequired(),
 			},
 			&display.Text{
 				Label: l.T("builder.place_of_publication"),

@@ -34,7 +34,7 @@ func miscellaneousDetails(l *locale.Locale, p *models.Publication) *display.Disp
 			&display.Text{
 				Label:    l.T("builder.title"),
 				Value:    p.Title,
-				Required: true,
+				Required: p.FieldIsRequired(),
 			},
 			&display.List{
 				Label:  l.T("builder.alternative_title"),
@@ -43,7 +43,7 @@ func miscellaneousDetails(l *locale.Locale, p *models.Publication) *display.Disp
 			&display.Text{
 				Label:    l.T("builder.publication"),
 				Value:    p.Publication,
-				Required: true,
+				Required: p.PublicationIsRequired(),
 			},
 			&display.Text{
 				Label: l.T("builder.publication_abbreviation"),
@@ -65,7 +65,7 @@ func miscellaneousDetails(l *locale.Locale, p *models.Publication) *display.Disp
 			&display.Text{
 				Label:    l.T("builder.year"),
 				Value:    p.Year,
-				Required: true,
+				Required: p.FieldIsRequired(),
 			},
 			&display.Text{
 				Label: l.T("builder.place_of_publication"),

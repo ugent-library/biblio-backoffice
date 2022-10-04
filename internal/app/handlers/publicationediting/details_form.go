@@ -126,7 +126,7 @@ func detailsForm(user *models.User, l *locale.Locale, p *models.Publication, err
 			Value:    p.Title,
 			Cols:     9,
 			Error:    localize.ValidationErrorAt(l, errors, "/title"),
-			Required: true,
+			Required: p.FieldIsRequired(),
 		})
 	}
 
@@ -146,7 +146,7 @@ func detailsForm(user *models.User, l *locale.Locale, p *models.Publication, err
 			Label:    l.T(fmt.Sprintf("builder.%s.publication", p.Type)),
 			Value:    p.Publication,
 			Cols:     9,
-			Required: true,
+			Required: p.PublicationIsRequired(),
 			Error:    localize.ValidationErrorAt(l, errors, "/publication"),
 		})
 	}
@@ -205,7 +205,7 @@ func detailsForm(user *models.User, l *locale.Locale, p *models.Publication, err
 			Name:     "year",
 			Label:    l.T("builder.year"),
 			Value:    p.Year,
-			Required: true,
+			Required: p.FieldIsRequired(),
 			Cols:     3,
 			Help:     l.T("builder.year.help"),
 			Error:    localize.ValidationErrorAt(l, errors, "/year"),
@@ -342,7 +342,7 @@ func detailsForm(user *models.User, l *locale.Locale, p *models.Publication, err
 				Name:     "defense_date",
 				Label:    l.T("builder.defense_date"),
 				Value:    p.DefenseDate,
-				Required: true,
+				Required: p.DefenseDateIsRequired(),
 				Cols:     3,
 				Help:     l.T("builder.defense_date.help"),
 				Error:    localize.ValidationErrorAt(l, errors, "/defense_date"),
@@ -351,7 +351,7 @@ func detailsForm(user *models.User, l *locale.Locale, p *models.Publication, err
 				Name:     "defense_time",
 				Label:    l.T("builder.defense_time"),
 				Value:    p.DefenseTime,
-				Required: true,
+				Required: p.DefenseTimeIsRequired(),
 				Cols:     3,
 				Help:     l.T("builder.defense_time.help"),
 				Error:    localize.ValidationErrorAt(l, errors, "/defense_time"),
@@ -360,7 +360,7 @@ func detailsForm(user *models.User, l *locale.Locale, p *models.Publication, err
 				Name:     "defense_place",
 				Label:    l.T("builder.defense_place"),
 				Value:    p.DefensePlace,
-				Required: true,
+				Required: p.DefensePlaceIsRequired(),
 				Cols:     3,
 				Error:    localize.ValidationErrorAt(l, errors, "/defense_place"),
 			},
