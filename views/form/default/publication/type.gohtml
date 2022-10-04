@@ -22,6 +22,6 @@
             <option value="{{.Value}}"{{if eq .Value $.Value}} selected{{end}}>{{.Label}}</option>
             {{end}}
         </select>
-        {{with .Error}}<div class="invalid-feedback">{{.}}</div>{{end}}
+        {{with .Error}}<small class="invalid-feedback">{{.}}</small>{{end}}
     </div>
 </div>

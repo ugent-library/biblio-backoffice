@@ -4,7 +4,7 @@
         <input class="custom-control-input{{if .Error}} is-invalid{{end}}" type="checkbox" id="{{.Name}}" name="{{.Name}}"
           {{if .Checked}}checked{{end}} value="{{.Value}}">
         <label class="custom-control-label" for="{{.Name}}">{{.Label}}</label>
-        {{if .Error}}<div class="invalid-feedback">{{.Error}}</div>{{end}}
+        {{if .Error}}<small class="invalid-feedback">{{.Error}}</small>{{end}}
       </div>
     </div>
   </div>
