@@ -24,7 +24,8 @@ type BindLink struct {
 }
 
 type BindDeleteLink struct {
-	LinkID string `path:"link_id"`
+	LinkID     string `path:"link_id"`
+	SnapshotID string `path:"snapshot_id"`
 }
 
 type YieldLinks struct {
@@ -137,20 +138,15 @@ func (h *Handler) UpdateLink(w http.ResponseWriter, r *http.Request, ctx Context
 		return
 	}
 
-	/*
-		TODO: throw a conflict error when
-		trying to update a non existing id?
-	*/
 	link := ctx.Publication.GetLink(b.LinkID)
 	if link == nil {
 		h.Logger.Warnw("update publication link: could not get link", "link", b.LinkID, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.BadRequest(
-			w,
-			r,
-			fmt.Errorf("no link found for %s in publication %s", b.LinkID, ctx.Publication.ID),
-		)
+		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
+			Message: ctx.Locale.T("publication.conflict_error_reload"),
+		})
 		return
 	}
+
 	link.URL = b.URL
 	link.Description = b.Description
 	link.Relation = b.Relation
@@ -198,6 +194,12 @@ func (h *Handler) ConfirmDeleteLink(w http.ResponseWriter, r *http.Request, ctx 
 	}
 
 	// TODO catch non-existing item in UI
+	if b.SnapshotID != ctx.Publication.SnapshotID {
+		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
+			Message: ctx.Locale.T("publication.conflict_error_reload"),
+		})
+		return
+	}
 
 	render.Layout(w, "show_modal", "publication/confirm_delete_link", YieldDeleteLink{
 		Context: ctx,

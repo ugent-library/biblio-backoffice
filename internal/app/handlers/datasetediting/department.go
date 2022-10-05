@@ -21,6 +21,7 @@ type BindDepartment struct {
 
 type BindDeleteDepartment struct {
 	DepartmentID string `path:"department_id"`
+	SnapshotID   string `path:"snapshot_id"`
 }
 
 type YieldDepartments struct {
@@ -120,7 +121,12 @@ func (h *Handler) ConfirmDeleteDepartment(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	// TODO catch non-existing item in UI
+	if b.SnapshotID != ctx.Dataset.SnapshotID {
+		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
+			Message: ctx.Locale.T("dataset.conflict_error_reload"),
+		})
+		return
+	}
 
 	render.Layout(w, "show_modal", "dataset/confirm_delete_department", YieldDeleteDepartment{
 		Context:      ctx,

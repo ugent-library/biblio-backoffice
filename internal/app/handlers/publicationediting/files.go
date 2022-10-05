@@ -36,9 +36,10 @@ type BindFile struct {
 
 type BindDeleteFile struct {
 	Context
-	FileID   string `path:"file_id"`
-	Name     string `form:"name"`
-	Conflict bool
+	FileID     string `path:"file_id"`
+	SnapshotID string `path:"snapshot_id"`
+	Name       string `form:"name"`
+	Conflict   bool
 }
 
 type YieldEditFile struct {
@@ -146,11 +147,11 @@ func (h *Handler) EditFile(w http.ResponseWriter, r *http.Request, ctx Context) 
 
 	file := ctx.Publication.GetFile(b.FileID)
 
-	// TODO catch non-existing item in UI
-
 	if file == nil {
 		h.Logger.Warnw("publication upload file: could not find file", "fileid", b.FileID, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
+			Message: ctx.Locale.T("publication.conflict_error_reload"),
+		})
 		return
 	}
 
@@ -302,7 +303,12 @@ func (h *Handler) ConfirmDeleteFile(w http.ResponseWriter, r *http.Request, ctx 
 
 	file := ctx.Publication.GetFile(b.FileID)
 
-	// TODO catch non-existing item in UI
+	if b.SnapshotID != ctx.Publication.SnapshotID {
+		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
+			Message: ctx.Locale.T("publication.conflict_error_reload"),
+		})
+		return
+	}
 
 	render.Layout(w, "show_modal", "publication/confirm_delete_file", YieldDeleteFile{
 		Context: ctx,

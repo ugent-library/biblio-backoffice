@@ -3,6 +3,7 @@ package publicationediting
 import (
 	"net/http"
 
+	"github.com/ugent-library/biblio-backend/internal/app/handlers"
 	"github.com/ugent-library/biblio-backend/internal/bind"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
@@ -15,7 +16,8 @@ type BindDataset struct {
 	DatasetID string `form:"dataset_id"`
 }
 type BindDeleteDataset struct {
-	DatasetID string `path:"dataset_id"`
+	DatasetID  string `path:"dataset_id"`
+	SnapshotID string `path:"snapshot_id"`
 }
 
 type YieldAddDataset struct {
@@ -84,12 +86,18 @@ func (h *Handler) CreateDataset(w http.ResponseWriter, r *http.Request, ctx Cont
 
 	// TODO handle validation errors
 	// TODO pass If-Match
-	err = h.Repository.AddPublicationDataset(ctx.Publication, d)
-
 	// TODO handle conflict
-
+	err = h.Repository.AddPublicationDataset(ctx.Publication, d)
 	if err != nil {
 		h.Logger.Errorw("create publication dataset: could not add dataset to publication", "errors", err, "publication", ctx.Publication.ID, "dataset", b.DatasetID, "user", ctx.User.ID)
+		render.InternalServerError(w, r, err)
+		return
+	}
+
+	// Refresh the ctx.Publication: it still carries the old snapshotID
+	ctx.Publication, err = h.Repository.GetPublication(ctx.Publication.ID)
+	if err != nil {
+		h.Logger.Errorw("create dataset publication: could not get publication", "errors", err, "publication", ctx.Publication.ID, "dataset", b.DatasetID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -115,7 +123,12 @@ func (h *Handler) ConfirmDeleteDataset(w http.ResponseWriter, r *http.Request, c
 		return
 	}
 
-	// TODO catch non-existing item in UI
+	if b.SnapshotID != ctx.Publication.SnapshotID {
+		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
+			Message: ctx.Locale.T("publication.conflict_error_reload"),
+		})
+		return
+	}
 
 	render.Layout(w, "show_modal", "publication/confirm_delete_dataset", YieldDeleteDataset{
 		Context:   ctx,
@@ -131,6 +144,13 @@ func (h *Handler) DeleteDataset(w http.ResponseWriter, r *http.Request, ctx Cont
 		return
 	}
 
+	if !ctx.Publication.HasRelatedDataset(b.DatasetID) {
+		render.Layout(w, "refresh_modal", "error_dialog", handlers.YieldErrorDialog{
+			Message: ctx.Locale.T("publication.conflict_error_reload"),
+		})
+		return
+	}
+
 	// TODO reduce calls to repository
 	d, err := h.Repository.GetDataset(b.DatasetID)
 	if err != nil {
@@ -141,12 +161,19 @@ func (h *Handler) DeleteDataset(w http.ResponseWriter, r *http.Request, ctx Cont
 
 	// TODO handle validation errors
 	// TODO pass If-Match
-	err = h.Repository.RemovePublicationDataset(ctx.Publication, d)
-
 	// TODO handle conflict
+	err = h.Repository.RemovePublicationDataset(ctx.Publication, d)
 
 	if err != nil {
 		h.Logger.Errorw("delete dataset publication: could not remove dataset", "errors", err, "publication", ctx.Publication.ID, "dataset", b.DatasetID, "user", ctx.User.ID)
+		render.InternalServerError(w, r, err)
+		return
+	}
+
+	// Refresh the ctx.Publication: it still carries the old snapshotID
+	ctx.Publication, err = h.Repository.GetPublication(ctx.Publication.ID)
+	if err != nil {
+		h.Logger.Errorw("delete dataset publication: could not get publication", "errors", err, "publication", ctx.Publication.ID, "dataset", b.DatasetID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}

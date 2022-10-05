@@ -18,7 +18,8 @@ type BindProject struct {
 	ProjectID string `form:"project_id"`
 }
 type BindDeleteProject struct {
-	ProjectID string `path:"project_id"`
+	ProjectID  string `path:"project_id"`
+	SnapshotID string `path:"snapshot_id"`
 }
 
 type YieldProjects struct {
@@ -118,7 +119,12 @@ func (h *Handler) ConfirmDeleteProject(w http.ResponseWriter, r *http.Request, c
 		return
 	}
 
-	// TODO catch non-existing item in UI
+	if b.SnapshotID != ctx.Publication.SnapshotID {
+		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
+			Message: ctx.Locale.T("publication.conflict_error_reload"),
+		})
+		return
+	}
 
 	render.Layout(w, "show_modal", "publication/confirm_delete_project", YieldDeleteProject{
 		Context:   ctx,

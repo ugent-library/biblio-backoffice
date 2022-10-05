@@ -14,7 +14,7 @@
                     </a>
                     {{if .User.CanEditDataset .Dataset}}
                     <button class="dropdown-item" type="button"
-                        hx-get="{{pathFor "dataset_confirm_delete_publication" "id" .Dataset.ID "publication_id" .Publication.ID}}"
+                        hx-get="{{pathFor "dataset_confirm_delete_publication" "id" .Dataset.ID "snapshot_id" .Dataset.SnapshotID "publication_id" .Publication.ID}}"
                         hx-target="#modals"
                     >
                         <i class="if if-delete"></i>

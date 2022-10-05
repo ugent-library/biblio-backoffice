@@ -25,7 +25,7 @@
     </form>
     <hr>
     {{end}}
-    
+
     {{if .Publication.File}}
     <ul class="list-group list-group-flush">
         {{range .Publication.File}}
@@ -76,7 +76,7 @@
                                         <i class="if if-edit"></i>
                                     </button>
                                     <button class="btn btn-default" type="button"
-                                        hx-get="{{pathFor "publication_confirm_delete_file" "id" $.Publication.ID "file_id" .ID}}"
+                                        hx-get="{{pathFor "publication_confirm_delete_file" "id" $.Publication.ID "snapshot_id" $.Publication.SnapshotID "file_id" .ID}}"
                                         hx-headers='{"If-Match": "{{$.Publication.SnapshotID}}"}'
                                         hx-target="#modals"
                                         hx-trigger="click"

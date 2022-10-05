@@ -24,6 +24,7 @@ type BindAbstract struct {
 
 type BindDeleteAbstract struct {
 	AbstractID string `path:"abstract_id"`
+	SnapshotID string `path:"snapshot_id"`
 }
 
 type YieldAbstracts struct {
@@ -109,14 +110,11 @@ func (h *Handler) EditAbstract(w http.ResponseWriter, r *http.Request, ctx Conte
 
 	abstract := ctx.Publication.GetAbstract(b.AbstractID)
 
-	// TODO catch non-existing item in UI
 	if abstract == nil {
 		h.Logger.Warnf("edit publication abstract: Could not fetch the abstract:", "publication", ctx.Publication.ID, "abstract", b.AbstractID, "user", ctx.User.ID)
-		render.BadRequest(
-			w,
-			r,
-			fmt.Errorf("no abstract found for %s in publication %s", b.AbstractID, ctx.Publication.ID),
-		)
+		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
+			Message: ctx.Locale.T("publication.conflict_error_reload"),
+		})
 		return
 	}
 
@@ -198,7 +196,12 @@ func (h *Handler) ConfirmDeleteAbstract(w http.ResponseWriter, r *http.Request, 
 		return
 	}
 
-	// TODO catch non-existing item
+	if b.SnapshotID != ctx.Publication.SnapshotID {
+		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
+			Message: ctx.Locale.T("publication.conflict_error_reload"),
+		})
+		return
+	}
 
 	render.Layout(w, "show_modal", "publication/confirm_delete_abstract", YieldDeleteAbstract{
 		Context:    ctx,

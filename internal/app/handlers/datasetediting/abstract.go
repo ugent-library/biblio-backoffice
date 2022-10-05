@@ -24,6 +24,7 @@ type BindAbstract struct {
 
 type BindDeleteAbstract struct {
 	AbstractID string `path:"abstract_id"`
+	SnapshotID string `path:"snapshot_id"`
 }
 
 type YieldAbstracts struct {
@@ -116,11 +117,9 @@ func (h *Handler) EditAbstract(w http.ResponseWriter, r *http.Request, ctx Conte
 	// TODO catch non-existing item in UI
 	if abstract == nil {
 		h.Logger.Warnf("edit dataset abstract: Could not fetch the abstract:", "dataset", ctx.Dataset.ID, "abstract", b.AbstractID, "user", ctx.User.ID)
-		render.NotFoundError(
-			w,
-			r,
-			fmt.Errorf("no abstract found for %s in dataset %s", b.AbstractID, ctx.Dataset.ID),
-		)
+		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
+			Message: ctx.Locale.T("dataset.conflict_error_reload"),
+		})
 		return
 	}
 
@@ -204,7 +203,12 @@ func (h *Handler) ConfirmDeleteAbstract(w http.ResponseWriter, r *http.Request, 
 		return
 	}
 
-	// TODO catch non-existing item in UI
+	if b.SnapshotID != ctx.Dataset.SnapshotID {
+		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
+			Message: ctx.Locale.T("dataset.conflict_error_reload"),
+		})
+		return
+	}
 
 	render.Layout(w, "show_modal", "dataset/confirm_delete_abstract", YieldDeleteAbstract{
 		Context:    ctx,

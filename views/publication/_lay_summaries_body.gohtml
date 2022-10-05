@@ -32,7 +32,7 @@
                                 </button>
 
                                 <button class="dropdown-item" type="button"
-                                    hx-get="{{pathFor "publication_confirm_delete_lay_summary" "id" $.Publication.ID "lay_summary_id" $a.ID}}"
+                                    hx-get="{{pathFor "publication_confirm_delete_lay_summary" "id" $.Publication.ID "snapshot_id" $.Publication.SnapshotID "lay_summary_id" $a.ID}}"
                                     hx-target="#modals"
                                 >
                                     <i class="if if-delete"></i>

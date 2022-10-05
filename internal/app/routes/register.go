@@ -390,7 +390,7 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		Methods("POST").
 		Name("dataset_create_project")
 	// TODO: weird project_id's not problematic in urls?
-	r.HandleFunc("/dataset/{id}/projects/{project_id}/confirm-delete",
+	r.HandleFunc("/dataset/{id}/{snapshot_id}/projects/{project_id}/confirm-delete",
 		datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmDeleteProject)).
 		Methods("GET").
 		Name("dataset_confirm_delete_project")
@@ -412,7 +412,7 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		datasetEditingHandler.Wrap(datasetEditingHandler.CreateDepartment)).
 		Methods("POST").
 		Name("dataset_create_department")
-	r.HandleFunc("/dataset/{id}/departments/{department_id}/confirm-delete",
+	r.HandleFunc("/dataset/{id}/{snapshot_id}/departments/{department_id}/confirm-delete",
 		datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmDeleteDepartment)).
 		Methods("GET").
 		Name("dataset_confirm_delete_department")
@@ -438,7 +438,7 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		datasetEditingHandler.Wrap(datasetEditingHandler.UpdateAbstract)).
 		Methods("PUT").
 		Name("dataset_update_abstract")
-	r.HandleFunc("/dataset/{id}/abstracts/{abstract_id}/confirm-delete",
+	r.HandleFunc("/dataset/{id}/{snapshot_id}/abstracts/{abstract_id}/confirm-delete",
 		datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmDeleteAbstract)).
 		Methods("GET").
 		Name("dataset_confirm_delete_abstract")
@@ -460,7 +460,7 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		datasetEditingHandler.Wrap(datasetEditingHandler.CreatePublication)).
 		Methods("POST").
 		Name("dataset_create_publication")
-	r.HandleFunc("/dataset/{id}/publications/{publication_id}/confirm-delete",
+	r.HandleFunc("/dataset/{id}/{snapshot_id}/publications/{publication_id}/confirm-delete",
 		datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmDeletePublication)).
 		Methods("GET").
 		Name("dataset_confirm_delete_publication")
@@ -744,7 +744,7 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		publicationEditingHandler.Wrap(publicationEditingHandler.CreateProject)).
 		Methods("POST").
 		Name("publication_create_project")
-	r.HandleFunc("/publication/{id}/projects/{project_id}/confirm-delete",
+	r.HandleFunc("/publication/{id}/{snapshot_id}/projects/{project_id}/confirm-delete",
 		publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDeleteProject)).
 		Methods("GET").
 		Name("publication_confirm_delete_project")
@@ -770,7 +770,7 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		publicationEditingHandler.Wrap(publicationEditingHandler.UpdateLink)).
 		Methods("PUT").
 		Name("publication_update_link")
-	r.HandleFunc("/publication/{id}/links/{link_id}/confirm-delete",
+	r.HandleFunc("/publication/{id}/{snapshot_id}/links/{link_id}/confirm-delete",
 		publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDeleteLink)).
 		Methods("GET").
 		Name("publication_confirm_delete_link")
@@ -792,7 +792,7 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		publicationEditingHandler.Wrap(publicationEditingHandler.CreateDepartment)).
 		Methods("POST").
 		Name("publication_create_department")
-	r.HandleFunc("/publication/{id}/departments/{department_id}/confirm-delete",
+	r.HandleFunc("/publication/{id}/{snapshot_id}/departments/{department_id}/confirm-delete",
 		publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDeleteDepartment)).
 		Methods("GET").
 		Name("publication_confirm_delete_department")
@@ -818,7 +818,7 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		publicationEditingHandler.Wrap(publicationEditingHandler.UpdateAbstract)).
 		Methods("PUT").
 		Name("publication_update_abstract")
-	r.HandleFunc("/publication/{id}/abstracts/{abstract_id}/confirm-delete",
+	r.HandleFunc("/publication/{id}/{snapshot_id}/abstracts/{abstract_id}/confirm-delete",
 		publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDeleteAbstract)).
 		Methods("GET").
 		Name("publication_confirm_delete_abstract")
@@ -844,7 +844,7 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		publicationEditingHandler.Wrap(publicationEditingHandler.UpdateLaySummary)).
 		Methods("PUT").
 		Name("publication_update_lay_summary")
-	r.HandleFunc("/publication/{id}/lay_summaries/{lay_summary_id}/confirm-delete",
+	r.HandleFunc("/publication/{id}/{snapshot_id}/lay_summaries/{lay_summary_id}/confirm-delete",
 		publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDeleteLaySummary)).
 		Methods("GET").
 		Name("publication_confirm_delete_lay_summary")
@@ -866,7 +866,7 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		publicationEditingHandler.Wrap(publicationEditingHandler.CreateDataset)).
 		Methods("POST").
 		Name("publication_create_dataset")
-	r.HandleFunc("/publication/{id}/datasets/{dataset_id}/confirm-delete",
+	r.HandleFunc("/publication/{id}/{snapshot_id}/datasets/{dataset_id}/confirm-delete",
 		publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDeleteDataset)).
 		Methods("GET").
 		Name("publication_confirm_delete_dataset")
@@ -934,7 +934,7 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		publicationEditingHandler.Wrap(publicationEditingHandler.UpdateFile)).
 		Methods("PUT").
 		Name("publication_update_file")
-	r.HandleFunc("/publication/{id}/files/{file_id}/confirm-delete",
+	r.HandleFunc("/publication/{id}/{snapshot_id}/files/{file_id}/confirm-delete",
 		publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDeleteFile)).
 		Methods("GET").
 		Name("publication_confirm_delete_file")

@@ -24,6 +24,7 @@ type BindLaySummary struct {
 
 type BindDeleteLaySummary struct {
 	LaySummaryID string `path:"lay_summary_id"`
+	SnapshotID   string `path:"snapshot_id"`
 }
 
 type YieldLaySummaries struct {
@@ -113,11 +114,10 @@ func (h *Handler) EditLaySummary(w http.ResponseWriter, r *http.Request, ctx Con
 
 	// TODO catch non-existing item in UI
 	if laySummary == nil {
-		render.BadRequest(
-			w,
-			r,
-			fmt.Errorf("no lay summary found for %s in publication %s", b.LaySummaryID, ctx.Publication.ID),
-		)
+		h.Logger.Warnf("edit publication lay summary: Could not fetch the lay summary:", "publication", ctx.Publication.ID, "abstract", b.LaySummaryID, "user", ctx.User.ID)
+		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
+			Message: ctx.Locale.T("publication.conflict_error_reload"),
+		})
 		return
 	}
 
@@ -197,7 +197,12 @@ func (h *Handler) ConfirmDeleteLaySummary(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	// TODO catch non-existing item
+	if b.SnapshotID != ctx.Publication.SnapshotID {
+		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
+			Message: ctx.Locale.T("publication.conflict_error_reload"),
+		})
+		return
+	}
 
 	render.Layout(w, "show_modal", "publication/confirm_delete_lay_summary", YieldDeleteLaySummary{
 		Context:      ctx,
