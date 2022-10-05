@@ -244,7 +244,7 @@ func (d *Dataset) ResolveDOI() string {
 }
 
 func (d *Dataset) FieldIsRequired() bool {
-	return d.Status == "public"
+	return true
 }
 
 func (d *Dataset) Validate() error {

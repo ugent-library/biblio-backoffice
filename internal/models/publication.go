@@ -747,23 +747,23 @@ func (p *Publication) InORCIDWorks(orcidID string) bool {
 }
 
 func (p *Publication) FieldIsRequired() bool {
-	return p.Status == "public"
+	return true
 }
 
 func (p *Publication) PublicationIsRequired() bool {
-	return p.Type == "journal_article" && p.Status == "public"
+	return p.Type == "journal_article"
 }
 
 func (p *Publication) DefensePlaceIsRequired() bool {
-	return p.Type == "dissertation" && p.Status == "public"
+	return p.Type == "dissertation"
 }
 
 func (p *Publication) DefenseDateIsRequired() bool {
-	return p.Type == "dissertation" && p.Status == "public"
+	return p.Type == "dissertation"
 }
 
 func (p *Publication) DefenseTimeIsRequired() bool {
-	return p.Type == "dissertation" && p.Status == "public"
+	return p.Type == "dissertation"
 }
 
 func (p *Publication) Validate() error {
