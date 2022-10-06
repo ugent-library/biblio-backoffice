@@ -1,5 +1,15 @@
+{{$canEditPublication := .User.CanEditPublication .Publication}}
+
 <div hx-swap-oob="innerHTML:#show-nav">
     {{partial "publication/show_nav" .}}
+</div>
+
+<div class="alert alert-success mb-6">
+    <i class="if if-check-circle"></i>
+    <div>
+        <h3>The&nbsp;<a href="#">UGent publication policy</a>&nbsp;ensures your Full text will be in safe hands.</h3>
+        <p>Other documents will be treated according to the access levels and licenses you indicate as well.</p>
+    </div>
 </div>
 
 <div class="card mb-6">
