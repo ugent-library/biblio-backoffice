@@ -36,7 +36,12 @@
         </div>
     </li>
     {{end}}
+</ul>
 
+{{if or .Hits (and .Contributor.ID .FirstName .LastName)}}
+<h3 class="mt-6">Select other {{$.Locale.TS "publication.contributor.role" $.Role}}</h3>
+
+<ul class="list-group">
     {{if and .Contributor.ID .FirstName .LastName}}
     <li class="list-group-item">
         <div class="list-group-item-inner">
@@ -56,12 +61,7 @@
         </div>
     </li>
     {{end}}
-</ul>
 
-{{if .Hits}}
-<h3 class="mt-6">Select other {{$.Locale.TS "publication.contributor.role" $.Role}}</h3>
-
-<ul class="list-group">
     {{range .Hits}}
     <li class="list-group-item">
         <div class="list-group-item-inner">
