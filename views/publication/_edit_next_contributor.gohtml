@@ -1,0 +1,5 @@
+<div hx-swap-oob="innerHTML:#contributors-{{.Role}}-body">
+    {{partial "publication/contributors_body" .}}
+</div>
+
+{{layout "refresh_modal" "publication/edit_contributor" .}}

@@ -1,0 +1,67 @@
+{{define "modal_dialog"}}
+<div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">Add {{.Locale.TS "publication.contributor.role" .Role}}</h2>
+        </div>
+        <div class="modal-body">
+            {{.Form.Errors.Render}}
+
+            <h3>Review {{.Locale.TS "publication.contributor.role" .Role}} information</h3>
+
+            <ul class="list-group mt-6">
+                <li class="list-group-item">
+                    <div class="list-group-item-inner">
+                        <div class="list-group-item-main">
+                            {{partial "publication/contributor_summary" (.Yield "Contributor" .Contributor "Current" false)}}
+                        </div>
+                        <div class="list-group-item-main contributor-attributes">
+                            {{range .Form.Sections}}
+                                {{.Render}}
+                            {{end}}
+                        </div>                      
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="modal-footer">
+            <div class="bc-toolbar">
+                <div class="bc-toolbar-right">
+                    <div class="bc-toolbar-item">
+                        <button class="btn btn-link modal-close">Cancel</button>
+                    </div>
+                    <div class="bc-toolbar-item">
+                        <button class="btn btn-outline-primary"
+                            hx-get="{{pathFor "publication_add_contributor" "id" .Publication.ID "role" .Role | querySet "first_name" .Contributor.FirstName | querySet "last_name" .Contributor.LastName}}"
+                            hx-target="#modal"
+                            hx-select="#modal"
+                        >
+                          <i class="if if-arrow-left"></i>
+                          <span class="button-text">Back to search</span>
+                        </button>
+                    </div>
+                    <div class="bc-toolbar-item">
+                        <button class="btn btn-outline-primary"
+                            hx-post="{{pathFor "publication_create_contributor" "id" .Publication.ID "role" .Role}}"
+                            hx-headers='{"If-Match": "{{.Publication.SnapshotID}}"}'
+                            hx-include=".modal-body .contributor-attributes"
+                            hx-vals='{"add_next": true}'
+                            hx-swap="none"
+                        >
+                          <i class="if if-add"></i><span class="button-text">Save and add next</span>
+                        </button>
+                    </div>
+                    <div class="bc-toolbar-item">
+                        <button class="btn btn-primary"
+                            hx-post="{{pathFor "publication_create_contributor" "id" .Publication.ID "role" .Role}}"
+                            hx-headers='{"If-Match": "{{.Publication.SnapshotID}}"}'
+                            hx-include=".modal-body .contributor-attributes"
+                            hx-swap="none"
+                        >Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{end}}

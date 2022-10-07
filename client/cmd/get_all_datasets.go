@@ -18,9 +18,9 @@ func (c *GetAllDatasetsCmd) Command() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "get-all",
 		Short: "Get all datasets",
-		Run: func(_ *cobra.Command, args []string) {
+		Run: func(cmd *cobra.Command, args []string) {
 			c.Wrap(func() {
-				c.Run(args)
+				c.Run(cmd, args)
 			})
 		},
 	}
@@ -28,7 +28,7 @@ func (c *GetAllDatasetsCmd) Command() *cobra.Command {
 	return cmd
 }
 
-func (c *GetAllDatasetsCmd) Run(args []string) {
+func (c *GetAllDatasetsCmd) Run(cmd *cobra.Command, args []string) {
 
 	req := &api.GetAllDatasetsRequest{}
 	stream, err := c.Client.GetAllDatasets(context.Background(), req)

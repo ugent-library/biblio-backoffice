@@ -249,7 +249,6 @@ func (h *Handler) DeleteAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 }
 
 func abstractForm(l *locale.Locale, dataset *models.Dataset, abstract *models.Text, errors validation.Errors) *form.Form {
-
 	idx := -1
 	for i, a := range dataset.Abstract {
 		if a.ID == abstract.ID {

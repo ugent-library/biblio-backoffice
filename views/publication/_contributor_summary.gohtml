@@ -1,0 +1,55 @@
+<div class="bc-avatar-and-text align-items-start">
+    {{if .Contributor.ID}}
+    <div class="bc-avatar">
+      <i class="if if-ghent-university"></i>
+    </div>
+    <div class="bc-avatar-text">
+      <h3>
+        {{.Contributor.FullName}}
+        {{if .Current}}
+        <span class="badge badge-pill badge-success"><i class="if if-check-circle"></i><span class="badge-text">Current selection</span></span>
+        {{end}}
+      </h3>
+      {{with .Contributor.Department}}
+      <p class="text-muted">
+          Current department(s):
+          {{range $i, $v := .}}
+              {{if $i}}, {{end}}{{$v.ID}}
+          {{end}}
+      </p>
+      {{end}}
+      <ul class="c-meta-list c-meta-list-horizontal">
+        <li class="c-meta-item">
+          <i class="if if-ghent-university"></i>
+          {{range $i, $v := .Contributor.UGentID}}
+              {{$v}}
+          {{end}}
+        </li>
+        {{with .Contributor.ORCID}}
+        <li class="c-meta-item">
+          <i class="if if-orcid"></i>
+          {{.}}
+        </li>
+        {{end}}
+        <li class="c-meta-item">
+          <a href="#"><i class="if if-external-link"></i><span>View personal details</span></a>
+        </li>
+      </ul>
+    </div>
+    {{else}}
+    <div class="bc-avatar-and-text align-items-start">
+        <div class="bc-avatar bc-avatar--muted">
+          <i class="if if-external-link"></i>
+        </div>
+        <div class="bc-avatar-text">
+          <h3>
+            {{.Contributor.FirstName}} {{.Contributor.LastName}}
+            {{if .Current}}
+            <span class="badge badge-pill badge-success"><i class="if if-check-circle"></i><span class="badge-text">Current selection</span></span>
+            {{end}}
+          </h3>
+          <p class="text-muted">External, non-UGent</p>
+        </div>
+    </div>
+    {{end}}
+</div>

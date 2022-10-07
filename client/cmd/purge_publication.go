@@ -17,9 +17,9 @@ func (c *PurgePublicationCmd) Command() *cobra.Command {
 		Use:   "purge [id]",
 		Short: "Purge publication",
 		Args:  cobra.MinimumNArgs(1),
-		Run: func(_ *cobra.Command, args []string) {
+		Run: func(cmd *cobra.Command, args []string) {
 			c.Wrap(func() {
-				c.Run(args)
+				c.Run(cmd, args)
 			})
 		},
 	}
@@ -27,7 +27,7 @@ func (c *PurgePublicationCmd) Command() *cobra.Command {
 	return cmd
 }
 
-func (c *PurgePublicationCmd) Run(args []string) {
+func (c *PurgePublicationCmd) Run(cmd *cobra.Command, args []string) {
 	id := args[0]
 	req := &api.PurgePublicationRequest{Id: id}
 	if _, err := c.Client.PurgePublication(context.Background(), req); err != nil {

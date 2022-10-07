@@ -24,9 +24,9 @@ func (c *AddFileCMd) Command() *cobra.Command {
 		Use:   "add",
 		Short: "Add file",
 		Args:  cobra.MinimumNArgs(1),
-		Run: func(_ *cobra.Command, args []string) {
+		Run: func(cmd *cobra.Command, args []string) {
 			c.Wrap(func() {
-				c.Run(args)
+				c.Run(cmd, args)
 			})
 		},
 	}
@@ -34,7 +34,7 @@ func (c *AddFileCMd) Command() *cobra.Command {
 	return cmd
 }
 
-func (c *AddFileCMd) Run(args []string) {
+func (c *AddFileCMd) Run(cmd *cobra.Command, args []string) {
 	stream, err := c.Client.AddFile(context.Background())
 	if err != nil {
 		log.Fatal(err)

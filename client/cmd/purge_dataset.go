@@ -17,9 +17,9 @@ func (c *PurgeDatasetCmd) Command() *cobra.Command {
 		Use:   "purge [id]",
 		Short: "Purge dataset",
 		Args:  cobra.MinimumNArgs(1),
-		Run: func(_ *cobra.Command, args []string) {
+		Run: func(cmd *cobra.Command, args []string) {
 			c.Wrap(func() {
-				c.Run(args)
+				c.Run(cmd, args)
 			})
 		},
 	}
@@ -27,7 +27,7 @@ func (c *PurgeDatasetCmd) Command() *cobra.Command {
 	return cmd
 }
 
-func (c *PurgeDatasetCmd) Run(args []string) {
+func (c *PurgeDatasetCmd) Run(cmd *cobra.Command, args []string) {
 	id := args[0]
 	req := &api.PurgeDatasetRequest{Id: id}
 	if _, err := c.Client.PurgeDataset(context.Background(), req); err != nil {

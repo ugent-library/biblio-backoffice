@@ -884,18 +884,14 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		publicationEditingHandler.Wrap(publicationEditingHandler.AddContributor)).
 		Methods("GET").
 		Name("publication_add_contributor")
-	r.HandleFunc("/publication/{id}/contributors/{role}/{position}/suggestions",
-		publicationEditingHandler.Wrap(publicationEditingHandler.SuggestContributors)).
+	r.HandleFunc("/publication/{id}/contributors/{role}/suggestions",
+		publicationEditingHandler.Wrap(publicationEditingHandler.AddContributorSuggest)).
 		Methods("GET").
-		Name("publication_suggest_contributors")
-	r.HandleFunc("/publication/{id}/contributors/{role}/{position}/confirm",
-		publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmContributor)).
-		Methods("POST").
-		Name("publication_confirm_contributor")
-	r.HandleFunc("/publication/{id}/contributors/{role}/{position}/unconfirm",
-		publicationEditingHandler.Wrap(publicationEditingHandler.UnconfirmContributor)).
-		Methods("POST").
-		Name("publication_unconfirm_contributor")
+		Name("publication_add_contributor_suggest")
+	r.HandleFunc("/publication/{id}/contributors/{role}/confirm-create",
+		publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmCreateContributor)).
+		Methods("GET").
+		Name("publication_confirm_create_contributor")
 	r.HandleFunc("/publication/{id}/contributors/{role}",
 		publicationEditingHandler.Wrap(publicationEditingHandler.CreateContributor)).
 		Methods("POST").
@@ -904,6 +900,14 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		publicationEditingHandler.Wrap(publicationEditingHandler.EditContributor)).
 		Methods("GET").
 		Name("publication_edit_contributor")
+	r.HandleFunc("/publication/{id}/contributors/{role}/{position}/suggestions",
+		publicationEditingHandler.Wrap(publicationEditingHandler.EditContributorSuggest)).
+		Methods("GET").
+		Name("publication_edit_contributor_suggest")
+	r.HandleFunc("/publication/{id}/contributors/{role}/{position}/confirm-update",
+		publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmUpdateContributor)).
+		Methods("GET").
+		Name("publication_confirm_update_contributor")
 	r.HandleFunc("/publication/{id}/contributors/{role}/{position}",
 		publicationEditingHandler.Wrap(publicationEditingHandler.UpdateContributor)).
 		Methods("PUT").

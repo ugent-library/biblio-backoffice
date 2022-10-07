@@ -1,20 +1,36 @@
 {{define "modal_dialog"}}
-<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+<div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable" role="document">
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">Edit {{.Locale.TS "publication.contributor.role" .Role}}</h2>
         </div>
-        <div class="modal-body">
-            {{partial "publication/contributors_form" .}}
+
+        <div class="p-6 border-bottom">
+            {{.Form.Errors.Render}}
+        
+            <h3>Confirm or search for other {{.Locale.TS "publication.contributor.role" .Role}}</h3>
+        
+            <div class="contributor-attributes">
+                {{range .Form.Sections}}
+                <div class="form-row align-items-end">
+                    {{.Render}}
+                </div>
+                {{end}}
+            </div>
         </div>
+
+        <div class="modal-body" id="contributor-suggestions">
+            {{partial "publication/edit_contributor_suggest" .}}
+        </div>
+
         <div class="modal-footer">
-            <button class="btn btn-link modal-close">Cancel</button>
-            <button class="btn btn-primary"
-                hx-put="{{pathFor "publication_update_contributor" "id" .Publication.ID "role" .Role "position" (.Position|toString)}}"
-                hx-headers='{"If-Match": "{{.Publication.SnapshotID}}"}'
-                hx-include=".modal-body .contributor-attributes"
-                hx-swap="none"
-            >Done</button>
+            <div class="bc-toolbar">
+                <div class="bc-toolbar-right">
+                    <div class="bc-toolbar-item">
+                        <button class="btn btn-link modal-close">Cancel</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

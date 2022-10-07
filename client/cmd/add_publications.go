@@ -19,9 +19,9 @@ func (c *AddPublicationsCmd) Command() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "add",
 		Short: "Add publications",
-		Run: func(_ *cobra.Command, args []string) {
+		Run: func(cmd *cobra.Command, args []string) {
 			c.Wrap(func() {
-				c.Run(args)
+				c.Run(cmd, args)
 			})
 		},
 	}
@@ -29,7 +29,7 @@ func (c *AddPublicationsCmd) Command() *cobra.Command {
 	return cmd
 }
 
-func (c *AddPublicationsCmd) Run(args []string) {
+func (c *AddPublicationsCmd) Run(cmd *cobra.Command, args []string) {
 	stream, err := c.Client.AddPublications(context.Background())
 	if err != nil {
 		log.Fatal(err)

@@ -19,9 +19,9 @@ func (c *GetFileCMd) Command() *cobra.Command {
 		Use:   "get [sha256]",
 		Short: "Get file",
 		Args:  cobra.MinimumNArgs(1),
-		Run: func(_ *cobra.Command, args []string) {
+		Run: func(cmd *cobra.Command, args []string) {
 			c.Wrap(func() {
-				c.Run(args)
+				c.Run(cmd, args)
 			})
 		},
 	}
@@ -29,7 +29,7 @@ func (c *GetFileCMd) Command() *cobra.Command {
 	return cmd
 }
 
-func (c *GetFileCMd) Run(args []string) {
+func (c *GetFileCMd) Run(cmd *cobra.Command, args []string) {
 	req := &api.GetFileRequest{Sha256: args[0]}
 	stream, err := c.Client.GetFile(context.Background(), req)
 	if err != nil {

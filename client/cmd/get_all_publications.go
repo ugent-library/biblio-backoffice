@@ -18,9 +18,9 @@ func (c *GetAllPublicationsCmd) Command() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "get-all",
 		Short: "Get all publications",
-		Run: func(_ *cobra.Command, args []string) {
+		Run: func(cmd *cobra.Command, args []string) {
 			c.Wrap(func() {
-				c.Run(args)
+				c.Run(cmd, args)
 			})
 		},
 	}
@@ -28,7 +28,7 @@ func (c *GetAllPublicationsCmd) Command() *cobra.Command {
 	return cmd
 }
 
-func (c *GetAllPublicationsCmd) Run(args []string) {
+func (c *GetAllPublicationsCmd) Run(cmd *cobra.Command, args []string) {
 	req := &api.GetAllPublicationsRequest{}
 	stream, err := c.Client.GetAllPublications(context.Background(), req)
 	if err != nil {
