@@ -42,25 +42,37 @@
                 <i class="if if-download text-success align-self-center"></i>
                 <div class="ml-5">
                     <p class="mb-1 mr-3">{{.Label}}</p>
-                    <span class="text-muted c-body-small">Your
-                    file will be publicly available, effective
-                    immediately. Recommended option if you own
-                    copyright, or have permission from the
-                    copyright holder(s)/holder of the exclusive
-                    license to publish.</span>
+                    <div>
+                        <span class="badge badge-pill badge-success">
+                            <i class="if if-info-circle"></i>
+                            <span class="badge-text"><strong>Recommended if you own the copyright or have permission</strong></span>
+                        </span>
+                    </div>
+                    <span class="text-muted c-body-small">Your document will be available to the world.
+                    Recommended if you own copyright, or you have permission from the copyright holder(s)
+                    of the exclusive license to publish.</span>
+                </div>
+                {{else if eq .Value "embargo"}}
+                <i class="if if-time text-muted align-self-center"></i>
+                <div class="ml-5">
+                    <p class="mb-1 mr-3">{{.Label}}</p>
+                    <span class="text-muted c-body-small">Restrict access to your documen temporarily.
+                    Recommended for documents under embargo, based on your publisher contract. UGent will
+                    use this option for <a href="#">AAM journal articles</a>.</span>
                 </div>
                 {{else if eq .Value "local"}}
                 <i class="if if-ghent-university text-primary align-self-center"></i>
                 <div class="ml-5">
                     <p class="mb-1 mr-3">{{.Label}}</p>
-                    <span class="text-muted c-body-small">Your file will only be
-                    available to UGent members.</span>
+                    <span class="text-muted c-body-small">Your document will only be available to UGent members.
+                    Recommended if you do not own the copyright nor have permission.</span>
                 </div>
                 {{else if eq .Value "closed"}}
                 <i class="if if-eye-off text-muted align-self-center"></i>
                 <div class="ml-5">
                     <p class="mb-1 mr-3">{{.Label}}</p>
-                    <span class="text-muted c-body-small">Your file will only be available to the authors and Biblio reviewers.</span>
+                    <span class="text-muted c-body-small">Your document will only be available to the
+                    authors and Biblio employees.</span>
                 </div>
                 {{end}}
             </div>

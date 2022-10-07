@@ -1,0 +1,18 @@
+<div class="row">
+    <div class="col-6">
+        <div class="form-group{{if .Error}} is-invalid{{end}}">
+            <label class="col-form-label" for="{{.Name}}">
+                {{.Label}}{{if .Required}}&nbsp;<abbr class="required" title="Required">*</abbr>{{end}}
+                {{with .Tooltip}}
+                <a class="text-muted mx-2" href="#" data-container="body" data-toggle="popover" data-trigger="focus" data-placement="right" data-content="{{.}}">
+                    <i class="if if-info-circle if--small"></i>
+                    <div class="sr-only">More info</div>
+                </a>
+                {{end}}
+            </label>
+            <input class="form-control{{if .Error}} is-invalid{{end}}" name="{{.Name}}" type="date"
+                value="{{.Value}}"{{with .Min}} min="{{.}}"{{end}}{{with .Max}} max="{{.}}"{{end}}{{if .Disabled}} disabled{{end}}>
+            {{if .Error}}<small class="invalid-feedback">{{.Error}}</small>{{end}}
+        </div>
+    </div>
+</div>

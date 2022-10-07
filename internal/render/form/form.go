@@ -54,9 +54,22 @@ func (f *Form) AddSection(fields ...Field) *Form {
 	return f
 }
 
+func (f *Form) AddTemplatedSection(template string, vars any, fields ...Field) *Form {
+	f.Sections = append(f.Sections, Section{
+		Fields:   fields,
+		Form:     f,
+		Template: template,
+		Vars:     vars,
+	})
+
+	return f
+}
+
 type Section struct {
-	Fields []Field
-	Form   *Form
+	Fields   []Field
+	Form     *Form
+	Template string
+	Vars     any
 }
 
 func (s *Section) Render() (template.HTML, error) {
@@ -66,6 +79,19 @@ func (s *Section) Render() (template.HTML, error) {
 		if err := field.Render(s.Form.Theme, b); err != nil {
 			return "", err
 		}
+	}
+
+	// Render the fields inside a wrapper template
+	if s.Template != "" {
+		tb := &bytes.Buffer{}
+		render.ExecuteView(tb, path.Join("form", s.Form.Theme, s.Template), struct {
+			Fields template.HTML
+			Vars   any
+		}{
+			Fields: template.HTML(b.String()),
+			Vars:   s.Vars,
+		})
+		return template.HTML(tb.String()), nil
 	}
 
 	return template.HTML(b.String()), nil
@@ -97,7 +123,9 @@ func (f *Text) Render(theme string, w io.Writer) error {
 	if f.Template != "" {
 		t = f.Template
 	}
-	return render.ExecuteView(w, path.Join("form", theme, t), f)
+
+	tmpl := path.Join("form", theme, t)
+	return render.ExecuteView(w, tmpl, f)
 }
 
 type TextRepeat struct {
@@ -218,7 +246,9 @@ func (f *Date) Render(theme string, w io.Writer) error {
 	if f.Template != "" {
 		t = f.Template
 	}
-	return render.ExecuteView(w, path.Join("form", theme, t), f)
+
+	tmpl := path.Join("form", theme, t)
+	return render.ExecuteView(w, tmpl, f)
 }
 
 type Checkbox struct {

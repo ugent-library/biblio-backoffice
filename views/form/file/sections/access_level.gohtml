@@ -1,0 +1,18 @@
+<div class="c-divider"></div>
+
+<h3 class="mb-3">Who can access this document?</h3>
+
+{{if eq .Vars.Relation "main_file"}}
+<div class="alert alert-success mt-3 mb-5">
+  <i class="if if-check-circle">
+  </i>
+  <div>
+    <p>UGent has the right to&nbsp;<strong>open up the auto accepted manuscript of a journal article to the public</strong> after embargo based on the <a href="#">Belgian Open Access Law.</a>
+      <br>
+      <small>Opt out of this right by sending us an email at <a href="mailto:biblio@ugent.be">biblio@ugent.be</a>.</small>
+    </p>
+  </div>
+</div>
+{{end}}
+
+{{.Fields}}

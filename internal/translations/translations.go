@@ -73,6 +73,8 @@ func init() {
 	message.SetString(language.English, "licenses.CC-BY-NC-SA-4.0", "CC BY-NC-SA (4.0)")
 	message.SetString(language.English, "licenses.CC-BY-NC-ND-4.0", "CC BY-NC-ND (4.0)")
 	message.SetString(language.English, "licenses.InC", "No license (in copyright)")
+	message.SetString(language.English, "licenses.Licensenotlisted", "The license is not listed here")
+	message.SetString(language.English, "licenses.Copyrightunknown", "I don't know the status of the copyright of this publication")
 
 	message.SetString(language.English, "access_levels.info:eu-repo/semantics/closedAccess", "Closed access")
 	message.SetString(language.English, "access_levels.info:eu-repo/semantics/embargoedAccess", "Embargoed access")
@@ -156,9 +158,16 @@ func init() {
 	message.SetString(language.English, "publication_statuses.public", "Public")
 	message.SetString(language.English, "publication_statuses.returned", "Withdrawn")
 
-	message.SetString(language.English, "publication_file_access_levels.open_access", "Open access")
-	message.SetString(language.English, "publication_file_access_levels.local", "UGent access")
-	message.SetString(language.English, "publication_file_access_levels.closed", "Private access")
+	message.SetString(language.English, "visible_publication_file_access_levels.open_access", "Public access - Open access")
+	message.SetString(language.English, "visible_publication_file_access_levels.embargo", "Temporarily restricted - Embargoed access")
+	message.SetString(language.English, "visible_publication_file_access_levels.local", "UGent access - Local access")
+	message.SetString(language.English, "visible_publication_file_access_levels.closed", "Private access - Closed access")
+
+	message.SetString(language.English, "publication_file_access_levels_embargo_during.local", "UGent access - Local access")
+	message.SetString(language.English, "publication_file_access_levels_embargo_during.closed", "Private access - Closed access")
+
+	message.SetString(language.English, "publication_file_access_levels_embargo_after.open_access", "Public access - Open access")
+	message.SetString(language.English, "publication_file_access_levels_embargo_after.local", "UGent access - Local access")
 
 	message.SetString(language.English, "publication_versions.publishedVersion", "Publisher version/Version of record (VoR)")
 	message.SetString(language.English, "publication_versions.authorVersion", "Author's original (AO)")
@@ -602,6 +611,8 @@ func init() {
 	message.SetString(language.English, "tooltip.publication.related_datasets", "<a href=\"https://onderzoektips.ugent.be/en/tips/00002061/\" target=\"_blank\">https://onderzoektips.ugent.be/en/tips/00002061/ <i class=\"if if--small if-external-link\"></i></a>")
 	message.SetString(language.English, "tooltip.publication.wos_type", "This is the type assigned by Web of Science when a publication is also registered in Web of Science and can be different from the Biblio type.")
 
+	message.SetString(language.English, "tooltip.publication.file.license", "<a href=\"#\" target=\"_blank\">More info&nbsp;<i class=\"if if--small if-external-link\"></i></a>")
+
 	message.SetString(language.English, "tooltip.dataset.access_level", "Specify the access level that is set in the external data repository. <a href=\"https://onderzoektips.ugent.be/en/tips/00002057/\" target=\"_blank\">See documentation <i class=\"if if--small if-external-link\"></i></a>")
 	message.SetString(language.English, "tooltip.dataset.contributors", "<a href=\"https://onderzoektips.ugent.be/en/tips/00002059/\" target=\"_blank\">https://onderzoektips.ugent.be/en/tips/00002059/ <i class=\"if if--small if-external-link\"></i></a>")
 	message.SetString(language.English, "tooltip.dataset.format", "Technical format of the data (select an <a href=\"https://www.iana.org/assignments/media-types/media-types.xhtml\">Internet Media Type</a> from the autocomplete drop-down menu (e.g. text/csv, image/jpeg) or enter <a href=\"https://en.wikipedia.org/wiki/List_of_file_formats\">free text</a>). <a href=\"https://onderzoektips.ugent.be/en/tips/00002058/\" target=\"_blank\">See documentation <i class=\"if if--small if-external-link\"></i></a>")
@@ -692,11 +703,12 @@ func init() {
 	message.SetString(language.English, "builder.file.relation", "Document type")
 	message.SetString(language.English, "builder.file.publication_version", "Publication version")
 	message.SetString(language.English, "builder.file.access_level", "Access level")
-	message.SetString(language.English, "builder.file.embargo", "Embargo period")
-	message.SetString(language.English, "builder.file.embargo_to", "Access level after embargo period")
-	message.SetString(language.English, "builder.file.license", "License")
-	message.SetString(language.English, "builder.file.no_license", "No license (in copyright)")
-	message.SetString(language.English, "builder.file.other_license", "Other license")
+	message.SetString(language.English, "builder.file.embargo", "Embargo end")
+	message.SetString(language.English, "builder.file.embargo_during", "Access level <strong>during</strong> embargo")
+	message.SetString(language.English, "builder.file.embargo_after", "Access level <strong>after</strong> embargo period")
+	message.SetString(language.English, "builder.file.license", "License for reuse granted by the rights holder")
+	// message.SetString(language.English, "builder.file.no_license", "No license (in copyright)")
+	// message.SetString(language.English, "builder.file.other_license", "Other license")
 	message.SetString(language.English, "builder.file.description", "Description")
 
 	//help texts
@@ -704,7 +716,7 @@ func init() {
 	message.SetString(language.English, "builder.doi.help", "e.g. 10.1093/plcell/koc126")
 	message.SetString(language.English, "builder.year.help", "e.g. 2022")
 	message.SetString(language.English, "builder.other_license.help", "e.g. https://creativecommons.org/licenses/publicdomain/")
-	message.SetString(language.English, "builder.file.other_license.help", "e.g. https://creativecommons.org/licenses/publicdomain/")
+	// message.SetString(language.English, "builder.file.other_license.help", "e.g. https://creativecommons.org/licenses/publicdomain/")
 	message.SetString(language.English, "builder.wos_id.help", "e.g. 000503382400004")
 	message.SetString(language.English, "builder.issn.help", "e.g. 2049-3630")
 	message.SetString(language.English, "builder.eissn.help", "e.g. 2049-3630")
