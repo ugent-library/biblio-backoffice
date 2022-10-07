@@ -1,0 +1,24 @@
+<div class="form-group{{if .Error}} is-invalid{{end}}">
+    <label class="col-form-label" for="{{.Name}}">
+        {{.Label}}{{if .Required}}&nbsp;<abbr class="required" title="Required">*</abbr>{{end}}
+        {{with .Tooltip}}
+        <a class="text-muted mx-2" href="#" data-container="body" data-toggle="popover" data-trigger="focus" data-placement="right" data-content="{{.}}">
+            <i class="if if-info-circle if--small"></i>
+            <div class="sr-only">More info</div>
+        </a>
+        {{end}}
+    </label>
+    <select class="custom-select form-control{{if .Error}} is-invalid{{end}}" name="{{.Name}}"{{if .Disabled}} disabled{{end}}
+        hx-get="{{pathFor "publication_edit_file_refresh_form" "id" $.Vars.ID "file_id" $.Vars.FileID}}"
+        hx-swap="none"
+        hx-include=".file-attributes"
+        hx-indicator=".modal-dialog .spinner-border"
+        hx-trigger="change delay:50ms"
+    >
+        {{if .EmptyOption}}<option></option>{{end}}
+        {{range .Options}}
+        <option value="{{.Value}}"{{if eq .Value $.Value}} selected{{end}}>{{.Label}}</option>
+        {{end}}
+    </select>
+    {{with .Error}}<small class="invalid-feedback">{{.}}</small>{{end}}
+</div>

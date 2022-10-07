@@ -73,6 +73,8 @@ var Map = map[string][]string{
 		"CC-BY-NC-SA-4.0",
 		"CC-BY-NC-ND-4.0",
 		"InC",
+		"Licensenotlisted",
+		"Copyrightunknown",
 	},
 	"confirmations": {
 		"yes",
@@ -192,6 +194,20 @@ var Map = map[string][]string{
 		"open_access",
 		"local",
 		"closed",
+	},
+	"visible_publication_file_access_levels": {
+		"open_access",
+		"embargo",
+		"local",
+		"closed",
+	},
+	"publication_file_access_levels_embargo_during": {
+		"local",
+		"closed",
+	},
+	"publication_file_access_levels_embargo_after": {
+		"open_access",
+		"local",
 	},
 	"publication_file_relations": {
 		"main_file",
