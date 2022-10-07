@@ -1,11 +1,7 @@
 {{if or .Contributor.FirstName .Contributor.LastName}}
-<div class="row">
-    <div class="col">
-    <h3 class="mt-4">Search results</h3>
-    </div>
-</div>
+<h3 class="mt-6">Search results</h3>
 
-<ul class="list-group mt-6">
+<ul class="list-group">
     {{if and .Contributor.FirstName .Contributor.LastName}}
     <li class="list-group-item">
         <div class="list-group-item-inner">

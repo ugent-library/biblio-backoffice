@@ -353,6 +353,20 @@ func (h *Handler) EditContributor(w http.ResponseWriter, r *http.Request, ctx Co
 		return
 	}
 
+	// exclude the current contributor
+	if c.ID != "" {
+		for i, hit := range hits {
+			if hit.ID == c.ID {
+				if i == 0 {
+					hits = hits[1:]
+				} else {
+					hits = append(hits[:i], hits[i+1:]...)
+				}
+				break
+			}
+		}
+	}
+
 	suggestURL := h.PathFor("publication_edit_contributor_suggest", "id", ctx.Publication.ID, "role", b.Role, "position", fmt.Sprintf("%d", b.Position)).String()
 
 	render.Layout(w, "show_modal", "publication/edit_contributor", YieldEditContributor{
@@ -390,6 +404,16 @@ func (h *Handler) EditContributorSuggest(w http.ResponseWriter, r *http.Request,
 			h.Logger.Errorw("suggest publication contributor: could not suggest people", "errors", err, "request", r, "user", ctx.User.ID)
 			render.InternalServerError(w, r, err)
 			return
+		}
+
+		// exclude the current contributor
+		if c.ID != "" {
+			for i, hit := range hits {
+				if hit.ID == c.ID {
+					hits = append(hits[:i], hits[i+1:]...)
+					break
+				}
+			}
 		}
 	}
 
