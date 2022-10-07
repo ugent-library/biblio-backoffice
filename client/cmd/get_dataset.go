@@ -19,9 +19,9 @@ func (c *GetDatasetCmd) Command() *cobra.Command {
 		Use:   "get [id]",
 		Short: "Get dataset by id",
 		Args:  cobra.MinimumNArgs(1),
-		Run: func(_ *cobra.Command, args []string) {
+		Run: func(cmd *cobra.Command, args []string) {
 			c.Wrap(func() {
-				c.Run(args)
+				c.Run(cmd, args)
 			})
 		},
 	}
@@ -29,7 +29,7 @@ func (c *GetDatasetCmd) Command() *cobra.Command {
 	return cmd
 }
 
-func (c *GetDatasetCmd) Run(args []string) {
+func (c *GetDatasetCmd) Run(cmd *cobra.Command, args []string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 

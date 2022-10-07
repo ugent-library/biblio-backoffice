@@ -186,6 +186,21 @@ func (s *server) PurgePublication(ctx context.Context, req *api.PurgePublication
 	return &api.PurgePublicationResponse{}, nil
 }
 
+func (s *server) PurgeAllPublications(ctx context.Context, req *api.PurgeAllPublicationsRequest) (*api.PurgeAllPublicationsResponse, error) {
+	if err := s.services.Repository.PurgeAllPublications(); err != nil {
+		return nil, status.Errorf(codes.Internal, "could not purge all publications: %w", err)
+	}
+	// TODO use delete by query instead of recreating?
+	if err := s.services.PublicationSearchService.DeleteIndex(); err != nil {
+		return nil, status.Errorf(codes.Internal, "could not delete publication index: %w", err)
+	}
+	if err := s.services.PublicationSearchService.CreateIndex(); err != nil {
+		return nil, status.Errorf(codes.Internal, "could not create publication index: %w", err)
+	}
+
+	return &api.PurgeAllPublicationsResponse{}, nil
+}
+
 func publicationToMessage(p *models.Publication) *api.Publication {
 	msg := &api.Publication{}
 
