@@ -156,11 +156,15 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 	// }
 	// r = r.Schemes(schemes...).Host(u.Host).PathPrefix(u.Path).Subrouter()
 
+	csrfPath := basePath
+	if csrfPath == "" {
+		csrfPath = "/"
+	}
 	r := router.PathPrefix(basePath).Subrouter()
 	r.Use(csrf.Protect(
 		[]byte(viper.GetString("csrf-secret")),        // TODO pass as argument
 		csrf.CookieName(viper.GetString("csrf-name")), // TODO pass as argument
-		csrf.Path(basePath),
+		csrf.Path(csrfPath),
 		csrf.Secure(baseURL.Scheme == "https"),
 		csrf.SameSite(csrf.SameSiteStrictMode),
 		csrf.FieldName("csrf-token"),
