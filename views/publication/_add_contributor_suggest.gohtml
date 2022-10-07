@@ -1,0 +1,68 @@
+{{if or .Contributor.FirstName .Contributor.LastName}}
+<div class="row">
+    <div class="col">
+    <h3 class="mt-4">Search results</h3>
+    </div>
+</div>
+
+<ul class="list-group mt-6">
+    {{if and .Contributor.FirstName .Contributor.LastName}}
+    <li class="list-group-item">
+        <div class="list-group-item-inner">
+          <div class="list-group-item-main">
+            {{partial "publication/contributor_summary" (.Yield "Contributor" .Contributor "Current" false)}}
+          </div>
+          <div class="c-button-toolbar">
+            <button class="btn btn-secondary"
+                hx-get="{{pathFor "publication_confirm_create_contributor" "id" .Publication.ID "role" .Role}}"
+                hx-vals='{"first_name":"{{.Contributor.FirstName}}","last_name":"{{.Contributor.LastName}}"}'
+                hx-swap="none"
+            >
+              <span class="btn-text">Add external {{.Locale.TS "publication.contributor.role" .Role}}</span>
+              <i class="if if-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+    </li>
+    {{end}}
+    {{if .Hits}}
+        {{range .Hits}}
+        <li class="list-group-item">
+            <div class="list-group-item-inner">
+                <div class="list-group-item-main">
+                    {{partial "publication/contributor_summary" ($.Yield "Contributor" . "Current" false)}}
+                </div>
+                <div class="c-button-toolbar">
+                    <button class="btn btn-primary"
+                        hx-get="{{pathFor "publication_confirm_create_contributor" "id" $.Publication.ID "role" $.Role}}"
+                        hx-vals='{"id":"{{.ID}}"}'
+                        hx-swap="none"
+                    >
+                        <span class="btn-text">Add {{$.Locale.TS "publication.contributor.role" $.Role}}</span><i class="if if-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </li>
+        {{end}}
+    {{else}}
+        <li class="list-group-item">
+            <div class="c-blank-slate c-blank-slate-muted">
+                <div class="bc-avatar bc-avatar--small">
+                    <i class="if if-info-circle"></i>
+                </div>
+                <h4>No UGent staff found.</h4>
+                <p>Omit letters for a broader search (e.g. only enter the last name,
+                or the last name and a latter of the first name), or add this person
+                as an external author.</p>
+            </div>
+        </li>
+    {{end}}
+</ul>
+{{else}}
+<div class="c-blank-slate c-blank-slate-muted c-blank-slate-large">
+    <div class="bc-avatar bc-avatar--small">
+        <i class="if if-info-circle"></i>
+    </div>
+    <p>Type a first and last name above to add an {{.Locale.TS "publication.contributor.role" .Role}}.</p>
+</div>
+{{end}}

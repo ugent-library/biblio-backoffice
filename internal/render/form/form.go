@@ -89,10 +89,15 @@ type Text struct {
 	Template        string
 	Tooltip         string
 	Value           string
+	Vars            any
 }
 
 func (f *Text) Render(theme string, w io.Writer) error {
-	return render.ExecuteView(w, path.Join("form", theme, "text"), f)
+	t := "text"
+	if f.Template != "" {
+		t = f.Template
+	}
+	return render.ExecuteView(w, path.Join("form", theme, t), f)
 }
 
 type TextRepeat struct {
@@ -106,12 +111,18 @@ type TextRepeat struct {
 	Help            string
 	Readonly        bool
 	Required        bool
+	Template        string
 	Tooltip         string
 	Values          []string
+	Vars            any
 }
 
 func (f *TextRepeat) Render(theme string, w io.Writer) error {
-	return render.ExecuteView(w, path.Join("form", theme, "text_repeat"), f)
+	t := "text_repeat"
+	if f.Template != "" {
+		t = f.Template
+	}
+	return render.ExecuteView(w, path.Join("form", theme, t), f)
 }
 
 type TextArea struct {
@@ -122,12 +133,18 @@ type TextArea struct {
 	Help     string
 	Required bool
 	Rows     int
+	Template string
 	Tooltip  string
 	Value    string
+	Vars     any
 }
 
 func (f *TextArea) Render(theme string, w io.Writer) error {
-	return render.ExecuteView(w, path.Join("form", theme, "text_area"), f)
+	t := "text_area"
+	if f.Template != "" {
+		t = f.Template
+	}
+	return render.ExecuteView(w, path.Join("form", theme, t), f)
 }
 
 type Select struct {
@@ -156,9 +173,7 @@ func (f *Select) Render(theme string, w io.Writer) error {
 	if f.Template != "" {
 		t = f.Template
 	}
-
-	tmpl := path.Join("form", theme, t)
-	return render.ExecuteView(w, tmpl, f)
+	return render.ExecuteView(w, path.Join("form", theme, t), f)
 }
 
 type SelectRepeat struct {
@@ -169,12 +184,18 @@ type SelectRepeat struct {
 	Name        string
 	Options     []SelectOption
 	Required    bool
+	Template    string
 	Tooltip     string
 	Values      []string
+	Vars        any
 }
 
 func (f *SelectRepeat) Render(theme string, w io.Writer) error {
-	return render.ExecuteView(w, path.Join("form", theme, "select_repeat"), f)
+	t := "select_repeat"
+	if f.Template != "" {
+		t = f.Template
+	}
+	return render.ExecuteView(w, path.Join("form", theme, t), f)
 }
 
 type Date struct {
@@ -186,12 +207,18 @@ type Date struct {
 	Min      string
 	Name     string
 	Required bool
+	Template string
 	Tooltip  string
 	Value    string
+	Vars     any
 }
 
 func (f *Date) Render(theme string, w io.Writer) error {
-	return render.ExecuteView(w, path.Join("form", theme, "date"), f)
+	t := "date"
+	if f.Template != "" {
+		t = f.Template
+	}
+	return render.ExecuteView(w, path.Join("form", theme, t), f)
 }
 
 type Checkbox struct {
@@ -210,9 +237,7 @@ func (f *Checkbox) Render(theme string, w io.Writer) error {
 	if f.Template != "" {
 		t = f.Template
 	}
-	tmpl := path.Join("form", theme, t)
-
-	return render.ExecuteView(w, tmpl, f)
+	return render.ExecuteView(w, path.Join("form", theme, t), f)
 }
 
 var HiddenFieldTemplate = template.Must(template.New("").Parse(`<input type="hidden" name="{{.Name}}" value="{{.Value}}">`))
@@ -244,7 +269,5 @@ func (f *RadioButtonGroup) Render(theme string, w io.Writer) error {
 	if f.Template != "" {
 		t = f.Template
 	}
-	tmpl := path.Join("form", theme, t)
-
-	return render.ExecuteView(w, tmpl, f)
+	return render.ExecuteView(w, path.Join("form", theme, t), f)
 }
