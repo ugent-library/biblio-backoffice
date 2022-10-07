@@ -670,7 +670,7 @@ func contributorForm(ctx Context, c *models.Contributor, suggestURL string) *for
 		WithTheme("cols").
 		AddSection(
 			&form.Text{
-				Template: "publication/contributor_name",
+				Template: "contributor_name",
 				Name:     "first_name",
 				Value:    c.FirstName,
 				Label:    "First name",
@@ -681,7 +681,7 @@ func contributorForm(ctx Context, c *models.Contributor, suggestURL string) *for
 				},
 			},
 			&form.Text{
-				Template: "publication/contributor_name",
+				Template: "contributor_name",
 				Name:     "last_name",
 				Value:    c.LastName,
 				Label:    "Last name",
