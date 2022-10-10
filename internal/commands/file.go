@@ -48,7 +48,7 @@ var fileAddCmd = &cobra.Command{
 		$ ./biblio-backend file add /path/to/file.txt > /path/to/id.txt
 		$ sha256sum -c /path/to/id.txt
 	`,
-	Args: cobra.MinimumNArgs(1),
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		path := args[0]
 		fs := newFileStore()

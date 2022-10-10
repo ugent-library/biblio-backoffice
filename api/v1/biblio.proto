@@ -30,6 +30,7 @@ service Biblio {
     rpc AddDatasets(stream AddDatasetsRequest) returns (stream AddDatasetsResponse);
     rpc PurgeDataset(PurgeDatasetRequest) returns (PurgeDatasetResponse);
     rpc PurgeAllDatasets(PurgeAllDatasetsRequest) returns (PurgeAllDatasetsResponse);
+    rpc Relate(RelateRequest) returns (RelateResponse);
 }
 
 enum Confirmation {
@@ -467,4 +468,18 @@ message PurgeAllDatasetsRequest {
 }
 
 message PurgeAllDatasetsResponse {
+}
+
+message RelateRequest {
+    oneof one {
+        string publication_one = 1;
+        string dataset_one = 2;
+    }
+    oneof two {
+        string publication_two = 3;
+        string dataset_two = 4;
+    }
+}
+
+message RelateResponse {
 }

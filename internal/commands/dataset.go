@@ -28,7 +28,7 @@ var datasetCmd = &cobra.Command{
 var datasetGetCmd = &cobra.Command{
 	Use:   "get [id]",
 	Short: "Get datasets by id",
-	Args:  cobra.MinimumNArgs(1),
+	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		s := newRepository()
 		e := json.NewEncoder(os.Stdout)
