@@ -8,7 +8,6 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/pagination"
 	"github.com/ugent-library/biblio-backend/internal/ulid"
 	"github.com/ugent-library/biblio-backend/internal/validation"
-	"github.com/ugent-library/biblio-backend/internal/vocabularies"
 )
 
 type DatasetHits struct {
@@ -45,34 +44,34 @@ type Dataset struct {
 	AccessLevel string         `json:"access_level,omitempty"`
 	Author      []*Contributor `json:"author,omitempty"` // TODO rename to Creator
 	// CompletenessScore  int                  `json:"completeness_score,omitempty"`
-	Contributor        []*Contributor       `json:"contributor,omitempty"`
-	Creator            *DatasetUser         `json:"creator,omitempty"`
-	DateCreated        *time.Time           `json:"date_created,omitempty"`
-	DateUpdated        *time.Time           `json:"date_updated,omitempty"`
-	DateFrom           *time.Time           `json:"date_from,omitempty"`
-	DateUntil          *time.Time           `json:"date_until,omitempty"`
-	Department         []DatasetDepartment  `json:"department,omitempty"`
-	DOI                string               `json:"doi,omitempty"`
-	Embargo            string               `json:"embargo,omitempty"`
-	EmbargoTo          string               `json:"embargo_to,omitempty"`
-	Format             []string             `json:"format,omitempty"`
-	ID                 string               `json:"id,omitempty"`
-	Keyword            []string             `json:"keyword,omitempty"`
-	License            string               `json:"license,omitempty"`
-	Locked             bool                 `json:"locked"`
-	Message            string               `json:"message,omitempty"`
-	OtherLicense       string               `json:"other_license,omitempty"`
-	Project            []DatasetProject     `json:"project,omitempty"`
-	Publisher          string               `json:"publisher,omitempty"`
-	RelatedPublication []RelatedPublication `json:"related_publication,omitempty"`
-	ReviewerNote       string               `json:"reviewer_note,omitempty"`
-	ReviewerTags       []string             `json:"reviewer_tags,omitempty"`
-	SnapshotID         string               `json:"snapshot_id,omitempty"`
-	Status             string               `json:"status,omitempty"`
-	Title              string               `json:"title,omitempty"`
-	URL                string               `json:"url,omitempty"`
-	User               *DatasetUser         `json:"user,omitempty"`
-	Year               string               `json:"year,omitempty"`
+	Contributor             []*Contributor       `json:"contributor,omitempty"`
+	Creator                 *DatasetUser         `json:"creator,omitempty"`
+	DateCreated             *time.Time           `json:"date_created,omitempty"`
+	DateUpdated             *time.Time           `json:"date_updated,omitempty"`
+	DateFrom                *time.Time           `json:"date_from,omitempty"`
+	DateUntil               *time.Time           `json:"date_until,omitempty"`
+	Department              []DatasetDepartment  `json:"department,omitempty"`
+	DOI                     string               `json:"doi,omitempty"`
+	EmbargoDate             string               `json:"embargo_date,omitempty"`
+	AccessLevelAfterEmbargo string               `json:"access_level_after_embargo,omitempty"`
+	Format                  []string             `json:"format,omitempty"`
+	ID                      string               `json:"id,omitempty"`
+	Keyword                 []string             `json:"keyword,omitempty"`
+	License                 string               `json:"license,omitempty"`
+	Locked                  bool                 `json:"locked"`
+	Message                 string               `json:"message,omitempty"`
+	OtherLicense            string               `json:"other_license,omitempty"`
+	Project                 []DatasetProject     `json:"project,omitempty"`
+	Publisher               string               `json:"publisher,omitempty"`
+	RelatedPublication      []RelatedPublication `json:"related_publication,omitempty"`
+	ReviewerNote            string               `json:"reviewer_note,omitempty"`
+	ReviewerTags            []string             `json:"reviewer_tags,omitempty"`
+	SnapshotID              string               `json:"snapshot_id,omitempty"`
+	Status                  string               `json:"status,omitempty"`
+	Title                   string               `json:"title,omitempty"`
+	URL                     string               `json:"url,omitempty"`
+	User                    *DatasetUser         `json:"user,omitempty"`
+	Year                    string               `json:"year,omitempty"`
 }
 
 func (d *Dataset) HasRelatedPublication(id string) bool {
@@ -398,32 +397,40 @@ func (d *Dataset) Validate() error {
 		}
 	}
 
-	if d.Status == "public" && d.AccessLevel == vocabularies.EmbargoedAccess {
-		if d.Embargo == "" {
+	if d.Status == "public" && d.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
+		if d.EmbargoDate == "" {
 			errs = append(errs, &validation.Error{
-				Pointer: "/embargo",
-				Code:    "dataset.embargo.required",
+				Pointer: "/embargo_date",
+				Code:    "dataset.embargo_date.required",
 			})
-		} else if !validation.IsDate(d.Embargo) {
+		} else if !validation.IsDate(d.EmbargoDate) {
 			errs = append(errs, &validation.Error{
-				Pointer: "/embargo",
-				Code:    "dataset.embargo.invalid",
+				Pointer: "/embargo_date",
+				Code:    "dataset.embargo_date.invalid",
 			})
 		}
-		if d.EmbargoTo == "" {
+
+		invalid := false
+		if d.AccessLevelAfterEmbargo == "" {
+			invalid = true
 			errs = append(errs, &validation.Error{
-				Pointer: "/embargo_to",
-				Code:    "dataset.embargo_to.required",
+				Pointer: "/access_level_after_embargo",
+				Code:    "dataset.access_level_after_embargo.required",
 			})
-		} else if d.AccessLevel == d.EmbargoTo {
+		}
+
+		if d.AccessLevel == d.AccessLevelAfterEmbargo && !invalid {
+			invalid = true
 			errs = append(errs, &validation.Error{
-				Pointer: "/embargo_to",
-				Code:    "dataset.embarg_to.invalid", // TODO better code
+				Pointer: "/access_level_after_embargo",
+				Code:    "dataset.access_level_after_embargo.similar", // TODO better code
 			})
-		} else if !validation.IsDatasetAccessLevel(d.EmbargoTo) {
+		}
+
+		if !validation.IsDatasetAccessLevel(d.AccessLevelAfterEmbargo) && !invalid {
 			errs = append(errs, &validation.Error{
-				Pointer: "/embargo_to",
-				Code:    "dataset.embargo_to.invalid", // TODO better code
+				Pointer: "/access_level_after_embargo",
+				Code:    "dataset.access_level_after_embargo.invalid", // TODO better code
 			})
 		}
 	}

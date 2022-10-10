@@ -270,7 +270,23 @@ func datasetToMessage(d *models.Dataset) *api.Dataset {
 
 	msg.Message = d.Message
 
-	msg.AccessLevel = d.AccessLevel
+	switch d.AccessLevel {
+	case "info:eu-repo/semantics/openAccess":
+		msg.AccessLevel = api.Dataset_ACCESS_LEVEL_OPEN_ACCESS
+	case "info:eu-repo/semantics/embargoedAccess":
+		msg.AccessLevel = api.Dataset_ACCESS_LEVEL_EMBARGOED_ACCESS
+	case "info:eu-repo/semantics/restrictedAccess":
+		msg.AccessLevel = api.Dataset_ACCESS_LEVEL_RESTRICTED_ACCESS
+	case "info:eu-repo/semantics/closedAccess":
+		msg.AccessLevel = api.Dataset_ACCESS_LEVEL_CLOSED_ACCESS
+	}
+
+	switch d.AccessLevelAfterEmbargo {
+	case "info:eu-repo/semantics/openAccess":
+		msg.AccessLevelAfterEmbargo = api.Dataset_ACCESS_LEVEL_OPEN_ACCESS
+	case "info:eu-repo/semantics/restrictedAccess":
+		msg.AccessLevelAfterEmbargo = api.Dataset_ACCESS_LEVEL_RESTRICTED_ACCESS
+	}
 
 	msg.Format = d.Format
 
@@ -384,7 +400,23 @@ func messageToDataset(msg *api.Dataset) *models.Dataset {
 
 	d.Message = msg.Message
 
-	d.AccessLevel = msg.AccessLevel
+	switch msg.AccessLevel {
+	case api.Dataset_ACCESS_LEVEL_OPEN_ACCESS:
+		d.AccessLevel = "info:eu-repo/semantics/openAccess"
+	case api.Dataset_ACCESS_LEVEL_EMBARGOED_ACCESS:
+		d.AccessLevel = "info:eu-repo/semantics/embargoedAccess"
+	case api.Dataset_ACCESS_LEVEL_RESTRICTED_ACCESS:
+		d.AccessLevel = "info:eu-repo/semantics/restrictedAccess"
+	case api.Dataset_ACCESS_LEVEL_CLOSED_ACCESS:
+		d.AccessLevel = "info:eu-repo/semantics/closedAccess"
+	}
+
+	switch msg.AccessLevelAfterEmbargo {
+	case api.Dataset_ACCESS_LEVEL_OPEN_ACCESS:
+		d.AccessLevelAfterEmbargo = "info:eu-repo/semantics/openAccess"
+	case api.Dataset_ACCESS_LEVEL_RESTRICTED_ACCESS:
+		d.AccessLevelAfterEmbargo = "info:eu-repo/semantics/restrictedAccess"
+	}
 
 	d.Format = msg.Format
 

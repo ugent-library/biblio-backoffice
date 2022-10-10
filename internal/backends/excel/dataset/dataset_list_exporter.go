@@ -28,8 +28,8 @@ var headers = []string{
 	"ugent_contributor",
 	"department",
 	"doi",
-	"embargo",
-	"embargo_to",
+	"embargo_date",
+	"access_level_after_embargo",
 	"format",
 	"keyword",
 	"license",
@@ -119,8 +119,8 @@ func (x *xlsx) datasetToRow(ds *models.Dataset) []string {
 	}
 
 	m["doi"] = ds.DOI
-	m["embargo"] = ds.Embargo
-	m["embargo_to"] = ds.EmbargoTo
+	m["embargo"] = ds.EmbargoDate
+	m["access_level_after_embargo"] = ds.AccessLevelAfterEmbargo
 	m["format"] = strings.Join(ds.Format, sep)
 	m["keyword"] = strings.Join(ds.Keyword, sep)
 	m["license"] = ds.License

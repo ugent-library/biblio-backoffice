@@ -17,17 +17,17 @@ import (
 )
 
 type BindDetails struct {
-	AccessLevel  string   `form:"access_level"`
-	Embargo      string   `form:"embargo"`
-	EmbargoTo    string   `form:"embargo_to"`
-	Format       []string `form:"format"`
-	Keyword      []string `form:"keyword"`
-	License      string   `form:"license"`
-	OtherLicense string   `form:"other_license"`
-	Publisher    string   `form:"publisher"`
-	Title        string   `form:"title"`
-	URL          string   `form:"url"`
-	Year         string   `form:"year"`
+	AccessLevel             string   `form:"access_level"`
+	EmbargoDate             string   `form:"embargo_date"`
+	AccessLevelAfterEmbargo string   `form:"access_level_after_embargo"`
+	Format                  []string `form:"format"`
+	Keyword                 []string `form:"keyword"`
+	License                 string   `form:"license"`
+	OtherLicense            string   `form:"other_license"`
+	Publisher               string   `form:"publisher"`
+	Title                   string   `form:"title"`
+	URL                     string   `form:"url"`
+	Year                    string   `form:"year"`
 }
 
 type YieldDetails struct {
@@ -48,24 +48,34 @@ func (h *Handler) EditDetails(w http.ResponseWriter, r *http.Request, ctx Contex
 	})
 }
 
-func (h *Handler) EditDetailsAccessLevel(w http.ResponseWriter, r *http.Request, ctx Context) {
-	// Clear embargo and embargoTo fields if access level is not embargo
-	//   TODO Disabled per https://github.com/ugent-library/biblio-backend/issues/217
-	//
-	//   Another issue: the old JS also temporary stored the data in these fields if
-	//   access level changed from embargo to something else. The data would be restored
-	//   into the form fields again if embargo level is chosen again. This feature isn't
-	//   implemented in this solution since state isn't kept across HTTP requests.
-	//
-	dataset := ctx.Dataset
-	if dataset.AccessLevel != "info:eu-repo/semantics/embargoedAccess" {
-		dataset.Embargo = ""
-		dataset.EmbargoTo = ""
+func (h *Handler) RefreshEditFileForm(w http.ResponseWriter, r *http.Request, ctx Context) {
+	b := BindDetails{}
+	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
+		h.Logger.Warnw("update dataset details: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
+		render.BadRequest(w, r, err)
+		return
 	}
+
+	if b.AccessLevel != "info:eu-repo/semantics/embargoedAccess" {
+		b.EmbargoDate = ""
+		b.AccessLevelAfterEmbargo = ""
+	}
+
+	ctx.Dataset.AccessLevel = b.AccessLevel
+	ctx.Dataset.EmbargoDate = b.EmbargoDate
+	ctx.Dataset.AccessLevelAfterEmbargo = b.AccessLevelAfterEmbargo
+	ctx.Dataset.Format = b.Format
+	ctx.Dataset.Keyword = b.Keyword
+	ctx.Dataset.License = b.License
+	ctx.Dataset.OtherLicense = b.OtherLicense
+	ctx.Dataset.Publisher = b.Publisher
+	ctx.Dataset.Title = b.Title
+	ctx.Dataset.URL = b.URL
+	ctx.Dataset.Year = b.Year
 
 	render.Layout(w, "refresh_modal", "dataset/edit_details", YieldEditDetails{
 		Context:  ctx,
-		Form:     detailsForm(ctx.Locale, dataset, nil),
+		Form:     detailsForm(ctx.Locale, ctx.Dataset, nil),
 		Conflict: false,
 	})
 }
@@ -81,13 +91,13 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 	// @note decoding the form into a model omits empty values
 	//   removing "omitempty" in the model doesn't make a difference.
 	if b.AccessLevel != "info:eu-repo/semantics/embargoedAccess" {
-		b.Embargo = ""
-		b.EmbargoTo = ""
+		b.EmbargoDate = ""
+		b.AccessLevelAfterEmbargo = ""
 	}
 
 	ctx.Dataset.AccessLevel = b.AccessLevel
-	ctx.Dataset.Embargo = b.Embargo
-	ctx.Dataset.EmbargoTo = b.EmbargoTo
+	ctx.Dataset.EmbargoDate = b.EmbargoDate
+	ctx.Dataset.AccessLevelAfterEmbargo = b.AccessLevelAfterEmbargo
 	ctx.Dataset.Format = b.Format
 	ctx.Dataset.Keyword = b.Keyword
 	ctx.Dataset.License = b.License
@@ -131,7 +141,7 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 }
 
 func detailsForm(l *locale.Locale, d *models.Dataset, errors validation.Errors) *form.Form {
-	return form.New().
+	f := form.New().
 		WithTheme("default").
 		WithErrors(localize.ValidationErrors(l, errors)).
 		AddSection(
@@ -217,13 +227,32 @@ func detailsForm(l *locale.Locale, d *models.Dataset, errors validation.Errors) 
 				Error:    localize.ValidationErrorAt(l, errors, "/other_license"),
 				Required: d.FieldIsRequired(),
 			},
+		)
+
+	if d.AccessLevel != "info:eu-repo/semantics/embargoedAccess" {
+		f.AddSection(
 			&form.Select{
-				//TODO: closes modal because controller reuses full edit view
-				//Template:    "dataset/access_level",
 				Name:        "access_level",
+				Template:    "dataset/access_level",
 				Label:       l.T("builder.access_level"),
 				Value:       d.AccessLevel,
-				Options:     localize.VocabularySelectOptions(l, "access_levels"),
+				Options:     localize.VocabularySelectOptions(l, "dataset_access_levels"),
+				Cols:        3,
+				Error:       localize.ValidationErrorAt(l, errors, "/access_level"),
+				Required:    d.FieldIsRequired(),
+				EmptyOption: true,
+				Tooltip:     l.T("tooltip.dataset.access_level"),
+				Vars:        struct{ ID string }{ID: d.ID},
+			},
+		)
+	} else {
+		f.AddSection(
+			&form.Select{
+				Name:        "access_level",
+				Template:    "dataset/access_level",
+				Label:       l.T("builder.access_level"),
+				Value:       d.AccessLevel,
+				Options:     localize.VocabularySelectOptions(l, "dataset_access_levels"),
 				Cols:        3,
 				Error:       localize.ValidationErrorAt(l, errors, "/access_level"),
 				Required:    d.FieldIsRequired(),
@@ -232,22 +261,25 @@ func detailsForm(l *locale.Locale, d *models.Dataset, errors validation.Errors) 
 				Vars:        struct{ ID string }{ID: d.ID},
 			},
 			&form.Date{
-				Name:     "embargo",
-				Value:    d.Embargo,
-				Label:    l.T("builder.embargo"),
-				Cols:     3,
-				Error:    localize.ValidationErrorAt(l, errors, "/embargo"),
-				Disabled: d.AccessLevel != "info:eu-repo/semantics/embargoedAccess",
+				Name:  "embargo_date",
+				Value: d.EmbargoDate,
+				Label: l.T("builder.embargo_date"),
+				Cols:  3,
+				Error: localize.ValidationErrorAt(l, errors, "/embargo_date"),
+				// Disabled: d.AccessLevel != "info:eu-repo/semantics/embargoedAccess",
 			},
 			&form.Select{
-				Name:        "embargo_to",
-				Label:       l.T("builder.embargo_to"),
-				Value:       d.EmbargoTo,
-				Options:     localize.VocabularySelectOptions(l, "access_levels"),
+				Name:        "access_level_after_embargo",
+				Label:       l.T("builder.access_level_after_embargo"),
+				Value:       d.AccessLevelAfterEmbargo,
+				Options:     localize.VocabularySelectOptions(l, "dataset_access_levels_after_embargo"),
 				Cols:        3,
-				Error:       localize.ValidationErrorAt(l, errors, "/embargo_to"),
+				Error:       localize.ValidationErrorAt(l, errors, "/access_level_after_embargo"),
 				EmptyOption: true,
-				Disabled:    d.AccessLevel != "info:eu-repo/semantics/embargoedAccess",
+				// Disabled:    d.AccessLevel != "info:eu-repo/semantics/embargoedAccess",
 			},
 		)
+	}
+
+	return f
 }

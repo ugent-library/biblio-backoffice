@@ -97,10 +97,24 @@ message Link {
 }
 
 message File {
+    // enum AccessLevel {
+    //     ACCESS_LEVEL_OPEN_ACCESS = 0;
+    //     ACCESS_LEVEL_LOCAL = 1;
+    //     ACCESS_LEVEL_CLOSED = 2;
+    // }
+
+	// "access_levels": {
+	// 	"info:eu-repo/semantics/closedAccess",
+	// 	"info:eu-repo/semantics/embargoedAccess",
+	// 	"info:eu-repo/semantics/restrictedAccess",
+	// 	"info:eu-repo/semantics/openAccess",
+	// },
+
     enum AccessLevel {
-        ACCESS_LEVEL_OPEN_ACCESS = 0;
-        ACCESS_LEVEL_LOCAL = 1;
-        ACCESS_LEVEL_CLOSED = 2;
+        ACCESS_LEVEL_CLOSED_ACCESS = 0;
+        ACCESS_LEVEL_EMBARGOED_ACCESS = 1;
+        ACCESS_LEVEL_RESTRICTED_ACCESS = 2;
+        ACCESS_LEVEL_OPEN_ACCESS = 3;
     }
 
     enum PublicationVersion {
@@ -126,14 +140,15 @@ message File {
     string content_type = 4;
     google.protobuf.Timestamp date_created = 5;
     google.protobuf.Timestamp date_updated = 6;
-    string embargo = 7;
-    AccessLevel embargo_to = 8;
-    string name = 9;
-    int32 size = 10;
-    string sha256 = 11;
-    string other_license = 12;
-    PublicationVersion publication_version = 13;
-    Relation relation = 14;
+    string embargo_date = 7;
+    AccessLevel access_level_after_embargo = 8;
+    AccessLevel access_level_during_embargo = 9;
+    string name = 10;
+    int32 size = 11;
+    string sha256 = 12;
+    string other_license = 13;
+    PublicationVersion publication_version = 14;
+    Relation relation = 15;
 }
 
 message Publication {
@@ -306,6 +321,20 @@ message Dataset {
 	    STATUS_RETURNED = 3;
     }
 
+	// "access_levels": {
+	// 	"info:eu-repo/semantics/closedAccess",
+	// 	"info:eu-repo/semantics/embargoedAccess",
+	// 	"info:eu-repo/semantics/restrictedAccess",
+	// 	"info:eu-repo/semantics/openAccess",
+	// },
+
+    enum AccessLevel {
+        ACCESS_LEVEL_CLOSED_ACCESS = 0;
+        ACCESS_LEVEL_EMBARGOED_ACCESS = 1;
+        ACCESS_LEVEL_RESTRICTED_ACCESS = 2;
+        ACCESS_LEVEL_OPEN_ACCESS = 3;
+    }
+
     string id = 1;
     Status status = 2;
     repeated Text abstract = 3;
@@ -329,10 +358,10 @@ message Dataset {
     string publisher = 21;
     repeated RelatedProject project = 22;
     repeated RelatedPublication publication = 23;
-    string access_level = 24;
+    AccessLevel access_level = 24;
     repeated Contributor contributor = 25;
-    string embargo = 26;
-    string embargo_to = 27;
+    string embargo_date = 26;
+    AccessLevel access_level_after_embargo = 27;
     repeated string format = 28;
     string license = 29;
     bool locked = 30;

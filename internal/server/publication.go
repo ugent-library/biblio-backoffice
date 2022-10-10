@@ -363,7 +363,7 @@ func publicationToMessage(p *models.Publication) *api.Publication {
 			Id:           val.ID,
 			License:      val.License,
 			ContentType:  val.ContentType,
-			Embargo:      val.Embargo,
+			EmbargoDate:  val.EmbargoDate,
 			Name:         val.Name,
 			Size:         int32(val.Size),
 			Sha256:       val.SHA256,
@@ -371,12 +371,14 @@ func publicationToMessage(p *models.Publication) *api.Publication {
 		}
 
 		switch val.AccessLevel {
-		case "open_access":
+		case "info:eu-repo/semantics/openAccess":
 			f.AccessLevel = api.File_ACCESS_LEVEL_OPEN_ACCESS
-		case "local":
-			f.AccessLevel = api.File_ACCESS_LEVEL_LOCAL
-		case "closed":
-			f.AccessLevel = api.File_ACCESS_LEVEL_CLOSED
+		case "info:eu-repo/semantics/embargoedAccess":
+			f.AccessLevel = api.File_ACCESS_LEVEL_EMBARGOED_ACCESS
+		case "info:eu-repo/semantics/restrictedAccess":
+			f.AccessLevel = api.File_ACCESS_LEVEL_RESTRICTED_ACCESS
+		case "info:eu-repo/semantics/closedAccess":
+			f.AccessLevel = api.File_ACCESS_LEVEL_CLOSED_ACCESS
 		}
 
 		if val.DateCreated != nil {
@@ -386,11 +388,18 @@ func publicationToMessage(p *models.Publication) *api.Publication {
 			f.DateUpdated = timestamppb.New(*val.DateUpdated)
 		}
 
-		switch val.EmbargoTo {
-		case "open_access":
-			f.EmbargoTo = api.File_ACCESS_LEVEL_OPEN_ACCESS
-		case "local":
-			f.EmbargoTo = api.File_ACCESS_LEVEL_LOCAL
+		switch val.AccessLevelDuringEmbargo {
+		case "info:eu-repo/semantics/closedAccess":
+			f.AccessLevelDuringEmbargo = api.File_ACCESS_LEVEL_CLOSED_ACCESS
+		case "info:eu-repo/semantics/restrictedAccess":
+			f.AccessLevelDuringEmbargo = api.File_ACCESS_LEVEL_RESTRICTED_ACCESS
+		}
+
+		switch val.AccessLevelAfterEmbargo {
+		case "info:eu-repo/semantics/openAccess":
+			f.AccessLevelAfterEmbargo = api.File_ACCESS_LEVEL_OPEN_ACCESS
+		case "info:eu-repo/semantics/restrictedAccess":
+			f.AccessLevelAfterEmbargo = api.File_ACCESS_LEVEL_RESTRICTED_ACCESS
 		}
 
 		switch val.PublicationVersion {
@@ -832,7 +841,7 @@ func messageToPublication(msg *api.Publication) *models.Publication {
 			ID:           val.Id,
 			License:      val.License,
 			ContentType:  val.ContentType,
-			Embargo:      val.Embargo,
+			EmbargoDate:  val.EmbargoDate,
 			Name:         val.Name,
 			Size:         int(val.Size),
 			SHA256:       val.Sha256,
@@ -841,11 +850,27 @@ func messageToPublication(msg *api.Publication) *models.Publication {
 
 		switch val.AccessLevel {
 		case api.File_ACCESS_LEVEL_OPEN_ACCESS:
-			f.AccessLevel = "open_access"
-		case api.File_ACCESS_LEVEL_LOCAL:
-			f.AccessLevel = "local"
-		case api.File_ACCESS_LEVEL_CLOSED:
-			f.AccessLevel = "closed"
+			f.AccessLevel = "info:eu-repo/semantics/openAccess"
+		case api.File_ACCESS_LEVEL_EMBARGOED_ACCESS:
+			f.AccessLevel = "info:eu-repo/semantics/embargoedAccess"
+		case api.File_ACCESS_LEVEL_RESTRICTED_ACCESS:
+			f.AccessLevel = "info:eu-repo/semantics/restrictedAccess"
+		case api.File_ACCESS_LEVEL_CLOSED_ACCESS:
+			f.AccessLevel = "info:eu-repo/semantics/closedAccess"
+		}
+
+		switch val.AccessLevelDuringEmbargo {
+		case api.File_ACCESS_LEVEL_CLOSED_ACCESS:
+			f.AccessLevelDuringEmbargo = "info:eu-repo/semantics/closedAccess"
+		case api.File_ACCESS_LEVEL_RESTRICTED_ACCESS:
+			f.AccessLevelDuringEmbargo = "info:eu-repo/semantics/restrictedAccess"
+		}
+
+		switch val.AccessLevelAfterEmbargo {
+		case api.File_ACCESS_LEVEL_OPEN_ACCESS:
+			f.AccessLevelAfterEmbargo = "info:eu-repo/semantics/openAccess"
+		case api.File_ACCESS_LEVEL_RESTRICTED_ACCESS:
+			f.AccessLevelAfterEmbargo = "info:eu-repo/semantics/restrictedAccess"
 		}
 
 		if val.DateCreated != nil {
@@ -855,13 +880,6 @@ func messageToPublication(msg *api.Publication) *models.Publication {
 		if val.DateUpdated != nil {
 			t := msg.DateUpdated.AsTime()
 			f.DateUpdated = &t
-		}
-
-		switch val.EmbargoTo {
-		case api.File_ACCESS_LEVEL_OPEN_ACCESS:
-			f.EmbargoTo = "open_access"
-		case api.File_ACCESS_LEVEL_LOCAL:
-			f.EmbargoTo = "local"
 		}
 
 		switch val.PublicationVersion {

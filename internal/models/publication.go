@@ -3,6 +3,7 @@ package models
 import (
 	"errors"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/ugent-library/biblio-backend/internal/pagination"
@@ -23,21 +24,22 @@ type PublicationUser struct {
 }
 
 type PublicationFile struct {
-	AccessLevel        string     `json:"access_level,omitempty"`
-	License            string     `json:"license,omitempty"`
-	ContentType        string     `json:"content_type,omitempty"`
-	DateCreated        *time.Time `json:"date_created,omitempty"`
-	DateUpdated        *time.Time `json:"date_updated,omitempty"`
-	Embargo            string     `json:"embargo,omitempty"`
-	EmbargoTo          string     `json:"embargo_to,omitempty"`
-	Name               string     `json:"name,omitempty"`
-	Size               int        `json:"size,omitempty"`
-	ID                 string     `json:"id,omitempty"`
-	SHA256             string     `json:"sha256,omitempty"`
-	OtherLicense       string     `json:"other_license,omitempty"`
-	PublicationVersion string     `json:"publication_version,omitempty"`
-	Relation           string     `json:"relation,omitempty"`
-	URL                string     `json:"url,omitempty"`
+	AccessLevel              string     `json:"access_level,omitempty"`
+	License                  string     `json:"license,omitempty"`
+	ContentType              string     `json:"content_type,omitempty"`
+	DateCreated              *time.Time `json:"date_created,omitempty"`
+	DateUpdated              *time.Time `json:"date_updated,omitempty"`
+	EmbargoDate              string     `json:"embargo_date,omitempty"`
+	AccessLevelDuringEmbargo string     `json:"access_level_during_embargo,omitempty"`
+	AccessLevelAfterEmbargo  string     `json:"access_level_after_embargo,omitempty"`
+	Name                     string     `json:"name,omitempty"`
+	Size                     int        `json:"size,omitempty"`
+	ID                       string     `json:"id,omitempty"`
+	SHA256                   string     `json:"sha256,omitempty"`
+	OtherLicense             string     `json:"other_license,omitempty"`
+	PublicationVersion       string     `json:"publication_version,omitempty"`
+	Relation                 string     `json:"relation,omitempty"`
+	URL                      string     `json:"url,omitempty"`
 }
 
 type PublicationLink struct {
@@ -158,7 +160,7 @@ type Publication struct {
 }
 
 func (p *Publication) AccessLevel() string {
-	for _, a := range []string{"open_access", "local", "closed"} {
+	for _, a := range vocabularies.Map["publication_file_access_levels"] {
 		for _, file := range p.File {
 			if file.AccessLevel == a {
 				return a
@@ -444,7 +446,7 @@ func (p *Publication) AddFile(file *PublicationFile) {
 	file.DateCreated = &now
 	file.DateUpdated = &now
 	if file.AccessLevel == "" {
-		file.AccessLevel = "local"
+		file.AccessLevel = "info:eu-repo/semantics/restrictedAccess"
 	}
 	p.File = append(p.File, file)
 }
@@ -982,7 +984,7 @@ func (p *Publication) Validate() error {
 		for _, err := range f.Validate() {
 			errs = append(errs, &validation.Error{
 				Pointer: fmt.Sprintf("/file/%d%s", i, err.Pointer),
-				Code:    "publication.file" + err.Code,
+				Code:    "publication.file." + err.Code,
 			})
 		}
 	}
@@ -992,7 +994,7 @@ func (p *Publication) Validate() error {
 			for _, err := range pl.Validate() {
 				errs = append(errs, &validation.Error{
 					Pointer: fmt.Sprintf("/link/%d%s", i, err.Pointer),
-					Code:    "publication.link" + err.Code,
+					Code:    "publication.link." + err.Code,
 				})
 			}
 		}
@@ -1142,22 +1144,36 @@ func (pf *PublicationFile) Validate() (errs validation.Errors) {
 		})
 	}
 
-	if pf.Embargo != "" {
-		if !validation.IsDate(pf.Embargo) {
+	if pf.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
+		if !validation.IsDate(pf.EmbargoDate) {
 			errs = append(errs, &validation.Error{
-				Pointer: "/embargo",
-				Code:    "embargo.invalid",
+				Pointer: "/embargo_date",
+				Code:    "embargo_date.invalid",
 			})
 		}
-		if pf.EmbargoTo == pf.AccessLevel {
+
+		invalid := false
+		if !validation.InArray(vocabularies.Map["publication_file_access_levels"], pf.AccessLevelAfterEmbargo) {
+			log.Println(pf.AccessLevelAfterEmbargo)
+			invalid = true
 			errs = append(errs, &validation.Error{
-				Pointer: "/embargo_to",
-				Code:    "embargo_to.invalid", // TODO better code
+				Pointer: "/access_level_after_embargo",
+				Code:    "access_level_after_embargo.invalid",
 			})
-		} else if !validation.InArray(vocabularies.Map["publication_file_access_levels"], pf.EmbargoTo) {
+		}
+
+		if !validation.InArray(vocabularies.Map["publication_file_access_levels"], pf.AccessLevelDuringEmbargo) {
+			invalid = true
 			errs = append(errs, &validation.Error{
-				Pointer: "/embargo_to",
-				Code:    "embargo_to.invalid", // TODO better code
+				Pointer: "/access_level_during_embargo",
+				Code:    "access_level_during_embargo.invalid",
+			})
+		}
+
+		if pf.AccessLevelAfterEmbargo == pf.AccessLevelDuringEmbargo && !invalid {
+			errs = append(errs, &validation.Error{
+				Pointer: "/access_level_after_embargo",
+				Code:    "access_level_after_embargo.similar",
 			})
 		}
 	}

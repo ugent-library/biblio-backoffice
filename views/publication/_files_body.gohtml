@@ -51,17 +51,17 @@
                                     {{with .PublicationVersion}}<span class="ml-3 pl-3 border-left">{{$.Locale.TS "publication_versions" .}}</span>{{end}}
                                 </span>
                                 <span class="badge badge-pill badge-outline-success">
-                                    {{if eq .AccessLevel "open_access"}}
+                                    {{if eq .AccessLevel "open_ainfo:eu-repo/semantics/openAccessccess"}}
                                     <i class="if if-download text-success"></i>
-                                    {{else if eq .AccessLevel "local"}}
+                                    {{else if eq .AccessLevel "info:eu-repo/semantics/restrictedAccess"}}
                                     <i class="if if-ghent-university text-primary"></i>
-                                    {{else if eq .AccessLevel "closed"}}
+                                    {{else if eq .AccessLevel "info:eu-repo/semantics/closedAccess"}}
                                     <i class="if if-eye-off text-muted"></i>
                                     {{end}}
                                     <span class="badge-text">{{$.Locale.TS "publication_file_access_levels" .AccessLevel}}</span>
                                 </span>
-                                {{if .EmbargoTo}}
-                                <span class="text-muted c-body-small pl-5">Changes to {{$.Locale.TS "publication_file_access_levels" .EmbargoTo}} on {{.Embargo}}</span>
+                                {{if .AccessLevelAfterEmbargo}}
+                                <span class="text-muted c-body-small pl-5">Changes to {{$.Locale.TS "publication_file_access_levels" .AccessLevelAfterEmbargo}} on {{.EmbargoDate}}</span>
                                 {{end}}
                             </div>
                             <div class="list-group-item-subline-right">

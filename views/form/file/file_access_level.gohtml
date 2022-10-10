@@ -38,7 +38,7 @@
                 </div>
             </div>
             <div class="c-radio-card__content d-flex align-content-center">
-                {{if eq .Value "open_access"}}
+                {{if eq .Value "info:eu-repo/semantics/openAccess"}}
                 <i class="if if-download text-success align-self-center"></i>
                 <div class="ml-5">
                     <p class="mb-1 mr-3">{{.Label}}</p>
@@ -52,7 +52,7 @@
                     Recommended if you own copyright, or you have permission from the copyright holder(s)
                     of the exclusive license to publish.</span>
                 </div>
-                {{else if eq .Value "embargo"}}
+                {{else if eq .Value "info:eu-repo/semantics/embargoedAccess"}}
                 <i class="if if-time text-muted align-self-center"></i>
                 <div class="ml-5">
                     <p class="mb-1 mr-3">{{.Label}}</p>
@@ -60,14 +60,14 @@
                     Recommended for documents under embargo, based on your publisher contract. UGent will
                     use this option for <a href="#">AAM journal articles</a>.</span>
                 </div>
-                {{else if eq .Value "local"}}
+                {{else if eq .Value "info:eu-repo/semantics/restrictedAccess"}}
                 <i class="if if-ghent-university text-primary align-self-center"></i>
                 <div class="ml-5">
                     <p class="mb-1 mr-3">{{.Label}}</p>
                     <span class="text-muted c-body-small">Your document will only be available to UGent members.
                     Recommended if you do not own the copyright nor have permission.</span>
                 </div>
-                {{else if eq .Value "closed"}}
+                {{else if eq .Value "info:eu-repo/semantics/closedAccess"}}
                 <i class="if if-eye-off text-muted align-self-center"></i>
                 <div class="ml-5">
                     <p class="mb-1 mr-3">{{.Label}}</p>

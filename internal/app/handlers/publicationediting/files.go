@@ -19,20 +19,20 @@ import (
 )
 
 type BindFile struct {
-	FileID             string `path:"file_id"`
-	AccessLevel        string `form:"access_level"`
-	License            string `form:"license"`
-	ContentType        string `form:"content_type"`
-	Embargo            string `form:"embargo"`
-	EmbargoTo          string `form:"embargo_after"`
-	EmbargoDuring      string `form:"embargo_during"`
-	Name               string `form:"name"`
-	Size               int    `form:"size"`
-	SHA256             string `form:"sha256"`
-	OtherLicense       string `form:"other_license"`
-	PublicationVersion string `form:"publication_version"`
-	Relation           string `form:"relation"`
-	URL                string `form:"url"`
+	FileID                   string `path:"file_id"`
+	AccessLevel              string `form:"access_level"`
+	License                  string `form:"license"`
+	ContentType              string `form:"content_type"`
+	EmbargoDate              string `form:"embargo_date"`
+	AccessLevelAfterEmbargo  string `form:"access_level_after_embargo"`
+	AccessLevelDuringEmbargo string `form:"access_level_during_embargo"`
+	Name                     string `form:"name"`
+	Size                     int    `form:"size"`
+	SHA256                   string `form:"sha256"`
+	OtherLicense             string `form:"other_license"`
+	PublicationVersion       string `form:"publication_version"`
+	Relation                 string `form:"relation"`
+	URL                      string `form:"url"`
 }
 
 type BindDeleteFile struct {
@@ -108,7 +108,7 @@ func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context
 	// save publication
 	// TODO check if file with same checksum is already present
 	pubFile := models.PublicationFile{
-		AccessLevel: "local",
+		AccessLevel: "info:eu-repo/semantics/restrictedAccess",
 		Name:        handler.Filename,
 		Size:        int(handler.Size),
 		ContentType: filetype,
@@ -177,13 +177,14 @@ func (h *Handler) RefreshEditFileForm(w http.ResponseWriter, r *http.Request, ct
 
 	if file == nil {
 		file := &models.PublicationFile{
-			AccessLevel:        b.AccessLevel,
-			License:            b.License,
-			Embargo:            b.Embargo,
-			EmbargoTo:          b.Embargo,
-			OtherLicense:       b.OtherLicense,
-			PublicationVersion: b.PublicationVersion,
-			Relation:           b.Relation,
+			AccessLevel:              b.AccessLevel,
+			License:                  b.License,
+			EmbargoDate:              b.EmbargoDate,
+			AccessLevelAfterEmbargo:  b.AccessLevelAfterEmbargo,
+			AccessLevelDuringEmbargo: b.AccessLevelDuringEmbargo,
+			OtherLicense:             b.OtherLicense,
+			PublicationVersion:       b.PublicationVersion,
+			Relation:                 b.Relation,
 		}
 		render.Layout(w, "refresh_modal", "publication/edit_file", YieldEditFile{
 			Context:  ctx,
@@ -195,9 +196,10 @@ func (h *Handler) RefreshEditFileForm(w http.ResponseWriter, r *http.Request, ct
 	}
 
 	// clear embargo fields when access level is set to anything else
-	if b.AccessLevel != "embargo" {
-		b.Embargo = ""
-		b.EmbargoTo = ""
+	if b.AccessLevel != "info:eu-repo/semantics/embargoedAccess" {
+		b.EmbargoDate = ""
+		b.AccessLevelAfterEmbargo = ""
+		b.AccessLevelDuringEmbargo = ""
 	}
 
 	// TODO apply other license && access level related rules, if any
@@ -205,8 +207,9 @@ func (h *Handler) RefreshEditFileForm(w http.ResponseWriter, r *http.Request, ct
 	// Copy everything
 	file.AccessLevel = b.AccessLevel
 	file.License = b.License
-	file.Embargo = b.Embargo
-	file.EmbargoTo = b.EmbargoTo
+	file.EmbargoDate = b.EmbargoDate
+	file.AccessLevelAfterEmbargo = b.AccessLevelAfterEmbargo
+	file.AccessLevelDuringEmbargo = b.AccessLevelDuringEmbargo
 	file.OtherLicense = b.OtherLicense
 	file.PublicationVersion = b.PublicationVersion
 	file.Relation = b.Relation
@@ -233,13 +236,14 @@ func (h *Handler) UpdateFile(w http.ResponseWriter, r *http.Request, ctx Context
 	// TODO catch non-existing item in UI (show message)
 	if file == nil {
 		file := &models.PublicationFile{
-			AccessLevel:        b.AccessLevel,
-			License:            b.License,
-			Embargo:            b.Embargo,
-			EmbargoTo:          b.Embargo,
-			OtherLicense:       b.OtherLicense,
-			PublicationVersion: b.PublicationVersion,
-			Relation:           b.Relation,
+			AccessLevel:              b.AccessLevel,
+			License:                  b.License,
+			EmbargoDate:              b.EmbargoDate,
+			AccessLevelAfterEmbargo:  b.AccessLevelAfterEmbargo,
+			AccessLevelDuringEmbargo: b.AccessLevelDuringEmbargo,
+			OtherLicense:             b.OtherLicense,
+			PublicationVersion:       b.PublicationVersion,
+			Relation:                 b.Relation,
 		}
 		render.Layout(w, "refresh_modal", "publication/edit_file", YieldEditFile{
 			Context:  ctx,
@@ -250,17 +254,11 @@ func (h *Handler) UpdateFile(w http.ResponseWriter, r *http.Request, ctx Context
 		return
 	}
 
-	// "embargo" isn't a valid status in itself. The status from the form field
-	// "EmbargoDuring" is copied into the AccessLevel field.
-	if b.AccessLevel == "embargo" {
-		file.AccessLevel = b.EmbargoDuring
-	} else {
-		file.AccessLevel = b.AccessLevel
-	}
-
+	file.AccessLevel = b.AccessLevel
 	file.License = b.License
-	file.Embargo = b.Embargo
-	file.EmbargoTo = b.EmbargoTo
+	file.EmbargoDate = b.EmbargoDate
+	file.AccessLevelAfterEmbargo = b.AccessLevelAfterEmbargo
+	file.AccessLevelDuringEmbargo = b.AccessLevelDuringEmbargo
 	file.OtherLicense = b.OtherLicense
 	file.PublicationVersion = b.PublicationVersion
 	file.Relation = b.Relation
@@ -438,10 +436,10 @@ func fileForm(l *locale.Locale, publication *models.Publication, file *models.Pu
 	// signals that the file has an "embargo access". The "embargo" option in the "Access
 	// level" field needs to be active in the display. We need this because "embargo"
 	// isn't a status value we store on the level of the data.
-	accessLevel := file.AccessLevel
-	if file.Embargo != "" {
-		accessLevel = "embargo"
-	}
+	// accessLevel := file.AccessLevel
+	// if file.EmbargoDate != "" {
+	// 	accessLevel = "embargo"
+	// }
 
 	f.AddTemplatedSection(
 		"sections/access_level",
@@ -452,134 +450,6 @@ func fileForm(l *locale.Locale, publication *models.Publication, file *models.Pu
 		},
 		&form.RadioButtonGroup{
 			Template: "file_access_level",
-			Name:     "access_level",
-			Value:    accessLevel,
-			Label:    l.T("builder.file.access_level"),
-			Options:  localize.VocabularySelectOptions(l, "visible_publication_file_access_levels"),
-			Cols:     9,
-			Error: localize.ValidationErrorAt(
-				l,
-				errors,
-				fmt.Sprintf("/file/%d/access_level", idx)),
-			Vars: struct {
-				ID     string
-				FileID string
-			}{
-				ID:     publication.ID,
-				FileID: file.ID,
-			},
-		},
-	)
-
-	if accessLevel == "embargo" || file.EmbargoTo != "" {
-		f.AddTemplatedSection(
-			"sections/embargo",
-			struct{}{},
-			&form.Select{
-				Template: "embargo_during",
-				Name:     "embargo_during",
-				Value:    file.AccessLevel,
-				// TODO html in l.T is transformed into html entities
-				// Label:       l.T("builder.file.embargo_during"),
-				EmptyOption: true,
-				Options:     localize.VocabularySelectOptions(l, "publication_file_access_levels_embargo_during"),
-				Error: localize.ValidationErrorAt(
-					l,
-					errors,
-					fmt.Sprintf("/file/%d/access_level", idx)),
-			},
-			&form.Select{
-				Template: "embargo_after",
-				Name:     "embargo_after",
-				Value:    file.EmbargoTo,
-				// TODO html in l.T is transformed into html entities
-				// Label:       l.T("builder.file.embargo_after"),
-				EmptyOption: true,
-				Options:     localize.VocabularySelectOptions(l, "publication_file_access_levels_embargo_after"),
-				Error: localize.ValidationErrorAt(
-					l,
-					errors,
-					fmt.Sprintf("/file/%d/embargo_to", idx)),
-			},
-		)
-
-		f.AddSection(
-			&form.Date{
-				Template: "embargo_end",
-				Name:     "embargo",
-				Value:    file.Embargo,
-				Label:    l.T("builder.file.embargo"),
-				Min:      time.Now().Format("2006-01-02"),
-				Error: localize.ValidationErrorAt(
-					l,
-					errors,
-					fmt.Sprintf("/file/%d/embargo", idx)),
-			},
-		)
-	}
-
-	f.AddTemplatedSection(
-		"sections/license",
-		struct{}{},
-		&form.Select{
-			Template:    "license",
-			Name:        "license",
-			Value:       file.License,
-			Label:       l.T("builder.file.license"),
-			Tooltip:     l.T("tooltip.publication.file.license"),
-			EmptyOption: true,
-			Options:     localize.VocabularySelectOptions(l, "licenses"),
-		},
-	)
-
-	return f
-}
-
-func fileForm2(l *locale.Locale, publication *models.Publication, file *models.PublicationFile, errors validation.Errors) *form.Form {
-	idx := -1
-	for i, f := range publication.File {
-		if f.ID == file.ID {
-			idx = i
-			break
-		}
-	}
-
-	f := form.New().
-		WithTheme("cols").
-		WithErrors(localize.ValidationErrors(l, errors))
-
-	f.AddSection(
-		&form.Select{
-			Name:        "relation",
-			Value:       file.Relation,
-			Label:       l.T("builder.file.relation"),
-			EmptyOption: true,
-			Options: localize.VocabularySelectOptions(
-				l,
-				"publication_file_relations"),
-			Cols: 12,
-			Error: localize.ValidationErrorAt(
-				l,
-				errors,
-				fmt.Sprintf("/file/%d/relation", idx)),
-		},
-		&form.Select{
-			Name:        "publication_version",
-			Value:       file.PublicationVersion,
-			Label:       l.T("builder.file.publication_version"),
-			EmptyOption: true,
-			Options:     localize.VocabularySelectOptions(l, "publication_versions"),
-			Cols:        12,
-			Error: localize.ValidationErrorAt(
-				l,
-				errors,
-				fmt.Sprintf("/file/%d/publication_version", idx)),
-		},
-	)
-
-	f.AddSection(
-		&form.RadioButtonGroup{
-			Template: "publication/file_access_level",
 			Name:     "access_level",
 			Value:    file.AccessLevel,
 			Label:    l.T("builder.file.access_level"),
@@ -599,58 +469,64 @@ func fileForm2(l *locale.Locale, publication *models.Publication, file *models.P
 		},
 	)
 
-	f.AddSection(
-		&form.Date{
-			Name:  "embargo",
-			Value: file.Embargo,
-			Label: l.T("builder.file.embargo"),
-			Min:   time.Now().Format("2006-01-02"),
-			Cols:  9,
-			Error: localize.ValidationErrorAt(
-				l,
-				errors,
-				fmt.Sprintf("/file/%d/embargo", idx)),
-		},
-		&form.Select{
-			Name:        "embargo_to",
-			Value:       file.EmbargoTo,
-			Label:       l.T("builder.file.embargo_to"),
-			EmptyOption: true,
-			Options:     localize.VocabularySelectOptions(l, "publication_file_access_levels"),
-			Cols:        9,
-			Error: localize.ValidationErrorAt(
-				l,
-				errors,
-				fmt.Sprintf("/file/%d/embargo_to", idx)),
-		},
-	)
+	if file.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
+		f.AddTemplatedSection(
+			"sections/embargo",
+			struct{}{},
+			&form.Select{
+				Template: "embargo_during",
+				Name:     "access_level_during_embargo",
+				Value:    file.AccessLevelDuringEmbargo,
+				// TODO html in l.T is transformed into html entities
+				// Label:       l.T("builder.file.embargo_during"),
+				EmptyOption: true,
+				Options:     localize.VocabularySelectOptions(l, "publication_file_access_levels_during_embargo"),
+				Error: localize.ValidationErrorAt(
+					l,
+					errors,
+					fmt.Sprintf("/file/%d/access_level_during_embargo", idx)),
+			},
+			&form.Select{
+				Template: "embargo_after",
+				Name:     "access_level_after_embargo",
+				Value:    file.AccessLevelAfterEmbargo,
+				// TODO html in l.T is transformed into html entities
+				// Label:       l.T("builder.file.embargo_after"),
+				EmptyOption: true,
+				Options:     localize.VocabularySelectOptions(l, "publication_file_access_levels_after_embargo"),
+				Error: localize.ValidationErrorAt(
+					l,
+					errors,
+					fmt.Sprintf("/file/%d/access_level_after_embargo", idx)),
+			},
+		)
 
-	f.AddSection(
+		f.AddSection(
+			&form.Date{
+				Template: "embargo_end",
+				Name:     "embargo_date",
+				Value:    file.EmbargoDate,
+				Label:    l.T("builder.file.embargo_date"),
+				Min:      time.Now().Format("2006-01-02"),
+				Error: localize.ValidationErrorAt(
+					l,
+					errors,
+					fmt.Sprintf("/file/%d/embargo_date", idx)),
+			},
+		)
+	}
+
+	f.AddTemplatedSection(
+		"sections/license",
+		struct{}{},
 		&form.Select{
+			Template:    "license",
 			Name:        "license",
 			Value:       file.License,
 			Label:       l.T("builder.file.license"),
+			Tooltip:     l.T("tooltip.publication.file.license"),
 			EmptyOption: true,
 			Options:     localize.VocabularySelectOptions(l, "licenses"),
-			Cols:        9,
-			Error: localize.ValidationErrorAt(
-				l,
-				errors,
-				fmt.Sprintf("/file/%d/license", idx)),
-		},
-	)
-
-	f.AddSection(
-		&form.Text{
-			Name:  "other_license",
-			Value: file.OtherLicense,
-			Label: l.T("builder.file.other_license"),
-			Help:  l.T("builder.file.other_license.help"),
-			Cols:  12,
-			Error: localize.ValidationErrorAt(
-				l,
-				errors,
-				fmt.Sprintf("/file/%d/other_license", idx)),
 		},
 	)
 

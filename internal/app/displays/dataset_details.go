@@ -64,16 +64,16 @@ func DatasetDetails(l *locale.Locale, d *models.Dataset) *display.Display {
 			},
 			&display.Text{
 				Label:    l.T("builder.access_level"),
-				Value:    l.TS("access_levels", d.AccessLevel),
+				Value:    l.TS("dataset_access_levels", d.AccessLevel),
 				Required: d.FieldIsRequired(),
 			},
 			&display.Text{
-				Label: l.T("builder.embargo"),
-				Value: d.Embargo,
+				Label: l.T("builder.embargo_date"),
+				Value: d.EmbargoDate,
 			},
 			&display.Text{
-				Label: l.T("builder.embargo_to"),
-				Value: l.TS("access_levels", d.EmbargoTo),
+				Label: l.T("builder.access_level_after_embargo"),
+				Value: l.TS("dataset_access_levels_after_embargo", d.AccessLevelAfterEmbargo),
 			},
 		)
 }

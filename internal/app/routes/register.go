@@ -367,10 +367,14 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		datasetEditingHandler.Wrap(datasetEditingHandler.EditDetails)).
 		Methods("GET").
 		Name("dataset_edit_details")
-	r.HandleFunc("/dataset/{id}/details/edit/access-level",
-		datasetEditingHandler.Wrap(datasetEditingHandler.EditDetailsAccessLevel)).
+	// r.HandleFunc("/dataset/{id}/details/edit/access-level",
+	// 	datasetEditingHandler.Wrap(datasetEditingHandler.EditDetailsAccessLevel)).
+	// 	Methods("PUT").
+	// 	Name("dataset_edit_details_access_level")
+	r.HandleFunc("/dataset/{id}/details/edit/refresh-form",
+		datasetEditingHandler.Wrap(datasetEditingHandler.RefreshEditFileForm)).
 		Methods("PUT").
-		Name("dataset_edit_details_access_level")
+		Name("dataset_edit_file_refresh_form")
 	r.HandleFunc("/dataset/{id}/details",
 		datasetEditingHandler.Wrap(datasetEditingHandler.UpdateDetails)).
 		Methods("PUT").

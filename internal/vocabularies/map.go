@@ -1,10 +1,5 @@
 package vocabularies
 
-const ClosedAccess = "info:eu-repo/semantics/closedAccess"
-const EmbargoedAccess = "info:eu-repo/semantics/embargoedAccess"
-const RestrictedAccess = "info:eu-repo/semantics/restrictedAccess"
-const OpenAccess = "info:eu-repo/semantics/openAccess"
-
 var Map = map[string][]string{
 	"user_roles": {
 		"user",
@@ -99,11 +94,15 @@ var Map = map[string][]string{
 		"writing_original_draft",
 		"writing_review_editing",
 	},
-	"access_levels": {
-		OpenAccess,
-		RestrictedAccess,
-		EmbargoedAccess,
-		ClosedAccess,
+	"dataset_access_levels": {
+		"info:eu-repo/semantics/openAccess",
+		"info:eu-repo/semantics/restrictedAccess",
+		"info:eu-repo/semantics/closedAccess",
+		"info:eu-repo/semantics/embargoedAccess",
+	},
+	"dataset_access_levels_after_embargo": {
+		"info:eu-repo/semantics/openAccess",
+		"info:eu-repo/semantics/restrictedAccess",
 	},
 	"faculties": {
 		"CA",
@@ -191,23 +190,18 @@ var Map = map[string][]string{
 		"year-desc",
 	},
 	"publication_file_access_levels": {
-		"open_access",
-		"local",
-		"closed",
+		"info:eu-repo/semantics/openAccess",
+		"info:eu-repo/semantics/embargoedAccess",
+		"info:eu-repo/semantics/restrictedAccess",
+		"info:eu-repo/semantics/closedAccess",
 	},
-	"visible_publication_file_access_levels": {
-		"open_access",
-		"embargo",
-		"local",
-		"closed",
+	"publication_file_access_levels_during_embargo": {
+		"info:eu-repo/semantics/restrictedAccess",
+		"info:eu-repo/semantics/closedAccess",
 	},
-	"publication_file_access_levels_embargo_during": {
-		"local",
-		"closed",
-	},
-	"publication_file_access_levels_embargo_after": {
-		"open_access",
-		"local",
+	"publication_file_access_levels_after_embargo": {
+		"info:eu-repo/semantics/openAccess",
+		"info:eu-repo/semantics/restrictedAccess",
 	},
 	"publication_file_relations": {
 		"main_file",
