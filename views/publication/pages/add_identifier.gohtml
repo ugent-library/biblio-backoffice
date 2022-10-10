@@ -1,5 +1,5 @@
 {{define "page_content"}}
-{{partial "publication/add_sidebar" .}}
+{{partial "publication/add_single_sidebar" .}}
 
 <form class="w-100 u-scroll-wrapper" action="{{pathFor "publication_add_single_import_confirm"}}" method="POST">
     {{.CSRFTag}}

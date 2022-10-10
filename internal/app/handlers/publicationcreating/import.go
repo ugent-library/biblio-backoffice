@@ -371,44 +371,8 @@ func (h *Handler) AddMultipleImport(w http.ResponseWriter, r *http.Request, ctx 
 	http.Redirect(
 		w,
 		r,
-		h.PathFor("publication_add_multiple_description", "batch_id", batchID).String(),
+		h.PathFor("publication_add_multiple_confirm", "batch_id", batchID).String(),
 		http.StatusFound)
-}
-
-func (h *Handler) AddMultipleDescription(w http.ResponseWriter, r *http.Request, ctx Context) {
-	searchArgs := models.NewSearchArgs()
-	if err := bind.RequestQuery(r, searchArgs); err != nil {
-		h.Logger.Warnw("add multiple description publication: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
-		return
-	}
-
-	searchArgs.WithFacets(vocabularies.Map["publication_facets"]...)
-
-	batchID := bind.PathValues(r).Get("batch_id")
-
-	hits, err := h.PublicationSearchService.
-		WithScope("status", "private", "public").
-		WithScope("creator.id", ctx.User.ID).
-		WithScope("batch_id", batchID).
-		Search(searchArgs)
-
-	if err != nil {
-		h.Logger.Errorw("add multiple description publication: could not execute search", "errors", err, "batch", batchID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
-		return
-	}
-
-	render.Layout(w, "layouts/default", "publication/pages/add_multiple_description", YieldAddMultiple{
-		Context:     ctx,
-		PageTitle:   "Add - Publications - Biblio",
-		Step:        2,
-		ActiveNav:   "publications",
-		RedirectURL: r.URL.String(),
-		BatchID:     batchID,
-		SearchArgs:  searchArgs,
-		Hits:        hits,
-	})
 }
 
 func (h *Handler) AddMultipleSave(w http.ResponseWriter, r *http.Request, ctx Context) {
@@ -469,7 +433,7 @@ func (h *Handler) AddMultipleConfirm(w http.ResponseWriter, r *http.Request, ctx
 	render.Layout(w, "layouts/default", "publication/pages/add_multiple_confirm", YieldAddMultiple{
 		Context:     ctx,
 		PageTitle:   "Add - Publications - Biblio",
-		Step:        3,
+		Step:        2,
 		ActiveNav:   "publications",
 		RedirectURL: r.URL.String(),
 		BatchID:     batchID,
@@ -537,7 +501,7 @@ func (h *Handler) AddMultipleFinish(w http.ResponseWriter, r *http.Request, ctx 
 	render.Layout(w, "layouts/default", "publication/pages/add_multiple_finish", YieldAddMultiple{
 		Context:     ctx,
 		PageTitle:   "Add - Publications - Biblio",
-		Step:        4,
+		Step:        3,
 		ActiveNav:   "publications",
 		RedirectURL: r.URL.String(),
 		BatchID:     batchID,

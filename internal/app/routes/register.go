@@ -552,10 +552,6 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		publicationCreatingHandler.Wrap(publicationCreatingHandler.AddMultipleImport)).
 		Methods("POST").
 		Name("publication_add_multiple_import")
-	r.HandleFunc("/publication/add-multiple/{batch_id}/description",
-		publicationCreatingHandler.Wrap(publicationCreatingHandler.AddMultipleDescription)).
-		Methods("GET").
-		Name("publication_add_multiple_description")
 	r.HandleFunc("/publication/add-multiple/{batch_id}/confirm",
 		publicationCreatingHandler.Wrap(publicationCreatingHandler.AddMultipleConfirm)).
 		Methods("GET").
