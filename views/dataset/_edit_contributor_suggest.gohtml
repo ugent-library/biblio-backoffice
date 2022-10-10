@@ -7,15 +7,11 @@
             </div>
             <div class="c-button-toolbar">
                 <button class="btn btn-primary"
-                    hx-get="{{pathFor "publication_confirm_update_contributor" "id" .Publication.ID "role" .Role "position" (.Position|toString)}}"
+                    hx-get="{{pathFor "dataset_confirm_update_contributor" "id" .Dataset.ID "role" .Role "position" (.Position|toString)}}"
                     hx-vals='{"id":"{{.Contributor.ID}}"}'
                     hx-swap="none"
                 >
-                    {{if eq .Role "author"}}
-                    <span class="btn-text">Edit credit roles</span>
-                    {{else}}
-                    <span class="btn-text">Confirm {{.Locale.TS "publication.contributor.role" .Role}}</span>
-                    {{end}}
+                    <span class="btn-text">Confirm {{.Locale.TS "dataset.contributor.role" .Role}}</span>
                     <i class="if if-arrow-right"></i>
                 </button>
             </div>
@@ -29,15 +25,11 @@
             </div>
             <div class="c-button-toolbar">
                 <button class="btn btn-primary"
-                    hx-get="{{pathFor "publication_confirm_update_contributor" "id" .Publication.ID "role" .Role "position" (.Position|toString)}}"
+                    hx-get="{{pathFor "dataset_confirm_update_contributor" "id" .Dataset.ID "role" .Role "position" (.Position|toString)}}"
                     hx-vals='{"first_name":"{{.FirstName}}","last_name":"{{.LastName}}"}'
                     hx-swap="none"
                 >
-                {{if eq .Role "author"}}
-                <span class="btn-text">Edit credit roles</span>
-                {{else}}
-                <span class="btn-text">Confirm {{.Locale.TS "publication.contributor.role" .Role}}</span>
-                {{end}}
+                <span class="btn-text">Confirm {{.Locale.TS "dataset.contributor.role" .Role}}</span>
                 <i class="if if-arrow-right"></i>
                 </button>
             </div>
@@ -47,7 +39,7 @@
 </ul>
 
 {{if or .Hits (and .Contributor.ID .FirstName .LastName)}}
-<h3 class="mt-6">Select other {{$.Locale.TS "publication.contributor.role" $.Role}}</h3>
+<h3 class="mt-6">Select other {{$.Locale.TS "dataset.contributor.role" $.Role}}</h3>
 
 <ul class="list-group">
     {{if and .Contributor.ID .FirstName .LastName}}
@@ -58,11 +50,11 @@
             </div>
             <div class="c-button-toolbar">
                 <button class="btn btn-secondary"
-                    hx-get="{{pathFor "publication_confirm_update_contributor" "id" .Publication.ID "role" .Role "position" (.Position|toString)}}"
+                    hx-get="{{pathFor "dataset_confirm_update_contributor" "id" .Dataset.ID "role" .Role "position" (.Position|toString)}}"
                     hx-vals='{"first_name":"{{.FirstName}}","last_name":"{{.LastName}}"}'
                     hx-swap="none"
                 >
-                    <span class="btn-text">Switch to external {{$.Locale.TS "publication.contributor.role" $.Role}}</span>
+                    <span class="btn-text">Switch to external {{$.Locale.TS "dataset.contributor.role" $.Role}}</span>
                     <i class="if if-arrow-right"></i>
                   </button>
             </div>
@@ -78,11 +70,11 @@
             </div>
             <div class="c-button-toolbar">
                 <button class="btn btn-primary"
-                    hx-get="{{pathFor "publication_confirm_update_contributor" "id" $.Publication.ID "role" $.Role "position" ($.Position|toString)}}"
+                    hx-get="{{pathFor "dataset_confirm_update_contributor" "id" $.Dataset.ID "role" $.Role "position" ($.Position|toString)}}"
                     hx-vals='{"id":"{{.ID}}"}'
                     hx-swap="none"
                 >
-                    <span class="btn-text">Switch {{$.Locale.TS "publication.contributor.role" $.Role}}</span>
+                    <span class="btn-text">Switch {{$.Locale.TS "dataset.contributor.role" $.Role}}</span>
                     <i class="if if-arrow-right"></i>
                 </button>
             </div>

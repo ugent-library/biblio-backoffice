@@ -38,6 +38,7 @@ type BiblioClient interface {
 	AddDatasets(ctx context.Context, opts ...grpc.CallOption) (Biblio_AddDatasetsClient, error)
 	PurgeDataset(ctx context.Context, in *PurgeDatasetRequest, opts ...grpc.CallOption) (*PurgeDatasetResponse, error)
 	PurgeAllDatasets(ctx context.Context, in *PurgeAllDatasetsRequest, opts ...grpc.CallOption) (*PurgeAllDatasetsResponse, error)
+	Relate(ctx context.Context, in *RelateRequest, opts ...grpc.CallOption) (*RelateResponse, error)
 }
 
 type biblioClient struct {
@@ -330,6 +331,15 @@ func (c *biblioClient) PurgeAllDatasets(ctx context.Context, in *PurgeAllDataset
 	return out, nil
 }
 
+func (c *biblioClient) Relate(ctx context.Context, in *RelateRequest, opts ...grpc.CallOption) (*RelateResponse, error) {
+	out := new(RelateResponse)
+	err := c.cc.Invoke(ctx, "/biblio.v1.Biblio/Relate", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // BiblioServer is the server API for Biblio service.
 // All implementations must embed UnimplementedBiblioServer
 // for forward compatibility
@@ -350,6 +360,7 @@ type BiblioServer interface {
 	AddDatasets(Biblio_AddDatasetsServer) error
 	PurgeDataset(context.Context, *PurgeDatasetRequest) (*PurgeDatasetResponse, error)
 	PurgeAllDatasets(context.Context, *PurgeAllDatasetsRequest) (*PurgeAllDatasetsResponse, error)
+	Relate(context.Context, *RelateRequest) (*RelateResponse, error)
 	mustEmbedUnimplementedBiblioServer()
 }
 
@@ -404,6 +415,9 @@ func (UnimplementedBiblioServer) PurgeDataset(context.Context, *PurgeDatasetRequ
 }
 func (UnimplementedBiblioServer) PurgeAllDatasets(context.Context, *PurgeAllDatasetsRequest) (*PurgeAllDatasetsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PurgeAllDatasets not implemented")
+}
+func (UnimplementedBiblioServer) Relate(context.Context, *RelateRequest) (*RelateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Relate not implemented")
 }
 func (UnimplementedBiblioServer) mustEmbedUnimplementedBiblioServer() {}
 
@@ -739,6 +753,24 @@ func _Biblio_PurgeAllDatasets_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Biblio_Relate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RelateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BiblioServer).Relate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/biblio.v1.Biblio/Relate",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BiblioServer).Relate(ctx, req.(*RelateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Biblio_ServiceDesc is the grpc.ServiceDesc for Biblio service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -785,6 +817,10 @@ var Biblio_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "PurgeAllDatasets",
 			Handler:    _Biblio_PurgeAllDatasets_Handler,
+		},
+		{
+			MethodName: "Relate",
+			Handler:    _Biblio_Relate_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

@@ -156,11 +156,15 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 	// }
 	// r = r.Schemes(schemes...).Host(u.Host).PathPrefix(u.Path).Subrouter()
 
+	csrfPath := basePath
+	if csrfPath == "" {
+		csrfPath = "/"
+	}
 	r := router.PathPrefix(basePath).Subrouter()
 	r.Use(csrf.Protect(
 		[]byte(viper.GetString("csrf-secret")),        // TODO pass as argument
 		csrf.CookieName(viper.GetString("csrf-name")), // TODO pass as argument
-		csrf.Path(basePath),
+		csrf.Path(csrfPath),
 		csrf.Secure(baseURL.Scheme == "https"),
 		csrf.SameSite(csrf.SameSiteStrictMode),
 		csrf.FieldName("csrf-token"),
@@ -482,18 +486,14 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		datasetEditingHandler.Wrap(datasetEditingHandler.AddContributor)).
 		Methods("GET").
 		Name("dataset_add_contributor")
-	r.HandleFunc("/dataset/{id}/contributors/{role}/{position}/suggestions",
-		datasetEditingHandler.Wrap(datasetEditingHandler.SuggestContributors)).
+	r.HandleFunc("/dataset/{id}/contributors/{role}/suggestions",
+		datasetEditingHandler.Wrap(datasetEditingHandler.AddContributorSuggest)).
 		Methods("GET").
-		Name("dataset_suggest_contributors")
-	r.HandleFunc("/dataset/{id}/contributors/{role}/{position}/confirm",
-		datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmContributor)).
-		Methods("POST").
-		Name("dataset_confirm_contributor")
-	r.HandleFunc("/dataset/{id}/contributors/{role}/{position}/unconfirm",
-		datasetEditingHandler.Wrap(datasetEditingHandler.UnconfirmContributor)).
-		Methods("POST").
-		Name("dataset_unconfirm_contributor")
+		Name("dataset_add_contributor_suggest")
+	r.HandleFunc("/dataset/{id}/contributors/{role}/confirm-create",
+		datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmCreateContributor)).
+		Methods("GET").
+		Name("dataset_confirm_create_contributor")
 	r.HandleFunc("/dataset/{id}/contributors/{role}",
 		datasetEditingHandler.Wrap(datasetEditingHandler.CreateContributor)).
 		Methods("POST").
@@ -502,6 +502,14 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		datasetEditingHandler.Wrap(datasetEditingHandler.EditContributor)).
 		Methods("GET").
 		Name("dataset_edit_contributor")
+	r.HandleFunc("/dataset/{id}/contributors/{role}/{position}/suggestions",
+		datasetEditingHandler.Wrap(datasetEditingHandler.EditContributorSuggest)).
+		Methods("GET").
+		Name("dataset_edit_contributor_suggest")
+	r.HandleFunc("/dataset/{id}/contributors/{role}/{position}/confirm-update",
+		datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmUpdateContributor)).
+		Methods("GET").
+		Name("dataset_confirm_update_contributor")
 	r.HandleFunc("/dataset/{id}/contributors/{role}/{position}",
 		datasetEditingHandler.Wrap(datasetEditingHandler.UpdateContributor)).
 		Methods("PUT").
@@ -548,10 +556,6 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		publicationCreatingHandler.Wrap(publicationCreatingHandler.AddMultipleImport)).
 		Methods("POST").
 		Name("publication_add_multiple_import")
-	r.HandleFunc("/publication/add-multiple/{batch_id}/description",
-		publicationCreatingHandler.Wrap(publicationCreatingHandler.AddMultipleDescription)).
-		Methods("GET").
-		Name("publication_add_multiple_description")
 	r.HandleFunc("/publication/add-multiple/{batch_id}/confirm",
 		publicationCreatingHandler.Wrap(publicationCreatingHandler.AddMultipleConfirm)).
 		Methods("GET").

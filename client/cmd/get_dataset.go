@@ -18,7 +18,7 @@ func (c *GetDatasetCmd) Command() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "get [id]",
 		Short: "Get dataset by id",
-		Args:  cobra.MinimumNArgs(1),
+		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			c.Wrap(func() {
 				c.Run(cmd, args)

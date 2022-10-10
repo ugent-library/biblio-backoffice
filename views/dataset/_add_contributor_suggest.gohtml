@@ -10,11 +10,11 @@
           </div>
           <div class="c-button-toolbar">
             <button class="btn btn-secondary"
-                hx-get="{{pathFor "publication_confirm_create_contributor" "id" .Publication.ID "role" .Role}}"
+                hx-get="{{pathFor "dataset_confirm_create_contributor" "id" .Dataset.ID "role" .Role}}"
                 hx-vals='{"first_name":"{{.Contributor.FirstName}}","last_name":"{{.Contributor.LastName}}"}'
                 hx-swap="none"
             >
-              <span class="btn-text">Add external {{.Locale.TS "publication.contributor.role" .Role}}</span>
+              <span class="btn-text">Add external {{.Locale.TS "dataset.contributor.role" .Role}}</span>
               <i class="if if-arrow-right"></i>
             </button>
           </div>
@@ -30,11 +30,11 @@
                 </div>
                 <div class="c-button-toolbar">
                     <button class="btn btn-primary"
-                        hx-get="{{pathFor "publication_confirm_create_contributor" "id" $.Publication.ID "role" $.Role}}"
+                        hx-get="{{pathFor "dataset_confirm_create_contributor" "id" $.Dataset.ID "role" $.Role}}"
                         hx-vals='{"id":"{{.ID}}"}'
                         hx-swap="none"
                     >
-                        <span class="btn-text">Add {{$.Locale.TS "publication.contributor.role" $.Role}}</span><i class="if if-arrow-right"></i>
+                        <span class="btn-text">Add {{$.Locale.TS "dataset.contributor.role" $.Role}}</span><i class="if if-arrow-right"></i>
                     </button>
                 </div>
             </div>
@@ -59,6 +59,6 @@
     <div class="bc-avatar bc-avatar--small">
         <i class="if if-info-circle"></i>
     </div>
-    <p>Type a first and last name above to add an {{.Locale.TS "publication.contributor.role" .Role}}.</p>
+    <p>Type a first and last name above to add an {{.Locale.TS "dataset.contributor.role" .Role}}.</p>
 </div>
 {{end}}

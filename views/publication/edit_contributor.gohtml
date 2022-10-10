@@ -2,13 +2,11 @@
 <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable" role="document">
     <div class="modal-content">
         <div class="modal-header">
-            <h2 class="modal-title">Edit {{.Locale.TS "publication.contributor.role" .Role}}</h2>
+            <h2 class="modal-title">Edit or change {{.Locale.TS "publication.contributor.role" .Role}}</h2>
         </div>
 
         <div class="p-6 border-bottom">
-            {{.Form.Errors.Render}}
-        
-            <h3>Confirm or search for other {{.Locale.TS "publication.contributor.role" .Role}}</h3>
+            <h3>Search {{.Locale.TS "publication.contributor.role" .Role}}</h3>
         
             <div class="contributor-attributes">
                 {{range .Form.Sections}}

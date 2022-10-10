@@ -249,6 +249,7 @@ func buildRouter(services *backends.Services, logger *zap.SugaredLogger) *mux.Ro
 	sessionName := viper.GetString("session-name")
 	sessionStore := sessions.NewCookieStore(sessionSecret)
 	sessionStore.MaxAge(viper.GetInt("session-max-age"))
+	sessionStore.Options.Path = "/"
 	if baseURL.Path != "" {
 		sessionStore.Options.Path = baseURL.Path
 	}

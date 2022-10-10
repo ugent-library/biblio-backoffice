@@ -57,6 +57,7 @@ func main() {
 	publicationCmd.AddCommand((&cmd.AddPublicationsCmd{}).Command())
 	publicationCmd.AddCommand((&cmd.PurgePublicationCmd{}).Command())
 	publicationCmd.AddCommand((&cmd.PurgeAllPublicationsCmd{}).Command())
+	publicationCmd.AddCommand((&cmd.PublicationRelateDatasetCmd{}).Command())
 
 	if err := rootCmd.Execute(); err != nil {
 		log.Fatal(err)
