@@ -2,12 +2,15 @@ package cmd
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"time"
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backend/api/v1"
+	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backend/internal/server"
 )
 
 type SearchDatasetsCmd struct {
@@ -50,7 +53,20 @@ func (c *SearchDatasetsCmd) Run(cmd *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	j, err := c.Marshaller.Marshal(res)
+	hits := struct {
+		Offset, Limit, Total int32
+		Hits                 []*models.Dataset
+	}{
+		Offset: res.Offset,
+		Limit:  res.Limit,
+		Total:  res.Total,
+		Hits:   make([]*models.Dataset, len(res.Hits)),
+	}
+	for i, d := range res.Hits {
+		hits.Hits[i] = server.MessageToDataset(d)
+	}
+
+	j, err := json.Marshal(hits)
 	if err != nil {
 		log.Fatal(err)
 	}

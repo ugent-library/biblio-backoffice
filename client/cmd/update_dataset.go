@@ -3,12 +3,15 @@ package cmd
 import (
 	"bufio"
 	"context"
+	"encoding/json"
 	"log"
 	"os"
 	"time"
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backend/api/v1"
+	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backend/internal/server"
 )
 
 type UpdateDatasetCmd struct {
@@ -39,12 +42,12 @@ func (c *UpdateDatasetCmd) Run(cmd *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	dataset := &api.Dataset{}
-	if err := c.Unmarshaller.Unmarshal(line, dataset); err != nil {
+	d := &models.Dataset{}
+	if err := json.Unmarshal(line, d); err != nil {
 		log.Fatal(err)
 	}
 
-	req := &api.UpdateDatasetRequest{Dataset: dataset}
+	req := &api.UpdateDatasetRequest{Dataset: server.DatasetToMessage(d)}
 	if _, err = c.Client.UpdateDataset(ctx, req); err != nil {
 		log.Fatal(err)
 	}

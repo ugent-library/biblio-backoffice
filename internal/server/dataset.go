@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"sync"
@@ -9,6 +10,7 @@ import (
 	api "github.com/ugent-library/biblio-backend/api/v1"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/ulid"
+	"github.com/ugent-library/biblio-backend/internal/validation"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -21,7 +23,7 @@ func (s *server) GetDataset(ctx context.Context, req *api.GetDatasetRequest) (*a
 		return nil, status.Errorf(codes.Internal, "Could not get dataset with id %d: %w", req.Id, err)
 	}
 
-	res := &api.GetDatasetResponse{Dataset: datasetToMessage(dataset)}
+	res := &api.GetDatasetResponse{Dataset: DatasetToMessage(dataset)}
 
 	return res, nil
 }
@@ -30,7 +32,7 @@ func (s *server) GetAllDatasets(req *api.GetAllDatasetsRequest, stream api.Bibli
 	// TODO errors in EachDataset aren't caught and pushed upstream. Returning 'false' in the callback
 	//   breaks the loop, but EachDataset will return 'nil'.
 	ErrorStream := s.services.Repository.EachDataset(func(p *models.Dataset) bool {
-		res := &api.GetAllDatasetsResponse{Dataset: datasetToMessage(p)}
+		res := &api.GetAllDatasetsResponse{Dataset: DatasetToMessage(p)}
 		if err = stream.Send(res); err != nil {
 			return false
 		}
@@ -63,14 +65,14 @@ func (s *server) SearchDatasets(ctx context.Context, req *api.SearchDatasetsRequ
 		Hits:   make([]*api.Dataset, len(hits.Hits)),
 	}
 	for i, p := range hits.Hits {
-		res.Hits[i] = datasetToMessage(p)
+		res.Hits[i] = DatasetToMessage(p)
 	}
 
 	return res, nil
 }
 
 func (s *server) UpdataDataset(ctx context.Context, req *api.UpdateDatasetRequest) (*api.UpdateDatasetResponse, error) {
-	p := messageToDataset(req.Dataset)
+	p := MessageToDataset(req.Dataset)
 
 	if err := p.Validate(); err != nil {
 		return nil, fmt.Errorf("validation failed for dataset %s: %w", p.ID, err)
@@ -109,12 +111,12 @@ func (s *server) AddDatasets(stream api.Biblio_AddDatasetsServer) error {
 		indexWG.Wait()
 	}()
 
-	var lineNum int
+	var seq int
 
 	for {
-		lineNum++
+		seq++
 
-		res, err := stream.Recv()
+		req, err := stream.Recv()
 		if err == io.EOF {
 			return nil
 		}
@@ -122,7 +124,7 @@ func (s *server) AddDatasets(stream api.Biblio_AddDatasetsServer) error {
 			return status.Errorf(codes.Internal, "failed to read stream: %w", err)
 		}
 
-		d := messageToDataset(res.Dataset)
+		d := MessageToDataset(req.Dataset)
 
 		if d.ID == "" {
 			d.ID = ulid.MustGenerate()
@@ -139,17 +141,18 @@ func (s *server) AddDatasets(stream api.Biblio_AddDatasetsServer) error {
 			d.Abstract[i] = val
 		}
 
+		// TODO this should return structured messages (see validate)
 		if err := d.Validate(); err != nil {
-			msg := fmt.Errorf("validation failed for dataset %s at line %d: %w", d.ID, lineNum, err).Error()
-			if err = stream.Send(&api.AddDatasetsResponse{Messsage: msg}); err != nil {
+			msg := fmt.Errorf("validation failed for dataset %s at line %d: %w", d.ID, seq, err).Error()
+			if err = stream.Send(&api.AddDatasetsResponse{Message: msg}); err != nil {
 				return err
 			}
 			continue
 		}
 
 		if err := s.services.Repository.SaveDataset(d); err != nil {
-			msg := fmt.Errorf("failed to store dataset %s at line %d: %w", d.ID, lineNum, err).Error()
-			if err = stream.Send(&api.AddDatasetsResponse{Messsage: msg}); err != nil {
+			msg := fmt.Errorf("failed to store dataset %s at line %d: %w", d.ID, seq, err).Error()
+			if err = stream.Send(&api.AddDatasetsResponse{Message: msg}); err != nil {
 				return status.Errorf(codes.Internal, msg)
 			}
 			continue
@@ -185,7 +188,36 @@ func (s *server) PurgeAllDatasets(ctx context.Context, req *api.PurgeAllDatasets
 	return &api.PurgeAllDatasetsResponse{}, nil
 }
 
-func datasetToMessage(d *models.Dataset) *api.Dataset {
+func (s *server) ValidateDatasets(stream api.Biblio_ValidateDatasetsServer) error {
+	var seq int32
+
+	for {
+		seq++
+
+		req, err := stream.Recv()
+		if err == io.EOF {
+			return nil
+		}
+		if err != nil {
+			return status.Errorf(codes.Internal, "failed to read stream: %w", err)
+		}
+
+		p := MessageToDataset(req.Dataset)
+
+		err = p.Validate()
+		var validationErrs validation.Errors
+		if errors.As(err, &validationErrs) {
+			res := &api.ValidateDatasetsResponse{Seq: seq, Id: p.ID, Message: validationErrs.Error()}
+			if err = stream.Send(res); err != nil {
+				return err
+			}
+		} else if err != nil {
+			return err
+		}
+	}
+}
+
+func DatasetToMessage(d *models.Dataset) *api.Dataset {
 	msg := &api.Dataset{}
 
 	msg.Id = d.ID
@@ -311,7 +343,7 @@ func datasetToMessage(d *models.Dataset) *api.Dataset {
 	return msg
 }
 
-func messageToDataset(msg *api.Dataset) *models.Dataset {
+func MessageToDataset(msg *api.Dataset) *models.Dataset {
 	d := &models.Dataset{}
 
 	d.ID = msg.Id

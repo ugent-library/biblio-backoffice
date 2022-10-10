@@ -2,12 +2,14 @@ package cmd
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"time"
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backend/api/v1"
+	"github.com/ugent-library/biblio-backend/internal/server"
 )
 
 type GetPublicationCmd struct {
@@ -40,7 +42,7 @@ func (c *GetPublicationCmd) Run(cmd *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	j, err := c.Marshaller.Marshal(res.Publication)
+	j, err := json.Marshal(server.MessageToPublication(res.Publication))
 	if err != nil {
 		log.Fatal(err)
 	}

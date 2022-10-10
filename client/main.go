@@ -47,6 +47,7 @@ func main() {
 	datasetCmd.AddCommand((&cmd.AddDatasetsCmd{}).Command())
 	datasetCmd.AddCommand((&cmd.PurgeDatasetCmd{}).Command())
 	datasetCmd.AddCommand((&cmd.PurgeAllDatasetsCmd{}).Command())
+	datasetCmd.AddCommand((&cmd.ValidateDatasetsCmd{}).Command())
 
 	publicationCmd := (&cmd.PublicationCmd{}).Command()
 	rootCmd.AddCommand(publicationCmd)
@@ -57,6 +58,7 @@ func main() {
 	publicationCmd.AddCommand((&cmd.AddPublicationsCmd{}).Command())
 	publicationCmd.AddCommand((&cmd.PurgePublicationCmd{}).Command())
 	publicationCmd.AddCommand((&cmd.PurgeAllPublicationsCmd{}).Command())
+	publicationCmd.AddCommand((&cmd.ValidatePublicationsCmd{}).Command())
 	publicationCmd.AddCommand((&cmd.PublicationRelateDatasetCmd{}).Command())
 
 	if err := rootCmd.Execute(); err != nil {

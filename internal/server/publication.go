@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"sync"
@@ -9,6 +10,7 @@ import (
 	api "github.com/ugent-library/biblio-backend/api/v1"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/ulid"
+	"github.com/ugent-library/biblio-backend/internal/validation"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -21,7 +23,7 @@ func (s *server) GetPublication(ctx context.Context, req *api.GetPublicationRequ
 		return nil, status.Errorf(codes.Internal, "could not get publication with id %d: %w", req.Id, err)
 	}
 
-	res := &api.GetPublicationResponse{Publication: publicationToMessage(pub)}
+	res := &api.GetPublicationResponse{Publication: PublicationToMessage(pub)}
 
 	return res, nil
 }
@@ -33,7 +35,7 @@ func (s *server) GetAllPublications(req *api.GetAllPublicationsRequest, stream a
 	//   Logging during streaming doesn't work / isn't possible. The grpc_zap interceptor is only called when
 	// 	 GetAllPublication returns an error.
 	ErrorStream := s.services.Repository.EachPublication(func(p *models.Publication) bool {
-		res := &api.GetAllPublicationsResponse{Publication: publicationToMessage(p)}
+		res := &api.GetAllPublicationsResponse{Publication: PublicationToMessage(p)}
 		if err = stream.Send(res); err != nil {
 			return false
 		}
@@ -66,14 +68,14 @@ func (s *server) SearchPublications(ctx context.Context, req *api.SearchPublicat
 		Hits:   make([]*api.Publication, len(hits.Hits)),
 	}
 	for i, p := range hits.Hits {
-		res.Hits[i] = publicationToMessage(p)
+		res.Hits[i] = PublicationToMessage(p)
 	}
 
 	return res, nil
 }
 
 func (s *server) UpdatePublication(ctx context.Context, req *api.UpdatePublicationRequest) (*api.UpdatePublicationResponse, error) {
-	p := messageToPublication(req.Publication)
+	p := MessageToPublication(req.Publication)
 
 	if err := p.Validate(); err != nil {
 		return nil, fmt.Errorf("validation failed for publication %s: %w", p.ID, err)
@@ -112,12 +114,12 @@ func (s *server) AddPublications(stream api.Biblio_AddPublicationsServer) error 
 		indexWG.Wait()
 	}()
 
-	var lineNum int
+	var seq int
 
 	for {
-		lineNum++
+		seq++
 
-		res, err := stream.Recv()
+		req, err := stream.Recv()
 		if err == io.EOF {
 			return nil
 		}
@@ -125,7 +127,7 @@ func (s *server) AddPublications(stream api.Biblio_AddPublicationsServer) error 
 			return status.Errorf(codes.Internal, "failed to read stream: %w", err)
 		}
 
-		p := messageToPublication(res.Publication)
+		p := MessageToPublication(req.Publication)
 
 		if p.ID == "" {
 			p.ID = ulid.MustGenerate()
@@ -155,17 +157,17 @@ func (s *server) AddPublications(stream api.Biblio_AddPublicationsServer) error 
 			p.Link[i] = val
 		}
 
+		// TODO this should return structured messages (see validate)
 		if err := p.Validate(); err != nil {
-			msg := fmt.Errorf("validation failed for publication %s at line %d: %w", p.ID, lineNum, err).Error()
-			if err = stream.Send(&api.AddPublicationsResponse{Messsage: msg}); err != nil {
+			msg := fmt.Errorf("validation failed for publication %s at line %d: %w", p.ID, seq, err).Error()
+			if err = stream.Send(&api.AddPublicationsResponse{Message: msg}); err != nil {
 				return err
 			}
 			continue
 		}
-
 		if err := s.services.Repository.SavePublication(p); err != nil {
-			msg := fmt.Errorf("failed to store publication %s at line %d: %w", p.ID, lineNum, err).Error()
-			if err = stream.Send(&api.AddPublicationsResponse{Messsage: msg}); err != nil {
+			msg := fmt.Errorf("failed to store publication %s at line %d: %w", p.ID, seq, err).Error()
+			if err = stream.Send(&api.AddPublicationsResponse{Message: msg}); err != nil {
 				return status.Errorf(codes.Internal, msg)
 			}
 			continue
@@ -201,7 +203,36 @@ func (s *server) PurgeAllPublications(ctx context.Context, req *api.PurgeAllPubl
 	return &api.PurgeAllPublicationsResponse{}, nil
 }
 
-func publicationToMessage(p *models.Publication) *api.Publication {
+func (s *server) ValidatePublications(stream api.Biblio_ValidatePublicationsServer) error {
+	var seq int32
+
+	for {
+		seq++
+
+		req, err := stream.Recv()
+		if err == io.EOF {
+			return nil
+		}
+		if err != nil {
+			return status.Errorf(codes.Internal, "failed to read stream: %w", err)
+		}
+
+		p := MessageToPublication(req.Publication)
+
+		err = p.Validate()
+		var validationErrs validation.Errors
+		if errors.As(err, &validationErrs) {
+			res := &api.ValidatePublicationsResponse{Seq: seq, Id: p.ID, Message: validationErrs.Error()}
+			if err = stream.Send(res); err != nil {
+				return err
+			}
+		} else if err != nil {
+			return err
+		}
+	}
+}
+
+func PublicationToMessage(p *models.Publication) *api.Publication {
 	msg := &api.Publication{}
 
 	msg.Id = p.ID
@@ -674,7 +705,7 @@ func publicationToMessage(p *models.Publication) *api.Publication {
 	return msg
 }
 
-func messageToPublication(msg *api.Publication) *models.Publication {
+func MessageToPublication(msg *api.Publication) *models.Publication {
 	p := &models.Publication{}
 
 	p.ID = msg.Id

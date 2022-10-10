@@ -3,12 +3,15 @@ package cmd
 import (
 	"bufio"
 	"context"
+	"encoding/json"
 	"log"
 	"os"
 	"time"
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backend/api/v1"
+	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backend/internal/server"
 )
 
 type UpdatePublicationCmd struct {
@@ -39,12 +42,12 @@ func (c *UpdatePublicationCmd) Run(cmd *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	pub := &api.Publication{}
-	if err := c.Unmarshaller.Unmarshal(line, pub); err != nil {
+	p := &models.Publication{}
+	if err := json.Unmarshal(line, p); err != nil {
 		log.Fatal(err)
 	}
 
-	req := &api.UpdatePublicationRequest{Publication: pub}
+	req := &api.UpdatePublicationRequest{Publication: server.PublicationToMessage(p)}
 	if _, err = c.Client.UpdatePublication(ctx, req); err != nil {
 		log.Fatal(err)
 	}

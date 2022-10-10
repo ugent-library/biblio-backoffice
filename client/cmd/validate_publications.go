@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"os"
@@ -14,14 +15,14 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/server"
 )
 
-type AddPublicationsCmd struct {
+type ValidatePublicationsCmd struct {
 	RootCmd
 }
 
-func (c *AddPublicationsCmd) Command() *cobra.Command {
+func (c *ValidatePublicationsCmd) Command() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "add",
-		Short: "Add publications",
+		Use:   "validate",
+		Short: "Validate publications",
 		Run: func(cmd *cobra.Command, args []string) {
 			c.Wrap(func() {
 				c.Run(cmd, args)
@@ -32,8 +33,8 @@ func (c *AddPublicationsCmd) Command() *cobra.Command {
 	return cmd
 }
 
-func (c *AddPublicationsCmd) Run(cmd *cobra.Command, args []string) {
-	stream, err := c.Client.AddPublications(context.Background())
+func (c *ValidatePublicationsCmd) Run(cmd *cobra.Command, args []string) {
+	stream, err := c.Client.ValidatePublications(context.Background())
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -50,7 +51,12 @@ func (c *AddPublicationsCmd) Run(cmd *cobra.Command, args []string) {
 			if err != nil {
 				log.Fatal(err)
 			}
-			log.Println(res.Message)
+
+			j, err := c.Marshaller.Marshal(res)
+			if err != nil {
+				log.Fatal(err)
+			}
+			fmt.Printf("%s\n", j)
 		}
 	}()
 
@@ -64,12 +70,12 @@ func (c *AddPublicationsCmd) Run(cmd *cobra.Command, args []string) {
 			log.Fatal(err)
 		}
 
-		p := &models.Publication{}
-		if err := json.Unmarshal(line, p); err != nil {
+		pub := &models.Publication{}
+		if err := json.Unmarshal(line, pub); err != nil {
 			log.Fatal(err)
 		}
 
-		req := &api.AddPublicationsRequest{Publication: server.PublicationToMessage(p)}
+		req := &api.ValidatePublicationsRequest{Publication: server.PublicationToMessage(pub)}
 		if err := stream.Send(req); err != nil {
 			log.Fatal(err)
 		}

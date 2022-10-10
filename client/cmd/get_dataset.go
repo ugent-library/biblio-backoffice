@@ -2,12 +2,14 @@ package cmd
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"time"
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backend/api/v1"
+	"github.com/ugent-library/biblio-backend/internal/server"
 )
 
 type GetDatasetCmd struct {
@@ -40,7 +42,7 @@ func (c *GetDatasetCmd) Run(cmd *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	j, err := c.Marshaller.Marshal(res.Dataset)
+	j, err := json.Marshal(server.MessageToDataset(res.Dataset))
 	if err != nil {
 		log.Fatal(err)
 	}

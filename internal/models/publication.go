@@ -3,7 +3,6 @@ package models
 import (
 	"errors"
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/ugent-library/biblio-backend/internal/pagination"
@@ -1154,7 +1153,6 @@ func (pf *PublicationFile) Validate() (errs validation.Errors) {
 
 		invalid := false
 		if !validation.InArray(vocabularies.Map["publication_file_access_levels"], pf.AccessLevelAfterEmbargo) {
-			log.Println(pf.AccessLevelAfterEmbargo)
 			invalid = true
 			errs = append(errs, &validation.Error{
 				Pointer: "/access_level_after_embargo",

@@ -23,6 +23,7 @@ service Biblio {
     rpc AddPublications(stream AddPublicationsRequest) returns (stream AddPublicationsResponse);
     rpc PurgePublication(PurgePublicationRequest) returns (PurgePublicationResponse);
     rpc PurgeAllPublications(PurgeAllPublicationsRequest) returns (PurgeAllPublicationsResponse);
+    rpc ValidatePublications(stream ValidatePublicationsRequest) returns (stream ValidatePublicationsResponse);
     rpc GetDataset(GetDatasetRequest) returns (GetDatasetResponse);
     rpc GetAllDatasets(GetAllDatasetsRequest) returns (stream GetAllDatasetsResponse);
     rpc SearchDatasets(SearchDatasetsRequest) returns (SearchDatasetsResponse);
@@ -30,6 +31,7 @@ service Biblio {
     rpc AddDatasets(stream AddDatasetsRequest) returns (stream AddDatasetsResponse);
     rpc PurgeDataset(PurgeDatasetRequest) returns (PurgeDatasetResponse);
     rpc PurgeAllDatasets(PurgeAllDatasetsRequest) returns (PurgeAllDatasetsResponse);
+    rpc ValidateDatasets(stream ValidateDatasetsRequest) returns (stream ValidateDatasetsResponse);
     rpc Relate(RelateRequest) returns (RelateResponse);
 }
 
@@ -98,19 +100,6 @@ message Link {
 }
 
 message File {
-    // enum AccessLevel {
-    //     ACCESS_LEVEL_OPEN_ACCESS = 0;
-    //     ACCESS_LEVEL_LOCAL = 1;
-    //     ACCESS_LEVEL_CLOSED = 2;
-    // }
-
-	// "access_levels": {
-	// 	"info:eu-repo/semantics/closedAccess",
-	// 	"info:eu-repo/semantics/embargoedAccess",
-	// 	"info:eu-repo/semantics/restrictedAccess",
-	// 	"info:eu-repo/semantics/openAccess",
-	// },
-
     enum AccessLevel {
         ACCESS_LEVEL_CLOSED_ACCESS = 0;
         ACCESS_LEVEL_EMBARGOED_ACCESS = 1;
@@ -426,7 +415,7 @@ message AddPublicationsRequest {
 }
 
 message AddPublicationsResponse {
-    string messsage = 1;
+    string message = 1;
 }
 
 message PurgePublicationRequest {
@@ -442,6 +431,15 @@ message PurgeAllPublicationsRequest {
 message PurgeAllPublicationsResponse {
 }
 
+message ValidatePublicationsRequest {
+    Publication publication = 1;
+}
+
+message ValidatePublicationsResponse {
+    int32 seq = 1;
+    string id = 2;
+    string message = 3;
+}
 
 message GetDatasetRequest {
     string id = 1;
@@ -483,7 +481,7 @@ message AddDatasetsRequest {
 }
 
 message AddDatasetsResponse {
-    string messsage = 1;
+    string message = 1;
 }
 
 message PurgeDatasetRequest {
@@ -497,6 +495,16 @@ message PurgeAllDatasetsRequest {
 }
 
 message PurgeAllDatasetsResponse {
+}
+
+message ValidateDatasetsRequest {
+    Dataset dataset = 1;
+}
+
+message ValidateDatasetsResponse {
+    int32 seq = 1;
+    string id = 2;
+    string message = 3;
 }
 
 message RelateRequest {
