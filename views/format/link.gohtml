@@ -1,4 +1,8 @@
+{{ if ne . "" }}
 <a href="{{.}}" target="_blank">
     {{.}}
     <i class="if if--small if-external-link"></i>
 </a>
+{{ else }}
+<span>-</span>
+{{ end }}
