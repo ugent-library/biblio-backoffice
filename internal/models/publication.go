@@ -323,6 +323,14 @@ func (p *Publication) GetLink(id string) *PublicationLink {
 	return nil
 }
 
+func (p *Publication) SetLink(l *PublicationLink) {
+	for i, link := range p.Link {
+		if link.ID == l.ID {
+			p.Link[i] = *l
+		}
+	}
+}
+
 func (p *Publication) AddLink(l *PublicationLink) {
 	l.ID = ulid.MustGenerate()
 	p.Link = append(p.Link, *l)
@@ -377,6 +385,14 @@ func (p *Publication) GetLaySummary(id string) *Text {
 		}
 	}
 	return nil
+}
+
+func (p *Publication) SetLaySummary(ls *Text) {
+	for i, laySummary := range p.LaySummary {
+		if laySummary.ID == ls.ID {
+			p.LaySummary[i] = *ls
+		}
+	}
 }
 
 func (p *Publication) AddLaySummary(t *Text) {

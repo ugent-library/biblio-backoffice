@@ -151,6 +151,8 @@ func (h *Handler) UpdateLink(w http.ResponseWriter, r *http.Request, ctx Context
 	link.Description = b.Description
 	link.Relation = b.Relation
 
+	ctx.Publication.SetLink(link)
+
 	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
 		render.Layout(w, "refresh_modal", "publication/edit_link", YieldEditLink{
 			Context:  ctx,

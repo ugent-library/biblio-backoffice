@@ -155,6 +155,8 @@ func (h *Handler) UpdateLaySummary(w http.ResponseWriter, r *http.Request, ctx C
 	laySummary.Text = b.Text
 	laySummary.Lang = b.Lang
 
+	ctx.Publication.SetLaySummary(laySummary)
+
 	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
 		render.Layout(w, "refresh_modal", "publication/edit_lay_summary", YieldEditLaySummary{
 			Context:      ctx,
