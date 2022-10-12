@@ -190,6 +190,7 @@ var Map = map[string][]string{
 	},
 	"publication_sorts": {
 		"date-updated-desc",
+		"date-created-asc",
 		"date-created-desc",
 		"year-desc",
 	},

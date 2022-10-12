@@ -117,6 +117,8 @@ func (datasets *Datasets) Search(args *models.SearchArgs) (*models.DatasetHits, 
 		switch args.Sort[0] {
 		case "date-updated-desc":
 			// sorts = []string{"date_updated:desc", "year:desc"}
+		case "date-created-asc":
+			sorts = []string{"date_created:asc", "year:asc"}
 		case "date-created-desc":
 			sorts = []string{"date_created:desc", "year:desc"}
 		case "year-desc":
