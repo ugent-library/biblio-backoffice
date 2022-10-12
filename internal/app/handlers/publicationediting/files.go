@@ -526,7 +526,7 @@ func fileForm(l *locale.Locale, publication *models.Publication, file *models.Pu
 			Label:       l.T("builder.file.license"),
 			Tooltip:     l.T("tooltip.publication.file.license"),
 			EmptyOption: true,
-			Options:     localize.VocabularySelectOptions(l, "licenses"),
+			Options:     localize.VocabularySelectOptions(l, "publication_licenses"),
 		},
 	)
 

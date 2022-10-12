@@ -59,7 +59,7 @@ var Map = map[string][]string{
 		"created_since",
 		"updated_since",
 	},
-	"licenses": {
+	"dataset_licenses": {
 		"CC0-1.0",
 		"CC-BY-4.0",
 		"CC-BY-SA-4.0",
@@ -67,9 +67,19 @@ var Map = map[string][]string{
 		"CC-BY-ND-4.0",
 		"CC-BY-NC-SA-4.0",
 		"CC-BY-NC-ND-4.0",
-		"InC",
-		"Licensenotlisted",
-		"Copyrightunknown",
+		"LicenseNotListed",
+	},
+	"publication_licenses": {
+		"CC0-1.0",
+		"CC-BY-4.0",
+		"CC-BY-SA-4.0",
+		"CC-BY-NC-4.0",
+		"CC-BY-ND-4.0",
+		"CC-BY-NC-SA-4.0",
+		"CC-BY-NC-ND-4.0",
+		"InCopyright",
+		"LicenseNotListed",
+		"CopyrightUnknown",
 	},
 	"confirmations": {
 		"yes",

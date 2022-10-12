@@ -205,18 +205,22 @@ func detailsForm(l *locale.Locale, d *models.Dataset, errors validation.Errors) 
 				Cols:   9,
 				Error:  localize.ValidationErrorAt(l, errors, "/keyword"),
 			},
-		).
-		AddSection(
+		)
+
+	if d.License == "LicenseNotListed" {
+		f.AddSection(
 			&form.Select{
 				Name:        "license",
+				Template:    "dataset/license",
 				Value:       d.License,
 				Label:       l.T("builder.license"),
-				Options:     localize.VocabularySelectOptions(l, "licenses"),
+				Options:     localize.VocabularySelectOptions(l, "dataset_licenses"),
 				Cols:        3,
 				Error:       localize.ValidationErrorAt(l, errors, "/license"),
 				Tooltip:     l.T("tooltip.dataset.license"),
 				EmptyOption: true,
 				Required:    d.FieldIsRequired(),
+				Vars:        struct{ ID string }{ID: d.ID},
 			},
 			&form.Text{
 				Name:     "other_license",
@@ -228,6 +232,23 @@ func detailsForm(l *locale.Locale, d *models.Dataset, errors validation.Errors) 
 				Required: d.FieldIsRequired(),
 			},
 		)
+	} else {
+		f.AddSection(
+			&form.Select{
+				Name:        "license",
+				Template:    "dataset/license",
+				Value:       d.License,
+				Label:       l.T("builder.license"),
+				Options:     localize.VocabularySelectOptions(l, "dataset_licenses"),
+				Cols:        3,
+				Error:       localize.ValidationErrorAt(l, errors, "/license"),
+				Tooltip:     l.T("tooltip.dataset.license"),
+				EmptyOption: true,
+				Required:    d.FieldIsRequired(),
+				Vars:        struct{ ID string }{ID: d.ID},
+			},
+		)
+	}
 
 	if d.AccessLevel != "info:eu-repo/semantics/embargoedAccess" {
 		f.AddSection(
