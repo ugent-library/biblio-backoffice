@@ -17,6 +17,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/datasetexporting"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/datasetsearching"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/datasetviewing"
+	"github.com/ugent-library/biblio-backend/internal/app/handlers/frontoffice"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/home"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/impersonating"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/mediatypes"
@@ -72,6 +73,12 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 	}
 	dashboardHandler := &dashboard.Handler{
 		BaseHandler:              baseHandler,
+		DatasetSearchService:     services.DatasetSearchService,
+		PublicationSearchService: services.PublicationSearchService,
+	}
+	frontofficeHandler := &frontoffice.Handler{
+		BaseHandler:              baseHandler,
+		Repository:               services.Repository,
 		DatasetSearchService:     services.DatasetSearchService,
 		PublicationSearchService: services.PublicationSearchService,
 	}
@@ -173,6 +180,16 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		csrf.SameSite(csrf.SameSiteStrictMode),
 		csrf.FieldName("csrf-token"),
 	))
+
+	// frontoffice data exchange api
+	r.HandleFunc("/frontoffice/publication/{id}", frontofficeHandler.Wrap(frontofficeHandler.GetPublication)).
+		Methods("GET")
+	r.HandleFunc("/frontoffice/publication", frontofficeHandler.Wrap(frontofficeHandler.GetAllPublications)).
+		Methods("GET")
+	r.HandleFunc("/frontoffice/dataset/{id}", frontofficeHandler.Wrap(frontofficeHandler.GetDataset)).
+		Methods("GET")
+	r.HandleFunc("/frontoffice/dataset", frontofficeHandler.Wrap(frontofficeHandler.GetAllDatasets)).
+		Methods("GET")
 
 	// home
 	r.HandleFunc("/",

@@ -16,7 +16,7 @@ func InternalServerError(w http.ResponseWriter, r *http.Request, err error) {
 }
 
 // HTTP 404 error
-func NotFoundError(w http.ResponseWriter, r *http.Request, err error) {
+func NotFound(w http.ResponseWriter, r *http.Request, err error) {
 	http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 }
 
