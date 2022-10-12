@@ -12,6 +12,7 @@ import (
 	"github.com/caltechlibrary/doitools"
 	"github.com/tidwall/gjson"
 	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backend/internal/validation"
 	"golang.org/x/text/language"
 )
 
@@ -114,7 +115,15 @@ func (c *Client) GetDataset(id string) (*models.Dataset, error) {
 		}
 	}
 	if res := attrs.Get(`rightsList.#(rightsIdentifierScheme="SPDX").rightsIdentifier`); res.Exists() {
-		d.License = strings.ToUpper(res.String())
+		license := strings.ToUpper(res.String())
+
+		// @todo Clean IsDatasetLicense() up.
+		if validation.IsDatasetLicense(license) {
+			d.License = license
+		} else {
+			d.License = "LicenseNotListed"
+			d.OtherLicense = license
+		}
 	}
 	if res := attrs.Get(`rightsList.#(rightsUri%"info:eu-repo/semantics/*").rightsUri`); res.Exists() {
 		d.AccessLevel = res.String()

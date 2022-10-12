@@ -42,3 +42,7 @@ func IsStatus(val string) bool {
 func IsDatasetAccessLevel(val string) bool {
 	return InArray(vocabularies.Map["dataset_access_levels"], val)
 }
+
+func IsDatasetLicense(val string) bool {
+	return InArray(vocabularies.Map["dataset_licenses"], val)
+}

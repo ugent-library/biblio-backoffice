@@ -43,18 +43,12 @@ var Map = map[string][]string{
 	"dataset_facets": {
 		"status",
 		"faculty",
-		"type",
-		"wos_type",
-		"classification",
 		"created_since",
 		"updated_since",
 	},
 	"dataset_curation_facets": {
 		"status",
 		"faculty",
-		"type",
-		"wos_type",
-		"classification",
 		"reviewer_tags",
 		"created_since",
 		"updated_since",
@@ -196,6 +190,7 @@ var Map = map[string][]string{
 	},
 	"publication_sorts": {
 		"date-updated-desc",
+		"date-created-asc",
 		"date-created-desc",
 		"year-desc",
 	},
