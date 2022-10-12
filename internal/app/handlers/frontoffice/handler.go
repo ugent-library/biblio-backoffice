@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/caltechlibrary/doitools"
 	"github.com/iancoleman/strcase"
 	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers"
@@ -336,9 +337,13 @@ func mapPublication(p *models.Publication) *Publication {
 		pp.CreatedBy = &Person{ID: p.Creator.ID}
 	}
 
-	// TODO normalize doi
 	if p.DOI != "" {
-		pp.DOI = append(pp.DOI, p.DOI)
+		doi, err := doitools.NormalizeDOI(p.DOI)
+		if err != nil {
+			pp.DOI = append(pp.DOI, p.DOI)
+		} else {
+			pp.DOI = append(pp.DOI, doi)
+		}
 	}
 
 	if p.Language != nil {
@@ -604,9 +609,13 @@ func mapDataset(p *models.Dataset) *Publication {
 		pp.CreatedBy = &Person{ID: p.Creator.ID}
 	}
 
-	// TODO normalize doi
 	if p.DOI != "" {
-		pp.DOI = append(pp.DOI, p.DOI)
+		doi, err := doitools.NormalizeDOI(p.DOI)
+		if err != nil {
+			pp.DOI = append(pp.DOI, p.DOI)
+		} else {
+			pp.DOI = append(pp.DOI, doi)
+		}
 	}
 
 	if p.Format != nil {
