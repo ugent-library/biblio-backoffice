@@ -270,8 +270,11 @@ func (h *Handler) mapPublication(p *models.Publication) *Publication {
 	}
 
 	for _, v := range p.Department {
-		// TODO rest of path
-		aff := Affiliation{UGentID: v.ID, Path: []AffiliationPath{{UGentID: v.ID}}}
+		aff := Affiliation{UGentID: v.ID}
+		for i := len(v.Tree) - 1; i >= 0; i-- {
+			aff.Path = append(aff.Path, AffiliationPath{UGentID: v.Tree[i].ID})
+		}
+		aff.Path = append(aff.Path, AffiliationPath{UGentID: v.ID})
 		pp.Affiliation = append(pp.Affiliation, aff)
 	}
 
@@ -603,8 +606,11 @@ func (h *Handler) mapDataset(p *models.Dataset) *Publication {
 	}
 
 	for _, v := range p.Department {
-		// TODO rest of path
-		aff := Affiliation{UGentID: v.ID, Path: []AffiliationPath{{UGentID: v.ID}}}
+		aff := Affiliation{UGentID: v.ID}
+		for i := len(v.Tree) - 1; i >= 0; i-- {
+			aff.Path = append(aff.Path, AffiliationPath{UGentID: v.Tree[i].ID})
+		}
+		aff.Path = append(aff.Path, AffiliationPath{UGentID: v.ID})
 		pp.Affiliation = append(pp.Affiliation, aff)
 	}
 
