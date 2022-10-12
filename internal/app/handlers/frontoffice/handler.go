@@ -179,7 +179,7 @@ type Publication struct {
 	EmbargoTo           string        `json:"embargo_to,omitempty"`
 	External            int           `json:"external,omitempty"`
 	File                []File        `json:"file,omitempty"`
-	Format              string        `json:"format,omitempty"`
+	Format              []string      `json:"format,omitempty"`
 	Handle              string        `json:"handle,omitempty"`
 	ISBN                []string      `json:"isbn,omitempty"`
 	ISSN                []string      `json:"issn,omitempty"`
@@ -212,10 +212,10 @@ type Publication struct {
 }
 
 type Hits struct {
-	Limit  int            `json:"limit,omitempty"`
-	Offset int            `json:"offset,omitempty"`
-	Total  int            `json:"total,omitempty"`
-	Hits   []*Publication `json:"hits,omitempty"`
+	Limit  int            `json:"limit"`
+	Offset int            `json:"offset"`
+	Total  int            `json:"total"`
+	Hits   []*Publication `json:"hits"`
 }
 
 func mapPublication(p *models.Publication) *Publication {
@@ -304,7 +304,6 @@ func mapPublication(p *models.Publication) *Publication {
 			FirstName: v.FirstName,
 			LastName:  v.LastName,
 		}
-		c.CreditRole = append(c.CreditRole, v.CreditRole...)
 		pp.Editor = append(pp.Editor, c)
 	}
 
@@ -315,7 +314,6 @@ func mapPublication(p *models.Publication) *Publication {
 			FirstName: v.FirstName,
 			LastName:  v.LastName,
 		}
-		c.CreditRole = append(c.CreditRole, v.CreditRole...)
 		pp.Promoter = append(pp.Promoter, c)
 	}
 
@@ -571,8 +569,91 @@ func mapPublication(p *models.Publication) *Publication {
 
 func mapDataset(p *models.Dataset) *Publication {
 	pp := &Publication{
-		ID: p.ID,
+		ID:          p.ID,
+		DateCreated: p.DateCreated.Format(timestampFmt),
+		DateUpdated: p.DateUpdated.Format(timestampFmt),
+		AccessLevel: p.AccessLevel,
+		Embargo:     p.EmbargoDate,
+		EmbargoTo:   p.AccessLevelAfterEmbargo,
+		Title:       p.Title,
+		URL:         p.URL,
+		Year:        p.Year,
 	}
+
+	for _, v := range p.Abstract {
+		pp.Abstract = append(pp.Abstract, v.Text)
+	}
+
+	for _, v := range p.Department {
+		// TODO rest of path
+		aff := Affiliation{UGentID: v.ID, Path: []AffiliationPath{{UGentID: v.ID}}}
+		pp.Affiliation = append(pp.Affiliation, aff)
+	}
+
+	for _, v := range p.Author {
+		c := Person{
+			ID:        v.ID,
+			Name:      v.FullName,
+			FirstName: v.FirstName,
+			LastName:  v.LastName,
+		}
+		pp.Author = append(pp.Author, c)
+	}
+
+	if p.Creator != nil {
+		pp.CreatedBy = &Person{ID: p.Creator.ID}
+	}
+
+	// TODO normalize doi
+	if p.DOI != "" {
+		pp.DOI = append(pp.DOI, p.DOI)
+	}
+
+	if p.Format != nil {
+		pp.Format = append(pp.Format, p.Format...)
+	}
+
+	if p.Keyword != nil {
+		pp.Keyword = append(pp.Keyword, p.Keyword...)
+	}
+
+	if p.License != "" {
+		if v, ok := licenseMap[p.License]; ok {
+			p.License = v
+		}
+	}
+
+	if p.Project != nil {
+		pp.Project = make([]Project, len(p.Project))
+		for i, v := range p.Project {
+			pp.Project[i] = Project{
+				ID:    v.ID,
+				Title: v.Name,
+			}
+		}
+	}
+
+	if p.Publisher != "" {
+		if pp.Publisher == nil {
+			pp.Publisher = &Publisher{}
+		}
+		pp.Publisher.Name = p.Publisher
+	}
+
+	if p.RelatedPublication != nil {
+		pp.RelatedPublication = make([]Relation, len(p.RelatedPublication))
+		for i, v := range p.RelatedPublication {
+			pp.RelatedPublication[i] = Relation{ID: v.ID}
+		}
+	}
+
+	// TODO handle pdeleted (search version history for status=public)
+	if p.Status == "private" {
+		pp.Status = "unsubmitted"
+	} else {
+		pp.Status = p.Status
+	}
+
 	return pp
 }
 
