@@ -32,7 +32,7 @@ func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) htt
 
 		p, err := h.Repository.GetPublication(bind.PathValues(r).Get("id"))
 		if err != nil {
-			render.NotFoundError(w, r, err)
+			render.NotFound(w, r, err)
 			return
 		}
 

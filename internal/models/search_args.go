@@ -60,6 +60,11 @@ func (s *SearchArgs) WithPage(p int) *SearchArgs {
 	return s
 }
 
+func (s *SearchArgs) WithPageSize(p int) *SearchArgs {
+	s.PageSize = p
+	return s
+}
+
 func (s *SearchArgs) WithSort(sort string) *SearchArgs {
 	if !s.HasSort(sort) {
 		s.Sort = append(s.Sort, sort)

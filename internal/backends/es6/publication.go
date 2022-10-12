@@ -123,6 +123,8 @@ func (publications *Publications) Search(args *models.SearchArgs) (*models.Publi
 			sorts = []string{"date_created:desc", "year:desc"}
 		case "year-desc":
 			sorts = []string{"year:desc"}
+		case "id-asc":
+			sorts = []string{"id:asc"}
 		}
 	}
 

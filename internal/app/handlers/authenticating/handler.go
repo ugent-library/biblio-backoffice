@@ -41,7 +41,7 @@ func (h *Handler) Callback(w http.ResponseWriter, r *http.Request, ctx Context) 
 	user, err := h.UserService.GetUserByUsername(claims.PreferredUsername)
 	if err != nil {
 		h.Logger.Warnw("authentication: No user with that name could be found:", "errors", err, "user", claims.PreferredUsername)
-		render.NotFoundError(w, r, err)
+		render.NotFound(w, r, err)
 		return
 	}
 

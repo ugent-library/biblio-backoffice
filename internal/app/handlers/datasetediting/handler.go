@@ -37,7 +37,7 @@ func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) htt
 		id := bind.PathValues(r).Get("id")
 		d, err := h.Repository.GetDataset(id)
 		if err != nil {
-			render.NotFoundError(w, r, err)
+			render.NotFound(w, r, err)
 			return
 		}
 
