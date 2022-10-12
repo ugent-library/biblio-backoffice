@@ -37,11 +37,8 @@ func (h *Handler) Datasets(w http.ResponseWriter, r *http.Request, ctx Context) 
 	faculties = append([]string{"all"}, faculties...)
 	ptypes := []string{"all"}
 
-	// locptypes := localize.VocabularyTerms(ctx.Locale, "publication_types")
 	locptypes := make(map[string]string)
 	locptypes["all"] = "All"
-
-	// Publications with publication status "accepted"
 
 	aSearcher := h.DatasetSearchService.WithScope("status", "private", "public", "returned")
 	baseSearchUrl := h.PathFor("datasets")
