@@ -219,7 +219,7 @@ type Hits struct {
 	Hits   []*Publication `json:"hits"`
 }
 
-func mapPublication(p *models.Publication) *Publication {
+func (h *Handler) mapPublication(p *models.Publication) *Publication {
 	pp := &Publication{
 		ID:             p.ID,
 		AdditionalInfo: p.AdditionalInfo,
@@ -326,9 +326,22 @@ func mapPublication(p *models.Publication) *Publication {
 		pp.Subject = append(pp.Subject, p.ResearchField...)
 	}
 
-	// TODO handle pdeleted (search version history for status=public)
 	if p.Status == "private" {
 		pp.Status = "unsubmitted"
+	} else if p.Status == "deleted" {
+		wasPublic := false
+		h.Repository.PublicationHistory(p.ID, func(version *models.Publication) bool {
+			if version.Status == "public" {
+				wasPublic = true
+				return false
+			}
+			return true
+		})
+		if wasPublic {
+			pp.Status = "pdeleted"
+		} else {
+			pp.Status = "deleted"
+		}
 	} else {
 		pp.Status = p.Status
 	}
@@ -572,7 +585,7 @@ func mapPublication(p *models.Publication) *Publication {
 	return pp
 }
 
-func mapDataset(p *models.Dataset) *Publication {
+func (h *Handler) mapDataset(p *models.Dataset) *Publication {
 	pp := &Publication{
 		ID:          p.ID,
 		DateCreated: p.DateCreated.Format(timestampFmt),
@@ -656,9 +669,22 @@ func mapDataset(p *models.Dataset) *Publication {
 		}
 	}
 
-	// TODO handle pdeleted (search version history for status=public)
 	if p.Status == "private" {
 		pp.Status = "unsubmitted"
+	} else if p.Status == "deleted" {
+		wasPublic := false
+		h.Repository.DatasetHistory(p.ID, func(version *models.Dataset) bool {
+			if version.Status == "public" {
+				wasPublic = true
+				return false
+			}
+			return true
+		})
+		if wasPublic {
+			pp.Status = "pdeleted"
+		} else {
+			pp.Status = "deleted"
+		}
 	} else {
 		pp.Status = p.Status
 	}
@@ -672,7 +698,7 @@ func (h *Handler) GetPublication(w http.ResponseWriter, r *http.Request, ctx Con
 		render.InternalServerError(w, r, err)
 		return
 	}
-	j, err := json.Marshal(mapPublication(p))
+	j, err := json.Marshal(h.mapPublication(p))
 	if err != nil {
 		render.InternalServerError(w, r, err)
 		return
@@ -687,7 +713,7 @@ func (h *Handler) GetDataset(w http.ResponseWriter, r *http.Request, ctx Context
 		render.InternalServerError(w, r, err)
 		return
 	}
-	j, err := json.Marshal(mapDataset(p))
+	j, err := json.Marshal(h.mapDataset(p))
 	if err != nil {
 		render.InternalServerError(w, r, err)
 		return
@@ -727,8 +753,8 @@ func (h *Handler) GetAllPublications(w http.ResponseWriter, r *http.Request, ctx
 		Total:  hits.Total,
 		Hits:   make([]*Publication, len(hits.Hits)),
 	}
-	for i, h := range hits.Hits {
-		mappedHits.Hits[i] = mapPublication(h)
+	for i, hit := range hits.Hits {
+		mappedHits.Hits[i] = h.mapPublication(hit)
 	}
 	j, err := json.Marshal(mappedHits)
 	if err != nil {
@@ -764,8 +790,8 @@ func (h *Handler) GetAllDatasets(w http.ResponseWriter, r *http.Request, ctx Con
 		Total:  hits.Total,
 		Hits:   make([]*Publication, len(hits.Hits)),
 	}
-	for i, h := range hits.Hits {
-		mappedHits.Hits[i] = mapDataset(h)
+	for i, hit := range hits.Hits {
+		mappedHits.Hits[i] = h.mapDataset(hit)
 	}
 	j, err := json.Marshal(mappedHits)
 	if err != nil {
