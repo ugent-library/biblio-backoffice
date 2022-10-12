@@ -196,6 +196,32 @@ func (s *Repository) EachPublicationSnapshot(fn func(*models.Publication) bool) 
 	return c.Err()
 }
 
+func (s *Repository) PublicationHistory(id string, fn func(*models.Publication) bool) error {
+	c, err := s.publicationStore.GetHistory(id, s.opts)
+	if err != nil {
+		return err
+	}
+	defer c.Close()
+	for c.HasNext() {
+		snap, err := c.Next()
+		if err != nil {
+			return err
+		}
+		p := &models.Publication{}
+		if err := snap.Scan(p); err != nil {
+			return err
+		}
+		p.SnapshotID = snap.SnapshotID
+		p.DateFrom = snap.DateFrom
+		p.DateUntil = snap.DateUntil
+		// TODO catch errors from fn() and pass them upstream
+		if ok := fn(p); !ok {
+			break
+		}
+	}
+	return c.Err()
+}
+
 func (s *Repository) GetDataset(id string) (*models.Dataset, error) {
 	d := &models.Dataset{}
 	snap, err := s.datasetStore.GetCurrentSnapshot(id, s.opts)
@@ -307,6 +333,32 @@ func (s *Repository) EachDatasetSnapshot(fn func(*models.Dataset) bool) error {
 		d := &models.Dataset{}
 		if err := snap.Scan(d); err != nil {
 
+			return err
+		}
+		d.SnapshotID = snap.SnapshotID
+		d.DateFrom = snap.DateFrom
+		d.DateUntil = snap.DateUntil
+		// TODO catch errors from fn() and pass them upstream
+		if ok := fn(d); !ok {
+			break
+		}
+	}
+	return c.Err()
+}
+
+func (s *Repository) DatasetHistory(id string, fn func(*models.Dataset) bool) error {
+	c, err := s.publicationStore.GetHistory(id, s.opts)
+	if err != nil {
+		return err
+	}
+	defer c.Close()
+	for c.HasNext() {
+		snap, err := c.Next()
+		if err != nil {
+			return err
+		}
+		d := &models.Dataset{}
+		if err := snap.Scan(d); err != nil {
 			return err
 		}
 		d.SnapshotID = snap.SnapshotID

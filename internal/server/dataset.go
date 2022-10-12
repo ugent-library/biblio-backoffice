@@ -162,6 +162,22 @@ func (s *server) AddDatasets(stream api.Biblio_AddDatasetsServer) error {
 	}
 }
 
+func (s *server) DatasetHistory(req *api.DatasetHistoryRequest, stream api.Biblio_DatasetHistoryServer) (err error) {
+	errorStream := s.services.Repository.DatasetHistory(req.Id, func(p *models.Dataset) bool {
+		res := &api.DatasetHistoryResponse{Dataset: DatasetToMessage(p)}
+		if err = stream.Send(res); err != nil {
+			return false
+		}
+		return true
+	})
+
+	if errorStream != nil {
+		return status.Errorf(codes.Internal, "could not get dataset history: %w", errorStream)
+	}
+
+	return nil
+}
+
 func (s *server) PurgeDataset(ctx context.Context, req *api.PurgeDatasetRequest) (*api.PurgeDatasetResponse, error) {
 	if err := s.services.Repository.PurgeDataset(req.Id); err != nil {
 		return nil, status.Errorf(codes.Internal, "could not purge dataset with id %d: %w", req.Id, err)

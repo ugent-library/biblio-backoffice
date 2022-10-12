@@ -21,6 +21,7 @@ service Biblio {
     rpc SearchPublications(SearchPublicationsRequest) returns (SearchPublicationsResponse);
     rpc UpdatePublication(UpdatePublicationRequest) returns (UpdatePublicationResponse);
     rpc AddPublications(stream AddPublicationsRequest) returns (stream AddPublicationsResponse);
+    rpc PublicationHistory(PublicationHistoryRequest) returns (stream PublicationHistoryResponse);
     rpc PurgePublication(PurgePublicationRequest) returns (PurgePublicationResponse);
     rpc PurgeAllPublications(PurgeAllPublicationsRequest) returns (PurgeAllPublicationsResponse);
     rpc ValidatePublications(stream ValidatePublicationsRequest) returns (stream ValidatePublicationsResponse);
@@ -29,6 +30,7 @@ service Biblio {
     rpc SearchDatasets(SearchDatasetsRequest) returns (SearchDatasetsResponse);
     rpc UpdateDataset(UpdateDatasetRequest) returns (UpdateDatasetResponse);
     rpc AddDatasets(stream AddDatasetsRequest) returns (stream AddDatasetsResponse);
+    rpc DatasetHistory(DatasetHistoryRequest) returns (stream DatasetHistoryResponse);
     rpc PurgeDataset(PurgeDatasetRequest) returns (PurgeDatasetResponse);
     rpc PurgeAllDatasets(PurgeAllDatasetsRequest) returns (PurgeAllDatasetsResponse);
     rpc ValidateDatasets(stream ValidateDatasetsRequest) returns (stream ValidateDatasetsResponse);
@@ -418,6 +420,14 @@ message AddPublicationsResponse {
     string message = 1;
 }
 
+message PublicationHistoryRequest {
+    string id = 1;
+}
+
+message PublicationHistoryResponse {
+    Publication publication = 1;
+}
+
 message PurgePublicationRequest {
     string id = 1;
 }
@@ -482,6 +492,14 @@ message AddDatasetsRequest {
 
 message AddDatasetsResponse {
     string message = 1;
+}
+
+message DatasetHistoryRequest {
+    string id = 1;
+}
+
+message DatasetHistoryResponse {
+    Dataset dataset = 1;
 }
 
 message PurgeDatasetRequest {

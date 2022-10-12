@@ -62,6 +62,7 @@ type Repository interface {
 	UpdatePublication(string, *models.Publication) error
 	EachPublication(func(*models.Publication) bool) error
 	EachPublicationSnapshot(func(*models.Publication) bool) error
+	PublicationHistory(string, func(*models.Publication) bool) error
 	PurgeAllPublications() error
 	PurgePublication(string) error
 	AddDatasetListener(func(*models.Dataset))
@@ -71,6 +72,7 @@ type Repository interface {
 	UpdateDataset(string, *models.Dataset) error
 	EachDataset(func(*models.Dataset) bool) error
 	EachDatasetSnapshot(func(*models.Dataset) bool) error
+	DatasetHistory(string, func(*models.Dataset) bool) error
 	PurgeAllDatasets() error
 	PurgeDataset(string) error
 	GetPublicationDatasets(*models.Publication) ([]*models.Dataset, error)

@@ -412,6 +412,32 @@ func (s *Store) GetAllSnapshots(o Options) (*Cursor, error) {
 	return &Cursor{rows}, nil
 }
 
+func (s *Store) GetHistory(id string, o Options) (*Cursor, error) {
+	var (
+		ctx context.Context
+		db  DB
+	)
+	if o.Context == nil {
+		ctx = context.Background()
+	} else {
+		ctx = o.Context
+	}
+	if o.Transaction == nil {
+		db = s.db
+	} else {
+		db = o.Transaction.db
+	}
+
+	sql := "select snapshot_id, id, data, date_from, date_until from " + s.table +
+		" where id = $1 order by date_from desc"
+
+	rows, err := db.Query(ctx, sql, id)
+	if err != nil {
+		return nil, err
+	}
+	return &Cursor{rows}, nil
+}
+
 type Cursor struct {
 	rows pgx.Rows
 }

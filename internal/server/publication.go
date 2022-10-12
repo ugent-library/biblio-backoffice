@@ -34,7 +34,7 @@ func (s *server) GetAllPublications(req *api.GetAllPublicationsRequest, stream a
 	//
 	//   Logging during streaming doesn't work / isn't possible. The grpc_zap interceptor is only called when
 	// 	 GetAllPublication returns an error.
-	ErrorStream := s.services.Repository.EachPublication(func(p *models.Publication) bool {
+	errorStream := s.services.Repository.EachPublication(func(p *models.Publication) bool {
 		res := &api.GetAllPublicationsResponse{Publication: PublicationToMessage(p)}
 		if err = stream.Send(res); err != nil {
 			return false
@@ -42,8 +42,8 @@ func (s *server) GetAllPublications(req *api.GetAllPublicationsRequest, stream a
 		return true
 	})
 
-	if ErrorStream != nil {
-		return status.Errorf(codes.Internal, "could not get all publications: %w", ErrorStream)
+	if errorStream != nil {
+		return status.Errorf(codes.Internal, "could not get all publications: %w", errorStream)
 	}
 
 	return nil
@@ -175,6 +175,22 @@ func (s *server) AddPublications(stream api.Biblio_AddPublicationsServer) error 
 
 		indexC <- p
 	}
+}
+
+func (s *server) PublicationHistory(req *api.PublicationHistoryRequest, stream api.Biblio_PublicationHistoryServer) (err error) {
+	errorStream := s.services.Repository.PublicationHistory(req.Id, func(p *models.Publication) bool {
+		res := &api.PublicationHistoryResponse{Publication: PublicationToMessage(p)}
+		if err = stream.Send(res); err != nil {
+			return false
+		}
+		return true
+	})
+
+	if errorStream != nil {
+		return status.Errorf(codes.Internal, "could not get publication history: %w", errorStream)
+	}
+
+	return nil
 }
 
 func (s *server) PurgePublication(ctx context.Context, req *api.PurgePublicationRequest) (*api.PurgePublicationResponse, error) {

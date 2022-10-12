@@ -12,14 +12,15 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/server"
 )
 
-type GetAllDatasetsCmd struct {
+type DatasetHistoryCmd struct {
 	RootCmd
 }
 
-func (c *GetAllDatasetsCmd) Command() *cobra.Command {
+func (c *DatasetHistoryCmd) Command() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "get-all",
-		Short: "Get all datasets",
+		Use:   "history [id]",
+		Short: "Dataset history",
+		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			c.Wrap(func() {
 				c.Run(cmd, args)
@@ -30,9 +31,9 @@ func (c *GetAllDatasetsCmd) Command() *cobra.Command {
 	return cmd
 }
 
-func (c *GetAllDatasetsCmd) Run(cmd *cobra.Command, args []string) {
-	req := &api.GetAllDatasetsRequest{}
-	stream, err := c.Client.GetAllDatasets(context.Background(), req)
+func (c *DatasetHistoryCmd) Run(cmd *cobra.Command, args []string) {
+	req := &api.DatasetHistoryRequest{Id: args[0]}
+	stream, err := c.Client.DatasetHistory(context.Background(), req)
 	if err != nil {
 		log.Fatal(err)
 	}

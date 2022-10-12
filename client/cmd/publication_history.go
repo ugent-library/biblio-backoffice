@@ -12,14 +12,15 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/server"
 )
 
-type GetAllDatasetsCmd struct {
+type PublicationHistoryCmd struct {
 	RootCmd
 }
 
-func (c *GetAllDatasetsCmd) Command() *cobra.Command {
+func (c *PublicationHistoryCmd) Command() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "get-all",
-		Short: "Get all datasets",
+		Use:   "history [id]",
+		Short: "Publication history",
+		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			c.Wrap(func() {
 				c.Run(cmd, args)
@@ -30,9 +31,9 @@ func (c *GetAllDatasetsCmd) Command() *cobra.Command {
 	return cmd
 }
 
-func (c *GetAllDatasetsCmd) Run(cmd *cobra.Command, args []string) {
-	req := &api.GetAllDatasetsRequest{}
-	stream, err := c.Client.GetAllDatasets(context.Background(), req)
+func (c *PublicationHistoryCmd) Run(cmd *cobra.Command, args []string) {
+	req := &api.PublicationHistoryRequest{Id: args[0]}
+	stream, err := c.Client.PublicationHistory(context.Background(), req)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -46,7 +47,7 @@ func (c *GetAllDatasetsCmd) Run(cmd *cobra.Command, args []string) {
 			log.Fatalf("error while reading stream: %v", err)
 		}
 
-		j, err := json.Marshal(server.MessageToDataset(res.Dataset))
+		j, err := json.Marshal(server.MessageToPublication(res.Publication))
 		if err != nil {
 			log.Fatal(err)
 		}
