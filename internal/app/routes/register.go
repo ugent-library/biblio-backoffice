@@ -167,6 +167,17 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 	// }
 	// r = r.Schemes(schemes...).Host(u.Host).PathPrefix(u.Path).Subrouter()
 
+	apiRouter := router.PathPrefix(basePath).Subrouter()
+	// frontoffice data exchange api
+	apiRouter.HandleFunc("/frontoffice/publication/{id}", frontofficeHandler.Wrap(frontofficeHandler.GetPublication)).
+		Methods("GET")
+	apiRouter.HandleFunc("/frontoffice/publication", frontofficeHandler.Wrap(frontofficeHandler.GetAllPublications)).
+		Methods("GET")
+	apiRouter.HandleFunc("/frontoffice/dataset/{id}", frontofficeHandler.Wrap(frontofficeHandler.GetDataset)).
+		Methods("GET")
+	apiRouter.HandleFunc("/frontoffice/dataset", frontofficeHandler.Wrap(frontofficeHandler.GetAllDatasets)).
+		Methods("GET")
+
 	csrfPath := basePath
 	if csrfPath == "" {
 		csrfPath = "/"
@@ -180,16 +191,6 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		csrf.SameSite(csrf.SameSiteStrictMode),
 		csrf.FieldName("csrf-token"),
 	))
-
-	// frontoffice data exchange api
-	r.HandleFunc("/frontoffice/publication/{id}", frontofficeHandler.Wrap(frontofficeHandler.GetPublication)).
-		Methods("GET")
-	r.HandleFunc("/frontoffice/publication", frontofficeHandler.Wrap(frontofficeHandler.GetAllPublications)).
-		Methods("GET")
-	r.HandleFunc("/frontoffice/dataset/{id}", frontofficeHandler.Wrap(frontofficeHandler.GetDataset)).
-		Methods("GET")
-	r.HandleFunc("/frontoffice/dataset", frontofficeHandler.Wrap(frontofficeHandler.GetAllDatasets)).
-		Methods("GET")
 
 	// home
 	r.HandleFunc("/",

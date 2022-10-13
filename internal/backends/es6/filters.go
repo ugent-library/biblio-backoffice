@@ -43,17 +43,10 @@ func (ff *DateSinceFilter) GetType() string {
 
 var regexYear = regexp.MustCompile(`^\d{4}$`)
 var regexDate = regexp.MustCompile(`^\d{4}-\d{2}-\d{2}$`)
-
-func isYear(v string) bool {
-	return regexYear.MatchString(v)
-}
-
-func isDate(v string) bool {
-	return regexDate.MatchString(v)
-}
+var regexDatestamp = regexp.MustCompile(`^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$`)
 
 func parseTimeSince(v string) string {
-	v = strings.ToLower(strings.TrimSpace(v))
+	v = strings.TrimSpace(v)
 
 	if v == "today" {
 		t := time.Now().UTC().Truncate(time.Hour * 24)
@@ -61,13 +54,15 @@ func parseTimeSince(v string) string {
 	} else if v == "yesterday" {
 		t := time.Now().UTC().Add(time.Hour * (-24)).Truncate(time.Hour * 24)
 		return internal_time.FormatTimeUTC(&t)
-	} else if isYear(v) {
+	} else if regexYear.MatchString(v) {
 		return v + "-01-01T00:00:00Z"
-	} else if isDate(v) {
+	} else if regexDate.MatchString(v) {
 		return v + "T00:00:00Z"
+	} else if regexDatestamp.MatchString(v) {
+		return v
 	}
 
-	//invalid time: search for time in the future in order to return 0 results
+	// invalid time: search for time in the future in order to return 0 results
 	t := time.Now().UTC().AddDate(100, 0, 0).Truncate(time.Hour * 24)
 	return internal_time.FormatTimeUTC(&t)
 }
