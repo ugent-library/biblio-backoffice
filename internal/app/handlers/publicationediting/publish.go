@@ -7,6 +7,7 @@ import (
 
 	"github.com/ugent-library/biblio-backend/internal/app/handlers"
 	"github.com/ugent-library/biblio-backend/internal/app/localize"
+	"github.com/ugent-library/biblio-backend/internal/publication"
 	"github.com/ugent-library/biblio-backend/internal/render"
 	"github.com/ugent-library/biblio-backend/internal/render/flash"
 	"github.com/ugent-library/biblio-backend/internal/render/form"
@@ -46,6 +47,10 @@ func (h *Handler) Publish(w http.ResponseWriter, r *http.Request, ctx Context) {
 		})
 		return
 	}
+
+	//TODO: find better place for this
+	//TODO: what if update publication fails?
+	ctx.Publication = publication.PublishPipeline.Process(ctx.Publication)
 
 	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication)
 

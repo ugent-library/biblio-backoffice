@@ -11,20 +11,24 @@ import (
 )
 
 const (
-	defaultPgConn           = "postgres://localhost:5432/biblio_backend?sslmode=disable"
-	defaultEs6URL           = "http://localhost:9200"
-	defaultDatasetIndex     = "biblio_backend_datasets"
-	defaultPublicationIndex = "biblio_backend_publications"
-	defaultAPIHost          = ""
-	defaultAPIPort          = 30000
-	defaultAPIAdminUsername = "admin"
-	defaultAPIAdminPassword = "admin"
-	defaultMode             = "production"
-	defaultHost             = ""
-	defaultPort             = 3000
-	defaultSessionName      = "biblio-backend"
-	defaultSessionMaxAge    = 86400 * 30 // 30 days
-	defaultCSRFName         = "biblio-backend.csrf-token"
+	defaultPgConn               = "postgres://localhost:5432/biblio_backend?sslmode=disable"
+	defaultEs6URL               = "http://localhost:9200"
+	defaultDatasetIndex         = "biblio_backend_datasets"
+	defaultPublicationIndex     = "biblio_backend_publications"
+	defaultAPIHost              = ""
+	defaultAPIPort              = 30000
+	defaultAPIAdminUsername     = "admin"
+	defaultAPIAdminPassword     = "admin"
+	defaultMode                 = "production"
+	defaultHost                 = ""
+	defaultPort                 = 3000
+	defaultSessionName          = "biblio-backend"
+	defaultSessionMaxAge        = 86400 * 30 // 30 days
+	defaultCSRFName             = "biblio-backend.csrf-token"
+	defaultHandleServerURL      = "http://localhost:4000/handles"
+	defaultHandleServerPrefix   = "1854"
+	defaultHandleServerUsername = "handle"
+	defaultHandleServerPassword = "handle"
 )
 
 // TODO we shouldn't do this for all flags, only ones that have a config equivalent
@@ -60,6 +64,10 @@ func init() {
 	viper.SetDefault("session-name", defaultSessionName)
 	viper.SetDefault("session-max-age", defaultSessionMaxAge)
 	viper.SetDefault("csrf-name", defaultCSRFName)
+	viper.SetDefault("hdl-srv-url", defaultHandleServerURL)
+	viper.SetDefault("hdl-srv-prefix", defaultHandleServerPrefix)
+	viper.SetDefault("hdl-srv-username", defaultHandleServerUsername)
+	viper.SetDefault("hdl-srv-password", defaultHandleServerPassword)
 
 	rootCmd.PersistentFlags().String("file-dir", "", "file store root directory")
 
@@ -84,6 +92,12 @@ func init() {
 
 	rootCmd.PersistentFlags().String("imagor-url", "", "imagor url")
 	rootCmd.PersistentFlags().String("imagor-secret", "", "imagor secret")
+
+	rootCmd.PersistentFlags().String("hdl-srv-url", defaultHandleServerURL, "handle server base url (without trailing slash)")
+	rootCmd.PersistentFlags().String("hdl-srv-prefix", defaultHandleServerPrefix, "handle server base prefix")
+	rootCmd.PersistentFlags().String("hdl-srv-username", defaultHandleServerUsername, "handle server auth basic username")
+	rootCmd.PersistentFlags().String("hdl-srv-password", defaultHandleServerPassword, "handle server auth basic password")
+
 }
 
 func Execute() {

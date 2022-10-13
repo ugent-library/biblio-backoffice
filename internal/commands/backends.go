@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"strings"
@@ -18,6 +19,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/backends/es6"
 	excel_dataset "github.com/ugent-library/biblio-backend/internal/backends/excel/dataset"
 	excel_publication "github.com/ugent-library/biblio-backend/internal/backends/excel/publication"
+	"github.com/ugent-library/biblio-backend/internal/backends/handle"
 
 	"github.com/ugent-library/biblio-backend/internal/backends/filestore"
 	"github.com/ugent-library/biblio-backend/internal/backends/ianamedia"
@@ -59,6 +61,16 @@ func newServices() *backends.Services {
 	orcidClient := orcid.NewMemberClient(orcidConfig)
 
 	citeprocURL := viper.GetString("citeproc-url")
+
+	handleService := handle.NewClient(
+		handle.Config{
+			BaseURL:         viper.GetString("hdl-srv-url"),
+			FrontEndBaseURL: fmt.Sprintf("%s/publication", viper.GetString("frontend-url")),
+			Prefix:          viper.GetString("hdl-srv-prefix"),
+			Username:        viper.GetString("hdl-srv-username"),
+			Password:        viper.GetString("hdl-srv-password"),
+		},
+	)
 
 	return &backends.Services{
 		FileStore:                 newFileStore(),
@@ -107,6 +119,7 @@ func newServices() *backends.Services {
 			"xlsx": excel_dataset.NewExporter,
 		},
 		DatasetSearcherService: newDatasetSearcherService(),
+		HandleService:          handleService,
 	}
 }
 

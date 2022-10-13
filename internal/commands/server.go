@@ -26,6 +26,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/logging"
 	"github.com/ugent-library/biblio-backend/internal/mix"
 	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backend/internal/publication"
 	"github.com/ugent-library/biblio-backend/internal/render"
 	"github.com/ugent-library/biblio-backend/internal/urls"
 	"github.com/ugent-library/biblio-backend/internal/vocabularies"
@@ -116,6 +117,65 @@ var serverStartCmd = &cobra.Command{
 				logger.Errorf("error indexing dataset %s: %w", d.ID, err)
 			}
 		})
+
+		publication.PublishPipeline = append(
+			publication.PublishPipeline,
+			func(p *models.Publication) *models.Publication {
+				if p.Status == "public" && p.Handle == "" {
+					h, hErr := e.HandleService.UpsertHandleByPublication(p)
+					if hErr != nil {
+						logger.Errorf(
+							"error adding handle for publication %s: %s",
+							p.ID,
+							hErr,
+						)
+					} else if !h.IsSuccess() {
+						logger.Errorf(
+							"error adding handle for publication %s: %s",
+							p.ID,
+							h.Message,
+						)
+					} else {
+						logger.Infof(
+							"added handle url %s to publication %s",
+							h.GetFullHandleURL(),
+							p.ID,
+						)
+						p.Handle = h.GetFullHandleURL()
+					}
+				}
+				return p
+			},
+		)
+
+		publication.UnpublishPipeline = append(
+			publication.UnpublishPipeline,
+			func(p *models.Publication) *models.Publication {
+				if (p.Status == "private" || p.Status == "returned") && p.Handle != "" {
+					h, hErr := e.HandleService.DeleteHandleByPublication(p)
+					if hErr != nil {
+						logger.Errorf(
+							"error removing handle for publication %s: %s",
+							p.ID,
+							hErr,
+						)
+					} else if !h.IsSuccess() {
+						logger.Errorf(
+							"error removing handle for publication %s: %s",
+							p.ID,
+							h.Message,
+						)
+					} else {
+						logger.Infof(
+							"removed handle url to publication %s",
+							p.ID,
+						)
+						p.Handle = ""
+					}
+				}
+				return p
+			},
+		)
 
 		// setup router
 		router := buildRouter(e, logger)
