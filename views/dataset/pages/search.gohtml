@@ -112,12 +112,18 @@
                     </div>
                 </div>
                 {{else}}
-                <div class="c-blank-slate c-blank-slate-large c-blank-slate-muted">
+                <div class="c-blank-slate c-blank-slate-default c-blank-slate-large">
                     <div class="bc-avatar bc-avatar--medium">
                         <i class="if if-info-circle"></I>
                     </div>
-                    <h1>No records found.</h1>
-                    <p>Adjust your search to find what you are looking for.</p>
+                    <h3 class="c-blank-slate-title">No records to display.</h3>
+                    <p>Refine your search or add a new record.</p>
+                    <div class="c-button-toolbar">
+                        <a class="btn btn-outline-primary" href="{{pathFor "dataset_add"}}">
+                            <i class="if if-add"></I>
+                            <div class="btn-text">Add dataset</div>
+                        </a>
+                    </div>
                 </div>
                 {{end}}
             </div>
