@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -111,6 +112,25 @@ func (s *Repository) GetPublications(ids []string) ([]*models.Publication, error
 		return nil, c.Err()
 	}
 	return publications, nil
+}
+
+func (s *Repository) ImportPublication(p *models.Publication) error {
+
+	if p.DateCreated == nil {
+		return fmt.Errorf("unable to import old publication %s: date_created is not set", p.ID)
+	}
+	if p.DateUpdated == nil {
+		return fmt.Errorf("unable to import old publication %s: date_updated is not set", p.ID)
+	}
+
+	// TODO move outside of store
+	p = publication.DefaultPipeline.Process(p)
+
+	if err := p.Validate(); err != nil {
+		return err
+	}
+
+	return s.publicationStore.Add(p.ID, p, s.opts)
 }
 
 func (s *Repository) SavePublication(p *models.Publication) error {

@@ -59,6 +59,7 @@ type Repository interface {
 	GetPublication(string) (*models.Publication, error)
 	GetPublications([]string) ([]*models.Publication, error)
 	SavePublication(*models.Publication) error
+	ImportPublication(*models.Publication) error
 	UpdatePublication(string, *models.Publication) error
 	EachPublication(func(*models.Publication) bool) error
 	EachPublicationSnapshot(func(*models.Publication) bool) error

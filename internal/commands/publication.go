@@ -118,7 +118,7 @@ var publicationAddCmd = &cobra.Command{
 				log.Printf("Validation failed for publication [id: %s] at line %d : %v", p.ID, lineNo, err)
 				continue
 			}
-			if err := e.Repository.SavePublication(&p); err != nil {
+			if err := e.Repository.ImportPublication(&p); err != nil {
 				log.Fatalf("Unable to store publication from line %d : %v", lineNo, err)
 			}
 
