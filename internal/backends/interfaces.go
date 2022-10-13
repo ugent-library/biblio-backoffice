@@ -69,6 +69,7 @@ type Repository interface {
 	AddDatasetListener(func(*models.Dataset))
 	GetDataset(string) (*models.Dataset, error)
 	GetDatasets([]string) ([]*models.Dataset, error)
+	ImportDataset(*models.Dataset) error
 	SaveDataset(*models.Dataset) error
 	UpdateDataset(string, *models.Dataset) error
 	EachDataset(func(*models.Dataset) bool) error

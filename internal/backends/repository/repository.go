@@ -284,6 +284,22 @@ func (s *Repository) GetDatasets(ids []string) ([]*models.Dataset, error) {
 	return datasets, nil
 }
 
+func (s *Repository) ImportDataset(d *models.Dataset) error {
+
+	if d.DateCreated == nil {
+		return fmt.Errorf("unable to import old dataset %s: date_created is not set", d.ID)
+	}
+	if d.DateUpdated == nil {
+		return fmt.Errorf("unable to import old dataset %s: date_updated is not set", d.ID)
+	}
+
+	if err := d.Validate(); err != nil {
+		return err
+	}
+
+	return s.datasetStore.Add(d.ID, d, s.opts)
+}
+
 func (s *Repository) SaveDataset(d *models.Dataset) error {
 	now := time.Now()
 

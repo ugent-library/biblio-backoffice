@@ -91,7 +91,7 @@ var datasetAddCmd = &cobra.Command{
 				log.Printf("Validation failed for dataset at line %d : %v", lineNo, err)
 				continue
 			}
-			if err := e.Repository.SaveDataset(&d); err != nil {
+			if err := e.Repository.ImportDataset(&d); err != nil {
 				log.Fatalf("Unable to store dataset from line %d : %v", lineNo, err)
 			}
 
