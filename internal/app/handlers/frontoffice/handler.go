@@ -597,6 +597,7 @@ func (h *Handler) mapDataset(p *models.Dataset) *Publication {
 		Embargo:     p.EmbargoDate,
 		EmbargoTo:   p.AccessLevelAfterEmbargo,
 		Title:       p.Title,
+		Type:        "researchData",
 		URL:         p.URL,
 		Year:        p.Year,
 	}
