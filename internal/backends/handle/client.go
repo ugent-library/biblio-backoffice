@@ -12,10 +12,11 @@ import (
 )
 
 type Config struct {
-	URL      string
-	Prefix   string
-	Username string
-	Password string
+	BaseURL         string
+	FrontEndBaseURL string
+	Prefix          string
+	Username        string
+	Password        string
 }
 
 type Client struct {
@@ -97,7 +98,7 @@ func (c *Client) newRequest(method, path string, vals url.Values, requestData an
 			return nil, err
 		}
 	}
-	u := c.config.URL + path
+	u := c.config.BaseURL + path
 	if vals != nil {
 		u = u + "?" + vals.Encode()
 	}
@@ -131,15 +132,13 @@ func (c *Client) doRequest(req *http.Request, responseData any) (*http.Response,
 }
 
 func (client *Client) GetByPublication(publication *models.Publication) (*Handle, error) {
-	return client.Get(
-		fmt.Sprintf("LU-%s", publication.ID),
-	)
+	return client.Get(publication.ID)
 }
 
 func (client *Client) Get(localId string) (*Handle, error) {
 	h := &Handle{}
 	_, err := client.get(
-		fmt.Sprintf("/%s/%s", client.config.Prefix, localId),
+		fmt.Sprintf("/%s/LU-%s", client.config.Prefix, localId),
 		nil,
 		h,
 	)
@@ -150,21 +149,38 @@ func (client *Client) Get(localId string) (*Handle, error) {
 }
 
 func (client *Client) UpsertByPublication(publication *models.Publication) (*Handle, error) {
-	return client.Upsert(
-		fmt.Sprintf("LU-%s", publication.ID),
-	)
+	return client.Upsert(publication.ID)
 }
 
 func (client *Client) Upsert(localId string) (*Handle, error) {
-	return nil, nil
+	h := &Handle{}
+	qp := url.Values{}
+	qp.Add("url", fmt.Sprintf("%s%s", client.config.FrontEndBaseURL, localId))
+	_, err := client.put(
+		fmt.Sprintf("/%s/LU-%s", client.config.Prefix, localId),
+		nil,
+		qp,
+		h,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return h, nil
 }
 
 func (client *Client) DeleteByPublication(publication *models.Publication) (*Handle, error) {
-	return client.Delete(
-		fmt.Sprintf("LU-%s", publication.ID),
-	)
+	return client.Delete(publication.ID)
 }
 
 func (client *Client) Delete(localId string) (*Handle, error) {
-	return nil, nil
+	h := &Handle{}
+	_, err := client.delete(
+		fmt.Sprintf("/%s/LU-%s", client.config.Prefix, localId),
+		nil,
+		h,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return h, nil
 }
