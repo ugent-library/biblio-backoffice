@@ -20,9 +20,11 @@
       {{end}}
       <ul class="c-meta-list c-meta-list-horizontal">
         <li class="c-meta-item">
-          <i class="if if-ghent-university"></i>
           {{range $i, $v := .Contributor.UGentID}}
+          <span class="mr-2">
+              <i class="if if-ghent-university"></i>
               {{$v}}
+          </span>
           {{end}}
         </li>
         {{with .Contributor.ORCID}}
