@@ -40,14 +40,10 @@ type Handler struct {
 	DatasetSearchService     backends.DatasetSearchService
 }
 
-type Context struct {
-	handlers.BaseContext
-}
-
 // safe basic auth handling
 // see https://www.alexedwards.net/blog/basic-authentication-in-go
-func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) http.HandlerFunc {
-	return h.BaseHandler.Wrap(func(w http.ResponseWriter, r *http.Request, ctx handlers.BaseContext) {
+func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request)) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		if username, password, ok := r.BasicAuth(); ok {
 			usernameHash := sha256.Sum256([]byte(username))
 			passwordHash := sha256.Sum256([]byte(password))
@@ -58,15 +54,14 @@ func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) htt
 			passwordMatch := (subtle.ConstantTimeCompare(passwordHash[:], expectedPasswordHash[:]) == 1)
 
 			if usernameMatch && passwordMatch {
-				fn(w, r, Context{
-					BaseContext: ctx,
-				})
+				fn(w, r)
 				return
 			}
 		}
 
+		w.Header().Set("WWW-Authenticate", `Basic realm="restricted", charset="UTF-8"`)
 		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
-	})
+	}
 }
 
 type AffiliationPath struct {
@@ -597,6 +592,7 @@ func (h *Handler) mapDataset(p *models.Dataset) *Publication {
 		Embargo:     p.EmbargoDate,
 		EmbargoTo:   p.AccessLevelAfterEmbargo,
 		Title:       p.Title,
+		Type:        "researchData",
 		URL:         p.URL,
 		Year:        p.Year,
 	}
@@ -698,7 +694,7 @@ func (h *Handler) mapDataset(p *models.Dataset) *Publication {
 	return pp
 }
 
-func (h *Handler) GetPublication(w http.ResponseWriter, r *http.Request, ctx Context) {
+func (h *Handler) GetPublication(w http.ResponseWriter, r *http.Request) {
 	p, err := h.Repository.GetPublication(bind.PathValues(r).Get("id"))
 	if err != nil {
 		render.InternalServerError(w, r, err)
@@ -713,7 +709,7 @@ func (h *Handler) GetPublication(w http.ResponseWriter, r *http.Request, ctx Con
 	w.Write(j)
 }
 
-func (h *Handler) GetDataset(w http.ResponseWriter, r *http.Request, ctx Context) {
+func (h *Handler) GetDataset(w http.ResponseWriter, r *http.Request) {
 	p, err := h.Repository.GetDataset(bind.PathValues(r).Get("id"))
 	if err != nil {
 		render.InternalServerError(w, r, err)
@@ -734,7 +730,7 @@ type BindGetAll struct {
 	UpdatedSince string `query:"updated_since"`
 }
 
-func (h *Handler) GetAllPublications(w http.ResponseWriter, r *http.Request, ctx Context) {
+func (h *Handler) GetAllPublications(w http.ResponseWriter, r *http.Request) {
 	b := BindGetAll{}
 	if err := bind.RequestQuery(r, &b); err != nil {
 		render.BadRequest(w, r, err)
@@ -775,7 +771,7 @@ func (h *Handler) GetAllPublications(w http.ResponseWriter, r *http.Request, ctx
 	w.Write(j)
 }
 
-func (h *Handler) GetAllDatasets(w http.ResponseWriter, r *http.Request, ctx Context) {
+func (h *Handler) GetAllDatasets(w http.ResponseWriter, r *http.Request) {
 	b := BindGetAll{}
 	if err := bind.RequestQuery(r, &b); err != nil {
 		render.BadRequest(w, r, err)
