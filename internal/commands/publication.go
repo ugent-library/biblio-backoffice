@@ -19,6 +19,7 @@ func init() {
 	publicationCmd.AddCommand(publicationGetCmd)
 	publicationCmd.AddCommand(publicationAllCmd)
 	publicationCmd.AddCommand(publicationAddCmd)
+	publicationCmd.AddCommand(publicationImportCmd)
 	rootCmd.AddCommand(publicationCmd)
 }
 
@@ -119,6 +120,58 @@ var publicationAddCmd = &cobra.Command{
 				continue
 			}
 			if err := e.Repository.SavePublication(&p); err != nil {
+				log.Fatalf("Unable to store publication from line %d : %v", lineNo, err)
+			}
+
+			indexC <- &p
+		}
+
+		// close indexing channel when all recs are stored
+		close(indexC)
+		// wait for indexing to finish
+		indexWG.Wait()
+	},
+}
+
+var publicationImportCmd = &cobra.Command{
+	Use:   "import",
+	Short: "Import publications",
+	Run: func(cmd *cobra.Command, args []string) {
+		e := Services()
+
+		var indexWG sync.WaitGroup
+
+		// indexing channel
+		indexC := make(chan *models.Publication)
+
+		// start bulk indexer
+		indexWG.Add(1)
+		go func() {
+			defer indexWG.Done()
+			e.PublicationSearchService.IndexMultiple(indexC)
+		}()
+
+		fmt, _ := cmd.Flags().GetString("format")
+		decFactory, ok := e.PublicationDecoders[fmt]
+		if !ok {
+			log.Fatalf("Unknown format %s", fmt)
+		}
+		dec := decFactory(os.Stdin)
+
+		lineNo := 0
+		for {
+			lineNo += 1
+			p := models.Publication{}
+			if err := dec.Decode(&p); errors.Is(err, io.EOF) {
+				break
+			} else if err != nil {
+				log.Fatalf("Unable to decode publication at line %d : %v", lineNo, err)
+			}
+			if err := p.Validate(); err != nil {
+				log.Printf("Validation failed for publication [id: %s] at line %d : %v", p.ID, lineNo, err)
+				continue
+			}
+			if err := e.Repository.ImportPublication(&p); err != nil {
 				log.Fatalf("Unable to store publication from line %d : %v", lineNo, err)
 			}
 
