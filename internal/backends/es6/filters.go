@@ -9,7 +9,7 @@ import (
 	internal_time "github.com/ugent-library/biblio-backend/internal/time"
 )
 
-//regular field filter: accepts syntax in the filter value
+// regular field filter: accepts syntax in the filter value
 type FieldFilter struct {
 	models.BaseFilter
 }
@@ -22,7 +22,7 @@ func (ff *FieldFilter) GetType() string {
 	return "field"
 }
 
-//date filter
+// date filter
 type DateSinceFilter struct {
 	models.BaseFilter
 }
@@ -53,7 +53,6 @@ func isDate(v string) bool {
 }
 
 func parseTimeSince(v string) string {
-
 	v = strings.ToLower(strings.TrimSpace(v))
 
 	if v == "today" {
@@ -74,7 +73,6 @@ func parseTimeSince(v string) string {
 }
 
 func ToTypeFilter(t string, name string, field string, values ...string) models.Filterable {
-
 	if t == "date_since" {
 		f := &DateSinceFilter{}
 		f.Name = name
@@ -90,5 +88,4 @@ func ToTypeFilter(t string, name string, field string, values ...string) models.
 	}
 
 	return nil
-
 }

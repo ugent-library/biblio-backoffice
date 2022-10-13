@@ -729,8 +729,9 @@ func (h *Handler) GetDataset(w http.ResponseWriter, r *http.Request, ctx Context
 }
 
 type BindGetAll struct {
-	Limit  int `query:"limit"`
-	Offset int `query:"offset"`
+	Limit        int    `query:"limit"`
+	Offset       int    `query:"offset"`
+	UpdatedSince string `query:"updated_since"`
 }
 
 func (h *Handler) GetAllPublications(w http.ResponseWriter, r *http.Request, ctx Context) {
@@ -741,6 +742,9 @@ func (h *Handler) GetAllPublications(w http.ResponseWriter, r *http.Request, ctx
 	}
 
 	args := models.NewSearchArgs().WithSort("id-asc")
+	if b.UpdatedSince != "" {
+		args.WithFilter("updated_since", b.UpdatedSince)
+	}
 	if b.Limit > 0 {
 		args.WithPageSize(b.Limit)
 	}
@@ -779,6 +783,9 @@ func (h *Handler) GetAllDatasets(w http.ResponseWriter, r *http.Request, ctx Con
 	}
 
 	args := models.NewSearchArgs().WithSort("id-asc")
+	if b.UpdatedSince != "" {
+		args.WithFilter("updated_since", b.UpdatedSince)
+	}
 	if b.Limit > 0 {
 		args.WithPageSize(b.Limit)
 	}
