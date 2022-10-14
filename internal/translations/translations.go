@@ -266,7 +266,9 @@ func init() {
 	message.SetString(language.English, "builder.conference.organizer", "Conference organiser")
 	message.SetString(language.English, "builder.conference.date", "Conference date")
 	message.SetString(language.English, "builder.conference.start_date", "Conference start date")
+	message.SetString(language.English, "builder.conference.start_date.help", "YYYY-MM-DD")
 	message.SetString(language.English, "builder.conference.end_date", "Conference end date")
+	message.SetString(language.English, "builder.conference.end_date.help", "YYYY-MM-DD")
 
 	message.SetString(language.English, "builder.abstract.text", "Abstract")
 	message.SetString(language.English, "builder.abstract.lang", "Language")
