@@ -24,7 +24,13 @@
             </div>
 
             <a href="{{.PublicationURL}}">
-                <h4 class="list-group-item-title">{{.Publication.Title}}</h4>
+                <h4 class="list-group-item-title">
+                    {{if .Publication.Title}}
+                        {{.Publication.Title}}
+                    {{else}}
+                        Untitled record
+                    {{end}}
+                </h4>
             </a>
 
             {{with .Publication.Author}}{{partial "shared/contributors" (dict "Contributors" . "ContributorsURL" ($.PublicationURL | querySet "show" "contributors"))}}{{end}}

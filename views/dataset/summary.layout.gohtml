@@ -23,7 +23,13 @@
             </div>
 
             <a href="{{.DatasetURL}}">
-                <h4 class="list-group-item-title">{{.Dataset.Title}}</h4>
+                <h4 class="list-group-item-title">
+                    {{if .Dataset.Title}}
+                        {{.Dataset.Title}}
+                    {{else}}
+                        Untitled record
+                    {{end}}
+                </h4>
             </a>
 
             {{with .Dataset.Author}}{{partial "shared/contributors" (dict "Contributors" . "ContributorsURL" ($.DatasetURL | querySet "show" "contributors"))}}{{end}}

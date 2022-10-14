@@ -130,7 +130,13 @@
                         </div>
                       </div>
                     </div>
-                    <h4 class="list-group-item-title">{{.Publication.Title}}</h4>
+                    <h4 class="list-group-item-title">
+                        {{if .Publication.Title}}
+                            {{.Publication.Title}}
+                        {{else}}
+                            Untitled record
+                        {{end}}
+                    </h4>
                     <div class="bc-toolbar bc-toolbar-responsive flex-wrap-reverse">
                       <div class="bc-toolbar-left flex-wrap">
                         {{with .Publication.PublicationStatus}}
