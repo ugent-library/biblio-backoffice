@@ -285,6 +285,7 @@ func PublicationToMessage(p *models.Publication) *api.Publication {
 
 	for _, val := range p.Abstract {
 		msg.Abstract = append(msg.Abstract, &api.Text{
+			Id:   val.ID,
 			Text: val.Text,
 			Lang: val.Lang,
 		})
@@ -529,6 +530,7 @@ func PublicationToMessage(p *models.Publication) *api.Publication {
 
 	for _, val := range p.LaySummary {
 		msg.LaySummary = append(msg.LaySummary, &api.Text{
+			Id:   val.ID,
 			Text: val.Text,
 			Lang: val.Lang,
 		})
@@ -758,6 +760,7 @@ func MessageToPublication(msg *api.Publication) *models.Publication {
 
 	for _, val := range msg.Abstract {
 		p.Abstract = append(p.Abstract, models.Text{
+			ID:   val.Id,
 			Text: val.Text,
 			Lang: val.Lang,
 		})
@@ -1009,6 +1012,7 @@ func MessageToPublication(msg *api.Publication) *models.Publication {
 
 	for _, val := range msg.LaySummary {
 		p.LaySummary = append(p.LaySummary, models.Text{
+			ID:   val.Id,
 			Text: val.Text,
 			Lang: val.Lang,
 		})
