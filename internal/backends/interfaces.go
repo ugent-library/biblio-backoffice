@@ -6,7 +6,6 @@ import (
 
 	"github.com/ugent-library/biblio-backend/internal/backends/filestore"
 	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/biblio-backend/internal/tasks"
 	"github.com/ugent-library/go-orcid/orcid"
 )
 
@@ -26,11 +25,11 @@ type Services struct {
 	ProjectSearchService
 	LicenseSearchService
 	MediaTypeSearchService
-	PublicationSources         map[string]PublicationGetter
-	DatasetSources             map[string]DatasetGetter
-	PublicationEncoders        map[string]PublicationEncoder
-	PublicationDecoders        map[string]PublicationDecoderFactory
-	Tasks                      *tasks.Hub
+	PublicationSources  map[string]PublicationGetter
+	DatasetSources      map[string]DatasetGetter
+	PublicationEncoders map[string]PublicationEncoder
+	PublicationDecoders map[string]PublicationDecoderFactory
+	// Tasks                      *tasks.Hub
 	PublicationListExporters   map[string]PublicationListExporterFactory
 	PublicationSearcherService PublicationSearcherService
 	DatasetListExporters       map[string]DatasetListExporterFactory

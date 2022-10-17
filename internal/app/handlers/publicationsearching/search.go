@@ -164,9 +164,9 @@ func (h *Handler) CurationSearch(w http.ResponseWriter, r *http.Request, ctx Con
 
 func (h *Handler) getCurationSearchActions(ctx Context) []*ActionItem {
 	actionItems := make([]*ActionItem, 0)
-	if oa := h.getOrcidAction(ctx); oa != nil {
-		actionItems = append(actionItems, oa)
-	}
+	// if oa := h.getOrcidAction(ctx); oa != nil {
+	// 	actionItems = append(actionItems, oa)
+	// }
 	u := h.PathFor("export_publications", "format", "xlsx")
 	q, _ := bind.EncodeQuery(ctx.SearchArgs)
 	u.RawQuery = q.Encode()
@@ -179,20 +179,21 @@ func (h *Handler) getCurationSearchActions(ctx Context) []*ActionItem {
 }
 
 func (h *Handler) getSearchActions(ctx Context) []*ActionItem {
-	actionItems := make([]*ActionItem, 0)
-	if oa := h.getOrcidAction(ctx); oa != nil {
-		actionItems = append(actionItems, oa)
-	}
-	return actionItems
+	// actionItems := make([]*ActionItem, 0)
+	// if oa := h.getOrcidAction(ctx); oa != nil {
+	// 	actionItems = append(actionItems, oa)
+	// }
+	// return actionItems
+	return nil
 }
 
-func (h *Handler) getOrcidAction(ctx Context) *ActionItem {
-	if ctx.User.ORCID == "" || ctx.User.ORCIDToken == "" {
-		return nil
-	}
-	return &ActionItem{
-		Label:    "Send my publications to ORCID",
-		URL:      h.PathFor("publication_orcid_add_all"),
-		Template: "actions/publication_orcid_add_all",
-	}
-}
+// func (h *Handler) getOrcidAction(ctx Context) *ActionItem {
+// 	if ctx.User.ORCID == "" || ctx.User.ORCIDToken == "" {
+// 		return nil
+// 	}
+// 	return &ActionItem{
+// 		Label:    "Send my publications to ORCID",
+// 		URL:      h.PathFor("publication_orcid_add_all"),
+// 		Template: "actions/publication_orcid_add_all",
+// 	}
+// }

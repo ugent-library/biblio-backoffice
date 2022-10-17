@@ -22,13 +22,11 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/impersonating"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/mediatypes"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/notfound"
-	"github.com/ugent-library/biblio-backend/internal/app/handlers/orcid"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/publicationcreating"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/publicationediting"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/publicationexporting"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/publicationsearching"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/publicationviewing"
-	"github.com/ugent-library/biblio-backend/internal/app/handlers/tasks"
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/locale"
 	"github.com/ugent-library/go-oidc/oidc"
@@ -67,10 +65,10 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 	impersonatingHandler := &impersonating.Handler{
 		BaseHandler: baseHandler,
 	}
-	tasksHandler := &tasks.Handler{
-		BaseHandler: baseHandler,
-		Tasks:       services.Tasks,
-	}
+	// tasksHandler := &tasks.Handler{
+	// 	BaseHandler: baseHandler,
+	// 	Tasks:       services.Tasks,
+	// }
 	dashboardHandler := &dashboard.Handler{
 		BaseHandler:              baseHandler,
 		DatasetSearchService:     services.DatasetSearchService,
@@ -146,13 +144,13 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		DatasetSearchService:      services.DatasetSearchService,
 		FileStore:                 services.FileStore,
 	}
-	orcidHandler := &orcid.Handler{
-		BaseHandler:              baseHandler,
-		Tasks:                    services.Tasks,
-		Repository:               services.Repository,
-		PublicationSearchService: services.PublicationSearchService,
-		Sandbox:                  services.ORCIDSandbox,
-	}
+	// orcidHandler := &orcid.Handler{
+	// 	BaseHandler:              baseHandler,
+	// 	Tasks:                    services.Tasks,
+	// 	Repository:               services.Repository,
+	// 	PublicationSearchService: services.PublicationSearchService,
+	// 	Sandbox:                  services.ORCIDSandbox,
+	// }
 	mediaTypesHandler := &mediatypes.Handler{
 		BaseHandler:            baseHandler,
 		MediaTypeSearchService: services.MediaTypeSearchService,
@@ -232,9 +230,9 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		Name("delete_impersonation")
 
 	// tasks
-	r.HandleFunc("/task/{id}/status", tasksHandler.Wrap(tasksHandler.Status)).
-		Methods("GET").
-		Name("task_status")
+	// r.HandleFunc("/task/{id}/status", tasksHandler.Wrap(tasksHandler.Status)).
+	// 	Methods("GET").
+	// 	Name("task_status")
 
 	// dashboard
 	r.HandleFunc("/dashboard/publications/{type}", dashboardHandler.Wrap(dashboardHandler.Publications)).
@@ -978,14 +976,14 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		Name("publication_delete_file")
 
 	// orcid
-	r.HandleFunc("/publication/orcid",
-		orcidHandler.Wrap(orcidHandler.AddAll)).
-		Methods("POST").
-		Name("publication_orcid_add_all")
-	r.HandleFunc("/publication/{id}/orcid",
-		orcidHandler.Wrap(orcidHandler.Add)).
-		Methods("POST").
-		Name("publication_orcid_add")
+	// r.HandleFunc("/publication/orcid",
+	// 	orcidHandler.Wrap(orcidHandler.AddAll)).
+	// 	Methods("POST").
+	// 	Name("publication_orcid_add_all")
+	// r.HandleFunc("/publication/{id}/orcid",
+	// 	orcidHandler.Wrap(orcidHandler.Add)).
+	// 	Methods("POST").
+	// 	Name("publication_orcid_add")
 
 	// media types
 	r.HandleFunc("/media_type/suggestions",

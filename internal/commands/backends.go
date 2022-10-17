@@ -28,7 +28,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/backends/spdxlicenses"
 	"go.uber.org/zap"
 
-	"github.com/ugent-library/biblio-backend/internal/tasks"
+	// "github.com/ugent-library/biblio-backend/internal/tasks"
 	"github.com/ugent-library/go-orcid/orcid"
 )
 
@@ -98,7 +98,7 @@ func newServices() *backends.Services {
 			"wos":    ris.NewDecoder,
 			"bibtex": bibtex.NewDecoder,
 		},
-		Tasks: tasks.NewHub(),
+		// Tasks: tasks.NewHub(),
 		PublicationListExporters: map[string]backends.PublicationListExporterFactory{
 			"xlsx": excel_publication.NewExporter,
 		},

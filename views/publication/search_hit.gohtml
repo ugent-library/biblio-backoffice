@@ -12,6 +12,7 @@
                         <i class="if if-file-text"></i>
                         <span>View details</span>
                     </a>
+                    {{/*
                     {{if and (eq .Publication.Status "public") .User.ORCID .User.ORCIDToken}}
                     <button class="dropdown-item"
                         hx-post="{{pathFor "publication_orcid_add" "id" .Publication.ID}}"
@@ -23,6 +24,7 @@
                         <span>Send to ORCID</span>
                     </button>
                     {{end}}
+                    */}}
                     {{if .User.CanDeletePublication .Publication}}
                     <button class="dropdown-item"
                         hx-get="{{pathFor "publication_confirm_delete" "id" .Publication.ID|querySet "redirect-url" .CurrentURL.String}}"
