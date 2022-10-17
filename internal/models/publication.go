@@ -243,7 +243,7 @@ func (p *Publication) ClassificationChoices() []string {
 			"U",
 			"D1",
 		}
-	case "miscellaneous", "report", "preprint":
+	case "miscellaneous":
 		return []string{
 			"U",
 			"V",
@@ -763,23 +763,11 @@ func (p *Publication) InORCIDWorks(orcidID string) bool {
 	return false
 }
 
-func (p *Publication) FieldIsRequired() bool {
-	return true
+func (p *Publication) ShowPublicationAsRequired() bool {
+	return p.Type == "journal_article" || p.Type == "book_chapter"
 }
 
-func (p *Publication) PublicationIsRequired() bool {
-	return p.Type == "journal_article"
-}
-
-func (p *Publication) DefensePlaceIsRequired() bool {
-	return p.Type == "dissertation"
-}
-
-func (p *Publication) DefenseDateIsRequired() bool {
-	return p.Type == "dissertation"
-}
-
-func (p *Publication) DefenseTimeIsRequired() bool {
+func (p *Publication) ShowDefenseAsRequired() bool {
 	return p.Type == "dissertation"
 }
 
