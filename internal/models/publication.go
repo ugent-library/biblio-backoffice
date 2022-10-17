@@ -828,7 +828,7 @@ func (p *Publication) Validate() error {
 				Pointer: "/year",
 				Code:    "publication.year.required",
 			})
-		} else if !validation.IsYear(p.Year) {
+		} else if !validation.IsYear(p.Year) && !validation.IsSineDato(p.Year) {
 			errs = append(errs, &validation.Error{
 				Pointer: "/year",
 				Code:    "publication.year.invalid",
@@ -1086,7 +1086,7 @@ func (p *Publication) validateDissertation() (errs validation.Errors) {
 			Pointer: "/defense_date",
 			Code:    "publication.defense_date.required",
 		})
-	} else if !validation.IsDate(p.DefenseDate) {
+	} else if !validation.IsDate(p.DefenseDate) && !validation.IsSineDato(p.DefenseDate) {
 		errs = append(errs, &validation.Error{
 			Pointer: "/defense_date",
 			Code:    "publication.defense_date.invalid",
@@ -1097,12 +1097,13 @@ func (p *Publication) validateDissertation() (errs validation.Errors) {
 			Pointer: "/defense_time",
 			Code:    "publication.defense_time.required",
 		})
-	} else if !validation.IsTime(p.DefenseTime) {
+	} else if !validation.IsTime(p.DefenseTime) && !validation.IsSineDato(p.DefenseTime) {
 		errs = append(errs, &validation.Error{
 			Pointer: "/defense_time",
 			Code:    "publication.defense_time.invalid",
 		})
 	}
+
 	return
 }
 

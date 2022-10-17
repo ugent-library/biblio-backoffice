@@ -16,6 +16,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/bind"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
+	"github.com/ugent-library/biblio-backend/internal/validation"
 )
 
 const timestampFmt = "2006-01-02 15:04:05"
@@ -361,7 +362,7 @@ func (h *Handler) mapPublication(p *models.Publication) *Publication {
 		pp.Language = append(pp.Language, p.Language...)
 	}
 
-	if p.Year != "s.d." {
+	if validation.IsYear(p.Year) {
 		pp.Year = p.Year
 	}
 
@@ -456,12 +457,12 @@ func (h *Handler) mapPublication(p *models.Publication) *Publication {
 		pp.Conference.EndDate = p.ConferenceEndDate
 	}
 
-	if p.DefenseDate != "" {
+	if validation.IsDate(p.DefenseDate) {
 		if pp.Defense == nil {
 			pp.Defense = &Defense{}
 		}
 		pp.Defense.Date = p.DefenseDate
-		if p.DefenseTime != "" {
+		if validation.IsTime(p.DefenseTime) {
 			pp.Defense.Date = fmt.Sprintf("%s %s", pp.Defense.Date, p.DefenseTime)
 		}
 	}
