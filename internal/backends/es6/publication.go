@@ -364,17 +364,14 @@ func decodePublicationRes(res *esapi.Response, facets []string) (*models.Publica
 
 func (publications *Publications) Index(p *models.Publication) error {
 	doc := NewIndexedPublication(p)
-	body := M{
-		"doc":           doc,
-		"doc_as_upsert": true,
-	}
 
-	payload, err := json.Marshal(body)
+	payload, err := json.Marshal(doc)
 	if err != nil {
 		return err
 	}
+
 	ctx := context.Background()
-	res, err := esapi.UpdateRequest{
+	res, err := esapi.IndexRequest{
 		Index: publications.Client.Index,
 		// DocumentID: d.SnapshotID,
 		DocumentID: p.ID,
