@@ -113,6 +113,17 @@ func detailsForm(user *models.User, l *locale.Locale, p *models.Publication, err
 		})
 	}
 
+	if user.CanCurate() {
+		section1 = append(section1, &form.Checkbox{
+			Name:    "legacy",
+			Label:   l.T("builder.legacy"),
+			Value:   "true",
+			Checked: p.Legacy,
+			Cols:    9,
+			Error:   localize.ValidationErrorAt(l, errors, "/legacy"),
+		})
+	}
+
 	if len(section1) > 0 {
 		f.AddSection(section1...)
 	}

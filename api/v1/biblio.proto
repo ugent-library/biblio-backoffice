@@ -303,6 +303,7 @@ message Publication {
     repeated RelatedDataset dataset = 76;
     repeated Link link = 77;
     repeated OrcidWork orcid_work = 78;
+    bool legacy = 79;
 }
 
 message Dataset {

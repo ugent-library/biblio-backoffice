@@ -27,7 +27,7 @@ func (h *Handler) ConfirmPublish(w http.ResponseWriter, r *http.Request, ctx Con
 }
 
 func (h *Handler) Publish(w http.ResponseWriter, r *http.Request, ctx Context) {
-	if !ctx.User.CanPublishPublication(ctx.Publication) {
+	if !ctx.User.CanEditPublication(ctx.Publication) {
 		h.Logger.Warnw("publish dataset: user has no permission to publish", "user", ctx.User.ID, "publication", ctx.Publication.ID)
 		render.Forbidden(w, r)
 		return

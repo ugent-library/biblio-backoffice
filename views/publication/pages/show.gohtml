@@ -12,7 +12,7 @@
                     </div>
                 </div>
                 <div class="bc-toolbar-right">
-                   {{if and (.User.CanWithdrawPublication .Publication) (eq .Publication.Status "public") (not .Publication.Locked)}}
+                   {{if and (.User.CanEditPublication .Publication) (eq .Publication.Status "public") (not .Publication.Locked)}}
                     <div class="bc-toolbar-item">
                         <button class="btn btn-outline-danger"
                             hx-get="{{pathFor "publication_confirm_withdraw" "id" .Publication.ID|querySet "redirect-url" .CurrentURL.String}}"
@@ -23,7 +23,7 @@
                         </button>
                     </div>
                     {{end}}
-                    {{if and (.User.CanRepublishPublication .Publication) (eq .Publication.Status "returned") (not .Publication.Locked)}}
+                    {{if and (.User.CanEditPublication .Publication) (eq .Publication.Status "returned") (not .Publication.Locked)}}
                     <div class="bc-toolbar-item">
                         <button class="btn btn-success"
                             hx-get="{{pathFor "publication_confirm_republish" "id" .Publication.ID|querySet "redirect-url" .CurrentURL.String}}"
@@ -33,7 +33,7 @@
                         </button>
                     </div>
                     {{end}}
-                    {{if and (.User.CanPublishPublication .Publication) (ne .Publication.Status "returned") (ne .Publication.Status "public") (not .Publication.Locked)}}
+                    {{if and (.User.CanEditPublication .Publication) (ne .Publication.Status "returned") (ne .Publication.Status "public") (not .Publication.Locked)}}
                     <div class="bc-toolbar-item">
                         <button class="btn btn-success"
                             hx-get="{{pathFor "publication_confirm_publish" "id" .Publication.ID|querySet "redirect-url" .CurrentURL.String}}"
@@ -44,7 +44,7 @@
                     </div>
                     {{end}}
                     <div class="bc-toolbar-item">
-                        {{if and (.User.CanLockPublication .Publication) .Publication.Locked}}
+                        {{if and .User.CanCurate .Publication.Locked}}
                         <button class="btn btn-outline-secondary"
                             hx-post="{{pathFor "publication_unlock" "id" .Publication.ID|querySet "redirect-url" .CurrentURL.String}}"
                             hx-target="#modals"
@@ -53,7 +53,7 @@
                             <i class="if if-lock-unlock"></I>
                             <span class="btn-text">Unlock record</span>
                         </button>
-                        {{else if .User.CanLockPublication .Publication}}
+                        {{else if .User.CanCurate}}
                         <button class="btn btn-outline-secondary"
                             hx-post="{{pathFor "publication_lock" "id" .Publication.ID|querySet "redirect-url" .CurrentURL.String}}"
                             hx-target="#modals"

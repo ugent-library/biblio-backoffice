@@ -27,7 +27,7 @@ func (h *Handler) ConfirmWithdraw(w http.ResponseWriter, r *http.Request, ctx Co
 }
 
 func (h *Handler) Withdraw(w http.ResponseWriter, r *http.Request, ctx Context) {
-	if !ctx.User.CanWithdrawDataset(ctx.Dataset) {
+	if !ctx.User.CanEditDataset(ctx.Dataset) {
 		h.Logger.Warnw("withdraw dataset: user has no permission to withdraw", "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
 		render.Forbidden(w, r)
 		return

@@ -455,6 +455,9 @@
                         "description": { "type": "text" }
                     }
                 },
+                "legacy": {
+                    "type": "boolean"
+                },
                 "locked": {
                     "type": "boolean"
                 },
