@@ -58,46 +58,61 @@ func (s *Store) FilePath(checksum string) string {
 }
 
 func (s *Store) Add(r io.Reader) (string, error) {
+	return s.AddWithChecksum(r, "")
+}
+
+func (s *Store) AddWithChecksum(r io.Reader, oldChecksum string) (string, error) {
+
+	/*
+		write to two writers:
+		* tmp file (rewindable)
+		* hash writer for new checksum
+	*/
 	tmpFile, err := os.CreateTemp(s.tmpPath, "")
 	if err != nil {
 		return "", err
 	}
-	// fmt.Printf("%s\n", tmpFile.Name())
 	defer os.Remove(tmpFile.Name())
 
-	hash := sha256.New()
+	newHash := sha256.New()
 
-	w := io.MultiWriter(tmpFile, hash)
+	w := io.MultiWriter(tmpFile, newHash)
 
 	if _, err := io.Copy(w, r); err != nil {
 		return "", err
 	}
 
-	checksum := fmt.Sprintf("%x", hash.Sum(nil))
-	fnv32 := fmt.Sprintf("%d", fnvHash(checksum))
+	newChecksum := fmt.Sprintf("%x", newHash.Sum(nil))
 
-	// log.Printf("sha256: %s", checksum)
-	// log.Printf("fnv: %s", fnv32)
+	//check sha256 if given
+	if oldChecksum != "" && oldChecksum != newChecksum {
+		return "", fmt.Errorf(
+			"sha256 checksum did not match '%s', got '%s'",
+			oldChecksum,
+			newChecksum,
+		)
+	}
 
+	//write to final location
+	fnv32 := fmt.Sprintf("%d", fnvHash(newChecksum))
 	segmentedPath := segmentedPath(fnv32, 3)
-	// log.Printf("segmented path: %s", segmentedPath)
 	pathToDir := path.Join(s.rootPath, segmentedPath)
-	pathToFile := path.Join(pathToDir, checksum)
+	pathToFile := path.Join(pathToDir, newChecksum)
 
 	// file already stored
 	if _, err := os.Stat(pathToFile); !os.IsNotExist(err) {
-		return checksum, nil
+		return newChecksum, nil
 	}
 
 	if err := os.MkdirAll(pathToDir, os.ModePerm); err != nil {
 		return "", err
 	}
 
-	if err := os.Rename(tmpFile.Name(), path.Join(pathToDir, checksum)); err != nil {
+	if err := os.Rename(tmpFile.Name(), path.Join(pathToDir, newChecksum)); err != nil {
 		return "", err
 	}
 
-	return checksum, nil
+	return newChecksum, nil
 }
 
 // TODO remove empty intermediate directories
