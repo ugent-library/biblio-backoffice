@@ -21,7 +21,7 @@ func init() {
 	message.SetString(language.English, "publication.subnav.description", "Description")
 	message.SetString(language.English, "publication.subnav.contributors", "People & Affiliations")
 	message.SetString(language.English, "publication.subnav.datasets", "Datasets")
-	message.SetString(language.English, "publication.subnav.files", "Full text")
+	message.SetString(language.English, "publication.subnav.files", "Full text & Files")
 	message.SetString(language.English, "publication.subnav.activity", "Biblio Messages")
 	message.SetString(language.English, "publication.page.show.title", "Publication - Biblio")
 
