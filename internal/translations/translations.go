@@ -759,6 +759,9 @@ func init() {
 	message.SetString(language.English, "locked.false", "unlocked")
 	message.SetString(language.English, "has_message.true", "with message")
 	message.SetString(language.English, "has_message.false", "without message")
+	message.SetString(language.English, "legacy.true", "legacy publication")
+	message.SetString(language.English, "legacy.false", "normal publication")
+
 	message.SetString(language.English, "suggest_custom_data_format", "Use custom data format")
 
 	message.SetString(language.English, "publication.search.empty.title.all", "No registered publications yet")
