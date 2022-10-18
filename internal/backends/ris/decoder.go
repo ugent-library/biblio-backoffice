@@ -126,7 +126,7 @@ func mapRecord(r Record, p *models.Publication) {
 				p.Author = append(p.Author, c)
 			}
 		case "TI", "T1":
-			p.Title = v[0]
+			p.Title = strings.Join(v, "")
 		case "AB", "N2":
 			p.AddAbstract(&models.Text{Text: v[0], Lang: "und"})
 		case "KW", "DW", "ID", "DE":
