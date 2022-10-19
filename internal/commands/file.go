@@ -15,6 +15,7 @@ import (
 type importFile struct {
 	File   string `json:"file,omitempty"`
 	Sha256 string `json:"sha256,omitempty"`
+	Size   int64  `json:"size,omitempty"`
 }
 
 func init() {
@@ -164,6 +165,17 @@ var fileImportManyCmd = &cobra.Command{
 				os.Exit(1)
 			}
 
+			if errs := importFile.Validate(); len(errs) > 0 {
+				for _, e := range errs {
+					fmt.Fprintf(
+						os.Stderr, "validation error for line %d: %s\n",
+						lineNo,
+						e.Error(),
+					)
+				}
+				continue
+			}
+
 			id, addErr := addFileWithChecksum(fs, importFile.File, importFile.Sha256)
 			if addErr != nil {
 				fmt.Fprintf(os.Stderr, "unable add file %s : %s\n", importFile.File, addErr.Error())
@@ -177,4 +189,35 @@ var fileImportManyCmd = &cobra.Command{
 		}
 
 	},
+}
+
+func (f *importFile) Validate() (errs []error) {
+	// file: required
+	if f.File == "" {
+		errs = append(errs, errors.New("attribute 'file' is required"))
+	}
+	// size: required
+	if f.Size <= 0 {
+		errs = append(errs, errors.New("attribute 'size' should be 1 or higher"))
+	} else if f.File != "" {
+		fhStat, fhStatErr := os.Stat(f.File)
+		if fhStatErr != nil {
+			errs = append(errs, fmt.Errorf("file \"%s\" not found", f.File))
+		} else if fhStat.Size() != f.Size {
+			errs = append(
+				errs,
+				fmt.Errorf(
+					"file \"%s\" has different file size (%d <=> %d)",
+					f.File,
+					f.Size,
+					fhStat.Size(),
+				),
+			)
+		}
+	}
+	// sha256: required
+	if len(f.Sha256) != 64 {
+		errs = append(errs, errors.New("attribute 'sha256' is required and must be 64 characters long"))
+	}
+	return
 }
