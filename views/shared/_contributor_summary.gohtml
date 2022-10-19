@@ -9,6 +9,9 @@
         {{if .Current}}
         <span class="badge badge-pill badge-success"><i class="if if-check-circle"></i><span class="badge-text">Current selection</span></span>
         {{end}}
+        {{if .Active}}
+        <span class="badge badge-pill badge-default ml-3">Active UGent member</span>
+        {{end}}
       </h3>
       {{with .Contributor.Department}}
       <p class="text-muted">
@@ -33,9 +36,11 @@
           {{.}}
         </li>
         {{end}}
+        {{if and .Active .Contributor.UGentID}}
         <li class="c-meta-item">
-          <a href="#"><i class="if if-external-link"></i><span>View personal details</span></a>
+          <a href="https://telefoonboek.ugent.be/en/people/{{index .Contributor.UGentID 0}}" target="_blank"><i class="if if-external-link"></i><span>View personal details</span></a>
         </li>
+        {{end}}
       </ul>
     </div>
     {{else}}
