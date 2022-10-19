@@ -708,6 +708,7 @@ func init() {
 	message.SetString(language.English, "validation.publication.file.access_level_during_embargo.invalid", "The selected access level is not a valid access level value")
 	message.SetString(language.English, "validation.publication.file.access_level_after_embargo.invalid", "The selected access level is not a valid access level value")
 	message.SetString(language.English, "validation.publication.file.access_level_after_embargo.similar", "The access level after embargo end date can't be the same as the access level during embargo")
+	message.SetString(language.English, "validation.publication.file.size.empty", "File is empty")
 
 	message.SetString(language.English, "validation.publication.author.min_ugent_authors", "At least one UGent author is required")
 	message.SetString(language.English, "validation.publication.author.required", "One or more authors are required")

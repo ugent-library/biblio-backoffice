@@ -1104,6 +1104,13 @@ func (pf *PublicationFile) Validate() (errs validation.Errors) {
 		})
 	}
 
+	if pf.Size == 0 {
+		errs = append(errs, &validation.Error{
+			Pointer: "/size",
+			Code:    "size.empty",
+		})
+	}
+
 	if pf.ContentType == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/content_type",
