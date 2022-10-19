@@ -2,6 +2,7 @@ package ris
 
 import (
 	"bufio"
+	"fmt"
 	"io"
 	"regexp"
 	"strings"
@@ -177,12 +178,71 @@ func mapRecord(r Record, p *models.Publication) {
 			p.ArticleNumber = v[0]
 		case "PB", "PU":
 			p.Publisher = v[0]
-		case "CY", "PI":
+		case "PI":
 			p.PlaceOfPublication = v[0]
 		case "CT":
 			p.ConferenceName = v[0]
 		case "CL":
 			p.ConferenceLocation = v[0]
+		case "CY":
+			date := parseConferenceDate(v[0])
+			p.ConferenceStartDate = date[0]
+			p.ConferenceEndDate = date[1]
 		}
 	}
+}
+
+func parseConferenceDate(date string) [2]string {
+	var parts []string
+	var result [2]string
+	var r *regexp.Regexp
+
+	result[0] = ""
+	result[1] = ""
+
+	// Match for a YYYY
+	if ok, _ := regexp.MatchString("^[0-9]{4}$", date); ok {
+		result[0] = date
+		result[1] = date
+	}
+
+	// Match for a MMM, YYYY
+	if ok, _ := regexp.MatchString("^[A-Z]{3}, [0-9]{4}$", date); ok {
+		result[0] = date
+		result[1] = date
+	}
+
+	// Match for a MMM DD, YYYY
+	if ok, _ := regexp.MatchString("^[A-Z]{3}[\\s]*[0-9]{2}, [0-9]{4}$", date); ok {
+		result[0] = date
+		result[1] = date
+	}
+
+	// Match for MMM DD-DD, YYYY
+	if ok, _ := regexp.MatchString("^[A-Z]{3} [0-9]{2}-[0-9]{2}, [0-9]{4}$", date); ok {
+		r, _ = regexp.Compile("[0-9]{4}$")
+		year := r.FindString(date)
+
+		r, _ = regexp.Compile("^[A-Z]{3} [0-9]{2}-[0-9]{2}")
+		daysMonth := r.FindString(date)
+
+		parts = strings.Split(daysMonth, "-")
+		r, _ = regexp.Compile("^[A-Z]{3}")
+		month := r.FindString(parts[0])
+
+		result[0] = fmt.Sprintf("%s, %s", parts[0], year)
+		result[1] = fmt.Sprintf("%s %s, %s", month, parts[1], year)
+	}
+
+	// Match for a MMM DD-MMM DD, YYYY
+	if ok, _ := regexp.MatchString("^[A-Z]{3} [0-9]{2}-[A-Z]{3} [0-9]{2}, [0-9]{4}$", date); ok {
+		parts = strings.Split(date, "-")
+		r, _ = regexp.Compile("[0-9]{4}$")
+		year := r.FindString(parts[1])
+
+		result[0] = fmt.Sprintf("%s, %s", parts[0], year)
+		result[1] = parts[1]
+	}
+
+	return result
 }
