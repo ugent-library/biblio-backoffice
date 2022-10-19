@@ -20,7 +20,7 @@ type YieldLock struct {
 }
 
 func (h *Handler) Lock(w http.ResponseWriter, r *http.Request, ctx Context) {
-	if !ctx.User.CanLockPublication(ctx.Publication) {
+	if !ctx.User.CanCurate() {
 		h.Logger.Warnw("lock publication: user has no permission to lock", "user", ctx.User.ID, "publication", ctx.Publication.ID)
 		render.Forbidden(w, r)
 		return
@@ -66,7 +66,7 @@ func (h *Handler) Lock(w http.ResponseWriter, r *http.Request, ctx Context) {
 }
 
 func (h *Handler) Unlock(w http.ResponseWriter, r *http.Request, ctx Context) {
-	if !ctx.User.CanLockPublication(ctx.Publication) {
+	if !ctx.User.CanCurate() {
 		h.Logger.Warnw("unlock publication: user has no permission to lock", "user", ctx.User.ID, "publication", ctx.Publication.ID)
 		render.Forbidden(w, r)
 		return

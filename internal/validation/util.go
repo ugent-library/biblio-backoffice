@@ -31,18 +31,6 @@ func IsYear(val string) bool {
 	return e == nil && y > 0 && len(val) == 4
 }
 
-func IsSineDato(val string) bool {
-	return val == "s.d."
-}
-
-//	func IsSineLoco(val string) bool {
-//		return val == "s.l."
-//	}
-
-//	func IsSinenomine(val string) bool {
-//		return val == "s.n."
-//	}
-
 func IsPublicationType(val string) bool {
 	return InArray(vocabularies.Map["publication_types"], val)
 }

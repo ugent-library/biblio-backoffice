@@ -118,6 +118,7 @@ type Publication struct {
 	Keyword                 []string                `json:"keyword,omitempty"`
 	Language                []string                `json:"language,omitempty"`
 	LaySummary              []Text                  `json:"lay_summary,omitempty"`
+	Legacy                  bool                    `json:"legacy"`
 	Link                    []PublicationLink       `json:"link,omitempty"`
 	Locked                  bool                    `json:"locked"`
 	Message                 string                  `json:"message,omitempty"`
@@ -822,18 +823,17 @@ func (p *Publication) Validate() error {
 		})
 	}
 
-	if p.Status == "public" {
-		if p.Year == "" {
-			errs = append(errs, &validation.Error{
-				Pointer: "/year",
-				Code:    "publication.year.required",
-			})
-		} else if !validation.IsYear(p.Year) && !validation.IsSineDato(p.Year) {
-			errs = append(errs, &validation.Error{
-				Pointer: "/year",
-				Code:    "publication.year.invalid",
-			})
-		}
+	if p.Status == "public" && !p.Legacy && p.Year == "" {
+		errs = append(errs, &validation.Error{
+			Pointer: "/year",
+			Code:    "publication.year.required",
+		})
+	}
+	if p.Year != "" && !validation.IsYear(p.Year) {
+		errs = append(errs, &validation.Error{
+			Pointer: "/year",
+			Code:    "publication.year.invalid",
+		})
 	}
 
 	if p.Status == "public" {
@@ -847,7 +847,7 @@ func (p *Publication) Validate() error {
 		}
 	}
 
-	if p.Status == "public" && p.UsesLaySummary() {
+	if p.Status == "public" {
 		for i, l := range p.LaySummary {
 			for _, err := range l.Validate() {
 				errs = append(errs, &validation.Error{
@@ -867,7 +867,7 @@ func (p *Publication) Validate() error {
 	}
 
 	// at least one ugent author if not external
-	if p.Status == "public" && p.UsesAuthor() && !p.Extern {
+	if p.Status == "public" && !p.Legacy && p.UsesAuthor() && !p.Extern {
 		var hasUgentAuthors bool = false
 		for _, a := range p.Author {
 			if a.ID != "" {
@@ -888,27 +888,10 @@ func (p *Publication) Validate() error {
 			Pointer: "/editor",
 			Code:    "publication.editor.required",
 		})
-
-		// at least one ugent editor if not external
-		if !p.Extern {
-			var hasUgentEditors bool = false
-			for _, a := range p.Editor {
-				if a.ID != "" {
-					hasUgentEditors = true
-					break
-				}
-			}
-			if !hasUgentEditors {
-				errs = append(errs, &validation.Error{
-					Pointer: "/editor",
-					Code:    "publication.editor.min_ugent_editors",
-				})
-			}
-		}
 	}
 
 	// at least one ugent editor for editor types if not external
-	if p.Status == "public" && p.UsesEditor() && !p.UsesAuthor() && !p.Extern {
+	if p.Status == "public" && !p.Legacy && p.UsesEditor() && !p.UsesAuthor() && !p.Extern {
 		var hasUgentEditors bool = false
 		for _, a := range p.Editor {
 			if a.ID != "" {
@@ -924,7 +907,7 @@ func (p *Publication) Validate() error {
 		}
 	}
 
-	if p.Status == "public" && p.UsesSupervisor() && len(p.Supervisor) == 0 {
+	if p.Status == "public" && !p.Legacy && p.UsesSupervisor() && len(p.Supervisor) == 0 {
 		errs = append(errs, &validation.Error{
 			Pointer: "/supervisor",
 			Code:    "publication.supervisor.required",
@@ -992,14 +975,12 @@ func (p *Publication) Validate() error {
 		}
 	}
 
-	if p.Status == "public" {
-		for i, pl := range p.Link {
-			for _, err := range pl.Validate() {
-				errs = append(errs, &validation.Error{
-					Pointer: fmt.Sprintf("/link/%d%s", i, err.Pointer),
-					Code:    "publication.link." + err.Code,
-				})
-			}
+	for i, pl := range p.Link {
+		for _, err := range pl.Validate() {
+			errs = append(errs, &validation.Error{
+				Pointer: fmt.Sprintf("/link/%d%s", i, err.Pointer),
+				Code:    "publication.link." + err.Code,
+			})
 		}
 	}
 
@@ -1047,10 +1028,7 @@ func (p *Publication) validateJournalArticle() (errs validation.Errors) {
 			Code:    "publication.journal_article_type.invalid",
 		})
 	}
-	if p.Status != "public" {
-		return
-	}
-	if p.Publication == "" {
+	if p.Status == "public " && !p.Legacy && p.Publication == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/publication",
 			Code:    "publication.journal_article.publication.required",
@@ -1072,32 +1050,31 @@ func (p *Publication) validateBookChapter() (errs validation.Errors) {
 }
 
 func (p *Publication) validateDissertation() (errs validation.Errors) {
-	if p.Status != "public" {
-		return
-	}
-	if p.DefensePlace == "" {
+	if p.Status == "public" && !p.Legacy && p.DefensePlace == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/defense_place",
 			Code:    "publication.defense_place.required",
 		})
 	}
-	if p.DefenseDate == "" {
+	if p.Status == "public" && !p.Legacy && p.DefenseDate == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/defense_date",
 			Code:    "publication.defense_date.required",
 		})
-	} else if !validation.IsDate(p.DefenseDate) && !validation.IsSineDato(p.DefenseDate) {
+	}
+	if p.DefenseDate != "" && !validation.IsDate(p.DefenseDate) {
 		errs = append(errs, &validation.Error{
 			Pointer: "/defense_date",
 			Code:    "publication.defense_date.invalid",
 		})
 	}
-	if p.DefenseTime == "" {
+	if p.Status == "public" && !p.Legacy && p.DefenseTime == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/defense_time",
 			Code:    "publication.defense_time.required",
 		})
-	} else if !validation.IsTime(p.DefenseTime) && !validation.IsSineDato(p.DefenseTime) {
+	}
+	if p.DefenseTime != "" && !validation.IsTime(p.DefenseTime) {
 		errs = append(errs, &validation.Error{
 			Pointer: "/defense_time",
 			Code:    "publication.defense_time.invalid",

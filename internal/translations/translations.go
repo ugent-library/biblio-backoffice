@@ -233,6 +233,7 @@ func init() {
 	message.SetString(language.English, "builder.journal_article_type", "Article type")
 	message.SetString(language.English, "builder.keyword", "Keywords")
 	message.SetString(language.English, "builder.language", "Languages")
+	message.SetString(language.English, "builder.legacy", "Legacy publication")
 	message.SetString(language.English, "builder.license", "License")
 	message.SetString(language.English, "builder.message", "Message")
 	message.SetString(language.English, "builder.miscellaneous_type", "Miscellaneous type")
@@ -738,7 +739,7 @@ func init() {
 	//help texts
 	message.SetString(language.English, "builder.type.help", "Changing the publication type might result in data loss")
 	message.SetString(language.English, "builder.doi.help", "e.g. 10.1093/plcell/koc126")
-	message.SetString(language.English, "builder.year.help", "e.g. 2022 or 's.d.' if year is unknown")
+	message.SetString(language.English, "builder.year.help", "e.g. 2022")
 	message.SetString(language.English, "builder.other_license.help", "e.g. https://creativecommons.org/licenses/publicdomain/")
 	// message.SetString(language.English, "builder.file.other_license.help", "e.g. https://creativecommons.org/licenses/publicdomain/")
 	message.SetString(language.English, "builder.wos_id.help", "e.g. 000503382400004")
@@ -746,8 +747,8 @@ func init() {
 	message.SetString(language.English, "builder.eissn.help", "e.g. 2049-3630")
 	message.SetString(language.English, "builder.isbn.help", "e.g. 978-3-16-148410-0")
 	message.SetString(language.English, "builder.eisbn.help", "e.g. 978-3-16-148410-0")
-	message.SetString(language.English, "builder.defense_date.help", "e.g. 2022-04-30. Formatted as YYYY-mm-dd or 's.d.' if date is unknown")
-	message.SetString(language.English, "builder.defense_time.help", "e.g. 11:30. Formatted as HH:MM or 's.d.' if time is unknown")
+	message.SetString(language.English, "builder.defense_date.help", "e.g. 2022-04-30. Formatted as YYYY-mm-dd")
+	message.SetString(language.English, "builder.defense_time.help", "e.g. 11:30. Formatted as HH:MM")
 	message.SetString(language.English, "builder.pubmed_id.help", "e.g. 35172674")
 	message.SetString(language.English, "builder.arxiv_id.help", "e.g. 0706.0001")
 	message.SetString(language.English, "builder.esci_id.help", "e.g. 000752820200004")
@@ -758,6 +759,9 @@ func init() {
 	message.SetString(language.English, "locked.false", "unlocked")
 	message.SetString(language.English, "has_message.true", "with message")
 	message.SetString(language.English, "has_message.false", "without message")
+	message.SetString(language.English, "legacy.true", "legacy publication")
+	message.SetString(language.English, "legacy.false", "normal publication")
+
 	message.SetString(language.English, "suggest_custom_data_format", "Use custom data format")
 
 	message.SetString(language.English, "publication.search.empty.title.all", "No registered publications yet")

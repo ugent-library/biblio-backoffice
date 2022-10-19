@@ -3,7 +3,6 @@ package es6
 import (
 	"github.com/ugent-library/biblio-backend/internal/models"
 	internal_time "github.com/ugent-library/biblio-backend/internal/time"
-	"github.com/ugent-library/biblio-backend/internal/validation"
 )
 
 type indexedPublication struct {
@@ -15,8 +14,6 @@ type indexedPublication struct {
 	DateUpdated string `json:"date_updated"`
 	// index only field
 	HasMessage bool `json:"has_message"`
-	// only allow YYYY
-	Year string `json:"year,omitempty"`
 }
 
 func NewIndexedPublication(publication *models.Publication) *indexedPublication {
@@ -31,9 +28,6 @@ func NewIndexedPublication(publication *models.Publication) *indexedPublication 
 	}
 	if publication.DateUntil != nil {
 		ipub.DateUntil = internal_time.FormatTimeUTC(publication.DateUntil)
-	}
-	if !validation.IsYear(publication.Year) {
-		ipub.Year = ""
 	}
 
 	return ipub

@@ -536,6 +536,8 @@ func PublicationToMessage(p *models.Publication) *api.Publication {
 		})
 	}
 
+	msg.Legacy = p.Legacy
+
 	for _, val := range p.Supervisor {
 		msg.Supervisor = append(msg.Supervisor, &api.Contributor{
 			Id:        val.ID,
@@ -1028,6 +1030,8 @@ func MessageToPublication(msg *api.Publication) *models.Publication {
 			FullName:  val.FullName,
 		})
 	}
+
+	p.Legacy = msg.Legacy
 
 	p.Volume = msg.Volume
 
