@@ -29,7 +29,7 @@
     {{if .Publication.File}}
     <ul class="list-group list-group-flush">
         {{range .Publication.File}}
-        <li class="list-group-item">
+        {{/* <li class="list-group-item">
             <div class="d-flex">
                 <div class="d-flex align-items-center w-100">
                     <div class="position-relative">
@@ -96,6 +96,104 @@
                             <div class="list-group-item-meta-left">
                                 <div class="list-group-item-meta-item">
                                     <span class="text-muted c-body-small">Uploaded {{.DateCreated | date "02-01-2006 at 15:04"}}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li> */}}
+        <li class="list-group-item">
+            <div class="list-group-item-inner">
+                <div class="list-group-item-main u-min-w-0">
+                    <div class="c-thumbnail-and-text align-items-start d-block d-lg-flex">
+                            <a href="{{pathFor "publication_download_file" "id" $.Publication.ID "file_id" .ID}}">
+                            {{if and (eq .ContentType "application/pdf") (le .Size 25000000)}}
+                            <img class="list-group-item-thumbnail" src="{{pathFor "publication_file_thumbnail" "id" $.Publication.ID "file_id" .ID}}" height="156">
+                            {{else}}
+                            <div class="c-thumbnail c-thumbnail-5-4 mb-6 mb-xl-0 flex-shrink-0">
+                                <div class="c-thumbnail-inner">
+                                    <i class="if if-article"></I>
+                                </div>
+                            </div>
+                            {{end}}
+                        </a>
+                        <div class="c-thumbnail-text u-min-w-0">
+                            <div class="bc-toolbar bc-toolbar--auto">
+                                <div class="bc-toolbar-left">
+                                    {{if eq .AccessLevel "info:eu-repo/semantics/openAccess"}}
+                                    <div class="c-subline text-nowrap mr-3 pr-3 my-2">
+                                        <i class="if if-download if--small if--muted"></I>
+                                        <span class="c-subline text-truncate pl-2">{{$.Locale.TS "publication_file_access_levels" .AccessLevel}}</span>
+                                    </div>
+                                    {{else if eq .AccessLevel "info:eu-repo/semantics/restrictedAccess"}}
+                                    <div class="c-subline text-nowrap mr-3 pr-3 my-2">
+                                        <i class="if if-ghent-university if--small if--muted"></I>
+                                        <span class="c-subline text-truncate pl-2">{{$.Locale.TS "publication_file_access_levels" .AccessLevel}}</span>
+                                    </div>
+                                    {{else if eq .AccessLevel "info:eu-repo/semantics/closedAccess"}}
+                                    <div class="c-subline text-nowrap mr-3 pr-3 my-2">
+                                        <i class="if if-eye-off if--small if--muted"></I>
+                                        <span class="c-subline text-truncate pl-2">{{$.Locale.TS "publication_file_access_levels" .AccessLevel}}</span>
+                                    </div>
+                                    {{else if eq .AccessLevel "info:eu-repo/semantics/embargoedAccess"}}
+                                    <div class="c-subline text-nowrap mr-3 pr-3 my-2 border-right">
+                                        <i class="if if-time if--small"></I>
+                                        <span class="c-subline text-truncate pl-2">{{$.Locale.TS "publication_file_access_levels" .AccessLevel}}</span>
+                                    </div><div class="c-subline text-nowrap mr-3 pr-3 my-2 border-right">
+                                        {{if eq .AccessLevelDuringEmbargo "info:eu-repo/semantics/closedAccess"}}
+                                        <i class="if if-eye-off if--small if--primary"></I>
+                                        {{else}}
+                                        <i class="if if-ghent-university if--small if--primary"></I>
+                                        {{end}}
+                                        <span class="c-subline text-truncate pl-2">{{$.Locale.TS "publication_file_access_levels_during_embargo" .AccessLevelDuringEmbargo}}</span>
+                                    </div>
+                                    <div class="c-subline text-nowrap mr-3 pr-3 my-2">
+                                        {{if eq .AccessLevelAfterEmbargo "info:eu-repo/semantics/openAccess"}}
+                                        <i class="if if-download if--small if--muted"></I>
+                                        {{else}}
+                                        <i class="if if-ghent-university if--small if--muted"></I>
+                                        {{end}}
+                                        <span class="c-subline text-truncate pl-2">{{$.Locale.TS "publication_file_access_levels_after_embargo" .AccessLevelAfterEmbargo}} from {{.EmbargoDate | date "02-01-2006"}}</span>
+                                    </div>
+                                    {{end}}
+                                </div>
+                                <div class="bc-toolbar-right">
+                                    <div class="bc-toolbar-item ml-auto ml-lg-0">
+                                        {{if $canEditPublication}}
+                                        <div class="c-button-toolbar">
+                                            <button class="btn btn-icon-only" type="button"
+                                                hx-get="{{pathFor "publication_edit_file" "id" $.Publication.ID "file_id" .ID}}"
+                                                hx-headers='{"If-Match": "{{$.Publication.SnapshotID}}"}'
+                                                hx-swap="innerHTML"
+                                                hx-target="#modals"
+                                            >
+                                                <i class="if if-edit"></i>
+                                            </button>
+                                            <button class="btn btn-icon-only" type="button"
+                                                hx-get="{{pathFor "publication_confirm_delete_file" "id" $.Publication.ID "snapshot_id" $.Publication.SnapshotID "file_id" .ID}}"
+                                                hx-headers='{"If-Match": "{{$.Publication.SnapshotID}}"}'
+                                                hx-target="#modals"
+                                                hx-trigger="click"
+                                            >
+                                                <i class="if if-delete"></i>
+                                            </button>
+                                        </div>
+                                        {{end}}
+                                    </div>
+                                </div>
+                            </div>
+                            <h4 class="list-group-item-title">
+                                <a href="{{pathFor "publication_download_file" "id" $.Publication.ID "file_id" .ID}}">
+                                    <h4 class="c-h4">{{.Name}}</h4>
+                                </a>
+                            </h4>
+                            <p>Document type, Publication version</p>
+                            <div class="bc-toolbar bc-toolbar-responsive mt-3">
+                                <div class="bc-toolbar-left flex-wrap">
+                                <div class="bc-toolbar-item">
+                                    <span class="c-body-small text-muted text-truncate my-2">Uploaded {{.DateCreated | date "02-01-2006 at 15:04"}}</span>
+                                </div>
                                 </div>
                             </div>
                         </div>
