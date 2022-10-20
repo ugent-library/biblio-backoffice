@@ -224,7 +224,7 @@ func messageForm(user *models.User, l *locale.Locale, p *models.Publication, err
 				Value: p.Message,
 				Label: l.T("builder.message"),
 				Cols:  9,
-				Rows:  10,
+				Rows:  4,
 				Error: localize.ValidationErrorAt(
 					l,
 					errors,
@@ -263,7 +263,7 @@ func reviewerNoteForm(user *models.User, l *locale.Locale, p *models.Publication
 				Value: p.ReviewerNote,
 				Label: l.T("builder.reviewer_note"),
 				Cols:  9,
-				Rows:  10,
+				Rows:  4,
 				Error: localize.ValidationErrorAt(
 					l,
 					errors,

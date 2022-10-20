@@ -1,5 +1,5 @@
 <div class="dropdown">
-    <a class="badge badge-default mr-3" data-toggle="dropdown" data-persist="true" aria-haspopup="true"
+    <a class="badge badge-pill badge-default mr-3" data-toggle="dropdown" data-persist="true" aria-haspopup="true"
         aria-expanded="false" role="button">
         <span class="badge-text">Librarian tags</span>
         <div class="c-counter c-counter--small">{{len (.SearchArgs.FiltersFor "reviewer_tags")}}</div>
@@ -26,7 +26,7 @@
         {{end}}
         {{end}}
         {{end}}
-        <div class="dropdown-menu__body border-bottom">
+        <div class="p-6">
             {{$last := sub (len .Hits.Facets.reviewer_tags) 1}}
             {{range $i, $f := .Hits.Facets.reviewer_tags}}
             <div class="custom-control custom-checkbox{{if lt $i $last}} mb-4{{end}}">

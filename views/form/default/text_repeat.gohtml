@@ -1,5 +1,5 @@
 <div class="form-group row form-text-multiple{{if .Error}} is-invalid{{end}}">
-   <label class="col-lg-3 col-form-label d-flex align-items-stretch" for="{{.Name}}">
+   <label class="col-md-3 col-form-label d-flex align-items-stretch" for="{{.Name}}">
         {{.Label}}{{if .Required}}&nbsp;<abbr class="required" title="Required">*</abbr>{{end}}
         {{with .Tooltip}}
         <a class="text-muted mx-2" href="#" data-container="body" data-toggle="popover" data-trigger="focus" data-placement="right" data-content="{{.}}">
@@ -8,7 +8,7 @@
         </a>
         {{end}}
     </label>
-    <div class="col-lg-{{.Cols}} form-values">
+    <div class="col-md-{{.Cols}} form-values">
         {{range $i, $v := .Values}}
         <div class="form-value">
             <div class="d-flex mb-3">

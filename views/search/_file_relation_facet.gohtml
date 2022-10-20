@@ -1,5 +1,5 @@
 <div class="dropdown">
-    <a class="badge badge-default mr-3" data-toggle="dropdown" data-persist="true" aria-haspopup="true"
+    <a class="badge badge-pill badge-default mr-3" data-toggle="dropdown" data-persist="true" aria-haspopup="true"
         aria-expanded="false" role="button">
         <span class="badge-text">File type</span>
         <div class="c-counter c-counter--small">{{len (.SearchArgs.FiltersFor "file.relation")}}</div>
@@ -27,7 +27,7 @@
         {{end}}
         {{end}}
         {{end}}
-        <div class="dropdown-menu__body border-bottom">
+        <div class="p-6">
             {{$vals := index .Hits.Facets "file.relation"}}
             {{$last := sub (len $vals) 1}}
             {{range $i, $f := $vals}}
