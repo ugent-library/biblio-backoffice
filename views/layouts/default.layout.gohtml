@@ -15,19 +15,19 @@
 <body class="u-maximize-height overflow-hidden u-scroll-wrapper">
     <header>
         {{if eq appMode "development"}}
-        <div class="alert alert-warning mb-0" role="alert">
+        <div class="alert alert-warning mb-0 py-1" role="alert">
             <strong>Warning!</strong>&nbsp;This is the&nbsp;<strong>development</strong>&nbsp;version of the Biblio
             backend. Features may not work correctly and data entered here will
             not be retained.
         </div>
         {{else if eq appMode "staging"}}
-        <div class="alert alert-warning mb-0" role="alert">
+        <div class="alert alert-warning mb-0 py-1" role="alert">
             <strong>Warning!</strong>&nbsp;This is the&nbsp;<strong>test</strong>&nbsp;version of the Biblio
             backend. Data entered here will not be retained.
         </div>
         {{end}}
         {{if .OriginalUser}}
-        <div class="alert alert-danger mb-0" role="alert">
+        <div class="alert alert-danger mb-0 py-1" role="alert">
             <form class="form-inline" action="{{pathFor "delete_impersonation"}}" method="POST">
                 {{.CSRFTag}}
                 <label class="my-1 mr-2 font-weight-bold">Viewing the perspective of {{.User.FullName}}.</label>
@@ -35,7 +35,7 @@
             </form>
         </div>
         {{end}}
-        <div class="bc-navbar bc-navbar--bordered-bottom bc-navbar--white bc-navbar--fixed bc-navbar--scrollable shadow-sm px-4">
+        <div class="bc-navbar bc-navbar--small bc-navbar--bordered-bottom bc-navbar--white bc-navbar--fixed bc-navbar--scrollable shadow-sm px-4">
             <div class="bc-toolbar bc-toolbar-sm">
                 <div class="bc-toolbar-left">
                     <div class="bc-toolbar-item">
