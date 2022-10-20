@@ -416,12 +416,40 @@ func (s *Repository) GetPublicationDatasets(p *models.Publication) ([]*models.Da
 	return s.GetDatasets(datasetIds)
 }
 
+func (s *Repository) GetPublicationLiveDatasets(p *models.Publication) ([]*models.Dataset, error) {
+	datasets, err := s.GetPublicationDatasets(p)
+	if err != nil {
+		return nil, err
+	}
+	filteredDatasets := make([]*models.Dataset, 0, len(datasets))
+	for _, dataset := range datasets {
+		if dataset.Status != "deleted" {
+			filteredDatasets = append(filteredDatasets, dataset)
+		}
+	}
+	return filteredDatasets, nil
+}
+
 func (s *Repository) GetDatasetPublications(d *models.Dataset) ([]*models.Publication, error) {
 	publicationIds := make([]string, len(d.RelatedPublication))
 	for _, rp := range d.RelatedPublication {
 		publicationIds = append(publicationIds, rp.ID)
 	}
 	return s.GetPublications(publicationIds)
+}
+
+func (s *Repository) GetDatasetLivePublications(d *models.Dataset) ([]*models.Publication, error) {
+	publications, err := s.GetDatasetPublications(d)
+	if err != nil {
+		return nil, err
+	}
+	filteredPublications := make([]*models.Publication, 0, len(publications))
+	for _, publication := range publications {
+		if publication.Status != "deleted" {
+			filteredPublications = append(filteredPublications, publication)
+		}
+	}
+	return filteredPublications, nil
 }
 
 func (s *Repository) AddPublicationDataset(p *models.Publication, d *models.Dataset) error {
