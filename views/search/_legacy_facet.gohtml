@@ -1,5 +1,5 @@
 <div class="dropdown">
-    <a class="badge badge-pill badge-default mr-3" data-toggle="dropdown" data-persist="true" aria-haspopup="true"
+    <a class="badge badge-default mr-3" data-toggle="dropdown" data-persist="true" aria-haspopup="true"
         aria-expanded="false" role="button">
         <span class="badge-text">Legacy</span>
         <div class="c-counter c-counter--small">{{len (.SearchArgs.FiltersFor "legacy")}}</div>
@@ -9,7 +9,7 @@
         <div class="bc-navbar bc-navbar--bordered-bottom">
             <div class="bc-toolbar bc-toolbar--auto">
                 <div class="bc-toolbar-left">
-                    <h4 class="text-nowrap">UGent</h4>
+                    <h4 class="text-nowrap">Legacy</h4>
                 </div>
                 <div class="bc-toolbar-right">
                     <button type="button" class="btn btn-link form-check-all">Select all</button>
@@ -27,7 +27,7 @@
         {{end}}
         {{end}}
         {{end}}
-        <div class="p-6">
+        <div class="dropdown-menu__body">
             {{$last := sub (len .Hits.Facets.legacy) 1}}
             {{range $i, $f := .Hits.Facets.legacy}}
             <div class="custom-control custom-checkbox{{if lt $i $last}} mb-4{{end}}">
