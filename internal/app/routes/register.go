@@ -183,7 +183,7 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 	frontofficeRouter.HandleFunc("/frontoffice/dataset", frontofficeHandler.BasicAuth(frontofficeHandler.GetAllDatasets)).
 		Methods("GET")
 	// frontoffice file download
-	frontofficeRouter.HandleFunc("/frontoffice/publication/{id}/file/{file_id}", frontofficeHandler.DownloadFile).
+	frontofficeRouter.HandleFunc("/download/{id}/{file_id}", frontofficeHandler.DownloadFile).
 		Methods("GET")
 
 	csrfPath := basePath
