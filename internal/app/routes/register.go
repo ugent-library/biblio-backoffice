@@ -3,11 +3,13 @@ package routes
 import (
 	"net/http"
 	"net/url"
+	"strings"
 
 	"github.com/gorilla/csrf"
 	mw "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
+	"github.com/jpillora/ipfilter"
 	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/authenticating"
@@ -79,6 +81,11 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		Repository:               services.Repository,
 		DatasetSearchService:     services.DatasetSearchService,
 		PublicationSearchService: services.PublicationSearchService,
+		FileStore:                services.FileStore,
+		IPFilter: ipfilter.New(ipfilter.Options{
+			AllowedIPs:     strings.Split(viper.GetString("ip-ranges"), ","),
+			BlockByDefault: true,
+		}),
 	}
 	datasetSearchingHandler := &datasetsearching.Handler{
 		BaseHandler:          baseHandler,
@@ -165,15 +172,18 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 	// }
 	// r = r.Schemes(schemes...).Host(u.Host).PathPrefix(u.Path).Subrouter()
 
-	apiRouter := router.PathPrefix(basePath).Subrouter()
+	frontofficeRouter := router.PathPrefix(basePath).Subrouter()
 	// frontoffice data exchange api
-	apiRouter.HandleFunc("/frontoffice/publication/{id}", frontofficeHandler.Wrap(frontofficeHandler.GetPublication)).
+	frontofficeRouter.HandleFunc("/frontoffice/publication/{id}", frontofficeHandler.BasicAuth(frontofficeHandler.GetPublication)).
 		Methods("GET")
-	apiRouter.HandleFunc("/frontoffice/publication", frontofficeHandler.Wrap(frontofficeHandler.GetAllPublications)).
+	frontofficeRouter.HandleFunc("/frontoffice/publication", frontofficeHandler.BasicAuth(frontofficeHandler.GetAllPublications)).
 		Methods("GET")
-	apiRouter.HandleFunc("/frontoffice/dataset/{id}", frontofficeHandler.Wrap(frontofficeHandler.GetDataset)).
+	frontofficeRouter.HandleFunc("/frontoffice/dataset/{id}", frontofficeHandler.BasicAuth(frontofficeHandler.GetDataset)).
 		Methods("GET")
-	apiRouter.HandleFunc("/frontoffice/dataset", frontofficeHandler.Wrap(frontofficeHandler.GetAllDatasets)).
+	frontofficeRouter.HandleFunc("/frontoffice/dataset", frontofficeHandler.BasicAuth(frontofficeHandler.GetAllDatasets)).
+		Methods("GET")
+	// frontoffice file download
+	frontofficeRouter.HandleFunc("/frontoffice/publication/{id}/file/{file_id}", frontofficeHandler.DownloadFile).
 		Methods("GET")
 
 	csrfPath := basePath

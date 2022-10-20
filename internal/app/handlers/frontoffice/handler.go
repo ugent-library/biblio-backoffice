@@ -6,13 +6,17 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
+	"net/url"
 
 	"github.com/caltechlibrary/doitools"
 	"github.com/iancoleman/strcase"
+	"github.com/jpillora/ipfilter"
 	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers"
 	"github.com/ugent-library/biblio-backend/internal/backends"
+	"github.com/ugent-library/biblio-backend/internal/backends/filestore"
 	"github.com/ugent-library/biblio-backend/internal/bind"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
@@ -39,11 +43,13 @@ type Handler struct {
 	Repository               backends.Repository
 	PublicationSearchService backends.PublicationSearchService
 	DatasetSearchService     backends.DatasetSearchService
+	FileStore                *filestore.Store
+	IPFilter                 *ipfilter.IPFilter
 }
 
 // safe basic auth handling
 // see https://www.alexedwards.net/blog/basic-authentication-in-go
-func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request)) http.HandlerFunc {
+func (h *Handler) BasicAuth(fn func(http.ResponseWriter, *http.Request)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if username, password, ok := r.BasicAuth(); ok {
 			usernameHash := sha256.Sum256([]byte(username))
@@ -809,4 +815,52 @@ func (h *Handler) GetAllDatasets(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(j)
+}
+
+func (h *Handler) DownloadFile(w http.ResponseWriter, r *http.Request) {
+	vals := bind.PathValues(r)
+
+	p, err := h.Repository.GetPublication(vals.Get("id"))
+	if err != nil {
+		render.InternalServerError(w, r, err)
+		return
+	}
+
+	if p.Status != "public" {
+		render.Forbidden(w, r)
+		return
+	}
+
+	f := p.GetFile(vals.Get("file_id"))
+	if f == nil {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+
+	accessLevel := f.AccessLevel
+	if accessLevel == "info:eu-repo/semantics/embargoedAccess" {
+		accessLevel = f.AccessLevelDuringEmbargo
+	}
+
+	switch accessLevel {
+	case "info:eu-repo/semantics/openAccess":
+		// ok
+	case "info:eu-repo/semantics/restrictedAccess":
+		// check ip
+		ip, _, _ := net.SplitHostPort(r.RemoteAddr)
+		if !h.IPFilter.Allowed(ip) {
+			log.Printf("ip %s not allowed, allowed: %s", ip, viper.GetString("ip-ranges"))
+			render.Forbidden(w, r)
+			return
+		}
+	default:
+		render.Forbidden(w, r)
+		return
+	}
+
+	w.Header().Set(
+		"Content-Disposition",
+		fmt.Sprintf("attachment; filename*=UTF-8''%s", url.PathEscape(f.Name)),
+	)
+	http.ServeFile(w, r, h.FileStore.FilePath(f.SHA256))
 }
