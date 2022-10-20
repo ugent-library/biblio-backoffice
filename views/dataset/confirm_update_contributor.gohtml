@@ -13,7 +13,7 @@
                 <li class="list-group-item">
                     <div class="list-group-item-inner">
                         <div class="list-group-item-main">
-                            {{partial "shared/contributor_summary" (.Yield "Contributor" .Contributor "Current" false)}}
+                            {{partial "shared/contributor_summary" (.Yield "Contributor" .Contributor "Current" false "Active" .Active)}}
                         </div>
                         <div class="list-group-item-main contributor-attributes">
                             {{range .Form.Sections}}
