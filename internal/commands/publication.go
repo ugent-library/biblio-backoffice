@@ -16,6 +16,7 @@ import (
 func init() {
 	publicationGetCmd.Flags().StringP("format", "f", "jsonl", "export format")
 	publicationAddCmd.Flags().StringP("format", "f", "jsonl", "import format")
+	publicationImportCmd.Flags().StringP("format", "f", "jsonl", "import format")
 	publicationCmd.AddCommand(publicationGetCmd)
 	publicationCmd.AddCommand(publicationAllCmd)
 	publicationCmd.AddCommand(publicationAddCmd)
