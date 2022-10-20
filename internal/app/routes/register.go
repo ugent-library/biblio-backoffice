@@ -417,12 +417,11 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		datasetEditingHandler.Wrap(datasetEditingHandler.CreateProject)).
 		Methods("POST").
 		Name("dataset_create_project")
-	// TODO: weird project_id's not problematic in urls?
-	r.HandleFunc("/dataset/{id}/{snapshot_id}/projects/{project_id}/confirm-delete",
+	r.HandleFunc("/dataset/{id}/{snapshot_id}/projects/confirm-delete/{project_id:.+}",
 		datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmDeleteProject)).
 		Methods("GET").
 		Name("dataset_confirm_delete_project")
-	r.HandleFunc("/dataset/{id}/projects/{project_id}",
+	r.HandleFunc("/dataset/{id}/projects/{project_id:.+}",
 		datasetEditingHandler.Wrap(datasetEditingHandler.DeleteProject)).
 		Methods("DELETE").
 		Name("dataset_delete_project")
@@ -772,11 +771,13 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		publicationEditingHandler.Wrap(publicationEditingHandler.CreateProject)).
 		Methods("POST").
 		Name("publication_create_project")
-	r.HandleFunc("/publication/{id}/{snapshot_id}/projects/{project_id}/confirm-delete",
+	// project_id is last part of url because some id's contain slashes
+	r.HandleFunc("/publication/{id}/{snapshot_id}/projects/confirm-delete/{project_id:.+}",
 		publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDeleteProject)).
 		Methods("GET").
 		Name("publication_confirm_delete_project")
-	r.HandleFunc("/publication/{id}/projects/{project_id}",
+	// project_id is last part of url because some id's contain slashes
+	r.HandleFunc("/publication/{id}/projects/{project_id:.+}",
 		publicationEditingHandler.Wrap(publicationEditingHandler.DeleteProject)).
 		Methods("DELETE").
 		Name("publication_delete_project")
