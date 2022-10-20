@@ -1,5 +1,5 @@
 <div class="dropdown">
-    <a class="badge badge-pill badge-default mr-3" data-toggle="dropdown" data-persist="true" aria-haspopup="true"
+    <a class="badge badge-default mr-3" data-toggle="dropdown" data-persist="true" aria-haspopup="true"
         aria-expanded="false" role="button">
         <span class="badge-text">Created since</span>
         <div class="c-counter c-counter--small">{{len (.SearchArgs.FiltersFor "created_since")}}</div>
@@ -13,7 +13,7 @@
                 </div>
             </div>
         </div>
-        <div class="p-6">
+        <div class="dropdown-menu__body">
             <label class="col-form-label">Show records created since</label>
             <input class="form-control" type="text" name="f[created_since]" value="{{.SearchArgs.FilterFor "created_since"}}">
             <small class="form-text text-muted">Type a date (YYYY-MM-DD), year (YYYY) or timing (today, yesterday).</small>
