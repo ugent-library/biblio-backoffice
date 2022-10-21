@@ -304,6 +304,10 @@ message Publication {
     repeated Link link = 77;
     repeated OrcidWork orcid_work = 78;
     bool legacy = 79;
+    string vabb_type = 80;
+    string vabb_id = 81;
+    bool vabb_approved = 82;
+    repeated string vabb_year = 83;
 }
 
 message Dataset {
