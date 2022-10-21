@@ -61,6 +61,7 @@ message Contributor {
 
 message RelatedUser {
     string id = 1;
+    string Name = 2;
 }
 
 message RelatedPublication {

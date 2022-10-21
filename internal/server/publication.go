@@ -378,11 +378,17 @@ func PublicationToMessage(p *models.Publication) *api.Publication {
 	}
 
 	if p.Creator != nil {
-		msg.Creator = &api.RelatedUser{Id: p.Creator.ID}
+		msg.Creator = &api.RelatedUser{
+			Id:   p.Creator.ID,
+			Name: p.Creator.Name,
+		}
 	}
 
 	if p.User != nil {
-		msg.User = &api.RelatedUser{Id: p.User.ID}
+		msg.User = &api.RelatedUser{
+			Id:   p.User.ID,
+			Name: p.User.Name,
+		}
 	}
 
 	msg.Doi = p.DOI
@@ -865,11 +871,17 @@ func MessageToPublication(msg *api.Publication) *models.Publication {
 	}
 
 	if msg.Creator != nil {
-		p.Creator = &models.PublicationUser{ID: msg.Creator.Id}
+		p.Creator = &models.PublicationUser{
+			ID:   msg.Creator.Id,
+			Name: msg.Creator.Name,
+		}
 	}
 
 	if msg.User != nil {
-		p.User = &models.PublicationUser{ID: msg.User.Id}
+		p.User = &models.PublicationUser{
+			ID:   msg.User.Id,
+			Name: msg.User.Name,
+		}
 	}
 
 	p.DOI = msg.Doi

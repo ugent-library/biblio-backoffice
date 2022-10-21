@@ -8,7 +8,7 @@
 
             <div class="c-thumbnail-text u-min-w-0">
                 <div class="bc-toolbar bc-toolbar--auto">
-                    <div class="bc-toolbar-left">
+                    <div class="bc-toolbar-left flex-wrap">
                         <span class="c-subline text-nowrap pr-3 my-2">
                             {{partial "shared/status" .Publication}}
                         </span>
@@ -91,7 +91,7 @@
                     </div>
                     <div class="bc-toolbar-right flex-wrap">
                         <div class="bc-toolbar-item">
-                            <span class="c-body-small text-muted text-truncate my-2">Updated {{timeElapsed .Publication.DateUpdated "en"}}</span>
+                            <span class="c-body-small text-muted text-truncate my-2">Created {{timeElapsed .Publication.DateCreated "en"}}{{with .Publication.Creator}} by {{.Name}}{{end}}</span>
                         </div>
                         <div class="bc-toolbar-item">
                             <ul class="c-meta-list c-meta-list-horizontal flex-nowrap">
