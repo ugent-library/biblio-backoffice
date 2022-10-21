@@ -66,14 +66,18 @@ func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context
 	// buffer limit of 32MB
 	if err := r.ParseMultipartForm(32 << 20); err != nil {
 		h.Logger.Errorf("publication upload file: exceeded buffer limit:", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
+			Message: ctx.Locale.T("publication.file_upload_error"),
+		})
 		return
 	}
 
 	file, handler, err := r.FormFile("file")
 	if err != nil {
 		h.Logger.Errorf("publication upload file: could not process file", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
+			Message: ctx.Locale.T("publication.file_upload_error"),
+		})
 		return
 	}
 	defer file.Close()
@@ -83,7 +87,9 @@ func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context
 	_, err = file.Read(buff)
 	if err != nil {
 		h.Logger.Errorf("publication upload file: could not read file", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
+			Message: ctx.Locale.T("publication.file_upload_error"),
+		})
 		return
 	}
 	filetype := http.DetectContentType(buff)
@@ -92,7 +98,9 @@ func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context
 	_, err = file.Seek(0, io.SeekStart)
 	if err != nil {
 		h.Logger.Errorf("publication upload file: could not read file", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
+			Message: ctx.Locale.T("publication.file_upload_error"),
+		})
 		return
 	}
 
@@ -101,7 +109,9 @@ func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context
 
 	if err != nil {
 		h.Logger.Errorf("publication upload file: could not save file", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
+			Message: ctx.Locale.T("publication.file_upload_error"),
+		})
 		return
 	}
 
