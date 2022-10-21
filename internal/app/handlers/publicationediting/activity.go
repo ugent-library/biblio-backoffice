@@ -216,7 +216,7 @@ func (h *Handler) UpdateReviewerNote(w http.ResponseWriter, r *http.Request, ctx
 
 func messageForm(user *models.User, l *locale.Locale, p *models.Publication, errors validation.Errors) *form.Form {
 	return form.New().
-		WithTheme("default").
+		WithTheme("cols").
 		WithErrors(localize.ValidationErrors(l, errors)).
 		AddSection(
 			&form.TextArea{
@@ -255,7 +255,7 @@ func reviewerTagsForm(user *models.User, l *locale.Locale, p *models.Publication
 
 func reviewerNoteForm(user *models.User, l *locale.Locale, p *models.Publication, errors validation.Errors) *form.Form {
 	return form.New().
-		WithTheme("default").
+		WithTheme("cols").
 		WithErrors(localize.ValidationErrors(l, errors)).
 		AddSection(
 			&form.TextArea{
