@@ -3,6 +3,8 @@ package models
 import (
 	"errors"
 	"fmt"
+	"regexp"
+	"strings"
 	"time"
 
 	"github.com/ugent-library/biblio-backend/internal/pagination"
@@ -159,6 +161,7 @@ type Publication struct {
 	Year                    string                  `json:"year,omitempty"`
 }
 
+// TODO determine which file passes access level to top
 func (p *Publication) AccessLevel() string {
 	for _, a := range vocabularies.Map["publication_file_access_levels"] {
 		for _, file := range p.File {
@@ -204,6 +207,115 @@ func (p *Publication) SetFile(f *PublicationFile) {
 			p.File[i] = f
 		}
 	}
+}
+
+// TODO determine which file will be the primary file for thumbnails, etc.
+//   This isn't necessarily the same file as the primary file used to indicate
+//   the access level across the entire publication (e.g. summaries)
+func (p *Publication) PrimaryFile() *PublicationFile {
+	for _, file := range p.File {
+		if file.AccessLevel != "" && file.Relation == "main_file" {
+			return file
+		}
+	}
+
+	return nil
+}
+
+// format: c:vabb:419551 (VABB-1, not approved, 2017
+func (p *Publication) VABB() string {
+	VABBID := "-"
+	VABBType := "-"
+	VABBApproved := "not approved"
+	VABBYear := "-"
+
+	if p.VABBID != "" {
+		VABBID = p.VABBID
+	}
+
+	if p.VABBType != "" {
+		VABBType = p.VABBType
+	}
+
+	if p.VABBApproved {
+		VABBApproved = "approved"
+	}
+
+	if len(p.VABBYear) > 0 {
+		VABBYear = strings.Join(p.VABBYear, ", ")
+	}
+
+	return fmt.Sprintf("%s (%s, %s, %s)", VABBID, VABBType, VABBApproved, VABBYear)
+}
+
+// Citation
+func (p *Publication) Reference() string {
+	ref := ""
+
+	ref_page := ""
+	ref_publisher := ""
+	ref_parent := ""
+	year := ""
+	volume := ""
+	issue := ""
+
+	if p.PublicationAbbreviation != "" {
+		ref_parent = fmt.Sprintf(" %s ", p.PublicationAbbreviation)
+	} else if p.Publication != "" {
+		ref_parent = fmt.Sprintf(" %s ", p.Publication)
+	}
+
+	if p.Year != "" {
+		year = fmt.Sprintf(" %s.", p.Year)
+	}
+
+	if p.Publisher != "" {
+		ref_publisher = fmt.Sprintf(" %s.", p.Publisher)
+	}
+
+	if p.Volume != "" {
+		volume = fmt.Sprintf(" %s", p.Volume)
+	}
+
+	if p.Issue != "" {
+		issue = fmt.Sprintf(" (%s) ", p.Issue)
+	}
+
+	if p.PageFirst != "" || p.PageLast != "" {
+		fp := ""
+		lp := ""
+		delim := ""
+
+		if p.PageFirst != "" {
+			fp = p.PageFirst
+		}
+
+		if p.PageLast != "" {
+			lp = p.PageLast
+			delim = "-"
+		}
+
+		ref_page = fmt.Sprintf(" %s%s%s ", fp, delim, lp)
+	}
+
+	ref = fmt.Sprintf("%s%s%s%s%s%s", ref_parent, year, ref_publisher, volume, issue, ref_page)
+
+	var r *regexp.Regexp
+	r = regexp.MustCompile(`^[ \.]+`)
+	ref = r.ReplaceAllString(ref, "")
+	r = regexp.MustCompile(`^\s*`)
+	ref = r.ReplaceAllString(ref, "")
+	r = regexp.MustCompile(`\s*$`)
+	ref = r.ReplaceAllString(ref, "")
+	r = regexp.MustCompile(`\.+`)
+	ref = r.ReplaceAllString(ref, ".")
+	r = regexp.MustCompile(`^\W*$`)
+
+	if r.MatchString(ref) {
+		ref = ""
+	}
+
+	return ref
 }
 
 func (p *Publication) ClassificationChoices() []string {

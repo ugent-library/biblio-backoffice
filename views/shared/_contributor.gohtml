@@ -1,11 +1,11 @@
-<div class="c-author">
-	<span class="c-link c-link-muted">{{.FirstName}} {{.LastName}}</span>
-	{{with .ORCID}}
-	<i class="if if-orcid" data-toggle="tooltip"
-		title="Author with ORCID" data-placement="bottom"></i>
-	{{end}}
+<div class="c-meta-item">
 	{{with .ID}}
 	<i class="if if-ghent-university" data-toggle="tooltip"
-		title="UGent author" data-placement="bottom"></i>
+		title="" data-placement="bottom" data-original-title="UGent author"></i>
 	{{end}}
+	{{with .ORCID}}
+	<i class="if if-orcid" data-toggle="tooltip"
+		title="" data-placement="bottom" data-original-title="Author with ORCID"></i>
+	{{end}}
+	<span>{{.FirstName}} {{.LastName}}</span>
 </div>

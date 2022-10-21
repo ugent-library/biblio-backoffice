@@ -593,6 +593,11 @@ func PublicationToMessage(p *models.Publication) *api.Publication {
 
 	msg.PubmedId = p.PubMedID
 
+	msg.VabbId = p.VABBID
+	msg.VabbApproved = p.VABBApproved
+	msg.VabbType = p.VABBType
+	msg.VabbYear = p.VABBYear
+
 	switch p.JournalArticleType {
 	case "original":
 		msg.JournalArticleType = api.Publication_JOURNAL_ARTICLE_TYPE_ORIGINAL
@@ -1076,6 +1081,11 @@ func MessageToPublication(msg *api.Publication) *models.Publication {
 	p.Publisher = msg.Publisher
 
 	p.PubMedID = msg.PubmedId
+
+	p.VABBID = msg.VabbId
+	p.VABBApproved = msg.VabbApproved
+	p.VABBType = msg.VabbType
+	p.VABBYear = msg.VabbYear
 
 	switch msg.JournalArticleType {
 	case api.Publication_JOURNAL_ARTICLE_TYPE_ORIGINAL:
