@@ -236,7 +236,7 @@ func messageForm(user *models.User, l *locale.Locale, p *models.Publication, err
 
 func reviewerTagsForm(user *models.User, l *locale.Locale, p *models.Publication, errors validation.Errors) *form.Form {
 	return form.New().
-		WithTheme("default").
+		WithTheme("cols").
 		WithErrors(localize.ValidationErrors(l, errors)).
 		AddSection(
 			&form.TextRepeat{
