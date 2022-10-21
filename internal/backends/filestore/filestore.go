@@ -2,6 +2,7 @@ package filestore
 
 import (
 	"crypto/sha256"
+	"errors"
 	"fmt"
 	"hash/fnv"
 	"io"
@@ -62,7 +63,6 @@ func (s *Store) Add(r io.Reader) (string, error) {
 }
 
 func (s *Store) AddWithChecksum(r io.Reader, oldChecksum string) (string, error) {
-
 	/*
 		write to two writers:
 		* tmp file (rewindable)
@@ -78,8 +78,12 @@ func (s *Store) AddWithChecksum(r io.Reader, oldChecksum string) (string, error)
 
 	w := io.MultiWriter(tmpFile, newHash)
 
-	if _, err := io.Copy(w, r); err != nil {
+	bytesWritten, err := io.Copy(w, r)
+	if err != nil {
 		return "", err
+	}
+	if bytesWritten == 0 {
+		return "", errors.New("file can't be empty")
 	}
 
 	newChecksum := fmt.Sprintf("%x", newHash.Sum(nil))

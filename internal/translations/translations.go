@@ -725,6 +725,8 @@ func init() {
 	message.SetString(language.English, "publication.conflict_error", "Publication has been modified by another user.")
 	message.SetString(language.English, "publication.conflict_error_reload", "Publication has been modified by another user. Please reload the page.")
 
+	message.SetString(language.English, "publication.file_upload_error", "File upload failed.")
+
 	message.SetString(language.English, "builder.file.title", "Title")
 	message.SetString(language.English, "builder.file.relation", "Document type")
 	message.SetString(language.English, "builder.file.publication_version", "Publication version")
