@@ -87,12 +87,23 @@
                 </div>
             </div>
         </div>
-        <div class="c-divider mt-0 mx-6"></div>
+        <div class="c-divider mt-0 mx-6 mb-4"></div>
         <div id="summary">
             <div class="mx-6">
                 <div class="c-thumbnail-text u-min-w-0">
-                    <div class="bc-toolbar bc-toolbar--auto flex-column-reverse flex-lg-row align-items-stretch align-items-lg-center mt-n3">
-                      <div class="bc-toolbar-left overflow-hidden flex-wrap">
+                    <div class="bc-toolbar bc-toolbar--auto bc-toolbar--responsive mb-3">
+                      <div class="bc-toolbar-left flex-wrap">
+                        <div class="bc-toolbar-item">
+                            {{partial "shared/status" .Dataset}}
+                        </div>
+                        {{if .Dataset.Locked}}
+                        <div class="bc-toolbar-item">
+                            <span class="c-subline text-nowrap pr-5 border-right" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Locked for editing">
+                              <i class="if if-lock if--small if--muted"></i>
+                              <span class="text-muted c-body-small ml-2">Locked</span>
+                            </span>
+                        </div>
+                        {{end}}
                       </div>
                       <div class="bc-toolbar-right">
                         <div class="bc-toolbar-item mr-auto mr-lg-0">
@@ -121,26 +132,12 @@
                             Untitled record
                         {{end}}
                     </h4>
-                    <div class="bc-toolbar bc-toolbar-responsive flex-wrap-reverse">
-                      <div class="bc-toolbar-left flex-wrap">
-                        <div class="bc-toolbar-item my-2">
-                            {{partial "shared/status" .Dataset}}
-                        </div>
-                        {{if .Dataset.Locked}}
-                        <div class="bc-toolbar-item my-2">
-                            <span class="c-meta-item" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Locked for editing">
-                              <i class="if if-lock if--small if--muted"></i>
-                            </span>
-                        </div>
-                        {{end}}
-                      </div>
-                    </div>
                   </div>
              </div>
         </div>
-        <div class="c-divider mb-2 mx-6"></div>
-        <div class="bc-navbar bc-navbar--white bc-navbar--bordered-bottom">
-            <div class="bc-toolbar">
+        <div class="c-divider mb-2 mx-6 mt-4"></div>
+        <div class="bc-navbar bc-navbar--auto bc-navbar--white bc-navbar--bordered-bottom">
+            <div class="bc-toolbar bc-toolbar--auto">
                 <div class="bc-toolbar-left">
                     <div class="bc-toolbar-item" id="show-nav">
                         {{partial "dataset/show_nav" .}}

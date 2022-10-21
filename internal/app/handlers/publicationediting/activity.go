@@ -216,7 +216,7 @@ func (h *Handler) UpdateReviewerNote(w http.ResponseWriter, r *http.Request, ctx
 
 func messageForm(user *models.User, l *locale.Locale, p *models.Publication, errors validation.Errors) *form.Form {
 	return form.New().
-		WithTheme("default").
+		WithTheme("cols").
 		WithErrors(localize.ValidationErrors(l, errors)).
 		AddSection(
 			&form.TextArea{
@@ -224,7 +224,7 @@ func messageForm(user *models.User, l *locale.Locale, p *models.Publication, err
 				Value: p.Message,
 				Label: l.T("builder.message"),
 				Cols:  9,
-				Rows:  4,
+				Rows:  10,
 				Error: localize.ValidationErrorAt(
 					l,
 					errors,
@@ -236,7 +236,7 @@ func messageForm(user *models.User, l *locale.Locale, p *models.Publication, err
 
 func reviewerTagsForm(user *models.User, l *locale.Locale, p *models.Publication, errors validation.Errors) *form.Form {
 	return form.New().
-		WithTheme("default").
+		WithTheme("cols").
 		WithErrors(localize.ValidationErrors(l, errors)).
 		AddSection(
 			&form.TextRepeat{
@@ -255,7 +255,7 @@ func reviewerTagsForm(user *models.User, l *locale.Locale, p *models.Publication
 
 func reviewerNoteForm(user *models.User, l *locale.Locale, p *models.Publication, errors validation.Errors) *form.Form {
 	return form.New().
-		WithTheme("default").
+		WithTheme("cols").
 		WithErrors(localize.ValidationErrors(l, errors)).
 		AddSection(
 			&form.TextArea{
@@ -263,7 +263,7 @@ func reviewerNoteForm(user *models.User, l *locale.Locale, p *models.Publication
 				Value: p.ReviewerNote,
 				Label: l.T("builder.reviewer_note"),
 				Cols:  9,
-				Rows:  4,
+				Rows:  10,
 				Error: localize.ValidationErrorAt(
 					l,
 					errors,

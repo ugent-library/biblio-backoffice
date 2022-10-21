@@ -1,5 +1,5 @@
 <div class="form-group row">
-    <label class="col-md-3 col-form-label d-flex align-items-stretch" for="{{.Name}}">
+    <label class="col-lg-3 col-form-label d-flex align-items-stretch" for="{{.Name}}">
          {{.Label}}{{if .Required}}&nbsp;<abbr class="required" title="Required">*</abbr>{{end}}
          {{if .Tooltip}}
          <a class="text-muted mx-2" href="#" data-container="body" data-toggle="popover" data-trigger="focus" data-placement="right" data-content="{{.Tooltip}}">
@@ -8,7 +8,7 @@
          </a>
          {{end}}
      </label>
-     <div class="col-md-{{.Cols}} form-values">
+     <div class="col-lg-{{.Cols}} form-values">
          {{range $i, $v := .Values}}
          <div class="d-flex mb-3 form-value">
              <select class="custom-select form-control" name="{{$.Name}}[{{$i}}]" data-tmpl-name="{{$.Name}}[{i}]">
