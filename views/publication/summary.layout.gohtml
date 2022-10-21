@@ -68,6 +68,13 @@
                     </div>
                 </div>
                 <h4 class="list-group-item-title">
+                    {{if .User.CanCurate}}
+                    {{if .Publication.Title}}
+                        {{.Publication.Title}}
+                    {{else}}
+                        Untitled record
+                    {{end}}
+                    {{else}}
                     <a href="{{.PublicationURL}}">
                     {{if .Publication.Title}}
                         {{.Publication.Title}}
@@ -75,6 +82,7 @@
                         Untitled record
                     {{end}}
                     </a>
+                    {{end}}
                 </h4>
 
                 <div class="c-meta-list c-meta-list-horizontal">
