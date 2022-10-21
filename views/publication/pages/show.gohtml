@@ -12,53 +12,46 @@
                     </div>
                 </div>
                 <div class="bc-toolbar-right">
-                   {{if and (.User.CanEditPublication .Publication) (eq .Publication.Status "public") (not .Publication.Locked)}}
+                    {{if and (.User.CanEditPublication .Publication) (eq .Publication.Status "public") (not
+                    .Publication.Locked)}}
                     <div class="bc-toolbar-item">
-                        <button class="btn btn-outline-danger"
-                            hx-get="{{pathFor "publication_confirm_withdraw" "id" .Publication.ID|querySet "redirect-url" .CurrentURL.String}}"
-                            hx-target="#modals"
-                        >
+                        <button class="btn btn-outline-danger" hx-get="{{pathFor " publication_confirm_withdraw" "id"
+                            .Publication.ID|querySet "redirect-url" .CurrentURL.String}}" hx-target="#modals">
                             <i class="if if-arrow-go-back"></I>
                             <span class="btn-text">Withdraw</span>
                         </button>
                     </div>
                     {{end}}
-                    {{if and (.User.CanEditPublication .Publication) (eq .Publication.Status "returned") (not .Publication.Locked)}}
+                    {{if and (.User.CanEditPublication .Publication) (eq .Publication.Status "returned") (not
+                    .Publication.Locked)}}
                     <div class="bc-toolbar-item">
-                        <button class="btn btn-success"
-                            hx-get="{{pathFor "publication_confirm_republish" "id" .Publication.ID|querySet "redirect-url" .CurrentURL.String}}"
-                            hx-target="#modals"
-                        >
+                        <button class="btn btn-success" hx-get="{{pathFor " publication_confirm_republish" "id"
+                            .Publication.ID|querySet "redirect-url" .CurrentURL.String}}" hx-target="#modals">
                             <div class="btn-text">Republish to Biblio</div>
                         </button>
                     </div>
                     {{end}}
-                    {{if and (.User.CanEditPublication .Publication) (ne .Publication.Status "returned") (ne .Publication.Status "public") (not .Publication.Locked)}}
+                    {{if and (.User.CanEditPublication .Publication) (ne .Publication.Status "returned") (ne
+                    .Publication.Status "public") (not .Publication.Locked)}}
                     <div class="bc-toolbar-item">
-                        <button class="btn btn-success"
-                            hx-get="{{pathFor "publication_confirm_publish" "id" .Publication.ID|querySet "redirect-url" .CurrentURL.String}}"
-                            hx-target="#modals"
-                        >
+                        <button class="btn btn-success" hx-get="{{pathFor " publication_confirm_publish" "id"
+                            .Publication.ID|querySet "redirect-url" .CurrentURL.String}}" hx-target="#modals">
                             <div class="btn-text">Publish to Biblio</div>
                         </button>
                     </div>
                     {{end}}
                     <div class="bc-toolbar-item">
                         {{if and .User.CanCurate .Publication.Locked}}
-                        <button class="btn btn-outline-secondary"
-                            hx-post="{{pathFor "publication_unlock" "id" .Publication.ID|querySet "redirect-url" .CurrentURL.String}}"
-                            hx-target="#modals"
-                            hx-headers='{"If-Match": "{{.Publication.SnapshotID}}"}'
-                        >
+                        <button class="btn btn-outline-secondary" hx-post="{{pathFor " publication_unlock" "id"
+                            .Publication.ID|querySet "redirect-url" .CurrentURL.String}}" hx-target="#modals"
+                            hx-headers='{"If-Match": "{{.Publication.SnapshotID}}"}'>
                             <i class="if if-lock-unlock"></I>
                             <span class="btn-text">Unlock record</span>
                         </button>
                         {{else if .User.CanCurate}}
-                        <button class="btn btn-outline-secondary"
-                            hx-post="{{pathFor "publication_lock" "id" .Publication.ID|querySet "redirect-url" .CurrentURL.String}}"
-                            hx-target="#modals"
-                            hx-headers='{"If-Match": "{{.Publication.SnapshotID}}"}'
-                        >
+                        <button class="btn btn-outline-secondary" hx-post="{{pathFor " publication_lock" "id"
+                            .Publication.ID|querySet "redirect-url" .CurrentURL.String}}" hx-target="#modals"
+                            hx-headers='{"If-Match": "{{.Publication.SnapshotID}}"}'>
                             <i class="if if-lock"></I>
                             <span class="btn-text">Lock record</span>
                         </button>
@@ -66,29 +59,24 @@
                     </div>
                     <div class="bc-toolbar-item">
                         <div class="dropdown dropleft">
-                            <button class="btn btn-outline-primary btn-icon-only"
-                                type="button" data-toggle="dropdown"
+                            <button class="btn btn-outline-primary btn-icon-only" type="button" data-toggle="dropdown"
                                 aria-haspopup="true" aria-expanded="false">
                                 <i class="if if-more"></i>
                             </button>
                             <div class="dropdown-menu">
                                 {{/*
                                 {{if and (eq .Publication.Status "public") .User.ORCID .User.ORCIDToken}}
-                                <button class="dropdown-item"
-                                    hx-post="{{pathFor "publication_orcid_add" "id" .Publication.ID}}"
-                                    hx-target="#publication-{{.Publication.ID}}-orcid-status"
-                                    hx-swap="outerHTML"
-                                >
+                                <button class="dropdown-item" hx-post="{{pathFor " publication_orcid_add" "id"
+                                    .Publication.ID}}" hx-target="#publication-{{.Publication.ID}}-orcid-status"
+                                    hx-swap="outerHTML">
                                     <i class="if if-orcid" style="color: #A6CE39"></i>
                                     <span>Send to ORCID</span>
                                 </button>
                                 {{end}}
                                 */}}
                                 {{if .User.CanDeletePublication .Publication}}
-                                <a class="dropdown-item" href="#"
-                                    hx-get="{{pathFor "publication_confirm_delete" "id" .Publication.ID|querySet "redirect-url" .RedirectURL}}"
-                                    hx-target="#modals"
-                                >
+                                <a class="dropdown-item" href="#" hx-get="{{pathFor " publication_confirm_delete" "id"
+                                    .Publication.ID|querySet "redirect-url" .RedirectURL}}" hx-target="#modals">
                                     <i class="if if-delete"></i>
                                     <span>Delete</span>
                                 </a>
@@ -106,80 +94,64 @@
             <div class="mx-6">
                 <div class="c-thumbnail-text u-min-w-0">
                     <div class="bc-toolbar bc-toolbar--auto bc-toolbar--responsive mb-3">
-                      <div class="bc-toolbar-left flex-wrap">
-                        <div class="bc-toolbar-item">
-                            {{partial "shared/status" .Publication}}
+                        <div class="bc-toolbar-left flex-wrap">
+                            <div class="bc-toolbar-item">
+                                {{partial "shared/status" .Publication}}
+                            </div>
+                            {{with .Publication.PublicationStatus}}
+                            <div class="bc-toolbar-item">
+                                <p class="c-subline text-nowrap pr-5 border-right">{{$.Locale.TS
+                                    "publication_publishing_statuses" .}}</p>
+                            </div>
+                            {{end}}
+                            {{if .Publication.Locked}}
+                            <div class="bc-toolbar-item">
+                                <span class="c-subline text-nowrap pr-5 border-right" data-toggle="tooltip" title=""
+                                    data-placement="bottom" data-original-title="Locked for editing">
+                                    <i class="if if-lock if--small if--muted"></i>
+                                    <span class="text-muted c-body-small ml-2">Locked</span>
+                                </span>
+                            </div>
+                            {{end}}
+                            <div class="bc-toolbar-item">
+                                <span class="c-subline text-nowrap">
+                                    {{.Locale.TS "publication_types" .Publication.Type}}
+                                    {{with .Publication.Classification}}: {{.}}{{end}}
+                                </span>
+                            </div>
                         </div>
-                        {{with .Publication.PublicationStatus}}
-                        <div class="bc-toolbar-item">
-                            <p class="c-subline text-nowrap pr-5 border-right">{{$.Locale.TS "publication_publishing_statuses" .}}</p>
-                        </div>
-                        {{end}}
-                        {{if .Publication.Locked}}
-                        <div class="bc-toolbar-item">
-                            <span class="c-subline text-nowrap pr-5 border-right" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Locked for editing">
-                              <i class="if if-lock if--small if--muted"></i>
-                              <span class="text-muted c-body-small ml-2">Locked</span>
-                            </span>
-                        </div>
-                        {{end}}
-                        <div class="bc-toolbar-item">
-                            <span class="c-subline text-nowrap">
-                                {{.Locale.TS "publication_types" .Publication.Type}}
-                                {{with .Publication.Classification}}: {{.}}{{end}}
-                            </span>
-                        </div>
-                      </div>
-                    </div>
 
-                      <div class="bc-toolbar-right">
-                        <div class="bc-toolbar-item mr-auto mr-lg-0">
-                          <div class="d-flex align-items-center flex-wrap justify-content-md-end">
-                            <span class="c-body-small text-muted text-truncate pr-5">
-                                Created {{timeElapsed .Publication.DateCreated "en"}}
-                                {{with .Publication.Creator}}
-                                    by <a class="c-link c-link-muted" href="#">{{.Name}}</a>
-                                    <i class="if if-ghent-university" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="UGent author"></i>
-                                {{end}}
-                            </span>
-                            <span class="c-subline text-nowrap">
-                                Updated {{timeElapsed .Publication.DateUpdated "en"}}
-                                {{with .Publication.User}}
-                                    by <a class="c-link c-link-muted" href="#">{{.Name}}</a>
-                                    <i class="if if-ghent-university" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="UGent author"></i>
-                                {{end}}
-                            </span>
-                          </div>
+                        <div class="bc-toolbar-right">
+                            <div class="bc-toolbar-item mr-auto mr-lg-0">
+                                <div class="d-flex align-items-center flex-wrap justify-content-md-end">
+                                    <span class="c-body-small text-muted text-truncate pr-5">
+                                        Created {{timeElapsed .Publication.DateCreated "en"}}
+                                        {{with .Publication.Creator}}
+                                        by <a class="c-link c-link-muted" href="#">{{.Name}}</a>
+                                        <i class="if if-ghent-university" data-toggle="tooltip" title=""
+                                            data-placement="bottom" data-original-title="UGent author"></i>
+                                        {{end}}
+                                    </span>
+                                    <span class="c-subline text-nowrap">
+                                        Updated {{timeElapsed .Publication.DateUpdated "en"}}
+                                        {{with .Publication.User}}
+                                        by <a class="c-link c-link-muted" href="#">{{.Name}}</a>
+                                        <i class="if if-ghent-university" data-toggle="tooltip" title=""
+                                            data-placement="bottom" data-original-title="UGent author"></i>
+                                        {{end}}
+                                    </span>
+                                </div>
+                            </div>
                         </div>
-                      </div>
                     </div>
                     <h4 class="list-group-item-title">
                         {{if .Publication.Title}}
-                            {{.Publication.Title}}
+                        {{.Publication.Title}}
                         {{else}}
-                            Untitled record
+                        Untitled record
                         {{end}}
                     </h4>
-                    <div class="bc-toolbar bc-toolbar-responsive flex-wrap-reverse">
-                      <div class="bc-toolbar-left flex-wrap">
-                        {{with .Publication.PublicationStatus}}
-                        <div class="bc-toolbar-item my-2">
-                            <p class="c-body-small text-muted">{{$.Locale.TS "publication_publishing_statuses" .}}</p>
-                        </div>
-                        {{end}}
-                        <div class="bc-toolbar-item my-2">
-                            {{partial "shared/status" .Publication}}
-                        </div>
-                        {{if .Publication.Locked}}
-                        <div class="bc-toolbar-item my-2">
-                            <span class="c-meta-item" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Locked for editing">
-                              <i class="if if-lock if--small if--muted"></i>
-                            </span>
-                        </div>
-                        {{end}}
-                      </div>
-                    </div>
-                  </div>
+                </div>
             </div>
         </div>
 
@@ -198,11 +170,9 @@
         </div>
     </div>
 
-    <div class="u-scroll-wrapper__body p-6" id="show-content"
-        hx-get="{{pathFor (print "publication_" .ActiveSubNav) "id" .Publication.ID|querySet "redirect-url" .RedirectURL}}"
-        hx-trigger="load delay:100ms"
-        hx-target="#show-content"
-    >
+    <div class="u-scroll-wrapper__body p-6" id="show-content" hx-get="{{pathFor (print " publication_"
+        .ActiveSubNav) "id" .Publication.ID|querySet "redirect-url" .RedirectURL}}" hx-trigger="load delay:100ms"
+        hx-target="#show-content">
     </div>
 </div>
 {{end}}
