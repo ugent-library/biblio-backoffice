@@ -16,14 +16,15 @@
     <header>
         {{if eq appMode "development"}}
         <div class="alert alert-warning mb-0 py-1" role="alert">
-            <strong>Warning!</strong>&nbsp;This is the&nbsp;<strong>development</strong>&nbsp;version of the Biblio
-            backend. Features may not work correctly and data entered here will
-            not be retained.
+            <p>
+                <strong>Warning!</strong>&nbsp;This is the&nbsp;<strong>development</strong>&nbsp;version of the Biblio backend. Features may not work correctly and data entered here will not be retained.
+            </p>
         </div>
         {{else if eq appMode "staging"}}
         <div class="alert alert-warning mb-0 py-1" role="alert">
-            <strong>Warning!</strong>&nbsp;This is the&nbsp;<strong>test</strong>&nbsp;version of the Biblio
-            backend. Data entered here will not be retained.
+            <p>
+                <strong>Warning!</strong>&nbsp;This is the&nbsp;<strong>test</strong>&nbsp;version of the Biblio backend. Data entered here will not be retained.
+            </p>
         </div>
         {{end}}
         {{if .OriginalUser}}
@@ -43,8 +44,8 @@
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item">
                                     <a href="{{pathFor "home"}}">
-                                        <img class="d-none d-lg-inline-block" src="{{assetPath "/images/ghent-university-library-logo.svg"}}" alt="Ghent University Library">
-                                        <img class="d-inline-block d-lg-none" src="{{assetPath "/images/ghent-university-library-mark.svg"}}" alt="Ghent University Library">
+                                        <img class="d-none d-lg-inline-block mb-1" src="{{assetPath "/images/ghent-university-library-logo-smaller.svg"}}" alt="Ghent University Library">
+                                        <img class="d-inline-block d-lg-none mb-1" src="{{assetPath "/images/ghent-university-library-mark-smaller.svg"}}" alt="Ghent University Library">
                                     </a>
                                 </li>
                             </ol>
