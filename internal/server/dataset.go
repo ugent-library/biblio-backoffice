@@ -293,11 +293,11 @@ func DatasetToMessage(d *models.Dataset) *api.Dataset {
 	}
 
 	if d.Creator != nil {
-		msg.Creator = &api.RelatedUser{Id: d.Creator.ID}
+		msg.Creator = &api.RelatedUser{Id: d.Creator.ID, Name: d.Creator.Name}
 	}
 
 	if d.User != nil {
-		msg.User = &api.RelatedUser{Id: d.User.ID}
+		msg.User = &api.RelatedUser{Id: d.User.ID, Name: d.User.Name}
 	}
 
 	msg.Doi = d.DOI
@@ -346,7 +346,8 @@ func DatasetToMessage(d *models.Dataset) *api.Dataset {
 
 	for _, val := range d.Project {
 		msg.Project = append(msg.Project, &api.RelatedProject{
-			Id: val.ID,
+			Id:   val.ID,
+			Name: val.Name,
 		})
 	}
 
@@ -423,11 +424,11 @@ func MessageToDataset(msg *api.Dataset) *models.Dataset {
 	}
 
 	if msg.Creator != nil {
-		d.Creator = &models.DatasetUser{ID: msg.Creator.Id}
+		d.Creator = &models.DatasetUser{ID: msg.Creator.Id, Name: msg.Creator.Name}
 	}
 
 	if msg.User != nil {
-		d.User = &models.DatasetUser{ID: msg.User.Id}
+		d.User = &models.DatasetUser{ID: msg.User.Id, Name: msg.User.Name}
 	}
 
 	d.DOI = msg.Doi
@@ -477,7 +478,8 @@ func MessageToDataset(msg *api.Dataset) *models.Dataset {
 	for _, val := range msg.Project {
 		// TODO add Name
 		d.Project = append(d.Project, models.DatasetProject{
-			ID: val.Id,
+			ID:   val.Id,
+			Name: val.Name,
 		})
 	}
 

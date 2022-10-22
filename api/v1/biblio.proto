@@ -61,6 +61,7 @@ message Contributor {
 
 message RelatedUser {
     string id = 1;
+    string name = 2;
 }
 
 message RelatedPublication {
@@ -73,6 +74,7 @@ message RelatedOrganization {
 
 message RelatedProject {
     string id = 1;
+    string name = 2;
 }
 
 message RelatedDataset {
