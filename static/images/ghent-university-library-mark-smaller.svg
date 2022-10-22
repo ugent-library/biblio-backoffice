@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="11px" height="14px" viewBox="0 0 11 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>ghent-university-library-mark</title>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="ghent-university-library-mark" transform="translate(0.000000, 0.000000)" fill="#040606" fill-rule="nonzero">
+            <polygon id="Path" points="0 -7.77156118e-16 0 2.00732873 4.09502626 2.00732873 4.09502626 14 6.10232001 14 6.10232001 2.00732873 10.1973375 2.00732873 10.1973375 -7.77156118e-16"></polygon>
+            <polyline id="Path" points="0 14 2.0073375 14 2.0073375 4.01461374 0 4.01461374 0 14"></polyline>
+            <polyline id="Path" points="8.19009626 14 10.197425 14 10.197425 4.01461374 8.19009626 4.01461374 8.19009626 14"></polyline>
+        </g>
+    </g>
+</svg>

@@ -148,7 +148,7 @@ func (s *server) AddPublications(stream api.Biblio_AddPublicationsServer) error 
 			if val.ID == "" {
 				val.ID = ulid.MustGenerate()
 			}
-			p.Abstract[i] = val
+			p.LaySummary[i] = val
 		}
 		for i, val := range p.Link {
 			if val.ID == "" {
