@@ -647,10 +647,10 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		publicationViewingHandler.Wrap(publicationViewingHandler.DownloadFile)).
 		Methods("GET").
 		Name("publication_download_file")
-	r.HandleFunc("/publication/{id}/files/{file_id}/thumbnail",
-		publicationViewingHandler.Wrap(publicationViewingHandler.FileThumbnail)).
-		Methods("GET").
-		Name("publication_file_thumbnail")
+	// r.HandleFunc("/publication/{id}/files/{file_id}/thumbnail",
+	// 	publicationViewingHandler.Wrap(publicationViewingHandler.FileThumbnail)).
+	// 	Methods("GET").
+	// 	Name("publication_file_thumbnail")
 
 	// publish publication
 	r.HandleFunc("/publication/{id}/publish/confirm",

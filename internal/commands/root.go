@@ -82,8 +82,8 @@ func init() {
 
 	rootCmd.PersistentFlags().String("citeproc-url", "", "citeproc url")
 
-	rootCmd.PersistentFlags().String("imagor-url", "", "imagor url")
-	rootCmd.PersistentFlags().String("imagor-secret", "", "imagor secret")
+	// rootCmd.PersistentFlags().String("imagor-url", "", "imagor url")
+	// rootCmd.PersistentFlags().String("imagor-secret", "", "imagor secret")
 }
 
 func Execute() {
