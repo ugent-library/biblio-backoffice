@@ -125,7 +125,6 @@ func (s *SearchArgs) Offset() int {
 }
 
 func (s *SearchArgs) Cleanup() {
-
 	//remove filters with empty values
 	cleanupParams(s.Filters)
 }

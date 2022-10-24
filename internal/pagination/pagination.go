@@ -20,7 +20,11 @@ func (p Pagination) TotalPages() int {
 	if p.Limit == 0 {
 		return 1
 	}
-	return int(math.Ceil(float64(p.Total) / float64(p.Limit)))
+	total := int(math.Ceil(float64(p.Total) / float64(p.Limit)))
+	if total > p.MaxPages() {
+		return p.MaxPages()
+	}
+	return total
 }
 
 func (p Pagination) Page() int {
@@ -106,10 +110,8 @@ func (p Pagination) PagesWithEllipsis() []int {
 
 // TODO enforce Page <= MaxPages
 func (p Pagination) pageRanges() [][]int {
+	page := p.Page()
 	totalPages := p.TotalPages()
-	if totalPages > p.MaxPages() {
-		totalPages = p.MaxPages()
-	}
 
 	visiblePages := 0
 	if p.MaxVisiblePages() < (totalPages - 1) {
@@ -121,7 +123,7 @@ func (p Pagination) pageRanges() [][]int {
 	var qSize []int
 
 	if totalPages-1 <= p.MaxVisiblePages() {
-		qSize = []int{p.Page() - 1, 0, 0, totalPages - p.Page()}
+		qSize = []int{page - 1, 0, 0, totalPages - page}
 	} else {
 		qSize = []int{
 			int(math.Floor(float64(visiblePages) / 4)),
@@ -129,16 +131,16 @@ func (p Pagination) pageRanges() [][]int {
 			int(math.Ceil(float64(visiblePages) / 4)),
 			int(math.Round((float64(visiblePages) - math.Round(float64(visiblePages)/4)) / 3)),
 		}
-		if p.Page()-qSize[0] < 1 {
-			addPages := qSize[0] + qSize[1] - p.Page() + 1
+		if page-qSize[0] < 1 {
+			addPages := qSize[0] + qSize[1] - page + 1
 			qSize = []int{
-				p.Page() - 1,
+				page - 1,
 				0,
 				qSize[2] + int(math.Ceil(float64(addPages)/2)),
 				qSize[3] + int(math.Floor(float64(addPages)/2)),
 			}
-		} else if p.Page()-qSize[1]-int(math.Ceil(float64(qSize[1])/3)) <= qSize[0] {
-			adj := int(math.Ceil(float64(3*(p.Page()-qSize[0]-1)) / 4))
+		} else if page-qSize[1]-int(math.Ceil(float64(qSize[1])/3)) <= qSize[0] {
+			adj := int(math.Ceil(float64(3*(page-qSize[0]-1)) / 4))
 			addPages := qSize[1] - adj
 			qSize = []int{
 				qSize[0],
@@ -146,16 +148,16 @@ func (p Pagination) pageRanges() [][]int {
 				qSize[2] + int(math.Ceil(float64(addPages)/2)),
 				qSize[3] + int(math.Floor(float64(addPages)/2)),
 			}
-		} else if p.Page()+qSize[3] >= totalPages {
-			addPages := qSize[2] + qSize[3] - totalPages + p.Page()
+		} else if page+qSize[3] >= totalPages {
+			addPages := qSize[2] + qSize[3] - totalPages + page
 			qSize = []int{
 				qSize[0] + int(math.Floor(float64(addPages)/2)),
 				qSize[1] + int(math.Ceil(float64(addPages)/2)),
 				0,
-				totalPages - p.Page(),
+				totalPages - page,
 			}
-		} else if p.Page()+qSize[2] >= totalPages-qSize[3] {
-			adj := int(math.Ceil(float64(3*(totalPages-p.Page()-qSize[3])) / 4))
+		} else if page+qSize[2] >= totalPages-qSize[3] {
+			adj := int(math.Ceil(float64(3*(totalPages-page-qSize[3])) / 4))
 			addPages := qSize[2] - adj
 			qSize = []int{
 				qSize[0] + int(math.Floor(float64(addPages)/2)),
@@ -172,10 +174,10 @@ func (p Pagination) pageRanges() [][]int {
 		pageRanges[0] = []int{1, qSize[0]}
 	}
 	if qSize[1] != 0 {
-		pageRanges[1] = []int{p.Page() - qSize[1], p.Page() - 1}
+		pageRanges[1] = []int{page - qSize[1], page - 1}
 	}
 	if qSize[2] != 0 {
-		pageRanges[2] = []int{p.Page() + 1, p.Page() + qSize[2]}
+		pageRanges[2] = []int{page + 1, page + qSize[2]}
 	}
 	if qSize[3] != 0 {
 		pageRanges[3] = []int{totalPages - qSize[3] + 1, totalPages}
