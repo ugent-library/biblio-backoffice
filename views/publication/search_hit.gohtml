@@ -2,7 +2,7 @@
 <div class="bc-toolbar-item ml-auto ml-lg-0">
     <div class="c-button-toolbar">
         <a class="btn btn-link btn-link-p-0 btn-icon-only" href="{{.PublicationURL}}">
-            <i class="if if-edit"></i>
+            <i class="if {{if not .Publication.Locked}}if-edit{{else}}if-eye{{end}}"></i>
             <div class="sr-only">Edit</div>
         </a>
         {{if .User.CanCurate}}
