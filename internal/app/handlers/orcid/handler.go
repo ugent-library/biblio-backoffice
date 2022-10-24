@@ -214,7 +214,7 @@ func (h *Handler) sendPublicationsToORCIDTask(t tasks.Task, userID, orcidID, orc
 
 		t.Progress(numDone, hits.Total)
 
-		if !hits.NextPage() {
+		if !hits.HasNextPage() {
 			break
 		}
 		searchArgs.Page = searchArgs.Page + 1
