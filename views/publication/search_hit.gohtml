@@ -2,13 +2,13 @@
 <div class="bc-toolbar-item ml-auto ml-lg-0">
     <div class="c-button-toolbar">
         <a class="btn btn-link btn-link-p-0 btn-icon-only" href="{{.PublicationURL}}">
-            <i class="if {{if not .Publication.Locked}}if-edit{{else}}if-eye{{end}}"></i>
-            <div class="sr-only">Edit</div>
+            <i class="if if-eye"></i>
+            <div class="sr-only">View publication</div>
         </a>
         {{if .User.CanCurate}}
         <a class="btn btn-link btn-link-p-0 btn-icon-only" href="{{pathFor "publication" "id" .Publication.ID|querySet "redirect-url" .CurrentURL.String|querySet "show" "files"}}">
             <i class="if if-file"></i>
-            <div class="sr-only">Download files</div>
+            <div class="sr-only">View full texts &amp; files</div>
         </a>
         {{end}}
         <div class="dropdown">
@@ -18,8 +18,8 @@
             </button>
             <div class="dropdown-menu">
                 <a class="dropdown-item" href="{{.PublicationURL}}">
-                    <i class="if if-file-text"></i>
-                    <span>View details</span>
+                    <i class="if if-eye"></i>
+                    <span>View publication</span>
                 </a>
                 {{/*
                 {{if and (eq .Publication.Status "public") .User.ORCID .User.ORCIDToken}}
