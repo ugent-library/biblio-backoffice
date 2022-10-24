@@ -5,6 +5,12 @@
             <i class="if if-edit"></i>
             <div class="sr-only">Edit</div>
         </a>
+        {{if .User.CanCurate}}
+        <a class="btn btn-link btn-link-p-0 btn-icon-only" href="{{pathFor "publication" "id" .Publication.ID|querySet "redirect-url" .CurrentURL.String|querySet "show" "files"}}">
+            <i class="if if-file"></i>
+            <div class="sr-only">Download files</div>
+        </a>
+        {{end}}
         <div class="dropdown">
             <button class="btn btn-link btn-link-p-0 btn-icon-only" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="if if-more"></i>
