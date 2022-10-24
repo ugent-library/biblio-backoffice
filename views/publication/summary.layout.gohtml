@@ -18,7 +18,7 @@
                             <span class="text-muted c-body-small ml-2">Locked</span>
                         </span>
                         {{end}}
-                        <span class="c-subline text-nowrap mr-3 pr-3 my-2 border-right">{{.Locale.TS "publication_types" .Publication.Type}}{{with .Publication.Classification}}: {{.}}{{end}}1</span>
+                        <span class="c-subline text-nowrap mr-3 pr-3 my-2 border-right">{{.Locale.TS "publication_types" .Publication.Type}}{{with .Publication.Classification}}: {{.}}{{end}}</span>
                         {{if $pfile}}
                         <div class="c-subline text-nowrap mr-3 pr-3 my-2 border-right">
                             {{if eq $pfile.AccessLevel "info:eu-repo/semantics/openAccess"}}
