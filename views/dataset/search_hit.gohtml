@@ -1,31 +1,46 @@
 {{define "summary_actions"}}
-    <div class="bc-toolbar-item ml-auto ml-lg-0">
-        <div class="c-button-toolbar">
-            <div class="dropdown dropleft">
-                <button class="btn btn-link btn-link-p-0 btn-icon-only"
-                    type="button" data-toggle="dropdown"
-                    aria-haspopup="true" aria-expanded="false">
-                    <i class="if if-more"></i>
+<div class="bc-toolbar-item ml-auto ml-lg-0">
+    <div class="c-button-toolbar">
+        <a class="btn btn-link btn-link-p-0 btn-icon-only" href="{{.DatasetURL}}">
+            <i class="if {{if not .Dataset.Locked}}if-edit{{else}}if-eye{{end}}"></i>
+            <div class="sr-only">Edit</div>
+        </a>
+        <div class="dropdown">
+            <button class="btn btn-link btn-link-p-0 btn-icon-only" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="if if-more"></i>
+                <div class="sr-only">More options</div>
+            </button>
+            <div class="dropdown-menu">
+                <a class="dropdown-item" href="{{.DatasetURL}}">
+                    <i class="if if-file-text"></i>
+                    <span>View details</span>
+                </a>
+                {{/*
+                {{if and (eq .Dataset.Status "public") .User.ORCID .User.ORCIDToken}}
+                <button class="dropdown-item"
+                    hx-post="{{pathFor "publication_orcid_add" "id" .Dataset.ID}}"
+                    hx-target="#publication-{{.Dataset.ID}}-orcid-status"
+                    hx-trigger="click"
+                    hx-swap="outerHTML"
+                >
+                    <i class="if if-orcid" style="color: #A6CE39"></i>
+                    <span>Send to ORCID</span>
                 </button>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item"
-                        href="{{.DatasetURL}}">
-                        <i class="if if-file-text"></i>
-                        <span>View details</span>
-                    </a>
-                    {{if .User.CanDeleteDataset .Dataset}}
-                    <button class="dropdown-item"
-                        hx-get="{{pathFor "dataset_confirm_delete" "id" .Dataset.ID|querySet "redirect-url" .CurrentURL.String}}"
-                        hx-target="#modals"
-                    >
-                        <i class="if if-delete"></i>
-                        <span>Delete</span>
-                    </button>
-                    {{end}}
-                </div>
+                {{end}}
+                */}}
+                {{if .User.CanDeleteDataset .Dataset}}
+                <button class="dropdown-item"
+                    hx-get="{{pathFor "dataset_confirm_delete" "id" .Dataset.ID|querySet "redirect-url" .CurrentURL.String}}"
+                    hx-target="#modals"
+                >
+                    <i class="if if-delete"></i>
+                    <span>Delete</span>
+                </button>
+                {{end}}
             </div>
         </div>
     </div>
+</div>
 {{end}}
 
 {{define "summary_footer"}}
