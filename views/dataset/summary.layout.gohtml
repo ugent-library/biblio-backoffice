@@ -1,7 +1,7 @@
 <div class="list-group-item-main u-min-w-0">
     <div class="c-thumbnail-and-text align-items-start d-block d-lg-flex">
-            <a href="{{.PublicationURL}}">
-                {{partial "dataset/thumbnail" .Publication}}
+            <a href="{{.DatasetURL}}">
+                {{partial "dataset/thumbnail" .Dataset}}
             </a>
         <div class="c-thumbnail-text u-min-w-0">
             <div class="bc-toolbar bc-toolbar--auto">
@@ -68,7 +68,7 @@
             <div class="c-meta-list c-meta-list-horizontal">
                 {{if .Dataset.Year}}<span class="c-meta-item">{{.Dataset.Year}}</span>{{end}}
                 {{if .Dataset.Publisher}}<span class="c-meta-item">{{.Dataset.Publisher}}</span>{{end}}
-                {{if .Dataset.ResolveDOI}}
+                {{if .Dataset.DOI}}
                 <span class="c-meta-item">
                     <span class="c-body-small text-muted">
                         <a class="c-link c-link-muted" target="_blank" href="{{.Dataset.ResolveDOI}}">

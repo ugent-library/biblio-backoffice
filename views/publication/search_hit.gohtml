@@ -5,8 +5,8 @@
             <i class="if if-eye"></i>
             <div class="sr-only">View publication</div>
         </a>
-        {{if .User.CanCurate}}
-        <a class="btn btn-link btn-link-p-0 btn-icon-only" href="{{pathFor "publication" "id" .Publication.ID|querySet "redirect-url" .CurrentURL.String|querySet "show" "files"}}">
+        {{if eq .UserMode "curator"}}
+        <a class="btn btn-link btn-link-p-0 btn-icon-only" href="{{.PublicationURL|querySet "show" "files"}}">
             <i class="if if-file"></i>
             <div class="sr-only">View full texts &amp; files</div>
         </a>
@@ -21,6 +21,44 @@
                     <i class="if if-eye"></i>
                     <span>View publication</span>
                 </a>
+                <div class="dropdown-divider"></div>
+                {{if eq .Publication.Status "public"}}
+                <a class="dropdown-item" href="https://biblio.ugent.be/publication/{{.Publication.ID}}" target="_blank">
+                    <i class="if if-book"></i>
+                    <span>Public Biblio Location</span>
+                </a>
+                {{end}}
+                {{if eq .UserRole "curator"}}
+                    <a class="dropdown-item" href="{{.PublicationURL|querySet "show" "files"}}">
+                        <i class="if if-file"></i>
+                        <span>View full texts &amp; files</span>
+                    </a>
+                    {{if .Publication.DOI}}
+                    <a class="dropdown-item" href="{{.Publication.ResolveDOI}}" target="_blank">
+                        <i class="if if-external-link"></i>
+                        <span>DOI</span>
+                    </a>
+                    {{end}}
+                    {{if .Publication.WOSID}}
+                    <a class="dropdown-item" href="{{.Publication.ResolveWOSID}}" target="_blank">
+                        <i class="if if-external-link"></i>
+                        <span>WoS</span>
+                    </a>
+                    {{end}}
+                    {{if .Publication.PubMedID}}
+                    <a class="dropdown-item" href="{{.Publication.ResolvePubMedID}}" target="_blank">
+                        <i class="if if-external-link"></i>
+                        <span>PubMed</span>
+                    </a>
+                    {{end}}
+                {{else}}
+                    {{if .Publication.DOI}}
+                    <a class="dropdown-item" href="https://www.altmetric.com/explorer/outputs?scope=all&identifier={{.Publication.DOI}}" target="_blank">
+                        <i class="if if-external-link"></i>
+                        <span>Altmetric</span>
+                    </a>
+                    {{end}}
+                {{end}}
                 {{/*
                 {{if and (eq .Publication.Status "public") .User.ORCID .User.ORCIDToken}}
                 <button class="dropdown-item"
@@ -35,6 +73,7 @@
                 {{end}}
                 */}}
                 {{if .User.CanDeletePublication .Publication}}
+                <div class="dropdown-divider"></div>
                 <button class="dropdown-item"
                     hx-get="{{pathFor "publication_confirm_delete" "id" .Publication.ID|querySet "redirect-url" .CurrentURL.String}}"
                     hx-target="#modals"

@@ -242,10 +242,6 @@ func (d *Dataset) ResolveDOI() string {
 	return ""
 }
 
-func (d *Dataset) FieldIsRequired() bool {
-	return true
-}
-
 func (d *Dataset) Validate() error {
 	var errs validation.Errors
 
