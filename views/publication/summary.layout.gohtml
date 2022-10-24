@@ -8,7 +8,7 @@
 
             <div class="c-thumbnail-text u-min-w-0">
                 <div class="bc-toolbar bc-toolbar--auto">
-                    <div class="bc-toolbar-left">
+                    <div class="bc-toolbar-left flex-wrap">
                         <span class="c-subline text-nowrap pr-3 my-2">
                             {{partial "shared/status" .Publication}}
                         </span>
@@ -18,17 +18,17 @@
                             <span class="text-muted c-body-small ml-2">Locked</span>
                         </span>
                         {{end}}
-                        <span class="c-subline text-nowrap mr-3 pr-3 my-2 border-right">{{.Locale.TS "publication_types" .Publication.Type}}{{with .Publication.Classification}}: {{.}}{{end}}1</span>
+                        <span class="c-subline text-nowrap mr-3 pr-3 my-2 border-right">{{.Locale.TS "publication_types" .Publication.Type}}{{with .Publication.Classification}}: {{.}}{{end}}</span>
                         {{if $pfile}}
-                        <div class="c-subline text-nowrap mr-3 pr-3 my-2 border-right">
+                        <div class="c-subline text-nowrap mr-3 pr-3 my-2{{if eq $pfile.AccessLevel "info:eu-repo/semantics/embargoedAccess"}} border-right{{end}}">
                             {{if eq $pfile.AccessLevel "info:eu-repo/semantics/openAccess"}}
-                            <i class="if if-download if--small if--success"></i>
+                            <i class="if if-calendar if--small if--muted"></i>
                             <span class="c-subline text-truncate pl-2">{{.Locale.TS "publication_file_access_levels" $pfile.AccessLevel}}</span>
                             {{else if eq $pfile.AccessLevel "info:eu-repo/semantics/embargoedAccess"}}
                             <i class="if if-time if--small if--muted"></i>
                             <span class="c-subline text-muted pl-2">{{.Locale.TS "publication_file_access_levels" $pfile.AccessLevel}}</span>
                             {{else if eq $pfile.AccessLevel "info:eu-repo/semantics/restrictedAccess"}}
-                            <i class="if if-ghent-university if--small if--primary"></i>
+                            <i class="if if-ghent-university if--small if--muted"></i>
                             <span class="c-subline text-muted pl-2">{{.Locale.TS "publication_file_access_levels" $pfile.AccessLevel}}</span>
                             {{else if eq $pfile.AccessLevel "info:eu-repo/semantics/closedAccess"}}
                             <i class="if if-eye-off if--small if--muted"></i>
@@ -49,7 +49,7 @@
                         </div>
                         <div class="c-subline text-nowrap mr-3 pr-3 my-2 border-right">
                             {{if eq $pfile.AccessLevelAfterEmbargo "info:eu-repo/semantics/openAccess"}}
-                            <i class="if if-download if--small if--muted"></I>
+                            <i class="if if-calendar if--small if--muted"></I>
                             {{else}}
                             <i class="if if-ghent-university if--small if--muted"></I>
                             {{end}}
@@ -57,7 +57,7 @@
                         </div>
                         {{end}}
                         {{else}}
-                        <div class="c-subline text-nowrap mr-3 pr-3 my-2 border-right">
+                        <div class="c-subline text-nowrap mr-3 pr-3 my-2">
                             <i class="if if-error-circle if--error"></i>
                             <span class="pl-2 text-muted">Full text missing</span>
                         </div>
@@ -68,6 +68,13 @@
                     </div>
                 </div>
                 <h4 class="list-group-item-title">
+                    {{if .User.CanCurate}}
+                    {{if .Publication.Title}}
+                        {{.Publication.Title}}
+                    {{else}}
+                        Untitled record
+                    {{end}}
+                    {{else}}
                     <a href="{{.PublicationURL}}">
                     {{if .Publication.Title}}
                         {{.Publication.Title}}
@@ -75,6 +82,7 @@
                         Untitled record
                     {{end}}
                     </a>
+                    {{end}}
                 </h4>
 
                 <div class="c-meta-list c-meta-list-horizontal">
@@ -82,6 +90,9 @@
                 </div>
 
                 {{with .Publication.Author}}{{partial "shared/contributors" (dict "Contributors" . "ContributorsURL" ($.PublicationURL | querySet "show" "contributors"))}}{{end}}
+
+                {{with .Publication.Department}}{{partial "shared/departments" (dict "Departments" . "ContributorsURL" ($.PublicationURL | querySet "show" "contributors"))}}{{end}}
+
 
                 <div class="bc-toolbar bc-toolbar-responsive">
                     <div class="bc-toolbar-left flex-wrap">
@@ -91,7 +102,7 @@
                     </div>
                     <div class="bc-toolbar-right flex-wrap">
                         <div class="bc-toolbar-item">
-                            <span class="c-body-small text-muted text-truncate my-2">Updated {{timeElapsed .Publication.DateUpdated "en"}}</span>
+                            <span class="c-body-small text-muted text-truncate my-2">Updated {{timeElapsed .Publication.DateUpdated "en"}}{{with .Publication.User}} by {{.Name}}{{end}}</span>
                         </div>
                         <div class="bc-toolbar-item">
                             <ul class="c-meta-list c-meta-list-horizontal flex-nowrap">

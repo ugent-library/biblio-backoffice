@@ -49,6 +49,11 @@ message Text {
     string text = 3;
 }
 
+message ContributorDepartment {
+    string id = 1;
+    string name = 2;
+}
+
 message Contributor {
     string id = 1;
     string orcid = 2;
@@ -57,10 +62,21 @@ message Contributor {
     string first_name = 5;
     string last_name = 6;
     string full_name = 7;
+    repeated ContributorDepartment department = 8;
+}
+
+message Department {
+    string id = 1;
+    repeated DepartmentRef tree = 2;
+}
+
+message DepartmentRef {
+    string id = 1;
 }
 
 message RelatedUser {
     string id = 1;
+    string name = 2;
 }
 
 message RelatedPublication {
@@ -73,6 +89,7 @@ message RelatedOrganization {
 
 message RelatedProject {
     string id = 1;
+    string name = 2;
 }
 
 message RelatedDataset {
@@ -250,7 +267,7 @@ message Publication {
     string conference_organizer = 23;
     string conference_start_date = 24;
     string conference_end_date = 25;
-    repeated RelatedOrganization organization = 26;
+    repeated Department department = 26;
     RelatedUser creator = 27;
     RelatedUser user = 28;
     string doi = 29;
@@ -308,6 +325,7 @@ message Publication {
     string vabb_id = 81;
     bool vabb_approved = 82;
     repeated string vabb_year = 83;
+    repeated string faculty = 84;
 }
 
 message Dataset {

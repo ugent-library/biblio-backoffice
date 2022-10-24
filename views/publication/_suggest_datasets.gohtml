@@ -1,16 +1,10 @@
 <ul class="list-group mt-6">
 {{range .Hits.Hits}}
     <li class="list-group-item">
-        <div class="d-flex w-100">
-            <div class="w-100">
-                <div class="d-flex align-items-start">
-                        {{layout "dataset/summary" "publication/suggest_datasets_summary" ($.Yield
-                            "Dataset" .
-                            "DatasetURL" (pathFor "dataset" "id" .ID)
-                            "Publication" $.Publication)}}
-                </div>
-            </div>
-        </div>
+        {{layout "dataset/summary" "publication/suggest_datasets_summary" ($.Yield
+            "Dataset" .
+            "DatasetURL" (pathFor "dataset" "id" .ID)
+            "Publication" $.Publication)}}
     </li>
 {{end}}
 </ul>

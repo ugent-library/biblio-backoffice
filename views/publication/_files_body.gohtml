@@ -34,15 +34,15 @@
                 <div class="list-group-item-main u-min-w-0">
                     <div class="c-thumbnail-and-text align-items-start d-block d-lg-flex">
                             <a href="{{pathFor "publication_download_file" "id" $.Publication.ID "file_id" .ID}}">
-                            {{if and (eq .ContentType "application/pdf") (le .Size 25000000)}}
+                            {{/*{{if and (eq .ContentType "application/pdf") (le .Size 25000000)}}
                             <img class="list-group-item-thumbnail" src="{{pathFor "publication_file_thumbnail" "id" $.Publication.ID "file_id" .ID}}" height="156">
-                            {{else}}
+                            {{else}}*/}}
                             <div class="c-thumbnail c-thumbnail-5-4 mb-6 mb-xl-0 flex-shrink-0">
                                 <div class="c-thumbnail-inner">
                                     <i class="if if-article"></I>
                                 </div>
                             </div>
-                            {{end}}
+                            {{/*{{end}}*/}}
                         </a>
                         <div class="c-thumbnail-text u-min-w-0">
                             <div class="bc-toolbar bc-toolbar--auto">

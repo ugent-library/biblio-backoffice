@@ -597,7 +597,7 @@ func (h *Handler) batchPublishPublications(batchID, userID string) (err error) {
 				return
 			}
 		}
-		if !hits.NextPage() {
+		if !hits.HasNextPage() {
 			break
 		}
 		args.Page = args.Page + 1

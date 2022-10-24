@@ -252,9 +252,7 @@
                         "tree": {
                             "properties": {
                                 "id": {
-                                    "type": "keyword",
-                                    "copy_to": ["faculty"]
-                                }
+                                    "type": "keyword"                                }
                             }
                         }
                     }

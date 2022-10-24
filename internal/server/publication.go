@@ -148,7 +148,7 @@ func (s *server) AddPublications(stream api.Biblio_AddPublicationsServer) error 
 			if val.ID == "" {
 				val.ID = ulid.MustGenerate()
 			}
-			p.Abstract[i] = val
+			p.LaySummary[i] = val
 		}
 		for i, val := range p.Link {
 			if val.ID == "" {
@@ -300,6 +300,14 @@ func PublicationToMessage(p *models.Publication) *api.Publication {
 	msg.ArxivId = p.ArxivID
 
 	for _, val := range p.Author {
+		var depts []*api.ContributorDepartment
+		for _, dept := range val.Department {
+			depts = append(depts, &api.ContributorDepartment{
+				Id:   dept.ID,
+				Name: dept.Name,
+			})
+		}
+
 		msg.Author = append(msg.Author, &api.Contributor{
 			Id:         val.ID,
 			Orcid:      val.ORCID,
@@ -308,6 +316,7 @@ func PublicationToMessage(p *models.Publication) *api.Publication {
 			FirstName:  val.FirstName,
 			LastName:   val.LastName,
 			FullName:   val.FullName,
+			Department: depts,
 		})
 	}
 
@@ -372,17 +381,28 @@ func PublicationToMessage(p *models.Publication) *api.Publication {
 	msg.ConferenceEndDate = p.ConferenceEndDate
 
 	for _, val := range p.Department {
-		msg.Organization = append(msg.Organization, &api.RelatedOrganization{
-			Id: val.ID,
+		var depts []*api.DepartmentRef
+
+		for _, dept := range val.Tree {
+			depts = append(depts, &api.DepartmentRef{
+				Id: dept.ID,
+			})
+		}
+
+		msg.Department = append(msg.Department, &api.Department{
+			Id:   val.ID,
+			Tree: depts,
 		})
 	}
 
+	msg.Faculty = p.Faculty
+
 	if p.Creator != nil {
-		msg.Creator = &api.RelatedUser{Id: p.Creator.ID}
+		msg.Creator = &api.RelatedUser{Id: p.Creator.ID, Name: p.Creator.Name}
 	}
 
 	if p.User != nil {
-		msg.User = &api.RelatedUser{Id: p.User.ID}
+		msg.User = &api.RelatedUser{Id: p.User.ID, Name: p.User.Name}
 	}
 
 	msg.Doi = p.DOI
@@ -683,7 +703,8 @@ func PublicationToMessage(p *models.Publication) *api.Publication {
 
 	for _, val := range p.Project {
 		msg.Project = append(msg.Project, &api.RelatedProject{
-			Id: val.ID,
+			Id:   val.ID,
+			Name: val.Name,
 		})
 	}
 
@@ -782,6 +803,14 @@ func MessageToPublication(msg *api.Publication) *models.Publication {
 	p.ArxivID = msg.ArxivId
 
 	for _, val := range msg.Author {
+		var depts []models.ContributorDepartment
+		for _, dept := range val.Department {
+			depts = append(depts, models.ContributorDepartment{
+				ID:   dept.Id,
+				Name: dept.Name,
+			})
+		}
+
 		p.Author = append(p.Author, &models.Contributor{
 			ID:         val.Id,
 			ORCID:      val.Orcid,
@@ -790,6 +819,7 @@ func MessageToPublication(msg *api.Publication) *models.Publication {
 			FirstName:  val.FirstName,
 			LastName:   val.LastName,
 			FullName:   val.FullName,
+			Department: depts,
 		})
 	}
 
@@ -857,19 +887,44 @@ func MessageToPublication(msg *api.Publication) *models.Publication {
 	p.ConferenceStartDate = msg.ConferenceStartDate
 	p.ConferenceEndDate = msg.ConferenceEndDate
 
-	for _, val := range msg.Organization {
-		// TODO add tree
+	for _, val := range msg.Department {
+		var depts []models.PublicationDepartmentRef
+		for _, dept := range val.Tree {
+			depts = append(depts, models.PublicationDepartmentRef{
+				ID: dept.Id,
+			})
+		}
+
 		p.Department = append(p.Department, models.PublicationDepartment{
-			ID: val.Id,
+			ID:   val.Id,
+			Tree: depts,
 		})
 	}
 
+	// Extract faculty from the department trees
+	for _, val := range msg.Department {
+		for _, dept := range val.Tree {
+			if len(dept.Id) <= 2 {
+				exists := false
+				for _, fac := range p.Faculty {
+					if fac == dept.Id {
+						exists = true
+					}
+				}
+
+				if !exists {
+					p.Faculty = append(p.Faculty, dept.Id)
+				}
+			}
+		}
+	}
+
 	if msg.Creator != nil {
-		p.Creator = &models.PublicationUser{ID: msg.Creator.Id}
+		p.Creator = &models.PublicationUser{ID: msg.Creator.Id, Name: msg.Creator.Name}
 	}
 
 	if msg.User != nil {
-		p.User = &models.PublicationUser{ID: msg.User.Id}
+		p.User = &models.PublicationUser{ID: msg.User.Id, Name: msg.User.Name}
 	}
 
 	p.DOI = msg.Doi
@@ -1173,7 +1228,8 @@ func MessageToPublication(msg *api.Publication) *models.Publication {
 	for _, val := range msg.Project {
 		// TODO add Name
 		p.Project = append(p.Project, models.PublicationProject{
-			ID: val.Id,
+			ID:   val.Id,
+			Name: val.Name,
 		})
 	}
 
