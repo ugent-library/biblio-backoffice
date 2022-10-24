@@ -16,6 +16,13 @@ func (p Pagination) MaxVisiblePages() int {
 	return 5
 }
 
+func (p Pagination) TotalPages() int {
+	if p.Limit == 0 {
+		return 1
+	}
+	return int(math.Ceil(float64(p.Total) / float64(p.Limit)))
+}
+
 func (p Pagination) Page() int {
 	if p.Limit == 0 {
 		return 1
@@ -23,19 +30,12 @@ func (p Pagination) Page() int {
 	return p.Offset/p.Limit + 1
 }
 
-func (p Pagination) LastPage() int {
-	if p.Limit == 0 {
-		return 1
-	}
-	return int(math.Ceil(float64(p.Total) / float64(p.Limit)))
-}
-
 func (p Pagination) HasPreviousPage() bool {
 	return p.Page() > 1
 }
 
 func (p Pagination) HasNextPage() bool {
-	return p.Page() < p.LastPage()
+	return p.Page() < p.TotalPages()
 }
 
 func (p Pagination) PreviousPage() int {
@@ -64,7 +64,13 @@ func (p Pagination) LastOnPage() int {
 }
 
 // ported from https://metacpan.org/dist/Data-SpreadPagination/source/lib/Data/SpreadPagination.pm
-func (p Pagination) PagesWithEllipsis() (pages []int) {
+func (p Pagination) PagesWithEllipsis() []int {
+	if p.Total <= p.Limit {
+		return []int{1}
+	}
+
+	pages := []int{}
+
 	ranges := p.pageRanges()
 
 	if ranges[0] == nil && p.Page() > 1 {
@@ -86,7 +92,7 @@ func (p Pagination) PagesWithEllipsis() (pages []int) {
 		pages = append(pages, makeRange(ranges[2][0], ranges[2][1])...)
 	}
 
-	if ranges[3] == nil && p.Page() < p.LastPage() {
+	if ranges[3] == nil && p.Page() < p.TotalPages() {
 		pages = append(pages, 0)
 	} else if ranges[3] != nil {
 		if ranges[2] != nil && ranges[3][0]-ranges[2][1] > 1 {
@@ -95,12 +101,12 @@ func (p Pagination) PagesWithEllipsis() (pages []int) {
 		pages = append(pages, makeRange(ranges[3][0], ranges[3][1])...)
 	}
 
-	return
+	return pages
 }
 
 // TODO enforce Page <= MaxPages
 func (p Pagination) pageRanges() [][]int {
-	totalPages := int(math.Ceil(float64(p.Total) / float64(p.Limit)))
+	totalPages := p.TotalPages()
 	if totalPages > p.MaxPages() {
 		totalPages = p.MaxPages()
 	}

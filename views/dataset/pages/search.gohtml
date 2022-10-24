@@ -106,6 +106,19 @@
             </div>
         </div>
 
+        {{if gt .Hits.TotalPages .Hits.MaxPages}}
+        <div class="alert alert-info">
+            <i class="if if-info-circle-filled"></I>
+            <div>
+                <h4>Biblio search results have been optimised</h4>
+                <p class="mb-2">To optimise Biblio's speed, we only show you the most relevant records.</p>
+                <p class="mb-2">Missing some results? <strong>Refine your search query</strong> and use the
+                <strong>filters</strong> to get a more precise set of
+                records.</p>
+            </div>
+        </div>
+        {{end}}
+
         <nav aria-label="Page navigation">
             {{partial "search/pagination" .}}
         </nav>
