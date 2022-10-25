@@ -401,8 +401,6 @@ func PublicationToMessage(p *models.Publication) *api.Publication {
 		})
 	}
 
-	msg.Faculty = p.Faculty
-
 	if p.Creator != nil {
 		msg.Creator = &api.RelatedUser{Id: p.Creator.ID, Name: p.Creator.Name}
 	}
@@ -905,24 +903,6 @@ func MessageToPublication(msg *api.Publication) *models.Publication {
 			ID:   val.Id,
 			Tree: depts,
 		})
-	}
-
-	// Extract faculty from the department trees
-	for _, val := range msg.Department {
-		for _, dept := range val.Tree {
-			if len(dept.Id) <= 2 {
-				exists := false
-				for _, fac := range p.Faculty {
-					if fac == dept.Id {
-						exists = true
-					}
-				}
-
-				if !exists {
-					p.Faculty = append(p.Faculty, dept.Id)
-				}
-			}
-		}
 	}
 
 	if msg.Creator != nil {

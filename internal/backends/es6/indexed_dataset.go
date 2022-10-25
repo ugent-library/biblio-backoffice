@@ -12,21 +12,45 @@ type indexedDataset struct {
 	DateUpdated string `json:"date_updated,omitempty"`
 	DateFrom    string `json:"date_from,omitempty"`
 	DateUntil   string `json:"date_until,omitempty"`
-	HasMessage  bool   `json:"has_message"`
+	// index only fields
+	HasMessage bool     `json:"has_message"`
+	Faculty    []string `json:"faculty"`
 }
 
-func NewIndexedDataset(dataset *models.Dataset) *indexedDataset {
-	idataset := &indexedDataset{
-		Dataset:     *dataset,
-		DateCreated: internal_time.FormatTimeUTC(dataset.DateCreated),
-		DateUpdated: internal_time.FormatTimeUTC(dataset.DateUpdated),
-		HasMessage:  len(dataset.Message) > 0,
+func NewIndexedDataset(d *models.Dataset) *indexedDataset {
+	id := &indexedDataset{
+		Dataset:     *d,
+		DateCreated: internal_time.FormatTimeUTC(d.DateCreated),
+		DateUpdated: internal_time.FormatTimeUTC(d.DateUpdated),
+		HasMessage:  len(d.Message) > 0,
 	}
-	if dataset.DateFrom != nil {
-		idataset.DateFrom = internal_time.FormatTimeUTC(dataset.DateFrom)
+
+	if d.DateFrom != nil {
+		id.DateFrom = internal_time.FormatTimeUTC(d.DateFrom)
 	}
-	if dataset.DateUntil != nil {
-		idataset.DateUntil = internal_time.FormatTimeUTC(dataset.DateUntil)
+	if d.DateUntil != nil {
+		id.DateUntil = internal_time.FormatTimeUTC(d.DateUntil)
 	}
-	return idataset
+
+	// extract faculty from department trees
+	for _, val := range id.Department {
+		for _, dept := range val.Tree {
+			// we naively assume that any 2 letter org is a faculty
+			if len(dept.ID) == 2 {
+				exists := false
+				for _, fac := range id.Faculty {
+					if fac == dept.ID {
+						exists = true
+						break
+					}
+				}
+
+				if !exists {
+					id.Faculty = append(id.Faculty, dept.ID)
+				}
+			}
+		}
+	}
+
+	return id
 }

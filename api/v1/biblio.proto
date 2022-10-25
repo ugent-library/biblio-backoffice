@@ -325,7 +325,6 @@ message Publication {
     string vabb_id = 81;
     bool vabb_approved = 82;
     repeated string vabb_year = 83;
-    repeated string faculty = 84;
 }
 
 message Dataset {
