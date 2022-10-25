@@ -74,11 +74,17 @@ func (s *server) SearchDatasets(ctx context.Context, req *api.SearchDatasetsRequ
 func (s *server) UpdataDataset(ctx context.Context, req *api.UpdateDatasetRequest) (*api.UpdateDatasetResponse, error) {
 	p := MessageToDataset(req.Dataset)
 
+	// TODO Fetch user information via better authentication (no basic auth)
+	user := &models.User{
+		ID:       "n/a",
+		FullName: "system user",
+	}
+
 	if err := p.Validate(); err != nil {
 		return nil, fmt.Errorf("validation failed for dataset %s: %w", p.ID, err)
 	}
 
-	if err := s.services.Repository.UpdateDataset(req.Dataset.SnapshotId, p); err != nil {
+	if err := s.services.Repository.UpdateDataset(req.Dataset.SnapshotId, p, user); err != nil {
 		// TODO How do we differentiate between errors?
 		return nil, status.Errorf(codes.Internal, "failed to store dataset %s, %w", p.ID, err)
 	}

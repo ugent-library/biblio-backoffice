@@ -79,7 +79,7 @@ func (h *Handler) CreateLink(w http.ResponseWriter, r *http.Request, ctx Context
 		return
 	}
 
-	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication)
+	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
@@ -163,7 +163,7 @@ func (h *Handler) UpdateLink(w http.ResponseWriter, r *http.Request, ctx Context
 		return
 	}
 
-	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication)
+	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
@@ -219,7 +219,7 @@ func (h *Handler) DeleteLink(w http.ResponseWriter, r *http.Request, ctx Context
 
 	ctx.Publication.RemoveLink(b.LinkID)
 
-	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication)
+	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {

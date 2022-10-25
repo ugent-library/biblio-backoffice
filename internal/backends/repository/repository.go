@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -114,23 +115,63 @@ func (s *Repository) GetPublications(ids []string) ([]*models.Publication, error
 	return publications, nil
 }
 
-func (s *Repository) ImportPublication(p *models.Publication) error {
+func (s *Repository) publicationToSnapshot(publication *models.Publication) (*snapstore.Snapshot, error) {
+	var snapshot *snapstore.Snapshot = &snapstore.Snapshot{}
 
+	var data []byte
+	var dataErr error
+	data, dataErr = json.Marshal(publication)
+	if dataErr != nil {
+		return nil, dataErr
+	}
+
+	snapshot.Data = data
+	snapshot.DateFrom = publication.DateFrom
+	snapshot.DateUntil = publication.DateUntil
+	snapshot.ID = publication.ID
+	snapshot.SnapshotID = publication.SnapshotID
+
+	return snapshot, nil
+}
+
+func (s *Repository) importPublication(p *models.Publication) error {
+	snapshot, snapshotErr := s.publicationToSnapshot(p)
+	if snapshotErr != nil {
+		return snapshotErr
+	}
+	return s.publicationStore.ImportSnapshot(snapshot, s.opts)
+}
+
+func (s *Repository) ImportCurrentPublication(p *models.Publication) error {
 	if p.DateCreated == nil {
 		return fmt.Errorf("unable to import old publication %s: date_created is not set", p.ID)
 	}
 	if p.DateUpdated == nil {
 		return fmt.Errorf("unable to import old publication %s: date_updated is not set", p.ID)
 	}
-
-	// TODO move outside of store
-	p = publication.DefaultPipeline.Process(p)
-
-	if err := p.Validate(); err != nil {
-		return err
+	if p.DateFrom == nil {
+		return fmt.Errorf("unable to import old publication %s: date_from is not set", p.ID)
 	}
+	if p.DateUntil != nil {
+		return fmt.Errorf("unable to import old publication %s: date_until should be nil", p.ID)
+	}
+	return s.importPublication(p)
+}
 
-	return s.publicationStore.Add(p.ID, p, s.opts)
+func (s *Repository) ImportOldPublication(p *models.Publication) error {
+	if p.DateCreated == nil {
+		return fmt.Errorf("unable to import old publication %s: date_created is not set", p.ID)
+	}
+	if p.DateUpdated == nil {
+		return fmt.Errorf("unable to import old publication %s: date_updated is not set", p.ID)
+	}
+	if p.DateFrom == nil {
+		return fmt.Errorf("unable to import old publication %s: date_from is not set", p.ID)
+	}
+	if p.DateUntil == nil {
+		return fmt.Errorf("unable to import old publication %s: date_until is not set", p.ID)
+	}
+	return s.importPublication(p)
 }
 
 func (s *Repository) SavePublication(p *models.Publication) error {
@@ -151,10 +192,14 @@ func (s *Repository) SavePublication(p *models.Publication) error {
 	return s.publicationStore.Add(p.ID, p, s.opts)
 }
 
-func (s *Repository) UpdatePublication(snapshotID string, p *models.Publication) error {
+func (s *Repository) UpdatePublication(snapshotID string, p *models.Publication, u *models.User) error {
 	oldDateUpdated := p.DateUpdated
 	now := time.Now()
 	p.DateUpdated = &now
+	p.User = &models.PublicationUser{
+		ID:   u.ID,
+		Name: u.FullName,
+	}
 	snapshotID, err := s.publicationStore.AddAfter(snapshotID, p.ID, p, s.opts)
 	if err != nil {
 		p.DateUpdated = oldDateUpdated
@@ -284,20 +329,62 @@ func (s *Repository) GetDatasets(ids []string) ([]*models.Dataset, error) {
 	return datasets, nil
 }
 
-func (s *Repository) ImportDataset(d *models.Dataset) error {
+func (s *Repository) datasetToSnapshot(dataset *models.Dataset) (*snapstore.Snapshot, error) {
+	var snapshot *snapstore.Snapshot = &snapstore.Snapshot{}
 
+	var data []byte
+	var dataErr error
+	data, dataErr = json.Marshal(dataset)
+	if dataErr != nil {
+		return nil, dataErr
+	}
+
+	snapshot.Data = data
+	snapshot.DateFrom = dataset.DateFrom
+	snapshot.DateUntil = dataset.DateUntil
+	snapshot.ID = dataset.ID
+	snapshot.SnapshotID = dataset.SnapshotID
+
+	return snapshot, nil
+}
+func (s *Repository) importDataset(d *models.Dataset) error {
+	snapshot, snapshotErr := s.datasetToSnapshot(d)
+	if snapshotErr != nil {
+		return snapshotErr
+	}
+	return s.datasetStore.ImportSnapshot(snapshot, s.opts)
+}
+
+func (s *Repository) ImportCurrentDataset(d *models.Dataset) error {
 	if d.DateCreated == nil {
-		return fmt.Errorf("unable to import old dataset %s: date_created is not set", d.ID)
+		return fmt.Errorf("unable to import dataset %s: date_created is not set", d.ID)
 	}
 	if d.DateUpdated == nil {
-		return fmt.Errorf("unable to import old dataset %s: date_updated is not set", d.ID)
+		return fmt.Errorf("unable to import dataset %s: date_updated is not set", d.ID)
 	}
-
-	if err := d.Validate(); err != nil {
-		return err
+	if d.DateFrom == nil {
+		return fmt.Errorf("unable to import dataset %s: date_from is not set", d.ID)
 	}
+	if d.DateUntil != nil {
+		return fmt.Errorf("unable to import dataset %s: date_until should be nil", d.ID)
+	}
+	return s.importDataset(d)
+}
 
-	return s.datasetStore.Add(d.ID, d, s.opts)
+func (s *Repository) ImportOldDataset(d *models.Dataset) error {
+	if d.DateCreated == nil {
+		return fmt.Errorf("unable to import dataset %s: date_created is not set", d.ID)
+	}
+	if d.DateUpdated == nil {
+		return fmt.Errorf("unable to import dataset %s: date_updated is not set", d.ID)
+	}
+	if d.DateFrom == nil {
+		return fmt.Errorf("unable to import dataset %s: date_from is not set", d.ID)
+	}
+	if d.DateUntil == nil {
+		return fmt.Errorf("unable to import dataset %s: date_until is not set", d.ID)
+	}
+	return s.importDataset(d)
 }
 
 func (s *Repository) SaveDataset(d *models.Dataset) error {
@@ -315,10 +402,14 @@ func (s *Repository) SaveDataset(d *models.Dataset) error {
 	return s.datasetStore.Add(d.ID, d, s.opts)
 }
 
-func (s *Repository) UpdateDataset(snapshotID string, d *models.Dataset) error {
+func (s *Repository) UpdateDataset(snapshotID string, d *models.Dataset, u *models.User) error {
 	oldDateUpdated := d.DateUpdated
 	now := time.Now()
 	d.DateUpdated = &now
+	d.User = &models.DatasetUser{
+		ID:   u.ID,
+		Name: u.FullName,
+	}
 	snapshotID, err := s.datasetStore.AddAfter(snapshotID, d.ID, d, s.opts)
 	if err != nil {
 		d.DateUpdated = oldDateUpdated

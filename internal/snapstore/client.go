@@ -237,6 +237,47 @@ func (s *Store) AddAfter(snapshotID, id string, data any, o Options) (string, er
 	return newSnapshotID, nil
 }
 
+func (store *Store) ImportSnapshot(snapshot *Snapshot, options Options) error {
+	if snapshot.ID == "" {
+		return errors.New("id is empty")
+	}
+	if snapshot.SnapshotID == "" {
+		return errors.New("snapshot_id is empty")
+	}
+	if snapshot.DateFrom == nil {
+		return errors.New("date_from is nil")
+	}
+	if snapshot.Data == nil {
+		return errors.New("data is nil")
+	}
+
+	ctx, db := store.ctxAndDb(options)
+	tx, err := db.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+
+	sqlInsert := `INSERT INTO ` +
+		store.table +
+		`(snapshot_id, id, data, date_from, date_until) VALUES ($1, $2, $3, $4, $5)`
+
+	if _, err = tx.Exec(
+		ctx,
+		sqlInsert,
+		snapshot.SnapshotID,
+		snapshot.ID,
+		snapshot.Data,
+		snapshot.DateFrom,
+		snapshot.DateUntil); err != nil {
+		return err
+	}
+	if err := tx.Commit(ctx); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (s *Store) Add(id string, data any, o Options) error {
 	if id == "" {
 		return errors.New("id is empty")

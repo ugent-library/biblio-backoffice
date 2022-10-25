@@ -130,7 +130,7 @@ func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context
 	*/
 	ctx.Publication.AddFile(&pubFile)
 
-	err = h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication)
+	err = h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
@@ -285,7 +285,7 @@ func (h *Handler) UpdateFile(w http.ResponseWriter, r *http.Request, ctx Context
 		return
 	}
 
-	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication)
+	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
@@ -342,7 +342,7 @@ func (h *Handler) DeleteFile(w http.ResponseWriter, r *http.Request, ctx Context
 
 	ctx.Publication.RemoveFile(b.FileID)
 
-	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication)
+	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
