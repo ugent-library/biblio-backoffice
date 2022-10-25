@@ -1,11 +1,7 @@
 {
     "private": true,
-    "scripts": {
-        "dev": "npx nodemon"
-    },
     "devDependencies": {
         "laravel-mix": "^6.0.11",
-        "nodemon": "^2.0.7",
         "resolve-url-loader": "^4.0.0",
         "sass": "^1.35.1",
         "sass-loader": "^12.1.0",
@@ -19,11 +15,5 @@
         "node-sass": "^4.14.1",
         "popper.js": "^1.16.1",
         "sortablejs": "^1.14.0"
-    },
-    "nodemonConfig": {
-        "exec": "go run main.go server start --host localhost --port 3001 || exit 1",
-        "signal": "SIGTERM",
-        "ext": "go,gohtml,json",
-        "delay": "1500"
     }
 }

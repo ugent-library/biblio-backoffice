@@ -3,6 +3,8 @@ package es6
 import (
 	"github.com/ugent-library/biblio-backend/internal/models"
 	internal_time "github.com/ugent-library/biblio-backend/internal/time"
+	"github.com/ugent-library/biblio-backend/internal/validation"
+	"github.com/ugent-library/biblio-backend/internal/vocabularies"
 )
 
 type indexedPublication struct {
@@ -12,23 +14,46 @@ type indexedPublication struct {
 	DateFrom    string `json:"date_from,omitempty"`
 	DateUntil   string `json:"date_until,omitempty"`
 	DateUpdated string `json:"date_updated"`
-	// index only field
-	HasMessage bool `json:"has_message"`
+	// index only fields
+	HasMessage bool     `json:"has_message"`
+	Faculty    []string `json:"faculty"`
 }
 
-func NewIndexedPublication(publication *models.Publication) *indexedPublication {
-	ipub := &indexedPublication{
-		Publication: *publication,
-		DateCreated: internal_time.FormatTimeUTC(publication.DateCreated),
-		DateUpdated: internal_time.FormatTimeUTC(publication.DateUpdated),
-		HasMessage:  len(publication.Message) > 0,
-	}
-	if publication.DateFrom != nil {
-		ipub.DateFrom = internal_time.FormatTimeUTC(publication.DateFrom)
-	}
-	if publication.DateUntil != nil {
-		ipub.DateUntil = internal_time.FormatTimeUTC(publication.DateUntil)
+func NewIndexedPublication(p *models.Publication) *indexedPublication {
+	ip := &indexedPublication{
+		Publication: *p,
+		DateCreated: internal_time.FormatTimeUTC(p.DateCreated),
+		DateUpdated: internal_time.FormatTimeUTC(p.DateUpdated),
+		HasMessage:  len(p.Message) > 0,
 	}
 
-	return ipub
+	if p.DateFrom != nil {
+		ip.DateFrom = internal_time.FormatTimeUTC(p.DateFrom)
+	}
+	if p.DateUntil != nil {
+		ip.DateUntil = internal_time.FormatTimeUTC(p.DateUntil)
+	}
+
+	faculties := vocabularies.Map["faculties"]
+
+	// extract faculty from department trees
+	for _, val := range p.Department {
+		for _, dept := range val.Tree {
+			if validation.InArray(faculties, dept.ID) {
+				exists := false
+				for _, fac := range ip.Faculty {
+					if fac == dept.ID {
+						exists = true
+						break
+					}
+				}
+
+				if !exists {
+					ip.Faculty = append(ip.Faculty, dept.ID)
+				}
+			}
+		}
+	}
+
+	return ip
 }

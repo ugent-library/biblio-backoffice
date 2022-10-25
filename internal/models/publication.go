@@ -105,7 +105,6 @@ type Publication struct {
 	EISSN                   []string                `json:"eissn,omitempty"`
 	ESCIID                  string                  `json:"esci_id,omitempty"`
 	Extern                  bool                    `json:"extern"`
-	Faculty                 []string                `json:"faculty,omitempty"`
 	File                    []*PublicationFile      `json:"file,omitempty"`
 	Handle                  string                  `json:"handle,omitempty"`
 	HasConfidentialData     string                  `json:"has_confidential_data,omitempty"`

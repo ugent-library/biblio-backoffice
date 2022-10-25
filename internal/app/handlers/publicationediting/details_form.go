@@ -35,8 +35,9 @@ func detailsForm(user *models.User, l *locale.Locale, p *models.Publication, err
 		})
 	} else {
 		section1 = append(section1, &display.Text{
-			Label: l.T("builder.type"),
-			Value: l.TS("publication_types", p.Type),
+			Label:   l.T("builder.type"),
+			Value:   l.TS("publication_types", p.Type),
+			Tooltip: l.T("tooltip.publication.type"),
 		})
 	}
 

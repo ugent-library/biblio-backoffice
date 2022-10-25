@@ -626,6 +626,7 @@ func init() {
 	message.SetString(language.English, "tooltip.publication.classification", "The publication will be classified by the Biblio team as part of the bibliographic review process.")
 	message.SetString(language.English, "tooltip.publication.related_datasets", "<a href=\"https://onderzoektips.ugent.be/en/tips/00002061/\" target=\"_blank\">https://onderzoektips.ugent.be/en/tips/00002061/ <i class=\"if if--small if-external-link\"></i></a>")
 	message.SetString(language.English, "tooltip.publication.wos_type", "This is the type assigned by Web of Science when a publication is also registered in Web of Science and can be different from the Biblio type.")
+	message.SetString(language.English, "tooltip.publication.type", "You can no longer change the publication type after publishing.")
 
 	message.SetString(language.English, "tooltip.publication.file.license", "<a href=\"#\" target=\"_blank\">More info&nbsp;<i class=\"if if--small if-external-link\"></i></a>")
 
