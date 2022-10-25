@@ -3,6 +3,8 @@ package es6
 import (
 	"github.com/ugent-library/biblio-backend/internal/models"
 	internal_time "github.com/ugent-library/biblio-backend/internal/time"
+	"github.com/ugent-library/biblio-backend/internal/validation"
+	"github.com/ugent-library/biblio-backend/internal/vocabularies"
 )
 
 type indexedPublication struct {
@@ -32,11 +34,12 @@ func NewIndexedPublication(p *models.Publication) *indexedPublication {
 		ip.DateUntil = internal_time.FormatTimeUTC(p.DateUntil)
 	}
 
+	faculties := vocabularies.Map["faculties"]
+
 	// extract faculty from department trees
 	for _, val := range p.Department {
 		for _, dept := range val.Tree {
-			// we naively assume that any 2 letter org is a faculty
-			if len(dept.ID) == 2 {
+			if validation.InArray(faculties, dept.ID) {
 				exists := false
 				for _, fac := range ip.Faculty {
 					if fac == dept.ID {
