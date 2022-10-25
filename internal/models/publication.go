@@ -211,8 +211,9 @@ func (p *Publication) SetFile(f *PublicationFile) {
 }
 
 // TODO determine which file will be the primary file for thumbnails, etc.
-//   This isn't necessarily the same file as the primary file used to indicate
-//   the access level across the entire publication (e.g. summaries)
+//
+//	This isn't necessarily the same file as the primary file used to indicate
+//	the access level across the entire publication (e.g. summaries)
 func (p *Publication) PrimaryFile() *PublicationFile {
 	for _, file := range p.File {
 		if file.AccessLevel != "" && file.Relation == "main_file" {
@@ -367,6 +368,27 @@ func (p *Publication) ClassificationChoices() []string {
 			"U",
 		}
 	}
+}
+
+func (p *Publication) ResolveDOI() string {
+	if p.DOI != "" {
+		return "https://doi.org/" + p.DOI
+	}
+	return ""
+}
+
+func (p *Publication) ResolveWOSID() string {
+	if p.WOSID != "" {
+		return "https://www.webofscience.com/wos/woscc/full-record/" + p.WOSID
+	}
+	return ""
+}
+
+func (p *Publication) ResolvePubMedID() string {
+	if p.PubMedID != "" {
+		return "https://www.ncbi.nlm.nih.gov/pubmed/" + p.PubMedID
+	}
+	return ""
 }
 
 func (p *Publication) Contributors(role string) []*Contributor {
