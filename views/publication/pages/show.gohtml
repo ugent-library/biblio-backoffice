@@ -178,11 +178,16 @@
         </div>
     </div>
 
-    <div class="u-scroll-wrapper__body p-6" id="show-content"
-        hx-get="{{pathFor (print "publication_" .ActiveSubNav) "id" .Publication.ID|querySet "redirect-url" .RedirectURL}}"
-        hx-trigger="load delay:100ms"
-        hx-target="#show-content"
-    >
+    <div class="d-flex flex-grow-1 flex-shrink-1 overflow-hidden">
+        <div id="show-sidebar">
+        </div>
+
+        <div class="u-scroll-wrapper__body p-6" id="show-content"
+            hx-get="{{pathFor (print "publication_" .ActiveSubNav) "id" .Publication.ID|querySet "redirect-url" .RedirectURL}}"
+            hx-trigger="load delay:100ms"
+            hx-target="#show-content"
+        >
+        </div>
     </div>
 </div>
 {{end}}
