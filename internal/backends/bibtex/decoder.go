@@ -99,7 +99,7 @@ func mapEntry(e *bibtex.BibEntry, p *models.Publication) {
 	case "conference", "proceedings", "inproceedings":
 		p.Type = "conference"
 	case "phdthesis":
-		p.Type = "disertation"
+		p.Type = "dissertation"
 	case "unpublished":
 		p.Type = "miscellaneous"
 		p.MiscellaneousType = "preprint"
