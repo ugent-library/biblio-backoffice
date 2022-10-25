@@ -90,16 +90,13 @@ List of PG env variables [here](https://www.postgresql.org/docs/current/libpq-en
 
 ## Start server
 
-Install node dependencies:
-
-```
-npm install
-```
 
 To start the development server with live reload:
 
 ```
-npm run dev
+go install github.com/cosmtrek/air@latest
+cp .example.air.toml .air.toml
+air
 ```
 
 Run the server directly:
