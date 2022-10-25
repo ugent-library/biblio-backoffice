@@ -151,10 +151,14 @@ func (s *Repository) SavePublication(p *models.Publication) error {
 	return s.publicationStore.Add(p.ID, p, s.opts)
 }
 
-func (s *Repository) UpdatePublication(snapshotID string, p *models.Publication) error {
+func (s *Repository) UpdatePublication(snapshotID string, p *models.Publication, u *models.User) error {
 	oldDateUpdated := p.DateUpdated
 	now := time.Now()
 	p.DateUpdated = &now
+	p.User = &models.PublicationUser{
+		ID:   u.ID,
+		Name: u.FullName,
+	}
 	snapshotID, err := s.publicationStore.AddAfter(snapshotID, p.ID, p, s.opts)
 	if err != nil {
 		p.DateUpdated = oldDateUpdated
@@ -315,10 +319,14 @@ func (s *Repository) SaveDataset(d *models.Dataset) error {
 	return s.datasetStore.Add(d.ID, d, s.opts)
 }
 
-func (s *Repository) UpdateDataset(snapshotID string, d *models.Dataset) error {
+func (s *Repository) UpdateDataset(snapshotID string, d *models.Dataset, u *models.User) error {
 	oldDateUpdated := d.DateUpdated
 	now := time.Now()
 	d.DateUpdated = &now
+	d.User = &models.DatasetUser{
+		ID:   u.ID,
+		Name: u.FullName,
+	}
 	snapshotID, err := s.datasetStore.AddAfter(snapshotID, d.ID, d, s.opts)
 	if err != nil {
 		d.DateUpdated = oldDateUpdated

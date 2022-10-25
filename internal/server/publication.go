@@ -77,11 +77,17 @@ func (s *server) SearchPublications(ctx context.Context, req *api.SearchPublicat
 func (s *server) UpdatePublication(ctx context.Context, req *api.UpdatePublicationRequest) (*api.UpdatePublicationResponse, error) {
 	p := MessageToPublication(req.Publication)
 
+	// TODO Fetch user information via better authentication (no basic auth)
+	user := &models.User{
+		ID:       "n/a",
+		FullName: "system user",
+	}
+
 	if err := p.Validate(); err != nil {
 		return nil, fmt.Errorf("validation failed for publication %s: %w", p.ID, err)
 	}
 
-	if err := s.services.Repository.UpdatePublication(req.Publication.SnapshotId, p); err != nil {
+	if err := s.services.Repository.UpdatePublication(req.Publication.SnapshotId, p, user); err != nil {
 		// TODO How do we differentiate between errors?
 		return nil, status.Errorf(codes.Internal, "failed to store publication %s, %w", p.ID, err)
 	}

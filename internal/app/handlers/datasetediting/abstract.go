@@ -81,7 +81,7 @@ func (h *Handler) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 		return
 	}
 
-	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
+	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
@@ -171,7 +171,7 @@ func (h *Handler) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 		return
 	}
 
-	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
+	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
@@ -227,7 +227,7 @@ func (h *Handler) DeleteAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 
 	ctx.Dataset.RemoveAbstract(b.AbstractID)
 
-	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
+	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {

@@ -291,7 +291,7 @@ func (h *Handler) CreateContributor(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
+	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
@@ -521,7 +521,7 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
+	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
@@ -622,7 +622,7 @@ func (h *Handler) DeleteContributor(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
+	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
@@ -665,7 +665,7 @@ func (h *Handler) OrderContributors(w http.ResponseWriter, r *http.Request, ctx 
 	}
 	ctx.Dataset.SetContributors(b.Role, newContributors)
 
-	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
+	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
