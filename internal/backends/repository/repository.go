@@ -209,6 +209,32 @@ func (s *Repository) UpdatePublication(snapshotID string, p *models.Publication,
 	return nil
 }
 
+func (s *Repository) SelectPublications(sql string, values []any, fn func(*models.Publication) bool) error {
+	cursor, cursorErr := s.publicationStore.Select(sql, values, s.opts)
+	if cursorErr != nil {
+		return cursorErr
+	}
+	defer cursor.Close()
+	for cursor.HasNext() {
+		snapshot, snapshotErr := cursor.Next()
+		if snapshotErr != nil {
+			return snapshotErr
+		}
+		publication := &models.Publication{}
+		if err := snapshot.Scan(publication); err != nil {
+			return err
+		}
+		publication.SnapshotID = snapshot.SnapshotID
+		publication.DateFrom = snapshot.DateFrom
+		publication.DateUntil = snapshot.DateUntil
+		// TODO catch errors from fn() and pass them upstream
+		if ok := fn(publication); !ok {
+			break
+		}
+	}
+	return cursor.Err()
+}
+
 func (s *Repository) EachPublication(fn func(*models.Publication) bool) error {
 	c, err := s.publicationStore.GetAll(s.opts)
 	if err != nil {
@@ -417,6 +443,32 @@ func (s *Repository) UpdateDataset(snapshotID string, d *models.Dataset, u *mode
 	}
 	d.SnapshotID = snapshotID
 	return nil
+}
+
+func (s *Repository) SelectDatasets(sql string, values []any, fn func(*models.Dataset) bool) error {
+	cursor, cursorErr := s.datasetStore.Select(sql, values, s.opts)
+	if cursorErr != nil {
+		return cursorErr
+	}
+	defer cursor.Close()
+	for cursor.HasNext() {
+		snapshot, snapshotErr := cursor.Next()
+		if snapshotErr != nil {
+			return snapshotErr
+		}
+		dataset := &models.Dataset{}
+		if err := snapshot.Scan(dataset); err != nil {
+			return err
+		}
+		dataset.SnapshotID = snapshot.SnapshotID
+		dataset.DateFrom = snapshot.DateFrom
+		dataset.DateUntil = snapshot.DateUntil
+		// TODO catch errors from fn() and pass them upstream
+		if ok := fn(dataset); !ok {
+			break
+		}
+	}
+	return cursor.Err()
 }
 
 func (s *Repository) EachDataset(fn func(*models.Dataset) bool) error {

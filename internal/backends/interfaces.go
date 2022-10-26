@@ -63,6 +63,7 @@ type Repository interface {
 	ImportCurrentPublication(*models.Publication) error
 	ImportOldPublication(*models.Publication) error
 	UpdatePublication(string, *models.Publication, *models.User) error
+	SelectPublications(string, []any, func(*models.Publication) bool) error
 	EachPublication(func(*models.Publication) bool) error
 	EachPublicationSnapshot(func(*models.Publication) bool) error
 	PublicationHistory(string, func(*models.Publication) bool) error
@@ -75,6 +76,7 @@ type Repository interface {
 	ImportOldDataset(*models.Dataset) error
 	SaveDataset(*models.Dataset) error
 	UpdateDataset(string, *models.Dataset, *models.User) error
+	SelectDatasets(string, []any, func(*models.Dataset) bool) error
 	EachDataset(func(*models.Dataset) bool) error
 	EachDatasetSnapshot(func(*models.Dataset) bool) error
 	DatasetHistory(string, func(*models.Dataset) bool) error
