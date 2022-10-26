@@ -335,7 +335,7 @@ func (d *Dataset) Validate() error {
 		for _, err := range c.Validate() {
 			errs = append(errs, &validation.Error{
 				Pointer: fmt.Sprintf("/author/%d%s", i, err.Pointer),
-				Code:    "dataset.author" + err.Code,
+				Code:    "dataset.author." + err.Code,
 			})
 		}
 	}

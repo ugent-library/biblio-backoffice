@@ -3,6 +3,7 @@ package datacite
 import (
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -58,7 +59,7 @@ func (c *Client) GetDataset(id string) (*models.Dataset, error) {
 		return nil, fmt.Errorf("can't import dataset: %s", src)
 	}
 
-	// log.Printf("import dataset src: %s", src)
+	log.Printf("import dataset src: %s", src)
 
 	attrs := gjson.ParseBytes(src)
 
@@ -103,7 +104,15 @@ func (c *Client) GetDataset(id string) (*models.Dataset, error) {
 			if res := r.Get("familyName"); res.Exists() {
 				c.LastName = res.String()
 			}
-			d.Author = append(d.Author, &c)
+			if c.FirstName == "" {
+				c.FirstName = "[missing]" // TODO
+			}
+			if c.LastName == "" {
+				c.LastName = c.FullName
+			}
+			if c.FullName != "" && c.FirstName != "" && c.LastName != "" {
+				d.Author = append(d.Author, &c)
+			}
 		}
 	}
 	if res := attrs.Get("descriptions"); res.Exists() {
