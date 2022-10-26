@@ -446,3 +446,9 @@ func (d *Dataset) Validate() error {
 	}
 	return nil
 }
+
+func (d *Dataset) ClearEmbargo() {
+	d.AccessLevel = d.AccessLevelAfterEmbargo
+	d.AccessLevelAfterEmbargo = ""
+	d.EmbargoDate = ""
+}
