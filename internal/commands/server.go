@@ -118,10 +118,15 @@ var serverStartCmd = &cobra.Command{
 			}
 		})
 
-		publication.PublishPipeline = append(
-			publication.PublishPipeline,
-			func(p *models.Publication) *models.Publication {
-				if p.Status == "public" && p.Handle == "" {
+		if e.HandleService != nil {
+			publication.PublishPipeline = append(
+				publication.PublishPipeline,
+				func(p *models.Publication) *models.Publication {
+
+					if p.Status != "public" {
+						return p
+					}
+
 					h, hErr := e.HandleService.UpsertHandleByPublication(p)
 					if hErr != nil {
 						logger.Errorf(
@@ -143,15 +148,19 @@ var serverStartCmd = &cobra.Command{
 						)
 						p.Handle = h.GetFullHandleURL()
 					}
-				}
-				return p
-			},
-		)
 
-		publication.UnpublishPipeline = append(
-			publication.UnpublishPipeline,
-			func(p *models.Publication) *models.Publication {
-				if (p.Status == "private" || p.Status == "returned") && p.Handle != "" {
+					return p
+				},
+			)
+
+			publication.UnpublishPipeline = append(
+				publication.UnpublishPipeline,
+				func(p *models.Publication) *models.Publication {
+
+					if !(p.Status == "private" || p.Status == "returned") {
+						return p
+					}
+
 					h, hErr := e.HandleService.DeleteHandleByPublication(p)
 					if hErr != nil {
 						logger.Errorf(
@@ -172,10 +181,13 @@ var serverStartCmd = &cobra.Command{
 						)
 						p.Handle = ""
 					}
-				}
-				return p
-			},
-		)
+
+					return p
+				},
+			)
+		} else {
+			logger.Warn("HandleService was not enabled")
+		}
 
 		// setup router
 		router := buildRouter(e, logger)

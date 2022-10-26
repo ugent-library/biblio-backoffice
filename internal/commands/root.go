@@ -25,6 +25,7 @@ const (
 	defaultSessionName          = "biblio-backend"
 	defaultSessionMaxAge        = 86400 * 30 // 30 days
 	defaultCSRFName             = "biblio-backend.csrf-token"
+	defaultHandleServerEnabled  = false
 	defaultHandleServerURL      = "http://localhost:4000/handles"
 	defaultHandleServerPrefix   = "1854"
 	defaultHandleServerUsername = "handle"
@@ -64,6 +65,7 @@ func init() {
 	viper.SetDefault("session-name", defaultSessionName)
 	viper.SetDefault("session-max-age", defaultSessionMaxAge)
 	viper.SetDefault("csrf-name", defaultCSRFName)
+	viper.SetDefault("hdl-srv-enabled", defaultHandleServerEnabled)
 	viper.SetDefault("hdl-srv-url", defaultHandleServerURL)
 	viper.SetDefault("hdl-srv-prefix", defaultHandleServerPrefix)
 	viper.SetDefault("hdl-srv-username", defaultHandleServerUsername)
@@ -92,6 +94,7 @@ func init() {
 
 	// rootCmd.PersistentFlags().String("imagor-url", "", "imagor url")
 	// rootCmd.PersistentFlags().String("imagor-secret", "", "imagor secret")
+	rootCmd.PersistentFlags().Bool("hdl-srv-enabled", defaultHandleServerEnabled, "enable updates to handle server (disabled by default)")
 	rootCmd.PersistentFlags().String("hdl-srv-url", defaultHandleServerURL, "handle server base url (without trailing slash)")
 	rootCmd.PersistentFlags().String("hdl-srv-prefix", defaultHandleServerPrefix, "handle server base prefix")
 	rootCmd.PersistentFlags().String("hdl-srv-username", defaultHandleServerUsername, "handle server auth basic username")

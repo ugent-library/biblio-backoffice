@@ -62,15 +62,19 @@ func newServices() *backends.Services {
 
 	citeprocURL := viper.GetString("citeproc-url")
 
-	handleService := handle.NewClient(
-		handle.Config{
-			BaseURL:         viper.GetString("hdl-srv-url"),
-			FrontEndBaseURL: fmt.Sprintf("%s/publication", viper.GetString("frontend-url")),
-			Prefix:          viper.GetString("hdl-srv-prefix"),
-			Username:        viper.GetString("hdl-srv-username"),
-			Password:        viper.GetString("hdl-srv-password"),
-		},
-	)
+	var handleService backends.HandleService = nil
+
+	if viper.GetBool("hdl-srv-enabled") {
+		handleService = handle.NewClient(
+			handle.Config{
+				BaseURL:         viper.GetString("hdl-srv-url"),
+				FrontEndBaseURL: fmt.Sprintf("%s/publication", viper.GetString("frontend-url")),
+				Prefix:          viper.GetString("hdl-srv-prefix"),
+				Username:        viper.GetString("hdl-srv-username"),
+				Password:        viper.GetString("hdl-srv-password"),
+			},
+		)
+	}
 
 	return &backends.Services{
 		FileStore:                 newFileStore(),
