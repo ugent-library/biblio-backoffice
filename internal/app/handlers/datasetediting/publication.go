@@ -34,7 +34,7 @@ type YieldDeletePublication struct {
 }
 
 func (h *Handler) AddPublication(w http.ResponseWriter, r *http.Request, ctx Context) {
-	hits, err := h.searchRelatedPublications(ctx.User.ID, ctx.Dataset, "")
+	hits, err := h.searchRelatedPublications(ctx.User, ctx.Dataset, "")
 	if err != nil {
 		h.Logger.Errorf("add dataset publication: Could find related publications:", "errors", err, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
@@ -55,7 +55,7 @@ func (h *Handler) SuggestPublications(w http.ResponseWriter, r *http.Request, ct
 		return
 	}
 
-	hits, err := h.searchRelatedPublications(ctx.User.ID, ctx.Dataset, b.Query)
+	hits, err := h.searchRelatedPublications(ctx.User, ctx.Dataset, b.Query)
 	if err != nil {
 		h.Logger.Errorf("add dataset publication: Could find related publications:", "errors", err, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
@@ -178,7 +178,7 @@ func (h *Handler) DeletePublication(w http.ResponseWriter, r *http.Request, ctx 
 	})
 }
 
-func (h *Handler) searchRelatedPublications(userID string, d *models.Dataset, q string) (*models.PublicationHits, error) {
+func (h *Handler) searchRelatedPublications(user *models.User, d *models.Dataset, q string) (*models.PublicationHits, error) {
 	args := models.NewSearchArgs().WithQuery(q)
 
 	// add exclusion filter if necessary
@@ -190,7 +190,7 @@ func (h *Handler) searchRelatedPublications(userID string, d *models.Dataset, q 
 		args.Filters["!id"] = datasetPubIDs
 	}
 
-	return h.PublicationSearchService.
-		WithScope("status", "private", "public", "returned").
-		Search(args)
+	searchService := h.PublicationSearchService.WithScope("status", "public")
+
+	return searchService.Search(args)
 }
