@@ -428,6 +428,29 @@ func (s *Store) ctxAndDb(o Options) (context.Context, DB) {
 	return ctx, db
 }
 
+func (s *Store) Select(sql string, values []any, options Options) (*Cursor, error) {
+	var (
+		ctx context.Context
+		db  DB
+	)
+	if options.Context == nil {
+		ctx = context.Background()
+	} else {
+		ctx = options.Context
+	}
+	if options.Transaction == nil {
+		db = s.db
+	} else {
+		db = options.Transaction.db
+	}
+
+	rows, err := db.Query(ctx, sql, values...)
+	if err != nil {
+		return nil, err
+	}
+	return &Cursor{rows}, nil
+}
+
 func (s *Store) GetAllSnapshots(o Options) (*Cursor, error) {
 	var (
 		ctx context.Context

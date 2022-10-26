@@ -1485,3 +1485,10 @@ func (p *Publication) ChangeType(newType string) error {
 
 	return nil
 }
+
+func (pf *PublicationFile) ClearEmbargo() {
+	pf.AccessLevel = pf.AccessLevelAfterEmbargo
+	pf.AccessLevelDuringEmbargo = ""
+	pf.AccessLevelAfterEmbargo = ""
+	pf.EmbargoDate = ""
+}
