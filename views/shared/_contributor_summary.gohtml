@@ -36,10 +36,15 @@
           {{.}}
         </li>
         {{end}}
-        {{if and .Active .Contributor.UGentID}}
-        <li class="c-meta-item">
-          <a href="https://telefoonboek.ugent.be/en/people/{{index .Contributor.UGentID 0}}" target="_blank"><i class="if if-external-link"></i><span>View personal details</span></a>
-        </li>
+        {{if .Active}}
+          {{range .Contributor.UGentID}}
+            {{if hasPrefix "80" .}}
+              <li class="c-meta-item">
+                <a href="https://telefoonboek.ugent.be/en/people/{{.}}" target="_blank"><i class="if if-external-link"></i><span>View personal details</span></a>
+              </li>
+              {{break}}
+            {{end}}
+          {{end}}
         {{end}}
       </ul>
     </div>
