@@ -34,6 +34,7 @@ type Services struct {
 	PublicationSearcherService PublicationSearcherService
 	DatasetListExporters       map[string]DatasetListExporterFactory
 	DatasetSearcherService     DatasetSearcherService
+	HandleService              HandleService
 	// Tasks                      *tasks.Hub
 }
 
@@ -179,3 +180,9 @@ type DatasetListExporter interface {
 }
 
 type DatasetListExporterFactory func(io.Writer) DatasetListExporter
+
+type HandleService interface {
+	GetHandleByPublication(*models.Publication) (*models.Handle, error)
+	UpsertHandleByPublication(*models.Publication) (*models.Handle, error)
+	DeleteHandleByPublication(*models.Publication) (*models.Handle, error)
+}
