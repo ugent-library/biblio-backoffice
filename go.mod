@@ -7,7 +7,6 @@ require (
 	github.com/alitto/pond v1.8.0
 	github.com/blevesearch/bleve/v2 v2.3.2
 	github.com/caltechlibrary/doitools v0.0.1
-	github.com/cshum/imagor v1.0.2
 	github.com/dimchansky/utfbom v1.1.1
 	github.com/elastic/go-elasticsearch/v6 v6.8.10
 	github.com/go-playground/form/v4 v4.2.0
@@ -16,9 +15,11 @@ require (
 	github.com/gorilla/handlers v1.5.1
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/sessions v1.2.1
+	github.com/iancoleman/strcase v0.2.0
 	github.com/jackc/pgconn v1.12.1
 	github.com/jackc/pgtype v1.11.0
 	github.com/jackc/pgx/v4 v4.16.1
+	github.com/jpillora/ipfilter v1.2.8
 	github.com/nickng/bibtex v1.2.0
 	github.com/oklog/ulid v1.3.1
 	github.com/pkg/errors v0.9.1
@@ -29,6 +30,7 @@ require (
 	github.com/tidwall/gjson v1.14.1
 	github.com/ugent-library/go-oidc v0.0.0-20210901124208-bda4cc73ba56
 	github.com/ugent-library/go-orcid v0.0.0-20211130191640-1138a344c30b
+	github.com/xuri/excelize/v2 v2.6.1
 	golang.org/x/net v0.0.0-20220812174116-3211cb980234
 	golang.org/x/text v0.3.7
 	google.golang.org/grpc v1.48.0
@@ -36,13 +38,16 @@ require (
 )
 
 require (
-	github.com/iancoleman/strcase v0.2.0 // indirect
+	cloud.google.com/go/compute v1.7.0 // indirect
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
+	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
+	github.com/phuslu/iploc v1.0.20220830 // indirect
 	github.com/richardlehane/mscfb v1.0.4 // indirect
 	github.com/richardlehane/msoleps v1.0.3 // indirect
+	github.com/tomasen/realip v0.0.0-20180522021738-f0c99a92ddce // indirect
 	github.com/xuri/efp v0.0.0-20220603152613-6918739fd470 // indirect
-	github.com/xuri/excelize/v2 v2.6.1 // indirect
 	github.com/xuri/nfp v0.0.0-20220409054826-5e722a1d9e22 // indirect
+	gopkg.in/check.v1 v1.0.0-20200902074654-038fdea0a05b // indirect
 )
 
 require (

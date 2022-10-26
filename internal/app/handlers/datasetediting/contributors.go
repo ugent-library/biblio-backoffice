@@ -107,6 +107,7 @@ type YieldConfirmCreateContributor struct {
 	Context
 	Role        string
 	Contributor *models.Contributor
+	Active      bool
 	Form        *form.Form
 }
 
@@ -117,6 +118,7 @@ type YieldEditContributor struct {
 	Contributor *models.Contributor
 	FirstName   string
 	LastName    string
+	Active      bool
 	Hits        []models.Person
 	Form        *form.Form
 }
@@ -136,6 +138,7 @@ type YieldConfirmUpdateContributor struct {
 	Role        string
 	Position    int
 	Contributor *models.Contributor
+	Active      bool
 	Form        *form.Form
 	EditNext    bool
 }
@@ -228,13 +231,15 @@ func (h *Handler) ConfirmCreateContributor(w http.ResponseWriter, r *http.Reques
 	}
 
 	c := &models.Contributor{}
+	active := false
 	if b.ID != "" {
-		newC, err := h.generateContributorFromPersonId(b.ID)
+		newC, newP, err := h.generateContributorFromPersonId(b.ID)
 		if err != nil {
 			render.InternalServerError(w, r, err)
 			return
 		}
 		c = newC
+		active = newP.Active
 	} else {
 		c.FirstName = b.FirstName
 		c.LastName = b.LastName
@@ -244,6 +249,7 @@ func (h *Handler) ConfirmCreateContributor(w http.ResponseWriter, r *http.Reques
 		Context:     ctx,
 		Role:        b.Role,
 		Contributor: c,
+		Active:      active,
 		Form:        confirmContributorForm(ctx, b.Role, c, nil),
 	})
 }
@@ -257,13 +263,15 @@ func (h *Handler) CreateContributor(w http.ResponseWriter, r *http.Request, ctx 
 	}
 
 	c := &models.Contributor{}
+	active := false
 	if b.ID != "" {
-		newC, err := h.generateContributorFromPersonId(b.ID)
+		newC, newP, err := h.generateContributorFromPersonId(b.ID)
 		if err != nil {
 			render.InternalServerError(w, r, err)
 			return
 		}
 		c = newC
+		active = newP.Active
 	} else {
 		c.FirstName = b.FirstName
 		c.LastName = b.LastName
@@ -276,13 +284,14 @@ func (h *Handler) CreateContributor(w http.ResponseWriter, r *http.Request, ctx 
 			Context:     ctx,
 			Role:        b.Role,
 			Contributor: c,
+			Active:      active,
 			Form:        confirmContributorForm(ctx, b.Role, c, validationErrs.(validation.Errors)),
 		})
 
 		return
 	}
 
-	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
+	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
@@ -334,6 +343,16 @@ func (h *Handler) EditContributor(w http.ResponseWriter, r *http.Request, ctx Co
 		return
 	}
 
+	active := false
+	if c.ID != "" {
+		p, err := h.PersonService.GetPerson(c.ID)
+		if err != nil {
+			render.InternalServerError(w, r, err)
+			return
+		}
+		active = p.Active
+	}
+
 	firstName := b.FirstName
 	lastName := b.LastName
 	if firstName == "" && lastName == "" {
@@ -371,6 +390,7 @@ func (h *Handler) EditContributor(w http.ResponseWriter, r *http.Request, ctx Co
 		Contributor: c,
 		FirstName:   firstName,
 		LastName:    lastName,
+		Active:      active,
 		Hits:        hits,
 		Form:        contributorForm(ctx, c, suggestURL),
 	})
@@ -432,13 +452,15 @@ func (h *Handler) ConfirmUpdateContributor(w http.ResponseWriter, r *http.Reques
 	}
 
 	c := &models.Contributor{}
+	active := false
 	if b.ID != "" {
-		newC, err := h.generateContributorFromPersonId(b.ID)
+		newC, newP, err := h.generateContributorFromPersonId(b.ID)
 		if err != nil {
 			render.InternalServerError(w, r, err)
 			return
 		}
 		c = newC
+		active = newP.Active
 	} else {
 		c.FirstName = b.FirstName
 		c.LastName = b.LastName
@@ -449,6 +471,7 @@ func (h *Handler) ConfirmUpdateContributor(w http.ResponseWriter, r *http.Reques
 		Role:        b.Role,
 		Position:    b.Position,
 		Contributor: c,
+		Active:      active,
 		Form:        confirmContributorForm(ctx, b.Role, c, nil),
 		EditNext:    b.Position+1 < len(ctx.Dataset.Contributors(b.Role)),
 	})
@@ -463,14 +486,16 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 	}
 
 	c := &models.Contributor{}
+	active := false
 	if b.ID != "" {
-		newC, err := h.generateContributorFromPersonId(b.ID)
+		newC, newP, err := h.generateContributorFromPersonId(b.ID)
 		if err != nil {
 			h.Logger.Errorw("update dataset contributor: could not fetch person", "errors", err, "personid", b.ID, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
 			render.InternalServerError(w, r, err)
 			return
 		}
 		c = newC
+		active = newP.Active
 	} else {
 		c.FirstName = b.FirstName
 		c.LastName = b.LastName
@@ -488,6 +513,7 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 			Role:        b.Role,
 			Position:    b.Position,
 			Contributor: c,
+			Active:      active,
 			Form:        confirmContributorForm(ctx, b.Role, c, validationErrs.(validation.Errors)),
 			EditNext:    b.Position+1 < len(ctx.Dataset.Contributors(b.Role)),
 		})
@@ -495,7 +521,7 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
+	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
@@ -523,13 +549,24 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 
 		suggestURL := h.PathFor("dataset_edit_contributor_suggest", "id", ctx.Dataset.ID, "role", b.Role, "position", fmt.Sprintf("%d", nextPos)).String()
 
+		nextActive := false
+		if nextC.ID != "" {
+			p, err := h.PersonService.GetPerson(nextC.ID)
+			if err != nil {
+				render.InternalServerError(w, r, err)
+				return
+			}
+			nextActive = p.Active
+		}
+
 		render.Partial(w, "dataset/edit_next_contributor", YieldEditContributor{
 			Context:     ctx,
 			Role:        b.Role,
 			Position:    nextPos,
-			Contributor: ctx.Dataset.Contributors(b.Role)[nextPos],
+			Contributor: nextC,
 			FirstName:   nextC.FirstName,
 			LastName:    nextC.LastName,
+			Active:      nextActive,
 			Hits:        hits,
 			Form:        contributorForm(ctx, nextC, suggestURL),
 		})
@@ -585,7 +622,7 @@ func (h *Handler) DeleteContributor(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
+	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
@@ -628,7 +665,7 @@ func (h *Handler) OrderContributors(w http.ResponseWriter, r *http.Request, ctx 
 	}
 	ctx.Dataset.SetContributors(b.Role, newContributors)
 
-	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
+	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
@@ -704,10 +741,10 @@ func confirmContributorForm(ctx Context, role string, c *models.Contributor, err
 		AddSection(fields...)
 }
 
-func (h *Handler) generateContributorFromPersonId(id string) (*models.Contributor, error) {
+func (h *Handler) generateContributorFromPersonId(id string) (*models.Contributor, *models.Person, error) {
 	p, err := h.PersonService.GetPerson(id)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	c := &models.Contributor{}
 	c.ID = p.ID
@@ -720,10 +757,10 @@ func (h *Handler) generateContributorFromPersonId(id string) (*models.Contributo
 		newDep := models.ContributorDepartment{ID: pd.ID}
 		org, orgErr := h.OrganizationService.GetOrganization(pd.ID)
 		if orgErr != nil {
-			return nil, orgErr
+			return nil, nil, orgErr
 		}
 		newDep.Name = org.Name
 		c.Department = append(c.Department, newDep)
 	}
-	return c, nil
+	return c, p, nil
 }

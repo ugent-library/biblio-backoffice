@@ -6,36 +6,36 @@ import (
 
 	"github.com/ugent-library/biblio-backend/internal/backends/filestore"
 	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/biblio-backend/internal/tasks"
 	"github.com/ugent-library/go-orcid/orcid"
 )
 
 type Services struct {
-	ORCIDSandbox             bool
-	ORCIDClient              *orcid.MemberClient
-	Repository               Repository
-	FileStore                *filestore.Store
-	DatasetSearchService     DatasetSearchService
-	PublicationSearchService PublicationSearchService
-	OrganizationService
-	PersonService
-	ProjectService
-	UserService
-	OrganizationSearchService
-	PersonSearchService
-	ProjectSearchService
-	LicenseSearchService
-	MediaTypeSearchService
+	ORCIDSandbox               bool
+	ORCIDClient                *orcid.MemberClient
+	Repository                 Repository
+	FileStore                  *filestore.Store
+	DatasetSearchService       DatasetSearchService
+	PublicationSearchService   PublicationSearchService
+	OrganizationService        OrganizationService
+	PersonService              PersonService
+	ProjectService             ProjectService
+	UserService                UserService
+	OrganizationSearchService  OrganizationSearchService
+	PersonSearchService        PersonSearchService
+	ProjectSearchService       ProjectSearchService
+	UserSearchService          UserSearchService
+	LicenseSearchService       LicenseSearchService
+	MediaTypeSearchService     MediaTypeSearchService
 	PublicationSources         map[string]PublicationGetter
 	DatasetSources             map[string]DatasetGetter
 	PublicationEncoders        map[string]PublicationEncoder
 	PublicationDecoders        map[string]PublicationDecoderFactory
-	Tasks                      *tasks.Hub
 	PublicationListExporters   map[string]PublicationListExporterFactory
 	PublicationSearcherService PublicationSearcherService
 	DatasetListExporters       map[string]DatasetListExporterFactory
 	DatasetSearcherService     DatasetSearcherService
 	HandleService              HandleService
+	// Tasks                      *tasks.Hub
 }
 
 type PublicationEncoder func(*models.Publication) ([]byte, error)
@@ -60,8 +60,9 @@ type Repository interface {
 	GetPublication(string) (*models.Publication, error)
 	GetPublications([]string) ([]*models.Publication, error)
 	SavePublication(*models.Publication) error
-	ImportPublication(*models.Publication) error
-	UpdatePublication(string, *models.Publication) error
+	ImportCurrentPublication(*models.Publication) error
+	ImportOldPublication(*models.Publication) error
+	UpdatePublication(string, *models.Publication, *models.User) error
 	EachPublication(func(*models.Publication) bool) error
 	EachPublicationSnapshot(func(*models.Publication) bool) error
 	PublicationHistory(string, func(*models.Publication) bool) error
@@ -70,16 +71,19 @@ type Repository interface {
 	AddDatasetListener(func(*models.Dataset))
 	GetDataset(string) (*models.Dataset, error)
 	GetDatasets([]string) ([]*models.Dataset, error)
-	ImportDataset(*models.Dataset) error
+	ImportCurrentDataset(*models.Dataset) error
+	ImportOldDataset(*models.Dataset) error
 	SaveDataset(*models.Dataset) error
-	UpdateDataset(string, *models.Dataset) error
+	UpdateDataset(string, *models.Dataset, *models.User) error
 	EachDataset(func(*models.Dataset) bool) error
 	EachDatasetSnapshot(func(*models.Dataset) bool) error
 	DatasetHistory(string, func(*models.Dataset) bool) error
 	PurgeAllDatasets() error
 	PurgeDataset(string) error
 	GetPublicationDatasets(*models.Publication) ([]*models.Dataset, error)
+	GetPublicationLiveDatasets(*models.Publication) ([]*models.Dataset, error)
 	GetDatasetPublications(*models.Dataset) ([]*models.Publication, error)
+	GetDatasetLivePublications(*models.Dataset) ([]*models.Publication, error)
 	AddPublicationDataset(*models.Publication, *models.Dataset) error
 	RemovePublicationDataset(*models.Publication, *models.Dataset) error
 }
@@ -145,6 +149,10 @@ type PersonSearchService interface {
 
 type ProjectSearchService interface {
 	SuggestProjects(string) ([]models.Completion, error)
+}
+
+type UserSearchService interface {
+	SuggestUsers(string) ([]models.Person, error)
 }
 
 type LicenseSearchService interface {

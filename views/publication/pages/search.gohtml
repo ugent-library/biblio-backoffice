@@ -1,30 +1,8 @@
 {{define "page_content"}}
-<div class="c-sub-sidebar c-sidebar--bordered">
-    <div class="bc-navbar bc-navbar--xlarge bc-navbar--bordered-bottom">
-        <div class="bc-toolbar">
-            <div class="bc-toolbar-left">
-                <div class="bc-toolbar-item">
-                    <h4 class="bc-toolbar-title">Publications</h4>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="c-sub-sidebar__menu my-6">
-        <nav>
-            <ul class="c-sub-sidebar-menu">
-                <li class="c-sub-sidebar__item c-sub-sidebar__item--active">
-                    <a href="{{pathFor "publications"}}">
-                        <span class="c-sidebar__label">Overview</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-    </div>
-</div>
 
 <div class="w-100 u-scroll-wrapper">
     <div class="bg-white">
-        <div class="bc-navbar bc-navbar--xlarge bc-navbar--white">
+        <div class="bc-navbar bc-navbar--large bc-navbar--bordered-bottom bc-navbar--white">
             <div class="bc-toolbar">
                 <div class="bc-toolbar-left">
                     <div class="bc-toolbar-item">
@@ -74,7 +52,7 @@
     <div class="u-scroll-wrapper__body p-6">
         {{partial "search/query" .}}
         {{with .SearchArgs.Facets}}
-        <div class="d-flex flex-wrap mb-6 badge-list">
+        <div class="d-flex flex-wrap mb-6 badge-list col-11">
             {{range .}}
             {{partial (printf "search/%s_facet" (. | replace "." "_")) $}}
             {{end}}
@@ -128,6 +106,19 @@
                 {{end}}
             </div>
         </div>
+
+        {{if gt .Hits.TotalPages .Hits.MaxPages}}
+        <div class="alert alert-info">
+            <i class="if if-info-circle-filled"></I>
+            <div>
+                <h4>Biblio search results have been optimised</h4>
+                <p class="mb-2">To optimise Biblio's speed, we only show you the most relevant records.</p>
+                <p class="mb-2">Missing some results? <strong>Refine your search query</strong> and use the
+                <strong>filters</strong> to get a more precise set of
+                records.</p>
+            </div>
+        </div>
+        {{end}}
 
         <nav aria-label="Page navigation">
             {{partial "search/pagination" .}}

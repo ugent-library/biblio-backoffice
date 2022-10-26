@@ -68,7 +68,7 @@ func (h *Handler) UpdateConference(w http.ResponseWriter, r *http.Request, ctx C
 		return
 	}
 
-	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), p)
+	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), p, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {

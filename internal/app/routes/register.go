@@ -3,11 +3,13 @@ package routes
 import (
 	"net/http"
 	"net/url"
+	"strings"
 
 	"github.com/gorilla/csrf"
 	mw "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
+	"github.com/jpillora/ipfilter"
 	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/authenticating"
@@ -22,13 +24,11 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/impersonating"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/mediatypes"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/notfound"
-	"github.com/ugent-library/biblio-backend/internal/app/handlers/orcid"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/publicationcreating"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/publicationediting"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/publicationexporting"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/publicationsearching"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/publicationviewing"
-	"github.com/ugent-library/biblio-backend/internal/app/handlers/tasks"
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/locale"
 	"github.com/ugent-library/go-oidc/oidc"
@@ -65,12 +65,13 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		OIDCClient:  oidcClient,
 	}
 	impersonatingHandler := &impersonating.Handler{
-		BaseHandler: baseHandler,
+		BaseHandler:       baseHandler,
+		UserSearchService: services.UserSearchService,
 	}
-	tasksHandler := &tasks.Handler{
-		BaseHandler: baseHandler,
-		Tasks:       services.Tasks,
-	}
+	// tasksHandler := &tasks.Handler{
+	// 	BaseHandler: baseHandler,
+	// 	Tasks:       services.Tasks,
+	// }
 	dashboardHandler := &dashboard.Handler{
 		BaseHandler:              baseHandler,
 		DatasetSearchService:     services.DatasetSearchService,
@@ -81,6 +82,11 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		Repository:               services.Repository,
 		DatasetSearchService:     services.DatasetSearchService,
 		PublicationSearchService: services.PublicationSearchService,
+		FileStore:                services.FileStore,
+		IPFilter: ipfilter.New(ipfilter.Options{
+			AllowedIPs:     strings.Split(viper.GetString("ip-ranges"), ","),
+			BlockByDefault: true,
+		}),
 	}
 	datasetSearchingHandler := &datasetsearching.Handler{
 		BaseHandler:          baseHandler,
@@ -146,13 +152,13 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		DatasetSearchService:      services.DatasetSearchService,
 		FileStore:                 services.FileStore,
 	}
-	orcidHandler := &orcid.Handler{
-		BaseHandler:              baseHandler,
-		Tasks:                    services.Tasks,
-		Repository:               services.Repository,
-		PublicationSearchService: services.PublicationSearchService,
-		Sandbox:                  services.ORCIDSandbox,
-	}
+	// orcidHandler := &orcid.Handler{
+	// 	BaseHandler:              baseHandler,
+	// 	Tasks:                    services.Tasks,
+	// 	Repository:               services.Repository,
+	// 	PublicationSearchService: services.PublicationSearchService,
+	// 	Sandbox:                  services.ORCIDSandbox,
+	// }
 	mediaTypesHandler := &mediatypes.Handler{
 		BaseHandler:            baseHandler,
 		MediaTypeSearchService: services.MediaTypeSearchService,
@@ -167,15 +173,18 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 	// }
 	// r = r.Schemes(schemes...).Host(u.Host).PathPrefix(u.Path).Subrouter()
 
-	apiRouter := router.PathPrefix(basePath).Subrouter()
+	frontofficeRouter := router.PathPrefix(basePath).Subrouter()
 	// frontoffice data exchange api
-	apiRouter.HandleFunc("/frontoffice/publication/{id}", frontofficeHandler.Wrap(frontofficeHandler.GetPublication)).
+	frontofficeRouter.HandleFunc("/frontoffice/publication/{id}", frontofficeHandler.BasicAuth(frontofficeHandler.GetPublication)).
 		Methods("GET")
-	apiRouter.HandleFunc("/frontoffice/publication", frontofficeHandler.Wrap(frontofficeHandler.GetAllPublications)).
+	frontofficeRouter.HandleFunc("/frontoffice/publication", frontofficeHandler.BasicAuth(frontofficeHandler.GetAllPublications)).
 		Methods("GET")
-	apiRouter.HandleFunc("/frontoffice/dataset/{id}", frontofficeHandler.Wrap(frontofficeHandler.GetDataset)).
+	frontofficeRouter.HandleFunc("/frontoffice/dataset/{id}", frontofficeHandler.BasicAuth(frontofficeHandler.GetDataset)).
 		Methods("GET")
-	apiRouter.HandleFunc("/frontoffice/dataset", frontofficeHandler.Wrap(frontofficeHandler.GetAllDatasets)).
+	frontofficeRouter.HandleFunc("/frontoffice/dataset", frontofficeHandler.BasicAuth(frontofficeHandler.GetAllDatasets)).
+		Methods("GET")
+	// frontoffice file download
+	frontofficeRouter.HandleFunc("/download/{id}/{file_id}", frontofficeHandler.DownloadFile).
 		Methods("GET")
 
 	csrfPath := basePath
@@ -221,6 +230,10 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		impersonatingHandler.Wrap(impersonatingHandler.AddImpersonation)).
 		Methods("GET").
 		Name("add_impersonation")
+	r.HandleFunc("/impersonation/suggestions",
+		impersonatingHandler.Wrap(impersonatingHandler.AddImpersonationSuggest)).
+		Methods("GET").
+		Name("suggest_impersonations")
 	r.HandleFunc("/impersonation",
 		impersonatingHandler.Wrap(impersonatingHandler.CreateImpersonation)).
 		Methods("POST").
@@ -232,9 +245,9 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		Name("delete_impersonation")
 
 	// tasks
-	r.HandleFunc("/task/{id}/status", tasksHandler.Wrap(tasksHandler.Status)).
-		Methods("GET").
-		Name("task_status")
+	// r.HandleFunc("/task/{id}/status", tasksHandler.Wrap(tasksHandler.Status)).
+	// 	Methods("GET").
+	// 	Name("task_status")
 
 	// dashboard
 	r.HandleFunc("/dashboard/publications/{type}", dashboardHandler.Wrap(dashboardHandler.Publications)).
@@ -419,12 +432,11 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		datasetEditingHandler.Wrap(datasetEditingHandler.CreateProject)).
 		Methods("POST").
 		Name("dataset_create_project")
-	// TODO: weird project_id's not problematic in urls?
-	r.HandleFunc("/dataset/{id}/{snapshot_id}/projects/{project_id}/confirm-delete",
+	r.HandleFunc("/dataset/{id}/{snapshot_id}/projects/confirm-delete/{project_id:.+}",
 		datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmDeleteProject)).
 		Methods("GET").
 		Name("dataset_confirm_delete_project")
-	r.HandleFunc("/dataset/{id}/projects/{project_id}",
+	r.HandleFunc("/dataset/{id}/projects/{project_id:.+}",
 		datasetEditingHandler.Wrap(datasetEditingHandler.DeleteProject)).
 		Methods("DELETE").
 		Name("dataset_delete_project")
@@ -640,10 +652,10 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		publicationViewingHandler.Wrap(publicationViewingHandler.DownloadFile)).
 		Methods("GET").
 		Name("publication_download_file")
-	r.HandleFunc("/publication/{id}/files/{file_id}/thumbnail",
-		publicationViewingHandler.Wrap(publicationViewingHandler.FileThumbnail)).
-		Methods("GET").
-		Name("publication_file_thumbnail")
+	// r.HandleFunc("/publication/{id}/files/{file_id}/thumbnail",
+	// 	publicationViewingHandler.Wrap(publicationViewingHandler.FileThumbnail)).
+	// 	Methods("GET").
+	// 	Name("publication_file_thumbnail")
 
 	// publish publication
 	r.HandleFunc("/publication/{id}/publish/confirm",
@@ -774,11 +786,13 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		publicationEditingHandler.Wrap(publicationEditingHandler.CreateProject)).
 		Methods("POST").
 		Name("publication_create_project")
-	r.HandleFunc("/publication/{id}/{snapshot_id}/projects/{project_id}/confirm-delete",
+	// project_id is last part of url because some id's contain slashes
+	r.HandleFunc("/publication/{id}/{snapshot_id}/projects/confirm-delete/{project_id:.+}",
 		publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDeleteProject)).
 		Methods("GET").
 		Name("publication_confirm_delete_project")
-	r.HandleFunc("/publication/{id}/projects/{project_id}",
+	// project_id is last part of url because some id's contain slashes
+	r.HandleFunc("/publication/{id}/projects/{project_id:.+}",
 		publicationEditingHandler.Wrap(publicationEditingHandler.DeleteProject)).
 		Methods("DELETE").
 		Name("publication_delete_project")
@@ -978,14 +992,14 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		Name("publication_delete_file")
 
 	// orcid
-	r.HandleFunc("/publication/orcid",
-		orcidHandler.Wrap(orcidHandler.AddAll)).
-		Methods("POST").
-		Name("publication_orcid_add_all")
-	r.HandleFunc("/publication/{id}/orcid",
-		orcidHandler.Wrap(orcidHandler.Add)).
-		Methods("POST").
-		Name("publication_orcid_add")
+	// r.HandleFunc("/publication/orcid",
+	// 	orcidHandler.Wrap(orcidHandler.AddAll)).
+	// 	Methods("POST").
+	// 	Name("publication_orcid_add_all")
+	// r.HandleFunc("/publication/{id}/orcid",
+	// 	orcidHandler.Wrap(orcidHandler.Add)).
+	// 	Methods("POST").
+	// 	Name("publication_orcid_add")
 
 	// media types
 	r.HandleFunc("/media_type/suggestions",

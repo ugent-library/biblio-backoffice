@@ -12,6 +12,7 @@ import modalClose from './ui/modal_close.js'
 import radioCard from './ui/radio_card.js'
 import toast from './ui/toast.js'
 import sortable from './ui/sortable.js';
+import collapseSubSidebar from './ui/collapsible_sub_sidebar.js'
 
 // configure htmx
 htmx.config.defaultFocusScroll = true
@@ -34,4 +35,5 @@ document.addEventListener('DOMContentLoaded', function () {
     radioCard()
     toast()
     sortable()
+    collapseSubSidebar()
 });

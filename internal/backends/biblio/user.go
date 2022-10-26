@@ -22,3 +22,13 @@ func (c *Client) GetUserByUsername(username string) (*models.User, error) {
 	}
 	return user, nil
 }
+
+func (c *Client) SuggestUsers(q string) ([]models.Person, error) {
+	hits := make([]models.Person, 0)
+	qp := url.Values{}
+	qp.Set("q", q)
+	if _, err := c.get("/restricted/user/completion", qp, &hits); err != nil {
+		return nil, err
+	}
+	return hits, nil
+}

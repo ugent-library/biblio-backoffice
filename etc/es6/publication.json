@@ -243,7 +243,9 @@
                 "defense_time": {
                     "type": "keyword"
                 },
-                "faculty": { "type": "keyword" },
+                "faculty": {
+                    "type": "keyword"
+                },
                 "department": {
                     "properties": {
                         "id": {
@@ -252,9 +254,7 @@
                         "tree": {
                             "properties": {
                                 "id": {
-                                    "type": "keyword",
-                                    "copy_to": ["faculty"]
-                                }
+                                    "type": "keyword"                                }
                             }
                         }
                     }
@@ -454,6 +454,9 @@
                         "url": { "type": "text" },
                         "description": { "type": "text" }
                     }
+                },
+                "legacy": {
+                    "type": "boolean"
                 },
                 "locked": {
                     "type": "boolean"

@@ -95,7 +95,7 @@ func (h *Handler) CreateProject(w http.ResponseWriter, r *http.Request, ctx Cont
 
 	// TODO handle validation errors
 
-	err = h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
+	err = h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
@@ -149,7 +149,7 @@ func (h *Handler) DeleteProject(w http.ResponseWriter, r *http.Request, ctx Cont
 
 	// TODO handle validation errors
 
-	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
+	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {

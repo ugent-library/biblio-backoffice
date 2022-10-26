@@ -8,16 +8,17 @@ import (
 // facets that also work as filters
 var fixedFacetValues = map[string][]string{
 	//"publication_statuses" includes "deleted"
+	"classification":     vocabularies.Map["publication_classifications"],
+	"extern":             {"true", "false"},
+	"faculty":            vocabularies.Map["faculties"],
+	"file.relation":      vocabularies.Map["publication_file_relations"],
+	"has_message":        {"true", "false"},
+	"legacy":             {"true", "false"},
+	"locked":             {"true", "false"},
+	"publication_status": vocabularies.Map["publication_publishing_statuses"],
 	"status":             vocabularies.Map["visible_publication_statuses"],
 	"type":               vocabularies.Map["publication_types"],
-	"faculty":            vocabularies.Map["faculties"],
-	"extern":             {"true", "false"},
-	"publication_status": vocabularies.Map["publication_publishing_statuses"],
-	"locked":             {"true", "false"},
-	"file.relation":      vocabularies.Map["publication_file_relations"],
-	"classification":     vocabularies.Map["publication_classifications"],
 	"vabb_type":          vocabularies.Map["publication_vabb_types"],
-	"has_message":        {"true", "false"},
 }
 
 // filter without facet values

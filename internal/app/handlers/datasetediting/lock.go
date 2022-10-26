@@ -20,7 +20,7 @@ type YieldLock struct {
 }
 
 func (h *Handler) Lock(w http.ResponseWriter, r *http.Request, ctx Context) {
-	if !ctx.User.CanLockDataset(ctx.Dataset) {
+	if !ctx.User.CanCurate() {
 		h.Logger.Warnw("lock dataset: user has no permission to lock", "user", ctx.User.ID, "dataset", ctx.Dataset.ID)
 		render.Forbidden(w, r)
 		return
@@ -40,7 +40,7 @@ func (h *Handler) Lock(w http.ResponseWriter, r *http.Request, ctx Context) {
 		return
 	}
 
-	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
+	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
@@ -66,7 +66,7 @@ func (h *Handler) Lock(w http.ResponseWriter, r *http.Request, ctx Context) {
 }
 
 func (h *Handler) Unlock(w http.ResponseWriter, r *http.Request, ctx Context) {
-	if !ctx.User.CanLockDataset(ctx.Dataset) {
+	if !ctx.User.CanCurate() {
 		h.Logger.Warnw("unlock dataset: user has no permission to lock", "user", ctx.User.ID, "dataset", ctx.Dataset.ID)
 		render.Forbidden(w, r)
 		return
@@ -86,7 +86,7 @@ func (h *Handler) Unlock(w http.ResponseWriter, r *http.Request, ctx Context) {
 		return
 	}
 
-	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
+	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {

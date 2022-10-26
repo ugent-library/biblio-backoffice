@@ -72,7 +72,7 @@ func (h *Handler) UpdateMessage(w http.ResponseWriter, r *http.Request, ctx Cont
 		return
 	}
 
-	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
+	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
@@ -131,7 +131,7 @@ func (h *Handler) UpdateReviewerTags(w http.ResponseWriter, r *http.Request, ctx
 		return
 	}
 
-	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
+	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
@@ -191,7 +191,7 @@ func (h *Handler) UpdateReviewerNote(w http.ResponseWriter, r *http.Request, ctx
 		return
 	}
 
-	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
+	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
@@ -214,7 +214,7 @@ func (h *Handler) UpdateReviewerNote(w http.ResponseWriter, r *http.Request, ctx
 
 func messageForm(user *models.User, l *locale.Locale, p *models.Dataset, errors validation.Errors) *form.Form {
 	return form.New().
-		WithTheme("default").
+		WithTheme("cols").
 		WithErrors(localize.ValidationErrors(l, errors)).
 		AddSection(
 			&form.TextArea{
@@ -234,7 +234,7 @@ func messageForm(user *models.User, l *locale.Locale, p *models.Dataset, errors 
 
 func reviewerTagsForm(user *models.User, l *locale.Locale, p *models.Dataset, errors validation.Errors) *form.Form {
 	return form.New().
-		WithTheme("default").
+		WithTheme("cols").
 		WithErrors(localize.ValidationErrors(l, errors)).
 		AddSection(
 			&form.TextRepeat{
@@ -253,7 +253,7 @@ func reviewerTagsForm(user *models.User, l *locale.Locale, p *models.Dataset, er
 
 func reviewerNoteForm(user *models.User, l *locale.Locale, p *models.Dataset, errors validation.Errors) *form.Form {
 	return form.New().
-		WithTheme("default").
+		WithTheme("cols").
 		WithErrors(localize.ValidationErrors(l, errors)).
 		AddSection(
 			&form.TextArea{

@@ -3,6 +3,8 @@ package models
 import (
 	"errors"
 	"fmt"
+	"regexp"
+	"strings"
 	"time"
 
 	"github.com/ugent-library/biblio-backend/internal/pagination"
@@ -118,6 +120,7 @@ type Publication struct {
 	Keyword                 []string                `json:"keyword,omitempty"`
 	Language                []string                `json:"language,omitempty"`
 	LaySummary              []Text                  `json:"lay_summary,omitempty"`
+	Legacy                  bool                    `json:"legacy"`
 	Link                    []PublicationLink       `json:"link,omitempty"`
 	Locked                  bool                    `json:"locked"`
 	Message                 string                  `json:"message,omitempty"`
@@ -158,6 +161,7 @@ type Publication struct {
 	Year                    string                  `json:"year,omitempty"`
 }
 
+// TODO determine which file passes access level to top
 func (p *Publication) AccessLevel() string {
 	for _, a := range vocabularies.Map["publication_file_access_levels"] {
 		for _, file := range p.File {
@@ -205,6 +209,116 @@ func (p *Publication) SetFile(f *PublicationFile) {
 	}
 }
 
+// TODO determine which file will be the primary file for thumbnails, etc.
+//
+//	This isn't necessarily the same file as the primary file used to indicate
+//	the access level across the entire publication (e.g. summaries)
+func (p *Publication) PrimaryFile() *PublicationFile {
+	for _, file := range p.File {
+		if file.AccessLevel != "" && file.Relation == "main_file" {
+			return file
+		}
+	}
+
+	return nil
+}
+
+// format: c:vabb:419551 (VABB-1, not approved, 2017
+func (p *Publication) VABB() string {
+	VABBID := "-"
+	VABBType := "-"
+	VABBApproved := "not approved"
+	VABBYear := "-"
+
+	if p.VABBID != "" {
+		VABBID = p.VABBID
+	}
+
+	if p.VABBType != "" {
+		VABBType = p.VABBType
+	}
+
+	if p.VABBApproved {
+		VABBApproved = "approved"
+	}
+
+	if len(p.VABBYear) > 0 {
+		VABBYear = strings.Join(p.VABBYear, ", ")
+	}
+
+	return fmt.Sprintf("%s (%s, %s, %s)", VABBID, VABBType, VABBApproved, VABBYear)
+}
+
+// Citation
+func (p *Publication) Reference() string {
+	ref := ""
+
+	ref_page := ""
+	ref_publisher := ""
+	ref_parent := ""
+	year := ""
+	volume := ""
+	issue := ""
+
+	if p.PublicationAbbreviation != "" {
+		ref_parent = fmt.Sprintf(" %s ", p.PublicationAbbreviation)
+	} else if p.Publication != "" {
+		ref_parent = fmt.Sprintf(" %s ", p.Publication)
+	}
+
+	if p.Year != "" {
+		year = fmt.Sprintf(" %s.", p.Year)
+	}
+
+	if p.Publisher != "" {
+		ref_publisher = fmt.Sprintf(" %s.", p.Publisher)
+	}
+
+	if p.Volume != "" {
+		volume = fmt.Sprintf(" %s", p.Volume)
+	}
+
+	if p.Issue != "" {
+		issue = fmt.Sprintf(" (%s) ", p.Issue)
+	}
+
+	if p.PageFirst != "" || p.PageLast != "" {
+		fp := ""
+		lp := ""
+		delim := ""
+
+		if p.PageFirst != "" {
+			fp = p.PageFirst
+		}
+
+		if p.PageLast != "" {
+			lp = p.PageLast
+			delim = "-"
+		}
+
+		ref_page = fmt.Sprintf(" %s%s%s ", fp, delim, lp)
+	}
+
+	ref = fmt.Sprintf("%s%s%s%s%s%s", ref_parent, year, ref_publisher, volume, issue, ref_page)
+
+	var r *regexp.Regexp
+	r = regexp.MustCompile(`^[ \.]+`)
+	ref = r.ReplaceAllString(ref, "")
+	r = regexp.MustCompile(`^\s*`)
+	ref = r.ReplaceAllString(ref, "")
+	r = regexp.MustCompile(`\s*$`)
+	ref = r.ReplaceAllString(ref, "")
+	r = regexp.MustCompile(`\.+`)
+	ref = r.ReplaceAllString(ref, ".")
+	r = regexp.MustCompile(`^\W*$`)
+
+	if r.MatchString(ref) {
+		ref = ""
+	}
+
+	return ref
+}
+
 func (p *Publication) ClassificationChoices() []string {
 	switch p.Type {
 	case "journal_article":
@@ -243,7 +357,7 @@ func (p *Publication) ClassificationChoices() []string {
 			"U",
 			"D1",
 		}
-	case "miscellaneous", "report", "preprint":
+	case "miscellaneous":
 		return []string{
 			"U",
 			"V",
@@ -253,6 +367,27 @@ func (p *Publication) ClassificationChoices() []string {
 			"U",
 		}
 	}
+}
+
+func (p *Publication) ResolveDOI() string {
+	if p.DOI != "" {
+		return "https://doi.org/" + p.DOI
+	}
+	return ""
+}
+
+func (p *Publication) ResolveWOSID() string {
+	if p.WOSID != "" {
+		return "https://www.webofscience.com/wos/woscc/full-record/" + p.WOSID
+	}
+	return ""
+}
+
+func (p *Publication) ResolvePubMedID() string {
+	if p.PubMedID != "" {
+		return "https://www.ncbi.nlm.nih.gov/pubmed/" + p.PubMedID
+	}
+	return ""
 }
 
 func (p *Publication) Contributors(role string) []*Contributor {
@@ -763,23 +898,11 @@ func (p *Publication) InORCIDWorks(orcidID string) bool {
 	return false
 }
 
-func (p *Publication) FieldIsRequired() bool {
-	return true
+func (p *Publication) ShowPublicationAsRequired() bool {
+	return p.Type == "journal_article" || p.Type == "book_chapter"
 }
 
-func (p *Publication) PublicationIsRequired() bool {
-	return p.Type == "journal_article"
-}
-
-func (p *Publication) DefensePlaceIsRequired() bool {
-	return p.Type == "dissertation"
-}
-
-func (p *Publication) DefenseDateIsRequired() bool {
-	return p.Type == "dissertation"
-}
-
-func (p *Publication) DefenseTimeIsRequired() bool {
+func (p *Publication) ShowDefenseAsRequired() bool {
 	return p.Type == "dissertation"
 }
 
@@ -834,18 +957,17 @@ func (p *Publication) Validate() error {
 		})
 	}
 
-	if p.Status == "public" {
-		if p.Year == "" {
-			errs = append(errs, &validation.Error{
-				Pointer: "/year",
-				Code:    "publication.year.required",
-			})
-		} else if !validation.IsYear(p.Year) {
-			errs = append(errs, &validation.Error{
-				Pointer: "/year",
-				Code:    "publication.year.invalid",
-			})
-		}
+	if p.Status == "public" && !p.Legacy && p.Year == "" {
+		errs = append(errs, &validation.Error{
+			Pointer: "/year",
+			Code:    "publication.year.required",
+		})
+	}
+	if p.Year != "" && !validation.IsYear(p.Year) {
+		errs = append(errs, &validation.Error{
+			Pointer: "/year",
+			Code:    "publication.year.invalid",
+		})
 	}
 
 	if p.Status == "public" {
@@ -859,7 +981,7 @@ func (p *Publication) Validate() error {
 		}
 	}
 
-	if p.Status == "public" && p.UsesLaySummary() {
+	if p.Status == "public" {
 		for i, l := range p.LaySummary {
 			for _, err := range l.Validate() {
 				errs = append(errs, &validation.Error{
@@ -879,7 +1001,7 @@ func (p *Publication) Validate() error {
 	}
 
 	// at least one ugent author if not external
-	if p.Status == "public" && p.UsesAuthor() && !p.Extern {
+	if p.Status == "public" && !p.Legacy && p.UsesAuthor() && !p.Extern {
 		var hasUgentAuthors bool = false
 		for _, a := range p.Author {
 			if a.ID != "" {
@@ -900,27 +1022,10 @@ func (p *Publication) Validate() error {
 			Pointer: "/editor",
 			Code:    "publication.editor.required",
 		})
-
-		// at least one ugent editor if not external
-		if !p.Extern {
-			var hasUgentEditors bool = false
-			for _, a := range p.Editor {
-				if a.ID != "" {
-					hasUgentEditors = true
-					break
-				}
-			}
-			if !hasUgentEditors {
-				errs = append(errs, &validation.Error{
-					Pointer: "/editor",
-					Code:    "publication.editor.min_ugent_editors",
-				})
-			}
-		}
 	}
 
 	// at least one ugent editor for editor types if not external
-	if p.Status == "public" && p.UsesEditor() && !p.UsesAuthor() && !p.Extern {
+	if p.Status == "public" && !p.Legacy && p.UsesEditor() && !p.UsesAuthor() && !p.Extern {
 		var hasUgentEditors bool = false
 		for _, a := range p.Editor {
 			if a.ID != "" {
@@ -936,7 +1041,7 @@ func (p *Publication) Validate() error {
 		}
 	}
 
-	if p.Status == "public" && p.UsesSupervisor() && len(p.Supervisor) == 0 {
+	if p.Status == "public" && !p.Legacy && p.UsesSupervisor() && len(p.Supervisor) == 0 {
 		errs = append(errs, &validation.Error{
 			Pointer: "/supervisor",
 			Code:    "publication.supervisor.required",
@@ -1004,14 +1109,12 @@ func (p *Publication) Validate() error {
 		}
 	}
 
-	if p.Status == "public" {
-		for i, pl := range p.Link {
-			for _, err := range pl.Validate() {
-				errs = append(errs, &validation.Error{
-					Pointer: fmt.Sprintf("/link/%d%s", i, err.Pointer),
-					Code:    "publication.link." + err.Code,
-				})
-			}
+	for i, pl := range p.Link {
+		for _, err := range pl.Validate() {
+			errs = append(errs, &validation.Error{
+				Pointer: fmt.Sprintf("/link/%d%s", i, err.Pointer),
+				Code:    "publication.link." + err.Code,
+			})
 		}
 	}
 
@@ -1059,10 +1162,7 @@ func (p *Publication) validateJournalArticle() (errs validation.Errors) {
 			Code:    "publication.journal_article_type.invalid",
 		})
 	}
-	if p.Status != "public" {
-		return
-	}
-	if p.Publication == "" {
+	if p.Status == "public " && !p.Legacy && p.Publication == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/publication",
 			Code:    "publication.journal_article.publication.required",
@@ -1084,37 +1184,37 @@ func (p *Publication) validateBookChapter() (errs validation.Errors) {
 }
 
 func (p *Publication) validateDissertation() (errs validation.Errors) {
-	if p.Status != "public" {
-		return
-	}
-	if p.DefensePlace == "" {
+	if p.Status == "public" && !p.Legacy && p.DefensePlace == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/defense_place",
 			Code:    "publication.defense_place.required",
 		})
 	}
-	if p.DefenseDate == "" {
+	if p.Status == "public" && !p.Legacy && p.DefenseDate == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/defense_date",
 			Code:    "publication.defense_date.required",
 		})
-	} else if !validation.IsDate(p.DefenseDate) {
+	}
+	if p.DefenseDate != "" && !validation.IsDate(p.DefenseDate) {
 		errs = append(errs, &validation.Error{
 			Pointer: "/defense_date",
 			Code:    "publication.defense_date.invalid",
 		})
 	}
-	if p.DefenseTime == "" {
+	if p.Status == "public" && !p.Legacy && p.DefenseTime == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/defense_time",
 			Code:    "publication.defense_time.required",
 		})
-	} else if !validation.IsTime(p.DefenseTime) {
+	}
+	if p.DefenseTime != "" && !validation.IsTime(p.DefenseTime) {
 		errs = append(errs, &validation.Error{
 			Pointer: "/defense_time",
 			Code:    "publication.defense_time.invalid",
 		})
 	}
+
 	return
 }
 
@@ -1135,6 +1235,13 @@ func (pf *PublicationFile) Validate() (errs validation.Errors) {
 		errs = append(errs, &validation.Error{
 			Pointer: "/access_level",
 			Code:    "access_level.invalid",
+		})
+	}
+
+	if pf.Size == 0 {
+		errs = append(errs, &validation.Error{
+			Pointer: "/size",
+			Code:    "size.empty",
 		})
 	}
 

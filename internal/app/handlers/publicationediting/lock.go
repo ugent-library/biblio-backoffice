@@ -20,7 +20,7 @@ type YieldLock struct {
 }
 
 func (h *Handler) Lock(w http.ResponseWriter, r *http.Request, ctx Context) {
-	if !ctx.User.CanLockPublication(ctx.Publication) {
+	if !ctx.User.CanCurate() {
 		h.Logger.Warnw("lock publication: user has no permission to lock", "user", ctx.User.ID, "publication", ctx.Publication.ID)
 		render.Forbidden(w, r)
 		return
@@ -40,7 +40,7 @@ func (h *Handler) Lock(w http.ResponseWriter, r *http.Request, ctx Context) {
 		return
 	}
 
-	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication)
+	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
@@ -66,7 +66,7 @@ func (h *Handler) Lock(w http.ResponseWriter, r *http.Request, ctx Context) {
 }
 
 func (h *Handler) Unlock(w http.ResponseWriter, r *http.Request, ctx Context) {
-	if !ctx.User.CanLockPublication(ctx.Publication) {
+	if !ctx.User.CanCurate() {
 		h.Logger.Warnw("unlock publication: user has no permission to lock", "user", ctx.User.ID, "publication", ctx.Publication.ID)
 		render.Forbidden(w, r)
 		return
@@ -86,7 +86,7 @@ func (h *Handler) Unlock(w http.ResponseWriter, r *http.Request, ctx Context) {
 		return
 	}
 
-	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication)
+	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {

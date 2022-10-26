@@ -79,7 +79,7 @@ func (h *Handler) CreateLaySummary(w http.ResponseWriter, r *http.Request, ctx C
 		return
 	}
 
-	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication)
+	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
@@ -167,7 +167,7 @@ func (h *Handler) UpdateLaySummary(w http.ResponseWriter, r *http.Request, ctx C
 		return
 	}
 
-	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication)
+	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
@@ -222,7 +222,7 @@ func (h *Handler) DeleteLaySummary(w http.ResponseWriter, r *http.Request, ctx C
 
 	ctx.Publication.RemoveLaySummary(b.LaySummaryID)
 
-	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication)
+	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {

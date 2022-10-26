@@ -1,3 +1,8 @@
 <div class="card-body">
     <p>{{.Dataset.Message}}</p>
+
+    {{if not (.User.CanEditDataset .Dataset)}}
+        <p class="text-muted">Have any questions or changes to report? Mail to <a
+        href="mailto:biblio@ugent.be">biblio@ugent.be</a>.</p>
+    {{end}}
 </div>

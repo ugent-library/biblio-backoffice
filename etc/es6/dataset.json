@@ -248,7 +248,9 @@
                 "date_until": {
                     "type": "date"
                 },
-                "faculty": { "type": "keyword" },
+                "faculty": {
+                    "type": "keyword"
+                },
                 "department": {
                     "properties": {
                         "id": {

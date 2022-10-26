@@ -74,11 +74,17 @@ func (s *server) SearchDatasets(ctx context.Context, req *api.SearchDatasetsRequ
 func (s *server) UpdataDataset(ctx context.Context, req *api.UpdateDatasetRequest) (*api.UpdateDatasetResponse, error) {
 	p := MessageToDataset(req.Dataset)
 
+	// TODO Fetch user information via better authentication (no basic auth)
+	user := &models.User{
+		ID:       "n/a",
+		FullName: "system user",
+	}
+
 	if err := p.Validate(); err != nil {
 		return nil, fmt.Errorf("validation failed for dataset %s: %w", p.ID, err)
 	}
 
-	if err := s.services.Repository.UpdateDataset(req.Dataset.SnapshotId, p); err != nil {
+	if err := s.services.Repository.UpdateDataset(req.Dataset.SnapshotId, p, user); err != nil {
 		// TODO How do we differentiate between errors?
 		return nil, status.Errorf(codes.Internal, "failed to store dataset %s, %w", p.ID, err)
 	}
@@ -293,11 +299,11 @@ func DatasetToMessage(d *models.Dataset) *api.Dataset {
 	}
 
 	if d.Creator != nil {
-		msg.Creator = &api.RelatedUser{Id: d.Creator.ID}
+		msg.Creator = &api.RelatedUser{Id: d.Creator.ID, Name: d.Creator.Name}
 	}
 
 	if d.User != nil {
-		msg.User = &api.RelatedUser{Id: d.User.ID}
+		msg.User = &api.RelatedUser{Id: d.User.ID, Name: d.User.Name}
 	}
 
 	msg.Doi = d.DOI
@@ -346,7 +352,8 @@ func DatasetToMessage(d *models.Dataset) *api.Dataset {
 
 	for _, val := range d.Project {
 		msg.Project = append(msg.Project, &api.RelatedProject{
-			Id: val.ID,
+			Id:   val.ID,
+			Name: val.Name,
 		})
 	}
 
@@ -423,11 +430,11 @@ func MessageToDataset(msg *api.Dataset) *models.Dataset {
 	}
 
 	if msg.Creator != nil {
-		d.Creator = &models.DatasetUser{ID: msg.Creator.Id}
+		d.Creator = &models.DatasetUser{ID: msg.Creator.Id, Name: msg.Creator.Name}
 	}
 
 	if msg.User != nil {
-		d.User = &models.DatasetUser{ID: msg.User.Id}
+		d.User = &models.DatasetUser{ID: msg.User.Id, Name: msg.User.Name}
 	}
 
 	d.DOI = msg.Doi
@@ -477,7 +484,8 @@ func MessageToDataset(msg *api.Dataset) *models.Dataset {
 	for _, val := range msg.Project {
 		// TODO add Name
 		d.Project = append(d.Project, models.DatasetProject{
-			ID: val.Id,
+			ID:   val.Id,
+			Name: val.Name,
 		})
 	}
 

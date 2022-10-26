@@ -21,7 +21,7 @@ func init() {
 	message.SetString(language.English, "publication.subnav.description", "Description")
 	message.SetString(language.English, "publication.subnav.contributors", "People & Affiliations")
 	message.SetString(language.English, "publication.subnav.datasets", "Datasets")
-	message.SetString(language.English, "publication.subnav.files", "Full text")
+	message.SetString(language.English, "publication.subnav.files", "Full text & Files")
 	message.SetString(language.English, "publication.subnav.activity", "Biblio Messages")
 	message.SetString(language.English, "publication.page.show.title", "Publication - Biblio")
 
@@ -233,6 +233,7 @@ func init() {
 	message.SetString(language.English, "builder.journal_article_type", "Article type")
 	message.SetString(language.English, "builder.keyword", "Keywords")
 	message.SetString(language.English, "builder.language", "Languages")
+	message.SetString(language.English, "builder.legacy", "Legacy publication")
 	message.SetString(language.English, "builder.license", "License")
 	message.SetString(language.English, "builder.message", "Message")
 	message.SetString(language.English, "builder.miscellaneous_type", "Miscellaneous type")
@@ -266,7 +267,9 @@ func init() {
 	message.SetString(language.English, "builder.conference.organizer", "Conference organiser")
 	message.SetString(language.English, "builder.conference.date", "Conference date")
 	message.SetString(language.English, "builder.conference.start_date", "Conference start date")
+	message.SetString(language.English, "builder.conference.start_date.help", "YYYY-MM-DD")
 	message.SetString(language.English, "builder.conference.end_date", "Conference end date")
+	message.SetString(language.English, "builder.conference.end_date.help", "YYYY-MM-DD")
 
 	message.SetString(language.English, "builder.abstract.text", "Abstract")
 	message.SetString(language.English, "builder.abstract.lang", "Language")
@@ -623,6 +626,7 @@ func init() {
 	message.SetString(language.English, "tooltip.publication.classification", "The publication will be classified by the Biblio team as part of the bibliographic review process.")
 	message.SetString(language.English, "tooltip.publication.related_datasets", "<a href=\"https://onderzoektips.ugent.be/en/tips/00002061/\" target=\"_blank\">https://onderzoektips.ugent.be/en/tips/00002061/ <i class=\"if if--small if-external-link\"></i></a>")
 	message.SetString(language.English, "tooltip.publication.wos_type", "This is the type assigned by Web of Science when a publication is also registered in Web of Science and can be different from the Biblio type.")
+	message.SetString(language.English, "tooltip.publication.type", "You can no longer change the publication type after publishing.")
 
 	message.SetString(language.English, "tooltip.publication.file.license", "<a href=\"#\" target=\"_blank\">More info&nbsp;<i class=\"if if--small if-external-link\"></i></a>")
 
@@ -705,6 +709,7 @@ func init() {
 	message.SetString(language.English, "validation.publication.file.access_level_during_embargo.invalid", "The selected access level is not a valid access level value")
 	message.SetString(language.English, "validation.publication.file.access_level_after_embargo.invalid", "The selected access level is not a valid access level value")
 	message.SetString(language.English, "validation.publication.file.access_level_after_embargo.similar", "The access level after embargo end date can't be the same as the access level during embargo")
+	message.SetString(language.English, "validation.publication.file.size.empty", "File is empty")
 
 	message.SetString(language.English, "validation.publication.author.min_ugent_authors", "At least one UGent author is required")
 	message.SetString(language.English, "validation.publication.author.required", "One or more authors are required")
@@ -720,6 +725,8 @@ func init() {
 
 	message.SetString(language.English, "publication.conflict_error", "Publication has been modified by another user.")
 	message.SetString(language.English, "publication.conflict_error_reload", "Publication has been modified by another user. Please reload the page.")
+
+	message.SetString(language.English, "publication.file_upload_error", "File upload failed.")
 
 	message.SetString(language.English, "builder.file.title", "Title")
 	message.SetString(language.English, "builder.file.relation", "Document type")
@@ -756,6 +763,9 @@ func init() {
 	message.SetString(language.English, "locked.false", "unlocked")
 	message.SetString(language.English, "has_message.true", "with message")
 	message.SetString(language.English, "has_message.false", "without message")
+	message.SetString(language.English, "legacy.true", "legacy publication")
+	message.SetString(language.English, "legacy.false", "normal publication")
+
 	message.SetString(language.English, "suggest_custom_data_format", "Use custom data format")
 
 	message.SetString(language.English, "publication.search.empty.title.all", "No registered publications yet")

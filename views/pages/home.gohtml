@@ -1,0 +1,104 @@
+{{define "page_content"}}
+<div class="w-100 u-scroll-wrapper">
+    <div class="bc-navbar bc-navbar--large bc-navbar--white bc-navbar--bordered-bottom">
+        <h2>Home</h2>
+    </div>
+    <div class="u-scroll-wrapper__body w-100 p-6">
+        <div class="container-fluid">
+            <div class="bc-toolbar bc-toolbar--auto align-items-start">
+                <div class="bc-toolbar-left">
+                    <div>
+                        <h1>Biblio</h1>
+                        <p class="c-intro">200 years of research collected in one place.</p>
+                    </div>
+                </div>
+                <div class="bc-toolbar-right col-6">
+                    <div>
+                        <div class="alert alert-info">
+                            <i class="if if-info-circle-filled"></i>
+                            <div class="alert-content">
+                                <h3 class="alert-title">New Biblio, new possibilities</h3>
+                                <p class="mb-2">Biblio just got stronger foundations and a new layout, which allows us
+                                    to improve and give you new features in the future. These changes might take some
+                                    time to get used to.</p>
+                                <p>Got stuck? Get in touch with us via <a
+                                        href="mailto:biblio@ugent.be">biblio@ugent.be</a>&nbsp;and help us improve.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-6">
+                <div class="col-lg-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <div class="mb-6">
+                                <div class="bc-avatar-and-text mb-6">
+                                    <div class="bc-avatar bc-avatar--medium bc-avatar--rounded bc-avatar--light-blue">
+                                        <i class="if if-article"></i>
+                                    </div>
+                                    <div class="bc-avatar-text">
+                                        <h3>Manage publications</h3>
+                                    </div>
+                                </div>
+                                <p class="text-muted">Deposit your publications to archive them directly in UGent's
+                                    academic bibliography.</p>
+                            </div>
+                            <a class="btn btn-outline-primary" href="{{pathFor "publications"}}">
+                                <span class="btn-text">Go to publications</span>
+                                <i class="if if-chevron-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <div class="mb-6">
+                                <div class="bc-avatar-and-text mb-6">
+                                    <div class="bc-avatar bc-avatar--medium bc-avatar--rounded bc-avatar--light-blue">
+                                        <i class="if if-database"></i>
+                                    </div>
+                                    <div class="bc-avatar-text">
+                                        <h3>Manage datasets</h3>
+                                    </div>
+                                </div>
+                                <p class="text-muted">Register your published datasets on UGent's academic bibliography.
+                                </p>
+                            </div>
+                            <a class="btn btn-outline-primary" href="{{pathFor "datasets"}}">
+                                <span class="btn-text">Go to datasets</span>
+                                <i class="if if-chevron-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-6">
+                <div class="col-lg-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <div class="mb-6">
+                                <div class="bc-avatar-and-text mb-6">
+                                    <div class="bc-avatar bc-avatar--medium bc-avatar--rounded bc-avatar--light-blue">
+                                        <i class="if if-search"></i>
+                                    </div>
+                                    <div class="bc-avatar-text">
+                                        <h3>Biblio Academic Bibliography</h3>
+                                    </div>
+                                </div>
+                                <p class="text-muted">Explore 200 years of publications and datasets, published by Ghent
+                                    University researchers.</p>
+                            </div>
+                            <a class="btn btn-outline-primary" href="https://biblio.ugent.be">
+                                <span class="btn-text">Go to Biblio Academic Bibliography</span>
+                                <i class="if if-external-link"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{end}}

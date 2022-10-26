@@ -39,6 +39,7 @@ var Map = map[string][]string{
 		"has_message",
 		"created_since",
 		"updated_since",
+		"legacy",
 	},
 	"dataset_facets": {
 		"status",

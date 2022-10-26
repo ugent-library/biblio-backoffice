@@ -1,0 +1,18 @@
+{{/*{{$thumbnailURL := ""}}
+{{if .PrimaryFile}}
+    {{$thumbnailURL = (pathFor "publication_file_thumbnail" "id" .ID "file_id" .PrimaryFile.ID).String}}
+{{end}}
+
+{{if $thumbnailURL}}
+<div class="c-thumbnail c-thumbnail-5-4 c-thumbnail-small c-thumbnail-lg-large mb-6 mb-lg-0 flex-shrink-0 c-thumbnail-img">
+    <div class="c-thumbnail-inner">
+        <img src="{{$thumbnailURL}}" height="156">
+    </div>
+</div>
+{{else}}*/}}
+<div class="c-thumbnail c-thumbnail-5-4 c-thumbnail-small c-thumbnail-xl-large mb-6 mb-xl-0 flex-shrink-0">
+    <div class="c-thumbnail-inner">
+        <i class="if if-article"></i>
+    </div>
+</div>
+{{/*{{end}}*/}}

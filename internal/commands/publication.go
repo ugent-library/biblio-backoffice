@@ -16,10 +16,13 @@ import (
 func init() {
 	publicationGetCmd.Flags().StringP("format", "f", "jsonl", "export format")
 	publicationAddCmd.Flags().StringP("format", "f", "jsonl", "import format")
+	publicationImportCmd.Flags().StringP("format", "f", "jsonl", "import format")
+	oldPublicationImportCmd.Flags().StringP("format", "f", "jsonl", "import format")
 	publicationCmd.AddCommand(publicationGetCmd)
 	publicationCmd.AddCommand(publicationAllCmd)
 	publicationCmd.AddCommand(publicationAddCmd)
 	publicationCmd.AddCommand(publicationImportCmd)
+	publicationCmd.AddCommand(oldPublicationImportCmd)
 	rootCmd.AddCommand(publicationCmd)
 }
 
@@ -168,12 +171,30 @@ var publicationImportCmd = &cobra.Command{
 				log.Fatalf("Unable to decode publication at line %d : %v", lineNo, err)
 			}
 			if err := p.Validate(); err != nil {
-				log.Printf("Validation failed for publication [id: %s] at line %d : %v", p.ID, lineNo, err)
+				log.Printf(
+					"Validation failed for publication[snapshot_id: %s, id: %s] at line %d : %v",
+					p.SnapshotID,
+					p.ID,
+					lineNo,
+					err,
+				)
 				continue
 			}
-			if err := e.Repository.ImportPublication(&p); err != nil {
-				log.Fatalf("Unable to store publication from line %d : %v", lineNo, err)
+			if err := e.Repository.ImportCurrentPublication(&p); err != nil {
+				log.Printf(
+					"Unable to store publication[snapshot_id: %s, id: %s] from line %d : %v",
+					p.SnapshotID,
+					p.ID,
+					lineNo,
+					err,
+				)
+				continue
 			}
+			log.Printf(
+				"Added publication[snapshot_id: %s, id: %s]",
+				p.SnapshotID,
+				p.ID,
+			)
 
 			indexC <- &p
 		}
@@ -182,5 +203,56 @@ var publicationImportCmd = &cobra.Command{
 		close(indexC)
 		// wait for indexing to finish
 		indexWG.Wait()
+	},
+}
+
+var oldPublicationImportCmd = &cobra.Command{
+	Use:   "import-version",
+	Short: "Import old publications",
+	Run: func(cmd *cobra.Command, args []string) {
+		e := Services()
+
+		fmt, _ := cmd.Flags().GetString("format")
+		decFactory, ok := e.PublicationDecoders[fmt]
+		if !ok {
+			log.Fatalf("Unknown format %s", fmt)
+		}
+		dec := decFactory(os.Stdin)
+
+		lineNo := 0
+		for {
+			lineNo += 1
+			p := models.Publication{}
+			if err := dec.Decode(&p); errors.Is(err, io.EOF) {
+				break
+			} else if err != nil {
+				log.Fatalf("Unable to decode publication at line %d : %v", lineNo, err)
+			}
+			if err := p.Validate(); err != nil {
+				log.Printf(
+					"Validation failed for publication[snapshot_id: %s, id: %s] at line %d : %v",
+					p.SnapshotID,
+					p.ID,
+					lineNo,
+					err,
+				)
+				continue
+			}
+			if err := e.Repository.ImportOldPublication(&p); err != nil {
+				log.Printf(
+					"Unable to store old publication[snapshot_id: %s, id: %s] from line %d : %v",
+					p.SnapshotID,
+					p.ID,
+					lineNo,
+					err,
+				)
+				continue
+			}
+			log.Printf(
+				"Added old publication[snapshot_id: %s, id: %s]",
+				p.SnapshotID,
+				p.ID,
+			)
+		}
 	},
 }

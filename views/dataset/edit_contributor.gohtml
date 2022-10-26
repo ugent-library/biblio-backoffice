@@ -8,7 +8,7 @@
         <div class="p-6 border-bottom">
             <h3>Search {{.Locale.TS "dataset.contributor.role" .Role}}</h3>
         
-            <div class="contributor-attributes">
+            <div class="person-attributes">
                 {{range .Form.Sections}}
                 <div class="form-row align-items-end">
                     {{.Render}}
@@ -17,7 +17,7 @@
             </div>
         </div>
 
-        <div class="modal-body" id="contributor-suggestions">
+        <div class="modal-body" id="person-suggestions">
             {{partial "dataset/edit_contributor_suggest" .}}
         </div>
 

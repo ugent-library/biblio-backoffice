@@ -90,14 +90,12 @@ func init() {
 
 	rootCmd.PersistentFlags().String("citeproc-url", "", "citeproc url")
 
-	rootCmd.PersistentFlags().String("imagor-url", "", "imagor url")
-	rootCmd.PersistentFlags().String("imagor-secret", "", "imagor secret")
-
+	// rootCmd.PersistentFlags().String("imagor-url", "", "imagor url")
+	// rootCmd.PersistentFlags().String("imagor-secret", "", "imagor secret")
 	rootCmd.PersistentFlags().String("hdl-srv-url", defaultHandleServerURL, "handle server base url (without trailing slash)")
 	rootCmd.PersistentFlags().String("hdl-srv-prefix", defaultHandleServerPrefix, "handle server base prefix")
 	rootCmd.PersistentFlags().String("hdl-srv-username", defaultHandleServerUsername, "handle server auth basic username")
 	rootCmd.PersistentFlags().String("hdl-srv-password", defaultHandleServerPassword, "handle server auth basic password")
-
 }
 
 func Execute() {

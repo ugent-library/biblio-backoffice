@@ -116,7 +116,7 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 		return
 	}
 
-	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
+	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
@@ -151,12 +151,12 @@ func detailsForm(l *locale.Locale, d *models.Dataset, errors validation.Errors) 
 				Label:    l.T("builder.title"),
 				Cols:     9,
 				Error:    localize.ValidationErrorAt(l, errors, "/title"),
-				Required: d.FieldIsRequired(),
+				Required: true,
 			},
 			&display.Text{
 				Label:         l.T("builder.doi"),
 				Value:         d.DOI,
-				Required:      d.FieldIsRequired(),
+				Required:      true,
 				ValueTemplate: "format/doi",
 			},
 			&form.Text{
@@ -174,7 +174,7 @@ func detailsForm(l *locale.Locale, d *models.Dataset, errors validation.Errors) 
 				Label:    l.T("builder.publisher"),
 				Cols:     9,
 				Error:    localize.ValidationErrorAt(l, errors, "/publisher"),
-				Required: d.FieldIsRequired(),
+				Required: true,
 				Tooltip:  l.T("tooltip.dataset.publisher"),
 			},
 			&form.Text{
@@ -184,7 +184,7 @@ func detailsForm(l *locale.Locale, d *models.Dataset, errors validation.Errors) 
 				Cols:     3,
 				Help:     l.T("builder.year.help"),
 				Error:    localize.ValidationErrorAt(l, errors, "/year"),
-				Required: d.FieldIsRequired(),
+				Required: true,
 			},
 		).
 		AddSection(
@@ -194,7 +194,7 @@ func detailsForm(l *locale.Locale, d *models.Dataset, errors validation.Errors) 
 				Label:           l.T("builder.format"),
 				Cols:            9,
 				Error:           localize.ValidationErrorAt(l, errors, "/format"),
-				Required:        d.FieldIsRequired(),
+				Required:        true,
 				AutocompleteURL: "suggest_media_types",
 				Tooltip:         l.T("tooltip.dataset.format"),
 			},
@@ -219,7 +219,7 @@ func detailsForm(l *locale.Locale, d *models.Dataset, errors validation.Errors) 
 				Error:       localize.ValidationErrorAt(l, errors, "/license"),
 				Tooltip:     l.T("tooltip.dataset.license"),
 				EmptyOption: true,
-				Required:    d.FieldIsRequired(),
+				Required:    true,
 				Vars:        struct{ ID string }{ID: d.ID},
 			},
 			&form.Text{
@@ -229,7 +229,7 @@ func detailsForm(l *locale.Locale, d *models.Dataset, errors validation.Errors) 
 				Cols:     9,
 				Help:     l.T("builder.other_license.help"),
 				Error:    localize.ValidationErrorAt(l, errors, "/other_license"),
-				Required: d.FieldIsRequired(),
+				Required: true,
 			},
 		)
 	} else {
@@ -244,7 +244,7 @@ func detailsForm(l *locale.Locale, d *models.Dataset, errors validation.Errors) 
 				Error:       localize.ValidationErrorAt(l, errors, "/license"),
 				Tooltip:     l.T("tooltip.dataset.license"),
 				EmptyOption: true,
-				Required:    d.FieldIsRequired(),
+				Required:    true,
 				Vars:        struct{ ID string }{ID: d.ID},
 			},
 		)
@@ -260,7 +260,7 @@ func detailsForm(l *locale.Locale, d *models.Dataset, errors validation.Errors) 
 				Options:     localize.VocabularySelectOptions(l, "dataset_access_levels"),
 				Cols:        3,
 				Error:       localize.ValidationErrorAt(l, errors, "/access_level"),
-				Required:    d.FieldIsRequired(),
+				Required:    true,
 				EmptyOption: true,
 				Tooltip:     l.T("tooltip.dataset.access_level"),
 				Vars:        struct{ ID string }{ID: d.ID},
@@ -276,7 +276,7 @@ func detailsForm(l *locale.Locale, d *models.Dataset, errors validation.Errors) 
 				Options:     localize.VocabularySelectOptions(l, "dataset_access_levels"),
 				Cols:        3,
 				Error:       localize.ValidationErrorAt(l, errors, "/access_level"),
-				Required:    d.FieldIsRequired(),
+				Required:    true,
 				EmptyOption: true,
 				Tooltip:     l.T("tooltip.dataset.access_level"),
 				Vars:        struct{ ID string }{ID: d.ID},

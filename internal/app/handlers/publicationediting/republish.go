@@ -28,7 +28,7 @@ func (h *Handler) ConfirmRepublish(w http.ResponseWriter, r *http.Request, ctx C
 }
 
 func (h *Handler) Republish(w http.ResponseWriter, r *http.Request, ctx Context) {
-	if !ctx.User.CanRepublishPublication(ctx.Publication) {
+	if !ctx.User.CanEditPublication(ctx.Publication) {
 		h.Logger.Warnw("republish publication: user has no permission to republish", "user", ctx.User.ID, "publication", ctx.Publication.ID)
 		render.Forbidden(w, r)
 		return
@@ -52,7 +52,7 @@ func (h *Handler) Republish(w http.ResponseWriter, r *http.Request, ctx Context)
 	//TODO: what if update publication fails?
 	ctx.Publication = publication.PublishPipeline.Process(ctx.Publication)
 
-	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication)
+	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {

@@ -27,7 +27,7 @@ func (h *Handler) ConfirmPublish(w http.ResponseWriter, r *http.Request, ctx Con
 }
 
 func (h *Handler) Publish(w http.ResponseWriter, r *http.Request, ctx Context) {
-	if !ctx.User.CanPublishDataset(ctx.Dataset) {
+	if !ctx.User.CanEditDataset(ctx.Dataset) {
 		h.Logger.Warnw("publish dataset: user has no permission to publish", "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
 		render.Forbidden(w, r)
 		return
@@ -47,7 +47,7 @@ func (h *Handler) Publish(w http.ResponseWriter, r *http.Request, ctx Context) {
 		return
 	}
 
-	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
+	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {

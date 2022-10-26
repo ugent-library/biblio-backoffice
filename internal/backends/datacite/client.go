@@ -2,7 +2,7 @@ package datacite
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -50,7 +50,7 @@ func (c *Client) GetDataset(id string) (*models.Dataset, error) {
 		return nil, err
 	}
 	defer res.Body.Close()
-	src, err := ioutil.ReadAll(res.Body)
+	src, err := io.ReadAll(res.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -81,10 +81,14 @@ func (c *Client) GetDataset(id string) (*models.Dataset, error) {
 			d.Format = append(d.Format, r.String())
 		}
 	}
-	if res := attrs.Get("subjects.#.subject"); res.Exists() {
+	if res := attrs.Get("subjects"); res.Exists() {
 		for _, r := range res.Array() {
-			keywords := reSplit.Split(r.String(), -1)
-			d.Keyword = append(d.Keyword, keywords...)
+			if r.Get("subjectScheme").Exists() {
+				continue
+			}
+			if keywords := reSplit.Split(r.Get("subject").String(), -1); len(keywords) > 0 {
+				d.Keyword = append(d.Keyword, keywords...)
+			}
 		}
 	}
 	if res := attrs.Get("creators"); res.Exists() {

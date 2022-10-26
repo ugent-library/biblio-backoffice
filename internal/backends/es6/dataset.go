@@ -363,17 +363,12 @@ func decodeDatasetRes(res *esapi.Response, facets []string) (*models.DatasetHits
 }
 
 func (publications *Datasets) Index(d *models.Dataset) error {
-	body := M{
-		"doc":           NewIndexedDataset(d),
-		"doc_as_upsert": true,
-	}
-
-	payload, err := json.Marshal(body)
+	payload, err := json.Marshal(d)
 	if err != nil {
 		return err
 	}
 	ctx := context.Background()
-	res, err := esapi.UpdateRequest{
+	res, err := esapi.IndexRequest{
 		Index: publications.Client.Index,
 		// DocumentID: d.SnapshotID,
 		DocumentID: d.ID,

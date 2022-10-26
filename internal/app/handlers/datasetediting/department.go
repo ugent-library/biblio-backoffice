@@ -92,7 +92,7 @@ func (h *Handler) CreateDepartment(w http.ResponseWriter, r *http.Request, ctx C
 
 	// TODO handle validation errors
 
-	err = h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
+	err = h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
@@ -144,7 +144,7 @@ func (h *Handler) DeleteDepartment(w http.ResponseWriter, r *http.Request, ctx C
 
 	ctx.Dataset.RemoveDepartment(b.DepartmentID)
 
-	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset)
+	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {

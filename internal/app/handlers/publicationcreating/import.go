@@ -260,7 +260,7 @@ func (h *Handler) AddSingleConfirm(w http.ResponseWriter, r *http.Request, ctx C
 }
 
 func (h *Handler) AddSinglePublish(w http.ResponseWriter, r *http.Request, ctx Context) {
-	if !ctx.User.CanPublishPublication(ctx.Publication) {
+	if !ctx.User.CanEditPublication(ctx.Publication) {
 		h.Logger.Warnw("add single publication publish: user has no permission to publish publication.", "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.Forbidden(w, r)
 		return
@@ -280,7 +280,7 @@ func (h *Handler) AddSinglePublish(w http.ResponseWriter, r *http.Request, ctx C
 		return
 	}
 
-	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication)
+	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
@@ -588,7 +588,7 @@ func (h *Handler) batchPublishPublications(batchID, userID string) (err error) {
 			return
 		}
 		for _, pub := range hits.Hits {
-			// TODO check CanPublishPublication
+			// TODO check CanEditPublication
 			pub.Status = "public"
 			if err = pub.Validate(); err != nil {
 				return
@@ -597,7 +597,7 @@ func (h *Handler) batchPublishPublications(batchID, userID string) (err error) {
 				return
 			}
 		}
-		if !hits.NextPage() {
+		if !hits.HasNextPage() {
 			break
 		}
 		args.Page = args.Page + 1

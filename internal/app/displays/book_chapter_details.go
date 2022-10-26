@@ -30,7 +30,7 @@ func bookChapterDetails(l *locale.Locale, p *models.Publication) *display.Displa
 			&display.Text{
 				Label:    l.T("builder.title"),
 				Value:    p.Title,
-				Required: p.FieldIsRequired(),
+				Required: true,
 			},
 			&display.List{
 				Label:  l.T("builder.alternative_title"),
@@ -39,7 +39,7 @@ func bookChapterDetails(l *locale.Locale, p *models.Publication) *display.Displa
 			&display.Text{
 				Label:    l.T("builder.book_chapter.publication"),
 				Value:    p.Publication,
-				Required: p.PublicationIsRequired(),
+				Required: p.ShowPublicationAsRequired(),
 			},
 		).
 		AddSection(
@@ -57,7 +57,7 @@ func bookChapterDetails(l *locale.Locale, p *models.Publication) *display.Displa
 			&display.Text{
 				Label:    l.T("builder.year"),
 				Value:    p.Year,
-				Required: p.FieldIsRequired(),
+				Required: true,
 			},
 			&display.Text{
 				Label: l.T("builder.place_of_publication"),

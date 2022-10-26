@@ -36,7 +36,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request, ctx Context) {
 
 	ctx.Publication.Status = "deleted"
 
-	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication)
+	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {

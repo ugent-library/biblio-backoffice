@@ -37,6 +37,7 @@ type BindDetails struct {
 	Issue                   string   `form:"issue"`
 	IssueTitle              string   `form:"issue_title"`
 	JournalArticleType      string   `form:"journal_article_type"`
+	Legacy                  bool     `form:"legacy"`
 	Language                []string `form:"language"`
 	MiscellaneousType       string   `form:"miscellaneous_type"`
 	PageCount               string   `form:"page_count"`
@@ -128,6 +129,7 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 
 	if ctx.User.CanCurate() {
 		p.Classification = b.Classification
+		p.Legacy = b.Legacy
 		p.WOSType = b.WOSType
 	}
 
@@ -140,7 +142,7 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 		return
 	}
 
-	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication)
+	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {

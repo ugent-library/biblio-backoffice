@@ -2,9 +2,54 @@
     {{partial "publication/show_nav" .}}
 </div>
 
+<div hx-swap-oob="innerHTML:#show-sidebar">
+    <div class="c-sub-sidebar c-sub-sidebar--responsive c-sub-sidebar--bordered u-z-reset h-100" data-sidebar="">
+        <div class="bc-navbar bc-navbar--bordered-bottom bc-navbar--large">
+            <div class="d-lg-none">
+                <div class="dropdown">
+                    <button class="btn btn-link btn-icon-only ml-n3" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="if if-menu"></i>
+                        <div class="sr-only">Accessible text</div>
+                    </button>
+                    <div class="dropdown-menu u-pointer-events-none" style="min-width: 240px;">
+                        <nav class="nav nav-pills flex-column" id="publication-data">
+                            <a class="nav-link" href="#authors">Authors</a>
+                            <a class="nav-link" href="#editors">Editors</a>
+                            {{if eq .Publication.Type "dissertation"}}
+                            <a class="nav-link" href="#supervisors">Supervisors</a>
+                            {{end}}
+                            <a class="nav-link" href="#departments">Departments</a>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            <div class="d-none d-lg-block">
+                <button class="btn btn-link btn-icon-only ml-n3" type="button" data-sidebar-toggle="">
+                    <i class="if if-menu"></i>
+                    <div class="sr-only">Accessible text</div>
+                </button>
+            </div>
+        </div>
+        <div class="c-sub-sidebar__content">
+            <div class="d-none d-lg-block">
+                <div class="p-4">
+                    <nav class="nav nav-pills flex-column" id="publication-data">
+                        <a class="nav-link" href="#authors">Authors</a>
+                        <a class="nav-link" href="#editors">Editors</a>
+                        {{if eq .Publication.Type "dissertation"}}
+                        <a class="nav-link" href="#supervisors">Supervisors</a>
+                        {{end}}
+                        <a class="nav-link" href="#departments">Departments</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 {{range $role := (list "author" "editor" "supervisor")}}
 {{if $.Publication.UsesContributors $role}}
-<div class="card mb-6">
+<div id="{{$role}}s" class="card mb-6">
     <div class="card-header">
         <div class="bc-toolbar">
             <div class="bc-toolbar-left">
@@ -34,3 +79,5 @@
 </div>
 {{end}}
 {{end}}
+
+{{partial "publication/show_departments" .}}

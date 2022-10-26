@@ -13,9 +13,9 @@
                 <li class="list-group-item">
                     <div class="list-group-item-inner">
                         <div class="list-group-item-main">
-                            {{partial "shared/contributor_summary" (.Yield "Contributor" .Contributor "Current" false)}}
+                            {{partial "shared/contributor_summary" (.Yield "Contributor" .Contributor "Current" false "Active" .Active)}}
                         </div>
-                        <div class="list-group-item-main contributor-attributes">
+                        <div class="list-group-item-main person-attributes">
                             {{range .Form.Sections}}
                                 {{.Render}}
                             {{end}}
@@ -45,7 +45,7 @@
                         <button class="btn btn-outline-primary"
                             hx-put="{{pathFor "publication_update_contributor" "id" .Publication.ID "role" .Role "position" (.Position|toString)}}"
                             hx-headers='{"If-Match": "{{.Publication.SnapshotID}}"}'
-                            hx-include=".modal-body .contributor-attributes"
+                            hx-include=".modal-body .person-attributes"
                             hx-vals='{"edit_next": true}'
                             hx-swap="none"
                         >
@@ -57,7 +57,7 @@
                         <button class="btn btn-primary"
                             hx-put="{{pathFor "publication_update_contributor" "id" .Publication.ID "role" .Role "position" (.Position|toString)}}"
                             hx-headers='{"If-Match": "{{.Publication.SnapshotID}}"}'
-                            hx-include=".modal-body .contributor-attributes"
+                            hx-include=".modal-body .person-attributes"
                             hx-swap="none"
                         >Save</button>
                     </div>

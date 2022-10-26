@@ -3,12 +3,12 @@
 
 <div class="w-100 u-scroll-wrapper">
     <div class="c-header-collapsible bg-white">
-        <div class="bc-navbar bc-navbar--xlarge bc-navbar--white">
+        <div class="bc-navbar bc-navbar--large bc-navbar--white">
             <div class="bc-toolbar">
                 <div class="bc-toolbar-left">
                     <div class="bc-toolbar-item">
                         <div class="d-flex flex-column">
-                            <span class="text-muted mb-2">Step {{.Step}}</span>
+                            <span class="text-muted">Step {{.Step}}</span>
                             <h4 class="bc-toolbar-title">Complete Description</h4>
                         </div>
                     </div>
@@ -31,7 +31,13 @@
                 <div class="d-flex w-100">
                     <div class="w-100">
                         <div class="d-flex align-items-start">
-                            <h4 class="h4">{{.Publication.Title}}</h4>
+                            <h4 class="h4">
+                                {{if .Publication.Title}}
+                                    {{.Publication.Title}}
+                                {{else}}
+                                    Untitled record
+                                {{end}}
+                            </h4>
                         </div>
                     </div>
                 </div>

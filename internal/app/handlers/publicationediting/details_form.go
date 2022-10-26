@@ -35,8 +35,9 @@ func detailsForm(user *models.User, l *locale.Locale, p *models.Publication, err
 		})
 	} else {
 		section1 = append(section1, &display.Text{
-			Label: l.T("builder.type"),
-			Value: l.TS("publication_types", p.Type),
+			Label:   l.T("builder.type"),
+			Value:   l.TS("publication_types", p.Type),
+			Tooltip: l.T("tooltip.publication.type"),
 		})
 	}
 
@@ -113,6 +114,17 @@ func detailsForm(user *models.User, l *locale.Locale, p *models.Publication, err
 		})
 	}
 
+	if user.CanCurate() {
+		section1 = append(section1, &form.Checkbox{
+			Name:    "legacy",
+			Label:   l.T("builder.legacy"),
+			Value:   "true",
+			Checked: p.Legacy,
+			Cols:    9,
+			Error:   localize.ValidationErrorAt(l, errors, "/legacy"),
+		})
+	}
+
 	if len(section1) > 0 {
 		f.AddSection(section1...)
 	}
@@ -126,7 +138,7 @@ func detailsForm(user *models.User, l *locale.Locale, p *models.Publication, err
 			Value:    p.Title,
 			Cols:     9,
 			Error:    localize.ValidationErrorAt(l, errors, "/title"),
-			Required: p.FieldIsRequired(),
+			Required: true,
 		})
 	}
 
@@ -146,7 +158,7 @@ func detailsForm(user *models.User, l *locale.Locale, p *models.Publication, err
 			Label:    l.T(fmt.Sprintf("builder.%s.publication", p.Type)),
 			Value:    p.Publication,
 			Cols:     9,
-			Required: p.PublicationIsRequired(),
+			Required: p.ShowPublicationAsRequired(),
 			Error:    localize.ValidationErrorAt(l, errors, "/publication"),
 		})
 	}
@@ -205,7 +217,7 @@ func detailsForm(user *models.User, l *locale.Locale, p *models.Publication, err
 			Name:     "year",
 			Label:    l.T("builder.year"),
 			Value:    p.Year,
-			Required: p.FieldIsRequired(),
+			Required: true,
 			Cols:     3,
 			Help:     l.T("builder.year.help"),
 			Error:    localize.ValidationErrorAt(l, errors, "/year"),
@@ -342,7 +354,7 @@ func detailsForm(user *models.User, l *locale.Locale, p *models.Publication, err
 				Name:     "defense_date",
 				Label:    l.T("builder.defense_date"),
 				Value:    p.DefenseDate,
-				Required: p.DefenseDateIsRequired(),
+				Required: p.ShowDefenseAsRequired(),
 				Cols:     3,
 				Help:     l.T("builder.defense_date.help"),
 				Error:    localize.ValidationErrorAt(l, errors, "/defense_date"),
@@ -351,7 +363,7 @@ func detailsForm(user *models.User, l *locale.Locale, p *models.Publication, err
 				Name:     "defense_time",
 				Label:    l.T("builder.defense_time"),
 				Value:    p.DefenseTime,
-				Required: p.DefenseTimeIsRequired(),
+				Required: p.ShowDefenseAsRequired(),
 				Cols:     3,
 				Help:     l.T("builder.defense_time.help"),
 				Error:    localize.ValidationErrorAt(l, errors, "/defense_time"),
@@ -360,7 +372,7 @@ func detailsForm(user *models.User, l *locale.Locale, p *models.Publication, err
 				Name:     "defense_place",
 				Label:    l.T("builder.defense_place"),
 				Value:    p.DefensePlace,
-				Required: p.DefensePlaceIsRequired(),
+				Required: p.ShowDefenseAsRequired(),
 				Cols:     3,
 				Error:    localize.ValidationErrorAt(l, errors, "/defense_place"),
 			},
