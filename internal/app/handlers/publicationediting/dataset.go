@@ -34,7 +34,7 @@ type YieldDeleteDataset struct {
 }
 
 func (h *Handler) AddDataset(w http.ResponseWriter, r *http.Request, ctx Context) {
-	hits, err := h.searchRelatedDatasets(ctx.User.ID, ctx.Publication, "")
+	hits, err := h.searchRelatedDatasets(ctx.User, ctx.Publication, "")
 	if err != nil {
 		h.Logger.Errorw("add dataset publication: could not execute search", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
@@ -55,7 +55,7 @@ func (h *Handler) SuggestDatasets(w http.ResponseWriter, r *http.Request, ctx Co
 		return
 	}
 
-	hits, err := h.searchRelatedDatasets(ctx.User.ID, ctx.Publication, b.Query)
+	hits, err := h.searchRelatedDatasets(ctx.User, ctx.Publication, b.Query)
 	if err != nil {
 		h.Logger.Errorw("add dataset publication: could not execute search", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
@@ -191,7 +191,7 @@ func (h *Handler) DeleteDataset(w http.ResponseWriter, r *http.Request, ctx Cont
 	})
 }
 
-func (h *Handler) searchRelatedDatasets(userID string, p *models.Publication, q string) (*models.DatasetHits, error) {
+func (h *Handler) searchRelatedDatasets(user *models.User, p *models.Publication, q string) (*models.DatasetHits, error) {
 	args := models.NewSearchArgs().WithQuery(q)
 
 	// add exclusion filter if necessary
@@ -203,7 +203,14 @@ func (h *Handler) searchRelatedDatasets(userID string, p *models.Publication, q 
 		args.Filters["!id"] = pubDatasetIDs
 	}
 
-	return h.DatasetSearchService.
-		WithScope("status", "private", "public", "returned").
-		Search(args)
+	searchService := h.DatasetSearchService.WithScope("status", "private", "public")
+
+	if !user.CanCurate() {
+		searchService = searchService.WithScope(
+			"creator.id|author.id|contributor.id",
+			user.ID,
+		)
+	}
+
+	return searchService.Search(args)
 }
