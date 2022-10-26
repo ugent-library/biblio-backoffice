@@ -190,14 +190,7 @@ func (h *Handler) searchRelatedPublications(user *models.User, d *models.Dataset
 		args.Filters["!id"] = datasetPubIDs
 	}
 
-	searchService := h.PublicationSearchService.WithScope("status", "private", "public")
-
-	if !user.CanCurate() {
-		searchService = searchService.WithScope(
-			"creator.id|author.id|editor.id|supervisor.id",
-			user.ID,
-		)
-	}
+	searchService := h.PublicationSearchService.WithScope("status", "public")
 
 	return searchService.Search(args)
 }
