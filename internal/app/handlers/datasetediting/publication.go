@@ -96,7 +96,7 @@ func (h *Handler) CreatePublication(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	relatedPublications, err := h.Repository.GetDatasetLivePublications(ctx.Dataset)
+	relatedPublications, err := h.Repository.GetVisibleDatasetPublications(ctx.User, ctx.Dataset)
 	if err != nil {
 		h.Logger.Errorw("create dataset publication: could not get dataset publications", "errors", err, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
@@ -165,7 +165,7 @@ func (h *Handler) DeletePublication(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	relatedPublications, err := h.Repository.GetDatasetLivePublications(ctx.Dataset)
+	relatedPublications, err := h.Repository.GetVisibleDatasetPublications(ctx.User, ctx.Dataset)
 	if err != nil {
 		h.Logger.Errorw("create dataset publication: could not get dataset publications", "errors", err, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)

@@ -81,9 +81,9 @@ type Repository interface {
 	PurgeAllDatasets() error
 	PurgeDataset(string) error
 	GetPublicationDatasets(*models.Publication) ([]*models.Dataset, error)
-	GetPublicationLiveDatasets(*models.Publication) ([]*models.Dataset, error)
+	GetVisiblePublicationDatasets(*models.User, *models.Publication) ([]*models.Dataset, error)
 	GetDatasetPublications(*models.Dataset) ([]*models.Publication, error)
-	GetDatasetLivePublications(*models.Dataset) ([]*models.Publication, error)
+	GetVisibleDatasetPublications(*models.User, *models.Dataset) ([]*models.Publication, error)
 	AddPublicationDataset(*models.Publication, *models.Dataset) error
 	RemovePublicationDataset(*models.Publication, *models.Dataset) error
 }

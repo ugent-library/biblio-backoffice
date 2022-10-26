@@ -102,7 +102,7 @@ func (h *Handler) CreateDataset(w http.ResponseWriter, r *http.Request, ctx Cont
 		return
 	}
 
-	relatedDatasets, err := h.Repository.GetPublicationLiveDatasets(ctx.Publication)
+	relatedDatasets, err := h.Repository.GetVisiblePublicationDatasets(ctx.User, ctx.Publication)
 	if err != nil {
 		h.Logger.Errorw("create dataset publication: could not get related datasets", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
@@ -178,7 +178,7 @@ func (h *Handler) DeleteDataset(w http.ResponseWriter, r *http.Request, ctx Cont
 		return
 	}
 
-	relatedDatasets, err := h.Repository.GetPublicationLiveDatasets(ctx.Publication)
+	relatedDatasets, err := h.Repository.GetVisiblePublicationDatasets(ctx.User, ctx.Publication)
 	if err != nil {
 		h.Logger.Errorw("create dataset publication: could not get related datasets", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)

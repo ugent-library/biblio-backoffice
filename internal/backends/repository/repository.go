@@ -507,14 +507,14 @@ func (s *Repository) GetPublicationDatasets(p *models.Publication) ([]*models.Da
 	return s.GetDatasets(datasetIds)
 }
 
-func (s *Repository) GetPublicationLiveDatasets(p *models.Publication) ([]*models.Dataset, error) {
+func (s *Repository) GetVisiblePublicationDatasets(u *models.User, p *models.Publication) ([]*models.Dataset, error) {
 	datasets, err := s.GetPublicationDatasets(p)
 	if err != nil {
 		return nil, err
 	}
 	filteredDatasets := make([]*models.Dataset, 0, len(datasets))
 	for _, dataset := range datasets {
-		if dataset.Status != "deleted" {
+		if u.CanViewDataset(dataset) {
 			filteredDatasets = append(filteredDatasets, dataset)
 		}
 	}
@@ -529,14 +529,14 @@ func (s *Repository) GetDatasetPublications(d *models.Dataset) ([]*models.Public
 	return s.GetPublications(publicationIds)
 }
 
-func (s *Repository) GetDatasetLivePublications(d *models.Dataset) ([]*models.Publication, error) {
+func (s *Repository) GetVisibleDatasetPublications(u *models.User, d *models.Dataset) ([]*models.Publication, error) {
 	publications, err := s.GetDatasetPublications(d)
 	if err != nil {
 		return nil, err
 	}
 	filteredPublications := make([]*models.Publication, 0, len(publications))
 	for _, publication := range publications {
-		if publication.Status != "deleted" {
+		if u.CanDeletePublication(publication) {
 			filteredPublications = append(filteredPublications, publication)
 		}
 	}
