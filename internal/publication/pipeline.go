@@ -33,6 +33,9 @@ var DefaultPipeline = NewPipeline(
 	EnsureFullName,
 )
 
+var PublishPipeline = NewPipeline()
+var UnpublishPipeline = NewPipeline()
+
 func EnsureFullName(p *models.Publication) *models.Publication {
 	for _, c := range p.Author {
 		if c.FullName == "" {

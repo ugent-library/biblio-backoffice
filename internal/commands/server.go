@@ -26,6 +26,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/logging"
 	"github.com/ugent-library/biblio-backend/internal/mix"
 	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backend/internal/publication"
 	"github.com/ugent-library/biblio-backend/internal/render"
 	"github.com/ugent-library/biblio-backend/internal/urls"
 	"github.com/ugent-library/biblio-backend/internal/vocabularies"
@@ -116,6 +117,45 @@ var serverStartCmd = &cobra.Command{
 				logger.Errorf("error indexing dataset %s: %w", d.ID, err)
 			}
 		})
+
+		if e.HandleService != nil {
+			publication.PublishPipeline = append(
+				publication.PublishPipeline,
+				func(p *models.Publication) *models.Publication {
+
+					if p.Status != "public" {
+						return p
+					}
+
+					h, hErr := e.HandleService.UpsertHandleByPublication(p)
+					if hErr != nil {
+						logger.Errorf(
+							"error adding handle for publication %s: %s",
+							p.ID,
+							hErr,
+						)
+					} else if !h.IsSuccess() {
+						logger.Errorf(
+							"error adding handle for publication %s: %s",
+							p.ID,
+							h.Message,
+						)
+					} else {
+						logger.Infof(
+							"added handle url %s to publication %s",
+							h.GetFullHandleURL(),
+							p.ID,
+						)
+						p.Handle = h.GetFullHandleURL()
+					}
+
+					return p
+				},
+			)
+
+		} else {
+			logger.Warn("HandleService was not enabled")
+		}
 
 		// setup router
 		router := buildRouter(e, logger)
