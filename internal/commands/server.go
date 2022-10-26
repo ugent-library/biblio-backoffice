@@ -153,38 +153,6 @@ var serverStartCmd = &cobra.Command{
 				},
 			)
 
-			publication.UnpublishPipeline = append(
-				publication.UnpublishPipeline,
-				func(p *models.Publication) *models.Publication {
-
-					if !(p.Status == "private" || p.Status == "returned") {
-						return p
-					}
-
-					h, hErr := e.HandleService.DeleteHandleByPublication(p)
-					if hErr != nil {
-						logger.Errorf(
-							"error removing handle for publication %s: %s",
-							p.ID,
-							hErr,
-						)
-					} else if !h.IsSuccess() {
-						logger.Errorf(
-							"error removing handle for publication %s: %s",
-							p.ID,
-							h.Message,
-						)
-					} else {
-						logger.Infof(
-							"removed handle url to publication %s",
-							p.ID,
-						)
-						p.Handle = ""
-					}
-
-					return p
-				},
-			)
 		} else {
 			logger.Warn("HandleService was not enabled")
 		}
