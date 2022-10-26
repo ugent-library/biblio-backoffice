@@ -187,9 +187,9 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 	frontofficeRouter.HandleFunc("/download/{id}/{file_id}", frontofficeHandler.DownloadFile).
 		Methods("GET")
 	// temporary route: let biblio call embargo update via cronjob
-	frontofficeRouter.HandleFunc("/frontoffice/publication-update-embargo", frontofficeHandler.PublicationUpdateEmbargo).
+	frontofficeRouter.HandleFunc("/frontoffice/publication-update-embargo", frontofficeHandler.BasicAuth(frontofficeHandler.PublicationUpdateEmbargo)).
 		Methods("GET")
-	frontofficeRouter.HandleFunc("/frontoffice/dataset-update-embargo", frontofficeHandler.DatasetUpdateEmbargo).
+	frontofficeRouter.HandleFunc("/frontoffice/dataset-update-embargo", frontofficeHandler.BasicAuth(frontofficeHandler.DatasetUpdateEmbargo)).
 		Methods("GET")
 
 	csrfPath := basePath
