@@ -15,7 +15,7 @@
                         <div class="list-group-item-main">
                             {{partial "shared/contributor_summary" (.Yield "Contributor" .Contributor "Current" false "Active" .Active)}}
                         </div>
-                        <div class="list-group-item-main contributor-attributes">
+                        <div class="list-group-item-main person-attributes">
                             {{range .Form.Sections}}
                                 {{.Render}}
                             {{end}}
@@ -44,7 +44,7 @@
                         <button class="btn btn-outline-primary"
                             hx-post="{{pathFor "dataset_create_contributor" "id" .Dataset.ID "role" .Role}}"
                             hx-headers='{"If-Match": "{{.Dataset.SnapshotID}}"}'
-                            hx-include=".modal-body .contributor-attributes"
+                            hx-include=".modal-body .person-attributes"
                             hx-vals='{"add_next": true}'
                             hx-swap="none"
                         >
@@ -55,7 +55,7 @@
                         <button class="btn btn-primary"
                             hx-post="{{pathFor "dataset_create_contributor" "id" .Dataset.ID "role" .Role}}"
                             hx-headers='{"If-Match": "{{.Dataset.SnapshotID}}"}'
-                            hx-include=".modal-body .contributor-attributes"
+                            hx-include=".modal-body .person-attributes"
                             hx-swap="none"
                         >Save</button>
                     </div>

@@ -10,30 +10,31 @@ import (
 )
 
 type Services struct {
-	ORCIDSandbox             bool
-	ORCIDClient              *orcid.MemberClient
-	Repository               Repository
-	FileStore                *filestore.Store
-	DatasetSearchService     DatasetSearchService
-	PublicationSearchService PublicationSearchService
-	OrganizationService
-	PersonService
-	ProjectService
-	UserService
-	OrganizationSearchService
-	PersonSearchService
-	ProjectSearchService
-	LicenseSearchService
-	MediaTypeSearchService
-	PublicationSources  map[string]PublicationGetter
-	DatasetSources      map[string]DatasetGetter
-	PublicationEncoders map[string]PublicationEncoder
-	PublicationDecoders map[string]PublicationDecoderFactory
-	// Tasks                      *tasks.Hub
+	ORCIDSandbox               bool
+	ORCIDClient                *orcid.MemberClient
+	Repository                 Repository
+	FileStore                  *filestore.Store
+	DatasetSearchService       DatasetSearchService
+	PublicationSearchService   PublicationSearchService
+	OrganizationService        OrganizationService
+	PersonService              PersonService
+	ProjectService             ProjectService
+	UserService                UserService
+	OrganizationSearchService  OrganizationSearchService
+	PersonSearchService        PersonSearchService
+	ProjectSearchService       ProjectSearchService
+	UserSearchService          UserSearchService
+	LicenseSearchService       LicenseSearchService
+	MediaTypeSearchService     MediaTypeSearchService
+	PublicationSources         map[string]PublicationGetter
+	DatasetSources             map[string]DatasetGetter
+	PublicationEncoders        map[string]PublicationEncoder
+	PublicationDecoders        map[string]PublicationDecoderFactory
 	PublicationListExporters   map[string]PublicationListExporterFactory
 	PublicationSearcherService PublicationSearcherService
 	DatasetListExporters       map[string]DatasetListExporterFactory
 	DatasetSearcherService     DatasetSearcherService
+	// Tasks                      *tasks.Hub
 }
 
 type PublicationEncoder func(*models.Publication) ([]byte, error)
@@ -147,6 +148,10 @@ type PersonSearchService interface {
 
 type ProjectSearchService interface {
 	SuggestProjects(string) ([]models.Completion, error)
+}
+
+type UserSearchService interface {
+	SuggestUsers(string) ([]models.Person, error)
 }
 
 type LicenseSearchService interface {

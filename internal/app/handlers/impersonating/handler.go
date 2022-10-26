@@ -5,12 +5,16 @@ import (
 	"net/http"
 
 	"github.com/ugent-library/biblio-backend/internal/app/handlers"
+	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/bind"
+	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
+	"github.com/ugent-library/biblio-backend/internal/render/form"
 )
 
 type Handler struct {
 	handlers.BaseHandler
+	UserSearchService backends.UserSearchService
 }
 
 type Context struct {
@@ -30,8 +34,25 @@ func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) htt
 	})
 }
 
-type BindImpersonation struct {
-	Username string `form:"username"`
+type BindAddCImpersonationSuggest struct {
+	FirstName string `query:"first_name"`
+	LastName  string `query:"last_name"`
+}
+
+type BindCreateImpersonation struct {
+	ID string `form:"id"`
+}
+
+type YieldAddImpersonation struct {
+	Context
+	Form *form.Form
+}
+
+type YieldAddImpersonationSuggest struct {
+	Context
+	FirstName string
+	LastName  string
+	Hits      []models.Person
 }
 
 func (h *Handler) AddImpersonation(w http.ResponseWriter, r *http.Request, ctx Context) {
@@ -46,7 +67,56 @@ func (h *Handler) AddImpersonation(w http.ResponseWriter, r *http.Request, ctx C
 		return
 	}
 
-	render.Layout(w, "show_modal", "impersonation/add", ctx)
+	render.Layout(w, "show_modal", "impersonation/add", YieldAddImpersonation{
+		Context: ctx,
+		Form:    h.addImpersonationForm(),
+	})
+}
+
+func (h *Handler) AddImpersonationSuggest(w http.ResponseWriter, r *http.Request, ctx Context) {
+	if ctx.OriginalUser != nil {
+		h.Logger.Warn("add impersonation: already impersonating", "user", ctx.OriginalUser.ID)
+		render.BadRequest(w, r, errors.New("already impersonating"))
+	}
+
+	if !ctx.User.CanImpersonateUser() {
+		h.Logger.Warn("add impersonation: user does not have permission to impersonate", "user", ctx.User.ID)
+		render.Unauthorized(w, r)
+		return
+	}
+
+	b := BindAddCImpersonationSuggest{}
+	if err := bind.Request(r, &b); err != nil {
+		h.Logger.Warnw("suggest impersonation: could not bind request arguments:", "errors", err, "request", r, "user", ctx.User.ID)
+		render.BadRequest(w, r, err)
+		return
+	}
+
+	hits, err := h.UserSearchService.SuggestUsers(b.FirstName + " " + b.LastName)
+	if err != nil {
+		h.Logger.Errorw("suggest impersonation: could not suggest users:", "errors", err, "request", r, "user", ctx.User.ID)
+		render.InternalServerError(w, r, err)
+		return
+	}
+
+	// exclude the current user
+	for i, hit := range hits {
+		if hit.ID == ctx.User.ID {
+			if i == 0 {
+				hits = hits[1:]
+			} else {
+				hits = append(hits[:i], hits[i+1:]...)
+			}
+			break
+		}
+	}
+
+	render.Partial(w, "impersonation/suggest", YieldAddImpersonationSuggest{
+		Context:   ctx,
+		FirstName: b.FirstName,
+		LastName:  b.LastName,
+		Hits:      hits,
+	})
 }
 
 func (h *Handler) CreateImpersonation(w http.ResponseWriter, r *http.Request, ctx Context) {
@@ -61,14 +131,14 @@ func (h *Handler) CreateImpersonation(w http.ResponseWriter, r *http.Request, ct
 		return
 	}
 
-	b := BindImpersonation{}
+	b := BindCreateImpersonation{}
 	if err := bind.Request(r, &b); err != nil {
 		h.Logger.Warnw("create impersonation: could not bind request arguments", "errors", err, "request", r)
 		render.BadRequest(w, r, err)
 		return
 	}
 
-	user, err := h.UserService.GetUserByUsername(b.Username)
+	user, err := h.UserService.GetUser(b.ID)
 	if err != nil {
 		render.InternalServerError(w, r, err)
 		return
@@ -121,4 +191,33 @@ func (h *Handler) DeleteImpersonation(w http.ResponseWriter, r *http.Request, ct
 	}
 
 	http.Redirect(w, r, h.PathFor("home").String(), http.StatusFound)
+}
+
+func (h *Handler) addImpersonationForm() *form.Form {
+	suggestURL := h.PathFor("suggest_impersonations").String()
+
+	return form.New().
+		WithTheme("cols").
+		AddSection(
+			&form.Text{
+				Template: "contributor_name",
+				Name:     "first_name",
+				Label:    "First name",
+				Vars: struct {
+					SuggestURL string
+				}{
+					SuggestURL: suggestURL,
+				},
+			},
+			&form.Text{
+				Template: "contributor_name",
+				Name:     "last_name",
+				Label:    "Last name",
+				Vars: struct {
+					SuggestURL string
+				}{
+					SuggestURL: suggestURL,
+				},
+			},
+		)
 }

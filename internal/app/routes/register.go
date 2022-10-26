@@ -65,7 +65,8 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		OIDCClient:  oidcClient,
 	}
 	impersonatingHandler := &impersonating.Handler{
-		BaseHandler: baseHandler,
+		BaseHandler:       baseHandler,
+		UserSearchService: services.UserSearchService,
 	}
 	// tasksHandler := &tasks.Handler{
 	// 	BaseHandler: baseHandler,
@@ -229,6 +230,10 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		impersonatingHandler.Wrap(impersonatingHandler.AddImpersonation)).
 		Methods("GET").
 		Name("add_impersonation")
+	r.HandleFunc("/impersonation/suggestions",
+		impersonatingHandler.Wrap(impersonatingHandler.AddImpersonationSuggest)).
+		Methods("GET").
+		Name("suggest_impersonations")
 	r.HandleFunc("/impersonation",
 		impersonatingHandler.Wrap(impersonatingHandler.CreateImpersonation)).
 		Methods("POST").

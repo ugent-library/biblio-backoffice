@@ -1,19 +1,27 @@
 {{define "modal_dialog"}}
-<div class="modal-dialog modal-dialog-centered" role="document">
+<div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" role="document">
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">View as other user</h2>
         </div>
-        <div class="modal-body">
-            <form action="{{pathFor "create_impersonation"}}" method="POST">
-                {{.CSRFTag}}
-                <div class="form-group">
-                    <label for="impersonation-username">Username</label>
-                    <input type="text" class="form-control" id="impersonation-username" name="username">
-                </div>
-                <button type="submit" class="btn btn-primary">Change user</button>
-            </form>
+
+        <div class="p-6 border-bottom person-attributes">
+            {{range .Form.Sections}}
+            <div class="form-row align-items-end">
+                {{.Render}}
+            </div>
+            {{end}}
         </div>
+
+        <div class="modal-body" id="person-suggestions">
+            <div class="c-blank-slate c-blank-slate-muted c-blank-slate-large">
+                <div class="bc-avatar bc-avatar--small">
+                    <i class="if if-info-circle"></i>
+                </div>
+                <p>Type a first or last name above.</p>
+            </div>
+        </div>
+
         <div class="modal-footer">
             <button class="btn btn-link modal-close" data-dismiss="modal">Cancel</button>
         </div>

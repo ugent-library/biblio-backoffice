@@ -74,6 +74,7 @@ func newServices() *backends.Services {
 		OrganizationSearchService: biblioClient,
 		PersonSearchService:       biblioClient,
 		ProjectSearchService:      biblioClient,
+		UserSearchService:         biblioClient,
 		LicenseSearchService:      spdxlicenses.New(),
 		MediaTypeSearchService:    ianamedia.New(),
 		DatasetSources: map[string]backends.DatasetGetter{

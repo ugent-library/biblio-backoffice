@@ -12,9 +12,9 @@
         class="form-control{{if .Error}} is-invalid{{end}}"
         {{if .Readonly}}readonly{{end}}
         hx-get="{{.Vars.SuggestURL}}"
-        hx-include='.contributor-attributes input[name="first_name"], .contributor-attributes input[name="last_name"]'
+        hx-include='.person-attributes input[name="first_name"], .person-attributes input[name="last_name"]'
         hx-trigger="keyup changed delay:350ms, search"
-        hx-target="#contributor-suggestions"
+        hx-target="#person-suggestions"
     >
     {{with .Error}}<small class="invalid-feedback">{{.}}</small>{{end}}
     {{with .Help}}<small class="form-text text-muted">{{.}}</small>{{end}}
