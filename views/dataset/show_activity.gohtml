@@ -2,6 +2,9 @@
     {{partial "dataset/show_nav" .}}
 </div>
 
+<div hx-swap-oob="innerHTML:#show-sidebar">
+</div>
+
 <div class="row">
     {{if .User.CanCurate}}
     <div class="col-lg-6">
