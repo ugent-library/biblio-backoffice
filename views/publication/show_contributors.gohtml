@@ -13,9 +13,13 @@
                     </button>
                     <div class="dropdown-menu u-pointer-events-none" style="min-width: 240px;">
                         <nav class="nav nav-pills flex-column" id="publication-data">
+                            {{if .Publication.UsesContributors "author"}}
                             <a class="nav-link" href="#authors">Authors</a>
+                            {{end}}
+                            {{if .Publication.UsesContributors "editor"}}
                             <a class="nav-link" href="#editors">Editors</a>
-                            {{if eq .Publication.Type "dissertation"}}
+                            {{end}}
+                            {{if .Publication.UsesContributors "supervisor"}}
                             <a class="nav-link" href="#supervisors">Supervisors</a>
                             {{end}}
                             <a class="nav-link" href="#departments">Departments</a>
@@ -34,11 +38,15 @@
             <div class="d-none d-lg-block">
                 <div class="p-4">
                     <nav class="nav nav-pills flex-column" id="publication-data">
-                        <a class="nav-link" href="#authors">Authors</a>
-                        <a class="nav-link" href="#editors">Editors</a>
-                        {{if eq .Publication.Type "dissertation"}}
-                        <a class="nav-link" href="#supervisors">Supervisors</a>
-                        {{end}}
+                            {{if .Publication.UsesContributors "author"}}
+                            <a class="nav-link" href="#authors">Authors</a>
+                            {{end}}
+                            {{if .Publication.UsesContributors "editor"}}
+                            <a class="nav-link" href="#editors">Editors</a>
+                            {{end}}
+                            {{if .Publication.UsesContributors "supervisor"}}
+                            <a class="nav-link" href="#supervisors">Supervisors</a>
+                            {{end}}
                         <a class="nav-link" href="#departments">Departments</a>
                     </nav>
                 </div>
