@@ -13,7 +13,6 @@
             hx-put="{{pathFor "dataset_edit_file_refresh_form" "id" .Vars.ID}}"
             hx-include=".modal-body"
             hx-swap="none scroll:.modal-body:bottom"
-            hx-indicator=".modal-dialog .spinner-border"
         >
             {{if .EmptyOption}}<option></option>{{end}}
             {{range .Options}}
