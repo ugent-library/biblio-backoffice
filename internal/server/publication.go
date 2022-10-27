@@ -171,7 +171,7 @@ func (s *server) AddPublications(stream api.Biblio_AddPublicationsServer) error 
 			}
 			continue
 		}
-		if err := s.services.Repository.SavePublication(p); err != nil {
+		if err := s.services.Repository.SavePublication(p, nil); err != nil {
 			msg := fmt.Errorf("failed to store publication %s at line %d: %w", p.ID, seq, err).Error()
 			if err = stream.Send(&api.AddPublicationsResponse{Message: msg}); err != nil {
 				return status.Errorf(codes.Internal, msg)

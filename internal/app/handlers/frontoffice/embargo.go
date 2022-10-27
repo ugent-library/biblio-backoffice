@@ -72,7 +72,7 @@ func (h *Handler) PublicationUpdateEmbargo(w http.ResponseWriter, r *http.Reques
 					}
 					file.ClearEmbargo()
 				}
-				if e := repo.SavePublication(publication); e != nil {
+				if e := repo.SavePublication(publication, nil); e != nil {
 					return e
 				}
 				count++
@@ -152,7 +152,7 @@ func (h *Handler) DatasetUpdateEmbargo(w http.ResponseWriter, r *http.Request) {
 				}
 				dataset.ClearEmbargo()
 
-				if e := repo.SaveDataset(dataset); e != nil {
+				if e := repo.SaveDataset(dataset, nil); e != nil {
 					return e
 				}
 				count++

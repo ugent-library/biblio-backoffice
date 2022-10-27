@@ -156,7 +156,7 @@ func (s *server) AddDatasets(stream api.Biblio_AddDatasetsServer) error {
 			continue
 		}
 
-		if err := s.services.Repository.SaveDataset(d); err != nil {
+		if err := s.services.Repository.SaveDataset(d, nil); err != nil {
 			msg := fmt.Errorf("failed to store dataset %s at line %d: %w", d.ID, seq, err).Error()
 			if err = stream.Send(&api.AddDatasetsResponse{Message: msg}); err != nil {
 				return status.Errorf(codes.Internal, msg)

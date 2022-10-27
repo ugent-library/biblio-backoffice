@@ -3,7 +3,7 @@ package orcid
 import (
 	"fmt"
 	"html/template"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"strings"
@@ -84,7 +84,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request, ctx Context) {
 
 	flash := flash.SimpleFlash()
 
-	p, err = h.addPublicationToORCID(ctx.User.ORCID, ctx.User.ORCIDToken, p)
+	p, err = h.addPublicationToORCID(ctx.User, p)
 	if err != nil {
 		if err == orcid.ErrDuplicate {
 			h.Logger.Warnw("add orcid: this publicaton is already part of the users orcid works", "publication", b.PublicationID, "user", ctx.User.ID)
@@ -130,26 +130,26 @@ func (h *Handler) AddAll(w http.ResponseWriter, r *http.Request, ctx Context) {
 
 // TODO make workflow
 // TODO add proper logging once moved to workflows
-func (h *Handler) addPublicationToORCID(orcidID, orcidToken string, p *models.Publication) (*models.Publication, error) {
+func (h *Handler) addPublicationToORCID(user *models.User, p *models.Publication) (*models.Publication, error) {
 	client := orcid.NewMemberClient(orcid.Config{
-		Token:   orcidToken,
+		Token:   user.ORCIDToken,
 		Sandbox: h.Sandbox,
 	})
 
 	work := publicationToORCID(p)
-	putCode, res, err := client.AddWork(orcidID, work)
+	putCode, res, err := client.AddWork(user.ORCID, work)
 	if err != nil {
-		body, _ := ioutil.ReadAll(res.Body)
+		body, _ := io.ReadAll(res.Body)
 		log.Printf("orcid error: %s", body)
 		return p, err
 	}
 
 	p.ORCIDWork = append(p.ORCIDWork, models.PublicationORCIDWork{
-		ORCID:   orcidID,
+		ORCID:   user.ORCID,
 		PutCode: putCode,
 	})
 
-	if err := h.Repository.SavePublication(p); err != nil {
+	if err := h.Repository.SavePublication(p, user); err != nil {
 		return nil, err
 	}
 
@@ -160,16 +160,16 @@ func (h *Handler) addPublicationsToORCID(user *models.User, s *models.SearchArgs
 	taskID := "orcid:" + ulid.MustGenerate()
 
 	h.Tasks.Add(taskID, func(t tasks.Task) error {
-		return h.sendPublicationsToORCIDTask(t, user.ID, user.ORCID, user.ORCIDToken, s)
+		return h.sendPublicationsToORCIDTask(t, user, s)
 	})
 
 	return taskID, nil
 }
 
 // TODO move to workflows
-func (h *Handler) sendPublicationsToORCIDTask(t tasks.Task, userID, orcidID, orcidToken string, searchArgs *models.SearchArgs) error {
+func (h *Handler) sendPublicationsToORCIDTask(t tasks.Task, user *models.User, searchArgs *models.SearchArgs) error {
 	orcidClient := orcid.NewMemberClient(orcid.Config{
-		Token:   orcidToken,
+		Token:   user.ORCIDToken,
 		Sandbox: h.Sandbox,
 	})
 
@@ -183,7 +183,7 @@ func (h *Handler) sendPublicationsToORCIDTask(t tasks.Task, userID, orcidID, orc
 
 			var done bool
 			for _, ow := range p.ORCIDWork {
-				if ow.ORCID == orcidID { // already sent to orcid
+				if ow.ORCID == user.ORCID { // already sent to orcid
 					done = true
 					break
 				}
@@ -193,21 +193,21 @@ func (h *Handler) sendPublicationsToORCIDTask(t tasks.Task, userID, orcidID, orc
 			}
 
 			work := publicationToORCID(p)
-			putCode, res, err := orcidClient.AddWork(orcidID, work)
+			putCode, res, err := orcidClient.AddWork(user.ORCID, work)
 			if res.StatusCode == 409 { // duplicate
 				continue
 			} else if err != nil {
-				body, _ := ioutil.ReadAll(res.Body)
+				body, _ := io.ReadAll(res.Body)
 				log.Printf("orcid error: %s", body)
 				return err
 			}
 
 			p.ORCIDWork = append(p.ORCIDWork, models.PublicationORCIDWork{
-				ORCID:   orcidID,
+				ORCID:   user.ORCID,
 				PutCode: putCode,
 			})
 
-			if err := h.Repository.SavePublication(p); err != nil {
+			if err := h.Repository.SavePublication(p, user); err != nil {
 				return err
 			}
 		}

@@ -206,7 +206,7 @@ func (h *Handler) AddSingleImport(w http.ResponseWriter, r *http.Request, ctx Co
 		return
 	}
 
-	err = h.Repository.SavePublication(p)
+	err = h.Repository.SavePublication(p, ctx.User)
 
 	if err != nil {
 		h.Logger.Errorf("import single publication: -could not save the publication:", "error", err, "identifier", b.Identifier, "user", ctx.User.ID)
@@ -445,7 +445,7 @@ func (h *Handler) AddMultipleConfirm(w http.ResponseWriter, r *http.Request, ctx
 func (h *Handler) AddMultiplePublish(w http.ResponseWriter, r *http.Request, ctx Context) {
 	batchID := bind.PathValues(r).Get("batch_id")
 
-	err := h.batchPublishPublications(batchID, ctx.User.ID)
+	err := h.batchPublishPublications(batchID, ctx.User)
 
 	// TODO this is useless to the user unless we point to the publication in
 	// question
@@ -559,7 +559,7 @@ func (h *Handler) importPublications(user *models.User, source string, file io.R
 			break
 		}
 
-		if err := h.Repository.SavePublication(&p); err != nil {
+		if err := h.Repository.SavePublication(&p, user); err != nil {
 			importErr = err
 			break
 		}
@@ -574,10 +574,10 @@ func (h *Handler) importPublications(user *models.User, source string, file io.R
 }
 
 // TODO check conflicts?
-func (h *Handler) batchPublishPublications(batchID, userID string) (err error) {
+func (h *Handler) batchPublishPublications(batchID string, user *models.User) (err error) {
 	searcher := h.PublicationSearchService.
 		WithScope("status", "private", "public").
-		WithScope("creator.id", userID).
+		WithScope("creator.id", user.ID).
 		WithScope("batch_id", batchID)
 	args := models.NewSearchArgs()
 
@@ -593,7 +593,7 @@ func (h *Handler) batchPublishPublications(batchID, userID string) (err error) {
 			if err = pub.Validate(); err != nil {
 				return
 			}
-			if err = h.Repository.SavePublication(pub); err != nil {
+			if err = h.Repository.SavePublication(pub, user); err != nil {
 				return
 			}
 		}

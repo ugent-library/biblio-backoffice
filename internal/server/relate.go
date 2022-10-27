@@ -38,7 +38,7 @@ func (s *server) Relate(ctx context.Context, req *api.RelateRequest) (*api.Relat
 		return nil, status.Error(codes.Internal, "two is missing")
 	}
 
-	if err := s.services.Repository.AddPublicationDataset(p, d); err != nil {
+	if err := s.services.Repository.AddPublicationDataset(p, d, nil); err != nil {
 		return nil, status.Errorf(codes.Internal, "could not relate: %w", err)
 	}
 	if err := s.services.PublicationSearchService.Index(p); err != nil {

@@ -87,7 +87,7 @@ func (h *Handler) CreateDataset(w http.ResponseWriter, r *http.Request, ctx Cont
 	// TODO handle validation errors
 	// TODO pass If-Match
 	// TODO handle conflict
-	err = h.Repository.AddPublicationDataset(ctx.Publication, d)
+	err = h.Repository.AddPublicationDataset(ctx.Publication, d, ctx.User)
 	if err != nil {
 		h.Logger.Errorw("create publication dataset: could not add dataset to publication", "errors", err, "publication", ctx.Publication.ID, "dataset", b.DatasetID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
@@ -162,7 +162,7 @@ func (h *Handler) DeleteDataset(w http.ResponseWriter, r *http.Request, ctx Cont
 	// TODO handle validation errors
 	// TODO pass If-Match
 	// TODO handle conflict
-	err = h.Repository.RemovePublicationDataset(ctx.Publication, d)
+	err = h.Repository.RemovePublicationDataset(ctx.Publication, d, ctx.User)
 
 	if err != nil {
 		h.Logger.Errorw("delete dataset publication: could not remove dataset", "errors", err, "publication", ctx.Publication.ID, "dataset", b.DatasetID, "user", ctx.User.ID)

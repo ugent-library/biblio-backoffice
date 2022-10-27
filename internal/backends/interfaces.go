@@ -59,7 +59,7 @@ type Repository interface {
 	AddPublicationListener(func(*models.Publication))
 	GetPublication(string) (*models.Publication, error)
 	GetPublications([]string) ([]*models.Publication, error)
-	SavePublication(*models.Publication) error
+	SavePublication(*models.Publication, *models.User) error
 	ImportCurrentPublication(*models.Publication) error
 	ImportOldPublication(*models.Publication) error
 	UpdatePublication(string, *models.Publication, *models.User) error
@@ -74,7 +74,7 @@ type Repository interface {
 	GetDatasets([]string) ([]*models.Dataset, error)
 	ImportCurrentDataset(*models.Dataset) error
 	ImportOldDataset(*models.Dataset) error
-	SaveDataset(*models.Dataset) error
+	SaveDataset(*models.Dataset, *models.User) error
 	UpdateDataset(string, *models.Dataset, *models.User) error
 	SelectDatasets(string, []any, func(*models.Dataset) bool) error
 	EachDataset(func(*models.Dataset) bool) error
@@ -86,8 +86,8 @@ type Repository interface {
 	GetVisiblePublicationDatasets(*models.User, *models.Publication) ([]*models.Dataset, error)
 	GetDatasetPublications(*models.Dataset) ([]*models.Publication, error)
 	GetVisibleDatasetPublications(*models.User, *models.Dataset) ([]*models.Publication, error)
-	AddPublicationDataset(*models.Publication, *models.Dataset) error
-	RemovePublicationDataset(*models.Publication, *models.Dataset) error
+	AddPublicationDataset(*models.Publication, *models.Dataset, *models.User) error
+	RemovePublicationDataset(*models.Publication, *models.Dataset, *models.User) error
 }
 
 type DatasetSearchService interface {

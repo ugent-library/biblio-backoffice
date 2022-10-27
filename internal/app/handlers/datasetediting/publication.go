@@ -86,7 +86,7 @@ func (h *Handler) CreatePublication(w http.ResponseWriter, r *http.Request, ctx 
 
 	// TODO handle validation errors
 	// TODO pass If-Match
-	err = h.Repository.AddPublicationDataset(p, ctx.Dataset)
+	err = h.Repository.AddPublicationDataset(p, ctx.Dataset, ctx.User)
 
 	// TODO handle conflict
 
@@ -149,7 +149,7 @@ func (h *Handler) DeletePublication(w http.ResponseWriter, r *http.Request, ctx 
 	// TODO handle validation errors
 	// TODO pass If-Match
 	// TODO handle conflict
-	err = h.Repository.RemovePublicationDataset(p, ctx.Dataset)
+	err = h.Repository.RemovePublicationDataset(p, ctx.Dataset, ctx.User)
 
 	if err != nil {
 		h.Logger.Errorw("delete dataset publication: could not delete the publication", "errors", err, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)

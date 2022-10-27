@@ -174,13 +174,19 @@ func (s *Repository) ImportOldPublication(p *models.Publication) error {
 	return s.importPublication(p)
 }
 
-func (s *Repository) SavePublication(p *models.Publication) error {
+func (s *Repository) SavePublication(p *models.Publication, u *models.User) error {
 	now := time.Now()
 
 	if p.DateCreated == nil {
 		p.DateCreated = &now
 	}
 	p.DateUpdated = &now
+	if u != nil {
+		p.User = &models.PublicationUser{
+			ID:   u.ID,
+			Name: u.FullName,
+		}
+	}
 
 	// TODO move outside of store
 	p = publication.DefaultPipeline.Process(p)
@@ -413,13 +419,19 @@ func (s *Repository) ImportOldDataset(d *models.Dataset) error {
 	return s.importDataset(d)
 }
 
-func (s *Repository) SaveDataset(d *models.Dataset) error {
+func (s *Repository) SaveDataset(d *models.Dataset, u *models.User) error {
 	now := time.Now()
 
 	if d.DateCreated == nil {
 		d.DateCreated = &now
 	}
 	d.DateUpdated = &now
+	if u != nil {
+		d.User = &models.DatasetUser{
+			ID:   u.ID,
+			Name: u.FullName,
+		}
+	}
 
 	if err := d.Validate(); err != nil {
 		return err
@@ -595,17 +607,17 @@ func (s *Repository) GetVisibleDatasetPublications(u *models.User, d *models.Dat
 	return filteredPublications, nil
 }
 
-func (s *Repository) AddPublicationDataset(p *models.Publication, d *models.Dataset) error {
+func (s *Repository) AddPublicationDataset(p *models.Publication, d *models.Dataset, u *models.User) error {
 	return s.Transaction(context.Background(), func(s backends.Repository) error {
 		if !p.HasRelatedDataset(d.ID) {
 			p.RelatedDataset = append(p.RelatedDataset, models.RelatedDataset{ID: d.ID})
-			if err := s.SavePublication(p); err != nil {
+			if err := s.SavePublication(p, u); err != nil {
 				return err
 			}
 		}
 		if !d.HasRelatedPublication(p.ID) {
 			d.RelatedPublication = append(d.RelatedPublication, models.RelatedPublication{ID: p.ID})
-			if err := s.SaveDataset(d); err != nil {
+			if err := s.SaveDataset(d, u); err != nil {
 				return err
 			}
 		}
@@ -614,17 +626,17 @@ func (s *Repository) AddPublicationDataset(p *models.Publication, d *models.Data
 	})
 }
 
-func (s *Repository) RemovePublicationDataset(p *models.Publication, d *models.Dataset) error {
+func (s *Repository) RemovePublicationDataset(p *models.Publication, d *models.Dataset, u *models.User) error {
 	return s.Transaction(context.Background(), func(s backends.Repository) error {
 		if p.HasRelatedDataset(d.ID) {
 			p.RemoveRelatedDataset(d.ID)
-			if err := s.SavePublication(p); err != nil {
+			if err := s.SavePublication(p, u); err != nil {
 				return err
 			}
 		}
 		if d.HasRelatedPublication(p.ID) {
 			d.RemoveRelatedPublication(p.ID)
-			if err := s.SaveDataset(d); err != nil {
+			if err := s.SaveDataset(d, u); err != nil {
 				return err
 			}
 		}

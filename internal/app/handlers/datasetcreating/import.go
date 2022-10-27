@@ -152,7 +152,7 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 		return
 	}
 
-	err = h.Repository.SaveDataset(d)
+	err = h.Repository.SaveDataset(d, ctx.User)
 
 	if err != nil {
 		h.Logger.Warnw("add import dataset: could not save dataset:", "errors", err, "dataset", b.Identifier, "user", ctx.User.ID)
