@@ -4,7 +4,7 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
-	"io/ioutil"
+	"os"
 
 	"github.com/spf13/viper"
 	"google.golang.org/grpc/credentials"
@@ -19,7 +19,7 @@ func LoadTLSCredentials() (credentials.TransportCredentials, error) {
 
 	// Override if a custom CA cert is provided
 	if cacert := viper.GetString("api-tls-ca-cert"); cacert != "" {
-		pemServerCA, err := ioutil.ReadFile(cacert)
+		pemServerCA, err := os.ReadFile(cacert)
 		if err != nil {
 			return nil, err
 		}

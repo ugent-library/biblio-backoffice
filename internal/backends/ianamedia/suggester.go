@@ -2,8 +2,8 @@ package ianamedia
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"log"
+	"os"
 	"strings"
 
 	"github.com/blevesearch/bleve/v2"
@@ -38,7 +38,7 @@ func New() *localSuggester {
 func (s *localSuggester) IndexAll() error {
 	env := make(ianaEnv)
 
-	file, err := ioutil.ReadFile("etc/iana-media-types.json")
+	file, err := os.ReadFile("etc/iana-media-types.json")
 	if err != nil {
 		return err
 	}

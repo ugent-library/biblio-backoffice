@@ -2,7 +2,7 @@ package crossref
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -52,7 +52,7 @@ func (c *Client) GetPublication(id string) (*models.Publication, error) {
 	}
 	// log.Printf("%+v", res)
 	defer res.Body.Close()
-	src, err := ioutil.ReadAll(res.Body)
+	src, err := io.ReadAll(res.Body)
 	if err != nil {
 		return nil, err
 	}

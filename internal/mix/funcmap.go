@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
-	"io/ioutil"
 	"log"
+	"os"
 	"path"
 )
 
@@ -35,7 +35,7 @@ func assetPathFunc(publicPath string, manifest map[string]string) func(string) (
 }
 
 func loadManifest(p string) map[string]string {
-	data, err := ioutil.ReadFile(p)
+	data, err := os.ReadFile(p)
 	if err != nil {
 		log.Fatalf("couldn't read %s: %s", p, err)
 	}

@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -49,7 +49,7 @@ func (c *Client) EncodePublication(p *models.Publication) ([]byte, error) {
 	}
 	// log.Printf("%+v", res)
 	defer res.Body.Close()
-	src, err := ioutil.ReadAll(res.Body)
+	src, err := io.ReadAll(res.Body)
 	if err != nil {
 		return nil, err
 	}

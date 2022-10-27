@@ -3,7 +3,7 @@ package arxiv
 import (
 	"encoding/xml"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -65,7 +65,7 @@ func (c *Client) GetPublication(id string) (*models.Publication, error) {
 	}
 	// log.Printf("%+v", res)
 	defer res.Body.Close()
-	src, err := ioutil.ReadAll(res.Body)
+	src, err := io.ReadAll(res.Body)
 	if err != nil {
 		return nil, err
 	}
