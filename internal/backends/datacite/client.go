@@ -3,7 +3,6 @@ package datacite
 import (
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -59,7 +58,7 @@ func (c *Client) GetDataset(id string) (*models.Dataset, error) {
 		return nil, fmt.Errorf("can't import dataset: %s", src)
 	}
 
-	log.Printf("import dataset src: %s", src)
+	// log.Printf("import dataset src: %s", src)
 
 	attrs := gjson.ParseBytes(src)
 
