@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/models"
@@ -77,6 +78,9 @@ func (s *Repository) GetPublication(id string) (*models.Publication, error) {
 	p := &models.Publication{}
 	snap, err := s.publicationStore.GetCurrentSnapshot(id, s.opts)
 	if err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, backends.ErrNotFound
+		}
 		return nil, err
 	}
 	if err := snap.Scan(p); err != nil {
@@ -199,6 +203,8 @@ func (s *Repository) SavePublication(p *models.Publication, u *models.User) erro
 }
 
 func (s *Repository) UpdatePublication(snapshotID string, p *models.Publication, u *models.User) error {
+	// TODO move outside of store
+	p = publication.DefaultPipeline.Process(p)
 	oldDateUpdated := p.DateUpdated
 	now := time.Now()
 	p.DateUpdated = &now
@@ -323,6 +329,9 @@ func (s *Repository) GetDataset(id string) (*models.Dataset, error) {
 	d := &models.Dataset{}
 	snap, err := s.datasetStore.GetCurrentSnapshot(id, s.opts)
 	if err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, backends.ErrNotFound
+		}
 		return nil, err
 	}
 	if err := snap.Scan(d); err != nil {
@@ -437,10 +446,19 @@ func (s *Repository) SaveDataset(d *models.Dataset, u *models.User) error {
 		return err
 	}
 
+	//TODO: move outside
+	if d.Status == "public" && !d.HasBeenPublic {
+		d.HasBeenPublic = true
+	}
+
 	return s.datasetStore.Add(d.ID, d, s.opts)
 }
 
 func (s *Repository) UpdateDataset(snapshotID string, d *models.Dataset, u *models.User) error {
+	//TODO: move outside
+	if d.Status == "public" && !d.HasBeenPublic {
+		d.HasBeenPublic = true
+	}
 	oldDateUpdated := d.DateUpdated
 	now := time.Now()
 	d.DateUpdated = &now
