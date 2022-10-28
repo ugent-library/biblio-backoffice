@@ -156,6 +156,7 @@ type Publication struct {
 	VABBID                  string                  `json:"vabb_id,omitempty"`
 	VABBApproved            bool                    `json:"vabb_approved"`
 	VABBYear                []string                `json:"vabb_year,omitempty"`
+	HasBeenPublic           bool                    `json:"has_been_public"`
 	WOSID                   string                  `json:"wos_id,omitempty"`
 	WOSType                 string                  `json:"wos_type,omitempty"`
 	Year                    string                  `json:"year,omitempty"`

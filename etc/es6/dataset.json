@@ -299,6 +299,9 @@
                 "message": {
                     "type": "text"
                 },
+                "has_been_public": {
+                    "type": "boolean"
+                },
                 "has_message": {
                     "type": "boolean"
                 },
