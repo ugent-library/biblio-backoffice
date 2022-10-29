@@ -9,6 +9,7 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"strings"
 
 	"github.com/caltechlibrary/doitools"
 	"github.com/iancoleman/strcase"
@@ -35,7 +36,7 @@ var licenseMap = map[string]string{
 	"CC-BY-NC-ND-4.0":  "Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International Public License (CC BY-NC-ND 4.0)",
 	"InCopyright":      "No license (in copyright)",
 	"LicenseNotListed": "The license is not listed here",
-	"CopyrightUnknown": "I don't know the status of the copyright of this publication",
+	"CopyrightUnknown": "I don't know the status of the copyright for this publication",
 }
 
 type Handler struct {
@@ -180,7 +181,7 @@ type Publication struct {
 	ESCIID              string        `json:"esci_id,omitempty"`
 	Embargo             string        `json:"embargo,omitempty"`
 	EmbargoTo           string        `json:"embargo_to,omitempty"`
-	External            int           `json:"external,omitempty"`
+	External            int           `json:"external"`
 	File                []File        `json:"file,omitempty"`
 	Format              []string      `json:"format,omitempty"`
 	Handle              string        `json:"handle,omitempty"`
@@ -219,6 +220,25 @@ type Hits struct {
 	Offset int            `json:"offset"`
 	Total  int            `json:"total"`
 	Hits   []*Publication `json:"hits"`
+}
+
+func mapContributor(c *models.Contributor) *Person {
+	p := &Person{
+		ID:        c.ID,
+		FirstName: c.FirstName,
+		LastName:  c.LastName,
+	}
+	nameParts := make([]string, 0, 2)
+	if c.FirstName != "" {
+		nameParts = append(nameParts, c.FirstName)
+	}
+	if c.LastName != "" {
+		nameParts = append(nameParts, c.LastName)
+	}
+	if len(nameParts) > 0 {
+		p.Name = strings.Join(nameParts, " ")
+	}
+	return p
 }
 
 func (h *Handler) mapPublication(p *models.Publication) *Publication {
@@ -267,6 +287,61 @@ func (h *Handler) mapPublication(p *models.Publication) *Publication {
 		pp.MiscType = strcase.ToLowerCamel(p.MiscellaneousType)
 	}
 
+	if pp.Type == "conference" && pp.ConferenceType == "" && p.WOSType != "" {
+		if strings.Contains(p.WOSType, "Proceeding") {
+			pp.ConferenceType = "proceedingsPaper"
+		} else if strings.Contains(p.WOSType, "Conference Paper") {
+			pp.ConferenceType = "conferencePaper"
+		} else if strings.Contains(p.WOSType, "Abstract") {
+			pp.ConferenceType = "meetingAbstract"
+		} else if strings.Contains(p.WOSType, "Other") {
+			pp.ConferenceType = "other"
+		}
+	}
+	if pp.Type == "conference" && pp.ConferenceType == "" && p.Classification == "P1" {
+		pp.ConferenceType = "proceedingsPaper"
+	}
+
+	if pp.Type == "journalArticle" && pp.ArticleType == "" && p.WOSType != "" {
+		if strings.Contains(p.WOSType, "Article") || strings.Contains(p.WOSType, "Journal Paper") {
+			pp.ArticleType = "original"
+		} else if strings.Contains(p.WOSType, "Proceedings Paper") {
+			pp.ArticleType = "proceedingsPaper"
+		} else if strings.Contains(p.WOSType, "Letter") || strings.Contains(p.WOSType, "Note") {
+			pp.ArticleType = "letterNote"
+		} else if strings.Contains(p.WOSType, "Review") {
+			pp.ArticleType = "review"
+		}
+	}
+
+	if pp.Type == "misc" && pp.MiscType == "" && p.WOSType != "" {
+		if strings.Contains(p.WOSType, "Book Review") {
+			pp.MiscType = "bookReview"
+		} else if strings.Contains(p.WOSType, "Theatre Review") {
+			pp.MiscType = "theatreReview"
+		} else if strings.Contains(p.WOSType, "Correction") {
+			pp.MiscType = "correction"
+		} else if strings.Contains(p.WOSType, "Editorial Material") {
+			pp.MiscType = "editorialMaterial"
+		} else if strings.Contains(p.WOSType, "Biographical-Item") || strings.Contains(p.WOSType, "Item About An Individual") {
+			pp.MiscType = "biography"
+		} else if strings.Contains(p.WOSType, "News Item") {
+			pp.MiscType = "newsArticle"
+		} else if strings.Contains(p.WOSType, "Bibliography") {
+			pp.MiscType = "bibliography"
+		} else if strings.Contains(p.WOSType, "Other") {
+			pp.MiscType = "other"
+		}
+	}
+
+	if pp.Type == "misc" {
+		if pp.MiscType == "biographicalItem" {
+			pp.MiscType = "biography"
+		} else if pp.MiscType == "bibliographicalItem" {
+			pp.MiscType = "bibliography"
+		}
+	}
+
 	for _, v := range p.Abstract {
 		pp.Abstract = append(pp.Abstract, v.Text)
 	}
@@ -292,34 +367,19 @@ func (h *Handler) mapPublication(p *models.Publication) *Publication {
 	}
 
 	for _, v := range p.Author {
-		c := Person{
-			ID:        v.ID,
-			Name:      v.FullName,
-			FirstName: v.FirstName,
-			LastName:  v.LastName,
-		}
+		c := mapContributor(v)
 		c.CreditRole = append(c.CreditRole, v.CreditRole...)
-		pp.Author = append(pp.Author, c)
+		pp.Author = append(pp.Author, *c)
 	}
 
 	for _, v := range p.Editor {
-		c := Person{
-			ID:        v.ID,
-			Name:      v.FullName,
-			FirstName: v.FirstName,
-			LastName:  v.LastName,
-		}
-		pp.Editor = append(pp.Editor, c)
+		c := mapContributor(v)
+		pp.Editor = append(pp.Editor, *c)
 	}
 
 	for _, v := range p.Supervisor {
-		c := Person{
-			ID:        v.ID,
-			Name:      v.FullName,
-			FirstName: v.FirstName,
-			LastName:  v.LastName,
-		}
-		pp.Promoter = append(pp.Promoter, c)
+		c := mapContributor(v)
+		pp.Promoter = append(pp.Promoter, *c)
 	}
 
 	if p.Keyword != nil {
@@ -332,20 +392,8 @@ func (h *Handler) mapPublication(p *models.Publication) *Publication {
 
 	if p.Status == "private" {
 		pp.Status = "unsubmitted"
-	} else if p.Status == "deleted" {
-		wasPublic := false
-		h.Repository.PublicationHistory(p.ID, func(version *models.Publication) bool {
-			if version.Status == "public" {
-				wasPublic = true
-				return false
-			}
-			return true
-		})
-		if wasPublic {
-			pp.Status = "pdeleted"
-		} else {
-			pp.Status = "deleted"
-		}
+	} else if p.HasBeenPublic {
+		pp.Status = "pdeleted"
 	} else {
 		pp.Status = p.Status
 	}
@@ -365,6 +413,8 @@ func (h *Handler) mapPublication(p *models.Publication) *Publication {
 
 	if p.Language != nil {
 		pp.Language = append(pp.Language, p.Language...)
+	} else if p.Language == nil || len(p.Language) == 0 {
+		pp.Language = []string{"und"}
 	}
 
 	if validation.IsYear(p.Year) {
@@ -373,7 +423,7 @@ func (h *Handler) mapPublication(p *models.Publication) *Publication {
 
 	if p.PublicationStatus == "unpublished" {
 		pp.PublicationStatus = "unpublished"
-	} else if p.Publication == "accepted" {
+	} else if p.PublicationStatus == "accepted" {
 		pp.PublicationStatus = "inpress"
 	} else {
 		pp.PublicationStatus = "published"
@@ -461,6 +511,12 @@ func (h *Handler) mapPublication(p *models.Publication) *Publication {
 		}
 		pp.Conference.EndDate = p.ConferenceEndDate
 	}
+	if p.ConferenceOrganizer != "" {
+		if pp.Conference == nil {
+			pp.Conference = &Conference{}
+		}
+		pp.Conference.Organizer = p.ConferenceOrganizer
+	}
 
 	if validation.IsDate(p.DefenseDate) {
 		if pp.Defense == nil {
@@ -511,6 +567,8 @@ func (h *Handler) mapPublication(p *models.Publication) *Publication {
 				f.Kind = "peerReviewReport"
 			case "agreement":
 				f.Kind = "agreement"
+			case "supplementary_material":
+				f.Kind = "dataset" //was called "data_set" in old LibreCat
 			default:
 				f.Kind = "fullText"
 			}
@@ -586,6 +644,12 @@ func (h *Handler) mapPublication(p *models.Publication) *Publication {
 		}
 	}
 
+	if p.Extern {
+		pp.External = 1
+	} else {
+		pp.External = 0
+	}
+
 	return pp
 }
 
@@ -617,13 +681,8 @@ func (h *Handler) mapDataset(p *models.Dataset) *Publication {
 	}
 
 	for _, v := range p.Author {
-		c := Person{
-			ID:        v.ID,
-			Name:      v.FullName,
-			FirstName: v.FirstName,
-			LastName:  v.LastName,
-		}
-		pp.Author = append(pp.Author, c)
+		c := mapContributor(v)
+		pp.Author = append(pp.Author, *c)
 	}
 
 	if p.Creator != nil {
@@ -679,20 +738,8 @@ func (h *Handler) mapDataset(p *models.Dataset) *Publication {
 
 	if p.Status == "private" {
 		pp.Status = "unsubmitted"
-	} else if p.Status == "deleted" {
-		wasPublic := false
-		h.Repository.DatasetHistory(p.ID, func(version *models.Dataset) bool {
-			if version.Status == "public" {
-				wasPublic = true
-				return false
-			}
-			return true
-		})
-		if wasPublic {
-			pp.Status = "pdeleted"
-		} else {
-			pp.Status = "deleted"
-		}
+	} else if p.HasBeenPublic {
+		pp.Status = "pdeleted"
 	} else {
 		pp.Status = p.Status
 	}
@@ -703,7 +750,11 @@ func (h *Handler) mapDataset(p *models.Dataset) *Publication {
 func (h *Handler) GetPublication(w http.ResponseWriter, r *http.Request) {
 	p, err := h.Repository.GetPublication(bind.PathValues(r).Get("id"))
 	if err != nil {
-		render.InternalServerError(w, r, err)
+		if err == backends.ErrNotFound {
+			render.NotFound(w, r, err)
+		} else {
+			render.InternalServerError(w, r, err)
+		}
 		return
 	}
 	j, err := json.Marshal(h.mapPublication(p))
@@ -718,7 +769,11 @@ func (h *Handler) GetPublication(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) GetDataset(w http.ResponseWriter, r *http.Request) {
 	p, err := h.Repository.GetDataset(bind.PathValues(r).Get("id"))
 	if err != nil {
-		render.InternalServerError(w, r, err)
+		if err == backends.ErrNotFound {
+			render.NotFound(w, r, err)
+		} else {
+			render.InternalServerError(w, r, err)
+		}
 		return
 	}
 	j, err := json.Marshal(h.mapDataset(p))
@@ -822,7 +877,11 @@ func (h *Handler) DownloadFile(w http.ResponseWriter, r *http.Request) {
 
 	p, err := h.Repository.GetPublication(vals.Get("id"))
 	if err != nil {
-		render.InternalServerError(w, r, err)
+		if err == backends.ErrNotFound {
+			render.NotFound(w, r, err)
+		} else {
+			render.InternalServerError(w, r, err)
+		}
 		return
 	}
 
