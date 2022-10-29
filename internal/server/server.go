@@ -1,13 +1,10 @@
 package server
 
 import (
-	"log"
-
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
 	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
-	"github.com/spf13/viper"
 	api "github.com/ugent-library/biblio-backend/api/v1"
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"go.uber.org/zap"
@@ -43,14 +40,14 @@ func New(services *backends.Services, logger *zap.SugaredLogger) *grpc.Server {
 	tlsOption := grpc.Creds(nil)
 
 	// If set, enabled server-side TLS secure connection
-	if viper.GetBool("api-tls-enabled") {
-		tlsCredentials, err := loadTLSCredentials()
-		if err != nil {
-			log.Fatal("cannot load TLS credentials: ", err)
-		}
+	// if viper.GetBool("api-tls-enabled") {
+	// 	tlsCredentials, err := loadTLSCredentials()
+	// 	if err != nil {
+	// 		log.Fatal("cannot load TLS credentials: ", err)
+	// 	}
 
-		tlsOption = grpc.Creds(tlsCredentials)
-	}
+	// 	tlsOption = grpc.Creds(tlsCredentials)
+	// }
 
 	gsrv := grpc.NewServer(
 		tlsOption,

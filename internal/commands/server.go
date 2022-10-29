@@ -45,6 +45,8 @@ func init() {
 	serverStartCmd.Flags().String("mode", defaultMode, "server mode (development, staging or production)")
 	serverStartCmd.Flags().String("host", defaultHost, "server host")
 	serverStartCmd.Flags().Int("port", defaultPort, "server port")
+	serverStartCmd.Flags().String("api-username", "", "api server administrator username")
+	serverStartCmd.Flags().String("api-password", "", "api server administrator password")
 	serverStartCmd.Flags().String("session-name", defaultSessionName, "session name")
 	serverStartCmd.Flags().String("session-secret", "", "session secret")
 	serverStartCmd.Flags().Int("session-max-age", defaultSessionMaxAge, "session lifetime")

@@ -1,26 +1,19 @@
 package server
 
-import (
-	"crypto/tls"
+// func loadTLSCredentials() (credentials.TransportCredentials, error) {
+// 	certFile := viper.GetString("api-tls-servercert")
+// 	keyFile := viper.GetString("api-tls-serverkey")
 
-	"github.com/spf13/viper"
-	"google.golang.org/grpc/credentials"
-)
+// 	serverCert, err := tls.LoadX509KeyPair(certFile, keyFile)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-func loadTLSCredentials() (credentials.TransportCredentials, error) {
-	certFile := viper.GetString("api-tls-servercert")
-	keyFile := viper.GetString("api-tls-serverkey")
+// 	// Create the credentials and return it
+// 	config := &tls.Config{
+// 		Certificates: []tls.Certificate{serverCert},
+// 		ClientAuth:   tls.NoClientCert,
+// 	}
 
-	serverCert, err := tls.LoadX509KeyPair(certFile, keyFile)
-	if err != nil {
-		return nil, err
-	}
-
-	// Create the credentials and return it
-	config := &tls.Config{
-		Certificates: []tls.Certificate{serverCert},
-		ClientAuth:   tls.NoClientCert,
-	}
-
-	return credentials.NewTLS(config), nil
-}
+// 	return credentials.NewTLS(config), nil
+// }
