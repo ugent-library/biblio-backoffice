@@ -12,14 +12,14 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/server"
 )
 
-type PublicationHistoryCmd struct {
+type GetPublicationHistoryCmd struct {
 	RootCmd
 }
 
-func (c *PublicationHistoryCmd) Command() *cobra.Command {
+func (c *GetPublicationHistoryCmd) Command() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "history [id]",
-		Short: "Publication history",
+		Use:   "get-history [id]",
+		Short: "Get publication history",
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			c.Wrap(func() {
@@ -31,9 +31,9 @@ func (c *PublicationHistoryCmd) Command() *cobra.Command {
 	return cmd
 }
 
-func (c *PublicationHistoryCmd) Run(cmd *cobra.Command, args []string) {
-	req := &api.PublicationHistoryRequest{Id: args[0]}
-	stream, err := c.Client.PublicationHistory(context.Background(), req)
+func (c *GetPublicationHistoryCmd) Run(cmd *cobra.Command, args []string) {
+	req := &api.GetPublicationHistoryRequest{Id: args[0]}
+	stream, err := c.Client.GetPublicationHistory(context.Background(), req)
 	if err != nil {
 		log.Fatal(err)
 	}

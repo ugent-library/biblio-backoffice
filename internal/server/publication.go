@@ -183,9 +183,65 @@ func (s *server) AddPublications(stream api.Biblio_AddPublicationsServer) error 
 	}
 }
 
-func (s *server) PublicationHistory(req *api.PublicationHistoryRequest, stream api.Biblio_PublicationHistoryServer) (err error) {
+// TODO catch indexing errors
+func (s *server) ImportPublications(stream api.Biblio_ImportPublicationsServer) error {
+	// indexing channel
+	indexC := make(chan *models.Publication)
+
+	var indexWG sync.WaitGroup
+
+	// start bulk indexer
+	indexWG.Add(1)
+	go func() {
+		defer indexWG.Done()
+		s.services.PublicationSearchService.IndexMultiple(indexC)
+	}()
+
+	defer func() {
+		// close indexing channel when all recs are stored
+		close(indexC)
+		// wait for indexing to finish
+		indexWG.Wait()
+	}()
+
+	var seq int
+
+	for {
+		seq++
+
+		req, err := stream.Recv()
+		if err == io.EOF {
+			return nil
+		}
+		if err != nil {
+			return status.Errorf(codes.Internal, "failed to read stream: %w", err)
+		}
+
+		p := MessageToPublication(req.Publication)
+
+		// TODO this should return structured messages (see validate)
+		if err := p.Validate(); err != nil {
+			msg := fmt.Errorf("validation failed for publication %s at line %d: %w", p.ID, seq, err).Error()
+			if err = stream.Send(&api.ImportPublicationsResponse{Message: msg}); err != nil {
+				return err
+			}
+			continue
+		}
+		if err := s.services.Repository.ImportCurrentPublication(p); err != nil {
+			msg := fmt.Errorf("failed to store publication %s at line %d: %w", p.ID, seq, err).Error()
+			if err = stream.Send(&api.ImportPublicationsResponse{Message: msg}); err != nil {
+				return status.Errorf(codes.Internal, msg)
+			}
+			continue
+		}
+
+		indexC <- p
+	}
+}
+
+func (s *server) GetPublicationHistory(req *api.GetPublicationHistoryRequest, stream api.Biblio_GetPublicationHistoryServer) (err error) {
 	errorStream := s.services.Repository.PublicationHistory(req.Id, func(p *models.Publication) bool {
-		res := &api.PublicationHistoryResponse{Publication: PublicationToMessage(p)}
+		res := &api.GetPublicationHistoryResponse{Publication: PublicationToMessage(p)}
 		if err = stream.Send(res); err != nil {
 			return false
 		}

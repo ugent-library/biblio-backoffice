@@ -168,9 +168,66 @@ func (s *server) AddDatasets(stream api.Biblio_AddDatasetsServer) error {
 	}
 }
 
-func (s *server) DatasetHistory(req *api.DatasetHistoryRequest, stream api.Biblio_DatasetHistoryServer) (err error) {
+// TODO catch indexing errors
+func (s *server) ImportDatasets(stream api.Biblio_ImportDatasetsServer) error {
+	// indexing channel
+	indexC := make(chan *models.Dataset)
+
+	var indexWG sync.WaitGroup
+
+	// start bulk indexer
+	indexWG.Add(1)
+	go func() {
+		defer indexWG.Done()
+		s.services.DatasetSearchService.IndexMultiple(indexC)
+	}()
+
+	defer func() {
+		// close indexing channel when all recs are stored
+		close(indexC)
+		// wait for indexing to finish
+		indexWG.Wait()
+	}()
+
+	var seq int
+
+	for {
+		seq++
+
+		req, err := stream.Recv()
+		if err == io.EOF {
+			return nil
+		}
+		if err != nil {
+			return status.Errorf(codes.Internal, "failed to read stream: %w", err)
+		}
+
+		d := MessageToDataset(req.Dataset)
+
+		// TODO this should return structured messages (see validate)
+		if err := d.Validate(); err != nil {
+			msg := fmt.Errorf("validation failed for dataset %s at line %d: %w", d.ID, seq, err).Error()
+			if err = stream.Send(&api.ImportDatasetsResponse{Message: msg}); err != nil {
+				return err
+			}
+			continue
+		}
+
+		if err := s.services.Repository.ImportCurrentDataset(d); err != nil {
+			msg := fmt.Errorf("failed to store dataset %s at line %d: %w", d.ID, seq, err).Error()
+			if err = stream.Send(&api.ImportDatasetsResponse{Message: msg}); err != nil {
+				return status.Errorf(codes.Internal, msg)
+			}
+			continue
+		}
+
+		indexC <- d
+	}
+}
+
+func (s *server) GetDatasetHistory(req *api.GetDatasetHistoryRequest, stream api.Biblio_GetDatasetHistoryServer) (err error) {
 	errorStream := s.services.Repository.DatasetHistory(req.Id, func(p *models.Dataset) bool {
-		res := &api.DatasetHistoryResponse{Dataset: DatasetToMessage(p)}
+		res := &api.GetDatasetHistoryResponse{Dataset: DatasetToMessage(p)}
 		if err = stream.Send(res); err != nil {
 			return false
 		}

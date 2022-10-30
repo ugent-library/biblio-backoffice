@@ -29,7 +29,8 @@ type BiblioClient interface {
 	SearchPublications(ctx context.Context, in *SearchPublicationsRequest, opts ...grpc.CallOption) (*SearchPublicationsResponse, error)
 	UpdatePublication(ctx context.Context, in *UpdatePublicationRequest, opts ...grpc.CallOption) (*UpdatePublicationResponse, error)
 	AddPublications(ctx context.Context, opts ...grpc.CallOption) (Biblio_AddPublicationsClient, error)
-	PublicationHistory(ctx context.Context, in *PublicationHistoryRequest, opts ...grpc.CallOption) (Biblio_PublicationHistoryClient, error)
+	ImportPublications(ctx context.Context, opts ...grpc.CallOption) (Biblio_ImportPublicationsClient, error)
+	GetPublicationHistory(ctx context.Context, in *GetPublicationHistoryRequest, opts ...grpc.CallOption) (Biblio_GetPublicationHistoryClient, error)
 	PurgePublication(ctx context.Context, in *PurgePublicationRequest, opts ...grpc.CallOption) (*PurgePublicationResponse, error)
 	PurgeAllPublications(ctx context.Context, in *PurgeAllPublicationsRequest, opts ...grpc.CallOption) (*PurgeAllPublicationsResponse, error)
 	ValidatePublications(ctx context.Context, opts ...grpc.CallOption) (Biblio_ValidatePublicationsClient, error)
@@ -38,7 +39,8 @@ type BiblioClient interface {
 	SearchDatasets(ctx context.Context, in *SearchDatasetsRequest, opts ...grpc.CallOption) (*SearchDatasetsResponse, error)
 	UpdateDataset(ctx context.Context, in *UpdateDatasetRequest, opts ...grpc.CallOption) (*UpdateDatasetResponse, error)
 	AddDatasets(ctx context.Context, opts ...grpc.CallOption) (Biblio_AddDatasetsClient, error)
-	DatasetHistory(ctx context.Context, in *DatasetHistoryRequest, opts ...grpc.CallOption) (Biblio_DatasetHistoryClient, error)
+	ImportDatasets(ctx context.Context, opts ...grpc.CallOption) (Biblio_ImportDatasetsClient, error)
+	GetDatasetHistory(ctx context.Context, in *GetDatasetHistoryRequest, opts ...grpc.CallOption) (Biblio_GetDatasetHistoryClient, error)
 	PurgeDataset(ctx context.Context, in *PurgeDatasetRequest, opts ...grpc.CallOption) (*PurgeDatasetResponse, error)
 	PurgeAllDatasets(ctx context.Context, in *PurgeAllDatasetsRequest, opts ...grpc.CallOption) (*PurgeAllDatasetsResponse, error)
 	ValidateDatasets(ctx context.Context, opts ...grpc.CallOption) (Biblio_ValidateDatasetsClient, error)
@@ -209,12 +211,43 @@ func (x *biblioAddPublicationsClient) Recv() (*AddPublicationsResponse, error) {
 	return m, nil
 }
 
-func (c *biblioClient) PublicationHistory(ctx context.Context, in *PublicationHistoryRequest, opts ...grpc.CallOption) (Biblio_PublicationHistoryClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[4], "/biblio.v1.Biblio/PublicationHistory", opts...)
+func (c *biblioClient) ImportPublications(ctx context.Context, opts ...grpc.CallOption) (Biblio_ImportPublicationsClient, error) {
+	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[4], "/biblio.v1.Biblio/ImportPublications", opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &biblioPublicationHistoryClient{stream}
+	x := &biblioImportPublicationsClient{stream}
+	return x, nil
+}
+
+type Biblio_ImportPublicationsClient interface {
+	Send(*ImportPublicationsRequest) error
+	Recv() (*ImportPublicationsResponse, error)
+	grpc.ClientStream
+}
+
+type biblioImportPublicationsClient struct {
+	grpc.ClientStream
+}
+
+func (x *biblioImportPublicationsClient) Send(m *ImportPublicationsRequest) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *biblioImportPublicationsClient) Recv() (*ImportPublicationsResponse, error) {
+	m := new(ImportPublicationsResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *biblioClient) GetPublicationHistory(ctx context.Context, in *GetPublicationHistoryRequest, opts ...grpc.CallOption) (Biblio_GetPublicationHistoryClient, error) {
+	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[5], "/biblio.v1.Biblio/GetPublicationHistory", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &biblioGetPublicationHistoryClient{stream}
 	if err := x.ClientStream.SendMsg(in); err != nil {
 		return nil, err
 	}
@@ -224,17 +257,17 @@ func (c *biblioClient) PublicationHistory(ctx context.Context, in *PublicationHi
 	return x, nil
 }
 
-type Biblio_PublicationHistoryClient interface {
-	Recv() (*PublicationHistoryResponse, error)
+type Biblio_GetPublicationHistoryClient interface {
+	Recv() (*GetPublicationHistoryResponse, error)
 	grpc.ClientStream
 }
 
-type biblioPublicationHistoryClient struct {
+type biblioGetPublicationHistoryClient struct {
 	grpc.ClientStream
 }
 
-func (x *biblioPublicationHistoryClient) Recv() (*PublicationHistoryResponse, error) {
-	m := new(PublicationHistoryResponse)
+func (x *biblioGetPublicationHistoryClient) Recv() (*GetPublicationHistoryResponse, error) {
+	m := new(GetPublicationHistoryResponse)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -260,7 +293,7 @@ func (c *biblioClient) PurgeAllPublications(ctx context.Context, in *PurgeAllPub
 }
 
 func (c *biblioClient) ValidatePublications(ctx context.Context, opts ...grpc.CallOption) (Biblio_ValidatePublicationsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[5], "/biblio.v1.Biblio/ValidatePublications", opts...)
+	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[6], "/biblio.v1.Biblio/ValidatePublications", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -300,7 +333,7 @@ func (c *biblioClient) GetDataset(ctx context.Context, in *GetDatasetRequest, op
 }
 
 func (c *biblioClient) GetAllDatasets(ctx context.Context, in *GetAllDatasetsRequest, opts ...grpc.CallOption) (Biblio_GetAllDatasetsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[6], "/biblio.v1.Biblio/GetAllDatasets", opts...)
+	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[7], "/biblio.v1.Biblio/GetAllDatasets", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -350,7 +383,7 @@ func (c *biblioClient) UpdateDataset(ctx context.Context, in *UpdateDatasetReque
 }
 
 func (c *biblioClient) AddDatasets(ctx context.Context, opts ...grpc.CallOption) (Biblio_AddDatasetsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[7], "/biblio.v1.Biblio/AddDatasets", opts...)
+	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[8], "/biblio.v1.Biblio/AddDatasets", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -380,12 +413,43 @@ func (x *biblioAddDatasetsClient) Recv() (*AddDatasetsResponse, error) {
 	return m, nil
 }
 
-func (c *biblioClient) DatasetHistory(ctx context.Context, in *DatasetHistoryRequest, opts ...grpc.CallOption) (Biblio_DatasetHistoryClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[8], "/biblio.v1.Biblio/DatasetHistory", opts...)
+func (c *biblioClient) ImportDatasets(ctx context.Context, opts ...grpc.CallOption) (Biblio_ImportDatasetsClient, error) {
+	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[9], "/biblio.v1.Biblio/ImportDatasets", opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &biblioDatasetHistoryClient{stream}
+	x := &biblioImportDatasetsClient{stream}
+	return x, nil
+}
+
+type Biblio_ImportDatasetsClient interface {
+	Send(*ImportDatasetsRequest) error
+	Recv() (*ImportDatasetsResponse, error)
+	grpc.ClientStream
+}
+
+type biblioImportDatasetsClient struct {
+	grpc.ClientStream
+}
+
+func (x *biblioImportDatasetsClient) Send(m *ImportDatasetsRequest) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *biblioImportDatasetsClient) Recv() (*ImportDatasetsResponse, error) {
+	m := new(ImportDatasetsResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *biblioClient) GetDatasetHistory(ctx context.Context, in *GetDatasetHistoryRequest, opts ...grpc.CallOption) (Biblio_GetDatasetHistoryClient, error) {
+	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[10], "/biblio.v1.Biblio/GetDatasetHistory", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &biblioGetDatasetHistoryClient{stream}
 	if err := x.ClientStream.SendMsg(in); err != nil {
 		return nil, err
 	}
@@ -395,17 +459,17 @@ func (c *biblioClient) DatasetHistory(ctx context.Context, in *DatasetHistoryReq
 	return x, nil
 }
 
-type Biblio_DatasetHistoryClient interface {
-	Recv() (*DatasetHistoryResponse, error)
+type Biblio_GetDatasetHistoryClient interface {
+	Recv() (*GetDatasetHistoryResponse, error)
 	grpc.ClientStream
 }
 
-type biblioDatasetHistoryClient struct {
+type biblioGetDatasetHistoryClient struct {
 	grpc.ClientStream
 }
 
-func (x *biblioDatasetHistoryClient) Recv() (*DatasetHistoryResponse, error) {
-	m := new(DatasetHistoryResponse)
+func (x *biblioGetDatasetHistoryClient) Recv() (*GetDatasetHistoryResponse, error) {
+	m := new(GetDatasetHistoryResponse)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -431,7 +495,7 @@ func (c *biblioClient) PurgeAllDatasets(ctx context.Context, in *PurgeAllDataset
 }
 
 func (c *biblioClient) ValidateDatasets(ctx context.Context, opts ...grpc.CallOption) (Biblio_ValidateDatasetsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[9], "/biblio.v1.Biblio/ValidateDatasets", opts...)
+	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[11], "/biblio.v1.Biblio/ValidateDatasets", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -481,7 +545,8 @@ type BiblioServer interface {
 	SearchPublications(context.Context, *SearchPublicationsRequest) (*SearchPublicationsResponse, error)
 	UpdatePublication(context.Context, *UpdatePublicationRequest) (*UpdatePublicationResponse, error)
 	AddPublications(Biblio_AddPublicationsServer) error
-	PublicationHistory(*PublicationHistoryRequest, Biblio_PublicationHistoryServer) error
+	ImportPublications(Biblio_ImportPublicationsServer) error
+	GetPublicationHistory(*GetPublicationHistoryRequest, Biblio_GetPublicationHistoryServer) error
 	PurgePublication(context.Context, *PurgePublicationRequest) (*PurgePublicationResponse, error)
 	PurgeAllPublications(context.Context, *PurgeAllPublicationsRequest) (*PurgeAllPublicationsResponse, error)
 	ValidatePublications(Biblio_ValidatePublicationsServer) error
@@ -490,7 +555,8 @@ type BiblioServer interface {
 	SearchDatasets(context.Context, *SearchDatasetsRequest) (*SearchDatasetsResponse, error)
 	UpdateDataset(context.Context, *UpdateDatasetRequest) (*UpdateDatasetResponse, error)
 	AddDatasets(Biblio_AddDatasetsServer) error
-	DatasetHistory(*DatasetHistoryRequest, Biblio_DatasetHistoryServer) error
+	ImportDatasets(Biblio_ImportDatasetsServer) error
+	GetDatasetHistory(*GetDatasetHistoryRequest, Biblio_GetDatasetHistoryServer) error
 	PurgeDataset(context.Context, *PurgeDatasetRequest) (*PurgeDatasetResponse, error)
 	PurgeAllDatasets(context.Context, *PurgeAllDatasetsRequest) (*PurgeAllDatasetsResponse, error)
 	ValidateDatasets(Biblio_ValidateDatasetsServer) error
@@ -523,8 +589,11 @@ func (UnimplementedBiblioServer) UpdatePublication(context.Context, *UpdatePubli
 func (UnimplementedBiblioServer) AddPublications(Biblio_AddPublicationsServer) error {
 	return status.Errorf(codes.Unimplemented, "method AddPublications not implemented")
 }
-func (UnimplementedBiblioServer) PublicationHistory(*PublicationHistoryRequest, Biblio_PublicationHistoryServer) error {
-	return status.Errorf(codes.Unimplemented, "method PublicationHistory not implemented")
+func (UnimplementedBiblioServer) ImportPublications(Biblio_ImportPublicationsServer) error {
+	return status.Errorf(codes.Unimplemented, "method ImportPublications not implemented")
+}
+func (UnimplementedBiblioServer) GetPublicationHistory(*GetPublicationHistoryRequest, Biblio_GetPublicationHistoryServer) error {
+	return status.Errorf(codes.Unimplemented, "method GetPublicationHistory not implemented")
 }
 func (UnimplementedBiblioServer) PurgePublication(context.Context, *PurgePublicationRequest) (*PurgePublicationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PurgePublication not implemented")
@@ -550,8 +619,11 @@ func (UnimplementedBiblioServer) UpdateDataset(context.Context, *UpdateDatasetRe
 func (UnimplementedBiblioServer) AddDatasets(Biblio_AddDatasetsServer) error {
 	return status.Errorf(codes.Unimplemented, "method AddDatasets not implemented")
 }
-func (UnimplementedBiblioServer) DatasetHistory(*DatasetHistoryRequest, Biblio_DatasetHistoryServer) error {
-	return status.Errorf(codes.Unimplemented, "method DatasetHistory not implemented")
+func (UnimplementedBiblioServer) ImportDatasets(Biblio_ImportDatasetsServer) error {
+	return status.Errorf(codes.Unimplemented, "method ImportDatasets not implemented")
+}
+func (UnimplementedBiblioServer) GetDatasetHistory(*GetDatasetHistoryRequest, Biblio_GetDatasetHistoryServer) error {
+	return status.Errorf(codes.Unimplemented, "method GetDatasetHistory not implemented")
 }
 func (UnimplementedBiblioServer) PurgeDataset(context.Context, *PurgeDatasetRequest) (*PurgeDatasetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PurgeDataset not implemented")
@@ -726,24 +798,50 @@ func (x *biblioAddPublicationsServer) Recv() (*AddPublicationsRequest, error) {
 	return m, nil
 }
 
-func _Biblio_PublicationHistory_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(PublicationHistoryRequest)
+func _Biblio_ImportPublications_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(BiblioServer).ImportPublications(&biblioImportPublicationsServer{stream})
+}
+
+type Biblio_ImportPublicationsServer interface {
+	Send(*ImportPublicationsResponse) error
+	Recv() (*ImportPublicationsRequest, error)
+	grpc.ServerStream
+}
+
+type biblioImportPublicationsServer struct {
+	grpc.ServerStream
+}
+
+func (x *biblioImportPublicationsServer) Send(m *ImportPublicationsResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *biblioImportPublicationsServer) Recv() (*ImportPublicationsRequest, error) {
+	m := new(ImportPublicationsRequest)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func _Biblio_GetPublicationHistory_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(GetPublicationHistoryRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return srv.(BiblioServer).PublicationHistory(m, &biblioPublicationHistoryServer{stream})
+	return srv.(BiblioServer).GetPublicationHistory(m, &biblioGetPublicationHistoryServer{stream})
 }
 
-type Biblio_PublicationHistoryServer interface {
-	Send(*PublicationHistoryResponse) error
+type Biblio_GetPublicationHistoryServer interface {
+	Send(*GetPublicationHistoryResponse) error
 	grpc.ServerStream
 }
 
-type biblioPublicationHistoryServer struct {
+type biblioGetPublicationHistoryServer struct {
 	grpc.ServerStream
 }
 
-func (x *biblioPublicationHistoryServer) Send(m *PublicationHistoryResponse) error {
+func (x *biblioGetPublicationHistoryServer) Send(m *GetPublicationHistoryResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
@@ -910,24 +1008,50 @@ func (x *biblioAddDatasetsServer) Recv() (*AddDatasetsRequest, error) {
 	return m, nil
 }
 
-func _Biblio_DatasetHistory_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(DatasetHistoryRequest)
+func _Biblio_ImportDatasets_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(BiblioServer).ImportDatasets(&biblioImportDatasetsServer{stream})
+}
+
+type Biblio_ImportDatasetsServer interface {
+	Send(*ImportDatasetsResponse) error
+	Recv() (*ImportDatasetsRequest, error)
+	grpc.ServerStream
+}
+
+type biblioImportDatasetsServer struct {
+	grpc.ServerStream
+}
+
+func (x *biblioImportDatasetsServer) Send(m *ImportDatasetsResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *biblioImportDatasetsServer) Recv() (*ImportDatasetsRequest, error) {
+	m := new(ImportDatasetsRequest)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func _Biblio_GetDatasetHistory_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(GetDatasetHistoryRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return srv.(BiblioServer).DatasetHistory(m, &biblioDatasetHistoryServer{stream})
+	return srv.(BiblioServer).GetDatasetHistory(m, &biblioGetDatasetHistoryServer{stream})
 }
 
-type Biblio_DatasetHistoryServer interface {
-	Send(*DatasetHistoryResponse) error
+type Biblio_GetDatasetHistoryServer interface {
+	Send(*GetDatasetHistoryResponse) error
 	grpc.ServerStream
 }
 
-type biblioDatasetHistoryServer struct {
+type biblioGetDatasetHistoryServer struct {
 	grpc.ServerStream
 }
 
-func (x *biblioDatasetHistoryServer) Send(m *DatasetHistoryResponse) error {
+func (x *biblioGetDatasetHistoryServer) Send(m *GetDatasetHistoryResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
@@ -1086,8 +1210,14 @@ var Biblio_ServiceDesc = grpc.ServiceDesc{
 			ClientStreams: true,
 		},
 		{
-			StreamName:    "PublicationHistory",
-			Handler:       _Biblio_PublicationHistory_Handler,
+			StreamName:    "ImportPublications",
+			Handler:       _Biblio_ImportPublications_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
+		},
+		{
+			StreamName:    "GetPublicationHistory",
+			Handler:       _Biblio_GetPublicationHistory_Handler,
 			ServerStreams: true,
 		},
 		{
@@ -1108,8 +1238,14 @@ var Biblio_ServiceDesc = grpc.ServiceDesc{
 			ClientStreams: true,
 		},
 		{
-			StreamName:    "DatasetHistory",
-			Handler:       _Biblio_DatasetHistory_Handler,
+			StreamName:    "ImportDatasets",
+			Handler:       _Biblio_ImportDatasets_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
+		},
+		{
+			StreamName:    "GetDatasetHistory",
+			Handler:       _Biblio_GetDatasetHistory_Handler,
 			ServerStreams: true,
 		},
 		{

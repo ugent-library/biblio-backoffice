@@ -21,7 +21,8 @@ service Biblio {
     rpc SearchPublications(SearchPublicationsRequest) returns (SearchPublicationsResponse);
     rpc UpdatePublication(UpdatePublicationRequest) returns (UpdatePublicationResponse);
     rpc AddPublications(stream AddPublicationsRequest) returns (stream AddPublicationsResponse);
-    rpc PublicationHistory(PublicationHistoryRequest) returns (stream PublicationHistoryResponse);
+    rpc ImportPublications(stream ImportPublicationsRequest) returns (stream ImportPublicationsResponse);
+    rpc GetPublicationHistory(GetPublicationHistoryRequest) returns (stream GetPublicationHistoryResponse);
     rpc PurgePublication(PurgePublicationRequest) returns (PurgePublicationResponse);
     rpc PurgeAllPublications(PurgeAllPublicationsRequest) returns (PurgeAllPublicationsResponse);
     rpc ValidatePublications(stream ValidatePublicationsRequest) returns (stream ValidatePublicationsResponse);
@@ -30,7 +31,8 @@ service Biblio {
     rpc SearchDatasets(SearchDatasetsRequest) returns (SearchDatasetsResponse);
     rpc UpdateDataset(UpdateDatasetRequest) returns (UpdateDatasetResponse);
     rpc AddDatasets(stream AddDatasetsRequest) returns (stream AddDatasetsResponse);
-    rpc DatasetHistory(DatasetHistoryRequest) returns (stream DatasetHistoryResponse);
+    rpc ImportDatasets(stream ImportDatasetsRequest) returns (stream importDatasetsResponse);
+    rpc GetDatasetHistory(GetDatasetHistoryRequest) returns (stream GetDatasetHistoryResponse);
     rpc PurgeDataset(PurgeDatasetRequest) returns (PurgeDatasetResponse);
     rpc PurgeAllDatasets(PurgeAllDatasetsRequest) returns (PurgeAllDatasetsResponse);
     rpc ValidateDatasets(stream ValidateDatasetsRequest) returns (stream ValidateDatasetsResponse);
@@ -442,11 +444,19 @@ message AddPublicationsResponse {
     string message = 1;
 }
 
-message PublicationHistoryRequest {
+message ImportPublicationsRequest {
+    Publication publication = 1;
+}
+
+message ImportPublicationsResponse {
+    string message = 1;
+}
+
+message GetPublicationHistoryRequest {
     string id = 1;
 }
 
-message PublicationHistoryResponse {
+message GetPublicationHistoryResponse {
     Publication publication = 1;
 }
 
@@ -516,11 +526,19 @@ message AddDatasetsResponse {
     string message = 1;
 }
 
-message DatasetHistoryRequest {
+message ImportDatasetsRequest {
+    Dataset dataset = 1;
+}
+
+message importDatasetsResponse {
+    string message = 1;
+}
+
+message GetDatasetHistoryRequest {
     string id = 1;
 }
 
-message DatasetHistoryResponse {
+message GetDatasetHistoryResponse {
     Dataset dataset = 1;
 }
 
