@@ -31,6 +31,7 @@ func (pl Pipeline) Func() PipelineFunc {
 
 var DefaultPipeline = NewPipeline(
 	EnsureFullName,
+	ensureHasBeenPublic,
 )
 
 var PublishPipeline = NewPipeline()
@@ -51,6 +52,13 @@ func EnsureFullName(p *models.Publication) *models.Publication {
 		if c.FullName == "" {
 			c.FullName = strings.Join([]string{c.FirstName, c.LastName}, " ")
 		}
+	}
+	return p
+}
+
+func ensureHasBeenPublic(p *models.Publication) *models.Publication {
+	if p.Status == "public" && !p.HasBeenPublic {
+		p.HasBeenPublic = true
 	}
 	return p
 }

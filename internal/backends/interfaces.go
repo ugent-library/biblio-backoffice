@@ -2,6 +2,7 @@ package backends
 
 import (
 	"context"
+	"errors"
 	"io"
 
 	"github.com/ugent-library/biblio-backend/internal/backends/filestore"
@@ -188,3 +189,5 @@ type HandleService interface {
 	UpsertHandleByPublication(*models.Publication) (*models.Handle, error)
 	DeleteHandleByPublication(*models.Publication) (*models.Handle, error)
 }
+
+var ErrNotFound = errors.New("record not found")

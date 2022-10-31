@@ -359,6 +359,9 @@
                     "type": "text",
                     "index": false
                 },
+                "has_been_public": {
+                    "type": "boolean"
+                },
                 "has_confidential_data": {
                     "type": "keyword"
                 },

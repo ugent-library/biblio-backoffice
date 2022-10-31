@@ -39,13 +39,23 @@ func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) htt
 		id := bind.PathValues(r).Get("id")
 		pub, err := h.Repository.GetPublication(id)
 		if err != nil {
-			h.Logger.Warn("edit dataset: could not find dataset with id:", "errors", err, "id", id, "user", ctx.User.ID)
-			render.InternalServerError(w, r, err)
+			if err == backends.ErrNotFound {
+				h.Logger.Warn("edit publication: could not find publication with id:", "errors", err, "id", id, "user", ctx.User.ID)
+				render.NotFound(w, r, err)
+			} else {
+				h.Logger.Error(
+					"edit publication: unexpected error when retrieving publication with id:",
+					"errors", err,
+					"id", id,
+					"user", ctx.User.ID,
+				)
+				render.InternalServerError(w, r, err)
+			}
 			return
 		}
 
 		if !ctx.User.CanEditPublication(pub) {
-			h.Logger.Warn("edit dataset: user isn't allowed to edit the dataset:", "errors", err, "publication", id, "user", ctx.User.ID)
+			h.Logger.Warn("edit publication: user isn't allowed to edit the publication:", "errors", err, "publication", id, "user", ctx.User.ID)
 			render.Forbidden(w, r)
 			return
 		}

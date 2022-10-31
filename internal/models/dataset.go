@@ -57,6 +57,7 @@ type Dataset struct {
 	Format                  []string             `json:"format,omitempty"`
 	ID                      string               `json:"id,omitempty"`
 	Keyword                 []string             `json:"keyword,omitempty"`
+	HasBeenPublic           bool                 `json:"has_been_public"`
 	License                 string               `json:"license,omitempty"`
 	Locked                  bool                 `json:"locked"`
 	Message                 string               `json:"message,omitempty"`
