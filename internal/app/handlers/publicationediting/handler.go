@@ -55,7 +55,7 @@ func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) htt
 		}
 
 		if !ctx.User.CanEditPublication(pub) {
-			h.Logger.Warn("edit publication: user isn't allowed to publication the dataset:", "errors", err, "publication", id, "user", ctx.User.ID)
+			h.Logger.Warn("edit publication: user isn't allowed to edit the publication:", "errors", err, "publication", id, "user", ctx.User.ID)
 			render.Forbidden(w, r)
 			return
 		}
