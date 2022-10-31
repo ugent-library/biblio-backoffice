@@ -1161,7 +1161,7 @@ func MessageToPublication(msg *api.Publication) *models.Publication {
 
 	p.SourceDB = msg.SourceDb
 
-	p.SnapshotID = msg.SourceId
+	p.SourceID = msg.SourceId
 
 	p.SourceRecord = msg.SourceRecord
 

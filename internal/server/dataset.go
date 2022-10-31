@@ -71,7 +71,7 @@ func (s *server) SearchDatasets(ctx context.Context, req *api.SearchDatasetsRequ
 	return res, nil
 }
 
-func (s *server) UpdataDataset(ctx context.Context, req *api.UpdateDatasetRequest) (*api.UpdateDatasetResponse, error) {
+func (s *server) UpdateDataset(ctx context.Context, req *api.UpdateDatasetRequest) (*api.UpdateDatasetResponse, error) {
 	p := MessageToDataset(req.Dataset)
 
 	// TODO Fetch user information via better authentication (no basic auth)
