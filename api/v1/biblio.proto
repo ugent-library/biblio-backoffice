@@ -327,6 +327,7 @@ message Publication {
     string vabb_id = 81;
     bool vabb_approved = 82;
     repeated string vabb_year = 83;
+    bool has_been_public = 84;
 }
 
 message Dataset {
@@ -383,6 +384,7 @@ message Dataset {
     bool locked = 30;
     string other_license = 31;
     repeated RelatedOrganization organization = 32;
+    bool has_been_public = 33;
 }
 
 message GetFileRequest {

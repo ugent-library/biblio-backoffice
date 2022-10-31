@@ -312,6 +312,8 @@ func DatasetToMessage(d *models.Dataset) *api.Dataset {
 		msg.Status = api.Dataset_STATUS_RETURNED
 	}
 
+	msg.HasBeenPublic = d.HasBeenPublic
+
 	for _, val := range d.Abstract {
 		msg.Abstract = append(msg.Abstract, &api.Text{
 			Id:   val.ID,
@@ -438,6 +440,8 @@ func MessageToDataset(msg *api.Dataset) *models.Dataset {
 	case api.Dataset_STATUS_RETURNED:
 		d.Status = "returned"
 	}
+
+	d.HasBeenPublic = msg.HasBeenPublic
 
 	for _, val := range msg.Abstract {
 		d.Abstract = append(d.Abstract, models.Text{

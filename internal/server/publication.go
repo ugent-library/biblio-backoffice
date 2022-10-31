@@ -345,6 +345,8 @@ func PublicationToMessage(p *models.Publication) *api.Publication {
 		msg.Status = api.Publication_STATUS_RETURNED
 	}
 
+	msg.HasBeenPublic = p.HasBeenPublic
+
 	for _, val := range p.Abstract {
 		msg.Abstract = append(msg.Abstract, &api.Text{
 			Id:   val.ID,
@@ -845,6 +847,8 @@ func MessageToPublication(msg *api.Publication) *models.Publication {
 	case api.Publication_STATUS_RETURNED:
 		p.Status = "returned"
 	}
+
+	p.HasBeenPublic = msg.HasBeenPublic
 
 	for _, val := range msg.Abstract {
 		p.Abstract = append(p.Abstract, models.Text{
