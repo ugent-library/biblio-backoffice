@@ -36,7 +36,7 @@ var licenseMap = map[string]string{
 	"CC-BY-NC-ND-4.0":  "Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International Public License (CC BY-NC-ND 4.0)",
 	"InCopyright":      "No license (in copyright)",
 	"LicenseNotListed": "The license is not listed here",
-	"CopyrightUnknown": "I don't know the status of the copyright for this publication",
+	"CopyrightUnknown": "I don't know the status of the copyright of this publication",
 }
 
 type Handler struct {
