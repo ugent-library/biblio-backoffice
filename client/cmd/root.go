@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
 	"log"
 	"time"
@@ -9,10 +10,15 @@ import (
 	"github.com/spf13/viper"
 	api "github.com/ugent-library/biblio-backend/api/v1"
 	"github.com/ugent-library/biblio-backend/client/auth"
-	"github.com/ugent-library/biblio-backend/client/tls"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/protobuf/encoding/protojson"
+)
+
+var (
+	marshaller   = protojson.MarshalOptions{UseProtoNames: true}
+	unmarshaller = protojson.UnmarshalOptions{}
 )
 
 type RootCmd struct {
@@ -22,35 +28,31 @@ type RootCmd struct {
 }
 
 func (c *RootCmd) Wrap(fn func()) {
-	// Set Marshaller
-	c.Marshaller = protojson.MarshalOptions{
-		UseProtoNames: true,
-	}
+	// Set marshaller
+	c.Marshaller = marshaller
+	// Set unmarshaller
+	c.Unmarshaller = unmarshaller
 
-	// Set Unmarshaller
-	c.Unmarshaller = protojson.UnmarshalOptions{}
-
-	dialOptionSecureConn := grpc.WithTransportCredentials(insecure.NewCredentials())
-	if !viper.GetBool("api-tls-disabled") {
-		tlsCredentials, err := tls.LoadTLSCredentials()
-		if err != nil {
-			log.Fatal("cannot load TLS credentials: ", err)
-		}
-		dialOptionSecureConn = grpc.WithTransportCredentials(tlsCredentials)
+	// Set encryption
+	var dialOptionSecureConn grpc.DialOption
+	if viper.GetBool("insecure") {
+		dialOptionSecureConn = grpc.WithTransportCredentials(insecure.NewCredentials())
+	} else {
+		dialOptionSecureConn = grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{}))
 	}
 
 	// Set up the connection and the API client
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
-	addr := fmt.Sprintf("%s:%d", viper.GetString("api-host"), viper.GetInt("api-port"))
+	addr := fmt.Sprintf("%s:%d", viper.GetString("host"), viper.GetInt("port"))
 	log.Println(addr)
 
 	conn, err := grpc.DialContext(ctx, addr,
 		dialOptionSecureConn,
 		grpc.WithPerRPCCredentials(auth.BasicAuth{
-			User:     viper.GetString("api-username"),
-			Password: viper.GetString("api-password"),
+			User:     viper.GetString("username"),
+			Password: viper.GetString("password"),
 		}),
 		grpc.WithBlock(),
 	)
