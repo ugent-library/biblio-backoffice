@@ -37,8 +37,8 @@ func auth(ctx context.Context) (context.Context, error) {
 	user, password := cs[:s], cs[s+1:]
 
 	admin := &User{
-		Username: viper.GetString("api-username"),
-		Password: viper.GetString("api-password"),
+		Username: viper.GetString("username"),
+		Password: viper.GetString("password"),
 	}
 
 	if user != admin.Username || password != admin.Password {

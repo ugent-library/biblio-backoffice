@@ -55,6 +55,7 @@ func (c *ImportDatasetsCmd) Run(cmd *cobra.Command, args []string) {
 	}()
 
 	reader := bufio.NewReader(os.Stdin)
+	lineNo := 0
 	for {
 		line, err := reader.ReadBytes('\n')
 		if err == io.EOF {
@@ -64,9 +65,11 @@ func (c *ImportDatasetsCmd) Run(cmd *cobra.Command, args []string) {
 			log.Fatal(err)
 		}
 
+		lineNo++
+
 		d := &models.Dataset{}
 		if err := json.Unmarshal(line, d); err != nil {
-			log.Fatal(err)
+			log.Fatalf("Unable to decode dataset at line %d : %v", lineNo, err)
 		}
 
 		req := &api.ImportDatasetsRequest{Dataset: server.DatasetToMessage(d)}

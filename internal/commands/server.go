@@ -28,13 +28,10 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/publication"
 	"github.com/ugent-library/biblio-backend/internal/render"
-	grpcserver "github.com/ugent-library/biblio-backend/internal/server"
 	"github.com/ugent-library/biblio-backend/internal/urls"
 	"github.com/ugent-library/biblio-backend/internal/vocabularies"
 	"github.com/ugent-library/go-oidc/oidc"
 	"go.uber.org/zap"
-	"golang.org/x/net/http2"
-	"golang.org/x/net/http2/h2c"
 
 	_ "github.com/ugent-library/biblio-backend/internal/translations"
 )
@@ -45,8 +42,6 @@ func init() {
 	serverStartCmd.Flags().String("mode", defaultMode, "server mode (development, staging or production)")
 	serverStartCmd.Flags().String("host", defaultHost, "server host")
 	serverStartCmd.Flags().Int("port", defaultPort, "server port")
-	serverStartCmd.Flags().String("api-username", "", "api server administrator username")
-	serverStartCmd.Flags().String("api-password", "", "api server administrator password")
 	serverStartCmd.Flags().String("session-name", defaultSessionName, "session name")
 	serverStartCmd.Flags().String("session-secret", "", "session secret")
 	serverStartCmd.Flags().Int("session-max-age", defaultSessionMaxAge, "session lifetime")
@@ -168,26 +163,14 @@ var serverStartCmd = &cobra.Command{
 		router := buildRouter(e, logger)
 
 		// setup logging
-		appHandler := logging.HTTPHandler(logger, router)
-
-		// grpc handler
-		grpcHandler := grpcserver.New(e, logger)
-
-		handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if r.ProtoMajor == 2 && strings.HasPrefix(r.Header.Get("Content-Type"), "application/grpc") {
-				grpcHandler.ServeHTTP(w, r)
-			} else {
-				appHandler.ServeHTTP(w, r)
-			}
-		})
+		handler := logging.HTTPHandler(logger, router)
 
 		// setup server
 		addr := fmt.Sprintf("%s:%d", viper.GetString("host"), viper.GetInt("port"))
 
-		// handle plain text http2 requests with h2c
 		server := &http.Server{
 			Addr:         addr,
-			Handler:      h2c.NewHandler(handler, &http2.Server{}),
+			Handler:      handler,
 			ReadTimeout:  3 * time.Minute,
 			WriteTimeout: 3 * time.Minute,
 		}
