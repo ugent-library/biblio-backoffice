@@ -12,7 +12,7 @@ import (
 
 const (
 	defaultHost = ""
-	defaultPort = 30000
+	defaultPort = 443
 )
 
 func main() {
