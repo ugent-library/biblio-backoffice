@@ -1,14 +1,17 @@
 package commands
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"io"
 	"log"
 	"os"
 	"sync"
+	"time"
 
 	"github.com/spf13/cobra"
+	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/ulid"
 )
@@ -23,6 +26,7 @@ func init() {
 	publicationCmd.AddCommand(publicationAddCmd)
 	publicationCmd.AddCommand(publicationImportCmd)
 	publicationCmd.AddCommand(oldPublicationImportCmd)
+	publicationCmd.AddCommand(updatePublicationEmbargoes)
 	rootCmd.AddCommand(publicationCmd)
 }
 
@@ -254,5 +258,82 @@ var oldPublicationImportCmd = &cobra.Command{
 				p.ID,
 			)
 		}
+	},
+}
+
+var updatePublicationEmbargoes = &cobra.Command{
+	Use:   "update-embargoes",
+	Short: "Update publication embargoes",
+	Run: func(cmd *cobra.Command, args []string) {
+		e := Services()
+
+		var count int = 0
+		updateEmbargoErr := e.Repository.Transaction(
+			context.Background(),
+			func(repo backends.Repository) error {
+
+				/*
+					select live publications that have files with embargoed access
+				*/
+				var embargoAccessLevel string = "info:eu-repo/semantics/embargoedAccess"
+				currentDateStr := time.Now().Format("2006-01-02")
+				var sqlPublicationWithEmbargo string = `
+				SELECT * FROM publications WHERE date_until IS NULL AND
+				data->'file' IS NOT NULL AND
+				EXISTS(
+					SELECT 1 FROM jsonb_array_elements(data->'file') AS f
+					WHERE f->>'access_level' = $1 AND
+					f->>'embargo_date' <= $2
+				)
+				`
+
+				publications := make([]*models.Publication, 0)
+				sErr := repo.SelectPublications(
+					sqlPublicationWithEmbargo,
+					[]any{
+						embargoAccessLevel,
+						currentDateStr},
+					func(publication *models.Publication) bool {
+						publications = append(publications, publication)
+						return true
+					},
+				)
+
+				if sErr != nil {
+					return sErr
+				}
+
+				for _, publication := range publications {
+					/*
+						clear outdated embargoes
+					*/
+					for _, file := range publication.File {
+						if file.AccessLevel != embargoAccessLevel {
+							continue
+						}
+						// TODO: what with empty embargo_date?
+						if file.EmbargoDate == "" {
+							continue
+						}
+						if file.EmbargoDate > currentDateStr {
+							continue
+						}
+						file.ClearEmbargo()
+					}
+					if e := repo.SavePublication(publication, nil); e != nil {
+						return e
+					}
+					count++
+				}
+
+				return nil
+			},
+		)
+
+		if updateEmbargoErr != nil {
+			log.Fatal(updateEmbargoErr)
+		}
+
+		log.Printf("updated %d embargoes", count)
 	},
 }
