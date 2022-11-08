@@ -107,7 +107,7 @@
             </div>
         </div>
 
-        {{if gt .Hits.TotalPages .Hits.MaxPages}}
+        {{if and (not .Hits.HasNextPage) (gt .Hits.UncappedTotalPages .Hits.TotalPages)}}
         <div class="alert alert-info">
             <i class="if if-info-circle-filled"></I>
             <div>

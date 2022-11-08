@@ -8,7 +8,7 @@ type Pagination struct {
 	Offset, Limit, Total int
 }
 
-func (p Pagination) MaxPages() int {
+func (p Pagination) PageCap() int {
 	return 500
 }
 
@@ -16,13 +16,20 @@ func (p Pagination) MaxVisiblePages() int {
 	return 5
 }
 
+func (p Pagination) UncappedTotalPages() int {
+	if p.Limit == 0 {
+		return 1
+	}
+	return int(math.Ceil(float64(p.Total) / float64(p.Limit)))
+}
+
 func (p Pagination) TotalPages() int {
 	if p.Limit == 0 {
 		return 1
 	}
-	total := int(math.Ceil(float64(p.Total) / float64(p.Limit)))
-	if total > p.MaxPages() {
-		return p.MaxPages()
+	total := p.UncappedTotalPages()
+	if total > p.PageCap() {
+		return p.PageCap()
 	}
 	return total
 }
@@ -108,7 +115,7 @@ func (p Pagination) PagesWithEllipsis() []int {
 	return pages
 }
 
-// TODO enforce Page <= MaxPages
+// TODO enforce Page <= PageCap
 func (p Pagination) pageRanges() [][]int {
 	page := p.Page()
 	totalPages := p.TotalPages()
