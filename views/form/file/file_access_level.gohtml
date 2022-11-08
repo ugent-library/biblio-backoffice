@@ -45,34 +45,28 @@
                     <div>
                         <span class="badge badge-pill badge-success">
                             <i class="if if-info-circle"></i>
-                            <span class="badge-text"><strong>Recommended if you own the copyright or have permission</strong></span>
+                            <span class="badge-text"><strong>Recommended if legally possible</strong></span>
                         </span>
                     </div>
-                    <span class="text-muted c-body-small">Your document will be available to the world.
-                    Recommended if you own copyright, or you have permission from the copyright holder(s)
-                    of the exclusive license to publish.</span>
+                    <span class="text-muted c-body-small">Your file will be immediately available to anyone. Not sure if it is allowed? Select ‘local access’.</span>
                 </div>
                 {{else if eq .Value "info:eu-repo/semantics/embargoedAccess"}}
                 <i class="if if-time text-muted align-self-center"></i>
                 <div class="ml-5">
                     <p class="mb-1 mr-3">{{.Label}}</p>
-                    <span class="text-muted c-body-small">Restrict access to your documen temporarily.
-                    Recommended for documents under embargo, based on your publisher contract. UGent will
-                    use this option for <a href="#">AAM journal articles</a>.</span>
+                    <span class="text-muted c-body-small">Use to switch access levels after a specified embargo. UGent selects this by default to open up the author's accepted manuscript (AAM) of journal articles published since 2023.</span>
                 </div>
                 {{else if eq .Value "info:eu-repo/semantics/restrictedAccess"}}
                 <i class="if if-ghent-university text-primary align-self-center"></i>
                 <div class="ml-5">
                     <p class="mb-1 mr-3">{{.Label}}</p>
-                    <span class="text-muted c-body-small">Your document will only be available to UGent members.
-                    Recommended if you do not own the copyright nor have permission.</span>
+                    <span class="text-muted c-body-small">Your file will be available to users within the UGent network only. Minimum expected by <a href="#TODO">UGent policy</a>.</span>
                 </div>
                 {{else if eq .Value "info:eu-repo/semantics/closedAccess"}}
                 <i class="if if-eye-off text-muted align-self-center"></i>
                 <div class="ml-5">
                     <p class="mb-1 mr-3">{{.Label}}</p>
-                    <span class="text-muted c-body-small">Your document will only be available to the
-                    authors and Biblio employees.</span>
+                    <span class="text-muted c-body-small">Only the authors and Biblio staff can access your file. Others will see metadata only. Use by exception.</span>
                 </div>
                 {{end}}
             </div>

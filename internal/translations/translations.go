@@ -184,7 +184,7 @@ func init() {
 
 	message.SetString(language.English, "publication_versions.publishedVersion", "Publisher version/Version of record (VoR)")
 	message.SetString(language.English, "publication_versions.authorVersion", "Author's original (AO)")
-	message.SetString(language.English, "publication_versions.acceptedVersion", "Author accepted manuscript (AAM)")
+	message.SetString(language.English, "publication_versions.acceptedVersion", "Author's accepted manuscript (AAM)")
 	message.SetString(language.English, "publication_versions.updatedVersion", "Corrected version of record (CVoR)")
 
 	message.SetString(language.English, "publication_file_relations.main_file", "Full text")
