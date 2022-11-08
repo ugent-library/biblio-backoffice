@@ -4,7 +4,9 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
+	"github.com/alexliesenfeld/health"
 	"github.com/gorilla/csrf"
 	mw "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
@@ -46,6 +48,14 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 	// static files
 	router.PathPrefix(basePath + "/static/").Handler(http.StripPrefix(basePath+"/static/", http.FileServer(http.Dir("./static"))))
 
+	// status endpoint
+	// TODO add checkers
+	checker := health.NewChecker(
+		health.WithTimeout(3 * time.Second),
+	)
+	router.Handle("/status", health.NewHandler(checker)).Methods("GET")
+
+	// handlers
 	baseHandler := handlers.BaseHandler{
 		Logger:       logger,
 		Router:       router,

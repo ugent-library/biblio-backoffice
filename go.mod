@@ -4,6 +4,7 @@ go 1.18
 
 require (
 	github.com/Masterminds/sprig/v3 v3.2.2
+	github.com/alexliesenfeld/health v0.6.0
 	github.com/alitto/pond v1.8.0
 	github.com/blevesearch/bleve/v2 v2.3.2
 	github.com/caltechlibrary/doitools v0.0.1
@@ -38,6 +39,7 @@ require (
 
 require (
 	cloud.google.com/go/compute v1.7.0 // indirect
+	github.com/lib/pq v1.10.6 // indirect
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/phuslu/iploc v1.0.20220830 // indirect
