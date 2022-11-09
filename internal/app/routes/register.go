@@ -25,7 +25,6 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/home"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/impersonating"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/mediatypes"
-	"github.com/ugent-library/biblio-backend/internal/app/handlers/notfound"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/publicationcreating"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/publicationediting"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/publicationexporting"
@@ -65,9 +64,6 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		UserService:  services.UserService,
 	}
 	homeHandler := &home.Handler{
-		BaseHandler: baseHandler,
-	}
-	notFoundHandler := &notfound.Handler{
 		BaseHandler: baseHandler,
 	}
 	authenticatingHandler := &authenticating.Handler{
@@ -1019,5 +1015,5 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 
 	// 404 Not Found page
 	// Note: ALWAYS KEEP ME LAST! If not, this will munge all subsequent handlers you define after me.
-	r.NotFoundHandler = r.NewRoute().HandlerFunc(notFoundHandler.Wrap(notFoundHandler.NotFound)).GetHandler()
+	r.NotFoundHandler = r.NewRoute().HandlerFunc(baseHandler.Wrap(baseHandler.NotFound)).GetHandler()
 }

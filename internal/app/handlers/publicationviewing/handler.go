@@ -23,12 +23,6 @@ type Context struct {
 	RedirectURL string
 }
 
-type YieldNotFound struct {
-	Context
-	PageTitle string
-	ActiveNav string
-}
-
 func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) http.HandlerFunc {
 	return h.BaseHandler.Wrap(func(w http.ResponseWriter, r *http.Request, ctx handlers.BaseContext) {
 		if ctx.User == nil {
@@ -39,13 +33,7 @@ func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) htt
 		p, err := h.Repository.GetPublication(bind.PathValues(r).Get("id"))
 		if err != nil {
 			if err == backends.ErrNotFound {
-				w.WriteHeader(404)
-				render.Layout(w, "layouts/default", "pages/notfound", YieldNotFound{
-					Context: Context{
-						BaseContext: ctx,
-					},
-					PageTitle: "Biblio",
-				})
+				h.NotFound(w, r, ctx)
 			} else {
 				render.InternalServerError(w, r, err)
 			}
