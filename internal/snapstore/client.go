@@ -1,12 +1,15 @@
 package snapstore
 
 // IDEAS:
+// - snapshots table with type column
+// - versioning strategies: update in place unless user changed, status changed, abort if no changes, …
+// - compaction method
+// - introduce internal and external relations
 // - add a method to get all snapshots for a given id
 // - add a method to view a store at a given date
 // - add date_created column to the table
-// - store canonical json and make snapshot id a hash of that
+// - draft versions with affinity_id: https://github.com/ugent-library/biblio-backoffice/commit/419b5ccd5de83b1010a2b629d72a526d2e33ae67
 // - improve the api:
-
 // tx := client.BeginTx(ctx)
 // tx.Store("publications").Add(ctx, id, &models.Publication{})
 // tx.Commit()
