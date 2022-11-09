@@ -152,7 +152,7 @@ func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context
 func (h *Handler) EditFile(w http.ResponseWriter, r *http.Request, ctx Context) {
 	var b BindFile
 	if err := bind.Request(r, &b); err != nil {
-		render.BadRequest(w, r, err)
+		handlers.BadRequest(w, r, err)
 		return
 	}
 
@@ -179,7 +179,7 @@ func (h *Handler) RefreshEditFileForm(w http.ResponseWriter, r *http.Request, ct
 	var b BindFile
 	if err := bind.Request(r, &b); err != nil {
 		h.Logger.Warnw("edit publication file license: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		handlers.BadRequest(w, r, err)
 		return
 	}
 
@@ -237,7 +237,7 @@ func (h *Handler) UpdateFile(w http.ResponseWriter, r *http.Request, ctx Context
 	b := BindFile{}
 	if err := bind.Request(r, &b); err != nil {
 		h.Logger.Warnw("update publication file: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		handlers.BadRequest(w, r, err)
 		return
 	}
 
@@ -300,7 +300,7 @@ func (h *Handler) UpdateFile(w http.ResponseWriter, r *http.Request, ctx Context
 
 	if err != nil {
 		h.Logger.Errorf("update publication file: could not save the publication:", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		handlers.InternalServerError(w, r, err)
 		return
 	}
 
@@ -313,7 +313,7 @@ func (h *Handler) ConfirmDeleteFile(w http.ResponseWriter, r *http.Request, ctx 
 	var b BindDeleteFile
 	if err := bind.Request(r, &b); err != nil {
 		h.Logger.Warnw("confirm delete publication file: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		handlers.BadRequest(w, r, err)
 		return
 	}
 
@@ -336,7 +336,7 @@ func (h *Handler) DeleteFile(w http.ResponseWriter, r *http.Request, ctx Context
 	var b BindDeleteFile
 	if err := bind.Request(r, &b); err != nil {
 		h.Logger.Warnw("delete publication file: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		handlers.BadRequest(w, r, err)
 		return
 	}
 
@@ -354,7 +354,7 @@ func (h *Handler) DeleteFile(w http.ResponseWriter, r *http.Request, ctx Context
 
 	if err != nil {
 		h.Logger.Errorf("delete publication file: could not save the publication:", "error", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		handlers.InternalServerError(w, r, err)
 		return
 	}
 

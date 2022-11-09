@@ -61,7 +61,7 @@ func (h *Handler) ConfirmImport(w http.ResponseWriter, r *http.Request, ctx Cont
 	b := BindImport{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
 		h.Logger.Warnw("confirm import dataset: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		handlers.BadRequest(w, r, err)
 		return
 	}
 
@@ -73,7 +73,7 @@ func (h *Handler) ConfirmImport(w http.ResponseWriter, r *http.Request, ctx Cont
 
 		if err != nil {
 			h.Logger.Errorw("confirm import dataset: could not execute search", "errors", err, "user", ctx.User.ID)
-			render.InternalServerError(w, r, err)
+			handlers.InternalServerError(w, r, err)
 			return
 		}
 
@@ -99,7 +99,7 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 	b := BindImport{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
 		h.Logger.Warnw("add import dataset: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		handlers.BadRequest(w, r, err)
 		return
 	}
 
@@ -156,7 +156,7 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 
 	if err != nil {
 		h.Logger.Warnw("add import dataset: could not save dataset:", "errors", err, "dataset", b.Identifier, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		handlers.InternalServerError(w, r, err)
 		return
 	}
 
@@ -209,7 +209,7 @@ func (h *Handler) AddConfirm(w http.ResponseWriter, r *http.Request, ctx Context
 func (h *Handler) AddPublish(w http.ResponseWriter, r *http.Request, ctx Context) {
 	if !ctx.User.CanEditDataset(ctx.Dataset) {
 		h.Logger.Warn("publish dataset: user isn't allowed to edit the dataset:", "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
-		render.Forbidden(w, r)
+		handlers.Forbidden(w, r)
 		return
 	}
 
@@ -238,7 +238,7 @@ func (h *Handler) AddPublish(w http.ResponseWriter, r *http.Request, ctx Context
 	}
 
 	if err != nil {
-		render.InternalServerError(w, r, err)
+		handlers.InternalServerError(w, r, err)
 		h.Logger.Warnf("create dataset: Could not save the dataset:", "error", err, "identifier", ctx.Dataset.ID)
 		return
 	}

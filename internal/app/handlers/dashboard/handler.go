@@ -6,7 +6,6 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/app/handlers"
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/bind"
-	"github.com/ugent-library/biblio-backend/internal/render"
 )
 
 type Handler struct {
@@ -23,7 +22,7 @@ type Context struct {
 func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) http.HandlerFunc {
 	return h.BaseHandler.Wrap(func(w http.ResponseWriter, r *http.Request, ctx handlers.BaseContext) {
 		if ctx.User == nil || !ctx.User.CanViewDashboard() {
-			render.Unauthorized(w, r)
+			handlers.Unauthorized(w, r)
 			return
 		}
 

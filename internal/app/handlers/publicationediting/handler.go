@@ -8,7 +8,6 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/backends/filestore"
 	"github.com/ugent-library/biblio-backend/internal/bind"
 	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/biblio-backend/internal/render"
 )
 
 type Handler struct {
@@ -32,7 +31,7 @@ type Context struct {
 func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) http.HandlerFunc {
 	return h.BaseHandler.Wrap(func(w http.ResponseWriter, r *http.Request, ctx handlers.BaseContext) {
 		if ctx.User == nil {
-			render.Unauthorized(w, r)
+			handlers.Unauthorized(w, r)
 			return
 		}
 
@@ -41,7 +40,7 @@ func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) htt
 		if err != nil {
 			if err == backends.ErrNotFound {
 				h.Logger.Warn("edit publication: could not find publication with id:", "errors", err, "id", id, "user", ctx.User.ID)
-				render.NotFound(w, r, err)
+				handlers.NotFound(w, r, ctx, err)
 			} else {
 				h.Logger.Error(
 					"edit publication: unexpected error when retrieving publication with id:",
@@ -49,14 +48,14 @@ func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) htt
 					"id", id,
 					"user", ctx.User.ID,
 				)
-				render.InternalServerError(w, r, err)
+				handlers.InternalServerError(w, r, err)
 			}
 			return
 		}
 
 		if !ctx.User.CanEditPublication(pub) {
 			h.Logger.Warn("edit publication: user isn't allowed to edit the publication:", "errors", err, "publication", id, "user", ctx.User.ID)
-			render.Forbidden(w, r)
+			handlers.Forbidden(w, r)
 			return
 		}
 

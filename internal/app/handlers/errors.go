@@ -1,10 +1,22 @@
-package render
+package handlers
 
 import (
 	"net/http"
+
+	"github.com/ugent-library/biblio-backend/internal/render"
 )
 
 var AuthURL string
+
+type Context struct {
+	BaseContext
+}
+
+type YieldNotFound struct {
+	Context
+	PageTitle string
+	ActiveNav string
+}
 
 // TODO Make these user friendly pages with a nice error message informing the user on
 //    a. What went wrong
@@ -16,8 +28,14 @@ func InternalServerError(w http.ResponseWriter, r *http.Request, err error) {
 }
 
 // HTTP 404 error
-func NotFound(w http.ResponseWriter, r *http.Request, err error) {
-	http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+func NotFound(w http.ResponseWriter, r *http.Request, ctx BaseContext, err error) {
+	// http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+	render.NotFoundLayout(w, "layouts/default", "pages/notfound", YieldNotFound{
+		Context: Context{
+			BaseContext: ctx,
+		},
+		PageTitle: "Biblio",
+	})
 }
 
 // HTTP 400 error

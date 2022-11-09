@@ -157,7 +157,7 @@ func (h *Handler) AddContributor(w http.ResponseWriter, r *http.Request, ctx Con
 	b := BindAddContributor{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
 		h.Logger.Warnw("add publication contributor: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		handlers.BadRequest(w, r, err)
 		return
 	}
 
@@ -170,7 +170,7 @@ func (h *Handler) AddContributor(w http.ResponseWriter, r *http.Request, ctx Con
 		hits, err = h.PersonSearchService.SuggestPeople(b.FirstName + " " + b.LastName)
 		if err != nil {
 			h.Logger.Errorw("suggest publication contributor: could not suggest people", "errors", err, "request", r, "user", ctx.User.ID)
-			render.InternalServerError(w, r, err)
+			handlers.InternalServerError(w, r, err)
 			return
 		}
 	}
@@ -195,7 +195,7 @@ func (h *Handler) AddContributorSuggest(w http.ResponseWriter, r *http.Request, 
 	b := BindAddContributorSuggest{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
 		h.Logger.Warnw("suggest publication contributor: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		handlers.BadRequest(w, r, err)
 		return
 	}
 
@@ -208,7 +208,7 @@ func (h *Handler) AddContributorSuggest(w http.ResponseWriter, r *http.Request, 
 		hits, err = h.PersonSearchService.SuggestPeople(b.FirstName + " " + b.LastName)
 		if err != nil {
 			h.Logger.Errorw("suggest publication contributor: could not suggest people", "errors", err, "request", r, "user", ctx.User.ID)
-			render.InternalServerError(w, r, err)
+			handlers.InternalServerError(w, r, err)
 			return
 		}
 	}
@@ -230,7 +230,7 @@ func (h *Handler) ConfirmCreateContributor(w http.ResponseWriter, r *http.Reques
 	b := BindConfirmCreateContributor{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
 		h.Logger.Warnw("confirm create publication contributor: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		handlers.BadRequest(w, r, err)
 		return
 	}
 
@@ -239,7 +239,7 @@ func (h *Handler) ConfirmCreateContributor(w http.ResponseWriter, r *http.Reques
 	if b.ID != "" {
 		newC, newP, err := h.generateContributorFromPersonId(b.ID)
 		if err != nil {
-			render.InternalServerError(w, r, err)
+			handlers.InternalServerError(w, r, err)
 			return
 		}
 		c = newC
@@ -262,7 +262,7 @@ func (h *Handler) CreateContributor(w http.ResponseWriter, r *http.Request, ctx 
 	b := BindCreateContributor{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
 		h.Logger.Warnw("create publication contributor: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		handlers.BadRequest(w, r, err)
 		return
 	}
 
@@ -271,7 +271,7 @@ func (h *Handler) CreateContributor(w http.ResponseWriter, r *http.Request, ctx 
 	if b.ID != "" {
 		newC, newP, err := h.generateContributorFromPersonId(b.ID)
 		if err != nil {
-			render.InternalServerError(w, r, err)
+			handlers.InternalServerError(w, r, err)
 			return
 		}
 		c = newC
@@ -308,7 +308,7 @@ func (h *Handler) CreateContributor(w http.ResponseWriter, r *http.Request, ctx 
 
 	if err != nil {
 		h.Logger.Errorf("create publication contributor: Could not save the publication:", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		handlers.InternalServerError(w, r, err)
 		return
 	}
 
@@ -337,14 +337,14 @@ func (h *Handler) EditContributor(w http.ResponseWriter, r *http.Request, ctx Co
 	b := BindEditContributor{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
 		h.Logger.Warnw("edit publication contributor: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		handlers.BadRequest(w, r, err)
 		return
 	}
 
 	c, err := ctx.Publication.GetContributor(b.Role, b.Position)
 	if err != nil {
 		h.Logger.Errorw("edit publication contributor: could not get the contributor", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		handlers.InternalServerError(w, r, err)
 		return
 	}
 
@@ -352,7 +352,7 @@ func (h *Handler) EditContributor(w http.ResponseWriter, r *http.Request, ctx Co
 	if c.ID != "" {
 		p, err := h.PersonService.GetPerson(c.ID)
 		if err != nil {
-			render.InternalServerError(w, r, err)
+			handlers.InternalServerError(w, r, err)
 			return
 		}
 		active = p.Active
@@ -368,7 +368,7 @@ func (h *Handler) EditContributor(w http.ResponseWriter, r *http.Request, ctx Co
 	hits, err := h.PersonSearchService.SuggestPeople(firstName + " " + lastName)
 	if err != nil {
 		h.Logger.Errorw("suggest publication contributor: could not suggest people", "errors", err, "request", r, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		handlers.InternalServerError(w, r, err)
 		return
 	}
 
@@ -405,14 +405,14 @@ func (h *Handler) EditContributorSuggest(w http.ResponseWriter, r *http.Request,
 	b := BindEditContributorSuggest{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
 		h.Logger.Warnw("suggest publication contributor: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		handlers.BadRequest(w, r, err)
 		return
 	}
 
 	c, err := ctx.Publication.GetContributor(b.Role, b.Position)
 	if err != nil {
 		h.Logger.Errorw("edit publication contributor: could not get the contributor", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		handlers.InternalServerError(w, r, err)
 		return
 	}
 
@@ -422,7 +422,7 @@ func (h *Handler) EditContributorSuggest(w http.ResponseWriter, r *http.Request,
 		hits, err = h.PersonSearchService.SuggestPeople(b.FirstName + " " + b.LastName)
 		if err != nil {
 			h.Logger.Errorw("suggest publication contributor: could not suggest people", "errors", err, "request", r, "user", ctx.User.ID)
-			render.InternalServerError(w, r, err)
+			handlers.InternalServerError(w, r, err)
 			return
 		}
 
@@ -452,14 +452,14 @@ func (h *Handler) ConfirmUpdateContributor(w http.ResponseWriter, r *http.Reques
 	b := BindConfirmUpdateContributor{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
 		h.Logger.Warnw("confirm update publication contributor: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		handlers.BadRequest(w, r, err)
 		return
 	}
 
 	oldC, err := ctx.Publication.GetContributor(b.Role, b.Position)
 	if err != nil {
 		h.Logger.Errorw("edit publication contributor: could not get the contributor", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		handlers.InternalServerError(w, r, err)
 		return
 	}
 
@@ -468,7 +468,7 @@ func (h *Handler) ConfirmUpdateContributor(w http.ResponseWriter, r *http.Reques
 	if b.ID != "" {
 		newC, newP, err := h.generateContributorFromPersonId(b.ID)
 		if err != nil {
-			render.InternalServerError(w, r, err)
+			handlers.InternalServerError(w, r, err)
 			return
 		}
 		c = newC
@@ -495,7 +495,7 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 	b := BindUpdateContributor{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
 		h.Logger.Warnw("update publication contributor: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		handlers.BadRequest(w, r, err)
 		return
 	}
 
@@ -505,7 +505,7 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 		newC, newP, err := h.generateContributorFromPersonId(b.ID)
 		if err != nil {
 			h.Logger.Errorw("update publication contributor: could not fetch person", "errors", err, "personid", b.ID, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-			render.InternalServerError(w, r, err)
+			handlers.InternalServerError(w, r, err)
 			return
 		}
 		c = newC
@@ -518,7 +518,7 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 
 	if err := ctx.Publication.SetContributor(b.Role, b.Position, c); err != nil {
 		h.Logger.Errorw("update publication contributor: could not set the contributor", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		handlers.InternalServerError(w, r, err)
 		return
 	}
 
@@ -548,7 +548,7 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 
 	if err != nil {
 		h.Logger.Errorf("update publication contributor: Could not save the publication:", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		handlers.InternalServerError(w, r, err)
 		return
 	}
 
@@ -558,7 +558,7 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 		hits, err := h.PersonSearchService.SuggestPeople(nextC.FirstName + " " + nextC.LastName)
 		if err != nil {
 			h.Logger.Errorw("suggest publication contributor: could not suggest people", "errors", err, "request", r, "user", ctx.User.ID)
-			render.InternalServerError(w, r, err)
+			handlers.InternalServerError(w, r, err)
 			return
 		}
 
@@ -568,7 +568,7 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 		if nextC.ID != "" {
 			p, err := h.PersonService.GetPerson(nextC.ID)
 			if err != nil {
-				render.InternalServerError(w, r, err)
+				handlers.InternalServerError(w, r, err)
 				return
 			}
 			nextActive = p.Active
@@ -599,7 +599,7 @@ func (h *Handler) ConfirmDeleteContributor(w http.ResponseWriter, r *http.Reques
 	b := BindDeleteContributor{}
 	if err := bind.Request(r, &b); err != nil {
 		h.Logger.Warnw("confirm delete publication contributor: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		handlers.BadRequest(w, r, err)
 		return
 	}
 
@@ -614,13 +614,13 @@ func (h *Handler) DeleteContributor(w http.ResponseWriter, r *http.Request, ctx 
 	b := BindDeleteContributor{}
 	if err := bind.Request(r, &b); err != nil {
 		h.Logger.Warnw("delete publication contributor: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		handlers.BadRequest(w, r, err)
 		return
 	}
 
 	if err := ctx.Publication.RemoveContributor(b.Role, b.Position); err != nil {
 		h.Logger.Warnw("delete publication contributor: could not remove contributor", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		handlers.InternalServerError(w, r, err)
 		return
 	}
 
@@ -649,7 +649,7 @@ func (h *Handler) DeleteContributor(w http.ResponseWriter, r *http.Request, ctx 
 
 	if err != nil {
 		h.Logger.Errorf("delete publication contributor: Could not save the publication:", "error", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		handlers.InternalServerError(w, r, err)
 		return
 	}
 
@@ -663,7 +663,7 @@ func (h *Handler) OrderContributors(w http.ResponseWriter, r *http.Request, ctx 
 	b := BindOrderContributors{}
 	if err := bind.Request(r, &b); err != nil {
 		h.Logger.Warnw("order publication contributors: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		handlers.BadRequest(w, r, err)
 		return
 	}
 
@@ -671,7 +671,7 @@ func (h *Handler) OrderContributors(w http.ResponseWriter, r *http.Request, ctx 
 	if len(b.Positions) != len(contributors) {
 		err := fmt.Errorf("positions don't match number of contributors")
 		h.Logger.Warnw("order publication contributors: could not order contributors", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		handlers.BadRequest(w, r, err)
 		return
 	}
 	newContributors := make([]*models.Contributor, len(contributors))
@@ -692,7 +692,7 @@ func (h *Handler) OrderContributors(w http.ResponseWriter, r *http.Request, ctx 
 
 	if err != nil {
 		h.Logger.Errorf("order publication contributors: Could not save the publication:", "errors", err, "identifier", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		handlers.InternalServerError(w, r, err)
 		return
 	}
 

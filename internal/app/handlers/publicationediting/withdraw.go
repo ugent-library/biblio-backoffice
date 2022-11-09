@@ -29,7 +29,7 @@ func (h *Handler) ConfirmWithdraw(w http.ResponseWriter, r *http.Request, ctx Co
 func (h *Handler) Withdraw(w http.ResponseWriter, r *http.Request, ctx Context) {
 	if !ctx.User.CanEditPublication(ctx.Publication) {
 		h.Logger.Warnw("witdraw publication: user has no permission to withdraw", "user", ctx.User.ID, "publication", ctx.Publication.ID)
-		render.Forbidden(w, r)
+		handlers.Forbidden(w, r)
 		return
 	}
 
@@ -60,7 +60,7 @@ func (h *Handler) Withdraw(w http.ResponseWriter, r *http.Request, ctx Context) 
 
 	if err != nil {
 		h.Logger.Errorf("withdraw publication: could not save the publication:", "error", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		handlers.InternalServerError(w, r, err)
 		return
 	}
 

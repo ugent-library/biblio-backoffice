@@ -102,7 +102,7 @@ func (h *Handler) AddSingleImportConfirm(w http.ResponseWriter, r *http.Request,
 	b := BindImportSingle{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
 		h.Logger.Warnw("import confirm single publication: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		handlers.BadRequest(w, r, err)
 		return
 	}
 
@@ -114,7 +114,7 @@ func (h *Handler) AddSingleImportConfirm(w http.ResponseWriter, r *http.Request,
 
 		if err != nil {
 			h.Logger.Warnw("import single publication: could not execute search for duplicates", "errors", err, "args", args, "user", ctx.User.ID)
-			render.InternalServerError(w, r, err)
+			handlers.InternalServerError(w, r, err)
 			return
 		}
 
@@ -140,7 +140,7 @@ func (h *Handler) AddSingleImport(w http.ResponseWriter, r *http.Request, ctx Co
 	b := BindImportSingle{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
 		h.Logger.Warnw("import single publication: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		handlers.BadRequest(w, r, err)
 		return
 	}
 
@@ -210,7 +210,7 @@ func (h *Handler) AddSingleImport(w http.ResponseWriter, r *http.Request, ctx Co
 
 	if err != nil {
 		h.Logger.Errorf("import single publication: -could not save the publication:", "error", err, "identifier", b.Identifier, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		handlers.InternalServerError(w, r, err)
 		return
 	}
 
@@ -262,7 +262,7 @@ func (h *Handler) AddSingleConfirm(w http.ResponseWriter, r *http.Request, ctx C
 func (h *Handler) AddSinglePublish(w http.ResponseWriter, r *http.Request, ctx Context) {
 	if !ctx.User.CanEditPublication(ctx.Publication) {
 		h.Logger.Warnw("add single publication publish: user has no permission to publish publication.", "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.Forbidden(w, r)
+		handlers.Forbidden(w, r)
 		return
 	}
 
@@ -292,7 +292,7 @@ func (h *Handler) AddSinglePublish(w http.ResponseWriter, r *http.Request, ctx C
 
 	if err != nil {
 		h.Logger.Errorf("add single publication publish: could not save the publication:", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		handlers.InternalServerError(w, r, err)
 		return
 	}
 
@@ -328,7 +328,7 @@ func (h *Handler) AddMultipleImport(w http.ResponseWriter, r *http.Request, ctx 
 	file, _, err := r.FormFile("file")
 	if err != nil {
 		h.Logger.Warnw("add multiple import publication: could not retrieve file from request", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		handlers.BadRequest(w, r, err)
 		return
 	}
 	defer file.Close()
@@ -410,7 +410,7 @@ func (h *Handler) AddMultipleConfirm(w http.ResponseWriter, r *http.Request, ctx
 	searchArgs := models.NewSearchArgs()
 	if err := bind.RequestQuery(r, searchArgs); err != nil {
 		h.Logger.Warnw("add multiple confirm publication: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		handlers.BadRequest(w, r, err)
 		return
 	}
 
@@ -426,7 +426,7 @@ func (h *Handler) AddMultipleConfirm(w http.ResponseWriter, r *http.Request, ctx
 
 	if err != nil {
 		h.Logger.Errorw("add multiple confirm publication: could not execute search", "errors", err, "batch", batchID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		handlers.InternalServerError(w, r, err)
 		return
 	}
 
@@ -465,7 +465,7 @@ func (h *Handler) AddMultiplePublish(w http.ResponseWriter, r *http.Request, ctx
 
 	if err != nil {
 		h.Logger.Errorw("add multiple publish publication: could not publish publications", "errors", err, "batch", batchID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		handlers.InternalServerError(w, r, err)
 		return
 	}
 
@@ -478,7 +478,7 @@ func (h *Handler) AddMultipleFinish(w http.ResponseWriter, r *http.Request, ctx 
 	searchArgs := models.NewSearchArgs()
 	if err := bind.RequestQuery(r, searchArgs); err != nil {
 		h.Logger.Warnw("add multiple finish publication: could not bind request arguments", "errors", err, "request", r)
-		render.BadRequest(w, r, err)
+		handlers.BadRequest(w, r, err)
 		return
 	}
 
@@ -494,7 +494,7 @@ func (h *Handler) AddMultipleFinish(w http.ResponseWriter, r *http.Request, ctx 
 
 	if err != nil {
 		h.Logger.Errorw("add multiple finish publication: could not execute search", "errors", err, "batch", batchID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		handlers.InternalServerError(w, r, err)
 		return
 	}
 

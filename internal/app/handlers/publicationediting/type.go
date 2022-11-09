@@ -32,7 +32,7 @@ func (h *Handler) UpdateType(w http.ResponseWriter, r *http.Request, ctx Context
 	b := BindType{}
 	if err := bind.RequestForm(r, &b); err != nil {
 		h.Logger.Warnw("update publication type: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		handlers.BadRequest(w, r, err)
 		return
 	}
 
@@ -65,7 +65,7 @@ func (h *Handler) UpdateType(w http.ResponseWriter, r *http.Request, ctx Context
 
 	if err != nil {
 		h.Logger.Errorf("update publication type: Could not save the publication:", "error", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		handlers.InternalServerError(w, r, err)
 		return
 	}
 

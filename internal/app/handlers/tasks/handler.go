@@ -23,7 +23,7 @@ type Context struct {
 func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) http.HandlerFunc {
 	return h.BaseHandler.Wrap(func(w http.ResponseWriter, r *http.Request, ctx handlers.BaseContext) {
 		if ctx.User == nil {
-			render.Unauthorized(w, r)
+			handlers.Unauthorized(w, r)
 			return
 		}
 
@@ -47,7 +47,7 @@ func (h *Handler) Status(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindStatus{}
 	if err := bind.Request(r, &b); err != nil {
 		h.Logger.Warnw("tasks: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		handlers.BadRequest(w, r, err)
 		return
 	}
 

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/ugent-library/biblio-backend/internal/app/handlers"
 	"github.com/ugent-library/biblio-backend/internal/app/localize"
 	"github.com/ugent-library/biblio-backend/internal/bind"
 	"github.com/ugent-library/biblio-backend/internal/locale"
@@ -56,7 +57,7 @@ func (h *Handler) UpdateMessage(w http.ResponseWriter, r *http.Request, ctx Cont
 	b := BindMessage{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
 		h.Logger.Warnw("update publication reviewer note: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		handlers.BadRequest(w, r, err)
 		return
 	}
 
@@ -87,7 +88,7 @@ func (h *Handler) UpdateMessage(w http.ResponseWriter, r *http.Request, ctx Cont
 
 	if err != nil {
 		h.Logger.Errorf("update publication message: could not save the publication:", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		handlers.InternalServerError(w, r, err)
 		return
 	}
 
@@ -96,7 +97,7 @@ func (h *Handler) UpdateMessage(w http.ResponseWriter, r *http.Request, ctx Cont
 
 func (h *Handler) EditReviewerTags(w http.ResponseWriter, r *http.Request, ctx Context) {
 	if !ctx.User.CanCurate() {
-		render.Unauthorized(w, r)
+		handlers.Unauthorized(w, r)
 		return
 	}
 
@@ -109,14 +110,14 @@ func (h *Handler) EditReviewerTags(w http.ResponseWriter, r *http.Request, ctx C
 
 func (h *Handler) UpdateReviewerTags(w http.ResponseWriter, r *http.Request, ctx Context) {
 	if !ctx.User.CanCurate() {
-		render.Unauthorized(w, r)
+		handlers.Unauthorized(w, r)
 		return
 	}
 
 	b := BindReviewerTags{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
 		h.Logger.Warnw("update publication reviewer tags: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		handlers.BadRequest(w, r, err)
 		return
 	}
 
@@ -147,7 +148,7 @@ func (h *Handler) UpdateReviewerTags(w http.ResponseWriter, r *http.Request, ctx
 
 	if err != nil {
 		h.Logger.Errorf("update publication reviewer tags: could not save the publication:", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		handlers.InternalServerError(w, r, err)
 		return
 	}
 
@@ -156,7 +157,7 @@ func (h *Handler) UpdateReviewerTags(w http.ResponseWriter, r *http.Request, ctx
 
 func (h *Handler) EditReviewerNote(w http.ResponseWriter, r *http.Request, ctx Context) {
 	if !ctx.User.CanCurate() {
-		render.Unauthorized(w, r)
+		handlers.Unauthorized(w, r)
 		return
 	}
 
@@ -169,14 +170,14 @@ func (h *Handler) EditReviewerNote(w http.ResponseWriter, r *http.Request, ctx C
 
 func (h *Handler) UpdateReviewerNote(w http.ResponseWriter, r *http.Request, ctx Context) {
 	if !ctx.User.CanCurate() {
-		render.Unauthorized(w, r)
+		handlers.Unauthorized(w, r)
 		return
 	}
 
 	b := BindReviewerNote{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
 		h.Logger.Warnw("update publication reviewer note: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		handlers.BadRequest(w, r, err)
 		return
 	}
 
@@ -207,7 +208,7 @@ func (h *Handler) UpdateReviewerNote(w http.ResponseWriter, r *http.Request, ctx
 
 	if err != nil {
 		h.Logger.Errorf("update publication reviewer note: could not save the publication:", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		handlers.InternalServerError(w, r, err)
 		return
 	}
 

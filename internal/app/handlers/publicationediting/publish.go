@@ -30,7 +30,7 @@ func (h *Handler) ConfirmPublish(w http.ResponseWriter, r *http.Request, ctx Con
 func (h *Handler) Publish(w http.ResponseWriter, r *http.Request, ctx Context) {
 	if !ctx.User.CanEditPublication(ctx.Publication) {
 		h.Logger.Warnw("publish dataset: user has no permission to publish", "user", ctx.User.ID, "publication", ctx.Publication.ID)
-		render.Forbidden(w, r)
+		handlers.Forbidden(w, r)
 		return
 	}
 
@@ -65,7 +65,7 @@ func (h *Handler) Publish(w http.ResponseWriter, r *http.Request, ctx Context) {
 
 	if err != nil {
 		h.Logger.Errorf("publish dataset: could not save the dataset:", "error", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		handlers.InternalServerError(w, r, err)
 		return
 	}
 

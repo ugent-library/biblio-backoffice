@@ -5,13 +5,13 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/ugent-library/biblio-backend/internal/app/handlers"
 	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/biblio-backend/internal/render"
 )
 
 func (h *Handler) ExportByCurationSearch(w http.ResponseWriter, r *http.Request, ctx Context) {
 	if !ctx.User.CanCurate() {
-		render.Forbidden(w, r)
+		handlers.Forbidden(w, r)
 		return
 	}
 
@@ -23,7 +23,7 @@ func (h *Handler) ExportByCurationSearch(w http.ResponseWriter, r *http.Request,
 			"errors", e,
 			"user", ctx.User.ID,
 		)
-		render.InternalServerError(w, r, e)
+		handlers.InternalServerError(w, r, e)
 		return
 	}
 	exporter := exporterFactory(w)
@@ -39,7 +39,7 @@ func (h *Handler) ExportByCurationSearch(w http.ResponseWriter, r *http.Request,
 			"errors", searcherErr,
 			"user", ctx.User.ID,
 		)
-		render.InternalServerError(w, r, fmt.Errorf("unable to execute search"))
+		handlers.InternalServerError(w, r, fmt.Errorf("unable to execute search"))
 		return
 	}
 
@@ -60,7 +60,7 @@ func (h *Handler) ExportByCurationSearch(w http.ResponseWriter, r *http.Request,
 
 	if err := exporter.Flush(); err != nil {
 		h.Logger.Errorw("publication search: could not export search", "errors", err, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		handlers.InternalServerError(w, r, err)
 		return
 	}
 }

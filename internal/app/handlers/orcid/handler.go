@@ -36,7 +36,7 @@ func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) htt
 	return h.BaseHandler.Wrap(func(w http.ResponseWriter, r *http.Request, ctx handlers.BaseContext) {
 		if ctx.User == nil {
 			h.Logger.Warnw("orcid: user is not authorized to access this resource", "user", ctx.User.ID)
-			render.Unauthorized(w, r)
+			handlers.Unauthorized(w, r)
 			return
 		}
 
@@ -66,19 +66,19 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindAdd{}
 	if err := bind.Request(r, &b); err != nil {
 		h.Logger.Warnw("add orcid: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		handlers.BadRequest(w, r, err)
 		return
 	}
 
 	p, err := h.Repository.GetPublication(b.PublicationID)
 	if err != nil {
 		h.Logger.Errorw("add orcid: could not get publication", "errors", err, "publication", b.PublicationID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		handlers.InternalServerError(w, r, err)
 		return
 	}
 	if !ctx.User.CanViewPublication(p) {
 		h.Logger.Warnw("add orcid: user has no permission to view this publication", "publication", b.PublicationID, "user", ctx.User.ID)
-		render.Forbidden(w, r)
+		handlers.Forbidden(w, r)
 		return
 	}
 
@@ -117,7 +117,7 @@ func (h *Handler) AddAll(w http.ResponseWriter, r *http.Request, ctx Context) {
 	)
 	if err != nil {
 		h.Logger.Errorw("add all orcid: could not add all publications to the users orcid", "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		handlers.InternalServerError(w, r, err)
 		return
 	}
 

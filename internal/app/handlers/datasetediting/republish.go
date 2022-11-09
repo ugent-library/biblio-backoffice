@@ -29,7 +29,7 @@ func (h *Handler) ConfirmRepublish(w http.ResponseWriter, r *http.Request, ctx C
 func (h *Handler) Republish(w http.ResponseWriter, r *http.Request, ctx Context) {
 	if !ctx.User.CanEditDataset(ctx.Dataset) {
 		h.Logger.Warnw("republish dataset: user has no permission to republish", "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
-		render.Forbidden(w, r)
+		handlers.Forbidden(w, r)
 		return
 	}
 
@@ -60,7 +60,7 @@ func (h *Handler) Republish(w http.ResponseWriter, r *http.Request, ctx Context)
 
 	if err != nil {
 		h.Logger.Errorf("republish dataset: could not save the dataset:", "errors", err, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		handlers.InternalServerError(w, r, err)
 		return
 	}
 

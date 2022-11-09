@@ -13,7 +13,6 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/locale"
 	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/biblio-backend/internal/render"
 	"github.com/ugent-library/biblio-backend/internal/render/flash"
 	"go.uber.org/zap"
 )
@@ -74,7 +73,7 @@ func (h BaseHandler) Wrap(fn func(http.ResponseWriter, *http.Request, BaseContex
 		ctx, err := h.NewContext(r, w)
 		if err != nil {
 			h.Logger.Errorw("could not create new context.", err)
-			render.InternalServerError(w, r, err)
+			InternalServerError(w, r, err)
 			return
 		}
 		fn(w, r, ctx)

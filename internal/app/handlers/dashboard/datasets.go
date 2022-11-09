@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/ugent-library/biblio-backend/internal/app/handlers"
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
@@ -49,7 +50,7 @@ func (h *Handler) Datasets(w http.ResponseWriter, r *http.Request, ctx Context) 
 
 	if err != nil {
 		h.Logger.Errorw("Dashboard: could not execute search", "errors", err, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		handlers.InternalServerError(w, r, err)
 		return
 	}
 

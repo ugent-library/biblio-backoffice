@@ -243,7 +243,7 @@ func (r *Renderer) ExecuteView(w io.Writer, view string, data any) error {
 	return nil
 }
 
-func (r *Renderer) Layout(w http.ResponseWriter, partial, view string, data any) {
+func (r *Renderer) Layout(w http.ResponseWriter, s int, partial, view string, data any) {
 	b := r.bufPool.Get().(*bytes.Buffer)
 	defer func() {
 		b.Reset()
@@ -256,9 +256,30 @@ func (r *Renderer) Layout(w http.ResponseWriter, partial, view string, data any)
 		return
 	}
 
+	w.WriteHeader(s)
+
 	r.SetContentType(w)
 	io.Copy(w, b)
 }
+
+// func (r *Renderer) NotFoundLayout(w http.ResponseWriter, partial, view string, data any) {
+// 	b := r.bufPool.Get().(*bytes.Buffer)
+// 	defer func() {
+// 		b.Reset()
+// 		r.bufPool.Put(b)
+// 	}()
+
+// 	if err := r.ExecuteLayout(b, partial, view, data); err != nil {
+// 		log.Println(err)
+// 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+// 		return
+// 	}
+
+// 	w.WriteHeader(http.StatusNotFound)
+
+// 	r.SetContentType(w)
+// 	io.Copy(w, b)
+// }
 
 func (r *Renderer) ExecuteLayout(w io.Writer, layout, view string, data any) error {
 	tmpl, ok := r.viewTemplates[view]
@@ -338,7 +359,11 @@ func ExecuteView(w io.Writer, view string, data any) error {
 }
 
 func Layout(w http.ResponseWriter, partial, view string, data any) {
-	defaultRenderer.Layout(w, partial, view, data)
+	defaultRenderer.Layout(w, http.StatusOK, partial, view, data)
+}
+
+func NotFoundLayout(w http.ResponseWriter, partial, view string, data any) {
+	defaultRenderer.Layout(w, http.StatusNotFound, partial, view, data)
 }
 
 func ExecuteLayout(w io.Writer, partial, view string, data any) error {

@@ -20,7 +20,6 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/backends/filestore"
 	"github.com/ugent-library/biblio-backend/internal/bind"
 	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/biblio-backend/internal/render"
 	"github.com/ugent-library/biblio-backend/internal/validation"
 )
 
@@ -751,15 +750,15 @@ func (h *Handler) GetPublication(w http.ResponseWriter, r *http.Request) {
 	p, err := h.Repository.GetPublication(bind.PathValues(r).Get("id"))
 	if err != nil {
 		if err == backends.ErrNotFound {
-			render.NotFound(w, r, err)
+			NotFound(w, r, err)
 		} else {
-			render.InternalServerError(w, r, err)
+			InternalServerError(w, r, err)
 		}
 		return
 	}
 	j, err := json.Marshal(h.mapPublication(p))
 	if err != nil {
-		render.InternalServerError(w, r, err)
+		InternalServerError(w, r, err)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -770,15 +769,15 @@ func (h *Handler) GetDataset(w http.ResponseWriter, r *http.Request) {
 	p, err := h.Repository.GetDataset(bind.PathValues(r).Get("id"))
 	if err != nil {
 		if err == backends.ErrNotFound {
-			render.NotFound(w, r, err)
+			NotFound(w, r, err)
 		} else {
-			render.InternalServerError(w, r, err)
+			InternalServerError(w, r, err)
 		}
 		return
 	}
 	j, err := json.Marshal(h.mapDataset(p))
 	if err != nil {
-		render.InternalServerError(w, r, err)
+		InternalServerError(w, r, err)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -794,7 +793,7 @@ type BindGetAll struct {
 func (h *Handler) GetAllPublications(w http.ResponseWriter, r *http.Request) {
 	b := BindGetAll{}
 	if err := bind.RequestQuery(r, &b); err != nil {
-		render.BadRequest(w, r, err)
+		BadRequest(w, r, err)
 		return
 	}
 
@@ -811,7 +810,7 @@ func (h *Handler) GetAllPublications(w http.ResponseWriter, r *http.Request) {
 	log.Printf("%d, %d", args.Limit(), args.Offset())
 	hits, err := h.PublicationSearchService.Search(args)
 	if err != nil {
-		render.InternalServerError(w, r, err)
+		InternalServerError(w, r, err)
 		return
 	}
 	mappedHits := &Hits{
@@ -825,7 +824,7 @@ func (h *Handler) GetAllPublications(w http.ResponseWriter, r *http.Request) {
 	}
 	j, err := json.Marshal(mappedHits)
 	if err != nil {
-		render.InternalServerError(w, r, err)
+		InternalServerError(w, r, err)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -835,7 +834,7 @@ func (h *Handler) GetAllPublications(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) GetAllDatasets(w http.ResponseWriter, r *http.Request) {
 	b := BindGetAll{}
 	if err := bind.RequestQuery(r, &b); err != nil {
-		render.BadRequest(w, r, err)
+		BadRequest(w, r, err)
 		return
 	}
 
@@ -851,7 +850,7 @@ func (h *Handler) GetAllDatasets(w http.ResponseWriter, r *http.Request) {
 	}
 	hits, err := h.DatasetSearchService.Search(args)
 	if err != nil {
-		render.InternalServerError(w, r, err)
+		InternalServerError(w, r, err)
 		return
 	}
 	mappedHits := &Hits{
@@ -865,7 +864,7 @@ func (h *Handler) GetAllDatasets(w http.ResponseWriter, r *http.Request) {
 	}
 	j, err := json.Marshal(mappedHits)
 	if err != nil {
-		render.InternalServerError(w, r, err)
+		InternalServerError(w, r, err)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -878,15 +877,15 @@ func (h *Handler) DownloadFile(w http.ResponseWriter, r *http.Request) {
 	p, err := h.Repository.GetPublication(vals.Get("id"))
 	if err != nil {
 		if err == backends.ErrNotFound {
-			render.NotFound(w, r, err)
+			NotFound(w, r, err)
 		} else {
-			render.InternalServerError(w, r, err)
+			InternalServerError(w, r, err)
 		}
 		return
 	}
 
 	if p.Status != "public" {
-		render.Forbidden(w, r)
+		Forbidden(w, r)
 		return
 	}
 
@@ -909,11 +908,11 @@ func (h *Handler) DownloadFile(w http.ResponseWriter, r *http.Request) {
 		ip, _, _ := net.SplitHostPort(r.RemoteAddr)
 		if !h.IPFilter.Allowed(ip) {
 			log.Printf("ip %s not allowed, allowed: %s", ip, viper.GetString("ip-ranges"))
-			render.Forbidden(w, r)
+			Forbidden(w, r)
 			return
 		}
 	default:
-		render.Forbidden(w, r)
+		Forbidden(w, r)
 		return
 	}
 

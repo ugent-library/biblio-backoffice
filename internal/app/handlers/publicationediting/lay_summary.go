@@ -58,7 +58,7 @@ func (h *Handler) CreateLaySummary(w http.ResponseWriter, r *http.Request, ctx C
 	var b BindLaySummary
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
 		h.Logger.Warnw("create publication lay summary: could not bind request arguments", "error", err, "request", r)
-		render.BadRequest(w, r, err)
+		handlers.BadRequest(w, r, err)
 		return
 	}
 
@@ -93,7 +93,7 @@ func (h *Handler) CreateLaySummary(w http.ResponseWriter, r *http.Request, ctx C
 
 	if err != nil {
 		h.Logger.Errorf("create publication lay summary: Could not save the publication:", "error", err, "identifier", ctx.Publication.ID)
-		render.InternalServerError(w, r, err)
+		handlers.InternalServerError(w, r, err)
 		return
 	}
 
@@ -106,7 +106,7 @@ func (h *Handler) EditLaySummary(w http.ResponseWriter, r *http.Request, ctx Con
 	var b BindLaySummary
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
 		h.Logger.Warnw("edit publication lay summary: could not bind request arguments", "error", err, "request", r)
-		render.BadRequest(w, r, err)
+		handlers.BadRequest(w, r, err)
 		return
 	}
 
@@ -132,7 +132,7 @@ func (h *Handler) UpdateLaySummary(w http.ResponseWriter, r *http.Request, ctx C
 	b := BindLaySummary{}
 	if err := bind.Request(r, &b); err != nil {
 		h.Logger.Warnw("update publication lay summary: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		handlers.BadRequest(w, r, err)
 		return
 	}
 
@@ -182,7 +182,7 @@ func (h *Handler) UpdateLaySummary(w http.ResponseWriter, r *http.Request, ctx C
 
 	if err != nil {
 		h.Logger.Errorf("update publication lay summary: Could not save the publication:", "error", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		handlers.InternalServerError(w, r, err)
 		return
 	}
 
@@ -195,7 +195,7 @@ func (h *Handler) ConfirmDeleteLaySummary(w http.ResponseWriter, r *http.Request
 	var b BindDeleteLaySummary
 	if err := bind.Request(r, &b); err != nil {
 		h.Logger.Warnw("confirm delete publication lay summary: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		handlers.BadRequest(w, r, err)
 		return
 	}
 
@@ -216,7 +216,7 @@ func (h *Handler) DeleteLaySummary(w http.ResponseWriter, r *http.Request, ctx C
 	var b BindDeleteLaySummary
 	if err := bind.Request(r, &b); err != nil {
 		h.Logger.Warnw("delete publication lay summary: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		handlers.BadRequest(w, r, err)
 		return
 	}
 
@@ -234,7 +234,7 @@ func (h *Handler) DeleteLaySummary(w http.ResponseWriter, r *http.Request, ctx C
 
 	if err != nil {
 		h.Logger.Errorf("delete publication lay summary: Could not save the publication:", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		handlers.InternalServerError(w, r, err)
 		return
 	}
 

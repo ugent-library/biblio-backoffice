@@ -22,7 +22,7 @@ type YieldLock struct {
 func (h *Handler) Lock(w http.ResponseWriter, r *http.Request, ctx Context) {
 	if !ctx.User.CanCurate() {
 		h.Logger.Warnw("lock publication: user has no permission to lock", "user", ctx.User.ID, "publication", ctx.Publication.ID)
-		render.Forbidden(w, r)
+		handlers.Forbidden(w, r)
 		return
 	}
 
@@ -52,7 +52,7 @@ func (h *Handler) Lock(w http.ResponseWriter, r *http.Request, ctx Context) {
 
 	if err != nil {
 		h.Logger.Errorf("lock publication: could not save the publication:", "error", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		handlers.InternalServerError(w, r, err)
 		return
 	}
 
@@ -68,7 +68,7 @@ func (h *Handler) Lock(w http.ResponseWriter, r *http.Request, ctx Context) {
 func (h *Handler) Unlock(w http.ResponseWriter, r *http.Request, ctx Context) {
 	if !ctx.User.CanCurate() {
 		h.Logger.Warnw("unlock publication: user has no permission to lock", "user", ctx.User.ID, "publication", ctx.Publication.ID)
-		render.Forbidden(w, r)
+		handlers.Forbidden(w, r)
 		return
 	}
 
@@ -99,7 +99,7 @@ func (h *Handler) Unlock(w http.ResponseWriter, r *http.Request, ctx Context) {
 
 	if err != nil {
 		h.Logger.Errorf("unlock publication: could not save the publication:", "error", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		handlers.InternalServerError(w, r, err)
 		return
 	}
 

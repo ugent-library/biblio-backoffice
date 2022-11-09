@@ -6,7 +6,6 @@ import (
 
 	"github.com/ugent-library/biblio-backend/internal/app/handlers"
 	"github.com/ugent-library/biblio-backend/internal/bind"
-	"github.com/ugent-library/biblio-backend/internal/render"
 	"github.com/ugent-library/biblio-backend/internal/validation"
 	"github.com/ugent-library/biblio-backend/internal/vocabularies"
 	"github.com/ugent-library/go-oidc/oidc"
@@ -34,21 +33,23 @@ func (h *Handler) Callback(w http.ResponseWriter, r *http.Request, ctx Context) 
 	claims := &oidc.Claims{}
 	if err := h.OIDCClient.Exchange(code, claims); err != nil {
 		h.Logger.Errorw("authentication: OIDC client could not complete exchange:", "errors", err)
-		render.InternalServerError(w, r, err)
+		handlers.InternalServerError(w, r, err)
 		return
 	}
 
 	user, err := h.UserService.GetUserByUsername(claims.PreferredUsername)
 	if err != nil {
 		h.Logger.Warnw("authentication: No user with that name could be found:", "errors", err, "user", claims.PreferredUsername)
-		render.NotFound(w, r, err)
+		// @TODO this can't be rendered via handlers.NotFound since we don't have a loaded Context object.
+		//   Callback isn't wrapped in a Wrap handler.
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
 
 	session, err := h.SessionStore.Get(r, h.SessionName)
 	if err != nil {
 		h.Logger.Errorw("authentication: session could not be retrieved:", "errors", err)
-		render.InternalServerError(w, r, err)
+		handlers.InternalServerError(w, r, err)
 		return
 	}
 
@@ -59,7 +60,7 @@ func (h *Handler) Callback(w http.ResponseWriter, r *http.Request, ctx Context) 
 
 	if err := session.Save(r, w); err != nil {
 		h.Logger.Errorw("authentication: session could not be saved:", "errors", err)
-		render.InternalServerError(w, r, err)
+		handlers.InternalServerError(w, r, err)
 		return
 	}
 
@@ -74,7 +75,7 @@ func (h *Handler) Logout(w http.ResponseWriter, r *http.Request, ctx Context) {
 	session, err := h.SessionStore.Get(r, h.SessionName)
 	if err != nil {
 		h.Logger.Errorw("authentication: session could not be retrieved:", "errors", err)
-		render.InternalServerError(w, r, err)
+		handlers.InternalServerError(w, r, err)
 		return
 	}
 
@@ -84,7 +85,7 @@ func (h *Handler) Logout(w http.ResponseWriter, r *http.Request, ctx Context) {
 	delete(session.Values, handlers.OriginalUserRoleKey)
 	if err := session.Save(r, w); err != nil {
 		h.Logger.Errorw("authentication: session could not be saved:", "errors", err)
-		render.InternalServerError(w, r, err)
+		handlers.InternalServerError(w, r, err)
 		return
 	}
 
@@ -93,21 +94,21 @@ func (h *Handler) Logout(w http.ResponseWriter, r *http.Request, ctx Context) {
 
 func (h *Handler) UpdateRole(w http.ResponseWriter, r *http.Request, ctx Context) {
 	if ctx.User == nil || !ctx.User.CanCurate() {
-		render.Unauthorized(w, r)
+		handlers.Unauthorized(w, r)
 		return
 	}
 
 	role := bind.PathValues(r).Get("role")
 
 	if !validation.InArray(vocabularies.Map["user_roles"], role) {
-		render.BadRequest(w, r, fmt.Errorf("%s is not a valid role", role))
+		handlers.BadRequest(w, r, fmt.Errorf("%s is not a valid role", role))
 		return
 	}
 
 	session, err := h.SessionStore.Get(r, h.SessionName)
 	if err != nil {
 		h.Logger.Errorw("authentication: session could not be retrieved:", "errors", err)
-		render.InternalServerError(w, r, err)
+		handlers.InternalServerError(w, r, err)
 		return
 	}
 
@@ -115,7 +116,7 @@ func (h *Handler) UpdateRole(w http.ResponseWriter, r *http.Request, ctx Context
 
 	if err := session.Save(r, w); err != nil {
 		h.Logger.Errorw("authentication: session could not be saved:", "errors", err)
-		render.InternalServerError(w, r, err)
+		handlers.InternalServerError(w, r, err)
 		return
 	}
 

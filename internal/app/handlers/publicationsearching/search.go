@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/ugent-library/biblio-backend/internal/app/handlers"
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/bind"
 	"github.com/ugent-library/biblio-backend/internal/models"
@@ -62,7 +63,7 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request, ctx Context) {
 	default:
 		errorUnkownScope := fmt.Errorf("unknown scope: %s", args.FilterFor("scope"))
 		h.Logger.Warnw("publication search: could not create searcher with passed filters", "errors", errorUnkownScope, "user", ctx.User.ID)
-		render.BadRequest(w, r, errorUnkownScope)
+		handlers.BadRequest(w, r, errorUnkownScope)
 		return
 	}
 	delete(args.Filters, "scope")
@@ -70,7 +71,7 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request, ctx Context) {
 	hits, err := searcher.Search(args)
 	if err != nil {
 		h.Logger.Errorw("publication search: could not execute search", "errors", err, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		handlers.InternalServerError(w, r, err)
 		return
 	}
 
@@ -84,7 +85,7 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request, ctx Context) {
 		globalHits, globalHitsErr := globalSearch(searcher)
 		if globalHitsErr != nil {
 			h.Logger.Errorw("publication search: could not execute global search", "errors", globalHitsErr, "user", ctx.User.ID)
-			render.InternalServerError(w, r, globalHitsErr)
+			handlers.InternalServerError(w, r, globalHitsErr)
 			return
 		}
 		isFirstUse = globalHits.Total == 0
@@ -121,7 +122,7 @@ func globalSearch(searcher backends.PublicationSearchService) (*models.Publicati
 
 func (h *Handler) CurationSearch(w http.ResponseWriter, r *http.Request, ctx Context) {
 	if !ctx.User.CanCurate() {
-		render.Forbidden(w, r)
+		handlers.Forbidden(w, r)
 		return
 	}
 
@@ -131,7 +132,7 @@ func (h *Handler) CurationSearch(w http.ResponseWriter, r *http.Request, ctx Con
 	hits, err := searcher.Search(ctx.SearchArgs)
 	if err != nil {
 		h.Logger.Errorw("publication search: could not execute search", "errors", err, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		handlers.InternalServerError(w, r, err)
 		return
 	}
 
@@ -145,7 +146,7 @@ func (h *Handler) CurationSearch(w http.ResponseWriter, r *http.Request, ctx Con
 		globalHits, globalHitsErr := globalSearch(searcher)
 		if globalHitsErr != nil {
 			h.Logger.Errorw("curation publication search: could not execute global search", "errors", globalHitsErr, "user", ctx.User.ID)
-			render.InternalServerError(w, r, globalHitsErr)
+			handlers.InternalServerError(w, r, globalHitsErr)
 			return
 		}
 		isFirstUse = globalHits.Total == 0

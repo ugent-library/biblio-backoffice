@@ -30,7 +30,7 @@ func (h *Handler) ConfirmDelete(w http.ResponseWriter, r *http.Request, ctx Cont
 func (h *Handler) Delete(w http.ResponseWriter, r *http.Request, ctx Context) {
 	if !ctx.User.CanDeleteDataset(ctx.Dataset) {
 		h.Logger.Warnw("delete dataset: user isn't allowed to delete dataset", "dataset", ctx.Dataset.ID, "user", ctx.User.ID, "user", ctx.User.ID)
-		render.Forbidden(w, r)
+		handlers.Forbidden(w, r)
 		return
 	}
 
@@ -48,7 +48,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request, ctx Context) {
 
 	if err != nil {
 		h.Logger.Errorf("delete dataset: Could not save the dataset:", "error", err, "identifier", ctx.Dataset.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		handlers.InternalServerError(w, r, err)
 		return
 	}
 

@@ -7,7 +7,6 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/bind"
 	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/biblio-backend/internal/render"
 )
 
 type Handler struct {
@@ -25,7 +24,7 @@ type Context struct {
 func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) http.HandlerFunc {
 	return h.BaseHandler.Wrap(func(w http.ResponseWriter, r *http.Request, ctx handlers.BaseContext) {
 		if ctx.User == nil {
-			render.Unauthorized(w, r)
+			handlers.Unauthorized(w, r)
 			return
 		}
 
@@ -36,13 +35,13 @@ func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) htt
 		if id := bind.PathValues(r).Get("id"); id != "" {
 			d, err := h.Repository.GetDataset(id)
 			if err != nil {
-				render.NotFound(w, r, err)
+				handlers.NotFound(w, r, ctx, err)
 				return
 			}
 
 			if !ctx.User.CanEditDataset(d) {
 				h.Logger.Warn("create dataset: user isn't allowed to edit the dataset:", "error", err, "dataset", id, "user", ctx.User.ID)
-				render.Forbidden(w, r)
+				handlers.Forbidden(w, r)
 				return
 			}
 

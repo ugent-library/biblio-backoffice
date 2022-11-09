@@ -18,6 +18,7 @@ import (
 	"github.com/gorilla/sessions"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/ugent-library/biblio-backend/internal/app/handlers"
 	"github.com/ugent-library/biblio-backend/internal/app/helpers"
 	"github.com/ugent-library/biblio-backend/internal/app/routes"
 	"github.com/ugent-library/biblio-backend/internal/backends"
@@ -266,7 +267,7 @@ func buildRouter(services *backends.Services, logger *zap.SugaredLogger) *mux.Ro
 	}
 
 	// init render
-	render.AuthURL = baseURL.Path + "/login"
+	handlers.AuthURL = baseURL.Path + "/login"
 
 	for _, funcs := range funcMaps {
 		render.Funcs(funcs)

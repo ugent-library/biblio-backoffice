@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/ugent-library/biblio-backend/internal/app/displays"
+	"github.com/ugent-library/biblio-backend/internal/app/handlers"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
 	"github.com/ugent-library/biblio-backend/internal/render/display"
@@ -84,7 +85,7 @@ func (h *Handler) ShowPublications(w http.ResponseWriter, r *http.Request, ctx C
 	relatedPublications, err := h.Repository.GetVisibleDatasetPublications(ctx.User, ctx.Dataset)
 	if err != nil {
 		h.Logger.Errorw("show dataset publications: could not get publications", "errors", err, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		handlers.InternalServerError(w, r, err)
 		return
 	}
 
