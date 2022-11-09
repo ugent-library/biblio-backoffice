@@ -30,6 +30,7 @@ type YieldNotFound struct {
 }
 
 func (h *Handler) NotFound(w http.ResponseWriter, r *http.Request, ctx Context) {
+	w.WriteHeader(404)
 	render.Layout(w, "layouts/default", "pages/notfound", YieldNotFound{
 		Context:   ctx,
 		PageTitle: "Biblio",
