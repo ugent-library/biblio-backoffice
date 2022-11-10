@@ -29,15 +29,18 @@ const timestampFmt = "2006-01-02 15:04:05"
 var licenseMap = map[string]string{
 	"CC0-1.0":          "Creative Commons Public Domain Dedication (CC0 1.0)",
 	"CC-BY-4.0":        "Creative Commons Attribution 4.0 International Public License (CC-BY 4.0)",
-	"CC-BY-SA-4.0":     "Creative Commons Attribution-ShareAlike 4.0 International Public License (CC BY-SA 4.0",
+	"CC-BY-SA-4.0":     "Creative Commons Attribution-ShareAlike 4.0 International Public License (CC BY-SA 4.0)",
 	"CC-BY-NC-4.0":     "Creative Commons Attribution-NonCommercial 4.0 International Public License (CC BY-NC 4.0)",
 	"CC-BY-ND-4.0":     "Creative Commons Attribution-NoDerivatives 4.0 International Public License (CC BY-ND 4.0)",
 	"CC-BY-NC-SA-4.0":  "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International Public License (CC BY-NC-SA 4.0)",
 	"CC-BY-NC-ND-4.0":  "Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International Public License (CC BY-NC-ND 4.0)",
 	"InCopyright":      "No license (in copyright)",
-	"LicenseNotListed": "The license is not listed here",
+	"LicenseNotListed": "A specific license has been chosen by the rights holder. Get in touch with the rights holder for reuse rights.",
 	"CopyrightUnknown": "I don't know the status of the copyright of this publication",
+	"":                 "Get in touch with the rights holder for reuse rights.",
 }
+
+var hiddenLicenses []string = []string{"LicenseNotListed", "CopyrightUnknown"}
 
 type Handler struct {
 	handlers.BaseHandler
@@ -193,6 +196,7 @@ type Publication struct {
 	Language            []string      `json:"language,omitempty"`
 	License             string        `json:"license,omitempty"`
 	MiscType            string        `json:"misc_type,omitempty"`
+	OtherLicense        string        `json:"other_license,omitempty"`
 	Page                *Page         `json:"page,omitempty"`
 	Parent              *Parent       `json:"parent,omitempty"`
 	Project             []Project     `json:"project,omitempty"`
@@ -610,7 +614,7 @@ func (h *Handler) mapPublication(p *models.Publication) *Publication {
 
 			pp.File[i] = f
 
-			if v.License != "" && pp.CopyrightStatement == "" {
+			if pp.CopyrightStatement == "" {
 				if vv, ok := licenseMap[v.License]; ok {
 					pp.CopyrightStatement = vv
 				}
@@ -706,10 +710,13 @@ func (h *Handler) mapDataset(p *models.Dataset) *Publication {
 		pp.Keyword = append(pp.Keyword, p.Keyword...)
 	}
 
-	if p.License != "" {
-		if v, ok := licenseMap[p.License]; ok {
-			p.License = v
-		}
+	// hide keywords like LicenseNotListed or UnknownCopyright
+	if !validation.InArray(hiddenLicenses, p.License) {
+		pp.License = p.License
+	}
+	pp.OtherLicense = p.OtherLicense
+	if v, ok := licenseMap[p.License]; ok {
+		pp.CopyrightStatement = v
 	}
 
 	if p.Project != nil {
