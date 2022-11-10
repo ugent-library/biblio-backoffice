@@ -172,7 +172,7 @@ func init() {
 	message.SetString(language.English, "publication_statuses.returned", "Withdrawn")
 
 	message.SetString(language.English, "publication_file_access_levels.info:eu-repo/semantics/openAccess", "Public access - Open access")
-	message.SetString(language.English, "publication_file_access_levels.info:eu-repo/semantics/embargoedAccess", "Temporarily restricted - Embargoed access")
+	message.SetString(language.English, "publication_file_access_levels.info:eu-repo/semantics/embargoedAccess", "Embargoed access")
 	message.SetString(language.English, "publication_file_access_levels.info:eu-repo/semantics/restrictedAccess", "UGent access - Local access")
 	message.SetString(language.English, "publication_file_access_levels.info:eu-repo/semantics/closedAccess", "Private access - Closed access")
 
@@ -218,7 +218,7 @@ func init() {
 	message.SetString(language.English, "builder.embargo_date", "Embargo end")
 	message.SetString(language.English, "builder.access_level_after_embargo", "Access level after embargo")
 	message.SetString(language.English, "builder.esci_id", "ESCI ID")
-	message.SetString(language.English, "builder.extern", "Published while none of the authors are employed at UGent")
+	message.SetString(language.English, "builder.extern", "Published while none of the authors and editors were employed at UGent")
 	message.SetString(language.English, "builder.format", "Data format")
 	message.SetString(language.English, "builder.has_confidential_data", "Does the dissertation contain confidential or personal data?")
 	message.SetString(language.English, "builder.has_patent_application", "Is a patent application ongoing or planned?")
@@ -736,7 +736,7 @@ func init() {
 	message.SetString(language.English, "builder.file.embargo_date", "Embargo end")
 	message.SetString(language.English, "builder.file.access_level_during_embargo", "Access level <strong>during</strong> embargo")
 	message.SetString(language.English, "builder.file.access_level_after_embargo", "Access level <strong>after</strong> embargo period")
-	message.SetString(language.English, "builder.file.license", "License for reuse granted by the rights holder")
+	message.SetString(language.English, "builder.file.license", "License granted by the rights holder")
 	// message.SetString(language.English, "builder.file.no_license", "No license (in copyright)")
 	// message.SetString(language.English, "builder.file.other_license", "Other license")
 	message.SetString(language.English, "builder.file.description", "Description")
