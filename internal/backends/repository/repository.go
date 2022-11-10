@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/jackc/pgx/v4"
@@ -219,6 +220,103 @@ func (s *Repository) UpdatePublication(snapshotID string, p *models.Publication,
 	}
 	p.SnapshotID = snapshotID
 	return nil
+}
+
+func (s *Repository) CountPublications(args *backends.RepositoryQueryArgs) (int, error) {
+	sql := "SELECT * FROM publications WHERE date_until is null"
+	values := make([]any, 0)
+	// TODO: how to safely quote field names?
+	for _, filter := range args.Filters {
+		values = append(values, filter.Value)
+		sql += " AND " + filter.Field + " " + filter.Op + " $" + strconv.Itoa(len(values))
+	}
+	return s.publicationStore.CountSql(sql, values, s.opts)
+}
+
+func (s *Repository) CountDatasets(args *backends.RepositoryQueryArgs) (int, error) {
+	sql := "SELECT * FROM datasets WHERE date_until is null"
+	values := make([]any, 0)
+	// TODO: how to safely quote field names?
+	for _, filter := range args.Filters {
+		values = append(values, filter.Value)
+		sql += " AND " + filter.Field + " " + filter.Op + " $" + strconv.Itoa(len(values))
+	}
+	return s.datasetStore.CountSql(sql, values, s.opts)
+}
+
+func (s *Repository) SearchPublications(args *backends.RepositoryQueryArgs) ([]*models.Publication, error) {
+	sql := "SELECT snapshot_id, id, data, date_from, date_until FROM publications WHERE date_until IS NULL"
+	values := make([]any, 0)
+	if args.Offset < 0 {
+		args.Offset = 0
+	}
+	if args.Limit < 0 {
+		args.Limit = 20
+	}
+
+	// TODO: how to safely quote field names?
+	for _, filter := range args.Filters {
+		values = append(values, filter.Value)
+		sql += " AND " + filter.Field + " " + filter.Op + " $" + strconv.Itoa(len(values))
+	}
+
+	if args.Order != "" {
+		sql += " ORDER BY " + args.Order
+	}
+	values = append(values, args.Limit)
+	sql += " LIMIT $" + strconv.Itoa(len(values))
+	values = append(values, args.Offset)
+	sql += " OFFSET $" + strconv.Itoa(len(values))
+
+	publications := make([]*models.Publication, 0, args.Limit)
+
+	err := s.SelectPublications(sql, values, func(publication *models.Publication) bool {
+		publications = append(publications, publication)
+		return true
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return publications, nil
+}
+
+func (s *Repository) SearchDatasets(args *backends.RepositoryQueryArgs) ([]*models.Dataset, error) {
+	sql := "SELECT snapshot_id, id, data, date_from, date_until FROM datasets WHERE date_until IS NULL"
+	values := make([]any, 0)
+	if args.Offset < 0 {
+		args.Offset = 0
+	}
+	if args.Limit < 0 {
+		args.Limit = 20
+	}
+
+	// TODO: how to safely quote field names?
+	for _, filter := range args.Filters {
+		values = append(values, filter.Value)
+		sql += " AND " + filter.Field + " " + filter.Op + " $" + strconv.Itoa(len(values))
+	}
+
+	if args.Order != "" {
+		sql += " ORDER BY " + args.Order
+	}
+	values = append(values, args.Limit)
+	sql += " LIMIT $" + strconv.Itoa(len(values))
+	values = append(values, args.Offset)
+	sql += " OFFSET $" + strconv.Itoa(len(values))
+	datasets := make([]*models.Dataset, 0, args.Limit)
+
+	err := s.SelectDatasets(sql, values, func(dataset *models.Dataset) bool {
+		datasets = append(datasets, dataset)
+		return true
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return datasets, nil
 }
 
 func (s *Repository) SelectPublications(sql string, values []any, fn func(*models.Publication) bool) error {
