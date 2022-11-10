@@ -16,7 +16,7 @@ type indexedDataset struct {
 	DateUntil   string `json:"date_until,omitempty"`
 	// index only fields
 	HasMessage bool     `json:"has_message"`
-	Faculty    []string `json:"faculty"`
+	Faculty    []string `json:"faculty,omitempty"`
 }
 
 func NewIndexedDataset(d *models.Dataset) *indexedDataset {

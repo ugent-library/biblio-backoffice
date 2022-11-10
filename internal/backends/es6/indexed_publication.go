@@ -16,7 +16,7 @@ type indexedPublication struct {
 	DateUpdated string `json:"date_updated"`
 	// index only fields
 	HasMessage bool     `json:"has_message"`
-	Faculty    []string `json:"faculty"`
+	Faculty    []string `json:"faculty,omitempty"`
 }
 
 func NewIndexedPublication(p *models.Publication) *indexedPublication {
