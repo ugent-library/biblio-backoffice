@@ -479,6 +479,43 @@ func (s *Store) GetAllSnapshots(o Options) (*Cursor, error) {
 	return &Cursor{rows}, nil
 }
 
+func (s *Store) CountSql(sql string, values []any, o Options) (int, error) {
+	var (
+		ctx context.Context
+		db  DB
+	)
+	if o.Context == nil {
+		ctx = context.Background()
+	} else {
+		ctx = o.Context
+	}
+	if o.Transaction == nil {
+		db = s.db
+	} else {
+		db = o.Transaction.db
+	}
+
+	countSql := "SELECT COUNT(*) count FROM (" + sql + ") t"
+	rows, rowsErr := db.Query(ctx, countSql, values...)
+	if rowsErr != nil {
+		return 0, rowsErr
+	}
+	defer rows.Close()
+
+	if !rows.Next() {
+		// TODO: it is an error to use rows.Scan without calling Next()
+		// but what to return here?
+		return 0, nil
+	}
+
+	var count int = 0
+	scanErr := rows.Scan(&count)
+	if scanErr != nil {
+		return 0, scanErr
+	}
+	return count, nil
+}
+
 func (s *Store) GetHistory(id string, o Options) (*Cursor, error) {
 	var (
 		ctx context.Context

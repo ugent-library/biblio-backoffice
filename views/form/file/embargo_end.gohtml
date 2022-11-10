@@ -12,7 +12,7 @@
             </label>
             <input class="form-control{{if .Error}} is-invalid{{end}}" name="{{.Name}}" type="date"
                 value="{{.Value}}"{{with .Min}} min="{{.}}"{{end}}{{with .Max}} max="{{.}}"{{end}}{{if .Disabled}} disabled{{end}}>
-            <small>Belgian law allows open access to journal article author accepted manuscripts 12 months (social sciences and humanities) or 6 months (other sciences) after first online publication. More information on <a href="#TODO">embargo periods</a>.</small>
+            <small>More information about <a href="https://onderzoektips.ugent.be/en/tips/00002097" target="_blank">embargo periods</a>.</small>
             {{if .Error}}<small class="invalid-feedback">{{.Error}}</small>{{end}}
         </div>
     </div>
