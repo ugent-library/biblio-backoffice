@@ -45,22 +45,22 @@
                     <div>
                         <span class="badge badge-pill badge-success">
                             <i class="if if-info-circle"></i>
-                            <span class="badge-text"><strong>Recommended if legally possible</strong></span>
+                            <span class="badge-text">Recommended if legally possible</span>
                         </span>
                     </div>
-                    <span class="text-muted c-body-small">Your file will be immediately available to anyone. Not sure if it is allowed? Select ‘local access’.</span>
+                    <span class="text-muted c-body-small">Your file will be immediately available to anyone. Select "Local access – UGent only" if you are unsure.</span>
                 </div>
                 {{else if eq .Value "info:eu-repo/semantics/embargoedAccess"}}
                 <i class="if if-time text-muted align-self-center"></i>
                 <div class="ml-5">
                     <p class="mb-1 mr-3">{{.Label}}</p>
-                    <span class="text-muted c-body-small">Use to switch access levels after a specified embargo. UGent selects this by default to open up the author's accepted manuscript (AAM) of journal articles published since 2023.</span>
+                    <span class="text-muted c-body-small">Use to switch access levels after a specified embargo period. UGent selects this by default to open up the author accepted manuscript (AAM) of journal articles published since 2023.</span>
                 </div>
                 {{else if eq .Value "info:eu-repo/semantics/restrictedAccess"}}
                 <i class="if if-ghent-university text-primary align-self-center"></i>
                 <div class="ml-5">
                     <p class="mb-1 mr-3">{{.Label}}</p>
-                    <span class="text-muted c-body-small">Your file will be available to users within the UGent network only. Minimum expected by <a href="#TODO">UGent policy</a>.</span>
+                    <span class="text-muted c-body-small">Your file will be available to users within the UGent network only. Minimum expected by UGent policy.</span>
                 </div>
                 {{else if eq .Value "info:eu-repo/semantics/closedAccess"}}
                 <i class="if if-eye-off text-muted align-self-center"></i>
