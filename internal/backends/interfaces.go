@@ -64,6 +64,8 @@ type Repository interface {
 	ImportCurrentPublication(*models.Publication) error
 	ImportOldPublication(*models.Publication) error
 	UpdatePublication(string, *models.Publication, *models.User) error
+	CountPublications(*RepositoryQueryArgs) (int, error)
+	SearchPublications(*RepositoryQueryArgs) ([]*models.Publication, error)
 	SelectPublications(string, []any, func(*models.Publication) bool) error
 	EachPublication(func(*models.Publication) bool) error
 	EachPublicationSnapshot(func(*models.Publication) bool) error
@@ -77,6 +79,8 @@ type Repository interface {
 	ImportOldDataset(*models.Dataset) error
 	SaveDataset(*models.Dataset, *models.User) error
 	UpdateDataset(string, *models.Dataset, *models.User) error
+	CountDatasets(*RepositoryQueryArgs) (int, error)
+	SearchDatasets(*RepositoryQueryArgs) ([]*models.Dataset, error)
 	SelectDatasets(string, []any, func(*models.Dataset) bool) error
 	EachDataset(func(*models.Dataset) bool) error
 	EachDatasetSnapshot(func(*models.Dataset) bool) error
@@ -191,3 +195,16 @@ type HandleService interface {
 }
 
 var ErrNotFound = errors.New("record not found")
+
+type RepositoryFilter struct {
+	Field string
+	Op    string
+	Value string
+}
+
+type RepositoryQueryArgs struct {
+	Limit   int
+	Offset  int
+	Order   string
+	Filters []*RepositoryFilter
+}
