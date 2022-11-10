@@ -136,6 +136,8 @@ var fileImportManyCmd = &cobra.Command{
 	Can easily be checked as following:
 		$ ./biblio-backend file import < /path/to/file_paths.json > /path/to/ids.txt
 		$ sha256sum -c /path/to/ids.txt
+
+	If the filestore already contains an identical checksum, the import will be skipped.
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
 
@@ -173,6 +175,14 @@ var fileImportManyCmd = &cobra.Command{
 						e.Error(),
 					)
 				}
+				continue
+			}
+
+			// skip files that are already in the store
+			if _, err := os.Stat(fs.FilePath(importFile.Sha256)); err != nil {
+				// <file-id> <old-path>
+				fmt.Printf("%s %s\n", importFile.Sha256, importFile.File)
+				lineNo++
 				continue
 			}
 
