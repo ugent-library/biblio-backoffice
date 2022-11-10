@@ -180,6 +180,7 @@ var fileImportManyCmd = &cobra.Command{
 
 			// skip files that are already in the store
 			if _, err := os.Stat(fs.FilePath(importFile.Sha256)); err != nil {
+				fmt.Fprintf(os.Stderr, "skipping file %s\n", importFile.File)
 				// <file-id> <old-path>
 				fmt.Printf("%s %s\n", importFile.Sha256, importFile.File)
 				lineNo++
