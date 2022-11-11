@@ -19,7 +19,7 @@ type userService struct {
 }
 
 func NewUserService(service backends.UserService) backends.UserService {
-	cache := gcache.New(2000).Expiration(5 * time.Minute).LRU().Build()
+	cache := gcache.New(2500).Expiration(5 * time.Minute).LRU().Build()
 	return &userService{
 		cache:   cache,
 		service: service,
@@ -52,7 +52,7 @@ type personService struct {
 }
 
 func NewPersonService(service backends.PersonService) backends.PersonService {
-	cache := gcache.New(10000).Expiration(30 * time.Minute).LRU().Build()
+	cache := gcache.New(5000).Expiration(30 * time.Minute).LRU().Build()
 	return &personService{
 		cache:   cache,
 		service: service,
@@ -110,7 +110,7 @@ type projectService struct {
 }
 
 func NewprojectService(service backends.ProjectService) backends.ProjectService {
-	cache := gcache.New(5000).Expiration(30 * time.Minute).LRU().Build()
+	cache := gcache.New(2500).Expiration(30 * time.Minute).LRU().Build()
 	return &projectService{
 		cache:   cache,
 		service: service,
