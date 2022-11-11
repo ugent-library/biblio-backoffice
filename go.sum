@@ -122,6 +122,8 @@ github.com/blevesearch/zapx/v14 v14.3.4/go.mod h1:b1YhRXXhAj9i+9aOwhRKCHUmJyYieK
 github.com/blevesearch/zapx/v15 v15.3.3/go.mod h1:C+f/97ZzTzK6vt/7sVlZdzZxKu+5+j4SrGCvr9dJzaY=
 github.com/blevesearch/zapx/v15 v15.3.4 h1:/y6AOxRuBiZPFAItqcrKcXPPtlAwuW/jMoOFO7tc7rs=
 github.com/blevesearch/zapx/v15 v15.3.4/go.mod h1:TQ/qDC2q7TSSpeC6Vgr9fDN56Ra0u49lZJQ4v30WEx4=
+github.com/bluele/gcache v0.0.2 h1:WcbfdXICg7G/DGBh1PFfcirkWOQV+v077yF1pSy3DGw=
+github.com/bluele/gcache v0.0.2/go.mod h1:m15KV+ECjptwSPxKhOhQoAFQVtUFjTVkc3H8o0t/fp0=
 github.com/caltechlibrary/doitools v0.0.1 h1:c6lvI5l9juo019GGUvuwbzeyv1c6VtSi8mkUv1drgwY=
 github.com/caltechlibrary/doitools v0.0.1/go.mod h1:1K36p/UIkIFM0JVaIVtFStKsFu5xjjYWMWAUExmFnP0=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=

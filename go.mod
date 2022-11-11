@@ -7,6 +7,7 @@ require (
 	github.com/alexliesenfeld/health v0.6.0
 	github.com/alitto/pond v1.8.0
 	github.com/blevesearch/bleve/v2 v2.3.2
+	github.com/bluele/gcache v0.0.2
 	github.com/caltechlibrary/doitools v0.0.1
 	github.com/dimchansky/utfbom v1.1.1
 	github.com/elastic/go-elasticsearch/v6 v6.8.10
