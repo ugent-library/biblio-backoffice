@@ -20,6 +20,7 @@ import (
 	excel_dataset "github.com/ugent-library/biblio-backend/internal/backends/excel/dataset"
 	excel_publication "github.com/ugent-library/biblio-backend/internal/backends/excel/publication"
 	"github.com/ugent-library/biblio-backend/internal/backends/handle"
+	"github.com/ugent-library/biblio-backend/internal/caching"
 
 	"github.com/ugent-library/biblio-backend/internal/backends/filestore"
 	"github.com/ugent-library/biblio-backend/internal/backends/ianamedia"
@@ -83,10 +84,10 @@ func newServices() *backends.Services {
 		Repository:                newRepository(),
 		DatasetSearchService:      newDatasetSearchService(),
 		PublicationSearchService:  newPublicationSearchService(),
-		OrganizationService:       biblioClient,
-		PersonService:             biblioClient,
-		ProjectService:            biblioClient,
-		UserService:               biblioClient,
+		OrganizationService:       caching.NewOrganzationService(biblioClient),
+		PersonService:             caching.NewPersonService(biblioClient),
+		ProjectService:            caching.NewprojectService(biblioClient),
+		UserService:               caching.NewUserService(biblioClient),
 		OrganizationSearchService: biblioClient,
 		PersonSearchService:       biblioClient,
 		ProjectSearchService:      biblioClient,
