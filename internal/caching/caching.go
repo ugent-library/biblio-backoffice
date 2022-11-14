@@ -76,7 +76,7 @@ type organizationService struct {
 	cache   gcache.Cache
 }
 
-func NewOrganzationService(service backends.OrganizationService) backends.OrganizationService {
+func NewOrganizationService(service backends.OrganizationService) backends.OrganizationService {
 	cache := gcache.New(1000).
 		Expiration(30 * time.Minute).
 		LoaderFunc(func(key any) (any, error) {
@@ -103,7 +103,7 @@ type projectService struct {
 	cache   gcache.Cache
 }
 
-func NewprojectService(service backends.ProjectService) backends.ProjectService {
+func NewProjectService(service backends.ProjectService) backends.ProjectService {
 	cache := gcache.New(2500).
 		Expiration(30 * time.Minute).
 		LoaderFunc(func(key any) (any, error) {
