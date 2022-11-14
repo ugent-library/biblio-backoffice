@@ -56,15 +56,15 @@
                     <div class="bc-toolbar-item">
                         <ul class="nav nav-main">
                             <li class="nav-item">
-                                <a class="nav-link collapsed" href="https://biblio.ugent.be/contact" target="_blank">
-                                    <i class="if if-info-circle if--small mt-1 text-muted"></i>
+                                <a class="nav-link collapsed btn-sm" href="https://biblio.ugent.be/contact" target="_blank">
+                                    <i class="if if-info-circle if--small text-muted"></i>
                                     <span class="btn-text">Help</span>
                                 </a>
                             </li>
                             <li class="nav-item">
                                 {{if .User}}
                                     <div class="dropdown position-static">
-                                        <button class="nav-link dropdown-toggle" role="button"
+                                        <button class="nav-link dropdown-toggle btn-sm" role="button"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             <div class="bc-avatar-and-text">
                                                 <div class="bc-avatar bc-avatar--tiny mr-3">
@@ -100,9 +100,9 @@
                                         </div>
                                     </div>
                                 {{else}}
-                                    <a class="btn btn-primary" href="{{pathFor "login"}}">
-                                        <i class="if if-arrow-right"></I>
-                                        <span class="btn-text">Log in</span>
+                                    <a class="btn btn-primary btn-sm" href="{{pathFor "login"}}">
+                                        <i class="if if-arrow-right ml-0"></I>
+                                        <span class="btn-text mr-2">Log in</span>
                                     </a>
                                 {{end}}
                             </li>

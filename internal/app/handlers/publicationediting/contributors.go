@@ -753,7 +753,7 @@ func confirmContributorForm(ctx Context, role string, c *models.Contributor, err
 	if role == "author" {
 		fields = append(fields, &form.SelectRepeat{
 			Name:        "credit_role",
-			Label:       "Credit roles",
+			Label:       "Roles",
 			Options:     localize.VocabularySelectOptions(ctx.Locale, "credit_roles"),
 			Values:      c.CreditRole,
 			EmptyOption: true,

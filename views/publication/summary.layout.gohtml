@@ -107,10 +107,17 @@
                         <div class="bc-toolbar-item">
                             <ul class="c-meta-list c-meta-list-horizontal flex-nowrap">
                                 {{if ne .Publication.VABBID ""}}
-                                <li class="c-meta-item" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="{{.Publication.VABB}}">
-                                    <i class="if if-bar-chart if--muted if--small mr-2"></i>
-                                    <span class="text-muted c-body-small">VABB</span>
-                                </li>
+                                    {{if .User.CanCurate}}
+                                    <li class="c-meta-item">
+                                        <i class="if if-bar-chart if--muted if--small mr-2"></i>
+                                        <span class="text-muted c-body-small">{{.Publication.VABB}}</span>
+                                    </li>
+                                    {{else}}
+                                    <li class="c-meta-item" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="{{.Publication.VABB}}">
+                                        <i class="if if-bar-chart if--muted if--small mr-2"></i>
+                                        <span class="text-muted c-body-small">VABB</span>
+                                    </li>
+                                    {{end}}
                                 {{end}}
                                 {{if .Publication.Legacy}}
                                 <li class="c-meta-item" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Legacy record">
