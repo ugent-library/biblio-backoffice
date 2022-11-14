@@ -396,7 +396,7 @@ func (h *Handler) mapPublication(p *models.Publication) *Publication {
 
 	if p.Status == "private" {
 		pp.Status = "unsubmitted"
-	} else if p.HasBeenPublic {
+	} else if p.Status == "deleted" && p.HasBeenPublic {
 		pp.Status = "pdeleted"
 	} else {
 		pp.Status = p.Status
@@ -745,7 +745,7 @@ func (h *Handler) mapDataset(p *models.Dataset) *Publication {
 
 	if p.Status == "private" {
 		pp.Status = "unsubmitted"
-	} else if p.HasBeenPublic {
+	} else if p.Status == "deleted" && p.HasBeenPublic {
 		pp.Status = "pdeleted"
 	} else {
 		pp.Status = p.Status
