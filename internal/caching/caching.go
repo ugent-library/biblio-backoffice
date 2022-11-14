@@ -1,11 +1,11 @@
 // TODO use something with lower gc load and more predictable size like
 // https://github.com/dgraph-io/ristretto
 // https://github.com/allegro/bigcache
+// or memcached, redis
 
 package caching
 
 import (
-	"errors"
 	"time"
 
 	"github.com/bluele/gcache"
@@ -19,7 +19,13 @@ type userService struct {
 }
 
 func NewUserService(service backends.UserService) backends.UserService {
-	cache := gcache.New(2500).Expiration(5 * time.Minute).LRU().Build()
+	cache := gcache.New(2500).
+		Expiration(5 * time.Minute).
+		LRU().
+		LoaderFunc(func(key any) (any, error) {
+			return service.GetUser(key.(string))
+		}).
+		Build()
 	return &userService{
 		cache:   cache,
 		service: service,
@@ -28,14 +34,6 @@ func NewUserService(service backends.UserService) backends.UserService {
 
 func (s *userService) GetUser(id string) (*models.User, error) {
 	v, err := s.cache.Get(id)
-	if errors.Is(err, gcache.KeyNotFoundError) {
-		u, err := s.service.GetUser(id)
-		if err != nil {
-			return nil, err
-		}
-		s.cache.Set(id, u)
-		return u, nil
-	}
 	if err != nil {
 		return nil, err
 	}
@@ -52,7 +50,13 @@ type personService struct {
 }
 
 func NewPersonService(service backends.PersonService) backends.PersonService {
-	cache := gcache.New(5000).Expiration(30 * time.Minute).LRU().Build()
+	cache := gcache.New(5000).
+		Expiration(30 * time.Minute).
+		LoaderFunc(func(key any) (any, error) {
+			return service.GetPerson(key.(string))
+		}).
+		LRU().
+		Build()
 	return &personService{
 		cache:   cache,
 		service: service,
@@ -61,14 +65,6 @@ func NewPersonService(service backends.PersonService) backends.PersonService {
 
 func (s *personService) GetPerson(id string) (*models.Person, error) {
 	v, err := s.cache.Get(id)
-	if errors.Is(err, gcache.KeyNotFoundError) {
-		p, err := s.service.GetPerson(id)
-		if err != nil {
-			return nil, err
-		}
-		s.cache.Set(id, p)
-		return p, nil
-	}
 	if err != nil {
 		return nil, err
 	}
@@ -81,7 +77,13 @@ type organizationService struct {
 }
 
 func NewOrganzationService(service backends.OrganizationService) backends.OrganizationService {
-	cache := gcache.New(1000).Expiration(30 * time.Minute).LRU().Build()
+	cache := gcache.New(1000).
+		Expiration(30 * time.Minute).
+		LoaderFunc(func(key any) (any, error) {
+			return service.GetOrganization(key.(string))
+		}).
+		LRU().
+		Build()
 	return &organizationService{
 		cache:   cache,
 		service: service,
@@ -90,14 +92,6 @@ func NewOrganzationService(service backends.OrganizationService) backends.Organi
 
 func (s *organizationService) GetOrganization(id string) (*models.Organization, error) {
 	v, err := s.cache.Get(id)
-	if errors.Is(err, gcache.KeyNotFoundError) {
-		o, err := s.service.GetOrganization(id)
-		if err != nil {
-			return nil, err
-		}
-		s.cache.Set(id, o)
-		return o, nil
-	}
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +104,13 @@ type projectService struct {
 }
 
 func NewprojectService(service backends.ProjectService) backends.ProjectService {
-	cache := gcache.New(2500).Expiration(30 * time.Minute).LRU().Build()
+	cache := gcache.New(2500).
+		Expiration(30 * time.Minute).
+		LoaderFunc(func(key any) (any, error) {
+			return service.GetProject(key.(string))
+		}).
+		LRU().
+		Build()
 	return &projectService{
 		cache:   cache,
 		service: service,
@@ -119,14 +119,6 @@ func NewprojectService(service backends.ProjectService) backends.ProjectService 
 
 func (s *projectService) GetProject(id string) (*models.Project, error) {
 	v, err := s.cache.Get(id)
-	if errors.Is(err, gcache.KeyNotFoundError) {
-		p, err := s.service.GetProject(id)
-		if err != nil {
-			return nil, err
-		}
-		s.cache.Set(id, p)
-		return p, nil
-	}
 	if err != nil {
 		return nil, err
 	}
