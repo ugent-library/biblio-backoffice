@@ -362,10 +362,18 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		Name("dataset_republish")
 
 	// lock dataset
+	r.HandleFunc("/dataset/{id}/confirm-lock",
+		datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmLock)).
+		Methods("GET").
+		Name("dataset_confirm_lock")
 	r.HandleFunc("/dataset/{id}/lock",
 		datasetEditingHandler.Wrap(datasetEditingHandler.Lock)).
 		Methods("POST").
 		Name("dataset_lock")
+	r.HandleFunc("/dataset/{id}/confirm-unlock",
+		datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmUnlock)).
+		Methods("GET").
+		Name("dataset_confirm_unlock")
 	r.HandleFunc("/dataset/{id}/unlock",
 		datasetEditingHandler.Wrap(datasetEditingHandler.Unlock)).
 		Methods("POST").
@@ -694,10 +702,18 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		Name("publication_republish")
 
 	// lock publication
+	r.HandleFunc("/publication/{id}/confirm-lock",
+		publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmLock)).
+		Methods("GET").
+		Name("publication_confirm_lock")
 	r.HandleFunc("/publication/{id}/lock",
 		publicationEditingHandler.Wrap(publicationEditingHandler.Lock)).
 		Methods("POST").
 		Name("publication_lock")
+	r.HandleFunc("/publication/{id}/confirm-unlock",
+		publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmUnlock)).
+		Methods("GET").
+		Name("publication_confirm_unlock")
 	r.HandleFunc("/publication/{id}/unlock",
 		publicationEditingHandler.Wrap(publicationEditingHandler.Unlock)).
 		Methods("POST").
