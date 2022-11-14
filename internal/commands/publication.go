@@ -267,6 +267,12 @@ var updatePublicationEmbargoes = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		e := Services()
 
+		e.Repository.AddPublicationListener(func(p *models.Publication) {
+			if err := e.PublicationSearchService.Index(p); err != nil {
+				log.Fatalf("error indexing publication %s: %v", p.ID, err)
+			}
+		})
+
 		var count int = 0
 		updateEmbargoErr := e.Repository.Transaction(
 			context.Background(),

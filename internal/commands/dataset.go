@@ -227,6 +227,12 @@ var updateDatasetEmbargoes = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		e := Services()
 
+		e.Repository.AddDatasetListener(func(d *models.Dataset) {
+			if err := e.DatasetSearchService.Index(d); err != nil {
+				log.Fatalf("error indexing dataset %s: %v", d.ID, err)
+			}
+		})
+
 		var count int = 0
 		updateEmbargoErr := e.Repository.Transaction(
 			context.Background(),
