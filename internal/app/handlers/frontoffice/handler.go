@@ -5,7 +5,6 @@ import (
 	"crypto/subtle"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net"
 	"net/http"
 	"net/url"
@@ -834,7 +833,7 @@ func (h *Handler) GetAllPublications(w http.ResponseWriter, r *http.Request) {
 
 	count, countErr := h.Repository.CountPublications(args)
 	if countErr != nil {
-		log.Printf("count error: %s", countErr)
+		h.Logger.Errorf("count error", "err", countErr)
 		render.InternalServerError(w, r, countErr)
 		return
 	}
@@ -845,7 +844,7 @@ func (h *Handler) GetAllPublications(w http.ResponseWriter, r *http.Request) {
 		publications, searchErr := h.Repository.SearchPublications(args)
 
 		if searchErr != nil {
-			log.Printf("select error: %s", searchErr)
+			h.Logger.Errorf("select error", "err", searchErr)
 			render.InternalServerError(w, r, searchErr)
 			return
 		}
@@ -901,7 +900,7 @@ func (h *Handler) GetAllDatasets(w http.ResponseWriter, r *http.Request) {
 
 	count, countErr := h.Repository.CountDatasets(args)
 	if countErr != nil {
-		log.Printf("count error: %s", countErr)
+		h.Logger.Errorf("count error", "err", countErr)
 		render.InternalServerError(w, r, countErr)
 		return
 	}
@@ -912,7 +911,7 @@ func (h *Handler) GetAllDatasets(w http.ResponseWriter, r *http.Request) {
 		datasets, searchErr := h.Repository.SearchDatasets(args)
 
 		if searchErr != nil {
-			log.Printf("select error: %s", searchErr)
+			h.Logger.Errorf("select error", "err", searchErr)
 			render.InternalServerError(w, r, searchErr)
 			return
 		}
@@ -973,7 +972,7 @@ func (h *Handler) DownloadFile(w http.ResponseWriter, r *http.Request) {
 			ip = remoteIP
 		}
 		if !h.IPFilter.Allowed(ip) {
-			log.Printf("ip %s not allowed, allowed: %s", ip, viper.GetString("ip-ranges"))
+			h.Logger.Warnw("ip not allowed, allowed", "ip", ip, "allowed", viper.GetString("ip-ranges"))
 			render.Forbidden(w, r)
 			return
 		}
