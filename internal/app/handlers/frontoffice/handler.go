@@ -969,7 +969,7 @@ func (h *Handler) DownloadFile(w http.ResponseWriter, r *http.Request) {
 		// check ip
 		ip, _, _ := net.SplitHostPort(r.RemoteAddr)
 		if !h.IPFilter.Allowed(ip) {
-			log.Printf("ip %s not allowed, allowed: %s", ip, viper.GetString("ip-ranges"))
+			log.Printf("ip %s not allowed, allowed: %s, headers: %+v", ip, viper.GetString("ip-ranges"), r.Header)
 			render.Forbidden(w, r)
 			return
 		}
