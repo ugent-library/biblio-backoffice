@@ -967,7 +967,11 @@ func (h *Handler) DownloadFile(w http.ResponseWriter, r *http.Request) {
 		// ok
 	case "info:eu-repo/semantics/restrictedAccess":
 		// check ip
-		ip, _, _ := net.SplitHostPort(r.RemoteAddr)
+		ip := r.Header.Get("X-Forwarded-For")
+		if ip == "" {
+			remoteIP, _, _ := net.SplitHostPort(r.RemoteAddr)
+			ip = remoteIP
+		}
 		if !h.IPFilter.Allowed(ip) {
 			log.Printf("ip %s not allowed, allowed: %s", ip, viper.GetString("ip-ranges"))
 			render.Forbidden(w, r)
