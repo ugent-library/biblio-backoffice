@@ -93,7 +93,7 @@ func (publications *Publications) Search(args *models.SearchArgs) (*models.Publi
 						"terms": M{
 							"field":         field,
 							"order":         M{"_key": "asc"},
-							"size":          200,
+							"size":          999,
 							"min_doc_count": 0,
 						},
 					},
