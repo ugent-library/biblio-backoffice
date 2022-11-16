@@ -130,7 +130,8 @@
                     "type": "text"
                 },
                 "alternative_title": {
-                    "type": "text"
+                    "type": "text",
+                    "copy_to": "all"
                 },
                 "article_number": {
                     "type": "text"
@@ -350,7 +351,8 @@
                     "type": "text"
                 },
                 "issue_title": {
-                    "type": "text"
+                    "type": "text",
+                    "copy_to": "all"
                 },
                 "journal_article_type": {
                     "type": "keyword"
@@ -495,10 +497,12 @@
                     "type": "text"
                 },
                 "publication": {
-                    "type": "text"
+                    "type": "text",
+                    "copy_to": "all"
                 },
                 "publication_abbreviation": {
-                    "type": "text"
+                    "type": "text",
+                    "copy_to": "all"
                 },
                 "publication_status": {
                     "type": "keyword"
@@ -523,7 +527,8 @@
                     "type": "keyword"
                 },
                 "series_title": {
-                    "type": "text"
+                    "type": "text",
+                    "copy_to": "all"
                 },
                 "snapshot_id": {
                     "type": "keyword"
