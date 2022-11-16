@@ -326,6 +326,9 @@ var updatePublicationEmbargoes = &cobra.Command{
 						}
 						file.ClearEmbargo()
 					}
+
+					publication.User = nil
+
 					if e := repo.SavePublication(publication, nil); e != nil {
 						return e
 					}
