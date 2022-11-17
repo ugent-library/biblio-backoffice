@@ -268,10 +268,11 @@ var updatePublicationEmbargoes = &cobra.Command{
 	Short: "Update publication embargoes",
 	Run: func(cmd *cobra.Command, args []string) {
 		e := Services()
+		logger := newLogger()
 
 		e.Repository.AddPublicationListener(func(p *models.Publication) {
 			if err := e.PublicationSearchService.Index(p); err != nil {
-				log.Fatalf("error indexing publication %s: %v", p.ID, err)
+				logger.Fatalf("error indexing publication %s: %v", p.ID, err)
 			}
 		})
 
@@ -342,10 +343,10 @@ var updatePublicationEmbargoes = &cobra.Command{
 		)
 
 		if updateEmbargoErr != nil {
-			log.Fatal(updateEmbargoErr)
+			logger.Fatal(updateEmbargoErr)
 		}
 
-		log.Printf("updated %d embargoes", count)
+		logger.Infof("updated %d embargoes", count)
 	},
 }
 
@@ -354,16 +355,16 @@ var createPublicationHandles = &cobra.Command{
 	Short: "Create publication handles",
 	Run: func(cmd *cobra.Command, args []string) {
 		e := Services()
-
+		logger := newLogger()
 		handleService := e.HandleService
 
 		if handleService == nil {
-			log.Fatal("handle server updates are not enabled")
+			logger.Fatal("handle server updates are not enabled")
 		}
 
 		e.Repository.AddPublicationListener(func(p *models.Publication) {
 			if err := e.PublicationSearchService.Index(p); err != nil {
-				log.Fatalf("error indexing publication %s: %v", p.ID, err)
+				logger.Fatalf("error indexing publication %s: %v", p.ID, err)
 			}
 		})
 
@@ -407,7 +408,7 @@ var createPublicationHandles = &cobra.Command{
 							h.Message,
 						)
 					} else {
-						log.Printf(
+						logger.Infof(
 							"added handle url %s to publication %s",
 							h.GetFullHandleURL(),
 							p.ID,
@@ -427,9 +428,9 @@ var createPublicationHandles = &cobra.Command{
 		)
 
 		if createHandlesErr != nil {
-			log.Fatal(createHandlesErr)
+			logger.Fatal(createHandlesErr)
 		}
 
-		log.Printf("updated %d embargoes", count)
+		logger.Infof("created %d handles", count)
 	},
 }

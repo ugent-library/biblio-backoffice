@@ -3,7 +3,7 @@ package models
 import "fmt"
 
 /*
-	copy from handle-server-api
+copy from handle-server-api
 */
 type HandleData struct {
 	Url    string `json:"url"`
