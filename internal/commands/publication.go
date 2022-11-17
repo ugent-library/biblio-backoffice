@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"log"
 	"os"
@@ -27,6 +28,7 @@ func init() {
 	publicationCmd.AddCommand(publicationImportCmd)
 	publicationCmd.AddCommand(oldPublicationImportCmd)
 	publicationCmd.AddCommand(updatePublicationEmbargoes)
+	publicationCmd.AddCommand(createPublicationHandles)
 	rootCmd.AddCommand(publicationCmd)
 }
 
@@ -341,6 +343,91 @@ var updatePublicationEmbargoes = &cobra.Command{
 
 		if updateEmbargoErr != nil {
 			log.Fatal(updateEmbargoErr)
+		}
+
+		log.Printf("updated %d embargoes", count)
+	},
+}
+
+var createPublicationHandles = &cobra.Command{
+	Use:   "create-handles",
+	Short: "Create publication handles",
+	Run: func(cmd *cobra.Command, args []string) {
+		e := Services()
+
+		handleService := e.HandleService
+
+		if handleService == nil {
+			log.Fatal("handle server updates are not enabled")
+		}
+
+		e.Repository.AddPublicationListener(func(p *models.Publication) {
+			if err := e.PublicationSearchService.Index(p); err != nil {
+				log.Fatalf("error indexing publication %s: %v", p.ID, err)
+			}
+		})
+
+		var count int = 0
+		createHandlesErr := e.Repository.Transaction(
+			context.Background(),
+			func(repo backends.Repository) error {
+
+				publications := make([]*models.Publication, 0)
+				sql := `
+				SELECT * FROM publications WHERE date_until IS NULL AND
+				data->>'status' = 'public' AND
+				NOT data ? 'handle'
+				`
+
+				selectErr := repo.SelectPublications(
+					sql,
+					[]any{},
+					func(p *models.Publication) bool {
+						publications = append(publications, p)
+						return true
+					},
+				)
+
+				if selectErr != nil {
+					return selectErr
+				}
+
+				for _, p := range publications {
+					h, hErr := handleService.UpsertHandleByPublication(p)
+					if hErr != nil {
+						return fmt.Errorf(
+							"error adding handle for publication %s: %s",
+							p.ID,
+							hErr,
+						)
+					} else if !h.IsSuccess() {
+						return fmt.Errorf(
+							"error adding handle for publication %s: %s",
+							p.ID,
+							h.Message,
+						)
+					} else {
+						log.Printf(
+							"added handle url %s to publication %s",
+							h.GetFullHandleURL(),
+							p.ID,
+						)
+						p.Handle = h.GetFullHandleURL()
+						p.User = nil
+
+						if e := repo.SavePublication(p, nil); e != nil {
+							return e
+						}
+						count++
+					}
+				}
+
+				return nil
+			},
+		)
+
+		if createHandlesErr != nil {
+			log.Fatal(createHandlesErr)
 		}
 
 		log.Printf("updated %d embargoes", count)
