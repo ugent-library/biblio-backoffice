@@ -65,12 +65,12 @@ type Client struct {
 }
 
 type Store struct {
-	db           DB
-	name         string
-	table        string
-	listeners    []func(*Snapshot)
-	listnenersMu sync.RWMutex
-	generateID   func() (string, error)
+	db          DB
+	name        string
+	table       string
+	listeners   []func(*Snapshot)
+	listenersMu sync.RWMutex
+	generateID  func() (string, error)
 }
 
 type Transaction struct {
@@ -136,14 +136,14 @@ func (s *Store) Name() string {
 }
 
 func (s *Store) Listen(fn func(*Snapshot)) {
-	s.listnenersMu.Lock()
-	defer s.listnenersMu.Unlock()
+	s.listenersMu.Lock()
+	defer s.listenersMu.Unlock()
 	s.listeners = append(s.listeners, fn)
 }
 
 func (s *Store) notify(snap *Snapshot) {
-	s.listnenersMu.RLock()
-	defer s.listnenersMu.RUnlock()
+	s.listenersMu.RLock()
+	defer s.listenersMu.RUnlock()
 	// TODO do this non-blocking
 	for _, fn := range s.listeners {
 		fn(snap)
