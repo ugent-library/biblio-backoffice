@@ -971,25 +971,39 @@ func (p *Publication) Validate() error {
 		})
 	}
 
-	if p.Status == "public" {
-		for i, a := range p.Abstract {
-			for _, err := range a.Validate() {
-				errs = append(errs, &validation.Error{
-					Pointer: fmt.Sprintf("/abstract/%d%s", i, err.Pointer),
-					Code:    "publication.abstract." + err.Code,
-				})
-			}
+	for i, k := range p.Keyword {
+		if k == "" {
+			errs = append(errs, &validation.Error{
+				Pointer: fmt.Sprintf("/keyword/%d", i),
+				Code:    "publication.keyword.invalid",
+			})
 		}
 	}
 
-	if p.Status == "public" {
-		for i, l := range p.LaySummary {
-			for _, err := range l.Validate() {
-				errs = append(errs, &validation.Error{
-					Pointer: fmt.Sprintf("/lay_summary/%d%s", i, err.Pointer),
-					Code:    "publication.lay_summary." + err.Code,
-				})
-			}
+	for i, l := range p.Language {
+		if !validation.InArray(vocabularies.Map["language_codes"], l) {
+			errs = append(errs, &validation.Error{
+				Pointer: fmt.Sprintf("/language/%d", i),
+				Code:    "publication.lang.invalid",
+			})
+		}
+	}
+
+	for i, a := range p.Abstract {
+		for _, err := range a.Validate() {
+			errs = append(errs, &validation.Error{
+				Pointer: fmt.Sprintf("/abstract/%d%s", i, err.Pointer),
+				Code:    "publication.abstract." + err.Code,
+			})
+		}
+	}
+
+	for i, l := range p.LaySummary {
+		for _, err := range l.Validate() {
+			errs = append(errs, &validation.Error{
+				Pointer: fmt.Sprintf("/lay_summary/%d%s", i, err.Pointer),
+				Code:    "publication.lay_summary." + err.Code,
+			})
 		}
 	}
 

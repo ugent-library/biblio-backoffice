@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/ugent-library/biblio-backend/internal/validation"
+	"github.com/ugent-library/biblio-backend/internal/vocabularies"
 )
 
 type Text struct {
@@ -17,12 +18,19 @@ func (t Text) Validate() (errs validation.Errors) {
 			Code:    "id.required",
 		})
 	}
+
 	if t.Lang == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/lang",
 			Code:    "lang.required",
 		})
+	} else if !validation.InArray(vocabularies.Map["language_codes"], t.Lang) {
+		errs = append(errs, &validation.Error{
+			Pointer: "/lang",
+			Code:    "lang.invalid",
+		})
 	}
+
 	if t.Text == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/text",

@@ -252,6 +252,7 @@ func (d *Dataset) Validate() error {
 			Code:    "dataset.id.required",
 		})
 	}
+
 	if d.Status == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/status",
@@ -263,41 +264,51 @@ func (d *Dataset) Validate() error {
 			Code:    "dataset.status.invalid",
 		})
 	}
-	if d.Status == "public" {
-		if d.AccessLevel == "" {
-			errs = append(errs, &validation.Error{
-				Pointer: "/access_level",
-				Code:    "dataset.access_level.required",
-			})
-		} else if !validation.IsDatasetAccessLevel(d.AccessLevel) {
-			errs = append(errs, &validation.Error{
-				Pointer: "/access_level",
-				Code:    "dataset.access_level.invalid",
-			})
-		}
+
+	if d.Status == "public" && d.AccessLevel == "" {
+		errs = append(errs, &validation.Error{
+			Pointer: "/access_level",
+			Code:    "dataset.access_level.required",
+		})
 	}
+	if d.AccessLevel != "" && !validation.IsDatasetAccessLevel(d.AccessLevel) {
+		errs = append(errs, &validation.Error{
+			Pointer: "/access_level",
+			Code:    "dataset.access_level.invalid",
+		})
+	}
+
 	if d.Status == "public" && d.DOI == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/doi",
 			Code:    "dataset.doi.required",
 		})
 	}
-	if d.Status == "public" {
-		if len(d.Format) == 0 {
+
+	if d.Status == "public" && len(d.Format) == 0 {
+		errs = append(errs, &validation.Error{
+			Pointer: "/format",
+			Code:    "dataset.format.required",
+		})
+	}
+	for i, f := range d.Format {
+		if f == "" {
 			errs = append(errs, &validation.Error{
-				Pointer: "/format",
-				Code:    "dataset.format.required",
+				Pointer: fmt.Sprintf("/format/%d", i),
+				Code:    "dataset.format.invalid",
 			})
 		}
-		for i, f := range d.Format {
-			if f == "" {
-				errs = append(errs, &validation.Error{
-					Pointer: fmt.Sprintf("/format/%d", i),
-					Code:    "dataset.format.required",
-				})
-			}
+	}
+
+	for i, k := range d.Keyword {
+		if k == "" {
+			errs = append(errs, &validation.Error{
+				Pointer: fmt.Sprintf("/keyword/%d", i),
+				Code:    "dataset.keyword.invalid",
+			})
 		}
 	}
+
 	if d.Status == "public" && d.Publisher == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/publisher",
@@ -311,20 +322,19 @@ func (d *Dataset) Validate() error {
 		})
 	}
 
-	if d.Status == "public" {
-		// year =~ /^\d{4}$/
-		if d.Year == "" {
-			errs = append(errs, &validation.Error{
-				Pointer: "/year",
-				Code:    "dataset.year.required",
-			})
-		} else if !validation.IsYear(d.Year) {
-			errs = append(errs, &validation.Error{
-				Pointer: "/year",
-				Code:    "dataset.year.invalid",
-			})
-		}
+	if d.Status == "public" && d.Year == "" {
+		errs = append(errs, &validation.Error{
+			Pointer: "/year",
+			Code:    "dataset.year.required",
+		})
 	}
+	if d.Year != "" && !validation.IsYear(d.Year) {
+		errs = append(errs, &validation.Error{
+			Pointer: "/year",
+			Code:    "dataset.year.invalid",
+		})
+	}
+
 	if d.Status == "public" && len(d.Author) == 0 {
 		errs = append(errs, &validation.Error{
 			Pointer: "/author",
@@ -394,6 +404,7 @@ func (d *Dataset) Validate() error {
 		}
 	}
 
+	// TODO IsDate and co. are only checked when dataset is public
 	if d.Status == "public" && d.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
 		if d.EmbargoDate == "" {
 			errs = append(errs, &validation.Error{
