@@ -11,6 +11,8 @@ import (
 	"github.com/caltechlibrary/doitools"
 	"github.com/tidwall/gjson"
 	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backend/internal/validation"
+	"github.com/ugent-library/biblio-backend/internal/vocabularies"
 	"golang.org/x/text/language"
 )
 
@@ -161,8 +163,10 @@ func (c *Client) GetPublication(id string) (*models.Publication, error) {
 		})
 	}
 	if res := attrs.Get("language"); res.Exists() {
-		if tag, err := language.Parse(res.String()); err == nil {
-			p.Language = []string{tag.String()}
+		if base, err := language.ParseBase(res.String()); err == nil {
+			if validation.InArray(vocabularies.Map["language_codes"], base.ISO3()) {
+				p.Language = []string{base.ISO3()}
+			}
 		}
 	}
 	if res := attrs.Get("volume"); res.Exists() {

@@ -13,6 +13,7 @@ import (
 	"github.com/tidwall/gjson"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/validation"
+	"github.com/ugent-library/biblio-backend/internal/vocabularies"
 	"golang.org/x/text/language"
 )
 
@@ -118,10 +119,11 @@ func (c *Client) GetDataset(id string) (*models.Dataset, error) {
 		for _, r := range res.Array() {
 			t := models.Text{Text: r.Get("description").String(), Lang: "und"}
 			if res := r.Get("lang"); res.Exists() {
-				if tag, err := language.Parse(res.String()); err == nil {
-					t.Lang = tag.String()
+				if base, err := language.ParseBase(res.String()); err == nil {
+					if validation.InArray(vocabularies.Map["language_codes"], base.ISO3()) {
+						t.Lang = base.ISO3()
+					}
 				}
-
 			}
 			d.AddAbstract(&t)
 		}
