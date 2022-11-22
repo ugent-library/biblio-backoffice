@@ -300,14 +300,14 @@ func (d *Dataset) Validate() error {
 		}
 	}
 
-	for i, k := range d.Keyword {
-		if k == "" {
-			errs = append(errs, &validation.Error{
-				Pointer: fmt.Sprintf("/keyword/%d", i),
-				Code:    "dataset.keyword.invalid",
-			})
-		}
-	}
+	// for i, k := range d.Keyword {
+	// 	if k == "" {
+	// 		errs = append(errs, &validation.Error{
+	// 			Pointer: fmt.Sprintf("/keyword/%d", i),
+	// 			Code:    "dataset.keyword.invalid",
+	// 		})
+	// 	}
+	// }
 
 	if d.Status == "public" && d.Publisher == "" {
 		errs = append(errs, &validation.Error{

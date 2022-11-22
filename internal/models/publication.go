@@ -683,7 +683,7 @@ func (p *Publication) UsesISSN() bool {
 
 func (p *Publication) UsesESCIID() bool {
 	switch p.Type {
-	case "journal_article":
+	case "journal_article", "miscellaneous":
 		return true
 	default:
 		return false
@@ -971,14 +971,14 @@ func (p *Publication) Validate() error {
 		})
 	}
 
-	for i, k := range p.Keyword {
-		if k == "" {
-			errs = append(errs, &validation.Error{
-				Pointer: fmt.Sprintf("/keyword/%d", i),
-				Code:    "publication.keyword.invalid",
-			})
-		}
-	}
+	// for i, k := range p.Keyword {
+	// 	if k == "" {
+	// 		errs = append(errs, &validation.Error{
+	// 			Pointer: fmt.Sprintf("/keyword/%d", i),
+	// 			Code:    "publication.keyword.invalid",
+	// 		})
+	// 	}
+	// }
 
 	for i, l := range p.Language {
 		if !validation.InArray(vocabularies.Map["language_codes"], l) {

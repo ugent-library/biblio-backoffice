@@ -132,7 +132,11 @@ func mapRecord(r Record, p *models.Publication) {
 			p.AddAbstract(&models.Text{Text: v[0], Lang: "und"})
 		case "KW", "DW", "ID", "DE":
 			for _, val := range v {
-				p.Keyword = append(p.Keyword, reSplit.Split(val, -1)...)
+				for _, str := range reSplit.Split(val, -1) {
+					if str != "" {
+						p.Keyword = append(p.Keyword, str)
+					}
+				}
 			}
 		case "DI":
 			p.DOI = v[0]
@@ -142,15 +146,27 @@ func mapRecord(r Record, p *models.Publication) {
 			p.PublicationAbbreviation = v[0]
 		case "SN":
 			for _, val := range v {
-				p.ISSN = append(p.ISSN, reSplit.Split(val, -1)...)
+				for _, str := range reSplit.Split(val, -1) {
+					if str != "" {
+						p.ISSN = append(p.ISSN, str)
+					}
+				}
 			}
 		case "EI":
 			for _, val := range v {
-				p.EISSN = append(p.EISSN, reSplit.Split(val, -1)...)
+				for _, str := range reSplit.Split(val, -1) {
+					if str != "" {
+						p.EISSN = append(p.EISSN, str)
+					}
+				}
 			}
 		case "BN":
 			for _, val := range v {
-				p.ISBN = append(p.ISBN, reSplit.Split(val, -1)...)
+				for _, str := range reSplit.Split(val, -1) {
+					if str != "" {
+						p.EISBN = append(p.EISBN, str)
+					}
+				}
 			}
 		case "UT":
 			p.WOSID = strings.TrimPrefix(v[0], "WOS:")
