@@ -362,7 +362,7 @@ func DatasetToMessage(d *models.Dataset) *api.Dataset {
 		})
 	}
 
-	// msg.BatchId = d.BatchID
+	msg.BatchId = d.BatchID
 
 	if d.DateCreated != nil {
 		msg.DateCreated = timestamppb.New(*d.DateCreated)
@@ -380,8 +380,15 @@ func DatasetToMessage(d *models.Dataset) *api.Dataset {
 	msg.Title = d.Title
 
 	for _, val := range d.Department {
-		msg.Organization = append(msg.Organization, &api.RelatedOrganization{
-			Id: val.ID,
+		var depts []*api.DepartmentRef
+		for _, dept := range val.Tree {
+			depts = append(depts, &api.DepartmentRef{
+				Id: dept.ID,
+			})
+		}
+		msg.Department = append(msg.Department, &api.Department{
+			Id:   val.ID,
+			Tree: depts,
 		})
 	}
 
@@ -539,10 +546,16 @@ func MessageToDataset(msg *api.Dataset) *models.Dataset {
 	}
 
 	d.Title = msg.Title
-	for _, val := range msg.Organization {
-		// TODO add tree
+	for _, val := range msg.Department {
+		var depts []models.DatasetDepartmentRef
+		for _, dept := range val.Tree {
+			depts = append(depts, models.DatasetDepartmentRef{
+				ID: dept.Id,
+			})
+		}
 		d.Department = append(d.Department, models.DatasetDepartment{
-			ID: val.Id,
+			ID:   val.Id,
+			Tree: depts,
 		})
 	}
 

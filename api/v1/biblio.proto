@@ -85,10 +85,6 @@ message RelatedPublication {
     string id = 1;
 }
 
-message RelatedOrganization {
-    string id = 1;
-}
-
 message RelatedProject {
     string id = 1;
     string name = 2;
@@ -391,7 +387,7 @@ message Dataset {
     string license = 29;
     bool locked = 30;
     string other_license = 31;
-    repeated RelatedOrganization organization = 32;
+    repeated Department department = 32;
     bool has_been_public = 33;
 }
 
