@@ -322,7 +322,34 @@ func DatasetToMessage(d *models.Dataset) *api.Dataset {
 		})
 	}
 
+	for _, val := range d.Contributor {
+		var depts []*api.ContributorDepartment
+		for _, dept := range val.Department {
+			depts = append(depts, &api.ContributorDepartment{
+				Id:   dept.ID,
+				Name: dept.Name,
+			})
+		}
+		msg.Contributor = append(msg.Contributor, &api.Contributor{
+			Id:         val.ID,
+			Orcid:      val.ORCID,
+			LocalId:    val.UGentID,
+			CreditRole: val.CreditRole,
+			FirstName:  val.FirstName,
+			LastName:   val.LastName,
+			FullName:   val.FullName,
+			Department: depts,
+		})
+	}
+
 	for _, val := range d.Author {
+		var depts []*api.ContributorDepartment
+		for _, dept := range val.Department {
+			depts = append(depts, &api.ContributorDepartment{
+				Id:   dept.ID,
+				Name: dept.Name,
+			})
+		}
 		msg.Author = append(msg.Author, &api.Contributor{
 			Id:         val.ID,
 			Orcid:      val.ORCID,
@@ -331,6 +358,7 @@ func DatasetToMessage(d *models.Dataset) *api.Dataset {
 			FirstName:  val.FirstName,
 			LastName:   val.LastName,
 			FullName:   val.FullName,
+			Department: depts,
 		})
 	}
 
@@ -451,7 +479,34 @@ func MessageToDataset(msg *api.Dataset) *models.Dataset {
 		})
 	}
 
+	for _, val := range msg.Contributor {
+		var depts []models.ContributorDepartment
+		for _, dept := range val.Department {
+			depts = append(depts, models.ContributorDepartment{
+				ID:   dept.Id,
+				Name: dept.Name,
+			})
+		}
+		d.Contributor = append(d.Contributor, &models.Contributor{
+			ID:         val.Id,
+			ORCID:      val.Orcid,
+			UGentID:    val.LocalId,
+			CreditRole: val.CreditRole,
+			FirstName:  val.FirstName,
+			LastName:   val.LastName,
+			FullName:   val.FullName,
+			Department: depts,
+		})
+	}
+
 	for _, val := range msg.Author {
+		var depts []models.ContributorDepartment
+		for _, dept := range val.Department {
+			depts = append(depts, models.ContributorDepartment{
+				ID:   dept.Id,
+				Name: dept.Name,
+			})
+		}
 		d.Author = append(d.Author, &models.Contributor{
 			ID:         val.Id,
 			ORCID:      val.Orcid,
@@ -460,10 +515,11 @@ func MessageToDataset(msg *api.Dataset) *models.Dataset {
 			FirstName:  val.FirstName,
 			LastName:   val.LastName,
 			FullName:   val.FullName,
+			Department: depts,
 		})
 	}
 
-	// d.BatchID = msg.BatchId
+	d.BatchID = msg.BatchId
 
 	if msg.DateCreated != nil {
 		t := msg.DateCreated.AsTime()
@@ -537,8 +593,6 @@ func MessageToDataset(msg *api.Dataset) *models.Dataset {
 	d.Format = msg.Format
 
 	d.License = msg.License
-
-	// d.Publicaiton = msg.Publication
 
 	d.Publisher = msg.Publisher
 
