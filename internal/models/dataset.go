@@ -44,6 +44,7 @@ type Dataset struct {
 	AccessLevel string         `json:"access_level,omitempty"`
 	Author      []*Contributor `json:"author,omitempty"` // TODO rename to Creator
 	// CompletenessScore  int                  `json:"completeness_score,omitempty"`
+	BatchID                 string               `json:"batch_id,omitempty"`
 	Contributor             []*Contributor       `json:"contributor,omitempty"`
 	Creator                 *DatasetUser         `json:"creator,omitempty"`
 	DateCreated             *time.Time           `json:"date_created,omitempty"`
