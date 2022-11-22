@@ -683,7 +683,7 @@ func (p *Publication) UsesISSN() bool {
 
 func (p *Publication) UsesESCIID() bool {
 	switch p.Type {
-	case "journal_article":
+	case "journal_article", "miscellaneous":
 		return true
 	default:
 		return false

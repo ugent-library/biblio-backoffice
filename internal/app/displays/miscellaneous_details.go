@@ -140,5 +140,9 @@ func miscellaneousDetails(l *locale.Locale, p *models.Publication) *display.Disp
 				Label:  l.T("builder.eisbn"),
 				Values: p.EISBN,
 			},
+			&display.Text{
+				Label: l.T("builder.esci_id"),
+				Value: p.ESCIID,
+			},
 		)
 }
