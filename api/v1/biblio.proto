@@ -163,6 +163,13 @@ message File {
 }
 
 message Publication {
+
+    enum PublicationStatus {
+        PUBLICATION_STATUS_UNPUBLISHED = 0;
+        PUBLICATION_STATUS_ACCEPTED = 1;
+        PUBLICATION_STATUS_PUBLISHED = 2;
+    }
+
     enum Type {
 	   TYPE_JOURNAL_ARTICLE = 0;
 	   TYPE_BOOK = 1;
@@ -328,6 +335,7 @@ message Publication {
     bool vabb_approved = 82;
     repeated string vabb_year = 83;
     bool has_been_public = 84;
+    PublicationStatus publication_status = 85;
 }
 
 message Dataset {

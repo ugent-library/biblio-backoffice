@@ -315,6 +315,15 @@ func PublicationToMessage(p *models.Publication) *api.Publication {
 
 	msg.Id = p.ID
 
+	switch p.PublicationStatus {
+	case "unpublished":
+		msg.PublicationStatus = api.Publication_PUBLICATION_STATUS_UNPUBLISHED
+	case "accepted":
+		msg.PublicationStatus = api.Publication_PUBLICATION_STATUS_ACCEPTED
+	case "published":
+		msg.PublicationStatus = api.Publication_PUBLICATION_STATUS_PUBLISHED
+	}
+
 	switch p.Type {
 	case "journal_article":
 		msg.Type = api.Publication_TYPE_JOURNAL_ARTICLE
@@ -817,6 +826,15 @@ func MessageToPublication(msg *api.Publication) *models.Publication {
 	p := &models.Publication{}
 
 	p.ID = msg.Id
+
+	switch msg.PublicationStatus {
+	case api.Publication_PUBLICATION_STATUS_ACCEPTED:
+		p.PublicationStatus = "accepted"
+	case api.Publication_PUBLICATION_STATUS_UNPUBLISHED:
+		p.PublicationStatus = "unpublished"
+	case api.Publication_PUBLICATION_STATUS_PUBLISHED:
+		p.PublicationStatus = "published"
+	}
 
 	switch msg.Type {
 	case api.Publication_TYPE_JOURNAL_ARTICLE:
