@@ -3,6 +3,7 @@ package publicationediting
 import (
 	"errors"
 	"net/http"
+	"net/url"
 
 	"github.com/ugent-library/biblio-backend/internal/app/handlers"
 	"github.com/ugent-library/biblio-backend/internal/bind"
@@ -125,6 +126,10 @@ func (h *Handler) ConfirmDeleteDepartment(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	// TODO why is this necessary for department id's containing an asterisk?
+	depID, _ := url.QueryUnescape(b.DepartmentID)
+	b.DepartmentID = depID
+
 	if b.SnapshotID != ctx.Publication.SnapshotID {
 		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
 			Message: ctx.Locale.T("publication.conflict_error_reload"),
@@ -145,6 +150,10 @@ func (h *Handler) DeleteDepartment(w http.ResponseWriter, r *http.Request, ctx C
 		render.BadRequest(w, r, err)
 		return
 	}
+
+	// TODO why is this necessary for department id's containing an asterisk?
+	depID, _ := url.QueryUnescape(b.DepartmentID)
+	b.DepartmentID = depID
 
 	ctx.Publication.RemoveDepartment(b.DepartmentID)
 
