@@ -128,10 +128,14 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 	d.User = &models.DatasetUser{ID: ctx.User.ID, Name: ctx.User.FullName}
 	d.Status = "private"
 
-	// Set the department if the user was assigned to at least one department
+	// Set the first department of the user if the user resides under at least one department
+	// TODO: this should be centralized
 	if len(ctx.User.Department) > 0 {
-		d.Department = []models.DatasetDepartment{
-			{ID: ctx.User.Department[0].ID},
+		org, orgErr := h.OrganizationService.GetOrganization(ctx.User.Department[0].ID)
+		if orgErr != nil {
+			h.Logger.Warnw("import single publication: could not fetch user department", "errors", orgErr, "user", ctx.User.ID)
+		} else {
+			d.AddDepartmentByOrg(org)
 		}
 	}
 

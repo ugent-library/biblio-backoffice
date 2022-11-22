@@ -16,6 +16,7 @@ type Handler struct {
 	PublicationSearchService backends.PublicationSearchService
 	PublicationSources       map[string]backends.PublicationGetter
 	PublicationDecoders      map[string]backends.PublicationDecoderFactory
+	OrganizationService      backends.OrganizationService
 }
 
 type Context struct {

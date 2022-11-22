@@ -15,6 +15,7 @@ type Handler struct {
 	Repository           backends.Repository
 	DatasetSearchService backends.DatasetSearchService
 	DatasetSources       map[string]backends.DatasetGetter
+	OrganizationService  backends.OrganizationService
 }
 
 type Context struct {

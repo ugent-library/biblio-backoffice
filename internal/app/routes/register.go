@@ -112,6 +112,7 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		Repository:           services.Repository,
 		DatasetSearchService: services.DatasetSearchService,
 		DatasetSources:       services.DatasetSources,
+		OrganizationService:  services.OrganizationService,
 	}
 	datasetEditingHandler := &datasetediting.Handler{
 		BaseHandler:               baseHandler,
@@ -145,6 +146,7 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		PublicationSearchService: services.PublicationSearchService,
 		PublicationSources:       services.PublicationSources,
 		PublicationDecoders:      services.PublicationDecoders,
+		OrganizationService:      services.OrganizationService,
 	}
 	publicationEditingHandler := &publicationediting.Handler{
 		BaseHandler:               baseHandler,

@@ -183,9 +183,13 @@ func (h *Handler) AddSingleImport(w http.ResponseWriter, r *http.Request, ctx Co
 	p.Classification = "U"
 
 	// Set the first department of the user if the user resides under at least one department
+	// TODO: this should be centralized
 	if len(ctx.User.Department) > 0 {
-		p.Department = []models.PublicationDepartment{
-			{ID: ctx.User.Department[0].ID},
+		org, orgErr := h.OrganizationService.GetOrganization(ctx.User.Department[0].ID)
+		if orgErr != nil {
+			h.Logger.Warnw("import single publication: could not fetch user department", "errors", orgErr, "user", ctx.User.ID)
+		} else {
+			p.AddDepartmentByOrg(org)
 		}
 	}
 
@@ -546,9 +550,13 @@ func (h *Handler) importPublications(user *models.User, source string, file io.R
 		}
 
 		// Set the department if the user was assigned to at least one department
+		// TODO: this should be centralized
 		if len(user.Department) > 0 {
-			p.Department = []models.PublicationDepartment{
-				{ID: user.Department[0].ID},
+			org, orgErr := h.OrganizationService.GetOrganization(user.Department[0].ID)
+			if orgErr != nil {
+				h.Logger.Warnw("add multiple publications: could not fetch user department", "errors", orgErr, "user", user.ID)
+			} else {
+				p.AddDepartmentByOrg(org)
 			}
 		}
 
