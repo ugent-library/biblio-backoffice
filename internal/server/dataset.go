@@ -456,7 +456,7 @@ func DatasetToMessage(d *models.Dataset) *api.Dataset {
 	}
 
 	for _, val := range d.RelatedPublication {
-		msg.Publication = append(msg.Publication, &api.RelatedPublication{
+		msg.RelatedPublication = append(msg.RelatedPublication, &api.RelatedPublication{
 			Id: val.ID,
 		})
 	}
@@ -625,7 +625,7 @@ func MessageToDataset(msg *api.Dataset) *models.Dataset {
 		})
 	}
 
-	for _, val := range msg.Publication {
+	for _, val := range msg.RelatedPublication {
 		d.RelatedPublication = append(d.RelatedPublication, models.RelatedPublication{
 			ID: val.Id,
 		})
