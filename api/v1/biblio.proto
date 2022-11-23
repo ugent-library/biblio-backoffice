@@ -85,10 +85,6 @@ message RelatedPublication {
     string id = 1;
 }
 
-message RelatedOrganization {
-    string id = 1;
-}
-
 message RelatedProject {
     string id = 1;
     string name = 2;
@@ -163,6 +159,13 @@ message File {
 }
 
 message Publication {
+
+    enum PublicationStatus {
+        PUBLICATION_STATUS_UNPUBLISHED = 0;
+        PUBLICATION_STATUS_ACCEPTED = 1;
+        PUBLICATION_STATUS_PUBLISHED = 2;
+    }
+
     enum Type {
 	   TYPE_JOURNAL_ARTICLE = 0;
 	   TYPE_BOOK = 1;
@@ -319,7 +322,7 @@ message Publication {
     ConferenceType conference_type = 73; // TODO use Oneof
     MiscellaneousType miscellaneous_type = 74; // TODO use Oneof
     repeated RelatedProject project = 75;
-    repeated RelatedDataset dataset = 76;
+    repeated RelatedDataset related_dataset = 76;
     repeated Link link = 77;
     repeated OrcidWork orcid_work = 78;
     bool legacy = 79;
@@ -328,6 +331,7 @@ message Publication {
     bool vabb_approved = 82;
     repeated string vabb_year = 83;
     bool has_been_public = 84;
+    PublicationStatus publication_status = 85;
 }
 
 message Dataset {
@@ -374,7 +378,7 @@ message Dataset {
     string message = 20;
     string publisher = 21;
     repeated RelatedProject project = 22;
-    repeated RelatedPublication publication = 23;
+    repeated RelatedPublication related_publication = 23;
     AccessLevel access_level = 24;
     repeated Contributor contributor = 25;
     string embargo_date = 26;
@@ -383,7 +387,7 @@ message Dataset {
     string license = 29;
     bool locked = 30;
     string other_license = 31;
-    repeated RelatedOrganization organization = 32;
+    repeated Department department = 32;
     bool has_been_public = 33;
 }
 

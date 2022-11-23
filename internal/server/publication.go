@@ -315,6 +315,15 @@ func PublicationToMessage(p *models.Publication) *api.Publication {
 
 	msg.Id = p.ID
 
+	switch p.PublicationStatus {
+	case "unpublished":
+		msg.PublicationStatus = api.Publication_PUBLICATION_STATUS_UNPUBLISHED
+	case "accepted":
+		msg.PublicationStatus = api.Publication_PUBLICATION_STATUS_ACCEPTED
+	case "published":
+		msg.PublicationStatus = api.Publication_PUBLICATION_STATUS_PUBLISHED
+	}
+
 	switch p.Type {
 	case "journal_article":
 		msg.Type = api.Publication_TYPE_JOURNAL_ARTICLE
@@ -472,13 +481,22 @@ func PublicationToMessage(p *models.Publication) *api.Publication {
 	msg.Edition = p.Edition
 
 	for _, val := range p.Editor {
+		var depts []*api.ContributorDepartment
+		for _, dept := range val.Department {
+			depts = append(depts, &api.ContributorDepartment{
+				Id:   dept.ID,
+				Name: dept.Name,
+			})
+		}
 		msg.Editor = append(msg.Editor, &api.Contributor{
-			Id:        val.ID,
-			Orcid:     val.ORCID,
-			LocalId:   val.UGentID,
-			FirstName: val.FirstName,
-			LastName:  val.LastName,
-			FullName:  val.FullName,
+			Id:         val.ID,
+			Orcid:      val.ORCID,
+			LocalId:    val.UGentID,
+			FirstName:  val.FirstName,
+			LastName:   val.LastName,
+			FullName:   val.FullName,
+			Department: depts,
+			CreditRole: val.CreditRole,
 		})
 	}
 
@@ -621,13 +639,22 @@ func PublicationToMessage(p *models.Publication) *api.Publication {
 	msg.Legacy = p.Legacy
 
 	for _, val := range p.Supervisor {
+		var depts []*api.ContributorDepartment
+		for _, dept := range val.Department {
+			depts = append(depts, &api.ContributorDepartment{
+				Id:   dept.ID,
+				Name: dept.Name,
+			})
+		}
 		msg.Supervisor = append(msg.Supervisor, &api.Contributor{
-			Id:        val.ID,
-			Orcid:     val.ORCID,
-			LocalId:   val.UGentID,
-			FirstName: val.FirstName,
-			LastName:  val.LastName,
-			FullName:  val.FullName,
+			Id:         val.ID,
+			Orcid:      val.ORCID,
+			LocalId:    val.UGentID,
+			FirstName:  val.FirstName,
+			LastName:   val.LastName,
+			FullName:   val.FullName,
+			Department: depts,
+			CreditRole: val.CreditRole,
 		})
 	}
 
@@ -771,7 +798,7 @@ func PublicationToMessage(p *models.Publication) *api.Publication {
 	}
 
 	for _, val := range p.RelatedDataset {
-		msg.Dataset = append(msg.Dataset, &api.RelatedDataset{
+		msg.RelatedDataset = append(msg.RelatedDataset, &api.RelatedDataset{
 			Id: val.ID,
 		})
 	}
@@ -817,6 +844,15 @@ func MessageToPublication(msg *api.Publication) *models.Publication {
 	p := &models.Publication{}
 
 	p.ID = msg.Id
+
+	switch msg.PublicationStatus {
+	case api.Publication_PUBLICATION_STATUS_ACCEPTED:
+		p.PublicationStatus = "accepted"
+	case api.Publication_PUBLICATION_STATUS_UNPUBLISHED:
+		p.PublicationStatus = "unpublished"
+	case api.Publication_PUBLICATION_STATUS_PUBLISHED:
+		p.PublicationStatus = "published"
+	}
 
 	switch msg.Type {
 	case api.Publication_TYPE_JOURNAL_ARTICLE:
@@ -978,13 +1014,22 @@ func MessageToPublication(msg *api.Publication) *models.Publication {
 	p.Edition = msg.Edition
 
 	for _, val := range msg.Editor {
+		var depts []models.ContributorDepartment
+		for _, dept := range val.Department {
+			depts = append(depts, models.ContributorDepartment{
+				ID:   dept.Id,
+				Name: dept.Name,
+			})
+		}
 		p.Editor = append(p.Editor, &models.Contributor{
-			ID:        val.Id,
-			ORCID:     val.Orcid,
-			UGentID:   val.LocalId,
-			FirstName: val.FirstName,
-			LastName:  val.LastName,
-			FullName:  val.FullName,
+			ID:         val.Id,
+			ORCID:      val.Orcid,
+			UGentID:    val.LocalId,
+			FirstName:  val.FirstName,
+			LastName:   val.LastName,
+			FullName:   val.FullName,
+			Department: depts,
+			CreditRole: val.CreditRole,
 		})
 	}
 
@@ -1127,13 +1172,22 @@ func MessageToPublication(msg *api.Publication) *models.Publication {
 	}
 
 	for _, val := range msg.Supervisor {
+		var depts []models.ContributorDepartment
+		for _, dept := range val.Department {
+			depts = append(depts, models.ContributorDepartment{
+				ID:   dept.Id,
+				Name: dept.Name,
+			})
+		}
 		p.Supervisor = append(p.Supervisor, &models.Contributor{
-			ID:        val.Id,
-			ORCID:     val.Orcid,
-			UGentID:   val.LocalId,
-			FirstName: val.FirstName,
-			LastName:  val.LastName,
-			FullName:  val.FullName,
+			ID:         val.Id,
+			ORCID:      val.Orcid,
+			UGentID:    val.LocalId,
+			FirstName:  val.FirstName,
+			LastName:   val.LastName,
+			FullName:   val.FullName,
+			Department: depts,
+			CreditRole: val.CreditRole,
 		})
 	}
 
@@ -1279,7 +1333,7 @@ func MessageToPublication(msg *api.Publication) *models.Publication {
 		})
 	}
 
-	for _, val := range msg.Dataset {
+	for _, val := range msg.RelatedDataset {
 		p.RelatedDataset = append(p.RelatedDataset, models.RelatedDataset{
 			ID: val.Id,
 		})

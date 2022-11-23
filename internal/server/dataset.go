@@ -322,7 +322,34 @@ func DatasetToMessage(d *models.Dataset) *api.Dataset {
 		})
 	}
 
+	for _, val := range d.Contributor {
+		var depts []*api.ContributorDepartment
+		for _, dept := range val.Department {
+			depts = append(depts, &api.ContributorDepartment{
+				Id:   dept.ID,
+				Name: dept.Name,
+			})
+		}
+		msg.Contributor = append(msg.Contributor, &api.Contributor{
+			Id:         val.ID,
+			Orcid:      val.ORCID,
+			LocalId:    val.UGentID,
+			CreditRole: val.CreditRole,
+			FirstName:  val.FirstName,
+			LastName:   val.LastName,
+			FullName:   val.FullName,
+			Department: depts,
+		})
+	}
+
 	for _, val := range d.Author {
+		var depts []*api.ContributorDepartment
+		for _, dept := range val.Department {
+			depts = append(depts, &api.ContributorDepartment{
+				Id:   dept.ID,
+				Name: dept.Name,
+			})
+		}
 		msg.Author = append(msg.Author, &api.Contributor{
 			Id:         val.ID,
 			Orcid:      val.ORCID,
@@ -331,10 +358,11 @@ func DatasetToMessage(d *models.Dataset) *api.Dataset {
 			FirstName:  val.FirstName,
 			LastName:   val.LastName,
 			FullName:   val.FullName,
+			Department: depts,
 		})
 	}
 
-	// msg.BatchId = d.BatchID
+	msg.BatchId = d.BatchID
 
 	if d.DateCreated != nil {
 		msg.DateCreated = timestamppb.New(*d.DateCreated)
@@ -352,8 +380,15 @@ func DatasetToMessage(d *models.Dataset) *api.Dataset {
 	msg.Title = d.Title
 
 	for _, val := range d.Department {
-		msg.Organization = append(msg.Organization, &api.RelatedOrganization{
-			Id: val.ID,
+		var depts []*api.DepartmentRef
+		for _, dept := range val.Tree {
+			depts = append(depts, &api.DepartmentRef{
+				Id: dept.ID,
+			})
+		}
+		msg.Department = append(msg.Department, &api.Department{
+			Id:   val.ID,
+			Tree: depts,
 		})
 	}
 
@@ -401,9 +436,13 @@ func DatasetToMessage(d *models.Dataset) *api.Dataset {
 		msg.AccessLevelAfterEmbargo = api.Dataset_ACCESS_LEVEL_RESTRICTED_ACCESS
 	}
 
+	msg.EmbargoDate = d.EmbargoDate
+
 	msg.Format = d.Format
 
 	msg.License = d.License
+
+	msg.OtherLicense = d.OtherLicense
 
 	// msg.Publication = d.Publication
 
@@ -417,7 +456,7 @@ func DatasetToMessage(d *models.Dataset) *api.Dataset {
 	}
 
 	for _, val := range d.RelatedPublication {
-		msg.Publication = append(msg.Publication, &api.RelatedPublication{
+		msg.RelatedPublication = append(msg.RelatedPublication, &api.RelatedPublication{
 			Id: val.ID,
 		})
 	}
@@ -451,7 +490,34 @@ func MessageToDataset(msg *api.Dataset) *models.Dataset {
 		})
 	}
 
+	for _, val := range msg.Contributor {
+		var depts []models.ContributorDepartment
+		for _, dept := range val.Department {
+			depts = append(depts, models.ContributorDepartment{
+				ID:   dept.Id,
+				Name: dept.Name,
+			})
+		}
+		d.Contributor = append(d.Contributor, &models.Contributor{
+			ID:         val.Id,
+			ORCID:      val.Orcid,
+			UGentID:    val.LocalId,
+			CreditRole: val.CreditRole,
+			FirstName:  val.FirstName,
+			LastName:   val.LastName,
+			FullName:   val.FullName,
+			Department: depts,
+		})
+	}
+
 	for _, val := range msg.Author {
+		var depts []models.ContributorDepartment
+		for _, dept := range val.Department {
+			depts = append(depts, models.ContributorDepartment{
+				ID:   dept.Id,
+				Name: dept.Name,
+			})
+		}
 		d.Author = append(d.Author, &models.Contributor{
 			ID:         val.Id,
 			ORCID:      val.Orcid,
@@ -460,10 +526,11 @@ func MessageToDataset(msg *api.Dataset) *models.Dataset {
 			FirstName:  val.FirstName,
 			LastName:   val.LastName,
 			FullName:   val.FullName,
+			Department: depts,
 		})
 	}
 
-	// d.BatchID = msg.BatchId
+	d.BatchID = msg.BatchId
 
 	if msg.DateCreated != nil {
 		t := msg.DateCreated.AsTime()
@@ -483,10 +550,16 @@ func MessageToDataset(msg *api.Dataset) *models.Dataset {
 	}
 
 	d.Title = msg.Title
-	for _, val := range msg.Organization {
-		// TODO add tree
+	for _, val := range msg.Department {
+		var depts []models.DatasetDepartmentRef
+		for _, dept := range val.Tree {
+			depts = append(depts, models.DatasetDepartmentRef{
+				ID: dept.Id,
+			})
+		}
 		d.Department = append(d.Department, models.DatasetDepartment{
-			ID: val.Id,
+			ID:   val.Id,
+			Tree: depts,
 		})
 	}
 
@@ -534,11 +607,13 @@ func MessageToDataset(msg *api.Dataset) *models.Dataset {
 		d.AccessLevelAfterEmbargo = "info:eu-repo/semantics/restrictedAccess"
 	}
 
+	d.EmbargoDate = msg.EmbargoDate
+
 	d.Format = msg.Format
 
 	d.License = msg.License
 
-	// d.Publicaiton = msg.Publication
+	d.OtherLicense = msg.OtherLicense
 
 	d.Publisher = msg.Publisher
 
@@ -550,7 +625,7 @@ func MessageToDataset(msg *api.Dataset) *models.Dataset {
 		})
 	}
 
-	for _, val := range msg.Publication {
+	for _, val := range msg.RelatedPublication {
 		d.RelatedPublication = append(d.RelatedPublication, models.RelatedPublication{
 			ID: val.Id,
 		})
