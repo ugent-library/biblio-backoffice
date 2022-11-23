@@ -40,7 +40,6 @@ type PublicationFile struct {
 	OtherLicense             string     `json:"other_license,omitempty"`
 	PublicationVersion       string     `json:"publication_version,omitempty"`
 	Relation                 string     `json:"relation,omitempty"`
-	URL                      string     `json:"url,omitempty"`
 }
 
 type PublicationLink struct {
@@ -804,10 +803,6 @@ func (p *Publication) UsesSeriesTitle() bool {
 }
 
 func (p *Publication) UsesTitle() bool {
-	return true
-}
-
-func (p *Publication) UsesURL() bool {
 	return true
 }
 
