@@ -436,6 +436,8 @@ func DatasetToMessage(d *models.Dataset) *api.Dataset {
 		msg.AccessLevelAfterEmbargo = api.Dataset_ACCESS_LEVEL_RESTRICTED_ACCESS
 	}
 
+	msg.EmbargoDate = d.EmbargoDate
+
 	msg.Format = d.Format
 
 	msg.License = d.License
@@ -602,6 +604,8 @@ func MessageToDataset(msg *api.Dataset) *models.Dataset {
 	case api.Dataset_ACCESS_LEVEL_RESTRICTED_ACCESS:
 		d.AccessLevelAfterEmbargo = "info:eu-repo/semantics/restrictedAccess"
 	}
+
+	d.EmbargoDate = msg.EmbargoDate
 
 	d.Format = msg.Format
 
