@@ -442,6 +442,8 @@ func DatasetToMessage(d *models.Dataset) *api.Dataset {
 
 	msg.License = d.License
 
+	msg.OtherLicense = d.OtherLicense
+
 	// msg.Publication = d.Publication
 
 	msg.Publisher = d.Publisher
@@ -610,6 +612,8 @@ func MessageToDataset(msg *api.Dataset) *models.Dataset {
 	d.Format = msg.Format
 
 	d.License = msg.License
+
+	d.OtherLicense = msg.OtherLicense
 
 	d.Publisher = msg.Publisher
 
