@@ -118,6 +118,7 @@ type File struct {
 	Kind               string  `json:"kind,omitempty"`
 	PublicationVersion string  `json:"publication_version,omitempty"`
 	Size               string  `json:"size,omitempty"`
+	SHA256             string  `json:"sha256,omitempty"`
 }
 
 type Page struct {
@@ -555,6 +556,7 @@ func (h *Handler) mapPublication(p *models.Publication) *Publication {
 				Name:        v.Name,
 				Size:        fmt.Sprintf("%d", v.Size),
 				ContentType: v.ContentType,
+				SHA256:      v.SHA256,
 			}
 
 			switch r := v.Relation; r {
