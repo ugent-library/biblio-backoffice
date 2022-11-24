@@ -30,7 +30,7 @@ func init() {
 	publicationCmd.AddCommand(oldPublicationImportCmd)
 	publicationCmd.AddCommand(updatePublicationEmbargoes)
 	publicationCmd.AddCommand(createPublicationHandles)
-	publicationCmd.AddCommand(cleanUpCmd)
+	publicationCmd.AddCommand(cleanupCmd)
 	rootCmd.AddCommand(publicationCmd)
 }
 
@@ -214,8 +214,8 @@ var publicationImportCmd = &cobra.Command{
 	},
 }
 
-var cleanUpCmd = &cobra.Command{
-	Use:   "clean-up",
+var cleanupCmd = &cobra.Command{
+	Use:   "cleanup",
 	Short: "Make publications consistent, clean up data anomalies",
 	Run: func(cmd *cobra.Command, args []string) {
 		s := newRepository()
