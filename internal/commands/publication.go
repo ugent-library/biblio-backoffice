@@ -14,6 +14,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backend/internal/snapstore"
 	"github.com/ugent-library/biblio-backend/internal/ulid"
 )
 
@@ -29,6 +30,7 @@ func init() {
 	publicationCmd.AddCommand(oldPublicationImportCmd)
 	publicationCmd.AddCommand(updatePublicationEmbargoes)
 	publicationCmd.AddCommand(createPublicationHandles)
+	publicationCmd.AddCommand(cleanUpCmd)
 	rootCmd.AddCommand(publicationCmd)
 }
 
@@ -204,6 +206,88 @@ var publicationImportCmd = &cobra.Command{
 
 			indexC <- &p
 		}
+
+		// close indexing channel when all recs are stored
+		close(indexC)
+		// wait for indexing to finish
+		indexWG.Wait()
+	},
+}
+
+var cleanUpCmd = &cobra.Command{
+	Use:   "clean-up",
+	Short: "Make publications consistent, clean up data anomalies",
+	Run: func(cmd *cobra.Command, args []string) {
+		s := newRepository()
+		e := Services()
+
+		var indexWG sync.WaitGroup
+
+		// indexing channel
+		indexC := make(chan *models.Publication)
+
+		// start bulk indexer
+		indexWG.Add(1)
+		go func() {
+			defer indexWG.Done()
+			e.PublicationSearchService.IndexMultiple(indexC)
+		}()
+
+		s.EachPublication(func(p *models.Publication) bool {
+			// Guard
+			fixed := false
+
+			// Make sure to set p.User = nil!!
+			p.User = nil
+
+			// Add the department "tree" property if it is missing.
+			for _, dep := range p.Department {
+				if dep.Tree == nil {
+					depID := dep.ID
+					org, orgErr := e.OrganizationService.GetOrganization(depID)
+					if orgErr == nil {
+						p.RemoveDepartment(depID)
+						p.AddDepartmentByOrg(org)
+						fixed = true
+					}
+				}
+			}
+
+			if fixed {
+				if err := p.Validate(); err != nil {
+					log.Printf(
+						"Validation failed for publication[snapshot_id: %s, id: %s] : %v",
+						p.SnapshotID,
+						p.ID,
+						err,
+					)
+					return false
+				}
+
+				err := s.UpdatePublication(p.SnapshotID, p, nil)
+
+				var conflict *snapstore.Conflict
+				if errors.As(err, &conflict) {
+					log.Printf(
+						"Conflict detected for publication[snapshot_id: %s, id: %s] : %v",
+						p.SnapshotID,
+						p.ID,
+						err,
+					)
+					return false
+				}
+
+				log.Printf(
+					"Fixed publication[snapshot_id: %s, id: %s]",
+					p.SnapshotID,
+					p.ID,
+				)
+
+				indexC <- p
+			}
+
+			return true
+		})
 
 		// close indexing channel when all recs are stored
 		close(indexC)
