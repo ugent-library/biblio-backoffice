@@ -209,9 +209,11 @@ func (s *Repository) UpdatePublication(snapshotID string, p *models.Publication,
 	oldDateUpdated := p.DateUpdated
 	now := time.Now()
 	p.DateUpdated = &now
-	p.User = &models.PublicationUser{
-		ID:   u.ID,
-		Name: u.FullName,
+	if u != nil {
+		p.User = &models.PublicationUser{
+			ID:   u.ID,
+			Name: u.FullName,
+		}
 	}
 	snapshotID, err := s.publicationStore.AddAfter(snapshotID, p.ID, p, s.opts)
 	if err != nil {
