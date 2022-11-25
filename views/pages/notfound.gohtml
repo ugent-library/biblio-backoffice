@@ -5,8 +5,8 @@
             <div class="bc-avatar bc-avatar--medium">
                 ?
             </div>
-            <h3 class="c-blank-slate-title">This page does not exist.</h3>
-            <p>Your (re)search was too groundbreaking.</p>
+            <h3 class="c-blank-slate-title">{{ .ErrorTitle }}</h3>
+            <p>{{ .ErrorDescription }}</p>
 
             <div class="c-button-toolbar">
                 <a class="btn btn-outline-primary" href="{{pathFor "home"}}">
