@@ -8,6 +8,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"strings"
 	"sync"
 	"time"
 
@@ -237,9 +238,6 @@ var cleanupCmd = &cobra.Command{
 			// Guard
 			fixed := false
 
-			// Make sure to set p.User = nil!!
-			p.User = nil
-
 			// Add the department "tree" property if it is missing.
 			for _, dep := range p.Department {
 				if dep.Tree == nil {
@@ -253,7 +251,23 @@ var cleanupCmd = &cobra.Command{
 				}
 			}
 
+			// Trim keywords, remove empty keywords
+			var cleanKeywords []string
+			for _, kw := range p.Keyword {
+				cleanKw := strings.TrimSpace(kw)
+				if cleanKw != kw || cleanKw == "" {
+					fixed = true
+				}
+				if cleanKw != "" {
+					cleanKeywords = append(cleanKeywords, cleanKw)
+				}
+			}
+			p.Keyword = cleanKeywords
+
+			// Save record if changed
 			if fixed {
+				p.User = nil
+
 				if err := p.Validate(); err != nil {
 					log.Printf(
 						"Validation failed for publication[snapshot_id: %s, id: %s] : %v",
