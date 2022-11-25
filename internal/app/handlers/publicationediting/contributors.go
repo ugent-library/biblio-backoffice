@@ -781,10 +781,9 @@ func (h *Handler) generateContributorFromPersonId(id string) (*models.Contributo
 	for _, pd := range p.Department {
 		newDep := models.ContributorDepartment{ID: pd.ID}
 		org, orgErr := h.OrganizationService.GetOrganization(pd.ID)
-		if orgErr != nil {
-			return nil, nil, orgErr
+		if orgErr == nil {
+			newDep.Name = org.Name
 		}
-		newDep.Name = org.Name
 		c.Department = append(c.Department, newDep)
 	}
 	return c, p, nil
