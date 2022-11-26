@@ -358,7 +358,7 @@ func (h *Handler) DeleteFile(w http.ResponseWriter, r *http.Request, ctx Context
 		return
 	}
 
-	render.View(w, "publication/refresh_files", YieldAbstracts{
+	render.View(w, "publication/refresh_files", YieldShowFiles{
 		Context: ctx,
 	})
 }

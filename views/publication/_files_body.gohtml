@@ -114,12 +114,11 @@
                                     <h4 class="c-h4">{{.Name}}</h4>
                                 </a>
                             </h4>
-                                {{with .Relation}}<span>{{$.Locale.TS "publication_file_relations" .}}</span>{{end}}
-                                {{with .PublicationVersion}}<span class="ml-3 pl-3 border-left">{{$.Locale.TS "publication_versions" .}}</span>{{end}}
-                                <div class="bc-toolbar-left flex-wrap">
+                            {{with .Relation}}<span>{{$.Locale.TS "publication_file_relations" .}}</span>{{end}}
+                            {{with .PublicationVersion}}<span class="ml-3 pl-3 border-left">{{$.Locale.TS "publication_versions" .}}</span>{{end}}
+                            <div class="bc-toolbar-left flex-wrap">
                                 <div class="bc-toolbar-item">
                                     <span class="c-body-small text-muted text-truncate my-2">Uploaded {{.DateCreated | date "02-01-2006 at 15:04"}}</span>
-                                </div>
                                 </div>
                             </div>
                         </div>
