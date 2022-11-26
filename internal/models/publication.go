@@ -161,18 +161,6 @@ type Publication struct {
 	Year                    string                  `json:"year,omitempty"`
 }
 
-// TODO determine which file passes access level to top
-func (p *Publication) AccessLevel() string {
-	for _, a := range vocabularies.Map["publication_file_access_levels"] {
-		for _, file := range p.File {
-			if file.AccessLevel == a {
-				return a
-			}
-		}
-	}
-	return ""
-}
-
 func (p *Publication) HasRelatedDataset(id string) bool {
 	for _, r := range p.RelatedDataset {
 		if r.ID == id {
@@ -209,21 +197,21 @@ func (p *Publication) SetFile(f *PublicationFile) {
 	}
 }
 
-// TODO determine which file will be the primary file for thumbnails, etc.
-//
-//	This isn't necessarily the same file as the primary file used to indicate
-//	the access level across the entire publication (e.g. summaries)
-func (p *Publication) PrimaryFile() *PublicationFile {
-	for _, file := range p.File {
-		if file.AccessLevel != "" && file.Relation == "main_file" {
-			return file
+// NOTE this assumes publication_file_access_levels are ordered from most to
+// least accessible
+func (p *Publication) MainFile() *PublicationFile {
+	for _, a := range vocabularies.Map["publication_file_access_levels"] {
+		for _, f := range p.File {
+			if f.Relation == "main_file" && f.AccessLevel == a {
+				return f
+			}
 		}
 	}
 
 	return nil
 }
 
-// format: c:vabb:419551 (VABB-1, not approved, 2017
+// format: c:vabb:419551 (VABB-1, not approved, 2017)
 func (p *Publication) VABB() string {
 	VABBID := "-"
 	VABBType := "-"

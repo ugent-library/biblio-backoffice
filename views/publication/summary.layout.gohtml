@@ -1,4 +1,4 @@
-{{$pfile := .Publication.PrimaryFile}}
+{{$mainFile := .Publication.MainFile}}
 <div class="list-group-item-inner">
     <div class="list-group-item-main u-min-w-0">
         <div class="c-thumbnail-and-text align-items-start d-block d-lg-flex">
@@ -19,41 +19,38 @@
                         </span>
                         {{end}}
                         <span class="c-subline text-nowrap mr-3 pr-3 my-2 border-right">{{.Locale.TS "publication_types" .Publication.Type}}{{with .Publication.Classification}}: {{.}}{{end}}</span>
-                        {{if $pfile}}
-                            <div class="c-subline text-nowrap mr-3 pr-3 my-2{{if eq $pfile.AccessLevel "info:eu-repo/semantics/embargoedAccess"}} border-right{{end}}">
-                                {{if eq $pfile.AccessLevel "info:eu-repo/semantics/openAccess"}}
+                        {{if $mainFile}}
+                            <div class="c-subline text-nowrap mr-3 pr-3 my-2{{if eq $mainFile.AccessLevel "info:eu-repo/semantics/embargoedAccess"}} border-right{{end}}">
+                                {{if eq $mainFile.AccessLevel "info:eu-repo/semantics/openAccess"}}
                                 <i class="if if-calendar if--small if--muted"></i>
-                                <span class="c-subline text-truncate pl-2">{{.Locale.TS "publication_file_access_levels" $pfile.AccessLevel}}</span>
-                                {{else if eq $pfile.AccessLevel "info:eu-repo/semantics/embargoedAccess"}}
+                                <span class="c-subline text-truncate pl-2">{{.Locale.TS "publication_file_access_levels" $mainFile.AccessLevel}}</span>
+                                {{else if eq $mainFile.AccessLevel "info:eu-repo/semantics/embargoedAccess"}}
                                 <i class="if if-time if--small if--muted"></i>
-                                <span class="c-subline text-muted pl-2">{{.Locale.TS "publication_file_access_levels" $pfile.AccessLevel}}</span>
-                                {{else if eq $pfile.AccessLevel "info:eu-repo/semantics/restrictedAccess"}}
+                                <span class="c-subline text-muted pl-2">{{.Locale.TS "publication_file_access_levels" $mainFile.AccessLevel}}</span>
+                                {{else if eq $mainFile.AccessLevel "info:eu-repo/semantics/restrictedAccess"}}
                                 <i class="if if-ghent-university if--small if--muted"></i>
-                                <span class="c-subline text-muted pl-2">{{.Locale.TS "publication_file_access_levels" $pfile.AccessLevel}}</span>
-                                {{else if eq $pfile.AccessLevel "info:eu-repo/semantics/closedAccess"}}
+                                <span class="c-subline text-muted pl-2">{{.Locale.TS "publication_file_access_levels" $mainFile.AccessLevel}}</span>
+                                {{else if eq $mainFile.AccessLevel "info:eu-repo/semantics/closedAccess"}}
                                 <i class="if if-eye-off if--small if--muted"></i>
-                                <span class="c-subline text-muted pl-2">{{.Locale.TS "publication_file_access_levels" $pfile.AccessLevel}}</span>
-                                {{else}}
-                                <i class="if if-error-circle if--error"></i>
-                                <span class="pl-2 text-muted">Access level missing</span>
+                                <span class="c-subline text-muted pl-2">{{.Locale.TS "publication_file_access_levels" $mainFile.AccessLevel}}</span>
                                 {{end}}
                             </div>
-                            {{if eq $pfile.AccessLevel "info:eu-repo/semantics/embargoedAccess"}}
+                            {{if eq $mainFile.AccessLevel "info:eu-repo/semantics/embargoedAccess"}}
                             <div class="c-subline text-nowrap mr-3 pr-3 my-2 border-right">
-                                {{if eq $pfile.AccessLevelDuringEmbargo "info:eu-repo/semantics/closedAccess"}}
+                                {{if eq $mainFile.AccessLevelDuringEmbargo "info:eu-repo/semantics/closedAccess"}}
                                 <i class="if if-eye-off if--small if--muted"></I>
                                 {{else}}
                                 <i class="if if-ghent-university if--small if--muted"></I>
                                 {{end}}
-                                <span class="c-subline text-truncate pl-2">{{.Locale.TS "publication_file_access_levels_during_embargo" $pfile.AccessLevelDuringEmbargo}}</span>
+                                <span class="c-subline text-truncate pl-2">{{.Locale.TS "publication_file_access_levels_during_embargo" $mainFile.AccessLevelDuringEmbargo}}</span>
                             </div>
                             <div class="c-subline text-nowrap mr-3 pr-3 my-2">
-                                {{if eq $pfile.AccessLevelAfterEmbargo "info:eu-repo/semantics/openAccess"}}
+                                {{if eq $mainFile.AccessLevelAfterEmbargo "info:eu-repo/semantics/openAccess"}}
                                 <i class="if if-calendar if--small if--muted"></I>
                                 {{else}}
                                 <i class="if if-ghent-university if--small if--muted"></I>
                                 {{end}}
-                                <span class="c-subline text-truncate pl-2">{{.Locale.TS "publication_file_access_levels_after_embargo" $pfile.AccessLevelAfterEmbargo}} from {{$pfile.EmbargoDate}}</span>
+                                <span class="c-subline text-truncate pl-2">{{.Locale.TS "publication_file_access_levels_after_embargo" $mainFile.AccessLevelAfterEmbargo}} from {{$mainFile.EmbargoDate}}</span>
                             </div>
                             {{end}}
                         {{else if not .Publication.Extern}}

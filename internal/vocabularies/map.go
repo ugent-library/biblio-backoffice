@@ -195,10 +195,11 @@ var Map = map[string][]string{
 		"date-created-desc",
 		"year-desc",
 	},
+	// NOTE keep ordered from most to least accessible
 	"publication_file_access_levels": {
 		"info:eu-repo/semantics/openAccess",
-		"info:eu-repo/semantics/embargoedAccess",
 		"info:eu-repo/semantics/restrictedAccess",
+		"info:eu-repo/semantics/embargoedAccess",
 		"info:eu-repo/semantics/closedAccess",
 	},
 	"publication_file_access_levels_during_embargo": {
