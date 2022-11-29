@@ -36,10 +36,6 @@ func dissertationDetails(l *locale.Locale, p *models.Publication) *display.Displ
 				Label:  l.T("builder.alternative_title"),
 				Values: p.AlternativeTitle,
 			},
-			&display.Text{
-				Label: l.T("builder.publication_abbreviation"),
-				Value: p.PublicationAbbreviation,
-			},
 		).
 		AddSection(
 			&display.List{
