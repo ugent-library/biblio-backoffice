@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- #600: Improve search by removing punctuation and icu folding (requires index switch)
 - #865: Remove "Publication short title" from dissertation details display.
 - #866: Add missing "Journal title" and "Short journal title" labels for issue_editor.
 - #863: Only show "Lay summaries" and "Conference details" links in sidebar menu.

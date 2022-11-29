@@ -39,6 +39,17 @@
                     }
                 },
                 "analyzer": {
+                    "words": {
+                        "filter": [
+                            "lowercase",
+                            "icu_folding"
+                        ],
+                        "char_filter": [
+                            "remove_punctuation"
+                        ],
+                        "type": "custom",
+                        "tokenizer": "standard"
+                    },
                     "ngram": {
                         "tokenizer": "ngram",
                         "filter": [
@@ -107,7 +118,8 @@
             "dynamic": false,
             "properties": {
                 "all": {
-                    "type": "text"
+                    "type": "text",
+                    "analyzer": "words"
                 },
                 "abstract": {
                     "properties": {
