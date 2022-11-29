@@ -187,9 +187,9 @@ func buildPublicationUserQuery(args *models.SearchArgs) M {
 				},
 				"lenient":                             true,
 				"analyze_wildcard":                    false,
-				"default_operator":                    "OR",
+				"default_operator":                    "AND",
 				"minimum_should_match":                "100%",
-				"flags":                               "PHRASE|WHITESPACE",
+				"flags":                               "PHRASE",
 				"auto_generate_synonyms_phrase_query": true,
 			},
 		}

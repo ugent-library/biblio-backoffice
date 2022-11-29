@@ -39,16 +39,11 @@
                     }
                 },
                 "analyzer": {
-                    "words": {
+                    "text_default": {
+                        "tokenizer": "standard",
                         "filter": [
-                            "lowercase",
                             "icu_folding"
-                        ],
-                        "char_filter": [
-                            "remove_punctuation"
-                        ],
-                        "type": "custom",
-                        "tokenizer": "standard"
+                        ]
                     },
                     "ngram": {
                         "tokenizer": "ngram",
@@ -119,7 +114,7 @@
             "properties": {
                 "all": {
                     "type": "text",
-                    "analyzer": "words"
+                    "analyzer": "text_default"
                 },
                 "abstract": {
                     "properties": {
@@ -353,6 +348,7 @@
                 },
                 "title": {
                     "type": "text",
+                    "analyzer": "text_default",
                     "copy_to": "all"
                 },
                 "url": {
