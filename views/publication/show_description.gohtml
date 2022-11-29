@@ -15,10 +15,12 @@
                 <nav class="nav nav-pills flex-column">
                     <a class="nav-link" href="#publication-details">Publication details</a>
                     <a class="nav-link" href="#projects">Projects</a>
+                    {{if .Publication.UsesConference}}
                     <a class="nav-link" href="#conference-details">Conference details</a>
+                    {{end}}
                     <a class="nav-link" href="#abstracts">Abstracts</a>
                     <a class="nav-link" href="#links">Links</a>
-                    {{if eq .Publication.Type "dissertation"}}
+                    {{if .Publication.UsesLaySummary}}
                     <a class="nav-link" href="#lay-summaries">Lay summaries</a>
                     {{end}}
                     <a class="nav-link" href="#additional-information">Additional information</a>
