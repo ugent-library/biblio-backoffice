@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - #865: Remove "Publication short title" from dissertation details display
+- #866: Add missing "Journal title" and "Short journal title" labels for issue_editor
 
 ## [v1.0.11] - 2022-11-28
 

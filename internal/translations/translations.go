@@ -288,6 +288,9 @@ func init() {
 	message.SetString(language.English, "builder.conference.publication", "Proceedings title")
 	message.SetString(language.English, "builder.conference.publication_abbreviation", "Publication short title")
 	message.SetString(language.English, "builder.conference.series_title", "Series or journal title")
+	
+	message.SetString(language.English, "builder.issue_editor.publication", "Journal title")
+	message.SetString(language.English, "builder.issue_editor.publication_abbreviation", "Short journal title")
 
 	message.SetString(language.English, "builder.journal_article.publication", "Journal title")
 	message.SetString(language.English, "builder.journal_article.publication_abbreviation", "Short journal title")
