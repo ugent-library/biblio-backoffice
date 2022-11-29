@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - #866: Add missing "Journal title" and "Short journal title" labels for issue_editor.
 - #863: Only show "Lay summaries" and "Conference details" links in sidebar menu.
   when the type uses these fields.
+- Various fixes (#867).
 
 ## [v1.0.11] - 2022-11-28
 
