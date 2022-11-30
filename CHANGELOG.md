@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Fixed
+
+## [v1.0.12] - 2022-11-30
+
+### Added
+
 - CHANGELOG.md document.
 
 ### Fixed
@@ -117,7 +123,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.11...HEAD
+[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.12...HEAD
+[v1.0.11]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.11...v1.0.12
 [v1.0.11]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.10...v1.0.11
 [v1.0.10]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.9...v1.0.10
 [v1.0.9]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.8...v1.0.9
