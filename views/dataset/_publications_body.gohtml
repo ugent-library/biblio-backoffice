@@ -5,10 +5,10 @@
         <li class="list-group-item">
             <div class="d-flex w-100">
                 <div class="w-100">
-                        {{layout "publication/summary" "dataset/publication_summary" ($.Yield
-                            "Publication" .
-                            "PublicationURL" (pathFor "publication" "id" .ID)
-                            "Dataset" $.Dataset)}}
+                    {{layout "publication/summary" "dataset/publication_summary" ($.Yield
+                        "Publication" .
+                        "PublicationURL" (pathFor "publication" "id" .ID)
+                        "Dataset" $.Dataset)}}
                 </div>
             </div>
         </li>
