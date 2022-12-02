@@ -5,12 +5,10 @@
         <li class="list-group-item">
             <div class="d-flex w-100">
                 <div class="w-100">
-                    <div class="d-flex align-items-start">
                         {{layout "dataset/summary" "publication/dataset_summary" ($.Yield
                             "Dataset" .
                             "DatasetURL" (pathFor "dataset" "id" .ID)
                             "Publication" $.Publication)}}
-                    </div>
                 </div>
             </div>
         </li>
