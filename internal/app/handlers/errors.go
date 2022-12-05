@@ -14,6 +14,11 @@ type YieldNotFound struct {
 	ErrorDescription string
 }
 
+type YieldModalError struct {
+	BaseContext
+	UUID string
+}
+
 func (h *BaseHandler) NotFound(w http.ResponseWriter, r *http.Request, ctx BaseContext) {
 	w.WriteHeader(404)
 	render.Layout(w, "layouts/default", "pages/notfound", YieldNotFound{
@@ -31,5 +36,12 @@ func (h *BaseHandler) InternalServerError(w http.ResponseWriter, r *http.Request
 		PageTitle:        "Biblio",
 		ErrorTitle:       "Something went wrong.",
 		ErrorDescription: "Your (re)search was too groundbreaking.",
+	})
+}
+
+func (h *BaseHandler) ErrorModal(w http.ResponseWriter, r *http.Request, uid string, ctx BaseContext) {
+	render.Layout(w, "show_modal", "modals/error", YieldModalError{
+		BaseContext: ctx,
+		UUID:        uid,
 	})
 }

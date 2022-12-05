@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
@@ -189,4 +190,11 @@ func (h BaseHandler) URLFor(name string, vars ...string) *url.URL {
 	}
 	h.Logger.Panic("Could not find route named %s", name)
 	return nil
+}
+
+func (h BaseHandler) ActionError(w http.ResponseWriter, r *http.Request, ctx BaseContext, msg string, err error, ID string) {
+	uuid := uuid.NewString()
+	errMsg := fmt.Sprintf("[error: %s] %s", uuid, msg)
+	h.Logger.Errorw(errMsg, "errors", err, "publication", ID, "user", ctx.User.ID)
+	h.ErrorModal(w, r, uuid, ctx)
 }
