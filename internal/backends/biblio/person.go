@@ -11,7 +11,7 @@ func (c *Client) GetPerson(id string) (*models.Person, error) {
 	p := &models.Person{}
 	qp := url.Values{}
 	qp.Set("format", "json")
-	if _, err := c.get(fmt.Sprintf("/person/%s", url.PathEscape(id)), qp, p); err != nil {
+	if err := c.get(fmt.Sprintf("/person/%s", url.PathEscape(id)), qp, p); err != nil {
 		return nil, err
 	}
 	return p, nil
@@ -21,7 +21,7 @@ func (c *Client) SuggestPeople(q string) ([]models.Person, error) {
 	hits := make([]models.Person, 0)
 	qp := url.Values{}
 	qp.Set("q", q)
-	if _, err := c.get("/person/completion", qp, &hits); err != nil {
+	if err := c.get("/person/completion", qp, &hits); err != nil {
 		return nil, err
 	}
 	return hits, nil

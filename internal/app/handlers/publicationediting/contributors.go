@@ -352,6 +352,7 @@ func (h *Handler) EditContributor(w http.ResponseWriter, r *http.Request, ctx Co
 	if c.ID != "" {
 		p, err := h.PersonService.GetPerson(c.ID)
 		if err != nil {
+			h.Logger.Errorw("edit publication contributor: could not get the contributor from person service", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 			render.InternalServerError(w, r, err)
 			return
 		}
@@ -568,6 +569,7 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 		if nextC.ID != "" {
 			p, err := h.PersonService.GetPerson(nextC.ID)
 			if err != nil {
+				h.Logger.Errorw("suggest publication contributor: could not get the contributor from person service", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 				render.InternalServerError(w, r, err)
 				return
 			}
@@ -769,6 +771,7 @@ func confirmContributorForm(ctx Context, role string, c *models.Contributor, err
 func (h *Handler) generateContributorFromPersonId(id string) (*models.Contributor, *models.Person, error) {
 	p, err := h.PersonService.GetPerson(id)
 	if err != nil {
+		h.Logger.Errorw("generate contributor from person id: could not get the contributor from person service", "errors", err)
 		return nil, nil, err
 	}
 	c := &models.Contributor{}
