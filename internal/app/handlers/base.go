@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/google/uuid"
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
@@ -16,6 +15,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
 	"github.com/ugent-library/biblio-backend/internal/render/flash"
+	"github.com/ugent-library/biblio-backend/internal/ulid"
 	"go.uber.org/zap"
 )
 
@@ -193,8 +193,8 @@ func (h BaseHandler) URLFor(name string, vars ...string) *url.URL {
 }
 
 func (h BaseHandler) ActionError(w http.ResponseWriter, r *http.Request, ctx BaseContext, msg string, err error, ID string) {
-	uuid := uuid.NewString()
-	errMsg := fmt.Sprintf("[error: %s] %s", uuid, msg)
+	errID := ulid.MustGenerate()
+	errMsg := fmt.Sprintf("[error: %s] %s", errID, msg)
 	h.Logger.Errorw(errMsg, "errors", err, "publication", ID, "user", ctx.User.ID)
-	h.ErrorModal(w, r, uuid, ctx)
+	h.ErrorModal(w, r, errID, ctx)
 }

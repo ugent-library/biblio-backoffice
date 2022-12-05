@@ -16,7 +16,7 @@ type YieldNotFound struct {
 
 type YieldModalError struct {
 	BaseContext
-	UUID string
+	ID string
 }
 
 func (h *BaseHandler) NotFound(w http.ResponseWriter, r *http.Request, ctx BaseContext) {
@@ -39,9 +39,9 @@ func (h *BaseHandler) InternalServerError(w http.ResponseWriter, r *http.Request
 	})
 }
 
-func (h *BaseHandler) ErrorModal(w http.ResponseWriter, r *http.Request, uid string, ctx BaseContext) {
+func (h *BaseHandler) ErrorModal(w http.ResponseWriter, r *http.Request, errID string, ctx BaseContext) {
 	render.Layout(w, "show_modal", "modals/error", YieldModalError{
 		BaseContext: ctx,
-		UUID:        uid,
+		ID:          errID,
 	})
 }
