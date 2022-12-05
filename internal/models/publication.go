@@ -238,36 +238,30 @@ func (p *Publication) VABB() string {
 }
 
 // Citation
-func (p *Publication) Reference() string {
-	ref := ""
+func (p *Publication) SummaryParts() []string {
 
-	ref_page := ""
-	ref_publisher := ""
-	ref_parent := ""
-	year := ""
-	volume := ""
-	issue := ""
-
-	if p.PublicationAbbreviation != "" {
-		ref_parent = fmt.Sprintf(" %s ", p.PublicationAbbreviation)
-	} else if p.Publication != "" {
-		ref_parent = fmt.Sprintf(" %s ", p.Publication)
-	}
+	tmpParts := make([]string, 0)
 
 	if p.Year != "" {
-		year = fmt.Sprintf(" %s.", p.Year)
+		tmpParts = append(tmpParts, p.Year)
+	}
+
+	if p.PublicationAbbreviation != "" {
+		tmpParts = append(tmpParts, p.PublicationAbbreviation)
+	} else if p.Publication != "" {
+		tmpParts = append(tmpParts, p.Publication)
 	}
 
 	if p.Publisher != "" {
-		ref_publisher = fmt.Sprintf(" %s.", p.Publisher)
+		tmpParts = append(tmpParts, p.Publisher)
 	}
 
 	if p.Volume != "" {
-		volume = fmt.Sprintf(" %s", p.Volume)
+		tmpParts = append(tmpParts, p.Volume)
 	}
 
 	if p.Issue != "" {
-		issue = fmt.Sprintf(" (%s) ", p.Issue)
+		tmpParts = append(tmpParts, fmt.Sprintf("(%s)", p.Issue))
 	}
 
 	if p.PageFirst != "" || p.PageLast != "" {
@@ -284,27 +278,31 @@ func (p *Publication) Reference() string {
 			delim = "-"
 		}
 
-		ref_page = fmt.Sprintf(" %s%s%s ", fp, delim, lp)
+		tmpParts = append(tmpParts, fmt.Sprintf("%s%s%s", fp, delim, lp))
 	}
 
-	ref = fmt.Sprintf("%s%s%s%s%s%s", ref_parent, year, ref_publisher, volume, issue, ref_page)
+	reTrimDot := regexp.MustCompile(`^[ \.]+`)
+	reTrimSpaceStart := regexp.MustCompile(`^\s*`)
+	reTrimSpaceEnd := regexp.MustCompile(`\s*$`)
+	reMultiDot := regexp.MustCompile(`\.+`)
+	reNonAlpha := regexp.MustCompile(`^\W*$`)
 
-	var r *regexp.Regexp
-	r = regexp.MustCompile(`^[ \.]+`)
-	ref = r.ReplaceAllString(ref, "")
-	r = regexp.MustCompile(`^\s*`)
-	ref = r.ReplaceAllString(ref, "")
-	r = regexp.MustCompile(`\s*$`)
-	ref = r.ReplaceAllString(ref, "")
-	r = regexp.MustCompile(`\.+`)
-	ref = r.ReplaceAllString(ref, ".")
-	r = regexp.MustCompile(`^\W*$`)
+	summaryParts := make([]string, 0, len(tmpParts))
 
-	if r.MatchString(ref) {
-		ref = ""
+	for _, v := range tmpParts {
+		v = reTrimDot.ReplaceAllString(v, "")
+		v = reTrimSpaceStart.ReplaceAllString(v, "")
+		v = reTrimSpaceEnd.ReplaceAllString(v, "")
+		v = reMultiDot.ReplaceAllString(v, ".")
+		if reNonAlpha.MatchString(v) {
+			v = ""
+		}
+		if v != "" {
+			summaryParts = append(summaryParts, v)
+		}
 	}
 
-	return ref
+	return summaryParts
 }
 
 func (p *Publication) ClassificationChoices() []string {

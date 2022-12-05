@@ -83,7 +83,9 @@
                 </h4>
 
                 <div class="c-meta-list c-meta-list-horizontal">
-                    <span class="c-meta-item">{{.Publication.Reference}}</span>
+                    {{range .Publication.SummaryParts}}
+                    <span class="c-meta-item">{{.}}</span>
+                    {{end}}
                 </div>
 
                 {{with .Publication.Author}}{{partial "shared/contributors" (dict "Contributors" . "ContributorsURL" ($.PublicationURL | querySet "show" "contributors"))}}{{end}}
