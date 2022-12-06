@@ -1,0 +1,19 @@
+{{define "modal_dialog"}}
+<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">An error has occurred</h2>
+        </div>
+        <div class="modal-body">
+            <div class="alert alert-danger mb-0" role="alert">
+                <i class="if if--error if-error-circle-fill"></i>
+                It's not possible to perform this action at this time. For more information, contact the
+                Biblio team and pass this error code along: {{.ID}}
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary modal-close">Close</button>
+        </div>
+    </div>
+</div>
+{{end}}
