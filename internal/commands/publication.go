@@ -32,6 +32,7 @@ func init() {
 	publicationCmd.AddCommand(updatePublicationEmbargoes)
 	publicationCmd.AddCommand(createPublicationHandles)
 	publicationCmd.AddCommand(cleanupCmd)
+	publicationCmd.AddCommand(transferCmd)
 	rootCmd.AddCommand(publicationCmd)
 }
 
@@ -307,6 +308,149 @@ var cleanupCmd = &cobra.Command{
 		close(indexC)
 		// wait for indexing to finish
 		indexWG.Wait()
+	},
+}
+
+var transferCmd = &cobra.Command{
+	Use:   "transfer",
+	Short: "Transfer publications between people",
+	Args:  cobra.ExactArgs(2),
+	Run: func(cmd *cobra.Command, args []string) {
+		e := Services()
+		logger := newLogger()
+
+		source := args[0]
+		dest := args[1]
+
+		p, err := e.PersonService.GetPerson(dest)
+		if err != nil {
+			logger.Fatalf("Fatal: could not retrieve person %s: %s", dest, err)
+		}
+
+		c := &models.Contributor{}
+		c.ID = p.ID
+		c.FirstName = p.FirstName
+		c.LastName = p.LastName
+		c.FullName = p.FullName
+		c.UGentID = p.UGentID
+		c.ORCID = p.ORCID
+		for _, pd := range p.Department {
+			newDep := models.ContributorDepartment{ID: pd.ID}
+			org, orgErr := e.OrganizationService.GetOrganization(pd.ID)
+			if orgErr == nil {
+				newDep.Name = org.Name
+			}
+			c.Department = append(c.Department, newDep)
+		}
+
+		// e.Repository.AddPublicationListener(func(p *models.Publication) {
+		// 	if err := e.PublicationSearchService.Index(p); err != nil {
+		// 		logger.Fatalf("error indexing publication %s: %v", p.ID, err)
+		// 	}
+		// })
+
+		// var count int = 0
+
+		transferErr := e.Repository.Transaction(
+			context.Background(),
+			func(r backends.Repository) error {
+				for _, role := range [4]string{"creator", "author", "editor", "supervisor"} {
+					var sqlSelectPublicationsQuery string
+
+					if role == "creator" {
+						sqlSelectPublicationsQuery = `
+						SELECT * FROM publications WHERE date_until IS NULL AND
+						data->'creator'->>'id' = $1
+						`
+					} else {
+						sqlSelectPublicationsQuery = fmt.Sprintf(`
+						SELECT * FROM publications WHERE date_until IS NULL AND
+						data->'%s' IS NOT NULL AND
+						EXISTS(
+							SELECT 1 FROM jsonb_array_elements(data->'%s') AS a
+							WHERE a->>'id' = $1
+						)
+						`, role, role)
+					}
+
+					publications := make([]*models.Publication, 0)
+					sErr := r.SelectPublications(
+						sqlSelectPublicationsQuery,
+						[]any{
+							source,
+						},
+						func(p *models.Publication) bool {
+							publications = append(publications, p)
+							return true
+						},
+					)
+
+					if sErr != nil {
+						return sErr
+					}
+
+					var handler func(p *models.Publication)
+
+					switch role {
+					case "author":
+						handler = func(p *models.Publication) {
+							for k, a := range p.Author {
+								if a.ID == source {
+									p.SetContributor("author", k, c)
+									logger.Infof("%s: replaced author %s with %s at position %d", p.ID, source, dest, k)
+								}
+							}
+						}
+					case "editor":
+						handler = func(p *models.Publication) {
+							for k, a := range p.Editor {
+								if a.ID == source {
+									p.SetContributor("editor", k, c)
+									logger.Infof("%s: replaced editor %s with %s at position %d", p.ID, source, dest, k)
+								}
+							}
+						}
+					case "supervisor":
+						handler = func(p *models.Publication) {
+							for k, a := range p.Supervisor {
+								if a.ID == source {
+									p.SetContributor("supervisor", k, c)
+									logger.Infof("%s: replaced supervisor %s with %s at position %d", p.ID, source, dest, k)
+								}
+							}
+						}
+					case "creator":
+						handler = func(p *models.Publication) {
+							p.Creator = &models.PublicationUser{
+								ID:   c.ID,
+								Name: c.FullName,
+							}
+
+							logger.Infof("%s: replaced creator %s with %s", p.ID, source, dest)
+						}
+					}
+
+					for _, p := range publications {
+						handler(p)
+
+						// 	p.User = nil
+
+						// 	if e := r.SavePublication(p, nil); e != nil {
+						// 		return e
+						// 	}
+					}
+
+				}
+
+				return nil
+			},
+		)
+
+		if transferErr != nil {
+			logger.Fatal(transferErr)
+		}
+
+		// logger.Infof("updated %d embargoes", count)
 	},
 }
 
