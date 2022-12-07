@@ -343,17 +343,19 @@ var transferCmd = &cobra.Command{
 			c.Department = append(c.Department, newDep)
 		}
 
-		// e.Repository.AddPublicationListener(func(p *models.Publication) {
-		// 	if err := e.PublicationSearchService.Index(p); err != nil {
-		// 		logger.Fatalf("error indexing publication %s: %v", p.ID, err)
-		// 	}
-		// })
+		e.Repository.AddPublicationListener(func(p *models.Publication) {
+			if err := e.PublicationSearchService.Index(p); err != nil {
+				logger.Fatalf("error indexing publication %s: %v", p.ID, err)
+			}
+		})
 
-		// var count int = 0
+		var count int = 0
 
 		transferErr := e.Repository.Transaction(
 			context.Background(),
 			func(r backends.Repository) error {
+				register := make(map[string]*models.Publication)
+
 				for _, role := range [4]string{"creator", "author", "editor", "supervisor"} {
 					var sqlSelectPublicationsQuery string
 
@@ -426,20 +428,39 @@ var transferCmd = &cobra.Command{
 								Name: c.FullName,
 							}
 
+							if len(c.Department) > 0 {
+								org, orgErr := e.OrganizationService.GetOrganization(c.Department[0].ID)
+								if orgErr != nil {
+									logger.Warnf("import single publication: could not fetch user department", "errors", orgErr, "user", c.ID)
+								} else {
+									p.AddDepartmentByOrg(org)
+								}
+							}
+
 							logger.Infof("%s: replaced creator %s with %s", p.ID, source, dest)
 						}
 					}
 
 					for _, p := range publications {
+						val, ok := register[p.ID]
+						if ok {
+							p = val
+						}
+
 						handler(p)
 
-						// 	p.User = nil
+						register[p.ID] = p
+					}
+				}
 
-						// 	if e := r.SavePublication(p, nil); e != nil {
-						// 		return e
-						// 	}
+				for _, p := range register {
+					p.User = nil
+
+					if errSave := r.SavePublication(p, nil); errSave != nil {
+						return errSave
 					}
 
+					count++
 				}
 
 				return nil
@@ -450,7 +471,7 @@ var transferCmd = &cobra.Command{
 			logger.Fatal(transferErr)
 		}
 
-		// logger.Infof("updated %d embargoes", count)
+		logger.Infof("updated %d publications", count)
 	},
 }
 
