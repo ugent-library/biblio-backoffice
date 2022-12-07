@@ -1,19 +1,26 @@
 {{define "modal_dialog"}}
-<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+  <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">An error has occurred</h2>
-        </div>
-        <div class="modal-body">
-            <div class="alert alert-danger mb-0" role="alert">
-                <i class="if if--error if-error-circle-fill"></i>
-                It's not possible to perform this action at this time. For more information, contact the
-                Biblio team and pass this error code along: {{.ID}}
+      <div class="modal-body">
+          <div class="c-blank-slate c-blank-slate-info">
+            <div class="bc-avatar">
+              <i class="if if-service"></i>
             </div>
-        </div>
-        <div class="modal-footer">
-            <button class="btn btn-primary modal-close">Close</button>
-        </div>
+            <h4>Biblio could not complete the action.</h4>
+            <p>
+              Copy this code <code class="c-code">{{.ID}}</code>
+              <br>
+              and send it to <a href="mailto:biblio@ugent.be">biblio@ugent.be</a>.
+              <br>
+              <br>
+              The Biblio team will complete the action for you.
+            </p>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-link modal-close">Close</button>
+      </div>
     </div>
+  </div>
 </div>
 {{end}}
