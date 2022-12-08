@@ -15,6 +15,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
 	"github.com/ugent-library/biblio-backend/internal/render/flash"
+	"github.com/ugent-library/biblio-backend/internal/ulid"
 	"go.uber.org/zap"
 )
 
@@ -189,4 +190,11 @@ func (h BaseHandler) URLFor(name string, vars ...string) *url.URL {
 	}
 	h.Logger.Panic("Could not find route named %s", name)
 	return nil
+}
+
+func (h BaseHandler) ActionError(w http.ResponseWriter, r *http.Request, ctx BaseContext, msg string, err error, ID string) {
+	errID := ulid.MustGenerate()
+	errMsg := fmt.Sprintf("[error: %s] %s", errID, msg)
+	h.Logger.Errorw(errMsg, "errors", err, "publication", ID, "user", ctx.User.ID)
+	h.ErrorModal(w, r, errID, ctx)
 }
