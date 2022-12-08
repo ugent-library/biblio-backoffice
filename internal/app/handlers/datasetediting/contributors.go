@@ -235,7 +235,7 @@ func (h *Handler) ConfirmCreateContributor(w http.ResponseWriter, r *http.Reques
 	if b.ID != "" {
 		newC, newP, err := h.generateContributorFromPersonId(b.ID)
 		if err != nil {
-			render.InternalServerError(w, r, err)
+			h.ActionError(w, r, ctx.BaseContext, "confirm create dataset contributor: could not generate contributor from person", err, ctx.Dataset.ID)
 			return
 		}
 		c = newC
@@ -267,7 +267,7 @@ func (h *Handler) CreateContributor(w http.ResponseWriter, r *http.Request, ctx 
 	if b.ID != "" {
 		newC, newP, err := h.generateContributorFromPersonId(b.ID)
 		if err != nil {
-			render.InternalServerError(w, r, err)
+			h.ActionError(w, r, ctx.BaseContext, "create dataset contributor: could not generate contributor from person", err, ctx.Dataset.ID)
 			return
 		}
 		c = newC
@@ -347,7 +347,7 @@ func (h *Handler) EditContributor(w http.ResponseWriter, r *http.Request, ctx Co
 	if c.ID != "" {
 		p, err := h.PersonService.GetPerson(c.ID)
 		if err != nil {
-			render.InternalServerError(w, r, err)
+			h.ActionError(w, r, ctx.BaseContext, "edit dataset contributor: could not generate contributor from person", err, ctx.Dataset.ID)
 			return
 		}
 		active = p.Active
@@ -456,7 +456,7 @@ func (h *Handler) ConfirmUpdateContributor(w http.ResponseWriter, r *http.Reques
 	if b.ID != "" {
 		newC, newP, err := h.generateContributorFromPersonId(b.ID)
 		if err != nil {
-			render.InternalServerError(w, r, err)
+			h.ActionError(w, r, ctx.BaseContext, "confirm update dataset contributor: could not generate contributor from person", err, ctx.Dataset.ID)
 			return
 		}
 		c = newC
@@ -553,7 +553,7 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 		if nextC.ID != "" {
 			p, err := h.PersonService.GetPerson(nextC.ID)
 			if err != nil {
-				render.InternalServerError(w, r, err)
+				h.ActionError(w, r, ctx.BaseContext, "suggest dataset contributor: could not generate contributor from person", err, ctx.Dataset.ID)
 				return
 			}
 			nextActive = p.Active
