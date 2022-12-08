@@ -9,7 +9,7 @@
         {{end}}
     </label>
     <input name="{{.Name}}" type="text" value="{{.Value}}"
-        class="form-control{{if .Error}} is-invalid{{end}}"
+        class="form-control{{if .Error}} is-invalid{{end}} form-control-auto-focus"
         {{if .Readonly}}readonly{{end}}
         hx-get="{{.Vars.SuggestURL}}"
         hx-include='.person-attributes input[name="first_name"], .person-attributes input[name="last_name"]'

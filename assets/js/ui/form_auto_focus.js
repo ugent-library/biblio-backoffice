@@ -8,7 +8,7 @@ export default function () {
      * Form now only present on htmx load
      */
     htmx.onLoad(function(el) {
-        let input = el.querySelector(".form-control")
+        let input = el.querySelector(".form-control-auto-focus")
         if (input == null) return
         input.focus()
     })
