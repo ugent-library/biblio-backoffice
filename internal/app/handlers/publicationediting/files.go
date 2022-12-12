@@ -63,15 +63,6 @@ func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context
 	// 2GB limit on request body
 	r.Body = http.MaxBytesReader(w, r.Body, 2000000000)
 
-	// buffer limit of 32MB
-	if err := r.ParseMultipartForm(32 << 20); err != nil {
-		h.Logger.Errorf("publication upload file: exceeded buffer limit:", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Locale.T("publication.file_upload_error"),
-		})
-		return
-	}
-
 	file, handler, err := r.FormFile("file")
 	if err != nil {
 		h.Logger.Errorf("publication upload file: could not process file", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
