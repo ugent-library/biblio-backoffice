@@ -1,5 +1,5 @@
-describe('empty spec', () => {
-  it('be able to load the home page anonymously', () => {
+describe('The home page', () => {
+  it('should be able to load the home page anonymously', () => {
     cy.visit('/')
 
     cy.get('h2').should('have.text', 'Home')
