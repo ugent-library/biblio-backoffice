@@ -372,11 +372,10 @@ func fileForm(l *locale.Locale, publication *models.Publication, file *models.Pu
 			"sections/document_type",
 			struct{}{},
 			&form.Select{
-				Template:    "document_type",
-				Name:        "relation",
-				Value:       file.Relation,
-				Label:       l.T("builder.file.relation"),
-				EmptyOption: true,
+				Template: "document_type",
+				Name:     "relation",
+				Value:    file.Relation,
+				Label:    l.T("builder.file.relation"),
 				Options: localize.VocabularySelectOptions(
 					l,
 					"publication_file_relations"),
@@ -410,11 +409,10 @@ func fileForm(l *locale.Locale, publication *models.Publication, file *models.Pu
 			"sections/document_type",
 			struct{}{},
 			&form.Select{
-				Template:    "document_type",
-				Name:        "relation",
-				Value:       file.Relation,
-				Label:       l.T("builder.file.relation"),
-				EmptyOption: true,
+				Template: "document_type",
+				Name:     "relation",
+				Value:    file.Relation,
+				Label:    l.T("builder.file.relation"),
 				Options: localize.VocabularySelectOptions(
 					l,
 					"publication_file_relations"),
