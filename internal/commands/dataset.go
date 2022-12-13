@@ -1,17 +1,14 @@
 package commands
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
 	"io"
 	"log"
 	"os"
 	"sync"
-	"time"
 
 	"github.com/spf13/cobra"
-	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/ulid"
 )
@@ -22,7 +19,6 @@ func init() {
 	datasetCmd.AddCommand(datasetAddCmd)
 	datasetCmd.AddCommand(datasetImportCmd)
 	datasetCmd.AddCommand(oldDatasetImportCmd)
-	datasetCmd.AddCommand(updateDatasetEmbargoes)
 	rootCmd.AddCommand(datasetCmd)
 }
 
@@ -218,82 +214,5 @@ var oldDatasetImportCmd = &cobra.Command{
 				d.ID,
 			)
 		}
-	},
-}
-
-var updateDatasetEmbargoes = &cobra.Command{
-	Use:   "update-embargoes",
-	Short: "Update embargoes",
-	Run: func(cmd *cobra.Command, args []string) {
-		e := Services()
-
-		e.Repository.AddDatasetListener(func(d *models.Dataset) {
-			if err := e.DatasetSearchService.Index(d); err != nil {
-				log.Fatalf("error indexing dataset %s: %v", d.ID, err)
-			}
-		})
-
-		var count int = 0
-		updateEmbargoErr := e.Repository.Transaction(
-			context.Background(),
-			func(repo backends.Repository) error {
-
-				/*
-					select live datasets with embargoed access
-				*/
-				var embargoAccessLevel string = "info:eu-repo/semantics/embargoedAccess"
-				currentDateStr := time.Now().Format("2006-01-02")
-				var sqlDatasetsWithEmbargo string = `
-			SELECT * FROM datasets
-			WHERE date_until is null AND 
-			data->>'access_level' = $1 AND
-			data->>'embargo_date' <> '' AND
-			data->>'embargo_date' <= $2 
-			`
-
-				datasets := make([]*models.Dataset, 0)
-				sErr := repo.SelectDatasets(
-					sqlDatasetsWithEmbargo,
-					[]any{
-						embargoAccessLevel,
-						currentDateStr},
-					func(dataset *models.Dataset) bool {
-						datasets = append(datasets, dataset)
-						return true
-					},
-				)
-
-				if sErr != nil {
-					return sErr
-				}
-
-				for _, dataset := range datasets {
-					/*
-						clear outdated embargoes
-					*/
-					// TODO: what with empty embargo_date?
-					if dataset.EmbargoDate == "" {
-						continue
-					}
-					if dataset.EmbargoDate > currentDateStr {
-						continue
-					}
-					dataset.ClearEmbargo()
-
-					if e := repo.SaveDataset(dataset, nil); e != nil {
-						return e
-					}
-					count++
-				}
-
-				return nil
-			},
-		)
-
-		if updateEmbargoErr != nil {
-			log.Fatal(updateEmbargoErr)
-		}
-
-		log.Printf("updated %d embargoes", count)
 	},
 }

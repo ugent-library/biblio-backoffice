@@ -29,14 +29,14 @@ func NewClient(c Config) *Client {
 	}
 }
 
-func (c *Client) get(path string, qp url.Values, responseData any) (*http.Response, error) {
-	req, err := c.newRequest("GET", path, qp)
-	if err != nil {
-		return nil, err
-	}
-	req.SetBasicAuth(c.config.Username, c.config.Password)
-	return c.doRequest(req, responseData)
-}
+// func (c *Client) get(path string, qp url.Values, responseData any) (*http.Response, error) {
+// 	req, err := c.newRequest("GET", path, qp)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	req.SetBasicAuth(c.config.Username, c.config.Password)
+// 	return c.doRequest(req, responseData)
+// }
 
 func (c *Client) put(path string, qp url.Values, responseData any) (*http.Response, error) {
 	req, err := c.newRequest("PUT", path, qp)
@@ -47,14 +47,14 @@ func (c *Client) put(path string, qp url.Values, responseData any) (*http.Respon
 	return c.doRequest(req, responseData)
 }
 
-func (c *Client) delete(path string, qp url.Values, responseData any) (*http.Response, error) {
-	req, err := c.newRequest("DELETE", path, qp)
-	if err != nil {
-		return nil, err
-	}
-	req.SetBasicAuth(c.config.Username, c.config.Password)
-	return c.doRequest(req, responseData)
-}
+// func (c *Client) delete(path string, qp url.Values, responseData any) (*http.Response, error) {
+// 	req, err := c.newRequest("DELETE", path, qp)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	req.SetBasicAuth(c.config.Username, c.config.Password)
+// 	return c.doRequest(req, responseData)
+// }
 
 func (c *Client) newRequest(method, path string, vals url.Values) (*http.Request, error) {
 	url := c.config.BaseURL + path
@@ -87,26 +87,18 @@ func (c *Client) doRequest(req *http.Request, responseData any) (*http.Response,
 	return res, nil
 }
 
-func (client *Client) GetHandleByPublication(publication *models.Publication) (*models.Handle, error) {
-	return client.GetHandle(publication.ID)
-}
-
-func (client *Client) GetHandle(localId string) (*models.Handle, error) {
-	h := &models.Handle{}
-	_, err := client.get(
-		fmt.Sprintf("/%s/LU-%s", client.config.Prefix, localId),
-		nil,
-		h,
-	)
-	if err != nil {
-		return nil, err
-	}
-	return h, nil
-}
-
-func (client *Client) UpsertHandleByPublication(publication *models.Publication) (*models.Handle, error) {
-	return client.UpsertHandle(publication.ID)
-}
+// func (client *Client) GetHandle(localId string) (*models.Handle, error) {
+// 	h := &models.Handle{}
+// 	_, err := client.get(
+// 		fmt.Sprintf("/%s/LU-%s", client.config.Prefix, localId),
+// 		nil,
+// 		h,
+// 	)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	return h, nil
+// }
 
 func (client *Client) UpsertHandle(localId string) (*models.Handle, error) {
 	h := &models.Handle{}
@@ -123,19 +115,15 @@ func (client *Client) UpsertHandle(localId string) (*models.Handle, error) {
 	return h, nil
 }
 
-func (client *Client) DeleteHandleByPublication(publication *models.Publication) (*models.Handle, error) {
-	return client.DeleteHandle(publication.ID)
-}
-
-func (client *Client) DeleteHandle(localId string) (*models.Handle, error) {
-	h := &models.Handle{}
-	_, err := client.delete(
-		fmt.Sprintf("/%s/LU-%s", client.config.Prefix, localId),
-		nil,
-		h,
-	)
-	if err != nil {
-		return nil, err
-	}
-	return h, nil
-}
+// func (client *Client) DeleteHandle(localId string) (*models.Handle, error) {
+// 	h := &models.Handle{}
+// 	_, err := client.delete(
+// 		fmt.Sprintf("/%s/LU-%s", client.config.Prefix, localId),
+// 		nil,
+// 		h,
+// 	)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	return h, nil
+// }

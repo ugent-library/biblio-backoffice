@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"html/template"
-	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -199,7 +198,7 @@ func buildRouter(services *backends.Services, logger *zap.SugaredLogger) *mux.Ro
 	}
 	baseURL, err := url.Parse(b)
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal(err)
 	}
 
 	// router
@@ -263,7 +262,7 @@ func buildRouter(services *backends.Services, logger *zap.SugaredLogger) *mux.Ro
 		RedirectURL:  baseURL.String() + "/auth/openid-connect/callback",
 	})
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal(err)
 	}
 
 	// add routes
