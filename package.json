@@ -1,20 +1,25 @@
 {
-    "private": true,
-    "devDependencies": {
-        "cypress": "^12.1.0",
-        "laravel-mix": "^6.0.11",
-        "resolve-url-loader": "^4.0.0",
-        "sass": "^1.35.1",
-        "sass-loader": "^12.1.0",
-        "uglify-js": "^3.14.2"
-    },
-    "dependencies": {
-        "bootstrap": "^4.6.0",
-        "bootstrap.native": "4.1.0",
-        "flatpickr": "^4.6.3",
-        "htmx.org": "^1.7.0",
-        "node-sass": "^4.14.1",
-        "popper.js": "^1.16.1",
-        "sortablejs": "^1.14.0"
-    }
+  "private": true,
+  "scripts": {
+    "precommit": "node node_modules/js-precommit-hook"
+  },
+  "precommit": "precommit",
+  "devDependencies": {
+    "cypress": "^12.1.0",
+    "js-precommit-hook": "git+https://github.com/ugent-library/js-precommit-hook.git",
+    "laravel-mix": "^6.0.11",
+    "resolve-url-loader": "^4.0.0",
+    "sass": "^1.35.1",
+    "sass-loader": "^12.1.0",
+    "uglify-js": "^3.14.2"
+  },
+  "dependencies": {
+    "bootstrap": "^4.6.0",
+    "bootstrap.native": "4.1.0",
+    "flatpickr": "^4.6.3",
+    "htmx.org": "^1.7.0",
+    "node-sass": "^4.14.1",
+    "popper.js": "^1.16.1",
+    "sortablejs": "^1.14.0"
+  }
 }
