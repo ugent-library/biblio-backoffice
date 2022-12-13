@@ -1,6 +1,7 @@
 {
   "private": true,
   "scripts": {
+    "test": "cypress run",
     "precommit": "node node_modules/js-precommit-hook"
   },
   "precommit": "precommit",
