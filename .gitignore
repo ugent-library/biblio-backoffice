@@ -24,3 +24,7 @@ go.work
 .air.toml
 tmp
 root
+
+# Cypress
+cypress/videos
+cypress/screenshots
