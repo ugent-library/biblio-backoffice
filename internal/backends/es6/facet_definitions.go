@@ -39,7 +39,7 @@ func defaultFacetDefinition(field string) facetDefinition {
 			"terms": M{
 				"field":         field,
 				"order":         M{"_key": "asc"},
-				"size":          999,
+				"size":          100,
 				"min_doc_count": 0,
 			},
 		},
