@@ -52,6 +52,17 @@ func (s *Repository) AddPublicationListener(fn func(*models.Publication)) {
 	})
 }
 
+func (s *Repository) PublicationNotify(p *models.Publication) error {
+	snapshot, snapshotErr := s.publicationToSnapshot(p)
+	if snapshotErr != nil {
+		return snapshotErr
+	}
+
+	s.publicationStore.Notify(snapshot)
+
+	return nil
+}
+
 func (s *Repository) AddDatasetListener(fn func(*models.Dataset)) {
 	s.datasetStore.Listen(func(snap *snapstore.Snapshot) {
 		d := &models.Dataset{}
@@ -221,6 +232,20 @@ func (s *Repository) UpdatePublication(snapshotID string, p *models.Publication,
 		return err
 	}
 	p.SnapshotID = snapshotID
+	return nil
+}
+
+func (s *Repository) UpdatePublicationInPlace(p *models.Publication) error {
+	snap, err := s.publicationStore.Update(p.SnapshotID, p.ID, p, s.opts)
+	if err != nil {
+		return err
+	}
+
+	np := &models.Publication{}
+	if err := snap.Scan(np); err != nil {
+		return err
+	}
+
 	return nil
 }
 

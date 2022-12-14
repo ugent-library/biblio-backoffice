@@ -58,12 +58,14 @@ type PublicationGetter interface {
 type Repository interface {
 	Transaction(context.Context, func(Repository) error) error
 	AddPublicationListener(func(*models.Publication))
+	PublicationNotify(*models.Publication) error
 	GetPublication(string) (*models.Publication, error)
 	GetPublications([]string) ([]*models.Publication, error)
 	SavePublication(*models.Publication, *models.User) error
 	ImportCurrentPublication(*models.Publication) error
 	ImportOldPublication(*models.Publication) error
 	UpdatePublication(string, *models.Publication, *models.User) error
+	UpdatePublicationInPlace(p *models.Publication) error
 	CountPublications(*RepositoryQueryArgs) (int, error)
 	SearchPublications(*RepositoryQueryArgs) ([]*models.Publication, error)
 	SelectPublications(string, []any, func(*models.Publication) bool) error

@@ -141,7 +141,7 @@ func (s *Store) Listen(fn func(*Snapshot)) {
 	s.listeners = append(s.listeners, fn)
 }
 
-func (s *Store) notify(snap *Snapshot) {
+func (s *Store) Notify(snap *Snapshot) {
 	s.listenersMu.RLock()
 	defer s.listenersMu.RUnlock()
 	// TODO do this non-blocking
@@ -228,9 +228,9 @@ func (s *Store) AddAfter(snapshotID, id string, data any, o Options) (string, er
 	}
 
 	for _, snap := range oldSnapshots {
-		s.notify(snap)
+		s.Notify(snap)
 	}
-	s.notify(&Snapshot{
+	s.Notify(&Snapshot{
 		SnapshotID: newSnapshotID,
 		ID:         id,
 		Data:       json.RawMessage(d),
@@ -238,6 +238,57 @@ func (s *Store) AddAfter(snapshotID, id string, data any, o Options) (string, er
 	})
 
 	return newSnapshotID, nil
+}
+
+func (s *Store) Update(snapshotID, id string, data any, o Options) (*Snapshot, error) {
+	if snapshotID == "" {
+		return nil, errors.New("snapshot id is empty")
+	}
+
+	d, err := json.Marshal(data)
+	if err != nil {
+		return nil, err
+	}
+
+	ctx, db := s.ctxAndDb(o)
+
+	tx, err := db.Begin(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback(ctx)
+
+	snap := Snapshot{}
+
+	sqlUpdate := `update ` + s.table + ` set data = $1
+	where id = $2 and snapshot_id = $3
+	returning snapshot_id,id,data,date_until,date_from`
+
+	updatedRows, err := tx.Query(ctx, sqlUpdate, d, id, snapshotID)
+	if err != nil {
+		return nil, err
+	}
+
+	cursorUpdatedRows := &Cursor{updatedRows}
+	snapshots := []*Snapshot{}
+	for cursorUpdatedRows.HasNext() {
+		sn, e := cursorUpdatedRows.Next()
+		if e != nil {
+			return nil, e
+		}
+		snapshots = append(snapshots, sn)
+		snap = *sn
+	}
+
+	if err := tx.Commit(ctx); err != nil {
+		return nil, err
+	}
+
+	for _, ns := range snapshots {
+		s.Notify(ns)
+	}
+
+	return &snap, nil
 }
 
 func (store *Store) ImportSnapshot(snapshot *Snapshot, options Options) error {
@@ -335,9 +386,9 @@ func (s *Store) Add(id string, data any, o Options) error {
 	}
 
 	for _, snap := range oldSnapshots {
-		s.notify(snap)
+		s.Notify(snap)
 	}
-	s.notify(&Snapshot{
+	s.Notify(&Snapshot{
 		SnapshotID: newSnapshotID,
 		ID:         id,
 		Data:       json.RawMessage(d),

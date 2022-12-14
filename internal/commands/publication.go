@@ -317,14 +317,20 @@ var transferCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		e := Services()
-		logger := newLogger()
+		s := newRepository()
+
+		s.AddPublicationListener(func(p *models.Publication) {
+			if err := e.PublicationSearchService.Index(p); err != nil {
+				log.Fatalf("error indexing publication %s: %v", p.ID, err)
+			}
+		})
 
 		source := args[0]
 		dest := args[1]
 
 		p, err := e.PersonService.GetPerson(dest)
 		if err != nil {
-			logger.Fatalf("Fatal: could not retrieve person %s: %s", dest, err)
+			log.Printf("Fatal: could not retrieve person %s: %s", dest, err)
 		}
 
 		c := &models.Contributor{}
@@ -343,135 +349,87 @@ var transferCmd = &cobra.Command{
 			c.Department = append(c.Department, newDep)
 		}
 
-		e.Repository.AddPublicationListener(func(p *models.Publication) {
-			if err := e.PublicationSearchService.Index(p); err != nil {
-				logger.Fatalf("error indexing publication %s: %v", p.ID, err)
+		publications := make([]*models.Publication, 0)
+
+		s.EachPublicationSnapshot(func(p *models.Publication) bool {
+			fixed := false
+
+			if p.User != nil {
+				if p.User.ID == source {
+					p.User = &models.PublicationUser{
+						ID:   c.ID,
+						Name: c.FullName,
+					}
+
+					log.Printf("p: %s: s: %s ::: user: %s -> %s", p.ID, p.SnapshotID, source, c.ID)
+					fixed = true
+				}
 			}
+
+			if p.Creator != nil {
+				if p.Creator.ID == source {
+					p.Creator = &models.PublicationUser{
+						ID:   c.ID,
+						Name: c.FullName,
+					}
+
+					if len(c.Department) > 0 {
+						org, orgErr := e.OrganizationService.GetOrganization(c.Department[0].ID)
+						if orgErr != nil {
+							log.Printf("p: %s: s: %s ::: creator: could not fetch department for %s: %s", p.ID, p.SnapshotID, c.ID, orgErr)
+						} else {
+							p.AddDepartmentByOrg(org)
+						}
+					}
+
+					log.Printf("p: %s: s: %s ::: creator: %s -> %s", p.ID, p.SnapshotID, source, c.ID)
+					fixed = true
+				}
+			}
+
+			for k, a := range p.Author {
+				if a.ID == source {
+					p.SetContributor("author", k, c)
+					log.Printf("p: %s: s: %s ::: author: %s -> %s", p.ID, p.SnapshotID, a.ID, c.ID)
+					fixed = true
+				}
+			}
+
+			for k, e := range p.Editor {
+				if e.ID == source {
+					p.SetContributor("editor", k, c)
+					log.Printf("p: %s: s: %s ::: editor: %s -> %s", p.ID, p.SnapshotID, e.ID, c.ID)
+					fixed = true
+				}
+			}
+
+			for k, s := range p.Supervisor {
+				if s.ID == source {
+					p.SetContributor("supervisor", k, c)
+					log.Printf("p: %s: s: %s ::: supervisor: %s -> %s", p.ID, p.SnapshotID, s.ID, c.ID)
+					fixed = true
+				}
+			}
+
+			if fixed {
+				errUpdate := s.UpdatePublicationInPlace(p)
+				if errUpdate != nil {
+					log.Printf("p: %s: s: %s ::: Could not update snapshot: %s", p.ID, p.SnapshotID, errUpdate)
+				}
+
+				// Keep the most recent snapshot in a register
+				if p.DateUntil == nil {
+					publications = append(publications, p)
+				}
+			}
+
+			return true
 		})
 
-		var count int = 0
-
-		transferErr := e.Repository.Transaction(
-			context.Background(),
-			func(r backends.Repository) error {
-				register := make(map[string]*models.Publication)
-
-				for _, role := range [4]string{"creator", "author", "editor", "supervisor"} {
-					var sqlSelectPublicationsQuery string
-
-					if role == "creator" {
-						sqlSelectPublicationsQuery = `
-						SELECT * FROM publications WHERE date_until IS NULL AND
-						data->'creator'->>'id' = $1
-						`
-					} else {
-						sqlSelectPublicationsQuery = fmt.Sprintf(`
-						SELECT * FROM publications WHERE date_until IS NULL AND
-						data->'%s' IS NOT NULL AND
-						EXISTS(
-							SELECT 1 FROM jsonb_array_elements(data->'%s') AS a
-							WHERE a->>'id' = $1
-						)
-						`, role, role)
-					}
-
-					publications := make([]*models.Publication, 0)
-					sErr := r.SelectPublications(
-						sqlSelectPublicationsQuery,
-						[]any{
-							source,
-						},
-						func(p *models.Publication) bool {
-							publications = append(publications, p)
-							return true
-						},
-					)
-
-					if sErr != nil {
-						return sErr
-					}
-
-					var handler func(p *models.Publication)
-
-					switch role {
-					case "author":
-						handler = func(p *models.Publication) {
-							for k, a := range p.Author {
-								if a.ID == source {
-									p.SetContributor("author", k, c)
-									logger.Infof("%s: replaced author %s with %s at position %d", p.ID, source, dest, k)
-								}
-							}
-						}
-					case "editor":
-						handler = func(p *models.Publication) {
-							for k, a := range p.Editor {
-								if a.ID == source {
-									p.SetContributor("editor", k, c)
-									logger.Infof("%s: replaced editor %s with %s at position %d", p.ID, source, dest, k)
-								}
-							}
-						}
-					case "supervisor":
-						handler = func(p *models.Publication) {
-							for k, a := range p.Supervisor {
-								if a.ID == source {
-									p.SetContributor("supervisor", k, c)
-									logger.Infof("%s: replaced supervisor %s with %s at position %d", p.ID, source, dest, k)
-								}
-							}
-						}
-					case "creator":
-						handler = func(p *models.Publication) {
-							p.Creator = &models.PublicationUser{
-								ID:   c.ID,
-								Name: c.FullName,
-							}
-
-							if len(c.Department) > 0 {
-								org, orgErr := e.OrganizationService.GetOrganization(c.Department[0].ID)
-								if orgErr != nil {
-									logger.Warnf("import single publication: could not fetch user department", "errors", orgErr, "user", c.ID)
-								} else {
-									p.AddDepartmentByOrg(org)
-								}
-							}
-
-							logger.Infof("%s: replaced creator %s with %s", p.ID, source, dest)
-						}
-					}
-
-					for _, p := range publications {
-						val, ok := register[p.ID]
-						if ok {
-							p = val
-						}
-
-						handler(p)
-
-						register[p.ID] = p
-					}
-				}
-
-				for _, p := range register {
-					p.User = nil
-
-					if errSave := r.SavePublication(p, nil); errSave != nil {
-						return errSave
-					}
-
-					count++
-				}
-
-				return nil
-			},
-		)
-
-		if transferErr != nil {
-			logger.Fatal(transferErr)
+		// Loop over the register and trigger notify in order to ensure the most recent snapshot gets indexed
+		for _, de := range publications {
+			s.PublicationNotify(de)
 		}
-
-		logger.Infof("updated %d publications", count)
 	},
 }
 
