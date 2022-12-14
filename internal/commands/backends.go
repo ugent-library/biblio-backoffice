@@ -50,7 +50,7 @@ func Services() *backends.Services {
 
 func newServices() *backends.Services {
 	authorityClient, authorityClientErr := authority.New(authority.Config{
-		MongoURI: viper.GetString("mongodb-uri"),
+		MongoDBURI: viper.GetString("mongodb-uri"),
 	})
 	if authorityClientErr != nil {
 		panic(authorityClientErr)

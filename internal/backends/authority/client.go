@@ -9,7 +9,7 @@ import (
 )
 
 type Config struct {
-	MongoURI string
+	MongoDBURI string
 }
 
 type Client struct {
@@ -19,7 +19,7 @@ type Client struct {
 func New(config Config) (*Client, error) {
 	m, e := mongo.Connect(
 		context.Background(),
-		options.Client().ApplyURI(config.MongoURI))
+		options.Client().ApplyURI(config.MongoDBURI))
 
 	if e != nil {
 		return nil, errors.Wrap(e, "unable to initialize connection to")
