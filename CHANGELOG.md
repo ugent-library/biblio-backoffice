@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - #887: Fix handle creation for datasets.
 - #902: Import language from WoS.
 - #910: File document type defaults to full text.
-- #926: Order year facet new to old.
+- #924: Order year facet new to old.
 - Various ux fixes.
 
 ## [v1.0.12] - 2022-11-30
