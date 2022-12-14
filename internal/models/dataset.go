@@ -56,6 +56,7 @@ type Dataset struct {
 	EmbargoDate             string               `json:"embargo_date,omitempty"`
 	AccessLevelAfterEmbargo string               `json:"access_level_after_embargo,omitempty"`
 	Format                  []string             `json:"format,omitempty"`
+	Handle                  string               `json:"handle,omitempty"`
 	ID                      string               `json:"id,omitempty"`
 	Keyword                 []string             `json:"keyword,omitempty"`
 	HasBeenPublic           bool                 `json:"has_been_public"`

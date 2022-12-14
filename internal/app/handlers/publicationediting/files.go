@@ -63,15 +63,6 @@ func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context
 	// 2GB limit on request body
 	r.Body = http.MaxBytesReader(w, r.Body, 2000000000)
 
-	// buffer limit of 32MB
-	if err := r.ParseMultipartForm(32 << 20); err != nil {
-		h.Logger.Errorf("publication upload file: exceeded buffer limit:", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Locale.T("publication.file_upload_error"),
-		})
-		return
-	}
-
 	file, handler, err := r.FormFile("file")
 	if err != nil {
 		h.Logger.Errorf("publication upload file: could not process file", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
@@ -381,11 +372,10 @@ func fileForm(l *locale.Locale, publication *models.Publication, file *models.Pu
 			"sections/document_type",
 			struct{}{},
 			&form.Select{
-				Template:    "document_type",
-				Name:        "relation",
-				Value:       file.Relation,
-				Label:       l.T("builder.file.relation"),
-				EmptyOption: true,
+				Template: "document_type",
+				Name:     "relation",
+				Value:    file.Relation,
+				Label:    l.T("builder.file.relation"),
 				Options: localize.VocabularySelectOptions(
 					l,
 					"publication_file_relations"),
@@ -419,11 +409,10 @@ func fileForm(l *locale.Locale, publication *models.Publication, file *models.Pu
 			"sections/document_type",
 			struct{}{},
 			&form.Select{
-				Template:    "document_type",
-				Name:        "relation",
-				Value:       file.Relation,
-				Label:       l.T("builder.file.relation"),
-				EmptyOption: true,
+				Template: "document_type",
+				Name:     "relation",
+				Value:    file.Relation,
+				Label:    l.T("builder.file.relation"),
 				Options: localize.VocabularySelectOptions(
 					l,
 					"publication_file_relations"),

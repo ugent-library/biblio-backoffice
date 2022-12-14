@@ -9,7 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- #875: Improve error reporting by including an error id.
+- #850: Add "Deselect all" action to facet filter dialog.
+
 ### Fixed
+
+= #887: Fix handle creation for datasets.
+- #902: Import language from WoS.
+- #910: File document type defaults to full text.
+- Various ux fixes.
+
 
 ## [v1.0.12] - 2022-11-30
 
@@ -58,7 +67,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - #837: Dashboard does not display all unclassified records, even when they have a department.
-- #842: ESCI-ID missing for V classified publications.
+- #842: ESCI ID missing for V classified publications.
 - #845: Fix deleting departments with an id containing an asterisk.
 
 ## [v1.0.8] - 2022-11-22

@@ -320,13 +320,6 @@ func (h *Handler) AddMultipleImport(w http.ResponseWriter, r *http.Request, ctx 
 	// 2GB limit on request body
 	r.Body = http.MaxBytesReader(w, r.Body, 2000000000)
 
-	// buffer limit of 32MB
-	if err := r.ParseMultipartForm(32 << 20); err != nil {
-		h.Logger.Warnw("add multiple import publication: buffer limit exceeded", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
 	source := r.FormValue("source")
 
 	file, _, err := r.FormFile("file")

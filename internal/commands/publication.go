@@ -1,19 +1,15 @@
 package commands
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"log"
 	"os"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/spf13/cobra"
-	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/snapstore"
 	"github.com/ugent-library/biblio-backend/internal/ulid"
@@ -29,8 +25,6 @@ func init() {
 	publicationCmd.AddCommand(publicationAddCmd)
 	publicationCmd.AddCommand(publicationImportCmd)
 	publicationCmd.AddCommand(oldPublicationImportCmd)
-	publicationCmd.AddCommand(updatePublicationEmbargoes)
-	publicationCmd.AddCommand(createPublicationHandles)
 	publicationCmd.AddCommand(cleanupCmd)
 	publicationCmd.AddCommand(transferCmd)
 	rootCmd.AddCommand(publicationCmd)
@@ -481,177 +475,5 @@ var oldPublicationImportCmd = &cobra.Command{
 				p.ID,
 			)
 		}
-	},
-}
-
-var updatePublicationEmbargoes = &cobra.Command{
-	Use:   "update-embargoes",
-	Short: "Update publication embargoes",
-	Run: func(cmd *cobra.Command, args []string) {
-		e := Services()
-		logger := newLogger()
-
-		e.Repository.AddPublicationListener(func(p *models.Publication) {
-			if err := e.PublicationSearchService.Index(p); err != nil {
-				logger.Fatalf("error indexing publication %s: %v", p.ID, err)
-			}
-		})
-
-		var count int = 0
-		updateEmbargoErr := e.Repository.Transaction(
-			context.Background(),
-			func(repo backends.Repository) error {
-
-				/*
-					select live publications that have files with embargoed access
-				*/
-				var embargoAccessLevel string = "info:eu-repo/semantics/embargoedAccess"
-				currentDateStr := time.Now().Format("2006-01-02")
-				var sqlPublicationWithEmbargo string = `
-				SELECT * FROM publications WHERE date_until IS NULL AND
-				data->'file' IS NOT NULL AND
-				EXISTS(
-					SELECT 1 FROM jsonb_array_elements(data->'file') AS f
-					WHERE f->>'access_level' = $1 AND
-					f->>'embargo_date' <= $2
-				)
-				`
-
-				publications := make([]*models.Publication, 0)
-				sErr := repo.SelectPublications(
-					sqlPublicationWithEmbargo,
-					[]any{
-						embargoAccessLevel,
-						currentDateStr},
-					func(publication *models.Publication) bool {
-						publications = append(publications, publication)
-						return true
-					},
-				)
-
-				if sErr != nil {
-					return sErr
-				}
-
-				for _, publication := range publications {
-					/*
-						clear outdated embargoes
-					*/
-					for _, file := range publication.File {
-						if file.AccessLevel != embargoAccessLevel {
-							continue
-						}
-						// TODO: what with empty embargo_date?
-						if file.EmbargoDate == "" {
-							continue
-						}
-						if file.EmbargoDate > currentDateStr {
-							continue
-						}
-						file.ClearEmbargo()
-					}
-
-					publication.User = nil
-
-					if e := repo.SavePublication(publication, nil); e != nil {
-						return e
-					}
-					count++
-				}
-
-				return nil
-			},
-		)
-
-		if updateEmbargoErr != nil {
-			logger.Fatal(updateEmbargoErr)
-		}
-
-		logger.Infof("updated %d embargoes", count)
-	},
-}
-
-var createPublicationHandles = &cobra.Command{
-	Use:   "create-handles",
-	Short: "Create publication handles",
-	Run: func(cmd *cobra.Command, args []string) {
-		e := Services()
-		logger := newLogger()
-		handleService := e.HandleService
-
-		if handleService == nil {
-			logger.Fatal("handle server updates are not enabled")
-		}
-
-		e.Repository.AddPublicationListener(func(p *models.Publication) {
-			if err := e.PublicationSearchService.Index(p); err != nil {
-				logger.Fatalf("error indexing publication %s: %v", p.ID, err)
-			}
-		})
-
-		var count int = 0
-		createHandlesErr := e.Repository.Transaction(
-			context.Background(),
-			func(repo backends.Repository) error {
-
-				publications := make([]*models.Publication, 0)
-				sql := `
-				SELECT * FROM publications WHERE date_until IS NULL AND
-				data->>'status' = 'public' AND
-				NOT data ? 'handle'
-				`
-
-				selectErr := repo.SelectPublications(
-					sql,
-					[]any{},
-					func(p *models.Publication) bool {
-						publications = append(publications, p)
-						return true
-					},
-				)
-
-				if selectErr != nil {
-					return selectErr
-				}
-
-				for _, p := range publications {
-					h, hErr := handleService.UpsertHandleByPublication(p)
-					if hErr != nil {
-						return fmt.Errorf(
-							"error adding handle for publication %s: %s",
-							p.ID,
-							hErr,
-						)
-					} else if !h.IsSuccess() {
-						return fmt.Errorf(
-							"error adding handle for publication %s: %s",
-							p.ID,
-							h.Message,
-						)
-					} else {
-						logger.Infof(
-							"added handle url %s to publication %s",
-							h.GetFullHandleURL(),
-							p.ID,
-						)
-						p.Handle = h.GetFullHandleURL()
-						p.User = nil
-
-						if e := repo.SavePublication(p, nil); e != nil {
-							return e
-						}
-						count++
-					}
-				}
-
-				return nil
-			},
-		)
-
-		if createHandlesErr != nil {
-			logger.Fatal(createHandlesErr)
-		}
-
-		logger.Infof("created %d handles", count)
 	},
 }

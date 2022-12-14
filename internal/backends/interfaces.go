@@ -191,9 +191,9 @@ type DatasetListExporter interface {
 type DatasetListExporterFactory func(io.Writer) DatasetListExporter
 
 type HandleService interface {
-	GetHandleByPublication(*models.Publication) (*models.Handle, error)
-	UpsertHandleByPublication(*models.Publication) (*models.Handle, error)
-	DeleteHandleByPublication(*models.Publication) (*models.Handle, error)
+	// GetHandle(string) (*models.Handle, error)
+	UpsertHandle(string) (*models.Handle, error)
+	// DeleteHandle(string) (*models.Handle, error)
 }
 
 var ErrNotFound = errors.New("record not found")
