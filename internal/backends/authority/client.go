@@ -22,7 +22,7 @@ func New(config Config) (*Client, error) {
 		options.Client().ApplyURI(config.MongoDBURI))
 
 	if e != nil {
-		return nil, errors.Wrap(e, "unable to initialize connection to")
+		return nil, errors.Wrap(e, "unable to initialize connection to mongodb")
 	}
 
 	return &Client{
