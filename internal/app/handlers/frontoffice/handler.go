@@ -815,7 +815,7 @@ func (h *Handler) GetAllPublications(w http.ResponseWriter, r *http.Request) {
 	args := &backends.RepositoryQueryArgs{
 		Offset:  b.Offset,
 		Limit:   b.Limit,
-		Order:   "id ASC",
+		Order:   "date_from ASC",
 		Filters: make([]*backends.RepositoryFilter, 0),
 	}
 
@@ -882,7 +882,7 @@ func (h *Handler) GetAllDatasets(w http.ResponseWriter, r *http.Request) {
 	args := &backends.RepositoryQueryArgs{
 		Offset:  b.Offset,
 		Limit:   b.Limit,
-		Order:   "id ASC",
+		Order:   "date_from ASC",
 		Filters: make([]*backends.RepositoryFilter, 0),
 	}
 
