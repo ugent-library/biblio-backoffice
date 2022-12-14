@@ -12,6 +12,8 @@ describe('The home page', () => {
     cy.contains('h3', 'Datasets').should('be.visible')
     cy.contains('a', 'Go to datasets').should('be.visible')
 
+    // On a regular page you don't have to do this to make the "be.visible" assertion work,
+    // but in this case the elements are being clipped by an element with "overflow: scroll"
     cy.get('.u-scroll-wrapper__body').scrollTo('bottom', { duration: 250 })
 
     cy.contains('h3', 'Biblio Academic Bibliography').should('be.visible')
