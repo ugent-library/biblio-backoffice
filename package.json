@@ -1,12 +1,15 @@
 {
   "private": true,
   "scripts": {
-    "test": "cypress run",
+    "test": "cypress run --config-file cypress/cypress.config.mjs",
+    "cypress:open": "cypress open --config-file cypress/cypress.config.mjs --browser chrome --e2e --detached",
     "precommit": "node node_modules/js-precommit-hook"
   },
   "precommit": "precommit",
   "devDependencies": {
     "cypress": "^12.1.0",
+    "cypress-dotenv": "^2.0.0",
+    "dotenv": "^16.0.3",
     "js-precommit-hook": "git+https://github.com/ugent-library/js-precommit-hook.git",
     "laravel-mix": "^6.0.11",
     "resolve-url-loader": "^4.0.0",

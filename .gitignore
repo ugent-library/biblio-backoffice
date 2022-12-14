@@ -26,5 +26,6 @@ tmp
 root
 
 # Cypress
+cypress/.env
 cypress/videos
 cypress/screenshots
