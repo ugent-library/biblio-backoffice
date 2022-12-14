@@ -85,18 +85,17 @@ func (publications *Publications) Search(args *models.SearchArgs) (*models.Publi
 				}
 			}
 
-			// TODO make configurable for each facet
+			var conf M
+			if c, ok := facetDefinitions[field]; ok {
+				conf = c.config
+			} else {
+				conf = defaultFacetDefinition(field).config
+			}
+
 			facet := M{
 				"filter": M{"bool": M{"must": filters}},
 				"aggs": M{
-					"facet": M{
-						"terms": M{
-							"field":         field,
-							"order":         M{"_key": "asc"},
-							"size":          999,
-							"min_doc_count": 0,
-						},
-					},
+					"facet": conf,
 				},
 			}
 

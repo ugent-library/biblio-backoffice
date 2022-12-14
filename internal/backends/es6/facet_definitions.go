@@ -5,6 +5,47 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/vocabularies"
 )
 
+type facetDefinition struct {
+	config M
+}
+
+var facetDefinitions = map[string]facetDefinition{
+	"reviewer_tags": {
+		config: M{
+			"terms": M{
+				"field":         "reviewer_tags",
+				"order":         M{"_key": "asc"},
+				"size":          999,
+				"min_doc_count": 1,
+			},
+		},
+	},
+	"year": {
+		config: M{
+			"terms": M{
+				"field":         "year",
+				"order":         M{"_key": "desc"},
+				"size":          999,
+				"min_doc_count": 1,
+			},
+		},
+	},
+}
+
+// TODO remove this when all facets have a static definition above
+func defaultFacetDefinition(field string) facetDefinition {
+	return facetDefinition{
+		config: M{
+			"terms": M{
+				"field":         field,
+				"order":         M{"_key": "asc"},
+				"size":          999,
+				"min_doc_count": 0,
+			},
+		},
+	}
+}
+
 // facets that also work as filters
 var fixedFacetValues = map[string][]string{
 	//"publication_statuses" includes "deleted"
