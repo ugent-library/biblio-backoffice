@@ -11,6 +11,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/backends/arxiv"
+	"github.com/ugent-library/biblio-backend/internal/backends/authority"
 	"github.com/ugent-library/biblio-backend/internal/backends/biblio"
 	"github.com/ugent-library/biblio-backend/internal/backends/bibtex"
 	"github.com/ugent-library/biblio-backend/internal/backends/citeproc"
@@ -48,6 +49,13 @@ func Services() *backends.Services {
 }
 
 func newServices() *backends.Services {
+	authorityClient, authorityClientErr := authority.New(authority.Config{
+		MongoURI: viper.GetString("mongodb-uri"),
+	})
+	if authorityClientErr != nil {
+		panic(authorityClientErr)
+	}
+
 	biblioClient := biblio.New(biblio.Config{
 		URL:      viper.GetString("frontend-url"),
 		Username: viper.GetString("frontend-username"),
@@ -87,7 +95,7 @@ func newServices() *backends.Services {
 		OrganizationService:       caching.NewOrganizationService(biblioClient),
 		PersonService:             caching.NewPersonService(biblioClient),
 		ProjectService:            caching.NewProjectService(biblioClient),
-		UserService:               caching.NewUserService(biblioClient),
+		UserService:               caching.NewUserService(authorityClient),
 		OrganizationSearchService: biblioClient,
 		PersonSearchService:       biblioClient,
 		ProjectSearchService:      biblioClient,
