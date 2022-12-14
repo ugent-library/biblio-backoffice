@@ -12,8 +12,62 @@ import (
 )
 
 var (
-	reTag   = regexp.MustCompile(`^([A-Z0-9]{2})\s+-?\s*(.*)$`)
-	reSplit = regexp.MustCompile(`\s*[,;]\s*`)
+	reTag        = regexp.MustCompile(`^([A-Z0-9]{2})\s+-?\s*(.*)$`)
+	reSplit      = regexp.MustCompile(`\s*[,;]\s*`)
+	wosLanguages = map[string]string{
+		"English":        "eng",
+		"Afrikaans":      "afr",
+		"Arabic":         "ara",
+		"Basque":         "baq",
+		"Bengali":        "ben",
+		"Bulgarian":      "bul",
+		"Byelorussian":   "bel",
+		"Catalan":        "cat",
+		"Chinese":        "chi",
+		"Croatian":       "hrv",
+		"Czech":          "cze",
+		"Danish":         "dan",
+		"Dutch":          "dut",
+		"Estonian":       "est",
+		"Finnish":        "fin",
+		"Flemish":        "dut",
+		"French":         "fre",
+		"Gaelic":         "gla",
+		"Galician":       "glg",
+		"Georgian":       "geo",
+		"German":         "ger",
+		"Greek":          "gre",
+		"Hebrew":         "heb",
+		"Hungarian":      "hun",
+		"Icelandic":      "ice",
+		"Italian":        "ita",
+		"Japanese":       "jpn",
+		"Korean":         "kor",
+		"Latin":          "lat",
+		"Latvian":        "lav",
+		"Lithuanian":     "lit",
+		"Macedonian":     "mac",
+		"Malay":          "may",
+		"Multi-Language": "mul",
+		"Norwegian":      "nor",
+		"Persian":        "per",
+		"Polish":         "pol",
+		"Portuguese":     "por",
+		"Provencal":      "pro",
+		"Rumanian":       "rum",
+		"Russian":        "rus",
+		"Serbian":        "srp",
+		// "Serbo-Croatian": "", // no current equivalent in iso 639-2
+		"Slovak":      "slo",
+		"Slovenian":   "slv",
+		"Spanish":     "spa",
+		"Swedish":     "swe",
+		"Thai":        "tha",
+		"Turkish":     "tur",
+		"Ukrainian":   "ukr",
+		"Unspecified": "und",
+		"Welsh":       "wel",
+	}
 )
 
 type Record map[string][]string
@@ -204,6 +258,12 @@ func mapRecord(r Record, p *models.Publication) {
 			date := parseConferenceDate(v[0])
 			p.ConferenceStartDate = date[0]
 			p.ConferenceEndDate = date[1]
+		case "LA":
+			for _, val := range v {
+				if code, ok := wosLanguages[val]; ok {
+					p.Language = append(p.Language, code)
+				}
+			}
 		}
 	}
 }

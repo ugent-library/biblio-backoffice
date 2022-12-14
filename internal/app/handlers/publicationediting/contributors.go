@@ -239,7 +239,7 @@ func (h *Handler) ConfirmCreateContributor(w http.ResponseWriter, r *http.Reques
 	if b.ID != "" {
 		newC, newP, err := h.generateContributorFromPersonId(b.ID)
 		if err != nil {
-			render.InternalServerError(w, r, err)
+			h.ActionError(w, r, ctx.BaseContext, "confirm create publication contributor: could not generate contributor from person", err, ctx.Publication.ID)
 			return
 		}
 		c = newC
@@ -271,7 +271,7 @@ func (h *Handler) CreateContributor(w http.ResponseWriter, r *http.Request, ctx 
 	if b.ID != "" {
 		newC, newP, err := h.generateContributorFromPersonId(b.ID)
 		if err != nil {
-			render.InternalServerError(w, r, err)
+			h.ActionError(w, r, ctx.BaseContext, "create publication contributor: could not generate contributor from person", err, ctx.Publication.ID)
 			return
 		}
 		c = newC
@@ -352,7 +352,7 @@ func (h *Handler) EditContributor(w http.ResponseWriter, r *http.Request, ctx Co
 	if c.ID != "" {
 		p, err := h.PersonService.GetPerson(c.ID)
 		if err != nil {
-			render.InternalServerError(w, r, err)
+			h.ActionError(w, r, ctx.BaseContext, "edit publication contributor: could not get the contributor from person service", err, ctx.Publication.ID)
 			return
 		}
 		active = p.Active
@@ -468,7 +468,7 @@ func (h *Handler) ConfirmUpdateContributor(w http.ResponseWriter, r *http.Reques
 	if b.ID != "" {
 		newC, newP, err := h.generateContributorFromPersonId(b.ID)
 		if err != nil {
-			render.InternalServerError(w, r, err)
+			h.ActionError(w, r, ctx.BaseContext, "edit publication contributor: could not generate contributor from person", err, ctx.Publication.ID)
 			return
 		}
 		c = newC
@@ -568,6 +568,7 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 		if nextC.ID != "" {
 			p, err := h.PersonService.GetPerson(nextC.ID)
 			if err != nil {
+				h.Logger.Errorw("suggest publication contributor: could not get the contributor from person service", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 				render.InternalServerError(w, r, err)
 				return
 			}

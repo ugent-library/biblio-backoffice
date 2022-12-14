@@ -1031,7 +1031,5 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		Methods("GET").
 		Name("suggest_media_types")
 
-	// 404 Not Found page
-	// Note: ALWAYS KEEP ME LAST! If not, this will munge all subsequent handlers you define after me.
-	r.NotFoundHandler = r.NewRoute().HandlerFunc(baseHandler.Wrap(baseHandler.NotFound)).GetHandler()
+	r.NotFoundHandler = baseHandler.Wrap(baseHandler.NotFound)
 }
