@@ -224,6 +224,20 @@ func (s *Repository) UpdatePublication(snapshotID string, p *models.Publication,
 	return nil
 }
 
+func (s *Repository) UpdatePublicationInPlace(p *models.Publication) error {
+	snap, err := s.publicationStore.Update(p.SnapshotID, p.ID, p, s.opts)
+	if err != nil {
+		return err
+	}
+
+	np := &models.Publication{}
+	if err := snap.Scan(np); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (s *Repository) CountPublications(args *backends.RepositoryQueryArgs) (int, error) {
 	sql := "SELECT * FROM publications WHERE date_until is null"
 	values := make([]any, 0)
