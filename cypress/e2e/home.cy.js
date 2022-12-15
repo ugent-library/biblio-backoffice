@@ -22,4 +22,52 @@ describe('The home page', () => {
     cy.contains('h3', 'Help').should('be.visible')
     cy.contains('a', 'How to register and deposit').should('be.visible')
   })
+
+  it('should be able to logon as reasearcher', () => {
+    cy.loginAsResearcher()
+
+    cy.visit('/')
+
+    cy.get('.nav-main .dropdown-menu').as('user-menu').should('have.css', 'display', 'none')
+    cy.get('.nav-main button.dropdown-toggle').click()
+    cy.get('@user-menu').should('have.css', 'display', 'block')
+
+    cy.get('.nav-main .dropdown-menu .dropdown-item').should('have.length', 1)
+    cy.contains('.dropdown-menu .dropdown-item', 'View as').should('not.exist')
+    cy.contains('.dropdown-menu .dropdown-item', 'Logout').should('exist')
+
+    cy.get('.c-sidebar button.dropdown-toggle').should('not.exist')
+    cy.get('.c-sidebar').should('not.have.class', 'c-sidebar--dark-gray')
+    cy.get('.c-sidebar-menu .c-sidebar__item').should('have.length', 2)
+    cy.contains('.c-sidebar__item', 'Biblio Publications').should('be.visible')
+    cy.contains('.c-sidebar__item', 'Biblio Datasets').should('be.visible')
+    cy.contains('.c-sidebar__item', 'Dashboard').should('not.exist')
+  })
+
+  it('should be able to logon as librarian and switch to librarian mode', () => {
+    cy.loginAsLibrarian()
+
+    cy.visit('/')
+
+    cy.get('.nav-main .dropdown-menu .dropdown-item').should('have.length', 2)
+    cy.contains('.dropdown-menu .dropdown-item', 'View as').should('exist')
+    cy.contains('.dropdown-menu .dropdown-item', 'Logout').should('exist')
+
+    cy.get('.c-sidebar button.dropdown-toggle').should('contain.text', 'Researcher')
+    cy.get('.c-sidebar').should('not.have.class', 'c-sidebar--dark-gray')
+    cy.get('.c-sidebar-menu .c-sidebar__item').should('have.length', 2)
+    cy.contains('.c-sidebar__item', 'Biblio Publications').should('be.visible')
+    cy.contains('.c-sidebar__item', 'Biblio Datasets').should('be.visible')
+    cy.contains('.c-sidebar__item', 'Dashboard').should('not.exist')
+
+    cy.contains('button.dropdown-toggle', 'Researcher').click()
+    cy.contains('button.dropdown-item', 'Librarian').click()
+
+    cy.get('.c-sidebar button.dropdown-toggle').should('contain.text', 'Librarian')
+    cy.get('.c-sidebar').should('have.class', 'c-sidebar--dark-gray')
+    cy.get('.c-sidebar-menu .c-sidebar__item').should('have.length', 3)
+    cy.contains('.c-sidebar__item', 'Biblio Publications').should('be.visible')
+    cy.contains('.c-sidebar__item', 'Biblio Datasets').should('be.visible')
+    cy.contains('.c-sidebar__item', 'Dashboard').should('be.visible')
+  })
 })

@@ -2,7 +2,7 @@
   "private": true,
   "scripts": {
     "test": "cypress run --config-file cypress/cypress.config.mjs",
-    "cypress:open": "cypress open --config-file cypress/cypress.config.mjs --browser chrome --e2e --detached",
+    "cypress:open": "cypress open --config-file cypress/cypress.config.mjs --browser chrome --e2e",
     "precommit": "node node_modules/js-precommit-hook"
   },
   "precommit": "precommit",
