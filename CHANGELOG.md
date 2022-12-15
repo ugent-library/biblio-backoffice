@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- #881: Add a publication transfer command that rewrites history and assigns
+  publications to another user id
 - #875: Improve error reporting by including an error id.
 - #850: Add "Deselect all" action to facet filter dialog.
 - Make facets configurable.
