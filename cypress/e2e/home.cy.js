@@ -23,6 +23,22 @@ describe('The home page', () => {
     cy.contains('a', 'How to register and deposit').should('be.visible')
   })
 
+  it('should redirect to the login page when browsing publications anonymously', () => {
+    cy.visit('/')
+
+    cy.contains('Biblio Publications').click()
+
+    cy.url().should('contain', 'liblogin.ugent.be')
+  })
+
+  it('should redirect to the login page when browsing datasets anonymously', () => {
+    cy.visit('/')
+
+    cy.contains('Biblio Datasets').click()
+
+    cy.url().should('contain', 'liblogin.ugent.be')
+  })
+
   it('should be able to logon as reasearcher', () => {
     cy.loginAsResearcher()
 
