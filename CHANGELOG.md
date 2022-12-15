@@ -11,14 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - #875: Improve error reporting by including an error id.
 - #850: Add "Deselect all" action to facet filter dialog.
+- Make facets configurable.
 
 ### Fixed
 
-= #887: Fix handle creation for datasets.
+- #887: Fix handle creation for datasets.
 - #902: Import language from WoS.
 - #910: File document type defaults to full text.
+- #924: Order year facet new to old.
 - Various ux fixes.
-
 
 ## [v1.0.12] - 2022-11-30
 
