@@ -314,8 +314,10 @@ var transferCmd = &cobra.Command{
 		s := newRepository()
 
 		s.AddPublicationListener(func(p *models.Publication) {
-			if err := e.PublicationSearchService.Index(p); err != nil {
-				log.Fatalf("error indexing publication %s: %v", p.ID, err)
+			if p.DateUntil == nil {
+				if err := e.PublicationSearchService.Index(p); err != nil {
+					log.Fatalf("error indexing publication %s: %v", p.ID, err)
+				}
 			}
 		})
 
@@ -342,8 +344,6 @@ var transferCmd = &cobra.Command{
 			}
 			c.Department = append(c.Department, newDep)
 		}
-
-		publications := make([]*models.Publication, 0)
 
 		s.EachPublicationSnapshot(func(p *models.Publication) bool {
 			fixed := false
@@ -410,20 +410,10 @@ var transferCmd = &cobra.Command{
 				if errUpdate != nil {
 					log.Printf("p: %s: s: %s ::: Could not update snapshot: %s", p.ID, p.SnapshotID, errUpdate)
 				}
-
-				// Keep the most recent snapshot in a register
-				if p.DateUntil == nil {
-					publications = append(publications, p)
-				}
 			}
 
 			return true
 		})
-
-		// Loop over the register and trigger notify in order to ensure the most recent snapshot gets indexed
-		for _, de := range publications {
-			s.PublicationNotify(de)
-		}
 	},
 }
 

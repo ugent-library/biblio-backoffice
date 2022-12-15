@@ -141,7 +141,7 @@ func (s *Store) Listen(fn func(*Snapshot)) {
 	s.listeners = append(s.listeners, fn)
 }
 
-func (s *Store) Notify(snap *Snapshot) {
+func (s *Store) notify(snap *Snapshot) {
 	s.listenersMu.RLock()
 	defer s.listenersMu.RUnlock()
 	// TODO do this non-blocking
@@ -228,9 +228,9 @@ func (s *Store) AddAfter(snapshotID, id string, data any, o Options) (string, er
 	}
 
 	for _, snap := range oldSnapshots {
-		s.Notify(snap)
+		s.notify(snap)
 	}
-	s.Notify(&Snapshot{
+	s.notify(&Snapshot{
 		SnapshotID: newSnapshotID,
 		ID:         id,
 		Data:       json.RawMessage(d),
@@ -262,7 +262,7 @@ func (s *Store) Update(snapshotID, id string, data any, o Options) (*Snapshot, e
 
 	sqlUpdate := `update ` + s.table + ` set data = $1
 	where id = $2 and snapshot_id = $3
-	returning snapshot_id,id,data,date_until,date_from`
+	returning snapshot_id,id,data,date_from,date_until`
 
 	updatedRows, err := tx.Query(ctx, sqlUpdate, d, id, snapshotID)
 	if err != nil {
@@ -285,7 +285,7 @@ func (s *Store) Update(snapshotID, id string, data any, o Options) (*Snapshot, e
 	}
 
 	for _, ns := range snapshots {
-		s.Notify(ns)
+		s.notify(ns)
 	}
 
 	return &snap, nil
@@ -386,9 +386,9 @@ func (s *Store) Add(id string, data any, o Options) error {
 	}
 
 	for _, snap := range oldSnapshots {
-		s.Notify(snap)
+		s.notify(snap)
 	}
-	s.Notify(&Snapshot{
+	s.notify(&Snapshot{
 		SnapshotID: newSnapshotID,
 		ID:         id,
 		Data:       json.RawMessage(d),

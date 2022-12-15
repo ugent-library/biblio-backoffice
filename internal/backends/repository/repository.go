@@ -52,17 +52,6 @@ func (s *Repository) AddPublicationListener(fn func(*models.Publication)) {
 	})
 }
 
-func (s *Repository) PublicationNotify(p *models.Publication) error {
-	snapshot, snapshotErr := s.publicationToSnapshot(p)
-	if snapshotErr != nil {
-		return snapshotErr
-	}
-
-	s.publicationStore.Notify(snapshot)
-
-	return nil
-}
-
 func (s *Repository) AddDatasetListener(fn func(*models.Dataset)) {
 	s.datasetStore.Listen(func(snap *snapstore.Snapshot) {
 		d := &models.Dataset{}
