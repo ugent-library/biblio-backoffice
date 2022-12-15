@@ -196,7 +196,7 @@ func (s *Store) AddAfter(snapshotID, id string, data any, o Options) (string, er
 
 	sqlUpdate := `update ` + s.table + ` set date_until = $1
 	where id = $2 and date_until is null
-	returning snapshot_id,id,data,date_until,date_from`
+	returning snapshot_id,id,data,date_from,date_until`
 
 	updatedRows, err := tx.Query(ctx, sqlUpdate, now, id)
 	if err != nil {
@@ -303,7 +303,7 @@ func (s *Store) Add(id string, data any, o Options) error {
 
 	sqlUpdate := `update ` + s.table + ` set date_until = $1
 	where id = $2 and date_until is null
-	returning snapshot_id,id,data,date_until,date_from`
+	returning snapshot_id,id,data,date_from,date_until`
 
 	updatedRows, err := tx.Query(ctx, sqlUpdate, now, id)
 	if err != nil {
