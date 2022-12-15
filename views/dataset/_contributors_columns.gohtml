@@ -23,18 +23,19 @@
     {{end}}
 </td>
 <td class="col-2">
+    <ul class="c-meta-list c-meta-list-horizontal">
     {{range $i, $cd := .Contributor.Department}}
-        {{$cd.ID}}
-        {{with $cd.Name}}
+        <li class="c-meta-item">
+            <span>{{$cd.ID}}</span>
+            {{with $cd.Name}}
             <a class="text-muted mx-2" href="#" data-container="body" data-toggle="popover" data-trigger="focus" data-placement="right" data-content="{{.}}">
                 <i class="if if-info-circle if--small"></i>
                 <div class="sr-only">More info</div>
             </a>
-        {{end}}
-        {{if (eq $i 0)}}
-            {{break}}
-        {{end}}
+            {{end}}
+        </li>
     {{end}}
+    </ul>
 </td>
 <td class="pr-4 col-3">
     {{if .User.CanEditDataset .Dataset}}
