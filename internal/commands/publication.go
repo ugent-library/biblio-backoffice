@@ -26,6 +26,7 @@ func init() {
 	publicationCmd.AddCommand(publicationImportCmd)
 	publicationCmd.AddCommand(oldPublicationImportCmd)
 	publicationCmd.AddCommand(cleanupCmd)
+	publicationCmd.AddCommand(transferCmd)
 	rootCmd.AddCommand(publicationCmd)
 }
 
@@ -301,6 +302,118 @@ var cleanupCmd = &cobra.Command{
 		close(indexC)
 		// wait for indexing to finish
 		indexWG.Wait()
+	},
+}
+
+var transferCmd = &cobra.Command{
+	Use:   "transfer",
+	Short: "Transfer publications between people",
+	Args:  cobra.ExactArgs(2),
+	Run: func(cmd *cobra.Command, args []string) {
+		e := Services()
+		s := newRepository()
+
+		s.AddPublicationListener(func(p *models.Publication) {
+			if p.DateUntil == nil {
+				if err := e.PublicationSearchService.Index(p); err != nil {
+					log.Fatalf("error indexing publication %s: %v", p.ID, err)
+				}
+			}
+		})
+
+		source := args[0]
+		dest := args[1]
+
+		p, err := e.PersonService.GetPerson(dest)
+		if err != nil {
+			log.Printf("Fatal: could not retrieve person %s: %s", dest, err)
+		}
+
+		c := &models.Contributor{}
+		c.ID = p.ID
+		c.FirstName = p.FirstName
+		c.LastName = p.LastName
+		c.FullName = p.FullName
+		c.UGentID = p.UGentID
+		c.ORCID = p.ORCID
+		for _, pd := range p.Department {
+			newDep := models.ContributorDepartment{ID: pd.ID}
+			org, orgErr := e.OrganizationService.GetOrganization(pd.ID)
+			if orgErr == nil {
+				newDep.Name = org.Name
+			}
+			c.Department = append(c.Department, newDep)
+		}
+
+		s.EachPublicationSnapshot(func(p *models.Publication) bool {
+			fixed := false
+
+			if p.User != nil {
+				if p.User.ID == source {
+					p.User = &models.PublicationUser{
+						ID:   c.ID,
+						Name: c.FullName,
+					}
+
+					log.Printf("p: %s: s: %s ::: user: %s -> %s", p.ID, p.SnapshotID, source, c.ID)
+					fixed = true
+				}
+			}
+
+			if p.Creator != nil {
+				if p.Creator.ID == source {
+					p.Creator = &models.PublicationUser{
+						ID:   c.ID,
+						Name: c.FullName,
+					}
+
+					if len(c.Department) > 0 {
+						org, orgErr := e.OrganizationService.GetOrganization(c.Department[0].ID)
+						if orgErr != nil {
+							log.Printf("p: %s: s: %s ::: creator: could not fetch department for %s: %s", p.ID, p.SnapshotID, c.ID, orgErr)
+						} else {
+							p.AddDepartmentByOrg(org)
+						}
+					}
+
+					log.Printf("p: %s: s: %s ::: creator: %s -> %s", p.ID, p.SnapshotID, source, c.ID)
+					fixed = true
+				}
+			}
+
+			for k, a := range p.Author {
+				if a.ID == source {
+					p.SetContributor("author", k, c)
+					log.Printf("p: %s: s: %s ::: author: %s -> %s", p.ID, p.SnapshotID, a.ID, c.ID)
+					fixed = true
+				}
+			}
+
+			for k, e := range p.Editor {
+				if e.ID == source {
+					p.SetContributor("editor", k, c)
+					log.Printf("p: %s: s: %s ::: editor: %s -> %s", p.ID, p.SnapshotID, e.ID, c.ID)
+					fixed = true
+				}
+			}
+
+			for k, s := range p.Supervisor {
+				if s.ID == source {
+					p.SetContributor("supervisor", k, c)
+					log.Printf("p: %s: s: %s ::: supervisor: %s -> %s", p.ID, p.SnapshotID, s.ID, c.ID)
+					fixed = true
+				}
+			}
+
+			if fixed {
+				errUpdate := s.UpdatePublicationInPlace(p)
+				if errUpdate != nil {
+					log.Printf("p: %s: s: %s ::: Could not update snapshot: %s", p.ID, p.SnapshotID, errUpdate)
+				}
+			}
+
+			return true
+		})
 	},
 }
 

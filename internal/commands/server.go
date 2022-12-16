@@ -107,13 +107,17 @@ var serverStartCmd = &cobra.Command{
 		// e.LicenseSearchService.IndexAll()
 
 		e.Repository.AddPublicationListener(func(p *models.Publication) {
-			if err := e.PublicationSearchService.Index(p); err != nil {
-				logger.Errorf("error indexing publication %s: %w", p.ID, err)
+			if p.DateUntil == nil {
+				if err := e.PublicationSearchService.Index(p); err != nil {
+					logger.Errorf("error indexing publication %s: %w", p.ID, err)
+				}
 			}
 		})
 		e.Repository.AddDatasetListener(func(d *models.Dataset) {
-			if err := e.DatasetSearchService.Index(d); err != nil {
-				logger.Errorf("error indexing dataset %s: %w", d.ID, err)
+			if d.DateUntil == nil {
+				if err := e.DatasetSearchService.Index(d); err != nil {
+					logger.Errorf("error indexing dataset %s: %w", d.ID, err)
+				}
 			}
 		})
 

@@ -196,7 +196,7 @@ func (s *Store) AddAfter(snapshotID, id string, data any, o Options) (string, er
 
 	sqlUpdate := `update ` + s.table + ` set date_until = $1
 	where id = $2 and date_until is null
-	returning snapshot_id,id,data,date_until,date_from`
+	returning snapshot_id,id,data,date_from,date_until`
 
 	updatedRows, err := tx.Query(ctx, sqlUpdate, now, id)
 	if err != nil {
@@ -238,6 +238,57 @@ func (s *Store) AddAfter(snapshotID, id string, data any, o Options) (string, er
 	})
 
 	return newSnapshotID, nil
+}
+
+func (s *Store) Update(snapshotID, id string, data any, o Options) (*Snapshot, error) {
+	if snapshotID == "" {
+		return nil, errors.New("snapshot id is empty")
+	}
+
+	d, err := json.Marshal(data)
+	if err != nil {
+		return nil, err
+	}
+
+	ctx, db := s.ctxAndDb(o)
+
+	tx, err := db.Begin(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback(ctx)
+
+	snap := Snapshot{}
+
+	sqlUpdate := `update ` + s.table + ` set data = $1
+	where id = $2 and snapshot_id = $3
+	returning snapshot_id,id,data,date_from,date_until`
+
+	updatedRows, err := tx.Query(ctx, sqlUpdate, d, id, snapshotID)
+	if err != nil {
+		return nil, err
+	}
+
+	cursorUpdatedRows := &Cursor{updatedRows}
+	snapshots := []*Snapshot{}
+	for cursorUpdatedRows.HasNext() {
+		sn, e := cursorUpdatedRows.Next()
+		if e != nil {
+			return nil, e
+		}
+		snapshots = append(snapshots, sn)
+		snap = *sn
+	}
+
+	if err := tx.Commit(ctx); err != nil {
+		return nil, err
+	}
+
+	for _, ns := range snapshots {
+		s.notify(ns)
+	}
+
+	return &snap, nil
 }
 
 func (store *Store) ImportSnapshot(snapshot *Snapshot, options Options) error {
@@ -303,7 +354,7 @@ func (s *Store) Add(id string, data any, o Options) error {
 
 	sqlUpdate := `update ` + s.table + ` set date_until = $1
 	where id = $2 and date_until is null
-	returning snapshot_id,id,data,date_until,date_from`
+	returning snapshot_id,id,data,date_from,date_until`
 
 	updatedRows, err := tx.Query(ctx, sqlUpdate, now, id)
 	if err != nil {

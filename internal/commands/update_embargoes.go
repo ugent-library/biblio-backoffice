@@ -28,8 +28,10 @@ var updateEmbargoes = &cobra.Command{
 
 func updatePublicationEmbargoes(e *backends.Services, logger *zap.SugaredLogger) {
 	e.Repository.AddPublicationListener(func(p *models.Publication) {
-		if err := e.PublicationSearchService.Index(p); err != nil {
-			logger.Fatalf("error indexing publication %s: %v", p.ID, err)
+		if p.DateUntil == nil {
+			if err := e.PublicationSearchService.Index(p); err != nil {
+				logger.Fatalf("error indexing publication %s: %v", p.ID, err)
+			}
 		}
 	})
 
@@ -108,8 +110,10 @@ func updatePublicationEmbargoes(e *backends.Services, logger *zap.SugaredLogger)
 
 func updateDatasetEmbargoes(e *backends.Services, logger *zap.SugaredLogger) {
 	e.Repository.AddDatasetListener(func(d *models.Dataset) {
-		if err := e.DatasetSearchService.Index(d); err != nil {
-			logger.Fatalf("error indexing dataset %s: %v", d.ID, err)
+		if d.DateUntil == nil {
+			if err := e.DatasetSearchService.Index(d); err != nil {
+				logger.Fatalf("error indexing dataset %s: %v", d.ID, err)
+			}
 		}
 	})
 
@@ -124,10 +128,10 @@ func updateDatasetEmbargoes(e *backends.Services, logger *zap.SugaredLogger) {
 			currentDateStr := time.Now().Format("2006-01-02")
 			var sqlDatasetsWithEmbargo string = `
 		SELECT * FROM datasets
-		WHERE date_until is null AND 
+		WHERE date_until is null AND
 		data->>'access_level' = $1 AND
 		data->>'embargo_date' <> '' AND
-		data->>'embargo_date' <= $2 
+		data->>'embargo_date' <= $2
 		`
 
 			datasets := make([]*models.Dataset, 0)

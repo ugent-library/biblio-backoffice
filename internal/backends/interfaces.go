@@ -64,6 +64,7 @@ type Repository interface {
 	ImportCurrentPublication(*models.Publication) error
 	ImportOldPublication(*models.Publication) error
 	UpdatePublication(string, *models.Publication, *models.User) error
+	UpdatePublicationInPlace(p *models.Publication) error
 	CountPublications(*RepositoryQueryArgs) (int, error)
 	SearchPublications(*RepositoryQueryArgs) ([]*models.Publication, error)
 	SelectPublications(string, []any, func(*models.Publication) bool) error
