@@ -94,7 +94,7 @@ func newServices() *backends.Services {
 		PublicationSearchService:  newPublicationSearchService(),
 		OrganizationService:       caching.NewOrganizationService(biblioClient),
 		PersonService:             caching.NewPersonService(biblioClient),
-		ProjectService:            caching.NewProjectService(biblioClient),
+		ProjectService:            caching.NewProjectService(authorityClient),
 		UserService:               caching.NewUserService(authorityClient),
 		OrganizationSearchService: biblioClient,
 		PersonSearchService:       biblioClient,
