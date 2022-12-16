@@ -142,13 +142,14 @@ func (datasets *Datasets) Search(args *models.SearchArgs) (*models.DatasetHits, 
 	}
 	opts = append(opts, datasets.Client.es.Search.WithBody(&buf))
 
-	res, err := datasets.Client.es.Search(opts...)
+	var res datasetResEnvelope = datasetResEnvelope{}
+	err := datasets.Client.searchWithOpts(opts, &res)
 	if err != nil {
 		return nil, err
 	}
 
 	// READ RESPONSE FROM ES
-	hits, err := decodeDatasetRes(res, args.Facets)
+	hits, err := decodeDatasetRes(&res, args.Facets)
 	if err != nil {
 		return nil, err
 	}
@@ -291,21 +292,7 @@ type resFacet struct {
 	Key      string
 }*/
 
-func decodeDatasetRes(res *esapi.Response, facets []string) (*models.DatasetHits, error) {
-	defer res.Body.Close()
-
-	if res.IsError() {
-		buf := &bytes.Buffer{}
-		if _, err := io.Copy(buf, res.Body); err != nil {
-			return nil, err
-		}
-		return nil, errors.New("Es6 error response: " + buf.String())
-	}
-
-	var r datasetResEnvelope
-	if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
-		return nil, errors.Wrap(err, "Error parsing the response body")
-	}
+func decodeDatasetRes(r *datasetResEnvelope, facets []string) (*models.DatasetHits, error) {
 
 	hits := models.DatasetHits{}
 	hits.Total = r.Hits.Total

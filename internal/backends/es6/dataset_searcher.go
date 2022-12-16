@@ -133,9 +133,10 @@ func (searcher *DatasetSearcher) buildEsOpts(query M) ([]func(*esapi.SearchReque
 }
 
 func (searcher *DatasetSearcher) esSearch(opts ...func(*esapi.SearchRequest)) (*models.DatasetHits, error) {
-	res, err := searcher.Client.es.Search(opts...)
+	var envelop datasetResEnvelope
+	err := searcher.Client.searchWithOpts(opts, &envelop)
 	if err != nil {
 		return nil, err
 	}
-	return decodeDatasetRes(res, []string{})
+	return decodeDatasetRes(&envelop, []string{})
 }
