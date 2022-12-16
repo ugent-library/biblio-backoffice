@@ -23,7 +23,7 @@ func (c *Client) GetUser(id string) (*models.User, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "unexpected error during document retrieval")
 	}
-	return c.recordToPerson(record)
+	return c.recordToUser(record)
 }
 
 func (c *Client) GetUserByUsername(username string) (*models.User, error) {
@@ -37,10 +37,10 @@ func (c *Client) GetUserByUsername(username string) (*models.User, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "unexpected error during document retrieval")
 	}
-	return c.recordToPerson(record)
+	return c.recordToUser(record)
 }
 
-func (c *Client) recordToPerson(record bson.M) (*models.User, error) {
+func (c *Client) recordToUser(record bson.M) (*models.User, error) {
 
 	var user *models.User = &models.User{}
 

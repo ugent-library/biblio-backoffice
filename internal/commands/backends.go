@@ -93,7 +93,7 @@ func newServices() *backends.Services {
 		DatasetSearchService:      newDatasetSearchService(),
 		PublicationSearchService:  newPublicationSearchService(),
 		OrganizationService:       caching.NewOrganizationService(biblioClient),
-		PersonService:             caching.NewPersonService(biblioClient),
+		PersonService:             caching.NewPersonService(authorityClient),
 		ProjectService:            caching.NewProjectService(authorityClient),
 		UserService:               caching.NewUserService(authorityClient),
 		OrganizationSearchService: biblioClient,
