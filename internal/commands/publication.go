@@ -306,9 +306,9 @@ var cleanupCmd = &cobra.Command{
 }
 
 var transferCmd = &cobra.Command{
-	Use:   "transfer",
+	Use:   "transfer UID UID [PUBID]",
 	Short: "Transfer publications between people",
-	Args:  cobra.ExactArgs(2),
+	Args:  cobra.RangeArgs(2, 3),
 	Run: func(cmd *cobra.Command, args []string) {
 		e := Services()
 		s := newRepository()
@@ -345,7 +345,7 @@ var transferCmd = &cobra.Command{
 			c.Department = append(c.Department, newDep)
 		}
 
-		s.EachPublicationSnapshot(func(p *models.Publication) bool {
+		callback := func(p *models.Publication) bool {
 			fixed := false
 
 			if p.User != nil {
@@ -413,7 +413,14 @@ var transferCmd = &cobra.Command{
 			}
 
 			return true
-		})
+		}
+
+		if len(args) > 2 {
+			pubID := args[2]
+			s.PublicationHistory(pubID, callback)
+		} else {
+			s.EachPublicationSnapshot(callback)
+		}
 	},
 }
 
