@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Fixed
+
+## [v1.0.13] - 2022-12-20
+
+### Added
+
 - #928: Allow transferring a single publication between users
 - #881: Add a publication transfer command that rewrites history and assigns
   publications to another user id
@@ -139,8 +145,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.12...HEAD
-[v1.0.11]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.11...v1.0.12
+[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.13...HEAD
+[v1.0.13]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.12...v1.0.13
+[v1.0.12]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.11...v1.0.12
 [v1.0.11]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.10...v1.0.11
 [v1.0.10]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.9...v1.0.10
 [v1.0.9]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.8...v1.0.9
