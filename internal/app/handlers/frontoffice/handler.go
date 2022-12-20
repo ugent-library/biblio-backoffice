@@ -25,7 +25,7 @@ import (
 
 const timestampFmt = "2006-01-02 15:04:05"
 
-var licenseMap = map[string]string{
+var licenses = map[string]string{
 	"CC0-1.0":          "Creative Commons Public Domain Dedication (CC0 1.0)",
 	"CC-BY-4.0":        "Creative Commons Attribution 4.0 International Public License (CC-BY 4.0)",
 	"CC-BY-SA-4.0":     "Creative Commons Attribution-ShareAlike 4.0 International Public License (CC BY-SA 4.0)",
@@ -39,7 +39,20 @@ var licenseMap = map[string]string{
 	"":                 "Get in touch with the rights holder for reuse rights.",
 }
 
-var hiddenLicenses []string = []string{"LicenseNotListed", "CopyrightUnknown"}
+var openLicenses = map[string]struct{}{
+	"CC0-1.0":         {},
+	"CC-BY-4.0":       {},
+	"CC-BY-SA-4.0":    {},
+	"CC-BY-NC-4.0":    {},
+	"CC-BY-ND-4.0":    {},
+	"CC-BY-NC-SA-4.0": {},
+	"CC-BY-NC-ND-4.0": {},
+}
+
+var hiddenLicenses = map[string]struct{}{
+	"LicenseNotListed": {},
+	"CopyrightUnknown": {},
+}
 
 type Handler struct {
 	handlers.BaseHandler
@@ -614,13 +627,21 @@ func (h *Handler) mapPublication(p *models.Publication) *Publication {
 			}
 
 			pp.File[i] = f
+		}
 
-			if pp.CopyrightStatement == "" {
-				if vv, ok := licenseMap[v.License]; ok {
-					pp.CopyrightStatement = vv
+		bestLicense := ""
+		for _, f := range p.File {
+			if bestLicense == "" {
+				if _, isLicense := licenses[f.License]; isLicense {
+					bestLicense = f.License
 				}
 			}
+			if _, isOpenLicense := openLicenses[f.License]; isOpenLicense {
+				bestLicense = f.License
+				break
+			}
 		}
+		pp.CopyrightStatement = licenses[bestLicense]
 	}
 
 	if p.SourceDB != "" {
@@ -712,11 +733,11 @@ func (h *Handler) mapDataset(p *models.Dataset) *Publication {
 	}
 
 	// hide keywords like LicenseNotListed or UnknownCopyright
-	if !validation.InArray(hiddenLicenses, p.License) {
+	if _, isHidden := hiddenLicenses[p.License]; !isHidden {
 		pp.License = p.License
 	}
 	pp.OtherLicense = p.OtherLicense
-	if v, ok := licenseMap[p.License]; ok {
+	if v, ok := licenses[p.License]; ok {
 		pp.CopyrightStatement = v
 	}
 
