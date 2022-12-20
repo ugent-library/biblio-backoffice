@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Previous fix for #910 had a bug where publication version field didn't appear,
+  this is now resolved.
+
 ## [v1.0.13] - 2022-12-20
 
 ### Added
