@@ -20,10 +20,12 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/bind"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
+	internal_time "github.com/ugent-library/biblio-backend/internal/time"
 	"github.com/ugent-library/biblio-backend/internal/validation"
 )
 
 const timestampFmt = "2006-01-02 15:04:05"
+const timestampFmtPg = "2006-01-02 15:04:05-07"
 
 var licenses = map[string]string{
 	"CC0-1.0":          "Creative Commons Public Domain Dedication (CC0 1.0)",
@@ -188,6 +190,7 @@ type Publication struct {
 	ConferenceType      string        `json:"conference_type,omitempty"`
 	CopyrightStatement  string        `json:"copyright_statement,omitempty"`
 	CreatedBy           *Person       `json:"created_by,omitempty"`
+	DateFrom            string        `json:"date_from"`
 	DateCreated         string        `json:"date_created"`
 	DateUpdated         string        `json:"date_updated"`
 	Defense             *Defense      `json:"defense,omitempty"`
@@ -265,19 +268,23 @@ func (h *Handler) mapPublication(p *models.Publication) *Publication {
 		ArticleNumber:  p.ArticleNumber,
 		ArxivID:        p.ArxivID,
 		Classification: p.Classification,
-		DateCreated:    p.DateCreated.Format(timestampFmt),
-		DateUpdated:    p.DateUpdated.Format(timestampFmt),
-		Edition:        p.Edition,
-		ESCIID:         p.ESCIID,
-		Handle:         p.Handle,
-		Issue:          p.Issue,
-		Issuetitle:     p.IssueTitle,
-		PubMedID:       p.PubMedID,
-		SeriesTitle:    p.SeriesTitle,
-		Title:          p.Title,
-		Volume:         p.Volume,
-		WOSID:          p.WOSID,
-		WOSType:        p.WOSType,
+		//biblio used librecat's zulu time and splitted them
+		//two types of dates in the loop (old: zulu, new: with timestamp)
+		DateCreated: p.DateCreated.UTC().Format(timestampFmt),
+		DateUpdated: p.DateUpdated.UTC().Format(timestampFmt),
+		//date_from used by biblio indexer only
+		DateFrom:    internal_time.FormatTimeUTC(p.DateFrom),
+		Edition:     p.Edition,
+		ESCIID:      p.ESCIID,
+		Handle:      p.Handle,
+		Issue:       p.Issue,
+		Issuetitle:  p.IssueTitle,
+		PubMedID:    p.PubMedID,
+		SeriesTitle: p.SeriesTitle,
+		Title:       p.Title,
+		Volume:      p.Volume,
+		WOSID:       p.WOSID,
+		WOSType:     p.WOSType,
 	}
 
 	if p.Type != "" {
@@ -681,9 +688,13 @@ func (h *Handler) mapPublication(p *models.Publication) *Publication {
 
 func (h *Handler) mapDataset(p *models.Dataset) *Publication {
 	pp := &Publication{
-		ID:          p.ID,
-		DateCreated: p.DateCreated.Format(timestampFmt),
-		DateUpdated: p.DateUpdated.Format(timestampFmt),
+		ID: p.ID,
+		//biblio used librecat's zulu time and splitted them
+		//two types of dates in the loop (old: zulu, new: with timestamp)
+		DateCreated: p.DateCreated.UTC().Format(timestampFmt),
+		DateUpdated: p.DateUpdated.UTC().Format(timestampFmt),
+		//date_from used by biblio indexer only
+		DateFrom:    internal_time.FormatTimeUTC(p.DateFrom),
 		AccessLevel: p.AccessLevel,
 		Embargo:     p.EmbargoDate,
 		EmbargoTo:   p.AccessLevelAfterEmbargo,
@@ -841,9 +852,16 @@ func (h *Handler) GetAllPublications(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if b.UpdatedSince != "" {
+		t, tErr := internal_time.ParseTimeUTC(b.UpdatedSince)
+		if tErr != nil {
+			h.Logger.Errorf("updatedSince error", "err", tErr)
+			render.InternalServerError(w, r, tErr)
+			return
+		}
+		updatedSince := t.Local().Format(timestampFmtPg)
 		args.Filters = append(args.Filters, &backends.RepositoryFilter{
-			Field: "data->>'date_updated'",
-			Value: b.UpdatedSince,
+			Field: "date_from",
+			Value: updatedSince,
 			Op:    ">=",
 		})
 	}
@@ -908,9 +926,16 @@ func (h *Handler) GetAllDatasets(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if b.UpdatedSince != "" {
+		t, tErr := internal_time.ParseTimeUTC(b.UpdatedSince)
+		if tErr != nil {
+			h.Logger.Errorf("updatedSince error", "err", tErr)
+			render.InternalServerError(w, r, tErr)
+			return
+		}
+		updatedSince := t.Local().Format(timestampFmtPg)
 		args.Filters = append(args.Filters, &backends.RepositoryFilter{
-			Field: "data->>'date_updated'",
-			Value: b.UpdatedSince,
+			Field: "date_from",
+			Value: updatedSince,
 			Op:    ">=",
 		})
 	}
