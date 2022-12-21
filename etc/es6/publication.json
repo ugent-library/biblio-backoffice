@@ -36,6 +36,11 @@
                     "type": "edge_ngram",
                     "min_gram": 2,
                     "max_gram": 50
+                  },
+                  "remove_dashes": {
+                    "type": "pattern_replace",
+                    "pattern": "-",
+                    "replacement": ""
                   }
                 },
                 "analyzer": {
@@ -58,6 +63,13 @@
                         "tokenizer": "keyword",
                         "filter": [
                             "lowercase"
+                        ]
+                    },
+                    "isxn": {
+                        "tokenizer": "keyword",
+                        "filter": [
+                            "lowercase",
+                            "remove_dashes"
                         ]
                     },
                     "token_edge_ngram": {
@@ -340,19 +352,19 @@
                 },
                 "isbn": {
                     "type": "text",
-                    "analyzer": "keyword_lowercase"
+                    "analyzer": "isxn"
                 },
                 "eisbn": {
                     "type": "text",
-                    "analyzer": "keyword_lowercase"
+                    "analyzer": "isxn"
                 },
                 "issn": {
                     "type": "text",
-                    "analyzer": "keyword_lowercase"
+                    "analyzer": "isxn"
                 },
                 "eissn": {
                     "type": "text",
-                    "analyzer": "keyword_lowercase"
+                    "analyzer": "isxn"
                 },
                 "issue": {
                     "type": "text"

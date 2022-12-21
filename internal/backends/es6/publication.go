@@ -180,6 +180,10 @@ func buildPublicationUserQuery(args *models.SearchArgs) M {
 				"fields": []string{
 					"id^100",
 					"doi^50",
+					"isbn^50",
+					"eisbn^50",
+					"issn^50",
+					"eissn^50",
 					"title^40",
 					"all",
 					"author.full_name.phrase_ngram^0.05",
