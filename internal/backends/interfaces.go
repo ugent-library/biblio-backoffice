@@ -104,6 +104,8 @@ type DatasetSearchService interface {
 	WithScope(string, ...string) DatasetSearchService
 	CreateIndex() error
 	DeleteIndex() error
+	Reindex() error
+	Init() error
 }
 
 type PublicationSearchService interface {
@@ -114,6 +116,8 @@ type PublicationSearchService interface {
 	WithScope(string, ...string) PublicationSearchService
 	CreateIndex() error
 	DeleteIndex() error
+	Reindex() error
+	Init() error
 }
 
 type PublicationSearcherService interface {
