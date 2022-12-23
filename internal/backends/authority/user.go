@@ -3,7 +3,6 @@ package authority
 import (
 	"context"
 	"fmt"
-	"regexp"
 	"strings"
 	"time"
 
@@ -42,18 +41,6 @@ func (c *Client) GetUserByUsername(username string) (*models.User, error) {
 	}
 	return c.recordToUser(record)
 }
-
-type personSearchEnvelope struct {
-	Hits struct {
-		Total int `json:"total"`
-		Hits  []struct {
-			ID     string        `json:"_id"`
-			Source models.Person `json:"_source"`
-		} `json:"hits"`
-	} `json:"hits"`
-}
-
-var regexMultipleSpaces = regexp.MustCompile(`\s+`)
 
 func (c *Client) SuggestUsers(q string) ([]models.Person, error) {
 	limit := 25

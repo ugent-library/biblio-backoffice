@@ -102,7 +102,7 @@ func newServices() *backends.Services {
 		ProjectService:            caching.NewProjectService(authorityClient),
 		UserService:               caching.NewUserService(authorityClient),
 		OrganizationSearchService: biblioClient,
-		PersonSearchService:       biblioClient,
+		PersonSearchService:       authorityClient,
 		ProjectSearchService:      biblioClient,
 		UserSearchService:         authorityClient,
 		LicenseSearchService:      spdxlicenses.New(),
