@@ -195,6 +195,33 @@ Alternatively, adapt this line in you `.air.toml` to suit your needs:
 full_bin = "source ./.env && ./tmp/main server start --host localhost --port 3001 || exit 1"
 ```
 
+### Running tests
+
+This project has integration tests for the GRPC client/server.
+
+Setting up the test environment:
+
+```bash
+# Set up a docker-based isolated, testing environment
+make setup-test-env
+# Run the GRPC API server
+make api-server
+```
+
+In a separate terminal, you can now run the integration tests:
+
+```bash
+make run-tests
+# or alternatively
+go test client/... -v
+```
+
+Tearing down the test environment:
+
+```bash
+make tear-test-env
+```
+
 ## SASS/SCSS & asset compilation
 
 Install node dependencies:
