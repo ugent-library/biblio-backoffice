@@ -2,11 +2,14 @@ package authority
 
 import (
 	"context"
+	"fmt"
+	"regexp"
 	"strings"
 	"time"
 
 	"github.com/pkg/errors"
 	"github.com/ugent-library/biblio-backend/internal/backends"
+	"github.com/ugent-library/biblio-backend/internal/backends/es6"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -38,6 +41,71 @@ func (c *Client) GetUserByUsername(username string) (*models.User, error) {
 		return nil, errors.Wrap(err, "unexpected error during document retrieval")
 	}
 	return c.recordToUser(record)
+}
+
+type personSearchEnvelope struct {
+	Hits struct {
+		Total int `json:"total"`
+		Hits  []struct {
+			ID     string        `json:"_id"`
+			Source models.Person `json:"_source"`
+		} `json:"hits"`
+	} `json:"hits"`
+}
+
+var regexMultipleSpaces = regexp.MustCompile(`\s+`)
+
+func (c *Client) SuggestUsers(q string) ([]models.Person, error) {
+	limit := 25
+	persons := make([]models.Person, 0, limit)
+
+	// remove duplicate spaces
+	q = regexMultipleSpaces.ReplaceAllString(q, " ")
+
+	// trim
+	q = strings.TrimSpace(q)
+
+	qParts := strings.Split(q, " ")
+	queryMust := make([]es6.M, 0, len(qParts))
+
+	for _, qp := range qParts {
+		queryMust = append(queryMust, es6.M{
+			"query_string": es6.M{
+				"default_operator": "AND",
+				"query":            fmt.Sprintf("%s*", qp),
+				"default_field":    "all",
+				"analyze_wildcard": "true",
+			},
+		})
+	}
+
+	requestBody := es6.M{
+		"query": es6.M{
+			"bool": es6.M{
+				"filter": es6.M{
+					"term": es6.M{
+						"active": "true",
+					},
+				},
+				"must": queryMust,
+			},
+		},
+		"size": limit,
+	}
+
+	var responseBody personSearchEnvelope = personSearchEnvelope{}
+
+	if e := c.es.SearchWithBody("biblio_person", requestBody, &responseBody); e != nil {
+		return nil, e
+	}
+
+	for _, p := range responseBody.Hits.Hits {
+		person := p.Source
+		person.ID = p.ID
+		persons = append(persons, person)
+	}
+
+	return persons, nil
 }
 
 func (c *Client) recordToUser(record bson.M) (*models.User, error) {

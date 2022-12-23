@@ -51,6 +51,11 @@ func Services() *backends.Services {
 func newServices() *backends.Services {
 	authorityClient, authorityClientErr := authority.New(authority.Config{
 		MongoDBURI: viper.GetString("mongodb-uri"),
+		ES6Config: es6.Config{
+			ClientConfig: elasticsearch.Config{
+				Addresses: strings.Split(viper.GetString("frontend-es6-url"), ","),
+			},
+		},
 	})
 	if authorityClientErr != nil {
 		panic(authorityClientErr)
@@ -99,7 +104,7 @@ func newServices() *backends.Services {
 		OrganizationSearchService: biblioClient,
 		PersonSearchService:       biblioClient,
 		ProjectSearchService:      biblioClient,
-		UserSearchService:         biblioClient,
+		UserSearchService:         authorityClient,
 		LicenseSearchService:      spdxlicenses.New(),
 		MediaTypeSearchService:    ianamedia.New(),
 		DatasetSources: map[string]backends.DatasetGetter{

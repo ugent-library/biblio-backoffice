@@ -53,6 +53,7 @@ func init() {
 	viper.AutomaticEnv()
 	viper.SetDefault("pg-conn", defaultPgConn)
 	viper.SetDefault("es6-url", defaultEs6URL)
+	viper.SetDefault("frontend-es6-url", defaultEs6URL)
 	viper.SetDefault("dataset-index", defaultDatasetIndex)
 	viper.SetDefault("publication-index", defaultPublicationIndex)
 	// viper.SetDefault("api-host", defaultAPIHost)
@@ -81,6 +82,8 @@ func init() {
 	rootCmd.PersistentFlags().String("es6-url", defaultEs6URL, "elasticsearch 6.x url, separate multiple with comma")
 	rootCmd.PersistentFlags().String("dataset-index", defaultDatasetIndex, "dataset index name")
 	rootCmd.PersistentFlags().String("publication-index", defaultPublicationIndex, "publication index name")
+
+	rootCmd.PersistentFlags().String("frontend-es6-url", "", "frontend elasticsearch 6.x url, separate multiple with comma")
 
 	rootCmd.PersistentFlags().String("orcid-client-id", "", "orcid client id")
 	rootCmd.PersistentFlags().String("orcid-client-secret", "", "orcid client secret")
