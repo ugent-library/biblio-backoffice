@@ -20,7 +20,7 @@ func (s *server) GetDataset(ctx context.Context, req *api.GetDatasetRequest) (*a
 	dataset, err := s.services.Repository.GetDataset(req.Id)
 	if err != nil {
 		// TODO How do we differentiate between errors? e.g. NotFound vs. Internal (database unavailable,...)
-		return nil, status.Errorf(codes.Internal, "Could not get dataset with id %d: %w", req.Id, err)
+		return nil, status.Errorf(codes.Internal, "Could not get dataset with id %s: %s", req.Id, err)
 	}
 
 	res := &api.GetDatasetResponse{Dataset: DatasetToMessage(dataset)}
@@ -40,7 +40,7 @@ func (s *server) GetAllDatasets(req *api.GetAllDatasetsRequest, stream api.Bibli
 	})
 
 	if ErrorStream != nil {
-		return status.Errorf(codes.Internal, "could not get all datasets: %w", ErrorStream)
+		return status.Errorf(codes.Internal, "could not get all datasets: %s", ErrorStream)
 	}
 
 	return nil
@@ -55,7 +55,7 @@ func (s *server) SearchDatasets(ctx context.Context, req *api.SearchDatasetsRequ
 	hits, err := s.services.DatasetSearchService.Search(args)
 	if err != nil {
 		// TODO How do we differentiate between errors?
-		return nil, status.Errorf(codes.Internal, "Could not search datasets: %s", req.Query, err)
+		return nil, status.Errorf(codes.Internal, "Could not search datasets: %s :: %s", req.Query, err)
 	}
 
 	res := &api.SearchDatasetsResponse{
@@ -81,16 +81,16 @@ func (s *server) UpdateDataset(ctx context.Context, req *api.UpdateDatasetReques
 	}
 
 	if err := p.Validate(); err != nil {
-		return nil, fmt.Errorf("validation failed for dataset %s: %w", p.ID, err)
+		return nil, fmt.Errorf("validation failed for dataset %s: %s", p.ID, err)
 	}
 
 	if err := s.services.Repository.UpdateDataset(req.Dataset.SnapshotId, p, user); err != nil {
 		// TODO How do we differentiate between errors?
-		return nil, status.Errorf(codes.Internal, "failed to store dataset %s, %w", p.ID, err)
+		return nil, status.Errorf(codes.Internal, "failed to store dataset %s, %s", p.ID, err)
 	}
 	if err := s.services.DatasetSearchService.Index(p); err != nil {
 		// TODO How do we differentiate between errors
-		return nil, status.Errorf(codes.Internal, "failed to index dataset %s, %w", p.ID, err)
+		return nil, status.Errorf(codes.Internal, "failed to index dataset %s, %s", p.ID, err)
 	}
 
 	return &api.UpdateDatasetResponse{}, nil
@@ -127,7 +127,7 @@ func (s *server) AddDatasets(stream api.Biblio_AddDatasetsServer) error {
 			return nil
 		}
 		if err != nil {
-			return status.Errorf(codes.Internal, "failed to read stream: %w", err)
+			return status.Errorf(codes.Internal, "failed to read stream: %s", err)
 		}
 
 		d := MessageToDataset(req.Dataset)
@@ -149,7 +149,7 @@ func (s *server) AddDatasets(stream api.Biblio_AddDatasetsServer) error {
 
 		// TODO this should return structured messages (see validate)
 		if err := d.Validate(); err != nil {
-			msg := fmt.Errorf("validation failed for dataset %s at line %d: %w", d.ID, seq, err).Error()
+			msg := fmt.Errorf("validation failed for dataset %s at line %d: %s", d.ID, seq, err).Error()
 			if err = stream.Send(&api.AddDatasetsResponse{Message: msg}); err != nil {
 				return err
 			}
@@ -157,7 +157,7 @@ func (s *server) AddDatasets(stream api.Biblio_AddDatasetsServer) error {
 		}
 
 		if err := s.services.Repository.SaveDataset(d, nil); err != nil {
-			msg := fmt.Errorf("failed to store dataset %s at line %d: %w", d.ID, seq, err).Error()
+			msg := fmt.Errorf("failed to store dataset %s at line %d: %s", d.ID, seq, err).Error()
 			if err = stream.Send(&api.AddDatasetsResponse{Message: msg}); err != nil {
 				return status.Errorf(codes.Internal, msg)
 			}
@@ -199,14 +199,14 @@ func (s *server) ImportDatasets(stream api.Biblio_ImportDatasetsServer) error {
 			return nil
 		}
 		if err != nil {
-			return status.Errorf(codes.Internal, "failed to read stream: %w", err)
+			return status.Errorf(codes.Internal, "failed to read stream: %s", err)
 		}
 
 		d := MessageToDataset(req.Dataset)
 
 		// TODO this should return structured messages (see validate)
 		if err := d.Validate(); err != nil {
-			msg := fmt.Errorf("validation failed for dataset %s at line %d: %w", d.ID, seq, err).Error()
+			msg := fmt.Errorf("validation failed for dataset %s at line %d: %s", d.ID, seq, err).Error()
 			if err = stream.Send(&api.ImportDatasetsResponse{Message: msg}); err != nil {
 				return err
 			}
@@ -214,7 +214,7 @@ func (s *server) ImportDatasets(stream api.Biblio_ImportDatasetsServer) error {
 		}
 
 		if err := s.services.Repository.ImportCurrentDataset(d); err != nil {
-			msg := fmt.Errorf("failed to store dataset %s at line %d: %w", d.ID, seq, err).Error()
+			msg := fmt.Errorf("failed to store dataset %s at line %d: %s", d.ID, seq, err).Error()
 			if err = stream.Send(&api.ImportDatasetsResponse{Message: msg}); err != nil {
 				return status.Errorf(codes.Internal, msg)
 			}
@@ -235,7 +235,7 @@ func (s *server) GetDatasetHistory(req *api.GetDatasetHistoryRequest, stream api
 	})
 
 	if errorStream != nil {
-		return status.Errorf(codes.Internal, "could not get dataset history: %w", errorStream)
+		return status.Errorf(codes.Internal, "could not get dataset history: %s", errorStream)
 	}
 
 	return nil
@@ -243,10 +243,10 @@ func (s *server) GetDatasetHistory(req *api.GetDatasetHistoryRequest, stream api
 
 func (s *server) PurgeDataset(ctx context.Context, req *api.PurgeDatasetRequest) (*api.PurgeDatasetResponse, error) {
 	if err := s.services.Repository.PurgeDataset(req.Id); err != nil {
-		return nil, status.Errorf(codes.Internal, "could not purge dataset with id %d: %w", req.Id, err)
+		return nil, status.Errorf(codes.Internal, "could not purge dataset with id %s: %s", req.Id, err)
 	}
 	if err := s.services.DatasetSearchService.Delete(req.Id); err != nil {
-		return nil, status.Errorf(codes.Internal, "could not purge dataset from index with id %d: %w", req.Id, err)
+		return nil, status.Errorf(codes.Internal, "could not purge dataset from index with id %s: %s", req.Id, err)
 	}
 
 	return &api.PurgeDatasetResponse{}, nil
@@ -254,14 +254,14 @@ func (s *server) PurgeDataset(ctx context.Context, req *api.PurgeDatasetRequest)
 
 func (s *server) PurgeAllDatasets(ctx context.Context, req *api.PurgeAllDatasetsRequest) (*api.PurgeAllDatasetsResponse, error) {
 	if err := s.services.Repository.PurgeAllDatasets(); err != nil {
-		return nil, status.Errorf(codes.Internal, "could not purge all datasets: %w", err)
+		return nil, status.Errorf(codes.Internal, "could not purge all datasets: %s", err)
 	}
 	// TODO use delete by query instead of recreating?
 	if err := s.services.DatasetSearchService.DeleteIndex(); err != nil {
-		return nil, status.Errorf(codes.Internal, "could not delete dataset index: %w", err)
+		return nil, status.Errorf(codes.Internal, "could not delete dataset index: %s", err)
 	}
 	if err := s.services.DatasetSearchService.CreateIndex(); err != nil {
-		return nil, status.Errorf(codes.Internal, "could not create dataset index: %w", err)
+		return nil, status.Errorf(codes.Internal, "could not create dataset index: %s", err)
 	}
 
 	return &api.PurgeAllDatasetsResponse{}, nil
@@ -278,7 +278,7 @@ func (s *server) ValidateDatasets(stream api.Biblio_ValidateDatasetsServer) erro
 			return nil
 		}
 		if err != nil {
-			return status.Errorf(codes.Internal, "failed to read stream: %w", err)
+			return status.Errorf(codes.Internal, "failed to read stream: %s", err)
 		}
 
 		p := MessageToDataset(req.Dataset)

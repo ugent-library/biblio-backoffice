@@ -20,7 +20,7 @@ func (s *server) GetPublication(ctx context.Context, req *api.GetPublicationRequ
 	pub, err := s.services.Repository.GetPublication(req.Id)
 	if err != nil {
 		// TODO How do we differentiate between errors? e.g. NotFound vs. Internal (database unavailable,...)
-		return nil, status.Errorf(codes.Internal, "could not get publication with id %d: %w", req.Id, err)
+		return nil, status.Errorf(codes.Internal, "could not get publication with id %s: %w", req.Id, err)
 	}
 
 	res := &api.GetPublicationResponse{Publication: PublicationToMessage(pub)}
@@ -43,7 +43,7 @@ func (s *server) GetAllPublications(req *api.GetAllPublicationsRequest, stream a
 	})
 
 	if errorStream != nil {
-		return status.Errorf(codes.Internal, "could not get all publications: %w", errorStream)
+		return status.Errorf(codes.Internal, "could not get all publications: %s", errorStream)
 	}
 
 	return nil
@@ -58,7 +58,7 @@ func (s *server) SearchPublications(ctx context.Context, req *api.SearchPublicat
 	hits, err := s.services.PublicationSearchService.Search(args)
 	if err != nil {
 		// TODO How do we differentiate between errors?
-		return nil, status.Errorf(codes.Internal, "Could not search publications: %s", req.Query, err)
+		return nil, status.Errorf(codes.Internal, "Could not search publications: %s :: %s", req.Query, err)
 	}
 
 	res := &api.SearchPublicationsResponse{
@@ -84,16 +84,16 @@ func (s *server) UpdatePublication(ctx context.Context, req *api.UpdatePublicati
 	}
 
 	if err := p.Validate(); err != nil {
-		return nil, fmt.Errorf("validation failed for publication %s: %w", p.ID, err)
+		return nil, fmt.Errorf("validation failed for publication %s: %s", p.ID, err)
 	}
 
 	if err := s.services.Repository.UpdatePublication(req.Publication.SnapshotId, p, user); err != nil {
 		// TODO How do we differentiate between errors?
-		return nil, status.Errorf(codes.Internal, "failed to store publication %s, %w", p.ID, err)
+		return nil, status.Errorf(codes.Internal, "failed to store publication %s, %s", p.ID, err)
 	}
 	if err := s.services.PublicationSearchService.Index(p); err != nil {
 		// TODO How do we differentiate between errors
-		return nil, status.Errorf(codes.Internal, "failed to index publication %s, %w", p.ID, err)
+		return nil, status.Errorf(codes.Internal, "failed to index publication %s, %s", p.ID, err)
 	}
 
 	return &api.UpdatePublicationResponse{}, nil
@@ -130,7 +130,7 @@ func (s *server) AddPublications(stream api.Biblio_AddPublicationsServer) error 
 			return nil
 		}
 		if err != nil {
-			return status.Errorf(codes.Internal, "failed to read stream: %w", err)
+			return status.Errorf(codes.Internal, "failed to read stream: %s", err)
 		}
 
 		p := MessageToPublication(req.Publication)
@@ -165,14 +165,14 @@ func (s *server) AddPublications(stream api.Biblio_AddPublicationsServer) error 
 
 		// TODO this should return structured messages (see validate)
 		if err := p.Validate(); err != nil {
-			msg := fmt.Errorf("validation failed for publication %s at line %d: %w", p.ID, seq, err).Error()
+			msg := fmt.Errorf("validation failed for publication %s at line %d: %s", p.ID, seq, err).Error()
 			if err = stream.Send(&api.AddPublicationsResponse{Message: msg}); err != nil {
 				return err
 			}
 			continue
 		}
 		if err := s.services.Repository.SavePublication(p, nil); err != nil {
-			msg := fmt.Errorf("failed to store publication %s at line %d: %w", p.ID, seq, err).Error()
+			msg := fmt.Errorf("failed to store publication %s at line %d: %s", p.ID, seq, err).Error()
 			if err = stream.Send(&api.AddPublicationsResponse{Message: msg}); err != nil {
 				return status.Errorf(codes.Internal, msg)
 			}
@@ -214,21 +214,21 @@ func (s *server) ImportPublications(stream api.Biblio_ImportPublicationsServer) 
 			return nil
 		}
 		if err != nil {
-			return status.Errorf(codes.Internal, "failed to read stream: %w", err)
+			return status.Errorf(codes.Internal, "failed to read stream: %s", err)
 		}
 
 		p := MessageToPublication(req.Publication)
 
 		// TODO this should return structured messages (see validate)
 		if err := p.Validate(); err != nil {
-			msg := fmt.Errorf("validation failed for publication %s at line %d: %w", p.ID, seq, err).Error()
+			msg := fmt.Errorf("validation failed for publication %s at line %d: %s", p.ID, seq, err).Error()
 			if err = stream.Send(&api.ImportPublicationsResponse{Message: msg}); err != nil {
 				return err
 			}
 			continue
 		}
 		if err := s.services.Repository.ImportCurrentPublication(p); err != nil {
-			msg := fmt.Errorf("failed to store publication %s at line %d: %w", p.ID, seq, err).Error()
+			msg := fmt.Errorf("failed to store publication %s at line %d: %s", p.ID, seq, err).Error()
 			if err = stream.Send(&api.ImportPublicationsResponse{Message: msg}); err != nil {
 				return status.Errorf(codes.Internal, msg)
 			}
@@ -249,7 +249,7 @@ func (s *server) GetPublicationHistory(req *api.GetPublicationHistoryRequest, st
 	})
 
 	if errorStream != nil {
-		return status.Errorf(codes.Internal, "could not get publication history: %w", errorStream)
+		return status.Errorf(codes.Internal, "could not get publication history: %s", errorStream)
 	}
 
 	return nil
@@ -257,10 +257,10 @@ func (s *server) GetPublicationHistory(req *api.GetPublicationHistoryRequest, st
 
 func (s *server) PurgePublication(ctx context.Context, req *api.PurgePublicationRequest) (*api.PurgePublicationResponse, error) {
 	if err := s.services.Repository.PurgePublication(req.Id); err != nil {
-		return nil, status.Errorf(codes.Internal, "could not purge publication with id %d: %w", req.Id, err)
+		return nil, status.Errorf(codes.Internal, "could not purge publication with id %s: %s", req.Id, err)
 	}
 	if err := s.services.PublicationSearchService.Delete(req.Id); err != nil {
-		return nil, status.Errorf(codes.Internal, "could not purge publication from index with id %d: %w", req.Id, err)
+		return nil, status.Errorf(codes.Internal, "could not purge publication from index with id %s: %s", req.Id, err)
 	}
 
 	return &api.PurgePublicationResponse{}, nil
@@ -268,14 +268,14 @@ func (s *server) PurgePublication(ctx context.Context, req *api.PurgePublication
 
 func (s *server) PurgeAllPublications(ctx context.Context, req *api.PurgeAllPublicationsRequest) (*api.PurgeAllPublicationsResponse, error) {
 	if err := s.services.Repository.PurgeAllPublications(); err != nil {
-		return nil, status.Errorf(codes.Internal, "could not purge all publications: %w", err)
+		return nil, status.Errorf(codes.Internal, "could not purge all publications: %s", err)
 	}
 	// TODO use delete by query instead of recreating?
 	if err := s.services.PublicationSearchService.DeleteIndex(); err != nil {
-		return nil, status.Errorf(codes.Internal, "could not delete publication index: %w", err)
+		return nil, status.Errorf(codes.Internal, "could not delete publication index: %s", err)
 	}
 	if err := s.services.PublicationSearchService.CreateIndex(); err != nil {
-		return nil, status.Errorf(codes.Internal, "could not create publication index: %w", err)
+		return nil, status.Errorf(codes.Internal, "could not create publication index: %s", err)
 	}
 
 	return &api.PurgeAllPublicationsResponse{}, nil
@@ -292,7 +292,7 @@ func (s *server) ValidatePublications(stream api.Biblio_ValidatePublicationsServ
 			return nil
 		}
 		if err != nil {
-			return status.Errorf(codes.Internal, "failed to read stream: %w", err)
+			return status.Errorf(codes.Internal, "failed to read stream: %s", err)
 		}
 
 		p := MessageToPublication(req.Publication)
