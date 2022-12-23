@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"io"
 	"log"
-	"os"
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backend/api/v1"
@@ -23,6 +22,8 @@ func (c *AddPublicationsCmd) Command() *cobra.Command {
 		Use:   "add",
 		Short: "Add publications",
 		Run: func(cmd *cobra.Command, args []string) {
+			log.SetOutput(cmd.OutOrStdout())
+
 			c.Wrap(func() {
 				c.Run(cmd, args)
 			})
@@ -54,7 +55,7 @@ func (c *AddPublicationsCmd) Run(cmd *cobra.Command, args []string) {
 		}
 	}()
 
-	reader := bufio.NewReader(os.Stdin)
+	reader := bufio.NewReader(cmd.InOrStdin())
 	lineNo := 0
 	for {
 		line, err := reader.ReadBytes('\n')

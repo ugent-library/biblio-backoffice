@@ -46,7 +46,7 @@ func (c *RootCmd) Wrap(fn func()) {
 	defer cancel()
 
 	addr := fmt.Sprintf("%s:%d", viper.GetString("host"), viper.GetInt("port"))
-	log.Println(addr)
+	// log.Println(addr)
 
 	conn, err := grpc.DialContext(ctx, addr,
 		dialOptionSecureConn,
