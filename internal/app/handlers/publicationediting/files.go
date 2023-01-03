@@ -109,6 +109,7 @@ func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context
 	// save publication
 	// TODO check if file with same checksum is already present
 	pubFile := models.PublicationFile{
+		Relation:    "main_file",
 		AccessLevel: "info:eu-repo/semantics/restrictedAccess",
 		Name:        handler.Filename,
 		Size:        int(handler.Size),
@@ -157,6 +158,11 @@ func (h *Handler) EditFile(w http.ResponseWriter, r *http.Request, ctx Context) 
 		return
 	}
 
+	// Set Relation to default "main_file" if absent in older records.
+	if file.Relation == "" {
+		file.Relation = "main_file"
+	}
+
 	render.Layout(w, "show_modal", "publication/edit_file", YieldEditFile{
 		Context:  ctx,
 		File:     file,
@@ -165,7 +171,6 @@ func (h *Handler) EditFile(w http.ResponseWriter, r *http.Request, ctx Context) 
 	})
 }
 
-// TODO add more rules
 func (h *Handler) RefreshEditFileForm(w http.ResponseWriter, r *http.Request, ctx Context) {
 	var b BindFile
 	if err := bind.Request(r, &b); err != nil {

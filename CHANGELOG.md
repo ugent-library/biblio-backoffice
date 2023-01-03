@@ -9,6 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Fixed
+
+## [v1.0.14] - 2022-12-20
+
+### Added
+
+### Fixed
+
+- Previous fix for #910 had a bug where publication version field didn't appear,
+  this is now resolved.
+
+## [v1.0.13] - 2022-12-20
+
+### Added
+
+- #928: Allow transferring a single publication between users
 - #881: Add a publication transfer command that rewrites history and assigns
   publications to another user id
 - #875: Improve error reporting by including an error id.
@@ -23,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - #902: Import language from WoS.
 - #910: File document type defaults to full text.
 - #924: Order year facet new to old.
+- #918: Set most open license as copyright statement in frontoffice.
 - Various ux fixes.
 
 ## [v1.0.12] - 2022-11-30
@@ -137,8 +154,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.12...HEAD
-[v1.0.11]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.11...v1.0.12
+[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.14...HEAD
+[v1.0.14]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.13...v1.0.14
+[v1.0.13]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.12...v1.0.13
+[v1.0.12]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.11...v1.0.12
 [v1.0.11]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.10...v1.0.11
 [v1.0.10]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.9...v1.0.10
 [v1.0.9]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.8...v1.0.9
