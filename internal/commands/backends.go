@@ -12,7 +12,6 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/backends/arxiv"
 	"github.com/ugent-library/biblio-backend/internal/backends/authority"
-	"github.com/ugent-library/biblio-backend/internal/backends/biblio"
 	"github.com/ugent-library/biblio-backend/internal/backends/bibtex"
 	"github.com/ugent-library/biblio-backend/internal/backends/citeproc"
 	"github.com/ugent-library/biblio-backend/internal/backends/crossref"
@@ -61,12 +60,6 @@ func newServices() *backends.Services {
 		panic(authorityClientErr)
 	}
 
-	biblioClient := biblio.New(biblio.Config{
-		URL:      viper.GetString("frontend-url"),
-		Username: viper.GetString("frontend-username"),
-		Password: viper.GetString("frontend-password"),
-	})
-
 	orcidConfig := orcid.Config{
 		ClientID:     viper.GetString("orcid-client-id"),
 		ClientSecret: viper.GetString("orcid-client-secret"),
@@ -103,7 +96,7 @@ func newServices() *backends.Services {
 		UserService:               caching.NewUserService(authorityClient),
 		OrganizationSearchService: authorityClient,
 		PersonSearchService:       authorityClient,
-		ProjectSearchService:      biblioClient,
+		ProjectSearchService:      authorityClient,
 		UserSearchService:         authorityClient,
 		LicenseSearchService:      spdxlicenses.New(),
 		MediaTypeSearchService:    ianamedia.New(),
