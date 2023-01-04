@@ -1,0 +1,2 @@
+# Check https://dashboard.cypress.io/#/projects/mjg74d/settings for the record key
+npm run test -- --record --key <record key>

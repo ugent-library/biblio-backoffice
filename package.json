@@ -3,6 +3,7 @@
   "scripts": {
     "test": "cypress run --config-file cypress/cypress.config.mjs",
     "cypress:open": "cypress open --config-file cypress/cypress.config.mjs --browser chrome --e2e",
+    "cypress:record": "cypress/cypress-record.sh",
     "precommit": "node node_modules/js-precommit-hook"
   },
   "precommit": "precommit",

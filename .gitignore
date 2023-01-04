@@ -29,3 +29,4 @@ root
 cypress/.env
 cypress/videos
 cypress/screenshots
+cypress/cypress-record.sh
