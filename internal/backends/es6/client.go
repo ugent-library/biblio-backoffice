@@ -149,25 +149,25 @@ func (c *Client) getAliasStatus() (*AliasStatus, error) {
 
 			return nil, AliasNotFoundErr
 
-		} else if res.StatusCode == 200 {
-
-			var aliasGet map[string]interface{} = make(map[string]interface{})
-			if e := json.NewDecoder(res.Body).Decode(&aliasGet); e != nil {
-				return nil, e
-			}
-
-			indexNames := make([]string, 0)
-			for k, _ := range aliasGet {
-				indexNames = append(indexNames, k)
-			}
-
-			return &AliasStatus{
-				Name:    c.Index,
-				Indexes: indexNames,
-			}, nil
+		} else if res.StatusCode != 200 {
+			return nil, fmt.Errorf("unexpected es6 error: %s", res)
 		}
 
-		return nil, fmt.Errorf("unexpected es6 error: %s", res)
+		var aliasGet map[string]interface{} = make(map[string]interface{})
+		if e := json.NewDecoder(res.Body).Decode(&aliasGet); e != nil {
+			return nil, e
+		}
+
+		indexNames := make([]string, 0)
+		for k, _ := range aliasGet {
+			indexNames = append(indexNames, k)
+		}
+
+		return &AliasStatus{
+			Name:    c.Index,
+			Indexes: indexNames,
+		}, nil
+
 	}
 }
 

@@ -179,12 +179,13 @@ var reindexPublicationCmd = &cobra.Command{
 	Short: "Reindex publications (and switch alias)",
 	Run: func(cmd *cobra.Command, args []string) {
 
-		var t time.Time
+		var startTime time.Time
+		var endTime time.Time
 		search := Services().PublicationSearchService
 		repo := Services().Repository
 
 		if seedIndex {
-			t = time.Time{}
+			startTime = time.Time{}
 		} else {
 			hits, hitsErr := search.Search(&models.SearchArgs{
 				Query:    "",
@@ -198,9 +199,9 @@ var reindexPublicationCmd = &cobra.Command{
 				os.Exit(1)
 			}
 			if len(hits.Hits) == 0 {
-				t = time.Time{}
+				startTime = time.Time{}
 			} else {
-				t = (*hits.Hits[0].DateFrom).Add(-time.Hour * 1)
+				startTime = (*hits.Hits[0].DateFrom).Add(-time.Hour * 1)
 			}
 		}
 
@@ -210,7 +211,14 @@ var reindexPublicationCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		//index publications we've missed
+		endTime = time.Now()
+
+		/*
+			index publications we've missed,
+			but do not add documents that are now
+			added to this live index (for which endTime is needed)
+			as we may have outdated data (again)
+		*/
 		var indexWG sync.WaitGroup
 		indexC := make(chan *models.Publication)
 
@@ -220,13 +228,17 @@ var reindexPublicationCmd = &cobra.Command{
 			search.IndexMultiple(indexC)
 		}()
 
-		sql := `SELECT * FROM publications WHERE date_until IS NULL AND date_from >= $1`
-		dateFrom := t.Format("2006-01-02 15:04:05-07")
+		pgDateFormat := "2006-01-02 15:04:05-07"
+		sql := `SELECT * FROM publications WHERE date_until IS NULL AND date_from >= $1 AND date_from <= $2`
+		dateFrom := startTime.Format(pgDateFormat)
+		dateTo := endTime.Format(pgDateFormat)
+		var countAdded int = 0
 		err := repo.SelectPublications(
 			sql,
-			[]any{dateFrom},
+			[]any{dateFrom, dateTo},
 			func(publication *models.Publication) bool {
 				indexC <- publication
+				countAdded++
 				return true
 			},
 		)
@@ -247,10 +259,11 @@ var reindexDatasetCmd = &cobra.Command{
 		search := Services().DatasetSearchService
 		repo := Services().Repository
 
-		var t time.Time
+		var startTime time.Time
+		var endTime time.Time
 
 		if seedIndex {
-			t = time.Time{}
+			startTime = time.Time{}
 		} else {
 			hits, hitsErr := search.Search(&models.SearchArgs{
 				Query:    "",
@@ -264,9 +277,9 @@ var reindexDatasetCmd = &cobra.Command{
 				os.Exit(1)
 			}
 			if len(hits.Hits) == 0 {
-				t = time.Time{}
+				startTime = time.Time{}
 			} else {
-				t = (*hits.Hits[0].DateFrom).Add(-time.Hour * 1)
+				startTime = (*hits.Hits[0].DateFrom).Add(-time.Hour * 1)
 			}
 		}
 
@@ -275,6 +288,8 @@ var reindexDatasetCmd = &cobra.Command{
 			fmt.Fprintln(os.Stderr, e.Error())
 			os.Exit(1)
 		}
+
+		endTime = time.Now()
 
 		//index publications we've missed
 		var indexWG sync.WaitGroup
@@ -286,11 +301,13 @@ var reindexDatasetCmd = &cobra.Command{
 			search.IndexMultiple(indexC)
 		}()
 
-		sql := `SELECT * FROM datasets WHERE date_until IS NULL AND date_from >= $1`
-		dateFrom := t.Format("2006-01-02 15:04:05-07")
+		pgDateFormat := "2006-01-02 15:04:05-07"
+		sql := `SELECT * FROM datasets WHERE date_until IS NULL AND date_from >= $1 AND date_from <= $2`
+		dateFrom := startTime.Format(pgDateFormat)
+		dateTo := endTime.Format(pgDateFormat)
 		err := repo.SelectDatasets(
 			sql,
-			[]any{dateFrom},
+			[]any{dateFrom, dateTo},
 			func(dataset *models.Dataset) bool {
 				indexC <- dataset
 				return true
