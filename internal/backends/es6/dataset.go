@@ -468,3 +468,7 @@ func (datasets *Datasets) Clone() *Datasets {
 		scopes: newScopes,
 	}
 }
+
+func (datasets *Datasets) NewReindexer() backends.DatasetReindexer {
+	return NewDatasetReindexer(datasets)
+}

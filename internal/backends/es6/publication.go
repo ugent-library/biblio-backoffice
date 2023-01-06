@@ -475,3 +475,7 @@ func (publications *Publications) Clone() *Publications {
 		scopes: newScopes,
 	}
 }
+
+func (publications *Publications) NewReindexer() backends.PublicationReindexer {
+	return NewPublicationReindexer(publications)
+}

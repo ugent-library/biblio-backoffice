@@ -96,6 +96,22 @@ type Repository interface {
 	RemovePublicationDataset(*models.Publication, *models.Dataset, *models.User) error
 }
 
+type Reindexer interface {
+	InitAlias() error
+	RemoveOldIndexes(int) error
+	ListIndexes() ([]map[string]string, error)
+}
+
+type PublicationReindexer interface {
+	Reindexer
+	Reindex(<-chan *models.Publication) error
+}
+
+type DatasetReindexer interface {
+	Reindexer
+	Reindex(<-chan *models.Dataset) error
+}
+
 type DatasetSearchService interface {
 	Search(*models.SearchArgs) (*models.DatasetHits, error)
 	Index(*models.Dataset) error
@@ -104,8 +120,7 @@ type DatasetSearchService interface {
 	WithScope(string, ...string) DatasetSearchService
 	CreateIndex() error
 	DeleteIndex() error
-	Reindex() error
-	Init() error
+	NewReindexer() DatasetReindexer
 }
 
 type PublicationSearchService interface {
@@ -116,8 +131,7 @@ type PublicationSearchService interface {
 	WithScope(string, ...string) PublicationSearchService
 	CreateIndex() error
 	DeleteIndex() error
-	Reindex() error
-	Init() error
+	NewReindexer() PublicationReindexer
 }
 
 type PublicationSearcherService interface {

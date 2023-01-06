@@ -12,19 +12,35 @@ import (
 )
 
 func init() {
-	reindexPublicationCmd.PersistentFlags().BoolVar(&seedIndex, "seed", false, "fully seed from database")
-	reindexDatasetCmd.PersistentFlags().BoolVar(&seedIndex, "seed", false, "fully seed from database")
+	removeOldIndexesDatasetCmd.PersistentFlags().IntVarP(
+		&keepMaxIndexes,
+		"keep",
+		"k",
+		0,
+		"keep number of old indexes (default: 0)",
+	)
+	removeOldIndexesPublicationCmd.PersistentFlags().IntVarP(
+		&keepMaxIndexes,
+		"keep",
+		"k",
+		0,
+		"keep number of old indexes (default: 0)",
+	)
 	indexDatasetCmd.AddCommand(indexDatasetCreateCmd)
 	indexDatasetCmd.AddCommand(indexDatasetDeleteCmd)
 	indexDatasetCmd.AddCommand(indexDatasetAllCmd)
 	indexDatasetCmd.AddCommand(reindexDatasetCmd)
 	indexDatasetCmd.AddCommand(initAliasDatasetCmd)
+	indexDatasetCmd.AddCommand(removeOldIndexesDatasetCmd)
+	indexDatasetCmd.AddCommand(listOldIndexesDatasetCmd)
 	indexCmd.AddCommand(indexDatasetCmd)
 	indexPublicationCmd.AddCommand(indexPublicationCreateCmd)
 	indexPublicationCmd.AddCommand(indexPublicationDeleteCmd)
 	indexPublicationCmd.AddCommand(indexPublicationAllCmd)
 	indexPublicationCmd.AddCommand(reindexPublicationCmd)
 	indexPublicationCmd.AddCommand(initAliasPublicationCmd)
+	indexPublicationCmd.AddCommand(removeOldIndexesPublicationCmd)
+	indexPublicationCmd.AddCommand(listOldIndexesPublicationCmd)
 	indexCmd.AddCommand(indexPublicationCmd)
 	rootCmd.AddCommand(indexCmd)
 }
@@ -148,8 +164,8 @@ var initAliasPublicationCmd = &cobra.Command{
 	Use:   "init",
 	Short: "Initialize alias index publications",
 	Run: func(cmd *cobra.Command, args []string) {
-		search := Services().PublicationSearchService
-		if e := search.Init(); e != nil {
+		reindexer := Services().PublicationSearchService.NewReindexer()
+		if e := reindexer.InitAlias(); e != nil {
 			fmt.Fprintln(os.Stderr, e.Error())
 			os.Exit(1)
 		}
@@ -160,94 +176,137 @@ var initAliasDatasetCmd = &cobra.Command{
 	Use:   "init",
 	Short: "Initialize alias index datasets",
 	Run: func(cmd *cobra.Command, args []string) {
-		search := Services().DatasetSearchService
-		if e := search.Init(); e != nil {
+		reindexer := Services().DatasetSearchService.NewReindexer()
+		if e := reindexer.InitAlias(); e != nil {
 			fmt.Fprintln(os.Stderr, e.Error())
 			os.Exit(1)
 		}
 	},
 }
 
-/*
-	--seed: feed entire table back into elasticsearch
-			instead of relying on /_reindex and recent
-			updates only
-*/
-var seedIndex bool = false
 var reindexPublicationCmd = &cobra.Command{
 	Use:   "reindex",
 	Short: "Reindex publications (and switch alias)",
 	Run: func(cmd *cobra.Command, args []string) {
 
-		var startTime time.Time
-		var endTime time.Time
-		search := Services().PublicationSearchService
+		searcher := Services().PublicationSearchService
+		reindexer := searcher.NewReindexer()
 		repo := Services().Repository
 
-		if seedIndex {
-			startTime = time.Time{}
-		} else {
-			hits, hitsErr := search.Search(&models.SearchArgs{
-				Query:    "",
-				Filters:  map[string][]string{},
-				PageSize: 1,
-				Page:     1,
-				Sort:     []string{"date_from:desc"},
-			})
-			if hitsErr != nil {
-				fmt.Fprintf(os.Stderr, "error: %s\n", hitsErr.Error())
+		startTime := time.Now()
+
+		//reindex from source to index, and then set alias
+		{
+			indexC := make(chan *models.Publication)
+			sql := "SELECT * FROM publications WHERE date_until IS NULL"
+
+			var indexWG sync.WaitGroup
+			indexWG.Add(1)
+
+			go func() {
+				defer indexWG.Done()
+				reindexer.Reindex(indexC)
+			}()
+
+			added := 0
+			err := repo.SelectPublications(
+				sql,
+				[]any{},
+				func(publication *models.Publication) bool {
+					indexC <- publication
+					added++
+					return true
+				},
+			)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, err.Error())
 				os.Exit(1)
 			}
-			if len(hits.Hits) == 0 {
-				startTime = time.Time{}
-			} else {
-				startTime = (*hits.Hits[0].DateFrom).Add(-time.Hour * 1)
+			close(indexC)
+			indexWG.Wait()
+
+			fmt.Fprintf(
+				os.Stderr,
+				"added %d docs for sql '%s' to new index\n",
+				added,
+				sql,
+			)
+
+		}
+
+		fmt.Fprintf(os.Stderr, "new index live now\n")
+
+		endTime := time.Now()
+
+		indexFunc := func(sql string, sqlArgs []any) int {
+			added := 0
+
+			indexC := make(chan *models.Publication)
+
+			var indexWG sync.WaitGroup
+			indexWG.Add(1)
+
+			go func() {
+				defer indexWG.Done()
+				searcher.IndexMultiple(indexC)
+			}()
+
+			err := repo.SelectPublications(
+				sql,
+				sqlArgs,
+				func(publication *models.Publication) bool {
+					indexC <- publication
+					added++
+					return true
+				},
+			)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, err.Error())
+				os.Exit(1)
 			}
-		}
+			close(indexC)
+			indexWG.Wait()
 
-		//copy entire index to new one and set alias
-		if e := search.Reindex(); e != nil {
-			fmt.Fprintln(os.Stderr, e.Error())
-			os.Exit(1)
-		}
+			fmt.Fprintf(
+				os.Stderr,
+				"added %d docs for sql '%s' with args %v\n",
+				added,
+				sql,
+				sqlArgs,
+			)
 
-		endTime = time.Now()
+			return added
+		}
 
 		/*
 			index publications we've missed,
 			but do not add documents that are now
 			added to this live index (for which endTime is needed)
 			as we may have outdated data (again)
+
+			keep looping until no more additions are left
 		*/
-		var indexWG sync.WaitGroup
-		indexC := make(chan *models.Publication)
+		const pgDateFormat = "2006-01-02 15:04:05-07"
 
-		indexWG.Add(1)
-		go func() {
-			defer indexWG.Done()
-			search.IndexMultiple(indexC)
-		}()
+		for {
+			sql := `SELECT * FROM publications WHERE date_until IS NULL AND date_from >= $1 AND date_from <= $2`
+			sqlArgs := []any{
+				startTime.Format(pgDateFormat),
+				endTime.Format(pgDateFormat),
+			}
 
-		pgDateFormat := "2006-01-02 15:04:05-07"
-		sql := `SELECT * FROM publications WHERE date_until IS NULL AND date_from >= $1 AND date_from <= $2`
-		dateFrom := startTime.Format(pgDateFormat)
-		dateTo := endTime.Format(pgDateFormat)
-		var countAdded int = 0
-		err := repo.SelectPublications(
-			sql,
-			[]any{dateFrom, dateTo},
-			func(publication *models.Publication) bool {
-				indexC <- publication
-				countAdded++
-				return true
-			},
-		)
-		if err != nil {
-			fmt.Fprintln(os.Stderr, err.Error())
-			os.Exit(1)
+			startTime = time.Now()
+			added := indexFunc(
+				sql,
+				sqlArgs,
+			)
+			endTime = time.Now()
+
+			if added <= 0 {
+				break
+			}
 		}
-		close(indexC)
-		indexWG.Wait()
+
 	},
 }
 
@@ -255,70 +314,189 @@ var reindexDatasetCmd = &cobra.Command{
 	Use:   "reindex",
 	Short: "Reindex datasets (and switch alias)",
 	Run: func(cmd *cobra.Command, args []string) {
-
-		search := Services().DatasetSearchService
+		searcher := Services().DatasetSearchService
+		reindexer := searcher.NewReindexer()
 		repo := Services().Repository
 
-		var startTime time.Time
-		var endTime time.Time
+		startTime := time.Now()
 
-		if seedIndex {
-			startTime = time.Time{}
-		} else {
-			hits, hitsErr := search.Search(&models.SearchArgs{
-				Query:    "",
-				Filters:  map[string][]string{},
-				PageSize: 1,
-				Page:     1,
-				Sort:     []string{"date_from:desc"},
-			})
-			if hitsErr != nil {
-				fmt.Fprintf(os.Stderr, "error: %s\n", hitsErr.Error())
+		//reindex from source to index, and then set alias
+		{
+			indexC := make(chan *models.Dataset)
+			sql := "SELECT * FROM datasets WHERE date_until IS NULL"
+
+			var indexWG sync.WaitGroup
+			indexWG.Add(1)
+
+			go func() {
+				defer indexWG.Done()
+				reindexer.Reindex(indexC)
+			}()
+
+			added := 0
+			err := repo.SelectDatasets(
+				sql,
+				[]any{},
+				func(dataset *models.Dataset) bool {
+					indexC <- dataset
+					added++
+					return true
+				},
+			)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, err.Error())
 				os.Exit(1)
 			}
-			if len(hits.Hits) == 0 {
-				startTime = time.Time{}
-			} else {
-				startTime = (*hits.Hits[0].DateFrom).Add(-time.Hour * 1)
-			}
+			close(indexC)
+			indexWG.Wait()
+
+			fmt.Fprintf(
+				os.Stderr,
+				"added %d docs for sql '%s' to new index\n",
+				added,
+				sql,
+			)
+
 		}
 
-		//copy entire index to new one and set alias
-		if e := search.Reindex(); e != nil {
+		fmt.Fprintf(os.Stderr, "new index live now\n")
+
+		endTime := time.Now()
+
+		indexFunc := func(sql string, sqlArgs []any) int {
+			added := 0
+
+			indexC := make(chan *models.Dataset)
+
+			var indexWG sync.WaitGroup
+			indexWG.Add(1)
+
+			go func() {
+				defer indexWG.Done()
+				searcher.IndexMultiple(indexC)
+			}()
+
+			err := repo.SelectDatasets(
+				sql,
+				sqlArgs,
+				func(dataset *models.Dataset) bool {
+					indexC <- dataset
+					added++
+					return true
+				},
+			)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, err.Error())
+				os.Exit(1)
+			}
+			close(indexC)
+			indexWG.Wait()
+
+			fmt.Fprintf(
+				os.Stderr,
+				"added %d docs for sql '%s' with args %v\n",
+				added,
+				sql,
+				sqlArgs,
+			)
+
+			return added
+		}
+
+		/*
+			index datasets we've missed,
+			but do not add documents that are now
+			added to this live index (for which endTime is needed)
+			as we may have outdated data (again)
+
+			keep looping until no more additions are left
+		*/
+		const pgDateFormat = "2006-01-02 15:04:05-07"
+
+		for {
+			sql := `SELECT * FROM datasets WHERE date_until IS NULL AND date_from >= $1 AND date_from <= $2`
+			sqlArgs := []any{
+				startTime.Format(pgDateFormat),
+				endTime.Format(pgDateFormat),
+			}
+
+			startTime = time.Now()
+			added := indexFunc(
+				sql,
+				sqlArgs,
+			)
+			endTime = time.Now()
+
+			if added <= 0 {
+				break
+			}
+		}
+	},
+}
+
+var keepMaxIndexes int = 0
+var removeOldIndexesDatasetCmd = &cobra.Command{
+	Use:   "remove-old-indexes",
+	Short: "Remove old dataset indexes",
+	Run: func(cmd *cobra.Command, args []string) {
+		reindexer := Services().DatasetSearchService.NewReindexer()
+		reindexer.RemoveOldIndexes(keepMaxIndexes)
+	},
+}
+
+var listOldIndexesDatasetCmd = &cobra.Command{
+	Use:   "indexes",
+	Short: "List dataset indexes",
+	Run: func(cmd *cobra.Command, args []string) {
+		reindexer := Services().DatasetSearchService.NewReindexer()
+		indexes, e := reindexer.ListIndexes()
+		if e != nil {
 			fmt.Fprintln(os.Stderr, e.Error())
 			os.Exit(1)
 		}
+		for _, idx := range indexes {
+			active := "inactive"
+			if idx["active"] == "true" {
+				active = "active"
+			}
+			fmt.Printf(
+				"%s %s\n",
+				active,
+				idx["index"],
+			)
+		}
+	},
+}
 
-		endTime = time.Now()
+var removeOldIndexesPublicationCmd = &cobra.Command{
+	Use:   "remove-old-indexes",
+	Short: "Removes old publication indexes",
+	Run: func(cmd *cobra.Command, args []string) {
+		reindexer := Services().PublicationSearchService.NewReindexer()
+		reindexer.RemoveOldIndexes(keepMaxIndexes)
+	},
+}
 
-		//index publications we've missed
-		var indexWG sync.WaitGroup
-		indexC := make(chan *models.Dataset)
-
-		indexWG.Add(1)
-		go func() {
-			defer indexWG.Done()
-			search.IndexMultiple(indexC)
-		}()
-
-		pgDateFormat := "2006-01-02 15:04:05-07"
-		sql := `SELECT * FROM datasets WHERE date_until IS NULL AND date_from >= $1 AND date_from <= $2`
-		dateFrom := startTime.Format(pgDateFormat)
-		dateTo := endTime.Format(pgDateFormat)
-		err := repo.SelectDatasets(
-			sql,
-			[]any{dateFrom, dateTo},
-			func(dataset *models.Dataset) bool {
-				indexC <- dataset
-				return true
-			},
-		)
-		if err != nil {
-			fmt.Fprintln(os.Stderr, err.Error())
+var listOldIndexesPublicationCmd = &cobra.Command{
+	Use:   "indexes",
+	Short: "List publication indexes",
+	Run: func(cmd *cobra.Command, args []string) {
+		reindexer := Services().PublicationSearchService.NewReindexer()
+		indexes, e := reindexer.ListIndexes()
+		if e != nil {
+			fmt.Fprintln(os.Stderr, e.Error())
 			os.Exit(1)
 		}
-
-		close(indexC)
-		indexWG.Wait()
+		for _, idx := range indexes {
+			active := "inactive"
+			if idx["active"] == "true" {
+				active = "active"
+			}
+			fmt.Printf(
+				"%s %s\n",
+				active,
+				idx["index"],
+			)
+		}
 	},
 }
