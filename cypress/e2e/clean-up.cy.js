@@ -9,7 +9,12 @@ describe('Clean-up', { redirectionLimit: PAGE_SIZE }, () => {
     deleteFirstPublication()
 
     function deleteFirstPublication() {
-      cy.visit(`/publication?q=&f[scope]=created&f[status]=private&page-size=${PAGE_SIZE}`).then(() => {
+      cy.visit('/publication', {
+        qs: {
+          'f[scope]': 'created',
+          'page-size': PAGE_SIZE,
+        },
+      }).then(() => {
         // Make sure the button exists, otherwise test will fail when directly calling cy.get(selector)
         const $deleteButton = Cypress.$(selector)
 
