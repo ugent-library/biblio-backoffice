@@ -30,6 +30,16 @@ var facetDefinitions = map[string]facetDefinition{
 			},
 		},
 	},
+	"wos_type": {
+		config: M{
+			"terms": M{
+				"field":         "facet_wos_type",
+				"order":         M{"_key": "asc"},
+				"size":          999,
+				"min_doc_count": 0,
+			},
+		},
+	},
 }
 
 // TODO remove this when all facets have a static definition above
