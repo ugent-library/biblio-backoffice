@@ -1,5 +1,19 @@
 const NO_LOG = { log: false }
 
+declare namespace Cypress {
+  interface Chainable {
+    login(username: string, password: string): Chainable<void>
+
+    loginAsResearcher(): Chainable<void>
+
+    loginAsLibrarian(): Chainable<void>
+
+    ensureModal(expectedTitle: string, strict?: boolean): Chainable<JQuery<HTMLElement>>
+
+    ensureNoModal(): Chainable<void>
+  }
+}
+
 Cypress.Commands.addAll({
   login(username, password) {
     // WARNING: Whenever you change the code of the session setup, Cypress will throw an error:

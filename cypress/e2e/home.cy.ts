@@ -39,7 +39,7 @@ describe('The home page', () => {
     cy.url().should('contain', 'liblogin.ugent.be')
   })
 
-  it('should be able to logon as reasearcher', () => {
+  it('should be able to logon as researcher', () => {
     cy.loginAsResearcher()
 
     cy.visit('/')
