@@ -2,7 +2,13 @@ const PAGE_SIZE = 500
 
 describe('Clean-up', { redirectionLimit: PAGE_SIZE }, () => {
   it('clean up publications', () => {
-    cy.loginAsResearcher()
+    cy.loginAsLibrarian()
+
+    cy.intercept('PUT', '/role/curator').as('curator')
+    cy.visit('/')
+    cy.contains('Researcher').click()
+    cy.contains('Librarian').click()
+    cy.wait('@curator')
 
     const selector = 'button.dropdown-item[hx-get*="/confirm-delete"]:first'
 
@@ -11,7 +17,7 @@ describe('Clean-up', { redirectionLimit: PAGE_SIZE }, () => {
     function deleteFirstPublication() {
       cy.visit('/publication', {
         qs: {
-          'f[scope]': 'created',
+          q: 'CYPRESSTEST',
           'page-size': PAGE_SIZE,
         },
       }).then(() => {
@@ -37,7 +43,7 @@ describe('Clean-up', { redirectionLimit: PAGE_SIZE }, () => {
           //   Force is necessary because button is invisible at this point
           cy.get('@confirmDelete').click({ force: true })
 
-          cy.contains('.modal-dialog button', 'Delete')
+          cy.contains('.modal-dialog .btn', 'Delete')
             .click()
             .then(() => {
               cy.wait('@deleteRoute')
@@ -45,6 +51,11 @@ describe('Clean-up', { redirectionLimit: PAGE_SIZE }, () => {
               // Recursive call to delete other publications
               deleteFirstPublication()
             })
+        } else {
+          cy.get('.card-header')
+            .should('be.visible')
+            .should('contain.text', 'Publications')
+            .should('contain.text', 'Showing 0')
         }
       })
     }
