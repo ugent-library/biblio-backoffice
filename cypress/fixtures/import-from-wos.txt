@@ -1,0 +1,263 @@
+﻿FN Clarivate Analytics Web of Science
+VR 1.0
+PT J
+AU Tuytschaever, T
+   Jacxsens, L
+   De Boeck, E
+   Uyttendaele, M
+AF Tuytschaever, Tessa
+   Jacxsens, Liesbeth
+   De Boeck, Elien
+   Uyttendaele, Mieke
+TI Microbiological characteristics and applied preservation method of novel
+   ready-to-eat vegetarian spreads and dips [CYPRESSTEST]
+SO FOOD CONTROL
+LA English
+DT Article
+DE Vegetarian ready -to -eat foods; Foods of non -animal origin;
+   Microbiological quality; Additives; Clean label
+ID PROCESSED VEGETABLE SALADS; SHELF-LIFE; PRONOUNCE; EXTENSION; CONSUMERS;
+   DIFFICULT; BEHAVIOR; AVOCADO; STORAGE; FOODS
+AB A range of spreads and dips as novel vegetarian ready-to-eat foods are being introduced on the (European) retail market to response to an increasing number of vegetarian'/flexitarian' consumers and the shift towards plantbased foods consumption. This innovative food group was explored by a product survey (n = 369) in Belgium. The spreads and dips were classified on the presence of main ingredients, the applied preservation mode, the remaining shelf-life period, and the presence of additives. The majority of the products have soybeans or other seeds as the main ingredient, are containing preservatives (e.g. potassium sorbate; E202) and organic acids/acid regulators (e.g. lactic acid; E270 and citric acid; E330) as additives. 45% of the products were marketed under the organic label and 36% of them were indicated as so-called 'clean label'. From a selection (78 refrigerated and 23 ambient stored products), the physicochemical characteristics (i.e. pH, water activity, and headspace gas composition) were determined as well as the microbiological quality, hygiene, and safety at the moment of purchase and the end of the indicated shelf-life. The analyzed microbiological quality indicators for refrigerated samples demonstrated a psychrotrophic total plate count range of 1.0-9.4 log CFU/g, psychrotrophic lactic acid bacteria range of 1.0-8.8 log CFU/g, yeast and fungi range of 2.0-9.5 log CFU/g and sulfite reducing Clostridia range of 1.0-3.7 log CFU/g. E. coli and coliforms were analyzed as hygiene indicators and solely coliforms were detected on three samples with a maximum count of 3.6 log CFU/g. Listeria monocytogenes was not detected in 10g. Bacillus cereus never exceeded 3.5 log CFU/g. For the ambient stored samples, mesophilic total plate count, mesophilic lactic acid bacteria, yeast and fungi, sulfite reducing Clostridia, B. cereus, B. cereus spores, aerobic spores, and anaerobic spores were determined. Most of the products showed cell counts below the limit of detection (= 1.0 log CFU/g). Only products based on chickpeas, sesame seeds, and other seeds showed cell counts for mesophilic total plate count and aerobic plate count ranging respectively from 1.0 to 4.3 log CFU/g and 1.0 to 5.1 log CFU/g. The research gives insight into the variable microbiological composition and multiple applied preservation modes of this innovative food group of ready-to-eat vegetarian dips and spreads.
+C1 [Tuytschaever, Tessa; Jacxsens, Liesbeth; De Boeck, Elien; Uyttendaele, Mieke] Univ Ghent, Fac Biosci Engn, Dept Food Technol Safety & Hlth, Lab Food Microbiol & Food Preservat LFMFP, Ghent, Belgium.
+   [Tuytschaever, Tessa] Sint Martens Latemlaan 2B, B-8500 Kortrijk, Belgium.
+C3 Ghent University
+RP Tuytschaever, T (corresponding author), Sint Martens Latemlaan 2B, B-8500 Kortrijk, Belgium.
+EM tessa.tuytschaever@ugent.be
+NR 46
+TC 0
+Z9 0
+U1 10
+U2 10
+PU ELSEVIER SCI LTD
+PI OXFORD
+PA THE BOULEVARD, LANGFORD LANE, KIDLINGTON, OXFORD OX5 1GB, OXON, ENGLAND
+SN 0956-7135
+EI 1873-7129
+J9 FOOD CONTROL
+JI Food Control
+PD JAN
+PY 2023
+VL 143
+AR 109313
+DI 10.1016/j.foodcont.2022.109313
+PG 10
+WC Food Science & Technology
+WE Science Citation Index Expanded (SCI-EXPANDED)
+SC Food Science & Technology
+GA 5A9DX
+UT WOS:000863180800005
+DA 2022-12-12
+ER
+
+PT J
+AU Van Winckel, T
+   Ngo, N
+   Sturm, B
+   Al-Omari, A
+   Wett, B
+   Bott, C
+   Vlaeminck, SE
+   De Clippeleir, H
+AF Van Winckel, Tim
+   Ngo, Nam
+   Sturm, Belinda
+   Al-Omari, Ahmed
+   Wett, Bernhard
+   Bott, Charles
+   Vlaeminck, Siegfried E.
+   De Clippeleir, Haydee
+TI Enhancing bioflocculation in high-rate activated sludge improves
+   effluent quality yet increases sensitivity to surface overflow rate [CYPRESSTEST]
+SO CHEMOSPHERE
+LA English
+DT Article
+DE A -stage; Floc formation; Sewage; Settling; Wastewater
+ID RATE CONTACT-STABILIZATION; EXTRACELLULAR POLYMERIC SUBSTANCES;
+   WASTE-WATER TREATMENT; SUSPENDED-SOLIDS; A-STAGE; CARBON; FLOCCULATION;
+   STRENGTH; GRANULATION; TECHNOLOGY
+AB High-rate activated sludge (HRAS) relies on good bioflocculation and subsequent solid-liquid separation to maximize the capture of organics. However, full-scale applications often suffer from poor and unpredictable effluent suspended solids (ESS). While the biological aspects of bioflocculation are thoroughly investigated, the effects of fines (settling velocity < 0.6 m3/m2/h), shear and surface overflow rate (SOR) are unclear. This work tackled the impact of fines, shear, and SOR on the ESS in absence of settleable influent solids. This was assessed on a full-scale HRAS step-feed (SF) and pilot-scale HRAS contact-stabilization (CS) configuration using batch settling tests, controlled clarifier experiments, and continuous operation of reactors. Fines contributed up to 25% of the ESS in the full-scale SF configuration. ESS decreased up to 30 mg TSS/L when bioflocculation was enhanced with the CS configuration. The feast-famine regime applied in CS promoted the production of highquality extracellular polymeric substances (EPS). However, this resulted in a narrow and unfavorable settling velocity distribution, with 50% +/- 5% of the sludge mass settling between 0.6 and 1.5 m3/m2/h, thus increasing sensitivity towards SOR changes. A low shear environment (20 s-1) before the clarifier for at least one min was enough to ensure the best possible settling velocity distribution, regardless of prior shear conditions. Overall, this paper provides a more complete view on the drivers of ESS in HRAS systems, creating the foundation for the design of effective HRAS clarifiers. Tangible recommendations are given on how to manage fines and establish the optimal settling velocity of the sludge.
+C1 [Van Winckel, Tim] Univ Ghent, Fac Biosci Engn, Ctr Microbial Ecol & Technol CMET, B-9000 Ghent, Belgium.
+   [Van Winckel, Tim; Ngo, Nam; Al-Omari, Ahmed] Dist Columbia Water & Sewer Author, Blue Plains Adv Wastewater Treatment Plant, 5000 Overlook Ave,SW, Washington, DC 20032 USA.
+   [Van Winckel, Tim; Sturm, Belinda] Univ Kansas, Dept Civil Environm & Architectural Engn, Lawrence, KS USA.
+   [Ngo, Nam] Catholic Univ Amer, Dept Civil & Environm Engn, Washington, DC USA.
+   [Wett, Bernhard] ARA Consult GmbH, Innsbruck, Austria.
+   [Bott, Charles] Hampton Rd Sanitat Dist, Virginia Beach, VA USA.
+   [Vlaeminck, Siegfried E.] Univ Antwerp, Dept Biosci Engn, Res Grp Sustainable Energy, Air & Water Technol, B-2020 Antwerp, Belgium.
+C3 Ghent University; University of Kansas; Catholic University of America;
+   University of Antwerp
+RP Vlaeminck, SE (corresponding author), Univ Antwerp, Dept Biosci Engn, Res Grp Sustainable Energy, Air & Water Technol, B-2020 Antwerp, Belgium.
+EM siegfried.vlaeminck@uantwerpen.be
+OI Wett, Bernhard/0000-0001-9489-337X
+FU Water Research Foundation; National Science Foundation GOALI;  [U1R14]; 
+   [1512667]
+FX This work was supported by the Water Research Foundation [grant number
+   U1R14] and the National Science Foundation GOALI [grant number 1512667]
+   .
+NR 53
+TC 0
+Z9 0
+U1 17
+U2 17
+PU PERGAMON-ELSEVIER SCIENCE LTD
+PI OXFORD
+PA THE BOULEVARD, LANGFORD LANE, KIDLINGTON, OXFORD OX5 1GB, ENGLAND
+SN 0045-6535
+EI 1879-1298
+J9 CHEMOSPHERE
+JI Chemosphere
+PD DEC
+PY 2022
+VL 308
+AR 136294
+DI 10.1016/j.chemosphere.2022.136294
+PN 2
+PG 11
+WC Environmental Sciences
+WE Science Citation Index Expanded (SCI-EXPANDED)
+SC Environmental Sciences & Ecology
+GA 5C0TC
+UT WOS:000863979600006
+PM 36084824
+OA Green Published
+DA 2022-12-12
+ER
+
+PT J
+AU Claerbout, J
+   Van Poucke, K
+   Mestdagh, H
+   Delaere, I
+   Vandevelde, I
+   Venneman, S
+   Decombel, A
+   Bleyaert, P
+   Neukermans, J
+   Viaene, N
+   Heungens, K
+   Hofte, M
+AF Claerbout, Jolien
+   Van Poucke, Kris
+   Mestdagh, Hanna
+   Delaere, Ilse
+   Vandevelde, Isabel
+   Venneman, Sofie
+   Decombel, An
+   Bleyaert, Peter
+   Neukermans, Jenny
+   Viaene, Nicole
+   Heungens, Kurt
+   Hofte, Monica
+TI Fusarium isolates from Belgium causing wilt in lettuce show genetic and
+   pathogenic diversity [CYPRESSTEST]
+SO PLANT PATHOLOGY
+LA English
+DT Article; Early Access
+DE Fusarium wilt; genotyping-by-sequencing; glasshouse; inoculation method;
+   soil-grown lettuce
+ID F-SP LACTUCAE; IDENTIFICATION; SEVERITY; RACE-1
+AB Fusarium oxysporum f. sp. lactucae race 4 causes vascular necrosis and wilting of lettuce. First observed in Belgium in 2015, the lack of disease resistance in commercial cultivars allowed this pathogen to spread to nearly the entire Belgian production area within 4 years. Different levels of disease development were observed in different commercial greenhouses. To help explain this variation, we collected 78 Fusarium isolates and characterized them both physiologically and genetically. Molecular race identification indicated that 91% of the isolates belonged to race 4, while 6% of the isolates belonged to race 1, which was not previously reported in Belgium. Pathogenicity assays using differential cultivars confirmed the molecular race assignment of selected isolates. Cultivar Patriot was identified as a suitable new differential cultivar to race 4. Race 4 isolates were more aggressive than race 1 isolates at 24 degrees C, but only when using chlamydospore inoculum instead of a root dip assay containing microconidia. Variation in pathogenicity and aggressiveness of the races may explain differences in disease development in commercial greenhouses. Based on genotyping-by-sequencing (GBS), race 1 and race 4 isolates were highly similar to reference isolates. Fusarium curvatum, F. oxysporum f. sp. tulipae and F. oxysporum f. sp. rhois were phylogenetically separated from F. oxysporum f. sp. lactucae races 1 and 4 based on the GBS data, but not when using multilocus sequence data. Within F. oxysporum f. sp. lactucae race 4, the GBS data differentiated two rather homogeneous groups, suggesting at least two introductions. However, the two groups did not differ in aggressiveness.
+C1 [Claerbout, Jolien; Mestdagh, Hanna; Delaere, Ilse; Hofte, Monica] Univ Ghent, Fac Biosci Engn, Dept Plants & Crops, Lab Phytopathol, Coupure Links 653, B-9000 Ghent, Belgium.
+   [Claerbout, Jolien; Van Poucke, Kris; Mestdagh, Hanna; Viaene, Nicole; Heungens, Kurt] ILVO Flanders Res Inst Agr Fisheries & Food, Plant Sci Unit, Merelbeke, Belgium.
+   [Claerbout, Jolien; Decombel, An; Bleyaert, Peter] Inagro Vzw, Ieperseweg 87, B-8800 Rumbeke Beitem, Belgium.
+   [Vandevelde, Isabel; Venneman, Sofie] PSKW Res Ctr Vegetable Prod, St Katelijne Waver, Belgium.
+   [Neukermans, Jenny] PCG Provinciaal Proefctr Groenteteelt Oost Vlaand, Kruishoutem, Belgium.
+   [Viaene, Nicole] Univ Ghent, Fac Sci, Ghent, Belgium.
+   [Neukermans, Jenny] KULeuven, Dept Crop Biotech, Willem Croylaan 42 Box 2427, B-3001 Leuven, Belgium.
+C3 Ghent University; Institute For Agricultural & Fisheries Research; Ghent
+   University; KU Leuven
+RP Hofte, M (corresponding author), Univ Ghent, Fac Biosci Engn, Dept Plants & Crops, Lab Phytopathol, Coupure Links 653, B-9000 Ghent, Belgium.
+EM monica.hofte@ugent.be
+FU Flanders Innovation & Entrepeneurship (VLAIO) [140984, HBC.2018.2200]
+FX We are grateful to Rijk Zwaan (Netherlands) for providing the Japanese
+   race 1 isolate and the lettuce seeds for most plant experiments. We also
+   thank Bejo Zaden (Netherlands) for providing the lettuce seeds of the
+   cultivar Romana Romabella 30 CN. We thank Fran Focquet, Beatrice
+   Moeneclaey, Ramize Xhaferi, Shirley Marcou and Nadia Lemeire for their
+   technical assistance, Paul Quataert for statistical advice and Miriam
+   Levenson for English language editing. This research was funded by grant
+   no. 140984 and HBC.2018.2200 from the Flanders Innovation &
+   Entrepeneurship (VLAIO).
+NR 33
+TC 0
+Z9 0
+U1 2
+U2 2
+PU WILEY
+PI HOBOKEN
+PA 111 RIVER ST, HOBOKEN 07030-5774, NJ USA
+SN 0032-0862
+EI 1365-3059
+J9 PLANT PATHOL
+JI Plant Pathol.
+DI 10.1111/ppa.13668
+EA NOV 2022
+PG 17
+WC Agronomy; Plant Sciences
+WE Science Citation Index Expanded (SCI-EXPANDED)
+SC Agriculture; Plant Sciences
+GA 6F9CB
+UT WOS:000884355800001
+DA 2022-12-12
+ER
+
+PT J
+AU Matassa, S
+   Boeckx, P
+   Boere, J
+   Erisman, JW
+   Guo, M
+   Manzo, R
+   Meerburg, F
+   Papirio, S
+   Pikaar, I
+   Rabaey, K
+   Rousseau, D
+   Schnoor, J
+   Smith, P
+   Smolders, E
+   Wuertz, S
+   Verstraete, W
+AF Matassa, Silvio
+   Boeckx, Pascal
+   Boere, Jos
+   Erisman, Jan Willem
+   Guo, Miao
+   Manzo, Raffaele
+   Meerburg, Francis
+   Papirio, Stefano
+   Pikaar, Ilje
+   Rabaey, Korneel
+   Rousseau, Diederik
+   Schnoor, Jerald
+   Smith, Peter
+   Smolders, Erik
+   Wuertz, Stefan
+   Verstraete, Willy
+TI How can we possibly resolve the planet's nitrogen dilemma? [CYPRESSTEST]
+SO MICROBIAL BIOTECHNOLOGY
+LA English
+DT Editorial Material; Early Access
+ID WATER; ASSIMILATION; MICROALGAL; EMISSIONS; FIXATION; CARBON; ROUTE
+AB Nitrogen is the most crucial element in the production of nutritious feeds and foods. The production of reactive nitrogen by means of fossil fuel has thus far been able to guarantee the protein supply for the world population. Yet, the production and massive use of fertilizer nitrogen constitute a major threat in terms of environmental health and sustainability. It is crucial to promote consumer acceptance and awareness towards proteins produced by highly effective microorganisms, and their potential to replace proteins obtained with poor nitrogen efficiencies from plants and animals. The fact that reactive fertilizer nitrogen, produced by the Haber Bosch process, consumes a significant amount of fossil fuel worldwide is of concern. Moreover, recently, the prices of fossil fuels have increased the cost of reactive nitrogen by a factor of 3 to 5 times, while international policies are fostering the transition towards a more sustainable agro-ecology by reducing mineral fertilizers inputs and increasing organic farming. The combination of these pressures and challenges opens opportunities to use the reactive nitrogen nutrient more carefully. Time has come to effectively recover used nitrogen from secondary resources and to upgrade it to a legal status of fertilizer. Organic nitrogen is a slow-release fertilizer, it has a factor of 2.5 or higher economic value per unit nitrogen as fertilizer and thus adequate technologies to produce it, for instance by implementing photobiological processes, are promising. Finally, it appears wise to start the integration in our overall feed and food supply chains of the exceptional potential of biological nitrogen fixation. Nitrogen produced by the nitrogenase enzyme, either in the soil or in novel biotechnology reactor systems, deserves to have a 'renaissance' in the context of planetary governance in general and the increasing number of people who desire to be fed in a sustainable way in particular.
+C1 [Matassa, Silvio; Manzo, Raffaele; Papirio, Stefano] Univ Naples Federico II, Dept Civil Architectural & Environm Engn, Naples, Italy.
+   [Boeckx, Pascal; Rousseau, Diederik] Univ Ghent, Fac Biosci Engn, Dept Green Chem & Technol, Ghent, Belgium.
+   [Boere, Jos] Allied Waters BV, Nieuwegein, Netherlands.
+   [Erisman, Jan Willem] Leiden Univ, Inst Environm Sci, Leiden, Netherlands.
+   [Guo, Miao] Kings Coll London, Fac Nat Math & Engn Sci, Dept Engn, London, England.
+   [Meerburg, Francis] Aquafin NV, Aartselaar, Belgium.
+   [Pikaar, Ilje] Univ Queensland, Sch Civil Engn, Brisbane, Qld, Australia.
+   [Rabaey, Korneel; Verstraete, Willy] Univ Ghent, Fac Biosci Engn, Ctr Microbial Ecol & Technol, Ghent, Belgium.
+   [Schnoor, Jerald] Univ Iowa, Dept Civil & Environm Engn, Iowa City, IA USA.
+   [Smith, Peter] Univ Aberdeen, Inst Biol & Environm Sci, Aberdeen, Scotland.
+   [Smolders, Erik] Katholieke Univ Leuven, Div Soil & Water Management, Leuven, Belgium.
+   [Wuertz, Stefan] Nanyang Technol Univ, Singapore Ctr Environm Life Sci Engn, Singapore, Singapore.
+   [Wuertz, Stefan] Nanyang Technol Univ, Sch Civil & Environm Engn, Singapore, Singapore.
+C3 University of Naples Federico II; Ghent University; Leiden University;
+   Leiden University - Excl LUMC; University of London; King's College
+   London; Aquafin; University of Queensland; Ghent University; University
+   of Iowa; University of Aberdeen; KU Leuven; Nanyang Technological
+   University & National Institute of Education (NIE) Singapore; Nanyang
+   Technological University; Nanyang Technological University & National
+   Institute of Education (NIE) Singapore; Nanyang Technological University
+RP Matassa, S (corre
