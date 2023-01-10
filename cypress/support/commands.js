@@ -1,3 +1,5 @@
+const NO_LOG = { log: false }
+
 Cypress.Commands.addAll({
   login(username, password) {
     // WARNING: Whenever you change the code of the session setup, Cypress will throw an error:
@@ -8,10 +10,12 @@ Cypress.Commands.addAll({
     // Temporarily uncomment the following line to clear the sessions if this happens
     // Cypress.session.clearAllSavedSessions()
 
+    logCommand('login', { username }, username)
+
     cy.session(
       username,
       () => {
-        cy.request('/login')
+        cy.request('/login', NO_LOG)
           .then(response => {
             const action = response.body.match(/action\=\"(.*)\" /)[1]
 
@@ -49,4 +53,45 @@ Cypress.Commands.addAll({
   loginAsLibrarian() {
     cy.login(Cypress.env('LIBRARIAN_USER_NAME'), Cypress.env('LIBRARIAN_USER_PASSWORD'))
   },
+
+  ensureModal(expectedTitle, strict = true) {
+    logCommand('ensureModal', { expectedTitle, strict }, expectedTitle)
+
+    cy.get('#modals', NO_LOG)
+      .should('not.be.empty', NO_LOG)
+
+      .within(NO_LOG, () => {
+        // Assertion "be.visible" doesn't work here because it is behind the dialog
+        cy.get('#modal-backdrop', NO_LOG).should('have.class', 'show')
+
+        cy.get('#modal', NO_LOG)
+          .should('be.visible')
+          .within(NO_LOG, () => {
+            cy.get('.modal-title', NO_LOG).should(strict ? 'have.text' : 'contain.text', expectedTitle)
+          })
+      })
+
+    // Yield the #modal dialog element
+    cy.get('#modal .modal-dialog', NO_LOG)
+  },
+
+  ensureNoModal() {
+    logCommand('ensureNoModal')
+
+    cy.get('#modals', NO_LOG).children(NO_LOG).should('have.length', 0)
+
+    cy.get('#modal-backdrop, #modal', NO_LOG).should('not.exist')
+  },
 })
+
+function logCommand(name, consoleProps = {}, message = '') {
+  return Cypress.log({
+    name,
+    displayName: name
+      .replace(/([A-Z])/g, ' $1')
+      .trim()
+      .toUpperCase(),
+    message,
+    consoleProps: () => consoleProps,
+  })
+}
