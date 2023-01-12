@@ -6,7 +6,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/render/display"
 )
 
-func PublicationAdditionalInfo(l *locale.Locale, p *models.Publication) *display.Display {
+func PublicationAdditionalInfo(user *models.User, l *locale.Locale, p *models.Publication) *display.Display {
 	return display.New().
 		WithTheme("default").
 		AddSection(

@@ -85,7 +85,7 @@ func (h *Handler) UpdateAdditionalInfo(w http.ResponseWriter, r *http.Request, c
 
 	render.View(w, "publication/refresh_additional_info", YieldAdditionalInfo{
 		Context:               ctx,
-		DisplayAdditionalInfo: displays.PublicationAdditionalInfo(ctx.Locale, p),
+		DisplayAdditionalInfo: displays.PublicationAdditionalInfo(ctx.User, ctx.Locale, p),
 	})
 }
 

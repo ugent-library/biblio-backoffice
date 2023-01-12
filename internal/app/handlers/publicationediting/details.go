@@ -162,6 +162,6 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 
 	render.View(w, "publication/refresh_details", YieldDetails{
 		Context:        ctx,
-		DisplayDetails: displays.PublicationDetails(ctx.Locale, ctx.Publication),
+		DisplayDetails: displays.PublicationDetails(ctx.User, ctx.Locale, ctx.Publication),
 	})
 }

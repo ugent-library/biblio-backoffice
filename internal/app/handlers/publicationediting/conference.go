@@ -88,7 +88,7 @@ func (h *Handler) UpdateConference(w http.ResponseWriter, r *http.Request, ctx C
 
 	render.View(w, "publication/refresh_conference", YieldConference{
 		Context:           ctx,
-		DisplayConference: displays.PublicationConference(ctx.Locale, p),
+		DisplayConference: displays.PublicationConference(ctx.User, ctx.Locale, p),
 	})
 }
 

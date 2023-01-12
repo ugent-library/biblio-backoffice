@@ -231,7 +231,7 @@ func (h *Handler) AddSingleImport(w http.ResponseWriter, r *http.Request, ctx Co
 		SubNavs:        []string{"description", "files", "contributors", "datasets"},
 		ActiveSubNav:   subNav,
 		Publication:    p,
-		DisplayDetails: displays.PublicationDetails(ctx.Locale, p),
+		DisplayDetails: displays.PublicationDetails(ctx.User, ctx.Locale, p),
 	})
 }
 
@@ -249,7 +249,7 @@ func (h *Handler) AddSingleDescription(w http.ResponseWriter, r *http.Request, c
 		SubNavs:        []string{"description", "files", "contributors", "datasets"},
 		ActiveSubNav:   subNav,
 		Publication:    ctx.Publication,
-		DisplayDetails: displays.PublicationDetails(ctx.Locale, ctx.Publication),
+		DisplayDetails: displays.PublicationDetails(ctx.User, ctx.Locale, ctx.Publication),
 	})
 }
 

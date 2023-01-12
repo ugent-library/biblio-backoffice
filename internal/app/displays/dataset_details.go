@@ -6,7 +6,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/render/display"
 )
 
-func DatasetDetails(l *locale.Locale, d *models.Dataset) *display.Display {
+func DatasetDetails(user *models.User, l *locale.Locale, d *models.Dataset) *display.Display {
 	return display.New().
 		WithTheme("default").
 		AddSection(

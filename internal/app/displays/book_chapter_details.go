@@ -8,8 +8,8 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/render/display"
 )
 
-func bookChapterDetails(l *locale.Locale, p *models.Publication) *display.Display {
-	return display.New().
+func bookChapterDetails(user *models.User, l *locale.Locale, p *models.Publication) *display.Display {
+	d := display.New().
 		WithTheme("default").
 		AddSection(
 			&display.Text{
@@ -51,8 +51,9 @@ func bookChapterDetails(l *locale.Locale, p *models.Publication) *display.Displa
 				Value: l.TS("publication_publishing_statuses", p.PublicationStatus),
 			},
 			&display.Text{
-				Label: l.T("builder.extern"),
-				Value: helpers.FormatBool(p.Extern, "✓", "-"),
+				Label:         l.T("builder.extern"),
+				Value:         helpers.FormatBool(p.Extern, "true", "false"),
+				ValueTemplate: "format/boolean_string",
 			},
 			&display.Text{
 				Label:    l.T("builder.year"),
@@ -117,4 +118,14 @@ func bookChapterDetails(l *locale.Locale, p *models.Publication) *display.Displa
 				Values: p.EISBN,
 			},
 		)
+
+	if user.CanCurate() {
+		d.Sections[0].Fields = append(d.Sections[0].Fields, &display.Text{
+			Label:         l.T("builder.legacy"),
+			Value:         helpers.FormatBool(p.Legacy, "true", "false"),
+			ValueTemplate: "format/boolean_string",
+		})
+	}
+
+	return d
 }

@@ -74,9 +74,9 @@ func (h *Handler) ShowDescription(w http.ResponseWriter, r *http.Request, ctx Co
 		Context:               ctx,
 		SubNavs:               subNavs,
 		ActiveSubNav:          "description",
-		DisplayDetails:        displays.PublicationDetails(ctx.Locale, ctx.Publication),
-		DisplayConference:     displays.PublicationConference(ctx.Locale, ctx.Publication),
-		DisplayAdditionalInfo: displays.PublicationAdditionalInfo(ctx.Locale, ctx.Publication),
+		DisplayDetails:        displays.PublicationDetails(ctx.User, ctx.Locale, ctx.Publication),
+		DisplayConference:     displays.PublicationConference(ctx.User, ctx.Locale, ctx.Publication),
+		DisplayAdditionalInfo: displays.PublicationAdditionalInfo(ctx.User, ctx.Locale, ctx.Publication),
 	})
 }
 
