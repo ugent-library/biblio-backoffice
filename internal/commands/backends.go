@@ -11,7 +11,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/backends/arxiv"
-	"github.com/ugent-library/biblio-backend/internal/backends/biblio"
+	"github.com/ugent-library/biblio-backend/internal/backends/authority"
 	"github.com/ugent-library/biblio-backend/internal/backends/bibtex"
 	"github.com/ugent-library/biblio-backend/internal/backends/citeproc"
 	"github.com/ugent-library/biblio-backend/internal/backends/crossref"
@@ -48,11 +48,17 @@ func Services() *backends.Services {
 }
 
 func newServices() *backends.Services {
-	biblioClient := biblio.New(biblio.Config{
-		URL:      viper.GetString("frontend-url"),
-		Username: viper.GetString("frontend-username"),
-		Password: viper.GetString("frontend-password"),
+	authorityClient, authorityClientErr := authority.New(authority.Config{
+		MongoDBURI: viper.GetString("mongodb-uri"),
+		ES6Config: es6.Config{
+			ClientConfig: elasticsearch.Config{
+				Addresses: strings.Split(viper.GetString("frontend-es6-url"), ","),
+			},
+		},
 	})
+	if authorityClientErr != nil {
+		panic(authorityClientErr)
+	}
 
 	orcidConfig := orcid.Config{
 		ClientID:     viper.GetString("orcid-client-id"),
@@ -84,14 +90,14 @@ func newServices() *backends.Services {
 		Repository:                newRepository(),
 		DatasetSearchService:      newDatasetSearchService(),
 		PublicationSearchService:  newPublicationSearchService(),
-		OrganizationService:       caching.NewOrganizationService(biblioClient),
-		PersonService:             caching.NewPersonService(biblioClient),
-		ProjectService:            caching.NewProjectService(biblioClient),
-		UserService:               caching.NewUserService(biblioClient),
-		OrganizationSearchService: biblioClient,
-		PersonSearchService:       biblioClient,
-		ProjectSearchService:      biblioClient,
-		UserSearchService:         biblioClient,
+		OrganizationService:       caching.NewOrganizationService(authorityClient),
+		PersonService:             caching.NewPersonService(authorityClient),
+		ProjectService:            caching.NewProjectService(authorityClient),
+		UserService:               caching.NewUserService(authorityClient),
+		OrganizationSearchService: authorityClient,
+		PersonSearchService:       authorityClient,
+		ProjectSearchService:      authorityClient,
+		UserSearchService:         authorityClient,
 		LicenseSearchService:      spdxlicenses.New(),
 		MediaTypeSearchService:    ianamedia.New(),
 		DatasetSources: map[string]backends.DatasetGetter{
