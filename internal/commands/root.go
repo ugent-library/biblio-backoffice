@@ -95,7 +95,7 @@ func init() {
 
 	rootCmd.PersistentFlags().String("citeproc-url", "", "citeproc url")
 
-	rootCmd.PersistentFlags().String("mongodb-uri", "", "mongodb connection uri (for authority database)")
+	rootCmd.PersistentFlags().String("mongodb-url", "", "mongodb connection uri (for authority database)")
 
 	// rootCmd.PersistentFlags().String("imagor-url", "", "imagor url")
 	// rootCmd.PersistentFlags().String("imagor-secret", "", "imagor secret")

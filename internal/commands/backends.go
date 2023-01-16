@@ -49,7 +49,7 @@ func Services() *backends.Services {
 
 func newServices() *backends.Services {
 	authorityClient, authorityClientErr := authority.New(authority.Config{
-		MongoDBURI: viper.GetString("mongodb-uri"),
+		MongoDBURI: viper.GetString("mongodb-url"),
 		ES6Config: es6.Config{
 			ClientConfig: elasticsearch.Config{
 				Addresses: strings.Split(viper.GetString("frontend-es6-url"), ","),

@@ -33,6 +33,7 @@ require (
 	github.com/ugent-library/go-oidc v0.0.0-20210901124208-bda4cc73ba56
 	github.com/ugent-library/go-orcid v0.0.0-20211130191640-1138a344c30b
 	github.com/xuri/excelize/v2 v2.6.1
+	go.mongodb.org/mongo-driver v1.11.1
 	golang.org/x/text v0.4.0
 	google.golang.org/grpc v1.48.0
 	google.golang.org/protobuf v1.28.1
@@ -55,7 +56,6 @@ require (
 	github.com/xuri/efp v0.0.0-20220603152613-6918739fd470 // indirect
 	github.com/xuri/nfp v0.0.0-20220409054826-5e722a1d9e22 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20181117223130-1be2e3e5546d // indirect
-	go.mongodb.org/mongo-driver v1.11.1 // indirect
 	golang.org/x/net v0.1.0 // indirect
 	golang.org/x/sync v0.0.0-20220601150217-0de741cfad7f // indirect
 	gopkg.in/check.v1 v1.0.0-20200902074654-038fdea0a05b // indirect
