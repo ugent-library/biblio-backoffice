@@ -184,6 +184,7 @@ func buildPublicationUserQuery(args *models.SearchArgs) M {
 					"eisbn^50",
 					"issn^50",
 					"eissn^50",
+					"wos_id^50",
 					"title^40",
 					"all",
 					"author.full_name.phrase_ngram^0.05",
