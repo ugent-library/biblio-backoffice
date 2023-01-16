@@ -172,7 +172,7 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 		SubNavs:        []string{"description", "contributors", "publications"},
 		ActiveSubNav:   "description",
 		Dataset:        d,
-		DisplayDetails: displays.DatasetDetails(ctx.Locale, d),
+		DisplayDetails: displays.DatasetDetails(ctx.User, ctx.Locale, d),
 	})
 }
 
@@ -185,7 +185,7 @@ func (h *Handler) AddDescription(w http.ResponseWriter, r *http.Request, ctx Con
 		SubNavs:        []string{"description", "contributors", "publications"},
 		ActiveSubNav:   "description",
 		Dataset:        ctx.Dataset,
-		DisplayDetails: displays.DatasetDetails(ctx.Locale, ctx.Dataset),
+		DisplayDetails: displays.DatasetDetails(ctx.User, ctx.Locale, ctx.Dataset),
 	})
 }
 

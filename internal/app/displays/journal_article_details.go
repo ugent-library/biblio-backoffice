@@ -8,8 +8,8 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/render/display"
 )
 
-func journalArticleDetails(l *locale.Locale, p *models.Publication) *display.Display {
-	return display.New().
+func journalArticleDetails(user *models.User, l *locale.Locale, p *models.Publication) *display.Display {
+	d := display.New().
 		WithTheme("default").
 		AddSection(
 			&display.Text{
@@ -59,8 +59,9 @@ func journalArticleDetails(l *locale.Locale, p *models.Publication) *display.Dis
 				Value: l.TS("publication_publishing_statuses", p.PublicationStatus),
 			},
 			&display.Text{
-				Label: l.T("builder.extern"),
-				Value: helpers.FormatBool(p.Extern, "✓", "-"),
+				Label:         l.T("builder.extern"),
+				Value:         helpers.FormatBool(p.Extern, "true", "false"),
+				ValueTemplate: "format/boolean_string",
 			},
 			&display.Text{
 				Label:    l.T("builder.year"),
@@ -141,4 +142,14 @@ func journalArticleDetails(l *locale.Locale, p *models.Publication) *display.Dis
 				Value: p.ESCIID,
 			},
 		)
+
+	if user.CanCurate() {
+		d.Sections[0].Fields = append(d.Sections[0].Fields, &display.Text{
+			Label:         l.T("builder.legacy"),
+			Value:         helpers.FormatBool(p.Legacy, "true", "false"),
+			ValueTemplate: "format/boolean_string",
+		})
+	}
+
+	return d
 }

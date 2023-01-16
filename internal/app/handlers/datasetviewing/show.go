@@ -68,7 +68,7 @@ func (h *Handler) ShowDescription(w http.ResponseWriter, r *http.Request, ctx Co
 		Context:        ctx,
 		SubNavs:        subNavs,
 		ActiveSubNav:   "description",
-		DisplayDetails: displays.DatasetDetails(ctx.Locale, ctx.Dataset),
+		DisplayDetails: displays.DatasetDetails(ctx.User, ctx.Locale, ctx.Dataset),
 	})
 }
 
