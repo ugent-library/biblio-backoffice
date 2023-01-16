@@ -39,7 +39,7 @@
                             {{else}}*/}}
                             <div class="c-thumbnail c-thumbnail-5-4 mb-6 mb-xl-0 flex-shrink-0">
                                 <div class="c-thumbnail-inner">
-                                    <i class="if if-article"></I>
+                                    <i class="if if-article"></i>
                                 </div>
                             </div>
                             {{/*{{end}}*/}}
@@ -47,42 +47,52 @@
                         <div class="c-thumbnail-text u-min-w-0">
                             <div class="bc-toolbar bc-toolbar--auto">
                                 <div class="bc-toolbar-left">
-                                    {{if eq .AccessLevel "info:eu-repo/semantics/openAccess"}}
-                                    <div class="c-subline text-nowrap mr-3 pr-3 my-2">
-                                        <i class="if if-download if--small if--muted"></I>
-                                        <span class="c-subline text-truncate pl-2">{{$.Locale.TS "publication_file_access_levels" .AccessLevel}}</span>
-                                    </div>
-                                    {{else if eq .AccessLevel "info:eu-repo/semantics/restrictedAccess"}}
-                                    <div class="c-subline text-nowrap mr-3 pr-3 my-2">
-                                        <i class="if if-ghent-university if--small if--muted"></I>
-                                        <span class="c-subline text-truncate pl-2">{{$.Locale.TS "publication_file_access_levels" .AccessLevel}}</span>
-                                    </div>
-                                    {{else if eq .AccessLevel "info:eu-repo/semantics/closedAccess"}}
-                                    <div class="c-subline text-nowrap mr-3 pr-3 my-2">
-                                        <i class="if if-eye-off if--small if--muted"></I>
-                                        <span class="c-subline text-truncate pl-2">{{$.Locale.TS "publication_file_access_levels" .AccessLevel}}</span>
-                                    </div>
-                                    {{else if eq .AccessLevel "info:eu-repo/semantics/embargoedAccess"}}
-                                    <div class="c-subline text-nowrap mr-3 pr-3 my-2 border-right">
-                                        <i class="if if-time if--small"></I>
-                                        <span class="c-subline text-truncate pl-2">{{$.Locale.TS "publication_file_access_levels" .AccessLevel}}</span>
-                                    </div><div class="c-subline text-nowrap mr-3 pr-3 my-2 border-right">
-                                        {{if eq .AccessLevelDuringEmbargo "info:eu-repo/semantics/closedAccess"}}
-                                        <i class="if if-eye-off if--small if--primary"></I>
-                                        {{else}}
-                                        <i class="if if-ghent-university if--small if--primary"></I>
+                                    <div class="c-meta-list c-meta-list-horizontal">
+                                        {{if eq .AccessLevel "info:eu-repo/semantics/openAccess"}}
+                                        <div class="c-meta-item pr-4 mr-4 border-right">
+                                            <i class="if if-download if--small if--muted"></i>
+                                            <span>{{$.Locale.TS "publication_file_access_levels" .AccessLevel}}</span>
+                                        </div>
+                                        {{else if eq .AccessLevel "info:eu-repo/semantics/restrictedAccess"}}
+                                        <div class="c-meta-item pr-4 mr-4 border-right">
+                                            <i class="if if-ghent-university if--small if--muted"></i>
+                                            <span>{{$.Locale.TS "publication_file_access_levels" .AccessLevel}}</span>
+                                        </div>
+                                        {{else if eq .AccessLevel "info:eu-repo/semantics/closedAccess"}}
+                                        <div class="c-meta-item pr-4 mr-4 border-right">
+                                            <i class="if if-eye-off if--small if--muted"></i>
+                                            <span>{{$.Locale.TS "publication_file_access_levels" .AccessLevel}}</span>
+                                        </div>
+                                        {{else if eq .AccessLevel "info:eu-repo/semantics/embargoedAccess"}}
+                                        <div class="c-meta-item pr-4 mr-4 border-right">
+                                            <i class="if if-time if--small"></i>
+                                            <span>{{$.Locale.TS "publication_file_access_levels" .AccessLevel}}</span>
+                                        </div>
+                                        <div class="c-meta-item pr-4 mr-4 border-right">
+                                            {{if eq .AccessLevelDuringEmbargo "info:eu-repo/semantics/closedAccess"}}
+                                            <i class="if if-eye-off if--small if--primary"></i>
+                                            {{else}}
+                                            <i class="if if-ghent-university if--small if--primary"></i>
+                                            {{end}}
+                                            <span>{{$.Locale.TS "publication_file_access_levels_during_embargo" .AccessLevelDuringEmbargo}}</span>
+                                        </div>
+                                        <div class="c-meta-item pr-4 mr-4 border-right">
+                                            {{if eq .AccessLevelAfterEmbargo "info:eu-repo/semantics/openAccess"}}
+                                            <i class="if if-download if--small if--muted"></i>
+                                            {{else}}
+                                            <i class="if if-ghent-university if--small if--muted"></i>
+                                            {{end}}
+                                            <span>{{$.Locale.TS "publication_file_access_levels_after_embargo" .AccessLevelAfterEmbargo}} from {{.EmbargoDate }}</span>
+                                        </div>
                                         {{end}}
-                                        <span class="c-subline text-truncate pl-2">{{$.Locale.TS "publication_file_access_levels_during_embargo" .AccessLevelDuringEmbargo}}</span>
+                                        <div class="c-meta-item pr-4 mr-4">
+                                            {{with .License}}
+                                                <span>{{$.Locale.TS "publication_licenses" .}}</span>
+                                            {{else}}
+                                                <span>{{.OtherLicense}}</span>
+                                            {{end}}
+                                        </div>
                                     </div>
-                                    <div class="c-subline text-nowrap mr-3 pr-3 my-2">
-                                        {{if eq .AccessLevelAfterEmbargo "info:eu-repo/semantics/openAccess"}}
-                                        <i class="if if-download if--small if--muted"></I>
-                                        {{else}}
-                                        <i class="if if-ghent-university if--small if--muted"></I>
-                                        {{end}}
-                                        <span class="c-subline text-truncate pl-2">{{$.Locale.TS "publication_file_access_levels_after_embargo" .AccessLevelAfterEmbargo}} from {{.EmbargoDate }}</span>
-                                    </div>
-                                    {{end}}
                                 </div>
                                 <div class="bc-toolbar-right">
                                     <div class="bc-toolbar-item ml-auto ml-lg-0">
