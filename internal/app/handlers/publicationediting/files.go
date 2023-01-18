@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/nanmu42/limitio"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers"
 	"github.com/ugent-library/biblio-backend/internal/app/localize"
 	"github.com/ugent-library/biblio-backend/internal/bind"
@@ -59,15 +60,48 @@ type YieldDeleteFile struct {
 	File *models.PublicationFile
 }
 
+// max file size in bytes (2G)
+const MaxFileSize = 2000000000
+
 func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context) {
+
+	redirectURL := h.PathFor("publication", "id", ctx.Publication.ID).String() + "?show=files"
+
+	// make sure full request body is read or client will not read the response
+	originalBody := r.Body
+	defer io.Copy(io.Discard, originalBody)
+
+	// naive check on file size
+	if r.ContentLength > MaxFileSize {
+		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
+			Message:     ctx.Locale.T("publication.file_upload_error"),
+			RedirectURL: redirectURL,
+		})
+		return
+	}
+
 	// 2GB limit on request body
-	r.Body = http.MaxBytesReader(w, r.Body, 2000000000)
+	/*
+		this will return an error when reading beyond the maximum file size,
+		which can be during mime type sniffing, or adding the file to the
+		file store
+
+		http.MaxBytesReader closes the connection when payload is too large
+		to stop the request from flooding the server, but that stops
+		the client from reading the response. Result is that the request
+		is resent three times
+
+		cf. https://stackoverflow.com/questions/43777433/go-http-maxbytesreader-resetting-connection
+		cf. https://serverfault.com/questions/888939/http-pipelining-producing-response-before-request-body-has-finished/1120506#1120506
+	*/
+	r.Body = limitio.NewReadCloser(r.Body, MaxFileSize, false)
 
 	file, handler, err := r.FormFile("file")
 	if err != nil {
 		h.Logger.Errorf("publication upload file: could not process file", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Locale.T("publication.file_upload_error"),
+			Message:     ctx.Locale.T("publication.file_upload_error"),
+			RedirectURL: redirectURL,
 		})
 		return
 	}
@@ -79,7 +113,8 @@ func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context
 	if err != nil {
 		h.Logger.Errorf("publication upload file: could not read file", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Locale.T("publication.file_upload_error"),
+			Message:     ctx.Locale.T("publication.file_upload_error"),
+			RedirectURL: redirectURL,
 		})
 		return
 	}
@@ -90,7 +125,8 @@ func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context
 	if err != nil {
 		h.Logger.Errorf("publication upload file: could not read file", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Locale.T("publication.file_upload_error"),
+			Message:     ctx.Locale.T("publication.file_upload_error"),
+			RedirectURL: redirectURL,
 		})
 		return
 	}
@@ -101,7 +137,8 @@ func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context
 	if err != nil {
 		h.Logger.Errorf("publication upload file: could not save file", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Locale.T("publication.file_upload_error"),
+			Message:     ctx.Locale.T("publication.file_upload_error"),
+			RedirectURL: redirectURL,
 		})
 		return
 	}
@@ -127,7 +164,8 @@ func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
 		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Locale.T("publication.conflict_error_reload"),
+			Message:     ctx.Locale.T("publication.conflict_error_reload"),
+			RedirectURL: redirectURL,
 		})
 		return
 	}
