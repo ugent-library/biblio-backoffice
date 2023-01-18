@@ -119,7 +119,7 @@ func (x *xlsx) datasetToRow(ds *models.Dataset) []string {
 	}
 
 	m["doi"] = ds.DOI
-	m["embargo"] = ds.EmbargoDate
+	m["embargo_date"] = ds.EmbargoDate
 	m["access_level_after_embargo"] = ds.AccessLevelAfterEmbargo
 	m["format"] = strings.Join(ds.Format, sep)
 	m["keyword"] = strings.Join(ds.Keyword, sep)

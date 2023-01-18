@@ -288,7 +288,7 @@ func init() {
 	message.SetString(language.English, "builder.conference.publication", "Proceedings title")
 	message.SetString(language.English, "builder.conference.publication_abbreviation", "Publication short title")
 	message.SetString(language.English, "builder.conference.series_title", "Series or journal title")
-	
+
 	message.SetString(language.English, "builder.issue_editor.publication", "Journal title")
 	message.SetString(language.English, "builder.issue_editor.publication_abbreviation", "Short journal title")
 
@@ -762,8 +762,8 @@ func init() {
 	message.SetString(language.English, "builder.arxiv_id.help", "e.g. 0706.0001")
 	message.SetString(language.English, "builder.esci_id.help", "e.g. 000752820200004")
 
-	message.SetString(language.English, "extern.true", "UGent")
-	message.SetString(language.English, "extern.false", "non UGent")
+	message.SetString(language.English, "extern.true", "non UGent")
+	message.SetString(language.English, "extern.false", "UGent")
 	message.SetString(language.English, "locked.true", "locked")
 	message.SetString(language.English, "locked.false", "unlocked")
 	message.SetString(language.English, "has_message.true", "with message")

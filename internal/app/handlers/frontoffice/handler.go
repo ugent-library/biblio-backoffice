@@ -273,7 +273,7 @@ func (h *Handler) mapPublication(p *models.Publication) *Publication {
 		DateCreated: p.DateCreated.UTC().Format(timestampFmt),
 		DateUpdated: p.DateUpdated.UTC().Format(timestampFmt),
 		//date_from used by biblio indexer only
-		DateFrom:    internal_time.FormatTimeUTC(p.DateFrom),
+		DateFrom:    p.DateFrom.Format("2006-01-02T15:04:05.000Z"),
 		Edition:     p.Edition,
 		ESCIID:      p.ESCIID,
 		Handle:      p.Handle,
@@ -694,7 +694,7 @@ func (h *Handler) mapDataset(p *models.Dataset) *Publication {
 		DateCreated: p.DateCreated.UTC().Format(timestampFmt),
 		DateUpdated: p.DateUpdated.UTC().Format(timestampFmt),
 		//date_from used by biblio indexer only
-		DateFrom:    internal_time.FormatTimeUTC(p.DateFrom),
+		DateFrom:    p.DateFrom.Format("2006-01-02T15:04:05.000Z"),
 		AccessLevel: p.AccessLevel,
 		Embargo:     p.EmbargoDate,
 		EmbargoTo:   p.AccessLevelAfterEmbargo,

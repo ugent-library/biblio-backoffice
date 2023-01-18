@@ -11,6 +11,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [v1.0.15] - 2023-01-18
+
+### Added
+
+- #848: Show legacy flag to curators and display prettier boolean flags.
+- #950: Show the chosen license in the Full text & Files list.
+- #926: Search on WoS ID.
+
+### Fixed
+
+- #925: Use frontoffice Elasticsearch and MongoDB directlto relieve pressure on
+  frontoffice app.
+- #937: Fix field extern display.
+- Fix typos.
+- #943: Fix timestamp format in frontoffice handler.
+
 ## [v1.0.14] - 2022-12-20
 
 ### Added
@@ -154,7 +170,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.14...HEAD
+[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.15...HEAD
+[v1.0.15]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.14...v1.0.15
 [v1.0.14]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.13...v1.0.14
 [v1.0.13]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.12...v1.0.13
 [v1.0.12]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.11...v1.0.12
