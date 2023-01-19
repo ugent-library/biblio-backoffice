@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- #984: Fix decoding of projects from MongoDB
+
 ## [v1.0.15] - 2023-01-18
 
 ### Added
