@@ -15,7 +15,7 @@ import (
 )
 
 func (c *Client) GetProject(id string) (*models.Project, error) {
-	var pr map[string]string = make(map[string]string)
+	var rec bson.M
 	err := c.mongo.Database("authority").Collection("project").FindOne(
 		context.Background(),
 		bson.M{
@@ -32,22 +32,29 @@ func (c *Client) GetProject(id string) (*models.Project, error) {
 					},
 				},
 			},
-		}).Decode(&pr)
+		}).Decode(&rec)
 	if err == mongo.ErrNoDocuments {
 		return nil, backends.ErrNotFound
 	}
 	if err != nil {
 		return nil, errors.Wrap(err, "unexpected error during document retrieval")
 	}
-	return &models.Project{
-		ID:        pr["_id"],
-		Title:     pr["title"],
-		StartDate: pr["start_date"],
-		EndDate:   pr["end_date"],
-	}, nil
+
+	p := &models.Project{
+		ID:    rec["_id"].(string),
+		Title: rec["title"].(string),
+	}
+	if v, ok := rec["start_date"]; ok {
+		p.StartDate = v.(string)
+	}
+	if v, ok := rec["end_date"]; ok {
+		p.EndDate = v.(string)
+	}
+
+	return p, nil
 }
 
-var projectFieldsBoosts map[string]string = map[string]string{
+var projectFieldsBoosts = map[string]string{
 	// field: boost
 	"_id":                    "100",
 	"iweto_id":               "80",
