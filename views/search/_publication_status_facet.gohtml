@@ -1,5 +1,6 @@
+{{ $badge := filterBadge .SearchArgs "publication_status" .Hits.Facets.publication_status }}
 <div class="dropdown">
-    <a class="badge badge-default mr-3" data-toggle="dropdown" data-persist="true" aria-haspopup="true"
+    <a class="badge {{$badge}} mr-3" data-toggle="dropdown" data-persist="true" aria-haspopup="true"
         aria-expanded="false" role="button">
         <span class="badge-text">Publication status</span>
         <div class="c-counter c-counter--small">{{len (.SearchArgs.FiltersFor "publication_status")}}</div>

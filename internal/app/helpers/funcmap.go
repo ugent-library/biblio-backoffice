@@ -14,6 +14,7 @@ func FuncMap() template.FuncMap {
 		"timeElapsed": elapsed.LocalTime,
 		"formatRange": FormatRange,
 		"formatBool":  FormatBool,
+		"filterBadge": FilterBadge,
 	}
 }
 
@@ -37,4 +38,22 @@ func FormatBool(b bool, t, f string) string {
 		return t
 	}
 	return f
+}
+
+func FilterBadge(searchArgs *models.SearchArgs, field string, fieldFacets []models.Facet) string {
+
+	// any filter is selected
+	if len(searchArgs.FiltersFor(field)) > 0 {
+		return "badge-primary"
+	}
+
+	// valuable options available
+	for _, facet := range fieldFacets {
+		if facet.Count > 0 {
+			return "badge-default"
+		}
+	}
+
+	// no valuable options available (all options return 0 results)
+	return "badge-secondary"
 }

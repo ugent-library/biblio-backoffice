@@ -1,5 +1,6 @@
+{{ $badge := filterBadge .SearchArgs "reviewer_tags" .Hits.Facets.reviewer_tags }}
 <div class="dropdown">
-    <a class="badge badge-default mr-3" data-toggle="dropdown" data-persist="true" aria-haspopup="true"
+    <a class="badge {{$badge}} mr-3" data-toggle="dropdown" data-persist="true" aria-haspopup="true"
         aria-expanded="false" role="button">
         <span class="badge-text">Librarian tags</span>
         <div class="c-counter c-counter--small">{{len (.SearchArgs.FiltersFor "reviewer_tags")}}</div>

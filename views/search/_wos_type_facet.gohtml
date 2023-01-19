@@ -1,5 +1,6 @@
+{{ $badge := filterBadge .SearchArgs "wos_type" .Hits.Facets.wos_type }}
 <div class="dropdown">
-    <a class="badge badge-default mr-3" data-toggle="dropdown" data-persist="true" aria-haspopup="true"
+    <a class="badge {{$badge}} mr-3" data-toggle="dropdown" data-persist="true" aria-haspopup="true"
         aria-expanded="false" role="button">
         <span class="badge-text">WOS Type</span>
         <div class="c-counter c-counter--small">{{len (.SearchArgs.FiltersFor "wos_type")}}</div>
