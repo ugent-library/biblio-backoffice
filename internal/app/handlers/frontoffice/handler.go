@@ -37,8 +37,8 @@ var licenses = map[string]string{
 	"CC-BY-NC-ND-4.0":  "Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International Public License (CC BY-NC-ND 4.0)",
 	"InCopyright":      "No license (in copyright)",
 	"LicenseNotListed": "A specific license has been chosen by the rights holder. Get in touch with the rights holder for reuse rights.",
-	"CopyrightUnknown": "I don't know the status of the copyright of this publication",
-	"":                 "Get in touch with the rights holder for reuse rights.",
+	"CopyrightUnknown": "Information pending",
+	"":                 "No license (in copyright)",
 }
 
 var openLicenses = map[string]struct{}{
@@ -52,7 +52,7 @@ var openLicenses = map[string]struct{}{
 }
 
 var hiddenLicenses = map[string]struct{}{
-	"LicenseNotListed": {},
+	"InCopyright": {},
 	"CopyrightUnknown": {},
 }
 
