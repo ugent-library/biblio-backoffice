@@ -41,8 +41,10 @@ func (c *Client) GetProject(id string) (*models.Project, error) {
 	}
 
 	p := &models.Project{
-		ID:    rec["_id"].(string),
-		Title: rec["title"].(string),
+		ID: rec["_id"].(string),
+	}
+	if v, ok := rec["title"]; ok {
+		p.Title = v.(string)
 	}
 	if v, ok := rec["start_date"]; ok {
 		p.StartDate = v.(string)
@@ -118,7 +120,9 @@ func (c *Client) SuggestProjects(q string) ([]models.Completion, error) {
 		}
 		c := models.Completion{}
 		c.ID = h.ID
-		c.Heading = m["title"].(string)
+		if v, ok := m["title"]; ok {
+			c.Heading = v.(string)
+		}
 		if k, e := m["eu_acronym"]; e {
 			c.Description = fmt.Sprintf("(%s)", k)
 		}
