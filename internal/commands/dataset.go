@@ -8,9 +8,9 @@ import (
 	"os"
 	"sync"
 
+	"github.com/oklog/ulid/v2"
 	"github.com/spf13/cobra"
 	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/biblio-backend/internal/ulid"
 )
 
 func init() {
@@ -81,7 +81,7 @@ var datasetAddCmd = &cobra.Command{
 		for {
 			lineNo += 1
 			d := models.Dataset{
-				ID:     ulid.MustGenerate(),
+				ID:     ulid.Make().String(),
 				Status: "private",
 			}
 			if err := dec.Decode(&d); errors.Is(err, io.EOF) {

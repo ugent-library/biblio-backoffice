@@ -10,12 +10,12 @@ import (
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
+	"github.com/oklog/ulid/v2"
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/locale"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
 	"github.com/ugent-library/biblio-backend/internal/render/flash"
-	"github.com/ugent-library/biblio-backend/internal/ulid"
 	"go.uber.org/zap"
 )
 
@@ -193,7 +193,7 @@ func (h BaseHandler) URLFor(name string, vars ...string) *url.URL {
 }
 
 func (h BaseHandler) ActionError(w http.ResponseWriter, r *http.Request, ctx BaseContext, msg string, err error, ID string) {
-	errID := ulid.MustGenerate()
+	errID := ulid.Make().String()
 	errMsg := fmt.Sprintf("[error: %s] %s", errID, msg)
 	h.Logger.Errorw(errMsg, "errors", err, "publication", ID, "user", ctx.User.ID)
 	h.ErrorModal(w, r, errID, ctx)

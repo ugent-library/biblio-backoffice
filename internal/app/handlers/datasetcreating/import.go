@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/oklog/ulid/v2"
 	"github.com/ugent-library/biblio-backend/internal/app/displays"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers"
 	"github.com/ugent-library/biblio-backend/internal/app/localize"
@@ -17,7 +18,6 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/render/flash"
 	"github.com/ugent-library/biblio-backend/internal/render/form"
 	"github.com/ugent-library/biblio-backend/internal/snapstore"
-	"github.com/ugent-library/biblio-backend/internal/ulid"
 	"github.com/ugent-library/biblio-backend/internal/validation"
 )
 
@@ -123,7 +123,7 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 		return
 	}
 
-	d.ID = ulid.MustGenerate()
+	d.ID = ulid.Make().String()
 	d.Creator = &models.DatasetUser{ID: ctx.User.ID, Name: ctx.User.FullName}
 	d.User = &models.DatasetUser{ID: ctx.User.ID, Name: ctx.User.FullName}
 	d.Status = "private"

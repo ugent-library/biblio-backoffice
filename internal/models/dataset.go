@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/oklog/ulid/v2"
 	"github.com/ugent-library/biblio-backend/internal/pagination"
-	"github.com/ugent-library/biblio-backend/internal/ulid"
 	"github.com/ugent-library/biblio-backend/internal/validation"
 )
 
@@ -169,7 +169,7 @@ func (d *Dataset) SetAbstract(t *Text) {
 }
 
 func (d *Dataset) AddAbstract(t *Text) {
-	t.ID = ulid.MustGenerate()
+	t.ID = ulid.Make().String()
 	d.Abstract = append(d.Abstract, *t)
 }
 

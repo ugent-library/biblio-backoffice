@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/oklog/ulid/v2"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers"
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/bind"
@@ -15,7 +16,6 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/render"
 	"github.com/ugent-library/biblio-backend/internal/render/flash"
 	"github.com/ugent-library/biblio-backend/internal/tasks"
-	"github.com/ugent-library/biblio-backend/internal/ulid"
 	"github.com/ugent-library/go-orcid/orcid"
 	"golang.org/x/text/language"
 )
@@ -157,7 +157,7 @@ func (h *Handler) addPublicationToORCID(user *models.User, p *models.Publication
 }
 
 func (h *Handler) addPublicationsToORCID(user *models.User, s *models.SearchArgs) (string, error) {
-	taskID := "orcid:" + ulid.MustGenerate()
+	taskID := "orcid:" + ulid.Make().String()
 
 	h.Tasks.Add(taskID, func(t tasks.Task) error {
 		return h.sendPublicationsToORCIDTask(t, user, s)

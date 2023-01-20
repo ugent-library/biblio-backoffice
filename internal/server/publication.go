@@ -7,9 +7,9 @@ import (
 	"io"
 	"sync"
 
+	"github.com/oklog/ulid/v2"
 	api "github.com/ugent-library/biblio-backend/api/v1"
 	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/biblio-backend/internal/ulid"
 	"github.com/ugent-library/biblio-backend/internal/validation"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -136,7 +136,7 @@ func (s *server) AddPublications(stream api.Biblio_AddPublicationsServer) error 
 		p := MessageToPublication(req.Publication)
 
 		if p.ID == "" {
-			p.ID = ulid.MustGenerate()
+			p.ID = ulid.Make().String()
 		}
 		if p.Status == "" {
 			p.Status = "private"
@@ -146,19 +146,19 @@ func (s *server) AddPublications(stream api.Biblio_AddPublicationsServer) error 
 		}
 		for i, val := range p.Abstract {
 			if val.ID == "" {
-				val.ID = ulid.MustGenerate()
+				val.ID = ulid.Make().String()
 			}
 			p.Abstract[i] = val
 		}
 		for i, val := range p.LaySummary {
 			if val.ID == "" {
-				val.ID = ulid.MustGenerate()
+				val.ID = ulid.Make().String()
 			}
 			p.LaySummary[i] = val
 		}
 		for i, val := range p.Link {
 			if val.ID == "" {
-				val.ID = ulid.MustGenerate()
+				val.ID = ulid.Make().String()
 			}
 			p.Link[i] = val
 		}

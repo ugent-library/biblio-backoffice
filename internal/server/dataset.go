@@ -7,9 +7,9 @@ import (
 	"io"
 	"sync"
 
+	"github.com/oklog/ulid/v2"
 	api "github.com/ugent-library/biblio-backend/api/v1"
 	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/biblio-backend/internal/ulid"
 	"github.com/ugent-library/biblio-backend/internal/validation"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -133,7 +133,7 @@ func (s *server) AddDatasets(stream api.Biblio_AddDatasetsServer) error {
 		d := MessageToDataset(req.Dataset)
 
 		if d.ID == "" {
-			d.ID = ulid.MustGenerate()
+			d.ID = ulid.Make().String()
 		}
 
 		if d.Status == "" {
@@ -142,7 +142,7 @@ func (s *server) AddDatasets(stream api.Biblio_AddDatasetsServer) error {
 
 		for i, val := range d.Abstract {
 			if val.ID == "" {
-				val.ID = ulid.MustGenerate()
+				val.ID = ulid.Make().String()
 			}
 			d.Abstract[i] = val
 		}

@@ -23,7 +23,6 @@ require (
 	github.com/jackc/pgx/v4 v4.16.1
 	github.com/jpillora/ipfilter v1.2.8
 	github.com/nickng/bibtex v1.2.0
-	github.com/oklog/ulid v1.3.1
 	github.com/pkg/errors v0.9.1
 	github.com/rvflash/elapsed v0.2.0
 	github.com/spf13/cobra v1.4.0
@@ -102,6 +101,7 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/mschoch/smat v0.2.0 // indirect
+	github.com/oklog/ulid/v2 v2.1.0
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.2 // indirect
 	github.com/shopspring/decimal v1.3.1 // indirect

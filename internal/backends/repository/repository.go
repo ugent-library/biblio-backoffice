@@ -9,11 +9,11 @@ import (
 
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/oklog/ulid/v2"
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/publication"
 	"github.com/ugent-library/biblio-backend/internal/snapstore"
-	"github.com/ugent-library/biblio-backend/internal/ulid"
 )
 
 type Repository struct {
@@ -30,7 +30,9 @@ func New(dsn string) (*Repository, error) {
 	}
 
 	client := snapstore.New(db, []string{"publications", "datasets"},
-		snapstore.WithIDGenerator(ulid.Generate),
+		snapstore.WithIDGenerator(func() (string, error) {
+			return ulid.Make().String(), nil
+		}),
 	)
 
 	return &Repository{

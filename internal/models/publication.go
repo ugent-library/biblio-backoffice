@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/oklog/ulid/v2"
 	"github.com/ugent-library/biblio-backend/internal/pagination"
-	"github.com/ugent-library/biblio-backend/internal/ulid"
 	"github.com/ugent-library/biblio-backend/internal/validation"
 	"github.com/ugent-library/biblio-backend/internal/vocabularies"
 )
@@ -453,7 +453,7 @@ func (p *Publication) SetLink(l *PublicationLink) {
 }
 
 func (p *Publication) AddLink(l *PublicationLink) {
-	l.ID = ulid.MustGenerate()
+	l.ID = ulid.Make().String()
 	p.Link = append(p.Link, *l)
 }
 
@@ -485,7 +485,7 @@ func (p *Publication) SetAbstract(t *Text) {
 }
 
 func (p *Publication) AddAbstract(t *Text) {
-	t.ID = ulid.MustGenerate()
+	t.ID = ulid.Make().String()
 	p.Abstract = append(p.Abstract, *t)
 }
 
@@ -517,7 +517,7 @@ func (p *Publication) SetLaySummary(ls *Text) {
 }
 
 func (p *Publication) AddLaySummary(t *Text) {
-	t.ID = ulid.MustGenerate()
+	t.ID = ulid.Make().String()
 	p.LaySummary = append(p.LaySummary, *t)
 }
 
@@ -577,7 +577,7 @@ func (p *Publication) AddDepartmentByOrg(org *Organization) {
 }
 
 func (p *Publication) AddFile(file *PublicationFile) {
-	file.ID = ulid.MustGenerate()
+	file.ID = ulid.Make().String()
 	now := time.Now()
 	file.DateCreated = &now
 	file.DateUpdated = &now
