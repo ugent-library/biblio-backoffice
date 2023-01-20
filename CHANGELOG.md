@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+
+### Fixed
+
+## [v1.0.18] - 2023-01-20
+
+### Added
+
+- Simple batch interface for curators (can currently only add projects) 
+- ulid wrapper package is no longer needed and has been removed
+
 ### Fixed
 
 ## [v1.0.17] - 2023-01-20
@@ -188,7 +198,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.17...HEAD
+[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.18...HEAD
+[v1.0.18]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.17...v1.0.18
 [v1.0.17]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.16...v1.0.17
 [v1.0.16]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.15...v1.0.16
 [v1.0.15]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.14...v1.0.15
