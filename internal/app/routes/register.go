@@ -25,6 +25,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/home"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/impersonating"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/mediatypes"
+	"github.com/ugent-library/biblio-backend/internal/app/handlers/publicationbatch"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/publicationcreating"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/publicationediting"
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/publicationexporting"
@@ -159,6 +160,11 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		PersonService:             services.PersonService,
 		DatasetSearchService:      services.DatasetSearchService,
 		FileStore:                 services.FileStore,
+	}
+	publicationBatchHandler := &publicationbatch.Handler{
+		BaseHandler:    baseHandler,
+		Repository:     services.Repository,
+		ProjectService: services.ProjectService,
 	}
 	// orcidHandler := &orcid.Handler{
 	// 	BaseHandler:              baseHandler,
@@ -638,6 +644,16 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		publicationExportingHandler.Wrap(publicationExportingHandler.ExportByCurationSearch)).
 		Methods("GET").
 		Name("export_publications")
+
+	// publication batch operations
+	r.HandleFunc("/publication/batch",
+		publicationBatchHandler.Wrap(publicationBatchHandler.Show)).
+		Methods("GET").
+		Name("publication_batch")
+	r.HandleFunc("/publication/batch/add-projects",
+		publicationBatchHandler.Wrap(publicationBatchHandler.AddProjects)).
+		Methods("POST").
+		Name("publication_batch_add_projects")
 
 	// view publication
 	r.HandleFunc("/publication/{id}",
