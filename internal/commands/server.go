@@ -23,12 +23,12 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/bind"
 	"github.com/ugent-library/biblio-backend/internal/locale"
 	"github.com/ugent-library/biblio-backend/internal/logging"
-	"github.com/ugent-library/biblio-backend/internal/mix"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
 	"github.com/ugent-library/biblio-backend/internal/urls"
 	"github.com/ugent-library/biblio-backend/internal/vocabularies"
 	"github.com/ugent-library/go-oidc/oidc"
+	"github.com/ugent-library/mix"
 	"go.uber.org/zap"
 
 	_ "github.com/ugent-library/biblio-backend/internal/translations"
@@ -208,16 +208,22 @@ func buildRouter(services *backends.Services, logger *zap.SugaredLogger) *mux.Ro
 	// router
 	router := mux.NewRouter()
 
+	// asets
+	assets, err := mix.New(mix.Config{
+		ManifestFile: "static/mix-manifest.json",
+		PublicPath:   baseURL.Path + "/static/",
+	})
+	if err != nil {
+		logger.Fatal(err)
+	}
+
 	// renderer
 	funcMaps := []template.FuncMap{
 		sprig.FuncMap(),
-		mix.FuncMap(mix.Config{
-			ManifestFile: "static/mix-manifest.json",
-			PublicPath:   baseURL.Path + "/static/",
-		}),
 		urls.FuncMap(router),
 		helpers.FuncMap(),
 		{
+			"assetPath": assets.AssetPath,
 			"appMode": func() string { // TODO eliminate need for this
 				return mode
 			},

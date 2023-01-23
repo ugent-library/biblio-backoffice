@@ -508,6 +508,8 @@ github.com/ugent-library/go-oidc v0.0.0-20210901124208-bda4cc73ba56 h1:y3N5ZTuh2
 github.com/ugent-library/go-oidc v0.0.0-20210901124208-bda4cc73ba56/go.mod h1:tkGlY27D3dQDVc5rNv8wzLaY5e44EHqmnusD/Pv0u4I=
 github.com/ugent-library/go-orcid v0.0.0-20211130191640-1138a344c30b h1:euR8KFPkxuhgI/Qy4UFRhMjZ3gV23wdr+nZPQjHhkjI=
 github.com/ugent-library/go-orcid v0.0.0-20211130191640-1138a344c30b/go.mod h1:NSt374Ru0dUuJanxiKk7fsGCnASjPz3dTBJGSfWll5w=
+github.com/ugent-library/mix v0.0.0-20230123085323-ee6f14c9d431 h1:SiRrv/eBUIn6j8Tkg2CLVHTSFhbNP/Ue/Bpyb/mYC+0=
+github.com/ugent-library/mix v0.0.0-20230123085323-ee6f14c9d431/go.mod h1:xrhsdKpNBuNqikF0f+QQ0s3e9Y1I64PNcGQFw0M+wTU=
 github.com/ugorji/go/codec v0.0.0-20181204163529-d75b2dcb6bc8/go.mod h1:VFNgLljTbGfSG7qAOspJ7OScBnGdDN/yBr0sguwnwf0=
 github.com/xdg-go/pbkdf2 v1.0.0 h1:Su7DPu48wXMwC3bs7MCNG+z4FhcyEuz5dlvchbq0B0c=
 github.com/xdg-go/pbkdf2 v1.0.0/go.mod h1:jrpuAogTd400dnrH08LKmI/xc1MbPOebTwRqcT5RDeI=
