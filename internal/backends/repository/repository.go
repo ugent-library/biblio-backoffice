@@ -188,11 +188,15 @@ func (s *Repository) SavePublication(p *models.Publication, u *models.User) erro
 		p.DateCreated = &now
 	}
 	p.DateUpdated = &now
+
 	if u != nil {
 		p.User = &models.PublicationUser{
 			ID:   u.ID,
 			Name: u.FullName,
 		}
+		p.LastUser = p.User
+	} else {
+		p.User = nil
 	}
 
 	// TODO move outside of store
@@ -211,12 +215,17 @@ func (s *Repository) UpdatePublication(snapshotID string, p *models.Publication,
 	oldDateUpdated := p.DateUpdated
 	now := time.Now()
 	p.DateUpdated = &now
+
 	if u != nil {
 		p.User = &models.PublicationUser{
 			ID:   u.ID,
 			Name: u.FullName,
 		}
+		p.LastUser = p.User
+	} else {
+		p.User = nil
 	}
+
 	snapshotID, err := s.publicationStore.AddAfter(snapshotID, p.ID, p, s.opts)
 	if err != nil {
 		p.DateUpdated = oldDateUpdated
@@ -551,11 +560,15 @@ func (s *Repository) SaveDataset(d *models.Dataset, u *models.User) error {
 		d.DateCreated = &now
 	}
 	d.DateUpdated = &now
+
 	if u != nil {
 		d.User = &models.DatasetUser{
 			ID:   u.ID,
 			Name: u.FullName,
 		}
+		d.LastUser = d.User
+	} else {
+		d.User = nil
 	}
 
 	if err := d.Validate(); err != nil {
@@ -578,10 +591,17 @@ func (s *Repository) UpdateDataset(snapshotID string, d *models.Dataset, u *mode
 	oldDateUpdated := d.DateUpdated
 	now := time.Now()
 	d.DateUpdated = &now
-	d.User = &models.DatasetUser{
-		ID:   u.ID,
-		Name: u.FullName,
+
+	if u != nil {
+		d.User = &models.DatasetUser{
+			ID:   u.ID,
+			Name: u.FullName,
+		}
+		d.LastUser = d.User
+	} else {
+		d.User = nil
 	}
+
 	snapshotID, err := s.datasetStore.AddAfter(snapshotID, d.ID, d, s.opts)
 	if err != nil {
 		d.DateUpdated = oldDateUpdated
