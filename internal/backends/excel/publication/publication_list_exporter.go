@@ -18,6 +18,7 @@ const sep = " ; "
 var headers = []string{
 	"id",
 	"type",
+	"status",
 	"author",
 	"ugent_author",
 	"editor",
@@ -90,6 +91,7 @@ var headers = []string{
 	"vabb_id",
 	"vabb_type",
 	"vabb_approved",
+	"vabb_year",
 	"article_number",
 	"jcr_category",
 	"jcr_category_rank",
@@ -120,10 +122,13 @@ func (x *xlsx) Add(pub *models.Publication) {
 
 func (x *xlsx) publicationToRow(pub *models.Publication) []string {
 	//see also: biblio/lib/Catmandu/Fix/publication_to_csv.pm
+	//see also: librecat/ugent/config/route.yml
+	//see also: librecat/ugent/fixes/to_reviewer_xlsx.fix
 
 	m := map[string]string{}
 	m["id"] = pub.ID
 	m["type"] = pub.Type
+	m["status"] = pub.Status
 
 	//field: <role>
 	//field: ugent_<role>
@@ -251,6 +256,7 @@ func (x *xlsx) publicationToRow(pub *models.Publication) []string {
 	m["vabb_id"] = pub.VABBID
 	m["vabb_type"] = pub.VABBType
 	m["vabb_approved"] = fmt.Sprintf("%t", pub.VABBApproved)
+	m["vabb_year"] = strings.Join(pub.VABBYear, sep)
 	m["article_number"] = pub.ArticleNumber
 
 	//TODO: jcr fields
