@@ -8,6 +8,8 @@ func ParseBoolean(v interface{}) bool {
 		return b == 1
 	case string:
 		return b == "true" || b == "1"
+	case bool:
+		return b
 	}
 	return false
 }
