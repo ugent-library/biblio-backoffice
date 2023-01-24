@@ -9,8 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-
 ### Fixed
+
+- #991: Be more forgiving when decoding boolean values from MongoDB
 
 ## [v1.0.18] - 2023-01-20
 
