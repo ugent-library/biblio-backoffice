@@ -118,6 +118,7 @@ type Publication struct {
 	JournalArticleType      string                  `json:"journal_article_type,omitempty"`
 	Keyword                 []string                `json:"keyword,omitempty"`
 	Language                []string                `json:"language,omitempty"`
+	LastUser                *PublicationUser        `json:"last_user,omitempty"`
 	LaySummary              []Text                  `json:"lay_summary,omitempty"`
 	Legacy                  bool                    `json:"legacy"`
 	Link                    []PublicationLink       `json:"link,omitempty"`

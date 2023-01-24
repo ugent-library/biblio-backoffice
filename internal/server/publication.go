@@ -476,6 +476,10 @@ func PublicationToMessage(p *models.Publication) *api.Publication {
 		msg.User = &api.RelatedUser{Id: p.User.ID, Name: p.User.Name}
 	}
 
+	if p.LastUser != nil {
+		msg.LastUser = &api.RelatedUser{Id: p.LastUser.ID, Name: p.LastUser.Name}
+	}
+
 	msg.Doi = p.DOI
 
 	msg.Edition = p.Edition
@@ -1007,6 +1011,10 @@ func MessageToPublication(msg *api.Publication) *models.Publication {
 
 	if msg.User != nil {
 		p.User = &models.PublicationUser{ID: msg.User.Id, Name: msg.User.Name}
+	}
+
+	if msg.LastUser != nil {
+		p.LastUser = &models.PublicationUser{ID: msg.LastUser.Id, Name: msg.LastUser.Name}
 	}
 
 	p.DOI = msg.Doi

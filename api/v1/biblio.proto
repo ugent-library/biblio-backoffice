@@ -332,6 +332,7 @@ message Publication {
     repeated string vabb_year = 83;
     bool has_been_public = 84;
     PublicationStatus publication_status = 85;
+    RelatedUser last_user = 86;
 }
 
 message Dataset {
