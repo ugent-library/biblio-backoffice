@@ -137,7 +137,11 @@ func (x *xlsx) publicationToRow(pub *models.Publication) []string {
 		{
 			values := []string{}
 			for _, contributor := range contributors {
-				values = append(values, contributor.FullName)
+				fullName := contributor.FullName
+				if fullName == "" {
+					fullName = contributor.FirstName + " " + contributor.LastName
+				}
+				values = append(values, fullName)
 			}
 			m[role] = strings.Join(values, sep)
 		}
@@ -153,7 +157,11 @@ func (x *xlsx) publicationToRow(pub *models.Publication) []string {
 				}
 				//full_name (<ugent_id>)
 				//full_name (<ugent_id>@<department.0.id>)
-				val := fmt.Sprintf("%s (%s%s)", contributor.FullName, contributor.UGentID[0], group)
+				fullName := contributor.FullName
+				if fullName == "" {
+					fullName = contributor.FirstName + " " + contributor.LastName
+				}
+				val := fmt.Sprintf("%s (%s%s)", fullName, contributor.UGentID[0], group)
 				values = append(values, val)
 			}
 			m["ugent_"+role] = strings.Join(values, sep)
