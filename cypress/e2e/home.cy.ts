@@ -81,9 +81,23 @@ describe('The home page', () => {
 
     cy.get('.c-sidebar button.dropdown-toggle').should('contain.text', 'Librarian')
     cy.get('.c-sidebar').should('have.class', 'c-sidebar--dark-gray')
-    cy.get('.c-sidebar-menu .c-sidebar__item').should('have.length', 3)
+    cy.get('.c-sidebar-menu .c-sidebar__item').should('have.length', 4)
     cy.contains('.c-sidebar__item', 'Biblio Publications').should('be.visible')
     cy.contains('.c-sidebar__item', 'Biblio Datasets').should('be.visible')
     cy.contains('.c-sidebar__item', 'Dashboard').should('be.visible')
+    cy.contains('.c-sidebar__item', 'Batch').should('be.visible')
+
+    // Switching back to researcher mode does not work due to a cookie bug in Cypress
+    // See: https://github.com/cypress-io/cypress/issues/25174
+
+    // cy.contains('button.dropdown-toggle', 'Librarian').click()
+    // cy.contains('button.dropdown-item', 'Researcher').click()
+
+    // cy.get('.c-sidebar button.dropdown-toggle').should('contain.text', 'Researcher')
+    // cy.get('.c-sidebar').should('not.have.class', 'c-sidebar--dark-gray')
+    // cy.get('.c-sidebar-menu .c-sidebar__item').should('have.length', 2)
+    // cy.contains('.c-sidebar__item', 'Biblio Publications').should('be.visible')
+    // cy.contains('.c-sidebar__item', 'Biblio Datasets').should('be.visible')
+    // cy.contains('.c-sidebar__item', 'Dashboard').should('not.exist')
   })
 })
