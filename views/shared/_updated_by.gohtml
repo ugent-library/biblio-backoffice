@@ -1,0 +1,8 @@
+{{if .User}}
+    Last edit by {{.User.Name}} {{timeElapsed .DateUpdated "en"}}.
+{{else}}
+    Automated system update {{timeElapsed .DateUpdated "en"}}.
+    {{if .LastUser}}
+    Last edit by {{.LastUser.Name}}.
+    {{end}}
+{{end}}

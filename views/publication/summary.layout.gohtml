@@ -101,7 +101,9 @@
                     </div>
                     <div class="bc-toolbar-right flex-wrap">
                         <div class="bc-toolbar-item">
-                            <span class="c-body-small text-muted text-truncate my-2">Updated {{timeElapsed .Publication.DateUpdated "en"}}{{with .Publication.User}} by {{.Name}}{{end}}</span>
+                            <span class="c-body-small text-muted text-truncate my-2">
+                                {{partial "shared/updated_by" .Publication}}
+                            </span>
                         </div>
                         <div class="bc-toolbar-item">
                             <ul class="c-meta-list c-meta-list-horizontal flex-nowrap">
