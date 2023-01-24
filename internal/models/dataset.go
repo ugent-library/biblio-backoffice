@@ -60,6 +60,7 @@ type Dataset struct {
 	ID                      string               `json:"id,omitempty"`
 	Keyword                 []string             `json:"keyword,omitempty"`
 	HasBeenPublic           bool                 `json:"has_been_public"`
+	LastUser                *DatasetUser         `json:"last_user,omitempty"`
 	License                 string               `json:"license,omitempty"`
 	Locked                  bool                 `json:"locked"`
 	Message                 string               `json:"message,omitempty"`

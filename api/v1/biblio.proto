@@ -390,6 +390,7 @@ message Dataset {
     string other_license = 31;
     repeated Department department = 32;
     bool has_been_public = 33;
+    RelatedUser last_user = 34;
 }
 
 message GetFileRequest {

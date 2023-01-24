@@ -400,6 +400,10 @@ func DatasetToMessage(d *models.Dataset) *api.Dataset {
 		msg.User = &api.RelatedUser{Id: d.User.ID, Name: d.User.Name}
 	}
 
+	if d.LastUser != nil {
+		msg.LastUser = &api.RelatedUser{Id: d.LastUser.ID, Name: d.LastUser.Name}
+	}
+
 	msg.Doi = d.DOI
 
 	msg.Keyword = d.Keyword
@@ -569,6 +573,10 @@ func MessageToDataset(msg *api.Dataset) *models.Dataset {
 
 	if msg.User != nil {
 		d.User = &models.DatasetUser{ID: msg.User.Id, Name: msg.User.Name}
+	}
+
+	if msg.LastUser != nil {
+		d.LastUser = &models.DatasetUser{ID: msg.LastUser.Id, Name: msg.LastUser.Name}
 	}
 
 	d.DOI = msg.Doi
