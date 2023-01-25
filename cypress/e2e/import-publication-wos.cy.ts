@@ -50,7 +50,7 @@ describe('Publication import', () => {
       .contains('Biblio ID:')
       .find('.c-code')
       .invoke('text')
-      .as('biblioID')
+      .as('biblioID', { type: 'static' })
 
     // Try publishing remaining publication and verify validation error
     cy.ensureNoModal()
@@ -116,9 +116,7 @@ describe('Publication import', () => {
     cy.location('pathname').should('eq', '/publication')
 
     // Verify publication is published
-    cy.then(function () {
-      return cy.visit(`/publication/${this.biblioID}`)
-    })
+    cy.get('@biblioID').then(biblioID => cy.visit(`/publication/${biblioID}`))
 
     cy.get('#summary .badge')
       .should('have.class', 'badge-default')
