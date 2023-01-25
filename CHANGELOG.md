@@ -11,6 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [v1.0.20] - 2023-01-25
+
+### Added
+
+- Switch from deprecated biblio-backend prefix to biblio-backoffice
+
+### Fixed
+
 ## [v1.0.19] - 2023-01-25
 
 ### Added
