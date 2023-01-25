@@ -9,7 +9,7 @@ syntax = "proto3";
 
 package biblio.v1;
 
-option go_package = "github.com/ugent-library/biblio-backend/api/v1";
+option go_package = "github.com/ugent-library/biblio-backoffice/api/v1";
 
 import "google/protobuf/timestamp.proto";
 

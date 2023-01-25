@@ -16,22 +16,22 @@ import (
 	"github.com/ory/graceful"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/ugent-library/biblio-backend/internal/app/helpers"
-	"github.com/ugent-library/biblio-backend/internal/app/routes"
-	"github.com/ugent-library/biblio-backend/internal/backends"
-	"github.com/ugent-library/biblio-backend/internal/bind"
-	"github.com/ugent-library/biblio-backend/internal/locale"
-	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/biblio-backend/internal/render"
-	"github.com/ugent-library/biblio-backend/internal/urls"
-	"github.com/ugent-library/biblio-backend/internal/vocabularies"
+	"github.com/ugent-library/biblio-backoffice/internal/app/helpers"
+	"github.com/ugent-library/biblio-backoffice/internal/app/routes"
+	"github.com/ugent-library/biblio-backoffice/internal/backends"
+	"github.com/ugent-library/biblio-backoffice/internal/bind"
+	"github.com/ugent-library/biblio-backoffice/internal/locale"
+	"github.com/ugent-library/biblio-backoffice/internal/models"
+	"github.com/ugent-library/biblio-backoffice/internal/render"
+	"github.com/ugent-library/biblio-backoffice/internal/urls"
+	"github.com/ugent-library/biblio-backoffice/internal/vocabularies"
 	"github.com/ugent-library/middleware"
 	"github.com/ugent-library/mix"
 	"github.com/ugent-library/oidc"
 	"github.com/ugent-library/zaphttp"
 	"go.uber.org/zap"
 
-	_ "github.com/ugent-library/biblio-backend/internal/translations"
+	_ "github.com/ugent-library/biblio-backoffice/internal/translations"
 )
 
 func init() {
@@ -53,7 +53,7 @@ func init() {
 
 var serverCmd = &cobra.Command{
 	Use:   "server [command]",
-	Short: "The biblio-backend HTTP server",
+	Short: "The biblio-backoffice HTTP server",
 }
 
 var serverRoutesCmd = &cobra.Command{

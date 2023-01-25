@@ -8,9 +8,9 @@ import (
 	"time"
 
 	"github.com/oklog/ulid/v2"
-	"github.com/ugent-library/biblio-backend/internal/pagination"
-	"github.com/ugent-library/biblio-backend/internal/validation"
-	"github.com/ugent-library/biblio-backend/internal/vocabularies"
+	"github.com/ugent-library/biblio-backoffice/internal/pagination"
+	"github.com/ugent-library/biblio-backoffice/internal/validation"
+	"github.com/ugent-library/biblio-backoffice/internal/vocabularies"
 )
 
 type PublicationHits struct {

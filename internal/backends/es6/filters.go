@@ -5,8 +5,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ugent-library/biblio-backend/internal/models"
-	internal_time "github.com/ugent-library/biblio-backend/internal/time"
+	"github.com/ugent-library/biblio-backoffice/internal/models"
+	internal_time "github.com/ugent-library/biblio-backoffice/internal/time"
 )
 
 // regular field filter: accepts syntax in the filter value

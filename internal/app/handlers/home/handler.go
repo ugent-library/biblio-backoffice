@@ -3,8 +3,8 @@ package home
 import (
 	"net/http"
 
-	"github.com/ugent-library/biblio-backend/internal/app/handlers"
-	"github.com/ugent-library/biblio-backend/internal/render"
+	"github.com/ugent-library/biblio-backoffice/internal/app/handlers"
+	"github.com/ugent-library/biblio-backoffice/internal/render"
 )
 
 type Handler struct {

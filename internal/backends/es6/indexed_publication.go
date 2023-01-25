@@ -1,10 +1,10 @@
 package es6
 
 import (
-	"github.com/ugent-library/biblio-backend/internal/models"
-	internal_time "github.com/ugent-library/biblio-backend/internal/time"
-	"github.com/ugent-library/biblio-backend/internal/validation"
-	"github.com/ugent-library/biblio-backend/internal/vocabularies"
+	"github.com/ugent-library/biblio-backoffice/internal/models"
+	internal_time "github.com/ugent-library/biblio-backoffice/internal/time"
+	"github.com/ugent-library/biblio-backoffice/internal/validation"
+	"github.com/ugent-library/biblio-backoffice/internal/vocabularies"
 )
 
 type indexedPublication struct {

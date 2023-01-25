@@ -1,4 +1,4 @@
-module github.com/ugent-library/biblio-backend
+module github.com/ugent-library/biblio-backoffice
 
 go 1.18
 

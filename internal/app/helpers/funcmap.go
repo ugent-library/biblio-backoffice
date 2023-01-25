@@ -5,7 +5,7 @@ import (
 	"html/template"
 
 	"github.com/rvflash/elapsed"
-	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backoffice/internal/models"
 )
 
 func FuncMap() template.FuncMap {

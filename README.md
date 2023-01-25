@@ -54,7 +54,7 @@ server.
 ### Docker
 
 ```bash
-docker run --name some-backoffice -d ugentlib/biblio-backend:dev
+docker run --name some-backoffice -d ugentlib/biblio-backoffice:dev
 ```
 
 Use `docker-compose` to manage all arguments (ports, volumes, env variables,...)
@@ -150,7 +150,7 @@ The following variables may be set:
 BIBLIO_BACKEND_MODE (default: production)
 BIBLIO_BACKEND_PORT (default: 3000)
 BIBLIO_BACKEND_HOST (default: localhost)
-BIBLIO_BACKEND_SESSION_NAME (default: biblio-backend)
+BIBLIO_BACKEND_SESSION_NAME (default: biblio-backoffice)
 BIBLIO_BACKEND_SESSION_MAX_AGE (default: 86400 * 30 // 30 days)
 BIBLIO_BACKEND_HDL_SRV_ENABLED (default: false)
 BIBLIO_BACKEND_HDL_SRV_URL

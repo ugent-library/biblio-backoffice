@@ -5,10 +5,10 @@ import (
 	"io"
 	"strings"
 
-	"github.com/ugent-library/biblio-backend/internal/backends"
-	"github.com/ugent-library/biblio-backend/internal/backends/excel"
-	"github.com/ugent-library/biblio-backend/internal/models"
-	internal_time "github.com/ugent-library/biblio-backend/internal/time"
+	"github.com/ugent-library/biblio-backoffice/internal/backends"
+	"github.com/ugent-library/biblio-backoffice/internal/backends/excel"
+	"github.com/ugent-library/biblio-backoffice/internal/models"
+	internal_time "github.com/ugent-library/biblio-backoffice/internal/time"
 )
 
 const sep = " ; "
