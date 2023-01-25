@@ -33,8 +33,9 @@ export default function() {
         // Add a new value to the field
         let addFormValue = function (e) {
             let formField = e.target.closest("div.form-values")
-            let lastValue = formField.lastElementChild
-            let valueIndex = Array.from(formField.children).length
+            let formValues = formField.querySelectorAll("div.form-value")
+            let lastValue = formValues[formValues.length-1]
+            let valueIndex = formValues.length
 
             let newValue = lastValue.cloneNode(true)
             newValue.querySelector(".form-control").value = ""
