@@ -1,5 +1,5 @@
 {{if .Creator}}
-Created by {{.Creator.Name}} {{timeElapsed .DateCreated "en"}}.
+Created {{timeElapsed .DateCreated "en"}} by {{.Creator.Name}}.
 {{else}}
-    Created {{timeElapsed .DateCreated "en"}}.
+Created {{timeElapsed .DateCreated "en"}}.
 {{end}}
