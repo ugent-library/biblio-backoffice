@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - #932: Add missing has_message curation only facet to datasets
 - #921: Add status and vabb_year fields to xslx export
 - #991: Be more forgiving when decoding boolean values from MongoDB
-- Various css fixes
+- Various css fixes, fix typos
 
 ## [v1.0.18] - 2023-01-20
 
