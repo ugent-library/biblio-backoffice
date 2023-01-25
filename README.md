@@ -171,17 +171,17 @@ BIBLIO_BACKEND_INSECURE (default: false)
 
 ## Development
 
-This project uses [cosmtrek/air](https://github.com/cosmtrek/air) to watch for file
-changes and recompile the application:
+This project uses [reflex](https://github.com/cespare/reflex) to watch for file
+changes and recompile the application and assets:
 
 ```
-git clone git@github.com:ugent-library/biblio-backoffice.git
 cd biblio-backoffice
-cp .air.example.toml .air.toml
-air
+go install github.com/cespare/reflex@latest
+cp .reflex.example.conf .reflex.conf
+reflex -d none -c .reflex.conf
 ```
 
-Refer to `air_example.toml`. The `full_bin` line assumes the existence of a `.env` file
+Refer to `.reflex.example.conf`. The command assumes the existence of a `.env` file
 which exports all relevant environment variables:
 
 ```bash
@@ -190,9 +190,9 @@ export BIBLIO_BACKEND_BASE_URL="http://localhost:3001"
 ...
 ```
 
-Alternatively, adapt this line in you `.air.toml` to suit your needs:
+Alternatively, adapt this command in your `.reflex.conf` to suit your needs.
 ```
-full_bin = "source ./.env && ./tmp/main server start --host localhost --port 3001 || exit 1"
+'source .env && go run main.go server start --host localhost --port 3001'
 ```
 
 ## SASS/SCSS & asset compilation
@@ -200,28 +200,20 @@ full_bin = "source ./.env && ./tmp/main server start --host localhost --port 300
 Install node dependencies:
 
 ```bash
-cd internal/services/webapp/
 npm install
 ```
 
-Build assets:
+Assets will be recompiled automatically if you use [reflex](https://github.com/cespare/reflex) (see above).
+
+Build assets manually:
 
 ```
-cd internal/services/webapp/
 npx mix
 ```
 
-Watch file changes in development:
+Build production assets manually:
 
 ```
-cd internal/services/webapp/
-npx mix watch
-```
-
-Build production assets:
-
-```
-cd internal/services/webapp/
 npx mix --production
 ```
 
@@ -238,4 +230,3 @@ PGDATABASE=biblio_backend tern migrate
 More info [here](https://github.com/jackc/tern).
 
 List of PG env variables [here](https://www.postgresql.org/docs/current/libpq-envars.html).
-
