@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"context"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -24,9 +25,9 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/render"
 	"github.com/ugent-library/biblio-backend/internal/urls"
 	"github.com/ugent-library/biblio-backend/internal/vocabularies"
-	"github.com/ugent-library/go-oidc/oidc"
 	"github.com/ugent-library/middleware"
 	"github.com/ugent-library/mix"
+	"github.com/ugent-library/oidc"
 	"github.com/ugent-library/zaphttp"
 	"go.uber.org/zap"
 
@@ -237,18 +238,20 @@ func buildRouter(services *backends.Services, logger *zap.SugaredLogger) *mux.Ro
 	sessionStore.Options.HttpOnly = true
 	sessionStore.Options.Secure = baseURL.Scheme == "https"
 
-	oidcClient, err := oidc.New(oidc.Config{
+	oidcAuth, err := oidc.NewAuth(context.TODO(), oidc.Config{
 		URL:          viper.GetString("oidc-url"),
 		ClientID:     viper.GetString("oidc-client-id"),
 		ClientSecret: viper.GetString("oidc-client-secret"),
 		RedirectURL:  baseURL.String() + "/auth/openid-connect/callback",
+		CookieName:   viper.GetString("session-name") + ".state",
+		CookieSecret: []byte(viper.GetString("session-secret")),
 	})
 	if err != nil {
 		logger.Fatal(err)
 	}
 
 	// add routes
-	routes.Register(services, baseURL, router, sessionStore, sessionName, localizer, logger, oidcClient)
+	routes.Register(services, baseURL, router, sessionStore, sessionName, localizer, logger, oidcAuth)
 
 	return router
 }

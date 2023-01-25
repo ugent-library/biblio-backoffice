@@ -9,12 +9,12 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/render"
 	"github.com/ugent-library/biblio-backend/internal/validation"
 	"github.com/ugent-library/biblio-backend/internal/vocabularies"
-	"github.com/ugent-library/go-oidc/oidc"
+	"github.com/ugent-library/oidc"
 )
 
 type Handler struct {
 	handlers.BaseHandler
-	OIDCClient *oidc.Client
+	OIDCAuth *oidc.Auth
 }
 
 type Context struct {
@@ -30,9 +30,8 @@ func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) htt
 }
 
 func (h *Handler) Callback(w http.ResponseWriter, r *http.Request, ctx Context) {
-	code := r.URL.Query().Get("code")
 	claims := &oidc.Claims{}
-	if err := h.OIDCClient.Exchange(code, claims); err != nil {
+	if err := h.OIDCAuth.CompleteAuth(w, r, &claims); err != nil {
 		h.Logger.Errorw("authentication: OIDC client could not complete exchange:", "errors", err)
 		h.InternalServerError(w, r, ctx.BaseContext)
 		return
@@ -67,7 +66,11 @@ func (h *Handler) Callback(w http.ResponseWriter, r *http.Request, ctx Context) 
 }
 
 func (h *Handler) Login(w http.ResponseWriter, r *http.Request, ctx Context) {
-	http.Redirect(w, r, h.OIDCClient.AuthorizationURL(), http.StatusFound)
+	if err := h.OIDCAuth.BeginAuth(w, r); err != nil {
+		h.Logger.Errorw("authentication: OIDC client could not begin exchange:", "errors", err)
+		h.InternalServerError(w, r, ctx.BaseContext)
+		return
+	}
 }
 
 func (h *Handler) Logout(w http.ResponseWriter, r *http.Request, ctx Context) {

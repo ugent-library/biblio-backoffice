@@ -32,12 +32,12 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/app/handlers/publicationviewing"
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/locale"
-	"github.com/ugent-library/go-oidc/oidc"
+	"github.com/ugent-library/oidc"
 	"go.uber.org/zap"
 )
 
 func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
-	sessionStore sessions.Store, sessionName string, localizer *locale.Localizer, logger *zap.SugaredLogger, oidcClient *oidc.Client) {
+	sessionStore sessions.Store, sessionName string, localizer *locale.Localizer, logger *zap.SugaredLogger, oidcAuth *oidc.Auth) {
 	basePath := baseURL.Path
 
 	router.StrictSlash(true)
@@ -67,7 +67,7 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 	}
 	authenticatingHandler := &authenticating.Handler{
 		BaseHandler: baseHandler,
-		OIDCClient:  oidcClient,
+		OIDCAuth:    oidcAuth,
 	}
 	impersonatingHandler := &impersonating.Handler{
 		BaseHandler:       baseHandler,

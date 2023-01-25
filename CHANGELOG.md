@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Switch to more secure github.com/ugent-library/oidc for authentication
 - #936: Differentiate between sytem and user updates in ui
 - Add request id to log statements; improve logging in general
 
