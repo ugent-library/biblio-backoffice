@@ -19,13 +19,13 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/backends"
 	"github.com/ugent-library/biblio-backend/internal/bind"
 	"github.com/ugent-library/biblio-backend/internal/locale"
-	"github.com/ugent-library/biblio-backend/internal/logging"
 	"github.com/ugent-library/biblio-backend/internal/models"
 	"github.com/ugent-library/biblio-backend/internal/render"
 	"github.com/ugent-library/biblio-backend/internal/urls"
 	"github.com/ugent-library/biblio-backend/internal/vocabularies"
 	"github.com/ugent-library/go-oidc/oidc"
 	"github.com/ugent-library/mix"
+	"github.com/ugent-library/zaphttp"
 	"go.uber.org/zap"
 
 	_ "github.com/ugent-library/biblio-backend/internal/translations"
@@ -122,7 +122,7 @@ var serverStartCmd = &cobra.Command{
 		router := buildRouter(e, logger)
 
 		// setup logging
-		handler := logging.HTTPHandler(logger, router)
+		handler := zaphttp.LogRequests(logger.Desugar())(router)
 
 		// setup server
 		addr := fmt.Sprintf("%s:%d", viper.GetString("host"), viper.GetInt("port"))
