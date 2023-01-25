@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Fixed
+
+## [v1.0.19] - 2023-01-25
+
+### Added
+
 - Switch to more secure github.com/ugent-library/oidc for authentication
 - #936: Differentiate between sytem and user updates in ui
 - Add request id to log statements; improve logging in general
@@ -207,7 +213,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.18...HEAD
+[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.19...HEAD
+[v1.0.19]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.18...v1.0.19
 [v1.0.18]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.17...v1.0.18
 [v1.0.17]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.16...v1.0.17
 [v1.0.16]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.15...v1.0.16
