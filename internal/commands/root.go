@@ -11,10 +11,10 @@ import (
 )
 
 const (
-	defaultPgConn               = "postgres://localhost:5432/biblio_backend?sslmode=disable"
+	defaultPgConn               = "postgres://localhost:5432/biblio_backoffice?sslmode=disable"
 	defaultEs6URL               = "http://localhost:9200"
-	defaultDatasetIndex         = "biblio_backend_datasets"
-	defaultPublicationIndex     = "biblio_backend_publications"
+	defaultDatasetIndex         = "biblio_backoffice_datasets"
+	defaultPublicationIndex     = "biblio_backoffice_publications"
 	defaultAPIHost              = ""
 	defaultAPIPort              = 30000
 	defaultAPIAdminUsername     = "admin"
