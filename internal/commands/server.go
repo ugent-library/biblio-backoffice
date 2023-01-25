@@ -1,20 +1,17 @@
 package commands
 
 import (
-	"context"
 	"fmt"
 	"html/template"
 	"net/http"
 	"net/url"
-	"os"
-	"os/signal"
 	"strings"
-	"syscall"
 	"time"
 
 	"github.com/Masterminds/sprig/v3"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
+	"github.com/ory/graceful"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backend/internal/app/helpers"
@@ -129,57 +126,17 @@ var serverStartCmd = &cobra.Command{
 
 		// setup server
 		addr := fmt.Sprintf("%s:%d", viper.GetString("host"), viper.GetInt("port"))
-
-		server := &http.Server{
+		server := graceful.WithDefaults(&http.Server{
 			Addr:         addr,
 			Handler:      handler,
 			ReadTimeout:  3 * time.Minute,
 			WriteTimeout: 3 * time.Minute,
+		})
+		logger.Infof("starting server at %s", addr)
+		if err := graceful.Graceful(server.ListenAndServe, server.Shutdown); err != nil {
+			logger.Fatal(err)
 		}
-
-		// start server
-		ctx, stop := signal.NotifyContext(context.Background(),
-			os.Interrupt,
-			syscall.SIGTERM,
-			syscall.SIGQUIT,
-		)
-
-		errC := make(chan error)
-
-		// listen for shutdown signal
-		go func() {
-			<-ctx.Done()
-
-			logger.Infof("Stopping gracefully...")
-
-			timeoutCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-
-			defer func() {
-				stop()
-				cancel()
-				close(errC)
-			}()
-
-			// disable keep-alive on shutdown
-			server.SetKeepAlivesEnabled(false)
-
-			if err := server.Shutdown(timeoutCtx); err != nil {
-				errC <- err
-			}
-
-			logger.Infof("Stopped")
-		}()
-
-		go func() {
-			logger.Infof("Listening at %s", addr)
-			if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-				errC <- err
-			}
-		}()
-
-		if err := <-errC; err != nil {
-			logger.Fatalf("Error while running: %s", err)
-		}
+		logger.Info("gracefully stopped server")
 	},
 }
 
