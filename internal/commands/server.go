@@ -11,6 +11,7 @@ import (
 	"github.com/Masterminds/sprig/v3"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
+	"github.com/oklog/ulid/v2"
 	"github.com/ory/graceful"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -24,6 +25,7 @@ import (
 	"github.com/ugent-library/biblio-backend/internal/urls"
 	"github.com/ugent-library/biblio-backend/internal/vocabularies"
 	"github.com/ugent-library/go-oidc/oidc"
+	"github.com/ugent-library/middleware"
 	"github.com/ugent-library/mix"
 	"github.com/ugent-library/zaphttp"
 	"go.uber.org/zap"
@@ -93,6 +95,7 @@ var serverStartCmd = &cobra.Command{
 	Use:   "start",
 	Short: "start the http server",
 	Run: func(cmd *cobra.Command, args []string) {
+		production := viper.GetString("mode") == "production"
 
 		// setup logger
 		logger := newLogger()
@@ -121,8 +124,20 @@ var serverStartCmd = &cobra.Command{
 		// setup router
 		router := buildRouter(e, logger)
 
-		// setup logging
-		handler := zaphttp.LogRequests(logger.Desugar())(router)
+		// apply these before request reaches the router
+		handler := middleware.Apply(router,
+			middleware.Recover(func(err any) {
+				if production {
+					logger.With(zap.Stack("stack")).Error(err)
+				} else {
+					logger.Error(err)
+				}
+			}),
+			middleware.SetRequestID(func() string {
+				return ulid.Make().String()
+			}),
+			zaphttp.LogRequests(logger.Desugar()),
+		)
 
 		// setup server
 		addr := fmt.Sprintf("%s:%d", viper.GetString("host"), viper.GetInt("port"))

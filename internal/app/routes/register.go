@@ -8,7 +8,6 @@ import (
 
 	"github.com/alexliesenfeld/health"
 	"github.com/gorilla/csrf"
-	mw "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"github.com/jpillora/ipfilter"
@@ -43,7 +42,6 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 
 	router.StrictSlash(true)
 	router.UseEncodedPath()
-	router.Use(mw.RecoveryHandler(mw.PrintRecoveryStack(true)))
 
 	// static files
 	router.PathPrefix(basePath + "/static/").Handler(http.StripPrefix(basePath+"/static/", http.FileServer(http.Dir("./static"))))
