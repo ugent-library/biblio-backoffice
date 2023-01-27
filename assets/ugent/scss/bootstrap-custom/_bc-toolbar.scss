@@ -32,9 +32,12 @@ $bc-toolbar-height: 6.4rem !default;
   align-items: center;
 }
 
-
 .bc-toolbar--auto {
   height: auto;
+}
+
+.bc-toolbar--top {
+  align-items: start;
 }
 
 /* Bordered variants

@@ -48,3 +48,14 @@
 
   transition: border-color .3s;
 }
+
+.c-file-upload.c-file-upload--disabled {
+  background-color: $gray-25;
+  pointer-events: none;
+
+  .c-file-upload__content {
+    pointer-events: none;
+    border-color: $gray-100;
+  }
+
+}
