@@ -732,6 +732,7 @@ func init() {
 	message.SetString(language.English, "publication.conflict_error_reload", "Publication has been modified by another user. Please reload the page.")
 
 	message.SetString(language.English, "publication.file_upload_error", "File upload failed.")
+	message.SetString(language.English, "publication.file_upload_error.limit_exceeded", "File upload failed: limit of %s was exceeded")
 
 	message.SetString(language.English, "builder.file.title", "Title")
 	message.SetString(language.English, "builder.file.relation", "Document type")

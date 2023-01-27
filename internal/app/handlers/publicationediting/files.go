@@ -66,6 +66,7 @@ const MaxFileSize = 2000000000
 func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context) {
 
 	redirectURL := h.PathFor("publication", "id", ctx.Publication.ID).String() + "?show=files"
+	msgErrLimit := ctx.Locale.T("publication.file_upload_error.limit_exceeded", "2G")
 
 	// make sure full request body is read or client will not read the response
 	originalBody := r.Body
@@ -73,8 +74,9 @@ func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context
 
 	// naive check on file size
 	if r.ContentLength > MaxFileSize {
+		h.Logger.Errorf("publication upload file: could not process file", "errors", limitio.ErrThresholdExceeded, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message:     ctx.Locale.T("publication.file_upload_error"),
+			Message:     msgErrLimit,
 			RedirectURL: redirectURL,
 		})
 		return
@@ -99,8 +101,12 @@ func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context
 	file, handler, err := r.FormFile("file")
 	if err != nil {
 		h.Logger.Errorf("publication upload file: could not process file", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
+		msg := ctx.Locale.T("publication.file_upload_error")
+		if errors.Is(err, limitio.ErrThresholdExceeded) {
+			msg = msgErrLimit
+		}
 		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message:     ctx.Locale.T("publication.file_upload_error"),
+			Message:     msg,
 			RedirectURL: redirectURL,
 		})
 		return
@@ -136,8 +142,12 @@ func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context
 
 	if err != nil {
 		h.Logger.Errorf("publication upload file: could not save file", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
+		msg := ctx.Locale.T("publication.file_upload_error")
+		if errors.Is(err, limitio.ErrThresholdExceeded) {
+			msg = msgErrLimit
+		}
 		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message:     ctx.Locale.T("publication.file_upload_error"),
+			Message:     msg,
 			RedirectURL: redirectURL,
 		})
 		return
