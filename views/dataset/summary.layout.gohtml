@@ -5,7 +5,7 @@
             </a>
         <div class="c-thumbnail-text u-min-w-0">
             <div class="bc-toolbar bc-toolbar--auto">
-                <div class="bc-toolbar-left flex-wrap">
+                <div class="bc-toolbar-left">
                     <span class="c-subline text-nowrap pr-3 my-2">
                         {{partial "shared/status" .Dataset}}
                     </span>
@@ -83,14 +83,16 @@
             {{with .Dataset.Author}}{{partial "shared/contributors" (dict "Contributors" . "ContributorsURL" ($.DatasetURL | querySet "show" "contributors"))}}{{end}}
 
             <div class="bc-toolbar bc-toolbar-responsive">
-                <div class="bc-toolbar-left flex-wrap">
+                <div class="bc-toolbar-left">
                     <div class="text-muted c-body-small text-truncate my-3">Biblio ID:
                         <code class="c-code ml-3">{{.Dataset.ID}}</code>
                     </div>
                 </div>
                 <div class="bc-toolbar-right flex-wrap">
                     <div class="bc-toolbar-item">
-                        <span class="c-body-small text-muted text-truncate my-2">Updated {{timeElapsed .Dataset.DateUpdated "en"}}{{with .Dataset.User}} by {{.Name}}{{end}}</span>
+                        <span class="c-body-small text-muted text-truncate my-2">
+                            {{partial "shared/updated_by" .Dataset}}
+                        </span>
                     </div>
                     <div class="bc-toolbar-item">
                         <ul class="c-meta-list c-meta-list-horizontal flex-nowrap">

@@ -5,12 +5,12 @@ import (
 	"io"
 	"strings"
 
-	"github.com/ugent-library/biblio-backend/internal/backends"
-	"github.com/ugent-library/biblio-backend/internal/backends/excel"
-	"github.com/ugent-library/biblio-backend/internal/models"
-	internal_time "github.com/ugent-library/biblio-backend/internal/time"
-	"github.com/ugent-library/biblio-backend/internal/validation"
-	"github.com/ugent-library/biblio-backend/internal/vocabularies"
+	"github.com/ugent-library/biblio-backoffice/internal/backends"
+	"github.com/ugent-library/biblio-backoffice/internal/backends/excel"
+	"github.com/ugent-library/biblio-backoffice/internal/models"
+	internal_time "github.com/ugent-library/biblio-backoffice/internal/time"
+	"github.com/ugent-library/biblio-backoffice/internal/validation"
+	"github.com/ugent-library/biblio-backoffice/internal/vocabularies"
 )
 
 const sep = " ; "
@@ -18,6 +18,7 @@ const sep = " ; "
 var headers = []string{
 	"id",
 	"type",
+	"status",
 	"author",
 	"ugent_author",
 	"editor",
@@ -90,6 +91,7 @@ var headers = []string{
 	"vabb_id",
 	"vabb_type",
 	"vabb_approved",
+	"vabb_year",
 	"article_number",
 	"jcr_category",
 	"jcr_category_rank",
@@ -120,10 +122,13 @@ func (x *xlsx) Add(pub *models.Publication) {
 
 func (x *xlsx) publicationToRow(pub *models.Publication) []string {
 	//see also: biblio/lib/Catmandu/Fix/publication_to_csv.pm
+	//see also: librecat/ugent/config/route.yml
+	//see also: librecat/ugent/fixes/to_reviewer_xlsx.fix
 
 	m := map[string]string{}
 	m["id"] = pub.ID
 	m["type"] = pub.Type
+	m["status"] = pub.Status
 
 	//field: <role>
 	//field: ugent_<role>
@@ -132,7 +137,11 @@ func (x *xlsx) publicationToRow(pub *models.Publication) []string {
 		{
 			values := []string{}
 			for _, contributor := range contributors {
-				values = append(values, contributor.FullName)
+				fullName := contributor.FullName
+				if fullName == "" {
+					fullName = contributor.FirstName + " " + contributor.LastName
+				}
+				values = append(values, fullName)
 			}
 			m[role] = strings.Join(values, sep)
 		}
@@ -148,7 +157,11 @@ func (x *xlsx) publicationToRow(pub *models.Publication) []string {
 				}
 				//full_name (<ugent_id>)
 				//full_name (<ugent_id>@<department.0.id>)
-				val := fmt.Sprintf("%s (%s%s)", contributor.FullName, contributor.UGentID[0], group)
+				fullName := contributor.FullName
+				if fullName == "" {
+					fullName = contributor.FirstName + " " + contributor.LastName
+				}
+				val := fmt.Sprintf("%s (%s%s)", fullName, contributor.UGentID[0], group)
 				values = append(values, val)
 			}
 			m["ugent_"+role] = strings.Join(values, sep)
@@ -251,6 +264,7 @@ func (x *xlsx) publicationToRow(pub *models.Publication) []string {
 	m["vabb_id"] = pub.VABBID
 	m["vabb_type"] = pub.VABBType
 	m["vabb_approved"] = fmt.Sprintf("%t", pub.VABBApproved)
+	m["vabb_year"] = strings.Join(pub.VABBYear, sep)
 	m["article_number"] = pub.ArticleNumber
 
 	//TODO: jcr fields

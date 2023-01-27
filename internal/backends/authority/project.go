@@ -7,15 +7,15 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
-	"github.com/ugent-library/biblio-backend/internal/backends"
-	"github.com/ugent-library/biblio-backend/internal/backends/es6"
-	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backoffice/internal/backends"
+	"github.com/ugent-library/biblio-backoffice/internal/backends/es6"
+	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func (c *Client) GetProject(id string) (*models.Project, error) {
-	var pr map[string]string = make(map[string]string)
+	var rec bson.M
 	err := c.mongo.Database("authority").Collection("project").FindOne(
 		context.Background(),
 		bson.M{
@@ -32,22 +32,31 @@ func (c *Client) GetProject(id string) (*models.Project, error) {
 					},
 				},
 			},
-		}).Decode(&pr)
+		}).Decode(&rec)
 	if err == mongo.ErrNoDocuments {
 		return nil, backends.ErrNotFound
 	}
 	if err != nil {
 		return nil, errors.Wrap(err, "unexpected error during document retrieval")
 	}
-	return &models.Project{
-		ID:        pr["_id"],
-		Title:     pr["title"],
-		StartDate: pr["start_date"],
-		EndDate:   pr["end_date"],
-	}, nil
+
+	p := &models.Project{
+		ID: rec["_id"].(string),
+	}
+	if v, ok := rec["title"]; ok {
+		p.Title = v.(string)
+	}
+	if v, ok := rec["start_date"]; ok {
+		p.StartDate = v.(string)
+	}
+	if v, ok := rec["end_date"]; ok {
+		p.EndDate = v.(string)
+	}
+
+	return p, nil
 }
 
-var projectFieldsBoosts map[string]string = map[string]string{
+var projectFieldsBoosts = map[string]string{
 	// field: boost
 	"_id":                    "100",
 	"iweto_id":               "80",
@@ -111,7 +120,9 @@ func (c *Client) SuggestProjects(q string) ([]models.Completion, error) {
 		}
 		c := models.Completion{}
 		c.ID = h.ID
-		c.Heading = m["title"].(string)
+		if v, ok := m["title"]; ok {
+			c.Heading = v.(string)
+		}
 		if k, e := m["eu_acronym"]; e {
 			c.Description = fmt.Sprintf("(%s)", k)
 		}

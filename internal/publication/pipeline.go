@@ -3,7 +3,7 @@ package publication
 import (
 	"strings"
 
-	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backoffice/internal/models"
 )
 
 // TODO eliminate need for this

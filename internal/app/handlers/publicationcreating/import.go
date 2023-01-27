@@ -10,19 +10,19 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ugent-library/biblio-backend/internal/app/displays"
-	"github.com/ugent-library/biblio-backend/internal/app/handlers"
-	"github.com/ugent-library/biblio-backend/internal/app/localize"
-	"github.com/ugent-library/biblio-backend/internal/bind"
-	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/biblio-backend/internal/render"
-	"github.com/ugent-library/biblio-backend/internal/render/display"
-	"github.com/ugent-library/biblio-backend/internal/render/flash"
-	"github.com/ugent-library/biblio-backend/internal/render/form"
-	"github.com/ugent-library/biblio-backend/internal/snapstore"
-	"github.com/ugent-library/biblio-backend/internal/ulid"
-	"github.com/ugent-library/biblio-backend/internal/validation"
-	"github.com/ugent-library/biblio-backend/internal/vocabularies"
+	"github.com/oklog/ulid/v2"
+	"github.com/ugent-library/biblio-backoffice/internal/app/displays"
+	"github.com/ugent-library/biblio-backoffice/internal/app/handlers"
+	"github.com/ugent-library/biblio-backoffice/internal/app/localize"
+	"github.com/ugent-library/biblio-backoffice/internal/bind"
+	"github.com/ugent-library/biblio-backoffice/internal/models"
+	"github.com/ugent-library/biblio-backoffice/internal/render"
+	"github.com/ugent-library/biblio-backoffice/internal/render/display"
+	"github.com/ugent-library/biblio-backoffice/internal/render/flash"
+	"github.com/ugent-library/biblio-backoffice/internal/render/form"
+	"github.com/ugent-library/biblio-backoffice/internal/snapstore"
+	"github.com/ugent-library/biblio-backoffice/internal/validation"
+	"github.com/ugent-library/biblio-backoffice/internal/vocabularies"
 )
 
 type BindImportSingle struct {
@@ -176,7 +176,7 @@ func (h *Handler) AddSingleImport(w http.ResponseWriter, r *http.Request, ctx Co
 		p = &models.Publication{Type: b.PublicationType}
 	}
 
-	p.ID = ulid.MustGenerate()
+	p.ID = ulid.Make().String()
 	p.Creator = &models.PublicationUser{ID: ctx.User.ID, Name: ctx.User.FullName}
 	p.User = &models.PublicationUser{ID: ctx.User.ID, Name: ctx.User.FullName}
 	p.Status = "private"
@@ -523,7 +523,7 @@ func (h *Handler) fetchPublicationByIdentifier(source, identifier string) (*mode
 }
 
 func (h *Handler) importPublications(user *models.User, source string, file io.Reader) (string, error) {
-	batchID := ulid.MustGenerate()
+	batchID := ulid.Make().String()
 
 	decFactory, ok := h.PublicationDecoders[source]
 	if !ok {
@@ -534,7 +534,7 @@ func (h *Handler) importPublications(user *models.User, source string, file io.R
 	var importErr error
 	for {
 		p := models.Publication{
-			ID:             ulid.MustGenerate(),
+			ID:             ulid.Make().String(),
 			BatchID:        batchID,
 			Status:         "private",
 			Classification: "U",

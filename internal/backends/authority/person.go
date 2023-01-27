@@ -7,9 +7,10 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
-	"github.com/ugent-library/biblio-backend/internal/backends"
-	"github.com/ugent-library/biblio-backend/internal/backends/es6"
-	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backoffice/internal/backends"
+	"github.com/ugent-library/biblio-backoffice/internal/backends/es6"
+	"github.com/ugent-library/biblio-backoffice/internal/models"
+	"github.com/ugent-library/biblio-backoffice/internal/util"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -90,7 +91,7 @@ func (c *Client) recordToPerson(record bson.M) (*models.Person, error) {
 		person.ID = v.(string)
 	}
 	if v, e := record["active"]; e {
-		person.Active = v.(int32) == 1
+		person.Active = util.ParseBoolean(v)
 	}
 	if v, e := record["orcid_id"]; e {
 		person.ORCID = v.(string)

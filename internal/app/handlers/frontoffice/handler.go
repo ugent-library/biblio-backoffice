@@ -14,14 +14,14 @@ import (
 	"github.com/iancoleman/strcase"
 	"github.com/jpillora/ipfilter"
 	"github.com/spf13/viper"
-	"github.com/ugent-library/biblio-backend/internal/app/handlers"
-	"github.com/ugent-library/biblio-backend/internal/backends"
-	"github.com/ugent-library/biblio-backend/internal/backends/filestore"
-	"github.com/ugent-library/biblio-backend/internal/bind"
-	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/biblio-backend/internal/render"
-	internal_time "github.com/ugent-library/biblio-backend/internal/time"
-	"github.com/ugent-library/biblio-backend/internal/validation"
+	"github.com/ugent-library/biblio-backoffice/internal/app/handlers"
+	"github.com/ugent-library/biblio-backoffice/internal/backends"
+	"github.com/ugent-library/biblio-backoffice/internal/backends/filestore"
+	"github.com/ugent-library/biblio-backoffice/internal/bind"
+	"github.com/ugent-library/biblio-backoffice/internal/models"
+	"github.com/ugent-library/biblio-backoffice/internal/render"
+	internal_time "github.com/ugent-library/biblio-backoffice/internal/time"
+	"github.com/ugent-library/biblio-backoffice/internal/validation"
 )
 
 const timestampFmt = "2006-01-02 15:04:05"
@@ -37,8 +37,8 @@ var licenses = map[string]string{
 	"CC-BY-NC-ND-4.0":  "Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International Public License (CC BY-NC-ND 4.0)",
 	"InCopyright":      "No license (in copyright)",
 	"LicenseNotListed": "A specific license has been chosen by the rights holder. Get in touch with the rights holder for reuse rights.",
-	"CopyrightUnknown": "I don't know the status of the copyright of this publication",
-	"":                 "Get in touch with the rights holder for reuse rights.",
+	"CopyrightUnknown": "Information pending",
+	"":                 "No license (in copyright)",
 }
 
 var openLicenses = map[string]struct{}{
@@ -52,7 +52,7 @@ var openLicenses = map[string]struct{}{
 }
 
 var hiddenLicenses = map[string]struct{}{
-	"LicenseNotListed": {},
+	"InCopyright":      {},
 	"CopyrightUnknown": {},
 }
 

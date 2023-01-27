@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/pkg/errors"
-	"github.com/ugent-library/biblio-backend/internal/backends/es6"
+	"github.com/ugent-library/biblio-backoffice/internal/backends/es6"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )

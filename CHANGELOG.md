@@ -11,6 +11,65 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [v1.0.21] - 2023-01-25
+
+### Added
+
+### Fixed
+
+- Fix bug in some repeated text fields
+
+## [v1.0.20] - 2023-01-25
+
+### Added
+
+- Switch from deprecated biblio-backend prefix to biblio-backoffice
+
+### Fixed
+
+## [v1.0.19] - 2023-01-25
+
+### Added
+
+- Switch to more secure github.com/ugent-library/oidc for authentication
+- #936: Differentiate between sytem and user updates in ui
+- Add request id to log statements; improve logging in general
+
+### Fixed
+
+- #966: Add missing external contributor names to dataset xlsx export
+- #932: Add missing has_message curation only facet to datasets
+- #921: Add status and vabb_year fields to xslx export
+- #991: Be more forgiving when decoding boolean values from MongoDB
+- Various css fixes, fix typos
+
+## [v1.0.18] - 2023-01-20
+
+### Added
+
+- Simple batch interface for curators (can currently only add projects) 
+- ulid wrapper package is no longer needed and has been removed
+
+### Fixed
+
+## [v1.0.17] - 2023-01-20
+
+### Added
+
+### Fixed
+
+- #984: Fix decoding of projects from Elasticsearch
+- #986: Reviewer tags facet was missing a 'Select all' button
+- #975: Fix exposing of licenses to frontoffice
+
+## [v1.0.16] - 2023-01-19
+
+### Added
+
+### Fixed
+
+- #984: Fix decoding of projects from MongoDB
+
 ## [v1.0.15] - 2023-01-18
 
 ### Added
@@ -170,7 +229,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.15...HEAD
+[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.21...HEAD
+[v1.0.21]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.20...v1.0.21
+[v1.0.20]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.19...v1.0.20
+[v1.0.19]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.18...v1.0.19
+[v1.0.18]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.17...v1.0.18
+[v1.0.17]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.16...v1.0.17
+[v1.0.16]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.15...v1.0.16
 [v1.0.15]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.14...v1.0.15
 [v1.0.14]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.13...v1.0.14
 [v1.0.13]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.12...v1.0.13

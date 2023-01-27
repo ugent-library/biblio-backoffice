@@ -51,6 +51,7 @@ var Map = map[string][]string{
 		"status",
 		"faculty",
 		"reviewer_tags",
+		"has_message",
 		"created_since",
 		"updated_since",
 	},

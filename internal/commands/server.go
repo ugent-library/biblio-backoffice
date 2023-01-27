@@ -6,32 +6,32 @@ import (
 	"html/template"
 	"net/http"
 	"net/url"
-	"os"
-	"os/signal"
 	"strings"
-	"syscall"
 	"time"
 
 	"github.com/Masterminds/sprig/v3"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
+	"github.com/oklog/ulid/v2"
+	"github.com/ory/graceful"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/ugent-library/biblio-backend/internal/app/helpers"
-	"github.com/ugent-library/biblio-backend/internal/app/routes"
-	"github.com/ugent-library/biblio-backend/internal/backends"
-	"github.com/ugent-library/biblio-backend/internal/bind"
-	"github.com/ugent-library/biblio-backend/internal/locale"
-	"github.com/ugent-library/biblio-backend/internal/logging"
-	"github.com/ugent-library/biblio-backend/internal/mix"
-	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/biblio-backend/internal/render"
-	"github.com/ugent-library/biblio-backend/internal/urls"
-	"github.com/ugent-library/biblio-backend/internal/vocabularies"
-	"github.com/ugent-library/go-oidc/oidc"
+	"github.com/ugent-library/biblio-backoffice/internal/app/helpers"
+	"github.com/ugent-library/biblio-backoffice/internal/app/routes"
+	"github.com/ugent-library/biblio-backoffice/internal/backends"
+	"github.com/ugent-library/biblio-backoffice/internal/bind"
+	"github.com/ugent-library/biblio-backoffice/internal/locale"
+	"github.com/ugent-library/biblio-backoffice/internal/models"
+	"github.com/ugent-library/biblio-backoffice/internal/render"
+	"github.com/ugent-library/biblio-backoffice/internal/urls"
+	"github.com/ugent-library/biblio-backoffice/internal/vocabularies"
+	"github.com/ugent-library/middleware"
+	"github.com/ugent-library/mix"
+	"github.com/ugent-library/oidc"
+	"github.com/ugent-library/zaphttp"
 	"go.uber.org/zap"
 
-	_ "github.com/ugent-library/biblio-backend/internal/translations"
+	_ "github.com/ugent-library/biblio-backoffice/internal/translations"
 )
 
 func init() {
@@ -53,7 +53,7 @@ func init() {
 
 var serverCmd = &cobra.Command{
 	Use:   "server [command]",
-	Short: "The biblio-backend HTTP server",
+	Short: "The biblio-backoffice HTTP server",
 }
 
 var serverRoutesCmd = &cobra.Command{
@@ -96,6 +96,7 @@ var serverStartCmd = &cobra.Command{
 	Use:   "start",
 	Short: "start the http server",
 	Run: func(cmd *cobra.Command, args []string) {
+		production := viper.GetString("mode") == "production"
 
 		// setup logger
 		logger := newLogger()
@@ -124,62 +125,34 @@ var serverStartCmd = &cobra.Command{
 		// setup router
 		router := buildRouter(e, logger)
 
-		// setup logging
-		handler := logging.HTTPHandler(logger, router)
+		// apply these before request reaches the router
+		handler := middleware.Apply(router,
+			middleware.Recover(func(err any) {
+				if production {
+					logger.With(zap.Stack("stack")).Error(err)
+				} else {
+					logger.Error(err)
+				}
+			}),
+			middleware.SetRequestID(func() string {
+				return ulid.Make().String()
+			}),
+			zaphttp.LogRequests(logger.Desugar()),
+		)
 
 		// setup server
 		addr := fmt.Sprintf("%s:%d", viper.GetString("host"), viper.GetInt("port"))
-
-		server := &http.Server{
+		server := graceful.WithDefaults(&http.Server{
 			Addr:         addr,
 			Handler:      handler,
 			ReadTimeout:  3 * time.Minute,
 			WriteTimeout: 3 * time.Minute,
+		})
+		logger.Infof("starting server at %s", addr)
+		if err := graceful.Graceful(server.ListenAndServe, server.Shutdown); err != nil {
+			logger.Fatal(err)
 		}
-
-		// start server
-		ctx, stop := signal.NotifyContext(context.Background(),
-			os.Interrupt,
-			syscall.SIGTERM,
-			syscall.SIGQUIT,
-		)
-
-		errC := make(chan error)
-
-		// listen for shutdown signal
-		go func() {
-			<-ctx.Done()
-
-			logger.Infof("Stopping gracefully...")
-
-			timeoutCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-
-			defer func() {
-				stop()
-				cancel()
-				close(errC)
-			}()
-
-			// disable keep-alive on shutdown
-			server.SetKeepAlivesEnabled(false)
-
-			if err := server.Shutdown(timeoutCtx); err != nil {
-				errC <- err
-			}
-
-			logger.Infof("Stopped")
-		}()
-
-		go func() {
-			logger.Infof("Listening at %s", addr)
-			if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-				errC <- err
-			}
-		}()
-
-		if err := <-errC; err != nil {
-			logger.Fatalf("Error while running: %s", err)
-		}
+		logger.Info("gracefully stopped server")
 	},
 }
 
@@ -208,16 +181,22 @@ func buildRouter(services *backends.Services, logger *zap.SugaredLogger) *mux.Ro
 	// router
 	router := mux.NewRouter()
 
+	// asets
+	assets, err := mix.New(mix.Config{
+		ManifestFile: "static/mix-manifest.json",
+		PublicPath:   baseURL.Path + "/static/",
+	})
+	if err != nil {
+		logger.Fatal(err)
+	}
+
 	// renderer
 	funcMaps := []template.FuncMap{
 		sprig.FuncMap(),
-		mix.FuncMap(mix.Config{
-			ManifestFile: "static/mix-manifest.json",
-			PublicPath:   baseURL.Path + "/static/",
-		}),
 		urls.FuncMap(router),
 		helpers.FuncMap(),
 		{
+			"assetPath": assets.AssetPath,
 			"appMode": func() string { // TODO eliminate need for this
 				return mode
 			},
@@ -259,18 +238,20 @@ func buildRouter(services *backends.Services, logger *zap.SugaredLogger) *mux.Ro
 	sessionStore.Options.HttpOnly = true
 	sessionStore.Options.Secure = baseURL.Scheme == "https"
 
-	oidcClient, err := oidc.New(oidc.Config{
+	oidcAuth, err := oidc.NewAuth(context.TODO(), oidc.Config{
 		URL:          viper.GetString("oidc-url"),
 		ClientID:     viper.GetString("oidc-client-id"),
 		ClientSecret: viper.GetString("oidc-client-secret"),
 		RedirectURL:  baseURL.String() + "/auth/openid-connect/callback",
+		CookieName:   viper.GetString("session-name") + ".state",
+		CookieSecret: []byte(viper.GetString("session-secret")),
 	})
 	if err != nil {
 		logger.Fatal(err)
 	}
 
 	// add routes
-	routes.Register(services, baseURL, router, sessionStore, sessionName, localizer, logger, oidcClient)
+	routes.Register(services, baseURL, router, sessionStore, sessionName, localizer, logger, oidcAuth)
 
 	return router
 }

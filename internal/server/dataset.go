@@ -7,10 +7,10 @@ import (
 	"io"
 	"sync"
 
-	api "github.com/ugent-library/biblio-backend/api/v1"
-	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/biblio-backend/internal/ulid"
-	"github.com/ugent-library/biblio-backend/internal/validation"
+	"github.com/oklog/ulid/v2"
+	api "github.com/ugent-library/biblio-backoffice/api/v1"
+	"github.com/ugent-library/biblio-backoffice/internal/models"
+	"github.com/ugent-library/biblio-backoffice/internal/validation"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -133,7 +133,7 @@ func (s *server) AddDatasets(stream api.Biblio_AddDatasetsServer) error {
 		d := MessageToDataset(req.Dataset)
 
 		if d.ID == "" {
-			d.ID = ulid.MustGenerate()
+			d.ID = ulid.Make().String()
 		}
 
 		if d.Status == "" {
@@ -142,7 +142,7 @@ func (s *server) AddDatasets(stream api.Biblio_AddDatasetsServer) error {
 
 		for i, val := range d.Abstract {
 			if val.ID == "" {
-				val.ID = ulid.MustGenerate()
+				val.ID = ulid.Make().String()
 			}
 			d.Abstract[i] = val
 		}
@@ -400,6 +400,10 @@ func DatasetToMessage(d *models.Dataset) *api.Dataset {
 		msg.User = &api.RelatedUser{Id: d.User.ID, Name: d.User.Name}
 	}
 
+	if d.LastUser != nil {
+		msg.LastUser = &api.RelatedUser{Id: d.LastUser.ID, Name: d.LastUser.Name}
+	}
+
 	msg.Doi = d.DOI
 
 	msg.Keyword = d.Keyword
@@ -569,6 +573,10 @@ func MessageToDataset(msg *api.Dataset) *models.Dataset {
 
 	if msg.User != nil {
 		d.User = &models.DatasetUser{ID: msg.User.Id, Name: msg.User.Name}
+	}
+
+	if msg.LastUser != nil {
+		d.LastUser = &models.DatasetUser{ID: msg.LastUser.Id, Name: msg.LastUser.Name}
 	}
 
 	d.DOI = msg.Doi
