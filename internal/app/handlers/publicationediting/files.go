@@ -59,6 +59,12 @@ type YieldDeleteFile struct {
 	File *models.PublicationFile
 }
 
+func (h *Handler) RefreshFiles(w http.ResponseWriter, r *http.Request, ctx Context) {
+	render.View(w, "publication/refresh_files", YieldShowFiles{
+		Context: ctx,
+	})
+}
+
 func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context) {
 	// 2GB limit on request body
 	r.Body = http.MaxBytesReader(w, r.Body, 2000000000)

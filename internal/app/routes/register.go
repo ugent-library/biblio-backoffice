@@ -1012,6 +1012,10 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		publicationEditingHandler.Wrap(publicationEditingHandler.EditFile)).
 		Methods("GET").
 		Name("publication_edit_file")
+	r.HandleFunc("/publication/{id}/refresh-files",
+		publicationEditingHandler.Wrap(publicationEditingHandler.RefreshFiles)).
+		Methods("GET").
+		Name("publication_refresh_files")
 	r.HandleFunc("/publication/{id}/files/{file_id}/refresh-form",
 		publicationEditingHandler.Wrap(publicationEditingHandler.RefreshEditFileForm)).
 		Methods("GET").

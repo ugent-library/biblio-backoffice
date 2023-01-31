@@ -9,7 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- File upload progress
+
 ### Fixed
+
+- Fix conflict error after file upload cancel
 
 ## [v1.0.21] - 2023-01-25
 
