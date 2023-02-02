@@ -9,7 +9,7 @@ syntax = "proto3";
 
 package biblio.v1;
 
-option go_package = "github.com/ugent-library/biblio-backend/api/v1";
+option go_package = "github.com/ugent-library/biblio-backoffice/api/v1";
 
 import "google/protobuf/timestamp.proto";
 
@@ -339,6 +339,7 @@ message Publication {
     repeated string vabb_year = 83;
     bool has_been_public = 84;
     PublicationStatus publication_status = 85;
+    RelatedUser last_user = 86;
 }
 
 message Dataset {
@@ -398,6 +399,7 @@ message Dataset {
     string other_license = 31;
     repeated Department department = 32;
     bool has_been_public = 33;
+    RelatedUser last_user = 34;
 }
 
 message GetFileRequest {

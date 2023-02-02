@@ -54,7 +54,7 @@ server.
 ### Docker
 
 ```bash
-docker run --name some-backoffice -d ugentlib/biblio-backend:dev
+docker run --name some-backoffice -d ugentlib/biblio-backoffice:dev
 ```
 
 Use `docker-compose` to manage all arguments (ports, volumes, env variables,...)
@@ -118,81 +118,81 @@ go run main.go server start --session-secret mysecret
 Or as an environment variables:
 
 ```
-BIBLIO_BACKEND_SESSION_SECRET=mysecret go run main.go server start
+BIBLIO_BACKOFFICE_SESSION_SECRET=mysecret go run main.go server start
 ```
 
 The following variables must be set:
 
 ```bash
-BIBLIO_BACKEND_BASE_URL
-BIBLIO_BACKEND_SESSION_SECRET
-BIBLIO_BACKEND_FILE_DIR
-BIBLIO_BACKEND_FRONTEND_URL
-BIBLIO_BACKEND_FRONTEND_USERNAME
-BIBLIO_BACKEND_FRONTEND_PASSWORD
-BIBLIO_BACKEND_OIDC_URL
-BIBLIO_BACKEND_OIDC_CLIENT_ID
-BIBLIO_BACKEND_OIDC_CLIENT_SECRET
-BIBLIO_BACKEND_CSRF_NAME
-BIBLIO_BACKEND_CSRF_SECRET
-BIBLIO_BACKEND_ORCID_CLIENT_ID
-BIBLIO_BACKEND_ORCID_CLIENT_SECRET
-BIBLIO_BACKEND_ORCID_SANDBOX
-BIBLIO_BACKEND_PG_CONN (default: postgres://localhost:5432/biblio_backend?sslmode=disable)
-BIBLIO_BACKEND_PUBLICATION_INDEX (default: biblio_backend_publications)
-BIBLIO_BACKEND_DATASET_INDEX (default: biblio_backend_datasets)
-BIBLIO_BACKEND_ES6_URL (default: http://localhost:9200)
+BIBLIO_BACKOFFICE_BASE_URL
+BIBLIO_BACKOFFICE_SESSION_SECRET
+BIBLIO_BACKOFFICE_FILE_DIR
+BIBLIO_BACKOFFICE_FRONTEND_URL
+BIBLIO_BACKOFFICE_FRONTEND_USERNAME
+BIBLIO_BACKOFFICE_FRONTEND_PASSWORD
+BIBLIO_BACKOFFICE_OIDC_URL
+BIBLIO_BACKOFFICE_OIDC_CLIENT_ID
+BIBLIO_BACKOFFICE_OIDC_CLIENT_SECRET
+BIBLIO_BACKOFFICE_CSRF_NAME
+BIBLIO_BACKOFFICE_CSRF_SECRET
+BIBLIO_BACKOFFICE_ORCID_CLIENT_ID
+BIBLIO_BACKOFFICE_ORCID_CLIENT_SECRET
+BIBLIO_BACKOFFICE_ORCID_SANDBOX
+BIBLIO_BACKOFFICE_PG_CONN (default: postgres://localhost:5432/biblio_backoffice?sslmode=disable)
+BIBLIO_BACKOFFICE_PUBLICATION_INDEX (default: biblio_backoffice_publications)
+BIBLIO_BACKOFFICE_DATASET_INDEX (default: biblio_backoffice_datasets)
+BIBLIO_BACKOFFICE_ES6_URL (default: http://localhost:9200)
 ```
 
 The following variables may be set:
 
 ```bash
-BIBLIO_BACKEND_MODE (default: production)
-BIBLIO_BACKEND_PORT (default: 3000)
-BIBLIO_BACKEND_HOST (default: localhost)
-BIBLIO_BACKEND_SESSION_NAME (default: biblio-backend)
-BIBLIO_BACKEND_SESSION_MAX_AGE (default: 86400 * 30 // 30 days)
-BIBLIO_BACKEND_HDL_SRV_ENABLED (default: false)
-BIBLIO_BACKEND_HDL_SRV_URL
-BIBLIO_BACKEND_HDL_SRV_PREFIX
-BIBLIO_BACKEND_HDL_SRV_USERNAME
-BIBLIO_BACKEND_HDL_SRV_PASSWORD
+BIBLIO_BACKOFFICE_MODE (default: production)
+BIBLIO_BACKOFFICE_PORT (default: 3000)
+BIBLIO_BACKOFFICE_HOST (default: localhost)
+BIBLIO_BACKOFFICE_SESSION_NAME (default: biblio-backoffice)
+BIBLIO_BACKOFFICE_SESSION_MAX_AGE (default: 86400 * 30 // 30 days)
+BIBLIO_BACKOFFICE_HDL_SRV_ENABLED (default: false)
+BIBLIO_BACKOFFICE_HDL_SRV_URL
+BIBLIO_BACKOFFICE_HDL_SRV_PREFIX
+BIBLIO_BACKOFFICE_HDL_SRV_USERNAME
+BIBLIO_BACKOFFICE_HDL_SRV_PASSWORD
 ```
 
 For the gRPC server and client:
 
 ```bash
-BIBLIO_BACKEND_HOST
-BIBLIO_BACKEND_PORT
-BIBLIO_BACKEND_USERNAME
-BIBLIO_BACKEND_PASSWORD
-BIBLIO_BACKEND_INSECURE (default: false)
+BIBLIO_BACKOFFICE_HOST
+BIBLIO_BACKOFFICE_PORT
+BIBLIO_BACKOFFICE_USERNAME
+BIBLIO_BACKOFFICE_PASSWORD
+BIBLIO_BACKOFFICE_INSECURE (default: false)
 ```
 
 ## Development
 
-This project uses [cosmtrek/air](https://github.com/cosmtrek/air) to watch for file
-changes and recompile the application:
+This project uses [reflex](https://github.com/cespare/reflex) to watch for file
+changes and recompile the application and assets:
 
 ```
-git clone git@github.com:ugent-library/biblio-backoffice.git
 cd biblio-backoffice
-cp .air.example.toml .air.toml
-air
+go install github.com/cespare/reflex@latest
+cp .reflex.example.conf .reflex.conf
+reflex -d none -c .reflex.conf
 ```
 
-Refer to `air_example.toml`. The `full_bin` line assumes the existence of a `.env` file
+Refer to `.reflex.example.conf`. The command assumes the existence of a `.env` file
 which exports all relevant environment variables:
 
 ```bash
-export BIBLIO_BACKEND_MODE="development"
-export BIBLIO_BACKEND_BASE_URL="http://localhost:3001"
+export BIBLIO_BACKOFFICE_MODE="development"
+export BIBLIO_BACKOFFICE_BASE_URL="http://localhost:3001"
 ...
 ```
 
-Alternatively, adapt this line in you `.air.toml` to suit your needs:
+Alternatively, adapt this command in your `.reflex.conf` to suit your needs.
 ```
-full_bin = "source ./.env && ./tmp/main server start --host localhost --port 3001 || exit 1"
+'source .env && go run main.go server start --host localhost --port 3001'
 ```
 
 ### Running tests
@@ -227,28 +227,20 @@ make tear-test-env
 Install node dependencies:
 
 ```bash
-cd internal/services/webapp/
 npm install
 ```
 
-Build assets:
+Assets will be recompiled automatically if you use [reflex](https://github.com/cespare/reflex) (see above).
+
+Build assets manually:
 
 ```
-cd internal/services/webapp/
 npx mix
 ```
 
-Watch file changes in development:
+Build production assets manually:
 
 ```
-cd internal/services/webapp/
-npx mix watch
-```
-
-Build production assets:
-
-```
-cd internal/services/webapp/
 npx mix --production
 ```
 
@@ -259,10 +251,9 @@ Laravel Mix [documentation](https://laravel.com/docs/8.x).
 ```
 go install github.com/jackc/tern@latest
 cd etc/pg/migrations
-PGDATABASE=biblio_backend tern migrate
+PGDATABASE=biblio_backoffice tern migrate
 ```
 
 More info [here](https://github.com/jackc/tern).
 
 List of PG env variables [here](https://www.postgresql.org/docs/current/libpq-envars.html).
-

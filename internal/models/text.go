@@ -1,8 +1,8 @@
 package models
 
 import (
-	"github.com/ugent-library/biblio-backend/internal/validation"
-	"github.com/ugent-library/biblio-backend/internal/vocabularies"
+	"github.com/ugent-library/biblio-backoffice/internal/validation"
+	"github.com/ugent-library/biblio-backoffice/internal/vocabularies"
 )
 
 type Text struct {

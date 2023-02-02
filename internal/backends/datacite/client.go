@@ -11,9 +11,9 @@ import (
 
 	"github.com/caltechlibrary/doitools"
 	"github.com/tidwall/gjson"
-	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/biblio-backend/internal/validation"
-	"github.com/ugent-library/biblio-backend/internal/vocabularies"
+	"github.com/ugent-library/biblio-backoffice/internal/models"
+	"github.com/ugent-library/biblio-backoffice/internal/validation"
+	"github.com/ugent-library/biblio-backoffice/internal/vocabularies"
 	"golang.org/x/text/language"
 )
 

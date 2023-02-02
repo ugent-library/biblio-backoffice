@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
-	"github.com/ugent-library/biblio-backend/client/cmd"
+	"github.com/ugent-library/biblio-backoffice/client/cmd"
 )
 
 const (
@@ -16,7 +16,7 @@ const (
 )
 
 func main() {
-	viper.SetEnvPrefix("biblio-backend")
+	viper.SetEnvPrefix("biblio-backoffice")
 	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
 	viper.AutomaticEnv()
 	viper.SetDefault("host", defaultHost)

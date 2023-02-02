@@ -7,14 +7,14 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
-	_ "github.com/ugent-library/biblio-backend/internal/snapstore"
+	_ "github.com/ugent-library/biblio-backoffice/internal/snapstore"
 )
 
 const (
-	defaultPgConn               = "postgres://localhost:5432/biblio_backend?sslmode=disable"
+	defaultPgConn               = "postgres://localhost:5432/biblio_backoffice?sslmode=disable"
 	defaultEs6URL               = "http://localhost:9200"
-	defaultDatasetIndex         = "biblio_backend_datasets"
-	defaultPublicationIndex     = "biblio_backend_publications"
+	defaultDatasetIndex         = "biblio_backoffice_datasets"
+	defaultPublicationIndex     = "biblio_backoffice_publications"
 	defaultAPIHost              = ""
 	defaultAPIPort              = 30000
 	defaultAPIAdminUsername     = "admin"
@@ -22,9 +22,9 @@ const (
 	defaultMode                 = "production"
 	defaultHost                 = ""
 	defaultPort                 = 3000
-	defaultSessionName          = "biblio-backend"
+	defaultSessionName          = "biblio-backoffice"
 	defaultSessionMaxAge        = 86400 * 30 // 30 days
-	defaultCSRFName             = "biblio-backend.csrf-token"
+	defaultCSRFName             = "biblio-backoffice.csrf-token"
 	defaultHandleServerEnabled  = false
 	defaultHandleServerURL      = "http://localhost:4000/handles"
 	defaultHandleServerPrefix   = "1854"
@@ -34,8 +34,8 @@ const (
 
 // TODO we shouldn't do this for all flags, only ones that have a config equivalent
 var rootCmd = &cobra.Command{
-	Use:   "biblio-backend [command]",
-	Short: "The biblio-backend CLI",
+	Use:   "biblio-backoffice [command]",
+	Short: "The biblio-backoffice CLI",
 	// flags override env vars
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		cmd.Flags().VisitAll(func(f *pflag.Flag) {
@@ -48,11 +48,12 @@ var rootCmd = &cobra.Command{
 }
 
 func init() {
-	viper.SetEnvPrefix("biblio-backend")
+	viper.SetEnvPrefix("biblio-backoffice")
 	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
 	viper.AutomaticEnv()
 	viper.SetDefault("pg-conn", defaultPgConn)
 	viper.SetDefault("es6-url", defaultEs6URL)
+	viper.SetDefault("frontend-es6-url", defaultEs6URL)
 	viper.SetDefault("dataset-index", defaultDatasetIndex)
 	viper.SetDefault("publication-index", defaultPublicationIndex)
 	// viper.SetDefault("api-host", defaultAPIHost)
@@ -82,6 +83,8 @@ func init() {
 	rootCmd.PersistentFlags().String("dataset-index", defaultDatasetIndex, "dataset index name")
 	rootCmd.PersistentFlags().String("publication-index", defaultPublicationIndex, "publication index name")
 
+	rootCmd.PersistentFlags().String("frontend-es6-url", "", "frontend elasticsearch 6.x url, separate multiple with comma")
+
 	rootCmd.PersistentFlags().String("orcid-client-id", "", "orcid client id")
 	rootCmd.PersistentFlags().String("orcid-client-secret", "", "orcid client secret")
 	rootCmd.PersistentFlags().Bool("orcid-sandbox", false, "use the orcid sandbox in development")
@@ -91,6 +94,8 @@ func init() {
 	rootCmd.PersistentFlags().String("oidc-client-secret", "", "openid connect client secret")
 
 	rootCmd.PersistentFlags().String("citeproc-url", "", "citeproc url")
+
+	rootCmd.PersistentFlags().String("mongodb-url", "", "mongodb connection uri (for authority database)")
 
 	// rootCmd.PersistentFlags().String("imagor-url", "", "imagor url")
 	// rootCmd.PersistentFlags().String("imagor-secret", "", "imagor secret")

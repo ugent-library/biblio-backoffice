@@ -1,15 +1,15 @@
 package displays
 
 import (
-	"github.com/ugent-library/biblio-backend/internal/app/helpers"
-	"github.com/ugent-library/biblio-backend/internal/app/localize"
-	"github.com/ugent-library/biblio-backend/internal/locale"
-	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/biblio-backend/internal/render/display"
+	"github.com/ugent-library/biblio-backoffice/internal/app/helpers"
+	"github.com/ugent-library/biblio-backoffice/internal/app/localize"
+	"github.com/ugent-library/biblio-backoffice/internal/locale"
+	"github.com/ugent-library/biblio-backoffice/internal/models"
+	"github.com/ugent-library/biblio-backoffice/internal/render/display"
 )
 
-func dissertationDetails(l *locale.Locale, p *models.Publication) *display.Display {
-	return display.New().
+func dissertationDetails(user *models.User, l *locale.Locale, p *models.Publication) *display.Display {
+	d := display.New().
 		WithTheme("default").
 		AddSection(
 			&display.Text{
@@ -46,8 +46,9 @@ func dissertationDetails(l *locale.Locale, p *models.Publication) *display.Displ
 				Value: l.TS("publication_publishing_statuses", p.PublicationStatus),
 			},
 			&display.Text{
-				Label: l.T("builder.extern"),
-				Value: helpers.FormatBool(p.Extern, "✓", "-"),
+				Label:         l.T("builder.extern"),
+				Value:         helpers.FormatBool(p.Extern, "true", "false"),
+				ValueTemplate: "format/boolean_string",
 			},
 			&display.Text{
 				Label:    l.T("builder.year"),
@@ -139,4 +140,14 @@ func dissertationDetails(l *locale.Locale, p *models.Publication) *display.Displ
 				Values: p.EISBN,
 			},
 		)
+
+	if user.CanCurate() {
+		d.Sections[0].Fields = append(d.Sections[0].Fields, &display.Text{
+			Label:         l.T("builder.legacy"),
+			Value:         helpers.FormatBool(p.Legacy, "true", "false"),
+			ValueTemplate: "format/boolean_string",
+		})
+	}
+
+	return d
 }

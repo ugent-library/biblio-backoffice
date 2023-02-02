@@ -3,7 +3,7 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/ugent-library/biblio-backend/internal/render"
+	"github.com/ugent-library/biblio-backoffice/internal/render"
 )
 
 type YieldNotFound struct {

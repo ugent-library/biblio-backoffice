@@ -8,7 +8,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	api "github.com/ugent-library/biblio-backend/api/v1"
+	api "github.com/ugent-library/biblio-backoffice/api/v1"
 )
 
 type AddFileCMd struct {

@@ -11,8 +11,8 @@ import (
 	"github.com/elastic/go-elasticsearch/v6/esapi"
 	"github.com/elastic/go-elasticsearch/v6/esutil"
 	"github.com/pkg/errors"
-	"github.com/ugent-library/biblio-backend/internal/backends"
-	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backoffice/internal/backends"
+	"github.com/ugent-library/biblio-backoffice/internal/models"
 )
 
 type Publications struct {
@@ -143,13 +143,14 @@ func (publications *Publications) Search(args *models.SearchArgs) (*models.Publi
 	}
 	opts = append(opts, publications.Client.es.Search.WithBody(&buf))
 
-	res, err := publications.Client.es.Search(opts...)
+	var res publicationResEnvelope
+	err := publications.Client.searchWithOpts(opts, &res)
 	if err != nil {
 		return nil, err
 	}
 
 	// READ RESPONSE FROM ES
-	hits, err := decodePublicationRes(res, args.Facets)
+	hits, err := decodePublicationRes(&res, args.Facets)
 	if err != nil {
 		return nil, err
 	}
@@ -179,6 +180,11 @@ func buildPublicationUserQuery(args *models.SearchArgs) M {
 				"fields": []string{
 					"id^100",
 					"doi^50",
+					"isbn^50",
+					"eisbn^50",
+					"issn^50",
+					"eissn^50",
+					"wos_id^50",
 					"title^40",
 					"all",
 					"author.full_name.phrase_ngram^0.05",
@@ -287,21 +293,7 @@ type publicationResEnvelope struct {
 	}
 }
 
-func decodePublicationRes(res *esapi.Response, facets []string) (*models.PublicationHits, error) {
-	defer res.Body.Close()
-
-	if res.IsError() {
-		buf := &bytes.Buffer{}
-		if _, err := io.Copy(buf, res.Body); err != nil {
-			return nil, err
-		}
-		return nil, errors.New("Es6 error response: " + buf.String())
-	}
-
-	var r publicationResEnvelope
-	if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
-		return nil, errors.Wrap(err, "Error parsing the response body")
-	}
+func decodePublicationRes(r *publicationResEnvelope, facets []string) (*models.PublicationHits, error) {
 
 	hits := models.PublicationHits{}
 	hits.Total = r.Hits.Total
