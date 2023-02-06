@@ -1,11 +1,11 @@
 export GO111MODULE=on
 
 -include .env
-BIBLIO_BACKEND_PG_CONN=postgres://biblio:biblio@localhost:2345/biblio
-BIBLIO_BACKEND_ES6_URL=http://localhost:9400
-BIBLIO_BACKEND_DATASET_INDEX=biblio_datasets
-BIBLIO_BACKEND_PUBLICATION_INDEX=biblio_publications
-BIBLIO_BACKEND_PORT=3999
+BIBLIO_BACKOFFICE_PG_CONN=postgres://biblio:biblio@localhost:2345/biblio
+BIBLIO_BACKOFFICE_ES6_URL=http://localhost:9400
+BIBLIO_BACKOFFICE_DATASET_INDEX=biblio_datasets
+BIBLIO_BACKOFFICE_PUBLICATION_INDEX=biblio_publications
+BIBLIO_BACKOFFICE_PORT=3999
 export
 
 setup-test-env: init-test-env create-db-tables create-es-indices
@@ -13,8 +13,8 @@ setup-test-env: init-test-env create-db-tables create-es-indices
 tear-test-env:
 	docker-compose down
 
-run-tests
-	@cd client && go test ./...
+run-tests:
+	@cd client && go clean -testcache ./... && go test ./... -v
 
 init-test-env:
 	docker-compose up -d
