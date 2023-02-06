@@ -3,7 +3,6 @@ package cmd
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"time"
 
@@ -22,6 +21,8 @@ func (c *GetPublicationCmd) Command() *cobra.Command {
 		Short: "Get publication by id",
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
+			log.SetOutput(cmd.OutOrStdout())
+
 			c.Wrap(func() {
 				c.Run(cmd, args)
 			})
@@ -46,5 +47,5 @@ func (c *GetPublicationCmd) Run(cmd *cobra.Command, args []string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("%s\n", j)
+	cmd.Printf("%s\n", j)
 }
