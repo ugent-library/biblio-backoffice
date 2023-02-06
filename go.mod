@@ -38,12 +38,9 @@ require (
 
 require (
 	cloud.google.com/go/compute v1.7.0 // indirect
-<<<<<<< HEAD
 	github.com/davecgh/go-spew v1.1.1 // indirect
-=======
 	github.com/go-jose/go-jose/v3 v3.0.0 // indirect
 	github.com/klauspost/compress v1.13.6 // indirect
->>>>>>> main
 	github.com/lib/pq v1.10.6 // indirect
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
 	github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe // indirect
