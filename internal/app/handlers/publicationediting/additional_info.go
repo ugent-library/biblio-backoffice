@@ -1,6 +1,7 @@
 package publicationediting
 
 import (
+	"encoding/json"
 	"errors"
 	"net/http"
 
@@ -96,6 +97,9 @@ func additionalInfoForm(user *models.User, l *locale.Locale, p *models.Publicati
 		researchFieldOptions[i].Value = v
 	}
 
+	keywordBytes, _ := json.Marshal(p.Keyword)
+	keywordStr := string(keywordBytes)
+
 	return form.New().
 		WithTheme("default").
 		WithErrors(localize.ValidationErrors(l, errors)).
@@ -113,11 +117,12 @@ func additionalInfoForm(user *models.User, l *locale.Locale, p *models.Publicati
 					"/research_field",
 				),
 			},
-			&form.TextRepeat{
-				Name:   "keyword",
-				Values: p.Keyword,
-				Label:  l.T("builder.keyword"),
-				Cols:   9,
+			&form.Text{
+				Name:     "keyword",
+				Value:    keywordStr,
+				Template: "tags",
+				Label:    l.T("builder.keyword"),
+				Cols:     9,
 				Error: localize.ValidationErrorAt(
 					l,
 					errors,
