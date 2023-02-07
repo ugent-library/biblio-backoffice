@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"bytes"
+	"encoding/json"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -41,11 +42,310 @@ func (s *AddPublicationSuite) SetupTest() {
 
 // Create new valid record
 
-// Test whether all fields are present
-
 // Update existing valid record
 
-// Test whether all fields are present
+// Test if all fields return properly
+func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
+	t := s.T()
+
+	file, errFile := os.ReadFile("../../etc/fixtures/complete.book_chapter.json")
+	if errFile != nil {
+		t.Fatal(errFile)
+	}
+
+	// Add a publication
+	addCmdOutFile, errJSONL := toJSONL(file)
+	if errJSONL != nil {
+		t.Fatal(errJSONL)
+	}
+
+	errAdd := addPublication(addCmdOutFile)
+	if errAdd != nil {
+		t.Fatal(errAdd)
+	}
+
+	// Retrieve the publication
+	getCmdOutFile, errGetCmdOut := getPublication("00000000000000000000000001")
+	if errGetCmdOut != nil {
+		t.Fatal(errGetCmdOut)
+	}
+
+	// Remove dynamic fields distorting the JSONEqf assertion
+	ina, err := removeKey(addCmdOutFile, "snapshot_id", "date_from", "date_updated", "user")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	ing, err := removeKey(getCmdOutFile, "snapshot_id", "date_from", "date_updated")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	assert.JSONEqf(t, ina, ing, "the added and retrieved records aren't equal.")
+
+	// assert.Regexp(t, `validation failed for publication .* at line .: publication.type.required\[\/type\]`, string(out))
+
+	file, errFile = os.ReadFile("../../etc/fixtures/complete.book_editor.json")
+	if errFile != nil {
+		t.Fatal(errFile)
+	}
+
+	// Add a publication
+	addCmdOutFile, errJSONL = toJSONL(file)
+	if errJSONL != nil {
+		t.Fatal(errJSONL)
+	}
+
+	errAdd = addPublication(addCmdOutFile)
+	if errAdd != nil {
+		t.Fatal(errAdd)
+	}
+
+	// Retrieve the publication
+	getCmdOutFile, errGetCmdOut = getPublication("00000000000000000000000002")
+	if errGetCmdOut != nil {
+		t.Fatal(errGetCmdOut)
+	}
+
+	// Remove dynamic fields distorting the JSONEqf assertion
+	ina, err = removeKey(addCmdOutFile, "snapshot_id", "date_from", "date_updated", "user")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	ing, err = removeKey(getCmdOutFile, "snapshot_id", "date_from", "date_updated")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	assert.JSONEqf(t, ina, ing, "the added and retrieved records aren't equal.")
+
+	// assert.Regexp(t, `validation failed for publication .* at line .: publication.type.required\[\/type\]`, string(out))
+
+	file, errFile = os.ReadFile("../../etc/fixtures/complete.book.json")
+	if errFile != nil {
+		t.Fatal(errFile)
+	}
+
+	// Add a publication
+	addCmdOutFile, errJSONL = toJSONL(file)
+	if errJSONL != nil {
+		t.Fatal(errJSONL)
+	}
+
+	errAdd = addPublication(addCmdOutFile)
+	if errAdd != nil {
+		t.Fatal(errAdd)
+	}
+
+	// Retrieve the publication
+	getCmdOutFile, errGetCmdOut = getPublication("00000000000000000000000003")
+	if errGetCmdOut != nil {
+		t.Fatal(errGetCmdOut)
+	}
+
+	// Remove dynamic fields distorting the JSONEqf assertion
+	ina, err = removeKey(addCmdOutFile, "snapshot_id", "date_from", "date_updated", "user")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	ing, err = removeKey(getCmdOutFile, "snapshot_id", "date_from", "date_updated")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	assert.JSONEqf(t, ina, ing, "the added and retrieved records aren't equal.")
+
+	// assert.Regexp(t, `validation failed for publication .* at line .: publication.type.required\[\/type\]`, string(out))
+
+	file, errFile = os.ReadFile("../../etc/fixtures/complete.conference.json")
+	if errFile != nil {
+		t.Fatal(errFile)
+	}
+
+	// Add a publication
+	addCmdOutFile, errJSONL = toJSONL(file)
+	if errJSONL != nil {
+		t.Fatal(errJSONL)
+	}
+
+	errAdd = addPublication(addCmdOutFile)
+	if errAdd != nil {
+		t.Fatal(errAdd)
+	}
+
+	// Retrieve the publication
+	getCmdOutFile, errGetCmdOut = getPublication("00000000000000000000000004")
+	if errGetCmdOut != nil {
+		t.Fatal(errGetCmdOut)
+	}
+
+	// Remove dynamic fields distorting the JSONEqf assertion
+	ina, err = removeKey(addCmdOutFile, "snapshot_id", "date_from", "date_updated", "user")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	ing, err = removeKey(getCmdOutFile, "snapshot_id", "date_from", "date_updated")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	assert.JSONEqf(t, ina, ing, "the added and retrieved records aren't equal.")
+
+	// assert.Regexp(t, `validation failed for publication .* at line .: publication.type.required\[\/type\]`, string(out))
+
+	file, errFile = os.ReadFile("../../etc/fixtures/complete.dissertation.json")
+	if errFile != nil {
+		t.Fatal(errFile)
+	}
+
+	// Add a publication
+	addCmdOutFile, errJSONL = toJSONL(file)
+	if errJSONL != nil {
+		t.Fatal(errJSONL)
+	}
+
+	errAdd = addPublication(addCmdOutFile)
+	if errAdd != nil {
+		t.Fatal(errAdd)
+	}
+
+	// Retrieve the publication
+	getCmdOutFile, errGetCmdOut = getPublication("00000000000000000000000005")
+	if errGetCmdOut != nil {
+		t.Fatal(errGetCmdOut)
+	}
+
+	// Remove dynamic fields distorting the JSONEqf assertion
+	ina, err = removeKey(addCmdOutFile, "snapshot_id", "date_from", "date_updated", "user")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	ing, err = removeKey(getCmdOutFile, "snapshot_id", "date_from", "date_updated")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	assert.JSONEqf(t, ina, ing, "the added and retrieved records aren't equal.")
+
+	// assert.Regexp(t, `validation failed for publication .* at line .: publication.type.required\[\/type\]`, string(out))
+
+	file, errFile = os.ReadFile("../../etc/fixtures/complete.issue_editor.json")
+	if errFile != nil {
+		t.Fatal(errFile)
+	}
+
+	// Add a publication
+	addCmdOutFile, errJSONL = toJSONL(file)
+	if errJSONL != nil {
+		t.Fatal(errJSONL)
+	}
+
+	errAdd = addPublication(addCmdOutFile)
+	if errAdd != nil {
+		t.Fatal(errAdd)
+	}
+
+	// Retrieve the publication
+	getCmdOutFile, errGetCmdOut = getPublication("00000000000000000000000006")
+	if errGetCmdOut != nil {
+		t.Fatal(errGetCmdOut)
+	}
+
+	// Remove dynamic fields distorting the JSONEqf assertion
+	ina, err = removeKey(addCmdOutFile, "snapshot_id", "date_from", "date_updated", "user")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	ing, err = removeKey(getCmdOutFile, "snapshot_id", "date_from", "date_updated")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	assert.JSONEqf(t, ina, ing, "the added and retrieved records aren't equal.")
+
+	// assert.Regexp(t, `validation failed for publication .* at line .: publication.type.required\[\/type\]`, string(out))
+
+	file, errFile = os.ReadFile("../../etc/fixtures/complete.journal_article.json")
+	if errFile != nil {
+		t.Fatal(errFile)
+	}
+
+	// Add a publication
+	addCmdOutFile, errJSONL = toJSONL(file)
+	if errJSONL != nil {
+		t.Fatal(errJSONL)
+	}
+
+	errAdd = addPublication(addCmdOutFile)
+	if errAdd != nil {
+		t.Fatal(errAdd)
+	}
+
+	// Retrieve the publication
+	getCmdOutFile, errGetCmdOut = getPublication("00000000000000000000000007")
+	if errGetCmdOut != nil {
+		t.Fatal(errGetCmdOut)
+	}
+
+	// Remove dynamic fields distorting the JSONEqf assertion
+	ina, err = removeKey(addCmdOutFile, "snapshot_id", "date_from", "date_updated", "user")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	ing, err = removeKey(getCmdOutFile, "snapshot_id", "date_from", "date_updated")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	assert.JSONEqf(t, ina, ing, "the added and retrieved records aren't equal.")
+
+	// assert.Regexp(t, `validation failed for publication .* at line .: publication.type.required\[\/type\]`, string(out))
+
+	file, errFile = os.ReadFile("../../etc/fixtures/complete.miscellaneous.json")
+	if errFile != nil {
+		t.Fatal(errFile)
+	}
+
+	// Add a publication
+	addCmdOutFile, errJSONL = toJSONL(file)
+	if errJSONL != nil {
+		t.Fatal(errJSONL)
+	}
+
+	errAdd = addPublication(addCmdOutFile)
+	if errAdd != nil {
+		t.Fatal(errAdd)
+	}
+
+	// Retrieve the publication
+	getCmdOutFile, errGetCmdOut = getPublication("00000000000000000000000008")
+	if errGetCmdOut != nil {
+		t.Fatal(errGetCmdOut)
+	}
+
+	// Remove dynamic fields distorting the JSONEqf assertion
+	ina, err = removeKey(addCmdOutFile, "snapshot_id", "date_from", "date_updated", "user")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	ing, err = removeKey(getCmdOutFile, "snapshot_id", "date_from", "date_updated")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	assert.JSONEqf(t, ina, ing, "the added and retrieved records aren't equal.")
+
+	// assert.Regexp(t, `validation failed for publication .* at line .: publication.type.required\[\/type\]`, string(out))
+}
+
+// Test validation
 
 // Validation: type field is required
 // Validation: type is invalid
@@ -93,85 +393,93 @@ func (s *AddPublicationSuite) SetupTest() {
 
 // Specifics
 
-// Dissertation
-// JournalArticle
-// Miscellaneous
-// book
-// book_chapter
-// conference
-// book_editor
-// issue_editor
-
-// Test if all fields return properly
-
-// Test validation
-func (s *AddPublicationSuite) TestAddAndGetValidPublication() {
-	t := s.T()
-
-	// Add a publication
-	// addPublications := AddPublicationsCmd{}
-	// addCmd := addPublications.Command()
-	// addCmdBuf := bytes.NewBufferString("")
-	// addCmd.SetOut(addCmdBuf)
-
-	addCmdOutFile, errJsonl := toJSONL("../../etc/fixtures/complete.publication.json")
-	if errJsonl != nil {
-		t.Fatal(errJsonl)
-	}
-
-	// in := strings.NewReader(addCmdOutFile)
-
-	// addCmd.SetIn(in)
-	// errAddCmd := addCmd.Execute()
-	// if errAddCmd != nil {
-	// 	t.Fatal(errAddCmd)
-	// }
-
-	// _, err := ioutil.ReadAll(addCmdBuf)
-	// if err != nil {
-	// 	t.Fatal(err)
-	// }
-	// t.Log(string(addCmdOut))
-
-	// Retrieve the publication
-	getPublication := GetPublicationCmd{}
-	getCmd := getPublication.Command()
-	getCmdBuf := bytes.NewBufferString("")
-	getCmd.SetOut(getCmdBuf)
-
-	getCmd.SetArgs([]string{"01GMQZQJZRH678JAYAW1J5VXSY"})
-	errGetCmd := getCmd.Execute()
-	if errGetCmd != nil {
-		t.Fatal(errGetCmd)
-	}
-
-	getCmdOut, err := ioutil.ReadAll(getCmdBuf)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	getCmdOutFile := string(getCmdOut)
-	t.Log(getCmdOutFile)
-
-	assert.JSONEqf(t, addCmdOutFile, getCmdOutFile, "error message %s", "formatted")
-
-	// assert.Regexp(t, `validation failed for publication .* at line .: publication.type.required\[\/type\]`, string(out))
-}
+// Dissertation xx
+// JournalArticle xx
+// Miscellaneous xx
+// book xx
+// book_chapter xxx
+// conference xx
+// book_editor xxx
+// issue_editor x
 
 func TestAddPublicationSuite(t *testing.T) {
 	suite.Run(t, new(AddPublicationSuite))
 }
 
-func toJSONL(f string) (string, error) {
-	file, err := os.ReadFile(f)
+func addPublication(jsonl string) error {
+	addPublications := AddPublicationsCmd{}
+	addCmd := addPublications.Command()
+	addCmdBuf := bytes.NewBufferString("")
+	addCmd.SetOut(addCmdBuf)
+
+	in := strings.NewReader(jsonl)
+
+	addCmd.SetIn(in)
+	errAdd := addCmd.Execute()
+	if errAdd != nil {
+		return errAdd
+	}
+
+	// addCmdOut, err := ioutil.ReadAll(addCmdBuf)
+	// if err != nil {
+	// 	return err
+	// }
+	// t.Log(string(addCmdOut))
+
+	return nil
+}
+
+func getPublication(id string) (string, error) {
+	getPublication := GetPublicationCmd{}
+	getCmd := getPublication.Command()
+	getCmdBuf := bytes.NewBufferString("")
+	getCmd.SetOut(getCmdBuf)
+
+	getCmd.SetArgs([]string{id})
+	errGetCmd := getCmd.Execute()
+	if errGetCmd != nil {
+		return "", errGetCmd
+	}
+
+	getCmdOut, err := ioutil.ReadAll(getCmdBuf)
 	if err != nil {
 		return "", err
 	}
-	json := string(file)
 
-	json = strings.ReplaceAll(json, "  ", "")
-	json = strings.ReplaceAll(json, "\n", "")
+	return string(getCmdOut), nil
+}
+
+func toJSONL(file []byte) (string, error) {
+	buffer := new(bytes.Buffer)
+	if err := json.Compact(buffer, file); err != nil {
+		return "", err
+	}
+
+	output, _ := ioutil.ReadAll(buffer)
+	json := string(output)
 	json = json + "\n"
 
 	return json, nil
+}
+
+func removeKey(input string, keys ...string) (string, error) {
+	var m map[string]json.RawMessage
+	if err := json.Unmarshal([]byte(input), &m); err != nil {
+		return "", err
+	}
+
+	output := input
+
+	for _, key := range keys {
+		if _, exists := m[key]; exists {
+			delete(m, key)
+			outputData, err := json.Marshal(m)
+			if err != nil {
+				return "", err
+			}
+			output = string(outputData)
+		}
+	}
+
+	return output, nil
 }

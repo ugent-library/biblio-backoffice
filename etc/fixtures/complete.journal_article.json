@@ -3,7 +3,7 @@
     {
       "text": "abstract",
       "lang": "eng",
-      "id": "01GRK2FG09NFMDRT9B2GEBST30"
+      "id": "00000000000000000000000007"
     }
   ],
   "additional_info": "additional information",
@@ -14,25 +14,29 @@
   "arxiv_id": "9999",
   "author": [
     {
-      "first_name": "Matthias",
-      "full_name": "Matthias Vandermaesen",
-      "id": "6D285C9C-CD04-11E9-8B81-BA085707D3EF",
-      "last_name": "Vandermaesen",
+      "credit_role": [
+        "first_author"
+      ],
+      "first_name": "first name",
+      "full_name": "full name",
+      "id": "00000000-0000-0000-0000-000000000000",
+      "last_name": "last name",
       "ugent_id": [
-        "802003218921"
+        "000000000000"
       ],
       "department": [
         {
-          "id": "CA20",
-          "name": "Department of Research Affairs"
+          "id": "AA00",
+          "name": "department name"
         }
       ]
     }
+
   ],
   "classification": "U",
   "conference_name": "conference",
   "conference_location": "conference location",
-  "conference_organizer": "conferen organiser",
+  "conference_organizer": "conference organiser",
   "conference_start_date": "2023-01-01",
   "conference_end_date": "2023-01-01",
   "date_created": "2022-12-20T15:41:49.048446246+01:00",
@@ -57,17 +61,17 @@
   "doi": "9999",
   "editor": [
     {
-      "first_name": "Matthias",
-      "full_name": "Matthias Vandermaesen",
-      "id": "6D285C9C-CD04-11E9-8B81-BA085707D3EF",
-      "last_name": "Vandermaesen",
+      "first_name": "first name",
+      "full_name": "full name",
+      "id": "00000000-0000-0000-0000-000000000000",
+      "last_name": "laste name",
       "ugent_id": [
-        "802003218921"
+        "000000000000"
       ],
       "department": [
         {
-          "id": "CA20",
-          "name": "Department of Research Affairs"
+          "id": "AA00",
+          "name": "department name"
         }
       ]
     }
@@ -92,13 +96,13 @@
       "access_level_after_embargo": "info:eu-repo/semantics/openAccess",
       "name": "testfile-1.pdf",
       "size": 52428800,
-      "id": "01GRK2JM2ZSBE4SKY0K38EBTQP",
+      "id": "00000000000000000000000007",
       "sha256": "6193ef5a1473db261b13191ccba2c9add35f27e3b387a9e138291183de99253a",
       "publication_version": "authorVersion",
       "relation": "main_file"
     }
   ],
-  "id": "01GMQZQJZRH678JAYAW1J5VXSY",
+  "id": "00000000000000000000000007",
   "isbn": [
     "9999"
   ],
@@ -115,13 +119,13 @@
     "eng"
   ],
   "last_user": {
-    "id": "6D285C9C-CD04-11E9-8B81-BA085707D3EF",
-    "name": "Matthias Vandermaesen"
+    "id": "00000000-0000-0000-0000-000000000000",
+    "name": "name"
   },
   "legacy": true,
   "link": [
     {
-      "id": "01GRK2FZTVKC8PESQHGTBC0KR0",
+      "id": "00000000000000000000000007",
       "url": "https://biblio.ugent.be",
       "relation": "data_management_plan",
       "description": "description"
@@ -135,14 +139,19 @@
   "place_of_publication": "place of publication",
   "project": [
     {
-      "id": "001D05703",
-      "name": "Late antiquity in the northern adriatic region"
+      "id": "000000000",
+      "name": "name"
     }
   ],
   "publication": "journal title",
   "publication_abbreviation": "short journal title",
   "publication_status": "published",
   "publisher": "publisher",
+  "related_dataset": [
+    {
+      "id": "90000000000000000000000007"
+    }
+  ],
   "pubmed_id": "9999",
   "research_field": [
     "Arts and Architecture"
@@ -151,10 +160,14 @@
   "reviewer_tags": [
     "librarian tag"
   ],
-  "snapshot_id": "01GRK2M7NV84P98JXM78V8PFSJ",
+  "snapshot_id": "00000000000000000000000007",
   "status": "public",
   "title": "title",
   "type": "journal_article",
+  "user": {
+    "id": "00000000-0000-0000-0000-000000000000",
+    "name": "name"
+  },
   "volume": "volume",
   "vabb_approved": false,
   "has_been_public": true,

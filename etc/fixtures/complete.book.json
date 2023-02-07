@@ -1,0 +1,166 @@
+{
+  "abstract": [
+    {
+      "text": "abstract",
+      "lang": "eng",
+      "id": "00000000000000000000000003"
+    }
+  ],
+  "additional_info": "additional information",
+  "alternative_title": [
+    "alternative title"
+  ],
+  "author": [
+    {
+      "credit_role": [
+        "first_author"
+      ],
+      "first_name": "first name",
+      "full_name": "full name",
+      "id": "00000000-0000-0000-0000-000000000000",
+      "last_name": "last name",
+      "ugent_id": [
+        "000000000000"
+      ],
+      "department": [
+        {
+          "id": "AA00",
+          "name": "department name"
+        }
+      ]
+    }
+  ],
+  "classification": "B1",
+  "creator": {
+    "id": "00000000-0000-0000-0000-000000000000",
+    "name": "name"
+  },
+  "date_created": "2023-02-07T11:05:24.758900244+01:00",
+  "date_updated": "2023-02-07T11:28:21.287064615+01:00",
+  "date_from": "2023-02-07T11:28:21.288159+01:00",
+  "department": [
+    {
+      "id": "CA20",
+      "tree": [
+        {
+          "id": "UGent"
+        },
+        {
+          "id": "CA"
+        },
+        {
+          "id": "CA20"
+        }
+      ]
+    }
+  ],
+  "doi": "0000",
+  "edition": "edition",
+  "editor": [
+    {
+      "first_name": "first name",
+      "full_name": "full name",
+      "id": "00000000-0000-0000-0000-000000000000",
+      "last_name": "laste name",
+      "ugent_id": [
+        "000000000000"
+      ],
+      "department": [
+        {
+          "id": "AA00",
+          "name": "department name"
+        }
+      ]
+    }
+  ],
+  "eisbn": [
+    "0000"
+  ],
+  "eissn": [
+    "0000"
+  ],
+  "extern": true,
+  "file": [
+    {
+      "access_level": "info:eu-repo/semantics/embargoedAccess",
+      "license": "CopyrightUnknown",
+      "content_type": "application/octet-stream",
+      "date_created": "2023-02-07T11:06:34.348943787+01:00",
+      "date_updated": "2023-02-07T11:06:34.348943787+01:00",
+      "embargo_date": "2100-01-01",
+      "access_level_during_embargo": "info:eu-repo/semantics/restrictedAccess",
+      "access_level_after_embargo": "info:eu-repo/semantics/openAccess",
+      "name": "testfile-1.pdf",
+      "size": 52428800,
+      "id": "00000000000000000000000003",
+      "sha256": "6193ef5a1473db261b13191ccba2c9add35f27e3b387a9e138291183de99253a",
+      "publication_version": "acceptedVersion",
+      "relation": "main_file"
+    }
+  ],
+  "id": "00000000000000000000000003",
+  "isbn": [
+    "0000"
+  ],
+  "issn": [
+    "0000"
+  ],
+  "keyword": [
+    "keyword"
+  ],
+  "language": [
+    "eng"
+  ],
+  "last_user": {
+    "id": "00000000-0000-0000-0000-000000000000",
+    "name": "name"
+  },
+  "legacy": true,
+  "link": [
+    {
+      "id": "00000000000000000000000003",
+      "url": "https://biblio.ugent.be",
+      "relation": "data_management_plan",
+      "description": "description"
+    }
+  ],
+  "locked": false,
+  "message": "message",
+  "page_count": "999",
+  "place_of_publication": "place of publication",
+  "project": [
+    {
+      "id": "000000000",
+      "name": "name"
+    }
+  ],
+  "publication_status": "published",
+  "publisher": "publisher",
+  "related_dataset": [
+    {
+      "id": "90000000000000000000000003"
+    }
+  ],
+  "research_field": [
+    "Agriculture and Food Sciences"
+  ],
+  "reviewer_note": "note",
+  "reviewer_tags": [
+    "tag"
+  ],
+  "series_title": "series title",
+  "snapshot_id": "00000000000000000000000003",
+  "status": "public",
+  "title": "title",
+  "type": "book",
+  "user": {
+    "id": "00000000-0000-0000-0000-000000000000",
+    "name": "name"
+  },
+  "volume": "volume",
+  "vabb_approved": false,
+  "has_been_public": true,
+  "wos_id": "0000",
+  "wos_type": "web of science type",
+  "year": "2023"
+}
