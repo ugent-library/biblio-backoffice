@@ -138,6 +138,7 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		BaseHandler: baseHandler,
 		Repository:  services.Repository,
 		FileStore:   services.FileStore,
+		MaxFileSize: viper.GetInt("max-file-size"),
 	}
 	publicationCreatingHandler := &publicationcreating.Handler{
 		BaseHandler:              baseHandler,
@@ -158,6 +159,7 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		PersonService:             services.PersonService,
 		DatasetSearchService:      services.DatasetSearchService,
 		FileStore:                 services.FileStore,
+		MaxFileSize:               viper.GetInt("max-file-size"),
 	}
 	publicationBatchHandler := &publicationbatch.Handler{
 		BaseHandler:    baseHandler,

@@ -3,7 +3,6 @@ package publicationviewing
 import (
 	"net/http"
 
-	"github.com/ugent-library/biblio-backoffice/internal/app/constants"
 	"github.com/ugent-library/biblio-backoffice/internal/app/displays"
 	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"github.com/ugent-library/biblio-backoffice/internal/render"
@@ -87,7 +86,7 @@ func (h *Handler) ShowFiles(w http.ResponseWriter, r *http.Request, ctx Context)
 		Context:      ctx,
 		SubNavs:      subNavs,
 		ActiveSubNav: "files",
-		MaxFileSize:  constants.MaxFileSize,
+		MaxFileSize:  h.MaxFileSize,
 	})
 }
 

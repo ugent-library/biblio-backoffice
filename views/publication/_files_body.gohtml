@@ -9,7 +9,10 @@
         hx-trigger="change"
     >
         <div class="c-file-upload file-upload-start">
-            <input class="upload-progress" type="file" name="file" data-max-size="{{.MaxFileSize}}" data-max-size-error="Maximum file size is 2G">
+            <input class="upload-progress" type="file" name="file"
+                data-max-size="{{.MaxFileSize}}"
+                data-max-size-error="Maximum file size is {{formatBytes (int64 .MaxFileSize)}}"
+            >
             <div class="c-file-upload__content">
                 <p>Drag and drop or</p>
                 <button class="btn btn-outline-primary">Upload file</button>

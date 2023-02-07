@@ -30,6 +30,7 @@ const (
 	defaultHandleServerPrefix   = "1854"
 	defaultHandleServerUsername = "handle"
 	defaultHandleServerPassword = "handle"
+	defaultMaxFileSize          = 2_000_000_000
 )
 
 // TODO we shouldn't do this for all flags, only ones that have a config equivalent
@@ -71,6 +72,7 @@ func init() {
 	viper.SetDefault("hdl-srv-prefix", defaultHandleServerPrefix)
 	viper.SetDefault("hdl-srv-username", defaultHandleServerUsername)
 	viper.SetDefault("hdl-srv-password", defaultHandleServerPassword)
+	viper.SetDefault("max-file-size", defaultMaxFileSize)
 
 	rootCmd.PersistentFlags().String("file-dir", "", "file store root directory")
 
@@ -104,6 +106,8 @@ func init() {
 	rootCmd.PersistentFlags().String("hdl-srv-prefix", defaultHandleServerPrefix, "handle server base prefix")
 	rootCmd.PersistentFlags().String("hdl-srv-username", defaultHandleServerUsername, "handle server auth basic username")
 	rootCmd.PersistentFlags().String("hdl-srv-password", defaultHandleServerPassword, "handle server auth basic password")
+
+	rootCmd.PersistentFlags().Int("max-file-size", defaultMaxFileSize, "maximum file size")
 }
 
 func Execute() {
