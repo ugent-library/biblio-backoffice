@@ -3,7 +3,6 @@ package cmd
 import (
 	"bufio"
 	"context"
-	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -11,8 +10,6 @@ import (
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
-	"github.com/ugent-library/biblio-backoffice/internal/models"
-	"github.com/ugent-library/biblio-backoffice/internal/server"
 )
 
 type ValidatePublicationsCmd struct {
@@ -70,12 +67,11 @@ func (c *ValidatePublicationsCmd) Run(cmd *cobra.Command, args []string) {
 			log.Fatal(err)
 		}
 
-		pub := &models.Publication{}
-		if err := json.Unmarshal(line, pub); err != nil {
-			log.Fatal(err)
+		p := &api.Publication{
+			Payload: line,
 		}
 
-		req := &api.ValidatePublicationsRequest{Publication: server.PublicationToMessage(pub)}
+		req := &api.ValidatePublicationsRequest{Publication: p}
 		if err := stream.Send(req); err != nil {
 			log.Fatal(err)
 		}

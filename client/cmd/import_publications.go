@@ -3,15 +3,12 @@ package cmd
 import (
 	"bufio"
 	"context"
-	"encoding/json"
 	"io"
 	"log"
 	"os"
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
-	"github.com/ugent-library/biblio-backoffice/internal/models"
-	"github.com/ugent-library/biblio-backoffice/internal/server"
 )
 
 type ImportPublicationsCmd struct {
@@ -67,12 +64,11 @@ func (c *ImportPublicationsCmd) Run(cmd *cobra.Command, args []string) {
 
 		lineNo++
 
-		p := &models.Publication{}
-		if err := json.Unmarshal(line, p); err != nil {
-			log.Fatalf("Unable to decode publication at line %d : %v", lineNo, err)
+		p := &api.Publication{
+			Payload: line,
 		}
 
-		req := &api.ImportPublicationsRequest{Publication: server.PublicationToMessage(p)}
+		req := &api.ImportPublicationsRequest{Publication: p}
 		if err := stream.Send(req); err != nil {
 			log.Fatal(err)
 		}

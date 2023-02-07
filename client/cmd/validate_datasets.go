@@ -3,7 +3,6 @@ package cmd
 import (
 	"bufio"
 	"context"
-	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -11,8 +10,6 @@ import (
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
-	"github.com/ugent-library/biblio-backoffice/internal/models"
-	"github.com/ugent-library/biblio-backoffice/internal/server"
 )
 
 type ValidateDatasetsCmd struct {
@@ -70,12 +67,11 @@ func (c *ValidateDatasetsCmd) Run(cmd *cobra.Command, args []string) {
 			log.Fatal(err)
 		}
 
-		d := &models.Dataset{}
-		if err := json.Unmarshal(line, d); err != nil {
-			log.Fatal(err)
+		d := &api.Dataset{
+			Payload: line,
 		}
 
-		req := &api.ValidateDatasetsRequest{Dataset: server.DatasetToMessage(d)}
+		req := &api.ValidateDatasetsRequest{Dataset: d}
 		if err := stream.Send(req); err != nil {
 			log.Fatal(err)
 		}

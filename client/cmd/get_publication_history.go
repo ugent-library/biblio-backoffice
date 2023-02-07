@@ -2,14 +2,12 @@ package cmd
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"io"
 	"log"
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
-	"github.com/ugent-library/biblio-backoffice/internal/server"
 )
 
 type GetPublicationHistoryCmd struct {
@@ -47,10 +45,6 @@ func (c *GetPublicationHistoryCmd) Run(cmd *cobra.Command, args []string) {
 			log.Fatalf("error while reading stream: %v", err)
 		}
 
-		j, err := json.Marshal(server.MessageToPublication(res.Publication))
-		if err != nil {
-			log.Fatal(err)
-		}
-		fmt.Printf("%s\n", j)
+		fmt.Printf("%s\n", res.Publication.Payload)
 	}
 }

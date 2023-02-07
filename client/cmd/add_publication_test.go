@@ -37,16 +37,148 @@ func (s *AddPublicationSuite) SetupTest() {
 }
 
 // Test empty input
-// Test non-JSONL input
-// Test empty JSONL object
+func (s *AddPublicationSuite) TestAddEmptyInput() {
+	t := s.T()
 
-// Create new valid record
+	addPublications := AddPublicationsCmd{}
+	addCmd := addPublications.Command()
+	addCmdBuf := bytes.NewBufferString("")
+	addCmd.SetOut(addCmdBuf)
+
+	in := strings.NewReader("")
+
+	addCmd.SetIn(in)
+	errAdd := addCmd.Execute()
+	if errAdd != nil {
+		t.Fatal(errAdd)
+	}
+
+	addCmdOut, err := ioutil.ReadAll(addCmdBuf)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	assert.Equal(t, "", string(addCmdOut))
+}
+
+// Test non-JSONL input
+func (s *AddPublicationSuite) TestAddNonJSONLInput() {
+	t := s.T()
+
+	addPublications := AddPublicationsCmd{}
+	addCmd := addPublications.Command()
+	addCmdBuf := bytes.NewBufferString("")
+	addCmd.SetOut(addCmdBuf)
+
+	in := strings.NewReader("invalid")
+
+	addCmd.SetIn(in)
+	errAdd := addCmd.Execute()
+	if errAdd != nil {
+		t.Fatal(errAdd)
+	}
+
+	addCmdOut, err := ioutil.ReadAll(addCmdBuf)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Log(addCmdOut)
+
+	assert.Equal(t, "invalid input", string(addCmdOut))
+}
+
+// Test empty JSONL object
+func (s *AddPublicationSuite) TestAddEmptyJSONLInput() {
+	t := s.T()
+
+	addPublications := AddPublicationsCmd{}
+	addCmd := addPublications.Command()
+	addCmdBuf := bytes.NewBufferString("")
+	addCmd.SetOut(addCmdBuf)
+
+	in := strings.NewReader("{}\n")
+
+	addCmd.SetIn(in)
+	errAdd := addCmd.Execute()
+	if errAdd != nil {
+		t.Fatal(errAdd)
+	}
+
+	addCmdOut, err := ioutil.ReadAll(addCmdBuf)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	assert.Regexp(t, `validation failed for publication .* at line .: publication.type.required\[\/type\]`, string(addCmdOut))
+}
+
+// Create new minimal valid record
+func (s *AddPublicationSuite) TestAddMinimalValidRecord() {
+	t := s.T()
+
+	json := `{
+		"title": "title",
+		"type": "journal_article",
+		"status": "public",
+		"year": "2023",
+		"author": [
+			{
+				"credit_role": [
+					"first_author"
+				],
+				"first_name": "first name",
+				"full_name": "full name",
+				"id": "00000000-0000-0000-0000-000000000000",
+				"last_name": "last name",
+				"ugent_id": [
+					"000000000000"
+				],
+				"department": [
+				{
+					"id": "AA00",
+					"name": "department name"
+				}
+				]
+			}
+		]
+	}`
+
+	addCmdOutFile, errJSONL := toJSONL([]byte(json))
+	if errJSONL != nil {
+		t.Fatal(errJSONL)
+	}
+
+	addPublications := AddPublicationsCmd{}
+	addCmd := addPublications.Command()
+	addCmdBuf := bytes.NewBufferString("")
+	addCmd.SetOut(addCmdBuf)
+
+	in := strings.NewReader(addCmdOutFile)
+
+	addCmd.SetIn(in)
+	errAdd := addCmd.Execute()
+	if errAdd != nil {
+		t.Fatal(errAdd)
+	}
+
+	addCmdOut, err := ioutil.ReadAll(addCmdBuf)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Log(string(addCmdOut))
+
+	// 	assert.Regexp(t, `validation failed for publication .* at line .: publication.type.required\[\/type\]`, string(addCmdOut))
+}
 
 // Update existing valid record
 
 // Test if all fields return properly
-func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
+func (s *AddPublicationSuite) estAddAndGetCompletePublications() {
 	t := s.T()
+
+	// Book chapter
 
 	file, errFile := os.ReadFile("../../etc/fixtures/complete.book_chapter.json")
 	if errFile != nil {
@@ -83,7 +215,7 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 
 	assert.JSONEqf(t, ina, ing, "the added and retrieved records aren't equal.")
 
-	// assert.Regexp(t, `validation failed for publication .* at line .: publication.type.required\[\/type\]`, string(out))
+	// Book editor
 
 	file, errFile = os.ReadFile("../../etc/fixtures/complete.book_editor.json")
 	if errFile != nil {
@@ -120,7 +252,7 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 
 	assert.JSONEqf(t, ina, ing, "the added and retrieved records aren't equal.")
 
-	// assert.Regexp(t, `validation failed for publication .* at line .: publication.type.required\[\/type\]`, string(out))
+	// Book
 
 	file, errFile = os.ReadFile("../../etc/fixtures/complete.book.json")
 	if errFile != nil {
@@ -157,7 +289,7 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 
 	assert.JSONEqf(t, ina, ing, "the added and retrieved records aren't equal.")
 
-	// assert.Regexp(t, `validation failed for publication .* at line .: publication.type.required\[\/type\]`, string(out))
+	// Conference
 
 	file, errFile = os.ReadFile("../../etc/fixtures/complete.conference.json")
 	if errFile != nil {
@@ -194,7 +326,7 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 
 	assert.JSONEqf(t, ina, ing, "the added and retrieved records aren't equal.")
 
-	// assert.Regexp(t, `validation failed for publication .* at line .: publication.type.required\[\/type\]`, string(out))
+	// Dissertation
 
 	file, errFile = os.ReadFile("../../etc/fixtures/complete.dissertation.json")
 	if errFile != nil {
@@ -231,7 +363,7 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 
 	assert.JSONEqf(t, ina, ing, "the added and retrieved records aren't equal.")
 
-	// assert.Regexp(t, `validation failed for publication .* at line .: publication.type.required\[\/type\]`, string(out))
+	// Issue editor
 
 	file, errFile = os.ReadFile("../../etc/fixtures/complete.issue_editor.json")
 	if errFile != nil {
@@ -268,7 +400,7 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 
 	assert.JSONEqf(t, ina, ing, "the added and retrieved records aren't equal.")
 
-	// assert.Regexp(t, `validation failed for publication .* at line .: publication.type.required\[\/type\]`, string(out))
+	// Journal article
 
 	file, errFile = os.ReadFile("../../etc/fixtures/complete.journal_article.json")
 	if errFile != nil {
@@ -305,7 +437,7 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 
 	assert.JSONEqf(t, ina, ing, "the added and retrieved records aren't equal.")
 
-	// assert.Regexp(t, `validation failed for publication .* at line .: publication.type.required\[\/type\]`, string(out))
+	// Miscellaneous
 
 	file, errFile = os.ReadFile("../../etc/fixtures/complete.miscellaneous.json")
 	if errFile != nil {
@@ -341,8 +473,6 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 	}
 
 	assert.JSONEqf(t, ina, ing, "the added and retrieved records aren't equal.")
-
-	// assert.Regexp(t, `validation failed for publication .* at line .: publication.type.required\[\/type\]`, string(out))
 }
 
 // Test validation

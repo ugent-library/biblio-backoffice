@@ -2,13 +2,11 @@ package cmd
 
 import (
 	"context"
-	"encoding/json"
 	"log"
 	"time"
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
-	"github.com/ugent-library/biblio-backoffice/internal/server"
 )
 
 type GetPublicationCmd struct {
@@ -43,9 +41,5 @@ func (c *GetPublicationCmd) Run(cmd *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	j, err := json.Marshal(server.MessageToPublication(res.Publication))
-	if err != nil {
-		log.Fatal(err)
-	}
-	cmd.Printf("%s\n", j)
+	cmd.Printf("%s\n", res.Publication.Payload)
 }

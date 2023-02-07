@@ -2,9 +2,11 @@ package server
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"sync"
 
 	"github.com/oklog/ulid/v2"
@@ -13,17 +15,24 @@ import (
 	"github.com/ugent-library/biblio-backoffice/internal/validation"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func (s *server) GetDataset(ctx context.Context, req *api.GetDatasetRequest) (*api.GetDatasetResponse, error) {
-	dataset, err := s.services.Repository.GetDataset(req.Id)
+	d, err := s.services.Repository.GetDataset(req.Id)
 	if err != nil {
 		// TODO How do we differentiate between errors? e.g. NotFound vs. Internal (database unavailable,...)
 		return nil, status.Errorf(codes.Internal, "Could not get dataset with id %s: %s", req.Id, err)
 	}
 
-	res := &api.GetDatasetResponse{Dataset: DatasetToMessage(dataset)}
+	j, err := json.Marshal(d)
+	if err != nil {
+		log.Fatal(err)
+	}
+	apid := &api.Dataset{
+		Payload: j,
+	}
+
+	res := &api.GetDatasetResponse{Dataset: apid}
 
 	return res, nil
 }
@@ -31,8 +40,16 @@ func (s *server) GetDataset(ctx context.Context, req *api.GetDatasetRequest) (*a
 func (s *server) GetAllDatasets(req *api.GetAllDatasetsRequest, stream api.Biblio_GetAllDatasetsServer) (err error) {
 	// TODO errors in EachDataset aren't caught and pushed upstream. Returning 'false' in the callback
 	//   breaks the loop, but EachDataset will return 'nil'.
-	ErrorStream := s.services.Repository.EachDataset(func(p *models.Dataset) bool {
-		res := &api.GetAllDatasetsResponse{Dataset: DatasetToMessage(p)}
+	ErrorStream := s.services.Repository.EachDataset(func(d *models.Dataset) bool {
+		j, err := json.Marshal(d)
+		if err != nil {
+			log.Fatal(err)
+		}
+		apid := &api.Dataset{
+			Payload: j,
+		}
+
+		res := &api.GetAllDatasetsResponse{Dataset: apid}
 		if err = stream.Send(res); err != nil {
 			return false
 		}
@@ -64,15 +81,25 @@ func (s *server) SearchDatasets(ctx context.Context, req *api.SearchDatasetsRequ
 		Total:  int32(hits.Total),
 		Hits:   make([]*api.Dataset, len(hits.Hits)),
 	}
-	for i, p := range hits.Hits {
-		res.Hits[i] = DatasetToMessage(p)
+	for i, d := range hits.Hits {
+		j, err := json.Marshal(d)
+		if err != nil {
+			log.Fatal(err)
+		}
+		apid := &api.Dataset{
+			Payload: j,
+		}
+		res.Hits[i] = apid
 	}
 
 	return res, nil
 }
 
 func (s *server) UpdateDataset(ctx context.Context, req *api.UpdateDatasetRequest) (*api.UpdateDatasetResponse, error) {
-	p := MessageToDataset(req.Dataset)
+	d := &models.Dataset{}
+	if err := json.Unmarshal(req.Dataset.Payload, d); err != nil {
+		log.Fatal(err)
+	}
 
 	// TODO Fetch user information via better authentication (no basic auth)
 	user := &models.User{
@@ -80,17 +107,17 @@ func (s *server) UpdateDataset(ctx context.Context, req *api.UpdateDatasetReques
 		FullName: "system user",
 	}
 
-	if err := p.Validate(); err != nil {
-		return nil, fmt.Errorf("validation failed for dataset %s: %s", p.ID, err)
+	if err := d.Validate(); err != nil {
+		return nil, fmt.Errorf("validation failed for dataset %s: %s", d.ID, err)
 	}
 
-	if err := s.services.Repository.UpdateDataset(req.Dataset.SnapshotId, p, user); err != nil {
+	if err := s.services.Repository.UpdateDataset(d.SnapshotID, d, user); err != nil {
 		// TODO How do we differentiate between errors?
-		return nil, status.Errorf(codes.Internal, "failed to store dataset %s, %s", p.ID, err)
+		return nil, status.Errorf(codes.Internal, "failed to store dataset %s, %s", d.ID, err)
 	}
-	if err := s.services.DatasetSearchService.Index(p); err != nil {
+	if err := s.services.DatasetSearchService.Index(d); err != nil {
 		// TODO How do we differentiate between errors
-		return nil, status.Errorf(codes.Internal, "failed to index dataset %s, %s", p.ID, err)
+		return nil, status.Errorf(codes.Internal, "failed to index dataset %s, %s", d.ID, err)
 	}
 
 	return &api.UpdateDatasetResponse{}, nil
@@ -130,7 +157,10 @@ func (s *server) AddDatasets(stream api.Biblio_AddDatasetsServer) error {
 			return status.Errorf(codes.Internal, "failed to read stream: %s", err)
 		}
 
-		d := MessageToDataset(req.Dataset)
+		d := &models.Dataset{}
+		if err := json.Unmarshal(req.Dataset.Payload, d); err != nil {
+			log.Fatal(err)
+		}
 
 		if d.ID == "" {
 			d.ID = ulid.Make().String()
@@ -202,7 +232,10 @@ func (s *server) ImportDatasets(stream api.Biblio_ImportDatasetsServer) error {
 			return status.Errorf(codes.Internal, "failed to read stream: %s", err)
 		}
 
-		d := MessageToDataset(req.Dataset)
+		d := &models.Dataset{}
+		if err := json.Unmarshal(req.Dataset.Payload, d); err != nil {
+			log.Fatal(err)
+		}
 
 		// TODO this should return structured messages (see validate)
 		if err := d.Validate(); err != nil {
@@ -226,8 +259,16 @@ func (s *server) ImportDatasets(stream api.Biblio_ImportDatasetsServer) error {
 }
 
 func (s *server) GetDatasetHistory(req *api.GetDatasetHistoryRequest, stream api.Biblio_GetDatasetHistoryServer) (err error) {
-	errorStream := s.services.Repository.DatasetHistory(req.Id, func(p *models.Dataset) bool {
-		res := &api.GetDatasetHistoryResponse{Dataset: DatasetToMessage(p)}
+	errorStream := s.services.Repository.DatasetHistory(req.Id, func(d *models.Dataset) bool {
+		j, err := json.Marshal(d)
+		if err != nil {
+			log.Fatal(err)
+		}
+		apid := &api.Dataset{
+			Payload: j,
+		}
+
+		res := &api.GetDatasetHistoryResponse{Dataset: apid}
 		if err = stream.Send(res); err != nil {
 			return false
 		}
@@ -281,12 +322,15 @@ func (s *server) ValidateDatasets(stream api.Biblio_ValidateDatasetsServer) erro
 			return status.Errorf(codes.Internal, "failed to read stream: %s", err)
 		}
 
-		p := MessageToDataset(req.Dataset)
+		d := &models.Dataset{}
+		if err := json.Unmarshal(req.Dataset.Payload, d); err != nil {
+			log.Fatal(err)
+		}
 
-		err = p.Validate()
+		err = d.Validate()
 		var validationErrs validation.Errors
 		if errors.As(err, &validationErrs) {
-			res := &api.ValidateDatasetsResponse{Seq: seq, Id: p.ID, Message: validationErrs.Error()}
+			res := &api.ValidateDatasetsResponse{Seq: seq, Id: d.ID, Message: validationErrs.Error()}
 			if err = stream.Send(res); err != nil {
 				return err
 			}
@@ -296,348 +340,358 @@ func (s *server) ValidateDatasets(stream api.Biblio_ValidateDatasetsServer) erro
 	}
 }
 
-func DatasetToMessage(d *models.Dataset) *api.Dataset {
-	msg := &api.Dataset{}
-
-	msg.Id = d.ID
-
-	switch d.Status {
-	case "private":
-		msg.Status = api.Dataset_STATUS_PRIVATE
-	case "public":
-		msg.Status = api.Dataset_STATUS_PUBLIC
-	case "deleted":
-		msg.Status = api.Dataset_STATUS_DELETED
-	case "returned":
-		msg.Status = api.Dataset_STATUS_RETURNED
-	}
-
-	msg.HasBeenPublic = d.HasBeenPublic
-
-	for _, val := range d.Abstract {
-		msg.Abstract = append(msg.Abstract, &api.Text{
-			Id:   val.ID,
-			Text: val.Text,
-			Lang: val.Lang,
-		})
-	}
-
-	for _, val := range d.Contributor {
-		var depts []*api.ContributorDepartment
-		for _, dept := range val.Department {
-			depts = append(depts, &api.ContributorDepartment{
-				Id:   dept.ID,
-				Name: dept.Name,
-			})
-		}
-		msg.Contributor = append(msg.Contributor, &api.Contributor{
-			Id:         val.ID,
-			Orcid:      val.ORCID,
-			LocalId:    val.UGentID,
-			CreditRole: val.CreditRole,
-			FirstName:  val.FirstName,
-			LastName:   val.LastName,
-			FullName:   val.FullName,
-			Department: depts,
-		})
-	}
-
-	for _, val := range d.Author {
-		var depts []*api.ContributorDepartment
-		for _, dept := range val.Department {
-			depts = append(depts, &api.ContributorDepartment{
-				Id:   dept.ID,
-				Name: dept.Name,
-			})
-		}
-		msg.Author = append(msg.Author, &api.Contributor{
-			Id:         val.ID,
-			Orcid:      val.ORCID,
-			LocalId:    val.UGentID,
-			CreditRole: val.CreditRole,
-			FirstName:  val.FirstName,
-			LastName:   val.LastName,
-			FullName:   val.FullName,
-			Department: depts,
-		})
-	}
-
-	msg.BatchId = d.BatchID
-
-	if d.DateCreated != nil {
-		msg.DateCreated = timestamppb.New(*d.DateCreated)
-	}
-	if d.DateUpdated != nil {
-		msg.DateUpdated = timestamppb.New(*d.DateUpdated)
-	}
-	if d.DateFrom != nil {
-		msg.DateFrom = timestamppb.New(*d.DateFrom)
-	}
-	if d.DateUntil != nil {
-		msg.DateUntil = timestamppb.New(*d.DateUntil)
-	}
-
-	msg.Title = d.Title
-
-	for _, val := range d.Department {
-		var depts []*api.DepartmentRef
-		for _, dept := range val.Tree {
-			depts = append(depts, &api.DepartmentRef{
-				Id: dept.ID,
-			})
-		}
-		msg.Department = append(msg.Department, &api.Department{
-			Id:   val.ID,
-			Tree: depts,
-		})
-	}
-
-	if d.Creator != nil {
-		msg.Creator = &api.RelatedUser{Id: d.Creator.ID, Name: d.Creator.Name}
-	}
-
-	if d.User != nil {
-		msg.User = &api.RelatedUser{Id: d.User.ID, Name: d.User.Name}
-	}
+// func DatasetToMessage(d *models.Dataset) *api.Dataset {
+// 	msg := &api.Dataset{}
+
+// 	payload, err := json.Marshal(d)
+// 	if err != nil {
+// 	}
+
+// 	msg.Payload = string(payload)
+
+// msg.Id = d.ID
+
+// switch d.Status {
+// case "private":
+// 	msg.Status = api.Dataset_STATUS_PRIVATE
+// case "public":
+// 	msg.Status = api.Dataset_STATUS_PUBLIC
+// case "deleted":
+// 	msg.Status = api.Dataset_STATUS_DELETED
+// case "returned":
+// 	msg.Status = api.Dataset_STATUS_RETURNED
+// }
+
+// msg.HasBeenPublic = d.HasBeenPublic
+
+// for _, val := range d.Abstract {
+// 	msg.Abstract = append(msg.Abstract, &api.Text{
+// 		Id:   val.ID,
+// 		Text: val.Text,
+// 		Lang: val.Lang,
+// 	})
+// }
+
+// for _, val := range d.Contributor {
+// 	var depts []*api.ContributorDepartment
+// 	for _, dept := range val.Department {
+// 		depts = append(depts, &api.ContributorDepartment{
+// 			Id:   dept.ID,
+// 			Name: dept.Name,
+// 		})
+// 	}
+// 	msg.Contributor = append(msg.Contributor, &api.Contributor{
+// 		Id:         val.ID,
+// 		Orcid:      val.ORCID,
+// 		LocalId:    val.UGentID,
+// 		CreditRole: val.CreditRole,
+// 		FirstName:  val.FirstName,
+// 		LastName:   val.LastName,
+// 		FullName:   val.FullName,
+// 		Department: depts,
+// 	})
+// }
+
+// for _, val := range d.Author {
+// 	var depts []*api.ContributorDepartment
+// 	for _, dept := range val.Department {
+// 		depts = append(depts, &api.ContributorDepartment{
+// 			Id:   dept.ID,
+// 			Name: dept.Name,
+// 		})
+// 	}
+// 	msg.Author = append(msg.Author, &api.Contributor{
+// 		Id:         val.ID,
+// 		Orcid:      val.ORCID,
+// 		LocalId:    val.UGentID,
+// 		CreditRole: val.CreditRole,
+// 		FirstName:  val.FirstName,
+// 		LastName:   val.LastName,
+// 		FullName:   val.FullName,
+// 		Department: depts,
+// 	})
+// }
+
+// msg.BatchId = d.BatchID
+
+// if d.DateCreated != nil {
+// 	msg.DateCreated = timestamppb.New(*d.DateCreated)
+// }
+// if d.DateUpdated != nil {
+// 	msg.DateUpdated = timestamppb.New(*d.DateUpdated)
+// }
+// if d.DateFrom != nil {
+// 	msg.DateFrom = timestamppb.New(*d.DateFrom)
+// }
+// if d.DateUntil != nil {
+// 	msg.DateUntil = timestamppb.New(*d.DateUntil)
+// }
+
+// msg.Title = d.Title
+
+// for _, val := range d.Department {
+// 	var depts []*api.DepartmentRef
+// 	for _, dept := range val.Tree {
+// 		depts = append(depts, &api.DepartmentRef{
+// 			Id: dept.ID,
+// 		})
+// 	}
+// 	msg.Department = append(msg.Department, &api.Department{
+// 		Id:   val.ID,
+// 		Tree: depts,
+// 	})
+// }
 
-	if d.LastUser != nil {
-		msg.LastUser = &api.RelatedUser{Id: d.LastUser.ID, Name: d.LastUser.Name}
-	}
+// if d.Creator != nil {
+// 	msg.Creator = &api.RelatedUser{Id: d.Creator.ID, Name: d.Creator.Name}
+// }
 
-	msg.Doi = d.DOI
-
-	msg.Keyword = d.Keyword
-
-	msg.Url = d.URL
-
-	msg.Year = d.Year
-
-	msg.ReviewerNote = d.ReviewerNote
-
-	msg.ReviewerTags = d.ReviewerTags
-
-	msg.SnapshotId = d.SnapshotID
-
-	msg.Locked = d.Locked
-
-	msg.Message = d.Message
-
-	switch d.AccessLevel {
-	case "info:eu-repo/semantics/openAccess":
-		msg.AccessLevel = api.Dataset_ACCESS_LEVEL_OPEN_ACCESS
-	case "info:eu-repo/semantics/embargoedAccess":
-		msg.AccessLevel = api.Dataset_ACCESS_LEVEL_EMBARGOED_ACCESS
-	case "info:eu-repo/semantics/restrictedAccess":
-		msg.AccessLevel = api.Dataset_ACCESS_LEVEL_RESTRICTED_ACCESS
-	case "info:eu-repo/semantics/closedAccess":
-		msg.AccessLevel = api.Dataset_ACCESS_LEVEL_CLOSED_ACCESS
-	}
-
-	switch d.AccessLevelAfterEmbargo {
-	case "info:eu-repo/semantics/openAccess":
-		msg.AccessLevelAfterEmbargo = api.Dataset_ACCESS_LEVEL_OPEN_ACCESS
-	case "info:eu-repo/semantics/restrictedAccess":
-		msg.AccessLevelAfterEmbargo = api.Dataset_ACCESS_LEVEL_RESTRICTED_ACCESS
-	}
-
-	msg.EmbargoDate = d.EmbargoDate
-
-	msg.Format = d.Format
-
-	msg.License = d.License
-
-	msg.OtherLicense = d.OtherLicense
-
-	// msg.Publication = d.Publication
-
-	msg.Publisher = d.Publisher
-
-	for _, val := range d.Project {
-		msg.Project = append(msg.Project, &api.RelatedProject{
-			Id:   val.ID,
-			Name: val.Name,
-		})
-	}
-
-	for _, val := range d.RelatedPublication {
-		msg.RelatedPublication = append(msg.RelatedPublication, &api.RelatedPublication{
-			Id: val.ID,
-		})
-	}
-
-	return msg
-}
-
-func MessageToDataset(msg *api.Dataset) *models.Dataset {
-	d := &models.Dataset{}
-
-	d.ID = msg.Id
-
-	switch msg.Status {
-	case api.Dataset_STATUS_PRIVATE:
-		d.Status = "private"
-	case api.Dataset_STATUS_PUBLIC:
-		d.Status = "public"
-	case api.Dataset_STATUS_DELETED:
-		d.Status = "deleted"
-	case api.Dataset_STATUS_RETURNED:
-		d.Status = "returned"
-	}
-
-	d.HasBeenPublic = msg.HasBeenPublic
-
-	for _, val := range msg.Abstract {
-		d.Abstract = append(d.Abstract, models.Text{
-			ID:   val.Id,
-			Text: val.Text,
-			Lang: val.Lang,
-		})
-	}
-
-	for _, val := range msg.Contributor {
-		var depts []models.ContributorDepartment
-		for _, dept := range val.Department {
-			depts = append(depts, models.ContributorDepartment{
-				ID:   dept.Id,
-				Name: dept.Name,
-			})
-		}
-		d.Contributor = append(d.Contributor, &models.Contributor{
-			ID:         val.Id,
-			ORCID:      val.Orcid,
-			UGentID:    val.LocalId,
-			CreditRole: val.CreditRole,
-			FirstName:  val.FirstName,
-			LastName:   val.LastName,
-			FullName:   val.FullName,
-			Department: depts,
-		})
-	}
-
-	for _, val := range msg.Author {
-		var depts []models.ContributorDepartment
-		for _, dept := range val.Department {
-			depts = append(depts, models.ContributorDepartment{
-				ID:   dept.Id,
-				Name: dept.Name,
-			})
-		}
-		d.Author = append(d.Author, &models.Contributor{
-			ID:         val.Id,
-			ORCID:      val.Orcid,
-			UGentID:    val.LocalId,
-			CreditRole: val.CreditRole,
-			FirstName:  val.FirstName,
-			LastName:   val.LastName,
-			FullName:   val.FullName,
-			Department: depts,
-		})
-	}
-
-	d.BatchID = msg.BatchId
-
-	if msg.DateCreated != nil {
-		t := msg.DateCreated.AsTime()
-		d.DateCreated = &t
-	}
-	if msg.DateUpdated != nil {
-		t := msg.DateUpdated.AsTime()
-		d.DateUpdated = &t
-	}
-	if msg.DateFrom != nil {
-		t := msg.DateFrom.AsTime()
-		d.DateFrom = &t
-	}
-	if msg.DateUntil != nil {
-		t := msg.DateUntil.AsTime()
-		d.DateUntil = &t
-	}
-
-	d.Title = msg.Title
-	for _, val := range msg.Department {
-		var depts []models.DatasetDepartmentRef
-		for _, dept := range val.Tree {
-			depts = append(depts, models.DatasetDepartmentRef{
-				ID: dept.Id,
-			})
-		}
-		d.Department = append(d.Department, models.DatasetDepartment{
-			ID:   val.Id,
-			Tree: depts,
-		})
-	}
-
-	if msg.Creator != nil {
-		d.Creator = &models.DatasetUser{ID: msg.Creator.Id, Name: msg.Creator.Name}
-	}
-
-	if msg.User != nil {
-		d.User = &models.DatasetUser{ID: msg.User.Id, Name: msg.User.Name}
-	}
-
-	if msg.LastUser != nil {
-		d.LastUser = &models.DatasetUser{ID: msg.LastUser.Id, Name: msg.LastUser.Name}
-	}
-
-	d.DOI = msg.Doi
-
-	d.Keyword = msg.Keyword
-
-	d.URL = msg.Url
-
-	d.Year = msg.Year
-
-	d.ReviewerNote = msg.ReviewerNote
-
-	d.ReviewerTags = msg.ReviewerTags
-
-	d.SnapshotID = msg.SnapshotId
-
-	d.Locked = msg.Locked
-
-	d.Message = msg.Message
-
-	switch msg.AccessLevel {
-	case api.Dataset_ACCESS_LEVEL_OPEN_ACCESS:
-		d.AccessLevel = "info:eu-repo/semantics/openAccess"
-	case api.Dataset_ACCESS_LEVEL_EMBARGOED_ACCESS:
-		d.AccessLevel = "info:eu-repo/semantics/embargoedAccess"
-	case api.Dataset_ACCESS_LEVEL_RESTRICTED_ACCESS:
-		d.AccessLevel = "info:eu-repo/semantics/restrictedAccess"
-	case api.Dataset_ACCESS_LEVEL_CLOSED_ACCESS:
-		d.AccessLevel = "info:eu-repo/semantics/closedAccess"
-	}
-
-	switch msg.AccessLevelAfterEmbargo {
-	case api.Dataset_ACCESS_LEVEL_OPEN_ACCESS:
-		d.AccessLevelAfterEmbargo = "info:eu-repo/semantics/openAccess"
-	case api.Dataset_ACCESS_LEVEL_RESTRICTED_ACCESS:
-		d.AccessLevelAfterEmbargo = "info:eu-repo/semantics/restrictedAccess"
-	}
-
-	d.EmbargoDate = msg.EmbargoDate
-
-	d.Format = msg.Format
-
-	d.License = msg.License
-
-	d.OtherLicense = msg.OtherLicense
-
-	d.Publisher = msg.Publisher
-
-	for _, val := range msg.Project {
-		// TODO add Name
-		d.Project = append(d.Project, models.DatasetProject{
-			ID:   val.Id,
-			Name: val.Name,
-		})
-	}
-
-	for _, val := range msg.RelatedPublication {
-		d.RelatedPublication = append(d.RelatedPublication, models.RelatedPublication{
-			ID: val.Id,
-		})
-	}
-
-	return d
-}
+// if d.User != nil {
+// 	msg.User = &api.RelatedUser{Id: d.User.ID, Name: d.User.Name}
+// }
+
+// if d.LastUser != nil {
+// 	msg.LastUser = &api.RelatedUser{Id: d.LastUser.ID, Name: d.LastUser.Name}
+// }
+
+// msg.Doi = d.DOI
+
+// msg.Keyword = d.Keyword
+
+// msg.Url = d.URL
+
+// msg.Year = d.Year
+
+// msg.ReviewerNote = d.ReviewerNote
+
+// msg.ReviewerTags = d.ReviewerTags
+
+// msg.SnapshotId = d.SnapshotID
+
+// msg.Locked = d.Locked
+
+// msg.Message = d.Message
+
+// switch d.AccessLevel {
+// case "info:eu-repo/semantics/openAccess":
+// 	msg.AccessLevel = api.Dataset_ACCESS_LEVEL_OPEN_ACCESS
+// case "info:eu-repo/semantics/embargoedAccess":
+// 	msg.AccessLevel = api.Dataset_ACCESS_LEVEL_EMBARGOED_ACCESS
+// case "info:eu-repo/semantics/restrictedAccess":
+// 	msg.AccessLevel = api.Dataset_ACCESS_LEVEL_RESTRICTED_ACCESS
+// case "info:eu-repo/semantics/closedAccess":
+// 	msg.AccessLevel = api.Dataset_ACCESS_LEVEL_CLOSED_ACCESS
+// }
+
+// switch d.AccessLevelAfterEmbargo {
+// case "info:eu-repo/semantics/openAccess":
+// 	msg.AccessLevelAfterEmbargo = api.Dataset_ACCESS_LEVEL_OPEN_ACCESS
+// case "info:eu-repo/semantics/restrictedAccess":
+// 	msg.AccessLevelAfterEmbargo = api.Dataset_ACCESS_LEVEL_RESTRICTED_ACCESS
+// }
+
+// msg.EmbargoDate = d.EmbargoDate
+
+// msg.Format = d.Format
+
+// msg.License = d.License
+
+// msg.OtherLicense = d.OtherLicense
+
+// // msg.Publication = d.Publication
+
+// msg.Publisher = d.Publisher
+
+// for _, val := range d.Project {
+// 	msg.Project = append(msg.Project, &api.RelatedProject{
+// 		Id:   val.ID,
+// 		Name: val.Name,
+// 	})
+// }
+
+// for _, val := range d.RelatedPublication {
+// 	msg.RelatedPublication = append(msg.RelatedPublication, &api.RelatedPublication{
+// 		Id: val.ID,
+// 	})
+// }
+
+// 	return msg
+// }
+
+// func MessageToDataset(msg *api.Dataset) *models.Dataset {
+// 	d := &models.Dataset{}
+
+// 	if err := json.Unmarshal([]byte(msg.Payload), d); err != nil {
+// log.Fatalf("Unable to decode publication at line %d : %v", lineNo, err)
+//	}
+
+// d.ID = msg.Id
+
+// switch msg.Status {
+// case api.Dataset_STATUS_PRIVATE:
+// 	d.Status = "private"
+// case api.Dataset_STATUS_PUBLIC:
+// 	d.Status = "public"
+// case api.Dataset_STATUS_DELETED:
+// 	d.Status = "deleted"
+// case api.Dataset_STATUS_RETURNED:
+// 	d.Status = "returned"
+// }
+
+// d.HasBeenPublic = msg.HasBeenPublic
+
+// for _, val := range msg.Abstract {
+// 	d.Abstract = append(d.Abstract, models.Text{
+// 		ID:   val.Id,
+// 		Text: val.Text,
+// 		Lang: val.Lang,
+// 	})
+// }
+
+// for _, val := range msg.Contributor {
+// 	var depts []models.ContributorDepartment
+// 	for _, dept := range val.Department {
+// 		depts = append(depts, models.ContributorDepartment{
+// 			ID:   dept.Id,
+// 			Name: dept.Name,
+// 		})
+// 	}
+// 	d.Contributor = append(d.Contributor, &models.Contributor{
+// 		ID:         val.Id,
+// 		ORCID:      val.Orcid,
+// 		UGentID:    val.LocalId,
+// 		CreditRole: val.CreditRole,
+// 		FirstName:  val.FirstName,
+// 		LastName:   val.LastName,
+// 		FullName:   val.FullName,
+// 		Department: depts,
+// 	})
+// }
+
+// for _, val := range msg.Author {
+// 	var depts []models.ContributorDepartment
+// 	for _, dept := range val.Department {
+// 		depts = append(depts, models.ContributorDepartment{
+// 			ID:   dept.Id,
+// 			Name: dept.Name,
+// 		})
+// 	}
+// 	d.Author = append(d.Author, &models.Contributor{
+// 		ID:         val.Id,
+// 		ORCID:      val.Orcid,
+// 		UGentID:    val.LocalId,
+// 		CreditRole: val.CreditRole,
+// 		FirstName:  val.FirstName,
+// 		LastName:   val.LastName,
+// 		FullName:   val.FullName,
+// 		Department: depts,
+// 	})
+// }
+
+// d.BatchID = msg.BatchId
+
+// if msg.DateCreated != nil {
+// 	t := msg.DateCreated.AsTime()
+// 	d.DateCreated = &t
+// }
+// if msg.DateUpdated != nil {
+// 	t := msg.DateUpdated.AsTime()
+// 	d.DateUpdated = &t
+// }
+// if msg.DateFrom != nil {
+// 	t := msg.DateFrom.AsTime()
+// 	d.DateFrom = &t
+// }
+// if msg.DateUntil != nil {
+// 	t := msg.DateUntil.AsTime()
+// 	d.DateUntil = &t
+// }
+
+// d.Title = msg.Title
+// for _, val := range msg.Department {
+// 	var depts []models.DatasetDepartmentRef
+// 	for _, dept := range val.Tree {
+// 		depts = append(depts, models.DatasetDepartmentRef{
+// 			ID: dept.Id,
+// 		})
+// 	}
+// 	d.Department = append(d.Department, models.DatasetDepartment{
+// 		ID:   val.Id,
+// 		Tree: depts,
+// 	})
+// }
+
+// if msg.Creator != nil {
+// 	d.Creator = &models.DatasetUser{ID: msg.Creator.Id, Name: msg.Creator.Name}
+// }
+
+// if msg.User != nil {
+// 	d.User = &models.DatasetUser{ID: msg.User.Id, Name: msg.User.Name}
+// }
+
+// if msg.LastUser != nil {
+// 	d.LastUser = &models.DatasetUser{ID: msg.LastUser.Id, Name: msg.LastUser.Name}
+// }
+
+// d.DOI = msg.Doi
+
+// d.Keyword = msg.Keyword
+
+// d.URL = msg.Url
+
+// d.Year = msg.Year
+
+// d.ReviewerNote = msg.ReviewerNote
+
+// d.ReviewerTags = msg.ReviewerTags
+
+// d.SnapshotID = msg.SnapshotId
+
+// d.Locked = msg.Locked
+
+// d.Message = msg.Message
+
+// switch msg.AccessLevel {
+// case api.Dataset_ACCESS_LEVEL_OPEN_ACCESS:
+// 	d.AccessLevel = "info:eu-repo/semantics/openAccess"
+// case api.Dataset_ACCESS_LEVEL_EMBARGOED_ACCESS:
+// 	d.AccessLevel = "info:eu-repo/semantics/embargoedAccess"
+// case api.Dataset_ACCESS_LEVEL_RESTRICTED_ACCESS:
+// 	d.AccessLevel = "info:eu-repo/semantics/restrictedAccess"
+// case api.Dataset_ACCESS_LEVEL_CLOSED_ACCESS:
+// 	d.AccessLevel = "info:eu-repo/semantics/closedAccess"
+// }
+
+// switch msg.AccessLevelAfterEmbargo {
+// case api.Dataset_ACCESS_LEVEL_OPEN_ACCESS:
+// 	d.AccessLevelAfterEmbargo = "info:eu-repo/semantics/openAccess"
+// case api.Dataset_ACCESS_LEVEL_RESTRICTED_ACCESS:
+// 	d.AccessLevelAfterEmbargo = "info:eu-repo/semantics/restrictedAccess"
+// }
+
+// d.EmbargoDate = msg.EmbargoDate
+
+// d.Format = msg.Format
+
+// d.License = msg.License
+
+// d.OtherLicense = msg.OtherLicense
+
+// d.Publisher = msg.Publisher
+
+// for _, val := range msg.Project {
+// 	// TODO add Name
+// 	d.Project = append(d.Project, models.DatasetProject{
+// 		ID:   val.Id,
+// 		Name: val.Name,
+// 	})
+// }
+
+// for _, val := range msg.RelatedPublication {
+// 	d.RelatedPublication = append(d.RelatedPublication, models.RelatedPublication{
+// 		ID: val.Id,
+// 	})
+// }
+
+// 	return d
+// }

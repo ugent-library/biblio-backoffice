@@ -10,7 +10,6 @@ import (
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
 	"github.com/ugent-library/biblio-backoffice/internal/models"
-	"github.com/ugent-library/biblio-backoffice/internal/server"
 )
 
 type SearchPublicationsCmd struct {
@@ -62,8 +61,11 @@ func (c *SearchPublicationsCmd) Run(cmd *cobra.Command, args []string) {
 		Total:  res.Total,
 		Hits:   make([]*models.Publication, len(res.Hits)),
 	}
-	for i, p := range res.Hits {
-		hits.Hits[i] = server.MessageToPublication(p)
+	for i, h := range res.Hits {
+		p := &models.Publication{}
+		if err := json.Unmarshal(h.Payload, p); err != nil {
+			hits.Hits[i] = p
+		}
 	}
 
 	j, err := json.Marshal(hits)

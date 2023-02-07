@@ -3,15 +3,12 @@ package cmd
 import (
 	"bufio"
 	"context"
-	"encoding/json"
 	"io"
 	"log"
 	"os"
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
-	"github.com/ugent-library/biblio-backoffice/internal/models"
-	"github.com/ugent-library/biblio-backoffice/internal/server"
 )
 
 type ImportDatasetsCmd struct {
@@ -67,12 +64,11 @@ func (c *ImportDatasetsCmd) Run(cmd *cobra.Command, args []string) {
 
 		lineNo++
 
-		d := &models.Dataset{}
-		if err := json.Unmarshal(line, d); err != nil {
-			log.Fatalf("Unable to decode dataset at line %d : %v", lineNo, err)
+		d := &api.Dataset{
+			Payload: line,
 		}
 
-		req := &api.ImportDatasetsRequest{Dataset: server.DatasetToMessage(d)}
+		req := &api.ImportDatasetsRequest{Dataset: d}
 		if err := stream.Send(req); err != nil {
 			log.Fatal(err)
 		}

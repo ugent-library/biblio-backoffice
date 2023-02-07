@@ -10,7 +10,6 @@ import (
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
 	"github.com/ugent-library/biblio-backoffice/internal/models"
-	"github.com/ugent-library/biblio-backoffice/internal/server"
 )
 
 type SearchDatasetsCmd struct {
@@ -62,8 +61,11 @@ func (c *SearchDatasetsCmd) Run(cmd *cobra.Command, args []string) {
 		Total:  res.Total,
 		Hits:   make([]*models.Dataset, len(res.Hits)),
 	}
-	for i, d := range res.Hits {
-		hits.Hits[i] = server.MessageToDataset(d)
+	for i, h := range res.Hits {
+		d := &models.Dataset{}
+		if err := json.Unmarshal(h.Payload, d); err != nil {
+			hits.Hits[i] = d
+		}
 	}
 
 	j, err := json.Marshal(hits)
