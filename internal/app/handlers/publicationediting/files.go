@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/ugent-library/biblio-backoffice/internal/app/constants"
 	"github.com/ugent-library/biblio-backoffice/internal/app/handlers"
 	"github.com/ugent-library/biblio-backoffice/internal/app/localize"
 	"github.com/ugent-library/biblio-backoffice/internal/bind"
@@ -52,6 +53,7 @@ type YieldEditFile struct {
 
 type YieldShowFiles struct {
 	Context
+	MaxFileSize int
 }
 
 type YieldDeleteFile struct {
@@ -61,7 +63,8 @@ type YieldDeleteFile struct {
 
 func (h *Handler) RefreshFiles(w http.ResponseWriter, r *http.Request, ctx Context) {
 	render.View(w, "publication/refresh_files", YieldShowFiles{
-		Context: ctx,
+		Context:     ctx,
+		MaxFileSize: constants.MaxFileSize,
 	})
 }
 
@@ -295,7 +298,8 @@ func (h *Handler) UpdateFile(w http.ResponseWriter, r *http.Request, ctx Context
 	}
 
 	render.View(w, "publication/refresh_files", YieldShowFiles{
-		Context: ctx,
+		Context:     ctx,
+		MaxFileSize: constants.MaxFileSize,
 	})
 }
 
@@ -349,7 +353,8 @@ func (h *Handler) DeleteFile(w http.ResponseWriter, r *http.Request, ctx Context
 	}
 
 	render.View(w, "publication/refresh_files", YieldShowFiles{
-		Context: ctx,
+		Context:     ctx,
+		MaxFileSize: constants.MaxFileSize,
 	})
 }
 

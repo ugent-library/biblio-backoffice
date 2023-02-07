@@ -3,6 +3,7 @@ package publicationviewing
 import (
 	"net/http"
 
+	"github.com/ugent-library/biblio-backoffice/internal/app/constants"
 	"github.com/ugent-library/biblio-backoffice/internal/app/displays"
 	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"github.com/ugent-library/biblio-backoffice/internal/render"
@@ -39,6 +40,7 @@ type YieldShowFiles struct {
 	Context
 	SubNavs      []string
 	ActiveSubNav string
+	MaxFileSize  int
 }
 
 type YieldShowDatasets struct {
@@ -85,6 +87,7 @@ func (h *Handler) ShowFiles(w http.ResponseWriter, r *http.Request, ctx Context)
 		Context:      ctx,
 		SubNavs:      subNavs,
 		ActiveSubNav: "files",
+		MaxFileSize:  constants.MaxFileSize,
 	})
 }
 

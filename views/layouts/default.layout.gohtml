@@ -182,6 +182,26 @@
     </main>
 
     <div id="modals"></div>
+    <template class="template-modal-error">
+        <div class="d-block modal-backdrop fade show"></div>
+        <div class="d-block modal show" tabindex="-1" aria-modal="true" role="dialog">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <div class="c-blank-slate c-blank-slate-danger">
+                            <div class="bc-avatar">
+                                <i class="if if-error-circle"></i>
+                            </div>
+                            <p class="msg"></p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-link modal-close">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
 
     <div id="flash-messages">
         {{range .Flash}}
