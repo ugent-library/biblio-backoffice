@@ -6,6 +6,8 @@ BIBLIO_BACKOFFICE_ES6_URL=http://localhost:9400
 BIBLIO_BACKOFFICE_DATASET_INDEX=biblio_datasets
 BIBLIO_BACKOFFICE_PUBLICATION_INDEX=biblio_publications
 BIBLIO_BACKOFFICE_PORT=3999
+BIBLIO_BACKOFFICE_MONGODB_URL=mongodb://localhost:27017/?directConnection=true&serverSelectionTimeoutMS=2000
+BIBLIO_BACKOFFICE_FRONTEND_ES6_URL=http://localhost:9200
 export
 
 setup-test-env: init-test-env create-db-tables create-es-indices
