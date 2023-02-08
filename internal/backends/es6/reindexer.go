@@ -100,7 +100,7 @@ func (r *reindexer) getAliasStatus(alias string) (*AliasStatus, error) {
 		}
 
 		indexNames := make([]string, 0)
-		for k, _ := range aliasGet {
+		for k := range aliasGet {
 			indexNames = append(indexNames, k)
 		}
 
@@ -172,15 +172,15 @@ func (r *reindexer) switchAlias(alias string, oldIndexName string, newIndexName 
 }
 
 /*
-	Initializes index:
+Initializes index:
 
-	1. creates new index with timestamp
-	2. sets alias to new index
+1. creates new index with timestamp
+2. sets alias to new index
 
-	Returns error when:
+Returns error when:
 
-	* Something (index or alias) already exists at the alias location
-	* unexpected es6 error occurs
+* Something (index or alias) already exists at the alias location
+* unexpected es6 error occurs
 */
 func (r *reindexer) InitAlias() error {
 	_, aliasStatusErr := r.getAliasStatus(r.alias)
@@ -232,14 +232,14 @@ func (r *reindexer) InitAlias() error {
 }
 
 /*
-	Returns all indexes that have the current alias as prefix,
-	and shows if they are currently linked to that alias
+Returns all indexes that have the current alias as prefix,
+and shows if they are currently linked to that alias
 
-	Technicall returns array of objects
-	each object contains keys "index" and "active":
+Technicall returns array of objects
+each object contains keys "index" and "active":
 
-		object["index"] is the name of an index that is version of the current alias
-		object["active"] contains either "true" or "false"
+	object["index"] is the name of an index that is version of the current alias
+	object["active"] contains either "true" or "false"
 */
 func (r *reindexer) ListIndexes() ([]map[string]string, error) {
 

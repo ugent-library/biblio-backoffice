@@ -384,6 +384,14 @@ func (publications *Publications) Index(p *models.Publication) error {
 	return nil
 }
 
+func (publications *Publications) NewBulkIndexer(config backends.BulkIndexerConfig) (backends.BulkIndexer[*models.Publication], error) {
+	docFn := func(p *models.Publication) (string, []byte, error) {
+		doc, err := json.Marshal(NewIndexedPublication(p))
+		return p.ID, doc, err
+	}
+	return newBulkIndexer(publications.Client.es, publications.Client.Index, docFn, config)
+}
+
 // TODO error chan
 func (publications *Publications) IndexMultiple(inCh <-chan *models.Publication) {
 	bi, err := esutil.NewBulkIndexer(esutil.BulkIndexerConfig{

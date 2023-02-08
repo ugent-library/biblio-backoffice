@@ -96,6 +96,16 @@ type Repository interface {
 	RemovePublicationDataset(*models.Publication, *models.Dataset, *models.User) error
 }
 
+type BulkIndexerConfig struct {
+	OnError      func(error)
+	OnIndexError func(string, error)
+}
+
+type BulkIndexer[T any] interface {
+	Index(context.Context, T) error
+	Close(context.Context) error
+}
+
 type Reindexer interface {
 	InitAlias() error
 	RemoveOldIndexes(int) error
@@ -126,6 +136,7 @@ type DatasetSearchService interface {
 type PublicationSearchService interface {
 	Search(*models.SearchArgs) (*models.PublicationHits, error)
 	Index(*models.Publication) error
+	NewBulkIndexer(BulkIndexerConfig) (BulkIndexer[*models.Publication], error)
 	IndexMultiple(<-chan *models.Publication)
 	Delete(id string) error
 	WithScope(string, ...string) PublicationSearchService
