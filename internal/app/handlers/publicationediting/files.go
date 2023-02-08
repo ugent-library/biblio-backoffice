@@ -52,6 +52,7 @@ type YieldEditFile struct {
 
 type YieldShowFiles struct {
 	Context
+	MaxFileSize int
 }
 
 type YieldDeleteFile struct {
@@ -61,7 +62,8 @@ type YieldDeleteFile struct {
 
 func (h *Handler) RefreshFiles(w http.ResponseWriter, r *http.Request, ctx Context) {
 	render.View(w, "publication/refresh_files", YieldShowFiles{
-		Context: ctx,
+		Context:     ctx,
+		MaxFileSize: h.MaxFileSize,
 	})
 }
 
@@ -295,7 +297,8 @@ func (h *Handler) UpdateFile(w http.ResponseWriter, r *http.Request, ctx Context
 	}
 
 	render.View(w, "publication/refresh_files", YieldShowFiles{
-		Context: ctx,
+		Context:     ctx,
+		MaxFileSize: h.MaxFileSize,
 	})
 }
 
@@ -349,7 +352,8 @@ func (h *Handler) DeleteFile(w http.ResponseWriter, r *http.Request, ctx Context
 	}
 
 	render.View(w, "publication/refresh_files", YieldShowFiles{
-		Context: ctx,
+		Context:     ctx,
+		MaxFileSize: h.MaxFileSize,
 	})
 }
 

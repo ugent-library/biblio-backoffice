@@ -22,6 +22,7 @@ type Handler struct {
 	OrganizationService       backends.OrganizationService
 	DatasetSearchService      backends.DatasetSearchService
 	FileStore                 *filestore.Store
+	MaxFileSize               int
 }
 
 type Context struct {

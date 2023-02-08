@@ -13,8 +13,9 @@ import (
 
 type Handler struct {
 	handlers.BaseHandler
-	Repository backends.Repository
-	FileStore  *filestore.Store
+	Repository  backends.Repository
+	FileStore   *filestore.Store
+	MaxFileSize int
 }
 
 type Context struct {
