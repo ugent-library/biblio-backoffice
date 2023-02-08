@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/ugent-library/biblio-backend/internal/vocabularies"
+	"github.com/ugent-library/biblio-backoffice/internal/vocabularies"
 )
 
 func InArray(values []string, val string) bool {

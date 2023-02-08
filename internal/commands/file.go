@@ -9,7 +9,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/ugent-library/biblio-backend/internal/backends/filestore"
+	"github.com/ugent-library/biblio-backoffice/internal/backends/filestore"
 )
 
 type importFile struct {
@@ -59,7 +59,7 @@ var fileAddCmd = &cobra.Command{
 		<id> <path>
 
 	Can easily be checked as following:
-		$ ./biblio-backend file add /path/to/file.txt > /path/to/id.txt
+		$ ./biblio-backoffice file add /path/to/file.txt > /path/to/id.txt
 		$ sha256sum -c /path/to/id.txt
 	`,
 	Args: cobra.ExactArgs(1),
@@ -86,7 +86,7 @@ var fileAddManyCmd = &cobra.Command{
 		<id> <path>
 
 	Can easily be checked as following:
-		$ ./biblio-backend file add_many < /path/to/file_paths.txt > /path/to/ids.txt
+		$ ./biblio-backoffice file add_many < /path/to/file_paths.txt > /path/to/ids.txt
 		$ sha256sum -c /path/to/ids.txt
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -134,7 +134,7 @@ var fileImportManyCmd = &cobra.Command{
 		<id> <path>
 
 	Can easily be checked as following:
-		$ ./biblio-backend file import < /path/to/file_paths.json > /path/to/ids.txt
+		$ ./biblio-backoffice file import < /path/to/file_paths.json > /path/to/ids.txt
 		$ sha256sum -c /path/to/ids.txt
 
 	If the filestore already contains an identical checksum, the import will be skipped.

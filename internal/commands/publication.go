@@ -9,10 +9,10 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/oklog/ulid/v2"
 	"github.com/spf13/cobra"
-	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/biblio-backend/internal/snapstore"
-	"github.com/ugent-library/biblio-backend/internal/ulid"
+	"github.com/ugent-library/biblio-backoffice/internal/models"
+	"github.com/ugent-library/biblio-backoffice/internal/snapstore"
 )
 
 func init() {
@@ -113,7 +113,7 @@ var publicationAddCmd = &cobra.Command{
 		for {
 			lineNo += 1
 			p := models.Publication{
-				ID:             ulid.MustGenerate(),
+				ID:             ulid.Make().String(),
 				Status:         "private",
 				Classification: "U",
 			}

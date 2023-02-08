@@ -1,20 +1,21 @@
 package publicationediting
 
 import (
+	"encoding/json"
 	"errors"
 	"net/http"
 
-	"github.com/ugent-library/biblio-backend/internal/app/displays"
-	"github.com/ugent-library/biblio-backend/internal/app/localize"
-	"github.com/ugent-library/biblio-backend/internal/bind"
-	"github.com/ugent-library/biblio-backend/internal/locale"
-	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/biblio-backend/internal/render"
-	"github.com/ugent-library/biblio-backend/internal/render/display"
-	"github.com/ugent-library/biblio-backend/internal/render/form"
-	"github.com/ugent-library/biblio-backend/internal/snapstore"
-	"github.com/ugent-library/biblio-backend/internal/validation"
-	"github.com/ugent-library/biblio-backend/internal/vocabularies"
+	"github.com/ugent-library/biblio-backoffice/internal/app/displays"
+	"github.com/ugent-library/biblio-backoffice/internal/app/localize"
+	"github.com/ugent-library/biblio-backoffice/internal/bind"
+	"github.com/ugent-library/biblio-backoffice/internal/locale"
+	"github.com/ugent-library/biblio-backoffice/internal/models"
+	"github.com/ugent-library/biblio-backoffice/internal/render"
+	"github.com/ugent-library/biblio-backoffice/internal/render/display"
+	"github.com/ugent-library/biblio-backoffice/internal/render/form"
+	"github.com/ugent-library/biblio-backoffice/internal/snapstore"
+	"github.com/ugent-library/biblio-backoffice/internal/validation"
+	"github.com/ugent-library/biblio-backoffice/internal/vocabularies"
 )
 
 type BindAdditionalInfo struct {
@@ -85,7 +86,7 @@ func (h *Handler) UpdateAdditionalInfo(w http.ResponseWriter, r *http.Request, c
 
 	render.View(w, "publication/refresh_additional_info", YieldAdditionalInfo{
 		Context:               ctx,
-		DisplayAdditionalInfo: displays.PublicationAdditionalInfo(ctx.Locale, p),
+		DisplayAdditionalInfo: displays.PublicationAdditionalInfo(ctx.User, ctx.Locale, p),
 	})
 }
 
@@ -95,6 +96,9 @@ func additionalInfoForm(user *models.User, l *locale.Locale, p *models.Publicati
 		researchFieldOptions[i].Label = v
 		researchFieldOptions[i].Value = v
 	}
+
+	keywordBytes, _ := json.Marshal(p.Keyword)
+	keywordStr := string(keywordBytes)
 
 	return form.New().
 		WithTheme("default").
@@ -113,11 +117,12 @@ func additionalInfoForm(user *models.User, l *locale.Locale, p *models.Publicati
 					"/research_field",
 				),
 			},
-			&form.TextRepeat{
-				Name:   "keyword",
-				Values: p.Keyword,
-				Label:  l.T("builder.keyword"),
-				Cols:   9,
+			&form.Text{
+				Name:     "keyword",
+				Value:    keywordStr,
+				Template: "tags",
+				Label:    l.T("builder.keyword"),
+				Cols:     9,
 				Error: localize.ValidationErrorAt(
 					l,
 					errors,

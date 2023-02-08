@@ -6,7 +6,7 @@ import (
 	"io"
 	"os"
 
-	api "github.com/ugent-library/biblio-backend/api/v1"
+	api "github.com/ugent-library/biblio-backoffice/api/v1"
 )
 
 const fileBufSize = 524288

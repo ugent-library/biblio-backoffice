@@ -6,11 +6,11 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ugent-library/biblio-backend/internal/app/handlers"
-	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/biblio-backend/internal/render"
-	"github.com/ugent-library/biblio-backend/internal/render/flash"
-	"github.com/ugent-library/biblio-backend/internal/snapstore"
+	"github.com/ugent-library/biblio-backoffice/internal/app/handlers"
+	"github.com/ugent-library/biblio-backoffice/internal/models"
+	"github.com/ugent-library/biblio-backoffice/internal/render"
+	"github.com/ugent-library/biblio-backoffice/internal/render/flash"
+	"github.com/ugent-library/biblio-backoffice/internal/snapstore"
 )
 
 type YieldConfirmDelete struct {
@@ -60,7 +60,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request, ctx Context) {
 	h.AddSessionFlash(r, w, *flash)
 
 	// TODO temporary fix until we can figure out a way let ES notify this handler that it did its thing.
-	// see: https://github.com/ugent-library/biblio-backend/issues/590
+	// see: https://github.com/ugent-library/biblio-backoffice/issues/590
 	time.Sleep(1250 * time.Millisecond)
 
 	w.Header().Set("HX-Redirect", r.URL.Query().Get("redirect-url"))

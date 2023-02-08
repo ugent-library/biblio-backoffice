@@ -6,7 +6,7 @@ import (
 	"io"
 	"path"
 
-	"github.com/ugent-library/biblio-backend/internal/render"
+	"github.com/ugent-library/biblio-backoffice/internal/render"
 )
 
 type Errors []string

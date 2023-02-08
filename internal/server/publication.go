@@ -7,10 +7,10 @@ import (
 	"io"
 	"sync"
 
-	api "github.com/ugent-library/biblio-backend/api/v1"
-	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/biblio-backend/internal/ulid"
-	"github.com/ugent-library/biblio-backend/internal/validation"
+	"github.com/oklog/ulid/v2"
+	api "github.com/ugent-library/biblio-backoffice/api/v1"
+	"github.com/ugent-library/biblio-backoffice/internal/models"
+	"github.com/ugent-library/biblio-backoffice/internal/validation"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -136,7 +136,7 @@ func (s *server) AddPublications(stream api.Biblio_AddPublicationsServer) error 
 		p := MessageToPublication(req.Publication)
 
 		if p.ID == "" {
-			p.ID = ulid.MustGenerate()
+			p.ID = ulid.Make().String()
 		}
 		if p.Status == "" {
 			p.Status = "private"
@@ -146,19 +146,19 @@ func (s *server) AddPublications(stream api.Biblio_AddPublicationsServer) error 
 		}
 		for i, val := range p.Abstract {
 			if val.ID == "" {
-				val.ID = ulid.MustGenerate()
+				val.ID = ulid.Make().String()
 			}
 			p.Abstract[i] = val
 		}
 		for i, val := range p.LaySummary {
 			if val.ID == "" {
-				val.ID = ulid.MustGenerate()
+				val.ID = ulid.Make().String()
 			}
 			p.LaySummary[i] = val
 		}
 		for i, val := range p.Link {
 			if val.ID == "" {
-				val.ID = ulid.MustGenerate()
+				val.ID = ulid.Make().String()
 			}
 			p.Link[i] = val
 		}
@@ -474,6 +474,10 @@ func PublicationToMessage(p *models.Publication) *api.Publication {
 
 	if p.User != nil {
 		msg.User = &api.RelatedUser{Id: p.User.ID, Name: p.User.Name}
+	}
+
+	if p.LastUser != nil {
+		msg.LastUser = &api.RelatedUser{Id: p.LastUser.ID, Name: p.LastUser.Name}
 	}
 
 	msg.Doi = p.DOI
@@ -1007,6 +1011,10 @@ func MessageToPublication(msg *api.Publication) *models.Publication {
 
 	if msg.User != nil {
 		p.User = &models.PublicationUser{ID: msg.User.Id, Name: msg.User.Name}
+	}
+
+	if msg.LastUser != nil {
+		p.LastUser = &models.PublicationUser{ID: msg.LastUser.Id, Name: msg.LastUser.Name}
 	}
 
 	p.DOI = msg.Doi

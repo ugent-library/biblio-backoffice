@@ -6,8 +6,8 @@ import (
 	"encoding/json"
 
 	"github.com/elastic/go-elasticsearch/v6/esapi"
-	"github.com/ugent-library/biblio-backend/internal/backends"
-	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backoffice/internal/backends"
+	"github.com/ugent-library/biblio-backoffice/internal/models"
 )
 
 type PublicationSearcher struct {

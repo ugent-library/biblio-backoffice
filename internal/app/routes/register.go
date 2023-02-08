@@ -8,41 +8,40 @@ import (
 
 	"github.com/alexliesenfeld/health"
 	"github.com/gorilla/csrf"
-	mw "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"github.com/jpillora/ipfilter"
 	"github.com/spf13/viper"
-	"github.com/ugent-library/biblio-backend/internal/app/handlers"
-	"github.com/ugent-library/biblio-backend/internal/app/handlers/authenticating"
-	"github.com/ugent-library/biblio-backend/internal/app/handlers/dashboard"
-	"github.com/ugent-library/biblio-backend/internal/app/handlers/datasetcreating"
-	"github.com/ugent-library/biblio-backend/internal/app/handlers/datasetediting"
-	"github.com/ugent-library/biblio-backend/internal/app/handlers/datasetexporting"
-	"github.com/ugent-library/biblio-backend/internal/app/handlers/datasetsearching"
-	"github.com/ugent-library/biblio-backend/internal/app/handlers/datasetviewing"
-	"github.com/ugent-library/biblio-backend/internal/app/handlers/frontoffice"
-	"github.com/ugent-library/biblio-backend/internal/app/handlers/home"
-	"github.com/ugent-library/biblio-backend/internal/app/handlers/impersonating"
-	"github.com/ugent-library/biblio-backend/internal/app/handlers/mediatypes"
-	"github.com/ugent-library/biblio-backend/internal/app/handlers/publicationcreating"
-	"github.com/ugent-library/biblio-backend/internal/app/handlers/publicationediting"
-	"github.com/ugent-library/biblio-backend/internal/app/handlers/publicationexporting"
-	"github.com/ugent-library/biblio-backend/internal/app/handlers/publicationsearching"
-	"github.com/ugent-library/biblio-backend/internal/app/handlers/publicationviewing"
-	"github.com/ugent-library/biblio-backend/internal/backends"
-	"github.com/ugent-library/biblio-backend/internal/locale"
-	"github.com/ugent-library/go-oidc/oidc"
+	"github.com/ugent-library/biblio-backoffice/internal/app/handlers"
+	"github.com/ugent-library/biblio-backoffice/internal/app/handlers/authenticating"
+	"github.com/ugent-library/biblio-backoffice/internal/app/handlers/dashboard"
+	"github.com/ugent-library/biblio-backoffice/internal/app/handlers/datasetcreating"
+	"github.com/ugent-library/biblio-backoffice/internal/app/handlers/datasetediting"
+	"github.com/ugent-library/biblio-backoffice/internal/app/handlers/datasetexporting"
+	"github.com/ugent-library/biblio-backoffice/internal/app/handlers/datasetsearching"
+	"github.com/ugent-library/biblio-backoffice/internal/app/handlers/datasetviewing"
+	"github.com/ugent-library/biblio-backoffice/internal/app/handlers/frontoffice"
+	"github.com/ugent-library/biblio-backoffice/internal/app/handlers/home"
+	"github.com/ugent-library/biblio-backoffice/internal/app/handlers/impersonating"
+	"github.com/ugent-library/biblio-backoffice/internal/app/handlers/mediatypes"
+	"github.com/ugent-library/biblio-backoffice/internal/app/handlers/publicationbatch"
+	"github.com/ugent-library/biblio-backoffice/internal/app/handlers/publicationcreating"
+	"github.com/ugent-library/biblio-backoffice/internal/app/handlers/publicationediting"
+	"github.com/ugent-library/biblio-backoffice/internal/app/handlers/publicationexporting"
+	"github.com/ugent-library/biblio-backoffice/internal/app/handlers/publicationsearching"
+	"github.com/ugent-library/biblio-backoffice/internal/app/handlers/publicationviewing"
+	"github.com/ugent-library/biblio-backoffice/internal/backends"
+	"github.com/ugent-library/biblio-backoffice/internal/locale"
+	"github.com/ugent-library/oidc"
 	"go.uber.org/zap"
 )
 
 func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
-	sessionStore sessions.Store, sessionName string, localizer *locale.Localizer, logger *zap.SugaredLogger, oidcClient *oidc.Client) {
+	sessionStore sessions.Store, sessionName string, localizer *locale.Localizer, logger *zap.SugaredLogger, oidcAuth *oidc.Auth) {
 	basePath := baseURL.Path
 
 	router.StrictSlash(true)
 	router.UseEncodedPath()
-	router.Use(mw.RecoveryHandler(mw.PrintRecoveryStack(true)))
 
 	// static files
 	router.PathPrefix(basePath + "/static/").Handler(http.StripPrefix(basePath+"/static/", http.FileServer(http.Dir("./static"))))
@@ -68,7 +67,7 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 	}
 	authenticatingHandler := &authenticating.Handler{
 		BaseHandler: baseHandler,
-		OIDCClient:  oidcClient,
+		OIDCAuth:    oidcAuth,
 	}
 	impersonatingHandler := &impersonating.Handler{
 		BaseHandler:       baseHandler,
@@ -139,6 +138,7 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		BaseHandler: baseHandler,
 		Repository:  services.Repository,
 		FileStore:   services.FileStore,
+		MaxFileSize: viper.GetInt("max-file-size"),
 	}
 	publicationCreatingHandler := &publicationcreating.Handler{
 		BaseHandler:              baseHandler,
@@ -159,6 +159,12 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		PersonService:             services.PersonService,
 		DatasetSearchService:      services.DatasetSearchService,
 		FileStore:                 services.FileStore,
+		MaxFileSize:               viper.GetInt("max-file-size"),
+	}
+	publicationBatchHandler := &publicationbatch.Handler{
+		BaseHandler:    baseHandler,
+		Repository:     services.Repository,
+		ProjectService: services.ProjectService,
 	}
 	// orcidHandler := &orcid.Handler{
 	// 	BaseHandler:              baseHandler,
@@ -639,6 +645,16 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		Methods("GET").
 		Name("export_publications")
 
+	// publication batch operations
+	r.HandleFunc("/publication/batch",
+		publicationBatchHandler.Wrap(publicationBatchHandler.Show)).
+		Methods("GET").
+		Name("publication_batch")
+	r.HandleFunc("/publication/batch/add-projects",
+		publicationBatchHandler.Wrap(publicationBatchHandler.AddProjects)).
+		Methods("POST").
+		Name("publication_batch_add_projects")
+
 	// view publication
 	r.HandleFunc("/publication/{id}",
 		publicationViewingHandler.Wrap(publicationViewingHandler.Show)).
@@ -998,6 +1014,10 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		publicationEditingHandler.Wrap(publicationEditingHandler.EditFile)).
 		Methods("GET").
 		Name("publication_edit_file")
+	r.HandleFunc("/publication/{id}/refresh-files",
+		publicationEditingHandler.Wrap(publicationEditingHandler.RefreshFiles)).
+		Methods("GET").
+		Name("publication_refresh_files")
 	r.HandleFunc("/publication/{id}/files/{file_id}/refresh-form",
 		publicationEditingHandler.Wrap(publicationEditingHandler.RefreshEditFileForm)).
 		Methods("GET").
