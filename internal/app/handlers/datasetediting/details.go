@@ -142,6 +142,9 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 }
 
 func detailsForm(l *locale.Locale, d *models.Dataset, errors validation.Errors) *form.Form {
+	if d.Keyword == nil {
+		d.Keyword = []string{}
+	}
 	keywordBytes, _ := json.Marshal(d.Keyword)
 	keywordStr := string(keywordBytes)
 

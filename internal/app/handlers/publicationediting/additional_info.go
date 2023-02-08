@@ -97,6 +97,9 @@ func additionalInfoForm(user *models.User, l *locale.Locale, p *models.Publicati
 		researchFieldOptions[i].Value = v
 	}
 
+	if p.Keyword == nil {
+		p.Keyword = []string{}
+	}
 	keywordBytes, _ := json.Marshal(p.Keyword)
 	keywordStr := string(keywordBytes)
 
