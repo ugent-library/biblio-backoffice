@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/mitchellh/go-homedir"
@@ -62,8 +61,6 @@ func initConfig() {
 	viper.SetEnvPrefix("biblio-backoffice")
 	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
 	viper.AutomaticEnv()
-
-	fmt.Println("Using config file:", viper.ConfigFileUsed())
 
 	cobra.CheckErr(viper.ReadInConfig())
 	cobra.CheckErr(viper.Unmarshal(&config))

@@ -24,12 +24,7 @@ func Create(ctx context.Context, config Config) (api.BiblioClient, *grpc.ClientC
 	}
 
 	// Set up the connection and the API client
-	// ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
-	// defer cancel()
-
 	addr := fmt.Sprintf("%s:%d", config.Host, config.Port)
-	// log.Println(addr)
-
 	conn, err := grpc.DialContext(ctx, addr,
 		dialOptionSecureConn,
 		grpc.WithPerRPCCredentials(auth.BasicAuth{
@@ -43,7 +38,6 @@ func Create(ctx context.Context, config Config) (api.BiblioClient, *grpc.ClientC
 		log.Fatal(err)
 	}
 
-	// defer conn.Close()
 	client := api.NewBiblioClient(conn)
 
 	return client, conn
