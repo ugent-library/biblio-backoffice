@@ -125,6 +125,7 @@ type DatasetReindexer interface {
 type DatasetSearchService interface {
 	Search(*models.SearchArgs) (*models.DatasetHits, error)
 	Index(*models.Dataset) error
+	NewBulkIndexer(BulkIndexerConfig) (BulkIndexer[*models.Dataset], error)
 	IndexMultiple(<-chan *models.Dataset)
 	Delete(id string) error
 	WithScope(string, ...string) DatasetSearchService

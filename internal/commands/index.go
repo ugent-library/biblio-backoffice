@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
@@ -8,6 +9,7 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
+	"github.com/ugent-library/biblio-backoffice/internal/backends"
 	"github.com/ugent-library/biblio-backoffice/internal/models"
 )
 
@@ -79,29 +81,31 @@ var indexDatasetAllCmd = &cobra.Command{
 	Use:   "all",
 	Short: "Reindex all datasets",
 	Run: func(cmd *cobra.Command, args []string) {
+		ctx := context.Background()
+
 		es := newDatasetSearchService()
 		store := newRepository()
-		var indexWG sync.WaitGroup
 
-		// indexing channel
-		indexC := make(chan *models.Dataset)
-
-		indexWG.Add(1)
-		go func() {
-			defer indexWG.Done()
-			es.IndexMultiple(indexC)
-		}()
+		bi, err := es.NewBulkIndexer(backends.BulkIndexerConfig{
+			OnError: func(err error) {
+				log.Printf("Indexing failed : %s", err)
+			},
+			OnIndexError: func(id string, err error) {
+				log.Printf("Indexing failed for dataset [id: %s] : %s", id, err)
+			},
+		})
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer bi.Close(ctx)
 
 		// send recs to indexer
-		store.EachDataset(func(p *models.Dataset) bool {
-			indexC <- p
+		store.EachDataset(func(d *models.Dataset) bool {
+			if err := bi.Index(ctx, d); err != nil {
+				log.Printf("Indexing failed for dataset [id: %s] : %s", d.ID, err)
+			}
 			return true
 		})
-
-		close(indexC)
-
-		// wait for indexing to finish
-		indexWG.Wait()
 	},
 }
 
@@ -134,29 +138,31 @@ var indexPublicationAllCmd = &cobra.Command{
 	Use:   "all",
 	Short: "Reindex all publications",
 	Run: func(cmd *cobra.Command, args []string) {
+		ctx := context.Background()
+
 		es := newPublicationSearchService()
 		store := newRepository()
-		var indexWG sync.WaitGroup
 
-		// indexing channel
-		indexC := make(chan *models.Publication)
-
-		indexWG.Add(1)
-		go func() {
-			defer indexWG.Done()
-			es.IndexMultiple(indexC)
-		}()
+		bi, err := es.NewBulkIndexer(backends.BulkIndexerConfig{
+			OnError: func(err error) {
+				log.Printf("Indexing failed : %s", err)
+			},
+			OnIndexError: func(id string, err error) {
+				log.Printf("Indexing failed for publication [id: %s] : %s", id, err)
+			},
+		})
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer bi.Close(ctx)
 
 		// send recs to indexer
 		store.EachPublication(func(p *models.Publication) bool {
-			indexC <- p
+			if err := bi.Index(ctx, p); err != nil {
+				log.Printf("Indexing failed for publication [id: %s] : %s", p.ID, err)
+			}
 			return true
 		})
-
-		close(indexC)
-
-		// wait for indexing to finish
-		indexWG.Wait()
 	},
 }
 

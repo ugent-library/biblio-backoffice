@@ -377,6 +377,14 @@ func (publications *Datasets) Index(d *models.Dataset) error {
 	return nil
 }
 
+func (dataset *Datasets) NewBulkIndexer(config backends.BulkIndexerConfig) (backends.BulkIndexer[*models.Dataset], error) {
+	docFn := func(d *models.Dataset) (string, []byte, error) {
+		doc, err := json.Marshal(NewIndexedDataset(d))
+		return d.ID, doc, err
+	}
+	return newBulkIndexer(dataset.Client.es, dataset.Client.Index, docFn, config)
+}
+
 func (datasets *Datasets) IndexMultiple(inCh <-chan *models.Dataset) {
 	bi, err := esutil.NewBulkIndexer(esutil.BulkIndexerConfig{
 		Index:  datasets.Client.Index,
