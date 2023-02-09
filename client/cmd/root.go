@@ -1,17 +1,22 @@
 package cmd
 
 import (
+	"fmt"
 	"strings"
 
+	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
+	"github.com/ugent-library/biblio-backoffice/client/client"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
 var (
 	marshaller   = protojson.MarshalOptions{UseProtoNames: true}
 	unmarshaller = protojson.UnmarshalOptions{}
+	cfgFile      string
+	config       client.Config
 )
 
 const (
@@ -20,9 +25,8 @@ const (
 )
 
 func init() {
-	viper.SetEnvPrefix("biblio-backoffice")
-	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
-	viper.AutomaticEnv()
+	cobra.OnInitialize(initConfig)
+
 	viper.SetDefault("host", defaultHost)
 	viper.SetDefault("port", defaultPort)
 	viper.SetDefault("username", "")
@@ -31,6 +35,7 @@ func init() {
 	// viper.SetDefault("api-tls-disabled", false)
 	// viper.SetDefault("api-ca-cert", "")
 
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.biblioclient.toml)")
 	rootCmd.PersistentFlags().String("host", defaultHost, "api server host")
 	rootCmd.PersistentFlags().Int("port", defaultPort, "api server port")
 	rootCmd.PersistentFlags().String("username", "ddd", "api server user username")
@@ -38,6 +43,30 @@ func init() {
 	rootCmd.PersistentFlags().Bool("insecure", false, "disable api client TLS")
 	// rootCmd.PersistentFlags().Bool("api-tls-disabled", false, "api client TLS enabled")
 	// rootCmd.PersistentFlags().String("api-tls-ca-cert", "", "api client location of the CA certificate")
+}
+
+func initConfig() {
+	if cfgFile != "" {
+		// Use config file from the flag.)
+		viper.SetConfigFile(cfgFile)
+	} else {
+		// Find home directory.
+		home, err := homedir.Dir()
+		cobra.CheckErr(err)
+
+		// Search config in home directory with name ".biblioclient.{yaml,toml}".
+		viper.AddConfigPath(home)
+		viper.SetConfigName(".biblioclient")
+	}
+
+	viper.SetEnvPrefix("biblio-backoffice")
+	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
+	viper.AutomaticEnv()
+
+	fmt.Println("Using config file:", viper.ConfigFileUsed())
+
+	cobra.CheckErr(viper.ReadInConfig())
+	cobra.CheckErr(viper.Unmarshal(&config))
 }
 
 // TODO we shouldn't do this for all flags, only ones that have a config equivalent

@@ -14,7 +14,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-func Create(ctx context.Context) (api.BiblioClient, *grpc.ClientConn) {
+func Create(ctx context.Context, config Config) (api.BiblioClient, *grpc.ClientConn) {
 	// Set encryption
 	var dialOptionSecureConn grpc.DialOption
 	if viper.GetBool("insecure") {
@@ -27,14 +27,14 @@ func Create(ctx context.Context) (api.BiblioClient, *grpc.ClientConn) {
 	// ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	// defer cancel()
 
-	addr := fmt.Sprintf("%s:%d", viper.GetString("host"), viper.GetInt("port"))
+	addr := fmt.Sprintf("%s:%d", config.Host, config.Port)
 	// log.Println(addr)
 
 	conn, err := grpc.DialContext(ctx, addr,
 		dialOptionSecureConn,
 		grpc.WithPerRPCCredentials(auth.BasicAuth{
-			User:     viper.GetString("username"),
-			Password: viper.GetString("password"),
+			User:     config.Username,
+			Password: config.Password,
 		}),
 		grpc.WithBlock(),
 	)

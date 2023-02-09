@@ -29,7 +29,7 @@ func UpdatePublication(cmd *cobra.Command, args []string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
-	c, cnx := client.Create(ctx)
+	c, cnx := client.Create(ctx, config)
 	defer cnx.Close()
 
 	reader := bufio.NewReader(os.Stdin)

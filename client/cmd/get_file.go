@@ -29,7 +29,7 @@ func GetFile(cmd *cobra.Command, args []string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
-	c, cnx := client.Create(ctx)
+	c, cnx := client.Create(ctx, config)
 	defer cnx.Close()
 
 	req := &api.GetFileRequest{Sha256: args[0]}

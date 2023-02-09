@@ -28,7 +28,7 @@ func GetDatasetHistory(cmd *cobra.Command, args []string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
-	c, cnx := client.Create(ctx)
+	c, cnx := client.Create(ctx, config)
 	defer cnx.Close()
 
 	req := &api.GetDatasetHistoryRequest{Id: args[0]}
