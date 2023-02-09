@@ -7,31 +7,29 @@ import (
 	"io"
 	"log"
 	"os"
+	"time"
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
+	"github.com/ugent-library/biblio-backoffice/client/client"
 )
 
-type ValidatePublicationsCmd struct {
-	RootCmd
+var ValidatePublicationsCmd = &cobra.Command{
+	Use:   "validate",
+	Short: "Validate publications",
+	Run: func(cmd *cobra.Command, args []string) {
+		ValidatePublications(cmd, args)
+	},
 }
 
-func (c *ValidatePublicationsCmd) Command() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "validate",
-		Short: "Validate publications",
-		Run: func(cmd *cobra.Command, args []string) {
-			c.Wrap(func() {
-				c.Run(cmd, args)
-			})
-		},
-	}
+func ValidatePublications(cmd *cobra.Command, args []string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
 
-	return cmd
-}
+	c, cnx := client.Create(ctx)
+	defer cnx.Close()
 
-func (c *ValidatePublicationsCmd) Run(cmd *cobra.Command, args []string) {
-	stream, err := c.Client.ValidatePublications(context.Background())
+	stream, err := c.ValidatePublications(context.Background())
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -49,7 +47,7 @@ func (c *ValidatePublicationsCmd) Run(cmd *cobra.Command, args []string) {
 				log.Fatal(err)
 			}
 
-			j, err := c.Marshaller.Marshal(res)
+			j, err := marshaller.Marshal(res)
 			if err != nil {
 				log.Fatal(err)
 			}

@@ -5,33 +5,31 @@ import (
 	"io"
 	"log"
 	"os"
+	"time"
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
+	"github.com/ugent-library/biblio-backoffice/client/client"
 )
 
-type GetFileCMd struct {
-	RootCmd
+var GetFileCMd = &cobra.Command{
+	Use:   "get [sha256]",
+	Short: "Get file",
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		GetFile(cmd, args)
+	},
 }
 
-func (c *GetFileCMd) Command() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "get [sha256]",
-		Short: "Get file",
-		Args:  cobra.ExactArgs(1),
-		Run: func(cmd *cobra.Command, args []string) {
-			c.Wrap(func() {
-				c.Run(cmd, args)
-			})
-		},
-	}
+func GetFile(cmd *cobra.Command, args []string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
 
-	return cmd
-}
+	c, cnx := client.Create(ctx)
+	defer cnx.Close()
 
-func (c *GetFileCMd) Run(cmd *cobra.Command, args []string) {
 	req := &api.GetFileRequest{Sha256: args[0]}
-	stream, err := c.Client.GetFile(context.Background(), req)
+	stream, err := c.GetFile(context.Background(), req)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -9,29 +9,23 @@ import (
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
+	"github.com/ugent-library/biblio-backoffice/client/client"
 )
 
-type UpdateDatasetCmd struct {
-	RootCmd
+var UpdateDatasetCmd = &cobra.Command{
+	Use:   "update",
+	Short: "Update publication",
+	Run: func(cmd *cobra.Command, args []string) {
+		UpdateDataset(cmd, args)
+	},
 }
 
-func (c *UpdateDatasetCmd) Command() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "update",
-		Short: "Update publication",
-		Run: func(cmd *cobra.Command, args []string) {
-			c.Wrap(func() {
-				c.Run(cmd, args)
-			})
-		},
-	}
-
-	return cmd
-}
-
-func (c *UpdateDatasetCmd) Run(cmd *cobra.Command, args []string) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+func UpdateDataset(cmd *cobra.Command, args []string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
+
+	c, cnx := client.Create(ctx)
+	defer cnx.Close()
 
 	reader := bufio.NewReader(os.Stdin)
 	line, err := reader.ReadBytes('\n')
@@ -43,9 +37,8 @@ func (c *UpdateDatasetCmd) Run(cmd *cobra.Command, args []string) {
 		Payload: line,
 	}
 
-
 	req := &api.UpdateDatasetRequest{Dataset: d}
-	if _, err = c.Client.UpdateDataset(ctx, req); err != nil {
+	if _, err = c.UpdateDataset(ctx, req); err != nil {
 		log.Fatal(err)
 	}
 }

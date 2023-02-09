@@ -6,31 +6,29 @@ import (
 	"io"
 	"log"
 	"os"
+	"time"
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
+	"github.com/ugent-library/biblio-backoffice/client/client"
 )
 
-type AddDatasetsCmd struct {
-	RootCmd
+var AddDatasetsCmd = &cobra.Command{
+	Use:   "add",
+	Short: "Add datasets",
+	Run: func(cmd *cobra.Command, args []string) {
+		AddDatasets(cmd, args)
+	},
 }
 
-func (c *AddDatasetsCmd) Command() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "add",
-		Short: "Add datasets",
-		Run: func(cmd *cobra.Command, args []string) {
-			c.Wrap(func() {
-				c.Run(cmd, args)
-			})
-		},
-	}
+func AddDatasets(cmd *cobra.Command, args []string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
 
-	return cmd
-}
+	c, cnx := client.Create(ctx)
+	defer cnx.Close()
 
-func (c *AddDatasetsCmd) Run(cmd *cobra.Command, args []string) {
-	stream, err := c.Client.AddDatasets(context.Background())
+	stream, err := c.AddDatasets(context.Background())
 	if err != nil {
 		log.Fatal(err)
 	}

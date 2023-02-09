@@ -4,33 +4,31 @@ import (
 	"context"
 	"io"
 	"log"
+	"time"
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
+	"github.com/ugent-library/biblio-backoffice/client/client"
 )
 
-type GetDatasetHistoryCmd struct {
-	RootCmd
+var GetDatasetHistoryCmd = &cobra.Command{
+	Use:   "get-history [id]",
+	Short: "Get dataset history",
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		GetDatasetHistory(cmd, args)
+	},
 }
 
-func (c *GetDatasetHistoryCmd) Command() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "get-history [id]",
-		Short: "Get dataset history",
-		Args:  cobra.ExactArgs(1),
-		Run: func(cmd *cobra.Command, args []string) {
-			c.Wrap(func() {
-				c.Run(cmd, args)
-			})
-		},
-	}
+func GetDatasetHistory(cmd *cobra.Command, args []string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
 
-	return cmd
-}
+	c, cnx := client.Create(ctx)
+	defer cnx.Close()
 
-func (c *GetDatasetHistoryCmd) Run(cmd *cobra.Command, args []string) {
 	req := &api.GetDatasetHistoryRequest{Id: args[0]}
-	stream, err := c.Client.GetDatasetHistory(context.Background(), req)
+	stream, err := c.GetDatasetHistory(context.Background(), req)
 	if err != nil {
 		log.Fatal(err)
 	}

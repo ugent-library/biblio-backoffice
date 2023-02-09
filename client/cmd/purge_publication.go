@@ -3,34 +3,32 @@ package cmd
 import (
 	"context"
 	"log"
+	"time"
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
+	"github.com/ugent-library/biblio-backoffice/client/client"
 )
 
-type PurgePublicationCmd struct {
-	RootCmd
+var PurgePublicationCmd = &cobra.Command{
+	Use:   "purge [id]",
+	Short: "Purge publication",
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		PurgePublication(cmd, args)
+	},
 }
 
-func (c *PurgePublicationCmd) Command() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "purge [id]",
-		Short: "Purge publication",
-		Args:  cobra.ExactArgs(1),
-		Run: func(cmd *cobra.Command, args []string) {
-			c.Wrap(func() {
-				c.Run(cmd, args)
-			})
-		},
-	}
+func PurgePublication(cmd *cobra.Command, args []string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
 
-	return cmd
-}
+	c, cnx := client.Create(ctx)
+	defer cnx.Close()
 
-func (c *PurgePublicationCmd) Run(cmd *cobra.Command, args []string) {
 	id := args[0]
 	req := &api.PurgePublicationRequest{Id: id}
-	if _, err := c.Client.PurgePublication(context.Background(), req); err != nil {
+	if _, err := c.PurgePublication(context.Background(), req); err != nil {
 		log.Fatal(err)
 	}
 }

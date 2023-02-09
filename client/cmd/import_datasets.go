@@ -6,31 +6,29 @@ import (
 	"io"
 	"log"
 	"os"
+	"time"
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
+	"github.com/ugent-library/biblio-backoffice/client/client"
 )
 
-type ImportDatasetsCmd struct {
-	RootCmd
+var ImportDatasetsCmd = &cobra.Command{
+	Use:   "import",
+	Short: "Import datasets",
+	Run: func(cmd *cobra.Command, args []string) {
+		ImportDatasets(cmd, args)
+	},
 }
 
-func (c *ImportDatasetsCmd) Command() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "import",
-		Short: "Import datasets",
-		Run: func(cmd *cobra.Command, args []string) {
-			c.Wrap(func() {
-				c.Run(cmd, args)
-			})
-		},
-	}
+func ImportDatasets(cmd *cobra.Command, args []string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
 
-	return cmd
-}
+	c, cnx := client.Create(ctx)
+	defer cnx.Close()
 
-func (c *ImportDatasetsCmd) Run(cmd *cobra.Command, args []string) {
-	stream, err := c.Client.ImportDatasets(context.Background())
+	stream, err := c.ImportDatasets(context.Background())
 	if err != nil {
 		log.Fatal(err)
 	}

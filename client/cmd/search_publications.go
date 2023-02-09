@@ -9,34 +9,30 @@ import (
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
+	"github.com/ugent-library/biblio-backoffice/client/client"
 	"github.com/ugent-library/biblio-backoffice/internal/models"
 )
 
-type SearchPublicationsCmd struct {
-	RootCmd
+var SearchPublicationsCmd = &cobra.Command{
+	Use:   "search",
+	Short: "Search publications",
+	Run: func(cmd *cobra.Command, args []string) {
+		SearchPublications(cmd, args)
+	},
 }
 
-func (c *SearchPublicationsCmd) Command() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "search",
-		Short: "Search publications",
-		Run: func(cmd *cobra.Command, args []string) {
-			c.Wrap(func() {
-				c.Run(cmd, args)
-			})
-		},
-	}
-
-	cmd.Flags().StringP("query", "q", "", "")
-	cmd.Flags().StringP("limit", "", "", "")
-	cmd.Flags().StringP("offset", "", "", "")
-
-	return cmd
+func init() {
+	SearchPublicationsCmd.Flags().StringP("query", "q", "", "")
+	SearchPublicationsCmd.Flags().StringP("limit", "", "", "")
+	SearchPublicationsCmd.Flags().StringP("offset", "", "", "")
 }
 
-func (c *SearchPublicationsCmd) Run(cmd *cobra.Command, args []string) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+func SearchPublications(cmd *cobra.Command, args []string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
+
+	c, cnx := client.Create(ctx)
+	defer cnx.Close()
 
 	query, _ := cmd.Flags().GetString("query")
 	limit, _ := cmd.Flags().GetInt32("limit")
@@ -47,7 +43,7 @@ func (c *SearchPublicationsCmd) Run(cmd *cobra.Command, args []string) {
 		Limit:  limit,
 		Offset: offset,
 	}
-	res, err := c.Client.SearchPublications(ctx, req)
+	res, err := c.SearchPublications(ctx, req)
 	if err != nil {
 		log.Fatal(err)
 	}

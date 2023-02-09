@@ -8,7 +8,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -16,39 +15,24 @@ import (
 
 type AddPublicationSuite struct {
 	suite.Suite
-	addCmd *cobra.Command
-	getCmd *cobra.Command
-	buf    *bytes.Buffer
 }
 
 func (s *AddPublicationSuite) SetupTest() {
-	addPublications := AddPublicationsCmd{}
-	s.addCmd = addPublications.Command()
-
-	getPublication := GetPublicationCmd{}
-	s.getCmd = getPublication.Command()
-
 	viper.Set("port", "3999")
 	viper.Set("insecure", true)
-
-	s.buf = bytes.NewBufferString("")
-	s.addCmd.SetOut(s.buf)
-	s.getCmd.SetOut(s.buf)
 }
 
 // Test empty input
 func (s *AddPublicationSuite) TestAddEmptyInput() {
 	t := s.T()
 
-	addPublications := AddPublicationsCmd{}
-	addCmd := addPublications.Command()
 	addCmdBuf := bytes.NewBufferString("")
-	addCmd.SetOut(addCmdBuf)
+	AddPublicationsCmd.SetOut(addCmdBuf)
 
 	in := strings.NewReader("")
 
-	addCmd.SetIn(in)
-	errAdd := addCmd.Execute()
+	AddPublicationsCmd.SetIn(in)
+	errAdd := AddPublicationsCmd.Execute()
 	if errAdd != nil {
 		t.Fatal(errAdd)
 	}
@@ -65,15 +49,13 @@ func (s *AddPublicationSuite) TestAddEmptyInput() {
 func (s *AddPublicationSuite) TestAddNonJSONLInput() {
 	t := s.T()
 
-	addPublications := AddPublicationsCmd{}
-	addCmd := addPublications.Command()
 	addCmdBuf := bytes.NewBufferString("")
-	addCmd.SetOut(addCmdBuf)
+	AddPublicationsCmd.SetOut(addCmdBuf)
 
 	in := strings.NewReader("invalid")
 
-	addCmd.SetIn(in)
-	errAdd := addCmd.Execute()
+	AddPublicationsCmd.SetIn(in)
+	errAdd := AddPublicationsCmd.Execute()
 	if errAdd != nil {
 		t.Fatal(errAdd)
 	}
@@ -92,15 +74,13 @@ func (s *AddPublicationSuite) TestAddNonJSONLInput() {
 func (s *AddPublicationSuite) TestAddEmptyJSONLInput() {
 	t := s.T()
 
-	addPublications := AddPublicationsCmd{}
-	addCmd := addPublications.Command()
 	addCmdBuf := bytes.NewBufferString("")
-	addCmd.SetOut(addCmdBuf)
+	AddPublicationsCmd.SetOut(addCmdBuf)
 
 	in := strings.NewReader("{}\n")
 
-	addCmd.SetIn(in)
-	errAdd := addCmd.Execute()
+	AddPublicationsCmd.SetIn(in)
+	errAdd := AddPublicationsCmd.Execute()
 	if errAdd != nil {
 		t.Fatal(errAdd)
 	}
@@ -149,15 +129,13 @@ func (s *AddPublicationSuite) TestAddMinimalValidRecord() {
 		t.Fatal(errJSONL)
 	}
 
-	addPublications := AddPublicationsCmd{}
-	addCmd := addPublications.Command()
 	addCmdBuf := bytes.NewBufferString("")
-	addCmd.SetOut(addCmdBuf)
+	AddPublicationsCmd.SetOut(addCmdBuf)
 
 	in := strings.NewReader(addCmdOutFile)
 
-	addCmd.SetIn(in)
-	errAdd := addCmd.Execute()
+	AddPublicationsCmd.SetIn(in)
+	errAdd := AddPublicationsCmd.Execute()
 	if errAdd != nil {
 		t.Fatal(errAdd)
 	}
@@ -169,7 +147,7 @@ func (s *AddPublicationSuite) TestAddMinimalValidRecord() {
 
 	t.Log(string(addCmdOut))
 
-	// 	assert.Regexp(t, `validation failed for publication .* at line .: publication.type.required\[\/type\]`, string(addCmdOut))
+	// @todo Add test
 }
 
 // Update existing valid record
@@ -537,15 +515,13 @@ func TestAddPublicationSuite(t *testing.T) {
 }
 
 func addPublication(jsonl string) error {
-	addPublications := AddPublicationsCmd{}
-	addCmd := addPublications.Command()
 	addCmdBuf := bytes.NewBufferString("")
-	addCmd.SetOut(addCmdBuf)
+	AddPublicationsCmd.SetOut(addCmdBuf)
 
 	in := strings.NewReader(jsonl)
 
-	addCmd.SetIn(in)
-	errAdd := addCmd.Execute()
+	AddPublicationsCmd.SetIn(in)
+	errAdd := AddPublicationsCmd.Execute()
 	if errAdd != nil {
 		return errAdd
 	}
@@ -560,13 +536,11 @@ func addPublication(jsonl string) error {
 }
 
 func getPublication(id string) (string, error) {
-	getPublication := GetPublicationCmd{}
-	getCmd := getPublication.Command()
 	getCmdBuf := bytes.NewBufferString("")
-	getCmd.SetOut(getCmdBuf)
+	GetPublicationCmd.SetOut(getCmdBuf)
 
-	getCmd.SetArgs([]string{id})
-	errGetCmd := getCmd.Execute()
+	GetPublicationCmd.SetArgs([]string{id})
+	errGetCmd := GetPublicationCmd.Execute()
 	if errGetCmd != nil {
 		return "", errGetCmd
 	}

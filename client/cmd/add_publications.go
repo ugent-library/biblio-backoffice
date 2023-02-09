@@ -5,33 +5,30 @@ import (
 	"context"
 	"io"
 	"log"
+	"time"
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
+	"github.com/ugent-library/biblio-backoffice/client/client"
 )
 
-type AddPublicationsCmd struct {
-	RootCmd
+var AddPublicationsCmd = &cobra.Command{
+	Use:   "add",
+	Short: "Add publications",
+	Run: func(cmd *cobra.Command, args []string) {
+		log.SetOutput(cmd.OutOrStdout())
+		AddPublications(cmd, args)
+	},
 }
 
-func (c *AddPublicationsCmd) Command() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "add",
-		Short: "Add publications",
-		Run: func(cmd *cobra.Command, args []string) {
-			log.SetOutput(cmd.OutOrStdout())
+func AddPublications(cmd *cobra.Command, args []string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
 
-			c.Wrap(func() {
-				c.Run(cmd, args)
-			})
-		},
-	}
+	c, cnx := client.Create(ctx)
+	defer cnx.Close()
 
-	return cmd
-}
-
-func (c *AddPublicationsCmd) Run(cmd *cobra.Command, args []string) {
-	stream, err := c.Client.AddPublications(context.Background())
+	stream, err := c.AddPublications(context.Background())
 	if err != nil {
 		log.Fatal(err)
 	}

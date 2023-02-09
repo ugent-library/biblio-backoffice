@@ -4,32 +4,30 @@ import (
 	"context"
 	"io"
 	"log"
+	"time"
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
+	"github.com/ugent-library/biblio-backoffice/client/client"
 )
 
-type GetAllPublicationsCmd struct {
-	RootCmd
+var GetAllPublicationsCmd = &cobra.Command{
+	Use:   "get-all",
+	Short: "Get all publications",
+	Run: func(cmd *cobra.Command, args []string) {
+		GetAllPublications(cmd, args)
+	},
 }
 
-func (c *GetAllPublicationsCmd) Command() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "get-all",
-		Short: "Get all publications",
-		Run: func(cmd *cobra.Command, args []string) {
-			c.Wrap(func() {
-				c.Run(cmd, args)
-			})
-		},
-	}
+func GetAllPublications(cmd *cobra.Command, args []string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
 
-	return cmd
-}
+	c, cnx := client.Create(ctx)
+	defer cnx.Close()
 
-func (c *GetAllPublicationsCmd) Run(cmd *cobra.Command, args []string) {
 	req := &api.GetAllPublicationsRequest{}
-	stream, err := c.Client.GetAllPublications(context.Background(), req)
+	stream, err := c.GetAllPublications(context.Background(), req)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -4,32 +4,30 @@ import (
 	"context"
 	"io"
 	"log"
+	"time"
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
+	"github.com/ugent-library/biblio-backoffice/client/client"
 )
 
-type GetAllDatasetsCmd struct {
-	RootCmd
+var GetAllDatasetsCmd = &cobra.Command{
+	Use:   "get-all",
+	Short: "Get all datasets",
+	Run: func(cmd *cobra.Command, args []string) {
+		GetAllDatasets(cmd, args)
+	},
 }
 
-func (c *GetAllDatasetsCmd) Command() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "get-all",
-		Short: "Get all datasets",
-		Run: func(cmd *cobra.Command, args []string) {
-			c.Wrap(func() {
-				c.Run(cmd, args)
-			})
-		},
-	}
+func GetAllDatasets(cmd *cobra.Command, args []string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
 
-	return cmd
-}
+	c, cnx := client.Create(ctx)
+	defer cnx.Close()
 
-func (c *GetAllDatasetsCmd) Run(cmd *cobra.Command, args []string) {
 	req := &api.GetAllDatasetsRequest{}
-	stream, err := c.Client.GetAllDatasets(context.Background(), req)
+	stream, err := c.GetAllDatasets(context.Background(), req)
 	if err != nil {
 		log.Fatal(err)
 	}

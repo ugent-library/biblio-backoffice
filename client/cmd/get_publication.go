@@ -7,39 +7,33 @@ import (
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
+	"github.com/ugent-library/biblio-backoffice/client/client"
 )
 
-type GetPublicationCmd struct {
-	RootCmd
+var GetPublicationCmd = &cobra.Command{
+	Use:   "get [id]",
+	Short: "Get publication by id",
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		log.SetOutput(cmd.OutOrStdout())
+		GetPublication(cmd, args)
+	},
 }
 
-func (c *GetPublicationCmd) Command() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "get [id]",
-		Short: "Get publication by id",
-		Args:  cobra.ExactArgs(1),
-		Run: func(cmd *cobra.Command, args []string) {
-			log.SetOutput(cmd.OutOrStdout())
-
-			c.Wrap(func() {
-				c.Run(cmd, args)
-			})
-		},
-	}
-
-	return cmd
-}
-
-func (c *GetPublicationCmd) Run(cmd *cobra.Command, args []string) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+func GetPublication(cmd *cobra.Command, args []string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
+
+	c, cnx := client.Create(ctx)
+	defer cnx.Close()
 
 	id := args[0]
 	req := &api.GetPublicationRequest{Id: id}
-	res, err := c.Client.GetPublication(ctx, req)
+	res, err := c.GetPublication(ctx, req)
 	if err != nil {
-		log.Fatal(err)
+		cmd.Println(err)
+		// log.Fatal(err)
+	} else {
+		cmd.Printf("%s\n", res.Publication.Payload)
 	}
-
-	cmd.Printf("%s\n", res.Publication.Payload)
 }

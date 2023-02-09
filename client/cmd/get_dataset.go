@@ -7,34 +7,28 @@ import (
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
+	"github.com/ugent-library/biblio-backoffice/client/client"
 )
 
-type GetDatasetCmd struct {
-	RootCmd
+var GetDatasetCmd = &cobra.Command{
+	Use:   "get [id]",
+	Short: "Get dataset by id",
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		GetDataset(cmd, args)
+	},
 }
 
-func (c *GetDatasetCmd) Command() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "get [id]",
-		Short: "Get dataset by id",
-		Args:  cobra.ExactArgs(1),
-		Run: func(cmd *cobra.Command, args []string) {
-			c.Wrap(func() {
-				c.Run(cmd, args)
-			})
-		},
-	}
-
-	return cmd
-}
-
-func (c *GetDatasetCmd) Run(cmd *cobra.Command, args []string) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+func GetDataset(cmd *cobra.Command, args []string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
+
+	c, cnx := client.Create(ctx)
+	defer cnx.Close()
 
 	id := args[0]
 	req := &api.GetDatasetRequest{Id: id}
-	res, err := c.Client.GetDataset(ctx, req)
+	res, err := c.GetDataset(ctx, req)
 	if err != nil {
 		log.Fatal(err)
 	}

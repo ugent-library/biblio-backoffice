@@ -9,31 +9,24 @@ import (
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
+	"github.com/ugent-library/biblio-backoffice/client/client"
 )
 
-type UpdatePublicationCmd struct {
-	RootCmd
+var UpdatePublicationCmd = &cobra.Command{
+	Use:   "update",
+	Short: "Update dataset",
+	Run: func(cmd *cobra.Command, args []string) {
+		log.SetOutput(cmd.OutOrStdout())
+		UpdatePublication(cmd, args)
+	},
 }
 
-func (c *UpdatePublicationCmd) Command() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "update",
-		Short: "Update dataset",
-		Run: func(cmd *cobra.Command, args []string) {
-			log.SetOutput(cmd.OutOrStdout())
-
-			c.Wrap(func() {
-				c.Run(cmd, args)
-			})
-		},
-	}
-
-	return cmd
-}
-
-func (c *UpdatePublicationCmd) Run(cmd *cobra.Command, args []string) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+func UpdatePublication(cmd *cobra.Command, args []string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
+
+	c, cnx := client.Create(ctx)
+	defer cnx.Close()
 
 	reader := bufio.NewReader(os.Stdin)
 	line, err := reader.ReadBytes('\n')
@@ -46,7 +39,7 @@ func (c *UpdatePublicationCmd) Run(cmd *cobra.Command, args []string) {
 	}
 
 	req := &api.UpdatePublicationRequest{Publication: p}
-	if _, err = c.Client.UpdatePublication(ctx, req); err != nil {
+	if _, err = c.UpdatePublication(ctx, req); err != nil {
 		log.Fatal(err)
 	}
 }
