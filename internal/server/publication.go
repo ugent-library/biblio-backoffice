@@ -5,10 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"sync"
 
 	"github.com/oklog/ulid/v2"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
+	"github.com/ugent-library/biblio-backoffice/internal/backends"
 	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"github.com/ugent-library/biblio-backoffice/internal/validation"
 	"google.golang.org/grpc/codes"
@@ -99,26 +99,25 @@ func (s *server) UpdatePublication(ctx context.Context, req *api.UpdatePublicati
 	return &api.UpdatePublicationResponse{}, nil
 }
 
-// TODO catch indexing errors
 func (s *server) AddPublications(stream api.Biblio_AddPublicationsServer) error {
-	// indexing channel
-	indexC := make(chan *models.Publication)
+	ctx := context.Background()
 
-	var indexWG sync.WaitGroup
-
-	// start bulk indexer
-	indexWG.Add(1)
-	go func() {
-		defer indexWG.Done()
-		s.services.PublicationSearchService.IndexMultiple(indexC)
-	}()
-
-	defer func() {
-		// close indexing channel when all recs are stored
-		close(indexC)
-		// wait for indexing to finish
-		indexWG.Wait()
-	}()
+	bi, err := s.services.PublicationSearchService.NewBulkIndexer(backends.BulkIndexerConfig{
+		OnError: func(err error) {
+			msg := fmt.Errorf("failed to index: %w", err).Error()
+			// TODO catch error
+			stream.Send(&api.AddPublicationsResponse{Message: msg})
+		},
+		OnIndexError: func(id string, err error) {
+			msg := fmt.Errorf("failed to index publication %s: %w", id, err).Error()
+			// TODO catch error
+			stream.Send(&api.AddPublicationsResponse{Message: msg})
+		},
+	})
+	if err != nil {
+		return err
+	}
+	defer bi.Close(ctx)
 
 	var seq int
 
@@ -174,35 +173,40 @@ func (s *server) AddPublications(stream api.Biblio_AddPublicationsServer) error 
 		if err := s.services.Repository.SavePublication(p, nil); err != nil {
 			msg := fmt.Errorf("failed to store publication %s at line %d: %w", p.ID, seq, err).Error()
 			if err = stream.Send(&api.AddPublicationsResponse{Message: msg}); err != nil {
-				return status.Errorf(codes.Internal, msg)
+				return err
 			}
 			continue
 		}
 
-		indexC <- p
+		if err := bi.Index(ctx, p); err != nil {
+			msg := fmt.Errorf("failed to index publication %s at line %d: %w", p.ID, seq, err).Error()
+			if err = stream.Send(&api.AddPublicationsResponse{Message: msg}); err != nil {
+				return err
+			}
+			continue
+		}
 	}
 }
 
-// TODO catch indexing errors
 func (s *server) ImportPublications(stream api.Biblio_ImportPublicationsServer) error {
-	// indexing channel
-	indexC := make(chan *models.Publication)
+	ctx := context.Background()
 
-	var indexWG sync.WaitGroup
-
-	// start bulk indexer
-	indexWG.Add(1)
-	go func() {
-		defer indexWG.Done()
-		s.services.PublicationSearchService.IndexMultiple(indexC)
-	}()
-
-	defer func() {
-		// close indexing channel when all recs are stored
-		close(indexC)
-		// wait for indexing to finish
-		indexWG.Wait()
-	}()
+	bi, err := s.services.PublicationSearchService.NewBulkIndexer(backends.BulkIndexerConfig{
+		OnError: func(err error) {
+			msg := fmt.Errorf("failed to index: %w", err).Error()
+			// TODO catch error
+			stream.Send(&api.ImportPublicationsResponse{Message: msg})
+		},
+		OnIndexError: func(id string, err error) {
+			msg := fmt.Errorf("failed to index publication %s: %w", id, err).Error()
+			// TODO catch error
+			stream.Send(&api.ImportPublicationsResponse{Message: msg})
+		},
+	})
+	if err != nil {
+		return err
+	}
+	defer bi.Close(ctx)
 
 	var seq int
 
@@ -230,12 +234,18 @@ func (s *server) ImportPublications(stream api.Biblio_ImportPublicationsServer) 
 		if err := s.services.Repository.ImportCurrentPublication(p); err != nil {
 			msg := fmt.Errorf("failed to store publication %s at line %d: %w", p.ID, seq, err).Error()
 			if err = stream.Send(&api.ImportPublicationsResponse{Message: msg}); err != nil {
-				return status.Errorf(codes.Internal, msg)
+				return err
 			}
 			continue
 		}
 
-		indexC <- p
+		if err := bi.Index(ctx, p); err != nil {
+			msg := fmt.Errorf("failed to index publication %s at line %d: %w", p.ID, seq, err).Error()
+			if err = stream.Send(&api.ImportPublicationsResponse{Message: msg}); err != nil {
+				return err
+			}
+			continue
+		}
 	}
 }
 

@@ -5,10 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"sync"
 
 	"github.com/oklog/ulid/v2"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
+	"github.com/ugent-library/biblio-backoffice/internal/backends"
 	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"github.com/ugent-library/biblio-backoffice/internal/validation"
 	"google.golang.org/grpc/codes"
@@ -98,24 +98,24 @@ func (s *server) UpdateDataset(ctx context.Context, req *api.UpdateDatasetReques
 
 // TODO catch indexing errors
 func (s *server) AddDatasets(stream api.Biblio_AddDatasetsServer) error {
-	// indexing channel
-	indexC := make(chan *models.Dataset)
+	ctx := context.Background()
 
-	var indexWG sync.WaitGroup
-
-	// start bulk indexer
-	indexWG.Add(1)
-	go func() {
-		defer indexWG.Done()
-		s.services.DatasetSearchService.IndexMultiple(indexC)
-	}()
-
-	defer func() {
-		// close indexing channel when all recs are stored
-		close(indexC)
-		// wait for indexing to finish
-		indexWG.Wait()
-	}()
+	bi, err := s.services.DatasetSearchService.NewBulkIndexer(backends.BulkIndexerConfig{
+		OnError: func(err error) {
+			msg := fmt.Errorf("failed to index: %w", err).Error()
+			// TODO catch error
+			stream.Send(&api.AddDatasetsResponse{Message: msg})
+		},
+		OnIndexError: func(id string, err error) {
+			msg := fmt.Errorf("failed to index publication %s: %w", id, err).Error()
+			// TODO catch error
+			stream.Send(&api.AddDatasetsResponse{Message: msg})
+		},
+	})
+	if err != nil {
+		return err
+	}
+	defer bi.Close(ctx)
 
 	var seq int
 
@@ -159,36 +159,40 @@ func (s *server) AddDatasets(stream api.Biblio_AddDatasetsServer) error {
 		if err := s.services.Repository.SaveDataset(d, nil); err != nil {
 			msg := fmt.Errorf("failed to store dataset %s at line %d: %w", d.ID, seq, err).Error()
 			if err = stream.Send(&api.AddDatasetsResponse{Message: msg}); err != nil {
-				return status.Errorf(codes.Internal, msg)
+				return err
 			}
 			continue
 		}
 
-		indexC <- d
+		if err := bi.Index(ctx, d); err != nil {
+			msg := fmt.Errorf("failed to index dataset %s at line %d: %w", d.ID, seq, err).Error()
+			if err = stream.Send(&api.AddDatasetsResponse{Message: msg}); err != nil {
+				return err
+			}
+			continue
+		}
 	}
 }
 
-// TODO catch indexing errors
 func (s *server) ImportDatasets(stream api.Biblio_ImportDatasetsServer) error {
-	// indexing channel
-	indexC := make(chan *models.Dataset)
+	ctx := context.Background()
 
-	var indexWG sync.WaitGroup
-
-	// start bulk indexer
-	indexWG.Add(1)
-	go func() {
-		defer indexWG.Done()
-		s.services.DatasetSearchService.IndexMultiple(indexC)
-	}()
-
-	defer func() {
-		// close indexing channel when all recs are stored
-		close(indexC)
-		// wait for indexing to finish
-		indexWG.Wait()
-	}()
-
+	bi, err := s.services.DatasetSearchService.NewBulkIndexer(backends.BulkIndexerConfig{
+		OnError: func(err error) {
+			msg := fmt.Errorf("failed to index: %w", err).Error()
+			// TODO catch error
+			stream.Send(&api.ImportDatasetsResponse{Message: msg})
+		},
+		OnIndexError: func(id string, err error) {
+			msg := fmt.Errorf("failed to index dataset %s: %w", id, err).Error()
+			// TODO catch error
+			stream.Send(&api.ImportDatasetsResponse{Message: msg})
+		},
+	})
+	if err != nil {
+		return err
+	}
+	defer bi.Close(ctx)
 	var seq int
 
 	for {
@@ -216,12 +220,18 @@ func (s *server) ImportDatasets(stream api.Biblio_ImportDatasetsServer) error {
 		if err := s.services.Repository.ImportCurrentDataset(d); err != nil {
 			msg := fmt.Errorf("failed to store dataset %s at line %d: %w", d.ID, seq, err).Error()
 			if err = stream.Send(&api.ImportDatasetsResponse{Message: msg}); err != nil {
-				return status.Errorf(codes.Internal, msg)
+				return err
 			}
 			continue
 		}
 
-		indexC <- d
+		if err := bi.Index(ctx, d); err != nil {
+			msg := fmt.Errorf("failed to index dataset %s at line %d: %w", d.ID, seq, err).Error()
+			if err = stream.Send(&api.ImportDatasetsResponse{Message: msg}); err != nil {
+				return err
+			}
+			continue
+		}
 	}
 }
 

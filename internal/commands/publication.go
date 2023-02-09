@@ -8,7 +8,6 @@ import (
 	"log"
 	"os"
 	"strings"
-	"sync"
 
 	"github.com/oklog/ulid/v2"
 	"github.com/spf13/cobra"
@@ -146,19 +145,9 @@ var publicationImportCmd = &cobra.Command{
 	Use:   "import",
 	Short: "Import publications",
 	Run: func(cmd *cobra.Command, args []string) {
+		ctx := context.Background()
+
 		e := Services()
-
-		var indexWG sync.WaitGroup
-
-		// indexing channel
-		indexC := make(chan *models.Publication)
-
-		// start bulk indexer
-		indexWG.Add(1)
-		go func() {
-			defer indexWG.Done()
-			e.PublicationSearchService.IndexMultiple(indexC)
-		}()
 
 		fmt, _ := cmd.Flags().GetString("format")
 		decFactory, ok := e.PublicationDecoders[fmt]
@@ -167,11 +156,24 @@ var publicationImportCmd = &cobra.Command{
 		}
 		dec := decFactory(os.Stdin)
 
+		bi, err := e.PublicationSearchService.NewBulkIndexer(backends.BulkIndexerConfig{
+			OnError: func(err error) {
+				log.Printf("Indexing failed : %s", err)
+			},
+			OnIndexError: func(id string, err error) {
+				log.Printf("Indexing failed for publication [id: %s] : %s", id, err)
+			},
+		})
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer bi.Close(ctx)
+
 		lineNo := 0
 		for {
 			lineNo += 1
-			p := models.Publication{}
-			if err := dec.Decode(&p); errors.Is(err, io.EOF) {
+			p := &models.Publication{}
+			if err := dec.Decode(p); errors.Is(err, io.EOF) {
 				break
 			} else if err != nil {
 				log.Fatalf("Unable to decode publication at line %d : %v", lineNo, err)
@@ -186,7 +188,7 @@ var publicationImportCmd = &cobra.Command{
 				)
 				continue
 			}
-			if err := e.Repository.ImportCurrentPublication(&p); err != nil {
+			if err := e.Repository.ImportCurrentPublication(p); err != nil {
 				log.Printf(
 					"Unable to store publication[snapshot_id: %s, id: %s] from line %d : %v",
 					p.SnapshotID,
@@ -202,13 +204,10 @@ var publicationImportCmd = &cobra.Command{
 				p.ID,
 			)
 
-			indexC <- &p
+			if err := bi.Index(ctx, p); err != nil {
+				log.Printf("Indexing failed for publication [id: %s] : %s", p.ID, err)
+			}
 		}
-
-		// close indexing channel when all recs are stored
-		close(indexC)
-		// wait for indexing to finish
-		indexWG.Wait()
 	},
 }
 
@@ -216,22 +215,24 @@ var cleanupCmd = &cobra.Command{
 	Use:   "cleanup",
 	Short: "Make publications consistent, clean up data anomalies",
 	Run: func(cmd *cobra.Command, args []string) {
-		s := newRepository()
+		ctx := context.Background()
+
 		e := Services()
 
-		var indexWG sync.WaitGroup
+		bi, err := e.PublicationSearchService.NewBulkIndexer(backends.BulkIndexerConfig{
+			OnError: func(err error) {
+				log.Printf("Indexing failed : %s", err)
+			},
+			OnIndexError: func(id string, err error) {
+				log.Printf("Indexing failed for publication [id: %s] : %s", id, err)
+			},
+		})
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer bi.Close(ctx)
 
-		// indexing channel
-		indexC := make(chan *models.Publication)
-
-		// start bulk indexer
-		indexWG.Add(1)
-		go func() {
-			defer indexWG.Done()
-			e.PublicationSearchService.IndexMultiple(indexC)
-		}()
-
-		s.EachPublication(func(p *models.Publication) bool {
+		e.Repository.EachPublication(func(p *models.Publication) bool {
 			// Guard
 			fixed := false
 
@@ -275,7 +276,7 @@ var cleanupCmd = &cobra.Command{
 					return false
 				}
 
-				err := s.UpdatePublication(p.SnapshotID, p, nil)
+				err := e.Repository.UpdatePublication(p.SnapshotID, p, nil)
 
 				var conflict *snapstore.Conflict
 				if errors.As(err, &conflict) {
@@ -294,16 +295,13 @@ var cleanupCmd = &cobra.Command{
 					p.ID,
 				)
 
-				indexC <- p
+				if err := bi.Index(ctx, p); err != nil {
+					log.Printf("Indexing failed for publication [id: %s] : %s", p.ID, err)
+				}
 			}
 
 			return true
 		})
-
-		// close indexing channel when all recs are stored
-		close(indexC)
-		// wait for indexing to finish
-		indexWG.Wait()
 	},
 }
 

@@ -7,7 +7,6 @@ import (
 	"io"
 	"log"
 	"os"
-	"sync"
 
 	"github.com/oklog/ulid/v2"
 	"github.com/spf13/cobra"
@@ -113,27 +112,30 @@ var datasetImportCmd = &cobra.Command{
 	Use:   "import",
 	Short: "Import datasets",
 	Run: func(cmd *cobra.Command, args []string) {
+		ctx := context.Background()
+
 		e := Services()
 
-		var indexWG sync.WaitGroup
-
-		// indexing channel
-		indexC := make(chan *models.Dataset)
-
-		// start bulk indexer
-		indexWG.Add(1)
-		go func() {
-			defer indexWG.Done()
-			e.DatasetSearchService.IndexMultiple(indexC)
-		}()
-
 		dec := json.NewDecoder(os.Stdin)
+
+		bi, err := e.DatasetSearchService.NewBulkIndexer(backends.BulkIndexerConfig{
+			OnError: func(err error) {
+				log.Printf("Indexing failed : %s", err)
+			},
+			OnIndexError: func(id string, err error) {
+				log.Printf("Indexing failed for dataset [id: %s] : %s", id, err)
+			},
+		})
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer bi.Close(ctx)
 
 		lineNo := 0
 		for {
 			lineNo += 1
-			d := models.Dataset{}
-			if err := dec.Decode(&d); errors.Is(err, io.EOF) {
+			d := &models.Dataset{}
+			if err := dec.Decode(d); errors.Is(err, io.EOF) {
 				break
 			} else if err != nil {
 				log.Fatalf("Unable to decode dataset at line %d : %v", lineNo, err)
@@ -148,7 +150,7 @@ var datasetImportCmd = &cobra.Command{
 				)
 				continue
 			}
-			if err := e.Repository.ImportCurrentDataset(&d); err != nil {
+			if err := e.Repository.ImportCurrentDataset(d); err != nil {
 				log.Printf(
 					"Unable to store dataset[snapshot_id: %s, id: %s] from line %d : %v",
 					d.SnapshotID,
@@ -164,13 +166,10 @@ var datasetImportCmd = &cobra.Command{
 				d.ID,
 			)
 
-			indexC <- &d
+			if err := bi.Index(ctx, d); err != nil {
+				log.Printf("Indexing failed for dataset [id: %s] : %s", d.ID, err)
+			}
 		}
-
-		// close indexing channel when all recs are stored
-		close(indexC)
-		// wait for indexing to finish
-		indexWG.Wait()
 	},
 }
 
