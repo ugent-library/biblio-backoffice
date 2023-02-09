@@ -14,6 +14,10 @@ import (
 	"github.com/ugent-library/biblio-backoffice/client/client"
 )
 
+func init() {
+	PublicationCmd.AddCommand(ValidatePublicationsCmd)
+}
+
 var ValidatePublicationsCmd = &cobra.Command{
 	Use:   "validate",
 	Short: "Validate publications",

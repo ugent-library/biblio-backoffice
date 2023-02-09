@@ -13,18 +13,19 @@ import (
 	"github.com/ugent-library/biblio-backoffice/internal/models"
 )
 
+func init() {
+	PublicationCmd.AddCommand(SearchPublicationsCmd)
+	SearchPublicationsCmd.Flags().StringP("query", "q", "", "")
+	SearchPublicationsCmd.Flags().StringP("limit", "", "", "")
+	SearchPublicationsCmd.Flags().StringP("offset", "", "", "")
+}
+
 var SearchPublicationsCmd = &cobra.Command{
 	Use:   "search",
 	Short: "Search publications",
 	Run: func(cmd *cobra.Command, args []string) {
 		SearchPublications(cmd, args)
 	},
-}
-
-func init() {
-	SearchPublicationsCmd.Flags().StringP("query", "q", "", "")
-	SearchPublicationsCmd.Flags().StringP("limit", "", "", "")
-	SearchPublicationsCmd.Flags().StringP("offset", "", "", "")
 }
 
 func SearchPublications(cmd *cobra.Command, args []string) {

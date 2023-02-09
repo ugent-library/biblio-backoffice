@@ -11,6 +11,10 @@ import (
 	"github.com/ugent-library/biblio-backoffice/client/client"
 )
 
+func init() {
+	DatasetCmd.AddCommand(GetDatasetHistoryCmd)
+}
+
 var GetDatasetHistoryCmd = &cobra.Command{
 	Use:   "get-history [id]",
 	Short: "Get dataset history",

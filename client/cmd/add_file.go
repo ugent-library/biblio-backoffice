@@ -13,6 +13,10 @@ import (
 	"github.com/ugent-library/biblio-backoffice/client/client"
 )
 
+func init() {
+	FileCmd.AddCommand(AddFileCmd)
+}
+
 // Set file buffer size
 var fileBufSize = 524288
 

@@ -12,6 +12,10 @@ import (
 	"github.com/ugent-library/biblio-backoffice/client/client"
 )
 
+func init() {
+	PublicationCmd.AddCommand(GetPublicationHistoryCmd)
+}
+
 var GetPublicationHistoryCmd = &cobra.Command{
 	Use:   "get-history [id]",
 	Short: "Get publication history",

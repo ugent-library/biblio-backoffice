@@ -10,6 +10,10 @@ import (
 	"github.com/ugent-library/biblio-backoffice/client/client"
 )
 
+func init() {
+	DatasetCmd.AddCommand(PurgeDatasetCmd)
+}
+
 var PurgeDatasetCmd = &cobra.Command{
 	Use:   "purge [id]",
 	Short: "Purge dataset",

@@ -13,18 +13,20 @@ import (
 	"github.com/ugent-library/biblio-backoffice/internal/models"
 )
 
+func init() {
+	DatasetCmd.AddCommand(SearchDatasetsCmd)
+
+	SearchDatasetsCmd.Flags().StringP("query", "q", "", "")
+	SearchDatasetsCmd.Flags().String("limit", "", "")
+	SearchDatasetsCmd.Flags().String("offset", "", "")
+}
+
 var SearchDatasetsCmd = &cobra.Command{
 	Use:   "search",
 	Short: "Search datasets",
 	Run: func(cmd *cobra.Command, args []string) {
 		SearchDatasets(cmd, args)
 	},
-}
-
-func init() {
-	SearchDatasetsCmd.Flags().StringP("query", "q", "", "")
-	SearchDatasetsCmd.Flags().String("limit", "", "")
-	SearchDatasetsCmd.Flags().String("offset", "", "")
 }
 
 func SearchDatasets(cmd *cobra.Command, args []string) {

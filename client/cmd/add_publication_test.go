@@ -26,18 +26,21 @@ func (s *AddPublicationSuite) SetupTest() {
 func (s *AddPublicationSuite) TestAddEmptyInput() {
 	t := s.T()
 
-	addCmdBuf := bytes.NewBufferString("")
-	AddPublicationsCmd.SetOut(addCmdBuf)
+	actual := bytes.NewBufferString("")
+	rootCmd.SetOut(actual)
+	rootCmd.SetErr(actual)
+
+	rootCmd.SetArgs([]string{"publication", "add"})
 
 	in := strings.NewReader("")
+	rootCmd.SetIn(in)
 
-	AddPublicationsCmd.SetIn(in)
-	errAdd := AddPublicationsCmd.Execute()
+	errAdd := rootCmd.Execute()
 	if errAdd != nil {
 		t.Fatal(errAdd)
 	}
 
-	addCmdOut, err := ioutil.ReadAll(addCmdBuf)
+	addCmdOut, err := ioutil.ReadAll(actual)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -49,23 +52,26 @@ func (s *AddPublicationSuite) TestAddEmptyInput() {
 func (s *AddPublicationSuite) TestAddNonJSONLInput() {
 	t := s.T()
 
-	addCmdBuf := bytes.NewBufferString("")
-	AddPublicationsCmd.SetOut(addCmdBuf)
+	actual := bytes.NewBufferString("")
+	rootCmd.SetOut(actual)
+	rootCmd.SetErr(actual)
+
+	rootCmd.SetArgs([]string{"publication", "add"})
 
 	in := strings.NewReader("invalid")
+	rootCmd.SetIn(in)
 
-	AddPublicationsCmd.SetIn(in)
-	errAdd := AddPublicationsCmd.Execute()
+	errAdd := rootCmd.Execute()
 	if errAdd != nil {
 		t.Fatal(errAdd)
 	}
 
-	addCmdOut, err := ioutil.ReadAll(addCmdBuf)
+	addCmdOut, err := ioutil.ReadAll(actual)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	t.Log(addCmdOut)
+	// t.Log(addCmdOut)
 
 	assert.Equal(t, "invalid input", string(addCmdOut))
 }
@@ -74,18 +80,21 @@ func (s *AddPublicationSuite) TestAddNonJSONLInput() {
 func (s *AddPublicationSuite) TestAddEmptyJSONLInput() {
 	t := s.T()
 
-	addCmdBuf := bytes.NewBufferString("")
-	AddPublicationsCmd.SetOut(addCmdBuf)
+	actual := bytes.NewBufferString("")
+	rootCmd.SetOut(actual)
+	rootCmd.SetErr(actual)
+
+	rootCmd.SetArgs([]string{"publication", "add"})
 
 	in := strings.NewReader("{}\n")
+	rootCmd.SetIn(in)
 
-	AddPublicationsCmd.SetIn(in)
-	errAdd := AddPublicationsCmd.Execute()
+	errAdd := rootCmd.Execute()
 	if errAdd != nil {
 		t.Fatal(errAdd)
 	}
 
-	addCmdOut, err := ioutil.ReadAll(addCmdBuf)
+	addCmdOut, err := ioutil.ReadAll(actual)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -124,23 +133,26 @@ func (s *AddPublicationSuite) TestAddMinimalValidRecord() {
 		]
 	}`
 
-	addCmdOutFile, errJSONL := toJSONL([]byte(json))
+	jsonl, errJSONL := toJSONL([]byte(json))
 	if errJSONL != nil {
 		t.Fatal(errJSONL)
 	}
 
-	addCmdBuf := bytes.NewBufferString("")
-	AddPublicationsCmd.SetOut(addCmdBuf)
+	actual := bytes.NewBufferString("")
+	rootCmd.SetOut(actual)
+	rootCmd.SetErr(actual)
 
-	in := strings.NewReader(addCmdOutFile)
+	rootCmd.SetArgs([]string{"publication", "add"})
 
-	AddPublicationsCmd.SetIn(in)
-	errAdd := AddPublicationsCmd.Execute()
+	in := strings.NewReader(jsonl)
+	rootCmd.SetIn(in)
+
+	errAdd := rootCmd.Execute()
 	if errAdd != nil {
 		t.Fatal(errAdd)
 	}
 
-	addCmdOut, err := ioutil.ReadAll(addCmdBuf)
+	addCmdOut, err := ioutil.ReadAll(actual)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -153,7 +165,7 @@ func (s *AddPublicationSuite) TestAddMinimalValidRecord() {
 // Update existing valid record
 
 // Test if all fields return properly
-func (s *AddPublicationSuite) estAddAndGetCompletePublications() {
+func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 	t := s.T()
 
 	// Book chapter
@@ -515,37 +527,41 @@ func TestAddPublicationSuite(t *testing.T) {
 }
 
 func addPublication(jsonl string) error {
-	addCmdBuf := bytes.NewBufferString("")
-	AddPublicationsCmd.SetOut(addCmdBuf)
+	actual := bytes.NewBufferString("")
+	rootCmd.SetOut(actual)
+	rootCmd.SetErr(actual)
+
+	rootCmd.SetArgs([]string{"publication", "add"})
 
 	in := strings.NewReader(jsonl)
+	rootCmd.SetIn(in)
 
-	AddPublicationsCmd.SetIn(in)
-	errAdd := AddPublicationsCmd.Execute()
+	errAdd := rootCmd.Execute()
 	if errAdd != nil {
 		return errAdd
 	}
 
-	// addCmdOut, err := ioutil.ReadAll(addCmdBuf)
+	// addCmdOut, err := ioutil.ReadAll(actual)
 	// if err != nil {
-	// 	return err
+	// 	t.Fatal(err)
 	// }
-	// t.Log(string(addCmdOut))
 
 	return nil
 }
 
 func getPublication(id string) (string, error) {
-	getCmdBuf := bytes.NewBufferString("")
-	GetPublicationCmd.SetOut(getCmdBuf)
+	actual := bytes.NewBufferString("")
+	rootCmd.SetOut(actual)
+	rootCmd.SetErr(actual)
 
-	GetPublicationCmd.SetArgs([]string{id})
-	errGetCmd := GetPublicationCmd.Execute()
-	if errGetCmd != nil {
-		return "", errGetCmd
+	rootCmd.SetArgs([]string{"publication", "get", id})
+
+	errAdd := rootCmd.Execute()
+	if errAdd != nil {
+		return "", errAdd
 	}
 
-	getCmdOut, err := ioutil.ReadAll(getCmdBuf)
+	getCmdOut, err := ioutil.ReadAll(actual)
 	if err != nil {
 		return "", err
 	}

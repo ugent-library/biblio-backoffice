@@ -13,6 +13,10 @@ import (
 	"github.com/ugent-library/biblio-backoffice/client/client"
 )
 
+func init() {
+	PublicationCmd.AddCommand(ImportPublicationsCmd)
+}
+
 var ImportPublicationsCmd = &cobra.Command{
 	Use:   "import",
 	Short: "Import publications",

@@ -11,6 +11,10 @@ import (
 	"github.com/ugent-library/biblio-backoffice/client/client"
 )
 
+func init() {
+	PublicationCmd.AddCommand(GetAllPublicationsCmd)
+}
+
 var GetAllPublicationsCmd = &cobra.Command{
 	Use:   "get-all",
 	Short: "Get all publications",

@@ -12,6 +12,10 @@ import (
 	"github.com/ugent-library/biblio-backoffice/client/client"
 )
 
+func init() {
+	DatasetCmd.AddCommand(UpdateDatasetCmd)
+}
+
 var UpdateDatasetCmd = &cobra.Command{
 	Use:   "update",
 	Short: "Update publication",

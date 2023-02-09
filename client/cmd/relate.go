@@ -10,6 +10,10 @@ import (
 	"github.com/ugent-library/biblio-backoffice/client/client"
 )
 
+func init() {
+	rootCmd.AddCommand(PublicationRelateDatasetCmd)
+}
+
 var PublicationRelateDatasetCmd = &cobra.Command{
 	Use:   "relate-dataset [id] [dataset-id]",
 	Short: "Add related dataset to publication",

@@ -14,6 +14,10 @@ import (
 	"github.com/ugent-library/biblio-backoffice/client/client"
 )
 
+func init() {
+	DatasetCmd.AddCommand(ValidateDatasetsCmd)
+}
+
 var ValidateDatasetsCmd = &cobra.Command{
 	Use:   "validate",
 	Short: "Validate datasets",

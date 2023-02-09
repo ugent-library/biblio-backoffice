@@ -13,6 +13,10 @@ import (
 	"github.com/ugent-library/biblio-backoffice/client/client"
 )
 
+func init() {
+	DatasetCmd.AddCommand(ImportDatasetsCmd)
+}
+
 var ImportDatasetsCmd = &cobra.Command{
 	Use:   "import",
 	Short: "Import datasets",

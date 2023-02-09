@@ -10,6 +10,10 @@ import (
 	"github.com/ugent-library/biblio-backoffice/client/client"
 )
 
+func init() {
+	PublicationCmd.AddCommand(PurgePublicationCmd)
+}
+
 var PurgePublicationCmd = &cobra.Command{
 	Use:   "purge [id]",
 	Short: "Purge publication",

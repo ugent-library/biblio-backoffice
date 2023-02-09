@@ -12,6 +12,10 @@ import (
 	"github.com/ugent-library/biblio-backoffice/client/client"
 )
 
+func init() {
+	PublicationCmd.AddCommand(AddPublicationsCmd)
+}
+
 var AddPublicationsCmd = &cobra.Command{
 	Use:   "add",
 	Short: "Add publications",

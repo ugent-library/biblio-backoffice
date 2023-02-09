@@ -10,16 +10,17 @@ import (
 	"github.com/ugent-library/biblio-backoffice/client/client"
 )
 
+func init() {
+	DatasetCmd.AddCommand(ImportDatasetsCmd)
+	PurgeAllDatasetsCmd.Flags().BoolP("yes", "y", false, "are you sure?")
+}
+
 var PurgeAllDatasetsCmd = &cobra.Command{
 	Use:   "purge-all",
 	Short: "Purge all datasets",
 	Run: func(cmd *cobra.Command, args []string) {
 		PurgeAllDatasets(cmd, args)
 	},
-}
-
-func init() {
-	PurgeAllDatasetsCmd.Flags().BoolP("yes", "y", false, "are you sure?")
 }
 
 func PurgeAllDatasets(cmd *cobra.Command, args []string) {

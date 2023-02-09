@@ -11,6 +11,10 @@ import (
 	"github.com/ugent-library/biblio-backoffice/client/client"
 )
 
+func init() {
+	DatasetCmd.AddCommand(GetAllDatasetsCmd)
+}
+
 var GetAllDatasetsCmd = &cobra.Command{
 	Use:   "get-all",
 	Short: "Get all datasets",

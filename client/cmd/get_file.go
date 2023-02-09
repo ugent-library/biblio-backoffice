@@ -12,7 +12,11 @@ import (
 	"github.com/ugent-library/biblio-backoffice/client/client"
 )
 
-var GetFileCMd = &cobra.Command{
+func init() {
+	FileCmd.AddCommand(GetFileCmd)
+}
+
+var GetFileCmd = &cobra.Command{
 	Use:   "get [sha256]",
 	Short: "Get file",
 	Args:  cobra.ExactArgs(1),
