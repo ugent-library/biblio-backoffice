@@ -485,6 +485,14 @@ func (publications *Publications) Clone() *Publications {
 	}
 }
 
+func (publications *Publications) NewIndexSwitcher(config backends.BulkIndexerConfig) (backends.IndexSwitcher[*models.Publication], error) {
+	docFn := func(p *models.Publication) (string, []byte, error) {
+		doc, err := json.Marshal(NewIndexedPublication(p))
+		return p.ID, doc, err
+	}
+	return newIndexSwitcher(publications.Client.es, publications.Client.Index, publications.Client.Settings, publications.Client.IndexRetention, docFn, config)
+}
+
 func (publications *Publications) NewReindexer() backends.PublicationReindexer {
 	return NewPublicationReindexer(publications)
 }

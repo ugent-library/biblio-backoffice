@@ -78,7 +78,6 @@ func (s *Repository) Transaction(ctx context.Context, fn func(backends.Repositor
 }
 
 func (s *Repository) GetPublication(id string) (*models.Publication, error) {
-	p := &models.Publication{}
 	snap, err := s.publicationStore.GetCurrentSnapshot(id, s.opts)
 	if err != nil {
 		if err == pgx.ErrNoRows {
@@ -86,12 +85,10 @@ func (s *Repository) GetPublication(id string) (*models.Publication, error) {
 		}
 		return nil, err
 	}
-	if err := snap.Scan(p); err != nil {
+	p, err := snapshotToPublication(snap)
+	if err != nil {
 		return nil, err
 	}
-	p.SnapshotID = snap.SnapshotID
-	p.DateFrom = snap.DateFrom
-	p.DateUntil = snap.DateUntil
 	return p, nil
 }
 
@@ -107,13 +104,10 @@ func (s *Repository) GetPublications(ids []string) ([]*models.Publication, error
 		if err != nil {
 			return nil, err
 		}
-		p := &models.Publication{}
-		if err := snap.Scan(p); err != nil {
+		p, err := snapshotToPublication(snap)
+		if err != nil {
 			return nil, err
 		}
-		p.SnapshotID = snap.SnapshotID
-		p.DateFrom = snap.DateFrom
-		p.DateUntil = snap.DateUntil
 		publications = append(publications, p)
 	}
 	if c.Err() != nil {
@@ -122,31 +116,12 @@ func (s *Repository) GetPublications(ids []string) ([]*models.Publication, error
 	return publications, nil
 }
 
-func (s *Repository) publicationToSnapshot(publication *models.Publication) (*snapstore.Snapshot, error) {
-	var snapshot *snapstore.Snapshot = &snapstore.Snapshot{}
-
-	var data []byte
-	var dataErr error
-	data, dataErr = json.Marshal(publication)
-	if dataErr != nil {
-		return nil, dataErr
-	}
-
-	snapshot.Data = data
-	snapshot.DateFrom = publication.DateFrom
-	snapshot.DateUntil = publication.DateUntil
-	snapshot.ID = publication.ID
-	snapshot.SnapshotID = publication.SnapshotID
-
-	return snapshot, nil
-}
-
 func (s *Repository) importPublication(p *models.Publication) error {
-	snapshot, snapshotErr := s.publicationToSnapshot(p)
-	if snapshotErr != nil {
-		return snapshotErr
+	snap, err := publicationToSnapshot(p)
+	if err != nil {
+		return err
 	}
-	return s.publicationStore.ImportSnapshot(snapshot, s.opts)
+	return s.publicationStore.ImportSnapshot(snap, s.opts)
 }
 
 func (s *Repository) ImportCurrentPublication(p *models.Publication) error {
@@ -347,29 +322,51 @@ func (s *Repository) SearchDatasets(args *backends.RepositoryQueryArgs) ([]*mode
 }
 
 func (s *Repository) SelectPublications(sql string, values []any, fn func(*models.Publication) bool) error {
-	cursor, cursorErr := s.publicationStore.Select(sql, values, s.opts)
-	if cursorErr != nil {
-		return cursorErr
+	c, err := s.publicationStore.Select(sql, values, s.opts)
+	if err != nil {
+		return err
 	}
-	defer cursor.Close()
-	for cursor.HasNext() {
-		snapshot, snapshotErr := cursor.Next()
-		if snapshotErr != nil {
-			return snapshotErr
-		}
-		publication := &models.Publication{}
-		if err := snapshot.Scan(publication); err != nil {
+	defer c.Close()
+	for c.HasNext() {
+		snap, err := c.Next()
+		if err != nil {
 			return err
 		}
-		publication.SnapshotID = snapshot.SnapshotID
-		publication.DateFrom = snapshot.DateFrom
-		publication.DateUntil = snapshot.DateUntil
-		// TODO catch errors from fn() and pass them upstream
-		if ok := fn(publication); !ok {
+		p, err := snapshotToPublication(snap)
+		if err != nil {
+			return err
+		}
+		if ok := fn(p); !ok {
 			break
 		}
 	}
-	return cursor.Err()
+	return c.Err()
+}
+
+func (s *Repository) PublicationsBetween(t1, t2 time.Time, fn func(*models.Publication) bool) error {
+	c, err := s.publicationStore.Select(
+		"SELECT * FROM publications WHERE date_until IS NULL AND date_from >= $1 AND date_from <= $2",
+		[]any{t1, t2},
+		s.opts,
+	)
+	if err != nil {
+		return err
+	}
+	defer c.Close()
+	for c.HasNext() {
+		snap, err := c.Next()
+		if err != nil {
+			return err
+		}
+		p, err := snapshotToPublication(snap)
+		if err != nil {
+			return err
+		}
+		if ok := fn(p); !ok {
+			break
+		}
+	}
+	return c.Err()
 }
 
 func (s *Repository) EachPublication(fn func(*models.Publication) bool) error {
@@ -383,14 +380,10 @@ func (s *Repository) EachPublication(fn func(*models.Publication) bool) error {
 		if err != nil {
 			return err
 		}
-		p := &models.Publication{}
-		if err := snap.Scan(p); err != nil {
+		p, err := snapshotToPublication(snap)
+		if err != nil {
 			return err
 		}
-		p.SnapshotID = snap.SnapshotID
-		p.DateFrom = snap.DateFrom
-		p.DateUntil = snap.DateUntil
-		// TODO catch errors from fn() and pass them upstream
 		if ok := fn(p); !ok {
 			break
 		}
@@ -409,14 +402,10 @@ func (s *Repository) EachPublicationSnapshot(fn func(*models.Publication) bool) 
 		if err != nil {
 			return err
 		}
-		p := &models.Publication{}
-		if err := snap.Scan(p); err != nil {
+		p, err := snapshotToPublication(snap)
+		if err != nil {
 			return err
 		}
-		p.SnapshotID = snap.SnapshotID
-		p.DateFrom = snap.DateFrom
-		p.DateUntil = snap.DateUntil
-		// TODO catch errors from fn() and pass them upstream
 		if ok := fn(p); !ok {
 			break
 		}
@@ -435,14 +424,10 @@ func (s *Repository) PublicationHistory(id string, fn func(*models.Publication) 
 		if err != nil {
 			return err
 		}
-		p := &models.Publication{}
-		if err := snap.Scan(p); err != nil {
+		p, err := snapshotToPublication(snap)
+		if err != nil {
 			return err
 		}
-		p.SnapshotID = snap.SnapshotID
-		p.DateFrom = snap.DateFrom
-		p.DateUntil = snap.DateUntil
-		// TODO catch errors from fn() and pass them upstream
 		if ok := fn(p); !ok {
 			break
 		}
@@ -451,7 +436,6 @@ func (s *Repository) PublicationHistory(id string, fn func(*models.Publication) 
 }
 
 func (s *Repository) GetDataset(id string) (*models.Dataset, error) {
-	d := &models.Dataset{}
 	snap, err := s.datasetStore.GetCurrentSnapshot(id, s.opts)
 	if err != nil {
 		if err == pgx.ErrNoRows {
@@ -459,12 +443,10 @@ func (s *Repository) GetDataset(id string) (*models.Dataset, error) {
 		}
 		return nil, err
 	}
-	if err := snap.Scan(d); err != nil {
+	d, err := snapshotToDataset(snap)
+	if err != nil {
 		return nil, err
 	}
-	d.SnapshotID = snap.SnapshotID
-	d.DateFrom = snap.DateFrom
-	d.DateUntil = snap.DateUntil
 	return d, nil
 }
 
@@ -480,13 +462,10 @@ func (s *Repository) GetDatasets(ids []string) ([]*models.Dataset, error) {
 		if err != nil {
 			return nil, err
 		}
-		d := &models.Dataset{}
-		if err := snap.Scan(d); err != nil {
+		d, err := snapshotToDataset(snap)
+		if err != nil {
 			return nil, err
 		}
-		d.SnapshotID = snap.SnapshotID
-		d.DateFrom = snap.DateFrom
-		d.DateUntil = snap.DateUntil
 		datasets = append(datasets, d)
 	}
 	if c.Err() != nil {
@@ -495,30 +474,12 @@ func (s *Repository) GetDatasets(ids []string) ([]*models.Dataset, error) {
 	return datasets, nil
 }
 
-func (s *Repository) datasetToSnapshot(dataset *models.Dataset) (*snapstore.Snapshot, error) {
-	var snapshot *snapstore.Snapshot = &snapstore.Snapshot{}
-
-	var data []byte
-	var dataErr error
-	data, dataErr = json.Marshal(dataset)
-	if dataErr != nil {
-		return nil, dataErr
-	}
-
-	snapshot.Data = data
-	snapshot.DateFrom = dataset.DateFrom
-	snapshot.DateUntil = dataset.DateUntil
-	snapshot.ID = dataset.ID
-	snapshot.SnapshotID = dataset.SnapshotID
-
-	return snapshot, nil
-}
 func (s *Repository) importDataset(d *models.Dataset) error {
-	snapshot, snapshotErr := s.datasetToSnapshot(d)
-	if snapshotErr != nil {
-		return snapshotErr
+	snap, err := datasetToSnapshot(d)
+	if err != nil {
+		return err
 	}
-	return s.datasetStore.ImportSnapshot(snapshot, s.opts)
+	return s.datasetStore.ImportSnapshot(snap, s.opts)
 }
 
 func (s *Repository) ImportCurrentDataset(d *models.Dataset) error {
@@ -612,29 +573,25 @@ func (s *Repository) UpdateDataset(snapshotID string, d *models.Dataset, u *mode
 }
 
 func (s *Repository) SelectDatasets(sql string, values []any, fn func(*models.Dataset) bool) error {
-	cursor, cursorErr := s.datasetStore.Select(sql, values, s.opts)
-	if cursorErr != nil {
-		return cursorErr
+	c, err := s.datasetStore.Select(sql, values, s.opts)
+	if err != nil {
+		return err
 	}
-	defer cursor.Close()
-	for cursor.HasNext() {
-		snapshot, snapshotErr := cursor.Next()
-		if snapshotErr != nil {
-			return snapshotErr
-		}
-		dataset := &models.Dataset{}
-		if err := snapshot.Scan(dataset); err != nil {
+	defer c.Close()
+	for c.HasNext() {
+		snap, err := c.Next()
+		if err != nil {
 			return err
 		}
-		dataset.SnapshotID = snapshot.SnapshotID
-		dataset.DateFrom = snapshot.DateFrom
-		dataset.DateUntil = snapshot.DateUntil
-		// TODO catch errors from fn() and pass them upstream
-		if ok := fn(dataset); !ok {
+		d, err := snapshotToDataset(snap)
+		if err != nil {
+			return err
+		}
+		if ok := fn(d); !ok {
 			break
 		}
 	}
-	return cursor.Err()
+	return c.Err()
 }
 
 func (s *Repository) EachDataset(fn func(*models.Dataset) bool) error {
@@ -648,15 +605,10 @@ func (s *Repository) EachDataset(fn func(*models.Dataset) bool) error {
 		if err != nil {
 			return err
 		}
-		d := &models.Dataset{}
-		if err := snap.Scan(d); err != nil {
-
+		d, err := snapshotToDataset(snap)
+		if err != nil {
 			return err
 		}
-		d.SnapshotID = snap.SnapshotID
-		d.DateFrom = snap.DateFrom
-		d.DateUntil = snap.DateUntil
-		// TODO catch errors from fn() and pass them upstream
 		if ok := fn(d); !ok {
 			break
 		}
@@ -675,15 +627,10 @@ func (s *Repository) EachDatasetSnapshot(fn func(*models.Dataset) bool) error {
 		if err != nil {
 			return err
 		}
-		d := &models.Dataset{}
-		if err := snap.Scan(d); err != nil {
-
+		d, err := snapshotToDataset(snap)
+		if err != nil {
 			return err
 		}
-		d.SnapshotID = snap.SnapshotID
-		d.DateFrom = snap.DateFrom
-		d.DateUntil = snap.DateUntil
-		// TODO catch errors from fn() and pass them upstream
 		if ok := fn(d); !ok {
 			break
 		}
@@ -702,14 +649,10 @@ func (s *Repository) DatasetHistory(id string, fn func(*models.Dataset) bool) er
 		if err != nil {
 			return err
 		}
-		d := &models.Dataset{}
-		if err := snap.Scan(d); err != nil {
+		d, err := snapshotToDataset(snap)
+		if err != nil {
 			return err
 		}
-		d.SnapshotID = snap.SnapshotID
-		d.DateFrom = snap.DateFrom
-		d.DateUntil = snap.DateUntil
-		// TODO catch errors from fn() and pass them upstream
 		if ok := fn(d); !ok {
 			break
 		}
@@ -813,4 +756,56 @@ func (s *Repository) PurgeAllDatasets() error {
 
 func (s *Repository) PurgeDataset(id string) error {
 	return s.datasetStore.Purge(id, s.opts)
+}
+
+func snapshotToPublication(snap *snapstore.Snapshot) (*models.Publication, error) {
+	p := &models.Publication{}
+	if err := snap.Scan(p); err != nil {
+		return nil, err
+	}
+	p.SnapshotID = snap.SnapshotID
+	p.DateFrom = snap.DateFrom
+	p.DateUntil = snap.DateUntil
+	return p, nil
+}
+
+func publicationToSnapshot(p *models.Publication) (*snapstore.Snapshot, error) {
+	snap := &snapstore.Snapshot{}
+	data, err := json.Marshal(p)
+	if err != nil {
+		return nil, err
+	}
+	snap.Data = data
+	snap.DateFrom = p.DateFrom
+	snap.DateUntil = p.DateUntil
+	snap.ID = p.ID
+	snap.SnapshotID = p.SnapshotID
+	return snap, nil
+}
+
+func snapshotToDataset(snap *snapstore.Snapshot) (*models.Dataset, error) {
+	d := &models.Dataset{}
+	if err := snap.Scan(d); err != nil {
+		return nil, err
+	}
+	d.SnapshotID = snap.SnapshotID
+	d.DateFrom = snap.DateFrom
+	d.DateUntil = snap.DateUntil
+	return d, nil
+}
+
+func datasetToSnapshot(d *models.Dataset) (*snapstore.Snapshot, error) {
+	snap := &snapstore.Snapshot{}
+	data, err := json.Marshal(d)
+	if err != nil {
+		return nil, err
+	}
+
+	snap.Data = data
+	snap.DateFrom = d.DateFrom
+	snap.DateUntil = d.DateUntil
+	snap.ID = d.ID
+	snap.SnapshotID = d.SnapshotID
+
+	return snap, nil
 }

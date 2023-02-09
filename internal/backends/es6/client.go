@@ -11,13 +11,13 @@ import (
 	"github.com/elastic/go-elasticsearch/v6"
 	"github.com/elastic/go-elasticsearch/v6/esapi"
 	"github.com/pkg/errors"
-	// "github.com/elastic/go-elasticsearch/v6/esutil"
 )
 
 type Config struct {
-	ClientConfig elasticsearch.Config
-	Index        string
-	Settings     string
+	ClientConfig   elasticsearch.Config
+	Index          string
+	Settings       string
+	IndexRetention int // -1: keep all old indexes, >=0: keep x old indexes
 }
 
 type Client struct {

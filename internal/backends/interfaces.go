@@ -101,6 +101,11 @@ type BulkIndexerConfig struct {
 	OnIndexError func(string, error)
 }
 
+type IndexSwitcher[T any] interface {
+	Index(context.Context, T) error
+	Switch(context.Context) error
+}
+
 type BulkIndexer[T any] interface {
 	Index(context.Context, T) error
 	Close(context.Context) error
@@ -143,6 +148,7 @@ type PublicationSearchService interface {
 	WithScope(string, ...string) PublicationSearchService
 	CreateIndex() error
 	DeleteIndex() error
+	NewIndexSwitcher(BulkIndexerConfig) (IndexSwitcher[*models.Publication], error)
 	NewReindexer() PublicationReindexer
 }
 

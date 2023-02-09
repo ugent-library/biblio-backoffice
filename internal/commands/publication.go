@@ -26,8 +26,9 @@ func init() {
 	publicationCmd.AddCommand(publicationAddCmd)
 	publicationCmd.AddCommand(publicationImportCmd)
 	publicationCmd.AddCommand(oldPublicationImportCmd)
-	publicationCmd.AddCommand(cleanupCmd)
-	publicationCmd.AddCommand(transferCmd)
+	publicationCmd.AddCommand(publicationCleanupCmd)
+	publicationCmd.AddCommand(publicationTransferCmd)
+	publicationCmd.AddCommand(publicationReindexCmd)
 	rootCmd.AddCommand(publicationCmd)
 }
 
@@ -211,7 +212,7 @@ var publicationImportCmd = &cobra.Command{
 	},
 }
 
-var cleanupCmd = &cobra.Command{
+var publicationCleanupCmd = &cobra.Command{
 	Use:   "cleanup",
 	Short: "Make publications consistent, clean up data anomalies",
 	Run: func(cmd *cobra.Command, args []string) {
@@ -305,7 +306,7 @@ var cleanupCmd = &cobra.Command{
 	},
 }
 
-var transferCmd = &cobra.Command{
+var publicationTransferCmd = &cobra.Command{
 	Use:   "transfer UID UID [PUBID]",
 	Short: "Transfer publications between people",
 	Args:  cobra.RangeArgs(2, 3),
@@ -471,6 +472,35 @@ var oldPublicationImportCmd = &cobra.Command{
 				p.SnapshotID,
 				p.ID,
 			)
+		}
+	},
+}
+
+var publicationReindexCmd = &cobra.Command{
+	Use:   "reindex",
+	Short: "Switch to a new search index",
+	Run: func(cmd *cobra.Command, args []string) {
+		ctx := context.Background()
+
+		switcher, err := Services().PublicationSearchService.NewIndexSwitcher(backends.BulkIndexerConfig{
+			OnError: func(err error) {
+				log.Printf("Indexing failed : %s", err)
+			},
+			OnIndexError: func(id string, err error) {
+				log.Printf("Indexing failed for publication [id: %s] : %s", id, err)
+			},
+		})
+		if err != nil {
+			log.Fatal(err)
+		}
+		Services().Repository.EachPublication(func(p *models.Publication) bool {
+			if err := switcher.Index(ctx, p); err != nil {
+				log.Printf("Indexing failed for publication [id: %s] : %s", p.ID, err)
+			}
+			return true
+		})
+		if err := switcher.Switch(ctx); err != nil {
+			log.Fatal(err)
 		}
 	},
 }

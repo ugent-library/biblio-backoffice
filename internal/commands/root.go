@@ -15,6 +15,7 @@ const (
 	defaultEs6URL               = "http://localhost:9200"
 	defaultDatasetIndex         = "biblio_backoffice_datasets"
 	defaultPublicationIndex     = "biblio_backoffice_publications"
+	defaultIndexRetention       = 2
 	defaultAPIHost              = ""
 	defaultAPIPort              = 30000
 	defaultAPIAdminUsername     = "admin"
@@ -57,6 +58,7 @@ func init() {
 	viper.SetDefault("frontend-es6-url", defaultEs6URL)
 	viper.SetDefault("dataset-index", defaultDatasetIndex)
 	viper.SetDefault("publication-index", defaultPublicationIndex)
+	viper.SetDefault("index-retention", defaultIndexRetention)
 	// viper.SetDefault("api-host", defaultAPIHost)
 	// viper.SetDefault("api-port", defaultAPIPort)
 	viper.SetDefault("api-username", defaultAPIAdminUsername)
@@ -84,6 +86,7 @@ func init() {
 	rootCmd.PersistentFlags().String("es6-url", defaultEs6URL, "elasticsearch 6.x url, separate multiple with comma")
 	rootCmd.PersistentFlags().String("dataset-index", defaultDatasetIndex, "dataset index name")
 	rootCmd.PersistentFlags().String("publication-index", defaultPublicationIndex, "publication index name")
+	rootCmd.PersistentFlags().Int("index-retention", defaultIndexRetention, "number of old indexes to retain after index switch")
 
 	rootCmd.PersistentFlags().String("frontend-es6-url", "", "frontend elasticsearch 6.x url, separate multiple with comma")
 
