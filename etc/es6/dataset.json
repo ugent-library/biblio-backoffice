@@ -172,8 +172,7 @@
                         "department": {
                           "properties": {
                             "id": {
-                              "type": "text",
-                              "analyzer": "keyword_lowercase"
+                              "type": "keyword"
                             },
                             "name": {
                               "type": "text"
@@ -224,8 +223,7 @@
                         "department": {
                           "properties": {
                             "id": {
-                              "type": "text",
-                              "analyzer": "keyword_lowercase"
+                              "type": "keyword"
                             },
                             "name": {
                               "type": "text"
@@ -263,15 +261,13 @@
                 "department": {
                     "properties": {
                         "id": {
-                          "type": "text",
-                          "analyzer": "keyword_lowercase"
+                          "type": "keyword"
                         },
                         "tree": {
                             "properties": {
                                 "id": {
-                                    "type": "text",
-                                    "analyzer": "keyword_lowercase",
-                                    "copy_to": ["faculty"]
+                                    "type": "keyword",
+                                    "copy_to": ["faculty", "all"]
                                 }
                             }
                         }
