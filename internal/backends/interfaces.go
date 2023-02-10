@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"io"
+	"time"
 
 	"github.com/ugent-library/biblio-backoffice/internal/backends/filestore"
 	"github.com/ugent-library/biblio-backoffice/internal/models"
@@ -68,6 +69,7 @@ type Repository interface {
 	CountPublications(*RepositoryQueryArgs) (int, error)
 	SearchPublications(*RepositoryQueryArgs) ([]*models.Publication, error)
 	SelectPublications(string, []any, func(*models.Publication) bool) error
+	PublicationsBetween(time.Time, time.Time, func(*models.Publication) bool) error
 	EachPublication(func(*models.Publication) bool) error
 	EachPublicationSnapshot(func(*models.Publication) bool) error
 	PublicationHistory(string, func(*models.Publication) bool) error
@@ -83,6 +85,7 @@ type Repository interface {
 	CountDatasets(*RepositoryQueryArgs) (int, error)
 	SearchDatasets(*RepositoryQueryArgs) ([]*models.Dataset, error)
 	SelectDatasets(string, []any, func(*models.Dataset) bool) error
+	DatasetsBetween(time.Time, time.Time, func(*models.Dataset) bool) error
 	EachDataset(func(*models.Dataset) bool) error
 	EachDatasetSnapshot(func(*models.Dataset) bool) error
 	DatasetHistory(string, func(*models.Dataset) bool) error
@@ -111,45 +114,24 @@ type BulkIndexer[T any] interface {
 	Close(context.Context) error
 }
 
-type Reindexer interface {
-	InitAlias() error
-	RemoveOldIndexes(int) error
-	ListIndexes() ([]map[string]string, error)
-}
-
-type PublicationReindexer interface {
-	Reindexer
-	Reindex(<-chan *models.Publication) error
-}
-
-type DatasetReindexer interface {
-	Reindexer
-	Reindex(<-chan *models.Dataset) error
-}
-
 type DatasetSearchService interface {
 	Search(*models.SearchArgs) (*models.DatasetHits, error)
 	Index(*models.Dataset) error
-	NewBulkIndexer(BulkIndexerConfig) (BulkIndexer[*models.Dataset], error)
-	IndexMultiple(<-chan *models.Dataset)
 	Delete(id string) error
+	DeleteAll() error
 	WithScope(string, ...string) DatasetSearchService
-	CreateIndex() error
-	DeleteIndex() error
-	NewReindexer() DatasetReindexer
+	NewBulkIndexer(BulkIndexerConfig) (BulkIndexer[*models.Dataset], error)
+	NewIndexSwitcher(BulkIndexerConfig) (IndexSwitcher[*models.Dataset], error)
 }
 
 type PublicationSearchService interface {
 	Search(*models.SearchArgs) (*models.PublicationHits, error)
 	Index(*models.Publication) error
-	NewBulkIndexer(BulkIndexerConfig) (BulkIndexer[*models.Publication], error)
-	IndexMultiple(<-chan *models.Publication)
 	Delete(id string) error
+	DeleteAll() error
 	WithScope(string, ...string) PublicationSearchService
-	CreateIndex() error
-	DeleteIndex() error
+	NewBulkIndexer(BulkIndexerConfig) (BulkIndexer[*models.Publication], error)
 	NewIndexSwitcher(BulkIndexerConfig) (IndexSwitcher[*models.Publication], error)
-	NewReindexer() PublicationReindexer
 }
 
 type PublicationSearcherService interface {
@@ -226,9 +208,7 @@ type DatasetListExporter interface {
 type DatasetListExporterFactory func(io.Writer) DatasetListExporter
 
 type HandleService interface {
-	// GetHandle(string) (*models.Handle, error)
 	UpsertHandle(string) (*models.Handle, error)
-	// DeleteHandle(string) (*models.Handle, error)
 }
 
 var ErrNotFound = errors.New("record not found")

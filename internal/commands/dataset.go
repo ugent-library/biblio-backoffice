@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"time"
 
 	"github.com/oklog/ulid/v2"
 	"github.com/spf13/cobra"
@@ -20,6 +21,7 @@ func init() {
 	datasetCmd.AddCommand(datasetAddCmd)
 	datasetCmd.AddCommand(datasetImportCmd)
 	datasetCmd.AddCommand(oldDatasetImportCmd)
+	datasetCmd.AddCommand(datasetReindexCmd)
 	rootCmd.AddCommand(datasetCmd)
 }
 
@@ -215,5 +217,94 @@ var oldDatasetImportCmd = &cobra.Command{
 				d.ID,
 			)
 		}
+	},
+}
+
+var datasetReindexCmd = &cobra.Command{
+	Use:   "reindex",
+	Short: "Reindex into a new search index",
+	Run: func(cmd *cobra.Command, args []string) {
+		ctx := context.Background()
+
+		services := Services()
+
+		startTime := time.Now()
+
+		indexed := 0
+
+		log.Println("Indexing to new index...")
+
+		switcher, err := services.DatasetSearchService.NewIndexSwitcher(backends.BulkIndexerConfig{
+			OnError: func(err error) {
+				log.Printf("Indexing failed : %s", err)
+			},
+			OnIndexError: func(id string, err error) {
+				log.Printf("Indexing failed for dataset [id: %s] : %s", id, err)
+			},
+		})
+		if err != nil {
+			log.Fatal(err)
+		}
+		services.Repository.EachDataset(func(p *models.Dataset) bool {
+			if err := switcher.Index(ctx, p); err != nil {
+				log.Printf("Indexing failed for dataset [id: %s] : %s", p.ID, err)
+			}
+			indexed++
+			return true
+		})
+
+		log.Printf("Indexed %d datasets...", indexed)
+
+		log.Println("Switching to new index...")
+
+		if err := switcher.Switch(ctx); err != nil {
+			log.Fatal(err)
+		}
+
+		endTime := time.Now()
+
+		log.Println("Indexing changes since start of reindex...")
+
+		for {
+			indexed = 0
+
+			bi, err := services.DatasetSearchService.NewBulkIndexer(backends.BulkIndexerConfig{
+				OnError: func(err error) {
+					log.Printf("Indexing failed : %s", err)
+				},
+				OnIndexError: func(id string, err error) {
+					log.Printf("Indexing failed for dataset [id: %s] : %s", id, err)
+				},
+			})
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			err = services.Repository.DatasetsBetween(startTime, endTime, func(p *models.Dataset) bool {
+				if err := bi.Index(ctx, p); err != nil {
+					log.Printf("Indexing failed for dataset [id: %s] : %s", p.ID, err)
+				}
+				indexed++
+				return true
+			})
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			if err = bi.Close(ctx); err != nil {
+				log.Fatal(err)
+			}
+
+			if indexed == 0 {
+				break
+			}
+
+			log.Printf("Indexed %d datasets...", indexed)
+
+			startTime = endTime
+			endTime = time.Now()
+		}
+
+		log.Println("Done.")
 	},
 }

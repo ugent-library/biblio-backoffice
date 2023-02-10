@@ -4,9 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
 	"io"
-	"strings"
 
 	"github.com/elastic/go-elasticsearch/v6"
 	"github.com/elastic/go-elasticsearch/v6/esapi"
@@ -33,38 +31,6 @@ func New(c Config) (*Client, error) {
 		return nil, err
 	}
 	return &Client{Config: c, es: client}, nil
-}
-
-func (c *Client) CreateIndex() error {
-	return c.createIndex(c.Index, c.Settings)
-}
-
-func (c *Client) DeleteIndex() error {
-	return c.deleteIndex(c.Index)
-}
-
-func (c *Client) createIndex(name string, settings string) error {
-	r := strings.NewReader(settings)
-	res, err := c.es.Indices.Create(name, c.es.Indices.Create.WithBody(r))
-	if err != nil {
-		return err
-	}
-	if res.IsError() {
-		return fmt.Errorf("unexpected es6 error: %s", res)
-	}
-	return nil
-}
-
-func (c *Client) deleteIndex(name string) error {
-	res, err := c.es.Indices.Delete([]string{name})
-	if err != nil {
-		return err
-	}
-	defer res.Body.Close()
-	if res.IsError() {
-		return fmt.Errorf("unexpected es6 error: %s", res)
-	}
-	return nil
 }
 
 func (c *Client) searchWithOpts(opts []func(*esapi.SearchRequest), responseBody any) error {

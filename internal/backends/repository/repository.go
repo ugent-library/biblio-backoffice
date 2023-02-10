@@ -594,6 +594,32 @@ func (s *Repository) SelectDatasets(sql string, values []any, fn func(*models.Da
 	return c.Err()
 }
 
+func (s *Repository) DatasetsBetween(t1, t2 time.Time, fn func(*models.Dataset) bool) error {
+	c, err := s.datasetStore.Select(
+		"SELECT * FROM datasets WHERE date_until IS NULL AND date_from >= $1 AND date_from <= $2",
+		[]any{t1, t2},
+		s.opts,
+	)
+	if err != nil {
+		return err
+	}
+	defer c.Close()
+	for c.HasNext() {
+		snap, err := c.Next()
+		if err != nil {
+			return err
+		}
+		p, err := snapshotToDataset(snap)
+		if err != nil {
+			return err
+		}
+		if ok := fn(p); !ok {
+			break
+		}
+	}
+	return c.Err()
+}
+
 func (s *Repository) EachDataset(fn func(*models.Dataset) bool) error {
 	c, err := s.datasetStore.GetAll(s.opts)
 	if err != nil {

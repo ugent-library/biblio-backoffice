@@ -266,14 +266,9 @@ func (s *server) PurgeAllDatasets(ctx context.Context, req *api.PurgeAllDatasets
 	if err := s.services.Repository.PurgeAllDatasets(); err != nil {
 		return nil, status.Errorf(codes.Internal, "could not purge all datasets: %w", err)
 	}
-	// TODO use delete by query instead of recreating?
-	if err := s.services.DatasetSearchService.DeleteIndex(); err != nil {
+	if err := s.services.DatasetSearchService.DeleteAll(); err != nil {
 		return nil, status.Errorf(codes.Internal, "could not delete dataset index: %w", err)
 	}
-	if err := s.services.DatasetSearchService.CreateIndex(); err != nil {
-		return nil, status.Errorf(codes.Internal, "could not create dataset index: %w", err)
-	}
-
 	return &api.PurgeAllDatasetsResponse{}, nil
 }
 
