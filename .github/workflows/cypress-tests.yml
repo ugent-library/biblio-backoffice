@@ -25,3 +25,9 @@ jobs:
           CYPRESS_LIBRARIAN_USER_NAME: ${{ secrets.CYPRESS_LIBRARIAN_USER_NAME }}
           CYPRESS_LIBRARIAN_USER_PASSWORD: ${{ secrets.CYPRESS_LIBRARIAN_USER_PASSWORD }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Archive npm failure logs
+        uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: npm-logs
+          path: ~/.npm/_logs
