@@ -274,7 +274,9 @@
                         "tree": {
                             "properties": {
                                 "id": {
-                                    "type": "keyword"                                }
+                                  "type": "keyword",
+                                  "copy_to": "all"
+                                }
                             }
                         }
                     }
