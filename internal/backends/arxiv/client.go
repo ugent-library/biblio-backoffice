@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backoffice/internal/models"
 )
 
 var reNormalizeID = regexp.MustCompile(`(?i)^arxiv:`)

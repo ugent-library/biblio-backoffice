@@ -1,10 +1,10 @@
 package localize
 
 import (
-	"github.com/ugent-library/biblio-backend/internal/locale"
-	"github.com/ugent-library/biblio-backend/internal/render/form"
-	"github.com/ugent-library/biblio-backend/internal/validation"
-	"github.com/ugent-library/biblio-backend/internal/vocabularies"
+	"github.com/ugent-library/biblio-backoffice/internal/locale"
+	"github.com/ugent-library/biblio-backoffice/internal/render/form"
+	"github.com/ugent-library/biblio-backoffice/internal/validation"
+	"github.com/ugent-library/biblio-backoffice/internal/vocabularies"
 )
 
 func ValidationErrors(loc *locale.Locale, errs validation.Errors) []string {

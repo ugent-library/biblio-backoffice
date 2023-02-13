@@ -7,18 +7,18 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/ugent-library/biblio-backend/internal/app/displays"
-	"github.com/ugent-library/biblio-backend/internal/app/handlers"
-	"github.com/ugent-library/biblio-backend/internal/app/localize"
-	"github.com/ugent-library/biblio-backend/internal/bind"
-	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/biblio-backend/internal/render"
-	"github.com/ugent-library/biblio-backend/internal/render/display"
-	"github.com/ugent-library/biblio-backend/internal/render/flash"
-	"github.com/ugent-library/biblio-backend/internal/render/form"
-	"github.com/ugent-library/biblio-backend/internal/snapstore"
-	"github.com/ugent-library/biblio-backend/internal/ulid"
-	"github.com/ugent-library/biblio-backend/internal/validation"
+	"github.com/oklog/ulid/v2"
+	"github.com/ugent-library/biblio-backoffice/internal/app/displays"
+	"github.com/ugent-library/biblio-backoffice/internal/app/handlers"
+	"github.com/ugent-library/biblio-backoffice/internal/app/localize"
+	"github.com/ugent-library/biblio-backoffice/internal/bind"
+	"github.com/ugent-library/biblio-backoffice/internal/models"
+	"github.com/ugent-library/biblio-backoffice/internal/render"
+	"github.com/ugent-library/biblio-backoffice/internal/render/display"
+	"github.com/ugent-library/biblio-backoffice/internal/render/flash"
+	"github.com/ugent-library/biblio-backoffice/internal/render/form"
+	"github.com/ugent-library/biblio-backoffice/internal/snapstore"
+	"github.com/ugent-library/biblio-backoffice/internal/validation"
 )
 
 type BindImport struct {
@@ -123,7 +123,7 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 		return
 	}
 
-	d.ID = ulid.MustGenerate()
+	d.ID = ulid.Make().String()
 	d.Creator = &models.DatasetUser{ID: ctx.User.ID, Name: ctx.User.FullName}
 	d.User = &models.DatasetUser{ID: ctx.User.ID, Name: ctx.User.FullName}
 	d.Status = "private"
@@ -172,7 +172,7 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 		SubNavs:        []string{"description", "contributors", "publications"},
 		ActiveSubNav:   "description",
 		Dataset:        d,
-		DisplayDetails: displays.DatasetDetails(ctx.Locale, d),
+		DisplayDetails: displays.DatasetDetails(ctx.User, ctx.Locale, d),
 	})
 }
 
@@ -185,7 +185,7 @@ func (h *Handler) AddDescription(w http.ResponseWriter, r *http.Request, ctx Con
 		SubNavs:        []string{"description", "contributors", "publications"},
 		ActiveSubNav:   "description",
 		Dataset:        ctx.Dataset,
-		DisplayDetails: displays.DatasetDetails(ctx.Locale, ctx.Dataset),
+		DisplayDetails: displays.DatasetDetails(ctx.User, ctx.Locale, ctx.Dataset),
 	})
 }
 

@@ -1,19 +1,20 @@
 package datasetediting
 
 import (
+	"encoding/json"
 	"errors"
 	"net/http"
 
-	"github.com/ugent-library/biblio-backend/internal/app/displays"
-	"github.com/ugent-library/biblio-backend/internal/app/localize"
-	"github.com/ugent-library/biblio-backend/internal/bind"
-	"github.com/ugent-library/biblio-backend/internal/locale"
-	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/biblio-backend/internal/render"
-	"github.com/ugent-library/biblio-backend/internal/render/display"
-	"github.com/ugent-library/biblio-backend/internal/render/form"
-	"github.com/ugent-library/biblio-backend/internal/snapstore"
-	"github.com/ugent-library/biblio-backend/internal/validation"
+	"github.com/ugent-library/biblio-backoffice/internal/app/displays"
+	"github.com/ugent-library/biblio-backoffice/internal/app/localize"
+	"github.com/ugent-library/biblio-backoffice/internal/bind"
+	"github.com/ugent-library/biblio-backoffice/internal/locale"
+	"github.com/ugent-library/biblio-backoffice/internal/models"
+	"github.com/ugent-library/biblio-backoffice/internal/render"
+	"github.com/ugent-library/biblio-backoffice/internal/render/display"
+	"github.com/ugent-library/biblio-backoffice/internal/render/form"
+	"github.com/ugent-library/biblio-backoffice/internal/snapstore"
+	"github.com/ugent-library/biblio-backoffice/internal/validation"
 )
 
 type BindDetails struct {
@@ -136,11 +137,17 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 
 	render.View(w, "dataset/refresh_details", YieldDetails{
 		Context:        ctx,
-		DisplayDetails: displays.DatasetDetails(ctx.Locale, ctx.Dataset),
+		DisplayDetails: displays.DatasetDetails(ctx.User, ctx.Locale, ctx.Dataset),
 	})
 }
 
 func detailsForm(l *locale.Locale, d *models.Dataset, errors validation.Errors) *form.Form {
+	if d.Keyword == nil {
+		d.Keyword = []string{}
+	}
+	keywordBytes, _ := json.Marshal(d.Keyword)
+	keywordStr := string(keywordBytes)
+
 	f := form.New().
 		WithTheme("default").
 		WithErrors(localize.ValidationErrors(l, errors)).
@@ -198,12 +205,13 @@ func detailsForm(l *locale.Locale, d *models.Dataset, errors validation.Errors) 
 				AutocompleteURL: "suggest_media_types",
 				Tooltip:         l.T("tooltip.dataset.format"),
 			},
-			&form.TextRepeat{
-				Name:   "keyword",
-				Values: d.Keyword,
-				Label:  l.T("builder.keyword"),
-				Cols:   9,
-				Error:  localize.ValidationErrorAt(l, errors, "/keyword"),
+			&form.Text{
+				Name:     "keyword",
+				Template: "tags",
+				Value:    keywordStr,
+				Label:    l.T("builder.keyword"),
+				Cols:     9,
+				Error:    localize.ValidationErrorAt(l, errors, "/keyword"),
 			},
 		)
 

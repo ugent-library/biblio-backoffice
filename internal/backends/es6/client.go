@@ -2,21 +2,20 @@ package es6
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
-	"fmt"
 	"io"
-	"strings"
 
 	"github.com/elastic/go-elasticsearch/v6"
 	"github.com/elastic/go-elasticsearch/v6/esapi"
 	"github.com/pkg/errors"
-	// "github.com/elastic/go-elasticsearch/v6/esutil"
 )
 
 type Config struct {
-	ClientConfig elasticsearch.Config
-	Index        string
-	Settings     string
+	ClientConfig   elasticsearch.Config
+	Index          string
+	Settings       string
+	IndexRetention int // -1: keep all old indexes, >=0: keep x old indexes
 }
 
 type Client struct {
@@ -32,29 +31,6 @@ func New(c Config) (*Client, error) {
 		return nil, err
 	}
 	return &Client{Config: c, es: client}, nil
-}
-
-func (c *Client) CreateIndex() error {
-	r := strings.NewReader(c.Settings)
-	res, err := c.es.Indices.Create(c.Index, c.es.Indices.Create.WithBody(r))
-	if err != nil {
-		return err
-	}
-	if res.IsError() {
-		return fmt.Errorf("error: %s", res)
-	}
-	return nil
-}
-
-func (c *Client) DeleteIndex() error {
-	res, err := c.es.Indices.Delete([]string{c.Index})
-	if err != nil {
-		return err
-	}
-	if res.IsError() {
-		return fmt.Errorf("error: %s", res)
-	}
-	return nil
 }
 
 func (c *Client) searchWithOpts(opts []func(*esapi.SearchRequest), responseBody any) error {
@@ -80,4 +56,29 @@ func (c *Client) searchWithOpts(opts []func(*esapi.SearchRequest), responseBody 
 	}
 
 	return nil
+}
+
+func (c *Client) SearchWithBody(index string, requestBody M, responseBody any) error {
+
+	sorts := make([]string, 0)
+
+	if v, exists := requestBody["sort"]; exists {
+		sorts = append(sorts, v.([]string)...)
+		delete(requestBody, "sort")
+	}
+
+	opts := []func(*esapi.SearchRequest){
+		c.es.Search.WithContext(context.Background()),
+		c.es.Search.WithIndex(index),
+		c.es.Search.WithTrackTotalHits(true),
+		c.es.Search.WithSort(sorts...),
+	}
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(requestBody); err != nil {
+		return err
+	}
+	opts = append(opts, c.es.Search.WithBody(&buf))
+
+	return c.searchWithOpts(opts, responseBody)
 }

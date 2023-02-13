@@ -5,12 +5,12 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"sync"
 
-	api "github.com/ugent-library/biblio-backend/api/v1"
-	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/biblio-backend/internal/ulid"
-	"github.com/ugent-library/biblio-backend/internal/validation"
+	"github.com/oklog/ulid/v2"
+	api "github.com/ugent-library/biblio-backoffice/api/v1"
+	"github.com/ugent-library/biblio-backoffice/internal/backends"
+	"github.com/ugent-library/biblio-backoffice/internal/models"
+	"github.com/ugent-library/biblio-backoffice/internal/validation"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -99,26 +99,25 @@ func (s *server) UpdatePublication(ctx context.Context, req *api.UpdatePublicati
 	return &api.UpdatePublicationResponse{}, nil
 }
 
-// TODO catch indexing errors
 func (s *server) AddPublications(stream api.Biblio_AddPublicationsServer) error {
-	// indexing channel
-	indexC := make(chan *models.Publication)
+	ctx := context.Background()
 
-	var indexWG sync.WaitGroup
-
-	// start bulk indexer
-	indexWG.Add(1)
-	go func() {
-		defer indexWG.Done()
-		s.services.PublicationSearchService.IndexMultiple(indexC)
-	}()
-
-	defer func() {
-		// close indexing channel when all recs are stored
-		close(indexC)
-		// wait for indexing to finish
-		indexWG.Wait()
-	}()
+	bi, err := s.services.PublicationSearchService.NewBulkIndexer(backends.BulkIndexerConfig{
+		OnError: func(err error) {
+			msg := fmt.Errorf("failed to index: %w", err).Error()
+			// TODO catch error
+			stream.Send(&api.AddPublicationsResponse{Message: msg})
+		},
+		OnIndexError: func(id string, err error) {
+			msg := fmt.Errorf("failed to index publication %s: %w", id, err).Error()
+			// TODO catch error
+			stream.Send(&api.AddPublicationsResponse{Message: msg})
+		},
+	})
+	if err != nil {
+		return err
+	}
+	defer bi.Close(ctx)
 
 	var seq int
 
@@ -136,7 +135,7 @@ func (s *server) AddPublications(stream api.Biblio_AddPublicationsServer) error 
 		p := MessageToPublication(req.Publication)
 
 		if p.ID == "" {
-			p.ID = ulid.MustGenerate()
+			p.ID = ulid.Make().String()
 		}
 		if p.Status == "" {
 			p.Status = "private"
@@ -146,19 +145,19 @@ func (s *server) AddPublications(stream api.Biblio_AddPublicationsServer) error 
 		}
 		for i, val := range p.Abstract {
 			if val.ID == "" {
-				val.ID = ulid.MustGenerate()
+				val.ID = ulid.Make().String()
 			}
 			p.Abstract[i] = val
 		}
 		for i, val := range p.LaySummary {
 			if val.ID == "" {
-				val.ID = ulid.MustGenerate()
+				val.ID = ulid.Make().String()
 			}
 			p.LaySummary[i] = val
 		}
 		for i, val := range p.Link {
 			if val.ID == "" {
-				val.ID = ulid.MustGenerate()
+				val.ID = ulid.Make().String()
 			}
 			p.Link[i] = val
 		}
@@ -174,35 +173,40 @@ func (s *server) AddPublications(stream api.Biblio_AddPublicationsServer) error 
 		if err := s.services.Repository.SavePublication(p, nil); err != nil {
 			msg := fmt.Errorf("failed to store publication %s at line %d: %w", p.ID, seq, err).Error()
 			if err = stream.Send(&api.AddPublicationsResponse{Message: msg}); err != nil {
-				return status.Errorf(codes.Internal, msg)
+				return err
 			}
 			continue
 		}
 
-		indexC <- p
+		if err := bi.Index(ctx, p); err != nil {
+			msg := fmt.Errorf("failed to index publication %s at line %d: %w", p.ID, seq, err).Error()
+			if err = stream.Send(&api.AddPublicationsResponse{Message: msg}); err != nil {
+				return err
+			}
+			continue
+		}
 	}
 }
 
-// TODO catch indexing errors
 func (s *server) ImportPublications(stream api.Biblio_ImportPublicationsServer) error {
-	// indexing channel
-	indexC := make(chan *models.Publication)
+	ctx := context.Background()
 
-	var indexWG sync.WaitGroup
-
-	// start bulk indexer
-	indexWG.Add(1)
-	go func() {
-		defer indexWG.Done()
-		s.services.PublicationSearchService.IndexMultiple(indexC)
-	}()
-
-	defer func() {
-		// close indexing channel when all recs are stored
-		close(indexC)
-		// wait for indexing to finish
-		indexWG.Wait()
-	}()
+	bi, err := s.services.PublicationSearchService.NewBulkIndexer(backends.BulkIndexerConfig{
+		OnError: func(err error) {
+			msg := fmt.Errorf("failed to index: %w", err).Error()
+			// TODO catch error
+			stream.Send(&api.ImportPublicationsResponse{Message: msg})
+		},
+		OnIndexError: func(id string, err error) {
+			msg := fmt.Errorf("failed to index publication %s: %w", id, err).Error()
+			// TODO catch error
+			stream.Send(&api.ImportPublicationsResponse{Message: msg})
+		},
+	})
+	if err != nil {
+		return err
+	}
+	defer bi.Close(ctx)
 
 	var seq int
 
@@ -230,12 +234,18 @@ func (s *server) ImportPublications(stream api.Biblio_ImportPublicationsServer) 
 		if err := s.services.Repository.ImportCurrentPublication(p); err != nil {
 			msg := fmt.Errorf("failed to store publication %s at line %d: %w", p.ID, seq, err).Error()
 			if err = stream.Send(&api.ImportPublicationsResponse{Message: msg}); err != nil {
-				return status.Errorf(codes.Internal, msg)
+				return err
 			}
 			continue
 		}
 
-		indexC <- p
+		if err := bi.Index(ctx, p); err != nil {
+			msg := fmt.Errorf("failed to index publication %s at line %d: %w", p.ID, seq, err).Error()
+			if err = stream.Send(&api.ImportPublicationsResponse{Message: msg}); err != nil {
+				return err
+			}
+			continue
+		}
 	}
 }
 
@@ -270,12 +280,8 @@ func (s *server) PurgeAllPublications(ctx context.Context, req *api.PurgeAllPubl
 	if err := s.services.Repository.PurgeAllPublications(); err != nil {
 		return nil, status.Errorf(codes.Internal, "could not purge all publications: %w", err)
 	}
-	// TODO use delete by query instead of recreating?
-	if err := s.services.PublicationSearchService.DeleteIndex(); err != nil {
+	if err := s.services.PublicationSearchService.DeleteAll(); err != nil {
 		return nil, status.Errorf(codes.Internal, "could not delete publication index: %w", err)
-	}
-	if err := s.services.PublicationSearchService.CreateIndex(); err != nil {
-		return nil, status.Errorf(codes.Internal, "could not create publication index: %w", err)
 	}
 
 	return &api.PurgeAllPublicationsResponse{}, nil
@@ -474,6 +480,10 @@ func PublicationToMessage(p *models.Publication) *api.Publication {
 
 	if p.User != nil {
 		msg.User = &api.RelatedUser{Id: p.User.ID, Name: p.User.Name}
+	}
+
+	if p.LastUser != nil {
+		msg.LastUser = &api.RelatedUser{Id: p.LastUser.ID, Name: p.LastUser.Name}
 	}
 
 	msg.Doi = p.DOI
@@ -1007,6 +1017,10 @@ func MessageToPublication(msg *api.Publication) *models.Publication {
 
 	if msg.User != nil {
 		p.User = &models.PublicationUser{ID: msg.User.Id, Name: msg.User.Name}
+	}
+
+	if msg.LastUser != nil {
+		p.LastUser = &models.PublicationUser{ID: msg.LastUser.Id, Name: msg.LastUser.Name}
 	}
 
 	p.DOI = msg.Doi

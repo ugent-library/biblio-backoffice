@@ -1,29 +1,29 @@
 package displays
 
 import (
-	"github.com/ugent-library/biblio-backend/internal/locale"
-	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/biblio-backend/internal/render/display"
+	"github.com/ugent-library/biblio-backoffice/internal/locale"
+	"github.com/ugent-library/biblio-backoffice/internal/models"
+	"github.com/ugent-library/biblio-backoffice/internal/render/display"
 )
 
-func PublicationDetails(l *locale.Locale, p *models.Publication) *display.Display {
+func PublicationDetails(user *models.User, l *locale.Locale, p *models.Publication) *display.Display {
 	switch p.Type {
 	case "book_chapter":
-		return bookChapterDetails(l, p)
+		return bookChapterDetails(user, l, p)
 	case "book_editor":
-		return bookEditorDetails(l, p)
+		return bookEditorDetails(user, l, p)
 	case "book":
-		return bookDetails(l, p)
+		return bookDetails(user, l, p)
 	case "conference":
-		return conferenceDetails(l, p)
+		return conferenceDetails(user, l, p)
 	case "dissertation":
-		return dissertationDetails(l, p)
+		return dissertationDetails(user, l, p)
 	case "issue_editor":
-		return issueEditorDetails(l, p)
+		return issueEditorDetails(user, l, p)
 	case "journal_article":
-		return journalArticleDetails(l, p)
+		return journalArticleDetails(user, l, p)
 	case "miscellaneous":
-		return miscellaneousDetails(l, p)
+		return miscellaneousDetails(user, l, p)
 	default:
 		return display.New()
 	}

@@ -3,11 +3,11 @@ package datasetviewing
 import (
 	"net/http"
 
-	"github.com/ugent-library/biblio-backend/internal/app/displays"
-	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/biblio-backend/internal/render"
-	"github.com/ugent-library/biblio-backend/internal/render/display"
-	"github.com/ugent-library/biblio-backend/internal/validation"
+	"github.com/ugent-library/biblio-backoffice/internal/app/displays"
+	"github.com/ugent-library/biblio-backoffice/internal/models"
+	"github.com/ugent-library/biblio-backoffice/internal/render"
+	"github.com/ugent-library/biblio-backoffice/internal/render/display"
+	"github.com/ugent-library/biblio-backoffice/internal/validation"
 )
 
 var (
@@ -68,7 +68,7 @@ func (h *Handler) ShowDescription(w http.ResponseWriter, r *http.Request, ctx Co
 		Context:        ctx,
 		SubNavs:        subNavs,
 		ActiveSubNav:   "description",
-		DisplayDetails: displays.DatasetDetails(ctx.Locale, ctx.Dataset),
+		DisplayDetails: displays.DatasetDetails(ctx.User, ctx.Locale, ctx.Dataset),
 	})
 }
 

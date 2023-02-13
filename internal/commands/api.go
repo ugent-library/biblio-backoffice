@@ -7,7 +7,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/ugent-library/biblio-backend/internal/server"
+	"github.com/ugent-library/biblio-backoffice/internal/server"
 )
 
 func init() {
