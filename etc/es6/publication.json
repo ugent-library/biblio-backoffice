@@ -635,6 +635,9 @@
                     "type": "text",
                     "analyzer": "keyword_lowercase"
                 },
+                "facet_wos_type": {
+                    "type": "keyword"
+                },
                 "wos_type": {
                     "type": "keyword"
                 },
