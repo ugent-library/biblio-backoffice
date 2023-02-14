@@ -15,8 +15,8 @@ import (
 
 type PublicationHits struct {
 	pagination.Pagination
-	Hits   []*Publication     `json:"hits"`
-	Facets map[string][]Facet `json:"facets"`
+	Hits   []*Publication         `json:"hits"`
+	Facets map[string]FacetValues `json:"facets"`
 }
 
 type PublicationUser struct {
