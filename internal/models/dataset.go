@@ -12,8 +12,8 @@ import (
 
 type DatasetHits struct {
 	pagination.Pagination
-	Hits   []*Dataset         `json:"hits"`
-	Facets map[string][]Facet `json:"facets"`
+	Hits   []*Dataset             `json:"hits"`
+	Facets map[string]FacetValues `json:"facets"`
 }
 
 type DatasetUser struct {

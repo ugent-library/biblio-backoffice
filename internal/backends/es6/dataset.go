@@ -297,7 +297,7 @@ func decodeDatasetRes(r *datasetResEnvelope, facets []string) (*models.DatasetHi
 	hits := models.DatasetHits{}
 	hits.Total = r.Hits.Total
 
-	hits.Facets = make(map[string][]models.Facet)
+	hits.Facets = make(map[string]models.FacetValues)
 
 	//preallocate to ensure non zero slices
 	for _, facet := range facets {

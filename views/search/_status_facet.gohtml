@@ -1,6 +1,8 @@
 <div class="dropdown">
-    <a class="badge badge-default mr-3" data-toggle="dropdown" data-persist="true" aria-haspopup="true"
-        aria-expanded="false" role="button">
+    <a class="badge badge-{{if .SearchArgs.HasFilter "status"}}primary{{else if .Hits.Facets.status.HasMatches}}default{{else}}secondary{{end}} mr-3"
+        data-toggle="dropdown" data-persist="true" aria-haspopup="true"
+        aria-expanded="false" role="button"
+    >
         <span class="badge-text">Biblio status</span>
         <div class="c-counter c-counter--small">{{len (.SearchArgs.FiltersFor "status")}}</div>
         <i class="if if-caret-down"></i>
