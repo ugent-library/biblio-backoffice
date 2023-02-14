@@ -9,12 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- File upload progress
+- #983: File upload progress
 - Show error dialog if upload is too large
 - Make maximum file size configurable
-- Reindex command
-- Better WOS Type facet
-- Search on organization ID
+- #930: Reindex command
+- #955: Better WOS Type facet
+- #1015: Search on organization ID
+- #956: Show status of facet filter in it's badge
 
 ### Fixed
 
