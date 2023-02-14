@@ -4,7 +4,6 @@
         aria-expanded="false" role="button"
     >
         <span class="badge-text">WOS Type</span>
-        <div class="c-counter c-counter--small">{{len (.SearchArgs.FiltersFor "wos_type")}}</div>
         <i class="if if-caret-down"></i>
     </a>
     <form class="dropdown-menu" method="GET" action="{{.CurrentURL|queryClear}}">

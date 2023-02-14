@@ -4,7 +4,6 @@
         aria-expanded="false" role="button"
     >
         <span class="badge-text">Completeness</span>
-        <div class="c-counter c-counter--small">{{len (.SearchArgs.FiltersFor "completeness_score")}}</div>
         <i class="if if-caret-down"></i>
     </a>
     <form class="dropdown-menu" method="GET" action="{{.CurrentURL|queryClear}}">
