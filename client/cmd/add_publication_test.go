@@ -151,7 +151,7 @@ func (s *AddPublicationSuite) TestAddMinimalValidRecord() {
 }
 
 // Test adding multiple records at once
-func (s *AddPublicationSuite) TestAddingMultiplePublcations() {
+func (s *AddPublicationSuite) TestAddingMultiplePublications() {
 	t := s.T()
 
 	json := `{
@@ -218,7 +218,7 @@ func (s *AddPublicationSuite) TestAddingMultiplePublcations() {
 }
 
 // Test if all fields return properly
-func (s *AddPublicationSuite) estAddAndGetCompletePublications() {
+func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 	t := s.T()
 
 	// Book chapter
