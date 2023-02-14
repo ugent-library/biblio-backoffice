@@ -142,7 +142,7 @@ func (s *server) AddPublications(stream api.Biblio_AddPublicationsServer) error 
 		},
 	})
 	if err != nil {
-		return err
+		return status.Errorf(codes.Internal, "failed to start an indexer: %s", err)
 	}
 	defer bi.Close(ctx)
 
@@ -194,10 +194,18 @@ func (s *server) AddPublications(stream api.Biblio_AddPublicationsServer) error 
 
 		// TODO this should return structured messages (see validate)
 		if err := p.Validate(); err != nil {
-			return status.Errorf(codes.InvalidArgument, "failed to validate publication %s at line %d: %s", p.ID, seq, err)
+			msg := fmt.Errorf("failed to validate publication %s at line %d: %s", p.ID, seq, err).Error()
+			if err = stream.Send(&api.AddPublicationsResponse{Message: msg}); err != nil {
+				return err
+			}
+			continue
 		}
 		if err := s.services.Repository.SavePublication(p, nil); err != nil {
-			return status.Errorf(codes.FailedPrecondition, "failed to store publication %s at line %d: %s", p.ID, seq, err)
+			msg := fmt.Errorf("failed to store publication %s at line %d: %s", p.ID, seq, err).Error()
+			if err = stream.Send(&api.AddPublicationsResponse{Message: msg}); err != nil {
+				return err
+			}
+			continue
 		}
 
 		if err := bi.Index(ctx, p); err != nil {
@@ -206,6 +214,11 @@ func (s *server) AddPublications(stream api.Biblio_AddPublicationsServer) error 
 				return err
 			}
 			continue
+		}
+
+		msg := fmt.Sprintf("stored and indexed publication %s at line %d", p.ID, seq)
+		if err = stream.Send(&api.AddPublicationsResponse{Message: msg}); err != nil {
+			return err
 		}
 	}
 }

@@ -68,7 +68,7 @@ func (s *AddPublicationSuite) TestAddNonJSONLInput() {
 		t.Fatal(err)
 	}
 
-	assert.Equal(t, "Error: could not read json: invalid character 'i' looking for beginning of value\n", string(addCmdOut))
+	assert.Equal(t, "Error: could not read json input: invalid character 'i' looking for beginning of value\n", string(addCmdOut))
 }
 
 // Test empty JSONL object
@@ -91,7 +91,7 @@ func (s *AddPublicationSuite) TestAddEmptyJSONLInput() {
 		t.Fatal(err)
 	}
 
-	assert.Regexp(t, `Error: validation failed for publication .* at line .: publication.type.required\[\/type\]`, string(addCmdOut))
+	assert.Regexp(t, `failed to validate publication .* at line .: publication.type.required\[\/type\]`, string(addCmdOut))
 }
 
 // Create new minimal valid record
@@ -146,9 +146,7 @@ func (s *AddPublicationSuite) TestAddMinimalValidRecord() {
 		t.Fatal(err)
 	}
 
-	t.Log(string(addCmdOut))
-
-	// @todo Add test
+	assert.Regexp(t, `stored and indexed publication .* at line .*`, string(addCmdOut))
 }
 
 // Update existing valid record
