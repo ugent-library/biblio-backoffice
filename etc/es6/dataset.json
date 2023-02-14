@@ -261,13 +261,13 @@
                 "department": {
                     "properties": {
                         "id": {
-                            "type": "keyword"
+                          "type": "keyword"
                         },
                         "tree": {
                             "properties": {
                                 "id": {
                                     "type": "keyword",
-                                    "copy_to": ["faculty"]
+                                    "copy_to": ["faculty", "all"]
                                 }
                             }
                         }

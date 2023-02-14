@@ -1,6 +1,7 @@
 package datasetediting
 
 import (
+	"encoding/json"
 	"errors"
 	"net/http"
 
@@ -141,6 +142,12 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 }
 
 func detailsForm(l *locale.Locale, d *models.Dataset, errors validation.Errors) *form.Form {
+	if d.Keyword == nil {
+		d.Keyword = []string{}
+	}
+	keywordBytes, _ := json.Marshal(d.Keyword)
+	keywordStr := string(keywordBytes)
+
 	f := form.New().
 		WithTheme("default").
 		WithErrors(localize.ValidationErrors(l, errors)).
@@ -198,12 +205,13 @@ func detailsForm(l *locale.Locale, d *models.Dataset, errors validation.Errors) 
 				AutocompleteURL: "suggest_media_types",
 				Tooltip:         l.T("tooltip.dataset.format"),
 			},
-			&form.TextRepeat{
-				Name:   "keyword",
-				Values: d.Keyword,
-				Label:  l.T("builder.keyword"),
-				Cols:   9,
-				Error:  localize.ValidationErrorAt(l, errors, "/keyword"),
+			&form.Text{
+				Name:     "keyword",
+				Template: "tags",
+				Value:    keywordStr,
+				Label:    l.T("builder.keyword"),
+				Cols:     9,
+				Error:    localize.ValidationErrorAt(l, errors, "/keyword"),
 			},
 		)
 

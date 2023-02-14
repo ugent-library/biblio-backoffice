@@ -181,8 +181,9 @@ func newEs6Client(t string) *es6.Client {
 		ClientConfig: elasticsearch.Config{
 			Addresses: strings.Split(viper.GetString("es6-url"), ","),
 		},
-		Index:    viper.GetString(t + "-index"),
-		Settings: string(settings),
+		Index:          viper.GetString(t + "-index"),
+		Settings:       string(settings),
+		IndexRetention: viper.GetInt("index-retention"),
 	})
 	if err != nil {
 		log.Fatal(err)

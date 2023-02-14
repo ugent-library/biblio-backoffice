@@ -24,11 +24,11 @@
   padding-left: .4rem;
 }
 
-.btn:not(.btn-icon-only):not(.btn-link-p-0) .if:first-child {
+.btn:not(.btn-icon-only):not(.btn-link-p-0):not(.btn-sm) .if:first-child {
   margin-left: -.8rem;
 }
 
-.btn:not(.btn-icon-only):not(.btn-link-p-0) .if:last-child {
+.btn:not(.btn-icon-only):not(.btn-link-p-0):not(.btn-sm) .if:last-child {
   margin-right: -.8rem;
 }
 
@@ -142,14 +142,26 @@
   min-height: 3.6rem;
 }
 
+// Small buttons
+
 .btn-sm {
   height: 2.8rem;
   font-size: 1.3rem;
   line-height: 2.8rem;
   .if {
     font-size: 1.6rem;
+    top: 0;
   }
 }
+
+.btn-sm.btn-icon-only {
+  width: 2.8rem;
+  height: 2.8rem;
+  min-width: 2.8rem;
+  min-height: 2.8rem;
+}
+
+// Thumbnail buttons
 
 .btn-thumbnail {
   border-radius: 50%;
@@ -177,6 +189,8 @@
     top: 0;
   }
 }
+
+// File button
 
 .btn-file {
   position: relative;

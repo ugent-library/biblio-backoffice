@@ -15,6 +15,7 @@ const (
 	defaultEs6URL               = "http://localhost:9200"
 	defaultDatasetIndex         = "biblio_backoffice_datasets"
 	defaultPublicationIndex     = "biblio_backoffice_publications"
+	defaultIndexRetention       = 2
 	defaultAPIHost              = ""
 	defaultAPIPort              = 30000
 	defaultAPIAdminUsername     = "admin"
@@ -30,6 +31,7 @@ const (
 	defaultHandleServerPrefix   = "1854"
 	defaultHandleServerUsername = "handle"
 	defaultHandleServerPassword = "handle"
+	defaultMaxFileSize          = 2_000_000_000
 )
 
 // TODO we shouldn't do this for all flags, only ones that have a config equivalent
@@ -56,6 +58,7 @@ func init() {
 	viper.SetDefault("frontend-es6-url", defaultEs6URL)
 	viper.SetDefault("dataset-index", defaultDatasetIndex)
 	viper.SetDefault("publication-index", defaultPublicationIndex)
+	viper.SetDefault("index-retention", defaultIndexRetention)
 	// viper.SetDefault("api-host", defaultAPIHost)
 	// viper.SetDefault("api-port", defaultAPIPort)
 	viper.SetDefault("api-username", defaultAPIAdminUsername)
@@ -71,6 +74,7 @@ func init() {
 	viper.SetDefault("hdl-srv-prefix", defaultHandleServerPrefix)
 	viper.SetDefault("hdl-srv-username", defaultHandleServerUsername)
 	viper.SetDefault("hdl-srv-password", defaultHandleServerPassword)
+	viper.SetDefault("max-file-size", defaultMaxFileSize)
 
 	rootCmd.PersistentFlags().String("file-dir", "", "file store root directory")
 
@@ -82,6 +86,7 @@ func init() {
 	rootCmd.PersistentFlags().String("es6-url", defaultEs6URL, "elasticsearch 6.x url, separate multiple with comma")
 	rootCmd.PersistentFlags().String("dataset-index", defaultDatasetIndex, "dataset index name")
 	rootCmd.PersistentFlags().String("publication-index", defaultPublicationIndex, "publication index name")
+	rootCmd.PersistentFlags().Int("index-retention", defaultIndexRetention, "number of old indexes to retain after index switch")
 
 	rootCmd.PersistentFlags().String("frontend-es6-url", "", "frontend elasticsearch 6.x url, separate multiple with comma")
 
@@ -104,6 +109,8 @@ func init() {
 	rootCmd.PersistentFlags().String("hdl-srv-prefix", defaultHandleServerPrefix, "handle server base prefix")
 	rootCmd.PersistentFlags().String("hdl-srv-username", defaultHandleServerUsername, "handle server auth basic username")
 	rootCmd.PersistentFlags().String("hdl-srv-password", defaultHandleServerPassword, "handle server auth basic password")
+
+	rootCmd.PersistentFlags().Int("max-file-size", defaultMaxFileSize, "maximum file size")
 }
 
 func Execute() {

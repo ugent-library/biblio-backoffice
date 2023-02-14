@@ -39,6 +39,7 @@ type YieldShowFiles struct {
 	Context
 	SubNavs      []string
 	ActiveSubNav string
+	MaxFileSize  int
 }
 
 type YieldShowDatasets struct {
@@ -85,6 +86,7 @@ func (h *Handler) ShowFiles(w http.ResponseWriter, r *http.Request, ctx Context)
 		Context:      ctx,
 		SubNavs:      subNavs,
 		ActiveSubNav: "files",
+		MaxFileSize:  h.MaxFileSize,
 	})
 }
 

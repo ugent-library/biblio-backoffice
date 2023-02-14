@@ -116,6 +116,8 @@ require (
 	github.com/subosito/gotenv v1.4.0 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.0 // indirect
+	github.com/ugent-library/friendly v0.0.0-20230207160741-a7eb22dfe944
+	github.com/ugent-library/httphelpers v0.0.0-20230201143255-2cc0471c702e
 	github.com/ugent-library/middleware v0.0.0-20230124121524-d72a5ab6674f
 	github.com/ugent-library/mix v0.0.0-20230123085323-ee6f14c9d431
 	github.com/ugent-library/oidc v0.0.0-20230125115048-da4a06842a62

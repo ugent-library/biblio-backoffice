@@ -1,9 +1,11 @@
 package commands
 
 import (
+	"context"
 	"log"
 
 	"github.com/spf13/cobra"
+	"github.com/ugent-library/biblio-backoffice/internal/backends"
 )
 
 func init() {
@@ -19,28 +21,44 @@ var resetCmd = &cobra.Command{
 			return
 		}
 
-		store := newRepository()
-		if err := store.PurgeAllPublications(); err != nil {
+		ctx := context.Background()
+
+		services := Services()
+
+		if err := services.Repository.PurgeAllPublications(); err != nil {
 			log.Fatal(err)
 		}
-		if err := store.PurgeAllDatasets(); err != nil {
+		if err := services.Repository.PurgeAllDatasets(); err != nil {
 			log.Fatal(err)
 		}
 
-		if err := newPublicationSearchService().DeleteIndex(); err != nil {
+		publicationSwitcher, err := services.PublicationSearchService.NewIndexSwitcher(backends.BulkIndexerConfig{
+			OnError: func(err error) {
+			},
+			OnIndexError: func(id string, err error) {
+			},
+		})
+		if err != nil {
 			log.Fatal(err)
 		}
-		if err := newDatasetSearchService().DeleteIndex(); err != nil {
-			log.Fatal(err)
-		}
-		if err := newPublicationSearchService().CreateIndex(); err != nil {
-			log.Fatal(err)
-		}
-		if err := newDatasetSearchService().CreateIndex(); err != nil {
+		if err := publicationSwitcher.Switch(ctx); err != nil {
 			log.Fatal(err)
 		}
 
-		if err := newFileStore().PurgeAll(); err != nil {
+		datasetSwitcher, err := services.DatasetSearchService.NewIndexSwitcher(backends.BulkIndexerConfig{
+			OnError: func(err error) {
+			},
+			OnIndexError: func(id string, err error) {
+			},
+		})
+		if err != nil {
+			log.Fatal(err)
+		}
+		if err := datasetSwitcher.Switch(ctx); err != nil {
+			log.Fatal(err)
+		}
+
+		if err := services.FileStore.PurgeAll(); err != nil {
 			log.Fatal(err)
 		}
 	},

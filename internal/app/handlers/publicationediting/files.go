@@ -3,7 +3,6 @@ package publicationediting
 import (
 	"errors"
 	"fmt"
-	"io"
 	"net/http"
 	"time"
 
@@ -16,6 +15,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/internal/render/form"
 	"github.com/ugent-library/biblio-backoffice/internal/snapstore"
 	"github.com/ugent-library/biblio-backoffice/internal/validation"
+	"github.com/ugent-library/httphelpers"
 )
 
 type BindFile struct {
@@ -52,11 +52,19 @@ type YieldEditFile struct {
 
 type YieldShowFiles struct {
 	Context
+	MaxFileSize int
 }
 
 type YieldDeleteFile struct {
 	Context
 	File *models.PublicationFile
+}
+
+func (h *Handler) RefreshFiles(w http.ResponseWriter, r *http.Request, ctx Context) {
+	render.View(w, "publication/refresh_files", YieldShowFiles{
+		Context:     ctx,
+		MaxFileSize: h.MaxFileSize,
+	})
 }
 
 func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context) {
@@ -74,19 +82,7 @@ func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context
 	defer file.Close()
 
 	// detect content type
-	buff := make([]byte, 512)
-	_, err = file.Read(buff)
-	if err != nil {
-		h.Logger.Errorf("publication upload file: could not read file", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Locale.T("publication.file_upload_error"),
-		})
-		return
-	}
-	filetype := http.DetectContentType(buff)
-
-	// rewind
-	_, err = file.Seek(0, io.SeekStart)
+	filetype, err := httphelpers.DetectContentType(file)
 	if err != nil {
 		h.Logger.Errorf("publication upload file: could not read file", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
@@ -301,7 +297,8 @@ func (h *Handler) UpdateFile(w http.ResponseWriter, r *http.Request, ctx Context
 	}
 
 	render.View(w, "publication/refresh_files", YieldShowFiles{
-		Context: ctx,
+		Context:     ctx,
+		MaxFileSize: h.MaxFileSize,
 	})
 }
 
@@ -355,7 +352,8 @@ func (h *Handler) DeleteFile(w http.ResponseWriter, r *http.Request, ctx Context
 	}
 
 	render.View(w, "publication/refresh_files", YieldShowFiles{
-		Context: ctx,
+		Context:     ctx,
+		MaxFileSize: h.MaxFileSize,
 	})
 }
 

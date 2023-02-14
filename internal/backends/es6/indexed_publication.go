@@ -1,7 +1,10 @@
 package es6
 
 import (
-	"github.com/ugent-library/biblio-backoffice/internal/models"
+	"regexp"
+	"strings"
+  
+  "github.com/ugent-library/biblio-backoffice/internal/models"
 	internal_time "github.com/ugent-library/biblio-backoffice/internal/time"
 	"github.com/ugent-library/biblio-backoffice/internal/validation"
 	"github.com/ugent-library/biblio-backoffice/internal/vocabularies"
@@ -15,9 +18,12 @@ type indexedPublication struct {
 	DateUntil   string `json:"date_until,omitempty"`
 	DateUpdated string `json:"date_updated"`
 	// index only fields
-	HasMessage bool     `json:"has_message"`
-	Faculty    []string `json:"faculty,omitempty"`
+	HasMessage   bool     `json:"has_message"`
+	Faculty      []string `json:"faculty,omitempty"`
+	FacetWOSType []string `json:"facet_wos_type,omitempty"`
 }
+
+var reSplitWOS *regexp.Regexp = regexp.MustCompile("[,;]")
 
 func NewIndexedPublication(p *models.Publication) *indexedPublication {
 	ip := &indexedPublication{
@@ -53,6 +59,16 @@ func NewIndexedPublication(p *models.Publication) *indexedPublication {
 				}
 			}
 		}
+	}
+
+	if ip.WOSType != "" {
+
+		wos_types := reSplitWOS.Split(ip.WOSType, -1)
+		for _, wos_type := range wos_types {
+			wt := strings.TrimSpace(wos_type)
+			ip.FacetWOSType = append(ip.FacetWOSType, wt)
+		}
+
 	}
 
 	return ip
