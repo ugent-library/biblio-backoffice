@@ -162,7 +162,7 @@ func (s *server) AddPublications(stream api.Biblio_AddPublicationsServer) error 
 
 		p := &models.Publication{}
 		if err := json.Unmarshal(req.Publication.Payload, p); err != nil {
-			log.Fatal(err)
+			return status.Errorf(codes.InvalidArgument, "could not read json input: %s", err)
 		}
 
 		if p.ID == "" {
@@ -195,18 +195,10 @@ func (s *server) AddPublications(stream api.Biblio_AddPublicationsServer) error 
 
 		// TODO this should return structured messages (see validate)
 		if err := p.Validate(); err != nil {
-			msg := fmt.Errorf("validation failed for publication %s at line %d: %s", p.ID, seq, err).Error()
-			if err = stream.Send(&api.AddPublicationsResponse{Message: msg}); err != nil {
-				return err
-			}
-			continue
+			return status.Errorf(codes.InvalidArgument, "failed to validate publication %s at line %d: %s", p.ID, seq, err)
 		}
 		if err := s.services.Repository.SavePublication(p, nil); err != nil {
-			msg := fmt.Errorf("failed to store publication %s at line %d: %s", p.ID, seq, err).Error()
-			if err = stream.Send(&api.AddPublicationsResponse{Message: msg}); err != nil {
-				return status.Errorf(codes.Internal, msg)
-			}
-			continue
+			return status.Errorf(codes.FailedPrecondition, "failed to store publication %s at line %d: %s", p.ID, seq, err)
 		}
 
 		indexC <- p

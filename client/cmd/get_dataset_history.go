@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"errors"
 	"io"
 	"log"
 	"time"
@@ -28,8 +29,12 @@ func GetDatasetHistory(cmd *cobra.Command, args []string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
-	c, cnx := client.Create(ctx, config)
+	c, cnx, err := client.Create(ctx, config)
 	defer cnx.Close()
+
+	if errors.Is(err, context.DeadlineExceeded) {
+		log.Fatal("ContextDeadlineExceeded: true")
+	}
 
 	req := &api.GetDatasetHistoryRequest{Id: args[0]}
 	stream, err := c.GetDatasetHistory(context.Background(), req)

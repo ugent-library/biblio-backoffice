@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"errors"
 	"log"
 	"time"
 
@@ -27,8 +28,12 @@ func PurgePublication(cmd *cobra.Command, args []string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
-	c, cnx := client.Create(ctx, config)
+	c, cnx, err := client.Create(ctx, config)
 	defer cnx.Close()
+
+	if errors.Is(err, context.DeadlineExceeded) {
+		log.Fatal("ContextDeadlineExceeded: true")
+	}
 
 	id := args[0]
 	req := &api.PurgePublicationRequest{Id: id}

@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
-	"log"
 
 	"github.com/spf13/viper"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
@@ -14,7 +13,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-func Create(ctx context.Context, config Config) (api.BiblioClient, *grpc.ClientConn) {
+func Create(ctx context.Context, config Config) (api.BiblioClient, *grpc.ClientConn, error) {
 	// Set encryption
 	var dialOptionSecureConn grpc.DialOption
 	if viper.GetBool("insecure") {
@@ -23,7 +22,7 @@ func Create(ctx context.Context, config Config) (api.BiblioClient, *grpc.ClientC
 		dialOptionSecureConn = grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{}))
 	}
 
-	// Set up the connection and the API client
+	// Set up the connection and the API client with Basic Authentication
 	addr := fmt.Sprintf("%s:%d", config.Host, config.Port)
 	conn, err := grpc.DialContext(ctx, addr,
 		dialOptionSecureConn,
@@ -35,10 +34,10 @@ func Create(ctx context.Context, config Config) (api.BiblioClient, *grpc.ClientC
 	)
 
 	if err != nil {
-		log.Fatal(err)
+		return nil, nil, err
 	}
 
 	client := api.NewBiblioClient(conn)
 
-	return client, conn
+	return client, conn, nil
 }

@@ -3,6 +3,7 @@ package cmd
 import (
 	"bufio"
 	"context"
+	"errors"
 	"log"
 	"os"
 	"time"
@@ -29,8 +30,12 @@ func UpdatePublication(cmd *cobra.Command, args []string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
-	c, cnx := client.Create(ctx, config)
+	c, cnx, err := client.Create(ctx, config)
 	defer cnx.Close()
+
+	if errors.Is(err, context.DeadlineExceeded) {
+		log.Fatal("ContextDeadlineExceeded: true")
+	}
 
 	reader := bufio.NewReader(os.Stdin)
 	line, err := reader.ReadBytes('\n')
