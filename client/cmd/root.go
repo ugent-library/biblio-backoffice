@@ -14,7 +14,7 @@ import (
 var (
 	marshaller   = protojson.MarshalOptions{UseProtoNames: true}
 	unmarshaller = protojson.UnmarshalOptions{}
-	cfgFile      string
+	configFile   string
 	config       client.Config
 )
 
@@ -34,7 +34,7 @@ func init() {
 	// viper.SetDefault("api-tls-disabled", false)
 	// viper.SetDefault("api-ca-cert", "")
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.biblioclient.toml)")
+	rootCmd.PersistentFlags().StringVar(&configFile, "config", "", "config file (default is $HOME/.biblioclient.toml)")
 	rootCmd.PersistentFlags().String("host", defaultHost, "api server host")
 	rootCmd.PersistentFlags().Int("port", defaultPort, "api server port")
 	rootCmd.PersistentFlags().String("username", "ddd", "api server user username")
@@ -45,9 +45,9 @@ func init() {
 }
 
 func initConfig() {
-	if cfgFile != "" {
+	if configFile != "" {
 		// Use config file from the flag.)
-		viper.SetConfigFile(cfgFile)
+		viper.SetConfigFile(configFile)
 	} else {
 		// Find home directory.
 		home, err := homedir.Dir()
