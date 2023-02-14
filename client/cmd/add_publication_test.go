@@ -3,6 +3,7 @@ package cmd
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -149,7 +150,72 @@ func (s *AddPublicationSuite) TestAddMinimalValidRecord() {
 	assert.Regexp(t, `stored and indexed publication .* at line .*`, string(addCmdOut))
 }
 
-// Update existing valid record
+// Test adding multiple records at once
+func (s *AddPublicationSuite) TestAddingMultiplePublcations() {
+	t := s.T()
+
+	json := `{
+		"title": "title",
+		"type": "journal_article",
+		"status": "public",
+		"year": "2023",
+		"author": [
+			{
+				"credit_role": [
+					"first_author"
+				],
+				"first_name": "first name",
+				"full_name": "full name",
+				"id": "00000000-0000-0000-0000-000000000000",
+				"last_name": "last name",
+				"ugent_id": [
+					"000000000000"
+				],
+				"department": [
+				{
+					"id": "AA00",
+					"name": "department name"
+				}
+				]
+			}
+		]
+	}`
+
+	input := ""
+	for i := 1; i <= 5; i += 1 {
+		jsonl, errJSONL := toJSONL([]byte(json))
+		if errJSONL != nil {
+			t.Fatal(errJSONL)
+		}
+		input = input + jsonl
+	}
+
+	actual := bytes.NewBufferString("")
+	rootCmd.SetOut(actual)
+	rootCmd.SetErr(actual)
+
+	rootCmd.SetArgs([]string{"publication", "add"})
+
+	in := strings.NewReader(input)
+	rootCmd.SetIn(in)
+
+	rootCmd.Execute()
+
+	addCmdOut, err := ioutil.ReadAll(actual)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	lines := strings.Split(string(addCmdOut), "\n")
+
+	seq := 0
+	for _, line := range lines {
+		if line != "" {
+			seq++
+			assert.Regexp(t, fmt.Sprintf("stored and indexed publication .* at line %d", seq), line)
+		}
+	}
+}
 
 // Test if all fields return properly
 func (s *AddPublicationSuite) estAddAndGetCompletePublications() {
@@ -500,14 +566,14 @@ func (s *AddPublicationSuite) estAddAndGetCompletePublications() {
 
 // Specifics
 
-// Dissertation xx
-// JournalArticle xx
-// Miscellaneous xx
-// book xx
-// book_chapter xxx
-// conference xx
-// book_editor xxx
-// issue_editor x
+// Dissertation
+// JournalArticle
+// Miscellaneous
+// book
+// book_chapter
+// conference
+// book_editor
+// issue_editor
 
 func TestAddPublicationSuite(t *testing.T) {
 	suite.Run(t, new(AddPublicationSuite))
@@ -527,11 +593,6 @@ func addPublication(jsonl string) error {
 	if errAdd != nil {
 		return errAdd
 	}
-
-	// addCmdOut, err := ioutil.ReadAll(actual)
-	// if err != nil {
-	// 	t.Fatal(err)
-	// }
 
 	return nil
 }
