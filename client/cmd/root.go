@@ -70,8 +70,11 @@ func initConfig() {
 var rootCmd = &cobra.Command{
 	Use:   "biblio-client [command]",
 	Short: "biblio client",
-	// flags override env vars
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+		// Silence the usage text if an error occurs
+		cmd.SilenceUsage = true
+
+		// flags override env vars
 		cmd.Flags().VisitAll(func(f *pflag.Flag) {
 			if f.Changed {
 				viper.Set(f.Name, f.Value.String())
