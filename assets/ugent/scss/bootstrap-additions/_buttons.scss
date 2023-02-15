@@ -204,3 +204,72 @@
   }
 }
 
+// Button groups
+
+.btn-group {
+  .btn-outline-primary {
+    &:hover,
+    &:focus {
+      background-color: $light-blue;
+      color: $blue;
+    }
+  }
+
+  .btn-outline-secondary {
+    color: $text;
+    border-color: $border;
+
+    &:hover,
+    &:focus {
+      background-color: $gray-50;
+    }
+  }
+
+  .btn-outline-success {
+    &:hover,
+    &:focus {
+      background-color: $light-green;
+      color: $green;
+    }
+  }
+
+  .btn-outline-danger {
+    &:hover,
+    &:focus {
+      background-color: $light-warm-red;
+      color: $warm-red;
+    }
+  }
+
+  .btn-outline-warning {
+    &:hover,
+    &:focus {
+      background-color: $light-orange;
+      color: $orange;
+    }
+  }
+
+  .btn-outline-info {
+    &:hover,
+    &:focus {
+      background-color: rgba($aqua, .1);
+      color: $aqua;
+    }
+  }
+
+  .btn-outline-light {
+    &:hover,
+    &:focus {
+      background-color: rgba($white, .1);
+      color: $white;
+    }
+  }
+
+  .btn-outline-dark {
+    &:hover,
+    &:focus {
+      background-color: $gray-50;
+      color: $gray-1000;
+    }
+  }
+}

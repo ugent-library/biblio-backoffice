@@ -49,6 +49,23 @@
   transition: border-color .3s;
 }
 
+/* Sizes */
+
+.c-file-upload.c-file-upload--small {
+
+  .c-file-upload__content {
+    padding: 0.5rem 0 1.5rem 0;
+    min-height: 11rem;
+
+    p {
+      margin-bottom: 1rem;
+    }
+  }
+
+}
+
+/* States */
+
 .c-file-upload.c-file-upload--disabled {
   background-color: $gray-25;
   pointer-events: none;
@@ -57,5 +74,4 @@
     pointer-events: none;
     border-color: $gray-100;
   }
-
 }
