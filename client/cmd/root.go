@@ -31,17 +31,15 @@ func init() {
 	viper.SetDefault("username", "")
 	viper.SetDefault("password", "")
 	viper.SetDefault("insecure", false)
-	// viper.SetDefault("api-tls-disabled", false)
-	// viper.SetDefault("api-ca-cert", "")
+	viper.SetDefault("cacert", "")
 
 	rootCmd.PersistentFlags().StringVar(&configFile, "config", "", "config file (default is $HOME/.biblioclient.toml)")
 	rootCmd.PersistentFlags().String("host", defaultHost, "api server host")
 	rootCmd.PersistentFlags().Int("port", defaultPort, "api server port")
 	rootCmd.PersistentFlags().String("username", "ddd", "api server user username")
 	rootCmd.PersistentFlags().String("password", "", "api server user password")
-	rootCmd.PersistentFlags().Bool("insecure", false, "disable api client TLS")
-	// rootCmd.PersistentFlags().Bool("api-tls-disabled", false, "api client TLS enabled")
-	// rootCmd.PersistentFlags().String("api-tls-ca-cert", "", "api client location of the CA certificate")
+	rootCmd.PersistentFlags().Bool("insecure", false, "disable TLS encryption")
+	rootCmd.PersistentFlags().String("cacert", "", "path to the CA certificate (if using self-signed certificates)")
 }
 
 func initConfig() {

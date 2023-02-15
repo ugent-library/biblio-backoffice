@@ -6,4 +6,5 @@ type Config struct {
 	Host     string
 	Port     int
 	Insecure bool
+	Cacert   string
 }
