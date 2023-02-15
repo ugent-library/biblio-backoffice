@@ -94,7 +94,6 @@
         border: 3px solid;
         border-color: #EEE #BBB #888 transparent;
         border-radius: 50%;
-        animation: rotateLoader .4s infinite linear;
     }
 
     @mixin tagReadonlyBG($size:5px){
@@ -119,10 +118,6 @@
         30% { transform: scale(1.2); }
     }
 
-    @keyframes rotateLoader {
-        to{ transform: rotate(1turn) }
-    }
-
     display       : inline-flex;
     align-items   : flex-start;
     flex-wrap     : wrap;
@@ -134,6 +129,7 @@
     position      : relative;
     box-sizing    : border-box;
     transition    : .1s;
+    height: inherit; /* width is 100% and height is fixed at 3.6rem in combination with form-control* */
 
     &:hover:not(.tagify--focus):not(.tagify--invalid){
         --tags-border-color : var(--tags-hover-border-color);
@@ -252,7 +248,6 @@
                 z-index: -1;
                 pointer-events:none;
                 transition: 120ms ease;
-                animation : tags--bump .3s ease-out 1;
                 box-shadow: 0 0 0 var(--tag-inset-shadow-size) var(--tag-bg) inset;
                 background: var(--tag-bg);
             }
@@ -375,8 +370,9 @@
             transition     : .2s ease-out;
 
             &::after{
-                content: "\00D7";
-                transition: .3s, color 0s;
+                content    : "\00D7";
+                transition : .3s, color 0s;
+                margin-top : -1px;
             }
 
             &:hover{
@@ -539,7 +535,6 @@
     &--select{
         &::after{
             $size: 16px;
-
             content: '>';
             opacity: .5;
             position: absolute;
