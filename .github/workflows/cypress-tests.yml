@@ -9,11 +9,21 @@ jobs:
   cypress-run:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-node@v3
+      - name: Setup Node.js 14
+        uses: actions/setup-node@v3
         with:
           node-version: 14
-      - uses: actions/checkout@v3
-      - uses: cypress-io/github-action@v5
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Uninstall node-sass
+        run: npm uninstall node-sass
+      - name: Install OS dependencies
+        run: |
+          apt search libnss3
+          sudo apt-get update
+          sudo apt-get install -y libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb
+      - name: Cypress
+        uses: cypress-io/github-action@v5
         with:
           config-file: cypress/cypress.config.mjs
           record: true
@@ -25,9 +35,3 @@ jobs:
           CYPRESS_LIBRARIAN_USER_NAME: ${{ secrets.CYPRESS_LIBRARIAN_USER_NAME }}
           CYPRESS_LIBRARIAN_USER_PASSWORD: ${{ secrets.CYPRESS_LIBRARIAN_USER_PASSWORD }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Archive npm failure logs
-        uses: actions/upload-artifact@v2
-        if: failure()
-        with:
-          name: npm-logs
-          path: ~/.npm/_logs
