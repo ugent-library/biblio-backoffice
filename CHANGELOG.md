@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - #955: Better WOS Type facet (reindex needed)
 - #1015: Search on organization ID (reindex needed)
 - #956: Show status of facet filter in it's badge
+- #1004: Add Reset filters button
 
 ### Fixed
 
