@@ -4,6 +4,16 @@
         aria-expanded="false" role="button"
     >
         <span class="badge-text">Librarian tags</span>
+        {{with .SearchArgs.FiltersFor "reviewer_tags"}}
+        <span class="badge-value ml-2">
+            &mdash;
+            {{range $i, $v := .}}
+                {{if gt $i 2}}, &hellip;{{break}}{{end}}
+                {{if gt $i 0}},{{end}}
+                {{$v}}
+            {{end}}
+        </span>
+        {{end}}
         <i class="if if-caret-down"></i>
     </a>
     <form class="dropdown-menu" method="GET" action="{{.CurrentURL|queryClear}}">

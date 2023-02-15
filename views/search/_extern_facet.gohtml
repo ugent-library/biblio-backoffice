@@ -4,6 +4,16 @@
         aria-expanded="false" role="button"
     >
         <span class="badge-text">UGent</span>
+        {{with .SearchArgs.FiltersFor "extern"}}
+        <span class="badge-value ml-2">
+            &ndash;
+            {{range $i, $v := .}}
+                {{if gt $i 2}}, &hellip;{{break}}{{end}}
+                {{if gt $i 0}},{{end}}
+                {{$.Locale.TS "extern" $v}}
+            {{end}}
+        </span>
+        {{end}}
         <i class="if if-caret-down"></i>
     </a>
     <form class="dropdown-menu" method="GET" action="{{.CurrentURL|queryClear}}">

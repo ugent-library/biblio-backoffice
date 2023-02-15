@@ -4,6 +4,9 @@
         aria-expanded="false" role="button"
     >
         <span class="badge-text">Created since</span>
+        {{with .SearchArgs.FilterFor "created_since"}}
+        <span class="badge-value ml-2">&ndash; {{.}}</span>
+        {{end}}
         <i class="if if-caret-down"></i>
     </a>
     <form class="dropdown-menu" method="GET" action="{{.CurrentURL|queryClear}}">
