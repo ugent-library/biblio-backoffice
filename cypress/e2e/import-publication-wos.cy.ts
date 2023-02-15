@@ -72,10 +72,14 @@ describe('Publication import', () => {
 
     cy.contains('.btn', 'Add author').click({ scrollBehavior: false })
 
-    cy.ensureModal('Add author').within(() => {
-      cy.intercept('/publication/*/contributors/author/suggestions?first_name=Dries&last_name=Moreels').as(
-        'user-search'
-      )
+    cy.ensureModal('Add author').within(function () {
+      cy.intercept({
+        pathname: `/publication/${this.biblioID}/contributors/author/suggestions`,
+        query: {
+          first_name: 'Dries',
+          last_name: 'Moreels',
+        },
+      }).as('user-search')
 
       cy.contains('Search author').should('be.visible')
       cy.get('input[name=first_name]').type('Dries')
