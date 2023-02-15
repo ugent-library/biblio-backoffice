@@ -28,8 +28,6 @@ func GetAllPublications(cmd *cobra.Command, args []string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
-	log.Println(config)
-
 	c, cnx, err := client.Create(ctx, config)
 	defer cnx.Close()
 
