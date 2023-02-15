@@ -73,11 +73,23 @@ describe('Publication import', () => {
     cy.contains('.btn', 'Add author').click({ scrollBehavior: false })
 
     cy.ensureModal('Add author').within(() => {
+      cy.intercept('/publication/*/contributors/author/suggestions?first_name=Dries&last_name=Moreels').as(
+        'user-search'
+      )
+
       cy.contains('Search author').should('be.visible')
       cy.get('input[name=first_name]').type('Dries')
       cy.get('input[name=last_name]').type('Moreels')
 
-      cy.contains('.badge', 'Active UGent member').closest('.list-group-item').contains('.btn', 'Add author').click()
+      cy.wait('@user-search')
+
+      cy.contains('.badge', 'Active UGent member')
+        .closest('.list-group-item')
+        // Make sure the right author is selected
+        .should('contain.text', 'Dries Moreels')
+        .should('contain.text', '802001088860')
+        .contains('.btn', 'Add author')
+        .click()
 
       cy.contains('Review author information').should('be.visible')
 

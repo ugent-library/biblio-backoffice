@@ -30,23 +30,23 @@ describe('Clean-up', { redirectionLimit: PAGE_SIZE }, () => {
 
         if ($deleteButton.length === 1) {
           cy.get(selector)
-            .as('confirmDelete')
+            .as('confirm-delete')
             .then(button => {
               const id = button.attr('hx-get').match(/^\/publication\/(?<id>.*)\/confirm-delete/).groups.id
 
               cy.intercept({
                 method: 'DELETE',
                 url: `/publication/${id}*`,
-              }).as('deleteRoute')
+              }).as('delete-route')
             })
 
           //   Force is necessary because button is invisible at this point
-          cy.get('@confirmDelete').click({ force: true })
+          cy.get('@confirm-delete').click({ force: true })
 
           cy.contains('.modal-dialog .btn', 'Delete')
             .click()
             .then(() => {
-              cy.wait('@deleteRoute')
+              cy.wait('@delete-route')
 
               // Recursive call to delete other publications
               deleteFirstPublication()
