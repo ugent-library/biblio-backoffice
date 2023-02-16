@@ -8,9 +8,9 @@
         <span class="badge-value ml-2">
             &mdash;
             {{range $i, $v := .}}
-                {{if gt $i 2}}, &hellip;{{break}}{{end}}
-                {{if gt $i 0}},{{end}}
-                {{$v}}
+                {{- if gt $i 2}}, &hellip;{{break}}{{end}}
+                {{- if gt $i 0}},{{end}}
+                {{$v -}}
             {{end}}
         </span>
         {{end}}
