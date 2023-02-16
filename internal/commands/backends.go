@@ -9,29 +9,29 @@ import (
 
 	"github.com/elastic/go-elasticsearch/v6"
 	"github.com/spf13/viper"
-	"github.com/ugent-library/biblio-backend/internal/backends"
-	"github.com/ugent-library/biblio-backend/internal/backends/arxiv"
-	"github.com/ugent-library/biblio-backend/internal/backends/biblio"
-	"github.com/ugent-library/biblio-backend/internal/backends/bibtex"
-	"github.com/ugent-library/biblio-backend/internal/backends/citeproc"
-	"github.com/ugent-library/biblio-backend/internal/backends/crossref"
-	"github.com/ugent-library/biblio-backend/internal/backends/datacite"
-	"github.com/ugent-library/biblio-backend/internal/backends/es6"
-	excel_dataset "github.com/ugent-library/biblio-backend/internal/backends/excel/dataset"
-	excel_publication "github.com/ugent-library/biblio-backend/internal/backends/excel/publication"
-	"github.com/ugent-library/biblio-backend/internal/backends/handle"
-	"github.com/ugent-library/biblio-backend/internal/caching"
+	"github.com/ugent-library/biblio-backoffice/internal/backends"
+	"github.com/ugent-library/biblio-backoffice/internal/backends/arxiv"
+	"github.com/ugent-library/biblio-backoffice/internal/backends/authority"
+	"github.com/ugent-library/biblio-backoffice/internal/backends/bibtex"
+	"github.com/ugent-library/biblio-backoffice/internal/backends/citeproc"
+	"github.com/ugent-library/biblio-backoffice/internal/backends/crossref"
+	"github.com/ugent-library/biblio-backoffice/internal/backends/datacite"
+	"github.com/ugent-library/biblio-backoffice/internal/backends/es6"
+	excel_dataset "github.com/ugent-library/biblio-backoffice/internal/backends/excel/dataset"
+	excel_publication "github.com/ugent-library/biblio-backoffice/internal/backends/excel/publication"
+	"github.com/ugent-library/biblio-backoffice/internal/backends/handle"
+	"github.com/ugent-library/biblio-backoffice/internal/caching"
 
-	"github.com/ugent-library/biblio-backend/internal/backends/filestore"
-	"github.com/ugent-library/biblio-backend/internal/backends/ianamedia"
-	"github.com/ugent-library/biblio-backend/internal/backends/jsonl"
-	"github.com/ugent-library/biblio-backend/internal/backends/pubmed"
-	"github.com/ugent-library/biblio-backend/internal/backends/repository"
-	"github.com/ugent-library/biblio-backend/internal/backends/ris"
-	"github.com/ugent-library/biblio-backend/internal/backends/spdxlicenses"
+	"github.com/ugent-library/biblio-backoffice/internal/backends/filestore"
+	"github.com/ugent-library/biblio-backoffice/internal/backends/ianamedia"
+	"github.com/ugent-library/biblio-backoffice/internal/backends/jsonl"
+	"github.com/ugent-library/biblio-backoffice/internal/backends/pubmed"
+	"github.com/ugent-library/biblio-backoffice/internal/backends/repository"
+	"github.com/ugent-library/biblio-backoffice/internal/backends/ris"
+	"github.com/ugent-library/biblio-backoffice/internal/backends/spdxlicenses"
 	"go.uber.org/zap"
 
-	// "github.com/ugent-library/biblio-backend/internal/tasks"
+	// "github.com/ugent-library/biblio-backoffice/internal/tasks"
 	"github.com/ugent-library/go-orcid/orcid"
 )
 
@@ -48,11 +48,17 @@ func Services() *backends.Services {
 }
 
 func newServices() *backends.Services {
-	biblioClient := biblio.New(biblio.Config{
-		URL:      viper.GetString("frontend-url"),
-		Username: viper.GetString("frontend-username"),
-		Password: viper.GetString("frontend-password"),
+	authorityClient, authorityClientErr := authority.New(authority.Config{
+		MongoDBURI: viper.GetString("mongodb-url"),
+		ES6Config: es6.Config{
+			ClientConfig: elasticsearch.Config{
+				Addresses: strings.Split(viper.GetString("frontend-es6-url"), ","),
+			},
+		},
 	})
+	if authorityClientErr != nil {
+		panic(authorityClientErr)
+	}
 
 	orcidConfig := orcid.Config{
 		ClientID:     viper.GetString("orcid-client-id"),
@@ -84,14 +90,14 @@ func newServices() *backends.Services {
 		Repository:                newRepository(),
 		DatasetSearchService:      newDatasetSearchService(),
 		PublicationSearchService:  newPublicationSearchService(),
-		OrganizationService:       caching.NewOrganizationService(biblioClient),
-		PersonService:             caching.NewPersonService(biblioClient),
-		ProjectService:            caching.NewProjectService(biblioClient),
-		UserService:               caching.NewUserService(biblioClient),
-		OrganizationSearchService: biblioClient,
-		PersonSearchService:       biblioClient,
-		ProjectSearchService:      biblioClient,
-		UserSearchService:         biblioClient,
+		OrganizationService:       caching.NewOrganizationService(authorityClient),
+		PersonService:             caching.NewPersonService(authorityClient),
+		ProjectService:            caching.NewProjectService(authorityClient),
+		UserService:               caching.NewUserService(authorityClient),
+		OrganizationSearchService: authorityClient,
+		PersonSearchService:       authorityClient,
+		ProjectSearchService:      authorityClient,
+		UserSearchService:         authorityClient,
 		LicenseSearchService:      spdxlicenses.New(),
 		MediaTypeSearchService:    ianamedia.New(),
 		DatasetSources: map[string]backends.DatasetGetter{
@@ -175,8 +181,9 @@ func newEs6Client(t string) *es6.Client {
 		ClientConfig: elasticsearch.Config{
 			Addresses: strings.Split(viper.GetString("es6-url"), ","),
 		},
-		Index:    viper.GetString(t + "-index"),
-		Settings: string(settings),
+		Index:          viper.GetString(t + "-index"),
+		Settings:       string(settings),
+		IndexRetention: viper.GetInt("index-retention"),
 	})
 	if err != nil {
 		log.Fatal(err)

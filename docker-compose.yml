@@ -1,0 +1,26 @@
+version: "3.5"
+
+services:
+  bb_postgres:
+    image: postgres:15-alpine
+    ports:
+      - "2345:5432"
+    environment:
+      POSTGRES_DB: biblio
+      POSTGRES_USER: biblio
+      POSTGRES_PASSWORD: biblio
+
+  bb_elastic:
+    image: elasticsearch:6.8.23
+    ports:
+      - 9400:9200
+    environment:
+        - ES_JAVA_OPTS=-Xmx2g -Xms2g
+    ulimits:
+        nofile:
+            soft: 65536
+            hard: 65536
+    command: >
+        /bin/sh -c "./bin/elasticsearch-plugin list | grep -q analysis-icu
+        || ./bin/elasticsearch-plugin install analysis-icu;
+        /usr/local/bin/docker-entrypoint.sh"

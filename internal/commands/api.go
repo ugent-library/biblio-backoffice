@@ -7,7 +7,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/ugent-library/biblio-backend/internal/server"
+	"github.com/ugent-library/biblio-backoffice/internal/server"
 )
 
 func init() {
@@ -15,9 +15,9 @@ func init() {
 	apiStartCmd.Flags().Int("port", defaultAPIPort, "api server port")
 	apiStartCmd.Flags().String("username", "", "api server administrator username")
 	apiStartCmd.Flags().String("password", "", "api server administrator password")
-	// apiStartCmd.Flags().Bool("api-tls-enabled", false, "api server enable TLS encryped connections")
-	// apiStartCmd.Flags().String("api-tls-servercert", "", "api server location of server certificate file")
-	// apiStartCmd.Flags().String("api-tls-serverkey", "", "api server location of server certificate key file")
+	apiStartCmd.Flags().Bool("api-tls-enabled", false, "api server enable TLS encryped connections")
+	apiStartCmd.Flags().String("api-tls-servercert", "", "api server location of server certificate file")
+	apiStartCmd.Flags().String("api-tls-serverkey", "", "api server location of server certificate key file")
 
 	apiCmd.AddCommand(apiStartCmd)
 	rootCmd.AddCommand(apiCmd)

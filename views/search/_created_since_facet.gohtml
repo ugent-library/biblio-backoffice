@@ -1,8 +1,12 @@
 <div class="dropdown">
-    <a class="badge badge-default mr-3" data-toggle="dropdown" data-persist="true" aria-haspopup="true"
-        aria-expanded="false" role="button">
+    <a class="badge badge-{{if .SearchArgs.HasFilter "created_since"}}primary{{else}}default{{end}} mr-3"
+        data-toggle="dropdown" data-persist="true" aria-haspopup="true"
+        aria-expanded="false" role="button"
+    >
         <span class="badge-text">Created since</span>
-        <div class="c-counter c-counter--small">{{len (.SearchArgs.FiltersFor "created_since")}}</div>
+        {{with .SearchArgs.FilterFor "created_since"}}
+        <span class="badge-value ml-2">&ndash; {{.}}</span>
+        {{end}}
         <i class="if if-caret-down"></i>
     </a>
     <form class="dropdown-menu" method="GET" action="{{.CurrentURL|queryClear}}">

@@ -2,14 +2,11 @@ package cmd
 
 import "github.com/spf13/cobra"
 
-type FileCmd struct {
+func init() {
+	rootCmd.AddCommand(FileCmd)
 }
 
-func (c *FileCmd) Command() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "file [command]",
-		Short: "File commands",
-	}
-
-	return cmd
+var FileCmd = &cobra.Command{
+	Use:   "file [command]",
+	Short: "File commands",
 }

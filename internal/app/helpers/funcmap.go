@@ -5,7 +5,8 @@ import (
 	"html/template"
 
 	"github.com/rvflash/elapsed"
-	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backoffice/internal/models"
+	"github.com/ugent-library/friendly"
 )
 
 func FuncMap() template.FuncMap {
@@ -14,6 +15,7 @@ func FuncMap() template.FuncMap {
 		"timeElapsed": elapsed.LocalTime,
 		"formatRange": FormatRange,
 		"formatBool":  FormatBool,
+		"formatBytes": friendly.Bytes,
 	}
 }
 

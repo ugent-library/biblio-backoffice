@@ -1,0 +1,179 @@
+{
+  "abstract": [
+    {
+      "text": "abstract",
+      "lang": "eng",
+      "id": "00000000000000000000000005"
+    }
+  ],
+  "additional_info": "additional information",
+  "alternative_title": [
+    "alternative title"
+  ],
+  "author": [
+    {
+      "credit_role": [
+        "first_author"
+      ],
+      "first_name": "first name",
+      "full_name": "full name",
+      "id": "00000000-0000-0000-0000-000000000000",
+      "last_name": "last name",
+      "ugent_id": [
+        "000000000000"
+      ],
+      "department": [
+        {
+          "id": "AA00",
+          "name": "department name"
+        }
+      ]
+    }
+
+  ],
+  "classification": "D1",
+  "creator": {
+    "id": "00000000-0000-0000-0000-000000000000",
+    "name": "name"
+  },
+  "date_created": "2023-02-07T10:53:35.919249866+01:00",
+  "date_updated": "2023-02-07T11:25:19.526128442+01:00",
+  "date_from": "2023-02-07T11:25:19.527553+01:00",
+  "defense_date": "2023-01-01",
+  "defense_place": "place of defense",
+  "defense_time": "12:00",
+  "department": [
+    {
+      "id": "CA20",
+      "tree": [
+        {
+          "id": "UGent"
+        },
+        {
+          "id": "CA"
+        },
+        {
+          "id": "CA20"
+        }
+      ]
+    }
+  ],
+  "doi": "0000",
+  "eisbn": [
+    "0000"
+  ],
+  "eissn": [
+    "0000"
+  ],
+  "extern": true,
+  "file": [
+    {
+      "access_level": "info:eu-repo/semantics/embargoedAccess",
+      "content_type": "application/octet-stream",
+      "date_created": "2023-02-07T10:55:41.425773992+01:00",
+      "date_updated": "2023-02-07T10:55:41.425773992+01:00",
+      "embargo_date": "2024-01-01",
+      "access_level_during_embargo": "info:eu-repo/semantics/closedAccess",
+      "access_level_after_embargo": "info:eu-repo/semantics/openAccess",
+      "name": "testfile-1.pdf",
+      "size": 52428800,
+      "id": "00000000000000000000000005",
+      "sha256": "6193ef5a1473db261b13191ccba2c9add35f27e3b387a9e138291183de99253a",
+      "publication_version": "acceptedVersion",
+      "relation": "main_file"
+    }
+  ],
+  "has_confidential_data": "no",
+  "has_patent_application": "no",
+  "has_publications_planned": "no",
+  "has_published_material": "no",
+  "id": "00000000000000000000000005",
+  "isbn": [
+    "0000"
+  ],
+  "issn": [
+    "0000"
+  ],
+  "keyword": [
+    "keyword"
+  ],
+  "language": [
+    "eng"
+  ],
+  "last_user": {
+    "id": "00000000-0000-0000-0000-000000000000",
+    "name": "name"
+  },
+  "lay_summary": [
+    {
+      "text": "lay summary",
+      "lang": "eng",
+      "id": "00000000000000000000000005"
+    }
+  ],
+  "legacy": true,
+  "link": [
+    {
+      "id": "00000000000000000000000005",
+      "url": "https://biblio.ugent.be",
+      "relation": "data_management_plan",
+      "description": "description"
+    }
+  ],
+  "locked": false,
+  "message": "message",
+  "page_count": "1",
+  "place_of_publication": "place of publication",
+  "project": [
+    {
+      "id": "000000000",
+      "name": "name"
+    }
+  ],
+  "publication_status": "published",
+  "publisher": "publisher",
+  "related_dataset": [
+    {
+      "id": "90000000000000000000000005"
+    }
+  ],
+  "research_field": [
+    "Agriculture and Food Sciences"
+  ],
+  "reviewer_note": "note",
+  "reviewer_tags": [
+    "tag"
+  ],
+  "series_title": "series title",
+  "snapshot_id": "00000000000000000000000005",
+  "status": "private",
+  "supervisor": [
+    {
+      "first_name": "first name",
+      "full_name": "full name",
+      "id": "00000000-0000-0000-0000-000000000000",
+      "last_name": "laste name",
+      "ugent_id": [
+        "000000000000"
+      ],
+      "department": [
+        {
+          "id": "AA00",
+          "name": "department name"
+        }
+      ]
+    }
+  ],
+  "title": "title",
+  "type": "dissertation",
+  "user": {
+    "id": "00000000-0000-0000-0000-000000000000",
+    "name": "name"
+  },
+  "volume": "1",
+  "vabb_approved": false,
+  "has_been_public": false,
+  "wos_id": "0000",
+  "wos_type": "0000",
+  "year": "2023"
+}

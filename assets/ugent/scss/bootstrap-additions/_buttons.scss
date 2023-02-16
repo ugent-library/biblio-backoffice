@@ -24,11 +24,11 @@
   padding-left: .4rem;
 }
 
-.btn:not(.btn-icon-only):not(.btn-link-p-0) .if:first-child {
+.btn:not(.btn-icon-only):not(.btn-link-p-0):not(.btn-sm) .if:first-child {
   margin-left: -.8rem;
 }
 
-.btn:not(.btn-icon-only):not(.btn-link-p-0) .if:last-child {
+.btn:not(.btn-icon-only):not(.btn-link-p-0):not(.btn-sm) .if:last-child {
   margin-right: -.8rem;
 }
 
@@ -142,14 +142,26 @@
   min-height: 3.6rem;
 }
 
+// Small buttons
+
 .btn-sm {
   height: 2.8rem;
   font-size: 1.3rem;
   line-height: 2.8rem;
   .if {
     font-size: 1.6rem;
+    top: 0;
   }
 }
+
+.btn-sm.btn-icon-only {
+  width: 2.8rem;
+  height: 2.8rem;
+  min-width: 2.8rem;
+  min-height: 2.8rem;
+}
+
+// Thumbnail buttons
 
 .btn-thumbnail {
   border-radius: 50%;
@@ -178,6 +190,8 @@
   }
 }
 
+// File button
+
 .btn-file {
   position: relative;
   input[type="file"] {
@@ -190,3 +204,72 @@
   }
 }
 
+// Button groups
+
+.btn-group {
+  .btn-outline-primary {
+    &:hover,
+    &:focus {
+      background-color: $light-blue;
+      color: $blue;
+    }
+  }
+
+  .btn-outline-secondary {
+    color: $text;
+    border-color: $border;
+
+    &:hover,
+    &:focus {
+      background-color: $gray-50;
+    }
+  }
+
+  .btn-outline-success {
+    &:hover,
+    &:focus {
+      background-color: $light-green;
+      color: $green;
+    }
+  }
+
+  .btn-outline-danger {
+    &:hover,
+    &:focus {
+      background-color: $light-warm-red;
+      color: $warm-red;
+    }
+  }
+
+  .btn-outline-warning {
+    &:hover,
+    &:focus {
+      background-color: $light-orange;
+      color: $orange;
+    }
+  }
+
+  .btn-outline-info {
+    &:hover,
+    &:focus {
+      background-color: rgba($aqua, .1);
+      color: $aqua;
+    }
+  }
+
+  .btn-outline-light {
+    &:hover,
+    &:focus {
+      background-color: rgba($white, .1);
+      color: $white;
+    }
+  }
+
+  .btn-outline-dark {
+    &:hover,
+    &:focus {
+      background-color: $gray-50;
+      color: $gray-1000;
+    }
+  }
+}

@@ -2,38 +2,42 @@ package cmd
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
+	"errors"
 	"io"
 	"log"
+	"time"
 
 	"github.com/spf13/cobra"
-	api "github.com/ugent-library/biblio-backend/api/v1"
-	"github.com/ugent-library/biblio-backend/internal/server"
+	api "github.com/ugent-library/biblio-backoffice/api/v1"
+	"github.com/ugent-library/biblio-backoffice/client/client"
 )
 
-type GetDatasetHistoryCmd struct {
-	RootCmd
+func init() {
+	DatasetCmd.AddCommand(GetDatasetHistoryCmd)
 }
 
-func (c *GetDatasetHistoryCmd) Command() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "get-history [id]",
-		Short: "Get dataset history",
-		Args:  cobra.ExactArgs(1),
-		Run: func(cmd *cobra.Command, args []string) {
-			c.Wrap(func() {
-				c.Run(cmd, args)
-			})
-		},
+var GetDatasetHistoryCmd = &cobra.Command{
+	Use:   "get-history [id]",
+	Short: "Get dataset history",
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		GetDatasetHistory(cmd, args)
+	},
+}
+
+func GetDatasetHistory(cmd *cobra.Command, args []string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	c, cnx, err := client.Create(ctx, config)
+	defer cnx.Close()
+
+	if errors.Is(err, context.DeadlineExceeded) {
+		log.Fatal("ContextDeadlineExceeded: true")
 	}
 
-	return cmd
-}
-
-func (c *GetDatasetHistoryCmd) Run(cmd *cobra.Command, args []string) {
 	req := &api.GetDatasetHistoryRequest{Id: args[0]}
-	stream, err := c.Client.GetDatasetHistory(context.Background(), req)
+	stream, err := c.GetDatasetHistory(context.Background(), req)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -47,10 +51,6 @@ func (c *GetDatasetHistoryCmd) Run(cmd *cobra.Command, args []string) {
 			log.Fatalf("error while reading stream: %v", err)
 		}
 
-		j, err := json.Marshal(server.MessageToDataset(res.Dataset))
-		if err != nil {
-			log.Fatal(err)
-		}
-		fmt.Printf("%s\n", j)
+		cmd.Printf("%s\n", res.Dataset.Payload)
 	}
 }

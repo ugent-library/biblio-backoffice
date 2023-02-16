@@ -7,16 +7,16 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ugent-library/biblio-backend/internal/pagination"
-	"github.com/ugent-library/biblio-backend/internal/ulid"
-	"github.com/ugent-library/biblio-backend/internal/validation"
-	"github.com/ugent-library/biblio-backend/internal/vocabularies"
+	"github.com/oklog/ulid/v2"
+	"github.com/ugent-library/biblio-backoffice/internal/pagination"
+	"github.com/ugent-library/biblio-backoffice/internal/validation"
+	"github.com/ugent-library/biblio-backoffice/internal/vocabularies"
 )
 
 type PublicationHits struct {
 	pagination.Pagination
-	Hits   []*Publication     `json:"hits"`
-	Facets map[string][]Facet `json:"facets"`
+	Hits   []*Publication         `json:"hits"`
+	Facets map[string]FacetValues `json:"facets"`
 }
 
 type PublicationUser struct {
@@ -118,6 +118,7 @@ type Publication struct {
 	JournalArticleType      string                  `json:"journal_article_type,omitempty"`
 	Keyword                 []string                `json:"keyword,omitempty"`
 	Language                []string                `json:"language,omitempty"`
+	LastUser                *PublicationUser        `json:"last_user,omitempty"`
 	LaySummary              []Text                  `json:"lay_summary,omitempty"`
 	Legacy                  bool                    `json:"legacy"`
 	Link                    []PublicationLink       `json:"link,omitempty"`
@@ -453,7 +454,7 @@ func (p *Publication) SetLink(l *PublicationLink) {
 }
 
 func (p *Publication) AddLink(l *PublicationLink) {
-	l.ID = ulid.MustGenerate()
+	l.ID = ulid.Make().String()
 	p.Link = append(p.Link, *l)
 }
 
@@ -485,7 +486,7 @@ func (p *Publication) SetAbstract(t *Text) {
 }
 
 func (p *Publication) AddAbstract(t *Text) {
-	t.ID = ulid.MustGenerate()
+	t.ID = ulid.Make().String()
 	p.Abstract = append(p.Abstract, *t)
 }
 
@@ -517,7 +518,7 @@ func (p *Publication) SetLaySummary(ls *Text) {
 }
 
 func (p *Publication) AddLaySummary(t *Text) {
-	t.ID = ulid.MustGenerate()
+	t.ID = ulid.Make().String()
 	p.LaySummary = append(p.LaySummary, *t)
 }
 
@@ -577,7 +578,7 @@ func (p *Publication) AddDepartmentByOrg(org *Organization) {
 }
 
 func (p *Publication) AddFile(file *PublicationFile) {
-	file.ID = ulid.MustGenerate()
+	file.ID = ulid.Make().String()
 	now := time.Now()
 	file.DateCreated = &now
 	file.DateUpdated = &now

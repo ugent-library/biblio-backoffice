@@ -5,15 +5,15 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ugent-library/biblio-backend/internal/pagination"
-	"github.com/ugent-library/biblio-backend/internal/ulid"
-	"github.com/ugent-library/biblio-backend/internal/validation"
+	"github.com/oklog/ulid/v2"
+	"github.com/ugent-library/biblio-backoffice/internal/pagination"
+	"github.com/ugent-library/biblio-backoffice/internal/validation"
 )
 
 type DatasetHits struct {
 	pagination.Pagination
-	Hits   []*Dataset         `json:"hits"`
-	Facets map[string][]Facet `json:"facets"`
+	Hits   []*Dataset             `json:"hits"`
+	Facets map[string]FacetValues `json:"facets"`
 }
 
 type DatasetUser struct {
@@ -60,6 +60,7 @@ type Dataset struct {
 	ID                      string               `json:"id,omitempty"`
 	Keyword                 []string             `json:"keyword,omitempty"`
 	HasBeenPublic           bool                 `json:"has_been_public"`
+	LastUser                *DatasetUser         `json:"last_user,omitempty"`
 	License                 string               `json:"license,omitempty"`
 	Locked                  bool                 `json:"locked"`
 	Message                 string               `json:"message,omitempty"`
@@ -169,7 +170,7 @@ func (d *Dataset) SetAbstract(t *Text) {
 }
 
 func (d *Dataset) AddAbstract(t *Text) {
-	t.ID = ulid.MustGenerate()
+	t.ID = ulid.Make().String()
 	d.Abstract = append(d.Abstract, *t)
 }
 

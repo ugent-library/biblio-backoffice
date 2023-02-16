@@ -90,7 +90,7 @@
             <div class="mx-6">
                 <div class="c-thumbnail-text u-min-w-0">
                     <div class="bc-toolbar bc-toolbar--auto bc-toolbar--responsive mb-3">
-                      <div class="bc-toolbar-left flex-wrap">
+                      <div class="bc-toolbar-left">
                         <div class="bc-toolbar-item">
                             {{partial "shared/status" .Dataset}}
                         </div>
@@ -107,18 +107,10 @@
                         <div class="bc-toolbar-item mr-auto mr-lg-0">
                           <div class="d-flex align-items-center flex-wrap justify-content-md-end">
                             <span class="c-subline text-truncate text-nowrap pr-5">
-                                Created {{timeElapsed .Dataset.DateCreated "en"}}
-                                {{with .Dataset.Creator}}
-                                    by <a class="c-link c-link-muted" href="#">{{.Name}}</a>
-                                    <i class="if if-ghent-university" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="UGent author"></i>
-                                {{end}}
+                               {{partial "shared/created_by" .Dataset}}
                             </span>
                             <span class="c-subline text-truncate text-nowrap">
-                                Updated {{timeElapsed .Dataset.DateUpdated "en"}}
-                                {{with .Dataset.User}}
-                                    by <a class="c-link c-link-muted" href="#">{{.Name}}</a>
-                                    <i class="if if-ghent-university" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="UGent author"></i>
-                                {{end}}
+                               {{partial "shared/updated_by" .Dataset}}
                             </span>
                           </div>
                         </div>

@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/blevesearch/bleve/v2"
-	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backoffice/internal/models"
 )
 
 type license struct {

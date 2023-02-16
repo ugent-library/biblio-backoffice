@@ -1,8 +1,19 @@
 <div class="dropdown">
-    <a class="badge badge-default mr-3" data-toggle="dropdown" data-persist="true" aria-haspopup="true"
-        aria-expanded="false" role="button">
+    <a class="badge badge-{{if .SearchArgs.HasFilter "has_message"}}primary{{else if .Hits.Facets.has_message.HasMatches}}default{{else}}secondary{{end}} mr-3"
+        data-toggle="dropdown" data-persist="true" aria-haspopup="true"
+        aria-expanded="false" role="button"
+    >
         <span class="badge-text">Message</span>
-        <div class="c-counter c-counter--small">{{len (.SearchArgs.FiltersFor "has_message")}}</div>
+        {{with .SearchArgs.FiltersFor "has_message"}}
+        <span class="badge-value ml-2">
+            &ndash;
+            {{range $i, $v := .}}
+                {{if gt $i 2}}, &hellip;{{break}}{{end}}
+                {{if gt $i 0}},{{end}}
+                {{$.Locale.TS "has_message" $v}}
+            {{end}}
+        </span>
+        {{end}}
         <i class="if if-caret-down"></i>
     </a>
     <form class="dropdown-menu" method="GET" action="{{.CurrentURL|queryClear}}">

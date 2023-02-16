@@ -9,5 +9,5 @@ RUN go build -o app -v
 FROM alpine:latest
 WORKDIR /dist
 COPY --from=build /build .
-EXPOSE 3333
+EXPOSE 3000
 CMD ["/dist/app", "server", "start"]

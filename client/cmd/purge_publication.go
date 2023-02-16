@@ -2,35 +2,42 @@ package cmd
 
 import (
 	"context"
+	"errors"
 	"log"
+	"time"
 
 	"github.com/spf13/cobra"
-	api "github.com/ugent-library/biblio-backend/api/v1"
+	api "github.com/ugent-library/biblio-backoffice/api/v1"
+	"github.com/ugent-library/biblio-backoffice/client/client"
 )
 
-type PurgePublicationCmd struct {
-	RootCmd
+func init() {
+	PublicationCmd.AddCommand(PurgePublicationCmd)
 }
 
-func (c *PurgePublicationCmd) Command() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "purge [id]",
-		Short: "Purge publication",
-		Args:  cobra.ExactArgs(1),
-		Run: func(cmd *cobra.Command, args []string) {
-			c.Wrap(func() {
-				c.Run(cmd, args)
-			})
-		},
+var PurgePublicationCmd = &cobra.Command{
+	Use:   "purge [id]",
+	Short: "Purge publication",
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		PurgePublication(cmd, args)
+	},
+}
+
+func PurgePublication(cmd *cobra.Command, args []string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	c, cnx, err := client.Create(ctx, config)
+	defer cnx.Close()
+
+	if errors.Is(err, context.DeadlineExceeded) {
+		log.Fatal("ContextDeadlineExceeded: true")
 	}
 
-	return cmd
-}
-
-func (c *PurgePublicationCmd) Run(cmd *cobra.Command, args []string) {
 	id := args[0]
 	req := &api.PurgePublicationRequest{Id: id}
-	if _, err := c.Client.PurgePublication(context.Background(), req); err != nil {
+	if _, err := c.PurgePublication(context.Background(), req); err != nil {
 		log.Fatal(err)
 	}
 }

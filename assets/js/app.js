@@ -13,6 +13,9 @@ import radioCard from './ui/radio_card.js'
 import toast from './ui/toast.js'
 import sortable from './ui/sortable.js';
 import collapseSubSidebar from './ui/collapsible_sub_sidebar.js'
+import formAutoFocus from './ui/form_auto_focus.js'
+import fileUpload from './ui/file_upload.js'
+import tags from './ui/tags.js'
 
 // configure htmx
 htmx.config.defaultFocusScroll = true
@@ -36,4 +39,7 @@ document.addEventListener('DOMContentLoaded', function () {
     toast()
     sortable()
     collapseSubSidebar()
+    formAutoFocus()
+    fileUpload()
+    tags()
 });

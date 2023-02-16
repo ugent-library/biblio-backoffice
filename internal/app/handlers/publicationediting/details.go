@@ -4,13 +4,13 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/ugent-library/biblio-backend/internal/app/displays"
-	"github.com/ugent-library/biblio-backend/internal/bind"
-	"github.com/ugent-library/biblio-backend/internal/render"
-	"github.com/ugent-library/biblio-backend/internal/render/display"
-	"github.com/ugent-library/biblio-backend/internal/render/form"
-	"github.com/ugent-library/biblio-backend/internal/snapstore"
-	"github.com/ugent-library/biblio-backend/internal/validation"
+	"github.com/ugent-library/biblio-backoffice/internal/app/displays"
+	"github.com/ugent-library/biblio-backoffice/internal/bind"
+	"github.com/ugent-library/biblio-backoffice/internal/render"
+	"github.com/ugent-library/biblio-backoffice/internal/render/display"
+	"github.com/ugent-library/biblio-backoffice/internal/render/form"
+	"github.com/ugent-library/biblio-backoffice/internal/snapstore"
+	"github.com/ugent-library/biblio-backoffice/internal/validation"
 )
 
 type BindDetails struct {
@@ -162,6 +162,6 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 
 	render.View(w, "publication/refresh_details", YieldDetails{
 		Context:        ctx,
-		DisplayDetails: displays.PublicationDetails(ctx.Locale, ctx.Publication),
+		DisplayDetails: displays.PublicationDetails(ctx.User, ctx.Locale, ctx.Publication),
 	})
 }

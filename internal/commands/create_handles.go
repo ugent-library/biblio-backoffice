@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	"github.com/ugent-library/biblio-backend/internal/backends"
-	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backoffice/internal/backends"
+	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"go.uber.org/zap"
 )
 
@@ -33,8 +33,10 @@ var createHandles = &cobra.Command{
 
 func createPublicationHandles(e *backends.Services, logger *zap.SugaredLogger, handleService backends.HandleService) {
 	e.Repository.AddPublicationListener(func(p *models.Publication) {
-		if err := e.PublicationSearchService.Index(p); err != nil {
-			logger.Fatalf("error indexing publication %s: %v", p.ID, err)
+		if p.DateUntil == nil {
+			if err := e.PublicationSearchService.Index(p); err != nil {
+				logger.Fatalf("error indexing publication %s: %v", p.ID, err)
+			}
 		}
 	})
 
@@ -105,9 +107,11 @@ func createPublicationHandles(e *backends.Services, logger *zap.SugaredLogger, h
 }
 
 func createDatasetHandles(e *backends.Services, logger *zap.SugaredLogger, handleService backends.HandleService) {
-	e.Repository.AddDatasetListener(func(p *models.Dataset) {
-		if err := e.DatasetSearchService.Index(p); err != nil {
-			logger.Fatalf("error indexing dataset %s: %v", p.ID, err)
+	e.Repository.AddDatasetListener(func(d *models.Dataset) {
+		if d.DateUntil == nil {
+			if err := e.DatasetSearchService.Index(d); err != nil {
+				logger.Fatalf("error indexing dataset %s: %v", d.ID, err)
+			}
 		}
 	})
 

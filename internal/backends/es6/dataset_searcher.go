@@ -8,8 +8,8 @@ import (
 	"os"
 
 	"github.com/elastic/go-elasticsearch/v6/esapi"
-	"github.com/ugent-library/biblio-backend/internal/backends"
-	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backoffice/internal/backends"
+	"github.com/ugent-library/biblio-backoffice/internal/models"
 )
 
 type DatasetSearcher struct {
@@ -133,9 +133,10 @@ func (searcher *DatasetSearcher) buildEsOpts(query M) ([]func(*esapi.SearchReque
 }
 
 func (searcher *DatasetSearcher) esSearch(opts ...func(*esapi.SearchRequest)) (*models.DatasetHits, error) {
-	res, err := searcher.Client.es.Search(opts...)
+	var envelop datasetResEnvelope
+	err := searcher.Client.searchWithOpts(opts, &envelop)
 	if err != nil {
 		return nil, err
 	}
-	return decodeDatasetRes(res, []string{})
+	return decodeDatasetRes(&envelop, []string{})
 }

@@ -2,35 +2,42 @@ package cmd
 
 import (
 	"context"
+	"errors"
 	"log"
+	"time"
 
 	"github.com/spf13/cobra"
-	api "github.com/ugent-library/biblio-backend/api/v1"
+	api "github.com/ugent-library/biblio-backoffice/api/v1"
+	"github.com/ugent-library/biblio-backoffice/client/client"
 )
 
-type PurgeDatasetCmd struct {
-	RootCmd
+func init() {
+	DatasetCmd.AddCommand(PurgeDatasetCmd)
 }
 
-func (c *PurgeDatasetCmd) Command() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "purge [id]",
-		Short: "Purge dataset",
-		Args:  cobra.ExactArgs(1),
-		Run: func(cmd *cobra.Command, args []string) {
-			c.Wrap(func() {
-				c.Run(cmd, args)
-			})
-		},
+var PurgeDatasetCmd = &cobra.Command{
+	Use:   "purge [id]",
+	Short: "Purge dataset",
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		PurgeDataset(cmd, args)
+	},
+}
+
+func PurgeDataset(cmd *cobra.Command, args []string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	c, cnx, err := client.Create(ctx, config)
+	defer cnx.Close()
+
+	if errors.Is(err, context.DeadlineExceeded) {
+		log.Fatal("ContextDeadlineExceeded: true")
 	}
 
-	return cmd
-}
-
-func (c *PurgeDatasetCmd) Run(cmd *cobra.Command, args []string) {
 	id := args[0]
 	req := &api.PurgeDatasetRequest{Id: id}
-	if _, err := c.Client.PurgeDataset(context.Background(), req); err != nil {
+	if _, err := c.PurgeDataset(context.Background(), req); err != nil {
 		log.Fatal(err)
 	}
 }

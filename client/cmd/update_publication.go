@@ -3,38 +3,39 @@ package cmd
 import (
 	"bufio"
 	"context"
-	"encoding/json"
+	"errors"
 	"log"
 	"os"
 	"time"
 
 	"github.com/spf13/cobra"
-	api "github.com/ugent-library/biblio-backend/api/v1"
-	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/biblio-backend/internal/server"
+	api "github.com/ugent-library/biblio-backoffice/api/v1"
+	"github.com/ugent-library/biblio-backoffice/client/client"
 )
 
-type UpdatePublicationCmd struct {
-	RootCmd
+func init() {
+	PublicationCmd.AddCommand(UpdatePublicationCmd)
 }
 
-func (c *UpdatePublicationCmd) Command() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "update",
-		Short: "Update dataset",
-		Run: func(cmd *cobra.Command, args []string) {
-			c.Wrap(func() {
-				c.Run(cmd, args)
-			})
-		},
-	}
-
-	return cmd
+var UpdatePublicationCmd = &cobra.Command{
+	Use:   "update",
+	Short: "Update dataset",
+	Run: func(cmd *cobra.Command, args []string) {
+		log.SetOutput(cmd.OutOrStdout())
+		UpdatePublication(cmd, args)
+	},
 }
 
-func (c *UpdatePublicationCmd) Run(cmd *cobra.Command, args []string) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+func UpdatePublication(cmd *cobra.Command, args []string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
+
+	c, cnx, err := client.Create(ctx, config)
+	defer cnx.Close()
+
+	if errors.Is(err, context.DeadlineExceeded) {
+		log.Fatal("ContextDeadlineExceeded: true")
+	}
 
 	reader := bufio.NewReader(os.Stdin)
 	line, err := reader.ReadBytes('\n')
@@ -42,13 +43,12 @@ func (c *UpdatePublicationCmd) Run(cmd *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	p := &models.Publication{}
-	if err := json.Unmarshal(line, p); err != nil {
-		log.Fatal(err)
+	p := &api.Publication{
+		Payload: line,
 	}
 
-	req := &api.UpdatePublicationRequest{Publication: server.PublicationToMessage(p)}
-	if _, err = c.Client.UpdatePublication(ctx, req); err != nil {
+	req := &api.UpdatePublicationRequest{Publication: p}
+	if _, err = c.UpdatePublication(ctx, req); err != nil {
 		log.Fatal(err)
 	}
 }

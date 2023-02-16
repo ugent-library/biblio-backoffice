@@ -7,8 +7,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/ugent-library/biblio-backend/internal/backends"
-	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backoffice/internal/backends"
+	"github.com/ugent-library/biblio-backoffice/internal/models"
 )
 
 var (

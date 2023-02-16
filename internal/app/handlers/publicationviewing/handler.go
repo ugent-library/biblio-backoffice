@@ -3,18 +3,19 @@ package publicationviewing
 import (
 	"net/http"
 
-	"github.com/ugent-library/biblio-backend/internal/app/handlers"
-	"github.com/ugent-library/biblio-backend/internal/backends"
-	"github.com/ugent-library/biblio-backend/internal/backends/filestore"
-	"github.com/ugent-library/biblio-backend/internal/bind"
-	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/biblio-backend/internal/render"
+	"github.com/ugent-library/biblio-backoffice/internal/app/handlers"
+	"github.com/ugent-library/biblio-backoffice/internal/backends"
+	"github.com/ugent-library/biblio-backoffice/internal/backends/filestore"
+	"github.com/ugent-library/biblio-backoffice/internal/bind"
+	"github.com/ugent-library/biblio-backoffice/internal/models"
+	"github.com/ugent-library/biblio-backoffice/internal/render"
 )
 
 type Handler struct {
 	handlers.BaseHandler
-	Repository backends.Repository
-	FileStore  *filestore.Store
+	Repository  backends.Repository
+	FileStore   *filestore.Store
+	MaxFileSize int
 }
 
 type Context struct {

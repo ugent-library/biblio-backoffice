@@ -9,16 +9,125 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- #875: Improve error reporting by including an error id.
-- #850: Add "Deselect all" action to facet filter dialog.
+- #983: File upload progress
+- Show error dialog if upload is too large
+- Make maximum file size configurable
+- #930: Reindex command
+- #955: Better WOS Type facet (reindex needed)
+- #1015: Search on organization ID (reindex needed)
+- #956: Show status of facet filter in badge
+- #1004: Add Reset filters button
+- #957: Show top 3 selected facet values in badge
 
 ### Fixed
 
-= #887: Fix handle creation for datasets.
+- Fix conflict error after file upload cancel
+
+## [v1.0.21] - 2023-01-25
+
+### Added
+
+### Fixed
+
+- Fix bug in some repeated text fields
+
+## [v1.0.20] - 2023-01-25
+
+### Added
+
+- Switch from deprecated biblio-backend prefix to biblio-backoffice
+
+### Fixed
+
+## [v1.0.19] - 2023-01-25
+
+### Added
+
+- Switch to more secure github.com/ugent-library/oidc for authentication
+- #936: Differentiate between sytem and user updates in ui
+- Add request id to log statements; improve logging in general
+
+### Fixed
+
+- #966: Add missing external contributor names to dataset xlsx export
+- #932: Add missing has_message curation only facet to datasets
+- #921: Add status and vabb_year fields to xslx export
+- #991: Be more forgiving when decoding boolean values from MongoDB
+- Various css fixes, fix typos
+
+## [v1.0.18] - 2023-01-20
+
+### Added
+
+- Simple batch interface for curators (can currently only add projects) 
+- ulid wrapper package is no longer needed and has been removed
+
+### Fixed
+
+## [v1.0.17] - 2023-01-20
+
+### Added
+
+### Fixed
+
+- #984: Fix decoding of projects from Elasticsearch
+- #986: Reviewer tags facet was missing a 'Select all' button
+- #975: Fix exposing of licenses to frontoffice
+
+## [v1.0.16] - 2023-01-19
+
+### Added
+
+### Fixed
+
+- #984: Fix decoding of projects from MongoDB
+
+## [v1.0.15] - 2023-01-18
+
+### Added
+
+- #848: Show legacy flag to curators and display prettier boolean flags.
+- #950: Show the chosen license in the Full text & Files list.
+- #926: Search on WoS ID.
+
+### Fixed
+
+- #925: Use frontoffice Elasticsearch and MongoDB directlto relieve pressure on
+  frontoffice app.
+- #937: Fix field extern display.
+- Fix typos.
+- #943: Fix timestamp format in frontoffice handler.
+
+## [v1.0.14] - 2022-12-20
+
+### Added
+
+### Fixed
+
+- Previous fix for #910 had a bug where publication version field didn't appear,
+  this is now resolved.
+
+## [v1.0.13] - 2022-12-20
+
+### Added
+
+- #928: Allow transferring a single publication between users
+- #881: Add a publication transfer command that rewrites history and assigns
+  publications to another user id
+- #875: Improve error reporting by including an error id.
+- #850: Add "Deselect all" action to facet filter dialog.
+- Make facets configurable.
+
+### Fixed
+
+- #900: Empty list item spotted in authors and editors – probably for UGent ID.
+- #901: Not all departments of people are showing in the overview.
+- #887: Fix handle creation for datasets.
 - #902: Import language from WoS.
 - #910: File document type defaults to full text.
+- #924: Order year facet new to old.
+- #918: Set most open license as copyright statement in frontoffice.
 - Various ux fixes.
-
 
 ## [v1.0.12] - 2022-11-30
 
@@ -132,8 +241,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.12...HEAD
-[v1.0.11]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.11...v1.0.12
+[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.21...HEAD
+[v1.0.21]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.20...v1.0.21
+[v1.0.20]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.19...v1.0.20
+[v1.0.19]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.18...v1.0.19
+[v1.0.18]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.17...v1.0.18
+[v1.0.17]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.16...v1.0.17
+[v1.0.16]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.15...v1.0.16
+[v1.0.15]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.14...v1.0.15
+[v1.0.14]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.13...v1.0.14
+[v1.0.13]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.12...v1.0.13
+[v1.0.12]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.11...v1.0.12
 [v1.0.11]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.10...v1.0.11
 [v1.0.10]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.9...v1.0.10
 [v1.0.9]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.8...v1.0.9

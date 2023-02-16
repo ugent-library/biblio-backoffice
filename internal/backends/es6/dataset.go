@@ -6,13 +6,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
+	"strings"
 
 	"github.com/elastic/go-elasticsearch/v6/esapi"
-	"github.com/elastic/go-elasticsearch/v6/esutil"
 	"github.com/pkg/errors"
-	"github.com/ugent-library/biblio-backend/internal/backends"
-	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backoffice/internal/backends"
+	"github.com/ugent-library/biblio-backoffice/internal/models"
 )
 
 type Datasets struct {
@@ -142,13 +141,14 @@ func (datasets *Datasets) Search(args *models.SearchArgs) (*models.DatasetHits, 
 	}
 	opts = append(opts, datasets.Client.es.Search.WithBody(&buf))
 
-	res, err := datasets.Client.es.Search(opts...)
+	var res datasetResEnvelope = datasetResEnvelope{}
+	err := datasets.Client.searchWithOpts(opts, &res)
 	if err != nil {
 		return nil, err
 	}
 
 	// READ RESPONSE FROM ES
-	hits, err := decodeDatasetRes(res, args.Facets)
+	hits, err := decodeDatasetRes(&res, args.Facets)
 	if err != nil {
 		return nil, err
 	}
@@ -179,6 +179,7 @@ func buildDatasetUserQuery(args *models.SearchArgs) M {
 					"id^100",
 					"doi^50",
 					"title^40",
+					"department.tree.id^50",
 					"all",
 					"author.full_name.phrase_ngram^0.05",
 					"author.full_name.ngram^0.01",
@@ -291,26 +292,12 @@ type resFacet struct {
 	Key      string
 }*/
 
-func decodeDatasetRes(res *esapi.Response, facets []string) (*models.DatasetHits, error) {
-	defer res.Body.Close()
-
-	if res.IsError() {
-		buf := &bytes.Buffer{}
-		if _, err := io.Copy(buf, res.Body); err != nil {
-			return nil, err
-		}
-		return nil, errors.New("Es6 error response: " + buf.String())
-	}
-
-	var r datasetResEnvelope
-	if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
-		return nil, errors.Wrap(err, "Error parsing the response body")
-	}
+func decodeDatasetRes(r *datasetResEnvelope, facets []string) (*models.DatasetHits, error) {
 
 	hits := models.DatasetHits{}
 	hits.Total = r.Hits.Total
 
-	hits.Facets = make(map[string][]models.Facet)
+	hits.Facets = make(map[string]models.FacetValues)
 
 	//preallocate to ensure non zero slices
 	for _, facet := range facets {
@@ -390,67 +377,39 @@ func (publications *Datasets) Index(d *models.Dataset) error {
 	return nil
 }
 
-func (datasets *Datasets) IndexMultiple(inCh <-chan *models.Dataset) {
-	bi, err := esutil.NewBulkIndexer(esutil.BulkIndexerConfig{
-		Index:  datasets.Client.Index,
-		Client: datasets.Client.es,
-		OnError: func(c context.Context, e error) {
-			log.Fatalf("ERROR: %s", e)
-		},
-		/*
-		   TODO: appropriate place for this?
-		   without this a controller may search too soon,
-		   and see no results
-		*/
-		Refresh: "wait_for",
-	})
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	for d := range inCh {
-		doc := NewIndexedDataset(d)
-
-		payload, err := json.Marshal(doc)
-		if err != nil {
-			log.Panic(err)
-		}
-
-		err = bi.Add(
-			context.Background(),
-			esutil.BulkIndexerItem{
-				Action: "index",
-				// DocumentID:   doc.SnapshotID,
-				DocumentID:   doc.ID,
-				DocumentType: "_doc",
-				Body:         bytes.NewReader(payload),
-				OnFailure: func(ctx context.Context, item esutil.BulkIndexerItem, res esutil.BulkIndexerResponseItem, err error) {
-					if err != nil {
-						log.Panicf("ERROR: %s", err)
-					} else {
-						log.Panicf("ERROR: %s: %s", res.Error.Type, res.Error.Reason)
-					}
-				},
-			},
-		)
-
-		if err != nil {
-			log.Panicf("Unexpected error: %s", err)
-		}
-	}
-
-	// Close the indexer
-	if err := bi.Close(context.Background()); err != nil {
-		log.Panicf("Unexpected error: %s", err)
-	}
-}
-
 func (datasets *Datasets) Delete(id string) error {
 	ctx := context.Background()
 	res, err := esapi.DeleteRequest{
 		Index:      datasets.Client.Index,
 		DocumentID: id,
 	}.Do(ctx, datasets.Client.es)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+
+	if res.IsError() {
+		buf := &bytes.Buffer{}
+		if _, err := io.Copy(buf, res.Body); err != nil {
+			return err
+		}
+		return errors.New("Es6 error response: " + buf.String())
+	}
+
+	return nil
+}
+
+func (datasets *Datasets) DeleteAll() error {
+	ctx := context.Background()
+	req := esapi.DeleteByQueryRequest{
+		Index: []string{datasets.Client.Index},
+		Body: strings.NewReader(`{
+			"query" : { 
+				"match_all" : {}
+			}
+		}`),
+	}
+	res, err := req.Do(ctx, datasets.Client.es)
 	if err != nil {
 		return err
 	}
@@ -480,4 +439,20 @@ func (datasets *Datasets) Clone() *Datasets {
 		Client: datasets.Client,
 		scopes: newScopes,
 	}
+}
+
+func (dataset *Datasets) NewBulkIndexer(config backends.BulkIndexerConfig) (backends.BulkIndexer[*models.Dataset], error) {
+	docFn := func(d *models.Dataset) (string, []byte, error) {
+		doc, err := json.Marshal(NewIndexedDataset(d))
+		return d.ID, doc, err
+	}
+	return newBulkIndexer(dataset.Client.es, dataset.Client.Index, docFn, config)
+}
+
+func (datasets *Datasets) NewIndexSwitcher(config backends.BulkIndexerConfig) (backends.IndexSwitcher[*models.Dataset], error) {
+	docFn := func(d *models.Dataset) (string, []byte, error) {
+		doc, err := json.Marshal(NewIndexedDataset(d))
+		return d.ID, doc, err
+	}
+	return newIndexSwitcher(datasets.Client.es, datasets.Client.Index, datasets.Client.Settings, datasets.Client.IndexRetention, docFn, config)
 }

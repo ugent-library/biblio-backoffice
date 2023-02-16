@@ -1,0 +1,27 @@
+<div class="bc-toolbar bc-toolbar--auto mb-4">
+    <div class="bc-toolbar-left">
+        <div class="bc-toolbar-item">
+            <div class="badge-list">
+                {{range .SearchArgs.Facets}}
+                {{partial (printf "search/%s_facet" (. | replace "." "_")) $}}
+                {{end}}
+            </div>
+        </div>
+    </div>
+    <div class="bc-toolbar-right">
+        <div class="bc-toolbar-item">
+            <div class="c-button-toolbar">
+                <form method="GET" action="{{.CurrentURL|queryClear}}">
+                    <input type="hidden" name="q" value="{{.SearchArgs.Query}}">
+                    {{range .SearchArgs.Sort}}
+                    <input type="hidden" name="sort" value="{{.}}">
+                    {{end}}
+                    <button class="btn btn-link btn-muted text-muted" type="submit">
+                        <i class="if if-close"></i>
+                        <span class="btn-text">Reset filters</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -3,38 +3,42 @@ package cmd
 import (
 	"bufio"
 	"context"
-	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log"
 	"os"
+	"time"
 
 	"github.com/spf13/cobra"
-	api "github.com/ugent-library/biblio-backend/api/v1"
-	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/biblio-backend/internal/server"
+	api "github.com/ugent-library/biblio-backoffice/api/v1"
+	"github.com/ugent-library/biblio-backoffice/client/client"
 )
 
-type ValidateDatasetsCmd struct {
-	RootCmd
+func init() {
+	DatasetCmd.AddCommand(ValidateDatasetsCmd)
 }
 
-func (c *ValidateDatasetsCmd) Command() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "validate",
-		Short: "Validate datasets",
-		Run: func(cmd *cobra.Command, args []string) {
-			c.Wrap(func() {
-				c.Run(cmd, args)
-			})
-		},
+var ValidateDatasetsCmd = &cobra.Command{
+	Use:   "validate",
+	Short: "Validate datasets",
+	Run: func(cmd *cobra.Command, args []string) {
+		ValidateDatasets(cmd, args)
+	},
+}
+
+func ValidateDatasets(cmd *cobra.Command, args []string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	c, cnx, err := client.Create(ctx, config)
+	defer cnx.Close()
+
+	if errors.Is(err, context.DeadlineExceeded) {
+		log.Fatal("ContextDeadlineExceeded: true")
 	}
 
-	return cmd
-}
-
-func (c *ValidateDatasetsCmd) Run(cmd *cobra.Command, args []string) {
-	stream, err := c.Client.ValidateDatasets(context.Background())
+	stream, err := c.ValidateDatasets(context.Background())
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -52,7 +56,7 @@ func (c *ValidateDatasetsCmd) Run(cmd *cobra.Command, args []string) {
 				log.Fatal(err)
 			}
 
-			j, err := c.Marshaller.Marshal(res)
+			j, err := marshaller.Marshal(res)
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -70,12 +74,11 @@ func (c *ValidateDatasetsCmd) Run(cmd *cobra.Command, args []string) {
 			log.Fatal(err)
 		}
 
-		d := &models.Dataset{}
-		if err := json.Unmarshal(line, d); err != nil {
-			log.Fatal(err)
+		d := &api.Dataset{
+			Payload: line,
 		}
 
-		req := &api.ValidateDatasetsRequest{Dataset: server.DatasetToMessage(d)}
+		req := &api.ValidateDatasetsRequest{Dataset: d}
 		if err := stream.Send(req); err != nil {
 			log.Fatal(err)
 		}

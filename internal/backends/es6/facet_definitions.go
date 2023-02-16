@@ -1,9 +1,60 @@
 package es6
 
 import (
-	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/biblio-backend/internal/vocabularies"
+	"github.com/ugent-library/biblio-backoffice/internal/models"
+	"github.com/ugent-library/biblio-backoffice/internal/vocabularies"
 )
+
+type facetDefinition struct {
+	config M
+}
+
+var facetDefinitions = map[string]facetDefinition{
+	"reviewer_tags": {
+		config: M{
+			"terms": M{
+				"field":         "reviewer_tags",
+				"order":         M{"_key": "asc"},
+				"size":          999,
+				"min_doc_count": 0,
+			},
+		},
+	},
+	"year": {
+		config: M{
+			"terms": M{
+				"field":         "year",
+				"order":         M{"_key": "desc"},
+				"size":          999,
+				"min_doc_count": 0,
+			},
+		},
+	},
+	"wos_type": {
+		config: M{
+			"terms": M{
+				"field":         "facet_wos_type",
+				"order":         M{"_key": "asc"},
+				"size":          999,
+				"min_doc_count": 0,
+			},
+		},
+	},
+}
+
+// TODO remove this when all facets have a static definition above
+func defaultFacetDefinition(field string) facetDefinition {
+	return facetDefinition{
+		config: M{
+			"terms": M{
+				"field":         field,
+				"order":         M{"_key": "asc"},
+				"size":          100,
+				"min_doc_count": 0,
+			},
+		},
+	}
+}
 
 // facets that also work as filters
 var fixedFacetValues = map[string][]string{

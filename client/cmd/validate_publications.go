@@ -3,38 +3,42 @@ package cmd
 import (
 	"bufio"
 	"context"
-	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log"
 	"os"
+	"time"
 
 	"github.com/spf13/cobra"
-	api "github.com/ugent-library/biblio-backend/api/v1"
-	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/biblio-backend/internal/server"
+	api "github.com/ugent-library/biblio-backoffice/api/v1"
+	"github.com/ugent-library/biblio-backoffice/client/client"
 )
 
-type ValidatePublicationsCmd struct {
-	RootCmd
+func init() {
+	PublicationCmd.AddCommand(ValidatePublicationsCmd)
 }
 
-func (c *ValidatePublicationsCmd) Command() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "validate",
-		Short: "Validate publications",
-		Run: func(cmd *cobra.Command, args []string) {
-			c.Wrap(func() {
-				c.Run(cmd, args)
-			})
-		},
+var ValidatePublicationsCmd = &cobra.Command{
+	Use:   "validate",
+	Short: "Validate publications",
+	Run: func(cmd *cobra.Command, args []string) {
+		ValidatePublications(cmd, args)
+	},
+}
+
+func ValidatePublications(cmd *cobra.Command, args []string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	c, cnx, err := client.Create(ctx, config)
+	defer cnx.Close()
+
+	if errors.Is(err, context.DeadlineExceeded) {
+		log.Fatal("ContextDeadlineExceeded: true")
 	}
 
-	return cmd
-}
-
-func (c *ValidatePublicationsCmd) Run(cmd *cobra.Command, args []string) {
-	stream, err := c.Client.ValidatePublications(context.Background())
+	stream, err := c.ValidatePublications(context.Background())
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -52,7 +56,7 @@ func (c *ValidatePublicationsCmd) Run(cmd *cobra.Command, args []string) {
 				log.Fatal(err)
 			}
 
-			j, err := c.Marshaller.Marshal(res)
+			j, err := marshaller.Marshal(res)
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -70,12 +74,11 @@ func (c *ValidatePublicationsCmd) Run(cmd *cobra.Command, args []string) {
 			log.Fatal(err)
 		}
 
-		pub := &models.Publication{}
-		if err := json.Unmarshal(line, pub); err != nil {
-			log.Fatal(err)
+		p := &api.Publication{
+			Payload: line,
 		}
 
-		req := &api.ValidatePublicationsRequest{Publication: server.PublicationToMessage(pub)}
+		req := &api.ValidatePublicationsRequest{Publication: p}
 		if err := stream.Send(req); err != nil {
 			log.Fatal(err)
 		}

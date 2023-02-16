@@ -2,49 +2,47 @@ package cmd
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
+	"errors"
 	"log"
 	"time"
 
 	"github.com/spf13/cobra"
-	api "github.com/ugent-library/biblio-backend/api/v1"
-	"github.com/ugent-library/biblio-backend/internal/server"
+	api "github.com/ugent-library/biblio-backoffice/api/v1"
+	"github.com/ugent-library/biblio-backoffice/client/client"
 )
 
-type GetPublicationCmd struct {
-	RootCmd
+func init() {
+	PublicationCmd.AddCommand(GetPublicationCmd)
 }
 
-func (c *GetPublicationCmd) Command() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "get [id]",
-		Short: "Get publication by id",
-		Args:  cobra.ExactArgs(1),
-		Run: func(cmd *cobra.Command, args []string) {
-			c.Wrap(func() {
-				c.Run(cmd, args)
-			})
-		},
-	}
-
-	return cmd
+var GetPublicationCmd = &cobra.Command{
+	Use:   "get [id]",
+	Short: "Get publication by id",
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		log.SetOutput(cmd.OutOrStdout())
+		GetPublication(cmd, args)
+	},
 }
 
-func (c *GetPublicationCmd) Run(cmd *cobra.Command, args []string) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+func GetPublication(cmd *cobra.Command, args []string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
+
+	c, cnx, err := client.Create(ctx, config)
+	defer cnx.Close()
+
+	if errors.Is(err, context.DeadlineExceeded) {
+		log.Fatal("ContextDeadlineExceeded: true")
+	}
 
 	id := args[0]
 	req := &api.GetPublicationRequest{Id: id}
-	res, err := c.Client.GetPublication(ctx, req)
+	res, err := c.GetPublication(ctx, req)
 	if err != nil {
-		log.Fatal(err)
+		cmd.Println(err)
+		// log.Fatal(err)
+	} else {
+		cmd.Printf("%s\n", res.Publication.Payload)
 	}
-
-	j, err := json.Marshal(server.MessageToPublication(res.Publication))
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Printf("%s\n", j)
 }

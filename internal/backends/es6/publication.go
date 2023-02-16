@@ -6,13 +6,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
+	"strings"
 
 	"github.com/elastic/go-elasticsearch/v6/esapi"
-	"github.com/elastic/go-elasticsearch/v6/esutil"
 	"github.com/pkg/errors"
-	"github.com/ugent-library/biblio-backend/internal/backends"
-	"github.com/ugent-library/biblio-backend/internal/models"
+	"github.com/ugent-library/biblio-backoffice/internal/backends"
+	"github.com/ugent-library/biblio-backoffice/internal/models"
 )
 
 type Publications struct {
@@ -85,18 +84,17 @@ func (publications *Publications) Search(args *models.SearchArgs) (*models.Publi
 				}
 			}
 
-			// TODO make configurable for each facet
+			var conf M
+			if c, ok := facetDefinitions[field]; ok {
+				conf = c.config
+			} else {
+				conf = defaultFacetDefinition(field).config
+			}
+
 			facet := M{
 				"filter": M{"bool": M{"must": filters}},
 				"aggs": M{
-					"facet": M{
-						"terms": M{
-							"field":         field,
-							"order":         M{"_key": "asc"},
-							"size":          999,
-							"min_doc_count": 0,
-						},
-					},
+					"facet": conf,
 				},
 			}
 
@@ -144,13 +142,14 @@ func (publications *Publications) Search(args *models.SearchArgs) (*models.Publi
 	}
 	opts = append(opts, publications.Client.es.Search.WithBody(&buf))
 
-	res, err := publications.Client.es.Search(opts...)
+	var res publicationResEnvelope
+	err := publications.Client.searchWithOpts(opts, &res)
 	if err != nil {
 		return nil, err
 	}
 
 	// READ RESPONSE FROM ES
-	hits, err := decodePublicationRes(res, args.Facets)
+	hits, err := decodePublicationRes(&res, args.Facets)
 	if err != nil {
 		return nil, err
 	}
@@ -180,7 +179,13 @@ func buildPublicationUserQuery(args *models.SearchArgs) M {
 				"fields": []string{
 					"id^100",
 					"doi^50",
+					"isbn^50",
+					"eisbn^50",
+					"issn^50",
+					"eissn^50",
+					"wos_id^50",
 					"title^40",
+					"department.tree.id^50",
 					"all",
 					"author.full_name.phrase_ngram^0.05",
 					"author.full_name.ngram^0.01",
@@ -288,26 +293,12 @@ type publicationResEnvelope struct {
 	}
 }
 
-func decodePublicationRes(res *esapi.Response, facets []string) (*models.PublicationHits, error) {
-	defer res.Body.Close()
-
-	if res.IsError() {
-		buf := &bytes.Buffer{}
-		if _, err := io.Copy(buf, res.Body); err != nil {
-			return nil, err
-		}
-		return nil, errors.New("Es6 error response: " + buf.String())
-	}
-
-	var r publicationResEnvelope
-	if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
-		return nil, errors.Wrap(err, "Error parsing the response body")
-	}
+func decodePublicationRes(r *publicationResEnvelope, facets []string) (*models.PublicationHits, error) {
 
 	hits := models.PublicationHits{}
 	hits.Total = r.Hits.Total
 
-	hits.Facets = make(map[string][]models.Facet)
+	hits.Facets = make(map[string]models.FacetValues)
 
 	//preallocate to ensure non zero slices
 	for _, facet := range facets {
@@ -393,68 +384,39 @@ func (publications *Publications) Index(p *models.Publication) error {
 	return nil
 }
 
-// TODO error chan
-func (publications *Publications) IndexMultiple(inCh <-chan *models.Publication) {
-	bi, err := esutil.NewBulkIndexer(esutil.BulkIndexerConfig{
-		Index:  publications.Client.Index,
-		Client: publications.Client.es,
-		OnError: func(c context.Context, e error) {
-			log.Fatalf("ERROR: %s", e)
-		},
-		/*
-			TODO: appropriate place for this?
-			without this a controller may search too soon,
-			and see no results
-		*/
-		Refresh: "wait_for",
-	})
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	for p := range inCh {
-		doc := NewIndexedPublication(p)
-
-		payload, err := json.Marshal(doc)
-		if err != nil {
-			log.Panic(err)
-		}
-
-		err = bi.Add(
-			context.Background(),
-			esutil.BulkIndexerItem{
-				Action: "index",
-				// DocumentID:   doc.SnapshotID,
-				DocumentID:   doc.ID,
-				DocumentType: "_doc",
-				Body:         bytes.NewReader(payload),
-				OnFailure: func(ctx context.Context, item esutil.BulkIndexerItem, res esutil.BulkIndexerResponseItem, err error) {
-					if err != nil {
-						log.Panicf("ERROR: %s", err)
-					} else {
-						log.Panicf("ERROR: %s: %s", res.Error.Type, res.Error.Reason)
-					}
-				},
-			},
-		)
-
-		if err != nil {
-			log.Panicf("Unexpected error: %s", err)
-		}
-	}
-
-	// Close the indexer
-	if err := bi.Close(context.Background()); err != nil {
-		log.Panicf("Unexpected error: %s", err)
-	}
-}
-
 func (publications *Publications) Delete(id string) error {
 	ctx := context.Background()
 	res, err := esapi.DeleteRequest{
 		Index:      publications.Client.Index,
 		DocumentID: id,
 	}.Do(ctx, publications.Client.es)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+
+	if res.IsError() {
+		buf := &bytes.Buffer{}
+		if _, err := io.Copy(buf, res.Body); err != nil {
+			return err
+		}
+		return errors.New("Es6 error response: " + buf.String())
+	}
+
+	return nil
+}
+
+func (publications *Publications) DeleteAll() error {
+	ctx := context.Background()
+	req := esapi.DeleteByQueryRequest{
+		Index: []string{publications.Client.Index},
+		Body: strings.NewReader(`{
+			"query" : { 
+				"match_all" : {}
+			}
+		}`),
+	}
+	res, err := req.Do(ctx, publications.Client.es)
 	if err != nil {
 		return err
 	}
@@ -484,4 +446,21 @@ func (publications *Publications) Clone() *Publications {
 		Client: publications.Client,
 		scopes: newScopes,
 	}
+}
+
+func (publications *Publications) NewBulkIndexer(config backends.BulkIndexerConfig) (backends.BulkIndexer[*models.Publication], error) {
+	docFn := func(p *models.Publication) (string, []byte, error) {
+		doc, err := json.Marshal(NewIndexedPublication(p))
+		return p.ID, doc, err
+	}
+	return newBulkIndexer(publications.Client.es, publications.Client.Index, docFn, config)
+}
+
+func (publications *Publications) NewIndexSwitcher(config backends.BulkIndexerConfig) (backends.IndexSwitcher[*models.Publication], error) {
+	docFn := func(p *models.Publication) (string, []byte, error) {
+		doc, err := json.Marshal(NewIndexedPublication(p))
+		return p.ID, doc, err
+	}
+	return newIndexSwitcher(publications.Client.es, publications.Client.Index,
+		publications.Client.Settings, publications.Client.IndexRetention, docFn, config)
 }

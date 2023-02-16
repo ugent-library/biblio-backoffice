@@ -3,37 +3,41 @@ package cmd
 import (
 	"bufio"
 	"context"
-	"encoding/json"
+	"errors"
 	"io"
 	"log"
 	"os"
+	"time"
 
 	"github.com/spf13/cobra"
-	api "github.com/ugent-library/biblio-backend/api/v1"
-	"github.com/ugent-library/biblio-backend/internal/models"
-	"github.com/ugent-library/biblio-backend/internal/server"
+	api "github.com/ugent-library/biblio-backoffice/api/v1"
+	"github.com/ugent-library/biblio-backoffice/client/client"
 )
 
-type AddDatasetsCmd struct {
-	RootCmd
+func init() {
+	DatasetCmd.AddCommand(AddDatasetsCmd)
 }
 
-func (c *AddDatasetsCmd) Command() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "add",
-		Short: "Add datasets",
-		Run: func(cmd *cobra.Command, args []string) {
-			c.Wrap(func() {
-				c.Run(cmd, args)
-			})
-		},
+var AddDatasetsCmd = &cobra.Command{
+	Use:   "add",
+	Short: "Add datasets",
+	Run: func(cmd *cobra.Command, args []string) {
+		AddDatasets(cmd, args)
+	},
+}
+
+func AddDatasets(cmd *cobra.Command, args []string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	c, cnx, err := client.Create(ctx, config)
+	defer cnx.Close()
+
+	if errors.Is(err, context.DeadlineExceeded) {
+		log.Fatal("ContextDeadlineExceeded: true")
 	}
 
-	return cmd
-}
-
-func (c *AddDatasetsCmd) Run(cmd *cobra.Command, args []string) {
-	stream, err := c.Client.AddDatasets(context.Background())
+	stream, err := c.AddDatasets(context.Background())
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -67,12 +71,11 @@ func (c *AddDatasetsCmd) Run(cmd *cobra.Command, args []string) {
 
 		lineNo++
 
-		d := &models.Dataset{}
-		if err := json.Unmarshal(line, d); err != nil {
-			log.Fatalf("Unable to decode dataset at line %d : %v", lineNo, err)
+		d := &api.Dataset{
+			Payload: line,
 		}
 
-		req := &api.AddDatasetsRequest{Dataset: server.DatasetToMessage(d)}
+		req := &api.AddDatasetsRequest{Dataset: d}
 		if err := stream.Send(req); err != nil {
 			log.Fatal(err)
 		}

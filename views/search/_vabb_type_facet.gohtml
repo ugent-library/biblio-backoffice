@@ -1,8 +1,19 @@
 <div class="dropdown">
-    <a class="badge badge-default mr-3" data-toggle="dropdown" data-persist="true" aria-haspopup="true"
-        aria-expanded="false" role="button">
+    <a class="badge badge-{{if .SearchArgs.HasFilter "vabb_type"}}primary{{else if .Hits.Facets.vabb_type.HasMatches}}default{{else}}secondary{{end}} mr-3"
+        data-toggle="dropdown" data-persist="true" aria-haspopup="true"
+        aria-expanded="false" role="button"
+    >
         <span class="badge-text">VABB Type</span>
-        <div class="c-counter c-counter--small">{{len (.SearchArgs.FiltersFor "vabb_type")}}</div>
+        {{with .SearchArgs.FiltersFor "vabb_type"}}
+        <span class="badge-value ml-2">
+            &ndash;
+            {{range $i, $v := .}}
+                {{if gt $i 2}}, &hellip;{{break}}{{end}}
+                {{if gt $i 0}},{{end}}
+                {{$v}}
+            {{end}}
+        </span>
+        {{end}}
         <i class="if if-caret-down"></i>
     </a>
     <form class="dropdown-menu" method="GET" action="{{.CurrentURL|queryClear}}">

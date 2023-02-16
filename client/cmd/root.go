@@ -1,69 +1,87 @@
 package cmd
 
 import (
-	"context"
-	"crypto/tls"
-	"fmt"
-	"log"
-	"time"
+	"strings"
 
+	"github.com/mitchellh/go-homedir"
+	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
-	api "github.com/ugent-library/biblio-backend/api/v1"
-	"github.com/ugent-library/biblio-backend/client/auth"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
-	"google.golang.org/grpc/credentials/insecure"
+	"github.com/ugent-library/biblio-backoffice/client/client"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
 var (
 	marshaller   = protojson.MarshalOptions{UseProtoNames: true}
 	unmarshaller = protojson.UnmarshalOptions{}
+	configFile   string
+	config       client.Config
 )
 
-type RootCmd struct {
-	Client       api.BiblioClient
-	Marshaller   protojson.MarshalOptions
-	Unmarshaller protojson.UnmarshalOptions
+const (
+	defaultHost = ""
+	defaultPort = 443
+)
+
+func init() {
+	cobra.OnInitialize(initConfig)
+
+	viper.SetDefault("host", defaultHost)
+	viper.SetDefault("port", defaultPort)
+	viper.SetDefault("username", "")
+	viper.SetDefault("password", "")
+	viper.SetDefault("insecure", false)
+	viper.SetDefault("cacert", "")
+
+	rootCmd.PersistentFlags().StringVar(&configFile, "config", "", "config file (default is $HOME/.biblioclient.toml)")
+	rootCmd.PersistentFlags().String("host", defaultHost, "api server host")
+	rootCmd.PersistentFlags().Int("port", defaultPort, "api server port")
+	rootCmd.PersistentFlags().String("username", "ddd", "api server user username")
+	rootCmd.PersistentFlags().String("password", "", "api server user password")
+	rootCmd.PersistentFlags().Bool("insecure", false, "disable TLS encryption")
+	rootCmd.PersistentFlags().String("cacert", "", "path to the CA certificate (if using self-signed certificates)")
 }
 
-func (c *RootCmd) Wrap(fn func()) {
-	// Set marshaller
-	c.Marshaller = marshaller
-	// Set unmarshaller
-	c.Unmarshaller = unmarshaller
-
-	// Set encryption
-	var dialOptionSecureConn grpc.DialOption
-	if viper.GetBool("insecure") {
-		dialOptionSecureConn = grpc.WithTransportCredentials(insecure.NewCredentials())
+func initConfig() {
+	if configFile != "" {
+		// Use config file from the flag.)
+		viper.SetConfigFile(configFile)
 	} else {
-		dialOptionSecureConn = grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{}))
+		// Find home directory.
+		home, err := homedir.Dir()
+		cobra.CheckErr(err)
+
+		// Search config in home directory with name ".biblioclient.{yaml,toml}".
+		viper.AddConfigPath(home)
+		viper.SetConfigName(".biblioclient")
 	}
 
-	// Set up the connection and the API client
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
-	defer cancel()
+	viper.SetEnvPrefix("biblio-backoffice")
+	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
+	viper.AutomaticEnv()
 
-	addr := fmt.Sprintf("%s:%d", viper.GetString("host"), viper.GetInt("port"))
-	log.Println(addr)
+	cobra.CheckErr(viper.ReadInConfig())
+	cobra.CheckErr(viper.Unmarshal(&config))
+}
 
-	conn, err := grpc.DialContext(ctx, addr,
-		dialOptionSecureConn,
-		grpc.WithPerRPCCredentials(auth.BasicAuth{
-			User:     viper.GetString("username"),
-			Password: viper.GetString("password"),
-		}),
-		grpc.WithBlock(),
-	)
+// TODO we shouldn't do this for all flags, only ones that have a config equivalent
+var rootCmd = &cobra.Command{
+	Use:   "biblio-client [command]",
+	Short: "biblio client",
+	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+		// Silence the usage text if an error occurs
+		cmd.SilenceUsage = true
 
-	if err != nil {
-		log.Fatal(err)
-	}
+		// flags override env vars
+		cmd.Flags().VisitAll(func(f *pflag.Flag) {
+			if f.Changed {
+				viper.Set(f.Name, f.Value.String())
+			}
+		})
+		return nil
+	},
+}
 
-	defer conn.Close()
-	c.Client = api.NewBiblioClient(conn)
-
-	// Run the command
-	fn()
+func Execute() error {
+	return rootCmd.Execute()
 }
