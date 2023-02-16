@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - #956: Show status of facet filter in badge
 - #1004: Add Reset filters button
 - #957: Show top 3 selected facet values in badge
+- Add cypress tests
 
 ### Fixed
 
