@@ -4,7 +4,17 @@
         aria-expanded="false" role="button"
     >
         <span class="badge-text">Classification</span>
-        <i class="if if-caret-down"></i>
+        {{with .SearchArgs.FiltersFor "classification"}}
+        <span class="badge-value ml-2">
+            &ndash;
+            {{range $i, $v := .}}
+                {{if gt $i 2}}, &hellip;{{break}}{{end}}
+                {{if gt $i 0}},{{end}}
+                {{$v}}
+            {{end}}
+        {{end}}
+        </span>
+    <i class="if if-caret-down"></i>
     </a>
     <form class="dropdown-menu" method="GET" action="{{.CurrentURL|queryClear}}">
         <div class="bc-navbar bc-navbar--bordered-bottom">
