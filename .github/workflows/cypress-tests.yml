@@ -1,7 +1,6 @@
 name: Cypress Tests
 
 on:
-  push:
   schedule:
     - cron: '30 8 * * *'
 
