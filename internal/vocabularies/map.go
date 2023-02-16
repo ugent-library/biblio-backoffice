@@ -49,8 +49,8 @@ var Map = map[string][]string{
 	},
 	"dataset_curation_facets": {
 		"status",
-		"faculty",
 		"locked",
+		"faculty",
 		"reviewer_tags",
 		"has_message",
 		"created_since",
