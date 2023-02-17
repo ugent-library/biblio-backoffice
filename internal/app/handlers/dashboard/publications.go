@@ -93,10 +93,6 @@ func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Conte
 func generatePublicationsDashboard(faculties []string, ptypes []string, searcher backends.PublicationSearchService, baseSearchUrl *url.URL, fn func(args *models.SearchArgs) *models.SearchArgs) (map[string]map[string][]string, error) {
 	var publications = make(map[string]map[string][]string)
 
-	// pool := pond.New(100, 300)
-	// defer pool.StopAndWait()
-	// group := pool.Group()
-
 	for _, fac := range faculties {
 		publications[fac] = map[string][]string{}
 
@@ -131,27 +127,8 @@ func generatePublicationsDashboard(faculties []string, ptypes []string, searcher
 			} else {
 				publications[fac][ptype] = []string{fmt.Sprint(hits.Total), searchUrl.String()}
 			}
-
-			// f := fac
-			// p := ptype
-
-			// var lock sync.Mutex
-			// group.Submit(func(f string, pt string, p map[string]map[string][]string, searchUrl string) func() {
-			// 	return func() {
-			// 		lock.Lock()
-			// 		hits, err := searcher.Search(searchArgs)
-			// 		if err != nil {
-			// 			p[f][pt] = []string{"Error", ""}
-			// 		} else {
-			// 			p[f][pt] = []string{fmt.Sprint(hits.Total), searchUrl}
-			// 		}
-			// 		lock.Unlock()
-			// 	}
-			// }(f, p, publications, searchUrl.String()))
 		}
 	}
-
-	// group.Wait()
 
 	return publications, nil
 }
