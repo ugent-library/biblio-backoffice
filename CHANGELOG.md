@@ -19,11 +19,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - #956: Show status of facet filter in badge
 - #1004: Add Reset filters button
 - #957: Show top 3 selected facet values in badge
-- Add cypress tests
+- Cypress tests
 
 ### Fixed
 
 - Fix conflict error after file upload cancel
+- #1006: Expose abstract language to frontoffice
 
 ## [v1.0.21] - 2023-01-25
 
