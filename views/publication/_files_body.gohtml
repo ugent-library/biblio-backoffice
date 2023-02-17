@@ -16,6 +16,7 @@
             <div class="c-file-upload__content">
                 <p>Drag and drop or</p>
                 <button class="btn btn-outline-primary">Upload file</button>
+                <p class="small pt-3 mb-0">Maximum file size: {{formatBytes (int64 .MaxFileSize)}}</p>
             </div>
         </div>
         <div class="c-file-upload c-file-upload--disabled file-upload-busy d-none">
