@@ -173,9 +173,15 @@ type Link struct {
 	URL    string `json:"url,omitempty"`
 }
 
+type Text struct {
+	Text string `json:"text,omitempty"`
+	Lang string `json:"lang,omitempty"`
+}
+
 type Publication struct {
 	ID                  string        `json:"_id"`
 	Abstract            []string      `json:"abstract,omitempty"`
+	AbstractFull        []Text        `json:"abstract_full,omitempty"`
 	AccessLevel         string        `json:"access_level,omitempty"`
 	AdditionalInfo      string        `json:"additional_info,omitempty"`
 	Affiliation         []Affiliation `json:"affiliation,omitempty"`
@@ -368,6 +374,7 @@ func (h *Handler) mapPublication(p *models.Publication) *Publication {
 
 	for _, v := range p.Abstract {
 		pp.Abstract = append(pp.Abstract, v.Text)
+		pp.AbstractFull = append(pp.AbstractFull, Text{Text: v.Text, Lang: v.Lang})
 	}
 
 	for _, v := range p.Department {
@@ -686,29 +693,30 @@ func (h *Handler) mapPublication(p *models.Publication) *Publication {
 	return pp
 }
 
-func (h *Handler) mapDataset(p *models.Dataset) *Publication {
+func (h *Handler) mapDataset(d *models.Dataset) *Publication {
 	pp := &Publication{
-		ID: p.ID,
+		ID: d.ID,
 		//biblio used librecat's zulu time and splitted them
 		//two types of dates in the loop (old: zulu, new: with timestamp)
-		DateCreated: p.DateCreated.UTC().Format(timestampFmt),
-		DateUpdated: p.DateUpdated.UTC().Format(timestampFmt),
+		DateCreated: d.DateCreated.UTC().Format(timestampFmt),
+		DateUpdated: d.DateUpdated.UTC().Format(timestampFmt),
 		//date_from used by biblio indexer only
-		DateFrom:    p.DateFrom.Format("2006-01-02T15:04:05.000Z"),
-		AccessLevel: p.AccessLevel,
-		Embargo:     p.EmbargoDate,
-		EmbargoTo:   p.AccessLevelAfterEmbargo,
-		Title:       p.Title,
+		DateFrom:    d.DateFrom.Format("2006-01-02T15:04:05.000Z"),
+		AccessLevel: d.AccessLevel,
+		Embargo:     d.EmbargoDate,
+		EmbargoTo:   d.AccessLevelAfterEmbargo,
+		Title:       d.Title,
 		Type:        "researchData",
-		URL:         p.URL,
-		Year:        p.Year,
+		URL:         d.URL,
+		Year:        d.Year,
 	}
 
-	for _, v := range p.Abstract {
+	for _, v := range d.Abstract {
 		pp.Abstract = append(pp.Abstract, v.Text)
+		pp.AbstractFull = append(pp.AbstractFull, Text{Text: v.Text, Lang: v.Lang})
 	}
 
-	for _, v := range p.Department {
+	for _, v := range d.Department {
 		aff := Affiliation{UGentID: v.ID}
 		for i := len(v.Tree) - 1; i >= 0; i-- {
 			aff.Path = append(aff.Path, AffiliationPath{UGentID: v.Tree[i].ID})
@@ -717,44 +725,44 @@ func (h *Handler) mapDataset(p *models.Dataset) *Publication {
 		pp.Affiliation = append(pp.Affiliation, aff)
 	}
 
-	for _, v := range p.Author {
+	for _, v := range d.Author {
 		c := mapContributor(v)
 		pp.Author = append(pp.Author, *c)
 	}
 
-	if p.Creator != nil {
-		pp.CreatedBy = &Person{ID: p.Creator.ID}
+	if d.Creator != nil {
+		pp.CreatedBy = &Person{ID: d.Creator.ID}
 	}
 
-	if p.DOI != "" {
-		doi, err := doitools.NormalizeDOI(p.DOI)
+	if d.DOI != "" {
+		doi, err := doitools.NormalizeDOI(d.DOI)
 		if err != nil {
-			pp.DOI = append(pp.DOI, p.DOI)
+			pp.DOI = append(pp.DOI, d.DOI)
 		} else {
 			pp.DOI = append(pp.DOI, doi)
 		}
 	}
 
-	if p.Format != nil {
-		pp.Format = append(pp.Format, p.Format...)
+	if d.Format != nil {
+		pp.Format = append(pp.Format, d.Format...)
 	}
 
-	if p.Keyword != nil {
-		pp.Keyword = append(pp.Keyword, p.Keyword...)
+	if d.Keyword != nil {
+		pp.Keyword = append(pp.Keyword, d.Keyword...)
 	}
 
 	// hide keywords like LicenseNotListed or UnknownCopyright
-	if _, isHidden := hiddenLicenses[p.License]; !isHidden {
-		pp.License = p.License
+	if _, isHidden := hiddenLicenses[d.License]; !isHidden {
+		pp.License = d.License
 	}
-	pp.OtherLicense = p.OtherLicense
-	if v, ok := licenses[p.License]; ok {
+	pp.OtherLicense = d.OtherLicense
+	if v, ok := licenses[d.License]; ok {
 		pp.CopyrightStatement = v
 	}
 
-	if p.Project != nil {
-		pp.Project = make([]Project, len(p.Project))
-		for i, v := range p.Project {
+	if d.Project != nil {
+		pp.Project = make([]Project, len(d.Project))
+		for i, v := range d.Project {
 			pp.Project[i] = Project{
 				ID:    v.ID,
 				Title: v.Name,
@@ -762,26 +770,26 @@ func (h *Handler) mapDataset(p *models.Dataset) *Publication {
 		}
 	}
 
-	if p.Publisher != "" {
+	if d.Publisher != "" {
 		if pp.Publisher == nil {
 			pp.Publisher = &Publisher{}
 		}
-		pp.Publisher.Name = p.Publisher
+		pp.Publisher.Name = d.Publisher
 	}
 
-	if p.RelatedPublication != nil {
-		pp.RelatedPublication = make([]Relation, len(p.RelatedPublication))
-		for i, v := range p.RelatedPublication {
+	if d.RelatedPublication != nil {
+		pp.RelatedPublication = make([]Relation, len(d.RelatedPublication))
+		for i, v := range d.RelatedPublication {
 			pp.RelatedPublication[i] = Relation{ID: v.ID}
 		}
 	}
 
-	if p.Status == "private" {
+	if d.Status == "private" {
 		pp.Status = "unsubmitted"
-	} else if p.Status == "deleted" && p.HasBeenPublic {
+	} else if d.Status == "deleted" && d.HasBeenPublic {
 		pp.Status = "pdeleted"
 	} else {
-		pp.Status = p.Status
+		pp.Status = d.Status
 	}
 
 	return pp

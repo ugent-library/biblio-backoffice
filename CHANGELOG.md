@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Fixed
+
+## [v1.0.22] - 2023-02-17
+
+### Added
+
 - #1017: Add locked / unlocked filter to datasets
 - #983: File upload progress
 - Show error dialog if upload is too large
@@ -19,11 +25,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - #956: Show status of facet filter in badge
 - #1004: Add Reset filters button
 - #957: Show top 3 selected facet values in badge
-- Add cypress tests
+- Cypress tests
 
 ### Fixed
 
 - Fix conflict error after file upload cancel
+- #1006: Expose abstract language to frontoffice
 
 ## [v1.0.21] - 2023-01-25
 
@@ -243,7 +250,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.21...HEAD
+[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.22...HEAD
+[v1.0.22]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.21...v1.0.22
 [v1.0.21]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.20...v1.0.21
 [v1.0.20]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.19...v1.0.20
 [v1.0.19]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.18...v1.0.19
