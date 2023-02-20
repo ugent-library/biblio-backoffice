@@ -42,7 +42,7 @@
                         <thead>
                             <tr>
                                 <th class="table-col-sm-fixed table-col-sm-fixed-left" scope="col"></th>
-                                {{range $i,$f := .Faculties}}
+                                {{range $i,$f := .UFaculties}}
                                 <th scope="col">{{$f}}</th>
                                 {{end}}
                             </tr>
@@ -51,7 +51,7 @@
                         {{range $pti, $pt := .PTypes}}
                             <tr>
                                 <th class="table-col-sm-fixed table-col-sm-fixed-left" scope="col">{{$pt}}</th>
-                                {{range $fi,$f := $.Faculties}}
+                                {{range $fi,$f := $.UFaculties}}
                                 {{with $cell := (index $.UPublications $f $pti)}}
                                 <td>
                                     {{if eq (index $cell 1) ""}}
@@ -84,7 +84,7 @@
                         <thead>
                             <tr>
                                 <th class="table-col-sm-fixed table-col-sm-fixed-left" scope="col"></th>
-                                {{range $i,$f := .Faculties}}
+                                {{range $i,$f := .AFaculties}}
                                 <th scope="col">{{$f}}</th>
                                 {{end}}
                             </tr>
@@ -93,7 +93,7 @@
                         {{range $pti, $pt := .PTypes}}
                             <tr>
                                 <th class="table-col-sm-fixed table-col-sm-fixed-left" scope="col">{{$pt}}</th>
-                                {{range $fi,$f := $.Faculties}}
+                                {{range $fi,$f := $.AFaculties}}
                                 {{with $cell := (index $.APublications $f $pti)}}
                                 <td>
                                     {{if eq (index $cell 1) ""}}

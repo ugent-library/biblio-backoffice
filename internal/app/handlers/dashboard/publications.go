@@ -2,7 +2,6 @@ package dashboard
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"net/url"
 
@@ -19,7 +18,8 @@ type YieldPublications struct {
 	ActiveNav     string
 	UPublications map[string]map[string][]string
 	APublications map[string]map[string][]string
-	Faculties     []string
+	UFaculties    []string
+	AFaculties    []string
 	PTypes        map[string]string
 }
 
@@ -28,31 +28,49 @@ func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Conte
 
 	var activeNav string
 
+	socs := vocabularies.Map["faculties_socs"]
+	core := vocabularies.Map["faculties_core"]
+	all := vocabularies.Map["faculties"]
+
 	switch ctx.Type {
 	case "socs":
-		faculties = vocabularies.Map["faculties_socs"]
+		faculties = socs
 		activeNav = "dashboard_publications_socs"
 	default:
-		faculties = vocabularies.Map["faculties_core"]
+		faculties = core
 		activeNav = "dashboard_publications_faculties"
 	}
 
-	ptypes := vocabularies.Map["publication_types"]
-
 	faculties = append([]string{"all"}, faculties...)
+
+	ptypes := vocabularies.Map["publication_types"]
 	ptypes = append([]string{"all"}, ptypes...)
 
 	locptypes := localize.VocabularyTerms(ctx.Locale, "publication_types")
 	locptypes["all"] = "All"
 
 	// Publications with classification U
+	ufaculties := faculties
+	ufaculties = append(ufaculties, []string{"UGent", "-"}...)
 
-	uSearcher := h.PublicationSearchService.WithScope("status", "public", "returned")
+	uSearcher := h.PublicationSearchService
 	baseSearchUrl := h.PathFor("publications")
 
-	uPublications, err := generatePublicationsDashboard(faculties, ptypes, uSearcher, baseSearchUrl, func(args *models.SearchArgs) *models.SearchArgs {
+	uPublications, err := generatePublicationsDashboard(ufaculties, ptypes, uSearcher, baseSearchUrl, func(fac string, args *models.SearchArgs) *models.SearchArgs {
 		args.WithFilter("classification", "U")
 		args.WithFilter("status", "public")
+
+		switch fac {
+		case "all":
+			args.WithFilter("faculty", faculties...)
+		case "-":
+			args.WithFilter("!faculty", all...)
+		case "UGent":
+			args.WithFilter("department.id", "UGent")
+		default:
+			args.WithFilter("faculty", fac)
+		}
+
 		return args
 	})
 
@@ -64,10 +82,21 @@ func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Conte
 
 	// Publications with publication status "accepted"
 
-	aSearcher := h.PublicationSearchService.WithScope("status", "private", "public", "returned")
+	aSearcher := h.PublicationSearchService
 
-	aPublications, err := generatePublicationsDashboard(faculties, ptypes, aSearcher, baseSearchUrl, func(args *models.SearchArgs) *models.SearchArgs {
+	aPublications, err := generatePublicationsDashboard(faculties, ptypes, aSearcher, baseSearchUrl, func(fac string, args *models.SearchArgs) *models.SearchArgs {
 		args.WithFilter("publication_status", "accepted")
+		args.WithFilter("status", "private", "public", "returned")
+
+		switch fac {
+		case "all":
+			args.WithFilter("faculty", faculties...)
+		case "-":
+			args.WithFilter("!faculty", all...)
+		default:
+			args.WithFilter("faculty", fac)
+		}
+
 		return args
 	})
 
@@ -77,20 +106,19 @@ func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Conte
 		return
 	}
 
-	log.Println(activeNav)
-
 	render.Layout(w, "layouts/default", "dashboard/pages/publications", YieldPublications{
 		Context:       ctx,
 		PageTitle:     "Dashboard - Publications - Biblio",
 		ActiveNav:     activeNav,
 		UPublications: uPublications,
 		APublications: aPublications,
-		Faculties:     faculties,
+		UFaculties:    ufaculties,
+		AFaculties:    faculties,
 		PTypes:        locptypes,
 	})
 }
 
-func generatePublicationsDashboard(faculties []string, ptypes []string, searcher backends.PublicationSearchService, baseSearchUrl *url.URL, fn func(args *models.SearchArgs) *models.SearchArgs) (map[string]map[string][]string, error) {
+func generatePublicationsDashboard(faculties []string, ptypes []string, searcher backends.PublicationSearchService, baseSearchUrl *url.URL, fn func(fac string, args *models.SearchArgs) *models.SearchArgs) (map[string]map[string][]string, error) {
 	var publications = make(map[string]map[string][]string)
 
 	for _, fac := range faculties {
@@ -101,17 +129,11 @@ func generatePublicationsDashboard(faculties []string, ptypes []string, searcher
 			searchArgs := models.NewSearchArgs()
 			queryVals := searchUrl.Query()
 
-			if fac != "all" {
-				searchArgs.WithFilter("faculty", fac)
-			} else {
-				searchArgs.WithFilter("faculty", faculties...)
-			}
-
 			if ptype != "all" {
 				searchArgs.WithFilter("type", ptype)
 			}
 
-			searchArgs = fn(searchArgs)
+			searchArgs = fn(fac, searchArgs)
 
 			for f, varr := range searchArgs.Filters {
 				for _, v := range varr {
