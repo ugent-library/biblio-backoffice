@@ -26,7 +26,7 @@ jobs:
         with:
           config-file: cypress/cypress.config.mjs
           record: true
-          config: video=true
+          config: video=true,retries=2
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           CYPRESS_RESEARCHER_USER_NAME: ${{ secrets.CYPRESS_RESEARCHER_USER_NAME }}
