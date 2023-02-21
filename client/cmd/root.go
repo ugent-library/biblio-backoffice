@@ -59,9 +59,6 @@ func initConfig() {
 	viper.SetEnvPrefix("biblio-backoffice")
 	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
 	viper.AutomaticEnv()
-
-	cobra.CheckErr(viper.ReadInConfig())
-	cobra.CheckErr(viper.Unmarshal(&config))
 }
 
 // TODO we shouldn't do this for all flags, only ones that have a config equivalent
@@ -75,9 +72,13 @@ var rootCmd = &cobra.Command{
 		// flags override env vars
 		cmd.Flags().VisitAll(func(f *pflag.Flag) {
 			if f.Changed {
-				viper.Set(f.Name, f.Value.String())
+				viper.BindPFlag(f.Name, f)
 			}
 		})
+
+		cobra.CheckErr(viper.ReadInConfig())
+		cobra.CheckErr(viper.Unmarshal(&config))
+
 		return nil
 	},
 }
