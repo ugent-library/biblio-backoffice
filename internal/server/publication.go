@@ -373,6 +373,7 @@ func (s *server) ReindexPublications(req *api.ReindexPublicationsRequest, stream
 
 	// cancel() is used to shutdown the async bulk indexer as well
 	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
 	go func(ctx context.Context) {
 		startTime := time.Now()
@@ -451,24 +452,33 @@ func (s *server) ReindexPublications(req *api.ReindexPublicationsRequest, stream
 			endTime = time.Now()
 		}
 
+		msgc <- "Done."
+
 		close(msgc)
 		close(errc)
 	}(ctx)
 
+readChannel:
 	for {
 		select {
 		case err := <-errc:
-			cancel()
 			return err
-		case msg := <-msgc:
+		case msg, ok := <-msgc:
 			if err := stream.Send(&api.ReindexPublicationsResponse{Message: msg}); err != nil {
-				cancel()
 				return err
 			}
-		// The client closed the stream on their end
+
+			if !ok {
+				// msgc channel closed, processing done.
+				break readChannel
+			}
 		case <-stream.Context().Done():
-			cancel()
+			// TODO: better error handling / logging server side
+			// The client closed the stream on their end, log as an error
+			// deferred cancel() is executed, ensures async bulk indexing stops as well.
 			return fmt.Errorf("client closed")
 		}
 	}
+
+	return nil
 }
