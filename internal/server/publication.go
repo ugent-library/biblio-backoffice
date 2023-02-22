@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"time"
 
 	"github.com/oklog/ulid/v2"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
@@ -362,6 +363,112 @@ func (s *server) ValidatePublications(stream api.Biblio_ValidatePublicationsServ
 			}
 		} else if err != nil {
 			return err
+		}
+	}
+}
+
+func (s *server) ReindexPublications(req *api.ReindexPublicationsRequest, stream api.Biblio_ReindexPublicationsServer) error {
+	msgc := make(chan string, 1)
+	errc := make(chan error)
+
+	// cancel() is used to shutdown the async bulk indexer as well
+	ctx, cancel := context.WithCancel(context.Background())
+
+	go func(ctx context.Context) {
+		startTime := time.Now()
+		indexed := 0
+
+		msgc <- "Indexing to new index..."
+
+		switcher, err := s.services.PublicationSearchService.NewIndexSwitcher(backends.BulkIndexerConfig{
+			OnError: func(err error) {
+				errc <- fmt.Errorf("indexing failed : %s", err)
+			},
+			OnIndexError: func(id string, err error) {
+				errc <- fmt.Errorf("indexing failed for publication [id: %s] : %s", id, err)
+			},
+		})
+		if err != nil {
+			errc <- err
+		}
+		s.services.Repository.EachPublication(func(p *models.Publication) bool {
+			if err := switcher.Index(ctx, p); err != nil {
+				errc <- fmt.Errorf("indexing failed for publication [id: %s] : %s", p.ID, err)
+			}
+			indexed++
+			return true
+		})
+
+		msgc <- fmt.Sprintf("Indexed %d publications...", indexed)
+
+		msgc <- "Switching to new index..."
+
+		if err := switcher.Switch(ctx); err != nil {
+			errc <- err
+		}
+
+		endTime := time.Now()
+
+		msgc <- "Indexing changes since start of reindex..."
+
+		for {
+			indexed = 0
+
+			bi, err := s.services.PublicationSearchService.NewBulkIndexer(backends.BulkIndexerConfig{
+				OnError: func(err error) {
+					errc <- fmt.Errorf("indexing failed : %s", err)
+				},
+				OnIndexError: func(id string, err error) {
+					errc <- fmt.Errorf("indexing failed for publication [id: %s] : %s", id, err)
+				},
+			})
+			if err != nil {
+				errc <- err
+			}
+
+			err = s.services.Repository.PublicationsBetween(startTime, endTime, func(p *models.Publication) bool {
+				if err := bi.Index(ctx, p); err != nil {
+					errc <- fmt.Errorf("indexing failed for publication [id: %s] : %s", p.ID, err)
+				}
+				indexed++
+				return true
+			})
+			if err != nil {
+				errc <- err
+			}
+
+			if err = bi.Close(ctx); err != nil {
+				errc <- err
+			}
+
+			if indexed == 0 {
+				break
+			}
+
+			msgc <- fmt.Sprintf("Indexed %d publications...", indexed)
+
+			startTime = endTime
+			endTime = time.Now()
+		}
+
+		close(msgc)
+		close(errc)
+	}(ctx)
+
+	for {
+		select {
+		case err := <-errc:
+			cancel()
+			return err
+		case msg := <-msgc:
+			if err := stream.Send(&api.ReindexPublicationsResponse{Message: msg}); err != nil {
+				cancel()
+				return err
+			}
+		// The client closed the stream on their end
+		case <-stream.Context().Done():
+			cancel()
+			return fmt.Errorf("client closed")
 		}
 	}
 }

@@ -34,6 +34,7 @@ type BiblioClient interface {
 	PurgePublication(ctx context.Context, in *PurgePublicationRequest, opts ...grpc.CallOption) (*PurgePublicationResponse, error)
 	PurgeAllPublications(ctx context.Context, in *PurgeAllPublicationsRequest, opts ...grpc.CallOption) (*PurgeAllPublicationsResponse, error)
 	ValidatePublications(ctx context.Context, opts ...grpc.CallOption) (Biblio_ValidatePublicationsClient, error)
+	ReindexPublications(ctx context.Context, in *ReindexPublicationsRequest, opts ...grpc.CallOption) (Biblio_ReindexPublicationsClient, error)
 	GetDataset(ctx context.Context, in *GetDatasetRequest, opts ...grpc.CallOption) (*GetDatasetResponse, error)
 	GetAllDatasets(ctx context.Context, in *GetAllDatasetsRequest, opts ...grpc.CallOption) (Biblio_GetAllDatasetsClient, error)
 	SearchDatasets(ctx context.Context, in *SearchDatasetsRequest, opts ...grpc.CallOption) (*SearchDatasetsResponse, error)
@@ -323,6 +324,38 @@ func (x *biblioValidatePublicationsClient) Recv() (*ValidatePublicationsResponse
 	return m, nil
 }
 
+func (c *biblioClient) ReindexPublications(ctx context.Context, in *ReindexPublicationsRequest, opts ...grpc.CallOption) (Biblio_ReindexPublicationsClient, error) {
+	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[7], "/biblio.v1.Biblio/ReindexPublications", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &biblioReindexPublicationsClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type Biblio_ReindexPublicationsClient interface {
+	Recv() (*ReindexPublicationsResponse, error)
+	grpc.ClientStream
+}
+
+type biblioReindexPublicationsClient struct {
+	grpc.ClientStream
+}
+
+func (x *biblioReindexPublicationsClient) Recv() (*ReindexPublicationsResponse, error) {
+	m := new(ReindexPublicationsResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 func (c *biblioClient) GetDataset(ctx context.Context, in *GetDatasetRequest, opts ...grpc.CallOption) (*GetDatasetResponse, error) {
 	out := new(GetDatasetResponse)
 	err := c.cc.Invoke(ctx, "/biblio.v1.Biblio/GetDataset", in, out, opts...)
@@ -333,7 +366,7 @@ func (c *biblioClient) GetDataset(ctx context.Context, in *GetDatasetRequest, op
 }
 
 func (c *biblioClient) GetAllDatasets(ctx context.Context, in *GetAllDatasetsRequest, opts ...grpc.CallOption) (Biblio_GetAllDatasetsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[7], "/biblio.v1.Biblio/GetAllDatasets", opts...)
+	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[8], "/biblio.v1.Biblio/GetAllDatasets", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -383,7 +416,7 @@ func (c *biblioClient) UpdateDataset(ctx context.Context, in *UpdateDatasetReque
 }
 
 func (c *biblioClient) AddDatasets(ctx context.Context, opts ...grpc.CallOption) (Biblio_AddDatasetsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[8], "/biblio.v1.Biblio/AddDatasets", opts...)
+	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[9], "/biblio.v1.Biblio/AddDatasets", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -414,7 +447,7 @@ func (x *biblioAddDatasetsClient) Recv() (*AddDatasetsResponse, error) {
 }
 
 func (c *biblioClient) ImportDatasets(ctx context.Context, opts ...grpc.CallOption) (Biblio_ImportDatasetsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[9], "/biblio.v1.Biblio/ImportDatasets", opts...)
+	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[10], "/biblio.v1.Biblio/ImportDatasets", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -445,7 +478,7 @@ func (x *biblioImportDatasetsClient) Recv() (*ImportDatasetsResponse, error) {
 }
 
 func (c *biblioClient) GetDatasetHistory(ctx context.Context, in *GetDatasetHistoryRequest, opts ...grpc.CallOption) (Biblio_GetDatasetHistoryClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[10], "/biblio.v1.Biblio/GetDatasetHistory", opts...)
+	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[11], "/biblio.v1.Biblio/GetDatasetHistory", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -495,7 +528,7 @@ func (c *biblioClient) PurgeAllDatasets(ctx context.Context, in *PurgeAllDataset
 }
 
 func (c *biblioClient) ValidateDatasets(ctx context.Context, opts ...grpc.CallOption) (Biblio_ValidateDatasetsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[11], "/biblio.v1.Biblio/ValidateDatasets", opts...)
+	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[12], "/biblio.v1.Biblio/ValidateDatasets", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -550,6 +583,7 @@ type BiblioServer interface {
 	PurgePublication(context.Context, *PurgePublicationRequest) (*PurgePublicationResponse, error)
 	PurgeAllPublications(context.Context, *PurgeAllPublicationsRequest) (*PurgeAllPublicationsResponse, error)
 	ValidatePublications(Biblio_ValidatePublicationsServer) error
+	ReindexPublications(*ReindexPublicationsRequest, Biblio_ReindexPublicationsServer) error
 	GetDataset(context.Context, *GetDatasetRequest) (*GetDatasetResponse, error)
 	GetAllDatasets(*GetAllDatasetsRequest, Biblio_GetAllDatasetsServer) error
 	SearchDatasets(context.Context, *SearchDatasetsRequest) (*SearchDatasetsResponse, error)
@@ -603,6 +637,9 @@ func (UnimplementedBiblioServer) PurgeAllPublications(context.Context, *PurgeAll
 }
 func (UnimplementedBiblioServer) ValidatePublications(Biblio_ValidatePublicationsServer) error {
 	return status.Errorf(codes.Unimplemented, "method ValidatePublications not implemented")
+}
+func (UnimplementedBiblioServer) ReindexPublications(*ReindexPublicationsRequest, Biblio_ReindexPublicationsServer) error {
+	return status.Errorf(codes.Unimplemented, "method ReindexPublications not implemented")
 }
 func (UnimplementedBiblioServer) GetDataset(context.Context, *GetDatasetRequest) (*GetDatasetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetDataset not implemented")
@@ -905,6 +942,27 @@ func (x *biblioValidatePublicationsServer) Recv() (*ValidatePublicationsRequest,
 		return nil, err
 	}
 	return m, nil
+}
+
+func _Biblio_ReindexPublications_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(ReindexPublicationsRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(BiblioServer).ReindexPublications(m, &biblioReindexPublicationsServer{stream})
+}
+
+type Biblio_ReindexPublicationsServer interface {
+	Send(*ReindexPublicationsResponse) error
+	grpc.ServerStream
+}
+
+type biblioReindexPublicationsServer struct {
+	grpc.ServerStream
+}
+
+func (x *biblioReindexPublicationsServer) Send(m *ReindexPublicationsResponse) error {
+	return x.ServerStream.SendMsg(m)
 }
 
 func _Biblio_GetDataset_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -1225,6 +1283,11 @@ var Biblio_ServiceDesc = grpc.ServiceDesc{
 			Handler:       _Biblio_ValidatePublications_Handler,
 			ServerStreams: true,
 			ClientStreams: true,
+		},
+		{
+			StreamName:    "ReindexPublications",
+			Handler:       _Biblio_ReindexPublications_Handler,
+			ServerStreams: true,
 		},
 		{
 			StreamName:    "GetAllDatasets",
