@@ -77,14 +77,16 @@ describe('Publication import', () => {
         pathname: `/publication/${this.biblioID}/contributors/author/suggestions`,
         query: {
           first_name: 'Dries',
-          last_name: 'Moreels',
+          last_name: /^(|Moreels)$/, // This forces an exact string match. Just '' matches any string.
         },
       }).as('user-search')
 
       cy.contains('Search author').should('be.visible')
-      cy.get('input[name=first_name]').type('Dries')
-      cy.get('input[name=last_name]').type('Moreels')
 
+      cy.get('input[name=first_name]').type('Dries')
+      cy.wait('@user-search')
+
+      cy.get('input[name=last_name]').type('Moreels')
       cy.wait('@user-search')
 
       cy.contains('.badge', 'Active UGent member')
