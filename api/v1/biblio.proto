@@ -35,6 +35,7 @@ service Biblio {
     rpc PurgeDataset(PurgeDatasetRequest) returns (PurgeDatasetResponse);
     rpc PurgeAllDatasets(PurgeAllDatasetsRequest) returns (PurgeAllDatasetsResponse);
     rpc ValidateDatasets(stream ValidateDatasetsRequest) returns (stream ValidateDatasetsResponse);
+    rpc ReindexDatasets(ReindexDatasetsRequest) returns (stream ReindexDatasetsResponse);
     rpc Relate(RelateRequest) returns (RelateResponse);
 }
 
@@ -231,6 +232,13 @@ message ValidateDatasetsResponse {
     int32 seq = 1;
     string id = 2;
     string message = 3;
+}
+
+message ReindexDatasetsRequest{
+}
+
+message ReindexDatasetsResponse {
+    string message = 1;
 }
 
 message RelateRequest {

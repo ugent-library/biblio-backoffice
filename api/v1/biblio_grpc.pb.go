@@ -45,6 +45,7 @@ type BiblioClient interface {
 	PurgeDataset(ctx context.Context, in *PurgeDatasetRequest, opts ...grpc.CallOption) (*PurgeDatasetResponse, error)
 	PurgeAllDatasets(ctx context.Context, in *PurgeAllDatasetsRequest, opts ...grpc.CallOption) (*PurgeAllDatasetsResponse, error)
 	ValidateDatasets(ctx context.Context, opts ...grpc.CallOption) (Biblio_ValidateDatasetsClient, error)
+	ReindexDatasets(ctx context.Context, in *ReindexDatasetsRequest, opts ...grpc.CallOption) (Biblio_ReindexDatasetsClient, error)
 	Relate(ctx context.Context, in *RelateRequest, opts ...grpc.CallOption) (*RelateResponse, error)
 }
 
@@ -558,6 +559,38 @@ func (x *biblioValidateDatasetsClient) Recv() (*ValidateDatasetsResponse, error)
 	return m, nil
 }
 
+func (c *biblioClient) ReindexDatasets(ctx context.Context, in *ReindexDatasetsRequest, opts ...grpc.CallOption) (Biblio_ReindexDatasetsClient, error) {
+	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[13], "/biblio.v1.Biblio/ReindexDatasets", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &biblioReindexDatasetsClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type Biblio_ReindexDatasetsClient interface {
+	Recv() (*ReindexDatasetsResponse, error)
+	grpc.ClientStream
+}
+
+type biblioReindexDatasetsClient struct {
+	grpc.ClientStream
+}
+
+func (x *biblioReindexDatasetsClient) Recv() (*ReindexDatasetsResponse, error) {
+	m := new(ReindexDatasetsResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 func (c *biblioClient) Relate(ctx context.Context, in *RelateRequest, opts ...grpc.CallOption) (*RelateResponse, error) {
 	out := new(RelateResponse)
 	err := c.cc.Invoke(ctx, "/biblio.v1.Biblio/Relate", in, out, opts...)
@@ -594,6 +627,7 @@ type BiblioServer interface {
 	PurgeDataset(context.Context, *PurgeDatasetRequest) (*PurgeDatasetResponse, error)
 	PurgeAllDatasets(context.Context, *PurgeAllDatasetsRequest) (*PurgeAllDatasetsResponse, error)
 	ValidateDatasets(Biblio_ValidateDatasetsServer) error
+	ReindexDatasets(*ReindexDatasetsRequest, Biblio_ReindexDatasetsServer) error
 	Relate(context.Context, *RelateRequest) (*RelateResponse, error)
 	mustEmbedUnimplementedBiblioServer()
 }
@@ -670,6 +704,9 @@ func (UnimplementedBiblioServer) PurgeAllDatasets(context.Context, *PurgeAllData
 }
 func (UnimplementedBiblioServer) ValidateDatasets(Biblio_ValidateDatasetsServer) error {
 	return status.Errorf(codes.Unimplemented, "method ValidateDatasets not implemented")
+}
+func (UnimplementedBiblioServer) ReindexDatasets(*ReindexDatasetsRequest, Biblio_ReindexDatasetsServer) error {
+	return status.Errorf(codes.Unimplemented, "method ReindexDatasets not implemented")
 }
 func (UnimplementedBiblioServer) Relate(context.Context, *RelateRequest) (*RelateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Relate not implemented")
@@ -1175,6 +1212,27 @@ func (x *biblioValidateDatasetsServer) Recv() (*ValidateDatasetsRequest, error) 
 	return m, nil
 }
 
+func _Biblio_ReindexDatasets_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(ReindexDatasetsRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(BiblioServer).ReindexDatasets(m, &biblioReindexDatasetsServer{stream})
+}
+
+type Biblio_ReindexDatasetsServer interface {
+	Send(*ReindexDatasetsResponse) error
+	grpc.ServerStream
+}
+
+type biblioReindexDatasetsServer struct {
+	grpc.ServerStream
+}
+
+func (x *biblioReindexDatasetsServer) Send(m *ReindexDatasetsResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
 func _Biblio_Relate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(RelateRequest)
 	if err := dec(in); err != nil {
@@ -1316,6 +1374,11 @@ var Biblio_ServiceDesc = grpc.ServiceDesc{
 			Handler:       _Biblio_ValidateDatasets_Handler,
 			ServerStreams: true,
 			ClientStreams: true,
+		},
+		{
+			StreamName:    "ReindexDatasets",
+			Handler:       _Biblio_ReindexDatasets_Handler,
+			ServerStreams: true,
 		},
 	},
 	Metadata: "api/v1/biblio.proto",

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"time"
 
 	"github.com/oklog/ulid/v2"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
@@ -343,4 +344,121 @@ func (s *server) ValidateDatasets(stream api.Biblio_ValidateDatasetsServer) erro
 			return err
 		}
 	}
+}
+
+func (s *server) ReindexDatasets(req *api.ReindexDatasetsRequest, stream api.Biblio_ReindexDatasetsServer) error {
+	msgc := make(chan string, 1)
+	errc := make(chan error)
+
+	// cancel() is used to shutdown the async bulk indexer as well
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	go func(ctx context.Context) {
+		startTime := time.Now()
+
+		indexed := 0
+
+		msgc <- "Indexing to new index..."
+
+		switcher, err := s.services.DatasetSearchService.NewIndexSwitcher(backends.BulkIndexerConfig{
+			OnError: func(err error) {
+				errc <- fmt.Errorf("indexing failed : %s", err)
+			},
+			OnIndexError: func(id string, err error) {
+				errc <- fmt.Errorf("indexing failed for dataset [id: %s] : %s", id, err)
+			},
+		})
+		if err != nil {
+			errc <- err
+		}
+		s.services.Repository.EachDataset(func(d *models.Dataset) bool {
+			if err := switcher.Index(ctx, d); err != nil {
+				errc <- fmt.Errorf("indexing failed for dataset [id: %s] : %s", d.ID, err)
+			}
+			indexed++
+			return true
+		})
+
+		msgc <- fmt.Sprintf("Indexed %d datasets...", indexed)
+
+		msgc <- "Switching to new index..."
+
+		if err := switcher.Switch(ctx); err != nil {
+			errc <- err
+		}
+
+		endTime := time.Now()
+
+		msgc <- "Indexing changes since start of reindex..."
+
+		for {
+			indexed = 0
+
+			bi, err := s.services.DatasetSearchService.NewBulkIndexer(backends.BulkIndexerConfig{
+				OnError: func(err error) {
+					errc <- fmt.Errorf("indexing failed : %s", err)
+				},
+				OnIndexError: func(id string, err error) {
+					errc <- fmt.Errorf("indexing failed for dataset [id: %s] : %s", id, err)
+				},
+			})
+			if err != nil {
+				errc <- err
+			}
+
+			err = s.services.Repository.DatasetsBetween(startTime, endTime, func(d *models.Dataset) bool {
+				if err := bi.Index(ctx, d); err != nil {
+					errc <- fmt.Errorf("indexing failed for dataset [id: %s] : %s", d.ID, err)
+				}
+				indexed++
+				return true
+			})
+			if err != nil {
+				errc <- err
+			}
+
+			if err = bi.Close(ctx); err != nil {
+				errc <- err
+			}
+
+			if indexed == 0 {
+				break
+			}
+
+			msgc <- fmt.Sprintf("Indexed %d datasets...", indexed)
+
+			startTime = endTime
+			endTime = time.Now()
+		}
+
+		msgc <- "Done."
+
+		close(msgc)
+		close(errc)
+	}(ctx)
+
+readChannel:
+	for {
+		select {
+		case err := <-errc:
+			return err
+		case msg, ok := <-msgc:
+			if err := stream.Send(&api.ReindexDatasetsResponse{Message: msg}); err != nil {
+				return err
+			}
+
+			if !ok {
+				// msgc channel closed, processing done.
+				break readChannel
+			}
+		case <-stream.Context().Done():
+			// TODO: better error handling / logging server side
+			// The client closed the stream on their end, log as an error
+			// deferred cancel() is executed, ensures async bulk indexing stops as well.
+			return fmt.Errorf("client closed")
+		}
+	}
+
+	return nil
 }
