@@ -417,11 +417,12 @@ var publicationTransferCmd = &cobra.Command{
 			return true
 		}
 
+		ctx := context.TODO()
 		if len(args) > 2 {
 			pubID := args[2]
-			s.PublicationHistory(pubID, callback)
+			s.PublicationHistory(ctx, pubID, callback)
 		} else {
-			s.EachPublicationSnapshot(callback)
+			s.EachPublicationSnapshot(ctx, callback)
 		}
 	},
 }

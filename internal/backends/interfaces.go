@@ -71,8 +71,8 @@ type Repository interface {
 	SelectPublications(string, []any, func(*models.Publication) bool) error
 	PublicationsBetween(time.Time, time.Time, func(*models.Publication) bool) error
 	EachPublication(func(*models.Publication) bool) error
-	EachPublicationSnapshot(func(*models.Publication) bool) error
-	PublicationHistory(string, func(*models.Publication) bool) error
+	EachPublicationSnapshot(context.Context, func(*models.Publication) bool) error
+	PublicationHistory(context.Context, string, func(*models.Publication) bool) error
 	PurgeAllPublications() error
 	PurgePublication(string) error
 	AddDatasetListener(func(*models.Dataset))

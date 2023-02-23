@@ -290,7 +290,8 @@ func (s *server) ImportPublications(stream api.Biblio_ImportPublicationsServer) 
 }
 
 func (s *server) GetPublicationHistory(req *api.GetPublicationHistoryRequest, stream api.Biblio_GetPublicationHistoryServer) (err error) {
-	errorStream := s.services.Repository.PublicationHistory(req.Id, func(p *models.Publication) bool {
+	ctx := context.TODO()
+	errorStream := s.services.Repository.PublicationHistory(ctx, req.Id, func(p *models.Publication) bool {
 		j, err := json.Marshal(p)
 		if err != nil {
 			log.Fatal(err)
@@ -501,7 +502,6 @@ func (s *server) TransferPublications(req *api.TransferPublicationsRequest, stre
 	msgc := make(chan string, 1)
 	errc := make(chan error)
 
-	// cancel() is used to shutdown the async bulk indexer as well
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -601,11 +601,9 @@ func (s *server) TransferPublications(req *api.TransferPublicationsRequest, stre
 		}
 
 		if req.Publicationid != "" {
-			// TODO Needs a context so it can be cancelled
-			repository.PublicationHistory(req.Publicationid, callback)
+			repository.PublicationHistory(ctx, req.Publicationid, callback)
 		} else {
-			// TODO Needs a context so it can be cancelled
-			repository.EachPublicationSnapshot(callback)
+			repository.EachPublicationSnapshot(ctx, callback)
 		}
 
 		close(errc)
