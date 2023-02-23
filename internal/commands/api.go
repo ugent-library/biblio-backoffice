@@ -33,8 +33,9 @@ var apiStartCmd = &cobra.Command{
 	Short: "start the api server",
 	Run: func(cmd *cobra.Command, args []string) {
 		logger := newLogger()
+		repository := newRepository()
 
-		srv := server.New(Services(), logger)
+		srv := server.New(Services(), &repository, logger)
 		addr := fmt.Sprintf("%s:%d", viper.GetString("host"), viper.GetInt("port"))
 		log.Printf("Listening at %s", addr)
 		listener, err := net.Listen("tcp", addr)
