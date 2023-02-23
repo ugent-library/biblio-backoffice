@@ -18,11 +18,10 @@ import (
 
 type server struct {
 	api.UnimplementedBiblioServer
-	services   *backends.Services
-	repository *backends.Repository
+	services *backends.Services
 }
 
-func New(services *backends.Services, repository *backends.Repository, logger *zap.SugaredLogger) *grpc.Server {
+func New(services *backends.Services, logger *zap.SugaredLogger) *grpc.Server {
 	zap_opt := grpc_zap.WithLevels(
 		func(c codes.Code) zapcore.Level {
 			var l zapcore.Level
@@ -67,8 +66,7 @@ func New(services *backends.Services, repository *backends.Repository, logger *z
 	)
 
 	srv := &server{
-		services:   services,
-		repository: repository,
+		services: services,
 	}
 	api.RegisterBiblioServer(gsrv, srv)
 	return gsrv

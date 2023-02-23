@@ -485,20 +485,6 @@ readChannel:
 }
 
 func (s *server) TransferPublications(req *api.TransferPublicationsRequest, stream api.Biblio_TransferPublicationsServer) error {
-
-	repository := *s.repository
-
-	// TODO: this is going to eventually set a huge number of listeners server-side
-	// This needs a clean-up function to avoid memory issues.
-	repository.AddPublicationListener(func(p *models.Publication) {
-		if p.DateUntil == nil {
-			if err := s.services.PublicationSearchService.Index(p); err != nil {
-				// TODO: listeners need to bubble up errors so we can send them via gRPC to the caller
-				log.Fatalf("error indexing publication %s: %v", p.ID, err)
-			}
-		}
-	})
-
 	msgc := make(chan string, 1)
 	errc := make(chan error)
 
@@ -591,7 +577,7 @@ func (s *server) TransferPublications(req *api.TransferPublicationsRequest, stre
 			}
 
 			if fixed {
-				errUpdate := repository.UpdatePublicationInPlace(p)
+				errUpdate := s.services.Repository.UpdatePublicationInPlace(p)
 				if errUpdate != nil {
 					msgc <- fmt.Sprintf("p: %s: s: %s ::: Could not update snapshot: %s", p.ID, p.SnapshotID, errUpdate)
 				}
@@ -601,9 +587,9 @@ func (s *server) TransferPublications(req *api.TransferPublicationsRequest, stre
 		}
 
 		if req.Publicationid != "" {
-			repository.PublicationHistory(ctx, req.Publicationid, callback)
+			s.services.Repository.PublicationHistory(ctx, req.Publicationid, callback)
 		} else {
-			repository.EachPublicationSnapshot(ctx, callback)
+			s.services.Repository.EachPublicationSnapshot(ctx, callback)
 		}
 
 		close(errc)
