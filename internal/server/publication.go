@@ -613,8 +613,8 @@ func (s *server) TransferPublications(req *api.TransferPublicationsRequest, stre
 readChannel:
 	for {
 		select {
-		// case err := <-errc:
-		// 	return err
+		case err := <-errc:
+			return err
 		case msg, ok := <-msgc:
 			if err := stream.Send(&api.TransferPublicationsResponse{Message: msg}); err != nil {
 				return err
