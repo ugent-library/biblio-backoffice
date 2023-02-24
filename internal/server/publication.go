@@ -386,6 +386,12 @@ func (s *server) ReindexPublications(req *api.ReindexPublicationsRequest, stream
 		startTime := time.Now()
 		indexed := 0
 
+		/* TODO We're altering data, so we want to avoid data races by clients
+		   making the same call concurrently. Needs to be revised.
+		*/
+		s.mu.reindexPublications.Lock()
+		defer s.mu.reindexPublications.Unlock()
+
 		msgc <- "Indexing to new index..."
 
 		switcher, err := s.services.PublicationSearchService.NewIndexSwitcher(backends.BulkIndexerConfig{
@@ -396,9 +402,11 @@ func (s *server) ReindexPublications(req *api.ReindexPublicationsRequest, stream
 				errc <- fmt.Errorf("indexing failed for publication [id: %s] : %s", id, err)
 			},
 		})
+
 		if err != nil {
 			errc <- err
 		}
+
 		s.services.Repository.EachPublication(ctx, func(p *models.Publication) bool {
 			if err := switcher.Index(ctx, p); err != nil {
 				errc <- fmt.Errorf("indexing failed for publication [id: %s] : %s", p.ID, err)
@@ -589,6 +597,12 @@ func (s *server) TransferPublications(req *api.TransferPublicationsRequest, stre
 			return true
 		}
 
+		/* TODO We're altering data, so we want to avoid data races by clients
+		   making the same call concurrently. Needs to be revised.
+		*/
+		s.mu.transferPublications.Lock()
+		defer s.mu.transferPublications.Unlock()
+
 		if req.Publicationid != "" {
 			s.services.Repository.PublicationHistory(ctx, req.Publicationid, callback)
 		} else {
@@ -609,9 +623,8 @@ readChannel:
 			}
 		case <-stream.Context().Done():
 			// TODO: better error handling / logging server side
-			// The client closed the stream on their end, log as an error
-			// deferred cancel() is executed, ensures async bulk indexing stops as well.
-			return fmt.Errorf("client closed")
+			// deferred cancel() is executed, ensures any goroutines stop as well.
+			break readChannel
 		case <-done:
 			break readChannel
 		}
@@ -641,6 +654,15 @@ func (s *server) CleanupPublications(req *api.CleanupPublicationsRequest, stream
 			errc <- err
 		}
 		defer bi.Close(ctx)
+
+		/* TODO We're altering data, so we want to avoid data races by clients
+		   making the same call concurrently. Three Q's:
+		   * maybe this should be set a level deeper, inside EachPublication
+		   * maybe this isn't needed since the store is transactional
+		   * cleanup is idempotent, so is this really required?
+		*/
+		s.mu.cleanupPublications.Lock()
+		defer s.mu.cleanupPublications.Unlock()
 
 		err = s.services.Repository.EachPublication(ctx, func(p *models.Publication) bool {
 			// Guard
@@ -734,9 +756,8 @@ readChannel:
 			}
 		case <-stream.Context().Done():
 			// TODO: better error handling / logging server side
-			// The client closed the stream on their end, log as an error
-			// deferred cancel() is executed, ensures async bulk indexing stops as well.
-			return fmt.Errorf("client closed")
+			// deferred cancel() is executed, ensures any goroutines stop as well.
+			break readChannel
 		case <-done:
 			break readChannel
 		}

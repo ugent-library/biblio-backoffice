@@ -2,6 +2,7 @@ package server
 
 import (
 	"log"
+	"sync"
 
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
@@ -19,6 +20,13 @@ import (
 type server struct {
 	api.UnimplementedBiblioServer
 	services *backends.Services
+	mu       Mutex
+}
+
+type Mutex struct {
+	cleanupPublications  sync.Mutex
+	transferPublications sync.Mutex
+	reindexPublications  sync.Mutex
 }
 
 func New(services *backends.Services, logger *zap.SugaredLogger) *grpc.Server {
