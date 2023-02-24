@@ -642,13 +642,9 @@ func (s *server) CleanupPublications(req *api.CleanupPublicationsRequest, stream
 		}
 		defer bi.Close(ctx)
 
-		co := 0
 		err = s.services.Repository.EachPublication(ctx, func(p *models.Publication) bool {
 			// Guard
 			fixed := false
-
-			co += 1
-			log.Println("Item %i", co)
 
 			// Add the department "tree" property if it is missing.
 			for _, dep := range p.Department {
