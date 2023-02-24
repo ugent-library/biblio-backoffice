@@ -349,6 +349,7 @@ func (s *server) ValidateDatasets(stream api.Biblio_ValidateDatasetsServer) erro
 func (s *server) ReindexDatasets(req *api.ReindexDatasetsRequest, stream api.Biblio_ReindexDatasetsServer) error {
 	msgc := make(chan string, 1)
 	errc := make(chan error)
+	done := make(chan bool)
 
 	// cancel() is used to shutdown the async bulk indexer as well
 	ctx, cancel := context.WithCancel(context.Background())
@@ -434,8 +435,7 @@ func (s *server) ReindexDatasets(req *api.ReindexDatasetsRequest, stream api.Bib
 
 		msgc <- "Done."
 
-		close(msgc)
-		close(errc)
+		done <- true
 	}(ctx)
 
 readChannel:
@@ -443,20 +443,17 @@ readChannel:
 		select {
 		case err := <-errc:
 			return err
-		case msg, ok := <-msgc:
+		case msg := <-msgc:
 			if err := stream.Send(&api.ReindexDatasetsResponse{Message: msg}); err != nil {
 				return err
-			}
-
-			if !ok {
-				// msgc channel closed, processing done.
-				break readChannel
 			}
 		case <-stream.Context().Done():
 			// TODO: better error handling / logging server side
 			// The client closed the stream on their end, log as an error
 			// deferred cancel() is executed, ensures async bulk indexing stops as well.
 			return fmt.Errorf("client closed")
+		case <-done:
+			break readChannel
 		}
 	}
 

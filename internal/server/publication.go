@@ -376,6 +376,7 @@ func (s *server) ValidatePublications(stream api.Biblio_ValidatePublicationsServ
 func (s *server) ReindexPublications(req *api.ReindexPublicationsRequest, stream api.Biblio_ReindexPublicationsServer) error {
 	msgc := make(chan string, 1)
 	errc := make(chan error)
+	done := make(chan bool)
 
 	// cancel() is used to shutdown the async bulk indexer as well
 	ctx, cancel := context.WithCancel(context.Background())
@@ -460,8 +461,7 @@ func (s *server) ReindexPublications(req *api.ReindexPublicationsRequest, stream
 
 		msgc <- "Done."
 
-		close(msgc)
-		close(errc)
+		done <- true
 	}(ctx)
 
 readChannel:
@@ -469,20 +469,17 @@ readChannel:
 		select {
 		case err := <-errc:
 			return err
-		case msg, ok := <-msgc:
+		case msg := <-msgc:
 			if err := stream.Send(&api.ReindexPublicationsResponse{Message: msg}); err != nil {
 				return err
-			}
-
-			if !ok {
-				// msgc channel closed, processing done.
-				break readChannel
 			}
 		case <-stream.Context().Done():
 			// TODO: better error handling / logging server side
 			// The client closed the stream on their end, log as an error
 			// deferred cancel() is executed, ensures async bulk indexing stops as well.
 			return fmt.Errorf("client closed")
+		case <-done:
+			break readChannel
 		}
 	}
 
@@ -492,6 +489,7 @@ readChannel:
 func (s *server) TransferPublications(req *api.TransferPublicationsRequest, stream api.Biblio_TransferPublicationsServer) error {
 	msgc := make(chan string, 1)
 	errc := make(chan error)
+	done := make(chan bool)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -597,8 +595,7 @@ func (s *server) TransferPublications(req *api.TransferPublicationsRequest, stre
 			s.services.Repository.EachPublicationSnapshot(ctx, callback)
 		}
 
-		close(errc)
-		close(msgc)
+		done <- true
 	}(ctx)
 
 readChannel:
@@ -606,20 +603,17 @@ readChannel:
 		select {
 		case err := <-errc:
 			return err
-		case msg, ok := <-msgc:
+		case msg := <-msgc:
 			if err := stream.Send(&api.TransferPublicationsResponse{Message: msg}); err != nil {
 				return err
-			}
-
-			if !ok {
-				// msgc channel closed, processing done.
-				break readChannel
 			}
 		case <-stream.Context().Done():
 			// TODO: better error handling / logging server side
 			// The client closed the stream on their end, log as an error
 			// deferred cancel() is executed, ensures async bulk indexing stops as well.
 			return fmt.Errorf("client closed")
+		case <-done:
+			break readChannel
 		}
 	}
 
