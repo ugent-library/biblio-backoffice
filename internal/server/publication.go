@@ -7,12 +7,14 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/oklog/ulid/v2"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
 	"github.com/ugent-library/biblio-backoffice/internal/backends"
 	"github.com/ugent-library/biblio-backoffice/internal/models"
+	"github.com/ugent-library/biblio-backoffice/internal/snapstore"
 	"github.com/ugent-library/biblio-backoffice/internal/validation"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -39,12 +41,15 @@ func (s *server) GetPublication(ctx context.Context, req *api.GetPublicationRequ
 }
 
 func (s *server) GetAllPublications(req *api.GetAllPublicationsRequest, stream api.Biblio_GetAllPublicationsServer) (err error) {
+	// TODO make this a cancelible context which breaks the EachPublication loop when the client goes away
+	ctx := context.TODO()
+
 	// TODO errors in EachPublication aren't caught and pushed upstream. Returning 'false' in the callback
 	//   breaks the loop, but EachPublication will return 'nil'.
 	//
 	//   Logging during streaming doesn't work / isn't possible. The grpc_zap interceptor is only called when
 	// 	 GetAllPublication returns an error.
-	errorStream := s.services.Repository.EachPublication(func(p *models.Publication) bool {
+	errorStream := s.services.Repository.EachPublication(ctx, func(p *models.Publication) bool {
 		j, err := json.Marshal(p)
 		if err != nil {
 			log.Fatal(err)
@@ -393,7 +398,7 @@ func (s *server) ReindexPublications(req *api.ReindexPublicationsRequest, stream
 		if err != nil {
 			errc <- err
 		}
-		s.services.Repository.EachPublication(func(p *models.Publication) bool {
+		s.services.Repository.EachPublication(ctx, func(p *models.Publication) bool {
 			if err := switcher.Index(ctx, p); err != nil {
 				errc <- fmt.Errorf("indexing failed for publication [id: %s] : %s", p.ID, err)
 			}
@@ -615,6 +620,135 @@ readChannel:
 			// The client closed the stream on their end, log as an error
 			// deferred cancel() is executed, ensures async bulk indexing stops as well.
 			return fmt.Errorf("client closed")
+		}
+	}
+
+	return nil
+}
+
+func (s *server) CleanupPublications(req *api.CleanupPublicationsRequest, stream api.Biblio_CleanupPublicationsServer) error {
+	msgc := make(chan string, 1)
+	errc := make(chan error)
+	done := make(chan bool)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	go func(ctx context.Context) {
+		bi, err := s.services.PublicationSearchService.NewBulkIndexer(backends.BulkIndexerConfig{
+			OnError: func(err error) {
+				log.Printf("indexing failed : %s", err)
+			},
+			OnIndexError: func(id string, err error) {
+				log.Printf("indexing failed for publication [id: %s] : %s", id, err)
+			},
+		})
+		if err != nil {
+			errc <- err
+		}
+		defer bi.Close(ctx)
+
+		co := 0
+		err = s.services.Repository.EachPublication(ctx, func(p *models.Publication) bool {
+			// Guard
+			fixed := false
+
+			co += 1
+			log.Println("Item %i", co)
+
+			// Add the department "tree" property if it is missing.
+			for _, dep := range p.Department {
+				if dep.Tree == nil {
+					depID := dep.ID
+					org, orgErr := s.services.OrganizationService.GetOrganization(depID)
+					if orgErr == nil {
+						p.RemoveDepartment(depID)
+						p.AddDepartmentByOrg(org)
+						fixed = true
+					}
+				}
+			}
+
+			// Trim keywords, remove empty keywords
+			var cleanKeywords []string
+			for _, kw := range p.Keyword {
+				cleanKw := strings.TrimSpace(kw)
+				if cleanKw != kw || cleanKw == "" {
+					fixed = true
+				}
+				if cleanKw != "" {
+					cleanKeywords = append(cleanKeywords, cleanKw)
+				}
+			}
+			p.Keyword = cleanKeywords
+
+			// Save record if changed
+			if fixed {
+				p.User = nil
+
+				if err := p.Validate(); err != nil {
+					msgc <- fmt.Sprintf(
+						"Validation failed for publication[snapshot_id: %s, id: %s] : %v",
+						p.SnapshotID,
+						p.ID,
+						err,
+					)
+					return false
+				}
+
+				err := s.services.Repository.UpdatePublication(p.SnapshotID, p, nil)
+				if err != nil {
+					log.Println(err)
+				}
+
+				var conflict *snapstore.Conflict
+				if errors.As(err, &conflict) {
+					msgc <- fmt.Sprintf(
+						"Conflict detected for publication[snapshot_id: %s, id: %s] : %v",
+						p.SnapshotID,
+						p.ID,
+						err,
+					)
+					return false
+				}
+
+				msgc <- fmt.Sprintf(
+					"Fixed publication[snapshot_id: %s, id: %s]",
+					p.SnapshotID,
+					p.ID,
+				)
+
+				if err := bi.Index(ctx, p); err != nil {
+					errc <- fmt.Errorf("indexing failed for publication [id: %s] : %s", p.ID, err)
+				}
+			}
+
+			return true
+		})
+
+		if err != nil {
+			errc <- err
+		}
+
+		done <- true
+	}(ctx)
+
+readChannel:
+	for {
+		select {
+		case err := <-errc:
+			return err
+		case msg := <-msgc:
+			if err := stream.Send(&api.CleanupPublicationsResponse{Message: msg}); err != nil {
+				return err
+			}
+		case <-stream.Context().Done():
+			// TODO: better error handling / logging server side
+			// The client closed the stream on their end, log as an error
+			// deferred cancel() is executed, ensures async bulk indexing stops as well.
+			return fmt.Errorf("client closed")
+		case <-done:
+			break readChannel
 		}
 	}
 

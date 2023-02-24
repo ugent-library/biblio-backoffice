@@ -26,6 +26,7 @@ service Biblio {
     rpc ValidatePublications(stream ValidatePublicationsRequest) returns (stream ValidatePublicationsResponse);
     rpc ReindexPublications(ReindexPublicationsRequest) returns (stream ReindexPublicationsResponse);
     rpc TransferPublications(TransferPublicationsRequest) returns (stream TransferPublicationsResponse);
+    rpc CleanupPublications(CleanupPublicationsRequest) returns (stream CleanupPublicationsResponse);
     rpc GetDataset(GetDatasetRequest) returns (GetDatasetResponse);
     rpc GetAllDatasets(GetAllDatasetsRequest) returns (stream GetAllDatasetsResponse);
     rpc SearchDatasets(SearchDatasetsRequest) returns (SearchDatasetsResponse);
@@ -160,6 +161,13 @@ message TransferPublicationsRequest {
 }
 
 message TransferPublicationsResponse {
+    string message = 1;
+}
+
+message CleanupPublicationsRequest {
+}
+
+message CleanupPublicationsResponse {
     string message = 1;
 }
 

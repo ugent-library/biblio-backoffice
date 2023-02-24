@@ -80,7 +80,8 @@ var publicationAllCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		s := newRepository()
 		e := json.NewEncoder(os.Stdout)
-		s.EachPublication(func(d *models.Publication) bool {
+		ctx := context.TODO()
+		s.EachPublication(ctx, func(d *models.Publication) bool {
 			e.Encode(d)
 			return true
 		})
@@ -234,7 +235,7 @@ var publicationCleanupCmd = &cobra.Command{
 		}
 		defer bi.Close(ctx)
 
-		e.Repository.EachPublication(func(p *models.Publication) bool {
+		e.Repository.EachPublication(ctx, func(p *models.Publication) bool {
 			// Guard
 			fixed := false
 
@@ -503,7 +504,7 @@ var publicationReindexCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal(err)
 		}
-		services.Repository.EachPublication(func(p *models.Publication) bool {
+		services.Repository.EachPublication(ctx, func(p *models.Publication) bool {
 			if err := switcher.Index(ctx, p); err != nil {
 				log.Printf("Indexing failed for publication [id: %s] : %s", p.ID, err)
 			}

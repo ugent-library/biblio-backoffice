@@ -369,25 +369,33 @@ func (s *Repository) PublicationsBetween(t1, t2 time.Time, fn func(*models.Publi
 	return c.Err()
 }
 
-func (s *Repository) EachPublication(fn func(*models.Publication) bool) error {
+func (s *Repository) EachPublication(ctx context.Context, fn func(*models.Publication) bool) error {
 	c, err := s.publicationStore.GetAll(s.opts)
 	if err != nil {
 		return err
 	}
 	defer c.Close()
+
+loop:
 	for c.HasNext() {
-		snap, err := c.Next()
-		if err != nil {
-			return err
-		}
-		p, err := snapshotToPublication(snap)
-		if err != nil {
-			return err
-		}
-		if ok := fn(p); !ok {
-			break
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		default:
+			snap, err := c.Next()
+			if err != nil {
+				return err
+			}
+			p, err := snapshotToPublication(snap)
+			if err != nil {
+				return err
+			}
+			if ok := fn(p); !ok {
+				break loop
+			}
 		}
 	}
+
 	return c.Err()
 }
 
