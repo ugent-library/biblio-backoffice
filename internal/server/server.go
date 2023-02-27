@@ -24,7 +24,6 @@ type server struct {
 }
 
 type Mutex struct {
-	cleanupPublications  sync.Mutex
 	transferPublications sync.Mutex
 	reindexPublications  sync.Mutex
 }

@@ -655,15 +655,6 @@ func (s *server) CleanupPublications(req *api.CleanupPublicationsRequest, stream
 		}
 		defer bi.Close(ctx)
 
-		/* TODO We're altering data, so we want to avoid data races by clients
-		   making the same call concurrently. Three Q's:
-		   * maybe this should be set a level deeper, inside EachPublication
-		   * maybe this isn't needed since the store is transactional
-		   * cleanup is idempotent, so is this really required?
-		*/
-		s.mu.cleanupPublications.Lock()
-		defer s.mu.cleanupPublications.Unlock()
-
 		err = s.services.Repository.EachPublication(ctx, func(p *models.Publication) bool {
 			// Guard
 			fixed := false
