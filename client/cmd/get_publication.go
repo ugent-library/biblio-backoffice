@@ -9,6 +9,7 @@ import (
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
 	"github.com/ugent-library/biblio-backoffice/client/client"
+	"google.golang.org/grpc/status"
 )
 
 func init() {
@@ -40,8 +41,11 @@ func GetPublication(cmd *cobra.Command, args []string) {
 	req := &api.GetPublicationRequest{Id: id}
 	res, err := c.GetPublication(ctx, req)
 	if err != nil {
-		cmd.Println(err)
-		// log.Fatal(err)
+		st, ok := status.FromError(err)
+		if !ok {
+			log.Fatal(err)
+		}
+		cmd.Println(st.Message())
 	} else {
 		cmd.Printf("%s\n", res.Publication.Payload)
 	}

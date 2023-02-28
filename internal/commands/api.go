@@ -56,13 +56,14 @@ var apiStartCmd = &cobra.Command{
 
 		srv := server.New(e, logger)
 		addr := fmt.Sprintf("%s:%d", viper.GetString("host"), viper.GetInt("port"))
-		log.Printf("Listening at %s", addr)
+		logger.Infof("Listening at %s", addr)
 		listener, err := net.Listen("tcp", addr)
 		if err != nil {
 			log.Fatal(err)
 		}
 		if err := srv.Serve(listener); err != nil {
-			log.Fatal(err)
+			// TODO not everything is a fatal error.
+			log.Println(err)
 		}
 	},
 }

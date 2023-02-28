@@ -22,20 +22,28 @@ import (
 
 func (s *server) GetPublication(ctx context.Context, req *api.GetPublicationRequest) (*api.GetPublicationResponse, error) {
 	p, err := s.services.Repository.GetPublication(req.Id)
+
 	if err != nil {
-		// TODO How do we differentiate between errors? e.g. NotFound vs. Internal (database unavailable,...)
-		return nil, status.Errorf(codes.Internal, "could not get publication with id %s: %w", req.Id, err)
+		if errors.Is(err, backends.ErrNotFound) {
+			return nil, status.Errorf(codes.NotFound, "could not find publication with id %s", req.Id)
+		} else {
+			return nil, status.Errorf(codes.Internal, "could not get publication with id %s: %v", err)
+		}
 	}
 
 	j, err := json.Marshal(p)
+
 	if err != nil {
-		log.Fatal(err)
+		return nil, status.Errorf(codes.Internal, "could not unmarshal publication with id %s: %v", err)
 	}
+
 	apip := &api.Publication{
 		Payload: j,
 	}
 
-	res := &api.GetPublicationResponse{Publication: apip}
+	res := &api.GetPublicationResponse{
+		Publication: apip,
+	}
 
 	return res, nil
 }
