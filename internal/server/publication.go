@@ -299,24 +299,26 @@ func (s *server) ImportPublications(stream api.Biblio_ImportPublicationsServer) 
 
 func (s *server) GetPublicationHistory(req *api.GetPublicationHistoryRequest, stream api.Biblio_GetPublicationHistoryServer) (err error) {
 	ctx := context.TODO()
-	errorStream := s.services.Repository.PublicationHistory(ctx, req.Id, func(p *models.Publication) bool {
+	errorStream := s.services.Repository.PublicationHistory(ctx, req.Id, func(p *models.Publication) error {
 		j, err := json.Marshal(p)
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
+
 		apip := &api.Publication{
 			Payload: j,
 		}
 
 		res := &api.GetPublicationHistoryResponse{Publication: apip}
 		if err = stream.Send(res); err != nil {
-			return false
+			return err
 		}
-		return true
+
+		return nil
 	})
 
 	if errorStream != nil {
-		return status.Errorf(codes.Internal, "could not get publication history: %s", errorStream)
+		return status.Errorf(codes.Internal, "could not get publication history: %v	", errorStream)
 	}
 
 	return nil
@@ -377,384 +379,382 @@ func (s *server) ValidatePublications(stream api.Biblio_ValidatePublicationsServ
 }
 
 func (s *server) ReindexPublications(req *api.ReindexPublicationsRequest, stream api.Biblio_ReindexPublicationsServer) error {
-	msgc := make(chan string, 1)
-	errc := make(chan error)
-	done := make(chan bool)
+	startTime := time.Now()
+	indexed := 0
 
-	// cancel() is used to shutdown the async bulk indexer as well
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	msg := "Indexing to new index..."
+	if err := stream.Send(&api.ReindexPublicationsResponse{Message: msg}); err != nil {
+		return err
+	}
 
-	go func(ctx context.Context) {
-		startTime := time.Now()
-		indexed := 0
+	var biErr error
+	// var biIndexErr error
+	switcher, err := s.services.PublicationSearchService.NewIndexSwitcher(backends.BulkIndexerConfig{
+		OnError: func(err error) {
+			biErr = fmt.Errorf("indexing failed : %s", err)
+		},
+		OnIndexError: func(id string, err error) {
+			// TODO review: does this even work?
+			// biIndexErr = fmt.Errorf("indexing failed for publication [id: %s] : %s", id, err)
+		},
+	})
 
-		/* TODO We're altering data, so we want to avoid data races by clients
-		   making the same call concurrently. Needs to be revised.
-		*/
-		s.mu.reindexPublications.Lock()
-		defer s.mu.reindexPublications.Unlock()
+	if err != nil {
+		return status.Errorf(codes.Internal, "indexing failed: %v", err)
+	}
 
-		msgc <- "Indexing to new index..."
+	ctx := stream.Context()
+	s.services.Repository.EachPublication(ctx, func(p *models.Publication) error {
+		if err := switcher.Index(ctx, p); err != nil {
+			msg = fmt.Sprintf("indexing failed for publication [id: %s] : %s", p.ID, err)
+			if err := stream.Send(&api.ReindexPublicationsResponse{Message: msg}); err != nil {
+				return err
+			}
+		}
+		indexed++
+		return nil
+	})
 
-		switcher, err := s.services.PublicationSearchService.NewIndexSwitcher(backends.BulkIndexerConfig{
+	msg = fmt.Sprintf("Indexed %d publications...", indexed)
+	if err := stream.Send(&api.ReindexPublicationsResponse{Message: msg}); err != nil {
+		return err
+	}
+
+	msg = "Switching to new index..."
+	if err := stream.Send(&api.ReindexPublicationsResponse{Message: msg}); err != nil {
+		return err
+	}
+
+	if err := switcher.Switch(ctx); err != nil {
+		return status.Errorf(codes.Internal, "indexing failed: %v", err)
+	}
+
+	if biErr != nil {
+		// TODO
+	}
+
+	// if biIndexErr != nil {
+	// 	// TODO
+	// }
+
+	endTime := time.Now()
+
+	msg = "Indexing changes since start of reindex..."
+	if err := stream.Send(&api.ReindexPublicationsResponse{Message: msg}); err != nil {
+		return err
+	}
+
+	for {
+		indexed = 0
+
+		var biErr error
+		bi, err := s.services.PublicationSearchService.NewBulkIndexer(backends.BulkIndexerConfig{
 			OnError: func(err error) {
-				errc <- fmt.Errorf("indexing failed : %s", err)
+				biErr = fmt.Errorf("indexing failed : %s", err)
 			},
 			OnIndexError: func(id string, err error) {
-				errc <- fmt.Errorf("indexing failed for publication [id: %s] : %s", id, err)
+				// TODO: review: does this work properly?
+				// errc <- fmt.Errorf("indexing failed for publication [id: %s] : %s", id, err)
 			},
 		})
 
 		if err != nil {
-			errc <- err
+			return status.Errorf(codes.Internal, "indexing failed: %v", err)
 		}
 
-		s.services.Repository.EachPublication(ctx, func(p *models.Publication) error {
-			if err := switcher.Index(ctx, p); err != nil {
-				errc <- fmt.Errorf("indexing failed for publication [id: %s] : %s", p.ID, err)
+		err = s.services.Repository.PublicationsBetween(startTime, endTime, func(p *models.Publication) error {
+			if err := bi.Index(ctx, p); err != nil {
+				msg = fmt.Sprintf("indexing failed for publication [id: %s] : %s", p.ID, err)
+				if err := stream.Send(&api.ReindexPublicationsResponse{Message: msg}); err != nil {
+					return err
+				}
 			}
 			indexed++
 			return nil
 		})
-
-		msgc <- fmt.Sprintf("Indexed %d publications...", indexed)
-
-		msgc <- "Switching to new index..."
-
-		if err := switcher.Switch(ctx); err != nil {
-			errc <- err
+		if err != nil {
+			return status.Errorf(codes.Internal, "indexing failed: %v", err)
 		}
 
-		endTime := time.Now()
-
-		msgc <- "Indexing changes since start of reindex..."
-
-		for {
-			indexed = 0
-
-			bi, err := s.services.PublicationSearchService.NewBulkIndexer(backends.BulkIndexerConfig{
-				OnError: func(err error) {
-					errc <- fmt.Errorf("indexing failed : %s", err)
-				},
-				OnIndexError: func(id string, err error) {
-					errc <- fmt.Errorf("indexing failed for publication [id: %s] : %s", id, err)
-				},
-			})
-			if err != nil {
-				errc <- err
-			}
-
-			err = s.services.Repository.PublicationsBetween(startTime, endTime, func(p *models.Publication) bool {
-				if err := bi.Index(ctx, p); err != nil {
-					errc <- fmt.Errorf("indexing failed for publication [id: %s] : %s", p.ID, err)
-				}
-				indexed++
-				return true
-			})
-			if err != nil {
-				errc <- err
-			}
-
-			if err = bi.Close(ctx); err != nil {
-				errc <- err
-			}
-
-			if indexed == 0 {
-				break
-			}
-
-			msgc <- fmt.Sprintf("Indexed %d publications...", indexed)
-
-			startTime = endTime
-			endTime = time.Now()
+		if err = bi.Close(ctx); err != nil {
+			return status.Errorf(codes.Internal, "indexing failed: %v", err)
 		}
 
-		msgc <- "Done."
+		if biErr != nil {
+			return status.Errorf(codes.Internal, "indexing failed: %v", biErr)
+		}
 
-		done <- true
-	}(ctx)
+		if indexed == 0 {
+			break
+		}
 
-readChannel:
-	for {
-		select {
-		case err := <-errc:
+		msg = fmt.Sprintf("Indexed %d publications...", indexed)
+		if err := stream.Send(&api.ReindexPublicationsResponse{Message: msg}); err != nil {
 			return err
-		case msg := <-msgc:
-			if err := stream.Send(&api.ReindexPublicationsResponse{Message: msg}); err != nil {
-				return err
-			}
-		case <-stream.Context().Done():
-			// TODO: better error handling / logging server side
-			// The client closed the stream on their end, log as an error
-			// deferred cancel() is executed, ensures async bulk indexing stops as well.
-			return fmt.Errorf("client closed")
-		case <-done:
-			break readChannel
 		}
+
+		startTime = endTime
+		endTime = time.Now()
+	}
+
+	msg = "Done."
+	if err := stream.Send(&api.ReindexPublicationsResponse{Message: msg}); err != nil {
+		return err
 	}
 
 	return nil
 }
 
 func (s *server) TransferPublications(req *api.TransferPublicationsRequest, stream api.Biblio_TransferPublicationsServer) error {
-	msgc := make(chan string, 1)
-	errc := make(chan error)
-	done := make(chan bool)
+	source := req.Src
+	dest := req.Dest
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	p, err := s.services.PersonService.GetPerson(dest)
+	if err != nil {
+		return status.Errorf(codes.Internal, "could not retrieve person %s: %v", dest, err)
+	}
 
-	go func(ctx context.Context) {
-		source := req.Src
-		dest := req.Dest
-
-		p, err := s.services.PersonService.GetPerson(dest)
-		if err != nil {
-			errc <- fmt.Errorf("fatal: could not retrieve person %s: %s", dest, err)
+	c := &models.Contributor{}
+	c.ID = p.ID
+	c.FirstName = p.FirstName
+	c.LastName = p.LastName
+	c.FullName = p.FullName
+	c.UGentID = p.UGentID
+	c.ORCID = p.ORCID
+	for _, pd := range p.Department {
+		newDep := models.ContributorDepartment{ID: pd.ID}
+		org, orgErr := s.services.OrganizationService.GetOrganization(pd.ID)
+		if orgErr == nil {
+			newDep.Name = org.Name
 		}
+		c.Department = append(c.Department, newDep)
+	}
 
-		c := &models.Contributor{}
-		c.ID = p.ID
-		c.FirstName = p.FirstName
-		c.LastName = p.LastName
-		c.FullName = p.FullName
-		c.UGentID = p.UGentID
-		c.ORCID = p.ORCID
-		for _, pd := range p.Department {
-			newDep := models.ContributorDepartment{ID: pd.ID}
-			org, orgErr := s.services.OrganizationService.GetOrganization(pd.ID)
-			if orgErr == nil {
-				newDep.Name = org.Name
+	callback := func(p *models.Publication) error {
+		fixed := false
+
+		if p.User != nil {
+			if p.User.ID == source {
+				p.User = &models.PublicationUser{
+					ID:   c.ID,
+					Name: c.FullName,
+				}
+
+				msg := fmt.Sprintf("p: %s: s: %s ::: user: %s -> %s", p.ID, p.SnapshotID, source, c.ID)
+				if err := stream.Send(&api.TransferPublicationsResponse{Message: msg}); err != nil {
+					return err
+				}
+
+				fixed = true
 			}
-			c.Department = append(c.Department, newDep)
 		}
 
-		callback := func(p *models.Publication) bool {
-			fixed := false
+		if p.Creator != nil {
+			if p.Creator.ID == source {
+				p.Creator = &models.PublicationUser{
+					ID:   c.ID,
+					Name: c.FullName,
+				}
 
-			if p.User != nil {
-				if p.User.ID == source {
-					p.User = &models.PublicationUser{
-						ID:   c.ID,
-						Name: c.FullName,
+				if len(c.Department) > 0 {
+					org, orgErr := s.services.OrganizationService.GetOrganization(c.Department[0].ID)
+					if orgErr != nil {
+						return fmt.Errorf("p: %s: s: %s ::: creator: could not fetch department for %s: %v", p.ID, p.SnapshotID, c.ID, orgErr)
+					} else {
+						p.AddDepartmentByOrg(org)
 					}
-
-					msgc <- fmt.Sprintf("p: %s: s: %s ::: user: %s -> %s", p.ID, p.SnapshotID, source, c.ID)
-					fixed = true
 				}
-			}
 
-			if p.Creator != nil {
-				if p.Creator.ID == source {
-					p.Creator = &models.PublicationUser{
-						ID:   c.ID,
-						Name: c.FullName,
-					}
-
-					if len(c.Department) > 0 {
-						org, orgErr := s.services.OrganizationService.GetOrganization(c.Department[0].ID)
-						if orgErr != nil {
-							errc <- fmt.Errorf("p: %s: s: %s ::: creator: could not fetch department for %s: %s", p.ID, p.SnapshotID, c.ID, orgErr)
-						} else {
-							p.AddDepartmentByOrg(org)
-						}
-					}
-
-					msgc <- fmt.Sprintf("p: %s: s: %s ::: creator: %s -> %s", p.ID, p.SnapshotID, source, c.ID)
-					fixed = true
+				msg := fmt.Sprintf("p: %s: s: %s ::: creator: %s -> %s", p.ID, p.SnapshotID, source, c.ID)
+				if err := stream.Send(&api.TransferPublicationsResponse{Message: msg}); err != nil {
+					return err
 				}
+				fixed = true
 			}
-
-			for k, a := range p.Author {
-				if a.ID == source {
-					p.SetContributor("author", k, c)
-					msgc <- fmt.Sprintf("p: %s: s: %s ::: author: %s -> %s", p.ID, p.SnapshotID, a.ID, c.ID)
-					fixed = true
-				}
-			}
-
-			for k, e := range p.Editor {
-				if e.ID == source {
-					p.SetContributor("editor", k, c)
-					msgc <- fmt.Sprintf("p: %s: s: %s ::: editor: %s -> %s", p.ID, p.SnapshotID, e.ID, c.ID)
-					fixed = true
-				}
-			}
-
-			for k, s := range p.Supervisor {
-				if s.ID == source {
-					p.SetContributor("supervisor", k, c)
-					msgc <- fmt.Sprintf("p: %s: s: %s ::: supervisor: %s -> %s", p.ID, p.SnapshotID, s.ID, c.ID)
-					fixed = true
-				}
-			}
-
-			if fixed {
-				errUpdate := s.services.Repository.UpdatePublicationInPlace(p)
-				if errUpdate != nil {
-					msgc <- fmt.Sprintf("p: %s: s: %s ::: Could not update snapshot: %s", p.ID, p.SnapshotID, errUpdate)
-				}
-			}
-
-			return true
 		}
 
-		/* TODO We're altering data, so we want to avoid data races by clients
-		   making the same call concurrently. Needs to be revised.
-		*/
-		s.mu.transferPublications.Lock()
-		defer s.mu.transferPublications.Unlock()
-
-		if req.Publicationid != "" {
-			s.services.Repository.PublicationHistory(ctx, req.Publicationid, callback)
-		} else {
-			s.services.Repository.EachPublicationSnapshot(ctx, callback)
-		}
-
-		done <- true
-	}(ctx)
-
-readChannel:
-	for {
-		select {
-		case err := <-errc:
-			return err
-		case msg := <-msgc:
-			if err := stream.Send(&api.TransferPublicationsResponse{Message: msg}); err != nil {
-				return err
+		for k, a := range p.Author {
+			if a.ID == source {
+				p.SetContributor("author", k, c)
+				msg := fmt.Sprintf("p: %s: s: %s ::: author: %s -> %s", p.ID, p.SnapshotID, a.ID, c.ID)
+				if err := stream.Send(&api.TransferPublicationsResponse{Message: msg}); err != nil {
+					return err
+				}
+				fixed = true
 			}
-		case <-stream.Context().Done():
-			// TODO: better error handling / logging server side
-			// deferred cancel() is executed, ensures any goroutines stop as well.
-			break readChannel
-		case <-done:
-			break readChannel
 		}
+
+		for k, e := range p.Editor {
+			if e.ID == source {
+				p.SetContributor("editor", k, c)
+				msg := fmt.Sprintf("p: %s: s: %s ::: editor: %s -> %s", p.ID, p.SnapshotID, e.ID, c.ID)
+				if err := stream.Send(&api.TransferPublicationsResponse{Message: msg}); err != nil {
+					return err
+				}
+				fixed = true
+			}
+		}
+
+		for k, s := range p.Supervisor {
+			if s.ID == source {
+				p.SetContributor("supervisor", k, c)
+				msg := fmt.Sprintf("p: %s: s: %s ::: supervisor: %s -> %s", p.ID, p.SnapshotID, s.ID, c.ID)
+				if err := stream.Send(&api.TransferPublicationsResponse{Message: msg}); err != nil {
+					return err
+				}
+				fixed = true
+			}
+		}
+
+		if fixed {
+			errUpdate := s.services.Repository.UpdatePublicationInPlace(p)
+			if errUpdate != nil {
+				// TODO turn this into a fatal error
+				msg := fmt.Sprintf("p: %s: s: %s ::: Could not update snapshot: %s", p.ID, p.SnapshotID, errUpdate)
+				if err := stream.Send(&api.TransferPublicationsResponse{Message: msg}); err != nil {
+					return err
+				}
+			}
+		}
+
+		return nil
+	}
+
+	/* TODO We're altering data, so we want to avoid data races by clients
+	   making the same call concurrently. Needs to be revised.
+	*/
+	// s.mu.transferPublications.Lock()
+	// defer s.mu.transferPublications.Unlock()
+
+	ctx := context.TODO()
+	if req.Publicationid != "" {
+		s.services.Repository.PublicationHistory(ctx, req.Publicationid, callback)
+	} else {
+		s.services.Repository.EachPublicationSnapshot(ctx, callback)
 	}
 
 	return nil
 }
 
 func (s *server) CleanupPublications(req *api.CleanupPublicationsRequest, stream api.Biblio_CleanupPublicationsServer) error {
-	msgc := make(chan string, 1)
-	errc := make(chan error)
-	done := make(chan bool)
-
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	go func(ctx context.Context) {
-		bi, err := s.services.PublicationSearchService.NewBulkIndexer(backends.BulkIndexerConfig{
-			OnError: func(err error) {
-				log.Printf("indexing failed : %s", err)
-			},
-			OnIndexError: func(id string, err error) {
-				log.Printf("indexing failed for publication [id: %s] : %s", id, err)
-			},
-		})
-		if err != nil {
-			errc <- err
-		}
-		defer bi.Close(ctx)
+	bi, err := s.services.PublicationSearchService.NewBulkIndexer(backends.BulkIndexerConfig{
+		OnError: func(err error) {
+			log.Printf("indexing failed : %s", err)
+		},
+		OnIndexError: func(id string, err error) {
+			log.Printf("indexing failed for publication [id: %s] : %s", id, err)
+		},
+	})
 
-		err = s.services.Repository.EachPublication(ctx, func(p *models.Publication) error {
-			// Guard
-			fixed := false
+	if err != nil {
+		return status.Errorf(codes.Internal, "bulk indexer failed: %v", err)
+	}
+	defer bi.Close(ctx)
 
-			// Add the department "tree" property if it is missing.
-			for _, dep := range p.Department {
-				if dep.Tree == nil {
-					depID := dep.ID
-					org, orgErr := s.services.OrganizationService.GetOrganization(depID)
-					if orgErr == nil {
-						p.RemoveDepartment(depID)
-						p.AddDepartmentByOrg(org)
-						fixed = true
-					}
-				}
-			}
+	count := 0
+	err = s.services.Repository.EachPublication(ctx, func(p *models.Publication) error {
+		// Guard
+		fixed := false
 
-			// Trim keywords, remove empty keywords
-			var cleanKeywords []string
-			for _, kw := range p.Keyword {
-				cleanKw := strings.TrimSpace(kw)
-				if cleanKw != kw || cleanKw == "" {
+		// Add the department "tree" property if it is missing.
+		for _, dep := range p.Department {
+			if dep.Tree == nil {
+				depID := dep.ID
+				org, orgErr := s.services.OrganizationService.GetOrganization(depID)
+				if orgErr == nil {
+					p.RemoveDepartment(depID)
+					p.AddDepartmentByOrg(org)
 					fixed = true
 				}
-				if cleanKw != "" {
-					cleanKeywords = append(cleanKeywords, cleanKw)
-				}
 			}
-			p.Keyword = cleanKeywords
-
-			// Save record if changed
-			if fixed {
-				p.User = nil
-
-				if err := p.Validate(); err != nil {
-					msgc <- fmt.Sprintf(
-						"Validation failed for publication[snapshot_id: %s, id: %s] : %v",
-						p.SnapshotID,
-						p.ID,
-						err,
-					)
-					return nil
-				}
-
-				err := s.services.Repository.UpdatePublication(p.SnapshotID, p, nil)
-				if err != nil {
-					log.Println(err)
-				}
-
-				var conflict *snapstore.Conflict
-				if errors.As(err, &conflict) {
-					msgc <- fmt.Sprintf(
-						"Conflict detected for publication[snapshot_id: %s, id: %s] : %v",
-						p.SnapshotID,
-						p.ID,
-						err,
-					)
-					return nil
-				}
-
-				msgc <- fmt.Sprintf(
-					"Fixed publication[snapshot_id: %s, id: %s]",
-					p.SnapshotID,
-					p.ID,
-				)
-
-				if err := bi.Index(ctx, p); err != nil {
-					errc <- fmt.Errorf("indexing failed for publication [id: %s] : %s", p.ID, err)
-				}
-			}
-
-			return nil
-		})
-
-		if err != nil {
-			errc <- err
 		}
 
-		done <- true
-	}(ctx)
+		// Trim keywords, remove empty keywords
+		var cleanKeywords []string
+		for _, kw := range p.Keyword {
+			cleanKw := strings.TrimSpace(kw)
+			if cleanKw != kw || cleanKw == "" {
+				fixed = true
+			}
+			if cleanKw != "" {
+				cleanKeywords = append(cleanKeywords, cleanKw)
+			}
+		}
+		p.Keyword = cleanKeywords
 
-readChannel:
-	for {
-		select {
-		case err := <-errc:
-			return err
-		case msg := <-msgc:
+		// Save record if changed
+		if fixed {
+			p.User = nil
+
+			if err := p.Validate(); err != nil {
+				msg := fmt.Sprintf(
+					"Validation failed for publication[snapshot_id: %s, id: %s] : %v",
+					p.SnapshotID,
+					p.ID,
+					err,
+				)
+
+				if err := stream.Send(&api.CleanupPublicationsResponse{Message: msg}); err != nil {
+					return err
+				}
+
+				return nil
+			}
+
+			err := s.services.Repository.UpdatePublication(p.SnapshotID, p, nil)
+			if err != nil {
+				log.Println(err)
+			}
+
+			var conflict *snapstore.Conflict
+			if errors.As(err, &conflict) {
+				msg := fmt.Sprintf(
+					"Conflict detected for publication[snapshot_id: %s, id: %s] : %v",
+					p.SnapshotID,
+					p.ID,
+					err,
+				)
+
+				if err := stream.Send(&api.CleanupPublicationsResponse{Message: msg}); err != nil {
+					return err
+				}
+
+				return nil
+			}
+
+			msg := fmt.Sprintf(
+				"Fixed publication[snapshot_id: %s, id: %s]",
+				p.SnapshotID,
+				p.ID,
+			)
+
 			if err := stream.Send(&api.CleanupPublicationsResponse{Message: msg}); err != nil {
 				return err
 			}
-		case <-stream.Context().Done():
-			// TODO: better error handling / logging server side
-			// deferred cancel() is executed, ensures any goroutines stop as well.
-			break readChannel
-		case <-done:
-			break readChannel
+
+			if err := bi.Index(ctx, p); err != nil {
+				msg := fmt.Sprintf("indexing failed for publication [id: %s] : %s", p.ID, err)
+				if err := stream.Send(&api.CleanupPublicationsResponse{Message: msg}); err != nil {
+					return err
+				}
+			}
+
+			count += 1
 		}
+
+		return nil
+	})
+
+	if err != nil {
+		return status.Errorf(codes.Internal, "could not complete cleanup: %v", err)
+	}
+
+	msg := fmt.Sprintf("done. cleaned %d publications.", count)
+	if err := stream.Send(&api.CleanupPublicationsResponse{Message: msg}); err != nil {
+		return err
 	}
 
 	return nil

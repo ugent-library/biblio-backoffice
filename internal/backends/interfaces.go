@@ -69,10 +69,10 @@ type Repository interface {
 	CountPublications(*RepositoryQueryArgs) (int, error)
 	SearchPublications(*RepositoryQueryArgs) ([]*models.Publication, error)
 	SelectPublications(string, []any, func(*models.Publication) bool) error
-	PublicationsBetween(time.Time, time.Time, func(*models.Publication) bool) error
+	PublicationsBetween(time.Time, time.Time, func(*models.Publication) error) error
 	EachPublication(context.Context, func(*models.Publication) error) error
-	EachPublicationSnapshot(context.Context, func(*models.Publication) bool) error
-	PublicationHistory(context.Context, string, func(*models.Publication) bool) error
+	EachPublicationSnapshot(context.Context, func(*models.Publication) error) error
+	PublicationHistory(context.Context, string, func(*models.Publication) error) error
 	PurgeAllPublications() error
 	PurgePublication(string) error
 	AddDatasetListener(func(*models.Dataset))

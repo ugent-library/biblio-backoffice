@@ -348,7 +348,7 @@ var publicationTransferCmd = &cobra.Command{
 			c.Department = append(c.Department, newDep)
 		}
 
-		callback := func(p *models.Publication) bool {
+		callback := func(p *models.Publication) error {
 			fixed := false
 
 			if p.User != nil {
@@ -415,7 +415,7 @@ var publicationTransferCmd = &cobra.Command{
 				}
 			}
 
-			return true
+			return nil
 		}
 
 		ctx := context.TODO()
@@ -539,12 +539,12 @@ var publicationReindexCmd = &cobra.Command{
 				log.Fatal(err)
 			}
 
-			err = services.Repository.PublicationsBetween(startTime, endTime, func(p *models.Publication) bool {
+			err = services.Repository.PublicationsBetween(startTime, endTime, func(p *models.Publication) error {
 				if err := bi.Index(ctx, p); err != nil {
 					log.Printf("Indexing failed for publication [id: %s] : %s", p.ID, err)
 				}
 				indexed++
-				return true
+				return nil
 			})
 			if err != nil {
 				log.Fatal(err)
