@@ -369,14 +369,13 @@ func (s *Repository) PublicationsBetween(t1, t2 time.Time, fn func(*models.Publi
 	return c.Err()
 }
 
-func (s *Repository) EachPublication(ctx context.Context, fn func(*models.Publication) bool) error {
+func (s *Repository) EachPublication(ctx context.Context, fn func(*models.Publication) error) error {
 	c, err := s.publicationStore.GetAll(s.opts)
 	if err != nil {
 		return err
 	}
 	defer c.Close()
 
-loop:
 	for c.HasNext() {
 		select {
 		case <-ctx.Done():
@@ -390,8 +389,8 @@ loop:
 			if err != nil {
 				return err
 			}
-			if ok := fn(p); !ok {
-				break loop
+			if err := fn(p); err != nil {
+				return err
 			}
 		}
 	}

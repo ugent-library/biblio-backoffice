@@ -52,28 +52,23 @@ func (s *server) GetAllPublications(req *api.GetAllPublicationsRequest, stream a
 	// TODO make this a cancelible context which breaks the EachPublication loop when the client goes away
 	ctx := context.TODO()
 
-	// TODO errors in EachPublication aren't caught and pushed upstream. Returning 'false' in the callback
-	//   breaks the loop, but EachPublication will return 'nil'.
-	//
-	//   Logging during streaming doesn't work / isn't possible. The grpc_zap interceptor is only called when
-	// 	 GetAllPublication returns an error.
-	errorStream := s.services.Repository.EachPublication(ctx, func(p *models.Publication) bool {
+	errorStream := s.services.Repository.EachPublication(ctx, func(p *models.Publication) error {
 		j, err := json.Marshal(p)
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 		apip := &api.Publication{
 			Payload: j,
 		}
 		res := &api.GetAllPublicationsResponse{Publication: apip}
 		if err = stream.Send(res); err != nil {
-			return false
+			return err
 		}
-		return true
+		return nil
 	})
 
 	if errorStream != nil {
-		return status.Errorf(codes.Internal, "could not get all publications: %s", errorStream)
+		return status.Errorf(codes.Internal, "could not get all publications: %v", errorStream)
 	}
 
 	return nil
@@ -415,12 +410,12 @@ func (s *server) ReindexPublications(req *api.ReindexPublicationsRequest, stream
 			errc <- err
 		}
 
-		s.services.Repository.EachPublication(ctx, func(p *models.Publication) bool {
+		s.services.Repository.EachPublication(ctx, func(p *models.Publication) error {
 			if err := switcher.Index(ctx, p); err != nil {
 				errc <- fmt.Errorf("indexing failed for publication [id: %s] : %s", p.ID, err)
 			}
 			indexed++
-			return true
+			return nil
 		})
 
 		msgc <- fmt.Sprintf("Indexed %d publications...", indexed)
@@ -663,7 +658,7 @@ func (s *server) CleanupPublications(req *api.CleanupPublicationsRequest, stream
 		}
 		defer bi.Close(ctx)
 
-		err = s.services.Repository.EachPublication(ctx, func(p *models.Publication) bool {
+		err = s.services.Repository.EachPublication(ctx, func(p *models.Publication) error {
 			// Guard
 			fixed := false
 
@@ -704,7 +699,7 @@ func (s *server) CleanupPublications(req *api.CleanupPublicationsRequest, stream
 						p.ID,
 						err,
 					)
-					return false
+					return nil
 				}
 
 				err := s.services.Repository.UpdatePublication(p.SnapshotID, p, nil)
@@ -720,7 +715,7 @@ func (s *server) CleanupPublications(req *api.CleanupPublicationsRequest, stream
 						p.ID,
 						err,
 					)
-					return false
+					return nil
 				}
 
 				msgc <- fmt.Sprintf(
@@ -734,7 +729,7 @@ func (s *server) CleanupPublications(req *api.CleanupPublicationsRequest, stream
 				}
 			}
 
-			return true
+			return nil
 		})
 
 		if err != nil {

@@ -81,9 +81,9 @@ var publicationAllCmd = &cobra.Command{
 		s := newRepository()
 		e := json.NewEncoder(os.Stdout)
 		ctx := context.TODO()
-		s.EachPublication(ctx, func(d *models.Publication) bool {
+		s.EachPublication(ctx, func(d *models.Publication) error {
 			e.Encode(d)
-			return true
+			return nil
 		})
 	},
 }
@@ -235,7 +235,7 @@ var publicationCleanupCmd = &cobra.Command{
 		}
 		defer bi.Close(ctx)
 
-		e.Repository.EachPublication(ctx, func(p *models.Publication) bool {
+		e.Repository.EachPublication(ctx, func(p *models.Publication) error {
 			// Guard
 			fixed := false
 
@@ -276,7 +276,7 @@ var publicationCleanupCmd = &cobra.Command{
 						p.ID,
 						err,
 					)
-					return false
+					return err
 				}
 
 				err := e.Repository.UpdatePublication(p.SnapshotID, p, nil)
@@ -289,7 +289,7 @@ var publicationCleanupCmd = &cobra.Command{
 						p.ID,
 						err,
 					)
-					return false
+					return err
 				}
 
 				log.Printf(
@@ -303,7 +303,7 @@ var publicationCleanupCmd = &cobra.Command{
 				}
 			}
 
-			return true
+			return nil
 		})
 	},
 }
@@ -504,12 +504,12 @@ var publicationReindexCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal(err)
 		}
-		services.Repository.EachPublication(ctx, func(p *models.Publication) bool {
+		services.Repository.EachPublication(ctx, func(p *models.Publication) error {
 			if err := switcher.Index(ctx, p); err != nil {
 				log.Printf("Indexing failed for publication [id: %s] : %s", p.ID, err)
 			}
 			indexed++
-			return true
+			return nil
 		})
 
 		log.Printf("Indexed %d publications...", indexed)
