@@ -1,5 +1,5 @@
 import { defineConfig } from 'cypress'
-import dotenvPlugin from 'cypress-dotenv'
+import * as dotenvPlugin from 'cypress-dotenv'
 
 export default defineConfig({
   projectId: 'mjg74d',

@@ -24,7 +24,7 @@ jobs:
       - name: Cypress
         uses: cypress-io/github-action@v5
         with:
-          config-file: cypress/cypress.config.mjs
+          config-file: cypress/cypress.config.ts
           record: true
           config: video=true,retries=2
         env:
