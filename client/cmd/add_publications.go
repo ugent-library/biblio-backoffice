@@ -42,6 +42,7 @@ func AddPublications(cmd *cobra.Command, args []string) (err error) {
 	if err != nil {
 		return fmt.Errorf("could not create a grpc stream: %w", err)
 	}
+
 	waitc := make(chan struct{})
 	errorc := make(chan error)
 
@@ -53,12 +54,22 @@ func AddPublications(cmd *cobra.Command, args []string) (err error) {
 				close(waitc)
 				return
 			}
+
+			// return gRPC level error
 			if err != nil {
-				// return grpc error
 				errorc <- err
 				return
 			}
-			cmd.Println(res.Message)
+
+			// Application level error
+			if ge := res.GetError(); ge != nil {
+				sre := status.FromProto(ge)
+				cmd.Printf("%s\n", sre.Message())
+			}
+
+			if rr := res.GetMessage(); rr != "" {
+				cmd.Printf("%s\n", rr)
+			}
 		}
 	}()
 
@@ -78,6 +89,7 @@ func AddPublications(cmd *cobra.Command, args []string) (err error) {
 		p := &api.Publication{
 			Payload: line,
 		}
+
 		req := &api.AddPublicationsRequest{Publication: p}
 		if err := stream.Send(req); err != nil {
 			return fmt.Errorf("could not send publication to the server: %w", err)

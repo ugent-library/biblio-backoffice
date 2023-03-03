@@ -3,7 +3,6 @@ package cmd
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"log"
 	"time"
@@ -11,6 +10,7 @@ import (
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
 	"github.com/ugent-library/biblio-backoffice/client/client"
+	"google.golang.org/grpc/status"
 )
 
 func init() {
@@ -21,12 +21,12 @@ var GetPublicationHistoryCmd = &cobra.Command{
 	Use:   "get-history [id]",
 	Short: "Get publication history",
 	Args:  cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		GetPublicationHistory(cmd, args)
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return GetPublicationHistory(cmd, args)
 	},
 }
 
-func GetPublicationHistory(cmd *cobra.Command, args []string) {
+func GetPublicationHistory(cmd *cobra.Command, args []string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
@@ -40,7 +40,7 @@ func GetPublicationHistory(cmd *cobra.Command, args []string) {
 	req := &api.GetPublicationHistoryRequest{Id: args[0]}
 	stream, err := c.GetPublicationHistory(context.Background(), req)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	for {
@@ -48,10 +48,24 @@ func GetPublicationHistory(cmd *cobra.Command, args []string) {
 		if err == io.EOF {
 			break
 		}
+
+		// return gRPC level error
 		if err != nil {
-			log.Fatalf("error while reading stream: %v", err)
+			if st, ok := status.FromError(err); ok {
+				return errors.New(st.Message())
+			}
 		}
 
-		fmt.Printf("%s\n", res.Publication.Payload)
+		// Application level error
+		if ge := res.GetError(); ge != nil {
+			sre := status.FromProto(ge)
+			cmd.Printf("%s\n", sre.Message())
+		}
+
+		if rr := res.GetPublication(); rr != nil {
+			cmd.Printf("%s\n", rr.GetPayload())
+		}
 	}
+
+	return nil
 }

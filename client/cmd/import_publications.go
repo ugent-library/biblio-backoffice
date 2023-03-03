@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"log"
 	"os"
@@ -12,6 +13,7 @@ import (
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
 	"github.com/ugent-library/biblio-backoffice/client/client"
+	"google.golang.org/grpc/status"
 )
 
 func init() {
@@ -21,12 +23,12 @@ func init() {
 var ImportPublicationsCmd = &cobra.Command{
 	Use:   "import",
 	Short: "Import publications",
-	Run: func(cmd *cobra.Command, args []string) {
-		ImportPublications(cmd, args)
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return ImportPublications(cmd, args)
 	},
 }
 
-func ImportPublications(cmd *cobra.Command, args []string) {
+func ImportPublications(cmd *cobra.Command, args []string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
@@ -41,7 +43,9 @@ func ImportPublications(cmd *cobra.Command, args []string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	waitc := make(chan struct{})
+	errorc := make(chan error)
 
 	go func() {
 		for {
@@ -51,10 +55,22 @@ func ImportPublications(cmd *cobra.Command, args []string) {
 				close(waitc)
 				return
 			}
+
+			// return gRPC level error
 			if err != nil {
-				log.Fatal(err)
+				errorc <- err
+				return
 			}
-			log.Println(res.Message)
+
+			// Application level error
+			if ge := res.GetError(); ge != nil {
+				sre := status.FromProto(ge)
+				cmd.Printf("%s\n", sre.Message())
+			}
+
+			if rr := res.GetMessage(); rr != "" {
+				cmd.Printf("%s\n", rr)
+			}
 		}
 	}()
 
@@ -66,7 +82,7 @@ func ImportPublications(cmd *cobra.Command, args []string) {
 			break
 		}
 		if err != nil {
-			log.Fatal(err)
+			return fmt.Errorf("could not read line from input: %w", err)
 		}
 
 		lineNo++
@@ -77,10 +93,19 @@ func ImportPublications(cmd *cobra.Command, args []string) {
 
 		req := &api.ImportPublicationsRequest{Publication: p}
 		if err := stream.Send(req); err != nil {
-			log.Fatal(err)
+			return fmt.Errorf("could not send publication to the server: %w", err)
 		}
 	}
 
 	stream.CloseSend()
-	<-waitc
+
+	select {
+	case errc := <-errorc:
+		if st, ok := status.FromError(errc); ok {
+			return errors.New(st.Message())
+		}
+	case <-waitc:
+	}
+
+	return nil
 }

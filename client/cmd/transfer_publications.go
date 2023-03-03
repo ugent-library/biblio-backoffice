@@ -3,7 +3,6 @@ package cmd
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"log"
 	"time"
@@ -11,6 +10,7 @@ import (
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
 	"github.com/ugent-library/biblio-backoffice/client/client"
+	"google.golang.org/grpc/status"
 )
 
 func init() {
@@ -21,12 +21,12 @@ var TransferPublicationsCmd = &cobra.Command{
 	Use:   "transfer UID UID [PUBID]",
 	Short: "Transfer publications between people",
 	Args:  cobra.RangeArgs(2, 3),
-	Run: func(cmd *cobra.Command, args []string) {
-		TransferPublications(cmd, args)
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return TransferPublications(cmd, args)
 	},
 }
 
-func TransferPublications(cmd *cobra.Command, args []string) {
+func TransferPublications(cmd *cobra.Command, args []string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
@@ -50,20 +50,51 @@ func TransferPublications(cmd *cobra.Command, args []string) {
 		Dest:          dest,
 		Publicationid: pubid,
 	}
+
 	stream, err := c.TransferPublications(context.Background(), req)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	for {
-		res, err := stream.Recv()
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			log.Fatalf("error while reading stream: %v", err)
-		}
+	waitc := make(chan struct{})
+	errorc := make(chan error)
 
-		fmt.Printf("%s\n", res.Message)
+	go func() {
+		for {
+			res, err := stream.Recv()
+			if err == io.EOF {
+				// read done.
+				close(waitc)
+				return
+			}
+
+			// return gRPC level error
+			if err != nil {
+				errorc <- err
+				return
+			}
+
+			// Application level error
+			if ge := res.GetError(); ge != nil {
+				sre := status.FromProto(ge)
+				cmd.Printf("%s\n", sre.Message())
+			}
+
+			if rr := res.GetMessage(); rr != "" {
+				cmd.Printf("%s\n", rr)
+			}
+		}
+	}()
+
+	stream.CloseSend()
+
+	select {
+	case errc := <-errorc:
+		if st, ok := status.FromError(errc); ok {
+			return errors.New(st.Message())
+		}
+	case <-waitc:
 	}
+
+	return nil
 }

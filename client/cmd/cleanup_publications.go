@@ -3,7 +3,6 @@ package cmd
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"log"
 	"time"
@@ -11,6 +10,7 @@ import (
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
 	"github.com/ugent-library/biblio-backoffice/client/client"
+	"google.golang.org/grpc/status"
 )
 
 func init() {
@@ -42,16 +42,44 @@ func CleanupPublications(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 
-	for {
-		res, err := stream.Recv()
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			return fmt.Errorf("error while reading stream: %v", err)
-		}
+	waitc := make(chan struct{})
+	errorc := make(chan error)
 
-		cmd.Printf("%s\n", res.Message)
+	go func() {
+		for {
+			res, err := stream.Recv()
+			if err == io.EOF {
+				// read done.
+				close(waitc)
+				return
+			}
+
+			// return gRPC level error
+			if err != nil {
+				errorc <- err
+				return
+			}
+
+			// Application level error
+			if ge := res.GetError(); ge != nil {
+				sre := status.FromProto(ge)
+				cmd.Printf("%s\n", sre.Message())
+			}
+
+			if rr := res.GetMessage(); rr != "" {
+				cmd.Printf("%s\n", rr)
+			}
+		}
+	}()
+
+	stream.CloseSend()
+
+	select {
+	case errc := <-errorc:
+		if st, ok := status.FromError(errc); ok {
+			return errors.New(st.Message())
+		}
+	case <-waitc:
 	}
 
 	return nil

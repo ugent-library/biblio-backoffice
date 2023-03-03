@@ -11,6 +11,8 @@ package biblio.v1;
 
 option go_package = "github.com/ugent-library/biblio-backoffice/api/v1";
 
+import "api/v1/google/rpc/status.proto";
+
 service Biblio {
     rpc GetFile(GetFileRequest) returns (stream GetFileResponse);
     rpc AddFile(stream AddFileRequest) returns (AddFileResponse);
@@ -77,7 +79,10 @@ message GetAllPublicationsRequest {
 }
 
 message GetAllPublicationsResponse {
-    Publication publication = 1;
+    oneof response {
+        Publication publication = 1;
+        google.rpc.Status error = 2;
+    }
 }
 
 message SearchPublicationsRequest {
@@ -105,7 +110,10 @@ message AddPublicationsRequest {
 }
 
 message AddPublicationsResponse {
-    string message = 1;
+    oneof response {
+        string message = 1;
+        google.rpc.Status error = 2;
+    }
 }
 
 message ImportPublicationsRequest {
@@ -113,7 +121,10 @@ message ImportPublicationsRequest {
 }
 
 message ImportPublicationsResponse {
-    string message = 1;
+    oneof response {
+        string message = 1;
+        google.rpc.Status error = 2;
+    }
 }
 
 message GetPublicationHistoryRequest {
@@ -121,8 +132,10 @@ message GetPublicationHistoryRequest {
 }
 
 message GetPublicationHistoryResponse {
-    Publication publication = 1;
-}
+    oneof response {
+        Publication publication = 1;
+        google.rpc.Status error = 2;
+    }}
 
 message PurgePublicationRequest {
     string id = 1;
@@ -141,17 +154,27 @@ message ValidatePublicationsRequest {
     Publication publication = 1;
 }
 
-message ValidatePublicationsResponse {
+message ValidateResults {
     int32 seq = 1;
     string id = 2;
     string message = 3;
+}
+
+message ValidatePublicationsResponse {
+    oneof response {
+        ValidateResults results = 1;
+        google.rpc.Status error = 2;
+    }
 }
 
 message ReindexPublicationsRequest{
 }
 
 message ReindexPublicationsResponse {
-    string message = 1;
+    oneof response {
+        string message = 1;
+        google.rpc.Status error = 2;
+    }
 }
 
 message TransferPublicationsRequest {
@@ -161,15 +184,20 @@ message TransferPublicationsRequest {
 }
 
 message TransferPublicationsResponse {
-    string message = 1;
+    oneof response {
+        string message = 1;
+        google.rpc.Status error = 2;
+    }
 }
 
 message CleanupPublicationsRequest {
 }
 
 message CleanupPublicationsResponse {
-    string message = 1;
-}
+    oneof response {
+        string message = 1;
+        google.rpc.Status error = 2;
+    }}
 
 message GetDatasetRequest {
     string id = 1;

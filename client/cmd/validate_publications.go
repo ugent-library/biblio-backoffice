@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"log"
 	"os"
@@ -13,6 +12,7 @@ import (
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
 	"github.com/ugent-library/biblio-backoffice/client/client"
+	"google.golang.org/grpc/status"
 )
 
 func init() {
@@ -22,12 +22,12 @@ func init() {
 var ValidatePublicationsCmd = &cobra.Command{
 	Use:   "validate",
 	Short: "Validate publications",
-	Run: func(cmd *cobra.Command, args []string) {
-		ValidatePublications(cmd, args)
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return ValidatePublications(cmd, args)
 	},
 }
 
-func ValidatePublications(cmd *cobra.Command, args []string) {
+func ValidatePublications(cmd *cobra.Command, args []string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
@@ -43,6 +43,7 @@ func ValidatePublications(cmd *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 	waitc := make(chan struct{})
+	errorc := make(chan error)
 
 	go func() {
 		for {
@@ -52,15 +53,25 @@ func ValidatePublications(cmd *cobra.Command, args []string) {
 				close(waitc)
 				return
 			}
+
+			// return gRPC level error
 			if err != nil {
-				log.Fatal(err)
+				errorc <- err
 			}
 
-			j, err := marshaller.Marshal(res)
-			if err != nil {
-				log.Fatal(err)
+			// Application level error
+			if ge := res.GetError(); ge != nil {
+				sre := status.FromProto(ge)
+				cmd.Printf("%s\n", sre.Message())
 			}
-			fmt.Printf("%s\n", j)
+
+			if rr := res.GetResults(); rr != nil {
+				j, err := marshaller.Marshal(res)
+				if err != nil {
+					errorc <- err
+				}
+				cmd.Printf("%s\n", j)
+			}
 		}
 	}()
 
@@ -85,5 +96,14 @@ func ValidatePublications(cmd *cobra.Command, args []string) {
 	}
 
 	stream.CloseSend()
-	<-waitc
+
+	select {
+	case errc := <-errorc:
+		if st, ok := status.FromError(errc); ok {
+			return errors.New(st.Message())
+		}
+	case <-waitc:
+	}
+
+	return nil
 }

@@ -34,7 +34,7 @@ func (s *server) GetPublication(ctx context.Context, req *api.GetPublicationRequ
 	j, err := json.Marshal(p)
 
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "could not unmarshal publication with id %s: %v", err)
+		return nil, status.Errorf(codes.Internal, "could not marshal publication with id %s: %v", err)
 	}
 
 	apip := &api.Publication{
@@ -49,21 +49,34 @@ func (s *server) GetPublication(ctx context.Context, req *api.GetPublicationRequ
 }
 
 func (s *server) GetAllPublications(req *api.GetAllPublicationsRequest, stream api.Biblio_GetAllPublicationsServer) (err error) {
-	// TODO make this a cancelible context which breaks the EachPublication loop when the client goes away
-	ctx := context.TODO()
-
-	errorStream := s.services.Repository.EachPublication(ctx, func(p *models.Publication) error {
+	errorStream := s.services.Repository.EachPublication(stream.Context(), func(p *models.Publication) error {
 		j, err := json.Marshal(p)
 		if err != nil {
-			return err
+			grpcError := status.New(codes.Internal, fmt.Errorf("could not marshal publication with id %s: %v", p.ID, err).Error())
+			grpcError, err = grpcError.WithDetails(req)
+			if err != nil {
+				return err
+			}
+
+			stream.Send(&api.GetAllPublicationsResponse{
+				Response: &api.GetAllPublicationsResponse_Error{
+					Error: grpcError.Proto(),
+				},
+			})
 		}
-		apip := &api.Publication{
-			Payload: j,
+
+		res := &api.GetAllPublicationsResponse{
+			Response: &api.GetAllPublicationsResponse_Publication{
+				Publication: &api.Publication{
+					Payload: j,
+				},
+			},
 		}
-		res := &api.GetAllPublicationsResponse{Publication: apip}
+
 		if err = stream.Send(res); err != nil {
 			return err
 		}
+
 		return nil
 	})
 
@@ -82,8 +95,7 @@ func (s *server) SearchPublications(ctx context.Context, req *api.SearchPublicat
 	args := models.NewSearchArgs().WithQuery(req.Query).WithPage(page)
 	hits, err := s.services.PublicationSearchService.Search(args)
 	if err != nil {
-		// TODO How do we differentiate between errors?
-		return nil, status.Errorf(codes.Internal, "Could not search publications: %s :: %s", req.Query, err)
+		return nil, status.Errorf(codes.Internal, "could not search publications: %s :: %s", req.Query, err)
 	}
 
 	res := &api.SearchPublicationsResponse{
@@ -124,11 +136,9 @@ func (s *server) UpdatePublication(ctx context.Context, req *api.UpdatePublicati
 	}
 
 	if err := s.services.Repository.UpdatePublication(p.SnapshotID, p, user); err != nil {
-		// TODO How do we differentiate between errors?
 		return nil, status.Errorf(codes.Internal, "failed to store publication %s, %s", p.ID, err)
 	}
 	if err := s.services.PublicationSearchService.Index(p); err != nil {
-		// TODO How do we differentiate between errors
 		return nil, status.Errorf(codes.Internal, "failed to index publication %s, %s", p.ID, err)
 	}
 
@@ -138,21 +148,36 @@ func (s *server) UpdatePublication(ctx context.Context, req *api.UpdatePublicati
 func (s *server) AddPublications(stream api.Biblio_AddPublicationsServer) error {
 	ctx := context.Background()
 
+	var biErr error
+	var biIdxErr error
+
 	bi, err := s.services.PublicationSearchService.NewBulkIndexer(backends.BulkIndexerConfig{
 		OnError: func(err error) {
-			msg := fmt.Errorf("failed to index: %w", err).Error()
-			// TODO catch error
-			stream.Send(&api.AddPublicationsResponse{Message: msg})
+			grpcErr := status.New(codes.Internal, fmt.Errorf("failed to index publication: %v", err).Error())
+			if err = stream.Send(&api.AddPublicationsResponse{
+				Response: &api.AddPublicationsResponse_Error{
+					Error: grpcErr.Proto(),
+				},
+			}); err != nil {
+				biErr = err
+			}
 		},
 		OnIndexError: func(id string, err error) {
-			msg := fmt.Errorf("failed to index publication %s: %w", id, err).Error()
-			// TODO catch error
-			stream.Send(&api.AddPublicationsResponse{Message: msg})
+			grpcErr := status.New(codes.Internal, fmt.Errorf("failed to index publication %s: %w", id, err).Error())
+			if err = stream.Send(&api.AddPublicationsResponse{
+				Response: &api.AddPublicationsResponse_Error{
+					Error: grpcErr.Proto(),
+				},
+			}); err != nil {
+				biErr = err
+			}
 		},
 	})
+
 	if err != nil {
 		return status.Errorf(codes.Internal, "failed to start an indexer: %s", err)
 	}
+
 	defer bi.Close(ctx)
 
 	var seq int
@@ -170,7 +195,15 @@ func (s *server) AddPublications(stream api.Biblio_AddPublicationsServer) error 
 
 		p := &models.Publication{}
 		if err := json.Unmarshal(req.Publication.Payload, p); err != nil {
-			return status.Errorf(codes.InvalidArgument, "could not read json input: %s", err)
+			grpcErr := status.New(codes.InvalidArgument, fmt.Errorf("could not read json input: %s", err).Error())
+			if err = stream.Send(&api.AddPublicationsResponse{
+				Response: &api.AddPublicationsResponse_Error{
+					Error: grpcErr.Proto(),
+				},
+			}); err != nil {
+				return status.Errorf(codes.Internal, "failed to to add publications: %v", err)
+			}
+			continue
 		}
 
 		if p.ID == "" {
@@ -201,34 +234,56 @@ func (s *server) AddPublications(stream api.Biblio_AddPublicationsServer) error 
 			p.Link[i] = val
 		}
 
-		// TODO this should return structured messages (see validate)
 		if err := p.Validate(); err != nil {
-			msg := fmt.Errorf("failed to validate publication %s at line %d: %s", p.ID, seq, err).Error()
-			if err = stream.Send(&api.AddPublicationsResponse{Message: msg}); err != nil {
-				return err
+			grpcErr := status.New(codes.InvalidArgument, fmt.Errorf("failed to validate publication %s at line %d: %v", p.ID, seq, err).Error())
+			if err = stream.Send(&api.AddPublicationsResponse{
+				Response: &api.AddPublicationsResponse_Error{
+					Error: grpcErr.Proto(),
+				},
+			}); err != nil {
+				return status.Errorf(codes.Internal, "failed to to add publications: %v", err)
 			}
 			continue
 		}
 
 		if err := s.services.Repository.SavePublication(p, nil); err != nil {
-			msg := fmt.Errorf("failed to store publication %s at line %d: %s", p.ID, seq, err).Error()
-			if err = stream.Send(&api.AddPublicationsResponse{Message: msg}); err != nil {
-				return err
+			grpcErr := status.New(codes.InvalidArgument, fmt.Errorf("failed to store publication %s at line %d: %s", p.ID, seq, err).Error())
+			if err = stream.Send(&api.AddPublicationsResponse{
+				Response: &api.AddPublicationsResponse_Error{
+					Error: grpcErr.Proto(),
+				},
+			}); err != nil {
+				return status.Errorf(codes.Internal, "failed to to add publications: %v", err)
 			}
 			continue
 		}
 
 		if err := bi.Index(ctx, p); err != nil {
-			msg := fmt.Errorf("failed to index publication %s at line %d: %w", p.ID, seq, err).Error()
-			if err = stream.Send(&api.AddPublicationsResponse{Message: msg}); err != nil {
-				return err
+			grpcErr := status.New(codes.InvalidArgument, fmt.Errorf("failed to index publication %s at line %d: %w", p.ID, seq, err).Error())
+			if err = stream.Send(&api.AddPublicationsResponse{
+				Response: &api.AddPublicationsResponse_Error{
+					Error: grpcErr.Proto(),
+				},
+			}); err != nil {
+				return status.Errorf(codes.Internal, "failed to to add publications: %v", err)
 			}
 			continue
 		}
 
-		msg := fmt.Sprintf("stored and indexed publication %s at line %d", p.ID, seq)
-		if err = stream.Send(&api.AddPublicationsResponse{Message: msg}); err != nil {
-			return err
+		if biErr != nil {
+			return status.Errorf(codes.Internal, "failed to to add publications: %v", biErr)
+		}
+
+		if biIdxErr != nil {
+			return status.Errorf(codes.Internal, "failed to to add publications: %v", biIdxErr)
+		}
+
+		if err = stream.Send(&api.AddPublicationsResponse{
+			Response: &api.AddPublicationsResponse_Message{
+				Message: fmt.Sprintf("stored and indexed publication %s at line %d", p.ID, seq),
+			},
+		}); err != nil {
+			return status.Errorf(codes.Internal, "failed to to add publications: %v", err)
 		}
 	}
 }
@@ -236,21 +291,36 @@ func (s *server) AddPublications(stream api.Biblio_AddPublicationsServer) error 
 func (s *server) ImportPublications(stream api.Biblio_ImportPublicationsServer) error {
 	ctx := context.Background()
 
+	var biErr error
+	var biIdxErr error
+
 	bi, err := s.services.PublicationSearchService.NewBulkIndexer(backends.BulkIndexerConfig{
 		OnError: func(err error) {
-			msg := fmt.Errorf("failed to index: %w", err).Error()
-			// TODO catch error
-			stream.Send(&api.ImportPublicationsResponse{Message: msg})
+			grpcErr := status.New(codes.Internal, fmt.Errorf("failed to index publication: %v", err).Error())
+			if err = stream.Send(&api.ImportPublicationsResponse{
+				Response: &api.ImportPublicationsResponse_Error{
+					Error: grpcErr.Proto(),
+				},
+			}); err != nil {
+				biErr = err
+			}
 		},
 		OnIndexError: func(id string, err error) {
-			msg := fmt.Errorf("failed to index publication %s: %w", id, err).Error()
-			// TODO catch error
-			stream.Send(&api.ImportPublicationsResponse{Message: msg})
+			grpcErr := status.New(codes.Internal, fmt.Errorf("failed to index publication %s: %w", id, err).Error())
+			if err = stream.Send(&api.ImportPublicationsResponse{
+				Response: &api.ImportPublicationsResponse_Error{
+					Error: grpcErr.Proto(),
+				},
+			}); err != nil {
+				biErr = err
+			}
 		},
 	})
+
 	if err != nil {
-		return err
+		return status.Errorf(codes.Internal, "failed to start an indexer: %s", err)
 	}
+
 	defer bi.Close(ctx)
 
 	var seq int
@@ -268,31 +338,59 @@ func (s *server) ImportPublications(stream api.Biblio_ImportPublicationsServer) 
 
 		p := &models.Publication{}
 		if err := json.Unmarshal(req.Publication.Payload, p); err != nil {
-			log.Fatal(err)
-		}
-
-		// TODO this should return structured messages (see validate)
-		if err := p.Validate(); err != nil {
-			msg := fmt.Errorf("validation failed for publication %s at line %d: %s", p.ID, seq, err).Error()
-			if err = stream.Send(&api.ImportPublicationsResponse{Message: msg}); err != nil {
-				return err
+			grpcErr := status.New(codes.InvalidArgument, fmt.Errorf("could not read json input: %s", err).Error())
+			if err = stream.Send(&api.ImportPublicationsResponse{
+				Response: &api.ImportPublicationsResponse_Error{
+					Error: grpcErr.Proto(),
+				},
+			}); err != nil {
+				return status.Errorf(codes.Internal, "failed to to import publications: %v", err)
 			}
 			continue
 		}
+
+		if err := p.Validate(); err != nil {
+			grpcErr := status.New(codes.InvalidArgument, fmt.Errorf("failed to validate publication %s at line %d: %v", p.ID, seq, err).Error())
+			if err = stream.Send(&api.ImportPublicationsResponse{
+				Response: &api.ImportPublicationsResponse_Error{
+					Error: grpcErr.Proto(),
+				},
+			}); err != nil {
+				return status.Errorf(codes.Internal, "failed to to import publications: %v", err)
+			}
+			continue
+		}
+
 		if err := s.services.Repository.ImportCurrentPublication(p); err != nil {
-			msg := fmt.Errorf("failed to store publication %s at line %d: %s", p.ID, seq, err).Error()
-			if err = stream.Send(&api.ImportPublicationsResponse{Message: msg}); err != nil {
-				return err
+			grpcErr := status.New(codes.InvalidArgument, fmt.Errorf("failed to store publication %s at line %d: %s", p.ID, seq, err).Error())
+			if err = stream.Send(&api.ImportPublicationsResponse{
+				Response: &api.ImportPublicationsResponse_Error{
+					Error: grpcErr.Proto(),
+				},
+			}); err != nil {
+				return status.Errorf(codes.Internal, "failed to to import publications: %v", err)
 			}
 			continue
 		}
 
 		if err := bi.Index(ctx, p); err != nil {
-			msg := fmt.Errorf("failed to index publication %s at line %d: %w", p.ID, seq, err).Error()
-			if err = stream.Send(&api.ImportPublicationsResponse{Message: msg}); err != nil {
-				return err
+			grpcErr := status.New(codes.InvalidArgument, fmt.Errorf("failed to index publication %s at line %d: %w", p.ID, seq, err).Error())
+			if err = stream.Send(&api.ImportPublicationsResponse{
+				Response: &api.ImportPublicationsResponse_Error{
+					Error: grpcErr.Proto(),
+				},
+			}); err != nil {
+				return status.Errorf(codes.Internal, "failed to to import publications: %v", err)
 			}
 			continue
+		}
+
+		if biErr != nil {
+			return status.Errorf(codes.Internal, "failed to to import publications: %v", biErr)
+		}
+
+		if biIdxErr != nil {
+			return status.Errorf(codes.Internal, "failed to to import publications: %v", biIdxErr)
 		}
 	}
 }
@@ -302,16 +400,24 @@ func (s *server) GetPublicationHistory(req *api.GetPublicationHistoryRequest, st
 	errorStream := s.services.Repository.PublicationHistory(ctx, req.Id, func(p *models.Publication) error {
 		j, err := json.Marshal(p)
 		if err != nil {
-			return err
-		}
-
-		apip := &api.Publication{
-			Payload: j,
-		}
-
-		res := &api.GetPublicationHistoryResponse{Publication: apip}
-		if err = stream.Send(res); err != nil {
-			return err
+			grpcErr := status.New(codes.InvalidArgument, fmt.Errorf("could not read json input: %s", err).Error())
+			if err = stream.Send(&api.GetPublicationHistoryResponse{
+				Response: &api.GetPublicationHistoryResponse_Error{
+					Error: grpcErr.Proto(),
+				},
+			}); err != nil {
+				return err
+			}
+		} else {
+			if err = stream.Send(&api.GetPublicationHistoryResponse{
+				Response: &api.GetPublicationHistoryResponse_Publication{
+					Publication: &api.Publication{
+						Payload: j,
+					},
+				},
+			}); err != nil {
+				return status.Errorf(codes.Internal, "could not get publication history: %v", err)
+			}
 		}
 
 		return nil
@@ -362,18 +468,33 @@ func (s *server) ValidatePublications(stream api.Biblio_ValidatePublicationsServ
 
 		p := &models.Publication{}
 		if err := json.Unmarshal(req.Publication.Payload, p); err != nil {
-			log.Fatal(err)
+			grpcErr := status.New(codes.InvalidArgument, fmt.Errorf("could not read json input: %s", err).Error())
+			if err = stream.Send(&api.ValidatePublicationsResponse{
+				Response: &api.ValidatePublicationsResponse_Error{
+					Error: grpcErr.Proto(),
+				},
+			}); err != nil {
+				return status.Errorf(codes.Internal, "failed to to validate publications: %v", err)
+			}
+			continue
 		}
 
 		err = p.Validate()
 		var validationErrs validation.Errors
 		if errors.As(err, &validationErrs) {
-			res := &api.ValidatePublicationsResponse{Seq: seq, Id: p.ID, Message: validationErrs.Error()}
-			if err = stream.Send(res); err != nil {
-				return err
+			if err = stream.Send(&api.ValidatePublicationsResponse{
+				Response: &api.ValidatePublicationsResponse_Results{
+					Results: &api.ValidateResults{
+						Seq:     seq,
+						Id:      p.ID,
+						Message: validationErrs.Error(),
+					},
+				},
+			}); err != nil {
+				return status.Errorf(codes.Internal, "failed to to validate publications: %v", err)
 			}
 		} else if err != nil {
-			return err
+			return status.Errorf(codes.Internal, "failed to to validate publications: %v", err)
 		}
 	}
 }
@@ -382,101 +503,149 @@ func (s *server) ReindexPublications(req *api.ReindexPublicationsRequest, stream
 	startTime := time.Now()
 	indexed := 0
 
-	msg := "Indexing to new index..."
-	if err := stream.Send(&api.ReindexPublicationsResponse{Message: msg}); err != nil {
-		return err
+	if err := stream.Send(&api.ReindexPublicationsResponse{
+		Response: &api.ReindexPublicationsResponse_Message{
+			Message: "Indexing to a new index",
+		},
+	}); err != nil {
+		return status.Errorf(codes.Internal, "failed to to index publications: %v", err)
 	}
 
-	var biErr error
-	// var biIndexErr error
+	var swErr error
+	var swIdxErr error
+
 	switcher, err := s.services.PublicationSearchService.NewIndexSwitcher(backends.BulkIndexerConfig{
 		OnError: func(err error) {
-			biErr = fmt.Errorf("indexing failed : %s", err)
+			grpcErr := status.New(codes.Internal, fmt.Errorf("failed to index publication: %v", err).Error())
+			if err = stream.Send(&api.ReindexPublicationsResponse{
+				Response: &api.ReindexPublicationsResponse_Error{
+					Error: grpcErr.Proto(),
+				},
+			}); err != nil {
+				swErr = err
+			}
 		},
 		OnIndexError: func(id string, err error) {
-			// TODO review: does this even work?
-			// biIndexErr = fmt.Errorf("indexing failed for publication [id: %s] : %s", id, err)
+			grpcErr := status.New(codes.Internal, fmt.Errorf("failed to index publication %s: %w", id, err).Error())
+			if err = stream.Send(&api.ReindexPublicationsResponse{
+				Response: &api.ReindexPublicationsResponse_Error{
+					Error: grpcErr.Proto(),
+				},
+			}); err != nil {
+				swIdxErr = err
+			}
 		},
 	})
 
 	if err != nil {
-		return status.Errorf(codes.Internal, "indexing failed: %v", err)
+		return status.Errorf(codes.Internal, "failed to start an indexer: %s", err)
 	}
 
 	ctx := stream.Context()
 	s.services.Repository.EachPublication(ctx, func(p *models.Publication) error {
 		if err := switcher.Index(ctx, p); err != nil {
-			msg = fmt.Sprintf("indexing failed for publication [id: %s] : %s", p.ID, err)
-			if err := stream.Send(&api.ReindexPublicationsResponse{Message: msg}); err != nil {
-				return err
+			grpcErr := status.New(codes.Internal, fmt.Errorf("indexing failed for publication [id: %s] : %s", p.ID, err).Error())
+			if err = stream.Send(&api.ReindexPublicationsResponse{
+				Response: &api.ReindexPublicationsResponse_Error{
+					Error: grpcErr.Proto(),
+				},
+			}); err != nil {
+				return status.Errorf(codes.Internal, "failed to to index publications: %v", err)
 			}
 		}
 		indexed++
 		return nil
 	})
 
-	msg = fmt.Sprintf("Indexed %d publications...", indexed)
-	if err := stream.Send(&api.ReindexPublicationsResponse{Message: msg}); err != nil {
-		return err
+	if swErr != nil {
+		return status.Errorf(codes.Internal, "failed to to index publications: %v", swErr)
 	}
 
-	msg = "Switching to new index..."
-	if err := stream.Send(&api.ReindexPublicationsResponse{Message: msg}); err != nil {
-		return err
+	if swIdxErr != nil {
+		return status.Errorf(codes.Internal, "failed to to index publications: %v", swIdxErr)
+	}
+
+	if err := stream.Send(&api.ReindexPublicationsResponse{
+		Response: &api.ReindexPublicationsResponse_Message{
+			Message: fmt.Sprintf("Indexed %d publications...", indexed),
+		},
+	}); err != nil {
+		return status.Errorf(codes.Internal, "failed to to index publications: %v", err)
+	}
+
+	if err := stream.Send(&api.ReindexPublicationsResponse{
+		Response: &api.ReindexPublicationsResponse_Message{
+			Message: "Switching to new index...",
+		},
+	}); err != nil {
+		return status.Errorf(codes.Internal, "failed to to index publications: %v", err)
 	}
 
 	if err := switcher.Switch(ctx); err != nil {
 		return status.Errorf(codes.Internal, "indexing failed: %v", err)
 	}
 
-	if biErr != nil {
-		// TODO
-	}
-
-	// if biIndexErr != nil {
-	// 	// TODO
-	// }
-
 	endTime := time.Now()
 
-	msg = "Indexing changes since start of reindex..."
-	if err := stream.Send(&api.ReindexPublicationsResponse{Message: msg}); err != nil {
-		return err
+	if err := stream.Send(&api.ReindexPublicationsResponse{
+		Response: &api.ReindexPublicationsResponse_Message{
+			Message: "Indexing changes since start of reindex...",
+		},
+	}); err != nil {
+		return status.Errorf(codes.Internal, "failed to to index publications: %v", err)
 	}
 
 	for {
 		indexed = 0
 
 		var biErr error
+		var biIdxErr error
+
 		bi, err := s.services.PublicationSearchService.NewBulkIndexer(backends.BulkIndexerConfig{
 			OnError: func(err error) {
-				biErr = fmt.Errorf("indexing failed : %s", err)
+				grpcErr := status.New(codes.Internal, fmt.Errorf("failed to index publication: %v", err).Error())
+				if err = stream.Send(&api.ReindexPublicationsResponse{
+					Response: &api.ReindexPublicationsResponse_Error{
+						Error: grpcErr.Proto(),
+					},
+				}); err != nil {
+					biErr = err
+				}
 			},
 			OnIndexError: func(id string, err error) {
-				// TODO: review: does this work properly?
-				// errc <- fmt.Errorf("indexing failed for publication [id: %s] : %s", id, err)
+				grpcErr := status.New(codes.Internal, fmt.Errorf("failed to index publication %s: %w", id, err).Error())
+				if err = stream.Send(&api.ReindexPublicationsResponse{
+					Response: &api.ReindexPublicationsResponse_Error{
+						Error: grpcErr.Proto(),
+					},
+				}); err != nil {
+					biErr = err
+				}
 			},
 		})
 
 		if err != nil {
-			return status.Errorf(codes.Internal, "indexing failed: %v", err)
+			return status.Errorf(codes.Internal, "failed to start an indexer: %s", err)
 		}
+
+		defer bi.Close(ctx)
 
 		err = s.services.Repository.PublicationsBetween(startTime, endTime, func(p *models.Publication) error {
 			if err := bi.Index(ctx, p); err != nil {
-				msg = fmt.Sprintf("indexing failed for publication [id: %s] : %s", p.ID, err)
-				if err := stream.Send(&api.ReindexPublicationsResponse{Message: msg}); err != nil {
-					return err
+				grpcErr := status.New(codes.Internal, fmt.Errorf("indexing failed for publication [id: %s] : %s", p.ID, err).Error())
+				if err = stream.Send(&api.ReindexPublicationsResponse{
+					Response: &api.ReindexPublicationsResponse_Error{
+						Error: grpcErr.Proto(),
+					},
+				}); err != nil {
+					return status.Errorf(codes.Internal, "failed to to index publications: %v", err)
 				}
 			}
 			indexed++
 			return nil
 		})
-		if err != nil {
-			return status.Errorf(codes.Internal, "indexing failed: %v", err)
-		}
 
-		if err = bi.Close(ctx); err != nil {
+		if err != nil {
 			return status.Errorf(codes.Internal, "indexing failed: %v", err)
 		}
 
@@ -484,22 +653,32 @@ func (s *server) ReindexPublications(req *api.ReindexPublicationsRequest, stream
 			return status.Errorf(codes.Internal, "indexing failed: %v", biErr)
 		}
 
+		if biIdxErr != nil {
+			return status.Errorf(codes.Internal, "indexing failed: %v", biErr)
+		}
+
 		if indexed == 0 {
 			break
 		}
 
-		msg = fmt.Sprintf("Indexed %d publications...", indexed)
-		if err := stream.Send(&api.ReindexPublicationsResponse{Message: msg}); err != nil {
-			return err
+		if err := stream.Send(&api.ReindexPublicationsResponse{
+			Response: &api.ReindexPublicationsResponse_Message{
+				Message: fmt.Sprintf("Indexed %d publications...", indexed),
+			},
+		}); err != nil {
+			return status.Errorf(codes.Internal, "failed to to index publications: %v", err)
 		}
 
 		startTime = endTime
 		endTime = time.Now()
 	}
 
-	msg = "Done."
-	if err := stream.Send(&api.ReindexPublicationsResponse{Message: msg}); err != nil {
-		return err
+	if err := stream.Send(&api.ReindexPublicationsResponse{
+		Response: &api.ReindexPublicationsResponse_Message{
+			Message: "Done",
+		},
+	}); err != nil {
+		return status.Errorf(codes.Internal, "failed to to index publications: %v", err)
 	}
 
 	return nil
@@ -521,6 +700,7 @@ func (s *server) TransferPublications(req *api.TransferPublicationsRequest, stre
 	c.FullName = p.FullName
 	c.UGentID = p.UGentID
 	c.ORCID = p.ORCID
+
 	for _, pd := range p.Department {
 		newDep := models.ContributorDepartment{ID: pd.ID}
 		org, orgErr := s.services.OrganizationService.GetOrganization(pd.ID)
@@ -540,9 +720,12 @@ func (s *server) TransferPublications(req *api.TransferPublicationsRequest, stre
 					Name: c.FullName,
 				}
 
-				msg := fmt.Sprintf("p: %s: s: %s ::: user: %s -> %s", p.ID, p.SnapshotID, source, c.ID)
-				if err := stream.Send(&api.TransferPublicationsResponse{Message: msg}); err != nil {
-					return err
+				if err := stream.Send(&api.TransferPublicationsResponse{
+					Response: &api.TransferPublicationsResponse_Message{
+						Message: fmt.Sprintf("p: %s: s: %s ::: user: %s -> %s", p.ID, p.SnapshotID, source, c.ID),
+					},
+				}); err != nil {
+					return status.Errorf(codes.Internal, "failed to to transfer publication: %v", err)
 				}
 
 				fixed = true
@@ -565,10 +748,14 @@ func (s *server) TransferPublications(req *api.TransferPublicationsRequest, stre
 					}
 				}
 
-				msg := fmt.Sprintf("p: %s: s: %s ::: creator: %s -> %s", p.ID, p.SnapshotID, source, c.ID)
-				if err := stream.Send(&api.TransferPublicationsResponse{Message: msg}); err != nil {
-					return err
+				if err := stream.Send(&api.TransferPublicationsResponse{
+					Response: &api.TransferPublicationsResponse_Message{
+						Message: fmt.Sprintf("p: %s: s: %s ::: creator: %s -> %s", p.ID, p.SnapshotID, source, c.ID),
+					},
+				}); err != nil {
+					return status.Errorf(codes.Internal, "failed to to transfer publication: %v", err)
 				}
+
 				fixed = true
 			}
 		}
@@ -576,10 +763,15 @@ func (s *server) TransferPublications(req *api.TransferPublicationsRequest, stre
 		for k, a := range p.Author {
 			if a.ID == source {
 				p.SetContributor("author", k, c)
-				msg := fmt.Sprintf("p: %s: s: %s ::: author: %s -> %s", p.ID, p.SnapshotID, a.ID, c.ID)
-				if err := stream.Send(&api.TransferPublicationsResponse{Message: msg}); err != nil {
-					return err
+
+				if err := stream.Send(&api.TransferPublicationsResponse{
+					Response: &api.TransferPublicationsResponse_Message{
+						Message: fmt.Sprintf("p: %s: s: %s ::: author: %s -> %s", p.ID, p.SnapshotID, a.ID, c.ID),
+					},
+				}); err != nil {
+					return status.Errorf(codes.Internal, "failed to to transfer publication: %v", err)
 				}
+
 				fixed = true
 			}
 		}
@@ -587,10 +779,15 @@ func (s *server) TransferPublications(req *api.TransferPublicationsRequest, stre
 		for k, e := range p.Editor {
 			if e.ID == source {
 				p.SetContributor("editor", k, c)
-				msg := fmt.Sprintf("p: %s: s: %s ::: editor: %s -> %s", p.ID, p.SnapshotID, e.ID, c.ID)
-				if err := stream.Send(&api.TransferPublicationsResponse{Message: msg}); err != nil {
-					return err
+
+				if err := stream.Send(&api.TransferPublicationsResponse{
+					Response: &api.TransferPublicationsResponse_Message{
+						Message: fmt.Sprintf("p: %s: s: %s ::: editor: %s -> %s", p.ID, p.SnapshotID, e.ID, c.ID),
+					},
+				}); err != nil {
+					return status.Errorf(codes.Internal, "failed to to transfer publication: %v", err)
 				}
+
 				fixed = true
 			}
 		}
@@ -598,10 +795,15 @@ func (s *server) TransferPublications(req *api.TransferPublicationsRequest, stre
 		for k, s := range p.Supervisor {
 			if s.ID == source {
 				p.SetContributor("supervisor", k, c)
-				msg := fmt.Sprintf("p: %s: s: %s ::: supervisor: %s -> %s", p.ID, p.SnapshotID, s.ID, c.ID)
-				if err := stream.Send(&api.TransferPublicationsResponse{Message: msg}); err != nil {
-					return err
+
+				if err := stream.Send(&api.TransferPublicationsResponse{
+					Response: &api.TransferPublicationsResponse_Message{
+						Message: fmt.Sprintf("p: %s: s: %s ::: supervisor: %s -> %s", p.ID, p.SnapshotID, s.ID, c.ID),
+					},
+				}); err != nil {
+					return status.Errorf(codes.Internal, "failed to to transfer publication: %v", err)
 				}
+
 				fixed = true
 			}
 		}
@@ -609,22 +811,19 @@ func (s *server) TransferPublications(req *api.TransferPublicationsRequest, stre
 		if fixed {
 			errUpdate := s.services.Repository.UpdatePublicationInPlace(p)
 			if errUpdate != nil {
-				// TODO turn this into a fatal error
-				msg := fmt.Sprintf("p: %s: s: %s ::: Could not update snapshot: %s", p.ID, p.SnapshotID, errUpdate)
-				if err := stream.Send(&api.TransferPublicationsResponse{Message: msg}); err != nil {
-					return err
+				grpcErr := status.New(codes.Internal, fmt.Errorf("p: %s: s: %s ::: could not update snapshot: %s", p.ID, p.SnapshotID, errUpdate).Error())
+				if err = stream.Send(&api.TransferPublicationsResponse{
+					Response: &api.TransferPublicationsResponse_Error{
+						Error: grpcErr.Proto(),
+					},
+				}); err != nil {
+					return status.Errorf(codes.Internal, "failed to to transfer publication: %v", err)
 				}
 			}
 		}
 
 		return nil
 	}
-
-	/* TODO We're altering data, so we want to avoid data races by clients
-	   making the same call concurrently. Needs to be revised.
-	*/
-	// s.mu.transferPublications.Lock()
-	// defer s.mu.transferPublications.Unlock()
 
 	ctx := context.TODO()
 	if req.Publicationid != "" {
@@ -637,21 +836,38 @@ func (s *server) TransferPublications(req *api.TransferPublicationsRequest, stre
 }
 
 func (s *server) CleanupPublications(req *api.CleanupPublicationsRequest, stream api.Biblio_CleanupPublicationsServer) error {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := context.Background()
+
+	var biErr error
+	var biIdxErr error
 
 	bi, err := s.services.PublicationSearchService.NewBulkIndexer(backends.BulkIndexerConfig{
 		OnError: func(err error) {
-			log.Printf("indexing failed : %s", err)
+			grpcErr := status.New(codes.Internal, fmt.Errorf("failed to clean up publication: %v", err).Error())
+			if err = stream.Send(&api.CleanupPublicationsResponse{
+				Response: &api.CleanupPublicationsResponse_Error{
+					Error: grpcErr.Proto(),
+				},
+			}); err != nil {
+				biErr = err
+			}
 		},
 		OnIndexError: func(id string, err error) {
-			log.Printf("indexing failed for publication [id: %s] : %s", id, err)
+			grpcErr := status.New(codes.Internal, fmt.Errorf("failed to clean up publication %s: %w", id, err).Error())
+			if err = stream.Send(&api.CleanupPublicationsResponse{
+				Response: &api.CleanupPublicationsResponse_Error{
+					Error: grpcErr.Proto(),
+				},
+			}); err != nil {
+				biErr = err
+			}
 		},
 	})
 
 	if err != nil {
-		return status.Errorf(codes.Internal, "bulk indexer failed: %v", err)
+		return status.Errorf(codes.Internal, "failed to start an indexer: %s", err)
 	}
+
 	defer bi.Close(ctx)
 
 	count := 0
@@ -690,15 +906,13 @@ func (s *server) CleanupPublications(req *api.CleanupPublicationsRequest, stream
 			p.User = nil
 
 			if err := p.Validate(); err != nil {
-				msg := fmt.Sprintf(
-					"Validation failed for publication[snapshot_id: %s, id: %s] : %v",
-					p.SnapshotID,
-					p.ID,
-					err,
-				)
-
-				if err := stream.Send(&api.CleanupPublicationsResponse{Message: msg}); err != nil {
-					return err
+				grpcErr := status.New(codes.Internal, fmt.Errorf("validation failed for publication[snapshot_id: %s, id: %s] : %v", p.SnapshotID, p.ID, err).Error())
+				if err = stream.Send(&api.CleanupPublicationsResponse{
+					Response: &api.CleanupPublicationsResponse_Error{
+						Error: grpcErr.Proto(),
+					},
+				}); err != nil {
+					return status.Errorf(codes.Internal, "failed to to clean up publication: %v", err)
 				}
 
 				return nil
@@ -706,40 +920,59 @@ func (s *server) CleanupPublications(req *api.CleanupPublicationsRequest, stream
 
 			err := s.services.Repository.UpdatePublication(p.SnapshotID, p, nil)
 			if err != nil {
-				log.Println(err)
-			}
-
-			var conflict *snapstore.Conflict
-			if errors.As(err, &conflict) {
-				msg := fmt.Sprintf(
-					"Conflict detected for publication[snapshot_id: %s, id: %s] : %v",
-					p.SnapshotID,
-					p.ID,
-					err,
-				)
-
-				if err := stream.Send(&api.CleanupPublicationsResponse{Message: msg}); err != nil {
-					return err
+				grpcErr := status.New(codes.Internal, fmt.Errorf("failed to update publication[snapshot_id: %s, id: %s] : %v", p.SnapshotID, p.ID, err).Error())
+				if err = stream.Send(&api.CleanupPublicationsResponse{
+					Response: &api.CleanupPublicationsResponse_Error{
+						Error: grpcErr.Proto(),
+					},
+				}); err != nil {
+					return status.Errorf(codes.Internal, "failed to to clean up publication: %v", err)
 				}
 
 				return nil
 			}
 
-			msg := fmt.Sprintf(
-				"Fixed publication[snapshot_id: %s, id: %s]",
-				p.SnapshotID,
-				p.ID,
-			)
+			if biErr != nil {
+				return status.Errorf(codes.Internal, "indexing failed: %v", biErr)
+			}
 
-			if err := stream.Send(&api.CleanupPublicationsResponse{Message: msg}); err != nil {
-				return err
+			if biIdxErr != nil {
+				return status.Errorf(codes.Internal, "indexing failed: %v", biErr)
+			}
+
+			var conflict *snapstore.Conflict
+			if errors.As(err, &conflict) {
+				grpcErr := status.New(codes.Internal, fmt.Errorf("conflict detected for publication[snapshot_id: %s, id: %s] : %v", p.SnapshotID, p.ID, err).Error())
+				if err = stream.Send(&api.CleanupPublicationsResponse{
+					Response: &api.CleanupPublicationsResponse_Error{
+						Error: grpcErr.Proto(),
+					},
+				}); err != nil {
+					return status.Errorf(codes.Internal, "failed to to clean up publication: %v", err)
+				}
+
+				return nil
+			}
+
+			if err := stream.Send(&api.CleanupPublicationsResponse{
+				Response: &api.CleanupPublicationsResponse_Message{
+					Message: fmt.Sprintf("fixed publication[snapshot_id: %s, id: %s]", p.SnapshotID, p.ID),
+				},
+			}); err != nil {
+				return status.Errorf(codes.Internal, "failed to to transfer publication: %v", err)
 			}
 
 			if err := bi.Index(ctx, p); err != nil {
-				msg := fmt.Sprintf("indexing failed for publication [id: %s] : %s", p.ID, err)
-				if err := stream.Send(&api.CleanupPublicationsResponse{Message: msg}); err != nil {
-					return err
+				grpcErr := status.New(codes.Internal, fmt.Errorf("indexing failed for publication [id: %s] : %s", p.ID, err).Error())
+				if err = stream.Send(&api.CleanupPublicationsResponse{
+					Response: &api.CleanupPublicationsResponse_Error{
+						Error: grpcErr.Proto(),
+					},
+				}); err != nil {
+					return status.Errorf(codes.Internal, "failed to to clean up publication: %v", err)
 				}
+
+				return nil
 			}
 
 			count += 1
@@ -752,9 +985,12 @@ func (s *server) CleanupPublications(req *api.CleanupPublicationsRequest, stream
 		return status.Errorf(codes.Internal, "could not complete cleanup: %v", err)
 	}
 
-	msg := fmt.Sprintf("done. cleaned %d publications.", count)
-	if err := stream.Send(&api.CleanupPublicationsResponse{Message: msg}); err != nil {
-		return err
+	if err := stream.Send(&api.CleanupPublicationsResponse{
+		Response: &api.CleanupPublicationsResponse_Message{
+			Message: fmt.Sprintf("done. cleaned %d publications.", count),
+		},
+	}); err != nil {
+		return status.Errorf(codes.Internal, "failed to to clean up publications: %v", err)
 	}
 
 	return nil

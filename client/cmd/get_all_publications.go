@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
 	"github.com/ugent-library/biblio-backoffice/client/client"
+	"google.golang.org/grpc/status"
 )
 
 func init() {
@@ -50,6 +51,13 @@ func GetAllPublications(cmd *cobra.Command, args []string) {
 			log.Fatalf("error while reading stream: %v", err)
 		}
 
-		cmd.Printf("%s\n", res.Publication.Payload)
+		if ge := res.GetError(); ge != nil {
+			sre := status.FromProto(ge)
+			cmd.Printf("%s\n", sre.Message())
+		}
+
+		if rr := res.GetPublication(); rr != nil {
+			cmd.Printf("%s\n", rr.GetPayload())
+		}
 	}
 }
