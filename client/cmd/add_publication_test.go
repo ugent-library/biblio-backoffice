@@ -69,7 +69,7 @@ func (s *AddPublicationSuite) TestAddNonJSONLInput() {
 		t.Fatal(err)
 	}
 
-	assert.Equal(t, "Error: could not read json input: invalid character 'i' looking for beginning of value\n", string(addCmdOut))
+	assert.Equal(t, "could not read json input: invalid character 'i' looking for beginning of value\n", string(addCmdOut))
 }
 
 // Test empty JSONL object
@@ -240,7 +240,8 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 	}
 
 	// Retrieve the publication
-	getCmdOutFile, errGetCmdOut := getPublication("00000000000000000000000001")
+	getCmdStdOut, _, errGetCmdOut := getPublication("00000000000000000000000001")
+
 	if errGetCmdOut != nil {
 		t.Fatal(errGetCmdOut)
 	}
@@ -251,7 +252,7 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 		t.Fatal(err)
 	}
 
-	ing, err := removeKey(getCmdOutFile, "snapshot_id", "date_from", "date_updated")
+	ing, err := removeKey(getCmdStdOut, "snapshot_id", "date_from", "date_updated")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -277,7 +278,7 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 	}
 
 	// Retrieve the publication
-	getCmdOutFile, errGetCmdOut = getPublication("00000000000000000000000002")
+	getCmdStdOut, _, errGetCmdOut = getPublication("00000000000000000000000002")
 	if errGetCmdOut != nil {
 		t.Fatal(errGetCmdOut)
 	}
@@ -288,7 +289,7 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 		t.Fatal(err)
 	}
 
-	ing, err = removeKey(getCmdOutFile, "snapshot_id", "date_from", "date_updated")
+	ing, err = removeKey(getCmdStdOut, "snapshot_id", "date_from", "date_updated")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -314,7 +315,7 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 	}
 
 	// Retrieve the publication
-	getCmdOutFile, errGetCmdOut = getPublication("00000000000000000000000003")
+	getCmdStdOut, _, errGetCmdOut = getPublication("00000000000000000000000003")
 	if errGetCmdOut != nil {
 		t.Fatal(errGetCmdOut)
 	}
@@ -325,7 +326,7 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 		t.Fatal(err)
 	}
 
-	ing, err = removeKey(getCmdOutFile, "snapshot_id", "date_from", "date_updated")
+	ing, err = removeKey(getCmdStdOut, "snapshot_id", "date_from", "date_updated")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -351,7 +352,7 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 	}
 
 	// Retrieve the publication
-	getCmdOutFile, errGetCmdOut = getPublication("00000000000000000000000004")
+	getCmdStdOut, _, errGetCmdOut = getPublication("00000000000000000000000004")
 	if errGetCmdOut != nil {
 		t.Fatal(errGetCmdOut)
 	}
@@ -362,7 +363,7 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 		t.Fatal(err)
 	}
 
-	ing, err = removeKey(getCmdOutFile, "snapshot_id", "date_from", "date_updated")
+	ing, err = removeKey(getCmdStdOut, "snapshot_id", "date_from", "date_updated")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -388,7 +389,7 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 	}
 
 	// Retrieve the publication
-	getCmdOutFile, errGetCmdOut = getPublication("00000000000000000000000005")
+	getCmdStdOut, _, errGetCmdOut = getPublication("00000000000000000000000005")
 	if errGetCmdOut != nil {
 		t.Fatal(errGetCmdOut)
 	}
@@ -399,7 +400,7 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 		t.Fatal(err)
 	}
 
-	ing, err = removeKey(getCmdOutFile, "snapshot_id", "date_from", "date_updated")
+	ing, err = removeKey(getCmdStdOut, "snapshot_id", "date_from", "date_updated")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -425,7 +426,7 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 	}
 
 	// Retrieve the publication
-	getCmdOutFile, errGetCmdOut = getPublication("00000000000000000000000006")
+	getCmdStdOut, _, errGetCmdOut = getPublication("00000000000000000000000006")
 	if errGetCmdOut != nil {
 		t.Fatal(errGetCmdOut)
 	}
@@ -436,7 +437,7 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 		t.Fatal(err)
 	}
 
-	ing, err = removeKey(getCmdOutFile, "snapshot_id", "date_from", "date_updated")
+	ing, err = removeKey(getCmdStdOut, "snapshot_id", "date_from", "date_updated")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -462,7 +463,7 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 	}
 
 	// Retrieve the publication
-	getCmdOutFile, errGetCmdOut = getPublication("00000000000000000000000007")
+	getCmdStdOut, _, errGetCmdOut = getPublication("00000000000000000000000007")
 	if errGetCmdOut != nil {
 		t.Fatal(errGetCmdOut)
 	}
@@ -473,7 +474,7 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 		t.Fatal(err)
 	}
 
-	ing, err = removeKey(getCmdOutFile, "snapshot_id", "date_from", "date_updated")
+	ing, err = removeKey(getCmdStdOut, "snapshot_id", "date_from", "date_updated")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -499,7 +500,7 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 	}
 
 	// Retrieve the publication
-	getCmdOutFile, errGetCmdOut = getPublication("00000000000000000000000008")
+	getCmdStdOut, _, errGetCmdOut = getPublication("00000000000000000000000008")
 	if errGetCmdOut != nil {
 		t.Fatal(errGetCmdOut)
 	}
@@ -510,7 +511,7 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 		t.Fatal(err)
 	}
 
-	ing, err = removeKey(getCmdOutFile, "snapshot_id", "date_from", "date_updated")
+	ing, err = removeKey(getCmdStdOut, "snapshot_id", "date_from", "date_updated")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -597,24 +598,31 @@ func addPublication(jsonl string) error {
 	return nil
 }
 
-func getPublication(id string) (string, error) {
-	actual := bytes.NewBufferString("")
-	rootCmd.SetOut(actual)
-	rootCmd.SetErr(actual)
+func getPublication(id string) (string, string, error) {
+	stdOut := bytes.NewBufferString("")
+	stdErr := bytes.NewBufferString("")
+
+	rootCmd.SetOut(stdOut)
+	rootCmd.SetErr(stdErr)
 
 	rootCmd.SetArgs([]string{"publication", "get", id})
 
 	errAdd := rootCmd.Execute()
 	if errAdd != nil {
-		return "", errAdd
+		return "", "", errAdd
 	}
 
-	getCmdOut, err := ioutil.ReadAll(actual)
+	getCmdOut, err := ioutil.ReadAll(stdOut)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
-	return string(getCmdOut), nil
+	getCmdErr, err := ioutil.ReadAll(stdOut)
+	if err != nil {
+		return "", "", err
+	}
+
+	return string(getCmdOut), string(getCmdErr), nil
 }
 
 func toJSONL(file []byte) (string, error) {
