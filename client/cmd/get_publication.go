@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"log"
-	"os"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -22,8 +21,6 @@ var GetPublicationCmd = &cobra.Command{
 	Short: "Get publication by id",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		cmd.SetOut(os.Stdout)
-		log.SetOutput(cmd.OutOrStdout())
 		GetPublication(cmd, args)
 	},
 }

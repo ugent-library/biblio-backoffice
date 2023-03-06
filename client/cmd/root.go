@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"log"
+	"os"
 	"strings"
 
 	"github.com/mitchellh/go-homedir"
@@ -84,5 +86,8 @@ var rootCmd = &cobra.Command{
 }
 
 func Execute() error {
+	// Set the output to os.Stdout. If not set, cmd.Println would write to Stderr
+	rootCmd.SetOut(os.Stdout)
+	log.SetOutput(rootCmd.OutOrStdout())
 	return rootCmd.Execute()
 }
