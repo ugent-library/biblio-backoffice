@@ -22,10 +22,12 @@ init-test-env:
 	docker-compose up -d
 	@echo "> Waiting 45 seconds for ElasticSearch to fully boot..."
 	@sleep 45
+	curl -XPUT -H "Content-Type: application/json" http://localhost:9400/_cluster/settings -d '{ "transient": { "cluster.routing.allocation.disk.threshold_enabled": false } }'
 
 create-es-indices:
-	go run main.go index publication create
-	go run main.go index dataset create
+	go run main.go publication reindex
+	go run main.go dataset reindex
+	curl -XPUT -H "Content-Type: application/json" http://localhost:9400/_all/_settings -d '{"index.blocks.read_only_allow_delete": null}'
 
 create-db-tables:
 	go install github.com/jackc/tern@latest
