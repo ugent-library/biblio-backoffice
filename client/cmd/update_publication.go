@@ -4,13 +4,13 @@ import (
 	"bufio"
 	"context"
 	"errors"
-	"log"
-	"os"
+	"fmt"
 	"time"
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
 	"github.com/ugent-library/biblio-backoffice/client/client"
+	"google.golang.org/grpc/status"
 )
 
 func init() {
@@ -19,14 +19,14 @@ func init() {
 
 var UpdatePublicationCmd = &cobra.Command{
 	Use:   "update",
-	Short: "Update dataset",
-	Run: func(cmd *cobra.Command, args []string) {
-		log.SetOutput(cmd.OutOrStdout())
-		UpdatePublication(cmd, args)
+	Short: "Update publication",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return UpdatePublication(cmd, args)
 	},
 }
 
-func UpdatePublication(cmd *cobra.Command, args []string) {
+func UpdatePublication(cmd *cobra.Command, args []string) error {
+
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
@@ -34,13 +34,13 @@ func UpdatePublication(cmd *cobra.Command, args []string) {
 	defer cnx.Close()
 
 	if errors.Is(err, context.DeadlineExceeded) {
-		log.Fatal("ContextDeadlineExceeded: true")
+		return fmt.Errorf("ContextDeadlineExceeded: true")
 	}
 
-	reader := bufio.NewReader(os.Stdin)
+	reader := bufio.NewReader(cmd.InOrStdin())
 	line, err := reader.ReadBytes('\n')
 	if err != nil {
-		log.Fatal(err)
+		return fmt.Errorf("could not read from stdin: %v", err)
 	}
 
 	p := &api.Publication{
@@ -48,7 +48,18 @@ func UpdatePublication(cmd *cobra.Command, args []string) {
 	}
 
 	req := &api.UpdatePublicationRequest{Publication: p}
-	if _, err = c.UpdatePublication(ctx, req); err != nil {
-		log.Fatal(err)
+	res, err := c.UpdatePublication(ctx, req)
+
+	if err != nil {
+		if st, ok := status.FromError(err); ok {
+			return errors.New(st.Message())
+		}
 	}
+
+	if ge := res.GetError(); ge != nil {
+		sre := status.FromProto(ge)
+		cmd.Printf("%s\n", sre.Message())
+	}
+
+	return nil
 }

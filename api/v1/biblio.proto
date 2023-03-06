@@ -103,6 +103,10 @@ message UpdatePublicationRequest {
 }
 
 message UpdatePublicationResponse {
+    oneof response {
+        string message = 1;
+        google.rpc.Status error = 2;
+    }
 }
 
 message AddPublicationsRequest {

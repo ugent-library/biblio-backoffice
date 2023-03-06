@@ -135,11 +135,22 @@ func (s *server) UpdatePublication(ctx context.Context, req *api.UpdatePublicati
 		return nil, fmt.Errorf("validation failed for publication %s: %s", p.ID, err)
 	}
 
-	if err := s.services.Repository.UpdatePublication(p.SnapshotID, p, user); err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to store publication %s, %s", p.ID, err)
+	err := s.services.Repository.UpdatePublication(p.SnapshotID, p, user)
+
+	var conflict *snapstore.Conflict
+	if errors.As(err, &conflict) {
+		grpcErr := status.New(codes.Internal, fmt.Errorf("failed to update publication: conflict detected for publication[snapshot_id: %s, id: %s] : %v", p.SnapshotID, p.ID, err).Error())
+		return &api.UpdatePublicationResponse{
+			Response: &api.UpdatePublicationResponse_Error{
+				Error: grpcErr.Proto(),
+			},
+		}, nil
+	} else if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to update publication[snapshot_id: %s, id: %s], %s", p.SnapshotID, p.ID, err)
 	}
+
 	if err := s.services.PublicationSearchService.Index(p); err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to index publication %s, %s", p.ID, err)
+		return nil, status.Errorf(codes.Internal, "failed to update publication[snapshot_id: %s, id: %s], %s", p.SnapshotID, p.ID, err)
 	}
 
 	return &api.UpdatePublicationResponse{}, nil
