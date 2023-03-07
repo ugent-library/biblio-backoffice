@@ -212,30 +212,28 @@ func (p *Publication) MainFile() *PublicationFile {
 	return nil
 }
 
-// format: c:vabb:419551 (VABB-1, not approved, 2017)
+// format: c:vabb:419551, VABB-1, not approved, 2017
 func (p *Publication) VABB() string {
-	VABBID := "-"
-	VABBType := "-"
-	VABBApproved := "not approved"
-	VABBYear := "-"
+	var parts []string
 
 	if p.VABBID != "" {
-		VABBID = p.VABBID
-	}
+		parts = append(parts, p.VABBID)
 
-	if p.VABBType != "" {
-		VABBType = p.VABBType
-	}
-
-	if p.VABBApproved {
-		VABBApproved = "approved"
+		if p.VABBType != "" {
+			parts = append(parts, p.VABBType)
+		}
+		if p.VABBApproved {
+			parts = append(parts, "approved")
+		} else {
+			parts = append(parts, "not approved")
+		}
 	}
 
 	if len(p.VABBYear) > 0 {
-		VABBYear = strings.Join(p.VABBYear, ", ")
+		parts = append(parts, p.VABBYear...)
 	}
 
-	return fmt.Sprintf("%s (%s, %s, %s)", VABBID, VABBType, VABBApproved, VABBYear)
+	return strings.Join(parts, ", ")
 }
 
 // Citation
