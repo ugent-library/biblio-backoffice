@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Always show VABB export years
+
 ## [v1.0.22] - 2023-02-17
 
 ### Added
