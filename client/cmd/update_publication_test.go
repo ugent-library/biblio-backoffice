@@ -23,27 +23,24 @@ func (s *UpdatePublicationSuite) SetupSuite() {
 
 	t := s.T()
 
-	// Book chapter
-
-	file, errFile := os.ReadFile("../../etc/fixtures/complete.book_chapter.json")
-	if errFile != nil {
-		t.Fatal(errFile)
+	file, err := os.ReadFile("../../etc/fixtures/complete.book_chapter.json")
+	if err != nil {
+		t.Fatal(err)
 	}
 
-	// Add a publication as user A
-	addCmdOutFile, errJSONL := toJSONL(file)
-	if errJSONL != nil {
-		t.Fatal(errJSONL)
+	addCmdOutFile, err := toJSONL(file)
+	if err != nil {
+		t.Fatal(err)
 	}
 
-	_, _, errAdd := addPublication(addCmdOutFile)
-	if errAdd != nil {
-		t.Fatal(errAdd)
+	_, _, err = addPublication(addCmdOutFile)
+	if err != nil {
+		t.Fatal(err)
 	}
 }
 
 // Test empty input
-func (s *UpdatePublicationSuite) TestEmptyInput() {
+func (s *UpdatePublicationSuite) TestUpdateEmptyInput() {
 	t := s.T()
 
 	jsonl := ""
@@ -54,20 +51,39 @@ func (s *UpdatePublicationSuite) TestEmptyInput() {
 }
 
 // Test invalid JSON input
-func (s *UpdatePublicationSuite) TestInvalidJSON() {
-	// t := s.T()
+func (s *UpdatePublicationSuite) TestUpdateInvalidJSON() {
+	t := s.T()
 
-	//TODO
+	jsonl := "invalid\n"
+
+	stdOut, _, err := updatePublication(jsonl)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	assert.Equal(t, "could not read json input: invalid character 'i' looking for beginning of value\n", stdOut)
+}
+
+func (s *AddPublicationSuite) TestUpdateEmptyJSONLInput() {
+	t := s.T()
+	jsonl := "{}\n"
+
+	stdOut, _, err := updatePublication(jsonl)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	assert.Regexp(t, `failed to validate publication : publication.id.required\[\/id\], publication.type.required\[\/type\], publication.classification.required\[\/classification\], publication.status.required\[\/status\]`, string(stdOut))
 }
 
 // Test if a publication can be succesfully updated
-func (s *UpdatePublicationSuite) TestUpdate() {
+func (s *UpdatePublicationSuite) TestUpdateValid() {
 	t := s.T()
 
 	// Retrieve the publication as user A
-	pubA, _, errGetCmdOut := getPublication("00000000000000000000000001")
-	if errGetCmdOut != nil {
-		t.Fatal(errGetCmdOut)
+	pubA, _, err := getPublication("00000000000000000000000001")
+	if err != nil {
+		t.Fatal(err)
 	}
 
 	updPubA, err := changeTitle(pubA, "update title")
@@ -87,7 +103,7 @@ func (s *UpdatePublicationSuite) TestUpdate() {
 
 	pubB, _, err := getPublication("00000000000000000000000001")
 	if err != nil {
-		t.Fatal(errGetCmdOut)
+		t.Fatal(err)
 	}
 
 	// Remove dynamic fields distorting the JSONEqf assertion
@@ -109,10 +125,10 @@ func (s *UpdatePublicationSuite) TestUpdateConflict() {
 	t := s.T()
 
 	// Retrieve the publication as user A
-	getCmdStdOut, _, errGetCmdOut := getPublication("00000000000000000000000001")
+	getCmdStdOut, _, err := getPublication("00000000000000000000000001")
 
-	if errGetCmdOut != nil {
-		t.Fatal(errGetCmdOut)
+	if err != nil {
+		t.Fatal(err)
 	}
 
 	// user B pushes a change to the publication

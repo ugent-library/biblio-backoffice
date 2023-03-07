@@ -122,7 +122,12 @@ func (s *server) SearchPublications(ctx context.Context, req *api.SearchPublicat
 func (s *server) UpdatePublication(ctx context.Context, req *api.UpdatePublicationRequest) (*api.UpdatePublicationResponse, error) {
 	p := &models.Publication{}
 	if err := json.Unmarshal(req.Publication.Payload, p); err != nil {
-		log.Fatal(err)
+		grpcErr := status.New(codes.InvalidArgument, fmt.Errorf("could not read json input: %s", err).Error())
+		return &api.UpdatePublicationResponse{
+			Response: &api.UpdatePublicationResponse_Error{
+				Error: grpcErr.Proto(),
+			},
+		}, nil
 	}
 
 	// TODO Fetch user information via better authentication (no basic auth)
@@ -132,7 +137,12 @@ func (s *server) UpdatePublication(ctx context.Context, req *api.UpdatePublicati
 	}
 
 	if err := p.Validate(); err != nil {
-		return nil, fmt.Errorf("validation failed for publication %s: %s", p.ID, err)
+		grpcErr := status.New(codes.InvalidArgument, fmt.Errorf("failed to validate publication %s: %v", p.ID, err).Error())
+		return &api.UpdatePublicationResponse{
+			Response: &api.UpdatePublicationResponse_Error{
+				Error: grpcErr.Proto(),
+			},
+		}, nil
 	}
 
 	err := s.services.Repository.UpdatePublication(p.SnapshotID, p, user)
@@ -917,7 +927,7 @@ func (s *server) CleanupPublications(req *api.CleanupPublicationsRequest, stream
 			p.User = nil
 
 			if err := p.Validate(); err != nil {
-				grpcErr := status.New(codes.Internal, fmt.Errorf("validation failed for publication[snapshot_id: %s, id: %s] : %v", p.SnapshotID, p.ID, err).Error())
+				grpcErr := status.New(codes.Internal, fmt.Errorf("failed to validate publication[snapshot_id: %s, id: %s] : %v", p.SnapshotID, p.ID, err).Error())
 				if err = stream.Send(&api.CleanupPublicationsResponse{
 					Response: &api.CleanupPublicationsResponse_Error{
 						Error: grpcErr.Proto(),
