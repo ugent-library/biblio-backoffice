@@ -234,7 +234,7 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 		t.Fatal(errJSONL)
 	}
 
-	errAdd := addPublication(addCmdOutFile)
+	_, _, errAdd := addPublication(addCmdOutFile)
 	if errAdd != nil {
 		t.Fatal(errAdd)
 	}
@@ -272,7 +272,7 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 		t.Fatal(errJSONL)
 	}
 
-	errAdd = addPublication(addCmdOutFile)
+	_, _, errAdd = addPublication(addCmdOutFile)
 	if errAdd != nil {
 		t.Fatal(errAdd)
 	}
@@ -309,7 +309,7 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 		t.Fatal(errJSONL)
 	}
 
-	errAdd = addPublication(addCmdOutFile)
+	_, _, errAdd = addPublication(addCmdOutFile)
 	if errAdd != nil {
 		t.Fatal(errAdd)
 	}
@@ -346,7 +346,7 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 		t.Fatal(errJSONL)
 	}
 
-	errAdd = addPublication(addCmdOutFile)
+	_, _, errAdd = addPublication(addCmdOutFile)
 	if errAdd != nil {
 		t.Fatal(errAdd)
 	}
@@ -383,7 +383,7 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 		t.Fatal(errJSONL)
 	}
 
-	errAdd = addPublication(addCmdOutFile)
+	_, _, errAdd = addPublication(addCmdOutFile)
 	if errAdd != nil {
 		t.Fatal(errAdd)
 	}
@@ -420,7 +420,7 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 		t.Fatal(errJSONL)
 	}
 
-	errAdd = addPublication(addCmdOutFile)
+	_, _, errAdd = addPublication(addCmdOutFile)
 	if errAdd != nil {
 		t.Fatal(errAdd)
 	}
@@ -457,7 +457,7 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 		t.Fatal(errJSONL)
 	}
 
-	errAdd = addPublication(addCmdOutFile)
+	_, _, errAdd = addPublication(addCmdOutFile)
 	if errAdd != nil {
 		t.Fatal(errAdd)
 	}
@@ -494,7 +494,7 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 		t.Fatal(errJSONL)
 	}
 
-	errAdd = addPublication(addCmdOutFile)
+	_, _, errAdd = addPublication(addCmdOutFile)
 	if errAdd != nil {
 		t.Fatal(errAdd)
 	}
@@ -580,22 +580,34 @@ func TestAddPublicationSuite(t *testing.T) {
 	suite.Run(t, new(AddPublicationSuite))
 }
 
-func addPublication(jsonl string) error {
-	actual := bytes.NewBufferString("")
-	rootCmd.SetOut(actual)
-	rootCmd.SetErr(actual)
+func addPublication(jsonl string) (string, string, error) {
+	stdOut := bytes.NewBufferString("")
+	stdErr := bytes.NewBufferString("")
+
+	rootCmd.SetOut(stdOut)
+	rootCmd.SetErr(stdErr)
 
 	rootCmd.SetArgs([]string{"publication", "add"})
 
 	in := strings.NewReader(jsonl)
 	rootCmd.SetIn(in)
 
-	errAdd := rootCmd.Execute()
-	if errAdd != nil {
-		return errAdd
+	err := rootCmd.Execute()
+	if err != nil {
+		return "", "", err
 	}
 
-	return nil
+	addCmdOut, err := ioutil.ReadAll(stdOut)
+	if err != nil {
+		return "", "", err
+	}
+
+	addCmdErr, err := ioutil.ReadAll(stdOut)
+	if err != nil {
+		return "", "", err
+	}
+
+	return string(addCmdOut), string(addCmdErr), nil
 }
 
 func getPublication(id string) (string, string, error) {
@@ -607,9 +619,9 @@ func getPublication(id string) (string, string, error) {
 
 	rootCmd.SetArgs([]string{"publication", "get", id})
 
-	errAdd := rootCmd.Execute()
-	if errAdd != nil {
-		return "", "", errAdd
+	errGet := rootCmd.Execute()
+	if errGet != nil {
+		return "", "", errGet
 	}
 
 	getCmdOut, err := ioutil.ReadAll(stdOut)
