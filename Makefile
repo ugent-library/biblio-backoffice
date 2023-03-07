@@ -16,7 +16,10 @@ tear-test-env:
 	docker-compose down
 
 run-tests:
-	@cd client && go clean -testcache ./... && go test ./... -v
+	@cd client && go clean -testcache ./... && go test ./... -v -cover
+
+coverage:
+	@cd client && go clean -testcache ./... && go test ./... -coverprofile=coverage.out && go tool cover -html=coverage.out && rm coverage.out
 
 init-test-env:
 	docker-compose up -d
