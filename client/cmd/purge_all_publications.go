@@ -30,7 +30,7 @@ func init() {
 
 func PurgeAllPublications(cmd *cobra.Command, args []string) error {
 	if yes, _ := cmd.Flags().GetBool("yes"); !yes {
-		cmd.Printf("no confirmation flag set. you need to set the --yes flag.")
+		cmd.Printf("no confirmation flag set. you need to set the --yes flag")
 		return nil
 	}
 
@@ -56,13 +56,12 @@ func PurgeAllPublications(cmd *cobra.Command, args []string) error {
 	}
 
 	if ge := res.GetError(); ge != nil {
-		log.Println(ge)
 		sre := status.FromProto(ge)
 		cmd.Printf("%s\n", sre.Message())
 	}
 
 	if res.GetOk() {
-		cmd.Printf("purged all publications from biblio backoffice.")
+		cmd.Printf("purged all publications")
 	}
 
 	return nil

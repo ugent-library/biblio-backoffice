@@ -139,14 +139,18 @@ message GetPublicationHistoryResponse {
     oneof response {
         Publication publication = 1;
         google.rpc.Status error = 2;
-    }}
+    }
+}
 
 message PurgePublicationRequest {
     string id = 1;
 }
 
 message PurgePublicationResponse {
-}
+    oneof response {
+        bool ok = 1;
+        google.rpc.Status error = 2;
+    }}
 
 message PurgeAllPublicationsRequest {
     bool confirm = 1;

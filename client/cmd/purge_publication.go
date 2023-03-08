@@ -3,12 +3,13 @@ package cmd
 import (
 	"context"
 	"errors"
-	"log"
+	"fmt"
 	"time"
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
 	"github.com/ugent-library/biblio-backoffice/client/client"
+	"google.golang.org/grpc/status"
 )
 
 func init() {
@@ -19,12 +20,12 @@ var PurgePublicationCmd = &cobra.Command{
 	Use:   "purge [id]",
 	Short: "Purge publication",
 	Args:  cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		PurgePublication(cmd, args)
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return PurgePublication(cmd, args)
 	},
 }
 
-func PurgePublication(cmd *cobra.Command, args []string) {
+func PurgePublication(cmd *cobra.Command, args []string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
@@ -32,12 +33,29 @@ func PurgePublication(cmd *cobra.Command, args []string) {
 	defer cnx.Close()
 
 	if errors.Is(err, context.DeadlineExceeded) {
-		log.Fatal("ContextDeadlineExceeded: true")
+		return fmt.Errorf("ContextDeadlineExceeded: true")
 	}
 
 	id := args[0]
 	req := &api.PurgePublicationRequest{Id: id}
-	if _, err := c.PurgePublication(context.Background(), req); err != nil {
-		log.Fatal(err)
+	res, err := c.PurgePublication(context.Background(), req)
+
+	if err != nil {
+		if st, ok := status.FromError(err); ok {
+			return errors.New(st.Message())
+		}
+
+		return err
 	}
+
+	if ge := res.GetError(); ge != nil {
+		sre := status.FromProto(ge)
+		cmd.Printf("%s", sre.Message())
+	}
+
+	if res.GetOk() {
+		cmd.Printf("purged publication %s", id)
+	}
+
+	return nil
 }

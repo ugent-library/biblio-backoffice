@@ -11,11 +11,11 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-type PurgeAllPublicationsSuite struct {
+type PurgePublicationSuite struct {
 	suite.Suite
 }
 
-func (s *PurgeAllPublicationsSuite) SetupSuite() {
+func (s *PurgePublicationSuite) SetupSuite() {
 	viper.Set("port", "3999")
 	viper.Set("insecure", true)
 
@@ -37,40 +37,36 @@ func (s *PurgeAllPublicationsSuite) SetupSuite() {
 	}
 }
 
-func (s *PurgeAllPublicationsSuite) TestPurgeAll() {
+func (s *PurgePublicationSuite) TestPurgeAll() {
 	t := s.T()
 
-	stdOut, _, err := purgeAllPublications(false)
+	stdOut, _, err := purgePublication("notexists")
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	assert.Equal(t, "no confirmation flag set. you need to set the --yes flag", stdOut)
+	assert.Equal(t, "could not find publication with id notexists", stdOut)
 
-	stdOut, _, err = purgeAllPublications(true)
+	stdOut, _, err = purgePublication("00000000000000000000000001")
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	assert.Equal(t, "purged all publications", stdOut)
+	assert.Equal(t, "purged publication 00000000000000000000000001", stdOut)
 }
 
-func TestPurgeAllPublicationsSuite(t *testing.T) {
-	suite.Run(t, new(PurgeAllPublicationsSuite))
+func TestPurgePublicationSuite(t *testing.T) {
+	suite.Run(t, new(PurgePublicationSuite))
 }
 
-func purgeAllPublications(confirm bool) (string, string, error) {
+func purgePublication(id string) (string, string, error) {
 	stdOut := bytes.NewBufferString("")
 	stdErr := bytes.NewBufferString("")
 
 	rootCmd.SetOut(stdOut)
 	rootCmd.SetErr(stdErr)
 
-	if confirm {
-		rootCmd.SetArgs([]string{"publication", "purge-all", "--yes"})
-	} else {
-		rootCmd.SetArgs([]string{"publication", "purge-all"})
-	}
+	rootCmd.SetArgs([]string{"publication", "purge", id})
 
 	errGet := rootCmd.Execute()
 	if errGet != nil {

@@ -470,14 +470,36 @@ func (s *server) GetPublicationHistory(req *api.GetPublicationHistoryRequest, st
 }
 
 func (s *server) PurgePublication(ctx context.Context, req *api.PurgePublicationRequest) (*api.PurgePublicationResponse, error) {
+	_, err := s.services.Repository.GetPublication(req.Id)
+
+	if err != nil {
+		if errors.Is(err, backends.ErrNotFound) {
+			grpcErr := status.New(codes.NotFound, fmt.Errorf("could not find publication with id %s", req.Id).Error())
+			return &api.PurgePublicationResponse{
+				Response: &api.PurgePublicationResponse_Error{
+					Error: grpcErr.Proto(),
+				},
+			}, nil
+		} else {
+			return nil, status.Errorf(codes.Internal, "could not get publication with id %s: %v", err)
+		}
+	}
+
+	// TODO purgePublication doesn't return an error if the record for req.Id can't be found
 	if err := s.services.Repository.PurgePublication(req.Id); err != nil {
 		return nil, status.Errorf(codes.Internal, "could not purge publication with id %s: %s", req.Id, err)
 	}
+
+	// TODO this will complain if the above didn't throw a 'not found' error
 	if err := s.services.PublicationSearchService.Delete(req.Id); err != nil {
 		return nil, status.Errorf(codes.Internal, "could not purge publication from index with id %s: %s", req.Id, err)
 	}
 
-	return &api.PurgePublicationResponse{}, nil
+	return &api.PurgePublicationResponse{
+		Response: &api.PurgePublicationResponse_Ok{
+			Ok: true,
+		},
+	}, nil
 }
 
 func (s *server) PurgeAllPublications(ctx context.Context, req *api.PurgeAllPublicationsRequest) (*api.PurgeAllPublicationsResponse, error) {
