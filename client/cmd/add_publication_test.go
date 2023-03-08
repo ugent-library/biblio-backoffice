@@ -610,6 +610,16 @@ func addPublication(jsonl string) (string, string, error) {
 	return string(addCmdOut), string(addCmdErr), nil
 }
 
+// TODO this doesn't work until we move to a change capture model
+// func (s *AddPublicationSuite) TearDownSuite() {
+// 	t := s.T()
+
+// 	_, _, err := purgeAllPublications(true)
+// 	if err != nil {
+// 		t.Fatal(err)
+// 	}
+// }
+
 func getPublication(id string) (string, string, error) {
 	stdOut := bytes.NewBufferString("")
 	stdErr := bytes.NewBufferString("")

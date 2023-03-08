@@ -168,6 +168,17 @@ func (s *UpdatePublicationSuite) TestUpdateConflict() {
 	assert.Regexp(t, `failed to update publication: conflict detected for publication\[snapshot_id: .*, id: .*\] : version conflict`, updCmdOut)
 }
 
+// TODO this doesn't work until we move to a change capture model
+
+// func (s *UpdatePublicationSuite) TearDownSuite() {
+// 	t := s.T()
+
+// 	_, _, err := purgeAllPublications(true)
+// 	if err != nil {
+// 		t.Fatal(err)
+// 	}
+// }
+
 func TestUpdatePublicationSuite(t *testing.T) {
 	suite.Run(t, new(UpdatePublicationSuite))
 }

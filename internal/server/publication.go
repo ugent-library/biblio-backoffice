@@ -463,14 +463,28 @@ func (s *server) PurgePublication(ctx context.Context, req *api.PurgePublication
 }
 
 func (s *server) PurgeAllPublications(ctx context.Context, req *api.PurgeAllPublicationsRequest) (*api.PurgeAllPublicationsResponse, error) {
+	if !req.Confirm {
+		grpcErr := status.New(codes.Internal, fmt.Errorf("confirm property in request is not set to true").Error())
+		return &api.PurgeAllPublicationsResponse{
+			Response: &api.PurgeAllPublicationsResponse_Error{
+				Error: grpcErr.Proto(),
+			},
+		}, nil
+	}
+
 	if err := s.services.Repository.PurgeAllPublications(); err != nil {
 		return nil, status.Errorf(codes.Internal, "could not purge all publications: %s", err)
 	}
+
 	if err := s.services.PublicationSearchService.DeleteAll(); err != nil {
-		return nil, status.Errorf(codes.Internal, "could not delete publication index: %w", err)
+		return nil, status.Errorf(codes.Internal, "could not delete publication from index: %w", err)
 	}
 
-	return &api.PurgeAllPublicationsResponse{}, nil
+	return &api.PurgeAllPublicationsResponse{
+		Response: &api.PurgeAllPublicationsResponse_Ok{
+			Ok: true,
+		},
+	}, nil
 }
 
 func (s *server) ValidatePublications(stream api.Biblio_ValidatePublicationsServer) error {

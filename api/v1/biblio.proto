@@ -149,9 +149,14 @@ message PurgePublicationResponse {
 }
 
 message PurgeAllPublicationsRequest {
+    bool confirm = 1;
 }
 
 message PurgeAllPublicationsResponse {
+    oneof response {
+        bool ok = 1;
+        google.rpc.Status error = 2;
+    }
 }
 
 message ValidatePublicationsRequest {

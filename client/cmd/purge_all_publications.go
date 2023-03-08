@@ -9,6 +9,7 @@ import (
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
 	"github.com/ugent-library/biblio-backoffice/client/client"
+	"google.golang.org/grpc/status"
 )
 
 func init() {
@@ -18,8 +19,8 @@ func init() {
 var PurgeAllPublicationsCmd = &cobra.Command{
 	Use:   "purge-all",
 	Short: "Purge all publications",
-	Run: func(cmd *cobra.Command, args []string) {
-		PurgeAllPublications(cmd, args)
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return PurgeAllPublications(cmd, args)
 	},
 }
 
@@ -27,9 +28,10 @@ func init() {
 	PurgeAllPublicationsCmd.Flags().BoolP("yes", "y", false, "are you sure?")
 }
 
-func PurgeAllPublications(cmd *cobra.Command, args []string) {
+func PurgeAllPublications(cmd *cobra.Command, args []string) error {
 	if yes, _ := cmd.Flags().GetBool("yes"); !yes {
-		return
+		cmd.Printf("no confirmation flag set. you need to set the --yes flag.")
+		return nil
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
@@ -42,8 +44,26 @@ func PurgeAllPublications(cmd *cobra.Command, args []string) {
 		log.Fatal("ContextDeadlineExceeded: true")
 	}
 
-	req := &api.PurgeAllPublicationsRequest{}
-	if _, err := c.PurgeAllPublications(context.Background(), req); err != nil {
-		log.Fatal(err)
+	req := &api.PurgeAllPublicationsRequest{
+		Confirm: true,
 	}
+	res, err := c.PurgeAllPublications(context.Background(), req)
+
+	if err != nil {
+		if st, ok := status.FromError(err); ok {
+			return errors.New(st.Message())
+		}
+	}
+
+	if ge := res.GetError(); ge != nil {
+		log.Println(ge)
+		sre := status.FromProto(ge)
+		cmd.Printf("%s\n", sre.Message())
+	}
+
+	if res.GetOk() {
+		cmd.Printf("purged all publications from biblio backoffice.")
+	}
+
+	return nil
 }
