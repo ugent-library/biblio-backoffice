@@ -54,6 +54,8 @@ func GetPublicationHistory(cmd *cobra.Command, args []string) error {
 			if st, ok := status.FromError(err); ok {
 				return errors.New(st.Message())
 			}
+
+			return err
 		}
 
 		// Application level error

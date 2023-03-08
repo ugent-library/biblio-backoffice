@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"log"
 	"time"
@@ -20,12 +21,12 @@ func init() {
 var GetAllPublicationsCmd = &cobra.Command{
 	Use:   "get-all",
 	Short: "Get all publications",
-	Run: func(cmd *cobra.Command, args []string) {
-		GetAllPublications(cmd, args)
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return GetAllPublications(cmd, args)
 	},
 }
 
-func GetAllPublications(cmd *cobra.Command, args []string) {
+func GetAllPublications(cmd *cobra.Command, args []string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
@@ -39,7 +40,7 @@ func GetAllPublications(cmd *cobra.Command, args []string) {
 	req := &api.GetAllPublicationsRequest{}
 	stream, err := c.GetAllPublications(context.Background(), req)
 	if err != nil {
-		log.Fatal(err)
+		return fmt.Errorf("error while reading stream: %v", err)
 	}
 
 	for {
@@ -47,8 +48,13 @@ func GetAllPublications(cmd *cobra.Command, args []string) {
 		if err == io.EOF {
 			break
 		}
+
 		if err != nil {
-			log.Fatalf("error while reading stream: %v", err)
+			if st, ok := status.FromError(err); ok {
+				return errors.New(st.Message())
+			}
+
+			return err
 		}
 
 		if ge := res.GetError(); ge != nil {
@@ -60,4 +66,6 @@ func GetAllPublications(cmd *cobra.Command, args []string) {
 			cmd.Printf("%s\n", rr.GetPayload())
 		}
 	}
+
+	return nil
 }

@@ -80,10 +80,9 @@ var publicationAllCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		s := newRepository()
 		e := json.NewEncoder(os.Stdout)
-		ctx := context.TODO()
-		s.EachPublication(ctx, func(d *models.Publication) error {
+		s.EachPublication(func(d *models.Publication) bool {
 			e.Encode(d)
-			return nil
+			return true
 		})
 	},
 }
@@ -235,7 +234,7 @@ var publicationCleanupCmd = &cobra.Command{
 		}
 		defer bi.Close(ctx)
 
-		e.Repository.EachPublication(ctx, func(p *models.Publication) error {
+		e.Repository.EachPublication(func(p *models.Publication) bool {
 			// Guard
 			fixed := false
 
@@ -276,7 +275,7 @@ var publicationCleanupCmd = &cobra.Command{
 						p.ID,
 						err,
 					)
-					return err
+					return false
 				}
 
 				err := e.Repository.UpdatePublication(p.SnapshotID, p, nil)
@@ -289,7 +288,7 @@ var publicationCleanupCmd = &cobra.Command{
 						p.ID,
 						err,
 					)
-					return err
+					return false
 				}
 
 				log.Printf(
@@ -303,7 +302,7 @@ var publicationCleanupCmd = &cobra.Command{
 				}
 			}
 
-			return nil
+			return true
 		})
 	},
 }
@@ -348,7 +347,7 @@ var publicationTransferCmd = &cobra.Command{
 			c.Department = append(c.Department, newDep)
 		}
 
-		callback := func(p *models.Publication) error {
+		callback := func(p *models.Publication) bool {
 			fixed := false
 
 			if p.User != nil {
@@ -415,15 +414,14 @@ var publicationTransferCmd = &cobra.Command{
 				}
 			}
 
-			return nil
+			return true
 		}
 
-		ctx := context.TODO()
 		if len(args) > 2 {
 			pubID := args[2]
-			s.PublicationHistory(ctx, pubID, callback)
+			s.PublicationHistory(pubID, callback)
 		} else {
-			s.EachPublicationSnapshot(ctx, callback)
+			s.EachPublicationSnapshot(callback)
 		}
 	},
 }
@@ -504,12 +502,12 @@ var publicationReindexCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal(err)
 		}
-		services.Repository.EachPublication(ctx, func(p *models.Publication) error {
+		services.Repository.EachPublication(func(p *models.Publication) bool {
 			if err := switcher.Index(ctx, p); err != nil {
 				log.Printf("Indexing failed for publication [id: %s] : %s", p.ID, err)
 			}
 			indexed++
-			return nil
+			return true
 		})
 
 		log.Printf("Indexed %d publications...", indexed)
@@ -539,12 +537,12 @@ var publicationReindexCmd = &cobra.Command{
 				log.Fatal(err)
 			}
 
-			err = services.Repository.PublicationsBetween(startTime, endTime, func(p *models.Publication) error {
+			err = services.Repository.PublicationsBetween(startTime, endTime, func(p *models.Publication) bool {
 				if err := bi.Index(ctx, p); err != nil {
 					log.Printf("Indexing failed for publication [id: %s] : %s", p.ID, err)
 				}
 				indexed++
-				return nil
+				return true
 			})
 			if err != nil {
 				log.Fatal(err)

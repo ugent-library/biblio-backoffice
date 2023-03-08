@@ -343,7 +343,7 @@ func (s *Repository) SelectPublications(sql string, values []any, fn func(*model
 	return c.Err()
 }
 
-func (s *Repository) PublicationsBetween(t1, t2 time.Time, fn func(*models.Publication) error) error {
+func (s *Repository) PublicationsBetween(t1, t2 time.Time, fn func(*models.Publication) bool) error {
 	c, err := s.publicationStore.Select(
 		"SELECT * FROM publications WHERE date_until IS NULL AND date_from >= $1 AND date_from <= $2",
 		[]any{t1, t2},
@@ -362,93 +362,74 @@ func (s *Repository) PublicationsBetween(t1, t2 time.Time, fn func(*models.Publi
 		if err != nil {
 			return err
 		}
-		if err := fn(p); err != nil {
-			return err
+		if ok := fn(p); !ok {
+			break
 		}
 	}
 	return c.Err()
 }
 
-func (s *Repository) EachPublication(ctx context.Context, fn func(*models.Publication) error) error {
+func (s *Repository) EachPublication(fn func(*models.Publication) bool) error {
 	c, err := s.publicationStore.GetAll(s.opts)
 	if err != nil {
 		return err
 	}
 	defer c.Close()
-
 	for c.HasNext() {
-		select {
-		case <-ctx.Done():
-			return ctx.Err()
-		default:
-			snap, err := c.Next()
-			if err != nil {
-				return err
-			}
-			p, err := snapshotToPublication(snap)
-			if err != nil {
-				return err
-			}
-			if err := fn(p); err != nil {
-				return err
-			}
+		snap, err := c.Next()
+		if err != nil {
+			return err
+		}
+		p, err := snapshotToPublication(snap)
+		if err != nil {
+			return err
+		}
+		if ok := fn(p); !ok {
+			break
 		}
 	}
-
 	return c.Err()
 }
 
-func (s *Repository) EachPublicationSnapshot(ctx context.Context, fn func(*models.Publication) error) error {
+func (s *Repository) EachPublicationSnapshot(fn func(*models.Publication) bool) error {
 	c, err := s.publicationStore.GetAllSnapshots(s.opts)
 	if err != nil {
 		return err
 	}
 	defer c.Close()
-
 	for c.HasNext() {
-		select {
-		case <-ctx.Done():
-			return ctx.Err()
-		default:
-			snap, err := c.Next()
-			if err != nil {
-				return err
-			}
-			p, err := snapshotToPublication(snap)
-			if err != nil {
-				return err
-			}
-			if err := fn(p); err != nil {
-				return err
-			}
+		snap, err := c.Next()
+		if err != nil {
+			return err
+		}
+		p, err := snapshotToPublication(snap)
+		if err != nil {
+			return err
+		}
+		if ok := fn(p); !ok {
+			break
 		}
 	}
 	return c.Err()
 }
 
-func (s *Repository) PublicationHistory(ctx context.Context, id string, fn func(*models.Publication) error) error {
+func (s *Repository) PublicationHistory(id string, fn func(*models.Publication) bool) error {
 	c, err := s.publicationStore.GetHistory(id, s.opts)
 	if err != nil {
 		return err
 	}
 	defer c.Close()
-
 	for c.HasNext() {
-		select {
-		case <-ctx.Done():
-			return ctx.Err()
-		default:
-			snap, err := c.Next()
-			if err != nil {
-				return err
-			}
-			p, err := snapshotToPublication(snap)
-			if err != nil {
-				return err
-			}
-			if err := fn(p); err != nil {
-				return err
-			}
+		snap, err := c.Next()
+		if err != nil {
+			return err
+		}
+		p, err := snapshotToPublication(snap)
+		if err != nil {
+			return err
+		}
+		if ok := fn(p); !ok {
+			break
 		}
 	}
 	return c.Err()
