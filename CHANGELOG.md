@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [v1.0.23] - 2023-03-08
+
+### Added
+
+### Fixed
+
 - Always show VABB export years
 
 ## [v1.0.22] - 2023-02-17
@@ -252,7 +258,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.22...HEAD
+[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.23...HEAD
+[v1.0.23]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.22...v1.0.23
 [v1.0.22]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.21...v1.0.22
 [v1.0.21]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.20...v1.0.21
 [v1.0.20]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.19...v1.0.20
