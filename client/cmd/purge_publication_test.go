@@ -37,7 +37,7 @@ func (s *PurgePublicationSuite) SetupSuite() {
 	}
 }
 
-func (s *PurgePublicationSuite) TestPurgeAll() {
+func (s *PurgePublicationSuite) TestPurgeSingle() {
 	t := s.T()
 
 	stdOut, _, err := purgePublication("notexists")

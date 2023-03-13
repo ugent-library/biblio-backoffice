@@ -163,6 +163,15 @@ func (s *ImportPublicationsSuite) TestImportEmptyJSONLInput() {
 	assert.Regexp(t, `failed to validate publication at line .: publication.id.required\[\/id\], publication.type.required\[\/type\], publication.classification.required\[\/classification\], publication.status.required\[\/status\]`, string(stdOut))
 }
 
+func (s *ImportPublicationsSuite) TearDownSuite() {
+	t := s.T()
+	_, _, err := purgePublication("00000000000000000000000011")
+
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestImportPublicationsSuite(t *testing.T) {
 	suite.Run(t, new(ImportPublicationsSuite))
 }

@@ -23,11 +23,21 @@ func (s *TransferPublicationsSuite) SetupSuite() {
 	t := s.T()
 
 	json := `{
-		"id": "00000000000000000000000003",
+		"id": "00000000000000000000000012",
+		"snapshot_id": "00000000000000000000000012",
 		"title": "title",
 		"type": "dissertation",
 		"status": "public",
 		"year": "2023",
+		"classification": "D1",
+		"extern": false,
+		"has_been_public": false,
+		"legacy": false,
+		"locked": false,
+		"vabb_approved": false,
+		"date_created": "2023-02-07T11:17:35.203928951+01:00",
+		"date_updated": "2023-02-07T11:33:49.661899119+01:00",
+		"date_from": "2023-02-07T11:33:49.663142+01:00",
 		"department": [
 			{
 			  "id": "CA20"
@@ -91,7 +101,7 @@ func (s *TransferPublicationsSuite) SetupSuite() {
 		t.Fatal(err)
 	}
 
-	_, _, err = addPublication(json)
+	_, _, err = importPublication(json)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -100,14 +110,14 @@ func (s *TransferPublicationsSuite) SetupSuite() {
 func (s *TransferPublicationsSuite) TestTransfer() {
 	t := s.T()
 
-	stdOut, _, err := transferPublications("00000000-0000-0000-0000-000000000001", "00000000-0000-0000-0000-000000000002", "00000000000000000000000003")
+	stdOut, _, err := transferPublications("00000000-0000-0000-0000-000000000001", "00000000-0000-0000-0000-000000000002", "00000000000000000000000012")
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	assert.Regexp(t, `p: 00000000000000000000000003: s: .* ::: author: 00000000-0000-0000-0000-000000000001 -> 00000000-0000-0000-0000-000000000002\np: 00000000000000000000000003: s: .* ::: supervisor: 00000000-0000-0000-0000-000000000001 -> 00000000-0000-0000-0000-000000000002`, string(stdOut))
+	assert.Regexp(t, `p: 00000000000000000000000012: s: .* ::: author: 00000000-0000-0000-0000-000000000001 -> 00000000-0000-0000-0000-000000000002\np: 00000000000000000000000012: s: .* ::: supervisor: 00000000-0000-0000-0000-000000000001 -> 00000000-0000-0000-0000-000000000002`, string(stdOut))
 
-	stdOut, _, err = getPublication("00000000000000000000000003")
+	stdOut, _, err = getPublication("00000000000000000000000012")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -120,8 +130,16 @@ func (s *TransferPublicationsSuite) TestTransfer() {
 
 	assert.Equal(t, p.Author[0].ID, "00000000-0000-0000-0000-000000000002")
 	assert.Equal(t, p.Supervisor[0].ID, "00000000-0000-0000-0000-000000000002")
+	assert.Equal(t, p.User.ID, "00000000-0000-0000-0000-000000000002")
+}
 
-	// TODO assert p.User. Implement this after import_publications has tests.
+func (s *TransferPublicationsSuite) TearDownSuite() {
+	t := s.T()
+	_, _, err := purgePublication("00000000000000000000000012")
+
+	if err != nil {
+		t.Fatal(err)
+	}
 }
 
 func TestTransferPublicationsSuite(t *testing.T) {

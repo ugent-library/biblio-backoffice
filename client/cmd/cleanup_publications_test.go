@@ -23,7 +23,7 @@ func (s *CleanupPublicationsSuite) SetupSuite() {
 	t := s.T()
 
 	json := `{
-		"id": "00000000000000000000000003",
+		"id": "00000000000000000000000013",
 		"title": "title",
 		"type": "journal_article",
 		"status": "public",
@@ -79,11 +79,11 @@ func (s *CleanupPublicationsSuite) TestCleanup() {
 		t.Fatal(err)
 	}
 
-	assert.Regexp(t, `fixed publication\[snapshot_id: .*, id: 00000000000000000000000003\]\ndone. cleaned 1 publications.`, string(stdOut))
+	assert.Regexp(t, `fixed publication\[snapshot_id: .*, id: 00000000000000000000000013\]\ndone. cleaned 1 publications.`, string(stdOut))
 
 	// Get the publication and assert that keyword and department tree were added
 
-	stdOut, _, err = getPublication("00000000000000000000000003")
+	stdOut, _, err = getPublication("00000000000000000000000013")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -98,6 +98,15 @@ func (s *CleanupPublicationsSuite) TestCleanup() {
 	assert.Equal(t, p.Keyword[0], "keyword")
 	assert.Equal(t, p.Keyword[1], "keyword2")
 	assert.NotNil(t, p.Department[0].Tree, "department tree is missing, got:", p.Department)
+}
+
+func (s *CleanupPublicationsSuite) TearDownSuite() {
+	t := s.T()
+	_, _, err := purgePublication("00000000000000000000000013")
+
+	if err != nil {
+		t.Fatal(err)
+	}
 }
 
 func TestCleanupPublicationsSuite(t *testing.T) {
