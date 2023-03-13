@@ -381,7 +381,7 @@ func (s *server) ImportPublications(stream api.Biblio_ImportPublicationsServer) 
 		}
 
 		if err := p.Validate(); err != nil {
-			grpcErr := status.New(codes.InvalidArgument, fmt.Errorf("failed to validate publication %s at line %d: %v", p.ID, seq, err).Error())
+			grpcErr := status.New(codes.InvalidArgument, fmt.Errorf("failed to validate publication at line %d: %v", seq, err).Error())
 			if err = stream.Send(&api.ImportPublicationsResponse{
 				Response: &api.ImportPublicationsResponse_Error{
 					Error: grpcErr.Proto(),
@@ -422,6 +422,14 @@ func (s *server) ImportPublications(stream api.Biblio_ImportPublicationsServer) 
 
 		if biIdxErr != nil {
 			return status.Errorf(codes.Internal, "failed to to import publications: %v", biIdxErr)
+		}
+
+		if err = stream.Send(&api.ImportPublicationsResponse{
+			Response: &api.ImportPublicationsResponse_Message{
+				Message: fmt.Sprintf("stored and indexed publication %s at line %d", p.ID, seq),
+			},
+		}); err != nil {
+			return status.Errorf(codes.Internal, "failed to to import publications: %v", err)
 		}
 	}
 }

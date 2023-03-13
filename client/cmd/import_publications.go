@@ -6,8 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
-	"os"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -33,15 +31,16 @@ func ImportPublications(cmd *cobra.Command, args []string) error {
 	defer cancel()
 
 	c, cnx, err := client.Create(ctx, config)
-	defer cnx.Close()
 
-	if errors.Is(err, context.DeadlineExceeded) {
-		log.Fatal("ContextDeadlineExceeded: true")
+	if err != nil {
+		return fmt.Errorf("could not connect with the server: %w", err)
 	}
+
+	defer cnx.Close()
 
 	stream, err := c.ImportPublications(context.Background())
 	if err != nil {
-		log.Fatal(err)
+		return fmt.Errorf("could not create a grpc stream: %w", err)
 	}
 
 	waitc := make(chan struct{})
@@ -74,7 +73,7 @@ func ImportPublications(cmd *cobra.Command, args []string) error {
 		}
 	}()
 
-	reader := bufio.NewReader(os.Stdin)
+	reader := bufio.NewReader(cmd.InOrStdin())
 	lineNo := 0
 	for {
 		line, err := reader.ReadBytes('\n')
