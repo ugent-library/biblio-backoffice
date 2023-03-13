@@ -153,7 +153,8 @@ message PurgePublicationResponse {
     oneof response {
         bool ok = 1;
         google.rpc.Status error = 2;
-    }}
+    }
+}
 
 message PurgeAllPublicationsRequest {
     bool confirm = 1;
@@ -220,14 +221,20 @@ message GetDatasetRequest {
 }
 
 message GetDatasetResponse {
-    Dataset dataset = 1;
+    oneof response {
+        Dataset dataset = 1;
+        google.rpc.Status error = 2;
+    }
 }
 
 message GetAllDatasetsRequest {
 }
 
 message GetAllDatasetsResponse {
-    Dataset dataset = 1;
+    oneof response {
+        Dataset dataset = 1;
+        google.rpc.Status error = 2;
+    }
 }
 
 message SearchDatasetsRequest {
@@ -248,6 +255,10 @@ message UpdateDatasetRequest {
 }
 
 message UpdateDatasetResponse {
+    oneof response {
+        string message = 1;
+        google.rpc.Status error = 2;
+    }
 }
 
 message AddDatasetsRequest {
@@ -255,7 +266,10 @@ message AddDatasetsRequest {
 }
 
 message AddDatasetsResponse {
-    string message = 1;
+    oneof response {
+        string message = 1;
+        google.rpc.Status error = 2;
+    }
 }
 
 message ImportDatasetsRequest {
@@ -263,7 +277,10 @@ message ImportDatasetsRequest {
 }
 
 message importDatasetsResponse {
-    string message = 1;
+    oneof response {
+        string message = 1;
+        google.rpc.Status error = 2;
+    }
 }
 
 message GetDatasetHistoryRequest {
@@ -271,7 +288,10 @@ message GetDatasetHistoryRequest {
 }
 
 message GetDatasetHistoryResponse {
-    Dataset dataset = 1;
+    oneof response {
+        Dataset dataset = 1;
+        google.rpc.Status error = 2;
+    }
 }
 
 message PurgeDatasetRequest {
@@ -279,12 +299,21 @@ message PurgeDatasetRequest {
 }
 
 message PurgeDatasetResponse {
+    oneof response {
+        bool ok = 1;
+        google.rpc.Status error = 2;
+    }
 }
 
 message PurgeAllDatasetsRequest {
+    bool confirm = 1;
 }
 
 message PurgeAllDatasetsResponse {
+    oneof response {
+        bool ok = 1;
+        google.rpc.Status error = 2;
+    }
 }
 
 message ValidateDatasetsRequest {
@@ -292,16 +321,20 @@ message ValidateDatasetsRequest {
 }
 
 message ValidateDatasetsResponse {
-    int32 seq = 1;
-    string id = 2;
-    string message = 3;
+    oneof response {
+        ValidateResults results = 1;
+        google.rpc.Status error = 2;
+    }
 }
 
 message ReindexDatasetsRequest{
 }
 
 message ReindexDatasetsResponse {
-    string message = 1;
+    oneof response {
+        string message = 1;
+        google.rpc.Status error = 2;
+    }
 }
 
 message RelateRequest {
