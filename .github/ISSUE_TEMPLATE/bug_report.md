@@ -17,6 +17,14 @@ A clear and concise description of what the bug is.
 3. Scroll down to '....'
 4. See error
 
+## Risk classification
+
+### Likelihood
+*How often does this happen? 1: Frequent, 2: Probable, 3: Occasional, 4: Remote, 5: improbable 6: incredible*
+
+### Consequences
+*What's the impact? 1: Catastrophic, 2: Critical, 3: Marginal, 4: Negligible*
+
 # Expected behavior
 A clear and concise description of what you expected to happen.
 
