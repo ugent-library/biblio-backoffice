@@ -1,0 +1,92 @@
+{
+  "abstract": [
+    {
+      "text": "test",
+      "lang": "und",
+      "id": "00000000000000000000000001"
+    }
+  ],
+  "access_level": "info:eu-repo/semantics/openAccess",
+  "author": [
+    {
+      "first_name": "first name",
+      "full_name": "full name",
+      "id": "00000000-0000-0000-0000-000000000001",
+      "last_name": "last name",
+      "ugent_id": [
+        "000000000001"
+      ],
+      "department": [
+        {
+          "id": "CA20",
+          "name": "Department of Research Affairs"
+        }
+      ]
+    }
+  ],
+  "creator": {
+    "id": "00000000-0000-0000-0000-000000000001",
+    "name": "full name"
+  },
+  "date_created": "2023-03-13T16:11:23.329912261+01:00",
+  "date_updated": "2023-03-13T16:13:24.471752952+01:00",
+  "date_from": "2023-03-13T16:13:24.472648+01:00",
+  "department": [
+    {
+      "id": "CA20",
+      "tree": [
+        {
+          "id": "UGent"
+        },
+        {
+          "id": "CA"
+        },
+        {
+          "id": "CA20"
+        }
+      ]
+    }
+  ],
+  "doi": "doi",
+  "format": [
+    "text/csv"
+  ],
+  "id": "00000000000000000000000001",
+  "keyword": [
+    "keyword",
+    "keyword2"
+  ],
+  "has_been_public": true,
+  "last_user": {
+    "id": "00000000-0000-0000-0000-000000000001",
+    "name": "full name"
+  },
+  "license": "CC-BY-4.0",
+  "locked": false,
+  "message": "test",
+  "project": [
+    {
+      "id": "001",
+      "name": "name"
+    }
+  ],
+  "publisher": "publisher",
+  "related_publication": [
+    {
+      "id": "00000000-0000-0000-0000-000000000001"
+    }
+  ],
+  "reviewer_note": "test",
+  "reviewer_tags": [
+    "test"
+  ],
+  "snapshot_id": "00000000000000000000000001",
+  "status": "public",
+  "title": "title",
+  "url": "URL",
+  "user": {
+    "id": "00000000-0000-0000-0000-000000000001",
+    "name": "full name"
+  },
+  "year": "2020"
+}
