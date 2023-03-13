@@ -272,30 +272,3 @@ func addDataset(jsonl string) (string, string, error) {
 // 		t.Fatal(err)
 // 	}
 // }
-
-func getDataset(id string) (string, string, error) {
-	stdOut := bytes.NewBufferString("")
-	stdErr := bytes.NewBufferString("")
-
-	rootCmd.SetOut(stdOut)
-	rootCmd.SetErr(stdErr)
-
-	rootCmd.SetArgs([]string{"dataset", "get", id})
-
-	errGet := rootCmd.Execute()
-	if errGet != nil {
-		return "", "", errGet
-	}
-
-	getCmdOut, err := ioutil.ReadAll(stdOut)
-	if err != nil {
-		return "", "", err
-	}
-
-	getCmdErr, err := ioutil.ReadAll(stdOut)
-	if err != nil {
-		return "", "", err
-	}
-
-	return string(getCmdOut), string(getCmdErr), nil
-}
