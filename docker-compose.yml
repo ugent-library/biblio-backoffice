@@ -24,3 +24,10 @@ services:
         /bin/sh -c "./bin/elasticsearch-plugin list | grep -q analysis-icu
         || ./bin/elasticsearch-plugin install analysis-icu;
         /usr/local/bin/docker-entrypoint.sh"
+
+  bb_mongo:
+    image: 'mongo'
+    environment:
+      - MONGO_INITDB_DATABASE=authority
+    ports:
+      - 27020:27017

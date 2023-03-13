@@ -1,0 +1,70 @@
+{
+    "settings": {
+      "index": {
+        "number_of_shards": "1",
+        "number_of_replicas": "0"
+      }
+    },
+    "mappings": {
+      "person": {
+        "dynamic": "false",
+        "date_detection": false,
+        "numeric_detection": false,
+        "properties": {
+          "active": {
+            "type": "boolean"
+          },
+          "all": {
+            "type": "text"
+          },
+          "date_created": {
+            "type": "date",
+            "format": "date_time_no_millis"
+          },
+          "date_updated": {
+            "type": "date",
+            "format": "date_time_no_millis"
+          },
+          "department": {
+            "properties": {
+              "_id": {
+                "type": "keyword",
+                "copy_to": [
+                  "all"
+                ]
+              }
+            }
+          },
+          "first_name": {
+            "type": "text",
+            "copy_to": [
+              "all"
+            ]
+          },
+          "last_name": {
+            "type": "text",
+            "copy_to": [
+              "all"
+            ]
+          },
+          "orcid": {
+            "type": "keyword",
+            "copy_to": [
+              "all"
+            ]
+          },
+          "publication_count": {
+            "type": "integer"
+          },
+          "ugent_id": {
+            "type": "keyword",
+            "copy_to": [
+              "all"
+            ]
+          }
+        }
+      }
+    }
+}
+
+
