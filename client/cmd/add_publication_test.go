@@ -620,33 +620,6 @@ func addPublication(jsonl string) (string, string, error) {
 // 	}
 // }
 
-func getPublication(id string) (string, string, error) {
-	stdOut := bytes.NewBufferString("")
-	stdErr := bytes.NewBufferString("")
-
-	rootCmd.SetOut(stdOut)
-	rootCmd.SetErr(stdErr)
-
-	rootCmd.SetArgs([]string{"publication", "get", id})
-
-	errGet := rootCmd.Execute()
-	if errGet != nil {
-		return "", "", errGet
-	}
-
-	getCmdOut, err := ioutil.ReadAll(stdOut)
-	if err != nil {
-		return "", "", err
-	}
-
-	getCmdErr, err := ioutil.ReadAll(stdOut)
-	if err != nil {
-		return "", "", err
-	}
-
-	return string(getCmdOut), string(getCmdErr), nil
-}
-
 func toJSONL(file []byte) (string, error) {
 	buffer := new(bytes.Buffer)
 	if err := json.Compact(buffer, file); err != nil {

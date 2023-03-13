@@ -25,24 +25,28 @@ func (s *server) GetPublication(ctx context.Context, req *api.GetPublicationRequ
 
 	if err != nil {
 		if errors.Is(err, backends.ErrNotFound) {
-			return nil, status.Errorf(codes.NotFound, "could not find publication with id %s", req.Id)
+			grpcErr := status.New(codes.InvalidArgument, fmt.Errorf("could not find publication with id %s", req.Id).Error())
+			return &api.GetPublicationResponse{
+				Response: &api.GetPublicationResponse_Error{
+					Error: grpcErr.Proto(),
+				},
+			}, nil
 		} else {
 			return nil, status.Errorf(codes.Internal, "could not get publication with id %s: %v", err)
 		}
 	}
 
 	j, err := json.Marshal(p)
-
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "could not marshal publication with id %s: %v", err)
 	}
 
-	apip := &api.Publication{
-		Payload: j,
-	}
-
 	res := &api.GetPublicationResponse{
-		Publication: apip,
+		Response: &api.GetPublicationResponse_Publication{
+			Publication: &api.Publication{
+				Payload: j,
+			},
+		},
 	}
 
 	return res, nil
