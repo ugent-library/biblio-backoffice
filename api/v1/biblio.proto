@@ -72,7 +72,10 @@ message GetPublicationRequest {
 }
 
 message GetPublicationResponse {
-    Publication publication = 1;
+    oneof response {
+        Publication publication = 1;
+        google.rpc.Status error = 2;
+    }
 }
 
 message GetAllPublicationsRequest {
