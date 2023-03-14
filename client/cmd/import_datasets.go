@@ -4,14 +4,14 @@ import (
 	"bufio"
 	"context"
 	"errors"
+	"fmt"
 	"io"
-	"log"
-	"os"
 	"time"
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
 	"github.com/ugent-library/biblio-backoffice/client/client"
+	"google.golang.org/grpc/status"
 )
 
 func init() {
@@ -21,27 +21,30 @@ func init() {
 var ImportDatasetsCmd = &cobra.Command{
 	Use:   "import",
 	Short: "Import datasets",
-	Run: func(cmd *cobra.Command, args []string) {
-		ImportDatasets(cmd, args)
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return ImportDatasets(cmd, args)
 	},
 }
 
-func ImportDatasets(cmd *cobra.Command, args []string) {
+func ImportDatasets(cmd *cobra.Command, args []string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
 	c, cnx, err := client.Create(ctx, config)
-	defer cnx.Close()
 
-	if errors.Is(err, context.DeadlineExceeded) {
-		log.Fatal("ContextDeadlineExceeded: true")
+	if err != nil {
+		return fmt.Errorf("could not connect with the server: %w", err)
 	}
+
+	defer cnx.Close()
 
 	stream, err := c.ImportDatasets(context.Background())
 	if err != nil {
-		log.Fatal(err)
+		return fmt.Errorf("could not create a grpc stream: %w", err)
 	}
+
 	waitc := make(chan struct{})
+	errorc := make(chan error)
 
 	go func() {
 		for {
@@ -51,14 +54,26 @@ func ImportDatasets(cmd *cobra.Command, args []string) {
 				close(waitc)
 				return
 			}
+
+			// return gRPC level error
 			if err != nil {
-				log.Fatal(err)
+				errorc <- err
+				return
 			}
-			log.Println(res.Message)
+
+			// Application level error
+			if ge := res.GetError(); ge != nil {
+				sre := status.FromProto(ge)
+				cmd.Printf("%s", sre.Message())
+			}
+
+			if rr := res.GetMessage(); rr != "" {
+				cmd.Printf("%s", rr)
+			}
 		}
 	}()
 
-	reader := bufio.NewReader(os.Stdin)
+	reader := bufio.NewReader(cmd.InOrStdin())
 	lineNo := 0
 	for {
 		line, err := reader.ReadBytes('\n')
@@ -66,7 +81,7 @@ func ImportDatasets(cmd *cobra.Command, args []string) {
 			break
 		}
 		if err != nil {
-			log.Fatal(err)
+			return fmt.Errorf("could not read line from input: %w", err)
 		}
 
 		lineNo++
@@ -77,10 +92,19 @@ func ImportDatasets(cmd *cobra.Command, args []string) {
 
 		req := &api.ImportDatasetsRequest{Dataset: d}
 		if err := stream.Send(req); err != nil {
-			log.Fatal(err)
+			return fmt.Errorf("could not send dataset to the server: %w", err)
 		}
 	}
 
 	stream.CloseSend()
-	<-waitc
+
+	select {
+	case errc := <-errorc:
+		if st, ok := status.FromError(errc); ok {
+			return errors.New(st.Message())
+		}
+	case <-waitc:
+	}
+
+	return nil
 }
