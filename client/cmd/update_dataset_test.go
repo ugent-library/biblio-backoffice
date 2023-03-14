@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"bytes"
-	"encoding/json"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -13,17 +12,17 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-type UpdatePublicationSuite struct {
+type UpdateDatasetSuite struct {
 	suite.Suite
 }
 
-func (s *UpdatePublicationSuite) SetupSuite() {
+func (s *UpdateDatasetSuite) SetupSuite() {
 	viper.Set("port", "3999")
 	viper.Set("insecure", true)
 
 	t := s.T()
 
-	file, err := os.ReadFile("../../etc/fixtures/complete.book_chapter.json")
+	file, err := os.ReadFile("../../etc/fixtures/complete.dataset.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -33,55 +32,55 @@ func (s *UpdatePublicationSuite) SetupSuite() {
 		t.Fatal(err)
 	}
 
-	_, _, err = addPublication(addCmdOutFile)
+	_, _, err = addDataset(addCmdOutFile)
 	if err != nil {
 		t.Fatal(err)
 	}
 }
 
 // Test empty input
-func (s *UpdatePublicationSuite) TestUpdateEmptyInput() {
+func (s *UpdateDatasetSuite) TestUpdateEmptyInput() {
 	t := s.T()
 
 	jsonl := ""
 
-	_, _, err := updatePublication(jsonl)
+	_, _, err := updateDataset(jsonl)
 
 	assert.Equal(t, "could not read from stdin: EOF", err.Error())
 }
 
 // Test invalid JSON input
-func (s *UpdatePublicationSuite) TestUpdateInvalidJSON() {
+func (s *UpdateDatasetSuite) TestUpdateInvalidJSON() {
 	t := s.T()
 
 	jsonl := "invalid\n"
 
-	stdOut, _, err := updatePublication(jsonl)
+	stdOut, _, err := updateDataset(jsonl)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	assert.Equal(t, "could not read json input: invalid character 'i' looking for beginning of value\n", stdOut)
+	assert.Equal(t, "could not read json input: invalid character 'i' looking for beginning of value", stdOut)
 }
 
-func (s *UpdatePublicationSuite) TestUpdateEmptyJSONLInput() {
+func (s *UpdateDatasetSuite) TestUpdateEmptyJSONLInput() {
 	t := s.T()
 	jsonl := "{}\n"
 
-	stdOut, _, err := updatePublication(jsonl)
+	stdOut, _, err := updateDataset(jsonl)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	assert.Regexp(t, `failed to validate publication : publication.id.required\[\/id\], publication.type.required\[\/type\], publication.classification.required\[\/classification\], publication.status.required\[\/status\]`, string(stdOut))
+	assert.Regexp(t, `failed to validate dataset : dataset.id.required\[\/id\], dataset.status.required\[\/status\]`, string(stdOut))
 }
 
-// Test if a publication can be succesfully updated
-func (s *UpdatePublicationSuite) TestUpdateValid() {
+// Test if a dataset can be succesfully updated
+func (s *UpdateDatasetSuite) TestUpdateValid() {
 	t := s.T()
 
-	// Retrieve the publication as user A
-	pubA, _, err := getPublication("00000000000000000000000001")
+	// Retrieve the dataset as user A
+	pubA, _, err := getDataset("00000000000000000000000001")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -96,12 +95,12 @@ func (s *UpdatePublicationSuite) TestUpdateValid() {
 		t.Fatal(err)
 	}
 
-	_, _, err = updatePublication(jsonl)
+	_, _, err = updateDataset(jsonl)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	pubB, _, err := getPublication("00000000000000000000000001")
+	pubB, _, err := getDataset("00000000000000000000000001")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -121,17 +120,17 @@ func (s *UpdatePublicationSuite) TestUpdateValid() {
 }
 
 // Test an update conflict
-func (s *UpdatePublicationSuite) TestUpdateConflict() {
+func (s *UpdateDatasetSuite) TestUpdateConflict() {
 	t := s.T()
 
-	// Retrieve the publication as user A
-	getCmdStdOut, _, err := getPublication("00000000000000000000000001")
+	// Retrieve the dataset as user A
+	getCmdStdOut, _, err := getDataset("00000000000000000000000001")
 
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	// user B pushes a change to the publication
+	// user B pushes a change to the dataset
 
 	updated, err := changeTitle(getCmdStdOut, "new title")
 	if err != nil {
@@ -143,12 +142,12 @@ func (s *UpdatePublicationSuite) TestUpdateConflict() {
 		t.Fatal(err)
 	}
 
-	_, _, err = updatePublication(jsonl)
+	_, _, err = updateDataset(jsonl)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	// // User A tries to change the publication with the old snapshotID
+	// // User A tries to change the dataset with the old snapshotID
 
 	updated, err = changeTitle(getCmdStdOut, "alternate title")
 	if err != nil {
@@ -160,35 +159,35 @@ func (s *UpdatePublicationSuite) TestUpdateConflict() {
 		t.Fatal(err)
 	}
 
-	updCmdOut, _, err := updatePublication(jsonl)
+	updCmdOut, _, err := updateDataset(jsonl)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	assert.Regexp(t, `failed to update publication: conflict detected for publication\[snapshot_id: .*, id: .*\] : version conflict`, updCmdOut)
+	assert.Regexp(t, `failed to update dataset: conflict detected for dataset\[snapshot_id: .*, id: .*\] : version conflict`, updCmdOut)
 }
 
-func (s *UpdatePublicationSuite) TearDownSuite() {
+func (s *UpdateDatasetSuite) TearDownSuite() {
 	t := s.T()
 
-	_, _, err := purgePublication("00000000000000000000000001")
+	_, _, err := purgeDataset("00000000000000000000000001")
 	if err != nil {
 		t.Fatal(err)
 	}
 }
 
-func TestUpdatePublicationSuite(t *testing.T) {
-	suite.Run(t, new(UpdatePublicationSuite))
+func TestUpdateDatasetSuite(t *testing.T) {
+	suite.Run(t, new(UpdateDatasetSuite))
 }
 
-func updatePublication(jsonl string) (string, string, error) {
+func updateDataset(jsonl string) (string, string, error) {
 	stdOut := bytes.NewBufferString("")
 	stdErr := bytes.NewBufferString("")
 
 	rootCmd.SetOut(stdOut)
 	rootCmd.SetErr(stdErr)
 
-	rootCmd.SetArgs([]string{"publication", "update"})
+	rootCmd.SetArgs([]string{"dataset", "update"})
 
 	in := strings.NewReader(jsonl)
 	rootCmd.SetIn(in)
@@ -209,20 +208,4 @@ func updatePublication(jsonl string) (string, string, error) {
 	}
 
 	return string(updCmdOut), string(updCmdErr), nil
-}
-
-func changeTitle(input string, value string) (string, error) {
-	var m map[string]interface{}
-	if err := json.Unmarshal([]byte(input), &m); err != nil {
-		return "", err
-	}
-
-	m["title"] = value
-
-	output, err := json.Marshal(m)
-	if err != nil {
-		return "", err
-	}
-
-	return string(output), nil
 }
