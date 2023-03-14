@@ -109,30 +109,3 @@ func getDataset(id string) (string, string, error) {
 
 	return string(getCmdOut), string(getCmdErr), nil
 }
-
-func purgeDataset(id string) (string, string, error) {
-	stdOut := bytes.NewBufferString("")
-	stdErr := bytes.NewBufferString("")
-
-	rootCmd.SetOut(stdOut)
-	rootCmd.SetErr(stdErr)
-
-	rootCmd.SetArgs([]string{"dataset", "purge", id})
-
-	errGet := rootCmd.Execute()
-	if errGet != nil {
-		return "", "", errGet
-	}
-
-	getCmdOut, err := ioutil.ReadAll(stdOut)
-	if err != nil {
-		return "", "", err
-	}
-
-	getCmdErr, err := ioutil.ReadAll(stdOut)
-	if err != nil {
-		return "", "", err
-	}
-
-	return string(getCmdOut), string(getCmdErr), nil
-}
