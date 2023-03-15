@@ -57,15 +57,12 @@ func (s *RelateSuite) SetupSuite() {
 func (s *RelateSuite) TestRelateValid() {
 	t := s.T()
 
-	stdOut, stdErr, err := relate("00000000000000000000000001", "00000000000000000000000001")
+	stdOut, _, err := relate("00000000000000000000000001", "00000000000000000000000001")
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	assert.Equal(t, "related: publication[id: 00000000000000000000000001] -> dataset[id: 00000000000000000000000001]", stdOut)
-
-	t.Log(stdOut)
-	t.Log(stdErr)
 
 	// Retrieve the publication
 	stdOut, _, err = getPublication("00000000000000000000000001")
@@ -98,13 +95,34 @@ func (s *RelateSuite) TestRelateValid() {
 	assert.Equal(t, "00000000000000000000000001", d.RelatedPublication[1].ID)
 }
 
-// func (s *RelateSuite) TestRelateNonExisting() {
-// 	t := s.T()
-// }
+func (s *RelateSuite) TestRelateNonExistingPublication() {
+	t := s.T()
 
-// func (s *RelateSuite) TestRelateInvalid() {
-// 	t := s.T()
-// }
+	stdOut, stdErr, err := relate("notexists", "00000000000000000000000001")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Log(stdOut)
+	t.Log(stdErr)
+
+	assert.Equal(t, "could not find publication with id notexists", stdOut)
+
+}
+
+func (s *RelateSuite) TestRelateNonExistingDataset() {
+	t := s.T()
+
+	stdOut, stdErr, err := relate("00000000000000000000000001", "notexists")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Log(stdOut)
+	t.Log(stdErr)
+
+	assert.Equal(t, "could not find dataset with id notexists", stdOut)
+}
 
 func (s *RelateSuite) TearDownSuite() {
 	t := s.T()
