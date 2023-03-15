@@ -349,4 +349,8 @@ message RelateRequest {
 }
 
 message RelateResponse {
+    oneof response {
+        string message = 1;
+        google.rpc.Status error = 2;
+    }
 }
