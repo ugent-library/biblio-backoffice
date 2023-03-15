@@ -53,6 +53,14 @@ func (s *PurgeDatasetSuite) TestPurgeSingle() {
 	}
 
 	assert.Equal(t, "purged dataset 00000000000000000000000001", stdOut)
+
+	// Retrieve the dataset
+	stdOut, _, err = getDataset("00000000000000000000000001")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	assert.Equal(t, "could not find dataset with id 00000000000000000000000001", stdOut)
 }
 
 func TestPurgeDatasetSuite(t *testing.T) {

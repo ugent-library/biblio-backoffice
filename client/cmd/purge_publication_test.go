@@ -53,6 +53,14 @@ func (s *PurgePublicationSuite) TestPurgeSingle() {
 	}
 
 	assert.Equal(t, "purged publication 00000000000000000000000001", stdOut)
+
+	// Retrieve the publication
+	stdOut, _, err = getPublication("00000000000000000000000001")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	assert.Equal(t, "could not find publication with id 00000000000000000000000001", stdOut)
 }
 
 func TestPurgePublicationSuite(t *testing.T) {

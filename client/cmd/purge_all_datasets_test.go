@@ -60,13 +60,10 @@ func (s *PurgeAllDatasetsSuite) TestPurgeAll() {
 	assert.Equal(t, "purged all datasets", stdOut)
 
 	// Retrieve the dataset
-	stdOut, stdErr, err := getDataset("00000000000000000000000001")
+	stdOut, _, err = getDataset("00000000000000000000000001")
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	t.Log(stdOut)
-	t.Log(stdErr)
 
 	assert.Equal(t, "could not find dataset with id 00000000000000000000000001", stdOut)
 }
