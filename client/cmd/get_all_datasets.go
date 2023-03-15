@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"log"
 	"time"
@@ -10,6 +11,7 @@ import (
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
 	"github.com/ugent-library/biblio-backoffice/client/client"
+	"google.golang.org/grpc/status"
 )
 
 func init() {
@@ -19,12 +21,12 @@ func init() {
 var GetAllDatasetsCmd = &cobra.Command{
 	Use:   "get-all",
 	Short: "Get all datasets",
-	Run: func(cmd *cobra.Command, args []string) {
-		GetAllDatasets(cmd, args)
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return GetAllDatasets(cmd, args)
 	},
 }
 
-func GetAllDatasets(cmd *cobra.Command, args []string) {
+func GetAllDatasets(cmd *cobra.Command, args []string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
@@ -38,7 +40,7 @@ func GetAllDatasets(cmd *cobra.Command, args []string) {
 	req := &api.GetAllDatasetsRequest{}
 	stream, err := c.GetAllDatasets(context.Background(), req)
 	if err != nil {
-		log.Fatal(err)
+		return fmt.Errorf("error while reading stream: %v", err)
 	}
 
 	for {
@@ -46,10 +48,24 @@ func GetAllDatasets(cmd *cobra.Command, args []string) {
 		if err == io.EOF {
 			break
 		}
+
 		if err != nil {
-			log.Fatalf("error while reading stream: %v", err)
+			if st, ok := status.FromError(err); ok {
+				return errors.New(st.Message())
+			}
+
+			return err
 		}
 
-		cmd.Printf("%s\n", res.Dataset.Payload)
+		if ge := res.GetError(); ge != nil {
+			sre := status.FromProto(ge)
+			cmd.Printf("%s\n", sre.Message())
+		}
+
+		if rr := res.GetDataset(); rr != nil {
+			cmd.Printf("%s\n", rr.GetPayload())
+		}
 	}
+
+	return nil
 }
