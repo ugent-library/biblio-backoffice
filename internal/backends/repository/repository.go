@@ -723,7 +723,7 @@ func (s *Repository) GetVisibleDatasetPublications(u *models.User, d *models.Dat
 	}
 	filteredPublications := make([]*models.Publication, 0, len(publications))
 	for _, publication := range publications {
-		if u.CanDeletePublication(publication) {
+		if u.CanViewPublication(publication) {
 			filteredPublications = append(filteredPublications, publication)
 		}
 	}
