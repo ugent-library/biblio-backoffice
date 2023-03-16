@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"reflect"
+	"sort"
 	"strings"
 	"time"
 
@@ -1134,6 +1136,134 @@ func (s *server) CleanupPublications(req *api.CleanupPublicationsRequest, stream
 		},
 	}); err != nil {
 		return status.Errorf(codes.Internal, "failed to to clean up publications: %v", err)
+	}
+
+	return nil
+}
+
+type contributorChange struct {
+	PublicationID   string `json:"publication_id"`
+	ContributorID   string `json:"contributor_id"`
+	ContributorRole string `json:"contributor_role"`
+	Attribute       string `json:"type"`
+	From            string `json:"from"`
+	To              string `json:"to"`
+}
+
+func (s *server) SyncPublicationContributors(req *api.SyncPublicationContributorsRequest, stream api.Biblio_SyncPublicationContributorsServer) error {
+
+	repository := s.services.Repository
+	personService := s.services.PersonService
+	orgService := s.services.OrganizationService
+	var callbackErr error
+
+	streamErr := repository.EachPublication(func(p *models.Publication) bool {
+
+		changes := make([]contributorChange, 0)
+
+		for _, role := range []string{"author", "editor", "supervisor"} {
+
+			contributors := p.Contributors(role)
+
+			for _, c := range contributors {
+
+				if c.ID == "" {
+					continue
+				}
+
+				// TODO: how to handle records that are gone from the authority table?
+				person, err := personService.GetPerson(c.ID)
+
+				if err != nil {
+					grpcErr := status.New(codes.Internal, fmt.Errorf("unable to fetch person record %s with role %s from publication %s: %s", c.ID, role, p.ID, err).Error())
+					// TODO: error handling
+					stream.Send(&api.SyncPublicationContributorsResponse{
+						Response: &api.SyncPublicationContributorsResponse_Error{
+							Error: grpcErr.Proto(),
+						},
+					})
+					continue
+				}
+
+				if c.ORCID != person.ORCID {
+					changes = append(changes, contributorChange{
+						PublicationID:   p.ID,
+						ContributorID:   c.ID,
+						ContributorRole: role,
+						Attribute:       "contributor.orcid",
+						From:            c.ORCID,
+						To:              person.ORCID,
+					})
+					c.ORCID = person.ORCID
+				}
+
+				if !reflect.DeepEqual(c.UGentID, person.UGentID) {
+					changes = append(changes, contributorChange{
+						PublicationID:   p.ID,
+						ContributorID:   c.ID,
+						ContributorRole: role,
+						Attribute:       "contributor.ugent_id",
+						From:            strings.Join(c.UGentID, ","),
+						To:              strings.Join(person.UGentID, ","),
+					})
+					c.UGentID = append([]string{}, person.UGentID...)
+				}
+
+				oldDeps := make([]string, 0, len(c.Department))
+				for _, dep := range c.Department {
+					oldDeps = append(oldDeps, dep.ID)
+				}
+				sort.Strings(oldDeps)
+
+				newDeps := make([]string, 0, len(person.Department))
+				for _, dep := range person.Department {
+					newDeps = append(newDeps, dep.ID)
+				}
+				sort.Strings(newDeps)
+
+				if !reflect.DeepEqual(oldDeps, newDeps) {
+					changes = append(changes, contributorChange{
+						PublicationID:   p.ID,
+						ContributorID:   c.ID,
+						ContributorRole: role,
+						Attribute:       "department",
+						From:            strings.Join(oldDeps, ","),
+						To:              strings.Join(newDeps, ","),
+					})
+					for _, pd := range person.Department {
+						newDep := models.ContributorDepartment{ID: pd.ID}
+						org, orgErr := orgService.GetOrganization(pd.ID)
+						if orgErr == nil {
+							newDep.Name = org.Name
+						}
+						c.Department = append(c.Department, newDep)
+					}
+				}
+
+			}
+		}
+
+		for _, change := range changes {
+			bytes, _ := json.Marshal(change)
+			if err := stream.Send(&api.SyncPublicationContributorsResponse{
+				Response: &api.SyncPublicationContributorsResponse_Message{
+					Message: string(bytes),
+				},
+			}); err != nil {
+				callbackErr = err
+				return false
+			}
+		}
+
+		return true
+	})
+
+	if streamErr != nil {
+		return status.Errorf(codes.Internal, "could not complete sync-publication-contributors: %v", streamErr)
+	}
+
+	if callbackErr != nil {
+		return status.Errorf(codes.Internal, "unable to send all changes: %s", callbackErr.Error())
 	}
 
 	return nil
