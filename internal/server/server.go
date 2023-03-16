@@ -65,6 +65,7 @@ func New(services *backends.Services, logger *zap.SugaredLogger) *grpc.Server {
 		grpc_middleware.WithStreamServerChain(
 			grpc_recovery.StreamServerInterceptor(),
 			grpc_zap.StreamServerInterceptor(logger.Desugar(), zap_opt),
+			grpc_auth.StreamServerInterceptor(auth),
 		),
 		grpc_middleware.WithUnaryServerChain(
 			grpc_recovery.UnaryServerInterceptor(),
