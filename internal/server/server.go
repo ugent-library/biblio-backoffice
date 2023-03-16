@@ -15,6 +15,7 @@ import (
 	"go.uber.org/zap/zapcore"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/reflection"
 )
 
 type server struct {
@@ -75,6 +76,11 @@ func New(services *backends.Services, logger *zap.SugaredLogger) *grpc.Server {
 	srv := &server{
 		services: services,
 	}
+
+	// Enable the gRPC reflection API
+	// e.g. grpcurl host:port list -> list all available services & methods
+	reflection.Register(gsrv)
+
 	api.RegisterBiblioServer(gsrv, srv)
 	return gsrv
 }

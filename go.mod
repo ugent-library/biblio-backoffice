@@ -21,12 +21,14 @@ require (
 	github.com/jackc/pgtype v1.11.0
 	github.com/jackc/pgx/v4 v4.16.1
 	github.com/jpillora/ipfilter v1.2.8
+	github.com/mitchellh/go-homedir v1.1.0
 	github.com/nickng/bibtex v1.2.0
 	github.com/pkg/errors v0.9.1
 	github.com/rvflash/elapsed v0.2.0
 	github.com/spf13/cobra v1.4.0
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.12.0
+	github.com/stretchr/testify v1.8.1
 	github.com/tidwall/gjson v1.14.1
 	github.com/ugent-library/go-orcid v0.0.0-20211130191640-1138a344c30b
 	github.com/xuri/excelize/v2 v2.6.1
@@ -42,7 +44,6 @@ require (
 	github.com/go-jose/go-jose/v3 v3.0.0 // indirect
 	github.com/klauspost/compress v1.13.6 // indirect
 	github.com/lib/pq v1.10.6 // indirect
-	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
 	github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe // indirect
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
@@ -50,8 +51,6 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/richardlehane/mscfb v1.0.4 // indirect
 	github.com/richardlehane/msoleps v1.0.3 // indirect
-	github.com/stretchr/objx v0.5.0 // indirect
-	github.com/stretchr/testify v1.8.1 // indirect
 	github.com/tomasen/realip v0.0.0-20180522021738-f0c99a92ddce // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.1 // indirect
@@ -130,7 +129,7 @@ require (
 	golang.org/x/oauth2 v0.4.0 // indirect
 	golang.org/x/sys v0.4.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
-	google.golang.org/genproto v0.0.0-20220817144833-d7fd3f11b9b1 // indirect
+	google.golang.org/genproto v0.0.0-20220817144833-d7fd3f11b9b1
 	gopkg.in/ini.v1 v1.66.6 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
