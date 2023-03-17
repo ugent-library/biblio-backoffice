@@ -1,5 +1,9 @@
 package util
 
+import (
+	"fmt"
+)
+
 func ParseBoolean(v interface{}) bool {
 	switch b := v.(type) {
 	case int32:
@@ -12,4 +16,28 @@ func ParseBoolean(v interface{}) bool {
 		return b
 	}
 	return false
+}
+
+func ParseString(v interface{}) string {
+	switch s := v.(type) {
+	case int:
+		return fmt.Sprintf("%d", s)
+	case int32:
+		return fmt.Sprintf("%d", s)
+	case int64:
+		return fmt.Sprintf("%d", s)
+	case float32:
+		return fmt.Sprintf("%g", s)
+	case float64:
+		return fmt.Sprintf("%g", s)
+	case string:
+		return s
+	case bool:
+		if s {
+			return "true"
+		} else {
+			return "false"
+		}
+	}
+	return ""
 }

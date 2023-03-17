@@ -88,33 +88,35 @@ func (c *Client) recordToPerson(record bson.M) (*models.Person, error) {
 	var person *models.Person = &models.Person{}
 
 	if v, e := record["_id"]; e {
-		person.ID = v.(string)
+		// _id might be stored as number, float or even "null"
+		person.ID = util.ParseString(v)
 	}
 	if v, e := record["active"]; e {
 		person.Active = util.ParseBoolean(v)
 	}
 	if v, e := record["orcid_id"]; e {
-		person.ORCID = v.(string)
+		// orcid might be stored as "null"
+		person.ORCID = util.ParseString(v)
 	}
 	if v, e := record["ugent_id"]; e {
 		for _, i := range v.(bson.A) {
-			person.UGentID = append(person.UGentID, i.(string))
+			person.UGentID = append(person.UGentID, util.ParseString(i))
 		}
 	}
 	if v, e := record["ugent_department_id"]; e {
 		for _, i := range v.(bson.A) {
-			person.Department = append(person.Department, models.PersonDepartment{ID: i.(string)})
+			person.Department = append(person.Department, models.PersonDepartment{ID: util.ParseString(i)})
 		}
 	}
 	if v, e := record["preferred_first_name"]; e {
-		person.FirstName = v.(string)
+		person.FirstName = util.ParseString(v)
 	} else if v, e := record["first_name"]; e {
-		person.FirstName = v.(string)
+		person.FirstName = util.ParseString(v)
 	}
 	if v, e := record["preferred_last_name"]; e {
-		person.LastName = v.(string)
+		person.LastName = util.ParseString(v)
 	} else if v, e := record["last_name"]; e {
-		person.LastName = v.(string)
+		person.LastName = util.ParseString(v)
 	}
 
 	if person.FirstName != "" && person.LastName != "" {
@@ -126,11 +128,11 @@ func (c *Client) recordToPerson(record bson.M) (*models.Person, error) {
 	}
 
 	if v, e := record["date_created"]; e {
-		t, _ := time.Parse(time.RFC3339, v.(string))
+		t, _ := time.Parse(time.RFC3339, util.ParseString(v))
 		person.DateCreated = &t
 	}
 	if v, e := record["date_updated"]; e {
-		t, _ := time.Parse(time.RFC3339, v.(string))
+		t, _ := time.Parse(time.RFC3339, util.ParseString(v))
 		person.DateUpdated = &t
 	}
 

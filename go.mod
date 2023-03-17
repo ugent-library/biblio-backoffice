@@ -11,6 +11,7 @@ require (
 	github.com/caltechlibrary/doitools v0.0.1
 	github.com/dimchansky/utfbom v1.1.1
 	github.com/elastic/go-elasticsearch/v6 v6.8.10
+	github.com/go-playground/assert/v2 v2.0.1
 	github.com/go-playground/form/v4 v4.2.0
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/csrf v1.7.1
