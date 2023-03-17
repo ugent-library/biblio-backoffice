@@ -14,6 +14,7 @@ import (
 )
 
 func init() {
+	SyncPublicationContributorsCmd.Flags().BoolP("noop", "n", false, "inspect changes. Do not execute them.")
 	PublicationCmd.AddCommand(SyncPublicationContributorsCmd)
 }
 
@@ -26,6 +27,10 @@ var SyncPublicationContributorsCmd = &cobra.Command{
 }
 
 func SyncPublicationContributors(cmd *cobra.Command, args []string) (err error) {
+
+	// --noop : dry mode
+	noop, _ := cmd.Flags().GetBool("noop")
+
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
@@ -35,7 +40,7 @@ func SyncPublicationContributors(cmd *cobra.Command, args []string) (err error) 
 	if errors.Is(err, context.DeadlineExceeded) {
 		log.Fatal("ContextDeadlineExceeded: true")
 	}
-	req := &api.SyncPublicationContributorsRequest{}
+	req := &api.SyncPublicationContributorsRequest{Noop: noop}
 	stream, err := c.SyncPublicationContributors(context.Background(), req)
 	if err != nil {
 		return err

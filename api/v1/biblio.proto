@@ -217,7 +217,9 @@ message CleanupPublicationsResponse {
         google.rpc.Status error = 2;
     }}
 
-message SyncPublicationContributorsRequest{}
+message SyncPublicationContributorsRequest{
+    bool noop = 1;
+}
 message SyncPublicationContributorsResponse{
     oneof response {
         string message = 1;

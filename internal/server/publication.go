@@ -1148,18 +1148,45 @@ type contributorChange struct {
 	Attribute       string `json:"type"`
 	From            string `json:"from"`
 	To              string `json:"to"`
+	Executed        bool   `json:"executed"`
+}
+
+func sendSyncPublicationContributorsError(stream api.Biblio_SyncPublicationContributorsServer, e error) error {
+	grpcErr := status.New(codes.Internal, e.Error())
+	return stream.Send(&api.SyncPublicationContributorsResponse{
+		Response: &api.SyncPublicationContributorsResponse_Error{
+			Error: grpcErr.Proto(),
+		},
+	})
 }
 
 func (s *server) SyncPublicationContributors(req *api.SyncPublicationContributorsRequest, stream api.Biblio_SyncPublicationContributorsServer) error {
 
+	ctx := context.Background()
 	repository := s.services.Repository
 	personService := s.services.PersonService
 	orgService := s.services.OrganizationService
+
+	bi, err := s.services.PublicationSearchService.NewBulkIndexer(backends.BulkIndexerConfig{
+		OnError: func(err error) {
+			sendSyncPublicationContributorsError(stream, err)
+		},
+		OnIndexError: func(id string, err error) {
+			sendSyncPublicationContributorsError(stream, err)
+		},
+	})
+
+	if err != nil {
+		return status.Errorf(codes.Internal, "failed to start an indexer: %s", err)
+	}
+
+	defer bi.Close(ctx)
+
 	var callbackErr error
 
 	streamErr := repository.EachPublication(func(p *models.Publication) bool {
 
-		changes := make([]contributorChange, 0)
+		changes := make([]*contributorChange, 0)
 
 		for _, role := range []string{"author", "editor", "supervisor"} {
 
@@ -1167,26 +1194,29 @@ func (s *server) SyncPublicationContributors(req *api.SyncPublicationContributor
 
 			for _, c := range contributors {
 
+				// only handle records from authority database
 				if c.ID == "" {
 					continue
 				}
 
-				// TODO: how to handle records that are gone from the authority table?
 				person, err := personService.GetPerson(c.ID)
 
+				// person is gone from the authority table
 				if err != nil {
-					grpcErr := status.New(codes.Internal, fmt.Errorf("unable to fetch person record %s with role %s from publication %s: %s", c.ID, role, p.ID, err).Error())
-					// TODO: error handling
-					stream.Send(&api.SyncPublicationContributorsResponse{
-						Response: &api.SyncPublicationContributorsResponse_Error{
-							Error: grpcErr.Proto(),
-						},
-					})
+					e := sendSyncPublicationContributorsError(stream, fmt.Errorf("unable to fetch person record %s with role %s from publication %s: %s", c.ID, role, p.ID, err))
+
+					if e != nil {
+						callbackErr = e
+						// unable to send error: stop the loop
+						return false
+					}
+
+					// this is not fatal error, so keep going
 					continue
 				}
 
 				if c.ORCID != person.ORCID {
-					changes = append(changes, contributorChange{
+					changes = append(changes, &contributorChange{
 						PublicationID:   p.ID,
 						ContributorID:   c.ID,
 						ContributorRole: role,
@@ -1198,7 +1228,7 @@ func (s *server) SyncPublicationContributors(req *api.SyncPublicationContributor
 				}
 
 				if !reflect.DeepEqual(c.UGentID, person.UGentID) {
-					changes = append(changes, contributorChange{
+					changes = append(changes, &contributorChange{
 						PublicationID:   p.ID,
 						ContributorID:   c.ID,
 						ContributorRole: role,
@@ -1222,7 +1252,7 @@ func (s *server) SyncPublicationContributors(req *api.SyncPublicationContributor
 				sort.Strings(newDeps)
 
 				if !reflect.DeepEqual(oldDeps, newDeps) {
-					changes = append(changes, contributorChange{
+					changes = append(changes, &contributorChange{
 						PublicationID:   p.ID,
 						ContributorID:   c.ID,
 						ContributorRole: role,
@@ -1239,8 +1269,52 @@ func (s *server) SyncPublicationContributors(req *api.SyncPublicationContributor
 						c.Department = append(c.Department, newDep)
 					}
 				}
-
 			}
+		}
+
+		if !req.Noop {
+			for _, change := range changes {
+				change.Executed = true
+			}
+		}
+
+		if !req.Noop {
+
+			// TODO: wrap validation error in a way so we can track which publication it was
+			if err := p.Validate(); err != nil {
+
+				for _, err := range err.(validation.Errors) {
+					if e := sendSyncPublicationContributorsError(stream, err); e != nil {
+						callbackErr = e
+						// unable to send error: stop the loop
+						return false
+					}
+				}
+
+			} else if err := s.services.Repository.UpdatePublication(p.SnapshotID, p, nil); err != nil {
+
+				e := sendSyncPublicationContributorsError(stream, fmt.Errorf("failed to update publication[snapshot_id: %s, id: %s] : %v", p.SnapshotID, p.ID, err))
+				if e != nil {
+					callbackErr = err
+					// unable to send error: stop the loop
+					return false
+				}
+
+				// unable to save record: stop the loop
+				return false
+
+			} else if err := bi.Index(ctx, p); err != nil {
+
+				e := sendSyncPublicationContributorsError(stream, fmt.Errorf("failed to index publication[snapshot_id: %s, id: %s] : %v", p.SnapshotID, p.ID, err))
+				if e != nil {
+					callbackErr = err
+					// unable to send error: stop the loop
+					return false
+				}
+
+				// indexation failed: keep going
+			}
+
 		}
 
 		for _, change := range changes {
@@ -1263,7 +1337,7 @@ func (s *server) SyncPublicationContributors(req *api.SyncPublicationContributor
 	}
 
 	if callbackErr != nil {
-		return status.Errorf(codes.Internal, "unable to send all changes: %s", callbackErr.Error())
+		return status.Errorf(codes.Internal, "unable to save all changes: %s", callbackErr.Error())
 	}
 
 	return nil
