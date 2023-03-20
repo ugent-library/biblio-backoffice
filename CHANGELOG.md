@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- #1035: DOI import fails, leaves blank screen for 2 DOIs
 - #1028: Fix editing of keyword tag
 
 ## [v1.0.23] - 2023-03-08
