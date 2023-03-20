@@ -26,15 +26,17 @@ func (s *PurgePublicationSuite) SetupSuite() {
 		t.Fatal(err)
 	}
 
-	addCmdOutFile, err := toJSONL(file)
+	rec, _ := addKey(string(file), "id", "00000000000000000000000051")
+
+	jsonl, err := toJSONL([]byte(rec))
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, _, err = addPublication(jsonl)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	_, _, err = addPublication(addCmdOutFile)
-	if err != nil {
-		t.Fatal(err)
-	}
 }
 
 func (s *PurgePublicationSuite) TestPurgeSingle() {
@@ -47,20 +49,20 @@ func (s *PurgePublicationSuite) TestPurgeSingle() {
 
 	assert.Equal(t, "could not find publication with id notexists", stdOut)
 
-	stdOut, _, err = purgePublication("00000000000000000000000001")
+	stdOut, _, err = purgePublication("00000000000000000000000051")
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	assert.Equal(t, "purged publication 00000000000000000000000001", stdOut)
+	assert.Equal(t, "purged publication 00000000000000000000000051", stdOut)
 
 	// Retrieve the publication
-	stdOut, _, err = getPublication("00000000000000000000000001")
+	stdOut, _, err = getPublication("00000000000000000000000051")
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	assert.Equal(t, "could not find publication with id 00000000000000000000000001", stdOut)
+	assert.Equal(t, "could not find publication with id 00000000000000000000000051", stdOut)
 }
 
 func TestPurgePublicationSuite(t *testing.T) {

@@ -23,8 +23,8 @@ func (s *TransferPublicationsSuite) SetupSuite() {
 	t := s.T()
 
 	json := `{
-		"id": "00000000000000000000000012",
-		"snapshot_id": "00000000000000000000000012",
+		"id": "00000000000000000000000071",
+		"snapshot_id": "00000000000000000000000071",
 		"title": "title",
 		"type": "dissertation",
 		"status": "public",
@@ -110,14 +110,14 @@ func (s *TransferPublicationsSuite) SetupSuite() {
 func (s *TransferPublicationsSuite) TestTransfer() {
 	t := s.T()
 
-	stdOut, _, err := transferPublications("00000000-0000-0000-0000-000000000001", "00000000-0000-0000-0000-000000000002", "00000000000000000000000012")
+	stdOut, _, err := transferPublications("00000000-0000-0000-0000-000000000001", "00000000-0000-0000-0000-000000000002", "00000000000000000000000071")
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	assert.Regexp(t, `p: 00000000000000000000000012: s: .* ::: author: 00000000-0000-0000-0000-000000000001 -> 00000000-0000-0000-0000-000000000002\np: 00000000000000000000000012: s: .* ::: supervisor: 00000000-0000-0000-0000-000000000001 -> 00000000-0000-0000-0000-000000000002`, string(stdOut))
+	assert.Regexp(t, `p: 00000000000000000000000071: s: .* ::: user: 00000000-0000-0000-0000-000000000001 -> 00000000-0000-0000-0000-000000000002\np: 00000000000000000000000071: s: .* ::: author: 00000000-0000-0000-0000-000000000001 -> 00000000-0000-0000-0000-000000000002\np: 00000000000000000000000071: s: .* ::: supervisor: 00000000-0000-0000-0000-000000000001 -> 00000000-0000-0000-0000-000000000002`, string(stdOut))
 
-	stdOut, _, err = getPublication("00000000000000000000000012")
+	stdOut, _, err = getPublication("00000000000000000000000071")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -135,7 +135,7 @@ func (s *TransferPublicationsSuite) TestTransfer() {
 
 func (s *TransferPublicationsSuite) TearDownSuite() {
 	t := s.T()
-	_, _, err := purgePublication("00000000000000000000000012")
+	_, _, err := purgePublication("00000000000000000000000071")
 
 	if err != nil {
 		t.Fatal(err)

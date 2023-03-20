@@ -43,12 +43,13 @@ func (s *RelateSuite) SetupSuite() {
 		t.Fatal(err)
 	}
 
-	addCmdOutFile, err = toJSONL(file)
+	rec, _ := addKey(string(file), "id", "00000000000000000000000061")
+
+	jsonl, err := toJSONL([]byte(rec))
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	_, _, err = addPublication(addCmdOutFile)
+	_, _, err = addPublication(jsonl)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -57,15 +58,15 @@ func (s *RelateSuite) SetupSuite() {
 func (s *RelateSuite) TestRelateValid() {
 	t := s.T()
 
-	stdOut, _, err := relate("00000000000000000000000001", "00000000000000000000000001")
+	stdOut, _, err := relate("00000000000000000000000061", "00000000000000000000000001")
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	assert.Equal(t, "related: publication[id: 00000000000000000000000001] -> dataset[id: 00000000000000000000000001]", stdOut)
+	assert.Equal(t, "related: publication[id: 00000000000000000000000061] -> dataset[id: 00000000000000000000000001]", stdOut)
 
 	// Retrieve the publication
-	stdOut, _, err = getPublication("00000000000000000000000001")
+	stdOut, _, err = getPublication("00000000000000000000000061")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -92,7 +93,7 @@ func (s *RelateSuite) TestRelateValid() {
 	}
 
 	assert.Len(t, d.RelatedPublication, 2, "number of related publications isn't 2, got:", len(d.RelatedPublication))
-	assert.Equal(t, "00000000000000000000000001", d.RelatedPublication[1].ID)
+	assert.Equal(t, "00000000000000000000000061", d.RelatedPublication[1].ID)
 }
 
 func (s *RelateSuite) TestRelateNonExistingPublication() {
@@ -113,7 +114,7 @@ func (s *RelateSuite) TestRelateNonExistingPublication() {
 func (s *RelateSuite) TestRelateNonExistingDataset() {
 	t := s.T()
 
-	stdOut, stdErr, err := relate("00000000000000000000000001", "notexists")
+	stdOut, stdErr, err := relate("00000000000000000000000061", "notexists")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -127,7 +128,7 @@ func (s *RelateSuite) TestRelateNonExistingDataset() {
 func (s *RelateSuite) TearDownSuite() {
 	t := s.T()
 
-	_, _, err := purgePublication("00000000000000000000000001")
+	_, _, err := purgePublication("00000000000000000000000061")
 	if err != nil {
 		t.Fatal(err)
 	}

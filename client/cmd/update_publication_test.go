@@ -28,15 +28,17 @@ func (s *UpdatePublicationSuite) SetupSuite() {
 		t.Fatal(err)
 	}
 
-	addCmdOutFile, err := toJSONL(file)
+	rec, _ := addKey(string(file), "id", "00000000000000000000000081")
+
+	jsonl, err := toJSONL([]byte(rec))
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, _, err = addPublication(jsonl)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	_, _, err = addPublication(addCmdOutFile)
-	if err != nil {
-		t.Fatal(err)
-	}
 }
 
 // Test empty input
@@ -81,7 +83,7 @@ func (s *UpdatePublicationSuite) TestUpdateValid() {
 	t := s.T()
 
 	// Retrieve the publication as user A
-	pubA, _, err := getPublication("00000000000000000000000001")
+	pubA, _, err := getPublication("00000000000000000000000081")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -101,7 +103,7 @@ func (s *UpdatePublicationSuite) TestUpdateValid() {
 		t.Fatal(err)
 	}
 
-	pubB, _, err := getPublication("00000000000000000000000001")
+	pubB, _, err := getPublication("00000000000000000000000081")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -125,7 +127,7 @@ func (s *UpdatePublicationSuite) TestUpdateConflict() {
 	t := s.T()
 
 	// Retrieve the publication as user A
-	getCmdStdOut, _, err := getPublication("00000000000000000000000001")
+	getCmdStdOut, _, err := getPublication("00000000000000000000000081")
 
 	if err != nil {
 		t.Fatal(err)
@@ -171,7 +173,7 @@ func (s *UpdatePublicationSuite) TestUpdateConflict() {
 func (s *UpdatePublicationSuite) TearDownSuite() {
 	t := s.T()
 
-	_, _, err := purgePublication("00000000000000000000000001")
+	_, _, err := purgePublication("00000000000000000000000081")
 	if err != nil {
 		t.Fatal(err)
 	}
