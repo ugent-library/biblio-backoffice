@@ -135,7 +135,15 @@ func (c *Client) GetPublication(id string) (*models.Publication, error) {
 			if res := r.Get("family"); res.Exists() {
 				c.LastName = res.String()
 			} else {
-				c.LastName = "[missing]" // TODO
+				// if LastName is empty, fill it with the FullName.
+				// if FullName is empty, put [missing] in LastName.
+				// solves for cases where authors are misused for organizational
+				// attribution.
+				if res := r.Get("name"); res.Exists() {
+					c.LastName = res.String()
+				} else {
+					c.LastName = "[missing]" // TODO
+				}
 			}
 			p.Author = append(p.Author, &c)
 		}
