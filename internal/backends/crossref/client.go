@@ -129,9 +129,13 @@ func (c *Client) GetPublication(id string) (*models.Publication, error) {
 			}
 			if res := r.Get("given"); res.Exists() {
 				c.FirstName = res.String()
+			} else {
+				c.FirstName = "[missing]" // TODO
 			}
 			if res := r.Get("family"); res.Exists() {
 				c.LastName = res.String()
+			} else {
+				c.LastName = "[missing]" // TODO
 			}
 			p.Author = append(p.Author, &c)
 		}
@@ -144,9 +148,13 @@ func (c *Client) GetPublication(id string) (*models.Publication, error) {
 			}
 			if res := r.Get("given"); res.Exists() {
 				c.FirstName = res.String()
+			} else {
+				c.FirstName = "[missing]" // TODO
 			}
 			if res := r.Get("family"); res.Exists() {
 				c.LastName = res.String()
+			} else {
+				c.LastName = "[missing]" // TODO
 			}
 			p.Editor = append(p.Editor, &c)
 		}
