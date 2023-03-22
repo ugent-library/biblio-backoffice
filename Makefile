@@ -1,6 +1,8 @@
 export GO111MODULE=on
 
 -include .env
+BIBLIO_BACKOFFICE_USERNAME=admin
+BIBLIO_BACKOFFICE_PASSWORD=admin
 BIBLIO_BACKOFFICE_PG_CONN=postgres://biblio:biblio@localhost:2345/biblio
 BIBLIO_BACKOFFICE_ES6_URL=http://localhost:9400
 BIBLIO_BACKOFFICE_DATASET_INDEX=biblio_datasets
