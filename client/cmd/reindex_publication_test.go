@@ -3,7 +3,6 @@ package cmd
 import (
 	"bytes"
 	"io/ioutil"
-	"os"
 	"testing"
 
 	"github.com/spf13/viper"
@@ -18,23 +17,6 @@ type PublicationReindexSuite struct {
 func (s *PublicationReindexSuite) SetupSuite() {
 	viper.Set("port", "3999")
 	viper.Set("insecure", true)
-
-	t := s.T()
-
-	file, err := os.ReadFile("../../etc/fixtures/complete.book_chapter.json")
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	addCmdOutFile, err := toJSONL(file)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	_, _, err = addPublication(addCmdOutFile)
-	if err != nil {
-		t.Fatal(err)
-	}
 }
 
 func (s *PublicationReindexSuite) TestReindex() {
@@ -46,15 +28,6 @@ func (s *PublicationReindexSuite) TestReindex() {
 	}
 
 	assert.Regexp(t, `Indexing to a new index\nIndexed .* publications...\nSwitching to new index...\nIndexing changes since start of reindex...\nDone`, stdOut)
-}
-
-func (s *PublicationReindexSuite) TearDownSuite() {
-	t := s.T()
-
-	_, _, err := purgeDataset("00000000000000000000000001")
-	if err != nil {
-		t.Fatal(err)
-	}
 }
 
 func TestPublicationReindexSuite(t *testing.T) {

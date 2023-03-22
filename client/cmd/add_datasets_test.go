@@ -262,13 +262,3 @@ func addDataset(jsonl string) (string, string, error) {
 
 	return string(addCmdOut), string(addCmdErr), nil
 }
-
-// TODO this doesn't work until we move to a change capture model
-// func (s *AddDatasetSuite) TearDownSuite() {
-// 	t := s.T()
-
-// 	_, _, err := purgeAllDatasets(true)
-// 	if err != nil {
-// 		t.Fatal(err)
-// 	}
-// }
