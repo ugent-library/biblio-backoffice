@@ -194,7 +194,7 @@ func (h *Handler) AddSingleImport(w http.ResponseWriter, r *http.Request, ctx Co
 	}
 
 	if validationErrs := p.Validate(); validationErrs != nil {
-		errors := form.Errors(localize.ValidationErrors(ctx.Locale, err.(validation.Errors)))
+		errors := form.Errors(localize.ValidationErrors(ctx.Locale, validationErrs.(validation.Errors)))
 		render.Layout(w, "layouts/default", "publication/pages/add_identifier", YieldAddSingle{
 			Context:    ctx,
 			PageTitle:  "Add - Publications - Biblio",

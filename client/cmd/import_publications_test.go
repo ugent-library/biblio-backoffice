@@ -24,8 +24,8 @@ func (s *ImportPublicationsSuite) TestValidImport() {
 	t := s.T()
 
 	json := `{
-		"id": "00000000000000000000000011",
-		"snapshot_id": "00000000000000000000000011",
+		"id": "00000000000000000000000041",
+		"snapshot_id": "00000000000000000000000041",
 		"title": "title",
 		"type": "dissertation",
 		"status": "public",
@@ -110,7 +110,7 @@ func (s *ImportPublicationsSuite) TestValidImport() {
 	assert.Regexp(t, `stored and indexed publication .* at line .*`, string(stdOut))
 
 	// Retrieve the publication
-	stdOut, _, err = getPublication("00000000000000000000000011")
+	stdOut, _, err = getPublication("00000000000000000000000041")
 
 	if err != nil {
 		t.Fatal(err)
@@ -165,7 +165,7 @@ func (s *ImportPublicationsSuite) TestImportEmptyJSONLInput() {
 
 func (s *ImportPublicationsSuite) TearDownSuite() {
 	t := s.T()
-	_, _, err := purgePublication("00000000000000000000000011")
+	_, _, err := purgePublication("00000000000000000000000041")
 
 	if err != nil {
 		t.Fatal(err)

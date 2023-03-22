@@ -28,19 +28,19 @@ func (s *GetPublicationSuite) TestGetPublication() {
 		t.Fatal(errFile)
 	}
 
-	// Add a publication
-	jsonl, err := toJSONL(file)
+	rec, _ := addKey(string(file), "id", "00000000000000000000000031")
+
+	jsonl, err := toJSONL([]byte(rec))
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, _, err = addPublication(jsonl)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	_, _, errAdd := addPublication(jsonl)
-	if errAdd != nil {
-		t.Fatal(errAdd)
-	}
-
 	// Retrieve the publication
-	stdOut, _, err := getPublication("00000000000000000000000001")
+	stdOut, _, err := getPublication("00000000000000000000000031")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -73,7 +73,7 @@ func (s *GetPublicationSuite) TestPublicationNotFound() {
 func (s *GetPublicationSuite) TearDownSuite() {
 	t := s.T()
 
-	_, _, err := purgePublication("00000000000000000000000001")
+	_, _, err := purgePublication("00000000000000000000000031")
 	if err != nil {
 		t.Fatal(err)
 	}
