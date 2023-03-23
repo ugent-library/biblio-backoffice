@@ -8,7 +8,6 @@ import (
 	"io"
 	"log"
 	"os"
-	"time"
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
@@ -22,68 +21,68 @@ func init() {
 var ValidateDatasetsCmd = &cobra.Command{
 	Use:   "validate",
 	Short: "Validate datasets",
-	Run: func(cmd *cobra.Command, args []string) {
-		ValidateDatasets(cmd, args)
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return ValidateDatasets(cmd, args)
 	},
 }
 
-func ValidateDatasets(cmd *cobra.Command, args []string) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
-	defer cancel()
+func ValidateDatasets(cmd *cobra.Command, args []string) error {
+	err := client.Transmit(config, func(c api.BiblioClient) error {
+		stream, err := c.ValidateDatasets(context.Background())
+		if err != nil {
+			log.Fatal(err)
+		}
+		waitc := make(chan struct{})
 
-	c, cnx, err := client.Create(ctx, config)
-	defer cnx.Close()
+		go func() {
+			for {
+				res, err := stream.Recv()
+				if err == io.EOF {
+					// read done.
+					close(waitc)
+					return
+				}
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				j, err := marshaller.Marshal(res)
+				if err != nil {
+					log.Fatal(err)
+				}
+				fmt.Printf("%s\n", j)
+			}
+		}()
+
+		reader := bufio.NewReader(os.Stdin)
+		for {
+			line, err := reader.ReadBytes('\n')
+			if err == io.EOF {
+				break
+			}
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			d := &api.Dataset{
+				Payload: line,
+			}
+
+			req := &api.ValidateDatasetsRequest{Dataset: d}
+			if err := stream.Send(req); err != nil {
+				log.Fatal(err)
+			}
+		}
+
+		stream.CloseSend()
+		<-waitc
+
+		return nil
+	})
 
 	if errors.Is(err, context.DeadlineExceeded) {
 		log.Fatal("ContextDeadlineExceeded: true")
 	}
 
-	stream, err := c.ValidateDatasets(context.Background())
-	if err != nil {
-		log.Fatal(err)
-	}
-	waitc := make(chan struct{})
-
-	go func() {
-		for {
-			res, err := stream.Recv()
-			if err == io.EOF {
-				// read done.
-				close(waitc)
-				return
-			}
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			j, err := marshaller.Marshal(res)
-			if err != nil {
-				log.Fatal(err)
-			}
-			fmt.Printf("%s\n", j)
-		}
-	}()
-
-	reader := bufio.NewReader(os.Stdin)
-	for {
-		line, err := reader.ReadBytes('\n')
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		d := &api.Dataset{
-			Payload: line,
-		}
-
-		req := &api.ValidateDatasetsRequest{Dataset: d}
-		if err := stream.Send(req); err != nil {
-			log.Fatal(err)
-		}
-	}
-
-	stream.CloseSend()
-	<-waitc
+	return err
 }
