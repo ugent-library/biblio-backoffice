@@ -1141,16 +1141,6 @@ func (s *server) CleanupPublications(req *api.CleanupPublicationsRequest, stream
 	return nil
 }
 
-type contributorChange struct {
-	PublicationID   string `json:"publication_id"`
-	ContributorID   string `json:"contributor_id"`
-	ContributorRole string `json:"contributor_role"`
-	Attribute       string `json:"type"`
-	From            string `json:"from"`
-	To              string `json:"to"`
-	Executed        bool   `json:"executed"`
-}
-
 func sendSyncPublicationContributorsError(stream api.Biblio_SyncPublicationContributorsServer, e error) error {
 	grpcErr := status.New(codes.Internal, e.Error())
 	return stream.Send(&api.SyncPublicationContributorsResponse{
@@ -1202,7 +1192,7 @@ func (s *server) SyncPublicationContributors(req *api.SyncPublicationContributor
 	repoErr := repository.EachPublication(func(p *models.Publication) bool {
 
 		faultyRecordId = p.ID
-		changes := make([]*contributorChange, 0)
+		changes := make([]*api.ContributorChange, 0)
 
 		for _, role := range []string{"author", "editor", "supervisor"} {
 
@@ -1232,9 +1222,9 @@ func (s *server) SyncPublicationContributors(req *api.SyncPublicationContributor
 				}
 
 				if c.FirstName != person.FirstName {
-					changes = append(changes, &contributorChange{
-						PublicationID:   p.ID,
-						ContributorID:   c.ID,
+					changes = append(changes, &api.ContributorChange{
+						PublicationId:   p.ID,
+						ContributorId:   c.ID,
 						ContributorRole: role,
 						Attribute:       "contributor.first_name",
 						From:            c.FirstName,
@@ -1243,9 +1233,9 @@ func (s *server) SyncPublicationContributors(req *api.SyncPublicationContributor
 					c.FirstName = person.FirstName
 				}
 				if c.LastName != person.LastName {
-					changes = append(changes, &contributorChange{
-						PublicationID:   p.ID,
-						ContributorID:   c.ID,
+					changes = append(changes, &api.ContributorChange{
+						PublicationId:   p.ID,
+						ContributorId:   c.ID,
 						ContributorRole: role,
 						Attribute:       "contributor.last_name",
 						From:            c.LastName,
@@ -1257,9 +1247,9 @@ func (s *server) SyncPublicationContributors(req *api.SyncPublicationContributor
 				// wait until format is the same everywhere
 				/*
 					if c.FullName != person.FullName {
-						changes = append(changes, &contributorChange{
-							PublicationID:   p.ID,
-							ContributorID:   c.ID,
+						changes = append(changes, &api.ContributorChange{
+							PublicationId:   p.ID,
+							ContributorId:   c.ID,
 							ContributorRole: role,
 							Attribute:       "contributor.full_name",
 							From:            c.FullName,
@@ -1270,9 +1260,9 @@ func (s *server) SyncPublicationContributors(req *api.SyncPublicationContributor
 				*/
 
 				if c.ORCID != person.ORCID {
-					changes = append(changes, &contributorChange{
-						PublicationID:   p.ID,
-						ContributorID:   c.ID,
+					changes = append(changes, &api.ContributorChange{
+						PublicationId:   p.ID,
+						ContributorId:   c.ID,
 						ContributorRole: role,
 						Attribute:       "contributor.orcid",
 						From:            c.ORCID,
@@ -1282,9 +1272,9 @@ func (s *server) SyncPublicationContributors(req *api.SyncPublicationContributor
 				}
 
 				if !reflect.DeepEqual(c.UGentID, person.UGentID) {
-					changes = append(changes, &contributorChange{
-						PublicationID:   p.ID,
-						ContributorID:   c.ID,
+					changes = append(changes, &api.ContributorChange{
+						PublicationId:   p.ID,
+						ContributorId:   c.ID,
 						ContributorRole: role,
 						Attribute:       "contributor.ugent_id",
 						From:            strings.Join(c.UGentID, ","),
@@ -1306,9 +1296,9 @@ func (s *server) SyncPublicationContributors(req *api.SyncPublicationContributor
 				sort.Strings(newDeps)
 
 				if !reflect.DeepEqual(oldDeps, newDeps) {
-					changes = append(changes, &contributorChange{
-						PublicationID:   p.ID,
-						ContributorID:   c.ID,
+					changes = append(changes, &api.ContributorChange{
+						PublicationId:   p.ID,
+						ContributorId:   c.ID,
 						ContributorRole: role,
 						Attribute:       "department",
 						From:            strings.Join(oldDeps, ","),
@@ -1381,10 +1371,9 @@ func (s *server) SyncPublicationContributors(req *api.SyncPublicationContributor
 
 		// list and send all changes to the client
 		for _, change := range changes {
-			bytes, _ := json.Marshal(change)
 			if err := stream.Send(&api.SyncPublicationContributorsResponse{
 				Response: &api.SyncPublicationContributorsResponse_Message{
-					Message: string(bytes),
+					Message: change,
 				},
 			}); err != nil {
 				faultyRecordErr = err

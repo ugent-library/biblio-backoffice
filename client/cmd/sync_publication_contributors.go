@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"io"
 	"log"
@@ -71,8 +72,9 @@ func SyncPublicationContributors(cmd *cobra.Command, args []string) (err error) 
 				continue
 			}
 
-			if rr := res.GetMessage(); rr != "" {
-				cmd.Printf("%s\n", rr)
+			if rr := res.GetMessage(); rr != nil {
+				bytes, _ := json.Marshal(rr)
+				cmd.Printf("%s\n", string(bytes))
 			}
 		}
 	}()

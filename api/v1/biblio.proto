@@ -223,9 +223,19 @@ message CleanupPublicationsResponse {
 message SyncPublicationContributorsRequest{
     bool noop = 1;
 }
+
+message ContributorChange {
+	string publication_id = 1;
+	string contributor_id = 2;
+	string contributor_role = 3;
+	string attribute = 4;
+	string from = 5;
+	string to = 6;
+	bool executed = 7;
+}
 message SyncPublicationContributorsResponse{
     oneof response {
-        string message = 1;
+        ContributorChange message = 1;
         google.rpc.Status error = 2;
     }
 }
