@@ -1160,6 +1160,18 @@ func sendSyncPublicationContributorsError(stream api.Biblio_SyncPublicationContr
 	})
 }
 
+// SyncPublicationContributors synchronizes data stored in the authority table "people" with the related
+// records as stored in publications under "author", "supervisor" and "editor", which we all call "contributors".
+// More specifically, every contributor in a publication that has an attribute "id",
+// is expected to have a related record with that id in the authority table.
+//
+// The attributes that are copied from the authority table are:
+// - first_name
+// - last_name
+// (- full_name) (TODO: see below)
+// - orcid
+// - ugent id's
+// - department id's (and their name)
 func (s *server) SyncPublicationContributors(req *api.SyncPublicationContributorsRequest, stream api.Biblio_SyncPublicationContributorsServer) error {
 
 	ctx := context.Background()
@@ -1218,6 +1230,44 @@ func (s *server) SyncPublicationContributors(req *api.SyncPublicationContributor
 					// this is not fatal error, so keep going
 					continue
 				}
+
+				if c.FirstName != person.FirstName {
+					changes = append(changes, &contributorChange{
+						PublicationID:   p.ID,
+						ContributorID:   c.ID,
+						ContributorRole: role,
+						Attribute:       "contributor.first_name",
+						From:            c.FirstName,
+						To:              person.FirstName,
+					})
+					c.FirstName = person.FirstName
+				}
+				if c.LastName != person.LastName {
+					changes = append(changes, &contributorChange{
+						PublicationID:   p.ID,
+						ContributorID:   c.ID,
+						ContributorRole: role,
+						Attribute:       "contributor.last_name",
+						From:            c.LastName,
+						To:              person.LastName,
+					})
+					c.LastName = person.LastName
+				}
+
+				// wait until format is the same everywhere
+				/*
+					if c.FullName != person.FullName {
+						changes = append(changes, &contributorChange{
+							PublicationID:   p.ID,
+							ContributorID:   c.ID,
+							ContributorRole: role,
+							Attribute:       "contributor.full_name",
+							From:            c.FullName,
+							To:              person.FullName,
+						})
+						c.FullName = person.FullName
+					}
+				*/
 
 				if c.ORCID != person.ORCID {
 					changes = append(changes, &contributorChange{
