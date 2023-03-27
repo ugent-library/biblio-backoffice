@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"log"
-	"time"
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
@@ -34,35 +33,33 @@ func PurgeAllPublications(cmd *cobra.Command, args []string) error {
 		return nil
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
-	defer cancel()
+	err := client.Transmit(config, func(c api.BiblioClient) error {
+		req := &api.PurgeAllPublicationsRequest{
+			Confirm: true,
+		}
+		res, err := c.PurgeAllPublications(context.Background(), req)
 
-	c, cnx, err := client.Create(ctx, config)
-	defer cnx.Close()
+		if err != nil {
+			if st, ok := status.FromError(err); ok {
+				return errors.New(st.Message())
+			}
+		}
+
+		if ge := res.GetError(); ge != nil {
+			sre := status.FromProto(ge)
+			cmd.Printf("%s\n", sre.Message())
+		}
+
+		if res.GetOk() {
+			cmd.Printf("purged all publications")
+		}
+
+		return nil
+	})
 
 	if errors.Is(err, context.DeadlineExceeded) {
 		log.Fatal("ContextDeadlineExceeded: true")
 	}
 
-	req := &api.PurgeAllPublicationsRequest{
-		Confirm: true,
-	}
-	res, err := c.PurgeAllPublications(context.Background(), req)
-
-	if err != nil {
-		if st, ok := status.FromError(err); ok {
-			return errors.New(st.Message())
-		}
-	}
-
-	if ge := res.GetError(); ge != nil {
-		sre := status.FromProto(ge)
-		cmd.Printf("%s\n", sre.Message())
-	}
-
-	if res.GetOk() {
-		cmd.Printf("purged all publications")
-	}
-
-	return nil
+	return err
 }

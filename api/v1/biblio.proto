@@ -65,7 +65,10 @@ message AddFileRequest {
 }
 
 message AddFileResponse {
-    string sha256 = 1;
+    oneof response {
+        string sha256 = 1;
+        google.rpc.Status error = 2;
+    }
 }
 
 message GetPublicationRequest {

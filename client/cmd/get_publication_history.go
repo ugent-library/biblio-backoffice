@@ -5,7 +5,6 @@ import (
 	"errors"
 	"io"
 	"log"
-	"time"
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
@@ -27,47 +26,45 @@ var GetPublicationHistoryCmd = &cobra.Command{
 }
 
 func GetPublicationHistory(cmd *cobra.Command, args []string) error {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
-	defer cancel()
+	err := client.Transmit(config, func(c api.BiblioClient) error {
+		req := &api.GetPublicationHistoryRequest{Id: args[0]}
+		stream, err := c.GetPublicationHistory(context.Background(), req)
+		if err != nil {
+			return err
+		}
 
-	c, cnx, err := client.Create(ctx, config)
-	defer cnx.Close()
+		for {
+			res, err := stream.Recv()
+			if err == io.EOF {
+				break
+			}
+
+			// return gRPC level error
+			if err != nil {
+				if st, ok := status.FromError(err); ok {
+					return errors.New(st.Message())
+				}
+
+				return err
+			}
+
+			// Application level error
+			if ge := res.GetError(); ge != nil {
+				sre := status.FromProto(ge)
+				cmd.Printf("%s\n", sre.Message())
+			}
+
+			if rr := res.GetPublication(); rr != nil {
+				cmd.Printf("%s\n", rr.GetPayload())
+			}
+		}
+
+		return nil
+	})
 
 	if errors.Is(err, context.DeadlineExceeded) {
 		log.Fatal("ContextDeadlineExceeded: true")
 	}
 
-	req := &api.GetPublicationHistoryRequest{Id: args[0]}
-	stream, err := c.GetPublicationHistory(context.Background(), req)
-	if err != nil {
-		return err
-	}
-
-	for {
-		res, err := stream.Recv()
-		if err == io.EOF {
-			break
-		}
-
-		// return gRPC level error
-		if err != nil {
-			if st, ok := status.FromError(err); ok {
-				return errors.New(st.Message())
-			}
-
-			return err
-		}
-
-		// Application level error
-		if ge := res.GetError(); ge != nil {
-			sre := status.FromProto(ge)
-			cmd.Printf("%s\n", sre.Message())
-		}
-
-		if rr := res.GetPublication(); rr != nil {
-			cmd.Printf("%s\n", rr.GetPayload())
-		}
-	}
-
-	return nil
+	return err
 }
