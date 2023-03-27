@@ -72,7 +72,7 @@ func SyncPublicationContributors(cmd *cobra.Command, args []string) (err error) 
 				continue
 			}
 
-			if rr := res.GetMessage(); rr != nil {
+			if rr := res.GetContributorChange(); rr != nil {
 				bytes, _ := json.Marshal(rr)
 				cmd.Printf("%s\n", string(bytes))
 			}

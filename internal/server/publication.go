@@ -1372,8 +1372,8 @@ func (s *server) SyncPublicationContributors(req *api.SyncPublicationContributor
 		// list and send all changes to the client
 		for _, change := range changes {
 			if err := stream.Send(&api.SyncPublicationContributorsResponse{
-				Response: &api.SyncPublicationContributorsResponse_Message{
-					Message: change,
+				Response: &api.SyncPublicationContributorsResponse_ContributorChange{
+					ContributorChange: change,
 				},
 			}); err != nil {
 				faultyRecordErr = err

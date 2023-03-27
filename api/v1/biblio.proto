@@ -235,7 +235,7 @@ message ContributorChange {
 }
 message SyncPublicationContributorsResponse{
     oneof response {
-        ContributorChange message = 1;
+        ContributorChange contributor_change = 1;
         google.rpc.Status error = 2;
     }
 }
