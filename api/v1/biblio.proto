@@ -16,6 +16,7 @@ import "google/rpc/status.proto";
 service Biblio {
     rpc GetFile(GetFileRequest) returns (stream GetFileResponse);
     rpc AddFile(stream AddFileRequest) returns (AddFileResponse);
+    rpc ExistsFile(ExistsFileRequest) returns (ExistsFileResponse);
     rpc GetPublication(GetPublicationRequest) returns (GetPublicationResponse);
     rpc GetAllPublications(GetAllPublicationsRequest) returns (stream GetAllPublicationsResponse);
     rpc SearchPublications(SearchPublicationsRequest) returns (SearchPublicationsResponse);
@@ -57,6 +58,14 @@ message GetFileRequest {
 
 message GetFileResponse {
     bytes chunk = 1;
+}
+
+message ExistsFileRequest {
+    string sha256 = 1;
+}
+
+message ExistsFileResponse {
+    bool exists = 1;
 }
 
 message AddFileRequest {

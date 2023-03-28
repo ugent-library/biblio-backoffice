@@ -24,6 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type BiblioClient interface {
 	GetFile(ctx context.Context, in *GetFileRequest, opts ...grpc.CallOption) (Biblio_GetFileClient, error)
 	AddFile(ctx context.Context, opts ...grpc.CallOption) (Biblio_AddFileClient, error)
+	ExistsFile(ctx context.Context, in *ExistsFileRequest, opts ...grpc.CallOption) (*ExistsFileResponse, error)
 	GetPublication(ctx context.Context, in *GetPublicationRequest, opts ...grpc.CallOption) (*GetPublicationResponse, error)
 	GetAllPublications(ctx context.Context, in *GetAllPublicationsRequest, opts ...grpc.CallOption) (Biblio_GetAllPublicationsClient, error)
 	SearchPublications(ctx context.Context, in *SearchPublicationsRequest, opts ...grpc.CallOption) (*SearchPublicationsResponse, error)
@@ -123,6 +124,15 @@ func (x *biblioAddFileClient) CloseAndRecv() (*AddFileResponse, error) {
 		return nil, err
 	}
 	return m, nil
+}
+
+func (c *biblioClient) ExistsFile(ctx context.Context, in *ExistsFileRequest, opts ...grpc.CallOption) (*ExistsFileResponse, error) {
+	out := new(ExistsFileResponse)
+	err := c.cc.Invoke(ctx, "/biblio.v1.Biblio/ExistsFile", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *biblioClient) GetPublication(ctx context.Context, in *GetPublicationRequest, opts ...grpc.CallOption) (*GetPublicationResponse, error) {
@@ -672,6 +682,7 @@ func (c *biblioClient) Relate(ctx context.Context, in *RelateRequest, opts ...gr
 type BiblioServer interface {
 	GetFile(*GetFileRequest, Biblio_GetFileServer) error
 	AddFile(Biblio_AddFileServer) error
+	ExistsFile(context.Context, *ExistsFileRequest) (*ExistsFileResponse, error)
 	GetPublication(context.Context, *GetPublicationRequest) (*GetPublicationResponse, error)
 	GetAllPublications(*GetAllPublicationsRequest, Biblio_GetAllPublicationsServer) error
 	SearchPublications(context.Context, *SearchPublicationsRequest) (*SearchPublicationsResponse, error)
@@ -709,6 +720,9 @@ func (UnimplementedBiblioServer) GetFile(*GetFileRequest, Biblio_GetFileServer) 
 }
 func (UnimplementedBiblioServer) AddFile(Biblio_AddFileServer) error {
 	return status.Errorf(codes.Unimplemented, "method AddFile not implemented")
+}
+func (UnimplementedBiblioServer) ExistsFile(context.Context, *ExistsFileRequest) (*ExistsFileResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ExistsFile not implemented")
 }
 func (UnimplementedBiblioServer) GetPublication(context.Context, *GetPublicationRequest) (*GetPublicationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPublication not implemented")
@@ -843,6 +857,24 @@ func (x *biblioAddFileServer) Recv() (*AddFileRequest, error) {
 		return nil, err
 	}
 	return m, nil
+}
+
+func _Biblio_ExistsFile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExistsFileRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BiblioServer).ExistsFile(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/biblio.v1.Biblio/ExistsFile",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BiblioServer).ExistsFile(ctx, req.(*ExistsFileRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _Biblio_GetPublication_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -1374,6 +1406,10 @@ var Biblio_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "biblio.v1.Biblio",
 	HandlerType: (*BiblioServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "ExistsFile",
+			Handler:    _Biblio_ExistsFile_Handler,
+		},
 		{
 			MethodName: "GetPublication",
 			Handler:    _Biblio_GetPublication_Handler,

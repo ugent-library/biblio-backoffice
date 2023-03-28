@@ -2,6 +2,7 @@ package server
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"io"
 	"os"
@@ -43,6 +44,21 @@ func (s *server) GetFile(req *api.GetFileRequest, stream api.Biblio_GetFileServe
 	}
 
 	return nil
+}
+
+func (s *server) ExistsFile(ctx context.Context, req *api.ExistsFileRequest) (*api.ExistsFileResponse, error) {
+	fPath := s.services.FileStore.FilePath(req.Sha256)
+	f, err := os.Open(fPath)
+	if err != nil {
+		return &api.ExistsFileResponse{
+			Exists: false,
+		}, nil
+	}
+	defer f.Close()
+
+	return &api.ExistsFileResponse{
+		Exists: true,
+	}, nil
 }
 
 func (s *server) AddFile(stream api.Biblio_AddFileServer) error {
