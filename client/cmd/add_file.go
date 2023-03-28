@@ -23,8 +23,21 @@ func init() {
 var fileBufSize = 524288
 
 var AddFileCmd = &cobra.Command{
-	Use:   "add",
-	Short: "Add file",
+	Use:   "add [file]",
+	Short: "Add file by path",
+	Long: `
+	Adds one file to the filestore.
+	File provided is the file added to the filestore.
+
+	Writes id and path to the stdout:
+
+		<id> <path>
+
+	Can easily be checked as following:
+		$ ./biblio-backoffice file add /path/to/file.txt > /path/to/id.txt
+		$ sha256sum -c /path/to/id.txt
+	`,
+	Args: cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return AddFile(cmd, args)
 	},
@@ -37,7 +50,15 @@ func AddFile(cmd *cobra.Command, args []string) error {
 			return fmt.Errorf("could not create a grpc stream: %w", err)
 		}
 
-		r := bufio.NewReader(os.Stdin)
+		path := args[0]
+		f, err := os.Open(path)
+		if err != nil {
+			return fmt.Errorf("cannot open file: %w", err)
+		}
+		defer f.Close()
+
+		r := bufio.NewReader(f)
+
 		buf := make([]byte, fileBufSize)
 
 		for {
@@ -65,7 +86,7 @@ func AddFile(cmd *cobra.Command, args []string) error {
 			return fmt.Errorf("could not close a grpc stream: %w", err)
 		}
 
-		cmd.Printf(res.GetSha256())
+		cmd.Printf("%s %s", res.GetSha256(), path)
 
 		return nil
 	})
