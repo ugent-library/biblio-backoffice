@@ -19,9 +19,6 @@ func init() {
 	FileCmd.AddCommand(AddFileCmd)
 }
 
-// Set file buffer size
-var fileBufSize = 524288
-
 var AddFileCmd = &cobra.Command{
 	Use:   "add [file]",
 	Short: "Add file by path",

@@ -2,6 +2,9 @@ package cmd
 
 import "github.com/spf13/cobra"
 
+// Set file buffer size
+var fileBufSize = 524288
+
 func init() {
 	rootCmd.AddCommand(FileCmd)
 }
