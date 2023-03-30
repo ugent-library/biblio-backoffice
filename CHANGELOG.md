@@ -7,11 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- #1039: Unable to add contributors with null values in authority database
-
 ### Added
 
+- gRPC client is now in a usable state
+
 ### Fixed
+
+- #1039: Make interaction with authority database more robust
+- Various small ux fixes
 
 ## [v1.0.24] - 2023-03-21
 

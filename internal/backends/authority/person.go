@@ -19,7 +19,7 @@ func (c *Client) GetPerson(id string) (*models.Person, error) {
 	var record bson.M
 	err := c.mongo.Database("authority").Collection("person").FindOne(
 		context.Background(),
-		bson.M{"_id": id}).Decode(&record)
+		bson.M{"ids": id}).Decode(&record)
 	if err == mongo.ErrNoDocuments {
 		return nil, backends.ErrNotFound
 	}
