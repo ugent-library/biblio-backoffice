@@ -1,4 +1,4 @@
-package client
+package connection
 
 import (
 	"context"
@@ -11,7 +11,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-func Transmit(config Config, t func(c api.BiblioClient) error) error {
+func Handle(config Config, t func(c api.BiblioClient) error) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 

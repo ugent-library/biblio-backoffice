@@ -13,7 +13,7 @@ import (
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
-	"github.com/ugent-library/biblio-backoffice/client/client"
+	cnx "github.com/ugent-library/biblio-backoffice/client/connection"
 	"google.golang.org/grpc/status"
 )
 
@@ -107,7 +107,7 @@ func ImportFile(cmd *cobra.Command, args []string) error {
 
 		var fileExists bool
 
-		txErr = client.Transmit(config, func(c api.BiblioClient) error {
+		txErr = cnx.Handle(config, func(c api.BiblioClient) error {
 			req := &api.ExistsFileRequest{Sha256: importFile.Sha256}
 			res, err := c.ExistsFile(context.Background(), req)
 
@@ -134,7 +134,7 @@ func ImportFile(cmd *cobra.Command, args []string) error {
 			continue
 		}
 
-		txErr = client.Transmit(config, func(c api.BiblioClient) error {
+		txErr = cnx.Handle(config, func(c api.BiblioClient) error {
 			stream, err := c.AddFile(context.Background())
 			if err != nil {
 				return fmt.Errorf("could not create a grpc stream: %w", err)
@@ -185,7 +185,7 @@ func ImportFile(cmd *cobra.Command, args []string) error {
 				log.Fatal("ContextDeadlineExceeded: true")
 			}
 
-			cmd.Printf("%w", txErr.Error())
+			cmd.Printf("%s", txErr.Error())
 			lineNo++
 			continue
 		}

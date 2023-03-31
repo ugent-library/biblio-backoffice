@@ -9,7 +9,7 @@ import (
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
-	"github.com/ugent-library/biblio-backoffice/client/client"
+	cnx "github.com/ugent-library/biblio-backoffice/client/connection"
 	"github.com/ugent-library/biblio-backoffice/internal/models"
 )
 
@@ -30,7 +30,7 @@ var SearchDatasetsCmd = &cobra.Command{
 }
 
 func SearchDatasets(cmd *cobra.Command, args []string) error {
-	err := client.Transmit(config, func(c api.BiblioClient) error {
+	err := cnx.Handle(config, func(c api.BiblioClient) error {
 		query, _ := cmd.Flags().GetString("query")
 		limit, _ := cmd.Flags().GetInt32("limit")
 		offset, _ := cmd.Flags().GetInt32("offset")

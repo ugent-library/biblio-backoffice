@@ -7,7 +7,7 @@ import (
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
-	"github.com/ugent-library/biblio-backoffice/client/client"
+	cnx "github.com/ugent-library/biblio-backoffice/client/connection"
 	"google.golang.org/grpc/status"
 )
 
@@ -25,7 +25,7 @@ var PurgePublicationCmd = &cobra.Command{
 }
 
 func PurgePublication(cmd *cobra.Command, args []string) error {
-	err := client.Transmit(config, func(c api.BiblioClient) error {
+	err := cnx.Handle(config, func(c api.BiblioClient) error {
 		id := args[0]
 		req := &api.PurgePublicationRequest{Id: id}
 		res, err := c.PurgePublication(context.Background(), req)

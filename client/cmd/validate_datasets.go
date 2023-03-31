@@ -11,7 +11,7 @@ import (
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
-	"github.com/ugent-library/biblio-backoffice/client/client"
+	cnx "github.com/ugent-library/biblio-backoffice/client/connection"
 )
 
 func init() {
@@ -27,7 +27,7 @@ var ValidateDatasetsCmd = &cobra.Command{
 }
 
 func ValidateDatasets(cmd *cobra.Command, args []string) error {
-	err := client.Transmit(config, func(c api.BiblioClient) error {
+	err := cnx.Handle(config, func(c api.BiblioClient) error {
 		stream, err := c.ValidateDatasets(context.Background())
 		if err != nil {
 			log.Fatal(err)

@@ -1,4 +1,4 @@
-package client
+package connection
 
 type Config struct {
 	Username string

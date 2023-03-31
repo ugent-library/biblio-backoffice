@@ -10,7 +10,7 @@ import (
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
-	"github.com/ugent-library/biblio-backoffice/client/client"
+	cnx "github.com/ugent-library/biblio-backoffice/client/connection"
 	"google.golang.org/grpc/status"
 )
 
@@ -28,7 +28,7 @@ var GetFileCmd = &cobra.Command{
 }
 
 func GetFile(cmd *cobra.Command, args []string) error {
-	err := client.Transmit(config, func(c api.BiblioClient) error {
+	err := cnx.Handle(config, func(c api.BiblioClient) error {
 		req := &api.GetFileRequest{Sha256: args[0]}
 		stream, err := c.GetFile(context.Background(), req)
 		if err != nil {

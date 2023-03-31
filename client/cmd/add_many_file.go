@@ -11,7 +11,7 @@ import (
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
-	"github.com/ugent-library/biblio-backoffice/client/client"
+	cnx "github.com/ugent-library/biblio-backoffice/client/connection"
 	"google.golang.org/grpc/status"
 )
 
@@ -64,7 +64,7 @@ func AddManyFile(cmd *cobra.Command, args []string) error {
 		}
 		defer f.Close()
 
-		txErr = client.Transmit(config, func(c api.BiblioClient) error {
+		txErr = cnx.Handle(config, func(c api.BiblioClient) error {
 			stream, err := c.AddFile(context.Background())
 			if err != nil {
 				return fmt.Errorf("could not create a grpc stream: %w", err)
