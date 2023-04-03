@@ -1141,15 +1141,6 @@ func (s *server) CleanupPublications(req *api.CleanupPublicationsRequest, stream
 	return nil
 }
 
-func sendSyncPublicationContributorsError(stream api.Biblio_SyncPublicationContributorsServer, e error) error {
-	grpcErr := status.New(codes.Internal, e.Error())
-	return stream.Send(&api.SyncPublicationContributorsResponse{
-		Response: &api.SyncPublicationContributorsResponse_Error{
-			Error: grpcErr.Proto(),
-		},
-	})
-}
-
 // SyncPublicationContributors synchronizes data stored in the authority table "people" with the related
 // records as stored in publications under "author", "supervisor" and "editor", which we all call "contributors".
 // More specifically, every contributor in a publication that has an attribute "id",
@@ -1168,6 +1159,15 @@ func (s *server) SyncPublicationContributors(req *api.SyncPublicationContributor
 	repository := s.services.Repository
 	personService := s.services.PersonService
 	orgService := s.services.OrganizationService
+
+	sendSyncPublicationContributorsError := func(stream api.Biblio_SyncPublicationContributorsServer, e error) error {
+		grpcErr := status.New(codes.Internal, e.Error())
+		return stream.Send(&api.SyncPublicationContributorsResponse{
+			Response: &api.SyncPublicationContributorsResponse_Error{
+				Error: grpcErr.Proto(),
+			},
+		})
+	}
 
 	bi, err := s.services.PublicationSearchService.NewBulkIndexer(backends.BulkIndexerConfig{
 		OnError: func(err error) {
