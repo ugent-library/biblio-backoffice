@@ -142,6 +142,8 @@ BIBLIO_BACKOFFICE_PG_CONN (default: postgres://localhost:5432/biblio_backoffice?
 BIBLIO_BACKOFFICE_PUBLICATION_INDEX (default: biblio_backoffice_publications)
 BIBLIO_BACKOFFICE_DATASET_INDEX (default: biblio_backoffice_datasets)
 BIBLIO_BACKOFFICE_ES6_URL (default: http://localhost:9200)
+BIBLIO_BACKOFFICE_MONGODB_URL (default: mongodb://localhost:27017/?directConnection=true&serverSelectionTimeoutMS=2000)
+BIBLIO_BACKOFFICE_FRONTEND_ES6_URL (default: http://localhost: 9200)
 ```
 
 The following variables may be set:
@@ -159,7 +161,19 @@ BIBLIO_BACKOFFICE_HDL_SRV_USERNAME
 BIBLIO_BACKOFFICE_HDL_SRV_PASSWORD
 ```
 
-For the gRPC server and client:
+For the gRPC server:
+
+```bash
+BIBLIO_BACKOFFICE_HOST
+BIBLIO_BACKOFFICE_PORT
+BIBLIO_BACKOFFICE_ADMIN_USERNAME
+BIBLIO_BACKOFFICE_ADMIN_PASSWORD
+BIBLIO_BACKOFFICE_CURATOR_USERNAME
+BIBLIO_BACKOFFICE_CURATOR_PASSWORD
+BIBLIO_BACKOFFICE_INSECURE (default: false)
+```
+
+And the gRPC client:
 
 ```bash
 BIBLIO_BACKOFFICE_HOST
