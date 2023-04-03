@@ -7,7 +7,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/ugent-library/biblio-backoffice/client/client"
+	cnx "github.com/ugent-library/biblio-backoffice/client/connection"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -15,7 +15,7 @@ var (
 	marshaller   = protojson.MarshalOptions{UseProtoNames: true}
 	unmarshaller = protojson.UnmarshalOptions{}
 	configFile   string
-	config       client.Config
+	config       cnx.Config
 )
 
 const (

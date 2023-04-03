@@ -8,7 +8,7 @@ import (
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
-	"github.com/ugent-library/biblio-backoffice/client/client"
+	cnx "github.com/ugent-library/biblio-backoffice/client/connection"
 	"google.golang.org/grpc/status"
 )
 
@@ -26,7 +26,7 @@ var TransferPublicationsCmd = &cobra.Command{
 }
 
 func TransferPublications(cmd *cobra.Command, args []string) error {
-	err := client.Transmit(config, func(c api.BiblioClient) error {
+	err := cnx.Handle(config, func(c api.BiblioClient) error {
 		source := args[0]
 		dest := args[1]
 

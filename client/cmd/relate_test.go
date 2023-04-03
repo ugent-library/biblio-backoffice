@@ -99,13 +99,10 @@ func (s *RelateSuite) TestRelateValid() {
 func (s *RelateSuite) TestRelateNonExistingPublication() {
 	t := s.T()
 
-	stdOut, stdErr, err := relate("notexists", "00000000000000000000000001")
+	stdOut, _, err := relate("notexists", "00000000000000000000000001")
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	t.Log(stdOut)
-	t.Log(stdErr)
 
 	assert.Equal(t, "could not find publication with id notexists", stdOut)
 
@@ -114,13 +111,10 @@ func (s *RelateSuite) TestRelateNonExistingPublication() {
 func (s *RelateSuite) TestRelateNonExistingDataset() {
 	t := s.T()
 
-	stdOut, stdErr, err := relate("00000000000000000000000061", "notexists")
+	stdOut, _, err := relate("00000000000000000000000061", "notexists")
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	t.Log(stdOut)
-	t.Log(stdErr)
 
 	assert.Equal(t, "could not find dataset with id notexists", stdOut)
 }
