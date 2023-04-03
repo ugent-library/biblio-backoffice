@@ -1160,7 +1160,7 @@ func (s *server) SyncPublicationContributors(req *api.SyncPublicationContributor
 	personService := s.services.PersonService
 	orgService := s.services.OrganizationService
 
-	sendSyncPublicationContributorsError := func(stream api.Biblio_SyncPublicationContributorsServer, e error) error {
+	sendErr := func(stream api.Biblio_SyncPublicationContributorsServer, e error) error {
 		grpcErr := status.New(codes.Internal, e.Error())
 		return stream.Send(&api.SyncPublicationContributorsResponse{
 			Response: &api.SyncPublicationContributorsResponse_Error{
@@ -1171,10 +1171,10 @@ func (s *server) SyncPublicationContributors(req *api.SyncPublicationContributor
 
 	bi, err := s.services.PublicationSearchService.NewBulkIndexer(backends.BulkIndexerConfig{
 		OnError: func(err error) {
-			sendSyncPublicationContributorsError(stream, err)
+			sendErr(stream, err)
 		},
 		OnIndexError: func(id string, err error) {
-			sendSyncPublicationContributorsError(stream, err)
+			sendErr(stream, err)
 		},
 	})
 
@@ -1184,14 +1184,11 @@ func (s *server) SyncPublicationContributors(req *api.SyncPublicationContributor
 
 	defer bi.Close(ctx)
 
-	// faultyRecordErr: error that stores why a specific record stopped the loop
-	var faultyRecordErr error
-	var faultyRecordId string
+	var callbackErr error
 
-	// repoErr: error that stores why the loop could not even start
-	repoErr := repository.EachPublication(func(p *models.Publication) bool {
+	// startErr: error that stores why the loop could not even start
+	startErr := repository.EachPublication(func(p *models.Publication) bool {
 
-		faultyRecordId = p.ID
 		changes := make([]*api.ContributorChange, 0)
 
 		for _, role := range []string{"author", "editor", "supervisor"} {
@@ -1209,10 +1206,10 @@ func (s *server) SyncPublicationContributors(req *api.SyncPublicationContributor
 
 				// person is gone from the authority table
 				if err != nil {
-					e := sendSyncPublicationContributorsError(stream, fmt.Errorf("unable to fetch person with id '%s' with role '%s' for publication with id '%s': %s", c.ID, role, p.ID, err))
+					e := sendErr(stream, fmt.Errorf("unable to fetch person with id '%s' with role '%s' for publication with id '%s': %s", c.ID, role, p.ID, err))
 
 					if e != nil {
-						faultyRecordErr = e
+						callbackErr = e
 						// unable to send error: stop the loop
 						return false
 					}
@@ -1311,9 +1308,9 @@ func (s *server) SyncPublicationContributors(req *api.SyncPublicationContributor
 						if orgErr == nil {
 							newDep.Name = org.Name
 						} else {
-							err := sendSyncPublicationContributorsError(stream, fmt.Errorf("unable to fetch organization with id '%s' for publication with id '%s': %s", pd.ID, p.ID, orgErr))
+							err := sendErr(stream, fmt.Errorf("unable to fetch organization with id '%s' for publication with id '%s': %s", pd.ID, p.ID, orgErr))
 							if err != nil {
-								faultyRecordErr = err
+								callbackErr = err
 								// unable to send error: stop the loop
 								return false
 							}
@@ -1330,53 +1327,59 @@ func (s *server) SyncPublicationContributors(req *api.SyncPublicationContributor
 			}
 		}
 
-		if !req.Noop {
+		if err := p.Validate(); err != nil {
 
-			// TODO: wrap validation error in a way so we can track which publication it was
-			if err := p.Validate(); err != nil {
-
-				for _, err := range err.(validation.Errors) {
-					if e := sendSyncPublicationContributorsError(stream, err); e != nil {
-						faultyRecordErr = e
-						// unable to send error: stop the loop
-						return false
-					}
-				}
-
-			} else if err := s.services.Repository.UpdatePublication(p.SnapshotID, p, nil); err != nil {
-
-				e := sendSyncPublicationContributorsError(stream, fmt.Errorf("failed to update publication[snapshot_id: %s, id: %s] : %v", p.SnapshotID, p.ID, err))
-				if e != nil {
-					faultyRecordErr = err
+			for _, validationErr := range err.(validation.Errors) {
+				if sErr := sendErr(stream, validationErr); sErr != nil {
+					callbackErr = sErr
 					// unable to send error: stop the loop
 					return false
 				}
+			}
 
-				// unable to save record: stop the loop
-				return false
+			// validation failed: continue to next record
+			return true
+
+		}
+
+		if !req.Noop {
+
+			if err := s.services.Repository.UpdatePublication(p.SnapshotID, p, nil); err != nil {
+
+				// unable to send error: stop the loop
+				e := sendErr(stream, fmt.Errorf("failed to update publication[snapshot_id: %s, id: %s] : %v", p.SnapshotID, p.ID, err))
+				if e != nil {
+					callbackErr = err
+					return false
+				}
+
+				// update failed: continue to next record
+				return true
 
 			} else if err := bi.Index(ctx, p); err != nil {
 
-				e := sendSyncPublicationContributorsError(stream, fmt.Errorf("failed to index publication[snapshot_id: %s, id: %s] : %v", p.SnapshotID, p.ID, err))
+				e := sendErr(stream, fmt.Errorf("failed to index publication[snapshot_id: %s, id: %s] : %v", p.SnapshotID, p.ID, err))
 				if e != nil {
-					faultyRecordErr = err
+					callbackErr = err
 					// unable to send error: stop the loop
 					return false
 				}
 
-				// indexation failed: keep going
+				// indexation failed: continue to next record
+				return true
 			}
 
 		}
 
-		// list and send all changes to the client
+		// validation, update and indexation ok: list and send all changes to the client
 		for _, change := range changes {
+			// unable to send message: stop the loop
 			if err := stream.Send(&api.SyncPublicationContributorsResponse{
 				Response: &api.SyncPublicationContributorsResponse_ContributorChange{
 					ContributorChange: change,
 				},
 			}); err != nil {
-				faultyRecordErr = err
+				callbackErr = err
 				return false
 			}
 		}
@@ -1385,12 +1388,12 @@ func (s *server) SyncPublicationContributors(req *api.SyncPublicationContributor
 		return true
 	})
 
-	if repoErr != nil {
-		return status.Errorf(codes.Internal, "unable to execute command sync-publication-contributors: %v", repoErr)
+	if startErr != nil {
+		return status.Errorf(codes.Internal, "unable to start command: %v", startErr)
 	}
 
-	if faultyRecordErr != nil {
-		return status.Errorf(codes.Internal, "unable to save all changes due to record with id '%s': %s", faultyRecordId, faultyRecordErr.Error())
+	if callbackErr != nil {
+		return status.Errorf(codes.Internal, "unable to complete command: %s", callbackErr.Error())
 	}
 
 	return nil
