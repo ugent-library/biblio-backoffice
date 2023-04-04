@@ -19,13 +19,7 @@ import (
 type server struct {
 	api.UnimplementedBiblioServer
 	services *backends.Services
-	// mu       Mutex
 }
-
-// type Mutex struct {
-// 	transferPublications sync.Mutex
-// 	reindexPublications  sync.Mutex
-// }
 
 func listUsers() Users {
 	var u Users
