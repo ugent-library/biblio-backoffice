@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"log"
 	"os"
 	"strings"
 
@@ -54,7 +53,6 @@ var rootCmd = &cobra.Command{
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		// Silence the usage text if an error occurs
 		cmd.SilenceUsage = true
-
 		return nil
 	},
 }
@@ -62,6 +60,6 @@ var rootCmd = &cobra.Command{
 func Execute() error {
 	// Set the output to os.Stdout. If not set, cmd.Println would write to Stderr
 	rootCmd.SetOut(os.Stdout)
-	log.SetOutput(rootCmd.OutOrStdout())
+	rootCmd.SetErr(os.Stderr)
 	return rootCmd.Execute()
 }
