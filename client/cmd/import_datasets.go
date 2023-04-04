@@ -20,13 +20,24 @@ func init() {
 var ImportDatasetsCmd = &cobra.Command{
 	Use:   "import",
 	Short: "Import datasets",
+	Long: `
+	Import one or more datasets from a JSONL (JSON Lines) formatted file via stdin.
+	Each line represents a single dataset.
+
+	Outputs either a success message with the dataset ID or an error message.
+	Each message contains the number pointing to the corresponding line in the input file:
+
+		$ ./biblio-backoffice dataset add < file.jsonl
+		stored and indexed dataset [ID] at line [LINENO]
+		failed to validate dataset [ID] at line [LINENO]: [MSG]
+	`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return ImportDatasets(cmd, args)
 	},
 }
 
 func ImportDatasets(cmd *cobra.Command, args []string) error {
-	err := cnx.Handle(config, func(c api.BiblioClient) error {
+	return cnx.Handle(config, func(c api.BiblioClient) error {
 		stream, err := c.ImportDatasets(context.Background())
 		if err != nil {
 			return fmt.Errorf("could not create a grpc stream: %w", err)
@@ -53,11 +64,11 @@ func ImportDatasets(cmd *cobra.Command, args []string) error {
 				// Application level error
 				if ge := res.GetError(); ge != nil {
 					sre := status.FromProto(ge)
-					cmd.Printf("%s", sre.Message())
+					cmd.Printf("%s\n", sre.Message())
 				}
 
 				if rr := res.GetMessage(); rr != "" {
-					cmd.Printf("%s", rr)
+					cmd.Printf("%s\n", rr)
 				}
 			}
 		}()
@@ -97,10 +108,4 @@ func ImportDatasets(cmd *cobra.Command, args []string) error {
 
 		return nil
 	})
-
-	if err != nil {
-		return fmt.Errorf("could not connect with the server: %w", err)
-	}
-
-	return err
 }

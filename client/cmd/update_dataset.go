@@ -19,13 +19,22 @@ func init() {
 var UpdateDatasetCmd = &cobra.Command{
 	Use:   "update",
 	Short: "Update dataset",
+	Long: `
+	Update one or multiple datasets.
+
+	This command reads a JSONL formatted file from stdin and streams it to the store.
+
+	It will output either a success message or an error message per record:
+
+		$ ./biblio-backoffice dataset update < datasets.jsonl
+	`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return UpdateDataset(cmd, args)
 	},
 }
 
 func UpdateDataset(cmd *cobra.Command, args []string) error {
-	err := cnx.Handle(config, func(c api.BiblioClient) error {
+	return cnx.Handle(config, func(c api.BiblioClient) error {
 		reader := bufio.NewReader(cmd.InOrStdin())
 		line, err := reader.ReadBytes('\n')
 		if err != nil {
@@ -52,10 +61,4 @@ func UpdateDataset(cmd *cobra.Command, args []string) error {
 
 		return nil
 	})
-
-	if errors.Is(err, context.DeadlineExceeded) {
-		return fmt.Errorf("ContextDeadlineExceeded: true")
-	}
-
-	return err
 }

@@ -20,13 +20,24 @@ func init() {
 var AddPublicationsCmd = &cobra.Command{
 	Use:   "add",
 	Short: "Add publications",
+	Long: `
+	Add one or more datasets from a JSONL (JSON Lines) formatted file via stdin.
+	Each line represents a single dataset.
+
+	Outputs either a success message with the dataset ID or an error message.
+	Each message contains the number pointing to the corresponding line in the input file:
+
+		$ ./biblio-backoffice dataset add < file.jsonl
+		stored and indexed dataset [ID] at line [LINENO]
+		failed to validate dataset [ID] at line [LINENO]: [MSG]
+	`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return AddPublications(cmd, args)
 	},
 }
 
 func AddPublications(cmd *cobra.Command, args []string) error {
-	err := cnx.Handle(config, func(c api.BiblioClient) error {
+	return cnx.Handle(config, func(c api.BiblioClient) error {
 		stream, err := c.AddPublications(context.Background())
 		if err != nil {
 			return fmt.Errorf("could not create a grpc stream: %w", err)
@@ -97,10 +108,4 @@ func AddPublications(cmd *cobra.Command, args []string) error {
 
 		return nil
 	})
-
-	if errors.Is(err, context.DeadlineExceeded) {
-		return fmt.Errorf("ContextDeadlineExceeded: true")
-	}
-
-	return err
 }

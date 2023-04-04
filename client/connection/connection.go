@@ -2,6 +2,7 @@ package connection
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -12,7 +13,7 @@ import (
 )
 
 func Handle(config Config, t func(c api.BiblioClient) error) error {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*config.Timeout)
 	defer cancel()
 
 	// Set TLS encryption
@@ -39,6 +40,10 @@ func Handle(config Config, t func(c api.BiblioClient) error) error {
 	)
 
 	if err != nil {
+		if errors.Is(err, context.DeadlineExceeded) {
+			return fmt.Errorf("could not connect to host %s:%d, connection timed-out", config.Host, config.Port)
+		}
+
 		return err
 	}
 

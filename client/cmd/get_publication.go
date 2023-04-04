@@ -3,7 +3,6 @@ package cmd
 import (
 	"context"
 	"errors"
-	"log"
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
@@ -18,14 +17,20 @@ func init() {
 var GetPublicationCmd = &cobra.Command{
 	Use:   "get [id]",
 	Short: "Get publication by id",
-	Args:  cobra.ExactArgs(1),
+	Long: `
+	Retrieve the a single publication as a JSONL formatted record.
+	The record will be outputted to stdout.
+
+		$ ./biblio-backoffice publication get [ID] > publication.jsonl
+	`,
+	Args: cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return GetPublication(cmd, args)
 	},
 }
 
 func GetPublication(cmd *cobra.Command, args []string) error {
-	err := cnx.Handle(config, func(c api.BiblioClient) error {
+	return cnx.Handle(config, func(c api.BiblioClient) error {
 		id := args[0]
 		req := &api.GetPublicationRequest{Id: id}
 		res, err := c.GetPublication(context.Background(), req)
@@ -45,10 +50,4 @@ func GetPublication(cmd *cobra.Command, args []string) error {
 
 		return nil
 	})
-
-	if errors.Is(err, context.DeadlineExceeded) {
-		log.Fatal("ContextDeadlineExceeded: true")
-	}
-
-	return err
 }

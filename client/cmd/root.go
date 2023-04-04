@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"log"
 	"os"
 	"strings"
 
@@ -19,8 +18,9 @@ var (
 )
 
 const (
-	defaultHost = ""
-	defaultPort = 443
+	defaultHost    = ""
+	defaultPort    = 443
+	defaultTimeout = 5
 )
 
 func init() {
@@ -30,6 +30,7 @@ func init() {
 	viper.SetDefault("password", "")
 	viper.SetDefault("insecure", false)
 	viper.SetDefault("cacert", "")
+	viper.SetDefault("timeout", defaultTimeout)
 
 	cobra.OnInitialize(initConfig)
 
@@ -54,7 +55,6 @@ var rootCmd = &cobra.Command{
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		// Silence the usage text if an error occurs
 		cmd.SilenceUsage = true
-
 		return nil
 	},
 }
@@ -62,6 +62,6 @@ var rootCmd = &cobra.Command{
 func Execute() error {
 	// Set the output to os.Stdout. If not set, cmd.Println would write to Stderr
 	rootCmd.SetOut(os.Stdout)
-	log.SetOutput(rootCmd.OutOrStdout())
+	rootCmd.SetErr(os.Stderr)
 	return rootCmd.Execute()
 }

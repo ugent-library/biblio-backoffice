@@ -3,7 +3,6 @@ package cmd
 import (
 	"context"
 	"errors"
-	"log"
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
@@ -18,14 +17,25 @@ func init() {
 var PublicationRelateDatasetCmd = &cobra.Command{
 	Use:   "relate-dataset [id] [dataset-id]",
 	Short: "Add related dataset to publication",
-	Args:  cobra.ExactArgs(2),
+	Long: `
+	Relate a publication to a dataset.
+
+	The "related_dataset" field will be filled on the publication side, the "related_publication"
+	field will be filled on the dataset side.
+
+	Outputs either a success message or an error message:
+
+		$ ./biblio-backoffice relate-dataset [ID] [DATASET-ID]
+		related: publication[id: ID] -> dataset[id: ID]
+	`,
+	Args: cobra.ExactArgs(2),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return PublicationRelateDataset(cmd, args)
 	},
 }
 
 func PublicationRelateDataset(cmd *cobra.Command, args []string) error {
-	err := cnx.Handle(config, func(c api.BiblioClient) error {
+	return cnx.Handle(config, func(c api.BiblioClient) error {
 		req := &api.RelateRequest{
 			One: &api.RelateRequest_PublicationOne{PublicationOne: args[0]},
 			Two: &api.RelateRequest_DatasetTwo{DatasetTwo: args[1]},
@@ -47,10 +57,4 @@ func PublicationRelateDataset(cmd *cobra.Command, args []string) error {
 
 		return nil
 	})
-
-	if errors.Is(err, context.DeadlineExceeded) {
-		log.Fatal("ContextDeadlineExceeded: true")
-	}
-
-	return err
 }

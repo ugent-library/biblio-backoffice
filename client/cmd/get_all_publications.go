@@ -19,13 +19,19 @@ func init() {
 var GetAllPublicationsCmd = &cobra.Command{
 	Use:   "get-all",
 	Short: "Get all publications",
+	Long: `
+	Retrieve all stored publications as a stream of JSONL formatted records.
+	The stream will be outputted to stdout.
+
+		$ ./biblio-backoffice publication get-all > publications.jsonl
+	`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return GetAllPublications(cmd, args)
 	},
 }
 
 func GetAllPublications(cmd *cobra.Command, args []string) error {
-	err := cnx.Handle(config, func(c api.BiblioClient) error {
+	return cnx.Handle(config, func(c api.BiblioClient) error {
 		req := &api.GetAllPublicationsRequest{}
 		stream, err := c.GetAllPublications(context.Background(), req)
 		if err != nil {
@@ -58,10 +64,4 @@ func GetAllPublications(cmd *cobra.Command, args []string) error {
 
 		return nil
 	})
-
-	if errors.Is(err, context.DeadlineExceeded) {
-		return fmt.Errorf("ContextDeadlineExceeded: true")
-	}
-
-	return err
 }

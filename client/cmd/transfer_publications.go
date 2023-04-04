@@ -19,14 +19,39 @@ func init() {
 var TransferPublicationsCmd = &cobra.Command{
 	Use:   "transfer UID UID [PUBID]",
 	Short: "Transfer publications between people",
-	Args:  cobra.RangeArgs(2, 3),
+	Long: `
+	Transfer one or multiple publications between two persons.
+
+	Each person id identified by an UUID. The first argument is the source, the second argument is the target person.
+	Transferring a publication means replacing all matching instances of the source ID with the target's ID across all
+	publicatoin fields (user, last_user & contributor fields).
+
+	This operation transfers the current and all previous snapshots of a publication between persons.
+
+	A publication ID can be passed as an optional third argument. If no publication ID is passed, the transfer will
+	happen across all stored publications. If a publication ID is passed, the transfer command will be limited to that
+	specific stored publication.
+
+	The command outputs either a success message or an error message to stdout:
+
+		$ ./biblio-client publication transfer UID UID
+		p: ID: s: SNAPSHOT-ID ::: creator: UID -> UID
+		p: ID: s: SNAPSHOT-ID ::: supervisor: UID -> UID
+		p: ID: s: SNAPSHOT-ID ::: editor: UID -> UID
+
+		$ ./biblio-client publication transfer UID UID
+		Error: could not retrieve person UID: record not found
+
+	If no matching instances of the source UID could be found, the transfer command won't produce any output.
+	`,
+	Args: cobra.RangeArgs(2, 3),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return TransferPublications(cmd, args)
 	},
 }
 
 func TransferPublications(cmd *cobra.Command, args []string) error {
-	err := cnx.Handle(config, func(c api.BiblioClient) error {
+	return cnx.Handle(config, func(c api.BiblioClient) error {
 		source := args[0]
 		dest := args[1]
 
@@ -46,52 +71,35 @@ func TransferPublications(cmd *cobra.Command, args []string) error {
 			log.Fatal(err)
 		}
 
-		waitc := make(chan struct{})
-		errorc := make(chan error)
-
-		go func() {
-			for {
-				res, err := stream.Recv()
-				if err == io.EOF {
-					// read done.
-					close(waitc)
-					return
-				}
-
-				// return gRPC level error
-				if err != nil {
-					errorc <- err
-					return
-				}
-
-				// Application level error
-				if ge := res.GetError(); ge != nil {
-					sre := status.FromProto(ge)
-					cmd.Printf("%s\n", sre.Message())
-				}
-
-				if rr := res.GetMessage(); rr != "" {
-					cmd.Printf("%s\n", rr)
-				}
-			}
-		}()
-
 		stream.CloseSend()
 
-		select {
-		case errc := <-errorc:
-			if st, ok := status.FromError(errc); ok {
-				return errors.New(st.Message())
+		for {
+			res, err := stream.Recv()
+			if err == io.EOF {
+				// read done.
+				break
 			}
-		case <-waitc:
+
+			// return gRPC level error
+			if err != nil {
+				if st, ok := status.FromError(err); ok {
+					return errors.New(st.Message())
+				}
+
+				return err
+			}
+
+			// Application level error
+			if ge := res.GetError(); ge != nil {
+				sre := status.FromProto(ge)
+				cmd.Printf("%s\n", sre.Message())
+			}
+
+			if rr := res.GetMessage(); rr != "" {
+				cmd.Printf("%s\n", rr)
+			}
 		}
 
 		return nil
 	})
-
-	if errors.Is(err, context.DeadlineExceeded) {
-		log.Fatal("ContextDeadlineExceeded: true")
-	}
-
-	return err
 }

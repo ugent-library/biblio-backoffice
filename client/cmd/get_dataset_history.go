@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"io"
-	"log"
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
@@ -19,14 +18,20 @@ func init() {
 var GetDatasetHistoryCmd = &cobra.Command{
 	Use:   "get-history [id]",
 	Short: "Get dataset history",
-	Args:  cobra.ExactArgs(1),
+	Long: `
+	Retrieve the history of a single dataset as a stream of JSONL formatted records.
+	The stream will be outputted to stdout.
+
+		$ ./biblio-backoffice dataset get-history [ID] > history.jsonl
+	`,
+	Args: cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return GetDatasetHistory(cmd, args)
 	},
 }
 
 func GetDatasetHistory(cmd *cobra.Command, args []string) error {
-	err := cnx.Handle(config, func(c api.BiblioClient) error {
+	return cnx.Handle(config, func(c api.BiblioClient) error {
 		req := &api.GetDatasetHistoryRequest{Id: args[0]}
 		stream, err := c.GetDatasetHistory(context.Background(), req)
 		if err != nil {
@@ -61,10 +66,4 @@ func GetDatasetHistory(cmd *cobra.Command, args []string) error {
 
 		return nil
 	})
-
-	if errors.Is(err, context.DeadlineExceeded) {
-		log.Fatal("ContextDeadlineExceeded: true")
-	}
-
-	return err
 }

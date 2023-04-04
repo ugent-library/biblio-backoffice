@@ -1,5 +1,7 @@
 package connection
 
+import "time"
+
 type Config struct {
 	Username string
 	Password string
@@ -7,4 +9,5 @@ type Config struct {
 	Port     int
 	Insecure bool
 	Cacert   string
+	Timeout  time.Duration
 }
