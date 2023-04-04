@@ -18,7 +18,13 @@ func init() {
 var GetDatasetHistoryCmd = &cobra.Command{
 	Use:   "get-history [id]",
 	Short: "Get dataset history",
-	Args:  cobra.ExactArgs(1),
+	Long: `
+	Retrieve the history of a single dataset as a stream of JSONL formatted records.
+	The stream will be outputted to stdout.
+
+		$ ./biblio-backoffice dataset get-history [ID] > history.jsonl
+	`,
+	Args: cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return GetDatasetHistory(cmd, args)
 	},

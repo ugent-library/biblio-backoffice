@@ -19,6 +19,12 @@ func init() {
 var GetAllPublicationsCmd = &cobra.Command{
 	Use:   "get-all",
 	Short: "Get all publications",
+	Long: `
+	Retrieve all stored publications as a stream of JSONL formatted records.
+	The stream will be outputted to stdout.
+
+		$ ./biblio-backoffice publication get-all > publications.jsonl
+	`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return GetAllPublications(cmd, args)
 	},

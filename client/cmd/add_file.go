@@ -22,14 +22,16 @@ var AddFileCmd = &cobra.Command{
 	Use:   "add [file]",
 	Short: "Add file by path",
 	Long: `
-	Adds one file to the filestore.
-	File provided is the file added to the filestore.
+	Add a single file to the filestore.
+	File provided is the file that will be added to the filestore.
 
-	Writes id and path to the stdout:
+	Prints id and local path to stdout:
 
 		<id> <path>
 
-	Can easily be checked as following:
+	The id is the sha256 checksum of the file. You can use it to check if a
+	file was succesfully added to the filestore:
+
 		$ ./biblio-backoffice file add /path/to/file.txt > /path/to/id.txt
 		$ sha256sum -c /path/to/id.txt
 	`,

@@ -17,7 +17,18 @@ func init() {
 var PublicationRelateDatasetCmd = &cobra.Command{
 	Use:   "relate-dataset [id] [dataset-id]",
 	Short: "Add related dataset to publication",
-	Args:  cobra.ExactArgs(2),
+	Long: `
+	Relate a publication to a dataset.
+
+	The "related_dataset" field will be filled on the publication side, the "related_publication"
+	field will be filled on the dataset side.
+
+	Outputs either a success message or an error message:
+
+		$ ./biblio-backoffice relate-dataset [ID] [DATASET-ID]
+		related: publication[id: ID] -> dataset[id: ID]
+	`,
+	Args: cobra.ExactArgs(2),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return PublicationRelateDataset(cmd, args)
 	},

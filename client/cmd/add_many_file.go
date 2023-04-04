@@ -26,9 +26,11 @@ var AddManyFileCmd = &cobra.Command{
 	Expected is txt file containing a file path per line.
 	Reads from the stdin when file is not provided.
 	For each path the new id followed by the old path is printed to the stdout:
+
 		<id> <path>
 
 	Can easily be checked as following:
+
 		$ ./biblio-backoffice file add_many < /path/to/file_paths.txt > /path/to/ids.txt
 		$ sha256sum -c /path/to/ids.txt
 	`,

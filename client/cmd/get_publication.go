@@ -17,7 +17,13 @@ func init() {
 var GetPublicationCmd = &cobra.Command{
 	Use:   "get [id]",
 	Short: "Get publication by id",
-	Args:  cobra.ExactArgs(1),
+	Long: `
+	Retrieve the a single publication as a JSONL formatted record.
+	The record will be outputted to stdout.
+
+		$ ./biblio-backoffice publication get [ID] > publication.jsonl
+	`,
+	Args: cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return GetPublication(cmd, args)
 	},

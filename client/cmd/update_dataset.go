@@ -19,6 +19,15 @@ func init() {
 var UpdateDatasetCmd = &cobra.Command{
 	Use:   "update",
 	Short: "Update dataset",
+	Long: `
+	Update one or multiple datasets.
+
+	This command reads a JSONL formatted file from stdin and streams it to the store.
+
+	It will output either a success message or an error message per record:
+
+		$ ./biblio-backoffice dataset update < datasets.jsonl
+	`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return UpdateDataset(cmd, args)
 	},

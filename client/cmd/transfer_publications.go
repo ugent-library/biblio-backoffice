@@ -19,7 +19,32 @@ func init() {
 var TransferPublicationsCmd = &cobra.Command{
 	Use:   "transfer UID UID [PUBID]",
 	Short: "Transfer publications between people",
-	Args:  cobra.RangeArgs(2, 3),
+	Long: `
+	Transfer one or multiple publications between two persons.
+
+	Each person id identified by an UUID. The first argument is the source, the second argument is the target person.
+	Transferring a publication means replacing all matching instances of the source ID with the target's ID across all
+	publicatoin fields (user, last_user & contributor fields).
+
+	This operation transfers the current and all previous snapshots of a publication between persons.
+
+	A publication ID can be passed as an optional third argument. If no publication ID is passed, the transfer will
+	happen across all stored publications. If a publication ID is passed, the transfer command will be limited to that
+	specific stored publication.
+
+	The command outputs either a success message or an error message to stdout:
+
+		$ ./biblio-client publication transfer UID UID
+		p: ID: s: SNAPSHOT-ID ::: creator: UID -> UID
+		p: ID: s: SNAPSHOT-ID ::: supervisor: UID -> UID
+		p: ID: s: SNAPSHOT-ID ::: editor: UID -> UID
+
+		$ ./biblio-client publication transfer UID UID
+		Error: could not retrieve person UID: record not found
+
+	If no matching instances of the source UID could be found, the transfer command won't produce any output.
+	`,
+	Args: cobra.RangeArgs(2, 3),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return TransferPublications(cmd, args)
 	},

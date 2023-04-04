@@ -17,7 +17,15 @@ func init() {
 var PurgePublicationCmd = &cobra.Command{
 	Use:   "purge [id]",
 	Short: "Purge publication",
-	Args:  cobra.ExactArgs(1),
+	Long: `
+	Purge a single stored publication.
+
+	Outputs either a success message with the dataset ID or an error message.
+
+		$ ./biblio-backoffice publication purge [ID]
+		purged publication [ID]
+	`,
+	Args: cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return PurgePublication(cmd, args)
 	},

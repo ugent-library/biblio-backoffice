@@ -20,6 +20,17 @@ func init() {
 var AddDatasetsCmd = &cobra.Command{
 	Use:   "add",
 	Short: "Add datasets",
+	Long: `
+	Add one or more datasets from a JSONL (JSON Lines) formatted file via stdin.
+	Each line represents a single dataset.
+
+	Outputs either a success message with the dataset ID or an error message.
+	Each message contains the number pointing to the corresponding line in the input file:
+
+		$ ./biblio-backoffice dataset add < file.jsonl
+		stored and indexed dataset [ID] at line [LINENO]
+		failed to validate dataset [ID] at line [LINENO]: [MSG]
+	`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return AddDatasets(cmd, args)
 	},

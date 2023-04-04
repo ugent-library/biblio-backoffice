@@ -19,6 +19,12 @@ func init() {
 var GetAllDatasetsCmd = &cobra.Command{
 	Use:   "get-all",
 	Short: "Get all datasets",
+	Long: `
+	Retrieve all stored datasets as a stream of JSONL formatted records.
+	The stream will be outputted to stdout.
+
+		$ ./biblio-backoffice dataset get-all > datasets.jsonl
+	`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return GetAllDatasets(cmd, args)
 	},

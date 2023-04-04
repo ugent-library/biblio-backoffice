@@ -17,7 +17,13 @@ func init() {
 var GetDatasetCmd = &cobra.Command{
 	Use:   "get [id]",
 	Short: "Get dataset by id",
-	Args:  cobra.ExactArgs(1),
+	Long: `
+	Retrieve the a single dataset as a JSONL formatted record.
+	The record will be outputted to stdout.
+
+		$ ./biblio-backoffice dataset get [ID] > dataset.jsonl
+	`,
+	Args: cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return GetDataset(cmd, args)
 	},

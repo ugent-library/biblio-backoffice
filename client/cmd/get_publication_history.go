@@ -18,7 +18,13 @@ func init() {
 var GetPublicationHistoryCmd = &cobra.Command{
 	Use:   "get-history [id]",
 	Short: "Get publication history",
-	Args:  cobra.ExactArgs(1),
+	Long: `
+	Retrieve the history of a single publication as a stream of JSONL formatted records.
+	The stream will be outputted to stdout.
+
+		$ ./biblio-backoffice publication get-history [ID] > history.jsonl
+	`,
+	Args: cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return GetPublicationHistory(cmd, args)
 	},
