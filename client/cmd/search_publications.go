@@ -3,7 +3,6 @@ package cmd
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"log"
 
@@ -29,7 +28,7 @@ var SearchPublicationsCmd = &cobra.Command{
 }
 
 func SearchPublications(cmd *cobra.Command, args []string) error {
-	err := cnx.Handle(config, func(c api.BiblioClient) error {
+	return cnx.Handle(config, func(c api.BiblioClient) error {
 		query, _ := cmd.Flags().GetString("query")
 		limit, _ := cmd.Flags().GetInt32("limit")
 		offset, _ := cmd.Flags().GetInt32("offset")
@@ -68,10 +67,4 @@ func SearchPublications(cmd *cobra.Command, args []string) error {
 
 		return nil
 	})
-
-	if errors.Is(err, context.DeadlineExceeded) {
-		log.Fatal("ContextDeadlineExceeded: true")
-	}
-
-	return err
 }

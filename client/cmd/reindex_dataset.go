@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"io"
-	"log"
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
@@ -25,7 +24,7 @@ var ReindexDatasetCmd = &cobra.Command{
 }
 
 func ReindexDatasets(cmd *cobra.Command, args []string) error {
-	err := cnx.Handle(config, func(c api.BiblioClient) error {
+	return cnx.Handle(config, func(c api.BiblioClient) error {
 		req := &api.ReindexDatasetsRequest{}
 		stream, err := c.ReindexDatasets(context.Background(), req)
 		if err != nil {
@@ -62,10 +61,4 @@ func ReindexDatasets(cmd *cobra.Command, args []string) error {
 
 		return nil
 	})
-
-	if errors.Is(err, context.DeadlineExceeded) {
-		log.Fatal("ContextDeadlineExceeded: true")
-	}
-
-	return err
 }

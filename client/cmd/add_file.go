@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -41,7 +40,7 @@ var AddFileCmd = &cobra.Command{
 }
 
 func AddFile(cmd *cobra.Command, args []string) error {
-	err := cnx.Handle(config, func(c api.BiblioClient) error {
+	return cnx.Handle(config, func(c api.BiblioClient) error {
 		stream, err := c.AddFile(context.Background())
 		if err != nil {
 			return fmt.Errorf("could not create a grpc stream: %w", err)
@@ -87,10 +86,4 @@ func AddFile(cmd *cobra.Command, args []string) error {
 
 		return nil
 	})
-
-	if errors.Is(err, context.DeadlineExceeded) {
-		log.Fatal("ContextDeadlineExceeded: true")
-	}
-
-	return err
 }

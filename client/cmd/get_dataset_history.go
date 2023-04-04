@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"io"
-	"log"
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
@@ -26,7 +25,7 @@ var GetDatasetHistoryCmd = &cobra.Command{
 }
 
 func GetDatasetHistory(cmd *cobra.Command, args []string) error {
-	err := cnx.Handle(config, func(c api.BiblioClient) error {
+	return cnx.Handle(config, func(c api.BiblioClient) error {
 		req := &api.GetDatasetHistoryRequest{Id: args[0]}
 		stream, err := c.GetDatasetHistory(context.Background(), req)
 		if err != nil {
@@ -61,10 +60,4 @@ func GetDatasetHistory(cmd *cobra.Command, args []string) error {
 
 		return nil
 	})
-
-	if errors.Is(err, context.DeadlineExceeded) {
-		log.Fatal("ContextDeadlineExceeded: true")
-	}
-
-	return err
 }

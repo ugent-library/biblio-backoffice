@@ -3,7 +3,6 @@ package cmd
 import (
 	"context"
 	"errors"
-	"log"
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
@@ -25,7 +24,7 @@ var GetDatasetCmd = &cobra.Command{
 }
 
 func GetDataset(cmd *cobra.Command, args []string) error {
-	err := cnx.Handle(config, func(c api.BiblioClient) error {
+	return cnx.Handle(config, func(c api.BiblioClient) error {
 		id := args[0]
 		req := &api.GetDatasetRequest{Id: id}
 		res, err := c.GetDataset(context.Background(), req)
@@ -45,10 +44,4 @@ func GetDataset(cmd *cobra.Command, args []string) error {
 
 		return nil
 	})
-
-	if errors.Is(err, context.DeadlineExceeded) {
-		log.Fatal("ContextDeadlineExceeded: true")
-	}
-
-	return err
 }

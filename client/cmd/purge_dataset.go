@@ -3,7 +3,6 @@ package cmd
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
@@ -25,7 +24,7 @@ var PurgeDatasetCmd = &cobra.Command{
 }
 
 func PurgeDataset(cmd *cobra.Command, args []string) error {
-	err := cnx.Handle(config, func(c api.BiblioClient) error {
+	return cnx.Handle(config, func(c api.BiblioClient) error {
 		id := args[0]
 		req := &api.PurgeDatasetRequest{Id: id}
 		res, err := c.PurgeDataset(context.Background(), req)
@@ -49,10 +48,4 @@ func PurgeDataset(cmd *cobra.Command, args []string) error {
 
 		return nil
 	})
-
-	if errors.Is(err, context.DeadlineExceeded) {
-		return fmt.Errorf("ContextDeadlineExceeded: true")
-	}
-
-	return err
 }

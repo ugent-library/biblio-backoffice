@@ -8,7 +8,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -122,8 +121,8 @@ func ImportFile(cmd *cobra.Command, args []string) error {
 			return nil
 		})
 
-		if errors.Is(txErr, context.DeadlineExceeded) {
-			log.Fatal("ContextDeadlineExceeded: true")
+		if txErr != nil {
+			return txErr
 		}
 
 		// skip files that are already in the store
@@ -181,10 +180,6 @@ func ImportFile(cmd *cobra.Command, args []string) error {
 		})
 
 		if txErr != nil {
-			if errors.Is(txErr, context.DeadlineExceeded) {
-				log.Fatal("ContextDeadlineExceeded: true")
-			}
-
 			cmd.Printf("%s", txErr.Error())
 			lineNo++
 			continue

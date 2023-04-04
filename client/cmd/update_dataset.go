@@ -25,7 +25,7 @@ var UpdateDatasetCmd = &cobra.Command{
 }
 
 func UpdateDataset(cmd *cobra.Command, args []string) error {
-	err := cnx.Handle(config, func(c api.BiblioClient) error {
+	return cnx.Handle(config, func(c api.BiblioClient) error {
 		reader := bufio.NewReader(cmd.InOrStdin())
 		line, err := reader.ReadBytes('\n')
 		if err != nil {
@@ -52,10 +52,4 @@ func UpdateDataset(cmd *cobra.Command, args []string) error {
 
 		return nil
 	})
-
-	if errors.Is(err, context.DeadlineExceeded) {
-		return fmt.Errorf("ContextDeadlineExceeded: true")
-	}
-
-	return err
 }

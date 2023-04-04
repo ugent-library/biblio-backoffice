@@ -3,7 +3,6 @@ package cmd
 import (
 	"bufio"
 	"context"
-	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -27,7 +26,7 @@ var ValidateDatasetsCmd = &cobra.Command{
 }
 
 func ValidateDatasets(cmd *cobra.Command, args []string) error {
-	err := cnx.Handle(config, func(c api.BiblioClient) error {
+	return cnx.Handle(config, func(c api.BiblioClient) error {
 		stream, err := c.ValidateDatasets(context.Background())
 		if err != nil {
 			log.Fatal(err)
@@ -79,10 +78,4 @@ func ValidateDatasets(cmd *cobra.Command, args []string) error {
 
 		return nil
 	})
-
-	if errors.Is(err, context.DeadlineExceeded) {
-		log.Fatal("ContextDeadlineExceeded: true")
-	}
-
-	return err
 }

@@ -26,7 +26,7 @@ var AddDatasetsCmd = &cobra.Command{
 }
 
 func AddDatasets(cmd *cobra.Command, args []string) error {
-	err := cnx.Handle(config, func(c api.BiblioClient) error {
+	return cnx.Handle(config, func(c api.BiblioClient) error {
 		stream, err := c.AddDatasets(context.Background())
 		if err != nil {
 			return fmt.Errorf("could not create a grpc stream: %w", err)
@@ -97,10 +97,4 @@ func AddDatasets(cmd *cobra.Command, args []string) error {
 
 		return nil
 	})
-
-	if errors.Is(err, context.DeadlineExceeded) {
-		return fmt.Errorf("ContextDeadlineExceeded: true")
-	}
-
-	return err
 }

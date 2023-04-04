@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -28,7 +27,7 @@ var GetFileCmd = &cobra.Command{
 }
 
 func GetFile(cmd *cobra.Command, args []string) error {
-	err := cnx.Handle(config, func(c api.BiblioClient) error {
+	return cnx.Handle(config, func(c api.BiblioClient) error {
 		req := &api.GetFileRequest{Sha256: args[0]}
 		stream, err := c.GetFile(context.Background(), req)
 		if err != nil {
@@ -55,10 +54,4 @@ func GetFile(cmd *cobra.Command, args []string) error {
 
 		return nil
 	})
-
-	if errors.Is(err, context.DeadlineExceeded) {
-		log.Fatal("ContextDeadlineExceeded: true")
-	}
-
-	return err
 }

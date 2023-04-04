@@ -26,7 +26,7 @@ var ImportDatasetsCmd = &cobra.Command{
 }
 
 func ImportDatasets(cmd *cobra.Command, args []string) error {
-	err := cnx.Handle(config, func(c api.BiblioClient) error {
+	return cnx.Handle(config, func(c api.BiblioClient) error {
 		stream, err := c.ImportDatasets(context.Background())
 		if err != nil {
 			return fmt.Errorf("could not create a grpc stream: %w", err)
@@ -97,10 +97,4 @@ func ImportDatasets(cmd *cobra.Command, args []string) error {
 
 		return nil
 	})
-
-	if err != nil {
-		return fmt.Errorf("could not connect with the server: %w", err)
-	}
-
-	return err
 }

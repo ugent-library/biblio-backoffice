@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -105,10 +104,6 @@ func AddManyFile(cmd *cobra.Command, args []string) error {
 		})
 
 		if txErr != nil {
-			if errors.Is(txErr, context.DeadlineExceeded) {
-				log.Fatal("ContextDeadlineExceeded: true")
-			}
-
 			return txErr
 		}
 	}

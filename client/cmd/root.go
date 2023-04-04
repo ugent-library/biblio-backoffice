@@ -18,8 +18,9 @@ var (
 )
 
 const (
-	defaultHost = ""
-	defaultPort = 443
+	defaultHost    = ""
+	defaultPort    = 443
+	defaultTimeout = 5
 )
 
 func init() {
@@ -29,6 +30,7 @@ func init() {
 	viper.SetDefault("password", "")
 	viper.SetDefault("insecure", false)
 	viper.SetDefault("cacert", "")
+	viper.SetDefault("timeout", defaultTimeout)
 
 	cobra.OnInitialize(initConfig)
 

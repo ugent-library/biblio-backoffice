@@ -26,7 +26,7 @@ var TransferPublicationsCmd = &cobra.Command{
 }
 
 func TransferPublications(cmd *cobra.Command, args []string) error {
-	err := cnx.Handle(config, func(c api.BiblioClient) error {
+	return cnx.Handle(config, func(c api.BiblioClient) error {
 		source := args[0]
 		dest := args[1]
 
@@ -77,10 +77,4 @@ func TransferPublications(cmd *cobra.Command, args []string) error {
 
 		return nil
 	})
-
-	if errors.Is(err, context.DeadlineExceeded) {
-		log.Fatal("ContextDeadlineExceeded: true")
-	}
-
-	return err
 }
