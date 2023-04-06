@@ -54,7 +54,7 @@ func SearchPublications(cmd *cobra.Command, args []string) error {
 		}
 		for i, h := range res.Hits {
 			p := &models.Publication{}
-			if err := json.Unmarshal(h.Payload, p); err != nil {
+			if err := json.Unmarshal(h.Payload, p); err == nil {
 				hits.Hits[i] = p
 			}
 		}

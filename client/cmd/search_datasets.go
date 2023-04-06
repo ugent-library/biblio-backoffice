@@ -55,7 +55,7 @@ func SearchDatasets(cmd *cobra.Command, args []string) error {
 		}
 		for i, h := range res.Hits {
 			d := &models.Dataset{}
-			if err := json.Unmarshal(h.Payload, d); err != nil {
+			if err := json.Unmarshal(h.Payload, d); err == nil {
 				hits.Hits[i] = d
 			}
 		}
