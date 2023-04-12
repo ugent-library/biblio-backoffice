@@ -5,6 +5,7 @@ import (
 	"crypto/subtle"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net"
 	"net/http"
 	"net/url"
@@ -1037,9 +1038,17 @@ func (h *Handler) DownloadFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	b, err := h.FileStore.Get(r.Context(), f.SHA256)
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	defer b.Close()
+
 	w.Header().Set(
 		"Content-Disposition",
 		fmt.Sprintf("attachment; filename*=UTF-8''%s", url.PathEscape(f.Name)),
 	)
-	http.ServeFile(w, r, h.FileStore.FilePath(f.SHA256))
+
+	io.Copy(w, b)
 }

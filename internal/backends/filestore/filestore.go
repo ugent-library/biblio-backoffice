@@ -1,6 +1,7 @@
 package filestore
 
 import (
+	"context"
 	"crypto/sha256"
 	"errors"
 	"fmt"
@@ -11,19 +12,19 @@ import (
 )
 
 type Store struct {
-	rootPath string
-	tmpPath  string
+	dir     string
+	tempDir string
 }
 
 func New(basePath string) (*Store, error) {
 	s := &Store{
-		rootPath: path.Join(basePath, "root"),
-		tmpPath:  path.Join(basePath, "tmp"),
+		dir:     path.Join(basePath, "root"),
+		tempDir: path.Join(basePath, "tmp"),
 	}
-	if err := os.MkdirAll(s.rootPath, os.ModePerm); err != nil {
+	if err := os.MkdirAll(s.dir, os.ModePerm); err != nil {
 		return nil, err
 	}
-	if err := os.MkdirAll(s.tmpPath, os.ModePerm); err != nil {
+	if err := os.MkdirAll(s.tempDir, os.ModePerm); err != nil {
 		return nil, err
 	}
 	return s, nil
@@ -49,34 +50,44 @@ func segmentedPath(str string, size int) string {
 	return path.Join(segments...)
 }
 
-func (s *Store) RelativeFilePath(checksum string) string {
+func (s *Store) relativeFilePath(checksum string) string {
 	fnv32 := fmt.Sprintf("%d", fnvHash(checksum))
 	return path.Join(segmentedPath(fnv32, 3), checksum)
 }
 
-func (s *Store) FilePath(checksum string) string {
-	return path.Join(s.rootPath, s.RelativeFilePath(checksum))
+func (s *Store) filePath(checksum string) string {
+	return path.Join(s.dir, s.relativeFilePath(checksum))
 }
 
-func (s *Store) Add(r io.Reader) (string, error) {
-	return s.AddWithChecksum(r, "")
+func (s *Store) Exists(ctx context.Context, checksum string) (bool, error) {
+	_, err := os.Stat(s.filePath(checksum))
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return false, err
 }
 
-func (s *Store) AddWithChecksum(r io.Reader, oldChecksum string) (string, error) {
-	/*
-		write to two writers:
-		* tmp file (rewindable)
-		* hash writer for new checksum
-	*/
-	tmpFile, err := os.CreateTemp(s.tmpPath, "")
+func (s *Store) Get(ctx context.Context, checksum string) (io.ReadCloser, error) {
+	p := s.filePath(checksum)
+	if _, err := os.Stat(p); err != nil {
+		return nil, err
+	}
+	return os.Open(p)
+}
+
+func (s *Store) Add(ctx context.Context, r io.Reader, oldChecksum string) (string, error) {
+	tmpFile, err := os.CreateTemp(s.tempDir, "")
 	if err != nil {
 		return "", err
 	}
 	defer os.Remove(tmpFile.Name())
 
-	newHash := sha256.New()
+	hasher := sha256.New()
 
-	w := io.MultiWriter(tmpFile, newHash)
+	w := io.MultiWriter(tmpFile, hasher)
 
 	bytesWritten, err := io.Copy(w, r)
 	if err != nil {
@@ -86,46 +97,46 @@ func (s *Store) AddWithChecksum(r io.Reader, oldChecksum string) (string, error)
 		return "", errors.New("file can't be empty")
 	}
 
-	newChecksum := fmt.Sprintf("%x", newHash.Sum(nil))
+	checksum := fmt.Sprintf("%x", hasher.Sum(nil))
 
 	//check sha256 if given
-	if oldChecksum != "" && oldChecksum != newChecksum {
+	if oldChecksum != "" && oldChecksum != checksum {
 		return "", fmt.Errorf(
 			"sha256 checksum did not match '%s', got '%s'",
 			oldChecksum,
-			newChecksum,
+			checksum,
 		)
 	}
 
 	//write to final location
-	fnv32 := fmt.Sprintf("%d", fnvHash(newChecksum))
+	fnv32 := fmt.Sprintf("%d", fnvHash(checksum))
 	segmentedPath := segmentedPath(fnv32, 3)
-	pathToDir := path.Join(s.rootPath, segmentedPath)
-	pathToFile := path.Join(pathToDir, newChecksum)
+	pathToDir := path.Join(s.dir, segmentedPath)
+	pathToFile := path.Join(pathToDir, checksum)
 
 	// file already stored
 	if _, err := os.Stat(pathToFile); !os.IsNotExist(err) {
-		return newChecksum, nil
+		return checksum, nil
 	}
 
 	if err := os.MkdirAll(pathToDir, os.ModePerm); err != nil {
 		return "", err
 	}
 
-	if err := os.Rename(tmpFile.Name(), path.Join(pathToDir, newChecksum)); err != nil {
+	if err := os.Rename(tmpFile.Name(), path.Join(pathToDir, checksum)); err != nil {
 		return "", err
 	}
 
-	return newChecksum, nil
+	return checksum, nil
 }
 
 // TODO remove empty intermediate directories
-func (s *Store) Purge(checksum string) error {
-	return os.Remove(s.FilePath(checksum))
+func (s *Store) Purge(ctx context.Context, checksum string) error {
+	return os.Remove(s.filePath(checksum))
 }
 
-func (s *Store) PurgeAll() error {
-	dir, err := os.Open(s.rootPath)
+func (s *Store) PurgeAll(ctx context.Context) error {
+	dir, err := os.Open(s.dir)
 	if err != nil {
 		return err
 	}
@@ -135,7 +146,7 @@ func (s *Store) PurgeAll() error {
 		return err
 	}
 	for _, name := range names {
-		if err := os.RemoveAll(path.Join(s.rootPath, name)); err != nil {
+		if err := os.RemoveAll(path.Join(s.dir, name)); err != nil {
 			return err
 		}
 	}

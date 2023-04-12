@@ -5,7 +5,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"os"
 
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
 	"google.golang.org/grpc/codes"
@@ -15,14 +14,13 @@ import (
 const fileBufSize = 524288
 
 func (s *server) GetFile(req *api.GetFileRequest, stream api.Biblio_GetFileServer) error {
-	fPath := s.services.FileStore.FilePath(req.Sha256)
-	f, err := os.Open(fPath)
+	b, err := s.services.FileStore.Get(stream.Context(), req.Sha256)
 	if err != nil {
 		return fmt.Errorf("cannot open file: %w", err)
 	}
-	defer f.Close()
+	defer b.Close()
 
-	r := bufio.NewReader(f)
+	r := bufio.NewReader(b)
 	buf := make([]byte, fileBufSize)
 
 	for {
@@ -47,18 +45,10 @@ func (s *server) GetFile(req *api.GetFileRequest, stream api.Biblio_GetFileServe
 }
 
 func (s *server) ExistsFile(ctx context.Context, req *api.ExistsFileRequest) (*api.ExistsFileResponse, error) {
-	fPath := s.services.FileStore.FilePath(req.Sha256)
-	f, err := os.Open(fPath)
-	if err != nil {
-		return &api.ExistsFileResponse{
-			Exists: false,
-		}, nil
-	}
-	defer f.Close()
-
+	exists, err := s.services.FileStore.Exists(ctx, req.Sha256)
 	return &api.ExistsFileResponse{
-		Exists: true,
-	}, nil
+		Exists: exists,
+	}, err
 }
 
 func (s *server) AddFile(stream api.Biblio_AddFileServer) error {
@@ -71,7 +61,7 @@ func (s *server) AddFile(stream api.Biblio_AddFileServer) error {
 	waitc := make(chan struct{})
 
 	go func() {
-		sha256, fileStoreErr = s.services.FileStore.Add(pr)
+		sha256, fileStoreErr = s.services.FileStore.Add(stream.Context(), pr, "")
 		close(waitc)
 	}()
 
