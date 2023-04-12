@@ -58,7 +58,7 @@ var resetCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		if err := services.FileStore.PurgeAll(ctx); err != nil {
+		if err := services.FileStore.DeleteAll(ctx); err != nil {
 			log.Fatal(err)
 		}
 	},

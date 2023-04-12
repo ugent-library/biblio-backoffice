@@ -130,25 +130,11 @@ func (s *Store) Add(ctx context.Context, r io.Reader, oldChecksum string) (strin
 	return checksum, nil
 }
 
-// TODO remove empty intermediate directories
-func (s *Store) Purge(ctx context.Context, checksum string) error {
+// TODO remove empty intermediate directories?
+func (s *Store) Delete(ctx context.Context, checksum string) error {
 	return os.Remove(s.filePath(checksum))
 }
 
-func (s *Store) PurgeAll(ctx context.Context) error {
-	dir, err := os.Open(s.dir)
-	if err != nil {
-		return err
-	}
-	defer dir.Close()
-	names, err := dir.Readdirnames(-1)
-	if err != nil {
-		return err
-	}
-	for _, name := range names {
-		if err := os.RemoveAll(path.Join(s.dir, name)); err != nil {
-			return err
-		}
-	}
-	return nil
+func (s *Store) DeleteAll(ctx context.Context) error {
+	return os.RemoveAll(s.dir)
 }
