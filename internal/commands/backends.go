@@ -167,14 +167,14 @@ func newRepository() backends.Repository {
 
 func newFileStore() *filestore.Store {
 	baseDir := viper.GetString("file-dir")
-	fs, err := filestore.New(filestore.Config{
+	fsStore, err := filestore.New(filestore.Config{
 		Dir:     path.Join(baseDir, "root"),
 		TempDir: path.Join(baseDir, "tmp"),
 	})
 	if err != nil {
 		log.Fatalln("Unable to initialize filestore", err)
 	}
-	return fs
+	return fsStore
 }
 
 func newEs6Client(t string) *es6.Client {
