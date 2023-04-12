@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path"
 	"strings"
 	"sync"
 
@@ -165,7 +166,11 @@ func newRepository() backends.Repository {
 }
 
 func newFileStore() *filestore.Store {
-	fs, err := filestore.New(viper.GetString("file-dir"))
+	baseDir := viper.GetString("file-dir")
+	fs, err := filestore.New(filestore.Config{
+		Dir:     path.Join(baseDir, "root"),
+		TempDir: path.Join(baseDir, "tmp"),
+	})
 	if err != nil {
 		log.Fatalln("Unable to initialize filestore", err)
 	}

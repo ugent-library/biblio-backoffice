@@ -12,14 +12,18 @@ import (
 )
 
 type Store struct {
-	dir     string
-	tempDir string
+	dir, tempDir string
 }
 
-func New(basePath string) (*Store, error) {
+type Config struct {
+	Dir     string
+	TempDir string
+}
+
+func New(c Config) (*Store, error) {
 	s := &Store{
-		dir:     path.Join(basePath, "root"),
-		tempDir: path.Join(basePath, "tmp"),
+		dir:     path.Join(c.Dir),
+		tempDir: path.Join(c.TempDir),
 	}
 	if err := os.MkdirAll(s.dir, os.ModePerm); err != nil {
 		return nil, err
