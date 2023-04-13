@@ -20,10 +20,10 @@ describe('Publication import', () => {
     cy.contains('.btn', 'Add publication(s)').click()
 
     // Upload WoS file
-    cy.get('.c-file-upload').should('contain.text', 'Drag and drop or')
-    cy.contains('.btn', 'Upload file').get('.spinner-border').should('not.be.visible')
+    cy.get('.c-file-upload').should('contain.text', 'Drag and drop your .txt file or')
+    cy.contains('.btn', 'Upload .txt file').get('.spinner-border').should('not.be.visible')
     cy.get('input[name=file]').selectFile('cypress/fixtures/import-from-wos.txt')
-    cy.contains('.btn', 'Upload file').get('.spinner-border').should('be.visible')
+    cy.contains('.btn', 'Upload .txt file').get('.spinner-border').should('be.visible')
 
     // Review and publish
     cy.contains('Step 2').should('be.visible')

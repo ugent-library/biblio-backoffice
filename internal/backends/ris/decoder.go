@@ -194,8 +194,10 @@ func mapRecord(r Record, p *models.Publication) {
 			}
 		case "DI":
 			p.DOI = v[0]
-		case "JF", "JO", "T2", "SO":
+		case "JF", "JO", "T2":
 			p.Publication = v[0]
+		case "SO":
+			p.Publication = strings.Join(v, "")
 		case "JA", "JI":
 			p.PublicationAbbreviation = v[0]
 		case "SN":
@@ -251,7 +253,7 @@ func mapRecord(r Record, p *models.Publication) {
 		case "PI":
 			p.PlaceOfPublication = v[0]
 		case "CT":
-			p.ConferenceName = v[0]
+			p.ConferenceName = strings.Join(v, "")
 		case "CL":
 			p.ConferenceLocation = v[0]
 		case "CY":
