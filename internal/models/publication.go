@@ -1320,6 +1320,18 @@ func (p *Publication) ChangeType(newType string) error {
 
 	p.Type = newType
 
+	if !p.UsesJournalArticleType() {
+		p.JournalArticleType = ""
+	}
+
+	if !p.UsesConferenceType() {
+		p.ConferenceType = ""
+	}
+
+	if !p.UsesMiscellaneousType() {
+		p.MiscellaneousType = ""
+	}
+
 	if !validation.InArray(p.ClassificationChoices(), p.Classification) {
 		p.Classification = "U"
 	}
