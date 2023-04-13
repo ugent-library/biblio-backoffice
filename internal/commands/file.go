@@ -10,7 +10,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/ugent-library/biblio-backoffice/internal/backends/filestore"
+	"github.com/ugent-library/biblio-backoffice/internal/backends"
 )
 
 type importFile struct {
@@ -26,7 +26,7 @@ func init() {
 	rootCmd.AddCommand(fileCmd)
 }
 
-func addFile(fileStore *filestore.Store, path, checksum string) (string, error) {
+func addFile(fileStore backends.FileStore, path, checksum string) (string, error) {
 	f, err := os.Open(path)
 	if err != nil {
 		return "", fmt.Errorf("unable to %s for reading: %v", path, err)

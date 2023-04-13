@@ -6,7 +6,6 @@ import (
 	"io"
 	"time"
 
-	"github.com/ugent-library/biblio-backoffice/internal/backends/filestore"
 	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"github.com/ugent-library/go-orcid/orcid"
 )
@@ -15,7 +14,7 @@ type Services struct {
 	ORCIDSandbox               bool
 	ORCIDClient                *orcid.MemberClient
 	Repository                 Repository
-	FileStore                  *filestore.Store
+	FileStore                  FileStore
 	DatasetSearchService       DatasetSearchService
 	PublicationSearchService   PublicationSearchService
 	OrganizationService        OrganizationService
@@ -97,6 +96,14 @@ type Repository interface {
 	GetVisibleDatasetPublications(*models.User, *models.Dataset) ([]*models.Publication, error)
 	AddPublicationDataset(*models.Publication, *models.Dataset, *models.User) error
 	RemovePublicationDataset(*models.Publication, *models.Dataset, *models.User) error
+}
+
+type FileStore interface {
+	Exists(context.Context, string) (bool, error)
+	Get(context.Context, string) (io.ReadCloser, error)
+	Add(context.Context, io.Reader, string) (string, error)
+	Delete(context.Context, string) error
+	DeleteAll(context.Context) error
 }
 
 type BulkIndexerConfig struct {

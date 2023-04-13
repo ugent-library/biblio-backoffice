@@ -20,10 +20,10 @@ import (
 	"github.com/ugent-library/biblio-backoffice/internal/backends/es6"
 	excel_dataset "github.com/ugent-library/biblio-backoffice/internal/backends/excel/dataset"
 	excel_publication "github.com/ugent-library/biblio-backoffice/internal/backends/excel/publication"
+	"github.com/ugent-library/biblio-backoffice/internal/backends/fsstore"
 	"github.com/ugent-library/biblio-backoffice/internal/backends/handle"
 	"github.com/ugent-library/biblio-backoffice/internal/caching"
 
-	"github.com/ugent-library/biblio-backoffice/internal/backends/filestore"
 	"github.com/ugent-library/biblio-backoffice/internal/backends/ianamedia"
 	"github.com/ugent-library/biblio-backoffice/internal/backends/jsonl"
 	"github.com/ugent-library/biblio-backoffice/internal/backends/pubmed"
@@ -165,16 +165,16 @@ func newRepository() backends.Repository {
 	return s
 }
 
-func newFileStore() *filestore.Store {
+func newFileStore() backends.FileStore {
 	baseDir := viper.GetString("file-dir")
-	fsStore, err := filestore.New(filestore.Config{
+	store, err := fsstore.New(fsstore.Config{
 		Dir:     path.Join(baseDir, "root"),
 		TempDir: path.Join(baseDir, "tmp"),
 	})
 	if err != nil {
 		log.Fatalln("Unable to initialize filestore", err)
 	}
-	return fsStore
+	return store
 }
 
 func newEs6Client(t string) *es6.Client {

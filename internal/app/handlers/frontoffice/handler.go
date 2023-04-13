@@ -17,7 +17,6 @@ import (
 	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backoffice/internal/app/handlers"
 	"github.com/ugent-library/biblio-backoffice/internal/backends"
-	"github.com/ugent-library/biblio-backoffice/internal/backends/filestore"
 	"github.com/ugent-library/biblio-backoffice/internal/bind"
 	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"github.com/ugent-library/biblio-backoffice/internal/render"
@@ -62,7 +61,7 @@ type Handler struct {
 	Repository               backends.Repository
 	PublicationSearchService backends.PublicationSearchService
 	DatasetSearchService     backends.DatasetSearchService
-	FileStore                *filestore.Store
+	FileStore                backends.FileStore
 	IPFilter                 *ipfilter.IPFilter
 }
 

@@ -5,7 +5,6 @@ import (
 
 	"github.com/ugent-library/biblio-backoffice/internal/app/handlers"
 	"github.com/ugent-library/biblio-backoffice/internal/backends"
-	"github.com/ugent-library/biblio-backoffice/internal/backends/filestore"
 	"github.com/ugent-library/biblio-backoffice/internal/bind"
 	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"github.com/ugent-library/biblio-backoffice/internal/render"
@@ -21,7 +20,7 @@ type Handler struct {
 	OrganizationSearchService backends.OrganizationSearchService
 	OrganizationService       backends.OrganizationService
 	DatasetSearchService      backends.DatasetSearchService
-	FileStore                 *filestore.Store
+	FileStore                 backends.FileStore
 	MaxFileSize               int
 }
 
