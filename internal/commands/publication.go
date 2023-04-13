@@ -264,6 +264,11 @@ var publicationCleanupCmd = &cobra.Command{
 			}
 			p.Keyword = cleanKeywords
 
+			// Remove unused fields
+			if p.CleanupUnusedFields() {
+				fixed = true
+			}
+
 			// Save record if changed
 			if fixed {
 				p.User = nil

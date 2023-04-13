@@ -1033,6 +1033,11 @@ func (s *server) CleanupPublications(req *api.CleanupPublicationsRequest, stream
 		}
 		p.Keyword = cleanKeywords
 
+		// Remove unused fields
+		if p.CleanupUnusedFields() {
+			fixed = true
+		}
+
 		// Save record if changed
 		if fixed {
 			p.User = nil
