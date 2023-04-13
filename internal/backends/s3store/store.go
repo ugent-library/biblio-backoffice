@@ -61,7 +61,14 @@ func New(c Config) (*Store, error) {
 }
 
 func (s *Store) Get(ctx context.Context, checksum string) (io.ReadCloser, error) {
-	return nil, errors.New("not implemented")
+	out, err := s.client.GetObject(ctx, &s3.GetObjectInput{
+		Bucket: aws.String(s.bucket),
+		Key:    aws.String(checksum),
+	})
+	if err != nil {
+		return nil, err
+	}
+	return out.Body, nil
 }
 
 func (s *Store) Exists(ctx context.Context, checksum string) (bool, error) {
@@ -127,12 +134,12 @@ func (s *Store) Delete(ctx context.Context, checksum string) error {
 }
 
 func (s *Store) DeleteAll(ctx context.Context) error {
-	paginator := s3.NewListObjectsV2Paginator(s.client, &s3.ListObjectsV2Input{
+	pager := s3.NewListObjectsV2Paginator(s.client, &s3.ListObjectsV2Input{
 		Bucket: aws.String(s.bucket),
 	})
 
-	for paginator.HasMorePages() {
-		page, err := paginator.NextPage(ctx)
+	for pager.HasMorePages() {
+		page, err := pager.NextPage(ctx)
 		if err != nil {
 			return err
 		}
