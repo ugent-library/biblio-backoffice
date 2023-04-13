@@ -14,6 +14,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 	"github.com/google/uuid"
 )
 
@@ -126,5 +127,33 @@ func (s *Store) Delete(ctx context.Context, checksum string) error {
 }
 
 func (s *Store) DeleteAll(ctx context.Context) error {
-	return errors.New("not implemented")
+	paginator := s3.NewListObjectsV2Paginator(s.client, &s3.ListObjectsV2Input{
+		Bucket: aws.String(s.bucket),
+	})
+
+	for paginator.HasMorePages() {
+		page, err := paginator.NextPage(ctx)
+		if err != nil {
+			return err
+		}
+
+		var ids []types.ObjectIdentifier
+		for _, object := range page.Contents {
+			ids = append(ids, types.ObjectIdentifier{
+				Key: object.Key,
+			})
+		}
+
+		_, err = s.client.DeleteObjects(ctx, &s3.DeleteObjectsInput{
+			Bucket: aws.String(s.bucket),
+			Delete: &types.Delete{
+				Objects: ids,
+			},
+		})
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
