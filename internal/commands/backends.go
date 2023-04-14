@@ -186,6 +186,7 @@ func newFileStore() backends.FileStore {
 		Bucket:     viper.GetString("s3-bucket"),
 		TempBucket: viper.GetString("s3-temp-bucket"),
 	})
+
 	if err != nil {
 		log.Fatalln("Unable to initialize filestore", err)
 	}

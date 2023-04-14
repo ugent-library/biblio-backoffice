@@ -59,6 +59,7 @@ func init() {
 	viper.SetDefault("dataset-index", defaultDatasetIndex)
 	viper.SetDefault("publication-index", defaultPublicationIndex)
 	viper.SetDefault("index-retention", defaultIndexRetention)
+	viper.SetDefault("s3-region", "us-east-1")
 	// viper.SetDefault("api-host", defaultAPIHost)
 	// viper.SetDefault("api-port", defaultAPIPort)
 	viper.SetDefault("api-username", defaultAPIAdminUsername)

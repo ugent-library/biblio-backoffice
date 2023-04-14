@@ -114,9 +114,9 @@ func (s *Store) Add(ctx context.Context, b io.Reader, oldChecksum string) (strin
 	}
 
 	_, err = s.client.CopyObject(ctx, &s3.CopyObjectInput{
-		Bucket:     aws.String(s.bucket),
 		CopySource: aws.String(s.tempBucket + "/" + tempKey),
-		Key:        aws.String(s.bucket + "/" + checksum),
+		Bucket:     aws.String(s.bucket),
+		Key:        aws.String(checksum),
 	})
 	if err != nil {
 		return "", err
