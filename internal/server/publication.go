@@ -1320,20 +1320,17 @@ func (s *server) SyncPublicationContributors(req *api.SyncPublicationContributor
 					c.LastName = person.LastName
 				}
 
-				// wait until format is the same everywhere
-				/*
-					if c.FullName != person.FullName {
-						changes = append(changes, &api.ContributorChange{
-							PublicationId:   p.ID,
-							ContributorId:   c.ID,
-							ContributorRole: role,
-							Attribute:       "contributor.full_name",
-							From:            c.FullName,
-							To:              person.FullName,
-						})
-						c.FullName = person.FullName
-					}
-				*/
+				if c.FullName != person.FullName {
+					changes = append(changes, &api.ContributorChange{
+						PublicationId:   p.ID,
+						ContributorId:   c.ID,
+						ContributorRole: role,
+						Attribute:       "contributor.full_name",
+						From:            c.FullName,
+						To:              person.FullName,
+					})
+					c.FullName = person.FullName
+				}
 
 				if c.ORCID != person.ORCID {
 					changes = append(changes, &api.ContributorChange{
