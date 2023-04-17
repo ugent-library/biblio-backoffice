@@ -1190,13 +1190,60 @@ func (s *server) SyncPublicationContributors(req *api.SyncPublicationContributor
 	defer bi.Close(ctx)
 
 	var callbackErr error
+	// cache does not store nil values
+	invalidContributors := map[string]error{}
+	contributorRoles := []string{"author", "editor", "supervisor"}
 
 	// startErr: error that stores why the loop could not even start
 	startErr := repository.EachPublication(func(p *models.Publication) bool {
 
 		changes := make([]*api.ContributorChange, 0)
 
-		for _, role := range []string{"author", "editor", "supervisor"} {
+		// prefetch all contributors from personService
+		// ignore those contributors that did not return anything in a previous call
+		contributorIds := make([]string, 0)
+		for _, role := range contributorRoles {
+			for _, contributor := range p.Contributors(role) {
+				if contributor.ID == "" {
+					continue
+				}
+				if _, ok := invalidContributors[contributor.ID]; !ok {
+					continue
+				}
+				found := false
+				for _, contributorId := range contributorIds {
+					if contributorId == contributor.ID {
+						found = true
+					}
+				}
+				if !found {
+					contributorIds = append(contributorIds, contributor.ID)
+				}
+			}
+		}
+
+		var persons []*models.Person = make([]*models.Person, 0)
+		if len(contributorIds) > 0 {
+
+			var personErr error
+			persons, personErr = personService.GetPersons(contributorIds)
+			if personErr != nil {
+
+				e := sendErr(stream, fmt.Errorf("unable to prefetch contributors for publication with id '%s': %s", p.ID, personErr))
+
+				if e != nil {
+					callbackErr = e
+					// unable to send error: stop the loop
+					return false
+				}
+
+				// TODO: send error
+				return false
+			}
+
+		}
+
+		for _, role := range contributorRoles {
 
 			contributors := p.Contributors(role)
 
@@ -1207,11 +1254,38 @@ func (s *server) SyncPublicationContributors(req *api.SyncPublicationContributor
 					continue
 				}
 
-				person, err := personService.GetPerson(c.ID)
+				// contributors already handled
+				if cErr, ok := invalidContributors[c.ID]; ok {
+					e := sendErr(stream, fmt.Errorf("[duplicate] unable to fetch person with id '%s' with role '%s' for publication with id '%s': %s", c.ID, role, p.ID, cErr))
+
+					if e != nil {
+						callbackErr = e
+						// unable to send error: stop the loop
+						return false
+					}
+
+					// this is not fatal error, so keep going
+					continue
+				}
+
+				var person *models.Person
+				for _, p := range persons {
+					if p.ID == c.ID {
+						person = p
+						break
+					}
+				}
+				var personErr error
+				if person == nil {
+					personErr = backends.ErrNotFound
+				}
 
 				// person is gone from the authority table
-				if err != nil {
-					e := sendErr(stream, fmt.Errorf("unable to fetch person with id '%s' with role '%s' for publication with id '%s': %s", c.ID, role, p.ID, err))
+				if personErr != nil {
+
+					invalidContributors[c.ID] = personErr
+
+					e := sendErr(stream, fmt.Errorf("unable to fetch person with id '%s' with role '%s' for publication with id '%s': %s", c.ID, role, p.ID, personErr))
 
 					if e != nil {
 						callbackErr = e
