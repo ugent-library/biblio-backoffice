@@ -93,7 +93,7 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 	p.ConferenceType = b.ConferenceType
 	p.DefenseDate = b.DefenseDate
 	p.DefensePlace = b.DefensePlace
-	p.DefenseTime = b.DefenseTime
+	//p.DefenseTime = b.DefenseTime
 	p.DOI = b.DOI
 	p.Edition = b.Edition
 	p.EISBN = b.EISBN

@@ -554,9 +554,10 @@ func (h *Handler) mapPublication(p *models.Publication) *Publication {
 			pp.Defense = &Defense{}
 		}
 		pp.Defense.Date = p.DefenseDate
-		if validation.IsTime(p.DefenseTime) {
-			pp.Defense.Date = fmt.Sprintf("%s %s", pp.Defense.Date, p.DefenseTime)
-		}
+		/*
+			if validation.IsTime(p.DefenseTime) {
+				pp.Defense.Date = fmt.Sprintf("%s %s", pp.Defense.Date, p.DefenseTime)
+			}*/
 	}
 	if p.DefensePlace != "" {
 		if pp.Defense == nil {

@@ -359,15 +359,16 @@ func detailsForm(user *models.User, l *locale.Locale, p *models.Publication, err
 				Help:     l.T("builder.defense_date.help"),
 				Error:    localize.ValidationErrorAt(l, errors, "/defense_date"),
 			},
-			&form.Text{
-				Name:     "defense_time",
-				Label:    l.T("builder.defense_time"),
-				Value:    p.DefenseTime,
-				Required: p.ShowDefenseAsRequired(),
-				Cols:     3,
-				Help:     l.T("builder.defense_time.help"),
-				Error:    localize.ValidationErrorAt(l, errors, "/defense_time"),
-			},
+			/*
+				&form.Text{
+					Name:     "defense_time",
+					Label:    l.T("builder.defense_time"),
+					Value:    p.DefenseTime,
+					Required: p.ShowDefenseAsRequired(),
+					Cols:     3,
+					Help:     l.T("builder.defense_time.help"),
+					Error:    localize.ValidationErrorAt(l, errors, "/defense_time"),
+				},*/
 			&form.Text{
 				Name:     "defense_place",
 				Label:    l.T("builder.defense_place"),
