@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	awshttp "github.com/aws/aws-sdk-go-v2/aws/transport/http"
@@ -86,6 +85,8 @@ func (s *Store) Exists(ctx context.Context, checksum string) (bool, error) {
 	return true, nil
 }
 
+// the temp bucket should have a suitable expiry configured
+// e.g. with minio client: mc ilm rule add biblio-dev/temp --expire-days 1
 func (s *Store) Add(ctx context.Context, b io.Reader, oldChecksum string) (string, error) {
 	tempKey := uuid.New().String()
 
@@ -93,14 +94,14 @@ func (s *Store) Add(ctx context.Context, b io.Reader, oldChecksum string) (strin
 
 	tee := io.TeeReader(b, hasher)
 
-	tempExpires := time.Now().Add(time.Hour)
+	// tempExpires := time.Now().Add(time.Hour)
 
 	uploader := manager.NewUploader(s.client)
 	_, err := uploader.Upload(ctx, &s3.PutObjectInput{
-		Bucket:  aws.String(s.tempBucket),
-		Key:     aws.String(tempKey),
-		Body:    tee,
-		Expires: &tempExpires,
+		Bucket: aws.String(s.tempBucket),
+		Key:    aws.String(tempKey),
+		Body:   tee,
+		// Expires: &tempExpires,
 	})
 	if err != nil {
 		return "", err
