@@ -1409,7 +1409,8 @@ func (s *server) SyncPublicationContributors(req *api.SyncPublicationContributor
 		if err := p.Validate(); err != nil {
 
 			for _, validationErr := range err.(validation.Errors) {
-				if sErr := sendErr(stream, validationErr); sErr != nil {
+				formattedErr := fmt.Errorf("validation failed for publication %s: %w", p.ID, validationErr)
+				if sErr := sendErr(stream, formattedErr); sErr != nil {
 					callbackErr = sErr
 					// unable to send error: stop the loop
 					return false
