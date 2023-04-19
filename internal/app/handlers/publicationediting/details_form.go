@@ -359,6 +359,7 @@ func detailsForm(user *models.User, l *locale.Locale, p *models.Publication, err
 				Help:     l.T("builder.defense_date.help"),
 				Error:    localize.ValidationErrorAt(l, errors, "/defense_date"),
 			},
+			// https://github.com/ugent-library/biblio-backoffice/issues/1058
 			/*
 				&form.Text{
 					Name:     "defense_time",

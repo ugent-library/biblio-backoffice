@@ -93,6 +93,7 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 	p.ConferenceType = b.ConferenceType
 	p.DefenseDate = b.DefenseDate
 	p.DefensePlace = b.DefensePlace
+	// https://github.com/ugent-library/biblio-backoffice/issues/1058
 	//p.DefenseTime = b.DefenseTime
 	p.DOI = b.DOI
 	p.Edition = b.Edition
