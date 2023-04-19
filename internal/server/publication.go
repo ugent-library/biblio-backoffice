@@ -1207,7 +1207,7 @@ func (s *server) SyncPublicationContributors(req *api.SyncPublicationContributor
 				if contributor.ID == "" {
 					continue
 				}
-				if _, ok := invalidContributors[contributor.ID]; !ok {
+				if _, ok := invalidContributors[contributor.ID]; ok {
 					continue
 				}
 				found := false
@@ -1419,7 +1419,7 @@ func (s *server) SyncPublicationContributors(req *api.SyncPublicationContributor
 
 		}
 
-		if !req.Noop {
+		if !req.Noop && len(changes) > 0 {
 
 			if err := s.services.Repository.UpdatePublication(p.SnapshotID, p, nil); err != nil {
 
