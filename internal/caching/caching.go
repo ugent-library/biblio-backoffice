@@ -63,6 +63,20 @@ func NewPersonService(service backends.PersonService) backends.PersonService {
 	}
 }
 
+func (s *personService) GetPersons(ids []string) ([]*models.Person, error) {
+	persons := make([]*models.Person, 0)
+	for _, id := range ids {
+		person, err := s.GetPerson(id)
+		if err != nil && err == backends.ErrNotFound {
+			continue
+		} else if err != nil {
+			return nil, err
+		}
+		persons = append(persons, person)
+	}
+	return persons, nil
+}
+
 func (s *personService) GetPerson(id string) (*models.Person, error) {
 	v, err := s.cache.Get(id)
 	if err != nil {

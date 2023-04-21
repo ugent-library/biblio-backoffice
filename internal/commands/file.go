@@ -2,6 +2,7 @@ package commands
 
 import (
 	"bufio"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -9,7 +10,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/ugent-library/biblio-backoffice/internal/backends/filestore"
+	"github.com/ugent-library/biblio-backoffice/internal/backends"
 )
 
 type importFile struct {
@@ -25,19 +26,15 @@ func init() {
 	rootCmd.AddCommand(fileCmd)
 }
 
-func addFile(fs *filestore.Store, path string) (string, error) {
-	return addFileWithChecksum(fs, path, "")
-}
-
-func addFileWithChecksum(fs *filestore.Store, path string, checksum string) (string, error) {
-	fh, fhErr := os.Open(path)
-	if fhErr != nil {
-		return "", fmt.Errorf("unable to %s for reading: %v", path, fhErr)
+func addFile(fileStore backends.FileStore, path, checksum string) (string, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return "", fmt.Errorf("unable to %s for reading: %v", path, err)
 	}
-	defer fh.Close()
-	id, addErr := fs.AddWithChecksum(fh, checksum)
-	if addErr != nil {
-		return "", fmt.Errorf("unable to add file %s: %v", path, addErr)
+	defer f.Close()
+	id, err := fileStore.Add(context.Background(), f, checksum)
+	if err != nil {
+		return "", fmt.Errorf("unable to add file %s: %v", path, err)
 	}
 	return id, nil
 }
@@ -66,7 +63,7 @@ var fileAddCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		path := args[0]
 		fs := newFileStore()
-		id, addErr := addFile(fs, path)
+		id, addErr := addFile(fs, path, "")
 		if addErr != nil {
 			fmt.Fprintf(os.Stderr, "unable to add file %s: %s\n", path, addErr.Error())
 			os.Exit(1)
@@ -104,12 +101,12 @@ var fileAddManyCmd = &cobra.Command{
 			}
 		}
 
-		fs := newFileStore()
+		fileStore := newFileStore()
 
 		scanner := bufio.NewScanner(fhIn)
 		for scanner.Scan() {
 			path := scanner.Text()
-			id, addErr := addFile(fs, path)
+			id, addErr := addFile(fileStore, path, "")
 			if addErr != nil {
 				fmt.Fprintf(os.Stderr, "unable add file %s : %s\n", path, addErr.Error())
 				continue
@@ -179,14 +176,14 @@ var fileImportManyCmd = &cobra.Command{
 			}
 
 			// skip files that are already in the store
-			if _, err := os.Stat(fs.FilePath(importFile.Sha256)); err == nil {
+			if exists, _ := fs.Exists(context.Background(), importFile.Sha256); exists {
 				// <file-id> <old-path>
 				fmt.Printf("%s %s\n", importFile.Sha256, importFile.File)
 				lineNo++
 				continue
 			}
 
-			id, addErr := addFileWithChecksum(fs, importFile.File, importFile.Sha256)
+			id, addErr := addFile(fs, importFile.File, importFile.Sha256)
 			if addErr != nil {
 				fmt.Fprintf(os.Stderr, "unable add file %s : %s\n", importFile.File, addErr.Error())
 				continue

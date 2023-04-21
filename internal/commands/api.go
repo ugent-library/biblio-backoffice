@@ -7,6 +7,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"github.com/ugent-library/biblio-backoffice/internal/server"
 )
 
@@ -32,17 +33,37 @@ var apiStartCmd = &cobra.Command{
 	Use:   "start",
 	Short: "start the api server",
 	Run: func(cmd *cobra.Command, args []string) {
+		// Setup logger
 		logger := newLogger()
 
-		srv := server.New(Services(), logger)
+		// Setup services
+		e := Services()
+
+		e.Repository.AddPublicationListener(func(p *models.Publication) {
+			if p.DateUntil == nil {
+				if err := e.PublicationSearchService.Index(p); err != nil {
+					logger.Errorf("error indexing publication %s: %w", p.ID, err)
+				}
+			}
+		})
+		e.Repository.AddDatasetListener(func(d *models.Dataset) {
+			if d.DateUntil == nil {
+				if err := e.DatasetSearchService.Index(d); err != nil {
+					logger.Errorf("error indexing dataset %s: %w", d.ID, err)
+				}
+			}
+		})
+
+		srv := server.New(e, logger)
 		addr := fmt.Sprintf("%s:%d", viper.GetString("host"), viper.GetInt("port"))
-		log.Printf("Listening at %s", addr)
+		logger.Infof("Listening at %s", addr)
 		listener, err := net.Listen("tcp", addr)
 		if err != nil {
 			log.Fatal(err)
 		}
 		if err := srv.Serve(listener); err != nil {
-			log.Fatal(err)
+			// TODO not everything is a fatal error.
+			log.Println(err)
 		}
 	},
 }

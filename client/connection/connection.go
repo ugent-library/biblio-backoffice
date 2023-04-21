@@ -1,8 +1,10 @@
-package client
+package connection
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"time"
 
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
 	"github.com/ugent-library/biblio-backoffice/client/auth"
@@ -10,15 +12,18 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-func Create(ctx context.Context, config Config) (api.BiblioClient, *grpc.ClientConn, error) {
-	// Set encryption
+func Handle(config Config, t func(c api.BiblioClient) error) error {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*config.Timeout)
+	defer cancel()
+
+	// Set TLS encryption
 	var dialOptionSecureConn grpc.DialOption
 	if config.Insecure {
 		dialOptionSecureConn = grpc.WithTransportCredentials(insecure.NewCredentials())
 	} else {
 		creds, err := LoadTLSCredentials(config)
 		if err != nil {
-			return nil, nil, err
+			return err
 		}
 		dialOptionSecureConn = grpc.WithTransportCredentials(creds)
 	}
@@ -35,10 +40,21 @@ func Create(ctx context.Context, config Config) (api.BiblioClient, *grpc.ClientC
 	)
 
 	if err != nil {
-		return nil, nil, err
+		if errors.Is(err, context.DeadlineExceeded) {
+			return fmt.Errorf("could not connect to host %s:%d, connection timed-out", config.Host, config.Port)
+		}
+
+		return err
 	}
+
+	defer conn.Close()
 
 	client := api.NewBiblioClient(conn)
 
-	return client, conn, nil
+	err = t(client)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

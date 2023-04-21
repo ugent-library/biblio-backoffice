@@ -92,7 +92,7 @@ func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context
 	}
 
 	// add file to filestore
-	checksum, err := h.FileStore.Add(file)
+	checksum, err := h.FileStore.Add(r.Context(), file, "")
 
 	if err != nil {
 		h.Logger.Errorf("publication upload file: could not save file", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)

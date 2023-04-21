@@ -2,24 +2,25 @@ package server
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"io"
-	"os"
 
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 const fileBufSize = 524288
 
 func (s *server) GetFile(req *api.GetFileRequest, stream api.Biblio_GetFileServer) error {
-	fPath := s.services.FileStore.FilePath(req.Sha256)
-	f, err := os.Open(fPath)
+	b, err := s.services.FileStore.Get(stream.Context(), req.Sha256)
 	if err != nil {
 		return fmt.Errorf("cannot open file: %w", err)
 	}
-	defer f.Close()
+	defer b.Close()
 
-	r := bufio.NewReader(f)
+	r := bufio.NewReader(b)
 	buf := make([]byte, fileBufSize)
 
 	for {
@@ -31,7 +32,9 @@ func (s *server) GetFile(req *api.GetFileRequest, stream api.Biblio_GetFileServe
 			return fmt.Errorf("cannot read chunk to buffer: %w", err)
 		}
 
-		req := &api.GetFileResponse{Chunk: buf[:n]}
+		req := &api.GetFileResponse{
+			Chunk: buf[:n],
+		}
 
 		if err := stream.Send(req); err != nil {
 			return fmt.Errorf("cannot send chunk to client: %w", err)
@@ -39,6 +42,13 @@ func (s *server) GetFile(req *api.GetFileRequest, stream api.Biblio_GetFileServe
 	}
 
 	return nil
+}
+
+func (s *server) ExistsFile(ctx context.Context, req *api.ExistsFileRequest) (*api.ExistsFileResponse, error) {
+	exists, err := s.services.FileStore.Exists(ctx, req.Sha256)
+	return &api.ExistsFileResponse{
+		Exists: exists,
+	}, err
 }
 
 func (s *server) AddFile(stream api.Biblio_AddFileServer) error {
@@ -51,7 +61,7 @@ func (s *server) AddFile(stream api.Biblio_AddFileServer) error {
 	waitc := make(chan struct{})
 
 	go func() {
-		sha256, fileStoreErr = s.services.FileStore.Add(pr)
+		sha256, fileStoreErr = s.services.FileStore.Add(stream.Context(), pr, "")
 		close(waitc)
 	}()
 
@@ -66,20 +76,28 @@ recv:
 				break recv
 			}
 			if err != nil {
-				return err
+				return status.Errorf(codes.Internal, "failed to read stream: %s", err)
 			}
 			if _, err := pw.Write(req.Chunk); err != nil {
-				return err
+				return status.Errorf(codes.Internal, "failed to write file chunk: %s", err)
 			}
 		}
 	}
 
 	pw.Close()
-
 	<-waitc
 
 	if fileStoreErr != nil {
-		return fileStoreErr
+		return status.Errorf(codes.Internal, "failed to write to stream: %v", fileStoreErr)
 	}
-	return stream.SendAndClose(&api.AddFileResponse{Sha256: sha256})
+
+	if err := stream.SendAndClose(&api.AddFileResponse{
+		Response: &api.AddFileResponse_Sha256{
+			Sha256: sha256,
+		},
+	}); err != nil {
+		return status.Errorf(codes.Internal, "failed to write to stream: %v", err)
+	}
+
+	return nil
 }

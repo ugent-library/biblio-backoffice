@@ -212,30 +212,28 @@ func (p *Publication) MainFile() *PublicationFile {
 	return nil
 }
 
-// format: c:vabb:419551 (VABB-1, not approved, 2017)
+// format: c:vabb:419551, VABB-1, not approved, 2017
 func (p *Publication) VABB() string {
-	VABBID := "-"
-	VABBType := "-"
-	VABBApproved := "not approved"
-	VABBYear := "-"
+	var parts []string
 
 	if p.VABBID != "" {
-		VABBID = p.VABBID
-	}
+		parts = append(parts, p.VABBID)
 
-	if p.VABBType != "" {
-		VABBType = p.VABBType
-	}
-
-	if p.VABBApproved {
-		VABBApproved = "approved"
+		if p.VABBType != "" {
+			parts = append(parts, p.VABBType)
+		}
+		if p.VABBApproved {
+			parts = append(parts, "approved")
+		} else {
+			parts = append(parts, "not approved")
+		}
 	}
 
 	if len(p.VABBYear) > 0 {
-		VABBYear = strings.Join(p.VABBYear, ", ")
+		parts = append(parts, p.VABBYear...)
 	}
 
-	return fmt.Sprintf("%s (%s, %s, %s)", VABBID, VABBType, VABBApproved, VABBYear)
+	return strings.Join(parts, ", ")
 }
 
 // Citation
@@ -1316,171 +1314,285 @@ func (pl *PublicationLink) Validate() (errs validation.Errors) {
 	return
 }
 
-func (p *Publication) ChangeType(newType string) error {
+func (p *Publication) CleanupUnusedFields() bool {
+	changed := false
+
+	if !p.UsesJournalArticleType() && p.JournalArticleType != "" {
+		changed = true
+		p.JournalArticleType = ""
+	}
+
+	if !p.UsesConferenceType() && p.ConferenceType != "" {
+		changed = true
+		p.ConferenceType = ""
+	}
+
+	if !p.UsesMiscellaneousType() && p.MiscellaneousType != "" {
+		changed = true
+		p.MiscellaneousType = ""
+	}
+
+	if !validation.InArray(p.ClassificationChoices(), p.Classification) {
+		changed = true
+		p.Classification = "U"
+	}
+
+	if !p.UsesAbstract() && p.Abstract != nil {
+		changed = true
+		p.Abstract = nil
+	}
+
+	if !p.UsesAdditionalInfo() && p.AdditionalInfo != "" {
+		changed = true
+		p.AdditionalInfo = ""
+	}
+
+	if !p.UsesAlternativeTitle() && p.AlternativeTitle != nil {
+		changed = true
+		p.AlternativeTitle = nil
+	}
+
+	if !p.UsesArticleNumber() && p.ArticleNumber != "" {
+		changed = true
+		p.ArticleNumber = ""
+	}
+
+	if !p.UsesArxivID() && p.ArxivID != "" {
+		changed = true
+		p.ArxivID = ""
+	}
+
+	if !p.UsesConference() {
+		if p.ConferenceName != "" {
+			changed = true
+			p.ConferenceName = ""
+		}
+		if p.ConferenceLocation != "" {
+			changed = true
+			p.ConferenceLocation = ""
+		}
+		if p.ConferenceOrganizer != "" {
+			changed = true
+			p.ConferenceOrganizer = ""
+		}
+		if p.ConferenceStartDate != "" {
+			changed = true
+			p.ConferenceStartDate = ""
+		}
+		if p.ConferenceEndDate != "" {
+			changed = true
+			p.ConferenceEndDate = ""
+		}
+	}
+
+	if !p.UsesDefense() {
+		if p.DefenseDate != "" {
+			changed = true
+			p.DefenseDate = ""
+		}
+		if p.DefensePlace != "" {
+			changed = true
+			p.DefensePlace = ""
+		}
+	}
+
+	if !p.UsesDOI() && p.DOI != "" {
+		changed = true
+		p.DOI = ""
+	}
+
+	if !p.UsesEdition() && p.Edition != "" {
+		changed = true
+		p.Edition = ""
+	}
+
+	if !p.UsesISBN() {
+		if p.ISBN != nil {
+			changed = true
+			p.ISBN = nil
+		}
+		if p.EISBN != nil {
+			changed = true
+			p.EISBN = nil
+		}
+	}
+
+	if !p.UsesISSN() {
+		if p.ISSN != nil {
+			changed = true
+			p.ISSN = nil
+		}
+		if p.EISSN != nil {
+			changed = true
+			p.EISSN = nil
+		}
+	}
+
+	if !p.UsesESCIID() && p.ESCIID != "" {
+		changed = true
+		p.ESCIID = ""
+	}
+
+	if !p.UsesConfirmations() {
+		if p.HasConfidentialData != "" {
+			changed = true
+			p.HasConfidentialData = ""
+		}
+		if p.HasPatentApplication != "" {
+			changed = true
+			p.HasPatentApplication = ""
+		}
+		if p.HasPublicationsPlanned != "" {
+			changed = true
+			p.HasPublicationsPlanned = ""
+		}
+		if p.HasPublishedMaterial != "" {
+			changed = true
+			p.HasPublishedMaterial = ""
+		}
+	}
+
+	if !p.UsesIssue() {
+		if p.Issue != "" {
+			changed = true
+			p.Issue = ""
+		}
+		if p.IssueTitle != "" {
+			changed = true
+			p.IssueTitle = ""
+		}
+	}
+
+	if !p.UsesKeyword() && p.Keyword != nil {
+		changed = true
+		p.Keyword = nil
+	}
+
+	if !p.UsesLanguage() && p.Language != nil {
+		changed = true
+		p.Language = nil
+	}
+
+	if !p.UsesLaySummary() && p.LaySummary != nil {
+		changed = true
+		p.LaySummary = nil
+	}
+
+	if !p.UsesLink() && p.Link != nil {
+		changed = true
+		p.Link = nil
+	}
+
+	if !p.UsesPageCount() && p.PageCount != "" {
+		changed = true
+		p.PageCount = ""
+	}
+
+	if !p.UsesPage() {
+		if p.PageFirst != "" {
+			changed = true
+			p.PageFirst = ""
+		}
+		if p.PageLast != "" {
+			changed = true
+			p.PageLast = ""
+		}
+	}
+
+	if !p.UsesProject() && p.Project != nil {
+		changed = true
+		p.Project = nil
+	}
+
+	if !p.UsesPublication() && p.Publication != "" {
+		changed = true
+		p.Publication = ""
+	}
+
+	if !p.UsesPublicationAbbreviation() && p.PublicationAbbreviation != "" {
+		changed = true
+		p.PublicationAbbreviation = ""
+	}
+
+	if !p.UsesPublicationStatus() && p.PublicationAbbreviation != "" {
+		changed = true
+		p.PublicationStatus = ""
+	}
+
+	if !p.UsesPubMedID() && p.PubMedID != "" {
+		changed = true
+		p.PubMedID = ""
+	}
+
+	if !p.UsesReportNumber() && p.ReportNumber != "" {
+		changed = true
+		p.ReportNumber = ""
+	}
+
+	if !p.UsesPublisher() {
+		if p.Publisher != "" {
+			changed = true
+			p.Publisher = ""
+		}
+		if p.PlaceOfPublication != "" {
+			changed = true
+			p.PlaceOfPublication = ""
+		}
+	}
+
+	if !p.UsesResearchField() && p.ResearchField != nil {
+		changed = true
+		p.ResearchField = nil
+	}
+
+	if !p.UsesSeriesTitle() && p.SeriesTitle != "" {
+		changed = true
+		p.SeriesTitle = ""
+	}
+
+	if !p.UsesTitle() && p.Title != "" {
+		changed = true
+		p.Title = ""
+	}
+
+	if !p.UsesAuthor() && p.Author != nil {
+		changed = true
+		p.Author = nil
+	}
+
+	if !p.UsesEditor() && p.Editor != nil {
+		changed = true
+		p.Editor = nil
+	}
+
+	if !p.UsesSupervisor() && p.Supervisor != nil {
+		changed = true
+		p.Supervisor = nil
+	}
+
+	return changed
+}
+
+func (p *Publication) ChangeType(newType string) {
 	usedAuthor := p.UsesAuthor()
 	usedEditor := p.UsesEditor()
 
 	p.Type = newType
 
-	if !validation.InArray(p.ClassificationChoices(), p.Classification) {
-		p.Classification = "U"
-	}
-
-	if !p.UsesAbstract() {
-		p.Abstract = nil
-	}
-
-	if !p.UsesAdditionalInfo() {
-		p.AdditionalInfo = ""
-	}
-
-	if !p.UsesAlternativeTitle() {
-		p.AlternativeTitle = nil
-	}
-
-	if !p.UsesArticleNumber() {
-		p.ArticleNumber = ""
-	}
-
-	if !p.UsesArxivID() {
-		p.ArxivID = ""
-	}
-
-	if !p.UsesConference() {
-		p.ConferenceName = ""
-		p.ConferenceLocation = ""
-		p.ConferenceOrganizer = ""
-		p.ConferenceStartDate = ""
-		p.ConferenceEndDate = ""
-	}
-
-	if !p.UsesDefense() {
-		p.DefenseDate = ""
-		p.DefensePlace = ""
-	}
-
-	if !p.UsesDOI() {
-		p.DOI = ""
-	}
-
-	if !p.UsesEdition() {
-		p.Edition = ""
-	}
-
-	if !p.UsesISBN() {
-		p.ISBN = nil
-		p.EISBN = nil
-	}
-
-	if !p.UsesISSN() {
-		p.ISSN = nil
-		p.EISSN = nil
-	}
-
-	if !p.UsesESCIID() {
-		p.ESCIID = ""
-	}
-
-	if !p.UsesConfirmations() {
-		p.HasConfidentialData = ""
-		p.HasPatentApplication = ""
-		p.HasPublicationsPlanned = ""
-		p.HasPublishedMaterial = ""
-	}
-
-	if !p.UsesIssue() {
-		p.Issue = ""
-		p.IssueTitle = ""
-	}
-
-	if !p.UsesKeyword() {
-		p.Keyword = nil
-	}
-
-	if !p.UsesLanguage() {
-		p.Language = nil
-	}
-
-	if !p.UsesLaySummary() {
-		p.LaySummary = nil
-	}
-
-	if !p.UsesLink() {
-		p.Link = nil
-	}
-
-	if !p.UsesPageCount() {
-		p.PageCount = ""
-	}
-
-	if !p.UsesPage() {
-		p.PageFirst = ""
-		p.PageLast = ""
-	}
-
-	if !p.UsesProject() {
-		p.Project = nil
-	}
-
-	if !p.UsesPublication() {
-		p.Publication = ""
-	}
-
-	if !p.UsesPublicationAbbreviation() {
-		p.PublicationAbbreviation = ""
-	}
-
-	if !p.UsesPublicationStatus() {
-		p.PublicationStatus = ""
-	}
-
-	if !p.UsesPubMedID() {
-		p.PubMedID = ""
-	}
-
-	if !p.UsesReportNumber() {
-		p.ReportNumber = ""
-	}
-
-	if !p.UsesPublisher() {
-		p.Publisher = ""
-		p.PlaceOfPublication = ""
-	}
-
-	if !p.UsesResearchField() {
-		p.ResearchField = nil
-	}
-
-	if !p.UsesSeriesTitle() {
-		p.SeriesTitle = ""
-	}
-
-	if !p.UsesTitle() {
-		p.Title = ""
-	}
-
-	if !p.UsesAuthor() {
-		if usedAuthor && p.UsesEditor() && p.Editor == nil {
-			p.Editor = p.Author
-			for _, c := range p.Editor {
-				c.CreditRole = nil
-			}
+	// transfer authors to Editor
+	if !p.UsesAuthor() && usedAuthor && p.UsesEditor() && p.Editor == nil {
+		p.Editor = p.Author
+		for _, c := range p.Editor {
+			c.CreditRole = nil
 		}
-		p.Author = nil
 	}
 
-	if !p.UsesEditor() {
-		if usedEditor && p.UsesAuthor() && p.Author == nil {
-			p.Author = p.Editor
-		}
-		p.Editor = nil
+	// transfer editors to Author
+	if !p.UsesEditor() && usedEditor && p.UsesAuthor() && p.Author == nil {
+		p.Author = p.Editor
 	}
 
-	if !p.UsesSupervisor() {
-		p.Supervisor = nil
-	}
-
-	return nil
+	p.CleanupUnusedFields()
 }
 
 func (pf *PublicationFile) ClearEmbargo() {

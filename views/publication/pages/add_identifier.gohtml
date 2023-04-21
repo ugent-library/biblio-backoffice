@@ -93,4 +93,9 @@
     </div>
 </div>
 {{end}}
+
+{{if .Errors}}
+    {{layout "show_modal" "form_errors_dialog" .Errors}}
+{{end}}
+
 {{end}}

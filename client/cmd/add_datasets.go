@@ -4,14 +4,13 @@ import (
 	"bufio"
 	"context"
 	"errors"
+	"fmt"
 	"io"
-	"log"
-	"os"
-	"time"
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
-	"github.com/ugent-library/biblio-backoffice/client/client"
+	cnx "github.com/ugent-library/biblio-backoffice/client/connection"
+	"google.golang.org/grpc/status"
 )
 
 func init() {
@@ -21,66 +20,92 @@ func init() {
 var AddDatasetsCmd = &cobra.Command{
 	Use:   "add",
 	Short: "Add datasets",
-	Run: func(cmd *cobra.Command, args []string) {
-		AddDatasets(cmd, args)
+	Long: `
+	Add one or more datasets from a JSONL (JSON Lines) formatted file via stdin.
+	Each line represents a single dataset.
+
+	Outputs either a success message with the dataset ID or an error message.
+	Each message contains the number pointing to the corresponding line in the input file:
+
+		$ ./biblio-backoffice dataset add < file.jsonl
+		stored and indexed dataset [ID] at line [LINENO]
+		failed to validate dataset [ID] at line [LINENO]: [MSG]
+	`,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return AddDatasets(cmd, args)
 	},
 }
 
-func AddDatasets(cmd *cobra.Command, args []string) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
-	defer cancel()
+func AddDatasets(cmd *cobra.Command, args []string) error {
+	return cnx.Handle(config, func(c api.BiblioClient) error {
+		stream, err := c.AddDatasets(context.Background())
+		if err != nil {
+			return fmt.Errorf("could not create a grpc stream: %w", err)
+		}
 
-	c, cnx, err := client.Create(ctx, config)
-	defer cnx.Close()
+		waitc := make(chan struct{})
+		errorc := make(chan error)
 
-	if errors.Is(err, context.DeadlineExceeded) {
-		log.Fatal("ContextDeadlineExceeded: true")
-	}
+		go func() {
+			for {
+				res, err := stream.Recv()
+				if err == io.EOF {
+					// read done.
+					close(waitc)
+					return
+				}
 
-	stream, err := c.AddDatasets(context.Background())
-	if err != nil {
-		log.Fatal(err)
-	}
-	waitc := make(chan struct{})
+				// return gRPC level error
+				if err != nil {
+					errorc <- err
+					return
+				}
 
-	go func() {
+				// Application level error
+				if ge := res.GetError(); ge != nil {
+					sre := status.FromProto(ge)
+					cmd.Printf("%s\n", sre.Message())
+				}
+
+				if rr := res.GetMessage(); rr != "" {
+					cmd.Printf("%s\n", rr)
+				}
+			}
+		}()
+
+		reader := bufio.NewReader(cmd.InOrStdin())
+		lineNo := 0
 		for {
-			res, err := stream.Recv()
+			line, err := reader.ReadBytes('\n')
 			if err == io.EOF {
-				// read done.
-				close(waitc)
-				return
+				break
 			}
 			if err != nil {
-				log.Fatal(err)
+				return fmt.Errorf("could not read line from input: %w", err)
 			}
-			log.Println(res.Message)
-		}
-	}()
 
-	reader := bufio.NewReader(os.Stdin)
-	lineNo := 0
-	for {
-		line, err := reader.ReadBytes('\n')
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			log.Fatal(err)
+			lineNo++
+
+			d := &api.Dataset{
+				Payload: line,
+			}
+
+			req := &api.AddDatasetsRequest{Dataset: d}
+			if err := stream.Send(req); err != nil {
+				return fmt.Errorf("could not send dataset to the server: %w", err)
+			}
 		}
 
-		lineNo++
+		stream.CloseSend()
 
-		d := &api.Dataset{
-			Payload: line,
+		select {
+		case errc := <-errorc:
+			if st, ok := status.FromError(errc); ok {
+				return errors.New(st.Message())
+			}
+		case <-waitc:
 		}
 
-		req := &api.AddDatasetsRequest{Dataset: d}
-		if err := stream.Send(req); err != nil {
-			log.Fatal(err)
-		}
-	}
-
-	stream.CloseSend()
-	<-waitc
+		return nil
+	})
 }

@@ -6,11 +6,10 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"time"
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
-	"github.com/ugent-library/biblio-backoffice/client/client"
+	cnx "github.com/ugent-library/biblio-backoffice/client/connection"
 	"google.golang.org/grpc/status"
 )
 
@@ -21,78 +20,92 @@ func init() {
 var AddPublicationsCmd = &cobra.Command{
 	Use:   "add",
 	Short: "Add publications",
+	Long: `
+	Add one or more datasets from a JSONL (JSON Lines) formatted file via stdin.
+	Each line represents a single dataset.
+
+	Outputs either a success message with the dataset ID or an error message.
+	Each message contains the number pointing to the corresponding line in the input file:
+
+		$ ./biblio-backoffice dataset add < file.jsonl
+		stored and indexed dataset [ID] at line [LINENO]
+		failed to validate dataset [ID] at line [LINENO]: [MSG]
+	`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return AddPublications(cmd, args)
 	},
 }
 
-func AddPublications(cmd *cobra.Command, args []string) (err error) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
-	defer cancel()
+func AddPublications(cmd *cobra.Command, args []string) error {
+	return cnx.Handle(config, func(c api.BiblioClient) error {
+		stream, err := c.AddPublications(context.Background())
+		if err != nil {
+			return fmt.Errorf("could not create a grpc stream: %w", err)
+		}
 
-	c, cnx, err := client.Create(ctx, config)
+		waitc := make(chan struct{})
+		errorc := make(chan error)
 
-	if err != nil {
-		return fmt.Errorf("could not connect with the server: %w", err)
-	}
+		go func() {
+			for {
+				res, err := stream.Recv()
+				if err == io.EOF {
+					// read done.
+					close(waitc)
+					return
+				}
 
-	defer cnx.Close()
+				// return gRPC level error
+				if err != nil {
+					errorc <- err
+					return
+				}
 
-	stream, err := c.AddPublications(context.Background())
-	if err != nil {
-		return fmt.Errorf("could not create a grpc stream: %w", err)
-	}
-	waitc := make(chan struct{})
-	errorc := make(chan error)
+				// Application level error
+				if ge := res.GetError(); ge != nil {
+					sre := status.FromProto(ge)
+					cmd.Printf("%s\n", sre.Message())
+				}
 
-	go func() {
+				if rr := res.GetMessage(); rr != "" {
+					cmd.Printf("%s\n", rr)
+				}
+			}
+		}()
+
+		reader := bufio.NewReader(cmd.InOrStdin())
+		lineNo := 0
 		for {
-			res, err := stream.Recv()
+			line, err := reader.ReadBytes('\n')
 			if err == io.EOF {
-				// read done.
-				close(waitc)
-				return
+				break
 			}
 			if err != nil {
-				// return grpc error
-				errorc <- err
-				return
+				return fmt.Errorf("could not read line from input: %w", err)
 			}
-			cmd.Println(res.Message)
-		}
-	}()
 
-	reader := bufio.NewReader(cmd.InOrStdin())
-	lineNo := 0
-	for {
-		line, err := reader.ReadBytes('\n')
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			return fmt.Errorf("could not read line from input: %w", err)
+			lineNo++
+
+			p := &api.Publication{
+				Payload: line,
+			}
+
+			req := &api.AddPublicationsRequest{Publication: p}
+			if err := stream.Send(req); err != nil {
+				return fmt.Errorf("could not send publication to the server: %w", err)
+			}
 		}
 
-		lineNo++
+		stream.CloseSend()
 
-		p := &api.Publication{
-			Payload: line,
+		select {
+		case errc := <-errorc:
+			if st, ok := status.FromError(errc); ok {
+				return errors.New(st.Message())
+			}
+		case <-waitc:
 		}
-		req := &api.AddPublicationsRequest{Publication: p}
-		if err := stream.Send(req); err != nil {
-			return fmt.Errorf("could not send publication to the server: %w", err)
-		}
-	}
 
-	stream.CloseSend()
-
-	select {
-	case errc := <-errorc:
-		if st, ok := status.FromError(errc); ok {
-			return errors.New(st.Message())
-		}
-	case <-waitc:
-	}
-
-	return nil
+		return nil
+	})
 }

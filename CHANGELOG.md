@@ -11,6 +11,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- #1051: WoS import does not import complete fields completely
+
+## [v1.0.25] - 2023-03-30
+
+### Added
+
+- gRPC client is now in a usable state
+
+### Fixed
+
+- #1039: Make interaction with authority database more robust
+- Various small ux fixes
+
+## [v1.0.24] - 2023-03-21
+
+### Added
+
+### Fixed
+
+- #1035: DOI import fails, leaves blank screen for 2 DOIs
+- #1030: Cannot see publications linked to a dataset as a researcher
+- #1028: Fix editing of keyword tag
+
+## [v1.0.23] - 2023-03-08
+
+### Added
+
+### Fixed
+
+- Always show VABB export years
+
 ## [v1.0.22] - 2023-02-17
 
 ### Added
@@ -68,7 +99,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Simple batch interface for curators (can currently only add projects) 
+- Simple batch interface for curators (can currently only add projects)
 - ulid wrapper package is no longer needed and has been removed
 
 ### Fixed
@@ -250,7 +281,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.22...HEAD
+[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.25...HEAD
+[v1.0.25]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.24...v1.0.25
+[v1.0.24]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.23...v1.0.24
+[v1.0.23]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.22...v1.0.23
 [v1.0.22]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.21...v1.0.22
 [v1.0.21]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.20...v1.0.21
 [v1.0.20]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.19...v1.0.20

@@ -15,11 +15,45 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+func (c *Client) GetPersons(ids []string) ([]*models.Person, error) {
+	cursor, err := c.mongo.
+		Database("authority").
+		Collection("person").
+		Find(context.Background(), bson.M{
+			"ids": bson.M{
+				"$in": ids,
+			},
+		})
+
+	if err != nil {
+		return nil, err
+	}
+
+	var records []bson.M = make([]bson.M, 0)
+	if err := cursor.All(context.Background(), records); err != nil {
+		if err == mongo.ErrNoDocuments {
+			return []*models.Person{}, nil
+		}
+		return nil, err
+	}
+
+	var persons []*models.Person = make([]*models.Person, 0, len(records))
+	for _, record := range records {
+		person, personErr := c.recordToPerson(record)
+		if personErr != nil {
+			return nil, personErr
+		}
+		persons = append(persons, person)
+	}
+
+	return persons, nil
+}
+
 func (c *Client) GetPerson(id string) (*models.Person, error) {
 	var record bson.M
 	err := c.mongo.Database("authority").Collection("person").FindOne(
 		context.Background(),
-		bson.M{"_id": id}).Decode(&record)
+		bson.M{"ids": id}).Decode(&record)
 	if err == mongo.ErrNoDocuments {
 		return nil, backends.ErrNotFound
 	}
@@ -88,49 +122,57 @@ func (c *Client) recordToPerson(record bson.M) (*models.Person, error) {
 	var person *models.Person = &models.Person{}
 
 	if v, e := record["_id"]; e {
-		person.ID = v.(string)
+		// _id might be stored as number, float or even "null"
+		person.ID = util.ParseString(v)
 	}
 	if v, e := record["active"]; e {
 		person.Active = util.ParseBoolean(v)
 	}
 	if v, e := record["orcid_id"]; e {
-		person.ORCID = v.(string)
+		// orcid might be stored as "null"
+		person.ORCID = util.ParseString(v)
 	}
 	if v, e := record["ugent_id"]; e {
 		for _, i := range v.(bson.A) {
-			person.UGentID = append(person.UGentID, i.(string))
+			person.UGentID = append(person.UGentID, util.ParseString(i))
 		}
 	}
 	if v, e := record["ugent_department_id"]; e {
 		for _, i := range v.(bson.A) {
-			person.Department = append(person.Department, models.PersonDepartment{ID: i.(string)})
+			person.Department = append(person.Department, models.PersonDepartment{ID: util.ParseString(i)})
 		}
 	}
 	if v, e := record["preferred_first_name"]; e {
-		person.FirstName = v.(string)
+		person.FirstName = util.ParseString(v)
 	} else if v, e := record["first_name"]; e {
-		person.FirstName = v.(string)
+		person.FirstName = util.ParseString(v)
 	}
 	if v, e := record["preferred_last_name"]; e {
-		person.LastName = v.(string)
+		person.LastName = util.ParseString(v)
 	} else if v, e := record["last_name"]; e {
-		person.LastName = v.(string)
+		person.LastName = util.ParseString(v)
 	}
 
-	if person.FirstName != "" && person.LastName != "" {
-		person.FullName = person.FirstName + " " + person.LastName
-	} else if person.LastName != "" {
-		person.FullName = person.LastName
-	} else if person.FirstName != "" {
-		person.FullName = person.FirstName
+	// TODO: cleanup when authority database is synchronized with full_name
+	if v, e := record["full_name"]; e {
+		person.FullName = v.(string)
+	}
+	if person.FullName == "" {
+		if person.FirstName != "" && person.LastName != "" {
+			person.FullName = person.FirstName + " " + person.LastName
+		} else if person.LastName != "" {
+			person.FullName = person.LastName
+		} else if person.FirstName != "" {
+			person.FullName = person.FirstName
+		}
 	}
 
 	if v, e := record["date_created"]; e {
-		t, _ := time.Parse(time.RFC3339, v.(string))
+		t, _ := time.Parse(time.RFC3339, util.ParseString(v))
 		person.DateCreated = &t
 	}
 	if v, e := record["date_updated"]; e {
-		t, _ := time.Parse(time.RFC3339, v.(string))
+		t, _ := time.Parse(time.RFC3339, util.ParseString(v))
 		person.DateUpdated = &t
 	}
 

@@ -20,10 +20,10 @@ describe('Publication import', () => {
     cy.contains('.btn', 'Add publication(s)').click()
 
     // Upload WoS file
-    cy.get('.c-file-upload').should('contain.text', 'Drag and drop or')
-    cy.contains('.btn', 'Upload file').get('.spinner-border').should('not.be.visible')
+    cy.get('.c-file-upload').should('contain.text', 'Drag and drop your .txt file or')
+    cy.contains('.btn', 'Upload .txt file').get('.spinner-border').should('not.be.visible')
     cy.get('input[name=file]').selectFile('cypress/fixtures/import-from-wos.txt')
-    cy.contains('.btn', 'Upload file').get('.spinner-border').should('be.visible')
+    cy.contains('.btn', 'Upload .txt file').get('.spinner-border').should('be.visible')
 
     // Review and publish
     cy.contains('Step 2').should('be.visible')
@@ -77,14 +77,16 @@ describe('Publication import', () => {
         pathname: `/publication/${this.biblioID}/contributors/author/suggestions`,
         query: {
           first_name: 'Dries',
-          last_name: 'Moreels',
+          last_name: /^(|Moreels)$/, // This forces an exact string match. Just '' matches any string.
         },
       }).as('user-search')
 
       cy.contains('Search author').should('be.visible')
-      cy.get('input[name=first_name]').type('Dries')
-      cy.get('input[name=last_name]').type('Moreels')
 
+      cy.get('input[name=first_name]').type('Dries')
+      cy.wait('@user-search')
+
+      cy.get('input[name=last_name]').type('Moreels')
       cy.wait('@user-search')
 
       cy.contains('.badge', 'Active UGent member')

@@ -24,9 +24,9 @@ jobs:
       - name: Cypress
         uses: cypress-io/github-action@v5
         with:
-          config-file: cypress/cypress.config.mjs
+          config-file: cypress/cypress.config.ts
           record: true
-          config: video=true
+          config: video=true,retries=2
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           CYPRESS_RESEARCHER_USER_NAME: ${{ secrets.CYPRESS_RESEARCHER_USER_NAME }}

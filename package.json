@@ -1,14 +1,14 @@
 {
   "private": true,
   "scripts": {
-    "test": "cypress run --config-file cypress/cypress.config.mjs",
-    "cypress:open": "cypress open --config-file cypress/cypress.config.mjs --browser chrome --e2e",
+    "test": "cypress run --config-file cypress/cypress.config.ts",
+    "cypress:open": "cypress open --config-file cypress/cypress.config.ts --browser chrome --e2e",
     "cypress:record": "cypress/cypress-record.sh",
     "precommit": "node node_modules/js-precommit-hook"
   },
   "precommit": "precommit",
   "devDependencies": {
-    "cypress": "^12.5.1",
+    "cypress": "^12.9.0",
     "cypress-dotenv": "^2.0.0",
     "dotenv": "^16.0.3",
     "js-precommit-hook": "git+https://github.com/ugent-library/js-precommit-hook.git",

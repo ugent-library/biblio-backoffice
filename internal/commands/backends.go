@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path"
 	"strings"
 	"sync"
 
@@ -19,10 +20,11 @@ import (
 	"github.com/ugent-library/biblio-backoffice/internal/backends/es6"
 	excel_dataset "github.com/ugent-library/biblio-backoffice/internal/backends/excel/dataset"
 	excel_publication "github.com/ugent-library/biblio-backoffice/internal/backends/excel/publication"
+	"github.com/ugent-library/biblio-backoffice/internal/backends/fsstore"
 	"github.com/ugent-library/biblio-backoffice/internal/backends/handle"
+	"github.com/ugent-library/biblio-backoffice/internal/backends/s3store"
 	"github.com/ugent-library/biblio-backoffice/internal/caching"
 
-	"github.com/ugent-library/biblio-backoffice/internal/backends/filestore"
 	"github.com/ugent-library/biblio-backoffice/internal/backends/ianamedia"
 	"github.com/ugent-library/biblio-backoffice/internal/backends/jsonl"
 	"github.com/ugent-library/biblio-backoffice/internal/backends/pubmed"
@@ -164,12 +166,31 @@ func newRepository() backends.Repository {
 	return s
 }
 
-func newFileStore() *filestore.Store {
-	fs, err := filestore.New(viper.GetString("file-dir"))
+func newFileStore() backends.FileStore {
+	if baseDir := viper.GetString("file-dir"); baseDir != "" {
+		store, err := fsstore.New(fsstore.Config{
+			Dir:     path.Join(baseDir, "root"),
+			TempDir: path.Join(baseDir, "tmp"),
+		})
+		if err != nil {
+			log.Fatalln("Unable to initialize filestore", err)
+		}
+		return store
+	}
+
+	store, err := s3store.New(s3store.Config{
+		Endpoint:   viper.GetString("s3-endpoint"),
+		Region:     viper.GetString("s3-region"),
+		ID:         viper.GetString("s3-id"),
+		Secret:     viper.GetString("s3-secret"),
+		Bucket:     viper.GetString("s3-bucket"),
+		TempBucket: viper.GetString("s3-temp-bucket"),
+	})
+
 	if err != nil {
 		log.Fatalln("Unable to initialize filestore", err)
 	}
-	return fs
+	return store
 }
 
 func newEs6Client(t string) *es6.Client {

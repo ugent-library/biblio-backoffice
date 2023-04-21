@@ -3,12 +3,11 @@ package cmd
 import (
 	"context"
 	"errors"
-	"log"
-	"time"
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
-	"github.com/ugent-library/biblio-backoffice/client/client"
+	cnx "github.com/ugent-library/biblio-backoffice/client/connection"
+	"google.golang.org/grpc/status"
 )
 
 func init() {
@@ -18,29 +17,37 @@ func init() {
 var GetDatasetCmd = &cobra.Command{
 	Use:   "get [id]",
 	Short: "Get dataset by id",
-	Args:  cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		GetDataset(cmd, args)
+	Long: `
+	Retrieve the a single dataset as a JSONL formatted record.
+	The record will be outputted to stdout.
+
+		$ ./biblio-backoffice dataset get [ID] > dataset.jsonl
+	`,
+	Args: cobra.ExactArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return GetDataset(cmd, args)
 	},
 }
 
-func GetDataset(cmd *cobra.Command, args []string) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
-	defer cancel()
+func GetDataset(cmd *cobra.Command, args []string) error {
+	return cnx.Handle(config, func(c api.BiblioClient) error {
+		id := args[0]
+		req := &api.GetDatasetRequest{Id: id}
+		res, err := c.GetDataset(context.Background(), req)
 
-	c, cnx, err := client.Create(ctx, config)
-	defer cnx.Close()
+		if err != nil {
+			if st, ok := status.FromError(err); ok {
+				return errors.New(st.Message())
+			}
+		}
 
-	if errors.Is(err, context.DeadlineExceeded) {
-		log.Fatal("ContextDeadlineExceeded: true")
-	}
+		if ge := res.GetError(); ge != nil {
+			sre := status.FromProto(ge)
+			cmd.Printf("%s", sre.Message())
+		} else {
+			cmd.Printf("%s", res.GetDataset().GetPayload())
+		}
 
-	id := args[0]
-	req := &api.GetDatasetRequest{Id: id}
-	res, err := c.GetDataset(ctx, req)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	cmd.Printf("%s\n", res.Dataset.Payload)
+		return nil
+	})
 }

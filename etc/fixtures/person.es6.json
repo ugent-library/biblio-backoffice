@@ -1,0 +1,4 @@
+{"index":{"_id":"00000000-0000-0000-0000-000000000001"}}
+{"id":"00000000-0000-0000-0000-000000000001", "date_updated":"2022-05-06T22:02:50Z","first_name":"First Name","ugent_id":["000000000001"],"date_created":"2022-05-06T22:02:50Z","last_name":"Last Name","active":true,"full_name":"Full Name","department":[{"_id":"CA20"}]}
+{"index":{"_id":"00000000-0000-0000-0000-000000000002"}}
+{"id":"00000000-0000-0000-0000-000000000002","date_updated":"2022-05-06T22:02:50Z","first_name":"First Name","ugent_id":["000000000002"],"date_created":"2022-05-06T22:02:50Z","last_name":"Last Name","active":true,"full_name":"Full Name","department":[{"_id":"CA20"}]}

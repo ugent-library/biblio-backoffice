@@ -58,14 +58,7 @@ export default function () {
           caseSensitive: true
         }
       });
-      t.on("add", function(evt) {
-        fillRealValues(
-          realValues,
-          inputName,
-          evt.detail.tagify.value.map(function(v){ return v.value; })
-        );
-      });
-      t.on("remove", function(evt) {
+      t.on("change", function(evt) {
         fillRealValues(
           realValues,
           inputName,
