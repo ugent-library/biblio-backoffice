@@ -58,6 +58,7 @@ type Dataset struct {
 	Format                  []string             `json:"format,omitempty"`
 	Handle                  string               `json:"handle,omitempty"`
 	ID                      string               `json:"id,omitempty"`
+	Identifiers             Identifiers          `json:"identifiers,omitempty"`
 	Keyword                 []string             `json:"keyword,omitempty"`
 	HasBeenPublic           bool                 `json:"has_been_public"`
 	LastUser                *DatasetUser         `json:"last_user,omitempty"`
