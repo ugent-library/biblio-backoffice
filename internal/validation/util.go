@@ -21,10 +21,10 @@ func IsDate(val string) bool {
 	return e == nil
 }
 
-func IsTime(val string) bool {
-	_, e := time.Parse("15:04", val)
-	return e == nil
-}
+// func IsTime(val string) bool {
+// 	_, e := time.Parse("15:04", val)
+// 	return e == nil
+// }
 
 func IsYear(val string) bool {
 	y, e := strconv.Atoi(val)
