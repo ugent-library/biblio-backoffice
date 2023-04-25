@@ -116,6 +116,7 @@ var Map = map[string][]string{
 		"DS",
 		"DI",
 		"EB",
+		"FlandersMake",
 		"FW",
 		"GE",
 		"LA",
@@ -150,6 +151,7 @@ var Map = map[string][]string{
 		"WE",
 	},
 	"faculties_socs": {
+		"FlandersMake",
 		"GUK",
 		"UZGent",
 		"HOART",
