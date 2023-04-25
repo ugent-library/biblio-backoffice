@@ -260,9 +260,6 @@
                 "defense_date": {
                     "type": "keyword"
                 },
-                "defense_time": {
-                    "type": "keyword"
-                },
                 "faculty": {
                     "type": "keyword"
                 },

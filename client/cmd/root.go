@@ -11,10 +11,9 @@ import (
 )
 
 var (
-	marshaller   = protojson.MarshalOptions{UseProtoNames: true}
-	unmarshaller = protojson.UnmarshalOptions{}
-	configFile   string
-	config       cnx.Config
+	marshaller = protojson.MarshalOptions{UseProtoNames: true}
+	configFile string
+	config     cnx.Config
 )
 
 const (

@@ -74,7 +74,6 @@ func (s *TransferPublicationsSuite) SetupSuite() {
 		],
 		"defense_date": "2023-01-01",
 		"defense_place": "place of defense",
-		"defense_time": "12:00",
 		"supervisor": [
 			{
 			  "first_name": "first name",

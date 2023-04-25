@@ -82,19 +82,20 @@ type Publication struct {
 	BatchID          string         `json:"batch_id,omitempty"`
 	Classification   string         `json:"classification,omitempty"`
 	// CompletenessScore       int                     `json:"completeness_score,omitempty"`
-	ConferenceName          string                  `json:"conference_name,omitempty"`
-	ConferenceLocation      string                  `json:"conference_location,omitempty"`
-	ConferenceOrganizer     string                  `json:"conference_organizer,omitempty"`
-	ConferenceStartDate     string                  `json:"conference_start_date,omitempty"`
-	ConferenceEndDate       string                  `json:"conference_end_date,omitempty"`
-	ConferenceType          string                  `json:"conference_type,omitempty"`
-	Creator                 *PublicationUser        `json:"creator,omitempty"`
-	DateCreated             *time.Time              `json:"date_created,omitempty"`
-	DateUpdated             *time.Time              `json:"date_updated,omitempty"`
-	DateFrom                *time.Time              `json:"date_from,omitempty"`
-	DateUntil               *time.Time              `json:"date_until,omitempty"`
-	DefenseDate             string                  `json:"defense_date,omitempty"`
-	DefensePlace            string                  `json:"defense_place,omitempty"`
+	ConferenceName      string           `json:"conference_name,omitempty"`
+	ConferenceLocation  string           `json:"conference_location,omitempty"`
+	ConferenceOrganizer string           `json:"conference_organizer,omitempty"`
+	ConferenceStartDate string           `json:"conference_start_date,omitempty"`
+	ConferenceEndDate   string           `json:"conference_end_date,omitempty"`
+	ConferenceType      string           `json:"conference_type,omitempty"`
+	Creator             *PublicationUser `json:"creator,omitempty"`
+	DateCreated         *time.Time       `json:"date_created,omitempty"`
+	DateUpdated         *time.Time       `json:"date_updated,omitempty"`
+	DateFrom            *time.Time       `json:"date_from,omitempty"`
+	DateUntil           *time.Time       `json:"date_until,omitempty"`
+	DefenseDate         string           `json:"defense_date,omitempty"`
+	DefensePlace        string           `json:"defense_place,omitempty"`
+	// DefenseTime is deprecated, see https://github.com/ugent-library/biblio-backoffice/issues/1058
 	DefenseTime             string                  `json:"defense_time,omitempty"`
 	Department              []PublicationDepartment `json:"department,omitempty"`
 	DOI                     string                  `json:"doi,omitempty"`
