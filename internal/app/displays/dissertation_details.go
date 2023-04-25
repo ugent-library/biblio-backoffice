@@ -84,13 +84,6 @@ func dissertationDetails(user *models.User, l *locale.Locale, p *models.Publicat
 				Value:    p.DefenseDate,
 				Required: p.ShowDefenseAsRequired(),
 			},
-			// https://github.com/ugent-library/biblio-backoffice/issues/1058
-			/*
-				&display.Text{
-					Label:    l.T("builder.defense_time"),
-					Value:    p.DefenseTime,
-					Required: p.ShowDefenseAsRequired(),
-				},*/
 			&display.Text{
 				Label:    l.T("builder.defense_place"),
 				Value:    p.DefensePlace,

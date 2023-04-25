@@ -554,11 +554,6 @@ func (h *Handler) mapPublication(p *models.Publication) *Publication {
 			pp.Defense = &Defense{}
 		}
 		pp.Defense.Date = p.DefenseDate
-		// https://github.com/ugent-library/biblio-backoffice/issues/1058
-		/*
-			if validation.IsTime(p.DefenseTime) {
-				pp.Defense.Date = fmt.Sprintf("%s %s", pp.Defense.Date, p.DefenseTime)
-			}*/
 	}
 	if p.DefensePlace != "" {
 		if pp.Defense == nil {
