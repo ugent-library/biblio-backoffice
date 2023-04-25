@@ -1197,18 +1197,6 @@ func (p *Publication) validateDissertation() (errs validation.Errors) {
 			Code:    "publication.defense_date.invalid",
 		})
 	}
-	if p.Status == "public" && !p.Legacy && p.DefenseTime == "" {
-		errs = append(errs, &validation.Error{
-			Pointer: "/defense_time",
-			Code:    "publication.defense_time.required",
-		})
-	}
-	if p.DefenseTime != "" && !validation.IsTime(p.DefenseTime) {
-		errs = append(errs, &validation.Error{
-			Pointer: "/defense_time",
-			Code:    "publication.defense_time.invalid",
-		})
-	}
 
 	return
 }
