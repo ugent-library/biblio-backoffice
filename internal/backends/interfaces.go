@@ -161,6 +161,7 @@ type OrganizationService interface {
 
 type PersonService interface {
 	GetPerson(string) (*models.Person, error)
+	GetPersons([]string) ([]*models.Person, error)
 }
 
 type ProjectService interface {

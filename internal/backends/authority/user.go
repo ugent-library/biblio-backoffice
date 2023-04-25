@@ -146,12 +146,18 @@ func (c *Client) recordToUser(record bson.M) (*models.User, error) {
 		user.LastName = v.(string)
 	}
 
-	if user.FirstName != "" && user.LastName != "" {
-		user.FullName = user.FirstName + " " + user.LastName
-	} else if user.LastName != "" {
-		user.FullName = user.LastName
-	} else if user.FirstName != "" {
-		user.FullName = user.FirstName
+	// TODO: cleanup when authority database is synchronized with full_name
+	if v, e := record["full_name"]; e {
+		user.FullName = v.(string)
+	}
+	if user.FullName == "" {
+		if user.FirstName != "" && user.LastName != "" {
+			user.FullName = user.FirstName + " " + user.LastName
+		} else if user.LastName != "" {
+			user.FullName = user.LastName
+		} else if user.FirstName != "" {
+			user.FullName = user.FirstName
+		}
 	}
 
 	if v, e := record["date_created"]; e {

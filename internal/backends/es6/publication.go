@@ -411,7 +411,7 @@ func (publications *Publications) DeleteAll() error {
 	req := esapi.DeleteByQueryRequest{
 		Index: []string{publications.Client.Index},
 		Body: strings.NewReader(`{
-			"query" : { 
+			"query" : {
 				"match_all" : {}
 			}
 		}`),

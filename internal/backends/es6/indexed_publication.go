@@ -3,8 +3,8 @@ package es6
 import (
 	"regexp"
 	"strings"
-  
-  "github.com/ugent-library/biblio-backoffice/internal/models"
+
+	"github.com/ugent-library/biblio-backoffice/internal/models"
 	internal_time "github.com/ugent-library/biblio-backoffice/internal/time"
 	"github.com/ugent-library/biblio-backoffice/internal/validation"
 	"github.com/ugent-library/biblio-backoffice/internal/vocabularies"
