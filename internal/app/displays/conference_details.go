@@ -114,8 +114,9 @@ func conferenceDetails(user *models.User, l *locale.Locale, p *models.Publicatio
 				Value: p.WOSType,
 			},
 			&display.Text{
-				Label: l.T("builder.wos_id"),
-				Value: p.WOSID,
+				Label:         l.T("builder.wos_id"),
+				Value:         p.WOSID,
+				ValueTemplate: "format/wos_id",
 			},
 			&display.List{
 				Label:  l.T("builder.issn"),
