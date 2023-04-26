@@ -706,6 +706,7 @@ func (h *Handler) mapDataset(d *models.Dataset) *Publication {
 		Type:        "researchData",
 		URL:         d.URL,
 		Year:        d.Year,
+		Language:    d.Language,
 	}
 
 	for _, v := range d.Abstract {

@@ -8,6 +8,7 @@ import (
 	"github.com/oklog/ulid/v2"
 	"github.com/ugent-library/biblio-backoffice/internal/pagination"
 	"github.com/ugent-library/biblio-backoffice/internal/validation"
+	"github.com/ugent-library/biblio-backoffice/internal/vocabularies"
 )
 
 type DatasetHits struct {
@@ -60,6 +61,7 @@ type Dataset struct {
 	ID                      string               `json:"id,omitempty"`
 	Keyword                 []string             `json:"keyword,omitempty"`
 	HasBeenPublic           bool                 `json:"has_been_public"`
+	Language                []string             `json:"language,omitempty"`
 	LastUser                *DatasetUser         `json:"last_user,omitempty"`
 	License                 string               `json:"license,omitempty"`
 	Locked                  bool                 `json:"locked"`
@@ -311,6 +313,15 @@ func (d *Dataset) Validate() error {
 	// 		})
 	// 	}
 	// }
+
+	for i, l := range d.Language {
+		if !validation.InArray(vocabularies.Map["language_codes"], l) {
+			errs = append(errs, &validation.Error{
+				Pointer: fmt.Sprintf("/language/%d", i),
+				Code:    "dataset.language.invalid",
+			})
+		}
+	}
 
 	if d.Status == "public" && d.Publisher == "" {
 		errs = append(errs, &validation.Error{

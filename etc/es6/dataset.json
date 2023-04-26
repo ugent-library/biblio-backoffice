@@ -294,6 +294,9 @@
                     "analyzer": "keyword_lowercase",
                     "copy_to": "all"
                 },
+                "language": {
+                    "type": "keyword"
+                },
                 "license": {
                     "type": "keyword"
                 },

@@ -23,6 +23,7 @@ type BindDetails struct {
 	AccessLevelAfterEmbargo string   `form:"access_level_after_embargo"`
 	Format                  []string `form:"format"`
 	Keyword                 []string `form:"keyword"`
+	Language                []string `form:"language"`
 	License                 string   `form:"license"`
 	OtherLicense            string   `form:"other_license"`
 	Publisher               string   `form:"publisher"`
@@ -67,6 +68,7 @@ func (h *Handler) RefreshEditFileForm(w http.ResponseWriter, r *http.Request, ct
 	ctx.Dataset.AccessLevelAfterEmbargo = b.AccessLevelAfterEmbargo
 	ctx.Dataset.Format = b.Format
 	ctx.Dataset.Keyword = b.Keyword
+	ctx.Dataset.Language = b.Language
 	ctx.Dataset.License = b.License
 	ctx.Dataset.OtherLicense = b.OtherLicense
 	ctx.Dataset.Publisher = b.Publisher
@@ -100,6 +102,7 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 	ctx.Dataset.EmbargoDate = b.EmbargoDate
 	ctx.Dataset.AccessLevelAfterEmbargo = b.AccessLevelAfterEmbargo
 	ctx.Dataset.Format = b.Format
+	ctx.Dataset.Language = b.Language
 	ctx.Dataset.Keyword = b.Keyword
 	ctx.Dataset.License = b.License
 	ctx.Dataset.OtherLicense = b.OtherLicense
@@ -212,6 +215,15 @@ func detailsForm(l *locale.Locale, d *models.Dataset, errors validation.Errors) 
 				Label:    l.T("builder.keyword"),
 				Cols:     9,
 				Error:    localize.ValidationErrorAt(l, errors, "/keyword"),
+			},
+			&form.SelectRepeat{
+				Name:        "language",
+				Label:       l.T("builder.language"),
+				Options:     localize.LanguageSelectOptions(l),
+				Values:      d.Language,
+				EmptyOption: true,
+				Cols:        9,
+				Error:       localize.ValidationErrorAt(l, errors, "/language"),
 			},
 		)
 

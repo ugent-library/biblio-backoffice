@@ -1,6 +1,7 @@
 package displays
 
 import (
+	"github.com/ugent-library/biblio-backoffice/internal/app/localize"
 	"github.com/ugent-library/biblio-backoffice/internal/locale"
 	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"github.com/ugent-library/biblio-backoffice/internal/render/display"
@@ -51,6 +52,9 @@ func DatasetDetails(user *models.User, l *locale.Locale, d *models.Dataset) *dis
 				Values:        d.Keyword,
 				ValueTemplate: "format/badge",
 			},
+			&display.List{
+				Label:  l.T("builder.language"),
+				Values: localize.LanguageNames(l, d.Language)},
 		).
 		AddSection(
 			&display.Text{
