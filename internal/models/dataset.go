@@ -282,6 +282,37 @@ func (d *Dataset) Validate() error {
 		})
 	}
 
+	if d.Status == "public" && len(d.Identifiers) == 0 {
+		errs = append(errs, &validation.Error{
+			Pointer: "/identifier",
+			Code:    "dataset.identifier.required",
+		})
+	}
+	for key, vals := range d.Identifiers {
+		if key == "" {
+			errs = append(errs, &validation.Error{
+				Pointer: "/identifier",
+				Code:    "dataset.identifier.required",
+			})
+			break
+		} else if !validation.IsDatasetIdentifierType(key) {
+			errs = append(errs, &validation.Error{
+				Pointer: "/identifier",
+				Code:    "dataset.identifier.invalid",
+			})
+			break
+		}
+		for _, val := range vals {
+			if val == "" {
+				errs = append(errs, &validation.Error{
+					Pointer: "/identifier",
+					Code:    "dataset.identifier.required",
+				})
+				break
+			}
+		}
+	}
+
 	if d.Status == "public" && d.DOI == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/doi",

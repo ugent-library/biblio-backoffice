@@ -101,6 +101,13 @@ var Map = map[string][]string{
 		"writing_original_draft",
 		"writing_review_editing",
 	},
+	"dataset_identifier_types": {
+		"DOI",
+		"BioProject",
+		"BioStudies",
+		"ENA",
+		"Ensembl",
+	},
 	"dataset_access_levels": {
 		"info:eu-repo/semantics/openAccess",
 		"info:eu-repo/semantics/restrictedAccess",

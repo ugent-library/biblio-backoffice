@@ -15,19 +15,21 @@ import (
 	"github.com/ugent-library/biblio-backoffice/internal/render/form"
 	"github.com/ugent-library/biblio-backoffice/internal/snapstore"
 	"github.com/ugent-library/biblio-backoffice/internal/validation"
+	"github.com/ugent-library/biblio-backoffice/internal/vocabularies"
 )
 
 type BindDetails struct {
 	AccessLevel             string   `form:"access_level"`
-	EmbargoDate             string   `form:"embargo_date"`
 	AccessLevelAfterEmbargo string   `form:"access_level_after_embargo"`
+	EmbargoDate             string   `form:"embargo_date"`
 	Format                  []string `form:"format"`
+	Identifier              string   `form:"identifier"`
+	IdentifierType          string   `form:"identifier_type"`
 	Keyword                 []string `form:"keyword"`
 	License                 string   `form:"license"`
 	OtherLicense            string   `form:"other_license"`
 	Publisher               string   `form:"publisher"`
 	Title                   string   `form:"title"`
-	URL                     string   `form:"url"`
 	Year                    string   `form:"year"`
 }
 
@@ -63,15 +65,15 @@ func (h *Handler) RefreshEditFileForm(w http.ResponseWriter, r *http.Request, ct
 	}
 
 	ctx.Dataset.AccessLevel = b.AccessLevel
-	ctx.Dataset.EmbargoDate = b.EmbargoDate
 	ctx.Dataset.AccessLevelAfterEmbargo = b.AccessLevelAfterEmbargo
+	ctx.Dataset.EmbargoDate = b.EmbargoDate
 	ctx.Dataset.Format = b.Format
+	ctx.Dataset.Identifiers = models.Identifiers{b.IdentifierType: []string{b.Identifier}}
 	ctx.Dataset.Keyword = b.Keyword
 	ctx.Dataset.License = b.License
 	ctx.Dataset.OtherLicense = b.OtherLicense
 	ctx.Dataset.Publisher = b.Publisher
 	ctx.Dataset.Title = b.Title
-	ctx.Dataset.URL = b.URL
 	ctx.Dataset.Year = b.Year
 
 	render.Layout(w, "refresh_modal", "dataset/edit_details", YieldEditDetails{
@@ -101,11 +103,11 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 	ctx.Dataset.AccessLevelAfterEmbargo = b.AccessLevelAfterEmbargo
 	ctx.Dataset.Format = b.Format
 	ctx.Dataset.Keyword = b.Keyword
+	ctx.Dataset.Identifiers = models.Identifiers{b.IdentifierType: []string{b.Identifier}}
 	ctx.Dataset.License = b.License
 	ctx.Dataset.OtherLicense = b.OtherLicense
 	ctx.Dataset.Publisher = b.Publisher
 	ctx.Dataset.Title = b.Title
-	ctx.Dataset.URL = b.URL
 	ctx.Dataset.Year = b.Year
 
 	if validationErrs := ctx.Dataset.Validate(); validationErrs != nil {
@@ -145,8 +147,22 @@ func detailsForm(l *locale.Locale, d *models.Dataset, errors validation.Errors) 
 	if d.Keyword == nil {
 		d.Keyword = []string{}
 	}
-	keywordBytes, _ := json.Marshal(d.Keyword)
-	keywordStr := string(keywordBytes)
+	keywordsJSON, _ := json.Marshal(d.Keyword)
+
+	var identifierType, identifier string
+	for _, key := range vocabularies.Map["dataset_identifier_types"] {
+		if val := d.Identifiers.Get(key); val != "" {
+			identifierType = key
+			identifier = val
+			break
+		}
+	}
+
+	identifierTypeOptions := make([]form.SelectOption, len(vocabularies.Map["dataset_identifier_types"]))
+	for i, v := range vocabularies.Map["dataset_identifier_types"] {
+		identifierTypeOptions[i].Label = v
+		identifierTypeOptions[i].Value = v
+	}
 
 	f := form.New().
 		WithTheme("default").
@@ -160,18 +176,23 @@ func detailsForm(l *locale.Locale, d *models.Dataset, errors validation.Errors) 
 				Error:    localize.ValidationErrorAt(l, errors, "/title"),
 				Required: true,
 			},
-			&display.Text{
-				Label:         l.T("builder.doi"),
-				Value:         d.DOI,
-				Required:      true,
-				ValueTemplate: "format/doi",
+			&form.Select{
+				Name:        "identifier_type",
+				Value:       identifierType,
+				Label:       l.T("builder.identifier_type"),
+				Options:     identifierTypeOptions,
+				Cols:        3,
+				Error:       localize.ValidationErrorAt(l, errors, "/identifier"),
+				EmptyOption: true,
+				Required:    true,
 			},
 			&form.Text{
-				Name:  "url",
-				Value: d.URL,
-				Label: l.T("builder.url"),
-				Cols:  3,
-				Error: localize.ValidationErrorAt(l, errors, "/url"),
+				Name:     "identifier",
+				Value:    identifier,
+				Required: true,
+				Label:    l.T("builder.identifier"),
+				Cols:     3,
+				Error:    localize.ValidationErrorAt(l, errors, "/identifier"),
 			},
 		).
 		AddSection(
@@ -208,7 +229,7 @@ func detailsForm(l *locale.Locale, d *models.Dataset, errors validation.Errors) 
 			&form.Text{
 				Name:     "keyword",
 				Template: "tags",
-				Value:    keywordStr,
+				Value:    string(keywordsJSON), // TODO just pass the object itself
 				Label:    l.T("builder.keyword"),
 				Cols:     9,
 				Error:    localize.ValidationErrorAt(l, errors, "/keyword"),

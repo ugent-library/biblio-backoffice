@@ -223,6 +223,8 @@ func init() {
 	message.SetString(language.English, "builder.has_patent_application", "Is a patent application ongoing or planned?")
 	message.SetString(language.English, "builder.has_publications_planned", "Are other publications planned based on this dissertation (e.g. articles or book)?")
 	message.SetString(language.English, "builder.has_published_material", "Does the dissertation contain published articles (publisher's version or accepted manuscript)?")
+	message.SetString(language.English, "builder.identifier", "Repository identifier")
+	message.SetString(language.English, "builder.identifier_type", "Repository identifier type")
 	message.SetString(language.English, "builder.isbn", "ISBN")
 	message.SetString(language.English, "builder.issn", "ISSN")
 	message.SetString(language.English, "builder.eisbn", "E-ISBN")
@@ -667,7 +669,8 @@ func init() {
 
 	// NEW
 	message.SetString(language.English, "validation.dataset.title.required", "Title is required")
-	message.SetString(language.English, "validation.dataset.doi.required", "DOI is required")
+	message.SetString(language.English, "validation.dataset.identifier.required", "Identifier is required")
+	message.SetString(language.English, "validation.dataset.identifier.invalid", "Identifier is invalid")
 	message.SetString(language.English, "validation.dataset.access_level.required", "Access level is required")
 	message.SetString(language.English, "validation.dataset.access_level.invalid", "Access level is an invalid value")
 	message.SetString(language.English, "validation.dataset.format.required", "Format is required")
