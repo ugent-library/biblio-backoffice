@@ -55,5 +55,9 @@ func NewIndexedDataset(d *models.Dataset) *indexedDataset {
 		}
 	}
 
+	if len(id.Faculty) == 0 {
+		id.Faculty = append(id.Faculty, "n/a")
+	}
+
 	return id
 }
