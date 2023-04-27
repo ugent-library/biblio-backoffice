@@ -1,7 +1,7 @@
 {{define "page_content"}}
 {{partial "dataset/add_sidebar" .}}
 
-<form class="w-100" action="{{pathFor "dataset_add"}}" method="POST">
+<form class="w-100" action="{{pathFor "dataset_confirm_import"}}" method="POST">
     {{.CSRFTag}}
     <div class="u-scroll-wrapper">
         <div class="bc-navbar bc-navbar--large bc-navbar-bordered bc-navbar--white bc-navbar--bordered-bottom">
@@ -29,43 +29,49 @@
             <div class="card mb-6">
                 <div class="card-header">
                     <div class="bc-toolbar">
-                        <div class="bc-toolbar-left">
-                            <h5>Add a dataset</h5>
-                        </div>
+                        <div class="bc-toolbar-left">Enter dataset identifier from external repository</div>
                     </div>
                 </div>
-                <div class="card-body radio-card-group">
-                    <label class="c-radio-card" aria-selected="false">
-                        <div class="c-radio-card__radio">
-                            <div class="custom-control custom-radio">
-                                <input class="custom-control-input" id="add-method-identifier" type="radio" name="method" value="identifier">
-                                <label class="custom-control-label" for="add-method-identifier"></label>
+                <div class="card-body">
+                    <p class="mb-4">Enter dataset identifier to import the
+                    metadata of the dataset from an external repository or
+                    database.  Currently, only DOIs (Digital Object
+                    Identifier) are accepted. Alternative identifiers will
+                    be enabled in the near future.</p>
+                    <div class="form-row">
+                        <div class="col-6">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">DOI</span>
+                                </div>
+                                <input type="hidden" name="source" value="datacite">
+                                <input class="form-control" type="text" name="identifier" value="{{.Identifier}}" placeholder="e.g. 10.7484/INSPIREHEP.DATA.RF5P.6M3K">
                             </div>
                         </div>
-                        <div class="c-radio-card__content">
-                            <h6>Import your dataset via a DOI identifier</h6>
-                            <p class="text-muted">Import a dataset via a DOI (Digital Object Identifier), retrieved from the <a href="https://onderzoektips.ugent.be/en/tips/00002071/" target="_blank">repository</a> your dataset has been deposited in.</p>
-                        </div>
-                    </label>
-                    <label class="c-radio-card">
-                        <div class="c-radio-card__radio" aria-selected="false">
-                            <div class="custom-control custom-radio">
-                                <input class="custom-control-input" id="add-method-manual" type="radio" name="method" value="manual">
-                                <label class="custom-control-label" for="add-method-manual"></label>
-                            </div>
-                        </div>
-                        <div class="c-radio-card__content">
-                            <h6>Add a dataset manually</h6>
-                            <p class="text-muted">Recommended for datasets that have been deposited in <a href="https://onderzoektips.ugent.be/en/tips/00002071/" target="_blank">repositories</a> that do not provide a DOI (Digital Object Identifier).</p>
-                        </div>
-                    </label>
+                    </div>
                 </div>
             </div>
 
             <div class="card mb-6">
                 <div class="card-header">
                     <div class="bc-toolbar">
-                        <div class="bc-toolbar-left">More information</div>
+                        <div class="bc-toolbar-left">
+                            Dataset not yet in external repository?
+                        </div>
+                    </div>
+                </div>
+                <div id="notInExternalRepo">
+                    <div class="card-body">
+                        <p>If your dataset is not yet in an external repository, have a look at <a href="https://onderzoektips.ugent.be/en/tips/00002071/" target="_blank">our research tip on sharing data in a data repository</a></p>
+                    </div>
+                </div>
+            </div>
+            <div class="card mb-6">
+                <div class="card-header">
+                    <div class="bc-toolbar">
+                        <div class="bc-toolbar-left">
+                            More information needed?
+                        </div>
                     </div>
                 </div>
                 <div class="card-body">
@@ -76,4 +82,12 @@
         </div>
     </div>
 </form>
+
+{{if .DuplicateDataset}}
+    {{partial "dataset/add_duplicate" .}}
+{{end}}
+
+{{if .Errors}}
+    {{layout "show_modal" "form_errors_dialog" .Errors}}
+{{end}}
 {{end}}
