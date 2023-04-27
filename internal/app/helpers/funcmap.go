@@ -11,11 +11,14 @@ import (
 
 func FuncMap() template.FuncMap {
 	return template.FuncMap{
-		"searchArgs":  models.NewSearchArgs,
-		"timeElapsed": elapsed.LocalTime,
-		"formatRange": FormatRange,
-		"formatBool":  FormatBool,
-		"formatBytes": friendly.Bytes,
+		"searchArgs":      models.NewSearchArgs,
+		"timeElapsed":     elapsed.LocalTime,
+		"formatRange":     FormatRange,
+		"formatBool":      FormatBool,
+		"formatBytes":     friendly.Bytes,
+		"resolveDOI":      ResolveDOI,
+		"resolveWOSID":    ResolveWOSID,
+		"resolvePubMedID": ResolvePubMedID,
 	}
 }
 
@@ -39,4 +42,16 @@ func FormatBool(b bool, t, f string) string {
 		return t
 	}
 	return f
+}
+
+func ResolveDOI(id string) string {
+	return "https://doi.org/" + id
+}
+
+func ResolveWOSID(id string) string {
+	return "https://www.webofscience.com/wos/woscc/full-record/" + id
+}
+
+func ResolvePubMedID(id string) string {
+	return "https://www.ncbi.nlm.nih.gov/pubmed/" + id
 }

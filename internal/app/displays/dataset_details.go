@@ -8,13 +8,17 @@ import (
 )
 
 func DatasetDetails(user *models.User, l *locale.Locale, d *models.Dataset) *display.Display {
-	var identifierType, identifier string
+	var identifierType, identifier, identifierTemplate string
 	for _, key := range vocabularies.Map["dataset_identifier_types"] {
 		if val := d.Identifiers.Get(key); val != "" {
 			identifierType = key
 			identifier = val
 			break
 		}
+	}
+	switch identifierType {
+	case "DOI":
+		identifierTemplate = "format/doi"
 	}
 
 	return display.New().
@@ -31,21 +35,11 @@ func DatasetDetails(user *models.User, l *locale.Locale, d *models.Dataset) *dis
 				Required: true,
 			},
 			&display.Text{
-				Label:    l.T("builder.identifier"),
-				Value:    identifier,
-				Required: true,
+				Label:         l.T("builder.identifier"),
+				Value:         identifier,
+				Required:      true,
+				ValueTemplate: identifierTemplate,
 			},
-			// &display.Text{
-			// 	Label:         l.T("builder.doi"),
-			// 	Value:         d.DOI,
-			// 	Required:      true,
-			// 	ValueTemplate: "format/doi",
-			// },
-			// &display.Text{
-			// 	Label:         l.T("builder.url"),
-			// 	Value:         d.URL,
-			// 	ValueTemplate: "format/link",
-			// },
 		).
 		AddSection(
 			&display.Text{

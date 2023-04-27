@@ -52,7 +52,7 @@ type Dataset struct {
 	DateFrom                *time.Time           `json:"date_from,omitempty"`
 	DateUntil               *time.Time           `json:"date_until,omitempty"`
 	Department              []DatasetDepartment  `json:"department,omitempty"`
-	DOI                     string               `json:"doi,omitempty"`
+	DOI                     string               `json:"doi,omitempty"` // TODO deprecated
 	EmbargoDate             string               `json:"embargo_date,omitempty"`
 	AccessLevelAfterEmbargo string               `json:"access_level_after_embargo,omitempty"`
 	Format                  []string             `json:"format,omitempty"`
@@ -74,7 +74,7 @@ type Dataset struct {
 	SnapshotID              string               `json:"snapshot_id,omitempty"`
 	Status                  string               `json:"status,omitempty"`
 	Title                   string               `json:"title,omitempty"`
-	URL                     string               `json:"url,omitempty"`
+	URL                     string               `json:"url,omitempty"` // TODO deprecated
 	User                    *DatasetUser         `json:"user,omitempty"`
 	Year                    string               `json:"year,omitempty"`
 }
@@ -239,14 +239,6 @@ func (d *Dataset) AddDepartmentByOrg(org *Organization) {
 	d.Department = append(d.Department, datasetDepartment)
 }
 
-func (d *Dataset) ResolveDOI() string {
-	if d.DOI != "" {
-		return "https://doi.org/" + d.DOI
-
-	}
-	return ""
-}
-
 func (d *Dataset) Validate() error {
 	var errs validation.Errors
 
@@ -311,13 +303,6 @@ func (d *Dataset) Validate() error {
 				break
 			}
 		}
-	}
-
-	if d.Status == "public" && d.DOI == "" {
-		errs = append(errs, &validation.Error{
-			Pointer: "/doi",
-			Code:    "dataset.doi.required",
-		})
 	}
 
 	if d.Status == "public" && len(d.Format) == 0 {

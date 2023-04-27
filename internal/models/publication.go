@@ -355,27 +355,6 @@ func (p *Publication) ClassificationChoices() []string {
 	}
 }
 
-func (p *Publication) ResolveDOI() string {
-	if p.DOI != "" {
-		return "https://doi.org/" + p.DOI
-	}
-	return ""
-}
-
-func (p *Publication) ResolveWOSID() string {
-	if p.WOSID != "" {
-		return "https://www.webofscience.com/wos/woscc/full-record/" + p.WOSID
-	}
-	return ""
-}
-
-func (p *Publication) ResolvePubMedID() string {
-	if p.PubMedID != "" {
-		return "https://www.ncbi.nlm.nih.gov/pubmed/" + p.PubMedID
-	}
-	return ""
-}
-
 func (p *Publication) Contributors(role string) []*Contributor {
 	switch role {
 	case "author":

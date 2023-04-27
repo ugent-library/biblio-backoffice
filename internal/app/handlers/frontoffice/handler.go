@@ -731,10 +731,10 @@ func (h *Handler) mapDataset(d *models.Dataset) *Publication {
 		pp.CreatedBy = &Person{ID: d.Creator.ID}
 	}
 
-	if d.DOI != "" {
-		doi, err := doitools.NormalizeDOI(d.DOI)
+	if val := d.Identifiers.Get("DOI"); val != "" {
+		doi, err := doitools.NormalizeDOI(val)
 		if err != nil {
-			pp.DOI = append(pp.DOI, d.DOI)
+			pp.DOI = append(pp.DOI, val)
 		} else {
 			pp.DOI = append(pp.DOI, doi)
 		}

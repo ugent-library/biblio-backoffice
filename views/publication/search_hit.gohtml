@@ -33,20 +33,20 @@
                         <i class="if if-file"></i>
                         <span>View full texts &amp; files</span>
                     </a>
-                    {{if .Publication.DOI}}
-                    <a class="dropdown-item" href="{{.Publication.ResolveDOI}}" target="_blank">
+                    {{with .Publication.DOI}}
+                    <a class="dropdown-item" href="{{resolveDOI .}}" target="_blank">
                         <i class="if if-external-link"></i>
                         <span>DOI</span>
                     </a>
                     {{end}}
-                    {{if .Publication.WOSID}}
-                    <a class="dropdown-item" href="{{.Publication.ResolveWOSID}}" target="_blank">
+                    {{with .Publication.WOSID}}
+                    <a class="dropdown-item" href="{{resolveWOSID .}}" target="_blank">
                         <i class="if if-external-link"></i>
                         <span>WoS</span>
                     </a>
                     {{end}}
-                    {{if .Publication.PubMedID}}
-                    <a class="dropdown-item" href="{{.Publication.ResolvePubMedID}}" target="_blank">
+                    {{with .Publication.PubMedID}}
+                    <a class="dropdown-item" href="{{resolvePubMedID .}}" target="_blank">
                         <i class="if if-external-link"></i>
                         <span>PubMed</span>
                     </a>
