@@ -98,8 +98,9 @@ func bookChapterDetails(user *models.User, l *locale.Locale, p *models.Publicati
 				Tooltip: l.T("tooltip.publication.wos_type"),
 			},
 			&display.Text{
-				Label: l.T("builder.wos_id"),
-				Value: p.WOSID,
+				Label:         l.T("builder.wos_id"),
+				Value:         p.WOSID,
+				ValueTemplate: "format/wos_id",
 			},
 			&display.List{
 				Label:  l.T("builder.issn"),
