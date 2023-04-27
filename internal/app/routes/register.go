@@ -280,7 +280,7 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 	// add dataset
 	r.HandleFunc("/dataset/add",
 		datasetCreatingHandler.Wrap(datasetCreatingHandler.Add)).
-		Methods("GET").
+		Methods("GET", "POST").
 		Name("dataset_add")
 	r.HandleFunc("/dataset/import",
 		datasetCreatingHandler.Wrap(datasetCreatingHandler.AddImport)).

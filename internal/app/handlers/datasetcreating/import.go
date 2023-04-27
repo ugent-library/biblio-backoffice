@@ -21,6 +21,10 @@ import (
 	"github.com/ugent-library/biblio-backoffice/internal/validation"
 )
 
+type BindAdd struct {
+	Method string `form:"method"`
+}
+
 type BindImport struct {
 	Source     string `form:"source"`
 	Identifier string `form:"identifier"`
@@ -49,7 +53,25 @@ type YieldValidationErrors struct {
 }
 
 func (h *Handler) Add(w http.ResponseWriter, r *http.Request, ctx Context) {
-	render.Layout(w, "layouts/default", "dataset/pages/add", YieldAdd{
+	b := BindAdd{}
+	if err := bind.Request(r, &b); err != nil {
+		h.Logger.Warnw("add dataset: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
+		render.BadRequest(w, r, err)
+		return
+	}
+
+	tmpl := ""
+	switch b.Method {
+	case "identifier":
+		tmpl = "dataset/pages/add_identifier"
+	case "manual":
+		h.ConfirmImport(w, r, ctx)
+		return
+	default:
+		tmpl = "dataset/pages/add"
+	}
+
+	render.Layout(w, "layouts/default", tmpl, YieldAdd{
 		Context:   ctx,
 		PageTitle: "Add - Datasets - Biblio",
 		Step:      1,
@@ -103,24 +125,34 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 		return
 	}
 
-	d, err := h.fetchDatasetByIdentifier(b.Source, b.Identifier)
-	if err != nil {
-		flash := flash.SimpleFlash().
-			WithLevel("error").
-			WithTitle("Failed to save draft").
-			WithBody(template.HTML(ctx.Locale.TS("dataset.single_import", "import_by_id.import_failed")))
+	var (
+		d   *models.Dataset
+		err error
+	)
 
-		ctx.Flash = append(ctx.Flash, *flash)
+	if b.Identifier != "" {
+		d, err = h.fetchDatasetByIdentifier(b.Source, b.Identifier)
+		if err != nil {
+			flash := flash.SimpleFlash().
+				WithLevel("error").
+				WithTitle("Failed to save draft").
+				WithBody(template.HTML(ctx.Locale.TS("dataset.single_import", "import_by_id.import_failed")))
 
-		render.Layout(w, "layouts/default", "dataset/pages/add", YieldAdd{
-			Context:    ctx,
-			PageTitle:  "Add - Datasets - Biblio",
-			Step:       1,
-			ActiveNav:  "datasets",
-			Source:     b.Source,
-			Identifier: b.Identifier,
-		})
-		return
+			ctx.Flash = append(ctx.Flash, *flash)
+
+			render.Layout(w, "layouts/default", "dataset/pages/add_identifier", YieldAdd{
+				Context:    ctx,
+				PageTitle:  "Add - Datasets - Biblio",
+				Step:       1,
+				ActiveNav:  "datasets",
+				Source:     b.Source,
+				Identifier: b.Identifier,
+			})
+			return
+		}
+	} else {
+		// or start with empty dataset
+		d = &models.Dataset{}
 	}
 
 	d.ID = ulid.Make().String()
@@ -141,7 +173,7 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 
 	if validationErrs := d.Validate(); validationErrs != nil {
 		errors := form.Errors(localize.ValidationErrors(ctx.Locale, validationErrs.(validation.Errors)))
-		render.Layout(w, "layouts/default", "dataset/pages/add", YieldAdd{
+		render.Layout(w, "layouts/default", "dataset/pages/add_identifier", YieldAdd{
 			Context:    ctx,
 			PageTitle:  "Add - Datasets - Biblio",
 			Step:       1,
