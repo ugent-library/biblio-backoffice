@@ -704,8 +704,11 @@ func (h *Handler) mapDataset(d *models.Dataset) *Publication {
 		EmbargoTo:   d.AccessLevelAfterEmbargo,
 		Title:       d.Title,
 		Type:        "researchData",
-		URL:         d.URL,
 		Year:        d.Year,
+	}
+
+	if len(d.Link) > 0 {
+		pp.URL = d.Link[0].URL
 	}
 
 	for _, v := range d.Abstract {
