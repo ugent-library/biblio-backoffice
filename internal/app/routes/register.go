@@ -463,6 +463,32 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		Methods("DELETE").
 		Name("dataset_delete_project")
 
+	// edit dataset links
+	r.HandleFunc("/publicaton/{id}/links/add",
+		datasetEditingHandler.Wrap(datasetEditingHandler.AddLink)).
+		Methods("GET").
+		Name("dataset_add_link")
+	r.HandleFunc("/dataset/{id}/links",
+		datasetEditingHandler.Wrap(datasetEditingHandler.CreateLink)).
+		Methods("POST").
+		Name("dataset_create_link")
+	r.HandleFunc("/dataset/{id}/links/{link_id}/edit",
+		datasetEditingHandler.Wrap(datasetEditingHandler.EditLink)).
+		Methods("GET").
+		Name("dataset_edit_link")
+	r.HandleFunc("/dataset/{id}/links/{link_id}",
+		datasetEditingHandler.Wrap(datasetEditingHandler.UpdateLink)).
+		Methods("PUT").
+		Name("dataset_update_link")
+	r.HandleFunc("/dataset/{id}/{snapshot_id}/links/{link_id}/confirm-delete",
+		datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmDeleteLink)).
+		Methods("GET").
+		Name("dataset_confirm_delete_link")
+	r.HandleFunc("/dataset/{id}/links/{link_id}",
+		datasetEditingHandler.Wrap(datasetEditingHandler.DeleteLink)).
+		Methods("DELETE").
+		Name("dataset_delete_link")
+
 	// edit dataset departments
 	r.HandleFunc("/dataset/{id}/departments/add",
 		datasetEditingHandler.Wrap(datasetEditingHandler.AddDepartment)).

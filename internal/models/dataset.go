@@ -40,7 +40,7 @@ type RelatedPublication struct {
 }
 
 type Dataset struct {
-	Abstract    []Text         `json:"abstract,omitempty"`
+	Abstract    []*Text        `json:"abstract,omitempty"`
 	AccessLevel string         `json:"access_level,omitempty"`
 	Author      []*Contributor `json:"author,omitempty"` // TODO rename to Creator
 	// CompletenessScore  int                  `json:"completeness_score,omitempty"`
@@ -63,6 +63,7 @@ type Dataset struct {
 	HasBeenPublic           bool                 `json:"has_been_public"`
 	LastUser                *DatasetUser         `json:"last_user,omitempty"`
 	License                 string               `json:"license,omitempty"`
+	Link                    []*Link              `json:"link,omitempty"`
 	Locked                  bool                 `json:"locked"`
 	Message                 string               `json:"message,omitempty"`
 	OtherLicense            string               `json:"other_license,omitempty"`
@@ -153,10 +154,42 @@ func (d *Dataset) RemoveContributor(role string, i int) error {
 	return nil
 }
 
+func (d *Dataset) GetLink(id string) *Link {
+	for _, pl := range d.Link {
+		if pl.ID == id {
+			return pl
+		}
+	}
+	return nil
+}
+
+func (d *Dataset) SetLink(l *Link) {
+	for i, link := range d.Link {
+		if link.ID == l.ID {
+			d.Link[i] = l
+		}
+	}
+}
+
+func (d *Dataset) AddLink(l *Link) {
+	l.ID = ulid.Make().String()
+	d.Link = append(d.Link, l)
+}
+
+func (d *Dataset) RemoveLink(id string) {
+	links := make([]*Link, 0)
+	for _, pl := range d.Link {
+		if pl.ID != id {
+			links = append(links, pl)
+		}
+	}
+	d.Link = links
+}
+
 func (d *Dataset) GetAbstract(id string) *Text {
 	for _, abstract := range d.Abstract {
 		if abstract.ID == id {
-			return &abstract
+			return abstract
 		}
 	}
 	return nil
@@ -165,18 +198,18 @@ func (d *Dataset) GetAbstract(id string) *Text {
 func (d *Dataset) SetAbstract(t *Text) {
 	for i, abstract := range d.Abstract {
 		if abstract.ID == t.ID {
-			d.Abstract[i] = *t
+			d.Abstract[i] = t
 		}
 	}
 }
 
 func (d *Dataset) AddAbstract(t *Text) {
 	t.ID = ulid.Make().String()
-	d.Abstract = append(d.Abstract, *t)
+	d.Abstract = append(d.Abstract, t)
 }
 
 func (d *Dataset) RemoveAbstract(id string) {
-	abstracts := make([]Text, 0)
+	abstracts := make([]*Text, 0)
 	for _, abstract := range d.Abstract {
 		if abstract.ID != id {
 			abstracts = append(abstracts, abstract)
