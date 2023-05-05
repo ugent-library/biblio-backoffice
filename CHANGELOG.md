@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- #1083: Increase request timeout to 5 minutes from 3 minutes
 - #1051: WoS import does not import complete fields completely
 
 ## [v1.0.25] - 2023-03-30
