@@ -369,6 +369,7 @@ func init() {
 	message.SetString(language.English, "organization.EB57", "Institute of Higher Education in Accounting and Tax")
 	message.SetString(language.English, "organization.EB58", "Faculty Education Services Economics and Business Administration")
 	message.SetString(language.English, "organization.EB61", "Technique and Budget")
+	message.SetString(language.English, "organization.FlandersMake", "Flanders Make")
 	message.SetString(language.English, "organization.FW", "Faculty of Pharmaceutical Sciences")
 	message.SetString(language.English, "organization.FW01", "Department of Pharmaceutics")
 	message.SetString(language.English, "organization.FW02", "Department of Pharmaceutical analysis")

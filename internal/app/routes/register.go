@@ -199,7 +199,7 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		Methods("GET")
 	// frontoffice file download
 	frontofficeRouter.HandleFunc("/download/{id}/{file_id}", frontofficeHandler.DownloadFile).
-		Methods("GET")
+		Methods("GET", "HEAD")
 
 	csrfPath := basePath
 	if csrfPath == "" {

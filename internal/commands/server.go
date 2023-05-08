@@ -145,8 +145,8 @@ var serverStartCmd = &cobra.Command{
 		server := graceful.WithDefaults(&http.Server{
 			Addr:         addr,
 			Handler:      handler,
-			ReadTimeout:  3 * time.Minute,
-			WriteTimeout: 3 * time.Minute,
+			ReadTimeout:  5 * time.Minute,
+			WriteTimeout: 5 * time.Minute,
 		})
 		logger.Infof("starting server at %s", addr)
 		if err := graceful.Graceful(server.ListenAndServe, server.Shutdown); err != nil {
