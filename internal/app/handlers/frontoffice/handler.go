@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/caltechlibrary/doitools"
 	"github.com/iancoleman/strcase"
@@ -1037,17 +1038,66 @@ func (h *Handler) DownloadFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	b, err := h.FileStore.Get(r.Context(), f.SHA256)
-	if err != nil {
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	var reader io.ReadCloser
+	var readerErr error
+
+	if r.Method == "GET" {
+		reader, readerErr = h.FileStore.Get(r.Context(), f.SHA256)
+		if readerErr != nil {
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
+		}
+		defer reader.Close()
+	}
+
+	responseHeaders := [][]string{}
+	responseHeaders = append(responseHeaders, []string{"Content-Type", f.ContentType})
+	responseHeaders = append(responseHeaders, []string{"Content-Length", fmt.Sprintf("%d", f.Size)})
+	responseHeaders = append(responseHeaders, []string{"Last-Modified", f.DateUpdated.UTC().Format(http.TimeFormat)})
+	responseHeaders = append(responseHeaders, []string{"ETag", f.SHA256})
+	responseHeaders = append(responseHeaders, []string{"Content-Disposition", fmt.Sprintf("attachment; filename*=UTF-8''%s", url.PathEscape(f.Name))})
+
+	/*
+		Important: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/304 dictates that all
+		headers in a 304 response should be sent, that would have been sent in 200 response,
+		but https://github.com/golang/go/issues/6157 dictates that Content-Length
+		and Content-Type should not. Weird.
+	*/
+
+	// Status 304: If-Modified-Since (Last-Modified)
+	if r.Header.Get("If-Modified-Since") != "" {
+		sinceTime, err := time.Parse(http.TimeFormat, r.Header.Get("If-Modified-Since"))
+		if err != nil {
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
+		}
+		// http time format does not register milliseconds
+		if !f.DateUpdated.Truncate(time.Second).After(sinceTime) {
+			for _, pairs := range responseHeaders {
+				w.Header().Set(pairs[0], pairs[1])
+			}
+			w.WriteHeader(http.StatusNotModified)
+			return
+		}
+	}
+
+	// Status 304: If-None-Match (ETag)
+	if r.Header.Get("If-None-Match") == f.SHA256 {
+		for _, pairs := range responseHeaders {
+			w.Header().Set(pairs[0], pairs[1])
+		}
+		w.WriteHeader(http.StatusNotModified)
 		return
 	}
-	defer b.Close()
 
-	w.Header().Set(
-		"Content-Disposition",
-		fmt.Sprintf("attachment; filename*=UTF-8''%s", url.PathEscape(f.Name)),
-	)
+	// Status 200
+	for _, pairs := range responseHeaders {
+		w.Header().Set(pairs[0], pairs[1])
+	}
+	w.WriteHeader(http.StatusOK)
 
-	io.Copy(w, b)
+	if r.Method == "GET" {
+		io.Copy(w, reader)
+	}
+
 }
