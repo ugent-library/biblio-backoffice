@@ -11,6 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [v1.0.27] - 2023-05-08
+
+### Added
+
+### Fixed
+
+- Small ux fix
+
 ## [v1.0.26] - 2023-05-08
 
 ### Added
@@ -300,7 +308,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.26...HEAD
+[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.27...HEAD
+[v1.0.27]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.26...v1.0.27
 [v1.0.26]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.25...v1.0.26
 [v1.0.25]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.24...v1.0.25
 [v1.0.24]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.23...v1.0.24
