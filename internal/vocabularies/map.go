@@ -133,6 +133,10 @@ var Map = map[string][]string{
 		"info:eu-repo/semantics/openAccess",
 		"info:eu-repo/semantics/restrictedAccess",
 	},
+	"dataset_link_relations": {
+		"homepage",
+		"related_information",
+	},
 	"faculties": {
 		"CA",
 		"DS",

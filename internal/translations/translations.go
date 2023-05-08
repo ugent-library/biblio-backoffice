@@ -93,6 +93,9 @@ func init() {
 	message.SetString(language.English, "dataset_access_levels_after_embargo.info:eu-repo/semantics/openAccess", "Open access")
 	message.SetString(language.English, "dataset_access_levels_after_embargo.info:eu-repo/semantics/restrictedAccess", "Restricted access")
 
+	message.SetString(language.English, "dataset_link_relations.homepage", "Accompanying website")
+	message.SetString(language.English, "dataset_link_relations.related_information", "Related information")
+
 	message.SetString(language.English, "publication_sorts.date-updated-desc", "Updated (newest first)")
 	message.SetString(language.English, "publication_sorts.date-created-asc", "Added (oldest first)")
 	message.SetString(language.English, "publication_sorts.date-created-desc", "Added (newest first)")
@@ -683,6 +686,7 @@ func init() {
 	message.SetString(language.English, "validation.dataset.abstract.text.required", "Abstract text can't be empty")
 	message.SetString(language.English, "validation.dataset.license.required", "License is required")
 	message.SetString(language.English, "validation.dataset.embargo.required", "Embargo is required")
+	message.SetString(language.English, "validation.dataset.link.url.required", "URL can't be empty")
 
 	message.SetString(language.English, "validation.dataset.embargo_date.required", "Embargo date is an invalid value")
 	message.SetString(language.English, "validation.dataset.embargo_date.invalid", "Embargo date is an invalid date")
@@ -710,6 +714,7 @@ func init() {
 	message.SetString(language.English, "validation.publication.defense_date.required", "Defense date is required")
 	message.SetString(language.English, "validation.publication.defense_date.invalid", "Defense date is not a valid date")
 	message.SetString(language.English, "validation.publication.file.embargo.invalid", "Embargo is not a valid date")
+	message.SetString(language.English, "validation.publication.link.url.required", "URL can't be empty")
 
 	message.SetString(language.English, "validation.publication.file.embargo_date.invalid", "The embargo end date is not a valid date")
 	message.SetString(language.English, "validation.publication.file.access_level_during_embargo.invalid", "The selected access level is not a valid access level value")

@@ -8,6 +8,7 @@ import (
 	"github.com/oklog/ulid/v2"
 	"github.com/ugent-library/biblio-backoffice/internal/pagination"
 	"github.com/ugent-library/biblio-backoffice/internal/validation"
+	"github.com/ugent-library/biblio-backoffice/internal/vocabularies"
 )
 
 type DatasetHits struct {
@@ -33,6 +34,13 @@ type DatasetDepartment struct {
 type DatasetProject struct {
 	ID   string `json:"id,omitempty"`
 	Name string `json:"name,omitempty"`
+}
+
+type DatasetLink struct {
+	ID          string `json:"id,omitempty"`
+	URL         string `json:"url,omitempty"`
+	Relation    string `json:"relation,omitempty"`
+	Description string `json:"description,omitempty"`
 }
 
 type RelatedPublication struct {
@@ -63,7 +71,7 @@ type Dataset struct {
 	HasBeenPublic           bool                 `json:"has_been_public"`
 	LastUser                *DatasetUser         `json:"last_user,omitempty"`
 	License                 string               `json:"license,omitempty"`
-	Link                    []*Link              `json:"link,omitempty"`
+	Link                    []*DatasetLink       `json:"link,omitempty"`
 	Locked                  bool                 `json:"locked"`
 	Message                 string               `json:"message,omitempty"`
 	OtherLicense            string               `json:"other_license,omitempty"`
@@ -154,7 +162,7 @@ func (d *Dataset) RemoveContributor(role string, i int) error {
 	return nil
 }
 
-func (d *Dataset) GetLink(id string) *Link {
+func (d *Dataset) GetLink(id string) *DatasetLink {
 	for _, pl := range d.Link {
 		if pl.ID == id {
 			return pl
@@ -163,7 +171,7 @@ func (d *Dataset) GetLink(id string) *Link {
 	return nil
 }
 
-func (d *Dataset) SetLink(l *Link) {
+func (d *Dataset) SetLink(l *DatasetLink) {
 	for i, link := range d.Link {
 		if link.ID == l.ID {
 			d.Link[i] = l
@@ -171,13 +179,13 @@ func (d *Dataset) SetLink(l *Link) {
 	}
 }
 
-func (d *Dataset) AddLink(l *Link) {
+func (d *Dataset) AddLink(l *DatasetLink) {
 	l.ID = ulid.Make().String()
 	d.Link = append(d.Link, l)
 }
 
 func (d *Dataset) RemoveLink(id string) {
-	links := make([]*Link, 0)
+	links := make([]*DatasetLink, 0)
 	for _, pl := range d.Link {
 		if pl.ID != id {
 			links = append(links, pl)
@@ -270,6 +278,28 @@ func (d *Dataset) AddDepartmentByOrg(org *Organization) {
 		datasetDepartment.Tree = append(datasetDepartment.Tree, DatasetDepartmentRef(d))
 	}
 	d.Department = append(d.Department, datasetDepartment)
+}
+
+func (dl *DatasetLink) Validate() (errs validation.Errors) {
+	if dl.ID == "" {
+		errs = append(errs, &validation.Error{
+			Pointer: "/id",
+			Code:    "id.required",
+		})
+	}
+	if dl.URL == "" {
+		errs = append(errs, &validation.Error{
+			Pointer: "/url",
+			Code:    "url.required",
+		})
+	}
+	if !validation.InArray(vocabularies.Map["dataset_link_relations"], dl.Relation) {
+		errs = append(errs, &validation.Error{
+			Pointer: "/relation",
+			Code:    "relation.invalid",
+		})
+	}
+	return
 }
 
 func (d *Dataset) Validate() error {
@@ -453,6 +483,15 @@ func (d *Dataset) Validate() error {
 			errs = append(errs, &validation.Error{
 				Pointer: fmt.Sprintf("/department/%d/id", i),
 				Code:    "dataset.department.id.required",
+			})
+		}
+	}
+
+	for i, l := range d.Link {
+		for _, err := range l.Validate() {
+			errs = append(errs, &validation.Error{
+				Pointer: fmt.Sprintf("/link/%d%s", i, err.Pointer),
+				Code:    "dataset.link." + err.Code,
 			})
 		}
 	}

@@ -48,7 +48,7 @@ type YieldDeleteLink struct {
 }
 
 func (h *Handler) AddLink(w http.ResponseWriter, r *http.Request, ctx Context) {
-	form := linkForm(ctx.Locale, ctx.Dataset, &models.Link{}, nil)
+	form := linkForm(ctx.Locale, ctx.Dataset, &models.DatasetLink{}, nil)
 	render.Layout(w, "show_modal", "dataset/add_link", YieldAddLink{
 		Context: ctx,
 		Form:    form,
@@ -63,7 +63,7 @@ func (h *Handler) CreateLink(w http.ResponseWriter, r *http.Request, ctx Context
 		return
 	}
 
-	datasetLink := models.Link{
+	datasetLink := models.DatasetLink{
 		URL:         b.URL,
 		Relation:    b.Relation,
 		Description: b.Description,
@@ -240,7 +240,7 @@ func (h *Handler) DeleteLink(w http.ResponseWriter, r *http.Request, ctx Context
 	})
 }
 
-func linkForm(l *locale.Locale, dataset *models.Dataset, link *models.Link, errors validation.Errors) *form.Form {
+func linkForm(l *locale.Locale, dataset *models.Dataset, link *models.DatasetLink, errors validation.Errors) *form.Form {
 	idx := -1
 	for i, l := range dataset.Link {
 		if l.ID == link.ID {
@@ -253,10 +253,11 @@ func linkForm(l *locale.Locale, dataset *models.Dataset, link *models.Link, erro
 		WithErrors(localize.ValidationErrors(l, errors)).
 		AddSection(
 			&form.Text{
-				Name:  "url",
-				Value: link.URL,
-				Label: l.T("builder.link.url"),
-				Cols:  12,
+				Name:     "url",
+				Value:    link.URL,
+				Label:    l.T("builder.link.url"),
+				Required: true,
+				Cols:     12,
 				Error: localize.ValidationErrorAt(
 					l,
 					errors,

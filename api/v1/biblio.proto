@@ -42,6 +42,7 @@ service Biblio {
     rpc PurgeAllDatasets(PurgeAllDatasetsRequest) returns (PurgeAllDatasetsResponse);
     rpc ValidateDatasets(stream ValidateDatasetsRequest) returns (stream ValidateDatasetsResponse);
     rpc ReindexDatasets(ReindexDatasetsRequest) returns (stream ReindexDatasetsResponse);
+    rpc CleanupDatasets(CleanupDatasetsRequest) returns (stream CleanupDatasetsResponse);
     rpc Relate(RelateRequest) returns (RelateResponse);
 }
 
@@ -227,7 +228,8 @@ message CleanupPublicationsResponse {
     oneof response {
         string message = 1;
         google.rpc.Status error = 2;
-    }}
+    }
+}
 
 message SyncPublicationContributorsRequest{
     bool noop = 1;
@@ -364,6 +366,16 @@ message ReindexDatasetsRequest{
 }
 
 message ReindexDatasetsResponse {
+    oneof response {
+        string message = 1;
+        google.rpc.Status error = 2;
+    }
+}
+
+message CleanupDatasetsRequest {
+}
+
+message CleanupDatasetsResponse {
     oneof response {
         string message = 1;
         google.rpc.Status error = 2;

@@ -54,6 +54,7 @@ const (
 	Biblio_PurgeAllDatasets_FullMethodName            = "/biblio.v1.Biblio/PurgeAllDatasets"
 	Biblio_ValidateDatasets_FullMethodName            = "/biblio.v1.Biblio/ValidateDatasets"
 	Biblio_ReindexDatasets_FullMethodName             = "/biblio.v1.Biblio/ReindexDatasets"
+	Biblio_CleanupDatasets_FullMethodName             = "/biblio.v1.Biblio/CleanupDatasets"
 	Biblio_Relate_FullMethodName                      = "/biblio.v1.Biblio/Relate"
 )
 
@@ -89,6 +90,7 @@ type BiblioClient interface {
 	PurgeAllDatasets(ctx context.Context, in *PurgeAllDatasetsRequest, opts ...grpc.CallOption) (*PurgeAllDatasetsResponse, error)
 	ValidateDatasets(ctx context.Context, opts ...grpc.CallOption) (Biblio_ValidateDatasetsClient, error)
 	ReindexDatasets(ctx context.Context, in *ReindexDatasetsRequest, opts ...grpc.CallOption) (Biblio_ReindexDatasetsClient, error)
+	CleanupDatasets(ctx context.Context, in *CleanupDatasetsRequest, opts ...grpc.CallOption) (Biblio_CleanupDatasetsClient, error)
 	Relate(ctx context.Context, in *RelateRequest, opts ...grpc.CallOption) (*RelateResponse, error)
 }
 
@@ -739,6 +741,38 @@ func (x *biblioReindexDatasetsClient) Recv() (*ReindexDatasetsResponse, error) {
 	return m, nil
 }
 
+func (c *biblioClient) CleanupDatasets(ctx context.Context, in *CleanupDatasetsRequest, opts ...grpc.CallOption) (Biblio_CleanupDatasetsClient, error) {
+	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[17], Biblio_CleanupDatasets_FullMethodName, opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &biblioCleanupDatasetsClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type Biblio_CleanupDatasetsClient interface {
+	Recv() (*CleanupDatasetsResponse, error)
+	grpc.ClientStream
+}
+
+type biblioCleanupDatasetsClient struct {
+	grpc.ClientStream
+}
+
+func (x *biblioCleanupDatasetsClient) Recv() (*CleanupDatasetsResponse, error) {
+	m := new(CleanupDatasetsResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 func (c *biblioClient) Relate(ctx context.Context, in *RelateRequest, opts ...grpc.CallOption) (*RelateResponse, error) {
 	out := new(RelateResponse)
 	err := c.cc.Invoke(ctx, Biblio_Relate_FullMethodName, in, out, opts...)
@@ -780,6 +814,7 @@ type BiblioServer interface {
 	PurgeAllDatasets(context.Context, *PurgeAllDatasetsRequest) (*PurgeAllDatasetsResponse, error)
 	ValidateDatasets(Biblio_ValidateDatasetsServer) error
 	ReindexDatasets(*ReindexDatasetsRequest, Biblio_ReindexDatasetsServer) error
+	CleanupDatasets(*CleanupDatasetsRequest, Biblio_CleanupDatasetsServer) error
 	Relate(context.Context, *RelateRequest) (*RelateResponse, error)
 	mustEmbedUnimplementedBiblioServer()
 }
@@ -871,6 +906,9 @@ func (UnimplementedBiblioServer) ValidateDatasets(Biblio_ValidateDatasetsServer)
 }
 func (UnimplementedBiblioServer) ReindexDatasets(*ReindexDatasetsRequest, Biblio_ReindexDatasetsServer) error {
 	return status.Errorf(codes.Unimplemented, "method ReindexDatasets not implemented")
+}
+func (UnimplementedBiblioServer) CleanupDatasets(*CleanupDatasetsRequest, Biblio_CleanupDatasetsServer) error {
+	return status.Errorf(codes.Unimplemented, "method CleanupDatasets not implemented")
 }
 func (UnimplementedBiblioServer) Relate(context.Context, *RelateRequest) (*RelateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Relate not implemented")
@@ -1478,6 +1516,27 @@ func (x *biblioReindexDatasetsServer) Send(m *ReindexDatasetsResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
+func _Biblio_CleanupDatasets_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(CleanupDatasetsRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(BiblioServer).CleanupDatasets(m, &biblioCleanupDatasetsServer{stream})
+}
+
+type Biblio_CleanupDatasetsServer interface {
+	Send(*CleanupDatasetsResponse) error
+	grpc.ServerStream
+}
+
+type biblioCleanupDatasetsServer struct {
+	grpc.ServerStream
+}
+
+func (x *biblioCleanupDatasetsServer) Send(m *CleanupDatasetsResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
 func _Biblio_Relate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(RelateRequest)
 	if err := dec(in); err != nil {
@@ -1642,6 +1701,11 @@ var Biblio_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "ReindexDatasets",
 			Handler:       _Biblio_ReindexDatasets_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "CleanupDatasets",
+			Handler:       _Biblio_CleanupDatasets_Handler,
 			ServerStreams: true,
 		},
 	},

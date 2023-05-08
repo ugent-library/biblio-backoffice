@@ -464,7 +464,7 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		Name("dataset_delete_project")
 
 	// edit dataset links
-	r.HandleFunc("/publicaton/{id}/links/add",
+	r.HandleFunc("/dataset/{id}/links/add",
 		datasetEditingHandler.Wrap(datasetEditingHandler.AddLink)).
 		Methods("GET").
 		Name("dataset_add_link")

@@ -781,3 +781,168 @@ func (s *server) ReindexDatasets(req *api.ReindexDatasetsRequest, stream api.Bib
 
 	return nil
 }
+
+func (s *server) CleanupDatasets(req *api.CleanupDatasetsRequest, stream api.Biblio_CleanupDatasetsServer) error {
+	ctx := context.Background()
+
+	var biErr error
+	var biIdxErr error
+
+	bi, err := s.services.DatasetSearchService.NewBulkIndexer(backends.BulkIndexerConfig{
+		OnError: func(err error) {
+			grpcErr := status.New(codes.Internal, fmt.Errorf("failed to clean up dataset: %v", err).Error())
+			if err = stream.Send(&api.CleanupDatasetsResponse{
+				Response: &api.CleanupDatasetsResponse_Error{
+					Error: grpcErr.Proto(),
+				},
+			}); err != nil {
+				biErr = err
+			}
+		},
+		OnIndexError: func(id string, err error) {
+			grpcErr := status.New(codes.Internal, fmt.Errorf("failed to clean up dataset %s: %w", id, err).Error())
+			if err = stream.Send(&api.CleanupDatasetsResponse{
+				Response: &api.CleanupDatasetsResponse_Error{
+					Error: grpcErr.Proto(),
+				},
+			}); err != nil {
+				biErr = err
+			}
+		},
+	})
+
+	if err != nil {
+		return status.Errorf(codes.Internal, "failed to start an indexer: %s", err)
+	}
+
+	defer bi.Close(ctx)
+
+	var callbackErr error
+
+	count := 0
+	streamErr := s.services.Repository.EachDataset(func(d *models.Dataset) bool {
+		// Guard
+		fixed := false
+
+		if d.DOI != "" {
+			if d.Identifiers == nil {
+				d.Identifiers = make(models.Identifiers)
+			}
+			d.Identifiers.Set("DOI", d.DOI)
+			d.DOI = ""
+			fixed = true
+		}
+
+		if d.URL != "" {
+			d.AddLink(&models.DatasetLink{
+				URL: d.URL,
+			})
+			d.URL = ""
+			fixed = true
+		}
+
+		// Save record if changed
+		if fixed {
+			d.User = nil
+
+			if err := d.Validate(); err != nil {
+				grpcErr := status.New(codes.Internal, fmt.Errorf("failed to validate dataset[snapshot_id: %s, id: %s] : %v", d.SnapshotID, d.ID, err).Error())
+				if err = stream.Send(&api.CleanupDatasetsResponse{
+					Response: &api.CleanupDatasetsResponse_Error{
+						Error: grpcErr.Proto(),
+					},
+				}); err != nil {
+					callbackErr = err
+					return false
+				}
+
+				return true
+			}
+
+			err := s.services.Repository.UpdateDataset(d.SnapshotID, d, nil)
+			if err != nil {
+				grpcErr := status.New(codes.Internal, fmt.Errorf("failed to update dataset[snapshot_id: %s, id: %s] : %v", d.SnapshotID, d.ID, err).Error())
+				if err = stream.Send(&api.CleanupDatasetsResponse{
+					Response: &api.CleanupDatasetsResponse_Error{
+						Error: grpcErr.Proto(),
+					},
+				}); err != nil {
+					callbackErr = err
+					return false
+				}
+
+				return true
+			}
+
+			if biErr != nil {
+				callbackErr = biErr
+				return false
+			}
+
+			if biIdxErr != nil {
+				callbackErr = biIdxErr
+				return false
+			}
+
+			var conflict *snapstore.Conflict
+			if errors.As(err, &conflict) {
+				grpcErr := status.New(codes.Internal, fmt.Errorf("conflict detected for dataset[snapshot_id: %s, id: %s] : %v", d.SnapshotID, d.ID, err).Error())
+				if err = stream.Send(&api.CleanupDatasetsResponse{
+					Response: &api.CleanupDatasetsResponse_Error{
+						Error: grpcErr.Proto(),
+					},
+				}); err != nil {
+					callbackErr = err
+					return false
+				}
+
+				return true
+			}
+
+			if err := stream.Send(&api.CleanupDatasetsResponse{
+				Response: &api.CleanupDatasetsResponse_Message{
+					Message: fmt.Sprintf("fixed dataset[snapshot_id: %s, id: %s]", d.SnapshotID, d.ID),
+				},
+			}); err != nil {
+				callbackErr = err
+				return false
+			}
+
+			if err := bi.Index(ctx, d); err != nil {
+				grpcErr := status.New(codes.Internal, fmt.Errorf("indexing failed for dataset [id: %s] : %s", d.ID, err).Error())
+				if err = stream.Send(&api.CleanupDatasetsResponse{
+					Response: &api.CleanupDatasetsResponse_Error{
+						Error: grpcErr.Proto(),
+					},
+				}); err != nil {
+					callbackErr = err
+					return false
+				}
+
+				return true
+			}
+
+			count += 1
+		}
+
+		return true
+	})
+
+	if callbackErr != nil {
+		return status.Errorf(codes.Internal, "failed to complete cleanup: %v", callbackErr)
+	}
+
+	if streamErr != nil {
+		return status.Errorf(codes.Internal, "could not complete cleanup: %v", err)
+	}
+
+	if err := stream.Send(&api.CleanupDatasetsResponse{
+		Response: &api.CleanupDatasetsResponse_Message{
+			Message: fmt.Sprintf("done. cleaned %d datasets.", count),
+		},
+	}); err != nil {
+		return status.Errorf(codes.Internal, "failed to to clean up datasets: %v", err)
+	}
+
+	return nil
+}
