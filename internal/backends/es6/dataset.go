@@ -177,7 +177,7 @@ func buildDatasetUserQuery(args *models.SearchArgs) M {
 				"query": args.Query,
 				"fields": []string{
 					"id^100",
-					"doi^50",
+					"identifier_values^50",
 					"title^40",
 					"department.tree.id^50",
 					"all",

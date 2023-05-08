@@ -1,10 +1,10 @@
 <div class="dropdown">
-    <a class="badge badge-{{if .SearchArgs.HasFilter "wos_type"}}primary{{else if .Hits.Facets.wos_type.HasMatches}}default{{else}}secondary{{end}} mr-3"
+    <a class="badge badge-{{if .SearchArgs.HasFilter "identifier_types"}}primary{{else if .Hits.Facets.identifier_types.HasMatches}}default{{else}}secondary{{end}} mr-3"
         data-toggle="dropdown" data-persist="true" aria-haspopup="true"
         aria-expanded="false" role="button"
     >
-        <span class="badge-text">WOS type</span>
-        {{with .SearchArgs.FiltersFor "wos_type"}}
+        <span class="badge-text">Persistent identifier type</span>
+        {{with .SearchArgs.FiltersFor "identifier_types"}}
         <span class="badge-value ml-2">
             &ndash;
             {{range $i, $v := .}}
@@ -20,7 +20,7 @@
         <div class="bc-navbar bc-navbar--bordered-bottom">
             <div class="bc-toolbar bc-toolbar--auto">
                 <div class="bc-toolbar-left">
-                    <h4 class="text-nowrap">WoS type</h4>
+                    <h4 class="text-nowrap">Persistent identifier type</h4>
                 </div>
                 <div class="bc-toolbar-right">
                     <button type="button" class="btn btn-link form-check-all">Select all</button>
@@ -32,18 +32,18 @@
         <input type="hidden" name="sort" value="{{.}}">
         {{end}}
         {{range $f, $vals := .SearchArgs.Filters}}
-        {{if ne $f "wos_type"}}
+        {{if ne $f "identifier_types"}}
         {{range $vals}}
         <input type="hidden" name="f[{{$f}}]" value="{{.}}">
         {{end}}
         {{end}}
         {{end}}
         <div class="dropdown-menu__body border-bottom">
-            {{$last := sub (len .Hits.Facets.wos_type) 1}}
-            {{range $i, $f := .Hits.Facets.wos_type}}
+            {{$last := sub (len .Hits.Facets.identifier_types) 1}}
+            {{range $i, $f := .Hits.Facets.identifier_types}}
             <div class="custom-control custom-checkbox{{if lt $i $last}} mb-4{{end}}">
-                <input class="custom-control-input" id="filter-wos-type-{{$i}}" type="checkbox" name="f[wos_type]" value="{{$f.Value}}"{{if $.SearchArgs.HasFilter "wos_type" $f.Value}} checked{{end}}>
-                <label class="custom-control-label" for="filter-wos-type-{{$i}}">{{$f.Value}} ({{$f.Count}})</label>
+                <input class="custom-control-input" id="filter-identifier-types-{{$i}}" type="checkbox" name="f[identifier_types]" value="{{$f.Value}}"{{if $.SearchArgs.HasFilter "identifier_types" $f.Value}} checked{{end}}>
+                <label class="custom-control-label" for="filter-identifier-types-{{$i}}">{{$f.Value}} ({{$f.Count}})</label>
             </div>
             {{end}}
         </div>

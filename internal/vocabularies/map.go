@@ -55,6 +55,7 @@ var Map = map[string][]string{
 		"has_message",
 		"created_since",
 		"updated_since",
+		"identifier_types",
 	},
 	"dataset_licenses": {
 		"CC0-1.0",

@@ -15,8 +15,10 @@ type indexedDataset struct {
 	DateFrom    string `json:"date_from,omitempty"`
 	DateUntil   string `json:"date_until,omitempty"`
 	// index only fields
-	HasMessage bool     `json:"has_message"`
-	Faculty    []string `json:"faculty,omitempty"`
+	HasMessage       bool     `json:"has_message"`
+	Faculty          []string `json:"faculty,omitempty"`
+	IdentifierTypes  []string `json:"identifier_types,omitempty"`
+	IdentifierValues []string `json:"identifier_values,omitempty"`
 }
 
 func NewIndexedDataset(d *models.Dataset) *indexedDataset {
@@ -53,6 +55,11 @@ func NewIndexedDataset(d *models.Dataset) *indexedDataset {
 				}
 			}
 		}
+	}
+
+	for k, vals := range d.Identifiers {
+		id.IdentifierTypes = append(id.IdentifierTypes, k)
+		id.IdentifierValues = append(id.IdentifierValues, vals...)
 	}
 
 	return id

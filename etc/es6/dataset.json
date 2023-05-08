@@ -273,10 +273,6 @@
                         }
                     }
                 },
-                "doi": {
-                    "type": "text",
-                    "analyzer": "keyword_lowercase"
-                },
                 "embargo": {
                     "type": "keyword"
                 },
@@ -288,6 +284,13 @@
                 },
                 "id": {
                     "type": "keyword"
+                },
+                "identifier_types": {
+                    "type": "keyword"
+                },
+                "identifier_values": {
+                    "type": "text",
+                    "analyzer": "keyword_lowercase"
                 },
                 "keyword": {
                     "type": "text",
