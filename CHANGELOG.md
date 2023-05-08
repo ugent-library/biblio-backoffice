@@ -9,10 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- S3 support for file storage
+- #1034: Add sync-publication-contributors command to keep embedded personal
+  details up to date.
+- #973: Add link to WoS ID on record detail page
+- #1081: support HEAD request for file downloads
+- #1065: Add FlandersMake organization
+- #1058: Hide deprecated DefenseTime field
+- #601: Add unclassified and unaffiliated records to dashboard
+- More Cypress tests
+
 ### Fixed
 
 - #1083: Increase request timeout to 5 minutes from 3 minutes
-- #1051: WoS import does not import complete fields completely
+- #1051: WoS import does not import all multiline fields completely
+- Ensure contact details are always visible
+- Various small ux fixes
 
 ## [v1.0.25] - 2023-03-30
 
