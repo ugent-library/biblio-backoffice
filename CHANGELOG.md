@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Fixed
+
+## [v1.0.26] - 2023-05-08
+
+### Added
+
 - S3 support for file storage
 - #1034: Add sync-publication-contributors command to keep embedded personal
   details up to date.
@@ -294,7 +300,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.25...HEAD
+[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.26...HEAD
+[v1.0.26]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.25...v1.0.26
 [v1.0.25]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.24...v1.0.25
 [v1.0.24]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.23...v1.0.24
 [v1.0.23]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.22...v1.0.23
