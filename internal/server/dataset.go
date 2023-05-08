@@ -824,6 +824,7 @@ func (s *server) CleanupDatasets(req *api.CleanupDatasetsRequest, stream api.Bib
 		// Guard
 		fixed := false
 
+		// Migrate DOI (temporary)
 		if d.DOI != "" {
 			if d.Identifiers == nil {
 				d.Identifiers = make(models.Identifiers)
@@ -833,6 +834,7 @@ func (s *server) CleanupDatasets(req *api.CleanupDatasetsRequest, stream api.Bib
 			fixed = true
 		}
 
+		// Migrate URL (temporary)
 		if d.URL != "" {
 			d.AddLink(&models.DatasetLink{
 				URL: d.URL,

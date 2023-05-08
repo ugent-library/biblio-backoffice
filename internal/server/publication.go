@@ -1035,6 +1035,14 @@ func (s *server) CleanupPublications(req *api.CleanupPublicationsRequest, stream
 		}
 		p.Keyword = cleanKeywords
 
+		// Remove empty links (temporary)
+		for _, l := range p.Link {
+			if l.URL == "" {
+				p.RemoveLink(l.ID)
+				fixed = true
+			}
+		}
+
 		// Remove unused fields
 		if p.CleanupUnusedFields() {
 			fixed = true
