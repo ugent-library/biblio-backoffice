@@ -146,12 +146,6 @@ func (s *server) UpdatePublication(ctx context.Context, req *api.UpdatePublicati
 		}, nil
 	}
 
-	// TODO Fetch user information via better authentication (no basic auth)
-	user := &models.User{
-		ID:       "n/a",
-		FullName: "system user",
-	}
-
 	if err := p.Validate(); err != nil {
 		grpcErr := status.New(codes.InvalidArgument, fmt.Errorf("failed to validate publication %s: %v", p.ID, err).Error())
 		return &api.UpdatePublicationResponse{
@@ -161,7 +155,7 @@ func (s *server) UpdatePublication(ctx context.Context, req *api.UpdatePublicati
 		}, nil
 	}
 
-	err := s.services.Repository.UpdatePublication(p.SnapshotID, p, user)
+	err := s.services.Repository.UpdatePublication(p.SnapshotID, p, nil)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
