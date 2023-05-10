@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Manual dataset input
+- Support dataset identifier types other than DOI
+
 ### Fixed
 
 ## [v1.0.27] - 2023-05-08
