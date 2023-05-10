@@ -67,11 +67,12 @@ type Repository interface {
 	UpdatePublicationInPlace(p *models.Publication) error
 	CountPublications(*RepositoryQueryArgs) (int, error)
 	SearchPublications(*RepositoryQueryArgs) ([]*models.Publication, error)
-	SelectPublications(string, []any, func(*models.Publication) bool) error
 	PublicationsBetween(time.Time, time.Time, func(*models.Publication) bool) error
 	EachPublication(func(*models.Publication) bool) error
 	EachPublicationSnapshot(func(*models.Publication) bool) error
+	EachPublicationWithoutHandle(func(*models.Publication) bool) error
 	PublicationHistory(string, func(*models.Publication) bool) error
+	UpdatePublicationEmbargoes() (int, error)
 	PurgeAllPublications() error
 	PurgePublication(string) error
 	AddDatasetListener(func(*models.Dataset))
@@ -83,11 +84,12 @@ type Repository interface {
 	UpdateDataset(string, *models.Dataset, *models.User) error
 	CountDatasets(*RepositoryQueryArgs) (int, error)
 	SearchDatasets(*RepositoryQueryArgs) ([]*models.Dataset, error)
-	SelectDatasets(string, []any, func(*models.Dataset) bool) error
 	DatasetsBetween(time.Time, time.Time, func(*models.Dataset) bool) error
 	EachDataset(func(*models.Dataset) bool) error
 	EachDatasetSnapshot(func(*models.Dataset) bool) error
+	EachDatasetWithoutHandle(func(*models.Dataset) bool) error
 	DatasetHistory(string, func(*models.Dataset) bool) error
+	UpdateDatasetEmbargoes() (int, error)
 	PurgeAllDatasets() error
 	PurgeDataset(string) error
 	GetPublicationDatasets(*models.Publication) ([]*models.Dataset, error)
