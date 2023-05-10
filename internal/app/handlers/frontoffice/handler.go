@@ -26,7 +26,6 @@ import (
 )
 
 const timestampFmt = "2006-01-02 15:04:05"
-const timestampFmtPg = "2006-01-02 15:04:05-07"
 
 var licenses = map[string]string{
 	"CC0-1.0":          "Creative Commons Public Domain Dedication (CC0 1.0)",
@@ -847,61 +846,33 @@ func (h *Handler) GetAllPublications(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if b.Limit < 0 {
-		b.Limit = 20
-	}
-	if b.Offset < 0 {
-		b.Offset = 0
-	}
-	args := &backends.RepositoryQueryArgs{
-		Offset:  b.Offset,
-		Limit:   b.Limit,
-		Order:   "date_from ASC",
-		Filters: make([]*backends.RepositoryFilter, 0),
-	}
-
+	var updatedSince time.Time
 	if b.UpdatedSince != "" {
-		t, tErr := internal_time.ParseTimeUTC(b.UpdatedSince)
-		if tErr != nil {
-			h.Logger.Errorf("updatedSince error", "err", tErr)
-			render.InternalServerError(w, r, tErr)
+		t, err := internal_time.ParseTimeUTC(b.UpdatedSince)
+		if err != nil {
+			h.Logger.Errorw("updatedSince error", err)
+			render.InternalServerError(w, r, err)
 			return
 		}
-		updatedSince := t.Local().Format(timestampFmtPg)
-		args.Filters = append(args.Filters, &backends.RepositoryFilter{
-			Field: "date_from",
-			Value: updatedSince,
-			Op:    ">=",
-		})
+		updatedSince = t.Local()
 	}
 
 	mappedHits := &Hits{
-		Offset: b.Offset,
 		Limit:  b.Limit,
-		Hits:   make([]*Publication, 0, b.Limit),
+		Offset: b.Offset,
 	}
 
-	count, countErr := h.Repository.CountPublications(args)
-	if countErr != nil {
-		h.Logger.Errorf("count error", "err", countErr)
-		render.InternalServerError(w, r, countErr)
+	n, publications, err := h.Repository.PublicationsAfter(updatedSince, b.Limit, b.Offset)
+	if err != nil {
+		h.Logger.Errorw("select error", err)
+		render.InternalServerError(w, r, err)
 		return
 	}
-	mappedHits.Total = count
 
-	if b.Limit > 0 {
-
-		publications, searchErr := h.Repository.SearchPublications(args)
-
-		if searchErr != nil {
-			h.Logger.Errorf("select error", "err", searchErr)
-			render.InternalServerError(w, r, searchErr)
-			return
-		}
-		for _, publication := range publications {
-			mappedHits.Hits = append(mappedHits.Hits, h.mapPublication(publication))
-		}
-
+	mappedHits.Total = n
+	mappedHits.Hits = make([]*Publication, 0, len(publications))
+	for _, p := range publications {
+		mappedHits.Hits = append(mappedHits.Hits, h.mapPublication(p))
 	}
 
 	j, err := json.Marshal(mappedHits)
@@ -909,6 +880,7 @@ func (h *Handler) GetAllPublications(w http.ResponseWriter, r *http.Request) {
 		render.InternalServerError(w, r, err)
 		return
 	}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Cache-Control", "no-cache")
 	w.Write(j)
@@ -921,62 +893,33 @@ func (h *Handler) GetAllDatasets(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if b.Limit < 0 {
-		b.Limit = 20
-	}
-	if b.Offset < 0 {
-		b.Offset = 0
-	}
-	args := &backends.RepositoryQueryArgs{
-		Offset:  b.Offset,
-		Limit:   b.Limit,
-		Order:   "date_from ASC",
-		Filters: make([]*backends.RepositoryFilter, 0),
-	}
-
+	var updatedSince time.Time
 	if b.UpdatedSince != "" {
-		t, tErr := internal_time.ParseTimeUTC(b.UpdatedSince)
-		if tErr != nil {
-			h.Logger.Errorf("updatedSince error", "err", tErr)
-			render.InternalServerError(w, r, tErr)
+		t, err := internal_time.ParseTimeUTC(b.UpdatedSince)
+		if err != nil {
+			h.Logger.Errorw("updatedSince error", err)
+			render.InternalServerError(w, r, err)
 			return
 		}
-		updatedSince := t.Local().Format(timestampFmtPg)
-		args.Filters = append(args.Filters, &backends.RepositoryFilter{
-			Field: "date_from",
-			Value: updatedSince,
-			Op:    ">=",
-		})
+		updatedSince = t.Local()
 	}
 
 	mappedHits := &Hits{
-		Offset: b.Offset,
 		Limit:  b.Limit,
-		Hits:   make([]*Publication, 0, b.Limit),
+		Offset: b.Offset,
 	}
 
-	count, countErr := h.Repository.CountDatasets(args)
-	if countErr != nil {
-		h.Logger.Errorf("count error", "err", countErr)
-		render.InternalServerError(w, r, countErr)
+	n, datasets, err := h.Repository.DatasetsAfter(updatedSince, b.Limit, b.Offset)
+	if err != nil {
+		h.Logger.Errorw("select error", err)
+		render.InternalServerError(w, r, err)
 		return
 	}
-	mappedHits.Total = count
 
-	if b.Limit > 0 {
-
-		datasets, searchErr := h.Repository.SearchDatasets(args)
-
-		if searchErr != nil {
-			h.Logger.Errorf("select error", "err", searchErr)
-			render.InternalServerError(w, r, searchErr)
-			return
-		}
-
-		for _, dataset := range datasets {
-			mappedHits.Hits = append(mappedHits.Hits, h.mapDataset(dataset))
-		}
-
+	mappedHits.Total = n
+	mappedHits.Hits = make([]*Publication, 0, len(datasets))
+	for _, d := range datasets {
+		mappedHits.Hits = append(mappedHits.Hits, h.mapDataset(d))
 	}
 
 	j, err := json.Marshal(mappedHits)
@@ -984,6 +927,7 @@ func (h *Handler) GetAllDatasets(w http.ResponseWriter, r *http.Request) {
 		render.InternalServerError(w, r, err)
 		return
 	}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Cache-Control", "no-cache")
 	w.Write(j)

@@ -65,8 +65,7 @@ type Repository interface {
 	ImportOldPublication(*models.Publication) error
 	UpdatePublication(string, *models.Publication, *models.User) error
 	UpdatePublicationInPlace(p *models.Publication) error
-	CountPublications(*RepositoryQueryArgs) (int, error)
-	SearchPublications(*RepositoryQueryArgs) ([]*models.Publication, error)
+	PublicationsAfter(t time.Time, limit, offset int) (int, []*models.Publication, error)
 	PublicationsBetween(time.Time, time.Time, func(*models.Publication) bool) error
 	EachPublication(func(*models.Publication) bool) error
 	EachPublicationSnapshot(func(*models.Publication) bool) error
@@ -82,8 +81,7 @@ type Repository interface {
 	ImportOldDataset(*models.Dataset) error
 	SaveDataset(*models.Dataset, *models.User) error
 	UpdateDataset(string, *models.Dataset, *models.User) error
-	CountDatasets(*RepositoryQueryArgs) (int, error)
-	SearchDatasets(*RepositoryQueryArgs) ([]*models.Dataset, error)
+	DatasetsAfter(t time.Time, limit, offset int) (int, []*models.Dataset, error)
 	DatasetsBetween(time.Time, time.Time, func(*models.Dataset) bool) error
 	EachDataset(func(*models.Dataset) bool) error
 	EachDatasetSnapshot(func(*models.Dataset) bool) error
