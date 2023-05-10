@@ -143,12 +143,6 @@ func (s *server) UpdateDataset(ctx context.Context, req *api.UpdateDatasetReques
 		}, nil
 	}
 
-	// TODO Fetch user information via better authentication (no basic auth)
-	user := &models.User{
-		ID:       "n/a",
-		FullName: "system user",
-	}
-
 	if err := d.Validate(); err != nil {
 		grpcErr := status.New(codes.InvalidArgument, fmt.Errorf("failed to validate dataset %s: %v", d.ID, err).Error())
 		return &api.UpdateDatasetResponse{
@@ -158,7 +152,7 @@ func (s *server) UpdateDataset(ctx context.Context, req *api.UpdateDatasetReques
 		}, nil
 	}
 
-	err := s.services.Repository.UpdateDataset(d.SnapshotID, d, user)
+	err := s.services.Repository.UpdateDataset(d.SnapshotID, d, nil)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {

@@ -17,6 +17,10 @@ A clear and concise description of what the bug is.
 3. Scroll down to '....'
 4. See error
 
+## Automatic testing scenario
+
+Write a high-level way to test this with Cypress if applicable.
+
 ## Risk classification
 
 ### Likelihood
