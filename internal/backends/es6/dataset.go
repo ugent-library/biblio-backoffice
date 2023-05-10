@@ -350,7 +350,7 @@ func decodeDatasetRes(r *datasetResEnvelope, facets []string) (*models.DatasetHi
 }
 
 func (publications *Datasets) Index(d *models.Dataset) error {
-	payload, err := json.Marshal(d)
+	payload, err := json.Marshal(NewIndexedDataset(d))
 	if err != nil {
 		return err
 	}
