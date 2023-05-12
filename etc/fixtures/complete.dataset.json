@@ -48,6 +48,11 @@
     }
   ],
   "doi": "doi",
+  "identifiers": {
+    "DOI": [
+      "doi"
+    ]
+  },
   "format": [
     "text/csv"
   ],
