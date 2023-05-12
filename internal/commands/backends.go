@@ -10,6 +10,7 @@ import (
 	"sync"
 
 	"github.com/elastic/go-elasticsearch/v6"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backoffice/internal/backends"
 	"github.com/ugent-library/biblio-backoffice/internal/backends/arxiv"
@@ -263,6 +264,8 @@ func newDatasetSearcherService() backends.DatasetSearcherService {
 }
 
 func newPublicationBulkIndexerService(logger *zap.SugaredLogger) backends.BulkIndexer[*models.Publication] {
+	ctx := context.Background()
+
 	bp, err := newPublicationSearchService().NewBulkIndexer(backends.BulkIndexerConfig{
 		OnError: func(err error) {
 			logger.Errorf("Indexing failed : %s", err)
@@ -276,10 +279,19 @@ func newPublicationBulkIndexerService(logger *zap.SugaredLogger) backends.BulkIn
 		logger.Fatalln("unable to create publication bulk indexer", err)
 	}
 
+	cobra.OnFinalize(func() {
+		err := bp.Close(ctx)
+		if err != nil {
+			panic(err)
+		}
+	})
+
 	return bp
 }
 
 func newDatasetBulkIndexerService(logger *zap.SugaredLogger) backends.BulkIndexer[*models.Dataset] {
+	ctx := context.Background()
+
 	bd, err := newDatasetSearchService().NewBulkIndexer(backends.BulkIndexerConfig{
 		OnError: func(err error) {
 			logger.Errorf("Indexing failed : %s", err)
@@ -292,6 +304,13 @@ func newDatasetBulkIndexerService(logger *zap.SugaredLogger) backends.BulkIndexe
 	if err != nil {
 		logger.Fatalln("unable to create publication bulk indexer", err)
 	}
+
+	cobra.OnFinalize(func() {
+		err := bd.Close(ctx)
+		if err != nil {
+			panic(err)
+		}
+	})
 
 	return bd
 }
