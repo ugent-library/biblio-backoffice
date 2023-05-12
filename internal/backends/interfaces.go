@@ -62,7 +62,6 @@ type Repository interface {
 	GetPublications([]string) ([]*models.Publication, error)
 	SavePublication(*models.Publication, *models.User) error
 	ImportCurrentPublication(*models.Publication) error
-	ImportOldPublication(*models.Publication) error
 	UpdatePublication(string, *models.Publication, *models.User) error
 	UpdatePublicationInPlace(p *models.Publication) error
 	PublicationsAfter(t time.Time, limit, offset int) (int, []*models.Publication, error)
@@ -78,7 +77,6 @@ type Repository interface {
 	GetDataset(string) (*models.Dataset, error)
 	GetDatasets([]string) ([]*models.Dataset, error)
 	ImportCurrentDataset(*models.Dataset) error
-	ImportOldDataset(*models.Dataset) error
 	SaveDataset(*models.Dataset, *models.User) error
 	UpdateDataset(string, *models.Dataset, *models.User) error
 	DatasetsAfter(t time.Time, limit, offset int) (int, []*models.Dataset, error)
