@@ -831,7 +831,8 @@ func (s *server) CleanupDatasets(req *api.CleanupDatasetsRequest, stream api.Bib
 		// Migrate URL (temporary)
 		if d.URL != "" {
 			d.AddLink(&models.DatasetLink{
-				URL: d.URL,
+				URL:      d.URL,
+				Relation: "related_information",
 			})
 			d.URL = ""
 			fixed = true
