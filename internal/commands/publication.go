@@ -126,8 +126,6 @@ var publicationImportCmd = &cobra.Command{
 	Use:   "import",
 	Short: "Import publications",
 	Run: func(cmd *cobra.Command, args []string) {
-		ctx := context.Background()
-
 		e := Services()
 
 		fmt, _ := cmd.Flags().GetString("format")
@@ -136,19 +134,6 @@ var publicationImportCmd = &cobra.Command{
 			log.Fatalf("Unknown format %s", fmt)
 		}
 		dec := decFactory(os.Stdin)
-
-		bi, err := e.PublicationSearchService.NewBulkIndexer(backends.BulkIndexerConfig{
-			OnError: func(err error) {
-				log.Printf("Indexing failed : %s", err)
-			},
-			OnIndexError: func(id string, err error) {
-				log.Printf("Indexing failed for publication [id: %s] : %s", id, err)
-			},
-		})
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer bi.Close(ctx)
 
 		lineNo := 0
 		for {
@@ -184,10 +169,6 @@ var publicationImportCmd = &cobra.Command{
 				p.SnapshotID,
 				p.ID,
 			)
-
-			if err := bi.Index(ctx, p); err != nil {
-				log.Printf("Indexing failed for publication [id: %s] : %s", p.ID, err)
-			}
 		}
 	},
 }

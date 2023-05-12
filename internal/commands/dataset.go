@@ -94,24 +94,9 @@ var datasetImportCmd = &cobra.Command{
 	Use:   "import",
 	Short: "Import datasets",
 	Run: func(cmd *cobra.Command, args []string) {
-		ctx := context.Background()
-
 		e := Services()
 
 		dec := json.NewDecoder(os.Stdin)
-
-		bi, err := e.DatasetSearchService.NewBulkIndexer(backends.BulkIndexerConfig{
-			OnError: func(err error) {
-				log.Printf("Indexing failed : %s", err)
-			},
-			OnIndexError: func(id string, err error) {
-				log.Printf("Indexing failed for dataset [id: %s] : %s", id, err)
-			},
-		})
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer bi.Close(ctx)
 
 		lineNo := 0
 		for {
@@ -147,10 +132,6 @@ var datasetImportCmd = &cobra.Command{
 				d.SnapshotID,
 				d.ID,
 			)
-
-			if err := bi.Index(ctx, d); err != nil {
-				log.Printf("Indexing failed for dataset [id: %s] : %s", d.ID, err)
-			}
 		}
 	},
 }

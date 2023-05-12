@@ -250,40 +250,6 @@ func (s *server) AddDatasets(stream api.Biblio_AddDatasetsServer) error {
 }
 
 func (s *server) ImportDatasets(stream api.Biblio_ImportDatasetsServer) error {
-	ctx := context.Background()
-
-	var biErr error
-	var biIdxErr error
-
-	bi, err := s.services.DatasetSearchService.NewBulkIndexer(backends.BulkIndexerConfig{
-		OnError: func(err error) {
-			grpcErr := status.New(codes.Internal, fmt.Errorf("failed to index dataset: %v", err).Error())
-			if err = stream.Send(&api.ImportDatasetsResponse{
-				Response: &api.ImportDatasetsResponse_Error{
-					Error: grpcErr.Proto(),
-				},
-			}); err != nil {
-				biErr = err
-			}
-		},
-		OnIndexError: func(id string, err error) {
-			grpcErr := status.New(codes.Internal, fmt.Errorf("failed to index dataset %s: %w", id, err).Error())
-			if err = stream.Send(&api.ImportDatasetsResponse{
-				Response: &api.ImportDatasetsResponse_Error{
-					Error: grpcErr.Proto(),
-				},
-			}); err != nil {
-				biErr = err
-			}
-		},
-	})
-
-	if err != nil {
-		return status.Errorf(codes.Internal, "failed to start an indexer: %s", err)
-	}
-
-	defer bi.Close(ctx)
-
 	var seq int
 
 	for {
@@ -332,26 +298,6 @@ func (s *server) ImportDatasets(stream api.Biblio_ImportDatasetsServer) error {
 				return status.Errorf(codes.Internal, "failed to to import datasets: %v", err)
 			}
 			continue
-		}
-
-		if err := bi.Index(ctx, d); err != nil {
-			grpcErr := status.New(codes.InvalidArgument, fmt.Errorf("failed to index dataset %s at line %d: %w", d.ID, seq, err).Error())
-			if err = stream.Send(&api.ImportDatasetsResponse{
-				Response: &api.ImportDatasetsResponse_Error{
-					Error: grpcErr.Proto(),
-				},
-			}); err != nil {
-				return status.Errorf(codes.Internal, "failed to to import datasets: %v", err)
-			}
-			continue
-		}
-
-		if biErr != nil {
-			return status.Errorf(codes.Internal, "failed to to import datasets: %v", biErr)
-		}
-
-		if biIdxErr != nil {
-			return status.Errorf(codes.Internal, "failed to to import datasets: %v", biIdxErr)
 		}
 
 		if err = stream.Send(&api.ImportDatasetsResponse{

@@ -266,40 +266,6 @@ func (s *server) AddPublications(stream api.Biblio_AddPublicationsServer) error 
 }
 
 func (s *server) ImportPublications(stream api.Biblio_ImportPublicationsServer) error {
-	ctx := context.Background()
-
-	var biErr error
-	var biIdxErr error
-
-	bi, err := s.services.PublicationSearchService.NewBulkIndexer(backends.BulkIndexerConfig{
-		OnError: func(err error) {
-			grpcErr := status.New(codes.Internal, fmt.Errorf("failed to index publication: %v", err).Error())
-			if err = stream.Send(&api.ImportPublicationsResponse{
-				Response: &api.ImportPublicationsResponse_Error{
-					Error: grpcErr.Proto(),
-				},
-			}); err != nil {
-				biErr = err
-			}
-		},
-		OnIndexError: func(id string, err error) {
-			grpcErr := status.New(codes.Internal, fmt.Errorf("failed to index publication %s: %w", id, err).Error())
-			if err = stream.Send(&api.ImportPublicationsResponse{
-				Response: &api.ImportPublicationsResponse_Error{
-					Error: grpcErr.Proto(),
-				},
-			}); err != nil {
-				biErr = err
-			}
-		},
-	})
-
-	if err != nil {
-		return status.Errorf(codes.Internal, "failed to start an indexer: %s", err)
-	}
-
-	defer bi.Close(ctx)
-
 	var seq int
 
 	for {
@@ -348,26 +314,6 @@ func (s *server) ImportPublications(stream api.Biblio_ImportPublicationsServer) 
 				return status.Errorf(codes.Internal, "failed to to import publications: %v", err)
 			}
 			continue
-		}
-
-		if err := bi.Index(ctx, p); err != nil {
-			grpcErr := status.New(codes.InvalidArgument, fmt.Errorf("failed to index publication %s at line %d: %w", p.ID, seq, err).Error())
-			if err = stream.Send(&api.ImportPublicationsResponse{
-				Response: &api.ImportPublicationsResponse_Error{
-					Error: grpcErr.Proto(),
-				},
-			}); err != nil {
-				return status.Errorf(codes.Internal, "failed to to import publications: %v", err)
-			}
-			continue
-		}
-
-		if biErr != nil {
-			return status.Errorf(codes.Internal, "failed to to import publications: %v", biErr)
-		}
-
-		if biIdxErr != nil {
-			return status.Errorf(codes.Internal, "failed to to import publications: %v", biIdxErr)
 		}
 
 		if err = stream.Send(&api.ImportPublicationsResponse{
