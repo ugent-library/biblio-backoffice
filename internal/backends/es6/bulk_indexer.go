@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/elastic/go-elasticsearch/v6"
 	"github.com/elastic/go-elasticsearch/v6/esutil"
@@ -18,8 +19,9 @@ type bulkIndexer[T any] struct {
 
 func newBulkIndexer[T any](client *elasticsearch.Client, index string, docFn func(T) (string, []byte, error), config backends.BulkIndexerConfig) (*bulkIndexer[T], error) {
 	bi, err := esutil.NewBulkIndexer(esutil.BulkIndexerConfig{
-		Client: client,
-		Index:  index,
+		Client:        client,
+		FlushInterval: 1 * time.Second,
+		Index:         index,
 		OnError: func(ctx context.Context, err error) {
 			// TODO wrap error
 			config.OnError(err)

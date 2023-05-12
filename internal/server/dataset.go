@@ -173,42 +173,7 @@ func (s *server) UpdateDataset(ctx context.Context, req *api.UpdateDatasetReques
 	return &api.UpdateDatasetResponse{}, nil
 }
 
-// TODO catch indexing errors
 func (s *server) AddDatasets(stream api.Biblio_AddDatasetsServer) error {
-	ctx := context.Background()
-
-	var biErr error
-	var biIdxErr error
-
-	bi, err := s.services.DatasetSearchService.NewBulkIndexer(backends.BulkIndexerConfig{
-		OnError: func(err error) {
-			grpcErr := status.New(codes.Internal, fmt.Errorf("failed to index dataset: %v", err).Error())
-			if err = stream.Send(&api.AddDatasetsResponse{
-				Response: &api.AddDatasetsResponse_Error{
-					Error: grpcErr.Proto(),
-				},
-			}); err != nil {
-				biErr = err
-			}
-		},
-		OnIndexError: func(id string, err error) {
-			grpcErr := status.New(codes.Internal, fmt.Errorf("failed to index dataset %s: %w", id, err).Error())
-			if err = stream.Send(&api.AddDatasetsResponse{
-				Response: &api.AddDatasetsResponse_Error{
-					Error: grpcErr.Proto(),
-				},
-			}); err != nil {
-				biErr = err
-			}
-		},
-	})
-
-	if err != nil {
-		return status.Errorf(codes.Internal, "failed to start an indexer: %s", err)
-	}
-
-	defer bi.Close(ctx)
-
 	var seq int
 
 	for {
@@ -272,26 +237,6 @@ func (s *server) AddDatasets(stream api.Biblio_AddDatasetsServer) error {
 				return status.Errorf(codes.Internal, "failed to to add datasets: %v", err)
 			}
 			continue
-		}
-
-		if err := bi.Index(ctx, d); err != nil {
-			grpcErr := status.New(codes.InvalidArgument, fmt.Errorf("failed to index dataset %s at line %d: %w", d.ID, seq, err).Error())
-			if err = stream.Send(&api.AddDatasetsResponse{
-				Response: &api.AddDatasetsResponse_Error{
-					Error: grpcErr.Proto(),
-				},
-			}); err != nil {
-				return status.Errorf(codes.Internal, "failed to to add datasets: %v", err)
-			}
-			continue
-		}
-
-		if biErr != nil {
-			return status.Errorf(codes.Internal, "failed to to add datasets: %v", biErr)
-		}
-
-		if biIdxErr != nil {
-			return status.Errorf(codes.Internal, "failed to to add datasets: %v", biIdxErr)
 		}
 
 		if err = stream.Send(&api.AddDatasetsResponse{
@@ -777,40 +722,6 @@ func (s *server) ReindexDatasets(req *api.ReindexDatasetsRequest, stream api.Bib
 }
 
 func (s *server) CleanupDatasets(req *api.CleanupDatasetsRequest, stream api.Biblio_CleanupDatasetsServer) error {
-	ctx := context.Background()
-
-	var biErr error
-	var biIdxErr error
-
-	bi, err := s.services.DatasetSearchService.NewBulkIndexer(backends.BulkIndexerConfig{
-		OnError: func(err error) {
-			grpcErr := status.New(codes.Internal, fmt.Errorf("failed to clean up dataset: %v", err).Error())
-			if err = stream.Send(&api.CleanupDatasetsResponse{
-				Response: &api.CleanupDatasetsResponse_Error{
-					Error: grpcErr.Proto(),
-				},
-			}); err != nil {
-				biErr = err
-			}
-		},
-		OnIndexError: func(id string, err error) {
-			grpcErr := status.New(codes.Internal, fmt.Errorf("failed to clean up dataset %s: %w", id, err).Error())
-			if err = stream.Send(&api.CleanupDatasetsResponse{
-				Response: &api.CleanupDatasetsResponse_Error{
-					Error: grpcErr.Proto(),
-				},
-			}); err != nil {
-				biErr = err
-			}
-		},
-	})
-
-	if err != nil {
-		return status.Errorf(codes.Internal, "failed to start an indexer: %s", err)
-	}
-
-	defer bi.Close(ctx)
-
 	var callbackErr error
 
 	count := 0
@@ -870,16 +781,6 @@ func (s *server) CleanupDatasets(req *api.CleanupDatasetsRequest, stream api.Bib
 				return true
 			}
 
-			if biErr != nil {
-				callbackErr = biErr
-				return false
-			}
-
-			if biIdxErr != nil {
-				callbackErr = biIdxErr
-				return false
-			}
-
 			var conflict *snapstore.Conflict
 			if errors.As(err, &conflict) {
 				grpcErr := status.New(codes.Internal, fmt.Errorf("conflict detected for dataset[snapshot_id: %s, id: %s] : %v", d.SnapshotID, d.ID, err).Error())
@@ -904,20 +805,6 @@ func (s *server) CleanupDatasets(req *api.CleanupDatasetsRequest, stream api.Bib
 				return false
 			}
 
-			if err := bi.Index(ctx, d); err != nil {
-				grpcErr := status.New(codes.Internal, fmt.Errorf("indexing failed for dataset [id: %s] : %s", d.ID, err).Error())
-				if err = stream.Send(&api.CleanupDatasetsResponse{
-					Response: &api.CleanupDatasetsResponse_Error{
-						Error: grpcErr.Proto(),
-					},
-				}); err != nil {
-					callbackErr = err
-					return false
-				}
-
-				return true
-			}
-
 			count += 1
 		}
 
@@ -929,7 +816,7 @@ func (s *server) CleanupDatasets(req *api.CleanupDatasetsRequest, stream api.Bib
 	}
 
 	if streamErr != nil {
-		return status.Errorf(codes.Internal, "could not complete cleanup: %v", err)
+		return status.Errorf(codes.Internal, "could not complete cleanup: %v", streamErr)
 	}
 
 	if err := stream.Send(&api.CleanupDatasetsResponse{

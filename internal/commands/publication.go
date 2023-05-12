@@ -78,7 +78,7 @@ var publicationAllCmd = &cobra.Command{
 	Use:   "all",
 	Short: "Get all publications",
 	Run: func(cmd *cobra.Command, args []string) {
-		s := newRepository()
+		s := Services().Repository
 		e := json.NewEncoder(os.Stdout)
 		s.EachPublication(func(d *models.Publication) bool {
 			e.Encode(d)
@@ -91,8 +91,6 @@ var publicationAddCmd = &cobra.Command{
 	Use:   "add",
 	Short: "Add publications",
 	Run: func(cmd *cobra.Command, args []string) {
-		ctx := context.Background()
-
 		e := Services()
 
 		fmt, _ := cmd.Flags().GetString("format")
@@ -101,19 +99,6 @@ var publicationAddCmd = &cobra.Command{
 			log.Fatalf("Unknown format %s", fmt)
 		}
 		dec := decFactory(os.Stdin)
-
-		bi, err := e.PublicationSearchService.NewBulkIndexer(backends.BulkIndexerConfig{
-			OnError: func(err error) {
-				log.Printf("Indexing failed : %s", err)
-			},
-			OnIndexError: func(id string, err error) {
-				log.Printf("Indexing failed for publication [id: %s] : %s", id, err)
-			},
-		})
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer bi.Close(ctx)
 
 		lineNo := 0
 		for {
@@ -134,10 +119,6 @@ var publicationAddCmd = &cobra.Command{
 			}
 			if err := e.Repository.SavePublication(p, nil); err != nil {
 				log.Fatalf("Unable to store publication from line %d : %v", lineNo, err)
-			}
-
-			if err := bi.Index(ctx, p); err != nil {
-				log.Printf("Indexing failed for publication [id: %s] at line %d : %s", p.ID, lineNo, err)
 			}
 		}
 	},
@@ -217,22 +198,7 @@ var publicationCleanupCmd = &cobra.Command{
 	Use:   "cleanup",
 	Short: "Make publications consistent, clean up data anomalies",
 	Run: func(cmd *cobra.Command, args []string) {
-		ctx := context.Background()
-
 		e := Services()
-
-		bi, err := e.PublicationSearchService.NewBulkIndexer(backends.BulkIndexerConfig{
-			OnError: func(err error) {
-				log.Printf("Indexing failed : %s", err)
-			},
-			OnIndexError: func(id string, err error) {
-				log.Printf("Indexing failed for publication [id: %s] : %s", id, err)
-			},
-		})
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer bi.Close(ctx)
 
 		e.Repository.EachPublication(func(p *models.Publication) bool {
 			// Guard
@@ -301,10 +267,6 @@ var publicationCleanupCmd = &cobra.Command{
 					p.SnapshotID,
 					p.ID,
 				)
-
-				if err := bi.Index(ctx, p); err != nil {
-					log.Printf("Indexing failed for publication [id: %s] : %s", p.ID, err)
-				}
 			}
 
 			return true
@@ -318,15 +280,7 @@ var publicationTransferCmd = &cobra.Command{
 	Args:  cobra.RangeArgs(2, 3),
 	Run: func(cmd *cobra.Command, args []string) {
 		e := Services()
-		s := newRepository()
-
-		s.AddPublicationListener(func(p *models.Publication) {
-			if p.DateUntil == nil {
-				if err := e.PublicationSearchService.Index(p); err != nil {
-					log.Fatalf("error indexing publication %s: %v", p.ID, err)
-				}
-			}
-		})
+		s := e.Repository
 
 		source := args[0]
 		dest := args[1]

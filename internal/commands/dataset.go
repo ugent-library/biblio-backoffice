@@ -35,7 +35,7 @@ var datasetGetCmd = &cobra.Command{
 	Short: "Get datasets by id",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		s := newRepository()
+		s := Services().Repository
 		e := json.NewEncoder(os.Stdout)
 		for _, id := range args {
 			d, err := s.GetDataset(id)
@@ -51,7 +51,7 @@ var datasetAllCmd = &cobra.Command{
 	Use:   "all",
 	Short: "Get all datasets",
 	Run: func(cmd *cobra.Command, args []string) {
-		s := newRepository()
+		s := Services().Repository
 		e := json.NewEncoder(os.Stdout)
 		s.EachDataset(func(d *models.Dataset) bool {
 			e.Encode(d)
@@ -64,24 +64,9 @@ var datasetAddCmd = &cobra.Command{
 	Use:   "add",
 	Short: "Add datasets",
 	Run: func(cmd *cobra.Command, args []string) {
-		ctx := context.Background()
-
 		e := Services()
 
 		dec := json.NewDecoder(os.Stdin)
-
-		bi, err := e.DatasetSearchService.NewBulkIndexer(backends.BulkIndexerConfig{
-			OnError: func(err error) {
-				log.Printf("Indexing failed : %s", err)
-			},
-			OnIndexError: func(id string, err error) {
-				log.Printf("Indexing failed for dataset [id: %s] : %s", id, err)
-			},
-		})
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer bi.Close(ctx)
 
 		lineNo := 0
 		for {
@@ -101,10 +86,6 @@ var datasetAddCmd = &cobra.Command{
 			}
 			if err := e.Repository.SaveDataset(d, nil); err != nil {
 				log.Fatalf("Unable to store dataset from line %d : %v", lineNo, err)
-			}
-
-			if err := bi.Index(ctx, d); err != nil {
-				log.Printf("Indexing failed for dataset [id: %s] at line %d : %s", d.ID, lineNo, err)
 			}
 		}
 	},

@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
@@ -24,6 +25,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/internal/backends/handle"
 	"github.com/ugent-library/biblio-backoffice/internal/backends/s3store"
 	"github.com/ugent-library/biblio-backoffice/internal/caching"
+	"github.com/ugent-library/biblio-backoffice/internal/models"
 
 	"github.com/ugent-library/biblio-backoffice/internal/backends/ianamedia"
 	"github.com/ugent-library/biblio-backoffice/internal/backends/jsonl"
@@ -85,11 +87,13 @@ func newServices() *backends.Services {
 		)
 	}
 
+	logger := newLogger()
+
 	return &backends.Services{
 		FileStore:                 newFileStore(),
 		ORCIDSandbox:              orcidConfig.Sandbox,
 		ORCIDClient:               orcidClient,
-		Repository:                newRepository(),
+		Repository:                newRepository(logger),
 		DatasetSearchService:      newDatasetSearchService(),
 		PublicationSearchService:  newPublicationSearchService(),
 		OrganizationService:       caching.NewOrganizationService(authorityClient),
@@ -158,12 +162,34 @@ func newLogger() *zap.SugaredLogger {
 	return sugar
 }
 
-func newRepository() backends.Repository {
-	s, err := repository.New(viper.GetString("pg-conn"))
+func newRepository(logger *zap.SugaredLogger) backends.Repository {
+	ctx := context.Background()
+
+	bp := newPublicationBulkIndexerService(logger)
+	bd := newDatasetBulkIndexerService(logger)
+
+	repo, err := repository.New(viper.GetString("pg-conn"))
 	if err != nil {
 		log.Fatalln("unable to create store", err)
 	}
-	return s
+
+	repo.AddPublicationListener(func(p *models.Publication) {
+		if p.DateUntil == nil {
+			if err := bp.Index(ctx, p); err != nil {
+				logger.Errorf("error indexing publication %s: %w", p.ID, err)
+			}
+		}
+	})
+
+	repo.AddDatasetListener(func(d *models.Dataset) {
+		if d.DateUntil == nil {
+			if err := bd.Index(ctx, d); err != nil {
+				logger.Errorf("error indexing dataset %s: %w", d.ID, err)
+			}
+		}
+	})
+
+	return repo
 }
 
 func newFileStore() backends.FileStore {
@@ -234,4 +260,38 @@ func newDatasetSearcherService() backends.DatasetSearcherService {
 	es6Client := newEs6Client("dataset")
 	//max size of exportable records is now 10K. Make configurable
 	return es6.NewDatasetSearcher(*es6Client, 10000)
+}
+
+func newPublicationBulkIndexerService(logger *zap.SugaredLogger) backends.BulkIndexer[*models.Publication] {
+	bp, err := newPublicationSearchService().NewBulkIndexer(backends.BulkIndexerConfig{
+		OnError: func(err error) {
+			logger.Errorf("Indexing failed : %s", err)
+		},
+		OnIndexError: func(id string, err error) {
+			logger.Errorf("Indexing failed for dataset [id: %s] : %s", id, err)
+		},
+	})
+
+	if err != nil {
+		logger.Fatalln("unable to create publication bulk indexer", err)
+	}
+
+	return bp
+}
+
+func newDatasetBulkIndexerService(logger *zap.SugaredLogger) backends.BulkIndexer[*models.Dataset] {
+	bd, err := newDatasetSearchService().NewBulkIndexer(backends.BulkIndexerConfig{
+		OnError: func(err error) {
+			logger.Errorf("Indexing failed : %s", err)
+		},
+		OnIndexError: func(id string, err error) {
+			logger.Errorf("Indexing failed for dataset [id: %s] : %s", id, err)
+		},
+	})
+
+	if err != nil {
+		logger.Fatalln("unable to create publication bulk indexer", err)
+	}
+
+	return bd
 }
