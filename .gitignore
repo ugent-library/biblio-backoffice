@@ -26,8 +26,10 @@ go.work
 tmp
 root
 
+# env
+.env
+
 # Cypress
-cypress/.env
 cypress/videos
 cypress/screenshots
 cypress/cypress-record.sh
