@@ -2,7 +2,6 @@ package es6
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"io"
 
@@ -33,7 +32,7 @@ func New(c Config) (*Client, error) {
 	return &Client{Config: c, es: client}, nil
 }
 
-func (c *Client) searchWithOpts(opts []func(*esapi.SearchRequest), responseBody any) error {
+func (c *Client) SearchWithOpts(opts []func(*esapi.SearchRequest), responseBody any) error {
 
 	res, err := c.es.Search(opts...)
 
@@ -56,29 +55,4 @@ func (c *Client) searchWithOpts(opts []func(*esapi.SearchRequest), responseBody 
 	}
 
 	return nil
-}
-
-func (c *Client) SearchWithBody(index string, requestBody M, responseBody any) error {
-
-	sorts := make([]string, 0)
-
-	if v, exists := requestBody["sort"]; exists {
-		sorts = append(sorts, v.([]string)...)
-		delete(requestBody, "sort")
-	}
-
-	opts := []func(*esapi.SearchRequest){
-		c.es.Search.WithContext(context.Background()),
-		c.es.Search.WithIndex(index),
-		c.es.Search.WithTrackTotalHits(true),
-		c.es.Search.WithSort(sorts...),
-	}
-
-	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(requestBody); err != nil {
-		return err
-	}
-	opts = append(opts, c.es.Search.WithBody(&buf))
-
-	return c.searchWithOpts(opts, responseBody)
 }

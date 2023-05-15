@@ -143,7 +143,7 @@ func (publications *Publications) Search(args *models.SearchArgs) (*models.Publi
 	opts = append(opts, publications.Client.es.Search.WithBody(&buf))
 
 	var res publicationResEnvelope
-	err := publications.Client.searchWithOpts(opts, &res)
+	err := publications.Client.SearchWithOpts(opts, &res)
 	if err != nil {
 		return nil, err
 	}

@@ -142,7 +142,7 @@ func (datasets *Datasets) Search(args *models.SearchArgs) (*models.DatasetHits, 
 	opts = append(opts, datasets.Client.es.Search.WithBody(&buf))
 
 	var res datasetResEnvelope = datasetResEnvelope{}
-	err := datasets.Client.searchWithOpts(opts, &res)
+	err := datasets.Client.SearchWithOpts(opts, &res)
 	if err != nil {
 		return nil, err
 	}

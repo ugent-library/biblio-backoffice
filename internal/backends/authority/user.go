@@ -8,7 +8,6 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/ugent-library/biblio-backoffice/internal/backends"
-	"github.com/ugent-library/biblio-backoffice/internal/backends/es6"
 	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -53,11 +52,11 @@ func (c *Client) SuggestUsers(q string) ([]models.Person, error) {
 	q = strings.TrimSpace(q)
 
 	qParts := strings.Split(q, " ")
-	queryMust := make([]es6.M, 0, len(qParts))
+	queryMust := make([]M, 0, len(qParts))
 
 	for _, qp := range qParts {
-		queryMust = append(queryMust, es6.M{
-			"query_string": es6.M{
+		queryMust = append(queryMust, M{
+			"query_string": M{
 				"default_operator": "AND",
 				"query":            fmt.Sprintf("%s*", qp),
 				"default_field":    "all",
@@ -66,11 +65,11 @@ func (c *Client) SuggestUsers(q string) ([]models.Person, error) {
 		})
 	}
 
-	requestBody := es6.M{
-		"query": es6.M{
-			"bool": es6.M{
-				"filter": es6.M{
-					"term": es6.M{
+	requestBody := M{
+		"query": M{
+			"bool": M{
+				"filter": M{
+					"term": M{
 						"active": "true",
 					},
 				},
@@ -82,7 +81,7 @@ func (c *Client) SuggestUsers(q string) ([]models.Person, error) {
 
 	var responseBody personSearchEnvelope = personSearchEnvelope{}
 
-	if e := c.es.SearchWithBody("biblio_person", requestBody, &responseBody); e != nil {
+	if e := c.search("biblio_person", requestBody, &responseBody); e != nil {
 		return nil, e
 	}
 

@@ -131,7 +131,7 @@ func (searcher *PublicationSearcher) buildEsOpts(query M) ([]func(*esapi.SearchR
 
 func (searcher *PublicationSearcher) esSearch(opts ...func(*esapi.SearchRequest)) (*models.PublicationHits, error) {
 	var envelop publicationResEnvelope
-	err := searcher.Client.searchWithOpts(opts, &envelop)
+	err := searcher.Client.SearchWithOpts(opts, &envelop)
 	if err != nil {
 		return nil, err
 	}

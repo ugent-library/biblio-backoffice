@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/ugent-library/biblio-backoffice/internal/backends"
-	"github.com/ugent-library/biblio-backoffice/internal/backends/es6"
 	"github.com/ugent-library/biblio-backoffice/internal/models"
 )
 
@@ -32,9 +31,9 @@ type searchEnvelope struct {
 
 func (c *Client) GetOrganization(id string) (*models.Organization, error) {
 
-	requestBody := es6.M{
-		"query": es6.M{
-			"term": es6.M{
+	requestBody := M{
+		"query": M{
+			"term": M{
 				"_id": id,
 			},
 		},
@@ -42,7 +41,7 @@ func (c *Client) GetOrganization(id string) (*models.Organization, error) {
 	}
 	var responseBody organizationSearchEnvelope = organizationSearchEnvelope{}
 
-	if e := c.es.SearchWithBody("biblio_organization", requestBody, &responseBody); e != nil {
+	if e := c.search("biblio_organization", requestBody, &responseBody); e != nil {
 		return nil, e
 	}
 
@@ -67,11 +66,11 @@ func (c *Client) SuggestOrganizations(q string) ([]models.Completion, error) {
 	q = strings.TrimSpace(q)
 
 	qParts := strings.Split(q, " ")
-	queryMust := make([]es6.M, 0, len(qParts))
+	queryMust := make([]M, 0, len(qParts))
 
 	for _, qp := range qParts {
-		queryMust = append(queryMust, es6.M{
-			"query_string": es6.M{
+		queryMust = append(queryMust, M{
+			"query_string": M{
 				"default_operator": "AND",
 				"query":            fmt.Sprintf("%s*", qp),
 				"default_field":    "all",
@@ -80,9 +79,9 @@ func (c *Client) SuggestOrganizations(q string) ([]models.Completion, error) {
 		})
 	}
 
-	requestBody := es6.M{
-		"query": es6.M{
-			"bool": es6.M{
+	requestBody := M{
+		"query": M{
+			"bool": M{
 				"must": queryMust,
 			},
 		},
@@ -91,7 +90,7 @@ func (c *Client) SuggestOrganizations(q string) ([]models.Completion, error) {
 
 	var responseBody searchEnvelope = searchEnvelope{}
 
-	if e := c.es.SearchWithBody("biblio_organization", requestBody, &responseBody); e != nil {
+	if e := c.search("biblio_organization", requestBody, &responseBody); e != nil {
 		return nil, e
 	}
 
