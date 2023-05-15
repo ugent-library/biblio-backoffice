@@ -30,10 +30,17 @@ func (searcher *DatasetSearcher) Searcher(searchArgs *models.SearchArgs, cb func
 	nProcessed := 0
 	start := 0
 	limit := 200
-	query := searcher.buildQuery(searchArgs)
 
-	sortValue := "0" //lowest sort value when sortin on id?
+	query := buildDatasetUserQuery(searchArgs)
+
 	queryFilters := query["query"].(M)["bool"].(M)["filter"].([]M)
+
+	// Set the searcher scopes
+	queryFilters = append(queryFilters, searcher.scopes...)
+
+	// Set the range to ID = 0, this value gets updated with each 200 hits
+	// fetched from ES in the loop
+	sortValue := "0" //lowest sort value when sortin on id?
 	queryFilters = append(queryFilters, M{
 		"range": M{
 			"id": M{
@@ -41,6 +48,7 @@ func (searcher *DatasetSearcher) Searcher(searchArgs *models.SearchArgs, cb func
 			},
 		},
 	})
+
 	query["query"].(M)["bool"].(M)["filter"] = queryFilters
 
 	for {
@@ -50,16 +58,31 @@ func (searcher *DatasetSearcher) Searcher(searchArgs *models.SearchArgs, cb func
 		queryFilters[len(queryFilters)-1]["range"].(M)["id"].(M)["gt"] = sortValue
 		query["query"].(M)["bool"].(M)["filter"] = queryFilters
 
-		opts, optsErr := searcher.buildEsOpts(query)
-
-		if optsErr != nil {
-			return optsErr
+		var buf bytes.Buffer
+		if err := json.NewEncoder(&buf).Encode(query); err != nil {
+			return err
 		}
 
-		hits, hitsErr := searcher.esSearch(opts...)
+		fmt.Fprintf(os.Stderr, "es dataset search: %s\n", buf.String())
 
-		if hitsErr != nil {
-			return hitsErr
+		opts := []func(*esapi.SearchRequest){
+			searcher.Client.es.Search.WithContext(context.Background()),
+			searcher.Client.es.Search.WithIndex(searcher.Client.Index),
+			searcher.Client.es.Search.WithTrackTotalHits(true),
+			searcher.Client.es.Search.WithSort("id:asc"),
+			searcher.Client.es.Search.WithBody(&buf),
+		}
+
+		var envelop datasetResEnvelope
+
+		err := searcher.Client.SearchWithOpts(opts, &envelop)
+		if err != nil {
+			return err
+		}
+
+		hits, err := decodeDatasetRes(&envelop, []string{})
+		if err != nil {
+			return err
 		}
 
 		if len(hits.Hits) == 0 {
@@ -85,50 +108,17 @@ func (searcher *DatasetSearcher) Searcher(searchArgs *models.SearchArgs, cb func
 }
 
 func (searcher *DatasetSearcher) WithScope(field string, terms ...string) backends.DatasetSearcherService {
-	d := searcher.Clone()
-	d.scopes = append(d.scopes, ParseScope(field, terms...))
-	return d
-}
-
-func (searcher *DatasetSearcher) Clone() *DatasetSearcher {
 	newScopes := make([]M, 0, len(searcher.scopes))
+
+	// Copy existing scopes
 	newScopes = append(newScopes, searcher.scopes...)
+
+	// Add new scopes
+	newScopes = append(newScopes, ParseScope(field, terms...))
+
 	return &DatasetSearcher{
 		Client:  searcher.Client,
 		scopes:  newScopes,
 		maxSize: searcher.maxSize,
 	}
-}
-
-func (searcher *DatasetSearcher) buildQuery(searchArgs *models.SearchArgs) M {
-	query := buildDatasetUserQuery(searchArgs)
-	queryFilters := query["query"].(M)["bool"].(M)["filter"].([]M)
-	queryFilters = append(queryFilters, searcher.scopes...)
-	query["query"].(M)["bool"].(M)["filter"] = queryFilters
-	return query
-}
-
-func (searcher *DatasetSearcher) buildEsOpts(query M) ([]func(*esapi.SearchRequest), error) {
-	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(query); err != nil {
-		return nil, err
-	}
-	fmt.Fprintf(os.Stderr, "es dataset search: %s\n", buf.String())
-	opts := []func(*esapi.SearchRequest){
-		searcher.Client.es.Search.WithContext(context.Background()),
-		searcher.Client.es.Search.WithIndex(searcher.Client.Index),
-		searcher.Client.es.Search.WithTrackTotalHits(true),
-		searcher.Client.es.Search.WithSort("id:asc"),
-		searcher.Client.es.Search.WithBody(&buf),
-	}
-	return opts, nil
-}
-
-func (searcher *DatasetSearcher) esSearch(opts ...func(*esapi.SearchRequest)) (*models.DatasetHits, error) {
-	var envelop datasetResEnvelope
-	err := searcher.Client.SearchWithOpts(opts, &envelop)
-	if err != nil {
-		return nil, err
-	}
-	return decodeDatasetRes(&envelop, []string{})
 }

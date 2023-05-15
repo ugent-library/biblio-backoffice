@@ -28,10 +28,17 @@ func (searcher *PublicationSearcher) Searcher(searchArgs *models.SearchArgs, cb 
 	nProcessed := 0
 	start := 0
 	limit := 200
-	query := searcher.buildQuery(searchArgs)
 
-	sortValue := "0" //lowest sort value when sortin on id?
+	query := buildPublicationUserQuery(searchArgs)
+
 	queryFilters := query["query"].(M)["bool"].(M)["filter"].([]M)
+
+	// Set the searcher scopes
+	queryFilters = append(queryFilters, searcher.scopes...)
+
+	// Set the range to ID = 0, this value gets updated with each 200 hits
+	// fetched from ES in the loop
+	sortValue := "0" //lowest sort value when sortin on id?
 	queryFilters = append(queryFilters, M{
 		"range": M{
 			"id": M{
@@ -39,6 +46,7 @@ func (searcher *PublicationSearcher) Searcher(searchArgs *models.SearchArgs, cb 
 			},
 		},
 	})
+
 	query["query"].(M)["bool"].(M)["filter"] = queryFilters
 
 	for {
@@ -48,16 +56,29 @@ func (searcher *PublicationSearcher) Searcher(searchArgs *models.SearchArgs, cb 
 		queryFilters[len(queryFilters)-1]["range"].(M)["id"].(M)["gt"] = sortValue
 		query["query"].(M)["bool"].(M)["filter"] = queryFilters
 
-		opts, optsErr := searcher.buildEsOpts(query)
-
-		if optsErr != nil {
-			return optsErr
+		var buf bytes.Buffer
+		if err := json.NewEncoder(&buf).Encode(query); err != nil {
+			return err
 		}
 
-		hits, hitsErr := searcher.esSearch(opts...)
+		opts := []func(*esapi.SearchRequest){
+			searcher.Client.es.Search.WithContext(context.Background()),
+			searcher.Client.es.Search.WithIndex(searcher.Client.Index),
+			searcher.Client.es.Search.WithTrackTotalHits(true),
+			searcher.Client.es.Search.WithSort("id:asc"),
+			searcher.Client.es.Search.WithBody(&buf),
+		}
 
-		if hitsErr != nil {
-			return hitsErr
+		var envelop publicationResEnvelope
+
+		err := searcher.Client.SearchWithOpts(opts, &envelop)
+		if err != nil {
+			return err
+		}
+
+		hits, err := decodePublicationRes(&envelop, []string{})
+		if err != nil {
+			return err
 		}
 
 		if len(hits.Hits) == 0 {
@@ -83,49 +104,17 @@ func (searcher *PublicationSearcher) Searcher(searchArgs *models.SearchArgs, cb 
 }
 
 func (searcher *PublicationSearcher) WithScope(field string, terms ...string) backends.PublicationSearcherService {
-	p := searcher.Clone()
-	p.scopes = append(p.scopes, ParseScope(field, terms...))
-	return p
-}
-
-func (searcher *PublicationSearcher) Clone() *PublicationSearcher {
 	newScopes := make([]M, 0, len(searcher.scopes))
+
+	// Copy existing scopes
 	newScopes = append(newScopes, searcher.scopes...)
+
+	// Add new scopes
+	newScopes = append(newScopes, ParseScope(field, terms...))
+
 	return &PublicationSearcher{
 		Client:  searcher.Client,
 		scopes:  newScopes,
 		maxSize: searcher.maxSize,
 	}
-}
-
-func (searcher *PublicationSearcher) buildQuery(searchArgs *models.SearchArgs) M {
-	query := buildPublicationUserQuery(searchArgs)
-	queryFilters := query["query"].(M)["bool"].(M)["filter"].([]M)
-	queryFilters = append(queryFilters, searcher.scopes...)
-	query["query"].(M)["bool"].(M)["filter"] = queryFilters
-	return query
-}
-
-func (searcher *PublicationSearcher) buildEsOpts(query M) ([]func(*esapi.SearchRequest), error) {
-	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(query); err != nil {
-		return nil, err
-	}
-	opts := []func(*esapi.SearchRequest){
-		searcher.Client.es.Search.WithContext(context.Background()),
-		searcher.Client.es.Search.WithIndex(searcher.Client.Index),
-		searcher.Client.es.Search.WithTrackTotalHits(true),
-		searcher.Client.es.Search.WithSort("id:asc"),
-		searcher.Client.es.Search.WithBody(&buf),
-	}
-	return opts, nil
-}
-
-func (searcher *PublicationSearcher) esSearch(opts ...func(*esapi.SearchRequest)) (*models.PublicationHits, error) {
-	var envelop publicationResEnvelope
-	err := searcher.Client.SearchWithOpts(opts, &envelop)
-	if err != nil {
-		return nil, err
-	}
-	return decodePublicationRes(&envelop, []string{})
 }
