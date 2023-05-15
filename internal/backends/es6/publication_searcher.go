@@ -23,14 +23,6 @@ func NewPublicationSearcher(c Client, maxSize int) *PublicationSearcher {
 	}
 }
 
-func (searcher *PublicationSearcher) GetMaxSize() int {
-	return searcher.maxSize
-}
-
-func (searcher *PublicationSearcher) SetMaxSize(maxSize int) {
-	searcher.maxSize = maxSize
-}
-
 func (searcher *PublicationSearcher) Searcher(searchArgs *models.SearchArgs, cb func(*models.Publication)) error {
 
 	nProcessed := 0

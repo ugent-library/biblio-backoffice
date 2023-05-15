@@ -140,15 +140,11 @@ type PublicationSearchService interface {
 }
 
 type PublicationSearcherService interface {
-	GetMaxSize() int
-	SetMaxSize(int)
 	WithScope(string, ...string) PublicationSearcherService
 	Searcher(*models.SearchArgs, func(*models.Publication)) error
 }
 
 type DatasetSearcherService interface {
-	GetMaxSize() int
-	SetMaxSize(int)
 	WithScope(string, ...string) DatasetSearcherService
 	Searcher(*models.SearchArgs, func(*models.Dataset)) error
 }

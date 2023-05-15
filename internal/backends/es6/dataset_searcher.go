@@ -25,14 +25,6 @@ func NewDatasetSearcher(c Client, maxSize int) *DatasetSearcher {
 	}
 }
 
-func (searcher *DatasetSearcher) GetMaxSize() int {
-	return searcher.maxSize
-}
-
-func (searcher *DatasetSearcher) SetMaxSize(maxSize int) {
-	searcher.maxSize = maxSize
-}
-
 func (searcher *DatasetSearcher) Searcher(searchArgs *models.SearchArgs, cb func(*models.Dataset)) error {
 
 	nProcessed := 0
