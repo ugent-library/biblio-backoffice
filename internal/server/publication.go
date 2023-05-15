@@ -177,40 +177,6 @@ func (s *server) UpdatePublication(ctx context.Context, req *api.UpdatePublicati
 }
 
 func (s *server) AddPublications(stream api.Biblio_AddPublicationsServer) error {
-	ctx := context.Background()
-
-	var biErr error
-	var biIdxErr error
-
-	bi, err := s.services.PublicationSearchService.NewBulkIndexer(backends.BulkIndexerConfig{
-		OnError: func(err error) {
-			grpcErr := status.New(codes.Internal, fmt.Errorf("failed to index publication: %v", err).Error())
-			if err = stream.Send(&api.AddPublicationsResponse{
-				Response: &api.AddPublicationsResponse_Error{
-					Error: grpcErr.Proto(),
-				},
-			}); err != nil {
-				biErr = err
-			}
-		},
-		OnIndexError: func(id string, err error) {
-			grpcErr := status.New(codes.Internal, fmt.Errorf("failed to index publication %s: %w", id, err).Error())
-			if err = stream.Send(&api.AddPublicationsResponse{
-				Response: &api.AddPublicationsResponse_Error{
-					Error: grpcErr.Proto(),
-				},
-			}); err != nil {
-				biErr = err
-			}
-		},
-	})
-
-	if err != nil {
-		return status.Errorf(codes.Internal, "failed to start an indexer: %s", err)
-	}
-
-	defer bi.Close(ctx)
-
 	var seq int
 
 	for {
@@ -289,26 +255,6 @@ func (s *server) AddPublications(stream api.Biblio_AddPublicationsServer) error 
 			continue
 		}
 
-		if err := bi.Index(ctx, p); err != nil {
-			grpcErr := status.New(codes.InvalidArgument, fmt.Errorf("failed to index publication %s at line %d: %w", p.ID, seq, err).Error())
-			if err = stream.Send(&api.AddPublicationsResponse{
-				Response: &api.AddPublicationsResponse_Error{
-					Error: grpcErr.Proto(),
-				},
-			}); err != nil {
-				return status.Errorf(codes.Internal, "failed to to add publications: %v", err)
-			}
-			continue
-		}
-
-		if biErr != nil {
-			return status.Errorf(codes.Internal, "failed to to add publications: %v", biErr)
-		}
-
-		if biIdxErr != nil {
-			return status.Errorf(codes.Internal, "failed to to add publications: %v", biIdxErr)
-		}
-
 		if err = stream.Send(&api.AddPublicationsResponse{
 			Response: &api.AddPublicationsResponse_Message{
 				Message: fmt.Sprintf("stored and indexed publication %s at line %d", p.ID, seq),
@@ -320,40 +266,6 @@ func (s *server) AddPublications(stream api.Biblio_AddPublicationsServer) error 
 }
 
 func (s *server) ImportPublications(stream api.Biblio_ImportPublicationsServer) error {
-	ctx := context.Background()
-
-	var biErr error
-	var biIdxErr error
-
-	bi, err := s.services.PublicationSearchService.NewBulkIndexer(backends.BulkIndexerConfig{
-		OnError: func(err error) {
-			grpcErr := status.New(codes.Internal, fmt.Errorf("failed to index publication: %v", err).Error())
-			if err = stream.Send(&api.ImportPublicationsResponse{
-				Response: &api.ImportPublicationsResponse_Error{
-					Error: grpcErr.Proto(),
-				},
-			}); err != nil {
-				biErr = err
-			}
-		},
-		OnIndexError: func(id string, err error) {
-			grpcErr := status.New(codes.Internal, fmt.Errorf("failed to index publication %s: %w", id, err).Error())
-			if err = stream.Send(&api.ImportPublicationsResponse{
-				Response: &api.ImportPublicationsResponse_Error{
-					Error: grpcErr.Proto(),
-				},
-			}); err != nil {
-				biErr = err
-			}
-		},
-	})
-
-	if err != nil {
-		return status.Errorf(codes.Internal, "failed to start an indexer: %s", err)
-	}
-
-	defer bi.Close(ctx)
-
 	var seq int
 
 	for {
@@ -402,26 +314,6 @@ func (s *server) ImportPublications(stream api.Biblio_ImportPublicationsServer) 
 				return status.Errorf(codes.Internal, "failed to to import publications: %v", err)
 			}
 			continue
-		}
-
-		if err := bi.Index(ctx, p); err != nil {
-			grpcErr := status.New(codes.InvalidArgument, fmt.Errorf("failed to index publication %s at line %d: %w", p.ID, seq, err).Error())
-			if err = stream.Send(&api.ImportPublicationsResponse{
-				Response: &api.ImportPublicationsResponse_Error{
-					Error: grpcErr.Proto(),
-				},
-			}); err != nil {
-				return status.Errorf(codes.Internal, "failed to to import publications: %v", err)
-			}
-			continue
-		}
-
-		if biErr != nil {
-			return status.Errorf(codes.Internal, "failed to to import publications: %v", biErr)
-		}
-
-		if biIdxErr != nil {
-			return status.Errorf(codes.Internal, "failed to to import publications: %v", biIdxErr)
 		}
 
 		if err = stream.Send(&api.ImportPublicationsResponse{
@@ -962,40 +854,6 @@ func (s *server) TransferPublications(req *api.TransferPublicationsRequest, stre
 }
 
 func (s *server) CleanupPublications(req *api.CleanupPublicationsRequest, stream api.Biblio_CleanupPublicationsServer) error {
-	ctx := context.Background()
-
-	var biErr error
-	var biIdxErr error
-
-	bi, err := s.services.PublicationSearchService.NewBulkIndexer(backends.BulkIndexerConfig{
-		OnError: func(err error) {
-			grpcErr := status.New(codes.Internal, fmt.Errorf("failed to clean up publication: %v", err).Error())
-			if err = stream.Send(&api.CleanupPublicationsResponse{
-				Response: &api.CleanupPublicationsResponse_Error{
-					Error: grpcErr.Proto(),
-				},
-			}); err != nil {
-				biErr = err
-			}
-		},
-		OnIndexError: func(id string, err error) {
-			grpcErr := status.New(codes.Internal, fmt.Errorf("failed to clean up publication %s: %w", id, err).Error())
-			if err = stream.Send(&api.CleanupPublicationsResponse{
-				Response: &api.CleanupPublicationsResponse_Error{
-					Error: grpcErr.Proto(),
-				},
-			}); err != nil {
-				biErr = err
-			}
-		},
-	})
-
-	if err != nil {
-		return status.Errorf(codes.Internal, "failed to start an indexer: %s", err)
-	}
-
-	defer bi.Close(ctx)
-
 	var callbackErr error
 
 	count := 0
@@ -1075,16 +933,6 @@ func (s *server) CleanupPublications(req *api.CleanupPublicationsRequest, stream
 				return true
 			}
 
-			if biErr != nil {
-				callbackErr = biErr
-				return false
-			}
-
-			if biIdxErr != nil {
-				callbackErr = biIdxErr
-				return false
-			}
-
 			var conflict *snapstore.Conflict
 			if errors.As(err, &conflict) {
 				grpcErr := status.New(codes.Internal, fmt.Errorf("conflict detected for publication[snapshot_id: %s, id: %s] : %v", p.SnapshotID, p.ID, err).Error())
@@ -1109,20 +957,6 @@ func (s *server) CleanupPublications(req *api.CleanupPublicationsRequest, stream
 				return false
 			}
 
-			if err := bi.Index(ctx, p); err != nil {
-				grpcErr := status.New(codes.Internal, fmt.Errorf("indexing failed for publication [id: %s] : %s", p.ID, err).Error())
-				if err = stream.Send(&api.CleanupPublicationsResponse{
-					Response: &api.CleanupPublicationsResponse_Error{
-						Error: grpcErr.Proto(),
-					},
-				}); err != nil {
-					callbackErr = err
-					return false
-				}
-
-				return true
-			}
-
 			count += 1
 		}
 
@@ -1134,7 +968,7 @@ func (s *server) CleanupPublications(req *api.CleanupPublicationsRequest, stream
 	}
 
 	if streamErr != nil {
-		return status.Errorf(codes.Internal, "could not complete cleanup: %v", err)
+		return status.Errorf(codes.Internal, "could not complete cleanup: %v", streamErr)
 	}
 
 	if err := stream.Send(&api.CleanupPublicationsResponse{
@@ -1161,8 +995,6 @@ func (s *server) CleanupPublications(req *api.CleanupPublicationsRequest, stream
 // - ugent id's
 // - department id's (and their name)
 func (s *server) SyncPublicationContributors(req *api.SyncPublicationContributorsRequest, stream api.Biblio_SyncPublicationContributorsServer) error {
-
-	ctx := context.Background()
 	repository := s.services.Repository
 	personService := s.services.PersonService
 	orgService := s.services.OrganizationService
@@ -1175,21 +1007,6 @@ func (s *server) SyncPublicationContributors(req *api.SyncPublicationContributor
 			},
 		})
 	}
-
-	bi, err := s.services.PublicationSearchService.NewBulkIndexer(backends.BulkIndexerConfig{
-		OnError: func(err error) {
-			sendErr(stream, err)
-		},
-		OnIndexError: func(id string, err error) {
-			sendErr(stream, err)
-		},
-	})
-
-	if err != nil {
-		return status.Errorf(codes.Internal, "failed to start an indexer: %s", err)
-	}
-
-	defer bi.Close(ctx)
 
 	var callbackErr error
 	// cache does not store nil values
@@ -1423,7 +1240,9 @@ func (s *server) SyncPublicationContributors(req *api.SyncPublicationContributor
 
 		if !req.Noop && len(changes) > 0 {
 
-			if err := s.services.Repository.UpdatePublication(p.SnapshotID, p, nil); err != nil {
+			err := s.services.Repository.UpdatePublication(p.SnapshotID, p, nil)
+
+			if err != nil {
 
 				// unable to send error: stop the loop
 				e := sendErr(stream, fmt.Errorf("failed to update publication[snapshot_id: %s, id: %s] : %v", p.SnapshotID, p.ID, err))
@@ -1435,19 +1254,7 @@ func (s *server) SyncPublicationContributors(req *api.SyncPublicationContributor
 				// update failed: continue to next record
 				return true
 
-			} else if err := bi.Index(ctx, p); err != nil {
-
-				e := sendErr(stream, fmt.Errorf("failed to index publication[snapshot_id: %s, id: %s] : %v", p.SnapshotID, p.ID, err))
-				if e != nil {
-					callbackErr = err
-					// unable to send error: stop the loop
-					return false
-				}
-
-				// indexation failed: continue to next record
-				return true
 			}
-
 		}
 
 		// validation, update and indexation ok: list and send all changes to the client

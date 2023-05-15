@@ -581,6 +581,17 @@ func TestAddPublicationSuite(t *testing.T) {
 	suite.Run(t, new(AddPublicationSuite))
 }
 
+func (s *AddPublicationSuite) TearDownSuite() {
+	purgePublication("00000000000000000000000001")
+	purgePublication("00000000000000000000000002")
+	purgePublication("00000000000000000000000003")
+	purgePublication("00000000000000000000000004")
+	purgePublication("00000000000000000000000005")
+	purgePublication("00000000000000000000000006")
+	purgePublication("00000000000000000000000007")
+	purgePublication("00000000000000000000000008")
+}
+
 func addPublication(jsonl string) (string, string, error) {
 	stdOut := bytes.NewBufferString("")
 	stdErr := bytes.NewBufferString("")

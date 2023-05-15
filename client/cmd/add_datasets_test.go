@@ -138,6 +138,11 @@ func (s *AddDatasetsSuite) TestAddingMultipleDatasets() {
 		  }
 		],
 		"doi": "doi",
+		"identifiers": {
+		  "DOI": [
+		    "doi"
+		  ]
+		},
 		"format": [
 		  "text/csv"
 		],

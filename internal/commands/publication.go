@@ -21,12 +21,10 @@ func init() {
 	publicationGetCmd.Flags().StringP("format", "f", "jsonl", "export format")
 	publicationAddCmd.Flags().StringP("format", "f", "jsonl", "import format")
 	publicationImportCmd.Flags().StringP("format", "f", "jsonl", "import format")
-	oldPublicationImportCmd.Flags().StringP("format", "f", "jsonl", "import format")
 	publicationCmd.AddCommand(publicationGetCmd)
 	publicationCmd.AddCommand(publicationAllCmd)
 	publicationCmd.AddCommand(publicationAddCmd)
 	publicationCmd.AddCommand(publicationImportCmd)
-	publicationCmd.AddCommand(oldPublicationImportCmd)
 	publicationCmd.AddCommand(publicationCleanupCmd)
 	publicationCmd.AddCommand(publicationTransferCmd)
 	publicationCmd.AddCommand(publicationReindexCmd)
@@ -78,7 +76,7 @@ var publicationAllCmd = &cobra.Command{
 	Use:   "all",
 	Short: "Get all publications",
 	Run: func(cmd *cobra.Command, args []string) {
-		s := newRepository()
+		s := Services().Repository
 		e := json.NewEncoder(os.Stdout)
 		s.EachPublication(func(d *models.Publication) bool {
 			e.Encode(d)
@@ -91,8 +89,6 @@ var publicationAddCmd = &cobra.Command{
 	Use:   "add",
 	Short: "Add publications",
 	Run: func(cmd *cobra.Command, args []string) {
-		ctx := context.Background()
-
 		e := Services()
 
 		fmt, _ := cmd.Flags().GetString("format")
@@ -101,19 +97,6 @@ var publicationAddCmd = &cobra.Command{
 			log.Fatalf("Unknown format %s", fmt)
 		}
 		dec := decFactory(os.Stdin)
-
-		bi, err := e.PublicationSearchService.NewBulkIndexer(backends.BulkIndexerConfig{
-			OnError: func(err error) {
-				log.Printf("Indexing failed : %s", err)
-			},
-			OnIndexError: func(id string, err error) {
-				log.Printf("Indexing failed for publication [id: %s] : %s", id, err)
-			},
-		})
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer bi.Close(ctx)
 
 		lineNo := 0
 		for {
@@ -135,10 +118,6 @@ var publicationAddCmd = &cobra.Command{
 			if err := e.Repository.SavePublication(p, nil); err != nil {
 				log.Fatalf("Unable to store publication from line %d : %v", lineNo, err)
 			}
-
-			if err := bi.Index(ctx, p); err != nil {
-				log.Printf("Indexing failed for publication [id: %s] at line %d : %s", p.ID, lineNo, err)
-			}
 		}
 	},
 }
@@ -147,8 +126,6 @@ var publicationImportCmd = &cobra.Command{
 	Use:   "import",
 	Short: "Import publications",
 	Run: func(cmd *cobra.Command, args []string) {
-		ctx := context.Background()
-
 		e := Services()
 
 		fmt, _ := cmd.Flags().GetString("format")
@@ -157,19 +134,6 @@ var publicationImportCmd = &cobra.Command{
 			log.Fatalf("Unknown format %s", fmt)
 		}
 		dec := decFactory(os.Stdin)
-
-		bi, err := e.PublicationSearchService.NewBulkIndexer(backends.BulkIndexerConfig{
-			OnError: func(err error) {
-				log.Printf("Indexing failed : %s", err)
-			},
-			OnIndexError: func(id string, err error) {
-				log.Printf("Indexing failed for publication [id: %s] : %s", id, err)
-			},
-		})
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer bi.Close(ctx)
 
 		lineNo := 0
 		for {
@@ -205,10 +169,6 @@ var publicationImportCmd = &cobra.Command{
 				p.SnapshotID,
 				p.ID,
 			)
-
-			if err := bi.Index(ctx, p); err != nil {
-				log.Printf("Indexing failed for publication [id: %s] : %s", p.ID, err)
-			}
 		}
 	},
 }
@@ -217,22 +177,7 @@ var publicationCleanupCmd = &cobra.Command{
 	Use:   "cleanup",
 	Short: "Make publications consistent, clean up data anomalies",
 	Run: func(cmd *cobra.Command, args []string) {
-		ctx := context.Background()
-
 		e := Services()
-
-		bi, err := e.PublicationSearchService.NewBulkIndexer(backends.BulkIndexerConfig{
-			OnError: func(err error) {
-				log.Printf("Indexing failed : %s", err)
-			},
-			OnIndexError: func(id string, err error) {
-				log.Printf("Indexing failed for publication [id: %s] : %s", id, err)
-			},
-		})
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer bi.Close(ctx)
 
 		e.Repository.EachPublication(func(p *models.Publication) bool {
 			// Guard
@@ -301,10 +246,6 @@ var publicationCleanupCmd = &cobra.Command{
 					p.SnapshotID,
 					p.ID,
 				)
-
-				if err := bi.Index(ctx, p); err != nil {
-					log.Printf("Indexing failed for publication [id: %s] : %s", p.ID, err)
-				}
 			}
 
 			return true
@@ -318,15 +259,7 @@ var publicationTransferCmd = &cobra.Command{
 	Args:  cobra.RangeArgs(2, 3),
 	Run: func(cmd *cobra.Command, args []string) {
 		e := Services()
-		s := newRepository()
-
-		s.AddPublicationListener(func(p *models.Publication) {
-			if p.DateUntil == nil {
-				if err := e.PublicationSearchService.Index(p); err != nil {
-					log.Fatalf("error indexing publication %s: %v", p.ID, err)
-				}
-			}
-		})
+		s := e.Repository
 
 		source := args[0]
 		dest := args[1]
@@ -427,57 +360,6 @@ var publicationTransferCmd = &cobra.Command{
 			s.PublicationHistory(pubID, callback)
 		} else {
 			s.EachPublicationSnapshot(callback)
-		}
-	},
-}
-
-var oldPublicationImportCmd = &cobra.Command{
-	Use:   "import-version",
-	Short: "Import old publications",
-	Run: func(cmd *cobra.Command, args []string) {
-		e := Services()
-
-		fmt, _ := cmd.Flags().GetString("format")
-		decFactory, ok := e.PublicationDecoders[fmt]
-		if !ok {
-			log.Fatalf("Unknown format %s", fmt)
-		}
-		dec := decFactory(os.Stdin)
-
-		lineNo := 0
-		for {
-			lineNo += 1
-			p := models.Publication{}
-			if err := dec.Decode(&p); errors.Is(err, io.EOF) {
-				break
-			} else if err != nil {
-				log.Fatalf("Unable to decode publication at line %d : %v", lineNo, err)
-			}
-			if err := p.Validate(); err != nil {
-				log.Printf(
-					"Validation failed for publication[snapshot_id: %s, id: %s] at line %d : %v",
-					p.SnapshotID,
-					p.ID,
-					lineNo,
-					err,
-				)
-				continue
-			}
-			if err := e.Repository.ImportOldPublication(&p); err != nil {
-				log.Printf(
-					"Unable to store old publication[snapshot_id: %s, id: %s] from line %d : %v",
-					p.SnapshotID,
-					p.ID,
-					lineNo,
-					err,
-				)
-				continue
-			}
-			log.Printf(
-				"Added old publication[snapshot_id: %s, id: %s]",
-				p.SnapshotID,
-				p.ID,
-			)
 		}
 	},
 }

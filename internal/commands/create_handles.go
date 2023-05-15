@@ -32,14 +32,6 @@ var createHandles = &cobra.Command{
 func createPublicationHandles(services *backends.Services, logger *zap.SugaredLogger) {
 	repo := services.Repository
 
-	repo.AddPublicationListener(func(p *models.Publication) {
-		if p.DateUntil == nil {
-			if err := services.PublicationSearchService.Index(p); err != nil {
-				logger.Fatalf("error indexing publication %s: %v", p.ID, err)
-			}
-		}
-	})
-
 	var n int
 	var err error
 
@@ -74,14 +66,6 @@ func createPublicationHandles(services *backends.Services, logger *zap.SugaredLo
 
 func createDatasetHandles(services *backends.Services, logger *zap.SugaredLogger) {
 	repo := services.Repository
-
-	repo.AddDatasetListener(func(p *models.Dataset) {
-		if p.DateUntil == nil {
-			if err := services.DatasetSearchService.Index(p); err != nil {
-				logger.Fatalf("error indexing dataset %s: %v", p.ID, err)
-			}
-		}
-	})
 
 	var n int
 	var err error

@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
@@ -75,6 +76,8 @@ func purgeDataset(id string) (string, string, error) {
 	rootCmd.SetErr(stdErr)
 
 	rootCmd.SetArgs([]string{"dataset", "purge", id})
+
+	time.Sleep(5 * time.Second)
 
 	errGet := rootCmd.Execute()
 	if errGet != nil {

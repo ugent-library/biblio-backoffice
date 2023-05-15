@@ -139,22 +139,6 @@ func (s *Repository) ImportCurrentPublication(p *models.Publication) error {
 	return s.importPublication(p)
 }
 
-func (s *Repository) ImportOldPublication(p *models.Publication) error {
-	if p.DateCreated == nil {
-		return fmt.Errorf("unable to import old publication %s: date_created is not set", p.ID)
-	}
-	if p.DateUpdated == nil {
-		return fmt.Errorf("unable to import old publication %s: date_updated is not set", p.ID)
-	}
-	if p.DateFrom == nil {
-		return fmt.Errorf("unable to import old publication %s: date_from is not set", p.ID)
-	}
-	if p.DateUntil == nil {
-		return fmt.Errorf("unable to import old publication %s: date_until is not set", p.ID)
-	}
-	return s.importPublication(p)
-}
-
 func (s *Repository) SavePublication(p *models.Publication, u *models.User) error {
 	now := time.Now()
 
@@ -496,22 +480,6 @@ func (s *Repository) ImportCurrentDataset(d *models.Dataset) error {
 	}
 	if d.DateUntil != nil {
 		return fmt.Errorf("unable to import dataset %s: date_until should be nil", d.ID)
-	}
-	return s.importDataset(d)
-}
-
-func (s *Repository) ImportOldDataset(d *models.Dataset) error {
-	if d.DateCreated == nil {
-		return fmt.Errorf("unable to import dataset %s: date_created is not set", d.ID)
-	}
-	if d.DateUpdated == nil {
-		return fmt.Errorf("unable to import dataset %s: date_updated is not set", d.ID)
-	}
-	if d.DateFrom == nil {
-		return fmt.Errorf("unable to import dataset %s: date_from is not set", d.ID)
-	}
-	if d.DateUntil == nil {
-		return fmt.Errorf("unable to import dataset %s: date_until is not set", d.ID)
 	}
 	return s.importDataset(d)
 }
