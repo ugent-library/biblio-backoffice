@@ -434,14 +434,14 @@ func (publications *Publications) DeleteAll() error {
 }
 
 func (publications *Publications) WithScope(field string, terms ...string) backends.PublicationSearchService {
-	p := publications.Clone()
-	p.scopes = append(p.scopes, ParseScope(field, terms...))
-	return p
-}
-
-func (publications *Publications) Clone() *Publications {
 	newScopes := make([]M, 0, len(publications.scopes))
+
+	// Copy existing scopes
 	newScopes = append(newScopes, publications.scopes...)
+
+	// Add new scopes
+	newScopes = append(newScopes, ParseScope(field, terms...))
+
 	return &Publications{
 		Client: publications.Client,
 		scopes: newScopes,

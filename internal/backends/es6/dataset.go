@@ -427,14 +427,14 @@ func (datasets *Datasets) DeleteAll() error {
 }
 
 func (datasets *Datasets) WithScope(field string, terms ...string) backends.DatasetSearchService {
-	d := datasets.Clone()
-	d.scopes = append(d.scopes, ParseScope(field, terms...))
-	return d
-}
-
-func (datasets *Datasets) Clone() *Datasets {
 	newScopes := make([]M, 0, len(datasets.scopes))
+
+	// Copy existing scopes
 	newScopes = append(newScopes, datasets.scopes...)
+
+	// Add new scopes
+	newScopes = append(newScopes, ParseScope(field, terms...))
+
 	return &Datasets{
 		Client: datasets.Client,
 		scopes: newScopes,
