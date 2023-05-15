@@ -12,8 +12,8 @@ import (
 
 type Handler struct {
 	handlers.BaseHandler
-	DatasetSearcherService backends.DatasetSearcherService
-	DatasetListExporters   map[string]backends.DatasetListExporterFactory
+	DatasetSearchService backends.DatasetSearchService
+	DatasetListExporters map[string]backends.DatasetListExporterFactory
 }
 
 type Context struct {

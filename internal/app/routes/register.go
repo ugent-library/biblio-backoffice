@@ -98,9 +98,9 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		DatasetSearchService: services.DatasetSearchService,
 	}
 	datasetExportingHandler := &datasetexporting.Handler{
-		BaseHandler:            baseHandler,
-		DatasetListExporters:   services.DatasetListExporters,
-		DatasetSearcherService: services.DatasetSearcherService,
+		BaseHandler:          baseHandler,
+		DatasetListExporters: services.DatasetListExporters,
+		DatasetSearchService: services.DatasetSearchService,
 	}
 	datasetViewingHandler := &datasetviewing.Handler{
 		BaseHandler: baseHandler,
@@ -130,9 +130,9 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		FileStore:                services.FileStore,
 	}
 	publicationExportingHandler := &publicationexporting.Handler{
-		BaseHandler:                baseHandler,
-		PublicationListExporters:   services.PublicationListExporters,
-		PublicationSearcherService: services.PublicationSearcherService,
+		BaseHandler:              baseHandler,
+		PublicationListExporters: services.PublicationListExporters,
+		PublicationSearchService: services.PublicationSearchService,
 	}
 	publicationViewingHandler := &publicationviewing.Handler{
 		BaseHandler: baseHandler,

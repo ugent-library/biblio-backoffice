@@ -129,12 +129,10 @@ func newServices() *backends.Services {
 		PublicationListExporters: map[string]backends.PublicationListExporterFactory{
 			"xlsx": excel_publication.NewExporter,
 		},
-		PublicationSearcherService: newPublicationSearcherService(),
 		DatasetListExporters: map[string]backends.DatasetListExporterFactory{
 			"xlsx": excel_dataset.NewExporter,
 		},
-		DatasetSearcherService: newDatasetSearcherService(),
-		HandleService:          handleService,
+		HandleService: handleService,
 	}
 }
 
@@ -245,18 +243,6 @@ func newDatasetSearchService() backends.DatasetSearchService {
 	es6Client := newEs6Client("dataset")
 	return es6.NewDatasets(*es6Client)
 
-}
-
-func newPublicationSearcherService() backends.PublicationSearcherService {
-	es6Client := newEs6Client("publication")
-	//max size of exportable records is now 10K. Make configurable
-	return es6.NewPublicationSearcher(*es6Client, 10000)
-}
-
-func newDatasetSearcherService() backends.DatasetSearcherService {
-	es6Client := newEs6Client("dataset")
-	//max size of exportable records is now 10K. Make configurable
-	return es6.NewDatasetSearcher(*es6Client, 10000)
 }
 
 func newPublicationBulkIndexerService(logger *zap.SugaredLogger) backends.BulkIndexer[*models.Publication] {

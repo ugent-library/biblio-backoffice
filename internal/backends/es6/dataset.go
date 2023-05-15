@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"os"
 	"strings"
 
 	"github.com/elastic/go-elasticsearch/v6/esapi"
@@ -157,6 +158,87 @@ func (datasets *Datasets) Search(args *models.SearchArgs) (*models.DatasetHits, 
 	hits.Offset = args.Offset()
 
 	return hits, nil
+}
+
+func (datasets *Datasets) Each(searchArgs *models.SearchArgs, maxSize int, cb func(*models.Dataset)) error {
+	nProcessed := 0
+	start := 0
+	limit := 200
+
+	query := buildDatasetUserQuery(searchArgs)
+
+	queryFilters := query["query"].(M)["bool"].(M)["filter"].([]M)
+
+	// Set the searcher scopes
+	queryFilters = append(queryFilters, datasets.scopes...)
+
+	// Set the range to ID = 0, this value gets updated with each 200 hits
+	// fetched from ES in the loop
+	sortValue := "0" //lowest sort value when sortin on id?
+	queryFilters = append(queryFilters, M{
+		"range": M{
+			"id": M{
+				"gt": sortValue,
+			},
+		},
+	})
+
+	query["query"].(M)["bool"].(M)["filter"] = queryFilters
+
+	for {
+		//filter by range greater than instead of via from and size
+		query["from"] = start
+		query["size"] = limit
+		queryFilters[len(queryFilters)-1]["range"].(M)["id"].(M)["gt"] = sortValue
+		query["query"].(M)["bool"].(M)["filter"] = queryFilters
+
+		var buf bytes.Buffer
+		if err := json.NewEncoder(&buf).Encode(query); err != nil {
+			return err
+		}
+
+		fmt.Fprintf(os.Stderr, "es dataset search: %s\n", buf.String())
+
+		opts := []func(*esapi.SearchRequest){
+			datasets.Client.es.Search.WithContext(context.Background()),
+			datasets.Client.es.Search.WithIndex(datasets.Client.Index),
+			datasets.Client.es.Search.WithTrackTotalHits(true),
+			datasets.Client.es.Search.WithSort("id:asc"),
+			datasets.Client.es.Search.WithBody(&buf),
+		}
+
+		var envelop datasetResEnvelope
+
+		err := datasets.Client.SearchWithOpts(opts, &envelop)
+		if err != nil {
+			return err
+		}
+
+		hits, err := decodeDatasetRes(&envelop, []string{})
+		if err != nil {
+			return err
+		}
+
+		if len(hits.Hits) == 0 {
+			return nil
+		}
+
+		for _, hit := range hits.Hits {
+			nProcessed++
+			if nProcessed > maxSize {
+				return nil
+			}
+			cb(hit)
+		}
+
+		if len(hits.Hits) > 0 {
+			sortValue = hits.Hits[len(hits.Hits)-1].ID
+		}
+
+		if len(hits.Hits) < limit {
+			return nil
+		}
+	}
 }
 
 func buildDatasetUserQuery(args *models.SearchArgs) M {

@@ -11,31 +11,30 @@ import (
 )
 
 type Services struct {
-	ORCIDSandbox               bool
-	ORCIDClient                *orcid.MemberClient
-	Repository                 Repository
-	FileStore                  FileStore
-	DatasetSearchService       DatasetSearchService
-	PublicationSearchService   PublicationSearchService
-	OrganizationService        OrganizationService
-	PersonService              PersonService
-	ProjectService             ProjectService
-	UserService                UserService
-	OrganizationSearchService  OrganizationSearchService
-	PersonSearchService        PersonSearchService
-	ProjectSearchService       ProjectSearchService
-	UserSearchService          UserSearchService
-	LicenseSearchService       LicenseSearchService
-	MediaTypeSearchService     MediaTypeSearchService
-	PublicationSources         map[string]PublicationGetter
-	DatasetSources             map[string]DatasetGetter
-	PublicationEncoders        map[string]PublicationEncoder
-	PublicationDecoders        map[string]PublicationDecoderFactory
-	PublicationListExporters   map[string]PublicationListExporterFactory
-	PublicationSearcherService PublicationSearcherService
-	DatasetListExporters       map[string]DatasetListExporterFactory
-	DatasetSearcherService     DatasetSearcherService
-	HandleService              HandleService
+	ORCIDSandbox              bool
+	ORCIDClient               *orcid.MemberClient
+	Repository                Repository
+	FileStore                 FileStore
+	DatasetSearchService      DatasetSearchService
+	PublicationSearchService  PublicationSearchService
+	OrganizationService       OrganizationService
+	PersonService             PersonService
+	ProjectService            ProjectService
+	UserService               UserService
+	OrganizationSearchService OrganizationSearchService
+	PersonSearchService       PersonSearchService
+	ProjectSearchService      ProjectSearchService
+	UserSearchService         UserSearchService
+	LicenseSearchService      LicenseSearchService
+	MediaTypeSearchService    MediaTypeSearchService
+	PublicationSources        map[string]PublicationGetter
+	DatasetSources            map[string]DatasetGetter
+	PublicationEncoders       map[string]PublicationEncoder
+	PublicationDecoders       map[string]PublicationDecoderFactory
+	PublicationListExporters  map[string]PublicationListExporterFactory
+	DatasetListExporters      map[string]DatasetListExporterFactory
+	DatasetSearcherService    DatasetSearcherService
+	HandleService             HandleService
 	// Tasks                      *tasks.Hub
 }
 
@@ -121,6 +120,7 @@ type BulkIndexer[T any] interface {
 
 type DatasetSearchService interface {
 	Search(*models.SearchArgs) (*models.DatasetHits, error)
+	Each(searchArgs *models.SearchArgs, maxSize int, cb func(*models.Dataset)) error
 	Index(*models.Dataset) error
 	Delete(id string) error
 	DeleteAll() error
@@ -131,17 +131,13 @@ type DatasetSearchService interface {
 
 type PublicationSearchService interface {
 	Search(*models.SearchArgs) (*models.PublicationHits, error)
+	Each(searchArgs *models.SearchArgs, maxSize int, cb func(*models.Publication)) error
 	Index(*models.Publication) error
 	Delete(id string) error
 	DeleteAll() error
 	WithScope(string, ...string) PublicationSearchService
 	NewBulkIndexer(BulkIndexerConfig) (BulkIndexer[*models.Publication], error)
 	NewIndexSwitcher(BulkIndexerConfig) (IndexSwitcher[*models.Publication], error)
-}
-
-type PublicationSearcherService interface {
-	WithScope(string, ...string) PublicationSearcherService
-	Searcher(*models.SearchArgs, func(*models.Publication)) error
 }
 
 type DatasetSearcherService interface {

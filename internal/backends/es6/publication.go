@@ -160,6 +160,85 @@ func (publications *Publications) Search(args *models.SearchArgs) (*models.Publi
 	return hits, nil
 }
 
+func (publications *Publications) Each(searchArgs *models.SearchArgs, maxSize int, cb func(*models.Publication)) error {
+	nProcessed := 0
+	start := 0
+	limit := 200
+
+	query := buildPublicationUserQuery(searchArgs)
+
+	queryFilters := query["query"].(M)["bool"].(M)["filter"].([]M)
+
+	// Set the searcher scopes
+	queryFilters = append(queryFilters, publications.scopes...)
+
+	// Set the range to ID = 0, this value gets updated with each 200 hits
+	// fetched from ES in the loop
+	sortValue := "0" //lowest sort value when sortin on id?
+	queryFilters = append(queryFilters, M{
+		"range": M{
+			"id": M{
+				"gt": sortValue,
+			},
+		},
+	})
+
+	query["query"].(M)["bool"].(M)["filter"] = queryFilters
+
+	for {
+		//filter by range greater than instead of via from and size
+		query["from"] = start
+		query["size"] = limit
+		queryFilters[len(queryFilters)-1]["range"].(M)["id"].(M)["gt"] = sortValue
+		query["query"].(M)["bool"].(M)["filter"] = queryFilters
+
+		var buf bytes.Buffer
+		if err := json.NewEncoder(&buf).Encode(query); err != nil {
+			return err
+		}
+
+		opts := []func(*esapi.SearchRequest){
+			publications.Client.es.Search.WithContext(context.Background()),
+			publications.Client.es.Search.WithIndex(publications.Client.Index),
+			publications.Client.es.Search.WithTrackTotalHits(true),
+			publications.Client.es.Search.WithSort("id:asc"),
+			publications.Client.es.Search.WithBody(&buf),
+		}
+
+		var envelop publicationResEnvelope
+
+		err := publications.Client.SearchWithOpts(opts, &envelop)
+		if err != nil {
+			return err
+		}
+
+		hits, err := decodePublicationRes(&envelop, []string{})
+		if err != nil {
+			return err
+		}
+
+		if len(hits.Hits) == 0 {
+			return nil
+		}
+
+		for _, hit := range hits.Hits {
+			nProcessed++
+			if nProcessed > maxSize {
+				return nil
+			}
+			cb(hit)
+		}
+
+		if len(hits.Hits) > 0 {
+			sortValue = hits.Hits[len(hits.Hits)-1].ID
+		}
+
+		if len(hits.Hits) < limit {
+			return nil
+		}
+	}
+}
+
 func buildPublicationUserQuery(args *models.SearchArgs) M {
 	var query M
 	var queryMust M
