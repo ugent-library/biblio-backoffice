@@ -21,8 +21,6 @@ type Client struct {
 	es *elasticsearch.Client
 }
 
-type M map[string]any
-
 func New(c Config) (*Client, error) {
 	client, err := elasticsearch.NewClient(c.ClientConfig)
 	if err != nil {
