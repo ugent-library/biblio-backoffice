@@ -118,24 +118,32 @@ type BulkIndexer[T any] interface {
 	Close(context.Context) error
 }
 
-type DatasetSearchService interface {
+type DatasetIndex interface {
 	Search(*models.SearchArgs) (*models.DatasetHits, error)
 	Each(searchArgs *models.SearchArgs, maxSize int, cb func(*models.Dataset)) error
 	Index(*models.Dataset) error
 	Delete(id string) error
 	DeleteAll() error
-	WithScope(string, ...string) DatasetSearchService
+	WithScope(string, ...string) DatasetIndex
+}
+
+type DatasetSearchService interface {
+	NewIndex() DatasetIndex
 	NewBulkIndexer(BulkIndexerConfig) (BulkIndexer[*models.Dataset], error)
 	NewIndexSwitcher(BulkIndexerConfig) (IndexSwitcher[*models.Dataset], error)
 }
 
-type PublicationSearchService interface {
+type PublicationIndex interface {
 	Search(*models.SearchArgs) (*models.PublicationHits, error)
 	Each(searchArgs *models.SearchArgs, maxSize int, cb func(*models.Publication)) error
 	Index(*models.Publication) error
 	Delete(id string) error
 	DeleteAll() error
-	WithScope(string, ...string) PublicationSearchService
+	WithScope(string, ...string) PublicationIndex
+}
+
+type PublicationSearchService interface {
+	NewIndex() PublicationIndex
 	NewBulkIndexer(BulkIndexerConfig) (BulkIndexer[*models.Publication], error)
 	NewIndexSwitcher(BulkIndexerConfig) (IndexSwitcher[*models.Publication], error)
 }

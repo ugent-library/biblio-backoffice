@@ -109,7 +109,7 @@ func (s *server) SearchPublications(ctx context.Context, req *api.SearchPublicat
 		page = int(req.Offset)/int(req.Limit) + 1
 	}
 	args := models.NewSearchArgs().WithQuery(req.Query).WithPage(page)
-	hits, err := s.services.PublicationSearchService.Search(args)
+	hits, err := s.services.PublicationSearchService.NewIndex().Search(args)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "could not search publications: %s :: %s", req.Query, err)
 	}
@@ -169,7 +169,7 @@ func (s *server) UpdatePublication(ctx context.Context, req *api.UpdatePublicati
 		return nil, status.Errorf(codes.Internal, "failed to update publication[snapshot_id: %s, id: %s], %s", p.SnapshotID, p.ID, err)
 	}
 
-	if err := s.services.PublicationSearchService.Index(p); err != nil {
+	if err := s.services.PublicationSearchService.NewIndex().Index(p); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to update publication[snapshot_id: %s, id: %s], %s", p.SnapshotID, p.ID, err)
 	}
 
@@ -391,7 +391,7 @@ func (s *server) PurgePublication(ctx context.Context, req *api.PurgePublication
 	}
 
 	// TODO this will complain if the above didn't throw a 'not found' error
-	if err := s.services.PublicationSearchService.Delete(req.Id); err != nil {
+	if err := s.services.PublicationSearchService.NewIndex().Delete(req.Id); err != nil {
 		return nil, status.Errorf(codes.Internal, "could not purge publication from index with id %s: %s", req.Id, err)
 	}
 
@@ -416,7 +416,7 @@ func (s *server) PurgeAllPublications(ctx context.Context, req *api.PurgeAllPubl
 		return nil, status.Errorf(codes.Internal, "could not purge all publications: %s", err)
 	}
 
-	if err := s.services.PublicationSearchService.DeleteAll(); err != nil {
+	if err := s.services.PublicationSearchService.NewIndex().DeleteAll(); err != nil {
 		return nil, status.Errorf(codes.Internal, "could not delete publication from index: %w", err)
 	}
 

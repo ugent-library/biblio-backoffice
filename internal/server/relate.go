@@ -76,11 +76,11 @@ func (s *server) Relate(ctx context.Context, req *api.RelateRequest) (*api.Relat
 		return nil, status.Errorf(codes.Internal, "failed to update dataset[snapshot_id: %s, id: %s], %s", d.SnapshotID, d.ID, err)
 	}
 
-	if err := s.services.PublicationSearchService.Index(p); err != nil {
+	if err := s.services.PublicationSearchService.NewIndex().Index(p); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to index publication %s, %s", p.ID, err)
 	}
 
-	if err := s.services.DatasetSearchService.Index(d); err != nil {
+	if err := s.services.DatasetSearchService.NewIndex().Index(d); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to index dataset %s, %s", d.ID, err)
 	}
 

@@ -45,7 +45,7 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request, ctx Context) {
 		ctx.SearchArgs.WithFilter("scope", "all")
 	}
 
-	searcher := h.PublicationSearchService.WithScope("status", "private", "public", "returned")
+	searcher := h.PublicationSearchService.NewIndex().WithScope("status", "private", "public", "returned")
 	args := ctx.SearchArgs.Clone()
 	var currentScope string
 
@@ -109,7 +109,7 @@ globalSearch(searcher)
 	for scoped searcher, regardless of choosen filters
 	Used to determine wether user has any records
 */
-func globalSearch(searcher backends.PublicationSearchService) (*models.PublicationHits, error) {
+func globalSearch(searcher backends.PublicationIndex) (*models.PublicationHits, error) {
 	globalArgs := models.NewSearchArgs()
 	globalArgs.Query = ""
 	globalArgs.Facets = nil
@@ -127,7 +127,7 @@ func (h *Handler) CurationSearch(w http.ResponseWriter, r *http.Request, ctx Con
 
 	ctx.SearchArgs.WithFacets(vocabularies.Map["publication_curation_facets"]...)
 
-	searcher := h.PublicationSearchService.WithScope("status", "private", "public", "returned")
+	searcher := h.PublicationSearchService.NewIndex().WithScope("status", "private", "public", "returned")
 	hits, err := searcher.Search(ctx.SearchArgs)
 	if err != nil {
 		h.Logger.Errorw("publication search: could not execute search", "errors", err, "user", ctx.User.ID)

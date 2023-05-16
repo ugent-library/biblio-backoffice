@@ -235,13 +235,13 @@ func newEs6Client(t string) *es6.Client {
 
 func newPublicationSearchService() backends.PublicationSearchService {
 	es6Client := newEs6Client("publication")
-	return es6.NewPublications(*es6Client)
+	return es6.NewPublicationSearchService(*es6Client)
 
 }
 
 func newDatasetSearchService() backends.DatasetSearchService {
 	es6Client := newEs6Client("dataset")
-	return es6.NewDatasets(*es6Client)
+	return es6.NewDatasetSearchService(*es6Client)
 
 }
 

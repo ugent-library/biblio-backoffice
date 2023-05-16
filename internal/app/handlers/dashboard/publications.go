@@ -53,7 +53,7 @@ func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Conte
 	ufaculties := faculties
 	ufaculties = append(ufaculties, []string{"UGent", "-"}...)
 
-	uSearcher := h.PublicationSearchService
+	uSearcher := h.PublicationSearchService.NewIndex()
 	baseSearchUrl := h.PathFor("publications")
 
 	uPublications, err := generatePublicationsDashboard(ufaculties, ptypes, uSearcher, baseSearchUrl, func(fac string, args *models.SearchArgs) *models.SearchArgs {
@@ -82,7 +82,7 @@ func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Conte
 
 	// Publications with publication status "accepted"
 
-	aSearcher := h.PublicationSearchService
+	aSearcher := h.PublicationSearchService.NewIndex()
 
 	aPublications, err := generatePublicationsDashboard(faculties, ptypes, aSearcher, baseSearchUrl, func(fac string, args *models.SearchArgs) *models.SearchArgs {
 		args.WithFilter("publication_status", "accepted")
@@ -118,7 +118,7 @@ func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Conte
 	})
 }
 
-func generatePublicationsDashboard(faculties []string, ptypes []string, searcher backends.PublicationSearchService, baseSearchUrl *url.URL, fn func(fac string, args *models.SearchArgs) *models.SearchArgs) (map[string]map[string][]string, error) {
+func generatePublicationsDashboard(faculties []string, ptypes []string, searcher backends.PublicationIndex, baseSearchUrl *url.URL, fn func(fac string, args *models.SearchArgs) *models.SearchArgs) (map[string]map[string][]string, error) {
 	var publications = make(map[string]map[string][]string)
 
 	for _, fac := range faculties {

@@ -176,7 +176,7 @@ func (h *Handler) sendPublicationsToORCIDTask(t tasks.Task, user *models.User, s
 	var numDone int
 
 	for {
-		hits, _ := h.PublicationSearchService.Search(searchArgs)
+		hits, _ := h.PublicationSearchService.NewIndex().Search(searchArgs)
 
 		for _, p := range hits.Hits {
 			numDone++

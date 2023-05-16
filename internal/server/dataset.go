@@ -106,7 +106,7 @@ func (s *server) SearchDatasets(ctx context.Context, req *api.SearchDatasetsRequ
 		page = int(req.Offset)/int(req.Limit) + 1
 	}
 	args := models.NewSearchArgs().WithQuery(req.Query).WithPage(page)
-	hits, err := s.services.DatasetSearchService.Search(args)
+	hits, err := s.services.DatasetSearchService.NewIndex().Search(args)
 	if err != nil {
 		// TODO How do we differentiate between errors?
 		return nil, status.Errorf(codes.Internal, "Could not search datasets: %s :: %s", req.Query, err)
@@ -166,7 +166,7 @@ func (s *server) UpdateDataset(ctx context.Context, req *api.UpdateDatasetReques
 		return nil, status.Errorf(codes.Internal, "failed to update dataset[snapshot_id: %s, id: %s], %s", d.SnapshotID, d.ID, err)
 	}
 
-	if err := s.services.DatasetSearchService.Index(d); err != nil {
+	if err := s.services.DatasetSearchService.NewIndex().Index(d); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to update dataset[snapshot_id: %s, id: %s], %s", d.SnapshotID, d.ID, err)
 	}
 
@@ -374,7 +374,7 @@ func (s *server) PurgeDataset(ctx context.Context, req *api.PurgeDatasetRequest)
 	}
 
 	// TODO this will complain if the above didn't throw a 'not found' error
-	if err := s.services.DatasetSearchService.Delete(req.Id); err != nil {
+	if err := s.services.DatasetSearchService.NewIndex().Delete(req.Id); err != nil {
 		return nil, status.Errorf(codes.Internal, "could not purge dataset from index with id %s: %s", req.Id, err)
 	}
 
@@ -399,7 +399,7 @@ func (s *server) PurgeAllDatasets(ctx context.Context, req *api.PurgeAllDatasets
 		return nil, status.Errorf(codes.Internal, "could not purge all datasets: %s", err)
 	}
 
-	if err := s.services.DatasetSearchService.DeleteAll(); err != nil {
+	if err := s.services.DatasetSearchService.NewIndex().DeleteAll(); err != nil {
 		return nil, status.Errorf(codes.Internal, "could not delete dataset from index: %w", err)
 	}
 

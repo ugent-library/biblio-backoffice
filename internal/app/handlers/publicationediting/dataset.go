@@ -203,7 +203,7 @@ func (h *Handler) searchRelatedDatasets(user *models.User, p *models.Publication
 		args.Filters["!id"] = pubDatasetIDs
 	}
 
-	searchService := h.DatasetSearchService.WithScope("status", "public")
+	searchService := h.DatasetSearchService.NewIndex().WithScope("status", "public")
 
 	return searchService.Search(args)
 }
