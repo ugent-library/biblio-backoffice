@@ -2,7 +2,6 @@ package es6
 
 import (
 	"bytes"
-	"encoding/json"
 	"io"
 
 	"github.com/elastic/go-elasticsearch/v6"
@@ -32,8 +31,7 @@ func New(c Config) (*Client, error) {
 	return &Client{Config: c, es: client}, nil
 }
 
-func (c *Client) SearchWithOpts(opts []func(*esapi.SearchRequest), responseBody any) error {
-
+func (c *Client) SearchWithOpts(opts []func(*esapi.SearchRequest), fn func(r io.ReadCloser) error) error {
 	res, err := c.es.Search(opts...)
 
 	if err != nil {
@@ -50,9 +48,5 @@ func (c *Client) SearchWithOpts(opts []func(*esapi.SearchRequest), responseBody 
 		return errors.New("Es6 error response: " + buf.String())
 	}
 
-	if err := json.NewDecoder(res.Body).Decode(responseBody); err != nil {
-		return errors.Wrap(err, "Error parsing the response body")
-	}
-
-	return nil
+	return fn(res.Body)
 }

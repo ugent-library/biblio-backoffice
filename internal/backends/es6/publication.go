@@ -143,7 +143,15 @@ func (publications *Publications) Search(args *models.SearchArgs) (*models.Publi
 	opts = append(opts, publications.Client.es.Search.WithBody(&buf))
 
 	var res publicationResEnvelope
-	err := publications.Client.SearchWithOpts(opts, &res)
+
+	err := publications.Client.SearchWithOpts(opts, func(r io.ReadCloser) error {
+		if err := json.NewDecoder(r).Decode(&res); err != nil {
+			return fmt.Errorf("error parsing the response body")
+		}
+
+		return nil
+	})
+
 	if err != nil {
 		return nil, err
 	}
@@ -205,14 +213,21 @@ func (publications *Publications) Each(searchArgs *models.SearchArgs, maxSize in
 			publications.Client.es.Search.WithBody(&buf),
 		}
 
-		var envelop publicationResEnvelope
+		var res publicationResEnvelope
 
-		err := publications.Client.SearchWithOpts(opts, &envelop)
+		err := publications.Client.SearchWithOpts(opts, func(r io.ReadCloser) error {
+			if err := json.NewDecoder(r).Decode(&res); err != nil {
+				return fmt.Errorf("error parsing the response body")
+			}
+
+			return nil
+		})
+
 		if err != nil {
 			return err
 		}
 
-		hits, err := decodePublicationRes(&envelop, []string{})
+		hits, err := decodePublicationRes(&res, []string{})
 		if err != nil {
 			return err
 		}

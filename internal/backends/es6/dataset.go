@@ -142,8 +142,16 @@ func (datasets *Datasets) Search(args *models.SearchArgs) (*models.DatasetHits, 
 	}
 	opts = append(opts, datasets.Client.es.Search.WithBody(&buf))
 
-	var res datasetResEnvelope = datasetResEnvelope{}
-	err := datasets.Client.SearchWithOpts(opts, &res)
+	var res datasetResEnvelope
+
+	err := datasets.Client.SearchWithOpts(opts, func(r io.ReadCloser) error {
+		if err := json.NewDecoder(r).Decode(&res); err != nil {
+			return fmt.Errorf("error parsing the response body")
+		}
+
+		return nil
+	})
+
 	if err != nil {
 		return nil, err
 	}
@@ -207,14 +215,21 @@ func (datasets *Datasets) Each(searchArgs *models.SearchArgs, maxSize int, cb fu
 			datasets.Client.es.Search.WithBody(&buf),
 		}
 
-		var envelop datasetResEnvelope
+		var res datasetResEnvelope
 
-		err := datasets.Client.SearchWithOpts(opts, &envelop)
+		err := datasets.Client.SearchWithOpts(opts, func(r io.ReadCloser) error {
+			if err := json.NewDecoder(r).Decode(&res); err != nil {
+				return fmt.Errorf("error parsing the response body")
+			}
+
+			return nil
+		})
+
 		if err != nil {
 			return err
 		}
 
-		hits, err := decodeDatasetRes(&envelop, []string{})
+		hits, err := decodeDatasetRes(&res, []string{})
 		if err != nil {
 			return err
 		}
