@@ -144,7 +144,7 @@ func (pi *PublicationIndex) Search(args *models.SearchArgs) (*models.Publication
 
 	var res publicationResEnvelope
 
-	err := pi.Client.SearchWithOpts(opts, func(r io.ReadCloser) error {
+	err := pi.searchWithOpts(opts, func(r io.ReadCloser) error {
 		if err := json.NewDecoder(r).Decode(&res); err != nil {
 			return fmt.Errorf("error parsing the response body")
 		}
@@ -215,7 +215,7 @@ func (pi *PublicationIndex) Each(searchArgs *models.SearchArgs, maxSize int, cb 
 
 		var res publicationResEnvelope
 
-		err := pi.Client.SearchWithOpts(opts, func(r io.ReadCloser) error {
+		err := pi.searchWithOpts(opts, func(r io.ReadCloser) error {
 			if err := json.NewDecoder(r).Decode(&res); err != nil {
 				return fmt.Errorf("error parsing the response body")
 			}
@@ -466,6 +466,26 @@ func (pi *PublicationIndex) WithScope(field string, terms ...string) backends.Pu
 		Client: pi.Client,
 		scopes: newScopes,
 	}
+}
+
+func (pi *PublicationIndex) searchWithOpts(opts []func(*esapi.SearchRequest), fn func(r io.ReadCloser) error) error {
+	res, err := pi.es.Search(opts...)
+
+	if err != nil {
+		return err
+	}
+
+	defer res.Body.Close()
+
+	if res.IsError() {
+		buf := &bytes.Buffer{}
+		if _, err := io.Copy(buf, res.Body); err != nil {
+			return err
+		}
+		return errors.New("Es6 error response: " + buf.String())
+	}
+
+	return fn(res.Body)
 }
 
 type publicationResEnvelope struct {

@@ -144,7 +144,7 @@ func (di *DatasetIndex) Search(args *models.SearchArgs) (*models.DatasetHits, er
 
 	var res datasetResEnvelope
 
-	err := di.Client.SearchWithOpts(opts, func(r io.ReadCloser) error {
+	err := di.searchWithOpts(opts, func(r io.ReadCloser) error {
 		if err := json.NewDecoder(r).Decode(&res); err != nil {
 			return fmt.Errorf("error parsing the response body")
 		}
@@ -217,7 +217,7 @@ func (di *DatasetIndex) Each(searchArgs *models.SearchArgs, maxSize int, cb func
 
 		var res datasetResEnvelope
 
-		err := di.Client.SearchWithOpts(opts, func(r io.ReadCloser) error {
+		err := di.searchWithOpts(opts, func(r io.ReadCloser) error {
 			if err := json.NewDecoder(r).Decode(&res); err != nil {
 				return fmt.Errorf("error parsing the response body")
 			}
@@ -459,6 +459,26 @@ func (di *DatasetIndex) WithScope(field string, terms ...string) backends.Datase
 		Client: di.Client,
 		scopes: newScopes,
 	}
+}
+
+func (di *DatasetIndex) searchWithOpts(opts []func(*esapi.SearchRequest), fn func(r io.ReadCloser) error) error {
+	res, err := di.es.Search(opts...)
+
+	if err != nil {
+		return err
+	}
+
+	defer res.Body.Close()
+
+	if res.IsError() {
+		buf := &bytes.Buffer{}
+		if _, err := io.Copy(buf, res.Body); err != nil {
+			return err
+		}
+		return errors.New("Es6 error response: " + buf.String())
+	}
+
+	return fn(res.Body)
 }
 
 type datasetResEnvelope struct {
