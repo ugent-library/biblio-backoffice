@@ -369,83 +369,6 @@ func buildDatasetUserQuery(args *models.SearchArgs) M {
 	return query
 }
 
-type datasetResEnvelope struct {
-	// ScrollID string `json:"_scroll_id"`
-	Hits struct {
-		Total int
-		Hits  []struct {
-			Source    json.RawMessage `json:"_source"`
-			Highlight json.RawMessage
-		}
-	}
-	Aggregations struct {
-		Facets M
-	}
-}
-
-/*
-type resFacet struct {
-	DocCount int
-	Key      string
-}*/
-
-func decodeDatasetRes(r *datasetResEnvelope, facets []string) (*models.DatasetHits, error) {
-
-	hits := models.DatasetHits{}
-	hits.Total = r.Hits.Total
-
-	hits.Facets = make(map[string]models.FacetValues)
-
-	//preallocate to ensure non zero slices
-	for _, facet := range facets {
-		hits.Facets[facet] = []models.Facet{}
-	}
-
-	for _, facet := range facets {
-		if _, found := r.Aggregations.Facets[facet]; !found {
-			continue
-		}
-
-		for _, f := range r.Aggregations.Facets[facet].(map[string]any)["facet"].(map[string]any)["buckets"].([]any) {
-			fv := f.(map[string]any)
-			value := ""
-			if v, e := fv["key_as_string"]; e {
-				value = v.(string)
-			} else {
-				switch v := fv["key"].(type) {
-				case string:
-					value = v
-				case int:
-					value = fmt.Sprintf("%d", v)
-				case float64:
-					value = fmt.Sprintf("%.2f", v)
-				}
-			}
-			hits.Facets[facet] = append(hits.Facets[facet], models.Facet{
-				Value: value,
-				Count: int(fv["doc_count"].(float64)),
-			})
-		}
-	}
-
-	//reorder facet values, if applicable
-	for _, facetName := range facets {
-		hits.Facets[facetName] = reorderFacets(facetName, hits.Facets[facetName])
-	}
-
-	for _, h := range r.Hits.Hits {
-		var hit models.Dataset
-
-		if err := json.Unmarshal(h.Source, &hit); err != nil {
-			return nil, err
-		}
-
-		hits.Hits = append(hits.Hits, &hit)
-	}
-
-	return &hits, nil
-}
-
 func (di *DatasetIndex) Index(d *models.Dataset) error {
 	payload, err := json.Marshal(NewIndexedDataset(d))
 	if err != nil {
@@ -536,4 +459,75 @@ func (di *DatasetIndex) WithScope(field string, terms ...string) backends.Datase
 		Client: di.Client,
 		scopes: newScopes,
 	}
+}
+
+type datasetResEnvelope struct {
+	// ScrollID string `json:"_scroll_id"`
+	Hits struct {
+		Total int
+		Hits  []struct {
+			Source    json.RawMessage `json:"_source"`
+			Highlight json.RawMessage
+		}
+	}
+	Aggregations struct {
+		Facets M
+	}
+}
+
+func decodeDatasetRes(r *datasetResEnvelope, facets []string) (*models.DatasetHits, error) {
+
+	hits := models.DatasetHits{}
+	hits.Total = r.Hits.Total
+
+	hits.Facets = make(map[string]models.FacetValues)
+
+	//preallocate to ensure non zero slices
+	for _, facet := range facets {
+		hits.Facets[facet] = []models.Facet{}
+	}
+
+	for _, facet := range facets {
+		if _, found := r.Aggregations.Facets[facet]; !found {
+			continue
+		}
+
+		for _, f := range r.Aggregations.Facets[facet].(map[string]any)["facet"].(map[string]any)["buckets"].([]any) {
+			fv := f.(map[string]any)
+			value := ""
+			if v, e := fv["key_as_string"]; e {
+				value = v.(string)
+			} else {
+				switch v := fv["key"].(type) {
+				case string:
+					value = v
+				case int:
+					value = fmt.Sprintf("%d", v)
+				case float64:
+					value = fmt.Sprintf("%.2f", v)
+				}
+			}
+			hits.Facets[facet] = append(hits.Facets[facet], models.Facet{
+				Value: value,
+				Count: int(fv["doc_count"].(float64)),
+			})
+		}
+	}
+
+	//reorder facet values, if applicable
+	for _, facetName := range facets {
+		hits.Facets[facetName] = reorderFacets(facetName, hits.Facets[facetName])
+	}
+
+	for _, h := range r.Hits.Hits {
+		var hit models.Dataset
+
+		if err := json.Unmarshal(h.Source, &hit); err != nil {
+			return nil, err
+		}
+
+		hits.Hits = append(hits.Hits, &hit)
+	}
+
+	return &hits, nil
 }
