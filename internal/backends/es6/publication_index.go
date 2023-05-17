@@ -129,18 +129,18 @@ func (pi *PublicationIndex) Search(args *models.SearchArgs) (*models.Publication
 	}
 
 	// SEND QUERY TO ES
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(query); err != nil {
+		return nil, err
+	}
+
 	opts := []func(*esapi.SearchRequest){
 		pi.Client.es.Search.WithContext(context.Background()),
 		pi.Client.es.Search.WithIndex(pi.Client.Index),
 		pi.Client.es.Search.WithTrackTotalHits(true),
 		pi.Client.es.Search.WithSort(sorts...),
+		pi.Client.es.Search.WithBody(&buf),
 	}
-
-	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(query); err != nil {
-		return nil, err
-	}
-	opts = append(opts, pi.Client.es.Search.WithBody(&buf))
 
 	var res publicationResEnvelope
 

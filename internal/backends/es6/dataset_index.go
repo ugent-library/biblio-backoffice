@@ -129,18 +129,18 @@ func (di *DatasetIndex) Search(args *models.SearchArgs) (*models.DatasetHits, er
 	}
 
 	// SEND QUERY TO ES
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(query); err != nil {
+		return nil, err
+	}
+
 	opts := []func(*esapi.SearchRequest){
 		di.Client.es.Search.WithContext(context.Background()),
 		di.Client.es.Search.WithIndex(di.Client.Index),
 		di.Client.es.Search.WithTrackTotalHits(true),
 		di.Client.es.Search.WithSort(sorts...),
+		di.Client.es.Search.WithBody(&buf),
 	}
-
-	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(query); err != nil {
-		return nil, err
-	}
-	opts = append(opts, di.Client.es.Search.WithBody(&buf))
 
 	var res datasetResEnvelope
 
