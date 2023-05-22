@@ -38,6 +38,7 @@ func newIndexSwitcher[T any](client *elasticsearch.Client, alias, settings strin
 		return nil, fmt.Errorf("%+v", res)
 	}
 
+	// TODO the default settings of the bulk indexer are not very efficient for this use case
 	bi, err := newBulkIndexer(client, index, docFn, config)
 	if err != nil {
 		return nil, err
