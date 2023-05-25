@@ -28,16 +28,16 @@ import (
 const timestampFmt = "2006-01-02 15:04:05"
 
 var licenses = map[string]string{
-	"CC0-1.0":          "Creative Commons Public Domain Dedication (CC0 1.0)",
-	"CC-BY-4.0":        "Creative Commons Attribution 4.0 International Public License (CC-BY 4.0)",
-	"CC-BY-SA-4.0":     "Creative Commons Attribution-ShareAlike 4.0 International Public License (CC BY-SA 4.0)",
-	"CC-BY-NC-4.0":     "Creative Commons Attribution-NonCommercial 4.0 International Public License (CC BY-NC 4.0)",
-	"CC-BY-ND-4.0":     "Creative Commons Attribution-NoDerivatives 4.0 International Public License (CC BY-ND 4.0)",
-	"CC-BY-NC-SA-4.0":  "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International Public License (CC BY-NC-SA 4.0)",
-	"CC-BY-NC-ND-4.0":  "Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International Public License (CC BY-NC-ND 4.0)",
+	"CC0-1.0":          "Creative Commons Zero v1.0 Universal",
+	"CC-BY-4.0":        "Creative Commons Attribution 4.0 International",
+	"CC-BY-SA-4.0":     "Creative Commons Attribution Share Alike 4.0 International",
+	"CC-BY-NC-4.0":     "Creative Commons Attribution Non Commercial 4.0 International",
+	"CC-BY-ND-4.0":     "Creative Commons Attribution No Derivatives 4.0 International",
+	"CC-BY-NC-SA-4.0":  "Creative Commons Attribution Non Commercial Share Alike 4.0 International",
+	"CC-BY-NC-ND-4.0":  "Creative Commons Attribution Non Commercial No Derivatives 4.0 International",
 	"InCopyright":      "No license (in copyright)",
-	"LicenseNotListed": "A specific license has been chosen by the rights holder. Get in touch with the rights holder for reuse rights.",
-	"CopyrightUnknown": "Information pending",
+	"LicenseNotListed": "The license is not listed here",
+	"CopyrightUnknown": "Pending",
 	"":                 "No license (in copyright)",
 }
 
