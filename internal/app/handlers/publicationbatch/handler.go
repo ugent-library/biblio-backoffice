@@ -1,24 +1,21 @@
 package publicationbatch
 
 import (
+	"encoding/csv"
 	"fmt"
 	"html/template"
 	"net/http"
-	"regexp"
 	"strings"
 
 	"github.com/ugent-library/biblio-backoffice/internal/app/handlers"
 	"github.com/ugent-library/biblio-backoffice/internal/backends"
-	"github.com/ugent-library/biblio-backoffice/internal/bind"
-	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"github.com/ugent-library/biblio-backoffice/internal/render"
 	"github.com/ugent-library/biblio-backoffice/internal/render/flash"
 )
 
 type Handler struct {
 	handlers.BaseHandler
-	Repository     backends.Repository
-	ProjectService backends.ProjectService
+	Repository backends.Repository
 }
 
 type Context struct {
@@ -45,13 +42,6 @@ func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) htt
 	})
 }
 
-var reSplitID = regexp.MustCompile(`[\s,;]+`)
-
-type BindAddProjects struct {
-	ProjectID      string `form:"project_id"`
-	PublicationIDs string `form:"publication_ids"`
-}
-
 type YieldShow struct {
 	Context
 	PageTitle string
@@ -66,47 +56,47 @@ func (h *Handler) Show(w http.ResponseWriter, r *http.Request, ctx Context) {
 	})
 }
 
-func (h *Handler) AddProjects(w http.ResponseWriter, r *http.Request, ctx Context) {
-	b := BindAddProjects{}
-	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		render.BadRequest(w, r, err)
-		return
-	}
-
-	project, err := h.ProjectService.GetProject(b.ProjectID)
-	if err != nil {
-		h.AddSessionFlash(r, w, *flash.SimpleFlash().
-			WithLevel("error").
-			WithBody(template.HTML(fmt.Sprintf("<p>could not find project %s</p>", b.ProjectID))).
-			DismissedAfter(0))
-		http.Redirect(w, r, h.PathFor("publication_batch").String(), http.StatusFound)
-		return
-	}
+func (h *Handler) Process(w http.ResponseWriter, r *http.Request, ctx Context) {
+	lines := strings.Split(strings.ReplaceAll(r.FormValue("ops"), "\r\n", "\n"), "\n")
 
 	done := 0
 	var errorMsgs []string
 
-	for _, id := range reSplitID.Split(b.PublicationIDs, -1) {
-		pub, err := h.Repository.GetPublication(id)
+	for i, line := range lines {
+		if len(line) == 0 {
+			continue
+		}
+
+		rdr := csv.NewReader(strings.NewReader(line))
+		rec, err := rdr.Read()
+
 		if err != nil {
-			errorMsgs = append(errorMsgs, fmt.Sprintf("<p>could not find publication %s</p>", id))
+			errorMsgs = append(errorMsgs, fmt.Sprintf("<p>error parsing line %d</p>", i))
 			continue
 		}
-		pub.AddProject(&models.PublicationProject{
-			ID:   project.ID,
-			Name: project.Title,
+
+		if len(rec) < 2 {
+			errorMsgs = append(errorMsgs, fmt.Sprintf("<p>error parsing line %d</p>", i))
+			continue
+		}
+
+		err = h.Repository.MutatePublication(rec[0], ctx.User, backends.Mutation{
+			Op:   rec[1],
+			Args: rec[2:],
 		})
-		if err = h.Repository.UpdatePublication(pub.SnapshotID, pub, ctx.User); err != nil {
-			errorMsgs = append(errorMsgs, fmt.Sprintf("<p>could not update publication %s</p>", id))
+
+		if err != nil {
+			errorMsgs = append(errorMsgs, fmt.Sprintf("<p>could not process publication %s at line %d</p>", rec[0], i))
 			continue
 		}
+
 		done++
 	}
 
 	if done > 0 {
 		h.AddSessionFlash(r, w, *flash.SimpleFlash().
 			WithLevel("success").
-			WithBody(template.HTML(fmt.Sprintf("<p>Successfully added project to %d publications.</p>", done))))
+			WithBody(template.HTML(fmt.Sprintf("<p>Successfully processed %d publications.</p>", done))))
 	}
 	if len(errorMsgs) > 0 {
 		h.AddSessionFlash(r, w, *flash.SimpleFlash().
@@ -114,5 +104,6 @@ func (h *Handler) AddProjects(w http.ResponseWriter, r *http.Request, ctx Contex
 			WithBody(template.HTML(strings.Join(errorMsgs, ""))).
 			DismissedAfter(0))
 	}
+
 	http.Redirect(w, r, h.PathFor("publication_batch").String(), http.StatusFound)
 }

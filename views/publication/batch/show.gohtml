@@ -16,31 +16,29 @@
             <div class="card-header">
                 <div class="bc-toolbar">
                     <div class="bc-toolbar-left">
-                        <div class="bc-toolbar-item">Batch add projects</div>
+                        <div class="bc-toolbar-item">Batch update publications</div>
                     </div>
                 </div>
             </div>
             <div class="card-body">
-                <form action="{{pathFor "publication_batch_add_projects"}}" method="POST">
+                <form action="{{pathFor "publication_process_batch"}}" method="POST">
                     {{.CSRFTag}}
                     <div class="form-group">
                         <div class="form-row form-group">
-                            <label class="col-lg-3 col-xl-2 col-form-label">Project</label>
-                            <div class="col-lg-5 col-xl-4">
-                                <input class="form-control" type="text" value="" name="project_id">
-                                <p class="small form-text text-muted">Project id.</p>
-                            </div>
-                        </div>
-                        <div class="form-row form-group">
-                            <label class="col-lg-3 col-xl-2 col-form-label">Publications</label>
-                            <div class="col-lg-5 col-xl-4">
-                                <textarea class="form-control" name="publication_ids"></textarea>
-                                <p class="small form-text text-muted">Separate publication ids with a comma, semicolon or whitespace.</p>
+                            <label class="col-lg-3 col-xl-2 col-form-label">Operations</label>
+                            <div class="col-lg-7 col-xl-7">
+                                <textarea class="form-control" name="ops" rows="8" spellcheck="false"></textarea>
+                                <p class="small form-text text-muted">One
+                                operation per line, e.g.<br>
+                                <code>1234,keyword.add,dna,"double helix"</code><br>
+                                <code>1234,project.add,2345</code><br>
+                                <code>1234,vabb_year.add,2023</code><br>
+                                <code>1234,classification.set,A2</code></p>
                             </div>
                         </div>
                         <div class="form-row form-group">
                             <div class="offset-lg-3 offset-xl-2 col-lg-5 col-xl-4">
-                                <button class="btn btn-primary" type="submit">Add project</button>
+                                <button class="btn btn-primary" type="submit">Process</button>
                             </div>
                         </div>
                     </div>

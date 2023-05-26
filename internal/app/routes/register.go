@@ -162,9 +162,8 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		MaxFileSize:               viper.GetInt("max-file-size"),
 	}
 	publicationBatchHandler := &publicationbatch.Handler{
-		BaseHandler:    baseHandler,
-		Repository:     services.Repository,
-		ProjectService: services.ProjectService,
+		BaseHandler: baseHandler,
+		Repository:  services.Repository,
 	}
 	// orcidHandler := &orcid.Handler{
 	// 	BaseHandler:              baseHandler,
@@ -676,10 +675,10 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		publicationBatchHandler.Wrap(publicationBatchHandler.Show)).
 		Methods("GET").
 		Name("publication_batch")
-	r.HandleFunc("/publication/batch/add-projects",
-		publicationBatchHandler.Wrap(publicationBatchHandler.AddProjects)).
+	r.HandleFunc("/publication/batch",
+		publicationBatchHandler.Wrap(publicationBatchHandler.Process)).
 		Methods("POST").
-		Name("publication_batch_add_projects")
+		Name("publication_process_batch")
 
 	// view publication
 	r.HandleFunc("/publication/{id}",
