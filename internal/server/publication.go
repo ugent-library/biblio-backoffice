@@ -304,7 +304,7 @@ func (s *server) ImportPublications(stream api.Biblio_ImportPublicationsServer) 
 			continue
 		}
 
-		if err := s.services.Repository.ImportCurrentPublication(p); err != nil {
+		if err := s.services.Repository.ImportPublication(p); err != nil {
 			grpcErr := status.New(codes.InvalidArgument, fmt.Errorf("failed to store publication %s at line %d: %s", p.ID, seq, err).Error())
 			if err = stream.Send(&api.ImportPublicationsResponse{
 				Response: &api.ImportPublicationsResponse_Error{

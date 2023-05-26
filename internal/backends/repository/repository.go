@@ -115,15 +115,7 @@ func (s *Repository) GetPublications(ids []string) ([]*models.Publication, error
 	return publications, nil
 }
 
-func (s *Repository) importPublication(p *models.Publication) error {
-	snap, err := publicationToSnapshot(p)
-	if err != nil {
-		return err
-	}
-	return s.publicationStore.ImportSnapshot(snap, s.opts)
-}
-
-func (s *Repository) ImportCurrentPublication(p *models.Publication) error {
+func (s *Repository) ImportPublication(p *models.Publication) error {
 	if p.DateCreated == nil {
 		return fmt.Errorf("unable to import old publication %s: date_created is not set", p.ID)
 	}
@@ -136,7 +128,11 @@ func (s *Repository) ImportCurrentPublication(p *models.Publication) error {
 	if p.DateUntil != nil {
 		return fmt.Errorf("unable to import old publication %s: date_until should be nil", p.ID)
 	}
-	return s.importPublication(p)
+	snap, err := publicationToSnapshot(p)
+	if err != nil {
+		return err
+	}
+	return s.publicationStore.ImportSnapshot(snap, s.opts)
 }
 
 func (s *Repository) SavePublication(p *models.Publication, u *models.User) error {
@@ -460,15 +456,7 @@ func (s *Repository) GetDatasets(ids []string) ([]*models.Dataset, error) {
 	return datasets, nil
 }
 
-func (s *Repository) importDataset(d *models.Dataset) error {
-	snap, err := datasetToSnapshot(d)
-	if err != nil {
-		return err
-	}
-	return s.datasetStore.ImportSnapshot(snap, s.opts)
-}
-
-func (s *Repository) ImportCurrentDataset(d *models.Dataset) error {
+func (s *Repository) ImportDataset(d *models.Dataset) error {
 	if d.DateCreated == nil {
 		return fmt.Errorf("unable to import dataset %s: date_created is not set", d.ID)
 	}
@@ -481,7 +469,11 @@ func (s *Repository) ImportCurrentDataset(d *models.Dataset) error {
 	if d.DateUntil != nil {
 		return fmt.Errorf("unable to import dataset %s: date_until should be nil", d.ID)
 	}
-	return s.importDataset(d)
+	snap, err := datasetToSnapshot(d)
+	if err != nil {
+		return err
+	}
+	return s.datasetStore.ImportSnapshot(snap, s.opts)
 }
 
 func (s *Repository) SaveDataset(d *models.Dataset, u *models.User) error {

@@ -61,7 +61,7 @@ type Repository interface {
 	GetPublication(string) (*models.Publication, error)
 	GetPublications([]string) ([]*models.Publication, error)
 	SavePublication(*models.Publication, *models.User) error
-	ImportCurrentPublication(*models.Publication) error
+	ImportPublication(*models.Publication) error
 	UpdatePublication(string, *models.Publication, *models.User) error
 	UpdatePublicationInPlace(p *models.Publication) error
 	PublicationsAfter(t time.Time, limit, offset int) (int, []*models.Publication, error)
@@ -76,7 +76,7 @@ type Repository interface {
 	AddDatasetListener(func(*models.Dataset))
 	GetDataset(string) (*models.Dataset, error)
 	GetDatasets([]string) ([]*models.Dataset, error)
-	ImportCurrentDataset(*models.Dataset) error
+	ImportDataset(*models.Dataset) error
 	SaveDataset(*models.Dataset, *models.User) error
 	UpdateDataset(string, *models.Dataset, *models.User) error
 	DatasetsAfter(t time.Time, limit, offset int) (int, []*models.Dataset, error)

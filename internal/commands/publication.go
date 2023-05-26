@@ -154,7 +154,7 @@ var publicationImportCmd = &cobra.Command{
 				)
 				continue
 			}
-			if err := e.Repository.ImportCurrentPublication(p); err != nil {
+			if err := e.Repository.ImportPublication(p); err != nil {
 				log.Printf(
 					"Unable to store publication[snapshot_id: %s, id: %s] from line %d : %v",
 					p.SnapshotID,

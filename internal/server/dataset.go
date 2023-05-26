@@ -288,7 +288,7 @@ func (s *server) ImportDatasets(stream api.Biblio_ImportDatasetsServer) error {
 			continue
 		}
 
-		if err := s.services.Repository.ImportCurrentDataset(d); err != nil {
+		if err := s.services.Repository.ImportDataset(d); err != nil {
 			grpcErr := status.New(codes.InvalidArgument, fmt.Errorf("failed to store dataset %s at line %d: %s", d.ID, seq, err).Error())
 			if err = stream.Send(&api.ImportDatasetsResponse{
 				Response: &api.ImportDatasetsResponse_Error{

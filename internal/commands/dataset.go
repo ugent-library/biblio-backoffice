@@ -117,7 +117,7 @@ var datasetImportCmd = &cobra.Command{
 				)
 				continue
 			}
-			if err := e.Repository.ImportCurrentDataset(d); err != nil {
+			if err := e.Repository.ImportDataset(d); err != nil {
 				log.Printf(
 					"Unable to store dataset[snapshot_id: %s, id: %s] from line %d : %v",
 					d.SnapshotID,
