@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Manual dataset input
 - Support dataset identifier types other than DOI
+- Batch operation support (initial operations are project.add,
+  classification.set, vabb_year.add and keyword.add)
 
 ### Fixed
 
