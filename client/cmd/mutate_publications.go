@@ -22,6 +22,22 @@ var MutatePublicationsCmd = &cobra.Command{
 	Use:   "mutate",
 	Short: "Mutate publications",
 	Long: `
+	Add one or more mutations from a JSONL (JSON Lines) formatted file via stdin.
+	Each line represents a single mutation.
+
+	Outputs either a success message with the publication ID or an error message.
+	Each message contains the number pointing to the corresponding line in the input file:
+
+		$ ./biblio-backoffice publication mutate < file.jsonl
+		mutated publication [ID] at line [LINENO]
+		# or
+		failed to mutate publication [ID] at line [LINENO]: [MSG]
+
+	Example input file:
+
+	    {"id":"1234", "op":"keyword.add", "args":["dna", "double helix"]}
+	    {"id":"2345", "op":"classification.set", "args":["A3"]}
+
 	`,
 	RunE: MutatePublications,
 }
