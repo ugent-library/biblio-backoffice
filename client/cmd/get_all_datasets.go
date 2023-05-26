@@ -25,9 +25,7 @@ var GetAllDatasetsCmd = &cobra.Command{
 
 		$ ./biblio-backoffice dataset get-all > datasets.jsonl
 	`,
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return GetAllDatasets(cmd, args)
-	},
+	RunE: GetAllDatasets,
 }
 
 func GetAllDatasets(cmd *cobra.Command, args []string) error {

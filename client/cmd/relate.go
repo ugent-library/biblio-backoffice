@@ -29,9 +29,7 @@ var PublicationRelateDatasetCmd = &cobra.Command{
 		related: publication[id: ID] -> dataset[id: ID]
 	`,
 	Args: cobra.ExactArgs(2),
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return PublicationRelateDataset(cmd, args)
-	},
+	RunE: PublicationRelateDataset,
 }
 
 func PublicationRelateDataset(cmd *cobra.Command, args []string) error {

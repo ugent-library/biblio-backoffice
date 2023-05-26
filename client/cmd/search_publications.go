@@ -22,9 +22,7 @@ func init() {
 var SearchPublicationsCmd = &cobra.Command{
 	Use:   "search",
 	Short: "Search publications",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return SearchPublications(cmd, args)
-	},
+	RunE:  SearchPublications,
 }
 
 func SearchPublications(cmd *cobra.Command, args []string) error {

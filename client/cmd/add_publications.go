@@ -21,19 +21,17 @@ var AddPublicationsCmd = &cobra.Command{
 	Use:   "add",
 	Short: "Add publications",
 	Long: `
-	Add one or more datasets from a JSONL (JSON Lines) formatted file via stdin.
-	Each line represents a single dataset.
+	Add one or more publications from a JSONL (JSON Lines) formatted file via stdin.
+	Each line represents a single publication.
 
-	Outputs either a success message with the dataset ID or an error message.
+	Outputs either a success message with the publication ID or an error message.
 	Each message contains the number pointing to the corresponding line in the input file:
 
-		$ ./biblio-backoffice dataset add < file.jsonl
-		stored and indexed dataset [ID] at line [LINENO]
-		failed to validate dataset [ID] at line [LINENO]: [MSG]
+		$ ./biblio-backoffice publication add < file.jsonl
+		stored and indexed publication [ID] at line [LINENO]
+		failed to validate publication [ID] at line [LINENO]: [MSG]
 	`,
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return AddPublications(cmd, args)
-	},
+	RunE: AddPublications,
 }
 
 func AddPublications(cmd *cobra.Command, args []string) error {

@@ -17,9 +17,7 @@ func init() {
 var PurgeAllPublicationsCmd = &cobra.Command{
 	Use:   "purge-all",
 	Short: "Purge all publications",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return PurgeAllPublications(cmd, args)
-	},
+	RunE:  PurgeAllPublications,
 }
 
 func init() {

@@ -25,9 +25,7 @@ var GetAllPublicationsCmd = &cobra.Command{
 
 		$ ./biblio-backoffice publication get-all > publications.jsonl
 	`,
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return GetAllPublications(cmd, args)
-	},
+	RunE: GetAllPublications,
 }
 
 func GetAllPublications(cmd *cobra.Command, args []string) error {

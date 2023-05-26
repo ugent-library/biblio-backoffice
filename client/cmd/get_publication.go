@@ -24,9 +24,7 @@ var GetPublicationCmd = &cobra.Command{
 		$ ./biblio-backoffice publication get [ID] > publication.jsonl
 	`,
 	Args: cobra.ExactArgs(1),
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return GetPublication(cmd, args)
-	},
+	RunE: GetPublication,
 }
 
 func GetPublication(cmd *cobra.Command, args []string) error {

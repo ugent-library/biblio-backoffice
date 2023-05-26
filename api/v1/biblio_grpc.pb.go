@@ -32,10 +32,10 @@ const (
 	Biblio_GetPublication_FullMethodName              = "/biblio.v1.Biblio/GetPublication"
 	Biblio_GetAllPublications_FullMethodName          = "/biblio.v1.Biblio/GetAllPublications"
 	Biblio_SearchPublications_FullMethodName          = "/biblio.v1.Biblio/SearchPublications"
-	Biblio_MutatePublications_FullMethodName          = "/biblio.v1.Biblio/MutatePublications"
 	Biblio_UpdatePublication_FullMethodName           = "/biblio.v1.Biblio/UpdatePublication"
 	Biblio_AddPublications_FullMethodName             = "/biblio.v1.Biblio/AddPublications"
 	Biblio_ImportPublications_FullMethodName          = "/biblio.v1.Biblio/ImportPublications"
+	Biblio_MutatePublications_FullMethodName          = "/biblio.v1.Biblio/MutatePublications"
 	Biblio_GetPublicationHistory_FullMethodName       = "/biblio.v1.Biblio/GetPublicationHistory"
 	Biblio_PurgePublication_FullMethodName            = "/biblio.v1.Biblio/PurgePublication"
 	Biblio_PurgeAllPublications_FullMethodName        = "/biblio.v1.Biblio/PurgeAllPublications"
@@ -50,6 +50,7 @@ const (
 	Biblio_UpdateDataset_FullMethodName               = "/biblio.v1.Biblio/UpdateDataset"
 	Biblio_AddDatasets_FullMethodName                 = "/biblio.v1.Biblio/AddDatasets"
 	Biblio_ImportDatasets_FullMethodName              = "/biblio.v1.Biblio/ImportDatasets"
+	Biblio_MutateDatasets_FullMethodName              = "/biblio.v1.Biblio/MutateDatasets"
 	Biblio_GetDatasetHistory_FullMethodName           = "/biblio.v1.Biblio/GetDatasetHistory"
 	Biblio_PurgeDataset_FullMethodName                = "/biblio.v1.Biblio/PurgeDataset"
 	Biblio_PurgeAllDatasets_FullMethodName            = "/biblio.v1.Biblio/PurgeAllDatasets"
@@ -69,10 +70,10 @@ type BiblioClient interface {
 	GetPublication(ctx context.Context, in *GetPublicationRequest, opts ...grpc.CallOption) (*GetPublicationResponse, error)
 	GetAllPublications(ctx context.Context, in *GetAllPublicationsRequest, opts ...grpc.CallOption) (Biblio_GetAllPublicationsClient, error)
 	SearchPublications(ctx context.Context, in *SearchPublicationsRequest, opts ...grpc.CallOption) (*SearchPublicationsResponse, error)
-	MutatePublications(ctx context.Context, opts ...grpc.CallOption) (Biblio_MutatePublicationsClient, error)
 	UpdatePublication(ctx context.Context, in *UpdatePublicationRequest, opts ...grpc.CallOption) (*UpdatePublicationResponse, error)
 	AddPublications(ctx context.Context, opts ...grpc.CallOption) (Biblio_AddPublicationsClient, error)
 	ImportPublications(ctx context.Context, opts ...grpc.CallOption) (Biblio_ImportPublicationsClient, error)
+	MutatePublications(ctx context.Context, opts ...grpc.CallOption) (Biblio_MutatePublicationsClient, error)
 	GetPublicationHistory(ctx context.Context, in *GetPublicationHistoryRequest, opts ...grpc.CallOption) (Biblio_GetPublicationHistoryClient, error)
 	PurgePublication(ctx context.Context, in *PurgePublicationRequest, opts ...grpc.CallOption) (*PurgePublicationResponse, error)
 	PurgeAllPublications(ctx context.Context, in *PurgeAllPublicationsRequest, opts ...grpc.CallOption) (*PurgeAllPublicationsResponse, error)
@@ -87,6 +88,7 @@ type BiblioClient interface {
 	UpdateDataset(ctx context.Context, in *UpdateDatasetRequest, opts ...grpc.CallOption) (*UpdateDatasetResponse, error)
 	AddDatasets(ctx context.Context, opts ...grpc.CallOption) (Biblio_AddDatasetsClient, error)
 	ImportDatasets(ctx context.Context, opts ...grpc.CallOption) (Biblio_ImportDatasetsClient, error)
+	MutateDatasets(ctx context.Context, opts ...grpc.CallOption) (Biblio_MutateDatasetsClient, error)
 	GetDatasetHistory(ctx context.Context, in *GetDatasetHistoryRequest, opts ...grpc.CallOption) (Biblio_GetDatasetHistoryClient, error)
 	PurgeDataset(ctx context.Context, in *PurgeDatasetRequest, opts ...grpc.CallOption) (*PurgeDatasetResponse, error)
 	PurgeAllDatasets(ctx context.Context, in *PurgeAllDatasetsRequest, opts ...grpc.CallOption) (*PurgeAllDatasetsResponse, error)
@@ -229,37 +231,6 @@ func (c *biblioClient) SearchPublications(ctx context.Context, in *SearchPublica
 	return out, nil
 }
 
-func (c *biblioClient) MutatePublications(ctx context.Context, opts ...grpc.CallOption) (Biblio_MutatePublicationsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[3], Biblio_MutatePublications_FullMethodName, opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &biblioMutatePublicationsClient{stream}
-	return x, nil
-}
-
-type Biblio_MutatePublicationsClient interface {
-	Send(*MutateRequest) error
-	Recv() (*MutateResponse, error)
-	grpc.ClientStream
-}
-
-type biblioMutatePublicationsClient struct {
-	grpc.ClientStream
-}
-
-func (x *biblioMutatePublicationsClient) Send(m *MutateRequest) error {
-	return x.ClientStream.SendMsg(m)
-}
-
-func (x *biblioMutatePublicationsClient) Recv() (*MutateResponse, error) {
-	m := new(MutateResponse)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
 func (c *biblioClient) UpdatePublication(ctx context.Context, in *UpdatePublicationRequest, opts ...grpc.CallOption) (*UpdatePublicationResponse, error) {
 	out := new(UpdatePublicationResponse)
 	err := c.cc.Invoke(ctx, Biblio_UpdatePublication_FullMethodName, in, out, opts...)
@@ -270,7 +241,7 @@ func (c *biblioClient) UpdatePublication(ctx context.Context, in *UpdatePublicat
 }
 
 func (c *biblioClient) AddPublications(ctx context.Context, opts ...grpc.CallOption) (Biblio_AddPublicationsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[4], Biblio_AddPublications_FullMethodName, opts...)
+	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[3], Biblio_AddPublications_FullMethodName, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -301,7 +272,7 @@ func (x *biblioAddPublicationsClient) Recv() (*AddPublicationsResponse, error) {
 }
 
 func (c *biblioClient) ImportPublications(ctx context.Context, opts ...grpc.CallOption) (Biblio_ImportPublicationsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[5], Biblio_ImportPublications_FullMethodName, opts...)
+	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[4], Biblio_ImportPublications_FullMethodName, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -325,6 +296,37 @@ func (x *biblioImportPublicationsClient) Send(m *ImportPublicationsRequest) erro
 
 func (x *biblioImportPublicationsClient) Recv() (*ImportPublicationsResponse, error) {
 	m := new(ImportPublicationsResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *biblioClient) MutatePublications(ctx context.Context, opts ...grpc.CallOption) (Biblio_MutatePublicationsClient, error) {
+	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[5], Biblio_MutatePublications_FullMethodName, opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &biblioMutatePublicationsClient{stream}
+	return x, nil
+}
+
+type Biblio_MutatePublicationsClient interface {
+	Send(*MutateRequest) error
+	Recv() (*MutateResponse, error)
+	grpc.ClientStream
+}
+
+type biblioMutatePublicationsClient struct {
+	grpc.ClientStream
+}
+
+func (x *biblioMutatePublicationsClient) Send(m *MutateRequest) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *biblioMutatePublicationsClient) Recv() (*MutateResponse, error) {
+	m := new(MutateResponse)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -661,8 +663,39 @@ func (x *biblioImportDatasetsClient) Recv() (*ImportDatasetsResponse, error) {
 	return m, nil
 }
 
+func (c *biblioClient) MutateDatasets(ctx context.Context, opts ...grpc.CallOption) (Biblio_MutateDatasetsClient, error) {
+	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[15], Biblio_MutateDatasets_FullMethodName, opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &biblioMutateDatasetsClient{stream}
+	return x, nil
+}
+
+type Biblio_MutateDatasetsClient interface {
+	Send(*MutateRequest) error
+	Recv() (*MutateResponse, error)
+	grpc.ClientStream
+}
+
+type biblioMutateDatasetsClient struct {
+	grpc.ClientStream
+}
+
+func (x *biblioMutateDatasetsClient) Send(m *MutateRequest) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *biblioMutateDatasetsClient) Recv() (*MutateResponse, error) {
+	m := new(MutateResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 func (c *biblioClient) GetDatasetHistory(ctx context.Context, in *GetDatasetHistoryRequest, opts ...grpc.CallOption) (Biblio_GetDatasetHistoryClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[15], Biblio_GetDatasetHistory_FullMethodName, opts...)
+	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[16], Biblio_GetDatasetHistory_FullMethodName, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -712,7 +745,7 @@ func (c *biblioClient) PurgeAllDatasets(ctx context.Context, in *PurgeAllDataset
 }
 
 func (c *biblioClient) ValidateDatasets(ctx context.Context, opts ...grpc.CallOption) (Biblio_ValidateDatasetsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[16], Biblio_ValidateDatasets_FullMethodName, opts...)
+	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[17], Biblio_ValidateDatasets_FullMethodName, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -743,7 +776,7 @@ func (x *biblioValidateDatasetsClient) Recv() (*ValidateDatasetsResponse, error)
 }
 
 func (c *biblioClient) ReindexDatasets(ctx context.Context, in *ReindexDatasetsRequest, opts ...grpc.CallOption) (Biblio_ReindexDatasetsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[17], Biblio_ReindexDatasets_FullMethodName, opts...)
+	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[18], Biblio_ReindexDatasets_FullMethodName, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -775,7 +808,7 @@ func (x *biblioReindexDatasetsClient) Recv() (*ReindexDatasetsResponse, error) {
 }
 
 func (c *biblioClient) CleanupDatasets(ctx context.Context, in *CleanupDatasetsRequest, opts ...grpc.CallOption) (Biblio_CleanupDatasetsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[18], Biblio_CleanupDatasets_FullMethodName, opts...)
+	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[19], Biblio_CleanupDatasets_FullMethodName, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -825,10 +858,10 @@ type BiblioServer interface {
 	GetPublication(context.Context, *GetPublicationRequest) (*GetPublicationResponse, error)
 	GetAllPublications(*GetAllPublicationsRequest, Biblio_GetAllPublicationsServer) error
 	SearchPublications(context.Context, *SearchPublicationsRequest) (*SearchPublicationsResponse, error)
-	MutatePublications(Biblio_MutatePublicationsServer) error
 	UpdatePublication(context.Context, *UpdatePublicationRequest) (*UpdatePublicationResponse, error)
 	AddPublications(Biblio_AddPublicationsServer) error
 	ImportPublications(Biblio_ImportPublicationsServer) error
+	MutatePublications(Biblio_MutatePublicationsServer) error
 	GetPublicationHistory(*GetPublicationHistoryRequest, Biblio_GetPublicationHistoryServer) error
 	PurgePublication(context.Context, *PurgePublicationRequest) (*PurgePublicationResponse, error)
 	PurgeAllPublications(context.Context, *PurgeAllPublicationsRequest) (*PurgeAllPublicationsResponse, error)
@@ -843,6 +876,7 @@ type BiblioServer interface {
 	UpdateDataset(context.Context, *UpdateDatasetRequest) (*UpdateDatasetResponse, error)
 	AddDatasets(Biblio_AddDatasetsServer) error
 	ImportDatasets(Biblio_ImportDatasetsServer) error
+	MutateDatasets(Biblio_MutateDatasetsServer) error
 	GetDatasetHistory(*GetDatasetHistoryRequest, Biblio_GetDatasetHistoryServer) error
 	PurgeDataset(context.Context, *PurgeDatasetRequest) (*PurgeDatasetResponse, error)
 	PurgeAllDatasets(context.Context, *PurgeAllDatasetsRequest) (*PurgeAllDatasetsResponse, error)
@@ -875,9 +909,6 @@ func (UnimplementedBiblioServer) GetAllPublications(*GetAllPublicationsRequest, 
 func (UnimplementedBiblioServer) SearchPublications(context.Context, *SearchPublicationsRequest) (*SearchPublicationsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchPublications not implemented")
 }
-func (UnimplementedBiblioServer) MutatePublications(Biblio_MutatePublicationsServer) error {
-	return status.Errorf(codes.Unimplemented, "method MutatePublications not implemented")
-}
 func (UnimplementedBiblioServer) UpdatePublication(context.Context, *UpdatePublicationRequest) (*UpdatePublicationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdatePublication not implemented")
 }
@@ -886,6 +917,9 @@ func (UnimplementedBiblioServer) AddPublications(Biblio_AddPublicationsServer) e
 }
 func (UnimplementedBiblioServer) ImportPublications(Biblio_ImportPublicationsServer) error {
 	return status.Errorf(codes.Unimplemented, "method ImportPublications not implemented")
+}
+func (UnimplementedBiblioServer) MutatePublications(Biblio_MutatePublicationsServer) error {
+	return status.Errorf(codes.Unimplemented, "method MutatePublications not implemented")
 }
 func (UnimplementedBiblioServer) GetPublicationHistory(*GetPublicationHistoryRequest, Biblio_GetPublicationHistoryServer) error {
 	return status.Errorf(codes.Unimplemented, "method GetPublicationHistory not implemented")
@@ -928,6 +962,9 @@ func (UnimplementedBiblioServer) AddDatasets(Biblio_AddDatasetsServer) error {
 }
 func (UnimplementedBiblioServer) ImportDatasets(Biblio_ImportDatasetsServer) error {
 	return status.Errorf(codes.Unimplemented, "method ImportDatasets not implemented")
+}
+func (UnimplementedBiblioServer) MutateDatasets(Biblio_MutateDatasetsServer) error {
+	return status.Errorf(codes.Unimplemented, "method MutateDatasets not implemented")
 }
 func (UnimplementedBiblioServer) GetDatasetHistory(*GetDatasetHistoryRequest, Biblio_GetDatasetHistoryServer) error {
 	return status.Errorf(codes.Unimplemented, "method GetDatasetHistory not implemented")
@@ -1085,32 +1122,6 @@ func _Biblio_SearchPublications_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Biblio_MutatePublications_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(BiblioServer).MutatePublications(&biblioMutatePublicationsServer{stream})
-}
-
-type Biblio_MutatePublicationsServer interface {
-	Send(*MutateResponse) error
-	Recv() (*MutateRequest, error)
-	grpc.ServerStream
-}
-
-type biblioMutatePublicationsServer struct {
-	grpc.ServerStream
-}
-
-func (x *biblioMutatePublicationsServer) Send(m *MutateResponse) error {
-	return x.ServerStream.SendMsg(m)
-}
-
-func (x *biblioMutatePublicationsServer) Recv() (*MutateRequest, error) {
-	m := new(MutateRequest)
-	if err := x.ServerStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
 func _Biblio_UpdatePublication_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdatePublicationRequest)
 	if err := dec(in); err != nil {
@@ -1175,6 +1186,32 @@ func (x *biblioImportPublicationsServer) Send(m *ImportPublicationsResponse) err
 
 func (x *biblioImportPublicationsServer) Recv() (*ImportPublicationsRequest, error) {
 	m := new(ImportPublicationsRequest)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func _Biblio_MutatePublications_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(BiblioServer).MutatePublications(&biblioMutatePublicationsServer{stream})
+}
+
+type Biblio_MutatePublicationsServer interface {
+	Send(*MutateResponse) error
+	Recv() (*MutateRequest, error)
+	grpc.ServerStream
+}
+
+type biblioMutatePublicationsServer struct {
+	grpc.ServerStream
+}
+
+func (x *biblioMutatePublicationsServer) Send(m *MutateResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *biblioMutatePublicationsServer) Recv() (*MutateRequest, error) {
+	m := new(MutateRequest)
 	if err := x.ServerStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -1475,6 +1512,32 @@ func (x *biblioImportDatasetsServer) Recv() (*ImportDatasetsRequest, error) {
 	return m, nil
 }
 
+func _Biblio_MutateDatasets_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(BiblioServer).MutateDatasets(&biblioMutateDatasetsServer{stream})
+}
+
+type Biblio_MutateDatasetsServer interface {
+	Send(*MutateResponse) error
+	Recv() (*MutateRequest, error)
+	grpc.ServerStream
+}
+
+type biblioMutateDatasetsServer struct {
+	grpc.ServerStream
+}
+
+func (x *biblioMutateDatasetsServer) Send(m *MutateResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *biblioMutateDatasetsServer) Recv() (*MutateRequest, error) {
+	m := new(MutateRequest)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 func _Biblio_GetDatasetHistory_Handler(srv interface{}, stream grpc.ServerStream) error {
 	m := new(GetDatasetHistoryRequest)
 	if err := stream.RecvMsg(m); err != nil {
@@ -1691,12 +1754,6 @@ var Biblio_ServiceDesc = grpc.ServiceDesc{
 			ServerStreams: true,
 		},
 		{
-			StreamName:    "MutatePublications",
-			Handler:       _Biblio_MutatePublications_Handler,
-			ServerStreams: true,
-			ClientStreams: true,
-		},
-		{
 			StreamName:    "AddPublications",
 			Handler:       _Biblio_AddPublications_Handler,
 			ServerStreams: true,
@@ -1705,6 +1762,12 @@ var Biblio_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "ImportPublications",
 			Handler:       _Biblio_ImportPublications_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
+		},
+		{
+			StreamName:    "MutatePublications",
+			Handler:       _Biblio_MutatePublications_Handler,
 			ServerStreams: true,
 			ClientStreams: true,
 		},
@@ -1753,6 +1816,12 @@ var Biblio_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "ImportDatasets",
 			Handler:       _Biblio_ImportDatasets_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
+		},
+		{
+			StreamName:    "MutateDatasets",
+			Handler:       _Biblio_MutateDatasets_Handler,
 			ServerStreams: true,
 			ClientStreams: true,
 		},

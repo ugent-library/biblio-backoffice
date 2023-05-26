@@ -45,9 +45,7 @@ var TransferPublicationsCmd = &cobra.Command{
 	If no matching instances of the source UID could be found, the transfer command won't produce any output.
 	`,
 	Args: cobra.RangeArgs(2, 3),
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return TransferPublications(cmd, args)
-	},
+	RunE: TransferPublications,
 }
 
 func TransferPublications(cmd *cobra.Command, args []string) error {

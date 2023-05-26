@@ -20,9 +20,7 @@ func init() {
 var SyncPublicationContributorsCmd = &cobra.Command{
 	Use:   "sync-publication-contributors",
 	Short: "Synchronize publication contributor attributes with person service",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return SyncPublicationContributors(cmd, args)
-	},
+	RunE:  SyncPublicationContributors,
 }
 
 func SyncPublicationContributors(cmd *cobra.Command, args []string) error {
