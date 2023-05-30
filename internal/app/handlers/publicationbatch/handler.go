@@ -59,6 +59,15 @@ func (h *Handler) Show(w http.ResponseWriter, r *http.Request, ctx Context) {
 func (h *Handler) Process(w http.ResponseWriter, r *http.Request, ctx Context) {
 	lines := strings.Split(strings.ReplaceAll(r.FormValue("ops"), "\r\n", "\n"), "\n")
 
+	if len(lines) > 500 {
+		h.AddSessionFlash(r, w, *flash.SimpleFlash().
+			WithLevel("error").
+			WithBody("No more than 500 operations can be processed at one time.").
+			DismissedAfter(0))
+		http.Redirect(w, r, h.PathFor("publication_batch").String(), http.StatusFound)
+		return
+	}
+
 	done := 0
 	var errorMsgs []string
 
