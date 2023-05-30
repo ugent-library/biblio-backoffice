@@ -3,20 +3,26 @@
     <input type="hidden" name="position" value="{{.Position}}">
     {{end}}
     <div class="bc-avatar-and-text">
+        {{if .Contributor.ID}}
         <div class="bc-avatar bc-avatar-icon bc-avatar--muted">
+            <i class="if if-ghent-university"></i>
+        </div>
+        {{else}}
+        <div class="bc-avatar bc-avatar-icon bc-avatar--default">
             <i class="if if-user"></i>
         </div>
+        {{end}}
         <div class="bc-avatar-text">
             {{.Contributor.FirstName}} {{.Contributor.LastName}}
             {{with .Contributor.ORCID}}
-            <span class="text-muted c-body-small ml-4"><i class="if if-orcid if--muted if--small"></i> {{.}}</span>
+            <span class="text-muted c-body-small ml-4"><i class="if if-orcid if--small text-success"></i> {{.}}</span>
             {{end}}
         </div>
     </div>
 </td>
 <td class="col-2">
     {{if .Contributor.ID}}
-    <i class="if if-ghent-university"></i>
+    <i class="if if-ghent-university text-default"></i>
     <span>UGent {{.Locale.TS "dataset.contributor.role" .Role}}</span>
     {{else}}
     External {{.Locale.TS "dataset.contributor.role" .Role}}
@@ -26,13 +32,15 @@
     <ul class="c-meta-list c-meta-list-horizontal">
     {{range $i, $cd := .Contributor.Department}}
         <li class="c-meta-item">
-            <span>{{$cd.ID}}</span>
-            {{with $cd.Name}}
-            <a class="text-muted mx-2" href="#" data-container="body" data-toggle="popover" data-trigger="focus" data-placement="right" data-content="{{.}}">
-                <i class="if if-info-circle if--small"></i>
-                <div class="sr-only">More info</div>
-            </a>
-            {{end}}
+            <span class="badge badge-pill badge-default">
+                <span class="badge-text">{{$cd.ID}}</span>
+                {{with $cd.Name}}
+                <a class="ml-4" href="#" data-container="body" data-toggle="popover" data-trigger="focus" data-placement="right" data-content="{{.}}">
+                    <i class="if if-info-circle if--small"></i>
+                    <div class="sr-only">More info</div>
+                </a>
+                {{end}}
+            </span>
         </li>
     {{end}}
     </ul>
