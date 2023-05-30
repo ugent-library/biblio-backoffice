@@ -67,7 +67,7 @@ func (h *Handler) Process(w http.ResponseWriter, r *http.Request, ctx Context) {
 			continue
 		}
 
-		rdr := csv.NewReader(strings.NewReader(line))
+		rdr := csv.NewReader(strings.NewReader(strings.TrimSpace(line)))
 		rec, err := rdr.Read()
 
 		if err != nil {
@@ -80,13 +80,20 @@ func (h *Handler) Process(w http.ResponseWriter, r *http.Request, ctx Context) {
 			continue
 		}
 
-		err = h.Repository.MutatePublication(rec[0], ctx.User, backends.Mutation{
-			Op:   rec[1],
-			Args: rec[2:],
+		id := strings.TrimSpace(rec[0])
+		op := strings.TrimSpace(rec[1])
+		args := rec[2:]
+		for i, arg := range args {
+			args[i] = strings.TrimSpace(arg)
+		}
+
+		err = h.Repository.MutatePublication(id, ctx.User, backends.Mutation{
+			Op:   op,
+			Args: args,
 		})
 
 		if err != nil {
-			errorMsgs = append(errorMsgs, fmt.Sprintf("<p>could not process publication %s at line %d</p>", rec[0], i))
+			errorMsgs = append(errorMsgs, fmt.Sprintf("<p>could not process publication %s at line %d</p>", id, i))
 			continue
 		}
 
