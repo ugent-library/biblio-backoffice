@@ -9,10 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Manual dataset input
-- Support dataset identifier types other than DOI
+- #898: Manual dataset input and support dataset identifier types other than DOI
 - Batch operation support (initial operations are project.add,
-  classification.set, vabb_year.add and keyword.add)
+  classification.set, vabb_year.add, keyword.add, keyword.remove,
+  reviewer_tag.add and reviewer_tag.remove)
+- #1109: Map VABB attributes in frontoffice handler
 
 ### Fixed
 
