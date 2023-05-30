@@ -722,6 +722,7 @@ func (h *Handler) mapDataset(d *models.Dataset) *Publication {
 		Title:       d.Title,
 		Type:        "researchData",
 		Year:        d.Year,
+		Language:    d.Language,
 	}
 
 	if len(d.Link) > 0 {

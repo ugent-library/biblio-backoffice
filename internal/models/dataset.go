@@ -69,6 +69,7 @@ type Dataset struct {
 	Identifiers             Identifiers          `json:"identifiers,omitempty"`
 	Keyword                 []string             `json:"keyword,omitempty"`
 	HasBeenPublic           bool                 `json:"has_been_public"`
+	Language                []string             `json:"language,omitempty"`
 	LastUser                *DatasetUser         `json:"last_user,omitempty"`
 	License                 string               `json:"license,omitempty"`
 	Link                    []*DatasetLink       `json:"link,omitempty"`
@@ -391,6 +392,15 @@ func (d *Dataset) Validate() error {
 	// 		})
 	// 	}
 	// }
+
+	for i, l := range d.Language {
+		if !validation.InArray(vocabularies.Map["language_codes"], l) {
+			errs = append(errs, &validation.Error{
+				Pointer: fmt.Sprintf("/language/%d", i),
+				Code:    "dataset.language.invalid",
+			})
+		}
+	}
 
 	if d.Status == "public" && d.Publisher == "" {
 		errs = append(errs, &validation.Error{

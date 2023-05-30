@@ -672,6 +672,7 @@ func init() {
 	message.SetString(language.English, "dataset.validation.error.supervisor.last_name.required", "Last name is required")
 
 	// NEW
+	message.SetString(language.English, "validation.dataset.language.invalid", "Language code is not valid")
 	message.SetString(language.English, "validation.dataset.title.required", "Title is required")
 	message.SetString(language.English, "validation.dataset.identifier.required", "Identifier is required")
 	message.SetString(language.English, "validation.dataset.identifier.invalid", "Identifier is invalid")
