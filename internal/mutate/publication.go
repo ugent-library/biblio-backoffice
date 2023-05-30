@@ -42,11 +42,42 @@ func KeywordAdd(p *models.Publication, args []string) error {
 	return nil
 }
 
+func KeywordRemove(p *models.Publication, args []string) error {
+	var vals []string
+	for _, val := range p.Keyword {
+		if !validation.InArray(args, val) {
+			vals = append(vals, val)
+		}
+	}
+	p.Keyword = vals
+	return nil
+}
+
 func VABBYearAdd(p *models.Publication, args []string) error {
 	for _, arg := range args {
 		if !validation.InArray(p.VABBYear, arg) {
 			p.VABBYear = append(p.VABBYear, arg)
 		}
 	}
+	return nil
+}
+
+func ReviewerTagAdd(p *models.Publication, args []string) error {
+	for _, arg := range args {
+		if !validation.InArray(p.ReviewerTags, arg) {
+			p.ReviewerTags = append(p.ReviewerTags, arg)
+		}
+	}
+	return nil
+}
+
+func ReviewerTagRemove(p *models.Publication, args []string) error {
+	var vals []string
+	for _, val := range p.ReviewerTags {
+		if !validation.InArray(args, val) {
+			vals = append(vals, val)
+		}
+	}
+	p.ReviewerTags = vals
 	return nil
 }

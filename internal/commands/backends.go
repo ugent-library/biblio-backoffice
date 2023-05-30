@@ -196,10 +196,13 @@ func newRepository(logger *zap.SugaredLogger, projectService backends.ProjectSer
 		},
 
 		PublicationMutators: map[string]repository.PublicationMutator{
-			"project.add":        mutate.ProjectAdd(projectService),
-			"classification.set": mutate.ClassificationSet,
-			"keyword.add":        mutate.KeywordAdd,
-			"vabb_year.add":      mutate.VABBYearAdd,
+			"project.add":         mutate.ProjectAdd(projectService),
+			"classification.set":  mutate.ClassificationSet,
+			"keyword.add":         mutate.KeywordAdd,
+			"keyword.remove":      mutate.KeywordRemove,
+			"vabb_year.add":       mutate.VABBYearAdd,
+			"reviewer_tag.add":    mutate.ReviewerTagAdd,
+			"reviewer_tag.remove": mutate.ReviewerTagRemove,
 		},
 	})
 
