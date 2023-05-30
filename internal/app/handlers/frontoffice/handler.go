@@ -239,6 +239,10 @@ type Publication struct {
 	Year                string        `json:"year,omitempty"`
 	RelatedPublication  []Relation    `json:"related_publication,omitempty"`
 	RelatedDataset      []Relation    `json:"related_dataset,omitempty"`
+	VABBID              string        `json:"vabb_id,omitempty"`
+	VABBType            string        `json:"vabb_type,omitempty"`
+	VABBApproved        *int          `json:"vabb_approved,omitempty"`
+	VABBYear            []string      `json:"vabb_year,omitempty"`
 }
 
 type Hits struct {
@@ -291,6 +295,9 @@ func (h *Handler) mapPublication(p *models.Publication) *Publication {
 		Volume:      p.Volume,
 		WOSID:       p.WOSID,
 		WOSType:     p.WOSType,
+		VABBID:      p.VABBID,
+		VABBType:    p.VABBType,
+		VABBYear:    p.VABBYear,
 	}
 
 	if p.Type != "" {
@@ -685,6 +692,16 @@ func (h *Handler) mapPublication(p *models.Publication) *Publication {
 		pp.External = 1
 	} else {
 		pp.External = 0
+	}
+
+	if p.VABBID != "" {
+		if p.VABBApproved {
+			v := 1
+			pp.VABBApproved = &v
+		} else {
+			v := 0
+			pp.VABBApproved = &v
+		}
 	}
 
 	return pp
