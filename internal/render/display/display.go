@@ -96,6 +96,19 @@ func (f *Text) renderWithValueTemplate(theme string, w io.Writer) error {
 	return render.ExecuteView(w, tmpl, y)
 }
 
+type Link struct {
+	Label    string
+	Required bool
+	Tooltip  string
+	Value    string
+	URL      string
+}
+
+func (f *Link) Render(theme string, w io.Writer) error {
+	tmpl := path.Join("display", theme, "link")
+	return render.ExecuteView(w, tmpl, f)
+}
+
 type List struct {
 	Inline        bool
 	Label         string
