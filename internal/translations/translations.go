@@ -93,8 +93,10 @@ func init() {
 	message.SetString(language.English, "dataset_access_levels_after_embargo.info:eu-repo/semantics/openAccess", "Open access")
 	message.SetString(language.English, "dataset_access_levels_after_embargo.info:eu-repo/semantics/restrictedAccess", "Restricted access")
 
+	message.SetString(language.English, "dataset_link_relations.data_management_plan", "Data management plan")
 	message.SetString(language.English, "dataset_link_relations.homepage", "Accompanying website")
 	message.SetString(language.English, "dataset_link_relations.related_information", "Related information")
+	message.SetString(language.English, "dataset_link_relations.software", "Software")
 
 	message.SetString(language.English, "publication_sorts.date-updated-desc", "Updated (newest first)")
 	message.SetString(language.English, "publication_sorts.date-created-asc", "Added (oldest first)")

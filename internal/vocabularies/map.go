@@ -122,8 +122,10 @@ var Map = map[string][]string{
 		"info:eu-repo/semantics/restrictedAccess",
 	},
 	"dataset_link_relations": {
+		"data_management_plan",
 		"homepage",
 		"related_information",
+		"software",
 	},
 	"faculties": {
 		"CA",
