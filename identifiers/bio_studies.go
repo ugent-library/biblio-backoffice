@@ -1,15 +1,15 @@
 package identifiers
 
-type BioStudies struct{}
+type BioStudiesType struct{}
 
-func (i *BioStudies) Validate(id string) bool {
+func (i *BioStudiesType) Validate(id string) bool {
 	return true
 }
 
-func (i *BioStudies) Normalize(id string) (string, error) {
+func (i *BioStudiesType) Normalize(id string) (string, error) {
 	return id, nil
 }
 
-func (i *BioStudies) Resolve(id string) string {
+func (i *BioStudiesType) Resolve(id string) string {
 	return "https://www.ebi.ac.uk/biostudies/studies/" + id
 }

@@ -1,15 +1,15 @@
 package identifiers
 
-type URN struct{}
+type URNType struct{}
 
-func (i *URN) Validate(id string) bool {
+func (i *URNType) Validate(id string) bool {
 	return true
 }
 
-func (i *URN) Normalize(id string) (string, error) {
+func (i *URNType) Normalize(id string) (string, error) {
 	return id, nil
 }
 
-func (i *URN) Resolve(id string) string {
+func (i *URNType) Resolve(id string) string {
 	return "https://nbn-resolving.org/" + id
 }

@@ -1,15 +1,15 @@
 package identifiers
 
-type BioProject struct{}
+type BioProjectType struct{}
 
-func (i *BioProject) Validate(id string) bool {
+func (i *BioProjectType) Validate(id string) bool {
 	return true
 }
 
-func (i *BioProject) Normalize(id string) (string, error) {
+func (i *BioProjectType) Normalize(id string) (string, error) {
 	return id, nil
 }
 
-func (i *BioProject) Resolve(id string) string {
+func (i *BioProjectType) Resolve(id string) string {
 	return "https://www.ebi.ac.uk/ena/data/view/" + id
 }
