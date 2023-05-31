@@ -7,8 +7,6 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"reflect"
-	"sort"
 	"strings"
 	"time"
 
@@ -733,21 +731,9 @@ func (s *server) TransferPublications(req *api.TransferPublicationsRequest, stre
 		return status.Errorf(codes.Internal, "could not retrieve person %s: %v", dest, err)
 	}
 
-	c := &models.Contributor{}
-	c.ID = p.ID
-	c.FirstName = p.FirstName
-	c.LastName = p.LastName
-	c.FullName = p.FullName
-	c.UGentID = p.UGentID
-	c.ORCID = p.ORCID
-
-	for _, pd := range p.Department {
-		newDep := models.ContributorDepartment{ID: pd.ID}
-		org, orgErr := s.services.OrganizationService.GetOrganization(pd.ID)
-		if orgErr == nil {
-			newDep.Name = org.Name
-		}
-		c.Department = append(c.Department, newDep)
+	c := &models.Contributor{
+		PersonID: p.ID,
+		Person:   p,
 	}
 
 	var callbackErr error
@@ -758,13 +744,13 @@ func (s *server) TransferPublications(req *api.TransferPublicationsRequest, stre
 		if p.User != nil {
 			if p.User.ID == source {
 				p.User = &models.PublicationUser{
-					ID:   c.ID,
-					Name: c.FullName,
+					ID:   c.PersonID,
+					Name: c.Person.FullName,
 				}
 
 				if err := stream.Send(&api.TransferPublicationsResponse{
 					Response: &api.TransferPublicationsResponse_Message{
-						Message: fmt.Sprintf("p: %s: s: %s ::: user: %s -> %s", p.ID, p.SnapshotID, source, c.ID),
+						Message: fmt.Sprintf("p: %s: s: %s ::: user: %s -> %s", p.ID, p.SnapshotID, source, c.PersonID),
 					},
 				}); err != nil {
 					callbackErr = err
@@ -794,7 +780,7 @@ func (s *server) TransferPublications(req *api.TransferPublicationsRequest, stre
 
 				if err := stream.Send(&api.TransferPublicationsResponse{
 					Response: &api.TransferPublicationsResponse_Message{
-						Message: fmt.Sprintf("p: %s: s: %s ::: creator: %s -> %s", p.ID, p.SnapshotID, source, c.ID),
+						Message: fmt.Sprintf("p: %s: s: %s ::: creator: %s -> %s", p.ID, p.SnapshotID, source, c.PersonID),
 					},
 				}); err != nil {
 					callbackErr = err
@@ -806,12 +792,12 @@ func (s *server) TransferPublications(req *api.TransferPublicationsRequest, stre
 		}
 
 		for k, a := range p.Author {
-			if a.ID == source {
+			if a.PersonID == source {
 				p.SetContributor("author", k, c)
 
 				if err := stream.Send(&api.TransferPublicationsResponse{
 					Response: &api.TransferPublicationsResponse_Message{
-						Message: fmt.Sprintf("p: %s: s: %s ::: author: %s -> %s", p.ID, p.SnapshotID, a.ID, c.ID),
+						Message: fmt.Sprintf("p: %s: s: %s ::: author: %s -> %s", p.ID, p.SnapshotID, a.PersonID, c.PersonID),
 					},
 				}); err != nil {
 					callbackErr = err
@@ -823,7 +809,7 @@ func (s *server) TransferPublications(req *api.TransferPublicationsRequest, stre
 		}
 
 		for k, e := range p.Editor {
-			if e.ID == source {
+			if e.PersonID == source {
 				p.SetContributor("editor", k, c)
 
 				if err := stream.Send(&api.TransferPublicationsResponse{
@@ -840,12 +826,12 @@ func (s *server) TransferPublications(req *api.TransferPublicationsRequest, stre
 		}
 
 		for k, s := range p.Supervisor {
-			if s.ID == source {
+			if s.PersonID == source {
 				p.SetContributor("supervisor", k, c)
 
 				if err := stream.Send(&api.TransferPublicationsResponse{
 					Response: &api.TransferPublicationsResponse_Message{
-						Message: fmt.Sprintf("p: %s: s: %s ::: supervisor: %s -> %s", p.ID, p.SnapshotID, s.ID, c.ID),
+						Message: fmt.Sprintf("p: %s: s: %s ::: supervisor: %s -> %s", p.ID, p.SnapshotID, s.PersonID, c.PersonID),
 					},
 				}); err != nil {
 					callbackErr = err
@@ -1035,292 +1021,292 @@ func (s *server) CleanupPublications(req *api.CleanupPublicationsRequest, stream
 // - ugent id's
 // - department id's (and their name)
 func (s *server) SyncPublicationContributors(req *api.SyncPublicationContributorsRequest, stream api.Biblio_SyncPublicationContributorsServer) error {
-	repository := s.services.Repository
-	personService := s.services.PersonService
-	orgService := s.services.OrganizationService
+	// repository := s.services.Repository
+	// personService := s.services.PersonService
+	// orgService := s.services.OrganizationService
 
-	sendErr := func(stream api.Biblio_SyncPublicationContributorsServer, e error) error {
-		grpcErr := status.New(codes.Internal, e.Error())
-		return stream.Send(&api.SyncPublicationContributorsResponse{
-			Response: &api.SyncPublicationContributorsResponse_Error{
-				Error: grpcErr.Proto(),
-			},
-		})
-	}
+	// sendErr := func(stream api.Biblio_SyncPublicationContributorsServer, e error) error {
+	// 	grpcErr := status.New(codes.Internal, e.Error())
+	// 	return stream.Send(&api.SyncPublicationContributorsResponse{
+	// 		Response: &api.SyncPublicationContributorsResponse_Error{
+	// 			Error: grpcErr.Proto(),
+	// 		},
+	// 	})
+	// }
 
-	var callbackErr error
-	// cache does not store nil values
-	invalidContributors := map[string]error{}
-	contributorRoles := []string{"author", "editor", "supervisor"}
+	// var callbackErr error
+	// // cache does not store nil values
+	// invalidContributors := map[string]error{}
+	// contributorRoles := []string{"author", "editor", "supervisor"}
 
-	// startErr: error that stores why the loop could not even start
-	startErr := repository.EachPublication(func(p *models.Publication) bool {
+	// // startErr: error that stores why the loop could not even start
+	// startErr := repository.EachPublication(func(p *models.Publication) bool {
 
-		changes := make([]*api.ContributorChange, 0)
+	// 	changes := make([]*api.ContributorChange, 0)
 
-		// prefetch all contributors from personService
-		// ignore those contributors that did not return anything in a previous call
-		contributorIds := make([]string, 0)
-		for _, role := range contributorRoles {
-			for _, contributor := range p.Contributors(role) {
-				if contributor.ID == "" {
-					continue
-				}
-				if _, ok := invalidContributors[contributor.ID]; ok {
-					continue
-				}
-				found := false
-				for _, contributorId := range contributorIds {
-					if contributorId == contributor.ID {
-						found = true
-					}
-				}
-				if !found {
-					contributorIds = append(contributorIds, contributor.ID)
-				}
-			}
-		}
+	// 	// prefetch all contributors from personService
+	// 	// ignore those contributors that did not return anything in a previous call
+	// 	contributorIds := make([]string, 0)
+	// 	for _, role := range contributorRoles {
+	// 		for _, contributor := range p.Contributors(role) {
+	// 			if contributor.ID == "" {
+	// 				continue
+	// 			}
+	// 			if _, ok := invalidContributors[contributor.ID]; ok {
+	// 				continue
+	// 			}
+	// 			found := false
+	// 			for _, contributorId := range contributorIds {
+	// 				if contributorId == contributor.ID {
+	// 					found = true
+	// 				}
+	// 			}
+	// 			if !found {
+	// 				contributorIds = append(contributorIds, contributor.ID)
+	// 			}
+	// 		}
+	// 	}
 
-		var persons []*models.Person = make([]*models.Person, 0)
-		if len(contributorIds) > 0 {
+	// 	var persons []*models.Person = make([]*models.Person, 0)
+	// 	if len(contributorIds) > 0 {
 
-			var personErr error
-			persons, personErr = personService.GetPersons(contributorIds)
-			if personErr != nil {
+	// 		var personErr error
+	// 		persons, personErr = personService.GetPersons(contributorIds)
+	// 		if personErr != nil {
 
-				e := sendErr(stream, fmt.Errorf("unable to prefetch contributors for publication with id '%s': %s", p.ID, personErr))
+	// 			e := sendErr(stream, fmt.Errorf("unable to prefetch contributors for publication with id '%s': %s", p.ID, personErr))
 
-				if e != nil {
-					callbackErr = e
-					// unable to send error: stop the loop
-					return false
-				}
+	// 			if e != nil {
+	// 				callbackErr = e
+	// 				// unable to send error: stop the loop
+	// 				return false
+	// 			}
 
-				// TODO: send error
-				return false
-			}
+	// 			// TODO: send error
+	// 			return false
+	// 		}
 
-		}
+	// 	}
 
-		for _, role := range contributorRoles {
+	// 	for _, role := range contributorRoles {
 
-			contributors := p.Contributors(role)
+	// 		contributors := p.Contributors(role)
 
-			for _, c := range contributors {
+	// 		for _, c := range contributors {
 
-				// only handle records from authority database
-				if c.ID == "" {
-					continue
-				}
+	// 			// only handle records from authority database
+	// 			if c.ID == "" {
+	// 				continue
+	// 			}
 
-				// contributors already handled
-				if cErr, ok := invalidContributors[c.ID]; ok {
-					e := sendErr(stream, fmt.Errorf("[duplicate] unable to fetch person with id '%s' with role '%s' for publication with id '%s': %s", c.ID, role, p.ID, cErr))
+	// 			// contributors already handled
+	// 			if cErr, ok := invalidContributors[c.ID]; ok {
+	// 				e := sendErr(stream, fmt.Errorf("[duplicate] unable to fetch person with id '%s' with role '%s' for publication with id '%s': %s", c.ID, role, p.ID, cErr))
 
-					if e != nil {
-						callbackErr = e
-						// unable to send error: stop the loop
-						return false
-					}
+	// 				if e != nil {
+	// 					callbackErr = e
+	// 					// unable to send error: stop the loop
+	// 					return false
+	// 				}
 
-					// this is not fatal error, so keep going
-					continue
-				}
+	// 				// this is not fatal error, so keep going
+	// 				continue
+	// 			}
 
-				var person *models.Person
-				for _, p := range persons {
-					if p.ID == c.ID {
-						person = p
-						break
-					}
-				}
-				var personErr error
-				if person == nil {
-					personErr = backends.ErrNotFound
-				}
+	// 			var person *models.Person
+	// 			for _, p := range persons {
+	// 				if p.ID == c.ID {
+	// 					person = p
+	// 					break
+	// 				}
+	// 			}
+	// 			var personErr error
+	// 			if person == nil {
+	// 				personErr = backends.ErrNotFound
+	// 			}
 
-				// person is gone from the authority table
-				if personErr != nil {
+	// 			// person is gone from the authority table
+	// 			if personErr != nil {
 
-					invalidContributors[c.ID] = personErr
+	// 				invalidContributors[c.ID] = personErr
 
-					e := sendErr(stream, fmt.Errorf("unable to fetch person with id '%s' with role '%s' for publication with id '%s': %s", c.ID, role, p.ID, personErr))
+	// 				e := sendErr(stream, fmt.Errorf("unable to fetch person with id '%s' with role '%s' for publication with id '%s': %s", c.ID, role, p.ID, personErr))
 
-					if e != nil {
-						callbackErr = e
-						// unable to send error: stop the loop
-						return false
-					}
+	// 				if e != nil {
+	// 					callbackErr = e
+	// 					// unable to send error: stop the loop
+	// 					return false
+	// 				}
 
-					// this is not fatal error, so keep going
-					continue
-				}
+	// 				// this is not fatal error, so keep going
+	// 				continue
+	// 			}
 
-				if c.FirstName != person.FirstName {
-					changes = append(changes, &api.ContributorChange{
-						PublicationId:   p.ID,
-						ContributorId:   c.ID,
-						ContributorRole: role,
-						Attribute:       "contributor.first_name",
-						From:            c.FirstName,
-						To:              person.FirstName,
-					})
-					c.FirstName = person.FirstName
-				}
-				if c.LastName != person.LastName {
-					changes = append(changes, &api.ContributorChange{
-						PublicationId:   p.ID,
-						ContributorId:   c.ID,
-						ContributorRole: role,
-						Attribute:       "contributor.last_name",
-						From:            c.LastName,
-						To:              person.LastName,
-					})
-					c.LastName = person.LastName
-				}
+	// 			if c.FirstName != person.FirstName {
+	// 				changes = append(changes, &api.ContributorChange{
+	// 					PublicationId:   p.ID,
+	// 					ContributorId:   c.ID,
+	// 					ContributorRole: role,
+	// 					Attribute:       "contributor.first_name",
+	// 					From:            c.FirstName,
+	// 					To:              person.FirstName,
+	// 				})
+	// 				c.FirstName = person.FirstName
+	// 			}
+	// 			if c.LastName != person.LastName {
+	// 				changes = append(changes, &api.ContributorChange{
+	// 					PublicationId:   p.ID,
+	// 					ContributorId:   c.ID,
+	// 					ContributorRole: role,
+	// 					Attribute:       "contributor.last_name",
+	// 					From:            c.LastName,
+	// 					To:              person.LastName,
+	// 				})
+	// 				c.LastName = person.LastName
+	// 			}
 
-				if c.FullName != person.FullName {
-					changes = append(changes, &api.ContributorChange{
-						PublicationId:   p.ID,
-						ContributorId:   c.ID,
-						ContributorRole: role,
-						Attribute:       "contributor.full_name",
-						From:            c.FullName,
-						To:              person.FullName,
-					})
-					c.FullName = person.FullName
-				}
+	// 			if c.FullName != person.FullName {
+	// 				changes = append(changes, &api.ContributorChange{
+	// 					PublicationId:   p.ID,
+	// 					ContributorId:   c.ID,
+	// 					ContributorRole: role,
+	// 					Attribute:       "contributor.full_name",
+	// 					From:            c.FullName,
+	// 					To:              person.FullName,
+	// 				})
+	// 				c.FullName = person.FullName
+	// 			}
 
-				if c.ORCID != person.ORCID {
-					changes = append(changes, &api.ContributorChange{
-						PublicationId:   p.ID,
-						ContributorId:   c.ID,
-						ContributorRole: role,
-						Attribute:       "contributor.orcid",
-						From:            c.ORCID,
-						To:              person.ORCID,
-					})
-					c.ORCID = person.ORCID
-				}
+	// 			if c.ORCID != person.ORCID {
+	// 				changes = append(changes, &api.ContributorChange{
+	// 					PublicationId:   p.ID,
+	// 					ContributorId:   c.ID,
+	// 					ContributorRole: role,
+	// 					Attribute:       "contributor.orcid",
+	// 					From:            c.ORCID,
+	// 					To:              person.ORCID,
+	// 				})
+	// 				c.ORCID = person.ORCID
+	// 			}
 
-				if !reflect.DeepEqual(c.UGentID, person.UGentID) {
-					changes = append(changes, &api.ContributorChange{
-						PublicationId:   p.ID,
-						ContributorId:   c.ID,
-						ContributorRole: role,
-						Attribute:       "contributor.ugent_id",
-						From:            strings.Join(c.UGentID, ","),
-						To:              strings.Join(person.UGentID, ","),
-					})
-					c.UGentID = append([]string{}, person.UGentID...)
-				}
+	// 			if !reflect.DeepEqual(c.UGentID, person.UGentID) {
+	// 				changes = append(changes, &api.ContributorChange{
+	// 					PublicationId:   p.ID,
+	// 					ContributorId:   c.ID,
+	// 					ContributorRole: role,
+	// 					Attribute:       "contributor.ugent_id",
+	// 					From:            strings.Join(c.UGentID, ","),
+	// 					To:              strings.Join(person.UGentID, ","),
+	// 				})
+	// 				c.UGentID = append([]string{}, person.UGentID...)
+	// 			}
 
-				oldDeps := make([]string, 0, len(c.Department))
-				for _, dep := range c.Department {
-					oldDeps = append(oldDeps, dep.ID)
-				}
-				sort.Strings(oldDeps)
+	// 			oldDeps := make([]string, 0, len(c.Department))
+	// 			for _, dep := range c.Department {
+	// 				oldDeps = append(oldDeps, dep.ID)
+	// 			}
+	// 			sort.Strings(oldDeps)
 
-				newDeps := make([]string, 0, len(person.Department))
-				for _, dep := range person.Department {
-					newDeps = append(newDeps, dep.ID)
-				}
-				sort.Strings(newDeps)
+	// 			newDeps := make([]string, 0, len(person.Department))
+	// 			for _, dep := range person.Department {
+	// 				newDeps = append(newDeps, dep.ID)
+	// 			}
+	// 			sort.Strings(newDeps)
 
-				if !reflect.DeepEqual(oldDeps, newDeps) {
-					changes = append(changes, &api.ContributorChange{
-						PublicationId:   p.ID,
-						ContributorId:   c.ID,
-						ContributorRole: role,
-						Attribute:       "department",
-						From:            strings.Join(oldDeps, ","),
-						To:              strings.Join(newDeps, ","),
-					})
-					c.Department = make([]models.ContributorDepartment, 0)
-					for _, pd := range person.Department {
-						newDep := models.ContributorDepartment{ID: pd.ID}
-						org, orgErr := orgService.GetOrganization(pd.ID)
-						if orgErr == nil {
-							newDep.Name = org.Name
-						} else {
-							err := sendErr(stream, fmt.Errorf("unable to fetch organization with id '%s' for publication with id '%s': %s", pd.ID, p.ID, orgErr))
-							if err != nil {
-								callbackErr = err
-								// unable to send error: stop the loop
-								return false
-							}
-						}
-						c.Department = append(c.Department, newDep)
-					}
-				}
-			}
-		}
+	// 			if !reflect.DeepEqual(oldDeps, newDeps) {
+	// 				changes = append(changes, &api.ContributorChange{
+	// 					PublicationId:   p.ID,
+	// 					ContributorId:   c.ID,
+	// 					ContributorRole: role,
+	// 					Attribute:       "department",
+	// 					From:            strings.Join(oldDeps, ","),
+	// 					To:              strings.Join(newDeps, ","),
+	// 				})
+	// 				c.Department = make([]models.ContributorDepartment, 0)
+	// 				for _, pd := range person.Department {
+	// 					newDep := models.ContributorDepartment{ID: pd.ID}
+	// 					org, orgErr := orgService.GetOrganization(pd.ID)
+	// 					if orgErr == nil {
+	// 						newDep.Name = org.Name
+	// 					} else {
+	// 						err := sendErr(stream, fmt.Errorf("unable to fetch organization with id '%s' for publication with id '%s': %s", pd.ID, p.ID, orgErr))
+	// 						if err != nil {
+	// 							callbackErr = err
+	// 							// unable to send error: stop the loop
+	// 							return false
+	// 						}
+	// 					}
+	// 					c.Department = append(c.Department, newDep)
+	// 				}
+	// 			}
+	// 		}
+	// 	}
 
-		if !req.Noop {
-			for _, change := range changes {
-				change.Executed = true
-			}
-		}
+	// 	if !req.Noop {
+	// 		for _, change := range changes {
+	// 			change.Executed = true
+	// 		}
+	// 	}
 
-		if err := p.Validate(); err != nil {
+	// 	if err := p.Validate(); err != nil {
 
-			for _, validationErr := range err.(validation.Errors) {
-				formattedErr := fmt.Errorf("validation failed for publication %s: %w", p.ID, validationErr)
-				if sErr := sendErr(stream, formattedErr); sErr != nil {
-					callbackErr = sErr
-					// unable to send error: stop the loop
-					return false
-				}
-			}
+	// 		for _, validationErr := range err.(validation.Errors) {
+	// 			formattedErr := fmt.Errorf("validation failed for publication %s: %w", p.ID, validationErr)
+	// 			if sErr := sendErr(stream, formattedErr); sErr != nil {
+	// 				callbackErr = sErr
+	// 				// unable to send error: stop the loop
+	// 				return false
+	// 			}
+	// 		}
 
-			// validation failed: continue to next record
-			return true
+	// 		// validation failed: continue to next record
+	// 		return true
 
-		}
+	// 	}
 
-		if !req.Noop && len(changes) > 0 {
+	// 	if !req.Noop && len(changes) > 0 {
 
-			err := s.services.Repository.UpdatePublication(p.SnapshotID, p, nil)
+	// 		err := s.services.Repository.UpdatePublication(p.SnapshotID, p, nil)
 
-			if err != nil {
+	// 		if err != nil {
 
-				// unable to send error: stop the loop
-				e := sendErr(stream, fmt.Errorf("failed to update publication[snapshot_id: %s, id: %s] : %v", p.SnapshotID, p.ID, err))
-				if e != nil {
-					callbackErr = err
-					return false
-				}
+	// 			// unable to send error: stop the loop
+	// 			e := sendErr(stream, fmt.Errorf("failed to update publication[snapshot_id: %s, id: %s] : %v", p.SnapshotID, p.ID, err))
+	// 			if e != nil {
+	// 				callbackErr = err
+	// 				return false
+	// 			}
 
-				// update failed: continue to next record
-				return true
+	// 			// update failed: continue to next record
+	// 			return true
 
-			}
-		}
+	// 		}
+	// 	}
 
-		// validation, update and indexation ok: list and send all changes to the client
-		for _, change := range changes {
-			// unable to send message: stop the loop
-			if err := stream.Send(&api.SyncPublicationContributorsResponse{
-				Response: &api.SyncPublicationContributorsResponse_ContributorChange{
-					ContributorChange: change,
-				},
-			}); err != nil {
-				callbackErr = err
-				return false
-			}
-		}
+	// 	// validation, update and indexation ok: list and send all changes to the client
+	// 	for _, change := range changes {
+	// 		// unable to send message: stop the loop
+	// 		if err := stream.Send(&api.SyncPublicationContributorsResponse{
+	// 			Response: &api.SyncPublicationContributorsResponse_ContributorChange{
+	// 				ContributorChange: change,
+	// 			},
+	// 		}); err != nil {
+	// 			callbackErr = err
+	// 			return false
+	// 		}
+	// 	}
 
-		// record processed successfully
-		return true
-	})
+	// 	// record processed successfully
+	// 	return true
+	// })
 
-	if startErr != nil {
-		return status.Errorf(codes.Internal, "unable to start command: %v", startErr)
-	}
+	// if startErr != nil {
+	// 	return status.Errorf(codes.Internal, "unable to start command: %v", startErr)
+	// }
 
-	if callbackErr != nil {
-		return status.Errorf(codes.Internal, "unable to complete command: %s", callbackErr.Error())
-	}
+	// if callbackErr != nil {
+	// 	return status.Errorf(codes.Internal, "unable to complete command: %s", callbackErr.Error())
+	// }
 
 	return nil
 }

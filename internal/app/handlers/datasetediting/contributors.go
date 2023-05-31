@@ -171,10 +171,7 @@ func (h *Handler) AddContributor(w http.ResponseWriter, r *http.Request, ctx Con
 		}
 	}
 
-	c := &models.Contributor{
-		FirstName: b.FirstName,
-		LastName:  b.LastName,
-	}
+	c := models.ContributorFromFirstLastName(b.FirstName, b.LastName)
 
 	suggestURL := h.PathFor("dataset_add_contributor_suggest", "id", ctx.Dataset.ID, "role", b.Role).String()
 
@@ -209,10 +206,7 @@ func (h *Handler) AddContributorSuggest(w http.ResponseWriter, r *http.Request, 
 		}
 	}
 
-	c := &models.Contributor{
-		FirstName: b.FirstName,
-		LastName:  b.LastName,
-	}
+	c := models.ContributorFromFirstLastName(b.FirstName, b.LastName)
 
 	render.Partial(w, "dataset/add_contributor_suggest", YieldAddContributorSuggest{
 		Context:     ctx,
@@ -230,7 +224,7 @@ func (h *Handler) ConfirmCreateContributor(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	c := &models.Contributor{}
+	var c *models.Contributor
 	active := false
 	if b.ID != "" {
 		newC, newP, err := h.generateContributorFromPersonId(b.ID)
@@ -241,8 +235,7 @@ func (h *Handler) ConfirmCreateContributor(w http.ResponseWriter, r *http.Reques
 		c = newC
 		active = newP.Active
 	} else {
-		c.FirstName = b.FirstName
-		c.LastName = b.LastName
+		c = models.ContributorFromFirstLastName(b.FirstName, b.LastName)
 	}
 
 	render.Layout(w, "refresh_modal", "dataset/confirm_create_contributor", YieldConfirmCreateContributor{
@@ -262,7 +255,7 @@ func (h *Handler) CreateContributor(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	c := &models.Contributor{}
+	var c *models.Contributor
 	active := false
 	if b.ID != "" {
 		newC, newP, err := h.generateContributorFromPersonId(b.ID)
@@ -273,8 +266,7 @@ func (h *Handler) CreateContributor(w http.ResponseWriter, r *http.Request, ctx 
 		c = newC
 		active = newP.Active
 	} else {
-		c.FirstName = b.FirstName
-		c.LastName = b.LastName
+		c = models.ContributorFromFirstLastName(b.FirstName, b.LastName)
 	}
 
 	ctx.Dataset.AddContributor(b.Role, c)
@@ -485,7 +477,7 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	c := &models.Contributor{}
+	var c *models.Contributor
 	active := false
 	if b.ID != "" {
 		newC, newP, err := h.generateContributorFromPersonId(b.ID)
@@ -497,8 +489,7 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 		c = newC
 		active = newP.Active
 	} else {
-		c.FirstName = b.FirstName
-		c.LastName = b.LastName
+		c = models.ContributorFromFirstLastName(b.FirstName, b.LastName)
 	}
 
 	if err := ctx.Dataset.SetContributor(b.Role, b.Position, c); err != nil {
@@ -746,20 +737,6 @@ func (h *Handler) generateContributorFromPersonId(id string) (*models.Contributo
 	if err != nil {
 		return nil, nil, err
 	}
-	c := &models.Contributor{}
-	c.ID = p.ID
-	c.FirstName = p.FirstName
-	c.LastName = p.LastName
-	c.FullName = p.FullName
-	c.UGentID = p.UGentID
-	c.ORCID = p.ORCID
-	for _, pd := range p.Department {
-		newDep := models.ContributorDepartment{ID: pd.ID}
-		org, orgErr := h.OrganizationService.GetOrganization(pd.ID)
-		if orgErr == nil {
-			newDep.Name = org.Name
-		}
-		c.Department = append(c.Department, newDep)
-	}
+	c := models.ContributorFromPerson(p)
 	return c, p, nil
 }

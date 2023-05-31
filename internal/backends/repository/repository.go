@@ -175,7 +175,7 @@ func (s *Repository) SavePublication(p *models.Publication, u *models.User) erro
 		p.User = nil
 	}
 
-	// TODO move outside of store
+	// TODO move outside of store?
 	p = publication.DefaultPipeline.Process(p)
 
 	if err := p.Validate(); err != nil {
@@ -364,7 +364,7 @@ func (s *Repository) EachPublicationSnapshot(fn func(*models.Publication) bool) 
 	return c.Err()
 }
 
-// TODO add handle with a listener
+// TODO add handle with a listener, then this method isn't needed anymore
 func (s *Repository) EachPublicationWithoutHandle(fn func(*models.Publication) bool) error {
 	sql := `
 		SELECT * FROM publications WHERE date_until IS NULL AND
