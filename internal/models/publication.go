@@ -979,7 +979,7 @@ func (p *Publication) Validate() error {
 	if p.Status == "public" && !p.Legacy && p.UsesAuthor() && !p.Extern {
 		var hasUgentAuthors bool = false
 		for _, a := range p.Author {
-			if a.ID != "" {
+			if a.PersonID != "" {
 				hasUgentAuthors = true
 				break
 			}
@@ -1003,7 +1003,7 @@ func (p *Publication) Validate() error {
 	if p.Status == "public" && !p.Legacy && p.UsesEditor() && !p.UsesAuthor() && !p.Extern {
 		var hasUgentEditors bool = false
 		for _, a := range p.Editor {
-			if a.ID != "" {
+			if a.PersonID != "" {
 				hasUgentEditors = true
 				break
 			}

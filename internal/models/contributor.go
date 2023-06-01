@@ -5,7 +5,7 @@ import (
 )
 
 type ExternalPerson struct {
-	Name      string `json:"name,omitempty"`
+	FullName  string `json:"name,omitempty"`
 	FirstName string `json:"first_name,omitempty"`
 	LastName  string `json:"last_name,omitempty"`
 }
@@ -27,38 +27,46 @@ func ContributorFromPerson(p *Person) *Contributor {
 func ContributorFromFirstLastName(fn, ln string) *Contributor {
 	return &Contributor{
 		ExternalPerson: &ExternalPerson{
-			Name:      fn + " " + ln,
+			FullName:  fn + " " + ln,
 			FirstName: fn,
 			LastName:  ln,
 		},
 	}
 }
 
+func (c *Contributor) Name() string {
+	if c.Person != nil {
+		return c.Person.FullName
+	}
+	if c.ExternalPerson != nil {
+		return c.ExternalPerson.FullName
+	}
+	return ""
+}
+
+func (c *Contributor) FirstName() string {
+	if c.Person != nil {
+		return c.Person.FirstName
+	}
+	if c.ExternalPerson != nil {
+		return c.ExternalPerson.FirstName
+	}
+	return ""
+}
+
+func (c *Contributor) LastName() string {
+	if c.Person != nil {
+		return c.Person.LastName
+	}
+	if c.ExternalPerson != nil {
+		return c.ExternalPerson.LastName
+	}
+	return ""
+}
+
 func (c *Contributor) Validate() (errs validation.Errors) {
 	return nil
 }
-
-// func (c *Contributor) SetPerson(p *Person) {
-// 	c.ExternalPerson = nil
-// 	c.PersonID = p.ID
-// 	c.Person = p
-// }
-
-// func (c *Contributor) SetExternalPerson(p *ExternalPerson) {
-// 	c.ExternalPerson = p
-// 	c.PersonID = ""
-// 	c.Person = nil
-// }
-
-// func (c *Contributor) Name() string {
-// 	if c.Person != nil {
-// 		return c.Person.FullName
-// 	}
-// 	if c.ExternalPerson != nil {
-// 		return c.ExternalPerson.FullName
-// 	}
-// 	return ""
-// }
 
 // type ContributorDepartment struct {
 // 	ID   string `json:"id"`

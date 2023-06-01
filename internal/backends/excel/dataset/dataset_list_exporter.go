@@ -85,32 +85,24 @@ func (x *xlsx) datasetToRow(ds *models.Dataset) []string {
 		contributors := ds.Contributors(role)
 		{
 			values := []string{}
-			for _, contributor := range contributors {
-				fullName := contributor.FullName
-				if fullName == "" {
-					fullName = contributor.FirstName + " " + contributor.LastName
-				}
-				values = append(values, fullName)
+			for _, c := range contributors {
+				values = append(values, c.Name())
 			}
 			m[role] = strings.Join(values, sep)
 		}
 		{
 			values := []string{}
-			for _, contributor := range contributors {
-				if len(contributor.UGentID) == 0 {
+			for _, c := range contributors {
+				if c.Person == nil || len(c.Person.UGentID) == 0 {
 					continue
 				}
 				group := ""
-				if len(contributor.Department) > 0 {
-					group = "@" + contributor.Department[0].ID
+				if len(c.Person.Department) > 0 {
+					group = "@" + c.Person.Department[0].ID
 				}
 				//full_name (<ugent_id>)
 				//full_name (<ugent_id>@<department.0.id>)
-				fullName := contributor.FullName
-				if fullName == "" {
-					fullName = contributor.FirstName + " " + contributor.LastName
-				}
-				val := fmt.Sprintf("%s (%s%s)", fullName, contributor.UGentID[0], group)
+				val := fmt.Sprintf("%s (%s%s)", c.Name(), c.Person.UGentID[0], group)
 				values = append(values, val)
 			}
 			m["ugent_"+role] = strings.Join(values, sep)

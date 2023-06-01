@@ -448,7 +448,7 @@ func (d *Dataset) Validate() error {
 	if d.Status == "public" {
 		var hasUgentAuthors bool = false
 		for _, a := range d.Author {
-			if a.ID != "" {
+			if a.PersonID != "" {
 				hasUgentAuthors = true
 				break
 			}

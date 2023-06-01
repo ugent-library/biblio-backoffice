@@ -34,17 +34,17 @@ func (u *User) CanViewPublication(p *Publication) bool {
 		return true
 	}
 	for _, c := range p.Author {
-		if c.ID == u.ID {
+		if c.PersonID == u.ID {
 			return true
 		}
 	}
 	for _, c := range p.Editor {
-		if c.ID == u.ID {
+		if c.PersonID == u.ID {
 			return true
 		}
 	}
 	for _, c := range p.Supervisor {
-		if c.ID == u.ID {
+		if c.PersonID == u.ID {
 			return true
 		}
 	}
@@ -68,17 +68,17 @@ func (u *User) CanEditPublication(p *Publication) bool {
 		return true
 	}
 	for _, c := range p.Author {
-		if c.ID == u.ID {
+		if c.PersonID == u.ID {
 			return true
 		}
 	}
 	for _, c := range p.Editor {
-		if c.ID == u.ID {
+		if c.PersonID == u.ID {
 			return true
 		}
 	}
 	for _, c := range p.Supervisor {
-		if c.ID == u.ID {
+		if c.PersonID == u.ID {
 			return true
 		}
 	}
@@ -112,12 +112,12 @@ func (u *User) CanViewDataset(d *Dataset) bool {
 		return true
 	}
 	for _, c := range d.Author {
-		if c.ID == u.ID {
+		if c.PersonID == u.ID {
 			return true
 		}
 	}
 	for _, c := range d.Contributor {
-		if c.ID == u.ID {
+		if c.PersonID == u.ID {
 			return true
 		}
 	}
@@ -138,12 +138,12 @@ func (u *User) CanEditDataset(d *Dataset) bool {
 		return true
 	}
 	for _, c := range d.Author {
-		if c.ID == u.ID {
+		if c.PersonID == u.ID {
 			return true
 		}
 	}
 	for _, c := range d.Contributor {
-		if c.ID == u.ID {
+		if c.PersonID == u.ID {
 			return true
 		}
 	}

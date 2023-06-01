@@ -1,8 +1,6 @@
 package publication
 
 import (
-	"strings"
-
 	"github.com/ugent-library/biblio-backoffice/internal/models"
 )
 
@@ -30,31 +28,11 @@ func (pl Pipeline) Func() PipelineFunc {
 }
 
 var DefaultPipeline = NewPipeline(
-	EnsureFullName,
 	ensureHasBeenPublic,
 )
 
 var PublishPipeline = NewPipeline()
 var UnpublishPipeline = NewPipeline()
-
-func EnsureFullName(p *models.Publication) *models.Publication {
-	for _, c := range p.Author {
-		if c.FullName == "" {
-			c.FullName = strings.Join([]string{c.FirstName, c.LastName}, " ")
-		}
-	}
-	for _, c := range p.Editor {
-		if c.FullName == "" {
-			c.FullName = strings.Join([]string{c.FirstName, c.LastName}, " ")
-		}
-	}
-	for _, c := range p.Supervisor {
-		if c.FullName == "" {
-			c.FullName = strings.Join([]string{c.FirstName, c.LastName}, " ")
-		}
-	}
-	return p
-}
 
 func ensureHasBeenPublic(p *models.Publication) *models.Publication {
 	if p.Status == "public" && !p.HasBeenPublic {

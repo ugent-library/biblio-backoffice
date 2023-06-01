@@ -764,14 +764,14 @@ func (s *server) TransferPublications(req *api.TransferPublicationsRequest, stre
 		if p.Creator != nil {
 			if p.Creator.ID == source {
 				p.Creator = &models.PublicationUser{
-					ID:   c.ID,
-					Name: c.FullName,
+					ID:   c.PersonID,
+					Name: c.Person.FullName,
 				}
 
-				if len(c.Department) > 0 {
-					org, orgErr := s.services.OrganizationService.GetOrganization(c.Department[0].ID)
+				if len(c.Person.Department) > 0 {
+					org, orgErr := s.services.OrganizationService.GetOrganization(c.Person.Department[0].ID)
 					if orgErr != nil {
-						callbackErr = fmt.Errorf("p: %s: s: %s ::: creator: could not fetch department for %s: %v", p.ID, p.SnapshotID, c.ID, orgErr)
+						callbackErr = fmt.Errorf("p: %s: s: %s ::: creator: could not fetch department for %s: %v", p.ID, p.SnapshotID, c.PersonID, orgErr)
 						return false
 					} else {
 						p.AddDepartmentByOrg(org)
@@ -814,7 +814,7 @@ func (s *server) TransferPublications(req *api.TransferPublicationsRequest, stre
 
 				if err := stream.Send(&api.TransferPublicationsResponse{
 					Response: &api.TransferPublicationsResponse_Message{
-						Message: fmt.Sprintf("p: %s: s: %s ::: editor: %s -> %s", p.ID, p.SnapshotID, e.ID, c.ID),
+						Message: fmt.Sprintf("p: %s: s: %s ::: editor: %s -> %s", p.ID, p.SnapshotID, e.PersonID, c.PersonID),
 					},
 				}); err != nil {
 					callbackErr = err
