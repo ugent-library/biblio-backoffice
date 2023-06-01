@@ -22,6 +22,8 @@ type Repository struct {
 	datasetStore        *snapstore.Store
 	publicationMutators map[string]PublicationMutator
 	datasetMutators     map[string]DatasetMutator
+	publicationLoaders  []PublicationVisitor
+	datasetLoaders      []DatasetVisitor
 	opts                snapstore.Options
 }
 
@@ -31,12 +33,16 @@ type Config struct {
 	DatasetListeners     []DatasetListener
 	PublicationMutators  map[string]PublicationMutator
 	DatasetMutators      map[string]DatasetMutator
+	PublicationLoaders   []PublicationVisitor
+	DatasetLoaders       []DatasetVisitor
 }
 
 type PublicationListener = func(*models.Publication)
 type DatasetListener = func(*models.Dataset)
 type PublicationMutator = func(*models.Publication, []string) error
 type DatasetMutator = func(*models.Dataset, []string) error
+type PublicationVisitor = func(*models.Publication) error
+type DatasetVisitor = func(*models.Dataset) error
 
 func New(c Config) (*Repository, error) {
 	db, err := pgxpool.Connect(context.Background(), c.DSN)
@@ -56,6 +62,8 @@ func New(c Config) (*Repository, error) {
 		datasetStore:        client.Store("datasets"),
 		publicationMutators: c.PublicationMutators,
 		datasetMutators:     c.DatasetMutators,
+		publicationLoaders:  c.PublicationLoaders,
+		datasetLoaders:      c.DatasetLoaders,
 	}
 
 	for _, fn := range c.PublicationListeners {
@@ -93,6 +101,8 @@ func (s *Repository) Transaction(ctx context.Context, fn func(backends.Repositor
 			datasetStore:        s.datasetStore,
 			publicationMutators: s.publicationMutators,
 			datasetMutators:     s.datasetMutators,
+			publicationLoaders:  s.publicationLoaders,
+			datasetLoaders:      s.datasetLoaders,
 			opts:                opts,
 		})
 	})
@@ -106,7 +116,7 @@ func (s *Repository) GetPublication(id string) (*models.Publication, error) {
 		}
 		return nil, err
 	}
-	p, err := snapshotToPublication(snap)
+	p, err := s.snapshotToPublication(snap)
 	if err != nil {
 		return nil, err
 	}
@@ -125,7 +135,7 @@ func (s *Repository) GetPublications(ids []string) ([]*models.Publication, error
 		if err != nil {
 			return nil, err
 		}
-		p, err := snapshotToPublication(snap)
+		p, err := s.snapshotToPublication(snap)
 		if err != nil {
 			return nil, err
 		}
@@ -150,7 +160,7 @@ func (s *Repository) ImportPublication(p *models.Publication) error {
 	if p.DateUntil != nil {
 		return fmt.Errorf("unable to import old publication %s: date_until should be nil", p.ID)
 	}
-	snap, err := publicationToSnapshot(p)
+	snap, err := s.publicationToSnapshot(p)
 	if err != nil {
 		return err
 	}
@@ -279,7 +289,7 @@ func (s *Repository) PublicationsAfter(t time.Time, limit, offset int) (int, []*
 		if err != nil {
 			return 0, nil, err
 		}
-		p, err := snapshotToPublication(snap)
+		p, err := s.snapshotToPublication(snap)
 		if err != nil {
 			return 0, nil, err
 		}
@@ -309,7 +319,7 @@ func (s *Repository) PublicationsBetween(t1, t2 time.Time, fn func(*models.Publi
 		if err != nil {
 			return err
 		}
-		p, err := snapshotToPublication(snap)
+		p, err := s.snapshotToPublication(snap)
 		if err != nil {
 			return err
 		}
@@ -331,7 +341,7 @@ func (s *Repository) EachPublication(fn func(*models.Publication) bool) error {
 		if err != nil {
 			return err
 		}
-		p, err := snapshotToPublication(snap)
+		p, err := s.snapshotToPublication(snap)
 		if err != nil {
 			return err
 		}
@@ -353,7 +363,7 @@ func (s *Repository) EachPublicationSnapshot(fn func(*models.Publication) bool) 
 		if err != nil {
 			return err
 		}
-		p, err := snapshotToPublication(snap)
+		p, err := s.snapshotToPublication(snap)
 		if err != nil {
 			return err
 		}
@@ -381,7 +391,7 @@ func (s *Repository) EachPublicationWithoutHandle(fn func(*models.Publication) b
 		if err != nil {
 			return err
 		}
-		p, err := snapshotToPublication(snap)
+		p, err := s.snapshotToPublication(snap)
 		if err != nil {
 			return err
 		}
@@ -403,7 +413,7 @@ func (s *Repository) PublicationHistory(id string, fn func(*models.Publication) 
 		if err != nil {
 			return err
 		}
-		p, err := snapshotToPublication(snap)
+		p, err := s.snapshotToPublication(snap)
 		if err != nil {
 			return err
 		}
@@ -437,7 +447,7 @@ func (s *Repository) UpdatePublicationEmbargoes() (int, error) {
 		if err != nil {
 			return n, err
 		}
-		p, err := snapshotToPublication(snap)
+		p, err := s.snapshotToPublication(snap)
 		if err != nil {
 			return n, err
 		}
@@ -475,7 +485,7 @@ func (s *Repository) GetDataset(id string) (*models.Dataset, error) {
 		}
 		return nil, err
 	}
-	d, err := snapshotToDataset(snap)
+	d, err := s.snapshotToDataset(snap)
 	if err != nil {
 		return nil, err
 	}
@@ -494,7 +504,7 @@ func (s *Repository) GetDatasets(ids []string) ([]*models.Dataset, error) {
 		if err != nil {
 			return nil, err
 		}
-		d, err := snapshotToDataset(snap)
+		d, err := s.snapshotToDataset(snap)
 		if err != nil {
 			return nil, err
 		}
@@ -519,7 +529,7 @@ func (s *Repository) ImportDataset(d *models.Dataset) error {
 	if d.DateUntil != nil {
 		return fmt.Errorf("unable to import dataset %s: date_until should be nil", d.ID)
 	}
-	snap, err := datasetToSnapshot(d)
+	snap, err := s.datasetToSnapshot(d)
 	if err != nil {
 		return err
 	}
@@ -638,7 +648,7 @@ func (s *Repository) DatasetsAfter(t time.Time, limit, offset int) (int, []*mode
 		if err != nil {
 			return 0, nil, err
 		}
-		p, err := snapshotToDataset(snap)
+		p, err := s.snapshotToDataset(snap)
 		if err != nil {
 			return 0, nil, err
 		}
@@ -668,7 +678,7 @@ func (s *Repository) DatasetsBetween(t1, t2 time.Time, fn func(*models.Dataset) 
 		if err != nil {
 			return err
 		}
-		p, err := snapshotToDataset(snap)
+		p, err := s.snapshotToDataset(snap)
 		if err != nil {
 			return err
 		}
@@ -690,7 +700,7 @@ func (s *Repository) EachDataset(fn func(*models.Dataset) bool) error {
 		if err != nil {
 			return err
 		}
-		d, err := snapshotToDataset(snap)
+		d, err := s.snapshotToDataset(snap)
 		if err != nil {
 			return err
 		}
@@ -712,7 +722,7 @@ func (s *Repository) EachDatasetSnapshot(fn func(*models.Dataset) bool) error {
 		if err != nil {
 			return err
 		}
-		d, err := snapshotToDataset(snap)
+		d, err := s.snapshotToDataset(snap)
 		if err != nil {
 			return err
 		}
@@ -739,7 +749,7 @@ func (s *Repository) EachDatasetWithoutHandle(fn func(*models.Dataset) bool) err
 		if err != nil {
 			return err
 		}
-		d, err := snapshotToDataset(snap)
+		d, err := s.snapshotToDataset(snap)
 		if err != nil {
 			return err
 		}
@@ -761,7 +771,7 @@ func (s *Repository) DatasetHistory(id string, fn func(*models.Dataset) bool) er
 		if err != nil {
 			return err
 		}
-		d, err := snapshotToDataset(snap)
+		d, err := s.snapshotToDataset(snap)
 		if err != nil {
 			return err
 		}
@@ -793,7 +803,7 @@ func (s *Repository) UpdateDatasetEmbargoes() (int, error) {
 		if err != nil {
 			return n, err
 		}
-		d, err := snapshotToDataset(snap)
+		d, err := s.snapshotToDataset(snap)
 		if err != nil {
 			return n, err
 		}
@@ -916,7 +926,7 @@ func (s *Repository) PurgeDataset(id string) error {
 	return s.datasetStore.Purge(id, s.opts)
 }
 
-func snapshotToPublication(snap *snapstore.Snapshot) (*models.Publication, error) {
+func (s *Repository) snapshotToPublication(snap *snapstore.Snapshot) (*models.Publication, error) {
 	p := &models.Publication{}
 	if err := snap.Scan(p); err != nil {
 		return nil, err
@@ -924,10 +934,15 @@ func snapshotToPublication(snap *snapstore.Snapshot) (*models.Publication, error
 	p.SnapshotID = snap.SnapshotID
 	p.DateFrom = snap.DateFrom
 	p.DateUntil = snap.DateUntil
+	for _, fn := range s.publicationLoaders {
+		if err := fn(p); err != nil {
+			return nil, err
+		}
+	}
 	return p, nil
 }
 
-func publicationToSnapshot(p *models.Publication) (*snapstore.Snapshot, error) {
+func (s *Repository) publicationToSnapshot(p *models.Publication) (*snapstore.Snapshot, error) {
 	snap := &snapstore.Snapshot{}
 	data, err := json.Marshal(p)
 	if err != nil {
@@ -941,7 +956,7 @@ func publicationToSnapshot(p *models.Publication) (*snapstore.Snapshot, error) {
 	return snap, nil
 }
 
-func snapshotToDataset(snap *snapstore.Snapshot) (*models.Dataset, error) {
+func (s *Repository) snapshotToDataset(snap *snapstore.Snapshot) (*models.Dataset, error) {
 	d := &models.Dataset{}
 	if err := snap.Scan(d); err != nil {
 		return nil, err
@@ -949,10 +964,15 @@ func snapshotToDataset(snap *snapstore.Snapshot) (*models.Dataset, error) {
 	d.SnapshotID = snap.SnapshotID
 	d.DateFrom = snap.DateFrom
 	d.DateUntil = snap.DateUntil
+	for _, fn := range s.datasetLoaders {
+		if err := fn(d); err != nil {
+			return nil, err
+		}
+	}
 	return d, nil
 }
 
-func datasetToSnapshot(d *models.Dataset) (*snapstore.Snapshot, error) {
+func (s *Repository) datasetToSnapshot(d *models.Dataset) (*snapstore.Snapshot, error) {
 	snap := &snapstore.Snapshot{}
 	data, err := json.Marshal(d)
 	if err != nil {

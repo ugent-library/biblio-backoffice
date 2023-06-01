@@ -91,17 +91,19 @@ func newServices() *backends.Services {
 
 	logger := newLogger()
 
+	personService := caching.NewPersonService(authorityClient)
+	organizationService := caching.NewOrganizationService(authorityClient)
 	projectService := caching.NewProjectService(authorityClient)
 
 	return &backends.Services{
 		FileStore:                 newFileStore(),
 		ORCIDSandbox:              orcidConfig.Sandbox,
 		ORCIDClient:               orcidClient,
-		Repository:                newRepository(logger, projectService),
+		Repository:                newRepository(logger, personService, projectService),
 		DatasetSearchService:      newDatasetSearchService(),
 		PublicationSearchService:  newPublicationSearchService(),
-		OrganizationService:       caching.NewOrganizationService(authorityClient),
-		PersonService:             caching.NewPersonService(authorityClient),
+		OrganizationService:       organizationService,
+		PersonService:             personService,
 		ProjectService:            projectService,
 		UserService:               caching.NewUserService(authorityClient),
 		OrganizationSearchService: authorityClient,
@@ -166,7 +168,7 @@ func newLogger() *zap.SugaredLogger {
 	return sugar
 }
 
-func newRepository(logger *zap.SugaredLogger, projectService backends.ProjectService) backends.Repository {
+func newRepository(logger *zap.SugaredLogger, personService backends.PersonService, projectService backends.ProjectService) backends.Repository {
 	ctx := context.Background()
 
 	bp := newPublicationBulkIndexerService(logger)
@@ -192,6 +194,42 @@ func newRepository(logger *zap.SugaredLogger, projectService backends.ProjectSer
 						logger.Errorf("error indexing dataset %s: %w", d.ID, err)
 					}
 				}
+			},
+		},
+
+		PublicationLoaders: []repository.PublicationVisitor{
+			func(p *models.Publication) error {
+				for _, role := range []string{"author", "editor", "supervisor"} {
+					for _, c := range p.Contributors(role) {
+						if c.PersonID == "" {
+							continue
+						}
+						person, err := personService.GetPerson(c.PersonID)
+						if err != nil {
+							return err
+						}
+						c.Person = person
+					}
+				}
+				return nil
+			},
+		},
+
+		DatasetLoaders: []repository.DatasetVisitor{
+			func(p *models.Dataset) error {
+				for _, role := range []string{"author", "contributor"} {
+					for _, c := range p.Contributors(role) {
+						if c.PersonID == "" {
+							continue
+						}
+						person, err := personService.GetPerson(c.PersonID)
+						if err != nil {
+							return err
+						}
+						c.Person = person
+					}
+				}
+				return nil
 			},
 		},
 
