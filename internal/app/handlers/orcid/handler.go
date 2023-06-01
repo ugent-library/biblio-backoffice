@@ -245,13 +245,13 @@ func publicationToORCID(p *models.Publication) *orcid.Work {
 	for _, role := range []string{"author", "editor"} {
 		for _, c := range p.Contributors(role) {
 			wc := orcid.Contributor{
-				CreditName: orcid.String(strings.Join([]string{c.FirstName, c.LastName}, " ")),
+				CreditName: orcid.String(c.Name()),
 				Attributes: &orcid.ContributorAttributes{
 					Role: strings.ToUpper(role),
 				},
 			}
-			if c.ORCID != "" {
-				wc.ORCID = &orcid.URI{Path: c.ORCID}
+			if c.Person != nil && c.Person.ORCID != "" {
+				wc.ORCID = &orcid.URI{Path: c.Person.ORCID}
 			}
 			if w.Contributors == nil {
 				w.Contributors = &orcid.Contributors{}

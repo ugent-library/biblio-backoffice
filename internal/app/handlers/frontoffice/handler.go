@@ -253,22 +253,12 @@ type Hits struct {
 }
 
 func mapContributor(c *models.Contributor) *Person {
-	p := &Person{
-		ID:        c.ID,
-		FirstName: c.FirstName,
-		LastName:  c.LastName,
+	return &Person{
+		ID:        c.PersonID,
+		FirstName: c.FirstName(),
+		LastName:  c.LastName(),
+		Name:      c.Name(),
 	}
-	nameParts := make([]string, 0, 2)
-	if c.FirstName != "" {
-		nameParts = append(nameParts, c.FirstName)
-	}
-	if c.LastName != "" {
-		nameParts = append(nameParts, c.LastName)
-	}
-	if len(nameParts) > 0 {
-		p.Name = strings.Join(nameParts, " ")
-	}
-	return p
 }
 
 func (h *Handler) mapPublication(p *models.Publication) *Publication {
