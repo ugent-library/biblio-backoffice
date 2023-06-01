@@ -7,6 +7,7 @@ var (
 	ENA            = &ENAType{}
 	Ensembl        = &EnsemblType{}
 	Handle         = &HandleType{}
+	PubMedID       = &PubMedIDType{}
 	URN            = &URNType{}
 	WebOfScienceID = &WebOfScienceIDType{}
 )
@@ -18,6 +19,7 @@ var types = map[string]Type{
 	"ENA":            ENA,
 	"Ensembl":        Ensembl,
 	"Handle":         Handle,
+	"PubMedID":       PubMedID,
 	"URN":            URN,
 	"WebOfScienceID": WebOfScienceID,
 }
@@ -28,6 +30,10 @@ type Type interface {
 	Resolve(string) string
 }
 
-func GetType(name string) Type {
-	return types[name]
+func Resolve(name, id string) string {
+	t, ok := types[name]
+	if !ok {
+		return ""
+	}
+	return t.Resolve(id)
 }

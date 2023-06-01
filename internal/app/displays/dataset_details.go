@@ -11,26 +11,11 @@ import (
 
 func DatasetDetails(user *models.User, l *locale.Locale, d *models.Dataset) *display.Display {
 	var identifierType, identifier string
-	var identifierField display.Field
 	for _, key := range vocabularies.Map["dataset_identifier_types"] {
 		if val := d.Identifiers.Get(key); val != "" {
 			identifierType = key
 			identifier = val
 			break
-		}
-	}
-	if it := identifiers.GetType(identifierType); it != nil {
-		identifierField = &display.Link{
-			Label:    l.T("builder.identifier"),
-			Value:    identifier,
-			URL:      it.Resolve(identifier),
-			Required: true,
-		}
-	} else {
-		identifierField = &display.Text{
-			Label:    l.T("builder.identifier"),
-			Value:    identifier,
-			Required: true,
 		}
 	}
 
@@ -47,7 +32,12 @@ func DatasetDetails(user *models.User, l *locale.Locale, d *models.Dataset) *dis
 				Value:    identifierType,
 				Required: true,
 			},
-			identifierField,
+			&display.Link{
+				Label:    l.T("builder.identifier"),
+				Value:    identifier,
+				URL:      identifiers.Resolve(identifierType, identifier),
+				Required: true,
+			},
 		).
 		AddSection(
 			&display.Text{
