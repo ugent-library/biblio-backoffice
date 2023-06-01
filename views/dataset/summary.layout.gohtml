@@ -74,18 +74,17 @@
                             {{$type}}
                         </span>
                     </span>
-                {{end}}
-                {{if index .Dataset.Identifiers "DOI"}}
-                <span class="c-meta-item">
-                    <span class="c-body-small text-muted">
-                        <a class="c-link c-link-muted" target="_blank" href="{{resolveDOI (.Dataset.Identifiers.Get "DOI")}}">
-                            <span class="text-decoration-underline"> View in external repository</span>
-                            <i class="if if--small if-external-link"></i>
-                        </a>
+                    <span class="c-meta-item">
+                        <span class="c-body-small text-muted">
+                            <a class="c-link c-link-muted" target="_blank" href="{{resolveIdentifier $type (index $vals 0)}}">
+                                <span class="text-decoration-underline"> View in external repository</span>
+                                <i class="if if--small if-external-link"></i>
+                            </a>
+                        </span>
                     </span>
-                </span>
+                    {{break}}
                 {{end}}
-        </div>
+            </div>
 
             {{with .Dataset.Author}}{{partial "shared/contributors" (dict "Contributors" . "ContributorsURL" ($.DatasetURL | querySet "show" "contributors"))}}{{end}}
 

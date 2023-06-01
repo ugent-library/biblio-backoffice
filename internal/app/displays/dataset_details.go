@@ -1,6 +1,7 @@
 package displays
 
 import (
+	"github.com/ugent-library/biblio-backoffice/identifiers"
 	"github.com/ugent-library/biblio-backoffice/internal/app/localize"
 	"github.com/ugent-library/biblio-backoffice/internal/locale"
 	"github.com/ugent-library/biblio-backoffice/internal/models"
@@ -9,17 +10,13 @@ import (
 )
 
 func DatasetDetails(user *models.User, l *locale.Locale, d *models.Dataset) *display.Display {
-	var identifierType, identifier, identifierTemplate string
+	var identifierType, identifier string
 	for _, key := range vocabularies.Map["dataset_identifier_types"] {
 		if val := d.Identifiers.Get(key); val != "" {
 			identifierType = key
 			identifier = val
 			break
 		}
-	}
-	switch identifierType {
-	case "DOI":
-		identifierTemplate = "format/doi"
 	}
 
 	return display.New().
@@ -35,11 +32,11 @@ func DatasetDetails(user *models.User, l *locale.Locale, d *models.Dataset) *dis
 				Value:    identifierType,
 				Required: true,
 			},
-			&display.Text{
-				Label:         l.T("builder.identifier"),
-				Value:         identifier,
-				Required:      true,
-				ValueTemplate: identifierTemplate,
+			&display.Link{
+				Label:    l.T("builder.identifier"),
+				Value:    identifier,
+				URL:      identifiers.Resolve(identifierType, identifier),
+				Required: true,
 			},
 		).
 		AddSection(

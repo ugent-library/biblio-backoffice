@@ -34,19 +34,19 @@
                         <span>View full texts &amp; files</span>
                     </a>
                     {{with .Publication.DOI}}
-                    <a class="dropdown-item" href="{{resolveDOI .}}" target="_blank">
+                    <a class="dropdown-item" href="{{resolveIdentifier "DOI" .}}" target="_blank">
                         <i class="if if-external-link"></i>
                         <span>DOI</span>
                     </a>
                     {{end}}
                     {{with .Publication.WOSID}}
-                    <a class="dropdown-item" href="{{resolveWOSID .}}" target="_blank">
+                    <a class="dropdown-item" href="{{resolveIdentifier "WebOfScienceID" .}}" target="_blank">
                         <i class="if if-external-link"></i>
                         <span>WoS</span>
                     </a>
                     {{end}}
                     {{with .Publication.PubMedID}}
-                    <a class="dropdown-item" href="{{resolvePubMedID .}}" target="_blank">
+                    <a class="dropdown-item" href="{{resolveIdentifier "PubMedID" .}}" target="_blank">
                         <i class="if if-external-link"></i>
                         <span>PubMed</span>
                     </a>
