@@ -8,7 +8,6 @@ var (
 	Ensembl        = &EnsemblType{}
 	Handle         = &HandleType{}
 	PubMedID       = &PubMedIDType{}
-	URN            = &URNType{}
 	WebOfScienceID = &WebOfScienceIDType{}
 )
 
@@ -20,7 +19,6 @@ var types = map[string]Type{
 	"Ensembl":        Ensembl,
 	"Handle":         Handle,
 	"PubMedID":       PubMedID,
-	"URN":            URN,
 	"WebOfScienceID": WebOfScienceID,
 }
 

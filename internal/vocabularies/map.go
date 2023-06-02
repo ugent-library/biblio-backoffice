@@ -109,7 +109,6 @@ var Map = map[string][]string{
 		"ENA",
 		"Ensembl",
 		"Handle",
-		"URN",
 	},
 	"dataset_access_levels": {
 		"info:eu-repo/semantics/openAccess",
