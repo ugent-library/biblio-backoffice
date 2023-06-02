@@ -50,7 +50,7 @@ type personService struct {
 }
 
 func NewPersonService(service backends.PersonService) backends.PersonService {
-	cache := gcache.New(5000).
+	cache := gcache.New(10000).
 		Expiration(30 * time.Minute).
 		LoaderFunc(func(key any) (any, error) {
 			return service.GetPerson(key.(string))
@@ -61,20 +61,6 @@ func NewPersonService(service backends.PersonService) backends.PersonService {
 		cache:   cache,
 		service: service,
 	}
-}
-
-func (s *personService) GetPersons(ids []string) ([]*models.Person, error) {
-	persons := make([]*models.Person, 0)
-	for _, id := range ids {
-		person, err := s.GetPerson(id)
-		if err != nil && err == backends.ErrNotFound {
-			continue
-		} else if err != nil {
-			return nil, err
-		}
-		persons = append(persons, person)
-	}
-	return persons, nil
 }
 
 func (s *personService) GetPerson(id string) (*models.Person, error) {

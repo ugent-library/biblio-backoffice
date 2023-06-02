@@ -91,8 +91,12 @@ func newServices() *backends.Services {
 
 	logger := newLogger()
 
-	personService := caching.NewPersonService(authorityClient)
 	organizationService := caching.NewOrganizationService(authorityClient)
+	// always add organization info to person affiliations
+	personService := &backends.PersonWithOrganizationsService{
+		PersonService:       caching.NewPersonService(authorityClient),
+		OrganizationService: organizationService,
+	}
 	projectService := caching.NewProjectService(authorityClient)
 
 	return &backends.Services{
@@ -208,13 +212,6 @@ func newRepository(logger *zap.SugaredLogger, personService backends.PersonServi
 						if err != nil {
 							return err
 						}
-						for _, a := range person.Affiliations {
-							o, err := organizationService.GetOrganization(a.OrganizationID)
-							if err != nil {
-								return err
-							}
-							a.Organization = o
-						}
 						c.Person = person
 					}
 				}
@@ -232,13 +229,6 @@ func newRepository(logger *zap.SugaredLogger, personService backends.PersonServi
 						person, err := personService.GetPerson(c.PersonID)
 						if err != nil {
 							return err
-						}
-						for _, a := range person.Affiliations {
-							o, err := organizationService.GetOrganization(a.OrganizationID)
-							if err != nil {
-								return err
-							}
-							a.Organization = o
 						}
 						c.Person = person
 					}

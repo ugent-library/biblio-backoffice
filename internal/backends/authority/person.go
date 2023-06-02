@@ -15,40 +15,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func (c *Client) GetPersons(ids []string) ([]*models.Person, error) {
-	cursor, err := c.mongo.
-		Database("authority").
-		Collection("person").
-		Find(context.Background(), bson.M{
-			"ids": bson.M{
-				"$in": ids,
-			},
-		})
-
-	if err != nil {
-		return nil, err
-	}
-
-	var records []bson.M = make([]bson.M, 0)
-	if err := cursor.All(context.Background(), records); err != nil {
-		if err == mongo.ErrNoDocuments {
-			return []*models.Person{}, nil
-		}
-		return nil, err
-	}
-
-	var persons []*models.Person = make([]*models.Person, 0, len(records))
-	for _, record := range records {
-		person, personErr := c.recordToPerson(record)
-		if personErr != nil {
-			return nil, personErr
-		}
-		persons = append(persons, person)
-	}
-
-	return persons, nil
-}
-
 func (c *Client) GetPerson(id string) (*models.Person, error) {
 	var record bson.M
 	err := c.mongo.Database("authority").Collection("person").FindOne(

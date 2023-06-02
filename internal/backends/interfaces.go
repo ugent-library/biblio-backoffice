@@ -159,7 +159,6 @@ type OrganizationService interface {
 
 type PersonService interface {
 	GetPerson(string) (*models.Person, error)
-	GetPersons([]string) ([]*models.Person, error)
 }
 
 type ProjectService interface {
@@ -219,20 +218,27 @@ type HandleService interface {
 
 var ErrNotFound = errors.New("record not found")
 
-type RepositoryFilter struct {
-	Field string
-	Op    string
-	Value string
-}
-
-type RepositoryQueryArgs struct {
-	Limit   int
-	Offset  int
-	Order   string
-	Filters []*RepositoryFilter
-}
-
 type Mutation struct {
 	Op   string
 	Args []string
+}
+
+type PersonWithOrganizationsService struct {
+	PersonService       PersonService
+	OrganizationService OrganizationService
+}
+
+func (s *PersonWithOrganizationsService) GetPerson(id string) (*models.Person, error) {
+	p, err := s.PersonService.GetPerson(id)
+	if err != nil {
+		return nil, err
+	}
+	for _, a := range p.Affiliations {
+		o, err := s.OrganizationService.GetOrganization(a.OrganizationID)
+		if err != nil {
+			return nil, err
+		}
+		a.Organization = o
+	}
+	return p, nil
 }

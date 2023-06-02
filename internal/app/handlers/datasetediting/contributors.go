@@ -744,13 +744,6 @@ func (h *Handler) generateContributorFromPersonId(id string) (*models.Contributo
 	if err != nil {
 		return nil, nil, err
 	}
-	for _, a := range p.Affiliations {
-		o, err := h.OrganizationService.GetOrganization(a.OrganizationID)
-		if err != nil {
-			return nil, nil, err
-		}
-		a.Organization = o
-	}
 	c := models.ContributorFromPerson(p)
 	return c, p, nil
 }
