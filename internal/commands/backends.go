@@ -99,7 +99,7 @@ func newServices() *backends.Services {
 		FileStore:                 newFileStore(),
 		ORCIDSandbox:              orcidConfig.Sandbox,
 		ORCIDClient:               orcidClient,
-		Repository:                newRepository(logger, personService, projectService),
+		Repository:                newRepository(logger, personService, organizationService, projectService),
 		DatasetSearchService:      newDatasetSearchService(),
 		PublicationSearchService:  newPublicationSearchService(),
 		OrganizationService:       organizationService,
@@ -168,7 +168,7 @@ func newLogger() *zap.SugaredLogger {
 	return sugar
 }
 
-func newRepository(logger *zap.SugaredLogger, personService backends.PersonService, projectService backends.ProjectService) backends.Repository {
+func newRepository(logger *zap.SugaredLogger, personService backends.PersonService, organizationService backends.OrganizationService, projectService backends.ProjectService) backends.Repository {
 	ctx := context.Background()
 
 	bp := newPublicationBulkIndexerService(logger)
@@ -208,6 +208,13 @@ func newRepository(logger *zap.SugaredLogger, personService backends.PersonServi
 						if err != nil {
 							return err
 						}
+						for _, a := range person.Affiliations {
+							o, err := organizationService.GetOrganization(a.OrganizationID)
+							if err != nil {
+								return err
+							}
+							a.Organization = o
+						}
 						c.Person = person
 					}
 				}
@@ -225,6 +232,13 @@ func newRepository(logger *zap.SugaredLogger, personService backends.PersonServi
 						person, err := personService.GetPerson(c.PersonID)
 						if err != nil {
 							return err
+						}
+						for _, a := range person.Affiliations {
+							o, err := organizationService.GetOrganization(a.OrganizationID)
+							if err != nil {
+								return err
+							}
+							a.Organization = o
 						}
 						c.Person = person
 					}

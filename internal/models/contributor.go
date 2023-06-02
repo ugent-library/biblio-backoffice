@@ -84,6 +84,13 @@ func (c *Contributor) LastName() string {
 	return ""
 }
 
+func (c *Contributor) ORCID() string {
+	if c.Person != nil {
+		return c.Person.ORCID
+	}
+	return ""
+}
+
 func (c *Contributor) Validate() (errs validation.Errors) {
 	if c.ExternalPerson != nil {
 		if c.ExternalPerson.FullName == "" {

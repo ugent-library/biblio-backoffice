@@ -118,7 +118,6 @@ func (c *Client) SuggestPeople(q string) ([]models.Person, error) {
 }
 
 func (c *Client) recordToPerson(record bson.M) (*models.Person, error) {
-
 	var person *models.Person = &models.Person{}
 
 	if v, e := record["_id"]; e {
@@ -139,7 +138,7 @@ func (c *Client) recordToPerson(record bson.M) (*models.Person, error) {
 	}
 	if v, e := record["ugent_department_id"]; e {
 		for _, i := range v.(bson.A) {
-			person.Department = append(person.Department, models.PersonDepartment{ID: util.ParseString(i)})
+			person.Affiliations = append(person.Affiliations, &models.Affiliation{OrganizationID: util.ParseString(i)})
 		}
 	}
 	if v, e := record["preferred_first_name"]; e {

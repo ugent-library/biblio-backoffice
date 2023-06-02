@@ -3,7 +3,7 @@
     <input type="hidden" name="position" value="{{.Position}}">
     {{end}}
     <div class="bc-avatar-and-text">
-        {{if .Contributor.ID}}
+        {{if .Contributor.Person}}
         <div class="bc-avatar bc-avatar-icon bc-avatar--default">
             <i class="if if-ghent-university"></i>
         </div>
@@ -13,7 +13,7 @@
         </div>
         {{end}}
         <div class="bc-avatar-text">
-            {{.Contributor.FirstName}} {{.Contributor.LastName}}
+            {{.Contributor.Name}}
             {{with .Contributor.ORCID}}
             <span class="text-muted c-body-small ml-4"><i class="if if-orcid if--small text-success"></i> {{.}}</span>
             {{end}}
@@ -21,7 +21,7 @@
     </div>
 </td>
 <td class="col-2">
-    {{if .Contributor.ID}}
+    {{if .Contributor.Person}}
     <i class="if if-ghent-university text-default"></i>
     <span>UGent {{.Locale.TS "dataset.contributor.role" .Role}}</span>
     {{else}}
@@ -30,20 +30,22 @@
 </td>
 <td class="col-2">
     <ul class="c-meta-list c-meta-list-horizontal">
-    {{range $i, $cd := .Contributor.Department}}
-        <li class="c-meta-item">
-            <span class="badge badge-pill badge-default">
-                <span class="badge-text">{{$cd.ID}}</span>
-                {{with $cd.Name}}
-                <a class="ml-4" href="#" data-container="body" data-toggle="popover" data-trigger="focus" data-placement="right" data-content="{{.}}">
-                    <i class="if if-info-circle if--small"></i>
-                    <div class="sr-only">More info</div>
-                </a>
-                {{end}}
-            </span>
-        </li>
+    {{if .Contributor.Person}}
+        {{range $i, $cd := .Contributor.Person.Affiliations}}
+            <li class="c-meta-item">
+                <span class="badge badge-pill badge-default">
+                    <span class="badge-text">{{$cd.OrganizationID}}</span>
+                    {{with $cd.Organization}}
+                    <a class="ml-4" href="#" data-container="body" data-toggle="popover" data-trigger="focus" data-placement="right" data-content="{{.Name}}">
+                        <i class="if if-info-circle if--small"></i>
+                        <div class="sr-only">More info</div>
+                    </a>
+                    {{end}}
+                </span>
+            </li>
+        {{end}}
+        </ul>
     {{end}}
-    </ul>
 </td>
 <td class="pr-4 col-3">
     {{if .User.CanEditDataset .Dataset}}

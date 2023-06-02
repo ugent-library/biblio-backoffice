@@ -148,8 +148,8 @@ func (x *xlsx) publicationToRow(pub *models.Publication) []string {
 					continue
 				}
 				group := ""
-				if len(c.Person.Department) > 0 {
-					group = "@" + c.Person.Department[0].ID
+				if len(c.Person.Affiliations) > 0 {
+					group = "@" + c.Person.Affiliations[0].OrganizationID
 				}
 				//full_name (<ugent_id>)
 				//full_name (<ugent_id>@<department.0.id>)

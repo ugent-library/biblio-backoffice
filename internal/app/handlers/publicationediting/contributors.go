@@ -97,14 +97,14 @@ type YieldAddContributor struct {
 	Role        string
 	Contributor *models.Contributor
 	Form        *form.Form
-	Hits        []models.Person
+	Hits        []*models.Contributor
 }
 
 type YieldAddContributorSuggest struct {
 	Context
 	Role        string
 	Contributor *models.Contributor
-	Hits        []models.Person
+	Hits        []*models.Contributor
 }
 
 type YieldConfirmCreateContributor struct {
@@ -123,7 +123,7 @@ type YieldEditContributor struct {
 	FirstName   string
 	LastName    string
 	Active      bool
-	Hits        []models.Person
+	Hits        []*models.Contributor
 	Form        *form.Form
 }
 
@@ -134,7 +134,7 @@ type YieldEditContributorSuggest struct {
 	Contributor *models.Contributor
 	FirstName   string
 	LastName    string
-	Hits        []models.Person
+	Hits        []*models.Contributor
 }
 
 type YieldConfirmUpdateContributor struct {
@@ -161,17 +161,18 @@ func (h *Handler) AddContributor(w http.ResponseWriter, r *http.Request, ctx Con
 		return
 	}
 
-	var (
-		hits []models.Person
-		err  error
-	)
+	var hits []*models.Contributor
 
 	if b.FirstName != "" || b.LastName != "" {
-		hits, err = h.PersonSearchService.SuggestPeople(b.FirstName + " " + b.LastName)
+		people, err := h.PersonSearchService.SuggestPeople(b.FirstName + " " + b.LastName)
 		if err != nil {
 			h.Logger.Errorw("suggest publication contributor: could not suggest people", "errors", err, "request", r, "user", ctx.User.ID)
 			render.InternalServerError(w, r, err)
 			return
+		}
+		hits = make([]*models.Contributor, len(people))
+		for i, person := range people {
+			hits[i] = models.ContributorFromPerson(&person)
 		}
 	}
 
@@ -196,17 +197,18 @@ func (h *Handler) AddContributorSuggest(w http.ResponseWriter, r *http.Request, 
 		return
 	}
 
-	var (
-		hits []models.Person
-		err  error
-	)
+	var hits []*models.Contributor
 
 	if b.FirstName != "" || b.LastName != "" {
-		hits, err = h.PersonSearchService.SuggestPeople(b.FirstName + " " + b.LastName)
+		people, err := h.PersonSearchService.SuggestPeople(b.FirstName + " " + b.LastName)
 		if err != nil {
 			h.Logger.Errorw("suggest publication contributor: could not suggest people", "errors", err, "request", r, "user", ctx.User.ID)
 			render.InternalServerError(w, r, err)
 			return
+		}
+		hits = make([]*models.Contributor, len(people))
+		for i, person := range people {
+			hits[i] = models.ContributorFromPerson(&person)
 		}
 	}
 
@@ -352,17 +354,22 @@ func (h *Handler) EditContributor(w http.ResponseWriter, r *http.Request, ctx Co
 		lastName = c.LastName()
 	}
 
-	hits, err := h.PersonSearchService.SuggestPeople(firstName + " " + lastName)
+	people, err := h.PersonSearchService.SuggestPeople(firstName + " " + lastName)
 	if err != nil {
 		h.Logger.Errorw("suggest publication contributor: could not suggest people", "errors", err, "request", r, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
 
+	hits := make([]*models.Contributor, len(people))
+	for i, person := range people {
+		hits[i] = models.ContributorFromPerson(&person)
+	}
+
 	// exclude the current contributor
 	if c.PersonID != "" {
 		for i, hit := range hits {
-			if hit.ID == c.PersonID {
+			if hit.PersonID == c.PersonID {
 				if i == 0 {
 					hits = hits[1:]
 				} else {
@@ -403,20 +410,25 @@ func (h *Handler) EditContributorSuggest(w http.ResponseWriter, r *http.Request,
 		return
 	}
 
-	var hits []models.Person
+	var hits []*models.Contributor
 
 	if b.FirstName != "" || b.LastName != "" {
-		hits, err = h.PersonSearchService.SuggestPeople(b.FirstName + " " + b.LastName)
+		people, err := h.PersonSearchService.SuggestPeople(b.FirstName + " " + b.LastName)
 		if err != nil {
 			h.Logger.Errorw("suggest publication contributor: could not suggest people", "errors", err, "request", r, "user", ctx.User.ID)
 			render.InternalServerError(w, r, err)
 			return
 		}
 
+		hits = make([]*models.Contributor, len(people))
+		for i, person := range people {
+			hits[i] = models.ContributorFromPerson(&person)
+		}
+
 		// exclude the current contributor
 		if c.PersonID != "" {
 			for i, hit := range hits {
-				if hit.ID == c.PersonID {
+				if hit.PersonID == c.PersonID {
 					hits = append(hits[:i], hits[i+1:]...)
 					break
 				}
@@ -540,11 +552,15 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 	if b.EditNext && b.Position+1 < len(ctx.Publication.Contributors(b.Role)) {
 		nextPos := b.Position + 1
 		nextC := ctx.Publication.Contributors(b.Role)[nextPos]
-		hits, err := h.PersonSearchService.SuggestPeople(nextC.Name())
+		people, err := h.PersonSearchService.SuggestPeople(nextC.Name())
 		if err != nil {
 			h.Logger.Errorw("suggest publication contributor: could not suggest people", "errors", err, "request", r, "user", ctx.User.ID)
 			render.InternalServerError(w, r, err)
 			return
+		}
+		hits := make([]*models.Contributor, len(people))
+		for i, person := range people {
+			hits[i] = models.ContributorFromPerson(&person)
 		}
 
 		suggestURL := h.PathFor("publication_edit_contributor_suggest", "id", ctx.Publication.ID, "role", b.Role, "position", fmt.Sprintf("%d", nextPos)).String()
@@ -750,6 +766,13 @@ func (h *Handler) generateContributorFromPersonId(id string) (*models.Contributo
 	p, err := h.PersonService.GetPerson(id)
 	if err != nil {
 		return nil, nil, err
+	}
+	for _, a := range p.Affiliations {
+		o, err := h.OrganizationService.GetOrganization(a.OrganizationID)
+		if err != nil {
+			return nil, nil, err
+		}
+		a.Organization = o
 	}
 	c := models.ContributorFromPerson(p)
 	return c, p, nil

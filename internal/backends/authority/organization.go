@@ -31,7 +31,6 @@ type searchEnvelope struct {
 }
 
 func (c *Client) GetOrganization(id string) (*models.Organization, error) {
-
 	requestBody := es6.M{
 		"query": es6.M{
 			"term": es6.M{
@@ -40,7 +39,7 @@ func (c *Client) GetOrganization(id string) (*models.Organization, error) {
 		},
 		"size": 1,
 	}
-	var responseBody organizationSearchEnvelope = organizationSearchEnvelope{}
+	responseBody := organizationSearchEnvelope{}
 
 	if e := c.es.SearchWithBody("biblio_organization", requestBody, &responseBody); e != nil {
 		return nil, e

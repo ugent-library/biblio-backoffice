@@ -768,8 +768,8 @@ func (s *server) TransferPublications(req *api.TransferPublicationsRequest, stre
 					Name: c.Person.FullName,
 				}
 
-				if len(c.Person.Department) > 0 {
-					org, orgErr := s.services.OrganizationService.GetOrganization(c.Person.Department[0].ID)
+				if len(c.Person.Affiliations) > 0 {
+					org, orgErr := s.services.OrganizationService.GetOrganization(c.Person.Affiliations[0].OrganizationID)
 					if orgErr != nil {
 						callbackErr = fmt.Errorf("p: %s: s: %s ::: creator: could not fetch department for %s: %v", p.ID, p.SnapshotID, c.PersonID, orgErr)
 						return false
