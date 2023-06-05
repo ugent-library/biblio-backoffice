@@ -8,6 +8,7 @@ import (
 	"path"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/elastic/go-elasticsearch/v6"
 	"github.com/spf13/cobra"
@@ -178,6 +179,29 @@ func newRepository(logger *zap.SugaredLogger, personService backends.PersonServi
 	bp := newPublicationBulkIndexerService(logger)
 	bd := newDatasetBulkIndexerService(logger)
 
+	now := time.Now()
+	dummyPerson := &models.Person{
+		ID:        "[missing]",
+		FullName:  "[missing]",
+		FirstName: "[missing]",
+		LastName:  "[missing]",
+	}
+	dummyOrganization := &models.Organization{
+		ID:   "[missing]",
+		Name: "[missing]",
+		Tree: []struct {
+			ID string `json:"id,omitempty"`
+		}{
+			{ID: "[missing]"},
+		},
+	}
+	dummyProject := &models.Project{
+		ID:          "[missing]",
+		Title:       "[missing]",
+		DateCreated: &now,
+		DateUpdated: &now,
+	}
+
 	repo, err := repository.New(repository.Config{
 		DSN: viper.GetString("pg-conn"),
 
@@ -210,6 +234,7 @@ func newRepository(logger *zap.SugaredLogger, personService backends.PersonServi
 						}
 						person, err := personService.GetPerson(c.PersonID)
 						if err != nil {
+							logger.Errorf("error loading person %s in publication %s:, %w", c.PersonID, p.ID, err)
 							return err
 						}
 						c.Person = person
@@ -221,6 +246,7 @@ func newRepository(logger *zap.SugaredLogger, personService backends.PersonServi
 				for _, rel := range p.RelatedOrganizations {
 					org, err := organizationService.GetOrganization(rel.OrganizationID)
 					if err != nil {
+						logger.Errorf("error loading organization %s in publication %s:, %w", rel.OrganizationID, p.ID, err)
 						return err
 					}
 					rel.Organization = org
@@ -231,6 +257,7 @@ func newRepository(logger *zap.SugaredLogger, personService backends.PersonServi
 				for _, rel := range p.RelatedProjects {
 					project, err := projectService.GetProject(rel.ProjectID)
 					if err != nil {
+						logger.Errorf("error loading project %s in publication %s:, %w", rel.ProjectID, p.ID, err)
 						return err
 					}
 					rel.Project = project
@@ -248,9 +275,11 @@ func newRepository(logger *zap.SugaredLogger, personService backends.PersonServi
 						}
 						person, err := personService.GetPerson(c.PersonID)
 						if err != nil {
-							return err
+							logger.Errorf("error loading person %s in dataset %s:, %w", c.PersonID, d.ID, err)
+							c.Person = dummyPerson
+						} else {
+							c.Person = person
 						}
-						c.Person = person
 					}
 				}
 				return nil
@@ -259,9 +288,11 @@ func newRepository(logger *zap.SugaredLogger, personService backends.PersonServi
 				for _, rel := range d.RelatedOrganizations {
 					org, err := organizationService.GetOrganization(rel.OrganizationID)
 					if err != nil {
-						return err
+						logger.Errorf("error loading organization %s in dataset %s:, %w", rel.OrganizationID, d.ID, err)
+						rel.Organization = dummyOrganization
+					} else {
+						rel.Organization = org
 					}
-					rel.Organization = org
 				}
 				return nil
 			},
@@ -269,9 +300,11 @@ func newRepository(logger *zap.SugaredLogger, personService backends.PersonServi
 				for _, rel := range d.RelatedProjects {
 					project, err := projectService.GetProject(rel.ProjectID)
 					if err != nil {
-						return err
+						logger.Errorf("error loading project %s in dataset %s:, %w", rel.ProjectID, d.ID, err)
+						rel.Project = dummyProject
+					} else {
+						rel.Project = project
 					}
-					rel.Project = project
 				}
 				return nil
 			},
