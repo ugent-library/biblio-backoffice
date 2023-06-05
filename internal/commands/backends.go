@@ -234,10 +234,11 @@ func newRepository(logger *zap.SugaredLogger, personService backends.PersonServi
 						}
 						person, err := personService.GetPerson(c.PersonID)
 						if err != nil {
-							logger.Errorf("error loading person %s in publication %s:, %w", c.PersonID, p.ID, err)
-							return err
+							logger.Warnf("error loading person %s in publication %s:, %w", c.PersonID, p.ID, err)
+							c.Person = dummyPerson
+						} else {
+							c.Person = person
 						}
-						c.Person = person
 					}
 				}
 				return nil
@@ -246,10 +247,11 @@ func newRepository(logger *zap.SugaredLogger, personService backends.PersonServi
 				for _, rel := range p.RelatedOrganizations {
 					org, err := organizationService.GetOrganization(rel.OrganizationID)
 					if err != nil {
-						logger.Errorf("error loading organization %s in publication %s:, %w", rel.OrganizationID, p.ID, err)
-						return err
+						logger.Warnf("error loading organization %s in publication %s:, %w", rel.OrganizationID, p.ID, err)
+						rel.Organization = dummyOrganization
+					} else {
+						rel.Organization = org
 					}
-					rel.Organization = org
 				}
 				return nil
 			},
@@ -257,10 +259,11 @@ func newRepository(logger *zap.SugaredLogger, personService backends.PersonServi
 				for _, rel := range p.RelatedProjects {
 					project, err := projectService.GetProject(rel.ProjectID)
 					if err != nil {
-						logger.Errorf("error loading project %s in publication %s:, %w", rel.ProjectID, p.ID, err)
-						return err
+						logger.Warnf("error loading project %s in publication %s:, %w", rel.ProjectID, p.ID, err)
+						rel.Project = dummyProject
+					} else {
+						rel.Project = project
 					}
-					rel.Project = project
 				}
 				return nil
 			},
@@ -275,7 +278,7 @@ func newRepository(logger *zap.SugaredLogger, personService backends.PersonServi
 						}
 						person, err := personService.GetPerson(c.PersonID)
 						if err != nil {
-							logger.Errorf("error loading person %s in dataset %s:, %w", c.PersonID, d.ID, err)
+							logger.Warnf("error loading person %s in dataset %s:, %w", c.PersonID, d.ID, err)
 							c.Person = dummyPerson
 						} else {
 							c.Person = person
@@ -288,7 +291,7 @@ func newRepository(logger *zap.SugaredLogger, personService backends.PersonServi
 				for _, rel := range d.RelatedOrganizations {
 					org, err := organizationService.GetOrganization(rel.OrganizationID)
 					if err != nil {
-						logger.Errorf("error loading organization %s in dataset %s:, %w", rel.OrganizationID, d.ID, err)
+						logger.Warnf("error loading organization %s in dataset %s:, %w", rel.OrganizationID, d.ID, err)
 						rel.Organization = dummyOrganization
 					} else {
 						rel.Organization = org
@@ -300,7 +303,7 @@ func newRepository(logger *zap.SugaredLogger, personService backends.PersonServi
 				for _, rel := range d.RelatedProjects {
 					project, err := projectService.GetProject(rel.ProjectID)
 					if err != nil {
-						logger.Errorf("error loading project %s in dataset %s:, %w", rel.ProjectID, d.ID, err)
+						logger.Warnf("error loading project %s in dataset %s:, %w", rel.ProjectID, d.ID, err)
 						rel.Project = dummyProject
 					} else {
 						rel.Project = project
