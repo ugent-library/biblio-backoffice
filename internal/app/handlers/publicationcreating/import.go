@@ -372,7 +372,7 @@ func (h *Handler) AddMultipleSave(w http.ResponseWriter, r *http.Request, ctx Co
 		WithLevel("success").
 		WithBody(template.HTML("<p>Publications successfully saved as draft.</p>"))
 
-	h.AddSessionFlash(r, w, *flash)
+	h.AddFlash(r, w, *flash)
 
 	redirectURL := h.PathFor("publications")
 	w.Header().Set("HX-Redirect", redirectURL.String())
