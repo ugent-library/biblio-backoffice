@@ -217,12 +217,32 @@ func newRepository(logger *zap.SugaredLogger, personService backends.PersonServi
 				}
 				return nil
 			},
+			func(p *models.Publication) error {
+				for _, rel := range p.RelatedOrganizations {
+					org, err := organizationService.GetOrganization(rel.OrganizationID)
+					if err != nil {
+						return err
+					}
+					rel.Organization = org
+				}
+				return nil
+			},
+			func(p *models.Publication) error {
+				for _, rel := range p.RelatedProjects {
+					project, err := projectService.GetProject(rel.ProjectID)
+					if err != nil {
+						return err
+					}
+					rel.Project = project
+				}
+				return nil
+			},
 		},
 
 		DatasetLoaders: []repository.DatasetVisitor{
-			func(p *models.Dataset) error {
+			func(d *models.Dataset) error {
 				for _, role := range []string{"author", "contributor"} {
-					for _, c := range p.Contributors(role) {
+					for _, c := range d.Contributors(role) {
 						if c.PersonID == "" {
 							continue
 						}
@@ -232,6 +252,26 @@ func newRepository(logger *zap.SugaredLogger, personService backends.PersonServi
 						}
 						c.Person = person
 					}
+				}
+				return nil
+			},
+			func(d *models.Dataset) error {
+				for _, rel := range d.RelatedOrganizations {
+					org, err := organizationService.GetOrganization(rel.OrganizationID)
+					if err != nil {
+						return err
+					}
+					rel.Organization = org
+				}
+				return nil
+			},
+			func(d *models.Dataset) error {
+				for _, rel := range d.RelatedProjects {
+					project, err := projectService.GetProject(rel.ProjectID)
+					if err != nil {
+						return err
+					}
+					rel.Project = project
 				}
 				return nil
 			},

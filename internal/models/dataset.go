@@ -22,20 +22,6 @@ type DatasetUser struct {
 	Name string `json:"name,omitempty"`
 }
 
-type DatasetDepartmentRef struct {
-	ID string `json:"id,omitempty"`
-}
-
-type DatasetDepartment struct {
-	ID   string                 `json:"id,omitempty"`
-	Tree []DatasetDepartmentRef `json:"tree,omitempty"`
-}
-
-type DatasetProject struct {
-	ID   string `json:"id,omitempty"`
-	Name string `json:"name,omitempty"`
-}
-
 type DatasetLink struct {
 	ID          string `json:"id,omitempty"`
 	URL         string `json:"url,omitempty"`
@@ -52,41 +38,41 @@ type Dataset struct {
 	AccessLevel string         `json:"access_level,omitempty"`
 	Author      []*Contributor `json:"author,omitempty"` // TODO rename to Creator
 	// CompletenessScore  int                  `json:"completeness_score,omitempty"`
-	BatchID                 string               `json:"batch_id,omitempty"`
-	Contributor             []*Contributor       `json:"contributor,omitempty"`
-	Creator                 *DatasetUser         `json:"creator,omitempty"`
-	DateCreated             *time.Time           `json:"date_created,omitempty"`
-	DateUpdated             *time.Time           `json:"date_updated,omitempty"`
-	DateFrom                *time.Time           `json:"date_from,omitempty"`
-	DateUntil               *time.Time           `json:"date_until,omitempty"`
-	Department              []DatasetDepartment  `json:"department,omitempty"`
-	DOI                     string               `json:"doi,omitempty"` // TODO deprecated
-	EmbargoDate             string               `json:"embargo_date,omitempty"`
-	AccessLevelAfterEmbargo string               `json:"access_level_after_embargo,omitempty"`
-	Format                  []string             `json:"format,omitempty"`
-	Handle                  string               `json:"handle,omitempty"`
-	ID                      string               `json:"id,omitempty"`
-	Identifiers             Identifiers          `json:"identifiers,omitempty"`
-	Keyword                 []string             `json:"keyword,omitempty"`
-	HasBeenPublic           bool                 `json:"has_been_public"`
-	Language                []string             `json:"language,omitempty"`
-	LastUser                *DatasetUser         `json:"last_user,omitempty"`
-	License                 string               `json:"license,omitempty"`
-	Link                    []*DatasetLink       `json:"link,omitempty"`
-	Locked                  bool                 `json:"locked"`
-	Message                 string               `json:"message,omitempty"`
-	OtherLicense            string               `json:"other_license,omitempty"`
-	Project                 []DatasetProject     `json:"project,omitempty"`
-	Publisher               string               `json:"publisher,omitempty"`
-	RelatedPublication      []RelatedPublication `json:"related_publication,omitempty"`
-	ReviewerNote            string               `json:"reviewer_note,omitempty"`
-	ReviewerTags            []string             `json:"reviewer_tags,omitempty"`
-	SnapshotID              string               `json:"snapshot_id,omitempty"`
-	Status                  string               `json:"status,omitempty"`
-	Title                   string               `json:"title,omitempty"`
-	URL                     string               `json:"url,omitempty"` // TODO deprecated
-	User                    *DatasetUser         `json:"user,omitempty"`
-	Year                    string               `json:"year,omitempty"`
+	BatchID                 string                 `json:"batch_id,omitempty"`
+	Contributor             []*Contributor         `json:"contributor,omitempty"`
+	Creator                 *DatasetUser           `json:"creator,omitempty"`
+	DateCreated             *time.Time             `json:"date_created,omitempty"`
+	DateUpdated             *time.Time             `json:"date_updated,omitempty"`
+	DateFrom                *time.Time             `json:"date_from,omitempty"`
+	DateUntil               *time.Time             `json:"date_until,omitempty"`
+	DOI                     string                 `json:"doi,omitempty"` // TODO deprecated
+	EmbargoDate             string                 `json:"embargo_date,omitempty"`
+	AccessLevelAfterEmbargo string                 `json:"access_level_after_embargo,omitempty"`
+	Format                  []string               `json:"format,omitempty"`
+	Handle                  string                 `json:"handle,omitempty"`
+	ID                      string                 `json:"id,omitempty"`
+	Identifiers             Identifiers            `json:"identifiers,omitempty"`
+	Keyword                 []string               `json:"keyword,omitempty"`
+	HasBeenPublic           bool                   `json:"has_been_public"`
+	Language                []string               `json:"language,omitempty"`
+	LastUser                *DatasetUser           `json:"last_user,omitempty"`
+	License                 string                 `json:"license,omitempty"`
+	Link                    []*DatasetLink         `json:"link,omitempty"`
+	Locked                  bool                   `json:"locked"`
+	Message                 string                 `json:"message,omitempty"`
+	OtherLicense            string                 `json:"other_license,omitempty"`
+	Publisher               string                 `json:"publisher,omitempty"`
+	RelatedOrganizations    []*RelatedOrganization `json:"related_organizations,omitempty"`
+	RelatedProjects         []*RelatedProject      `json:"related_projects,omitempty"`
+	RelatedPublication      []RelatedPublication   `json:"related_publication,omitempty"`
+	ReviewerNote            string                 `json:"reviewer_note,omitempty"`
+	ReviewerTags            []string               `json:"reviewer_tags,omitempty"`
+	SnapshotID              string                 `json:"snapshot_id,omitempty"`
+	Status                  string                 `json:"status,omitempty"`
+	Title                   string                 `json:"title,omitempty"`
+	URL                     string                 `json:"url,omitempty"` // TODO deprecated
+	User                    *DatasetUser           `json:"user,omitempty"`
+	Year                    string                 `json:"year,omitempty"`
 }
 
 func (d *Dataset) HasRelatedPublication(id string) bool {
@@ -227,58 +213,40 @@ func (d *Dataset) RemoveAbstract(id string) {
 	d.Abstract = abstracts
 }
 
-func (d *Dataset) GetProject(id string) *DatasetProject {
-	for _, project := range d.Project {
-		if project.ID == id {
-			return &project
-		}
-	}
-	return nil
+func (d *Dataset) AddProject(project *Project) {
+	d.RemoveProject(project.ID)
+	d.RelatedProjects = append(d.RelatedProjects, &RelatedProject{
+		ProjectID: project.ID,
+		Project:   project,
+	})
 }
 
 func (d *Dataset) RemoveProject(id string) {
-	projects := make([]DatasetProject, 0)
-	for _, project := range d.Project {
-		if project.ID != id {
-			projects = append(projects, project)
+	rels := make([]*RelatedProject, 0)
+	for _, rel := range d.RelatedProjects {
+		if rel.ProjectID != id {
+			rels = append(rels, rel)
 		}
 	}
-	d.Project = projects
+	d.RelatedProjects = rels
 }
 
-func (d *Dataset) AddProject(pr *DatasetProject) {
-	d.RemoveProject(pr.ID)
-	d.Project = append(d.Project, *pr)
+func (d *Dataset) AddOrganization(org *Organization) {
+	d.RemoveOrganization(org.ID)
+	d.RelatedOrganizations = append(d.RelatedOrganizations, &RelatedOrganization{
+		OrganizationID: org.ID,
+		Organization:   org,
+	})
 }
 
-func (d *Dataset) GetDepartment(id string) *DatasetDepartment {
-	for _, department := range d.Department {
-		if department.ID == id {
-			return &department
+func (d *Dataset) RemoveOrganization(id string) {
+	rels := make([]*RelatedOrganization, 0)
+	for _, rel := range d.RelatedOrganizations {
+		if rel.OrganizationID != id {
+			rels = append(rels, rel)
 		}
 	}
-	return nil
-}
-
-func (d *Dataset) RemoveDepartment(id string) {
-	departments := make([]DatasetDepartment, 0)
-	for _, department := range d.Department {
-		if department.ID != id {
-			departments = append(departments, department)
-		}
-	}
-	d.Department = departments
-}
-
-func (d *Dataset) AddDepartmentByOrg(org *Organization) {
-	// remove if added before
-	d.RemoveDepartment(org.ID)
-
-	datasetDepartment := DatasetDepartment{ID: org.ID}
-	for _, d := range org.Tree {
-		datasetDepartment.Tree = append(datasetDepartment.Tree, DatasetDepartmentRef(d))
-	}
-	d.Department = append(d.Department, datasetDepartment)
+	d.RelatedOrganizations = rels
 }
 
 func (dl *DatasetLink) Validate() (errs validation.Errors) {
@@ -470,8 +438,8 @@ func (d *Dataset) Validate() error {
 		})
 	}
 
-	for i, rp := range d.RelatedPublication {
-		if rp.ID == "" {
+	for i, rel := range d.RelatedPublication {
+		if rel.ID == "" {
 			errs = append(errs, &validation.Error{
 				Pointer: fmt.Sprintf("/related_publication/%d/id", i),
 				Code:    "dataset.related_publication.required",
@@ -479,8 +447,8 @@ func (d *Dataset) Validate() error {
 		}
 	}
 
-	for i, pr := range d.Project {
-		if pr.ID == "" {
+	for i, rel := range d.RelatedProjects {
+		if rel.ProjectID == "" {
 			errs = append(errs, &validation.Error{
 				Pointer: fmt.Sprintf("/project/%d/id", i),
 				Code:    "dataset.project.id.required",
@@ -488,8 +456,8 @@ func (d *Dataset) Validate() error {
 		}
 	}
 
-	for i, dep := range d.Department {
-		if dep.ID == "" {
+	for i, rel := range d.RelatedOrganizations {
+		if rel.OrganizationID == "" {
 			errs = append(errs, &validation.Error{
 				Pointer: fmt.Sprintf("/department/%d/id", i),
 				Code:    "dataset.department.id.required",

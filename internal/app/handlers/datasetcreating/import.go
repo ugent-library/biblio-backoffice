@@ -167,7 +167,7 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 		if orgErr != nil {
 			h.Logger.Warnw("import single publication: could not fetch user department", "errors", orgErr, "user", ctx.User.ID)
 		} else {
-			d.AddDepartmentByOrg(org)
+			d.AddOrganization(org)
 		}
 	}
 

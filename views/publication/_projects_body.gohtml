@@ -1,8 +1,8 @@
-{{if .Publication.Project}}
+{{if .Publication.RelatedProjects}}
 <div class="card-body p-0">
     <table class="table">
         <tbody>
-            {{range $i, $p := .Publication.Project}}
+            {{range $i, $rel := .Publication.RelatedProjects}}
                 <tr class="row-{{$i}}">
                     <td class="pl-6">
                         <div class="d-flex w-100">
@@ -10,9 +10,9 @@
                                 <div class="d-flex align-items-start">
                                     <div class="list-group-item-content">
                                         <div class="list-group-item-text">
-                                            <h4 class="c-h4">{{$p.Name}}</h4>
+                                            <h4 class="c-h4">{{$rel.Project.Title}}</h4>
                                             <div class="c-body-small text-muted">Description</div>
-                                            <div class="text-muted c-body-small">Project ID: {{$p.ID}}</div>
+                                            <div class="text-muted c-body-small">Project ID: {{$rel.ProjectID}}</div>
                                         </div>
                                     </div>
                                     </div>
@@ -30,7 +30,7 @@
                                 </button>
                                 <div class="dropdown-menu">
                                     <button class="dropdown-item" type="button"
-                                        hx-get="{{pathFor "publication_confirm_delete_project" "id" $.Publication.ID "snapshot_id" $.Publication.SnapshotID "project_id" $p.ID}}"
+                                        hx-get="{{pathFor "publication_confirm_delete_project" "id" $.Publication.ID "snapshot_id" $.Publication.SnapshotID "project_id" $rel.ProjectID}}"
                                         hx-target="#modals"
                                     >
                                         <i class="if if-delete"></i>

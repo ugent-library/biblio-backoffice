@@ -16,6 +16,7 @@ type indexedDataset struct {
 	DateUntil   string `json:"date_until,omitempty"`
 	// index only fields
 	HasMessage       bool     `json:"has_message"`
+	Department       []string `json:"department,omitempty"`
 	Faculty          []string `json:"faculty,omitempty"`
 	IdentifierTypes  []string `json:"identifier_types,omitempty"`
 	IdentifierValues []string `json:"identifier_values,omitempty"`
@@ -38,21 +39,15 @@ func NewIndexedDataset(d *models.Dataset) *indexedDataset {
 
 	faculties := vocabularies.Map["faculties"]
 
-	// extract faculty from department trees
-	for _, val := range id.Department {
-		for _, dept := range val.Tree {
-			if validation.InArray(faculties, dept.ID) {
-				exists := false
-				for _, fac := range id.Faculty {
-					if fac == dept.ID {
-						exists = true
-						break
-					}
-				}
+	// extract faculty and department id from department trees
+	for _, rel := range id.RelatedOrganizations {
+		for _, org := range rel.Organization.Tree {
+			if !validation.InArray(id.Department, org.ID) {
+				id.Department = append(id.Department, org.ID)
+			}
 
-				if !exists {
-					id.Faculty = append(id.Faculty, dept.ID)
-				}
+			if validation.InArray(faculties, org.ID) && !validation.InArray(id.Faculty, org.ID) {
+				id.Faculty = append(id.Faculty, org.ID)
 			}
 		}
 	}

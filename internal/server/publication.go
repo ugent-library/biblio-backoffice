@@ -774,7 +774,7 @@ func (s *server) TransferPublications(req *api.TransferPublicationsRequest, stre
 						callbackErr = fmt.Errorf("p: %s: s: %s ::: creator: could not fetch department for %s: %v", p.ID, p.SnapshotID, c.PersonID, orgErr)
 						return false
 					} else {
-						p.AddDepartmentByOrg(org)
+						p.AddOrganization(org)
 					}
 				}
 
@@ -886,19 +886,6 @@ func (s *server) CleanupPublications(req *api.CleanupPublicationsRequest, stream
 	streamErr := s.services.Repository.EachPublication(func(p *models.Publication) bool {
 		// Guard
 		fixed := false
-
-		// Add the department "tree" property if it is missing.
-		for _, dep := range p.Department {
-			if dep.Tree == nil {
-				depID := dep.ID
-				org, orgErr := s.services.OrganizationService.GetOrganization(depID)
-				if orgErr == nil {
-					p.RemoveDepartment(depID)
-					p.AddDepartmentByOrg(org)
-					fixed = true
-				}
-			}
-		}
 
 		// Trim keywords, remove empty keywords
 		var cleanKeywords []string

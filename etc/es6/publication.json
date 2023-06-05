@@ -265,23 +265,11 @@
                 "defense_date": {
                     "type": "keyword"
                 },
-                "faculty": {
+                "department": {
                     "type": "keyword"
                 },
-                "department": {
-                    "properties": {
-                        "id": {
-                            "type": "keyword"
-                        },
-                        "tree": {
-                            "properties": {
-                                "id": {
-                                  "type": "keyword",
-                                  "copy_to": "all"
-                                }
-                            }
-                        }
-                    }
+                "faculty": {
+                    "type": "keyword"
                 },
                 "editor": {
                     "properties": {

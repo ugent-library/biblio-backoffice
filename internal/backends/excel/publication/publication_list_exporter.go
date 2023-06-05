@@ -161,11 +161,11 @@ func (x *xlsx) publicationToRow(pub *models.Publication) []string {
 	}
 
 	//field: department
-	if len(pub.Department) > 0 {
-		depIds := make([]string, 0, len(pub.Department))
-		for _, dep := range pub.Department {
+	if len(pub.RelatedOrganizations) > 0 {
+		depIds := make([]string, 0, len(pub.RelatedOrganizations))
+		for _, dep := range pub.RelatedOrganizations {
 			//TODO: biblio skips department without id? Do they exist?
-			depIds = append(depIds, dep.ID)
+			depIds = append(depIds, dep.OrganizationID)
 		}
 		m["department"] = strings.Join(depIds, sep)
 	}
@@ -238,11 +238,11 @@ func (x *xlsx) publicationToRow(pub *models.Publication) []string {
 	m["jcr_prev_category_quartile"] = ""
 
 	//TODO: projects
-	projectIds := make([]string, 0, len(pub.Project))
-	projectTitles := make([]string, 0, len(pub.Project))
-	for _, project := range pub.Project {
-		projectIds = append(projectIds, project.ID)
-		projectTitles = append(projectTitles, project.Name)
+	projectIds := make([]string, 0, len(pub.RelatedProjects))
+	projectTitles := make([]string, 0, len(pub.RelatedProjects))
+	for _, rel := range pub.RelatedProjects {
+		projectIds = append(projectIds, rel.ProjectID)
+		projectTitles = append(projectTitles, rel.Project.Title)
 	}
 	m["project_id"] = strings.Join(projectIds, sep)
 	m["project_title"] = strings.Join(projectTitles, sep)

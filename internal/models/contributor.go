@@ -7,29 +7,6 @@ import (
 	"github.com/ugent-library/biblio-backoffice/internal/vocabularies"
 )
 
-// type ContributorDepartment struct {
-// 	ID   string `json:"id"`
-// 	Name string `json:"name"`
-// }
-
-// TODO only name should be required (support corporate names)
-// type Contributor struct {
-// 	CreditRole []string                `json:"credit_role,omitempty"`
-// 	FirstName  string                  `json:"first_name,omitempty"`
-// 	FullName   string                  `json:"full_name,omitempty"` // TODO rename to Name
-// 	ID         string                  `json:"id,omitempty"`
-// 	LastName   string                  `json:"last_name,omitempty"`
-// 	ORCID      string                  `json:"orcid,omitempty"`
-// 	UGentID    []string                `json:"ugent_id,omitempty"`
-// 	Department []ContributorDepartment `json:"department,omitempty"`
-// }
-
-type ExternalPerson struct {
-	FullName  string `json:"full_name,omitempty"`
-	FirstName string `json:"first_name,omitempty"`
-	LastName  string `json:"last_name,omitempty"`
-}
-
 type Contributor struct {
 	PersonID       string          `json:"person_id,omitempty"`
 	Person         *Person         `json:"-"`

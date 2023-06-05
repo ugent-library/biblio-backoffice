@@ -374,9 +374,9 @@ func (h *Handler) mapPublication(p *models.Publication) *Publication {
 		pp.AbstractFull = append(pp.AbstractFull, Text{Text: v.Text, Lang: v.Lang})
 	}
 
-	for _, v := range p.Department {
-		aff := Affiliation{UGentID: v.ID, Path: make([]AffiliationPath, len(v.Tree))}
-		for i, t := range v.Tree {
+	for _, rel := range p.RelatedOrganizations {
+		aff := Affiliation{UGentID: rel.OrganizationID, Path: make([]AffiliationPath, len(rel.Organization.Tree))}
+		for i, t := range rel.Organization.Tree {
 			aff.Path[i] = AffiliationPath{UGentID: t.ID}
 		}
 		pp.Affiliation = append(pp.Affiliation, aff)
@@ -559,12 +559,12 @@ func (h *Handler) mapPublication(p *models.Publication) *Publication {
 		pp.Defense.Location = p.DefensePlace
 	}
 
-	if p.Project != nil {
-		pp.Project = make([]Project, len(p.Project))
-		for i, v := range p.Project {
+	if p.RelatedProjects != nil {
+		pp.Project = make([]Project, len(p.RelatedProjects))
+		for i, v := range p.RelatedProjects {
 			pp.Project[i] = Project{
-				ID:    v.ID,
-				Title: v.Name,
+				ID:    v.ProjectID,
+				Title: v.Project.Title,
 			}
 		}
 	}
@@ -724,12 +724,12 @@ func (h *Handler) mapDataset(d *models.Dataset) *Publication {
 		pp.AbstractFull = append(pp.AbstractFull, Text{Text: v.Text, Lang: v.Lang})
 	}
 
-	for _, v := range d.Department {
-		aff := Affiliation{UGentID: v.ID}
-		for i := len(v.Tree) - 1; i >= 0; i-- {
-			aff.Path = append(aff.Path, AffiliationPath{UGentID: v.Tree[i].ID})
+	for _, rel := range d.RelatedOrganizations {
+		aff := Affiliation{UGentID: rel.OrganizationID}
+		for i := len(rel.Organization.Tree) - 1; i >= 0; i-- {
+			aff.Path = append(aff.Path, AffiliationPath{UGentID: rel.Organization.Tree[i].ID})
 		}
-		aff.Path = append(aff.Path, AffiliationPath{UGentID: v.ID})
+		aff.Path = append(aff.Path, AffiliationPath{UGentID: rel.OrganizationID})
 		pp.Affiliation = append(pp.Affiliation, aff)
 	}
 
@@ -768,12 +768,12 @@ func (h *Handler) mapDataset(d *models.Dataset) *Publication {
 		pp.CopyrightStatement = v
 	}
 
-	if d.Project != nil {
-		pp.Project = make([]Project, len(d.Project))
-		for i, v := range d.Project {
+	if d.RelatedProjects != nil {
+		pp.Project = make([]Project, len(d.RelatedProjects))
+		for i, v := range d.RelatedProjects {
 			pp.Project[i] = Project{
-				ID:    v.ID,
-				Title: v.Name,
+				ID:    v.ProjectID,
+				Title: v.Project.Title,
 			}
 		}
 	}

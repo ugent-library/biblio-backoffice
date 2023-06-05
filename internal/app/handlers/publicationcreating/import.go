@@ -189,7 +189,7 @@ func (h *Handler) AddSingleImport(w http.ResponseWriter, r *http.Request, ctx Co
 		if orgErr != nil {
 			h.Logger.Warnw("import single publication: could not fetch user department", "errors", orgErr, "user", ctx.User.ID)
 		} else {
-			p.AddDepartmentByOrg(org)
+			p.AddOrganization(org)
 		}
 	}
 
@@ -549,7 +549,7 @@ func (h *Handler) importPublications(user *models.User, source string, file io.R
 			if orgErr != nil {
 				h.Logger.Warnw("add multiple publications: could not fetch user department", "errors", orgErr, "user", user.ID)
 			} else {
-				p.AddDepartmentByOrg(org)
+				p.AddOrganization(org)
 			}
 		}
 

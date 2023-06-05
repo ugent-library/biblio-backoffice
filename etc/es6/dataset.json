@@ -265,23 +265,11 @@
                 "date_until": {
                     "type": "date"
                 },
-                "faculty": {
+                "department": {
                     "type": "keyword"
                 },
-                "department": {
-                    "properties": {
-                        "id": {
-                          "type": "keyword"
-                        },
-                        "tree": {
-                            "properties": {
-                                "id": {
-                                    "type": "keyword",
-                                    "copy_to": ["faculty", "all"]
-                                }
-                            }
-                        }
-                    }
+                "faculty": {
+                    "type": "keyword"
                 },
                 "embargo": {
                     "type": "keyword"
