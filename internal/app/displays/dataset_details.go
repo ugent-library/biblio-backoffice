@@ -1,12 +1,24 @@
 package displays
 
 import (
+	"github.com/ugent-library/biblio-backoffice/identifiers"
+	"github.com/ugent-library/biblio-backoffice/internal/app/localize"
 	"github.com/ugent-library/biblio-backoffice/internal/locale"
 	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"github.com/ugent-library/biblio-backoffice/internal/render/display"
+	"github.com/ugent-library/biblio-backoffice/internal/vocabularies"
 )
 
 func DatasetDetails(user *models.User, l *locale.Locale, d *models.Dataset) *display.Display {
+	var identifierType, identifier string
+	for _, key := range vocabularies.Map["dataset_identifier_types"] {
+		if val := d.Identifiers.Get(key); val != "" {
+			identifierType = key
+			identifier = val
+			break
+		}
+	}
+
 	return display.New().
 		WithTheme("default").
 		AddSection(
@@ -16,15 +28,15 @@ func DatasetDetails(user *models.User, l *locale.Locale, d *models.Dataset) *dis
 				Required: true,
 			},
 			&display.Text{
-				Label:         l.T("builder.doi"),
-				Value:         d.DOI,
-				Required:      true,
-				ValueTemplate: "format/doi",
+				Label:    l.T("builder.identifier_type"),
+				Value:    identifierType,
+				Required: true,
 			},
-			&display.Text{
-				Label:         l.T("builder.url"),
-				Value:         d.URL,
-				ValueTemplate: "format/link",
+			&display.Link{
+				Label:    l.T("builder.identifier"),
+				Value:    identifier,
+				URL:      identifiers.Resolve(identifierType, identifier),
+				Required: true,
 			},
 		).
 		AddSection(
@@ -51,6 +63,9 @@ func DatasetDetails(user *models.User, l *locale.Locale, d *models.Dataset) *dis
 				Values:        d.Keyword,
 				ValueTemplate: "format/badge",
 			},
+			&display.List{
+				Label:  l.T("builder.language"),
+				Values: localize.LanguageNames(l, d.Language)},
 		).
 		AddSection(
 			&display.Text{

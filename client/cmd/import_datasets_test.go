@@ -63,6 +63,11 @@ func (s *ImportDatasetsSuite) TestValidImport() {
 		  }
 		],
 		"doi": "doi",
+		"identifiers": {
+		  "DOI": [
+		    "doi"
+		  ]
+		},
 		"format": [
 		  "text/csv"
 		],
@@ -122,7 +127,7 @@ func (s *ImportDatasetsSuite) TestImportNonJSONLInput() {
 		t.Fatal(err)
 	}
 
-	assert.Equal(t, "could not read json input: invalid character 'i' looking for beginning of value", string(stdOut))
+	assert.Equal(t, "could not read json input: invalid character 'i' looking for beginning of value\n", string(stdOut))
 }
 
 func (s *ImportDatasetsSuite) TestImportEmptyJSONLInput() {

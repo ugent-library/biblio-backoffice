@@ -45,9 +45,7 @@ var ImportFileCmd = &cobra.Command{
 
 	If the filestore already contains an identical checksum, the import will be skipped.
 	`,
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return ImportFile(cmd, args)
-	},
+	RunE: ImportFile,
 }
 
 func ImportFile(cmd *cobra.Command, args []string) error {

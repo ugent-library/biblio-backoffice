@@ -93,6 +93,11 @@ func init() {
 	message.SetString(language.English, "dataset_access_levels_after_embargo.info:eu-repo/semantics/openAccess", "Open access")
 	message.SetString(language.English, "dataset_access_levels_after_embargo.info:eu-repo/semantics/restrictedAccess", "Restricted access")
 
+	message.SetString(language.English, "dataset_link_relations.data_management_plan", "Data management plan")
+	message.SetString(language.English, "dataset_link_relations.homepage", "Accompanying website")
+	message.SetString(language.English, "dataset_link_relations.related_information", "Related information")
+	message.SetString(language.English, "dataset_link_relations.software", "Software")
+
 	message.SetString(language.English, "publication_sorts.date-updated-desc", "Updated (newest first)")
 	message.SetString(language.English, "publication_sorts.date-created-asc", "Added (oldest first)")
 	message.SetString(language.English, "publication_sorts.date-created-desc", "Added (newest first)")
@@ -223,6 +228,8 @@ func init() {
 	message.SetString(language.English, "builder.has_patent_application", "Is a patent application ongoing or planned?")
 	message.SetString(language.English, "builder.has_publications_planned", "Are other publications planned based on this dissertation (e.g. articles or book)?")
 	message.SetString(language.English, "builder.has_published_material", "Does the dissertation contain published articles (publisher's version or accepted manuscript)?")
+	message.SetString(language.English, "builder.identifier", "Repository identifier")
+	message.SetString(language.English, "builder.identifier_type", "Repository identifier type")
 	message.SetString(language.English, "builder.isbn", "ISBN")
 	message.SetString(language.English, "builder.issn", "ISSN")
 	message.SetString(language.English, "builder.eisbn", "E-ISBN")
@@ -370,6 +377,7 @@ func init() {
 	message.SetString(language.English, "organization.EB57", "Institute of Higher Education in Accounting and Tax")
 	message.SetString(language.English, "organization.EB58", "Faculty Education Services Economics and Business Administration")
 	message.SetString(language.English, "organization.EB61", "Technique and Budget")
+	message.SetString(language.English, "organization.FlandersMake", "Flanders Make")
 	message.SetString(language.English, "organization.FW", "Faculty of Pharmaceutical Sciences")
 	message.SetString(language.English, "organization.FW01", "Department of Pharmaceutics")
 	message.SetString(language.English, "organization.FW02", "Department of Pharmaceutical analysis")
@@ -667,8 +675,10 @@ func init() {
 	message.SetString(language.English, "dataset.validation.error.supervisor.last_name.required", "Last name is required")
 
 	// NEW
+	message.SetString(language.English, "validation.dataset.language.invalid", "Language code is not valid")
 	message.SetString(language.English, "validation.dataset.title.required", "Title is required")
-	message.SetString(language.English, "validation.dataset.doi.required", "DOI is required")
+	message.SetString(language.English, "validation.dataset.identifier.required", "Identifier is required")
+	message.SetString(language.English, "validation.dataset.identifier.invalid", "Identifier is invalid")
 	message.SetString(language.English, "validation.dataset.access_level.required", "Access level is required")
 	message.SetString(language.English, "validation.dataset.access_level.invalid", "Access level is an invalid value")
 	message.SetString(language.English, "validation.dataset.format.required", "Format is required")
@@ -680,6 +690,7 @@ func init() {
 	message.SetString(language.English, "validation.dataset.abstract.text.required", "Abstract text can't be empty")
 	message.SetString(language.English, "validation.dataset.license.required", "License is required")
 	message.SetString(language.English, "validation.dataset.embargo.required", "Embargo is required")
+	message.SetString(language.English, "validation.dataset.link.url.required", "URL can't be empty")
 
 	message.SetString(language.English, "validation.dataset.embargo_date.required", "Embargo date is an invalid value")
 	message.SetString(language.English, "validation.dataset.embargo_date.invalid", "Embargo date is an invalid date")
@@ -707,6 +718,7 @@ func init() {
 	message.SetString(language.English, "validation.publication.defense_date.required", "Defense date is required")
 	message.SetString(language.English, "validation.publication.defense_date.invalid", "Defense date is not a valid date")
 	message.SetString(language.English, "validation.publication.file.embargo.invalid", "Embargo is not a valid date")
+	message.SetString(language.English, "validation.publication.link.url.required", "URL can't be empty")
 
 	message.SetString(language.English, "validation.publication.file.embargo_date.invalid", "The embargo end date is not a valid date")
 	message.SetString(language.English, "validation.publication.file.access_level_during_embargo.invalid", "The selected access level is not a valid access level value")

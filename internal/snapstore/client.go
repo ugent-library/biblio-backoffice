@@ -326,9 +326,13 @@ func (store *Store) ImportSnapshot(snapshot *Snapshot, options Options) error {
 		snapshot.DateUntil); err != nil {
 		return err
 	}
+
 	if err := tx.Commit(ctx); err != nil {
 		return err
 	}
+
+	store.notify(snapshot)
+
 	return nil
 }
 

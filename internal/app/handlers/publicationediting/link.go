@@ -253,10 +253,11 @@ func linkForm(l *locale.Locale, publication *models.Publication, link *models.Pu
 		WithErrors(localize.ValidationErrors(l, errors)).
 		AddSection(
 			&form.Text{
-				Name:  "url",
-				Value: link.URL,
-				Label: l.T("builder.link.url"),
-				Cols:  12,
+				Name:     "url",
+				Value:    link.URL,
+				Label:    l.T("builder.link.url"),
+				Required: true,
+				Cols:     12,
 				Error: localize.ValidationErrorAt(
 					l,
 					errors,

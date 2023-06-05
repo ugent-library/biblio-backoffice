@@ -34,6 +34,10 @@ func IsStatus(val string) bool {
 	return InArray(vocabularies.Map["publication_statuses"], val)
 }
 
+func IsDatasetIdentifierType(val string) bool {
+	return InArray(vocabularies.Map["dataset_identifier_types"], val)
+}
+
 func IsDatasetAccessLevel(val string) bool {
 	return InArray(vocabularies.Map["dataset_access_levels"], val)
 }

@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/caltechlibrary/doitools"
 	"github.com/iancoleman/strcase"
@@ -25,7 +26,6 @@ import (
 )
 
 const timestampFmt = "2006-01-02 15:04:05"
-const timestampFmtPg = "2006-01-02 15:04:05-07"
 
 var licenses = map[string]string{
 	"CC0-1.0":          "Creative Commons Public Domain Dedication (CC0 1.0)",
@@ -239,6 +239,10 @@ type Publication struct {
 	Year                string        `json:"year,omitempty"`
 	RelatedPublication  []Relation    `json:"related_publication,omitempty"`
 	RelatedDataset      []Relation    `json:"related_dataset,omitempty"`
+	VABBID              string        `json:"vabb_id,omitempty"`
+	VABBType            string        `json:"vabb_type,omitempty"`
+	VABBApproved        *int          `json:"vabb_approved,omitempty"`
+	VABBYear            []string      `json:"vabb_year,omitempty"`
 }
 
 type Hits struct {
@@ -291,6 +295,9 @@ func (h *Handler) mapPublication(p *models.Publication) *Publication {
 		Volume:      p.Volume,
 		WOSID:       p.WOSID,
 		WOSType:     p.WOSType,
+		VABBID:      p.VABBID,
+		VABBType:    p.VABBType,
+		VABBYear:    p.VABBYear,
 	}
 
 	if p.Type != "" {
@@ -675,9 +682,17 @@ func (h *Handler) mapPublication(p *models.Publication) *Publication {
 	}
 
 	if p.RelatedDataset != nil {
-		pp.RelatedDataset = make([]Relation, len(p.RelatedDataset))
-		for i, v := range p.RelatedDataset {
-			pp.RelatedDataset[i] = Relation{ID: v.ID}
+		rel_ids := make([]string, 0, len(p.RelatedDataset))
+		for _, rd := range p.RelatedDataset {
+			rel_ids = append(rel_ids, rd.ID)
+		}
+		related_datasets, _ := h.Repository.GetDatasets(rel_ids)
+		pp.RelatedDataset = make([]Relation, 0, len(related_datasets))
+		for _, rd := range related_datasets {
+			if rd.Status != "public" {
+				continue
+			}
+			pp.RelatedDataset = append(pp.RelatedDataset, Relation{ID: rd.ID})
 		}
 	}
 
@@ -685,6 +700,16 @@ func (h *Handler) mapPublication(p *models.Publication) *Publication {
 		pp.External = 1
 	} else {
 		pp.External = 0
+	}
+
+	if p.VABBID != "" {
+		if p.VABBApproved {
+			v := 1
+			pp.VABBApproved = &v
+		} else {
+			v := 0
+			pp.VABBApproved = &v
+		}
 	}
 
 	return pp
@@ -704,8 +729,12 @@ func (h *Handler) mapDataset(d *models.Dataset) *Publication {
 		EmbargoTo:   d.AccessLevelAfterEmbargo,
 		Title:       d.Title,
 		Type:        "researchData",
-		URL:         d.URL,
 		Year:        d.Year,
+		Language:    d.Language,
+	}
+
+	if len(d.Link) > 0 {
+		pp.URL = d.Link[0].URL
 	}
 
 	for _, v := range d.Abstract {
@@ -731,10 +760,10 @@ func (h *Handler) mapDataset(d *models.Dataset) *Publication {
 		pp.CreatedBy = &Person{ID: d.Creator.ID}
 	}
 
-	if d.DOI != "" {
-		doi, err := doitools.NormalizeDOI(d.DOI)
+	if val := d.Identifiers.Get("DOI"); val != "" {
+		doi, err := doitools.NormalizeDOI(val)
 		if err != nil {
-			pp.DOI = append(pp.DOI, d.DOI)
+			pp.DOI = append(pp.DOI, val)
 		} else {
 			pp.DOI = append(pp.DOI, doi)
 		}
@@ -775,9 +804,17 @@ func (h *Handler) mapDataset(d *models.Dataset) *Publication {
 	}
 
 	if d.RelatedPublication != nil {
-		pp.RelatedPublication = make([]Relation, len(d.RelatedPublication))
-		for i, v := range d.RelatedPublication {
-			pp.RelatedPublication[i] = Relation{ID: v.ID}
+		rel_ids := make([]string, 0, len(d.RelatedPublication))
+		for _, rp := range d.RelatedPublication {
+			rel_ids = append(rel_ids, rp.ID)
+		}
+		related_publications, _ := h.Repository.GetPublications(rel_ids)
+		pp.RelatedPublication = make([]Relation, 0, len(related_publications))
+		for _, rp := range related_publications {
+			if rp.Status != "public" {
+				continue
+			}
+			pp.RelatedPublication = append(pp.RelatedPublication, Relation{ID: rp.ID})
 		}
 	}
 
@@ -843,61 +880,33 @@ func (h *Handler) GetAllPublications(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if b.Limit < 0 {
-		b.Limit = 20
-	}
-	if b.Offset < 0 {
-		b.Offset = 0
-	}
-	args := &backends.RepositoryQueryArgs{
-		Offset:  b.Offset,
-		Limit:   b.Limit,
-		Order:   "date_from ASC",
-		Filters: make([]*backends.RepositoryFilter, 0),
-	}
-
+	var updatedSince time.Time
 	if b.UpdatedSince != "" {
-		t, tErr := internal_time.ParseTimeUTC(b.UpdatedSince)
-		if tErr != nil {
-			h.Logger.Errorf("updatedSince error", "err", tErr)
-			render.InternalServerError(w, r, tErr)
+		t, err := internal_time.ParseTimeUTC(b.UpdatedSince)
+		if err != nil {
+			h.Logger.Errorw("updatedSince error", err)
+			render.InternalServerError(w, r, err)
 			return
 		}
-		updatedSince := t.Local().Format(timestampFmtPg)
-		args.Filters = append(args.Filters, &backends.RepositoryFilter{
-			Field: "date_from",
-			Value: updatedSince,
-			Op:    ">=",
-		})
+		updatedSince = t.Local()
 	}
 
 	mappedHits := &Hits{
-		Offset: b.Offset,
 		Limit:  b.Limit,
-		Hits:   make([]*Publication, 0, b.Limit),
+		Offset: b.Offset,
 	}
 
-	count, countErr := h.Repository.CountPublications(args)
-	if countErr != nil {
-		h.Logger.Errorf("count error", "err", countErr)
-		render.InternalServerError(w, r, countErr)
+	n, publications, err := h.Repository.PublicationsAfter(updatedSince, b.Limit, b.Offset)
+	if err != nil {
+		h.Logger.Errorw("select error", err)
+		render.InternalServerError(w, r, err)
 		return
 	}
-	mappedHits.Total = count
 
-	if b.Limit > 0 {
-
-		publications, searchErr := h.Repository.SearchPublications(args)
-
-		if searchErr != nil {
-			h.Logger.Errorf("select error", "err", searchErr)
-			render.InternalServerError(w, r, searchErr)
-			return
-		}
-		for _, publication := range publications {
-			mappedHits.Hits = append(mappedHits.Hits, h.mapPublication(publication))
-		}
-
+	mappedHits.Total = n
+	mappedHits.Hits = make([]*Publication, 0, len(publications))
+	for _, p := range publications {
+		mappedHits.Hits = append(mappedHits.Hits, h.mapPublication(p))
 	}
 
 	j, err := json.Marshal(mappedHits)
@@ -905,6 +914,7 @@ func (h *Handler) GetAllPublications(w http.ResponseWriter, r *http.Request) {
 		render.InternalServerError(w, r, err)
 		return
 	}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Cache-Control", "no-cache")
 	w.Write(j)
@@ -917,62 +927,33 @@ func (h *Handler) GetAllDatasets(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if b.Limit < 0 {
-		b.Limit = 20
-	}
-	if b.Offset < 0 {
-		b.Offset = 0
-	}
-	args := &backends.RepositoryQueryArgs{
-		Offset:  b.Offset,
-		Limit:   b.Limit,
-		Order:   "date_from ASC",
-		Filters: make([]*backends.RepositoryFilter, 0),
-	}
-
+	var updatedSince time.Time
 	if b.UpdatedSince != "" {
-		t, tErr := internal_time.ParseTimeUTC(b.UpdatedSince)
-		if tErr != nil {
-			h.Logger.Errorf("updatedSince error", "err", tErr)
-			render.InternalServerError(w, r, tErr)
+		t, err := internal_time.ParseTimeUTC(b.UpdatedSince)
+		if err != nil {
+			h.Logger.Errorw("updatedSince error", err)
+			render.InternalServerError(w, r, err)
 			return
 		}
-		updatedSince := t.Local().Format(timestampFmtPg)
-		args.Filters = append(args.Filters, &backends.RepositoryFilter{
-			Field: "date_from",
-			Value: updatedSince,
-			Op:    ">=",
-		})
+		updatedSince = t.Local()
 	}
 
 	mappedHits := &Hits{
-		Offset: b.Offset,
 		Limit:  b.Limit,
-		Hits:   make([]*Publication, 0, b.Limit),
+		Offset: b.Offset,
 	}
 
-	count, countErr := h.Repository.CountDatasets(args)
-	if countErr != nil {
-		h.Logger.Errorf("count error", "err", countErr)
-		render.InternalServerError(w, r, countErr)
+	n, datasets, err := h.Repository.DatasetsAfter(updatedSince, b.Limit, b.Offset)
+	if err != nil {
+		h.Logger.Errorw("select error", err)
+		render.InternalServerError(w, r, err)
 		return
 	}
-	mappedHits.Total = count
 
-	if b.Limit > 0 {
-
-		datasets, searchErr := h.Repository.SearchDatasets(args)
-
-		if searchErr != nil {
-			h.Logger.Errorf("select error", "err", searchErr)
-			render.InternalServerError(w, r, searchErr)
-			return
-		}
-
-		for _, dataset := range datasets {
-			mappedHits.Hits = append(mappedHits.Hits, h.mapDataset(dataset))
-		}
-
+	mappedHits.Total = n
+	mappedHits.Hits = make([]*Publication, 0, len(datasets))
+	for _, d := range datasets {
+		mappedHits.Hits = append(mappedHits.Hits, h.mapDataset(d))
 	}
 
 	j, err := json.Marshal(mappedHits)
@@ -980,6 +961,7 @@ func (h *Handler) GetAllDatasets(w http.ResponseWriter, r *http.Request) {
 		render.InternalServerError(w, r, err)
 		return
 	}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Cache-Control", "no-cache")
 	w.Write(j)
@@ -1034,17 +1016,66 @@ func (h *Handler) DownloadFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	b, err := h.FileStore.Get(r.Context(), f.SHA256)
-	if err != nil {
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	var reader io.ReadCloser
+	var readerErr error
+
+	if r.Method == "GET" {
+		reader, readerErr = h.FileStore.Get(r.Context(), f.SHA256)
+		if readerErr != nil {
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
+		}
+		defer reader.Close()
+	}
+
+	responseHeaders := [][]string{}
+	responseHeaders = append(responseHeaders, []string{"Content-Type", f.ContentType})
+	responseHeaders = append(responseHeaders, []string{"Content-Length", fmt.Sprintf("%d", f.Size)})
+	responseHeaders = append(responseHeaders, []string{"Last-Modified", f.DateUpdated.UTC().Format(http.TimeFormat)})
+	responseHeaders = append(responseHeaders, []string{"ETag", f.SHA256})
+	responseHeaders = append(responseHeaders, []string{"Content-Disposition", fmt.Sprintf("attachment; filename*=UTF-8''%s", url.PathEscape(f.Name))})
+
+	/*
+		Important: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/304 dictates that all
+		headers in a 304 response should be sent, that would have been sent in 200 response,
+		but https://github.com/golang/go/issues/6157 dictates that Content-Length
+		and Content-Type should not. Weird.
+	*/
+
+	// Status 304: If-Modified-Since (Last-Modified)
+	if r.Header.Get("If-Modified-Since") != "" {
+		sinceTime, err := time.Parse(http.TimeFormat, r.Header.Get("If-Modified-Since"))
+		if err != nil {
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
+		}
+		// http time format does not register milliseconds
+		if !f.DateUpdated.Truncate(time.Second).After(sinceTime) {
+			for _, pairs := range responseHeaders {
+				w.Header().Set(pairs[0], pairs[1])
+			}
+			w.WriteHeader(http.StatusNotModified)
+			return
+		}
+	}
+
+	// Status 304: If-None-Match (ETag)
+	if r.Header.Get("If-None-Match") == f.SHA256 {
+		for _, pairs := range responseHeaders {
+			w.Header().Set(pairs[0], pairs[1])
+		}
+		w.WriteHeader(http.StatusNotModified)
 		return
 	}
-	defer b.Close()
 
-	w.Header().Set(
-		"Content-Disposition",
-		fmt.Sprintf("attachment; filename*=UTF-8''%s", url.PathEscape(f.Name)),
-	)
+	// Status 200
+	for _, pairs := range responseHeaders {
+		w.Header().Set(pairs[0], pairs[1])
+	}
+	w.WriteHeader(http.StatusOK)
 
-	io.Copy(w, b)
+	if r.Method == "GET" {
+		io.Copy(w, reader)
+	}
+
 }

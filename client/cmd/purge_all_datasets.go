@@ -17,9 +17,7 @@ func init() {
 var PurgeAllDatasetsCmd = &cobra.Command{
 	Use:   "purge-all",
 	Short: "Purge all datasets",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return PurgeAllDatasets(cmd, args)
-	},
+	RunE:  PurgeAllDatasets,
 }
 
 func init() {

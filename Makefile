@@ -11,6 +11,7 @@ BIBLIO_BACKOFFICE_PG_CONN=postgres://biblio:biblio@localhost:2345/biblio
 BIBLIO_BACKOFFICE_ES6_URL=http://localhost:9400
 BIBLIO_BACKOFFICE_DATASET_INDEX=biblio_datasets
 BIBLIO_BACKOFFICE_PUBLICATION_INDEX=biblio_publications
+BIBLIO_BACKOFFICE_HOST=localhost
 BIBLIO_BACKOFFICE_PORT=3999
 BIBLIO_BACKOFFICE_MONGODB_URL=mongodb://localhost:27020/?directConnection=true&serverSelectionTimeoutMS=2000
 BIBLIO_BACKOFFICE_FRONTEND_ES6_URL=http://localhost:9400
@@ -22,10 +23,11 @@ tear-test-env:
 	docker-compose down
 
 run-tests:
-	@cd client && go clean -testcache ./... && go test ./... -v -cover
+	go run main.go reset --confirm
+	@cd client && go clean -testcache && go test ./... -v -cover
 
 coverage:
-	@cd client && go clean -testcache ./... && go test ./... -coverprofile=coverage.out && go tool cover -html=coverage.out && rm coverage.out
+	@cd client && go clean -testcache && go test ./... -coverprofile=coverage.out && go tool cover -html=coverage.out && rm coverage.out
 
 init-test-env:
 	docker-compose up -d

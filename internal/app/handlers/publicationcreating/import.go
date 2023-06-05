@@ -362,7 +362,7 @@ func (h *Handler) AddMultipleImport(w http.ResponseWriter, r *http.Request, ctx 
 	}
 
 	// TODO wait for index refresh, do something more elegant
-	time.Sleep(time.Second)
+	time.Sleep(1 * time.Second)
 
 	// redirect to batch page so that pagination links work
 	http.Redirect(

@@ -31,9 +31,7 @@ var ImportPublicationsCmd = &cobra.Command{
 		stored and indexed dataset [ID] at line [LINENO]
 		failed to validate dataset [ID] at line [LINENO]: [MSG]
 	`,
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return ImportPublications(cmd, args)
-	},
+	RunE: ImportPublications,
 }
 
 func ImportPublications(cmd *cobra.Command, args []string) error {

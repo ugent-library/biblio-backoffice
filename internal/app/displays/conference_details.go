@@ -1,6 +1,7 @@
 package displays
 
 import (
+	"github.com/ugent-library/biblio-backoffice/identifiers"
 	"github.com/ugent-library/biblio-backoffice/internal/app/helpers"
 	"github.com/ugent-library/biblio-backoffice/internal/app/localize"
 	"github.com/ugent-library/biblio-backoffice/internal/locale"
@@ -20,10 +21,10 @@ func conferenceDetails(user *models.User, l *locale.Locale, p *models.Publicatio
 				Label: l.T("builder.conference_type"),
 				Value: l.TS("conference_types", p.ConferenceType),
 			},
-			&display.Text{
-				Label:         l.T("builder.doi"),
-				Value:         p.DOI,
-				ValueTemplate: "format/doi",
+			&display.Link{
+				Label: l.T("builder.doi"),
+				Value: p.DOI,
+				URL:   identifiers.DOI.Resolve(p.DOI),
 			},
 			&display.Text{
 				Label: l.T("builder.classification"),
@@ -113,9 +114,10 @@ func conferenceDetails(user *models.User, l *locale.Locale, p *models.Publicatio
 				Label: l.T("builder.wos_type"),
 				Value: p.WOSType,
 			},
-			&display.Text{
+			&display.Link{
 				Label: l.T("builder.wos_id"),
 				Value: p.WOSID,
+				URL:   identifiers.WebOfScienceID.Resolve(p.WOSID),
 			},
 			&display.List{
 				Label:  l.T("builder.issn"),

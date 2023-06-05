@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
@@ -77,6 +78,8 @@ func purgePublication(id string) (string, string, error) {
 	rootCmd.SetErr(stdErr)
 
 	rootCmd.SetArgs([]string{"publication", "purge", id})
+
+	time.Sleep(5 * time.Second)
 
 	errGet := rootCmd.Execute()
 	if errGet != nil {

@@ -143,12 +143,6 @@ func (s *server) UpdateDataset(ctx context.Context, req *api.UpdateDatasetReques
 		}, nil
 	}
 
-	// TODO Fetch user information via better authentication (no basic auth)
-	user := &models.User{
-		ID:       "n/a",
-		FullName: "system user",
-	}
-
 	if err := d.Validate(); err != nil {
 		grpcErr := status.New(codes.InvalidArgument, fmt.Errorf("failed to validate dataset %s: %v", d.ID, err).Error())
 		return &api.UpdateDatasetResponse{
@@ -158,7 +152,7 @@ func (s *server) UpdateDataset(ctx context.Context, req *api.UpdateDatasetReques
 		}, nil
 	}
 
-	err := s.services.Repository.UpdateDataset(d.SnapshotID, d, user)
+	err := s.services.Repository.UpdateDataset(d.SnapshotID, d, nil)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
@@ -179,42 +173,7 @@ func (s *server) UpdateDataset(ctx context.Context, req *api.UpdateDatasetReques
 	return &api.UpdateDatasetResponse{}, nil
 }
 
-// TODO catch indexing errors
 func (s *server) AddDatasets(stream api.Biblio_AddDatasetsServer) error {
-	ctx := context.Background()
-
-	var biErr error
-	var biIdxErr error
-
-	bi, err := s.services.DatasetSearchService.NewBulkIndexer(backends.BulkIndexerConfig{
-		OnError: func(err error) {
-			grpcErr := status.New(codes.Internal, fmt.Errorf("failed to index dataset: %v", err).Error())
-			if err = stream.Send(&api.AddDatasetsResponse{
-				Response: &api.AddDatasetsResponse_Error{
-					Error: grpcErr.Proto(),
-				},
-			}); err != nil {
-				biErr = err
-			}
-		},
-		OnIndexError: func(id string, err error) {
-			grpcErr := status.New(codes.Internal, fmt.Errorf("failed to index dataset %s: %w", id, err).Error())
-			if err = stream.Send(&api.AddDatasetsResponse{
-				Response: &api.AddDatasetsResponse_Error{
-					Error: grpcErr.Proto(),
-				},
-			}); err != nil {
-				biErr = err
-			}
-		},
-	})
-
-	if err != nil {
-		return status.Errorf(codes.Internal, "failed to start an indexer: %s", err)
-	}
-
-	defer bi.Close(ctx)
-
 	var seq int
 
 	for {
@@ -236,7 +195,7 @@ func (s *server) AddDatasets(stream api.Biblio_AddDatasetsServer) error {
 					Error: grpcErr.Proto(),
 				},
 			}); err != nil {
-				return status.Errorf(codes.Internal, "failed to to add datasets: %v", err)
+				return status.Errorf(codes.Internal, "failed to add datasets: %v", err)
 			}
 			continue
 		}
@@ -263,7 +222,7 @@ func (s *server) AddDatasets(stream api.Biblio_AddDatasetsServer) error {
 					Error: grpcErr.Proto(),
 				},
 			}); err != nil {
-				return status.Errorf(codes.Internal, "failed to to add datasets: %v", err)
+				return status.Errorf(codes.Internal, "failed to add datasets: %v", err)
 			}
 			continue
 		}
@@ -275,29 +234,9 @@ func (s *server) AddDatasets(stream api.Biblio_AddDatasetsServer) error {
 					Error: grpcErr.Proto(),
 				},
 			}); err != nil {
-				return status.Errorf(codes.Internal, "failed to to add datasets: %v", err)
+				return status.Errorf(codes.Internal, "failed to add datasets: %v", err)
 			}
 			continue
-		}
-
-		if err := bi.Index(ctx, d); err != nil {
-			grpcErr := status.New(codes.InvalidArgument, fmt.Errorf("failed to index dataset %s at line %d: %w", d.ID, seq, err).Error())
-			if err = stream.Send(&api.AddDatasetsResponse{
-				Response: &api.AddDatasetsResponse_Error{
-					Error: grpcErr.Proto(),
-				},
-			}); err != nil {
-				return status.Errorf(codes.Internal, "failed to to add datasets: %v", err)
-			}
-			continue
-		}
-
-		if biErr != nil {
-			return status.Errorf(codes.Internal, "failed to to add datasets: %v", biErr)
-		}
-
-		if biIdxErr != nil {
-			return status.Errorf(codes.Internal, "failed to to add datasets: %v", biIdxErr)
 		}
 
 		if err = stream.Send(&api.AddDatasetsResponse{
@@ -305,46 +244,12 @@ func (s *server) AddDatasets(stream api.Biblio_AddDatasetsServer) error {
 				Message: fmt.Sprintf("stored and indexed dataset %s at line %d", d.ID, seq),
 			},
 		}); err != nil {
-			return status.Errorf(codes.Internal, "failed to to add datasets: %v", err)
+			return status.Errorf(codes.Internal, "failed to add datasets: %v", err)
 		}
 	}
 }
 
 func (s *server) ImportDatasets(stream api.Biblio_ImportDatasetsServer) error {
-	ctx := context.Background()
-
-	var biErr error
-	var biIdxErr error
-
-	bi, err := s.services.DatasetSearchService.NewBulkIndexer(backends.BulkIndexerConfig{
-		OnError: func(err error) {
-			grpcErr := status.New(codes.Internal, fmt.Errorf("failed to index dataset: %v", err).Error())
-			if err = stream.Send(&api.ImportDatasetsResponse{
-				Response: &api.ImportDatasetsResponse_Error{
-					Error: grpcErr.Proto(),
-				},
-			}); err != nil {
-				biErr = err
-			}
-		},
-		OnIndexError: func(id string, err error) {
-			grpcErr := status.New(codes.Internal, fmt.Errorf("failed to index dataset %s: %w", id, err).Error())
-			if err = stream.Send(&api.ImportDatasetsResponse{
-				Response: &api.ImportDatasetsResponse_Error{
-					Error: grpcErr.Proto(),
-				},
-			}); err != nil {
-				biErr = err
-			}
-		},
-	})
-
-	if err != nil {
-		return status.Errorf(codes.Internal, "failed to start an indexer: %s", err)
-	}
-
-	defer bi.Close(ctx)
-
 	var seq int
 
 	for {
@@ -366,7 +271,7 @@ func (s *server) ImportDatasets(stream api.Biblio_ImportDatasetsServer) error {
 					Error: grpcErr.Proto(),
 				},
 			}); err != nil {
-				return status.Errorf(codes.Internal, "failed to to import datasets: %v", err)
+				return status.Errorf(codes.Internal, "failed to import datasets: %v", err)
 			}
 			continue
 		}
@@ -378,41 +283,21 @@ func (s *server) ImportDatasets(stream api.Biblio_ImportDatasetsServer) error {
 					Error: grpcErr.Proto(),
 				},
 			}); err != nil {
-				return status.Errorf(codes.Internal, "failed to to import datasets: %v", err)
+				return status.Errorf(codes.Internal, "failed to import datasets: %v", err)
 			}
 			continue
 		}
 
-		if err := s.services.Repository.ImportCurrentDataset(d); err != nil {
+		if err := s.services.Repository.ImportDataset(d); err != nil {
 			grpcErr := status.New(codes.InvalidArgument, fmt.Errorf("failed to store dataset %s at line %d: %s", d.ID, seq, err).Error())
 			if err = stream.Send(&api.ImportDatasetsResponse{
 				Response: &api.ImportDatasetsResponse_Error{
 					Error: grpcErr.Proto(),
 				},
 			}); err != nil {
-				return status.Errorf(codes.Internal, "failed to to import datasets: %v", err)
+				return status.Errorf(codes.Internal, "failed to import datasets: %v", err)
 			}
 			continue
-		}
-
-		if err := bi.Index(ctx, d); err != nil {
-			grpcErr := status.New(codes.InvalidArgument, fmt.Errorf("failed to index dataset %s at line %d: %w", d.ID, seq, err).Error())
-			if err = stream.Send(&api.ImportDatasetsResponse{
-				Response: &api.ImportDatasetsResponse_Error{
-					Error: grpcErr.Proto(),
-				},
-			}); err != nil {
-				return status.Errorf(codes.Internal, "failed to to import datasets: %v", err)
-			}
-			continue
-		}
-
-		if biErr != nil {
-			return status.Errorf(codes.Internal, "failed to to import datasets: %v", biErr)
-		}
-
-		if biIdxErr != nil {
-			return status.Errorf(codes.Internal, "failed to to import datasets: %v", biIdxErr)
 		}
 
 		if err = stream.Send(&api.ImportDatasetsResponse{
@@ -420,7 +305,48 @@ func (s *server) ImportDatasets(stream api.Biblio_ImportDatasetsServer) error {
 				Message: fmt.Sprintf("stored and indexed dataset %s at line %d", d.ID, seq),
 			},
 		}); err != nil {
-			return status.Errorf(codes.Internal, "failed to to import datasets: %v", err)
+			return status.Errorf(codes.Internal, "failed to import datasets: %v", err)
+		}
+	}
+}
+
+func (s *server) MutateDatasets(stream api.Biblio_MutateDatasetsServer) error {
+	var seq int
+
+	for {
+		seq++
+
+		req, err := stream.Recv()
+		if err == io.EOF {
+			return nil
+		}
+		if err != nil {
+			return status.Errorf(codes.Internal, "failed to read stream: %s", err)
+		}
+
+		mut := backends.Mutation{
+			Op:   req.Op,
+			Args: req.Args,
+		}
+
+		if err := s.services.Repository.MutateDataset(req.Id, nil, mut); err != nil {
+			grpcErr := status.New(codes.InvalidArgument, fmt.Errorf("failed to mutate dataset %s at line %d: %s", req.Id, seq, err).Error())
+			if err = stream.Send(&api.MutateResponse{
+				Response: &api.MutateResponse_Error{
+					Error: grpcErr.Proto(),
+				},
+			}); err != nil {
+				return status.Errorf(codes.Internal, "failed to mutate dataset: %v", err)
+			}
+			continue
+		}
+
+		if err = stream.Send(&api.MutateResponse{
+			Response: &api.MutateResponse_Message{
+				Message: fmt.Sprintf("mutated dataset %s at line %d", req.Id, seq),
+			},
+		}); err != nil {
+			return status.Errorf(codes.Internal, "failed to mutate dataset: %v", err)
 		}
 	}
 }
@@ -547,7 +473,7 @@ func (s *server) ValidateDatasets(stream api.Biblio_ValidateDatasetsServer) erro
 					Error: grpcErr.Proto(),
 				},
 			}); err != nil {
-				return status.Errorf(codes.Internal, "failed to to validate datasets: %v", err)
+				return status.Errorf(codes.Internal, "failed to validate datasets: %v", err)
 			}
 			continue
 		}
@@ -564,10 +490,10 @@ func (s *server) ValidateDatasets(stream api.Biblio_ValidateDatasetsServer) erro
 					},
 				},
 			}); err != nil {
-				return status.Errorf(codes.Internal, "failed to to validate datasets: %v", err)
+				return status.Errorf(codes.Internal, "failed to validate datasets: %v", err)
 			}
 		} else if err != nil {
-			return status.Errorf(codes.Internal, "failed to to validate datasets: %v", err)
+			return status.Errorf(codes.Internal, "failed to validate datasets: %v", err)
 		}
 	}
 }
@@ -581,7 +507,7 @@ func (s *server) ReindexDatasets(req *api.ReindexDatasetsRequest, stream api.Bib
 			Message: "Indexing to a new index",
 		},
 	}); err != nil {
-		return status.Errorf(codes.Internal, "failed to to index datasets: %v", err)
+		return status.Errorf(codes.Internal, "failed to index datasets: %v", err)
 	}
 
 	var swErr error
@@ -636,19 +562,19 @@ func (s *server) ReindexDatasets(req *api.ReindexDatasetsRequest, stream api.Bib
 	})
 
 	if callbackErr != nil {
-		return status.Errorf(codes.Internal, "failed to to index datasets: %v", err)
+		return status.Errorf(codes.Internal, "failed to index datasets: %v", err)
 	}
 
 	if streamErr != nil {
-		return status.Errorf(codes.Internal, "failed to to index datasets: %v", err)
+		return status.Errorf(codes.Internal, "failed to index datasets: %v", err)
 	}
 
 	if swErr != nil {
-		return status.Errorf(codes.Internal, "failed to to index datasets: %v", swErr)
+		return status.Errorf(codes.Internal, "failed to index datasets: %v", swErr)
 	}
 
 	if swIdxErr != nil {
-		return status.Errorf(codes.Internal, "failed to to index datasets: %v", swIdxErr)
+		return status.Errorf(codes.Internal, "failed to index datasets: %v", swIdxErr)
 	}
 
 	if err := stream.Send(&api.ReindexDatasetsResponse{
@@ -656,7 +582,7 @@ func (s *server) ReindexDatasets(req *api.ReindexDatasetsRequest, stream api.Bib
 			Message: fmt.Sprintf("Indexed %d datasets...", indexed),
 		},
 	}); err != nil {
-		return status.Errorf(codes.Internal, "failed to to index datasets: %v", err)
+		return status.Errorf(codes.Internal, "failed to index datasets: %v", err)
 	}
 
 	if err := stream.Send(&api.ReindexDatasetsResponse{
@@ -664,7 +590,7 @@ func (s *server) ReindexDatasets(req *api.ReindexDatasetsRequest, stream api.Bib
 			Message: "Switching to new index...",
 		},
 	}); err != nil {
-		return status.Errorf(codes.Internal, "failed to to index datasets: %v", err)
+		return status.Errorf(codes.Internal, "failed to index datasets: %v", err)
 	}
 
 	if err := switcher.Switch(ctx); err != nil {
@@ -678,7 +604,7 @@ func (s *server) ReindexDatasets(req *api.ReindexDatasetsRequest, stream api.Bib
 			Message: "Indexing changes since start of reindex...",
 		},
 	}); err != nil {
-		return status.Errorf(codes.Internal, "failed to to index datasets: %v", err)
+		return status.Errorf(codes.Internal, "failed to index datasets: %v", err)
 	}
 
 	for {
@@ -764,7 +690,7 @@ func (s *server) ReindexDatasets(req *api.ReindexDatasetsRequest, stream api.Bib
 				Message: fmt.Sprintf("Indexed %d datasets...", indexed),
 			},
 		}); err != nil {
-			return status.Errorf(codes.Internal, "failed to to index datasets: %v", err)
+			return status.Errorf(codes.Internal, "failed to index datasets: %v", err)
 		}
 
 		startTime = endTime
@@ -776,7 +702,117 @@ func (s *server) ReindexDatasets(req *api.ReindexDatasetsRequest, stream api.Bib
 			Message: "Done",
 		},
 	}); err != nil {
-		return status.Errorf(codes.Internal, "failed to to index datasets: %v", err)
+		return status.Errorf(codes.Internal, "failed to index datasets: %v", err)
+	}
+
+	return nil
+}
+
+func (s *server) CleanupDatasets(req *api.CleanupDatasetsRequest, stream api.Biblio_CleanupDatasetsServer) error {
+	var callbackErr error
+
+	count := 0
+	streamErr := s.services.Repository.EachDataset(func(d *models.Dataset) bool {
+		// Guard
+		fixed := false
+
+		// Migrate DOI (temporary)
+		if d.DOI != "" {
+			if d.Identifiers == nil {
+				d.Identifiers = make(models.Identifiers)
+			}
+			d.Identifiers.Set("DOI", d.DOI)
+			d.DOI = ""
+			fixed = true
+		}
+
+		// Migrate URL (temporary)
+		if d.URL != "" {
+			d.AddLink(&models.DatasetLink{
+				URL:      d.URL,
+				Relation: "related_information",
+			})
+			d.URL = ""
+			fixed = true
+		}
+
+		// Save record if changed
+		if fixed {
+			d.User = nil
+
+			if err := d.Validate(); err != nil {
+				grpcErr := status.New(codes.Internal, fmt.Errorf("failed to validate dataset[snapshot_id: %s, id: %s] : %v", d.SnapshotID, d.ID, err).Error())
+				if err = stream.Send(&api.CleanupDatasetsResponse{
+					Response: &api.CleanupDatasetsResponse_Error{
+						Error: grpcErr.Proto(),
+					},
+				}); err != nil {
+					callbackErr = err
+					return false
+				}
+
+				return true
+			}
+
+			err := s.services.Repository.UpdateDataset(d.SnapshotID, d, nil)
+			if err != nil {
+				grpcErr := status.New(codes.Internal, fmt.Errorf("failed to update dataset[snapshot_id: %s, id: %s] : %v", d.SnapshotID, d.ID, err).Error())
+				if err = stream.Send(&api.CleanupDatasetsResponse{
+					Response: &api.CleanupDatasetsResponse_Error{
+						Error: grpcErr.Proto(),
+					},
+				}); err != nil {
+					callbackErr = err
+					return false
+				}
+
+				return true
+			}
+
+			var conflict *snapstore.Conflict
+			if errors.As(err, &conflict) {
+				grpcErr := status.New(codes.Internal, fmt.Errorf("conflict detected for dataset[snapshot_id: %s, id: %s] : %v", d.SnapshotID, d.ID, err).Error())
+				if err = stream.Send(&api.CleanupDatasetsResponse{
+					Response: &api.CleanupDatasetsResponse_Error{
+						Error: grpcErr.Proto(),
+					},
+				}); err != nil {
+					callbackErr = err
+					return false
+				}
+
+				return true
+			}
+
+			if err := stream.Send(&api.CleanupDatasetsResponse{
+				Response: &api.CleanupDatasetsResponse_Message{
+					Message: fmt.Sprintf("fixed dataset[snapshot_id: %s, id: %s]", d.SnapshotID, d.ID),
+				},
+			}); err != nil {
+				callbackErr = err
+				return false
+			}
+
+			count += 1
+		}
+
+		return true
+	})
+
+	if callbackErr != nil {
+		return status.Errorf(codes.Internal, "failed to complete cleanup: %v", callbackErr)
+	}
+
+	if streamErr != nil {
+		return status.Errorf(codes.Internal, "could not complete cleanup: %v", streamErr)
+	}
+
+	if err := stream.Send(&api.CleanupDatasetsResponse{
+		Response: &api.CleanupDatasetsResponse_Message{
+			Message: fmt.Sprintf("done. cleaned %d datasets.", count),
+		},
+	}); err != nil {
+		return status.Errorf(codes.Internal, "failed to clean up datasets: %v", err)
 	}
 
 	return nil

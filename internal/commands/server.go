@@ -21,7 +21,6 @@ import (
 	"github.com/ugent-library/biblio-backoffice/internal/backends"
 	"github.com/ugent-library/biblio-backoffice/internal/bind"
 	"github.com/ugent-library/biblio-backoffice/internal/locale"
-	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"github.com/ugent-library/biblio-backoffice/internal/render"
 	"github.com/ugent-library/biblio-backoffice/internal/urls"
 	"github.com/ugent-library/biblio-backoffice/internal/vocabularies"
@@ -107,21 +106,6 @@ var serverStartCmd = &cobra.Command{
 		e.MediaTypeSearchService.IndexAll()
 		// e.LicenseSearchService.IndexAll()
 
-		e.Repository.AddPublicationListener(func(p *models.Publication) {
-			if p.DateUntil == nil {
-				if err := e.PublicationSearchService.Index(p); err != nil {
-					logger.Errorf("error indexing publication %s: %w", p.ID, err)
-				}
-			}
-		})
-		e.Repository.AddDatasetListener(func(d *models.Dataset) {
-			if d.DateUntil == nil {
-				if err := e.DatasetSearchService.Index(d); err != nil {
-					logger.Errorf("error indexing dataset %s: %w", d.ID, err)
-				}
-			}
-		})
-
 		// setup router
 		router := buildRouter(e, logger)
 
@@ -145,8 +129,8 @@ var serverStartCmd = &cobra.Command{
 		server := graceful.WithDefaults(&http.Server{
 			Addr:         addr,
 			Handler:      handler,
-			ReadTimeout:  3 * time.Minute,
-			WriteTimeout: 3 * time.Minute,
+			ReadTimeout:  5 * time.Minute,
+			WriteTimeout: 5 * time.Minute,
 		})
 		logger.Infof("starting server at %s", addr)
 		if err := graceful.Graceful(server.ListenAndServe, server.Shutdown); err != nil {

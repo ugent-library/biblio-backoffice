@@ -2,31 +2,43 @@
 name: Improvement report
 about: Create a report to help us improve
 title: ''
-labels: ''
-assignees: sdebodt
+labels: enhancement
+assignees: ''
 
 ---
 
-**Describe the improvement**
+# Enhancement
 A clear and concise description of what the improvement is.
 
-**To Reproduce**
+## Steps to reproduce
 If something does not work as expected, which steps did you take?
 1. Go to '...'
 2. Click on '....'
 3. Scroll down to '....'
 4. See error
 
-**Expected behavior**
+## Expected behavior
 A clear and concise description of what you expected to happen.
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+## System information
 
-**Desktop (please complete the following information):**
+### Desktop
  - OS: [e.g. iOS]
  - Browser [e.g. chrome, safari]
  - Version [e.g. 22]
 
-**Additional context**
+### Smartphone
+ - Device: [e.g. iPhone6]
+ - OS: [e.g. iOS8.1]
+ - Browser [e.g. stock browser, safari]
+ - Version [e.g. 22]
+
+## Screenshots
+If applicable, add screenshots to help explain your problem.
+
+## Additional context
 Add any other context about the problem here.
+
+# Automatic testing scenario
+
+Write a high-level way to test this with Cypress if applicable.

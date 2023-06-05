@@ -23,9 +23,7 @@ func init() {
 var SearchDatasetsCmd = &cobra.Command{
 	Use:   "search",
 	Short: "Search datasets",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return SearchDatasets(cmd, args)
-	},
+	RunE:  SearchDatasets,
 }
 
 func SearchDatasets(cmd *cobra.Command, args []string) error {

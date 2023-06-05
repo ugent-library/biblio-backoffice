@@ -42,13 +42,6 @@ type PublicationFile struct {
 	Relation                 string     `json:"relation,omitempty"`
 }
 
-type PublicationLink struct {
-	ID          string `json:"id,omitempty"`
-	URL         string `json:"url,omitempty"`
-	Relation    string `json:"relation,omitempty"`
-	Description string `json:"description,omitempty"`
-}
-
 type PublicationDepartmentRef struct {
 	ID string `json:"id,omitempty"`
 }
@@ -63,6 +56,13 @@ type PublicationProject struct {
 	Name string `json:"name,omitempty"`
 }
 
+type PublicationLink struct {
+	ID          string `json:"id,omitempty"`
+	URL         string `json:"url,omitempty"`
+	Relation    string `json:"relation,omitempty"`
+	Description string `json:"description,omitempty"`
+}
+
 type PublicationORCIDWork struct {
 	ORCID   string `json:"orcid,omitempty"`
 	PutCode int    `json:"put_code,omitempty"`
@@ -73,7 +73,7 @@ type RelatedDataset struct {
 }
 
 type Publication struct {
-	Abstract         []Text         `json:"abstract,omitempty"`
+	Abstract         []*Text        `json:"abstract,omitempty"`
 	AdditionalInfo   string         `json:"additional_info,omitempty"`
 	AlternativeTitle []string       `json:"alternative_title,omitempty"`
 	ArticleNumber    string         `json:"article_number,omitempty"`
@@ -120,9 +120,9 @@ type Publication struct {
 	Keyword                 []string                `json:"keyword,omitempty"`
 	Language                []string                `json:"language,omitempty"`
 	LastUser                *PublicationUser        `json:"last_user,omitempty"`
-	LaySummary              []Text                  `json:"lay_summary,omitempty"`
+	LaySummary              []*Text                 `json:"lay_summary,omitempty"`
 	Legacy                  bool                    `json:"legacy"`
-	Link                    []PublicationLink       `json:"link,omitempty"`
+	Link                    []*PublicationLink      `json:"link,omitempty"`
 	Locked                  bool                    `json:"locked"`
 	Message                 string                  `json:"message,omitempty"`
 	MiscellaneousType       string                  `json:"miscellaneous_type,omitempty"`
@@ -355,27 +355,6 @@ func (p *Publication) ClassificationChoices() []string {
 	}
 }
 
-func (p *Publication) ResolveDOI() string {
-	if p.DOI != "" {
-		return "https://doi.org/" + p.DOI
-	}
-	return ""
-}
-
-func (p *Publication) ResolveWOSID() string {
-	if p.WOSID != "" {
-		return "https://www.webofscience.com/wos/woscc/full-record/" + p.WOSID
-	}
-	return ""
-}
-
-func (p *Publication) ResolvePubMedID() string {
-	if p.PubMedID != "" {
-		return "https://www.ncbi.nlm.nih.gov/pubmed/" + p.PubMedID
-	}
-	return ""
-}
-
 func (p *Publication) Contributors(role string) []*Contributor {
 	switch role {
 	case "author":
@@ -438,7 +417,7 @@ func (p *Publication) RemoveContributor(role string, i int) error {
 func (p *Publication) GetLink(id string) *PublicationLink {
 	for _, pl := range p.Link {
 		if pl.ID == id {
-			return &pl
+			return pl
 		}
 	}
 	return nil
@@ -447,18 +426,18 @@ func (p *Publication) GetLink(id string) *PublicationLink {
 func (p *Publication) SetLink(l *PublicationLink) {
 	for i, link := range p.Link {
 		if link.ID == l.ID {
-			p.Link[i] = *l
+			p.Link[i] = l
 		}
 	}
 }
 
 func (p *Publication) AddLink(l *PublicationLink) {
 	l.ID = ulid.Make().String()
-	p.Link = append(p.Link, *l)
+	p.Link = append(p.Link, l)
 }
 
 func (p *Publication) RemoveLink(id string) {
-	links := make([]PublicationLink, 0)
+	links := make([]*PublicationLink, 0)
 	for _, pl := range p.Link {
 		if pl.ID != id {
 			links = append(links, pl)
@@ -470,7 +449,7 @@ func (p *Publication) RemoveLink(id string) {
 func (p *Publication) GetAbstract(id string) *Text {
 	for _, abstract := range p.Abstract {
 		if abstract.ID == id {
-			return &abstract
+			return abstract
 		}
 	}
 	return nil
@@ -479,18 +458,18 @@ func (p *Publication) GetAbstract(id string) *Text {
 func (p *Publication) SetAbstract(t *Text) {
 	for i, abstract := range p.Abstract {
 		if abstract.ID == t.ID {
-			p.Abstract[i] = *t
+			p.Abstract[i] = t
 		}
 	}
 }
 
 func (p *Publication) AddAbstract(t *Text) {
 	t.ID = ulid.Make().String()
-	p.Abstract = append(p.Abstract, *t)
+	p.Abstract = append(p.Abstract, t)
 }
 
 func (p *Publication) RemoveAbstract(id string) {
-	abstracts := make([]Text, 0)
+	abstracts := make([]*Text, 0)
 	for _, abstract := range p.Abstract {
 		if abstract.ID != id {
 			abstracts = append(abstracts, abstract)
@@ -502,7 +481,7 @@ func (p *Publication) RemoveAbstract(id string) {
 func (p *Publication) GetLaySummary(id string) *Text {
 	for _, ls := range p.LaySummary {
 		if ls.ID == id {
-			return &ls
+			return ls
 		}
 	}
 	return nil
@@ -511,18 +490,18 @@ func (p *Publication) GetLaySummary(id string) *Text {
 func (p *Publication) SetLaySummary(ls *Text) {
 	for i, laySummary := range p.LaySummary {
 		if laySummary.ID == ls.ID {
-			p.LaySummary[i] = *ls
+			p.LaySummary[i] = ls
 		}
 	}
 }
 
 func (p *Publication) AddLaySummary(t *Text) {
 	t.ID = ulid.Make().String()
-	p.LaySummary = append(p.LaySummary, *t)
+	p.LaySummary = append(p.LaySummary, t)
 }
 
 func (p *Publication) RemoveLaySummary(id string) {
-	lay_summaries := make([]Text, 0)
+	lay_summaries := make([]*Text, 0)
 	for _, ls := range p.LaySummary {
 		if ls.ID != id {
 			lay_summaries = append(lay_summaries, ls)
@@ -1105,8 +1084,8 @@ func (p *Publication) Validate() error {
 		}
 	}
 
-	for i, pl := range p.Link {
-		for _, err := range pl.Validate() {
+	for i, l := range p.Link {
+		for _, err := range l.Validate() {
 			errs = append(errs, &validation.Error{
 				Pointer: fmt.Sprintf("/link/%d%s", i, err.Pointer),
 				Code:    "publication.link." + err.Code,
@@ -1294,6 +1273,18 @@ func (pf *PublicationFile) Validate() (errs validation.Errors) {
 }
 
 func (pl *PublicationLink) Validate() (errs validation.Errors) {
+	if pl.ID == "" {
+		errs = append(errs, &validation.Error{
+			Pointer: "/id",
+			Code:    "id.required",
+		})
+	}
+	if pl.URL == "" {
+		errs = append(errs, &validation.Error{
+			Pointer: "/url",
+			Code:    "url.required",
+		})
+	}
 	if !validation.InArray(vocabularies.Map["publication_link_relations"], pl.Relation) {
 		errs = append(errs, &validation.Error{
 			Pointer: "/relation",

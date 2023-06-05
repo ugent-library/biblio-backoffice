@@ -26,9 +26,7 @@ var PurgeDatasetCmd = &cobra.Command{
 		purged dataset [ID]
 	`,
 	Args: cobra.ExactArgs(1),
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return PurgeDataset(cmd, args)
-	},
+	RunE: PurgeDataset,
 }
 
 func PurgeDataset(cmd *cobra.Command, args []string) error {

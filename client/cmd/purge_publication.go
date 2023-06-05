@@ -26,9 +26,7 @@ var PurgePublicationCmd = &cobra.Command{
 		purged publication [ID]
 	`,
 	Args: cobra.ExactArgs(1),
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return PurgePublication(cmd, args)
-	},
+	RunE: PurgePublication,
 }
 
 func PurgePublication(cmd *cobra.Command, args []string) error {

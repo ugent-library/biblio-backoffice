@@ -18,9 +18,7 @@ func init() {
 var ReindexDatasetCmd = &cobra.Command{
 	Use:   "reindex",
 	Short: "Reindex all datasets",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return ReindexDatasets(cmd, args)
-	},
+	RunE:  ReindexDatasets,
 }
 
 func ReindexDatasets(cmd *cobra.Command, args []string) error {

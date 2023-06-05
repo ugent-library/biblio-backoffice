@@ -20,9 +20,7 @@ func init() {
 var ValidateDatasetsCmd = &cobra.Command{
 	Use:   "validate",
 	Short: "Validate datasets",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return ValidateDatasets(cmd, args)
-	},
+	RunE:  ValidateDatasets,
 }
 
 func ValidateDatasets(cmd *cobra.Command, args []string) error {

@@ -273,10 +273,6 @@
                         }
                     }
                 },
-                "doi": {
-                    "type": "text",
-                    "analyzer": "keyword_lowercase"
-                },
                 "embargo": {
                     "type": "keyword"
                 },
@@ -289,10 +285,20 @@
                 "id": {
                     "type": "keyword"
                 },
+                "identifier_types": {
+                    "type": "keyword"
+                },
+                "identifier_values": {
+                    "type": "text",
+                    "analyzer": "keyword_lowercase"
+                },
                 "keyword": {
                     "type": "text",
                     "analyzer": "keyword_lowercase",
                     "copy_to": "all"
+                },
+                "language": {
+                    "type": "keyword"
                 },
                 "license": {
                     "type": "keyword"

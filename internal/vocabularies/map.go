@@ -55,6 +55,7 @@ var Map = map[string][]string{
 		"has_message",
 		"created_since",
 		"updated_since",
+		"identifier_types",
 	},
 	"dataset_licenses": {
 		"CC0-1.0",
@@ -101,6 +102,14 @@ var Map = map[string][]string{
 		"writing_original_draft",
 		"writing_review_editing",
 	},
+	"dataset_identifier_types": {
+		"DOI",
+		"BioProject",
+		"BioStudies",
+		"ENA",
+		"Ensembl",
+		"Handle",
+	},
 	"dataset_access_levels": {
 		"info:eu-repo/semantics/openAccess",
 		"info:eu-repo/semantics/restrictedAccess",
@@ -111,11 +120,18 @@ var Map = map[string][]string{
 		"info:eu-repo/semantics/openAccess",
 		"info:eu-repo/semantics/restrictedAccess",
 	},
+	"dataset_link_relations": {
+		"data_management_plan",
+		"homepage",
+		"related_information",
+		"software",
+	},
 	"faculties": {
 		"CA",
 		"DS",
 		"DI",
 		"EB",
+		"FlandersMake",
 		"FW",
 		"GE",
 		"LA",
@@ -150,6 +166,7 @@ var Map = map[string][]string{
 		"WE",
 	},
 	"faculties_socs": {
+		"FlandersMake",
 		"GUK",
 		"UZGent",
 		"HOART",

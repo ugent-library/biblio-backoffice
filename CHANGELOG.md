@@ -9,9 +9,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- #898: Manual dataset input and support dataset identifier types other than DOI
+- Batch operation support (initial operations are project.add,
+  classification.set, vabb_year.add, keyword.add, keyword.remove,
+  reviewer_tag.add and reviewer_tag.remove)
+- #1109: Map VABB attributes in frontoffice handler
+
 ### Fixed
 
-- #1051: WoS import does not import complete fields completely
+## [v1.0.27] - 2023-05-08
+
+### Added
+
+### Fixed
+
+- Small ux fix
+
+## [v1.0.26] - 2023-05-08
+
+### Added
+
+- S3 support for file storage
+- #1034: Add sync-publication-contributors command to keep embedded personal
+  details up to date.
+- #973: Add link to WoS ID on record detail page
+- #1081: support HEAD request for file downloads
+- #1065: Add FlandersMake organization
+- #1058: Hide deprecated DefenseTime field
+- #601: Add unclassified and unaffiliated records to dashboard
+- More Cypress tests
+
+### Fixed
+
+- #1083: Increase request timeout to 5 minutes from 3 minutes
+- #1051: WoS import does not import all multiline fields completely
+- Ensure contact details are always visible
+- Various small ux fixes
 
 ## [v1.0.25] - 2023-03-30
 
@@ -281,7 +314,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.25...HEAD
+[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.27...HEAD
+[v1.0.27]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.26...v1.0.27
+[v1.0.26]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.25...v1.0.26
 [v1.0.25]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.24...v1.0.25
 [v1.0.24]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.23...v1.0.24
 [v1.0.23]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.22...v1.0.23

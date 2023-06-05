@@ -18,9 +18,7 @@ func init() {
 var ReindexPublicationCmd = &cobra.Command{
 	Use:   "reindex",
 	Short: "Reindex all publications",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return ReindexPublications(cmd, args)
-	},
+	RunE:  ReindexPublications,
 }
 
 func ReindexPublications(cmd *cobra.Command, args []string) error {

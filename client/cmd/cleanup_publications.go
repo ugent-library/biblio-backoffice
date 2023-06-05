@@ -18,9 +18,7 @@ func init() {
 var CleanupPublicationsCmd = &cobra.Command{
 	Use:   "cleanup",
 	Short: "Clean up inconsistencies across store publications",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return CleanupPublications(cmd, args)
-	},
+	RunE:  CleanupPublications,
 }
 
 func CleanupPublications(cmd *cobra.Command, args []string) error {
