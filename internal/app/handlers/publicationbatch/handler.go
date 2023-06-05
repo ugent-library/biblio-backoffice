@@ -60,7 +60,7 @@ func (h *Handler) Process(w http.ResponseWriter, r *http.Request, ctx Context) {
 	lines := strings.Split(strings.ReplaceAll(r.FormValue("ops"), "\r\n", "\n"), "\n")
 
 	if len(lines) > 500 {
-		h.AddSessionFlash(r, w, *flash.SimpleFlash().
+		h.AddFlash(r, w, *flash.SimpleFlash().
 			WithLevel("error").
 			WithBody("No more than 500 operations can be processed at one time.").
 			DismissedAfter(0))
@@ -110,12 +110,12 @@ func (h *Handler) Process(w http.ResponseWriter, r *http.Request, ctx Context) {
 	}
 
 	if done > 0 {
-		h.AddSessionFlash(r, w, *flash.SimpleFlash().
+		h.AddFlash(r, w, *flash.SimpleFlash().
 			WithLevel("success").
 			WithBody(template.HTML(fmt.Sprintf("<p>Successfully processed %d publications.</p>", done))))
 	}
 	if len(errorMsgs) > 0 {
-		h.AddSessionFlash(r, w, *flash.SimpleFlash().
+		h.AddFlash(r, w, *flash.SimpleFlash().
 			WithLevel("error").
 			WithBody(template.HTML(strings.Join(errorMsgs, ""))).
 			DismissedAfter(0))

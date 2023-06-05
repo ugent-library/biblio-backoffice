@@ -68,7 +68,7 @@ func (h *Handler) Withdraw(w http.ResponseWriter, r *http.Request, ctx Context) 
 		WithLevel("error").
 		WithBody(template.HTML("<p>Publication was successfully witdrawn.</p>"))
 
-	h.AddSessionFlash(r, w, *flash)
+	h.AddFlash(r, w, *flash)
 
 	w.Header().Set("HX-Redirect", r.URL.Query().Get("redirect-url"))
 }
