@@ -138,48 +138,52 @@
                         "person_id": {
                             "type": "keyword"
                         },
+                        "person": {
+                            "properties": {
+                                "orcid": {
+                                    "type": "keyword"
+                                },
+                                "ugent_id": {
+                                    "type": "keyword"
+                                },
+                                "full_name": {
+                                    "type": "text",
+                                    "copy_to": "all",
+                                    "fields": {
+                                        "ngram": {
+                                            "type": "text",
+                                            "analyzer": "token_edge_ngram",
+                                            "search_analyzer": "token_edge_ngram_search"
+                                        },
+                                        "phrase_ngram": {
+                                            "type": "text",
+                                            "analyzer": "phrase_edge_ngram",
+                                            "search_analyzer": "phrase_edge_ngram_search"
+                                        }
+                                    }
+                                } 
+                            }
+                        },
                         "external_person": {
-                            "full_name": {
-                                "type": "text",
-                                "copy_to": "all",
-                                "fields": {
-                                    "ngram": {
-                                        "type": "text",
-                                        "analyzer": "token_edge_ngram",
-                                        "search_analyzer": "token_edge_ngram_search"
-                                    },
-                                    "phrase_ngram": {
-                                        "type": "text",
-                                        "analyzer": "phrase_edge_ngram",
-                                        "search_analyzer": "phrase_edge_ngram_search"
+                            "properties": {
+                                "full_name": {
+                                    "type": "text",
+                                    "copy_to": "all",
+                                    "fields": {
+                                        "ngram": {
+                                            "type": "text",
+                                            "analyzer": "token_edge_ngram",
+                                            "search_analyzer": "token_edge_ngram_search"
+                                        },
+                                        "phrase_ngram": {
+                                            "type": "text",
+                                            "analyzer": "phrase_edge_ngram",
+                                            "search_analyzer": "phrase_edge_ngram_search"
+                                        }
                                     }
                                 }
                             }
-                        },    
-                        "person": {
-                            "orcid": {
-                                "type": "keyword"
-                            },
-                            "ugent_id": {
-                                "type": "keyword"
-                            },
-                            "full_name": {
-                                "type": "text",
-                                "copy_to": "all",
-                                "fields": {
-                                    "ngram": {
-                                        "type": "text",
-                                        "analyzer": "token_edge_ngram",
-                                        "search_analyzer": "token_edge_ngram_search"
-                                    },
-                                    "phrase_ngram": {
-                                        "type": "text",
-                                        "analyzer": "phrase_edge_ngram",
-                                        "search_analyzer": "phrase_edge_ngram_search"
-                                    }
-                                }
-                            } 
-                        }
+                        }   
                     }
                 },
                 "completeness_score": {
@@ -190,48 +194,52 @@
                         "person_id": {
                             "type": "keyword"
                         },
+                        "person": {
+                            "properties": {
+                                "orcid": {
+                                    "type": "keyword"
+                                },
+                                "ugent_id": {
+                                    "type": "keyword"
+                                },
+                                "full_name": {
+                                    "type": "text",
+                                    "copy_to": "all",
+                                    "fields": {
+                                        "ngram": {
+                                            "type": "text",
+                                            "analyzer": "token_edge_ngram",
+                                            "search_analyzer": "token_edge_ngram_search"
+                                        },
+                                        "phrase_ngram": {
+                                            "type": "text",
+                                            "analyzer": "phrase_edge_ngram",
+                                            "search_analyzer": "phrase_edge_ngram_search"
+                                        }
+                                    }
+                                } 
+                            }
+                        },
                         "external_person": {
-                            "full_name": {
-                                "type": "text",
-                                "copy_to": "all",
-                                "fields": {
-                                    "ngram": {
-                                        "type": "text",
-                                        "analyzer": "token_edge_ngram",
-                                        "search_analyzer": "token_edge_ngram_search"
-                                    },
-                                    "phrase_ngram": {
-                                        "type": "text",
-                                        "analyzer": "phrase_edge_ngram",
-                                        "search_analyzer": "phrase_edge_ngram_search"
+                            "properties": {
+                                "full_name": {
+                                    "type": "text",
+                                    "copy_to": "all",
+                                    "fields": {
+                                        "ngram": {
+                                            "type": "text",
+                                            "analyzer": "token_edge_ngram",
+                                            "search_analyzer": "token_edge_ngram_search"
+                                        },
+                                        "phrase_ngram": {
+                                            "type": "text",
+                                            "analyzer": "phrase_edge_ngram",
+                                            "search_analyzer": "phrase_edge_ngram_search"
+                                        }
                                     }
                                 }
                             }
-                        },    
-                        "person": {
-                            "orcid": {
-                                "type": "keyword"
-                            },
-                            "ugent_id": {
-                                "type": "keyword"
-                            },
-                            "full_name": {
-                                "type": "text",
-                                "copy_to": "all",
-                                "fields": {
-                                    "ngram": {
-                                        "type": "text",
-                                        "analyzer": "token_edge_ngram",
-                                        "search_analyzer": "token_edge_ngram_search"
-                                    },
-                                    "phrase_ngram": {
-                                        "type": "text",
-                                        "analyzer": "phrase_edge_ngram",
-                                        "search_analyzer": "phrase_edge_ngram_search"
-                                    }
-                                }
-                            } 
-                        }
+                        }  
                     }
                 },
                 "creator": {
