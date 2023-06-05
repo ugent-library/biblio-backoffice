@@ -56,7 +56,6 @@ type PublicationGetter interface {
 }
 
 type Repository interface {
-	Transaction(context.Context, func(Repository) error) error
 	GetPublication(string) (*models.Publication, error)
 	GetPublications([]string) ([]*models.Publication, error)
 	SavePublication(*models.Publication, *models.User) error

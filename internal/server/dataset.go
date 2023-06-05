@@ -31,13 +31,13 @@ func (s *server) GetDataset(ctx context.Context, req *api.GetDatasetRequest) (*a
 				},
 			}, nil
 		} else {
-			return nil, status.Errorf(codes.Internal, "could not get dataset with id %s: %v", err)
+			return nil, status.Errorf(codes.Internal, "could not get dataset with id %s: %v", req.Id, err)
 		}
 	}
 
 	j, err := json.Marshal(p)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "could not marshal dataset with id %s: %v", err)
+		return nil, status.Errorf(codes.Internal, "could not marshal dataset with id %s: %v", req.Id, err)
 	}
 
 	res := &api.GetDatasetResponse{
@@ -405,7 +405,7 @@ func (s *server) PurgeDataset(ctx context.Context, req *api.PurgeDatasetRequest)
 				},
 			}, nil
 		} else {
-			return nil, status.Errorf(codes.Internal, "could not get dataset with id %s: %v", err)
+			return nil, status.Errorf(codes.Internal, "could not get dataset with id %s: %v", req.Id, err)
 		}
 	}
 
@@ -441,7 +441,7 @@ func (s *server) PurgeAllDatasets(ctx context.Context, req *api.PurgeAllDatasets
 	}
 
 	if err := s.services.DatasetSearchService.DeleteAll(); err != nil {
-		return nil, status.Errorf(codes.Internal, "could not delete dataset from index: %w", err)
+		return nil, status.Errorf(codes.Internal, "could not delete dataset from index: %s", err)
 	}
 
 	return &api.PurgeAllDatasetsResponse{
