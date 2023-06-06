@@ -9,7 +9,6 @@ import (
 
 type PublicationSearchService struct {
 	Client
-	scopes []M
 }
 
 func NewPublicationSearchService(c Client) *PublicationSearchService {

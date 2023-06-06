@@ -84,3 +84,47 @@ func ToTypeFilter(t string, name string, field string, values ...string) models.
 
 	return nil
 }
+
+// filter without facet values
+var RegularPublicationFilters = []map[string]string{
+	{
+		"name":  "created_since",
+		"field": "date_created",
+		"type":  "date_since",
+	},
+	{
+		"name":  "updated_since",
+		"field": "date_updated",
+		"type":  "date_since",
+	},
+}
+
+var RegularDatasetFilters = []map[string]string{
+	{
+		"name":  "created_since",
+		"field": "date_created",
+		"type":  "date_since",
+	},
+	{
+		"name":  "updated_since",
+		"field": "date_updated",
+		"type":  "date_since",
+	},
+}
+
+func getRegularPublicationFilter(name string, values ...string) models.Filterable {
+	for _, cf := range RegularPublicationFilters {
+		if cf["name"] == name {
+			return ToTypeFilter(cf["type"], cf["name"], cf["field"], values...)
+		}
+	}
+	return nil
+}
+func getRegularDatasetFilter(name string, values ...string) models.Filterable {
+	for _, cf := range RegularPublicationFilters {
+		if cf["name"] == name {
+			return ToTypeFilter(cf["type"], cf["name"], cf["field"], values...)
+		}
+	}
+	return nil
+}
