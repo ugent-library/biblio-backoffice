@@ -5,13 +5,49 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ugent-library/biblio-backoffice/internal/models"
 	internal_time "github.com/ugent-library/biblio-backoffice/internal/time"
 )
 
+/*
+Name: 		public field name (e.g. url query parameter)
+Field: 		internal field name (e.g. elasticsearch field)
+Values:		array of string values
+Type:		type of filter. To distinguish from other filters
+ToQuery:	convert and return search engine specific filter
+*/
+type Filterable interface {
+	GetName() string
+	GetField() string
+	GetValues() []string
+	GetType() string
+	ToQuery() map[string]interface{}
+}
+
+type Filter struct {
+	Name   string
+	Field  string
+	Values []string
+}
+
+type BaseFilter struct {
+	Filter
+}
+
+func (bf *BaseFilter) GetName() string {
+	return bf.Name
+}
+
+func (bf *BaseFilter) GetField() string {
+	return bf.Field
+}
+
+func (bf *BaseFilter) GetValues() []string {
+	return bf.Values
+}
+
 // regular field filter: accepts syntax in the filter value
 type FieldFilter struct {
-	models.BaseFilter
+	BaseFilter
 }
 
 func (ff *FieldFilter) ToQuery() map[string]interface{} {
@@ -24,7 +60,7 @@ func (ff *FieldFilter) GetType() string {
 
 // date filter
 type DateSinceFilter struct {
-	models.BaseFilter
+	BaseFilter
 }
 
 func (dbf *DateSinceFilter) ToQuery() map[string]interface{} {
@@ -67,7 +103,7 @@ func parseTimeSince(v string) string {
 	return internal_time.FormatTimeUTC(&t)
 }
 
-func ToTypeFilter(t string, name string, field string, values ...string) models.Filterable {
+func ToTypeFilter(t string, name string, field string, values ...string) Filterable {
 	if t == "date_since" {
 		f := &DateSinceFilter{}
 		f.Name = name
@@ -112,7 +148,7 @@ var RegularDatasetFilters = []map[string]string{
 	},
 }
 
-func getRegularPublicationFilter(name string, values ...string) models.Filterable {
+func getRegularPublicationFilter(name string, values ...string) Filterable {
 	for _, cf := range RegularPublicationFilters {
 		if cf["name"] == name {
 			return ToTypeFilter(cf["type"], cf["name"], cf["field"], values...)
@@ -120,7 +156,7 @@ func getRegularPublicationFilter(name string, values ...string) models.Filterabl
 	}
 	return nil
 }
-func getRegularDatasetFilter(name string, values ...string) models.Filterable {
+func getRegularDatasetFilter(name string, values ...string) Filterable {
 	for _, cf := range RegularPublicationFilters {
 		if cf["name"] == name {
 			return ToTypeFilter(cf["type"], cf["name"], cf["field"], values...)
