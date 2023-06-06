@@ -29,8 +29,6 @@ func (pi *PublicationIndex) Search(args *models.SearchArgs) (*models.Publication
 
 	queryFilters := query["query"].(M)["bool"].(M)["filter"].([]M)
 	queryMust := query["query"].(M)["bool"].(M)["must"].(M)
-	query["size"] = args.Limit()
-	query["from"] = args.Offset()
 
 	// extra internal filters
 	// internalFilters := []M{

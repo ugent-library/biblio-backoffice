@@ -30,8 +30,6 @@ func (di *DatasetIndex) Search(args *models.SearchArgs) (*models.DatasetHits, er
 
 	queryFilters := query["query"].(M)["bool"].(M)["filter"].([]M)
 	queryMust := query["query"].(M)["bool"].(M)["must"].(M)
-	query["size"] = args.Limit()
-	query["from"] = args.Offset()
 
 	// extra internal filters
 	// internalFilters := []M{
