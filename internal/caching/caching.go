@@ -50,8 +50,8 @@ type personService struct {
 }
 
 func NewPersonService(service backends.PersonService) backends.PersonService {
-	cache := gcache.New(10000).
-		Expiration(30 * time.Minute).
+	cache := gcache.New(50000).
+		Expiration(1 * time.Hour).
 		LoaderFunc(func(key any) (any, error) {
 			return service.GetPerson(key.(string))
 		}).
@@ -78,7 +78,7 @@ type organizationService struct {
 
 func NewOrganizationService(service backends.OrganizationService) backends.OrganizationService {
 	cache := gcache.New(1000).
-		Expiration(30 * time.Minute).
+		Expiration(1 * time.Hour).
 		LoaderFunc(func(key any) (any, error) {
 			return service.GetOrganization(key.(string))
 		}).
@@ -104,8 +104,8 @@ type projectService struct {
 }
 
 func NewProjectService(service backends.ProjectService) backends.ProjectService {
-	cache := gcache.New(2500).
-		Expiration(30 * time.Minute).
+	cache := gcache.New(5000).
+		Expiration(1 * time.Hour).
 		LoaderFunc(func(key any) (any, error) {
 			return service.GetProject(key.(string))
 		}).
