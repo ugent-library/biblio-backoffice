@@ -23,7 +23,7 @@ func NewPublications(c Client) *Publications {
 	return &Publications{Client: c}
 }
 
-func (publications *Publications) Search(args *models.SearchArgs) (*models.PublicationHits, error) {
+func (publications *Publications) Search(args *models.SearchArgs) (*models.SearchHits, error) {
 	// BUILD QUERY AND FILTERS FROM USER INPUT
 	query := buildPublicationUserQuery(args)
 
@@ -286,8 +286,9 @@ type publicationResEnvelope struct {
 	Hits struct {
 		Total int
 		Hits  []struct {
-			Source    json.RawMessage `json:"_source"`
-			Highlight json.RawMessage
+			ID string `json:"_id"`
+			// Source json.RawMessage `json:"_source"`
+			// Highlight json.RawMessage
 		}
 	}
 	Aggregations struct {
@@ -295,9 +296,8 @@ type publicationResEnvelope struct {
 	}
 }
 
-func decodePublicationRes(r *publicationResEnvelope, facets []string) (*models.PublicationHits, error) {
-
-	hits := models.PublicationHits{}
+func decodePublicationRes(r *publicationResEnvelope, facets []string) (*models.SearchHits, error) {
+	hits := models.SearchHits{}
 	hits.Total = r.Hits.Total
 
 	hits.Facets = make(map[string]models.FacetValues)
@@ -343,13 +343,7 @@ func decodePublicationRes(r *publicationResEnvelope, facets []string) (*models.P
 	}
 
 	for _, h := range r.Hits.Hits {
-		var hit models.Publication
-
-		if err := json.Unmarshal(h.Source, &hit); err != nil {
-			return nil, err
-		}
-
-		hits.Hits = append(hits.Hits, &hit)
+		hits.Hits = append(hits.Hits, h.ID)
 	}
 
 	return &hits, nil
@@ -435,7 +429,7 @@ func (publications *Publications) DeleteAll() error {
 	return nil
 }
 
-func (publications *Publications) WithScope(field string, terms ...string) backends.PublicationSearchService {
+func (publications *Publications) WithScope(field string, terms ...string) backends.PublicationIDSearchService {
 	p := publications.Clone()
 	p.scopes = append(p.scopes, ParseScope(field, terms...))
 	return p

@@ -128,6 +128,16 @@ type DatasetSearchService interface {
 	NewIndexSwitcher(BulkIndexerConfig) (IndexSwitcher[*models.Dataset], error)
 }
 
+type PublicationIDSearchService interface {
+	Search(*models.SearchArgs) (*models.SearchHits, error)
+	Index(*models.Publication) error
+	Delete(id string) error
+	DeleteAll() error
+	WithScope(string, ...string) PublicationIDSearchService
+	NewBulkIndexer(BulkIndexerConfig) (BulkIndexer[*models.Publication], error)
+	NewIndexSwitcher(BulkIndexerConfig) (IndexSwitcher[*models.Publication], error)
+}
+
 type PublicationSearchService interface {
 	Search(*models.SearchArgs) (*models.PublicationHits, error)
 	Index(*models.Publication) error
@@ -138,11 +148,80 @@ type PublicationSearchService interface {
 	NewIndexSwitcher(BulkIndexerConfig) (IndexSwitcher[*models.Publication], error)
 }
 
+type publicationSearchService struct {
+	PublicationIDSearchService
+	repo Repository
+}
+
+func NewPublicationSearchService(s PublicationIDSearchService, r Repository) PublicationSearchService {
+	return &publicationSearchService{
+		PublicationIDSearchService: s,
+		repo:                       r,
+	}
+}
+
+func (s *publicationSearchService) Search(args *models.SearchArgs) (*models.PublicationHits, error) {
+	h, err := s.PublicationIDSearchService.Search(args)
+	if err != nil {
+		return nil, err
+	}
+	pubs, err := s.repo.GetPublications(h.Hits)
+	if err != nil {
+		return nil, err
+	}
+	return &models.PublicationHits{
+		Pagination: h.Pagination,
+		Hits:       pubs,
+		Facets:     h.Facets,
+	}, nil
+}
+
+func (s *publicationSearchService) WithScope(field string, terms ...string) PublicationSearchService {
+	return &publicationSearchService{
+		PublicationIDSearchService: s.PublicationIDSearchService.WithScope(field, terms...),
+		repo:                       s.repo,
+	}
+}
+
+type PublicationIDSearcherService interface {
+	GetMaxSize() int
+	SetMaxSize(int)
+	WithScope(string, ...string) PublicationIDSearcherService
+	Searcher(*models.SearchArgs, func(string)) error
+}
+
 type PublicationSearcherService interface {
 	GetMaxSize() int
 	SetMaxSize(int)
 	WithScope(string, ...string) PublicationSearcherService
 	Searcher(*models.SearchArgs, func(*models.Publication)) error
+}
+
+type publicationSearcherService struct {
+	PublicationIDSearcherService
+	repo Repository
+}
+
+func NewPublicationSearcherService(s PublicationIDSearcherService, r Repository) PublicationSearcherService {
+	return &publicationSearcherService{
+		PublicationIDSearcherService: s,
+		repo:                         r,
+	}
+}
+
+func (s *publicationSearcherService) Searcher(args *models.SearchArgs, fn func(*models.Publication)) error {
+	return s.PublicationIDSearcherService.Searcher(args, func(id string) {
+		// TODO handle error
+		pub, _ := s.repo.GetPublication(id)
+		fn(pub)
+	})
+}
+
+func (s *publicationSearcherService) WithScope(field string, terms ...string) PublicationSearcherService {
+	return &publicationSearcherService{
+		PublicationIDSearcherService: s.PublicationIDSearcherService.WithScope(field, terms...),
+		repo:                         s.repo,
+	}
 }
 
 type DatasetSearcherService interface {

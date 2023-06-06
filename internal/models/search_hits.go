@@ -1,5 +1,13 @@
 package models
 
+import "github.com/ugent-library/biblio-backoffice/internal/pagination"
+
+type SearchHits struct {
+	pagination.Pagination
+	Hits   []string
+	Facets map[string]FacetValues
+}
+
 type FacetValues []Facet
 
 type Facet struct {

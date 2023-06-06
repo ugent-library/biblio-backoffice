@@ -100,13 +100,15 @@ func newServices() *backends.Services {
 	}
 	projectService := caching.NewProjectService(authorityClient)
 
+	repo := newRepository(logger, personService, organizationService, projectService)
+
 	return &backends.Services{
 		FileStore:                 newFileStore(),
 		ORCIDSandbox:              orcidConfig.Sandbox,
 		ORCIDClient:               orcidClient,
-		Repository:                newRepository(logger, personService, organizationService, projectService),
+		Repository:                repo,
 		DatasetSearchService:      newDatasetSearchService(),
-		PublicationSearchService:  newPublicationSearchService(),
+		PublicationSearchService:  backends.NewPublicationSearchService(newPublicationSearchService(), repo),
 		OrganizationService:       organizationService,
 		PersonService:             personService,
 		ProjectService:            projectService,
@@ -143,7 +145,7 @@ func newServices() *backends.Services {
 		PublicationListExporters: map[string]backends.PublicationListExporterFactory{
 			"xlsx": excel_publication.NewExporter,
 		},
-		PublicationSearcherService: newPublicationSearcherService(),
+		PublicationSearcherService: backends.NewPublicationSearcherService(newPublicationSearcherService(), repo),
 		DatasetListExporters: map[string]backends.DatasetListExporterFactory{
 			"xlsx": excel_dataset.NewExporter,
 		},
@@ -377,7 +379,7 @@ func newEs6Client(t string) *es6.Client {
 	return client
 }
 
-func newPublicationSearchService() backends.PublicationSearchService {
+func newPublicationSearchService() backends.PublicationIDSearchService {
 	es6Client := newEs6Client("publication")
 	return es6.NewPublications(*es6Client)
 
@@ -389,7 +391,7 @@ func newDatasetSearchService() backends.DatasetSearchService {
 
 }
 
-func newPublicationSearcherService() backends.PublicationSearcherService {
+func newPublicationSearcherService() backends.PublicationIDSearcherService {
 	es6Client := newEs6Client("publication")
 	//max size of exportable records is now 10K. Make configurable
 	return es6.NewPublicationSearcher(*es6Client, 10000)

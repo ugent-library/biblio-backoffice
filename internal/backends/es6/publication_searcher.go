@@ -31,7 +31,7 @@ func (searcher *PublicationSearcher) SetMaxSize(maxSize int) {
 	searcher.maxSize = maxSize
 }
 
-func (searcher *PublicationSearcher) Searcher(searchArgs *models.SearchArgs, cb func(*models.Publication)) error {
+func (searcher *PublicationSearcher) Searcher(searchArgs *models.SearchArgs, cb func(string)) error {
 
 	nProcessed := 0
 	start := 0
@@ -81,7 +81,7 @@ func (searcher *PublicationSearcher) Searcher(searchArgs *models.SearchArgs, cb 
 		}
 
 		if len(hits.Hits) > 0 {
-			sortValue = hits.Hits[len(hits.Hits)-1].ID
+			sortValue = hits.Hits[len(hits.Hits)-1]
 		}
 
 		if len(hits.Hits) < limit {
@@ -90,7 +90,7 @@ func (searcher *PublicationSearcher) Searcher(searchArgs *models.SearchArgs, cb 
 	}
 }
 
-func (searcher *PublicationSearcher) WithScope(field string, terms ...string) backends.PublicationSearcherService {
+func (searcher *PublicationSearcher) WithScope(field string, terms ...string) backends.PublicationIDSearcherService {
 	p := searcher.Clone()
 	p.scopes = append(p.scopes, ParseScope(field, terms...))
 	return p
@@ -129,7 +129,7 @@ func (searcher *PublicationSearcher) buildEsOpts(query M) ([]func(*esapi.SearchR
 	return opts, nil
 }
 
-func (searcher *PublicationSearcher) esSearch(opts ...func(*esapi.SearchRequest)) (*models.PublicationHits, error) {
+func (searcher *PublicationSearcher) esSearch(opts ...func(*esapi.SearchRequest)) (*models.SearchHits, error) {
 	var envelop publicationResEnvelope
 	err := searcher.Client.searchWithOpts(opts, &envelop)
 	if err != nil {
