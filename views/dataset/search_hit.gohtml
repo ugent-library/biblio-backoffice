@@ -17,16 +17,17 @@
                 </a>
                 <div class="dropdown-divider"></div>
                 {{if eq .Dataset.Status "public"}}
-                <a class="dropdown-item" href="https://biblio.ugent.be/publication/{{.Dataset.ID}}" target="_blank">
-                    <i class="if if-book"></i>
-                    <span>Public Biblio Location</span>
-                </a>
+                    <a class="dropdown-item" href="https://biblio.ugent.be/publication/{{.Dataset.ID}}" target="_blank">
+                        <i class="if if-book"></i>
+                        <span>Public Biblio Location</span>
+                    </a>
                 {{end}}
-                {{if index .Dataset.Identifiers "DOI"}}
-                <a class="dropdown-item" href="{{resolveDOI (.Dataset.Identifiers.Get "DOI")}}" target="_blank">
-                    <i class="if if-external-link"></i>
-                    <span>View in external repository</span>
-                </a>
+                {{range $type, $vals := .Dataset.Identifiers}}
+                    <a class="dropdown-item" href="{{resolveIdentifier $type (index $vals 0)}}" target="_blank">
+                        <i class="if if-external-link"></i>
+                        <span>View in external repository</span>
+                    </a>
+                    {{break}}
                 {{end}}
                 {{/*
                 {{if and (eq .Dataset.Status "public") .User.ORCID .User.ORCIDToken}}

@@ -21,9 +21,7 @@ func init() {
 var ValidatePublicationsCmd = &cobra.Command{
 	Use:   "validate",
 	Short: "Validate publications",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return ValidatePublications(cmd, args)
-	},
+	RunE:  ValidatePublications,
 }
 
 func ValidatePublications(cmd *cobra.Command, args []string) error {

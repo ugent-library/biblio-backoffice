@@ -56,14 +56,14 @@ type PublicationGetter interface {
 
 type Repository interface {
 	Transaction(context.Context, func(Repository) error) error
-	AddPublicationListener(func(*models.Publication))
 	GetPublication(string) (*models.Publication, error)
 	GetPublications([]string) ([]*models.Publication, error)
 	SavePublication(*models.Publication, *models.User) error
-	ImportCurrentPublication(*models.Publication) error
+	ImportPublication(*models.Publication) error
 	UpdatePublication(string, *models.Publication, *models.User) error
-	UpdatePublicationInPlace(p *models.Publication) error
-	PublicationsAfter(t time.Time, limit, offset int) (int, []*models.Publication, error)
+	UpdatePublicationInPlace(*models.Publication) error
+	MutatePublication(string, *models.User, ...Mutation) error
+	PublicationsAfter(time.Time, int, int) (int, []*models.Publication, error)
 	PublicationsBetween(time.Time, time.Time, func(*models.Publication) bool) error
 	EachPublication(func(*models.Publication) bool) error
 	EachPublicationSnapshot(func(*models.Publication) bool) error
@@ -72,13 +72,13 @@ type Repository interface {
 	UpdatePublicationEmbargoes() (int, error)
 	PurgeAllPublications() error
 	PurgePublication(string) error
-	AddDatasetListener(func(*models.Dataset))
 	GetDataset(string) (*models.Dataset, error)
 	GetDatasets([]string) ([]*models.Dataset, error)
-	ImportCurrentDataset(*models.Dataset) error
+	ImportDataset(*models.Dataset) error
 	SaveDataset(*models.Dataset, *models.User) error
 	UpdateDataset(string, *models.Dataset, *models.User) error
-	DatasetsAfter(t time.Time, limit, offset int) (int, []*models.Dataset, error)
+	MutateDataset(string, *models.User, ...Mutation) error
+	DatasetsAfter(time.Time, int, int) (int, []*models.Dataset, error)
 	DatasetsBetween(time.Time, time.Time, func(*models.Dataset) bool) error
 	EachDataset(func(*models.Dataset) bool) error
 	EachDatasetSnapshot(func(*models.Dataset) bool) error
@@ -230,4 +230,9 @@ type RepositoryQueryArgs struct {
 	Offset  int
 	Order   string
 	Filters []*RepositoryFilter
+}
+
+type Mutation struct {
+	Op   string
+	Args []string
 }

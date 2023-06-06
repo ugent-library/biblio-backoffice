@@ -36,9 +36,7 @@ var AddFileCmd = &cobra.Command{
 		$ sha256sum -c /path/to/id.txt
 	`,
 	Args: cobra.ExactArgs(1),
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return AddFile(cmd, args)
-	},
+	RunE: AddFile,
 }
 
 func AddFile(cmd *cobra.Command, args []string) error {

@@ -23,6 +23,7 @@ service Biblio {
     rpc UpdatePublication(UpdatePublicationRequest) returns (UpdatePublicationResponse);
     rpc AddPublications(stream AddPublicationsRequest) returns (stream AddPublicationsResponse);
     rpc ImportPublications(stream ImportPublicationsRequest) returns (stream ImportPublicationsResponse);
+    rpc MutatePublications(stream MutateRequest) returns (stream MutateResponse);
     rpc GetPublicationHistory(GetPublicationHistoryRequest) returns (stream GetPublicationHistoryResponse);
     rpc PurgePublication(PurgePublicationRequest) returns (PurgePublicationResponse);
     rpc PurgeAllPublications(PurgeAllPublicationsRequest) returns (PurgeAllPublicationsResponse);
@@ -37,6 +38,7 @@ service Biblio {
     rpc UpdateDataset(UpdateDatasetRequest) returns (UpdateDatasetResponse);
     rpc AddDatasets(stream AddDatasetsRequest) returns (stream AddDatasetsResponse);
     rpc ImportDatasets(stream ImportDatasetsRequest) returns (stream importDatasetsResponse);
+    rpc MutateDatasets(stream MutateRequest) returns (stream MutateResponse);
     rpc GetDatasetHistory(GetDatasetHistoryRequest) returns (stream GetDatasetHistoryResponse);
     rpc PurgeDataset(PurgeDatasetRequest) returns (PurgeDatasetResponse);
     rpc PurgeAllDatasets(PurgeAllDatasetsRequest) returns (PurgeAllDatasetsResponse);
@@ -52,6 +54,19 @@ message Publication {
 
 message Dataset {
     bytes payload = 1;
+}
+
+message MutateRequest {
+    string id = 1;
+    string op = 2;
+    repeated string args = 3;
+}
+
+message MutateResponse {
+    oneof response {
+        string message = 1;
+        google.rpc.Status error = 2;
+    }
 }
 
 message GetFileRequest {

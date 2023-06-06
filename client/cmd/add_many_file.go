@@ -34,9 +34,7 @@ var AddManyFileCmd = &cobra.Command{
 		$ ./biblio-backoffice file add_many < /path/to/file_paths.txt > /path/to/ids.txt
 		$ sha256sum -c /path/to/ids.txt
 	`,
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return AddManyFile(cmd, args)
-	},
+	RunE: AddManyFile,
 }
 
 func AddManyFile(cmd *cobra.Command, args []string) error {

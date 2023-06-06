@@ -28,9 +28,7 @@ var UpdatePublicationCmd = &cobra.Command{
 
 		$ ./biblio-backoffice publication update < publications.jsonl
 	`,
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return UpdatePublication(cmd, args)
-	},
+	RunE: UpdatePublication,
 }
 
 func UpdatePublication(cmd *cobra.Command, args []string) error {

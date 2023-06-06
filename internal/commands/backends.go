@@ -27,6 +27,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/internal/backends/s3store"
 	"github.com/ugent-library/biblio-backoffice/internal/caching"
 	"github.com/ugent-library/biblio-backoffice/internal/models"
+	"github.com/ugent-library/biblio-backoffice/internal/mutate"
 
 	"github.com/ugent-library/biblio-backoffice/internal/backends/ianamedia"
 	"github.com/ugent-library/biblio-backoffice/internal/backends/jsonl"
@@ -86,16 +87,18 @@ func newServices() *backends.Services {
 
 	logger := newLogger()
 
+	projectService := caching.NewProjectService(authorityClient)
+
 	return &backends.Services{
 		FileStore:                 newFileStore(),
 		ORCIDSandbox:              orcidConfig.Sandbox,
 		ORCIDClient:               orcidClient,
-		Repository:                newRepository(logger),
+		Repository:                newRepository(logger, projectService),
 		DatasetSearchService:      newDatasetSearchService(),
 		PublicationSearchService:  newPublicationSearchService(),
 		OrganizationService:       caching.NewOrganizationService(authorityClient),
 		PersonService:             caching.NewPersonService(authorityClient),
-		ProjectService:            caching.NewProjectService(authorityClient),
+		ProjectService:            projectService,
 		UserService:               caching.NewUserService(authorityClient),
 		OrganizationSearchService: authorityClient,
 		PersonSearchService:       authorityClient,
@@ -157,32 +160,49 @@ func newLogger() *zap.SugaredLogger {
 	return sugar
 }
 
-func newRepository(logger *zap.SugaredLogger) backends.Repository {
+func newRepository(logger *zap.SugaredLogger, projectService backends.ProjectService) backends.Repository {
 	ctx := context.Background()
 
 	bp := newPublicationBulkIndexerService(logger)
 	bd := newDatasetBulkIndexerService(logger)
 
-	repo, err := repository.New(viper.GetString("pg-conn"))
+	repo, err := repository.New(repository.Config{
+		DSN: viper.GetString("pg-conn"),
+
+		PublicationListeners: []repository.PublicationListener{
+			func(p *models.Publication) {
+				if p.DateUntil == nil {
+					if err := bp.Index(ctx, p); err != nil {
+						logger.Errorf("error indexing publication %s: %w", p.ID, err)
+					}
+				}
+			},
+		},
+
+		DatasetListeners: []repository.DatasetListener{
+			func(d *models.Dataset) {
+				if d.DateUntil == nil {
+					if err := bd.Index(ctx, d); err != nil {
+						logger.Errorf("error indexing dataset %s: %w", d.ID, err)
+					}
+				}
+			},
+		},
+
+		PublicationMutators: map[string]repository.PublicationMutator{
+			"project.add":         mutate.ProjectAdd(projectService),
+			"classification.set":  mutate.ClassificationSet,
+			"keyword.add":         mutate.KeywordAdd,
+			"keyword.remove":      mutate.KeywordRemove,
+			"vabb_year.add":       mutate.VABBYearAdd,
+			"reviewer_tag.add":    mutate.ReviewerTagAdd,
+			"reviewer_tag.remove": mutate.ReviewerTagRemove,
+		},
+	})
+
 	if err != nil {
 		log.Fatalln("unable to create store", err)
 	}
-
-	repo.AddPublicationListener(func(p *models.Publication) {
-		if p.DateUntil == nil {
-			if err := bp.Index(ctx, p); err != nil {
-				logger.Errorf("error indexing publication %s: %w", p.ID, err)
-			}
-		}
-	})
-
-	repo.AddDatasetListener(func(d *models.Dataset) {
-		if d.DateUntil == nil {
-			if err := bd.Index(ctx, d); err != nil {
-				logger.Errorf("error indexing dataset %s: %w", d.ID, err)
-			}
-		}
-	})
 
 	return repo
 }

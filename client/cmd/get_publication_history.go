@@ -25,9 +25,7 @@ var GetPublicationHistoryCmd = &cobra.Command{
 		$ ./biblio-backoffice publication get-history [ID] > history.jsonl
 	`,
 	Args: cobra.ExactArgs(1),
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return GetPublicationHistory(cmd, args)
-	},
+	RunE: GetPublicationHistory,
 }
 
 func GetPublicationHistory(cmd *cobra.Command, args []string) error {

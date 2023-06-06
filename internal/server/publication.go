@@ -198,7 +198,7 @@ func (s *server) AddPublications(stream api.Biblio_AddPublicationsServer) error 
 					Error: grpcErr.Proto(),
 				},
 			}); err != nil {
-				return status.Errorf(codes.Internal, "failed to to add publications: %v", err)
+				return status.Errorf(codes.Internal, "failed to add publications: %v", err)
 			}
 			continue
 		}
@@ -238,7 +238,7 @@ func (s *server) AddPublications(stream api.Biblio_AddPublicationsServer) error 
 					Error: grpcErr.Proto(),
 				},
 			}); err != nil {
-				return status.Errorf(codes.Internal, "failed to to add publications: %v", err)
+				return status.Errorf(codes.Internal, "failed to add publications: %v", err)
 			}
 			continue
 		}
@@ -250,7 +250,7 @@ func (s *server) AddPublications(stream api.Biblio_AddPublicationsServer) error 
 					Error: grpcErr.Proto(),
 				},
 			}); err != nil {
-				return status.Errorf(codes.Internal, "failed to to add publications: %v", err)
+				return status.Errorf(codes.Internal, "failed to add publications: %v", err)
 			}
 			continue
 		}
@@ -260,7 +260,7 @@ func (s *server) AddPublications(stream api.Biblio_AddPublicationsServer) error 
 				Message: fmt.Sprintf("stored and indexed publication %s at line %d", p.ID, seq),
 			},
 		}); err != nil {
-			return status.Errorf(codes.Internal, "failed to to add publications: %v", err)
+			return status.Errorf(codes.Internal, "failed to add publications: %v", err)
 		}
 	}
 }
@@ -287,7 +287,7 @@ func (s *server) ImportPublications(stream api.Biblio_ImportPublicationsServer) 
 					Error: grpcErr.Proto(),
 				},
 			}); err != nil {
-				return status.Errorf(codes.Internal, "failed to to import publications: %v", err)
+				return status.Errorf(codes.Internal, "failed to import publications: %v", err)
 			}
 			continue
 		}
@@ -299,19 +299,19 @@ func (s *server) ImportPublications(stream api.Biblio_ImportPublicationsServer) 
 					Error: grpcErr.Proto(),
 				},
 			}); err != nil {
-				return status.Errorf(codes.Internal, "failed to to import publications: %v", err)
+				return status.Errorf(codes.Internal, "failed to import publications: %v", err)
 			}
 			continue
 		}
 
-		if err := s.services.Repository.ImportCurrentPublication(p); err != nil {
+		if err := s.services.Repository.ImportPublication(p); err != nil {
 			grpcErr := status.New(codes.InvalidArgument, fmt.Errorf("failed to store publication %s at line %d: %s", p.ID, seq, err).Error())
 			if err = stream.Send(&api.ImportPublicationsResponse{
 				Response: &api.ImportPublicationsResponse_Error{
 					Error: grpcErr.Proto(),
 				},
 			}); err != nil {
-				return status.Errorf(codes.Internal, "failed to to import publications: %v", err)
+				return status.Errorf(codes.Internal, "failed to import publications: %v", err)
 			}
 			continue
 		}
@@ -321,13 +321,53 @@ func (s *server) ImportPublications(stream api.Biblio_ImportPublicationsServer) 
 				Message: fmt.Sprintf("stored and indexed publication %s at line %d", p.ID, seq),
 			},
 		}); err != nil {
-			return status.Errorf(codes.Internal, "failed to to import publications: %v", err)
+			return status.Errorf(codes.Internal, "failed to import publications: %v", err)
+		}
+	}
+}
+
+func (s *server) MutatePublications(stream api.Biblio_MutatePublicationsServer) error {
+	var seq int
+
+	for {
+		seq++
+
+		req, err := stream.Recv()
+		if err == io.EOF {
+			return nil
+		}
+		if err != nil {
+			return status.Errorf(codes.Internal, "failed to read stream: %s", err)
+		}
+
+		mut := backends.Mutation{
+			Op:   req.Op,
+			Args: req.Args,
+		}
+
+		if err := s.services.Repository.MutatePublication(req.Id, nil, mut); err != nil {
+			grpcErr := status.New(codes.InvalidArgument, fmt.Errorf("failed to mutate publication %s at line %d: %s", req.Id, seq, err).Error())
+			if err = stream.Send(&api.MutateResponse{
+				Response: &api.MutateResponse_Error{
+					Error: grpcErr.Proto(),
+				},
+			}); err != nil {
+				return status.Errorf(codes.Internal, "failed to mutate publication: %v", err)
+			}
+			continue
+		}
+
+		if err = stream.Send(&api.MutateResponse{
+			Response: &api.MutateResponse_Message{
+				Message: fmt.Sprintf("mutated publication %s at line %d", req.Id, seq),
+			},
+		}); err != nil {
+			return status.Errorf(codes.Internal, "failed to mutate publication: %v", err)
 		}
 	}
 }
 
 func (s *server) GetPublicationHistory(req *api.GetPublicationHistoryRequest, stream api.Biblio_GetPublicationHistoryServer) (err error) {
-
 	var callbackErr error
 	streamErr := s.services.Repository.PublicationHistory(req.Id, func(p *models.Publication) bool {
 		j, err := json.Marshal(p)
@@ -449,7 +489,7 @@ func (s *server) ValidatePublications(stream api.Biblio_ValidatePublicationsServ
 					Error: grpcErr.Proto(),
 				},
 			}); err != nil {
-				return status.Errorf(codes.Internal, "failed to to validate publications: %v", err)
+				return status.Errorf(codes.Internal, "failed to validate publications: %v", err)
 			}
 			continue
 		}
@@ -466,10 +506,10 @@ func (s *server) ValidatePublications(stream api.Biblio_ValidatePublicationsServ
 					},
 				},
 			}); err != nil {
-				return status.Errorf(codes.Internal, "failed to to validate publications: %v", err)
+				return status.Errorf(codes.Internal, "failed to validate publications: %v", err)
 			}
 		} else if err != nil {
-			return status.Errorf(codes.Internal, "failed to to validate publications: %v", err)
+			return status.Errorf(codes.Internal, "failed to validate publications: %v", err)
 		}
 	}
 }
@@ -483,7 +523,7 @@ func (s *server) ReindexPublications(req *api.ReindexPublicationsRequest, stream
 			Message: "Indexing to a new index",
 		},
 	}); err != nil {
-		return status.Errorf(codes.Internal, "failed to to index publications: %v", err)
+		return status.Errorf(codes.Internal, "failed to index publications: %v", err)
 	}
 
 	var swErr error
@@ -538,19 +578,19 @@ func (s *server) ReindexPublications(req *api.ReindexPublicationsRequest, stream
 	})
 
 	if callbackErr != nil {
-		return status.Errorf(codes.Internal, "failed to to index publications: %v", err)
+		return status.Errorf(codes.Internal, "failed to index publications: %v", err)
 	}
 
 	if streamErr != nil {
-		return status.Errorf(codes.Internal, "failed to to index publications: %v", err)
+		return status.Errorf(codes.Internal, "failed to index publications: %v", err)
 	}
 
 	if swErr != nil {
-		return status.Errorf(codes.Internal, "failed to to index publications: %v", swErr)
+		return status.Errorf(codes.Internal, "failed to index publications: %v", swErr)
 	}
 
 	if swIdxErr != nil {
-		return status.Errorf(codes.Internal, "failed to to index publications: %v", swIdxErr)
+		return status.Errorf(codes.Internal, "failed to index publications: %v", swIdxErr)
 	}
 
 	if err := stream.Send(&api.ReindexPublicationsResponse{
@@ -558,7 +598,7 @@ func (s *server) ReindexPublications(req *api.ReindexPublicationsRequest, stream
 			Message: fmt.Sprintf("Indexed %d publications...", indexed),
 		},
 	}); err != nil {
-		return status.Errorf(codes.Internal, "failed to to index publications: %v", err)
+		return status.Errorf(codes.Internal, "failed to index publications: %v", err)
 	}
 
 	if err := stream.Send(&api.ReindexPublicationsResponse{
@@ -566,7 +606,7 @@ func (s *server) ReindexPublications(req *api.ReindexPublicationsRequest, stream
 			Message: "Switching to new index...",
 		},
 	}); err != nil {
-		return status.Errorf(codes.Internal, "failed to to index publications: %v", err)
+		return status.Errorf(codes.Internal, "failed to index publications: %v", err)
 	}
 
 	if err := switcher.Switch(ctx); err != nil {
@@ -580,7 +620,7 @@ func (s *server) ReindexPublications(req *api.ReindexPublicationsRequest, stream
 			Message: "Indexing changes since start of reindex...",
 		},
 	}); err != nil {
-		return status.Errorf(codes.Internal, "failed to to index publications: %v", err)
+		return status.Errorf(codes.Internal, "failed to index publications: %v", err)
 	}
 
 	for {
@@ -666,7 +706,7 @@ func (s *server) ReindexPublications(req *api.ReindexPublicationsRequest, stream
 				Message: fmt.Sprintf("Indexed %d publications...", indexed),
 			},
 		}); err != nil {
-			return status.Errorf(codes.Internal, "failed to to index publications: %v", err)
+			return status.Errorf(codes.Internal, "failed to index publications: %v", err)
 		}
 
 		startTime = endTime
@@ -678,7 +718,7 @@ func (s *server) ReindexPublications(req *api.ReindexPublicationsRequest, stream
 			Message: "Done",
 		},
 	}); err != nil {
-		return status.Errorf(codes.Internal, "failed to to index publications: %v", err)
+		return status.Errorf(codes.Internal, "failed to index publications: %v", err)
 	}
 
 	return nil
@@ -843,11 +883,11 @@ func (s *server) TransferPublications(req *api.TransferPublicationsRequest, stre
 	}
 
 	if callbackErr != nil {
-		return status.Errorf(codes.Internal, "failed to to transfer publication: %v", callbackErr)
+		return status.Errorf(codes.Internal, "failed to transfer publication: %v", callbackErr)
 	}
 
 	if streamErr != nil {
-		return status.Errorf(codes.Internal, "failed to to transfer publication: %v", streamErr)
+		return status.Errorf(codes.Internal, "failed to transfer publication: %v", streamErr)
 	}
 
 	return nil
@@ -976,7 +1016,7 @@ func (s *server) CleanupPublications(req *api.CleanupPublicationsRequest, stream
 			Message: fmt.Sprintf("done. cleaned %d publications.", count),
 		},
 	}); err != nil {
-		return status.Errorf(codes.Internal, "failed to to clean up publications: %v", err)
+		return status.Errorf(codes.Internal, "failed to clean up publications: %v", err)
 	}
 
 	return nil

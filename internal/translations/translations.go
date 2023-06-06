@@ -93,8 +93,10 @@ func init() {
 	message.SetString(language.English, "dataset_access_levels_after_embargo.info:eu-repo/semantics/openAccess", "Open access")
 	message.SetString(language.English, "dataset_access_levels_after_embargo.info:eu-repo/semantics/restrictedAccess", "Restricted access")
 
+	message.SetString(language.English, "dataset_link_relations.data_management_plan", "Data management plan")
 	message.SetString(language.English, "dataset_link_relations.homepage", "Accompanying website")
 	message.SetString(language.English, "dataset_link_relations.related_information", "Related information")
+	message.SetString(language.English, "dataset_link_relations.software", "Software")
 
 	message.SetString(language.English, "publication_sorts.date-updated-desc", "Updated (newest first)")
 	message.SetString(language.English, "publication_sorts.date-created-asc", "Added (oldest first)")
@@ -226,8 +228,8 @@ func init() {
 	message.SetString(language.English, "builder.has_patent_application", "Is a patent application ongoing or planned?")
 	message.SetString(language.English, "builder.has_publications_planned", "Are other publications planned based on this dissertation (e.g. articles or book)?")
 	message.SetString(language.English, "builder.has_published_material", "Does the dissertation contain published articles (publisher's version or accepted manuscript)?")
-	message.SetString(language.English, "builder.identifier", "Repository identifier")
-	message.SetString(language.English, "builder.identifier_type", "Repository identifier type")
+	message.SetString(language.English, "builder.identifier", "Identifier")
+	message.SetString(language.English, "builder.identifier_type", "Persistent identifier type")
 	message.SetString(language.English, "builder.isbn", "ISBN")
 	message.SetString(language.English, "builder.issn", "ISSN")
 	message.SetString(language.English, "builder.eisbn", "E-ISBN")
@@ -643,6 +645,7 @@ func init() {
 	message.SetString(language.English, "tooltip.dataset.access_level", "Specify the access level that is set in the external data repository. <a href=\"https://onderzoektips.ugent.be/en/tips/00002057/\" target=\"_blank\">See documentation <i class=\"if if--small if-external-link\"></i></a>")
 	message.SetString(language.English, "tooltip.dataset.contributors", "<a href=\"https://onderzoektips.ugent.be/en/tips/00002059/\" target=\"_blank\">https://onderzoektips.ugent.be/en/tips/00002059/ <i class=\"if if--small if-external-link\"></i></a>")
 	message.SetString(language.English, "tooltip.dataset.format", "Technical format of the data (select an <a href=\"https://www.iana.org/assignments/media-types/media-types.xhtml\">Internet Media Type</a> from the autocomplete drop-down menu (e.g. text/csv, image/jpeg) or enter <a href=\"https://en.wikipedia.org/wiki/List_of_file_formats\">free text</a>). <a href=\"https://onderzoektips.ugent.be/en/tips/00002058/\" target=\"_blank\">See documentation <i class=\"if if--small if-external-link\"></i></a>")
+	message.SetString(language.English, "tooltip.dataset.identifier", "Persistent identifier or accession number that uniquely identifies and locates your dataset.")
 	message.SetString(language.English, "tooltip.dataset.license", "Specify the license that is set in the external data repository. This license lets potential users of your data know in advance what they are allowed to do with the data. The supported licenses in the list are harvested from spdx.org/licenses. If you cannot find the license you're looking for, you can add a URL or URI to the license. <a href=\"https://onderzoektips.ugent.be/en/tips/00002057/\" target=\"_blank\">See documentation <i class=\"if if--small if-external-link\"></i></a>")
 	message.SetString(language.English, "tooltip.dataset.publisher", "The name of the entity that holds, archives, publishes prints, distributes, releases, issues, or produces the resource. Typically, the name of the data repository in which the datasets was deposited.")
 	message.SetString(language.English, "tooltip.dataset.related_publications", "<a href=\"https://onderzoektips.ugent.be/en/tips/00002061/\" target=\"_blank\">https://onderzoektips.ugent.be/en/tips/00002061/ <i class=\"if if--small if-external-link\"></i></a>")
@@ -672,6 +675,7 @@ func init() {
 	message.SetString(language.English, "dataset.validation.error.supervisor.last_name.required", "Last name is required")
 
 	// NEW
+	message.SetString(language.English, "validation.dataset.language.invalid", "Language code is not valid")
 	message.SetString(language.English, "validation.dataset.title.required", "Title is required")
 	message.SetString(language.English, "validation.dataset.identifier.required", "Identifier is required")
 	message.SetString(language.English, "validation.dataset.identifier.invalid", "Identifier is invalid")
@@ -755,6 +759,8 @@ func init() {
 	message.SetString(language.English, "builder.type.help", "Changing the publication type might result in data loss")
 	message.SetString(language.English, "builder.doi.help", "e.g. 10.1093/plcell/koc126")
 	message.SetString(language.English, "builder.year.help", "e.g. 2022")
+	message.SetString(language.English, "builder.identifier_type.help", "More information about <a href=\"https://www.ugent.be/en/research/datamanagement/after-research/fair-data.htm#FAIRconcepts\" target=\"_blank\">persistent identifiers.</a><br><a href=\"https://biblio.ugent.be/contact\" target=\"_blank\">Contact us</a> if your identifier is not in the list.")
+	message.SetString(language.English, "builder.identifier.help", "e.g. 1854/LU-01H03BX2HH1YNS0KJHBK0T1WYV")
 	message.SetString(language.English, "builder.other_license.help", "e.g. https://creativecommons.org/licenses/publicdomain/")
 	// message.SetString(language.English, "builder.file.other_license.help", "e.g. https://creativecommons.org/licenses/publicdomain/")
 	message.SetString(language.English, "builder.wos_id.help", "e.g. 000503382400004")

@@ -21,9 +21,7 @@ var GetFileCmd = &cobra.Command{
 	Use:   "get [sha256]",
 	Short: "Get file",
 	Args:  cobra.ExactArgs(1),
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return GetFile(cmd, args)
-	},
+	RunE:  GetFile,
 }
 
 func GetFile(cmd *cobra.Command, args []string) error {

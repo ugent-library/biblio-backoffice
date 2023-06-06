@@ -24,9 +24,7 @@ var GetDatasetCmd = &cobra.Command{
 		$ ./biblio-backoffice dataset get [ID] > dataset.jsonl
 	`,
 	Args: cobra.ExactArgs(1),
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return GetDataset(cmd, args)
-	},
+	RunE: GetDataset,
 }
 
 func GetDataset(cmd *cobra.Command, args []string) error {

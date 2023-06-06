@@ -1,3 +1,4 @@
+// TODO all mutating methods should call Validate() before saving
 package repository
 
 import (
@@ -16,14 +17,29 @@ import (
 )
 
 type Repository struct {
-	client           *snapstore.Client
-	publicationStore *snapstore.Store
-	datasetStore     *snapstore.Store
-	opts             snapstore.Options
+	client              *snapstore.Client
+	publicationStore    *snapstore.Store
+	datasetStore        *snapstore.Store
+	publicationMutators map[string]PublicationMutator
+	datasetMutators     map[string]DatasetMutator
+	opts                snapstore.Options
 }
 
-func New(dsn string) (*Repository, error) {
-	db, err := pgxpool.Connect(context.Background(), dsn)
+type Config struct {
+	DSN                  string
+	PublicationListeners []PublicationListener
+	DatasetListeners     []DatasetListener
+	PublicationMutators  map[string]PublicationMutator
+	DatasetMutators      map[string]DatasetMutator
+}
+
+type PublicationListener = func(*models.Publication)
+type DatasetListener = func(*models.Dataset)
+type PublicationMutator = func(*models.Publication, []string) error
+type DatasetMutator = func(*models.Dataset, []string) error
+
+func New(c Config) (*Repository, error) {
+	db, err := pgxpool.Connect(context.Background(), c.DSN)
 	if err != nil {
 		return nil, err
 	}
@@ -34,44 +50,50 @@ func New(dsn string) (*Repository, error) {
 		}),
 	)
 
-	return &Repository{
-		client:           client,
-		publicationStore: client.Store("publications"),
-		datasetStore:     client.Store("datasets"),
-	}, nil
-}
+	repo := &Repository{
+		client:              client,
+		publicationStore:    client.Store("publications"),
+		datasetStore:        client.Store("datasets"),
+		publicationMutators: c.PublicationMutators,
+		datasetMutators:     c.DatasetMutators,
+	}
 
-func (s *Repository) AddPublicationListener(fn func(*models.Publication)) {
-	s.publicationStore.Listen(func(snap *snapstore.Snapshot) {
-		p := &models.Publication{}
-		if err := snap.Scan(p); err == nil {
-			p.SnapshotID = snap.SnapshotID
-			p.DateFrom = snap.DateFrom
-			p.DateUntil = snap.DateUntil
-			fn(p)
-		}
-	})
-}
+	for _, fn := range c.PublicationListeners {
+		repo.publicationStore.Listen(func(snap *snapstore.Snapshot) {
+			p := &models.Publication{}
+			if err := snap.Scan(p); err == nil {
+				p.SnapshotID = snap.SnapshotID
+				p.DateFrom = snap.DateFrom
+				p.DateUntil = snap.DateUntil
+				fn(p)
+			}
+		})
+	}
 
-func (s *Repository) AddDatasetListener(fn func(*models.Dataset)) {
-	s.datasetStore.Listen(func(snap *snapstore.Snapshot) {
-		d := &models.Dataset{}
-		if err := snap.Scan(d); err == nil {
-			d.SnapshotID = snap.SnapshotID
-			d.DateFrom = snap.DateFrom
-			d.DateUntil = snap.DateUntil
-			fn(d)
-		}
-	})
+	for _, fn := range c.DatasetListeners {
+		repo.datasetStore.Listen(func(snap *snapstore.Snapshot) {
+			d := &models.Dataset{}
+			if err := snap.Scan(d); err == nil {
+				d.SnapshotID = snap.SnapshotID
+				d.DateFrom = snap.DateFrom
+				d.DateUntil = snap.DateUntil
+				fn(d)
+			}
+		})
+	}
+
+	return repo, nil
 }
 
 func (s *Repository) Transaction(ctx context.Context, fn func(backends.Repository) error) error {
 	return s.client.Transaction(ctx, func(opts snapstore.Options) error {
 		return fn(&Repository{
-			client:           s.client,
-			publicationStore: s.publicationStore,
-			datasetStore:     s.datasetStore,
-			opts:             opts,
+			client:              s.client,
+			publicationStore:    s.publicationStore,
+			datasetStore:        s.datasetStore,
+			publicationMutators: s.publicationMutators,
+			datasetMutators:     s.datasetMutators,
+			opts:                opts,
 		})
 	})
 }
@@ -115,15 +137,7 @@ func (s *Repository) GetPublications(ids []string) ([]*models.Publication, error
 	return publications, nil
 }
 
-func (s *Repository) importPublication(p *models.Publication) error {
-	snap, err := publicationToSnapshot(p)
-	if err != nil {
-		return err
-	}
-	return s.publicationStore.ImportSnapshot(snap, s.opts)
-}
-
-func (s *Repository) ImportCurrentPublication(p *models.Publication) error {
+func (s *Repository) ImportPublication(p *models.Publication) error {
 	if p.DateCreated == nil {
 		return fmt.Errorf("unable to import old publication %s: date_created is not set", p.ID)
 	}
@@ -136,7 +150,11 @@ func (s *Repository) ImportCurrentPublication(p *models.Publication) error {
 	if p.DateUntil != nil {
 		return fmt.Errorf("unable to import old publication %s: date_until should be nil", p.ID)
 	}
-	return s.importPublication(p)
+	snap, err := publicationToSnapshot(p)
+	if err != nil {
+		return err
+	}
+	return s.publicationStore.ImportSnapshot(snap, s.opts)
 }
 
 func (s *Repository) SavePublication(p *models.Publication, u *models.User) error {
@@ -205,6 +223,33 @@ func (s *Repository) UpdatePublicationInPlace(p *models.Publication) error {
 	}
 
 	return nil
+}
+
+func (s *Repository) MutatePublication(id string, u *models.User, muts ...backends.Mutation) error {
+	if len(muts) == 0 {
+		return nil
+	}
+
+	p, err := s.GetPublication(id)
+	if err != nil {
+		return err
+	}
+
+	for _, mut := range muts {
+		mutator, ok := s.publicationMutators[mut.Op]
+		if !ok {
+			return fmt.Errorf("unknown mutation '%s'", mut.Op)
+		}
+		if err := mutator(p, mut.Args); err != nil {
+			return err
+		}
+	}
+
+	if err = p.Validate(); err != nil {
+		return err
+	}
+
+	return s.UpdatePublication(p.SnapshotID, p, u)
 }
 
 func (s *Repository) PublicationsAfter(t time.Time, limit, offset int) (int, []*models.Publication, error) {
@@ -319,6 +364,7 @@ func (s *Repository) EachPublicationSnapshot(fn func(*models.Publication) bool) 
 	return c.Err()
 }
 
+// TODO add handle with a listener
 func (s *Repository) EachPublicationWithoutHandle(fn func(*models.Publication) bool) error {
 	sql := `
 		SELECT * FROM publications WHERE date_until IS NULL AND
@@ -460,15 +506,7 @@ func (s *Repository) GetDatasets(ids []string) ([]*models.Dataset, error) {
 	return datasets, nil
 }
 
-func (s *Repository) importDataset(d *models.Dataset) error {
-	snap, err := datasetToSnapshot(d)
-	if err != nil {
-		return err
-	}
-	return s.datasetStore.ImportSnapshot(snap, s.opts)
-}
-
-func (s *Repository) ImportCurrentDataset(d *models.Dataset) error {
+func (s *Repository) ImportDataset(d *models.Dataset) error {
 	if d.DateCreated == nil {
 		return fmt.Errorf("unable to import dataset %s: date_created is not set", d.ID)
 	}
@@ -481,7 +519,11 @@ func (s *Repository) ImportCurrentDataset(d *models.Dataset) error {
 	if d.DateUntil != nil {
 		return fmt.Errorf("unable to import dataset %s: date_until should be nil", d.ID)
 	}
-	return s.importDataset(d)
+	snap, err := datasetToSnapshot(d)
+	if err != nil {
+		return err
+	}
+	return s.datasetStore.ImportSnapshot(snap, s.opts)
 }
 
 func (s *Repository) SaveDataset(d *models.Dataset, u *models.User) error {
@@ -540,6 +582,33 @@ func (s *Repository) UpdateDataset(snapshotID string, d *models.Dataset, u *mode
 	}
 	d.SnapshotID = snapshotID
 	return nil
+}
+
+func (s *Repository) MutateDataset(id string, u *models.User, muts ...backends.Mutation) error {
+	if len(muts) == 0 {
+		return nil
+	}
+
+	d, err := s.GetDataset(id)
+	if err != nil {
+		return err
+	}
+
+	for _, mut := range muts {
+		mutator, ok := s.datasetMutators[mut.Op]
+		if !ok {
+			return fmt.Errorf("unknown mutation '%s'", mut.Op)
+		}
+		if err := mutator(d, mut.Args); err != nil {
+			return err
+		}
+	}
+
+	if err = d.Validate(); err != nil {
+		return err
+	}
+
+	return s.UpdateDataset(d.SnapshotID, d, u)
 }
 
 func (s *Repository) DatasetsAfter(t time.Time, limit, offset int) (int, []*models.Dataset, error) {

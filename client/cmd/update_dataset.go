@@ -28,9 +28,7 @@ var UpdateDatasetCmd = &cobra.Command{
 
 		$ ./biblio-backoffice dataset update < datasets.jsonl
 	`,
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return UpdateDataset(cmd, args)
-	},
+	RunE: UpdateDataset,
 }
 
 func UpdateDataset(cmd *cobra.Command, args []string) error {

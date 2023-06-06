@@ -1,6 +1,7 @@
 package displays
 
 import (
+	"github.com/ugent-library/biblio-backoffice/identifiers"
 	"github.com/ugent-library/biblio-backoffice/internal/app/helpers"
 	"github.com/ugent-library/biblio-backoffice/internal/app/localize"
 	"github.com/ugent-library/biblio-backoffice/internal/locale"
@@ -20,10 +21,10 @@ func journalArticleDetails(user *models.User, l *locale.Locale, p *models.Public
 				Label: l.T("builder.journal_article_type"),
 				Value: l.TS("journal_article_types", p.JournalArticleType),
 			},
-			&display.Text{
-				Label:         l.T("builder.doi"),
-				Value:         p.DOI,
-				ValueTemplate: "format/doi",
+			&display.Link{
+				Label: l.T("builder.doi"),
+				Value: p.DOI,
+				URL:   identifiers.DOI.Resolve(p.DOI),
 			},
 			&display.Text{
 				Label: l.T("builder.classification"),
@@ -109,10 +110,10 @@ func journalArticleDetails(user *models.User, l *locale.Locale, p *models.Public
 				Value:   p.WOSType,
 				Tooltip: l.T("tooltip.publication.wos_type"),
 			},
-			&display.Text{
-				Label:         l.T("builder.wos_id"),
-				Value:         p.WOSID,
-				ValueTemplate: "format/wos_id",
+			&display.Link{
+				Label: l.T("builder.wos_id"),
+				Value: p.WOSID,
+				URL:   identifiers.WebOfScienceID.Resolve(p.WOSID),
 			},
 			&display.List{
 				Label:  l.T("builder.issn"),
