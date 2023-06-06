@@ -501,6 +501,7 @@ func (s *server) ValidateDatasets(stream api.Biblio_ValidateDatasetsServer) erro
 func (s *server) ReindexDatasets(req *api.ReindexDatasetsRequest, stream api.Biblio_ReindexDatasetsServer) error {
 	startTime := time.Now()
 	indexed := 0
+	reported := 0
 
 	if err := stream.Send(&api.ReindexDatasetsResponse{
 		Response: &api.ReindexDatasetsResponse_Message{
@@ -558,6 +559,16 @@ func (s *server) ReindexDatasets(req *api.ReindexDatasetsRequest, stream api.Bib
 
 		indexed++
 
+		// progress message
+		if indexed-500 == reported {
+			stream.Send(&api.ReindexDatasetsResponse{
+				Response: &api.ReindexDatasetsResponse_Message{
+					Message: fmt.Sprintf("Indexing %d datasets...", indexed),
+				},
+			})
+			reported = indexed
+		}
+
 		return true
 	})
 
@@ -579,7 +590,7 @@ func (s *server) ReindexDatasets(req *api.ReindexDatasetsRequest, stream api.Bib
 
 	if err := stream.Send(&api.ReindexDatasetsResponse{
 		Response: &api.ReindexDatasetsResponse_Message{
-			Message: fmt.Sprintf("Indexed %d datasets...", indexed),
+			Message: fmt.Sprintf("Indexed %d datasets", indexed),
 		},
 	}); err != nil {
 		return status.Errorf(codes.Internal, "failed to index datasets: %v", err)
@@ -601,7 +612,7 @@ func (s *server) ReindexDatasets(req *api.ReindexDatasetsRequest, stream api.Bib
 
 	if err := stream.Send(&api.ReindexDatasetsResponse{
 		Response: &api.ReindexDatasetsResponse_Message{
-			Message: "Indexing changes since start of reindex...",
+			Message: "Indexing changes since start of reindex",
 		},
 	}); err != nil {
 		return status.Errorf(codes.Internal, "failed to index datasets: %v", err)
@@ -687,7 +698,7 @@ func (s *server) ReindexDatasets(req *api.ReindexDatasetsRequest, stream api.Bib
 
 		if err := stream.Send(&api.ReindexDatasetsResponse{
 			Response: &api.ReindexDatasetsResponse_Message{
-				Message: fmt.Sprintf("Indexed %d datasets...", indexed),
+				Message: fmt.Sprintf("Indexed %d datasets", indexed),
 			},
 		}); err != nil {
 			return status.Errorf(codes.Internal, "failed to index datasets: %v", err)

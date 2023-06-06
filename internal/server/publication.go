@@ -515,6 +515,7 @@ func (s *server) ValidatePublications(stream api.Biblio_ValidatePublicationsServ
 func (s *server) ReindexPublications(req *api.ReindexPublicationsRequest, stream api.Biblio_ReindexPublicationsServer) error {
 	startTime := time.Now()
 	indexed := 0
+	reported := 0
 
 	if err := stream.Send(&api.ReindexPublicationsResponse{
 		Response: &api.ReindexPublicationsResponse_Message{
@@ -572,6 +573,16 @@ func (s *server) ReindexPublications(req *api.ReindexPublicationsRequest, stream
 
 		indexed++
 
+		// progress message
+		if indexed-500 == reported {
+			stream.Send(&api.ReindexPublicationsResponse{
+				Response: &api.ReindexPublicationsResponse_Message{
+					Message: fmt.Sprintf("Indexing %d publications...", indexed),
+				},
+			})
+			reported = indexed
+		}
+
 		return true
 	})
 
@@ -593,7 +604,7 @@ func (s *server) ReindexPublications(req *api.ReindexPublicationsRequest, stream
 
 	if err := stream.Send(&api.ReindexPublicationsResponse{
 		Response: &api.ReindexPublicationsResponse_Message{
-			Message: fmt.Sprintf("Indexed %d publications...", indexed),
+			Message: fmt.Sprintf("Indexed %d publications", indexed),
 		},
 	}); err != nil {
 		return status.Errorf(codes.Internal, "failed to index publications: %v", err)
@@ -615,7 +626,7 @@ func (s *server) ReindexPublications(req *api.ReindexPublicationsRequest, stream
 
 	if err := stream.Send(&api.ReindexPublicationsResponse{
 		Response: &api.ReindexPublicationsResponse_Message{
-			Message: "Indexing changes since start of reindex...",
+			Message: "Indexing changes since start of reindex",
 		},
 	}); err != nil {
 		return status.Errorf(codes.Internal, "failed to index publications: %v", err)
@@ -701,7 +712,7 @@ func (s *server) ReindexPublications(req *api.ReindexPublicationsRequest, stream
 
 		if err := stream.Send(&api.ReindexPublicationsResponse{
 			Response: &api.ReindexPublicationsResponse_Message{
-				Message: fmt.Sprintf("Indexed %d publications...", indexed),
+				Message: fmt.Sprintf("Indexed %d publications", indexed),
 			},
 		}); err != nil {
 			return status.Errorf(codes.Internal, "failed to index publications: %v", err)
