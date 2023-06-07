@@ -254,7 +254,7 @@ func (s *Repository) MutatePublication(id string, u *models.User, muts ...backen
 
 func (s *Repository) PublicationsAfter(t time.Time, limit, offset int) (int, []*models.Publication, error) {
 	n, err := s.publicationStore.CountSql(
-		"SELECT COUNT(*) FROM publications WHERE date_until IS NULL AND date_from >= $1",
+		"SELECT * FROM publications WHERE date_until IS NULL AND date_from >= $1",
 		[]any{t},
 		s.opts,
 	)
@@ -263,7 +263,7 @@ func (s *Repository) PublicationsAfter(t time.Time, limit, offset int) (int, []*
 	}
 
 	c, err := s.publicationStore.Select(
-		"SELECT * FROM publications WHERE date_until IS NULL AND date_from >= $1 LIMIT $2 OFFSET $3 ORDER BY date_from ASC",
+		"SELECT * FROM publications WHERE date_until IS NULL AND date_from >= $1 ORDER BY date_from ASC LIMIT $2 OFFSET $3",
 		[]any{t, limit, offset},
 		s.opts,
 	)
@@ -613,7 +613,7 @@ func (s *Repository) MutateDataset(id string, u *models.User, muts ...backends.M
 
 func (s *Repository) DatasetsAfter(t time.Time, limit, offset int) (int, []*models.Dataset, error) {
 	n, err := s.datasetStore.CountSql(
-		"SELECT COUNT(*) FROM datasets WHERE date_until IS NULL AND date_from >= $1",
+		"SELECT * FROM datasets WHERE date_until IS NULL AND date_from >= $1",
 		[]any{t},
 		s.opts,
 	)
@@ -622,7 +622,7 @@ func (s *Repository) DatasetsAfter(t time.Time, limit, offset int) (int, []*mode
 	}
 
 	c, err := s.datasetStore.Select(
-		"SELECT * FROM datasets WHERE date_until IS NULL AND date_from >= $1 LIMIT $2 OFFSET $3 ORDER BY date_from ASC",
+		"SELECT * FROM datasets WHERE date_until IS NULL AND date_from >= $1 ORDER BY date_from ASC LIMIT $2 OFFSET $3",
 		[]any{t, limit, offset},
 		s.opts,
 	)
