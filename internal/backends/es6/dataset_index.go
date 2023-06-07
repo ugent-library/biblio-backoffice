@@ -343,7 +343,7 @@ func buildDatasetUserQuery(args *models.SearchArgs) M {
 	if args.Filters != nil {
 		for field, terms := range args.Filters {
 
-			if qf := getRegularDatasetFilter(field, terms...); qf != nil {
+			if qf := getRegularDatasetFilter(field, terms); qf != nil {
 				if len(terms) == 0 {
 					continue
 				}

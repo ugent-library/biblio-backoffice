@@ -347,7 +347,7 @@ func buildPublicationUserQuery(args *models.SearchArgs) M {
 	if args.Filters != nil {
 		for field, terms := range args.Filters {
 
-			if qf := getRegularPublicationFilter(field, terms...); qf != nil {
+			if qf := getRegularPublicationFilter(field, terms); qf != nil {
 				if len(terms) == 0 {
 					continue
 				}
