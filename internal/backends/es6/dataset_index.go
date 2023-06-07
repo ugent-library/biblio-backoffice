@@ -254,6 +254,90 @@ func (di *DatasetIndex) Each(searchArgs *models.SearchArgs, maxSize int, cb func
 	}
 }
 
+func (di *DatasetIndex) Delete(id string) error {
+	ctx := context.Background()
+	res, err := esapi.DeleteRequest{
+		Index:      di.Client.Index,
+		DocumentID: id,
+	}.Do(ctx, di.Client.es)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+
+	if res.IsError() {
+		buf := &bytes.Buffer{}
+		if _, err := io.Copy(buf, res.Body); err != nil {
+			return err
+		}
+		return errors.New("Es6 error response: " + buf.String())
+	}
+
+	return nil
+}
+
+func (di *DatasetIndex) DeleteAll() error {
+	ctx := context.Background()
+	req := esapi.DeleteByQueryRequest{
+		Index: []string{di.Client.Index},
+		Body: strings.NewReader(`{
+			"query" : { 
+				"match_all" : {}
+			}
+		}`),
+	}
+	res, err := req.Do(ctx, di.Client.es)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+
+	if res.IsError() {
+		buf := &bytes.Buffer{}
+		if _, err := io.Copy(buf, res.Body); err != nil {
+			return err
+		}
+		return errors.New("Es6 error response: " + buf.String())
+	}
+
+	return nil
+}
+
+func (di *DatasetIndex) WithScope(field string, terms ...string) backends.DatasetIndex {
+	newScopes := make([]M, 0, len(di.scopes))
+
+	// Copy existing scopes
+	newScopes = append(newScopes, di.scopes...)
+
+	// Add new scopes
+	newScopes = append(newScopes, ParseScope(field, terms...))
+
+	return &DatasetIndex{
+		Client: di.Client,
+		scopes: newScopes,
+	}
+}
+
+func (di *DatasetIndex) searchWithOpts(opts []func(*esapi.SearchRequest), fn func(r io.ReadCloser) error) error {
+	res, err := di.es.Search(opts...)
+
+	if err != nil {
+		return err
+	}
+
+	defer res.Body.Close()
+
+	if res.IsError() {
+		buf := &bytes.Buffer{}
+		if _, err := io.Copy(buf, res.Body); err != nil {
+			return err
+		}
+		return errors.New("Es6 error response: " + buf.String())
+	}
+
+	return fn(res.Body)
+}
+
 func buildDatasetUserQuery(args *models.SearchArgs) M {
 	var query M
 	var queryMust M
@@ -365,90 +449,6 @@ func buildDatasetUserQuery(args *models.SearchArgs) M {
 	query["from"] = args.Offset()
 
 	return query
-}
-
-func (di *DatasetIndex) Delete(id string) error {
-	ctx := context.Background()
-	res, err := esapi.DeleteRequest{
-		Index:      di.Client.Index,
-		DocumentID: id,
-	}.Do(ctx, di.Client.es)
-	if err != nil {
-		return err
-	}
-	defer res.Body.Close()
-
-	if res.IsError() {
-		buf := &bytes.Buffer{}
-		if _, err := io.Copy(buf, res.Body); err != nil {
-			return err
-		}
-		return errors.New("Es6 error response: " + buf.String())
-	}
-
-	return nil
-}
-
-func (di *DatasetIndex) DeleteAll() error {
-	ctx := context.Background()
-	req := esapi.DeleteByQueryRequest{
-		Index: []string{di.Client.Index},
-		Body: strings.NewReader(`{
-			"query" : { 
-				"match_all" : {}
-			}
-		}`),
-	}
-	res, err := req.Do(ctx, di.Client.es)
-	if err != nil {
-		return err
-	}
-	defer res.Body.Close()
-
-	if res.IsError() {
-		buf := &bytes.Buffer{}
-		if _, err := io.Copy(buf, res.Body); err != nil {
-			return err
-		}
-		return errors.New("Es6 error response: " + buf.String())
-	}
-
-	return nil
-}
-
-func (di *DatasetIndex) WithScope(field string, terms ...string) backends.DatasetIndex {
-	newScopes := make([]M, 0, len(di.scopes))
-
-	// Copy existing scopes
-	newScopes = append(newScopes, di.scopes...)
-
-	// Add new scopes
-	newScopes = append(newScopes, ParseScope(field, terms...))
-
-	return &DatasetIndex{
-		Client: di.Client,
-		scopes: newScopes,
-	}
-}
-
-func (di *DatasetIndex) searchWithOpts(opts []func(*esapi.SearchRequest), fn func(r io.ReadCloser) error) error {
-	res, err := di.es.Search(opts...)
-
-	if err != nil {
-		return err
-	}
-
-	defer res.Body.Close()
-
-	if res.IsError() {
-		buf := &bytes.Buffer{}
-		if _, err := io.Copy(buf, res.Body); err != nil {
-			return err
-		}
-		return errors.New("Es6 error response: " + buf.String())
-	}
-
-	return fn(res.Body)
 }
 
 type datasetResEnvelope struct {

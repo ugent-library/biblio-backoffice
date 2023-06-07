@@ -252,6 +252,90 @@ func (pi *PublicationIndex) Each(searchArgs *models.SearchArgs, maxSize int, cb 
 	}
 }
 
+func (pi *PublicationIndex) Delete(id string) error {
+	ctx := context.Background()
+	res, err := esapi.DeleteRequest{
+		Index:      pi.Client.Index,
+		DocumentID: id,
+	}.Do(ctx, pi.Client.es)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+
+	if res.IsError() {
+		buf := &bytes.Buffer{}
+		if _, err := io.Copy(buf, res.Body); err != nil {
+			return err
+		}
+		return errors.New("Es6 error response: " + buf.String())
+	}
+
+	return nil
+}
+
+func (pi *PublicationIndex) DeleteAll() error {
+	ctx := context.Background()
+	req := esapi.DeleteByQueryRequest{
+		Index: []string{pi.Client.Index},
+		Body: strings.NewReader(`{
+			"query" : {
+				"match_all" : {}
+			}
+		}`),
+	}
+	res, err := req.Do(ctx, pi.Client.es)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+
+	if res.IsError() {
+		buf := &bytes.Buffer{}
+		if _, err := io.Copy(buf, res.Body); err != nil {
+			return err
+		}
+		return errors.New("Es6 error response: " + buf.String())
+	}
+
+	return nil
+}
+
+func (pi *PublicationIndex) WithScope(field string, terms ...string) backends.PublicationIndex {
+	newScopes := make([]M, 0, len(pi.scopes))
+
+	// Copy existing scopes
+	newScopes = append(newScopes, pi.scopes...)
+
+	// Add new scopes
+	newScopes = append(newScopes, ParseScope(field, terms...))
+
+	return &PublicationIndex{
+		Client: pi.Client,
+		scopes: newScopes,
+	}
+}
+
+func (pi *PublicationIndex) searchWithOpts(opts []func(*esapi.SearchRequest), fn func(r io.ReadCloser) error) error {
+	res, err := pi.es.Search(opts...)
+
+	if err != nil {
+		return err
+	}
+
+	defer res.Body.Close()
+
+	if res.IsError() {
+		buf := &bytes.Buffer{}
+		if _, err := io.Copy(buf, res.Body); err != nil {
+			return err
+		}
+		return errors.New("Es6 error response: " + buf.String())
+	}
+
+	return fn(res.Body)
+}
+
 func buildPublicationUserQuery(args *models.SearchArgs) M {
 	var query M
 	var queryMust M
@@ -369,90 +453,6 @@ func buildPublicationUserQuery(args *models.SearchArgs) M {
 	query["from"] = args.Offset()
 
 	return query
-}
-
-func (pi *PublicationIndex) Delete(id string) error {
-	ctx := context.Background()
-	res, err := esapi.DeleteRequest{
-		Index:      pi.Client.Index,
-		DocumentID: id,
-	}.Do(ctx, pi.Client.es)
-	if err != nil {
-		return err
-	}
-	defer res.Body.Close()
-
-	if res.IsError() {
-		buf := &bytes.Buffer{}
-		if _, err := io.Copy(buf, res.Body); err != nil {
-			return err
-		}
-		return errors.New("Es6 error response: " + buf.String())
-	}
-
-	return nil
-}
-
-func (pi *PublicationIndex) DeleteAll() error {
-	ctx := context.Background()
-	req := esapi.DeleteByQueryRequest{
-		Index: []string{pi.Client.Index},
-		Body: strings.NewReader(`{
-			"query" : {
-				"match_all" : {}
-			}
-		}`),
-	}
-	res, err := req.Do(ctx, pi.Client.es)
-	if err != nil {
-		return err
-	}
-	defer res.Body.Close()
-
-	if res.IsError() {
-		buf := &bytes.Buffer{}
-		if _, err := io.Copy(buf, res.Body); err != nil {
-			return err
-		}
-		return errors.New("Es6 error response: " + buf.String())
-	}
-
-	return nil
-}
-
-func (pi *PublicationIndex) WithScope(field string, terms ...string) backends.PublicationIndex {
-	newScopes := make([]M, 0, len(pi.scopes))
-
-	// Copy existing scopes
-	newScopes = append(newScopes, pi.scopes...)
-
-	// Add new scopes
-	newScopes = append(newScopes, ParseScope(field, terms...))
-
-	return &PublicationIndex{
-		Client: pi.Client,
-		scopes: newScopes,
-	}
-}
-
-func (pi *PublicationIndex) searchWithOpts(opts []func(*esapi.SearchRequest), fn func(r io.ReadCloser) error) error {
-	res, err := pi.es.Search(opts...)
-
-	if err != nil {
-		return err
-	}
-
-	defer res.Body.Close()
-
-	if res.IsError() {
-		buf := &bytes.Buffer{}
-		if _, err := io.Copy(buf, res.Body); err != nil {
-			return err
-		}
-		return errors.New("Es6 error response: " + buf.String())
-	}
-
-	return fn(res.Body)
 }
 
 type publicationResEnvelope struct {
