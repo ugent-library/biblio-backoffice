@@ -33,7 +33,7 @@ func (searcher *DatasetSearcher) SetMaxSize(maxSize int) {
 	searcher.maxSize = maxSize
 }
 
-func (searcher *DatasetSearcher) Searcher(searchArgs *models.SearchArgs, cb func(*models.Dataset)) error {
+func (searcher *DatasetSearcher) Searcher(searchArgs *models.SearchArgs, cb func(string)) error {
 
 	nProcessed := 0
 	start := 0
@@ -83,7 +83,7 @@ func (searcher *DatasetSearcher) Searcher(searchArgs *models.SearchArgs, cb func
 		}
 
 		if len(hits.Hits) > 0 {
-			sortValue = hits.Hits[len(hits.Hits)-1].ID
+			sortValue = hits.Hits[len(hits.Hits)-1]
 		}
 
 		if len(hits.Hits) < limit {
@@ -92,7 +92,7 @@ func (searcher *DatasetSearcher) Searcher(searchArgs *models.SearchArgs, cb func
 	}
 }
 
-func (searcher *DatasetSearcher) WithScope(field string, terms ...string) backends.DatasetSearcherService {
+func (searcher *DatasetSearcher) WithScope(field string, terms ...string) backends.DatasetIDSearcherService {
 	d := searcher.Clone()
 	d.scopes = append(d.scopes, ParseScope(field, terms...))
 	return d
@@ -132,7 +132,7 @@ func (searcher *DatasetSearcher) buildEsOpts(query M) ([]func(*esapi.SearchReque
 	return opts, nil
 }
 
-func (searcher *DatasetSearcher) esSearch(opts ...func(*esapi.SearchRequest)) (*models.DatasetHits, error) {
+func (searcher *DatasetSearcher) esSearch(opts ...func(*esapi.SearchRequest)) (*models.SearchHits, error) {
 	var envelop datasetResEnvelope
 	err := searcher.Client.searchWithOpts(opts, &envelop)
 	if err != nil {

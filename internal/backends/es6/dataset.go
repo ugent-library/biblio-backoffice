@@ -23,7 +23,7 @@ func NewDatasets(c Client) *Datasets {
 	return &Datasets{Client: c}
 }
 
-func (datasets *Datasets) Search(args *models.SearchArgs) (*models.DatasetHits, error) {
+func (datasets *Datasets) Search(args *models.SearchArgs) (*models.SearchHits, error) {
 	// BUILD QUERY AND FILTERS FROM USER INPUT
 	query := buildDatasetUserQuery(args)
 
@@ -279,8 +279,9 @@ type datasetResEnvelope struct {
 	Hits struct {
 		Total int
 		Hits  []struct {
-			Source    json.RawMessage `json:"_source"`
-			Highlight json.RawMessage
+			ID string `json:"_id"`
+			// Source    json.RawMessage `json:"_source"`
+			// Highlight json.RawMessage
 		}
 	}
 	Aggregations struct {
@@ -294,9 +295,8 @@ type resFacet struct {
 	Key      string
 }*/
 
-func decodeDatasetRes(r *datasetResEnvelope, facets []string) (*models.DatasetHits, error) {
-
-	hits := models.DatasetHits{}
+func decodeDatasetRes(r *datasetResEnvelope, facets []string) (*models.SearchHits, error) {
+	hits := models.SearchHits{}
 	hits.Total = r.Hits.Total
 
 	hits.Facets = make(map[string]models.FacetValues)
@@ -339,13 +339,7 @@ func decodeDatasetRes(r *datasetResEnvelope, facets []string) (*models.DatasetHi
 	}
 
 	for _, h := range r.Hits.Hits {
-		var hit models.Dataset
-
-		if err := json.Unmarshal(h.Source, &hit); err != nil {
-			return nil, err
-		}
-
-		hits.Hits = append(hits.Hits, &hit)
+		hits.Hits = append(hits.Hits, h.ID)
 	}
 
 	return &hits, nil
@@ -428,7 +422,7 @@ func (datasets *Datasets) DeleteAll() error {
 	return nil
 }
 
-func (datasets *Datasets) WithScope(field string, terms ...string) backends.DatasetSearchService {
+func (datasets *Datasets) WithScope(field string, terms ...string) backends.DatasetIDSearchService {
 	d := datasets.Clone()
 	d.scopes = append(d.scopes, ParseScope(field, terms...))
 	return d

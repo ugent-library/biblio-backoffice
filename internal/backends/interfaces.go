@@ -118,6 +118,16 @@ type BulkIndexer[T any] interface {
 	Close(context.Context) error
 }
 
+type DatasetIDSearchService interface {
+	Search(*models.SearchArgs) (*models.SearchHits, error)
+	Index(*models.Dataset) error
+	Delete(id string) error
+	DeleteAll() error
+	WithScope(string, ...string) DatasetIDSearchService
+	NewBulkIndexer(BulkIndexerConfig) (BulkIndexer[*models.Dataset], error)
+	NewIndexSwitcher(BulkIndexerConfig) (IndexSwitcher[*models.Dataset], error)
+}
+
 type DatasetSearchService interface {
 	Search(*models.SearchArgs) (*models.DatasetHits, error)
 	Index(*models.Dataset) error
@@ -126,6 +136,41 @@ type DatasetSearchService interface {
 	WithScope(string, ...string) DatasetSearchService
 	NewBulkIndexer(BulkIndexerConfig) (BulkIndexer[*models.Dataset], error)
 	NewIndexSwitcher(BulkIndexerConfig) (IndexSwitcher[*models.Dataset], error)
+}
+
+type datasetSearchService struct {
+	DatasetIDSearchService
+	repo Repository
+}
+
+func NewDatasetSearchService(s DatasetIDSearchService, r Repository) DatasetSearchService {
+	return &datasetSearchService{
+		DatasetIDSearchService: s,
+		repo:                   r,
+	}
+}
+
+func (s *datasetSearchService) Search(args *models.SearchArgs) (*models.DatasetHits, error) {
+	h, err := s.DatasetIDSearchService.Search(args)
+	if err != nil {
+		return nil, err
+	}
+	pubs, err := s.repo.GetDatasets(h.Hits)
+	if err != nil {
+		return nil, err
+	}
+	return &models.DatasetHits{
+		Pagination: h.Pagination,
+		Hits:       pubs,
+		Facets:     h.Facets,
+	}, nil
+}
+
+func (s *datasetSearchService) WithScope(field string, terms ...string) DatasetSearchService {
+	return &datasetSearchService{
+		DatasetIDSearchService: s.DatasetIDSearchService.WithScope(field, terms...),
+		repo:                   s.repo,
+	}
 }
 
 type PublicationIDSearchService interface {
@@ -224,11 +269,45 @@ func (s *publicationSearcherService) WithScope(field string, terms ...string) Pu
 	}
 }
 
+type DatasetIDSearcherService interface {
+	GetMaxSize() int
+	SetMaxSize(int)
+	WithScope(string, ...string) DatasetIDSearcherService
+	Searcher(*models.SearchArgs, func(string)) error
+}
+
 type DatasetSearcherService interface {
 	GetMaxSize() int
 	SetMaxSize(int)
 	WithScope(string, ...string) DatasetSearcherService
 	Searcher(*models.SearchArgs, func(*models.Dataset)) error
+}
+
+type datasetSearcherService struct {
+	DatasetIDSearcherService
+	repo Repository
+}
+
+func NewDatasetSearcherService(s DatasetIDSearcherService, r Repository) DatasetSearcherService {
+	return &datasetSearcherService{
+		DatasetIDSearcherService: s,
+		repo:                     r,
+	}
+}
+
+func (s *datasetSearcherService) Searcher(args *models.SearchArgs, fn func(*models.Dataset)) error {
+	return s.DatasetIDSearcherService.Searcher(args, func(id string) {
+		// TODO handle error
+		pub, _ := s.repo.GetDataset(id)
+		fn(pub)
+	})
+}
+
+func (s *datasetSearcherService) WithScope(field string, terms ...string) DatasetSearcherService {
+	return &datasetSearcherService{
+		DatasetIDSearcherService: s.DatasetIDSearcherService.WithScope(field, terms...),
+		repo:                     s.repo,
+	}
 }
 
 type OrganizationService interface {

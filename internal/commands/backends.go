@@ -107,7 +107,7 @@ func newServices() *backends.Services {
 		ORCIDSandbox:              orcidConfig.Sandbox,
 		ORCIDClient:               orcidClient,
 		Repository:                repo,
-		DatasetSearchService:      newDatasetSearchService(),
+		DatasetSearchService:      backends.NewDatasetSearchService(newDatasetSearchService(), repo),
 		PublicationSearchService:  backends.NewPublicationSearchService(newPublicationSearchService(), repo),
 		OrganizationService:       organizationService,
 		PersonService:             personService,
@@ -149,7 +149,7 @@ func newServices() *backends.Services {
 		DatasetListExporters: map[string]backends.DatasetListExporterFactory{
 			"xlsx": excel_dataset.NewExporter,
 		},
-		DatasetSearcherService: newDatasetSearcherService(),
+		DatasetSearcherService: backends.NewDatasetSearcherService(newDatasetSearcherService(), repo),
 		HandleService:          handleService,
 	}
 }
@@ -385,7 +385,7 @@ func newPublicationSearchService() backends.PublicationIDSearchService {
 
 }
 
-func newDatasetSearchService() backends.DatasetSearchService {
+func newDatasetSearchService() backends.DatasetIDSearchService {
 	es6Client := newEs6Client("dataset")
 	return es6.NewDatasets(*es6Client)
 
@@ -397,7 +397,7 @@ func newPublicationSearcherService() backends.PublicationIDSearcherService {
 	return es6.NewPublicationSearcher(*es6Client, 10000)
 }
 
-func newDatasetSearcherService() backends.DatasetSearcherService {
+func newDatasetSearcherService() backends.DatasetIDSearcherService {
 	es6Client := newEs6Client("dataset")
 	//max size of exportable records is now 10K. Make configurable
 	return es6.NewDatasetSearcher(*es6Client, 10000)
