@@ -371,37 +371,6 @@ func buildPublicationUserQuery(args *models.SearchArgs) M {
 	return query
 }
 
-func (pi *PublicationIndex) Index(p *models.Publication) error {
-	doc := NewIndexedPublication(p)
-
-	payload, err := json.Marshal(doc)
-	if err != nil {
-		return err
-	}
-
-	ctx := context.Background()
-	res, err := esapi.IndexRequest{
-		Index: pi.Client.Index,
-		// DocumentID: d.SnapshotID,
-		DocumentID: p.ID,
-		Body:       bytes.NewReader(payload),
-	}.Do(ctx, pi.Client.es)
-	if err != nil {
-		return err
-	}
-	defer res.Body.Close()
-
-	if res.IsError() {
-		buf := &bytes.Buffer{}
-		if _, err := io.Copy(buf, res.Body); err != nil {
-			return err
-		}
-		return errors.New("Es6 error response: " + buf.String())
-	}
-
-	return nil
-}
-
 func (pi *PublicationIndex) Delete(id string) error {
 	ctx := context.Background()
 	res, err := esapi.DeleteRequest{

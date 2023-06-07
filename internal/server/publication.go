@@ -169,10 +169,6 @@ func (s *server) UpdatePublication(ctx context.Context, req *api.UpdatePublicati
 		return nil, status.Errorf(codes.Internal, "failed to update publication[snapshot_id: %s, id: %s], %s", p.SnapshotID, p.ID, err)
 	}
 
-	if err := s.services.PublicationSearchService.NewIndex().Index(p); err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to update publication[snapshot_id: %s, id: %s], %s", p.SnapshotID, p.ID, err)
-	}
-
 	return &api.UpdatePublicationResponse{}, nil
 }
 

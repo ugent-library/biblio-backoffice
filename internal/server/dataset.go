@@ -166,10 +166,6 @@ func (s *server) UpdateDataset(ctx context.Context, req *api.UpdateDatasetReques
 		return nil, status.Errorf(codes.Internal, "failed to update dataset[snapshot_id: %s, id: %s], %s", d.SnapshotID, d.ID, err)
 	}
 
-	if err := s.services.DatasetSearchService.NewIndex().Index(d); err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to update dataset[snapshot_id: %s, id: %s], %s", d.SnapshotID, d.ID, err)
-	}
-
 	return &api.UpdateDatasetResponse{}, nil
 }
 

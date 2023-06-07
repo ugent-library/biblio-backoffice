@@ -121,7 +121,6 @@ type BulkIndexer[T any] interface {
 type DatasetIndex interface {
 	Search(*models.SearchArgs) (*models.DatasetHits, error)
 	Each(searchArgs *models.SearchArgs, maxSize int, cb func(*models.Dataset)) error
-	Index(*models.Dataset) error
 	Delete(id string) error
 	DeleteAll() error
 	WithScope(string, ...string) DatasetIndex
@@ -136,7 +135,6 @@ type DatasetSearchService interface {
 type PublicationIndex interface {
 	Search(*models.SearchArgs) (*models.PublicationHits, error)
 	Each(searchArgs *models.SearchArgs, maxSize int, cb func(*models.Publication)) error
-	Index(*models.Publication) error
 	Delete(id string) error
 	DeleteAll() error
 	WithScope(string, ...string) PublicationIndex

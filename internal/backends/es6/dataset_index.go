@@ -367,34 +367,6 @@ func buildDatasetUserQuery(args *models.SearchArgs) M {
 	return query
 }
 
-func (di *DatasetIndex) Index(d *models.Dataset) error {
-	payload, err := json.Marshal(NewIndexedDataset(d))
-	if err != nil {
-		return err
-	}
-	ctx := context.Background()
-	res, err := esapi.IndexRequest{
-		Index: di.Client.Index,
-		// DocumentID: d.SnapshotID,
-		DocumentID: d.ID,
-		Body:       bytes.NewReader(payload),
-	}.Do(ctx, di.Client.es)
-	if err != nil {
-		return err
-	}
-	defer res.Body.Close()
-
-	if res.IsError() {
-		buf := &bytes.Buffer{}
-		if _, err := io.Copy(buf, res.Body); err != nil {
-			return err
-		}
-		return errors.New("Es6 error response: " + buf.String())
-	}
-
-	return nil
-}
-
 func (di *DatasetIndex) Delete(id string) error {
 	ctx := context.Background()
 	res, err := esapi.DeleteRequest{
