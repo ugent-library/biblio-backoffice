@@ -32,7 +32,6 @@ type Services struct {
 	PublicationDecoders       map[string]PublicationDecoderFactory
 	PublicationListExporters  map[string]PublicationListExporterFactory
 	DatasetListExporters      map[string]DatasetListExporterFactory
-	DatasetSearcherService    DatasetSearcherService
 	HandleService             HandleService
 	// Tasks                      *tasks.Hub
 }
@@ -140,23 +139,6 @@ type SearchService interface {
 	NewPublicationIndex() PublicationIndex
 	NewPublicationBulkIndexer(BulkIndexerConfig) (BulkIndexer[*models.Publication], error)
 	NewPublicationIndexSwitcher(BulkIndexerConfig) (IndexSwitcher[*models.Publication], error)
-}
-
-type DatasetSearchService interface {
-	NewIndex() DatasetIndex
-	NewBulkIndexer(BulkIndexerConfig) (BulkIndexer[*models.Dataset], error)
-	NewIndexSwitcher(BulkIndexerConfig) (IndexSwitcher[*models.Dataset], error)
-}
-
-type PublicationSearchService interface {
-	NewIndex() PublicationIndex
-	NewBulkIndexer(BulkIndexerConfig) (BulkIndexer[*models.Publication], error)
-	NewIndexSwitcher(BulkIndexerConfig) (IndexSwitcher[*models.Publication], error)
-}
-
-type DatasetSearcherService interface {
-	WithScope(string, ...string) DatasetSearcherService
-	Searcher(*models.SearchArgs, func(*models.Dataset)) error
 }
 
 type OrganizationService interface {
