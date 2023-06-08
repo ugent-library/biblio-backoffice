@@ -109,7 +109,7 @@ func (s *server) SearchPublications(ctx context.Context, req *api.SearchPublicat
 		page = int(req.Offset)/int(req.Limit) + 1
 	}
 	args := models.NewSearchArgs().WithQuery(req.Query).WithPage(page)
-	hits, err := s.services.PublicationSearchService.NewIndex().Search(args)
+	hits, err := s.services.SearchService.NewPublicationIndex().Search(args)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "could not search publications: %s :: %s", req.Query, err)
 	}
@@ -427,7 +427,7 @@ func (s *server) PurgePublication(ctx context.Context, req *api.PurgePublication
 	}
 
 	// TODO this will complain if the above didn't throw a 'not found' error
-	if err := s.services.PublicationSearchService.NewIndex().Delete(req.Id); err != nil {
+	if err := s.services.SearchService.NewPublicationIndex().Delete(req.Id); err != nil {
 		return nil, status.Errorf(codes.Internal, "could not purge publication from index with id %s: %s", req.Id, err)
 	}
 
@@ -452,7 +452,7 @@ func (s *server) PurgeAllPublications(ctx context.Context, req *api.PurgeAllPubl
 		return nil, status.Errorf(codes.Internal, "could not purge all publications: %s", err)
 	}
 
-	if err := s.services.PublicationSearchService.NewIndex().DeleteAll(); err != nil {
+	if err := s.services.SearchService.NewPublicationIndex().DeleteAll(); err != nil {
 		return nil, status.Errorf(codes.Internal, "could not delete publication from index: %w", err)
 	}
 
@@ -525,7 +525,7 @@ func (s *server) ReindexPublications(req *api.ReindexPublicationsRequest, stream
 	var swErr error
 	var swIdxErr error
 
-	switcher, err := s.services.PublicationSearchService.NewIndexSwitcher(backends.BulkIndexerConfig{
+	switcher, err := s.services.SearchService.NewPublicationIndexSwitcher(backends.BulkIndexerConfig{
 		OnError: func(err error) {
 			grpcErr := status.New(codes.Internal, fmt.Errorf("failed to index publication: %v", err).Error())
 			if err = stream.Send(&api.ReindexPublicationsResponse{
@@ -625,7 +625,7 @@ func (s *server) ReindexPublications(req *api.ReindexPublicationsRequest, stream
 		var biErr error
 		var biIdxErr error
 
-		bi, err := s.services.PublicationSearchService.NewBulkIndexer(backends.BulkIndexerConfig{
+		bi, err := s.services.SearchService.NewPublicationBulkIndexer(backends.BulkIndexerConfig{
 			OnError: func(err error) {
 				grpcErr := status.New(codes.Internal, fmt.Errorf("failed to index publication: %v", err).Error())
 				if err = stream.Send(&api.ReindexPublicationsResponse{

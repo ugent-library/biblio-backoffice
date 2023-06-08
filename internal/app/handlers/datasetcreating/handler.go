@@ -12,10 +12,10 @@ import (
 
 type Handler struct {
 	handlers.BaseHandler
-	Repository           backends.Repository
-	DatasetSearchService backends.DatasetSearchService
-	DatasetSources       map[string]backends.DatasetGetter
-	OrganizationService  backends.OrganizationService
+	Repository          backends.Repository
+	SearchService       backends.SearchService
+	DatasetSources      map[string]backends.DatasetGetter
+	OrganizationService backends.OrganizationService
 }
 
 type Context struct {

@@ -22,10 +22,10 @@ import (
 
 type Handler struct {
 	handlers.BaseHandler
-	Tasks                    *tasks.Hub
-	Repository               backends.Repository
-	PublicationSearchService backends.PublicationSearchService
-	Sandbox                  bool
+	Tasks         *tasks.Hub
+	Repository    backends.Repository
+	SearchService backends.SearchService
+	Sandbox       bool
 }
 
 type Context struct {
@@ -176,7 +176,7 @@ func (h *Handler) sendPublicationsToORCIDTask(t tasks.Task, user *models.User, s
 	var numDone int
 
 	for {
-		hits, _ := h.PublicationSearchService.NewIndex().Search(searchArgs)
+		hits, _ := h.SearchService.NewPublicationIndex().Search(searchArgs)
 
 		for _, p := range hits.Hits {
 			numDone++

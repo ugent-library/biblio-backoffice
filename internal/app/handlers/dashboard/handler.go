@@ -11,8 +11,7 @@ import (
 
 type Handler struct {
 	handlers.BaseHandler
-	DatasetSearchService     backends.DatasetSearchService
-	PublicationSearchService backends.PublicationSearchService
+	SearchService backends.SearchService
 }
 
 type Context struct {

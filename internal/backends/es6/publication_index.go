@@ -8,6 +8,7 @@ import (
 	"io"
 	"strings"
 
+	"github.com/elastic/go-elasticsearch/v6"
 	"github.com/elastic/go-elasticsearch/v6/esapi"
 	"github.com/pkg/errors"
 	"github.com/ugent-library/biblio-backoffice/internal/backends"
@@ -15,12 +16,16 @@ import (
 )
 
 type PublicationIndex struct {
-	Client
+	client *elasticsearch.Client
+	index  string
 	scopes []M
 }
 
-func newPublicationIndex(c Client) *PublicationIndex {
-	return &PublicationIndex{Client: c}
+func newPublicationIndex(c *elasticsearch.Client, i string) *PublicationIndex {
+	return &PublicationIndex{
+		client: c,
+		index:  i,
+	}
 }
 
 func (pi *PublicationIndex) Search(args *models.SearchArgs) (*models.PublicationHits, error) {
@@ -133,11 +138,11 @@ func (pi *PublicationIndex) Search(args *models.SearchArgs) (*models.Publication
 	}
 
 	opts := []func(*esapi.SearchRequest){
-		pi.Client.es.Search.WithContext(context.Background()),
-		pi.Client.es.Search.WithIndex(pi.Client.Index),
-		pi.Client.es.Search.WithTrackTotalHits(true),
-		pi.Client.es.Search.WithSort(sorts...),
-		pi.Client.es.Search.WithBody(&buf),
+		pi.client.Search.WithContext(context.Background()),
+		pi.client.Search.WithIndex(pi.index),
+		pi.client.Search.WithTrackTotalHits(true),
+		pi.client.Search.WithSort(sorts...),
+		pi.client.Search.WithBody(&buf),
 	}
 
 	var res publicationResEnvelope
@@ -204,11 +209,11 @@ func (pi *PublicationIndex) Each(searchArgs *models.SearchArgs, maxSize int, cb 
 		}
 
 		opts := []func(*esapi.SearchRequest){
-			pi.Client.es.Search.WithContext(context.Background()),
-			pi.Client.es.Search.WithIndex(pi.Client.Index),
-			pi.Client.es.Search.WithTrackTotalHits(true),
-			pi.Client.es.Search.WithSort("id:asc"),
-			pi.Client.es.Search.WithBody(&buf),
+			pi.client.Search.WithContext(context.Background()),
+			pi.client.Search.WithIndex(pi.index),
+			pi.client.Search.WithTrackTotalHits(true),
+			pi.client.Search.WithSort("id:asc"),
+			pi.client.Search.WithBody(&buf),
 		}
 
 		var res publicationResEnvelope
@@ -255,9 +260,9 @@ func (pi *PublicationIndex) Each(searchArgs *models.SearchArgs, maxSize int, cb 
 func (pi *PublicationIndex) Delete(id string) error {
 	ctx := context.Background()
 	res, err := esapi.DeleteRequest{
-		Index:      pi.Client.Index,
+		Index:      pi.index,
 		DocumentID: id,
-	}.Do(ctx, pi.Client.es)
+	}.Do(ctx, pi.client)
 	if err != nil {
 		return err
 	}
@@ -277,14 +282,14 @@ func (pi *PublicationIndex) Delete(id string) error {
 func (pi *PublicationIndex) DeleteAll() error {
 	ctx := context.Background()
 	req := esapi.DeleteByQueryRequest{
-		Index: []string{pi.Client.Index},
+		Index: []string{pi.index},
 		Body: strings.NewReader(`{
 			"query" : {
 				"match_all" : {}
 			}
 		}`),
 	}
-	res, err := req.Do(ctx, pi.Client.es)
+	res, err := req.Do(ctx, pi.client)
 	if err != nil {
 		return err
 	}
@@ -311,13 +316,14 @@ func (pi *PublicationIndex) WithScope(field string, terms ...string) backends.Pu
 	newScopes = append(newScopes, ParseScope(field, terms...))
 
 	return &PublicationIndex{
-		Client: pi.Client,
+		client: pi.client,
+		index:  pi.index,
 		scopes: newScopes,
 	}
 }
 
 func (pi *PublicationIndex) searchWithOpts(opts []func(*esapi.SearchRequest), fn func(r io.ReadCloser) error) error {
-	res, err := pi.es.Search(opts...)
+	res, err := pi.client.Search(opts...)
 
 	if err != nil {
 		return err

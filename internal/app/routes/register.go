@@ -78,40 +78,37 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 	// 	Tasks:       services.Tasks,
 	// }
 	dashboardHandler := &dashboard.Handler{
-		BaseHandler:              baseHandler,
-		DatasetSearchService:     services.DatasetSearchService,
-		PublicationSearchService: services.PublicationSearchService,
+		BaseHandler:   baseHandler,
+		SearchService: services.SearchService,
 	}
 	frontofficeHandler := &frontoffice.Handler{
-		BaseHandler:              baseHandler,
-		Repository:               services.Repository,
-		DatasetSearchService:     services.DatasetSearchService,
-		PublicationSearchService: services.PublicationSearchService,
-		FileStore:                services.FileStore,
+		BaseHandler: baseHandler,
+		Repository:  services.Repository,
+		FileStore:   services.FileStore,
 		IPFilter: ipfilter.New(ipfilter.Options{
 			AllowedIPs:     strings.Split(viper.GetString("ip-ranges"), ","),
 			BlockByDefault: true,
 		}),
 	}
 	datasetSearchingHandler := &datasetsearching.Handler{
-		BaseHandler:          baseHandler,
-		DatasetSearchService: services.DatasetSearchService,
+		BaseHandler:   baseHandler,
+		SearchService: services.SearchService,
 	}
 	datasetExportingHandler := &datasetexporting.Handler{
 		BaseHandler:          baseHandler,
 		DatasetListExporters: services.DatasetListExporters,
-		DatasetSearchService: services.DatasetSearchService,
+		SearchService:        services.SearchService,
 	}
 	datasetViewingHandler := &datasetviewing.Handler{
 		BaseHandler: baseHandler,
 		Repository:  services.Repository,
 	}
 	datasetCreatingHandler := &datasetcreating.Handler{
-		BaseHandler:          baseHandler,
-		Repository:           services.Repository,
-		DatasetSearchService: services.DatasetSearchService,
-		DatasetSources:       services.DatasetSources,
-		OrganizationService:  services.OrganizationService,
+		BaseHandler:         baseHandler,
+		Repository:          services.Repository,
+		SearchService:       services.SearchService,
+		DatasetSources:      services.DatasetSources,
+		OrganizationService: services.OrganizationService,
 	}
 	datasetEditingHandler := &datasetediting.Handler{
 		BaseHandler:               baseHandler,
@@ -122,17 +119,17 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		OrganizationService:       services.OrganizationService,
 		PersonSearchService:       services.PersonSearchService,
 		PersonService:             services.PersonService,
-		PublicationSearchService:  services.PublicationSearchService,
+		SearchService:             services.SearchService,
 	}
 	publicationSearchingHandler := &publicationsearching.Handler{
-		BaseHandler:              baseHandler,
-		PublicationSearchService: services.PublicationSearchService,
-		FileStore:                services.FileStore,
+		BaseHandler:   baseHandler,
+		SearchService: services.SearchService,
+		FileStore:     services.FileStore,
 	}
 	publicationExportingHandler := &publicationexporting.Handler{
 		BaseHandler:              baseHandler,
 		PublicationListExporters: services.PublicationListExporters,
-		PublicationSearchService: services.PublicationSearchService,
+		SearchService:            services.SearchService,
 	}
 	publicationViewingHandler := &publicationviewing.Handler{
 		BaseHandler: baseHandler,
@@ -141,12 +138,12 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		MaxFileSize: viper.GetInt("max-file-size"),
 	}
 	publicationCreatingHandler := &publicationcreating.Handler{
-		BaseHandler:              baseHandler,
-		Repository:               services.Repository,
-		PublicationSearchService: services.PublicationSearchService,
-		PublicationSources:       services.PublicationSources,
-		PublicationDecoders:      services.PublicationDecoders,
-		OrganizationService:      services.OrganizationService,
+		BaseHandler:         baseHandler,
+		Repository:          services.Repository,
+		SearchService:       services.SearchService,
+		PublicationSources:  services.PublicationSources,
+		PublicationDecoders: services.PublicationDecoders,
+		OrganizationService: services.OrganizationService,
 	}
 	publicationEditingHandler := &publicationediting.Handler{
 		BaseHandler:               baseHandler,
@@ -157,7 +154,7 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		OrganizationService:       services.OrganizationService,
 		PersonSearchService:       services.PersonSearchService,
 		PersonService:             services.PersonService,
-		DatasetSearchService:      services.DatasetSearchService,
+		SearchService:             services.SearchService,
 		FileStore:                 services.FileStore,
 		MaxFileSize:               viper.GetInt("max-file-size"),
 	}

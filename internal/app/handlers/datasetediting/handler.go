@@ -19,7 +19,7 @@ type Handler struct {
 	PersonSearchService       backends.PersonSearchService
 	OrganizationSearchService backends.OrganizationSearchService
 	OrganizationService       backends.OrganizationService
-	PublicationSearchService  backends.PublicationSearchService
+	SearchService             backends.SearchService
 }
 
 type Context struct {

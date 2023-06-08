@@ -5,14 +5,10 @@ import (
 )
 
 type Config struct {
-	ClientConfig   elasticsearch.Config
-	Index          string
-	Settings       string
-	IndexRetention int // -1: keep all old indexes, >=0: keep x old indexes
+	ClientConfig elasticsearch.Config
 }
 
 type Client struct {
-	Config
 	es *elasticsearch.Client
 }
 
@@ -21,5 +17,5 @@ func New(c Config) (*Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Client{Config: c, es: client}, nil
+	return &Client{es: client}, nil
 }

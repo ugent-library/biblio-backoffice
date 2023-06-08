@@ -91,7 +91,7 @@ func (h *Handler) ConfirmImport(w http.ResponseWriter, r *http.Request, ctx Cont
 	if b.Source == "datacite" {
 		args := models.NewSearchArgs().WithFilter("doi", strings.ToLower(b.Identifier)).WithFilter("status", "public")
 
-		existing, err := h.DatasetSearchService.NewIndex().Search(args)
+		existing, err := h.SearchService.NewDatasetIndex().Search(args)
 
 		if err != nil {
 			h.Logger.Errorw("confirm import dataset: could not execute search", "errors", err, "user", ctx.User.ID)

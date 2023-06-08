@@ -15,8 +15,7 @@ type Services struct {
 	ORCIDClient               *orcid.MemberClient
 	Repository                Repository
 	FileStore                 FileStore
-	DatasetSearchService      DatasetSearchService
-	PublicationSearchService  PublicationSearchService
+	SearchService             SearchService
 	OrganizationService       OrganizationService
 	PersonService             PersonService
 	ProjectService            ProjectService
@@ -126,18 +125,27 @@ type DatasetIndex interface {
 	WithScope(string, ...string) DatasetIndex
 }
 
-type DatasetSearchService interface {
-	NewIndex() DatasetIndex
-	NewBulkIndexer(BulkIndexerConfig) (BulkIndexer[*models.Dataset], error)
-	NewIndexSwitcher(BulkIndexerConfig) (IndexSwitcher[*models.Dataset], error)
-}
-
 type PublicationIndex interface {
 	Search(*models.SearchArgs) (*models.PublicationHits, error)
 	Each(searchArgs *models.SearchArgs, maxSize int, cb func(*models.Publication)) error
 	Delete(id string) error
 	DeleteAll() error
 	WithScope(string, ...string) PublicationIndex
+}
+
+type SearchService interface {
+	NewDatasetIndex() DatasetIndex
+	NewDatasetBulkIndexer(BulkIndexerConfig) (BulkIndexer[*models.Dataset], error)
+	NewDatasetIndexSwitcher(BulkIndexerConfig) (IndexSwitcher[*models.Dataset], error)
+	NewPublicationIndex() PublicationIndex
+	NewPublicationBulkIndexer(BulkIndexerConfig) (BulkIndexer[*models.Publication], error)
+	NewPublicationIndexSwitcher(BulkIndexerConfig) (IndexSwitcher[*models.Publication], error)
+}
+
+type DatasetSearchService interface {
+	NewIndex() DatasetIndex
+	NewBulkIndexer(BulkIndexerConfig) (BulkIndexer[*models.Dataset], error)
+	NewIndexSwitcher(BulkIndexerConfig) (IndexSwitcher[*models.Dataset], error)
 }
 
 type PublicationSearchService interface {

@@ -9,6 +9,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/elastic/go-elasticsearch/v6"
 	"github.com/elastic/go-elasticsearch/v6/esapi"
 	"github.com/pkg/errors"
 	"github.com/ugent-library/biblio-backoffice/internal/backends"
@@ -16,12 +17,16 @@ import (
 )
 
 type DatasetIndex struct {
-	Client
+	client *elasticsearch.Client
+	index  string
 	scopes []M
 }
 
-func newDatasetIndex(c Client) *DatasetIndex {
-	return &DatasetIndex{Client: c}
+func newDatasetIndex(c *elasticsearch.Client, i string) *DatasetIndex {
+	return &DatasetIndex{
+		client: c,
+		index:  i,
+	}
 }
 
 func (di *DatasetIndex) Search(args *models.SearchArgs) (*models.DatasetHits, error) {
@@ -133,11 +138,11 @@ func (di *DatasetIndex) Search(args *models.SearchArgs) (*models.DatasetHits, er
 	}
 
 	opts := []func(*esapi.SearchRequest){
-		di.Client.es.Search.WithContext(context.Background()),
-		di.Client.es.Search.WithIndex(di.Client.Index),
-		di.Client.es.Search.WithTrackTotalHits(true),
-		di.Client.es.Search.WithSort(sorts...),
-		di.Client.es.Search.WithBody(&buf),
+		di.client.Search.WithContext(context.Background()),
+		di.client.Search.WithIndex(di.index),
+		di.client.Search.WithTrackTotalHits(true),
+		di.client.Search.WithSort(sorts...),
+		di.client.Search.WithBody(&buf),
 	}
 
 	var res datasetResEnvelope
@@ -206,11 +211,11 @@ func (di *DatasetIndex) Each(searchArgs *models.SearchArgs, maxSize int, cb func
 		fmt.Fprintf(os.Stderr, "es dataset search: %s\n", buf.String())
 
 		opts := []func(*esapi.SearchRequest){
-			di.Client.es.Search.WithContext(context.Background()),
-			di.Client.es.Search.WithIndex(di.Client.Index),
-			di.Client.es.Search.WithTrackTotalHits(true),
-			di.Client.es.Search.WithSort("id:asc"),
-			di.Client.es.Search.WithBody(&buf),
+			di.client.Search.WithContext(context.Background()),
+			di.client.Search.WithIndex(di.index),
+			di.client.Search.WithTrackTotalHits(true),
+			di.client.Search.WithSort("id:asc"),
+			di.client.Search.WithBody(&buf),
 		}
 
 		var res datasetResEnvelope
@@ -257,9 +262,9 @@ func (di *DatasetIndex) Each(searchArgs *models.SearchArgs, maxSize int, cb func
 func (di *DatasetIndex) Delete(id string) error {
 	ctx := context.Background()
 	res, err := esapi.DeleteRequest{
-		Index:      di.Client.Index,
+		Index:      di.index,
 		DocumentID: id,
-	}.Do(ctx, di.Client.es)
+	}.Do(ctx, di.client)
 	if err != nil {
 		return err
 	}
@@ -279,14 +284,14 @@ func (di *DatasetIndex) Delete(id string) error {
 func (di *DatasetIndex) DeleteAll() error {
 	ctx := context.Background()
 	req := esapi.DeleteByQueryRequest{
-		Index: []string{di.Client.Index},
+		Index: []string{di.index},
 		Body: strings.NewReader(`{
 			"query" : { 
 				"match_all" : {}
 			}
 		}`),
 	}
-	res, err := req.Do(ctx, di.Client.es)
+	res, err := req.Do(ctx, di.client)
 	if err != nil {
 		return err
 	}
@@ -313,13 +318,14 @@ func (di *DatasetIndex) WithScope(field string, terms ...string) backends.Datase
 	newScopes = append(newScopes, ParseScope(field, terms...))
 
 	return &DatasetIndex{
-		Client: di.Client,
+		client: di.client,
+		index:  di.index,
 		scopes: newScopes,
 	}
 }
 
 func (di *DatasetIndex) searchWithOpts(opts []func(*esapi.SearchRequest), fn func(r io.ReadCloser) error) error {
-	res, err := di.es.Search(opts...)
+	res, err := di.client.Search(opts...)
 
 	if err != nil {
 		return err

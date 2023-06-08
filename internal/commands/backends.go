@@ -4,12 +4,10 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"os"
 	"path"
 	"strings"
 	"sync"
 
-	"github.com/elastic/go-elasticsearch/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backoffice/internal/backends"
@@ -94,8 +92,7 @@ func newServices() *backends.Services {
 		ORCIDSandbox:              orcidConfig.Sandbox,
 		ORCIDClient:               orcidClient,
 		Repository:                newRepository(logger, projectService),
-		DatasetSearchService:      newDatasetSearchService(),
-		PublicationSearchService:  newPublicationSearchService(),
+		SearchService:             newSearchService(logger),
 		OrganizationService:       caching.NewOrganizationService(authorityClient),
 		PersonService:             caching.NewPersonService(authorityClient),
 		ProjectService:            projectService,
@@ -234,41 +231,27 @@ func newFileStore() backends.FileStore {
 	return store
 }
 
-func newEs6Client(t string) *es6.Client {
-	settings, err := os.ReadFile("etc/es6/" + t + ".json")
-	if err != nil {
-		log.Fatal(err)
+func newSearchService(logger *zap.SugaredLogger) backends.SearchService {
+	config := es6.SearchServiceConfig{
+		Addresses:        viper.GetString("es6-url"),
+		PublicationIndex: viper.GetString("publication-index"),
+		DatasetIndex:     viper.GetString("dataset-index"),
+		IndexRetention:   viper.GetInt("index-retention"),
 	}
-	client, err := es6.New(es6.Config{
-		ClientConfig: elasticsearch.Config{
-			Addresses: strings.Split(viper.GetString("es6-url"), ","),
-		},
-		Index:          viper.GetString(t + "-index"),
-		Settings:       string(settings),
-		IndexRetention: viper.GetInt("index-retention"),
-	})
+
+	s, err := es6.NewSearchService(config)
+
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatalln("unable to create search service", err)
 	}
-	return client
-}
 
-func newPublicationSearchService() backends.PublicationSearchService {
-	es6Client := newEs6Client("publication")
-	return es6.NewPublicationSearchService(*es6Client)
-
-}
-
-func newDatasetSearchService() backends.DatasetSearchService {
-	es6Client := newEs6Client("dataset")
-	return es6.NewDatasetSearchService(*es6Client)
-
+	return s
 }
 
 func newPublicationBulkIndexerService(logger *zap.SugaredLogger) backends.BulkIndexer[*models.Publication] {
 	ctx := context.Background()
 
-	bp, err := newPublicationSearchService().NewBulkIndexer(backends.BulkIndexerConfig{
+	bp, err := newSearchService(logger).NewPublicationBulkIndexer(backends.BulkIndexerConfig{
 		OnError: func(err error) {
 			logger.Errorf("Indexing failed : %s", err)
 		},
@@ -294,7 +277,7 @@ func newPublicationBulkIndexerService(logger *zap.SugaredLogger) backends.BulkIn
 func newDatasetBulkIndexerService(logger *zap.SugaredLogger) backends.BulkIndexer[*models.Dataset] {
 	ctx := context.Background()
 
-	bd, err := newDatasetSearchService().NewBulkIndexer(backends.BulkIndexerConfig{
+	bd, err := newSearchService(logger).NewDatasetBulkIndexer(backends.BulkIndexerConfig{
 		OnError: func(err error) {
 			logger.Errorf("Indexing failed : %s", err)
 		},

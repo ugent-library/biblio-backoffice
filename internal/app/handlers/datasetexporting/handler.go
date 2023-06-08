@@ -12,7 +12,7 @@ import (
 
 type Handler struct {
 	handlers.BaseHandler
-	DatasetSearchService backends.DatasetSearchService
+	SearchService        backends.SearchService
 	DatasetListExporters map[string]backends.DatasetListExporterFactory
 }
 

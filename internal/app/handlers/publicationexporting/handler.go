@@ -12,7 +12,7 @@ import (
 
 type Handler struct {
 	handlers.BaseHandler
-	PublicationSearchService backends.PublicationSearchService
+	SearchService            backends.SearchService
 	PublicationListExporters map[string]backends.PublicationListExporterFactory
 }
 

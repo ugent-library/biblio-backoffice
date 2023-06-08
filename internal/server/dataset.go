@@ -106,7 +106,7 @@ func (s *server) SearchDatasets(ctx context.Context, req *api.SearchDatasetsRequ
 		page = int(req.Offset)/int(req.Limit) + 1
 	}
 	args := models.NewSearchArgs().WithQuery(req.Query).WithPage(page)
-	hits, err := s.services.DatasetSearchService.NewIndex().Search(args)
+	hits, err := s.services.SearchService.NewDatasetIndex().Search(args)
 	if err != nil {
 		// TODO How do we differentiate between errors?
 		return nil, status.Errorf(codes.Internal, "Could not search datasets: %s :: %s", req.Query, err)
@@ -411,7 +411,7 @@ func (s *server) PurgeDataset(ctx context.Context, req *api.PurgeDatasetRequest)
 	}
 
 	// TODO this will complain if the above didn't throw a 'not found' error
-	if err := s.services.DatasetSearchService.NewIndex().Delete(req.Id); err != nil {
+	if err := s.services.SearchService.NewDatasetIndex().Delete(req.Id); err != nil {
 		return nil, status.Errorf(codes.Internal, "could not purge dataset from index with id %s: %s", req.Id, err)
 	}
 
@@ -436,7 +436,7 @@ func (s *server) PurgeAllDatasets(ctx context.Context, req *api.PurgeAllDatasets
 		return nil, status.Errorf(codes.Internal, "could not purge all datasets: %s", err)
 	}
 
-	if err := s.services.DatasetSearchService.NewIndex().DeleteAll(); err != nil {
+	if err := s.services.SearchService.NewDatasetIndex().DeleteAll(); err != nil {
 		return nil, status.Errorf(codes.Internal, "could not delete dataset from index: %w", err)
 	}
 
@@ -509,7 +509,7 @@ func (s *server) ReindexDatasets(req *api.ReindexDatasetsRequest, stream api.Bib
 	var swErr error
 	var swIdxErr error
 
-	switcher, err := s.services.DatasetSearchService.NewIndexSwitcher(backends.BulkIndexerConfig{
+	switcher, err := s.services.SearchService.NewDatasetIndexSwitcher(backends.BulkIndexerConfig{
 		OnError: func(err error) {
 			grpcErr := status.New(codes.Internal, fmt.Errorf("failed to index dataset: %v", err).Error())
 			if err = stream.Send(&api.ReindexDatasetsResponse{
@@ -609,7 +609,7 @@ func (s *server) ReindexDatasets(req *api.ReindexDatasetsRequest, stream api.Bib
 		var biErr error
 		var biIdxErr error
 
-		bi, err := s.services.DatasetSearchService.NewBulkIndexer(backends.BulkIndexerConfig{
+		bi, err := s.services.SearchService.NewDatasetBulkIndexer(backends.BulkIndexerConfig{
 			OnError: func(err error) {
 				grpcErr := status.New(codes.Internal, fmt.Errorf("failed to index dataset: %v", err).Error())
 				if err = stream.Send(&api.ReindexDatasetsResponse{

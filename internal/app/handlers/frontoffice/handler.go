@@ -58,11 +58,9 @@ var hiddenLicenses = map[string]struct{}{
 
 type Handler struct {
 	handlers.BaseHandler
-	Repository               backends.Repository
-	PublicationSearchService backends.PublicationSearchService
-	DatasetSearchService     backends.DatasetSearchService
-	FileStore                backends.FileStore
-	IPFilter                 *ipfilter.IPFilter
+	Repository backends.Repository
+	FileStore  backends.FileStore
+	IPFilter   *ipfilter.IPFilter
 }
 
 // safe basic auth handling
