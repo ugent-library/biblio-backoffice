@@ -1,6 +1,7 @@
 {{if .User}}
-Last edit {{timeElapsed .DateUpdated "en"}} by {{.User.Name}}.
+Last edit {{timeElapsed .DateUpdated "en"}} by {{.User.FullName}}.
 {{else}}
 System update {{timeElapsed .DateUpdated "en"}}.
-{{if .LastUser}}Last edit by {{.LastUser.Name}}.{{end}}
+{{if .LastUser}}
+Last edit by {{.LastUser.FullName}}.{{end}}
 {{end}}

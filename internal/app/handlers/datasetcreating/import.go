@@ -156,19 +156,14 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 	}
 
 	d.ID = ulid.Make().String()
-	d.Creator = &models.DatasetUser{ID: ctx.User.ID, Name: ctx.User.FullName}
-	d.User = &models.DatasetUser{ID: ctx.User.ID, Name: ctx.User.FullName}
+	d.CreatorID = ctx.User.ID
+	d.Creator = &ctx.User.Person
+	d.UserID = ctx.User.ID
+	d.User = &ctx.User.Person
 	d.Status = "private"
 
-	// Set the first department of the user if the user resides under at least one department
-	// TODO: this should be centralized
-	if len(ctx.User.Department) > 0 {
-		org, orgErr := h.OrganizationService.GetOrganization(ctx.User.Department[0].ID)
-		if orgErr != nil {
-			h.Logger.Warnw("import single publication: could not fetch user department", "errors", orgErr, "user", ctx.User.ID)
-		} else {
-			d.AddOrganization(org)
-		}
+	if len(ctx.User.Affiliations) > 0 {
+		d.AddOrganization(ctx.User.Affiliations[0].Organization)
 	}
 
 	if validationErrs := d.Validate(); validationErrs != nil {

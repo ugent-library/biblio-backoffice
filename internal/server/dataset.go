@@ -749,6 +749,7 @@ func (s *server) CleanupDatasets(req *api.CleanupDatasetsRequest, stream api.Bib
 
 		// Save record if changed
 		if fixed {
+			d.UserID = ""
 			d.User = nil
 
 			if err := d.Validate(); err != nil {

@@ -17,11 +17,6 @@ type DatasetHits struct {
 	Facets map[string]FacetValues `json:"facets"`
 }
 
-type DatasetUser struct {
-	ID   string `json:"id,omitempty"`
-	Name string `json:"name,omitempty"`
-}
-
 type DatasetLink struct {
 	ID          string `json:"id,omitempty"`
 	URL         string `json:"url,omitempty"`
@@ -40,7 +35,8 @@ type Dataset struct {
 	// CompletenessScore  int                  `json:"completeness_score,omitempty"`
 	BatchID                 string                 `json:"batch_id,omitempty"`
 	Contributor             []*Contributor         `json:"contributor,omitempty"`
-	Creator                 *DatasetUser           `json:"creator,omitempty"`
+	CreatorID               string                 `json:"creator_id,omitempty"`
+	Creator                 *Person                `json:"-"`
 	DateCreated             *time.Time             `json:"date_created,omitempty"`
 	DateUpdated             *time.Time             `json:"date_updated,omitempty"`
 	DateFrom                *time.Time             `json:"date_from,omitempty"`
@@ -55,7 +51,8 @@ type Dataset struct {
 	Keyword                 []string               `json:"keyword,omitempty"`
 	HasBeenPublic           bool                   `json:"has_been_public"`
 	Language                []string               `json:"language,omitempty"`
-	LastUser                *DatasetUser           `json:"last_user,omitempty"`
+	LastUserID              string                 `json:"last_user_id,omitempty"`
+	LastUser                *Person                `json:"-"`
 	License                 string                 `json:"license,omitempty"`
 	Link                    []*DatasetLink         `json:"link,omitempty"`
 	Locked                  bool                   `json:"locked"`
@@ -71,7 +68,8 @@ type Dataset struct {
 	Status                  string                 `json:"status,omitempty"`
 	Title                   string                 `json:"title,omitempty"`
 	URL                     string                 `json:"url,omitempty"` // TODO deprecated
-	User                    *DatasetUser           `json:"user,omitempty"`
+	UserID                  string                 `json:"user_id,omitempty"`
+	User                    *Person                `json:"-"`
 	Year                    string                 `json:"year,omitempty"`
 }
 

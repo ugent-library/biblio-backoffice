@@ -229,6 +229,34 @@ func newRepository(logger *zap.SugaredLogger, personService backends.PersonServi
 
 		PublicationLoaders: []repository.PublicationVisitor{
 			func(p *models.Publication) error {
+				if p.CreatorID != "" {
+					person, err := personService.GetPerson(p.CreatorID)
+					if err != nil {
+						logger.Warnf("error loading person %s in publication %s:, %w", p.CreatorID, p.ID, err)
+						p.Creator = dummyPerson
+					} else {
+						p.Creator = person
+					}
+				}
+				if p.UserID != "" {
+					person, err := personService.GetPerson(p.UserID)
+					if err != nil {
+						logger.Warnf("error loading person %s in publication %s:, %w", p.UserID, p.ID, err)
+						p.User = dummyPerson
+					} else {
+						p.User = person
+					}
+				}
+				if p.LastUserID != "" {
+					person, err := personService.GetPerson(p.LastUserID)
+					if err != nil {
+						logger.Warnf("error loading person %s in publication %s:, %w", p.LastUserID, p.ID, err)
+						p.LastUser = dummyPerson
+					} else {
+						p.LastUser = person
+					}
+				}
+
 				for _, role := range []string{"author", "editor", "supervisor"} {
 					for _, c := range p.Contributors(role) {
 						if c.PersonID == "" {
@@ -273,6 +301,34 @@ func newRepository(logger *zap.SugaredLogger, personService backends.PersonServi
 
 		DatasetLoaders: []repository.DatasetVisitor{
 			func(d *models.Dataset) error {
+				if d.CreatorID != "" {
+					person, err := personService.GetPerson(d.CreatorID)
+					if err != nil {
+						logger.Warnf("error loading person %s in dataset %s:, %w", d.CreatorID, d.ID, err)
+						d.Creator = dummyPerson
+					} else {
+						d.Creator = person
+					}
+				}
+				if d.UserID != "" {
+					person, err := personService.GetPerson(d.UserID)
+					if err != nil {
+						logger.Warnf("error loading person %s in dataset %s:, %w", d.UserID, d.ID, err)
+						d.User = dummyPerson
+					} else {
+						d.User = person
+					}
+				}
+				if d.LastUserID != "" {
+					person, err := personService.GetPerson(d.LastUserID)
+					if err != nil {
+						logger.Warnf("error loading person %s in dataset %s:, %w", d.LastUserID, d.ID, err)
+						d.LastUser = dummyPerson
+					} else {
+						d.LastUser = person
+					}
+				}
+
 				for _, role := range []string{"author", "contributor"} {
 					for _, c := range d.Contributors(role) {
 						if c.PersonID == "" {

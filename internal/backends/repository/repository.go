@@ -167,12 +167,12 @@ func (s *Repository) SavePublication(p *models.Publication, u *models.User) erro
 	p.DateUpdated = &now
 
 	if u != nil {
-		p.User = &models.PublicationUser{
-			ID:   u.ID,
-			Name: u.FullName,
-		}
-		p.LastUser = p.User
+		p.UserID = u.Person.ID
+		p.User = &u.Person
+		p.LastUserID = u.Person.ID
+		p.LastUser = &u.Person
 	} else {
+		p.UserID = ""
 		p.User = nil
 	}
 
@@ -200,12 +200,12 @@ func (s *Repository) UpdatePublication(snapshotID string, p *models.Publication,
 	p.DateUpdated = &now
 
 	if u != nil {
-		p.User = &models.PublicationUser{
-			ID:   u.ID,
-			Name: u.FullName,
-		}
-		p.LastUser = p.User
+		p.UserID = u.Person.ID
+		p.User = &u.Person
+		p.LastUserID = u.Person.ID
+		p.LastUser = &u.Person
 	} else {
+		p.UserID = ""
 		p.User = nil
 	}
 
@@ -561,12 +561,12 @@ func (s *Repository) SaveDataset(d *models.Dataset, u *models.User) error {
 	d.DateUpdated = &now
 
 	if u != nil {
-		d.User = &models.DatasetUser{
-			ID:   u.ID,
-			Name: u.FullName,
-		}
-		d.LastUser = d.User
+		d.UserID = u.Person.ID
+		d.User = &u.Person
+		d.LastUserID = u.Person.ID
+		d.LastUser = &u.Person
 	} else {
+		d.UserID = ""
 		d.User = nil
 	}
 
@@ -598,12 +598,12 @@ func (s *Repository) UpdateDataset(snapshotID string, d *models.Dataset, u *mode
 	d.DateUpdated = &now
 
 	if u != nil {
-		d.User = &models.DatasetUser{
-			ID:   u.ID,
-			Name: u.FullName,
-		}
-		d.LastUser = d.User
+		d.UserID = u.Person.ID
+		d.User = &u.Person
+		d.LastUserID = u.Person.ID
+		d.LastUser = &u.Person
 	} else {
+		d.UserID = ""
 		d.User = nil
 	}
 

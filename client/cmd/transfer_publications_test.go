@@ -129,7 +129,7 @@ func (s *TransferPublicationsSuite) TestTransfer() {
 
 	assert.Equal(t, p.Author[0].PersonID, "00000000-0000-0000-0000-000000000002")
 	assert.Equal(t, p.Supervisor[0].PersonID, "00000000-0000-0000-0000-000000000002")
-	assert.Equal(t, p.User.ID, "00000000-0000-0000-0000-000000000002")
+	assert.Equal(t, p.UserID, "00000000-0000-0000-0000-000000000002")
 }
 
 func (s *TransferPublicationsSuite) TearDownSuite() {

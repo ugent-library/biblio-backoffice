@@ -177,20 +177,15 @@ func (h *Handler) AddSingleImport(w http.ResponseWriter, r *http.Request, ctx Co
 	}
 
 	p.ID = ulid.Make().String()
-	p.Creator = &models.PublicationUser{ID: ctx.User.ID, Name: ctx.User.FullName}
-	p.User = &models.PublicationUser{ID: ctx.User.ID, Name: ctx.User.FullName}
+	p.CreatorID = ctx.User.Person.ID
+	p.Creator = &ctx.User.Person
+	p.UserID = ctx.User.Person.ID
+	p.User = &ctx.User.Person
 	p.Status = "private"
 	p.Classification = "U"
 
-	// Set the first department of the user if the user resides under at least one department
-	// TODO: this should be centralized
-	if len(ctx.User.Department) > 0 {
-		org, orgErr := h.OrganizationService.GetOrganization(ctx.User.Department[0].ID)
-		if orgErr != nil {
-			h.Logger.Warnw("import single publication: could not fetch user department", "errors", orgErr, "user", ctx.User.ID)
-		} else {
-			p.AddOrganization(org)
-		}
+	if len(ctx.User.Affiliations) > 0 {
+		p.AddOrganization(ctx.User.Affiliations[0].Organization)
 	}
 
 	if validationErrs := p.Validate(); validationErrs != nil {
@@ -538,19 +533,14 @@ func (h *Handler) importPublications(user *models.User, source string, file io.R
 			BatchID:        batchID,
 			Status:         "private",
 			Classification: "U",
-			Creator:        &models.PublicationUser{ID: user.ID, Name: user.FullName},
-			User:           &models.PublicationUser{ID: user.ID, Name: user.FullName},
+			CreatorID:      user.Person.ID,
+			Creator:        &user.Person,
+			UserID:         user.Person.ID,
+			User:           &user.Person,
 		}
 
-		// Set the department if the user was assigned to at least one department
-		// TODO: this should be centralized
-		if len(user.Department) > 0 {
-			org, orgErr := h.OrganizationService.GetOrganization(user.Department[0].ID)
-			if orgErr != nil {
-				h.Logger.Warnw("add multiple publications: could not fetch user department", "errors", orgErr, "user", user.ID)
-			} else {
-				p.AddOrganization(org)
-			}
+		if len(user.Affiliations) > 0 {
+			p.AddOrganization(user.Affiliations[0].Organization)
 		}
 
 		if err := dec.Decode(&p); errors.Is(err, io.EOF) {
