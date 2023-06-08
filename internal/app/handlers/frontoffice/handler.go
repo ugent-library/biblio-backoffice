@@ -741,11 +741,10 @@ func (h *Handler) mapDataset(d *models.Dataset) *Publication {
 	}
 
 	for _, v := range d.Department {
-		aff := Affiliation{UGentID: v.ID}
-		for i := len(v.Tree) - 1; i >= 0; i-- {
-			aff.Path = append(aff.Path, AffiliationPath{UGentID: v.Tree[i].ID})
+		aff := Affiliation{UGentID: v.ID, Path: make([]AffiliationPath, len(v.Tree))}
+		for i, t := range v.Tree {
+			aff.Path[i] = AffiliationPath{UGentID: t.ID}
 		}
-		aff.Path = append(aff.Path, AffiliationPath{UGentID: v.ID})
 		pp.Affiliation = append(pp.Affiliation, aff)
 	}
 
