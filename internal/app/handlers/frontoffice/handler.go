@@ -424,8 +424,8 @@ func (h *Handler) mapPublication(p *models.Publication) *Publication {
 		pp.Status = p.Status
 	}
 
-	if p.Creator != nil {
-		pp.CreatedBy = &Person{ID: p.Creator.ID}
+	if p.CreatorID != "" {
+		pp.CreatedBy = &Person{ID: p.CreatorID}
 	}
 
 	if p.DOI != "" {
@@ -744,8 +744,8 @@ func (h *Handler) mapDataset(d *models.Dataset) *Publication {
 		pp.Author = append(pp.Author, *c)
 	}
 
-	if d.Creator != nil {
-		pp.CreatedBy = &Person{ID: d.Creator.ID}
+	if d.CreatorID != "" {
+		pp.CreatedBy = &Person{ID: d.CreatorID}
 	}
 
 	if val := d.Identifiers.Get("DOI"); val != "" {

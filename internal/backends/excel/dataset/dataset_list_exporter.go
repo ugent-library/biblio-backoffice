@@ -65,10 +65,10 @@ func (x *xlsx) datasetToRow(d *models.Dataset) []string {
 	m["id"] = d.ID
 	m["status"] = d.Status
 	if d.Creator != nil {
-		m["creator"] = fmt.Sprintf("%s (%s)", d.Creator.Name, d.Creator.ID)
+		m["creator"] = fmt.Sprintf("%s (%s)", d.Creator.FullName, d.Creator.ID)
 	}
 	if d.User != nil {
-		m["user"] = fmt.Sprintf("%s (%s)", d.User.Name, d.User.ID)
+		m["user"] = fmt.Sprintf("%s (%s)", d.User.FullName, d.User.ID)
 	}
 	if d.DateCreated != nil {
 		m["date_created"] = internal_time.FormatTimeUTC(d.DateCreated)

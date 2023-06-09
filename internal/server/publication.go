@@ -733,14 +733,14 @@ func (s *server) TransferPublications(req *api.TransferPublicationsRequest, stre
 	source := req.Src
 	dest := req.Dest
 
-	p, err := s.services.PersonService.GetPerson(dest)
+	person, err := s.services.PersonService.GetPerson(dest)
 	if err != nil {
 		return status.Errorf(codes.Internal, "could not retrieve person %s: %v", dest, err)
 	}
 
 	c := &models.Contributor{
-		PersonID: p.ID,
-		Person:   p,
+		PersonID: person.ID,
+		Person:   person,
 	}
 
 	var callbackErr error
@@ -748,12 +748,10 @@ func (s *server) TransferPublications(req *api.TransferPublicationsRequest, stre
 	callback := func(p *models.Publication) bool {
 		fixed := false
 
-		if p.User != nil {
-			if p.User.ID == source {
-				p.User = &models.PublicationUser{
-					ID:   c.PersonID,
-					Name: c.Person.FullName,
-				}
+		if p.UserID != "" {
+			if p.UserID == source {
+				p.UserID = person.ID
+				p.User = person
 
 				if err := stream.Send(&api.TransferPublicationsResponse{
 					Response: &api.TransferPublicationsResponse_Message{
@@ -768,12 +766,10 @@ func (s *server) TransferPublications(req *api.TransferPublicationsRequest, stre
 			}
 		}
 
-		if p.Creator != nil {
-			if p.Creator.ID == source {
-				p.Creator = &models.PublicationUser{
-					ID:   c.PersonID,
-					Name: c.Person.FullName,
-				}
+		if p.CreatorID != "" {
+			if p.CreatorID == source {
+				p.CreatorID = person.ID
+				p.Creator = person
 
 				if len(c.Person.Affiliations) > 0 {
 					org, orgErr := s.services.OrganizationService.GetOrganization(c.Person.Affiliations[0].OrganizationID)
@@ -922,6 +918,7 @@ func (s *server) CleanupPublications(req *api.CleanupPublicationsRequest, stream
 
 		// Save record if changed
 		if fixed {
+			p.UserID = ""
 			p.User = nil
 
 			if err := p.Validate(); err != nil {

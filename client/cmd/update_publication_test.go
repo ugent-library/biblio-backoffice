@@ -109,12 +109,12 @@ func (s *UpdatePublicationSuite) TestUpdateValid() {
 	}
 
 	// Remove dynamic fields distorting the JSONEqf assertion
-	updPubA, err = removeKey(updPubA, "snapshot_id", "date_from", "date_updated", "user", "last_user")
+	updPubA, err = removeKey(updPubA, "snapshot_id", "date_from", "date_updated", "user_id", "last_user_id")
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	pubB, err = removeKey(pubB, "snapshot_id", "date_from", "date_updated", "user", "last_user")
+	pubB, err = removeKey(pubB, "snapshot_id", "date_from", "date_updated", "use_idr", "last_user_id")
 	if err != nil {
 		t.Fatal(err)
 	}

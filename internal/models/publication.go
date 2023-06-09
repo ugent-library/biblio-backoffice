@@ -19,11 +19,6 @@ type PublicationHits struct {
 	Facets map[string]FacetValues `json:"facets"`
 }
 
-type PublicationUser struct {
-	ID   string `json:"id,omitempty"`
-	Name string `json:"name,omitempty"`
-}
-
 type PublicationFile struct {
 	AccessLevel              string     `json:"access_level,omitempty"`
 	License                  string     `json:"license,omitempty"`
@@ -68,19 +63,20 @@ type Publication struct {
 	BatchID          string         `json:"batch_id,omitempty"`
 	Classification   string         `json:"classification,omitempty"`
 	// CompletenessScore       int                     `json:"completeness_score,omitempty"`
-	ConferenceName      string           `json:"conference_name,omitempty"`
-	ConferenceLocation  string           `json:"conference_location,omitempty"`
-	ConferenceOrganizer string           `json:"conference_organizer,omitempty"`
-	ConferenceStartDate string           `json:"conference_start_date,omitempty"`
-	ConferenceEndDate   string           `json:"conference_end_date,omitempty"`
-	ConferenceType      string           `json:"conference_type,omitempty"`
-	Creator             *PublicationUser `json:"creator,omitempty"`
-	DateCreated         *time.Time       `json:"date_created,omitempty"`
-	DateUpdated         *time.Time       `json:"date_updated,omitempty"`
-	DateFrom            *time.Time       `json:"date_from,omitempty"`
-	DateUntil           *time.Time       `json:"date_until,omitempty"`
-	DefenseDate         string           `json:"defense_date,omitempty"`
-	DefensePlace        string           `json:"defense_place,omitempty"`
+	ConferenceName      string     `json:"conference_name,omitempty"`
+	ConferenceLocation  string     `json:"conference_location,omitempty"`
+	ConferenceOrganizer string     `json:"conference_organizer,omitempty"`
+	ConferenceStartDate string     `json:"conference_start_date,omitempty"`
+	ConferenceEndDate   string     `json:"conference_end_date,omitempty"`
+	ConferenceType      string     `json:"conference_type,omitempty"`
+	CreatorID           string     `json:"creator_id,omitempty"`
+	Creator             *Person    `json:"-"`
+	DateCreated         *time.Time `json:"date_created,omitempty"`
+	DateUpdated         *time.Time `json:"date_updated,omitempty"`
+	DateFrom            *time.Time `json:"date_from,omitempty"`
+	DateUntil           *time.Time `json:"date_until,omitempty"`
+	DefenseDate         string     `json:"defense_date,omitempty"`
+	DefensePlace        string     `json:"defense_place,omitempty"`
 	// DefenseTime is deprecated, see https://github.com/ugent-library/biblio-backoffice/issues/1058
 	DefenseTime             string                 `json:"defense_time,omitempty"`
 	DOI                     string                 `json:"doi,omitempty"`
@@ -104,7 +100,8 @@ type Publication struct {
 	JournalArticleType      string                 `json:"journal_article_type,omitempty"`
 	Keyword                 []string               `json:"keyword,omitempty"`
 	Language                []string               `json:"language,omitempty"`
-	LastUser                *PublicationUser       `json:"last_user,omitempty"`
+	LastUserID              string                 `json:"last_user_id,omitempty"`
+	LastUser                *Person                `json:"-"`
 	LaySummary              []*Text                `json:"lay_summary,omitempty"`
 	Legacy                  bool                   `json:"legacy"`
 	Link                    []*PublicationLink     `json:"link,omitempty"`
@@ -137,7 +134,8 @@ type Publication struct {
 	Supervisor              []*Contributor         `json:"supervisor,omitempty"`
 	Title                   string                 `json:"title,omitempty"`
 	Type                    string                 `json:"type,omitempty"`
-	User                    *PublicationUser       `json:"user,omitempty"`
+	UserID                  string                 `json:"user_id,omitempty"`
+	User                    *Person                `json:"-"`
 	Volume                  string                 `json:"volume,omitempty"`
 	VABBType                string                 `json:"vabb_type,omitempty"`
 	VABBID                  string                 `json:"vabb_id,omitempty"`

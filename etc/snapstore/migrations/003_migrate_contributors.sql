@@ -5,7 +5,7 @@ set data['author'] =
         then jsonb_build_object('person_id', el->'id') ||
         	el::jsonb - 'id' - 'first_name' - 'last_name' - 'full_name' - 'orcid' - 'ugent_id' - 'department'
         else jsonb_build_object('external_person',
-        		jsonb_build_object('first_name', el->'first_name', 'last_name', el->'last_name', 'full_name', concat(replace((el->'first_name')::text, '"', ''), ' ', replace((el->'last_name')::text, '"', '')))) ||
+        		jsonb_build_object('first_name', el->'first_name', 'last_name', el->'last_name', 'full_name', concat(replace(el->>'first_name', '"', ''), ' ', replace(el->>'last_name', '"', '')))) ||
         	el::jsonb - 'id' - 'first_name' - 'last_name' - 'full_name' - 'orcid' - 'ugent_id' - 'department'
         end 
     )
@@ -20,7 +20,7 @@ set data['editor'] =
         then jsonb_build_object('person_id', el->'id') ||
         	el::jsonb - 'id' - 'first_name' - 'last_name' - 'full_name' - 'orcid' - 'ugent_id' - 'department'
         else jsonb_build_object('external_person',
-        		jsonb_build_object('first_name', el->'first_name', 'last_name', el->'last_name', 'full_name', concat(replace((el->'first_name')::text, '"', ''), ' ', replace((el->'last_name')::text, '"', '')))) ||
+        		jsonb_build_object('first_name', el->'first_name', 'last_name', el->'last_name', 'full_name', concat(replace(el->>'first_name', '"', ''), ' ', replace(el->>'last_name', '"', '')))) ||
         	el::jsonb - 'id' - 'first_name' - 'last_name' - 'full_name' - 'orcid' - 'ugent_id' - 'department'
         end 
     )
@@ -35,7 +35,7 @@ set data['supervisor'] =
         then jsonb_build_object('person_id', el->'id') ||
         	el::jsonb - 'id' - 'first_name' - 'last_name' - 'full_name' - 'orcid' - 'ugent_id' - 'department'
         else jsonb_build_object('external_person',
-        		jsonb_build_object('first_name', el->'first_name', 'last_name', el->'last_name', 'full_name', concat(replace((el->'first_name')::text, '"', ''), ' ', replace((el->'last_name')::text, '"', '')))) ||
+        		jsonb_build_object('first_name', el->'first_name', 'last_name', el->'last_name', 'full_name', concat(replace(el->>'first_name', '"', ''), ' ', replace(el->>'last_name', '"', '')))) ||
         	el::jsonb - 'id' - 'first_name' - 'last_name' - 'full_name' - 'orcid' - 'ugent_id' - 'department'
         end 
     )
@@ -50,7 +50,7 @@ set data['author'] =
         then jsonb_build_object('person_id', el->'id') ||
         	el::jsonb - 'id' - 'first_name' - 'last_name' - 'full_name' - 'orcid' - 'ugent_id' - 'department'
         else jsonb_build_object('external_person',
-        		jsonb_build_object('first_name', el->'first_name', 'last_name', el->'last_name', 'full_name', concat(replace((el->'first_name')::text, '"', ''), ' ', replace((el->'last_name')::text, '"', '')))) ||
+        		jsonb_build_object('first_name', el->'first_name', 'last_name', el->'last_name', 'full_name', concat(replace(el->>'first_name', '"', ''), ' ', replace(el->>'last_name', '"', '')))) ||
         	el::jsonb - 'id' - 'first_name' - 'last_name' - 'full_name' - 'orcid' - 'ugent_id' - 'department'
         end 
     )
@@ -65,7 +65,7 @@ set data['contributor'] =
         then jsonb_build_object('person_id', el->'id') ||
         	el::jsonb - 'id' - 'first_name' - 'last_name' - 'full_name' - 'orcid' - 'ugent_id' - 'department'
         else jsonb_build_object('external_person',
-        		jsonb_build_object('first_name', el->'first_name', 'last_name', el->'last_name', 'full_name', concat(replace((el->'first_name')::text, '"', ''), ' ', replace((el->'last_name')::text, '"', '')))) ||
+        		jsonb_build_object('first_name', el->'first_name', 'last_name', el->'last_name', 'full_name', concat(replace(el->>'first_name', '"', ''), ' ', replace(el->>'last_name', '"', '')))) ||
         	el::jsonb - 'id' - 'first_name' - 'last_name' - 'full_name' - 'orcid' - 'ugent_id' - 'department'
         end 
     )

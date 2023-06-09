@@ -330,10 +330,42 @@ func (s *PersonWithOrganizationsService) GetPerson(id string) (*models.Person, e
 	}
 	for _, a := range p.Affiliations {
 		o, err := s.OrganizationService.GetOrganization(a.OrganizationID)
-		if err != nil {
+		if err == ErrNotFound {
+			a.Organization = NewDummyOrganization(a.OrganizationID)
+		} else if err != nil {
 			return nil, err
+		} else {
+			a.Organization = o
 		}
-		a.Organization = o
 	}
 	return p, nil
+}
+
+// TODO remove this when we always have an uptodate db of organizations
+func NewDummyOrganization(id string) *models.Organization {
+	return &models.Organization{
+		ID:   id,
+		Name: id,
+		Tree: []struct {
+			ID string `json:"id,omitempty"`
+		}{
+			{ID: id},
+		},
+	}
+}
+
+func NewDummyPerson(id string) *models.Person {
+	return &models.Person{
+		ID:        id,
+		FullName:  "[missing]",
+		FirstName: "[missing]",
+		LastName:  "[missing]",
+	}
+}
+
+func NewDummyProject(id string) *models.Project {
+	return &models.Project{
+		ID:    id,
+		Title: "[missing]",
+	}
 }
