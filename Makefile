@@ -28,6 +28,7 @@ run-tests:
 	go run main.go reset --confirm
 	@cd client && go clean -testcache && go test ./... -v -cover
 
+# e.g. TEST=TestTransferPublicationsSuite make run-test
 run-test:
 	go run main.go reset --confirm
 	@cd client && go clean -testcache && go test ./... -v -run $(TEST)

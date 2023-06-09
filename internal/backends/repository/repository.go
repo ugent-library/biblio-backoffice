@@ -187,6 +187,12 @@ func (s *Repository) SavePublication(p *models.Publication, u *models.User) erro
 		return err
 	}
 
+	for _, fn := range s.config.PublicationLoaders {
+		if err := fn(p); err != nil {
+			return err
+		}
+	}
+
 	s.publicationNotify(p)
 
 	return nil
@@ -216,6 +222,12 @@ func (s *Repository) UpdatePublication(snapshotID string, p *models.Publication,
 	}
 	p.SnapshotID = snapshotID
 
+	for _, fn := range s.config.PublicationLoaders {
+		if err := fn(p); err != nil {
+			return err
+		}
+	}
+
 	s.publicationNotify(p)
 
 	return nil
@@ -230,6 +242,12 @@ func (s *Repository) UpdatePublicationInPlace(p *models.Publication) error {
 	np := &models.Publication{}
 	if err := snap.Scan(np); err != nil {
 		return err
+	}
+
+	for _, fn := range s.config.PublicationLoaders {
+		if err := fn(p); err != nil {
+			return err
+		}
 	}
 
 	s.publicationNotify(p)
@@ -583,6 +601,12 @@ func (s *Repository) SaveDataset(d *models.Dataset, u *models.User) error {
 		return err
 	}
 
+	for _, fn := range s.config.DatasetLoaders {
+		if err := fn(d); err != nil {
+			return err
+		}
+	}
+
 	s.datasetNotify(d)
 
 	return nil
@@ -613,6 +637,12 @@ func (s *Repository) UpdateDataset(snapshotID string, d *models.Dataset, u *mode
 		return err
 	}
 	d.SnapshotID = snapshotID
+
+	for _, fn := range s.config.DatasetLoaders {
+		if err := fn(d); err != nil {
+			return err
+		}
+	}
 
 	s.datasetNotify(d)
 
