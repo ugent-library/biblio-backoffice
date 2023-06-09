@@ -2,9 +2,11 @@ package dashboard
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"net/url"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/ugent-library/biblio-backoffice/internal/app/localize"
 	"github.com/ugent-library/biblio-backoffice/internal/backends"
 	"github.com/ugent-library/biblio-backoffice/internal/models"
@@ -54,6 +56,8 @@ func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Conte
 	ufaculties = append(ufaculties, []string{"UGent", "-"}...)
 
 	uSearcher := h.PublicationSearchIndex
+	spew.Dump(uSearcher)
+	log.Println("TEST TEST")
 	baseSearchUrl := h.PathFor("publications")
 
 	uPublications, err := generatePublicationsDashboard(ufaculties, ptypes, uSearcher, baseSearchUrl, func(fac string, args *models.SearchArgs) *models.SearchArgs {

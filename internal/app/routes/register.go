@@ -78,8 +78,9 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 	// 	Tasks:       services.Tasks,
 	// }
 	dashboardHandler := &dashboard.Handler{
-		BaseHandler:   baseHandler,
-		SearchService: services.SearchService,
+		BaseHandler:            baseHandler,
+		DatasetSearchIndex:     services.DatasetSearchIndex,
+		PublicationSearchIndex: services.PublicationSearchIndex,
 	}
 	frontofficeHandler := &frontoffice.Handler{
 		BaseHandler: baseHandler,
