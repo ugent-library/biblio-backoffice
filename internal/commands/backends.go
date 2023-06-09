@@ -8,7 +8,6 @@ import (
 	"path"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/elastic/go-elasticsearch/v6"
 	"github.com/spf13/cobra"
@@ -93,11 +92,13 @@ func newServices() *backends.Services {
 	logger := newLogger()
 
 	organizationService := caching.NewOrganizationService(authorityClient)
+
 	// always add organization info to person affiliations
 	personService := &backends.PersonWithOrganizationsService{
 		PersonService:       caching.NewPersonService(authorityClient),
 		OrganizationService: organizationService,
 	}
+
 	projectService := caching.NewProjectService(authorityClient)
 
 	repo := newRepository(logger, personService, organizationService, projectService)
@@ -181,29 +182,6 @@ func newRepository(logger *zap.SugaredLogger, personService backends.PersonServi
 	bp := newPublicationBulkIndexerService(logger)
 	bd := newDatasetBulkIndexerService(logger)
 
-	now := time.Now()
-	dummyPerson := &models.Person{
-		ID:        "[missing]",
-		FullName:  "[missing]",
-		FirstName: "[missing]",
-		LastName:  "[missing]",
-	}
-	dummyOrganization := &models.Organization{
-		ID:   "[missing]",
-		Name: "[missing]",
-		Tree: []struct {
-			ID string `json:"id,omitempty"`
-		}{
-			{ID: "[missing]"},
-		},
-	}
-	dummyProject := &models.Project{
-		ID:          "[missing]",
-		Title:       "[missing]",
-		DateCreated: &now,
-		DateUpdated: &now,
-	}
-
 	repo, err := repository.New(repository.Config{
 		DSN: viper.GetString("pg-conn"),
 
@@ -233,7 +211,7 @@ func newRepository(logger *zap.SugaredLogger, personService backends.PersonServi
 					person, err := personService.GetPerson(p.CreatorID)
 					if err != nil {
 						logger.Warnf("error loading person %s in publication %s:, %w", p.CreatorID, p.ID, err)
-						p.Creator = dummyPerson
+						p.Creator = backends.NewDummyPerson(p.CreatorID)
 					} else {
 						p.Creator = person
 					}
@@ -242,7 +220,7 @@ func newRepository(logger *zap.SugaredLogger, personService backends.PersonServi
 					person, err := personService.GetPerson(p.UserID)
 					if err != nil {
 						logger.Warnf("error loading person %s in publication %s:, %w", p.UserID, p.ID, err)
-						p.User = dummyPerson
+						p.User = backends.NewDummyPerson(p.UserID)
 					} else {
 						p.User = person
 					}
@@ -251,7 +229,7 @@ func newRepository(logger *zap.SugaredLogger, personService backends.PersonServi
 					person, err := personService.GetPerson(p.LastUserID)
 					if err != nil {
 						logger.Warnf("error loading person %s in publication %s:, %w", p.LastUserID, p.ID, err)
-						p.LastUser = dummyPerson
+						p.LastUser = backends.NewDummyPerson(p.LastUserID)
 					} else {
 						p.LastUser = person
 					}
@@ -265,7 +243,7 @@ func newRepository(logger *zap.SugaredLogger, personService backends.PersonServi
 						person, err := personService.GetPerson(c.PersonID)
 						if err != nil {
 							logger.Warnf("error loading person %s in publication %s:, %w", c.PersonID, p.ID, err)
-							c.Person = dummyPerson
+							c.Person = backends.NewDummyPerson(c.PersonID)
 						} else {
 							c.Person = person
 						}
@@ -277,8 +255,7 @@ func newRepository(logger *zap.SugaredLogger, personService backends.PersonServi
 				for _, rel := range p.RelatedOrganizations {
 					org, err := organizationService.GetOrganization(rel.OrganizationID)
 					if err != nil {
-						logger.Warnf("error loading organization %s in publication %s:, %w", rel.OrganizationID, p.ID, err)
-						rel.Organization = dummyOrganization
+						rel.Organization = backends.NewDummyOrganization(rel.OrganizationID)
 					} else {
 						rel.Organization = org
 					}
@@ -290,7 +267,7 @@ func newRepository(logger *zap.SugaredLogger, personService backends.PersonServi
 					project, err := projectService.GetProject(rel.ProjectID)
 					if err != nil {
 						logger.Warnf("error loading project %s in publication %s:, %w", rel.ProjectID, p.ID, err)
-						rel.Project = dummyProject
+						rel.Project = backends.NewDummyProject(rel.ProjectID)
 					} else {
 						rel.Project = project
 					}
@@ -305,7 +282,7 @@ func newRepository(logger *zap.SugaredLogger, personService backends.PersonServi
 					person, err := personService.GetPerson(d.CreatorID)
 					if err != nil {
 						logger.Warnf("error loading person %s in dataset %s:, %w", d.CreatorID, d.ID, err)
-						d.Creator = dummyPerson
+						d.Creator = backends.NewDummyPerson(d.CreatorID)
 					} else {
 						d.Creator = person
 					}
@@ -314,7 +291,7 @@ func newRepository(logger *zap.SugaredLogger, personService backends.PersonServi
 					person, err := personService.GetPerson(d.UserID)
 					if err != nil {
 						logger.Warnf("error loading person %s in dataset %s:, %w", d.UserID, d.ID, err)
-						d.User = dummyPerson
+						d.User = backends.NewDummyPerson(d.UserID)
 					} else {
 						d.User = person
 					}
@@ -323,7 +300,7 @@ func newRepository(logger *zap.SugaredLogger, personService backends.PersonServi
 					person, err := personService.GetPerson(d.LastUserID)
 					if err != nil {
 						logger.Warnf("error loading person %s in dataset %s:, %w", d.LastUserID, d.ID, err)
-						d.LastUser = dummyPerson
+						d.LastUser = backends.NewDummyPerson(d.LastUserID)
 					} else {
 						d.LastUser = person
 					}
@@ -337,7 +314,7 @@ func newRepository(logger *zap.SugaredLogger, personService backends.PersonServi
 						person, err := personService.GetPerson(c.PersonID)
 						if err != nil {
 							logger.Warnf("error loading person %s in dataset %s:, %w", c.PersonID, d.ID, err)
-							c.Person = dummyPerson
+							c.Person = backends.NewDummyPerson(c.PersonID)
 						} else {
 							c.Person = person
 						}
@@ -349,8 +326,7 @@ func newRepository(logger *zap.SugaredLogger, personService backends.PersonServi
 				for _, rel := range d.RelatedOrganizations {
 					org, err := organizationService.GetOrganization(rel.OrganizationID)
 					if err != nil {
-						logger.Warnf("error loading organization %s in dataset %s:, %w", rel.OrganizationID, d.ID, err)
-						rel.Organization = dummyOrganization
+						rel.Organization = backends.NewDummyOrganization(rel.OrganizationID)
 					} else {
 						rel.Organization = org
 					}
@@ -362,7 +338,7 @@ func newRepository(logger *zap.SugaredLogger, personService backends.PersonServi
 					project, err := projectService.GetProject(rel.ProjectID)
 					if err != nil {
 						logger.Warnf("error loading project %s in dataset %s:, %w", rel.ProjectID, d.ID, err)
-						rel.Project = dummyProject
+						rel.Project = backends.NewDummyProject(rel.ProjectID)
 					} else {
 						rel.Project = project
 					}
