@@ -33,7 +33,7 @@ func (s *ImportDatasetsSuite) TestValidImport() {
 		"creator_id": "00000000-0000-0000-0000-000000000001",
 		"related_organizations": [
 		  {
-			"organization_id": "CA20",
+			"organization_id": "CA20"
 		  }
 		],
 		"doi": "doi",
