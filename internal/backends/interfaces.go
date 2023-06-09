@@ -16,6 +16,8 @@ type Services struct {
 	Repository                Repository
 	FileStore                 FileStore
 	SearchService             SearchService
+	DatasetSearchIndex        DatasetIndex
+	PublicationSearchIndex    PublicationIndex
 	OrganizationService       OrganizationService
 	PersonService             PersonService
 	ProjectService            ProjectService
@@ -53,7 +55,6 @@ type PublicationGetter interface {
 }
 
 type Repository interface {
-	Transaction(context.Context, func(Repository) error) error
 	GetPublication(string) (*models.Publication, error)
 	GetPublications([]string) ([]*models.Publication, error)
 	SavePublication(*models.Publication, *models.User) error
@@ -116,12 +117,73 @@ type BulkIndexer[T any] interface {
 	Close(context.Context) error
 }
 
+type DatasetIDIndex interface {
+	Search(*models.SearchArgs) (*models.SearchHits, error)
+	Each(searchArgs *models.SearchArgs, maxSize int, cb func(string)) error
+	Delete(id string) error
+	DeleteAll() error
+	WithScope(string, ...string) DatasetIDIndex
+}
+
 type DatasetIndex interface {
 	Search(*models.SearchArgs) (*models.DatasetHits, error)
 	Each(searchArgs *models.SearchArgs, maxSize int, cb func(*models.Dataset)) error
 	Delete(id string) error
 	DeleteAll() error
 	WithScope(string, ...string) DatasetIndex
+}
+
+type datasetIndex struct {
+	DatasetIDIndex
+	repo Repository
+}
+
+func NewDatasetIndex(di DatasetIDIndex, r Repository) DatasetIndex {
+	return &datasetIndex{
+		DatasetIDIndex: di,
+		repo:           r,
+	}
+}
+
+func (ds *datasetIndex) Search(args *models.SearchArgs) (*models.DatasetHits, error) {
+	h, err := ds.DatasetIDIndex.Search(args)
+	if err != nil {
+		return nil, err
+	}
+
+	datasets, err := ds.repo.GetDatasets(h.Hits)
+	if err != nil {
+		return nil, err
+	}
+
+	return &models.DatasetHits{
+		Pagination: h.Pagination,
+		Hits:       datasets,
+		Facets:     h.Facets,
+	}, nil
+}
+
+func (ds *datasetIndex) Each(searchArgs *models.SearchArgs, maxSize int, cb func(*models.Dataset)) error {
+	return ds.DatasetIDIndex.Each(searchArgs, maxSize, func(id string) {
+		// TODO handle error
+		dataset, _ := ds.repo.GetDataset(id)
+		cb(dataset)
+	})
+}
+
+func (ds *datasetIndex) WithScope(field string, terms ...string) DatasetIndex {
+	return &datasetIndex{
+		DatasetIDIndex: ds.DatasetIDIndex.WithScope(field, terms...),
+		repo:           ds.repo,
+	}
+}
+
+type PublicationIDIndex interface {
+	Search(*models.SearchArgs) (*models.SearchHits, error)
+	Each(searchArgs *models.SearchArgs, maxSize int, cb func(string)) error
+	Delete(id string) error
+	DeleteAll() error
+	WithScope(string, ...string) PublicationIDIndex
 }
 
 type PublicationIndex interface {
@@ -132,11 +194,56 @@ type PublicationIndex interface {
 	WithScope(string, ...string) PublicationIndex
 }
 
+type publicationIndex struct {
+	PublicationIDIndex
+	repo Repository
+}
+
+func NewPublicationIndex(di PublicationIDIndex, r Repository) PublicationIndex {
+	return &publicationIndex{
+		PublicationIDIndex: di,
+		repo:               r,
+	}
+}
+
+func (pi *publicationIndex) Search(args *models.SearchArgs) (*models.PublicationHits, error) {
+	h, err := pi.PublicationIDIndex.Search(args)
+	if err != nil {
+		return nil, err
+	}
+
+	publications, err := pi.repo.GetPublications(h.Hits)
+	if err != nil {
+		return nil, err
+	}
+
+	return &models.PublicationHits{
+		Pagination: h.Pagination,
+		Hits:       publications,
+		Facets:     h.Facets,
+	}, nil
+}
+
+func (pi *publicationIndex) Each(searchArgs *models.SearchArgs, maxSize int, cb func(*models.Publication)) error {
+	return pi.PublicationIDIndex.Each(searchArgs, maxSize, func(id string) {
+		// TODO handle error
+		publication, _ := pi.repo.GetPublication(id)
+		cb(publication)
+	})
+}
+
+func (pi *publicationIndex) WithScope(field string, terms ...string) PublicationIndex {
+	return &publicationIndex{
+		PublicationIDIndex: pi.PublicationIDIndex.WithScope(field, terms...),
+		repo:               pi.repo,
+	}
+}
+
 type SearchService interface {
-	NewDatasetIndex() DatasetIndex
+	NewDatasetIndex(Repository) DatasetIndex
 	NewDatasetBulkIndexer(BulkIndexerConfig) (BulkIndexer[*models.Dataset], error)
 	NewDatasetIndexSwitcher(BulkIndexerConfig) (IndexSwitcher[*models.Dataset], error)
-	NewPublicationIndex() PublicationIndex
+	NewPublicationIndex(Repository) PublicationIndex
 	NewPublicationBulkIndexer(BulkIndexerConfig) (BulkIndexer[*models.Publication], error)
 	NewPublicationIndexSwitcher(BulkIndexerConfig) (IndexSwitcher[*models.Publication], error)
 }
@@ -147,7 +254,6 @@ type OrganizationService interface {
 
 type PersonService interface {
 	GetPerson(string) (*models.Person, error)
-	GetPersons([]string) ([]*models.Person, error)
 }
 
 type ProjectService interface {
@@ -207,20 +313,27 @@ type HandleService interface {
 
 var ErrNotFound = errors.New("record not found")
 
-type RepositoryFilter struct {
-	Field string
-	Op    string
-	Value string
-}
-
-type RepositoryQueryArgs struct {
-	Limit   int
-	Offset  int
-	Order   string
-	Filters []*RepositoryFilter
-}
-
 type Mutation struct {
 	Op   string
 	Args []string
+}
+
+type PersonWithOrganizationsService struct {
+	PersonService       PersonService
+	OrganizationService OrganizationService
+}
+
+func (s *PersonWithOrganizationsService) GetPerson(id string) (*models.Person, error) {
+	p, err := s.PersonService.GetPerson(id)
+	if err != nil {
+		return nil, err
+	}
+	for _, a := range p.Affiliations {
+		o, err := s.OrganizationService.GetOrganization(a.OrganizationID)
+		if err != nil {
+			return nil, err
+		}
+		a.Organization = o
+	}
+	return p, nil
 }

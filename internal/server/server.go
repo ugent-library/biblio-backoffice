@@ -39,6 +39,7 @@ func listUsers() Users {
 	return u
 }
 
+// TODO this is not used
 func listPermissions() map[string][]string {
 	const biblioServicePath = "/biblio.v1.Biblio/"
 

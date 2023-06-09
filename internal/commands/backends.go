@@ -7,6 +7,7 @@ import (
 	"path"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -85,16 +86,30 @@ func newServices() *backends.Services {
 
 	logger := newLogger()
 
+	organizationService := caching.NewOrganizationService(authorityClient)
+	// always add organization info to person affiliations
+	personService := &backends.PersonWithOrganizationsService{
+		PersonService:       caching.NewPersonService(authorityClient),
+		OrganizationService: organizationService,
+	}
 	projectService := caching.NewProjectService(authorityClient)
 
+	repo := newRepository(logger, personService, organizationService, projectService)
+
+	searchService := newSearchService(logger)
+
 	return &backends.Services{
-		FileStore:                 newFileStore(),
-		ORCIDSandbox:              orcidConfig.Sandbox,
-		ORCIDClient:               orcidClient,
-		Repository:                newRepository(logger, projectService),
-		SearchService:             newSearchService(logger),
-		OrganizationService:       caching.NewOrganizationService(authorityClient),
-		PersonService:             caching.NewPersonService(authorityClient),
+		FileStore:              newFileStore(),
+		ORCIDSandbox:           orcidConfig.Sandbox,
+		ORCIDClient:            orcidClient,
+		Repository:             repo,
+		SearchService:          searchService,
+		DatasetSearchIndex:     searchService.NewDatasetIndex(repo),
+		PublicationSearchIndex: searchService.NewPublicationIndex(repo),
+		// DatasetSearchService:      backends.NewDatasetSearchService(newDatasetSearchService(), repo),
+		// PublicationSearchService:  backends.NewPublicationSearchService(newPublicationSearchService(), repo),
+		OrganizationService:       organizationService,
+		PersonService:             personService,
 		ProjectService:            projectService,
 		UserService:               caching.NewUserService(authorityClient),
 		OrganizationSearchService: authorityClient,
@@ -157,11 +172,34 @@ func newLogger() *zap.SugaredLogger {
 	return sugar
 }
 
-func newRepository(logger *zap.SugaredLogger, projectService backends.ProjectService) backends.Repository {
+func newRepository(logger *zap.SugaredLogger, personService backends.PersonService, organizationService backends.OrganizationService, projectService backends.ProjectService) backends.Repository {
 	ctx := context.Background()
 
 	bp := newPublicationBulkIndexerService(logger)
 	bd := newDatasetBulkIndexerService(logger)
+
+	now := time.Now()
+	dummyPerson := &models.Person{
+		ID:        "[missing]",
+		FullName:  "[missing]",
+		FirstName: "[missing]",
+		LastName:  "[missing]",
+	}
+	dummyOrganization := &models.Organization{
+		ID:   "[missing]",
+		Name: "[missing]",
+		Tree: []struct {
+			ID string `json:"id,omitempty"`
+		}{
+			{ID: "[missing]"},
+		},
+	}
+	dummyProject := &models.Project{
+		ID:          "[missing]",
+		Title:       "[missing]",
+		DateCreated: &now,
+		DateUpdated: &now,
+	}
 
 	repo, err := repository.New(repository.Config{
 		DSN: viper.GetString("pg-conn"),
@@ -183,6 +221,94 @@ func newRepository(logger *zap.SugaredLogger, projectService backends.ProjectSer
 						logger.Errorf("error indexing dataset %s: %w", d.ID, err)
 					}
 				}
+			},
+		},
+
+		PublicationLoaders: []repository.PublicationVisitor{
+			func(p *models.Publication) error {
+				for _, role := range []string{"author", "editor", "supervisor"} {
+					for _, c := range p.Contributors(role) {
+						if c.PersonID == "" {
+							continue
+						}
+						person, err := personService.GetPerson(c.PersonID)
+						if err != nil {
+							logger.Warnf("error loading person %s in publication %s:, %w", c.PersonID, p.ID, err)
+							c.Person = dummyPerson
+						} else {
+							c.Person = person
+						}
+					}
+				}
+				return nil
+			},
+			func(p *models.Publication) error {
+				for _, rel := range p.RelatedOrganizations {
+					org, err := organizationService.GetOrganization(rel.OrganizationID)
+					if err != nil {
+						logger.Warnf("error loading organization %s in publication %s:, %w", rel.OrganizationID, p.ID, err)
+						rel.Organization = dummyOrganization
+					} else {
+						rel.Organization = org
+					}
+				}
+				return nil
+			},
+			func(p *models.Publication) error {
+				for _, rel := range p.RelatedProjects {
+					project, err := projectService.GetProject(rel.ProjectID)
+					if err != nil {
+						logger.Warnf("error loading project %s in publication %s:, %w", rel.ProjectID, p.ID, err)
+						rel.Project = dummyProject
+					} else {
+						rel.Project = project
+					}
+				}
+				return nil
+			},
+		},
+
+		DatasetLoaders: []repository.DatasetVisitor{
+			func(d *models.Dataset) error {
+				for _, role := range []string{"author", "contributor"} {
+					for _, c := range d.Contributors(role) {
+						if c.PersonID == "" {
+							continue
+						}
+						person, err := personService.GetPerson(c.PersonID)
+						if err != nil {
+							logger.Warnf("error loading person %s in dataset %s:, %w", c.PersonID, d.ID, err)
+							c.Person = dummyPerson
+						} else {
+							c.Person = person
+						}
+					}
+				}
+				return nil
+			},
+			func(d *models.Dataset) error {
+				for _, rel := range d.RelatedOrganizations {
+					org, err := organizationService.GetOrganization(rel.OrganizationID)
+					if err != nil {
+						logger.Warnf("error loading organization %s in dataset %s:, %w", rel.OrganizationID, d.ID, err)
+						rel.Organization = dummyOrganization
+					} else {
+						rel.Organization = org
+					}
+				}
+				return nil
+			},
+			func(d *models.Dataset) error {
+				for _, rel := range d.RelatedProjects {
+					project, err := projectService.GetProject(rel.ProjectID)
+					if err != nil {
+						logger.Warnf("error loading project %s in dataset %s:, %w", rel.ProjectID, d.ID, err)
+						rel.Project = dummyProject
+					} else {
+						rel.Project = project
+					}
+				}
+				return nil
 			},
 		},
 

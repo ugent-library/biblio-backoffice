@@ -1,0 +1,20 @@
+<div class="c-meta-list c-meta-list-horizontal">
+    {{if gt (len .RelatedOrganizations) 3}}
+        {{range (slice .RelatedOrganizations 0 3)}}
+            {{partial "shared/organization" .Organization}}
+        {{end}}
+        <div class="c-meta-item">
+            {{if .ContributorsURL}}
+            <a class="c-link c-link-muted" href="{{.ContributorsURL}}">
+            {{end}}
+            {{sub (len $.RelatedOrganizations) 3}} more department{{if gt (sub (len $.RelatedOrganizations) 3) 1}}s{{end}}
+            {{if .ContributorsURL}}
+            </a>
+            {{end}}
+        </div>
+    {{else}}
+        {{range .RelatedOrganizations}}
+            {{partial "shared/organization" .Organization}}
+        {{end}}
+    {{end}}
+</div>

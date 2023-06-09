@@ -28,7 +28,7 @@ func (h *Handler) ExportByCurationSearch(w http.ResponseWriter, r *http.Request,
 	}
 	exporter := exporterFactory(w)
 
-	searcher := h.SearchService.NewPublicationIndex().WithScope("status", "private", "public", "returned")
+	searcher := h.PublicationSearchIndex.WithScope("status", "private", "public", "returned")
 	searcherErr := searcher.Each(ctx.SearchArgs, 10000, func(pub *models.Publication) {
 		exporter.Add(pub)
 	})

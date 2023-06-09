@@ -127,8 +127,8 @@ func (s *TransferPublicationsSuite) TestTransfer() {
 		t.Fatal(err)
 	}
 
-	assert.Equal(t, p.Author[0].ID, "00000000-0000-0000-0000-000000000002")
-	assert.Equal(t, p.Supervisor[0].ID, "00000000-0000-0000-0000-000000000002")
+	assert.Equal(t, p.Author[0].PersonID, "00000000-0000-0000-0000-000000000002")
+	assert.Equal(t, p.Supervisor[0].PersonID, "00000000-0000-0000-0000-000000000002")
 	assert.Equal(t, p.User.ID, "00000000-0000-0000-0000-000000000002")
 }
 

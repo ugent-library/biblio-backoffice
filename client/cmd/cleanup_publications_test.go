@@ -97,7 +97,7 @@ func (s *CleanupPublicationsSuite) TestCleanup() {
 	assert.Len(t, p.Keyword, 2, "number of keywords isn't 2, got:", len(p.Keyword))
 	assert.Equal(t, p.Keyword[0], "keyword")
 	assert.Equal(t, p.Keyword[1], "keyword2")
-	assert.NotNil(t, p.Department[0].Tree, "department tree is missing, got:", p.Department)
+	assert.NotNil(t, p.RelatedOrganizations[0].Organization.Tree, "department tree is missing, got:", p.RelatedOrganizations)
 }
 
 func (s *CleanupPublicationsSuite) TearDownSuite() {

@@ -40,7 +40,7 @@ func (h *Handler) Datasets(w http.ResponseWriter, r *http.Request, ctx Context) 
 	locptypes := make(map[string]string)
 	locptypes["all"] = "All"
 
-	aSearcher := h.SearchService.NewDatasetIndex().WithScope("status", "private", "public", "returned")
+	aSearcher := h.DatasetSearchIndex.WithScope("status", "private", "public", "returned")
 	baseSearchUrl := h.PathFor("datasets")
 
 	datasets, err := generateDatasetsDashboard(faculties, ptypes, aSearcher, baseSearchUrl, func(args *models.SearchArgs) *models.SearchArgs {

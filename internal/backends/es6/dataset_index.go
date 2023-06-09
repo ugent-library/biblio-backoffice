@@ -22,14 +22,14 @@ type DatasetIndex struct {
 	scopes []M
 }
 
-func newDatasetIndex(c *elasticsearch.Client, i string) *DatasetIndex {
+func newDatasetIndex(c *elasticsearch.Client, i string) backends.DatasetIDIndex {
 	return &DatasetIndex{
 		client: c,
 		index:  i,
 	}
 }
 
-func (di *DatasetIndex) Search(args *models.SearchArgs) (*models.DatasetHits, error) {
+func (di *DatasetIndex) Search(args *models.SearchArgs) (*models.SearchHits, error) {
 	// BUILD QUERY AND FILTERS FROM USER INPUT
 	query := buildDatasetUserQuery(args)
 
@@ -171,7 +171,7 @@ func (di *DatasetIndex) Search(args *models.SearchArgs) (*models.DatasetHits, er
 	return hits, nil
 }
 
-func (di *DatasetIndex) Each(searchArgs *models.SearchArgs, maxSize int, cb func(*models.Dataset)) error {
+func (di *DatasetIndex) Each(searchArgs *models.SearchArgs, maxSize int, cb func(string)) error {
 	nProcessed := 0
 	start := 0
 	limit := 200
@@ -250,7 +250,7 @@ func (di *DatasetIndex) Each(searchArgs *models.SearchArgs, maxSize int, cb func
 		}
 
 		if len(hits.Hits) > 0 {
-			sortValue = hits.Hits[len(hits.Hits)-1].ID
+			sortValue = hits.Hits[len(hits.Hits)-1]
 		}
 
 		if len(hits.Hits) < limit {
@@ -308,7 +308,7 @@ func (di *DatasetIndex) DeleteAll() error {
 	return nil
 }
 
-func (di *DatasetIndex) WithScope(field string, terms ...string) backends.DatasetIndex {
+func (di *DatasetIndex) WithScope(field string, terms ...string) backends.DatasetIDIndex {
 	newScopes := make([]M, 0, len(di.scopes))
 
 	// Copy existing scopes
@@ -364,10 +364,12 @@ func buildDatasetUserQuery(args *models.SearchArgs) M {
 					"id^100",
 					"identifier_values^50",
 					"title^40",
-					"department.tree.id^50",
+					"department^50",
+					"author.person.full_name.phrase_ngram^0.05",
+					"author.person.full_name.ngram^0.01",
+					"author.external_person.full_name.phrase_ngram^0.05",
+					"author.external_person.full_name.ngram^0.01",
 					"all",
-					"author.full_name.phrase_ngram^0.05",
-					"author.full_name.ngram^0.01",
 				},
 				"lenient":                             true,
 				"analyze_wildcard":                    false,
@@ -462,8 +464,9 @@ type datasetResEnvelope struct {
 	Hits struct {
 		Total int
 		Hits  []struct {
-			Source    json.RawMessage `json:"_source"`
-			Highlight json.RawMessage
+			ID string `json:"_id"`
+			// Source    json.RawMessage `json:"_source"`
+			// Highlight json.RawMessage
 		}
 	}
 	Aggregations struct {
@@ -471,11 +474,9 @@ type datasetResEnvelope struct {
 	}
 }
 
-func decodeDatasetRes(r *datasetResEnvelope, facets []string) (*models.DatasetHits, error) {
-
-	hits := models.DatasetHits{}
+func decodeDatasetRes(r *datasetResEnvelope, facets []string) (*models.SearchHits, error) {
+	hits := models.SearchHits{}
 	hits.Total = r.Hits.Total
-
 	hits.Facets = make(map[string]models.FacetValues)
 
 	//preallocate to ensure non zero slices
@@ -516,13 +517,7 @@ func decodeDatasetRes(r *datasetResEnvelope, facets []string) (*models.DatasetHi
 	}
 
 	for _, h := range r.Hits.Hits {
-		var hit models.Dataset
-
-		if err := json.Unmarshal(h.Source, &hit); err != nil {
-			return nil, err
-		}
-
-		hits.Hits = append(hits.Hits, &hit)
+		hits.Hits = append(hits.Hits, h.ID)
 	}
 
 	return &hits, nil

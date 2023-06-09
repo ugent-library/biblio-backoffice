@@ -21,14 +21,14 @@ type PublicationIndex struct {
 	scopes []M
 }
 
-func newPublicationIndex(c *elasticsearch.Client, i string) *PublicationIndex {
+func newPublicationIndex(c *elasticsearch.Client, i string) backends.PublicationIDIndex {
 	return &PublicationIndex{
 		client: c,
 		index:  i,
 	}
 }
 
-func (pi *PublicationIndex) Search(args *models.SearchArgs) (*models.PublicationHits, error) {
+func (pi *PublicationIndex) Search(args *models.SearchArgs) (*models.SearchHits, error) {
 	// BUILD QUERY AND FILTERS FROM USER INPUT
 	query := buildPublicationUserQuery(args)
 
@@ -171,7 +171,7 @@ func (pi *PublicationIndex) Search(args *models.SearchArgs) (*models.Publication
 	return hits, nil
 }
 
-func (pi *PublicationIndex) Each(searchArgs *models.SearchArgs, maxSize int, cb func(*models.Publication)) error {
+func (pi *PublicationIndex) Each(searchArgs *models.SearchArgs, maxSize int, cb func(string)) error {
 	nProcessed := 0
 	start := 0
 	limit := 200
@@ -248,7 +248,7 @@ func (pi *PublicationIndex) Each(searchArgs *models.SearchArgs, maxSize int, cb 
 		}
 
 		if len(hits.Hits) > 0 {
-			sortValue = hits.Hits[len(hits.Hits)-1].ID
+			sortValue = hits.Hits[len(hits.Hits)-1]
 		}
 
 		if len(hits.Hits) < limit {
@@ -306,7 +306,7 @@ func (pi *PublicationIndex) DeleteAll() error {
 	return nil
 }
 
-func (pi *PublicationIndex) WithScope(field string, terms ...string) backends.PublicationIndex {
+func (pi *PublicationIndex) WithScope(field string, terms ...string) backends.PublicationIDIndex {
 	newScopes := make([]M, 0, len(pi.scopes))
 
 	// Copy existing scopes
@@ -367,10 +367,12 @@ func buildPublicationUserQuery(args *models.SearchArgs) M {
 					"eissn^50",
 					"wos_id^50",
 					"title^40",
-					"department.tree.id^50",
+					"department^50",
+					"author.person.full_name.phrase_ngram^0.05",
+					"author.person.full_name.ngram^0.01",
+					"author.external_person.full_name.phrase_ngram^0.05",
+					"author.external_person.full_name.ngram^0.01",
 					"all",
-					"author.full_name.phrase_ngram^0.05",
-					"author.full_name.ngram^0.01",
 				},
 				"lenient":                             true,
 				"analyze_wildcard":                    false,
@@ -466,8 +468,9 @@ type publicationResEnvelope struct {
 	Hits struct {
 		Total int
 		Hits  []struct {
-			Source    json.RawMessage `json:"_source"`
-			Highlight json.RawMessage
+			ID string `json:"_id"`
+			// Source json.RawMessage `json:"_source"`
+			// Highlight json.RawMessage
 		}
 	}
 	Aggregations struct {
@@ -475,9 +478,8 @@ type publicationResEnvelope struct {
 	}
 }
 
-func decodePublicationRes(r *publicationResEnvelope, facets []string) (*models.PublicationHits, error) {
-
-	hits := models.PublicationHits{}
+func decodePublicationRes(r *publicationResEnvelope, facets []string) (*models.SearchHits, error) {
+	hits := models.SearchHits{}
 	hits.Total = r.Hits.Total
 
 	hits.Facets = make(map[string]models.FacetValues)
@@ -523,13 +525,7 @@ func decodePublicationRes(r *publicationResEnvelope, facets []string) (*models.P
 	}
 
 	for _, h := range r.Hits.Hits {
-		var hit models.Publication
-
-		if err := json.Unmarshal(h.Source, &hit); err != nil {
-			return nil, err
-		}
-
-		hits.Hits = append(hits.Hits, &hit)
+		hits.Hits = append(hits.Hits, h.ID)
 	}
 
 	return &hits, nil

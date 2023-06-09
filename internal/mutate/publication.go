@@ -17,10 +17,7 @@ func ProjectAdd(projectService backends.ProjectService) func(*models.Publication
 		if err != nil {
 			return err
 		}
-		p.AddProject(&models.PublicationProject{
-			ID:   project.ID,
-			Name: project.Title,
-		})
+		p.AddProject(project)
 		return nil
 	}
 }

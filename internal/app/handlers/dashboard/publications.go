@@ -53,7 +53,7 @@ func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Conte
 	ufaculties := faculties
 	ufaculties = append(ufaculties, []string{"UGent", "-"}...)
 
-	uSearcher := h.SearchService.NewPublicationIndex()
+	uSearcher := h.PublicationSearchIndex
 	baseSearchUrl := h.PathFor("publications")
 
 	uPublications, err := generatePublicationsDashboard(ufaculties, ptypes, uSearcher, baseSearchUrl, func(fac string, args *models.SearchArgs) *models.SearchArgs {
@@ -82,7 +82,7 @@ func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Conte
 
 	// Publications with publication status "accepted"
 
-	aSearcher := h.SearchService.NewPublicationIndex()
+	aSearcher := h.PublicationSearchIndex
 
 	aPublications, err := generatePublicationsDashboard(faculties, ptypes, aSearcher, baseSearchUrl, func(fac string, args *models.SearchArgs) *models.SearchArgs {
 		args.WithFilter("publication_status", "accepted")

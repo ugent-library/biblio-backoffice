@@ -95,12 +95,8 @@ func (c *Client) GetPublication(id string) (*models.Publication, error) {
 			nameParts := strings.Split(strings.ReplaceAll(r, ".", ""), " ")
 			firstName := nameParts[len(nameParts)-1]
 			lastName := strings.Join(nameParts[:len(nameParts)-1], " ")
-			c := models.Contributor{
-				FirstName: firstName,
-				LastName:  lastName,
-				FullName:  firstName + " " + lastName,
-			}
-			p.Author = append(p.Author, &c)
+			c := models.ContributorFromFirstLastName(firstName, lastName)
+			p.Author = append(p.Author, c)
 		}
 	}
 	if res := attrs.Get("pageInfo"); res.Exists() {

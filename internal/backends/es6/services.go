@@ -41,8 +41,9 @@ func NewSearchService(c SearchServiceConfig) (backends.SearchService, error) {
 	}, nil
 }
 
-func (s *SearchService) NewPublicationIndex() backends.PublicationIndex {
-	return newPublicationIndex(s.client, s.publicationIndex)
+func (s *SearchService) NewPublicationIndex(r backends.Repository) backends.PublicationIndex {
+	e := newPublicationIndex(s.client, s.publicationIndex)
+	return backends.NewPublicationIndex(e, r)
 }
 
 func (s *SearchService) NewPublicationBulkIndexer(config backends.BulkIndexerConfig) (backends.BulkIndexer[*models.Publication], error) {
@@ -69,8 +70,9 @@ func (s *SearchService) NewPublicationIndexSwitcher(config backends.BulkIndexerC
 		string(settings), s.indexRetention, docFn, config)
 }
 
-func (s *SearchService) NewDatasetIndex() backends.DatasetIndex {
-	return newDatasetIndex(s.client, s.datasetIndex)
+func (s *SearchService) NewDatasetIndex(r backends.Repository) backends.DatasetIndex {
+	e := newDatasetIndex(s.client, s.datasetIndex)
+	return backends.NewDatasetIndex(e, r)
 }
 
 func (s *SearchService) NewDatasetBulkIndexer(config backends.BulkIndexerConfig) (backends.BulkIndexer[*models.Dataset], error) {

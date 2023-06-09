@@ -91,7 +91,7 @@ func (h *Handler) ConfirmImport(w http.ResponseWriter, r *http.Request, ctx Cont
 	if b.Source == "datacite" {
 		args := models.NewSearchArgs().WithFilter("doi", strings.ToLower(b.Identifier)).WithFilter("status", "public")
 
-		existing, err := h.SearchService.NewDatasetIndex().Search(args)
+		existing, err := h.DatasetSearchIndex.Search(args)
 
 		if err != nil {
 			h.Logger.Errorw("confirm import dataset: could not execute search", "errors", err, "user", ctx.User.ID)
@@ -167,7 +167,7 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 		if orgErr != nil {
 			h.Logger.Warnw("import single publication: could not fetch user department", "errors", orgErr, "user", ctx.User.ID)
 		} else {
-			d.AddDepartmentByOrg(org)
+			d.AddOrganization(org)
 		}
 	}
 

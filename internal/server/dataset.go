@@ -31,13 +31,13 @@ func (s *server) GetDataset(ctx context.Context, req *api.GetDatasetRequest) (*a
 				},
 			}, nil
 		} else {
-			return nil, status.Errorf(codes.Internal, "could not get dataset with id %s: %v", err)
+			return nil, status.Errorf(codes.Internal, "could not get dataset with id %s: %v", req.Id, err)
 		}
 	}
 
 	j, err := json.Marshal(p)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "could not marshal dataset with id %s: %v", err)
+		return nil, status.Errorf(codes.Internal, "could not marshal dataset with id %s: %v", req.Id, err)
 	}
 
 	res := &api.GetDatasetResponse{
@@ -106,7 +106,7 @@ func (s *server) SearchDatasets(ctx context.Context, req *api.SearchDatasetsRequ
 		page = int(req.Offset)/int(req.Limit) + 1
 	}
 	args := models.NewSearchArgs().WithQuery(req.Query).WithPage(page)
-	hits, err := s.services.SearchService.NewDatasetIndex().Search(args)
+	hits, err := s.services.DatasetSearchIndex.Search(args)
 	if err != nil {
 		// TODO How do we differentiate between errors?
 		return nil, status.Errorf(codes.Internal, "Could not search datasets: %s :: %s", req.Query, err)
@@ -401,7 +401,7 @@ func (s *server) PurgeDataset(ctx context.Context, req *api.PurgeDatasetRequest)
 				},
 			}, nil
 		} else {
-			return nil, status.Errorf(codes.Internal, "could not get dataset with id %s: %v", err)
+			return nil, status.Errorf(codes.Internal, "could not get dataset with id %s: %v", req.Id, err)
 		}
 	}
 
@@ -411,7 +411,7 @@ func (s *server) PurgeDataset(ctx context.Context, req *api.PurgeDatasetRequest)
 	}
 
 	// TODO this will complain if the above didn't throw a 'not found' error
-	if err := s.services.SearchService.NewDatasetIndex().Delete(req.Id); err != nil {
+	if err := s.services.DatasetSearchIndex.Delete(req.Id); err != nil {
 		return nil, status.Errorf(codes.Internal, "could not purge dataset from index with id %s: %s", req.Id, err)
 	}
 
@@ -436,7 +436,7 @@ func (s *server) PurgeAllDatasets(ctx context.Context, req *api.PurgeAllDatasets
 		return nil, status.Errorf(codes.Internal, "could not purge all datasets: %s", err)
 	}
 
-	if err := s.services.SearchService.NewDatasetIndex().DeleteAll(); err != nil {
+	if err := s.services.DatasetSearchIndex.DeleteAll(); err != nil {
 		return nil, status.Errorf(codes.Internal, "could not delete dataset from index: %w", err)
 	}
 
@@ -497,6 +497,7 @@ func (s *server) ValidateDatasets(stream api.Biblio_ValidateDatasetsServer) erro
 func (s *server) ReindexDatasets(req *api.ReindexDatasetsRequest, stream api.Biblio_ReindexDatasetsServer) error {
 	startTime := time.Now()
 	indexed := 0
+	reported := 0
 
 	if err := stream.Send(&api.ReindexDatasetsResponse{
 		Response: &api.ReindexDatasetsResponse_Message{
@@ -554,6 +555,16 @@ func (s *server) ReindexDatasets(req *api.ReindexDatasetsRequest, stream api.Bib
 
 		indexed++
 
+		// progress message
+		if indexed-500 == reported {
+			stream.Send(&api.ReindexDatasetsResponse{
+				Response: &api.ReindexDatasetsResponse_Message{
+					Message: fmt.Sprintf("Indexing %d datasets...", indexed),
+				},
+			})
+			reported = indexed
+		}
+
 		return true
 	})
 
@@ -575,7 +586,7 @@ func (s *server) ReindexDatasets(req *api.ReindexDatasetsRequest, stream api.Bib
 
 	if err := stream.Send(&api.ReindexDatasetsResponse{
 		Response: &api.ReindexDatasetsResponse_Message{
-			Message: fmt.Sprintf("Indexed %d datasets...", indexed),
+			Message: fmt.Sprintf("Indexed %d datasets", indexed),
 		},
 	}); err != nil {
 		return status.Errorf(codes.Internal, "failed to index datasets: %v", err)
@@ -597,7 +608,7 @@ func (s *server) ReindexDatasets(req *api.ReindexDatasetsRequest, stream api.Bib
 
 	if err := stream.Send(&api.ReindexDatasetsResponse{
 		Response: &api.ReindexDatasetsResponse_Message{
-			Message: "Indexing changes since start of reindex...",
+			Message: "Indexing changes since start of reindex",
 		},
 	}); err != nil {
 		return status.Errorf(codes.Internal, "failed to index datasets: %v", err)
@@ -683,7 +694,7 @@ func (s *server) ReindexDatasets(req *api.ReindexDatasetsRequest, stream api.Bib
 
 		if err := stream.Send(&api.ReindexDatasetsResponse{
 			Response: &api.ReindexDatasetsResponse_Message{
-				Message: fmt.Sprintf("Indexed %d datasets...", indexed),
+				Message: fmt.Sprintf("Indexed %d datasets", indexed),
 			},
 		}); err != nil {
 			return status.Errorf(codes.Internal, "failed to index datasets: %v", err)

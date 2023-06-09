@@ -44,7 +44,7 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request, ctx Context) {
 		ctx.SearchArgs.WithFilter("scope", "all")
 	}
 
-	searcher := h.SearchService.NewDatasetIndex().WithScope("status", "private", "public", "returned")
+	searcher := h.DatasetSearchIndex.WithScope("status", "private", "public", "returned")
 	args := ctx.SearchArgs.Clone()
 	var currentScope string
 
@@ -126,7 +126,7 @@ func (h *Handler) CurationSearch(w http.ResponseWriter, r *http.Request, ctx Con
 
 	ctx.SearchArgs.WithFacets(vocabularies.Map["dataset_curation_facets"]...)
 
-	searcher := h.SearchService.NewDatasetIndex().WithScope("status", "private", "public", "returned")
+	searcher := h.DatasetSearchIndex.WithScope("status", "private", "public", "returned")
 	hits, err := searcher.Search(ctx.SearchArgs)
 	if err != nil {
 		h.Logger.Errorw("dataset search: could not execute search", "errors", err, "user", ctx.User.ID)

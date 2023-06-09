@@ -110,7 +110,7 @@ func (h *Handler) AddSingleImportConfirm(w http.ResponseWriter, r *http.Request,
 	if b.Source == "crossref" && b.Identifier != "" {
 		args := models.NewSearchArgs().WithFilter("doi", strings.ToLower(b.Identifier)).WithFilter("status", "public")
 
-		existing, err := h.SearchService.NewPublicationIndex().Search(args)
+		existing, err := h.PublicationSearchIndex.Search(args)
 
 		if err != nil {
 			h.Logger.Warnw("import single publication: could not execute search for duplicates", "errors", err, "args", args, "user", ctx.User.ID)
@@ -189,7 +189,7 @@ func (h *Handler) AddSingleImport(w http.ResponseWriter, r *http.Request, ctx Co
 		if orgErr != nil {
 			h.Logger.Warnw("import single publication: could not fetch user department", "errors", orgErr, "user", ctx.User.ID)
 		} else {
-			p.AddDepartmentByOrg(org)
+			p.AddOrganization(org)
 		}
 	}
 
@@ -415,7 +415,7 @@ func (h *Handler) AddMultipleConfirm(w http.ResponseWriter, r *http.Request, ctx
 
 	batchID := bind.PathValues(r).Get("batch_id")
 
-	hits, err := h.SearchService.NewPublicationIndex().
+	hits, err := h.PublicationSearchIndex.
 		WithScope("status", "private", "public").
 		WithScope("creator.id", ctx.User.ID).
 		WithScope("batch_id", batchID).
@@ -483,7 +483,7 @@ func (h *Handler) AddMultipleFinish(w http.ResponseWriter, r *http.Request, ctx 
 
 	batchID := bind.PathValues(r).Get("batch_id")
 
-	hits, err := h.SearchService.NewPublicationIndex().
+	hits, err := h.PublicationSearchIndex.
 		WithScope("status", "private", "public").
 		WithScope("creator.id", ctx.User.ID).
 		WithScope("batch_id", batchID).
@@ -549,7 +549,7 @@ func (h *Handler) importPublications(user *models.User, source string, file io.R
 			if orgErr != nil {
 				h.Logger.Warnw("add multiple publications: could not fetch user department", "errors", orgErr, "user", user.ID)
 			} else {
-				p.AddDepartmentByOrg(org)
+				p.AddOrganization(org)
 			}
 		}
 
@@ -576,7 +576,7 @@ func (h *Handler) importPublications(user *models.User, source string, file io.R
 
 // TODO check conflicts?
 func (h *Handler) batchPublishPublications(batchID string, user *models.User) (err error) {
-	searcher := h.SearchService.NewPublicationIndex().
+	searcher := h.PublicationSearchIndex.
 		WithScope("status", "private", "public").
 		WithScope("creator.id", user.ID).
 		WithScope("batch_id", batchID)
