@@ -225,7 +225,7 @@ func (s *Store) Update(snapshotID, id string, data any, o Options) (*Snapshot, e
 	WHERE id = $2 AND snapshot_id = $3
 	RETURNING date_from,date_until`
 
-	if err = db.QueryRow(ctx, sql, snapshotID).Scan(&snap.DateFrom, &snap.DateUntil); err != nil {
+	if err = db.QueryRow(ctx, sql, d, id, snapshotID).Scan(&snap.DateFrom, &snap.DateUntil); err != nil {
 		return nil, err
 	}
 
