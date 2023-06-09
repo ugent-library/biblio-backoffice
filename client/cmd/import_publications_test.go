@@ -39,9 +39,9 @@ func (s *ImportPublicationsSuite) TestValidImport() {
 		"date_created": "2023-02-07T11:17:35.203928951+01:00",
 		"date_updated": "2023-02-07T11:33:49.661899119+01:00",
 		"date_from": "2023-02-07T11:33:49.663142+01:00",
-		"department": [
+		"related_organizations": [
 			{
-			  "id": "CA20"
+			  "organization_id": "CA20"
 			}
 		],
 		"keyword": [
@@ -49,49 +49,20 @@ func (s *ImportPublicationsSuite) TestValidImport() {
 			"",
 			"  keyword2  "
 		],
-		"user": {
-			"id": "00000000-0000-0000-0000-000000000001",
-			"name": "full name"
-		},
+		"user_id": "00000000-0000-0000-0000-000000000001",
 		"author": [
 			{
 				"credit_role": [
 					"first_author"
 				],
-				"first_name": "first name",
-				"full_name": "full name",
-				"id": "00000000-0000-0000-0000-000000000001",
-				"last_name": "last name",
-				"ugent_id": [
-					"000000000000"
-				],
-				"department": [
-				{
-					"id": "AA00",
-					"name": "department name"
-				}
-				]
+				"person_id": "00000000-0000-0000-0000-000000000001"
 			}
 		],
 		"defense_date": "2023-01-01",
 		"defense_place": "place of defense",
 		"supervisor": [
 			{
-			  "first_name": "first name",
-			  "full_name": "full name",
-			  "id": "00000000-0000-0000-0000-000000000001",
-			  "last_name": "last name",
-			  "orcid": "0000-0000-0000-0000",
-			  "ugent_id": [
-				"000000000000",
-				"000000000001"
-			  ],
-			  "department": [
-				{
-				  "id": "AA00",
-				  "name": "department name"
-				}
-			  ]
+			  "person_id": "00000000-0000-0000-0000-000000000001"
 			}
 		]
 	}`

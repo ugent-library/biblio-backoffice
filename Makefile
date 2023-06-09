@@ -42,11 +42,11 @@ create-es-indices:
 	curl -X PUT http://localhost:9400/biblio_project -H 'Content-Type: application/json' -d @etc/es6/project.json
 	curl -X PUT http://localhost:9400/biblio_organization -H 'Content-Type: application/json' -d @etc/es6/organization.json
 	curl -X PUT -H "Content-Type: application/json" http://localhost:9400/_all/_settings -d '{"index.blocks.read_only_allow_delete": null}'
-	curl -X POST http://localhost:9400/biblio_person/person/_bulk -H "Content-Type: application/x-ndjson" --data-binary @etc/fixtures/person.es6.json
-	curl -X POST http://localhost:9400/biblio_organization/organization/_bulk -H "Content-Type: application/x-ndjson" --data-binary @etc/fixtures/organization.es6.json
+	curl -X POST http://localhost:9400/biblio_person/person/_bulk -H "Content-Type: application/x-ndjson" --data-binary @etc/fixtures/person.es6.jsonl
+	curl -X POST http://localhost:9400/biblio_organization/organization/_bulk -H "Content-Type: application/x-ndjson" --data-binary @etc/fixtures/organization.es6.jsonl
 
 create-mongo-db:
-	mongoimport --uri "mongodb://localhost:27020/authority?directConnection=true&serverSelectionTimeoutMS=2000" --collection person  ./etc/fixtures/person.json
+	mongoimport --uri "mongodb://localhost:27020/authority?directConnection=true&serverSelectionTimeoutMS=2000" --collection person ./etc/fixtures/person.jsonl
 
 create-db-tables:
 	go install github.com/jackc/tern@latest
