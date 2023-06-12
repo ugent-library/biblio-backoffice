@@ -64,7 +64,7 @@ func (h *Handler) Lock(w http.ResponseWriter, r *http.Request, ctx Context) {
 	}
 
 	flash := flash.SimpleFlash().
-		WithLevel("error").
+		WithLevel("success").
 		WithBody(template.HTML("<p>Publication was successfully locked.</p>"))
 
 	h.AddSessionFlash(r, w, *flash)
@@ -118,7 +118,7 @@ func (h *Handler) Unlock(w http.ResponseWriter, r *http.Request, ctx Context) {
 	}
 
 	flash := flash.SimpleFlash().
-		WithLevel("error").
+		WithLevel("success").
 		WithBody(template.HTML("<p>Publication was successfully unlocked.</p>"))
 
 	h.AddSessionFlash(r, w, *flash)
