@@ -89,43 +89,6 @@ func (d *Decoder) Decode(p *models.Publication) error {
 
 		switch line {
 		case "ER", "ER  -":
-			/*
-				fix incorrect splitting into parts:
-					keywords: actually split by colon, not by newline
-					title: only one title, but may cross line boundary
-					abstract: may cross line boundary. Unclear how multiple abstracts are expressed.
-			*/
-			for key, val := range rec {
-				switch key {
-				case "KW", "DW", "ID", "DE":
-					fullValue := strings.Join(val, "")
-					newValues := []string{}
-					for _, v := range reSplit.Split(fullValue, -1) {
-						if v != "" {
-							newValues = append(newValues, v)
-						}
-					}
-					rec[key] = newValues
-				case "AB", "N2":
-					rec[key] = []string{strings.Join(val, "\n\n")}
-				case "TI", "T1":
-					rec[key] = []string{strings.Join(val, "")}
-				case "SO":
-					rec[key] = []string{strings.Join(val, "")}
-				case "CT":
-					rec[key] = []string{strings.Join(val, "")}
-				case "SN", "EI", "BN":
-					newValues := []string{}
-					for _, v := range val {
-						for _, str := range reSplit.Split(v, -1) {
-							if str != "" {
-								newValues = append(newValues, str)
-							}
-						}
-					}
-					rec[key] = newValues
-				}
-			}
 			mapRecord(rec, p)
 			return nil
 		case "EF":
@@ -218,25 +181,25 @@ func mapRecord(r Record, p *models.Publication) {
 				p.Author = append(p.Author, c)
 			}
 		case "TI", "T1":
-			p.Title = v[0]
+			p.Title = strings.Join(v, "")
 		case "AB", "N2":
-			p.AddAbstract(&models.Text{Text: v[0], Lang: "und"})
+			p.AddAbstract(&models.Text{Text: strings.Join(v, "\n\n"), Lang: "und"})
 		case "KW", "DW", "ID", "DE":
-			p.Keyword = append(p.Keyword, v...)
+			p.Keyword = append(p.Keyword, splitMultilineVals(v)...)
 		case "DI":
 			p.DOI = v[0]
 		case "JF", "JO", "T2":
 			p.Publication = v[0]
 		case "SO":
-			p.Publication = v[0]
+			p.Publication = strings.Join(v, "")
 		case "JA", "JI":
 			p.PublicationAbbreviation = v[0]
 		case "SN":
-			p.ISSN = append(p.ISSN, v...)
+			p.ISSN = append(p.ISSN, splitVals(v)...)
 		case "EI":
-			p.EISSN = append(p.EISSN, v...)
+			p.EISSN = append(p.EISSN, splitVals(v)...)
 		case "BN":
-			p.EISBN = append(p.EISBN, v...)
+			p.EISBN = append(p.EISBN, splitVals(v)...)
 		case "UT":
 			p.WOSID = strings.TrimPrefix(v[0], "WOS:")
 		case "AN":
@@ -266,7 +229,7 @@ func mapRecord(r Record, p *models.Publication) {
 		case "PI":
 			p.PlaceOfPublication = v[0]
 		case "CT":
-			p.ConferenceName = v[0]
+			p.ConferenceName = strings.Join(v, "")
 		case "CL":
 			p.ConferenceLocation = v[0]
 		case "CY":
@@ -281,6 +244,26 @@ func mapRecord(r Record, p *models.Publication) {
 			}
 		}
 	}
+}
+
+func splitVals(vals []string) (newVals []string) {
+	for _, v := range vals {
+		for _, str := range reSplit.Split(v, -1) {
+			if str != "" {
+				newVals = append(newVals, str)
+			}
+		}
+	}
+	return
+}
+
+func splitMultilineVals(vals []string) (newVals []string) {
+	for _, v := range reSplit.Split(strings.Join(vals, ""), -1) {
+		if v != "" {
+			newVals = append(newVals, v)
+		}
+	}
+	return
 }
 
 func parseConferenceDate(date string) [2]string {
