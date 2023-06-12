@@ -682,9 +682,17 @@ func (h *Handler) mapPublication(p *models.Publication) *Publication {
 	}
 
 	if p.RelatedDataset != nil {
-		pp.RelatedDataset = make([]Relation, len(p.RelatedDataset))
-		for i, v := range p.RelatedDataset {
-			pp.RelatedDataset[i] = Relation{ID: v.ID}
+		rel_ids := make([]string, 0, len(p.RelatedDataset))
+		for _, rd := range p.RelatedDataset {
+			rel_ids = append(rel_ids, rd.ID)
+		}
+		related_datasets, _ := h.Repository.GetDatasets(rel_ids)
+		pp.RelatedDataset = make([]Relation, 0, len(related_datasets))
+		for _, rd := range related_datasets {
+			if rd.Status != "public" {
+				continue
+			}
+			pp.RelatedDataset = append(pp.RelatedDataset, Relation{ID: rd.ID})
 		}
 	}
 
@@ -735,11 +743,10 @@ func (h *Handler) mapDataset(d *models.Dataset) *Publication {
 	}
 
 	for _, v := range d.Department {
-		aff := Affiliation{UGentID: v.ID}
-		for i := len(v.Tree) - 1; i >= 0; i-- {
-			aff.Path = append(aff.Path, AffiliationPath{UGentID: v.Tree[i].ID})
+		aff := Affiliation{UGentID: v.ID, Path: make([]AffiliationPath, len(v.Tree))}
+		for i, t := range v.Tree {
+			aff.Path[i] = AffiliationPath{UGentID: t.ID}
 		}
-		aff.Path = append(aff.Path, AffiliationPath{UGentID: v.ID})
 		pp.Affiliation = append(pp.Affiliation, aff)
 	}
 
@@ -796,9 +803,17 @@ func (h *Handler) mapDataset(d *models.Dataset) *Publication {
 	}
 
 	if d.RelatedPublication != nil {
-		pp.RelatedPublication = make([]Relation, len(d.RelatedPublication))
-		for i, v := range d.RelatedPublication {
-			pp.RelatedPublication[i] = Relation{ID: v.ID}
+		rel_ids := make([]string, 0, len(d.RelatedPublication))
+		for _, rp := range d.RelatedPublication {
+			rel_ids = append(rel_ids, rp.ID)
+		}
+		related_publications, _ := h.Repository.GetPublications(rel_ids)
+		pp.RelatedPublication = make([]Relation, 0, len(related_publications))
+		for _, rp := range related_publications {
+			if rp.Status != "public" {
+				continue
+			}
+			pp.RelatedPublication = append(pp.RelatedPublication, Relation{ID: rp.ID})
 		}
 	}
 
