@@ -34,11 +34,11 @@ func (s *UpdatePublicationSuite) SetupSuite() {
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	_, _, err = addPublication(jsonl)
 	if err != nil {
 		t.Fatal(err)
 	}
-
 }
 
 // Test empty input
