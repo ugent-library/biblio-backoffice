@@ -160,14 +160,12 @@ func (s *Repository) ImportPublication(p *models.Publication) error {
 
 func (s *Repository) SavePublication(p *models.Publication, u *models.User) error {
 
-	if oldPublication, err := s.GetPublication(p.ID); err != nil {
-		if err != backends.ErrNotFound {
-			return err
-		}
-	} else {
-		if reflect.DeepEqual(oldPublication, p) {
-			return nil
-		}
+	oldPublication, err := s.GetPublication(p.ID)
+	if err != nil && err != backends.ErrNotFound {
+		return err
+	}
+	if reflect.DeepEqual(oldPublication, p) {
+		return nil
 	}
 
 	now := time.Now()
@@ -202,10 +200,8 @@ func (s *Repository) UpdatePublication(snapshotID string, p *models.Publication,
 	if oldPublication, err := s.GetPublication(p.ID); err != nil {
 		// publication must exist, so both internal error and ErrNotFound are acceptable
 		return err
-	} else {
-		if reflect.DeepEqual(oldPublication, p) {
-			return nil
-		}
+	} else if reflect.DeepEqual(oldPublication, p) {
+		return nil
 	}
 
 	// TODO move outside of store
@@ -550,14 +546,12 @@ func (s *Repository) ImportDataset(d *models.Dataset) error {
 
 func (s *Repository) SaveDataset(d *models.Dataset, u *models.User) error {
 
-	if oldDataset, err := s.GetDataset(d.ID); err != nil {
-		if err != backends.ErrNotFound {
-			return err
-		}
-	} else {
-		if reflect.DeepEqual(oldDataset, d) {
-			return nil
-		}
+	oldDataset, err := s.GetDataset(d.ID)
+	if err != nil && err != backends.ErrNotFound {
+		return err
+	}
+	if reflect.DeepEqual(oldDataset, d) {
+		return nil
 	}
 
 	now := time.Now()
