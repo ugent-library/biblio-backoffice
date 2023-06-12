@@ -23,11 +23,6 @@
   "date_created": "2023-02-07T11:05:24.758900244+01:00",
   "date_updated": "2023-02-07T11:28:21.287064615+01:00",
   "date_from": "2023-02-07T11:28:21.288159+01:00",
-  "related_organizatons": [
-    {
-      "organization_id": "CA20"
-    }
-  ],
   "doi": "0000",
   "edition": "edition",
   "editor": [
@@ -86,6 +81,11 @@
   "message": "message",
   "page_count": "999",
   "place_of_publication": "place of publication",
+  "related_organizations": [
+    {
+      "organization_id": "CA20"
+    }
+  ],
   "related_projects": [
     {
       "project_id": "000000000"
