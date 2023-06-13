@@ -723,26 +723,6 @@ func (s *server) CleanupDatasets(req *api.CleanupDatasetsRequest, stream api.Bib
 		// Guard
 		fixed := false
 
-		// Migrate DOI (temporary)
-		if d.DOI != "" {
-			if d.Identifiers == nil {
-				d.Identifiers = make(models.Identifiers)
-			}
-			d.Identifiers.Set("DOI", d.DOI)
-			d.DOI = ""
-			fixed = true
-		}
-
-		// Migrate URL (temporary)
-		if d.URL != "" {
-			d.AddLink(&models.DatasetLink{
-				URL:      d.URL,
-				Relation: "related_information",
-			})
-			d.URL = ""
-			fixed = true
-		}
-
 		// Save record if changed
 		if fixed {
 			d.UserID = ""

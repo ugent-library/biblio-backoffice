@@ -41,7 +41,6 @@ type Dataset struct {
 	DateUpdated             *time.Time             `json:"date_updated,omitempty"`
 	DateFrom                *time.Time             `json:"date_from,omitempty"`
 	DateUntil               *time.Time             `json:"date_until,omitempty"`
-	DOI                     string                 `json:"doi,omitempty"` // TODO deprecated
 	EmbargoDate             string                 `json:"embargo_date,omitempty"`
 	AccessLevelAfterEmbargo string                 `json:"access_level_after_embargo,omitempty"`
 	Format                  []string               `json:"format,omitempty"`
@@ -67,7 +66,6 @@ type Dataset struct {
 	SnapshotID              string                 `json:"snapshot_id,omitempty"`
 	Status                  string                 `json:"status,omitempty"`
 	Title                   string                 `json:"title,omitempty"`
-	URL                     string                 `json:"url,omitempty"` // TODO deprecated
 	UserID                  string                 `json:"user_id,omitempty"`
 	User                    *Person                `json:"-"`
 	Year                    string                 `json:"year,omitempty"`
