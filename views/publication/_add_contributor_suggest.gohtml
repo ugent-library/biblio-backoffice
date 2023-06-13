@@ -26,12 +26,12 @@
         <li class="list-group-item">
             <div class="list-group-item-inner">
                 <div class="list-group-item-main">
-                    {{partial "shared/contributor_summary" ($.Yield "Contributor" . "Current" false "Active" .Active)}}
+                    {{partial "shared/contributor_summary" ($.Yield "Contributor" . "Current" false "Active" .Person.Active)}}
                 </div>
                 <div class="c-button-toolbar">
                     <button class="btn btn-primary"
                         hx-get="{{pathFor "publication_confirm_create_contributor" "id" $.Publication.ID "role" $.Role}}"
-                        hx-vals='{"id":"{{.ID}}"}'
+                        hx-vals='{"id":"{{.PersonID}}"}'
                         hx-swap="none"
                     >
                         <span class="btn-text">Add {{$.Locale.TS "publication.contributor.role" $.Role}}</span><i class="if if-arrow-right"></i>
