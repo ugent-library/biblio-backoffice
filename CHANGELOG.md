@@ -17,6 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- #1123: Fix import of multiline RIS/WoS fields
+- Various ux fixes
+
 ## [v1.0.27] - 2023-05-08
 
 ### Added
