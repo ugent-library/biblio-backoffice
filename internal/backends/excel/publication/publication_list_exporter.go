@@ -136,32 +136,24 @@ func (x *xlsx) publicationToRow(pub *models.Publication) []string {
 		contributors := pub.Contributors(role)
 		{
 			values := []string{}
-			for _, contributor := range contributors {
-				fullName := contributor.FullName
-				if fullName == "" {
-					fullName = contributor.FirstName + " " + contributor.LastName
-				}
-				values = append(values, fullName)
+			for _, c := range contributors {
+				values = append(values, c.Name())
 			}
 			m[role] = strings.Join(values, sep)
 		}
 		{
 			values := []string{}
-			for _, contributor := range contributors {
-				if len(contributor.UGentID) == 0 {
+			for _, c := range contributors {
+				if c.Person == nil || len(c.Person.UGentID) == 0 {
 					continue
 				}
 				group := ""
-				if len(contributor.Department) > 0 {
-					group = "@" + contributor.Department[0].ID
+				if len(c.Person.Affiliations) > 0 {
+					group = "@" + c.Person.Affiliations[0].OrganizationID
 				}
 				//full_name (<ugent_id>)
 				//full_name (<ugent_id>@<department.0.id>)
-				fullName := contributor.FullName
-				if fullName == "" {
-					fullName = contributor.FirstName + " " + contributor.LastName
-				}
-				val := fmt.Sprintf("%s (%s%s)", fullName, contributor.UGentID[0], group)
+				val := fmt.Sprintf("%s (%s%s)", c.Name(), c.Person.UGentID[0], group)
 				values = append(values, val)
 			}
 			m["ugent_"+role] = strings.Join(values, sep)
@@ -169,11 +161,11 @@ func (x *xlsx) publicationToRow(pub *models.Publication) []string {
 	}
 
 	//field: department
-	if len(pub.Department) > 0 {
-		depIds := make([]string, 0, len(pub.Department))
-		for _, dep := range pub.Department {
+	if len(pub.RelatedOrganizations) > 0 {
+		depIds := make([]string, 0, len(pub.RelatedOrganizations))
+		for _, dep := range pub.RelatedOrganizations {
 			//TODO: biblio skips department without id? Do they exist?
-			depIds = append(depIds, dep.ID)
+			depIds = append(depIds, dep.OrganizationID)
 		}
 		m["department"] = strings.Join(depIds, sep)
 	}
@@ -246,11 +238,11 @@ func (x *xlsx) publicationToRow(pub *models.Publication) []string {
 	m["jcr_prev_category_quartile"] = ""
 
 	//TODO: projects
-	projectIds := make([]string, 0, len(pub.Project))
-	projectTitles := make([]string, 0, len(pub.Project))
-	for _, project := range pub.Project {
-		projectIds = append(projectIds, project.ID)
-		projectTitles = append(projectTitles, project.Name)
+	projectIds := make([]string, 0, len(pub.RelatedProjects))
+	projectTitles := make([]string, 0, len(pub.RelatedProjects))
+	for _, rel := range pub.RelatedProjects {
+		projectIds = append(projectIds, rel.ProjectID)
+		projectTitles = append(projectTitles, rel.Project.Title)
 	}
 	m["project_id"] = strings.Join(projectIds, sep)
 	m["project_title"] = strings.Join(projectTitles, sep)

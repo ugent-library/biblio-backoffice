@@ -8,29 +8,32 @@ import (
 	"io"
 	"strings"
 
+	"github.com/elastic/go-elasticsearch/v6"
 	"github.com/elastic/go-elasticsearch/v6/esapi"
 	"github.com/pkg/errors"
 	"github.com/ugent-library/biblio-backoffice/internal/backends"
 	"github.com/ugent-library/biblio-backoffice/internal/models"
 )
 
-type Datasets struct {
-	Client
+type PublicationIndex struct {
+	client *elasticsearch.Client
+	index  string
 	scopes []M
 }
 
-func NewDatasets(c Client) *Datasets {
-	return &Datasets{Client: c}
+func newPublicationIndex(c *elasticsearch.Client, i string) backends.PublicationIDIndex {
+	return &PublicationIndex{
+		client: c,
+		index:  i,
+	}
 }
 
-func (datasets *Datasets) Search(args *models.SearchArgs) (*models.DatasetHits, error) {
+func (pi *PublicationIndex) Search(args *models.SearchArgs) (*models.SearchHits, error) {
 	// BUILD QUERY AND FILTERS FROM USER INPUT
-	query := buildDatasetUserQuery(args)
+	query := buildPublicationUserQuery(args)
 
 	queryFilters := query["query"].(M)["bool"].(M)["filter"].([]M)
 	queryMust := query["query"].(M)["bool"].(M)["must"].(M)
-	query["size"] = args.Limit()
-	query["from"] = args.Offset()
 
 	// extra internal filters
 	// internalFilters := []M{
@@ -45,10 +48,11 @@ func (datasets *Datasets) Search(args *models.SearchArgs) (*models.DatasetHits, 
 	// 	},
 	// }
 
-	// FACETS
+	// ADD FACETS
 	// 	create global bucket so that not all buckets are influenced by query and filters
 	// 	name "facets" is not important
 	if args.Facets != nil {
+
 		query["aggs"] = M{
 			"facets": M{
 				"global": M{},
@@ -59,11 +63,11 @@ func (datasets *Datasets) Search(args *models.SearchArgs) (*models.DatasetHits, 
 		// facet filter contains all query and all filters except itself
 		for _, field := range args.Facets {
 
-			filters := make([]M, 0, len(datasets.scopes)+1)
+			filters := make([]M, 0, len(pi.scopes)+1)
 
 			// add all internal filters
 			filters = append(filters, queryMust)
-			filters = append(filters, datasets.scopes...)
+			filters = append(filters, pi.scopes...)
 			// filters = append(filters, internalFilters...)
 
 			// TODO: cleanup messy difference between regular filters and
@@ -83,17 +87,17 @@ func (datasets *Datasets) Search(args *models.SearchArgs) (*models.DatasetHits, 
 				}
 			}
 
+			var conf M
+			if c, ok := facetDefinitions[field]; ok {
+				conf = c.config
+			} else {
+				conf = defaultFacetDefinition(field).config
+			}
+
 			facet := M{
 				"filter": M{"bool": M{"must": filters}},
 				"aggs": M{
-					"facet": M{
-						"terms": M{
-							"field":         field,
-							"order":         M{"_key": "asc"},
-							"size":          200,
-							"min_doc_count": 0,
-						},
-					},
+					"facet": conf,
 				},
 			}
 
@@ -106,7 +110,7 @@ func (datasets *Datasets) Search(args *models.SearchArgs) (*models.DatasetHits, 
 	}
 
 	// ADD QUERY FILTERS
-	queryFilters = append(queryFilters, datasets.scopes...)
+	queryFilters = append(queryFilters, pi.scopes...)
 	// queryFilters = append(queryFilters, internalFilters...)
 	query["query"].(M)["bool"].(M)["filter"] = queryFilters
 
@@ -128,27 +132,35 @@ func (datasets *Datasets) Search(args *models.SearchArgs) (*models.DatasetHits, 
 	}
 
 	// SEND QUERY TO ES
-	opts := []func(*esapi.SearchRequest){
-		datasets.Client.es.Search.WithContext(context.Background()),
-		datasets.Client.es.Search.WithIndex(datasets.Client.Index),
-		datasets.Client.es.Search.WithTrackTotalHits(true),
-		datasets.Client.es.Search.WithSort(sorts...),
-	}
-
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(query); err != nil {
 		return nil, err
 	}
-	opts = append(opts, datasets.Client.es.Search.WithBody(&buf))
 
-	var res datasetResEnvelope = datasetResEnvelope{}
-	err := datasets.Client.searchWithOpts(opts, &res)
+	opts := []func(*esapi.SearchRequest){
+		pi.client.Search.WithContext(context.Background()),
+		pi.client.Search.WithIndex(pi.index),
+		pi.client.Search.WithTrackTotalHits(true),
+		pi.client.Search.WithSort(sorts...),
+		pi.client.Search.WithBody(&buf),
+	}
+
+	var res publicationResEnvelope
+
+	err := pi.searchWithOpts(opts, func(r io.ReadCloser) error {
+		if err := json.NewDecoder(r).Decode(&res); err != nil {
+			return fmt.Errorf("error parsing the response body")
+		}
+
+		return nil
+	})
+
 	if err != nil {
 		return nil, err
 	}
 
 	// READ RESPONSE FROM ES
-	hits, err := decodeDatasetRes(&res, args.Facets)
+	hits, err := decodePublicationRes(&res, args.Facets)
 	if err != nil {
 		return nil, err
 	}
@@ -159,7 +171,178 @@ func (datasets *Datasets) Search(args *models.SearchArgs) (*models.DatasetHits, 
 	return hits, nil
 }
 
-func buildDatasetUserQuery(args *models.SearchArgs) M {
+func (pi *PublicationIndex) Each(searchArgs *models.SearchArgs, maxSize int, cb func(string)) error {
+	nProcessed := 0
+	start := 0
+	limit := 200
+
+	query := buildPublicationUserQuery(searchArgs)
+
+	queryFilters := query["query"].(M)["bool"].(M)["filter"].([]M)
+
+	// Set the searcher scopes
+	queryFilters = append(queryFilters, pi.scopes...)
+
+	// Set the range to ID = 0, this value gets updated with each 200 hits
+	// fetched from ES in the loop
+	sortValue := "0" //lowest sort value when sortin on id?
+	queryFilters = append(queryFilters, M{
+		"range": M{
+			"id": M{
+				"gt": sortValue,
+			},
+		},
+	})
+
+	query["query"].(M)["bool"].(M)["filter"] = queryFilters
+
+	for {
+		//filter by range greater than instead of via from and size
+		query["from"] = start
+		query["size"] = limit
+		queryFilters[len(queryFilters)-1]["range"].(M)["id"].(M)["gt"] = sortValue
+		query["query"].(M)["bool"].(M)["filter"] = queryFilters
+
+		var buf bytes.Buffer
+		if err := json.NewEncoder(&buf).Encode(query); err != nil {
+			return err
+		}
+
+		opts := []func(*esapi.SearchRequest){
+			pi.client.Search.WithContext(context.Background()),
+			pi.client.Search.WithIndex(pi.index),
+			pi.client.Search.WithTrackTotalHits(true),
+			pi.client.Search.WithSort("id:asc"),
+			pi.client.Search.WithBody(&buf),
+		}
+
+		var res publicationResEnvelope
+
+		err := pi.searchWithOpts(opts, func(r io.ReadCloser) error {
+			if err := json.NewDecoder(r).Decode(&res); err != nil {
+				return fmt.Errorf("error parsing the response body")
+			}
+
+			return nil
+		})
+
+		if err != nil {
+			return err
+		}
+
+		hits, err := decodePublicationRes(&res, []string{})
+		if err != nil {
+			return err
+		}
+
+		if len(hits.Hits) == 0 {
+			return nil
+		}
+
+		for _, hit := range hits.Hits {
+			nProcessed++
+			if nProcessed > maxSize {
+				return nil
+			}
+			cb(hit)
+		}
+
+		if len(hits.Hits) > 0 {
+			sortValue = hits.Hits[len(hits.Hits)-1]
+		}
+
+		if len(hits.Hits) < limit {
+			return nil
+		}
+	}
+}
+
+func (pi *PublicationIndex) Delete(id string) error {
+	ctx := context.Background()
+	res, err := esapi.DeleteRequest{
+		Index:      pi.index,
+		DocumentID: id,
+	}.Do(ctx, pi.client)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+
+	if res.IsError() {
+		buf := &bytes.Buffer{}
+		if _, err := io.Copy(buf, res.Body); err != nil {
+			return err
+		}
+		return errors.New("Es6 error response: " + buf.String())
+	}
+
+	return nil
+}
+
+func (pi *PublicationIndex) DeleteAll() error {
+	ctx := context.Background()
+	req := esapi.DeleteByQueryRequest{
+		Index: []string{pi.index},
+		Body: strings.NewReader(`{
+			"query" : {
+				"match_all" : {}
+			}
+		}`),
+	}
+	res, err := req.Do(ctx, pi.client)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+
+	if res.IsError() {
+		buf := &bytes.Buffer{}
+		if _, err := io.Copy(buf, res.Body); err != nil {
+			return err
+		}
+		return errors.New("Es6 error response: " + buf.String())
+	}
+
+	return nil
+}
+
+func (pi *PublicationIndex) WithScope(field string, terms ...string) backends.PublicationIDIndex {
+	newScopes := make([]M, 0, len(pi.scopes))
+
+	// Copy existing scopes
+	newScopes = append(newScopes, pi.scopes...)
+
+	// Add new scopes
+	newScopes = append(newScopes, ParseScope(field, terms...))
+
+	return &PublicationIndex{
+		client: pi.client,
+		index:  pi.index,
+		scopes: newScopes,
+	}
+}
+
+func (pi *PublicationIndex) searchWithOpts(opts []func(*esapi.SearchRequest), fn func(r io.ReadCloser) error) error {
+	res, err := pi.client.Search(opts...)
+
+	if err != nil {
+		return err
+	}
+
+	defer res.Body.Close()
+
+	if res.IsError() {
+		buf := &bytes.Buffer{}
+		if _, err := io.Copy(buf, res.Body); err != nil {
+			return err
+		}
+		return errors.New("Es6 error response: " + buf.String())
+	}
+
+	return fn(res.Body)
+}
+
+func buildPublicationUserQuery(args *models.SearchArgs) M {
 	var query M
 	var queryMust M
 	var queryFilters []M
@@ -177,12 +360,19 @@ func buildDatasetUserQuery(args *models.SearchArgs) M {
 				"query": args.Query,
 				"fields": []string{
 					"id^100",
-					"identifier_values^50",
+					"doi^50",
+					"isbn^50",
+					"eisbn^50",
+					"issn^50",
+					"eissn^50",
+					"wos_id^50",
 					"title^40",
-					"department.tree.id^50",
+					"department^50",
+					"author.person.full_name.phrase_ngram^0.05",
+					"author.person.full_name.ngram^0.01",
+					"author.external_person.full_name.phrase_ngram^0.05",
+					"author.external_person.full_name.ngram^0.01",
 					"all",
-					"author.full_name.phrase_ngram^0.05",
-					"author.full_name.ngram^0.01",
 				},
 				"lenient":                             true,
 				"analyze_wildcard":                    false,
@@ -230,7 +420,7 @@ func buildDatasetUserQuery(args *models.SearchArgs) M {
 			"query": M{
 				"bool": M{
 					"must":                 queryMust,
-					"minimum_should_match": 0,
+					"minimum_should_match": "0",
 					"should":               queryShould,
 				},
 			},
@@ -245,10 +435,11 @@ func buildDatasetUserQuery(args *models.SearchArgs) M {
 		}
 	}
 
+	// query.bool.filter: search without score
 	if args.Filters != nil {
 		for field, terms := range args.Filters {
 
-			if qf := getRegularDatasetFilter(field, terms...); qf != nil {
+			if qf := getRegularPublicationFilter(field, terms); qf != nil {
 				if len(terms) == 0 {
 					continue
 				}
@@ -272,13 +463,14 @@ func buildDatasetUserQuery(args *models.SearchArgs) M {
 	return query
 }
 
-type datasetResEnvelope struct {
+type publicationResEnvelope struct {
 	// ScrollID string `json:"_scroll_id"`
 	Hits struct {
 		Total int
 		Hits  []struct {
-			Source    json.RawMessage `json:"_source"`
-			Highlight json.RawMessage
+			ID string `json:"_id"`
+			// Source json.RawMessage `json:"_source"`
+			// Highlight json.RawMessage
 		}
 	}
 	Aggregations struct {
@@ -286,15 +478,8 @@ type datasetResEnvelope struct {
 	}
 }
 
-/*
-type resFacet struct {
-	DocCount int
-	Key      string
-}*/
-
-func decodeDatasetRes(r *datasetResEnvelope, facets []string) (*models.DatasetHits, error) {
-
-	hits := models.DatasetHits{}
+func decodePublicationRes(r *publicationResEnvelope, facets []string) (*models.SearchHits, error) {
+	hits := models.SearchHits{}
 	hits.Total = r.Hits.Total
 
 	hits.Facets = make(map[string]models.FacetValues)
@@ -305,6 +490,7 @@ func decodeDatasetRes(r *datasetResEnvelope, facets []string) (*models.DatasetHi
 	}
 
 	for _, facet := range facets {
+
 		if _, found := r.Aggregations.Facets[facet]; !found {
 			continue
 		}
@@ -312,6 +498,8 @@ func decodeDatasetRes(r *datasetResEnvelope, facets []string) (*models.DatasetHi
 		for _, f := range r.Aggregations.Facets[facet].(map[string]any)["facet"].(map[string]any)["buckets"].([]any) {
 			fv := f.(map[string]any)
 			value := ""
+
+			//boolean returned 0 and 1, so not to be distinguished from integers
 			if v, e := fv["key_as_string"]; e {
 				value = v.(string)
 			} else {
@@ -337,122 +525,8 @@ func decodeDatasetRes(r *datasetResEnvelope, facets []string) (*models.DatasetHi
 	}
 
 	for _, h := range r.Hits.Hits {
-		var hit models.Dataset
-
-		if err := json.Unmarshal(h.Source, &hit); err != nil {
-			return nil, err
-		}
-
-		hits.Hits = append(hits.Hits, &hit)
+		hits.Hits = append(hits.Hits, h.ID)
 	}
 
 	return &hits, nil
-}
-
-func (publications *Datasets) Index(d *models.Dataset) error {
-	payload, err := json.Marshal(NewIndexedDataset(d))
-	if err != nil {
-		return err
-	}
-	ctx := context.Background()
-	res, err := esapi.IndexRequest{
-		Index: publications.Client.Index,
-		// DocumentID: d.SnapshotID,
-		DocumentID: d.ID,
-		Body:       bytes.NewReader(payload),
-	}.Do(ctx, publications.Client.es)
-	if err != nil {
-		return err
-	}
-	defer res.Body.Close()
-
-	if res.IsError() {
-		buf := &bytes.Buffer{}
-		if _, err := io.Copy(buf, res.Body); err != nil {
-			return err
-		}
-		return errors.New("Es6 error response: " + buf.String())
-	}
-
-	return nil
-}
-
-func (datasets *Datasets) Delete(id string) error {
-	ctx := context.Background()
-	res, err := esapi.DeleteRequest{
-		Index:      datasets.Client.Index,
-		DocumentID: id,
-	}.Do(ctx, datasets.Client.es)
-	if err != nil {
-		return err
-	}
-	defer res.Body.Close()
-
-	if res.IsError() {
-		buf := &bytes.Buffer{}
-		if _, err := io.Copy(buf, res.Body); err != nil {
-			return err
-		}
-		return errors.New("Es6 error response: " + buf.String())
-	}
-
-	return nil
-}
-
-func (datasets *Datasets) DeleteAll() error {
-	ctx := context.Background()
-	req := esapi.DeleteByQueryRequest{
-		Index: []string{datasets.Client.Index},
-		Body: strings.NewReader(`{
-			"query" : { 
-				"match_all" : {}
-			}
-		}`),
-	}
-	res, err := req.Do(ctx, datasets.Client.es)
-	if err != nil {
-		return err
-	}
-	defer res.Body.Close()
-
-	if res.IsError() {
-		buf := &bytes.Buffer{}
-		if _, err := io.Copy(buf, res.Body); err != nil {
-			return err
-		}
-		return errors.New("Es6 error response: " + buf.String())
-	}
-
-	return nil
-}
-
-func (datasets *Datasets) WithScope(field string, terms ...string) backends.DatasetSearchService {
-	d := datasets.Clone()
-	d.scopes = append(d.scopes, ParseScope(field, terms...))
-	return d
-}
-
-func (datasets *Datasets) Clone() *Datasets {
-	newScopes := make([]M, 0, len(datasets.scopes))
-	newScopes = append(newScopes, datasets.scopes...)
-	return &Datasets{
-		Client: datasets.Client,
-		scopes: newScopes,
-	}
-}
-
-func (dataset *Datasets) NewBulkIndexer(config backends.BulkIndexerConfig) (backends.BulkIndexer[*models.Dataset], error) {
-	docFn := func(d *models.Dataset) (string, []byte, error) {
-		doc, err := json.Marshal(NewIndexedDataset(d))
-		return d.ID, doc, err
-	}
-	return newBulkIndexer(dataset.Client.es, dataset.Client.Index, docFn, config)
-}
-
-func (datasets *Datasets) NewIndexSwitcher(config backends.BulkIndexerConfig) (backends.IndexSwitcher[*models.Dataset], error) {
-	docFn := func(d *models.Dataset) (string, []byte, error) {
-		doc, err := json.Marshal(NewIndexedDataset(d))
-		return d.ID, doc, err
-	}
-	return newIndexSwitcher(datasets.Client.es, datasets.Client.Index, datasets.Client.Settings, datasets.Client.IndexRetention, docFn, config)
 }

@@ -19,6 +19,7 @@ type indexedPublication struct {
 	DateUpdated string `json:"date_updated"`
 	// index only fields
 	HasMessage   bool     `json:"has_message"`
+	Department   []string `json:"department,omitempty"`
 	Faculty      []string `json:"faculty,omitempty"`
 	FacetWOSType []string `json:"facet_wos_type,omitempty"`
 }
@@ -42,27 +43,20 @@ func NewIndexedPublication(p *models.Publication) *indexedPublication {
 
 	faculties := vocabularies.Map["faculties"]
 
-	// extract faculty from department trees
-	for _, val := range p.Department {
-		for _, dept := range val.Tree {
-			if validation.InArray(faculties, dept.ID) {
-				exists := false
-				for _, fac := range ip.Faculty {
-					if fac == dept.ID {
-						exists = true
-						break
-					}
-				}
+	// extract faculty and department id from department trees
+	for _, rel := range ip.RelatedOrganizations {
+		for _, org := range rel.Organization.Tree {
+			if !validation.InArray(ip.Department, org.ID) {
+				ip.Department = append(ip.Department, org.ID)
+			}
 
-				if !exists {
-					ip.Faculty = append(ip.Faculty, dept.ID)
-				}
+			if validation.InArray(faculties, org.ID) && !validation.InArray(ip.Faculty, org.ID) {
+				ip.Faculty = append(ip.Faculty, org.ID)
 			}
 		}
 	}
 
 	if ip.WOSType != "" {
-
 		wos_types := reSplitWOS.Split(ip.WOSType, -1)
 		for _, wos_type := range wos_types {
 			wt := strings.TrimSpace(wos_type)

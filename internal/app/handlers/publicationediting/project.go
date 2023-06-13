@@ -83,10 +83,7 @@ func (h *Handler) CreateProject(w http.ResponseWriter, r *http.Request, ctx Cont
 		render.InternalServerError(w, r, err)
 		return
 	}
-	ctx.Publication.AddProject(&models.PublicationProject{
-		ID:   project.ID,
-		Name: project.Title,
-	})
+	ctx.Publication.AddProject(project)
 
 	// TODO handle validation errors
 

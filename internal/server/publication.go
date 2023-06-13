@@ -7,8 +7,6 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"reflect"
-	"sort"
 	"strings"
 	"time"
 
@@ -34,13 +32,13 @@ func (s *server) GetPublication(ctx context.Context, req *api.GetPublicationRequ
 				},
 			}, nil
 		} else {
-			return nil, status.Errorf(codes.Internal, "could not get publication with id %s: %v", err)
+			return nil, status.Errorf(codes.Internal, "could not get publication with id %s: %v", req.Id, err)
 		}
 	}
 
 	j, err := json.Marshal(p)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "could not marshal publication with id %s: %v", err)
+		return nil, status.Errorf(codes.Internal, "could not marshal publication with id %s: %v", req.Id, err)
 	}
 
 	res := &api.GetPublicationResponse{
@@ -109,7 +107,7 @@ func (s *server) SearchPublications(ctx context.Context, req *api.SearchPublicat
 		page = int(req.Offset)/int(req.Limit) + 1
 	}
 	args := models.NewSearchArgs().WithQuery(req.Query).WithPage(page)
-	hits, err := s.services.PublicationSearchService.Search(args)
+	hits, err := s.services.PublicationSearchIndex.Search(args)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "could not search publications: %s :: %s", req.Query, err)
 	}
@@ -166,10 +164,6 @@ func (s *server) UpdatePublication(ctx context.Context, req *api.UpdatePublicati
 			},
 		}, nil
 	} else if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to update publication[snapshot_id: %s, id: %s], %s", p.SnapshotID, p.ID, err)
-	}
-
-	if err := s.services.PublicationSearchService.Index(p); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to update publication[snapshot_id: %s, id: %s], %s", p.SnapshotID, p.ID, err)
 	}
 
@@ -421,7 +415,7 @@ func (s *server) PurgePublication(ctx context.Context, req *api.PurgePublication
 				},
 			}, nil
 		} else {
-			return nil, status.Errorf(codes.Internal, "could not get publication with id %s: %v", err)
+			return nil, status.Errorf(codes.Internal, "could not get publication with id %s: %s", req.Id, err)
 		}
 	}
 
@@ -431,7 +425,7 @@ func (s *server) PurgePublication(ctx context.Context, req *api.PurgePublication
 	}
 
 	// TODO this will complain if the above didn't throw a 'not found' error
-	if err := s.services.PublicationSearchService.Delete(req.Id); err != nil {
+	if err := s.services.PublicationSearchIndex.Delete(req.Id); err != nil {
 		return nil, status.Errorf(codes.Internal, "could not purge publication from index with id %s: %s", req.Id, err)
 	}
 
@@ -456,7 +450,7 @@ func (s *server) PurgeAllPublications(ctx context.Context, req *api.PurgeAllPubl
 		return nil, status.Errorf(codes.Internal, "could not purge all publications: %s", err)
 	}
 
-	if err := s.services.PublicationSearchService.DeleteAll(); err != nil {
+	if err := s.services.PublicationSearchIndex.DeleteAll(); err != nil {
 		return nil, status.Errorf(codes.Internal, "could not delete publication from index: %w", err)
 	}
 
@@ -517,6 +511,7 @@ func (s *server) ValidatePublications(stream api.Biblio_ValidatePublicationsServ
 func (s *server) ReindexPublications(req *api.ReindexPublicationsRequest, stream api.Biblio_ReindexPublicationsServer) error {
 	startTime := time.Now()
 	indexed := 0
+	reported := 0
 
 	if err := stream.Send(&api.ReindexPublicationsResponse{
 		Response: &api.ReindexPublicationsResponse_Message{
@@ -529,7 +524,7 @@ func (s *server) ReindexPublications(req *api.ReindexPublicationsRequest, stream
 	var swErr error
 	var swIdxErr error
 
-	switcher, err := s.services.PublicationSearchService.NewIndexSwitcher(backends.BulkIndexerConfig{
+	switcher, err := s.services.SearchService.NewPublicationIndexSwitcher(backends.BulkIndexerConfig{
 		OnError: func(err error) {
 			grpcErr := status.New(codes.Internal, fmt.Errorf("failed to index publication: %v", err).Error())
 			if err = stream.Send(&api.ReindexPublicationsResponse{
@@ -574,6 +569,16 @@ func (s *server) ReindexPublications(req *api.ReindexPublicationsRequest, stream
 
 		indexed++
 
+		// progress message
+		if indexed-500 == reported {
+			stream.Send(&api.ReindexPublicationsResponse{
+				Response: &api.ReindexPublicationsResponse_Message{
+					Message: fmt.Sprintf("Indexing %d publications...", indexed),
+				},
+			})
+			reported = indexed
+		}
+
 		return true
 	})
 
@@ -595,7 +600,7 @@ func (s *server) ReindexPublications(req *api.ReindexPublicationsRequest, stream
 
 	if err := stream.Send(&api.ReindexPublicationsResponse{
 		Response: &api.ReindexPublicationsResponse_Message{
-			Message: fmt.Sprintf("Indexed %d publications...", indexed),
+			Message: fmt.Sprintf("Indexed %d publications", indexed),
 		},
 	}); err != nil {
 		return status.Errorf(codes.Internal, "failed to index publications: %v", err)
@@ -617,7 +622,7 @@ func (s *server) ReindexPublications(req *api.ReindexPublicationsRequest, stream
 
 	if err := stream.Send(&api.ReindexPublicationsResponse{
 		Response: &api.ReindexPublicationsResponse_Message{
-			Message: "Indexing changes since start of reindex...",
+			Message: "Indexing changes since start of reindex",
 		},
 	}); err != nil {
 		return status.Errorf(codes.Internal, "failed to index publications: %v", err)
@@ -629,7 +634,7 @@ func (s *server) ReindexPublications(req *api.ReindexPublicationsRequest, stream
 		var biErr error
 		var biIdxErr error
 
-		bi, err := s.services.PublicationSearchService.NewBulkIndexer(backends.BulkIndexerConfig{
+		bi, err := s.services.SearchService.NewPublicationBulkIndexer(backends.BulkIndexerConfig{
 			OnError: func(err error) {
 				grpcErr := status.New(codes.Internal, fmt.Errorf("failed to index publication: %v", err).Error())
 				if err = stream.Send(&api.ReindexPublicationsResponse{
@@ -703,7 +708,7 @@ func (s *server) ReindexPublications(req *api.ReindexPublicationsRequest, stream
 
 		if err := stream.Send(&api.ReindexPublicationsResponse{
 			Response: &api.ReindexPublicationsResponse_Message{
-				Message: fmt.Sprintf("Indexed %d publications...", indexed),
+				Message: fmt.Sprintf("Indexed %d publications", indexed),
 			},
 		}); err != nil {
 			return status.Errorf(codes.Internal, "failed to index publications: %v", err)
@@ -728,26 +733,14 @@ func (s *server) TransferPublications(req *api.TransferPublicationsRequest, stre
 	source := req.Src
 	dest := req.Dest
 
-	p, err := s.services.PersonService.GetPerson(dest)
+	person, err := s.services.PersonService.GetPerson(dest)
 	if err != nil {
 		return status.Errorf(codes.Internal, "could not retrieve person %s: %v", dest, err)
 	}
 
-	c := &models.Contributor{}
-	c.ID = p.ID
-	c.FirstName = p.FirstName
-	c.LastName = p.LastName
-	c.FullName = p.FullName
-	c.UGentID = p.UGentID
-	c.ORCID = p.ORCID
-
-	for _, pd := range p.Department {
-		newDep := models.ContributorDepartment{ID: pd.ID}
-		org, orgErr := s.services.OrganizationService.GetOrganization(pd.ID)
-		if orgErr == nil {
-			newDep.Name = org.Name
-		}
-		c.Department = append(c.Department, newDep)
+	c := &models.Contributor{
+		PersonID: person.ID,
+		Person:   person,
 	}
 
 	var callbackErr error
@@ -755,16 +748,14 @@ func (s *server) TransferPublications(req *api.TransferPublicationsRequest, stre
 	callback := func(p *models.Publication) bool {
 		fixed := false
 
-		if p.User != nil {
-			if p.User.ID == source {
-				p.User = &models.PublicationUser{
-					ID:   c.ID,
-					Name: c.FullName,
-				}
+		if p.UserID != "" {
+			if p.UserID == source {
+				p.UserID = person.ID
+				p.User = person
 
 				if err := stream.Send(&api.TransferPublicationsResponse{
 					Response: &api.TransferPublicationsResponse_Message{
-						Message: fmt.Sprintf("p: %s: s: %s ::: user: %s -> %s", p.ID, p.SnapshotID, source, c.ID),
+						Message: fmt.Sprintf("p: %s: s: %s ::: user: %s -> %s", p.ID, p.SnapshotID, source, c.PersonID),
 					},
 				}); err != nil {
 					callbackErr = err
@@ -775,26 +766,24 @@ func (s *server) TransferPublications(req *api.TransferPublicationsRequest, stre
 			}
 		}
 
-		if p.Creator != nil {
-			if p.Creator.ID == source {
-				p.Creator = &models.PublicationUser{
-					ID:   c.ID,
-					Name: c.FullName,
-				}
+		if p.CreatorID != "" {
+			if p.CreatorID == source {
+				p.CreatorID = person.ID
+				p.Creator = person
 
-				if len(c.Department) > 0 {
-					org, orgErr := s.services.OrganizationService.GetOrganization(c.Department[0].ID)
+				if len(c.Person.Affiliations) > 0 {
+					org, orgErr := s.services.OrganizationService.GetOrganization(c.Person.Affiliations[0].OrganizationID)
 					if orgErr != nil {
-						callbackErr = fmt.Errorf("p: %s: s: %s ::: creator: could not fetch department for %s: %v", p.ID, p.SnapshotID, c.ID, orgErr)
+						callbackErr = fmt.Errorf("p: %s: s: %s ::: creator: could not fetch department for %s: %v", p.ID, p.SnapshotID, c.PersonID, orgErr)
 						return false
 					} else {
-						p.AddDepartmentByOrg(org)
+						p.AddOrganization(org)
 					}
 				}
 
 				if err := stream.Send(&api.TransferPublicationsResponse{
 					Response: &api.TransferPublicationsResponse_Message{
-						Message: fmt.Sprintf("p: %s: s: %s ::: creator: %s -> %s", p.ID, p.SnapshotID, source, c.ID),
+						Message: fmt.Sprintf("p: %s: s: %s ::: creator: %s -> %s", p.ID, p.SnapshotID, source, c.PersonID),
 					},
 				}); err != nil {
 					callbackErr = err
@@ -806,12 +795,12 @@ func (s *server) TransferPublications(req *api.TransferPublicationsRequest, stre
 		}
 
 		for k, a := range p.Author {
-			if a.ID == source {
+			if a.PersonID == source {
 				p.SetContributor("author", k, c)
 
 				if err := stream.Send(&api.TransferPublicationsResponse{
 					Response: &api.TransferPublicationsResponse_Message{
-						Message: fmt.Sprintf("p: %s: s: %s ::: author: %s -> %s", p.ID, p.SnapshotID, a.ID, c.ID),
+						Message: fmt.Sprintf("p: %s: s: %s ::: author: %s -> %s", p.ID, p.SnapshotID, a.PersonID, c.PersonID),
 					},
 				}); err != nil {
 					callbackErr = err
@@ -823,12 +812,12 @@ func (s *server) TransferPublications(req *api.TransferPublicationsRequest, stre
 		}
 
 		for k, e := range p.Editor {
-			if e.ID == source {
+			if e.PersonID == source {
 				p.SetContributor("editor", k, c)
 
 				if err := stream.Send(&api.TransferPublicationsResponse{
 					Response: &api.TransferPublicationsResponse_Message{
-						Message: fmt.Sprintf("p: %s: s: %s ::: editor: %s -> %s", p.ID, p.SnapshotID, e.ID, c.ID),
+						Message: fmt.Sprintf("p: %s: s: %s ::: editor: %s -> %s", p.ID, p.SnapshotID, e.PersonID, c.PersonID),
 					},
 				}); err != nil {
 					callbackErr = err
@@ -840,12 +829,12 @@ func (s *server) TransferPublications(req *api.TransferPublicationsRequest, stre
 		}
 
 		for k, s := range p.Supervisor {
-			if s.ID == source {
+			if s.PersonID == source {
 				p.SetContributor("supervisor", k, c)
 
 				if err := stream.Send(&api.TransferPublicationsResponse{
 					Response: &api.TransferPublicationsResponse_Message{
-						Message: fmt.Sprintf("p: %s: s: %s ::: supervisor: %s -> %s", p.ID, p.SnapshotID, s.ID, c.ID),
+						Message: fmt.Sprintf("p: %s: s: %s ::: supervisor: %s -> %s", p.ID, p.SnapshotID, s.PersonID, c.PersonID),
 					},
 				}); err != nil {
 					callbackErr = err
@@ -901,19 +890,6 @@ func (s *server) CleanupPublications(req *api.CleanupPublicationsRequest, stream
 		// Guard
 		fixed := false
 
-		// Add the department "tree" property if it is missing.
-		for _, dep := range p.Department {
-			if dep.Tree == nil {
-				depID := dep.ID
-				org, orgErr := s.services.OrganizationService.GetOrganization(depID)
-				if orgErr == nil {
-					p.RemoveDepartment(depID)
-					p.AddDepartmentByOrg(org)
-					fixed = true
-				}
-			}
-		}
-
 		// Trim keywords, remove empty keywords
 		var cleanKeywords []string
 		for _, kw := range p.Keyword {
@@ -942,6 +918,7 @@ func (s *server) CleanupPublications(req *api.CleanupPublicationsRequest, stream
 
 		// Save record if changed
 		if fixed {
+			p.UserID = ""
 			p.User = nil
 
 			if err := p.Validate(); err != nil {
@@ -1017,309 +994,6 @@ func (s *server) CleanupPublications(req *api.CleanupPublicationsRequest, stream
 		},
 	}); err != nil {
 		return status.Errorf(codes.Internal, "failed to clean up publications: %v", err)
-	}
-
-	return nil
-}
-
-// SyncPublicationContributors synchronizes data stored in the authority table "people" with the related
-// records as stored in publications under "author", "supervisor" and "editor", which we all call "contributors".
-// More specifically, every contributor in a publication that has an attribute "id",
-// is expected to have a related record with that id in the authority table.
-//
-// The attributes that are copied from the authority table are:
-// - first_name
-// - last_name
-// (- full_name) (TODO: see below)
-// - orcid
-// - ugent id's
-// - department id's (and their name)
-func (s *server) SyncPublicationContributors(req *api.SyncPublicationContributorsRequest, stream api.Biblio_SyncPublicationContributorsServer) error {
-	repository := s.services.Repository
-	personService := s.services.PersonService
-	orgService := s.services.OrganizationService
-
-	sendErr := func(stream api.Biblio_SyncPublicationContributorsServer, e error) error {
-		grpcErr := status.New(codes.Internal, e.Error())
-		return stream.Send(&api.SyncPublicationContributorsResponse{
-			Response: &api.SyncPublicationContributorsResponse_Error{
-				Error: grpcErr.Proto(),
-			},
-		})
-	}
-
-	var callbackErr error
-	// cache does not store nil values
-	invalidContributors := map[string]error{}
-	contributorRoles := []string{"author", "editor", "supervisor"}
-
-	// startErr: error that stores why the loop could not even start
-	startErr := repository.EachPublication(func(p *models.Publication) bool {
-
-		changes := make([]*api.ContributorChange, 0)
-
-		// prefetch all contributors from personService
-		// ignore those contributors that did not return anything in a previous call
-		contributorIds := make([]string, 0)
-		for _, role := range contributorRoles {
-			for _, contributor := range p.Contributors(role) {
-				if contributor.ID == "" {
-					continue
-				}
-				if _, ok := invalidContributors[contributor.ID]; ok {
-					continue
-				}
-				found := false
-				for _, contributorId := range contributorIds {
-					if contributorId == contributor.ID {
-						found = true
-					}
-				}
-				if !found {
-					contributorIds = append(contributorIds, contributor.ID)
-				}
-			}
-		}
-
-		var persons []*models.Person = make([]*models.Person, 0)
-		if len(contributorIds) > 0 {
-
-			var personErr error
-			persons, personErr = personService.GetPersons(contributorIds)
-			if personErr != nil {
-
-				e := sendErr(stream, fmt.Errorf("unable to prefetch contributors for publication with id '%s': %s", p.ID, personErr))
-
-				if e != nil {
-					callbackErr = e
-					// unable to send error: stop the loop
-					return false
-				}
-
-				// TODO: send error
-				return false
-			}
-
-		}
-
-		for _, role := range contributorRoles {
-
-			contributors := p.Contributors(role)
-
-			for _, c := range contributors {
-
-				// only handle records from authority database
-				if c.ID == "" {
-					continue
-				}
-
-				// contributors already handled
-				if cErr, ok := invalidContributors[c.ID]; ok {
-					e := sendErr(stream, fmt.Errorf("[duplicate] unable to fetch person with id '%s' with role '%s' for publication with id '%s': %s", c.ID, role, p.ID, cErr))
-
-					if e != nil {
-						callbackErr = e
-						// unable to send error: stop the loop
-						return false
-					}
-
-					// this is not fatal error, so keep going
-					continue
-				}
-
-				var person *models.Person
-				for _, p := range persons {
-					if p.ID == c.ID {
-						person = p
-						break
-					}
-				}
-				var personErr error
-				if person == nil {
-					personErr = backends.ErrNotFound
-				}
-
-				// person is gone from the authority table
-				if personErr != nil {
-
-					invalidContributors[c.ID] = personErr
-
-					e := sendErr(stream, fmt.Errorf("unable to fetch person with id '%s' with role '%s' for publication with id '%s': %s", c.ID, role, p.ID, personErr))
-
-					if e != nil {
-						callbackErr = e
-						// unable to send error: stop the loop
-						return false
-					}
-
-					// this is not fatal error, so keep going
-					continue
-				}
-
-				if c.FirstName != person.FirstName {
-					changes = append(changes, &api.ContributorChange{
-						PublicationId:   p.ID,
-						ContributorId:   c.ID,
-						ContributorRole: role,
-						Attribute:       "contributor.first_name",
-						From:            c.FirstName,
-						To:              person.FirstName,
-					})
-					c.FirstName = person.FirstName
-				}
-				if c.LastName != person.LastName {
-					changes = append(changes, &api.ContributorChange{
-						PublicationId:   p.ID,
-						ContributorId:   c.ID,
-						ContributorRole: role,
-						Attribute:       "contributor.last_name",
-						From:            c.LastName,
-						To:              person.LastName,
-					})
-					c.LastName = person.LastName
-				}
-
-				if c.FullName != person.FullName {
-					changes = append(changes, &api.ContributorChange{
-						PublicationId:   p.ID,
-						ContributorId:   c.ID,
-						ContributorRole: role,
-						Attribute:       "contributor.full_name",
-						From:            c.FullName,
-						To:              person.FullName,
-					})
-					c.FullName = person.FullName
-				}
-
-				if c.ORCID != person.ORCID {
-					changes = append(changes, &api.ContributorChange{
-						PublicationId:   p.ID,
-						ContributorId:   c.ID,
-						ContributorRole: role,
-						Attribute:       "contributor.orcid",
-						From:            c.ORCID,
-						To:              person.ORCID,
-					})
-					c.ORCID = person.ORCID
-				}
-
-				if !reflect.DeepEqual(c.UGentID, person.UGentID) {
-					changes = append(changes, &api.ContributorChange{
-						PublicationId:   p.ID,
-						ContributorId:   c.ID,
-						ContributorRole: role,
-						Attribute:       "contributor.ugent_id",
-						From:            strings.Join(c.UGentID, ","),
-						To:              strings.Join(person.UGentID, ","),
-					})
-					c.UGentID = append([]string{}, person.UGentID...)
-				}
-
-				oldDeps := make([]string, 0, len(c.Department))
-				for _, dep := range c.Department {
-					oldDeps = append(oldDeps, dep.ID)
-				}
-				sort.Strings(oldDeps)
-
-				newDeps := make([]string, 0, len(person.Department))
-				for _, dep := range person.Department {
-					newDeps = append(newDeps, dep.ID)
-				}
-				sort.Strings(newDeps)
-
-				if !reflect.DeepEqual(oldDeps, newDeps) {
-					changes = append(changes, &api.ContributorChange{
-						PublicationId:   p.ID,
-						ContributorId:   c.ID,
-						ContributorRole: role,
-						Attribute:       "department",
-						From:            strings.Join(oldDeps, ","),
-						To:              strings.Join(newDeps, ","),
-					})
-					c.Department = make([]models.ContributorDepartment, 0)
-					for _, pd := range person.Department {
-						newDep := models.ContributorDepartment{ID: pd.ID}
-						org, orgErr := orgService.GetOrganization(pd.ID)
-						if orgErr == nil {
-							newDep.Name = org.Name
-						} else {
-							err := sendErr(stream, fmt.Errorf("unable to fetch organization with id '%s' for publication with id '%s': %s", pd.ID, p.ID, orgErr))
-							if err != nil {
-								callbackErr = err
-								// unable to send error: stop the loop
-								return false
-							}
-						}
-						c.Department = append(c.Department, newDep)
-					}
-				}
-			}
-		}
-
-		if !req.Noop {
-			for _, change := range changes {
-				change.Executed = true
-			}
-		}
-
-		if err := p.Validate(); err != nil {
-
-			for _, validationErr := range err.(validation.Errors) {
-				formattedErr := fmt.Errorf("validation failed for publication %s: %w", p.ID, validationErr)
-				if sErr := sendErr(stream, formattedErr); sErr != nil {
-					callbackErr = sErr
-					// unable to send error: stop the loop
-					return false
-				}
-			}
-
-			// validation failed: continue to next record
-			return true
-
-		}
-
-		if !req.Noop && len(changes) > 0 {
-
-			err := s.services.Repository.UpdatePublication(p.SnapshotID, p, nil)
-
-			if err != nil {
-
-				// unable to send error: stop the loop
-				e := sendErr(stream, fmt.Errorf("failed to update publication[snapshot_id: %s, id: %s] : %v", p.SnapshotID, p.ID, err))
-				if e != nil {
-					callbackErr = err
-					return false
-				}
-
-				// update failed: continue to next record
-				return true
-
-			}
-		}
-
-		// validation, update and indexation ok: list and send all changes to the client
-		for _, change := range changes {
-			// unable to send message: stop the loop
-			if err := stream.Send(&api.SyncPublicationContributorsResponse{
-				Response: &api.SyncPublicationContributorsResponse_ContributorChange{
-					ContributorChange: change,
-				},
-			}); err != nil {
-				callbackErr = err
-				return false
-			}
-		}
-
-		// record processed successfully
-		return true
-	})
-
-	if startErr != nil {
-		return status.Errorf(codes.Internal, "unable to start command: %v", startErr)
-	}
-
-	if callbackErr != nil {
-		return status.Errorf(codes.Internal, "unable to complete command: %s", callbackErr.Error())
 	}
 
 	return nil
