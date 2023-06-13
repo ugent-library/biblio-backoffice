@@ -202,14 +202,14 @@ func detailsForm(l *locale.Locale, d *models.Dataset, errors validation.Errors) 
 			},
 		).
 		AddSection(
-			&form.Text{
-				Name:     "publisher",
-				Value:    d.Publisher,
-				Label:    l.T("builder.publisher"),
-				Cols:     9,
-				Error:    localize.ValidationErrorAt(l, errors, "/publisher"),
-				Required: true,
-				Tooltip:  l.T("tooltip.dataset.publisher"),
+			&form.SelectRepeat{
+				Name:        "language",
+				Label:       l.T("builder.language"),
+				Options:     localize.LanguageSelectOptions(l),
+				Values:      d.Language,
+				EmptyOption: true,
+				Cols:        9,
+				Error:       localize.ValidationErrorAt(l, errors, "/language"),
 			},
 			&form.Text{
 				Name:     "year",
@@ -219,6 +219,15 @@ func detailsForm(l *locale.Locale, d *models.Dataset, errors validation.Errors) 
 				Help:     l.T("builder.year.help"),
 				Error:    localize.ValidationErrorAt(l, errors, "/year"),
 				Required: true,
+			},
+			&form.Text{
+				Name:     "publisher",
+				Value:    d.Publisher,
+				Label:    l.T("builder.publisher"),
+				Cols:     9,
+				Error:    localize.ValidationErrorAt(l, errors, "/publisher"),
+				Required: true,
+				Tooltip:  l.T("tooltip.dataset.publisher"),
 			},
 		).
 		AddSection(
@@ -239,15 +248,6 @@ func detailsForm(l *locale.Locale, d *models.Dataset, errors validation.Errors) 
 				Label:    l.T("builder.keyword"),
 				Cols:     9,
 				Error:    localize.ValidationErrorAt(l, errors, "/keyword"),
-			},
-			&form.SelectRepeat{
-				Name:        "language",
-				Label:       l.T("builder.language"),
-				Options:     localize.LanguageSelectOptions(l),
-				Values:      d.Language,
-				EmptyOption: true,
-				Cols:        9,
-				Error:       localize.ValidationErrorAt(l, errors, "/language"),
 			},
 		)
 
