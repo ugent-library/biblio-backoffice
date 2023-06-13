@@ -107,7 +107,7 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 	datasetCreatingHandler := &datasetcreating.Handler{
 		BaseHandler:         baseHandler,
 		Repository:          services.Repository,
-		SearchService:       services.SearchService,
+		DatasetSearchIndex:  services.DatasetSearchIndex,
 		DatasetSources:      services.DatasetSources,
 		OrganizationService: services.OrganizationService,
 	}
