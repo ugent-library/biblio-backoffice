@@ -65,7 +65,7 @@ func (h *Handler) Withdraw(w http.ResponseWriter, r *http.Request, ctx Context) 
 	}
 
 	flash := flash.SimpleFlash().
-		WithLevel("error").
+		WithLevel("success").
 		WithBody(template.HTML("<p>Publication was successfully witdrawn.</p>"))
 
 	h.AddSessionFlash(r, w, *flash)

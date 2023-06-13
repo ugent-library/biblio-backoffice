@@ -183,15 +183,9 @@ func mapRecord(r Record, p *models.Publication) {
 		case "TI", "T1":
 			p.Title = strings.Join(v, "")
 		case "AB", "N2":
-			p.AddAbstract(&models.Text{Text: v[0], Lang: "und"})
+			p.AddAbstract(&models.Text{Text: strings.Join(v, "\n\n"), Lang: "und"})
 		case "KW", "DW", "ID", "DE":
-			for _, val := range v {
-				for _, str := range reSplit.Split(val, -1) {
-					if str != "" {
-						p.Keyword = append(p.Keyword, str)
-					}
-				}
-			}
+			p.Keyword = append(p.Keyword, splitMultilineVals(v)...)
 		case "DI":
 			p.DOI = v[0]
 		case "JF", "JO", "T2":
@@ -201,29 +195,11 @@ func mapRecord(r Record, p *models.Publication) {
 		case "JA", "JI":
 			p.PublicationAbbreviation = v[0]
 		case "SN":
-			for _, val := range v {
-				for _, str := range reSplit.Split(val, -1) {
-					if str != "" {
-						p.ISSN = append(p.ISSN, str)
-					}
-				}
-			}
+			p.ISSN = append(p.ISSN, splitVals(v)...)
 		case "EI":
-			for _, val := range v {
-				for _, str := range reSplit.Split(val, -1) {
-					if str != "" {
-						p.EISSN = append(p.EISSN, str)
-					}
-				}
-			}
+			p.EISSN = append(p.EISSN, splitVals(v)...)
 		case "BN":
-			for _, val := range v {
-				for _, str := range reSplit.Split(val, -1) {
-					if str != "" {
-						p.EISBN = append(p.EISBN, str)
-					}
-				}
-			}
+			p.EISBN = append(p.EISBN, splitVals(v)...)
 		case "UT":
 			p.WOSID = strings.TrimPrefix(v[0], "WOS:")
 		case "AN":
@@ -268,6 +244,26 @@ func mapRecord(r Record, p *models.Publication) {
 			}
 		}
 	}
+}
+
+func splitVals(vals []string) (newVals []string) {
+	for _, v := range vals {
+		for _, str := range reSplit.Split(v, -1) {
+			if str != "" {
+				newVals = append(newVals, str)
+			}
+		}
+	}
+	return
+}
+
+func splitMultilineVals(vals []string) (newVals []string) {
+	for _, v := range reSplit.Split(strings.Join(vals, ""), -1) {
+		if v != "" {
+			newVals = append(newVals, v)
+		}
+	}
+	return
 }
 
 func parseConferenceDate(date string) [2]string {
