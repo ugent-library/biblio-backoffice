@@ -9,9 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Allow HTML in form help text
+### Fixed
+
+## [v1.0.29] - 2023-06-13
+
+### Added
 
 ### Fixed
+
+- Allow HTML in form help text
+- Update text
 
 ## [v1.0.28] - 2023-06-13
 
@@ -325,7 +332,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.28...HEAD
+[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.29...HEAD
+[v1.0.29]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.28...v1.0.29
 [v1.0.28]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.27...v1.0.28
 [v1.0.27]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.26...v1.0.27
 [v1.0.26]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.25...v1.0.26
