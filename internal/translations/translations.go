@@ -759,7 +759,7 @@ func init() {
 	message.SetString(language.English, "builder.type.help", "Changing the publication type might result in data loss")
 	message.SetString(language.English, "builder.doi.help", "e.g. 10.1093/plcell/koc126")
 	message.SetString(language.English, "builder.year.help", "e.g. 2022")
-	message.SetString(language.English, "builder.identifier_type.help", "More information about <a href=\"https://www.ugent.be/en/research/datamanagement/after-research/fair-data.htm#FAIRconcepts\" target=\"_blank\">persistent identifiers.</a><br><a href=\"https://biblio.ugent.be/contact\" target=\"_blank\">Contact us</a> if your identifier is not in the list.")
+	message.SetString(language.English, "builder.identifier_type.help", "More information about <a href=\"https://www.ugent.be/en/research/datamanagement/after-research/fair-data.htm#FAIRconcepts\" target=\"_blank\">persistent identifiers.</a><br><a href=\"mailto:rdm.support@ugent.be" target=\"_blank\">Contact us</a> if your identifier is not in the list.")
 	message.SetString(language.English, "builder.identifier.help", "e.g. 1854/LU-01H03BX2HH1YNS0KJHBK0T1WYV")
 	message.SetString(language.English, "builder.other_license.help", "e.g. https://creativecommons.org/licenses/publicdomain/")
 	// message.SetString(language.English, "builder.file.other_license.help", "e.g. https://creativecommons.org/licenses/publicdomain/")
