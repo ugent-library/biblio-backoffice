@@ -2,6 +2,7 @@ package publicationediting
 
 import (
 	"errors"
+	"html/template"
 	"net/http"
 
 	"github.com/ugent-library/biblio-backoffice/internal/app/displays"
@@ -135,7 +136,7 @@ func conferenceForm(l *locale.Locale, publication *models.Publication, errors va
 				Value: publication.ConferenceStartDate,
 				Label: l.T("builder.conference.start_date"),
 				Cols:  3,
-				Help:  l.T("builder.conference.start_date.help"),
+				Help:  template.HTML(l.T("builder.conference.start_date.help")),
 				Error: localize.ValidationErrorAt(
 					l,
 					errors,
@@ -147,7 +148,7 @@ func conferenceForm(l *locale.Locale, publication *models.Publication, errors va
 				Value: publication.ConferenceEndDate,
 				Label: l.T("builder.conference.end_date"),
 				Cols:  3,
-				Help:  l.T("builder.conference.end_date.help"),
+				Help:  template.HTML(l.T("builder.conference.end_date.help")),
 				Error: localize.ValidationErrorAt(
 					l,
 					errors,
