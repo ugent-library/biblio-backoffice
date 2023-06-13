@@ -341,6 +341,47 @@ func (s *PersonWithOrganizationsService) GetPerson(id string) (*models.Person, e
 	return p, nil
 }
 
+type UserWithOrganizationsService struct {
+	UserService         UserService
+	OrganizationService OrganizationService
+}
+
+func (s *UserWithOrganizationsService) GetUser(id string) (*models.User, error) {
+	u, err := s.UserService.GetUser(id)
+	if err != nil {
+		return nil, err
+	}
+	for _, a := range u.Affiliations {
+		o, err := s.OrganizationService.GetOrganization(a.OrganizationID)
+		if err == ErrNotFound {
+			a.Organization = NewDummyOrganization(a.OrganizationID)
+		} else if err != nil {
+			return nil, err
+		} else {
+			a.Organization = o
+		}
+	}
+	return u, nil
+}
+
+func (s *UserWithOrganizationsService) GetUserByUsername(username string) (*models.User, error) {
+	u, err := s.UserService.GetUserByUsername(username)
+	if err != nil {
+		return nil, err
+	}
+	for _, a := range u.Affiliations {
+		o, err := s.OrganizationService.GetOrganization(a.OrganizationID)
+		if err == ErrNotFound {
+			a.Organization = NewDummyOrganization(a.OrganizationID)
+		} else if err != nil {
+			return nil, err
+		} else {
+			a.Organization = o
+		}
+	}
+	return u, nil
+}
+
 // TODO remove this when we always have an uptodate db of organizations
 func NewDummyOrganization(id string) *models.Organization {
 	return &models.Organization{

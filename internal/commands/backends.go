@@ -87,6 +87,12 @@ func newServices() *backends.Services {
 
 	organizationService := caching.NewOrganizationService(authorityClient)
 
+	// always add organization info to user affiliations
+	userService := &backends.UserWithOrganizationsService{
+		UserService:         caching.NewUserService(authorityClient),
+		OrganizationService: organizationService,
+	}
+
 	// always add organization info to person affiliations
 	personService := &backends.PersonWithOrganizationsService{
 		PersonService:       caching.NewPersonService(authorityClient),
@@ -112,7 +118,7 @@ func newServices() *backends.Services {
 		OrganizationService:       organizationService,
 		PersonService:             personService,
 		ProjectService:            projectService,
-		UserService:               caching.NewUserService(authorityClient),
+		UserService:               userService,
 		OrganizationSearchService: authorityClient,
 		PersonSearchService:       authorityClient,
 		ProjectSearchService:      authorityClient,
