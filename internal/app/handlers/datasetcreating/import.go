@@ -221,7 +221,7 @@ func (h *Handler) AddSaveDraft(w http.ResponseWriter, r *http.Request, ctx Conte
 		WithLevel("success").
 		WithBody(template.HTML("<p>Dataset successfully saved as a draft.</p>"))
 
-	h.AddSessionFlash(r, w, *flash)
+	h.AddFlash(r, w, *flash)
 
 	redirectURL := h.PathFor("datasets")
 	w.Header().Set("HX-Redirect", redirectURL.String())
