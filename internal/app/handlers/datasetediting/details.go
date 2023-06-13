@@ -3,6 +3,7 @@ package datasetediting
 import (
 	"encoding/json"
 	"errors"
+	"html/template"
 	"net/http"
 
 	"github.com/ugent-library/biblio-backoffice/internal/app/displays"
@@ -185,7 +186,7 @@ func detailsForm(l *locale.Locale, d *models.Dataset, errors validation.Errors) 
 				Label:       l.T("builder.identifier_type"),
 				Options:     identifierTypeOptions,
 				Cols:        3,
-				Help:        l.T("builder.identifier_type.help"),
+				Help:        template.HTML(l.T("builder.identifier_type.help")),
 				Error:       localize.ValidationErrorAt(l, errors, "/identifier"),
 				EmptyOption: true,
 				Required:    true,
@@ -196,7 +197,7 @@ func detailsForm(l *locale.Locale, d *models.Dataset, errors validation.Errors) 
 				Required: true,
 				Label:    l.T("builder.identifier"),
 				Cols:     3,
-				Help:     l.T("builder.identifier.help"),
+				Help:     template.HTML(l.T("builder.identifier.help")),
 				Error:    localize.ValidationErrorAt(l, errors, "/identifier"),
 				Tooltip:  l.T("tooltip.dataset.identifier"),
 			},
@@ -216,7 +217,7 @@ func detailsForm(l *locale.Locale, d *models.Dataset, errors validation.Errors) 
 				Value:    d.Year,
 				Label:    l.T("builder.year"),
 				Cols:     3,
-				Help:     l.T("builder.year.help"),
+				Help:     template.HTML(l.T("builder.year.help")),
 				Error:    localize.ValidationErrorAt(l, errors, "/year"),
 				Required: true,
 			},
@@ -271,7 +272,7 @@ func detailsForm(l *locale.Locale, d *models.Dataset, errors validation.Errors) 
 				Value:    d.OtherLicense,
 				Label:    l.T("builder.other_license"),
 				Cols:     9,
-				Help:     l.T("builder.other_license.help"),
+				Help:     template.HTML(l.T("builder.other_license.help")),
 				Error:    localize.ValidationErrorAt(l, errors, "/other_license"),
 				Required: true,
 			},
