@@ -40,14 +40,17 @@ func DatasetDetails(user *models.User, l *locale.Locale, d *models.Dataset) *dis
 			},
 		).
 		AddSection(
-			&display.Text{
-				Label:    l.T("builder.publisher"),
-				Value:    d.Publisher,
-				Required: true,
-			},
+			&display.List{
+				Label:  l.T("builder.language"),
+				Values: localize.LanguageNames(l, d.Language)},
 			&display.Text{
 				Label:    l.T("builder.year"),
 				Value:    d.Year,
+				Required: true,
+			},
+			&display.Text{
+				Label:    l.T("builder.publisher"),
+				Value:    d.Publisher,
 				Required: true,
 			},
 		).
@@ -63,9 +66,6 @@ func DatasetDetails(user *models.User, l *locale.Locale, d *models.Dataset) *dis
 				Values:        d.Keyword,
 				ValueTemplate: "format/badge",
 			},
-			&display.List{
-				Label:  l.T("builder.language"),
-				Values: localize.LanguageNames(l, d.Language)},
 		).
 		AddSection(
 			&display.Text{
