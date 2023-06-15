@@ -330,7 +330,7 @@ func (s *Store) GetByID(ids []string, o Options) (*Cursor, error) {
 	pgIds := &pgtype.TextArray{}
 	pgIds.Set(ids)
 	sql := "SELECT snapshot_id, id, data, date_from, date_until FROM " + s.table +
-		" WHERE date_until IS NULL AND id = any($1)"
+		" WHERE date_until IS NULL AND id = any($1) order by array_position($1, id)"
 
 	rows, err := db.Query(ctx, sql, pgIds)
 	if err != nil {
