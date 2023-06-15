@@ -90,8 +90,7 @@
 
                 {{with .Publication.Author}}{{partial "shared/contributors" (dict "Contributors" . "ContributorsURL" ($.PublicationURL | querySet "show" "contributors"))}}{{end}}
 
-                {{with .Publication.Department}}{{partial "shared/departments" (dict "Departments" . "ContributorsURL" ($.PublicationURL | querySet "show" "contributors"))}}{{end}}
-
+                {{with .Publication.RelatedOrganizations}}{{partial "shared/related_organizations" (dict "RelatedOrganizations" . "ContributorsURL" ($.PublicationURL | querySet "show" "contributors"))}}{{end}}
 
                 <div class="bc-toolbar bc-toolbar-responsive">
                     <div class="bc-toolbar-left">

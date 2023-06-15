@@ -10,3 +10,8 @@ type Project struct {
 	StartDate   string     `json:"start_date,omitempty"`
 	Title       string     `json:"title,omitempty"`
 }
+
+type RelatedProject struct {
+	ProjectID string   `json:"project_id,omitempty"`
+	Project   *Project `json:"-"`
+}

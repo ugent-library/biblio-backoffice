@@ -4,12 +4,10 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"os"
 	"path"
 	"strings"
 	"sync"
 
-	"github.com/elastic/go-elasticsearch/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backoffice/internal/backends"
@@ -56,11 +54,7 @@ func Services() *backends.Services {
 func newServices() *backends.Services {
 	authorityClient, authorityClientErr := authority.New(authority.Config{
 		MongoDBURI: viper.GetString("mongodb-url"),
-		ES6Config: es6.Config{
-			ClientConfig: elasticsearch.Config{
-				Addresses: strings.Split(viper.GetString("frontend-es6-url"), ","),
-			},
-		},
+		ESURI:      strings.Split(viper.GetString("frontend-es6-url"), ","),
 	})
 	if authorityClientErr != nil {
 		panic(authorityClientErr)
@@ -91,19 +85,40 @@ func newServices() *backends.Services {
 
 	logger := newLogger()
 
+	organizationService := caching.NewOrganizationService(authorityClient)
+
+	// always add organization info to user affiliations
+	userService := &backends.UserWithOrganizationsService{
+		UserService:         caching.NewUserService(authorityClient),
+		OrganizationService: organizationService,
+	}
+
+	// always add organization info to person affiliations
+	personService := &backends.PersonWithOrganizationsService{
+		PersonService:       caching.NewPersonService(authorityClient),
+		OrganizationService: organizationService,
+	}
+
 	projectService := caching.NewProjectService(authorityClient)
 
+	repo := newRepository(logger, personService, organizationService, projectService)
+
+	searchService := newSearchService(logger)
+
 	return &backends.Services{
-		FileStore:                 newFileStore(),
-		ORCIDSandbox:              orcidConfig.Sandbox,
-		ORCIDClient:               orcidClient,
-		Repository:                newRepository(logger, projectService),
-		DatasetSearchService:      newDatasetSearchService(),
-		PublicationSearchService:  newPublicationSearchService(),
-		OrganizationService:       caching.NewOrganizationService(authorityClient),
-		PersonService:             caching.NewPersonService(authorityClient),
+		FileStore:              newFileStore(),
+		ORCIDSandbox:           orcidConfig.Sandbox,
+		ORCIDClient:            orcidClient,
+		Repository:             repo,
+		SearchService:          searchService,
+		DatasetSearchIndex:     searchService.NewDatasetIndex(repo),
+		PublicationSearchIndex: searchService.NewPublicationIndex(repo),
+		// DatasetSearchService:      backends.NewDatasetSearchService(newDatasetSearchService(), repo),
+		// PublicationSearchService:  backends.NewPublicationSearchService(newPublicationSearchService(), repo),
+		OrganizationService:       organizationService,
+		PersonService:             personService,
 		ProjectService:            projectService,
-		UserService:               caching.NewUserService(authorityClient),
+		UserService:               userService,
 		OrganizationSearchService: authorityClient,
 		PersonSearchService:       authorityClient,
 		ProjectSearchService:      authorityClient,
@@ -136,12 +151,10 @@ func newServices() *backends.Services {
 		PublicationListExporters: map[string]backends.PublicationListExporterFactory{
 			"xlsx": excel_publication.NewExporter,
 		},
-		PublicationSearcherService: newPublicationSearcherService(),
 		DatasetListExporters: map[string]backends.DatasetListExporterFactory{
 			"xlsx": excel_dataset.NewExporter,
 		},
-		DatasetSearcherService: newDatasetSearcherService(),
-		HandleService:          handleService,
+		HandleService: handleService,
 	}
 }
 
@@ -166,7 +179,7 @@ func newLogger() *zap.SugaredLogger {
 	return sugar
 }
 
-func newRepository(logger *zap.SugaredLogger, projectService backends.ProjectService) backends.Repository {
+func newRepository(logger *zap.SugaredLogger, personService backends.PersonService, organizationService backends.OrganizationService, projectService backends.ProjectService) backends.Repository {
 	ctx := context.Background()
 
 	bp := newPublicationBulkIndexerService(logger)
@@ -192,6 +205,148 @@ func newRepository(logger *zap.SugaredLogger, projectService backends.ProjectSer
 						logger.Errorf("error indexing dataset %s: %w", d.ID, err)
 					}
 				}
+			},
+		},
+
+		PublicationLoaders: []repository.PublicationVisitor{
+			func(p *models.Publication) error {
+				if p.CreatorID != "" {
+					person, err := personService.GetPerson(p.CreatorID)
+					if err != nil {
+						logger.Warnf("error loading person %s in publication %s:, %w", p.CreatorID, p.ID, err)
+						p.Creator = backends.NewDummyPerson(p.CreatorID)
+					} else {
+						p.Creator = person
+					}
+				}
+				if p.UserID != "" {
+					person, err := personService.GetPerson(p.UserID)
+					if err != nil {
+						logger.Warnf("error loading person %s in publication %s:, %w", p.UserID, p.ID, err)
+						p.User = backends.NewDummyPerson(p.UserID)
+					} else {
+						p.User = person
+					}
+				}
+				if p.LastUserID != "" {
+					person, err := personService.GetPerson(p.LastUserID)
+					if err != nil {
+						logger.Warnf("error loading person %s in publication %s:, %w", p.LastUserID, p.ID, err)
+						p.LastUser = backends.NewDummyPerson(p.LastUserID)
+					} else {
+						p.LastUser = person
+					}
+				}
+
+				for _, role := range []string{"author", "editor", "supervisor"} {
+					for _, c := range p.Contributors(role) {
+						if c.PersonID == "" {
+							continue
+						}
+						person, err := personService.GetPerson(c.PersonID)
+						if err != nil {
+							logger.Warnf("error loading person %s in publication %s:, %w", c.PersonID, p.ID, err)
+							c.Person = backends.NewDummyPerson(c.PersonID)
+						} else {
+							c.Person = person
+						}
+					}
+				}
+				return nil
+			},
+			func(p *models.Publication) error {
+				for _, rel := range p.RelatedOrganizations {
+					org, err := organizationService.GetOrganization(rel.OrganizationID)
+					if err != nil {
+						rel.Organization = backends.NewDummyOrganization(rel.OrganizationID)
+					} else {
+						rel.Organization = org
+					}
+				}
+				return nil
+			},
+			func(p *models.Publication) error {
+				for _, rel := range p.RelatedProjects {
+					project, err := projectService.GetProject(rel.ProjectID)
+					if err != nil {
+						logger.Warnf("error loading project %s in publication %s:, %w", rel.ProjectID, p.ID, err)
+						rel.Project = backends.NewDummyProject(rel.ProjectID)
+					} else {
+						rel.Project = project
+					}
+				}
+				return nil
+			},
+		},
+
+		DatasetLoaders: []repository.DatasetVisitor{
+			func(d *models.Dataset) error {
+				if d.CreatorID != "" {
+					person, err := personService.GetPerson(d.CreatorID)
+					if err != nil {
+						logger.Warnf("error loading person %s in dataset %s:, %w", d.CreatorID, d.ID, err)
+						d.Creator = backends.NewDummyPerson(d.CreatorID)
+					} else {
+						d.Creator = person
+					}
+				}
+				if d.UserID != "" {
+					person, err := personService.GetPerson(d.UserID)
+					if err != nil {
+						logger.Warnf("error loading person %s in dataset %s:, %w", d.UserID, d.ID, err)
+						d.User = backends.NewDummyPerson(d.UserID)
+					} else {
+						d.User = person
+					}
+				}
+				if d.LastUserID != "" {
+					person, err := personService.GetPerson(d.LastUserID)
+					if err != nil {
+						logger.Warnf("error loading person %s in dataset %s:, %w", d.LastUserID, d.ID, err)
+						d.LastUser = backends.NewDummyPerson(d.LastUserID)
+					} else {
+						d.LastUser = person
+					}
+				}
+
+				for _, role := range []string{"author", "contributor"} {
+					for _, c := range d.Contributors(role) {
+						if c.PersonID == "" {
+							continue
+						}
+						person, err := personService.GetPerson(c.PersonID)
+						if err != nil {
+							logger.Warnf("error loading person %s in dataset %s:, %w", c.PersonID, d.ID, err)
+							c.Person = backends.NewDummyPerson(c.PersonID)
+						} else {
+							c.Person = person
+						}
+					}
+				}
+				return nil
+			},
+			func(d *models.Dataset) error {
+				for _, rel := range d.RelatedOrganizations {
+					org, err := organizationService.GetOrganization(rel.OrganizationID)
+					if err != nil {
+						rel.Organization = backends.NewDummyOrganization(rel.OrganizationID)
+					} else {
+						rel.Organization = org
+					}
+				}
+				return nil
+			},
+			func(d *models.Dataset) error {
+				for _, rel := range d.RelatedProjects {
+					project, err := projectService.GetProject(rel.ProjectID)
+					if err != nil {
+						logger.Warnf("error loading project %s in dataset %s:, %w", rel.ProjectID, d.ID, err)
+						rel.Project = backends.NewDummyProject(rel.ProjectID)
+					} else {
+						rel.Project = project
+					}
+				}
+				return nil
 			},
 		},
 
@@ -240,58 +395,32 @@ func newFileStore() backends.FileStore {
 	return store
 }
 
-func newEs6Client(t string) *es6.Client {
-	settings, err := os.ReadFile("etc/es6/" + t + ".json")
-	if err != nil {
-		log.Fatal(err)
+func newSearchService(logger *zap.SugaredLogger) backends.SearchService {
+	config := es6.SearchServiceConfig{
+		Addresses:        viper.GetString("es6-url"),
+		PublicationIndex: viper.GetString("publication-index"),
+		DatasetIndex:     viper.GetString("dataset-index"),
+		IndexRetention:   viper.GetInt("index-retention"),
 	}
-	client, err := es6.New(es6.Config{
-		ClientConfig: elasticsearch.Config{
-			Addresses: strings.Split(viper.GetString("es6-url"), ","),
-		},
-		Index:          viper.GetString(t + "-index"),
-		Settings:       string(settings),
-		IndexRetention: viper.GetInt("index-retention"),
-	})
+
+	s, err := es6.NewSearchService(config)
+
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatalln("unable to create search service", err)
 	}
-	return client
-}
 
-func newPublicationSearchService() backends.PublicationSearchService {
-	es6Client := newEs6Client("publication")
-	return es6.NewPublications(*es6Client)
-
-}
-
-func newDatasetSearchService() backends.DatasetSearchService {
-	es6Client := newEs6Client("dataset")
-	return es6.NewDatasets(*es6Client)
-
-}
-
-func newPublicationSearcherService() backends.PublicationSearcherService {
-	es6Client := newEs6Client("publication")
-	//max size of exportable records is now 10K. Make configurable
-	return es6.NewPublicationSearcher(*es6Client, 10000)
-}
-
-func newDatasetSearcherService() backends.DatasetSearcherService {
-	es6Client := newEs6Client("dataset")
-	//max size of exportable records is now 10K. Make configurable
-	return es6.NewDatasetSearcher(*es6Client, 10000)
+	return s
 }
 
 func newPublicationBulkIndexerService(logger *zap.SugaredLogger) backends.BulkIndexer[*models.Publication] {
 	ctx := context.Background()
 
-	bp, err := newPublicationSearchService().NewBulkIndexer(backends.BulkIndexerConfig{
+	bp, err := newSearchService(logger).NewPublicationBulkIndexer(backends.BulkIndexerConfig{
 		OnError: func(err error) {
 			logger.Errorf("Indexing failed : %s", err)
 		},
 		OnIndexError: func(id string, err error) {
-			logger.Errorf("Indexing failed for dataset [id: %s] : %s", id, err)
+			logger.Errorf("Indexing failed for publication [id: %s] : %s", id, err)
 		},
 	})
 
@@ -312,7 +441,7 @@ func newPublicationBulkIndexerService(logger *zap.SugaredLogger) backends.BulkIn
 func newDatasetBulkIndexerService(logger *zap.SugaredLogger) backends.BulkIndexer[*models.Dataset] {
 	ctx := context.Background()
 
-	bd, err := newDatasetSearchService().NewBulkIndexer(backends.BulkIndexerConfig{
+	bd, err := newSearchService(logger).NewDatasetBulkIndexer(backends.BulkIndexerConfig{
 		OnError: func(err error) {
 			logger.Errorf("Indexing failed : %s", err)
 		},

@@ -8,46 +8,11 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/ugent-library/biblio-backoffice/internal/backends"
-	"github.com/ugent-library/biblio-backoffice/internal/backends/es6"
 	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"github.com/ugent-library/biblio-backoffice/internal/util"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
-
-func (c *Client) GetPersons(ids []string) ([]*models.Person, error) {
-	cursor, err := c.mongo.
-		Database("authority").
-		Collection("person").
-		Find(context.Background(), bson.M{
-			"ids": bson.M{
-				"$in": ids,
-			},
-		})
-
-	if err != nil {
-		return nil, err
-	}
-
-	var records []bson.M = make([]bson.M, 0)
-	if err := cursor.All(context.Background(), records); err != nil {
-		if err == mongo.ErrNoDocuments {
-			return []*models.Person{}, nil
-		}
-		return nil, err
-	}
-
-	var persons []*models.Person = make([]*models.Person, 0, len(records))
-	for _, record := range records {
-		person, personErr := c.recordToPerson(record)
-		if personErr != nil {
-			return nil, personErr
-		}
-		persons = append(persons, person)
-	}
-
-	return persons, nil
-}
 
 func (c *Client) GetPerson(id string) (*models.Person, error) {
 	var record bson.M
@@ -63,9 +28,9 @@ func (c *Client) GetPerson(id string) (*models.Person, error) {
 	return c.recordToPerson(record)
 }
 
-func (c *Client) SuggestPeople(q string) ([]models.Person, error) {
+func (c *Client) SuggestPeople(q string) ([]*models.Person, error) {
 	limit := 500
-	persons := make([]models.Person, 0, limit)
+	persons := make([]*models.Person, 0, limit)
 
 	// remove duplicate spaces
 	q = regexMultipleSpaces.ReplaceAllString(q, " ")
@@ -74,7 +39,7 @@ func (c *Client) SuggestPeople(q string) ([]models.Person, error) {
 	q = strings.TrimSpace(q)
 
 	qParts := strings.Split(q, " ")
-	queryMust := make([]es6.M, 0, len(qParts))
+	queryMust := make([]M, 0, len(qParts))
 
 	for _, qp := range qParts {
 
@@ -83,8 +48,8 @@ func (c *Client) SuggestPeople(q string) ([]models.Person, error) {
 			continue
 		}
 
-		queryMust = append(queryMust, es6.M{
-			"query_string": es6.M{
+		queryMust = append(queryMust, M{
+			"query_string": M{
 				"default_operator": "AND",
 				"query":            fmt.Sprintf("%s*", qp),
 				"default_field":    "all",
@@ -93,9 +58,9 @@ func (c *Client) SuggestPeople(q string) ([]models.Person, error) {
 		})
 	}
 
-	requestBody := es6.M{
-		"query": es6.M{
-			"bool": es6.M{
+	requestBody := M{
+		"query": M{
+			"bool": M{
 				"must": queryMust,
 			},
 		},
@@ -104,7 +69,7 @@ func (c *Client) SuggestPeople(q string) ([]models.Person, error) {
 
 	var responseBody personSearchEnvelope = personSearchEnvelope{}
 
-	if e := c.es.SearchWithBody("biblio_person", requestBody, &responseBody); e != nil {
+	if e := c.search("biblio_person", requestBody, &responseBody); e != nil {
 		return nil, e
 	}
 
@@ -118,7 +83,6 @@ func (c *Client) SuggestPeople(q string) ([]models.Person, error) {
 }
 
 func (c *Client) recordToPerson(record bson.M) (*models.Person, error) {
-
 	var person *models.Person = &models.Person{}
 
 	if v, e := record["_id"]; e {
@@ -139,7 +103,7 @@ func (c *Client) recordToPerson(record bson.M) (*models.Person, error) {
 	}
 	if v, e := record["ugent_department_id"]; e {
 		for _, i := range v.(bson.A) {
-			person.Department = append(person.Department, models.PersonDepartment{ID: util.ParseString(i)})
+			person.Affiliations = append(person.Affiliations, &models.Affiliation{OrganizationID: util.ParseString(i)})
 		}
 	}
 	if v, e := record["preferred_first_name"]; e {

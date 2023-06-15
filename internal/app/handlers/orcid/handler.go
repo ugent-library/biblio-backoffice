@@ -22,10 +22,10 @@ import (
 
 type Handler struct {
 	handlers.BaseHandler
-	Tasks                    *tasks.Hub
-	Repository               backends.Repository
-	PublicationSearchService backends.PublicationSearchService
-	Sandbox                  bool
+	Tasks                  *tasks.Hub
+	Repository             backends.Repository
+	PublicationSearchIndex backends.PublicationIndex
+	Sandbox                bool
 }
 
 type Context struct {
@@ -113,7 +113,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request, ctx Context) {
 func (h *Handler) AddAll(w http.ResponseWriter, r *http.Request, ctx Context) {
 	id, err := h.addPublicationsToORCID(
 		ctx.User,
-		models.NewSearchArgs().WithFilter("status", "public").WithFilter("author.id", ctx.User.ID),
+		models.NewSearchArgs().WithFilter("status", "public").WithFilter("author_id", ctx.User.ID),
 	)
 	if err != nil {
 		h.Logger.Errorw("add all orcid: could not add all publications to the users orcid", "user", ctx.User.ID)
@@ -176,7 +176,7 @@ func (h *Handler) sendPublicationsToORCIDTask(t tasks.Task, user *models.User, s
 	var numDone int
 
 	for {
-		hits, _ := h.PublicationSearchService.Search(searchArgs)
+		hits, _ := h.PublicationSearchIndex.Search(searchArgs)
 
 		for _, p := range hits.Hits {
 			numDone++
@@ -245,13 +245,13 @@ func publicationToORCID(p *models.Publication) *orcid.Work {
 	for _, role := range []string{"author", "editor"} {
 		for _, c := range p.Contributors(role) {
 			wc := orcid.Contributor{
-				CreditName: orcid.String(strings.Join([]string{c.FirstName, c.LastName}, " ")),
+				CreditName: orcid.String(c.Name()),
 				Attributes: &orcid.ContributorAttributes{
 					Role: strings.ToUpper(role),
 				},
 			}
-			if c.ORCID != "" {
-				wc.ORCID = &orcid.URI{Path: c.ORCID}
+			if c.Person != nil && c.Person.ORCID != "" {
+				wc.ORCID = &orcid.URI{Path: c.Person.ORCID}
 			}
 			if w.Contributors == nil {
 				w.Contributors = &orcid.Contributors{}

@@ -2,6 +2,7 @@ package publicationediting
 
 import (
 	"fmt"
+	"html/template"
 
 	"github.com/ugent-library/biblio-backoffice/internal/app/localize"
 	"github.com/ugent-library/biblio-backoffice/internal/locale"
@@ -26,7 +27,7 @@ func detailsForm(user *models.User, l *locale.Locale, p *models.Publication, err
 			Options:  localize.VocabularySelectOptions(l, "publication_types"),
 			Value:    p.Type,
 			Cols:     3,
-			Help:     l.T("builder.type.help"),
+			Help:     template.HTML(l.T("builder.type.help")),
 			Vars: struct {
 				Publication *models.Publication
 			}{
@@ -83,7 +84,7 @@ func detailsForm(user *models.User, l *locale.Locale, p *models.Publication, err
 			Label: l.T("builder.doi"),
 			Value: p.DOI,
 			Cols:  9,
-			Help:  l.T("builder.doi.help"),
+			Help:  template.HTML(l.T("builder.doi.help")),
 			Error: localize.ValidationErrorAt(l, errors, "/doi"),
 		})
 	}
@@ -219,7 +220,7 @@ func detailsForm(user *models.User, l *locale.Locale, p *models.Publication, err
 			Value:    p.Year,
 			Required: true,
 			Cols:     3,
-			Help:     l.T("builder.year.help"),
+			Help:     template.HTML(l.T("builder.year.help")),
 			Error:    localize.ValidationErrorAt(l, errors, "/year"),
 		})
 	}
@@ -356,7 +357,7 @@ func detailsForm(user *models.User, l *locale.Locale, p *models.Publication, err
 				Value:    p.DefenseDate,
 				Required: p.ShowDefenseAsRequired(),
 				Cols:     3,
-				Help:     l.T("builder.defense_date.help"),
+				Help:     template.HTML(l.T("builder.defense_date.help")),
 				Error:    localize.ValidationErrorAt(l, errors, "/defense_date"),
 			},
 			&form.Text{
@@ -428,7 +429,7 @@ func detailsForm(user *models.User, l *locale.Locale, p *models.Publication, err
 			Label: l.T("builder.wos_id"),
 			Value: p.WOSID,
 			Cols:  3,
-			Help:  l.T("builder.wos_id.help"),
+			Help:  template.HTML(l.T("builder.wos_id.help")),
 			Error: localize.ValidationErrorAt(l, errors, "/wos_id"),
 		})
 	}
@@ -440,7 +441,7 @@ func detailsForm(user *models.User, l *locale.Locale, p *models.Publication, err
 				Label:  l.T("builder.issn"),
 				Values: p.ISSN,
 				Cols:   3,
-				Help:   l.T("builder.issn.help"),
+				Help:   template.HTML(l.T("builder.issn.help")),
 				Error:  localize.ValidationErrorAt(l, errors, "/issn"),
 			},
 			&form.TextRepeat{
@@ -448,7 +449,7 @@ func detailsForm(user *models.User, l *locale.Locale, p *models.Publication, err
 				Label:  l.T("builder.eissn"),
 				Values: p.EISSN,
 				Cols:   3,
-				Help:   l.T("builder.eissn.help"),
+				Help:   template.HTML(l.T("builder.eissn.help")),
 				Error:  localize.ValidationErrorAt(l, errors, "/eissn"),
 			})
 	}
@@ -460,7 +461,7 @@ func detailsForm(user *models.User, l *locale.Locale, p *models.Publication, err
 				Label:  l.T("builder.isbn"),
 				Values: p.ISBN,
 				Cols:   3,
-				Help:   l.T("builder.isbn.help"),
+				Help:   template.HTML(l.T("builder.isbn.help")),
 				Error:  localize.ValidationErrorAt(l, errors, "/isbn"),
 			},
 			&form.TextRepeat{
@@ -468,7 +469,7 @@ func detailsForm(user *models.User, l *locale.Locale, p *models.Publication, err
 				Label:  l.T("builder.eisbn"),
 				Values: p.EISBN,
 				Cols:   3,
-				Help:   l.T("builder.eisbn.help"),
+				Help:   template.HTML(l.T("builder.eisbn.help")),
 				Error:  localize.ValidationErrorAt(l, errors, "/eisbn"),
 			})
 	}
@@ -479,7 +480,7 @@ func detailsForm(user *models.User, l *locale.Locale, p *models.Publication, err
 			Label: l.T("builder.pubmed_id"),
 			Value: p.PubMedID,
 			Cols:  3,
-			Help:  l.T("builder.pubmed_id.help"),
+			Help:  template.HTML(l.T("builder.pubmed_id.help")),
 			Error: localize.ValidationErrorAt(l, errors, "/pubmed_id"),
 		})
 	}
@@ -490,7 +491,7 @@ func detailsForm(user *models.User, l *locale.Locale, p *models.Publication, err
 			Label: l.T("builder.arxiv_id"),
 			Value: p.ArxivID,
 			Cols:  3,
-			Help:  l.T("builder.arxiv_id.help"),
+			Help:  template.HTML(l.T("builder.arxiv_id.help")),
 			Error: localize.ValidationErrorAt(l, errors, "/arxiv_id"),
 		})
 	}
@@ -501,7 +502,7 @@ func detailsForm(user *models.User, l *locale.Locale, p *models.Publication, err
 			Label: l.T("builder.esci_id"),
 			Value: p.ESCIID,
 			Cols:  3,
-			Help:  l.T("builder.esci_id.help"),
+			Help:  template.HTML(l.T("builder.esci_id.help")),
 			Error: localize.ValidationErrorAt(l, errors, "/esci_id"),
 		})
 	}

@@ -12,7 +12,7 @@ import (
 
 type Handler struct {
 	handlers.BaseHandler
-	DatasetSearchService backends.DatasetSearchService
+	DatasetSearchIndex backends.DatasetIndex
 }
 
 type Context struct {

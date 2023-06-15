@@ -70,10 +70,10 @@ func (h *Handler) Publish(w http.ResponseWriter, r *http.Request, ctx Context) {
 	}
 
 	flash := flash.SimpleFlash().
-		WithLevel("error").
+		WithLevel("success").
 		WithBody(template.HTML("<p>Publication was successfully published.</p>"))
 
-	h.AddSessionFlash(r, w, *flash)
+	h.AddFlash(r, w, *flash)
 
 	w.Header().Set("HX-Redirect", r.URL.Query().Get("redirect-url"))
 }

@@ -1,0 +1,95 @@
+﻿FN Clarivate Analytics Web of Science
+VR 1.0
+PT J
+AU Christodoulaki, A
+   He, H
+   Zhou, M
+   Barberan, AC
+   De Roo, C
+   Lopes, SMCD
+   Baetens, M
+   Menten, B
+   Van Soom, A
+   De Sutter, P
+   Weyers, S
+   Boel, A
+   Stoop, D
+   Heindryckx, B
+AF Christodoulaki, A.
+   He, H.
+   Zhou, M.
+   Barberan, A. Cardona
+   De Roo, C.
+   Lopes, S. M. Chuva De Sousa
+   Baetens, M.
+   Menten, B.
+   Van Soom, A.
+   De Sutter, P.
+   Weyers, S.
+   Boel, A.
+   Stoop, D.
+   Heindryckx, B.
+TI Characterization of ovarian tissue oocytes from transgender men reveals
+   poor calcium release and embryo development, which might be overcome by
+   spindle transfer [CYPRESSTEST]
+SO HUMAN REPRODUCTION
+LA English
+DT Article
+DE spindle transfer; fertility preservation; transgender men; testosterone
+   treatment; embryo arrest; embryo development; OTO-IVM; in vitro
+   maturation
+ID VITRO MATURED OOCYTES; NUCLEAR TRANSFER TECHNIQUES; FERTILITY
+   PRESERVATION; MITOCHONDRIAL-DNA; PRONUCLEAR TRANSFER; GENOME TRANSFER;
+   MEDULLA TISSUE; MATURATION; PREVENT; CRYOPRESERVATION
+AB STUDY QUESTION Can spindle transfer (ST) overcome inferior embryonic development of in vitro matured ovarian tissue oocytes (OTO-IVM) originating from testosterone-treated transgender men? SUMMARY ANSWER ST shows some potential to overcome the embryo developmental arrest observed in OTO-IVM oocytes from transgender men. WHAT IS KNOWN ALREADY OTO-IVM is being applied as a complementary approach to increase the number of oocytes/embryos available for fertility preservation during ovarian tissue cryopreservation in cancer patients. OTO-IVM has also been proposed for transgender men, although the potential of their oocytes remains poorly investigated. Currently, only one study has examined the ability of OTO-IVM oocytes originating from transgender men to support embryo development, and that study has shown that they exhibit poor potential. STUDY DESIGN, SIZE, DURATION Both ovaries from 18 transgender men undergoing oophorectomy were collected for the purposes of this study, from November 2020 to September 2022. The patients did not wish to cryopreserve their tissue for fertility preservation and donated their ovaries for research. All patients were having testosterone treatment at the time of oophorectomy and some of them were also having menses inhibition treatment. PARTICIPANTS/MATERIALS, SETTING, METHODS Sibling ovaries were collected in either cold or warm medium, to identify the most optimal collection temperature. Cumulus oocyte complexes (COCs) from each condition were isolated from the ovarian tissue and matured in vitro for 48 h. The quality of OTO-IVM oocytes was assessed by calcium pattern releasing ability, embryo developmental competence following ICSI, and staining for mitochondrial membrane potential. In vitro matured metaphase I (MI) oocytes, germinal vesicle (GV) oocytes, and in vivo matured oocytes with aggregates of smooth endoplasmic reticulum (SERa) were donated from ovarian stimulated women undergoing infertility treatment and these served as Control oocytes for the study groups. ST was applied to overcome poor oocyte quality. Specifically, enucleated mature Control oocytes served as cytoplasmic recipients of the OTO-IVM spindles from the transgender men. Embryos derived from the different groups were scored and analysed by shallow whole genome sequencing for copy number variations (CNVs). MAIN RESULTS AND THE ROLE OF CHANCE In total, 331 COCs were collected in the cold condition (OTO-Cold) and 282 were collected in the warm condition (OTO-Warm) from transgender men. The maturation rate was close to 54% for OTO-Cold and 57% for OTO-Warm oocytes. Control oocytes showed a calcium releasing ability of 2.30 AU (n = 39), significantly higher than OTO-Cold (1.47 AU, P = 0.046) oocytes (n = 33) and OTO-Warm (1.03 AU, P = 0.036) oocytes (n = 31); both values of calcium release were similar between the two collection temperatures. Mitochondrial membrane potential did not reveal major differences between Control, OTO-Warm, and OTO-Cold oocytes (P = 0.417). Following ICSI, 59/70 (84.2%) of Control oocytes were fertilized, which was significantly higher compared to 19/47 (40.4%) of OTO-Cold (P < 0.01) and 24/48 (50%) of OTO-Warm oocytes (P < 0.01). In total, 15/59 (25.4%) blastocysts were formed on Day 5 in the Control group, significantly higher than 0/19 (0%) from the OTO-Cold (P = 0.014) and 1/24 (4.1%) in OTO-Warm oocytes (P = 0.026). Application of ST rescued the poor embryo development, by increasing the Day 5 blastocyst rate from 0% (0/19) to 20.6% (6/29) (P = 0.034), similar to that in the ICSI-Control group (25.
+   4%, 15/59).
+   A normal genetic profile was observed in 72.7% (8/11) of OTO-Cold, 72.7% (8/11) of OTO-Warm and 64.7% (11/17) of Control Day 3-Day 5 embryos. After ST was applied for OTO-IVM oocytes, 41.1% (7/17) of the embryos displayed normal genetic patterns, compared to 57.1% (4/7) among ST-Control Day 3-Day 5 embryos. LARGE SCALE DATA N/A. LIMITATIONS, REASONS FOR CAUTION Due to the limited access to human oocytes and ovarian tissue, our results should be interpreted with some caution, as only a limited number of human oocytes and embryos could be investigated. WIDER IMPLICATIONS OF THE FINDINGS The results of this study, clearly indicate that OTO-IVM oocytes originating from transgender patients are of inferior quality, which questions their use for fertility preservation. The poor quality is likely to be related to cytoplasmic factors, supported by the increased blastocyst numbers following application of ST. Future research on OTO-IVM from transgender men should focus on the cytoplasmic content of oocytes or supplementation of media with factors that promote cytoplasmic maturation. A more detailed study on the effect of the length of testosterone treatment is also currently missing for more concrete guidelines and guidance on the fertility options of transgender men. Furthermore, our study suggests a potentially beneficial role of experimental ST in overcoming poor embryo development related to cytoplasmic quality. STUDY FUNDING/COMPETING INTEREST(S) A.C. is a holder of FWO grants (1S80220N and 1S80222N). A.B. is a holder of an FWO grant (1298722N). B.H. and A.V.S. have been awarded with a special BOF (Bijzonder Onderzoeksfonds), GOA (Geconcerteerde onderzoeksacties) and 2018000504 (GOA030-18 BOF) funding. B.H. has additional grants from FWO-Vlaanderen (Flemish Fund for Scientific Research, G051516N and G1507816N) and Ghent University Special Research Fund (Bijzonder Onderzoeksfonds, BOF funding (BOF/STA/202109/005)), and has been receiving unrestricted educational funding from Ferring Pharmaceuticals (Aalst, Belgium). The authors declare that they have no conflict of interest.
+C1 [Christodoulaki, A.; He, H.; Zhou, M.; Barberan, A. Cardona; De Roo, C.; Lopes, S. M. Chuva De Sousa; De Sutter, P.; Boel, A.; Stoop, D.; Heindryckx, B.] Ghent Univ Hosp, Dept Reprod Med, Ghent Fertil & Stem Cell Team G FAST, Ghent, Belgium.
+   [Christodoulaki, A.; He, H.; Zhou, M.; Barberan, A. Cardona; De Roo, C.; Lopes, S. M. Chuva De Sousa; De Sutter, P.; Boel, A.; Stoop, D.; Heindryckx, B.] Univ Ghent, Dept Human Struct & Repair, Ghent, Belgium.
+   [De Roo, C.; Weyers, S.; Stoop, D.] Ghent Univ Hosp, Dept Obstet & Gynecol, Womens Clin, Ghent, Belgium.
+   [Lopes, S. M. Chuva De Sousa] Leiden Univ, Med Ctr, Dept Anat & Embryol, Leiden, Netherlands.
+   [Baetens, M.; Menten, B.] Ghent Univ Hosp, Ctr Med Genet Ghent CMGG, Dept Biomol Med, Ghent, Belgium.
+   [Van Soom, A.] Univ Ghent, Fac Vet Med, Dept Reprod Obstet & Herd Hlth, Merelbeke, Belgium.
+C3 Ghent University; Ghent University Hospital; Ghent University; Ghent
+   University; Ghent University Hospital; Leiden University; Leiden
+   University Medical Center (LUMC); Leiden University - Excl LUMC; Ghent
+   University; Ghent University Hospital; Ghent University
+RP Heindryckx, B (corresponding author), Ghent Univ Hosp, Dept Reprod Med, Dept Human Struct & Repair, Ghent Fertil & Stem Cell Team G FAST, Corneel Heymanslaan 10, B-9000 Ghent, Belgium.
+EM bjorn.heindryckx@ugent.be
+RI Christodoulaki, Antonia/IQU-9471-2023
+OI Christodoulaki, Antonia/0000-0003-4292-5311; heindryckx,
+   bjorn/0000-0003-0630-8420; Menten, Bjorn/0000-0001-8182-659X; Cardona
+   Barberan, Arantxa/0000-0002-3136-8946; De Roo,
+   Chloe/0000-0002-6623-3283; Van Soom, Ann/0000-0001-5010-6311; Boel,
+   Annekatrien/0000-0003-3256-7020
+NR 76
+TC 0
+Z9 0
+U1 5
+U2 5
+PU OXFORD UNIV PRESS
+PI OXFORD
+PA GREAT CLARENDON ST, OXFORD OX2 6DP, ENGLAND
+SN 0268-1161
+EI 1460-2350
+J9 HUM REPROD
+JI Hum. Reprod.
+PD JUN 1
+PY 2023
+VL 38
+IS 6
+BP 1135
+EP 1150
+DI 10.1093/humrep/dead068
+EA APR 2023
+PG 16
+WC Obstetrics & Gynecology; Reproductive Biology
+WE Science Citation Index Expanded (SCI-EXPANDED)
+SC Obstetrics & Gynecology; Reproductive Biology
+GA H7BI7
+UT WOS:000963572100001
+PM 37029914
+DA 2023-06-12
+ER
+
+EF

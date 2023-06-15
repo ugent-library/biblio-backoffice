@@ -3,6 +3,7 @@ package datasetediting
 import (
 	"encoding/json"
 	"errors"
+	"html/template"
 	"net/http"
 
 	"github.com/ugent-library/biblio-backoffice/internal/app/displays"
@@ -185,6 +186,7 @@ func detailsForm(l *locale.Locale, d *models.Dataset, errors validation.Errors) 
 				Label:       l.T("builder.identifier_type"),
 				Options:     identifierTypeOptions,
 				Cols:        3,
+				Help:        template.HTML(l.T("builder.identifier_type.help")),
 				Error:       localize.ValidationErrorAt(l, errors, "/identifier"),
 				EmptyOption: true,
 				Required:    true,
@@ -195,10 +197,30 @@ func detailsForm(l *locale.Locale, d *models.Dataset, errors validation.Errors) 
 				Required: true,
 				Label:    l.T("builder.identifier"),
 				Cols:     3,
+				Help:     template.HTML(l.T("builder.identifier.help")),
 				Error:    localize.ValidationErrorAt(l, errors, "/identifier"),
+				Tooltip:  l.T("tooltip.dataset.identifier"),
 			},
 		).
 		AddSection(
+			&form.SelectRepeat{
+				Name:        "language",
+				Label:       l.T("builder.language"),
+				Options:     localize.LanguageSelectOptions(l),
+				Values:      d.Language,
+				EmptyOption: true,
+				Cols:        9,
+				Error:       localize.ValidationErrorAt(l, errors, "/language"),
+			},
+			&form.Text{
+				Name:     "year",
+				Value:    d.Year,
+				Label:    l.T("builder.year"),
+				Cols:     3,
+				Help:     template.HTML(l.T("builder.year.help")),
+				Error:    localize.ValidationErrorAt(l, errors, "/year"),
+				Required: true,
+			},
 			&form.Text{
 				Name:     "publisher",
 				Value:    d.Publisher,
@@ -207,15 +229,6 @@ func detailsForm(l *locale.Locale, d *models.Dataset, errors validation.Errors) 
 				Error:    localize.ValidationErrorAt(l, errors, "/publisher"),
 				Required: true,
 				Tooltip:  l.T("tooltip.dataset.publisher"),
-			},
-			&form.Text{
-				Name:     "year",
-				Value:    d.Year,
-				Label:    l.T("builder.year"),
-				Cols:     3,
-				Help:     l.T("builder.year.help"),
-				Error:    localize.ValidationErrorAt(l, errors, "/year"),
-				Required: true,
 			},
 		).
 		AddSection(
@@ -236,15 +249,6 @@ func detailsForm(l *locale.Locale, d *models.Dataset, errors validation.Errors) 
 				Label:    l.T("builder.keyword"),
 				Cols:     9,
 				Error:    localize.ValidationErrorAt(l, errors, "/keyword"),
-			},
-			&form.SelectRepeat{
-				Name:        "language",
-				Label:       l.T("builder.language"),
-				Options:     localize.LanguageSelectOptions(l),
-				Values:      d.Language,
-				EmptyOption: true,
-				Cols:        9,
-				Error:       localize.ValidationErrorAt(l, errors, "/language"),
 			},
 		)
 
@@ -268,7 +272,7 @@ func detailsForm(l *locale.Locale, d *models.Dataset, errors validation.Errors) 
 				Value:    d.OtherLicense,
 				Label:    l.T("builder.other_license"),
 				Cols:     9,
-				Help:     l.T("builder.other_license.help"),
+				Help:     template.HTML(l.T("builder.other_license.help")),
 				Error:    localize.ValidationErrorAt(l, errors, "/other_license"),
 				Required: true,
 			},

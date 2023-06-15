@@ -33,7 +33,7 @@ var facetDefinitions = map[string]facetDefinition{
 	"wos_type": {
 		config: M{
 			"terms": M{
-				"field":         "facet_wos_type",
+				"field":         "wos_type",
 				"order":         M{"_key": "asc"},
 				"size":          999,
 				"min_doc_count": 0,
@@ -61,8 +61,8 @@ var fixedFacetValues = map[string][]string{
 	//"publication_statuses" includes "deleted"
 	"classification":     vocabularies.Map["publication_classifications"],
 	"extern":             {"true", "false"},
-	"faculty":            vocabularies.Map["faculties"],
-	"file.relation":      vocabularies.Map["publication_file_relations"],
+	"faculty_id":         vocabularies.Map["faculties"],
+	"file_relation":      vocabularies.Map["publication_file_relations"],
 	"has_message":        {"true", "false"},
 	"legacy":             {"true", "false"},
 	"locked":             {"true", "false"},
@@ -70,50 +70,6 @@ var fixedFacetValues = map[string][]string{
 	"status":             vocabularies.Map["visible_publication_statuses"],
 	"type":               vocabularies.Map["publication_types"],
 	"vabb_type":          vocabularies.Map["publication_vabb_types"],
-}
-
-// filter without facet values
-var RegularPublicationFilters = []map[string]string{
-	{
-		"name":  "created_since",
-		"field": "date_created",
-		"type":  "date_since",
-	},
-	{
-		"name":  "updated_since",
-		"field": "date_updated",
-		"type":  "date_since",
-	},
-}
-
-var RegularDatasetFilters = []map[string]string{
-	{
-		"name":  "created_since",
-		"field": "date_created",
-		"type":  "date_since",
-	},
-	{
-		"name":  "updated_since",
-		"field": "date_updated",
-		"type":  "date_since",
-	},
-}
-
-func getRegularPublicationFilter(name string, values ...string) models.Filterable {
-	for _, cf := range RegularPublicationFilters {
-		if cf["name"] == name {
-			return ToTypeFilter(cf["type"], cf["name"], cf["field"], values...)
-		}
-	}
-	return nil
-}
-func getRegularDatasetFilter(name string, values ...string) models.Filterable {
-	for _, cf := range RegularPublicationFilters {
-		if cf["name"] == name {
-			return ToTypeFilter(cf["type"], cf["name"], cf["field"], values...)
-		}
-	}
-	return nil
 }
 
 func reorderFacets(t string, facets []models.Facet) []models.Facet {

@@ -19,7 +19,7 @@ type Handler struct {
 	PersonSearchService       backends.PersonSearchService
 	OrganizationSearchService backends.OrganizationSearchService
 	OrganizationService       backends.OrganizationService
-	DatasetSearchService      backends.DatasetSearchService
+	DatasetSearchIndex        backends.DatasetIndex
 	FileStore                 backends.FileStore
 	MaxFileSize               int
 }

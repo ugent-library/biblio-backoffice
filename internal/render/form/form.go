@@ -109,7 +109,7 @@ type Text struct {
 	ID              string
 	Label           string
 	Name            string
-	Help            string
+	Help            template.HTML
 	Readonly        bool
 	Required        bool
 	Template        string
@@ -136,7 +136,7 @@ type TextRepeat struct {
 	ID              string
 	Label           string
 	Name            string
-	Help            string
+	Help            template.HTML
 	Readonly        bool
 	Required        bool
 	Template        string
@@ -158,7 +158,7 @@ type TextArea struct {
 	Error    string
 	Label    string
 	Name     string
-	Help     string
+	Help     template.HTML
 	Required bool
 	Rows     int
 	Template string
@@ -180,7 +180,7 @@ type Select struct {
 	Disabled    bool
 	EmptyOption bool
 	Error       string
-	Help        string
+	Help        template.HTML
 	Label       string
 	Name        string
 	Options     []SelectOption
