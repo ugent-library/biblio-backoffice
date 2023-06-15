@@ -26,6 +26,7 @@ type indexedPublication struct {
 	HasMessage        bool     `json:"has_message"`
 	ID                string   `json:"id,omitempty"`
 	Identifier        []string `json:"identifier,omitempty"`
+	ISXN              []string `json:"isxn,omitempty"`
 	LastUserID        string   `json:"last_user_id,omitempty"`
 	Locked            bool     `json:"locked"`
 	OrganizationID    []string `json:"organization_id,omitempty"`
@@ -134,6 +135,12 @@ func NewIndexedPublication(p *models.Publication) *indexedPublication {
 	if p.SourceID != "" {
 		ip.Identifier = append(ip.Identifier, p.SourceID)
 	}
+
+	// issn/isbn may have dashes or not, so separate analyzing is necessary
+	ip.ISXN = append(ip.ISXN, p.ISBN...)
+	ip.ISXN = append(ip.ISXN, p.EISBN...)
+	ip.ISXN = append(ip.ISXN, p.ISSN...)
+	ip.ISXN = append(ip.ISXN, p.EISSN...)
 
 	return ip
 }

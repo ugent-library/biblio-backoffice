@@ -36,6 +36,11 @@
                     "type": "edge_ngram",
                     "min_gram": 2,
                     "max_gram": 50
+                  },
+                  "remove_dashes": {
+                    "type": "pattern_replace",
+                    "pattern": "-",
+                    "replacement": ""
                   }
                 },
                 "analyzer": {
@@ -58,6 +63,13 @@
                         "tokenizer": "keyword",
                         "filter": [
                             "lowercase"
+                        ]
+                    },
+                    "isxn": {
+                        "tokenizer": "keyword",
+                        "filter": [
+                            "lowercase",
+                            "remove_dashes"
                         ]
                     },
                     "token_edge_ngram": {
@@ -210,6 +222,10 @@
                 },
                 "vabb_type": {
                     "type": "keyword"
+                },
+                "isxn": {
+                    "type": "text",
+                    "analyzer": "isxn"
                 }
             }
         }

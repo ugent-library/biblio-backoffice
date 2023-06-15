@@ -364,6 +364,7 @@ func buildPublicationUserQuery(args *models.SearchArgs) M {
 				"fields": []string{
 					"id^100",
 					"identifier^50",
+					"isxn^50",
 					"title^40",
 					"organization_id^50",
 					"contributor.phrase_ngram^0.05",
