@@ -33,7 +33,7 @@ var facetDefinitions = map[string]facetDefinition{
 	"wos_type": {
 		config: M{
 			"terms": M{
-				"field":         "facet_wos_type",
+				"field":         "wos_type",
 				"order":         M{"_key": "asc"},
 				"size":          999,
 				"min_doc_count": 0,
@@ -61,8 +61,8 @@ var fixedFacetValues = map[string][]string{
 	//"publication_statuses" includes "deleted"
 	"classification":     vocabularies.Map["publication_classifications"],
 	"extern":             {"true", "false"},
-	"faculty":            vocabularies.Map["faculties"],
-	"file.relation":      vocabularies.Map["publication_file_relations"],
+	"faculty_id":         vocabularies.Map["faculties"],
+	"file_relation":      vocabularies.Map["publication_file_relations"],
 	"has_message":        {"true", "false"},
 	"legacy":             {"true", "false"},
 	"locked":             {"true", "false"},

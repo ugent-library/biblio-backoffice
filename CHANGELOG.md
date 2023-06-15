@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- #1110: Keep related object metadata up-to-date
+- #812: remove confirmation dialog for Lock and Unlock
+- Only save a new version of a publication or dataset if the record has changes
+- Smaller and more efficient search index
+
 ### Fixed
 
 - #1108: Cannot add author without first name

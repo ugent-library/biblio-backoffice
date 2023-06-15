@@ -16,7 +16,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/internal/render"
 	"github.com/ugent-library/biblio-backoffice/internal/render/flash"
 	"github.com/ugent-library/biblio-backoffice/internal/tasks"
-	"github.com/ugent-library/go-orcid/orcid"
+	"github.com/ugent-library/orcid"
 	"golang.org/x/text/language"
 )
 
@@ -113,7 +113,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request, ctx Context) {
 func (h *Handler) AddAll(w http.ResponseWriter, r *http.Request, ctx Context) {
 	id, err := h.addPublicationsToORCID(
 		ctx.User,
-		models.NewSearchArgs().WithFilter("status", "public").WithFilter("author.person_id", ctx.User.ID),
+		models.NewSearchArgs().WithFilter("status", "public").WithFilter("author_id", ctx.User.ID),
 	)
 	if err != nil {
 		h.Logger.Errorw("add all orcid: could not add all publications to the users orcid", "user", ctx.User.ID)

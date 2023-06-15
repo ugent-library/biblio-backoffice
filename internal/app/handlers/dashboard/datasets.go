@@ -79,9 +79,9 @@ func generateDatasetsDashboard(faculties []string, ptypes []string, searcher bac
 			queryVals := searchUrl.Query()
 
 			if fac != "all" {
-				searchArgs.WithFilter("faculty", fac)
+				searchArgs.WithFilter("faculty_id", fac)
 			} else {
-				searchArgs.WithFilter("faculty", faculties...)
+				searchArgs.WithFilter("faculty_id", faculties...)
 			}
 
 			searchArgs = fn(searchArgs)

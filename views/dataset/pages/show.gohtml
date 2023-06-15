@@ -46,16 +46,18 @@
                     <div class="bc-toolbar-item">
                         {{if and .User.CanCurate .Dataset.Locked}}
                         <button class="btn btn-outline-secondary"
-                            hx-get="{{pathFor "dataset_confirm_unlock" "id" .Dataset.ID|querySet "redirect-url" .CurrentURL.String}}"
-                            hx-target="#modals"
+                            hx-post="{{pathFor "dataset_unlock" "id" .Dataset.ID|querySet "redirect-url" .CurrentURL.String}}"
+                            hx-headers='{"If-Match": "{{.Dataset.SnapshotID}}"}'
+                            hx-swap="none"
                         >
                             <i class="if if-lock-unlock"></I>
                             <span class="btn-text">Unlock record</span>
                         </button>
                         {{else if .User.CanCurate}}
                         <button class="btn btn-outline-secondary"
-                            hx-get="{{pathFor "dataset_confirm_lock" "id" .Dataset.ID|querySet "redirect-url" .CurrentURL.String}}"
-                            hx-target="#modals"
+                            hx-post="{{pathFor "dataset_lock" "id" .Dataset.ID|querySet "redirect-url" .CurrentURL.String}}"
+                            hx-headers='{"If-Match": "{{.Dataset.SnapshotID}}"}'
+                            hx-swap="none"
                         >
                             <i class="if if-lock"></I>
                             <span class="btn-text">Lock record</span>

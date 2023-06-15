@@ -46,16 +46,19 @@
                     <div class="bc-toolbar-item">
                         {{if and .User.CanCurate .Publication.Locked}}
                         <button class="btn btn-outline-secondary"
-                            hx-get="{{pathFor "publication_confirm_unlock" "id" .Publication.ID|querySet "redirect-url" .CurrentURL.String}}"
-                            hx-target="#modals"
+
+                            hx-post="{{pathFor "publication_unlock" "id" .Publication.ID|querySet "redirect-url" .CurrentURL.String}}"
+                            hx-headers='{"If-Match": "{{.Publication.SnapshotID}}"}'
+                            hx-swap="none"
                         >
                             <i class="if if-lock-unlock"></I>
                             <span class="btn-text">Unlock record</span>
                         </button>
                         {{else if .User.CanCurate}}
                         <button class="btn btn-outline-secondary"
-                            hx-get="{{pathFor "publication_confirm_lock" "id" .Publication.ID|querySet "redirect-url" .CurrentURL.String}}"
-                            hx-target="#modals"
+                            hx-post="{{pathFor "publication_lock" "id" .Publication.ID|querySet "redirect-url" .CurrentURL.String}}"
+                            hx-headers='{"If-Match": "{{.Publication.SnapshotID}}"}'
+                            hx-swap="none"
                         >
                             <i class="if if-lock"></I>
                             <span class="btn-text">Lock record</span>

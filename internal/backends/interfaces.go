@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/ugent-library/biblio-backoffice/internal/models"
-	"github.com/ugent-library/go-orcid/orcid"
+	"github.com/ugent-library/orcid"
 )
 
 type Services struct {
