@@ -36,7 +36,7 @@ import (
 	"go.uber.org/zap"
 
 	// "github.com/ugent-library/biblio-backoffice/internal/tasks"
-	"github.com/ugent-library/go-orcid/orcid"
+	"github.com/ugent-library/orcid"
 )
 
 var (

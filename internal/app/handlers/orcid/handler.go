@@ -16,7 +16,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/internal/render"
 	"github.com/ugent-library/biblio-backoffice/internal/render/flash"
 	"github.com/ugent-library/biblio-backoffice/internal/tasks"
-	"github.com/ugent-library/go-orcid/orcid"
+	"github.com/ugent-library/orcid"
 	"golang.org/x/text/language"
 )
 
