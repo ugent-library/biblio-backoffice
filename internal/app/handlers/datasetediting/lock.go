@@ -19,13 +19,6 @@ type YieldLock struct {
 	RedirectURL string
 }
 
-func (h *Handler) ConfirmLock(w http.ResponseWriter, r *http.Request, ctx Context) {
-	render.Layout(w, "show_modal", "dataset/confirm_lock", YieldLock{
-		Context:     ctx,
-		RedirectURL: r.URL.Query().Get("redirect-url"),
-	})
-}
-
 func (h *Handler) Lock(w http.ResponseWriter, r *http.Request, ctx Context) {
 	if !ctx.User.CanCurate() {
 		h.Logger.Warnw("lock dataset: user has no permission to lock", "user", ctx.User.ID, "dataset", ctx.Dataset.ID)
@@ -70,13 +63,6 @@ func (h *Handler) Lock(w http.ResponseWriter, r *http.Request, ctx Context) {
 	h.AddFlash(r, w, *flash)
 
 	w.Header().Set("HX-Redirect", r.URL.Query().Get("redirect-url"))
-}
-
-func (h *Handler) ConfirmUnlock(w http.ResponseWriter, r *http.Request, ctx Context) {
-	render.Layout(w, "show_modal", "dataset/confirm_unlock", YieldLock{
-		Context:     ctx,
-		RedirectURL: r.URL.Query().Get("redirect-url"),
-	})
 }
 
 func (h *Handler) Unlock(w http.ResponseWriter, r *http.Request, ctx Context) {
