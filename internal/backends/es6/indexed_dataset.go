@@ -20,6 +20,7 @@ type indexedDataset struct {
 	ID             string   `json:"id,omitempty"`
 	IdentifierType []string `json:"identifier_type,omitempty"`
 	Identifier     []string `json:"identifier,omitempty"`
+	LastUserID     string   `json:"last_user_id,omitempty"`
 	Locked         bool     `json:"locked"`
 	OrganizationID []string `json:"organization_id,omitempty"`
 	ReviewerTags   []string `json:"reviewer_tags,omitempty"`
@@ -37,6 +38,7 @@ func NewIndexedDataset(d *models.Dataset) *indexedDataset {
 		DateUpdated:  internal_time.FormatTimeUTC(d.DateUpdated),
 		HasMessage:   len(d.Message) > 0,
 		ID:           d.ID,
+		LastUserID:   d.LastUserID,
 		Locked:       d.Locked,
 		ReviewerTags: d.ReviewerTags,
 		Status:       d.Status,
