@@ -2,7 +2,7 @@
 <h3 class="mt-6">Search results</h3>
 
 <ul class="list-group">
-    {{if and .Contributor.FirstName .Contributor.LastName}}
+    {{if or .Contributor.FirstName .Contributor.LastName}}
     <li class="list-group-item">
         <div class="list-group-item-inner">
           <div class="list-group-item-main">

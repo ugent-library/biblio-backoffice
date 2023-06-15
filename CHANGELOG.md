@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- #1108: Cannot add author without first name
+
 ## [v1.0.29] - 2023-06-13
 
 ### Added
