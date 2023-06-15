@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"reflect"
 	"time"
 
 	"github.com/jackc/pgx/v4"
@@ -159,6 +160,14 @@ func (s *Repository) ImportPublication(p *models.Publication) error {
 }
 
 func (s *Repository) SavePublication(p *models.Publication, u *models.User) error {
+	oldPublication, err := s.GetPublication(p.ID)
+	if err != nil && err != backends.ErrNotFound {
+		return err
+	}
+	if reflect.DeepEqual(oldPublication, p) {
+		return nil
+	}
+
 	now := time.Now()
 
 	if p.DateCreated == nil {
@@ -199,6 +208,12 @@ func (s *Repository) SavePublication(p *models.Publication, u *models.User) erro
 }
 
 func (s *Repository) UpdatePublication(snapshotID string, p *models.Publication, u *models.User) error {
+	if oldPublication, err := s.GetPublication(p.ID); err != nil {
+		return err
+	} else if reflect.DeepEqual(oldPublication, p) {
+		return nil
+	}
+
 	// TODO move outside of store
 	p = publication.DefaultPipeline.Process(p)
 	oldDateUpdated := p.DateUpdated
@@ -571,6 +586,14 @@ func (s *Repository) ImportDataset(d *models.Dataset) error {
 }
 
 func (s *Repository) SaveDataset(d *models.Dataset, u *models.User) error {
+	oldDataset, err := s.GetDataset(d.ID)
+	if err != nil && err != backends.ErrNotFound {
+		return err
+	}
+	if reflect.DeepEqual(oldDataset, d) {
+		return nil
+	}
+
 	now := time.Now()
 
 	if d.DateCreated == nil {
@@ -613,6 +636,12 @@ func (s *Repository) SaveDataset(d *models.Dataset, u *models.User) error {
 }
 
 func (s *Repository) UpdateDataset(snapshotID string, d *models.Dataset, u *models.User) error {
+	if oldDataset, err := s.GetDataset(d.ID); err != nil {
+		return err
+	} else if reflect.DeepEqual(oldDataset, d) {
+		return nil
+	}
+
 	//TODO: move outside
 	if d.Status == "public" && !d.HasBeenPublic {
 		d.HasBeenPublic = true
