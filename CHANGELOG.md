@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Only save a new version of a publication or dataset if the record has changes
+
 ### Fixed
 
 - #1108: Cannot add author without first name
