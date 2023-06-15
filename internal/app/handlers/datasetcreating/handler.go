@@ -13,7 +13,6 @@ import (
 type Handler struct {
 	handlers.BaseHandler
 	Repository          backends.Repository
-	SearchService       backends.SearchService
 	DatasetSearchIndex  backends.DatasetIndex
 	DatasetSources      map[string]backends.DatasetGetter
 	OrganizationService backends.OrganizationService

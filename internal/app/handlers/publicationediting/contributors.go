@@ -172,7 +172,7 @@ func (h *Handler) AddContributor(w http.ResponseWriter, r *http.Request, ctx Con
 		}
 		hits = make([]*models.Contributor, len(people))
 		for i, person := range people {
-			hits[i] = models.ContributorFromPerson(&person)
+			hits[i] = models.ContributorFromPerson(person)
 		}
 	}
 
@@ -208,7 +208,7 @@ func (h *Handler) AddContributorSuggest(w http.ResponseWriter, r *http.Request, 
 		}
 		hits = make([]*models.Contributor, len(people))
 		for i, person := range people {
-			hits[i] = models.ContributorFromPerson(&person)
+			hits[i] = models.ContributorFromPerson(person)
 		}
 	}
 
@@ -272,6 +272,12 @@ func (h *Handler) CreateContributor(w http.ResponseWriter, r *http.Request, ctx 
 		c = newC
 		active = newP.Active
 	} else {
+		if b.FirstName == "" {
+			b.FirstName = "[missing]"
+		}
+		if b.LastName == "" {
+			b.LastName = "[missing]"
+		}
 		c = models.ContributorFromFirstLastName(b.FirstName, b.LastName)
 	}
 	c.CreditRole = b.CreditRole
@@ -363,7 +369,7 @@ func (h *Handler) EditContributor(w http.ResponseWriter, r *http.Request, ctx Co
 
 	hits := make([]*models.Contributor, len(people))
 	for i, person := range people {
-		hits[i] = models.ContributorFromPerson(&person)
+		hits[i] = models.ContributorFromPerson(person)
 	}
 
 	// exclude the current contributor
@@ -422,7 +428,7 @@ func (h *Handler) EditContributorSuggest(w http.ResponseWriter, r *http.Request,
 
 		hits = make([]*models.Contributor, len(people))
 		for i, person := range people {
-			hits[i] = models.ContributorFromPerson(&person)
+			hits[i] = models.ContributorFromPerson(person)
 		}
 
 		// exclude the current contributor
@@ -509,6 +515,12 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 		c = newC
 		active = newP.Active
 	} else {
+		if b.FirstName == "" {
+			b.FirstName = "[missing]"
+		}
+		if b.LastName == "" {
+			b.LastName = "[missing]"
+		}
 		c = models.ContributorFromFirstLastName(b.FirstName, b.LastName)
 	}
 	c.CreditRole = b.CreditRole
@@ -560,7 +572,7 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 		}
 		hits := make([]*models.Contributor, len(people))
 		for i, person := range people {
-			hits[i] = models.ContributorFromPerson(&person)
+			hits[i] = models.ContributorFromPerson(person)
 		}
 
 		suggestURL := h.PathFor("publication_edit_contributor_suggest", "id", ctx.Publication.ID, "role", b.Role, "position", fmt.Sprintf("%d", nextPos)).String()

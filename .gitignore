@@ -25,6 +25,8 @@ go.work
 .air.toml
 tmp
 root
+.tern*
+!.tern.example.conf
 
 # env
 .env

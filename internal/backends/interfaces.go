@@ -270,7 +270,7 @@ type OrganizationSearchService interface {
 }
 
 type PersonSearchService interface {
-	SuggestPeople(string) ([]models.Person, error)
+	SuggestPeople(string) ([]*models.Person, error)
 }
 
 type ProjectSearchService interface {
@@ -278,7 +278,7 @@ type ProjectSearchService interface {
 }
 
 type UserSearchService interface {
-	SuggestUsers(string) ([]models.Person, error)
+	SuggestUsers(string) ([]*models.Person, error)
 }
 
 type LicenseSearchService interface {

@@ -144,6 +144,9 @@
                 "creator_id": {
                     "type": "keyword"
                 },
+                "creator_id": {
+                    "type": "keyword"
+                },
                 "date_created": {
                     "type": "date"
                 },
@@ -197,6 +200,12 @@
                     "type": "keyword"
                 },
                 "reviewer_tags": {
+                    "type": "keyword"
+                },
+                "user_id": {
+                    "type": "keyword"
+                },
+                "last_user_id": {
                     "type": "keyword"
                 },
                 "wos_type": {

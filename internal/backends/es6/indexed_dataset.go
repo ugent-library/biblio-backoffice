@@ -25,6 +25,7 @@ type indexedDataset struct {
 	ReviewerTags   []string `json:"reviewer_tags,omitempty"`
 	Status         string   `json:"status,omitempty"`
 	Title          string   `json:"title,omitempty"`
+	UserID         string   `json:"user_id,omitempty"`
 	Year           string   `json:"year,omitempty"`
 }
 

@@ -141,6 +141,9 @@
                         }
                     }
                 },
+                "creator_id": {
+                    "type": "keyword"
+                },
                 "date_created": {
                     "type": "date"
                 },
@@ -179,6 +182,9 @@
                     "type": "text",
                     "analyzer": "text_default",
                     "copy_to": "all"
+                },
+                "user_id": {
+                    "type": "keyword"
                 },
                 "year": {
                     "type": "date",

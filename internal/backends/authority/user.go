@@ -41,9 +41,9 @@ func (c *Client) GetUserByUsername(username string) (*models.User, error) {
 	return c.recordToUser(record)
 }
 
-func (c *Client) SuggestUsers(q string) ([]models.Person, error) {
+func (c *Client) SuggestUsers(q string) ([]*models.Person, error) {
 	limit := 25
-	persons := make([]models.Person, 0, limit)
+	persons := make([]*models.Person, 0, limit)
 
 	// remove duplicate spaces
 	q = regexMultipleSpaces.ReplaceAllString(q, " ")
