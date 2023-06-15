@@ -272,6 +272,12 @@ func (h *Handler) CreateContributor(w http.ResponseWriter, r *http.Request, ctx 
 		c = newC
 		active = newP.Active
 	} else {
+		if b.FirstName == "" {
+			b.FirstName = "[missing]"
+		}
+		if b.LastName == "" {
+			b.LastName = "[missing]"
+		}
 		c = models.ContributorFromFirstLastName(b.FirstName, b.LastName)
 	}
 	c.CreditRole = b.CreditRole
@@ -509,6 +515,12 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 		c = newC
 		active = newP.Active
 	} else {
+		if b.FirstName == "" {
+			b.FirstName = "[missing]"
+		}
+		if b.LastName == "" {
+			b.LastName = "[missing]"
+		}
 		c = models.ContributorFromFirstLastName(b.FirstName, b.LastName)
 	}
 	c.CreditRole = b.CreditRole
