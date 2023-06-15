@@ -144,9 +144,6 @@
                 "creator_id": {
                     "type": "keyword"
                 },
-                "creator_id": {
-                    "type": "keyword"
-                },
                 "date_created": {
                     "type": "date"
                 },
