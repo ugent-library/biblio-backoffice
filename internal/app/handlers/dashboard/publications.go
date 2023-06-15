@@ -66,13 +66,13 @@ func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Conte
 
 		switch fac {
 		case "all":
-			args.WithFilter("faculty", faculties...)
+			args.WithFilter("faculty_id", faculties...)
 		case "-":
-			args.WithFilter("!faculty", all...)
+			args.WithFilter("!faculty_id", all...)
 		case "UGent":
-			args.WithFilter("department", "UGent")
+			args.WithFilter("organization_id", "UGent")
 		default:
-			args.WithFilter("faculty", fac)
+			args.WithFilter("faculty_id", fac)
 		}
 
 		return args
@@ -94,11 +94,11 @@ func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Conte
 
 		switch fac {
 		case "all":
-			args.WithFilter("faculty", faculties...)
+			args.WithFilter("faculty_id", faculties...)
 		case "-":
-			args.WithFilter("!faculty", all...)
+			args.WithFilter("!faculty_id", all...)
 		default:
-			args.WithFilter("faculty", fac)
+			args.WithFilter("faculty_id", fac)
 		}
 
 		return args
