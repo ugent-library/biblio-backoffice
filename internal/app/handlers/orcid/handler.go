@@ -113,7 +113,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request, ctx Context) {
 func (h *Handler) AddAll(w http.ResponseWriter, r *http.Request, ctx Context) {
 	id, err := h.addPublicationsToORCID(
 		ctx.User,
-		models.NewSearchArgs().WithFilter("status", "public").WithFilter("author.id", ctx.User.ID),
+		models.NewSearchArgs().WithFilter("status", "public").WithFilter("author_id", ctx.User.ID),
 	)
 	if err != nil {
 		h.Logger.Errorw("add all orcid: could not add all publications to the users orcid", "user", ctx.User.ID)

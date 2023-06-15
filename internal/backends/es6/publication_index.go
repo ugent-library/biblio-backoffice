@@ -360,18 +360,11 @@ func buildPublicationUserQuery(args *models.SearchArgs) M {
 				"query": args.Query,
 				"fields": []string{
 					"id^100",
-					"doi^50",
-					"isbn^50",
-					"eisbn^50",
-					"issn^50",
-					"eissn^50",
-					"wos_id^50",
+					"identifier^50",
 					"title^40",
-					"department^50",
-					"author.person.full_name.phrase_ngram^0.05",
-					"author.person.full_name.ngram^0.01",
-					"author.external_person.full_name.phrase_ngram^0.05",
-					"author.external_person.full_name.ngram^0.01",
+					"organization_id^50",
+					"contributor.phrase_ngram^0.05",
+					"contributor.ngram^0.01",
 					"all",
 				},
 				"lenient":                             true,
@@ -401,7 +394,7 @@ func buildPublicationUserQuery(args *models.SearchArgs) M {
 			},
 			{
 				"match_phrase": M{
-					"author.full_name": M{
+					"contributor": M{
 						"query": args.Query,
 						"boost": 200,
 					},

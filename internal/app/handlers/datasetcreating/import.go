@@ -89,7 +89,7 @@ func (h *Handler) ConfirmImport(w http.ResponseWriter, r *http.Request, ctx Cont
 
 	// check for duplicates
 	if b.Source == "datacite" {
-		args := models.NewSearchArgs().WithFilter("doi", strings.ToLower(b.Identifier)).WithFilter("status", "public")
+		args := models.NewSearchArgs().WithFilter("identifier", strings.ToLower(b.Identifier)).WithFilter("status", "public")
 
 		existing, err := h.DatasetSearchIndex.Search(args)
 

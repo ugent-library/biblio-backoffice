@@ -50,13 +50,13 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request, ctx Context) {
 
 	switch args.FilterFor("scope") {
 	case "created":
-		searcher = searcher.WithScope("creator.id", ctx.User.ID)
+		searcher = searcher.WithScope("creator_id", ctx.User.ID)
 		currentScope = "created"
 	case "contributed":
-		searcher = searcher.WithScope("author.id", ctx.User.ID)
+		searcher = searcher.WithScope("author_id", ctx.User.ID)
 		currentScope = "contributed"
 	case "all":
-		searcher = searcher.WithScope("creator.id|author.id", ctx.User.ID)
+		searcher = searcher.WithScope("creator_id|author_id", ctx.User.ID)
 		currentScope = "all"
 	default:
 		errorUnkownScope := fmt.Errorf("unknown scope: %s", args.FilterFor("scope"))
