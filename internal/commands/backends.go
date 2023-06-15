@@ -420,7 +420,7 @@ func newPublicationBulkIndexerService(logger *zap.SugaredLogger) backends.BulkIn
 			logger.Errorf("Indexing failed : %s", err)
 		},
 		OnIndexError: func(id string, err error) {
-			logger.Errorf("Indexing failed for dataset [id: %s] : %s", id, err)
+			logger.Errorf("Indexing failed for publication [id: %s] : %s", id, err)
 		},
 	})
 

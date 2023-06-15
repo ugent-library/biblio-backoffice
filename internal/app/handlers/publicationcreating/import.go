@@ -412,7 +412,7 @@ func (h *Handler) AddMultipleConfirm(w http.ResponseWriter, r *http.Request, ctx
 
 	hits, err := h.PublicationSearchIndex.
 		WithScope("status", "private", "public").
-		WithScope("creator.id", ctx.User.ID).
+		WithScope("creator_id", ctx.User.ID).
 		WithScope("batch_id", batchID).
 		Search(searchArgs)
 
@@ -480,7 +480,7 @@ func (h *Handler) AddMultipleFinish(w http.ResponseWriter, r *http.Request, ctx 
 
 	hits, err := h.PublicationSearchIndex.
 		WithScope("status", "private", "public").
-		WithScope("creator.id", ctx.User.ID).
+		WithScope("creator_id", ctx.User.ID).
 		WithScope("batch_id", batchID).
 		Search(searchArgs)
 
@@ -568,7 +568,7 @@ func (h *Handler) importPublications(user *models.User, source string, file io.R
 func (h *Handler) batchPublishPublications(batchID string, user *models.User) (err error) {
 	searcher := h.PublicationSearchIndex.
 		WithScope("status", "private", "public").
-		WithScope("creator.id", user.ID).
+		WithScope("creator_id", user.ID).
 		WithScope("batch_id", batchID)
 	args := models.NewSearchArgs()
 

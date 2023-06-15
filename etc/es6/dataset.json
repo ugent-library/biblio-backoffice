@@ -242,6 +242,9 @@
                         }  
                     }
                 },
+                "creator_id": {
+                    "type": "keyword"
+                },
                 "date_created": {
                     "type": "date"
                 },
@@ -347,6 +350,9 @@
                 "url": {
                     "type": "text",
                     "index": false
+                },
+                "user_id": {
+                    "type": "keyword"
                 },
                 "year": {
                     "type": "date",

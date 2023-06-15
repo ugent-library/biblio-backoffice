@@ -70,7 +70,7 @@ func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Conte
 		case "-":
 			args.WithFilter("!faculty", all...)
 		case "UGent":
-			args.WithFilter("department.id", "UGent")
+			args.WithFilter("department", "UGent")
 		default:
 			args.WithFilter("faculty", fac)
 		}
