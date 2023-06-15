@@ -186,6 +186,9 @@
                 "user_id": {
                     "type": "keyword"
                 },
+                "last_user_id": {
+                    "type": "keyword"
+                },
                 "year": {
                     "type": "date",
                     "format": "year",
