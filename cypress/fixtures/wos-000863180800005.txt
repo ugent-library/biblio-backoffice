@@ -1,0 +1,55 @@
+﻿FN Clarivate Analytics Web of Science
+VR 1.0
+PT J
+AU Tuytschaever, T
+   Jacxsens, L
+   De Boeck, E
+   Uyttendaele, M
+AF Tuytschaever, Tessa
+   Jacxsens, Liesbeth
+   De Boeck, Elien
+   Uyttendaele, Mieke
+TI Microbiological characteristics and applied preservation method of novel
+   ready-to-eat vegetarian spreads and dips [CYPRESSTEST]
+SO FOOD CONTROL
+LA English
+DT Article
+DE Vegetarian ready -to -eat foods; Foods of non -animal origin;
+   Microbiological quality; Additives; Clean label
+ID PROCESSED VEGETABLE SALADS; SHELF-LIFE; PRONOUNCE; EXTENSION; CONSUMERS;
+   DIFFICULT; BEHAVIOR; AVOCADO; STORAGE; FOODS
+AB A range of spreads and dips as novel vegetarian ready-to-eat foods are being introduced on the (European) retail market to response to an increasing number of vegetarian'/flexitarian' consumers and the shift towards plantbased foods consumption. This innovative food group was explored by a product survey (n = 369) in Belgium. The spreads and dips were classified on the presence of main ingredients, the applied preservation mode, the remaining shelf-life period, and the presence of additives. The majority of the products have soybeans or other seeds as the main ingredient, are containing preservatives (e.g. potassium sorbate; E202) and organic acids/acid regulators (e.g. lactic acid; E270 and citric acid; E330) as additives. 45% of the products were marketed under the organic label and 36% of them were indicated as so-called 'clean label'. From a selection (78 refrigerated and 23 ambient stored products), the physicochemical characteristics (i.e. pH, water activity, and headspace gas composition) were determined as well as the microbiological quality, hygiene, and safety at the moment of purchase and the end of the indicated shelf-life. The analyzed microbiological quality indicators for refrigerated samples demonstrated a psychrotrophic total plate count range of 1.0-9.4 log CFU/g, psychrotrophic lactic acid bacteria range of 1.0-8.8 log CFU/g, yeast and fungi range of 2.0-9.5 log CFU/g and sulfite reducing Clostridia range of 1.0-3.7 log CFU/g. E. coli and coliforms were analyzed as hygiene indicators and solely coliforms were detected on three samples with a maximum count of 3.6 log CFU/g. Listeria monocytogenes was not detected in 10g. Bacillus cereus never exceeded 3.5 log CFU/g. For the ambient stored samples, mesophilic total plate count, mesophilic lactic acid bacteria, yeast and fungi, sulfite reducing Clostridia, B. cereus, B. cereus spores, aerobic spores, and anaerobic spores were determined. Most of the products showed cell counts below the limit of detection (= 1.0 log CFU/g). Only products based on chickpeas, sesame seeds, and other seeds showed cell counts for mesophilic total plate count and aerobic plate count ranging respectively from 1.0 to 4.3 log CFU/g and 1.0 to 5.1 log CFU/g. The research gives insight into the variable microbiological composition and multiple applied preservation modes of this innovative food group of ready-to-eat vegetarian dips and spreads.
+C1 [Tuytschaever, Tessa; Jacxsens, Liesbeth; De Boeck, Elien; Uyttendaele, Mieke] Univ Ghent, Fac Biosci Engn, Dept Food Technol Safety & Hlth, Lab Food Microbiol & Food Preservat LFMFP, Ghent, Belgium.
+   [Tuytschaever, Tessa] Sint Martens Latemlaan 2B, B-8500 Kortrijk, Belgium.
+C3 Ghent University
+RP Tuytschaever, T (corresponding author), Sint Martens Latemlaan 2B, B-8500 Kortrijk, Belgium.
+EM tessa.tuytschaever@ugent.be
+OI Tuytschaever, Tessa/0000-0002-5711-8451
+NR 46
+TC 0
+Z9 0
+U1 10
+U2 20
+PU ELSEVIER SCI LTD
+PI OXFORD
+PA THE BOULEVARD, LANGFORD LANE, KIDLINGTON, OXFORD OX5 1GB, OXON, ENGLAND
+SN 0956-7135
+EI 1873-7129
+J9 FOOD CONTROL
+JI Food Control
+PD JAN
+PY 2023
+VL 143
+AR 109313
+DI 10.1016/j.foodcont.2022.109313
+EA SEP 2022
+PG 10
+WC Food Science & Technology
+WE Science Citation Index Expanded (SCI-EXPANDED)
+SC Food Science & Technology
+GA 5A9DX
+UT WOS:000863180800005
+DA 2023-06-12
+ER
+
+EF
