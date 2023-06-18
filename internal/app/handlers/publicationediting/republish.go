@@ -7,7 +7,6 @@ import (
 
 	"github.com/ugent-library/biblio-backoffice/internal/app/handlers"
 	"github.com/ugent-library/biblio-backoffice/internal/app/localize"
-	"github.com/ugent-library/biblio-backoffice/internal/publication"
 	"github.com/ugent-library/biblio-backoffice/internal/render"
 	"github.com/ugent-library/biblio-backoffice/internal/render/flash"
 	"github.com/ugent-library/biblio-backoffice/internal/render/form"
@@ -47,10 +46,6 @@ func (h *Handler) Republish(w http.ResponseWriter, r *http.Request, ctx Context)
 		})
 		return
 	}
-
-	//TODO: find better place for this
-	//TODO: what if update publication fails?
-	ctx.Publication = publication.PublishPipeline.Process(ctx.Publication)
 
 	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
 
