@@ -13,7 +13,6 @@ import (
 	"github.com/oklog/ulid/v2"
 	"github.com/ugent-library/biblio-backoffice/internal/backends"
 	"github.com/ugent-library/biblio-backoffice/internal/models"
-	"github.com/ugent-library/biblio-backoffice/internal/publication"
 	"github.com/ugent-library/biblio-backoffice/internal/snapstore"
 )
 
@@ -185,9 +184,6 @@ func (s *Repository) SavePublication(p *models.Publication, u *models.User) erro
 		p.User = nil
 	}
 
-	// TODO move outside of store?
-	p = publication.DefaultPipeline.Process(p)
-
 	if err := p.Validate(); err != nil {
 		return err
 	}
@@ -214,8 +210,6 @@ func (s *Repository) UpdatePublication(snapshotID string, p *models.Publication,
 		return nil
 	}
 
-	// TODO move outside of store
-	p = publication.DefaultPipeline.Process(p)
 	oldDateUpdated := p.DateUpdated
 	now := time.Now()
 	p.DateUpdated = &now
