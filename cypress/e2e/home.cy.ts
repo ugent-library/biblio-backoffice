@@ -76,8 +76,7 @@ describe('The home page', () => {
     cy.contains('.c-sidebar__item', 'Biblio Datasets').should('be.visible')
     cy.contains('.c-sidebar__item', 'Dashboard').should('not.exist')
 
-    cy.contains('button.dropdown-toggle', 'Researcher').click()
-    cy.contains('button.dropdown-item', 'Librarian').click()
+    cy.switchMode('Librarian')
 
     cy.get('.c-sidebar button.dropdown-toggle').should('contain.text', 'Librarian')
     cy.get('.c-sidebar').should('have.class', 'c-sidebar--dark-gray')
@@ -87,8 +86,7 @@ describe('The home page', () => {
     cy.contains('.c-sidebar__item', 'Dashboard').should('be.visible')
     cy.contains('.c-sidebar__item', 'Batch').should('be.visible')
 
-    cy.contains('button.dropdown-toggle', 'Librarian').click()
-    cy.contains('button.dropdown-item', 'Researcher').click()
+    cy.switchMode('Researcher')
 
     cy.get('.c-sidebar button.dropdown-toggle').should('contain.text', 'Researcher')
     cy.get('.c-sidebar').should('not.have.class', 'c-sidebar--dark-gray')
@@ -106,8 +104,7 @@ describe('The home page', () => {
     cy.intercept({ method: 'PUT', pathname: '/role/curator' }).as('role-curator')
     cy.intercept({ method: 'PUT', pathname: '/role/user' }).as('role-user')
 
-    cy.contains('button.dropdown-toggle', 'Researcher').click()
-    cy.contains('button.dropdown-item', 'Librarian').click()
+    cy.switchMode('Librarian')
 
     cy.wait('@role-curator')
       .its('response.headers[set-cookie]')
@@ -115,8 +112,7 @@ describe('The home page', () => {
         expect(cookies.filter(c => c.startsWith('biblio-backoffice='))).to.have.length(1)
       })
 
-    cy.contains('button.dropdown-toggle', 'Librarian').click()
-    cy.contains('button.dropdown-item', 'Researcher').click()
+    cy.switchMode('Researcher')
 
     cy.wait('@role-user')
       .its('response.headers[set-cookie]')
