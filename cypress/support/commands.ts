@@ -8,6 +8,8 @@ declare namespace Cypress {
 
     loginAsLibrarian(): Chainable<void>
 
+    switchMode(mode: 'Researcher' | 'Librarian'): Chainable<void>
+
     ensureModal(expectedTitle: string, strict?: boolean): Chainable<JQuery<HTMLElement>>
 
     ensureNoModal(): Chainable<void>
@@ -68,6 +70,32 @@ Cypress.Commands.addAll({
     cy.login(Cypress.env('LIBRARIAN_USER_NAME'), Cypress.env('LIBRARIAN_USER_PASSWORD'))
   },
 
+  switchMode(mode: 'Researcher' | 'Librarian') {
+    const currentMode = mode === 'Researcher' ? 'Librarian' : 'Researcher'
+
+    let log: Cypress.Log
+
+    cy.visit('/', NO_LOG)
+
+    cy.intercept({ method: 'PUT', url: '/role/*' }, NO_LOG).as('switch-role')
+
+    cy.contains(`.c-sidebar > .dropdown > button`, currentMode, NO_LOG)
+      .click(NO_LOG)
+      .next('.dropdown-menu', NO_LOG)
+      .contains(mode, NO_LOG)
+      .then($el => {
+        log = logCommand('switchMode', { 'Current mode': currentMode, 'New mode': mode }, mode, $el)
+        log.snapshot('before')
+      })
+      .click(NO_LOG)
+
+    cy.wait('@switch-role', NO_LOG)
+
+    cy.contains(`.c-sidebar > .dropdown > button`, mode, NO_LOG).then($el => {
+      log.set('$el', $el).snapshot('after').end()
+    })
+  },
+
   ensureModal(expectedTitle, strict = true) {
     logCommand('ensureModal', { expectedTitle, strict }, expectedTitle)
 
@@ -98,8 +126,9 @@ Cypress.Commands.addAll({
   },
 })
 
-function logCommand(name, consoleProps = {}, message = '') {
+function logCommand(name, consoleProps = {}, message = '', $el = undefined) {
   return Cypress.log({
+    $el,
     name,
     displayName: name
       .replace(/([A-Z])/g, ' $1')
