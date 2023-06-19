@@ -48,17 +48,10 @@ describe('Issue #1124:  Add friendlier consistent confirmation toaster when lock
         cy.visit(`/publication/${biblioId}`)
         cy.contains('.btn', 'Lock record').should('be.visible').click()
 
-        cy.ensureModal('Are you sure?').within(() => {
-          cy.contains('Are you sure you want to lock this publication?').should('be.visible')
-          cy.contains('.btn', 'Lock').click()
-        })
-
-        cy.ensureNoModal()
-
         // Confirmation toast is displayed upon locking (and hidden after 5s)
-        cy.contains('.toast', 'Publication was successfully locked.').as('toast').should('be.visible')
+        cy.contains('.toast', 'Publication was successfully locked.').as('lockedToast').should('be.visible')
         cy.wait(5000)
-        cy.get('@toast').should('not.exist')
+        cy.get('@lockedToast').should('not.exist')
 
         // Publication now has lock icon in the detail view
         cy.get('.c-subline .if.if-lock').should('be.visible')
@@ -98,17 +91,10 @@ describe('Issue #1124:  Add friendlier consistent confirmation toaster when lock
         cy.visit(`/publication/${biblioId}`)
         cy.contains('.btn', 'Unlock record').should('be.visible').click()
 
-        cy.ensureModal('Are you sure?').within(() => {
-          cy.contains('Are you sure you want to unlock this publication?').should('be.visible')
-          cy.contains('.btn', 'Unlock').click()
-        })
-
-        cy.ensureNoModal()
-
         // Confirmation toast is displayed upon locking (and hidden after 5s)
-        cy.contains('.toast', 'Publication was successfully unlocked.').as('toast').should('be.visible')
+        cy.contains('.toast', 'Publication was successfully unlocked.').as('unlockedToast').should('be.visible')
         cy.wait(5000)
-        cy.get('@toast').should('not.exist')
+        cy.get('@unlockedToast').should('not.exist')
 
         // Lock icon is removed again
         cy.get('.c-subline .if.if-lock').should('not.exist')
