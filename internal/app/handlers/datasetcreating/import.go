@@ -21,6 +21,10 @@ import (
 	"github.com/ugent-library/biblio-backoffice/internal/validation"
 )
 
+type BindAdd struct {
+	Method string `form:"method"`
+}
+
 type BindImport struct {
 	Source     string `form:"source"`
 	Identifier string `form:"identifier"`
@@ -49,7 +53,25 @@ type YieldValidationErrors struct {
 }
 
 func (h *Handler) Add(w http.ResponseWriter, r *http.Request, ctx Context) {
-	render.Layout(w, "layouts/default", "dataset/pages/add", YieldAdd{
+	b := BindAdd{}
+	if err := bind.Request(r, &b); err != nil {
+		h.Logger.Warnw("add dataset: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
+		render.BadRequest(w, r, err)
+		return
+	}
+
+	tmpl := ""
+	switch b.Method {
+	case "identifier":
+		tmpl = "dataset/pages/add_identifier"
+	case "manual":
+		h.ConfirmImport(w, r, ctx)
+		return
+	default:
+		tmpl = "dataset/pages/add"
+	}
+
+	render.Layout(w, "layouts/default", tmpl, YieldAdd{
 		Context:   ctx,
 		PageTitle: "Add - Datasets - Biblio",
 		Step:      1,
@@ -67,9 +89,9 @@ func (h *Handler) ConfirmImport(w http.ResponseWriter, r *http.Request, ctx Cont
 
 	// check for duplicates
 	if b.Source == "datacite" {
-		args := models.NewSearchArgs().WithFilter("doi", strings.ToLower(b.Identifier)).WithFilter("status", "public")
+		args := models.NewSearchArgs().WithFilter("identifier", strings.ToLower(b.Identifier)).WithFilter("status", "public")
 
-		existing, err := h.DatasetSearchService.Search(args)
+		existing, err := h.DatasetSearchIndex.Search(args)
 
 		if err != nil {
 			h.Logger.Errorw("confirm import dataset: could not execute search", "errors", err, "user", ctx.User.ID)
@@ -103,45 +125,50 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 		return
 	}
 
-	d, err := h.fetchDatasetByIdentifier(b.Source, b.Identifier)
-	if err != nil {
-		flash := flash.SimpleFlash().
-			WithLevel("error").
-			WithTitle("Failed to save draft").
-			WithBody(template.HTML(ctx.Locale.TS("dataset.single_import", "import_by_id.import_failed")))
+	var (
+		d   *models.Dataset
+		err error
+	)
 
-		ctx.Flash = append(ctx.Flash, *flash)
+	if b.Identifier != "" {
+		d, err = h.fetchDatasetByIdentifier(b.Source, b.Identifier)
+		if err != nil {
+			flash := flash.SimpleFlash().
+				WithLevel("error").
+				WithTitle("Failed to save draft").
+				WithBody(template.HTML(ctx.Locale.TS("dataset.single_import", "import_by_id.import_failed")))
 
-		render.Layout(w, "layouts/default", "dataset/pages/add", YieldAdd{
-			Context:    ctx,
-			PageTitle:  "Add - Datasets - Biblio",
-			Step:       1,
-			ActiveNav:  "datasets",
-			Source:     b.Source,
-			Identifier: b.Identifier,
-		})
-		return
+			ctx.Flash = append(ctx.Flash, *flash)
+
+			render.Layout(w, "layouts/default", "dataset/pages/add_identifier", YieldAdd{
+				Context:    ctx,
+				PageTitle:  "Add - Datasets - Biblio",
+				Step:       1,
+				ActiveNav:  "datasets",
+				Source:     b.Source,
+				Identifier: b.Identifier,
+			})
+			return
+		}
+	} else {
+		// or start with empty dataset
+		d = &models.Dataset{}
 	}
 
 	d.ID = ulid.Make().String()
-	d.Creator = &models.DatasetUser{ID: ctx.User.ID, Name: ctx.User.FullName}
-	d.User = &models.DatasetUser{ID: ctx.User.ID, Name: ctx.User.FullName}
+	d.CreatorID = ctx.User.ID
+	d.Creator = &ctx.User.Person
+	d.UserID = ctx.User.ID
+	d.User = &ctx.User.Person
 	d.Status = "private"
 
-	// Set the first department of the user if the user resides under at least one department
-	// TODO: this should be centralized
-	if len(ctx.User.Department) > 0 {
-		org, orgErr := h.OrganizationService.GetOrganization(ctx.User.Department[0].ID)
-		if orgErr != nil {
-			h.Logger.Warnw("import single publication: could not fetch user department", "errors", orgErr, "user", ctx.User.ID)
-		} else {
-			d.AddDepartmentByOrg(org)
-		}
+	if len(ctx.User.Affiliations) > 0 {
+		d.AddOrganization(ctx.User.Affiliations[0].Organization)
 	}
 
 	if validationErrs := d.Validate(); validationErrs != nil {
 		errors := form.Errors(localize.ValidationErrors(ctx.Locale, validationErrs.(validation.Errors)))
-		render.Layout(w, "layouts/default", "dataset/pages/add", YieldAdd{
+		render.Layout(w, "layouts/default", "dataset/pages/add_identifier", YieldAdd{
 			Context:    ctx,
 			PageTitle:  "Add - Datasets - Biblio",
 			Step:       1,
@@ -194,7 +221,7 @@ func (h *Handler) AddSaveDraft(w http.ResponseWriter, r *http.Request, ctx Conte
 		WithLevel("success").
 		WithBody(template.HTML("<p>Dataset successfully saved as a draft.</p>"))
 
-	h.AddSessionFlash(r, w, *flash)
+	h.AddFlash(r, w, *flash)
 
 	redirectURL := h.PathFor("datasets")
 	w.Header().Set("HX-Redirect", redirectURL.String())

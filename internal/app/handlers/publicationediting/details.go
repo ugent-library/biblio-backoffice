@@ -21,7 +21,6 @@ type BindDetails struct {
 	ConferenceType          string   `form:"conference_type"`
 	DefenseDate             string   `form:"defense_date"`
 	DefensePlace            string   `form:"defense_place"`
-	DefenseTime             string   `form:"defense_time"`
 	DOI                     string   `form:"doi"`
 	Edition                 string   `form:"edition"`
 	EISBN                   []string `form:"eisbn"`
@@ -93,7 +92,8 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 	p.ConferenceType = b.ConferenceType
 	p.DefenseDate = b.DefenseDate
 	p.DefensePlace = b.DefensePlace
-	p.DefenseTime = b.DefenseTime
+	// see https://github.com/ugent-library/biblio-backoffice/issues/1058
+	//p.DefenseTime = b.DefenseTime
 	p.DOI = b.DOI
 	p.Edition = b.Edition
 	p.EISBN = b.EISBN

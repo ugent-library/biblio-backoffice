@@ -36,17 +36,17 @@ func (s *AddPublicationSuite) TestAddEmptyInput() {
 	in := strings.NewReader("")
 	rootCmd.SetIn(in)
 
-	errAdd := rootCmd.Execute()
-	if errAdd != nil {
-		t.Fatal(errAdd)
-	}
-
-	addCmdOut, err := ioutil.ReadAll(actual)
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	assert.Equal(t, "", string(addCmdOut))
+	stdOut, err := ioutil.ReadAll(actual)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	assert.Equal(t, "", string(stdOut))
 }
 
 // Test non-JSONL input
@@ -64,12 +64,12 @@ func (s *AddPublicationSuite) TestAddNonJSONLInput() {
 
 	rootCmd.Execute()
 
-	addCmdOut, err := ioutil.ReadAll(actual)
+	stdOut, err := ioutil.ReadAll(actual)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	assert.Equal(t, "Error: could not read json input: invalid character 'i' looking for beginning of value\n", string(addCmdOut))
+	assert.Equal(t, "could not read json input: invalid character 'i' looking for beginning of value\n", string(stdOut))
 }
 
 // Test empty JSONL object
@@ -87,12 +87,12 @@ func (s *AddPublicationSuite) TestAddEmptyJSONLInput() {
 
 	rootCmd.Execute()
 
-	addCmdOut, err := ioutil.ReadAll(actual)
+	stdOut, err := ioutil.ReadAll(actual)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	assert.Regexp(t, `failed to validate publication .* at line .: publication.type.required\[\/type\]`, string(addCmdOut))
+	assert.Regexp(t, `failed to validate publication .* at line .: publication.type.required\[\/type\]`, string(stdOut))
 }
 
 // Create new minimal valid record
@@ -109,19 +109,7 @@ func (s *AddPublicationSuite) TestAddMinimalValidRecord() {
 				"credit_role": [
 					"first_author"
 				],
-				"first_name": "first name",
-				"full_name": "full name",
-				"id": "00000000-0000-0000-0000-000000000000",
-				"last_name": "last name",
-				"ugent_id": [
-					"000000000000"
-				],
-				"department": [
-				{
-					"id": "AA00",
-					"name": "department name"
-				}
-				]
+				"person_id": "00000000-0000-0000-0000-000000000000"
 			}
 		]
 	}`
@@ -142,12 +130,12 @@ func (s *AddPublicationSuite) TestAddMinimalValidRecord() {
 
 	rootCmd.Execute()
 
-	addCmdOut, err := ioutil.ReadAll(actual)
+	stdOut, err := ioutil.ReadAll(actual)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	assert.Regexp(t, `stored and indexed publication .* at line .*`, string(addCmdOut))
+	assert.Regexp(t, `stored and indexed publication .* at line .*`, string(stdOut))
 }
 
 // Test adding multiple records at once
@@ -164,19 +152,7 @@ func (s *AddPublicationSuite) TestAddingMultiplePublications() {
 				"credit_role": [
 					"first_author"
 				],
-				"first_name": "first name",
-				"full_name": "full name",
-				"id": "00000000-0000-0000-0000-000000000000",
-				"last_name": "last name",
-				"ugent_id": [
-					"000000000000"
-				],
-				"department": [
-				{
-					"id": "AA00",
-					"name": "department name"
-				}
-				]
+				"person_id": "00000000-0000-0000-0000-000000000000"
 			}
 		]
 	}`
@@ -201,12 +177,12 @@ func (s *AddPublicationSuite) TestAddingMultiplePublications() {
 
 	rootCmd.Execute()
 
-	addCmdOut, err := ioutil.ReadAll(actual)
+	stdOut, err := ioutil.ReadAll(actual)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	lines := strings.Split(string(addCmdOut), "\n")
+	lines := strings.Split(string(stdOut), "\n")
 
 	seq := 0
 	for _, line := range lines {
@@ -228,30 +204,32 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 		t.Fatal(errFile)
 	}
 
-	// Add a publication
-	addCmdOutFile, errJSONL := toJSONL(file)
-	if errJSONL != nil {
-		t.Fatal(errJSONL)
-	}
+	rec, _ := addKey(string(file), "id", "00000000000000000000000001")
 
-	errAdd := addPublication(addCmdOutFile)
-	if errAdd != nil {
-		t.Fatal(errAdd)
-	}
-
-	// Retrieve the publication
-	getCmdOutFile, errGetCmdOut := getPublication("00000000000000000000000001")
-	if errGetCmdOut != nil {
-		t.Fatal(errGetCmdOut)
-	}
-
-	// Remove dynamic fields distorting the JSONEqf assertion
-	ina, err := removeKey(addCmdOutFile, "snapshot_id", "date_from", "date_updated", "user")
+	jsonl, err := toJSONL([]byte(rec))
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	ing, err := removeKey(getCmdOutFile, "snapshot_id", "date_from", "date_updated")
+	_, _, err = addPublication(jsonl)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Retrieve the publication
+	stdOut, _, err := getPublication("00000000000000000000000001")
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Remove dynamic fields distorting the JSONEqf assertion
+	ina, err := removeKey(jsonl, "snapshot_id", "date_from", "date_updated", "user_id")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	ing, err := removeKey(stdOut, "snapshot_id", "date_from", "date_updated")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -265,30 +243,30 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 		t.Fatal(errFile)
 	}
 
-	// Add a publication
-	addCmdOutFile, errJSONL = toJSONL(file)
-	if errJSONL != nil {
-		t.Fatal(errJSONL)
-	}
+	rec, _ = addKey(string(file), "id", "00000000000000000000000002")
 
-	errAdd = addPublication(addCmdOutFile)
-	if errAdd != nil {
-		t.Fatal(errAdd)
+	jsonl, err = toJSONL([]byte(rec))
+	if err != nil {
+		t.Fatal(err)
 	}
-
-	// Retrieve the publication
-	getCmdOutFile, errGetCmdOut = getPublication("00000000000000000000000002")
-	if errGetCmdOut != nil {
-		t.Fatal(errGetCmdOut)
-	}
-
-	// Remove dynamic fields distorting the JSONEqf assertion
-	ina, err = removeKey(addCmdOutFile, "snapshot_id", "date_from", "date_updated", "user")
+	_, _, err = addPublication(jsonl)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	ing, err = removeKey(getCmdOutFile, "snapshot_id", "date_from", "date_updated")
+	// Retrieve the publication
+	stdOut, _, err = getPublication("00000000000000000000000002")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Remove dynamic fields distorting the JSONEqf assertion
+	ina, err = removeKey(jsonl, "snapshot_id", "date_from", "date_updated", "user_id")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	ing, err = removeKey(stdOut, "snapshot_id", "date_from", "date_updated")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -302,30 +280,30 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 		t.Fatal(errFile)
 	}
 
-	// Add a publication
-	addCmdOutFile, errJSONL = toJSONL(file)
-	if errJSONL != nil {
-		t.Fatal(errJSONL)
-	}
+	rec, _ = addKey(string(file), "id", "00000000000000000000000003")
 
-	errAdd = addPublication(addCmdOutFile)
-	if errAdd != nil {
-		t.Fatal(errAdd)
+	jsonl, err = toJSONL([]byte(rec))
+	if err != nil {
+		t.Fatal(err)
 	}
-
-	// Retrieve the publication
-	getCmdOutFile, errGetCmdOut = getPublication("00000000000000000000000003")
-	if errGetCmdOut != nil {
-		t.Fatal(errGetCmdOut)
-	}
-
-	// Remove dynamic fields distorting the JSONEqf assertion
-	ina, err = removeKey(addCmdOutFile, "snapshot_id", "date_from", "date_updated", "user")
+	_, _, err = addPublication(jsonl)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	ing, err = removeKey(getCmdOutFile, "snapshot_id", "date_from", "date_updated")
+	// Retrieve the publication
+	stdOut, _, err = getPublication("00000000000000000000000003")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Remove dynamic fields distorting the JSONEqf assertion
+	ina, err = removeKey(jsonl, "snapshot_id", "date_from", "date_updated", "user_id")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	ing, err = removeKey(stdOut, "snapshot_id", "date_from", "date_updated")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -339,30 +317,30 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 		t.Fatal(errFile)
 	}
 
-	// Add a publication
-	addCmdOutFile, errJSONL = toJSONL(file)
-	if errJSONL != nil {
-		t.Fatal(errJSONL)
-	}
+	rec, _ = addKey(string(file), "id", "00000000000000000000000004")
 
-	errAdd = addPublication(addCmdOutFile)
-	if errAdd != nil {
-		t.Fatal(errAdd)
+	jsonl, err = toJSONL([]byte(rec))
+	if err != nil {
+		t.Fatal(err)
 	}
-
-	// Retrieve the publication
-	getCmdOutFile, errGetCmdOut = getPublication("00000000000000000000000004")
-	if errGetCmdOut != nil {
-		t.Fatal(errGetCmdOut)
-	}
-
-	// Remove dynamic fields distorting the JSONEqf assertion
-	ina, err = removeKey(addCmdOutFile, "snapshot_id", "date_from", "date_updated", "user")
+	_, _, err = addPublication(jsonl)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	ing, err = removeKey(getCmdOutFile, "snapshot_id", "date_from", "date_updated")
+	// Retrieve the publication
+	stdOut, _, err = getPublication("00000000000000000000000004")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Remove dynamic fields distorting the JSONEqf assertion
+	ina, err = removeKey(jsonl, "snapshot_id", "date_from", "date_updated", "user_id")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	ing, err = removeKey(stdOut, "snapshot_id", "date_from", "date_updated")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -376,30 +354,30 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 		t.Fatal(errFile)
 	}
 
-	// Add a publication
-	addCmdOutFile, errJSONL = toJSONL(file)
-	if errJSONL != nil {
-		t.Fatal(errJSONL)
-	}
+	rec, _ = addKey(string(file), "id", "00000000000000000000000005")
 
-	errAdd = addPublication(addCmdOutFile)
-	if errAdd != nil {
-		t.Fatal(errAdd)
+	jsonl, err = toJSONL([]byte(rec))
+	if err != nil {
+		t.Fatal(err)
 	}
-
-	// Retrieve the publication
-	getCmdOutFile, errGetCmdOut = getPublication("00000000000000000000000005")
-	if errGetCmdOut != nil {
-		t.Fatal(errGetCmdOut)
-	}
-
-	// Remove dynamic fields distorting the JSONEqf assertion
-	ina, err = removeKey(addCmdOutFile, "snapshot_id", "date_from", "date_updated", "user")
+	_, _, err = addPublication(jsonl)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	ing, err = removeKey(getCmdOutFile, "snapshot_id", "date_from", "date_updated")
+	// Retrieve the publication
+	stdOut, _, err = getPublication("00000000000000000000000005")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Remove dynamic fields distorting the JSONEqf assertion
+	ina, err = removeKey(jsonl, "snapshot_id", "date_from", "date_updated", "user_id")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	ing, err = removeKey(stdOut, "snapshot_id", "date_from", "date_updated")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -413,30 +391,30 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 		t.Fatal(errFile)
 	}
 
-	// Add a publication
-	addCmdOutFile, errJSONL = toJSONL(file)
-	if errJSONL != nil {
-		t.Fatal(errJSONL)
-	}
+	rec, _ = addKey(string(file), "id", "00000000000000000000000006")
 
-	errAdd = addPublication(addCmdOutFile)
-	if errAdd != nil {
-		t.Fatal(errAdd)
+	jsonl, err = toJSONL([]byte(rec))
+	if err != nil {
+		t.Fatal(err)
 	}
-
-	// Retrieve the publication
-	getCmdOutFile, errGetCmdOut = getPublication("00000000000000000000000006")
-	if errGetCmdOut != nil {
-		t.Fatal(errGetCmdOut)
-	}
-
-	// Remove dynamic fields distorting the JSONEqf assertion
-	ina, err = removeKey(addCmdOutFile, "snapshot_id", "date_from", "date_updated", "user")
+	_, _, err = addPublication(jsonl)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	ing, err = removeKey(getCmdOutFile, "snapshot_id", "date_from", "date_updated")
+	// Retrieve the publication
+	stdOut, _, err = getPublication("00000000000000000000000006")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Remove dynamic fields distorting the JSONEqf assertion
+	ina, err = removeKey(jsonl, "snapshot_id", "date_from", "date_updated", "user_id")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	ing, err = removeKey(stdOut, "snapshot_id", "date_from", "date_updated")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -450,30 +428,30 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 		t.Fatal(errFile)
 	}
 
-	// Add a publication
-	addCmdOutFile, errJSONL = toJSONL(file)
-	if errJSONL != nil {
-		t.Fatal(errJSONL)
-	}
+	rec, _ = addKey(string(file), "id", "00000000000000000000000007")
 
-	errAdd = addPublication(addCmdOutFile)
-	if errAdd != nil {
-		t.Fatal(errAdd)
+	jsonl, err = toJSONL([]byte(rec))
+	if err != nil {
+		t.Fatal(err)
 	}
-
-	// Retrieve the publication
-	getCmdOutFile, errGetCmdOut = getPublication("00000000000000000000000007")
-	if errGetCmdOut != nil {
-		t.Fatal(errGetCmdOut)
-	}
-
-	// Remove dynamic fields distorting the JSONEqf assertion
-	ina, err = removeKey(addCmdOutFile, "snapshot_id", "date_from", "date_updated", "user")
+	_, _, err = addPublication(jsonl)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	ing, err = removeKey(getCmdOutFile, "snapshot_id", "date_from", "date_updated")
+	// Retrieve the publication
+	stdOut, _, err = getPublication("00000000000000000000000007")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Remove dynamic fields distorting the JSONEqf assertion
+	ina, err = removeKey(jsonl, "snapshot_id", "date_from", "date_updated", "user_id")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	ing, err = removeKey(stdOut, "snapshot_id", "date_from", "date_updated")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -487,30 +465,30 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 		t.Fatal(errFile)
 	}
 
-	// Add a publication
-	addCmdOutFile, errJSONL = toJSONL(file)
-	if errJSONL != nil {
-		t.Fatal(errJSONL)
-	}
+	rec, _ = addKey(string(file), "id", "00000000000000000000000008")
 
-	errAdd = addPublication(addCmdOutFile)
-	if errAdd != nil {
-		t.Fatal(errAdd)
+	jsonl, err = toJSONL([]byte(rec))
+	if err != nil {
+		t.Fatal(err)
 	}
-
-	// Retrieve the publication
-	getCmdOutFile, errGetCmdOut = getPublication("00000000000000000000000008")
-	if errGetCmdOut != nil {
-		t.Fatal(errGetCmdOut)
-	}
-
-	// Remove dynamic fields distorting the JSONEqf assertion
-	ina, err = removeKey(addCmdOutFile, "snapshot_id", "date_from", "date_updated", "user")
+	_, _, err = addPublication(jsonl)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	ing, err = removeKey(getCmdOutFile, "snapshot_id", "date_from", "date_updated")
+	// Retrieve the publication
+	stdOut, _, err = getPublication("00000000000000000000000008")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Remove dynamic fields distorting the JSONEqf assertion
+	ina, err = removeKey(jsonl, "snapshot_id", "date_from", "date_updated", "user_id")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	ing, err = removeKey(stdOut, "snapshot_id", "date_from", "date_updated")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -530,11 +508,11 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 // Validation: year field is required
 // Validation: year field is invalid
 // Validation: language code is invalid
-// Validation: abstract => ID is required
+// Validation: abstract => id is required
 // Validation: abstract => lang is required
 // Validation: abstract => lang is invalid
 // Validation: abstraxt => text is required
-// Validation: laysummary => ID is required
+// Validation: laysummary => id is required
 // Validation: laysummary => lang is required
 // Validation: laysummary => lang is invalid
 // Validation: laysummary => text is required
@@ -543,24 +521,24 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 // Validation: if status = public, usesEditor, !usesAuthor => at least 1 editor
 // Validation: if status = public, usesEditor, !usesAuthor, !extern => at least 1 ugent editor
 // Validation: if status = public, !legacy, usesSupervisor => at least 1 supervisor
-// Validation: author => ID is required
+// Validation: author => id is required
 // Validation: author => first name is required
 // Validation: author => last name is required
 // Validation: author => credit role is required
 // Validation: author => credit role is invalid
-// Validation: editor => ID is required
+// Validation: editor => id is required
 // Validation: editor => first name is required
 // Validation: editor => last name is required
 // Validation: editor => credit role is required
 // Validation: editor => credit role is invalid
-// Validation: supervisor => ID is required
+// Validation: supervisor => id is required
 // Validation: supervisor => first name is required
 // Validation: supervisor => last name is required
 // Validation: supervisor => credit role is required
 // Validation: supervisor => credit role is invalid
-// Validation: project => ID is required
-// Validation: department => ID is required
-// Validation: relatedDataset => ID is required
+// Validation: project => id is required
+// Validation: department => id is required
+// Validation: relatedDataset => id is required
 // Validation: file ........
 // Validation: link => invalid relation
 
@@ -579,42 +557,45 @@ func TestAddPublicationSuite(t *testing.T) {
 	suite.Run(t, new(AddPublicationSuite))
 }
 
-func addPublication(jsonl string) error {
-	actual := bytes.NewBufferString("")
-	rootCmd.SetOut(actual)
-	rootCmd.SetErr(actual)
+func (s *AddPublicationSuite) TearDownSuite() {
+	purgePublication("00000000000000000000000001")
+	purgePublication("00000000000000000000000002")
+	purgePublication("00000000000000000000000003")
+	purgePublication("00000000000000000000000004")
+	purgePublication("00000000000000000000000005")
+	purgePublication("00000000000000000000000006")
+	purgePublication("00000000000000000000000007")
+	purgePublication("00000000000000000000000008")
+}
+
+func addPublication(jsonl string) (string, string, error) {
+	stdOut := bytes.NewBufferString("")
+	stdErr := bytes.NewBufferString("")
+
+	rootCmd.SetOut(stdOut)
+	rootCmd.SetErr(stdErr)
 
 	rootCmd.SetArgs([]string{"publication", "add"})
 
 	in := strings.NewReader(jsonl)
 	rootCmd.SetIn(in)
 
-	errAdd := rootCmd.Execute()
-	if errAdd != nil {
-		return errAdd
-	}
-
-	return nil
-}
-
-func getPublication(id string) (string, error) {
-	actual := bytes.NewBufferString("")
-	rootCmd.SetOut(actual)
-	rootCmd.SetErr(actual)
-
-	rootCmd.SetArgs([]string{"publication", "get", id})
-
-	errAdd := rootCmd.Execute()
-	if errAdd != nil {
-		return "", errAdd
-	}
-
-	getCmdOut, err := ioutil.ReadAll(actual)
+	err := rootCmd.Execute()
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
-	return string(getCmdOut), nil
+	cmdOut, err := ioutil.ReadAll(stdOut)
+	if err != nil {
+		return "", "", err
+	}
+
+	cmdErr, err := ioutil.ReadAll(stdOut)
+	if err != nil {
+		return "", "", err
+	}
+
+	return string(cmdOut), string(cmdErr), nil
 }
 
 func toJSONL(file []byte) (string, error) {
@@ -650,4 +631,20 @@ func removeKey(input string, keys ...string) (string, error) {
 	}
 
 	return output, nil
+}
+
+func addKey(input, key, value string) (string, error) {
+	var m map[string]interface{}
+	if err := json.Unmarshal([]byte(input), &m); err != nil {
+		return "", err
+	}
+
+	m[key] = value
+
+	output, err := json.Marshal(m)
+	if err != nil {
+		return "", err
+	}
+
+	return string(output), nil
 }

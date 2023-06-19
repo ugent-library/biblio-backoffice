@@ -112,7 +112,7 @@ func publicationToItem(p *models.Publication) Item {
 	}
 	item.Issued.Raw = p.Year
 	for _, a := range p.Author {
-		item.Author = append(item.Author, Person{Family: a.LastName, Given: a.FirstName})
+		item.Author = append(item.Author, Person{Family: a.LastName(), Given: a.FirstName()})
 	}
 	if len(p.ISBN) > 0 {
 		item.ISBN = p.ISBN[0]

@@ -3,57 +3,80 @@ package es6
 import (
 	"github.com/ugent-library/biblio-backoffice/internal/models"
 	internal_time "github.com/ugent-library/biblio-backoffice/internal/time"
+	"github.com/ugent-library/biblio-backoffice/internal/util"
 	"github.com/ugent-library/biblio-backoffice/internal/validation"
 	"github.com/ugent-library/biblio-backoffice/internal/vocabularies"
 )
 
 type indexedDataset struct {
-	models.Dataset
-	// not needed anymore in es7 with date nano type
-	DateCreated string `json:"date_created,omitempty"`
-	DateUpdated string `json:"date_updated,omitempty"`
-	DateFrom    string `json:"date_from,omitempty"`
-	DateUntil   string `json:"date_until,omitempty"`
-	// index only fields
-	HasMessage bool     `json:"has_message"`
-	Faculty    []string `json:"faculty,omitempty"`
+	AuthorID       []string `json:"author_id,omitempty"`
+	BatchID        string   `json:"batch_id,omitempty"`
+	CreatorID      string   `json:"creator_id,omitempty"`
+	DateCreated    string   `json:"date_created,omitempty"`
+	DateUpdated    string   `json:"date_updated,omitempty"`
+	Contributor    []string `json:"contributor,omitempty"`
+	FacultyID      []string `json:"faculty_id,omitempty"`
+	HasMessage     bool     `json:"has_message"`
+	ID             string   `json:"id,omitempty"`
+	IdentifierType []string `json:"identifier_type,omitempty"`
+	Identifier     []string `json:"identifier,omitempty"`
+	LastUserID     string   `json:"last_user_id,omitempty"`
+	Locked         bool     `json:"locked"`
+	OrganizationID []string `json:"organization_id,omitempty"`
+	ReviewerTags   []string `json:"reviewer_tags,omitempty"`
+	Status         string   `json:"status,omitempty"`
+	Title          string   `json:"title,omitempty"`
+	UserID         string   `json:"user_id,omitempty"`
+	Year           string   `json:"year,omitempty"`
 }
 
 func NewIndexedDataset(d *models.Dataset) *indexedDataset {
 	id := &indexedDataset{
-		Dataset:     *d,
-		DateCreated: internal_time.FormatTimeUTC(d.DateCreated),
-		DateUpdated: internal_time.FormatTimeUTC(d.DateUpdated),
-		HasMessage:  len(d.Message) > 0,
-	}
-
-	if d.DateFrom != nil {
-		id.DateFrom = internal_time.FormatTimeUTC(d.DateFrom)
-	}
-	if d.DateUntil != nil {
-		id.DateUntil = internal_time.FormatTimeUTC(d.DateUntil)
+		BatchID:      d.BatchID,
+		CreatorID:    d.CreatorID,
+		DateCreated:  internal_time.FormatTimeUTC(d.DateCreated),
+		DateUpdated:  internal_time.FormatTimeUTC(d.DateUpdated),
+		HasMessage:   len(d.Message) > 0,
+		ID:           d.ID,
+		LastUserID:   d.LastUserID,
+		Locked:       d.Locked,
+		ReviewerTags: d.ReviewerTags,
+		Status:       d.Status,
+		Title:        d.Title,
+		Year:         d.Year,
 	}
 
 	faculties := vocabularies.Map["faculties"]
 
-	// extract faculty from department trees
-	for _, val := range id.Department {
-		for _, dept := range val.Tree {
-			if validation.InArray(faculties, dept.ID) {
-				exists := false
-				for _, fac := range id.Faculty {
-					if fac == dept.ID {
-						exists = true
-						break
-					}
-				}
+	// extract faculty_id and organization_id from department trees
+	for _, rel := range d.RelatedOrganizations {
+		for _, org := range rel.Organization.Tree {
+			if !validation.InArray(id.OrganizationID, org.ID) {
+				id.OrganizationID = append(id.OrganizationID, org.ID)
+			}
 
-				if !exists {
-					id.Faculty = append(id.Faculty, dept.ID)
-				}
+			if validation.InArray(faculties, org.ID) && !validation.InArray(id.FacultyID, org.ID) {
+				id.FacultyID = append(id.FacultyID, org.ID)
 			}
 		}
 	}
+
+	for k, vals := range d.Identifiers {
+		id.IdentifierType = append(id.IdentifierType, k)
+		id.Identifier = append(id.Identifier, vals...)
+	}
+
+	for _, author := range d.Author {
+		id.Contributor = append(id.Contributor, author.Name())
+		if author.PersonID != "" {
+			id.AuthorID = append(id.AuthorID, author.PersonID)
+		}
+	}
+	for _, contributor := range d.Contributor {
+		id.Contributor = append(id.Contributor, contributor.Name())
+	}
+	id.AuthorID = util.UniqStrings(id.AuthorID)
+	id.Contributor = util.UniqStrings(id.Contributor)
 
 	return id
 }

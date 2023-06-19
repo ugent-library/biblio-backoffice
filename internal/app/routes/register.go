@@ -78,40 +78,38 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 	// 	Tasks:       services.Tasks,
 	// }
 	dashboardHandler := &dashboard.Handler{
-		BaseHandler:              baseHandler,
-		DatasetSearchService:     services.DatasetSearchService,
-		PublicationSearchService: services.PublicationSearchService,
+		BaseHandler:            baseHandler,
+		DatasetSearchIndex:     services.DatasetSearchIndex,
+		PublicationSearchIndex: services.PublicationSearchIndex,
 	}
 	frontofficeHandler := &frontoffice.Handler{
-		BaseHandler:              baseHandler,
-		Repository:               services.Repository,
-		DatasetSearchService:     services.DatasetSearchService,
-		PublicationSearchService: services.PublicationSearchService,
-		FileStore:                services.FileStore,
+		BaseHandler: baseHandler,
+		Repository:  services.Repository,
+		FileStore:   services.FileStore,
 		IPFilter: ipfilter.New(ipfilter.Options{
 			AllowedIPs:     strings.Split(viper.GetString("ip-ranges"), ","),
 			BlockByDefault: true,
 		}),
 	}
 	datasetSearchingHandler := &datasetsearching.Handler{
-		BaseHandler:          baseHandler,
-		DatasetSearchService: services.DatasetSearchService,
+		BaseHandler:        baseHandler,
+		DatasetSearchIndex: services.DatasetSearchIndex,
 	}
 	datasetExportingHandler := &datasetexporting.Handler{
-		BaseHandler:            baseHandler,
-		DatasetListExporters:   services.DatasetListExporters,
-		DatasetSearcherService: services.DatasetSearcherService,
+		BaseHandler:          baseHandler,
+		DatasetListExporters: services.DatasetListExporters,
+		DatasetSearchIndex:   services.DatasetSearchIndex,
 	}
 	datasetViewingHandler := &datasetviewing.Handler{
 		BaseHandler: baseHandler,
 		Repository:  services.Repository,
 	}
 	datasetCreatingHandler := &datasetcreating.Handler{
-		BaseHandler:          baseHandler,
-		Repository:           services.Repository,
-		DatasetSearchService: services.DatasetSearchService,
-		DatasetSources:       services.DatasetSources,
-		OrganizationService:  services.OrganizationService,
+		BaseHandler:         baseHandler,
+		Repository:          services.Repository,
+		DatasetSearchIndex:  services.DatasetSearchIndex,
+		DatasetSources:      services.DatasetSources,
+		OrganizationService: services.OrganizationService,
 	}
 	datasetEditingHandler := &datasetediting.Handler{
 		BaseHandler:               baseHandler,
@@ -122,17 +120,17 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		OrganizationService:       services.OrganizationService,
 		PersonSearchService:       services.PersonSearchService,
 		PersonService:             services.PersonService,
-		PublicationSearchService:  services.PublicationSearchService,
+		PublicationSearchIndex:    services.PublicationSearchIndex,
 	}
 	publicationSearchingHandler := &publicationsearching.Handler{
-		BaseHandler:              baseHandler,
-		PublicationSearchService: services.PublicationSearchService,
-		FileStore:                services.FileStore,
+		BaseHandler:            baseHandler,
+		PublicationSearchIndex: services.PublicationSearchIndex,
+		FileStore:              services.FileStore,
 	}
 	publicationExportingHandler := &publicationexporting.Handler{
-		BaseHandler:                baseHandler,
-		PublicationListExporters:   services.PublicationListExporters,
-		PublicationSearcherService: services.PublicationSearcherService,
+		BaseHandler:              baseHandler,
+		PublicationListExporters: services.PublicationListExporters,
+		PublicationSearchIndex:   services.PublicationSearchIndex,
 	}
 	publicationViewingHandler := &publicationviewing.Handler{
 		BaseHandler: baseHandler,
@@ -141,12 +139,12 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		MaxFileSize: viper.GetInt("max-file-size"),
 	}
 	publicationCreatingHandler := &publicationcreating.Handler{
-		BaseHandler:              baseHandler,
-		Repository:               services.Repository,
-		PublicationSearchService: services.PublicationSearchService,
-		PublicationSources:       services.PublicationSources,
-		PublicationDecoders:      services.PublicationDecoders,
-		OrganizationService:      services.OrganizationService,
+		BaseHandler:            baseHandler,
+		Repository:             services.Repository,
+		PublicationSearchIndex: services.PublicationSearchIndex,
+		PublicationSources:     services.PublicationSources,
+		PublicationDecoders:    services.PublicationDecoders,
+		OrganizationService:    services.OrganizationService,
 	}
 	publicationEditingHandler := &publicationediting.Handler{
 		BaseHandler:               baseHandler,
@@ -157,14 +155,13 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		OrganizationService:       services.OrganizationService,
 		PersonSearchService:       services.PersonSearchService,
 		PersonService:             services.PersonService,
-		DatasetSearchService:      services.DatasetSearchService,
+		DatasetSearchIndex:        services.DatasetSearchIndex,
 		FileStore:                 services.FileStore,
 		MaxFileSize:               viper.GetInt("max-file-size"),
 	}
 	publicationBatchHandler := &publicationbatch.Handler{
-		BaseHandler:    baseHandler,
-		Repository:     services.Repository,
-		ProjectService: services.ProjectService,
+		BaseHandler: baseHandler,
+		Repository:  services.Repository,
 	}
 	// orcidHandler := &orcid.Handler{
 	// 	BaseHandler:              baseHandler,
@@ -199,7 +196,7 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		Methods("GET")
 	// frontoffice file download
 	frontofficeRouter.HandleFunc("/download/{id}/{file_id}", frontofficeHandler.DownloadFile).
-		Methods("GET")
+		Methods("GET", "HEAD")
 
 	csrfPath := basePath
 	if csrfPath == "" {
@@ -280,7 +277,7 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 	// add dataset
 	r.HandleFunc("/dataset/add",
 		datasetCreatingHandler.Wrap(datasetCreatingHandler.Add)).
-		Methods("GET").
+		Methods("GET", "POST").
 		Name("dataset_add")
 	r.HandleFunc("/dataset/import",
 		datasetCreatingHandler.Wrap(datasetCreatingHandler.AddImport)).
@@ -370,18 +367,10 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		Name("dataset_republish")
 
 	// lock dataset
-	r.HandleFunc("/dataset/{id}/confirm-lock",
-		datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmLock)).
-		Methods("GET").
-		Name("dataset_confirm_lock")
 	r.HandleFunc("/dataset/{id}/lock",
 		datasetEditingHandler.Wrap(datasetEditingHandler.Lock)).
 		Methods("POST").
 		Name("dataset_lock")
-	r.HandleFunc("/dataset/{id}/confirm-unlock",
-		datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmUnlock)).
-		Methods("GET").
-		Name("dataset_confirm_unlock")
 	r.HandleFunc("/dataset/{id}/unlock",
 		datasetEditingHandler.Wrap(datasetEditingHandler.Unlock)).
 		Methods("POST").
@@ -462,6 +451,32 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		datasetEditingHandler.Wrap(datasetEditingHandler.DeleteProject)).
 		Methods("DELETE").
 		Name("dataset_delete_project")
+
+	// edit dataset links
+	r.HandleFunc("/dataset/{id}/links/add",
+		datasetEditingHandler.Wrap(datasetEditingHandler.AddLink)).
+		Methods("GET").
+		Name("dataset_add_link")
+	r.HandleFunc("/dataset/{id}/links",
+		datasetEditingHandler.Wrap(datasetEditingHandler.CreateLink)).
+		Methods("POST").
+		Name("dataset_create_link")
+	r.HandleFunc("/dataset/{id}/links/{link_id}/edit",
+		datasetEditingHandler.Wrap(datasetEditingHandler.EditLink)).
+		Methods("GET").
+		Name("dataset_edit_link")
+	r.HandleFunc("/dataset/{id}/links/{link_id}",
+		datasetEditingHandler.Wrap(datasetEditingHandler.UpdateLink)).
+		Methods("PUT").
+		Name("dataset_update_link")
+	r.HandleFunc("/dataset/{id}/{snapshot_id}/links/{link_id}/confirm-delete",
+		datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmDeleteLink)).
+		Methods("GET").
+		Name("dataset_confirm_delete_link")
+	r.HandleFunc("/dataset/{id}/links/{link_id}",
+		datasetEditingHandler.Wrap(datasetEditingHandler.DeleteLink)).
+		Methods("DELETE").
+		Name("dataset_delete_link")
 
 	// edit dataset departments
 	r.HandleFunc("/dataset/{id}/departments/add",
@@ -650,10 +665,10 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		publicationBatchHandler.Wrap(publicationBatchHandler.Show)).
 		Methods("GET").
 		Name("publication_batch")
-	r.HandleFunc("/publication/batch/add-projects",
-		publicationBatchHandler.Wrap(publicationBatchHandler.AddProjects)).
+	r.HandleFunc("/publication/batch",
+		publicationBatchHandler.Wrap(publicationBatchHandler.Process)).
 		Methods("POST").
-		Name("publication_batch_add_projects")
+		Name("publication_process_batch")
 
 	// view publication
 	r.HandleFunc("/publication/{id}",
@@ -720,18 +735,10 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		Name("publication_republish")
 
 	// lock publication
-	r.HandleFunc("/publication/{id}/confirm-lock",
-		publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmLock)).
-		Methods("GET").
-		Name("publication_confirm_lock")
 	r.HandleFunc("/publication/{id}/lock",
 		publicationEditingHandler.Wrap(publicationEditingHandler.Lock)).
 		Methods("POST").
 		Name("publication_lock")
-	r.HandleFunc("/publication/{id}/confirm-unlock",
-		publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmUnlock)).
-		Methods("GET").
-		Name("publication_confirm_unlock")
 	r.HandleFunc("/publication/{id}/unlock",
 		publicationEditingHandler.Wrap(publicationEditingHandler.Unlock)).
 		Methods("POST").

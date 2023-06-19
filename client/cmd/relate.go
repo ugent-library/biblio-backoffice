@@ -3,12 +3,11 @@ package cmd
 import (
 	"context"
 	"errors"
-	"log"
-	"time"
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
-	"github.com/ugent-library/biblio-backoffice/client/client"
+	cnx "github.com/ugent-library/biblio-backoffice/client/connection"
+	"google.golang.org/grpc/status"
 )
 
 func init() {
@@ -18,28 +17,42 @@ func init() {
 var PublicationRelateDatasetCmd = &cobra.Command{
 	Use:   "relate-dataset [id] [dataset-id]",
 	Short: "Add related dataset to publication",
-	Args:  cobra.ExactArgs(2),
-	Run: func(cmd *cobra.Command, args []string) {
-		PublicationRelateDataset(cmd, args)
-	},
+	Long: `
+	Relate a publication to a dataset.
+
+	The "related_dataset" field will be filled on the publication side, the "related_publication"
+	field will be filled on the dataset side.
+
+	Outputs either a success message or an error message:
+
+		$ ./biblio-backoffice relate-dataset [ID] [DATASET-ID]
+		related: publication[id: ID] -> dataset[id: ID]
+	`,
+	Args: cobra.ExactArgs(2),
+	RunE: PublicationRelateDataset,
 }
 
-func PublicationRelateDataset(cmd *cobra.Command, args []string) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
-	defer cancel()
+func PublicationRelateDataset(cmd *cobra.Command, args []string) error {
+	return cnx.Handle(config, func(c api.BiblioClient) error {
+		req := &api.RelateRequest{
+			One: &api.RelateRequest_PublicationOne{PublicationOne: args[0]},
+			Two: &api.RelateRequest_DatasetTwo{DatasetTwo: args[1]},
+		}
+		res, err := c.Relate(context.Background(), req)
 
-	c, cnx, err := client.Create(ctx, config)
-	defer cnx.Close()
+		if err != nil {
+			if st, ok := status.FromError(err); ok {
+				return errors.New(st.Message())
+			}
+		}
 
-	if errors.Is(err, context.DeadlineExceeded) {
-		log.Fatal("ContextDeadlineExceeded: true")
-	}
+		if ge := res.GetError(); ge != nil {
+			sre := status.FromProto(ge)
+			cmd.Printf("%s", sre.Message())
+		} else {
+			cmd.Printf("%s", res.GetMessage())
+		}
 
-	req := &api.RelateRequest{
-		One: &api.RelateRequest_PublicationOne{PublicationOne: args[0]},
-		Two: &api.RelateRequest_DatasetTwo{DatasetTwo: args[1]},
-	}
-	if _, err := c.Relate(context.Background(), req); err != nil {
-		log.Fatal(err)
-	}
+		return nil
+	})
 }

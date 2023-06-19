@@ -58,59 +58,51 @@ func (x *xlsx) Add(dataset *models.Dataset) {
 	x.BaseExporter.Add(x.datasetToRow(dataset))
 }
 
-func (x *xlsx) datasetToRow(ds *models.Dataset) []string {
+func (x *xlsx) datasetToRow(d *models.Dataset) []string {
 	//see also: biblio/lib/Catmandu/Fix/publication_to_csv.pm
 
 	m := map[string]string{}
-	m["id"] = ds.ID
-	m["status"] = ds.Status
-	if ds.Creator != nil {
-		m["creator"] = fmt.Sprintf("%s (%s)", ds.Creator.Name, ds.Creator.ID)
+	m["id"] = d.ID
+	m["status"] = d.Status
+	if d.Creator != nil {
+		m["creator"] = fmt.Sprintf("%s (%s)", d.Creator.FullName, d.Creator.ID)
 	}
-	if ds.User != nil {
-		m["user"] = fmt.Sprintf("%s (%s)", ds.User.Name, ds.User.ID)
+	if d.User != nil {
+		m["user"] = fmt.Sprintf("%s (%s)", d.User.FullName, d.User.ID)
 	}
-	if ds.DateCreated != nil {
-		m["date_created"] = internal_time.FormatTimeUTC(ds.DateCreated)
+	if d.DateCreated != nil {
+		m["date_created"] = internal_time.FormatTimeUTC(d.DateCreated)
 	}
-	if ds.DateUpdated != nil {
-		m["date_updated"] = internal_time.FormatTimeUTC(ds.DateUpdated)
+	if d.DateUpdated != nil {
+		m["date_updated"] = internal_time.FormatTimeUTC(d.DateUpdated)
 	}
-	m["title"] = ds.Title
-	m["access_level"] = ds.AccessLevel
+	m["title"] = d.Title
+	m["access_level"] = d.AccessLevel
 
 	//field: <role>
 	//field: ugent_<role>
 	for _, role := range []string{"author", "contributor"} {
-		contributors := ds.Contributors(role)
+		contributors := d.Contributors(role)
 		{
 			values := []string{}
-			for _, contributor := range contributors {
-				fullName := contributor.FullName
-				if fullName == "" {
-					fullName = contributor.FirstName + " " + contributor.LastName
-				}
-				values = append(values, fullName)
+			for _, c := range contributors {
+				values = append(values, c.Name())
 			}
 			m[role] = strings.Join(values, sep)
 		}
 		{
 			values := []string{}
-			for _, contributor := range contributors {
-				if len(contributor.UGentID) == 0 {
+			for _, c := range contributors {
+				if c.Person == nil || len(c.Person.UGentID) == 0 {
 					continue
 				}
 				group := ""
-				if len(contributor.Department) > 0 {
-					group = "@" + contributor.Department[0].ID
+				if len(c.Person.Affiliations) > 0 {
+					group = "@" + c.Person.Affiliations[0].OrganizationID
 				}
 				//full_name (<ugent_id>)
 				//full_name (<ugent_id>@<department.0.id>)
-				fullName := contributor.FullName
-				if fullName == "" {
-					fullName = contributor.FirstName + " " + contributor.LastName
-				}
-				val := fmt.Sprintf("%s (%s%s)", fullName, contributor.UGentID[0], group)
+				val := fmt.Sprintf("%s (%s%s)", c.Name(), c.Person.UGentID[0], group)
 				values = append(values, val)
 			}
 			m["ugent_"+role] = strings.Join(values, sep)
@@ -118,34 +110,34 @@ func (x *xlsx) datasetToRow(ds *models.Dataset) []string {
 	}
 
 	//field: department
-	if len(ds.Department) > 0 {
-		depIds := make([]string, 0, len(ds.Department))
-		for _, dep := range ds.Department {
-			depIds = append(depIds, dep.ID)
+	if len(d.RelatedOrganizations) > 0 {
+		depIds := make([]string, 0, len(d.RelatedOrganizations))
+		for _, dep := range d.RelatedOrganizations {
+			depIds = append(depIds, dep.OrganizationID)
 		}
 		m["department"] = strings.Join(depIds, sep)
 	}
 
-	m["doi"] = ds.DOI
-	m["embargo_date"] = ds.EmbargoDate
-	m["access_level_after_embargo"] = ds.AccessLevelAfterEmbargo
-	m["format"] = strings.Join(ds.Format, sep)
-	m["keyword"] = strings.Join(ds.Keyword, sep)
-	m["license"] = ds.License
-	m["other_license"] = ds.OtherLicense
-	m["locked"] = fmt.Sprintf("%t", ds.Locked)
+	m["doi"] = d.Identifiers.Get("DOI")
+	m["embargo_date"] = d.EmbargoDate
+	m["access_level_after_embargo"] = d.AccessLevelAfterEmbargo
+	m["format"] = strings.Join(d.Format, sep)
+	m["keyword"] = strings.Join(d.Keyword, sep)
+	m["license"] = d.License
+	m["other_license"] = d.OtherLicense
+	m["locked"] = fmt.Sprintf("%t", d.Locked)
 	//TODO: projects
-	projectIds := make([]string, 0, len(ds.Project))
-	projectTitles := make([]string, 0, len(ds.Project))
-	for _, project := range ds.Project {
-		projectIds = append(projectIds, project.ID)
-		projectTitles = append(projectTitles, project.Name)
+	projectIds := make([]string, 0, len(d.RelatedProjects))
+	projectTitles := make([]string, 0, len(d.RelatedProjects))
+	for _, rel := range d.RelatedProjects {
+		projectIds = append(projectIds, rel.ProjectID)
+		projectTitles = append(projectTitles, rel.Project.Title)
 	}
 	m["project_id"] = strings.Join(projectIds, sep)
 	m["project_title"] = strings.Join(projectTitles, sep)
-	m["publisher"] = ds.Publisher
-	m["reviewer_tags"] = strings.Join(ds.ReviewerTags, sep)
-	m["year"] = ds.Year
+	m["publisher"] = d.Publisher
+	m["reviewer_tags"] = strings.Join(d.ReviewerTags, sep)
+	m["year"] = d.Year
 
 	//hash to ordered list
 	row := make([]string, 0, len(headers))

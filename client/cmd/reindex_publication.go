@@ -3,14 +3,12 @@ package cmd
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
-	"log"
-	"time"
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
-	"github.com/ugent-library/biblio-backoffice/client/client"
+	cnx "github.com/ugent-library/biblio-backoffice/client/connection"
+	"google.golang.org/grpc/status"
 )
 
 func init() {
@@ -20,60 +18,45 @@ func init() {
 var ReindexPublicationCmd = &cobra.Command{
 	Use:   "reindex",
 	Short: "Reindex all publications",
-	Run: func(cmd *cobra.Command, args []string) {
-		ReindexPublications(cmd, args)
-	},
+	RunE:  ReindexPublications,
 }
 
-func ReindexPublications(cmd *cobra.Command, args []string) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
-	defer cancel()
-
-	c, cnx, err := client.Create(ctx, config)
-	defer cnx.Close()
-
-	if errors.Is(err, context.DeadlineExceeded) {
-		log.Fatal("ContextDeadlineExceeded: true")
-	}
-
-	req := &api.ReindexPublicationsRequest{}
-	stream, err := c.ReindexPublications(context.Background(), req)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// sigCh := make(chan os.Signal, 1)
-	// signal.Notify(sigCh, os.Interrupt)
-
-	// wg := sync.WaitGroup{}
-	// wg.Add(1)
-	// go func() {
-	// 	defer wg.Done()
-	// 	select {
-	// 	case <-ctx.Done():
-	// 		log.Println("TEST TEST")
-	// 		os.Exit(0)
-	// 		return
-	// 	case s := <-sigCh:
-	// 		log.Printf("got signal %v, attempting graceful shutdown", s)
-	// 		stream.CloseSend()
-	// 		cancel()
-	// 		cnx.Close()
-	// 		os.Exit(0)
-	// 	}
-	// }()
-
-	//go func() {
-	for {
-		res, err := stream.Recv()
-		if err == io.EOF {
-			break
-		}
+func ReindexPublications(cmd *cobra.Command, args []string) error {
+	return cnx.Handle(config, func(c api.BiblioClient) error {
+		req := &api.ReindexPublicationsRequest{}
+		stream, err := c.ReindexPublications(context.Background(), req)
 		if err != nil {
-			log.Fatalf("error while reading stream: %v", err)
+			return err
 		}
 
-		fmt.Printf("%s\n", res.Message)
-	}
-	// }()
+		stream.CloseSend()
+
+		for {
+			res, err := stream.Recv()
+			if err == io.EOF {
+				break
+			}
+
+			// return gRPC level error
+			if err != nil {
+				if st, ok := status.FromError(err); ok {
+					return errors.New(st.Message())
+				}
+
+				return err
+			}
+
+			// Application level error
+			if ge := res.GetError(); ge != nil {
+				sre := status.FromProto(ge)
+				cmd.Printf("%s\n", sre.Message())
+			}
+
+			if rr := res.GetMessage(); rr != "" {
+				cmd.Printf("%s\n", rr)
+			}
+		}
+
+		return nil
+	})
 }

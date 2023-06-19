@@ -5,17 +5,19 @@ import (
 	"html/template"
 
 	"github.com/rvflash/elapsed"
+	"github.com/ugent-library/biblio-backoffice/identifiers"
 	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"github.com/ugent-library/friendly"
 )
 
 func FuncMap() template.FuncMap {
 	return template.FuncMap{
-		"searchArgs":  models.NewSearchArgs,
-		"timeElapsed": elapsed.LocalTime,
-		"formatRange": FormatRange,
-		"formatBool":  FormatBool,
-		"formatBytes": friendly.Bytes,
+		"searchArgs":        models.NewSearchArgs,
+		"timeElapsed":       elapsed.LocalTime,
+		"formatRange":       FormatRange,
+		"formatBool":        FormatBool,
+		"formatBytes":       friendly.Bytes,
+		"resolveIdentifier": identifiers.Resolve,
 	}
 }
 

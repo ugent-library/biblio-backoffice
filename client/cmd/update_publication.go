@@ -4,13 +4,12 @@ import (
 	"bufio"
 	"context"
 	"errors"
-	"log"
-	"os"
-	"time"
+	"fmt"
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
-	"github.com/ugent-library/biblio-backoffice/client/client"
+	cnx "github.com/ugent-library/biblio-backoffice/client/connection"
+	"google.golang.org/grpc/status"
 )
 
 func init() {
@@ -19,36 +18,45 @@ func init() {
 
 var UpdatePublicationCmd = &cobra.Command{
 	Use:   "update",
-	Short: "Update dataset",
-	Run: func(cmd *cobra.Command, args []string) {
-		log.SetOutput(cmd.OutOrStdout())
-		UpdatePublication(cmd, args)
-	},
+	Short: "Update publication",
+	Long: `
+	Update one or multiple publications.
+
+	This command reads a JSONL formatted file from stdin and streams it to the store.
+
+	It will output either a success message or an error message per record:
+
+		$ ./biblio-backoffice publication update < publications.jsonl
+	`,
+	RunE: UpdatePublication,
 }
 
-func UpdatePublication(cmd *cobra.Command, args []string) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
-	defer cancel()
+func UpdatePublication(cmd *cobra.Command, args []string) error {
+	return cnx.Handle(config, func(c api.BiblioClient) error {
+		reader := bufio.NewReader(cmd.InOrStdin())
+		line, err := reader.ReadBytes('\n')
+		if err != nil {
+			return fmt.Errorf("could not read from stdin: %v", err)
+		}
 
-	c, cnx, err := client.Create(ctx, config)
-	defer cnx.Close()
+		p := &api.Publication{
+			Payload: line,
+		}
 
-	if errors.Is(err, context.DeadlineExceeded) {
-		log.Fatal("ContextDeadlineExceeded: true")
-	}
+		req := &api.UpdatePublicationRequest{Publication: p}
+		res, err := c.UpdatePublication(context.Background(), req)
 
-	reader := bufio.NewReader(os.Stdin)
-	line, err := reader.ReadBytes('\n')
-	if err != nil {
-		log.Fatal(err)
-	}
+		if err != nil {
+			if st, ok := status.FromError(err); ok {
+				return errors.New(st.Message())
+			}
+		}
 
-	p := &api.Publication{
-		Payload: line,
-	}
+		if ge := res.GetError(); ge != nil {
+			sre := status.FromProto(ge)
+			cmd.Printf("%s\n", sre.Message())
+		}
 
-	req := &api.UpdatePublicationRequest{Publication: p}
-	if _, err = c.UpdatePublication(ctx, req); err != nil {
-		log.Fatal(err)
-	}
+		return nil
+	})
 }

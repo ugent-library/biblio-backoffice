@@ -1,0 +1,56 @@
+{{if .Dataset.Link}}
+<div class="card-body p-0">
+    <table class="table" id="links-table">
+        <thead>
+            <tr>
+                <th class="pl-6">Link</th>
+                <th>Relation</th>
+                <th class="pr-6"></th>
+            </tr>
+        </thead>
+        <tbody>
+        {{range $k, $a := .Dataset.Link}}
+            {{$k = $k|toString}}
+            <tr class="row-{{$k}}">
+                <td class="pl-6">
+                    <a class="text-break" href="{{.URL}}" target="_blank">{{.URL}}</a>
+                    <p class="c-body-small text-muted m-0">{{.Description}}</p>
+                </td>
+                <td>{{$.Locale.TS "dataset_link_relations" .Relation}}</td>
+                <td class="pr-6">
+                    {{if $.User.CanEditDataset $.Dataset}}
+                    <div class="c-button-toolbar">
+                        <div class="dropdown">
+                            <button class="btn btn-link btn-icon-only btn-link-muted" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="if if-more"></i>
+                            </button>
+                            <div class="dropdown-menu">
+                                <button class="dropdown-item" type="button"
+                                    hx-get="{{pathFor "dataset_edit_link" "id" $.Dataset.ID "link_id" $a.ID}}"
+                                    hx-target="#modals"
+                                >
+                                    <i class="if if-edit"></i>
+                                    <span>Edit</span>
+                                </button>
+                                <button class="dropdown-item" type="button"
+                                    hx-get="{{pathFor "dataset_confirm_delete_link" "id" $.Dataset.ID "snapshot_id" $.Dataset.SnapshotID "link_id" $a.ID}}"
+                                    hx-target="#modals"
+                                >
+                                    <i class="if if-delete"></i>
+                                    <span>Delete</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {{end}}
+                </td>
+            </tr>
+        {{end}}
+        </tbody>
+    </table>
+</div>
+{{else}}
+<div class="card-body">
+    <span class="text-muted">No links</span>
+</div>
+{{end}}

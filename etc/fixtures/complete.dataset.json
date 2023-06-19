@@ -1,0 +1,64 @@
+{
+  "abstract": [
+    {
+      "text": "test",
+      "lang": "und",
+      "id": "00000000000000000000000001"
+    }
+  ],
+  "access_level": "info:eu-repo/semantics/openAccess",
+  "author": [
+    {
+      "person_id": "00000000-0000-0000-0000-000000000001"
+    }
+  ],
+  "creator_id": "00000000-0000-0000-0000-000000000001",
+  "date_created": "2023-03-13T16:11:23.329912261+01:00",
+  "date_updated": "2023-03-13T16:13:24.471752952+01:00",
+  "date_from": "2023-03-13T16:13:24.472648+01:00",
+  "related_organizations": [
+    {
+      "organization_id": "CA20"
+    }
+  ],
+  "doi": "doi",
+  "identifiers": {
+    "DOI": [
+      "doi"
+    ]
+  },
+  "format": [
+    "text/csv"
+  ],
+  "id": "00000000000000000000000001",
+  "keyword": [
+    "keyword",
+    "keyword2"
+  ],
+  "has_been_public": true,
+  "last_user_id": "00000000-0000-0000-0000-000000000001",
+  "license": "CC-BY-4.0",
+  "locked": false,
+  "message": "test",
+  "related_projects": [
+    {
+      "project_id": "001"
+    }
+  ],
+  "publisher": "publisher",
+  "related_publication": [
+    {
+      "id": "00000000000000000000000011"
+    }
+  ],
+  "reviewer_note": "test",
+  "reviewer_tags": [
+    "test"
+  ],
+  "snapshot_id": "00000000000000000000000001",
+  "status": "public",
+  "title": "title",
+  "url": "URL",
+  "user_id": "00000000-0000-0000-0000-000000000001",
+  "year": "2020"
+}

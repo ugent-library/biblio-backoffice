@@ -3,7 +3,7 @@
 // go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 // go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 // then generate with
-// protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative api/v1/biblio.proto
+// protoc -I ./api/v1 --go_out=api/v1/. --go_opt=paths=source_relative --go-grpc_out=api/v1/. --go-grpc_opt=paths=source_relative api/v1/biblio.proto
 
 syntax = "proto3";
 
@@ -11,15 +11,19 @@ package biblio.v1;
 
 option go_package = "github.com/ugent-library/biblio-backoffice/api/v1";
 
+import "google/rpc/status.proto";
+
 service Biblio {
     rpc GetFile(GetFileRequest) returns (stream GetFileResponse);
     rpc AddFile(stream AddFileRequest) returns (AddFileResponse);
+    rpc ExistsFile(ExistsFileRequest) returns (ExistsFileResponse);
     rpc GetPublication(GetPublicationRequest) returns (GetPublicationResponse);
     rpc GetAllPublications(GetAllPublicationsRequest) returns (stream GetAllPublicationsResponse);
     rpc SearchPublications(SearchPublicationsRequest) returns (SearchPublicationsResponse);
     rpc UpdatePublication(UpdatePublicationRequest) returns (UpdatePublicationResponse);
     rpc AddPublications(stream AddPublicationsRequest) returns (stream AddPublicationsResponse);
     rpc ImportPublications(stream ImportPublicationsRequest) returns (stream ImportPublicationsResponse);
+    rpc MutatePublications(stream MutateRequest) returns (stream MutateResponse);
     rpc GetPublicationHistory(GetPublicationHistoryRequest) returns (stream GetPublicationHistoryResponse);
     rpc PurgePublication(PurgePublicationRequest) returns (PurgePublicationResponse);
     rpc PurgeAllPublications(PurgeAllPublicationsRequest) returns (PurgeAllPublicationsResponse);
@@ -33,11 +37,13 @@ service Biblio {
     rpc UpdateDataset(UpdateDatasetRequest) returns (UpdateDatasetResponse);
     rpc AddDatasets(stream AddDatasetsRequest) returns (stream AddDatasetsResponse);
     rpc ImportDatasets(stream ImportDatasetsRequest) returns (stream importDatasetsResponse);
+    rpc MutateDatasets(stream MutateRequest) returns (stream MutateResponse);
     rpc GetDatasetHistory(GetDatasetHistoryRequest) returns (stream GetDatasetHistoryResponse);
     rpc PurgeDataset(PurgeDatasetRequest) returns (PurgeDatasetResponse);
     rpc PurgeAllDatasets(PurgeAllDatasetsRequest) returns (PurgeAllDatasetsResponse);
     rpc ValidateDatasets(stream ValidateDatasetsRequest) returns (stream ValidateDatasetsResponse);
     rpc ReindexDatasets(ReindexDatasetsRequest) returns (stream ReindexDatasetsResponse);
+    rpc CleanupDatasets(CleanupDatasetsRequest) returns (stream CleanupDatasetsResponse);
     rpc Relate(RelateRequest) returns (RelateResponse);
 }
 
@@ -49,6 +55,19 @@ message Dataset {
     bytes payload = 1;
 }
 
+message MutateRequest {
+    string id = 1;
+    string op = 2;
+    repeated string args = 3;
+}
+
+message MutateResponse {
+    oneof response {
+        string message = 1;
+        google.rpc.Status error = 2;
+    }
+}
+
 message GetFileRequest {
     string sha256 = 1;
 }
@@ -57,12 +76,23 @@ message GetFileResponse {
     bytes chunk = 1;
 }
 
+message ExistsFileRequest {
+    string sha256 = 1;
+}
+
+message ExistsFileResponse {
+    bool exists = 1;
+}
+
 message AddFileRequest {
     bytes chunk = 1;
 }
 
 message AddFileResponse {
-    string sha256 = 1;
+    oneof response {
+        string sha256 = 1;
+        google.rpc.Status error = 2;
+    }
 }
 
 message GetPublicationRequest {
@@ -70,14 +100,20 @@ message GetPublicationRequest {
 }
 
 message GetPublicationResponse {
-    Publication publication = 1;
+    oneof response {
+        Publication publication = 1;
+        google.rpc.Status error = 2;
+    }
 }
 
 message GetAllPublicationsRequest {
 }
 
 message GetAllPublicationsResponse {
-    Publication publication = 1;
+    oneof response {
+        Publication publication = 1;
+        google.rpc.Status error = 2;
+    }
 }
 
 message SearchPublicationsRequest {
@@ -98,6 +134,10 @@ message UpdatePublicationRequest {
 }
 
 message UpdatePublicationResponse {
+    oneof response {
+        string message = 1;
+        google.rpc.Status error = 2;
+    }
 }
 
 message AddPublicationsRequest {
@@ -105,7 +145,10 @@ message AddPublicationsRequest {
 }
 
 message AddPublicationsResponse {
-    string message = 1;
+    oneof response {
+        string message = 1;
+        google.rpc.Status error = 2;
+    }
 }
 
 message ImportPublicationsRequest {
@@ -113,7 +156,10 @@ message ImportPublicationsRequest {
 }
 
 message ImportPublicationsResponse {
-    string message = 1;
+    oneof response {
+        string message = 1;
+        google.rpc.Status error = 2;
+    }
 }
 
 message GetPublicationHistoryRequest {
@@ -121,7 +167,10 @@ message GetPublicationHistoryRequest {
 }
 
 message GetPublicationHistoryResponse {
-    Publication publication = 1;
+    oneof response {
+        Publication publication = 1;
+        google.rpc.Status error = 2;
+    }
 }
 
 message PurgePublicationRequest {
@@ -129,29 +178,48 @@ message PurgePublicationRequest {
 }
 
 message PurgePublicationResponse {
+    oneof response {
+        bool ok = 1;
+        google.rpc.Status error = 2;
+    }
 }
 
 message PurgeAllPublicationsRequest {
+    bool confirm = 1;
 }
 
 message PurgeAllPublicationsResponse {
+    oneof response {
+        bool ok = 1;
+        google.rpc.Status error = 2;
+    }
 }
 
 message ValidatePublicationsRequest {
     Publication publication = 1;
 }
 
-message ValidatePublicationsResponse {
+message ValidateResults {
     int32 seq = 1;
     string id = 2;
     string message = 3;
+}
+
+message ValidatePublicationsResponse {
+    oneof response {
+        ValidateResults results = 1;
+        google.rpc.Status error = 2;
+    }
 }
 
 message ReindexPublicationsRequest{
 }
 
 message ReindexPublicationsResponse {
-    string message = 1;
+    oneof response {
+        string message = 1;
+        google.rpc.Status error = 2;
+    }
 }
 
 message TransferPublicationsRequest {
@@ -161,14 +229,20 @@ message TransferPublicationsRequest {
 }
 
 message TransferPublicationsResponse {
-    string message = 1;
+    oneof response {
+        string message = 1;
+        google.rpc.Status error = 2;
+    }
 }
 
 message CleanupPublicationsRequest {
 }
 
 message CleanupPublicationsResponse {
-    string message = 1;
+    oneof response {
+        string message = 1;
+        google.rpc.Status error = 2;
+    }
 }
 
 message GetDatasetRequest {
@@ -176,14 +250,20 @@ message GetDatasetRequest {
 }
 
 message GetDatasetResponse {
-    Dataset dataset = 1;
+    oneof response {
+        Dataset dataset = 1;
+        google.rpc.Status error = 2;
+    }
 }
 
 message GetAllDatasetsRequest {
 }
 
 message GetAllDatasetsResponse {
-    Dataset dataset = 1;
+    oneof response {
+        Dataset dataset = 1;
+        google.rpc.Status error = 2;
+    }
 }
 
 message SearchDatasetsRequest {
@@ -204,6 +284,10 @@ message UpdateDatasetRequest {
 }
 
 message UpdateDatasetResponse {
+    oneof response {
+        string message = 1;
+        google.rpc.Status error = 2;
+    }
 }
 
 message AddDatasetsRequest {
@@ -211,7 +295,10 @@ message AddDatasetsRequest {
 }
 
 message AddDatasetsResponse {
-    string message = 1;
+    oneof response {
+        string message = 1;
+        google.rpc.Status error = 2;
+    }
 }
 
 message ImportDatasetsRequest {
@@ -219,7 +306,10 @@ message ImportDatasetsRequest {
 }
 
 message importDatasetsResponse {
-    string message = 1;
+    oneof response {
+        string message = 1;
+        google.rpc.Status error = 2;
+    }
 }
 
 message GetDatasetHistoryRequest {
@@ -227,7 +317,10 @@ message GetDatasetHistoryRequest {
 }
 
 message GetDatasetHistoryResponse {
-    Dataset dataset = 1;
+    oneof response {
+        Dataset dataset = 1;
+        google.rpc.Status error = 2;
+    }
 }
 
 message PurgeDatasetRequest {
@@ -235,12 +328,21 @@ message PurgeDatasetRequest {
 }
 
 message PurgeDatasetResponse {
+    oneof response {
+        bool ok = 1;
+        google.rpc.Status error = 2;
+    }
 }
 
 message PurgeAllDatasetsRequest {
+    bool confirm = 1;
 }
 
 message PurgeAllDatasetsResponse {
+    oneof response {
+        bool ok = 1;
+        google.rpc.Status error = 2;
+    }
 }
 
 message ValidateDatasetsRequest {
@@ -248,16 +350,30 @@ message ValidateDatasetsRequest {
 }
 
 message ValidateDatasetsResponse {
-    int32 seq = 1;
-    string id = 2;
-    string message = 3;
+    oneof response {
+        ValidateResults results = 1;
+        google.rpc.Status error = 2;
+    }
 }
 
 message ReindexDatasetsRequest{
 }
 
 message ReindexDatasetsResponse {
-    string message = 1;
+    oneof response {
+        string message = 1;
+        google.rpc.Status error = 2;
+    }
+}
+
+message CleanupDatasetsRequest {
+}
+
+message CleanupDatasetsResponse {
+    oneof response {
+        string message = 1;
+        google.rpc.Status error = 2;
+    }
 }
 
 message RelateRequest {
@@ -272,4 +388,8 @@ message RelateRequest {
 }
 
 message RelateResponse {
+    oneof response {
+        string message = 1;
+        google.rpc.Status error = 2;
+    }
 }

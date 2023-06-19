@@ -3,12 +3,11 @@ package cmd
 import (
 	"context"
 	"errors"
-	"log"
-	"time"
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
-	"github.com/ugent-library/biblio-backoffice/client/client"
+	cnx "github.com/ugent-library/biblio-backoffice/client/connection"
+	"google.golang.org/grpc/status"
 )
 
 func init() {
@@ -18,32 +17,40 @@ func init() {
 var PurgeAllPublicationsCmd = &cobra.Command{
 	Use:   "purge-all",
 	Short: "Purge all publications",
-	Run: func(cmd *cobra.Command, args []string) {
-		PurgeAllPublications(cmd, args)
-	},
+	RunE:  PurgeAllPublications,
 }
 
 func init() {
 	PurgeAllPublicationsCmd.Flags().BoolP("yes", "y", false, "are you sure?")
 }
 
-func PurgeAllPublications(cmd *cobra.Command, args []string) {
+func PurgeAllPublications(cmd *cobra.Command, args []string) error {
 	if yes, _ := cmd.Flags().GetBool("yes"); !yes {
-		return
+		cmd.Printf("no confirmation flag set. you need to set the --yes flag")
+		return nil
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
-	defer cancel()
+	return cnx.Handle(config, func(c api.BiblioClient) error {
+		req := &api.PurgeAllPublicationsRequest{
+			Confirm: true,
+		}
+		res, err := c.PurgeAllPublications(context.Background(), req)
 
-	c, cnx, err := client.Create(ctx, config)
-	defer cnx.Close()
+		if err != nil {
+			if st, ok := status.FromError(err); ok {
+				return errors.New(st.Message())
+			}
+		}
 
-	if errors.Is(err, context.DeadlineExceeded) {
-		log.Fatal("ContextDeadlineExceeded: true")
-	}
+		if ge := res.GetError(); ge != nil {
+			sre := status.FromProto(ge)
+			cmd.Printf("%s\n", sre.Message())
+		}
 
-	req := &api.PurgeAllPublicationsRequest{}
-	if _, err := c.PurgeAllPublications(context.Background(), req); err != nil {
-		log.Fatal(err)
-	}
+		if res.GetOk() {
+			cmd.Printf("purged all publications")
+		}
+
+		return nil
+	})
 }

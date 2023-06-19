@@ -15,47 +15,20 @@
       "credit_role": [
         "first_author"
       ],
-      "first_name": "first name",
-      "full_name": "full name",
-      "id": "00000000-0000-0000-0000-000000000000",
-      "last_name": "last name",
-      "ugent_id": [
-        "000000000000"
-      ],
-      "department": [
-        {
-          "id": "AA00",
-          "name": "department name"
-        }
-      ]
+      "person_id": "00000000-0000-0000-0000-000000000000"
     }
 
   ],
   "classification": "D1",
-  "creator": {
-    "id": "00000000-0000-0000-0000-000000000000",
-    "name": "name"
-  },
+  "creator_id": "00000000-0000-0000-0000-000000000000",
   "date_created": "2023-02-07T10:53:35.919249866+01:00",
   "date_updated": "2023-02-07T11:25:19.526128442+01:00",
   "date_from": "2023-02-07T11:25:19.527553+01:00",
   "defense_date": "2023-01-01",
   "defense_place": "place of defense",
-  "defense_time": "12:00",
-  "department": [
+  "related_organizations": [
     {
-      "id": "CA20",
-      "tree": [
-        {
-          "id": "UGent"
-        },
-        {
-          "id": "CA"
-        },
-        {
-          "id": "CA20"
-        }
-      ]
+      "organization_id": "CA20"
     }
   ],
   "doi": "0000",
@@ -87,7 +60,6 @@
   "has_patent_application": "no",
   "has_publications_planned": "no",
   "has_published_material": "no",
-  "id": "00000000000000000000000005",
   "isbn": [
     "0000"
   ],
@@ -100,10 +72,7 @@
   "language": [
     "eng"
   ],
-  "last_user": {
-    "id": "00000000-0000-0000-0000-000000000000",
-    "name": "name"
-  },
+  "last_user_id": "00000000-0000-0000-0000-000000000000",
   "lay_summary": [
     {
       "text": "lay summary",
@@ -124,10 +93,9 @@
   "message": "message",
   "page_count": "1",
   "place_of_publication": "place of publication",
-  "project": [
+  "related_projects": [
     {
-      "id": "000000000",
-      "name": "name"
+      "project_id": "000000000"
     }
   ],
   "publication_status": "published",
@@ -149,27 +117,12 @@
   "status": "private",
   "supervisor": [
     {
-      "first_name": "first name",
-      "full_name": "full name",
-      "id": "00000000-0000-0000-0000-000000000000",
-      "last_name": "laste name",
-      "ugent_id": [
-        "000000000000"
-      ],
-      "department": [
-        {
-          "id": "AA00",
-          "name": "department name"
-        }
-      ]
+      "person_id": "00000000-0000-0000-0000-000000000000"
     }
   ],
   "title": "title",
   "type": "dissertation",
-  "user": {
-    "id": "00000000-0000-0000-0000-000000000000",
-    "name": "name"
-  },
+  "user_id": "00000000-0000-0000-0000-000000000000",
   "volume": "1",
   "vabb_approved": false,
   "has_been_public": false,

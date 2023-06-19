@@ -5,7 +5,7 @@
             </a>
         <div class="c-thumbnail-text u-min-w-0">
             <div class="bc-toolbar bc-toolbar--auto">
-                <div class="bc-toolbar-left">
+                <div class="bc-toolbar-left flex-wrap">
                     <span class="c-subline text-nowrap pr-3 my-2">
                         {{partial "shared/status" .Dataset}}
                     </span>
@@ -68,15 +68,21 @@
             <div class="c-meta-list c-meta-list-horizontal">
                 {{if .Dataset.Year}}<span class="c-meta-item">{{.Dataset.Year}}</span>{{end}}
                 {{if .Dataset.Publisher}}<span class="c-meta-item">{{.Dataset.Publisher}}</span>{{end}}
-                {{if .Dataset.DOI}}
-                <span class="c-meta-item">
-                    <span class="c-body-small text-muted">
-                        <a class="c-link c-link-muted" target="_blank" href="{{.Dataset.ResolveDOI}}">
-                            <span class="text-decoration-underline"> View in external repository</span>
-                            <i class="if if--small if-external-link"></i>
-                        </a>
+                {{range $type, $vals := .Dataset.Identifiers}}
+                    <span class="c-meta-item">
+                        <span class="c-body-small text-muted">
+                            {{$type}}
+                        </span>
                     </span>
-                </span>
+                    <span class="c-meta-item">
+                        <span class="c-body-small text-muted">
+                            <a class="c-link c-link-muted" target="_blank" href="{{resolveIdentifier $type (index $vals 0)}}">
+                                <span class="text-decoration-underline"> View in external repository</span>
+                                <i class="if if--small if-external-link"></i>
+                            </a>
+                        </span>
+                    </span>
+                    {{break}}
                 {{end}}
             </div>
 

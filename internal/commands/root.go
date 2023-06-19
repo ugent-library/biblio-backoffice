@@ -59,6 +59,7 @@ func init() {
 	viper.SetDefault("dataset-index", defaultDatasetIndex)
 	viper.SetDefault("publication-index", defaultPublicationIndex)
 	viper.SetDefault("index-retention", defaultIndexRetention)
+	viper.SetDefault("s3-region", "us-east-1")
 	// viper.SetDefault("api-host", defaultAPIHost)
 	// viper.SetDefault("api-port", defaultAPIPort)
 	viper.SetDefault("api-username", defaultAPIAdminUsername)
@@ -77,6 +78,12 @@ func init() {
 	viper.SetDefault("max-file-size", defaultMaxFileSize)
 
 	rootCmd.PersistentFlags().String("file-dir", "", "file store root directory")
+	rootCmd.PersistentFlags().String("s3-endpoint", "", "S3 endpoint url")
+	rootCmd.PersistentFlags().String("s3-region", "", "S3 region")
+	rootCmd.PersistentFlags().String("s3-id", "", "S3 access key id")
+	rootCmd.PersistentFlags().String("s3-secret", "", "S3 secret access key")
+	rootCmd.PersistentFlags().String("s3-bucket", "", "S3 file bucket name")
+	rootCmd.PersistentFlags().String("s3-temp-bucket", "", "S3 temp file bucket name")
 
 	rootCmd.PersistentFlags().String("frontend-url", "", "biblio frontend url")
 	rootCmd.PersistentFlags().String("frontend-username", "", "biblio frontend username")

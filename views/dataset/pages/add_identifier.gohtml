@@ -1,0 +1,89 @@
+{{define "page_content"}}
+{{partial "dataset/add_sidebar" .}}
+
+<form class="w-100" action="{{pathFor "dataset_confirm_import"}}" method="POST">
+    {{.CSRFTag}}
+    <div class="u-scroll-wrapper">
+        <div class="bc-navbar bc-navbar--large bc-navbar-bordered bc-navbar--white bc-navbar--bordered-bottom">
+            <div class="bc-toolbar">
+                <div class="bc-toolbar-left">
+                    <div class="bc-toolbar-item">
+                        <div class="d-flex flex-column">
+                            <span class="text-muted">Step {{.Step}}</span>
+                            <h4 class="bc-toolbar-title">Add dataset</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="bc-toolbar-right">
+                    <div class="bc-toolbar-item">
+                        <button type="submit" class="btn btn-primary">
+                            <div class="btn-text">Add dataset</div>
+                            <i class="if if-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-6 u-scroll-wrapper__body">
+            <div class="card mb-6">
+                <div class="card-header">
+                    <div class="bc-toolbar">
+                        <div class="bc-toolbar-left">
+                            <div class="bc-toolbar-item">
+                                <h5 class="h6">Enter the DOI from an external repository to import the metadata of a dataset</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="form-row">
+                        <div class="col-6">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">DOI</span>
+                                </div>
+                                <input type="hidden" name="source" value="datacite">
+                                <input class="form-control" type="text" name="identifier" value="{{.Identifier}}" placeholder="e.g. 10.7484/INSPIREHEP.DATA.RF5P.6M3K">
+                            </div>
+                        </div>
+                    </div>
+                    <p class="form-text text-muted small mt-3">If you do not have a DOI (Digital Object Identifier), select the manual registration method in the previous step.</p>
+                </div>
+            </div>
+
+
+            <div class="card mb-6">
+                <div class="card-header">
+                    <div class="bc-toolbar">
+                        <div class="bc-toolbar-left">
+                            <div class="bc-toolbar-item">
+                                <h5 class="h6">Tips for depositing and registering your data</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <ol>
+                        <li class="mb-2" id="notInExternalRepo">
+                            <a href="https://onderzoektips.ugent.be/en/tips/00002071/" target="_blank">Share your data in a repository</a> <em>before</em> registering it in Biblio.
+                            <br>
+                            <span class="text-muted">This step will provide you with an identifier.</span>
+                        </li>
+                        <li class="mb-2">Get more information about <a href="https://onderzoektips.ugent.be/en/tips/00002054/" target="_blank">dataset registration in Biblio</a>.</li>
+                        <li class="mb-2"><a href="https://onderzoektips.ugent.be/en/tips/00002055/" target="_blank">Follow a simple illustrated guide to register your dataset in Biblio</a>.</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+{{if .DuplicateDataset}}
+    {{partial "dataset/add_duplicate" .}}
+{{end}}
+
+{{if .Errors}}
+    {{layout "show_modal" "form_errors_dialog" .Errors}}
+{{end}}
+{{end}}

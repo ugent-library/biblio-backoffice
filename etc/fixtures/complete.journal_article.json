@@ -17,19 +17,7 @@
       "credit_role": [
         "first_author"
       ],
-      "first_name": "first name",
-      "full_name": "full name",
-      "id": "00000000-0000-0000-0000-000000000000",
-      "last_name": "last name",
-      "ugent_id": [
-        "000000000000"
-      ],
-      "department": [
-        {
-          "id": "AA00",
-          "name": "department name"
-        }
-      ]
+      "person_id": "00000000-0000-0000-0000-000000000000"
     }
 
   ],
@@ -42,38 +30,15 @@
   "date_created": "2022-12-20T15:41:49.048446246+01:00",
   "date_updated": "2023-02-06T10:59:00.02517096+01:00",
   "date_from": "2023-02-06T10:59:00.026443+01:00",
-  "department": [
+  "related_organizations": [
     {
-      "id": "CA20",
-      "tree": [
-        {
-          "id": "UGent"
-        },
-        {
-          "id": "CA"
-        },
-        {
-          "id": "CA20"
-        }
-      ]
+      "organization_id": "CA20"
     }
   ],
   "doi": "9999",
   "editor": [
     {
-      "first_name": "first name",
-      "full_name": "full name",
-      "id": "00000000-0000-0000-0000-000000000000",
-      "last_name": "laste name",
-      "ugent_id": [
-        "000000000000"
-      ],
-      "department": [
-        {
-          "id": "AA00",
-          "name": "department name"
-        }
-      ]
+      "person_id": "00000000-0000-0000-0000-000000000000"
     }
   ],
   "eisbn": [
@@ -102,7 +67,6 @@
       "relation": "main_file"
     }
   ],
-  "id": "00000000000000000000000007",
   "isbn": [
     "9999"
   ],
@@ -118,10 +82,7 @@
   "language": [
     "eng"
   ],
-  "last_user": {
-    "id": "00000000-0000-0000-0000-000000000000",
-    "name": "name"
-  },
+  "last_user_id": "00000000-0000-0000-0000-000000000000",
   "legacy": true,
   "link": [
     {
@@ -137,10 +98,9 @@
   "page_first": "1",
   "page_last": "99",
   "place_of_publication": "place of publication",
-  "project": [
+  "related_projects": [
     {
-      "id": "000000000",
-      "name": "name"
+      "project_id": "000000000"
     }
   ],
   "publication": "journal title",
@@ -164,10 +124,7 @@
   "status": "public",
   "title": "title",
   "type": "journal_article",
-  "user": {
-    "id": "00000000-0000-0000-0000-000000000000",
-    "name": "name"
-  },
+  "user_id": "00000000-0000-0000-0000-000000000000",
   "volume": "volume",
   "vabb_approved": false,
   "has_been_public": true,

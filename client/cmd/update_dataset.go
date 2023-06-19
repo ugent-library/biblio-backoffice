@@ -4,13 +4,12 @@ import (
 	"bufio"
 	"context"
 	"errors"
-	"log"
-	"os"
-	"time"
+	"fmt"
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
-	"github.com/ugent-library/biblio-backoffice/client/client"
+	cnx "github.com/ugent-library/biblio-backoffice/client/connection"
+	"google.golang.org/grpc/status"
 )
 
 func init() {
@@ -19,35 +18,45 @@ func init() {
 
 var UpdateDatasetCmd = &cobra.Command{
 	Use:   "update",
-	Short: "Update publication",
-	Run: func(cmd *cobra.Command, args []string) {
-		UpdateDataset(cmd, args)
-	},
+	Short: "Update dataset",
+	Long: `
+	Update one or multiple datasets.
+
+	This command reads a JSONL formatted file from stdin and streams it to the store.
+
+	It will output either a success message or an error message per record:
+
+		$ ./biblio-backoffice dataset update < datasets.jsonl
+	`,
+	RunE: UpdateDataset,
 }
 
-func UpdateDataset(cmd *cobra.Command, args []string) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
-	defer cancel()
+func UpdateDataset(cmd *cobra.Command, args []string) error {
+	return cnx.Handle(config, func(c api.BiblioClient) error {
+		reader := bufio.NewReader(cmd.InOrStdin())
+		line, err := reader.ReadBytes('\n')
+		if err != nil {
+			return fmt.Errorf("could not read from stdin: %v", err)
+		}
 
-	c, cnx, err := client.Create(ctx, config)
-	defer cnx.Close()
+		p := &api.Dataset{
+			Payload: line,
+		}
 
-	if errors.Is(err, context.DeadlineExceeded) {
-		log.Fatal("ContextDeadlineExceeded: true")
-	}
+		req := &api.UpdateDatasetRequest{Dataset: p}
+		res, err := c.UpdateDataset(context.Background(), req)
 
-	reader := bufio.NewReader(os.Stdin)
-	line, err := reader.ReadBytes('\n')
-	if err != nil {
-		log.Fatal(err)
-	}
+		if err != nil {
+			if st, ok := status.FromError(err); ok {
+				return errors.New(st.Message())
+			}
+		}
 
-	d := &api.Dataset{
-		Payload: line,
-	}
+		if ge := res.GetError(); ge != nil {
+			sre := status.FromProto(ge)
+			cmd.Printf("%s", sre.Message())
+		}
 
-	req := &api.UpdateDatasetRequest{Dataset: d}
-	if _, err = c.UpdateDataset(ctx, req); err != nil {
-		log.Fatal(err)
-	}
+		return nil
+	})
 }

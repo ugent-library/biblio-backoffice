@@ -116,132 +116,30 @@
                     "type": "text",
                     "analyzer": "text_default"
                 },
-                "abstract": {
-                    "properties": {
-                        "id": {
-                            "type": "keyword"
-                        },
-                        "lang": {
-                            "type": "keyword"
-                        },
-                        "text": {
-                            "type": "text",
-                            "copy_to": "all"
-                        }
-                    }
-                },
-                "access_level": {
+                "author_id": {
                     "type": "keyword"
                 },
-                "author": {
-                    "properties": {
-                        "id": {
-                            "type": "keyword"
-                        },
-                        "orcid": {
-                            "type": "keyword"
-                        },
-                        "ugent_id": {
-                            "type": "keyword"
-                        },
-                        "first_name": {
-                            "type": "text"
-                        },
-                        "last_name": {
-                            "type": "text"
-                        },
-                        "full_name": {
-                            "type": "text",
-                            "copy_to": "all",
-                            "fields": {
-                                "ngram": {
-                                    "type": "text",
-                                    "analyzer": "token_edge_ngram",
-                                    "search_analyzer": "token_edge_ngram_search"
-                                },
-                                "phrase_ngram": {
-                                    "type": "text",
-                                    "analyzer": "phrase_edge_ngram",
-                                    "search_analyzer": "phrase_edge_ngram_search"
-                                }
-                            }
-                        },
-                        "credit_role": {
-                            "type": "keyword"
-                        },
-                        "department": {
-                          "properties": {
-                            "id": {
-                              "type": "keyword"
-                            },
-                            "name": {
-                              "type": "text"
-                            }
-                          }
-                        }
-                    }
-                },
-                "completeness_score": {
-                    "type": "integer"
+                "batch_id": {
+                    "type": "keyword"
                 },
                 "contributor": {
-                    "properties": {
-                        "id": {
-                            "type": "keyword"
-                        },
-                        "orcid": {
-                            "type": "keyword"
-                        },
-                        "ugent_id": {
-                            "type": "keyword"
-                        },
-                        "first_name": {
-                            "type": "text"
-                        },
-                        "last_name": {
-                            "type": "text"
-                        },
-                        "full_name": {
+                    "type": "text",
+                    "copy_to": "all",
+                    "fields": {
+                        "ngram": {
                             "type": "text",
-                            "copy_to": "all",
-                            "fields": {
-                                "ngram": {
-                                    "type": "text",
-                                    "analyzer": "token_edge_ngram",
-                                    "search_analyzer": "token_edge_ngram_search"
-                                },
-                                "phrase_ngram": {
-                                    "type": "text",
-                                    "analyzer": "phrase_edge_ngram",
-                                    "search_analyzer": "phrase_edge_ngram_search"
-                                }
-                            }
+                            "analyzer": "token_edge_ngram",
+                            "search_analyzer": "token_edge_ngram_search"
                         },
-                        "credit_role": {
-                            "type": "keyword"
-                        },
-                        "department": {
-                          "properties": {
-                            "id": {
-                              "type": "keyword"
-                            },
-                            "name": {
-                              "type": "text"
-                            }
-                          }
+                        "phrase_ngram": {
+                            "type": "text",
+                            "analyzer": "phrase_edge_ngram",
+                            "search_analyzer": "phrase_edge_ngram_search"
                         }
                     }
                 },
-                "creator": {
-                    "properties": {
-                        "id": {
-                            "type": "keyword"
-                        },
-                        "name": {
-                            "type": "text",
-                            "index": false
-                        }
-                    }
+                "creator_id": {
+                    "type": "keyword"
                 },
                 "date_created": {
                     "type": "date"
@@ -249,98 +147,29 @@
                 "date_updated": {
                     "type": "date"
                 },
-                "date_from": {
-                    "type": "date"
-                },
-                "date_until": {
-                    "type": "date"
-                },
-                "faculty": {
+                "organization_id": {
                     "type": "keyword"
                 },
-                "department": {
-                    "properties": {
-                        "id": {
-                          "type": "keyword"
-                        },
-                        "tree": {
-                            "properties": {
-                                "id": {
-                                    "type": "keyword",
-                                    "copy_to": ["faculty", "all"]
-                                }
-                            }
-                        }
-                    }
-                },
-                "doi": {
-                    "type": "text",
-                    "analyzer": "keyword_lowercase"
-                },
-                "embargo": {
-                    "type": "keyword"
-                },
-                "embargo_to": {
-                    "type": "keyword"
-                },
-                "format": {
+                "faculty_id": {
                     "type": "keyword"
                 },
                 "id": {
                     "type": "keyword"
                 },
-                "keyword": {
-                    "type": "text",
-                    "analyzer": "keyword_lowercase",
-                    "copy_to": "all"
-                },
-                "license": {
+                "identifier_type": {
                     "type": "keyword"
                 },
-                "other_license": {
-                    "type": "text"
+                "identifier": {
+                    "type": "text",
+                    "analyzer": "keyword_lowercase"
                 },
                 "locked": {
-                    "type": "boolean"
-                },
-                "message": {
-                    "type": "text"
-                },
-                "has_been_public": {
                     "type": "boolean"
                 },
                 "has_message": {
                     "type": "boolean"
                 },
-                "publisher": {
-                    "type": "text",
-                    "copy_to": "all"
-                },
-                "project": {
-                    "properties": {
-                        "id": {
-                            "type": "keyword"
-                        },
-                        "name": {
-                            "type": "text"
-                        }
-                    }
-                },
-                "related_publication": {
-                    "properties": {
-                        "id": {
-                            "type": "keyword"
-                        }
-                    }
-                },
-                "reviewer_note": {
-                    "type": "text",
-                    "index": false
-                },
                 "reviewer_tags": {
-                    "type": "keyword"
-                },
-                "snapshot_id": {
                     "type": "keyword"
                 },
                 "status": {
@@ -351,20 +180,11 @@
                     "analyzer": "text_default",
                     "copy_to": "all"
                 },
-                "url": {
-                    "type": "text",
-                    "index": false
+                "user_id": {
+                    "type": "keyword"
                 },
-                "user": {
-                    "properties": {
-                        "id": {
-                            "type": "keyword"
-                        },
-                        "name": {
-                            "type": "text",
-                            "index": false
-                        }
-                    }
+                "last_user_id": {
+                    "type": "keyword"
                 },
                 "year": {
                     "type": "date",

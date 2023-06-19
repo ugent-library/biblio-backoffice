@@ -113,16 +113,12 @@ func (c *Client) GetPublication(id string) (*models.Publication, error) {
 
 	for _, a := range feed.Entry.Author {
 		nameParts := strings.Split(a.Name, " ")
-		c := models.Contributor{
-			FullName: a.Name,
-		}
+		firstName := nameParts[0]
+		lastName := nameParts[0]
 		if len(nameParts) > 1 {
-			c.FirstName = nameParts[0]
-			c.LastName = strings.Join(nameParts[1:], " ")
-		} else {
-			c.LastName = nameParts[0]
+			lastName = strings.Join(nameParts[1:], " ")
 		}
-		p.Author = append(p.Author, &c)
+		p.Author = append(p.Author, models.ContributorFromFirstLastName(firstName, lastName))
 	}
 
 	// log.Printf("import publication: %+v", p)

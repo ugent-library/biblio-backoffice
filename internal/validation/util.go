@@ -21,11 +21,6 @@ func IsDate(val string) bool {
 	return e == nil
 }
 
-func IsTime(val string) bool {
-	_, e := time.Parse("15:04", val)
-	return e == nil
-}
-
 func IsYear(val string) bool {
 	y, e := strconv.Atoi(val)
 	return e == nil && y > 0 && len(val) == 4
@@ -37,6 +32,10 @@ func IsPublicationType(val string) bool {
 
 func IsStatus(val string) bool {
 	return InArray(vocabularies.Map["publication_statuses"], val)
+}
+
+func IsDatasetIdentifierType(val string) bool {
+	return InArray(vocabularies.Map["dataset_identifier_types"], val)
 }
 
 func IsDatasetAccessLevel(val string) bool {

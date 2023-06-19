@@ -5,7 +5,6 @@ import (
 
 	"github.com/ugent-library/biblio-backoffice/internal/app/handlers"
 	"github.com/ugent-library/biblio-backoffice/internal/backends"
-	"github.com/ugent-library/biblio-backoffice/internal/backends/filestore"
 	"github.com/ugent-library/biblio-backoffice/internal/bind"
 	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"github.com/ugent-library/biblio-backoffice/internal/render"
@@ -13,8 +12,8 @@ import (
 
 type Handler struct {
 	handlers.BaseHandler
-	PublicationSearchService backends.PublicationSearchService
-	FileStore                *filestore.Store
+	PublicationSearchIndex backends.PublicationIndex
+	FileStore              backends.FileStore
 }
 
 type Context struct {

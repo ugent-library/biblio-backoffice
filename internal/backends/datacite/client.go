@@ -65,8 +65,15 @@ func (c *Client) GetDataset(id string) (*models.Dataset, error) {
 
 	d := &models.Dataset{}
 
+	if res := attrs.Get("language"); res.Exists() {
+		if base, err := language.ParseBase(res.String()); err == nil {
+			if validation.InArray(vocabularies.Map["language_codes"], base.ISO3()) {
+				d.Language = append(d.Language, base.ISO3())
+			}
+		}
+	}
 	if res := attrs.Get("doi"); res.Exists() {
-		d.DOI = res.String()
+		d.Identifiers = models.Identifiers{"DOI": []string{res.String()}}
 	}
 	if res := attrs.Get("publicationYear"); res.Exists() {
 		d.Year = res.String()
@@ -94,25 +101,16 @@ func (c *Client) GetDataset(id string) (*models.Dataset, error) {
 	}
 	if res := attrs.Get("creators"); res.Exists() {
 		for _, r := range res.Array() {
-			c := models.Contributor{}
-			if res := r.Get("name"); res.Exists() {
-				c.FullName = res.String()
+			name := r.Get("name").String()
+			firstName := r.Get("givenName").String()
+			lastName := r.Get("familyName").String()
+			if firstName == "" {
+				firstName = "[missing]" // TODO
 			}
-			if res := r.Get("givenName"); res.Exists() {
-				c.FirstName = res.String()
+			if lastName == "" {
+				lastName = name
 			}
-			if res := r.Get("familyName"); res.Exists() {
-				c.LastName = res.String()
-			}
-			if c.FirstName == "" {
-				c.FirstName = "[missing]" // TODO
-			}
-			if c.LastName == "" {
-				c.LastName = c.FullName
-			}
-			if c.FullName != "" && c.FirstName != "" && c.LastName != "" {
-				d.Author = append(d.Author, &c)
-			}
+			d.Author = append(d.Author, models.ContributorFromFirstLastName(firstName, lastName))
 		}
 	}
 	if res := attrs.Get("descriptions"); res.Exists() {

@@ -1,6 +1,7 @@
 package displays
 
 import (
+	"github.com/ugent-library/biblio-backoffice/identifiers"
 	"github.com/ugent-library/biblio-backoffice/internal/app/helpers"
 	"github.com/ugent-library/biblio-backoffice/internal/app/localize"
 	"github.com/ugent-library/biblio-backoffice/internal/locale"
@@ -20,10 +21,10 @@ func miscellaneousDetails(user *models.User, l *locale.Locale, p *models.Publica
 				Label: l.T("builder.miscellaneous_type"),
 				Value: l.TS("miscellaneous_types", p.MiscellaneousType),
 			},
-			&display.Text{
-				Label:         l.T("builder.doi"),
-				Value:         p.DOI,
-				ValueTemplate: "format/doi",
+			&display.Link{
+				Label: l.T("builder.doi"),
+				Value: p.DOI,
+				URL:   identifiers.DOI.Resolve(p.DOI),
 			},
 			&display.Text{
 				Label: l.T("builder.classification"),
@@ -121,9 +122,10 @@ func miscellaneousDetails(user *models.User, l *locale.Locale, p *models.Publica
 				Value:   p.WOSType,
 				Tooltip: l.T("tooltip.publication.wos_type"),
 			},
-			&display.Text{
+			&display.Link{
 				Label: l.T("builder.wos_id"),
 				Value: p.WOSID,
+				URL:   identifiers.WebOfScienceID.Resolve(p.WOSID),
 			},
 			&display.List{
 				Label:  l.T("builder.issn"),

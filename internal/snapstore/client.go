@@ -22,7 +22,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"sync"
 	"time"
 
 	"github.com/google/uuid"
@@ -65,12 +64,10 @@ type Client struct {
 }
 
 type Store struct {
-	db          DB
-	name        string
-	table       string
-	listeners   []func(*Snapshot)
-	listenersMu sync.RWMutex
-	generateID  func() (string, error)
+	db         DB
+	name       string
+	table      string
+	generateID func() (string, error)
 }
 
 type Transaction struct {
@@ -117,7 +114,7 @@ func (c *Client) Store(name string) *Store {
 	return c.stores[name]
 }
 
-func (c *Client) Transaction(ctx context.Context, fn func(Options) error) error {
+func (c *Client) Tx(ctx context.Context, fn func(Options) error) error {
 	tx, err := c.db.Begin(ctx)
 	if err != nil {
 		return err
@@ -133,21 +130,6 @@ func (c *Client) Transaction(ctx context.Context, fn func(Options) error) error 
 
 func (s *Store) Name() string {
 	return s.name
-}
-
-func (s *Store) Listen(fn func(*Snapshot)) {
-	s.listenersMu.Lock()
-	defer s.listenersMu.Unlock()
-	s.listeners = append(s.listeners, fn)
-}
-
-func (s *Store) notify(snap *Snapshot) {
-	s.listenersMu.RLock()
-	defer s.listenersMu.RUnlock()
-	// TODO do this non-blocking
-	for _, fn := range s.listeners {
-		fn(snap)
-	}
 }
 
 func (s *Store) AddAfter(snapshotID, id string, data any, o Options) (string, error) {
@@ -172,10 +154,12 @@ func (s *Store) AddAfter(snapshotID, id string, data any, o Options) (string, er
 	defer tx.Rollback(ctx)
 
 	snap := Snapshot{}
-	snapSql := `select id, date_from, date_until from ` + s.table + `
-	where snapshot_id = $1
-	limit 1`
-	err = tx.QueryRow(ctx, snapSql, snapshotID).Scan(&snap.ID, &snap.DateFrom, &snap.DateUntil)
+
+	sqlSnap := `SELECT id, date_from, date_until FROM ` + s.table + `
+	WHERE snapshot_id = $1
+	LIMIT 1`
+
+	err = tx.QueryRow(ctx, sqlSnap, snapshotID).Scan(&snap.ID, &snap.DateFrom, &snap.DateUntil)
 
 	if err == pgx.ErrNoRows {
 		return "", fmt.Errorf("unknown snapshot %s", snapshotID)
@@ -194,22 +178,11 @@ func (s *Store) AddAfter(snapshotID, id string, data any, o Options) (string, er
 
 	now := time.Now()
 
-	sqlUpdate := `update ` + s.table + ` set date_until = $1
-	where id = $2 and date_until is null
-	returning snapshot_id,id,data,date_from,date_until`
+	sqlUpdate := `UPDATE ` + s.table + ` SET date_until = $1
+	WHERE id = $2 AND date_until IS NULL`
 
-	updatedRows, err := tx.Query(ctx, sqlUpdate, now, id)
-	if err != nil {
+	if _, err := tx.Exec(ctx, sqlUpdate, now, id); err != nil {
 		return "", err
-	}
-	cursorUpdatedRows := &Cursor{updatedRows}
-	oldSnapshots := []*Snapshot{}
-	for cursorUpdatedRows.HasNext() {
-		snap, e := cursorUpdatedRows.Next()
-		if e != nil {
-			return "", e
-		}
-		oldSnapshots = append(oldSnapshots, snap)
 	}
 
 	newSnapshotID, err := s.generateID()
@@ -217,7 +190,7 @@ func (s *Store) AddAfter(snapshotID, id string, data any, o Options) (string, er
 		return "", err
 	}
 
-	sqlInsert := `insert into ` + s.table + `(snapshot_id, id, data, date_from) values ($1, $2, $3, $4)`
+	sqlInsert := `INSERT INTO ` + s.table + `(snapshot_id, id, data, date_from) VALUES ($1, $2, $3, $4)`
 
 	if _, err = tx.Exec(ctx, sqlInsert, newSnapshotID, id, d, now); err != nil {
 		return "", err
@@ -227,20 +200,12 @@ func (s *Store) AddAfter(snapshotID, id string, data any, o Options) (string, er
 		return "", err
 	}
 
-	for _, snap := range oldSnapshots {
-		s.notify(snap)
-	}
-	s.notify(&Snapshot{
-		SnapshotID: newSnapshotID,
-		ID:         id,
-		Data:       json.RawMessage(d),
-		DateFrom:   &now,
-	})
-
 	return newSnapshotID, nil
 }
 
 func (s *Store) Update(snapshotID, id string, data any, o Options) (*Snapshot, error) {
+	ctx, db := s.ctxAndDb(o)
+
 	if snapshotID == "" {
 		return nil, errors.New("snapshot id is empty")
 	}
@@ -250,42 +215,18 @@ func (s *Store) Update(snapshotID, id string, data any, o Options) (*Snapshot, e
 		return nil, err
 	}
 
-	ctx, db := s.ctxAndDb(o)
+	snap := Snapshot{
+		SnapshotID: snapshotID,
+		ID:         id,
+		Data:       d,
+	}
 
-	tx, err := db.Begin(ctx)
-	if err != nil {
+	sql := `UPDATE ` + s.table + ` SET data = $1
+	WHERE id = $2 AND snapshot_id = $3
+	RETURNING date_from,date_until`
+
+	if err = db.QueryRow(ctx, sql, d, id, snapshotID).Scan(&snap.DateFrom, &snap.DateUntil); err != nil {
 		return nil, err
-	}
-	defer tx.Rollback(ctx)
-
-	snap := Snapshot{}
-
-	sqlUpdate := `update ` + s.table + ` set data = $1
-	where id = $2 and snapshot_id = $3
-	returning snapshot_id,id,data,date_from,date_until`
-
-	updatedRows, err := tx.Query(ctx, sqlUpdate, d, id, snapshotID)
-	if err != nil {
-		return nil, err
-	}
-
-	cursorUpdatedRows := &Cursor{updatedRows}
-	snapshots := []*Snapshot{}
-	for cursorUpdatedRows.HasNext() {
-		sn, e := cursorUpdatedRows.Next()
-		if e != nil {
-			return nil, e
-		}
-		snapshots = append(snapshots, sn)
-		snap = *sn
-	}
-
-	if err := tx.Commit(ctx); err != nil {
-		return nil, err
-	}
-
-	for _, ns := range snapshots {
-		s.notify(ns)
 	}
 
 	return &snap, nil
@@ -306,30 +247,19 @@ func (store *Store) ImportSnapshot(snapshot *Snapshot, options Options) error {
 	}
 
 	ctx, db := store.ctxAndDb(options)
-	tx, err := db.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback(ctx)
 
-	sqlInsert := `INSERT INTO ` +
-		store.table +
+	sql := `INSERT INTO ` + store.table +
 		`(snapshot_id, id, data, date_from, date_until) VALUES ($1, $2, $3, $4, $5)`
 
-	if _, err = tx.Exec(
-		ctx,
-		sqlInsert,
+	_, err := db.Exec(ctx, sql,
 		snapshot.SnapshotID,
 		snapshot.ID,
 		snapshot.Data,
 		snapshot.DateFrom,
-		snapshot.DateUntil); err != nil {
-		return err
-	}
-	if err := tx.Commit(ctx); err != nil {
-		return err
-	}
-	return nil
+		snapshot.DateUntil,
+	)
+
+	return err
 }
 
 func (s *Store) Add(id string, data any, o Options) error {
@@ -352,25 +282,14 @@ func (s *Store) Add(id string, data any, o Options) error {
 
 	now := time.Now()
 
-	sqlUpdate := `update ` + s.table + ` set date_until = $1
-	where id = $2 and date_until is null
-	returning snapshot_id,id,data,date_from,date_until`
+	sqlUpdate := `UPDATE ` + s.table + ` SET date_until = $1
+	WHERE id = $2 AND date_until IS null`
 
-	updatedRows, err := tx.Query(ctx, sqlUpdate, now, id)
-	if err != nil {
+	if _, err := tx.Exec(ctx, sqlUpdate, now, id); err != nil {
 		return err
 	}
-	cursorUpdatedRows := &Cursor{updatedRows}
-	oldSnapshots := []*Snapshot{}
-	for cursorUpdatedRows.HasNext() {
-		snap, e := cursorUpdatedRows.Next()
-		if e != nil {
-			return e
-		}
-		oldSnapshots = append(oldSnapshots, snap)
-	}
 
-	sqlInsert := `insert into ` + s.table + `(snapshot_id, id, data, date_from) values ($1, $2, $3, $4)`
+	sqlInsert := `INSERT INTO ` + s.table + `(snapshot_id, id, data, date_from) VALUES ($1, $2, $3, $4)`
 
 	newSnapshotID, err := s.generateID()
 	if err != nil {
@@ -385,16 +304,6 @@ func (s *Store) Add(id string, data any, o Options) error {
 		return err
 	}
 
-	for _, snap := range oldSnapshots {
-		s.notify(snap)
-	}
-	s.notify(&Snapshot{
-		SnapshotID: newSnapshotID,
-		ID:         id,
-		Data:       json.RawMessage(d),
-		DateFrom:   &now,
-	})
-
 	return nil
 
 }
@@ -402,10 +311,9 @@ func (s *Store) Add(id string, data any, o Options) error {
 func (s *Store) GetCurrentSnapshot(id string, o Options) (*Snapshot, error) {
 	ctx, db := s.ctxAndDb(o)
 
-	sql := `
-	select snapshot_id, data, date_from from ` + s.table + `
-	where date_until is null and id = $1
-	limit 1`
+	sql := `SELECT snapshot_id, data, date_from FROM ` + s.table + `
+	WHERE date_until IS NULL AND id = $1
+	LIMIT 1`
 
 	snap := Snapshot{}
 
@@ -421,8 +329,8 @@ func (s *Store) GetByID(ids []string, o Options) (*Cursor, error) {
 
 	pgIds := &pgtype.TextArray{}
 	pgIds.Set(ids)
-	sql := "select snapshot_id, id, data, date_from, date_until from " + s.table +
-		" where date_until is null and id = any($1)"
+	sql := "SELECT snapshot_id, id, data, date_from, date_until FROM " + s.table +
+		" WHERE date_until IS NULL AND id = any($1) order by array_position($1, id)"
 
 	rows, err := db.Query(ctx, sql, pgIds)
 	if err != nil {
@@ -434,8 +342,8 @@ func (s *Store) GetByID(ids []string, o Options) (*Cursor, error) {
 func (s *Store) GetAll(o Options) (*Cursor, error) {
 	ctx, db := s.ctxAndDb(o)
 
-	sql := "select snapshot_id, id, data, date_from, date_until from " + s.table +
-		" where date_until is null"
+	sql := "SELECT snapshot_id, id, data, date_from, date_until FROM " + s.table +
+		" WHERE date_until IS NULL"
 
 	rows, err := db.Query(ctx, sql)
 	if err != nil {
@@ -447,7 +355,7 @@ func (s *Store) GetAll(o Options) (*Cursor, error) {
 func (s *Store) Purge(id string, o Options) error {
 	ctx, db := s.ctxAndDb(o)
 
-	sql := "delete from " + s.table + " where id = $1"
+	sql := "DELETE FROM " + s.table + " WHERE id = $1"
 
 	_, err := db.Exec(ctx, sql, id)
 
@@ -457,7 +365,7 @@ func (s *Store) Purge(id string, o Options) error {
 func (s *Store) PurgeAll(o Options) error {
 	ctx, db := s.ctxAndDb(o)
 
-	sql := "truncate " + s.table
+	sql := "TRUNCATE " + s.table
 
 	_, err := db.Exec(ctx, sql)
 
@@ -521,7 +429,7 @@ func (s *Store) GetAllSnapshots(o Options) (*Cursor, error) {
 		db = o.Transaction.db
 	}
 
-	sql := "select snapshot_id, id, data, date_from, date_until from " + s.table
+	sql := "SELECT snapshot_id, id, data, date_from, date_until FROM " + s.table
 
 	rows, err := db.Query(ctx, sql)
 	if err != nil {
@@ -583,8 +491,8 @@ func (s *Store) GetHistory(id string, o Options) (*Cursor, error) {
 		db = o.Transaction.db
 	}
 
-	sql := "select snapshot_id, id, data, date_from, date_until from " + s.table +
-		" where id = $1 order by date_from desc"
+	sql := "SELECT snapshot_id, id, data, date_from, date_until FROM " + s.table +
+		" WHERE id = $1 ORDER BY date_from DESC"
 
 	rows, err := db.Query(ctx, sql, id)
 	if err != nil {

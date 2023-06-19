@@ -3,14 +3,12 @@ package cmd
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
-	"log"
-	"time"
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
-	"github.com/ugent-library/biblio-backoffice/client/client"
+	cnx "github.com/ugent-library/biblio-backoffice/client/connection"
+	"google.golang.org/grpc/status"
 )
 
 func init() {
@@ -20,37 +18,45 @@ func init() {
 var ReindexDatasetCmd = &cobra.Command{
 	Use:   "reindex",
 	Short: "Reindex all datasets",
-	Run: func(cmd *cobra.Command, args []string) {
-		ReindexDatasets(cmd, args)
-	},
+	RunE:  ReindexDatasets,
 }
 
-func ReindexDatasets(cmd *cobra.Command, args []string) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
-	defer cancel()
-
-	c, cnx, err := client.Create(ctx, config)
-	defer cnx.Close()
-
-	if errors.Is(err, context.DeadlineExceeded) {
-		log.Fatal("ContextDeadlineExceeded: true")
-	}
-
-	req := &api.ReindexDatasetsRequest{}
-	stream, err := c.ReindexDatasets(context.Background(), req)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	for {
-		res, err := stream.Recv()
-		if err == io.EOF {
-			break
-		}
+func ReindexDatasets(cmd *cobra.Command, args []string) error {
+	return cnx.Handle(config, func(c api.BiblioClient) error {
+		req := &api.ReindexDatasetsRequest{}
+		stream, err := c.ReindexDatasets(context.Background(), req)
 		if err != nil {
-			log.Fatalf("error while reading stream: %v", err)
+			return err
 		}
 
-		fmt.Printf("%s\n", res.Message)
-	}
+		stream.CloseSend()
+
+		for {
+			res, err := stream.Recv()
+			if err == io.EOF {
+				break
+			}
+
+			// return gRPC level error
+			if err != nil {
+				if st, ok := status.FromError(err); ok {
+					return errors.New(st.Message())
+				}
+
+				return err
+			}
+
+			// Application level error
+			if ge := res.GetError(); ge != nil {
+				sre := status.FromProto(ge)
+				cmd.Printf("%s\n", sre.Message())
+			}
+
+			if rr := res.GetMessage(); rr != "" {
+				cmd.Printf("%s\n", rr)
+			}
+		}
+
+		return nil
+	})
 }

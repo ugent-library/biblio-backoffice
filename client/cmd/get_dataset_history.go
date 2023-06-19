@@ -4,12 +4,11 @@ import (
 	"context"
 	"errors"
 	"io"
-	"log"
-	"time"
 
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
-	"github.com/ugent-library/biblio-backoffice/client/client"
+	cnx "github.com/ugent-library/biblio-backoffice/client/connection"
+	"google.golang.org/grpc/status"
 )
 
 func init() {
@@ -19,38 +18,50 @@ func init() {
 var GetDatasetHistoryCmd = &cobra.Command{
 	Use:   "get-history [id]",
 	Short: "Get dataset history",
-	Args:  cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		GetDatasetHistory(cmd, args)
-	},
+	Long: `
+	Retrieve the history of a single dataset as a stream of JSONL formatted records.
+	The stream will be outputted to stdout.
+
+		$ ./biblio-backoffice dataset get-history [ID] > history.jsonl
+	`,
+	Args: cobra.ExactArgs(1),
+	RunE: GetDatasetHistory,
 }
 
-func GetDatasetHistory(cmd *cobra.Command, args []string) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
-	defer cancel()
-
-	c, cnx, err := client.Create(ctx, config)
-	defer cnx.Close()
-
-	if errors.Is(err, context.DeadlineExceeded) {
-		log.Fatal("ContextDeadlineExceeded: true")
-	}
-
-	req := &api.GetDatasetHistoryRequest{Id: args[0]}
-	stream, err := c.GetDatasetHistory(context.Background(), req)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	for {
-		res, err := stream.Recv()
-		if err == io.EOF {
-			break
-		}
+func GetDatasetHistory(cmd *cobra.Command, args []string) error {
+	return cnx.Handle(config, func(c api.BiblioClient) error {
+		req := &api.GetDatasetHistoryRequest{Id: args[0]}
+		stream, err := c.GetDatasetHistory(context.Background(), req)
 		if err != nil {
-			log.Fatalf("error while reading stream: %v", err)
+			return err
 		}
 
-		cmd.Printf("%s\n", res.Dataset.Payload)
-	}
+		for {
+			res, err := stream.Recv()
+			if err == io.EOF {
+				break
+			}
+
+			// return gRPC level error
+			if err != nil {
+				if st, ok := status.FromError(err); ok {
+					return errors.New(st.Message())
+				}
+
+				return err
+			}
+
+			// Application level error
+			if ge := res.GetError(); ge != nil {
+				sre := status.FromProto(ge)
+				cmd.Printf("%s\n", sre.Message())
+			}
+
+			if rr := res.GetDataset(); rr != nil {
+				cmd.Printf("%s\n", rr.GetPayload())
+			}
+		}
+
+		return nil
+	})
 }

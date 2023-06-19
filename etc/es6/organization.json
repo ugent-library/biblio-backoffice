@@ -1,0 +1,55 @@
+{
+    "mappings": {
+      "organization": {
+        "dynamic": "false",
+        "date_detection": false,
+        "numeric_detection": false,
+        "properties": {
+          "all": {
+            "type": "text"
+          },
+          "id": {
+            "type": "text",
+            "copy_to": [
+              "all"
+            ],
+            "analyzer": "tag"
+          },
+          "name": {
+            "type": "text",
+            "copy_to": [
+              "all"
+            ]
+          },
+          "tree": {
+            "properties": {
+              "id": {
+                "type": "keyword"
+              }
+            }
+          },
+          "url": {
+            "type": "keyword",
+            "index": false
+          }
+        }
+      }
+    },
+    "settings": {
+      "index": {
+        "number_of_shards": "1",
+        "analysis": {
+          "analyzer": {
+            "tag": {
+              "filter": [
+                "lowercase"
+              ],
+              "type": "custom",
+              "tokenizer": "keyword"
+            }
+          }
+        },
+        "number_of_replicas": "0"
+      }
+    }
+}

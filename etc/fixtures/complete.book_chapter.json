@@ -15,19 +15,7 @@
       "credit_role": [
         "first_author"
       ],
-      "first_name": "first name",
-      "full_name": "full name",
-      "id": "00000000-0000-0000-0000-000000000000",
-      "last_name": "last name",
-      "ugent_id": [
-        "000000000000"
-      ],
-      "department": [
-        {
-          "id": "AA00",
-          "name": "department name"
-        }
-      ]
+      "person_id": "00000000-0000-0000-0000-000000000000"
     }
   ],
   "classification": "B2",
@@ -36,46 +24,20 @@
   "conference_organizer": "conference organiser",
   "conference_start_date": "2023-01-01",
   "conference_end_date": "2023-01-01",
-  "creator": {
-    "id": "00000000-0000-0000-0000-000000000000",
-    "name": "name"
-  },
+  "creator_id": "00000000-0000-0000-0000-000000000000",
   "date_created": "2023-02-07T11:10:48.365254677+01:00",
   "date_updated": "2023-02-07T11:37:13.337997943+01:00",
   "date_from": "2023-02-07T11:37:13.339245+01:00",
-  "department": [
+  "related_organizations": [
     {
-      "id": "CA20",
-      "tree": [
-        {
-          "id": "UGent"
-        },
-        {
-          "id": "CA"
-        },
-        {
-          "id": "CA20"
-        }
-      ]
+      "organization_id": "CA20"
     }
   ],
   "doi": "0000",
   "edition": "edition",
   "editor": [
     {
-      "first_name": "first name",
-      "full_name": "full name",
-      "id": "00000000-0000-0000-0000-000000000000",
-      "last_name": "last name",
-      "ugent_id": [
-        "000000000000"
-      ],
-      "department": [
-        {
-          "id": "AA00",
-          "name": "department name"
-        }
-      ]
+      "person_id": "00000000-0000-0000-0000-000000000000"
     }
   ],
   "eisbn": [
@@ -103,7 +65,6 @@
       "relation": "main_file"
     }
   ],
-  "id": "00000000000000000000000001",
   "isbn": [
     "0000"
   ],
@@ -116,10 +77,7 @@
   "language": [
     "eng"
   ],
-  "last_user": {
-    "id": "00000000-0000-0000-0000-000000000000",
-    "name": "name"
-  },
+  "last_user_id": "00000000-0000-0000-0000-000000000000",
   "legacy": true,
   "link": [
     {
@@ -135,10 +93,9 @@
   "page_first": "1",
   "page_last": "99",
   "place_of_publication": "place of publication",
-  "project": [
+  "related_projects": [
     {
-      "id": "000000000",
-      "name": "name"
+      "project_id": "000000000"
     }
   ],
   "publication": "book title",
@@ -146,7 +103,7 @@
   "publisher": "publisher",
   "related_dataset": [
     {
-      "id": "90000000000000000000000000"
+      "id": "00000000000000000000000011"
     }
   ],
   "research_field": [
@@ -161,10 +118,7 @@
   "status": "public",
   "title": "title",
   "type": "book_chapter",
-  "user": {
-    "id": "00000000-0000-0000-0000-000000000000",
-    "name": "name"
-  },
+  "user_id": "00000000-0000-0000-0000-000000000000",
   "volume": "volume",
   "vabb_approved": false,
   "has_been_public": true,

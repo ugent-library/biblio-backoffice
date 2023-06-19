@@ -25,9 +25,13 @@ go.work
 .air.toml
 tmp
 root
+.tern*
+!.tern.example.conf
+
+# env
+.env
 
 # Cypress
-cypress/.env
 cypress/videos
 cypress/screenshots
 cypress/cypress-record.sh
