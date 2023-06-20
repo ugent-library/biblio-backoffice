@@ -6,6 +6,7 @@ require (
 	github.com/Masterminds/sprig/v3 v3.2.2
 	github.com/alexliesenfeld/health v0.6.0
 	github.com/alitto/pond v1.8.0
+	github.com/aws/aws-sdk-go-v2 v1.17.8
 	github.com/blevesearch/bleve/v2 v2.3.2
 	github.com/bluele/gcache v0.0.2
 	github.com/caltechlibrary/doitools v0.0.1
@@ -21,7 +22,6 @@ require (
 	github.com/jackc/pgtype v1.11.0
 	github.com/jackc/pgx/v4 v4.16.1
 	github.com/jpillora/ipfilter v1.2.8
-	github.com/mitchellh/go-homedir v1.1.0
 	github.com/nickng/bibtex v1.2.0
 	github.com/pkg/errors v0.9.1
 	github.com/rvflash/elapsed v0.2.0
@@ -40,7 +40,6 @@ require (
 
 require (
 	cloud.google.com/go/compute v1.7.0 // indirect
-	github.com/aws/aws-sdk-go-v2 v1.17.8 // indirect
 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.4.10 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/configsources v1.1.32 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.4.26 // indirect
