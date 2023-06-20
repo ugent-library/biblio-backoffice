@@ -11,13 +11,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - #1110: Keep related object metadata up-to-date
 - #812: remove confirmation dialog for Lock and Unlock
-- Only save a new version of a publication or dataset if the record has changes
 - Smaller and more efficient search index
 - Add vabb_id.set, vabb_type.set, vabb_approved.set batch operations
 
 ### Fixed
 
 - #1108: Cannot add author without first name
+
+## [v1.0.31] - 2023-06-20
+
+### Added
+
+- Only save a new version of a publication or dataset if the record has changes
+
+### Fixed
 
 ## [v1.0.30] - 2023-06-20
 
@@ -348,7 +355,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.30...HEAD
+[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.31...HEAD
+[v1.0.31]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.30...v1.0.31
 [v1.0.30]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.29...v1.0.30
 [v1.0.29]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.28...v1.0.29
 [v1.0.28]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.27...v1.0.28
