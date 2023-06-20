@@ -50,6 +50,37 @@ func KeywordRemove(p *models.Publication, args []string) error {
 	return nil
 }
 
+func VABBTypeSet(p *models.Publication, args []string) error {
+	if len(args) != 1 {
+		return errors.New("vabb type is missing")
+	}
+	p.VABBType = args[0]
+	return nil
+}
+
+func VABBIDSet(p *models.Publication, args []string) error {
+	if len(args) != 1 {
+		return errors.New("vabb id is missing")
+	}
+	p.VABBID = args[0]
+	return nil
+}
+
+func VABBApprovedSet(p *models.Publication, args []string) error {
+	if len(args) != 1 {
+		return errors.New("vabb approved value must be 'true' or 'false'")
+	}
+	switch args[0] {
+	case "true":
+		p.VABBApproved = true
+	case "false":
+		p.VABBApproved = false
+	default:
+		return errors.New("vabb approved value must be 'true' or 'false'")
+	}
+	return nil
+}
+
 func VABBYearAdd(p *models.Publication, args []string) error {
 	for _, arg := range args {
 		if !validation.InArray(p.VABBYear, arg) {
