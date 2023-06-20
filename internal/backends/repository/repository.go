@@ -159,9 +159,11 @@ func (s *Repository) ImportPublication(p *models.Publication) error {
 }
 
 func (s *Repository) SavePublication(p *models.Publication, u *models.User) error {
-	if oldPublication, err := s.GetPublication(p.ID); err != nil {
+	oldPublication, err := s.GetPublication(p.ID)
+	if err != nil && err != backends.ErrNotFound {
 		return err
-	} else if reflect.DeepEqual(oldPublication, p) {
+	}
+	if reflect.DeepEqual(oldPublication, p) {
 		return nil
 	}
 
@@ -540,9 +542,11 @@ func (s *Repository) ImportDataset(d *models.Dataset) error {
 }
 
 func (s *Repository) SaveDataset(d *models.Dataset, u *models.User) error {
-	if oldDataset, err := s.GetDataset(d.ID); err != nil {
+	oldDataset, err := s.GetDataset(d.ID)
+	if err != nil && err != backends.ErrNotFound {
 		return err
-	} else if reflect.DeepEqual(oldDataset, d) {
+	}
+	if reflect.DeepEqual(oldDataset, d) {
 		return nil
 	}
 
