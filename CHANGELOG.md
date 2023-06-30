@@ -11,6 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [v1.0.33] - 2023-06-30
+
+### Added
+
+- lower stupidly high limit for suggest
+
+### Fixed
+
 ## [v1.0.32] - 2023-06-20
 
 ### Added
@@ -356,7 +364,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.32...HEAD
+[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.33...HEAD
+[v1.0.33]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.32...v1.0.33
 [v1.0.32]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.31...v1.0.32
 [v1.0.31]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.30...v1.0.31
 [v1.0.30]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.29...v1.0.30
