@@ -101,6 +101,7 @@ Cypress.Commands.addAll({
       .contains(mode, NO_LOG)
       .then($el => {
         log = logCommand('switchMode', { 'Current mode': currentMode, 'New mode': mode }, mode, $el)
+        log.set('type', 'parent')
         log.snapshot('before')
       })
       .click(NO_LOG)
