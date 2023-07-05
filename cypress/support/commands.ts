@@ -16,6 +16,8 @@ declare namespace Cypress {
 
     extractBiblioId(alias?: string): Chainable<string> | never
 
+    visitPublication(alias?: string): Chainable<AUTWindow>
+
     /**
      * Extends the log console props with the yielded result.
      *
@@ -137,6 +139,17 @@ Cypress.Commands.addAll({
     cy.get('#modals', NO_LOG).children(NO_LOG).should('have.length', 0)
 
     cy.get('#modal-backdrop, #modal', NO_LOG).should('not.exist')
+  },
+
+  visitPublication(alias = '@biblioId') {
+    const log = logCommand('visitPublication', { alias }, alias)
+
+    cy.get(alias, NO_LOG).then(biblioId => {
+      updateLogMessage(log, biblioId)
+      updateConsoleProps(log, cp => (cp['Biblio ID'] = biblioId))
+
+      cy.visit(`/publication/${biblioId}`, NO_LOG)
+    })
   },
 })
 
