@@ -145,7 +145,7 @@ Cypress.Commands.addAll(
   { prevSubject: true },
   {
     extractBiblioId(subject, alias = 'biblioId') {
-      const log = logCommand('extractBiblioId', { alias }, `@${alias}`)
+      const log = logCommand('extractBiblioId', { subject, alias }, `@${alias}`)
 
       if (subject.length !== 1) {
         expect(subject).to.have.length(1, `Expected subject to have length 1, but it has length ${subject.length}`)
@@ -170,12 +170,7 @@ Cypress.Commands.addAll(
       updateConsoleProps(log, cp => (cp.yielded = theSubject))
 
       if (appendToMessage) {
-        const message = log.get('message').split(', ')
-
-        message.push(subject)
-
-        log.set('message', message.join(', '))
-      
+        updateLogMessage(log, subject)
       }
 
       log.end()
@@ -197,6 +192,15 @@ function logCommand(name, consoleProps = {}, message = '', $el = undefined) {
     consoleProps: () => consoleProps,
   })
 }
+
+function updateLogMessage(log: Cypress.Log, subject: unknown) {
+  const message = log.get('message').split(', ')
+
+  message.push(subject)
+
+  log.set('message', message.join(', '))
+}
+
 
 function updateConsoleProps(log: Cypress.Log, callback: (ObjectLike) => void) {
   const consoleProps = log.get('consoleProps')()
