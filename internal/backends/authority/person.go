@@ -29,7 +29,7 @@ func (c *Client) GetPerson(id string) (*models.Person, error) {
 }
 
 func (c *Client) SuggestPeople(q string) ([]*models.Person, error) {
-	limit := 500
+	limit := 20
 	persons := make([]*models.Person, 0, limit)
 
 	// remove duplicate spaces

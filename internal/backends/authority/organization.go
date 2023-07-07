@@ -55,7 +55,7 @@ func (c *Client) GetOrganization(id string) (*models.Organization, error) {
 }
 
 func (c *Client) SuggestOrganizations(q string) ([]models.Completion, error) {
-	limit := 500
+	limit := 20
 	completions := make([]models.Completion, 0, limit)
 
 	// remove duplicate spaces
