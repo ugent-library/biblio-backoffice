@@ -70,6 +70,24 @@ func EncodePublication(p *models.Publication) ([]byte, error) {
 	for _, val := range p.Keyword {
 		writeField(b, "subject", val)
 	}
+	for _, val := range p.ResearchField {
+		writeField(b, "subject", val)
+	}
+	for _, val := range p.Author {
+		writeField(b, "creator", val.Person.FullName)
+	}
+	for _, val := range p.Supervisor {
+		writeField(b, "contributor", val.Person.FullName)
+	}
+	if p.Type == "book_editor" || p.Type == "issue_editor" {
+		for _, val := range p.Editor {
+			writeField(b, "creator", val.Person.FullName)
+		}
+	} else {
+		for _, val := range p.Editor {
+			writeField(b, "contributor", val.Person.FullName)
+		}
+	}
 
 	b.WriteString(endTag)
 
@@ -119,22 +137,6 @@ func EncodePublication(p *models.Publication) ([]byte, error) {
 //         if (my $version = $VERSIONS->{$pub->{publication_status}}) {
 //             push @{$dc->{type}}, "info:eu-repo/semantics/$version";
 //         }
-//     }
-//     if (my $people = $pub->{author}) {
-//         push @{$dc->{creator} ||= []}, map { $_->{name_last_first} } @$people;
-//     }
-//     if (my $people = $pub->{editor}) {
-//         if ($pub->{type} eq 'bookEditor' || $pub->{type} eq 'journalEditor' || $pub->{type} eq 'issueEditor') {
-//             push @{$dc->{creator} ||= []}, map { $_->{name_last_first} } @$people;
-//         } else {
-//             push @{$dc->{contributor} ||= []}, map { $_->{name_last_first} } @$people;
-//         }
-//     }
-//     if (my $people = $pub->{promoter}) {
-//         push @{$dc->{contributor} ||= []}, map { $_->{name_last_first} } @$people;
-//     }
-//     if (my $subject = $pub->{subject}) {
-//         push @{$dc->{subject} ||= []}, @$subject;
 //     }
 //     $dc->{rights}      = [ $pub->{copyright_statement} ] if $pub->{copyright_statement};
 //     $dc->{source}      = [ $pub->{parent}{title} ]       if $pub->{parent} && $pub->{parent}{title};
