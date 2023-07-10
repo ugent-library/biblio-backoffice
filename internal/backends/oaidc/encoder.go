@@ -33,6 +33,32 @@ func EncodePublication(p *models.Publication) ([]byte, error) {
 	b := &bytes.Buffer{}
 	b.WriteString(startTag)
 
+	var t string
+	switch p.Type {
+	case "book", "book_editor":
+		t = "book"
+	case "book_chapter":
+		t = "bookPart"
+	case "conference":
+		t = "conferenceObject"
+	case "dissertation":
+		t = "doctoralThesis"
+	case "journalArticle":
+		t = "article"
+	default:
+		t = "other"
+	}
+	switch p.MiscellaneousType {
+	case "newsArticle", "newspaperPiece":
+		t = "contributionToPeriodical"
+	case "bookReview":
+		t = "review"
+	case "report":
+		t = "report"
+	}
+	writeField(b, "type", t)
+	writeField(b, "type", "info:eu-repo/semantics/"+t)
+
 	writeField(b, "identifier", p.Handle)
 	writeField(b, "title", p.Title)
 	writeField(b, "date", p.Year)
@@ -74,18 +100,18 @@ func EncodePublication(p *models.Publication) ([]byte, error) {
 		writeField(b, "subject", val)
 	}
 	for _, val := range p.Author {
-		writeField(b, "creator", val.Person.FullName)
+		writeField(b, "creator", val.Name())
 	}
 	for _, val := range p.Supervisor {
-		writeField(b, "contributor", val.Person.FullName)
+		writeField(b, "contributor", val.Name())
 	}
 	if p.Type == "book_editor" || p.Type == "issue_editor" {
 		for _, val := range p.Editor {
-			writeField(b, "creator", val.Person.FullName)
+			writeField(b, "creator", val.Name())
 		}
 	} else {
 		for _, val := range p.Editor {
-			writeField(b, "contributor", val.Person.FullName)
+			writeField(b, "contributor", val.Name())
 		}
 	}
 
@@ -93,16 +119,6 @@ func EncodePublication(p *models.Publication) ([]byte, error) {
 
 	return b.Bytes(), nil
 }
-
-// my $TYPES = {
-//     book             => 'book',
-//     bookChapter      => 'bookPart',
-//     bookEditor       => 'book',
-//     conference       => 'conferenceObject',
-//     dissertation     => 'doctoralThesis',
-//     journalArticle   => 'article',
-//     licentiateThesis => 'masterThesis',
-// };
 
 // my $VERSIONS = {
 //     unsubmitted => 'draft',
@@ -114,23 +130,8 @@ func EncodePublication(p *models.Publication) ([]byte, error) {
 // sub fix {
 //     state $uri_base = Catmandu->config->{uri_base} . '/publication';
 
-//     my ($self, $pub) = @_;
-
-//     my $type = $TYPES->{$pub->{type}} || 'other';
-
-//     if ($pub->{misc_type}) {
-//         if ($pub->{misc_type} eq 'newsArticle' || $pub->{misc_type} eq 'newspaperPiece' || $pub->{misc_type} eq 'magazinePiece') {
-//             $type = 'contributionToPeriodical';
-//         } elsif ($pub->{misc_type} eq 'bookReview') {
-//             $type = 'review';
-//         } elsif ($pub->{misc_type} eq 'report') {
-//             $type = 'report';
-//         }
-//     }
-
 //     my $dc = {
 //         identifier => [ "$uri_base/$pub->{_id}" ],
-//         type => [ $pub->{type}, "info:eu-repo/semantics/$type" ],
 //     };
 
 //     if ($pub->{publication_status}) {
