@@ -2,6 +2,7 @@ package oaidc
 
 import (
 	"bytes"
+	"encoding/xml"
 
 	"github.com/ugent-library/biblio-backoffice/identifiers"
 	"github.com/ugent-library/biblio-backoffice/internal/models"
@@ -22,7 +23,7 @@ func writeField(b *bytes.Buffer, tag, val string) {
 		b.WriteString("<dc:")
 		b.WriteString(tag)
 		b.WriteString(">")
-		b.WriteString(val)
+		xml.EscapeText(b, []byte(val))
 		b.WriteString("</dc:")
 		b.WriteString(tag)
 		b.WriteString(">")
