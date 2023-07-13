@@ -13,6 +13,23 @@ import (
 	"github.com/ugent-library/biblio-backoffice/internal/models"
 )
 
+// api reference: https://europepmc.org/RestfulWebService
+/*
+	differences between resultType=lite and resultType=core
+
+	* journalTitle in lite is an abbreviation (e.g. "Plant Physiol" instead of "Plant physiology"),
+	  which equals the core attribute journalInfo.journal.medlineAbbreviation.
+	  Better to use core attribute journalInfo.journal.title.
+
+	* journalISSN in lite is a colon separated list of both ISSN and EISSN, while
+	  core attribute journalInfo.journal.issn and journalInfo.journal.essn (note the name)
+	  separates them.
+
+	* authorString in lite is a colon separated list of abbreviated full names,
+	  while core attribute authorList.author is an array of objects, containing
+	  attributes firstName, lastName, fullName (with abbreviation of firstName),
+	  and possibly also an orcid in authorId.id (if authorId.type is "ORCID")
+*/
 var reSplit = regexp.MustCompile(`\s*[,;]\s*`)
 
 type Client struct {
@@ -36,6 +53,7 @@ func (c *Client) GetPublication(id string) (*models.Publication, error) {
 	q := u.Query()
 	q.Set("format", "json")
 	q.Set("query", id)
+	q.Set("resultType", "core")
 	u.RawQuery = q.Encode()
 	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
 	if err != nil {
@@ -78,23 +96,38 @@ func (c *Client) GetPublication(id string) (*models.Publication, error) {
 	if res := attrs.Get("title"); res.Exists() {
 		p.Title = res.String()
 	}
-	if res := attrs.Get("journalTitle"); res.Exists() {
-		p.Publication = res.String()
-	}
-	if res := attrs.Get("journalVolume"); res.Exists() {
-		p.Volume = res.String()
-	}
-	if res := attrs.Get("journalIssn"); res.Exists() {
-		p.ISSN = reSplit.Split(res.String(), -1)
+	if journalInfo := attrs.Get("journalInfo"); journalInfo.IsObject() {
+		if journalVolume := journalInfo.Get("volume"); journalVolume.Exists() {
+			p.Volume = journalVolume.String()
+		}
+		if journalIssue := journalInfo.Get("issue"); journalIssue.Exists() {
+			p.Issue = journalIssue.String()
+		}
+		if journal := journalInfo.Get("journal"); journal.IsObject() {
+			if journalTitle := journal.Get("title"); journalTitle.Exists() {
+				p.Publication = journalTitle.String()
+			}
+			if journalISSN := journal.Get("issn"); journalISSN.Exists() {
+				p.ISSN = append(p.ISSN, journalISSN.String())
+			}
+			if journalEISSN := journal.Get("essn"); journalEISSN.Exists() {
+				p.EISSN = append(p.EISSN, journalEISSN.String())
+			}
+		}
 	}
 	if res := attrs.Get("pubYear"); res.Exists() {
 		p.Year = res.String()
 	}
-	if res := attrs.Get("authorString"); res.Exists() {
-		for _, r := range reSplit.Split(res.String(), -1) {
-			nameParts := strings.Split(strings.ReplaceAll(r, ".", ""), " ")
-			firstName := nameParts[len(nameParts)-1]
-			lastName := strings.Join(nameParts[:len(nameParts)-1], " ")
+	if authorList := attrs.Get("authorList.author"); authorList.IsArray() {
+		for _, author := range authorList.Array() {
+			var firstName string
+			var lastName string
+			if fn := author.Get("firstName"); fn.Exists() {
+				firstName = fn.String()
+			}
+			if ln := author.Get("lastName"); ln.Exists() {
+				lastName = ln.String()
+			}
 			c := models.ContributorFromFirstLastName(firstName, lastName)
 			p.Author = append(p.Author, c)
 		}
@@ -107,6 +140,13 @@ func (c *Client) GetPublication(id string) (*models.Publication, error) {
 		} else {
 			p.ArticleNumber = pages[0]
 		}
+	}
+	// TODO: language of abstract always in English?
+	if res := attrs.Get("abstractText"); res.Exists() {
+		p.AddAbstract(&models.Text{Text: res.String(), Lang: "eng"})
+	}
+	if res := attrs.Get("language"); res.Exists() {
+		p.Language = append(p.Language, res.String())
 	}
 
 	// log.Printf("import publication: %+v", p)
