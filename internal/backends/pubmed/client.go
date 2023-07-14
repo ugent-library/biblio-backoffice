@@ -5,7 +5,6 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"regexp"
 	"strings"
 	"time"
 
@@ -14,7 +13,6 @@ import (
 )
 
 // api reference: https://europepmc.org/RestfulWebService
-var reSplit = regexp.MustCompile(`\s*[,;]\s*`)
 
 type Client struct {
 	url  string
