@@ -123,48 +123,30 @@ func (c *Client) GetPublication(id string) (*models.Publication, error) {
 	}
 	if res := attrs.Get("author"); res.Exists() {
 		for _, r := range res.Array() {
-			c := models.Contributor{}
-			if res := r.Get("name"); res.Exists() {
-				c.FullName = res.String()
+			name := r.Get("name").String()
+			firstName := r.Get("given").String()
+			lastName := r.Get("family").String()
+			if firstName == "" {
+				firstName = "[missing]" // TODO
 			}
-			if res := r.Get("given"); res.Exists() {
-				c.FirstName = res.String()
-			} else {
-				c.FirstName = "[missing]" // TODO
+			if lastName == "" {
+				lastName = name
 			}
-			if res := r.Get("family"); res.Exists() {
-				c.LastName = res.String()
-			} else {
-				// if LastName is empty, fill it with the FullName.
-				// if FullName is empty, put [missing] in LastName.
-				// solves for cases where authors are misused for organizational
-				// attribution.
-				if res := r.Get("name"); res.Exists() {
-					c.LastName = res.String()
-				} else {
-					c.LastName = "[missing]" // TODO
-				}
-			}
-			p.Author = append(p.Author, &c)
+			p.Author = append(p.Author, models.ContributorFromFirstLastName(firstName, lastName))
 		}
 	}
 	if res := attrs.Get("editor"); res.Exists() {
 		for _, r := range res.Array() {
-			c := models.Contributor{}
-			if res := r.Get("name"); res.Exists() {
-				c.FullName = res.String()
+			name := r.Get("name").String()
+			firstName := r.Get("given").String()
+			lastName := r.Get("family").String()
+			if firstName == "" {
+				firstName = "[missing]" // TODO
 			}
-			if res := r.Get("given"); res.Exists() {
-				c.FirstName = res.String()
-			} else {
-				c.FirstName = "[missing]" // TODO
+			if lastName == "" {
+				lastName = name
 			}
-			if res := r.Get("family"); res.Exists() {
-				c.LastName = res.String()
-			} else {
-				c.LastName = "[missing]" // TODO
-			}
-			p.Editor = append(p.Editor, &c)
+			p.Editor = append(p.Editor, models.ContributorFromFirstLastName(firstName, lastName))
 		}
 	}
 	if res := attrs.Get("subject"); res.Exists() {

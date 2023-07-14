@@ -4,11 +4,7 @@ describe('Clean-up', { redirectionLimit: PAGE_SIZE }, () => {
   it('clean up publications', () => {
     cy.loginAsLibrarian()
 
-    cy.intercept('PUT', '/role/curator').as('curator')
-    cy.visit('/')
-    cy.contains('Researcher').click()
-    cy.contains('Librarian').click()
-    cy.wait('@curator')
+    cy.switchMode('Librarian')
 
     const selector = 'button.dropdown-item[hx-get*="/confirm-delete"]:first'
 

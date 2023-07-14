@@ -11,10 +11,11 @@ services:
       POSTGRES_PASSWORD: biblio
 
   bb_elastic:
+    platform: "linux/amd64"
     # TODO: elastic 6.8 doesn't provide an arm64 image. So, we need to use a 
     #   custom image for the time being. Switch this if you are on x86_64.
-    # image: elasticsearch:6.8.23
-    image: elyalvarado/elasticsearch-arm64:6.8.16
+    image: elasticsearch:6.8.23
+    # image: elyalvarado/elasticsearch-arm64:6.8.16
     ports:
       - 9400:9200
     environment:
@@ -27,8 +28,12 @@ services:
             hard: 65536
     command: >
         /bin/sh -c "./bin/elasticsearch-plugin list | grep -q analysis-icu
-        || ./bin/elasticsearch-plugin install https://artifacts.elastic.co/downloads/elasticsearch-plugins/analysis-icu/analysis-icu-6.8.16.zip;
+        || ./bin/elasticsearch-plugin install analysis-icu;
         /usr/local/bin/docker-entrypoint.sh"
+    # command: >
+    #     /bin/sh -c "./bin/elasticsearch-plugin list | grep -q analysis-icu
+    #     || ./bin/elasticsearch-plugin install https://artifacts.elastic.co/downloads/elasticsearch-plugins/analysis-icu/analysis-icu-6.8.16.zip;
+    #     /usr/local/bin/docker-entrypoint.sh"
 
   bb_mongo:
     image: 'mongo'

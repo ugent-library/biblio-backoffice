@@ -17,10 +17,7 @@ func ProjectAdd(projectService backends.ProjectService) func(*models.Publication
 		if err != nil {
 			return err
 		}
-		p.AddProject(&models.PublicationProject{
-			ID:   project.ID,
-			Name: project.Title,
-		})
+		p.AddProject(project)
 		return nil
 	}
 }
@@ -50,6 +47,37 @@ func KeywordRemove(p *models.Publication, args []string) error {
 		}
 	}
 	p.Keyword = vals
+	return nil
+}
+
+func VABBTypeSet(p *models.Publication, args []string) error {
+	if len(args) != 1 {
+		return errors.New("vabb type is missing")
+	}
+	p.VABBType = args[0]
+	return nil
+}
+
+func VABBIDSet(p *models.Publication, args []string) error {
+	if len(args) != 1 {
+		return errors.New("vabb id is missing")
+	}
+	p.VABBID = args[0]
+	return nil
+}
+
+func VABBApprovedSet(p *models.Publication, args []string) error {
+	if len(args) != 1 {
+		return errors.New("vabb approved value must be 'true' or 'false'")
+	}
+	switch args[0] {
+	case "true":
+		p.VABBApproved = true
+	case "false":
+		p.VABBApproved = false
+	default:
+		return errors.New("vabb approved value must be 'true' or 'false'")
+	}
 	return nil
 }
 

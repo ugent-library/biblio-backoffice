@@ -163,25 +163,23 @@ func mapEntry(e *bibtex.BibEntry, p *models.Publication) {
 	if f, ok := entries["author"]; ok {
 		for _, v := range strings.Split(f, " and ") {
 			nameParts := reSplit.Split(v, -1)
-			c := &models.Contributor{FullName: v, LastName: nameParts[0]}
+			lastName := nameParts[0]
+			firstName := "[missing]" // TODO
 			if len(nameParts) > 1 {
-				c.FirstName = nameParts[1]
-			} else {
-				c.FirstName = "[missing]" // TODO
+				firstName = nameParts[1]
 			}
-			p.Author = append(p.Author, c)
+			p.Author = append(p.Author, models.ContributorFromFirstLastName(firstName, lastName))
 		}
 	}
 	if f, ok := entries["editor"]; ok {
 		for _, v := range strings.Split(f, " and ") {
 			nameParts := reSplit.Split(v, -1)
-			c := &models.Contributor{FullName: v, LastName: nameParts[0]}
+			lastName := nameParts[0]
+			firstName := "[missing]" // TODO
 			if len(nameParts) > 1 {
-				c.FirstName = nameParts[1]
-			} else {
-				c.FirstName = "[missing]" // TODO
+				firstName = nameParts[1]
 			}
-			p.Editor = append(p.Editor, c)
+			p.Editor = append(p.Editor, models.ContributorFromFirstLastName(firstName, lastName))
 		}
 	}
 

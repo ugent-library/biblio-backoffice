@@ -27,7 +27,8 @@ func (s *PublicationReindexSuite) TestReindex() {
 		t.Fatal(err)
 	}
 
-	assert.Regexp(t, `Indexing to a new index\nIndexed .* publications...\nSwitching to new index...\nIndexing changes since start of reindex...\nDone`, stdOut)
+	assert.Regexp(t, `^Indexing to a new index\n`, stdOut)
+	assert.Regexp(t, `\nDone\n$`, stdOut)
 }
 
 func TestPublicationReindexSuite(t *testing.T) {

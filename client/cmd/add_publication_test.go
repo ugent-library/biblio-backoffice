@@ -109,19 +109,7 @@ func (s *AddPublicationSuite) TestAddMinimalValidRecord() {
 				"credit_role": [
 					"first_author"
 				],
-				"first_name": "first name",
-				"full_name": "full name",
-				"id": "00000000-0000-0000-0000-000000000000",
-				"last_name": "last name",
-				"ugent_id": [
-					"000000000000"
-				],
-				"department": [
-				{
-					"id": "AA00",
-					"name": "department name"
-				}
-				]
+				"person_id": "00000000-0000-0000-0000-000000000000"
 			}
 		]
 	}`
@@ -164,19 +152,7 @@ func (s *AddPublicationSuite) TestAddingMultiplePublications() {
 				"credit_role": [
 					"first_author"
 				],
-				"first_name": "first name",
-				"full_name": "full name",
-				"id": "00000000-0000-0000-0000-000000000000",
-				"last_name": "last name",
-				"ugent_id": [
-					"000000000000"
-				],
-				"department": [
-				{
-					"id": "AA00",
-					"name": "department name"
-				}
-				]
+				"person_id": "00000000-0000-0000-0000-000000000000"
 			}
 		]
 	}`
@@ -248,7 +224,7 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 	}
 
 	// Remove dynamic fields distorting the JSONEqf assertion
-	ina, err := removeKey(jsonl, "snapshot_id", "date_from", "date_updated", "user")
+	ina, err := removeKey(jsonl, "snapshot_id", "date_from", "date_updated", "user_id")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -285,7 +261,7 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 	}
 
 	// Remove dynamic fields distorting the JSONEqf assertion
-	ina, err = removeKey(jsonl, "snapshot_id", "date_from", "date_updated", "user")
+	ina, err = removeKey(jsonl, "snapshot_id", "date_from", "date_updated", "user_id")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -322,7 +298,7 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 	}
 
 	// Remove dynamic fields distorting the JSONEqf assertion
-	ina, err = removeKey(jsonl, "snapshot_id", "date_from", "date_updated", "user")
+	ina, err = removeKey(jsonl, "snapshot_id", "date_from", "date_updated", "user_id")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -359,7 +335,7 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 	}
 
 	// Remove dynamic fields distorting the JSONEqf assertion
-	ina, err = removeKey(jsonl, "snapshot_id", "date_from", "date_updated", "user")
+	ina, err = removeKey(jsonl, "snapshot_id", "date_from", "date_updated", "user_id")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -396,7 +372,7 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 	}
 
 	// Remove dynamic fields distorting the JSONEqf assertion
-	ina, err = removeKey(jsonl, "snapshot_id", "date_from", "date_updated", "user")
+	ina, err = removeKey(jsonl, "snapshot_id", "date_from", "date_updated", "user_id")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -433,7 +409,7 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 	}
 
 	// Remove dynamic fields distorting the JSONEqf assertion
-	ina, err = removeKey(jsonl, "snapshot_id", "date_from", "date_updated", "user")
+	ina, err = removeKey(jsonl, "snapshot_id", "date_from", "date_updated", "user_id")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -470,7 +446,7 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 	}
 
 	// Remove dynamic fields distorting the JSONEqf assertion
-	ina, err = removeKey(jsonl, "snapshot_id", "date_from", "date_updated", "user")
+	ina, err = removeKey(jsonl, "snapshot_id", "date_from", "date_updated", "user_id")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -507,7 +483,7 @@ func (s *AddPublicationSuite) TestAddAndGetCompletePublications() {
 	}
 
 	// Remove dynamic fields distorting the JSONEqf assertion
-	ina, err = removeKey(jsonl, "snapshot_id", "date_from", "date_updated", "user")
+	ina, err = removeKey(jsonl, "snapshot_id", "date_from", "date_updated", "user_id")
 	if err != nil {
 		t.Fatal(err)
 	}

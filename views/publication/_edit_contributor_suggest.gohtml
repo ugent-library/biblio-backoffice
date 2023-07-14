@@ -1,14 +1,14 @@
 <ul class="list-group mt-6">
-    {{if .Contributor.ID}}
+    {{if .Contributor.Person}}
     <li class="list-group-item">
         <div class="list-group-item-inner">
             <div class="list-group-item-main">
-                {{partial "shared/contributor_summary" (.Yield "Contributor" .Contributor "Current" true "Active" .Active)}}
+                {{partial "shared/contributor_summary" (.Yield "Contributor" .Contributor "Current" true "Active" .Contributor.Person.Active)}}
             </div>
             <div class="c-button-toolbar">
                 <button class="btn btn-primary"
                     hx-get="{{pathFor "publication_confirm_update_contributor" "id" .Publication.ID "role" .Role "position" (.Position|toString)}}"
-                    hx-vals='{"id":"{{.Contributor.ID}}"}'
+                    hx-vals='{"id":"{{.Contributor.PersonID}}"}'
                     hx-swap="none"
                 >
                     {{if eq .Role "author"}}
@@ -46,11 +46,11 @@
     {{end}}
 </ul>
 
-{{if or .Hits (and .Contributor.ID .FirstName .LastName)}}
+{{if or .Hits (and .Contributor.PersonID .FirstName .LastName)}}
 <h3 class="mt-6">Select other {{$.Locale.TS "publication.contributor.role" $.Role}}</h3>
 
 <ul class="list-group">
-    {{if and .Contributor.ID .FirstName .LastName}}
+    {{if and .Contributor.PersonID .FirstName .LastName}}
     <li class="list-group-item">
         <div class="list-group-item-inner">
             <div class="list-group-item-main">
@@ -74,12 +74,12 @@
     <li class="list-group-item">
         <div class="list-group-item-inner">
             <div class="list-group-item-main">
-                {{partial "shared/contributor_summary" ($.Yield "Contributor" . "Current" false "Active" .Active)}}
+                {{partial "shared/contributor_summary" ($.Yield "Contributor" . "Current" false "Active" .Person.Active)}}
             </div>
             <div class="c-button-toolbar">
                 <button class="btn btn-primary"
                     hx-get="{{pathFor "publication_confirm_update_contributor" "id" $.Publication.ID "role" $.Role "position" ($.Position|toString)}}"
-                    hx-vals='{"id":"{{.ID}}"}'
+                    hx-vals='{"id":"{{.PersonID}}"}'
                     hx-swap="none"
                 >
                     <span class="btn-text">Switch {{$.Locale.TS "publication.contributor.role" $.Role}}</span>

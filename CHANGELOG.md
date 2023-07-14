@@ -9,6 +9,60 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- #1110: Keep related object metadata up-to-date
+- #812: remove confirmation dialog for Lock and Unlock
+- Smaller and more efficient search index
+- Add vabb_id.set, vabb_type.set, vabb_approved.set batch operations
+
+### Fixed
+
+- #1108: Cannot add author without first name
+
+## [v1.0.33] - 2023-06-30
+
+### Added
+
+### Fixed
+
+- Lower limit for suggest to 20
+
+## [v1.0.32] - 2023-06-20
+
+### Added
+
+- Only save a new version of a publication or dataset if the record has changes
+
+### Fixed
+
+## [v1.0.31] - 2023-06-20
+
+### Added
+
+- Only save a new version of a publication or dataset if the record has changes
+
+### Fixed
+
+## [v1.0.30] - 2023-06-20
+
+### Added
+
+- Add vabb_id.set, vabb_type.set, vabb_approved.set batch operations
+
+### Fixed
+
+## [v1.0.29] - 2023-06-13
+
+### Added
+
+### Fixed
+
+- Allow HTML in form help text
+- Update text
+
+## [v1.0.28] - 2023-06-13
+
+### Added
+
 - #898: Manual dataset input and support dataset identifier types other than DOI
 - Batch operation support (initial operations are project.add,
   classification.set, vabb_year.add, keyword.add, keyword.remove,
@@ -16,6 +70,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - #1109: Map VABB attributes in frontoffice handler
 
 ### Fixed
+
+- #1123: Fix import of multiline RIS/WoS fields
+- Various ux fixes
 
 ## [v1.0.27] - 2023-05-08
 
@@ -314,7 +371,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.27...HEAD
+[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.33...HEAD
+[v1.0.33]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.32...v1.0.33
+[v1.0.32]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.31...v1.0.32
+[v1.0.31]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.30...v1.0.31
+[v1.0.30]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.29...v1.0.30
+[v1.0.29]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.28...v1.0.29
+[v1.0.28]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.27...v1.0.28
 [v1.0.27]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.26...v1.0.27
 [v1.0.26]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.25...v1.0.26
 [v1.0.25]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.24...v1.0.25

@@ -52,7 +52,7 @@ type YieldAddImpersonationSuggest struct {
 	Context
 	FirstName string
 	LastName  string
-	Hits      []models.Person
+	Hits      []*models.Person
 }
 
 func (h *Handler) AddImpersonation(w http.ResponseWriter, r *http.Request, ctx Context) {

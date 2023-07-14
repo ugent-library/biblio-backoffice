@@ -84,14 +84,7 @@ func (h *Handler) CreateProject(w http.ResponseWriter, r *http.Request, ctx Cont
 		return
 	}
 
-	/*
-		Note: AddProject removes potential existing project
-		and adds a new one at the end
-	*/
-	ctx.Dataset.AddProject(&models.DatasetProject{
-		ID:   project.ID,
-		Name: project.Title,
-	})
+	ctx.Dataset.AddProject(project)
 
 	// TODO handle validation errors
 

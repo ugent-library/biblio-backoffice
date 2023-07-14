@@ -1,11 +1,15 @@
 package handlers
 
 import (
+	"encoding/base64"
 	"encoding/gob"
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"net/http"
 	"net/url"
+	"strings"
+	"time"
 
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/mux"
@@ -28,36 +32,39 @@ func init() {
 // TODO handlers should only have access to a url builder,
 // the session and maybe the localizer
 type BaseHandler struct {
-	Router       *mux.Router
-	Logger       *zap.SugaredLogger
-	SessionName  string
-	SessionStore sessions.Store
-	UserService  backends.UserService
-	Localizer    *locale.Localizer
+	Router          *mux.Router
+	Logger          *zap.SugaredLogger
+	SessionName     string
+	SessionStore    sessions.Store
+	UserService     backends.UserService
+	Localizer       *locale.Localizer
+	FrontendBaseUrl string
 }
 
 // also add fields to Yield method
 type BaseContext struct {
-	CurrentURL   *url.URL
-	Flash        []flash.Flash
-	Locale       *locale.Locale
-	User         *models.User
-	UserRole     string
-	OriginalUser *models.User
-	CSRFToken    string
-	CSRFTag      template.HTML
+	CurrentURL      *url.URL
+	Flash           []flash.Flash
+	Locale          *locale.Locale
+	User            *models.User
+	UserRole        string
+	OriginalUser    *models.User
+	CSRFToken       string
+	CSRFTag         template.HTML
+	FrontendBaseUrl string
 }
 
 func (c BaseContext) Yield(pairs ...any) map[string]any {
 	yield := map[string]any{
-		"CurrentURL":   c.CurrentURL,
-		"Flash":        c.Flash,
-		"Locale":       c.Locale,
-		"User":         c.User,
-		"UserRole":     c.UserRole,
-		"OriginalUser": c.OriginalUser,
-		"CSRFToken":    c.CSRFToken,
-		"CSRFTag":      c.CSRFTag,
+		"CurrentURL":      c.CurrentURL,
+		"Flash":           c.Flash,
+		"Locale":          c.Locale,
+		"User":            c.User,
+		"UserRole":        c.UserRole,
+		"OriginalUser":    c.OriginalUser,
+		"CSRFToken":       c.CSRFToken,
+		"CSRFTag":         c.CSRFTag,
+		"FrontendBaseUrl": c.FrontendBaseUrl,
 	}
 
 	n := len(pairs)
@@ -98,48 +105,67 @@ func (h BaseHandler) NewContext(r *http.Request, w http.ResponseWriter) (BaseCon
 		return BaseContext{}, fmt.Errorf("could not get original user from session: %w", err)
 	}
 
-	flash, err := h.getFlashFromSession(session, r, w)
+	flash, err := h.getFlashFromCookies(r, w)
 	if err != nil {
 		return BaseContext{}, fmt.Errorf("could not get flash message from session: %w", err)
 	}
 
 	return BaseContext{
-		CurrentURL:   r.URL,
-		Flash:        flash,
-		Locale:       h.Localizer.GetLocale(r.Header.Get("Accept-Language")),
-		User:         user,
-		UserRole:     h.getUserRoleFromSession(session),
-		OriginalUser: originalUser,
-		CSRFToken:    csrf.Token(r),
-		CSRFTag:      csrf.TemplateField(r),
+		CurrentURL:      r.URL,
+		Flash:           flash,
+		Locale:          h.Localizer.GetLocale(r.Header.Get("Accept-Language")),
+		User:            user,
+		UserRole:        h.getUserRoleFromSession(session),
+		OriginalUser:    originalUser,
+		CSRFToken:       csrf.Token(r),
+		CSRFTag:         csrf.TemplateField(r),
+		FrontendBaseUrl: h.FrontendBaseUrl,
 	}, nil
 }
 
-func (h BaseHandler) AddSessionFlash(r *http.Request, w http.ResponseWriter, f flash.Flash) error {
-	session, err := h.SessionStore.Get(r, h.SessionName)
+func (h BaseHandler) AddFlash(r *http.Request, w http.ResponseWriter, f flash.Flash) error {
+	j, err := json.Marshal(f)
 	if err != nil {
-		return fmt.Errorf("could not get session from store: %w", err)
+		return err
 	}
-
-	session.AddFlash(f, FlashKey)
-
-	if err := session.Save(r, w); err != nil {
-		return fmt.Errorf("could not save data to session: %w", err)
-	}
-
+	http.SetCookie(w, &http.Cookie{
+		Name:     FlashCookiePrefix + ulid.Make().String(),
+		Value:    base64.URLEncoding.EncodeToString(j),
+		Expires:  time.Now().Add(3 * time.Minute),
+		Path:     "/",
+		HttpOnly: true,
+		SameSite: http.SameSiteStrictMode,
+	})
 	return nil
 }
 
-func (h BaseHandler) getFlashFromSession(session *sessions.Session, r *http.Request, w http.ResponseWriter) ([]flash.Flash, error) {
-	sessionFlashes := session.Flashes(FlashKey)
-
-	if err := session.Save(r, w); err != nil {
-		return []flash.Flash{}, fmt.Errorf("could not save data to session: %w", err)
-	}
-
+func (h BaseHandler) getFlashFromCookies(r *http.Request, w http.ResponseWriter) ([]flash.Flash, error) {
 	flashes := []flash.Flash{}
-	for _, f := range sessionFlashes {
-		flashes = append(flashes, f.(flash.Flash))
+
+	for _, cookie := range r.Cookies() {
+		if !strings.HasPrefix(cookie.Name, FlashCookiePrefix) {
+			continue
+		}
+
+		// delete cookie
+		http.SetCookie(w, &http.Cookie{
+			Name:     cookie.Name,
+			Value:    "",
+			Expires:  time.Now(),
+			Path:     "/",
+			HttpOnly: true,
+			SameSite: http.SameSiteStrictMode,
+		})
+
+		j, err := base64.URLEncoding.DecodeString(cookie.Value)
+		if err != nil {
+			continue
+		}
+
+		f := flash.Flash{}
+		if err = json.Unmarshal(j, &f); err == nil {
+			flashes = append(flashes, f)
+		}
 	}
 
 	return flashes, nil

@@ -32,10 +32,12 @@ var resetCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		publicationSwitcher, err := services.PublicationSearchService.NewIndexSwitcher(backends.BulkIndexerConfig{
+		publicationSwitcher, err := services.SearchService.NewPublicationIndexSwitcher(backends.BulkIndexerConfig{
 			OnError: func(err error) {
+				log.Fatal(err)
 			},
 			OnIndexError: func(id string, err error) {
+				log.Fatal(err)
 			},
 		})
 		if err != nil {
@@ -45,10 +47,12 @@ var resetCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		datasetSwitcher, err := services.DatasetSearchService.NewIndexSwitcher(backends.BulkIndexerConfig{
+		datasetSwitcher, err := services.SearchService.NewDatasetIndexSwitcher(backends.BulkIndexerConfig{
 			OnError: func(err error) {
+				log.Fatal(err)
 			},
 			OnIndexError: func(id string, err error) {
+				log.Fatal(err)
 			},
 		})
 		if err != nil {

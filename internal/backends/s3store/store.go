@@ -152,6 +152,10 @@ func (s *Store) DeleteAll(ctx context.Context) error {
 			})
 		}
 
+		if len(ids) == 0 {
+			break
+		}
+
 		_, err = s.client.DeleteObjects(ctx, &s3.DeleteObjectsInput{
 			Bucket: aws.String(s.bucket),
 			Delete: &types.Delete{
