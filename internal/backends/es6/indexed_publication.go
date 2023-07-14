@@ -85,6 +85,10 @@ func NewIndexedPublication(p *models.Publication) *indexedPublication {
 		ip.FacultyID = append(ip.FacultyID, "n/a")
 	}
 
+	if ip.VABBType == "" {
+		ip.VABBType = "n/a"
+	}
+
 	if p.WOSType != "" {
 		wos_types := reSplitWOS.Split(p.WOSType, -1)
 		for _, wos_type := range wos_types {

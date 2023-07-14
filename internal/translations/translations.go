@@ -304,6 +304,8 @@ func init() {
 	message.SetString(language.English, "builder.miscellaneous.publication", "Publication title")
 	message.SetString(language.English, "builder.miscellaneous.publication_abbreviation", "Publication short title")
 
+	message.SetString(language.English, "vabb_type.n/a", "[missing]")
+
 	message.SetString(language.English, "organization.n/a", "[missing]")
 	message.SetString(language.English, "organization.CA", "Central Administration")
 	message.SetString(language.English, "organization.CA01", "Rector's Office")

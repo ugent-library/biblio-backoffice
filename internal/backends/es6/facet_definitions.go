@@ -69,7 +69,7 @@ var fixedFacetValues = map[string][]string{
 	"publication_status": vocabularies.Map["publication_publishing_statuses"],
 	"status":             vocabularies.Map["visible_publication_statuses"],
 	"type":               vocabularies.Map["publication_types"],
-	"vabb_type":          vocabularies.Map["publication_vabb_types"],
+	"vabb_type":          append([]string{"n/a"}, vocabularies.Map["publication_vabb_types"]...),
 }
 
 func reorderFacets(t string, facets []models.Facet) []models.Facet {
