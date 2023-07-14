@@ -23,7 +23,7 @@
                 </a>
                 <div class="dropdown-divider"></div>
                 {{if eq .Publication.Status "public"}}
-                <a class="dropdown-item" href="https://biblio.ugent.be/publication/{{.Publication.ID}}" target="_blank">
+                <a class="dropdown-item" href="{{index .Constants "frontend-url"}}/publication/{{.Publication.ID}}" target="_blank">
                     <i class="if if-book"></i>
                     <span>Public Biblio Location</span>
                 </a>

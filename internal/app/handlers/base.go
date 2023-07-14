@@ -38,6 +38,7 @@ type BaseHandler struct {
 	SessionStore sessions.Store
 	UserService  backends.UserService
 	Localizer    *locale.Localizer
+	Constants    map[string]string
 }
 
 // also add fields to Yield method
@@ -50,6 +51,7 @@ type BaseContext struct {
 	OriginalUser *models.User
 	CSRFToken    string
 	CSRFTag      template.HTML
+	Constants    map[string]string
 }
 
 func (c BaseContext) Yield(pairs ...any) map[string]any {
@@ -62,6 +64,7 @@ func (c BaseContext) Yield(pairs ...any) map[string]any {
 		"OriginalUser": c.OriginalUser,
 		"CSRFToken":    c.CSRFToken,
 		"CSRFTag":      c.CSRFTag,
+		"Constants":    c.Constants,
 	}
 
 	n := len(pairs)
@@ -116,6 +119,7 @@ func (h BaseHandler) NewContext(r *http.Request, w http.ResponseWriter) (BaseCon
 		OriginalUser: originalUser,
 		CSRFToken:    csrf.Token(r),
 		CSRFTag:      csrf.TemplateField(r),
+		Constants:    h.Constants,
 	}, nil
 }
 

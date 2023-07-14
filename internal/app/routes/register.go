@@ -61,6 +61,9 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		SessionName:  sessionName,
 		Localizer:    localizer,
 		UserService:  services.UserService,
+		Constants: map[string]string{
+			"frontend-url": viper.GetString("frontend-url"),
+		},
 	}
 	homeHandler := &home.Handler{
 		BaseHandler: baseHandler,
