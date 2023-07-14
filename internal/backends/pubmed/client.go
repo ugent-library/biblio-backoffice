@@ -14,22 +14,6 @@ import (
 )
 
 // api reference: https://europepmc.org/RestfulWebService
-/*
-	differences between resultType=lite and resultType=core
-
-	* journalTitle in lite is an abbreviation (e.g. "Plant Physiol" instead of "Plant physiology"),
-	  which equals the core attribute journalInfo.journal.medlineAbbreviation.
-	  Better to use core attribute journalInfo.journal.title.
-
-	* journalISSN in lite is a colon separated list of both ISSN and EISSN, while
-	  core attribute journalInfo.journal.issn and journalInfo.journal.essn (note the name)
-	  separates them.
-
-	* authorString in lite is a colon separated list of abbreviated full names,
-	  while core attribute authorList.author is an array of objects, containing
-	  attributes firstName, lastName, fullName (with abbreviation of firstName),
-	  and possibly also an orcid in authorId.id (if authorId.type is "ORCID")
-*/
 var reSplit = regexp.MustCompile(`\s*[,;]\s*`)
 
 type Client struct {
