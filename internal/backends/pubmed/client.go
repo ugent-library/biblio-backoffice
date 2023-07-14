@@ -102,13 +102,13 @@ func (c *Client) GetPublication(id string) (*models.Publication, error) {
 	}
 	if authorList := attrs.Get("authorList.author"); authorList.IsArray() {
 		for _, author := range authorList.Array() {
-			var firstName string
-			var lastName string
-			if fn := author.Get("firstName"); fn.Exists() {
-				firstName = fn.String()
+			firstName := author.Get("firstName").String()
+			if firstName == "" {
+				firstName = "[missing]"
 			}
-			if ln := author.Get("lastName"); ln.Exists() {
-				lastName = ln.String()
+			lastName := author.Get("lastName").String()
+			if lastName == "" {
+				lastName = "[missing]"
 			}
 			c := models.ContributorFromFirstLastName(firstName, lastName)
 			p.Author = append(p.Author, c)
