@@ -62,6 +62,14 @@ func (c *Client) SuggestPeople(q string) ([]*models.Person, error) {
 		"query": M{
 			"bool": M{
 				"must": queryMust,
+				"should": M{
+					"match_phrase_prefix": M{
+						"full_name": M{
+							"query": q,
+							"boost": 100,
+						},
+					},
+				},
 			},
 		},
 		"size": limit,
