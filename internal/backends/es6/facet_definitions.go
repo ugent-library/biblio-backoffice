@@ -61,7 +61,7 @@ var fixedFacetValues = map[string][]string{
 	//"publication_statuses" includes "deleted"
 	"classification":     vocabularies.Map["publication_classifications"],
 	"extern":             {"true", "false"},
-	"faculty":            append([]string{"n/a"}, vocabularies.Map["faculties"]...),
+	"faculty_id":         append([]string{"n/a"}, vocabularies.Map["faculties"]...),
 	"file.relation":      vocabularies.Map["publication_file_relations"],
 	"has_message":        {"true", "false"},
 	"legacy":             {"true", "false"},
