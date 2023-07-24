@@ -117,3 +117,11 @@ func PublicationSet(p *models.Publication, args []string) error {
 	p.Publication = args[0]
 	return nil
 }
+
+func PublicationAbbreviationSet(p *models.Publication, args []string) error {
+	if len(args) != 1 {
+		return errors.New("short journal title is missing")
+	}
+	p.PublicationAbbreviation = args[0]
+	return nil
+}
