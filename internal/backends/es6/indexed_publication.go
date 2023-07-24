@@ -24,6 +24,7 @@ type indexedPublication struct {
 	FacultyID         []string `json:"faculty_id,omitempty"`
 	FileRelation      []string `json:"file_relation,omitempty"`
 	HasMessage        bool     `json:"has_message"`
+	HasFiles          bool     `json:"has_files"`
 	ID                string   `json:"id,omitempty"`
 	Identifier        []string `json:"identifier,omitempty"`
 	ISXN              []string `json:"isxn,omitempty"`
@@ -64,6 +65,7 @@ func NewIndexedPublication(p *models.Publication) *indexedPublication {
 		UserID:            p.UserID,
 		VABBType:          p.VABBType,
 		Year:              p.Year,
+		HasFiles:          len(p.File) > 0,
 	}
 
 	faculties := vocabularies.Map["faculties"]

@@ -1,0 +1,54 @@
+<div class="dropdown">
+    <a class="badge badge-{{if .SearchArgs.HasFilter "has_files"}}primary{{else if .Hits.Facets.has_files.HasMatches}}default{{else}}secondary{{end}} mr-3"
+        data-toggle="dropdown" data-persist="true" aria-haspopup="true"
+        aria-expanded="false" role="button"
+    >
+        <span class="badge-text">Files</span>
+        {{with .SearchArgs.FiltersFor "has_files"}}
+        <span class="badge-value ml-2">
+            &ndash;
+            {{range $i, $v := .}}
+                {{- if gt $i 2}}, &hellip;{{break}}{{end}}
+                {{- if gt $i 0}},{{end}}
+                {{$.Locale.TS "has_files" $v -}}
+            {{end}}
+        </span>
+        {{end}}
+        <i class="if if-caret-down"></i>
+    </a>
+    <form class="dropdown-menu" method="GET" action="{{.CurrentURL|queryClear}}">
+        <div class="bc-navbar bc-navbar--bordered-bottom">
+            <div class="bc-toolbar bc-toolbar--auto">
+                <div class="bc-toolbar-left">
+                    <h4 class="text-nowrap">Files</h4>
+                </div>
+                <div class="bc-toolbar-right">
+                    <button type="button" class="btn btn-link form-check-all">Select all</button>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" name="q" value="{{.SearchArgs.Query}}">
+        {{range .SearchArgs.Sort}}
+        <input type="hidden" name="sort" value="{{.}}">
+        {{end}}
+        {{range $f, $vals := .SearchArgs.Filters}}
+        {{if ne $f "has_files"}}
+        {{range $vals}}
+        <input type="hidden" name="f[{{$f}}]" value="{{.}}">
+        {{end}}
+        {{end}}
+        {{end}}
+        <div class="dropdown-menu__body">
+            {{$last := sub (len .Hits.Facets.has_files) 1}}
+            {{range $i, $f := .Hits.Facets.has_files}}
+            <div class="custom-control custom-checkbox{{if lt $i $last}} mb-4{{end}}">
+                <input class="custom-control-input" id="filter-has-files-{{$i}}" type="checkbox" name="f[has_files]" value="{{$f.Value}}"{{if $.SearchArgs.HasFilter "has_files" $f.Value}} checked{{end}}>
+                <label class="custom-control-label" for="filter-has-files-{{$i}}">{{$.Locale.TS "has_files" $f.Value}} ({{$f.Count}})</label>
+            </div>
+            {{end}}
+        </div>
+        <div class="bc-navbar bc-navbar--large">
+            <button class="btn btn-primary btn-block" type="submit">Apply filter</button>
+        </div>
+    </form>
+</div>
