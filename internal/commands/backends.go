@@ -361,6 +361,7 @@ func newRepository(logger *zap.SugaredLogger, personService backends.PersonServi
 			"vabb_year.add":       mutate.VABBYearAdd,
 			"reviewer_tag.add":    mutate.ReviewerTagAdd,
 			"reviewer_tag.remove": mutate.ReviewerTagRemove,
+			"journal_title.set":   mutate.JournalTitleSet,
 		},
 	})
 
