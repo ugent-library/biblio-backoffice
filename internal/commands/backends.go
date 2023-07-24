@@ -363,6 +363,14 @@ func newRepository(logger *zap.SugaredLogger, personService backends.PersonServi
 			"reviewer_tag.remove":     mutate.ReviewerTagRemove,
 			"journal_title.set":       mutate.PublicationSet,
 			"short_journal_title.set": mutate.PublicationAbbreviationSet,
+			"isbn.add":                mutate.ISBNAdd,
+			"isbn.remove":             mutate.ISBNRemove,
+			"eisbn.add":               mutate.EISBNAdd,
+			"eisbn.remove":            mutate.EISBNRemove,
+			"issn.add":                mutate.ISSNAdd,
+			"issn.remove":             mutate.ISSNRemove,
+			"eissn.add":               mutate.EISSNAdd,
+			"eissn.remove":            mutate.EISSNRemove,
 		},
 	})
 
