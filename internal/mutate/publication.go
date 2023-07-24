@@ -110,7 +110,7 @@ func ReviewerTagRemove(p *models.Publication, args []string) error {
 	return nil
 }
 
-func JournalTitleSet(p *models.Publication, args []string) error {
+func PublicationSet(p *models.Publication, args []string) error {
 	if len(args) != 1 {
 		return errors.New("journal title is missing")
 	}
