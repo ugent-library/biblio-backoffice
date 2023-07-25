@@ -312,6 +312,9 @@ type HandleService interface {
 }
 
 var ErrNotFound = errors.New("record not found")
+var ErrBaddConn = errors.New("bad connection")
+var ErrInvalidId = errors.New("identifier has invalid format")
+var ErrInvalidContent = errors.New("invalid content")
 
 type Mutation struct {
 	Op   string

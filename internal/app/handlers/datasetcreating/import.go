@@ -11,6 +11,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/internal/app/displays"
 	"github.com/ugent-library/biblio-backoffice/internal/app/handlers"
 	"github.com/ugent-library/biblio-backoffice/internal/app/localize"
+	"github.com/ugent-library/biblio-backoffice/internal/backends"
 	"github.com/ugent-library/biblio-backoffice/internal/bind"
 	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"github.com/ugent-library/biblio-backoffice/internal/render"
@@ -133,10 +134,26 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 	if b.Identifier != "" {
 		d, err = h.fetchDatasetByIdentifier(b.Source, b.Identifier)
 		if err != nil {
-			flash := flash.SimpleFlash().
+			flash := flash.ComplexFlash().
 				WithLevel("error").
-				WithTitle("Failed to save draft").
-				WithBody(template.HTML(ctx.Locale.TS("dataset.single_import", "import_by_id.import_failed")))
+				WithApplication(b.Source).
+				DismissedAfter(30000)
+
+			if errors.Is(err, backends.ErrBaddConn) {
+				lCode := fmt.Sprintf("dataset.single_import.import_by_id.%s.bad_conn", b.Source)
+				flash = flash.WithBody(template.HTML(ctx.Locale.T(lCode)))
+				flash = flash.WithCode("500")
+			} else if errors.Is(err, backends.ErrNotFound) {
+				lCode := fmt.Sprintf("dataset.single_import.import_by_id.%s.not_found", b.Source)
+				flash = flash.WithBody(template.HTML(ctx.Locale.T(lCode)))
+				flash = flash.WithCode("404")
+			} else if errors.Is(err, backends.ErrInvalidContent) {
+				lCode := fmt.Sprintf("dataset.single_import.import_by_id.%s.invalid_content", b.Source)
+				flash = flash.WithBody(template.HTML(ctx.Locale.T(lCode)))
+				flash = flash.WithCode("500")
+			} else {
+				flash = flash.WithBody(template.HTML(ctx.Locale.T("dataset.single_import.import_by_id.import_failed")))
+			}
 
 			ctx.Flash = append(ctx.Flash, *flash)
 

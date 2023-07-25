@@ -7,6 +7,7 @@ import (
 type Flash struct {
 	Type         string
 	Application  string
+	Code         string
 	Level        string
 	Title        string
 	Body         template.HTML
@@ -46,6 +47,16 @@ func (f *Flash) WithTitle(title string) *Flash {
 
 func (f *Flash) WithBody(body template.HTML) *Flash {
 	f.Body = body
+	return f
+}
+
+func (f *Flash) WithApplication(app string) *Flash {
+	f.Application = app
+	return f
+}
+
+func (f *Flash) WithCode(code string) *Flash {
+	f.Code = code
 	return f
 }
 

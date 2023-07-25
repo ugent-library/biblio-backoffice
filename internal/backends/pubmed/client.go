@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/tidwall/gjson"
+	"github.com/ugent-library/biblio-backoffice/internal/backends"
 	"github.com/ugent-library/biblio-backoffice/internal/models"
 )
 
@@ -43,16 +44,21 @@ func (c *Client) GetPublication(id string) (*models.Publication, error) {
 	}
 	res, err := c.http.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%w : %w", backends.ErrBaddConn, err)
 	}
-	// log.Printf("%+v", res)
 	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		return nil, backends.ErrInvalidContent
+	}
+
 	src, err := io.ReadAll(res.Body)
 	if err != nil {
 		return nil, err
 	}
-	if res.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("can't import publication: %s", src)
+
+	if !gjson.ValidBytes(src) {
+		return nil, backends.ErrInvalidContent
 	}
 
 	// log.Printf("import publication src: %s", src)
@@ -64,7 +70,7 @@ func (c *Client) GetPublication(id string) (*models.Publication, error) {
 	attrs := gjson.ParseBytes(src)
 
 	if attrs.Get("hitCount").Int() != 1 {
-		return nil, fmt.Errorf("no publication found")
+		return nil, backends.ErrNotFound
 	}
 
 	attrs = attrs.Get("resultList.result.0")

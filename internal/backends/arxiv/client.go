@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ugent-library/biblio-backoffice/internal/backends"
 	"github.com/ugent-library/biblio-backoffice/internal/models"
 )
 
@@ -22,6 +23,7 @@ type Feed struct {
 }
 
 type Entry struct {
+	ID         string `xml:"id"`
 	Title      string `xml:"title"`
 	Summary    string `xml:"summary"`
 	Published  string `xml:"published"`
@@ -61,16 +63,21 @@ func (c *Client) GetPublication(id string) (*models.Publication, error) {
 	}
 	res, err := c.http.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%w : %w", backends.ErrBaddConn, err)
 	}
-	// log.Printf("%+v", res)
 	defer res.Body.Close()
+
+	// This happens when id has invalid format
+	if res.StatusCode == http.StatusBadRequest {
+		return nil, backends.ErrInvalidId
+	}
+	if res.StatusCode != http.StatusOK {
+		return nil, backends.ErrInvalidContent
+	}
+
 	src, err := io.ReadAll(res.Body)
 	if err != nil {
 		return nil, err
-	}
-	if res.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("can't import publication: %s", src)
 	}
 
 	// log.Printf("import publication src: %s", src)
@@ -78,13 +85,24 @@ func (c *Client) GetPublication(id string) (*models.Publication, error) {
 	feed := Feed{}
 
 	if err := xml.Unmarshal(src, &feed); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%w : %w", backends.ErrInvalidContent, err)
 	}
 
 	// log.Printf("feed: %+v", feed)
 
 	if feed.TotalResults != 1 {
-		return nil, fmt.Errorf("no publication found")
+		return nil, backends.ErrNotFound
+	}
+	/*
+				api returns this weird entry when arxiv is not found:
+				<entry>
+		    		<arxiv:primary_category xmlns:arxiv="http://arxiv.org/schemas/atom" term="" scheme="http://arxiv.org/schemas/atom"/>
+		    		<category term="" scheme="http://arxiv.org/schemas/atom"/>
+		  		</entry>
+				and feed.TotalResults is still 1
+	*/
+	if feed.Entry.ID == "" {
+		return nil, backends.ErrNotFound
 	}
 
 	p := &models.Publication{
