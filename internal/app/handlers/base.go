@@ -32,36 +32,39 @@ func init() {
 // TODO handlers should only have access to a url builder,
 // the session and maybe the localizer
 type BaseHandler struct {
-	Router       *mux.Router
-	Logger       *zap.SugaredLogger
-	SessionName  string
-	SessionStore sessions.Store
-	UserService  backends.UserService
-	Localizer    *locale.Localizer
+	Router          *mux.Router
+	Logger          *zap.SugaredLogger
+	SessionName     string
+	SessionStore    sessions.Store
+	UserService     backends.UserService
+	Localizer       *locale.Localizer
+	FrontendBaseUrl string
 }
 
 // also add fields to Yield method
 type BaseContext struct {
-	CurrentURL   *url.URL
-	Flash        []flash.Flash
-	Locale       *locale.Locale
-	User         *models.User
-	UserRole     string
-	OriginalUser *models.User
-	CSRFToken    string
-	CSRFTag      template.HTML
+	CurrentURL      *url.URL
+	Flash           []flash.Flash
+	Locale          *locale.Locale
+	User            *models.User
+	UserRole        string
+	OriginalUser    *models.User
+	CSRFToken       string
+	CSRFTag         template.HTML
+	FrontendBaseUrl string
 }
 
 func (c BaseContext) Yield(pairs ...any) map[string]any {
 	yield := map[string]any{
-		"CurrentURL":   c.CurrentURL,
-		"Flash":        c.Flash,
-		"Locale":       c.Locale,
-		"User":         c.User,
-		"UserRole":     c.UserRole,
-		"OriginalUser": c.OriginalUser,
-		"CSRFToken":    c.CSRFToken,
-		"CSRFTag":      c.CSRFTag,
+		"CurrentURL":      c.CurrentURL,
+		"Flash":           c.Flash,
+		"Locale":          c.Locale,
+		"User":            c.User,
+		"UserRole":        c.UserRole,
+		"OriginalUser":    c.OriginalUser,
+		"CSRFToken":       c.CSRFToken,
+		"CSRFTag":         c.CSRFTag,
+		"FrontendBaseUrl": c.FrontendBaseUrl,
 	}
 
 	n := len(pairs)
@@ -108,14 +111,15 @@ func (h BaseHandler) NewContext(r *http.Request, w http.ResponseWriter) (BaseCon
 	}
 
 	return BaseContext{
-		CurrentURL:   r.URL,
-		Flash:        flash,
-		Locale:       h.Localizer.GetLocale(r.Header.Get("Accept-Language")),
-		User:         user,
-		UserRole:     h.getUserRoleFromSession(session),
-		OriginalUser: originalUser,
-		CSRFToken:    csrf.Token(r),
-		CSRFTag:      csrf.TemplateField(r),
+		CurrentURL:      r.URL,
+		Flash:           flash,
+		Locale:          h.Localizer.GetLocale(r.Header.Get("Accept-Language")),
+		User:            user,
+		UserRole:        h.getUserRoleFromSession(session),
+		OriginalUser:    originalUser,
+		CSRFToken:       csrf.Token(r),
+		CSRFTag:         csrf.TemplateField(r),
+		FrontendBaseUrl: h.FrontendBaseUrl,
 	}, nil
 }
 
