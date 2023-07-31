@@ -110,17 +110,23 @@ func ReviewerTagRemove(p *models.Publication, args []string) error {
 	return nil
 }
 
-func PublicationSet(p *models.Publication, args []string) error {
+func JournalTitleSet(p *models.Publication, args []string) error {
 	if len(args) != 1 {
 		return errors.New("journal title is missing")
+	}
+	if p.Type != "journal_article" {
+		return errors.New("record is not of type journal_article")
 	}
 	p.Publication = args[0]
 	return nil
 }
 
-func PublicationAbbreviationSet(p *models.Publication, args []string) error {
+func ShortJournalTitleSet(p *models.Publication, args []string) error {
 	if len(args) != 1 {
 		return errors.New("short journal title is missing")
+	}
+	if p.Type != "journal_article" {
+		return errors.New("record is not of type journal_article")
 	}
 	p.PublicationAbbreviation = args[0]
 	return nil
