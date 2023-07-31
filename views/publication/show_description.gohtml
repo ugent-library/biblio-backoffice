@@ -30,6 +30,9 @@
     </div>
 </div>
 
+{{if .Publication.Locked}}
+    {{partial "publication/show_lock_message" .}}
+{{end}}
 {{partial "publication/show_details" .}}
 {{partial "publication/show_projects" .}}
 {{if .Publication.UsesConference}}
