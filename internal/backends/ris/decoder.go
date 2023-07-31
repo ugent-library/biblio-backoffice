@@ -183,7 +183,7 @@ func mapRecord(r Record, p *models.Publication) {
 		case "TI", "T1":
 			p.Title = strings.Join(v, "")
 		case "AB", "N2":
-			p.AddAbstract(&models.Text{Text: strings.Join(v, "\n\n"), Lang: "und"})
+			p.AddAbstract(&models.Text{Text: strings.Join(v, "\n\n"), Lang: "eng"})
 		case "KW", "DW", "ID", "DE":
 			p.Keyword = append(p.Keyword, splitMultilineVals(v)...)
 		case "DI":
