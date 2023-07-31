@@ -121,9 +121,9 @@ func JournalTitleSet(p *models.Publication, args []string) error {
 	return nil
 }
 
-func ShortJournalTitleSet(p *models.Publication, args []string) error {
+func JournalAbbreviationSet(p *models.Publication, args []string) error {
 	if len(args) != 1 {
-		return errors.New("short journal title is missing")
+		return errors.New("journal abbreviation is missing")
 	}
 	if p.Type != "journal_article" {
 		return errors.New("record is not of type journal_article")
