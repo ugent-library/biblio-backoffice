@@ -45,12 +45,7 @@ describe('Publication import', () => {
     cy.contains('Imported publications Showing 1').should('be.visible')
 
     // Extract Biblio ID for remaining publication
-    cy.get('.list-group-item-main')
-      .should('have.length', 1)
-      .contains('Biblio ID:')
-      .find('.c-code')
-      .invoke('text')
-      .as('biblioID', { type: 'static' })
+    cy.get('.list-group-item-main').extractBiblioId()
 
     // Try publishing remaining publication and verify validation error
     cy.ensureNoModal()
@@ -74,7 +69,7 @@ describe('Publication import', () => {
 
     cy.ensureModal('Add author').within(function () {
       cy.intercept({
-        pathname: `/publication/${this.biblioID}/contributors/author/suggestions`,
+        pathname: `/publication/${this.biblioId}/contributors/author/suggestions`,
         query: {
           first_name: 'Dries',
           last_name: /^(|Moreels)$/, // This forces an exact string match. Just '' matches any string.
@@ -134,7 +129,7 @@ describe('Publication import', () => {
     cy.location('pathname').should('eq', '/publication')
 
     // Verify publication is published
-    cy.get('@biblioID').then(biblioID => cy.visit(`/publication/${biblioID}`))
+    cy.visitPublication()
 
     cy.get('#summary .badge')
       .should('have.class', 'badge-default')
