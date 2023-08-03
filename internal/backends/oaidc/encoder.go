@@ -3,6 +3,7 @@ package oaidc
 import (
 	"bytes"
 	"encoding/xml"
+	"fmt"
 
 	"github.com/ugent-library/biblio-backoffice/identifiers"
 	"github.com/ugent-library/biblio-backoffice/internal/models"
@@ -17,6 +18,31 @@ xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.opena
 const endTag = `
 </oai_dc:dc>
 `
+
+// TODO copied from frontoffice handler, DRY this
+var licenses = map[string]string{
+	"CC0-1.0":          "Creative Commons Public Domain Dedication (CC0 1.0)",
+	"CC-BY-4.0":        "Creative Commons Attribution 4.0 International Public License (CC-BY 4.0)",
+	"CC-BY-SA-4.0":     "Creative Commons Attribution-ShareAlike 4.0 International Public License (CC BY-SA 4.0)",
+	"CC-BY-NC-4.0":     "Creative Commons Attribution-NonCommercial 4.0 International Public License (CC BY-NC 4.0)",
+	"CC-BY-ND-4.0":     "Creative Commons Attribution-NoDerivatives 4.0 International Public License (CC BY-ND 4.0)",
+	"CC-BY-NC-SA-4.0":  "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International Public License (CC BY-NC-SA 4.0)",
+	"CC-BY-NC-ND-4.0":  "Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International Public License (CC BY-NC-ND 4.0)",
+	"InCopyright":      "No license (in copyright)",
+	"LicenseNotListed": "A specific license has been chosen by the rights holder. Get in touch with the rights holder for reuse rights.",
+	"CopyrightUnknown": "Information pending",
+	"":                 "No license (in copyright)",
+}
+
+var openLicenses = map[string]struct{}{
+	"CC0-1.0":         {},
+	"CC-BY-4.0":       {},
+	"CC-BY-SA-4.0":    {},
+	"CC-BY-NC-4.0":    {},
+	"CC-BY-ND-4.0":    {},
+	"CC-BY-NC-SA-4.0": {},
+	"CC-BY-NC-ND-4.0": {},
+}
 
 func writeField(b *bytes.Buffer, tag, val string) {
 	if val != "" {
@@ -149,22 +175,31 @@ func EncodePublication(p *models.Publication) ([]byte, error) {
 		break
 	}
 
+	if p.File != nil {
+		bestLicense := ""
+		for _, f := range p.File {
+			if bestLicense == "" {
+				if _, isLicense := licenses[f.License]; isLicense {
+					bestLicense = f.License
+				}
+			}
+			if _, isOpenLicense := openLicenses[f.License]; isOpenLicense {
+				bestLicense = f.License
+				break
+			}
+		}
+
+		writeField(b, "rights", licenses[bestLicense])
+	}
+
+	for _, val := range p.RelatedProjects {
+		eu := val.Project.EUProject
+		if eu != nil && eu.ID != "" && eu.FrameworkProgramme != "" {
+			writeField(b, "relation", fmt.Sprintf("info:eu-repo/grantAgreement/EC/%s/%s", eu.FrameworkProgramme, eu.ID))
+		}
+	}
+
 	b.WriteString(endTag)
 
 	return b.Bytes(), nil
 }
-
-//     $dc->{rights}      = [ $pub->{copyright_statement} ] if $pub->{copyright_statement};
-
-//     if (my $projects = $pub->{project}) {
-//         for my $project (@$projects) {
-//             if ($project->{eu_id} && $project->{eu_framework_programme}) {
-//                 push @{$dc->{relation} ||= []}, "info:eu-repo/grantAgreement/EC/$project->{eu_framework_programme}/$project->{eu_id}";
-//             }
-//         }
-//     }
-
-//     $dc;
-// }
-
-// 1;

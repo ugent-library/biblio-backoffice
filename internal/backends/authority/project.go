@@ -51,6 +51,30 @@ func (c *Client) GetProject(id string) (*models.Project, error) {
 	if v, ok := rec["end_date"]; ok {
 		p.EndDate = v.(string)
 	}
+	if v, ok := rec["eu_id"]; ok {
+		if p.EUProject == nil {
+			p.EUProject = &models.EUProject{}
+		}
+		p.EUProject.ID = v.(string)
+	}
+	if v, ok := rec["eu_call_id"]; ok {
+		if p.EUProject == nil {
+			p.EUProject = &models.EUProject{}
+		}
+		p.EUProject.CallID = v.(string)
+	}
+	if v, ok := rec["eu_acronym"]; ok {
+		if p.EUProject == nil {
+			p.EUProject = &models.EUProject{}
+		}
+		p.EUProject.Acronym = v.(string)
+	}
+	if v, ok := rec["eu_framework_programme"]; ok {
+		if p.EUProject == nil {
+			p.EUProject = &models.EUProject{}
+		}
+		p.EUProject.FrameworkProgramme = v.(string)
+	}
 
 	return p, nil
 }
