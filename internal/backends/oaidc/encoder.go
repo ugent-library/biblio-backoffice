@@ -60,13 +60,31 @@ func EncodePublication(p *models.Publication) ([]byte, error) {
 	writeField(b, "type", t)
 	writeField(b, "type", "info:eu-repo/semantics/"+t)
 
+	writeField(b, "identifier", "oai:archive.ugent.be:"+p.ID)
 	writeField(b, "identifier", p.Handle)
-	writeField(b, "title", p.Title)
-	writeField(b, "date", p.Year)
-	writeField(b, "publisher", p.Publisher)
 	if p.DOI != "" {
 		writeField(b, "identifier", identifiers.DOI.Resolve(p.DOI))
 	}
+
+	switch p.PublicationStatus {
+	case "unpublished":
+		writeField(b, "type", "info:eu-repo/semantics/draft")
+	case "accepted":
+		writeField(b, "type", "info:eu-repo/semantics/acceptedVersion")
+	default:
+		writeField(b, "type", "info:eu-repo/semantics/publishedVersion")
+	}
+
+	writeField(b, "title", p.Title)
+
+	writeField(b, "date", p.Year)
+
+	writeField(b, "publisher", p.Publisher)
+
+	if p.Publication != "" {
+		writeField(b, "source", p.Publication)
+	}
+
 	if p.Publication != "" || p.PublicationAbbreviation != "" {
 		for _, val := range p.ISBN {
 			writeField(b, "source", "ISBN: "+val)
@@ -82,24 +100,29 @@ func EncodePublication(p *models.Publication) ([]byte, error) {
 			writeField(b, "identifier", "urn:isbn:"+val)
 		}
 	}
+
 	for _, val := range p.ISSN {
 		writeField(b, "source", "ISSN: "+val)
 	}
 	for _, val := range p.EISSN {
 		writeField(b, "source", "ISSN: "+val)
 	}
+
 	for _, val := range p.Language {
 		writeField(b, "language", val)
 	}
+
 	for _, val := range p.Abstract {
 		writeField(b, "description", val.Text)
 	}
+
 	for _, val := range p.Keyword {
 		writeField(b, "subject", val)
 	}
 	for _, val := range p.ResearchField {
 		writeField(b, "subject", val)
 	}
+
 	for _, val := range p.Author {
 		writeField(b, "creator", val.Name())
 	}
@@ -116,49 +139,22 @@ func EncodePublication(p *models.Publication) ([]byte, error) {
 		}
 	}
 
+	for _, val := range p.File {
+		writeField(b, "format", val.ContentType)
+		writeField(b, "rights", val.AccessLevel)
+		if val.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
+			writeField(b, "date", "info:eu-repo/date/embargoEnd/"+val.EmbargoDate)
+		}
+
+		break
+	}
+
 	b.WriteString(endTag)
 
 	return b.Bytes(), nil
 }
 
-// my $VERSIONS = {
-//     unsubmitted => 'draft',
-//     inpress     => 'acceptedVersion',
-//     accepted    => 'acceptedVersion',
-//     published   => 'publishedVersion',
-// };
-
-// sub fix {
-//     state $uri_base = Catmandu->config->{uri_base} . '/publication';
-
-//     my $dc = {
-//         identifier => [ "$uri_base/$pub->{_id}" ],
-//     };
-
-//     if ($pub->{publication_status}) {
-//         if (my $version = $VERSIONS->{$pub->{publication_status}}) {
-//             push @{$dc->{type}}, "info:eu-repo/semantics/$version";
-//         }
-//     }
 //     $dc->{rights}      = [ $pub->{copyright_statement} ] if $pub->{copyright_statement};
-//     $dc->{source}      = [ $pub->{parent}{title} ]       if $pub->{parent} && $pub->{parent}{title};
-
-//     if ($pub->{file}) {
-//         if (my $file = $pub->{file}->[0]) {
-//             push @{$dc->{identifier} ||= []}, "$uri_base/$pub->{_id}/file/$file->{_id}";
-//             $dc->{format} = [ $file->{content_type} ];
-//             if ($file->{change} && $file->{change}{to} eq 'open') {
-//                 push @{$dc->{rights} ||= []}, "info:eu-repo/semantics/embargoedAccess";
-//                 if ($file->{change}{on}) {
-//                     push @{$dc->{date} ||= []}, "info:eu-repo/date/embargoEnd/" . substr($file->{change}{on}, 0, 10);
-//                 }
-//             } elsif ($file->{access}) {
-//                 if ($file->{access} eq 'open')       { push @{$dc->{rights} ||= []}, "info:eu-repo/semantics/openAccess" }
-//                 if ($file->{access} eq 'restricted') { push @{$dc->{rights} ||= []}, "info:eu-repo/semantics/restrictedAccess" }
-//                 if ($file->{access} eq 'private')    { push @{$dc->{rights} ||= []}, "info:eu-repo/semantics/closedAccess" }
-//             }
-//         }
-//     }
 
 //     if (my $projects = $pub->{project}) {
 //         for my $project (@$projects) {
