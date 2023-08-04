@@ -103,9 +103,9 @@ func EncodePublication(p *models.Publication) ([]byte, error) {
 
 	writeField(b, "title", p.Title)
 
-	writeField(b, "date", p.Year)
-
 	writeField(b, "publisher", p.Publisher)
+
+	writeField(b, "date", p.Year)
 
 	if p.Publication != "" {
 		writeField(b, "source", p.Publication)

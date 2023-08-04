@@ -43,8 +43,22 @@ var updateOai = &cobra.Command{
 			logger.Fatal(err)
 		}
 		err = client.AddSet(context.TODO(), &api.AddSetRequest{
+			SetSpec: "biblio",
+			SetName: "All Biblio records",
+		})
+		if err != nil {
+			logger.Fatal(err)
+		}
+		err = client.AddSet(context.TODO(), &api.AddSetRequest{
 			SetSpec: "biblio:journal_article",
-			SetName: "Biblio journal article",
+			SetName: "Biblio journal articles",
+		})
+		if err != nil {
+			logger.Fatal(err)
+		}
+		err = client.AddSet(context.TODO(), &api.AddSetRequest{
+			SetSpec: "biblio:book",
+			SetName: "Biblio books",
 		})
 		if err != nil {
 			logger.Fatal(err)
@@ -54,6 +68,10 @@ var updateOai = &cobra.Command{
 		n := 0
 		repo := Services().Repository
 		repo.EachPublication(func(p *models.Publication) bool {
+			if p.Status != "public" {
+				return true
+			}
+
 			metadata, err := oaidc.EncodePublication(p)
 			if err != nil {
 				logger.Fatal(err)
@@ -62,7 +80,7 @@ var updateOai = &cobra.Command{
 			err = client.AddRecordMetadata(context.TODO(), &api.AddRecordMetadataRequest{
 				Identifier:     p.ID,
 				MetadataPrefix: "oai_dc",
-				Metadata:       string(metadata),
+				Content:        string(metadata),
 			})
 			if err != nil {
 				logger.Fatal(err)
@@ -77,11 +95,19 @@ var updateOai = &cobra.Command{
 					logger.Fatal(err)
 				}
 			}
+			if p.Type == "book" {
+				err = client.AddRecordSets(context.TODO(), &api.AddRecordSetsRequest{
+					Identifier: p.ID,
+					SetSpecs:   []string{"biblio:book"},
+				})
+				if err != nil {
+					logger.Fatal(err)
+				}
+			}
 
 			n++
-			logger.Infof("%d", n)
 
-			return true
+			return n < 5000
 		})
 	},
 }
