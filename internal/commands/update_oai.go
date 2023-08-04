@@ -65,7 +65,6 @@ var updateOai = &cobra.Command{
 		}
 
 		// add all publications
-		n := 0
 		repo := Services().Repository
 		repo.EachPublication(func(p *models.Publication) bool {
 			if p.Status != "public" {
@@ -105,9 +104,7 @@ var updateOai = &cobra.Command{
 				}
 			}
 
-			n++
-
-			return n < 5000
+			return true
 		})
 	},
 }
