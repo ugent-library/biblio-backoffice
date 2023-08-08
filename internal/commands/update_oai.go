@@ -33,7 +33,6 @@ var updateOai = &cobra.Command{
 			logger.Fatal(err)
 		}
 
-		// TODO
 		err = client.AddMetadataFormat(context.TODO(), &api.AddMetadataFormatRequest{
 			MetadataPrefix:    "oai_dc",
 			MetadataNamespace: "http://www.openarchives.org/OAI/2.0/oai_dc/",
