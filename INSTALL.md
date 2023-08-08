@@ -239,7 +239,7 @@ Next, create the database tables by running the migrations:
 
 ```
 cp .tern.example.conf tern.conf
-````
+```
 
 Then open `tern.conf` and change the `port` variable to a value that matches the port on which your
 postgresql server listens (default, this should be: 5432).
