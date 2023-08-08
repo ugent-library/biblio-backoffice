@@ -246,7 +246,7 @@ postgresql server listens (default, this should be: 5432).
 
 Now run the migrations using the `tern` program:
 
-````
+```
 go install github.com/jackc/tern@latest
 tern migrate --migrations etc/snapstore/migrations
 ```
