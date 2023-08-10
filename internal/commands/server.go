@@ -229,6 +229,7 @@ func buildRouter(services *backends.Services, logger *zap.SugaredLogger) *mux.Ro
 		RedirectURL:  baseURL.String() + "/auth/openid-connect/callback",
 		CookieName:   viper.GetString("session-name") + ".state",
 		CookieSecret: []byte(viper.GetString("session-secret")),
+		CookieSecure: (mode == "production"),
 	})
 	if err != nil {
 		logger.Fatal(err)
