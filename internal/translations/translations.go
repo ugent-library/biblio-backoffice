@@ -763,6 +763,7 @@ func init() {
 	message.SetString(language.English, "builder.identifier.help", "e.g. 1854/LU-01H03BX2HH1YNS0KJHBK0T1WYV")
 	message.SetString(language.English, "builder.other_license.help", "e.g. https://creativecommons.org/licenses/publicdomain/")
 	// message.SetString(language.English, "builder.file.other_license.help", "e.g. https://creativecommons.org/licenses/publicdomain/")
+	message.SetString(language.English, "builder.page_count.help", "Only provide the number of pages when the exact first and last page are unknown.")
 	message.SetString(language.English, "builder.wos_id.help", "e.g. 000503382400004")
 	message.SetString(language.English, "builder.issn.help", "e.g. 2049-3630")
 	message.SetString(language.English, "builder.eissn.help", "e.g. 2049-3630")

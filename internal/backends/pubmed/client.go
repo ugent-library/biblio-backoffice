@@ -89,6 +89,9 @@ func (c *Client) GetPublication(id string) (*models.Publication, error) {
 			if journalTitle := journal.Get("title"); journalTitle.Exists() {
 				p.Publication = journalTitle.String()
 			}
+			if journalAbbr := journal.Get("isoabbreviation"); journalAbbr.Exists() {
+				p.PublicationAbbreviation = journalAbbr.String()
+			}
 			if journalISSN := journal.Get("issn"); journalISSN.Exists() {
 				p.ISSN = append(p.ISSN, journalISSN.String())
 			}

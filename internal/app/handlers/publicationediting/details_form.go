@@ -321,6 +321,7 @@ func detailsForm(user *models.User, l *locale.Locale, p *models.Publication, err
 			Label: l.T("builder.page_count"),
 			Value: p.PageCount,
 			Cols:  3,
+			Help:  template.HTML(l.T("builder.page_count.help")),
 			Error: localize.ValidationErrorAt(l, errors, "/page_count"),
 		})
 	}
