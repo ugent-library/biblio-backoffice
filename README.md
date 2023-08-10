@@ -138,11 +138,11 @@ BIBLIO_BACKOFFICE_CSRF_SECRET
 BIBLIO_BACKOFFICE_ORCID_CLIENT_ID
 BIBLIO_BACKOFFICE_ORCID_CLIENT_SECRET
 BIBLIO_BACKOFFICE_ORCID_SANDBOX
-BIBLIO_BACKOFFICE_PG_CONN (default: postgres://localhost:5432/biblio_backoffice?sslmode=disable)
-BIBLIO_BACKOFFICE_PUBLICATION_INDEX (default: biblio_backoffice_publications)
-BIBLIO_BACKOFFICE_DATASET_INDEX (default: biblio_backoffice_datasets)
-BIBLIO_BACKOFFICE_ES6_URL (default: http://localhost:9200)
-BIBLIO_BACKOFFICE_MONGODB_URL (default: mongodb://localhost:27017/?directConnection=true&serverSelectionTimeoutMS=2000)
+BIBLIO_BACKOFFICE_PG_CONN (e.g.: postgres://localhost:5432/biblio_backoffice?sslmode=disable)
+BIBLIO_BACKOFFICE_PUBLICATION_INDEX (e.g.: biblio_backoffice_publications)
+BIBLIO_BACKOFFICE_DATASET_INDEX (e.g.: biblio_backoffice_datasets)
+BIBLIO_BACKOFFICE_ES6_URL (e.g.: http://localhost:9200)
+BIBLIO_BACKOFFICE_MONGODB_URL (e.g.: mongodb://localhost:27017/?directConnection=true&serverSelectionTimeoutMS=2000)
 BIBLIO_BACKOFFICE_FRONTEND_ES6_URL (default: http://localhost: 9200)
 ```
 
@@ -155,8 +155,8 @@ BIBLIO_BACKOFFICE_HOST (default: localhost)
 BIBLIO_BACKOFFICE_SESSION_NAME (default: biblio-backoffice)
 BIBLIO_BACKOFFICE_SESSION_MAX_AGE (default: 86400 * 30 // 30 days)
 BIBLIO_BACKOFFICE_HDL_SRV_ENABLED (default: false)
-BIBLIO_BACKOFFICE_HDL_SRV_URL
-BIBLIO_BACKOFFICE_HDL_SRV_PREFIX
+BIBLIO_BACKOFFICE_HDL_SRV_URL (e.g.: http://localhost:4000/handles)
+BIBLIO_BACKOFFICE_HDL_SRV_PREFIX (e.g. 1854)
 BIBLIO_BACKOFFICE_HDL_SRV_USERNAME
 BIBLIO_BACKOFFICE_HDL_SRV_PASSWORD
 BIBLIO_BACKOFFICE_OAI_API_URL
