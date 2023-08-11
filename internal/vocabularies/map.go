@@ -323,7 +323,6 @@ var Map = map[string][]string{
 		"C1",
 		"C3",
 		"D1",
-		"D2",
 		"P1",
 		"V",
 		"U",
