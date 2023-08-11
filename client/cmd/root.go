@@ -4,9 +4,6 @@ import (
 	"os"
 	"strings"
 
-	// embed timezone data
-	_ "time/tzdata"
-
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	cnx "github.com/ugent-library/biblio-backoffice/client/connection"
