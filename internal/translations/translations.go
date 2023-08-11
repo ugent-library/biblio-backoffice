@@ -162,7 +162,6 @@ func init() {
 	message.SetString(language.English, "publication_classifications.C1", "C1 - conference paper (not WoS)")
 	message.SetString(language.English, "publication_classifications.C3", "C3 - meeting abstract")
 	message.SetString(language.English, "publication_classifications.D1", "D1 - doctoral thesis")
-	message.SetString(language.English, "publication_classifications.D2", "D2 - student thesis")
 	message.SetString(language.English, "publication_classifications.P1", "P1 - proceedings paper (WoS)")
 	message.SetString(language.English, "publication_classifications.V", "V - miscellaneous")
 	message.SetString(language.English, "publication_classifications.U", "U - undetermined")
