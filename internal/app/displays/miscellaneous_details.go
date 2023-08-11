@@ -144,6 +144,14 @@ func miscellaneousDetails(user *models.User, l *locale.Locale, p *models.Publica
 				Values: p.EISBN,
 			},
 			&display.Text{
+				Label: l.T("builder.pubmed_id"),
+				Value: p.PubMedID,
+			},
+			&display.Text{
+				Label: l.T("builder.arxiv_id"),
+				Value: p.ArxivID,
+			},
+			&display.Text{
 				Label: l.T("builder.esci_id"),
 				Value: p.ESCIID,
 			},
