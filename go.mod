@@ -158,7 +158,7 @@ require (
 	github.com/ugent-library/friendly v0.0.0-20230207160741-a7eb22dfe944
 	github.com/ugent-library/middleware v0.0.0-20230124121524-d72a5ab6674f
 	github.com/ugent-library/mix v0.0.0-20230123085323-ee6f14c9d431
-	github.com/ugent-library/oidc v0.0.0-20230125115048-da4a06842a62
+	github.com/ugent-library/oidc v0.0.0-20230810150340-b66acc34dfeb
 	github.com/ugent-library/zaphttp v0.0.0-20230513174723-52c27d21c5ce
 	go.etcd.io/bbolt v1.3.6 // indirect
 	go.uber.org/multierr v1.11.0 // indirect

@@ -187,7 +187,7 @@ Next, copy these configuration files:
 
 ```
 cp .env.example .env
-cp .reflex.example.conf .reflex.conf
+cp reflex.example.conf reflex.conf
 ```
 
 Configure the `.env` file accordingly:
@@ -278,7 +278,7 @@ go install github.com/cespare/reflex@latest
 Starting the application:
 
 ```
-reflex -d none -c .reflex.conf
+reflex -d none -c reflex.conf
 ```
 
 If the configuration in `.env` contains no errors, you should see this output:

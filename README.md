@@ -161,6 +161,7 @@ BIBLIO_BACKOFFICE_HDL_SRV_USERNAME
 BIBLIO_BACKOFFICE_HDL_SRV_PASSWORD
 BIBLIO_BACKOFFICE_OAI_API_URL
 BIBLIO_BACKOFFICE_OAI_API_KEY
+BIBLIO_BACKOFFICE_TIMEZONE (default: Europe/Brussels)
 ```
 
 For the gRPC server:
@@ -194,11 +195,11 @@ changes and recompile the application and assets:
 ```
 cd biblio-backoffice
 go install github.com/cespare/reflex@latest
-cp .reflex.example.conf .reflex.conf
-reflex -d none -c .reflex.conf
+cp reflex.example.conf reflex.conf
+reflex -d none -c reflex.conf
 ```
 
-Refer to `.reflex.example.conf`. The command assumes the existence of a `.env` file
+Refer to `reflex.example.conf`. The command assumes the existence of a `.env` file
 which exports all relevant environment variables:
 
 ```bash
@@ -207,7 +208,7 @@ export BIBLIO_BACKOFFICE_BASE_URL="http://localhost:3001"
 ...
 ```
 
-Alternatively, adapt this command in your `.reflex.conf` to suit your needs.
+Alternatively, adapt this command in your `reflex.conf` to suit your needs.
 ```
 'source .env && go run main.go server start --host localhost --port 3001'
 ```

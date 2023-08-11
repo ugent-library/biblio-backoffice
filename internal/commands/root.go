@@ -11,6 +11,7 @@ import (
 )
 
 const (
+	defaultTimezone            = "Europe/Brussels"
 	defaultIndexRetention      = 2
 	defaultAPIPort             = 30000
 	defaultMode                = "production"
@@ -41,6 +42,7 @@ func init() {
 	viper.SetEnvPrefix("biblio-backoffice")
 	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
 	viper.AutomaticEnv()
+	viper.SetDefault("timezone", defaultTimezone)
 	viper.SetDefault("index-retention", defaultIndexRetention)
 	viper.SetDefault("s3-region", "us-east-1")
 	viper.SetDefault("mode", defaultMode)
