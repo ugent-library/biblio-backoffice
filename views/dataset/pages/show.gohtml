@@ -64,6 +64,7 @@
                         </button>
                         {{end}}
                     </div>
+                    {{if .User.CanDeleteDataset .Dataset}}
                     <div class="bc-toolbar-item">
                         <div class="dropdown">
                             <button class="btn btn-outline-primary btn-icon-only"
@@ -72,7 +73,6 @@
                                 <i class="if if-more"></i>
                             </button>
                             <div class="dropdown-menu">
-                                {{if .User.CanDeleteDataset .Dataset}}
                                 <button class="dropdown-item"
                                     hx-get="{{pathFor "dataset_confirm_delete" "id" .Dataset.ID|querySet "redirect-url" .RedirectURL}}"
                                     hx-target="#modals"
@@ -80,10 +80,10 @@
                                     <i class="if if-delete"></i>
                                     <span>Delete</span>
                                 </button>
-                                {{end}}
                             </div>
                         </div>
                     </div>
+                    {{end}}
                 </div>
             </div>
         </div>
