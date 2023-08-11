@@ -191,26 +191,36 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 		return
 	}
 
+	subNav := r.URL.Query().Get("show")
+	if subNav == "" {
+		subNav = "description"
+	}
+
 	render.Layout(w, "layouts/default", "dataset/pages/add_description", YieldAdd{
 		Context:        ctx,
 		PageTitle:      "Add - Datasets - Biblio",
 		Step:           2,
 		ActiveNav:      "datasets",
 		SubNavs:        []string{"description", "contributors", "publications"},
-		ActiveSubNav:   "description",
+		ActiveSubNav:   subNav,
 		Dataset:        d,
 		DisplayDetails: displays.DatasetDetails(ctx.User, ctx.Locale, d),
 	})
 }
 
 func (h *Handler) AddDescription(w http.ResponseWriter, r *http.Request, ctx Context) {
+	subNav := r.URL.Query().Get("show")
+	if subNav == "" {
+		subNav = "description"
+	}
+
 	render.Layout(w, "layouts/default", "dataset/pages/add_description", YieldAdd{
 		Context:        ctx,
 		PageTitle:      "Add - Datasets - Biblio",
 		Step:           2,
 		ActiveNav:      "datasets",
 		SubNavs:        []string{"description", "contributors", "publications"},
-		ActiveSubNav:   "description",
+		ActiveSubNav:   subNav,
 		Dataset:        ctx.Dataset,
 		DisplayDetails: displays.DatasetDetails(ctx.User, ctx.Locale, ctx.Dataset),
 	})
