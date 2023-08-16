@@ -18,7 +18,7 @@
     "sortablejs": "^1.14.0"
   },
   "devDependencies": {
-    "cypress": "^12.17.3",
+    "cypress": "^12.17.4",
     "cypress-dotenv": "^2.0.0",
     "dotenv": "^16.3.1",
     "js-precommit-hook": "git+https://github.com/ugent-library/js-precommit-hook.git",
