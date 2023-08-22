@@ -15,7 +15,6 @@ import (
 	"github.com/ugent-library/biblio-backoffice/internal/render/form"
 	"github.com/ugent-library/biblio-backoffice/internal/snapstore"
 	"github.com/ugent-library/biblio-backoffice/internal/validation"
-	"github.com/ugent-library/httphelpers"
 )
 
 type BindFile struct {
@@ -81,16 +80,6 @@ func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context
 	}
 	defer file.Close()
 
-	// detect content type
-	filetype, err := httphelpers.DetectContentType(file)
-	if err != nil {
-		h.Logger.Errorf("publication upload file: could not read file", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Locale.T("publication.file_upload_error"),
-		})
-		return
-	}
-
 	// add file to filestore
 	checksum, err := h.FileStore.Add(r.Context(), file, "")
 
@@ -109,7 +98,7 @@ func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context
 		AccessLevel: "info:eu-repo/semantics/restrictedAccess",
 		Name:        handler.Filename,
 		Size:        int(handler.Size),
-		ContentType: filetype,
+		ContentType: handler.Header.Get("Content-Type"),
 		SHA256:      checksum,
 	}
 	/*

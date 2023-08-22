@@ -46,7 +46,7 @@ func (s *GetPublicationSuite) TestGetPublication() {
 	}
 
 	// Remove dynamic fields distorting the JSONEqf assertion
-	ina, err := removeKey(jsonl, "snapshot_id", "date_from", "date_updated", "user")
+	ina, err := removeKey(jsonl, "snapshot_id", "date_from", "date_updated", "user_id")
 	if err != nil {
 		t.Fatal(err)
 	}

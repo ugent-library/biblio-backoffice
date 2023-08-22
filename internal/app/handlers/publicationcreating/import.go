@@ -110,7 +110,7 @@ func (h *Handler) AddSingleImportConfirm(w http.ResponseWriter, r *http.Request,
 	if b.Source == "crossref" && b.Identifier != "" {
 		args := models.NewSearchArgs().WithFilter("doi", strings.ToLower(b.Identifier)).WithFilter("status", "public")
 
-		existing, err := h.PublicationSearchService.Search(args)
+		existing, err := h.PublicationSearchIndex.Search(args)
 
 		if err != nil {
 			h.Logger.Warnw("import single publication: could not execute search for duplicates", "errors", err, "args", args, "user", ctx.User.ID)
@@ -177,20 +177,15 @@ func (h *Handler) AddSingleImport(w http.ResponseWriter, r *http.Request, ctx Co
 	}
 
 	p.ID = ulid.Make().String()
-	p.Creator = &models.PublicationUser{ID: ctx.User.ID, Name: ctx.User.FullName}
-	p.User = &models.PublicationUser{ID: ctx.User.ID, Name: ctx.User.FullName}
+	p.CreatorID = ctx.User.Person.ID
+	p.Creator = &ctx.User.Person
+	p.UserID = ctx.User.Person.ID
+	p.User = &ctx.User.Person
 	p.Status = "private"
 	p.Classification = "U"
 
-	// Set the first department of the user if the user resides under at least one department
-	// TODO: this should be centralized
-	if len(ctx.User.Department) > 0 {
-		org, orgErr := h.OrganizationService.GetOrganization(ctx.User.Department[0].ID)
-		if orgErr != nil {
-			h.Logger.Warnw("import single publication: could not fetch user department", "errors", orgErr, "user", ctx.User.ID)
-		} else {
-			p.AddDepartmentByOrg(org)
-		}
+	if len(ctx.User.Affiliations) > 0 {
+		p.AddOrganization(ctx.User.Affiliations[0].Organization)
 	}
 
 	if validationErrs := p.Validate(); validationErrs != nil {
@@ -377,7 +372,7 @@ func (h *Handler) AddMultipleSave(w http.ResponseWriter, r *http.Request, ctx Co
 		WithLevel("success").
 		WithBody(template.HTML("<p>Publications successfully saved as draft.</p>"))
 
-	h.AddSessionFlash(r, w, *flash)
+	h.AddFlash(r, w, *flash)
 
 	redirectURL := h.PathFor("publications")
 	w.Header().Set("HX-Redirect", redirectURL.String())
@@ -415,9 +410,9 @@ func (h *Handler) AddMultipleConfirm(w http.ResponseWriter, r *http.Request, ctx
 
 	batchID := bind.PathValues(r).Get("batch_id")
 
-	hits, err := h.PublicationSearchService.
+	hits, err := h.PublicationSearchIndex.
 		WithScope("status", "private", "public").
-		WithScope("creator.id", ctx.User.ID).
+		WithScope("creator_id", ctx.User.ID).
 		WithScope("batch_id", batchID).
 		Search(searchArgs)
 
@@ -483,9 +478,9 @@ func (h *Handler) AddMultipleFinish(w http.ResponseWriter, r *http.Request, ctx 
 
 	batchID := bind.PathValues(r).Get("batch_id")
 
-	hits, err := h.PublicationSearchService.
+	hits, err := h.PublicationSearchIndex.
 		WithScope("status", "private", "public").
-		WithScope("creator.id", ctx.User.ID).
+		WithScope("creator_id", ctx.User.ID).
 		WithScope("batch_id", batchID).
 		Search(searchArgs)
 
@@ -538,19 +533,14 @@ func (h *Handler) importPublications(user *models.User, source string, file io.R
 			BatchID:        batchID,
 			Status:         "private",
 			Classification: "U",
-			Creator:        &models.PublicationUser{ID: user.ID, Name: user.FullName},
-			User:           &models.PublicationUser{ID: user.ID, Name: user.FullName},
+			CreatorID:      user.Person.ID,
+			Creator:        &user.Person,
+			UserID:         user.Person.ID,
+			User:           &user.Person,
 		}
 
-		// Set the department if the user was assigned to at least one department
-		// TODO: this should be centralized
-		if len(user.Department) > 0 {
-			org, orgErr := h.OrganizationService.GetOrganization(user.Department[0].ID)
-			if orgErr != nil {
-				h.Logger.Warnw("add multiple publications: could not fetch user department", "errors", orgErr, "user", user.ID)
-			} else {
-				p.AddDepartmentByOrg(org)
-			}
+		if len(user.Affiliations) > 0 {
+			p.AddOrganization(user.Affiliations[0].Organization)
 		}
 
 		if err := dec.Decode(&p); errors.Is(err, io.EOF) {
@@ -576,9 +566,9 @@ func (h *Handler) importPublications(user *models.User, source string, file io.R
 
 // TODO check conflicts?
 func (h *Handler) batchPublishPublications(batchID string, user *models.User) (err error) {
-	searcher := h.PublicationSearchService.
+	searcher := h.PublicationSearchIndex.
 		WithScope("status", "private", "public").
-		WithScope("creator.id", user.ID).
+		WithScope("creator_id", user.ID).
 		WithScope("batch_id", batchID)
 	args := models.NewSearchArgs()
 

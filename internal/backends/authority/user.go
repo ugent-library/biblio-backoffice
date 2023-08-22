@@ -8,7 +8,6 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/ugent-library/biblio-backoffice/internal/backends"
-	"github.com/ugent-library/biblio-backoffice/internal/backends/es6"
 	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -42,9 +41,9 @@ func (c *Client) GetUserByUsername(username string) (*models.User, error) {
 	return c.recordToUser(record)
 }
 
-func (c *Client) SuggestUsers(q string) ([]models.Person, error) {
+func (c *Client) SuggestUsers(q string) ([]*models.Person, error) {
 	limit := 25
-	persons := make([]models.Person, 0, limit)
+	persons := make([]*models.Person, 0, limit)
 
 	// remove duplicate spaces
 	q = regexMultipleSpaces.ReplaceAllString(q, " ")
@@ -53,11 +52,11 @@ func (c *Client) SuggestUsers(q string) ([]models.Person, error) {
 	q = strings.TrimSpace(q)
 
 	qParts := strings.Split(q, " ")
-	queryMust := make([]es6.M, 0, len(qParts))
+	queryMust := make([]M, 0, len(qParts))
 
 	for _, qp := range qParts {
-		queryMust = append(queryMust, es6.M{
-			"query_string": es6.M{
+		queryMust = append(queryMust, M{
+			"query_string": M{
 				"default_operator": "AND",
 				"query":            fmt.Sprintf("%s*", qp),
 				"default_field":    "all",
@@ -66,11 +65,11 @@ func (c *Client) SuggestUsers(q string) ([]models.Person, error) {
 		})
 	}
 
-	requestBody := es6.M{
-		"query": es6.M{
-			"bool": es6.M{
-				"filter": es6.M{
-					"term": es6.M{
+	requestBody := M{
+		"query": M{
+			"bool": M{
+				"filter": M{
+					"term": M{
 						"active": "true",
 					},
 				},
@@ -82,7 +81,7 @@ func (c *Client) SuggestUsers(q string) ([]models.Person, error) {
 
 	var responseBody personSearchEnvelope = personSearchEnvelope{}
 
-	if e := c.es.SearchWithBody("biblio_person", requestBody, &responseBody); e != nil {
+	if e := c.search("biblio_person", requestBody, &responseBody); e != nil {
 		return nil, e
 	}
 
@@ -96,33 +95,32 @@ func (c *Client) SuggestUsers(q string) ([]models.Person, error) {
 }
 
 func (c *Client) recordToUser(record bson.M) (*models.User, error) {
+	user := &models.User{}
 
-	var user *models.User = &models.User{}
-
-	if v, e := record["_id"]; e {
+	if v, ok := record["_id"]; ok {
 		user.ID = v.(string)
 	}
-	if v, e := record["email"]; e {
+	if v, ok := record["email"]; ok {
 		user.Email = strings.ToLower(v.(string))
 	}
-	if v, e := record["ugent_username"]; e {
+	if v, ok := record["ugent_username"]; ok {
 		user.Username = v.(string)
 	}
-	if v, e := record["active"]; e {
+	if v, ok := record["active"]; ok {
 		user.Active = v.(int32) == 1
 	}
-	if v, e := record["orcid_token"]; e {
+	if v, ok := record["orcid_token"]; ok {
 		user.ORCIDToken = v.(string)
 	}
-	if v, e := record["orcid_id"]; e {
+	if v, ok := record["orcid_id"]; ok {
 		user.ORCID = v.(string)
 	}
-	if v, e := record["ugent_id"]; e {
+	if v, ok := record["ugent_id"]; ok {
 		for _, i := range v.(bson.A) {
 			user.UGentID = append(user.UGentID, i.(string))
 		}
 	}
-	if v, e := record["roles"]; e {
+	if v, ok := record["roles"]; ok {
 		for _, r := range v.(bson.A) {
 			if r.(string) == "biblio-admin" {
 				user.Role = "admin"
@@ -130,24 +128,24 @@ func (c *Client) recordToUser(record bson.M) (*models.User, error) {
 			}
 		}
 	}
-	if v, e := record["ugent_department_id"]; e {
+	if v, ok := record["ugent_department_id"]; ok {
 		for _, i := range v.(bson.A) {
-			user.Department = append(user.Department, models.UserDepartment{ID: i.(string)})
+			user.Affiliations = append(user.Affiliations, &models.Affiliation{OrganizationID: i.(string)})
 		}
 	}
-	if v, e := record["preferred_first_name"]; e {
+	if v, ok := record["preferred_first_name"]; ok {
 		user.FirstName = v.(string)
-	} else if v, e := record["first_name"]; e {
+	} else if v, ok := record["first_name"]; ok {
 		user.FirstName = v.(string)
 	}
-	if v, e := record["preferred_last_name"]; e {
+	if v, ok := record["preferred_last_name"]; ok {
 		user.LastName = v.(string)
-	} else if v, e := record["last_name"]; e {
+	} else if v, ok := record["last_name"]; ok {
 		user.LastName = v.(string)
 	}
 
 	// TODO: cleanup when authority database is synchronized with full_name
-	if v, e := record["full_name"]; e {
+	if v, ok := record["full_name"]; ok {
 		user.FullName = v.(string)
 	}
 	if user.FullName == "" {
@@ -160,11 +158,11 @@ func (c *Client) recordToUser(record bson.M) (*models.User, error) {
 		}
 	}
 
-	if v, e := record["date_created"]; e {
+	if v, ok := record["date_created"]; ok {
 		t, _ := time.Parse(time.RFC3339, v.(string))
 		user.DateCreated = &t
 	}
-	if v, e := record["date_updated"]; e {
+	if v, ok := record["date_updated"]; ok {
 		t, _ := time.Parse(time.RFC3339, v.(string))
 		user.DateUpdated = &t
 	}

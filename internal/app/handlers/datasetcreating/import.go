@@ -89,9 +89,9 @@ func (h *Handler) ConfirmImport(w http.ResponseWriter, r *http.Request, ctx Cont
 
 	// check for duplicates
 	if b.Source == "datacite" {
-		args := models.NewSearchArgs().WithFilter("doi", strings.ToLower(b.Identifier)).WithFilter("status", "public")
+		args := models.NewSearchArgs().WithFilter("identifier", strings.ToLower(b.Identifier)).WithFilter("status", "public")
 
-		existing, err := h.DatasetSearchService.Search(args)
+		existing, err := h.DatasetSearchIndex.Search(args)
 
 		if err != nil {
 			h.Logger.Errorw("confirm import dataset: could not execute search", "errors", err, "user", ctx.User.ID)
@@ -156,19 +156,14 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 	}
 
 	d.ID = ulid.Make().String()
-	d.Creator = &models.DatasetUser{ID: ctx.User.ID, Name: ctx.User.FullName}
-	d.User = &models.DatasetUser{ID: ctx.User.ID, Name: ctx.User.FullName}
+	d.CreatorID = ctx.User.ID
+	d.Creator = &ctx.User.Person
+	d.UserID = ctx.User.ID
+	d.User = &ctx.User.Person
 	d.Status = "private"
 
-	// Set the first department of the user if the user resides under at least one department
-	// TODO: this should be centralized
-	if len(ctx.User.Department) > 0 {
-		org, orgErr := h.OrganizationService.GetOrganization(ctx.User.Department[0].ID)
-		if orgErr != nil {
-			h.Logger.Warnw("import single publication: could not fetch user department", "errors", orgErr, "user", ctx.User.ID)
-		} else {
-			d.AddDepartmentByOrg(org)
-		}
+	if len(ctx.User.Affiliations) > 0 {
+		d.AddOrganization(ctx.User.Affiliations[0].Organization)
 	}
 
 	if validationErrs := d.Validate(); validationErrs != nil {
@@ -196,26 +191,36 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 		return
 	}
 
+	subNav := r.URL.Query().Get("show")
+	if subNav == "" {
+		subNav = "description"
+	}
+
 	render.Layout(w, "layouts/default", "dataset/pages/add_description", YieldAdd{
 		Context:        ctx,
 		PageTitle:      "Add - Datasets - Biblio",
 		Step:           2,
 		ActiveNav:      "datasets",
 		SubNavs:        []string{"description", "contributors", "publications"},
-		ActiveSubNav:   "description",
+		ActiveSubNav:   subNav,
 		Dataset:        d,
 		DisplayDetails: displays.DatasetDetails(ctx.User, ctx.Locale, d),
 	})
 }
 
 func (h *Handler) AddDescription(w http.ResponseWriter, r *http.Request, ctx Context) {
+	subNav := r.URL.Query().Get("show")
+	if subNav == "" {
+		subNav = "description"
+	}
+
 	render.Layout(w, "layouts/default", "dataset/pages/add_description", YieldAdd{
 		Context:        ctx,
 		PageTitle:      "Add - Datasets - Biblio",
 		Step:           2,
 		ActiveNav:      "datasets",
 		SubNavs:        []string{"description", "contributors", "publications"},
-		ActiveSubNav:   "description",
+		ActiveSubNav:   subNav,
 		Dataset:        ctx.Dataset,
 		DisplayDetails: displays.DatasetDetails(ctx.User, ctx.Locale, ctx.Dataset),
 	})
@@ -226,7 +231,7 @@ func (h *Handler) AddSaveDraft(w http.ResponseWriter, r *http.Request, ctx Conte
 		WithLevel("success").
 		WithBody(template.HTML("<p>Dataset successfully saved as a draft.</p>"))
 
-	h.AddSessionFlash(r, w, *flash)
+	h.AddFlash(r, w, *flash)
 
 	redirectURL := h.PathFor("datasets")
 	w.Header().Set("HX-Redirect", redirectURL.String())

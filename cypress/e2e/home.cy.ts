@@ -76,8 +76,7 @@ describe('The home page', () => {
     cy.contains('.c-sidebar__item', 'Biblio Datasets').should('be.visible')
     cy.contains('.c-sidebar__item', 'Dashboard').should('not.exist')
 
-    cy.contains('button.dropdown-toggle', 'Researcher').click()
-    cy.contains('button.dropdown-item', 'Librarian').click()
+    cy.switchMode('Librarian')
 
     cy.get('.c-sidebar button.dropdown-toggle').should('contain.text', 'Librarian')
     cy.get('.c-sidebar').should('have.class', 'c-sidebar--dark-gray')
@@ -87,17 +86,38 @@ describe('The home page', () => {
     cy.contains('.c-sidebar__item', 'Dashboard').should('be.visible')
     cy.contains('.c-sidebar__item', 'Batch').should('be.visible')
 
-    // Switching back to researcher mode does not work due to a cookie bug in Cypress
-    // See: https://github.com/cypress-io/cypress/issues/25174
+    cy.switchMode('Researcher')
 
-    // cy.contains('button.dropdown-toggle', 'Librarian').click()
-    // cy.contains('button.dropdown-item', 'Researcher').click()
+    cy.get('.c-sidebar button.dropdown-toggle').should('contain.text', 'Researcher')
+    cy.get('.c-sidebar').should('not.have.class', 'c-sidebar--dark-gray')
+    cy.get('.c-sidebar-menu .c-sidebar__item').should('have.length', 2)
+    cy.contains('.c-sidebar__item', 'Biblio Publications').should('be.visible')
+    cy.contains('.c-sidebar__item', 'Biblio Datasets').should('be.visible')
+    cy.contains('.c-sidebar__item', 'Dashboard').should('not.exist')
+  })
 
-    // cy.get('.c-sidebar button.dropdown-toggle').should('contain.text', 'Researcher')
-    // cy.get('.c-sidebar').should('not.have.class', 'c-sidebar--dark-gray')
-    // cy.get('.c-sidebar-menu .c-sidebar__item').should('have.length', 2)
-    // cy.contains('.c-sidebar__item', 'Biblio Publications').should('be.visible')
-    // cy.contains('.c-sidebar__item', 'Biblio Datasets').should('be.visible')
-    // cy.contains('.c-sidebar__item', 'Dashboard').should('not.exist')
+  it('should not set the biblio-backoffice cookie twice when switching roles', () => {
+    cy.loginAsLibrarian()
+
+    cy.visit('/')
+
+    cy.intercept({ method: 'PUT', pathname: '/role/curator' }).as('role-curator')
+    cy.intercept({ method: 'PUT', pathname: '/role/user' }).as('role-user')
+
+    cy.switchMode('Librarian')
+
+    cy.wait('@role-curator')
+      .its('response.headers[set-cookie]')
+      .then(cookies => {
+        expect(cookies.filter(c => c.startsWith('biblio-backoffice='))).to.have.length(1)
+      })
+
+    cy.switchMode('Researcher')
+
+    cy.wait('@role-user')
+      .its('response.headers[set-cookie]')
+      .then(cookies => {
+        expect(cookies.filter(c => c.startsWith('biblio-backoffice='))).to.have.length(1)
+      })
   })
 })

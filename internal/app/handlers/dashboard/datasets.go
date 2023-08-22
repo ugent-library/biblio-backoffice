@@ -40,7 +40,7 @@ func (h *Handler) Datasets(w http.ResponseWriter, r *http.Request, ctx Context) 
 	locptypes := make(map[string]string)
 	locptypes["all"] = "All"
 
-	aSearcher := h.DatasetSearchService.WithScope("status", "private", "public", "returned")
+	aSearcher := h.DatasetSearchIndex.WithScope("status", "private", "public", "returned")
 	baseSearchUrl := h.PathFor("datasets")
 
 	datasets, err := generateDatasetsDashboard(faculties, ptypes, aSearcher, baseSearchUrl, func(args *models.SearchArgs) *models.SearchArgs {
@@ -63,7 +63,7 @@ func (h *Handler) Datasets(w http.ResponseWriter, r *http.Request, ctx Context) 
 	})
 }
 
-func generateDatasetsDashboard(faculties []string, ptypes []string, searcher backends.DatasetSearchService, baseSearchUrl *url.URL, fn func(args *models.SearchArgs) *models.SearchArgs) (map[string]map[string][]string, error) {
+func generateDatasetsDashboard(faculties []string, ptypes []string, searcher backends.DatasetIndex, baseSearchUrl *url.URL, fn func(args *models.SearchArgs) *models.SearchArgs) (map[string]map[string][]string, error) {
 	var datasets = make(map[string]map[string][]string)
 
 	// pool := pond.New(100, 300)
@@ -79,9 +79,9 @@ func generateDatasetsDashboard(faculties []string, ptypes []string, searcher bac
 			queryVals := searchUrl.Query()
 
 			if fac != "all" {
-				searchArgs.WithFilter("faculty", fac)
+				searchArgs.WithFilter("faculty_id", fac)
 			} else {
-				searchArgs.WithFilter("faculty", faculties...)
+				searchArgs.WithFilter("faculty_id", faculties...)
 			}
 
 			searchArgs = fn(searchArgs)

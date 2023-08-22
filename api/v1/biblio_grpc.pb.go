@@ -26,38 +26,37 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Biblio_GetFile_FullMethodName                     = "/biblio.v1.Biblio/GetFile"
-	Biblio_AddFile_FullMethodName                     = "/biblio.v1.Biblio/AddFile"
-	Biblio_ExistsFile_FullMethodName                  = "/biblio.v1.Biblio/ExistsFile"
-	Biblio_GetPublication_FullMethodName              = "/biblio.v1.Biblio/GetPublication"
-	Biblio_GetAllPublications_FullMethodName          = "/biblio.v1.Biblio/GetAllPublications"
-	Biblio_SearchPublications_FullMethodName          = "/biblio.v1.Biblio/SearchPublications"
-	Biblio_UpdatePublication_FullMethodName           = "/biblio.v1.Biblio/UpdatePublication"
-	Biblio_AddPublications_FullMethodName             = "/biblio.v1.Biblio/AddPublications"
-	Biblio_ImportPublications_FullMethodName          = "/biblio.v1.Biblio/ImportPublications"
-	Biblio_MutatePublications_FullMethodName          = "/biblio.v1.Biblio/MutatePublications"
-	Biblio_GetPublicationHistory_FullMethodName       = "/biblio.v1.Biblio/GetPublicationHistory"
-	Biblio_PurgePublication_FullMethodName            = "/biblio.v1.Biblio/PurgePublication"
-	Biblio_PurgeAllPublications_FullMethodName        = "/biblio.v1.Biblio/PurgeAllPublications"
-	Biblio_ValidatePublications_FullMethodName        = "/biblio.v1.Biblio/ValidatePublications"
-	Biblio_ReindexPublications_FullMethodName         = "/biblio.v1.Biblio/ReindexPublications"
-	Biblio_TransferPublications_FullMethodName        = "/biblio.v1.Biblio/TransferPublications"
-	Biblio_CleanupPublications_FullMethodName         = "/biblio.v1.Biblio/CleanupPublications"
-	Biblio_SyncPublicationContributors_FullMethodName = "/biblio.v1.Biblio/SyncPublicationContributors"
-	Biblio_GetDataset_FullMethodName                  = "/biblio.v1.Biblio/GetDataset"
-	Biblio_GetAllDatasets_FullMethodName              = "/biblio.v1.Biblio/GetAllDatasets"
-	Biblio_SearchDatasets_FullMethodName              = "/biblio.v1.Biblio/SearchDatasets"
-	Biblio_UpdateDataset_FullMethodName               = "/biblio.v1.Biblio/UpdateDataset"
-	Biblio_AddDatasets_FullMethodName                 = "/biblio.v1.Biblio/AddDatasets"
-	Biblio_ImportDatasets_FullMethodName              = "/biblio.v1.Biblio/ImportDatasets"
-	Biblio_MutateDatasets_FullMethodName              = "/biblio.v1.Biblio/MutateDatasets"
-	Biblio_GetDatasetHistory_FullMethodName           = "/biblio.v1.Biblio/GetDatasetHistory"
-	Biblio_PurgeDataset_FullMethodName                = "/biblio.v1.Biblio/PurgeDataset"
-	Biblio_PurgeAllDatasets_FullMethodName            = "/biblio.v1.Biblio/PurgeAllDatasets"
-	Biblio_ValidateDatasets_FullMethodName            = "/biblio.v1.Biblio/ValidateDatasets"
-	Biblio_ReindexDatasets_FullMethodName             = "/biblio.v1.Biblio/ReindexDatasets"
-	Biblio_CleanupDatasets_FullMethodName             = "/biblio.v1.Biblio/CleanupDatasets"
-	Biblio_Relate_FullMethodName                      = "/biblio.v1.Biblio/Relate"
+	Biblio_GetFile_FullMethodName               = "/biblio.v1.Biblio/GetFile"
+	Biblio_AddFile_FullMethodName               = "/biblio.v1.Biblio/AddFile"
+	Biblio_ExistsFile_FullMethodName            = "/biblio.v1.Biblio/ExistsFile"
+	Biblio_GetPublication_FullMethodName        = "/biblio.v1.Biblio/GetPublication"
+	Biblio_GetAllPublications_FullMethodName    = "/biblio.v1.Biblio/GetAllPublications"
+	Biblio_SearchPublications_FullMethodName    = "/biblio.v1.Biblio/SearchPublications"
+	Biblio_UpdatePublication_FullMethodName     = "/biblio.v1.Biblio/UpdatePublication"
+	Biblio_AddPublications_FullMethodName       = "/biblio.v1.Biblio/AddPublications"
+	Biblio_ImportPublications_FullMethodName    = "/biblio.v1.Biblio/ImportPublications"
+	Biblio_MutatePublications_FullMethodName    = "/biblio.v1.Biblio/MutatePublications"
+	Biblio_GetPublicationHistory_FullMethodName = "/biblio.v1.Biblio/GetPublicationHistory"
+	Biblio_PurgePublication_FullMethodName      = "/biblio.v1.Biblio/PurgePublication"
+	Biblio_PurgeAllPublications_FullMethodName  = "/biblio.v1.Biblio/PurgeAllPublications"
+	Biblio_ValidatePublications_FullMethodName  = "/biblio.v1.Biblio/ValidatePublications"
+	Biblio_ReindexPublications_FullMethodName   = "/biblio.v1.Biblio/ReindexPublications"
+	Biblio_TransferPublications_FullMethodName  = "/biblio.v1.Biblio/TransferPublications"
+	Biblio_CleanupPublications_FullMethodName   = "/biblio.v1.Biblio/CleanupPublications"
+	Biblio_GetDataset_FullMethodName            = "/biblio.v1.Biblio/GetDataset"
+	Biblio_GetAllDatasets_FullMethodName        = "/biblio.v1.Biblio/GetAllDatasets"
+	Biblio_SearchDatasets_FullMethodName        = "/biblio.v1.Biblio/SearchDatasets"
+	Biblio_UpdateDataset_FullMethodName         = "/biblio.v1.Biblio/UpdateDataset"
+	Biblio_AddDatasets_FullMethodName           = "/biblio.v1.Biblio/AddDatasets"
+	Biblio_ImportDatasets_FullMethodName        = "/biblio.v1.Biblio/ImportDatasets"
+	Biblio_MutateDatasets_FullMethodName        = "/biblio.v1.Biblio/MutateDatasets"
+	Biblio_GetDatasetHistory_FullMethodName     = "/biblio.v1.Biblio/GetDatasetHistory"
+	Biblio_PurgeDataset_FullMethodName          = "/biblio.v1.Biblio/PurgeDataset"
+	Biblio_PurgeAllDatasets_FullMethodName      = "/biblio.v1.Biblio/PurgeAllDatasets"
+	Biblio_ValidateDatasets_FullMethodName      = "/biblio.v1.Biblio/ValidateDatasets"
+	Biblio_ReindexDatasets_FullMethodName       = "/biblio.v1.Biblio/ReindexDatasets"
+	Biblio_CleanupDatasets_FullMethodName       = "/biblio.v1.Biblio/CleanupDatasets"
+	Biblio_Relate_FullMethodName                = "/biblio.v1.Biblio/Relate"
 )
 
 // BiblioClient is the client API for Biblio service.
@@ -81,7 +80,6 @@ type BiblioClient interface {
 	ReindexPublications(ctx context.Context, in *ReindexPublicationsRequest, opts ...grpc.CallOption) (Biblio_ReindexPublicationsClient, error)
 	TransferPublications(ctx context.Context, in *TransferPublicationsRequest, opts ...grpc.CallOption) (Biblio_TransferPublicationsClient, error)
 	CleanupPublications(ctx context.Context, in *CleanupPublicationsRequest, opts ...grpc.CallOption) (Biblio_CleanupPublicationsClient, error)
-	SyncPublicationContributors(ctx context.Context, in *SyncPublicationContributorsRequest, opts ...grpc.CallOption) (Biblio_SyncPublicationContributorsClient, error)
 	GetDataset(ctx context.Context, in *GetDatasetRequest, opts ...grpc.CallOption) (*GetDatasetResponse, error)
 	GetAllDatasets(ctx context.Context, in *GetAllDatasetsRequest, opts ...grpc.CallOption) (Biblio_GetAllDatasetsClient, error)
 	SearchDatasets(ctx context.Context, in *SearchDatasetsRequest, opts ...grpc.CallOption) (*SearchDatasetsResponse, error)
@@ -510,38 +508,6 @@ func (x *biblioCleanupPublicationsClient) Recv() (*CleanupPublicationsResponse, 
 	return m, nil
 }
 
-func (c *biblioClient) SyncPublicationContributors(ctx context.Context, in *SyncPublicationContributorsRequest, opts ...grpc.CallOption) (Biblio_SyncPublicationContributorsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[11], Biblio_SyncPublicationContributors_FullMethodName, opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &biblioSyncPublicationContributorsClient{stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
-}
-
-type Biblio_SyncPublicationContributorsClient interface {
-	Recv() (*SyncPublicationContributorsResponse, error)
-	grpc.ClientStream
-}
-
-type biblioSyncPublicationContributorsClient struct {
-	grpc.ClientStream
-}
-
-func (x *biblioSyncPublicationContributorsClient) Recv() (*SyncPublicationContributorsResponse, error) {
-	m := new(SyncPublicationContributorsResponse)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
 func (c *biblioClient) GetDataset(ctx context.Context, in *GetDatasetRequest, opts ...grpc.CallOption) (*GetDatasetResponse, error) {
 	out := new(GetDatasetResponse)
 	err := c.cc.Invoke(ctx, Biblio_GetDataset_FullMethodName, in, out, opts...)
@@ -552,7 +518,7 @@ func (c *biblioClient) GetDataset(ctx context.Context, in *GetDatasetRequest, op
 }
 
 func (c *biblioClient) GetAllDatasets(ctx context.Context, in *GetAllDatasetsRequest, opts ...grpc.CallOption) (Biblio_GetAllDatasetsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[12], Biblio_GetAllDatasets_FullMethodName, opts...)
+	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[11], Biblio_GetAllDatasets_FullMethodName, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -602,7 +568,7 @@ func (c *biblioClient) UpdateDataset(ctx context.Context, in *UpdateDatasetReque
 }
 
 func (c *biblioClient) AddDatasets(ctx context.Context, opts ...grpc.CallOption) (Biblio_AddDatasetsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[13], Biblio_AddDatasets_FullMethodName, opts...)
+	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[12], Biblio_AddDatasets_FullMethodName, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -633,7 +599,7 @@ func (x *biblioAddDatasetsClient) Recv() (*AddDatasetsResponse, error) {
 }
 
 func (c *biblioClient) ImportDatasets(ctx context.Context, opts ...grpc.CallOption) (Biblio_ImportDatasetsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[14], Biblio_ImportDatasets_FullMethodName, opts...)
+	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[13], Biblio_ImportDatasets_FullMethodName, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -664,7 +630,7 @@ func (x *biblioImportDatasetsClient) Recv() (*ImportDatasetsResponse, error) {
 }
 
 func (c *biblioClient) MutateDatasets(ctx context.Context, opts ...grpc.CallOption) (Biblio_MutateDatasetsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[15], Biblio_MutateDatasets_FullMethodName, opts...)
+	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[14], Biblio_MutateDatasets_FullMethodName, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -695,7 +661,7 @@ func (x *biblioMutateDatasetsClient) Recv() (*MutateResponse, error) {
 }
 
 func (c *biblioClient) GetDatasetHistory(ctx context.Context, in *GetDatasetHistoryRequest, opts ...grpc.CallOption) (Biblio_GetDatasetHistoryClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[16], Biblio_GetDatasetHistory_FullMethodName, opts...)
+	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[15], Biblio_GetDatasetHistory_FullMethodName, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -745,7 +711,7 @@ func (c *biblioClient) PurgeAllDatasets(ctx context.Context, in *PurgeAllDataset
 }
 
 func (c *biblioClient) ValidateDatasets(ctx context.Context, opts ...grpc.CallOption) (Biblio_ValidateDatasetsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[17], Biblio_ValidateDatasets_FullMethodName, opts...)
+	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[16], Biblio_ValidateDatasets_FullMethodName, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -776,7 +742,7 @@ func (x *biblioValidateDatasetsClient) Recv() (*ValidateDatasetsResponse, error)
 }
 
 func (c *biblioClient) ReindexDatasets(ctx context.Context, in *ReindexDatasetsRequest, opts ...grpc.CallOption) (Biblio_ReindexDatasetsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[18], Biblio_ReindexDatasets_FullMethodName, opts...)
+	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[17], Biblio_ReindexDatasets_FullMethodName, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -808,7 +774,7 @@ func (x *biblioReindexDatasetsClient) Recv() (*ReindexDatasetsResponse, error) {
 }
 
 func (c *biblioClient) CleanupDatasets(ctx context.Context, in *CleanupDatasetsRequest, opts ...grpc.CallOption) (Biblio_CleanupDatasetsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[19], Biblio_CleanupDatasets_FullMethodName, opts...)
+	stream, err := c.cc.NewStream(ctx, &Biblio_ServiceDesc.Streams[18], Biblio_CleanupDatasets_FullMethodName, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -869,7 +835,6 @@ type BiblioServer interface {
 	ReindexPublications(*ReindexPublicationsRequest, Biblio_ReindexPublicationsServer) error
 	TransferPublications(*TransferPublicationsRequest, Biblio_TransferPublicationsServer) error
 	CleanupPublications(*CleanupPublicationsRequest, Biblio_CleanupPublicationsServer) error
-	SyncPublicationContributors(*SyncPublicationContributorsRequest, Biblio_SyncPublicationContributorsServer) error
 	GetDataset(context.Context, *GetDatasetRequest) (*GetDatasetResponse, error)
 	GetAllDatasets(*GetAllDatasetsRequest, Biblio_GetAllDatasetsServer) error
 	SearchDatasets(context.Context, *SearchDatasetsRequest) (*SearchDatasetsResponse, error)
@@ -941,9 +906,6 @@ func (UnimplementedBiblioServer) TransferPublications(*TransferPublicationsReque
 }
 func (UnimplementedBiblioServer) CleanupPublications(*CleanupPublicationsRequest, Biblio_CleanupPublicationsServer) error {
 	return status.Errorf(codes.Unimplemented, "method CleanupPublications not implemented")
-}
-func (UnimplementedBiblioServer) SyncPublicationContributors(*SyncPublicationContributorsRequest, Biblio_SyncPublicationContributorsServer) error {
-	return status.Errorf(codes.Unimplemented, "method SyncPublicationContributors not implemented")
 }
 func (UnimplementedBiblioServer) GetDataset(context.Context, *GetDatasetRequest) (*GetDatasetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetDataset not implemented")
@@ -1364,27 +1326,6 @@ func (x *biblioCleanupPublicationsServer) Send(m *CleanupPublicationsResponse) e
 	return x.ServerStream.SendMsg(m)
 }
 
-func _Biblio_SyncPublicationContributors_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(SyncPublicationContributorsRequest)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
-	}
-	return srv.(BiblioServer).SyncPublicationContributors(m, &biblioSyncPublicationContributorsServer{stream})
-}
-
-type Biblio_SyncPublicationContributorsServer interface {
-	Send(*SyncPublicationContributorsResponse) error
-	grpc.ServerStream
-}
-
-type biblioSyncPublicationContributorsServer struct {
-	grpc.ServerStream
-}
-
-func (x *biblioSyncPublicationContributorsServer) Send(m *SyncPublicationContributorsResponse) error {
-	return x.ServerStream.SendMsg(m)
-}
-
 func _Biblio_GetDataset_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetDatasetRequest)
 	if err := dec(in); err != nil {
@@ -1795,11 +1736,6 @@ var Biblio_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "CleanupPublications",
 			Handler:       _Biblio_CleanupPublications_Handler,
-			ServerStreams: true,
-		},
-		{
-			StreamName:    "SyncPublicationContributors",
-			Handler:       _Biblio_SyncPublicationContributors_Handler,
 			ServerStreams: true,
 		},
 		{

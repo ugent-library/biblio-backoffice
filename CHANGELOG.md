@@ -9,15 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- #1110: Keep related object metadata up-to-date
+- #812: remove confirmation dialog for Lock and Unlock
+- Smaller and more efficient search index
+- Add vabb_id.set, vabb_type.set, vabb_approved.set batch operations
+
 ### Fixed
+
+- #1108: Cannot add author without first name
 
 ## [v1.0.33] - 2023-06-30
 
 ### Added
 
-- lower stupidly high limit for suggest
-
 ### Fixed
+
+- Lower limit for suggest to 20
 
 ## [v1.0.32] - 2023-06-20
 

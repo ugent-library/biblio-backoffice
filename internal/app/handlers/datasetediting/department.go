@@ -89,7 +89,7 @@ func (h *Handler) CreateDepartment(w http.ResponseWriter, r *http.Request, ctx C
 		return
 	}
 
-	ctx.Dataset.AddDepartmentByOrg(org)
+	ctx.Dataset.AddOrganization(org)
 
 	// TODO handle validation errors
 
@@ -151,7 +151,7 @@ func (h *Handler) DeleteDepartment(w http.ResponseWriter, r *http.Request, ctx C
 	depID, _ := url.QueryUnescape(b.DepartmentID)
 	b.DepartmentID = depID
 
-	ctx.Dataset.RemoveDepartment(b.DepartmentID)
+	ctx.Dataset.RemoveOrganization(b.DepartmentID)
 
 	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset, ctx.User)
 

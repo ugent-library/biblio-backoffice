@@ -16,19 +16,7 @@
       "credit_role": [
         "first_author"
       ],
-      "first_name": "first name",
-      "full_name": "full name",
-      "id": "00000000-0000-0000-0000-000000000000",
-      "last_name": "last name",
-      "ugent_id": [
-        "000000000000"
-      ],
-      "department": [
-        {
-          "id": "AA00",
-          "name": "department name"
-        }
-      ]
+      "person_id": "00000000-0000-0000-0000-000000000000"
     }
   ],
   "classification": "P1",
@@ -38,45 +26,19 @@
   "conference_start_date": "2023-01-01",
   "conference_end_date": "2023-01-01",
   "conference_type": "proceedingsPaper",
-  "creator": {
-    "id": "00000000-0000-0000-0000-000000000000",
-    "name": "name"
-  },
+  "creator_id": "00000000-0000-0000-0000-000000000000",
   "date_created": "2023-02-07T11:14:24.788490844+01:00",
   "date_updated": "2023-02-07T11:32:22.347045701+01:00",
   "date_from": "2023-02-07T11:32:22.348654+01:00",
-  "department": [
+  "related_organizations": [
     {
-      "id": "CA20",
-      "tree": [
-        {
-          "id": "UGent"
-        },
-        {
-          "id": "CA"
-        },
-        {
-          "id": "CA20"
-        }
-      ]
+      "organization_id": "CA20"
     }
   ],
   "doi": "0000",
   "editor": [
     {
-      "first_name": "first name",
-      "full_name": "full name",
-      "id": "00000000-0000-0000-0000-000000000000",
-      "last_name": "laste name",
-      "ugent_id": [
-        "000000000000"
-      ],
-      "department": [
-        {
-          "id": "AA00",
-          "name": "department name"
-        }
-      ]
+      "person_id": "00000000-0000-0000-0000-000000000000"
     }
   ],
   "eisbn": [
@@ -118,10 +80,7 @@
   "language": [
     "eng"
   ],
-  "last_user": {
-    "id": "00000000-0000-0000-0000-000000000000",
-    "name": "name"
-  },
+  "last_user_id": "00000000-0000-0000-0000-000000000000",
   "legacy": true,
   "link": [
     {
@@ -137,10 +96,9 @@
   "page_first": "1",
   "page_last": "99",
   "place_of_publication": "place of publication",
-  "project": [
+  "related_projects": [
     {
-      "id": "000000000",
-      "name": "name"
+      "project_id": "000000000"
     }
   ],
   "publication": "proceedings title",
@@ -164,10 +122,7 @@
   "status": "public",
   "title": "title",
   "type": "conference",
-  "user": {
-    "id": "00000000-0000-0000-0000-000000000000",
-    "name": "name"
-  },
+  "user_id": "00000000-0000-0000-0000-000000000000",
   "volume": "volume",
   "vabb_approved": false,
   "has_been_public": true,
