@@ -104,7 +104,7 @@ var Map = map[string][]string{
 	},
 	"dataset_identifier_types": {
 		"DOI",
-		"BioProject",
+		"ENA BioProject",
 		"BioStudies",
 		"ENA",
 		"Ensembl",
