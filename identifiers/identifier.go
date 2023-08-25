@@ -12,7 +12,7 @@ var (
 )
 
 var types = map[string]Type{
-	"BioProject":     BioProject,
+	"ENA BioProject": BioProject,
 	"BioStudies":     BioStudies,
 	"DOI":            DOI,
 	"ENA":            ENA,
