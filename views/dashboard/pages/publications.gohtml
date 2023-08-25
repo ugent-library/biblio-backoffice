@@ -16,8 +16,8 @@
 
 <div class="w-100 u-scroll-wrapper">
     <div class="bg-white">
-        <div class="bc-navbar bc-navbar--large bc-navbar--white">
-            <div class="bc-toolbar">
+        <div class="bc-navbar bc-navbar--large bc-navbar--white bc-navbar--bordered-bottom">
+            <div class="bc-toolbar bc-toolbar--auto">
                 <div class="bc-toolbar-left">
                     <div class="bc-toolbar-item">
                         <h4 class="bc-toolbar-title">Publications</h4>
@@ -26,13 +26,21 @@
             </div>
         </div>
     </div>
-
+    
     <div class="u-scroll-wrapper__body w-100 p-6">
+        <div class="pb-5">
+            <p><strong>Why are the totals wrong?</strong></p>
+            <p>Some publications are associated with more than 1 faculty.</p>
+            <p>The category "all" in the table header may contain less publications, as it only counts each publication once.</p>
+        </div>
+
         <div class="card w-100 mb-6">
-            <div class="card-header">
-                <div class="bc-toolbar">
+            <div class="card-header card-header--auto">
+                <div class="bc-toolbar bc-toolbar--auto">
                     <div class="bc-toolbar-left">
-                        <h3 class="card-title">Public with classification U</h3>
+                        <div class="bc-toolbar-item">
+                            <h3 class="card-title">Public with classification U</h3>
+                        </div>
                     </div>
                 </div>
             </div>
