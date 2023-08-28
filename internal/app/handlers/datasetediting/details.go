@@ -164,7 +164,7 @@ func detailsForm(l *locale.Locale, d *models.Dataset, errors validation.Errors) 
 
 	identifierTypeOptions := make([]form.SelectOption, len(vocabularies.Map["dataset_identifier_types"]))
 	for i, v := range vocabularies.Map["dataset_identifier_types"] {
-		identifierTypeOptions[i].Label = v
+		identifierTypeOptions[i].Label = l.TS("identifier", v)
 		identifierTypeOptions[i].Value = v
 	}
 

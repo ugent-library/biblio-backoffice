@@ -29,7 +29,7 @@ func DatasetDetails(user *models.User, l *locale.Locale, d *models.Dataset) *dis
 			},
 			&display.Text{
 				Label:    l.T("builder.identifier_type"),
-				Value:    identifierType,
+				Value:    l.TS("identifier", identifierType),
 				Required: true,
 			},
 			&display.Link{

@@ -798,4 +798,13 @@ func init() {
 	message.SetString(language.English, "dataset.search.empty.title.created", "No registered datasets yet")
 	message.SetString(language.English, "dataset.search.empty.description.created", "Register a first datasets")
 	message.SetString(language.English, "export_to.xlsx", "Export to Excel")
+
+	message.SetString(language.English, "identifier.BioStudies", "BioStudies")
+	message.SetString(language.English, "identifier.DOI", "DOI")
+	message.SetString(language.English, "identifier.ENA", "ENA")
+	message.SetString(language.English, "identifier.ENABioProject", "ENA BioProject")
+	message.SetString(language.English, "identifier.Ensembl", "Ensembl")
+	message.SetString(language.English, "identifier.Handle", "Handle")
+	message.SetString(language.English, "identifier.PubMedID", "PubMed ID")
+	message.SetString(language.English, "identifier.WebOfScience", "Web of Science ID")
 }
