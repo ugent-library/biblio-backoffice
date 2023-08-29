@@ -8,12 +8,18 @@
             <p>Are you sure you want to remove this project from the publication?</p>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-link modal-close">Cancel</button>
-            <button class="btn btn-danger"
-                hx-delete="{{pathFor "publication_delete_project" "id" .Publication.ID "project_id" .ProjectID}}"
-                hx-headers='{"If-Match": "{{.Publication.SnapshotID}}"}'
-                hx-swap="none"
-            >Delete</button>
+            <div class="bc-toolbar">
+                <div class="bc-toolbar-left">
+                    <button class="btn btn-link modal-close">Cancel</button>
+                </div>
+                <div class="bc-toolbar-right">
+                    <button class="btn btn-danger"
+                        hx-delete="{{pathFor "publication_delete_project" "id" .Publication.ID "project_id" .ProjectID}}"
+                        hx-headers='{"If-Match": "{{.Publication.SnapshotID}}"}'
+                        hx-swap="none"
+                    >Delete</button>
+                </div>
+            </div>
         </div>
     </div>
 </div>

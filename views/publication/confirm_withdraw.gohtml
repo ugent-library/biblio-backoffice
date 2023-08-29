@@ -8,12 +8,18 @@
             <p>Are you sure you want to withdraw this publication to Biblio?</p>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-link modal-close">Cancel</button>
-            <button class="btn btn-danger"
-                hx-post="{{pathFor "publication_withdraw" "id" .Publication.ID|querySet "redirect-url" .RedirectURL}}"
-                hx-headers='{"If-Match": "{{.Publication.SnapshotID}}"}'
-                hx-swap="none"
-            >Withdraw</button>
+            <div class="bc-toolbar">
+                <div class="bc-toolbar-left">
+                    <button class="btn btn-link modal-close">Cancel</button>
+                </div>
+                <div class="bc-toolbar-left">
+                    <button class="btn btn-danger"
+                        hx-post="{{pathFor "publication_withdraw" "id" .Publication.ID|querySet "redirect-url" .RedirectURL}}"
+                        hx-headers='{"If-Match": "{{.Publication.SnapshotID}}"}'
+                        hx-swap="none"
+                    >Withdraw</button>
+                </div>
+            </div>
         </div>
     </div>
 </div>

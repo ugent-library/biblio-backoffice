@@ -8,12 +8,18 @@
             <p>Are you sure you want to lock this publication?</p>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-link modal-close">Cancel</button>
-            <button class="btn btn-success"
-                hx-post="{{pathFor "publication_lock" "id" .Publication.ID|querySet "redirect-url" .RedirectURL}}"
-                hx-headers='{"If-Match": "{{.Publication.SnapshotID}}"}'
-                hx-swap="none"
-            >Lock</button>
+            <div class="bc-toolbar">
+                <div class="bc-toolbar-left">
+                    <button class="btn btn-link modal-close">Cancel</button>
+                </div>
+                <div class="bc-toolbar-right">
+                    <button class="btn btn-success"
+                        hx-post="{{pathFor "publication_lock" "id" .Publication.ID|querySet "redirect-url" .RedirectURL}}"
+                        hx-headers='{"If-Match": "{{.Publication.SnapshotID}}"}'
+                        hx-swap="none"
+                    >Lock</button>
+                </div>
+            </div>
         </div>
     </div>
 </div>

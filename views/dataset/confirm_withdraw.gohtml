@@ -8,12 +8,17 @@
             <p>Are you sure you want to withdraw this dataset to Biblio?</p>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-link modal-close">Cancel</button>
-            <button class="btn btn-danger"
-                hx-post="{{pathFor "dataset_withdraw" "id" .Dataset.ID|querySet "redirect-url" .RedirectURL}}"
-                hx-headers='{"If-Match": "{{.Dataset.SnapshotID}}"}'
-                hx-swap="none"
-            >Withdraw</button>
+            <div class="bc-toolbar">
+                <div class="bc-toolbar-left">
+                    <button class="btn btn-link modal-close">Cancel</button>
+                <div class="bc-toolbar-right">
+                    <button class="btn btn-danger"
+                        hx-post="{{pathFor "dataset_withdraw" "id" .Dataset.ID|querySet "redirect-url" .RedirectURL}}"
+                        hx-headers='{"If-Match": "{{.Dataset.SnapshotID}}"}'
+                        hx-swap="none"
+                    >Withdraw</button>
+                </div>
+            </div>
         </div>
     </div>
 </div>

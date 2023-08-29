@@ -8,12 +8,17 @@
             <p>Are you sure you want to republish this dataset to Biblio?</p>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-link modal-close">Cancel</button>
-            <button class="btn btn-success"
-                hx-post="{{pathFor "dataset_republish" "id" .Dataset.ID|querySet "redirect-url" .RedirectURL}}"
-                hx-headers='{"If-Match": "{{.Dataset.SnapshotID}}"}'
-                hx-swap="none"
-            >Republish</button>
+            <div class="bc-toolbar">
+                <div class="bc-toolbar-left">
+                    <button class="btn btn-link modal-close">Cancel</button>
+                <div class="bc-toolbar-right">
+                    <button class="btn btn-success"
+                        hx-post="{{pathFor "dataset_republish" "id" .Dataset.ID|querySet "redirect-url" .RedirectURL}}"
+                        hx-headers='{"If-Match": "{{.Dataset.SnapshotID}}"}'
+                        hx-swap="none"
+                    >Republish</button>
+                </div>
+            </div>
         </div>
     </div>
 </div>

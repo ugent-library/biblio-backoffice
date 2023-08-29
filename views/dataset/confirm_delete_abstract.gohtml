@@ -8,12 +8,17 @@
             <p>Are you sure you want to remove this abstract</p>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-link modal-close">Cancel</button>
-            <button class="btn btn-danger"
-                hx-delete="{{pathFor "dataset_delete_abstract" "id" .Dataset.ID "abstract_id" .AbstractID}}"
-                hx-headers='{"If-Match": "{{.Dataset.SnapshotID}}"}'
-                hx-swap="none"
-            >Delete</button>
+            <div class="bc-toolbar">
+                <div class="bc-toolbar-left">
+                    <button class="btn btn-link modal-close">Cancel</button>
+                <div class="bc-toolbar-right">
+                    <button class="btn btn-danger"
+                        hx-delete="{{pathFor "dataset_delete_abstract" "id" .Dataset.ID "abstract_id" .AbstractID}}"
+                        hx-headers='{"If-Match": "{{.Dataset.SnapshotID}}"}'
+                        hx-swap="none"
+                    >Delete</button>
+                </div>
+            </div>
         </div>
     </div>
 </div>

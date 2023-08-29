@@ -82,13 +82,19 @@
             </ul>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-link modal-close">Cancel</button>
-            <form action="{{pathFor "publication_add_single_import"}}" method="POST">
-                {{.CSRFTag}}
-                <input type="hidden" name="source" value="{{.Source}}">
-                <input type="hidden" name="identifier" value="{{.Identifier}}">
-                <button type="submit" class="btn btn-danger">Import anyway</button>
-            </form>
+            <div class="bc-toolbar">
+                <div class="bc-toolbar-left">
+                    <button class="btn btn-link modal-close">Cancel</button>
+                </div>
+                <div class="bc-toolbar-right">
+                    <form action="{{pathFor "publication_add_single_import"}}" method="POST">
+                        {{.CSRFTag}}
+                        <input type="hidden" name="source" value="{{.Source}}">
+                        <input type="hidden" name="identifier" value="{{.Identifier}}">
+                        <button type="submit" class="btn btn-danger">Import anyway</button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>
