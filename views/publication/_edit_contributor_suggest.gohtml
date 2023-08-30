@@ -25,7 +25,7 @@
     <li class="list-group-item">
         <div class="list-group-item-inner">
             <div class="list-group-item-main">
-                {{partial "shared/contributor_summary" (.Yield "Contributor" (dict "FirstName" .FirstName "LastName" .LastName) "Current" true)}}
+                {{partial "shared/contributor_summary" (.Yield "Contributor" (dict "Name" (print .FirstName " " .LastName)) "Current" true)}}
             </div>
             <div class="c-button-toolbar">
                 <button class="btn btn-primary"
@@ -54,7 +54,7 @@
     <li class="list-group-item">
         <div class="list-group-item-inner">
             <div class="list-group-item-main">
-                {{partial "shared/contributor_summary" (.Yield "Contributor" (dict "FirstName" .FirstName "LastName" .LastName) "Current" false)}}
+                {{partial "shared/contributor_summary" (.Yield "Contributor" (dict "Name" (print .FirstName " " .LastName)) "Current" false)}}
             </div>
             <div class="c-button-toolbar">
                 <button class="btn btn-secondary"
