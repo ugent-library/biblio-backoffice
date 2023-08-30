@@ -22,6 +22,7 @@ require (
 	github.com/jackc/pgconn v1.12.1
 	github.com/jackc/pgtype v1.11.0
 	github.com/jackc/pgx/v4 v4.16.1
+	github.com/joho/godotenv v1.5.1
 	github.com/jpillora/ipfilter v1.2.8
 	github.com/nickng/bibtex v1.2.0
 	github.com/pkg/errors v0.9.1

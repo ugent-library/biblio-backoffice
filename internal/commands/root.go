@@ -3,13 +3,13 @@ package commands
 import (
 	"log"
 	"strings"
-
-	// embed timezone data
 	_ "time/tzdata"
 
+	_ "github.com/joho/godotenv/autoload"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
+
 	_ "github.com/ugent-library/biblio-backoffice/internal/snapstore"
 )
 
