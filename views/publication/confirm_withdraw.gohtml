@@ -12,7 +12,7 @@
                 <div class="bc-toolbar-left">
                     <button class="btn btn-link modal-close">Cancel</button>
                 </div>
-                <div class="bc-toolbar-left">
+                <div class="bc-toolbar-right">
                     <button class="btn btn-danger"
                         hx-post="{{pathFor "publication_withdraw" "id" .Publication.ID|querySet "redirect-url" .RedirectURL}}"
                         hx-headers='{"If-Match": "{{.Publication.SnapshotID}}"}'
