@@ -34,7 +34,7 @@ var Map = map[string][]string{
 		"classification",
 		"year",
 		"vabb_type",
-		"file.relation",
+		"file_relation",
 		"reviewer_tags",
 		"has_message",
 		"created_since",
