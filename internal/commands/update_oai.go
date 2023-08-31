@@ -2,12 +2,14 @@ package commands
 
 import (
 	"context"
+	"log"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/ugent-library/oai-service/api/v1"
+
 	"github.com/ugent-library/biblio-backoffice/internal/backends/oaidc"
 	"github.com/ugent-library/biblio-backoffice/internal/models"
-	"github.com/ugent-library/oai-service/api/v1"
 )
 
 func init() {
@@ -62,6 +64,20 @@ var updateOai = &cobra.Command{
 		if err != nil {
 			logger.Fatal(err)
 		}
+		err = client.AddSet(context.TODO(), &api.AddSetRequest{
+			SetSpec: "biblio:fulltext",
+			SetName: "Biblio records with a fulltext file",
+		})
+		if err != nil {
+			logger.Fatal(err)
+		}
+		err = client.AddSet(context.TODO(), &api.AddSetRequest{
+			SetSpec: "biblio:open_access",
+			SetName: "Biblio records with an open access fulltext file",
+		})
+		if err != nil {
+			logger.Fatal(err)
+		}
 
 		// add all publications
 		repo := Services().Repository
@@ -84,19 +100,31 @@ var updateOai = &cobra.Command{
 				logger.Fatal(err)
 			}
 
+			var setSpecs []string
+
 			if p.Type == "journal_article" {
-				err = client.AddRecordSets(context.TODO(), &api.AddRecordSetsRequest{
-					Identifier: p.ID,
-					SetSpecs:   []string{"biblio:journal_article"},
-				})
-				if err != nil {
-					logger.Fatal(err)
-				}
+				setSpecs = append(setSpecs, "biblio:journal_article")
 			}
 			if p.Type == "book" {
+				setSpecs = append(setSpecs, "biblio:book")
+			}
+			for _, f := range p.File {
+				if f.Relation == "main_file" {
+					setSpecs = append(setSpecs, "biblio:fulltext")
+					break
+				}
+			}
+			for _, f := range p.File {
+				if f.Relation == "main_file" && f.AccessLevel == "info:eu-repo/semantics/openAccess" {
+					setSpecs = append(setSpecs, "biblio:open_access")
+					break
+				}
+			}
+
+			if len(setSpecs) > 0 {
 				err = client.AddRecordSets(context.TODO(), &api.AddRecordSetsRequest{
 					Identifier: p.ID,
-					SetSpecs:   []string{"biblio:book"},
+					SetSpecs:   setSpecs,
 				})
 				if err != nil {
 					logger.Fatal(err)
