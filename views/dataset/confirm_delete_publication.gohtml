@@ -12,7 +12,7 @@
                 <div class="bc-toolbar-left">
                     <button class="btn btn-link modal-close">Cancel</button>
                 </div>
-                <div class="bc-toolbar-left">
+                <div class="bc-toolbar-right">
                     <button class="btn btn-danger"
                         hx-delete="{{pathFor "dataset_delete_publication" "id" .Dataset.ID "publication_id" .PublicationID}}"
                         hx-headers='{"If-Match": "{{.Dataset.SnapshotID}}"}'
