@@ -12,11 +12,11 @@ import (
 
 type Handler struct {
 	handlers.BaseHandler
-	Repository               backends.Repository
-	PublicationSearchService backends.PublicationSearchService
-	PublicationSources       map[string]backends.PublicationGetter
-	PublicationDecoders      map[string]backends.PublicationDecoderFactory
-	OrganizationService      backends.OrganizationService
+	Repository             backends.Repository
+	PublicationSearchIndex backends.PublicationIndex
+	PublicationSources     map[string]backends.PublicationGetter
+	PublicationDecoders    map[string]backends.PublicationDecoderFactory
+	OrganizationService    backends.OrganizationService
 }
 
 type Context struct {

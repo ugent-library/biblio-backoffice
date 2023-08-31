@@ -17,7 +17,7 @@
                 </a>
                 <div class="dropdown-divider"></div>
                 {{if eq .Dataset.Status "public"}}
-                    <a class="dropdown-item" href="https://biblio.ugent.be/publication/{{.Dataset.ID}}" target="_blank">
+                    <a class="dropdown-item" href="{{.FrontendBaseUrl}}/publication/{{.Dataset.ID}}" target="_blank">
                         <i class="if if-book"></i>
                         <span>Public Biblio Location</span>
                     </a>

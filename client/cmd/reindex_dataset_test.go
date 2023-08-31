@@ -45,7 +45,8 @@ func (s *DatasetReindexSuite) TestReindex() {
 		t.Fatal(err)
 	}
 
-	assert.Regexp(t, `Indexing to a new index\nIndexed .* datasets...\nSwitching to new index...\nIndexing changes since start of reindex...\nDone`, stdOut)
+	assert.Regexp(t, `^Indexing to a new index\n`, stdOut)
+	assert.Regexp(t, `\nDone\n$`, stdOut)
 }
 
 func (s *DatasetReindexSuite) TearDownSuite() {

@@ -5,8 +5,9 @@ export default defineConfig({
   projectId: 'mjg74d',
 
   e2e: {
-    baseUrl: 'https://backoffice.bibliotest.ugent.be',
+    baseUrl: 'https://backoffice.bibliodev.ugent.be',
     experimentalStudio: true,
+    experimentalRunAllSpecs: true,
 
     setupNodeEvents(_on, config) {
       config = dotenvPlugin(config)

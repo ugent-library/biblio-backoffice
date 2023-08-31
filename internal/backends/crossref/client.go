@@ -111,60 +111,60 @@ func (c *Client) GetPublication(id string) (*models.Publication, error) {
 			p.AlternativeTitle = append(p.AlternativeTitle, r.String())
 		}
 	}
-	if res := attrs.Get("ISBN"); res.Exists() {
+	if res := attrs.Get("isbn-type"); res.IsArray() {
+		for _, r := range res.Array() {
+			switch r.Get("type").String() {
+			case "print":
+				p.ISBN = append(p.ISBN, r.Get("value").String())
+			case "electronic":
+				p.EISBN = append(p.EISBN, r.Get("value").String())
+			}
+		}
+	} else if res := attrs.Get("ISBN"); res.Exists() { // TODO: keep fallback?
 		for _, r := range res.Array() {
 			p.ISBN = append(p.ISBN, r.String())
 		}
 	}
-	if res := attrs.Get("ISSN"); res.Exists() {
+	if res := attrs.Get("issn-type"); res.IsArray() {
+		for _, r := range res.Array() {
+			switch r.Get("type").String() {
+			case "print":
+				p.ISSN = append(p.ISSN, r.Get("value").String())
+			case "electronic":
+				p.EISSN = append(p.EISSN, r.Get("value").String())
+			}
+		}
+	} else if res := attrs.Get("ISSN"); res.Exists() { // TODO: keep fallback?
 		for _, r := range res.Array() {
 			p.ISSN = append(p.ISSN, r.String())
 		}
 	}
 	if res := attrs.Get("author"); res.Exists() {
 		for _, r := range res.Array() {
-			c := models.Contributor{}
-			if res := r.Get("name"); res.Exists() {
-				c.FullName = res.String()
+			name := r.Get("name").String()
+			firstName := r.Get("given").String()
+			lastName := r.Get("family").String()
+			if firstName == "" {
+				firstName = "[missing]" // TODO
 			}
-			if res := r.Get("given"); res.Exists() {
-				c.FirstName = res.String()
-			} else {
-				c.FirstName = "[missing]" // TODO
+			if lastName == "" {
+				lastName = name
 			}
-			if res := r.Get("family"); res.Exists() {
-				c.LastName = res.String()
-			} else {
-				// if LastName is empty, fill it with the FullName.
-				// if FullName is empty, put [missing] in LastName.
-				// solves for cases where authors are misused for organizational
-				// attribution.
-				if res := r.Get("name"); res.Exists() {
-					c.LastName = res.String()
-				} else {
-					c.LastName = "[missing]" // TODO
-				}
-			}
-			p.Author = append(p.Author, &c)
+			p.Author = append(p.Author, models.ContributorFromFirstLastName(firstName, lastName))
 		}
 	}
 	if res := attrs.Get("editor"); res.Exists() {
 		for _, r := range res.Array() {
-			c := models.Contributor{}
-			if res := r.Get("name"); res.Exists() {
-				c.FullName = res.String()
+			name := r.Get("name").String()
+			firstName := r.Get("given").String()
+			lastName := r.Get("family").String()
+			if firstName == "" {
+				firstName = "[missing]" // TODO
 			}
-			if res := r.Get("given"); res.Exists() {
-				c.FirstName = res.String()
-			} else {
-				c.FirstName = "[missing]" // TODO
+			if lastName == "" {
+				lastName = name
 			}
-			if res := r.Get("family"); res.Exists() {
-				c.LastName = res.String()
-			} else {
-				c.LastName = "[missing]" // TODO
-			}
-			p.Editor = append(p.Editor, &c)
+			p.Editor = append(p.Editor, models.ContributorFromFirstLastName(firstName, lastName))
 		}
 	}
 	if res := attrs.Get("subject"); res.Exists() {

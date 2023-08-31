@@ -76,14 +76,6 @@ func (s *server) Relate(ctx context.Context, req *api.RelateRequest) (*api.Relat
 		return nil, status.Errorf(codes.Internal, "failed to update dataset[snapshot_id: %s, id: %s], %s", d.SnapshotID, d.ID, err)
 	}
 
-	if err := s.services.PublicationSearchService.Index(p); err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to index publication %s, %s", p.ID, err)
-	}
-
-	if err := s.services.DatasetSearchService.Index(d); err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to index dataset %s, %s", d.ID, err)
-	}
-
 	return &api.RelateResponse{
 		Response: &api.RelateResponse_Message{
 			Message: fmt.Sprintf("related: publication[id: %s] -> dataset[id: %s]", p.ID, d.ID),

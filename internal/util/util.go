@@ -2,6 +2,8 @@ package util
 
 import (
 	"fmt"
+
+	"github.com/ugent-library/biblio-backoffice/internal/validation"
 )
 
 func ParseBoolean(v interface{}) bool {
@@ -40,4 +42,13 @@ func ParseString(v interface{}) string {
 		}
 	}
 	return ""
+}
+
+func UniqStrings(vals []string) (newVals []string) {
+	for _, val := range vals {
+		if !validation.InArray(newVals, val) {
+			newVals = append(newVals, val)
+		}
+	}
+	return
 }

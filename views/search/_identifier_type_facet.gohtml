@@ -1,10 +1,10 @@
 <div class="dropdown">
-    <a class="badge badge-{{if .SearchArgs.HasFilter "faculty"}}primary{{else if .Hits.Facets.faculty.HasMatches}}default{{else}}secondary{{end}} mr-3"
+    <a class="badge badge-{{if .SearchArgs.HasFilter "identifier_type"}}primary{{else if .Hits.Facets.identifier_type.HasMatches}}default{{else}}secondary{{end}} mr-3"
         data-toggle="dropdown" data-persist="true" aria-haspopup="true"
         aria-expanded="false" role="button"
     >
-        <span class="badge-text">Faculty</span>
-        {{with .SearchArgs.FiltersFor "faculty"}}
+        <span class="badge-text">Persistent identifier type</span>
+        {{with .SearchArgs.FiltersFor "identifier_type"}}
         <span class="badge-value ml-2">
             &ndash;
             {{range $i, $v := .}}
@@ -13,14 +13,14 @@
                 {{$v -}}
             {{end}}
         </span>
-        {{end}} 
+        {{end}}
         <i class="if if-caret-down"></i>
     </a>
     <form class="dropdown-menu" method="GET" action="{{.CurrentURL|queryClear}}">
         <div class="bc-navbar bc-navbar--bordered-bottom">
             <div class="bc-toolbar bc-toolbar--auto">
                 <div class="bc-toolbar-left">
-                    <h4 class="text-nowrap">Faculty</h4>
+                    <h4 class="text-nowrap">Persistent identifier type</h4>
                 </div>
                 <div class="bc-toolbar-right">
                     <button type="button" class="btn btn-link form-check-all">Select all</button>
@@ -32,18 +32,18 @@
         <input type="hidden" name="sort" value="{{.}}">
         {{end}}
         {{range $f, $vals := .SearchArgs.Filters}}
-        {{if ne $f "faculty"}}
+        {{if ne $f "identifier_type"}}
         {{range $vals}}
         <input type="hidden" name="f[{{$f}}]" value="{{.}}">
         {{end}}
         {{end}}
         {{end}}
         <div class="dropdown-menu__body border-bottom">
-            {{$last := sub (len .Hits.Facets.faculty) 1}}
-            {{range $i, $f := .Hits.Facets.faculty}}
+            {{$last := sub (len .Hits.Facets.identifier_type) 1}}
+            {{range $i, $f := .Hits.Facets.identifier_type}}
             <div class="custom-control custom-checkbox{{if lt $i $last}} mb-4{{end}}">
-                <input class="custom-control-input" id="filter-faculty-{{$i}}" type="checkbox" name="f[faculty]" value="{{$f.Value}}"{{if $.SearchArgs.HasFilter "faculty" $f.Value}} checked{{end}}>
-                <label class="custom-control-label" for="filter-faculty-{{$i}}">{{$.Locale.TS "organization" $f.Value}} ({{$f.Count}})</label>
+                <input class="custom-control-input" id="filter-identifier-types-{{$i}}" type="checkbox" name="f[identifier_type]" value="{{$f.Value}}"{{if $.SearchArgs.HasFilter "identifier_type" $f.Value}} checked{{end}}>
+                <label class="custom-control-label" for="filter-identifier-types-{{$i}}">{{$f.Value}} ({{$f.Count}})</label>
             </div>
             {{end}}
         </div>

@@ -8,7 +8,6 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/ugent-library/biblio-backoffice/internal/backends"
-	"github.com/ugent-library/biblio-backoffice/internal/backends/es6"
 	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -52,6 +51,30 @@ func (c *Client) GetProject(id string) (*models.Project, error) {
 	if v, ok := rec["end_date"]; ok {
 		p.EndDate = v.(string)
 	}
+	if v, ok := rec["eu_id"]; ok {
+		if p.EUProject == nil {
+			p.EUProject = &models.EUProject{}
+		}
+		p.EUProject.ID = v.(string)
+	}
+	if v, ok := rec["eu_call_id"]; ok {
+		if p.EUProject == nil {
+			p.EUProject = &models.EUProject{}
+		}
+		p.EUProject.CallID = v.(string)
+	}
+	if v, ok := rec["eu_acronym"]; ok {
+		if p.EUProject == nil {
+			p.EUProject = &models.EUProject{}
+		}
+		p.EUProject.Acronym = v.(string)
+	}
+	if v, ok := rec["eu_framework_programme"]; ok {
+		if p.EUProject == nil {
+			p.EUProject = &models.EUProject{}
+		}
+		p.EUProject.FrameworkProgramme = v.(string)
+	}
 
 	return p, nil
 }
@@ -74,18 +97,18 @@ func (c *Client) SuggestProjects(q string) ([]models.Completion, error) {
 	limit := 20
 	completions := make([]models.Completion, 0, limit)
 
-	var query es6.M = es6.M{
-		"match_all": es6.M{},
+	var query M = M{
+		"match_all": M{},
 	}
 
 	q = strings.TrimSpace(q)
 
 	if q != "" {
-		dismaxQueries := make([]es6.M, 0, len(projectFieldsBoosts))
+		dismaxQueries := make([]M, 0, len(projectFieldsBoosts))
 		for field, boost := range projectFieldsBoosts {
-			dismaxQuery := es6.M{
-				"match": es6.M{
-					field: es6.M{
+			dismaxQuery := M{
+				"match": M{
+					field: M{
 						"query":    q,
 						"operator": "AND",
 						"boost":    boost,
@@ -94,14 +117,14 @@ func (c *Client) SuggestProjects(q string) ([]models.Completion, error) {
 			}
 			dismaxQueries = append(dismaxQueries, dismaxQuery)
 		}
-		query = es6.M{
-			"dis_max": es6.M{
+		query = M{
+			"dis_max": M{
 				"queries": dismaxQueries,
 			},
 		}
 	}
 
-	requestBody := es6.M{
+	requestBody := M{
 		"query": query,
 		"size":  limit,
 		"sort":  []string{"_score:desc"},
@@ -109,7 +132,7 @@ func (c *Client) SuggestProjects(q string) ([]models.Completion, error) {
 
 	var responseBody searchEnvelope = searchEnvelope{}
 
-	if e := c.es.SearchWithBody("biblio_project", requestBody, &responseBody); e != nil {
+	if e := c.search("biblio_project", requestBody, &responseBody); e != nil {
 		return nil, e
 	}
 

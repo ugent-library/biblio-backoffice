@@ -1,11 +1,11 @@
 <div class="bc-avatar-and-text align-items-start">
-    {{if .Contributor.ID}}
+{{if .Contributor.Person}}
     <div class="bc-avatar">
       <i class="if if-ghent-university"></i>
     </div>
     <div class="bc-avatar-text">
       <h3>
-        <span class="mr-3">{{.Contributor.FullName}}</span>
+        <span class="mr-3">{{.Contributor.Name}}</span>
         {{if .Current}}
         <span class="badge badge-pill badge-success mr-3"><i class="if if-check-circle"></i><span class="badge-text">Current selection</span></span>
         {{end}}
@@ -13,16 +13,16 @@
         <span class="badge badge-pill badge-default">Active UGent member</span>
         {{end}}
       </h3>
-      {{with .Contributor.Department}}
+      {{with .Contributor.Person.Affiliations}}
       <p class="text-muted">
           Current department(s):
           {{range $i, $v := .}}
-              {{if $i}}, {{end}}{{$v.ID}}
+              {{if $i}}, {{end}}{{$v.OrganizationID}}
           {{end}}
       </p>
       {{end}}
       <ul class="c-meta-list c-meta-list-horizontal">
-        {{with .Contributor.UGentID}}
+        {{with .Contributor.Person.UGentID}}
         <li class="c-meta-item">
           {{range $i, $v := .}}
           <span class="mr-2">
@@ -39,7 +39,7 @@
         </li>
         {{end}}
         {{if .Active}}
-          {{range .Contributor.UGentID}}
+          {{range .Contributor.Person.UGentID}}
             {{if hasPrefix "80" .}}
               <li class="c-meta-item">
                 <a href="https://telefoonboek.ugent.be/en/people/{{.}}" target="_blank"><i class="if if-external-link"></i><span>View personal details</span></a>
@@ -50,14 +50,14 @@
         {{end}}
       </ul>
     </div>
-    {{else}}
+{{else}}
     <div class="bc-avatar-and-text align-items-start">
         <div class="bc-avatar bc-avatar--muted">
           <i class="if if-external-link"></i>
         </div>
         <div class="bc-avatar-text">
           <h3>
-            {{.Contributor.FirstName}} {{.Contributor.LastName}}
+            {{.Contributor.Name}}
             {{if .Current}}
             <span class="badge badge-pill badge-success"><i class="if if-check-circle"></i><span class="badge-text">Current selection</span></span>
             {{end}}
@@ -65,5 +65,5 @@
           <p class="text-muted">External, non-UGent</p>
         </div>
     </div>
-    {{end}}
+{{end}}
 </div>

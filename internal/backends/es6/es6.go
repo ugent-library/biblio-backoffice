@@ -1,6 +1,10 @@
 package es6
 
-import "strings"
+import (
+	"strings"
+)
+
+type M map[string]any
 
 func ParseScope(field string, terms ...string) M {
 	orFields := strings.Split(field, "|")

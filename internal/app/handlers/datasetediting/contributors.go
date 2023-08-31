@@ -93,14 +93,14 @@ type YieldAddContributor struct {
 	Role        string
 	Contributor *models.Contributor
 	Form        *form.Form
-	Hits        []models.Person
+	Hits        []*models.Contributor
 }
 
 type YieldAddContributorSuggest struct {
 	Context
 	Role        string
 	Contributor *models.Contributor
-	Hits        []models.Person
+	Hits        []*models.Contributor
 }
 
 type YieldConfirmCreateContributor struct {
@@ -119,7 +119,7 @@ type YieldEditContributor struct {
 	FirstName   string
 	LastName    string
 	Active      bool
-	Hits        []models.Person
+	Hits        []*models.Contributor
 	Form        *form.Form
 }
 
@@ -130,7 +130,7 @@ type YieldEditContributorSuggest struct {
 	Contributor *models.Contributor
 	FirstName   string
 	LastName    string
-	Hits        []models.Person
+	Hits        []*models.Contributor
 }
 
 type YieldConfirmUpdateContributor struct {
@@ -157,24 +157,23 @@ func (h *Handler) AddContributor(w http.ResponseWriter, r *http.Request, ctx Con
 		return
 	}
 
-	var (
-		hits []models.Person
-		err  error
-	)
+	var hits []*models.Contributor
 
 	if b.FirstName != "" || b.LastName != "" {
-		hits, err = h.PersonSearchService.SuggestPeople(b.FirstName + " " + b.LastName)
+		people, err := h.PersonSearchService.SuggestPeople(b.FirstName + " " + b.LastName)
 		if err != nil {
 			h.Logger.Errorw("suggest dataset contributor: could not suggest people", "errors", err, "request", r, "user", ctx.User.ID)
 			render.InternalServerError(w, r, err)
 			return
 		}
+
+		hits = make([]*models.Contributor, len(people))
+		for i, person := range people {
+			hits[i] = models.ContributorFromPerson(person)
+		}
 	}
 
-	c := &models.Contributor{
-		FirstName: b.FirstName,
-		LastName:  b.LastName,
-	}
+	c := models.ContributorFromFirstLastName(b.FirstName, b.LastName)
 
 	suggestURL := h.PathFor("dataset_add_contributor_suggest", "id", ctx.Dataset.ID, "role", b.Role).String()
 
@@ -195,24 +194,23 @@ func (h *Handler) AddContributorSuggest(w http.ResponseWriter, r *http.Request, 
 		return
 	}
 
-	var (
-		hits []models.Person
-		err  error
-	)
+	var hits []*models.Contributor
 
 	if b.FirstName != "" || b.LastName != "" {
-		hits, err = h.PersonSearchService.SuggestPeople(b.FirstName + " " + b.LastName)
+		people, err := h.PersonSearchService.SuggestPeople(b.FirstName + " " + b.LastName)
 		if err != nil {
 			h.Logger.Errorw("suggest dataset contributor: could not suggest people", "errors", err, "request", r, "user", ctx.User.ID)
 			render.InternalServerError(w, r, err)
 			return
 		}
+
+		hits = make([]*models.Contributor, len(people))
+		for i, person := range people {
+			hits[i] = models.ContributorFromPerson(person)
+		}
 	}
 
-	c := &models.Contributor{
-		FirstName: b.FirstName,
-		LastName:  b.LastName,
-	}
+	c := models.ContributorFromFirstLastName(b.FirstName, b.LastName)
 
 	render.Partial(w, "dataset/add_contributor_suggest", YieldAddContributorSuggest{
 		Context:     ctx,
@@ -230,7 +228,7 @@ func (h *Handler) ConfirmCreateContributor(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	c := &models.Contributor{}
+	var c *models.Contributor
 	active := false
 	if b.ID != "" {
 		newC, newP, err := h.generateContributorFromPersonId(b.ID)
@@ -241,8 +239,7 @@ func (h *Handler) ConfirmCreateContributor(w http.ResponseWriter, r *http.Reques
 		c = newC
 		active = newP.Active
 	} else {
-		c.FirstName = b.FirstName
-		c.LastName = b.LastName
+		c = models.ContributorFromFirstLastName(b.FirstName, b.LastName)
 	}
 
 	render.Layout(w, "refresh_modal", "dataset/confirm_create_contributor", YieldConfirmCreateContributor{
@@ -262,7 +259,7 @@ func (h *Handler) CreateContributor(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	c := &models.Contributor{}
+	var c *models.Contributor
 	active := false
 	if b.ID != "" {
 		newC, newP, err := h.generateContributorFromPersonId(b.ID)
@@ -273,8 +270,13 @@ func (h *Handler) CreateContributor(w http.ResponseWriter, r *http.Request, ctx 
 		c = newC
 		active = newP.Active
 	} else {
-		c.FirstName = b.FirstName
-		c.LastName = b.LastName
+		if b.FirstName == "" {
+			b.FirstName = "[missing]"
+		}
+		if b.LastName == "" {
+			b.LastName = "[missing]"
+		}
+		c = models.ContributorFromFirstLastName(b.FirstName, b.LastName)
 	}
 
 	ctx.Dataset.AddContributor(b.Role, c)
@@ -344,33 +346,33 @@ func (h *Handler) EditContributor(w http.ResponseWriter, r *http.Request, ctx Co
 	}
 
 	active := false
-	if c.ID != "" {
-		p, err := h.PersonService.GetPerson(c.ID)
-		if err != nil {
-			h.ActionError(w, r, ctx.BaseContext, "edit dataset contributor: could not generate contributor from person", err, ctx.Dataset.ID)
-			return
-		}
-		active = p.Active
+	if c.Person != nil {
+		active = c.Person.Active
 	}
 
 	firstName := b.FirstName
 	lastName := b.LastName
 	if firstName == "" && lastName == "" {
-		firstName = c.FirstName
-		lastName = c.LastName
+		firstName = c.FirstName()
+		lastName = c.LastName()
 	}
 
-	hits, err := h.PersonSearchService.SuggestPeople(firstName + " " + lastName)
+	people, err := h.PersonSearchService.SuggestPeople(firstName + " " + lastName)
 	if err != nil {
 		h.Logger.Errorw("suggest dataset contributor: could not suggest people", "errors", err, "request", r, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
 
+	hits := make([]*models.Contributor, len(people))
+	for i, person := range people {
+		hits[i] = models.ContributorFromPerson(person)
+	}
+
 	// exclude the current contributor
-	if c.ID != "" {
+	if c.PersonID != "" {
 		for i, hit := range hits {
-			if hit.ID == c.ID {
+			if hit.PersonID == c.PersonID {
 				if i == 0 {
 					hits = hits[1:]
 				} else {
@@ -411,20 +413,25 @@ func (h *Handler) EditContributorSuggest(w http.ResponseWriter, r *http.Request,
 		return
 	}
 
-	var hits []models.Person
+	var hits []*models.Contributor
 
 	if b.FirstName != "" || b.LastName != "" {
-		hits, err = h.PersonSearchService.SuggestPeople(b.FirstName + " " + b.LastName)
+		people, err := h.PersonSearchService.SuggestPeople(b.FirstName + " " + b.LastName)
 		if err != nil {
 			h.Logger.Errorw("suggest dataset contributor: could not suggest people", "errors", err, "request", r, "user", ctx.User.ID)
 			render.InternalServerError(w, r, err)
 			return
 		}
 
+		hits = make([]*models.Contributor, len(people))
+		for i, person := range people {
+			hits[i] = models.ContributorFromPerson(person)
+		}
+
 		// exclude the current contributor
-		if c.ID != "" {
+		if c.PersonID != "" {
 			for i, hit := range hits {
-				if hit.ID == c.ID {
+				if hit.PersonID == c.PersonID {
 					hits = append(hits[:i], hits[i+1:]...)
 					break
 				}
@@ -451,7 +458,7 @@ func (h *Handler) ConfirmUpdateContributor(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	c := &models.Contributor{}
+	var c *models.Contributor
 	active := false
 	if b.ID != "" {
 		newC, newP, err := h.generateContributorFromPersonId(b.ID)
@@ -462,8 +469,7 @@ func (h *Handler) ConfirmUpdateContributor(w http.ResponseWriter, r *http.Reques
 		c = newC
 		active = newP.Active
 	} else {
-		c.FirstName = b.FirstName
-		c.LastName = b.LastName
+		c = models.ContributorFromFirstLastName(b.FirstName, b.LastName)
 	}
 
 	render.Layout(w, "refresh_modal", "dataset/confirm_update_contributor", YieldConfirmUpdateContributor{
@@ -485,7 +491,7 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	c := &models.Contributor{}
+	var c *models.Contributor
 	active := false
 	if b.ID != "" {
 		newC, newP, err := h.generateContributorFromPersonId(b.ID)
@@ -497,8 +503,13 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 		c = newC
 		active = newP.Active
 	} else {
-		c.FirstName = b.FirstName
-		c.LastName = b.LastName
+		if b.FirstName == "" {
+			b.FirstName = "[missing]"
+		}
+		if b.LastName == "" {
+			b.LastName = "[missing]"
+		}
+		c = models.ContributorFromFirstLastName(b.FirstName, b.LastName)
 	}
 
 	if err := ctx.Dataset.SetContributor(b.Role, b.Position, c); err != nil {
@@ -540,23 +551,22 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 	if b.EditNext && b.Position+1 < len(ctx.Dataset.Contributors(b.Role)) {
 		nextPos := b.Position + 1
 		nextC := ctx.Dataset.Contributors(b.Role)[nextPos]
-		hits, err := h.PersonSearchService.SuggestPeople(nextC.FirstName + " " + nextC.LastName)
+		people, err := h.PersonSearchService.SuggestPeople(nextC.Name())
 		if err != nil {
 			h.Logger.Errorw("suggest dataset contributor: could not suggest people", "errors", err, "request", r, "user", ctx.User.ID)
 			render.InternalServerError(w, r, err)
 			return
 		}
+		hits := make([]*models.Contributor, len(people))
+		for i, person := range people {
+			hits[i] = models.ContributorFromPerson(person)
+		}
 
 		suggestURL := h.PathFor("dataset_edit_contributor_suggest", "id", ctx.Dataset.ID, "role", b.Role, "position", fmt.Sprintf("%d", nextPos)).String()
 
 		nextActive := false
-		if nextC.ID != "" {
-			p, err := h.PersonService.GetPerson(nextC.ID)
-			if err != nil {
-				h.ActionError(w, r, ctx.BaseContext, "suggest dataset contributor: could not generate contributor from person", err, ctx.Dataset.ID)
-				return
-			}
-			nextActive = p.Active
+		if nextC.Person != nil {
+			nextActive = nextC.Person.Active
 		}
 
 		render.Partial(w, "dataset/edit_next_contributor", YieldEditContributor{
@@ -564,8 +574,8 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 			Role:        b.Role,
 			Position:    nextPos,
 			Contributor: nextC,
-			FirstName:   nextC.FirstName,
-			LastName:    nextC.LastName,
+			FirstName:   nextC.FirstName(),
+			LastName:    nextC.LastName(),
 			Active:      nextActive,
 			Hits:        hits,
 			Form:        contributorForm(ctx, nextC, suggestURL),
@@ -694,7 +704,7 @@ func contributorForm(ctx Context, c *models.Contributor, suggestURL string) *for
 			&form.Text{
 				Template: "contributor_name",
 				Name:     "first_name",
-				Value:    c.FirstName,
+				Value:    c.FirstName(),
 				Label:    "First name",
 				Vars: struct {
 					SuggestURL string
@@ -705,7 +715,7 @@ func contributorForm(ctx Context, c *models.Contributor, suggestURL string) *for
 			&form.Text{
 				Template: "contributor_name",
 				Name:     "last_name",
-				Value:    c.LastName,
+				Value:    c.LastName(),
 				Label:    "Last name",
 				Vars: struct {
 					SuggestURL string
@@ -719,19 +729,19 @@ func contributorForm(ctx Context, c *models.Contributor, suggestURL string) *for
 func confirmContributorForm(ctx Context, role string, c *models.Contributor, errors validation.Errors) *form.Form {
 	var fields []form.Field
 
-	if c.ID != "" {
+	if c.PersonID != "" {
 		fields = append(fields, &form.Hidden{
 			Name:  "id",
-			Value: c.ID,
+			Value: c.PersonID,
 		})
 	} else {
 		fields = append(fields,
 			&form.Hidden{
 				Name:  "first_name",
-				Value: c.FirstName,
+				Value: c.FirstName(),
 			}, &form.Hidden{
 				Name:  "last_name",
-				Value: c.LastName,
+				Value: c.LastName(),
 			})
 	}
 
@@ -746,20 +756,6 @@ func (h *Handler) generateContributorFromPersonId(id string) (*models.Contributo
 	if err != nil {
 		return nil, nil, err
 	}
-	c := &models.Contributor{}
-	c.ID = p.ID
-	c.FirstName = p.FirstName
-	c.LastName = p.LastName
-	c.FullName = p.FullName
-	c.UGentID = p.UGentID
-	c.ORCID = p.ORCID
-	for _, pd := range p.Department {
-		newDep := models.ContributorDepartment{ID: pd.ID}
-		org, orgErr := h.OrganizationService.GetOrganization(pd.ID)
-		if orgErr == nil {
-			newDep.Name = org.Name
-		}
-		c.Department = append(c.Department, newDep)
-	}
+	c := models.ContributorFromPerson(p)
 	return c, p, nil
 }
