@@ -81,6 +81,16 @@ var updateOai = &cobra.Command{
 		// add all publications
 		repo := Services().Repository
 		repo.EachPublication(func(p *models.Publication) bool {
+			if p.Status == "deleted" && p.HasBeenPublic {
+				err = client.DeleteRecord(context.TODO(), &api.DeleteRecordRequest{
+					Identifier: p.ID,
+				})
+				if err != nil {
+					logger.Fatal(err)
+				}
+				return true
+			}
+
 			if p.Status != "public" {
 				return true
 			}
