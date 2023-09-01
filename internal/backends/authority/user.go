@@ -87,8 +87,11 @@ func (c *Client) SuggestUsers(q string) ([]*models.Person, error) {
 	}
 
 	for _, p := range responseBody.Hits.Hits {
-		person := p.Source
+		person := p.Source.Person
 		person.ID = p.ID
+		for _, d := range p.Source.Department {
+			person.Affiliations = append(person.Affiliations, &models.Affiliation{OrganizationID: d.ID})
+		}
 		persons = append(persons, person)
 	}
 
