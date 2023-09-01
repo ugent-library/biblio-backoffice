@@ -7,10 +7,11 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
-	"github.com/ugent-library/biblio-backoffice/internal/backends"
-	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+
+	"github.com/ugent-library/biblio-backoffice/internal/backends"
+	"github.com/ugent-library/biblio-backoffice/internal/models"
 )
 
 func (c *Client) GetUser(id string) (*models.User, error) {

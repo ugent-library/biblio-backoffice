@@ -100,7 +100,7 @@ var updateOai = &cobra.Command{
 				logger.Fatal(err)
 			}
 
-			err = client.AddRecordMetadata(context.TODO(), &api.AddRecordMetadataRequest{
+			err = client.AddRecord(context.TODO(), &api.AddRecordRequest{
 				Identifier:     p.ID,
 				MetadataPrefix: "oai_dc",
 				Content:        string(metadata),
@@ -131,7 +131,7 @@ var updateOai = &cobra.Command{
 			}
 
 			if len(setSpecs) > 0 {
-				err = client.AddRecordSets(context.TODO(), &api.AddRecordSetsRequest{
+				err = client.AddItem(context.TODO(), &api.AddItemRequest{
 					Identifier: p.ID,
 					SetSpecs:   setSpecs,
 				})

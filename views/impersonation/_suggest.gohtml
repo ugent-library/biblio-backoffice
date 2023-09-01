@@ -6,7 +6,7 @@
     <li class="list-group-item">
         <div class="list-group-item-inner">
             <div class="list-group-item-main">
-                {{partial "shared/contributor_summary" ($.Yield "Contributor" .)}}
+                {{partial "shared/contributor_summary" ($.Yield "Contributor" (dict "Person" .))}}
             </div>
             <div class="c-button-toolbar">
                 <form action="{{pathFor "create_impersonation"}}" method="POST">
