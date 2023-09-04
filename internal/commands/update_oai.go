@@ -109,7 +109,7 @@ var updateOai = &cobra.Command{
 				logger.Fatal(err)
 			}
 
-			var setSpecs []string
+			setSpecs := []string{"biblio"}
 
 			if p.Type == "journal_article" {
 				setSpecs = append(setSpecs, "biblio:journal_article")
@@ -130,14 +130,12 @@ var updateOai = &cobra.Command{
 				}
 			}
 
-			if len(setSpecs) > 0 {
-				err = client.AddItem(context.TODO(), &api.AddItemRequest{
-					Identifier: p.ID,
-					SetSpecs:   setSpecs,
-				})
-				if err != nil {
-					logger.Fatal(err)
-				}
+			err = client.AddItem(context.TODO(), &api.AddItemRequest{
+				Identifier: p.ID,
+				SetSpecs:   setSpecs,
+			})
+			if err != nil {
+				logger.Fatal(err)
 			}
 
 			return true
