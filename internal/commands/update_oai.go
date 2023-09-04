@@ -81,9 +81,11 @@ var updateOai = &cobra.Command{
 		// add all publications
 		repo := Services().Repository
 		repo.EachPublication(func(p *models.Publication) bool {
+			oaiID := "oai:archive.ugent.be:" + p.ID
+
 			if p.Status == "deleted" && p.HasBeenPublic {
 				err = client.DeleteRecord(context.TODO(), &api.DeleteRecordRequest{
-					Identifier: p.ID,
+					Identifier: oaiID,
 				})
 				if err != nil {
 					logger.Fatal(err)
@@ -101,7 +103,7 @@ var updateOai = &cobra.Command{
 			}
 
 			err = client.AddRecord(context.TODO(), &api.AddRecordRequest{
-				Identifier:     p.ID,
+				Identifier:     oaiID,
 				MetadataPrefix: "oai_dc",
 				Content:        string(metadata),
 			})
@@ -131,7 +133,7 @@ var updateOai = &cobra.Command{
 			}
 
 			err = client.AddItem(context.TODO(), &api.AddItemRequest{
-				Identifier: p.ID,
+				Identifier: oaiID,
 				SetSpecs:   setSpecs,
 			})
 			if err != nil {
