@@ -29,6 +29,8 @@ var updateOai = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		logger := newLogger()
 
+		encoder := oaidc.New(viper.GetString("frontend-url"))
+
 		client, err := api.NewClient(viper.GetString("oai-api-url"), &securitySource{viper.GetString("oai-api-key")})
 		if err != nil {
 			logger.Fatal(err)
@@ -97,7 +99,7 @@ var updateOai = &cobra.Command{
 				return true
 			}
 
-			metadata, err := oaidc.EncodePublication(p)
+			metadata, err := encoder.EncodePublication(p)
 			if err != nil {
 				logger.Fatal(err)
 			}
