@@ -9,6 +9,7 @@ import (
 
 	"github.com/ugent-library/biblio-backoffice/internal/backends/oaidc"
 	"github.com/ugent-library/biblio-backoffice/internal/models"
+	"github.com/ugent-library/biblio-backoffice/internal/vocabularies"
 )
 
 func init() {
@@ -52,20 +53,6 @@ var updateOai = &cobra.Command{
 			logger.Fatal(err)
 		}
 		err = client.AddSet(context.TODO(), &api.AddSetRequest{
-			SetSpec: "biblio:journal_article",
-			SetName: "Biblio journal articles",
-		})
-		if err != nil {
-			logger.Fatal(err)
-		}
-		err = client.AddSet(context.TODO(), &api.AddSetRequest{
-			SetSpec: "biblio:book",
-			SetName: "Biblio books",
-		})
-		if err != nil {
-			logger.Fatal(err)
-		}
-		err = client.AddSet(context.TODO(), &api.AddSetRequest{
 			SetSpec: "biblio:fulltext",
 			SetName: "Biblio records with a fulltext file",
 		})
@@ -78,6 +65,15 @@ var updateOai = &cobra.Command{
 		})
 		if err != nil {
 			logger.Fatal(err)
+		}
+		for _, t := range vocabularies.Map["publication_types"] {
+			err = client.AddSet(context.TODO(), &api.AddSetRequest{
+				SetSpec: "biblio:" + t,
+				SetName: "Biblio " + t + "records",
+			})
+			if err != nil {
+				logger.Fatal(err)
+			}
 		}
 
 		// add all publications
@@ -113,14 +109,8 @@ var updateOai = &cobra.Command{
 				logger.Fatal(err)
 			}
 
-			setSpecs := []string{"biblio"}
+			setSpecs := []string{"biblio", "biblio:" + p.Type}
 
-			if p.Type == "journal_article" {
-				setSpecs = append(setSpecs, "biblio:journal_article")
-			}
-			if p.Type == "book" {
-				setSpecs = append(setSpecs, "biblio:book")
-			}
 			for _, f := range p.File {
 				if f.Relation == "main_file" {
 					setSpecs = append(setSpecs, "biblio:fulltext")
