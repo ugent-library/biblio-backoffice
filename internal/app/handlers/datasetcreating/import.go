@@ -100,7 +100,7 @@ func (h *Handler) ConfirmImport(w http.ResponseWriter, r *http.Request, ctx Cont
 		}
 
 		if existing.Total > 0 {
-			render.Layout(w, "layouts/default", "dataset/pages/add", YieldAdd{
+			render.Layout(w, "layouts/default", "dataset/pages/add_identifier", YieldAdd{
 				Context:          ctx,
 				PageTitle:        "Add - Datasets - Biblio",
 				Step:             1,
