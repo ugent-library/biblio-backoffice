@@ -29,6 +29,8 @@ var updateOai = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		logger := newLogger()
 
+		encoder := oaidc.New(viper.GetString("frontend-url"))
+
 		client, err := api.NewClient(viper.GetString("oai-api-url"), &securitySource{viper.GetString("oai-api-key")})
 		if err != nil {
 			logger.Fatal(err)
@@ -81,9 +83,11 @@ var updateOai = &cobra.Command{
 		// add all publications
 		repo := Services().Repository
 		repo.EachPublication(func(p *models.Publication) bool {
+			oaiID := "oai:archive.ugent.be:" + p.ID
+
 			if p.Status == "deleted" && p.HasBeenPublic {
 				err = client.DeleteRecord(context.TODO(), &api.DeleteRecordRequest{
-					Identifier: p.ID,
+					Identifier: oaiID,
 				})
 				if err != nil {
 					logger.Fatal(err)
@@ -95,13 +99,13 @@ var updateOai = &cobra.Command{
 				return true
 			}
 
-			metadata, err := oaidc.EncodePublication(p)
+			metadata, err := encoder.EncodePublication(p)
 			if err != nil {
 				logger.Fatal(err)
 			}
 
-			err = client.AddRecordMetadata(context.TODO(), &api.AddRecordMetadataRequest{
-				Identifier:     p.ID,
+			err = client.AddRecord(context.TODO(), &api.AddRecordRequest{
+				Identifier:     oaiID,
 				MetadataPrefix: "oai_dc",
 				Content:        string(metadata),
 			})
@@ -109,7 +113,7 @@ var updateOai = &cobra.Command{
 				logger.Fatal(err)
 			}
 
-			var setSpecs []string
+			setSpecs := []string{"biblio"}
 
 			if p.Type == "journal_article" {
 				setSpecs = append(setSpecs, "biblio:journal_article")
@@ -130,14 +134,12 @@ var updateOai = &cobra.Command{
 				}
 			}
 
-			if len(setSpecs) > 0 {
-				err = client.AddRecordSets(context.TODO(), &api.AddRecordSetsRequest{
-					Identifier: p.ID,
-					SetSpecs:   setSpecs,
-				})
-				if err != nil {
-					logger.Fatal(err)
-				}
+			err = client.AddItem(context.TODO(), &api.AddItemRequest{
+				Identifier: oaiID,
+				SetSpecs:   setSpecs,
+			})
+			if err != nil {
+				logger.Fatal(err)
 			}
 
 			return true

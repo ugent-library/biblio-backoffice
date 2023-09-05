@@ -15,6 +15,7 @@ xmlns:dc="http://purl.org/dc/elements/1.1/"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">
 `
+
 const endTag = `
 </oai_dc:dc>
 `
@@ -56,7 +57,17 @@ func writeField(b *bytes.Buffer, tag, val string) {
 	}
 }
 
-func EncodePublication(p *models.Publication) ([]byte, error) {
+type Encoder struct {
+	baseURL string
+}
+
+func New(baseURL string) *Encoder {
+	return &Encoder{
+		baseURL: baseURL,
+	}
+}
+
+func (e *Encoder) EncodePublication(p *models.Publication) ([]byte, error) {
 	b := &bytes.Buffer{}
 	b.WriteString(startTag)
 
@@ -88,6 +99,7 @@ func EncodePublication(p *models.Publication) ([]byte, error) {
 
 	writeField(b, "identifier", "oai:archive.ugent.be:"+p.ID)
 	writeField(b, "identifier", p.Handle)
+	writeField(b, "identifier", e.baseURL+"/publication/"+p.ID)
 	if p.DOI != "" {
 		writeField(b, "identifier", identifiers.DOI.Resolve(p.DOI))
 	}
@@ -165,14 +177,14 @@ func EncodePublication(p *models.Publication) ([]byte, error) {
 		}
 	}
 
-	for _, val := range p.File {
-		writeField(b, "format", val.ContentType)
-		writeField(b, "rights", val.AccessLevel)
-		if val.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
-			writeField(b, "date", "info:eu-repo/date/embargoEnd/"+val.EmbargoDate)
+	if len(p.File) > 0 {
+		f := p.File[0]
+		writeField(b, "identifier", e.baseURL+"/publication/"+p.ID+"/file/"+f.ID)
+		writeField(b, "format", f.ContentType)
+		writeField(b, "rights", f.AccessLevel)
+		if f.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
+			writeField(b, "date", "info:eu-repo/date/embargoEnd/"+f.EmbargoDate)
 		}
-
-		break
 	}
 
 	if p.File != nil {

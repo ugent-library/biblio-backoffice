@@ -7,10 +7,11 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
-	"github.com/ugent-library/biblio-backoffice/internal/backends"
-	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+
+	"github.com/ugent-library/biblio-backoffice/internal/backends"
+	"github.com/ugent-library/biblio-backoffice/internal/models"
 )
 
 func (c *Client) GetUser(id string) (*models.User, error) {
@@ -86,8 +87,11 @@ func (c *Client) SuggestUsers(q string) ([]*models.Person, error) {
 	}
 
 	for _, p := range responseBody.Hits.Hits {
-		person := p.Source
+		person := p.Source.Person
 		person.ID = p.ID
+		for _, d := range p.Source.Department {
+			person.Affiliations = append(person.Affiliations, &models.Affiliation{OrganizationID: d.ID})
+		}
 		persons = append(persons, person)
 	}
 
