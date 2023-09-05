@@ -69,7 +69,7 @@ var updateOai = &cobra.Command{
 		for _, t := range vocabularies.Map["publication_types"] {
 			err = client.AddSet(context.TODO(), &api.AddSetRequest{
 				SetSpec: "biblio:" + t,
-				SetName: "Biblio " + t + "records",
+				SetName: "Biblio " + t + " records",
 			})
 			if err != nil {
 				logger.Fatal(err)
