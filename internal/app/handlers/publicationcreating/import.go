@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"html/template"
 	"io"
-	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -111,11 +110,7 @@ func (h *Handler) AddSingleImportConfirm(w http.ResponseWriter, r *http.Request,
 	if b.Source == "crossref" && b.Identifier != "" {
 		args := models.NewSearchArgs().WithFilter("identifier", strings.ToLower(b.Identifier)).WithFilter("status", "public")
 
-		log.Printf("%+v", args)
-		log.Println("CHECK CHECK CHECK")
 		existing, err := h.PublicationSearchIndex.Search(args)
-
-		log.Printf("%+v", existing)
 
 		if err != nil {
 			h.Logger.Warnw("import single publication: could not execute search for duplicates", "errors", err, "args", args, "user", ctx.User.ID)
