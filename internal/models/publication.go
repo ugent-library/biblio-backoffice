@@ -574,7 +574,7 @@ func (p *Publication) UsesArticleNumber() bool {
 
 func (p *Publication) UsesArxivID() bool {
 	switch p.Type {
-	case "journal_article":
+	case "journal_article", "miscellaneous":
 		return true
 	default:
 		return false
@@ -713,7 +713,7 @@ func (p *Publication) UsesPublisher() bool {
 
 func (p *Publication) UsesPubMedID() bool {
 	switch p.Type {
-	case "journal_article":
+	case "journal_article", "miscellaneous":
 		return true
 	default:
 		return false
