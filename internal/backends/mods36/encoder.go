@@ -289,7 +289,8 @@ type Record struct {
 }
 
 type RelatedItem struct {
-	OtherType string `xml:"otherType,attr"`
+	XMLName   xml.Name `xml:"relatedItem"`
+	OtherType string   `xml:"otherType,attr"`
 
 	Abstract        []Abstract        `xml:",omitempty"`
 	AccessCondition []AccessCondition `xml:",omitempty"`
