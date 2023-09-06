@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/ugent-library/oai-service/api/v1"
 
+	"github.com/ugent-library/biblio-backoffice/internal/backends/mods36"
 	"github.com/ugent-library/biblio-backoffice/internal/backends/oaidc"
 	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"github.com/ugent-library/biblio-backoffice/internal/vocabularies"
@@ -30,7 +31,8 @@ var updateOai = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		logger := newLogger()
 
-		encoder := oaidc.New(viper.GetString("frontend-url"))
+		oaiEncoder := oaidc.New(viper.GetString("frontend-url"))
+		modsEncoder := mods36.New(viper.GetString("frontend-url"))
 
 		client, err := api.NewClient(viper.GetString("oai-api-url"), &securitySource{viper.GetString("oai-api-key")})
 		if err != nil {
@@ -45,6 +47,15 @@ var updateOai = &cobra.Command{
 		if err != nil {
 			logger.Fatal(err)
 		}
+		err = client.AddMetadataFormat(context.TODO(), &api.AddMetadataFormatRequest{
+			MetadataPrefix:    "mods_36",
+			MetadataNamespace: "http://www.loc.gov/mods/v3",
+			Schema:            "http://www.loc.gov/standards/mods/v3/mods-3-6.xsd",
+		})
+		if err != nil {
+			logger.Fatal(err)
+		}
+
 		err = client.AddSet(context.TODO(), &api.AddSetRequest{
 			SetSpec: "biblio",
 			SetName: "All Biblio records",
@@ -95,7 +106,7 @@ var updateOai = &cobra.Command{
 				return true
 			}
 
-			metadata, err := encoder.EncodePublication(p)
+			metadata, err := oaiEncoder.EncodePublication(p)
 			if err != nil {
 				logger.Fatal(err)
 			}
@@ -103,6 +114,20 @@ var updateOai = &cobra.Command{
 			err = client.AddRecord(context.TODO(), &api.AddRecordRequest{
 				Identifier:     oaiID,
 				MetadataPrefix: "oai_dc",
+				Content:        string(metadata),
+			})
+			if err != nil {
+				logger.Fatal(err)
+			}
+
+			metadata, err = modsEncoder.EncodePublication(p)
+			if err != nil {
+				logger.Fatal(err)
+			}
+
+			err = client.AddRecord(context.TODO(), &api.AddRecordRequest{
+				Identifier:     oaiID,
+				MetadataPrefix: "mods_36",
 				Content:        string(metadata),
 			})
 			if err != nil {

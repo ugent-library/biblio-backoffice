@@ -187,7 +187,7 @@ func (e *Encoder) EncodePublication(p *models.Publication) ([]byte, error) {
 		}
 	}
 
-	if p.File != nil {
+	if len(p.File) > 0 {
 		bestLicense := ""
 		for _, f := range p.File {
 			if bestLicense == "" {
