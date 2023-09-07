@@ -230,6 +230,31 @@ func (e *Encoder) EncodePublication(p *models.Publication) ([]byte, error) {
 		r.OriginInfo = append(r.OriginInfo, oi)
 	}
 
+	for _, rp := range p.RelatedProjects {
+		ri := RelatedItem{
+			OtherType:  "project",
+			Identifier: []Identifier{{Type: "iweto", Value: rp.ProjectID}},
+		}
+		// TODO map gismo id
+		// [%- IF pro.gismo_id %]
+		// <identifier type="gismo-uuid">[% pro.gismo_id | xml_strict %]</identifier>
+		// [%- END %]
+		if rp.Project.Title != "" {
+			ri.TitleInfo = append(ri.TitleInfo, TitleInfo{Title: &Title{Value: rp.Project.Title}})
+		}
+		if rp.Project.StartDate != "" || rp.Project.EndDate != "" {
+			oi := OriginInfo{}
+			if rp.Project.StartDate != "" {
+				oi.DateOther = append(oi.DateOther, DateOther{Type: "project", Encoding: "w3cdtf", Point: "start", Value: rp.Project.StartDate})
+			}
+			if rp.Project.EndDate != "" {
+				oi.DateOther = append(oi.DateOther, DateOther{Type: "project", Encoding: "w3cdtf", Point: "end", Value: rp.Project.EndDate})
+			}
+			ri.OriginInfo = []OriginInfo{oi}
+		}
+		r.RelatedItem = append(r.RelatedItem, ri)
+	}
+
 	return xml.Marshal(r)
 }
 
