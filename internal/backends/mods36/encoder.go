@@ -219,6 +219,17 @@ func (e *Encoder) EncodePublication(p *models.Publication) ([]byte, error) {
 		r.RelatedItem = append(r.RelatedItem, ri)
 	}
 
+	if p.DefensePlace != "" || p.DefenseDate != "" {
+		oi := OriginInfo{EventType: "promotion"}
+		if p.DefensePlace != "" {
+			oi.Place = []Place{{PlaceTerm: []PlaceTerm{{Value: p.DefensePlace}}}}
+		}
+		if p.DefenseDate != "" {
+			oi.DateOther = []DateOther{{Type: "promotion", Encoding: "w3cdtf", Value: p.DefenseDate}}
+		}
+		r.OriginInfo = append(r.OriginInfo, oi)
+	}
+
 	return xml.Marshal(r)
 }
 
@@ -416,6 +427,7 @@ type Affiliation struct {
 
 type OriginInfo struct {
 	XMLName   xml.Name    `xml:"originInfo"`
+	EventType string      `xml:"eventType,attr,omitempty"`
 	Publisher *Publisher  `xml:",omitempty"`
 	Place     []Place     `xml:",omitempty"`
 	DateOther []DateOther `xml:",omitempty"`
