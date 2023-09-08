@@ -15,8 +15,7 @@
                     <button class="btn btn-danger"
                         hx-delete="{{pathFor "dataset_delete_abstract" "id" .Dataset.ID "abstract_id" .AbstractID}}"
                         hx-headers='{"If-Match": "{{.Dataset.SnapshotID}}"}'
-                        hx-swap="none"
-                    >Delete</button>
+                        hx-swap="none">Delete</button>
                 </div>
             </div>
         </div>
