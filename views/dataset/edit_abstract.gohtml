@@ -30,8 +30,7 @@
                         hx-put="{{pathFor "dataset_update_abstract" "id" .Dataset.ID "abstract_id" .AbstractID}}"
                         hx-headers='{"If-Match": "{{.Dataset.SnapshotID}}"}'
                         hx-include=".modal-body"
-                        hx-swap="none"
-                    >
+                        hx-swap="none">
                         Update abstract
                     </button>
                 </div>
