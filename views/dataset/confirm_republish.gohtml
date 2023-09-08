@@ -11,6 +11,7 @@
             <div class="bc-toolbar">
                 <div class="bc-toolbar-left">
                     <button class="btn btn-link modal-close">Cancel</button>
+                </div>
                 <div class="bc-toolbar-right">
                     <button class="btn btn-success"
                         hx-post="{{pathFor "dataset_republish" "id" .Dataset.ID|querySet "redirect-url" .RedirectURL}}"
