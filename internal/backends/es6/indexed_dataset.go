@@ -62,7 +62,7 @@ func NewIndexedDataset(d *models.Dataset) *indexedDataset {
 	}
 
 	if len(id.FacultyID) == 0 {
-		id.FacultyID = append(id.FacultyID, "n/a")
+		id.FacultyID = append(id.FacultyID, MissingValue)
 	}
 
 	for k, vals := range d.Identifiers {

@@ -61,16 +61,16 @@ var fixedFacetValues = map[string][]string{
 	//"publication_statuses" includes "deleted"
 	"classification":     vocabularies.Map["publication_classifications"],
 	"extern":             {"true", "false"},
-	"faculty_id":         append([]string{"n/a"}, vocabularies.Map["faculties"]...),
-	"file.relation":      vocabularies.Map["publication_file_relations"],
+	"faculty_id":         append([]string{MissingValue}, vocabularies.Map["faculties"]...),
+	"file_relation":      vocabularies.Map["publication_file_relations"],
 	"has_message":        {"true", "false"},
 	"has_files":          {"true", "false"},
 	"legacy":             {"true", "false"},
 	"locked":             {"true", "false"},
-	"publication_status": vocabularies.Map["publication_publishing_statuses"],
+	"publication_status": append([]string{MissingValue}, vocabularies.Map["publication_publishing_statuses"]...),
 	"status":             vocabularies.Map["visible_publication_statuses"],
 	"type":               vocabularies.Map["publication_types"],
-	"vabb_type":          append([]string{"n/a"}, vocabularies.Map["publication_vabb_types"]...),
+	"vabb_type":          vocabularies.Map["publication_vabb_types"],
 }
 
 func reorderFacets(t string, facets []models.Facet) []models.Facet {
