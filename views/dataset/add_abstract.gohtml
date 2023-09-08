@@ -31,8 +31,7 @@
                         hx-post="{{pathFor "dataset_create_abstract" "id" .Dataset.ID}}"
                         hx-headers='{"If-Match": "{{.Dataset.SnapshotID}}"}'
                         hx-include=".modal-body"
-                        hx-swap="none"
-                    >
+                        hx-swap="none">
                         Add abstract
                     </button>
                 </div>
