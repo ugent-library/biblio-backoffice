@@ -1,25 +1,25 @@
 package identifiers
 
 var (
-	BioProject     = &BioProjectType{}
-	BioStudies     = &BioStudiesType{}
-	DOI            = &DOIType{}
-	ENA            = &ENAType{}
-	Ensembl        = &EnsemblType{}
-	Handle         = &HandleType{}
-	PubMedID       = &PubMedIDType{}
-	WebOfScienceID = &WebOfScienceIDType{}
+	BioStudies    = &BioStudiesType{}
+	DOI           = &DOIType{}
+	ENA           = &ENAType{}
+	ENABioProject = &ENABioProjectType{}
+	Ensembl       = &EnsemblType{}
+	Handle        = &HandleType{}
+	PubMed        = &PubMedType{}
+	WebOfScience  = &WebOfScienceType{}
 )
 
 var types = map[string]Type{
-	"BioProject":     BioProject,
-	"BioStudies":     BioStudies,
-	"DOI":            DOI,
-	"ENA":            ENA,
-	"Ensembl":        Ensembl,
-	"Handle":         Handle,
-	"PubMedID":       PubMedID,
-	"WebOfScienceID": WebOfScienceID,
+	"BioStudies":    BioStudies,
+	"DOI":           DOI,
+	"ENA":           ENA,
+	"ENABioProject": ENABioProject,
+	"Ensembl":       Ensembl,
+	"Handle":        Handle,
+	"PubMed":        PubMed,
+	"WebOfScience":  WebOfScience,
 }
 
 type Type interface {

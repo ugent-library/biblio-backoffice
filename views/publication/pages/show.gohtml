@@ -65,6 +65,7 @@
                         </button>
                         {{end}}
                     </div>
+                    {{if .User.CanDeletePublication .Publication}}
                     <div class="bc-toolbar-item">
                         <div class="dropdown dropleft">
                             <button class="btn btn-outline-primary btn-icon-only"
@@ -97,6 +98,7 @@
                             </div>
                         </div>
                     </div>
+                    {{end}}
                 </div>
             </div>
         </div>

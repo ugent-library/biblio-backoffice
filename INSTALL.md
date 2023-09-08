@@ -19,10 +19,7 @@ For development, you will also need:
 
 For importing data into the authority backend:
 
-* Perl
-* Catmandu with these modules:
-  * Catmandu::Store::ElasticSearch
-  * Search::ElasticSearch@6.80
+* Benthos
 
 ## Preparation
 
@@ -71,12 +68,31 @@ brew install elasticsearch@6
 brew services start elasticsearch@6
 ```
 
+**Note**: Elasticsearch@6 is disabled since 06/2023. You will need to edit the formula and 
+change this line:
+
+```
+disable! date: "2023-06-19", because: :unsupported
+```
+
+to
+
+```
+deprecate! date: "2022-02-10", because: :unsupported
+```
+
 After installing ElasticSearch, you will need to install the `analyzer-icu` plugin:
 
 ```
 echo 'export PATH="/opt/homebrew/opt/elasticsearch@6/bin:$PATH"' >> ~/.zshrc
 source ~/.zshrc
 elasticsearch-plugin install analysis-icu
+```
+
+Finally, restart the elasticsearch server to make sure the analysis-icu plugin is loaded:
+
+```
+brew services restart elasticsearch@6
 ```
 
 ### Mongodb
@@ -92,60 +108,14 @@ brew install mongodb-community@6.0
 brew services start mongodb-community@6.0
 ```
 
-### Perl & Catmandu
+### Benthos
+
+[Benthos](https://benthos.dev) is a declarative data streaming service. It's a data-processing toolkit.
 
 On Macos:
 
-First, install Perl. We'll use Plenv, a version management tool for Perl to do just that.
-
 ```
-brew install plenv
-echo 'if which plenv > /dev/null; then eval "$(plenv init - zsh)"; fi' >> ~/.zshrc
-# Plenv should work if you type this next command
-plenv 
-```
-
-Next, install Perl:
-
-```
-# This might take a while...
-plenv install 5.30.3
-# Switch to perl 5.30.3
-plenv global 5.30.3
-plenv rehash
-# Check if the version is set correctly:
-plenv version
-5.30.3 (set by /Users/netsensei/.plenv/version)
-```
-
-Next, install cpanm, the package manager for Perl:
-
-```
-plenv install-cpanm
-plenv rehash
-# check if cpanm works:
-cpanm
-which cpamn
-/Users/netsensei/.plenv/shims/cpanm
-```
-
-Next, install Catmandu:
-
-```
-# This might take a while
-cpanm -n Catmandu
-plenv rehash
-# Check if catmandu is installed
-catmandu version
-catmandu (Catmandu::CLI) version 1.2020 (/Users/netsensei/.plenv/versions/5.30.3/bin/catmandu)
-```
-
-Next, install the ElasticSearch module for Catmandu:
-
-```
-cpanm -n Catmandu::Store::ElasticSearch
-# Downgrade to Elasticsearch 6.8
-cpanm Search::Elasticsearch@6.80
+brew install benthos
 ```
 
 ### Go
@@ -217,7 +187,7 @@ Next, copy these configuration files:
 
 ```
 cp .env.example .env
-cp .reflex.example.conf .reflex.conf
+cp reflex.example.conf reflex.conf
 ```
 
 Configure the `.env` file accordingly:
@@ -268,6 +238,15 @@ export BIBLIO_BACKOFFICE_FRONTEND_ES6_URL="http://localhost:9200"
 Next, create the database tables by running the migrations:
 
 ```
+cp .tern.example.conf tern.conf
+```
+
+Then open `tern.conf` and change the `port` variable to a value that matches the port on which your
+postgresql server listens (default, this should be: 5432).
+
+Now run the migrations using the `tern` program:
+
+```
 go install github.com/jackc/tern@latest
 tern migrate --migrations etc/snapstore/migrations
 ```
@@ -275,8 +254,7 @@ tern migrate --migrations etc/snapstore/migrations
 Next, initialize the ElasticSearch indices:
 
 ```
-go run main.go publication reindex
-go run main.go dataset reindex
+go run main.go reset
 ```
 
 Next, use `npm` to download all dependencies for frontend development:
@@ -300,7 +278,7 @@ go install github.com/cespare/reflex@latest
 Starting the application:
 
 ```
-reflex -d none -c .reflex.conf
+reflex -d none -c reflex.conf
 ```
 
 If the configuration in `.env` contains no errors, you should see this output:
@@ -357,6 +335,9 @@ Create a new file called person.json with a single record. Fill out the fields w
   "roles": [
     "biblio-admin"
   ],
+  "ids":  [
+    "00000000-0000-0000-0000-000000000001"
+  ]
   "date_created": "2022-05-06T22:02:50Z",
   "last_name": "YOUR FIRST NAME",
   "active": 1,
@@ -397,12 +378,7 @@ You will need to obtain a full copy from the authority backend on either test or
 
 * MongoDB dump of the authority > person collection: `authority_person.json`
 * MongoDB dump of the authority > project collection: `authority_project.json`
-* ES dump of the person index: `es_persons.json`
-* ES dump of the project index: `es_projects.json`
 * ES dump of the organizations index: `es_organizations.json`
-
-The ES dumps are preferably made through Catmandu. They should contain an array of documents, with each document
-identified by an unique `_id` field.
 
 Importing the MongoDB data dumps:
 
@@ -411,29 +387,58 @@ mongoimport --uri "mongodb://localhost:27017/authority?directConnection=true&ser
 mongoimport --uri "mongodb://localhost:27017/authority?directConnection=true&serverSelectionTimeoutMS=2000" --collection project authority_project.json
 ```
 
-Importing the ElasticSearch dumps with Catmandu:
+Next, load the data from the dumps into ElasticSearch using [Benthos](https://benthos.dev).
 
-Create a `catmandu.yml` file in the same directory as the one where the JSON files are stored.
-```
-store:
-    search:
-       package: ElasticSearch
-       options:
-         bags:
-           biblio_organization:
-             type: organization
-           biblio_person:
-             type: person
-           biblio_project:
-             type: project
-```
-
-Next, import each dataset:
+Create a new file called `benthos.yml` and add the configuration below:
 
 ```
-catmandu import JSON to search --bag biblio_person < es_persons.json
-catmandu import JSON to search --bag biblio_organization < es_organizations.json
-catmandu import JSON to search --bag biblio_project < es_projects.json
+input:
+  label: ""
+  stdin:
+    codec: lines
+    max_buffer: 1000000
+pipeline:
+  threads: -1
+  processors:
+    - mapping: |
+        root = this
+        root.id = this._id
+        root._id = deleted()
+        root.active = deleted()
+output:
+  label: ""
+  elasticsearch:
+    urls: [ "http://localhost:9200" ]
+    index: "biblio_project"
+    id: ${! json("id") }
+    type: "project"
+    max_in_flight: 64
+    batching:
+      count: 0
+      byte_size: 0
+      period: ""
+      check: ""
+```
+
+This file will allow us to import `authority_project.json` file into the `biblio_project` index.
+
+Run this command to import projects:
+
+```
+cat authority_project.json | benthos -c benthos.yml
+```
+
+Now, change the YAML file:
+
+```
+index: "biblio_person"
+type: "person"
+```
+
+Run this command to import persons:
+
+```
+cat authority_person.json | benthos -c benthos.yml
 ```
 
 ## Step 4: import publications / datasets

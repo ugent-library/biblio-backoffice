@@ -108,7 +108,7 @@ func (h *Handler) AddSingleImportConfirm(w http.ResponseWriter, r *http.Request,
 
 	// check for duplicates
 	if b.Source == "crossref" && b.Identifier != "" {
-		args := models.NewSearchArgs().WithFilter("doi", strings.ToLower(b.Identifier)).WithFilter("status", "public")
+		args := models.NewSearchArgs().WithFilter("identifier", strings.ToLower(b.Identifier)).WithFilter("status", "public")
 
 		existing, err := h.PublicationSearchIndex.Search(args)
 

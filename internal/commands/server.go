@@ -37,13 +37,14 @@ func init() {
 	serverCmd.PersistentFlags().String("base-url", "", "base url")
 
 	serverStartCmd.Flags().String("mode", defaultMode, "server mode (development, staging or production)")
-	serverStartCmd.Flags().String("host", defaultHost, "server host")
+	serverStartCmd.Flags().String("host", "", "server host")
 	serverStartCmd.Flags().Int("port", defaultPort, "server port")
 	serverStartCmd.Flags().String("session-name", defaultSessionName, "session name")
 	serverStartCmd.Flags().String("session-secret", "", "session secret")
 	serverStartCmd.Flags().Int("session-max-age", defaultSessionMaxAge, "session lifetime")
 	serverStartCmd.Flags().String("csrf-name", "", "csrf cookie name")
 	serverStartCmd.Flags().String("csrf-secret", "", "csrf cookie secret")
+	serverStartCmd.Flags().String("location", defaultTimezone, "location used for date and time display")
 
 	serverCmd.AddCommand(serverRoutesCmd)
 	serverCmd.AddCommand(serverStartCmd)
@@ -210,6 +211,12 @@ func buildRouter(services *backends.Services, logger *zap.SugaredLogger) *mux.Ro
 	// localizer
 	localizer := locale.NewLocalizer("en")
 
+	//
+	timezone, err := time.LoadLocation(viper.GetString("timezone"))
+	if err != nil {
+		logger.Fatal(err)
+	}
+
 	// sessions & auth
 	sessionSecret := []byte(viper.GetString("session-secret"))
 	sessionName := viper.GetString("session-name")
@@ -229,13 +236,14 @@ func buildRouter(services *backends.Services, logger *zap.SugaredLogger) *mux.Ro
 		RedirectURL:  baseURL.String() + "/auth/openid-connect/callback",
 		CookieName:   viper.GetString("session-name") + ".state",
 		CookieSecret: []byte(viper.GetString("session-secret")),
+		Insecure:     mode != "production",
 	})
 	if err != nil {
 		logger.Fatal(err)
 	}
 
 	// add routes
-	routes.Register(services, baseURL, router, sessionStore, sessionName, localizer, logger, oidcAuth)
+	routes.Register(services, baseURL, router, sessionStore, sessionName, timezone, localizer, logger, oidcAuth)
 
 	return router
 }

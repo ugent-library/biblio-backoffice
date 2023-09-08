@@ -115,6 +115,9 @@ func (c *Client) GetDataset(id string) (*models.Dataset, error) {
 	}
 	if res := attrs.Get("descriptions"); res.Exists() {
 		for _, r := range res.Array() {
+			if r.Get("descriptionType").String() != "Abstract" {
+				continue
+			}
 			t := models.Text{Text: r.Get("description").String(), Lang: "und"}
 			if res := r.Get("lang"); res.Exists() {
 				if base, err := language.ParseBase(res.String()); err == nil {

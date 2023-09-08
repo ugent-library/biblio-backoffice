@@ -5,7 +5,7 @@
     </div>
     <div class="bc-avatar-text">
       <h3>
-        {{.Contributor.Name}}
+        {{.Contributor.Person.FullName}}
         {{if .Current}}
         <span class="badge badge-pill badge-success"><i class="if if-check-circle"></i><span class="badge-text">Current selection</span></span>
         {{end}}
@@ -32,7 +32,7 @@
           {{end}}
         </li>
         {{end}}
-        {{with .Contributor.ORCID}}
+        {{with .Contributor.Person.ORCID}}
         <li class="c-meta-item">
           <i class="if if-orcid"></i>
           {{.}}

@@ -37,6 +37,7 @@ type BaseHandler struct {
 	SessionName     string
 	SessionStore    sessions.Store
 	UserService     backends.UserService
+	Timezone        *time.Location
 	Localizer       *locale.Localizer
 	FrontendBaseUrl string
 }
@@ -46,6 +47,7 @@ type BaseContext struct {
 	CurrentURL      *url.URL
 	Flash           []flash.Flash
 	Locale          *locale.Locale
+	Timezone        *time.Location
 	User            *models.User
 	UserRole        string
 	OriginalUser    *models.User
@@ -59,6 +61,7 @@ func (c BaseContext) Yield(pairs ...any) map[string]any {
 		"CurrentURL":      c.CurrentURL,
 		"Flash":           c.Flash,
 		"Locale":          c.Locale,
+		"Timezone":        c.Timezone,
 		"User":            c.User,
 		"UserRole":        c.UserRole,
 		"OriginalUser":    c.OriginalUser,
@@ -114,6 +117,7 @@ func (h BaseHandler) NewContext(r *http.Request, w http.ResponseWriter) (BaseCon
 		CurrentURL:      r.URL,
 		Flash:           flash,
 		Locale:          h.Localizer.GetLocale(r.Header.Get("Accept-Language")),
+		Timezone:        h.Timezone,
 		User:            user,
 		UserRole:        h.getUserRoleFromSession(session),
 		OriginalUser:    originalUser,

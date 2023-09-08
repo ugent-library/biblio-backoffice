@@ -118,7 +118,7 @@ func dissertationDetails(user *models.User, l *locale.Locale, p *models.Publicat
 			&display.Link{
 				Label: l.T("builder.wos_id"),
 				Value: p.WOSID,
-				URL:   identifiers.WebOfScienceID.Resolve(p.WOSID),
+				URL:   identifiers.WebOfScience.Resolve(p.WOSID),
 			},
 			&display.List{
 				Label:  l.T("builder.issn"),

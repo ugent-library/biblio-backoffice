@@ -109,3 +109,105 @@ func ReviewerTagRemove(p *models.Publication, args []string) error {
 	p.ReviewerTags = vals
 	return nil
 }
+
+func JournalTitleSet(p *models.Publication, args []string) error {
+	if len(args) != 1 {
+		return errors.New("journal title is missing")
+	}
+	if p.Type != "journal_article" {
+		return errors.New("record is not of type journal_article")
+	}
+	p.Publication = args[0]
+	return nil
+}
+
+func JournalAbbreviationSet(p *models.Publication, args []string) error {
+	if len(args) != 1 {
+		return errors.New("journal abbreviation is missing")
+	}
+	if p.Type != "journal_article" {
+		return errors.New("record is not of type journal_article")
+	}
+	p.PublicationAbbreviation = args[0]
+	return nil
+}
+
+func ISBNAdd(p *models.Publication, args []string) error {
+	for _, arg := range args {
+		if !validation.InArray(p.ISBN, arg) {
+			p.ISBN = append(p.ISBN, arg)
+		}
+	}
+	return nil
+}
+
+func ISBNRemove(p *models.Publication, args []string) error {
+	var vals []string
+	for _, val := range p.ISBN {
+		if !validation.InArray(args, val) {
+			vals = append(vals, val)
+		}
+	}
+	p.ISBN = vals
+	return nil
+}
+
+func EISBNAdd(p *models.Publication, args []string) error {
+	for _, arg := range args {
+		if !validation.InArray(p.EISBN, arg) {
+			p.EISBN = append(p.EISBN, arg)
+		}
+	}
+	return nil
+}
+
+func EISBNRemove(p *models.Publication, args []string) error {
+	var vals []string
+	for _, val := range p.EISBN {
+		if !validation.InArray(args, val) {
+			vals = append(vals, val)
+		}
+	}
+	p.EISBN = vals
+	return nil
+}
+
+func ISSNAdd(p *models.Publication, args []string) error {
+	for _, arg := range args {
+		if !validation.InArray(p.ISSN, arg) {
+			p.ISSN = append(p.ISSN, arg)
+		}
+	}
+	return nil
+}
+
+func ISSNRemove(p *models.Publication, args []string) error {
+	var vals []string
+	for _, val := range p.ISSN {
+		if !validation.InArray(args, val) {
+			vals = append(vals, val)
+		}
+	}
+	p.ISSN = vals
+	return nil
+}
+
+func EISSNAdd(p *models.Publication, args []string) error {
+	for _, arg := range args {
+		if !validation.InArray(p.EISSN, arg) {
+			p.EISSN = append(p.EISSN, arg)
+		}
+	}
+	return nil
+}
+
+func EISSNRemove(p *models.Publication, args []string) error {
+	var vals []string
+	for _, val := range p.EISSN {
+		if !validation.InArray(args, val) {
+			vals = append(vals, val)
+		}
+	}
+	p.EISSN = vals
+	return nil
+}

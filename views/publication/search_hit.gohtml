@@ -40,13 +40,13 @@
                     </a>
                     {{end}}
                     {{with .Publication.WOSID}}
-                    <a class="dropdown-item" href="{{resolveIdentifier "WebOfScienceID" .}}" target="_blank">
+                    <a class="dropdown-item" href="{{resolveIdentifier "WebOfScience" .}}" target="_blank">
                         <i class="if if-external-link"></i>
                         <span>WoS</span>
                     </a>
                     {{end}}
                     {{with .Publication.PubMedID}}
-                    <a class="dropdown-item" href="{{resolveIdentifier "PubMedID" .}}" target="_blank">
+                    <a class="dropdown-item" href="{{resolveIdentifier "PubMed" .}}" target="_blank">
                         <i class="if if-external-link"></i>
                         <span>PubMed</span>
                     </a>

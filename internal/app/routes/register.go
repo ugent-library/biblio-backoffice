@@ -37,7 +37,7 @@ import (
 )
 
 func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
-	sessionStore sessions.Store, sessionName string, localizer *locale.Localizer, logger *zap.SugaredLogger, oidcAuth *oidc.Auth) {
+	sessionStore sessions.Store, sessionName string, timezone *time.Location, localizer *locale.Localizer, logger *zap.SugaredLogger, oidcAuth *oidc.Auth) {
 	basePath := baseURL.Path
 
 	router.StrictSlash(true)
@@ -59,6 +59,7 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		Router:          router,
 		SessionStore:    sessionStore,
 		SessionName:     sessionName,
+		Timezone:        timezone,
 		Localizer:       localizer,
 		UserService:     services.UserService,
 		FrontendBaseUrl: viper.GetString("frontend-url"),
