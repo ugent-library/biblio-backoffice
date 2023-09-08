@@ -14,9 +14,8 @@
                 <div class="bc-toolbar-right">
                     <button class="btn btn-success"
                         hx-post="{{pathFor "dataset_republish" "id" .Dataset.ID|querySet "redirect-url" .RedirectURL}}"
-                        hx-headers='{"If-Match": "{{.Dataset.SnapshotID}}"}'
-                        hx-swap="none"
-                    >Republish</button>
+                        hx-headers='{"If-Match": "{{.Dataset.SnapshotID}}"}'>Republish
+                    </button>
                 </div>
             </div>
         </div>
