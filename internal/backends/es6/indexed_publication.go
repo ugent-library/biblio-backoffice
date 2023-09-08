@@ -84,11 +84,11 @@ func NewIndexedPublication(p *models.Publication) *indexedPublication {
 	}
 
 	if len(ip.FacultyID) == 0 {
-		ip.FacultyID = append(ip.FacultyID, MissingValue)
+		ip.FacultyID = append(ip.FacultyID, models.MissingValue)
 	}
 
 	if ip.PublicationStatus == "" {
-		ip.PublicationStatus = MissingValue
+		ip.PublicationStatus = models.MissingValue
 	}
 
 	if p.WOSType != "" {

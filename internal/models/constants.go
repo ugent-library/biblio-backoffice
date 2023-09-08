@@ -1,3 +1,3 @@
-package es6
+package models
 
 const MissingValue = "missing"
