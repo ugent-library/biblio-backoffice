@@ -5,12 +5,12 @@
     </div>
     <div class="bc-avatar-text">
       <h3>
-        {{.Contributor.Person.FullName}}
+        <span class="mr-3">{{.Contributor.Person.FullName}}</span>
         {{if .Current}}
-        <span class="badge badge-pill badge-success"><i class="if if-check-circle"></i><span class="badge-text">Current selection</span></span>
+        <span class="badge badge-pill badge-success mr-3"><i class="if if-check-circle"></i><span class="badge-text">Current selection</span></span>
         {{end}}
         {{if .Active}}
-        <span class="badge badge-pill badge-default ml-3">Active UGent member</span>
+        <span class="badge badge-pill badge-default">Active UGent member</span>
         {{end}}
       </h3>
       {{with .Contributor.Person.Affiliations}}
