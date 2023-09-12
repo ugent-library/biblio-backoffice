@@ -1,19 +1,37 @@
 const NO_LOG = { log: false }
 
 declare namespace Cypress {
-  interface Chainable {
+  interface Chainable<Subject> {
     login(username: string, password: string): Chainable<void>
 
     loginAsResearcher(): Chainable<void>
 
     loginAsLibrarian(): Chainable<void>
 
+    switchMode(mode: 'Researcher' | 'Librarian'): Chainable<void>
+
     ensureModal(expectedTitle: string, strict?: boolean): Chainable<JQuery<HTMLElement>>
 
     ensureNoModal(): Chainable<void>
+
+    extractBiblioId(alias?: string): Chainable<string> | never
+
+    visitPublication(alias?: string): Chainable<AUTWindow>
+
+    /**
+     * Extends the log console props with the yielded result.
+     *
+     * @param Log log The log object to extend
+     * @example
+     * cy
+     *   .validatedRequest(...)
+     *   .finishLog(log)
+     */
+    finishLog(log: Log, appendToMessage?: boolean): Chainable<Subject>
   }
 }
 
+// Parent commands
 Cypress.Commands.addAll({
   login(username, password) {
     // WARNING: Whenever you change the code of the session setup, Cypress will throw an error:
@@ -68,6 +86,33 @@ Cypress.Commands.addAll({
     cy.login(Cypress.env('LIBRARIAN_USER_NAME'), Cypress.env('LIBRARIAN_USER_PASSWORD'))
   },
 
+  switchMode(mode: 'Researcher' | 'Librarian') {
+    const currentMode = mode === 'Researcher' ? 'Librarian' : 'Researcher'
+
+    let log: Cypress.Log
+
+    cy.visit('/', NO_LOG)
+
+    cy.intercept({ method: 'PUT', url: '/role/*' }, NO_LOG).as('switch-role')
+
+    cy.contains(`.c-sidebar > .dropdown > button`, currentMode, NO_LOG)
+      .click(NO_LOG)
+      .next('.dropdown-menu', NO_LOG)
+      .contains(mode, NO_LOG)
+      .then($el => {
+        log = logCommand('switchMode', { 'Current mode': currentMode, 'New mode': mode }, mode, $el)
+        log.set('type', 'parent')
+        log.snapshot('before')
+      })
+      .click(NO_LOG)
+
+    cy.wait('@switch-role', NO_LOG)
+
+    cy.contains(`.c-sidebar > .dropdown > button`, mode, NO_LOG).then($el => {
+      log.set('$el', $el).snapshot('after').end()
+    })
+  },
+
   ensureModal(expectedTitle, strict = true) {
     logCommand('ensureModal', { expectedTitle, strict }, expectedTitle)
 
@@ -96,10 +141,62 @@ Cypress.Commands.addAll({
 
     cy.get('#modal-backdrop, #modal', NO_LOG).should('not.exist')
   },
+
+  visitPublication(alias = '@biblioId') {
+    const log = logCommand('visitPublication', { alias }, alias)
+
+    cy.get(alias, NO_LOG).then(biblioId => {
+      updateLogMessage(log, biblioId)
+      updateConsoleProps(log, cp => (cp['Biblio ID'] = biblioId))
+
+      cy.visit(`/publication/${biblioId}`, NO_LOG)
+    })
+  },
 })
 
-function logCommand(name, consoleProps = {}, message = '') {
+// Child commands
+Cypress.Commands.addAll(
+  { prevSubject: true },
+  {
+    extractBiblioId(subject, alias = 'biblioId') {
+      const log = logCommand('extractBiblioId', { subject, alias }, `@${alias}`)
+
+      if (subject.length !== 1) {
+        expect(subject).to.have.length(1, `Expected subject to have length 1, but it has length ${subject.length}`)
+      }
+
+      cy.wrap(subject, NO_LOG)
+        .contains('Biblio ID:', NO_LOG)
+        .find('.c-code', NO_LOG)
+        .invoke(NO_LOG, 'text')
+        .as(alias, { type: 'static' })
+        .finishLog(log, true)
+    },
+
+    finishLog(subject, log, appendToMessage = false) {
+      let theSubject = subject
+      if (subject === null) {
+        theSubject = '(null)'
+      } else if (subject === '') {
+        theSubject = '""'
+      }
+
+      updateConsoleProps(log, cp => (cp.yielded = theSubject))
+
+      if (appendToMessage) {
+        updateLogMessage(log, subject)
+      }
+
+      log.end()
+
+      return subject
+    },
+  }
+)
+
+function logCommand(name, consoleProps = {}, message = '', $el = undefined) {
   return Cypress.log({
+    $el,
     name,
     displayName: name
       .replace(/([A-Z])/g, ' $1')
@@ -108,4 +205,21 @@ function logCommand(name, consoleProps = {}, message = '') {
     message,
     consoleProps: () => consoleProps,
   })
+}
+
+function updateLogMessage(log: Cypress.Log, subject: unknown) {
+  const message = log.get('message').split(', ')
+
+  message.push(subject)
+
+  log.set('message', message.join(', '))
+}
+
+
+function updateConsoleProps(log: Cypress.Log, callback: (ObjectLike) => void) {
+  const consoleProps = log.get('consoleProps')()
+
+  callback(consoleProps)
+
+  log.set({ consoleProps: () => consoleProps })
 }

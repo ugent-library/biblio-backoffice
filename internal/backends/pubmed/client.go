@@ -5,7 +5,6 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"regexp"
 	"strings"
 	"time"
 
@@ -13,7 +12,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/internal/models"
 )
 
-var reSplit = regexp.MustCompile(`\s*[,;]\s*`)
+// api reference: https://europepmc.org/RestfulWebService
 
 type Client struct {
 	url  string
@@ -36,6 +35,7 @@ func (c *Client) GetPublication(id string) (*models.Publication, error) {
 	q := u.Query()
 	q.Set("format", "json")
 	q.Set("query", id)
+	q.Set("resultType", "core")
 	u.RawQuery = q.Encode()
 	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
 	if err != nil {
@@ -78,29 +78,43 @@ func (c *Client) GetPublication(id string) (*models.Publication, error) {
 	if res := attrs.Get("title"); res.Exists() {
 		p.Title = res.String()
 	}
-	if res := attrs.Get("journalTitle"); res.Exists() {
-		p.Publication = res.String()
-	}
-	if res := attrs.Get("journalVolume"); res.Exists() {
-		p.Volume = res.String()
-	}
-	if res := attrs.Get("journalIssn"); res.Exists() {
-		p.ISSN = reSplit.Split(res.String(), -1)
+	if journalInfo := attrs.Get("journalInfo"); journalInfo.IsObject() {
+		if journalVolume := journalInfo.Get("volume"); journalVolume.Exists() {
+			p.Volume = journalVolume.String()
+		}
+		if journalIssue := journalInfo.Get("issue"); journalIssue.Exists() {
+			p.Issue = journalIssue.String()
+		}
+		if journal := journalInfo.Get("journal"); journal.IsObject() {
+			if journalTitle := journal.Get("title"); journalTitle.Exists() {
+				p.Publication = journalTitle.String()
+			}
+			if journalAbbr := journal.Get("isoabbreviation"); journalAbbr.Exists() {
+				p.PublicationAbbreviation = journalAbbr.String()
+			}
+			if journalISSN := journal.Get("issn"); journalISSN.Exists() {
+				p.ISSN = append(p.ISSN, journalISSN.String())
+			}
+			if journalEISSN := journal.Get("essn"); journalEISSN.Exists() {
+				p.EISSN = append(p.EISSN, journalEISSN.String())
+			}
+		}
 	}
 	if res := attrs.Get("pubYear"); res.Exists() {
 		p.Year = res.String()
 	}
-	if res := attrs.Get("authorString"); res.Exists() {
-		for _, r := range reSplit.Split(res.String(), -1) {
-			nameParts := strings.Split(strings.ReplaceAll(r, ".", ""), " ")
-			firstName := nameParts[len(nameParts)-1]
-			lastName := strings.Join(nameParts[:len(nameParts)-1], " ")
-			c := models.Contributor{
-				FirstName: firstName,
-				LastName:  lastName,
-				FullName:  firstName + " " + lastName,
+	if authorList := attrs.Get("authorList.author"); authorList.IsArray() {
+		for _, author := range authorList.Array() {
+			firstName := author.Get("firstName").String()
+			if firstName == "" {
+				firstName = "[missing]"
 			}
-			p.Author = append(p.Author, &c)
+			lastName := author.Get("lastName").String()
+			if lastName == "" {
+				lastName = "[missing]"
+			}
+			c := models.ContributorFromFirstLastName(firstName, lastName)
+			p.Author = append(p.Author, c)
 		}
 	}
 	if res := attrs.Get("pageInfo"); res.Exists() {
@@ -111,6 +125,13 @@ func (c *Client) GetPublication(id string) (*models.Publication, error) {
 		} else {
 			p.ArticleNumber = pages[0]
 		}
+	}
+	// TODO: language of abstract always in English?
+	if res := attrs.Get("abstractText"); res.Exists() {
+		p.AddAbstract(&models.Text{Text: res.String(), Lang: "eng"})
+	}
+	if res := attrs.Get("language"); res.Exists() {
+		p.Language = append(p.Language, res.String())
 	}
 
 	// log.Printf("import publication: %+v", p)

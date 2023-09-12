@@ -56,7 +56,7 @@
                     <div class="bc-toolbar-item">
                         <ul class="nav nav-main">
                             <li class="nav-item">
-                                <a class="nav-link collapsed btn-sm" href="https://biblio.ugent.be/contact" target="_blank">
+                                <a class="nav-link collapsed btn-sm" href="{{.FrontendBaseUrl}}/contact" target="_blank">
                                     <i class="if if-info-circle if--small text-muted"></i>
                                     <span class="btn-text">Help</span>
                                 </a>
@@ -196,7 +196,11 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-link modal-close">Close</button>
+                        <div class="bc-toolbar">
+                            <div class="bc-toolbar-left">
+                                <button class="btn btn-link modal-close">Close</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

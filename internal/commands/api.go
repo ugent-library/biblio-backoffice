@@ -11,7 +11,7 @@ import (
 )
 
 func init() {
-	apiStartCmd.Flags().String("host", defaultAPIHost, "api server host")
+	apiStartCmd.Flags().String("host", "", "api server host")
 	apiStartCmd.Flags().Int("port", defaultAPIPort, "api server port")
 	apiStartCmd.Flags().String("username", "", "api server administrator username")
 	apiStartCmd.Flags().String("password", "", "api server administrator password")

@@ -1,8 +1,8 @@
-{{if .Dataset.Department}}
+{{if .Dataset.RelatedOrganizations}}
 <div class="card-body p-0">
     <table class="table">
         <tbody>
-            {{range $k, $d := .Dataset.Department}}
+            {{range $k, $rel := .Dataset.RelatedOrganizations}}
                 <tr class="row-{{$k}}">
                     <td class="pl-6">
                         <div class="d-flex w-100">
@@ -10,8 +10,8 @@
                                 <div class="d-flex align-items-start">
                                     <div class="list-group-item-content">
                                         <div class="list-group-item-text">
-                                            <h4 class="c-h4">{{$.Locale.TS "organization" $d.ID}}</h4>
-                                            <div class="text-muted c-body-small">Department ID: {{$d.ID}}</div>
+                                            <h4 class="c-h4">{{$.Locale.TS "organization" $rel.OrganizationID}}</h4>
+                                            <div class="text-muted c-body-small">Department ID: {{$rel.OrganizationID}}</div>
                                         </div>
                                     </div>
                                     </div>
@@ -29,7 +29,7 @@
                                 </button>
                                 <div class="dropdown-menu">
                                     <button class="dropdown-item" type="button"
-                                        hx-get="{{pathFor "dataset_confirm_delete_department" "id" $.Dataset.ID "snapshot_id" $.Dataset.SnapshotID "department_id" $d.ID}}"
+                                        hx-get="{{pathFor "dataset_confirm_delete_department" "id" $.Dataset.ID "snapshot_id" $.Dataset.SnapshotID "department_id" $rel.OrganizationID}}"
                                         hx-target="#modals"
                                     >
                                         <i class="if if-delete"></i>

@@ -16,46 +16,20 @@
   "conference_organizer": "conference organiser",
   "conference_start_date": "2023-01-01",
   "conference_end_date": "2023-01-01",
-  "creator": {
-    "id": "00000000-0000-0000-0000-000000000000",
-    "name": "name"
-  },
+  "creator_id": "00000000-0000-0000-0000-000000000000",
   "date_created": "2023-02-07T11:19:50.447925791+01:00",
   "date_updated": "2023-02-07T11:35:22.556159422+01:00",
   "date_from": "2023-02-07T11:35:22.557247+01:00",
-  "department": [
+  "related_organizations": [
     {
-      "id": "CA20",
-      "tree": [
-        {
-          "id": "UGent"
-        },
-        {
-          "id": "CA"
-        },
-        {
-          "id": "CA20"
-        }
-      ]
+      "organization_id": "CA20"
     }
   ],
   "doi": "000",
   "edition": "edition",
   "editor": [
     {
-      "first_name": "first name",
-      "full_name": "full name",
-      "id": "00000000-0000-0000-0000-000000000000",
-      "last_name": "laste name",
-      "ugent_id": [
-        "000000000000"
-      ],
-      "department": [
-        {
-          "id": "AA00",
-          "name": "department name"
-        }
-      ]
+      "person_id": "00000000-0000-0000-0000-000000000000"
     }
   ],
   "eisbn": [
@@ -97,10 +71,7 @@
   "language": [
     "eng"
   ],
-  "last_user": {
-    "id": "00000000-0000-0000-0000-000000000000",
-    "name": "name"
-  },
+  "last_user_id": "00000000-0000-0000-0000-000000000000",
   "legacy": true,
   "link": [
     {
@@ -114,10 +85,9 @@
   "message": "message",
   "page_count": "99",
   "place_of_publication": "place of publication",
-  "project": [
+  "related_projects": [
     {
-      "id": "000000000",
-      "name": "name"
+      "project_id": "000000000"
     }
   ],
   "publication": "journal title",
@@ -140,10 +110,7 @@
   "status": "public",
   "title": "title",
   "type": "issue_editor",
-  "user": {
-    "id": "00000000-0000-0000-0000-000000000000",
-    "name": "name"
-  },
+  "user_id": "00000000-0000-0000-0000-000000000000",
   "volume": "volume",
   "vabb_approved": false,
   "has_been_public": true,

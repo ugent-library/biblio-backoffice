@@ -8,12 +8,18 @@
             <p>Are you sure you want to remove this {{.Locale.TS "dataset.contributor.role" .Role}}?</p>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-link modal-close">Cancel</button>
-            <button class="btn btn-danger"
-                hx-delete="{{pathFor "dataset_delete_contributor" "id" .Dataset.ID "role" .Role "position" (.Position|toString)}}"
-                hx-headers='{"If-Match": "{{.Dataset.SnapshotID}}"}'
-                hx-swap="none"
-            >Delete</button>
+            <div class="bc-toolbar">
+                <div class="bc-toolbar-left">
+                    <button class="btn btn-link modal-close">Cancel</button>
+                </div>
+                <div class="bc-toolbar-right">
+                    <button class="btn btn-danger"
+                        hx-delete="{{pathFor "dataset_delete_contributor" "id" .Dataset.ID "role" .Role "position" (.Position|toString)}}"
+                        hx-headers='{"If-Match": "{{.Dataset.SnapshotID}}"}'
+                        hx-swap="none"
+                    >Delete</button>
+                </div>
+            </div>
         </div>
     </div>
 </div>

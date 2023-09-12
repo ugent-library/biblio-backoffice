@@ -27,39 +27,13 @@ func (s *ImportDatasetsSuite) TestValidImport() {
 		"access_level": "info:eu-repo/semantics/openAccess",
 		"author": [
 		  {
-			"first_name": "first name",
-			"full_name": "full name",
-			"id": "00000000-0000-0000-0000-000000000001",
-			"last_name": "last name",
-			"ugent_id": [
-			  "000000000001"
-			],
-			"department": [
-			  {
-				"id": "CA20",
-				"name": "Department of Research Affairs"
-			  }
-			]
+			"person_id": "00000000-0000-0000-0000-000000000001"
 		  }
 		],
-		"creator": {
-		  "id": "00000000-0000-0000-0000-000000000001",
-		  "name": "full name"
-		},
-		"department": [
+		"creator_id": "00000000-0000-0000-0000-000000000001",
+		"related_organizations": [
 		  {
-			"id": "CA20",
-			"tree": [
-			  {
-				"id": "UGent"
-			  },
-			  {
-				"id": "CA"
-			  },
-			  {
-				"id": "CA20"
-			  }
-			]
+			"organization_id": "CA20"
 		  }
 		],
 		"doi": "doi",

@@ -101,29 +101,23 @@ func (c *Client) GetDataset(id string) (*models.Dataset, error) {
 	}
 	if res := attrs.Get("creators"); res.Exists() {
 		for _, r := range res.Array() {
-			c := models.Contributor{}
-			if res := r.Get("name"); res.Exists() {
-				c.FullName = res.String()
+			name := r.Get("name").String()
+			firstName := r.Get("givenName").String()
+			lastName := r.Get("familyName").String()
+			if firstName == "" {
+				firstName = "[missing]" // TODO
 			}
-			if res := r.Get("givenName"); res.Exists() {
-				c.FirstName = res.String()
+			if lastName == "" {
+				lastName = name
 			}
-			if res := r.Get("familyName"); res.Exists() {
-				c.LastName = res.String()
-			}
-			if c.FirstName == "" {
-				c.FirstName = "[missing]" // TODO
-			}
-			if c.LastName == "" {
-				c.LastName = c.FullName
-			}
-			if c.FullName != "" && c.FirstName != "" && c.LastName != "" {
-				d.Author = append(d.Author, &c)
-			}
+			d.Author = append(d.Author, models.ContributorFromFirstLastName(firstName, lastName))
 		}
 	}
 	if res := attrs.Get("descriptions"); res.Exists() {
 		for _, r := range res.Array() {
+			if r.Get("descriptionType").String() != "Abstract" {
+				continue
+			}
 			t := models.Text{Text: r.Get("description").String(), Lang: "und"}
 			if res := r.Get("lang"); res.Exists() {
 				if base, err := language.ParseBase(res.String()); err == nil {

@@ -19,11 +19,6 @@ type PublicationHits struct {
 	Facets map[string]FacetValues `json:"facets"`
 }
 
-type PublicationUser struct {
-	ID   string `json:"id,omitempty"`
-	Name string `json:"name,omitempty"`
-}
-
 type PublicationFile struct {
 	AccessLevel              string     `json:"access_level,omitempty"`
 	License                  string     `json:"license,omitempty"`
@@ -40,20 +35,6 @@ type PublicationFile struct {
 	OtherLicense             string     `json:"other_license,omitempty"`
 	PublicationVersion       string     `json:"publication_version,omitempty"`
 	Relation                 string     `json:"relation,omitempty"`
-}
-
-type PublicationDepartmentRef struct {
-	ID string `json:"id,omitempty"`
-}
-
-type PublicationDepartment struct {
-	ID   string                     `json:"id,omitempty"`
-	Tree []PublicationDepartmentRef `json:"tree,omitempty"`
-}
-
-type PublicationProject struct {
-	ID   string `json:"id,omitempty"`
-	Name string `json:"name,omitempty"`
 }
 
 type PublicationLink struct {
@@ -82,85 +63,88 @@ type Publication struct {
 	BatchID          string         `json:"batch_id,omitempty"`
 	Classification   string         `json:"classification,omitempty"`
 	// CompletenessScore       int                     `json:"completeness_score,omitempty"`
-	ConferenceName      string           `json:"conference_name,omitempty"`
-	ConferenceLocation  string           `json:"conference_location,omitempty"`
-	ConferenceOrganizer string           `json:"conference_organizer,omitempty"`
-	ConferenceStartDate string           `json:"conference_start_date,omitempty"`
-	ConferenceEndDate   string           `json:"conference_end_date,omitempty"`
-	ConferenceType      string           `json:"conference_type,omitempty"`
-	Creator             *PublicationUser `json:"creator,omitempty"`
-	DateCreated         *time.Time       `json:"date_created,omitempty"`
-	DateUpdated         *time.Time       `json:"date_updated,omitempty"`
-	DateFrom            *time.Time       `json:"date_from,omitempty"`
-	DateUntil           *time.Time       `json:"date_until,omitempty"`
-	DefenseDate         string           `json:"defense_date,omitempty"`
-	DefensePlace        string           `json:"defense_place,omitempty"`
+	ConferenceName      string     `json:"conference_name,omitempty"`
+	ConferenceLocation  string     `json:"conference_location,omitempty"`
+	ConferenceOrganizer string     `json:"conference_organizer,omitempty"`
+	ConferenceStartDate string     `json:"conference_start_date,omitempty"`
+	ConferenceEndDate   string     `json:"conference_end_date,omitempty"`
+	ConferenceType      string     `json:"conference_type,omitempty"`
+	CreatorID           string     `json:"creator_id,omitempty"`
+	Creator             *Person    `json:"-"`
+	DateCreated         *time.Time `json:"date_created,omitempty"`
+	DateUpdated         *time.Time `json:"date_updated,omitempty"`
+	DateFrom            *time.Time `json:"date_from,omitempty"`
+	DateUntil           *time.Time `json:"date_until,omitempty"`
+	DefenseDate         string     `json:"defense_date,omitempty"`
+	DefensePlace        string     `json:"defense_place,omitempty"`
 	// DefenseTime is deprecated, see https://github.com/ugent-library/biblio-backoffice/issues/1058
-	DefenseTime             string                  `json:"defense_time,omitempty"`
-	Department              []PublicationDepartment `json:"department,omitempty"`
-	DOI                     string                  `json:"doi,omitempty"`
-	Edition                 string                  `json:"edition,omitempty"`
-	Editor                  []*Contributor          `json:"editor,omitempty"`
-	EISBN                   []string                `json:"eisbn,omitempty"`
-	EISSN                   []string                `json:"eissn,omitempty"`
-	ESCIID                  string                  `json:"esci_id,omitempty"`
-	Extern                  bool                    `json:"extern"`
-	File                    []*PublicationFile      `json:"file,omitempty"`
-	Handle                  string                  `json:"handle,omitempty"`
-	HasConfidentialData     string                  `json:"has_confidential_data,omitempty"`
-	HasPatentApplication    string                  `json:"has_patent_application,omitempty"`
-	HasPublicationsPlanned  string                  `json:"has_publications_planned,omitempty"`
-	HasPublishedMaterial    string                  `json:"has_published_material,omitempty"`
-	ID                      string                  `json:"id,omitempty"`
-	ISBN                    []string                `json:"isbn,omitempty"`
-	ISSN                    []string                `json:"issn,omitempty"`
-	Issue                   string                  `json:"issue,omitempty"`
-	IssueTitle              string                  `json:"issue_title,omitempty"`
-	JournalArticleType      string                  `json:"journal_article_type,omitempty"`
-	Keyword                 []string                `json:"keyword,omitempty"`
-	Language                []string                `json:"language,omitempty"`
-	LastUser                *PublicationUser        `json:"last_user,omitempty"`
-	LaySummary              []*Text                 `json:"lay_summary,omitempty"`
-	Legacy                  bool                    `json:"legacy"`
-	Link                    []*PublicationLink      `json:"link,omitempty"`
-	Locked                  bool                    `json:"locked"`
-	Message                 string                  `json:"message,omitempty"`
-	MiscellaneousType       string                  `json:"miscellaneous_type,omitempty"`
-	ORCIDWork               []PublicationORCIDWork  `json:"orcid_work,omitempty"`
-	PageCount               string                  `json:"page_count,omitempty"`
-	PageFirst               string                  `json:"page_first,omitempty"`
-	PageLast                string                  `json:"page_last,omitempty"`
-	PlaceOfPublication      string                  `json:"place_of_publication,omitempty"`
-	Project                 []PublicationProject    `json:"project,omitempty"`
-	Publication             string                  `json:"publication,omitempty"`
-	PublicationAbbreviation string                  `json:"publication_abbreviation,omitempty"`
-	PublicationStatus       string                  `json:"publication_status,omitempty"`
-	Publisher               string                  `json:"publisher,omitempty"`
-	PubMedID                string                  `json:"pubmed_id,omitempty"`
-	RelatedDataset          []RelatedDataset        `json:"related_dataset,omitempty"`
-	ReportNumber            string                  `json:"report_number,omitempty"`
-	ResearchField           []string                `json:"research_field,omitempty"`
-	ReviewerNote            string                  `json:"reviewer_note,omitempty"`
-	ReviewerTags            []string                `json:"reviewer_tags,omitempty"`
-	SeriesTitle             string                  `json:"series_title,omitempty"`
-	SnapshotID              string                  `json:"snapshot_id,omitempty"`
-	SourceDB                string                  `json:"source_db,omitempty"`
-	SourceID                string                  `json:"source_id,omitempty"`
-	SourceRecord            string                  `json:"source_record,omitempty"`
-	Status                  string                  `json:"status,omitempty"`
-	Supervisor              []*Contributor          `json:"supervisor,omitempty"`
-	Title                   string                  `json:"title,omitempty"`
-	Type                    string                  `json:"type,omitempty"`
-	User                    *PublicationUser        `json:"user,omitempty"`
-	Volume                  string                  `json:"volume,omitempty"`
-	VABBType                string                  `json:"vabb_type,omitempty"`
-	VABBID                  string                  `json:"vabb_id,omitempty"`
-	VABBApproved            bool                    `json:"vabb_approved"`
-	VABBYear                []string                `json:"vabb_year,omitempty"`
-	HasBeenPublic           bool                    `json:"has_been_public"`
-	WOSID                   string                  `json:"wos_id,omitempty"`
-	WOSType                 string                  `json:"wos_type,omitempty"`
-	Year                    string                  `json:"year,omitempty"`
+	DefenseTime             string                 `json:"defense_time,omitempty"`
+	DOI                     string                 `json:"doi,omitempty"`
+	Edition                 string                 `json:"edition,omitempty"`
+	Editor                  []*Contributor         `json:"editor,omitempty"`
+	EISBN                   []string               `json:"eisbn,omitempty"`
+	EISSN                   []string               `json:"eissn,omitempty"`
+	ESCIID                  string                 `json:"esci_id,omitempty"`
+	Extern                  bool                   `json:"extern"`
+	File                    []*PublicationFile     `json:"file,omitempty"`
+	Handle                  string                 `json:"handle,omitempty"`
+	HasConfidentialData     string                 `json:"has_confidential_data,omitempty"`
+	HasPatentApplication    string                 `json:"has_patent_application,omitempty"`
+	HasPublicationsPlanned  string                 `json:"has_publications_planned,omitempty"`
+	HasPublishedMaterial    string                 `json:"has_published_material,omitempty"`
+	ID                      string                 `json:"id,omitempty"`
+	ISBN                    []string               `json:"isbn,omitempty"`
+	ISSN                    []string               `json:"issn,omitempty"`
+	Issue                   string                 `json:"issue,omitempty"`
+	IssueTitle              string                 `json:"issue_title,omitempty"`
+	JournalArticleType      string                 `json:"journal_article_type,omitempty"`
+	Keyword                 []string               `json:"keyword,omitempty"`
+	Language                []string               `json:"language,omitempty"`
+	LastUserID              string                 `json:"last_user_id,omitempty"`
+	LastUser                *Person                `json:"-"`
+	LaySummary              []*Text                `json:"lay_summary,omitempty"`
+	Legacy                  bool                   `json:"legacy"`
+	Link                    []*PublicationLink     `json:"link,omitempty"`
+	Locked                  bool                   `json:"locked"`
+	Message                 string                 `json:"message,omitempty"`
+	MiscellaneousType       string                 `json:"miscellaneous_type,omitempty"`
+	ORCIDWork               []PublicationORCIDWork `json:"orcid_work,omitempty"`
+	PageCount               string                 `json:"page_count,omitempty"`
+	PageFirst               string                 `json:"page_first,omitempty"`
+	PageLast                string                 `json:"page_last,omitempty"`
+	PlaceOfPublication      string                 `json:"place_of_publication,omitempty"`
+	Publication             string                 `json:"publication,omitempty"`
+	PublicationAbbreviation string                 `json:"publication_abbreviation,omitempty"`
+	PublicationStatus       string                 `json:"publication_status,omitempty"`
+	Publisher               string                 `json:"publisher,omitempty"`
+	PubMedID                string                 `json:"pubmed_id,omitempty"`
+	RelatedDataset          []RelatedDataset       `json:"related_dataset,omitempty"`
+	RelatedOrganizations    []*RelatedOrganization `json:"related_organizations,omitempty"`
+	RelatedProjects         []*RelatedProject      `json:"related_projects,omitempty"`
+	ReportNumber            string                 `json:"report_number,omitempty"`
+	ResearchField           []string               `json:"research_field,omitempty"`
+	ReviewerNote            string                 `json:"reviewer_note,omitempty"`
+	ReviewerTags            []string               `json:"reviewer_tags,omitempty"`
+	SeriesTitle             string                 `json:"series_title,omitempty"`
+	SnapshotID              string                 `json:"snapshot_id,omitempty"`
+	SourceDB                string                 `json:"source_db,omitempty"`
+	SourceID                string                 `json:"source_id,omitempty"`
+	SourceRecord            string                 `json:"source_record,omitempty"`
+	Status                  string                 `json:"status,omitempty"`
+	Supervisor              []*Contributor         `json:"supervisor,omitempty"`
+	Title                   string                 `json:"title,omitempty"`
+	Type                    string                 `json:"type,omitempty"`
+	UserID                  string                 `json:"user_id,omitempty"`
+	User                    *Person                `json:"-"`
+	Volume                  string                 `json:"volume,omitempty"`
+	VABBType                string                 `json:"vabb_type,omitempty"`
+	VABBID                  string                 `json:"vabb_id,omitempty"`
+	VABBApproved            bool                   `json:"vabb_approved"`
+	VABBYear                []string               `json:"vabb_year,omitempty"`
+	HasBeenPublic           bool                   `json:"has_been_public"`
+	WOSID                   string                 `json:"wos_id,omitempty"`
+	WOSType                 string                 `json:"wos_type,omitempty"`
+	Year                    string                 `json:"year,omitempty"`
 }
 
 func (p *Publication) HasRelatedDataset(id string) bool {
@@ -510,49 +494,40 @@ func (p *Publication) RemoveLaySummary(id string) {
 	p.LaySummary = lay_summaries
 }
 
-func (p *Publication) GetProject(id string) *PublicationProject {
-	for _, p := range p.Project {
-		if p.ID == id {
-			return &p
-		}
-	}
-	return nil
+func (p *Publication) AddProject(project *Project) {
+	p.RemoveProject(project.ID)
+	p.RelatedProjects = append(p.RelatedProjects, &RelatedProject{
+		ProjectID: project.ID,
+		Project:   project,
+	})
 }
 
 func (p *Publication) RemoveProject(id string) {
-	projects := make([]PublicationProject, 0)
-	for _, pl := range p.Project {
-		if pl.ID != id {
-			projects = append(projects, pl)
+	rels := make([]*RelatedProject, 0)
+	for _, rel := range p.RelatedProjects {
+		if rel.ProjectID != id {
+			rels = append(rels, rel)
 		}
 	}
-	p.Project = projects
+	p.RelatedProjects = rels
 }
 
-func (p *Publication) AddProject(pr *PublicationProject) {
-	p.RemoveProject(pr.ID)
-	p.Project = append(p.Project, *pr)
+func (p *Publication) AddOrganization(org *Organization) {
+	p.RemoveOrganization(org.ID)
+	p.RelatedOrganizations = append(p.RelatedOrganizations, &RelatedOrganization{
+		OrganizationID: org.ID,
+		Organization:   org,
+	})
 }
 
-func (p *Publication) RemoveDepartment(id string) {
-	deps := make([]PublicationDepartment, 0)
-	for _, dep := range p.Department {
-		if dep.ID != id {
-			deps = append(deps, dep)
+func (p *Publication) RemoveOrganization(id string) {
+	rels := make([]*RelatedOrganization, 0)
+	for _, rel := range p.RelatedOrganizations {
+		if rel.OrganizationID != id {
+			rels = append(rels, rel)
 		}
 	}
-	p.Department = deps
-}
-
-func (p *Publication) AddDepartmentByOrg(org *Organization) {
-	// remove if added before
-	p.RemoveDepartment(org.ID)
-
-	publicationDepartment := PublicationDepartment{ID: org.ID}
-	for _, d := range org.Tree {
-		publicationDepartment.Tree = append(publicationDepartment.Tree, PublicationDepartmentRef(d))
-	}
-	p.Department = append(p.Department, publicationDepartment)
+	p.RelatedOrganizations = rels
 }
 
 func (p *Publication) AddFile(file *PublicationFile) {
@@ -599,7 +574,7 @@ func (p *Publication) UsesArticleNumber() bool {
 
 func (p *Publication) UsesArxivID() bool {
 	switch p.Type {
-	case "journal_article":
+	case "journal_article", "miscellaneous":
 		return true
 	default:
 		return false
@@ -738,7 +713,7 @@ func (p *Publication) UsesPublisher() bool {
 
 func (p *Publication) UsesPubMedID() bool {
 	switch p.Type {
-	case "journal_article":
+	case "journal_article", "miscellaneous":
 		return true
 	default:
 		return false
@@ -979,7 +954,7 @@ func (p *Publication) Validate() error {
 	if p.Status == "public" && !p.Legacy && p.UsesAuthor() && !p.Extern {
 		var hasUgentAuthors bool = false
 		for _, a := range p.Author {
-			if a.ID != "" {
+			if a.PersonID != "" {
 				hasUgentAuthors = true
 				break
 			}
@@ -1003,7 +978,7 @@ func (p *Publication) Validate() error {
 	if p.Status == "public" && !p.Legacy && p.UsesEditor() && !p.UsesAuthor() && !p.Extern {
 		var hasUgentEditors bool = false
 		for _, a := range p.Editor {
-			if a.ID != "" {
+			if a.PersonID != "" {
 				hasUgentEditors = true
 				break
 			}
@@ -1048,8 +1023,8 @@ func (p *Publication) Validate() error {
 		}
 	}
 
-	for i, pr := range p.Project {
-		if pr.ID == "" {
+	for i, rel := range p.RelatedProjects {
+		if rel.ProjectID == "" {
 			errs = append(errs, &validation.Error{
 				Pointer: fmt.Sprintf("/project/%d/id", i),
 				Code:    "publication.project.id.required",
@@ -1057,8 +1032,8 @@ func (p *Publication) Validate() error {
 		}
 	}
 
-	for i, dep := range p.Department {
-		if dep.ID == "" {
+	for i, rel := range p.RelatedOrganizations {
+		if rel.OrganizationID == "" {
 			errs = append(errs, &validation.Error{
 				Pointer: fmt.Sprintf("/department/%d/id", i),
 				Code:    "publication.department.id.required",
@@ -1066,8 +1041,8 @@ func (p *Publication) Validate() error {
 		}
 	}
 
-	for i, rd := range p.RelatedDataset {
-		if rd.ID == "" {
+	for i, rel := range p.RelatedDataset {
+		if rel.ID == "" {
 			errs = append(errs, &validation.Error{
 				Pointer: fmt.Sprintf("/related_dataset/%d/id", i),
 				Code:    "publication.related_dataset.id.required",
@@ -1479,9 +1454,9 @@ func (p *Publication) CleanupUnusedFields() bool {
 		}
 	}
 
-	if !p.UsesProject() && p.Project != nil {
+	if !p.UsesProject() && p.RelatedProjects != nil {
 		changed = true
-		p.Project = nil
+		p.RelatedProjects = nil
 	}
 
 	if !p.UsesPublication() && p.Publication != "" {

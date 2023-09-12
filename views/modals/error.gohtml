@@ -1,26 +1,29 @@
 {{define "modal_dialog"}}
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-body">
-          <div class="c-blank-slate c-blank-slate-info">
-            <div class="bc-avatar">
-              <i class="if if-service"></i>
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="c-blank-slate c-blank-slate-info">
+                    <div class="bc-avatar">
+                        <i class="if if-service"></i>
+                    </div>
+                    <h4>Biblio could not complete the action.</h4>
+                    <p>
+                        Copy this code <code class="c-code">{{.ID}}</code>
+                        <br>
+                        and send it to <a href="mailto:biblio@ugent.be">biblio@ugent.be</a>.
+                        <br>
+                        <br>
+                        The Biblio team will complete the action for you.
+                    </p>
+                </div>
             </div>
-            <h4>Biblio could not complete the action.</h4>
-            <p>
-              Copy this code <code class="c-code">{{.ID}}</code>
-              <br>
-              and send it to <a href="mailto:biblio@ugent.be">biblio@ugent.be</a>.
-              <br>
-              <br>
-              The Biblio team will complete the action for you.
-            </p>
-          </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-link modal-close">Close</button>
-      </div>
+            <div class="modal-footer">
+                <div class="bc-toolbar">
+                    <div class="bc-toolbar-left">
+                        <button class="btn btn-link modal-close">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
 {{end}}

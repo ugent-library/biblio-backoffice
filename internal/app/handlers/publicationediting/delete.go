@@ -57,7 +57,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request, ctx Context) {
 		WithLevel("success").
 		WithBody(template.HTML("<p>Publication was successfully deleted.</p>"))
 
-	h.AddSessionFlash(r, w, *flash)
+	h.AddFlash(r, w, *flash)
 
 	// TODO temporary fix until we can figure out a way let ES notify this handler that it did its thing.
 	// see: https://github.com/ugent-library/biblio-backoffice/issues/590

@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/bluele/gcache"
+
 	"github.com/ugent-library/biblio-backoffice/internal/backends"
 	"github.com/ugent-library/biblio-backoffice/internal/models"
 )
@@ -50,8 +51,8 @@ type personService struct {
 }
 
 func NewPersonService(service backends.PersonService) backends.PersonService {
-	cache := gcache.New(5000).
-		Expiration(30 * time.Minute).
+	cache := gcache.New(50000).
+		Expiration(1 * time.Hour).
 		LoaderFunc(func(key any) (any, error) {
 			return service.GetPerson(key.(string))
 		}).
@@ -61,20 +62,6 @@ func NewPersonService(service backends.PersonService) backends.PersonService {
 		cache:   cache,
 		service: service,
 	}
-}
-
-func (s *personService) GetPersons(ids []string) ([]*models.Person, error) {
-	persons := make([]*models.Person, 0)
-	for _, id := range ids {
-		person, err := s.GetPerson(id)
-		if err != nil && err == backends.ErrNotFound {
-			continue
-		} else if err != nil {
-			return nil, err
-		}
-		persons = append(persons, person)
-	}
-	return persons, nil
 }
 
 func (s *personService) GetPerson(id string) (*models.Person, error) {
@@ -92,7 +79,7 @@ type organizationService struct {
 
 func NewOrganizationService(service backends.OrganizationService) backends.OrganizationService {
 	cache := gcache.New(1000).
-		Expiration(30 * time.Minute).
+		Expiration(1 * time.Hour).
 		LoaderFunc(func(key any) (any, error) {
 			return service.GetOrganization(key.(string))
 		}).
@@ -118,8 +105,8 @@ type projectService struct {
 }
 
 func NewProjectService(service backends.ProjectService) backends.ProjectService {
-	cache := gcache.New(2500).
-		Expiration(30 * time.Minute).
+	cache := gcache.New(5000).
+		Expiration(1 * time.Hour).
 		LoaderFunc(func(key any) (any, error) {
 			return service.GetProject(key.(string))
 		}).

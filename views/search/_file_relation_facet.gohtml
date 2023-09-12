@@ -1,10 +1,10 @@
 <div class="dropdown">
-    <a class="badge badge-{{if .SearchArgs.HasFilter "file.relation"}}primary{{else if (index .Hits.Facets "file.relation").HasMatches}}default{{else}}secondary{{end}} mr-3"
+    <a class="badge badge-{{if .SearchArgs.HasFilter "file_relation"}}primary{{else if (index .Hits.Facets "file_relation").HasMatches}}default{{else}}secondary{{end}} mr-3"
         data-toggle="dropdown" data-persist="true" aria-haspopup="true"
         aria-expanded="false" role="button"
     >
         <span class="badge-text">File type</span>
-        {{with .SearchArgs.FiltersFor "file.relation"}}
+        {{with .SearchArgs.FiltersFor "file_relation"}}
         <span class="badge-value ml-2">
             &ndash;
             {{range $i, $v := .}}
@@ -32,18 +32,18 @@
         <input type="hidden" name="sort" value="{{.}}">
         {{end}}
         {{range $f, $vals := .SearchArgs.Filters}}
-        {{if ne $f "file.relation"}}
+        {{if ne $f "file_relation"}}
         {{range $vals}}
         <input type="hidden" name="f[{{$f}}]" value="{{.}}">
         {{end}}
         {{end}}
         {{end}}
         <div class="dropdown-menu__body border-bottom">
-            {{$vals := index .Hits.Facets "file.relation"}}
+            {{$vals := index .Hits.Facets "file_relation"}}
             {{$last := sub (len $vals) 1}}
             {{range $i, $f := $vals}}
             <div class="custom-control custom-checkbox{{if lt $i $last}} mb-4{{end}}">
-                <input class="custom-control-input" id="filter-file-relation-{{$i}}" type="checkbox" name="f[file.relation]" value="{{$f.Value}}"{{if $.SearchArgs.HasFilter "file.relation" $f.Value}} checked{{end}}>
+                <input class="custom-control-input" id="filter-file-relation-{{$i}}" type="checkbox" name="f[file_relation]" value="{{$f.Value}}"{{if $.SearchArgs.HasFilter "file_relation" $f.Value}} checked{{end}}>
                 <label class="custom-control-label" for="filter-file-relation-{{$i}}">{{$.Locale.TS "publication_file_relations" $f.Value}} ({{$f.Count}})</label>
             </div>
             {{end}}

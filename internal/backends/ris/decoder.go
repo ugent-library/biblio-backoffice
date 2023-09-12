@@ -172,18 +172,18 @@ func mapRecord(r Record, p *models.Publication) {
 			}
 			for _, val := range v {
 				nameParts := reSplit.Split(val, -1)
-				c := &models.Contributor{FullName: val, LastName: nameParts[0]}
+				lastName := nameParts[0]
+				firstName := "[missing]" // TODO
 				if len(nameParts) > 1 {
-					c.FirstName = nameParts[1]
-				} else {
-					c.FirstName = "[missing]" // TODO
+					firstName = nameParts[1]
 				}
+				c := models.ContributorFromFirstLastName(firstName, lastName)
 				p.Author = append(p.Author, c)
 			}
 		case "TI", "T1":
 			p.Title = strings.Join(v, "")
 		case "AB", "N2":
-			p.AddAbstract(&models.Text{Text: strings.Join(v, "\n\n"), Lang: "und"})
+			p.AddAbstract(&models.Text{Text: strings.Join(v, "\n\n"), Lang: "eng"})
 		case "KW", "DW", "ID", "DE":
 			p.Keyword = append(p.Keyword, splitMultilineVals(v)...)
 		case "DI":

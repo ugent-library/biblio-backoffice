@@ -21,19 +21,27 @@
             </ul>
         </div>
         <div class="modal-footer">
-            {{if .Conflict}}
-            <button class="btn btn-primary modal-close">Close</button>
-            {{else}}
-            <button class="btn btn-link modal-close">Cancel</button>
-            <button type="button" name="create" class="btn btn-primary"
-                hx-put="{{pathFor "publication_update_additional_info" "id" .Publication.ID}}"
-                hx-headers='{"If-Match": "{{.Publication.SnapshotID}}"}'
-                hx-include=".modal-body"
-                hx-swap="none"
-            >
-                Save
-            </button>
-            {{end}}
+            <div class="bc-toolbar">
+                {{if .Conflict}}
+                <div class="bc-toolbar-left">
+                    <button class="btn btn-primary modal-close">Close</button>
+                </div>
+                {{else}}
+                <div class="bc-toolbar-left">
+                    <button class="btn btn-link modal-close">Cancel</button>
+                </div>
+                <div class="bc-toolbar-right">
+                    <button type="button" name="create" class="btn btn-primary"
+                        hx-put="{{pathFor "publication_update_additional_info" "id" .Publication.ID}}"
+                        hx-headers='{"If-Match": "{{.Publication.SnapshotID}}"}'
+                        hx-include=".modal-body"
+                        hx-swap="none"
+                    >
+                        Save
+                    </button>
+                </div>
+                {{end}}
+            </div>
         </div>
     </div>
 </div>
