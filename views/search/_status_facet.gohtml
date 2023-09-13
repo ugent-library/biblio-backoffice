@@ -41,7 +41,7 @@
         <div class="dropdown-menu__body">
             {{$last := sub (len .Hits.Facets.status) 1}}
             {{range $i, $f := .Hits.Facets.status}}
-            <div class="custom-control custom-checkbox{{if lt $i $last}} mb-4{{end}}">
+            <div class="custom-control form-check{{if lt $i $last}} mb-4{{end}}">
                 <input class="custom-control-input" id="filter-status-{{$i}}" type="checkbox" name="f[status]" value="{{$f.Value}}"{{if $.SearchArgs.HasFilter "status" $f.Value}} checked{{end}}>
                 <label class="custom-control-label" for="filter-status-{{$i}}">{{$.Locale.TS "publication_statuses" $f.Value}} ({{$f.Count}})</label>
             </div>

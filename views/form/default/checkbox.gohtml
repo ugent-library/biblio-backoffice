@@ -1,6 +1,6 @@
 <div class="form-group row{{if .Error}} is-invalid{{end}}">
     <div class="col-{{.Cols}} offset-lg-3">
-      <div class="custom-control custom-checkbox">
+      <div class="custom-control form-check">
         <input class="custom-control-input{{if .Error}} is-invalid{{end}}" type="checkbox" id="{{.Name}}" name="{{.Name}}"
           {{if .Checked}}checked{{end}} value="{{.Value}}">
         <label class="custom-control-label" for="{{.Name}}">{{.Label}}</label>

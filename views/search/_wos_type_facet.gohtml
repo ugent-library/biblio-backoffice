@@ -41,7 +41,7 @@
         <div class="dropdown-menu__body border-bottom">
             {{$last := sub (len .Hits.Facets.wos_type) 1}}
             {{range $i, $f := .Hits.Facets.wos_type}}
-            <div class="custom-control custom-checkbox{{if lt $i $last}} mb-4{{end}}">
+            <div class="custom-control form-check{{if lt $i $last}} mb-4{{end}}">
                 <input class="custom-control-input" id="filter-wos-type-{{$i}}" type="checkbox" name="f[wos_type]" value="{{$f.Value}}"{{if $.SearchArgs.HasFilter "wos_type" $f.Value}} checked{{end}}>
                 <label class="custom-control-label" for="filter-wos-type-{{$i}}">{{$f.Value}} ({{$f.Count}})</label>
             </div>

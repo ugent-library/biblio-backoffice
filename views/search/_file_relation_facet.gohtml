@@ -42,7 +42,7 @@
             {{$vals := index .Hits.Facets "file_relation"}}
             {{$last := sub (len $vals) 1}}
             {{range $i, $f := $vals}}
-            <div class="custom-control custom-checkbox{{if lt $i $last}} mb-4{{end}}">
+            <div class="custom-control form-check{{if lt $i $last}} mb-4{{end}}">
                 <input class="custom-control-input" id="filter-file-relation-{{$i}}" type="checkbox" name="f[file_relation]" value="{{$f.Value}}"{{if $.SearchArgs.HasFilter "file_relation" $f.Value}} checked{{end}}>
                 <label class="custom-control-label" for="filter-file-relation-{{$i}}">{{$.Locale.TS "publication_file_relations" $f.Value}} ({{$f.Count}})</label>
             </div>

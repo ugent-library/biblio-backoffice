@@ -41,7 +41,7 @@
         <div class="dropdown-menu__body border-bottom">
             {{$last := sub (len .Hits.Facets.reviewer_tags) 1}}
             {{range $i, $f := .Hits.Facets.reviewer_tags}}
-            <div class="custom-control custom-checkbox{{if lt $i $last}} mb-4{{end}}">
+            <div class="custom-control form-check{{if lt $i $last}} mb-4{{end}}">
                 <input class="custom-control-input" id="filter-reviewer_tags-{{$i}}" type="checkbox" name="f[reviewer_tags]" value="{{$f.Value}}"{{if $.SearchArgs.HasFilter "reviewer_tags" $f.Value}} checked{{end}}>
                 <label class="custom-control-label" for="filter-reviewer_tags-{{$i}}">{{$f.Value}} ({{$f.Count}})</label>
             </div>
