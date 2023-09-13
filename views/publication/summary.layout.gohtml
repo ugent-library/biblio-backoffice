@@ -13,14 +13,14 @@
                             {{partial "shared/status" .Publication}}
                         </span>
                         {{if .Publication.Locked}}
-                        <span class="c-subline text-nowrap me-3 pe-3 my-2 border-right" data-toggle="tooltip" data-placement="bottom" data-original-title="Locked for editing">
+                        <span class="c-subline text-nowrap me-3 pe-3 my-2 border-end" data-toggle="tooltip" data-placement="bottom" data-original-title="Locked for editing">
                             <i class="if if-lock if--small if--muted"></i>
                             <span class="text-muted c-body-small ms-2">Locked</span>
                         </span>
                         {{end}}
-                        <span class="c-subline text-nowrap me-3 pe-3 my-2 border-right">{{.Locale.TS "publication_types" .Publication.Type}}{{with .Publication.Classification}}: {{.}}{{end}}</span>
+                        <span class="c-subline text-nowrap me-3 pe-3 my-2 border-end">{{.Locale.TS "publication_types" .Publication.Type}}{{with .Publication.Classification}}: {{.}}{{end}}</span>
                         {{if $mainFile}}
-                            <div class="c-subline text-nowrap me-3 pe-3 my-2{{if eq $mainFile.AccessLevel "info:eu-repo/semantics/embargoedAccess"}} border-right{{end}}">
+                            <div class="c-subline text-nowrap me-3 pe-3 my-2{{if eq $mainFile.AccessLevel "info:eu-repo/semantics/embargoedAccess"}} border-end{{end}}">
                                 {{if eq $mainFile.AccessLevel "info:eu-repo/semantics/openAccess"}}
                                 <i class="if if-calendar if--small if--muted"></i>
                                 <span class="c-subline text-truncate ps-2">{{.Locale.TS "publication_file_access_levels" $mainFile.AccessLevel}}</span>
@@ -36,7 +36,7 @@
                                 {{end}}
                             </div>
                             {{if eq $mainFile.AccessLevel "info:eu-repo/semantics/embargoedAccess"}}
-                            <div class="c-subline text-nowrap me-3 pe-3 my-2 border-right">
+                            <div class="c-subline text-nowrap me-3 pe-3 my-2 border-end">
                                 {{if eq $mainFile.AccessLevelDuringEmbargo "info:eu-repo/semantics/closedAccess"}}
                                 <i class="if if-eye-off if--small if--muted"></I>
                                 {{else}}

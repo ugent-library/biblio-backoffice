@@ -64,7 +64,7 @@
   border-bottom-left-radius: 0;
 }
 .flatpickr-calendar .hasWeeks .dayContainer {
-  border-left: 0;
+  border-start: 0;
 }
 .flatpickr-calendar.showTimeInput.hasTime .flatpickr-time {
   height: 40px;
@@ -267,8 +267,8 @@
   border-bottom: 0;
 }
 .numInputWrapper span.arrowUp:after {
-  border-left: 4px solid transparent;
-  border-right: 4px solid transparent;
+  border-start: 4px solid transparent;
+  border-end: 4px solid transparent;
   border-bottom: 4px solid rgba(57,57,57,0.6);
   top: 26%;
 }
@@ -276,8 +276,8 @@
   top: 50%;
 }
 .numInputWrapper span.arrowDown:after {
-  border-left: 4px solid transparent;
-  border-right: 4px solid transparent;
+  border-start: 4px solid transparent;
+  border-end: 4px solid transparent;
   border-top: 4px solid rgba(57,57,57,0.6);
   top: 40%;
 }

@@ -76,12 +76,12 @@
   // Fix bordered tables within cards
   >.table-bordered tr td:first-child,
   >.table-bordered tr th:first-child {
-    border-left: none;
+    border-start: none;
   }
 
   >.table-bordered tr td:last-child,
   >.table-bordered tr th:last-child {
-    border-right: none;
+    border-end: none;
   }
 
   >.table-bordered tr:last-child td {

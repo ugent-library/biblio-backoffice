@@ -10,12 +10,12 @@
                         {{partial "shared/status" .Dataset}}
                     </span>
                     {{if .Dataset.Locked}}
-                    <span class="c-subline text-nowrap me-3 pe-3 my-2 border-right" data-toggle="tooltip" data-placement="bottom" data-original-title="Locked for editing">
+                    <span class="c-subline text-nowrap me-3 pe-3 my-2 border-end" data-toggle="tooltip" data-placement="bottom" data-original-title="Locked for editing">
                         <i class="if if-lock if--small if--muted"></i>
                         <span class="text-muted c-body-small ms-2">Locked</span>
                     </span>
                     {{end}}
-                    <div class="c-subline text-nowrap me-3 pe-3 my-2{{if eq .Dataset.AccessLevel "info:eu-repo/semantics/embargoedAccess"}} border-right{{end}}">
+                    <div class="c-subline text-nowrap me-3 pe-3 my-2{{if eq .Dataset.AccessLevel "info:eu-repo/semantics/embargoedAccess"}} border-end{{end}}">
                         {{if eq .Dataset.AccessLevel "info:eu-repo/semantics/openAccess"}}
                         <i class="if if-calendar if--small if--muted"></i>
                         <span class="c-subline text-truncate ps-2">{{.Locale.TS "dataset_access_levels" .Dataset.AccessLevel}}</span>

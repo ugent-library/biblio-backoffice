@@ -106,13 +106,13 @@ $font-size-base:              1.5rem;
 $font-size-lg:                $font-size-base * 1.25 !default;
 $font-size-sm:                1.3rem;
 
-$font-weight-lighter:         lighter !default;
-$font-weight-light:           300 !default;
-$font-weight-normal:          400 !default;
-$font-weight-bold:            500 !default;
-$font-weight-bolder:          bolder !default;
+$fw-lighter:         lighter !default;
+$fw-light:           300 !default;
+$fw-normal:          400 !default;
+$fw-bold:            500 !default;
+$fw-bolder:          bolder !default;
 
-$font-weight-base:            $font-weight-normal !default;
+$fw-base:            $fw-normal !default;
 $line-height-base:            1.5 !default;
 
 $h1-font-size:                2.4rem;

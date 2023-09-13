@@ -67,26 +67,26 @@
                                 <div class="bc-toolbar-left">
                                     <div class="c-meta-list c-meta-list-horizontal">
                                         {{if eq .AccessLevel "info:eu-repo/semantics/openAccess"}}
-                                        <div class="c-meta-item pe-4 me-4 border-right">
+                                        <div class="c-meta-item pe-4 me-4 border-end">
                                             <i class="if if-download if--small if--muted"></i>
                                             <span>{{$.Locale.TS "publication_file_access_levels" .AccessLevel}}</span>
                                         </div>
                                         {{else if eq .AccessLevel "info:eu-repo/semantics/restrictedAccess"}}
-                                        <div class="c-meta-item pe-4 me-4 border-right">
+                                        <div class="c-meta-item pe-4 me-4 border-end">
                                             <i class="if if-ghent-university if--small if--muted"></i>
                                             <span>{{$.Locale.TS "publication_file_access_levels" .AccessLevel}}</span>
                                         </div>
                                         {{else if eq .AccessLevel "info:eu-repo/semantics/closedAccess"}}
-                                        <div class="c-meta-item pe-4 me-4 border-right">
+                                        <div class="c-meta-item pe-4 me-4 border-end">
                                             <i class="if if-eye-off if--small if--muted"></i>
                                             <span>{{$.Locale.TS "publication_file_access_levels" .AccessLevel}}</span>
                                         </div>
                                         {{else if eq .AccessLevel "info:eu-repo/semantics/embargoedAccess"}}
-                                        <div class="c-meta-item pe-4 me-4 border-right">
+                                        <div class="c-meta-item pe-4 me-4 border-end">
                                             <i class="if if-time if--small"></i>
                                             <span>{{$.Locale.TS "publication_file_access_levels" .AccessLevel}}</span>
                                         </div>
-                                        <div class="c-meta-item pe-4 me-4 border-right">
+                                        <div class="c-meta-item pe-4 me-4 border-end">
                                             {{if eq .AccessLevelDuringEmbargo "info:eu-repo/semantics/closedAccess"}}
                                             <i class="if if-eye-off if--small if--primary"></i>
                                             {{else}}
@@ -94,7 +94,7 @@
                                             {{end}}
                                             <span>{{$.Locale.TS "publication_file_access_levels_during_embargo" .AccessLevelDuringEmbargo}}</span>
                                         </div>
-                                        <div class="c-meta-item pe-4 me-4 border-right">
+                                        <div class="c-meta-item pe-4 me-4 border-end">
                                             {{if eq .AccessLevelAfterEmbargo "info:eu-repo/semantics/openAccess"}}
                                             <i class="if if-download if--small if--muted"></i>
                                             {{else}}
@@ -143,7 +143,7 @@
                                 </a>
                             </h4>
                             {{with .Relation}}<span>{{$.Locale.TS "publication_file_relations" .}}</span>{{end}}
-                            {{with .PublicationVersion}}<span class="ms-3 ps-3 border-left">{{$.Locale.TS "publication_versions" .}}</span>{{end}}
+                            {{with .PublicationVersion}}<span class="ms-3 ps-3 border-start">{{$.Locale.TS "publication_versions" .}}</span>{{end}}
                             <div class="bc-toolbar-left flex-wrap">
                                 <div class="bc-toolbar-item">
                                     <span class="c-body-small text-muted text-truncate my-2">Uploaded {{.DateCreated.In $.Timezone | date "02-01-2006 at 15:04"}}</span>
