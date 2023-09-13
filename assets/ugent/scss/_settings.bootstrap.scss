@@ -93,6 +93,12 @@ $spacers: map-merge(
   $spacers
 );
 
+// Margins
+//
+// We allow negative margins
+
+$enable-negative-margins:     true;
+
 // Options
 //
 // Quickly modify global styling by enabling or disabling optional features.
@@ -371,3 +377,11 @@ $breadcrumb-padding-x:              0.8rem;
 $breadcrumb-padding-y:              0.4rem;
 $breadcrumb-item-padding:           0;
 $breadcrumb-divider:                none;
+
+
+// Tables
+//
+// Customizes the `.table` component with basic values, each used across all table variations.
+
+// scss-docs-start table-variables
+$table-bg:                    #FFF;
