@@ -4,7 +4,7 @@
          {{if .Tooltip}}
          <a class="text-muted mx-2" href="#" data-container="body" data-toggle="popover" data-trigger="focus" data-placement="right" data-content="{{.Tooltip}}">
              <i class="if if-info-circle if--small"></i>
-             <div class="sr-only">More info</div>
+             <div class="visually-hidden">More info</div>
          </a>
          {{end}}
      </label>
@@ -19,11 +19,11 @@
              </select>
              <button class="btn btn-link-muted btn-icon-only ml-3 form-value-delete" type="button">
                  <i class="if if-delete"></i>
-                 <div class="sr-only">Delete</div>
+                 <div class="visually-hidden">Delete</div>
              </button>
          </div>
          {{end}}
- 
+
          <div class="d-flex mb-3 form-value">
              <select class="custom-select form-control" name="{{.Name}}[{{len .Values}}]" data-tmpl-name="{{.Name}}[{i}]">
                  {{if .EmptyOption}}<option></option>{{end}}
@@ -33,9 +33,8 @@
              </select>
              <button class="btn btn-outline-primary btn-icon-only ml-3 form-value-add" type="button">
                  <i class="if if-add"></i>
-                 <div class="sr-only">Add</div>
+                 <div class="visually-hidden">Add</div>
              </button>
          </div>
      </div>
  </div>
- 

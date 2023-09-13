@@ -9,7 +9,7 @@
             <p class="text-muted">
                 See <a href="https://onderzoektips.ugent.be/en/tips/00002060/" target="_blank">Documentation
                 <i class="if if--small if-external-link"></i></a></p>
-            <label class="sr-only" for="project-q">Search</label>
+            <label class="visually-hidden" for="project-q">Search</label>
             <input class="form-control" type="text" id="project-q" name="q" placeholder="Search..."
                 hx-get="{{pathFor "dataset_suggest_projects" "id" .Dataset.ID}}"
                 hx-trigger="keyup changed delay:500ms"
