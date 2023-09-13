@@ -9,54 +9,54 @@
             <div class="c-thumbnail-text u-min-w-0">
                 <div class="bc-toolbar bc-toolbar--auto">
                     <div class="bc-toolbar-left flex-wrap">
-                        <span class="c-subline text-nowrap pr-3 my-2">
+                        <span class="c-subline text-nowrap pe-3 my-2">
                             {{partial "shared/status" .Publication}}
                         </span>
                         {{if .Publication.Locked}}
-                        <span class="c-subline text-nowrap mr-3 pr-3 my-2 border-right" data-toggle="tooltip" data-placement="bottom" data-original-title="Locked for editing">
+                        <span class="c-subline text-nowrap me-3 pe-3 my-2 border-right" data-toggle="tooltip" data-placement="bottom" data-original-title="Locked for editing">
                             <i class="if if-lock if--small if--muted"></i>
-                            <span class="text-muted c-body-small ml-2">Locked</span>
+                            <span class="text-muted c-body-small ms-2">Locked</span>
                         </span>
                         {{end}}
-                        <span class="c-subline text-nowrap mr-3 pr-3 my-2 border-right">{{.Locale.TS "publication_types" .Publication.Type}}{{with .Publication.Classification}}: {{.}}{{end}}</span>
+                        <span class="c-subline text-nowrap me-3 pe-3 my-2 border-right">{{.Locale.TS "publication_types" .Publication.Type}}{{with .Publication.Classification}}: {{.}}{{end}}</span>
                         {{if $mainFile}}
-                            <div class="c-subline text-nowrap mr-3 pr-3 my-2{{if eq $mainFile.AccessLevel "info:eu-repo/semantics/embargoedAccess"}} border-right{{end}}">
+                            <div class="c-subline text-nowrap me-3 pe-3 my-2{{if eq $mainFile.AccessLevel "info:eu-repo/semantics/embargoedAccess"}} border-right{{end}}">
                                 {{if eq $mainFile.AccessLevel "info:eu-repo/semantics/openAccess"}}
                                 <i class="if if-calendar if--small if--muted"></i>
-                                <span class="c-subline text-truncate pl-2">{{.Locale.TS "publication_file_access_levels" $mainFile.AccessLevel}}</span>
+                                <span class="c-subline text-truncate ps-2">{{.Locale.TS "publication_file_access_levels" $mainFile.AccessLevel}}</span>
                                 {{else if eq $mainFile.AccessLevel "info:eu-repo/semantics/embargoedAccess"}}
                                 <i class="if if-time if--small if--muted"></i>
-                                <span class="c-subline text-muted pl-2">{{.Locale.TS "publication_file_access_levels" $mainFile.AccessLevel}}</span>
+                                <span class="c-subline text-muted ps-2">{{.Locale.TS "publication_file_access_levels" $mainFile.AccessLevel}}</span>
                                 {{else if eq $mainFile.AccessLevel "info:eu-repo/semantics/restrictedAccess"}}
                                 <i class="if if-ghent-university if--small if--muted"></i>
-                                <span class="c-subline text-muted pl-2">{{.Locale.TS "publication_file_access_levels" $mainFile.AccessLevel}}</span>
+                                <span class="c-subline text-muted ps-2">{{.Locale.TS "publication_file_access_levels" $mainFile.AccessLevel}}</span>
                                 {{else if eq $mainFile.AccessLevel "info:eu-repo/semantics/closedAccess"}}
                                 <i class="if if-eye-off if--small if--muted"></i>
-                                <span class="c-subline text-muted pl-2">{{.Locale.TS "publication_file_access_levels" $mainFile.AccessLevel}}</span>
+                                <span class="c-subline text-muted ps-2">{{.Locale.TS "publication_file_access_levels" $mainFile.AccessLevel}}</span>
                                 {{end}}
                             </div>
                             {{if eq $mainFile.AccessLevel "info:eu-repo/semantics/embargoedAccess"}}
-                            <div class="c-subline text-nowrap mr-3 pr-3 my-2 border-right">
+                            <div class="c-subline text-nowrap me-3 pe-3 my-2 border-right">
                                 {{if eq $mainFile.AccessLevelDuringEmbargo "info:eu-repo/semantics/closedAccess"}}
                                 <i class="if if-eye-off if--small if--muted"></I>
                                 {{else}}
                                 <i class="if if-ghent-university if--small if--muted"></I>
                                 {{end}}
-                                <span class="c-subline text-truncate pl-2">{{.Locale.TS "publication_file_access_levels_during_embargo" $mainFile.AccessLevelDuringEmbargo}}</span>
+                                <span class="c-subline text-truncate ps-2">{{.Locale.TS "publication_file_access_levels_during_embargo" $mainFile.AccessLevelDuringEmbargo}}</span>
                             </div>
-                            <div class="c-subline text-nowrap mr-3 pr-3 my-2">
+                            <div class="c-subline text-nowrap me-3 pe-3 my-2">
                                 {{if eq $mainFile.AccessLevelAfterEmbargo "info:eu-repo/semantics/openAccess"}}
                                 <i class="if if-calendar if--small if--muted"></I>
                                 {{else}}
                                 <i class="if if-ghent-university if--small if--muted"></I>
                                 {{end}}
-                                <span class="c-subline text-truncate pl-2">{{.Locale.TS "publication_file_access_levels_after_embargo" $mainFile.AccessLevelAfterEmbargo}} from {{$mainFile.EmbargoDate}}</span>
+                                <span class="c-subline text-truncate ps-2">{{.Locale.TS "publication_file_access_levels_after_embargo" $mainFile.AccessLevelAfterEmbargo}} from {{$mainFile.EmbargoDate}}</span>
                             </div>
                             {{end}}
                         {{else if not .Publication.Extern}}
-                        <div class="c-subline text-nowrap mr-3 pr-3 my-2">
+                        <div class="c-subline text-nowrap me-3 pe-3 my-2">
                             <i class="if if-error-circle if--error"></i>
-                            <span class="pl-2 text-muted">Full text missing</span>
+                            <span class="ps-2 text-muted">Full text missing</span>
                         </div>
                         {{end}}
                     </div>
@@ -95,7 +95,7 @@
                 <div class="bc-toolbar bc-toolbar-responsive">
                     <div class="bc-toolbar-left">
                         <div class="text-muted c-body-small text-truncate my-3">Biblio ID:
-                            <code class="c-code ml-3">{{.Publication.ID}}</code>
+                            <code class="c-code ms-3">{{.Publication.ID}}</code>
                         </div>
                     </div>
                     <div class="bc-toolbar-right flex-wrap">
@@ -109,25 +109,25 @@
                                 {{with .Publication.VABB}}
                                     {{if $.User.CanCurate}}
                                     <li class="c-meta-item">
-                                        <i class="if if-bar-chart if--muted if--small mr-2"></i>
+                                        <i class="if if-bar-chart if--muted if--small me-2"></i>
                                         <span class="text-muted c-body-small">VABB: {{.}}</span>
                                     </li>
                                     {{else}}
                                     <li class="c-meta-item" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="{{.}}">
-                                        <i class="if if-bar-chart if--muted if--small mr-2"></i>
+                                        <i class="if if-bar-chart if--muted if--small me-2"></i>
                                         <span class="text-muted c-body-small">VABB</span>
                                     </li>
                                     {{end}}
                                 {{end}}
                                 {{if .Publication.Legacy}}
                                 <li class="c-meta-item" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Legacy record">
-                                    <i class="if if-forbid if--muted if--small mr-2"></i>
+                                    <i class="if if-forbid if--muted if--small me-2"></i>
                                     <span class="text-muted c-body-small">Legacy</span>
                                 </li>
                                 {{end}}
                                 {{if .Publication.RelatedDataset}}
                                 <li class="c-meta-item" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="{{len .Publication.RelatedDataset}} related datasets">
-                                    <i class="if if-database if--muted if--small mr-2"></i>
+                                    <i class="if if-database if--muted if--small me-2"></i>
                                    <span class="text-muted c-body-small">{{len .Publication.RelatedDataset}}</span>
                                 </li>
                                 {{end}}

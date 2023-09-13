@@ -40,8 +40,8 @@
             <div class="c-radio-card__content d-flex align-content-center">
                 {{if eq .Value "info:eu-repo/semantics/openAccess"}}
                 <i class="if if-download text-success align-self-center"></i>
-                <div class="ml-5">
-                    <p class="mb-1 mr-3">{{.Label}}</p>
+                <div class="ms-5">
+                    <p class="mb-1 me-3">{{.Label}}</p>
                     <div>
                         <span class="badge badge-pill badge-success">
                             <i class="if if-info-circle"></i>
@@ -52,20 +52,20 @@
                 </div>
                 {{else if eq .Value "info:eu-repo/semantics/embargoedAccess"}}
                 <i class="if if-time text-muted align-self-center"></i>
-                <div class="ml-5">
-                    <p class="mb-1 mr-3">{{.Label}}</p>
+                <div class="ms-5">
+                    <p class="mb-1 me-3">{{.Label}}</p>
                     <span class="text-muted c-body-small">Use to switch access levels after a specified embargo period. UGent selects this by default to open up the author accepted manuscript (AAM) of journal articles published since 2023.</span>
                 </div>
                 {{else if eq .Value "info:eu-repo/semantics/restrictedAccess"}}
                 <i class="if if-ghent-university text-primary align-self-center"></i>
-                <div class="ml-5">
-                    <p class="mb-1 mr-3">{{.Label}}</p>
+                <div class="ms-5">
+                    <p class="mb-1 me-3">{{.Label}}</p>
                     <span class="text-muted c-body-small">Your file will be available to users within the UGent network only. Minimum expected by UGent policy.</span>
                 </div>
                 {{else if eq .Value "info:eu-repo/semantics/closedAccess"}}
                 <i class="if if-eye-off text-muted align-self-center"></i>
-                <div class="ml-5">
-                    <p class="mb-1 mr-3">{{.Label}}</p>
+                <div class="ms-5">
+                    <p class="mb-1 me-3">{{.Label}}</p>
                     <span class="text-muted c-body-small">Only the authors and Biblio staff can access your file. Others will see metadata only. Use by exception.</span>
                 </div>
                 {{end}}

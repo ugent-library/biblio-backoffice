@@ -1,11 +1,11 @@
 <div class="dropdown">
-    <a class="badge badge-{{if .SearchArgs.HasFilter "identifier_type"}}primary{{else if .Hits.Facets.identifier_type.HasMatches}}default{{else}}secondary{{end}} mr-3"
+    <a class="badge badge-{{if .SearchArgs.HasFilter "identifier_type"}}primary{{else if .Hits.Facets.identifier_type.HasMatches}}default{{else}}secondary{{end}} me-3"
         data-toggle="dropdown" data-persist="true" aria-haspopup="true"
         aria-expanded="false" role="button"
     >
         <span class="badge-text">Persistent identifier type</span>
         {{with .SearchArgs.FiltersFor "identifier_type"}}
-        <span class="badge-value ml-2">
+        <span class="badge-value ms-2">
             &ndash;
             {{range $i, $v := .}}
                 {{- if gt $i 2}}, &hellip;{{break}}{{end}}

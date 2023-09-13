@@ -1,11 +1,11 @@
 <div class="dropdown">
-    <a class="badge badge-{{if .SearchArgs.HasFilter "updated_since"}}primary{{else}}default{{end}} mr-3"
+    <a class="badge badge-{{if .SearchArgs.HasFilter "updated_since"}}primary{{else}}default{{end}} me-3"
         data-toggle="dropdown" data-persist="true" aria-haspopup="true"
         aria-expanded="false" role="button"
     >
         <span class="badge-text">Updated since</span>
         {{with .SearchArgs.FilterFor "updated_since"}}
-        <span class="badge-value ml-2">&ndash; {{.}}</span>
+        <span class="badge-value ms-2">&ndash; {{.}}</span>
         {{end}}
         <i class="if if-caret-down"></i>
     </a>

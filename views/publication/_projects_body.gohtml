@@ -4,7 +4,7 @@
         <tbody>
             {{range $i, $rel := .Publication.RelatedProjects}}
                 <tr class="row-{{$i}}">
-                    <td class="pl-6">
+                    <td class="ps-6">
                         <div class="d-flex w-100">
                             <div class="w-100">
                                 <div class="d-flex align-items-start">
@@ -20,7 +20,7 @@
                             </div>
                         </div>
                     </td>
-                    <td class="pr-6">
+                    <td class="pe-6">
                         {{if $.User.CanEditPublication $.Publication}}
                         <div class="c-button-toolbar">
                             <div class="dropdown">

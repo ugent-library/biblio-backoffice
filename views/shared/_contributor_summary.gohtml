@@ -5,9 +5,9 @@
     </div>
     <div class="bc-avatar-text">
       <h3>
-        <span class="mr-3">{{.Contributor.Person.FullName}}</span>
+        <span class="me-3">{{.Contributor.Person.FullName}}</span>
         {{if .Current}}
-        <span class="badge badge-pill badge-success mr-3"><i class="if if-check-circle"></i><span class="badge-text">Current selection</span></span>
+        <span class="badge badge-pill badge-success me-3"><i class="if if-check-circle"></i><span class="badge-text">Current selection</span></span>
         {{end}}
         {{if .Active}}
         <span class="badge badge-pill badge-default">Active UGent member</span>
@@ -25,7 +25,7 @@
         {{with .Contributor.Person.UGentID}}
         <li class="c-meta-item">
           {{range $i, $v := .}}
-          <span class="mr-2">
+          <span class="me-2">
               <i class="if if-ghent-university"></i>
               {{$v}}
           </span>

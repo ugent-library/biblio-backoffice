@@ -55,7 +55,7 @@
 
         <div class="card mb-6">
             <div class="card-header">
-                <h4 class="mr-5 d-inline">Imported publications</h4>
+                <h4 class="me-5 d-inline">Imported publications</h4>
                 {{partial "search/count" .}}
             </div>
             <div class="card-body p-0">
@@ -76,7 +76,7 @@
                                     <a class="list-group-item list-group-item-action" href="{{$pubURL|querySet "show" "description"}}">
                                         <div class="d-flex justify-content-between align-items-center">
                                             <div class="d-flex align-items-center">
-                                                <span class="ml-3">Description</span>
+                                                <span class="ms-3">Description</span>
                                             </div>
                                             <i class="if if-chevron-right"></i>
                                         </div>
@@ -84,7 +84,7 @@
                                     <a class="list-group-item list-group-item-action" href="{{$pubURL|querySet "show" "contributors"}}">
                                         <div class="d-flex justify-content-between align-items-center">
                                             <div class="d-flex align-items-center">
-                                                <span class="ml-3">{{$.Locale.T "publication.subnav.contributors"}}</span>
+                                                <span class="ms-3">{{$.Locale.T "publication.subnav.contributors"}}</span>
                                             </div>
                                             <i class="if if-chevron-right"></i>
                                         </div>
@@ -92,7 +92,7 @@
                                     <a class="list-group-item list-group-item-action" href="{{$pubURL|querySet "show" "files"}}">
                                         <div class="d-flex justify-content-between align-items-center">
                                             <div class="d-flex align-items-center">
-                                                <span class="ml-3">Full text &amp; Files</span>
+                                                <span class="ms-3">Full text &amp; Files</span>
                                             </div>
                                             <i class="if if-chevron-right"></i>
                                         </div>

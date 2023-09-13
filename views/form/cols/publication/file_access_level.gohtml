@@ -40,8 +40,8 @@
             <div class="c-radio-card__content d-flex align-content-center">
                 {{if eq .Value "open_access"}}
                 <i class="if if-download text-success align-self-center"></i>
-                <div class="ml-5">
-                    <p class="mb-1 mr-3">{{.Label}}</p>
+                <div class="ms-5">
+                    <p class="mb-1 me-3">{{.Label}}</p>
                     <span class="text-muted c-body-small">Your
                     file will be publicly available, effective
                     immediately. Recommended option if you own
@@ -51,15 +51,15 @@
                 </div>
                 {{else if eq .Value "local"}}
                 <i class="if if-ghent-university text-primary align-self-center"></i>
-                <div class="ml-5">
-                    <p class="mb-1 mr-3">{{.Label}}</p>
+                <div class="ms-5">
+                    <p class="mb-1 me-3">{{.Label}}</p>
                     <span class="text-muted c-body-small">Your file will only be
                     available to UGent members.</span>
                 </div>
                 {{else if eq .Value "closed"}}
                 <i class="if if-eye-off text-muted align-self-center"></i>
-                <div class="ml-5">
-                    <p class="mb-1 mr-3">{{.Label}}</p>
+                <div class="ms-5">
+                    <p class="mb-1 me-3">{{.Label}}</p>
                     <span class="text-muted c-body-small">Your file will only be available to the authors and Biblio reviewers.</span>
                 </div>
                 {{end}}
