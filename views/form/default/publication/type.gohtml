@@ -1,4 +1,4 @@
-<div class="form-group group row{{if .Error}} is-invalid{{end}}">
+<div class="mb-6 row {{if .Error}} is-invalid{{end}}">
     <label class="col-lg-3 col-form-label" for="{{.Name}}">
         {{.Label}}{{if .Required}}&nbsp;<abbr class="required" title="Required">*</abbr>{{end}}
         {{with .Tooltip}}
