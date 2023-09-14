@@ -7,10 +7,10 @@
 
         <div class="p-6 border-bottom">
             <h3>Search {{.Locale.TS "publication.contributor.role" .Role}}</h3>
-        
+
             <div class="person-attributes">
                 {{range .Form.Sections}}
-                <div class="form-row align-items-end">
+                <div class="row align-items-end">
                     {{.Render}}
                 </div>
                 {{end}}

@@ -1,5 +1,5 @@
 <div class="col-6">
-    <div class="form-group{{if .Error}} is-invalid{{end}}">
+    <div class="mb-6 {{if .Error}} is-invalid{{end}}">
         <label class="col-form-label" for="{{.Name}}">
             Access level&nbsp;<strong>during</strong>&nbsp;embargo{{if .Required}}&nbsp;<abbr class="required" title="Required">*</abbr>{{end}}
             {{with .Tooltip}}
