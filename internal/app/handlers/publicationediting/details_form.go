@@ -415,6 +415,7 @@ func detailsForm(user *models.User, l *locale.Locale, p *models.Publication, err
 				Name:    "wos_type",
 				Label:   l.T("builder.wos_type"),
 				Value:   p.WOSType,
+				Cols:    3,
 				Tooltip: l.T("tooltip.publication.wos_type"),
 			})
 		} else {
