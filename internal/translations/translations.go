@@ -44,7 +44,7 @@ func init() {
 	message.SetString(language.English, "dataset.contributor.title.contributor", "Contributors")
 	message.SetString(language.English, "publication.contributor.role.author", "author")
 	message.SetString(language.English, "publication.contributor.role.editor", "editor")
-	message.SetString(language.English, "publication.contributor.role.supervisor", "promoter")
+	message.SetString(language.English, "publication.contributor.role.supervisor", "supervisor")
 	message.SetString(language.English, "dataset.contributor.role.author", "creator")
 	message.SetString(language.English, "dataset.contributor.role.contributor", "contributor")
 
