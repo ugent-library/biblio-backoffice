@@ -32,15 +32,12 @@
 }
 
 
-.alert-dismissible .close {
+.alert-dismissible .btn-close {
   opacity: 1;
-  top: 0.1rem;
   mix-blend-mode: multiply;
-
-  .if {
-    display: block;
-    color: $icon-muted;
-  }
+  padding: 0.8rem;
+  top: 1rem;
+  right: 1rem;
 }
 
 /* Success alert
