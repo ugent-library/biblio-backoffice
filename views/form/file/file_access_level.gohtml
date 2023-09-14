@@ -32,9 +32,9 @@
             hx-trigger="click delay:50ms"
         >
             <div class="c-radio-card__radio">
-                <div class="custom-control custom-radio">
-                    <input class="custom-control-input" id="access-level-{{.Value}}" type="radio" name="access_level" value="{{.Value}}"{{if eq .Value $.Value}} checked{{end}}>
-                    <label class="custom-control-label" for="access-level-{{.Value}}"></label>
+                <div class="form-check">
+                    <input class="form-check-input" id="access-level-{{.Value}}" type="radio" name="access_level" value="{{.Value}}"{{if eq .Value $.Value}} checked{{end}}>
+                    <label class="form-check-label" for="access-level-{{.Value}}"></label>
                 </div>
             </div>
             <div class="c-radio-card__content d-flex align-content-center">

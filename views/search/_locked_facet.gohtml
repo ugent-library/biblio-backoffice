@@ -41,9 +41,9 @@
         <div class="dropdown-menu__body">
             {{$last := sub (len .Hits.Facets.locked) 1}}
             {{range $i, $f := .Hits.Facets.locked}}
-            <div class="custom-control form-check{{if lt $i $last}} mb-4{{end}}">
-                <input class="custom-control-input" id="filter-locked-{{$i}}" type="checkbox" name="f[locked]" value="{{$f.Value}}"{{if $.SearchArgs.HasFilter "locked" .Value}} checked{{end}}>
-                <label class="custom-control-label" for="filter-locked-{{$i}}">{{$.Locale.TS "locked" $f.Value}} ({{$f.Count}})</label>
+            <div class="form-check {{if lt $i $last}} mb-4{{end}}">
+                <input class="form-check-input" id="filter-locked-{{$i}}" type="checkbox" name="f[locked]" value="{{$f.Value}}"{{if $.SearchArgs.HasFilter "locked" .Value}} checked{{end}}>
+                <label class="form-check-label" for="filter-locked-{{$i}}">{{$.Locale.TS "locked" $f.Value}} ({{$f.Count}})</label>
             </div>
             {{end}}
         </div>

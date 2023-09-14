@@ -41,9 +41,9 @@
         <div class="dropdown-menu__body">
             {{$last := sub (len .Hits.Facets.extern) 1}}
             {{range $i, $f := .Hits.Facets.extern}}
-            <div class="custom-control form-check{{if lt $i $last}} mb-4{{end}}">
-                <input class="custom-control-input" id="filter-extern-{{$i}}" type="checkbox" name="f[extern]" value="{{$f.Value}}"{{if $.SearchArgs.HasFilter "extern" $f.Value}} checked{{end}}>
-                <label class="custom-control-label" for="filter-extern-{{$i}}">{{$.Locale.TS "extern" $f.Value}} ({{$f.Count}})</label>
+            <div class="form-check {{if lt $i $last}} mb-4{{end}}">
+                <input class="form-check-input" id="filter-extern-{{$i}}" type="checkbox" name="f[extern]" value="{{$f.Value}}"{{if $.SearchArgs.HasFilter "extern" $f.Value}} checked{{end}}>
+                <label class="form-check-label" for="filter-extern-{{$i}}">{{$.Locale.TS "extern" $f.Value}} ({{$f.Count}})</label>
             </div>
             {{end}}
         </div>

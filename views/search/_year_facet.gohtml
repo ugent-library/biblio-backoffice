@@ -41,9 +41,9 @@
         <div class="dropdown-menu__body border-bottom">
             {{$last := sub (len .Hits.Facets.year) 1}}
             {{range $i, $f := .Hits.Facets.year}}
-            <div class="custom-control form-check{{if lt $i $last}} mb-4{{end}}">
-                <input class="custom-control-input" id="filter-year-{{$i}}" type="checkbox" name="f[year]" value="{{$f.Value}}"{{if $.SearchArgs.HasFilter "year" $f.Value}} checked{{end}}>
-                <label class="custom-control-label" for="filter-year-{{$i}}">{{$f.Value}} ({{$f.Count}})</label>
+            <div class="form-check {{if lt $i $last}} mb-4{{end}}">
+                <input class="form-check-input" id="filter-year-{{$i}}" type="checkbox" name="f[year]" value="{{$f.Value}}"{{if $.SearchArgs.HasFilter "year" $f.Value}} checked{{end}}>
+                <label class="form-check-label" for="filter-year-{{$i}}">{{$f.Value}} ({{$f.Count}})</label>
             </div>
             {{end}}
         </div>

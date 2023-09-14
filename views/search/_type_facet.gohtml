@@ -41,9 +41,9 @@
         <div class="dropdown-menu__body border-bottom">
             {{$last := sub (len .Hits.Facets.type) 1}}
             {{range $i, $f := .Hits.Facets.type}}
-            <div class="custom-control form-check{{if lt $i $last}} mb-4{{end}}">
-                <input class="custom-control-input" id="filter-type-{{$i}}" type="checkbox" name="f[type]" value="{{$f.Value}}"{{if $.SearchArgs.HasFilter "type" $f.Value}} checked{{end}}>
-                <label class="custom-control-label" for="filter-type-{{$i}}">{{$.Locale.TS "publication_types" $f.Value}} ({{$f.Count}})</label>
+            <div class="form-check {{if lt $i $last}} mb-4{{end}}">
+                <input class="form-check-input" id="filter-type-{{$i}}" type="checkbox" name="f[type]" value="{{$f.Value}}"{{if $.SearchArgs.HasFilter "type" $f.Value}} checked{{end}}>
+                <label class="form-check-label" for="filter-type-{{$i}}">{{$.Locale.TS "publication_types" $f.Value}} ({{$f.Count}})</label>
             </div>
             {{end}}
         </div>

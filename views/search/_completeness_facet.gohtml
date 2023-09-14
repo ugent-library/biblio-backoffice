@@ -31,9 +31,9 @@
         <div class="dropdown-menu__body">
             {{$last := sub (len .Hits.Facets.completeness_score) 1}}
             {{range $i, $f := .Hits.Facets.completeness_score}}
-            <div class="custom-control form-check{{if lt $i $last}} mb-4{{end}}">
-                <input class="custom-control-input" id="filter-completeness_score-{{$i}}" type="checkbox" name="f[completeness_score]" value="{{$f.Value}}"{{if $.SearchArgs.HasFilter "completeness_score" $f.Value}} checked{{end}}>
-                <label class="custom-control-label" for="filter-completeness_score-{{$i}}">
+            <div class="form-check {{if lt $i $last}} mb-4{{end}}">
+                <input class="form-check-input" id="filter-completeness_score-{{$i}}" type="checkbox" name="f[completeness_score]" value="{{$f.Value}}"{{if $.SearchArgs.HasFilter "completeness_score" $f.Value}} checked{{end}}>
+                <label class="form-check-label" for="filter-completeness_score-{{$i}}">
                     {{if eq $f.Value "3"}}
                         Completed
                     {{else if eq $f.Value "2"}}

@@ -10,7 +10,7 @@
     </label>
     <div class="col-lg-{{.Cols}}">
         <select
-            class="custom-select form-control{{if .Error}} is-invalid{{end}}"
+            class="form-select form-control{{if .Error}} is-invalid{{end}}"
             name="{{.Name}}"
             {{if .Disabled}} disabled{{end}}
             hx-get="{{pathFor "publication_confirm_update_type" "id" .Vars.Publication.ID}}"

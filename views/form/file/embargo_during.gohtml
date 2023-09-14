@@ -9,7 +9,7 @@
             </a>
             {{end}}
         </label>
-        <select class="custom-select form-control{{if .Error}} is-invalid{{end}}" name="{{.Name}}"{{if .Disabled}} disabled{{end}}>
+        <select class="form-select form-control{{if .Error}} is-invalid{{end}}" name="{{.Name}}"{{if .Disabled}} disabled{{end}}>
             {{if .EmptyOption}}<option></option>{{end}}
             {{range .Options}}
             <option value="{{.Value}}"{{if eq .Value $.Value}} selected{{end}}>{{.Label}}</option>

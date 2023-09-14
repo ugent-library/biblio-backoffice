@@ -41,9 +41,9 @@
         <div class="dropdown-menu__body border-bottom">
             {{$last := sub (len .Hits.Facets.classification) 1}}
             {{range $i, $f := .Hits.Facets.classification}}
-            <div class="custom-control form-check{{if lt $i $last}} mb-4{{end}}">
-                <input class="custom-control-input" id="filter-classification-{{$i}}" type="checkbox" name="f[classification]" value="{{$f.Value}}"{{if $.SearchArgs.HasFilter "classification" $f.Value}} checked{{end}}>
-                <label class="custom-control-label" for="filter-classification-{{$i}}">{{$.Locale.TS "publication_classifications" $f.Value}} ({{$f.Count}})</label>
+            <div class="form-check {{if lt $i $last}} mb-4{{end}}">
+                <input class="form-check-input" id="filter-classification-{{$i}}" type="checkbox" name="f[classification]" value="{{$f.Value}}"{{if $.SearchArgs.HasFilter "classification" $f.Value}} checked{{end}}>
+                <label class="form-check-label" for="filter-classification-{{$i}}">{{$.Locale.TS "publication_classifications" $f.Value}} ({{$f.Count}})</label>
             </div>
             {{end}}
         </div>
