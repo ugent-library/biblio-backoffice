@@ -117,7 +117,7 @@
             <div class="c-sidebar{{if eq .UserRole "curator"}} c-sidebar--dark-gray{{end}}">
                 {{if and .User .User.CanCurate}}
                 <div class="dropdown mx-4 mt-1 mb-5">
-                    <button class="btn btn-outline-light btn-sm btn-block dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <button class="btn btn-outline-light btn-sm w-100 dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <span class="text-truncate">
                         {{if eq .UserRole "user"}}
                             Researcher

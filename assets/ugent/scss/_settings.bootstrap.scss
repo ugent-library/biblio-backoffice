@@ -140,11 +140,11 @@ $input-btn-padding-x-sm:      .5rem;
 
 // Buttons
 //
-// For each of Bootstrap's buttons, define text, background, and border color.
+// For each of Bootstrap's buttons, define text, background, shadow and border color.
 
 $btn-font-weight:             500;
-
 $btn-link-disabled-color:     rgba($blue, .5);
+$btn-box-shadow:              none;
 
 // Allows for customizing button radius independently from global border radius
 $btn-border-radius-sm:        $border-radius;
