@@ -46,7 +46,7 @@
         <ul class="c-meta-list c-meta-list-horizontal">
         {{range $i, $cd := .Contributor.Person.Affiliations}}
             <li class="c-meta-item">
-                <span class="badge badge-pill badge-default">
+                <span class="badge rounded-pill badge-default">
                     <span class="badge-text">{{$cd.OrganizationID}}</span>
                     {{with $cd.Organization}}
                     <a class="ms-4" href="#" data-container="body" data-toggle="popover" data-trigger="focus" data-placement="right" data-content="{{.Name}}">
