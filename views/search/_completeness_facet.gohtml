@@ -1,5 +1,5 @@
 <div class="dropdown">
-    <a class="badge badge-{{if .SearchArgs.HasFilter "completeness_score"}}primary{{else if .Hits.Facets.completeness_score.HasMatches}}default{{else}}secondary{{end}} me-3"
+    <a class="badge {{if .SearchArgs.HasFilter "completeness_score"}}bg-primary{{else if .Hits.Facets.completeness_score.HasMatches}}badge-default{{else}}badge-secondary{{end}} me-3"
         data-toggle="dropdown" data-persist="true" aria-haspopup="true"
         aria-expanded="false" role="button"
     >

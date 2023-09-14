@@ -1,5 +1,5 @@
 <div class="dropdown">
-    <a class="badge badge-{{if .SearchArgs.HasFilter "updated_since"}}primary{{else}}default{{end}} me-3"
+    <a class="badge {{if .SearchArgs.HasFilter "updated_since"}}bg-primary{{else}}badge-default{{end}} me-3"
         data-toggle="dropdown" data-persist="true" aria-haspopup="true"
         aria-expanded="false" role="button"
     >
