@@ -255,6 +255,8 @@ func (e *Encoder) EncodePublication(p *models.Publication) ([]byte, error) {
 		r.RelatedItem = append(r.RelatedItem, ri)
 	}
 
+	// TODO map views/export/_mods_36_body.tt lines >=234
+
 	return xml.Marshal(r)
 }
 
