@@ -4,8 +4,8 @@ import (
 	"errors"
 
 	"github.com/ugent-library/biblio-backoffice/internal/backends"
-	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"github.com/ugent-library/biblio-backoffice/internal/validation"
+	"github.com/ugent-library/biblio-backoffice/models"
 )
 
 func ProjectAdd(projectService backends.ProjectService) func(*models.Publication, []string) error {

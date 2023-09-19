@@ -7,7 +7,8 @@ import (
 
 	"github.com/elastic/go-elasticsearch/v6"
 	"github.com/ugent-library/biblio-backoffice/internal/backends"
-	"github.com/ugent-library/biblio-backoffice/internal/models"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/repositories"
 )
 
 type SearchServiceConfig struct {
@@ -41,7 +42,7 @@ func NewSearchService(c SearchServiceConfig) (backends.SearchService, error) {
 	}, nil
 }
 
-func (s *SearchService) NewPublicationIndex(r backends.Repository) backends.PublicationIndex {
+func (s *SearchService) NewPublicationIndex(r *repositories.Repo) backends.PublicationIndex {
 	e := newPublicationIndex(s.client, s.publicationIndex)
 	return backends.NewPublicationIndex(e, r)
 }
@@ -70,7 +71,7 @@ func (s *SearchService) NewPublicationIndexSwitcher(config backends.BulkIndexerC
 		string(settings), s.indexRetention, docFn, config)
 }
 
-func (s *SearchService) NewDatasetIndex(r backends.Repository) backends.DatasetIndex {
+func (s *SearchService) NewDatasetIndex(r *repositories.Repo) backends.DatasetIndex {
 	e := newDatasetIndex(s.client, s.datasetIndex)
 	return backends.NewDatasetIndex(e, r)
 }

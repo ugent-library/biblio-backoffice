@@ -4,10 +4,10 @@ import (
 	"net/http"
 
 	"github.com/ugent-library/biblio-backoffice/internal/app/displays"
-	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"github.com/ugent-library/biblio-backoffice/internal/render"
 	"github.com/ugent-library/biblio-backoffice/internal/render/display"
 	"github.com/ugent-library/biblio-backoffice/internal/validation"
+	"github.com/ugent-library/biblio-backoffice/models"
 )
 
 var (
@@ -81,7 +81,7 @@ func (h *Handler) ShowContributors(w http.ResponseWriter, r *http.Request, ctx C
 }
 
 func (h *Handler) ShowPublications(w http.ResponseWriter, r *http.Request, ctx Context) {
-	relatedPublications, err := h.Repository.GetVisibleDatasetPublications(ctx.User, ctx.Dataset)
+	relatedPublications, err := h.Repo.GetVisibleDatasetPublications(ctx.User, ctx.Dataset)
 	if err != nil {
 		h.Logger.Errorw("show dataset publications: could not get publications", "errors", err, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)

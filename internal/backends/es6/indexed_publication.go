@@ -5,11 +5,11 @@ import (
 	"strings"
 
 	"github.com/ugent-library/biblio-backoffice/internal/backends"
-	"github.com/ugent-library/biblio-backoffice/internal/models"
 	internal_time "github.com/ugent-library/biblio-backoffice/internal/time"
 	"github.com/ugent-library/biblio-backoffice/internal/util"
 	"github.com/ugent-library/biblio-backoffice/internal/validation"
 	"github.com/ugent-library/biblio-backoffice/internal/vocabularies"
+	"github.com/ugent-library/biblio-backoffice/models"
 )
 
 type indexedPublication struct {

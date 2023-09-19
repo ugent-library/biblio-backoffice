@@ -3,7 +3,7 @@ package mods36
 import (
 	"encoding/xml"
 
-	"github.com/ugent-library/biblio-backoffice/internal/models"
+	"github.com/ugent-library/biblio-backoffice/models"
 )
 
 // TODO copied from frontoffice handler, DRY this

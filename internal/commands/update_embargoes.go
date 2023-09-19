@@ -23,7 +23,7 @@ var updateEmbargoes = &cobra.Command{
 }
 
 func updatePublicationEmbargoes(e *backends.Services, logger *zap.SugaredLogger) {
-	n, err := e.Repository.UpdatePublicationEmbargoes()
+	n, err := e.Repo.UpdatePublicationEmbargoes()
 
 	if err != nil {
 		logger.Fatal(err)
@@ -33,7 +33,7 @@ func updatePublicationEmbargoes(e *backends.Services, logger *zap.SugaredLogger)
 }
 
 func updateDatasetEmbargoes(e *backends.Services, logger *zap.SugaredLogger) {
-	n, err := e.Repository.UpdateDatasetEmbargoes()
+	n, err := e.Repo.UpdateDatasetEmbargoes()
 
 	if err != nil {
 		logger.Fatal(err)

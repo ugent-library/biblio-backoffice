@@ -13,7 +13,7 @@ import (
 	"github.com/elastic/go-elasticsearch/v6/esapi"
 	"github.com/pkg/errors"
 	"github.com/ugent-library/biblio-backoffice/internal/backends"
-	"github.com/ugent-library/biblio-backoffice/internal/models"
+	"github.com/ugent-library/biblio-backoffice/models"
 )
 
 type DatasetIndex struct {

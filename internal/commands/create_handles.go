@@ -5,7 +5,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/ugent-library/biblio-backoffice/internal/backends"
-	"github.com/ugent-library/biblio-backoffice/internal/models"
+	"github.com/ugent-library/biblio-backoffice/models"
 	"go.uber.org/zap"
 )
 
@@ -30,7 +30,7 @@ var createHandles = &cobra.Command{
 }
 
 func createPublicationHandles(services *backends.Services, logger *zap.SugaredLogger) {
-	repo := services.Repository
+	repo := services.Repo
 
 	var n int
 	var err error
@@ -65,7 +65,7 @@ func createPublicationHandles(services *backends.Services, logger *zap.SugaredLo
 }
 
 func createDatasetHandles(services *backends.Services, logger *zap.SugaredLogger) {
-	repo := services.Repository
+	repo := services.Repo
 
 	var n int
 	var err error

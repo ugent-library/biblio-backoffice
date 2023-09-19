@@ -2,8 +2,8 @@ package es6
 
 import (
 	"github.com/ugent-library/biblio-backoffice/internal/backends"
-	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"github.com/ugent-library/biblio-backoffice/internal/vocabularies"
+	"github.com/ugent-library/biblio-backoffice/models"
 )
 
 type facetDefinition struct {

@@ -6,7 +6,7 @@ import (
 
 	"github.com/rvflash/elapsed"
 	"github.com/ugent-library/biblio-backoffice/identifiers"
-	"github.com/ugent-library/biblio-backoffice/internal/models"
+	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/friendly"
 )
 

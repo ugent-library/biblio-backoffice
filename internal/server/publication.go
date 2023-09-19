@@ -13,18 +13,19 @@ import (
 	"github.com/oklog/ulid/v2"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
 	"github.com/ugent-library/biblio-backoffice/internal/backends"
-	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"github.com/ugent-library/biblio-backoffice/internal/snapstore"
 	"github.com/ugent-library/biblio-backoffice/internal/validation"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/repositories"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 func (s *server) GetPublication(ctx context.Context, req *api.GetPublicationRequest) (*api.GetPublicationResponse, error) {
-	p, err := s.services.Repository.GetPublication(req.Id)
+	p, err := s.services.Repo.GetPublication(req.Id)
 
 	if err != nil {
-		if errors.Is(err, backends.ErrNotFound) {
+		if errors.Is(err, models.ErrNotFound) {
 			grpcErr := status.New(codes.InvalidArgument, fmt.Errorf("could not find publication with id %s", req.Id).Error())
 			return &api.GetPublicationResponse{
 				Response: &api.GetPublicationResponse_Error{
@@ -55,7 +56,7 @@ func (s *server) GetPublication(ctx context.Context, req *api.GetPublicationRequ
 func (s *server) GetAllPublications(req *api.GetAllPublicationsRequest, stream api.Biblio_GetAllPublicationsServer) (err error) {
 	var callbackErr error
 
-	streamErr := s.services.Repository.EachPublication(func(p *models.Publication) bool {
+	streamErr := s.services.Repo.EachPublication(func(p *models.Publication) bool {
 		j, err := json.Marshal(p)
 		if err != nil {
 			grpcError := status.New(codes.Internal, fmt.Errorf("could not marshal publication with id %s: %v", p.ID, err).Error())
@@ -153,7 +154,7 @@ func (s *server) UpdatePublication(ctx context.Context, req *api.UpdatePublicati
 		}, nil
 	}
 
-	err := s.services.Repository.UpdatePublication(p.SnapshotID, p, nil)
+	err := s.services.Repo.UpdatePublication(p.SnapshotID, p, nil)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
@@ -237,7 +238,7 @@ func (s *server) AddPublications(stream api.Biblio_AddPublicationsServer) error 
 			continue
 		}
 
-		if err := s.services.Repository.SavePublication(p, nil); err != nil {
+		if err := s.services.Repo.SavePublication(p, nil); err != nil {
 			grpcErr := status.New(codes.InvalidArgument, fmt.Errorf("failed to store publication %s at line %d: %s", p.ID, seq, err).Error())
 			if err = stream.Send(&api.AddPublicationsResponse{
 				Response: &api.AddPublicationsResponse_Error{
@@ -298,7 +299,7 @@ func (s *server) ImportPublications(stream api.Biblio_ImportPublicationsServer) 
 			continue
 		}
 
-		if err := s.services.Repository.ImportPublication(p); err != nil {
+		if err := s.services.Repo.ImportPublication(p); err != nil {
 			grpcErr := status.New(codes.InvalidArgument, fmt.Errorf("failed to store publication %s at line %d: %s", p.ID, seq, err).Error())
 			if err = stream.Send(&api.ImportPublicationsResponse{
 				Response: &api.ImportPublicationsResponse_Error{
@@ -334,12 +335,12 @@ func (s *server) MutatePublications(stream api.Biblio_MutatePublicationsServer) 
 			return status.Errorf(codes.Internal, "failed to read stream: %s", err)
 		}
 
-		mut := backends.Mutation{
+		mut := repositories.Mutation{
 			Op:   req.Op,
 			Args: req.Args,
 		}
 
-		if err := s.services.Repository.MutatePublication(req.Id, nil, mut); err != nil {
+		if err := s.services.Repo.MutatePublication(req.Id, nil, mut); err != nil {
 			grpcErr := status.New(codes.InvalidArgument, fmt.Errorf("failed to mutate publication %s at line %d: %s", req.Id, seq, err).Error())
 			if err = stream.Send(&api.MutateResponse{
 				Response: &api.MutateResponse_Error{
@@ -363,7 +364,7 @@ func (s *server) MutatePublications(stream api.Biblio_MutatePublicationsServer) 
 
 func (s *server) GetPublicationHistory(req *api.GetPublicationHistoryRequest, stream api.Biblio_GetPublicationHistoryServer) (err error) {
 	var callbackErr error
-	streamErr := s.services.Repository.PublicationHistory(req.Id, func(p *models.Publication) bool {
+	streamErr := s.services.Repo.PublicationHistory(req.Id, func(p *models.Publication) bool {
 		j, err := json.Marshal(p)
 		if err != nil {
 			grpcErr := status.New(codes.InvalidArgument, fmt.Errorf("could not read json input: %s", err).Error())
@@ -404,10 +405,10 @@ func (s *server) GetPublicationHistory(req *api.GetPublicationHistoryRequest, st
 }
 
 func (s *server) PurgePublication(ctx context.Context, req *api.PurgePublicationRequest) (*api.PurgePublicationResponse, error) {
-	_, err := s.services.Repository.GetPublication(req.Id)
+	_, err := s.services.Repo.GetPublication(req.Id)
 
 	if err != nil {
-		if errors.Is(err, backends.ErrNotFound) {
+		if errors.Is(err, models.ErrNotFound) {
 			grpcErr := status.New(codes.NotFound, fmt.Errorf("could not find publication with id %s", req.Id).Error())
 			return &api.PurgePublicationResponse{
 				Response: &api.PurgePublicationResponse_Error{
@@ -420,7 +421,7 @@ func (s *server) PurgePublication(ctx context.Context, req *api.PurgePublication
 	}
 
 	// TODO purgePublication doesn't return an error if the record for req.Id can't be found
-	if err := s.services.Repository.PurgePublication(req.Id); err != nil {
+	if err := s.services.Repo.PurgePublication(req.Id); err != nil {
 		return nil, status.Errorf(codes.Internal, "could not purge publication with id %s: %s", req.Id, err)
 	}
 
@@ -446,12 +447,12 @@ func (s *server) PurgeAllPublications(ctx context.Context, req *api.PurgeAllPubl
 		}, nil
 	}
 
-	if err := s.services.Repository.PurgeAllPublications(); err != nil {
+	if err := s.services.Repo.PurgeAllPublications(); err != nil {
 		return nil, status.Errorf(codes.Internal, "could not purge all publications: %s", err)
 	}
 
 	if err := s.services.PublicationSearchIndex.DeleteAll(); err != nil {
-		return nil, status.Errorf(codes.Internal, "could not delete publication from index: %w", err)
+		return nil, status.Errorf(codes.Internal, "could not delete publication from index: %s", err)
 	}
 
 	return &api.PurgeAllPublicationsResponse{
@@ -554,7 +555,7 @@ func (s *server) ReindexPublications(req *api.ReindexPublicationsRequest, stream
 	ctx := stream.Context()
 	var callbackErr error
 
-	streamErr := s.services.Repository.EachPublication(func(p *models.Publication) bool {
+	streamErr := s.services.Repo.EachPublication(func(p *models.Publication) bool {
 		if err := switcher.Index(ctx, p); err != nil {
 			grpcErr := status.New(codes.Internal, fmt.Errorf("indexing failed for publication [id: %s] : %s", p.ID, err).Error())
 			if err = stream.Send(&api.ReindexPublicationsResponse{
@@ -664,7 +665,7 @@ func (s *server) ReindexPublications(req *api.ReindexPublicationsRequest, stream
 		defer bi.Close(ctx)
 
 		var callbackErr error
-		streamErr := s.services.Repository.PublicationsBetween(startTime, endTime, func(p *models.Publication) bool {
+		streamErr := s.services.Repo.PublicationsBetween(startTime, endTime, func(p *models.Publication) bool {
 			if err := bi.Index(ctx, p); err != nil {
 				grpcErr := status.New(codes.Internal, fmt.Errorf("indexing failed for publication [id: %s] : %s", p.ID, err).Error())
 				if err = stream.Send(&api.ReindexPublicationsResponse{
@@ -846,7 +847,7 @@ func (s *server) TransferPublications(req *api.TransferPublicationsRequest, stre
 		}
 
 		if fixed {
-			errUpdate := s.services.Repository.UpdatePublicationInPlace(p)
+			errUpdate := s.services.Repo.UpdatePublicationInPlace(p)
 			if errUpdate != nil {
 				grpcErr := status.New(codes.Internal, fmt.Errorf("p: %s: s: %s ::: could not update snapshot: %s", p.ID, p.SnapshotID, errUpdate).Error())
 				if err = stream.Send(&api.TransferPublicationsResponse{
@@ -866,9 +867,9 @@ func (s *server) TransferPublications(req *api.TransferPublicationsRequest, stre
 	var streamErr error
 
 	if req.Publicationid != "" {
-		streamErr = s.services.Repository.PublicationHistory(req.Publicationid, callback)
+		streamErr = s.services.Repo.PublicationHistory(req.Publicationid, callback)
 	} else {
-		streamErr = s.services.Repository.EachPublicationSnapshot(callback)
+		streamErr = s.services.Repo.EachPublicationSnapshot(callback)
 	}
 
 	if callbackErr != nil {
@@ -886,7 +887,7 @@ func (s *server) CleanupPublications(req *api.CleanupPublicationsRequest, stream
 	var callbackErr error
 
 	count := 0
-	streamErr := s.services.Repository.EachPublication(func(p *models.Publication) bool {
+	streamErr := s.services.Repo.EachPublication(func(p *models.Publication) bool {
 		// Guard
 		fixed := false
 
@@ -935,7 +936,7 @@ func (s *server) CleanupPublications(req *api.CleanupPublicationsRequest, stream
 				return true
 			}
 
-			err := s.services.Repository.UpdatePublication(p.SnapshotID, p, nil)
+			err := s.services.Repo.UpdatePublication(p.SnapshotID, p, nil)
 			if err != nil {
 				grpcErr := status.New(codes.Internal, fmt.Errorf("failed to update publication[snapshot_id: %s, id: %s] : %v", p.SnapshotID, p.ID, err).Error())
 				if err = stream.Send(&api.CleanupPublicationsResponse{

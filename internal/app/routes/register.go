@@ -86,7 +86,7 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 	}
 	frontofficeHandler := &frontoffice.Handler{
 		BaseHandler: baseHandler,
-		Repository:  services.Repository,
+		Repo:        services.Repo,
 		FileStore:   services.FileStore,
 		IPFilter: ipfilter.New(ipfilter.Options{
 			AllowedIPs:     strings.Split(viper.GetString("ip-ranges"), ","),
@@ -104,18 +104,18 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 	}
 	datasetViewingHandler := &datasetviewing.Handler{
 		BaseHandler: baseHandler,
-		Repository:  services.Repository,
+		Repo:        services.Repo,
 	}
 	datasetCreatingHandler := &datasetcreating.Handler{
 		BaseHandler:         baseHandler,
-		Repository:          services.Repository,
+		Repo:                services.Repo,
 		DatasetSearchIndex:  services.DatasetSearchIndex,
 		DatasetSources:      services.DatasetSources,
 		OrganizationService: services.OrganizationService,
 	}
 	datasetEditingHandler := &datasetediting.Handler{
 		BaseHandler:               baseHandler,
-		Repository:                services.Repository,
+		Repo:                      services.Repo,
 		ProjectService:            services.ProjectService,
 		ProjectSearchService:      services.ProjectSearchService,
 		OrganizationSearchService: services.OrganizationSearchService,
@@ -136,13 +136,13 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 	}
 	publicationViewingHandler := &publicationviewing.Handler{
 		BaseHandler: baseHandler,
-		Repository:  services.Repository,
+		Repo:        services.Repo,
 		FileStore:   services.FileStore,
 		MaxFileSize: viper.GetInt("max-file-size"),
 	}
 	publicationCreatingHandler := &publicationcreating.Handler{
 		BaseHandler:            baseHandler,
-		Repository:             services.Repository,
+		Repo:                   services.Repo,
 		PublicationSearchIndex: services.PublicationSearchIndex,
 		PublicationSources:     services.PublicationSources,
 		PublicationDecoders:    services.PublicationDecoders,
@@ -150,7 +150,7 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 	}
 	publicationEditingHandler := &publicationediting.Handler{
 		BaseHandler:               baseHandler,
-		Repository:                services.Repository,
+		Repo:                      services.Repo,
 		ProjectService:            services.ProjectService,
 		ProjectSearchService:      services.ProjectSearchService,
 		OrganizationSearchService: services.OrganizationSearchService,
@@ -163,12 +163,12 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 	}
 	publicationBatchHandler := &publicationbatch.Handler{
 		BaseHandler: baseHandler,
-		Repository:  services.Repository,
+		Repo:        services.Repo,
 	}
 	// orcidHandler := &orcid.Handler{
 	// 	BaseHandler:              baseHandler,
 	// 	Tasks:                    services.Tasks,
-	// 	Repository:               services.Repository,
+	// 	Repo:                     services.Repo,
 	// 	PublicationSearchService: services.PublicationSearchService,
 	// 	Sandbox:                  services.ORCIDSandbox,
 	// }

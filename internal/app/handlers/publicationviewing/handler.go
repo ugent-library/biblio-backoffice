@@ -6,13 +6,14 @@ import (
 	"github.com/ugent-library/biblio-backoffice/internal/app/handlers"
 	"github.com/ugent-library/biblio-backoffice/internal/backends"
 	"github.com/ugent-library/biblio-backoffice/internal/bind"
-	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"github.com/ugent-library/biblio-backoffice/internal/render"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/repositories"
 )
 
 type Handler struct {
 	handlers.BaseHandler
-	Repository  backends.Repository
+	Repo        *repositories.Repo
 	FileStore   backends.FileStore
 	MaxFileSize int
 }
@@ -30,9 +31,9 @@ func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) htt
 			return
 		}
 
-		p, err := h.Repository.GetPublication(bind.PathValues(r).Get("id"))
+		p, err := h.Repo.GetPublication(bind.PathValues(r).Get("id"))
 		if err != nil {
-			if err == backends.ErrNotFound {
+			if err == models.ErrNotFound {
 				h.NotFound(w, r, ctx)
 			} else {
 				render.InternalServerError(w, r, err)

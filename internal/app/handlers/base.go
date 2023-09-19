@@ -17,9 +17,9 @@ import (
 	"github.com/oklog/ulid/v2"
 	"github.com/ugent-library/biblio-backoffice/internal/backends"
 	"github.com/ugent-library/biblio-backoffice/internal/locale"
-	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"github.com/ugent-library/biblio-backoffice/internal/render"
 	"github.com/ugent-library/biblio-backoffice/internal/render/flash"
+	"github.com/ugent-library/biblio-backoffice/models"
 	"go.uber.org/zap"
 )
 

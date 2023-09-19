@@ -2,18 +2,17 @@ package backends
 
 import (
 	"context"
-	"errors"
 	"io"
-	"time"
 
-	"github.com/ugent-library/biblio-backoffice/internal/models"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/repositories"
 	"github.com/ugent-library/orcid"
 )
 
 type Services struct {
 	ORCIDSandbox              bool
 	ORCIDClient               *orcid.MemberClient
-	Repository                Repository
+	Repo                      *repositories.Repo
 	FileStore                 FileStore
 	SearchService             SearchService
 	DatasetSearchIndex        DatasetIndex
@@ -52,46 +51,6 @@ type DatasetGetter interface {
 
 type PublicationGetter interface {
 	GetPublication(string) (*models.Publication, error)
-}
-
-type Repository interface {
-	GetPublication(string) (*models.Publication, error)
-	GetPublications([]string) ([]*models.Publication, error)
-	SavePublication(*models.Publication, *models.User) error
-	ImportPublication(*models.Publication) error
-	UpdatePublication(string, *models.Publication, *models.User) error
-	UpdatePublicationInPlace(*models.Publication) error
-	MutatePublication(string, *models.User, ...Mutation) error
-	PublicationsAfter(time.Time, int, int) (int, []*models.Publication, error)
-	PublicationsBetween(time.Time, time.Time, func(*models.Publication) bool) error
-	EachPublication(func(*models.Publication) bool) error
-	EachPublicationSnapshot(func(*models.Publication) bool) error
-	EachPublicationWithoutHandle(func(*models.Publication) bool) error
-	PublicationHistory(string, func(*models.Publication) bool) error
-	UpdatePublicationEmbargoes() (int, error)
-	PurgeAllPublications() error
-	PurgePublication(string) error
-	GetDataset(string) (*models.Dataset, error)
-	GetDatasets([]string) ([]*models.Dataset, error)
-	ImportDataset(*models.Dataset) error
-	SaveDataset(*models.Dataset, *models.User) error
-	UpdateDataset(string, *models.Dataset, *models.User) error
-	MutateDataset(string, *models.User, ...Mutation) error
-	DatasetsAfter(time.Time, int, int) (int, []*models.Dataset, error)
-	DatasetsBetween(time.Time, time.Time, func(*models.Dataset) bool) error
-	EachDataset(func(*models.Dataset) bool) error
-	EachDatasetSnapshot(func(*models.Dataset) bool) error
-	EachDatasetWithoutHandle(func(*models.Dataset) bool) error
-	DatasetHistory(string, func(*models.Dataset) bool) error
-	UpdateDatasetEmbargoes() (int, error)
-	PurgeAllDatasets() error
-	PurgeDataset(string) error
-	GetPublicationDatasets(*models.Publication) ([]*models.Dataset, error)
-	GetVisiblePublicationDatasets(*models.User, *models.Publication) ([]*models.Dataset, error)
-	GetDatasetPublications(*models.Dataset) ([]*models.Publication, error)
-	GetVisibleDatasetPublications(*models.User, *models.Dataset) ([]*models.Publication, error)
-	AddPublicationDataset(*models.Publication, *models.Dataset, *models.User) error
-	RemovePublicationDataset(*models.Publication, *models.Dataset, *models.User) error
 }
 
 type FileStore interface {
@@ -135,10 +94,10 @@ type DatasetIndex interface {
 
 type datasetIndex struct {
 	DatasetIDIndex
-	repo Repository
+	repo *repositories.Repo
 }
 
-func NewDatasetIndex(di DatasetIDIndex, r Repository) DatasetIndex {
+func NewDatasetIndex(di DatasetIDIndex, r *repositories.Repo) DatasetIndex {
 	return &datasetIndex{
 		DatasetIDIndex: di,
 		repo:           r,
@@ -196,10 +155,10 @@ type PublicationIndex interface {
 
 type publicationIndex struct {
 	PublicationIDIndex
-	repo Repository
+	repo *repositories.Repo
 }
 
-func NewPublicationIndex(di PublicationIDIndex, r Repository) PublicationIndex {
+func NewPublicationIndex(di PublicationIDIndex, r *repositories.Repo) PublicationIndex {
 	return &publicationIndex{
 		PublicationIDIndex: di,
 		repo:               r,
@@ -240,10 +199,10 @@ func (pi *publicationIndex) WithScope(field string, terms ...string) Publication
 }
 
 type SearchService interface {
-	NewDatasetIndex(Repository) DatasetIndex
+	NewDatasetIndex(*repositories.Repo) DatasetIndex
 	NewDatasetBulkIndexer(BulkIndexerConfig) (BulkIndexer[*models.Dataset], error)
 	NewDatasetIndexSwitcher(BulkIndexerConfig) (IndexSwitcher[*models.Dataset], error)
-	NewPublicationIndex(Repository) PublicationIndex
+	NewPublicationIndex(*repositories.Repo) PublicationIndex
 	NewPublicationBulkIndexer(BulkIndexerConfig) (BulkIndexer[*models.Publication], error)
 	NewPublicationIndexSwitcher(BulkIndexerConfig) (IndexSwitcher[*models.Publication], error)
 }
@@ -311,14 +270,7 @@ type HandleService interface {
 	UpsertHandle(string) (*models.Handle, error)
 }
 
-var ErrNotFound = errors.New("record not found")
-
 const MissingValue = "missing"
-
-type Mutation struct {
-	Op   string
-	Args []string
-}
 
 type PersonWithOrganizationsService struct {
 	PersonService       PersonService
@@ -332,7 +284,7 @@ func (s *PersonWithOrganizationsService) GetPerson(id string) (*models.Person, e
 	}
 	for _, a := range p.Affiliations {
 		o, err := s.OrganizationService.GetOrganization(a.OrganizationID)
-		if err == ErrNotFound {
+		if err == models.ErrNotFound {
 			a.Organization = NewDummyOrganization(a.OrganizationID)
 		} else if err != nil {
 			return nil, err
@@ -355,7 +307,7 @@ func (s *UserWithOrganizationsService) GetUser(id string) (*models.User, error) 
 	}
 	for _, a := range u.Affiliations {
 		o, err := s.OrganizationService.GetOrganization(a.OrganizationID)
-		if err == ErrNotFound {
+		if err == models.ErrNotFound {
 			a.Organization = NewDummyOrganization(a.OrganizationID)
 		} else if err != nil {
 			return nil, err
@@ -373,7 +325,7 @@ func (s *UserWithOrganizationsService) GetUserByUsername(username string) (*mode
 	}
 	for _, a := range u.Affiliations {
 		o, err := s.OrganizationService.GetOrganization(a.OrganizationID)
-		if err == ErrNotFound {
+		if err == models.ErrNotFound {
 			a.Organization = NewDummyOrganization(a.OrganizationID)
 		} else if err != nil {
 			return nil, err

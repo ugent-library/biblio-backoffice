@@ -8,14 +8,14 @@ import (
 	"strings"
 
 	"github.com/ugent-library/biblio-backoffice/internal/app/handlers"
-	"github.com/ugent-library/biblio-backoffice/internal/backends"
 	"github.com/ugent-library/biblio-backoffice/internal/render"
 	"github.com/ugent-library/biblio-backoffice/internal/render/flash"
+	"github.com/ugent-library/biblio-backoffice/repositories"
 )
 
 type Handler struct {
 	handlers.BaseHandler
-	Repository backends.Repository
+	Repo *repositories.Repo
 }
 
 type Context struct {
@@ -96,7 +96,7 @@ func (h *Handler) Process(w http.ResponseWriter, r *http.Request, ctx Context) {
 			args[i] = strings.TrimSpace(arg)
 		}
 
-		err = h.Repository.MutatePublication(id, ctx.User, backends.Mutation{
+		err = h.Repo.MutatePublication(id, ctx.User, repositories.Mutation{
 			Op:   op,
 			Args: args,
 		})

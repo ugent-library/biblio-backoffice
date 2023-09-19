@@ -4,9 +4,9 @@ import (
 	"github.com/ugent-library/biblio-backoffice/identifiers"
 	"github.com/ugent-library/biblio-backoffice/internal/app/localize"
 	"github.com/ugent-library/biblio-backoffice/internal/locale"
-	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"github.com/ugent-library/biblio-backoffice/internal/render/display"
 	"github.com/ugent-library/biblio-backoffice/internal/vocabularies"
+	"github.com/ugent-library/biblio-backoffice/models"
 )
 
 func DatasetDetails(user *models.User, l *locale.Locale, d *models.Dataset) *display.Display {

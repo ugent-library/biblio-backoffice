@@ -25,10 +25,10 @@ var resetCmd = &cobra.Command{
 
 		services := Services()
 
-		if err := services.Repository.PurgeAllPublications(); err != nil {
+		if err := services.Repo.PurgeAllPublications(); err != nil {
 			log.Fatal(err)
 		}
-		if err := services.Repository.PurgeAllDatasets(); err != nil {
+		if err := services.Repo.PurgeAllDatasets(); err != nil {
 			log.Fatal(err)
 		}
 

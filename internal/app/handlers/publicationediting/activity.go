@@ -7,11 +7,11 @@ import (
 	"github.com/ugent-library/biblio-backoffice/internal/app/localize"
 	"github.com/ugent-library/biblio-backoffice/internal/bind"
 	"github.com/ugent-library/biblio-backoffice/internal/locale"
-	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"github.com/ugent-library/biblio-backoffice/internal/render"
 	"github.com/ugent-library/biblio-backoffice/internal/render/form"
 	"github.com/ugent-library/biblio-backoffice/internal/snapstore"
 	"github.com/ugent-library/biblio-backoffice/internal/validation"
+	"github.com/ugent-library/biblio-backoffice/models"
 )
 
 type BindMessage struct {
@@ -73,7 +73,7 @@ func (h *Handler) UpdateMessage(w http.ResponseWriter, r *http.Request, ctx Cont
 		return
 	}
 
-	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
+	err := h.Repo.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
@@ -133,7 +133,7 @@ func (h *Handler) UpdateReviewerTags(w http.ResponseWriter, r *http.Request, ctx
 		return
 	}
 
-	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
+	err := h.Repo.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
@@ -193,7 +193,7 @@ func (h *Handler) UpdateReviewerNote(w http.ResponseWriter, r *http.Request, ctx
 		return
 	}
 
-	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
+	err := h.Repo.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {

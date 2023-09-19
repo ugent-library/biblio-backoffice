@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"github.com/ugent-library/biblio-backoffice/internal/render"
+	"github.com/ugent-library/biblio-backoffice/models"
 )
 
 func (h *Handler) ExportByCurationSearch(w http.ResponseWriter, r *http.Request, ctx Context) {

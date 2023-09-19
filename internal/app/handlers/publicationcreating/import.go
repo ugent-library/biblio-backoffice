@@ -15,7 +15,6 @@ import (
 	"github.com/ugent-library/biblio-backoffice/internal/app/handlers"
 	"github.com/ugent-library/biblio-backoffice/internal/app/localize"
 	"github.com/ugent-library/biblio-backoffice/internal/bind"
-	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"github.com/ugent-library/biblio-backoffice/internal/render"
 	"github.com/ugent-library/biblio-backoffice/internal/render/display"
 	"github.com/ugent-library/biblio-backoffice/internal/render/flash"
@@ -23,6 +22,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/internal/snapstore"
 	"github.com/ugent-library/biblio-backoffice/internal/validation"
 	"github.com/ugent-library/biblio-backoffice/internal/vocabularies"
+	"github.com/ugent-library/biblio-backoffice/models"
 )
 
 type BindImportSingle struct {
@@ -205,7 +205,7 @@ func (h *Handler) AddSingleImport(w http.ResponseWriter, r *http.Request, ctx Co
 		return
 	}
 
-	err = h.Repository.SavePublication(p, ctx.User)
+	err = h.Repo.SavePublication(p, ctx.User)
 
 	if err != nil {
 		h.Logger.Errorf("import single publication: -could not save the publication:", "error", err, "identifier", b.Identifier, "user", ctx.User.ID)
@@ -279,7 +279,7 @@ func (h *Handler) AddSinglePublish(w http.ResponseWriter, r *http.Request, ctx C
 		return
 	}
 
-	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
+	err := h.Repo.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
@@ -550,7 +550,7 @@ func (h *Handler) importPublications(user *models.User, source string, file io.R
 			break
 		}
 
-		if err := h.Repository.SavePublication(&p, user); err != nil {
+		if err := h.Repo.SavePublication(&p, user); err != nil {
 			importErr = err
 			break
 		}
@@ -584,7 +584,7 @@ func (h *Handler) batchPublishPublications(batchID string, user *models.User) (e
 			if err = pub.Validate(); err != nil {
 				return
 			}
-			if err = h.Repository.SavePublication(pub, user); err != nil {
+			if err = h.Repo.SavePublication(pub, user); err != nil {
 				return
 			}
 		}

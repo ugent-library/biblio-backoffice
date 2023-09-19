@@ -11,7 +11,7 @@ import (
 	"github.com/bluele/gcache"
 
 	"github.com/ugent-library/biblio-backoffice/internal/backends"
-	"github.com/ugent-library/biblio-backoffice/internal/models"
+	"github.com/ugent-library/biblio-backoffice/models"
 )
 
 type userService struct {

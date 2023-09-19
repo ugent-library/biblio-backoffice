@@ -6,13 +6,14 @@ import (
 	"github.com/ugent-library/biblio-backoffice/internal/app/handlers"
 	"github.com/ugent-library/biblio-backoffice/internal/backends"
 	"github.com/ugent-library/biblio-backoffice/internal/bind"
-	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"github.com/ugent-library/biblio-backoffice/internal/render"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/repositories"
 )
 
 type Handler struct {
 	handlers.BaseHandler
-	Repository                backends.Repository
+	Repo                      *repositories.Repo
 	ProjectSearchService      backends.ProjectSearchService
 	ProjectService            backends.ProjectService
 	PersonService             backends.PersonService
@@ -37,9 +38,9 @@ func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) htt
 		}
 
 		id := bind.PathValues(r).Get("id")
-		pub, err := h.Repository.GetPublication(id)
+		pub, err := h.Repo.GetPublication(id)
 		if err != nil {
-			if err == backends.ErrNotFound {
+			if err == models.ErrNotFound {
 				h.Logger.Warn("edit publication: could not find publication with id:", "errors", err, "id", id, "user", ctx.User.ID)
 				render.NotFound(w, r, err)
 			} else {

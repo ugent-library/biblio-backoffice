@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/tidwall/gjson"
-	"github.com/ugent-library/biblio-backoffice/internal/models"
+	"github.com/ugent-library/biblio-backoffice/models"
 )
 
 // api reference: https://europepmc.org/RestfulWebService

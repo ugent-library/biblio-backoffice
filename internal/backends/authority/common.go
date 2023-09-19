@@ -3,7 +3,7 @@ package authority
 import (
 	"regexp"
 
-	"github.com/ugent-library/biblio-backoffice/internal/models"
+	"github.com/ugent-library/biblio-backoffice/models"
 )
 
 type personSearchEnvelope struct {

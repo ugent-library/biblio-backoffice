@@ -9,8 +9,8 @@ import (
 
 	"github.com/ugent-library/biblio-backoffice/internal/backends/mods36"
 	"github.com/ugent-library/biblio-backoffice/internal/backends/oaidc"
-	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"github.com/ugent-library/biblio-backoffice/internal/vocabularies"
+	"github.com/ugent-library/biblio-backoffice/models"
 )
 
 func init() {
@@ -88,7 +88,7 @@ var updateOai = &cobra.Command{
 		}
 
 		// add all publications
-		repo := Services().Repository
+		repo := Services().Repo
 		repo.EachPublication(func(p *models.Publication) bool {
 			oaiID := "oai:archive.ugent.be:" + p.ID
 
