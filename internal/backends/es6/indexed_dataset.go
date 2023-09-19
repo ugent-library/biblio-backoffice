@@ -1,6 +1,7 @@
 package es6
 
 import (
+	"github.com/ugent-library/biblio-backoffice/internal/backends"
 	"github.com/ugent-library/biblio-backoffice/internal/models"
 	internal_time "github.com/ugent-library/biblio-backoffice/internal/time"
 	"github.com/ugent-library/biblio-backoffice/internal/util"
@@ -62,7 +63,7 @@ func NewIndexedDataset(d *models.Dataset) *indexedDataset {
 	}
 
 	if len(id.FacultyID) == 0 {
-		id.FacultyID = append(id.FacultyID, MissingValue)
+		id.FacultyID = append(id.FacultyID, backends.MissingValue)
 	}
 
 	for k, vals := range d.Identifiers {

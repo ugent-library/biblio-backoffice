@@ -9,7 +9,6 @@ import (
 	"github.com/davecgh/go-spew/spew"
 	"github.com/ugent-library/biblio-backoffice/internal/app/localize"
 	"github.com/ugent-library/biblio-backoffice/internal/backends"
-	"github.com/ugent-library/biblio-backoffice/internal/backends/es6"
 	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"github.com/ugent-library/biblio-backoffice/internal/render"
 	"github.com/ugent-library/biblio-backoffice/internal/vocabularies"
@@ -68,7 +67,7 @@ func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Conte
 		case "all":
 			args.WithFilter("faculty_id", faculties...)
 		case "-":
-			args.WithFilter("faculty_id", es6.MissingValue)
+			args.WithFilter("faculty_id", backends.MissingValue)
 		case "UGent":
 			args.WithFilter("organization_id", "UGent")
 		default:
@@ -96,7 +95,7 @@ func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Conte
 		case "all":
 			args.WithFilter("faculty_id", faculties...)
 		case "-":
-			args.WithFilter("faculty_id", es6.MissingValue)
+			args.WithFilter("faculty_id", backends.MissingValue)
 		default:
 			args.WithFilter("faculty_id", fac)
 		}

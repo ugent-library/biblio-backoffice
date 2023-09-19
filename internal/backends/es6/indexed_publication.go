@@ -4,6 +4,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/ugent-library/biblio-backoffice/internal/backends"
 	"github.com/ugent-library/biblio-backoffice/internal/models"
 	internal_time "github.com/ugent-library/biblio-backoffice/internal/time"
 	"github.com/ugent-library/biblio-backoffice/internal/util"
@@ -84,11 +85,11 @@ func NewIndexedPublication(p *models.Publication) *indexedPublication {
 	}
 
 	if len(ip.FacultyID) == 0 {
-		ip.FacultyID = append(ip.FacultyID, MissingValue)
+		ip.FacultyID = append(ip.FacultyID, backends.MissingValue)
 	}
 
 	if ip.PublicationStatus == "" {
-		ip.PublicationStatus = MissingValue
+		ip.PublicationStatus = backends.MissingValue
 	}
 
 	if p.WOSType != "" {
