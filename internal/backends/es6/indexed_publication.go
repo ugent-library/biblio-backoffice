@@ -4,6 +4,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/ugent-library/biblio-backoffice/internal/backends"
 	"github.com/ugent-library/biblio-backoffice/internal/models"
 	internal_time "github.com/ugent-library/biblio-backoffice/internal/time"
 	"github.com/ugent-library/biblio-backoffice/internal/util"
@@ -24,6 +25,7 @@ type indexedPublication struct {
 	FacultyID         []string `json:"faculty_id,omitempty"`
 	FileRelation      []string `json:"file_relation,omitempty"`
 	HasMessage        bool     `json:"has_message"`
+	HasFiles          bool     `json:"has_files"`
 	ID                string   `json:"id,omitempty"`
 	Identifier        []string `json:"identifier,omitempty"`
 	ISXN              []string `json:"isxn,omitempty"`
@@ -64,6 +66,7 @@ func NewIndexedPublication(p *models.Publication) *indexedPublication {
 		UserID:            p.UserID,
 		VABBType:          p.VABBType,
 		Year:              p.Year,
+		HasFiles:          len(p.File) > 0,
 	}
 
 	faculties := vocabularies.Map["faculties"]
@@ -81,13 +84,20 @@ func NewIndexedPublication(p *models.Publication) *indexedPublication {
 		}
 	}
 
+	if len(ip.FacultyID) == 0 {
+		ip.FacultyID = append(ip.FacultyID, backends.MissingValue)
+	}
+
+	if ip.PublicationStatus == "" {
+		ip.PublicationStatus = backends.MissingValue
+	}
+
 	if p.WOSType != "" {
 		wos_types := reSplitWOS.Split(p.WOSType, -1)
 		for _, wos_type := range wos_types {
 			wt := strings.TrimSpace(wos_type)
 			ip.WOSType = append(ip.WOSType, wt)
 		}
-
 	}
 
 	for _, author := range p.Author {

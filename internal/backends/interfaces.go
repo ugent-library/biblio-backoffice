@@ -313,6 +313,8 @@ type HandleService interface {
 
 var ErrNotFound = errors.New("record not found")
 
+const MissingValue = "missing"
+
 type Mutation struct {
 	Op   string
 	Args []string

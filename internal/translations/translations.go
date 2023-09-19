@@ -166,6 +166,7 @@ func init() {
 	message.SetString(language.English, "publication_classifications.V", "V - miscellaneous")
 	message.SetString(language.English, "publication_classifications.U", "U - undetermined")
 
+	message.SetString(language.English, "publication_publishing_statuses.missing", "No publication status")
 	message.SetString(language.English, "publication_publishing_statuses.unpublished", "Unpublished")
 	message.SetString(language.English, "publication_publishing_statuses.accepted", "Accepted")
 	message.SetString(language.English, "publication_publishing_statuses.published", "Published")
@@ -303,6 +304,7 @@ func init() {
 	message.SetString(language.English, "builder.miscellaneous.publication", "Publication title")
 	message.SetString(language.English, "builder.miscellaneous.publication_abbreviation", "Publication short title")
 
+	message.SetString(language.English, "organization.missing", "No affiliation")
 	message.SetString(language.English, "organization.CA", "Central Administration")
 	message.SetString(language.English, "organization.CA01", "Rector's Office")
 	message.SetString(language.English, "organization.CA02", "Vice-rector's Office")
@@ -781,6 +783,8 @@ func init() {
 	message.SetString(language.English, "has_message.false", "without message")
 	message.SetString(language.English, "legacy.true", "legacy publication")
 	message.SetString(language.English, "legacy.false", "normal publication")
+	message.SetString(language.English, "has_files.true", "With files")
+	message.SetString(language.English, "has_files.false", "Without files")
 
 	message.SetString(language.English, "suggest_custom_data_format", "Use custom data format")
 

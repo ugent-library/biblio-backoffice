@@ -32,7 +32,6 @@ func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Conte
 
 	socs := vocabularies.Map["faculties_socs"]
 	core := vocabularies.Map["faculties_core"]
-	all := vocabularies.Map["faculties"]
 
 	switch ctx.Type {
 	case "socs":
@@ -68,7 +67,7 @@ func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Conte
 		case "all":
 			args.WithFilter("faculty_id", faculties...)
 		case "-":
-			args.WithFilter("!faculty_id", all...)
+			args.WithFilter("faculty_id", backends.MissingValue)
 		case "UGent":
 			args.WithFilter("organization_id", "UGent")
 		default:
@@ -96,7 +95,7 @@ func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Conte
 		case "all":
 			args.WithFilter("faculty_id", faculties...)
 		case "-":
-			args.WithFilter("!faculty_id", all...)
+			args.WithFilter("faculty_id", backends.MissingValue)
 		default:
 			args.WithFilter("faculty_id", fac)
 		}

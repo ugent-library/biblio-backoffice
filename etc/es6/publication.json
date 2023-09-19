@@ -205,6 +205,9 @@
                 "has_message": {
                     "type": "boolean"
                 },
+                "has_files": {
+                    "type": "boolean"
+                },
                 "publication_status": {
                     "type": "keyword"
                 },
