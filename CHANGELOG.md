@@ -9,10 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Fixed
+
+## [v1.0.35] - 2023-09-19
+
+### Added
+
 - #1110: Keep related object metadata up-to-date
 - #812: remove confirmation dialog for Lock and Unlock
 - Smaller and more efficient search index
 - Add vabb_id.set, vabb_type.set, vabb_approved.set batch operations
+- Various ux improvements
+- remove downtime banner
 
 ### Fixed
 
@@ -379,7 +387,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.34...HEAD
+[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.35...HEAD
+[v1.0.35]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.34...v1.0.35
 [v1.0.34]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.33...v1.0.34
 [v1.0.33]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.32...v1.0.33
 [v1.0.32]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.31...v1.0.32
