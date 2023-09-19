@@ -1,7 +1,7 @@
 package main
 
-import "github.com/ugent-library/biblio-backoffice/internal/commands"
+import "github.com/ugent-library/biblio-backoffice/cli"
 
 func main() {
-	commands.Execute()
+	cli.Run()
 }

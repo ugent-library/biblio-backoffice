@@ -1,4 +1,4 @@
-package commands
+package cli
 
 import (
 	"log"
@@ -98,7 +98,7 @@ func init() {
 	rootCmd.PersistentFlags().Int("max-file-size", defaultMaxFileSize, "maximum file size")
 }
 
-func Execute() {
+func Run() {
 	if err := rootCmd.Execute(); err != nil {
 		log.Fatal(err)
 	}
