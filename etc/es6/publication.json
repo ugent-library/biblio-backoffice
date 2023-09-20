@@ -229,6 +229,35 @@
                 "isxn": {
                     "type": "text",
                     "analyzer": "isxn"
+                },
+                "keyword": {
+                    "type": "text",
+                    "analyzer": "keyword_lowercase",
+                    "copy_to": "all"
+                },
+                "alternative_title": {
+                    "type": "text",
+                    "copy_to": "all"
+                },
+                "issue_title": {
+                    "type": "text",
+                    "copy_to": "all"
+                },
+                "publisher": {
+                    "type": "text",
+                    "copy_to": "all"
+                },
+                "publication": {
+                    "type": "text",
+                    "copy_to": "all"
+                },
+                "publication_abbreviation": {
+                    "type": "text",
+                    "copy_to": "all"
+                },
+                "series_title": {
+                    "type": "text",
+                    "copy_to": "all"
                 }
             }
         }
