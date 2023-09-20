@@ -13,60 +13,74 @@ import (
 )
 
 type indexedPublication struct {
-	AuthorID          []string `json:"author_id,omitempty"`
-	BatchID           string   `json:"batch_id,omitempty"`
-	Classification    string   `json:"classification,omitempty"`
-	Contributor       []string `json:"contributor,omitempty"`
-	CreatorID         string   `json:"creator_id,omitempty"`
-	DateCreated       string   `json:"date_created"`
-	DateUpdated       string   `json:"date_updated"`
-	DOI               string   `json:"doi,omitempty"`
-	Extern            bool     `json:"extern"`
-	FacultyID         []string `json:"faculty_id,omitempty"`
-	FileRelation      []string `json:"file_relation,omitempty"`
-	HasMessage        bool     `json:"has_message"`
-	HasFiles          bool     `json:"has_files"`
-	ID                string   `json:"id,omitempty"`
-	Identifier        []string `json:"identifier,omitempty"`
-	ISXN              []string `json:"isxn,omitempty"`
-	LastUserID        string   `json:"last_user_id,omitempty"`
-	Locked            bool     `json:"locked"`
-	OrganizationID    []string `json:"organization_id,omitempty"`
-	PublicationStatus string   `json:"publication_status,omitempty"`
-	ReviewerTags      []string `json:"reviewer_tags,omitempty"`
-	Status            string   `json:"status,omitempty"`
-	Title             string   `json:"title,omitempty"`
-	Type              string   `json:"type,omitempty"`
-	UserID            string   `json:"user_id,omitempty"`
-	VABBType          string   `json:"vabb_type,omitempty"`
-	WOSType           []string `json:"wos_type,omitempty"`
-	Year              string   `json:"year,omitempty"`
+	AuthorID                []string `json:"author_id,omitempty"`
+	AlternativeTitle        []string `json:"alternative_title,omitempty"`
+	BatchID                 string   `json:"batch_id,omitempty"`
+	Classification          string   `json:"classification,omitempty"`
+	Contributor             []string `json:"contributor,omitempty"`
+	CreatorID               string   `json:"creator_id,omitempty"`
+	DateCreated             string   `json:"date_created"`
+	DateUpdated             string   `json:"date_updated"`
+	DOI                     string   `json:"doi,omitempty"`
+	Extern                  bool     `json:"extern"`
+	FacultyID               []string `json:"faculty_id,omitempty"`
+	FileRelation            []string `json:"file_relation,omitempty"`
+	HasMessage              bool     `json:"has_message"`
+	HasFiles                bool     `json:"has_files"`
+	ID                      string   `json:"id,omitempty"`
+	Identifier              []string `json:"identifier,omitempty"`
+	IssueTitle              string   `json:"issue_title,omitempty"`
+	ISXN                    []string `json:"isxn,omitempty"`
+	Keyword                 []string `json:"keyword,omitempty"`
+	LastUserID              string   `json:"last_user_id,omitempty"`
+	Locked                  bool     `json:"locked"`
+	OrganizationID          []string `json:"organization_id,omitempty"`
+	Publication             string   `json:"publication,omitempty"`
+	PublicationAbbreviation string   `json:"publication_abbreviation,omitempty"`
+	PublicationStatus       string   `json:"publication_status,omitempty"`
+	Publisher               string   `json:"publisher,omitempty"`
+	ReviewerTags            []string `json:"reviewer_tags,omitempty"`
+	SeriesTitle             string   `json:"series_title,omitempty"`
+	Status                  string   `json:"status,omitempty"`
+	Title                   string   `json:"title,omitempty"`
+	Type                    string   `json:"type,omitempty"`
+	UserID                  string   `json:"user_id,omitempty"`
+	VABBType                string   `json:"vabb_type,omitempty"`
+	WOSType                 []string `json:"wos_type,omitempty"`
+	Year                    string   `json:"year,omitempty"`
 }
 
 var reSplitWOS *regexp.Regexp = regexp.MustCompile("[,;]")
 
 func NewIndexedPublication(p *models.Publication) *indexedPublication {
 	ip := &indexedPublication{
-		BatchID:           p.BatchID,
-		Classification:    p.Classification,
-		CreatorID:         p.CreatorID,
-		DateCreated:       internal_time.FormatTimeUTC(p.DateCreated),
-		DateUpdated:       internal_time.FormatTimeUTC(p.DateUpdated),
-		DOI:               p.DOI,
-		Extern:            p.Extern,
-		ID:                p.ID,
-		LastUserID:        p.LastUserID,
-		Locked:            p.Locked,
-		HasMessage:        len(p.Message) > 0,
-		PublicationStatus: p.PublicationStatus,
-		ReviewerTags:      p.ReviewerTags,
-		Status:            p.Status,
-		Title:             p.Title,
-		Type:              p.Type,
-		UserID:            p.UserID,
-		VABBType:          p.VABBType,
-		Year:              p.Year,
-		HasFiles:          len(p.File) > 0,
+		BatchID:                 p.BatchID,
+		Classification:          p.Classification,
+		CreatorID:               p.CreatorID,
+		DateCreated:             internal_time.FormatTimeUTC(p.DateCreated),
+		DateUpdated:             internal_time.FormatTimeUTC(p.DateUpdated),
+		DOI:                     p.DOI,
+		Extern:                  p.Extern,
+		ID:                      p.ID,
+		IssueTitle:              p.IssueTitle,
+		LastUserID:              p.LastUserID,
+		Locked:                  p.Locked,
+		HasMessage:              len(p.Message) > 0,
+		Publication:             p.Publication,
+		PublicationAbbreviation: p.PublicationAbbreviation,
+		PublicationStatus:       p.PublicationStatus,
+		Publisher:               p.Publisher,
+		ReviewerTags:            p.ReviewerTags,
+		SeriesTitle:             p.SeriesTitle,
+		Status:                  p.Status,
+		Title:                   p.Title,
+		Type:                    p.Type,
+		UserID:                  p.UserID,
+		VABBType:                p.VABBType,
+		Year:                    p.Year,
+		HasFiles:                len(p.File) > 0,
+		Keyword:                 p.Keyword,
+		AlternativeTitle:        p.AlternativeTitle,
 	}
 
 	faculties := vocabularies.Map["faculties"]
