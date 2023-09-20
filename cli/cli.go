@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"log"
 	"strings"
 	_ "time/tzdata"
 
@@ -99,7 +98,5 @@ func init() {
 }
 
 func Run() {
-	if err := rootCmd.Execute(); err != nil {
-		log.Fatal(err)
-	}
+	cobra.CheckErr(rootCmd.Execute())
 }
