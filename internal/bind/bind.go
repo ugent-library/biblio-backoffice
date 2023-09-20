@@ -1,3 +1,4 @@
+// TODO use ugen-library/bind instead
 package bind
 
 import (
@@ -47,25 +48,13 @@ func PathValues(r *http.Request) url.Values {
 	return nil
 }
 
-func VacuumValues(vals url.Values) url.Values {
-	for k, v := range vals {
-		vacuumed := vacuumStringSlice(v)
-		if len(vacuumed) > 0 {
-			vals[k] = vacuumed
-		} else {
-			delete(vals, k)
-		}
-	}
-	return vals
-}
-
 func RequestPath(r *http.Request, v any, flags ...Flag) error {
 	return Path(PathValues(r), v, flags...)
 }
 
 func Path(vals url.Values, v any, flags ...Flag) error {
 	if hasFlag(flags, Vacuum) {
-		vals = VacuumValues(vals)
+		vals = vacuum(vals)
 	}
 	return pathDecoder.Decode(v, vals)
 }
@@ -76,7 +65,7 @@ func RequestQuery(r *http.Request, v any, flags ...Flag) error {
 
 func Query(vals url.Values, v any, flags ...Flag) error {
 	if hasFlag(flags, Vacuum) {
-		vals = VacuumValues(vals)
+		vals = vacuum(vals)
 	}
 	return queryDecoder.Decode(v, vals)
 }
@@ -88,7 +77,7 @@ func RequestForm(r *http.Request, v any, flags ...Flag) error {
 
 func Form(vals url.Values, v any, flags ...Flag) error {
 	if hasFlag(flags, Vacuum) {
-		vals = VacuumValues(vals)
+		vals = vacuum(vals)
 	}
 	return formDecoder.Decode(v, vals)
 }
@@ -123,15 +112,21 @@ func EncodeQuery(v any) (url.Values, error) {
 
 // helpers
 
-func vacuumStringSlice(vals []string) []string {
-	var tmp []string
-	for _, v := range vals {
-		v = strings.TrimSpace(v)
-		if v != "" {
-			tmp = append(tmp, v)
+func vacuum(values url.Values) url.Values {
+	newValues := make(url.Values)
+	for key, vals := range values {
+		var newVals []string
+		for _, val := range vals {
+			val = strings.TrimSpace(val)
+			if val != "" {
+				newVals = append(newVals, val)
+			}
+		}
+		if len(newVals) > 0 {
+			newValues[key] = newVals
 		}
 	}
-	return tmp
+	return newValues
 }
 
 func hasFlag(flags []Flag, flag Flag) bool {
