@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"strings"
 
 	"github.com/elastic/go-elasticsearch/v6"
@@ -137,8 +136,6 @@ func (pi *PublicationIndex) Search(args *models.SearchArgs) (*models.SearchHits,
 	if err := json.NewEncoder(&buf).Encode(query); err != nil {
 		return nil, err
 	}
-
-	log.Printf("query: %s", buf.String())
 
 	opts := []func(*esapi.SearchRequest){
 		pi.client.Search.WithContext(context.Background()),
