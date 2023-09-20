@@ -59,9 +59,12 @@ var serverCmd = &cobra.Command{
 var serverRoutesCmd = &cobra.Command{
 	Use:   "routes",
 	Short: "print routes",
-	Run: func(cmd *cobra.Command, args []string) {
-		router := buildRouter(Services(), newLogger())
-		router.Walk(func(route *mux.Route, router *mux.Router, ancestors []*mux.Route) error {
+	RunE: func(cmd *cobra.Command, args []string) error {
+		router, err := buildRouter(Services(), newLogger())
+		if err != nil {
+			return err
+		}
+		return router.Walk(func(route *mux.Route, router *mux.Router, ancestors []*mux.Route) error {
 			hostTemplate, err := route.GetHostTemplate()
 			if err == nil {
 				fmt.Println("HOST:", hostTemplate)
@@ -95,7 +98,7 @@ var serverRoutesCmd = &cobra.Command{
 var serverStartCmd = &cobra.Command{
 	Use:   "start",
 	Short: "start the http server",
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		production := viper.GetString("mode") == "production"
 
 		// setup logger
@@ -108,7 +111,10 @@ var serverStartCmd = &cobra.Command{
 		// e.LicenseSearchService.IndexAll()
 
 		// setup router
-		router := buildRouter(e, logger)
+		router, err := buildRouter(e, logger)
+		if err != nil {
+			return err
+		}
 
 		// apply these before request reaches the router
 		handler := middleware.Apply(router,
@@ -135,13 +141,15 @@ var serverStartCmd = &cobra.Command{
 		})
 		logger.Infof("starting server at %s", addr)
 		if err := graceful.Graceful(server.ListenAndServe, server.Shutdown); err != nil {
-			logger.Fatal(err)
+			return err
 		}
 		logger.Info("gracefully stopped server")
+
+		return nil
 	},
 }
 
-func buildRouter(services *backends.Services, logger *zap.SugaredLogger) *mux.Router {
+func buildRouter(services *backends.Services, logger *zap.SugaredLogger) (*mux.Router, error) {
 	mode := viper.GetString("mode")
 
 	host := viper.GetString("host")
@@ -160,7 +168,7 @@ func buildRouter(services *backends.Services, logger *zap.SugaredLogger) *mux.Ro
 	}
 	baseURL, err := url.Parse(b)
 	if err != nil {
-		logger.Fatal(err)
+		return nil, err
 	}
 
 	// router
@@ -172,7 +180,7 @@ func buildRouter(services *backends.Services, logger *zap.SugaredLogger) *mux.Ro
 		PublicPath:   baseURL.Path + "/static/",
 	})
 	if err != nil {
-		logger.Fatal(err)
+		return nil, err
 	}
 
 	// renderer
@@ -214,7 +222,7 @@ func buildRouter(services *backends.Services, logger *zap.SugaredLogger) *mux.Ro
 	//
 	timezone, err := time.LoadLocation(viper.GetString("timezone"))
 	if err != nil {
-		logger.Fatal(err)
+		return nil, err
 	}
 
 	// sessions & auth
@@ -239,11 +247,11 @@ func buildRouter(services *backends.Services, logger *zap.SugaredLogger) *mux.Ro
 		Insecure:     mode != "production",
 	})
 	if err != nil {
-		logger.Fatal(err)
+		return nil, err
 	}
 
 	// add routes
 	routes.Register(services, baseURL, router, sessionStore, sessionName, timezone, localizer, logger, oidcAuth)
 
-	return router
+	return router, nil
 }

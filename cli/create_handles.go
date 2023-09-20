@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/spf13/cobra"
@@ -16,16 +17,18 @@ func init() {
 var createHandles = &cobra.Command{
 	Use:   "create-handles",
 	Short: "Create handles",
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		services := Services()
 		logger := newLogger()
 
 		if services.HandleService == nil {
-			logger.Fatal("handle server updates are not enabled")
+			return errors.New("handle server updates are not enabled")
 		}
 
 		createPublicationHandles(services, logger)
 		createDatasetHandles(services, logger)
+
+		return nil
 	},
 }
 
