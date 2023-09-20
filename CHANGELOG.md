@@ -11,6 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [v1.0.37] - 2023-09-20
+
+### Added
+
+- Start bringing code structure in line with our other apps (deliver, oai-service and people-service)
+
+### Fixed
+
+- #1227: Fix regression in searchable fields
+
 ## [v1.0.36] - 2023-09-19
 
 ### Added
@@ -395,7 +405,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.36...HEAD
+[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.37...HEAD
+[v1.0.37]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.36...v1.0.37
 [v1.0.36]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.35...v1.0.36
 [v1.0.35]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.34...v1.0.35
 [v1.0.34]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.33...v1.0.34
