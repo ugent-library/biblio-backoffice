@@ -65,7 +65,7 @@
                                 {{if .User}}
                                     <div class="dropdown position-static">
                                         <button class="nav-link dropdown-toggle btn-sm" role="button"
-                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             <div class="bc-avatar-and-text">
                                                 <div class="bc-avatar bc-avatar--tiny me-3">
                                                     <i class="if if-user"></i>
@@ -117,7 +117,7 @@
             <div class="c-sidebar{{if eq .UserRole "curator"}} c-sidebar--dark-gray{{end}}">
                 {{if and .User .User.CanCurate}}
                 <div class="dropdown mx-4 mt-1 mb-5">
-                    <button class="btn btn-outline-light btn-sm w-100 dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <button class="btn btn-outline-light btn-sm w-100 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <span class="text-truncate">
                         {{if eq .UserRole "user"}}
                             Researcher

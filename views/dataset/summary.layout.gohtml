@@ -10,7 +10,7 @@
                         {{partial "shared/status" .Dataset}}
                     </span>
                     {{if .Dataset.Locked}}
-                    <span class="c-subline text-nowrap me-3 pe-3 my-2 border-end" data-toggle="tooltip" data-placement="bottom" data-original-title="Locked for editing">
+                    <span class="c-subline text-nowrap me-3 pe-3 my-2 border-end" data-bs-toggle="tooltip" data-bs-placement="bottom" data-original-title="Locked for editing">
                         <i class="if if-lock if--small if--muted"></i>
                         <span class="text-muted c-body-small ms-2">Locked</span>
                     </span>
@@ -103,12 +103,12 @@
                     <div class="bc-toolbar-item">
                         <ul class="c-meta-list c-meta-list-horizontal flex-nowrap">
                             {{if .Dataset.RelatedPublication}}
-                            <li class="c-meta-item" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="{{len .Dataset.RelatedPublication}} related publications">
+                            <li class="c-meta-item" data-bs-toggle="tooltip" title="" data-bs-placement="bottom" data-original-title="{{len .Dataset.RelatedPublication}} related publications">
                                 <i class="if if-article if--muted if--small me-2"></i>
                                 <span class="text-muted c-body-small">{{len .Dataset.RelatedPublication}}</span>
                             </li>
                             {{end}}
-                            {{/* <li class="c-meta-item" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Sent to Orcid">
+                            {{/* <li class="c-meta-item" data-bs-toggle="tooltip" title="" data-bs-placement="bottom" data-original-title="Sent to Orcid">
                                 <i class="if if-orcid if--muted if--small"></i>
                                 <i class="if if-check text-success if--small"></i>
                             </li> */}}
