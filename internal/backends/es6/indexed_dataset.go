@@ -1,11 +1,12 @@
 package es6
 
 import (
-	"github.com/ugent-library/biblio-backoffice/internal/models"
+	"github.com/ugent-library/biblio-backoffice/internal/backends"
 	internal_time "github.com/ugent-library/biblio-backoffice/internal/time"
 	"github.com/ugent-library/biblio-backoffice/internal/util"
 	"github.com/ugent-library/biblio-backoffice/internal/validation"
 	"github.com/ugent-library/biblio-backoffice/internal/vocabularies"
+	"github.com/ugent-library/biblio-backoffice/models"
 )
 
 type indexedDataset struct {
@@ -20,9 +21,11 @@ type indexedDataset struct {
 	ID             string   `json:"id,omitempty"`
 	IdentifierType []string `json:"identifier_type,omitempty"`
 	Identifier     []string `json:"identifier,omitempty"`
+	Keyword        []string `json:"keyword,omitempty"`
 	LastUserID     string   `json:"last_user_id,omitempty"`
 	Locked         bool     `json:"locked"`
 	OrganizationID []string `json:"organization_id,omitempty"`
+	Publisher      string   `json:"publisher,omitempty"`
 	ReviewerTags   []string `json:"reviewer_tags,omitempty"`
 	Status         string   `json:"status,omitempty"`
 	Title          string   `json:"title,omitempty"`
@@ -40,7 +43,9 @@ func NewIndexedDataset(d *models.Dataset) *indexedDataset {
 		ID:           d.ID,
 		LastUserID:   d.LastUserID,
 		Locked:       d.Locked,
+		Keyword:      d.Keyword,
 		ReviewerTags: d.ReviewerTags,
+		Publisher:    d.Publisher,
 		Status:       d.Status,
 		Title:        d.Title,
 		Year:         d.Year,
@@ -59,6 +64,10 @@ func NewIndexedDataset(d *models.Dataset) *indexedDataset {
 				id.FacultyID = append(id.FacultyID, org.ID)
 			}
 		}
+	}
+
+	if len(id.FacultyID) == 0 {
+		id.FacultyID = append(id.FacultyID, backends.MissingValue)
 	}
 
 	for k, vals := range d.Identifiers {

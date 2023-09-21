@@ -6,13 +6,14 @@ import (
 	"github.com/ugent-library/biblio-backoffice/internal/app/handlers"
 	"github.com/ugent-library/biblio-backoffice/internal/backends"
 	"github.com/ugent-library/biblio-backoffice/internal/bind"
-	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"github.com/ugent-library/biblio-backoffice/internal/render"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/repositories"
 )
 
 type Handler struct {
 	handlers.BaseHandler
-	Repository          backends.Repository
+	Repo                *repositories.Repo
 	DatasetSearchIndex  backends.DatasetIndex
 	DatasetSources      map[string]backends.DatasetGetter
 	OrganizationService backends.OrganizationService
@@ -35,7 +36,7 @@ func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) htt
 		}
 
 		if id := bind.PathValues(r).Get("id"); id != "" {
-			d, err := h.Repository.GetDataset(id)
+			d, err := h.Repo.GetDataset(id)
 			if err != nil {
 				render.NotFound(w, r, err)
 				return

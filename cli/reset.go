@@ -1,4 +1,4 @@
-package commands
+package cli
 
 import (
 	"context"
@@ -16,54 +16,60 @@ func init() {
 var resetCmd = &cobra.Command{
 	Use:   "reset",
 	Short: "Destructive reset",
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		if confirm, _ := cmd.Flags().GetBool("confirm"); !confirm {
-			return
+			return nil
 		}
 
 		ctx := context.Background()
 
 		services := Services()
 
-		if err := services.Repository.PurgeAllPublications(); err != nil {
-			log.Fatal(err)
+		if err := services.Repo.PurgeAllPublications(); err != nil {
+			return err
 		}
-		if err := services.Repository.PurgeAllDatasets(); err != nil {
-			log.Fatal(err)
+		if err := services.Repo.PurgeAllDatasets(); err != nil {
+			return err
 		}
 
 		publicationSwitcher, err := services.SearchService.NewPublicationIndexSwitcher(backends.BulkIndexerConfig{
 			OnError: func(err error) {
+				// TODO
 				log.Fatal(err)
 			},
 			OnIndexError: func(id string, err error) {
+				// TODO
 				log.Fatal(err)
 			},
 		})
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 		if err := publicationSwitcher.Switch(ctx); err != nil {
-			log.Fatal(err)
+			return err
 		}
 
 		datasetSwitcher, err := services.SearchService.NewDatasetIndexSwitcher(backends.BulkIndexerConfig{
 			OnError: func(err error) {
+				// TODO
 				log.Fatal(err)
 			},
 			OnIndexError: func(id string, err error) {
+				// TODO
 				log.Fatal(err)
 			},
 		})
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 		if err := datasetSwitcher.Switch(ctx); err != nil {
-			log.Fatal(err)
+			return err
 		}
 
 		if err := services.FileStore.DeleteAll(ctx); err != nil {
-			log.Fatal(err)
+			return err
 		}
+
+		return nil
 	},
 }

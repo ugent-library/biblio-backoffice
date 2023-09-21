@@ -8,9 +8,13 @@
         <span class="badge-value ms-2">
             &ndash;
             {{range $i, $v := .}}
+                {{$lVal := $v}}
+                {{if eq $lVal "missing"}}
+                    {{$lVal =  $.Locale.TS "organization" $lVal}}
+                {{end}}
                 {{- if gt $i 2}}, &hellip;{{break}}{{end}}
                 {{- if gt $i 0}},{{end}}
-                {{$v -}}
+                {{$lVal -}}
             {{end}}
         </span>
         {{end}}

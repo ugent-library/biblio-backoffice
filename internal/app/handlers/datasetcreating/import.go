@@ -12,13 +12,13 @@ import (
 	"github.com/ugent-library/biblio-backoffice/internal/app/handlers"
 	"github.com/ugent-library/biblio-backoffice/internal/app/localize"
 	"github.com/ugent-library/biblio-backoffice/internal/bind"
-	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"github.com/ugent-library/biblio-backoffice/internal/render"
 	"github.com/ugent-library/biblio-backoffice/internal/render/display"
 	"github.com/ugent-library/biblio-backoffice/internal/render/flash"
 	"github.com/ugent-library/biblio-backoffice/internal/render/form"
 	"github.com/ugent-library/biblio-backoffice/internal/snapstore"
 	"github.com/ugent-library/biblio-backoffice/internal/validation"
+	"github.com/ugent-library/biblio-backoffice/models"
 )
 
 type BindAdd struct {
@@ -183,7 +183,7 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 		return
 	}
 
-	err = h.Repository.SaveDataset(d, ctx.User)
+	err = h.Repo.SaveDataset(d, ctx.User)
 
 	if err != nil {
 		h.Logger.Warnw("add import dataset: could not save dataset:", "errors", err, "dataset", b.Identifier, "user", ctx.User.ID)
@@ -268,7 +268,7 @@ func (h *Handler) AddPublish(w http.ResponseWriter, r *http.Request, ctx Context
 		return
 	}
 
-	err := h.Repository.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset, ctx.User)
+	err := h.Repo.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {

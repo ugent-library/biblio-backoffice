@@ -12,18 +12,19 @@ import (
 	"github.com/oklog/ulid/v2"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
 	"github.com/ugent-library/biblio-backoffice/internal/backends"
-	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"github.com/ugent-library/biblio-backoffice/internal/snapstore"
 	"github.com/ugent-library/biblio-backoffice/internal/validation"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/repositories"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 func (s *server) GetDataset(ctx context.Context, req *api.GetDatasetRequest) (*api.GetDatasetResponse, error) {
-	p, err := s.services.Repository.GetDataset(req.Id)
+	p, err := s.services.Repo.GetDataset(req.Id)
 
 	if err != nil {
-		if errors.Is(err, backends.ErrNotFound) {
+		if errors.Is(err, models.ErrNotFound) {
 			grpcErr := status.New(codes.InvalidArgument, fmt.Errorf("could not find dataset with id %s", req.Id).Error())
 			return &api.GetDatasetResponse{
 				Response: &api.GetDatasetResponse_Error{
@@ -54,7 +55,7 @@ func (s *server) GetDataset(ctx context.Context, req *api.GetDatasetRequest) (*a
 func (s *server) GetAllDatasets(req *api.GetAllDatasetsRequest, stream api.Biblio_GetAllDatasetsServer) (err error) {
 	var callbackErr error
 
-	streamErr := s.services.Repository.EachDataset(func(d *models.Dataset) bool {
+	streamErr := s.services.Repo.EachDataset(func(d *models.Dataset) bool {
 		j, err := json.Marshal(d)
 		if err != nil {
 			grpcError := status.New(codes.Internal, fmt.Errorf("could not marshal dataset with id %s: %v", d.ID, err).Error())
@@ -152,7 +153,7 @@ func (s *server) UpdateDataset(ctx context.Context, req *api.UpdateDatasetReques
 		}, nil
 	}
 
-	err := s.services.Repository.UpdateDataset(d.SnapshotID, d, nil)
+	err := s.services.Repo.UpdateDataset(d.SnapshotID, d, nil)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
@@ -223,7 +224,7 @@ func (s *server) AddDatasets(stream api.Biblio_AddDatasetsServer) error {
 			continue
 		}
 
-		if err := s.services.Repository.SaveDataset(d, nil); err != nil {
+		if err := s.services.Repo.SaveDataset(d, nil); err != nil {
 			grpcErr := status.New(codes.InvalidArgument, fmt.Errorf("failed to store dataset %s at line %d: %s", d.ID, seq, err).Error())
 			if err = stream.Send(&api.AddDatasetsResponse{
 				Response: &api.AddDatasetsResponse_Error{
@@ -284,7 +285,7 @@ func (s *server) ImportDatasets(stream api.Biblio_ImportDatasetsServer) error {
 			continue
 		}
 
-		if err := s.services.Repository.ImportDataset(d); err != nil {
+		if err := s.services.Repo.ImportDataset(d); err != nil {
 			grpcErr := status.New(codes.InvalidArgument, fmt.Errorf("failed to store dataset %s at line %d: %s", d.ID, seq, err).Error())
 			if err = stream.Send(&api.ImportDatasetsResponse{
 				Response: &api.ImportDatasetsResponse_Error{
@@ -320,12 +321,12 @@ func (s *server) MutateDatasets(stream api.Biblio_MutateDatasetsServer) error {
 			return status.Errorf(codes.Internal, "failed to read stream: %s", err)
 		}
 
-		mut := backends.Mutation{
+		mut := repositories.Mutation{
 			Op:   req.Op,
 			Args: req.Args,
 		}
 
-		if err := s.services.Repository.MutateDataset(req.Id, nil, mut); err != nil {
+		if err := s.services.Repo.MutateDataset(req.Id, nil, mut); err != nil {
 			grpcErr := status.New(codes.InvalidArgument, fmt.Errorf("failed to mutate dataset %s at line %d: %s", req.Id, seq, err).Error())
 			if err = stream.Send(&api.MutateResponse{
 				Response: &api.MutateResponse_Error{
@@ -349,7 +350,7 @@ func (s *server) MutateDatasets(stream api.Biblio_MutateDatasetsServer) error {
 
 func (s *server) GetDatasetHistory(req *api.GetDatasetHistoryRequest, stream api.Biblio_GetDatasetHistoryServer) (err error) {
 	var callbackErr error
-	streamErr := s.services.Repository.DatasetHistory(req.Id, func(d *models.Dataset) bool {
+	streamErr := s.services.Repo.DatasetHistory(req.Id, func(d *models.Dataset) bool {
 		j, err := json.Marshal(d)
 		if err != nil {
 			grpcErr := status.New(codes.InvalidArgument, fmt.Errorf("could not read json input: %s", err).Error())
@@ -390,10 +391,10 @@ func (s *server) GetDatasetHistory(req *api.GetDatasetHistoryRequest, stream api
 }
 
 func (s *server) PurgeDataset(ctx context.Context, req *api.PurgeDatasetRequest) (*api.PurgeDatasetResponse, error) {
-	_, err := s.services.Repository.GetDataset(req.Id)
+	_, err := s.services.Repo.GetDataset(req.Id)
 
 	if err != nil {
-		if errors.Is(err, backends.ErrNotFound) {
+		if errors.Is(err, models.ErrNotFound) {
 			grpcErr := status.New(codes.NotFound, fmt.Errorf("could not find dataset with id %s", req.Id).Error())
 			return &api.PurgeDatasetResponse{
 				Response: &api.PurgeDatasetResponse_Error{
@@ -406,7 +407,7 @@ func (s *server) PurgeDataset(ctx context.Context, req *api.PurgeDatasetRequest)
 	}
 
 	// TODO purgeDataset doesn't return an error if the record for req.Id can't be found
-	if err := s.services.Repository.PurgeDataset(req.Id); err != nil {
+	if err := s.services.Repo.PurgeDataset(req.Id); err != nil {
 		return nil, status.Errorf(codes.Internal, "could not purge dataset with id %s: %s", req.Id, err)
 	}
 
@@ -432,12 +433,12 @@ func (s *server) PurgeAllDatasets(ctx context.Context, req *api.PurgeAllDatasets
 		}, nil
 	}
 
-	if err := s.services.Repository.PurgeAllDatasets(); err != nil {
+	if err := s.services.Repo.PurgeAllDatasets(); err != nil {
 		return nil, status.Errorf(codes.Internal, "could not purge all datasets: %s", err)
 	}
 
 	if err := s.services.DatasetSearchIndex.DeleteAll(); err != nil {
-		return nil, status.Errorf(codes.Internal, "could not delete dataset from index: %w", err)
+		return nil, status.Errorf(codes.Internal, "could not delete dataset from index: %s", err)
 	}
 
 	return &api.PurgeAllDatasetsResponse{
@@ -540,7 +541,7 @@ func (s *server) ReindexDatasets(req *api.ReindexDatasetsRequest, stream api.Bib
 	ctx := stream.Context()
 	var callbackErr error
 
-	streamErr := s.services.Repository.EachDataset(func(d *models.Dataset) bool {
+	streamErr := s.services.Repo.EachDataset(func(d *models.Dataset) bool {
 		if err := switcher.Index(ctx, d); err != nil {
 			grpcErr := status.New(codes.Internal, fmt.Errorf("indexing failed for dataset [id: %s] : %s", d.ID, err).Error())
 			if err = stream.Send(&api.ReindexDatasetsResponse{
@@ -650,7 +651,7 @@ func (s *server) ReindexDatasets(req *api.ReindexDatasetsRequest, stream api.Bib
 		defer bi.Close(ctx)
 
 		var callbackErr error
-		streamErr := s.services.Repository.DatasetsBetween(startTime, endTime, func(d *models.Dataset) bool {
+		streamErr := s.services.Repo.DatasetsBetween(startTime, endTime, func(d *models.Dataset) bool {
 			if err := bi.Index(ctx, d); err != nil {
 				grpcErr := status.New(codes.Internal, fmt.Errorf("indexing failed for dataset [id: %s] : %s", d.ID, err).Error())
 				if err = stream.Send(&api.ReindexDatasetsResponse{
@@ -719,7 +720,7 @@ func (s *server) CleanupDatasets(req *api.CleanupDatasetsRequest, stream api.Bib
 	var callbackErr error
 
 	count := 0
-	streamErr := s.services.Repository.EachDataset(func(d *models.Dataset) bool {
+	streamErr := s.services.Repo.EachDataset(func(d *models.Dataset) bool {
 		// Guard
 		fixed := false
 
@@ -742,7 +743,7 @@ func (s *server) CleanupDatasets(req *api.CleanupDatasetsRequest, stream api.Bib
 				return true
 			}
 
-			err := s.services.Repository.UpdateDataset(d.SnapshotID, d, nil)
+			err := s.services.Repo.UpdateDataset(d.SnapshotID, d, nil)
 			if err != nil {
 				grpcErr := status.New(codes.Internal, fmt.Errorf("failed to update dataset[snapshot_id: %s, id: %s] : %v", d.SnapshotID, d.ID, err).Error())
 				if err = stream.Send(&api.CleanupDatasetsResponse{

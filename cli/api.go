@@ -1,8 +1,7 @@
-package commands
+package cli
 
 import (
 	"fmt"
-	"log"
 	"net"
 
 	"github.com/spf13/cobra"
@@ -31,7 +30,7 @@ var apiCmd = &cobra.Command{
 var apiStartCmd = &cobra.Command{
 	Use:   "start",
 	Short: "start the api server",
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		// Setup logger
 		logger := newLogger()
 
@@ -43,11 +42,8 @@ var apiStartCmd = &cobra.Command{
 		logger.Infof("Listening at %s", addr)
 		listener, err := net.Listen("tcp", addr)
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
-		if err := srv.Serve(listener); err != nil {
-			// TODO not everything is a fatal error.
-			log.Println(err)
-		}
+		return srv.Serve(listener)
 	},
 }

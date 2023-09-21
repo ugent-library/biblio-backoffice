@@ -5,8 +5,8 @@ import (
 
 	"github.com/ugent-library/biblio-backoffice/internal/app/handlers"
 	"github.com/ugent-library/biblio-backoffice/internal/bind"
-	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"github.com/ugent-library/biblio-backoffice/internal/render"
+	"github.com/ugent-library/biblio-backoffice/models"
 )
 
 type BindSuggestDatasets struct {
@@ -77,7 +77,7 @@ func (h *Handler) CreateDataset(w http.ResponseWriter, r *http.Request, ctx Cont
 	}
 
 	// TODO reduce calls to repository
-	d, err := h.Repository.GetDataset(b.DatasetID)
+	d, err := h.Repo.GetDataset(b.DatasetID)
 	if err != nil {
 		h.Logger.Errorw("create dataset publication: could not get dataset", "errors", err, "publication", ctx.Publication.ID, "dataset", b.DatasetID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
@@ -87,7 +87,7 @@ func (h *Handler) CreateDataset(w http.ResponseWriter, r *http.Request, ctx Cont
 	// TODO handle validation errors
 	// TODO pass If-Match
 	// TODO handle conflict
-	err = h.Repository.AddPublicationDataset(ctx.Publication, d, ctx.User)
+	err = h.Repo.AddPublicationDataset(ctx.Publication, d, ctx.User)
 	if err != nil {
 		h.Logger.Errorw("create publication dataset: could not add dataset to publication", "errors", err, "publication", ctx.Publication.ID, "dataset", b.DatasetID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
@@ -95,14 +95,14 @@ func (h *Handler) CreateDataset(w http.ResponseWriter, r *http.Request, ctx Cont
 	}
 
 	// Refresh the ctx.Publication: it still carries the old snapshotID
-	ctx.Publication, err = h.Repository.GetPublication(ctx.Publication.ID)
+	ctx.Publication, err = h.Repo.GetPublication(ctx.Publication.ID)
 	if err != nil {
 		h.Logger.Errorw("create dataset publication: could not get publication", "errors", err, "publication", ctx.Publication.ID, "dataset", b.DatasetID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
 
-	relatedDatasets, err := h.Repository.GetVisiblePublicationDatasets(ctx.User, ctx.Publication)
+	relatedDatasets, err := h.Repo.GetVisiblePublicationDatasets(ctx.User, ctx.Publication)
 	if err != nil {
 		h.Logger.Errorw("create dataset publication: could not get related datasets", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
@@ -152,7 +152,7 @@ func (h *Handler) DeleteDataset(w http.ResponseWriter, r *http.Request, ctx Cont
 	}
 
 	// TODO reduce calls to repository
-	d, err := h.Repository.GetDataset(b.DatasetID)
+	d, err := h.Repo.GetDataset(b.DatasetID)
 	if err != nil {
 		h.Logger.Errorw("delete dataset publication: could not get dataset", "errors", err, "publication", ctx.Publication.ID, "dataset", b.DatasetID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
@@ -162,7 +162,7 @@ func (h *Handler) DeleteDataset(w http.ResponseWriter, r *http.Request, ctx Cont
 	// TODO handle validation errors
 	// TODO pass If-Match
 	// TODO handle conflict
-	err = h.Repository.RemovePublicationDataset(ctx.Publication, d, ctx.User)
+	err = h.Repo.RemovePublicationDataset(ctx.Publication, d, ctx.User)
 
 	if err != nil {
 		h.Logger.Errorw("delete dataset publication: could not remove dataset", "errors", err, "publication", ctx.Publication.ID, "dataset", b.DatasetID, "user", ctx.User.ID)
@@ -171,14 +171,14 @@ func (h *Handler) DeleteDataset(w http.ResponseWriter, r *http.Request, ctx Cont
 	}
 
 	// Refresh the ctx.Publication: it still carries the old snapshotID
-	ctx.Publication, err = h.Repository.GetPublication(ctx.Publication.ID)
+	ctx.Publication, err = h.Repo.GetPublication(ctx.Publication.ID)
 	if err != nil {
 		h.Logger.Errorw("delete dataset publication: could not get publication", "errors", err, "publication", ctx.Publication.ID, "dataset", b.DatasetID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
 
-	relatedDatasets, err := h.Repository.GetVisiblePublicationDatasets(ctx.User, ctx.Publication)
+	relatedDatasets, err := h.Repo.GetVisiblePublicationDatasets(ctx.User, ctx.Publication)
 	if err != nil {
 		h.Logger.Errorw("create dataset publication: could not get related datasets", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)

@@ -3,8 +3,8 @@ package displays
 import (
 	"github.com/ugent-library/biblio-backoffice/internal/app/helpers"
 	"github.com/ugent-library/biblio-backoffice/internal/locale"
-	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"github.com/ugent-library/biblio-backoffice/internal/render/display"
+	"github.com/ugent-library/biblio-backoffice/models"
 )
 
 func PublicationConference(user *models.User, l *locale.Locale, p *models.Publication) *display.Display {

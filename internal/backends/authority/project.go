@@ -7,8 +7,7 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
-	"github.com/ugent-library/biblio-backoffice/internal/backends"
-	"github.com/ugent-library/biblio-backoffice/internal/models"
+	"github.com/ugent-library/biblio-backoffice/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -33,7 +32,7 @@ func (c *Client) GetProject(id string) (*models.Project, error) {
 			},
 		}).Decode(&rec)
 	if err == mongo.ErrNoDocuments {
-		return nil, backends.ErrNotFound
+		return nil, models.ErrNotFound
 	}
 	if err != nil {
 		return nil, errors.Wrap(err, "unexpected error during document retrieval")

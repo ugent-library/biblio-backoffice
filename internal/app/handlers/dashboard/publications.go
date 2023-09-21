@@ -2,16 +2,14 @@ package dashboard
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"net/url"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/ugent-library/biblio-backoffice/internal/app/localize"
 	"github.com/ugent-library/biblio-backoffice/internal/backends"
-	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"github.com/ugent-library/biblio-backoffice/internal/render"
 	"github.com/ugent-library/biblio-backoffice/internal/vocabularies"
+	"github.com/ugent-library/biblio-backoffice/models"
 )
 
 type YieldPublications struct {
@@ -32,7 +30,6 @@ func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Conte
 
 	socs := vocabularies.Map["faculties_socs"]
 	core := vocabularies.Map["faculties_core"]
-	all := vocabularies.Map["faculties"]
 
 	switch ctx.Type {
 	case "socs":
@@ -56,8 +53,6 @@ func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Conte
 	ufaculties = append(ufaculties, []string{"UGent", "-"}...)
 
 	uSearcher := h.PublicationSearchIndex
-	spew.Dump(uSearcher)
-	log.Println("TEST TEST")
 	baseSearchUrl := h.PathFor("publications")
 
 	uPublications, err := generatePublicationsDashboard(ufaculties, ptypes, uSearcher, baseSearchUrl, func(fac string, args *models.SearchArgs) *models.SearchArgs {
@@ -68,7 +63,7 @@ func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Conte
 		case "all":
 			args.WithFilter("faculty_id", faculties...)
 		case "-":
-			args.WithFilter("!faculty_id", all...)
+			args.WithFilter("faculty_id", backends.MissingValue)
 		case "UGent":
 			args.WithFilter("organization_id", "UGent")
 		default:
@@ -96,7 +91,7 @@ func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Conte
 		case "all":
 			args.WithFilter("faculty_id", faculties...)
 		case "-":
-			args.WithFilter("!faculty_id", all...)
+			args.WithFilter("faculty_id", backends.MissingValue)
 		default:
 			args.WithFilter("faculty_id", fac)
 		}

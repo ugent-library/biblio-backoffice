@@ -1,4 +1,4 @@
-package commands
+package cli
 
 import (
 	"github.com/spf13/cobra"
@@ -13,31 +13,37 @@ func init() {
 var updateEmbargoes = &cobra.Command{
 	Use:   "update-embargoes",
 	Short: "Update embargoes",
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		e := Services()
 		logger := newLogger()
 
-		updatePublicationEmbargoes(e, logger)
+		if err := updatePublicationEmbargoes(e, logger); err != nil {
+			return err
+		}
 		updateDatasetEmbargoes(e, logger)
+
+		return nil
 	},
 }
 
-func updatePublicationEmbargoes(e *backends.Services, logger *zap.SugaredLogger) {
-	n, err := e.Repository.UpdatePublicationEmbargoes()
-
+func updatePublicationEmbargoes(e *backends.Services, logger *zap.SugaredLogger) error {
+	n, err := e.Repo.UpdatePublicationEmbargoes()
 	if err != nil {
-		logger.Fatal(err)
+		return err
 	}
 
 	logger.Infof("updated %d publication embargoes", n)
+
+	return nil
 }
 
-func updateDatasetEmbargoes(e *backends.Services, logger *zap.SugaredLogger) {
-	n, err := e.Repository.UpdateDatasetEmbargoes()
-
+func updateDatasetEmbargoes(e *backends.Services, logger *zap.SugaredLogger) error {
+	n, err := e.Repo.UpdateDatasetEmbargoes()
 	if err != nil {
-		logger.Fatal(err)
+		return err
 	}
 
 	logger.Infof("updated %d dataset embargoes", n)
+
+	return nil
 }

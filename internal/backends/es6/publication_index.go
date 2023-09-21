@@ -6,14 +6,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"strings"
 
 	"github.com/elastic/go-elasticsearch/v6"
 	"github.com/elastic/go-elasticsearch/v6/esapi"
 	"github.com/pkg/errors"
 	"github.com/ugent-library/biblio-backoffice/internal/backends"
-	"github.com/ugent-library/biblio-backoffice/internal/models"
+	"github.com/ugent-library/biblio-backoffice/models"
 )
 
 type PublicationIndex struct {
@@ -137,8 +136,6 @@ func (pi *PublicationIndex) Search(args *models.SearchArgs) (*models.SearchHits,
 	if err := json.NewEncoder(&buf).Encode(query); err != nil {
 		return nil, err
 	}
-
-	log.Printf("query: %s", buf.String())
 
 	opts := []func(*esapi.SearchRequest){
 		pi.client.Search.WithContext(context.Background()),

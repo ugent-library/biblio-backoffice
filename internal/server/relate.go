@@ -6,9 +6,8 @@ import (
 	"fmt"
 
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
-	"github.com/ugent-library/biblio-backoffice/internal/backends"
-	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"github.com/ugent-library/biblio-backoffice/internal/snapstore"
+	"github.com/ugent-library/biblio-backoffice/models"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -22,9 +21,9 @@ func (s *server) Relate(ctx context.Context, req *api.RelateRequest) (*api.Relat
 
 	switch one := req.One.(type) {
 	case *api.RelateRequest_PublicationOne:
-		p, err = s.services.Repository.GetPublication(one.PublicationOne)
+		p, err = s.services.Repo.GetPublication(one.PublicationOne)
 		if err != nil {
-			if errors.Is(err, backends.ErrNotFound) {
+			if errors.Is(err, models.ErrNotFound) {
 				grpcErr := status.New(codes.InvalidArgument, fmt.Errorf("could not find publication with id %s", one.PublicationOne).Error())
 				return &api.RelateResponse{
 					Response: &api.RelateResponse_Error{
@@ -45,9 +44,9 @@ func (s *server) Relate(ctx context.Context, req *api.RelateRequest) (*api.Relat
 	case *api.RelateRequest_PublicationTwo:
 		return nil, status.Error(codes.Internal, "two can only be a dataset for now")
 	case *api.RelateRequest_DatasetTwo:
-		d, err = s.services.Repository.GetDataset(two.DatasetTwo)
+		d, err = s.services.Repo.GetDataset(two.DatasetTwo)
 		if err != nil {
-			if errors.Is(err, backends.ErrNotFound) {
+			if errors.Is(err, models.ErrNotFound) {
 				grpcErr := status.New(codes.InvalidArgument, fmt.Errorf("could not find dataset with id %s", two.DatasetTwo).Error())
 				return &api.RelateResponse{
 					Response: &api.RelateResponse_Error{
@@ -62,7 +61,7 @@ func (s *server) Relate(ctx context.Context, req *api.RelateRequest) (*api.Relat
 		return nil, status.Error(codes.Internal, "two is missing")
 	}
 
-	err = s.services.Repository.AddPublicationDataset(p, d, nil)
+	err = s.services.Repo.AddPublicationDataset(p, d, nil)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {

@@ -1,11 +1,12 @@
-package commands
+package cli
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/spf13/cobra"
 	"github.com/ugent-library/biblio-backoffice/internal/backends"
-	"github.com/ugent-library/biblio-backoffice/internal/models"
+	"github.com/ugent-library/biblio-backoffice/models"
 	"go.uber.org/zap"
 )
 
@@ -16,21 +17,23 @@ func init() {
 var createHandles = &cobra.Command{
 	Use:   "create-handles",
 	Short: "Create handles",
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		services := Services()
 		logger := newLogger()
 
 		if services.HandleService == nil {
-			logger.Fatal("handle server updates are not enabled")
+			return errors.New("handle server updates are not enabled")
 		}
 
 		createPublicationHandles(services, logger)
 		createDatasetHandles(services, logger)
+
+		return nil
 	},
 }
 
 func createPublicationHandles(services *backends.Services, logger *zap.SugaredLogger) {
-	repo := services.Repository
+	repo := services.Repo
 
 	var n int
 	var err error
@@ -65,7 +68,7 @@ func createPublicationHandles(services *backends.Services, logger *zap.SugaredLo
 }
 
 func createDatasetHandles(services *backends.Services, logger *zap.SugaredLogger) {
-	repo := services.Repository
+	repo := services.Repo
 
 	var n int
 	var err error

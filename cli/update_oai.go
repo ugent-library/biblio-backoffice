@@ -1,4 +1,4 @@
-package commands
+package cli
 
 import (
 	"context"
@@ -9,8 +9,8 @@ import (
 
 	"github.com/ugent-library/biblio-backoffice/internal/backends/mods36"
 	"github.com/ugent-library/biblio-backoffice/internal/backends/oaidc"
-	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"github.com/ugent-library/biblio-backoffice/internal/vocabularies"
+	"github.com/ugent-library/biblio-backoffice/models"
 )
 
 func init() {
@@ -28,7 +28,7 @@ func (s *securitySource) ApiKey(ctx context.Context, operationName string) (api.
 var updateOai = &cobra.Command{
 	Use:   "update-oai",
 	Short: "Update OAI provider",
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		logger := newLogger()
 
 		oaiEncoder := oaidc.New(viper.GetString("frontend-url"))
@@ -36,7 +36,7 @@ var updateOai = &cobra.Command{
 
 		client, err := api.NewClient(viper.GetString("oai-api-url"), &securitySource{viper.GetString("oai-api-key")})
 		if err != nil {
-			logger.Fatal(err)
+			return err
 		}
 
 		err = client.AddMetadataFormat(context.TODO(), &api.AddMetadataFormatRequest{
@@ -45,7 +45,7 @@ var updateOai = &cobra.Command{
 			Schema:            "http://www.openarchives.org/OAI/2.0/oai_dc.xsd",
 		})
 		if err != nil {
-			logger.Fatal(err)
+			return err
 		}
 		err = client.AddMetadataFormat(context.TODO(), &api.AddMetadataFormatRequest{
 			MetadataPrefix:    "mods_36",
@@ -53,7 +53,7 @@ var updateOai = &cobra.Command{
 			Schema:            "http://www.loc.gov/standards/mods/v3/mods-3-6.xsd",
 		})
 		if err != nil {
-			logger.Fatal(err)
+			return err
 		}
 
 		err = client.AddSet(context.TODO(), &api.AddSetRequest{
@@ -61,14 +61,14 @@ var updateOai = &cobra.Command{
 			SetName: "All Biblio records",
 		})
 		if err != nil {
-			logger.Fatal(err)
+			return err
 		}
 		err = client.AddSet(context.TODO(), &api.AddSetRequest{
 			SetSpec: "biblio:fulltext",
 			SetName: "Biblio records with a fulltext file",
 		})
 		if err != nil {
-			logger.Fatal(err)
+			return err
 		}
 		err = client.AddSet(context.TODO(), &api.AddSetRequest{
 			SetSpec: "biblio:open_access",
@@ -83,12 +83,12 @@ var updateOai = &cobra.Command{
 				SetName: "Biblio " + t + " records",
 			})
 			if err != nil {
-				logger.Fatal(err)
+				return err
 			}
 		}
 
 		// add all publications
-		repo := Services().Repository
+		repo := Services().Repo
 		repo.EachPublication(func(p *models.Publication) bool {
 			oaiID := "oai:archive.ugent.be:" + p.ID
 
@@ -97,6 +97,7 @@ var updateOai = &cobra.Command{
 					Identifier: oaiID,
 				})
 				if err != nil {
+					// TODO
 					logger.Fatal(err)
 				}
 				return true
@@ -108,6 +109,7 @@ var updateOai = &cobra.Command{
 
 			metadata, err := oaiEncoder.EncodePublication(p)
 			if err != nil {
+				// TODO
 				logger.Fatal(err)
 			}
 
@@ -122,6 +124,7 @@ var updateOai = &cobra.Command{
 
 			metadata, err = modsEncoder.EncodePublication(p)
 			if err != nil {
+				// TODO
 				logger.Fatal(err)
 			}
 
@@ -131,6 +134,7 @@ var updateOai = &cobra.Command{
 				Content:        string(metadata),
 			})
 			if err != nil {
+				// TODO
 				logger.Fatal(err)
 			}
 
@@ -154,10 +158,13 @@ var updateOai = &cobra.Command{
 				SetSpecs:   setSpecs,
 			})
 			if err != nil {
+				// TODO
 				logger.Fatal(err)
 			}
 
 			return true
 		})
+
+		return nil
 	},
 }

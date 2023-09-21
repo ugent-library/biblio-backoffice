@@ -1,4 +1,4 @@
-package commands
+package cli
 
 import (
 	"bufio"
@@ -60,15 +60,15 @@ var fileAddCmd = &cobra.Command{
 		$ sha256sum -c /path/to/id.txt
 	`,
 	Args: cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		path := args[0]
 		fs := newFileStore()
-		id, addErr := addFile(fs, path, "")
-		if addErr != nil {
-			fmt.Fprintf(os.Stderr, "unable to add file %s: %s\n", path, addErr.Error())
-			os.Exit(1)
+		id, err := addFile(fs, path, "")
+		if err != nil {
+			return fmt.Errorf("unable to add file %s: %w", path, err)
 		}
 		fmt.Printf("%s %s\n", id, path)
+		return nil
 	},
 }
 
@@ -86,8 +86,7 @@ var fileAddManyCmd = &cobra.Command{
 		$ ./biblio-backoffice file add_many < /path/to/file_paths.txt > /path/to/ids.txt
 		$ sha256sum -c /path/to/ids.txt
 	`,
-	Run: func(cmd *cobra.Command, args []string) {
-
+	RunE: func(cmd *cobra.Command, args []string) error {
 		// file add < /path/to/files_paths.txt
 		var fhIn *os.File = os.Stdin
 		var fhInErr error
@@ -96,8 +95,7 @@ var fileAddManyCmd = &cobra.Command{
 		if len(args) > 0 {
 			fhIn, fhInErr = os.Open(args[0])
 			if fhInErr != nil {
-				fmt.Fprintf(os.Stderr, "Unable to open file %s: %s", args[0], fhInErr.Error())
-				os.Exit(1)
+				return fmt.Errorf("unable to open file %s: %w", args[0], fhInErr)
 			}
 		}
 
@@ -114,6 +112,8 @@ var fileAddManyCmd = &cobra.Command{
 			// <file-id> <old-path>
 			fmt.Printf("%s %s\n", id, path)
 		}
+
+		return nil
 	},
 }
 
@@ -136,8 +136,7 @@ var fileImportManyCmd = &cobra.Command{
 
 	If the filestore already contains an identical checksum, the import will be skipped.
 	`,
-	Run: func(cmd *cobra.Command, args []string) {
-
+	RunE: func(cmd *cobra.Command, args []string) error {
 		// file import < /path/to/files.json
 		var fhIn *os.File = os.Stdin
 		var fhInErr error
@@ -146,8 +145,7 @@ var fileImportManyCmd = &cobra.Command{
 		if len(args) > 0 {
 			fhIn, fhInErr = os.Open(args[0])
 			if fhInErr != nil {
-				fmt.Fprintf(os.Stderr, "Unable to open file %s: %s", args[0], fhInErr.Error())
-				os.Exit(1)
+				return fmt.Errorf("unable to open file %s: %w", args[0], fhInErr)
 			}
 		}
 
@@ -160,8 +158,7 @@ var fileImportManyCmd = &cobra.Command{
 			if err := decoder.Decode(&importFile); errors.Is(err, io.EOF) {
 				break
 			} else if err != nil {
-				fmt.Fprintf(os.Stderr, "Unable to decode line %d\n", lineNo)
-				os.Exit(1)
+				return fmt.Errorf("unable to decode line %d", lineNo)
 			}
 
 			if errs := importFile.Validate(); len(errs) > 0 {
@@ -195,6 +192,7 @@ var fileImportManyCmd = &cobra.Command{
 			lineNo++
 		}
 
+		return nil
 	},
 }
 

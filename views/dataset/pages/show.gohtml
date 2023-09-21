@@ -47,7 +47,6 @@
                         {{if and .User.CanCurate .Dataset.Locked}}
                         <button class="btn btn-outline-secondary"
                             hx-post="{{pathFor "dataset_unlock" "id" .Dataset.ID|querySet "redirect-url" .CurrentURL.String}}"
-                            hx-headers='{"If-Match": "{{.Dataset.SnapshotID}}"}'
                             hx-swap="none"
                         >
                             <i class="if if-lock-unlock"></I>
@@ -56,7 +55,6 @@
                         {{else if .User.CanCurate}}
                         <button class="btn btn-outline-secondary"
                             hx-post="{{pathFor "dataset_lock" "id" .Dataset.ID|querySet "redirect-url" .CurrentURL.String}}"
-                            hx-headers='{"If-Match": "{{.Dataset.SnapshotID}}"}'
                             hx-swap="none"
                         >
                             <i class="if if-lock"></I>

@@ -10,7 +10,6 @@ require (
 	github.com/blevesearch/bleve/v2 v2.3.2
 	github.com/bluele/gcache v0.0.2
 	github.com/caltechlibrary/doitools v0.0.1
-	github.com/davecgh/go-spew v1.1.1
 	github.com/dimchansky/utfbom v1.1.1
 	github.com/elastic/go-elasticsearch/v6 v6.8.10
 	github.com/go-playground/form/v4 v4.2.0
@@ -46,7 +45,6 @@ require (
 	cloud.google.com/go/compute v1.7.0 // indirect
 	entgo.io/ent v0.12.3 // indirect
 	github.com/agext/levenshtein v1.2.3 // indirect
-	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.4.10 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/configsources v1.1.32 // indirect
@@ -57,11 +55,10 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.9.26 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.14.1 // indirect
 	github.com/aws/smithy-go v1.13.5 // indirect
-	github.com/caarlos0/env/v8 v8.0.0 // indirect
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dlclark/regexp2 v1.10.0 // indirect
 	github.com/fatih/color v1.15.0 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
-	github.com/go-chi/chi/v5 v5.0.10 // indirect
 	github.com/go-faster/errors v0.6.1 // indirect
 	github.com/go-faster/jx v1.1.0 // indirect
 	github.com/go-faster/yaml v0.4.6 // indirect
@@ -88,7 +85,6 @@ require (
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/tomasen/realip v0.0.0-20180522021738-f0c99a92ddce // indirect
 	github.com/ugent-library/crypt v0.0.0-20230630063634-8c02106fd40e // indirect
-	github.com/ugent-library/httpx v0.0.0-20230810085329-405b7b83c66c // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.1 // indirect
 	github.com/xdg-go/stringprep v1.0.3 // indirect

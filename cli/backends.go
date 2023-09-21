@@ -1,4 +1,4 @@
-package commands
+package cli
 
 import (
 	"context"
@@ -24,15 +24,15 @@ import (
 	"github.com/ugent-library/biblio-backoffice/internal/backends/handle"
 	"github.com/ugent-library/biblio-backoffice/internal/backends/s3store"
 	"github.com/ugent-library/biblio-backoffice/internal/caching"
-	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"github.com/ugent-library/biblio-backoffice/internal/mutate"
+	"github.com/ugent-library/biblio-backoffice/models"
 
 	"github.com/ugent-library/biblio-backoffice/internal/backends/ianamedia"
 	"github.com/ugent-library/biblio-backoffice/internal/backends/jsonl"
 	"github.com/ugent-library/biblio-backoffice/internal/backends/pubmed"
-	"github.com/ugent-library/biblio-backoffice/internal/backends/repository"
 	"github.com/ugent-library/biblio-backoffice/internal/backends/ris"
 	"github.com/ugent-library/biblio-backoffice/internal/backends/spdxlicenses"
+	"github.com/ugent-library/biblio-backoffice/repositories"
 	"go.uber.org/zap"
 
 	// "github.com/ugent-library/biblio-backoffice/internal/tasks"
@@ -101,7 +101,7 @@ func newServices() *backends.Services {
 
 	projectService := caching.NewProjectService(authorityClient)
 
-	repo := newRepository(logger, personService, organizationService, projectService)
+	repo := newRepo(logger, personService, organizationService, projectService)
 
 	searchService := newSearchService(logger)
 
@@ -109,7 +109,7 @@ func newServices() *backends.Services {
 		FileStore:              newFileStore(),
 		ORCIDSandbox:           orcidConfig.Sandbox,
 		ORCIDClient:            orcidClient,
-		Repository:             repo,
+		Repo:                   repo,
 		SearchService:          searchService,
 		DatasetSearchIndex:     searchService.NewDatasetIndex(repo),
 		PublicationSearchIndex: searchService.NewPublicationIndex(repo),
@@ -179,16 +179,16 @@ func newLogger() *zap.SugaredLogger {
 	return sugar
 }
 
-func newRepository(logger *zap.SugaredLogger, personService backends.PersonService, organizationService backends.OrganizationService, projectService backends.ProjectService) backends.Repository {
+func newRepo(logger *zap.SugaredLogger, personService backends.PersonService, organizationService backends.OrganizationService, projectService backends.ProjectService) *repositories.Repo {
 	ctx := context.Background()
 
 	bp := newPublicationBulkIndexerService(logger)
 	bd := newDatasetBulkIndexerService(logger)
 
-	repo, err := repository.New(repository.Config{
+	repo, err := repositories.New(repositories.Config{
 		DSN: viper.GetString("pg-conn"),
 
-		PublicationListeners: []repository.PublicationListener{
+		PublicationListeners: []repositories.PublicationListener{
 			func(p *models.Publication) {
 				if p.DateUntil == nil {
 					if err := bp.Index(ctx, p); err != nil {
@@ -198,7 +198,7 @@ func newRepository(logger *zap.SugaredLogger, personService backends.PersonServi
 			},
 		},
 
-		DatasetListeners: []repository.DatasetListener{
+		DatasetListeners: []repositories.DatasetListener{
 			func(d *models.Dataset) {
 				if d.DateUntil == nil {
 					if err := bd.Index(ctx, d); err != nil {
@@ -208,7 +208,7 @@ func newRepository(logger *zap.SugaredLogger, personService backends.PersonServi
 			},
 		},
 
-		PublicationLoaders: []repository.PublicationVisitor{
+		PublicationLoaders: []repositories.PublicationVisitor{
 			func(p *models.Publication) error {
 				if p.CreatorID != "" {
 					person, err := personService.GetPerson(p.CreatorID)
@@ -279,7 +279,7 @@ func newRepository(logger *zap.SugaredLogger, personService backends.PersonServi
 			},
 		},
 
-		DatasetLoaders: []repository.DatasetVisitor{
+		DatasetLoaders: []repositories.DatasetVisitor{
 			func(d *models.Dataset) error {
 				if d.CreatorID != "" {
 					person, err := personService.GetPerson(d.CreatorID)
@@ -350,7 +350,7 @@ func newRepository(logger *zap.SugaredLogger, personService backends.PersonServi
 			},
 		},
 
-		PublicationMutators: map[string]repository.PublicationMutator{
+		PublicationMutators: map[string]repositories.PublicationMutator{
 			"project.add":              mutate.ProjectAdd(projectService),
 			"classification.set":       mutate.ClassificationSet,
 			"keyword.add":              mutate.KeywordAdd,

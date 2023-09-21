@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	"github.com/ugent-library/biblio-backoffice/identifiers"
-	"github.com/ugent-library/biblio-backoffice/internal/models"
+	"github.com/ugent-library/biblio-backoffice/models"
 )
 
 const startTag = `<oai_dc:dc xmlns="http://www.openarchives.org/OAI/2.0/oai_dc/"

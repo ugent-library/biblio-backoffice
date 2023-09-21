@@ -19,10 +19,11 @@ import (
 	"github.com/ugent-library/biblio-backoffice/internal/app/handlers"
 	"github.com/ugent-library/biblio-backoffice/internal/backends"
 	"github.com/ugent-library/biblio-backoffice/internal/bind"
-	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"github.com/ugent-library/biblio-backoffice/internal/render"
 	internal_time "github.com/ugent-library/biblio-backoffice/internal/time"
 	"github.com/ugent-library/biblio-backoffice/internal/validation"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/repositories"
 )
 
 const timestampFmt = "2006-01-02 15:04:05"
@@ -58,9 +59,9 @@ var hiddenLicenses = map[string]struct{}{
 
 type Handler struct {
 	handlers.BaseHandler
-	Repository backends.Repository
-	FileStore  backends.FileStore
-	IPFilter   *ipfilter.IPFilter
+	Repo      *repositories.Repo
+	FileStore backends.FileStore
+	IPFilter  *ipfilter.IPFilter
 }
 
 // safe basic auth handling
@@ -674,7 +675,7 @@ func (h *Handler) mapPublication(p *models.Publication) *Publication {
 		for _, rd := range p.RelatedDataset {
 			rel_ids = append(rel_ids, rd.ID)
 		}
-		related_datasets, _ := h.Repository.GetDatasets(rel_ids)
+		related_datasets, _ := h.Repo.GetDatasets(rel_ids)
 		pp.RelatedDataset = make([]Relation, 0, len(related_datasets))
 		for _, rd := range related_datasets {
 			if rd.Status != "public" {
@@ -796,7 +797,7 @@ func (h *Handler) mapDataset(d *models.Dataset) *Publication {
 		for _, rp := range d.RelatedPublication {
 			rel_ids = append(rel_ids, rp.ID)
 		}
-		related_publications, _ := h.Repository.GetPublications(rel_ids)
+		related_publications, _ := h.Repo.GetPublications(rel_ids)
 		pp.RelatedPublication = make([]Relation, 0, len(related_publications))
 		for _, rp := range related_publications {
 			if rp.Status != "public" {
@@ -818,9 +819,9 @@ func (h *Handler) mapDataset(d *models.Dataset) *Publication {
 }
 
 func (h *Handler) GetPublication(w http.ResponseWriter, r *http.Request) {
-	p, err := h.Repository.GetPublication(bind.PathValues(r).Get("id"))
+	p, err := h.Repo.GetPublication(bind.PathValues(r).Get("id"))
 	if err != nil {
-		if err == backends.ErrNotFound {
+		if err == models.ErrNotFound {
 			render.NotFound(w, r, err)
 		} else {
 			render.InternalServerError(w, r, err)
@@ -837,9 +838,9 @@ func (h *Handler) GetPublication(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetDataset(w http.ResponseWriter, r *http.Request) {
-	p, err := h.Repository.GetDataset(bind.PathValues(r).Get("id"))
+	p, err := h.Repo.GetDataset(bind.PathValues(r).Get("id"))
 	if err != nil {
-		if err == backends.ErrNotFound {
+		if err == models.ErrNotFound {
 			render.NotFound(w, r, err)
 		} else {
 			render.InternalServerError(w, r, err)
@@ -884,7 +885,7 @@ func (h *Handler) GetAllPublications(w http.ResponseWriter, r *http.Request) {
 		Offset: b.Offset,
 	}
 
-	n, publications, err := h.Repository.PublicationsAfter(updatedSince, b.Limit, b.Offset)
+	n, publications, err := h.Repo.PublicationsAfter(updatedSince, b.Limit, b.Offset)
 	if err != nil {
 		h.Logger.Errorw("select error", err)
 		render.InternalServerError(w, r, err)
@@ -931,7 +932,7 @@ func (h *Handler) GetAllDatasets(w http.ResponseWriter, r *http.Request) {
 		Offset: b.Offset,
 	}
 
-	n, datasets, err := h.Repository.DatasetsAfter(updatedSince, b.Limit, b.Offset)
+	n, datasets, err := h.Repo.DatasetsAfter(updatedSince, b.Limit, b.Offset)
 	if err != nil {
 		h.Logger.Errorw("select error", err)
 		render.InternalServerError(w, r, err)
@@ -958,9 +959,9 @@ func (h *Handler) GetAllDatasets(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) DownloadFile(w http.ResponseWriter, r *http.Request) {
 	vals := bind.PathValues(r)
 
-	p, err := h.Repository.GetPublication(vals.Get("id"))
+	p, err := h.Repo.GetPublication(vals.Get("id"))
 	if err != nil {
-		if err == backends.ErrNotFound {
+		if err == models.ErrNotFound {
 			render.NotFound(w, r, err)
 		} else {
 			render.InternalServerError(w, r, err)

@@ -40,7 +40,7 @@ func (h *Handler) Lock(w http.ResponseWriter, r *http.Request, ctx Context) {
 		return
 	}
 
-	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
+	err := h.Repo.UpdatePublication(ctx.Publication.SnapshotID, ctx.Publication, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
@@ -86,7 +86,7 @@ func (h *Handler) Unlock(w http.ResponseWriter, r *http.Request, ctx Context) {
 		return
 	}
 
-	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
+	err := h.Repo.UpdatePublication(ctx.Publication.SnapshotID, ctx.Publication, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {

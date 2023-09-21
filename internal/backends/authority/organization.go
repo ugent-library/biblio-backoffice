@@ -5,8 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/ugent-library/biblio-backoffice/internal/backends"
-	"github.com/ugent-library/biblio-backoffice/internal/models"
+	"github.com/ugent-library/biblio-backoffice/models"
 )
 
 type organizationSearchEnvelope struct {
@@ -45,7 +44,7 @@ func (c *Client) GetOrganization(id string) (*models.Organization, error) {
 	}
 
 	if len(responseBody.Hits.Hits) == 0 {
-		return nil, backends.ErrNotFound
+		return nil, models.ErrNotFound
 	}
 
 	org := responseBody.Hits.Hits[0].Source

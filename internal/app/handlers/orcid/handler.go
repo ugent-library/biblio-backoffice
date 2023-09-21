@@ -12,10 +12,11 @@ import (
 	"github.com/ugent-library/biblio-backoffice/internal/app/handlers"
 	"github.com/ugent-library/biblio-backoffice/internal/backends"
 	"github.com/ugent-library/biblio-backoffice/internal/bind"
-	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"github.com/ugent-library/biblio-backoffice/internal/render"
 	"github.com/ugent-library/biblio-backoffice/internal/render/flash"
 	"github.com/ugent-library/biblio-backoffice/internal/tasks"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/repositories"
 	"github.com/ugent-library/orcid"
 	"golang.org/x/text/language"
 )
@@ -23,7 +24,7 @@ import (
 type Handler struct {
 	handlers.BaseHandler
 	Tasks                  *tasks.Hub
-	Repository             backends.Repository
+	Repo                   *repositories.Repo
 	PublicationSearchIndex backends.PublicationIndex
 	Sandbox                bool
 }
@@ -70,7 +71,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request, ctx Context) {
 		return
 	}
 
-	p, err := h.Repository.GetPublication(b.PublicationID)
+	p, err := h.Repo.GetPublication(b.PublicationID)
 	if err != nil {
 		h.Logger.Errorw("add orcid: could not get publication", "errors", err, "publication", b.PublicationID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
@@ -149,7 +150,7 @@ func (h *Handler) addPublicationToORCID(user *models.User, p *models.Publication
 		PutCode: putCode,
 	})
 
-	if err := h.Repository.SavePublication(p, user); err != nil {
+	if err := h.Repo.SavePublication(p, user); err != nil {
 		return nil, err
 	}
 
@@ -207,7 +208,7 @@ func (h *Handler) sendPublicationsToORCIDTask(t tasks.Task, user *models.User, s
 				PutCode: putCode,
 			})
 
-			if err := h.Repository.SavePublication(p, user); err != nil {
+			if err := h.Repo.SavePublication(p, user); err != nil {
 				return err
 			}
 		}

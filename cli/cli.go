@@ -1,7 +1,6 @@
-package commands
+package cli
 
 import (
-	"log"
 	"strings"
 	_ "time/tzdata"
 
@@ -98,8 +97,6 @@ func init() {
 	rootCmd.PersistentFlags().Int("max-file-size", defaultMaxFileSize, "maximum file size")
 }
 
-func Execute() {
-	if err := rootCmd.Execute(); err != nil {
-		log.Fatal(err)
-	}
+func Run() {
+	cobra.CheckErr(rootCmd.Execute())
 }

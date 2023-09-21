@@ -1,8 +1,9 @@
 package es6
 
 import (
-	"github.com/ugent-library/biblio-backoffice/internal/models"
+	"github.com/ugent-library/biblio-backoffice/internal/backends"
 	"github.com/ugent-library/biblio-backoffice/internal/vocabularies"
+	"github.com/ugent-library/biblio-backoffice/models"
 )
 
 type facetDefinition struct {
@@ -61,12 +62,13 @@ var fixedFacetValues = map[string][]string{
 	//"publication_statuses" includes "deleted"
 	"classification":     vocabularies.Map["publication_classifications"],
 	"extern":             {"true", "false"},
-	"faculty_id":         vocabularies.Map["faculties"],
+	"faculty_id":         append([]string{backends.MissingValue}, vocabularies.Map["faculties"]...),
 	"file_relation":      vocabularies.Map["publication_file_relations"],
 	"has_message":        {"true", "false"},
+	"has_files":          {"true", "false"},
 	"legacy":             {"true", "false"},
 	"locked":             {"true", "false"},
-	"publication_status": vocabularies.Map["publication_publishing_statuses"],
+	"publication_status": append([]string{backends.MissingValue}, vocabularies.Map["publication_publishing_statuses"]...),
 	"status":             vocabularies.Map["visible_publication_statuses"],
 	"type":               vocabularies.Map["publication_types"],
 	"vabb_type":          vocabularies.Map["publication_vabb_types"],

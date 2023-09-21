@@ -7,10 +7,10 @@ import (
 	"time"
 
 	"github.com/ugent-library/biblio-backoffice/internal/app/handlers"
-	"github.com/ugent-library/biblio-backoffice/internal/models"
 	"github.com/ugent-library/biblio-backoffice/internal/render"
 	"github.com/ugent-library/biblio-backoffice/internal/render/flash"
 	"github.com/ugent-library/biblio-backoffice/internal/snapstore"
+	"github.com/ugent-library/biblio-backoffice/models"
 )
 
 type YieldConfirmDelete struct {
@@ -36,7 +36,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request, ctx Context) {
 
 	ctx.Publication.Status = "deleted"
 
-	err := h.Repository.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
+	err := h.Repo.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
