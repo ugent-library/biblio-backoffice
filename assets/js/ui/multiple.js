@@ -11,11 +11,11 @@ export default function() {
                 for (var i = 0; i < attrs.length; i++) {
                     let m = attrs[i].name.match(reTmpl);
                     if (m) {
-                        el.setAttribute(m[1], attrs[i].value.replace('{i}', valueIndex))                            
+                        el.setAttribute(m[1], attrs[i].value.replace('{i}', valueIndex))
                     }
                 }
             }
-        })                       
+        })
     }
 
     const addEvents = (rootEl) => {
@@ -58,7 +58,7 @@ export default function() {
             classList = lastValue.querySelector("i.if-add").classList
             classList.remove("if-add")
             classList.add("if-delete")
-            lastValue.querySelector("div.sr-only").textContent = "Delete"
+            lastValue.querySelector("div.visually-hidden").textContent = "Delete"
             lastBtn.removeEventListener("click", addFormValue)
             lastBtn.addEventListener("click", deleteFormValue)
 

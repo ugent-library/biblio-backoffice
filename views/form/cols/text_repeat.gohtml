@@ -1,10 +1,10 @@
-<div class="form-group col form-text-multiple{{if .Error}} is-invalid{{end}}">
+<div class="mb-6 col form-text-multiple{{if .Error}} is-invalid{{end}}">
    <label class="col-form-label" for="{{.Name}}">
         {{.Label}}{{if .Required}}&nbsp;<abbr class="required" title="Required">*</abbr>{{end}}
         {{with .Tooltip}}
-        <a class="text-muted mx-2" href="#" data-container="body" data-toggle="popover" data-trigger="focus" data-placement="right" data-content="{{.}}">
+        <a class="text-muted mx-2" href="#" data-bs-container="body" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right" data-bs-content="{{.}}">
             <i class="if if-info-circle if--small"></i>
-            <div class="sr-only">More info</div>
+            <div class="visually-hidden">More info</div>
         </a>
         {{end}}
     </label>
@@ -12,7 +12,7 @@
         {{range $i, $v := .Values}}
         <div class="d-flex mb-3 form-value">
             {{if $.AutocompleteURL}}
-            <div class="w-100 autocomplete" data-target="[name='{{$.Name}}[{{$i}}]']" data-tmpl-data-target="[name='{{$.Name}}[{i}]']">
+            <div class="w-100 autocomplete" data-bs-target="[name='{{$.Name}}[{{$i}}]']" data-tmpl-data-bs-target="[name='{{$.Name}}[{i}]']">
             {{end}}
                 <input class="form-control{{if $.Error}} is-invalid{{end}}" name="{{$.Name}}[{{$i}}]" data-tmpl-name="{{$.Name}}[{i}]" type="text" value="{{$v}}"
                     {{if $.AutocompleteURL}}
@@ -28,15 +28,15 @@
             <div class="autocomplete-hits" id="{{$.Name}}-{{$i}}-autocomplete" data-tmpl-id="{{$.Name}}-{i}-autocomplete"></div>
             </div>
             {{end}}
-            <button class="btn btn-link-muted btn-icon-only ml-3 form-value-delete" type="button">
+            <button class="btn btn-link-muted btn-icon-only ms-3 form-value-delete" type="button">
                 <i class="if if-delete"></i>
-                <div class="sr-only">Delete</div>
+                <div class="visually-hidden">Delete</div>
             </button>
         </div>
         {{end}}
         <div class="d-flex mb-3 form-value">
             {{if .AutocompleteURL}}
-            <div class="w-100 autocomplete" data-target="[name='{{.Name}}[{{len .Values}}]']" data-tmpl-data-target="[name='{{.Name}}[{i}]']">
+            <div class="w-100 autocomplete" data-bs-target="[name='{{.Name}}[{{len .Values}}]']" data-tmpl-data-bs-target="[name='{{.Name}}[{i}]']">
             {{end}}
                 <input class="form-control{{if .Error}} is-invalid{{end}}" name="{{.Name}}[{{len .Values}}]" data-tmpl-name="{{.Name}}[{i}]" type="text"
                     {{if .AutocompleteURL}}
@@ -51,9 +51,9 @@
             <div class="autocomplete-hits" id="{{.Name}}-{{len .Values}}-autocomplete" data-tmpl-id="{{.Name}}-{i}-autocomplete"></div>
             </div>
             {{end}}
-            <button class="btn btn-outline-primary btn-icon-only ml-3 form-value-add" type="button">
+            <button class="btn btn-outline-primary btn-icon-only ms-3 form-value-add" type="button">
                 <i class="if if-add"></i>
-                <div class="sr-only">Add</div>
+                <div class="visually-hidden">Add</div>
             </button>
         </div>
         <!--

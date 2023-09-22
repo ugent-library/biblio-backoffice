@@ -162,7 +162,7 @@ func (e *Encoder) EncodePublication(p *models.Publication) ([]byte, error) {
 	for _, c := range p.Author {
 		addContributor(r, "editor", c)
 	}
-	// TODO use promoter terminology everywhere?
+
 	for _, c := range p.Supervisor {
 		addContributor(r, "promoter", c)
 	}

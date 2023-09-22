@@ -273,3 +273,18 @@
     }
   }
 }
+
+// Override color-contrast() function
+
+.btn-success,
+.btn-danger,
+.btn-info {
+  --bs-btn-color: #FFF;
+  --bs-btn-hover-color: #FFF;
+}
+
+.btn-secondary,
+.btn-light {
+  --bs-btn-color: #{$gray-700};
+  --bs-btn-hover-color: #{$gray-800};
+}

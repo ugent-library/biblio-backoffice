@@ -1,4 +1,4 @@
-<td class="pl-8 col-5">
+<td class="ps-8 col-5">
     {{if .User.CanEditDataset .Dataset}}
     <input type="hidden" name="position" value="{{.Position}}">
     {{end}}
@@ -15,7 +15,7 @@
         <div class="bc-avatar-text">
             {{.Contributor.Name}}
             {{with .Contributor.ORCID}}
-            <span class="text-muted c-body-small ml-4"><i class="if if-orcid if--small text-success"></i> {{.}}</span>
+            <span class="text-muted c-body-small ms-4"><i class="if if-orcid if--small text-success"></i> {{.}}</span>
             {{end}}
         </div>
     </div>
@@ -33,12 +33,12 @@
     {{if .Contributor.Person}}
         {{range $i, $cd := .Contributor.Person.Affiliations}}
             <li class="c-meta-item">
-                <span class="badge badge-pill badge-default">
+                <span class="badge rounded-pill badge-default">
                     <span class="badge-text">{{$cd.OrganizationID}}</span>
                     {{with $cd.Organization}}
-                    <a class="ml-4" href="#" data-container="body" data-toggle="popover" data-trigger="focus" data-placement="right" data-content="{{.Name}}">
+                    <a class="ms-4" href="#" data-bs-container="body" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right" data-bs-content="{{.Name}}">
                         <i class="if if-info-circle if--small"></i>
-                        <div class="sr-only">More info</div>
+                        <div class="visually-hidden">More info</div>
                     </a>
                     {{end}}
                 </span>
@@ -47,7 +47,7 @@
         </ul>
     {{end}}
 </td>
-<td class="pr-4 col-3">
+<td class="pe-4 col-3">
     {{if .User.CanEditDataset .Dataset}}
     <div class="c-button-toolbar">
         <button type="button" class="btn btn-default"

@@ -67,7 +67,7 @@
                     <div class="bc-toolbar-item">
                         <div class="dropdown dropleft">
                             <button class="btn btn-outline-primary btn-icon-only"
-                                type="button" data-toggle="dropdown"
+                                type="button" data-bs-toggle="dropdown"
                                 aria-haspopup="true" aria-expanded="false">
                                 <i class="if if-more"></i>
                             </button>
@@ -113,14 +113,14 @@
                         </div>
                         {{with .Publication.PublicationStatus}}
                         <div class="bc-toolbar-item">
-                            <p class="c-subline text-nowrap pr-5 border-right">{{$.Locale.TS "publication_publishing_statuses" .}}</p>
+                            <p class="c-subline text-nowrap pe-5 border-end">{{$.Locale.TS "publication_publishing_statuses" .}}</p>
                         </div>
                         {{end}}
                         {{if .Publication.Locked}}
                         <div class="bc-toolbar-item">
-                            <span class="c-subline text-nowrap pr-5 border-right" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Locked for editing">
+                            <span class="c-subline text-nowrap pe-5 border-end" data-bs-toggle="tooltip" title="" data-bs-placement="bottom" data-original-title="Locked for editing">
                               <i class="if if-lock if--small if--muted"></i>
-                              <span class="text-muted c-body-small ml-2">Locked</span>
+                              <span class="text-muted c-body-small ms-2">Locked</span>
                             </span>
                         </div>
                         {{end}}
@@ -133,13 +133,13 @@
                       </div>
 
                       <div class="bc-toolbar-right">
-                        <div class="bc-toolbar-item mr-auto mr-lg-0">
+                        <div class="bc-toolbar-item me-auto me-lg-0">
                           <div class="d-flex align-items-center flex-wrap justify-content-md-end">
                             <span class="c-subline text-truncate text-nowrap">
-                               {{partial "shared/created_by" .Publication}} 
+                               {{partial "shared/created_by" .Publication}}
                             </span>
-                            <span class="c-subline text-truncate text-nowrap pl-5">
-                               {{partial "shared/updated_by" .Publication}} 
+                            <span class="c-subline text-truncate text-nowrap ps-5">
+                               {{partial "shared/updated_by" .Publication}}
                             </span>
                           </div>
                         </div>

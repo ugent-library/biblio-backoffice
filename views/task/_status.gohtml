@@ -7,15 +7,15 @@
     <div class="bc-toast__right">
         <button class="btn btn-link btn-icon-only toast-dismiss" aria-label="Close">
             <i class="if if-close"></i>
-            <div class="sr-only">Close</div>
+            <div class="visually-hidden">Close</div>
         </button>
     </div>
 </div>
 {{else if .Status.Running}}
 <div id="task-{{.ID}}" class="bc-toast bc-toast--info"
     hx-target="this"
-    hx-get="{{pathFor "task_status" "id" .ID}}" 
-    hx-trigger="load delay:300ms" 
+    hx-get="{{pathFor "task_status" "id" .ID}}"
+    hx-trigger="load delay:300ms"
     hx-swap="outerHTML"
 >
     <div class="bc-toast__left">
@@ -34,15 +34,15 @@
     <div class="bc-toast__right">
         <button class="btn btn-link btn-icon-only toast-dismiss" aria-label="Close">
             <i class="if if-close"></i>
-            <div class="sr-only">Close</div>
+            <div class="visually-hidden">Close</div>
         </button>
     </div>
 </div>
 {{else}}
 <div id="task-{{.ID}}" class="bc-toast bc-toast--info"
     hx-target="this"
-    hx-get="{{pathFor "task_status" "id" .ID}}" 
-    hx-trigger="load delay:300ms" 
+    hx-get="{{pathFor "task_status" "id" .ID}}"
+    hx-trigger="load delay:300ms"
     hx-swap="outerHTML"
 >
     <div class="bc-toast__left">

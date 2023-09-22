@@ -66,7 +66,7 @@
                     <div class="bc-toolbar-item">
                         <div class="dropdown">
                             <button class="btn btn-outline-primary btn-icon-only"
-                                type="button" data-toggle="dropdown"
+                                type="button" data-bs-toggle="dropdown"
                                 aria-haspopup="true" aria-expanded="false">
                                 <i class="if if-more"></i>
                             </button>
@@ -96,17 +96,17 @@
                         </div>
                         {{if .Dataset.Locked}}
                         <div class="bc-toolbar-item">
-                            <span class="c-subline text-nowrap pr-5 border-right" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Locked for editing">
+                            <span class="c-subline text-nowrap pe-5 border-end" data-bs-toggle="tooltip" title="" data-bs-placement="bottom" data-original-title="Locked for editing">
                               <i class="if if-lock if--small if--muted"></i>
-                              <span class="text-muted c-body-small ml-2">Locked</span>
+                              <span class="text-muted c-body-small ms-2">Locked</span>
                             </span>
                         </div>
                         {{end}}
                       </div>
                       <div class="bc-toolbar-right">
-                        <div class="bc-toolbar-item mr-auto mr-lg-0">
+                        <div class="bc-toolbar-item me-auto me-lg-0">
                           <div class="d-flex align-items-center flex-wrap justify-content-md-end">
-                            <span class="c-subline text-truncate text-nowrap pr-5">
+                            <span class="c-subline text-truncate text-nowrap pe-5">
                                {{partial "shared/created_by" .Dataset}}
                             </span>
                             <span class="c-subline text-truncate text-nowrap">

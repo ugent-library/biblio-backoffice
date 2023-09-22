@@ -15,11 +15,11 @@
                         <div class="col-md-6">
                             {{partial "shared/contributor_summary" (.Yield "Contributor" .Contributor "Current" false "Active" .Active)}}
                         </div>
-                        <div class="col-md-6 person-attributes pl-5">
+                        <div class="col-md-6 person-attributes ps-5">
                             {{range .Form.Sections}}
                                 {{.Render}}
                             {{end}}
-                        </div>                      
+                        </div>
                     </div>
                 </li>
             </ul>

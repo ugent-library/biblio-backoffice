@@ -29,9 +29,9 @@
         {{end}}
         {{if .OriginalUser}}
         <div class="alert alert-danger mb-0 py-1" role="alert">
-            <form class="form-inline" action="{{pathFor "delete_impersonation"}}" method="POST">
+            <form action="{{pathFor "delete_impersonation"}}" method="POST">
                 {{.CSRFTag}}
-                <label class="my-1 mr-2 font-weight-bold">Viewing the perspective of {{.User.FullName}}.</label>
+                <label class="my-1 me-2 fw-bold">Viewing the perspective of {{.User.FullName}}.</label>
                 <button type="submit" class="btn btn-danger my-1">return to {{.OriginalUser.FullName}}</button>.
             </form>
         </div>
@@ -65,9 +65,9 @@
                                 {{if .User}}
                                     <div class="dropdown position-static">
                                         <button class="nav-link dropdown-toggle btn-sm" role="button"
-                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             <div class="bc-avatar-and-text">
-                                                <div class="bc-avatar bc-avatar--tiny mr-3">
+                                                <div class="bc-avatar bc-avatar--tiny me-3">
                                                     <i class="if if-user"></i>
                                                 </div>
                                                 <div class="bc-avatar-text">{{.User.FullName}}</div>
@@ -101,8 +101,8 @@
                                     </div>
                                 {{else}}
                                     <a class="btn btn-primary btn-sm" href="{{pathFor "login"}}">
-                                        <i class="if if-arrow-right ml-0"></I>
-                                        <span class="btn-text mr-2">Log in</span>
+                                        <i class="if if-arrow-right ms-0"></I>
+                                        <span class="btn-text me-2">Log in</span>
                                     </a>
                                 {{end}}
                             </li>
@@ -117,7 +117,7 @@
             <div class="c-sidebar{{if eq .UserRole "curator"}} c-sidebar--dark-gray{{end}}">
                 {{if and .User .User.CanCurate}}
                 <div class="dropdown mx-4 mt-1 mb-5">
-                    <button class="btn btn-outline-light btn-sm btn-block dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <button class="btn btn-outline-light btn-sm w-100 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <span class="text-truncate">
                         {{if eq .UserRole "user"}}
                             Researcher

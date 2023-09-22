@@ -37,7 +37,6 @@
 
 .col-form-label {
   display: flex;
-  align-items: center;
   flex-wrap: wrap;
 
   .badge {
@@ -86,13 +85,13 @@ abbr {
   font-weight: 500;
 }
 
-// .form-group:last-child {
+// .form--group:last-child {
 //   margin-bottom: 0;
 // }
 
-.form-group.form-row {
-  align-items: flex-start;
-}
+// .form--group.form--row {
+//   align-items: flex-start;
+// }
 
 
 /* Better focus states
@@ -137,4 +136,3 @@ abbr {
   width: 56rem;
   max-width: 100%;
 }
-

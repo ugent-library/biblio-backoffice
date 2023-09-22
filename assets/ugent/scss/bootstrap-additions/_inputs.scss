@@ -1,41 +1,36 @@
-.custom-control {
-  display: flex;
-  align-items: center;
-}
-
-.custom-switch {
+.form-select {
   min-height: 2.4rem;
 
-  & + .custom-switch {
+  & + .form-select {
     margin-top: 1.2rem;
   }
 }
-.custom-switch .custom-control-label::before {
+.form-select .form-check-label::before {
   height: 2.4rem;
   top: 0;
   background-color: $gray-300;
   border-color: $gray-300;
 }
 
-.custom-switch .custom-control-label::after {
+.form-select .form-check-label::after {
   top: .5rem;
   left: calc(-4.4rem + 2px);
   background-color: $white;
 }
 
-.custom-switch .custom-control-input:checked ~ .custom-control-label::after {
+.form-select .form-check-input:checked ~ .form-check-label::after {
   transform: translateX(1.6rem);
 }
 
-.custom-control-input[disabled] ~ .custom-control-label::before, .custom-control-input:disabled ~ .custom-control-label::before {
+.form-check-input[disabled] ~ .form-check-label::before, .form-check-input:disabled ~ .form-check-label::before {
   background-color: $gray-100 !important;
 }
 
 
-.custom-checkbox-no-label {
+.form-check-no-label {
   padding-left: 0;
 
-  .custom-control-label {
+  .form-check-label {
     // set same width/height as before and after
     width: 1em;
     height: 1em;

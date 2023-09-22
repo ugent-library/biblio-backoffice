@@ -55,7 +55,7 @@
 
 .u-divide-x {
    > :not([hidden])~:not([hidden]) {
-    border-left: 1px solid $border;
+    border-start: 1px solid $border;
   }
 }
 
