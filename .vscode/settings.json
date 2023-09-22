@@ -1,7 +1,6 @@
 {
-    "protoc": {
-        "options": [
-            "-I ./api/v1"
-        ]
-    }
+  "protoc": {
+    "options": ["-I ./api/v1"]
+  },
+  "cSpell.words": ["biblio", "Biblio", "CYPRESSTEST", "Moreels"]
 }

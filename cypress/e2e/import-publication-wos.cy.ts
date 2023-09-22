@@ -91,16 +91,15 @@ describe('Publication import', () => {
         .should('contain.text', '802001088860')
         .contains('.btn', 'Add author')
         .click()
+    })
 
-      cy.contains('Review author information').should('be.visible')
+    cy.ensureModal('Add author').within(() => {
+      cy.contains('h3', 'Review author information').should('be.visible')
 
       cy.get('.list-group-item').should('have.length', 1).should('contain.text', 'Dries Moreels')
 
       // Using RegExp to match entire button text to make sure the "Save and add next" button is not picked instead
       cy.contains('.btn', /^Save$/).click()
-
-      // Necessary to wait or next publication attempt may still be invalid
-      cy.wait(2000)
     })
 
     cy.ensureNoModal()
