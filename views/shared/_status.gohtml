@@ -1,13 +1,13 @@
 {{if eq .Status "public"}}
-<span class="badge badge-pill badge-default">
+<span class="badge rounded-pill badge-default">
     <span class="badge-text">Biblio Public</span>
 </span>
 {{else if eq .Status "returned"}}
-<span class="badge badge-pill badge-danger">
+<span class="badge rounded-pill badge-danger">
     <span class="badge-text">Biblio Withdrawn</span>
 </span>
 {{else if eq .Status "private"}}
-<span class="badge badge-pill badge-secondary">
+<span class="badge rounded-pill badge-secondary">
     <span class="badge-text">Biblio Draft</span>
 </span>
 {{end}}

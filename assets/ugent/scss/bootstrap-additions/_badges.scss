@@ -56,6 +56,19 @@
   color: $blue;
 }
 
+a.bg-primary,
+a.badge.bg-primary {
+  color: $icon-default;
+  background-color: $white;
+  color: $white;
+
+   &:hover,
+   &:focus {
+     background-color: $dark-blue; // this does not work in the new badge bg structure
+     color: $white;
+   }
+}
+
 .badge-secondary,
 a.badge-secondary {
   color: $icon-default;
@@ -64,7 +77,7 @@ a.badge-secondary {
 
    &:hover,
    &:focus {
-     background-color: $gray-50;
+     background-color: $gray-80;
      color: $text;
    }
 }

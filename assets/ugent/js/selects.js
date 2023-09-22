@@ -10,7 +10,7 @@ function setMultiIconsText(state) {
   var iconTemplate = '';
 
   icons.forEach((icon) => {
-    iconTemplate+= '<i class="ml-2 if--small text-muted if if-' + icon + '"></i>'
+    iconTemplate+= '<i class="ms-2 if--small text-muted if if-' + icon + '"></i>'
   })
   var $multiIcons = $('<div class="d-flex align-items-center">' + state.text + iconTemplate + '</div>');
 
@@ -19,7 +19,7 @@ function setMultiIconsText(state) {
 
 function setIconText (state) {
   if (!state.id) { return state.text; }
-  var $state = $('<div class="d-flex align-items-center"><i class="mr-2 if if-' + state.element.dataset.icon + '"/></i>' + state.text + '</div>');
+  var $state = $('<div class="d-flex align-items-center"><i class="me-2 if if-' + state.element.dataset.icon + '"/></i>' + state.text + '</div>');
   return $state;
 };
 

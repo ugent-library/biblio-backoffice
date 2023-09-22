@@ -16,7 +16,6 @@ $warning:       $warning;
 $light:         $gray-50;
 $dark:          $gray-900;
 
-
 // Body
 //
 // Settings for the `<body>` element.
@@ -93,6 +92,12 @@ $spacers: map-merge(
   $spacers
 );
 
+// Margins
+//
+// We allow negative margins
+
+$enable-negative-margins:     true;
+
 // Options
 //
 // Quickly modify global styling by enabling or disabling optional features.
@@ -106,13 +111,13 @@ $font-size-base:              1.5rem;
 $font-size-lg:                $font-size-base * 1.25 !default;
 $font-size-sm:                1.3rem;
 
-$font-weight-lighter:         lighter !default;
-$font-weight-light:           300 !default;
-$font-weight-normal:          400 !default;
-$font-weight-bold:            500 !default;
-$font-weight-bolder:          bolder !default;
+$fw-lighter:         lighter !default;
+$fw-light:           300 !default;
+$fw-normal:          400 !default;
+$fw-bold:            500 !default;
+$fw-bolder:          bolder !default;
 
-$font-weight-base:            $font-weight-normal !default;
+$fw-base:            $fw-normal !default;
 $line-height-base:            1.5 !default;
 
 $h1-font-size:                2.4rem;
@@ -134,11 +139,11 @@ $input-btn-padding-x-sm:      .5rem;
 
 // Buttons
 //
-// For each of Bootstrap's buttons, define text, background, and border color.
+// For each of Bootstrap's buttons, define text, background, shadow and border color.
 
 $btn-font-weight:             500;
-
 $btn-link-disabled-color:     rgba($blue, .5);
+$btn-box-shadow:              none;
 
 // Allows for customizing button radius independently from global border radius
 $btn-border-radius-sm:        $border-radius;
@@ -147,9 +152,9 @@ $btn-border-radius-sm:        $border-radius;
 //
 // Style anchor elements.
 
+$link-decoration:                         none;
 $link-hover-color:                        $dark-blue;
 $link-hover-decoration:                   none;
-
 
 // Paragraphs
 //
@@ -214,31 +219,30 @@ $input-height:                          3.6rem;
 // $form-check-inline-margin-x:            .75rem !default;
 // $form-check-inline-input-margin-x:      .3125rem !default;
 
-$custom-control-gutter:                 0.8rem;
+$form-check-gutter:                 0.8rem;
 $form-grid-gutter-width:                1.6rem;
-$form-group-margin-bottom:              2.4rem;
 
 $input-group-addon-color:               $text-muted;
 $input-group-addon-bg:                  $gray-50;
 
-$custom-control-indicator-size:         1.6rem;
+$form-check-indicator-size:         1.6rem;
 
-$custom-control-indicator-border-color: $gray-200;
+$form-check-indicator-border-color: $gray-200;
 
-$custom-control-indicator-disabled-bg:          $gray-100;
+$form-check-indicator-disabled-bg:          $gray-100;
 
-$custom-control-indicator-checked-color:        $white;
-$custom-control-indicator-checked-bg:           $primary;
-$custom-control-indicator-checked-disabled-bg:  $gray-100;
-$custom-control-indicator-checked-border-color: $primary;
+$form-check-indicator-checked-color:        $white;
+$form-check-indicator-checked-bg:           $primary;
+$form-check-indicator-checked-disabled-bg:  $gray-100;
+$form-check-indicator-checked-border-color: $primary;
 
-$custom-checkbox-indicator-indeterminate-bg:           $primary;
-$custom-checkbox-indicator-indeterminate-color:        $white;
-$custom-checkbox-indicator-indeterminate-border-color: $primary;
+$form-check-indicator-indeterminate-bg:           $primary;
+$form-check-indicator-indeterminate-color:        $white;
+$form-check-indicator-indeterminate-border-color: $primary;
 
-$custom-switch-width:                           4rem;
-$custom-switch-indicator-border-radius:         1.2rem;
-$custom-switch-indicator-size:                  1.4rem;
+$form-select-width:                           4rem;
+$form-select-indicator-border-radius:         1.2rem;
+$form-select-indicator-size:                  1.4rem;
 
 // Modals
 
@@ -327,7 +331,7 @@ $card-cap-bg:                       $white;
 $card-cap-color:                    $header;
 $card-color:                        $text;
 $card-bg:                           $white;
-
+$card-spacer-y:                     2.4rem;
 
 // Pagination
 
@@ -371,3 +375,11 @@ $breadcrumb-padding-x:              0.8rem;
 $breadcrumb-padding-y:              0.4rem;
 $breadcrumb-item-padding:           0;
 $breadcrumb-divider:                none;
+
+
+// Tables
+//
+// Customizes the `.table` component with basic values, each used across all table variations.
+
+// scss-docs-start table-variables
+$table-bg:                    #FFF;

@@ -1,11 +1,11 @@
 <div class="dropdown">
-    <a class="badge badge-{{if .SearchArgs.HasFilter "created_since"}}primary{{else}}default{{end}} mr-3"
-        data-toggle="dropdown" data-persist="true" aria-haspopup="true"
+    <a class="badge {{if .SearchArgs.HasFilter "created_since"}}bg-primary{{else}}badge-default{{end}} me-3"
+        data-bs-toggle="dropdown" data-persist="true" aria-haspopup="true"
         aria-expanded="false" role="button"
     >
         <span class="badge-text">Created since</span>
         {{with .SearchArgs.FilterFor "created_since"}}
-        <span class="badge-value ml-2">&ndash; {{.}}</span>
+        <span class="badge-value ms-2">&ndash; {{.}}</span>
         {{end}}
         <i class="if if-caret-down"></i>
     </a>
@@ -23,7 +23,7 @@
             <small class="form-text text-muted">Type a date (YYYY-MM-DD), year (YYYY) or timing (today, yesterday).</small>
         </div>
         <div class="bc-navbar bc-navbar--large">
-            <button class="btn btn-primary btn-block" type="submit">Apply filter</button>
+            <button class="btn btn-primary d-grid w-100" type="submit">Apply filter</button>
         </div>
 
         <input type="hidden" name="q" value="{{.SearchArgs.Query}}">

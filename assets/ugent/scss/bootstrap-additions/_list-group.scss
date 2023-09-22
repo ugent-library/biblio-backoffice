@@ -182,7 +182,7 @@ a:hover .list-group-item-title {
       >:not(:last-child) {
         padding-right: 0.8rem;
         margin-right: 0.8rem;
-        border-right: 1px solid $border;
+        border-end: 1px solid $border;
       }
     }
   }

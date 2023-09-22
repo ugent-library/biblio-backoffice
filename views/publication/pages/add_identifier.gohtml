@@ -35,16 +35,16 @@
                 <div class="card-body">
                     <div classp="card-body">
                         <p class="mb-4">Enter publication identifier (e.g. DOI, PubMed ID) to import the publication description from an external repository or database.</p>
-                        <div class="form-group">
-                            <div class="form-row">
+                        <div class="mb-6">
+                            <div class="row">
                                 <div class="col-6">
                                     <div class="input-group">
-                                        <select name="source" class="custom-select col-2">
+                                        <select name="source" class="form-select">
                                             <option value="crossref">DOI</option>
                                             <option value="pubmed">PubMed</option>
                                             <option value="arxiv">arXiv</option>
                                         </select>
-                                        <input class="form-control col-10" type="text" name="identifier" placeholder="e.g. 10.7484/INSPIREHEP.DATA.RF5P.6M3K">
+                                        <input class="form-control" type="text" name="identifier" placeholder="e.g. 10.7484/INSPIREHEP.DATA.RF5P.6M3K">
                                     </div>
                                 </div>
                             </div>
@@ -60,7 +60,7 @@
 {{if .DuplicatePublication}}
 <div id="modal-backdrop" class="d-block modal-backdrop fade show"></div>
 <div class="d-block modal show" tabindex="-1" aria-modal="true" role="dialog">
-<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+<div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" role="document">
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">Are you sure you want to import this publication?</h2>

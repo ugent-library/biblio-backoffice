@@ -174,7 +174,7 @@ func buildRouter(services *backends.Services, logger *zap.SugaredLogger) (*mux.R
 	// router
 	router := mux.NewRouter()
 
-	// asets
+	// assets
 	assets, err := mix.New(mix.Config{
 		ManifestFile: "static/mix-manifest.json",
 		PublicPath:   baseURL.Path + "/static/",

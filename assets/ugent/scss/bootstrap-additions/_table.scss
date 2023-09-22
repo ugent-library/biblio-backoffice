@@ -68,11 +68,11 @@
    ========================================================================== */
 
 .table tr[data-href]:hover,
-.table tr[data-toggle]:hover,
+.table tr[data-bs-toggle]:hover,
 .table tr[data-href]:hover .table-col-sm-fixed,
-.table tr[data-toggle]:hover .table-col-sm-fixed,
+.table tr[data-bs-toggle]:hover .table-col-sm-fixed,
 .table tr[data-href]:hover .table-col-lg-fixed,
-.table tr[data-toggle]:hover .table-col-lg-fixed {
+.table tr[data-bs-toggle]:hover .table-col-lg-fixed {
   background: $gray-25;
   cursor: pointer;
 }
@@ -143,4 +143,3 @@
     height: 4rem;
   }
 }
-

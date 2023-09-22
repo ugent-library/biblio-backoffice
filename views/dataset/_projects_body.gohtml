@@ -4,7 +4,7 @@
         <tbody>
             {{range $i, $rel := .Dataset.RelatedProjects}}
                 <tr class="row-{{$i}}">
-                    <td class="pl-6">
+                    <td class="ps-6">
                         <div class="d-flex w-100">
                             <div class="w-100">
                                 <div class="d-flex align-items-start">
@@ -20,12 +20,12 @@
                             </div>
                         </div>
                     </td>
-                    <td class="pr-6">
+                    <td class="pe-6">
                         {{if $.User.CanEditDataset $.Dataset}}
                         <div class="c-button-toolbar">
                             <div class="dropdown">
                                 <button class="btn btn-link btn-icon-only btn-link-muted" type="button"
-                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <i class="if if-more"></i>
                                 </button>
                                 <div class="dropdown-menu">
