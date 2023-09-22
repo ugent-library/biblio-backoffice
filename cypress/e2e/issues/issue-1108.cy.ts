@@ -12,6 +12,8 @@ describe('Issue #1108: Cannot add author without first name', () => {
     cy.contains('People & Affiliations').click()
 
     cy.contains('.btn', 'Add author').click({ scrollBehavior: false })
+
+    cy.intercept('/publication/*/contributors/author/confirm-create*').as('confirm-create')
   })
 
   it('should be possible to add author without first name', () => {
@@ -19,6 +21,11 @@ describe('Issue #1108: Cannot add author without first name', () => {
       cy.get('input[name=last_name]').type('Doe')
 
       cy.contains('Doe External, non-UGent').closest('.list-group-item').contains('.btn', 'Add external author').click()
+    })
+
+    cy.wait('@confirm-create')
+
+    cy.ensureModal('Add author').within(() => {
       cy.contains('.btn', /^Save$/).click()
     })
 
@@ -41,6 +48,11 @@ describe('Issue #1108: Cannot add author without first name', () => {
         .closest('.list-group-item')
         .contains('.btn', 'Add external author')
         .click()
+    })
+
+    cy.wait('@confirm-create')
+
+    cy.ensureModal('Add author').within(() => {
       cy.contains('.btn', /^Save$/).click()
     })
 

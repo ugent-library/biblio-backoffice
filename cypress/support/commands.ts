@@ -1,4 +1,5 @@
 const NO_LOG = { log: false }
+// TODO split up in separate commands
 
 declare namespace Cypress {
   interface Chainable<Subject> {
@@ -33,7 +34,7 @@ declare namespace Cypress {
 
 // Parent commands
 Cypress.Commands.addAll({
-  login(username, password) {
+  login(username, password): void {
     // WARNING: Whenever you change the code of the session setup, Cypress will throw an error:
     //   This session already exists. You may not create a new session with a previously used identifier.
     //   If you want to create a new session with a different setup function, please call cy.session() with
@@ -78,15 +79,15 @@ Cypress.Commands.addAll({
     )
   },
 
-  loginAsResearcher() {
+  loginAsResearcher(): void {
     cy.login(Cypress.env('RESEARCHER_USER_NAME'), Cypress.env('RESEARCHER_USER_PASSWORD'))
   },
 
-  loginAsLibrarian() {
+  loginAsLibrarian(): void {
     cy.login(Cypress.env('LIBRARIAN_USER_NAME'), Cypress.env('LIBRARIAN_USER_PASSWORD'))
   },
 
-  switchMode(mode: 'Researcher' | 'Librarian') {
+  switchMode(mode: 'Researcher' | 'Librarian'): void {
     const currentMode = mode === 'Researcher' ? 'Librarian' : 'Researcher'
 
     let log: Cypress.Log
@@ -113,8 +114,9 @@ Cypress.Commands.addAll({
     })
   },
 
-  ensureModal(expectedTitle, strict = true) {
-    logCommand('ensureModal', { expectedTitle, strict }, expectedTitle)
+  ensureModal(expectedTitle: string, strict = true): Cypress.Chainable<JQuery<HTMLElement>> {
+    const char = strict ? '"' : '/'
+    const log = logCommand('ensureModal', { expectedTitle, strict }, char + expectedTitle + char)
 
     cy.get('#modals', NO_LOG)
       .should('not.be.empty', NO_LOG)
@@ -131,10 +133,10 @@ Cypress.Commands.addAll({
       })
 
     // Yield the #modal dialog element
-    cy.get('#modal .modal-dialog', NO_LOG)
+    return cy.get('#modal .modal-dialog', NO_LOG).finishLog(log)
   },
 
-  ensureNoModal() {
+  ensureNoModal(): void {
     logCommand('ensureNoModal')
 
     cy.get('#modals', NO_LOG).children(NO_LOG).should('have.length', 0)
@@ -142,14 +144,14 @@ Cypress.Commands.addAll({
     cy.get('#modal-backdrop, #modal', NO_LOG).should('not.exist')
   },
 
-  visitPublication(alias = '@biblioId') {
+  visitPublication(alias = '@biblioId'): Cypress.Chainable<Cypress.AUTWindow> {
     const log = logCommand('visitPublication', { alias }, alias)
 
-    cy.get(alias, NO_LOG).then(biblioId => {
+    return cy.get(alias, NO_LOG).then(biblioId => {
       updateLogMessage(log, biblioId)
       updateConsoleProps(log, cp => (cp['Biblio ID'] = biblioId))
 
-      cy.visit(`/publication/${biblioId}`, NO_LOG)
+      return cy.visit(`/publication/${biblioId}`, NO_LOG)
     })
   },
 })
@@ -207,14 +209,13 @@ function logCommand(name, consoleProps = {}, message = '', $el = undefined) {
   })
 }
 
-function updateLogMessage(log: Cypress.Log, subject: unknown) {
+function updateLogMessage(log: Cypress.Log, append: unknown) {
   const message = log.get('message').split(', ')
 
-  message.push(subject)
+  message.push(append)
 
   log.set('message', message.join(', '))
 }
-
 
 function updateConsoleProps(log: Cypress.Log, callback: (ObjectLike) => void) {
   const consoleProps = log.get('consoleProps')()

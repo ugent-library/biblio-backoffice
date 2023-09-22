@@ -13,23 +13,28 @@ describe('Issue #1140: External contributor info is empty in the suggest box', (
 
     cy.contains('.btn', 'Add author').click({ scrollBehavior: false })
 
-    cy.get('input[name=first_name]').type('John')
-    cy.get('input[name=last_name]').type('Doe')
-    cy.contains('.btn', 'Add external author').click()
+    cy.ensureModal('Add author').within(() => {
+      cy.get('input[name=first_name]').type('John')
+      cy.get('input[name=last_name]').type('Doe')
 
-    cy.contains('label', 'Roles').next().find('select').select('Validation')
+      cy.intercept('/publication/*/contributors/author/confirm-create*').as('confirm-create')
 
-    cy.intercept('POST', '/publication/*/contributors/author').as('add-author')
+      cy.contains('.btn', 'Add external author').click()
+    })
 
-    cy.contains('.btn', /^Save$/).click()
+    cy.wait('@confirm-create')
 
-    cy.wait('@add-author')
+    cy.ensureModal('Add author').within(() => {
+      cy.contains('label', 'Roles').next().find('select').select('Validation')
+
+      cy.contains('.btn', /^Save$/).click()
+    })
+
+    cy.ensureNoModal()
 
     cy.contains('table#contributors-author-table tr', 'John Doe')
-      .as('contributor-row')
-      .scrollIntoView({ offset: { top: -100, left: 0 } })
-
-    cy.get('@contributor-row').find('.if.if-edit').click({ scrollBehavior: false })
+      .find('.if.if-edit')
+      .click({ scrollBehavior: 'nearest' })
 
     cy.get('#person-suggestions')
       .find('.list-group-item')
