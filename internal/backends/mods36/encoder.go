@@ -164,7 +164,7 @@ func (e *Encoder) EncodePublication(p *models.Publication) ([]byte, error) {
 	}
 
 	for _, c := range p.Supervisor {
-		addContributor(r, "Supervisor", c)
+		addContributor(r, "promoter", c)
 	}
 
 	for _, rel := range p.RelatedOrganizations {
