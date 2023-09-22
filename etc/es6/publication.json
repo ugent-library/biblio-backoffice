@@ -166,7 +166,8 @@
                     "type": "keyword"
                 },
                 "faculty_id": {
-                    "type": "keyword"
+                    "type": "keyword",
+                    "copy_to": "all"
                 },
                 "extern": {
                     "type": "boolean"
