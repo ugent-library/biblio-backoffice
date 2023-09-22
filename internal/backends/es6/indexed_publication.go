@@ -33,6 +33,7 @@ type indexedPublication struct {
 	ISXN                    []string `json:"isxn,omitempty"`
 	Keyword                 []string `json:"keyword,omitempty"`
 	LastUserID              string   `json:"last_user_id,omitempty"`
+	Legacy                  bool     `json:"legacy"`
 	Locked                  bool     `json:"locked"`
 	OrganizationID          []string `json:"organization_id,omitempty"`
 	Publication             string   `json:"publication,omitempty"`
@@ -64,6 +65,7 @@ func NewIndexedPublication(p *models.Publication) *indexedPublication {
 		ID:                      p.ID,
 		IssueTitle:              p.IssueTitle,
 		LastUserID:              p.LastUserID,
+		Legacy:                  p.Legacy,
 		Locked:                  p.Locked,
 		HasMessage:              len(p.Message) > 0,
 		Publication:             p.Publication,
