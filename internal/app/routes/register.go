@@ -11,7 +11,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"github.com/jpillora/ipfilter"
-	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backoffice/internal/app/handlers"
 	"github.com/ugent-library/biblio-backoffice/internal/app/handlers/authenticating"
 	"github.com/ugent-library/biblio-backoffice/internal/app/handlers/dashboard"
@@ -36,44 +35,62 @@ import (
 	"go.uber.org/zap"
 )
 
-func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
-	sessionStore sessions.Store, sessionName string, timezone *time.Location, localizer *locale.Localizer, logger *zap.SugaredLogger, oidcAuth *oidc.Auth) {
-	basePath := baseURL.Path
+type Config struct {
+	Services         *backends.Services
+	BaseURL          *url.URL
+	Router           *mux.Router
+	SessionStore     sessions.Store
+	SessionName      string
+	Timezone         *time.Location
+	Localizer        *locale.Localizer
+	Logger           *zap.SugaredLogger
+	OIDCAuth         *oidc.Auth
+	FrontendURL      string
+	FrontendUsername string
+	FrontendPassword string
+	IPRanges         string
+	MaxFileSize      int
+	CSRFName         string
+	CSRFSecret       string
+}
 
-	router.StrictSlash(true)
-	router.UseEncodedPath()
+func Register(c Config) {
+	basePath := c.BaseURL.Path
+
+	c.Router.StrictSlash(true)
+	c.Router.UseEncodedPath()
 
 	// static files
-	router.PathPrefix(basePath + "/static/").Handler(http.StripPrefix(basePath+"/static/", http.FileServer(http.Dir("./static"))))
+	c.Router.PathPrefix(basePath + "/static/").Handler(http.StripPrefix(basePath+"/static/", http.FileServer(http.Dir("./static"))))
 
 	// status endpoint
 	// TODO add checkers
 	checker := health.NewChecker(
 		health.WithTimeout(3 * time.Second),
 	)
-	router.Handle("/status", health.NewHandler(checker)).Methods("GET")
+	c.Router.Handle("/status", health.NewHandler(checker)).Methods("GET")
 
 	// handlers
 	baseHandler := handlers.BaseHandler{
-		Logger:          logger,
-		Router:          router,
-		SessionStore:    sessionStore,
-		SessionName:     sessionName,
-		Timezone:        timezone,
-		Localizer:       localizer,
-		UserService:     services.UserService,
-		FrontendBaseUrl: viper.GetString("frontend-url"),
+		Logger:          c.Logger,
+		Router:          c.Router,
+		SessionStore:    c.SessionStore,
+		SessionName:     c.SessionName,
+		Timezone:        c.Timezone,
+		Localizer:       c.Localizer,
+		UserService:     c.Services.UserService,
+		FrontendBaseUrl: c.FrontendURL,
 	}
 	homeHandler := &home.Handler{
 		BaseHandler: baseHandler,
 	}
 	authenticatingHandler := &authenticating.Handler{
 		BaseHandler: baseHandler,
-		OIDCAuth:    oidcAuth,
+		OIDCAuth:    c.OIDCAuth,
 	}
 	impersonatingHandler := &impersonating.Handler{
 		BaseHandler:       baseHandler,
-		UserSearchService: services.UserSearchService,
+		UserSearchService: c.Services.UserSearchService,
 	}
 	// tasksHandler := &tasks.Handler{
 	// 	BaseHandler: baseHandler,
@@ -81,112 +98,100 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 	// }
 	dashboardHandler := &dashboard.Handler{
 		BaseHandler:            baseHandler,
-		DatasetSearchIndex:     services.DatasetSearchIndex,
-		PublicationSearchIndex: services.PublicationSearchIndex,
+		DatasetSearchIndex:     c.Services.DatasetSearchIndex,
+		PublicationSearchIndex: c.Services.PublicationSearchIndex,
 	}
 	frontofficeHandler := &frontoffice.Handler{
-		BaseHandler: baseHandler,
-		Repo:        services.Repo,
-		FileStore:   services.FileStore,
+		BaseHandler:      baseHandler,
+		Repo:             c.Services.Repo,
+		FileStore:        c.Services.FileStore,
+		FrontendUsername: c.FrontendUsername,
+		FrontendPassword: c.FrontendPassword,
+		IPRanges:         c.IPRanges,
 		IPFilter: ipfilter.New(ipfilter.Options{
-			AllowedIPs:     strings.Split(viper.GetString("ip-ranges"), ","),
+			AllowedIPs:     strings.Split(c.IPRanges, ","),
 			BlockByDefault: true,
 		}),
 	}
 	datasetSearchingHandler := &datasetsearching.Handler{
 		BaseHandler:        baseHandler,
-		DatasetSearchIndex: services.DatasetSearchIndex,
+		DatasetSearchIndex: c.Services.DatasetSearchIndex,
 	}
 	datasetExportingHandler := &datasetexporting.Handler{
 		BaseHandler:          baseHandler,
-		DatasetListExporters: services.DatasetListExporters,
-		DatasetSearchIndex:   services.DatasetSearchIndex,
+		DatasetListExporters: c.Services.DatasetListExporters,
+		DatasetSearchIndex:   c.Services.DatasetSearchIndex,
 	}
 	datasetViewingHandler := &datasetviewing.Handler{
 		BaseHandler: baseHandler,
-		Repo:        services.Repo,
+		Repo:        c.Services.Repo,
 	}
 	datasetCreatingHandler := &datasetcreating.Handler{
 		BaseHandler:         baseHandler,
-		Repo:                services.Repo,
-		DatasetSearchIndex:  services.DatasetSearchIndex,
-		DatasetSources:      services.DatasetSources,
-		OrganizationService: services.OrganizationService,
+		Repo:                c.Services.Repo,
+		DatasetSearchIndex:  c.Services.DatasetSearchIndex,
+		DatasetSources:      c.Services.DatasetSources,
+		OrganizationService: c.Services.OrganizationService,
 	}
 	datasetEditingHandler := &datasetediting.Handler{
 		BaseHandler:               baseHandler,
-		Repo:                      services.Repo,
-		ProjectService:            services.ProjectService,
-		ProjectSearchService:      services.ProjectSearchService,
-		OrganizationSearchService: services.OrganizationSearchService,
-		OrganizationService:       services.OrganizationService,
-		PersonSearchService:       services.PersonSearchService,
-		PersonService:             services.PersonService,
-		PublicationSearchIndex:    services.PublicationSearchIndex,
+		Repo:                      c.Services.Repo,
+		ProjectService:            c.Services.ProjectService,
+		ProjectSearchService:      c.Services.ProjectSearchService,
+		OrganizationSearchService: c.Services.OrganizationSearchService,
+		OrganizationService:       c.Services.OrganizationService,
+		PersonSearchService:       c.Services.PersonSearchService,
+		PersonService:             c.Services.PersonService,
+		PublicationSearchIndex:    c.Services.PublicationSearchIndex,
 	}
 	publicationSearchingHandler := &publicationsearching.Handler{
 		BaseHandler:            baseHandler,
-		PublicationSearchIndex: services.PublicationSearchIndex,
-		FileStore:              services.FileStore,
+		PublicationSearchIndex: c.Services.PublicationSearchIndex,
+		FileStore:              c.Services.FileStore,
 	}
 	publicationExportingHandler := &publicationexporting.Handler{
 		BaseHandler:              baseHandler,
-		PublicationListExporters: services.PublicationListExporters,
-		PublicationSearchIndex:   services.PublicationSearchIndex,
+		PublicationListExporters: c.Services.PublicationListExporters,
+		PublicationSearchIndex:   c.Services.PublicationSearchIndex,
 	}
 	publicationViewingHandler := &publicationviewing.Handler{
 		BaseHandler: baseHandler,
-		Repo:        services.Repo,
-		FileStore:   services.FileStore,
-		MaxFileSize: viper.GetInt("max-file-size"),
+		Repo:        c.Services.Repo,
+		FileStore:   c.Services.FileStore,
+		MaxFileSize: c.MaxFileSize,
 	}
 	publicationCreatingHandler := &publicationcreating.Handler{
 		BaseHandler:            baseHandler,
-		Repo:                   services.Repo,
-		PublicationSearchIndex: services.PublicationSearchIndex,
-		PublicationSources:     services.PublicationSources,
-		PublicationDecoders:    services.PublicationDecoders,
-		OrganizationService:    services.OrganizationService,
+		Repo:                   c.Services.Repo,
+		PublicationSearchIndex: c.Services.PublicationSearchIndex,
+		PublicationSources:     c.Services.PublicationSources,
+		PublicationDecoders:    c.Services.PublicationDecoders,
+		OrganizationService:    c.Services.OrganizationService,
 	}
 	publicationEditingHandler := &publicationediting.Handler{
 		BaseHandler:               baseHandler,
-		Repo:                      services.Repo,
-		ProjectService:            services.ProjectService,
-		ProjectSearchService:      services.ProjectSearchService,
-		OrganizationSearchService: services.OrganizationSearchService,
-		OrganizationService:       services.OrganizationService,
-		PersonSearchService:       services.PersonSearchService,
-		PersonService:             services.PersonService,
-		DatasetSearchIndex:        services.DatasetSearchIndex,
-		FileStore:                 services.FileStore,
-		MaxFileSize:               viper.GetInt("max-file-size"),
+		Repo:                      c.Services.Repo,
+		ProjectService:            c.Services.ProjectService,
+		ProjectSearchService:      c.Services.ProjectSearchService,
+		OrganizationSearchService: c.Services.OrganizationSearchService,
+		OrganizationService:       c.Services.OrganizationService,
+		PersonSearchService:       c.Services.PersonSearchService,
+		PersonService:             c.Services.PersonService,
+		DatasetSearchIndex:        c.Services.DatasetSearchIndex,
+		FileStore:                 c.Services.FileStore,
+		MaxFileSize:               c.MaxFileSize,
 	}
 	publicationBatchHandler := &publicationbatch.Handler{
 		BaseHandler: baseHandler,
-		Repo:        services.Repo,
+		Repo:        c.Services.Repo,
 	}
-	// orcidHandler := &orcid.Handler{
-	// 	BaseHandler:              baseHandler,
-	// 	Tasks:                    services.Tasks,
-	// 	Repo:                     services.Repo,
-	// 	PublicationSearchService: services.PublicationSearchService,
-	// 	Sandbox:                  services.ORCIDSandbox,
-	// }
+
 	mediaTypesHandler := &mediatypes.Handler{
 		BaseHandler:            baseHandler,
-		MediaTypeSearchService: services.MediaTypeSearchService,
+		MediaTypeSearchService: c.Services.MediaTypeSearchService,
 	}
 
-	// TODO fix absolute url generation
-	// var schemes []string
-	// if u.Scheme == "http" {
-	// 	schemes = []string{"http", "https"}
-	// } else {
-	// 	schemes = []string{"https", "http"}
-	// }
-	// r = r.Schemes(schemes...).Host(u.Host).PathPrefix(u.Path).Subrouter()
-
-	frontofficeRouter := router.PathPrefix(basePath).Subrouter()
+	frontofficeRouter := c.Router.PathPrefix(basePath).Subrouter()
 	// frontoffice data exchange api
 	frontofficeRouter.HandleFunc("/frontoffice/publication/{id}", frontofficeHandler.BasicAuth(frontofficeHandler.GetPublication)).
 		Methods("GET")
@@ -204,12 +209,12 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 	if csrfPath == "" {
 		csrfPath = "/"
 	}
-	r := router.PathPrefix(basePath).Subrouter()
+	r := c.Router.PathPrefix(basePath).Subrouter()
 	r.Use(csrf.Protect(
-		[]byte(viper.GetString("csrf-secret")),        // TODO pass as argument
-		csrf.CookieName(viper.GetString("csrf-name")), // TODO pass as argument
+		[]byte(c.CSRFSecret),
+		csrf.CookieName(c.CSRFName),
 		csrf.Path(csrfPath),
-		csrf.Secure(baseURL.Scheme == "https"),
+		csrf.Secure(c.BaseURL.Scheme == "https"),
 		csrf.SameSite(csrf.SameSiteStrictMode),
 		csrf.FieldName("csrf-token"),
 	))
@@ -1043,16 +1048,6 @@ func Register(services *backends.Services, baseURL *url.URL, router *mux.Router,
 		publicationEditingHandler.Wrap(publicationEditingHandler.DeleteFile)).
 		Methods("DELETE").
 		Name("publication_delete_file")
-
-	// orcid
-	// r.HandleFunc("/publication/orcid",
-	// 	orcidHandler.Wrap(orcidHandler.AddAll)).
-	// 	Methods("POST").
-	// 	Name("publication_orcid_add_all")
-	// r.HandleFunc("/publication/{id}/orcid",
-	// 	orcidHandler.Wrap(orcidHandler.Add)).
-	// 	Methods("POST").
-	// 	Name("publication_orcid_add")
 
 	// media types
 	r.HandleFunc("/media_type/suggestions",

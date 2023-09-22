@@ -15,7 +15,6 @@ import (
 	"github.com/caltechlibrary/doitools"
 	"github.com/iancoleman/strcase"
 	"github.com/jpillora/ipfilter"
-	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backoffice/internal/app/handlers"
 	"github.com/ugent-library/biblio-backoffice/internal/backends"
 	"github.com/ugent-library/biblio-backoffice/internal/bind"
@@ -59,9 +58,12 @@ var hiddenLicenses = map[string]struct{}{
 
 type Handler struct {
 	handlers.BaseHandler
-	Repo      *repositories.Repo
-	FileStore backends.FileStore
-	IPFilter  *ipfilter.IPFilter
+	Repo             *repositories.Repo
+	FileStore        backends.FileStore
+	IPRanges         string
+	IPFilter         *ipfilter.IPFilter
+	FrontendUsername string
+	FrontendPassword string
 }
 
 // safe basic auth handling
@@ -71,8 +73,8 @@ func (h *Handler) BasicAuth(fn func(http.ResponseWriter, *http.Request)) http.Ha
 		if username, password, ok := r.BasicAuth(); ok {
 			usernameHash := sha256.Sum256([]byte(username))
 			passwordHash := sha256.Sum256([]byte(password))
-			expectedUsernameHash := sha256.Sum256([]byte(viper.GetString("frontend-username")))
-			expectedPasswordHash := sha256.Sum256([]byte(viper.GetString("frontend-password")))
+			expectedUsernameHash := sha256.Sum256([]byte(h.FrontendUsername))
+			expectedPasswordHash := sha256.Sum256([]byte(h.FrontendPassword))
 
 			usernameMatch := (subtle.ConstantTimeCompare(usernameHash[:], expectedUsernameHash[:]) == 1)
 			passwordMatch := (subtle.ConstantTimeCompare(passwordHash[:], expectedPasswordHash[:]) == 1)
@@ -996,7 +998,7 @@ func (h *Handler) DownloadFile(w http.ResponseWriter, r *http.Request) {
 			ip = remoteIP
 		}
 		if !h.IPFilter.Allowed(ip) {
-			h.Logger.Warnw("ip not allowed, allowed", "ip", ip, "allowed", viper.GetString("ip-ranges"))
+			h.Logger.Warnw("ip not allowed, allowed", "ip", ip, "allowed", h.IPRanges)
 			render.Forbidden(w, r)
 			return
 		}

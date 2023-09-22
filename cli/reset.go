@@ -9,8 +9,8 @@ import (
 )
 
 func init() {
-	resetCmd.Flags().Bool("confirm", false, "destructive reset of all data")
 	rootCmd.AddCommand(resetCmd)
+	resetCmd.Flags().Bool("confirm", false, "destructive reset of all data")
 }
 
 var resetCmd = &cobra.Command{
@@ -23,7 +23,7 @@ var resetCmd = &cobra.Command{
 
 		ctx := context.Background()
 
-		services := Services()
+		services := newServices()
 
 		if err := services.Repo.PurgeAllPublications(); err != nil {
 			return err

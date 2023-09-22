@@ -1,12 +1,9 @@
 package server
 
 import (
-	"log"
-
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
-	"github.com/spf13/viper"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
 	"github.com/ugent-library/biblio-backoffice/internal/backends"
 	"go.uber.org/zap"
@@ -19,24 +16,6 @@ import (
 type server struct {
 	api.UnimplementedBiblioServer
 	services *backends.Services
-}
-
-func listUsers() Users {
-	var u Users
-
-	u = append(u, &User{
-		Username: viper.GetString("admin_username"),
-		Password: viper.GetString("admin_password"),
-		Role:     "admin",
-	})
-
-	u = append(u, &User{
-		Username: viper.GetString("curator_username"),
-		Password: viper.GetString("curator_password"),
-		Role:     "curator",
-	})
-
-	return u
 }
 
 func listPermissions() map[string][]string {
@@ -74,7 +53,7 @@ func listPermissions() map[string][]string {
 	}
 }
 
-func New(services *backends.Services, logger *zap.SugaredLogger) *grpc.Server {
+func New(services *backends.Services, users Users, logger *zap.SugaredLogger) *grpc.Server {
 	zap_opt := grpc_zap.WithLevels(
 		func(c codes.Code) zapcore.Level {
 			var l zapcore.Level
@@ -92,25 +71,11 @@ func New(services *backends.Services, logger *zap.SugaredLogger) *grpc.Server {
 		},
 	)
 
-	// Defaults to an insecure connection
-	tlsOption := grpc.Creds(nil)
-
-	// If set, enabled server-side TLS secure connection
-	if viper.GetBool("api-tls-enabled") {
-		tlsCredentials, err := loadTLSCredentials()
-		if err != nil {
-			log.Fatal("cannot load TLS credentials: ", err)
-		}
-
-		tlsOption = grpc.Creds(tlsCredentials)
-	}
-
-	users := listUsers()
 	permissions := listPermissions()
 	basicAuthInterceptor := NewBasicAuthInterceptor(users, permissions)
 
 	gsrv := grpc.NewServer(
-		tlsOption,
+		grpc.Creds(nil),
 		grpc_middleware.WithStreamServerChain(
 			grpc_recovery.StreamServerInterceptor(),
 			grpc_zap.StreamServerInterceptor(logger.Desugar(), zap_opt),
