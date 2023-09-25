@@ -121,22 +121,22 @@ Cypress.Commands.addAll({
     const char = strict ? '"' : '/'
     const log = logCommand('ensureModal', { expectedTitle, strict }, char + expectedTitle + char)
 
-    cy.get('#modals', NO_LOG)
+    return cy
+      .get('#modals', NO_LOG)
       .should('not.be.empty', NO_LOG)
 
       .within(NO_LOG, () => {
         // Assertion "be.visible" doesn't work here because it is behind the dialog
         cy.get('#modal-backdrop', NO_LOG).should('have.class', 'show')
 
-        cy.get('#modal', NO_LOG)
+        return cy
+          .get('#modal', NO_LOG)
           .should('be.visible')
           .within(NO_LOG, () => {
             cy.get('.modal-title', NO_LOG).should(strict ? 'have.text' : 'contain.text', expectedTitle)
           })
       })
-
-    // Yield the #modal dialog element
-    return cy.get('#modal .modal-dialog', NO_LOG).finishLog(log)
+      .finishLog(log)
   },
 
   ensureNoModal(): void {

@@ -17,12 +17,8 @@ describe('Issue #1140: External contributor info is empty in the suggest box', (
       cy.get('input[name=first_name]').type('John')
       cy.get('input[name=last_name]').type('Doe')
 
-      cy.intercept('/publication/*/contributors/author/confirm-create*').as('confirm-create')
-
       cy.contains('.btn', 'Add external author').click()
     })
-
-    cy.wait('@confirm-create')
 
     cy.ensureModal('Add author').within(() => {
       cy.contains('label', 'Roles').next().find('select').select('Validation')
