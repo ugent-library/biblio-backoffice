@@ -12,7 +12,7 @@
         {{range $i, $v := .Values}}
         <div class="d-flex mb-3 form-value">
             {{if $.AutocompleteURL}}
-            <div class="w-100 autocomplete" data-bs-target="[name='{{$.Name}}[{{$i}}]']" data-tmpl-data-bs-target="[name='{{$.Name}}[{i}]']">
+            <div class="w-100 autocomplete" data-target="[name='{{$.Name}}[{{$i}}]']" data-tmpl-data-target="[name='{{$.Name}}[{i}]']">
             {{end}}
                 <input class="form-control{{if $.Error}} is-invalid{{end}}" name="{{$.Name}}[{{$i}}]" data-tmpl-name="{{$.Name}}[{i}]" type="text" value="{{$v}}"
                     {{if $.AutocompleteURL}}
@@ -36,7 +36,7 @@
         {{end}}
         <div class="d-flex mb-3 form-value">
             {{if .AutocompleteURL}}
-            <div class="w-100 autocomplete" data-bs-target="[name='{{.Name}}[{{len .Values}}]']" data-tmpl-data-bs-target="[name='{{.Name}}[{i}]']">
+            <div class="w-100 autocomplete" data-target="[name='{{.Name}}[{{len .Values}}]']" data-tmpl-data-target="[name='{{.Name}}[{i}]']">
             {{end}}
                 <input class="form-control{{if .Error}} is-invalid{{end}}" name="{{.Name}}[{{len .Values}}]" data-tmpl-name="{{.Name}}[{i}]" type="text"
                     {{if .AutocompleteURL}}

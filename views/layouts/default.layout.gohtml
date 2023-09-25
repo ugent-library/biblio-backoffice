@@ -63,7 +63,7 @@
                             </li>
                             <li class="nav-item">
                                 {{if .User}}
-                                    <div class="dropdown position-static">
+                                    <div class="dropdown">
                                         <button class="nav-link dropdown-toggle btn-sm" role="button"
                                             data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             <div class="bc-avatar-and-text">
@@ -73,7 +73,7 @@
                                                 <div class="bc-avatar-text">{{.User.FullName}}</div>
                                             </div>
                                         </button>
-                                        <div class="dropdown-menu mt-8">
+                                        <div class="dropdown-menu mt-8" x-placement="top">
                                             <div class="bc-avatar-and-text m-4">
                                                 <div class="bc-avatar bc-avatar-icon bc-avatar--small">
                                                     <i class="if if-user"></i>
