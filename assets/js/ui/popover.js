@@ -1,5 +1,5 @@
 import htmx from 'htmx.org';
-import BSN from "bootstrap.native/dist/bootstrap-native-v4";
+import {Popover} from "bootstrap.native";
 
 export default function () {
     let addEvents = function(rootEl) {
@@ -11,7 +11,7 @@ export default function () {
             if (heading) {
                 title = heading.innerHTML
             }
-            new BSN.Popover(el, {
+            new Popover(el, {
                 content: content.innerHTML,
                 title: title,
                 delay: 1000,

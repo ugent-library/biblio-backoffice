@@ -5,8 +5,8 @@
 /* Variables
    ========================================================================== */
 
-  $c-sub-sidebar-width: 22rem !default;
-  $c-sub-sidebar-background-color: $gray-50 !default;
+  $c-sub-sidebar-width: 24rem !default;
+
   $c-sub-sidebar-color: $text !default;
   $c-sub-sidebar-active-background-color: $gray-100 !default;
   $c-sub-sidebar-active-color: $header !default;
@@ -16,14 +16,41 @@
 /* Component
    ========================================================================== */
 
+.c-sub-sidebar-responsive-wrapper {
+  display: flex;
+  @include media-breakpoint-down(lg) {
+    z-index: 2;
+
+    .c-sub-sidebar:first-child {
+      position: absolute;
+      top: 0;
+      right: 5.6rem;
+      box-shadow: $box-shadow;
+    }
+  }
+}
+
 .c-sub-sidebar {
-  background: $c-sub-sidebar-background-color;
   height: 100%;
   width: $c-sub-sidebar-width;
   position: relative;
   min-width: $c-sub-sidebar-width;
   display: flex;
   flex-direction: column;
+}
+
+.c-sub-sidebar--lightest {
+  background: $gray-25
+}
+
+.c-sub-sidebar--large {
+  width: 32rem;
+  min-width: 32rem;
+}
+
+.c-sub-sidebar--small {
+  width: 5.6rem;
+  min-width: 5.6rem;
 }
 
 .c-sub-sidebar__menu {
@@ -43,9 +70,9 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 0 2.4rem;
+    padding: 0.8rem 2.4rem;
     color: $c-sub-sidebar-color;
-    height: 4rem;
+    min-height: 4rem;
     font-weight: 500;
 
     &:hover,
@@ -98,12 +125,20 @@
 }
 
 .c-sub-sidebar--responsive {
-  @include media-breakpoint-down(md) {
-    max-width: 7.2rem;
-    min-width: 7.2rem;
+  @include media-breakpoint-down(lg) {
+    width: 5.6rem;
+    min-width: 5.6rem;
   }
 }
 
 .c-sub-sidebar--bordered {
-  border-end: .1rem solid $border-color;
+  border-right: .1rem solid $border-color;
+}
+
+.c-sub-sidebar[data-sidebar-content] {
+  display: none;
+}
+
+.c-sub-sidebar[data-sidebar-content].open {
+  display: flex;
 }

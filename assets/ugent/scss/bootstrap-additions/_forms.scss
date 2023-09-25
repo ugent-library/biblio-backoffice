@@ -31,12 +31,26 @@
 
 .col-form-label,
 .form-label {
-  font-weight: 500;
   color: $gray-600;
+  padding-bottom: 0.4rem;
+  font-weight: 500;
 }
 
 .col-form-label {
+  min-height: 3.6rem;
+  padding: 0.6rem 0;
+}
+
+.form-label-top {
+  min-height: 2.4rem;
+  margin-bottom: 0;
+  padding-bottom: 0.4rem;
+}
+
+.col-form-label,
+.form-label {
   display: flex;
+  align-items: center;
   flex-wrap: wrap;
 
   .badge {
@@ -46,33 +60,31 @@
   }
 }
 
-.form-row .col-form-label {
-  padding-top: 0;
-  padding-bottom: 0;
-}
-
-[class^='col-sm-'].col-form-label {
+[class^='col-sm-'].col-form-label,
+[class^='col-sm-'].form-label {
   @include media-breakpoint-up(sm) {
     justify-content: flex-end;
   }
 }
 
-[class^='col-md-'].col-form-label {
+[class^='col-md-'].col-form-label,
+[class^='col-md-'].form-label {
   @include media-breakpoint-up(md) {
     justify-content: flex-end;
   }
 }
 
-[class^='col-lg-'].col-form-label {
+[class^='col-lg-'].col-form-label,
+[class^='col-lg-'].form-label {
   @include media-breakpoint-up(lg) {
     justify-content: flex-end;
   }
 }
 
-abbr.required {
+.required {
   color: $danger;
   text-decoration: none;
-  margin-left: 0.2rem;
+  margin-right: 0.2rem;
 }
 
 
@@ -80,18 +92,18 @@ abbr {
   border-bottom: 1px dotted $gray-400;
 }
 
-.form-label {
-  line-height: 3.6rem;
-  font-weight: 500;
+.form-group {
+  margin-bottom: $form-group-margin-bottom;
 }
 
-// .form--group:last-child {
+// .form-group:last-child {
 //   margin-bottom: 0;
 // }
 
-// .form--group.form--row {
-//   align-items: flex-start;
-// }
+.form-group.row,
+.row .col-form-label {
+  align-items: flex-start;
+}
 
 
 /* Better focus states
@@ -105,13 +117,13 @@ abbr {
 
 // Widths
 .form-control-w-xsmall,
-.input-gro-w-xsmall {
+.input-group-w-xsmall {
   width: 8rem;
   max-width: 100%;
 }
 
 .form-control-w-small,
-.input-gro-w-small {
+.input-group-w-small {
   width: 15rem;
   max-width: 100%;
 
@@ -135,4 +147,56 @@ abbr {
 .input-group-w-xlarge {
   width: 56rem;
   max-width: 100%;
+}
+
+
+/* Override Bootstrap 4 code */
+.btn-group > .btn:nth-child(n+2) {
+  border-top-left-radius: $border-radius;
+  border-bottom-left-radius: $border-radius;
+
+}
+
+/* Bootstrap 5 code */
+.btn-check {
+  position: absolute;
+  clip: rect(0,0,0,0);
+  pointer-events: none;
+}
+
+.btn-check:active+.btn-outline-primary,
+.btn-check:checked+.btn-outline-primary,
+.btn-outline-primary.active,
+.btn-outline-primary.dropdown-toggle.show,
+.btn-outline-primary:active {
+  color: #fff;
+  background-color: $primary;
+  border-color: $primary;
+}
+
+.btn-group>.btn-group:not(:first-child)>.btn,
+.btn-group>.btn:nth-child(n+3),
+.btn-group>:not(.btn-check) + .btn {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+
+.form-group:last-child {
+  margin-bottom: 0;
+}
+
+.form-control.has-warning,
+.has-warning {
+  border-color: $warning;
+  padding-right: calc(1.5em + 0.75rem);
+  background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12.866 3L22.392 19.5C22.4797 19.652 22.5259 19.8245 22.5259 20C22.5259 20.1755 22.4797 20.348 22.392 20.5C22.3042 20.652 22.178 20.7782 22.026 20.866C21.8739 20.9538 21.7015 21 21.526 21H2.47397C2.29844 21 2.126 20.9538 1.97398 20.866C1.82197 20.7782 1.69573 20.652 1.60797 20.5C1.5202 20.348 1.474 20.1755 1.474 20C1.474 19.8245 1.52021 19.652 1.60797 19.5L11.134 3C11.2217 2.84799 11.348 2.72177 11.5 2.63401C11.652 2.54625 11.8244 2.50005 12 2.50005C12.1755 2.50005 12.3479 2.54625 12.5 2.63401C12.652 2.72177 12.7782 2.84799 12.866 3ZM4.20597 19H19.794L12 5.5L4.20597 19ZM11 16H13V18H11V16ZM11 9H13V14H11V9Z' fill='%23F1A42B'/%3E%3C/svg%3E%0A");
+  background-repeat: no-repeat;
+  background-position: right calc(0.375em + 0.1875rem) center;
+  background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+}
+
+.form-check {
+  padding-top: 0.2rem;
+  padding-bottom: 0.2rem;
 }

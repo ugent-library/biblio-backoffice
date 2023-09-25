@@ -3,9 +3,8 @@
 .btn-group {
   .btn {
     background-color: white;
-    border: 1px solid $blue;
-    height: 3.6rem;
-    color: $blue;
+    border: 1px solid $border;
+    color: $gray-600;
 
     &:hover
     &:focus {
@@ -15,8 +14,9 @@
   }
 
   .active {
-    background-color: $blue !important;
-    color: $white !important;
+    background-color: $light-blue !important;
+    color: $blue !important;
+    box-shadow: none !important;
     border: 1px solid $blue !important;
   }
 }

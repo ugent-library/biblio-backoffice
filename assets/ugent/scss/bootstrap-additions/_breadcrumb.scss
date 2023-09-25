@@ -5,16 +5,21 @@
 .breadcrumb {
   align-items: center;
   flex-wrap: nowrap;
+  height: 3.2rem;
 }
 
 .breadcrumb-item {
   display: inline-flex;
   align-items: center;
+  height: 100%;
   font-weight: 500;
 }
 
-.breadcrumb-item + .breadcrumb-item {
-  padding-left: 1.6rem;
-  margin-left: 1.6rem;
-  border-start: 1px solid $border;
+.breadcrumb-item + .breadcrumb-item::before {
+  height: 100%;
+}
+
+.breadcrumb-item > a {
+  color: $text-muted;
+  text-decoration: underline;
 }

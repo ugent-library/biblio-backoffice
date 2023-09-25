@@ -1,0 +1,15 @@
+/* ==========================================================================
+  Additions to bootstrap/carousel
+   ========================================================================== */
+
+.carousel-control-next, .carousel-control-prev {
+  background: 0 0;
+  border: 0;
+  opacity: 1;
+}
+
+.carousel-item {
+  align-items: center;
+  padding: 0 3.2rem;
+  min-height: 20rem;
+}
