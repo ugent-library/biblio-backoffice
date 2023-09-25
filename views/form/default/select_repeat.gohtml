@@ -11,7 +11,7 @@
      <div class="col-lg-{{.Cols}} form-values">
          {{range $i, $v := .Values}}
          <div class="d-flex mb-3 form-value">
-             <select class="form-select form-control" name="{{$.Name}}[{{$i}}]" data-tmpl-name="{{$.Name}}[{i}]">
+             <select class="form-select form-control" name="{{$.Name}}">
                  {{if $.EmptyOption}}<option></option>{{end}}
                  {{range $.Options}}
                  <option value="{{.Value}}"{{if eq .Value $v}} selected{{end}}>{{.Label}}</option>
@@ -25,7 +25,7 @@
          {{end}}
 
          <div class="d-flex mb-3 form-value">
-             <select class="form-select form-control" name="{{.Name}}[{{len .Values}}]" data-tmpl-name="{{.Name}}[{i}]">
+             <select class="form-select form-control" name="{{.Name}}">
                  {{if .EmptyOption}}<option></option>{{end}}
                  {{range .Options}}
                  <option value="{{.Value}}">{{.Label}}</option>
