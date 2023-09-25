@@ -15,7 +15,6 @@ import (
 	"github.com/oklog/ulid/v2"
 	"github.com/ory/graceful"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"github.com/ugent-library/biblio-backoffice/internal/app/helpers"
 	"github.com/ugent-library/biblio-backoffice/internal/app/routes"
 	"github.com/ugent-library/biblio-backoffice/internal/backends"
@@ -34,33 +33,21 @@ import (
 )
 
 func init() {
-	serverCmd.PersistentFlags().String("base-url", "", "base url")
-
-	serverStartCmd.Flags().String("mode", defaultMode, "server mode (development, staging or production)")
-	serverStartCmd.Flags().String("host", "", "server host")
-	serverStartCmd.Flags().Int("port", defaultPort, "server port")
-	serverStartCmd.Flags().String("session-name", defaultSessionName, "session name")
-	serverStartCmd.Flags().String("session-secret", "", "session secret")
-	serverStartCmd.Flags().Int("session-max-age", defaultSessionMaxAge, "session lifetime")
-	serverStartCmd.Flags().String("csrf-name", "", "csrf cookie name")
-	serverStartCmd.Flags().String("csrf-secret", "", "csrf cookie secret")
-	serverStartCmd.Flags().String("location", defaultTimezone, "location used for date and time display")
-
+	rootCmd.AddCommand(serverCmd)
 	serverCmd.AddCommand(serverRoutesCmd)
 	serverCmd.AddCommand(serverStartCmd)
-	rootCmd.AddCommand(serverCmd)
 }
 
 var serverCmd = &cobra.Command{
-	Use:   "server [command]",
-	Short: "The biblio-backoffice HTTP server",
+	Use:   "server",
+	Short: "Biblio backoffice HTTP server",
 }
 
 var serverRoutesCmd = &cobra.Command{
 	Use:   "routes",
 	Short: "print routes",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		router, err := buildRouter(Services(), newLogger())
+		router, err := buildRouter(newServices())
 		if err != nil {
 			return err
 		}
@@ -99,19 +86,13 @@ var serverStartCmd = &cobra.Command{
 	Use:   "start",
 	Short: "start the http server",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		production := viper.GetString("mode") == "production"
+		services := newServices()
 
-		// setup logger
-		logger := newLogger()
-
-		// setup services
-		e := Services()
-
-		e.MediaTypeSearchService.IndexAll()
+		services.MediaTypeSearchService.IndexAll()
 		// e.LicenseSearchService.IndexAll()
 
 		// setup router
-		router, err := buildRouter(e, logger)
+		router, err := buildRouter(services)
 		if err != nil {
 			return err
 		}
@@ -119,7 +100,7 @@ var serverStartCmd = &cobra.Command{
 		// apply these before request reaches the router
 		handler := middleware.Apply(router,
 			middleware.Recover(func(err any) {
-				if production {
+				if config.Env == "local" {
 					logger.With(zap.Stack("stack")).Error(err)
 				} else {
 					logger.Error(err)
@@ -132,7 +113,7 @@ var serverStartCmd = &cobra.Command{
 		)
 
 		// setup server
-		addr := fmt.Sprintf("%s:%d", viper.GetString("host"), viper.GetInt("port"))
+		addr := fmt.Sprintf("%s:%d", config.Host, config.Port)
 		server := graceful.WithDefaults(&http.Server{
 			Addr:         addr,
 			Handler:      handler,
@@ -149,21 +130,16 @@ var serverStartCmd = &cobra.Command{
 	},
 }
 
-func buildRouter(services *backends.Services, logger *zap.SugaredLogger) (*mux.Router, error) {
-	mode := viper.GetString("mode")
-
-	host := viper.GetString("host")
-	port := viper.GetInt("port")
-
-	b := viper.GetString("base-url")
+func buildRouter(services *backends.Services) (*mux.Router, error) {
+	b := config.BaseURL
 	if b == "" {
-		if host == "" {
+		if config.Host == "" {
 			b = "http://localhost"
 		} else {
-			b = "http://" + host
+			b = "http://" + config.Host
 		}
-		if port != 80 {
-			b = fmt.Sprintf("%s:%d", b, port)
+		if config.Port != 80 {
+			b = fmt.Sprintf("%s:%d", b, config.Port)
 		}
 	}
 	baseURL, err := url.Parse(b)
@@ -191,7 +167,7 @@ func buildRouter(services *backends.Services, logger *zap.SugaredLogger) (*mux.R
 		{
 			"assetPath": assets.AssetPath,
 			"appMode": func() string { // TODO eliminate need for this
-				return mode
+				return config.Env
 			},
 			"vocabulary": func(k string) []string { // TODO eliminate need for this?
 				return vocabularies.Map[k]
@@ -220,16 +196,16 @@ func buildRouter(services *backends.Services, logger *zap.SugaredLogger) (*mux.R
 	localizer := locale.NewLocalizer("en")
 
 	//
-	timezone, err := time.LoadLocation(viper.GetString("timezone"))
+	timezone, err := time.LoadLocation(config.Timezone)
 	if err != nil {
 		return nil, err
 	}
 
 	// sessions & auth
-	sessionSecret := []byte(viper.GetString("session-secret"))
-	sessionName := viper.GetString("session-name")
+	sessionSecret := []byte(config.Session.Secret)
+	sessionName := config.Session.Name
 	sessionStore := sessions.NewCookieStore(sessionSecret)
-	sessionStore.MaxAge(viper.GetInt("session-max-age"))
+	sessionStore.MaxAge(config.Session.MaxAge)
 	sessionStore.Options.Path = "/"
 	if baseURL.Path != "" {
 		sessionStore.Options.Path = baseURL.Path
@@ -238,20 +214,37 @@ func buildRouter(services *backends.Services, logger *zap.SugaredLogger) (*mux.R
 	sessionStore.Options.Secure = baseURL.Scheme == "https"
 
 	oidcAuth, err := oidc.NewAuth(context.TODO(), oidc.Config{
-		URL:          viper.GetString("oidc-url"),
-		ClientID:     viper.GetString("oidc-client-id"),
-		ClientSecret: viper.GetString("oidc-client-secret"),
+		URL:          config.OIDC.URL,
+		ClientID:     config.OIDC.ClientID,
+		ClientSecret: config.OIDC.ClientSecret,
 		RedirectURL:  baseURL.String() + "/auth/openid-connect/callback",
-		CookieName:   viper.GetString("session-name") + ".state",
-		CookieSecret: []byte(viper.GetString("session-secret")),
-		Insecure:     mode != "production",
+		CookieName:   config.Session.Name + ".state",
+		CookieSecret: []byte(config.Session.Secret),
+		Insecure:     config.Env != "local",
 	})
 	if err != nil {
 		return nil, err
 	}
 
 	// add routes
-	routes.Register(services, baseURL, router, sessionStore, sessionName, timezone, localizer, logger, oidcAuth)
+	routes.Register(routes.Config{
+		Services:         services,
+		BaseURL:          baseURL,
+		Router:           router,
+		SessionStore:     sessionStore,
+		SessionName:      sessionName,
+		Timezone:         timezone,
+		Localizer:        localizer,
+		Logger:           logger,
+		OIDCAuth:         oidcAuth,
+		FrontendURL:      config.Frontend.URL,
+		FrontendUsername: config.Frontend.Username,
+		FrontendPassword: config.Frontend.Password,
+		IPRanges:         config.IPRanges,
+		MaxFileSize:      config.MaxFileSize,
+		CSRFName:         config.CSRF.Name,
+		CSRFSecret:       config.CSRF.Secret,
+	})
 
 	return router, nil
 }

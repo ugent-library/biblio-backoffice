@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"github.com/ugent-library/oai-service/api/v1"
 
 	"github.com/ugent-library/biblio-backoffice/internal/backends/mods36"
@@ -29,12 +28,10 @@ var updateOai = &cobra.Command{
 	Use:   "update-oai",
 	Short: "Update OAI provider",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		logger := newLogger()
+		oaiEncoder := oaidc.New(config.Frontend.URL)
+		modsEncoder := mods36.New(config.Frontend.URL)
 
-		oaiEncoder := oaidc.New(viper.GetString("frontend-url"))
-		modsEncoder := mods36.New(viper.GetString("frontend-url"))
-
-		client, err := api.NewClient(viper.GetString("oai-api-url"), &securitySource{viper.GetString("oai-api-key")})
+		client, err := api.NewClient(config.OAI.APIURL, &securitySource{config.OAI.APIKey})
 		if err != nil {
 			return err
 		}
@@ -88,7 +85,7 @@ var updateOai = &cobra.Command{
 		}
 
 		// add all publications
-		repo := Services().Repo
+		repo := newServices().Repo
 		repo.EachPublication(func(p *models.Publication) bool {
 			oaiID := "oai:archive.ugent.be:" + p.ID
 

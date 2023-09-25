@@ -3,7 +3,6 @@ package cli
 import (
 	"github.com/spf13/cobra"
 	"github.com/ugent-library/biblio-backoffice/internal/backends"
-	"go.uber.org/zap"
 )
 
 func init() {
@@ -14,20 +13,19 @@ var updateEmbargoes = &cobra.Command{
 	Use:   "update-embargoes",
 	Short: "Update embargoes",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		e := Services()
-		logger := newLogger()
-
-		if err := updatePublicationEmbargoes(e, logger); err != nil {
+		services := newServices()
+		if err := updatePublicationEmbargoes(services); err != nil {
 			return err
 		}
-		updateDatasetEmbargoes(e, logger)
-
+		if err := updateDatasetEmbargoes(services); err != nil {
+			return err
+		}
 		return nil
 	},
 }
 
-func updatePublicationEmbargoes(e *backends.Services, logger *zap.SugaredLogger) error {
-	n, err := e.Repo.UpdatePublicationEmbargoes()
+func updatePublicationEmbargoes(services *backends.Services) error {
+	n, err := services.Repo.UpdatePublicationEmbargoes()
 	if err != nil {
 		return err
 	}
@@ -37,7 +35,7 @@ func updatePublicationEmbargoes(e *backends.Services, logger *zap.SugaredLogger)
 	return nil
 }
 
-func updateDatasetEmbargoes(e *backends.Services, logger *zap.SugaredLogger) error {
+func updateDatasetEmbargoes(e *backends.Services) error {
 	n, err := e.Repo.UpdateDatasetEmbargoes()
 	if err != nil {
 		return err

@@ -193,8 +193,8 @@ cp reflex.example.conf reflex.conf
 Configure the `.env` file accordingly:
 
 ```
-# Run in development mode
-export BIBLIO_BACKOFFICE_MODE="development"
+# Run in local development mode
+export BIBLIO_BACKOFFICE_MODE="local"
 # Base URL of the installation
 export BIBLIO_BACKOFFICE_BASE_URL="http://localhost:3001"
 # Credentials for the gRPC service
