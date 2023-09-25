@@ -10,11 +10,10 @@
   "dependencies": {
     "@yaireo/tagify": "^4.17.7",
     "bootstrap": "^5.2.3",
-    "bootstrap.native": "4.1.0",
+    "bootstrap.native": "^5.0.9",
     "flatpickr": "^4.6.3",
-    "htmx.org": "^1.7.0",
-    "node-sass": "^4.14.1",
-    "popper.js": "^1.16.1",
+    "htmx.org": "^1.9.6",
+    "node-sass": "^9.0.0",
     "sortablejs": "^1.14.0"
   },
   "devDependencies": {
