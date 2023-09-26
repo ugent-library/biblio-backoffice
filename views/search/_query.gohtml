@@ -5,11 +5,16 @@
         {{end}}
     {{end}}
     <div class="row">
-        <div class="col input-group">
-            <label class="visually-hidden" for="q">Search</label>
-            <input class="form-control" type="text" name="q" value="{{.SearchArgs.Query}}" placeholder="Search..."
-                autocomplete="off">
-            <button type="submit" class="btn btn-outline-primary" type="button">Search</button>
+        <div class="col">
+            <div class="input-group flex-nowrap">
+                <label class="visually-hidden" for="q">Search</label>
+                <input class="form-control" type="text" name="q" value="{{.SearchArgs.Query}}" placeholder="Search..."
+                    autocomplete="off">
+                <button type="submit" class="btn btn-outline-primary" type="button">
+                    <i class="if if-search"></i>
+                    <span class="btn-text">Search</span>
+                </button>
+            </div>
         </div>
         <div class="col-3">
             <div class="d-flex">
