@@ -114,24 +114,24 @@
     </header>
     <main>
         <div class="d-flex u-maximize-height">
-            <div class="c-sidebar{{if eq .UserRole "curator"}} c-sidebar--dark-gray{{end}}">
+            <div class="c-sidebar c-sidebar--dark-gray">
                 {{if and .User .User.CanCurate}}
-                <div class="dropdown mx-4 mt-1 mb-5">
-                    <button class="btn btn-outline-light btn-sm w-100 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <span class="text-truncate">
-                        {{if eq .UserRole "user"}}
-                            Researcher
-                        {{else if eq .UserRole "curator"}}
-                            Librarian
-                        {{end}}
-                      </span>
+                <div class="dropdown mx-lg-4 mb-6 mt-3">
+                    <button class="btn btn-dark dropdown-toggle w-100 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    {{if eq .UserRole "user"}}
+                        <i class="if if-briefcase mx-2 ms-lg-4"></i>
+                        <span class="visually-hidden">Researcher</span>
+                    {{else if eq .UserRole "curator"}}
+                        <i class="if if-book mx-2 ms-lg-4"></i>
+                        <span class="visually-hidden">Librarian</span>
+                    {{end}}
                     </button>
                     <div class="dropdown-menu">
                         <button class="dropdown-item" hx-put="{{pathFor "update_role" "role" "user"}}" hx-swap="none">
-                            Researcher
+                            <i class="if if-briefcase"></i> Researcher
                         </button>
                         <button class="dropdown-item" hx-put="{{pathFor "update_role" "role" "curator"}}" hx-swap="none">
-                            Librarian
+                            <i class="if if-book"></i> Librarian
                         </button>
                     </div>
                 </div>
@@ -174,7 +174,8 @@
                     </nav>
                 </div>
                 <div class="c-sidebar__bottom">
-                    <img src="{{assetPath "/images/logo-ugent-white.svg"}}" alt="Logo UGent" height="48px" width="auto">
+                    <img src="{{assetPath "/images/logo-ugent-white.svg"}}" class="d-none d-lg-block" alt="Logo UGent" height="48px" width="auto">
+                    <img src="{{assetPath "/images/mark-ugent-white.svg"}}" class="d-block d-lg-none" alt="Logo UGent" height="20px" width="auto">
                 </div>
             </div>
             {{block "page_content" .}}{{end}}
