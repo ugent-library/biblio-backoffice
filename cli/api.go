@@ -5,7 +5,7 @@ import (
 	"net"
 
 	"github.com/spf13/cobra"
-	"github.com/ugent-library/biblio-backoffice/internal/server"
+	"github.com/ugent-library/biblio-backoffice/server"
 )
 
 func init() {
