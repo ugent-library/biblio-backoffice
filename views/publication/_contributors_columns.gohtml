@@ -1,4 +1,4 @@
-<td class="ps-8 col-5">
+<td>
     {{if .User.CanEditPublication .Publication}}
     <input type="hidden" name="position" value="{{.Position}}">
     {{end}}
@@ -21,7 +21,7 @@
     </div>
 </td>
 {{if eq .Role "author"}}
-<td class="col-2">
+<td>
     {{if .Contributor.CreditRole}}
     <ul class="list-unstyled">
         {{range .Contributor.CreditRole}}
@@ -33,15 +33,15 @@
     {{end}}
 </td>
 {{end}}
-<td class="col-2">
+<td>
     {{if .Contributor.Person}}
     <i class="if if-ghent-university text-default"></i>
-    <span>UGent {{.Locale.TS "publication.contributor.role" .Role}}</span>
+    <span>UGent</span>
     {{else}}
-    External {{.Locale.TS "publication.contributor.role" .Role}}
+    External
     {{end}}
 </td>
-<td class="col-2">
+<td>
     {{if .Contributor.Person}}
         <ul class="c-meta-list c-meta-list-horizontal">
         {{range $i, $cd := .Contributor.Person.Affiliations}}
@@ -60,7 +60,7 @@
         </ul>
     {{end}}
 </td>
-<td class="pe-4 col-3">
+<td>
     {{if .User.CanEditPublication .Publication}}
     <div class="c-button-toolbar">
         <button type="button" class="btn btn-default"
