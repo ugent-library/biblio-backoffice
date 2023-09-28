@@ -1,4 +1,4 @@
-<td class="ps-8 col-5">
+<td>
     {{if .User.CanEditDataset .Dataset}}
     <input type="hidden" name="position" value="{{.Position}}">
     {{end}}
@@ -20,15 +20,15 @@
         </div>
     </div>
 </td>
-<td class="col-2">
+<td>
     {{if .Contributor.Person}}
     <i class="if if-ghent-university text-default"></i>
-    <span>UGent {{.Locale.TS "dataset.contributor.role" .Role}}</span>
+    <span>UGent</span>
     {{else}}
-    External {{.Locale.TS "dataset.contributor.role" .Role}}
+    External
     {{end}}
 </td>
-<td class="col-2">
+<td>
     <ul class="c-meta-list c-meta-list-horizontal">
     {{if .Contributor.Person}}
         {{range $i, $cd := .Contributor.Person.Affiliations}}
@@ -47,7 +47,7 @@
         </ul>
     {{end}}
 </td>
-<td class="pe-4 col-3">
+<td>
     {{if .User.CanEditDataset .Dataset}}
     <div class="c-button-toolbar">
         <button type="button" class="btn btn-default"
