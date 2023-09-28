@@ -6,10 +6,10 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/ugent-library/oai-service/api/v1"
 
-	"github.com/ugent-library/biblio-backoffice/internal/backends/mods36"
-	"github.com/ugent-library/biblio-backoffice/internal/backends/oaidc"
-	"github.com/ugent-library/biblio-backoffice/internal/vocabularies"
+	"github.com/ugent-library/biblio-backoffice/backends/mods36"
+	"github.com/ugent-library/biblio-backoffice/backends/oaidc"
 	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/vocabularies"
 )
 
 func init() {

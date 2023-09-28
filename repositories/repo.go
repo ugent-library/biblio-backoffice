@@ -11,8 +11,8 @@ import (
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/oklog/ulid/v2"
-	"github.com/ugent-library/biblio-backoffice/internal/snapstore"
 	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/snapstore"
 )
 
 type Mutation struct {

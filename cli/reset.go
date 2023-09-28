@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"github.com/spf13/cobra"
-	"github.com/ugent-library/biblio-backoffice/internal/backends"
+	"github.com/ugent-library/biblio-backoffice/backends"
 )
 
 func init() {

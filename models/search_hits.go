@@ -1,6 +1,6 @@
 package models
 
-import "github.com/ugent-library/biblio-backoffice/internal/pagination"
+import "github.com/ugent-library/biblio-backoffice/pagination"
 
 type SearchHits struct {
 	pagination.Pagination
