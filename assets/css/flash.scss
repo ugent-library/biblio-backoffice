@@ -6,7 +6,12 @@
     flex-direction: column-reverse;
     background-color: transparent;
 
-    .bc-toast {
-        margin: 0 1.3rem 1.3rem 0;
+    .toast {
+        margin: 10rem 0.3rem 1.3rem 0;
+
+        &.fade {
+            opacity: 1;
+            display: block;
+        }
     }
 }

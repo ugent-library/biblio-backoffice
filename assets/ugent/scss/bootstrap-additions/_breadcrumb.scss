@@ -19,7 +19,19 @@
   height: 100%;
 }
 
-.breadcrumb-item > a {
+.if + .breadcrumb-text,
+.breadcrumb-text + .if {
+  margin-left: .4rem;
+}
+
+.breadcrumb-item a {
   color: $text-muted;
-  text-decoration: underline;
+
+  &:not(:has(> .if)) {
+    text-decoration: underline;
+  }
+
+  .breadcrumb-text {
+    text-decoration: underline;
+  }
 }
