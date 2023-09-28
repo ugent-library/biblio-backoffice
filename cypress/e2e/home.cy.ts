@@ -2,7 +2,7 @@ describe('The home page', () => {
   it('should be able to load the home page anonymously', () => {
     cy.visit('/')
 
-    cy.get('h2').should('have.text', 'Home')
+    cy.get('h2').should('have.text', 'Biblio Backoffice')
 
     cy.contains('a', 'Log in').should('be.visible')
 
@@ -53,7 +53,6 @@ describe('The home page', () => {
     cy.contains('.dropdown-menu .dropdown-item', 'Logout').should('exist')
 
     cy.get('.c-sidebar button.dropdown-toggle').should('not.exist')
-    cy.get('.c-sidebar').should('not.have.class', 'c-sidebar--dark-gray')
     cy.get('.c-sidebar-menu .c-sidebar__item').should('have.length', 2)
     cy.contains('.c-sidebar__item', 'Biblio Publications').should('be.visible')
     cy.contains('.c-sidebar__item', 'Biblio Datasets').should('be.visible')
@@ -70,7 +69,6 @@ describe('The home page', () => {
     cy.contains('.dropdown-menu .dropdown-item', 'Logout').should('exist')
 
     cy.get('.c-sidebar button.dropdown-toggle').should('contain.text', 'Researcher')
-    cy.get('.c-sidebar').should('not.have.class', 'c-sidebar--dark-gray')
     cy.get('.c-sidebar-menu .c-sidebar__item').should('have.length', 2)
     cy.contains('.c-sidebar__item', 'Biblio Publications').should('be.visible')
     cy.contains('.c-sidebar__item', 'Biblio Datasets').should('be.visible')
@@ -79,7 +77,6 @@ describe('The home page', () => {
     cy.switchMode('Librarian')
 
     cy.get('.c-sidebar button.dropdown-toggle').should('contain.text', 'Librarian')
-    cy.get('.c-sidebar').should('have.class', 'c-sidebar--dark-gray')
     cy.get('.c-sidebar-menu .c-sidebar__item').should('have.length', 4)
     cy.contains('.c-sidebar__item', 'Biblio Publications').should('be.visible')
     cy.contains('.c-sidebar__item', 'Biblio Datasets').should('be.visible')
@@ -89,7 +86,6 @@ describe('The home page', () => {
     cy.switchMode('Researcher')
 
     cy.get('.c-sidebar button.dropdown-toggle').should('contain.text', 'Researcher')
-    cy.get('.c-sidebar').should('not.have.class', 'c-sidebar--dark-gray')
     cy.get('.c-sidebar-menu .c-sidebar__item').should('have.length', 2)
     cy.contains('.c-sidebar__item', 'Biblio Publications').should('be.visible')
     cy.contains('.c-sidebar__item', 'Biblio Datasets').should('be.visible')

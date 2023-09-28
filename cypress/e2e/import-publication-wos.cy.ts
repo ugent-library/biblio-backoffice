@@ -41,7 +41,12 @@ describe('Publication import', () => {
     )
     cy.contains('Imported publications Showing 2').should('be.visible')
 
+    cy.contains('.toast', 'Publication was successfully deleted.').find('.btn-close').click()
+
     deletePublication('Fusarium isolates from Belgium causing wilt in lettuce show genetic and pathogenic diversity')
+
+    cy.contains('.toast', 'Publication was successfully deleted.').find('.btn-close').click()
+
     cy.contains('Imported publications Showing 1').should('be.visible')
 
     // Extract Biblio ID for remaining publication
@@ -50,7 +55,9 @@ describe('Publication import', () => {
     // Try publishing remaining publication and verify validation error
     cy.ensureNoModal()
 
-    cy.contains('.btn', 'Publish all to Biblio').click()
+    cy.contains('.btn', 'Publish all to Biblio')
+      // TODO: this force should be removed once the toast-close button works again (issue #1246)
+      .click({ force: true })
 
     cy.ensureModal('Unable to publish a publication due to the following errors').within(() => {
       cy.get('.alert.alert-danger').should('be.visible').should('contain.text', 'At least one UGent author is required')
@@ -108,9 +115,9 @@ describe('Publication import', () => {
 
     // Verify publication is still draft
     cy.get('.list-group-item .badge')
-      .should('have.class', 'badge-secondary')
+      .should('have.class', 'badge-warning-light')
       .find('.badge-text')
-      .should('have.text', 'Biblio Draft')
+      .should('have.text', 'Biblio draft')
 
     // Publish
     cy.intercept('POST', '/publication/add-multiple/*/publish').as('publish')
@@ -131,9 +138,9 @@ describe('Publication import', () => {
     cy.visitPublication()
 
     cy.get('#summary .badge')
-      .should('have.class', 'badge-default')
+      .should('have.class', 'badge-success-light')
       .find('.badge-text')
-      .should('have.text', 'Biblio Public')
+      .should('have.text', 'Biblio public')
   })
 
   // TODO: Not yet implemented
@@ -149,10 +156,10 @@ function deletePublication(title) {
     .find('.c-button-toolbar')
     // The "..." dropdown toggle button
     .find('.dropdown .btn:has(i.if.if-more)')
-    .click()
+    .click({ force: true }) // TODO: this force should be removed once the toast-close button works again (issue #1246)
     .closest('.dropdown')
     .contains('button', 'Delete')
-    .click()
+    .click({ force: true }) // TODO: this force should be removed once the toast-close button works again (issue #1246)
 
   cy.ensureModal('Are you sure?').within(() => {
     cy.get('.modal-body > p').should('have.text', 'Are you sure you want to delete this publication?')
