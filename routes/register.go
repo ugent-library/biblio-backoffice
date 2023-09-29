@@ -517,79 +517,62 @@ func Register(c Config) {
 			Name("dataset_delete_contributor")
 
 		// add publication
-		r.HandleFunc("/publication/add",
+		r.Get("/publication/add",
 			publicationCreatingHandler.Wrap(publicationCreatingHandler.Add)).
-			Methods("GET").
 			Name("publication_add")
-		r.HandleFunc("/publication/add-single/import",
+		r.Post("/publication/add-single/import",
 			publicationCreatingHandler.Wrap(publicationCreatingHandler.AddSingleImport)).
-			Methods("POST").
 			Name("publication_add_single_import")
-		r.HandleFunc("/publication/add-single/import/confirm",
+		r.Post("/publication/add-single/import/confirm",
 			publicationCreatingHandler.Wrap(publicationCreatingHandler.AddSingleImportConfirm)).
-			Methods("POST").
 			Name("publication_add_single_import_confirm")
-		r.HandleFunc("/publication/{id}/add/description",
+		r.Get("/publication/{id}/add/description",
 			publicationCreatingHandler.Wrap(publicationCreatingHandler.AddSingleDescription)).
-			Methods("GET").
 			Name("publication_add_single_description")
-		r.HandleFunc("/publication/{id}/add/confirm",
+		r.Get("/publication/{id}/add/confirm",
 			publicationCreatingHandler.Wrap(publicationCreatingHandler.AddSingleConfirm)).
-			Methods("GET").
 			Name("publication_add_single_confirm")
-		r.HandleFunc("/publication/{id}/add/publish",
+		r.Post("/publication/{id}/add/publish",
 			publicationCreatingHandler.Wrap(publicationCreatingHandler.AddSinglePublish)).
-			Methods("POST").
 			Name("publication_add_single_publish")
-		r.HandleFunc("/publication/{id}/add/finish",
+		r.Get("/publication/{id}/add/finish",
 			publicationCreatingHandler.Wrap(publicationCreatingHandler.AddSingleFinish)).
-			Methods("GET").
 			Name("publication_add_single_finish")
-		r.HandleFunc("/publication/add-multiple/import",
+		r.Post("/publication/add-multiple/import",
 			publicationCreatingHandler.Wrap(publicationCreatingHandler.AddMultipleImport)).
-			Methods("POST").
 			Name("publication_add_multiple_import")
-		r.HandleFunc("/publication/add-multiple/{batch_id}/confirm",
+		r.Get("/publication/add-multiple/{batch_id}/confirm",
 			publicationCreatingHandler.Wrap(publicationCreatingHandler.AddMultipleConfirm)).
-			Methods("GET").
 			Name("publication_add_multiple_confirm")
-		r.HandleFunc("/publication/add-multiple/{batch_id}/publication/{id}",
+		r.Get("/publication/add-multiple/{batch_id}/publication/{id}",
 			publicationCreatingHandler.Wrap(publicationCreatingHandler.AddMultipleShow)).
-			Methods("GET").
 			Name("publication_add_multiple_show")
-		r.HandleFunc("/publication/add-multiple/{batch_id}/save",
+		r.Post("/publication/add-multiple/{batch_id}/save",
 			publicationCreatingHandler.Wrap(publicationCreatingHandler.AddMultipleSave)).
-			Methods("POST").
 			Name("publication_add_multiple_save_draft")
-		r.HandleFunc("/publication/add-multiple/{batch_id}/publish",
+		r.Post("/publication/add-multiple/{batch_id}/publish",
 			publicationCreatingHandler.Wrap(publicationCreatingHandler.AddMultiplePublish)).
-			Methods("POST").
 			Name("publication_add_multiple_publish")
-		r.HandleFunc("/publication/add-multiple/{batch_id}/finish",
+		r.Get("/publication/add-multiple/{batch_id}/finish",
 			publicationCreatingHandler.Wrap(publicationCreatingHandler.AddMultipleFinish)).
-			Methods("GET").
 			Name("publication_add_multiple_finish")
 
 		// search publications
-		r.HandleFunc("/publication",
+		r.Get("/publication",
 			publicationSearchingHandler.Wrap(publicationSearchingHandler.Search)).
-			Methods("GET").
 			Name("publications")
 
 		// export publications
-		r.HandleFunc("/publication.{format}",
+		r.Get("/publication.{format}",
 			publicationExportingHandler.Wrap(publicationExportingHandler.ExportByCurationSearch)).
-			Methods("GET").
 			Name("export_publications")
 
 		// publication batch operations
-		r.HandleFunc("/publication/batch",
+		r.Get("/publication/batch",
 			publicationBatchHandler.Wrap(publicationBatchHandler.Show)).
-			Methods("GET").
 			Name("publication_batch")
-		r.HandleFunc("/publication/batch",
+		r.Post("/publication/batch",
 			publicationBatchHandler.Wrap(publicationBatchHandler.Process)).
-			Methods("POST").
 			Name("publication_process_batch")
 
 		// view publication
