@@ -7,10 +7,11 @@ import (
 	"time"
 
 	"github.com/alexliesenfeld/health"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/gorilla/csrf"
-	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"github.com/jpillora/ipfilter"
+	"github.com/nics/ich"
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/handlers/authenticating"
@@ -31,14 +32,18 @@ import (
 	"github.com/ugent-library/biblio-backoffice/handlers/publicationsearching"
 	"github.com/ugent-library/biblio-backoffice/handlers/publicationviewing"
 	"github.com/ugent-library/biblio-backoffice/locale"
+	mw "github.com/ugent-library/middleware"
 	"github.com/ugent-library/oidc"
+	"github.com/ugent-library/zaphttp"
+	"github.com/ugent-library/zaphttp/zapchi"
 	"go.uber.org/zap"
 )
 
 type Config struct {
+	Env              string
 	Services         *backends.Services
 	BaseURL          *url.URL
-	Router           *mux.Router
+	Router           *ich.Mux
 	SessionStore     sessions.Store
 	SessionName      string
 	Timezone         *time.Location
@@ -55,20 +60,26 @@ type Config struct {
 }
 
 func Register(c Config) {
-	basePath := c.BaseURL.Path
-
-	c.Router.StrictSlash(true)
-	c.Router.UseEncodedPath()
+	c.Router.Use(middleware.RequestID)
+	if c.Env != "local" {
+		c.Router.Use(middleware.RealIP)
+	}
+	c.Router.Use(mw.MethodOverride( // TODO eliminate need for method override
+		mw.MethodFromHeader(mw.MethodHeader),
+		mw.MethodFromForm(mw.MethodParam),
+	))
+	c.Router.Use(zaphttp.SetLogger(c.Logger.Desugar(), zapchi.RequestID))
+	c.Router.Use(middleware.RequestLogger(zapchi.LogFormatter()))
+	c.Router.Use(middleware.Recoverer)
+	c.Router.Use(middleware.StripSlashes)
 
 	// static files
-	c.Router.PathPrefix(basePath + "/static/").Handler(http.StripPrefix(basePath+"/static/", http.FileServer(http.Dir("./static"))))
+	c.Router.Handle("/static/*", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 
 	// status endpoint
 	// TODO add checkers
-	checker := health.NewChecker(
-		health.WithTimeout(3 * time.Second),
-	)
-	c.Router.Handle("/status", health.NewHandler(checker)).Methods("GET")
+	c.Router.Get("/status", health.NewHandler(health.NewChecker()))
+	// TODO add /info endpoint
 
 	// handlers
 	baseHandler := handlers.BaseHandler{
@@ -79,6 +90,7 @@ func Register(c Config) {
 		Timezone:        c.Timezone,
 		Localizer:       c.Localizer,
 		UserService:     c.Services.UserService,
+		BaseURL:         c.BaseURL,
 		FrontendBaseUrl: c.FrontendURL,
 	}
 	homeHandler := &home.Handler{
@@ -191,7 +203,7 @@ func Register(c Config) {
 		MediaTypeSearchService: c.Services.MediaTypeSearchService,
 	}
 
-	frontofficeRouter := c.Router.PathPrefix(basePath).Subrouter()
+	frontofficeRouter := c.Router.PathPrefix("").Subrouter()
 	// frontoffice data exchange api
 	frontofficeRouter.HandleFunc("/frontoffice/publication/{id}", frontofficeHandler.BasicAuth(frontofficeHandler.GetPublication)).
 		Methods("GET")
@@ -205,15 +217,11 @@ func Register(c Config) {
 	frontofficeRouter.HandleFunc("/download/{id}/{file_id}", frontofficeHandler.DownloadFile).
 		Methods("GET", "HEAD")
 
-	csrfPath := basePath
-	if csrfPath == "" {
-		csrfPath = "/"
-	}
-	r := c.Router.PathPrefix(basePath).Subrouter()
+	r := c.Router.PathPrefix("").Subrouter()
 	r.Use(csrf.Protect(
 		[]byte(c.CSRFSecret),
 		csrf.CookieName(c.CSRFName),
-		csrf.Path(csrfPath),
+		csrf.Path("/"),
 		csrf.Secure(c.BaseURL.Scheme == "https"),
 		csrf.SameSite(csrf.SameSiteStrictMode),
 		csrf.FieldName("csrf-token"),
