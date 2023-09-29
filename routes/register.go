@@ -576,371 +576,286 @@ func Register(c Config) {
 			Name("publication_process_batch")
 
 		// view publication
-		r.HandleFunc("/publication/{id}",
+		r.Get("/publication/{id}",
 			publicationViewingHandler.Wrap(publicationViewingHandler.Show)).
-			Methods("GET").
 			Name("publication")
-		r.HandleFunc("/publication/{id}/description",
+		r.Get("/publication/{id}/description",
 			publicationViewingHandler.Wrap(publicationViewingHandler.ShowDescription)).
-			Methods("GET").
 			Name("publication_description")
-		r.HandleFunc("/publication/{id}/files",
+		r.Get("/publication/{id}/files",
 			publicationViewingHandler.Wrap(publicationViewingHandler.ShowFiles)).
-			Methods("GET").
 			Name("publication_files")
-		r.HandleFunc("/publication/{id}/contributors",
+		r.Get("/publication/{id}/contributors",
 			publicationViewingHandler.Wrap(publicationViewingHandler.ShowContributors)).
-			Methods("GET").
 			Name("publication_contributors")
-		r.HandleFunc("/publication/{id}/datasets",
+		r.Get("/publication/{id}/datasets",
 			publicationViewingHandler.Wrap(publicationViewingHandler.ShowDatasets)).
-			Methods("GET").
 			Name("publication_datasets")
-		r.HandleFunc("/publication/{id}/activity",
+		r.Get("/publication/{id}/activity",
 			publicationViewingHandler.Wrap(publicationViewingHandler.ShowActivity)).
-			Methods("GET").
 			Name("publication_activity")
-		r.HandleFunc("/publication/{id}/files/{file_id}",
+		r.Get("/publication/{id}/files/{file_id}",
 			publicationViewingHandler.Wrap(publicationViewingHandler.DownloadFile)).
-			Methods("GET").
 			Name("publication_download_file")
-		// r.HandleFunc("/publication/{id}/files/{file_id}/thumbnail",
-		// 	publicationViewingHandler.Wrap(publicationViewingHandler.FileThumbnail)).
-		// 	Methods("GET").
-		// 	Name("publication_file_thumbnail")
 
 		// publish publication
-		r.HandleFunc("/publication/{id}/publish/confirm",
+		r.Get("/publication/{id}/publish/confirm",
 			publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmPublish)).
-			Methods("GET").
 			Name("publication_confirm_publish")
-		r.HandleFunc("/publication/{id}/publish",
+		r.Post("/publication/{id}/publish",
 			publicationEditingHandler.Wrap(publicationEditingHandler.Publish)).
-			Methods("POST").
 			Name("publication_publish")
 
 		// withdraw publication
-		r.HandleFunc("/publication/{id}/withdraw/confirm",
+		r.Get("/publication/{id}/withdraw/confirm",
 			publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmWithdraw)).
-			Methods("GET").
 			Name("publication_confirm_withdraw")
-		r.HandleFunc("/publication/{id}/withdraw",
+		r.Post("/publication/{id}/withdraw",
 			publicationEditingHandler.Wrap(publicationEditingHandler.Withdraw)).
-			Methods("POST").
 			Name("publication_withdraw")
 
 		// re-publish publication
-		r.HandleFunc("/publication/{id}/republish/confirm",
+		r.Get("/publication/{id}/republish/confirm",
 			publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmRepublish)).
-			Methods("GET").
 			Name("publication_confirm_republish")
-		r.HandleFunc("/publication/{id}/republish",
+		r.Post("/publication/{id}/republish",
 			publicationEditingHandler.Wrap(publicationEditingHandler.Republish)).
-			Methods("POST").
 			Name("publication_republish")
 
 		// lock publication
-		r.HandleFunc("/publication/{id}/lock",
+		r.Post("/publication/{id}/lock",
 			publicationEditingHandler.Wrap(publicationEditingHandler.Lock)).
-			Methods("POST").
 			Name("publication_lock")
-		r.HandleFunc("/publication/{id}/unlock",
+		r.Post("/publication/{id}/unlock",
 			publicationEditingHandler.Wrap(publicationEditingHandler.Unlock)).
-			Methods("POST").
 			Name("publication_unlock")
 
 		// delete publication
-		r.HandleFunc("/publication/{id}/confirm-delete",
+		r.Get("/publication/{id}/confirm-delete",
 			publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDelete)).
-			Methods("GET").
 			Name("publication_confirm_delete")
-		r.HandleFunc("/publication/{id}",
+		r.Delete("/publication/{id}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.Delete)).
-			Methods("DELETE").
 			Name("publication_delete")
 
 		// edit publication activity
-		r.HandleFunc("/publication/{id}/message/edit",
+		r.Get("/publication/{id}/message/edit",
 			publicationEditingHandler.Wrap(publicationEditingHandler.EditMessage)).
-			Methods("GET").
 			Name("publication_edit_message")
-		r.HandleFunc("/publication/{id}/message",
+		r.Put("/publication/{id}/message",
 			publicationEditingHandler.Wrap(publicationEditingHandler.UpdateMessage)).
-			Methods("PUT").
 			Name("publication_update_message")
-		r.HandleFunc("/publication/{id}/reviewer-tags/edit",
+		r.Get("/publication/{id}/reviewer-tags/edit",
 			publicationEditingHandler.Wrap(publicationEditingHandler.EditReviewerTags)).
-			Methods("GET").
 			Name("publication_edit_reviewer_tags")
-		r.HandleFunc("/publication/{id}/reviewer-tags",
+		r.Put("/publication/{id}/reviewer-tags",
 			publicationEditingHandler.Wrap(publicationEditingHandler.UpdateReviewerTags)).
-			Methods("PUT").
 			Name("publication_update_reviewer_tags")
-		r.HandleFunc("/publication/{id}/reviewer-note/edit",
+		r.Get("/publication/{id}/reviewer-note/edit",
 			publicationEditingHandler.Wrap(publicationEditingHandler.EditReviewerNote)).
-			Methods("GET").
 			Name("publication_edit_reviewer_note")
-		r.HandleFunc("/publication/{id}/reviewer-note",
+		r.Put("/publication/{id}/reviewer-note",
 			publicationEditingHandler.Wrap(publicationEditingHandler.UpdateReviewerNote)).
-			Methods("PUT").
 			Name("publication_update_reviewer_note")
 
 		// edit publication details
-		r.HandleFunc("/publication/{id}/details/edit",
+		r.Get("/publication/{id}/details/edit",
 			publicationEditingHandler.Wrap(publicationEditingHandler.EditDetails)).
-			Methods("GET").
 			Name("publication_edit_details")
-		r.HandleFunc("/publication/{id}/details",
+		r.Put("/publication/{id}/details",
 			publicationEditingHandler.Wrap(publicationEditingHandler.UpdateDetails)).
-			Methods("PUT").
 			Name("publication_update_details")
 
 		// edit publication type
-		r.HandleFunc("/publication/{id}/type/confirm",
+		r.Get("/publication/{id}/type/confirm",
 			publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmUpdateType)).
-			Methods("GET").
 			Name("publication_confirm_update_type")
-		r.HandleFunc("/publication/{id}/type",
+		r.Put("/publication/{id}/type",
 			publicationEditingHandler.Wrap(publicationEditingHandler.UpdateType)).
-			Methods("PUT").
 			Name("publication_update_type")
 
 		// edit publication conference
-		r.HandleFunc("/publication/{id}/conference/edit",
+		r.Get("/publication/{id}/conference/edit",
 			publicationEditingHandler.Wrap(publicationEditingHandler.EditConference)).
-			Methods("GET").
 			Name("publication_edit_conference")
-		r.HandleFunc("/publication/{id}/conference",
+		r.Put("/publication/{id}/conference",
 			publicationEditingHandler.Wrap(publicationEditingHandler.UpdateConference)).
-			Methods("PUT").
 			Name("publication_update_conference")
 
 		// edit publication additional info
-		r.HandleFunc("/publication/{id}/additional-info/edit",
+		r.Get("/publication/{id}/additional-info/edit",
 			publicationEditingHandler.Wrap(publicationEditingHandler.EditAdditionalInfo)).
-			Methods("GET").
 			Name("publication_edit_additional_info")
-		r.HandleFunc("/publication/{id}/additional-info",
+		r.Put("/publication/{id}/additional-info",
 			publicationEditingHandler.Wrap(publicationEditingHandler.UpdateAdditionalInfo)).
-			Methods("PUT").
 			Name("publication_update_additional_info")
 
 		// edit publication projects
-		r.HandleFunc("/publication/{id}/projects/add",
+		r.Get("/publication/{id}/projects/add",
 			publicationEditingHandler.Wrap(publicationEditingHandler.AddProject)).
-			Methods("GET").
 			Name("publication_add_project")
-		r.HandleFunc("/publication/{id}/projects/suggestions",
+		r.Get("/publication/{id}/projects/suggestions",
 			publicationEditingHandler.Wrap(publicationEditingHandler.SuggestProjects)).
-			Methods("GET").
 			Name("publication_suggest_projects")
-		r.HandleFunc("/publication/{id}/projects",
+		r.Post("/publication/{id}/projects",
 			publicationEditingHandler.Wrap(publicationEditingHandler.CreateProject)).
-			Methods("POST").
 			Name("publication_create_project")
 		// project_id is last part of url because some id's contain slashes
-		r.HandleFunc("/publication/{id}/{snapshot_id}/projects/confirm-delete/{project_id:.+}",
+		r.Get("/publication/{id}/{snapshot_id}/projects/confirm-delete/{project_id:.+}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDeleteProject)).
-			Methods("GET").
 			Name("publication_confirm_delete_project")
 		// project_id is last part of url because some id's contain slashes
-		r.HandleFunc("/publication/{id}/projects/{project_id:.+}",
+		r.Delete("/publication/{id}/projects/{project_id:.+}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteProject)).
-			Methods("DELETE").
 			Name("publication_delete_project")
 
 		// edit publication links
-		r.HandleFunc("/publicaton/{id}/links/add",
+		r.Get("/publicaton/{id}/links/add",
 			publicationEditingHandler.Wrap(publicationEditingHandler.AddLink)).
-			Methods("GET").
 			Name("publication_add_link")
-		r.HandleFunc("/publication/{id}/links",
+		r.Post("/publication/{id}/links",
 			publicationEditingHandler.Wrap(publicationEditingHandler.CreateLink)).
-			Methods("POST").
 			Name("publication_create_link")
-		r.HandleFunc("/publication/{id}/links/{link_id}/edit",
+		r.Get("/publication/{id}/links/{link_id}/edit",
 			publicationEditingHandler.Wrap(publicationEditingHandler.EditLink)).
-			Methods("GET").
 			Name("publication_edit_link")
-		r.HandleFunc("/publication/{id}/links/{link_id}",
+		r.Put("/publication/{id}/links/{link_id}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.UpdateLink)).
-			Methods("PUT").
 			Name("publication_update_link")
-		r.HandleFunc("/publication/{id}/{snapshot_id}/links/{link_id}/confirm-delete",
+		r.Get("/publication/{id}/{snapshot_id}/links/{link_id}/confirm-delete",
 			publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDeleteLink)).
-			Methods("GET").
 			Name("publication_confirm_delete_link")
-		r.HandleFunc("/publication/{id}/links/{link_id}",
+		r.Delete("/publication/{id}/links/{link_id}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteLink)).
-			Methods("DELETE").
 			Name("publication_delete_link")
 
 		// edit publication departments
-		r.HandleFunc("/publication/{id}/departments/add",
+		r.Get("/publication/{id}/departments/add",
 			publicationEditingHandler.Wrap(publicationEditingHandler.AddDepartment)).
-			Methods("GET").
 			Name("publication_add_department")
-		r.HandleFunc("/publication/{id}/departments/suggestions",
+		r.Get("/publication/{id}/departments/suggestions",
 			publicationEditingHandler.Wrap(publicationEditingHandler.SuggestDepartments)).
-			Methods("GET").
 			Name("publication_suggest_departments")
-		r.HandleFunc("/publication/{id}/departments",
+		r.Post("/publication/{id}/departments",
 			publicationEditingHandler.Wrap(publicationEditingHandler.CreateDepartment)).
-			Methods("POST").
 			Name("publication_create_department")
-		r.HandleFunc("/publication/{id}/{snapshot_id}/departments/{department_id}/confirm-delete",
+		r.Get("/publication/{id}/{snapshot_id}/departments/{department_id}/confirm-delete",
 			publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDeleteDepartment)).
-			Methods("GET").
 			Name("publication_confirm_delete_department")
-		r.HandleFunc("/publication/{id}/departments/{department_id}",
+		r.Delete("/publication/{id}/departments/{department_id}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteDepartment)).
-			Methods("DELETE").
 			Name("publication_delete_department")
 
 		// edit publication abstracts
-		r.HandleFunc("/publication/{id}/abstracts/add",
+		r.Get("/publication/{id}/abstracts/add",
 			publicationEditingHandler.Wrap(publicationEditingHandler.AddAbstract)).
-			Methods("GET").
 			Name("publication_add_abstract")
-		r.HandleFunc("/publication/{id}/abstracts",
+		r.Post("/publication/{id}/abstracts",
 			publicationEditingHandler.Wrap(publicationEditingHandler.CreateAbstract)).
-			Methods("POST").
 			Name("publication_create_abstract")
-		r.HandleFunc("/publication/{id}/abstracts/{abstract_id}/edit",
+		r.Get("/publication/{id}/abstracts/{abstract_id}/edit",
 			publicationEditingHandler.Wrap(publicationEditingHandler.EditAbstract)).
-			Methods("GET").
 			Name("publication_edit_abstract")
-		r.HandleFunc("/publication/{id}/abstracts/{abstract_id}",
+		r.Put("/publication/{id}/abstracts/{abstract_id}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.UpdateAbstract)).
-			Methods("PUT").
 			Name("publication_update_abstract")
-		r.HandleFunc("/publication/{id}/{snapshot_id}/abstracts/{abstract_id}/confirm-delete",
+		r.Get("/publication/{id}/{snapshot_id}/abstracts/{abstract_id}/confirm-delete",
 			publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDeleteAbstract)).
-			Methods("GET").
 			Name("publication_confirm_delete_abstract")
-		r.HandleFunc("/publication/{id}/abstracts/{abstract_id}",
+		r.Delete("/publication/{id}/abstracts/{abstract_id}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteAbstract)).
-			Methods("DELETE").
 			Name("publication_delete_abstract")
 
 		// edit publication lay summaries
-		r.HandleFunc("/publication/{id}/lay_summaries/add",
+		r.Get("/publication/{id}/lay_summaries/add",
 			publicationEditingHandler.Wrap(publicationEditingHandler.AddLaySummary)).
-			Methods("GET").
 			Name("publication_add_lay_summary")
-		r.HandleFunc("/publication/{id}/lay_summaries",
+		r.Post("/publication/{id}/lay_summaries",
 			publicationEditingHandler.Wrap(publicationEditingHandler.CreateLaySummary)).
-			Methods("POST").
 			Name("publication_create_lay_summary")
-		r.HandleFunc("/publication/{id}/lay_summaries/{lay_summary_id}/edit",
+		r.Get("/publication/{id}/lay_summaries/{lay_summary_id}/edit",
 			publicationEditingHandler.Wrap(publicationEditingHandler.EditLaySummary)).
-			Methods("GET").
 			Name("publication_edit_lay_summary")
-		r.HandleFunc("/publication/{id}/lay_summaries/{lay_summary_id}",
+		r.Put("/publication/{id}/lay_summaries/{lay_summary_id}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.UpdateLaySummary)).
-			Methods("PUT").
 			Name("publication_update_lay_summary")
-		r.HandleFunc("/publication/{id}/{snapshot_id}/lay_summaries/{lay_summary_id}/confirm-delete",
+		r.Get("/publication/{id}/{snapshot_id}/lay_summaries/{lay_summary_id}/confirm-delete",
 			publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDeleteLaySummary)).
-			Methods("GET").
 			Name("publication_confirm_delete_lay_summary")
-		r.HandleFunc("/publication/{id}/lay_summaries/{lay_summary_id}",
+		r.Delete("/publication/{id}/lay_summaries/{lay_summary_id}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteLaySummary)).
-			Methods("DELETE").
 			Name("publication_delete_lay_summary")
 
 		// edit publication datasets
-		r.HandleFunc("/publication/{id}/datasets/add",
+		r.Get("/publication/{id}/datasets/add",
 			publicationEditingHandler.Wrap(publicationEditingHandler.AddDataset)).
-			Methods("GET").
 			Name("publication_add_dataset")
-		r.HandleFunc("/publication/{id}/datasets/suggestions",
+		r.Get("/publication/{id}/datasets/suggestions",
 			publicationEditingHandler.Wrap(publicationEditingHandler.SuggestDatasets)).
-			Methods("GET").
 			Name("publication_suggest_datasets")
-		r.HandleFunc("/publication/{id}/datasets",
+		r.Post("/publication/{id}/datasets",
 			publicationEditingHandler.Wrap(publicationEditingHandler.CreateDataset)).
-			Methods("POST").
 			Name("publication_create_dataset")
-		r.HandleFunc("/publication/{id}/{snapshot_id}/datasets/{dataset_id}/confirm-delete",
+		r.Get("/publication/{id}/{snapshot_id}/datasets/{dataset_id}/confirm-delete",
 			publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDeleteDataset)).
-			Methods("GET").
 			Name("publication_confirm_delete_dataset")
-		r.HandleFunc("/publication/{id}/datasets/{dataset_id}",
+		r.Delete("/publication/{id}/datasets/{dataset_id}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteDataset)).
-			Methods("DELETE").
 			Name("publication_delete_dataset")
 
 		// edit publication contributors
-		r.HandleFunc("/publication/{id}/contributors/{role}/order",
+		r.Post("/publication/{id}/contributors/{role}/order",
 			publicationEditingHandler.Wrap(publicationEditingHandler.OrderContributors)).
-			Methods("POST").
 			Name("publication_order_contributors")
-		r.HandleFunc("/publication/{id}/contributors/{role}/add",
+		r.Get("/publication/{id}/contributors/{role}/add",
 			publicationEditingHandler.Wrap(publicationEditingHandler.AddContributor)).
-			Methods("GET").
 			Name("publication_add_contributor")
-		r.HandleFunc("/publication/{id}/contributors/{role}/suggestions",
+		r.Get("/publication/{id}/contributors/{role}/suggestions",
 			publicationEditingHandler.Wrap(publicationEditingHandler.AddContributorSuggest)).
-			Methods("GET").
 			Name("publication_add_contributor_suggest")
-		r.HandleFunc("/publication/{id}/contributors/{role}/confirm-create",
+		r.Get("/publication/{id}/contributors/{role}/confirm-create",
 			publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmCreateContributor)).
-			Methods("GET").
 			Name("publication_confirm_create_contributor")
-		r.HandleFunc("/publication/{id}/contributors/{role}",
+		r.Post("/publication/{id}/contributors/{role}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.CreateContributor)).
-			Methods("POST").
 			Name("publication_create_contributor")
-		r.HandleFunc("/publication/{id}/contributors/{role}/{position}/edit",
+		r.Get("/publication/{id}/contributors/{role}/{position}/edit",
 			publicationEditingHandler.Wrap(publicationEditingHandler.EditContributor)).
-			Methods("GET").
 			Name("publication_edit_contributor")
-		r.HandleFunc("/publication/{id}/contributors/{role}/{position}/suggestions",
+		r.Get("/publication/{id}/contributors/{role}/{position}/suggestions",
 			publicationEditingHandler.Wrap(publicationEditingHandler.EditContributorSuggest)).
-			Methods("GET").
 			Name("publication_edit_contributor_suggest")
-		r.HandleFunc("/publication/{id}/contributors/{role}/{position}/confirm-update",
+		r.Get("/publication/{id}/contributors/{role}/{position}/confirm-update",
 			publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmUpdateContributor)).
-			Methods("GET").
 			Name("publication_confirm_update_contributor")
-		r.HandleFunc("/publication/{id}/contributors/{role}/{position}",
+		r.Put("/publication/{id}/contributors/{role}/{position}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.UpdateContributor)).
-			Methods("PUT").
 			Name("publication_update_contributor")
-		r.HandleFunc("/publication/{id}/contributors/{role}/{position}/confirm-delete",
+		r.Get("/publication/{id}/contributors/{role}/{position}/confirm-delete",
 			publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDeleteContributor)).
-			Methods("GET").
 			Name("publication_confirm_delete_contributor")
-		r.HandleFunc("/publication/{id}/contributors/{role}/{position}",
+		r.Delete("/publication/{id}/contributors/{role}/{position}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteContributor)).
-			Methods("DELETE").
 			Name("publication_delete_contributor")
 
 		// edit publication files
-		r.HandleFunc("/publication/{id}/files",
+		r.Post("/publication/{id}/files",
 			publicationEditingHandler.Wrap(publicationEditingHandler.UploadFile)).
-			Methods("POST").
 			Name("publication_upload_file")
-		r.HandleFunc("/publication/{id}/files/{file_id}/edit",
+		r.Get("/publication/{id}/files/{file_id}/edit",
 			publicationEditingHandler.Wrap(publicationEditingHandler.EditFile)).
-			Methods("GET").
 			Name("publication_edit_file")
-		r.HandleFunc("/publication/{id}/refresh-files",
+		r.Get("/publication/{id}/refresh-files",
 			publicationEditingHandler.Wrap(publicationEditingHandler.RefreshFiles)).
-			Methods("GET").
 			Name("publication_refresh_files")
-		r.HandleFunc("/publication/{id}/files/{file_id}/refresh-form",
+		r.Get("/publication/{id}/files/{file_id}/refresh-form",
 			publicationEditingHandler.Wrap(publicationEditingHandler.RefreshEditFileForm)).
-			Methods("GET").
 			Name("publication_edit_file_refresh_form")
-		r.HandleFunc("/publication/{id}/files/{file_id}",
+		r.Put("/publication/{id}/files/{file_id}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.UpdateFile)).
-			Methods("PUT").
 			Name("publication_update_file")
-		r.HandleFunc("/publication/{id}/{snapshot_id}/files/{file_id}/confirm-delete",
+		r.Get("/publication/{id}/{snapshot_id}/files/{file_id}/confirm-delete",
 			publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDeleteFile)).
-			Methods("GET").
 			Name("publication_confirm_delete_file")
 		r.Delete("/publication/{id}/files/{file_id}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteFile)).
