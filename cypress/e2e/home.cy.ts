@@ -68,6 +68,8 @@ describe('The home page', () => {
     cy.contains('.dropdown-menu .dropdown-item', 'View as').should('exist')
     cy.contains('.dropdown-menu .dropdown-item', 'Logout').should('exist')
 
+    cy.get('.c-sidebar button.dropdown-toggle').find('.if-briefcase').should('be.visible')
+    cy.get('.c-sidebar button.dropdown-toggle').find('.if-book').should('not.exist')
     cy.get('.c-sidebar button.dropdown-toggle').should('contain.text', 'Researcher')
     cy.get('.c-sidebar-menu .c-sidebar__item').should('have.length', 2)
     cy.contains('.c-sidebar__item', 'Biblio Publications').should('be.visible')
@@ -76,6 +78,8 @@ describe('The home page', () => {
 
     cy.switchMode('Librarian')
 
+    cy.get('.c-sidebar button.dropdown-toggle').find('.if-book').should('be.visible')
+    cy.get('.c-sidebar button.dropdown-toggle').find('.if-briefcase').should('not.exist')
     cy.get('.c-sidebar button.dropdown-toggle').should('contain.text', 'Librarian')
     cy.get('.c-sidebar-menu .c-sidebar__item').should('have.length', 4)
     cy.contains('.c-sidebar__item', 'Biblio Publications').should('be.visible')
@@ -85,6 +89,8 @@ describe('The home page', () => {
 
     cy.switchMode('Researcher')
 
+    cy.get('.c-sidebar button.dropdown-toggle').find('.if-briefcase').should('be.visible')
+    cy.get('.c-sidebar button.dropdown-toggle').find('.if-book').should('not.exist')
     cy.get('.c-sidebar button.dropdown-toggle').should('contain.text', 'Researcher')
     cy.get('.c-sidebar-menu .c-sidebar__item').should('have.length', 2)
     cy.contains('.c-sidebar__item', 'Biblio Publications').should('be.visible')
