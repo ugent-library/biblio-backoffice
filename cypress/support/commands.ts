@@ -11,7 +11,7 @@ declare namespace Cypress {
 
     switchMode(mode: 'Researcher' | 'Librarian'): Chainable<void>
 
-    ensureModal(expectedTitle: string, strict?: boolean): Chainable<JQuery<HTMLElement>>
+    ensureModal(expectedTitle: string | RegExp): Chainable<JQuery<HTMLElement>>
 
     ensureNoModal(): Chainable<void>
 
@@ -114,9 +114,8 @@ Cypress.Commands.addAll({
     })
   },
 
-  ensureModal(expectedTitle: string, strict = true): Cypress.Chainable<JQuery<HTMLElement>> {
-    const char = strict ? '"' : '/'
-    const log = logCommand('ensureModal', { expectedTitle, strict }, char + expectedTitle + char)
+  ensureModal(expectedTitle: string | RegExp): Cypress.Chainable<JQuery<HTMLElement>> {
+    const log = logCommand('ensureModal', { expectedTitle }, expectedTitle.toString())
 
     return cy
       .get('#modals', NO_LOG)
@@ -130,7 +129,11 @@ Cypress.Commands.addAll({
           .get('#modal', NO_LOG)
           .should('be.visible')
           .within(NO_LOG, () => {
-            cy.get('.modal-title', NO_LOG).should(strict ? 'have.text' : 'contain.text', expectedTitle)
+            if (expectedTitle instanceof RegExp) {
+              cy.get('.modal-title', NO_LOG).invoke({ log: false }, 'text').should('match', expectedTitle)
+            } else {
+              cy.get('.modal-title', NO_LOG).should('have.text', expectedTitle)
+            }
           })
       })
       .finishLog(log)
