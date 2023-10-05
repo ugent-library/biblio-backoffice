@@ -405,6 +405,20 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
     })
   })
 
+  it('should have clickable labels in the file upload form', () => {
+    setUpPublication('Miscellaneous', () => {
+      cy.contains('.nav-tabs .nav-item', 'Full text & Files').click()
+
+      cy.get('input[type=file][name=file]').selectFile('cypress/fixtures/empty-pdf.pdf')
+
+      cy.ensureModal('Document details for file empty-pdf.pdf').within(() => {
+        testFocusForLabel('Document type', 'select[name="relation"]')
+        testFocusForLabel('Publication version', 'select[name="publication_version"]')
+        testFocusForLabel('License granted by the rights holder', 'select[name="license"]')
+      })
+    })
+  })
+
   function testFocusForLabel(labelText: string, fieldSelector: string, autoFocus = false) {
     getLabel(labelText)
       .as('theLabel')
@@ -528,8 +542,6 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
 
     // Custom callback here
     editPublicationCallback()
-
-    cy.ensureNoModal()
   }
 
   type FieldsSection =
@@ -568,7 +580,7 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
         // Make sure to match the exact label text (excluding badges)
         const $label = Cypress.$(el).clone()
 
-        $label.find('.badge').remove()
+        $label.find('.badge, .visually-hidden').remove()
 
         return $label.text().trim() === labelText
       },
