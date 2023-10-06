@@ -1,3 +1,5 @@
+// https://github.com/ugent-library/biblio-backoffice/issues/1140
+
 describe('Issue #1140: External contributor info is empty in the suggest box', () => {
   it('should display the external contributor name in the suggestions', () => {
     cy.loginAsResearcher()
