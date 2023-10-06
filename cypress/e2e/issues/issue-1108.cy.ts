@@ -1,3 +1,5 @@
+// https://github.com/ugent-library/biblio-backoffice/issues/1108
+
 describe('Issue #1108: Cannot add author without first name', () => {
   beforeEach(() => {
     cy.loginAsResearcher()

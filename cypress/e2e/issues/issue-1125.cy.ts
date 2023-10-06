@@ -1,3 +1,5 @@
+// https://github.com/ugent-library/biblio-backoffice/issues/1125
+
 describe('Issue #1125: Add "locked" message when record is locked', () => {
   it('should display "locked" message when record is locked', () => {
     cy.loginAsResearcher()
