@@ -49,8 +49,7 @@ describe('Publication import', () => {
 
     cy.contains('Imported publications Showing 1').should('be.visible')
 
-    // Extract Biblio ID for remaining publication
-    cy.get('.list-group-item-main').extractBiblioId()
+    cy.extractBiblioId()
 
     // Try publishing remaining publication and verify validation error
     cy.ensureNoModal()
