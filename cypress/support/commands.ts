@@ -163,21 +163,6 @@ Cypress.Commands.addAll({
 Cypress.Commands.addAll(
   { prevSubject: true },
   {
-    extractBiblioId(subject, alias = 'biblioId') {
-      const log = logCommand('extractBiblioId', { subject, alias }, `@${alias}`)
-
-      if (subject.length !== 1) {
-        expect(subject).to.have.length(1, `Expected subject to have length 1, but it has length ${subject.length}`)
-      }
-
-      cy.wrap(subject, NO_LOG)
-        .contains('Biblio ID:', NO_LOG)
-        .find('.c-code', NO_LOG)
-        .invoke(NO_LOG, 'text')
-        .as(alias, { type: 'static' })
-        .finishLog(log, true)
-    },
-
     finishLog(subject, log, appendToMessage = false) {
       let theSubject = subject
       if (subject === null) {
@@ -195,6 +180,39 @@ Cypress.Commands.addAll(
       log.end()
 
       return subject
+    },
+  }
+)
+
+// Dual commands
+Cypress.Commands.addAll(
+  {
+    prevSubject: 'optional',
+  },
+  {
+    extractBiblioId(subject: undefined | JQuery<HTMLElement>, alias = 'biblioId') {
+      const log = logCommand('extractBiblioId', { alias }, `@${alias}`)
+
+      let cySubject: Cypress.Chainable
+      if (subject) {
+        if (subject.length !== 1) {
+          expect(subject).to.have.length(1, `Expected subject to have length 1, but it has length ${subject.length}`)
+        }
+
+        cySubject = cy.wrap(subject, NO_LOG)
+      } else {
+        cySubject = cy.get('.list-group-item-main', NO_LOG)
+      }
+
+      cySubject
+        .then(el => {
+          updateConsoleProps(log, cp => (cp.subject = el))
+        })
+        .contains('Biblio ID:', NO_LOG)
+        .find('.c-code', NO_LOG)
+        .invoke(NO_LOG, 'text')
+        .as(alias, { type: 'static' })
+        .finishLog(log, true)
     },
   }
 )
