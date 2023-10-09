@@ -1,3 +1,5 @@
+// https://github.com/ugent-library/biblio-backoffice/issues/1125
+
 describe('Issue #1125: Add "locked" message when record is locked', () => {
   it('should display "locked" message when record is locked', () => {
     cy.loginAsResearcher()
@@ -9,8 +11,7 @@ describe('Issue #1125: Add "locked" message when record is locked', () => {
 
     cy.get('input[name=file]').selectFile('cypress/fixtures/wos-000963572100001.txt')
 
-    // Extract Biblio ID
-    cy.get('.list-group-item-main').extractBiblioId()
+    cy.extractBiblioId()
 
     // Lock the publication
     cy.loginAsLibrarian()
