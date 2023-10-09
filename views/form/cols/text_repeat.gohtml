@@ -13,15 +13,16 @@
         {{range $i, $v := .Values}}
         <div class="d-flex mb-3 form-value">
             {{if $.AutocompleteURL}}
-            <div class="w-100 autocomplete" data-target="[name='{{$.Name}}[{{$i}}]']" data-tmpl-data-target="[name='{{$.Name}}[{i}]']">
+            <div class="w-100 autocomplete" data-target="#{{$.Name}}-{{$i}}" data-tmpl-data-target="#{{$.Name}}-{i}">
             {{end}}
-                <input class="form-control{{if $.Error}} is-invalid{{end}}" name="{{$.Name}}[{{$i}}]" data-tmpl-name="{{$.Name}}[{i}]" type="text" value="{{$v}}"
+                <input class="form-control{{if $.Error}} is-invalid{{end}}" name="{{$.Name}}" type="text" value="{{$v}}"
+                    id="{{$.Name}}-{{$i}}" data-tmpl-id="{{$.Name}}-{i}"
                     {{if $.AutocompleteURL}}
                     autocomplete="off"
                     hx-get="{{pathFor $.AutocompleteURL}}"
                     hx-trigger="keyup changed delay:100ms"
                     hx-target="#{{$.Name}}-{{$i}}-autocomplete" data-tmpl-hx-target="#{{$.Name}}-{i}-autocomplete"
-                    hx-vals='{"input": "{{$.Name}}[{{$i}}]"}' data-tmpl-hx-vals='{"input": "{{$.Name}}[{i}]"}'
+                    hx-vals='{"input": "{{$.Name}}"}'
                     {{end}}
                     {{if $.Readonly}}readonly{{end}}
                 >
@@ -37,15 +38,16 @@
         {{end}}
         <div class="d-flex mb-3 form-value">
             {{if .AutocompleteURL}}
-            <div class="w-100 autocomplete" data-target="[name='{{.Name}}[{{len .Values}}]']" data-tmpl-data-target="[name='{{.Name}}[{i}]']">
+            <div class="w-100 autocomplete" data-target="#{{.Name}}-{{len .Values}}" data-tmpl-data-target="#{{.Name}}-{i}">
             {{end}}
-                <input class="form-control{{if .Error}} is-invalid{{end}}" name="{{.Name}}[{{len .Values}}]" data-tmpl-name="{{.Name}}[{i}]" type="text"
+                <input class="form-control{{if .Error}} is-invalid{{end}}" name="{{.Name}}" type="text"
+                    id="{{.Name}}-{{len .Values}}" data-tmpl-id="{{.Name}}-{i}"
                     {{if .AutocompleteURL}}
                     autocomplete="off"
                     hx-get="{{pathFor .AutocompleteURL}}"
                     hx-trigger="keyup changed delay:100ms"
                     hx-target="#{{.Name}}-{{len .Values}}-autocomplete" data-tmpl-hx-target="#{{.Name}}-{i}-autocomplete"
-                    hx-vals='{"input": "{{.Name}}[{{len .Values}}]"}' data-tmpl-hx-vals='{"input": "{{.Name}}[{i}]"}'
+                    hx-vals='{"input": "{{.Name}}"}'
                     {{end}}
                 >
             {{if .AutocompleteURL}}
