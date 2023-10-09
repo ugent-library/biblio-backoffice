@@ -95,8 +95,8 @@
                             {{partial "shared/status" .Dataset}}
                         </div>
                         {{if .Dataset.Locked}}
-                        <div class="bc-toolbar-item">
-                            <span class="c-subline text-nowrap pe-5 border-end" data-bs-toggle="tooltip" title="" data-bs-placement="bottom" data-original-title="Locked for editing">
+                        <div class="bc-toolbar-item" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Locked for editing">
+                            <span class="c-subline text-nowrap pe-5 border-end">
                               <i class="if if-lock if--small if--muted"></i>
                               <span class="text-muted c-body-small ms-2">Locked</span>
                             </span>
