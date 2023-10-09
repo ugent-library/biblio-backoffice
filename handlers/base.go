@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/base64"
-	"encoding/gob"
 	"encoding/json"
 	"fmt"
 	"html/template"
@@ -22,12 +21,6 @@ import (
 	"github.com/ugent-library/biblio-backoffice/render/flash"
 	"go.uber.org/zap"
 )
-
-func init() {
-	// register flash.Flash as a gob Type to make SecureCookieStore happy
-	// see https://github.com/gin-contrib/sessions/issues/39
-	gob.Register(flash.Flash{})
-}
 
 // TODO handlers should only have access to a url builder,
 // the session and maybe the localizer
