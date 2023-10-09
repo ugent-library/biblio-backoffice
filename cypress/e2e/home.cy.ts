@@ -2,7 +2,7 @@ describe('The home page', () => {
   it('should be able to load the home page anonymously', () => {
     cy.visit('/')
 
-    cy.get('h2').should('have.text', 'Biblio Backoffice')
+    cy.get('h2').should('have.text', 'Biblio Back Office')
 
     cy.contains('a', 'Log in').should('be.visible')
 
