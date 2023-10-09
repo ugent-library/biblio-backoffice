@@ -12,8 +12,8 @@ import (
 	"time"
 
 	"github.com/gorilla/csrf"
-	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
+	"github.com/nics/ich"
 	"github.com/oklog/ulid/v2"
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/locale"
@@ -32,13 +32,14 @@ func init() {
 // TODO handlers should only have access to a url builder,
 // the session and maybe the localizer
 type BaseHandler struct {
-	Router          *mux.Router
+	Router          *ich.Mux
 	Logger          *zap.SugaredLogger
 	SessionName     string
 	SessionStore    sessions.Store
 	UserService     backends.UserService
 	Timezone        *time.Location
 	Localizer       *locale.Localizer
+	BaseURL         *url.URL
 	FrontendBaseUrl string
 }
 
@@ -197,29 +198,15 @@ func (h BaseHandler) getUserRoleFromSession(session *sessions.Session) string {
 	return role.(string)
 }
 
-func (h BaseHandler) PathFor(name string, vars ...string) *url.URL {
-	if route := h.Router.Get(name); route != nil {
-		u, err := route.URLPath(vars...)
-		if err != nil {
-			h.Logger.Panic("Could not reverse route %s: %w", name, err)
-		}
-		return u
-	}
-	h.Logger.Panicf("Could not find route named %s", name)
-	return nil
-
+func (h BaseHandler) PathFor(name string, pairs ...string) *url.URL {
+	return h.Router.PathTo(name, pairs...)
 }
 
-func (h BaseHandler) URLFor(name string, vars ...string) *url.URL {
-	if route := h.Router.Get(name); route != nil {
-		u, err := route.URL(vars...)
-		if err != nil {
-			h.Logger.Panic("Could not reverse route %s: %w", name, err)
-		}
-		return u
-	}
-	h.Logger.Panic("Could not find route named %s", name)
-	return nil
+func (h BaseHandler) URLFor(name string, pairs ...string) *url.URL {
+	u := h.Router.PathTo(name, pairs...)
+	u.Scheme = h.BaseURL.Scheme
+	u.Host = h.BaseURL.Host
+	return u
 }
 
 func (h BaseHandler) ActionError(w http.ResponseWriter, r *http.Request, ctx BaseContext, msg string, err error, ID string) {

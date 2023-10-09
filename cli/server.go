@@ -6,12 +6,12 @@ import (
 	"html/template"
 	"net/http"
 	"net/url"
-	"strings"
 	"time"
 
 	"github.com/Masterminds/sprig/v3"
-	"github.com/gorilla/mux"
+	"github.com/go-chi/chi/v5"
 	"github.com/gorilla/sessions"
+	"github.com/nics/ich"
 	"github.com/oklog/ulid/v2"
 	"github.com/ory/graceful"
 	"github.com/spf13/cobra"
@@ -34,52 +34,12 @@ import (
 
 func init() {
 	rootCmd.AddCommand(serverCmd)
-	serverCmd.AddCommand(serverRoutesCmd)
 	serverCmd.AddCommand(serverStartCmd)
 }
 
 var serverCmd = &cobra.Command{
 	Use:   "server",
 	Short: "Biblio backoffice HTTP server",
-}
-
-var serverRoutesCmd = &cobra.Command{
-	Use:   "routes",
-	Short: "print routes",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		router, err := buildRouter(newServices())
-		if err != nil {
-			return err
-		}
-		return router.Walk(func(route *mux.Route, router *mux.Router, ancestors []*mux.Route) error {
-			hostTemplate, err := route.GetHostTemplate()
-			if err == nil {
-				fmt.Println("HOST:", hostTemplate)
-			}
-			pathTemplate, err := route.GetPathTemplate()
-			if err == nil {
-				fmt.Println("ROUTE:", pathTemplate)
-			}
-			pathRegexp, err := route.GetPathRegexp()
-			if err == nil {
-				fmt.Println("Path regexp:", pathRegexp)
-			}
-			queriesTemplates, err := route.GetQueriesTemplates()
-			if err == nil {
-				fmt.Println("Queries templates:", strings.Join(queriesTemplates, ","))
-			}
-			queriesRegexps, err := route.GetQueriesRegexp()
-			if err == nil {
-				fmt.Println("Queries regexps:", strings.Join(queriesRegexps, ","))
-			}
-			methods, err := route.GetMethods()
-			if err == nil {
-				fmt.Println("Methods:", strings.Join(methods, ","))
-			}
-			fmt.Println()
-			return nil
-		})
-	},
 }
 
 var serverStartCmd = &cobra.Command{
@@ -130,7 +90,7 @@ var serverStartCmd = &cobra.Command{
 	},
 }
 
-func buildRouter(services *backends.Services) (*mux.Router, error) {
+func buildRouter(services *backends.Services) (*ich.Mux, error) {
 	b := config.BaseURL
 	if b == "" {
 		if config.Host == "" {
@@ -148,7 +108,7 @@ func buildRouter(services *backends.Services) (*mux.Router, error) {
 	}
 
 	// router
-	router := mux.NewRouter()
+	router := ich.New()
 
 	// assets
 	assets, err := mix.New(mix.Config{
@@ -162,7 +122,7 @@ func buildRouter(services *backends.Services) (*mux.Router, error) {
 	// renderer
 	funcMaps := []template.FuncMap{
 		sprig.FuncMap(),
-		urls.FuncMap(router),
+		urls.FuncMap(router, baseURL.Scheme, baseURL.Host),
 		helpers.FuncMap(),
 		{
 			"assetPath": assets.AssetPath,
@@ -176,7 +136,7 @@ func buildRouter(services *backends.Services) (*mux.Router, error) {
 	}
 
 	// init render
-	render.AuthURL = baseURL.Path + "/login"
+	render.AuthURL = "/login"
 
 	for _, funcs := range funcMaps {
 		render.Funcs(funcs)
@@ -186,8 +146,9 @@ func buildRouter(services *backends.Services) (*mux.Router, error) {
 	// init bind
 	bind.PathValuesFunc = func(r *http.Request) url.Values {
 		p := url.Values{}
-		for k, v := range mux.Vars(r) {
-			p.Set(k, v)
+		params := chi.RouteContext(r.Context()).URLParams
+		for i, k := range params.Keys {
+			p.Set(k, params.Values[i])
 		}
 		return p
 	}
@@ -228,6 +189,7 @@ func buildRouter(services *backends.Services) (*mux.Router, error) {
 
 	// add routes
 	routes.Register(routes.Config{
+		Env:              config.Env,
 		Services:         services,
 		BaseURL:          baseURL,
 		Router:           router,
