@@ -133,7 +133,10 @@ describe('Issue #1246: Close button on toast does not work', () => {
     cy.contains('Miscellaneous').click()
     cy.contains('.btn', 'Add publication(s)').click()
 
-    cy.contains('Publication details').closest('.card-header').contains('.btn', 'Edit').click()
+    cy.contains('Publication details')
+      .closest('.card-header')
+      .contains('.btn', 'Edit')
+      .click({ scrollBehavior: 'nearest' })
 
     cy.ensureModal('Edit publication details').within(() => {
       cy.get('input[type=text][name=title]').type('Issue 1246 test [CYPRESSTEST]')
