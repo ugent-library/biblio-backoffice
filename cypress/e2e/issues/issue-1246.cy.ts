@@ -147,7 +147,7 @@ describe('Issue #1246: Close button on toast does not work', () => {
 
     cy.contains('People & Affiliations').click()
 
-    cy.contains('.btn', 'Add author').click()
+    cy.contains('.btn', 'Add author').click({ scrollBehavior: 'nearest' })
 
     cy.ensureModal('Add author').within(() => {
       cy.get('input[type=text][name=first_name]').type('Dries')
