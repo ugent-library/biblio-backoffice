@@ -120,7 +120,7 @@ func homePageContent(c *ctx.Ctx) templ.Component {
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("</span></a></div></div></div></div></div></div><div class=\"u-scroll-wrapper__body w-100 p-6\"><div class=\"row\"><div class=\"col-xl-8 mb-6\"><div class=\"row\"><div class=\"col-xl-6\"><div class=\"d-flex flex-column h-100\" hx-get=\"")
+		_, err = templBuffer.WriteString("</span></a></div></div></div></div></div></div><div class=\"u-scroll-wrapper__body w-100 p-6\"><div class=\"row\"><div class=\"col-xl-8 mb-6\"><div class=\"row\"><div class=\"col-xl-6\" hx-get=\"")
 		if err != nil {
 			return err
 		}
@@ -128,7 +128,15 @@ func homePageContent(c *ctx.Ctx) templ.Component {
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("\" hx-trigger=\"load\"></div></div></div></div></div></div></div>")
+		_, err = templBuffer.WriteString("\" hx-trigger=\"load\"></div><div class=\"col-xl-6\" hx-get=\"")
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString(templ.EscapeString(c.PathTo("drafts_to_complete").String()))
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("\" hx-trigger=\"load\"></div></div></div></div></div></div>")
 		if err != nil {
 			return err
 		}

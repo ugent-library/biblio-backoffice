@@ -244,6 +244,8 @@ func Register(c Config) {
 				r.Get("/", handlers.HomePage).Name("home")
 				// home action required card
 				r.Get("/action-required", handlers.ActionRequired).Name("action_required")
+				// home drafts to complete card
+				r.Get("/drafts-to-complete", handlers.DraftsToComplete).Name("drafts_to_complete")
 			})
 		})
 		// END NEW STYLE HANDLERS

@@ -11,7 +11,7 @@ import "bytes"
 
 import "github.com/ugent-library/biblio-backoffice/ctx"
 
-func ActionRequired(c *ctx.Ctx) templ.Component {
+func DraftsToComplete(c *ctx.Ctx) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
 		templBuffer, templIsBuffer := w.(*bytes.Buffer)
 		if !templIsBuffer {
@@ -28,7 +28,7 @@ func ActionRequired(c *ctx.Ctx) templ.Component {
 		if err != nil {
 			return err
 		}
-		var_2 := `Action required`
+		var_2 := `Drafts to complete`
 		_, err = templBuffer.WriteString(var_2)
 		if err != nil {
 			return err
@@ -45,7 +45,7 @@ func ActionRequired(c *ctx.Ctx) templ.Component {
 		if err != nil {
 			return err
 		}
-		var_3 := `No action required.`
+		var_3 := `Fully completed.`
 		_, err = templBuffer.WriteString(var_3)
 		if err != nil {
 			return err
