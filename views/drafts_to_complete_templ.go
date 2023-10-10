@@ -92,12 +92,21 @@ func DraftsToComplete(c *ctx.Ctx, pTotal, dTotal int) templ.Component {
 				if err != nil {
 					return err
 				}
-				_, err = templBuffer.WriteString("</span></span></div></div><div class=\"bc-toolbar-right\"><a class=\"btn btn-outline-secondary\" href=\"#\"><span class=\"btn-text\">")
+				_, err = templBuffer.WriteString("</span></span></div></div><div class=\"bc-toolbar-right\"><a class=\"btn btn-outline-secondary\" href=\"")
 				if err != nil {
 					return err
 				}
-				var_7 := `Complete`
-				_, err = templBuffer.WriteString(var_7)
+				var var_7 templ.SafeURL = templ.URL(c.PathTo("publications").String())
+				_, err = templBuffer.WriteString(templ.EscapeString(string(var_7)))
+				if err != nil {
+					return err
+				}
+				_, err = templBuffer.WriteString("\"><span class=\"btn-text\">")
+				if err != nil {
+					return err
+				}
+				var_8 := `Complete`
+				_, err = templBuffer.WriteString(var_8)
 				if err != nil {
 					return err
 				}
@@ -110,8 +119,8 @@ func DraftsToComplete(c *ctx.Ctx, pTotal, dTotal int) templ.Component {
 				if err != nil {
 					return err
 				}
-				var_8 := `Publications`
-				_, err = templBuffer.WriteString(var_8)
+				var_9 := `Publications`
+				_, err = templBuffer.WriteString(var_9)
 				if err != nil {
 					return err
 				}
@@ -119,8 +128,8 @@ func DraftsToComplete(c *ctx.Ctx, pTotal, dTotal int) templ.Component {
 				if err != nil {
 					return err
 				}
-				var_9 := `Completed`
-				_, err = templBuffer.WriteString(var_9)
+				var_10 := `Completed`
+				_, err = templBuffer.WriteString(var_10)
 				if err != nil {
 					return err
 				}
@@ -134,8 +143,8 @@ func DraftsToComplete(c *ctx.Ctx, pTotal, dTotal int) templ.Component {
 				if err != nil {
 					return err
 				}
-				var_10 := `Datasets`
-				_, err = templBuffer.WriteString(var_10)
+				var_11 := `Datasets`
+				_, err = templBuffer.WriteString(var_11)
 				if err != nil {
 					return err
 				}
@@ -143,8 +152,8 @@ func DraftsToComplete(c *ctx.Ctx, pTotal, dTotal int) templ.Component {
 				if err != nil {
 					return err
 				}
-				var var_11 string = fmt.Sprint(dTotal)
-				_, err = templBuffer.WriteString(templ.EscapeString(var_11))
+				var var_12 string = fmt.Sprint(dTotal)
+				_, err = templBuffer.WriteString(templ.EscapeString(var_12))
 				if err != nil {
 					return err
 				}
@@ -152,17 +161,26 @@ func DraftsToComplete(c *ctx.Ctx, pTotal, dTotal int) templ.Component {
 				if err != nil {
 					return err
 				}
-				var_12 := `Biblio draft`
-				_, err = templBuffer.WriteString(var_12)
-				if err != nil {
-					return err
-				}
-				_, err = templBuffer.WriteString("</span></span></div></div><div class=\"bc-toolbar-right\"><a class=\"btn btn-outline-secondary\" href=\"#\"><span class=\"btn-text\">")
-				if err != nil {
-					return err
-				}
-				var_13 := `Complete`
+				var_13 := `Biblio draft`
 				_, err = templBuffer.WriteString(var_13)
+				if err != nil {
+					return err
+				}
+				_, err = templBuffer.WriteString("</span></span></div></div><div class=\"bc-toolbar-right\"><a class=\"btn btn-outline-secondary\" href=\"")
+				if err != nil {
+					return err
+				}
+				var var_14 templ.SafeURL = templ.URL(c.PathTo("datasets").String())
+				_, err = templBuffer.WriteString(templ.EscapeString(string(var_14)))
+				if err != nil {
+					return err
+				}
+				_, err = templBuffer.WriteString("\"><span class=\"btn-text\">")
+				if err != nil {
+					return err
+				}
+				var_15 := `Complete`
+				_, err = templBuffer.WriteString(var_15)
 				if err != nil {
 					return err
 				}
@@ -175,8 +193,8 @@ func DraftsToComplete(c *ctx.Ctx, pTotal, dTotal int) templ.Component {
 				if err != nil {
 					return err
 				}
-				var_14 := `Publications`
-				_, err = templBuffer.WriteString(var_14)
+				var_16 := `Publications`
+				_, err = templBuffer.WriteString(var_16)
 				if err != nil {
 					return err
 				}
@@ -184,8 +202,8 @@ func DraftsToComplete(c *ctx.Ctx, pTotal, dTotal int) templ.Component {
 				if err != nil {
 					return err
 				}
-				var_15 := `Completed`
-				_, err = templBuffer.WriteString(var_15)
+				var_17 := `Completed`
+				_, err = templBuffer.WriteString(var_17)
 				if err != nil {
 					return err
 				}
@@ -211,8 +229,8 @@ func DraftsToComplete(c *ctx.Ctx, pTotal, dTotal int) templ.Component {
 			if err != nil {
 				return err
 			}
-			var_16 := `Fully completed.`
-			_, err = templBuffer.WriteString(var_16)
+			var_18 := `Fully completed.`
+			_, err = templBuffer.WriteString(var_18)
 			if err != nil {
 				return err
 			}
