@@ -259,6 +259,10 @@
                 "series_title": {
                     "type": "text",
                     "copy_to": "all"
+                },
+                "conference_name": {
+                    "type": "text",
+                    "copy_to": "all"
                 }
             }
         }
