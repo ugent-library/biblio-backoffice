@@ -1,21 +1,102 @@
 package views
 
-import "github.com/ugent-library/biblio-backoffice/ctx"
+import (
+    "fmt"
+    "github.com/ugent-library/biblio-backoffice/ctx"
+)
 
-templ DraftsToComplete(c *ctx.Ctx) {
+templ DraftsToComplete(c *ctx.Ctx, pTotal, dTotal int) {
     <div class="d-flex flex-column h-100">
         <div class="bc-toolbar">
             <div class="bc-toolbar-left">
                 <div class="d-flex align-items-center">
                     <h2 class="mb-0">Drafts to complete</h2>
+                    if pTotal > 0 || dTotal > 0 {
+                    <span class="badge bg-warning rounded-pill badge-sm ms-3">{ fmt.Sprint(pTotal+dTotal) }</span>
+                    }
                 </div>
             </div>
         </div>
+        if pTotal > 0 || dTotal > 0 {
+        <div class="card mb-6 flex-grow-1">
+            <ul class="list-group list-group-flush">
+                if pTotal > 0 {
+                <li class="list-group-item bg-transparent">
+                    <div class="bc-toolbar h-auto">
+                        <div class="bc-toolbar-left">
+                            <div class="d-flex align-items-center flex-wrap">
+                                <h4 class="font-weight-bold me-4">Publications</h4>
+                                <span class="badge badge-sm badge-pill badge-warning-light">
+                                    <span class="badge-circle"></span>
+                                    <span class="badge-text">{ fmt.Sprint(pTotal) } Biblio draft</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="bc-toolbar-right">
+                            <a class="btn btn-outline-secondary" href="#">
+                                <span class="btn-text">Complete</span>
+                            </a>
+                        </div>
+                    </div>
+                </li>
+                } else {
+                <li class="list-group-item bg-transparent">
+                    <div class="bc-toolbar h-auto">
+                        <div class="bc-toolbar-left">
+                            <div class="d-flex align-items-center flex-wrap">
+                                <h4 class="font-weight-bold me-4">Publications</h4>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <i class="if if-check if--small if--success me-2"></i>
+                            <span class="c-body-small text-muted">Completed</span>
+                        </div>
+                    </div>
+                </li>
+                }
+                if dTotal > 0 {
+                <li class="list-group-item bg-transparent">
+                    <div class="bc-toolbar h-auto">
+                        <div class="bc-toolbar-left">
+                            <div class="d-flex align-items-center flex-wrap">
+                                <h4 class="font-weight-bold me-4">Datasets</h4>
+                                <span class="badge badge-sm badge-pill badge-warning-light">
+                                    <span class="badge-circle"></span>
+                                    <span class="badge-text">{ fmt.Sprint(dTotal) } Biblio draft</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="bc-toolbar-right">
+                            <a class="btn btn-outline-secondary" href="#">
+                                <span class="btn-text">Complete</span>
+                            </a>
+                        </div>
+                    </div>
+                </li>
+                } else {
+                <li class="list-group-item bg-transparent">
+                    <div class="bc-toolbar h-auto">
+                        <div class="bc-toolbar-left">
+                            <div class="d-flex align-items-center flex-wrap">
+                                <h4 class="font-weight-bold me-4">Publications</h4>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <i class="if if-check if--small if--success me-2"></i>
+                            <span class="c-body-small text-muted">Completed</span>
+                        </div>
+                    </div>
+                </li>
+                }
+            </ul>
+        </div>
+        } else {
         <div class="card mb-6 flex-grow-1 bg-lightest shadow-none u-mix-blend-multiply">
             <div class="c-blank-slate py-6">
                 <img class="mb-4" src={ c.AssetPath("/images/inbox-illustration.svg") } alt="" width="auto" height="32"/>
                 <p>Fully completed.</p>
             </div>
         </div>
+        }
     </div>
 }

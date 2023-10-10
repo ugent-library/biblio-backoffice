@@ -9,9 +9,12 @@ import "context"
 import "io"
 import "bytes"
 
-import "github.com/ugent-library/biblio-backoffice/ctx"
+import (
+	"fmt"
+	"github.com/ugent-library/biblio-backoffice/ctx"
+)
 
-func DraftsToComplete(c *ctx.Ctx) templ.Component {
+func DraftsToComplete(c *ctx.Ctx, pTotal, dTotal int) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
 		templBuffer, templIsBuffer := w.(*bytes.Buffer)
 		if !templIsBuffer {
@@ -33,24 +36,192 @@ func DraftsToComplete(c *ctx.Ctx) templ.Component {
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("</h2></div></div></div><div class=\"card mb-6 flex-grow-1 bg-lightest shadow-none u-mix-blend-multiply\"><div class=\"c-blank-slate py-6\"><img class=\"mb-4\" src=\"")
+		_, err = templBuffer.WriteString("</h2>")
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString(templ.EscapeString(c.AssetPath("/images/inbox-illustration.svg")))
+		if pTotal > 0 || dTotal > 0 {
+			_, err = templBuffer.WriteString("<span class=\"badge bg-warning rounded-pill badge-sm ms-3\">")
+			if err != nil {
+				return err
+			}
+			var var_3 string = fmt.Sprint(pTotal + dTotal)
+			_, err = templBuffer.WriteString(templ.EscapeString(var_3))
+			if err != nil {
+				return err
+			}
+			_, err = templBuffer.WriteString("</span>")
+			if err != nil {
+				return err
+			}
+		}
+		_, err = templBuffer.WriteString("</div></div></div>")
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("\" alt=\"\" width=\"auto\" height=\"32\"><p>")
-		if err != nil {
-			return err
+		if pTotal > 0 || dTotal > 0 {
+			_, err = templBuffer.WriteString("<div class=\"card mb-6 flex-grow-1\"><ul class=\"list-group list-group-flush\">")
+			if err != nil {
+				return err
+			}
+			if pTotal > 0 {
+				_, err = templBuffer.WriteString("<li class=\"list-group-item bg-transparent\"><div class=\"bc-toolbar h-auto\"><div class=\"bc-toolbar-left\"><div class=\"d-flex align-items-center flex-wrap\"><h4 class=\"font-weight-bold me-4\">")
+				if err != nil {
+					return err
+				}
+				var_4 := `Publications`
+				_, err = templBuffer.WriteString(var_4)
+				if err != nil {
+					return err
+				}
+				_, err = templBuffer.WriteString("</h4><span class=\"badge badge-sm badge-pill badge-warning-light\"><span class=\"badge-circle\"></span><span class=\"badge-text\">")
+				if err != nil {
+					return err
+				}
+				var var_5 string = fmt.Sprint(pTotal)
+				_, err = templBuffer.WriteString(templ.EscapeString(var_5))
+				if err != nil {
+					return err
+				}
+				_, err = templBuffer.WriteString(" ")
+				if err != nil {
+					return err
+				}
+				var_6 := `Biblio draft`
+				_, err = templBuffer.WriteString(var_6)
+				if err != nil {
+					return err
+				}
+				_, err = templBuffer.WriteString("</span></span></div></div><div class=\"bc-toolbar-right\"><a class=\"btn btn-outline-secondary\" href=\"#\"><span class=\"btn-text\">")
+				if err != nil {
+					return err
+				}
+				var_7 := `Complete`
+				_, err = templBuffer.WriteString(var_7)
+				if err != nil {
+					return err
+				}
+				_, err = templBuffer.WriteString("</span></a></div></div></li>")
+				if err != nil {
+					return err
+				}
+			} else {
+				_, err = templBuffer.WriteString("<li class=\"list-group-item bg-transparent\"><div class=\"bc-toolbar h-auto\"><div class=\"bc-toolbar-left\"><div class=\"d-flex align-items-center flex-wrap\"><h4 class=\"font-weight-bold me-4\">")
+				if err != nil {
+					return err
+				}
+				var_8 := `Publications`
+				_, err = templBuffer.WriteString(var_8)
+				if err != nil {
+					return err
+				}
+				_, err = templBuffer.WriteString("</h4></div></div><div class=\"d-flex align-items-center\"><i class=\"if if-check if--small if--success me-2\"></i><span class=\"c-body-small text-muted\">")
+				if err != nil {
+					return err
+				}
+				var_9 := `Completed`
+				_, err = templBuffer.WriteString(var_9)
+				if err != nil {
+					return err
+				}
+				_, err = templBuffer.WriteString("</span></div></div></li>")
+				if err != nil {
+					return err
+				}
+			}
+			if dTotal > 0 {
+				_, err = templBuffer.WriteString("<li class=\"list-group-item bg-transparent\"><div class=\"bc-toolbar h-auto\"><div class=\"bc-toolbar-left\"><div class=\"d-flex align-items-center flex-wrap\"><h4 class=\"font-weight-bold me-4\">")
+				if err != nil {
+					return err
+				}
+				var_10 := `Datasets`
+				_, err = templBuffer.WriteString(var_10)
+				if err != nil {
+					return err
+				}
+				_, err = templBuffer.WriteString("</h4><span class=\"badge badge-sm badge-pill badge-warning-light\"><span class=\"badge-circle\"></span><span class=\"badge-text\">")
+				if err != nil {
+					return err
+				}
+				var var_11 string = fmt.Sprint(dTotal)
+				_, err = templBuffer.WriteString(templ.EscapeString(var_11))
+				if err != nil {
+					return err
+				}
+				_, err = templBuffer.WriteString(" ")
+				if err != nil {
+					return err
+				}
+				var_12 := `Biblio draft`
+				_, err = templBuffer.WriteString(var_12)
+				if err != nil {
+					return err
+				}
+				_, err = templBuffer.WriteString("</span></span></div></div><div class=\"bc-toolbar-right\"><a class=\"btn btn-outline-secondary\" href=\"#\"><span class=\"btn-text\">")
+				if err != nil {
+					return err
+				}
+				var_13 := `Complete`
+				_, err = templBuffer.WriteString(var_13)
+				if err != nil {
+					return err
+				}
+				_, err = templBuffer.WriteString("</span></a></div></div></li>")
+				if err != nil {
+					return err
+				}
+			} else {
+				_, err = templBuffer.WriteString("<li class=\"list-group-item bg-transparent\"><div class=\"bc-toolbar h-auto\"><div class=\"bc-toolbar-left\"><div class=\"d-flex align-items-center flex-wrap\"><h4 class=\"font-weight-bold me-4\">")
+				if err != nil {
+					return err
+				}
+				var_14 := `Publications`
+				_, err = templBuffer.WriteString(var_14)
+				if err != nil {
+					return err
+				}
+				_, err = templBuffer.WriteString("</h4></div></div><div class=\"d-flex align-items-center\"><i class=\"if if-check if--small if--success me-2\"></i><span class=\"c-body-small text-muted\">")
+				if err != nil {
+					return err
+				}
+				var_15 := `Completed`
+				_, err = templBuffer.WriteString(var_15)
+				if err != nil {
+					return err
+				}
+				_, err = templBuffer.WriteString("</span></div></div></li>")
+				if err != nil {
+					return err
+				}
+			}
+			_, err = templBuffer.WriteString("</ul></div>")
+			if err != nil {
+				return err
+			}
+		} else {
+			_, err = templBuffer.WriteString("<div class=\"card mb-6 flex-grow-1 bg-lightest shadow-none u-mix-blend-multiply\"><div class=\"c-blank-slate py-6\"><img class=\"mb-4\" src=\"")
+			if err != nil {
+				return err
+			}
+			_, err = templBuffer.WriteString(templ.EscapeString(c.AssetPath("/images/inbox-illustration.svg")))
+			if err != nil {
+				return err
+			}
+			_, err = templBuffer.WriteString("\" alt=\"\" width=\"auto\" height=\"32\"><p>")
+			if err != nil {
+				return err
+			}
+			var_16 := `Fully completed.`
+			_, err = templBuffer.WriteString(var_16)
+			if err != nil {
+				return err
+			}
+			_, err = templBuffer.WriteString("</p></div></div>")
+			if err != nil {
+				return err
+			}
 		}
-		var_3 := `Fully completed.`
-		_, err = templBuffer.WriteString(var_3)
-		if err != nil {
-			return err
-		}
-		_, err = templBuffer.WriteString("</p></div></div></div>")
+		_, err = templBuffer.WriteString("</div>")
 		if err != nil {
 			return err
 		}
