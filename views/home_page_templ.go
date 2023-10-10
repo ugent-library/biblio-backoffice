@@ -48,7 +48,79 @@ func homePageContent(c *ctx.Ctx) templ.Component {
 			var_2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, err = templBuffer.WriteString("<div></div>")
+		_, err = templBuffer.WriteString("<div class=\"w-100 u-scroll-wrapper\"><div class=\"bc-navbar bc-navbar--large bc-navbar--white bc-navbar--bordered-bottom h-auto\"><div class=\"bc-toolbar h-auto py-4\"><div class=\"bc-toolbar-left\"><div><h2>")
+		if err != nil {
+			return err
+		}
+		var_3 := `Biblio Backoffice`
+		_, err = templBuffer.WriteString(var_3)
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("</h2><p class=\"c-body-small text-muted\">")
+		if err != nil {
+			return err
+		}
+		var_4 := `Deposit and Registration office for the Academic bibliography and institutional repository of Ghent University.`
+		_, err = templBuffer.WriteString(var_4)
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("</p></div></div><div class=\"bc-toolbar-right\"><div class=\"c-button-toolbar c-button-toolbar--wide-spacing\"><a class=\"btn btn-tertiary\" href=\"https://onderzoektips.ugent.be/en/tips/00002094/\"><i class=\"if if-book\"></i><span class=\"btn-text\">")
+		if err != nil {
+			return err
+		}
+		var_5 := `Manual`
+		_, err = templBuffer.WriteString(var_5)
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("</span></a><div class=\"dropdown\"><button class=\"btn btn-primary dropdown-toggle\" type=\"button\" data-bs-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\"><i class=\"if if-add\"></i><span class=\"btn-text\">")
+		if err != nil {
+			return err
+		}
+		var_6 := `Add research`
+		_, err = templBuffer.WriteString(var_6)
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("</span></button><div class=\"dropdown-menu\"><a class=\"dropdown-item\" href=\"")
+		if err != nil {
+			return err
+		}
+		var var_7 templ.SafeURL = templ.URL(c.PathTo("publication_add").String())
+		_, err = templBuffer.WriteString(templ.EscapeString(string(var_7)))
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("\"><i class=\"if if-article\"></i><span>")
+		if err != nil {
+			return err
+		}
+		var_8 := `Add publication`
+		_, err = templBuffer.WriteString(var_8)
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("</span></a><a class=\"dropdown-item\" href=\"")
+		if err != nil {
+			return err
+		}
+		var var_9 templ.SafeURL = templ.URL(c.PathTo("dataset_add").String())
+		_, err = templBuffer.WriteString(templ.EscapeString(string(var_9)))
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("\"><i class=\"if if-database\"></i><span>")
+		if err != nil {
+			return err
+		}
+		var_10 := `Add dataset`
+		_, err = templBuffer.WriteString(var_10)
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("</span></a></div></div></div></div></div></div></div>")
 		if err != nil {
 			return err
 		}
