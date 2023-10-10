@@ -241,7 +241,7 @@ func Register(c Config) {
 				r.Use(ctx.RequireUser)
 
 				// home
-				r.Get("/", handlers.Home).Name("home")
+				r.Get("/", handlers.HomePage).Name("home")
 			})
 		})
 		// END NEW STYLE HANDLERS
