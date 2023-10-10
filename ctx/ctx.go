@@ -20,6 +20,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render/flash"
 	"github.com/ugent-library/httperror"
+	"github.com/ugent-library/mix"
 	"github.com/ugent-library/zaphttp"
 	"go.uber.org/zap"
 )
@@ -100,12 +101,14 @@ func Set(config Config) func(http.Handler) http.Handler {
 type Config struct {
 	*backends.Services
 	Router        *ich.Mux
+	Assets        mix.Manifest
 	Localizer     *locale.Localizer
 	Env           string
 	ErrorHandlers map[int]http.HandlerFunc
 	SessionName   string
 	SessionStore  sessions.Store
 	BaseURL       *url.URL
+	FrontendURL   string
 	CSRFName      string
 }
 
@@ -151,6 +154,14 @@ func (c *Ctx) URLTo(name string, pairs ...string) *url.URL {
 	u.Scheme = c.BaseURL.Scheme
 	u.Host = c.BaseURL.Host
 	return u
+}
+
+func (c *Ctx) AssetPath(asset string) string {
+	p, err := c.Assets.AssetPath(asset)
+	if err != nil {
+		panic(err)
+	}
+	return p
 }
 
 func (c *Ctx) PersistFlash(w http.ResponseWriter, f flash.Flash) {

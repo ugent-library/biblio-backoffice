@@ -1,0 +1,11 @@
+package views
+
+import "github.com/ugent-library/biblio-backoffice/ctx"
+
+templ HomePage(c *ctx.Ctx) {
+    @pageLayout(c, "Biblio", "", nil, homePageContent(c))
+}
+
+templ homePageContent(c *ctx.Ctx) {
+    <div></div>
+}

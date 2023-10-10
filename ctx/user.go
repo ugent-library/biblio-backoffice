@@ -14,6 +14,7 @@ func RequireUser(next http.Handler) http.Handler {
 			c.HandleError(w, r, httperror.Unauthorized)
 			return
 		}
+
 		next.ServeHTTP(w, r)
 	})
 }
