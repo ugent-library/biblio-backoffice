@@ -1,7 +1,7 @@
 import { logCommand } from './helpers'
 
 export default function ensureModal(expectedTitle: string | RegExp): Cypress.Chainable<JQuery<HTMLElement>> {
-  const log = logCommand('ensureModal', { expectedTitle }, expectedTitle.toString())
+  const log = logCommand('ensureModal', { 'Expected title': expectedTitle }, expectedTitle.toString())
 
   return cy
     .get('#modals', { log: false })

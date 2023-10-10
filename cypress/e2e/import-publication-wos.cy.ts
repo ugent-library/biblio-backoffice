@@ -41,11 +41,11 @@ describe('Publication import', () => {
     )
     cy.contains('Imported publications Showing 2').should('be.visible')
 
-    cy.contains('.toast', 'Publication was successfully deleted.').find('.btn-close').click()
+    cy.ensureToast('Publication was successfully deleted.').closeToast()
 
     deletePublication('Fusarium isolates from Belgium causing wilt in lettuce show genetic and pathogenic diversity')
 
-    cy.contains('.toast', 'Publication was successfully deleted.').find('.btn-close').click()
+    cy.ensureToast('Publication was successfully deleted.').closeToast()
 
     cy.contains('Imported publications Showing 1').should('be.visible')
 
