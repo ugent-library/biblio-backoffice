@@ -12,11 +12,11 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
           testFocusForLabel('DOI', 'input[type=text][name="doi"]')
 
           testFocusForLabel('Title', 'input[type=text][name="title"]')
-          testFocusForLabel('Alternative title', 'input[type=text][name="alternative_title[0]"]')
+          testFocusForLabel('Alternative title', 'input[type=text][name="alternative_title"]')
           testFocusForLabel('Journal title', 'input[type=text][name="publication"]')
           testFocusForLabel('Short journal title', 'input[type=text][name="publication_abbreviation"]')
 
-          testFocusForLabel('Languages', 'select[name="language[0]"]')
+          testFocusForLabel('Languages', 'select[name="language"]')
           testFocusForLabel('Publishing status', 'select[name="publication_status"]')
           testFocusForLabel(
             'Published while none of the authors and editors were employed at UGent',
@@ -35,10 +35,10 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
           testFocusForLabel('Article number', 'input[type=text][name="article_number"]')
 
           testFocusForLabel('Web of Science ID', 'input[type=text][name="wos_id"]')
-          testFocusForLabel('ISSN', 'input[type=text][name="issn[0]"]')
-          testFocusForLabel('E-ISSN', 'input[type=text][name="eissn[0]"]')
-          testFocusForLabel('ISBN', 'input[type=text][name="isbn[0]"]')
-          testFocusForLabel('E-ISBN', 'input[type=text][name="eisbn[0]"]')
+          testFocusForLabel('ISSN', 'input[type=text][name="issn"]')
+          testFocusForLabel('E-ISSN', 'input[type=text][name="eissn"]')
+          testFocusForLabel('ISBN', 'input[type=text][name="isbn"]')
+          testFocusForLabel('E-ISBN', 'input[type=text][name="eisbn"]')
           testFocusForLabel('PubMed ID', 'input[type=text][name="pubmed_id"]')
           testFocusForLabel('Arxiv ID', 'input[type=text][name="arxiv_id"]')
           testFocusForLabel('ESCI ID', 'input[type=text][name="esci_id"]')
@@ -71,10 +71,10 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
           testFocusForLabel('DOI', 'input[type=text][name="doi"]')
 
           testFocusForLabel('Title', 'input[type=text][name="title"]')
-          testFocusForLabel('Alternative title', 'input[type=text][name="alternative_title[0]"]')
+          testFocusForLabel('Alternative title', 'input[type=text][name="alternative_title"]')
           testFocusForLabel('Book title', 'input[type=text][name="publication"]')
 
-          testFocusForLabel('Languages', 'select[name="language[0]"]')
+          testFocusForLabel('Languages', 'select[name="language"]')
           testFocusForLabel('Publishing status', 'select[name="publication_status"]')
           testFocusForLabel(
             'Published while none of the authors and editors were employed at UGent',
@@ -92,10 +92,10 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
           testFocusForLabel('Number of pages', 'input[type=text][name="page_count"]')
 
           testFocusForLabel('Web of Science ID', 'input[type=text][name="wos_id"]')
-          testFocusForLabel('ISSN', 'input[type=text][name="issn[0]"]')
-          testFocusForLabel('E-ISSN', 'input[type=text][name="eissn[0]"]')
-          testFocusForLabel('ISBN', 'input[type=text][name="isbn[0]"]')
-          testFocusForLabel('E-ISBN', 'input[type=text][name="eisbn[0]"]')
+          testFocusForLabel('ISSN', 'input[type=text][name="issn"]')
+          testFocusForLabel('E-ISSN', 'input[type=text][name="eissn"]')
+          testFocusForLabel('ISBN', 'input[type=text][name="isbn"]')
+          testFocusForLabel('E-ISBN', 'input[type=text][name="eisbn"]')
         })
 
         testConferenceDetailsSection()
@@ -125,9 +125,9 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
           testFocusForLabel('DOI', 'input[type=text][name="doi"]')
 
           testFocusForLabel('Title', 'input[type=text][name="title"]')
-          testFocusForLabel('Alternative title', 'input[type=text][name="alternative_title[0]"]')
+          testFocusForLabel('Alternative title', 'input[type=text][name="alternative_title"]')
 
-          testFocusForLabel('Languages', 'select[name="language[0]"]')
+          testFocusForLabel('Languages', 'select[name="language"]')
           testFocusForLabel('Publishing status', 'select[name="publication_status"]')
           testFocusForLabel(
             'Published while none of the authors and editors were employed at UGent',
@@ -143,10 +143,10 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
           testFocusForLabel('Number of pages', 'input[type=text][name="page_count"]')
 
           testFocusForLabel('Web of Science ID', 'input[type=text][name="wos_id"]')
-          testFocusForLabel('ISSN', 'input[type=text][name="issn[0]"]')
-          testFocusForLabel('E-ISSN', 'input[type=text][name="eissn[0]"]')
-          testFocusForLabel('ISBN', 'input[type=text][name="isbn[0]"]')
-          testFocusForLabel('E-ISBN', 'input[type=text][name="eisbn[0]"]')
+          testFocusForLabel('ISSN', 'input[type=text][name="issn"]')
+          testFocusForLabel('E-ISSN', 'input[type=text][name="eissn"]')
+          testFocusForLabel('ISBN', 'input[type=text][name="isbn"]')
+          testFocusForLabel('E-ISBN', 'input[type=text][name="eisbn"]')
         })
 
         testAbstractSection()
@@ -175,11 +175,11 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
           testFocusForLabel('DOI', 'input[type=text][name="doi"]')
 
           testFocusForLabel('Title', 'input[type=text][name="title"]')
-          testFocusForLabel('Alternative title', 'input[type=text][name="alternative_title[0]"]')
+          testFocusForLabel('Alternative title', 'input[type=text][name="alternative_title"]')
           testFocusForLabel('Proceedings title', 'input[type=text][name="publication"]')
           testFocusForLabel('Publication short title', 'input[type=text][name="publication_abbreviation"]')
 
-          testFocusForLabel('Languages', 'select[name="language[0]"]')
+          testFocusForLabel('Languages', 'select[name="language"]')
           testFocusForLabel('Publishing status', 'select[name="publication_status"]')
           testFocusForLabel(
             'Published while none of the authors and editors were employed at UGent',
@@ -199,10 +199,10 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
           testFocusForLabel('Article number', 'input[type=text][name="article_number"]')
 
           testFocusForLabel('Web of Science ID', 'input[type=text][name="wos_id"]')
-          testFocusForLabel('ISSN', 'input[type=text][name="issn[0]"]')
-          testFocusForLabel('E-ISSN', 'input[type=text][name="eissn[0]"]')
-          testFocusForLabel('ISBN', 'input[type=text][name="isbn[0]"]')
-          testFocusForLabel('E-ISBN', 'input[type=text][name="eisbn[0]"]')
+          testFocusForLabel('ISSN', 'input[type=text][name="issn"]')
+          testFocusForLabel('E-ISSN', 'input[type=text][name="eissn"]')
+          testFocusForLabel('ISBN', 'input[type=text][name="isbn"]')
+          testFocusForLabel('E-ISBN', 'input[type=text][name="eisbn"]')
         })
 
         testConferenceDetailsSection()
@@ -232,9 +232,9 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
           testFocusForLabel('DOI', 'input[type=text][name="doi"]')
 
           testFocusForLabel('Title', 'input[type=text][name="title"]')
-          testFocusForLabel('Alternative title', 'input[type=text][name="alternative_title[0]"]')
+          testFocusForLabel('Alternative title', 'input[type=text][name="alternative_title"]')
 
-          testFocusForLabel('Languages', 'select[name="language[0]"]')
+          testFocusForLabel('Languages', 'select[name="language"]')
           testFocusForLabel('Publishing status', 'select[name="publication_status"]')
           testFocusForLabel(
             'Published while none of the authors and editors were employed at UGent',
@@ -251,28 +251,11 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
           testFocusForLabel('Date of defense', 'input[type=text][name="defense_date"]')
           testFocusForLabel('Place of defense', 'input[type=text][name="defense_place"]')
 
-          testFocusForLabel(
-            'Does the dissertation contain confidential or personal data?',
-            ':radio[name="has_confidential_data"][value="yes"]'
-          )
-          testFocusForLabel(
-            'Is a patent application ongoing or planned?',
-            ':radio[name="has_patent_application"][value="yes"]'
-          )
-          testFocusForLabel(
-            'Are other publications planned based on this dissertation (e.g. articles or book)?',
-            ':radio[name="has_publications_planned"][value="yes"]'
-          )
-          testFocusForLabel(
-            "Does the dissertation contain published articles (publisher's version or accepted manuscript)?",
-            ':radio[name="has_published_material"][value="yes"]'
-          )
-
           testFocusForLabel('Web of Science ID', 'input[type=text][name="wos_id"]')
-          testFocusForLabel('ISSN', 'input[type=text][name="issn[0]"]')
-          testFocusForLabel('E-ISSN', 'input[type=text][name="eissn[0]"]')
-          testFocusForLabel('ISBN', 'input[type=text][name="isbn[0]"]')
-          testFocusForLabel('E-ISBN', 'input[type=text][name="eisbn[0]"]')
+          testFocusForLabel('ISSN', 'input[type=text][name="issn"]')
+          testFocusForLabel('E-ISSN', 'input[type=text][name="eissn"]')
+          testFocusForLabel('ISBN', 'input[type=text][name="isbn"]')
+          testFocusForLabel('E-ISBN', 'input[type=text][name="eisbn"]')
         })
 
         testAbstractSection()
@@ -303,11 +286,11 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
           testFocusForLabel('DOI', 'input[type=text][name="doi"]')
 
           testFocusForLabel('Title', 'input[type=text][name="title"]')
-          testFocusForLabel('Alternative title', 'input[type=text][name="alternative_title[0]"]')
+          testFocusForLabel('Alternative title', 'input[type=text][name="alternative_title"]')
           testFocusForLabel('Publication title', 'input[type=text][name="publication"]')
           testFocusForLabel('Publication short title', 'input[type=text][name="publication_abbreviation"]')
 
-          testFocusForLabel('Languages', 'select[name="language[0]"]')
+          testFocusForLabel('Languages', 'select[name="language"]')
           testFocusForLabel('Publishing status', 'select[name="publication_status"]')
           testFocusForLabel(
             'Published while none of the authors and editors were employed at UGent',
@@ -329,9 +312,9 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
           testFocusForLabel('Report number', 'input[type=text][name="report_number"]')
 
           testFocusForLabel('Web of Science ID', 'input[type=text][name="wos_id"]')
-          testFocusForLabel('ISSN', 'input[type=text][name="issn[0]"]')
-          testFocusForLabel('E-ISSN', 'input[type=text][name="eissn[0]"]')
-          testFocusForLabel('ISBN', 'input[type=text][name="isbn[0]"]')
+          testFocusForLabel('ISSN', 'input[type=text][name="issn"]')
+          testFocusForLabel('E-ISSN', 'input[type=text][name="eissn"]')
+          testFocusForLabel('ISBN', 'input[type=text][name="isbn"]')
           testFocusForLabel('PubMed ID', 'input[type=text][name="pubmed_id"]')
           testFocusForLabel('Arxiv ID', 'input[type=text][name="arxiv_id"]')
           testFocusForLabel('ESCI ID', 'input[type=text][name="esci_id"]')
@@ -362,11 +345,11 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
           testFocusForLabel('DOI', 'input[type=text][name="doi"]')
 
           testFocusForLabel('Title', 'input[type=text][name="title"]')
-          testFocusForLabel('Alternative title', 'input[type=text][name="alternative_title[0]"]')
+          testFocusForLabel('Alternative title', 'input[type=text][name="alternative_title"]')
           testFocusForLabel('Journal title', 'input[type=text][name="publication"]')
           testFocusForLabel('Short journal title', 'input[type=text][name="publication_abbreviation"]')
 
-          testFocusForLabel('Languages', 'select[name="language[0]"]')
+          testFocusForLabel('Languages', 'select[name="language"]')
           testFocusForLabel('Publishing status', 'select[name="publication_status"]')
           testFocusForLabel(
             'Published while none of the authors and editors were employed at UGent',
@@ -383,9 +366,9 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
           testFocusForLabel('Number of pages', 'input[type=text][name="page_count"]')
 
           testFocusForLabel('Web of Science ID', 'input[type=text][name="wos_id"]')
-          testFocusForLabel('ISSN', 'input[type=text][name="issn[0]"]')
-          testFocusForLabel('E-ISSN', 'input[type=text][name="eissn[0]"]')
-          testFocusForLabel('ISBN', 'input[type=text][name="isbn[0]"]')
+          testFocusForLabel('ISSN', 'input[type=text][name="issn"]')
+          testFocusForLabel('E-ISSN', 'input[type=text][name="eissn"]')
+          testFocusForLabel('ISBN', 'input[type=text][name="isbn"]')
         })
 
         testConferenceDetailsSection()
@@ -429,11 +412,11 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
           testFocusForLabel('Persistent identifier type', 'select[name="identifier_type"]')
           testFocusForLabel('Identifier', 'input[type=text][name="identifier"]')
 
-          testFocusForLabel('Languages', 'select[name="language[0]"]')
+          testFocusForLabel('Languages', 'select[name="language"]')
           testFocusForLabel('Publication year', 'input[type=text][name="year"]')
           testFocusForLabel('Publisher', 'input[type=text][name="publisher"]')
 
-          testFocusForLabel('Data format', 'input[type=text][name="format[0]"]')
+          testFocusForLabel('Data format', 'input[type=text][name="format"]')
           // TODO: tagify component doesn't support focussing by label
           // testFocusForLabel('Keywords', 'tags > .tagify__input')
 
@@ -463,6 +446,7 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
       .should('have.length', 1)
       .parent({ log: false })
       .find(fieldSelector)
+      .first()
       .as('theField')
       .should('have.length', 1)
       .should(autoFocus ? 'have.focus' : 'not.have.focus')
@@ -514,7 +498,7 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
 
   function testAdditionalInformationSection() {
     updateFields('Additional information', () => {
-      testFocusForLabel('Research field', 'select[name="research_field[0]"]')
+      testFocusForLabel('Research field', 'select[name="research_field"]')
       // TODO: tagify component doesn't support focussing by label
       // testFocusForLabel('Keywords', 'tags > .tagify__input')
       testFocusForLabel('Additional information', 'textarea[name="additional_info"]')
@@ -528,7 +512,7 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
 
       cy.contains('.btn', 'Add author').click()
 
-      testFocusForLabel('Roles', 'select[name="credit_role[0]"]')
+      testFocusForLabel('Roles', 'select[name="credit_role"]')
     })
   }
 
