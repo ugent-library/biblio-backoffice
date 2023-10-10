@@ -24,7 +24,16 @@ func ActionRequired(c *ctx.Ctx) templ.Component {
 			var_1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, err = templBuffer.WriteString("<div class=\"card mb-6 flex-grow-1 bg-lightest shadow-none u-mix-blend-multiply\"><div class=\"c-blank-slate py-6\"><img class=\"mb-4\" src=\"")
+		_, err = templBuffer.WriteString("<div class=\"bc-toolbar\"><div class=\"bc-toolbar-left\"><div class=\"d-flex align-items-center\"><h2 class=\"mb-0\">")
+		if err != nil {
+			return err
+		}
+		var_2 := `Action required`
+		_, err = templBuffer.WriteString(var_2)
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("</h2></div></div></div><div class=\"card mb-6 flex-grow-1 bg-lightest shadow-none u-mix-blend-multiply\"><div class=\"c-blank-slate py-6\"><img class=\"mb-4\" src=\"")
 		if err != nil {
 			return err
 		}
@@ -36,8 +45,8 @@ func ActionRequired(c *ctx.Ctx) templ.Component {
 		if err != nil {
 			return err
 		}
-		var_2 := `No action required.`
-		_, err = templBuffer.WriteString(var_2)
+		var_3 := `No action required.`
+		_, err = templBuffer.WriteString(var_3)
 		if err != nil {
 			return err
 		}
