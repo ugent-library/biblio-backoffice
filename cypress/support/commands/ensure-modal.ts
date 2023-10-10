@@ -5,11 +5,13 @@ export default function ensureModal(expectedTitle: string | RegExp): Cypress.Cha
 
   return cy
     .get('#modals', { log: false })
-    .should('not.be.empty', { log: false })
-
     .within({ log: false }, () => {
       // Assertion "be.visible" doesn't work here because it is behind the dialog
-      cy.get('#modal-backdrop', { log: false }).should('have.class', 'show')
+      cy.get('#modal-backdrop', { log: false }).then(modalBackdrop => {
+        if (!modalBackdrop.get(0).classList.contains('show')) {
+          cy.wrap(modalBackdrop, { log: false }).should('have.class', 'show')
+        }
+      })
 
       return cy
         .get('#modal', { log: false })
