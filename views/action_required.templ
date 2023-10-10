@@ -1,0 +1,12 @@
+package views
+
+import "github.com/ugent-library/biblio-backoffice/ctx"
+
+templ ActionRequired(c *ctx.Ctx) {
+    <div class="card mb-6 flex-grow-1 bg-lightest shadow-none u-mix-blend-multiply">
+        <div class="c-blank-slate py-6">
+            <img class="mb-4" src={ c.AssetPath("/images/inbox-illustration.svg") } alt="" width="auto" height="32"/>
+            <p>No action required.</p>
+        </div>
+    </div>
+}

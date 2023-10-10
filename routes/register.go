@@ -242,6 +242,8 @@ func Register(c Config) {
 
 				// home
 				r.Get("/", handlers.HomePage).Name("home")
+				// home action required card
+				r.Get("/action-required", handlers.ActionRequired).Name("action_required")
 			})
 		})
 		// END NEW STYLE HANDLERS
