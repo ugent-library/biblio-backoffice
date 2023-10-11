@@ -242,10 +242,12 @@ func Register(c Config) {
 
 				// home
 				r.Get("/", handlers.HomePage).Name("home")
-				// home action required card
+				// home action required component
 				r.Get("/action-required", handlers.ActionRequired).Name("action_required")
-				// home drafts to complete card
+				// home drafts to complete component
 				r.Get("/drafts-to-complete", handlers.DraftsToComplete).Name("drafts_to_complete")
+				// home recent activity component
+				r.Get("/recent-activity", handlers.RecentActivity).Name("recent_activity")
 			})
 		})
 		// END NEW STYLE HANDLERS

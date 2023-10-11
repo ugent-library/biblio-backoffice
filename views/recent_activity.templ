@@ -1,0 +1,19 @@
+package views
+
+import "github.com/ugent-library/biblio-backoffice/ctx"
+
+templ RecentActivity(c *ctx.Ctx) {
+    <div class="mb-6">
+        <div class="bc-toolbar">
+            <div class="bc-toolbar-left">
+                <h2>Recent activity</h2>
+            </div>
+            <div class="bc-toolbar-right">
+                <a class="btn btn-tertiary" href="#">
+                    <span class="btn-text">View all</span>
+                    <i class="if if-chevron-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+}

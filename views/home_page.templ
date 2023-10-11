@@ -52,6 +52,8 @@ templ homePageContent(c *ctx.Ctx) {
                         </div>
                     </div>
                 </div>
+                <div class="col-xl-4" hx-get={ c.PathTo("recent_activity").String() } hx-trigger="load">
+                </div>
             </div>
         </div>
     </div>

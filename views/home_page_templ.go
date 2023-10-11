@@ -136,7 +136,15 @@ func homePageContent(c *ctx.Ctx) templ.Component {
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("\" hx-trigger=\"load\"></div></div></div></div></div></div>")
+		_, err = templBuffer.WriteString("\" hx-trigger=\"load\"></div></div></div><div class=\"col-xl-4\" hx-get=\"")
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString(templ.EscapeString(c.PathTo("recent_activity").String()))
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("\" hx-trigger=\"load\"></div></div></div></div>")
 		if err != nil {
 			return err
 		}
