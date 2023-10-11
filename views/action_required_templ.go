@@ -11,7 +11,7 @@ import "bytes"
 
 import "github.com/ugent-library/biblio-backoffice/ctx"
 
-func ActionRequired(c *ctx.Ctx) templ.Component {
+func ActionRequired(c *ctx.Ctx, pTotal, dTotal int) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
 		templBuffer, templIsBuffer := w.(*bytes.Buffer)
 		if !templIsBuffer {

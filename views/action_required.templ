@@ -2,7 +2,7 @@ package views
 
 import "github.com/ugent-library/biblio-backoffice/ctx"
 
-templ ActionRequired(c *ctx.Ctx) {
+templ ActionRequired(c *ctx.Ctx, pTotal, dTotal int) {
     <div class="d-flex flex-column h-100">
         <div class="bc-toolbar">
             <div class="bc-toolbar-left">

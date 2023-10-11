@@ -15,7 +15,25 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 
 func ActionRequired(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
-	views.ActionRequired(c).Render(r.Context(), w)
+
+	pHits, err := c.PublicationSearchIndex.Search(models.NewSearchArgs().
+		WithPageSize(0).
+		WithFilter("creator_id|author_id", c.User.ID).
+		WithFilter("status", "returned"))
+	if err != nil {
+		c.HandleError(w, r, err)
+		return
+	}
+	dHits, err := c.DatasetSearchIndex.Search(models.NewSearchArgs().
+		WithPageSize(0).
+		WithFilter("creator_id|author_id", c.User.ID).
+		WithFilter("status", "returned"))
+	if err != nil {
+		c.HandleError(w, r, err)
+		return
+	}
+
+	views.ActionRequired(c, pHits.Total, dHits.Total).Render(r.Context(), w)
 }
 
 func DraftsToComplete(w http.ResponseWriter, r *http.Request) {
@@ -23,7 +41,7 @@ func DraftsToComplete(w http.ResponseWriter, r *http.Request) {
 
 	pHits, err := c.PublicationSearchIndex.Search(models.NewSearchArgs().
 		WithPageSize(0).
-		WithFilter("creator_id", c.User.ID).
+		WithFilter("creator_id|author_id", c.User.ID).
 		WithFilter("status", "private"))
 	if err != nil {
 		c.HandleError(w, r, err)
@@ -31,7 +49,7 @@ func DraftsToComplete(w http.ResponseWriter, r *http.Request) {
 	}
 	dHits, err := c.DatasetSearchIndex.Search(models.NewSearchArgs().
 		WithPageSize(0).
-		WithFilter("creator_id", c.User.ID).
+		WithFilter("creator_id|author_id", c.User.ID).
 		WithFilter("status", "private"))
 	if err != nil {
 		c.HandleError(w, r, err)
