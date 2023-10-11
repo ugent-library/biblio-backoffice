@@ -396,8 +396,17 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
       cy.get('input[type=file][name=file]').selectFile('cypress/fixtures/empty-pdf.pdf')
 
       cy.ensureModal('Document details for file empty-pdf.pdf').within(() => {
+        cy.intercept('/publication/*/files/*/refresh-form*').as('refreshForm')
+
+        cy.contains('label.c-radio-card', 'Embargoed access').click()
+
+        cy.wait('@refreshForm')
+
         testFocusForLabel('Document type', 'select[name="relation"]')
         testFocusForLabel('Publication version', 'select[name="publication_version"]')
+        testFocusForLabel('Access level during embargo', 'select[name="access_level_during_embargo"]')
+        testFocusForLabel('Access level after embargo', 'select[name="access_level_after_embargo"]')
+        testFocusForLabel('Embargo end', 'input[type=date][name="embargo_date"]')
         testFocusForLabel('License granted by the rights holder', 'select[name="license"]')
       })
     })
@@ -407,6 +416,11 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
     it('should have clickable labels in the dataset form', () => {
       setUpDataset(() => {
         updateFields('Dataset details', () => {
+          cy.intercept('PUT', '/dataset/*/details/edit/refresh-form*').as('refreshForm')
+          getLabel('License').next().find('select').select('The license is not listed here')
+
+          cy.wait('@refreshForm')
+
           testFocusForLabel('Title', 'input[type=text][name="title"]')
           testFocusForLabel('Persistent identifier type', 'select[name="identifier_type"]')
           testFocusForLabel('Identifier', 'input[type=text][name="identifier"]')
@@ -420,6 +434,7 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
           // testFocusForLabel('Keywords', 'tags > .tagify__input')
 
           testFocusForLabel('License', 'select[name="license"]')
+          testFocusForLabel('Other license', 'input[type=text][name="other_license"]')
 
           testFocusForLabel('Access level', 'select[name="access_level"]')
         })
@@ -622,14 +637,16 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
   }
 
   function getLabel(labelText: string) {
-    return cy.get(`label:contains("${labelText}")`).filter(
+    return cy.get(`label`, { log: false }).filter(
       (_, el) => {
         // Make sure to match the exact label text (excluding badges)
         const $label = Cypress.$(el).clone()
 
         $label.find('.badge, .visually-hidden').remove()
 
-        return $label.text().trim() === labelText
+        const currentLabelText = $label.text().trim().split(/\s/).join(' ')
+
+        return currentLabelText === labelText
       },
       { log: false }
     )
