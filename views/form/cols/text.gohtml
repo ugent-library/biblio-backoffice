@@ -9,7 +9,7 @@
         {{end}}
         {{if .Required}}&nbsp;<span class="badge badge-outline-primary badge-sm">Required</span>{{end}}
     </label>
-    <input class="form-control{{if .Error}} is-invalid{{end}}" name="{{.Name}}" type="text" value="{{.Value}}"
+    <input class="form-control{{if .Error}} is-invalid{{end}}" id="{{.Name}}" name="{{.Name}}" type="text" value="{{.Value}}"
         {{if .Readonly}}readonly{{end}}
     >
     {{with .Error}}<small class="invalid-feedback">{{.}}</small>{{end}}

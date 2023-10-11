@@ -9,7 +9,7 @@
         {{end}}
         {{if .Required}}&nbsp;<span class="badge badge-outline-primary badge-sm">Required</span>{{end}}
     </label>
-    <input name="{{.Name}}" type="text" value="{{.Value}}"
+    <input id="{{.Name}}" name="{{.Name}}" type="text" value="{{.Value}}"
         class="form-control{{if .Error}} is-invalid{{end}} form-control-auto-focus"
         {{if .Readonly}}readonly{{end}}
         hx-get="{{.Vars.SuggestURL}}"
