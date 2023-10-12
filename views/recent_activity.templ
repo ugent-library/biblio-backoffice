@@ -14,7 +14,6 @@ const (
     DatasetObject
 
     CreateEvent ActivityEvent = iota
-    DeleteEvent
     PublishEvent
     RepublishEvent
     WithdrawEvent
@@ -54,8 +53,6 @@ templ RecentActivity(c *ctx.Ctx, acts []Activity) {
                         switch act.Event {
                         case CreateEvent:
                         <i class="if if-article"></i>
-                        case DeleteEvent:
-                        <i class="if if-edit"></i>
                         case PublishEvent, RepublishEvent:
                         <i class="if if-book"></i>
                         case WithdrawEvent:
@@ -84,8 +81,6 @@ templ RecentActivity(c *ctx.Ctx, acts []Activity) {
                             switch act.Event {
                             case CreateEvent:
                             started a { act.Status }
-                            case DeleteEvent:
-                            deleted a { act.Status }
                             case PublishEvent:
                             published
                             case RepublishEvent:
@@ -105,11 +100,7 @@ templ RecentActivity(c *ctx.Ctx, acts []Activity) {
                             dataset
                             }
                             { " " }
-                            if act.Event == DeleteEvent || act.Status == "deleted" {
-                            { act.Title }
-                            } else {
                             <a class="c-activity-item__link" href={ templ.URL(act.URL) }>{ act.Title }</a>
-                            }
                         </div>
                     </div>
                 </div>

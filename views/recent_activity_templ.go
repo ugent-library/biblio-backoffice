@@ -23,7 +23,6 @@ const (
 	DatasetObject
 
 	CreateEvent ActivityEvent = iota
-	DeleteEvent
 	PublishEvent
 	RepublishEvent
 	WithdrawEvent
@@ -89,11 +88,6 @@ func RecentActivity(c *ctx.Ctx, acts []Activity) templ.Component {
 				switch act.Event {
 				case CreateEvent:
 					_, err = templBuffer.WriteString("<i class=\"if if-article\"></i>")
-					if err != nil {
-						return err
-					}
-				case DeleteEvent:
-					_, err = templBuffer.WriteString("<i class=\"if if-edit\"></i>")
 					if err != nil {
 						return err
 					}
@@ -175,44 +169,33 @@ func RecentActivity(c *ctx.Ctx, acts []Activity) templ.Component {
 					if err != nil {
 						return err
 					}
-				case DeleteEvent:
-					var_11 := `deleted a `
+				case PublishEvent:
+					var_11 := `published`
 					_, err = templBuffer.WriteString(var_11)
 					if err != nil {
 						return err
 					}
-					var var_12 string = act.Status
-					_, err = templBuffer.WriteString(templ.EscapeString(var_12))
-					if err != nil {
-						return err
-					}
-				case PublishEvent:
-					var_13 := `published`
-					_, err = templBuffer.WriteString(var_13)
-					if err != nil {
-						return err
-					}
 				case RepublishEvent:
-					var_14 := `republished`
-					_, err = templBuffer.WriteString(var_14)
+					var_12 := `republished`
+					_, err = templBuffer.WriteString(var_12)
 					if err != nil {
 						return err
 					}
 				case WithdrawEvent:
-					var_15 := `withdrew`
-					_, err = templBuffer.WriteString(var_15)
+					var_13 := `withdrew`
+					_, err = templBuffer.WriteString(var_13)
 					if err != nil {
 						return err
 					}
 				case LockEvent:
-					var_16 := `locked`
-					_, err = templBuffer.WriteString(var_16)
+					var_14 := `locked`
+					_, err = templBuffer.WriteString(var_14)
 					if err != nil {
 						return err
 					}
 				case UpdateEvent:
-					var_17 := `edited`
-					_, err = templBuffer.WriteString(var_17)
+					var_15 := `edited`
+					_, err = templBuffer.WriteString(var_15)
 					if err != nil {
 						return err
 					}
@@ -221,8 +204,8 @@ func RecentActivity(c *ctx.Ctx, acts []Activity) templ.Component {
 				if err != nil {
 					return err
 				}
-				var var_18 string = " "
-				_, err = templBuffer.WriteString(templ.EscapeString(var_18))
+				var var_16 string = " "
+				_, err = templBuffer.WriteString(templ.EscapeString(var_16))
 				if err != nil {
 					return err
 				}
@@ -232,14 +215,14 @@ func RecentActivity(c *ctx.Ctx, acts []Activity) templ.Component {
 				}
 				switch act.Object {
 				case PublicationObject:
-					var_19 := `publication`
-					_, err = templBuffer.WriteString(var_19)
+					var_17 := `publication`
+					_, err = templBuffer.WriteString(var_17)
 					if err != nil {
 						return err
 					}
 				case DatasetObject:
-					var_20 := `dataset`
-					_, err = templBuffer.WriteString(var_20)
+					var_18 := `dataset`
+					_, err = templBuffer.WriteString(var_18)
 					if err != nil {
 						return err
 					}
@@ -248,46 +231,30 @@ func RecentActivity(c *ctx.Ctx, acts []Activity) templ.Component {
 				if err != nil {
 					return err
 				}
-				var var_21 string = " "
+				var var_19 string = " "
+				_, err = templBuffer.WriteString(templ.EscapeString(var_19))
+				if err != nil {
+					return err
+				}
+				_, err = templBuffer.WriteString(" <a class=\"c-activity-item__link\" href=\"")
+				if err != nil {
+					return err
+				}
+				var var_20 templ.SafeURL = templ.URL(act.URL)
+				_, err = templBuffer.WriteString(templ.EscapeString(string(var_20)))
+				if err != nil {
+					return err
+				}
+				_, err = templBuffer.WriteString("\">")
+				if err != nil {
+					return err
+				}
+				var var_21 string = act.Title
 				_, err = templBuffer.WriteString(templ.EscapeString(var_21))
 				if err != nil {
 					return err
 				}
-				_, err = templBuffer.WriteString(" ")
-				if err != nil {
-					return err
-				}
-				if act.Event == DeleteEvent || act.Status == "deleted" {
-					var var_22 string = act.Title
-					_, err = templBuffer.WriteString(templ.EscapeString(var_22))
-					if err != nil {
-						return err
-					}
-				} else {
-					_, err = templBuffer.WriteString("<a class=\"c-activity-item__link\" href=\"")
-					if err != nil {
-						return err
-					}
-					var var_23 templ.SafeURL = templ.URL(act.URL)
-					_, err = templBuffer.WriteString(templ.EscapeString(string(var_23)))
-					if err != nil {
-						return err
-					}
-					_, err = templBuffer.WriteString("\">")
-					if err != nil {
-						return err
-					}
-					var var_24 string = act.Title
-					_, err = templBuffer.WriteString(templ.EscapeString(var_24))
-					if err != nil {
-						return err
-					}
-					_, err = templBuffer.WriteString("</a>")
-					if err != nil {
-						return err
-					}
-				}
-				_, err = templBuffer.WriteString("</div></div></div></li>")
+				_, err = templBuffer.WriteString("</a></div></div></div></li>")
 				if err != nil {
 					return err
 				}

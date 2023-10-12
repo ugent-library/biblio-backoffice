@@ -16,6 +16,7 @@ func RecentActivity(w http.ResponseWriter, r *http.Request) {
 
 	pHits, err := c.PublicationSearchIndex.Search(models.NewSearchArgs().
 		WithPageSize(5).
+		WithFilter("status", "private", "public", "returned").
 		WithFilter("creator_id|author_id", c.User.ID))
 	if err != nil {
 		c.HandleError(w, r, err)
@@ -37,9 +38,6 @@ func RecentActivity(w http.ResponseWriter, r *http.Request) {
 		}
 		if prevP == nil {
 			act.Event = views.CreateEvent
-		} else if p.Status == "deleted" && prevP.Status != "deleted" {
-			act.Event = views.DeleteEvent
-			act.Status = prevP.Status
 		} else if p.Status == "public" && prevP.Status == "returned" {
 			act.Event = views.RepublishEvent
 		} else if p.Status == "public" && prevP.Status != "public" {
@@ -56,6 +54,7 @@ func RecentActivity(w http.ResponseWriter, r *http.Request) {
 
 	dHits, err := c.DatasetSearchIndex.Search(models.NewSearchArgs().
 		WithPageSize(5).
+		WithFilter("status", "private", "public", "returned").
 		WithFilter("creator_id|author_id", c.User.ID))
 	if err != nil {
 		c.HandleError(w, r, err)
@@ -77,9 +76,6 @@ func RecentActivity(w http.ResponseWriter, r *http.Request) {
 		}
 		if prevd == nil {
 			act.Event = views.CreateEvent
-		} else if d.Status == "deleted" && prevd.Status != "deleted" {
-			act.Event = views.DeleteEvent
-			act.Status = prevd.Status
 		} else if d.Status == "public" && prevd.Status == "returned" {
 			act.Event = views.RepublishEvent
 		} else if d.Status == "public" && prevd.Status != "public" {
