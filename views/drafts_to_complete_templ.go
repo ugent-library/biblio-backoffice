@@ -193,7 +193,7 @@ func DraftsToComplete(c *ctx.Ctx, pTotal, dTotal int) templ.Component {
 				if err != nil {
 					return err
 				}
-				var_16 := `Publications`
+				var_16 := `Datasets`
 				_, err = templBuffer.WriteString(var_16)
 				if err != nil {
 					return err
