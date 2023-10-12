@@ -28,6 +28,7 @@ const (
 	WithdrawEvent
 	LockEvent
 	UpdateEvent
+	MessageEvent
 )
 
 type Activity struct {
@@ -108,6 +109,11 @@ func RecentActivity(c *ctx.Ctx, acts []Activity) templ.Component {
 					}
 				case UpdateEvent:
 					_, err = templBuffer.WriteString("<i class=\"if if-edit\"></i>")
+					if err != nil {
+						return err
+					}
+				case MessageEvent:
+					_, err = templBuffer.WriteString("<i class=\"if if-message\"></i>")
 					if err != nil {
 						return err
 					}
@@ -199,13 +205,19 @@ func RecentActivity(c *ctx.Ctx, acts []Activity) templ.Component {
 					if err != nil {
 						return err
 					}
+				case MessageEvent:
+					var_16 := `left a comment on`
+					_, err = templBuffer.WriteString(var_16)
+					if err != nil {
+						return err
+					}
 				}
 				_, err = templBuffer.WriteString(" ")
 				if err != nil {
 					return err
 				}
-				var var_16 string = " "
-				_, err = templBuffer.WriteString(templ.EscapeString(var_16))
+				var var_17 string = " "
+				_, err = templBuffer.WriteString(templ.EscapeString(var_17))
 				if err != nil {
 					return err
 				}
@@ -215,14 +227,14 @@ func RecentActivity(c *ctx.Ctx, acts []Activity) templ.Component {
 				}
 				switch act.Object {
 				case PublicationObject:
-					var_17 := `publication`
-					_, err = templBuffer.WriteString(var_17)
+					var_18 := `publication`
+					_, err = templBuffer.WriteString(var_18)
 					if err != nil {
 						return err
 					}
 				case DatasetObject:
-					var_18 := `dataset`
-					_, err = templBuffer.WriteString(var_18)
+					var_19 := `dataset`
+					_, err = templBuffer.WriteString(var_19)
 					if err != nil {
 						return err
 					}
@@ -231,8 +243,8 @@ func RecentActivity(c *ctx.Ctx, acts []Activity) templ.Component {
 				if err != nil {
 					return err
 				}
-				var var_19 string = " "
-				_, err = templBuffer.WriteString(templ.EscapeString(var_19))
+				var var_20 string = " "
+				_, err = templBuffer.WriteString(templ.EscapeString(var_20))
 				if err != nil {
 					return err
 				}
@@ -240,8 +252,8 @@ func RecentActivity(c *ctx.Ctx, acts []Activity) templ.Component {
 				if err != nil {
 					return err
 				}
-				var var_20 templ.SafeURL = templ.URL(act.URL)
-				_, err = templBuffer.WriteString(templ.EscapeString(string(var_20)))
+				var var_21 templ.SafeURL = templ.URL(act.URL)
+				_, err = templBuffer.WriteString(templ.EscapeString(string(var_21)))
 				if err != nil {
 					return err
 				}
@@ -249,8 +261,8 @@ func RecentActivity(c *ctx.Ctx, acts []Activity) templ.Component {
 				if err != nil {
 					return err
 				}
-				var var_21 string = act.Title
-				_, err = templBuffer.WriteString(templ.EscapeString(var_21))
+				var var_22 string = act.Title
+				_, err = templBuffer.WriteString(templ.EscapeString(var_22))
 				if err != nil {
 					return err
 				}

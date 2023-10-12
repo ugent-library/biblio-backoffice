@@ -50,6 +50,17 @@ func RecentActivity(w http.ResponseWriter, r *http.Request) {
 			act.Event = views.UpdateEvent
 		}
 		acts = append(acts, act)
+		if prevP != nil && p.Message != "" && p.Message != prevP.Message {
+			acts = append(acts, views.Activity{
+				Event:     views.MessageEvent,
+				Object:    views.PublicationObject,
+				User:      p.User,
+				Datestamp: *p.DateUpdated,
+				URL:       c.PathTo("publication", "id", p.ID).String(),
+				Status:    p.Status,
+				Title:     p.Title,
+			})
+		}
 	}
 
 	dHits, err := c.DatasetSearchIndex.Search(models.NewSearchArgs().
@@ -61,7 +72,7 @@ func RecentActivity(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	for _, d := range dHits.Hits {
-		prevd, err := c.Repo.GetDatasetSnapshotBefore(d.ID, *d.DateFrom)
+		prevD, err := c.Repo.GetDatasetSnapshotBefore(d.ID, *d.DateFrom)
 		if err != nil && err != models.ErrNotFound {
 			c.HandleError(w, r, err)
 			return
@@ -74,20 +85,31 @@ func RecentActivity(w http.ResponseWriter, r *http.Request) {
 			Status:    d.Status,
 			Title:     d.Title,
 		}
-		if prevd == nil {
+		if prevD == nil {
 			act.Event = views.CreateEvent
-		} else if d.Status == "public" && prevd.Status == "returned" {
+		} else if d.Status == "public" && prevD.Status == "returned" {
 			act.Event = views.RepublishEvent
-		} else if d.Status == "public" && prevd.Status != "public" {
+		} else if d.Status == "public" && prevD.Status != "public" {
 			act.Event = views.PublishEvent
-		} else if d.Status == "returned" && prevd.Status != "returned" {
+		} else if d.Status == "returned" && prevD.Status != "returned" {
 			act.Event = views.WithdrawEvent
-		} else if d.Locked && !prevd.Locked {
+		} else if d.Locked && !prevD.Locked {
 			act.Event = views.LockEvent
 		} else {
 			act.Event = views.UpdateEvent
 		}
 		acts = append(acts, act)
+		if prevD != nil && d.Message != "" && d.Message != prevD.Message {
+			acts = append(acts, views.Activity{
+				Event:     views.MessageEvent,
+				Object:    views.DatasetObject,
+				User:      d.User,
+				Datestamp: *d.DateUpdated,
+				URL:       c.PathTo("dataset", "id", d.ID).String(),
+				Status:    d.Status,
+				Title:     d.Title,
+			})
+		}
 	}
 
 	sort.Slice(acts, func(i, j int) bool {

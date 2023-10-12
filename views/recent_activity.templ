@@ -18,7 +18,8 @@ const (
     RepublishEvent
     WithdrawEvent
     LockEvent
-    UpdateEvent   
+    UpdateEvent
+    MessageEvent   
 )
 
 type Activity struct {
@@ -61,6 +62,8 @@ templ RecentActivity(c *ctx.Ctx, acts []Activity) {
                         <i class="if if-check"></i>
                         case UpdateEvent:
                         <i class="if if-edit"></i>
+                        case MessageEvent:
+                        <i class="if if-message"></i>
                         }
                     </div>
                 </div>
@@ -91,6 +94,8 @@ templ RecentActivity(c *ctx.Ctx, acts []Activity) {
                             locked
                             case UpdateEvent:
                             edited
+                            case MessageEvent:
+                            left a comment on
                             }
                             { " " }
                             switch act.Object {
