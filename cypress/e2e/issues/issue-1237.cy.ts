@@ -430,8 +430,7 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
           testFocusForLabel('Publisher', 'input[type=text][name="publisher"]')
 
           testFocusForLabel('Data format', 'input[type=text][name="format"]')
-          // TODO: tagify component doesn't support focussing by label
-          // testFocusForLabel('Keywords', 'tags > .tagify__input')
+          // Keywords field: tagify component doesn't support focussing by label
 
           testFocusForLabel('License', 'select[name="license"]')
           testFocusForLabel('Other license', 'input[type=text][name="other_license"]')
@@ -513,8 +512,7 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
   function testAdditionalInformationSection() {
     updateFields('Additional information', () => {
       testFocusForLabel('Research field', 'select[name="research_field"]')
-      // TODO: tagify component doesn't support focussing by label
-      // testFocusForLabel('Keywords', 'tags > .tagify__input')
+      // Keywords field: tagify component doesn't support focussing by label
       testFocusForLabel('Additional information', 'textarea[name="additional_info"]')
     })
   }
