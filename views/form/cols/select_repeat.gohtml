@@ -1,5 +1,5 @@
 <div class="mb-6 col{{if .Error}} is-invalid{{end}}">
-    <label class="col-form-label" for="{{.Name}}">
+    <label class="col-form-label" for="{{.Name}}-0">
         {{.Label}}
         {{with .Tooltip}}
         <a class="text-muted mx-2" href="#" data-bs-container="body" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right" data-bs-content="{{.}}">
@@ -13,7 +13,7 @@
     <div class="form-values">
         {{range $i, $v := .Values}}
         <div class="d-flex mb-3 form-value">
-            <select class="form-select form-control" name="{{$.Name}}[{{$i}}]" data-tmpl-name="{{$.Name}}[{i}]">
+            <select class="custom-select form-control" name="{{$.Name}}" id="{{$.Name}}-{{$i}}" data-tmpl-id="{{.Name}}-{i}">
                 {{if $.EmptyOption}}<option></option>{{end}}
                 {{range $.Options}}
                 <option value="{{.Value}}"{{if eq .Value $v}} selected{{end}}>{{.Label}}</option>
@@ -27,7 +27,7 @@
         {{end}}
 
         <div class="d-flex mb-3 form-value">
-            <select class="form-select form-control" name="{{.Name}}[{{len .Values}}]" data-tmpl-name="{{.Name}}[{i}]">
+            <select class="custom-select form-control" name="{{.Name}}" id="{{.Name}}-{{len .Values}}" data-tmpl-id="{{.Name}}-{i}">
                 {{if .EmptyOption}}<option></option>{{end}}
                 {{range .Options}}
                 <option value="{{.Value}}">{{.Label}}</option>

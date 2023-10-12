@@ -13,6 +13,7 @@
         <select
             class="form-select form-control{{if .Error}} is-invalid{{end}}"
             name="{{.Name}}"
+            id="{{.Name}}"
             {{if .Disabled}} disabled{{end}}
             hx-get="{{pathFor "publication_confirm_update_type" "id" .Vars.Publication.ID}}"
             hx-headers='{"If-Match": "{{.Vars.Publication.SnapshotID}}"}'

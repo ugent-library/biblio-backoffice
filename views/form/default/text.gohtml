@@ -10,7 +10,7 @@
         {{if .Required}}&nbsp;<span class="badge badge-outline-primary badge-sm">Required</span>{{end}}
     </label>
     <div class="col-lg-{{.Cols}} {{if .AutocompleteURL}} autocomplete{{end}}"{{if .AutocompleteURL}} data-bs-target="[name={{.Name}}]"{{end}}>
-        <input class="form-control{{if .Error}} is-invalid{{end}}" name="{{.Name}}" type="text" value="{{.Value}}"
+        <input class="form-control{{if .Error}} is-invalid{{end}}" id="{{.Name}}" name="{{.Name}}" type="text" value="{{.Value}}"
             {{if .AutocompleteURL}}
             autocomplete="off"
             hx-get="{{.AutocompleteURL}}"

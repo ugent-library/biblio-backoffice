@@ -9,7 +9,7 @@
         {{end}}
         {{if .Required}}&nbsp;<span class="badge badge-outline-primary badge-sm">Required</span>{{end}}
     </label>
-    <input class="form-control{{if .Error}} is-invalid{{end}}" name="{{.Name}}" type="date"
+    <input class="form-control{{if .Error}} is-invalid{{end}}" id="{{.Name}}" name="{{.Name}}" type="date"
         value="{{.Value}}"{{with .Min}} min="{{.}}"{{end}}{{with .Max}} max="{{.}}"{{end}}{{if .Disabled}} disabled{{end}}>
     {{if .Error}}<small class="invalid-feedback">{{.Error}}</small>{{end}}
 </div>
