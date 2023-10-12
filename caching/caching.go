@@ -33,15 +33,15 @@ func NewUserService(service backends.UserService) backends.UserService {
 	}
 }
 
-func (s *userService) GetUser(id string) (*models.User, error) {
+func (s *userService) GetUser(id string) (*models.Person, error) {
 	v, err := s.cache.Get(id)
 	if err != nil {
 		return nil, err
 	}
-	return v.(*models.User), nil
+	return v.(*models.Person), nil
 }
 
-func (s *userService) GetUserByUsername(username string) (*models.User, error) {
+func (s *userService) GetUserByUsername(username string) (*models.Person, error) {
 	return s.service.GetUserByUsername(username)
 }
 

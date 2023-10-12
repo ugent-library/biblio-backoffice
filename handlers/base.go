@@ -42,9 +42,9 @@ type BaseContext struct {
 	Flash           []flash.Flash
 	Locale          *locale.Locale
 	Timezone        *time.Location
-	User            *models.User
+	User            *models.Person
 	UserRole        string
-	OriginalUser    *models.User
+	OriginalUser    *models.Person
 	CSRFToken       string
 	CSRFTag         template.HTML
 	FrontendBaseUrl string
@@ -169,7 +169,7 @@ func (h BaseHandler) getFlashFromCookies(r *http.Request, w http.ResponseWriter)
 	return flashes, nil
 }
 
-func (h BaseHandler) getUserFromSession(session *sessions.Session, r *http.Request, sessionKey string) (*models.User, error) {
+func (h BaseHandler) getUserFromSession(session *sessions.Session, r *http.Request, sessionKey string) (*models.Person, error) {
 	userID := session.Values[sessionKey]
 	if userID == nil {
 		return nil, nil

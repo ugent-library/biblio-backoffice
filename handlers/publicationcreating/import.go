@@ -177,10 +177,10 @@ func (h *Handler) AddSingleImport(w http.ResponseWriter, r *http.Request, ctx Co
 	}
 
 	p.ID = ulid.Make().String()
-	p.CreatorID = ctx.User.Person.ID
-	p.Creator = &ctx.User.Person
-	p.UserID = ctx.User.Person.ID
-	p.User = &ctx.User.Person
+	p.CreatorID = ctx.User.ID
+	p.Creator = ctx.User
+	p.UserID = ctx.User.ID
+	p.User = ctx.User
 	p.Status = "private"
 	p.Classification = "U"
 
@@ -517,7 +517,7 @@ func (h *Handler) fetchPublicationByIdentifier(source, identifier string) (*mode
 	return d, nil
 }
 
-func (h *Handler) importPublications(user *models.User, source string, file io.Reader) (string, error) {
+func (h *Handler) importPublications(user *models.Person, source string, file io.Reader) (string, error) {
 	batchID := ulid.Make().String()
 
 	decFactory, ok := h.PublicationDecoders[source]
@@ -533,10 +533,10 @@ func (h *Handler) importPublications(user *models.User, source string, file io.R
 			BatchID:        batchID,
 			Status:         "private",
 			Classification: "U",
-			CreatorID:      user.Person.ID,
-			Creator:        &user.Person,
-			UserID:         user.Person.ID,
-			User:           &user.Person,
+			CreatorID:      user.ID,
+			Creator:        user,
+			UserID:         user.ID,
+			User:           user,
 		}
 
 		if len(user.Affiliations) > 0 {
@@ -565,7 +565,7 @@ func (h *Handler) importPublications(user *models.User, source string, file io.R
 }
 
 // TODO check conflicts?
-func (h *Handler) batchPublishPublications(batchID string, user *models.User) (err error) {
+func (h *Handler) batchPublishPublications(batchID string, user *models.Person) (err error) {
 	searcher := h.PublicationSearchIndex.
 		WithScope("status", "private", "public").
 		WithScope("creator_id", user.ID).

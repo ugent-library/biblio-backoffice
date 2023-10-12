@@ -157,9 +157,9 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 
 	d.ID = ulid.Make().String()
 	d.CreatorID = ctx.User.ID
-	d.Creator = &ctx.User.Person
+	d.Creator = ctx.User
 	d.UserID = ctx.User.ID
-	d.User = &ctx.User.Person
+	d.User = ctx.User
 	d.Status = "private"
 
 	if len(ctx.User.Affiliations) > 0 {

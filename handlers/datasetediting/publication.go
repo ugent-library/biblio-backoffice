@@ -178,7 +178,7 @@ func (h *Handler) DeletePublication(w http.ResponseWriter, r *http.Request, ctx 
 	})
 }
 
-func (h *Handler) searchRelatedPublications(user *models.User, d *models.Dataset, q string) (*models.PublicationHits, error) {
+func (h *Handler) searchRelatedPublications(user *models.Person, d *models.Dataset, q string) (*models.PublicationHits, error) {
 	args := models.NewSearchArgs().WithQuery(q)
 
 	// add exclusion filter if necessary

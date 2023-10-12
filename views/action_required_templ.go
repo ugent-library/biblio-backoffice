@@ -96,7 +96,7 @@ func ActionRequired(c *ctx.Ctx, pTotal, dTotal int) templ.Component {
 				if err != nil {
 					return err
 				}
-				var var_7 templ.SafeURL = templ.URL(c.PathTo("publications", "f[status]", "private", "f[locked]", "false").String())
+				var var_7 templ.SafeURL = templ.URL(c.PathTo("publications", "f[status]", "returned", "f[locked]", "false").String())
 				_, err = templBuffer.WriteString(templ.EscapeString(string(var_7)))
 				if err != nil {
 					return err
@@ -170,7 +170,7 @@ func ActionRequired(c *ctx.Ctx, pTotal, dTotal int) templ.Component {
 				if err != nil {
 					return err
 				}
-				var var_14 templ.SafeURL = templ.URL(c.PathTo("datasets", "f[status]", "private", "f[locked]", "false").String())
+				var var_14 templ.SafeURL = templ.URL(c.PathTo("datasets", "f[status]", "returned", "f[locked]", "false").String())
 				_, err = templBuffer.WriteString(templ.EscapeString(string(var_14)))
 				if err != nil {
 					return err

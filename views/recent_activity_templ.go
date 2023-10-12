@@ -9,9 +9,39 @@ import "context"
 import "io"
 import "bytes"
 
-import "github.com/ugent-library/biblio-backoffice/ctx"
+import (
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"time"
+)
 
-func RecentActivity(c *ctx.Ctx) templ.Component {
+type ActivityObject int
+type ActivityEvent int
+
+const (
+	PublicationObject ActivityObject = iota
+	DatasetObject
+
+	CreateEvent ActivityEvent = iota
+	PublishEvent
+	RepublishEvent
+	WithdrawEvent
+	LockEvent
+	UpdateEvent
+	MessageEvent
+)
+
+type Activity struct {
+	Event     ActivityEvent
+	User      *models.Person
+	Object    ActivityObject
+	Datestamp time.Time
+	Status    string
+	URL       string
+	Title     string
+}
+
+func RecentActivity(c *ctx.Ctx, acts []Activity) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
 		templBuffer, templIsBuffer := w.(*bytes.Buffer)
 		if !templIsBuffer {
@@ -42,7 +72,211 @@ func RecentActivity(c *ctx.Ctx) templ.Component {
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("</span><i class=\"if if-chevron-right\"></i></a></div></div></div>")
+		_, err = templBuffer.WriteString("</span><i class=\"if if-chevron-right\"></i></a></div></div>")
+		if err != nil {
+			return err
+		}
+		if len(acts) > 0 {
+			_, err = templBuffer.WriteString("<ul class=\"c-activity-list\">")
+			if err != nil {
+				return err
+			}
+			for _, act := range acts {
+				_, err = templBuffer.WriteString("<li class=\"c-activity-item\"><div class=\"c-activity-item__avatar-wrapper\"><div class=\"bc-avatar bc-avatar--muted bc-avatar--small\">")
+				if err != nil {
+					return err
+				}
+				switch act.Event {
+				case CreateEvent:
+					_, err = templBuffer.WriteString("<i class=\"if if-article\"></i>")
+					if err != nil {
+						return err
+					}
+				case PublishEvent, RepublishEvent:
+					_, err = templBuffer.WriteString("<i class=\"if if-book\"></i>")
+					if err != nil {
+						return err
+					}
+				case WithdrawEvent:
+					_, err = templBuffer.WriteString("<i class=\"if if-arrow-go-back\"></i>")
+					if err != nil {
+						return err
+					}
+				case LockEvent:
+					_, err = templBuffer.WriteString("<i class=\"if if-check\"></i>")
+					if err != nil {
+						return err
+					}
+				case UpdateEvent:
+					_, err = templBuffer.WriteString("<i class=\"if if-edit\"></i>")
+					if err != nil {
+						return err
+					}
+				case MessageEvent:
+					_, err = templBuffer.WriteString("<i class=\"if if-message\"></i>")
+					if err != nil {
+						return err
+					}
+				}
+				_, err = templBuffer.WriteString("</div></div><div class=\"c-activity-item__content\"><div class=\"c-activity-item__activity\"><div class=\"c-activity-item__date\">")
+				if err != nil {
+					return err
+				}
+				var var_4 string = act.Datestamp.In(c.Timezone).Format("2006-01-02 15:04")
+				_, err = templBuffer.WriteString(templ.EscapeString(var_4))
+				if err != nil {
+					return err
+				}
+				_, err = templBuffer.WriteString("</div><div class=\"c-activity-item__text\"><span>")
+				if err != nil {
+					return err
+				}
+				if act.User != nil && act.User.CanCurate() {
+					var_5 := `A Biblio Team member`
+					_, err = templBuffer.WriteString(var_5)
+					if err != nil {
+						return err
+					}
+				} else if act.User != nil {
+					var var_6 string = act.User.FullName
+					_, err = templBuffer.WriteString(templ.EscapeString(var_6))
+					if err != nil {
+						return err
+					}
+				} else {
+					var_7 := `System`
+					_, err = templBuffer.WriteString(var_7)
+					if err != nil {
+						return err
+					}
+				}
+				_, err = templBuffer.WriteString("</span> ")
+				if err != nil {
+					return err
+				}
+				var var_8 string = " "
+				_, err = templBuffer.WriteString(templ.EscapeString(var_8))
+				if err != nil {
+					return err
+				}
+				_, err = templBuffer.WriteString(" ")
+				if err != nil {
+					return err
+				}
+				switch act.Event {
+				case CreateEvent:
+					var_9 := `started a `
+					_, err = templBuffer.WriteString(var_9)
+					if err != nil {
+						return err
+					}
+					var var_10 string = act.Status
+					_, err = templBuffer.WriteString(templ.EscapeString(var_10))
+					if err != nil {
+						return err
+					}
+				case PublishEvent:
+					var_11 := `published`
+					_, err = templBuffer.WriteString(var_11)
+					if err != nil {
+						return err
+					}
+				case RepublishEvent:
+					var_12 := `republished`
+					_, err = templBuffer.WriteString(var_12)
+					if err != nil {
+						return err
+					}
+				case WithdrawEvent:
+					var_13 := `withdrew`
+					_, err = templBuffer.WriteString(var_13)
+					if err != nil {
+						return err
+					}
+				case LockEvent:
+					var_14 := `locked`
+					_, err = templBuffer.WriteString(var_14)
+					if err != nil {
+						return err
+					}
+				case UpdateEvent:
+					var_15 := `edited`
+					_, err = templBuffer.WriteString(var_15)
+					if err != nil {
+						return err
+					}
+				case MessageEvent:
+					var_16 := `left a comment on`
+					_, err = templBuffer.WriteString(var_16)
+					if err != nil {
+						return err
+					}
+				}
+				_, err = templBuffer.WriteString(" ")
+				if err != nil {
+					return err
+				}
+				var var_17 string = " "
+				_, err = templBuffer.WriteString(templ.EscapeString(var_17))
+				if err != nil {
+					return err
+				}
+				_, err = templBuffer.WriteString(" ")
+				if err != nil {
+					return err
+				}
+				switch act.Object {
+				case PublicationObject:
+					var_18 := `publication`
+					_, err = templBuffer.WriteString(var_18)
+					if err != nil {
+						return err
+					}
+				case DatasetObject:
+					var_19 := `dataset`
+					_, err = templBuffer.WriteString(var_19)
+					if err != nil {
+						return err
+					}
+				}
+				_, err = templBuffer.WriteString(" ")
+				if err != nil {
+					return err
+				}
+				var var_20 string = " "
+				_, err = templBuffer.WriteString(templ.EscapeString(var_20))
+				if err != nil {
+					return err
+				}
+				_, err = templBuffer.WriteString(" <a class=\"c-activity-item__link\" href=\"")
+				if err != nil {
+					return err
+				}
+				var var_21 templ.SafeURL = templ.URL(act.URL)
+				_, err = templBuffer.WriteString(templ.EscapeString(string(var_21)))
+				if err != nil {
+					return err
+				}
+				_, err = templBuffer.WriteString("\">")
+				if err != nil {
+					return err
+				}
+				var var_22 string = act.Title
+				_, err = templBuffer.WriteString(templ.EscapeString(var_22))
+				if err != nil {
+					return err
+				}
+				_, err = templBuffer.WriteString("</a></div></div></div></li>")
+				if err != nil {
+					return err
+				}
+			}
+			_, err = templBuffer.WriteString("</ul>")
+			if err != nil {
+				return err
+			}
+		}
+		_, err = templBuffer.WriteString("</div>")
 		if err != nil {
 			return err
 		}
