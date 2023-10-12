@@ -150,11 +150,19 @@ describe('Issue #1246: Close button on toast does not work', () => {
     cy.contains('.btn', 'Add author').click({ scrollBehavior: 'nearest' })
 
     cy.ensureModal('Add author').within(() => {
-      cy.get('input[type=text][name=first_name]').type('Dries')
-      cy.get('input[type=text][name=last_name]').type('Moreels')
+      cy.intercept('/publication/*/contributors/author/suggestions?*').as('suggestions')
+
+      cy.get('input[type=text][name=first_name]').type('Griet')
+      cy.get('input[type=text][name=last_name]').type('Alleman')
+
+      cy.wait('@suggestions')
+
+      cy.intercept('/publication/*/contributors/author/confirm-create?*').as('confirmCreate')
 
       cy.contains('.btn', 'Add author').click()
     })
+
+    cy.wait('@confirmCreate')
 
     cy.ensureModal('Add author').within(() => {
       cy.contains('.btn', /^Save$/).click()
