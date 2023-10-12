@@ -41,11 +41,11 @@ describe('Publication import', () => {
     )
     cy.contains('Imported publications Showing 2').should('be.visible')
 
-    cy.contains('.toast', 'Publication was successfully deleted.').find('.btn-close').click()
+    cy.ensureToast('Publication was successfully deleted.').closeToast()
 
     deletePublication('Fusarium isolates from Belgium causing wilt in lettuce show genetic and pathogenic diversity')
 
-    cy.contains('.toast', 'Publication was successfully deleted.').find('.btn-close').click()
+    cy.ensureToast('Publication was successfully deleted.').closeToast()
 
     cy.contains('Imported publications Showing 1').should('be.visible')
 
@@ -54,9 +54,7 @@ describe('Publication import', () => {
     // Try publishing remaining publication and verify validation error
     cy.ensureNoModal()
 
-    cy.contains('.btn', 'Publish all to Biblio')
-      // TODO: this force should be removed once the toast-close button works again (issue #1246)
-      .click({ force: true })
+    cy.contains('.btn', 'Publish all to Biblio').click()
 
     cy.ensureModal('Unable to publish a publication due to the following errors').within(() => {
       cy.get('.alert.alert-danger').should('be.visible').should('contain.text', 'At least one UGent author is required')
@@ -155,10 +153,10 @@ function deletePublication(title) {
     .find('.c-button-toolbar')
     // The "..." dropdown toggle button
     .find('.dropdown .btn:has(i.if.if-more)')
-    .click({ force: true }) // TODO: this force should be removed once the toast-close button works again (issue #1246)
+    .click()
     .closest('.dropdown')
     .contains('button', 'Delete')
-    .click({ force: true }) // TODO: this force should be removed once the toast-close button works again (issue #1246)
+    .click()
 
   cy.ensureModal('Are you sure?').within(() => {
     cy.get('.modal-body > p').should('have.text', 'Are you sure you want to delete this publication?')
