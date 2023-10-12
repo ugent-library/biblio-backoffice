@@ -103,6 +103,7 @@ type Config struct {
 	Router        *ich.Mux
 	Assets        mix.Manifest
 	Localizer     *locale.Localizer
+	Timezone      *time.Location
 	Env           string
 	ErrorHandlers map[int]http.HandlerFunc
 	SessionName   string
@@ -118,9 +119,9 @@ type Ctx struct {
 	scheme       string
 	Log          *zap.SugaredLogger
 	Locale       *locale.Locale
-	User         *models.User
+	User         *models.Person
 	UserRole     string
-	OriginalUser *models.User
+	OriginalUser *models.Person
 	Flash        []flash.Flash
 	CSRFToken    string
 }
@@ -212,7 +213,7 @@ func (c *Ctx) getFlash(r *http.Request, w http.ResponseWriter) ([]flash.Flash, e
 	return flashes, nil
 }
 
-func (c *Ctx) getUserFromSession(r *http.Request, session *sessions.Session, sessionKey string) (*models.User, error) {
+func (c *Ctx) getUserFromSession(r *http.Request, session *sessions.Session, sessionKey string) (*models.Person, error) {
 	userID := session.Values[sessionKey]
 	if userID == nil {
 		return nil, nil

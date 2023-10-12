@@ -225,6 +225,7 @@ func Register(c Config) {
 				Services:      c.Services,
 				Router:        c.Router,
 				Assets:        c.Assets,
+				Timezone:      c.Timezone,
 				Localizer:     c.Localizer,
 				Env:           c.Env,
 				ErrorHandlers: map[int]http.HandlerFunc{
