@@ -519,8 +519,8 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
 
   function testAuthorSection() {
     updateFields('Author', () => {
-      testFocusForLabel('First name', 'input[name="first_name"]', true).type('Dries')
-      testFocusForLabel('Last name', 'input[name="last_name"]').type('Moreels')
+      testFocusForLabel('First name', 'input[name="first_name"]', true).type('Griet')
+      testFocusForLabel('Last name', 'input[name="last_name"]').type('Alleman')
 
       cy.contains('.btn', 'Add author').click()
 
