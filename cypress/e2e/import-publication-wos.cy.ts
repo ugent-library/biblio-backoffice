@@ -41,11 +41,11 @@ describe('Publication import', () => {
     )
     cy.contains('Imported publications Showing 2').should('be.visible')
 
-    cy.contains('.toast', 'Publication was successfully deleted.').find('.btn-close').click()
+    cy.ensureToast('Publication was successfully deleted.').closeToast()
 
     deletePublication('Fusarium isolates from Belgium causing wilt in lettuce show genetic and pathogenic diversity')
 
-    cy.contains('.toast', 'Publication was successfully deleted.').find('.btn-close').click()
+    cy.ensureToast('Publication was successfully deleted.').closeToast()
 
     cy.contains('Imported publications Showing 1').should('be.visible')
 
@@ -54,9 +54,7 @@ describe('Publication import', () => {
     // Try publishing remaining publication and verify validation error
     cy.ensureNoModal()
 
-    cy.contains('.btn', 'Publish all to Biblio')
-      // TODO: this force should be removed once the toast-close button works again (issue #1246)
-      .click({ force: true })
+    cy.contains('.btn', 'Publish all to Biblio').click()
 
     cy.ensureModal('Unable to publish a publication due to the following errors').within(() => {
       cy.get('.alert.alert-danger').should('be.visible').should('contain.text', 'At least one UGent author is required')
@@ -77,24 +75,24 @@ describe('Publication import', () => {
       cy.intercept({
         pathname: `/publication/${this.biblioId}/contributors/author/suggestions`,
         query: {
-          first_name: 'Dries',
-          last_name: /^(|Moreels)$/, // This forces an exact string match. Just '' matches any string.
+          first_name: 'Griet',
+          last_name: /^(|Alleman)$/, // This forces an exact string match. Just '' matches any string.
         },
       }).as('user-search')
 
       cy.contains('Search author').should('be.visible')
 
-      cy.get('input[name=first_name]').type('Dries')
+      cy.get('input[name=first_name]').type('Griet')
       cy.wait('@user-search')
 
-      cy.get('input[name=last_name]').type('Moreels')
+      cy.get('input[name=last_name]').type('Alleman')
       cy.wait('@user-search')
 
       cy.contains('.badge', 'Active UGent member')
         .closest('.list-group-item')
         // Make sure the right author is selected
-        .should('contain.text', 'Dries Moreels')
-        .should('contain.text', '802001088860')
+        .should('contain.text', 'Griet Alleman')
+        .should('contain.text', '002004596441')
         .contains('.btn', 'Add author')
         .click()
     })
@@ -102,7 +100,7 @@ describe('Publication import', () => {
     cy.ensureModal('Add author').within(() => {
       cy.contains('h3', 'Review author information').should('be.visible')
 
-      cy.get('.list-group-item').should('have.length', 1).should('contain.text', 'Dries Moreels')
+      cy.get('.list-group-item').should('have.length', 1).should('contain.text', 'Griet Alleman')
 
       // Using RegExp to match entire button text to make sure the "Save and add next" button is not picked instead
       cy.contains('.btn', /^Save$/).click()
@@ -155,10 +153,10 @@ function deletePublication(title) {
     .find('.c-button-toolbar')
     // The "..." dropdown toggle button
     .find('.dropdown .btn:has(i.if.if-more)')
-    .click({ force: true }) // TODO: this force should be removed once the toast-close button works again (issue #1246)
+    .click()
     .closest('.dropdown')
     .contains('button', 'Delete')
-    .click({ force: true }) // TODO: this force should be removed once the toast-close button works again (issue #1246)
+    .click()
 
   cy.ensureModal('Are you sure?').within(() => {
     cy.get('.modal-body > p').should('have.text', 'Are you sure you want to delete this publication?')

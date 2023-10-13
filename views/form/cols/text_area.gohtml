@@ -9,7 +9,7 @@
         {{end}}
         {{if .Required}}&nbsp;<span class="badge badge-outline-primary badge-sm">Required</span>{{end}}
     </label>
-    <textarea class="form-control{{if .Error}} is-invalid{{end}}" name="{{.Name}}" rows="{{.Rows}}">{{.Value}}</textarea>
+    <textarea class="form-control{{if .Error}} is-invalid{{end}}" id="{{.Name}}" name="{{.Name}}" rows="{{.Rows}}">{{.Value}}</textarea>
     {{with .Error}}<small class="invalid-feedback">{{.}}</small>{{end}}
     {{with .Help}}<small class="form-text text-muted">{{.}}</small>{{end}}
 </div>

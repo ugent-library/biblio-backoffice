@@ -9,7 +9,7 @@
         {{end}}
         {{if .Required}}&nbsp;<span class="badge badge-outline-primary badge-sm">Required</span>{{end}}
     </label>
-    <select class="form-select form-control{{if .Error}} is-invalid{{end}}" name="{{.Name}}"{{if .Disabled}} disabled{{end}}
+    <select class="form-select form-control{{if .Error}} is-invalid{{end}}" id="{{.Name}}" name="{{.Name}}"{{if .Disabled}} disabled{{end}}
         hx-get="{{pathFor "publication_edit_file_refresh_form" "id" $.Vars.ID "file_id" $.Vars.FileID}}"
         hx-swap="none"
         hx-include=".file-attributes"

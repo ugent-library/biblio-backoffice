@@ -21,7 +21,7 @@ node_modules
 go.work
 
 # Live reloading (reflex, air)
-.reflex.conf
+reflex.conf
 .air.toml
 tmp
 root

@@ -26,6 +26,9 @@ describe('Issue #1125: Add "locked" message when record is locked', () => {
 
     cy.visitPublication()
 
+    // Give tooltip mechanism some time to load
+    cy.wait(100)
+
     // Ensure publication is locked
     cy.get('#summary .bc-toolbar')
       .contains('Locked')

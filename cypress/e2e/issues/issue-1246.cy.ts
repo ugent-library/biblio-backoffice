@@ -118,7 +118,7 @@ describe('Issue #1246: Close button on toast does not work', () => {
     cy.contains('Lock record').click()
 
     // Make sure lock-toast is gone first
-    cy.get('.toast', { timeout: 6000 }).should('not.exist')
+    cy.ensureNoToast({ timeout: 6000 })
 
     cy.contains('Unlock record').click()
 
@@ -133,7 +133,10 @@ describe('Issue #1246: Close button on toast does not work', () => {
     cy.contains('Miscellaneous').click()
     cy.contains('.btn', 'Add publication(s)').click()
 
-    cy.contains('Publication details').closest('.card-header').contains('.btn', 'Edit').click()
+    cy.contains('Publication details')
+      .closest('.card-header')
+      .contains('.btn', 'Edit')
+      .click({ scrollBehavior: 'nearest' })
 
     cy.ensureModal('Edit publication details').within(() => {
       cy.get('input[type=text][name=title]').type('Issue 1246 test [CYPRESSTEST]')
@@ -144,14 +147,22 @@ describe('Issue #1246: Close button on toast does not work', () => {
 
     cy.contains('People & Affiliations').click()
 
-    cy.contains('.btn', 'Add author').click()
+    cy.contains('.btn', 'Add author').click({ scrollBehavior: 'nearest' })
 
     cy.ensureModal('Add author').within(() => {
-      cy.get('input[type=text][name=first_name]').type('Dries')
-      cy.get('input[type=text][name=last_name]').type('Moreels')
+      cy.intercept('/publication/*/contributors/author/suggestions?*').as('suggestions')
+
+      cy.get('input[type=text][name=first_name]').type('Griet')
+      cy.get('input[type=text][name=last_name]').type('Alleman')
+
+      cy.wait('@suggestions')
+
+      cy.intercept('/publication/*/contributors/author/confirm-create?*').as('confirmCreate')
 
       cy.contains('.btn', 'Add author').click()
     })
+
+    cy.wait('@confirmCreate')
 
     cy.ensureModal('Add author').within(() => {
       cy.contains('.btn', /^Save$/).click()
@@ -165,14 +176,10 @@ describe('Issue #1246: Close button on toast does not work', () => {
   }
 
   function assertToast(toastMessage: string) {
-    cy.contains('.toast', toastMessage)
-      .should('be.visible')
-      .within(() => {
-        cy.get('.btn-close').click()
-      })
+    cy.ensureToast(toastMessage).closeToast()
 
     // Reduced assertion timeout here so the test still works if someone decides to reduce the
     // toast dismissal timeout in the future.
-    cy.contains('.toast', toastMessage, { timeout: 1000 }).should('not.exist')
+    cy.ensureNoToast({ timeout: 1000 })
   }
 })
