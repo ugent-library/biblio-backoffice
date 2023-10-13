@@ -13,7 +13,7 @@ describe('Issue #1108: Cannot add author without first name', () => {
 
     cy.contains('People & Affiliations').click()
 
-    cy.contains('.btn', 'Add author').click({ scrollBehavior: false })
+    cy.contains('.btn', 'Add author').click()
   })
 
   it('should be possible to add author without first name', () => {

@@ -4,7 +4,9 @@ type EnsureNoToastOptions = {
   timeout?: number
 }
 
-export default function ensureNoToast(options: EnsureNoToastOptions): Cypress.Chainable<JQuery<HTMLElement>> {
+export default function ensureNoToast(
+  options: EnsureNoToastOptions = { timeout: 6000 } // Toast automatically disappear after 5 seconds
+): Cypress.Chainable<JQuery<HTMLElement>> {
   logCommand('ensureNoToast', { options })
 
   const { timeout } = options

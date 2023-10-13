@@ -17,10 +17,10 @@ describe('Issue #1246: Close button on toast does not work', () => {
       .find('.dropdown .btn:has(i.if.if-more)')
       .click()
 
-    cy.contains('Delete').click()
+    cy.contains('.dropdown-item', 'Delete').click()
 
     cy.ensureModal('Are you sure?').within(() => {
-      cy.contains('.btn-danger', 'Delete').click()
+      cy.contains('.btn', 'Delete').click()
     })
 
     cy.ensureNoModal()
@@ -35,10 +35,10 @@ describe('Issue #1246: Close button on toast does not work', () => {
 
     cy.visitPublication()
 
-    cy.contains('Publish to Biblio').click()
+    cy.contains('.btn', 'Publish to Biblio').click()
 
     cy.ensureModal('Are you sure?').within(() => {
-      cy.contains('.btn-success', 'Publish').click()
+      cy.contains('.btn', 'Publish').click()
     })
 
     cy.ensureNoModal()
@@ -53,10 +53,10 @@ describe('Issue #1246: Close button on toast does not work', () => {
 
     cy.visitPublication()
 
-    cy.contains('Withdraw').click()
+    cy.contains('.btn', 'Withdraw').click()
 
     cy.ensureModal('Are you sure?').within(() => {
-      cy.contains('.btn-danger', 'Withdraw').click()
+      cy.contains('.btn', 'Withdraw').click()
     })
 
     cy.ensureNoModal()
@@ -71,18 +71,21 @@ describe('Issue #1246: Close button on toast does not work', () => {
 
     cy.visitPublication()
 
-    cy.contains('Withdraw').click()
+    cy.contains('.btn', 'Withdraw').click()
 
     cy.ensureModal('Are you sure?').within(() => {
-      cy.contains('.btn-danger', 'Withdraw').click()
+      cy.contains('.btn', 'Withdraw').click()
     })
 
     cy.ensureNoModal()
 
-    cy.contains('Republish').click()
+    // Make sure withdraw-toast is gone first
+    cy.ensureNoToast()
+
+    cy.contains('.btn', 'Republish').click()
 
     cy.ensureModal('Are you sure?').within(() => {
-      cy.contains('.btn-success', 'Republish').click()
+      cy.contains('.btn', 'Republish').click()
     })
 
     cy.ensureNoModal()
@@ -100,7 +103,7 @@ describe('Issue #1246: Close button on toast does not work', () => {
 
     cy.visitPublication()
 
-    cy.contains('Lock record').click()
+    cy.contains('.btn', 'Lock record').click()
 
     assertToast('Publication was successfully locked.')
   })
@@ -115,12 +118,12 @@ describe('Issue #1246: Close button on toast does not work', () => {
 
     cy.visitPublication()
 
-    cy.contains('Lock record').click()
+    cy.contains('.btn', 'Lock record').click()
 
     // Make sure lock-toast is gone first
-    cy.ensureNoToast({ timeout: 6000 })
+    cy.ensureNoToast()
 
-    cy.contains('Unlock record').click()
+    cy.contains('.btn', 'Unlock record').click()
 
     assertToast('Publication was successfully unlocked.')
   })
@@ -133,10 +136,7 @@ describe('Issue #1246: Close button on toast does not work', () => {
     cy.contains('Miscellaneous').click()
     cy.contains('.btn', 'Add publication(s)').click()
 
-    cy.contains('Publication details')
-      .closest('.card-header')
-      .contains('.btn', 'Edit')
-      .click({ scrollBehavior: 'nearest' })
+    cy.contains('Publication details').closest('.card-header').contains('.btn', 'Edit').click()
 
     cy.ensureModal('Edit publication details').within(() => {
       cy.get('input[type=text][name=title]').type('Issue 1246 test [CYPRESSTEST]')
@@ -147,7 +147,7 @@ describe('Issue #1246: Close button on toast does not work', () => {
 
     cy.contains('People & Affiliations').click()
 
-    cy.contains('.btn', 'Add author').click({ scrollBehavior: 'nearest' })
+    cy.contains('.btn', 'Add author').click()
 
     cy.ensureModal('Add author').within(() => {
       cy.intercept('/publication/*/contributors/author/suggestions?*').as('suggestions')
@@ -180,6 +180,6 @@ describe('Issue #1246: Close button on toast does not work', () => {
 
     // Reduced assertion timeout here so the test still works if someone decides to reduce the
     // toast dismissal timeout in the future.
-    cy.ensureNoToast({ timeout: 1000 })
+    cy.ensureNoToast({ timeout: 500 })
   }
 })

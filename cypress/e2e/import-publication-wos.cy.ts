@@ -69,7 +69,7 @@ describe('Publication import', () => {
 
     cy.ensureNoModal()
 
-    cy.contains('.btn', 'Add author').click({ scrollBehavior: false })
+    cy.contains('.btn', 'Add author').click()
 
     cy.ensureModal('Add author').within(function () {
       cy.intercept({
