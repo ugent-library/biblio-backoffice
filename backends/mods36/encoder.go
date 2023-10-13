@@ -540,6 +540,7 @@ func (e *Encoder) EncodePublication(p *models.Publication) ([]byte, error) {
 	// </location>
 	// [%- END %]
 
+	// TODO
 	// [%- IF plain_text_cite.fwo %]
 	// <note type="preferred citation" lang="eng">[% plain_text_cite.fwo | xml_strict %]</note>
 	// [%- END %]
