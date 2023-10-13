@@ -2,11 +2,8 @@ package views
 
 import "github.com/ugent-library/biblio-backoffice/ctx"
 
-templ HomePage(c *ctx.Ctx) {
-    @pageLayout(c, "Biblio", "", nil, homePageContent(c))
-}
-
-templ homePageContent(c *ctx.Ctx) {
+templ Home(c *ctx.Ctx) {
+    @pageLayout(c, "Biblio", "", nil) {
     <div class="w-100 u-scroll-wrapper">
         <div class="bc-navbar bc-navbar--large bc-navbar--white bc-navbar--bordered-bottom h-auto">
             <div class="bc-toolbar h-auto py-4">
@@ -57,4 +54,5 @@ templ homePageContent(c *ctx.Ctx) {
             </div>
         </div>
     </div>
+    }
 }

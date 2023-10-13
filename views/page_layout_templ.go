@@ -11,7 +11,7 @@ import "bytes"
 
 import "github.com/ugent-library/biblio-backoffice/ctx"
 
-func pageLayout(c *ctx.Ctx, title, activeNav string, meta, content templ.Component) templ.Component {
+func pageLayout(c *ctx.Ctx, title, activeNav string, meta templ.Component) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
 		templBuffer, templIsBuffer := w.(*bytes.Buffer)
 		if !templIsBuffer {
@@ -611,7 +611,7 @@ func pageLayout(c *ctx.Ctx, title, activeNav string, meta, content templ.Compone
 		if err != nil {
 			return err
 		}
-		err = content.Render(ctx, templBuffer)
+		err = var_1.Render(ctx, templBuffer)
 		if err != nil {
 			return err
 		}

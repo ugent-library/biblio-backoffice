@@ -2,7 +2,7 @@ package views
 
 import "github.com/ugent-library/biblio-backoffice/ctx"
 
-templ pageLayout(c *ctx.Ctx, title, activeNav string, meta, content templ.Component) {
+templ pageLayout(c *ctx.Ctx, title, activeNav string, meta templ.Component) {
     <!DOCTYPE html>
     <html class="u-maximize-height" dir="ltr" lang="en">
 
@@ -191,7 +191,7 @@ templ pageLayout(c *ctx.Ctx, title, activeNav string, meta, content templ.Compon
                         <img src={ c.AssetPath("/images/mark-ugent-white.svg") } class="d-block d-lg-none" alt="Logo UGent" height="20px" width="auto"/>
                     </div>
                 </div>
-                {! content }
+                { children... }
             </div>
         </main>
 

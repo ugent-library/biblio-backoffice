@@ -222,14 +222,15 @@ func Register(c Config) {
 		// BEGIN NEW STYLE HANDLERS
 		r.Group(func(r *ich.Mux) {
 			r.Use(ctx.Set(ctx.Config{
-				Services:      c.Services,
-				Router:        c.Router,
-				Assets:        c.Assets,
-				Timezone:      c.Timezone,
-				Localizer:     c.Localizer,
-				Env:           c.Env,
+				Services:  c.Services,
+				Router:    c.Router,
+				Assets:    c.Assets,
+				Timezone:  c.Timezone,
+				Localizer: c.Localizer,
+				Env:       c.Env,
 				ErrorHandlers: map[int]http.HandlerFunc{
-					// TODO
+					http.StatusNotFound:            handlers.NotFound,
+					http.StatusInternalServerError: handlers.InternalServerError,
 				},
 				SessionName:  c.SessionName,
 				SessionStore: c.SessionStore,
@@ -242,7 +243,7 @@ func Register(c Config) {
 				r.Use(ctx.RequireUser)
 
 				// home
-				r.Get("/", handlers.HomePage).Name("home")
+				r.Get("/", handlers.Home).Name("home")
 				// home action required component
 				r.Get("/action-required", handlers.ActionRequired).Name("action_required")
 				// home drafts to complete component

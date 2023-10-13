@@ -7,7 +7,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/views"
 )
 
-func HomePage(w http.ResponseWriter, r *http.Request) {
+func Home(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
-	views.HomePage(c).Render(r.Context(), w)
+	views.Home(c).Render(r.Context(), w)
 }

@@ -3,8 +3,22 @@ package handlers
 import (
 	"net/http"
 
+	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/render"
+	"github.com/ugent-library/biblio-backoffice/views"
 )
+
+func NotFound(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	w.WriteHeader(404)
+	views.NotFound(c).Render(r.Context(), w)
+}
+
+func InternalServerError(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	w.WriteHeader(500)
+	views.InternalServerError(c).Render(r.Context(), w)
+}
 
 type YieldNotFound struct {
 	BaseContext
@@ -31,7 +45,7 @@ func (h *BaseHandler) NotFound(w http.ResponseWriter, r *http.Request, ctx BaseC
 
 func (h *BaseHandler) InternalServerError(w http.ResponseWriter, r *http.Request, ctx BaseContext) {
 	w.WriteHeader(500)
-	render.Layout(w, "layouts/default", "pageserror", YieldNotFound{
+	render.Layout(w, "layouts/default", "pages/internalerror", YieldNotFound{
 		BaseContext:      ctx,
 		PageTitle:        "Biblio",
 		ErrorTitle:       "Something went wrong.",
