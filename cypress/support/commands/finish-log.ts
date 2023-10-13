@@ -1,6 +1,6 @@
 import { updateConsoleProps, updateLogMessage } from './helpers'
 
-export default function finishLog(subject, log, appendToMessage = false) {
+export default function finishLog(subject: unknown, log: Cypress.Log, appendToMessage = false) {
   let theSubject = subject
   if (subject === null) {
     theSubject = '(null)'
@@ -14,7 +14,7 @@ export default function finishLog(subject, log, appendToMessage = false) {
     updateLogMessage(log, subject)
   }
 
-  log.end()
+  log.finish()
 
   return subject
 }

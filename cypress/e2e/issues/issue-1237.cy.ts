@@ -567,7 +567,7 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
   function setUpPublication(publicationType: PublicationType) {
     cy.visit('/publication/add')
 
-    cy.contains('Enter a publication manually').click()
+    cy.contains('Enter a publication manually').find(':radio').click()
     cy.contains('.btn', 'Add publication(s)').click()
 
     cy.contains(new RegExp(`^${publicationType}$`)).click()
@@ -585,7 +585,7 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
   function setUpDataset(editDatasetCallback: () => void) {
     cy.visit('/dataset/add')
 
-    cy.contains('Register a dataset manually').click()
+    cy.contains('Register a dataset manually').find(':radio').click()
     cy.contains('.btn', 'Add dataset').click()
 
     updateFields(
@@ -617,7 +617,7 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
     | 'Creator'
 
   function updateFields(section: FieldsSection, callback: () => void, persist = false) {
-    cy.contains('.card-header', section).find('.btn').click({ scrollBehavior: 'nearest' })
+    cy.contains('.card-header', section).find('.btn').click()
 
     const modalTitle = new RegExp(`(Edit|Add) ${section}`, 'i')
 
