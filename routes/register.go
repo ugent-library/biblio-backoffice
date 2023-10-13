@@ -217,8 +217,6 @@ func Register(c Config) {
 			csrf.FieldName("csrf-token"),
 		))
 
-		r.NotFound(baseHandler.Wrap(baseHandler.NotFound))
-
 		// BEGIN NEW STYLE HANDLERS
 		r.Group(func(r *ich.Mux) {
 			r.Use(ctx.Set(ctx.Config{
@@ -238,6 +236,8 @@ func Register(c Config) {
 				FrontendURL:  c.FrontendURL,
 				CSRFName:     "_csrf_token",
 			}))
+
+			r.NotFound(handlers.NotFound)
 
 			r.Group(func(r *ich.Mux) {
 				r.Use(ctx.RequireUser)
