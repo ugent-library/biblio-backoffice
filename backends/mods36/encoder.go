@@ -465,17 +465,14 @@ func (e *Encoder) EncodePublication(p *models.Publication) ([]byte, error) {
 	// [%- END %]
 	// [%- END %]
 
-	// [%- FOREACH s IN subject %]
-	// <subject>
-	// 	<occupation lang="eng">[% s | xml_strict %]</occupation>
-	// </subject>
-	// [%- END %]
-	// [%- FOREACH k IN keyword %]
-	// <subject>
-	// 	<topic lang="und">[% k | xml_strict %]</topic>
-	// </subject>
-	// [%- END %]
+	for _, val := range p.ResearchField {
+		r.Subject = append(r.Subject, Subject{Occupation: []Occupation{{Lang: "end", Value: val}}})
+	}
+	for _, val := range p.Keyword {
+		r.Subject = append(r.Subject, Subject{Topic: []Topic{{Lang: "und", Value: val}}})
+	}
 
+	// TODO
 	// [%- IF best_file %]
 	//   [%- IF best_file.change %]
 	//   <accessCondition type="accessRights">info:eu-repo/semantics/embargoedAccess</accessCondition>
@@ -489,6 +486,7 @@ func (e *Encoder) EncodePublication(p *models.Publication) ([]byte, error) {
 	//   [%- END %]
 	// [%- END %]
 
+	// TODO
 	// [%- FOREACH f IN file %]
 	// <location>
 	// 	<url displayLabel="[% f.name | xml_strict %]" access="raw object">[% _config.uri_base | xml_strict %]/publication/[% _id | xml_strict %]/file/[% f._id | xml_strict %]</url>
@@ -524,6 +522,8 @@ func (e *Encoder) EncodePublication(p *models.Publication) ([]byte, error) {
 	// 	</holdingExternal>
 	// </location>
 	// [%- END %]
+
+	// TODO
 	// [%- FOREACH a IN alternative_location %]
 	// <location>
 	// 	<url access="object in context">[% a.url.trim | url | xml_strict %]</url>
@@ -674,6 +674,7 @@ type Record struct {
 	TitleInfo       []TitleInfo       `xml:",omitempty"`
 	Name            []Name            `xml:",omitempty"`
 	OriginInfo      []OriginInfo      `xml:",omitempty"`
+	Subject         []Subject         `xml:",omitempty"`
 	Note            []Note            `xml:",omitempty"`
 	RelatedItem     []RelatedItem     `xml:",omitempty"`
 	RecordInfo      *RecordInfo       `xml:",omitempty"`
@@ -736,6 +737,7 @@ type RelatedItem struct {
 	TitleInfo       []TitleInfo       `xml:",omitempty"`
 	Name            []Name            `xml:",omitempty"`
 	OriginInfo      []OriginInfo      `xml:",omitempty"`
+	Subject         []Subject         `xml:",omitempty"`
 	Note            []Note            `xml:",omitempty"`
 	RelatedItem     []RelatedItem     `xml:",omitempty"`
 	RecordInfo      *RecordInfo       `xml:",omitempty"`
@@ -875,6 +877,24 @@ type DateOther struct {
 type Note struct {
 	XMLName xml.Name `xml:"note"`
 	Type    string   `xml:"type,attr,omitempty"`
+	Lang    string   `xml:"lang,attr,omitempty"`
+	Value   string   `xml:",chardata"`
+}
+
+type Subject struct {
+	XMLName    xml.Name     `xml:"subject"`
+	Topic      []Topic      `xml:",omitempty"`
+	Occupation []Occupation `xml:",omitempty"`
+}
+
+type Topic struct {
+	XMLName xml.Name `xml:"topic"`
+	Lang    string   `xml:"lang,attr,omitempty"`
+	Value   string   `xml:",chardata"`
+}
+
+type Occupation struct {
+	XMLName xml.Name `xml:"occupation"`
 	Lang    string   `xml:"lang,attr,omitempty"`
 	Value   string   `xml:",chardata"`
 }
