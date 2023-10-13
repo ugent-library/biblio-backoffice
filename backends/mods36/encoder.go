@@ -452,18 +452,18 @@ func (e *Encoder) EncodePublication(p *models.Publication) ([]byte, error) {
 	// [%- ELSE %]
 	// [% PROCESS mods_origin_info %]
 
-	// [%- IF page.count || article_number  %]
-	// <physicalDescription>
-	// 	[%- IF page.count %]
-	// 	<extent>[% page.count | xml_strict %] p.</extent>
-	// 	[%- END %]
-	// 	[%- IF article_number %]
-	// 	<form type="epublication"/>
-	// 	[%# TODO why? flag only these as e-only in non-standard way %]
-	// 	[%- END %]
-	// </physicalDescription>
-	// [%- END %]
-	// [%- END %]
+	if p.PageCount != "" {
+		if r.PhysicalDescription == nil {
+			r.PhysicalDescription = &PhysicalDescription{}
+		}
+		r.PhysicalDescription.Extent = append(r.PhysicalDescription.Extent, Extent{Value: p.PageCount})
+	}
+	if p.ArticleNumber != "" {
+		if r.PhysicalDescription == nil {
+			r.PhysicalDescription = &PhysicalDescription{}
+		}
+		r.PhysicalDescription.Form = append(r.PhysicalDescription.Form, Form{Authority: "marcform", Value: "electronic"})
+	}
 
 	for _, val := range p.ResearchField {
 		r.Subject = append(r.Subject, Subject{Occupation: []Occupation{{Lang: "end", Value: val}}})
@@ -665,19 +665,20 @@ type Record struct {
 	XsiSchemaLocation string   `xml:"xsi:schemaLocation,attr"`
 	Version           string   `xml:"version,attr"`
 
-	Abstract        []Abstract        `xml:",omitempty"`
-	AccessCondition []AccessCondition `xml:",omitempty"`
-	Classification  []Classification  `xml:",omitempty"`
-	Genre           []Genre           `xml:",omitempty"`
-	Identifier      []Identifier      `xml:",omitempty"`
-	Language        []Language        `xml:",omitempty"`
-	TitleInfo       []TitleInfo       `xml:",omitempty"`
-	Name            []Name            `xml:",omitempty"`
-	OriginInfo      []OriginInfo      `xml:",omitempty"`
-	Subject         []Subject         `xml:",omitempty"`
-	Note            []Note            `xml:",omitempty"`
-	RelatedItem     []RelatedItem     `xml:",omitempty"`
-	RecordInfo      *RecordInfo       `xml:",omitempty"`
+	Abstract            []Abstract           `xml:",omitempty"`
+	AccessCondition     []AccessCondition    `xml:",omitempty"`
+	Classification      []Classification     `xml:",omitempty"`
+	Genre               []Genre              `xml:",omitempty"`
+	Identifier          []Identifier         `xml:",omitempty"`
+	Language            []Language           `xml:",omitempty"`
+	TitleInfo           []TitleInfo          `xml:",omitempty"`
+	Name                []Name               `xml:",omitempty"`
+	OriginInfo          []OriginInfo         `xml:",omitempty"`
+	PhysicalDescription *PhysicalDescription `xml:",omitempty"`
+	Subject             []Subject            `xml:",omitempty"`
+	Note                []Note               `xml:",omitempty"`
+	RelatedItem         []RelatedItem        `xml:",omitempty"`
+	RecordInfo          *RecordInfo          `xml:",omitempty"`
 }
 
 type RecordInfo struct {
@@ -725,22 +726,23 @@ type RecordInfoNote struct {
 }
 
 type RelatedItem struct {
-	XMLName         xml.Name          `xml:"relatedItem"`
-	OtherType       string            `xml:"otherType,attr"`
-	OtherTypeAuth   string            `xml:"otherTypeAuth,attr"`
-	Abstract        []Abstract        `xml:",omitempty"`
-	AccessCondition []AccessCondition `xml:",omitempty"`
-	Classification  []Classification  `xml:",omitempty"`
-	Genre           []Genre           `xml:",omitempty"`
-	Identifier      []Identifier      `xml:",omitempty"`
-	Language        []Language        `xml:",omitempty"`
-	TitleInfo       []TitleInfo       `xml:",omitempty"`
-	Name            []Name            `xml:",omitempty"`
-	OriginInfo      []OriginInfo      `xml:",omitempty"`
-	Subject         []Subject         `xml:",omitempty"`
-	Note            []Note            `xml:",omitempty"`
-	RelatedItem     []RelatedItem     `xml:",omitempty"`
-	RecordInfo      *RecordInfo       `xml:",omitempty"`
+	XMLName             xml.Name             `xml:"relatedItem"`
+	OtherType           string               `xml:"otherType,attr"`
+	OtherTypeAuth       string               `xml:"otherTypeAuth,attr"`
+	Abstract            []Abstract           `xml:",omitempty"`
+	AccessCondition     []AccessCondition    `xml:",omitempty"`
+	Classification      []Classification     `xml:",omitempty"`
+	Genre               []Genre              `xml:",omitempty"`
+	Identifier          []Identifier         `xml:",omitempty"`
+	Language            []Language           `xml:",omitempty"`
+	TitleInfo           []TitleInfo          `xml:",omitempty"`
+	Name                []Name               `xml:",omitempty"`
+	OriginInfo          []OriginInfo         `xml:",omitempty"`
+	PhysicalDescription *PhysicalDescription `xml:",omitempty"`
+	Subject             []Subject            `xml:",omitempty"`
+	Note                []Note               `xml:",omitempty"`
+	RelatedItem         []RelatedItem        `xml:",omitempty"`
+	RecordInfo          *RecordInfo          `xml:",omitempty"`
 }
 
 type Classification struct {
@@ -850,6 +852,23 @@ type OriginInfo struct {
 	Publisher *Publisher  `xml:",omitempty"`
 	Place     []Place     `xml:",omitempty"`
 	DateOther []DateOther `xml:",omitempty"`
+}
+
+type PhysicalDescription struct {
+	XMLName xml.Name `xml:"physicalDescription"`
+	Extent  []Extent `xml:",omitempty"`
+	Form    []Form   `xml:",omitempty"`
+}
+
+type Extent struct {
+	XMLName xml.Name `xml:"extent"`
+	Value   string   `xml:",chardata"`
+}
+
+type Form struct {
+	XMLName   xml.Name `xml:"extent"`
+	Authority string   `xml:"authority,attr,omitempty"`
+	Value     string   `xml:",chardata"`
 }
 
 type Publisher struct {
