@@ -79,6 +79,8 @@ describe('Issue #1246: Close button on toast does not work', () => {
 
     cy.ensureNoModal()
 
+    cy.ensureToast('Publication was successfully withdrawn.').closeToast()
+
     // Make sure withdraw-toast is gone first
     cy.ensureNoToast()
 
@@ -108,7 +110,7 @@ describe('Issue #1246: Close button on toast does not work', () => {
     assertToast('Publication was successfully locked.')
   })
 
-  it('should be possible to dismiss the locked publication toast', () => {
+  it('should be possible to dismiss the unlocked publication toast', () => {
     setUpPublication()
 
     cy.contains('.btn', 'Publish to Biblio').click()
@@ -119,6 +121,8 @@ describe('Issue #1246: Close button on toast does not work', () => {
     cy.visitPublication()
 
     cy.contains('.btn', 'Lock record').click()
+
+    cy.ensureToast('Publication was successfully locked.').closeToast()
 
     // Make sure lock-toast is gone first
     cy.ensureNoToast()
