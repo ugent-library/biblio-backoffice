@@ -2,6 +2,8 @@ package mods36
 
 import (
 	"encoding/xml"
+	"fmt"
+	"time"
 
 	"github.com/ugent-library/biblio-backoffice/models"
 )
@@ -255,7 +257,347 @@ func (e *Encoder) EncodePublication(p *models.Publication) ([]byte, error) {
 		r.RelatedItem = append(r.RelatedItem, ri)
 	}
 
-	// TODO map views/export/_mods_36_body.tt lines >=234
+	// TODO
+	// [%- IF type == 'researchData' %]
+	// <location>
+	// 	[%- IF url %]
+	// 	<url>[% url | xml_strict %]</url>
+	// 	[%- END %]
+	// 	<holdingExternal>
+	// 		<dcterms:simpledc xmlns:dcterms="http://purl.org/dc/terms/">
+	// 			[%- IF access_level %]
+	// 			<dcterms:accessRights>[% access_level | xml_strict %]</dcterms:accessRights>
+	// 			[%- END %]
+	// 			[%- IF license == "LicenseNotListed" %]
+	// 			<dcterms:license>[% other_license | xml_strict %]</dcterms:license>
+	// 			[%- ELSIF license -%]
+	// 			<dcterms:license>[% license | xml_strict %]</dcterms:license>
+	// 			[%- END %]
+	// 			[%- FOREACH f IN format %]
+	// 			<dcterms:format>[% f | xml_strict %]</dcterms:format>
+	// 			[%- END %]
+	// 		</dcterms:simpledc>
+	// 	</holdingExternal>
+	// </location>
+
+	// TODO
+	// 	[%- IF access_level %]
+	// <accessCondition type="accessRights">[% access_level | xml_strict %]</accessCondition>
+	// [%- END %]
+	// [%- IF embargo %]
+	// <accessCondition type="embargoEnd">[% embargo | xml_strict %]</accessCondition>
+	// [%- END %]
+	// [%- END %]
+
+	// TODO
+	// [%- FOREACH rel_pub IN related_publication %]
+	// <relatedItem otherType="hasRelatedObject" otherTypeAuth="pcdm">
+	//   <identifier type="hdl">http://hdl.handle.net/1854/LU-[% rel_pub._id | xml_strict %]</identifier>
+	//   <recordInfo lang="eng">
+	// 	<recordIdentifier>[% rel_pub._id | xml_strict %]</recordIdentifier>
+	//   </recordInfo>
+	// </relatedItem>
+	// [%- END %]
+
+	for _, rel := range p.RelatedDataset {
+		r.RelatedItem = append(r.RelatedItem, RelatedItem{
+			OtherType:     "hasRelatedObject",
+			OtherTypeAuth: "pcdm",
+			Identifier:    []Identifier{{Type: "hdl", Value: fmt.Sprintf("http://hdl.handle.net/1854/LU-%s", rel.ID)}},
+			RecordInfo: &RecordInfo{
+				Lang:             "eng",
+				RecordIdentifier: []RecordIdentifier{{Value: rel.ID}},
+			},
+		})
+	}
+
+	// TODO
+	// [%- IF type == 'book' || type == 'bookEditor' %]
+	// [% PROCESS mods_origin_info %]
+	// [%- IF page.count || article_number  %]
+	// <physicalDescription>
+	// 	[%- IF page.count %]
+	// 	<extent>[% page.count | xml_strict %] p.</extent>
+	// 	[%- END %]
+	// 	[%- IF article_number %]
+	// 	<form type="epublication"/>
+	// 	[%# TODO why? flag only these as e-only in non-standard way %]
+	// 	[%- END %]
+	// </physicalDescription>
+	// [%- END %]
+
+	// [%- IF parent.title || series_title || volume || issn || vabb_series_id %]
+	// <relatedItem type="series">
+	// 	[%- IF parent.title || series_title %]
+	// 	<titleInfo>
+	// 		<title>[% parent.title || series_title | xml_strict %]</title>
+	// 	</titleInfo>
+	// 	[%- END %]
+	// 	[%- IF parent.short_title %]
+	// 	<titleInfo type="abbreviated">
+	// 		<title>[% parent.short_title | xml_strict %]</title>
+	// 	</titleInfo>
+	// 	[%- END %]
+	// 	[%- IF volume %]
+	// 	<part>
+	// 		<detail type="volume">
+	// 			<number>[% volume | xml_strict %]</number>
+	// 		</detail>
+	// 	</part>
+	// 	[%- END %]
+	// 	[%- FOREACH i IN issn %]
+	// 	[%- IF i.search('^[\dxX-]+$') %]
+	// 	<identifier type="issn">[% i | xml_strict %]</identifier>
+	// 	[%- END %]
+	// 	[%- END %]
+	// 	[%- IF vabb_series_id %]
+	// 	<identifier type="vabb-series">[% vabb_series_id | xml_strict %]</identifier>
+	// 	[%- END %]
+	// </relatedItem>
+	// [%- END %]
+	// [%- ELSIF parent %]
+	// <relatedItem type="host">
+	// 	[%- IF parent.title %]
+	// 	<titleInfo>
+	// 		<title>[% parent.title | xml_strict %]</title>
+	// 	</titleInfo>
+	// 	[%- END %]
+	// 	[%- IF parent.short_title %]
+	// 	<titleInfo type="abbreviated">
+	// 		<title>[% parent.short_title | xml_strict %]</title>
+	// 	</titleInfo>
+	// 	[%- END %]
+	// 	[%- IF type == 'bookChapter' %]
+	// 	[%- FOREACH person IN editor %]
+	// 	[% mods_person(person, 'editor') %]
+	// 	[%- END %]
+	// 	[%- IF page.count %]
+	// 	<physicalDescription>
+	// 		<extent>[% page.count | xml_strict %] p.</extent>
+	// 	</physicalDescription>
+	// 	[%- END %]
+	// 	[%- END %]
+	// 	[%- IF type != 'bookChapter' %]
+	// 	[%- FOREACH i IN issn %]
+	// 	[%- IF i.search('^[\dxX-]+$') %]
+	// 	<identifier type="issn">[% i | xml_strict %]</identifier>
+	// 	[%- END %]
+	// 	[%- END %]
+	// 	[%- END %]
+	// 	[%- FOREACH i IN isbn %]
+	// 	[%- IF i.search('^[\dxX-]+$') %]
+	// 	<identifier type="isbn">[% i | xml_strict %]</identifier>
+	// 	[%- END %]
+	// 	[%- END %]
+	// 	[% PROCESS mods_origin_info %]
+	// 	<part>
+	// 		[%- IF volume && type != 'bookChapter' %]
+	// 		<detail type="volume">
+	// 			<number>[% volume | xml_strict %]</number>
+	// 		</detail>
+	// 		[%- END %]
+	// 		[%- IF issue || issue_title %]
+	// 		<detail type="issue">
+	// 			[%- IF issue %]
+	// 			<number>[% issue | xml_strict %]</number>
+	// 			[%- END %]
+	// 			[%- IF issue_title %]
+	// 			<title>[% issue_title | xml_strict %]</title>
+	// 			[%- END %]
+	// 		</detail>
+	// 		[%- END %]
+	// 		[%- IF article_number %]
+	// 		<detail type="article-number">
+	// 			<number>[% article_number | xml_strict %]</number>
+	// 		</detail>
+	// 		[%- END %]
+	// 		[%- IF page.item('first') || page.item('last') %]
+	// 		<extent unit="page">
+	// 			[%- IF page.item('first') %]
+	// 			<start>[% page.item('first') | xml_strict %]</start>
+	// 			[%- END %]
+	// 			[%- IF page.item('last') %]
+	// 			<end>[% page.item('last') | xml_strict %]</end>
+	// 			[%- END %]
+	// 		</extent>
+	// 		[%- END %]
+	// 		[%- IF year %]
+	// 		<date encoding="w3cdtf">[% year | xml_strict %]</date>
+	// 		[%- END %]
+	// 	</part>
+
+	// 	[%- IF type == 'bookChapter' && series_title %]
+	// 	<relatedItem type="series">
+	// 	  <titleInfo>
+	// 		  <title>[% series_title | xml_strict %]</title>
+	// 	  </titleInfo>
+	// 	  [%- IF volume %]
+	// 	  <part>
+	// 		  <detail type="volume">
+	// 			  <number>[% volume | xml_strict %]</number>
+	// 		  </detail>
+	// 	  </part>
+	// 	  [%- END %]
+	// 	  [%- FOREACH i IN issn %]
+	// 	  [%- IF i.search('^[\dxX-]+$') %]
+	// 	  <identifier type="issn">[% i | xml_strict %]</identifier>
+	// 	  [%- END %]
+	// 	  [%- END %]
+	// 	  [%- IF vabb_series_id %]
+	// 	  <identifier type="vabb-series">[% vabb_series_id | xml_strict %]</identifier>
+	// 	  [%- END %]
+	// 	</relatedItem>
+	// 	[%- END %]
+	// </relatedItem>
+	// [%- ELSE %]
+	// [% PROCESS mods_origin_info %]
+
+	// [%- IF page.count || article_number  %]
+	// <physicalDescription>
+	// 	[%- IF page.count %]
+	// 	<extent>[% page.count | xml_strict %] p.</extent>
+	// 	[%- END %]
+	// 	[%- IF article_number %]
+	// 	<form type="epublication"/>
+	// 	[%# TODO why? flag only these as e-only in non-standard way %]
+	// 	[%- END %]
+	// </physicalDescription>
+	// [%- END %]
+	// [%- END %]
+
+	// [%- FOREACH s IN subject %]
+	// <subject>
+	// 	<occupation lang="eng">[% s | xml_strict %]</occupation>
+	// </subject>
+	// [%- END %]
+	// [%- FOREACH k IN keyword %]
+	// <subject>
+	// 	<topic lang="und">[% k | xml_strict %]</topic>
+	// </subject>
+	// [%- END %]
+
+	// [%- IF best_file %]
+	//   [%- IF best_file.change %]
+	//   <accessCondition type="accessRights">info:eu-repo/semantics/embargoedAccess</accessCondition>
+	//   <accessCondition type="embargoEnd">[% best_file.change.on | xml_strict %]</accessCondition>
+	//   [%- ELSIF best_file.access == 'open'  %]
+	//   <accessCondition type="accessRights">info:eu-repo/semantics/openAccess</accessCondition>
+	//   [%- ELSIF best_file.access == 'restricted'  %]
+	//   <accessCondition type="accessRights">info:eu-repo/semantics/restrictedAccess</accessCondition>
+	//   [%- ELSIF best_file.access == 'private'  %]
+	//   <accessCondition type="accessRights">info:eu-repo/semantics/closedAccess</accessCondition>
+	//   [%- END %]
+	// [%- END %]
+
+	// [%- FOREACH f IN file %]
+	// <location>
+	// 	<url displayLabel="[% f.name | xml_strict %]" access="raw object">[% _config.uri_base | xml_strict %]/publication/[% _id | xml_strict %]/file/[% f._id | xml_strict %]</url>
+	// 	<holdingExternal>
+	// 		<dcterms:simpledc xmlns:dcterms="http://purl.org/dc/terms/">
+	// 			[%- IF f.change %]
+	// 			<dcterms:accessRights>info:eu-repo/semantics/embargoedAccess</dcterms:accessRights>
+	// 			<dcterms:accessRights>info:eu-repo/date/embargoEnd/[% f.change.on | xml_strict %]</dcterms:accessRights>
+	// 			[%- ELSIF f.access == 'open'  %]
+	// 			<dcterms:accessRights>info:eu-repo/semantics/openAccess</dcterms:accessRights>
+	// 			[%- ELSIF f.access == 'restricted'  %]
+	// 			<dcterms:accessRights>info:eu-repo/semantics/restrictedAccess</dcterms:accessRights>
+	// 			[%- ELSIF f.access == 'private'  %]
+	// 			<dcterms:accessRights>info:eu-repo/semantics/closedAccess</dcterms:accessRights>
+	// 			[%- END %]
+	// 			[%- IF date_approved %]
+	// 			<dcterms:valid>[% date_approved | xml_strict %]</dcterms:valid>
+	// 			[%- END %]
+	// 			[%- IF f.content_type %]
+	// 			<dcterms:format>https://www.iana.org/assignments/media-types/[% f.content_type | xml_strict %]</dcterms:format>
+	// 			[%- END %]
+	// 			<dcterms:coverage>[% f.kind | xml_strict %]</dcterms:coverage>
+	// 			[%- IF f.kind == 'dataset' %]
+	// 			<dcterms:type>http://purl.org/dc/dcmitype/Dataset</dcterms:type>
+	// 			[%- ELSE %]
+	// 			<dcterms:type>http://purl.org/dc/dcmitype/Text</dcterms:type>
+	// 			[%- END %]
+	// 			[%- IF f.size %]
+	// 			<dcterms:extent>[% f.size | xml_strict %] bytes</dcterms:extent>
+	// 			[%- END %]
+	// 			<dcterms:title>[% f.name | xml_strict %]</dcterms:title>
+	// 		</dcterms:simpledc>
+	// 	</holdingExternal>
+	// </location>
+	// [%- END %]
+	// [%- FOREACH a IN alternative_location %]
+	// <location>
+	// 	<url access="object in context">[% a.url.trim | url | xml_strict %]</url>
+	// 	<holdingExternal>
+	// 		<dcterms:simpledc xmlns:dcterms="http://purl.org/dc/terms/">
+	// 			<dcterms:accessRights>[% a.access | xml_strict %]</dcterms:accessRights>
+	// 			[%- IF date_submitted %]
+	// 			<dcterms:valid>[% date_submitted | xml_strict %]</dcterms:valid>
+	// 			[%- END %]
+	// 			<dcterms:coverage>[% a.kind | xml_strict %]</dcterms:coverage>
+	// 			<dcterms:type>http://purl.org/dc/dcmitype/InteractiveResource</dcterms:type>
+	// 		</dcterms:simpledc>
+	// 	</holdingExternal>
+	// </location>
+	// [%- END %]
+
+	// [%- IF plain_text_cite.fwo %]
+	// <note type="preferred citation" lang="eng">[% plain_text_cite.fwo | xml_strict %]</note>
+	// [%- END %]
+
+	if p.AdditionalInfo != "" {
+		r.Note = append(r.Note, Note{Type: "content", Lang: "und", Value: p.AdditionalInfo})
+	}
+
+	var recordInfoNotes []RecordInfoNote
+	if p.Status == "private" {
+		recordInfoNotes = append(recordInfoNotes, RecordInfoNote{Type: "ugent-submission-status", Value: "unsubmitted"})
+	} else if p.Status == "deleted" && p.HasBeenPublic {
+		recordInfoNotes = append(recordInfoNotes, RecordInfoNote{Type: "ugent-submission-status", Value: "pdeleted"})
+	} else {
+		recordInfoNotes = append(recordInfoNotes, RecordInfoNote{Type: "ugent-submission-status", Value: p.Status})
+	}
+	if p.Creator != nil && len(p.Creator.UGentID) > 0 {
+		recordInfoNotes = append(recordInfoNotes, RecordInfoNote{Type: "ugent-creator", Value: p.Creator.UGentID[0]})
+	}
+	if p.SourceRecord != "" {
+		recordInfoNotes = append(recordInfoNotes, RecordInfoNote{Type: "source note", Value: p.SourceRecord})
+	}
+	if p.SourceDB != "" && p.SourceID != "" {
+		recordInfoNotes = append(recordInfoNotes, RecordInfoNote{Type: "source identifier", Value: fmt.Sprintf("%s:%s", p.SourceDB, p.SourceID)})
+	}
+	r.RecordInfo = &RecordInfo{
+		Lang:                "eng",
+		RecordContentSource: []RecordContentSource{{Value: "Ghent University Library"}},
+		RecordIdentifier:    []RecordIdentifier{{Value: fmt.Sprintf("pug01:%s", p.ID)}},
+		RecordCreationDate: []RecordCreationDate{{
+			Encoding: "w3cdtf",
+			Value:    p.DateCreated.UTC().Format(time.RFC3339),
+		}},
+		RecordChangeDate: []RecordChangeDate{{
+			Encoding: "w3cdtf",
+			Value:    p.DateUpdated.UTC().Format(time.RFC3339),
+		}},
+		LanguageOfCataloging: []LanguageOfCataloging{{LanguageTerm: LanguageTerm{Authority: "iso639-2b", Type: "code", Value: "eng"}}},
+		RecordInfoNote:       recordInfoNotes,
+	}
+	// TODO
+	// <recordInfo lang="eng">
+	// 	[%- FOREACH fund IN ecoom %]
+	// 	  [% IF fund.value.weight %]
+	// 	  <recordInfoNote type="ecoom-[% fund.key %]-weight">[% fund.value.weight %]</recordInfoNote>
+	// 	  [% END %]
+	// 	  [% IF fund.value.css %]
+	// 	  <recordInfoNote type="ecoom-[% fund.key %]-css">[% fund.value.css %]</recordInfoNote>
+	// 	  [% END %]
+	// 	  [% IF fund.value.international_collaboration.defined %]
+	// 	  <recordInfoNote type="ecoom-[% fund.key %]-international-collaboration">[% fund.value.international_collaboration == 1 ? 'true' : 'false' %]</recordInfoNote>
+	// 	  [% END %]
+	// 	  [% FOREACH sector IN fund.value.sector %]
+	// 	  <recordInfoNote type="ecoom-[% fund.key %]-sector">[% sector %]</recordInfoNote>
+	// 	  [% END %]
+	// 	  <recordInfoNote type="ecoom-[% fund.key %]-validation">[% fund.value.first_year %]</recordInfoNote>
+	// 	[%- END %]
+	// </recordInfo>
 
 	return xml.Marshal(r)
 }
@@ -307,6 +649,15 @@ const (
 	Version           = "3.6"
 )
 
+func NewRecord() *Record {
+	return &Record{
+		XmlnsXsi:          XmlnsXsi,
+		XmlnsXlink:        XmlnsXlink,
+		XsiSchemaLocation: XsiSchemaLocation,
+		Version:           Version,
+	}
+}
+
 type Record struct {
 	XMLName           xml.Name `xml:"http://www.loc.gov/mods/v3 mods"`
 	XmlnsXsi          string   `xml:"xmlns:xsi,attr"`
@@ -323,13 +674,59 @@ type Record struct {
 	TitleInfo       []TitleInfo       `xml:",omitempty"`
 	Name            []Name            `xml:",omitempty"`
 	OriginInfo      []OriginInfo      `xml:",omitempty"`
+	Note            []Note            `xml:",omitempty"`
 	RelatedItem     []RelatedItem     `xml:",omitempty"`
+	RecordInfo      *RecordInfo       `xml:",omitempty"`
+}
+
+type RecordInfo struct {
+	XMLName              xml.Name               `xml:"recordInfo"`
+	Lang                 string                 `xml:"lang,attr,omitempty"`
+	RecordContentSource  []RecordContentSource  `xml:",omitempty"`
+	RecordIdentifier     []RecordIdentifier     `xml:",omitempty"`
+	RecordCreationDate   []RecordCreationDate   `xml:",omitempty"`
+	RecordChangeDate     []RecordChangeDate     `xml:",omitempty"`
+	LanguageOfCataloging []LanguageOfCataloging `xml:",omitempty"`
+	RecordInfoNote       []RecordInfoNote       `xml:",omitempty"`
+}
+
+type RecordContentSource struct {
+	XMLName xml.Name `xml:"recordContentSource"`
+	Value   string   `xml:",chardata"`
+}
+
+type RecordIdentifier struct {
+	XMLName xml.Name `xml:"recordIdentifier"`
+	Value   string   `xml:",chardata"`
+}
+
+type RecordCreationDate struct {
+	XMLName  xml.Name `xml:"recordCreationDate"`
+	Encoding string   `xml:"encoding,attr,omitempty"`
+	Value    string   `xml:",chardata"`
+}
+
+type RecordChangeDate struct {
+	XMLName  xml.Name `xml:"recordChangeDate"`
+	Encoding string   `xml:"encoding,attr,omitempty"`
+	Value    string   `xml:",chardata"`
+}
+
+type LanguageOfCataloging struct {
+	XMLName      xml.Name     `xml:"languageOfCataloging"`
+	LanguageTerm LanguageTerm `xml:"languageTerm"`
+}
+
+type RecordInfoNote struct {
+	XMLName xml.Name `xml:"recordInfoNote"`
+	Type    string   `xml:"type,attr,omitempty"`
+	Value   string   `xml:",chardata"`
 }
 
 type RelatedItem struct {
-	XMLName   xml.Name `xml:"relatedItem"`
-	OtherType string   `xml:"otherType,attr"`
-
+	XMLName         xml.Name          `xml:"relatedItem"`
+	OtherType       string            `xml:"otherType,attr"`
+	OtherTypeAuth   string            `xml:"otherTypeAuth,attr"`
 	Abstract        []Abstract        `xml:",omitempty"`
 	AccessCondition []AccessCondition `xml:",omitempty"`
 	Classification  []Classification  `xml:",omitempty"`
@@ -339,16 +736,9 @@ type RelatedItem struct {
 	TitleInfo       []TitleInfo       `xml:",omitempty"`
 	Name            []Name            `xml:",omitempty"`
 	OriginInfo      []OriginInfo      `xml:",omitempty"`
+	Note            []Note            `xml:",omitempty"`
 	RelatedItem     []RelatedItem     `xml:",omitempty"`
-}
-
-func NewRecord() *Record {
-	return &Record{
-		XmlnsXsi:          XmlnsXsi,
-		XmlnsXlink:        XmlnsXlink,
-		XsiSchemaLocation: XsiSchemaLocation,
-		Version:           Version,
-	}
+	RecordInfo      *RecordInfo       `xml:",omitempty"`
 }
 
 type Classification struct {
@@ -463,6 +853,7 @@ type OriginInfo struct {
 type Publisher struct {
 	Value string `xml:",chardata"`
 }
+
 type Place struct {
 	XMLName   xml.Name    `xml:"place"`
 	PlaceTerm []PlaceTerm `xml:",omitempty"`
@@ -479,4 +870,11 @@ type DateOther struct {
 	Encoding string   `xml:"encoding,attr,omitempty"`
 	Point    string   `xml:"point,attr,omitempty"`
 	Value    string   `xml:",chardata"`
+}
+
+type Note struct {
+	XMLName xml.Name `xml:"note"`
+	Type    string   `xml:"type,attr,omitempty"`
+	Lang    string   `xml:"lang,attr,omitempty"`
+	Value   string   `xml:",chardata"`
 }
