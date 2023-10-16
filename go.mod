@@ -152,7 +152,7 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/mschoch/smat v0.2.0 // indirect
-	github.com/nics/ich v0.0.0-20230515073809-6deee7f5ae14
+	github.com/nics/ich v0.0.0-20231010153708-2d9e5a14e2c8
 	github.com/oklog/ulid/v2 v2.1.0
 	github.com/ory/graceful v0.1.3
 	github.com/pelletier/go-toml v1.9.5 // indirect
