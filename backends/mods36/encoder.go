@@ -452,18 +452,19 @@ func (e *Encoder) EncodePublication(p *models.Publication) ([]byte, error) {
 	// [%- ELSE %]
 	// [% PROCESS mods_origin_info %]
 
-	if p.PageCount != "" {
-		if r.PhysicalDescription == nil {
-			r.PhysicalDescription = &PhysicalDescription{}
-		}
-		r.PhysicalDescription.Extent = append(r.PhysicalDescription.Extent, Extent{Value: p.PageCount})
-	}
-	if p.ArticleNumber != "" {
-		if r.PhysicalDescription == nil {
-			r.PhysicalDescription = &PhysicalDescription{}
-		}
-		r.PhysicalDescription.Form = append(r.PhysicalDescription.Form, Form{Authority: "marcform", Value: "electronic"})
-	}
+	// if p.PageCount != "" {
+	// 	if r.PhysicalDescription == nil {
+	// 		r.PhysicalDescription = &PhysicalDescription{}
+	// 	}
+	// 	r.PhysicalDescription.Extent = append(r.PhysicalDescription.Extent, Extent{Value: p.PageCount})
+	// }
+	// if p.ArticleNumber != "" {
+	// 	if r.PhysicalDescription == nil {
+	// 		r.PhysicalDescription = &PhysicalDescription{}
+	// 	}
+	// 	r.PhysicalDescription.Form = append(r.PhysicalDescription.Form, Form{Authority: "marcform", Value: "electronic"})
+	// }
+	// [%- END %]
 
 	for _, val := range p.ResearchField {
 		r.Subject = append(r.Subject, Subject{Occupation: []Occupation{{Lang: "end", Value: val}}})
@@ -925,9 +926,10 @@ type Location struct {
 }
 
 type URL struct {
-	XMLName xml.Name `xml:"url"`
-	Access  string   `xml:"access,attr,omitempty"`
-	Value   string   `xml:",chardata"`
+	XMLName      xml.Name `xml:"url"`
+	Access       string   `xml:"access,attr,omitempty"`
+	DisplayLabel string   `xml:"displayLabel,attr,omitempty"`
+	Value        string   `xml:",chardata"`
 }
 
 type HoldingExternal struct {

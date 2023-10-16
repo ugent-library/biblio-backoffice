@@ -1,4 +1,4 @@
-export function logCommand(name, consoleProps = {}, message = '', $el = undefined) {
+export function logCommand(name, consoleProps = {}, message: unknown = '', $el = undefined) {
   return Cypress.log({
     $el,
     name,
