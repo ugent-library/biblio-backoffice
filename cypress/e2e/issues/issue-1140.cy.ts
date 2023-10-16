@@ -23,7 +23,8 @@ describe('Issue #1140: External contributor info is empty in the suggest box', (
     })
 
     cy.ensureModal('Add author').within(() => {
-      cy.contains('label', 'Roles').next().find('select').select('Validation')
+      cy.getLabel('Roles').click()
+      cy.focused().select('Validation')
 
       cy.contains('.btn', /^Save$/).click()
     })

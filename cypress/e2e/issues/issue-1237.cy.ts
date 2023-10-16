@@ -398,7 +398,7 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
       cy.ensureModal('Document details for file empty-pdf.pdf').within(() => {
         cy.intercept('/publication/*/files/*/refresh-form*').as('refreshForm')
 
-        cy.contains('label.c-radio-card', 'Embargoed access').click()
+        cy.getLabel(/Embargoed access/).click()
 
         cy.wait('@refreshForm')
 
@@ -417,7 +417,8 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
       setUpDataset(() => {
         updateFields('Dataset details', () => {
           cy.intercept('PUT', '/dataset/*/details/edit/refresh-form*').as('refreshForm')
-          getLabel('License').next().find('select').select('The license is not listed here')
+          cy.getLabel('License').click()
+          cy.focused().select('The license is not listed here')
 
           cy.wait('@refreshForm')
 
@@ -454,7 +455,7 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
   })
 
   function testFocusForLabel(labelText: string, fieldSelector: string, autoFocus = false) {
-    getLabel(labelText)
+    cy.getLabel(labelText)
       .as('theLabel')
       .should('have.length', 1)
       .parent({ log: false })
@@ -463,15 +464,6 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
       .as('theField')
       .should('have.length', 1)
       .should(autoFocus ? 'have.focus' : 'not.have.focus')
-
-    // TODO: remove
-    // cy.get('@theLabel').then(label => {
-    //   cy.get('@theField').then(field => {
-    //     if (!field.attr('id')) {
-    //       field.attr('id', label.attr('for'))
-    //     }
-    //   })
-    // })
 
     cy.get('@theLabel').click()
 
@@ -592,7 +584,9 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
       'Dataset details',
       () => {
         setField('Title', `The dataset title [CYPRESSTEST]`)
-        getLabel('Persistent identifier type').next().find('select').select('DOI')
+
+        setField('Persistent identifier type', 'DOI')
+
         setField('Identifier', '10.5072/test/t')
       },
       true
@@ -630,23 +624,24 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
     cy.ensureNoModal()
   }
 
-  function setField(fieldLabel: string, value: string) {
-    return getLabel(fieldLabel).next().find('input').type(value)
-  }
+  function setField(fieldLabel: string, value: string): Cypress.Chainable<JQuery<HTMLElement>> {
+    cy.getLabel(fieldLabel).click()
 
-  function getLabel(labelText: string) {
-    return cy.get(`label`, { log: false }).filter(
-      (_, el) => {
-        // Make sure to match the exact label text (excluding badges)
-        const $label = Cypress.$(el).clone()
+    return cy.focused().then(field => {
+      const $field = cy.wrap(field, { log: false })
 
-        $label.find('.badge, .visually-hidden').remove()
+      switch (field.prop('tagName')) {
+        case 'INPUT':
+          $field.clear().type(value)
+          break
 
-        const currentLabelText = $label.text().trim().split(/\s/).join(' ')
+        case 'SELECT':
+          $field.select(value)
+          break
 
-        return currentLabelText === labelText
-      },
-      { log: false }
-    )
+        default:
+          throw new Error(`Field of type ${fieldLabel} is not supported.`)
+      }
+    })
   }
 })
