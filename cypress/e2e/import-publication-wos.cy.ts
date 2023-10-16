@@ -82,10 +82,10 @@ describe('Publication import', () => {
 
       cy.contains('Search author').should('be.visible')
 
-      cy.get('input[name=first_name]').type('Griet')
+      cy.setFieldByLabel('First name', 'Griet')
       cy.wait('@user-search')
 
-      cy.get('input[name=last_name]').type('Alleman')
+      cy.setFieldByLabel('Last name', 'Alleman')
       cy.wait('@user-search')
 
       cy.contains('.badge', 'Active UGent member')

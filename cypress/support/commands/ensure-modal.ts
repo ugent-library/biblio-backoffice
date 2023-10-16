@@ -1,7 +1,7 @@
 import { logCommand } from './helpers'
 
 export default function ensureModal(expectedTitle: string | RegExp): Cypress.Chainable<JQuery<HTMLElement>> {
-  const log = logCommand('ensureModal', { 'Expected title': expectedTitle }, expectedTitle.toString())
+  const log = logCommand('ensureModal', { 'Expected title': expectedTitle }, expectedTitle)
 
   // Assertion "be.visible" doesn't work here because it is behind the dialog
   cy.get('#modal-backdrop', { log: false }).then(modalBackdrop => {
