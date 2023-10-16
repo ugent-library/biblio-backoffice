@@ -49,7 +49,7 @@ require (
 	github.com/a-h/lexical v0.0.53 // indirect
 	github.com/a-h/parse v0.0.0-20230731060248-8319ff0754b6 // indirect
 	github.com/a-h/protocol v0.0.0-20230224160810-b4eec67c1c22 // indirect
-	github.com/a-h/templ v0.2.364 // indirect
+	github.com/a-h/templ v0.2.408 // indirect
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.4.13 // indirect

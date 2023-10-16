@@ -97,6 +97,8 @@ github.com/a-h/protocol v0.0.0-20230224160810-b4eec67c1c22 h1:ehNdbGOAR8KTrLY/S9
 github.com/a-h/protocol v0.0.0-20230224160810-b4eec67c1c22/go.mod h1:Gm0KywveHnkiIhqFSMZglXwWZRQICg3KDWLYdglv/d8=
 github.com/a-h/templ v0.2.364 h1:4vseUATyAzacrOOU1jPmLfkxet6Yg/NAmsA/4rDDhfo=
 github.com/a-h/templ v0.2.364/go.mod h1:6Lfhsl3Z4/vXl7jjEjkJRCqoWDGjDnuKgzjYMDSddas=
+github.com/a-h/templ v0.2.408 h1:WmXdjVjxjMJyjRg+34cgg+hRC0duDg9OJy6euZbS4ek=
+github.com/a-h/templ v0.2.408/go.mod h1:6Lfhsl3Z4/vXl7jjEjkJRCqoWDGjDnuKgzjYMDSddas=
 github.com/agext/levenshtein v1.2.3 h1:YB2fHEn0UJagG8T1rrWknE3ZQzWM06O8AMAatNn7lmo=
 github.com/agext/levenshtein v1.2.3/go.mod h1:JEDfjyjHDjOF/1e4FlBE/PkbqA9OfWu2ki2W0IB5558=
 github.com/alexliesenfeld/health v0.7.0 h1:U3mSZ3ussRbGx+/rXBjNVxjLX5cKaNh8Ly9Hx3q+yfY=
