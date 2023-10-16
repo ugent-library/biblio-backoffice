@@ -523,22 +523,18 @@ func (e *Encoder) EncodePublication(p *models.Publication) ([]byte, error) {
 	// </location>
 	// [%- END %]
 
-	// TODO
-	// [%- FOREACH a IN alternative_location %]
-	// <location>
-	// 	<url access="object in context">[% a.url.trim | url | xml_strict %]</url>
-	// 	<holdingExternal>
-	// 		<dcterms:simpledc xmlns:dcterms="http://purl.org/dc/terms/">
-	// 			<dcterms:accessRights>[% a.access | xml_strict %]</dcterms:accessRights>
-	// 			[%- IF date_submitted %]
-	// 			<dcterms:valid>[% date_submitted | xml_strict %]</dcterms:valid>
-	// 			[%- END %]
-	// 			<dcterms:coverage>[% a.kind | xml_strict %]</dcterms:coverage>
-	// 			<dcterms:type>http://purl.org/dc/dcmitype/InteractiveResource</dcterms:type>
-	// 		</dcterms:simpledc>
-	// 	</holdingExternal>
-	// </location>
-	// [%- END %]
+	for _, val := range p.Link {
+		// TODO map coverage to Relation field
+		r.Location = append(r.Location, Location{
+			URL: []URL{{Access: "object in context", Value: val.URL}},
+			HoldingExternal: &HoldingExternal{XML: `
+		<dcterms:simpledc xmlns:dcterms="http://purl.org/dc/terms/">
+			<dcterms:accessRights>open</dcterms:accessRights>
+			<dcterms:coverage>fullText</dcterms:coverage>
+			<dcterms:type>http://purl.org/dc/dcmitype/InteractiveResource</dcterms:type>
+		</dcterms:simpledc>`},
+		})
+	}
 
 	// TODO
 	// [%- IF plain_text_cite.fwo %]
@@ -672,14 +668,15 @@ type Record struct {
 	Genre               []Genre              `xml:",omitempty"`
 	Identifier          []Identifier         `xml:",omitempty"`
 	Language            []Language           `xml:",omitempty"`
-	TitleInfo           []TitleInfo          `xml:",omitempty"`
+	Location            []Location           `xml:",omitempty"`
 	Name                []Name               `xml:",omitempty"`
+	Note                []Note               `xml:",omitempty"`
 	OriginInfo          []OriginInfo         `xml:",omitempty"`
 	PhysicalDescription *PhysicalDescription `xml:",omitempty"`
-	Subject             []Subject            `xml:",omitempty"`
-	Note                []Note               `xml:",omitempty"`
-	RelatedItem         []RelatedItem        `xml:",omitempty"`
 	RecordInfo          *RecordInfo          `xml:",omitempty"`
+	RelatedItem         []RelatedItem        `xml:",omitempty"`
+	Subject             []Subject            `xml:",omitempty"`
+	TitleInfo           []TitleInfo          `xml:",omitempty"`
 }
 
 type RecordInfo struct {
@@ -727,23 +724,25 @@ type RecordInfoNote struct {
 }
 
 type RelatedItem struct {
-	XMLName             xml.Name             `xml:"relatedItem"`
-	OtherType           string               `xml:"otherType,attr"`
-	OtherTypeAuth       string               `xml:"otherTypeAuth,attr"`
+	XMLName xml.Name `xml:"relatedItem"`
+
 	Abstract            []Abstract           `xml:",omitempty"`
 	AccessCondition     []AccessCondition    `xml:",omitempty"`
 	Classification      []Classification     `xml:",omitempty"`
 	Genre               []Genre              `xml:",omitempty"`
 	Identifier          []Identifier         `xml:",omitempty"`
 	Language            []Language           `xml:",omitempty"`
-	TitleInfo           []TitleInfo          `xml:",omitempty"`
+	Location            []Location           `xml:",omitempty"`
 	Name                []Name               `xml:",omitempty"`
-	OriginInfo          []OriginInfo         `xml:",omitempty"`
-	PhysicalDescription *PhysicalDescription `xml:",omitempty"`
-	Subject             []Subject            `xml:",omitempty"`
 	Note                []Note               `xml:",omitempty"`
-	RelatedItem         []RelatedItem        `xml:",omitempty"`
+	OriginInfo          []OriginInfo         `xml:",omitempty"`
+	OtherType           string               `xml:"otherType,attr"`
+	OtherTypeAuth       string               `xml:"otherTypeAuth,attr"`
+	PhysicalDescription *PhysicalDescription `xml:",omitempty"`
 	RecordInfo          *RecordInfo          `xml:",omitempty"`
+	RelatedItem         []RelatedItem        `xml:",omitempty"`
+	Subject             []Subject            `xml:",omitempty"`
+	TitleInfo           []TitleInfo          `xml:",omitempty"`
 }
 
 type Classification struct {
@@ -917,4 +916,21 @@ type Occupation struct {
 	XMLName xml.Name `xml:"occupation"`
 	Lang    string   `xml:"lang,attr,omitempty"`
 	Value   string   `xml:",chardata"`
+}
+
+type Location struct {
+	XMLName         xml.Name         `xml:"location"`
+	URL             []URL            `xml:",omitempty"`
+	HoldingExternal *HoldingExternal `xml:",omitempty"`
+}
+
+type URL struct {
+	XMLName xml.Name `xml:"url"`
+	Access  string   `xml:"access,attr,omitempty"`
+	Value   string   `xml:",chardata"`
+}
+
+type HoldingExternal struct {
+	XMLName xml.Name `xml:"holdingExternal"`
+	XML     string   `xml:",innerxml"`
 }
