@@ -48,7 +48,8 @@
                                 name="uyear"
                                 hx-post="{{pathFor "dashboard_refresh_upublications" "type" $.Type}}"
                                 hx-target="#tbl-upublications"
-                                hx-include="[name='ayear']">
+                                hx-include="[name='ayear']"
+                                hx-indicator="#tbl-upublications .overlay-transparent">
                                 <option value="">All years</option>
                                 {{ range $uyear := $.AllUPublicationYears}}
                                 <option value="{{$uyear}}" {{if eq $uyear $.UYear}}selected{{end}}>{{$uyear}}</option>
@@ -78,7 +79,8 @@
                                 class="form-select w-100"
                                 hx-post="{{pathFor "dashboard_refresh_apublications" "type" $.Type}}" 
                                 hx-target="#tbl-apublications"
-                                hx-include="[name='uyear']">
+                                hx-include="[name='uyear']"
+                                hx-indicator="#tbl-apublications .overlay-transparent">
                                 <option value="">All years</option>
                                 {{ range $ayear := $.AllUPublicationYears}}
                                 <option value="{{$ayear}}" {{if eq $ayear $.AYear}}selected{{end}}>{{$ayear}}</option>
