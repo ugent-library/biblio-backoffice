@@ -13,7 +13,7 @@ describe('Issue #1123:  WoS import cuts keywords up because of newlines in impor
 
     cy.contains('a.list-group-item', 'Description').click()
 
-    cy.contains('label', 'Keywords')
+    cy.getLabel('Keywords')
       .next('div')
       .find('ul > li > span')
       .then($spans => Cypress._.map($spans, 'innerText'))
