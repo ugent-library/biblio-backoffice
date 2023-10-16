@@ -121,19 +121,17 @@ describe('The home page', () => {
     cy.contains('.c-sidebar nav a', menuItem)
       .invoke('attr', 'href')
       .then(href => {
-        cy.request(href)
-          .debug()
-          .then(response => {
-            expect(response.isOkStatusCode).to.be.true
-            expect(response.redirects).is.an('array').that.has.length(2)
+        cy.request(href).then(response => {
+          expect(response.isOkStatusCode).to.be.true
+          expect(response.redirects).is.an('array').that.has.length(2)
 
-            const redirects = response.redirects
-              .map(url => url.replace(/^\d{3}\: /, '')) // Redirect entries are in form '3XX: {url}'
-              .map(url => new URL(url))
+          const redirects = response.redirects
+            .map(url => url.replace(/^\d{3}\: /, '')) // Redirect entries are in form '3XX: {url}'
+            .map(url => new URL(url))
 
-            expect(redirects[0]).to.have.property('pathname', '/login')
-            expect(redirects[1]).to.have.property('hostname', 'test.liblogin.ugent.be')
-          })
+          expect(redirects[0]).to.have.property('pathname', '/login')
+          expect(redirects[1]).to.have.property('hostname', 'test.liblogin.ugent.be')
+        })
       })
   }
 })

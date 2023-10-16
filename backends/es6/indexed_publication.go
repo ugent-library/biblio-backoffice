@@ -19,6 +19,7 @@ type indexedPublication struct {
 	Classification          string   `json:"classification,omitempty"`
 	Contributor             []string `json:"contributor,omitempty"`
 	CreatorID               string   `json:"creator_id,omitempty"`
+	ConferenceName          string   `json:"conference_name,omitempty"`
 	DateCreated             string   `json:"date_created"`
 	DateUpdated             string   `json:"date_updated"`
 	DOI                     string   `json:"doi,omitempty"`
@@ -58,6 +59,7 @@ func NewIndexedPublication(p *models.Publication) *indexedPublication {
 		BatchID:                 p.BatchID,
 		Classification:          p.Classification,
 		CreatorID:               p.CreatorID,
+		ConferenceName:          p.ConferenceName,
 		DateCreated:             internal_time.FormatTimeUTC(p.DateCreated),
 		DateUpdated:             internal_time.FormatTimeUTC(p.DateUpdated),
 		DOI:                     p.DOI,

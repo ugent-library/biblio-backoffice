@@ -21,7 +21,7 @@ node_modules
 go.work
 
 # Live reloading (reflex, air)
-.reflex.conf
+reflex.conf
 .air.toml
 tmp
 root
@@ -32,6 +32,7 @@ root
 .env
 
 # Cypress
+cypress.env.json
 cypress/videos
 cypress/screenshots
 cypress/cypress-record.sh

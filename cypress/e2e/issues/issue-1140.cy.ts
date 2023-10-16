@@ -13,7 +13,7 @@ describe('Issue #1140: External contributor info is empty in the suggest box', (
 
     cy.contains('People & Affiliations').click()
 
-    cy.contains('.btn', 'Add author').click({ scrollBehavior: false })
+    cy.contains('.btn', 'Add author').click()
 
     cy.ensureModal('Add author').within(() => {
       cy.get('input[name=first_name]').type('John')
@@ -23,16 +23,15 @@ describe('Issue #1140: External contributor info is empty in the suggest box', (
     })
 
     cy.ensureModal('Add author').within(() => {
-      cy.contains('label', 'Roles').next().find('select').select('Validation')
+      cy.getLabel('Roles').click()
+      cy.focused().select('Validation')
 
       cy.contains('.btn', /^Save$/).click()
     })
 
     cy.ensureNoModal()
 
-    cy.contains('table#contributors-author-table tr', 'John Doe')
-      .find('.if.if-edit')
-      .click({ scrollBehavior: 'nearest' })
+    cy.contains('table#contributors-author-table tr', 'John Doe').find('.if.if-edit').click()
 
     cy.get('#person-suggestions')
       .find('.list-group-item')

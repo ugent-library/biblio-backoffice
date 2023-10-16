@@ -48,7 +48,7 @@ describe('Clean-up', { redirectionLimit: PAGE_SIZE }, () => {
               }).as('delete-route')
             })
 
-          //   Force is necessary because button is invisible at this point
+          // Force is necessary because button is invisible at this point (hidden in popover menu)
           cy.get('@confirm-delete').click({ force: true })
 
           cy.contains('.modal-dialog .btn', 'Delete')
