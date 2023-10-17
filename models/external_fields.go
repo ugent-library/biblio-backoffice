@@ -12,8 +12,9 @@ func (ex ExternalFields) Set(key string, values ...string) ExternalFields {
 	return ex
 }
 
-func (ex ExternalFields) Get(key string) []string {
-	return ex[key]
+func (ex ExternalFields) Get(key string) ([]string, bool) {
+	vals, ok := ex[key]
+	return vals, ok
 }
 
 func (ex ExternalFields) Delete(typ string) ExternalFields {
