@@ -211,6 +211,35 @@ func (r *Record) IsVABBApproved() bool {
 	return r.VABBApproved != nil && *r.VABBApproved == 1
 }
 
+func (r *Record) BestFile() *File {
+	for _, f := range r.File {
+		if f.Access == "open" {
+			return &f
+		}
+	}
+	for _, f := range r.File {
+		if f.Access == "restricted" && f.Change != nil && f.Change.To == "open" {
+			return &f
+		}
+	}
+	for _, f := range r.File {
+		if f.Access == "restricted" {
+			return &f
+		}
+	}
+	for _, f := range r.File {
+		if f.Access == "private" && f.Change != nil && f.Change.To == "restricted" {
+			return &f
+		}
+	}
+	for _, f := range r.File {
+		if f.Access == "private" {
+			return &f
+		}
+	}
+	return nil
+}
+
 type Hits struct {
 	Limit  int       `json:"limit"`
 	Offset int       `json:"offset"`
