@@ -119,10 +119,10 @@
     </header>
     <main>
         <div class="d-flex u-maximize-height">
-            <div class="c-sidebar c-sidebar--dark-gray">
+            <div class="c-sidebar {{if and .User .User.CanCurate (eq .UserRole "curator")}} c-sidebar--dark-gray {{end}}">
                 {{if and .User .User.CanCurate}}
                 <div class="dropdown mx-lg-4 mb-6 mt-3">
-                    <button class="btn btn-dark dropdown-toggle w-100 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <button class="btn btn-outline-light dropdown-toggle w-100 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     {{if eq .UserRole "user"}}
                         <i class="if if-briefcase mx-2 ms-lg-4"></i>
                         <span class="visually-hidden">Researcher</span>
