@@ -23,9 +23,7 @@ describe('Issue #1108: Cannot add author without first name', () => {
       cy.contains('Doe External, non-UGent').closest('.list-group-item').contains('.btn', 'Add external author').click()
     })
 
-    cy.ensureModal('Add author').within(() => {
-      cy.contains('.btn', /^Save$/).click()
-    })
+    cy.ensureModal('Add author').closeModal(/^Save$/)
 
     cy.ensureNoModal()
 
@@ -48,9 +46,7 @@ describe('Issue #1108: Cannot add author without first name', () => {
         .click()
     })
 
-    cy.ensureModal('Add author').within(() => {
-      cy.contains('.btn', /^Save$/).click()
-    })
+    cy.ensureModal('Add author').closeModal(/^Save$/)
 
     cy.ensureNoModal()
 

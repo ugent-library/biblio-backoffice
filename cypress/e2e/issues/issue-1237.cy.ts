@@ -414,42 +414,42 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
 
   describe('Add/edit dataset form', () => {
     it('should have clickable labels in the dataset form', () => {
-      setUpDataset(() => {
-        updateFields('Dataset details', () => {
-          cy.intercept('PUT', '/dataset/*/details/edit/refresh-form*').as('refreshForm')
-          cy.setFieldByLabel('License', 'The license is not listed here')
+      setUpDataset()
 
-          cy.wait('@refreshForm')
+      updateFields('Dataset details', () => {
+        cy.intercept('PUT', '/dataset/*/details/edit/refresh-form*').as('refreshForm')
+        cy.setFieldByLabel('License', 'The license is not listed here')
 
-          testFocusForLabel('Title', 'input[type=text][name="title"]')
-          testFocusForLabel('Persistent identifier type', 'select[name="identifier_type"]')
-          testFocusForLabel('Identifier', 'input[type=text][name="identifier"]')
+        cy.wait('@refreshForm')
 
-          testFocusForLabel('Languages', 'select[name="language"]')
-          testFocusForLabel('Publication year', 'input[type=text][name="year"]')
-          testFocusForLabel('Publisher', 'input[type=text][name="publisher"]')
+        testFocusForLabel('Title', 'input[type=text][name="title"]')
+        testFocusForLabel('Persistent identifier type', 'select[name="identifier_type"]')
+        testFocusForLabel('Identifier', 'input[type=text][name="identifier"]')
 
-          testFocusForLabel('Data format', 'input[type=text][name="format"]')
-          // Keywords field: tagify component doesn't support focussing by label
+        testFocusForLabel('Languages', 'select[name="language"]')
+        testFocusForLabel('Publication year', 'input[type=text][name="year"]')
+        testFocusForLabel('Publisher', 'input[type=text][name="publisher"]')
 
-          testFocusForLabel('License', 'select[name="license"]')
-          testFocusForLabel('Other license', 'input[type=text][name="other_license"]')
+        testFocusForLabel('Data format', 'input[type=text][name="format"]')
+        // Keywords field: tagify component doesn't support focussing by label
 
-          testFocusForLabel('Access level', 'select[name="access_level"]')
-        })
+        testFocusForLabel('License', 'select[name="license"]')
+        testFocusForLabel('Other license', 'input[type=text][name="other_license"]')
 
-        testAbstractSection()
-
-        testLinkSection()
-
-        cy.contains('.nav-tabs .nav-item', 'People & Affiliations').click()
-
-        testCreatorSection()
-
-        cy.contains('.nav-tabs .nav-item', 'Biblio Messages').click()
-
-        testMessagesSection()
+        testFocusForLabel('Access level', 'select[name="access_level"]')
       })
+
+      testAbstractSection()
+
+      testLinkSection()
+
+      cy.contains('.nav-tabs .nav-item', 'People & Affiliations').click()
+
+      testCreatorSection()
+
+      cy.contains('.nav-tabs .nav-item', 'Biblio Messages').click()
+
+      testMessagesSection()
     })
   })
 
@@ -580,7 +580,7 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
     )
   }
 
-  function setUpDataset(editDatasetCallback: () => void) {
+  function setUpDataset() {
     cy.visit('/dataset/add')
 
     cy.contains('Register a dataset manually').find(':radio').click()
@@ -597,9 +597,6 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
       },
       true
     )
-
-    // Custom callback here
-    editDatasetCallback()
   }
 
   type FieldsSection =
@@ -621,11 +618,7 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
 
     const modalTitle = new RegExp(`(Edit|Add) ${section}`, 'i')
 
-    cy.ensureModal(modalTitle).within(() => {
-      callback()
-
-      cy.contains('.modal-footer .btn', persist ? 'Save' : 'Cancel').click()
-    })
+    cy.ensureModal(modalTitle).within(callback).closeModal(persist)
 
     cy.ensureNoModal()
   }
