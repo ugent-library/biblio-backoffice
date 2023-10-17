@@ -330,7 +330,6 @@ func newRepo(personService backends.PersonService, organizationService backends.
 			"eissn.add":                mutate.EISSNAdd,
 			"eissn.remove":             mutate.EISSNRemove,
 			"external_fields.set":      mutate.ExternalFieldsSet,
-			"ecoom.set":                mutate.ECOOMSet,
 		},
 	})
 
