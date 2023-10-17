@@ -28,8 +28,10 @@ var updateOai = &cobra.Command{
 	Use:   "update-oai",
 	Short: "Update OAI provider",
 	RunE: func(cmd *cobra.Command, args []string) error {
+		services := newServices()
+
 		oaiEncoder := oaidc.New(config.Frontend.URL)
-		modsEncoder := mods36.New(config.Frontend.URL)
+		modsEncoder := mods36.New(services.Repo, config.Frontend.URL)
 
 		client, err := api.NewClient(config.OAI.APIURL, &securitySource{config.OAI.APIKey})
 		if err != nil {
@@ -84,8 +86,8 @@ var updateOai = &cobra.Command{
 			}
 		}
 
-		// add all publications
 		repo := newServices().Repo
+		// add all publications
 		repo.EachPublication(func(p *models.Publication) bool {
 			oaiID := "oai:archive.ugent.be:" + p.ID
 
@@ -161,6 +163,8 @@ var updateOai = &cobra.Command{
 
 			return true
 		})
+
+		// TODO add all datasets
 
 		return nil
 	},
