@@ -143,8 +143,8 @@ describe('Issue #1246: Close button on toast does not work', () => {
     cy.contains('Publication details').closest('.card-header').contains('.btn', 'Edit').click()
 
     cy.ensureModal('Edit publication details').within(() => {
-      cy.get('input[type=text][name=title]').type('Issue 1246 test [CYPRESSTEST]')
-      cy.get('input[type=text][name=year]').type(new Date().getFullYear().toString())
+      cy.setFieldByLabel('Title', 'Issue 1246 test [CYPRESSTEST]')
+      cy.setFieldByLabel('Publication year', new Date().getFullYear().toString())
 
       cy.contains('.btn', 'Save').click()
     })
@@ -156,8 +156,8 @@ describe('Issue #1246: Close button on toast does not work', () => {
     cy.ensureModal('Add author').within(() => {
       cy.intercept('/publication/*/contributors/author/suggestions?*').as('suggestions')
 
-      cy.get('input[type=text][name=first_name]').type('Griet')
-      cy.get('input[type=text][name=last_name]').type('Alleman')
+      cy.setFieldByLabel('First name', 'Griet')
+      cy.setFieldByLabel('Last name', 'Alleman')
 
       cy.wait('@suggestions')
 

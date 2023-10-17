@@ -1,7 +1,7 @@
 import { logCommand } from './helpers'
 
 export default function ensureToast(expectedTitle: string | RegExp): Cypress.Chainable<JQuery<HTMLElement>> {
-  const log = logCommand('ensureToast', { 'Expected title': expectedTitle }, expectedTitle.toString())
+  const log = logCommand('ensureToast', { 'Expected title': expectedTitle }, expectedTitle)
 
   return cy
     .contains('.toast', expectedTitle, { log: false })
