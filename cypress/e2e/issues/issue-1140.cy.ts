@@ -22,11 +22,11 @@ describe('Issue #1140: External contributor info is empty in the suggest box', (
       cy.contains('.btn', 'Add external author').click()
     })
 
-    cy.ensureModal('Add author').within(() => {
-      cy.setFieldByLabel('Roles', 'Validation')
-
-      cy.contains('.btn', /^Save$/).click()
-    })
+    cy.ensureModal('Add author')
+      .within(() => {
+        cy.setFieldByLabel('Roles', 'Validation')
+      })
+      .closeModal(/^Save$/)
 
     cy.ensureNoModal()
 

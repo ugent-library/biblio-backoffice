@@ -97,14 +97,13 @@ describe('Publication import', () => {
         .click()
     })
 
-    cy.ensureModal('Add author').within(() => {
-      cy.contains('h3', 'Review author information').should('be.visible')
+    cy.ensureModal('Add author')
+      .within(() => {
+        cy.contains('h3', 'Review author information').should('be.visible')
 
-      cy.get('.list-group-item').should('have.length', 1).should('contain.text', 'Griet Alleman')
-
-      // Using RegExp to match entire button text to make sure the "Save and add next" button is not picked instead
-      cy.contains('.btn', /^Save$/).click()
-    })
+        cy.get('.list-group-item').should('have.length', 1).should('contain.text', 'Griet Alleman')
+      })
+      .closeModal(/^Save$/)
 
     cy.ensureNoModal()
 
@@ -158,9 +157,9 @@ function deletePublication(title) {
     .contains('button', 'Delete')
     .click()
 
-  cy.ensureModal('Are you sure?').within(() => {
-    cy.get('.modal-body > p').should('have.text', 'Are you sure you want to delete this publication?')
-
-    cy.contains('.modal-footer .btn', 'Delete').click()
-  })
+  cy.ensureModal('Are you sure?')
+    .within(() => {
+      cy.get('.modal-body > p').should('have.text', 'Are you sure you want to delete this publication?')
+    })
+    .closeModal('Delete')
 }

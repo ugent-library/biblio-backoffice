@@ -17,6 +17,7 @@ import setField from './set-field'
 
 // Dual commands
 import extractBiblioId from './extract-biblio-id'
+import closeModal from './close-modal'
 
 // Parent commands
 Cypress.Commands.addAll({
@@ -60,5 +61,7 @@ Cypress.Commands.addAll(
   },
   {
     extractBiblioId,
+
+    closeModal,
   }
 )
