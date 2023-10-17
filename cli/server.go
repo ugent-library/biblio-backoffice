@@ -193,6 +193,7 @@ func buildRouter(services *backends.Services) (*ich.Mux, error) {
 		Services:         services,
 		BaseURL:          baseURL,
 		Router:           router,
+		Assets:           assets,
 		SessionStore:     sessionStore,
 		SessionName:      sessionName,
 		Timezone:         timezone,

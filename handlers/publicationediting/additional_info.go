@@ -90,7 +90,7 @@ func (h *Handler) UpdateAdditionalInfo(w http.ResponseWriter, r *http.Request, c
 	})
 }
 
-func additionalInfoForm(user *models.User, l *locale.Locale, p *models.Publication, errors validation.Errors) *form.Form {
+func additionalInfoForm(user *models.Person, l *locale.Locale, p *models.Publication, errors validation.Errors) *form.Form {
 	researchFieldOptions := make([]form.SelectOption, len(vocabularies.Map["research_fields"]))
 	for i, v := range vocabularies.Map["research_fields"] {
 		researchFieldOptions[i].Label = v

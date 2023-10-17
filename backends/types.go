@@ -220,8 +220,8 @@ type ProjectService interface {
 }
 
 type UserService interface {
-	GetUser(string) (*models.User, error)
-	GetUserByUsername(string) (*models.User, error)
+	GetUser(string) (*models.Person, error)
+	GetUserByUsername(string) (*models.Person, error)
 }
 
 type OrganizationSearchService interface {
@@ -300,7 +300,7 @@ type UserWithOrganizationsService struct {
 	OrganizationService OrganizationService
 }
 
-func (s *UserWithOrganizationsService) GetUser(id string) (*models.User, error) {
+func (s *UserWithOrganizationsService) GetUser(id string) (*models.Person, error) {
 	u, err := s.UserService.GetUser(id)
 	if err != nil {
 		return nil, err
@@ -318,7 +318,7 @@ func (s *UserWithOrganizationsService) GetUser(id string) (*models.User, error) 
 	return u, nil
 }
 
-func (s *UserWithOrganizationsService) GetUserByUsername(username string) (*models.User, error) {
+func (s *UserWithOrganizationsService) GetUserByUsername(username string) (*models.Person, error) {
 	u, err := s.UserService.GetUserByUsername(username)
 	if err != nil {
 		return nil, err
