@@ -141,7 +141,7 @@ type ECOOMFund struct {
 	CSS                        string   `json:"css,omitempty"`
 	InternationalCollaboration bool     `json:"international_collaboration"`
 	Sector                     []string `json:"sector,omitempty"`
-	FirstYear                  string   `json:"first_year,omitempty"`
+	Validation                 string   `json:"validation,omitempty"`
 	Weight                     string   `json:"weight,omitempty"`
 }
 
@@ -710,8 +710,8 @@ func MapPublication(p *models.Publication, repo *repositories.Repo) *Record {
 			if vals, ok := p.ExternalFields.Get(fmt.Sprintf("%s%s", prefix, "sector")); ok {
 				ecoomFund.Sector = vals
 			}
-			if vals, ok := p.ExternalFields.Get(fmt.Sprintf("%s%s", prefix, "first_year")); ok {
-				ecoomFund.FirstYear = vals[0]
+			if vals, ok := p.ExternalFields.Get(fmt.Sprintf("%s%s", prefix, "validation")); ok {
+				ecoomFund.Validation = vals[0]
 			}
 			rec.ECOOM[fund] = ecoomFund
 		}
