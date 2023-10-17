@@ -11,6 +11,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [v1.0.39] - 2023-10-17
+
+### Added
+
+- Cypress testing improvements
+- Switch to Bootstrap 5
+- Application structure simplifications and improvements
+- Various ux improvements
+- #1237: Various accessibility improvements
+- #1227: Make conference name searchable
+
+### Fixed
+
+- #1223: Fix empty librarian tag facet values
+
 ## [v1.0.38] - 2023-09-22
 
 ### Added
@@ -413,7 +428,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.38...HEAD
+[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.39...HEAD
+[v1.0.39]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.38...v1.0.39
 [v1.0.38]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.37...v1.0.38
 [v1.0.37]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.36...v1.0.37
 [v1.0.36]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.35...v1.0.36

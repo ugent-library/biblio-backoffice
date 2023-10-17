@@ -324,13 +324,30 @@ func (s *Store) GetCurrentSnapshot(id string, o Options) (*Snapshot, error) {
 	return &snap, nil
 }
 
+func (s *Store) GetSnapshotBefore(id string, dateFrom time.Time, o Options) (*Snapshot, error) {
+	ctx, db := s.ctxAndDb(o)
+
+	sql := `SELECT snapshot_id, data, date_from FROM ` + s.table + `
+	WHERE id = $1 AND date_from < $2
+	ORDER BY date_from DESC
+	LIMIT 1`
+
+	snap := Snapshot{}
+
+	if err := db.QueryRow(ctx, sql, id, dateFrom).Scan(&snap.SnapshotID, &snap.Data, &snap.DateFrom); err != nil {
+		return nil, err
+	}
+
+	return &snap, nil
+}
+
 func (s *Store) GetByID(ids []string, o Options) (*Cursor, error) {
 	ctx, db := s.ctxAndDb(o)
 
 	pgIds := &pgtype.TextArray{}
 	pgIds.Set(ids)
 	sql := "SELECT snapshot_id, id, data, date_from, date_until FROM " + s.table +
-		" WHERE date_until IS NULL AND id = any($1) order by array_position($1, id)"
+		" WHERE date_until IS NULL AND id = any($1) ORDER BY array_position($1, id)"
 
 	rows, err := db.Query(ctx, sql, pgIds)
 	if err != nil {

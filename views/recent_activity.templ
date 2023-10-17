@@ -1,0 +1,117 @@
+package views
+
+import (
+    "time"
+    "github.com/ugent-library/biblio-backoffice/ctx"
+    "github.com/ugent-library/biblio-backoffice/models"
+)
+
+type ActivityObject int
+type ActivityEvent int
+
+const (
+    PublicationObject ActivityObject = iota
+    DatasetObject
+
+    CreateEvent ActivityEvent = iota
+    PublishEvent
+    RepublishEvent
+    WithdrawEvent
+    LockEvent
+    UpdateEvent
+    MessageEvent   
+)
+
+type Activity struct {
+    Event     ActivityEvent
+    User      *models.Person
+    Object    ActivityObject
+    Datestamp time.Time
+    Status    string
+    URL       string
+    Title     string
+}
+
+templ RecentActivity(c *ctx.Ctx, acts []Activity) {
+    <div class="mb-6">
+        <div class="bc-toolbar">
+            <div class="bc-toolbar-left">
+                <h2>Recent activity</h2>
+            </div>
+            <div class="bc-toolbar-right">
+                <a class="btn btn-tertiary" href="#">
+                    <span class="btn-text">View all</span>
+                    <i class="if if-chevron-right"></i>
+                </a>
+            </div>
+        </div>
+        if len(acts) > 0 {
+        <ul class="c-activity-list">
+            for _, act := range acts {
+            <li class="c-activity-item">
+                <div class="c-activity-item__avatar-wrapper">
+                    <div class="bc-avatar bc-avatar--muted bc-avatar--small">
+                        switch act.Event {
+                        case CreateEvent:
+                        <i class="if if-article"></i>
+                        case PublishEvent, RepublishEvent:
+                        <i class="if if-book"></i>
+                        case WithdrawEvent:
+                        <i class="if if-arrow-go-back"></i>
+                        case LockEvent:
+                        <i class="if if-check"></i>
+                        case UpdateEvent:
+                        <i class="if if-edit"></i>
+                        case MessageEvent:
+                        <i class="if if-message"></i>
+                        }
+                    </div>
+                </div>
+                <div class="c-activity-item__content">
+                    <div class="c-activity-item__activity">
+                        <div class="c-activity-item__date">{ act.Datestamp.In(c.Timezone).Format("2006-01-02 15:04") }</div>
+                        <div class="c-activity-item__text">
+                            <span>
+                            if act.User != nil && act.User.CanCurate() {
+                                A Biblio Team member
+                            } else if act.User != nil {
+                                { act.User.FullName }
+                            } else {
+                                System
+                            }
+                            </span>
+                            { " " }
+                            switch act.Event {
+                            case CreateEvent:
+                            started a { act.Status }
+                            case PublishEvent:
+                            published
+                            case RepublishEvent:
+                            republished
+                            case WithdrawEvent:
+                            withdrew
+                            case LockEvent:
+                            locked
+                            case UpdateEvent:
+                            edited
+                            case MessageEvent:
+                            left a comment on
+                            }
+                            { " " }
+                            switch act.Object {
+                            case PublicationObject:
+                            publication
+                            case DatasetObject:
+                            dataset
+                            }
+                            { " " }
+                            <a class="c-activity-item__link" href={ templ.URL(act.URL) }>{ act.Title }</a>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            }
+        </ul>
+        }
+    </div>
+}
