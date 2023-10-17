@@ -226,3 +226,11 @@ func ExternalFieldsSet(p *models.Publication, args []string) error {
 	p.ExternalFields.Set(args[0], args[1:]...)
 	return nil
 }
+
+func ECOOMSet(p *models.Publication, args []string) error {
+	if len(args) < 1 {
+		return errors.New("no key supplied")
+	}
+	args[0] = "ecoom-" + args[0]
+	return ExternalFieldsSet(p, args)
+}
