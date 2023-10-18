@@ -70,7 +70,7 @@ func (h *Handler) RefreshEditFileForm(w http.ResponseWriter, r *http.Request, ct
 	ctx.Dataset.AccessLevelAfterEmbargo = b.AccessLevelAfterEmbargo
 	ctx.Dataset.EmbargoDate = b.EmbargoDate
 	ctx.Dataset.Format = b.Format
-	ctx.Dataset.Identifiers = models.Identifiers{b.IdentifierType: []string{b.Identifier}}
+	ctx.Dataset.Identifiers = models.Values{b.IdentifierType: []string{b.Identifier}}
 	ctx.Dataset.Keyword = b.Keyword
 	ctx.Dataset.Language = b.Language
 	ctx.Dataset.License = b.License
@@ -107,7 +107,7 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 	ctx.Dataset.Format = b.Format
 	ctx.Dataset.Language = b.Language
 	ctx.Dataset.Keyword = b.Keyword
-	ctx.Dataset.Identifiers = models.Identifiers{b.IdentifierType: []string{b.Identifier}}
+	ctx.Dataset.Identifiers = models.Values{b.IdentifierType: []string{b.Identifier}}
 	ctx.Dataset.License = b.License
 	ctx.Dataset.OtherLicense = b.OtherLicense
 	ctx.Dataset.Publisher = b.Publisher
