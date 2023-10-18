@@ -3,6 +3,7 @@ package oaidc
 import (
 	"bytes"
 	"encoding/xml"
+	"fmt"
 
 	"github.com/ugent-library/biblio-backoffice/frontoffice"
 	"github.com/ugent-library/biblio-backoffice/identifiers"
@@ -169,12 +170,11 @@ func (e *Encoder) encode(r *frontoffice.Record) ([]byte, error) {
 		}
 	}
 
-	// for _, val := range r.Project {
-	// TODO
-	// if ($project->{eu_id} && $project->{eu_framework_programme}) {
-	// 	push @{$dc->{relation} ||= []}, "info:eu-repo/grantAgreement/EC/$project->{eu_framework_programme}/$project->{eu_id}";
-	// }
-	// }
+	for _, val := range r.Project {
+		if val.EUFrameworkProgramme != "" && val.EUID != "" {
+			writeField(b, "relation", fmt.Sprintf("info:eu-repo/grantAgreement/EC/%s/%s", val.EUFrameworkProgramme, val.EUID))
+		}
+	}
 
 	b.WriteString(endTag)
 
