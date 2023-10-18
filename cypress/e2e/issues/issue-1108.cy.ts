@@ -1,3 +1,5 @@
+// https://github.com/ugent-library/biblio-backoffice/issues/1108
+
 describe('Issue #1108: Cannot add author without first name', () => {
   beforeEach(() => {
     cy.loginAsResearcher()
@@ -11,19 +13,17 @@ describe('Issue #1108: Cannot add author without first name', () => {
 
     cy.contains('People & Affiliations').click()
 
-    cy.contains('.btn', 'Add author').click({ scrollBehavior: false })
+    cy.contains('.btn', 'Add author').click()
   })
 
   it('should be possible to add author without first name', () => {
     cy.ensureModal('Add author').within(() => {
-      cy.get('input[name=last_name]').type('Doe')
+      cy.setFieldByLabel('Last name', 'Doe')
 
       cy.contains('Doe External, non-UGent').closest('.list-group-item').contains('.btn', 'Add external author').click()
     })
 
-    cy.ensureModal('Add author').within(() => {
-      cy.contains('.btn', /^Save$/).click()
-    })
+    cy.ensureModal('Add author').closeModal(/^Save$/)
 
     cy.ensureNoModal()
 
@@ -38,7 +38,7 @@ describe('Issue #1108: Cannot add author without first name', () => {
 
   it('should be possible to add author without last name', () => {
     cy.ensureModal('Add author').within(() => {
-      cy.get('input[name=first_name]').type('John')
+      cy.setFieldByLabel('First name', 'John')
 
       cy.contains('John External, non-UGent')
         .closest('.list-group-item')
@@ -46,9 +46,7 @@ describe('Issue #1108: Cannot add author without first name', () => {
         .click()
     })
 
-    cy.ensureModal('Add author').within(() => {
-      cy.contains('.btn', /^Save$/).click()
-    })
+    cy.ensureModal('Add author').closeModal(/^Save$/)
 
     cy.ensureNoModal()
 

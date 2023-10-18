@@ -2,24 +2,46 @@
   background-color: $gray-50;
   color: $gray-600;
   border-radius: 3rem;
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   font-weight: 500;
   height: 2rem;
   min-width: 2rem;
   text-align: center;
   line-height: 2rem;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-self: center;
   padding: 0 .6rem;
 }
 
 .c-counter--primary {
-  background-color: $blue;
+  background-color: $primary;
   color: $white;
 }
 
 .c-counter--danger {
   background-color: $danger;
   color: $white;
+}
+
+.c-counter--primary-light {
+  background-color: $blue-100;
+  color: $blue-700;
+}
+
+.c-counter--danger-light {
+  background-color: $red-100;
+  color: $red-700;
+}
+
+.c-counter--warning-light {
+  background-color: $orange-100;
+  color: $orange-700;
+}
+
+.c-counter--success-light {
+  background-color: $green-100;
+  color: $green-700;
 }
 
 .c-counter--small {

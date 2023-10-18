@@ -15,7 +15,7 @@
 }
 
 .c-master-detail-responsive {
-  @include media-breakpoint-down(md) {
+  @include media-breakpoint-down(lg) {
     position: relative;
 
     [data-detail],

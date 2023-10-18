@@ -2,31 +2,32 @@
   "private": true,
   "scripts": {
     "test": "cypress run --config-file cypress/cypress.config.ts",
+    "test:local": "cypress run --config-file cypress/cypress.config.ts --config baseUrl=http://localhost:3001",
     "cypress:open": "cypress open --config-file cypress/cypress.config.ts --browser chrome --e2e",
+    "cypress:open:local": "cypress open --config-file cypress/cypress.config.ts --browser chrome --e2e --config baseUrl=http://localhost:3001",
     "cypress:record": "cypress/cypress-record.sh",
-    "precommit": "node node_modules/js-precommit-hook"
+    "precommit": "node node_modules/js-precommit-hook",
+    "generate-issue-test": "node ./cypress/scripts/generate-issue-test.mjs"
   },
   "precommit": "precommit",
   "dependencies": {
     "@yaireo/tagify": "^4.17.7",
     "bootstrap": "^5.2.3",
-    "bootstrap.native": "4.1.0",
+    "bootstrap.native": "^5.0.9",
     "flatpickr": "^4.6.3",
-    "htmx.org": "^1.7.0",
-    "node-sass": "^4.14.1",
-    "popper.js": "^1.16.1",
-    "sortablejs": "^1.14.0"
+    "htmx.org": "^1.9.6",
+    "sass": "^1.68.0",
+    "sortablejs": "^1.15.0"
   },
   "devDependencies": {
-    "cypress": "^12.17.4",
+    "cypress": "^13.3.0",
     "cypress-dotenv": "^2.0.0",
     "dotenv": "^16.3.1",
     "js-precommit-hook": "git+https://github.com/ugent-library/js-precommit-hook.git",
-    "laravel-mix": "^6.0.11",
-    "resolve-url-loader": "^4.0.0",
-    "sass": "^1.35.1",
-    "sass-loader": "^12.1.0",
-    "typescript": "^5.1.6",
-    "uglify-js": "^3.14.2"
+    "laravel-mix": "^6.0.49",
+    "resolve-url-loader": "^5.0.0",
+    "sass": "^1.68.0",
+    "sass-loader": "^12.6.0",
+    "typescript": "^5.1.6"
   }
 }

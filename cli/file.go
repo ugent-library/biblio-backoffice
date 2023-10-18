@@ -10,7 +10,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/ugent-library/biblio-backoffice/internal/backends"
+	"github.com/ugent-library/biblio-backoffice/backends"
 )
 
 type importFile struct {
@@ -20,10 +20,10 @@ type importFile struct {
 }
 
 func init() {
+	rootCmd.AddCommand(fileCmd)
 	fileCmd.AddCommand(fileAddCmd)
 	fileCmd.AddCommand(fileAddManyCmd)
 	fileCmd.AddCommand(fileImportManyCmd)
-	rootCmd.AddCommand(fileCmd)
 }
 
 func addFile(fileStore backends.FileStore, path, checksum string) (string, error) {
@@ -40,7 +40,7 @@ func addFile(fileStore backends.FileStore, path, checksum string) (string, error
 }
 
 var fileCmd = &cobra.Command{
-	Use:   "file [command]",
+	Use:   "file",
 	Short: "File commands",
 }
 

@@ -1,3 +1,5 @@
+// https://github.com/ugent-library/biblio-backoffice/issues/1140
+
 describe('Issue #1140: External contributor info is empty in the suggest box', () => {
   it('should display the external contributor name in the suggestions', () => {
     cy.loginAsResearcher()
@@ -11,26 +13,24 @@ describe('Issue #1140: External contributor info is empty in the suggest box', (
 
     cy.contains('People & Affiliations').click()
 
-    cy.contains('.btn', 'Add author').click({ scrollBehavior: false })
+    cy.contains('.btn', 'Add author').click()
 
     cy.ensureModal('Add author').within(() => {
-      cy.get('input[name=first_name]').type('John')
-      cy.get('input[name=last_name]').type('Doe')
+      cy.setFieldByLabel('First name', 'John')
+      cy.setFieldByLabel('Last name', 'Doe')
 
       cy.contains('.btn', 'Add external author').click()
     })
 
-    cy.ensureModal('Add author').within(() => {
-      cy.contains('label', 'Roles').next().find('select').select('Validation')
-
-      cy.contains('.btn', /^Save$/).click()
-    })
+    cy.ensureModal('Add author')
+      .within(() => {
+        cy.setFieldByLabel('Roles', 'Validation')
+      })
+      .closeModal(/^Save$/)
 
     cy.ensureNoModal()
 
-    cy.contains('table#contributors-author-table tr', 'John Doe')
-      .find('.if.if-edit')
-      .click({ scrollBehavior: 'nearest' })
+    cy.contains('table#contributors-author-table tr', 'John Doe').find('.if.if-edit').click()
 
     cy.get('#person-suggestions')
       .find('.list-group-item')

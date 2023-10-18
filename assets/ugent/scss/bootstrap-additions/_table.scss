@@ -11,6 +11,10 @@
   border-top: none;
 }
 
+.table tr:first-child td {
+  border-top: none;
+}
+
 .table td {
   height: 6.4rem;
   vertical-align: middle;
@@ -138,8 +142,9 @@
   td {
     background-color: $gray-50;
     font-weight: 500;
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     color: $text-muted;
     height: 4rem;
   }
 }
+

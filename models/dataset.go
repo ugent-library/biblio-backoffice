@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/oklog/ulid/v2"
-	"github.com/ugent-library/biblio-backoffice/internal/pagination"
-	"github.com/ugent-library/biblio-backoffice/internal/validation"
-	"github.com/ugent-library/biblio-backoffice/internal/vocabularies"
+	"github.com/ugent-library/biblio-backoffice/pagination"
+	"github.com/ugent-library/biblio-backoffice/validation"
+	"github.com/ugent-library/biblio-backoffice/vocabularies"
 )
 
 type DatasetHits struct {

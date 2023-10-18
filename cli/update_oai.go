@@ -4,13 +4,12 @@ import (
 	"context"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"github.com/ugent-library/oai-service/api/v1"
 
-	"github.com/ugent-library/biblio-backoffice/internal/backends/mods36"
-	"github.com/ugent-library/biblio-backoffice/internal/backends/oaidc"
-	"github.com/ugent-library/biblio-backoffice/internal/vocabularies"
+	"github.com/ugent-library/biblio-backoffice/backends/mods36"
+	"github.com/ugent-library/biblio-backoffice/backends/oaidc"
 	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/vocabularies"
 )
 
 func init() {
@@ -29,12 +28,12 @@ var updateOai = &cobra.Command{
 	Use:   "update-oai",
 	Short: "Update OAI provider",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		logger := newLogger()
+		services := newServices()
 
-		oaiEncoder := oaidc.New(viper.GetString("frontend-url"))
-		modsEncoder := mods36.New(viper.GetString("frontend-url"))
+		oaiEncoder := oaidc.New(services.Repo, config.Frontend.URL)
+		modsEncoder := mods36.New(services.Repo, config.Frontend.URL)
 
-		client, err := api.NewClient(viper.GetString("oai-api-url"), &securitySource{viper.GetString("oai-api-key")})
+		client, err := api.NewClient(config.OAI.APIURL, &securitySource{config.OAI.APIKey})
 		if err != nil {
 			return err
 		}
@@ -86,9 +85,16 @@ var updateOai = &cobra.Command{
 				return err
 			}
 		}
+		err = client.AddSet(context.TODO(), &api.AddSetRequest{
+			SetSpec: "biblio:dataset",
+			SetName: "Biblio datasets",
+		})
+		if err != nil {
+			return err
+		}
 
+		repo := newServices().Repo
 		// add all publications
-		repo := Services().Repo
 		repo.EachPublication(func(p *models.Publication) bool {
 			oaiID := "oai:archive.ugent.be:" + p.ID
 
@@ -152,6 +158,70 @@ var updateOai = &cobra.Command{
 					break
 				}
 			}
+
+			err = client.AddItem(context.TODO(), &api.AddItemRequest{
+				Identifier: oaiID,
+				SetSpecs:   setSpecs,
+			})
+			if err != nil {
+				// TODO
+				logger.Fatal(err)
+			}
+
+			return true
+		})
+
+		// TODO add all datasets
+		repo.EachDataset(func(d *models.Dataset) bool {
+			oaiID := "oai:archive.ugent.be:" + d.ID
+
+			if d.Status == "deleted" && d.HasBeenPublic {
+				err = client.DeleteRecord(context.TODO(), &api.DeleteRecordRequest{
+					Identifier: oaiID,
+				})
+				if err != nil {
+					// TODO
+					logger.Fatal(err)
+				}
+				return true
+			}
+
+			if d.Status != "public" {
+				return true
+			}
+
+			metadata, err := oaiEncoder.EncodeDataset(d)
+			if err != nil {
+				// TODO
+				logger.Fatal(err)
+			}
+
+			err = client.AddRecord(context.TODO(), &api.AddRecordRequest{
+				Identifier:     oaiID,
+				MetadataPrefix: "oai_dc",
+				Content:        string(metadata),
+			})
+			if err != nil {
+				logger.Fatal(err)
+			}
+
+			metadata, err = modsEncoder.EncodeDataset(d)
+			if err != nil {
+				// TODO
+				logger.Fatal(err)
+			}
+
+			err = client.AddRecord(context.TODO(), &api.AddRecordRequest{
+				Identifier:     oaiID,
+				MetadataPrefix: "mods_36",
+				Content:        string(metadata),
+			})
+			if err != nil {
+				// TODO
+				logger.Fatal(err)
+			}
+
+			setSpecs := []string{"biblio", "biblio:dataset"}
 
 			err = client.AddItem(context.TODO(), &api.AddItemRequest{
 				Identifier: oaiID,

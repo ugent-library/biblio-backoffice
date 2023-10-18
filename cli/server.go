@@ -6,112 +6,53 @@ import (
 	"html/template"
 	"net/http"
 	"net/url"
-	"strings"
 	"time"
 
 	"github.com/Masterminds/sprig/v3"
-	"github.com/gorilla/mux"
+	"github.com/go-chi/chi/v5"
 	"github.com/gorilla/sessions"
+	"github.com/nics/ich"
 	"github.com/oklog/ulid/v2"
 	"github.com/ory/graceful"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-	"github.com/ugent-library/biblio-backoffice/internal/app/helpers"
-	"github.com/ugent-library/biblio-backoffice/internal/app/routes"
-	"github.com/ugent-library/biblio-backoffice/internal/backends"
-	"github.com/ugent-library/biblio-backoffice/internal/bind"
-	"github.com/ugent-library/biblio-backoffice/internal/locale"
-	"github.com/ugent-library/biblio-backoffice/internal/render"
-	"github.com/ugent-library/biblio-backoffice/internal/urls"
-	"github.com/ugent-library/biblio-backoffice/internal/vocabularies"
+	"github.com/ugent-library/biblio-backoffice/backends"
+	"github.com/ugent-library/biblio-backoffice/bind"
+	"github.com/ugent-library/biblio-backoffice/helpers"
+	"github.com/ugent-library/biblio-backoffice/locale"
+	"github.com/ugent-library/biblio-backoffice/render"
+	"github.com/ugent-library/biblio-backoffice/routes"
+	"github.com/ugent-library/biblio-backoffice/urls"
+	"github.com/ugent-library/biblio-backoffice/vocabularies"
 	"github.com/ugent-library/middleware"
 	"github.com/ugent-library/mix"
 	"github.com/ugent-library/oidc"
 	"github.com/ugent-library/zaphttp"
 	"go.uber.org/zap"
 
-	_ "github.com/ugent-library/biblio-backoffice/internal/translations"
+	_ "github.com/ugent-library/biblio-backoffice/translations"
 )
 
 func init() {
-	serverCmd.PersistentFlags().String("base-url", "", "base url")
-
-	serverStartCmd.Flags().String("mode", defaultMode, "server mode (development, staging or production)")
-	serverStartCmd.Flags().String("host", "", "server host")
-	serverStartCmd.Flags().Int("port", defaultPort, "server port")
-	serverStartCmd.Flags().String("session-name", defaultSessionName, "session name")
-	serverStartCmd.Flags().String("session-secret", "", "session secret")
-	serverStartCmd.Flags().Int("session-max-age", defaultSessionMaxAge, "session lifetime")
-	serverStartCmd.Flags().String("csrf-name", "", "csrf cookie name")
-	serverStartCmd.Flags().String("csrf-secret", "", "csrf cookie secret")
-	serverStartCmd.Flags().String("location", defaultTimezone, "location used for date and time display")
-
-	serverCmd.AddCommand(serverRoutesCmd)
-	serverCmd.AddCommand(serverStartCmd)
 	rootCmd.AddCommand(serverCmd)
+	serverCmd.AddCommand(serverStartCmd)
 }
 
 var serverCmd = &cobra.Command{
-	Use:   "server [command]",
-	Short: "The biblio-backoffice HTTP server",
-}
-
-var serverRoutesCmd = &cobra.Command{
-	Use:   "routes",
-	Short: "print routes",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		router, err := buildRouter(Services(), newLogger())
-		if err != nil {
-			return err
-		}
-		return router.Walk(func(route *mux.Route, router *mux.Router, ancestors []*mux.Route) error {
-			hostTemplate, err := route.GetHostTemplate()
-			if err == nil {
-				fmt.Println("HOST:", hostTemplate)
-			}
-			pathTemplate, err := route.GetPathTemplate()
-			if err == nil {
-				fmt.Println("ROUTE:", pathTemplate)
-			}
-			pathRegexp, err := route.GetPathRegexp()
-			if err == nil {
-				fmt.Println("Path regexp:", pathRegexp)
-			}
-			queriesTemplates, err := route.GetQueriesTemplates()
-			if err == nil {
-				fmt.Println("Queries templates:", strings.Join(queriesTemplates, ","))
-			}
-			queriesRegexps, err := route.GetQueriesRegexp()
-			if err == nil {
-				fmt.Println("Queries regexps:", strings.Join(queriesRegexps, ","))
-			}
-			methods, err := route.GetMethods()
-			if err == nil {
-				fmt.Println("Methods:", strings.Join(methods, ","))
-			}
-			fmt.Println()
-			return nil
-		})
-	},
+	Use:   "server",
+	Short: "Biblio backoffice HTTP server",
 }
 
 var serverStartCmd = &cobra.Command{
 	Use:   "start",
 	Short: "start the http server",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		production := viper.GetString("mode") == "production"
+		services := newServices()
 
-		// setup logger
-		logger := newLogger()
-
-		// setup services
-		e := Services()
-
-		e.MediaTypeSearchService.IndexAll()
+		services.MediaTypeSearchService.IndexAll()
 		// e.LicenseSearchService.IndexAll()
 
 		// setup router
-		router, err := buildRouter(e, logger)
+		router, err := buildRouter(services)
 		if err != nil {
 			return err
 		}
@@ -119,7 +60,7 @@ var serverStartCmd = &cobra.Command{
 		// apply these before request reaches the router
 		handler := middleware.Apply(router,
 			middleware.Recover(func(err any) {
-				if production {
+				if config.Env == "local" {
 					logger.With(zap.Stack("stack")).Error(err)
 				} else {
 					logger.Error(err)
@@ -132,7 +73,7 @@ var serverStartCmd = &cobra.Command{
 		)
 
 		// setup server
-		addr := fmt.Sprintf("%s:%d", viper.GetString("host"), viper.GetInt("port"))
+		addr := fmt.Sprintf("%s:%d", config.Host, config.Port)
 		server := graceful.WithDefaults(&http.Server{
 			Addr:         addr,
 			Handler:      handler,
@@ -149,21 +90,16 @@ var serverStartCmd = &cobra.Command{
 	},
 }
 
-func buildRouter(services *backends.Services, logger *zap.SugaredLogger) (*mux.Router, error) {
-	mode := viper.GetString("mode")
-
-	host := viper.GetString("host")
-	port := viper.GetInt("port")
-
-	b := viper.GetString("base-url")
+func buildRouter(services *backends.Services) (*ich.Mux, error) {
+	b := config.BaseURL
 	if b == "" {
-		if host == "" {
+		if config.Host == "" {
 			b = "http://localhost"
 		} else {
-			b = "http://" + host
+			b = "http://" + config.Host
 		}
-		if port != 80 {
-			b = fmt.Sprintf("%s:%d", b, port)
+		if config.Port != 80 {
+			b = fmt.Sprintf("%s:%d", b, config.Port)
 		}
 	}
 	baseURL, err := url.Parse(b)
@@ -172,7 +108,7 @@ func buildRouter(services *backends.Services, logger *zap.SugaredLogger) (*mux.R
 	}
 
 	// router
-	router := mux.NewRouter()
+	router := ich.New()
 
 	// assets
 	assets, err := mix.New(mix.Config{
@@ -186,12 +122,12 @@ func buildRouter(services *backends.Services, logger *zap.SugaredLogger) (*mux.R
 	// renderer
 	funcMaps := []template.FuncMap{
 		sprig.FuncMap(),
-		urls.FuncMap(router),
+		urls.FuncMap(router, baseURL.Scheme, baseURL.Host),
 		helpers.FuncMap(),
 		{
 			"assetPath": assets.AssetPath,
 			"appMode": func() string { // TODO eliminate need for this
-				return mode
+				return config.Env
 			},
 			"vocabulary": func(k string) []string { // TODO eliminate need for this?
 				return vocabularies.Map[k]
@@ -200,7 +136,7 @@ func buildRouter(services *backends.Services, logger *zap.SugaredLogger) (*mux.R
 	}
 
 	// init render
-	render.AuthURL = baseURL.Path + "/login"
+	render.AuthURL = "/login"
 
 	for _, funcs := range funcMaps {
 		render.Funcs(funcs)
@@ -210,8 +146,9 @@ func buildRouter(services *backends.Services, logger *zap.SugaredLogger) (*mux.R
 	// init bind
 	bind.PathValuesFunc = func(r *http.Request) url.Values {
 		p := url.Values{}
-		for k, v := range mux.Vars(r) {
-			p.Set(k, v)
+		params := chi.RouteContext(r.Context()).URLParams
+		for i, k := range params.Keys {
+			p.Set(k, params.Values[i])
 		}
 		return p
 	}
@@ -220,16 +157,16 @@ func buildRouter(services *backends.Services, logger *zap.SugaredLogger) (*mux.R
 	localizer := locale.NewLocalizer("en")
 
 	//
-	timezone, err := time.LoadLocation(viper.GetString("timezone"))
+	timezone, err := time.LoadLocation(config.Timezone)
 	if err != nil {
 		return nil, err
 	}
 
 	// sessions & auth
-	sessionSecret := []byte(viper.GetString("session-secret"))
-	sessionName := viper.GetString("session-name")
+	sessionSecret := []byte(config.Session.Secret)
+	sessionName := config.Session.Name
 	sessionStore := sessions.NewCookieStore(sessionSecret)
-	sessionStore.MaxAge(viper.GetInt("session-max-age"))
+	sessionStore.MaxAge(config.Session.MaxAge)
 	sessionStore.Options.Path = "/"
 	if baseURL.Path != "" {
 		sessionStore.Options.Path = baseURL.Path
@@ -238,20 +175,39 @@ func buildRouter(services *backends.Services, logger *zap.SugaredLogger) (*mux.R
 	sessionStore.Options.Secure = baseURL.Scheme == "https"
 
 	oidcAuth, err := oidc.NewAuth(context.TODO(), oidc.Config{
-		URL:          viper.GetString("oidc-url"),
-		ClientID:     viper.GetString("oidc-client-id"),
-		ClientSecret: viper.GetString("oidc-client-secret"),
+		URL:          config.OIDC.URL,
+		ClientID:     config.OIDC.ClientID,
+		ClientSecret: config.OIDC.ClientSecret,
 		RedirectURL:  baseURL.String() + "/auth/openid-connect/callback",
-		CookieName:   viper.GetString("session-name") + ".state",
-		CookieSecret: []byte(viper.GetString("session-secret")),
-		Insecure:     mode != "production",
+		CookieName:   config.Session.Name + ".state",
+		CookieSecret: []byte(config.Session.Secret),
+		Insecure:     config.Env != "local",
 	})
 	if err != nil {
 		return nil, err
 	}
 
 	// add routes
-	routes.Register(services, baseURL, router, sessionStore, sessionName, timezone, localizer, logger, oidcAuth)
+	routes.Register(routes.Config{
+		Env:              config.Env,
+		Services:         services,
+		BaseURL:          baseURL,
+		Router:           router,
+		Assets:           assets,
+		SessionStore:     sessionStore,
+		SessionName:      sessionName,
+		Timezone:         timezone,
+		Localizer:        localizer,
+		Logger:           logger,
+		OIDCAuth:         oidcAuth,
+		FrontendURL:      config.Frontend.URL,
+		FrontendUsername: config.Frontend.Username,
+		FrontendPassword: config.Frontend.Password,
+		IPRanges:         config.IPRanges,
+		MaxFileSize:      config.MaxFileSize,
+		CSRFName:         config.CSRF.Name,
+		CSRFSecret:       config.CSRF.Secret,
+	})
 
 	return router, nil
 }

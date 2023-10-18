@@ -5,12 +5,12 @@ import (
 	"log"
 
 	"github.com/spf13/cobra"
-	"github.com/ugent-library/biblio-backoffice/internal/backends"
+	"github.com/ugent-library/biblio-backoffice/backends"
 )
 
 func init() {
-	resetCmd.Flags().Bool("confirm", false, "destructive reset of all data")
 	rootCmd.AddCommand(resetCmd)
+	resetCmd.Flags().Bool("confirm", false, "destructive reset of all data")
 }
 
 var resetCmd = &cobra.Command{
@@ -23,7 +23,7 @@ var resetCmd = &cobra.Command{
 
 		ctx := context.Background()
 
-		services := Services()
+		services := newServices()
 
 		if err := services.Repo.PurgeAllPublications(); err != nil {
 			return err

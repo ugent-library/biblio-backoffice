@@ -36,7 +36,7 @@
             </form>
         </div>
         {{end}}
-        <div class="bc-navbar bc-navbar--small bc-navbar--bordered-bottom bc-navbar--white bc-navbar--fixed bc-navbar--scrollable shadow-sm px-4">
+        <div class="bc-navbar bc-navbar--small bc-navbar--bordered-bottom bc-navbar--white bc-navbar--fixed shadow-sm px-4">
             <div class="bc-toolbar bc-toolbar-sm">
                 <div class="bc-toolbar-left">
                     <div class="bc-toolbar-item">
@@ -44,8 +44,13 @@
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item">
                                     <a href="{{pathFor "home"}}">
-                                        <img class="d-none d-lg-inline-block mb-1" src="{{assetPath "/images/ghent-university-library-logo-smaller.svg"}}" alt="Ghent University Library">
-                                        <img class="d-inline-block d-lg-none mb-1" src="{{assetPath "/images/ghent-university-library-mark-smaller.svg"}}" alt="Ghent University Library">
+                                        <img class="c-logo d-none d-xl-inline-block" src="{{assetPath "/images/ghent-university-library-logo.svg"}}" alt="Ghent University Library">
+                                        <img class="c-logo d-inline-block d-xl-none" src="{{assetPath "/images/ghent-university-library-mark.svg"}}" alt="Ghent University Library">
+                                    </a>
+                                </li>
+                                <li class="breadcrumb-item">
+                                    <a href="{{pathFor "home"}}">
+                                        <i class="if if-book if--small me-3"></i>Biblio
                                     </a>
                                 </li>
                             </ol>
@@ -56,24 +61,24 @@
                     <div class="bc-toolbar-item">
                         <ul class="nav nav-main">
                             <li class="nav-item">
-                                <a class="nav-link collapsed btn-sm" href="{{.FrontendBaseUrl}}/contact" target="_blank">
+                                <a class="nav-link collapsed" href="{{.FrontendBaseUrl}}/contact" target="_blank">
                                     <i class="if if-info-circle if--small text-muted"></i>
                                     <span class="btn-text">Help</span>
                                 </a>
                             </li>
                             <li class="nav-item">
                                 {{if .User}}
-                                    <div class="dropdown position-static">
-                                        <button class="nav-link dropdown-toggle btn-sm" role="button"
+                                    <div class="dropdown">
+                                        <button class="nav-link dropdown-toggle" role="button"
                                             data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             <div class="bc-avatar-and-text">
-                                                <div class="bc-avatar bc-avatar--tiny me-3">
+                                                <div class="bc-avatar bc-avatar--tiny bc-avatar--light-blue me-3">
                                                     <i class="if if-user"></i>
                                                 </div>
                                                 <div class="bc-avatar-text">{{.User.FullName}}</div>
                                             </div>
                                         </button>
-                                        <div class="dropdown-menu mt-8">
+                                        <div class="dropdown-menu mt-2" x-placement="top">
                                             <div class="bc-avatar-and-text m-4">
                                                 <div class="bc-avatar bc-avatar-icon bc-avatar--small">
                                                     <i class="if if-user"></i>
@@ -114,24 +119,24 @@
     </header>
     <main>
         <div class="d-flex u-maximize-height">
-            <div class="c-sidebar{{if eq .UserRole "curator"}} c-sidebar--dark-gray{{end}}">
+            <div class="c-sidebar {{if and .User .User.CanCurate (eq .UserRole "curator")}} c-sidebar--dark-gray {{end}}">
                 {{if and .User .User.CanCurate}}
-                <div class="dropdown mx-4 mt-1 mb-5">
-                    <button class="btn btn-outline-light btn-sm w-100 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <span class="text-truncate">
-                        {{if eq .UserRole "user"}}
-                            Researcher
-                        {{else if eq .UserRole "curator"}}
-                            Librarian
-                        {{end}}
-                      </span>
+                <div class="dropdown mx-lg-4 mb-6 mt-3">
+                    <button class="btn btn-outline-light dropdown-toggle w-100 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    {{if eq .UserRole "user"}}
+                        <i class="if if-briefcase mx-2 ms-lg-4"></i>
+                        <span class="visually-hidden">Researcher</span>
+                    {{else if eq .UserRole "curator"}}
+                        <i class="if if-book mx-2 ms-lg-4"></i>
+                        <span class="visually-hidden">Librarian</span>
+                    {{end}}
                     </button>
                     <div class="dropdown-menu">
                         <button class="dropdown-item" hx-put="{{pathFor "update_role" "role" "user"}}" hx-swap="none">
-                            Researcher
+                            <i class="if if-briefcase"></i> Researcher
                         </button>
                         <button class="dropdown-item" hx-put="{{pathFor "update_role" "role" "curator"}}" hx-swap="none">
-                            Librarian
+                            <i class="if if-book"></i> Librarian
                         </button>
                     </div>
                 </div>
@@ -174,7 +179,8 @@
                     </nav>
                 </div>
                 <div class="c-sidebar__bottom">
-                    <img src="{{assetPath "/images/logo-ugent-white.svg"}}" alt="Logo UGent" height="48px" width="auto">
+                    <img src="{{assetPath "/images/logo-ugent-white.svg"}}" class="d-none d-lg-block" alt="Logo UGent" height="48px" width="auto">
+                    <img src="{{assetPath "/images/mark-ugent-white.svg"}}" class="d-block d-lg-none" alt="Logo UGent" height="20px" width="auto">
                 </div>
             </div>
             {{block "page_content" .}}{{end}}

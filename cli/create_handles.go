@@ -5,9 +5,8 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	"github.com/ugent-library/biblio-backoffice/internal/backends"
+	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/models"
-	"go.uber.org/zap"
 )
 
 func init() {
@@ -18,21 +17,20 @@ var createHandles = &cobra.Command{
 	Use:   "create-handles",
 	Short: "Create handles",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		services := Services()
-		logger := newLogger()
+		services := newServices()
 
 		if services.HandleService == nil {
 			return errors.New("handle server updates are not enabled")
 		}
 
-		createPublicationHandles(services, logger)
-		createDatasetHandles(services, logger)
+		createPublicationHandles(services)
+		createDatasetHandles(services)
 
 		return nil
 	},
 }
 
-func createPublicationHandles(services *backends.Services, logger *zap.SugaredLogger) {
+func createPublicationHandles(services *backends.Services) {
 	repo := services.Repo
 
 	var n int
@@ -67,7 +65,7 @@ func createPublicationHandles(services *backends.Services, logger *zap.SugaredLo
 	logger.Infof("created %d publication handles", n)
 }
 
-func createDatasetHandles(services *backends.Services, logger *zap.SugaredLogger) {
+func createDatasetHandles(services *backends.Services) {
 	repo := services.Repo
 
 	var n int

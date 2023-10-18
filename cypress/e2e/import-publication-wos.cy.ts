@@ -41,11 +41,15 @@ describe('Publication import', () => {
     )
     cy.contains('Imported publications Showing 2').should('be.visible')
 
+    cy.ensureToast('Publication was successfully deleted.').closeToast()
+
     deletePublication('Fusarium isolates from Belgium causing wilt in lettuce show genetic and pathogenic diversity')
+
+    cy.ensureToast('Publication was successfully deleted.').closeToast()
+
     cy.contains('Imported publications Showing 1').should('be.visible')
 
-    // Extract Biblio ID for remaining publication
-    cy.get('.list-group-item-main').extractBiblioId()
+    cy.extractBiblioId()
 
     // Try publishing remaining publication and verify validation error
     cy.ensureNoModal()
@@ -65,42 +69,41 @@ describe('Publication import', () => {
 
     cy.ensureNoModal()
 
-    cy.contains('.btn', 'Add author').click({ scrollBehavior: false })
+    cy.contains('.btn', 'Add author').click()
 
     cy.ensureModal('Add author').within(function () {
       cy.intercept({
         pathname: `/publication/${this.biblioId}/contributors/author/suggestions`,
         query: {
-          first_name: 'Dries',
-          last_name: /^(|Moreels)$/, // This forces an exact string match. Just '' matches any string.
+          first_name: 'Griet',
+          last_name: /^(|Alleman)$/, // This forces an exact string match. Just '' matches any string.
         },
       }).as('user-search')
 
       cy.contains('Search author').should('be.visible')
 
-      cy.get('input[name=first_name]').type('Dries')
+      cy.setFieldByLabel('First name', 'Griet')
       cy.wait('@user-search')
 
-      cy.get('input[name=last_name]').type('Moreels')
+      cy.setFieldByLabel('Last name', 'Alleman')
       cy.wait('@user-search')
 
       cy.contains('.badge', 'Active UGent member')
         .closest('.list-group-item')
         // Make sure the right author is selected
-        .should('contain.text', 'Dries Moreels')
-        .should('contain.text', '802001088860')
+        .should('contain.text', 'Griet Alleman')
+        .should('contain.text', '002004596441')
         .contains('.btn', 'Add author')
         .click()
     })
 
-    cy.ensureModal('Add author').within(() => {
-      cy.contains('h3', 'Review author information').should('be.visible')
+    cy.ensureModal('Add author')
+      .within(() => {
+        cy.contains('h3', 'Review author information').should('be.visible')
 
-      cy.get('.list-group-item').should('have.length', 1).should('contain.text', 'Dries Moreels')
-
-      // Using RegExp to match entire button text to make sure the "Save and add next" button is not picked instead
-      cy.contains('.btn', /^Save$/).click()
-    })
+        cy.get('.list-group-item').should('have.length', 1).should('contain.text', 'Griet Alleman')
+      })
+      .closeModal(/^Save$/)
 
     cy.ensureNoModal()
 
@@ -108,9 +111,9 @@ describe('Publication import', () => {
 
     // Verify publication is still draft
     cy.get('.list-group-item .badge')
-      .should('have.class', 'badge-secondary')
+      .should('have.class', 'badge-warning-light')
       .find('.badge-text')
-      .should('have.text', 'Biblio Draft')
+      .should('have.text', 'Biblio draft')
 
     // Publish
     cy.intercept('POST', '/publication/add-multiple/*/publish').as('publish')
@@ -131,9 +134,9 @@ describe('Publication import', () => {
     cy.visitPublication()
 
     cy.get('#summary .badge')
-      .should('have.class', 'badge-default')
+      .should('have.class', 'badge-success-light')
       .find('.badge-text')
-      .should('have.text', 'Biblio Public')
+      .should('have.text', 'Biblio public')
   })
 
   // TODO: Not yet implemented
@@ -154,9 +157,9 @@ function deletePublication(title) {
     .contains('button', 'Delete')
     .click()
 
-  cy.ensureModal('Are you sure?').within(() => {
-    cy.get('.modal-body > p').should('have.text', 'Are you sure you want to delete this publication?')
-
-    cy.contains('.modal-footer .btn', 'Delete').click()
-  })
+  cy.ensureModal('Are you sure?')
+    .within(() => {
+      cy.get('.modal-body > p').should('have.text', 'Are you sure you want to delete this publication?')
+    })
+    .closeModal('Delete')
 }

@@ -1,6 +1,6 @@
 {{define "page_content"}}
 <div class="w-100 u-scroll-wrapper">
-    <div class="c-header-collapsible bg-white" data-collapsed="true">
+    <div class="bg-white">
         <div class="bc-navbar bc-navbar--large bc-navbar--white">
             <div class="bc-toolbar">
                 <div class="bc-toolbar-left">
@@ -95,8 +95,8 @@
                             {{partial "shared/status" .Dataset}}
                         </div>
                         {{if .Dataset.Locked}}
-                        <div class="bc-toolbar-item">
-                            <span class="c-subline text-nowrap pe-5 border-end" data-bs-toggle="tooltip" title="" data-bs-placement="bottom" data-original-title="Locked for editing">
+                        <div class="bc-toolbar-item" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Locked for editing">
+                            <span class="c-subline text-nowrap pe-5 border-end">
                               <i class="if if-lock if--small if--muted"></i>
                               <span class="text-muted c-body-small ms-2">Locked</span>
                             </span>
@@ -105,7 +105,7 @@
                       </div>
                       <div class="bc-toolbar-right">
                         <div class="bc-toolbar-item me-auto me-lg-0">
-                          <div class="d-flex align-items-center flex-wrap justify-content-md-end">
+                          <div class="d-flex align-items-center flex-wrap justify-content-end">
                             <span class="c-subline text-truncate text-nowrap pe-5">
                                {{partial "shared/created_by" .Dataset}}
                             </span>

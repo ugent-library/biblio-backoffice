@@ -1,8 +1,7 @@
 import htmx from 'htmx.org';
+import {initCallback} from "bootstrap.native";
 import csrf from './ui/csrf.js'
 import checkbox from './ui/checkbox.js'
-import bootstrap from './ui/bootstrap.js'
-import bootstrapPopper from './ui/bootstrap_popper.js'
 import popover from './ui/popover.js'
 import header from './ui/header.js' // TODO is this still needed?
 import multiple from './ui/multiple.js'
@@ -19,6 +18,10 @@ import tags from './ui/tags.js'
 
 // configure htmx
 htmx.config.defaultFocusScroll = true
+
+// apply bootstrap js to new dom content
+htmx.onLoad(initCallback);
+
 // load htmx extensions
 window.htmx = htmx
 require('htmx.org/dist/ext/remove-me.js');
@@ -27,8 +30,6 @@ require('htmx.org/dist/ext/remove-me.js');
 document.addEventListener('DOMContentLoaded', function () {
     csrf()
     checkbox()
-    bootstrap()
-    bootstrapPopper()
     popover()
     header()
     multiple()

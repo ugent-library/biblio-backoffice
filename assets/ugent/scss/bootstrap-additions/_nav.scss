@@ -20,7 +20,8 @@ button.nav-link {
     justify-content: center;
     height: 100%;
     padding: 0 1.6rem;
-    border-end: 1px solid $border;
+    font-size: 1.2rem;
+    border-right: 1px solid $border;
   }
 
   .nav-item:last-child .nav-link {
@@ -56,16 +57,56 @@ button.nav-link {
 .nav.nav-pills {
   .nav-link {
     font-weight: 500;
-    padding: 0.8rem 1.2rem;
+    padding: 0.8rem 0;
+    color: $text-muted;
+    display: flex;
+    align-items: center;
+    position: relative;
+
+    /*
+    &::before {
+      content:'';
+      position: absolute;
+      width: 0.1rem;
+      height: 100%;
+      top: 0;
+      left:0;
+      background: $border;
+    }*/
+
+    &.active {
+      color: $primary;
+      background-color: transparent;
+
+      .c-subline,
+      h1,h2,h3,h4 {
+        color: $primary;
+      }
+      /*
+      &::before {
+        width: 0.3rem;
+        background: $primary;
+      }*/
+    }
+  }
+}
+
+.dropdown .nav.nav-pills .nav-link {
+  padding: 0.8rem 1.6rem;
+}
+
+.nav.nav-sidebar {
+  .nav-link {
+    font-weight: 500;
+    padding: 0.8rem 1.6rem;
     color: $text-muted;
     display: flex;
     align-items: center;
 
     &.active {
-      background: $light-blue;
-      mix-blend-mode: multiply;
-      color: $primary
-    }
+      color: $primary;
+      background-color: $gray-100;
+      }
   }
 }
 

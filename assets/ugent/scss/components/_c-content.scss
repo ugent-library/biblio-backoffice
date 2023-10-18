@@ -9,44 +9,43 @@
   margin: auto 0;
 
   p + p {
-    margin-top: 1.6rem;
+    margin-top: 0.8rem;
+  }
+
+  ul {
+    list-style-type: disc;
+    padding-left: 1.6rem;
   }
 }
 
 .c-content pre {
   background: #F5F6F9;
-  padding: 1.5rem;
+  padding: 1.6rem;
   margin: 0 0 1rem;
   font-size: 75%;
   white-space: pre-wrap;
 }
 
 .c-intro {
-  font-size: 1.8rem;
+  font-size: 1.6rem;
 }
 
 .c-body {
-  font-size: 1.5rem;
+  font-size: 1.4rem;
 }
 
 .c-body-small {
-  font-size: 1.3rem;
+  font-size: 1.2rem;
 }
 
 .c-link {
   color: $primary;
-  text-decoration: none;
-  border-bottom: 1px solid $blue;
-
-  &:hover,
-  &:active {
-    border-color: transparent;
-  }
+  text-decoration: underline;
 }
 
 .c-link-muted {
   color: $text-muted;
-  border-bottom: 1px solid $gray-200;
+  text-decoration: underline;
 
   &:hover {
     color: $gray-600;
@@ -54,13 +53,13 @@
 }
 
 .c-link-small {
-  font-size: 1.3rem;
+  font-size: 1.2rem;
 }
 
 .c-subline {
    color: $text-muted;
+   font-size: 1.2rem;
    font-weight: 500;
-   font-size: 1.3rem;
 }
 
 .c-label {
@@ -70,11 +69,31 @@
 
 
 .c-code {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   background-color: $gray-25;
-  color: $text-muted;
   border: 1px solid $border;
-  font-size: 1.2rem;
-  border-radius: 0.3rem;
+  color: $gray-600;
+  border-radius: 0.4rem;
   padding: 0.1rem 0.6rem;
+}
+
+.c-content-i {
+  color: rgba($white, 0.7);
+
+  h1,h2,h3,h4 {
+    color: $white;
+  }
+}
+
+.text-muted-i {
+  color: rgba($white, 0.6);
+}
+
+.text-i {
+  color: rgba($white, 0.8);
+}
+
+strong {
+  font-weight: 500;
 }

@@ -2,7 +2,7 @@ describe('The home page', () => {
   it('should be able to load the home page anonymously', () => {
     cy.visit('/')
 
-    cy.get('h2').should('have.text', 'Home')
+    cy.get('h2').should('have.text', 'Biblio Back Office')
 
     cy.contains('a', 'Log in').should('be.visible')
 
@@ -24,19 +24,11 @@ describe('The home page', () => {
   })
 
   it('should redirect to the login page when browsing publications anonymously', () => {
-    cy.visit('/')
-
-    cy.contains('Biblio Publications').click()
-
-    cy.url().should('contain', 'liblogin.ugent.be')
+    redirectAnonymouslyTest('Biblio Publications')
   })
 
   it('should redirect to the login page when browsing datasets anonymously', () => {
-    cy.visit('/')
-
-    cy.contains('Biblio Datasets').click()
-
-    cy.url().should('contain', 'liblogin.ugent.be')
+    redirectAnonymouslyTest('Biblio Datasets')
   })
 
   it('should be able to logon as researcher', () => {
@@ -53,7 +45,6 @@ describe('The home page', () => {
     cy.contains('.dropdown-menu .dropdown-item', 'Logout').should('exist')
 
     cy.get('.c-sidebar button.dropdown-toggle').should('not.exist')
-    cy.get('.c-sidebar').should('not.have.class', 'c-sidebar--dark-gray')
     cy.get('.c-sidebar-menu .c-sidebar__item').should('have.length', 2)
     cy.contains('.c-sidebar__item', 'Biblio Publications').should('be.visible')
     cy.contains('.c-sidebar__item', 'Biblio Datasets').should('be.visible')
@@ -69,8 +60,9 @@ describe('The home page', () => {
     cy.contains('.dropdown-menu .dropdown-item', 'View as').should('exist')
     cy.contains('.dropdown-menu .dropdown-item', 'Logout').should('exist')
 
+    cy.get('.c-sidebar button.dropdown-toggle').find('.if-briefcase').should('be.visible')
+    cy.get('.c-sidebar button.dropdown-toggle').find('.if-book').should('not.exist')
     cy.get('.c-sidebar button.dropdown-toggle').should('contain.text', 'Researcher')
-    cy.get('.c-sidebar').should('not.have.class', 'c-sidebar--dark-gray')
     cy.get('.c-sidebar-menu .c-sidebar__item').should('have.length', 2)
     cy.contains('.c-sidebar__item', 'Biblio Publications').should('be.visible')
     cy.contains('.c-sidebar__item', 'Biblio Datasets').should('be.visible')
@@ -78,8 +70,9 @@ describe('The home page', () => {
 
     cy.switchMode('Librarian')
 
+    cy.get('.c-sidebar button.dropdown-toggle').find('.if-book').should('be.visible')
+    cy.get('.c-sidebar button.dropdown-toggle').find('.if-briefcase').should('not.exist')
     cy.get('.c-sidebar button.dropdown-toggle').should('contain.text', 'Librarian')
-    cy.get('.c-sidebar').should('have.class', 'c-sidebar--dark-gray')
     cy.get('.c-sidebar-menu .c-sidebar__item').should('have.length', 4)
     cy.contains('.c-sidebar__item', 'Biblio Publications').should('be.visible')
     cy.contains('.c-sidebar__item', 'Biblio Datasets').should('be.visible')
@@ -88,8 +81,9 @@ describe('The home page', () => {
 
     cy.switchMode('Researcher')
 
+    cy.get('.c-sidebar button.dropdown-toggle').find('.if-briefcase').should('be.visible')
+    cy.get('.c-sidebar button.dropdown-toggle').find('.if-book').should('not.exist')
     cy.get('.c-sidebar button.dropdown-toggle').should('contain.text', 'Researcher')
-    cy.get('.c-sidebar').should('not.have.class', 'c-sidebar--dark-gray')
     cy.get('.c-sidebar-menu .c-sidebar__item').should('have.length', 2)
     cy.contains('.c-sidebar__item', 'Biblio Publications').should('be.visible')
     cy.contains('.c-sidebar__item', 'Biblio Datasets').should('be.visible')
@@ -120,4 +114,24 @@ describe('The home page', () => {
         expect(cookies.filter(c => c.startsWith('biblio-backoffice='))).to.have.length(1)
       })
   })
+
+  function redirectAnonymouslyTest(menuItem: string) {
+    cy.visit('/')
+
+    cy.contains('.c-sidebar nav a', menuItem)
+      .invoke('attr', 'href')
+      .then(href => {
+        cy.request(href).then(response => {
+          expect(response.isOkStatusCode).to.be.true
+          expect(response.redirects).is.an('array').that.has.length(2)
+
+          const redirects = response.redirects
+            .map(url => url.replace(/^\d{3}\: /, '')) // Redirect entries are in form '3XX: {url}'
+            .map(url => new URL(url))
+
+          expect(redirects[0]).to.have.property('pathname', '/login')
+          expect(redirects[1]).to.have.property('hostname', 'test.liblogin.ugent.be')
+        })
+      })
+  }
 })

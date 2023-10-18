@@ -1,32 +1,34 @@
 {{if .Publication.Contributors .Role}}
-<table class="table" id="contributors-{{.Role}}-table">
-    <thead>
-        <tr>
-            <th class="ps-6 col-5">Name</th>
-            {{if eq .Role "author"}}<th class="col-2">Role</th>{{end}}
-            <th class="col-2">UGent {{.Locale.TS "publication.contributor.role" .Role}}</th>
-            <th class="col-2">UGent affiliation</th>
-            <th class="pe-6 col-3"></th>
-        </tr>
-    </thead>
-    <tbody
-        {{if .User.CanEditPublication .Publication}}
-        class="sortable"
-        hx-post="{{pathFor "publication_order_contributors" "id" .Publication.ID "role" .Role}}"
-        hx-trigger="end"
-        hx-swap="none"
-        hx-headers='{"If-Match": "{{.Publication.SnapshotID}}"}'
-        hx-include="#contributors-{{.Role}}-table [name='position']"
-        hx-disinherit="*"
-        {{end}}
-    >
-        {{range $i, $c := (.Publication.Contributors .Role)}}
-        <tr id="{{$.Role}}-{{$i}}">
-            {{partial "publication/contributors_columns" (dict "User" $.User "Locale" $.Locale "Publication" $.Publication "Contributor" $c "Position" $i "Role" $.Role)}}
-        </tr>
-        {{end}}
-    </tbody>
-</table>
+<div class="table-responsive">
+    <table class="table table-" id="contributors-{{.Role}}-table">
+        <thead>
+            <tr>
+                <th class="ps-6">Name</th>
+                {{if eq .Role "author"}}<th>Role</th>{{end}}
+                <th>Affiliation</th>
+                <th><span class="visually-hidden">Departments</span></th>
+                <th><span class="visually-hidden">Actions</span></th>
+            </tr>
+        </thead>
+        <tbody
+            {{if .User.CanEditPublication .Publication}}
+            class="sortable"
+            hx-post="{{pathFor "publication_order_contributors" "id" .Publication.ID "role" .Role}}"
+            hx-trigger="end"
+            hx-swap="none"
+            hx-headers='{"If-Match": "{{.Publication.SnapshotID}}"}'
+            hx-include="#contributors-{{.Role}}-table [name='position']"
+            hx-disinherit="*"
+            {{end}}
+        >
+            {{range $i, $c := (.Publication.Contributors .Role)}}
+            <tr id="{{$.Role}}-{{$i}}">
+                {{partial "publication/contributors_columns" (dict "User" $.User "Locale" $.Locale "Publication" $.Publication "Contributor" $c "Position" $i "Role" $.Role)}}
+            </tr>
+            {{end}}
+        </tbody>
+    </table>
+</div>
 {{else}}
 <div class="card-body">
     <span class="text-muted">No {{.Locale.TS "publication.contributor.role" .Role}}s</span>

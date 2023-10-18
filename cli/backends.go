@@ -6,84 +6,65 @@ import (
 	"log"
 	"path"
 	"strings"
-	"sync"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-	"github.com/ugent-library/biblio-backoffice/internal/backends"
-	"github.com/ugent-library/biblio-backoffice/internal/backends/arxiv"
-	"github.com/ugent-library/biblio-backoffice/internal/backends/authority"
-	"github.com/ugent-library/biblio-backoffice/internal/backends/bibtex"
-	"github.com/ugent-library/biblio-backoffice/internal/backends/citeproc"
-	"github.com/ugent-library/biblio-backoffice/internal/backends/crossref"
-	"github.com/ugent-library/biblio-backoffice/internal/backends/datacite"
-	"github.com/ugent-library/biblio-backoffice/internal/backends/es6"
-	excel_dataset "github.com/ugent-library/biblio-backoffice/internal/backends/excel/dataset"
-	excel_publication "github.com/ugent-library/biblio-backoffice/internal/backends/excel/publication"
-	"github.com/ugent-library/biblio-backoffice/internal/backends/fsstore"
-	"github.com/ugent-library/biblio-backoffice/internal/backends/handle"
-	"github.com/ugent-library/biblio-backoffice/internal/backends/s3store"
-	"github.com/ugent-library/biblio-backoffice/internal/caching"
-	"github.com/ugent-library/biblio-backoffice/internal/mutate"
+	"github.com/ugent-library/biblio-backoffice/backends"
+	"github.com/ugent-library/biblio-backoffice/backends/arxiv"
+	"github.com/ugent-library/biblio-backoffice/backends/authority"
+	"github.com/ugent-library/biblio-backoffice/backends/bibtex"
+	"github.com/ugent-library/biblio-backoffice/backends/citeproc"
+	"github.com/ugent-library/biblio-backoffice/backends/crossref"
+	"github.com/ugent-library/biblio-backoffice/backends/datacite"
+	"github.com/ugent-library/biblio-backoffice/backends/es6"
+	excel_dataset "github.com/ugent-library/biblio-backoffice/backends/excel/dataset"
+	excel_publication "github.com/ugent-library/biblio-backoffice/backends/excel/publication"
+	"github.com/ugent-library/biblio-backoffice/backends/fsstore"
+	"github.com/ugent-library/biblio-backoffice/backends/handle"
+	"github.com/ugent-library/biblio-backoffice/backends/s3store"
+	"github.com/ugent-library/biblio-backoffice/caching"
 	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/mutate"
 
-	"github.com/ugent-library/biblio-backoffice/internal/backends/ianamedia"
-	"github.com/ugent-library/biblio-backoffice/internal/backends/jsonl"
-	"github.com/ugent-library/biblio-backoffice/internal/backends/pubmed"
-	"github.com/ugent-library/biblio-backoffice/internal/backends/ris"
-	"github.com/ugent-library/biblio-backoffice/internal/backends/spdxlicenses"
+	"github.com/ugent-library/biblio-backoffice/backends/ianamedia"
+	"github.com/ugent-library/biblio-backoffice/backends/jsonl"
+	"github.com/ugent-library/biblio-backoffice/backends/pubmed"
+	"github.com/ugent-library/biblio-backoffice/backends/ris"
+	"github.com/ugent-library/biblio-backoffice/backends/spdxlicenses"
 	"github.com/ugent-library/biblio-backoffice/repositories"
-	"go.uber.org/zap"
-
-	// "github.com/ugent-library/biblio-backoffice/internal/tasks"
 	"github.com/ugent-library/orcid"
 )
 
-var (
-	_services     *backends.Services
-	_servicesOnce sync.Once
-)
-
-func Services() *backends.Services {
-	_servicesOnce.Do(func() {
-		_services = newServices()
-	})
-	return _services
-}
-
 func newServices() *backends.Services {
 	authorityClient, authorityClientErr := authority.New(authority.Config{
-		MongoDBURI: viper.GetString("mongodb-url"),
-		ESURI:      strings.Split(viper.GetString("frontend-es6-url"), ","),
+		MongoDBURI: config.MongoDBURL,
+		ESURI:      strings.Split(config.Frontend.Es6URL, ","),
 	})
 	if authorityClientErr != nil {
 		panic(authorityClientErr)
 	}
 
 	orcidConfig := orcid.Config{
-		ClientID:     viper.GetString("orcid-client-id"),
-		ClientSecret: viper.GetString("orcid-client-secret"),
-		Sandbox:      viper.GetBool("orcid-sandbox"),
+		ClientID:     config.ORCID.ClientID,
+		ClientSecret: config.ORCID.ClientSecret,
+		Sandbox:      config.ORCID.Sandbox,
 	}
 	orcidClient := orcid.NewMemberClient(orcidConfig)
 
-	citeprocURL := viper.GetString("citeproc-url")
+	citeprocURL := config.CiteprocURL
 
 	var handleService backends.HandleService = nil
 
-	if viper.GetBool("hdl-srv-enabled") {
+	if config.Handle.Enabled {
 		handleService = handle.NewClient(
 			handle.Config{
-				BaseURL:         viper.GetString("hdl-srv-url"),
-				FrontEndBaseURL: fmt.Sprintf("%s/publication", viper.GetString("frontend-url")),
-				Prefix:          viper.GetString("hdl-srv-prefix"),
-				Username:        viper.GetString("hdl-srv-username"),
-				Password:        viper.GetString("hdl-srv-password"),
+				BaseURL:         config.Handle.URL,
+				FrontEndBaseURL: fmt.Sprintf("%s/publication", config.Frontend.URL),
+				Prefix:          config.Handle.Prefix,
+				Username:        config.Handle.Username,
+				Password:        config.Handle.Password,
 			},
 		)
 	}
-
-	logger := newLogger()
 
 	organizationService := caching.NewOrganizationService(authorityClient)
 
@@ -101,20 +82,18 @@ func newServices() *backends.Services {
 
 	projectService := caching.NewProjectService(authorityClient)
 
-	repo := newRepo(logger, personService, organizationService, projectService)
+	repo := newRepo(personService, organizationService, projectService)
 
-	searchService := newSearchService(logger)
+	searchService := newSearchService()
 
 	return &backends.Services{
-		FileStore:              newFileStore(),
-		ORCIDSandbox:           orcidConfig.Sandbox,
-		ORCIDClient:            orcidClient,
-		Repo:                   repo,
-		SearchService:          searchService,
-		DatasetSearchIndex:     searchService.NewDatasetIndex(repo),
-		PublicationSearchIndex: searchService.NewPublicationIndex(repo),
-		// DatasetSearchService:      backends.NewDatasetSearchService(newDatasetSearchService(), repo),
-		// PublicationSearchService:  backends.NewPublicationSearchService(newPublicationSearchService(), repo),
+		FileStore:                 newFileStore(),
+		ORCIDSandbox:              orcidConfig.Sandbox,
+		ORCIDClient:               orcidClient,
+		Repo:                      repo,
+		SearchService:             searchService,
+		DatasetSearchIndex:        searchService.NewDatasetIndex(repo),
+		PublicationSearchIndex:    searchService.NewPublicationIndex(repo),
 		OrganizationService:       organizationService,
 		PersonService:             personService,
 		ProjectService:            projectService,
@@ -158,35 +137,14 @@ func newServices() *backends.Services {
 	}
 }
 
-func newLogger() *zap.SugaredLogger {
-	logEnv := viper.GetString("mode")
-
-	var logger *zap.Logger
-	var err error
-
-	if logEnv == "production" {
-		logger, err = zap.NewProduction()
-	} else {
-		logger, err = zap.NewDevelopment()
-	}
-
-	if err != nil {
-		log.Fatalln("Unable to initialize logger", err)
-	}
-
-	sugar := logger.Sugar()
-
-	return sugar
-}
-
-func newRepo(logger *zap.SugaredLogger, personService backends.PersonService, organizationService backends.OrganizationService, projectService backends.ProjectService) *repositories.Repo {
+func newRepo(personService backends.PersonService, organizationService backends.OrganizationService, projectService backends.ProjectService) *repositories.Repo {
 	ctx := context.Background()
 
-	bp := newPublicationBulkIndexerService(logger)
-	bd := newDatasetBulkIndexerService(logger)
+	bp := newPublicationBulkIndexerService()
+	bd := newDatasetBulkIndexerService()
 
 	repo, err := repositories.New(repositories.Config{
-		DSN: viper.GetString("pg-conn"),
+		DSN: config.PgConn,
 
 		PublicationListeners: []repositories.PublicationListener{
 			func(p *models.Publication) {
@@ -382,7 +340,7 @@ func newRepo(logger *zap.SugaredLogger, personService backends.PersonService, or
 }
 
 func newFileStore() backends.FileStore {
-	if baseDir := viper.GetString("file-dir"); baseDir != "" {
+	if baseDir := config.FileDir; baseDir != "" {
 		store, err := fsstore.New(fsstore.Config{
 			Dir:     path.Join(baseDir, "root"),
 			TempDir: path.Join(baseDir, "tmp"),
@@ -394,12 +352,12 @@ func newFileStore() backends.FileStore {
 	}
 
 	store, err := s3store.New(s3store.Config{
-		Endpoint:   viper.GetString("s3-endpoint"),
-		Region:     viper.GetString("s3-region"),
-		ID:         viper.GetString("s3-id"),
-		Secret:     viper.GetString("s3-secret"),
-		Bucket:     viper.GetString("s3-bucket"),
-		TempBucket: viper.GetString("s3-temp-bucket"),
+		Endpoint:   config.S3.Endpoint,
+		Region:     config.S3.Region,
+		ID:         config.S3.ID,
+		Secret:     config.S3.Secret,
+		Bucket:     config.S3.Bucket,
+		TempBucket: config.S3.TempBucket,
 	})
 
 	if err != nil {
@@ -408,12 +366,12 @@ func newFileStore() backends.FileStore {
 	return store
 }
 
-func newSearchService(logger *zap.SugaredLogger) backends.SearchService {
+func newSearchService() backends.SearchService {
 	config := es6.SearchServiceConfig{
-		Addresses:        viper.GetString("es6-url"),
-		PublicationIndex: viper.GetString("publication-index"),
-		DatasetIndex:     viper.GetString("dataset-index"),
-		IndexRetention:   viper.GetInt("index-retention"),
+		Addresses:        config.Es6URL,
+		PublicationIndex: config.PublicationIndex,
+		DatasetIndex:     config.DatasetIndex,
+		IndexRetention:   config.IndexRetention,
 	}
 
 	s, err := es6.NewSearchService(config)
@@ -425,10 +383,10 @@ func newSearchService(logger *zap.SugaredLogger) backends.SearchService {
 	return s
 }
 
-func newPublicationBulkIndexerService(logger *zap.SugaredLogger) backends.BulkIndexer[*models.Publication] {
+func newPublicationBulkIndexerService() backends.BulkIndexer[*models.Publication] {
 	ctx := context.Background()
 
-	bp, err := newSearchService(logger).NewPublicationBulkIndexer(backends.BulkIndexerConfig{
+	bp, err := newSearchService().NewPublicationBulkIndexer(backends.BulkIndexerConfig{
 		OnError: func(err error) {
 			logger.Errorf("Indexing failed : %s", err)
 		},
@@ -451,10 +409,10 @@ func newPublicationBulkIndexerService(logger *zap.SugaredLogger) backends.BulkIn
 	return bp
 }
 
-func newDatasetBulkIndexerService(logger *zap.SugaredLogger) backends.BulkIndexer[*models.Dataset] {
+func newDatasetBulkIndexerService() backends.BulkIndexer[*models.Dataset] {
 	ctx := context.Background()
 
-	bd, err := newSearchService(logger).NewDatasetBulkIndexer(backends.BulkIndexerConfig{
+	bd, err := newSearchService().NewDatasetBulkIndexer(backends.BulkIndexerConfig{
 		OnError: func(err error) {
 			logger.Errorf("Indexing failed : %s", err)
 		},

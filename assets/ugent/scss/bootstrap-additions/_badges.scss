@@ -7,6 +7,7 @@
   display: inline-flex;
   align-items: center;
   line-height: 2.4rem;
+  min-width: 2rem;
 
   // Fix Safari
   -webkit-appearance: none
@@ -51,50 +52,69 @@
   height: 2.8rem;
 }
 
-.badge-default {
-  background-color: $light-blue;
-  color: $blue;
+.badge-circle {
+  width: .6rem;
+  height: .6rem;
+  border-radius: .8rem;
+  display: block;
+  margin-right: 0.6rem;
 }
 
-a.bg-primary,
-a.badge.bg-primary {
-  color: $icon-default;
-  background-color: $white;
+.badge-primary {
+  background-color: $primary;
   color: $white;
+}
 
-   &:hover,
-   &:focus {
-     background-color: $dark-blue; // this does not work in the new badge bg structure
-     color: $white;
-   }
+.badge-default {
+  background-color: $blue-50;
+  color: $blue-600;
+
+  .badge-circle {
+    background: $blue-500;
+  }
 }
 
 .badge-secondary,
 a.badge-secondary {
-  color: $icon-default;
+  background-color: $gray-400;
+  color: $white;
+}
+
+.badge-light {
   background-color: $gray-50;
-  color: $gray-600;
-
-   &:hover,
-   &:focus {
-     background-color: $gray-80;
-     color: $text;
-   }
+  color: $text-muted;
 }
 
-.badge-success {
-  background-color: $light-green;
-  color: $dark-green;
+.badge-success-light {
+  background-color: $green-50;
+  color: $green-600;
+
+  .badge-circle {
+    background: $green-500;
+  }
 }
 
-.badge-danger {
-  background-color: $light-warm-red;
-  color: $dark-warm-red;
+.badge-danger-light {
+  background-color: $red-50;
+  color: $red-600;
+
+  .badge-circle {
+    background: $red-500;
+  }
 }
 
-.badge-warning {
-  background-color: $light-orange;
-  color: $dark-orange;
+.badge-warning-light {
+  background-color: $orange-50;
+  color: $orange-600;
+
+  .badge-circle {
+    background: $orange-500;
+  }
+}
+
+.badge-outline-primary {
+  color: $primary;
+  border: 1px solid $primary;
 }
 
 .badge-outline-secondary {
@@ -105,6 +125,7 @@ a.badge-secondary {
 
 .badge-list {
   margin: 0 -0.4rem;
+  padding-left: 0;
   display: flex;
   flex-wrap: wrap;
 
@@ -117,4 +138,9 @@ a.badge-secondary {
   height: 2rem;
   font-size: 1.2rem;
   padding: 0.3rem 0.6rem;
+}
+
+.badge-sm .if:last-child,
+.badge-sm .bc-avatar:last-child {
+  margin-right: -.2rem;
 }

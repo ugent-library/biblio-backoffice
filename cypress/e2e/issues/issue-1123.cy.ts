@@ -1,3 +1,5 @@
+// https://github.com/ugent-library/biblio-backoffice/issues/1123
+
 describe('Issue #1123:  WoS import cuts keywords up because of newlines in import', () => {
   it('should not split up keywords by newlines', () => {
     cy.loginAsResearcher()
@@ -11,7 +13,7 @@ describe('Issue #1123:  WoS import cuts keywords up because of newlines in impor
 
     cy.contains('a.list-group-item', 'Description').click()
 
-    cy.contains('label', 'Keywords')
+    cy.getLabel('Keywords')
       .next('div')
       .find('ul > li > span')
       .then($spans => Cypress._.map($spans, 'innerText'))

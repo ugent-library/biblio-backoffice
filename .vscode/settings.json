@@ -2,5 +2,23 @@
   "protoc": {
     "options": ["-I ./api/v1"]
   },
-  "cSpell.words": ["biblio", "Biblio", "CYPRESSTEST", "Moreels"]
+  "cSpell.words": [
+    "arxiv",
+    "Arxiv",
+    "biblio",
+    "Biblio",
+    "bibtex",
+    "briefcase",
+    "CYPRESSTEST",
+    "eisbn",
+    "eissn",
+    "esci",
+    "isbn",
+    "issn",
+    "liblogin",
+    "Moreels",
+    "pubmed",
+    "socs",
+    "tagify"
+  ]
 }

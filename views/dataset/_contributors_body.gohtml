@@ -1,31 +1,33 @@
 {{if .Dataset.Contributors .Role}}
-<table class="table" id="contributors-{{.Role}}-table">
-    <thead>
-        <tr>
-            <th class="ps-6 col-5">Name</th>
-            <th class="col-2">UGent {{.Locale.TS "dataset.contributor.role" .Role}}</th>
-            <th class="col-2">UGent affiliation</th>
-            <th class="pe-6 col-3"></th>
-        </tr>
-    </thead>
-    <tbody
-        {{if .User.CanEditDataset .Dataset}}
-        class="sortable"
-        hx-post="{{pathFor "dataset_order_contributors" "id" .Dataset.ID "role" .Role}}"
-        hx-trigger="end"
-        hx-swap="none"
-        hx-headers='{"If-Match": "{{.Dataset.SnapshotID}}"}'
-        hx-include="#contributors-{{.Role}}-table [name='position']"
-        hx-disinherit="*"
-        {{end}}
-    >
-        {{range $i, $c := (.Dataset.Contributors .Role)}}
-        <tr id="{{$.Role}}-{{$i}}">
-            {{partial "dataset/contributors_columns" (dict "User" $.User "Locale" $.Locale "Dataset" $.Dataset "Contributor" $c "Position" $i "Role" $.Role)}}
-        </tr>
-        {{end}}
-    </tbody>
-</table>
+<div class="table-responsive">
+    <table class="table" id="contributors-{{.Role}}-table">
+        <thead>
+            <tr>
+                <th class="ps-6">Name</th>
+                <th>Affiliation</th>
+                <th><span class="visually-hidden">Departments</span></th>
+                <th><span class="visually-hidden">Actions</span></th>
+            </tr>
+        </thead>
+        <tbody
+            {{if .User.CanEditDataset .Dataset}}
+            class="sortable"
+            hx-post="{{pathFor "dataset_order_contributors" "id" .Dataset.ID "role" .Role}}"
+            hx-trigger="end"
+            hx-swap="none"
+            hx-headers='{"If-Match": "{{.Dataset.SnapshotID}}"}'
+            hx-include="#contributors-{{.Role}}-table [name='position']"
+            hx-disinherit="*"
+            {{end}}
+        >
+            {{range $i, $c := (.Dataset.Contributors .Role)}}
+            <tr id="{{$.Role}}-{{$i}}">
+                {{partial "dataset/contributors_columns" (dict "User" $.User "Locale" $.Locale "Dataset" $.Dataset "Contributor" $c "Position" $i "Role" $.Role)}}
+            </tr>
+            {{end}}
+        </tbody>
+    </table>
+</div>
 {{else}}
 <div class="card-body">
     <span class="text-muted">No {{.Locale.TS "dataset.contributor.role" .Role}}s</span>
