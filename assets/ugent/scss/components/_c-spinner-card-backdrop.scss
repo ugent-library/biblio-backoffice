@@ -1,0 +1,26 @@
+/* ==========================================================================
+  Additions to bootstrap/spinner – backdrop
+  To disable backgrounds for cards
+  ========================================================================== */
+
+  $spinner-backdrop-bg:                 $gray-25;
+  $spinner-backdrop-opacity:            .8;
+
+  .spinner-card-backdrop {
+    position: absolute;
+    z-index: 1050;
+    background-color: $spinner-backdrop-bg;
+    opacity: $spinner-backdrop-opacity;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    display: none;
+  }
+
+  .spinner-card-backdrop.htmx-request { // "htmx-request" class should be "show"
+    display: flex;
+  }
