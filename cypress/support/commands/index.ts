@@ -9,6 +9,7 @@ import visitPublication from './visit-publication'
 import ensureToast from './ensure-toast'
 import ensureNoToast from './ensure-no-toast'
 import setFieldByLabel from './set-field-by-label'
+import search from './search'
 
 // Child commands
 import finishLog from './finish-log'
@@ -40,6 +41,8 @@ Cypress.Commands.addAll({
   ensureNoToast,
 
   setFieldByLabel,
+
+  search,
 })
 
 // Child commands
