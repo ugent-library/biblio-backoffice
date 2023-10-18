@@ -104,10 +104,17 @@ type Parent struct {
 }
 
 type Project struct {
-	ID        string `json:"_id"`
-	Title     string `json:"title,omitempty"`
-	StartDate string `json:"start_date,omitempty"`
-	EndDate   string `json:"end_date,omitempty"`
+	ID                   string `json:"_id"`
+	Title                string `json:"title,omitempty"`
+	StartDate            string `json:"start_date,omitempty"`
+	EndDate              string `json:"end_date,omitempty"`
+	EUID                 string `json:"eu_id,omitempty"`
+	EUCallID             string `json:"eu_call_id,omitempty"`
+	EUFrameworkProgramme string `json:"eu_framework_programme,omitempty"`
+	EUAcronym            string `json:"eu_acronym,omitempty"`
+	GISMOID              string `json:"gismo_id,omitempty"`
+	IWETOID              string `json:"iweto_id,omitempty"`
+	Abstract             string `json:"abstract,omitempty"`
 }
 
 type Publisher struct {
@@ -540,12 +547,21 @@ func MapPublication(p *models.Publication, repo *repositories.Repo) *Record {
 	if p.RelatedProjects != nil {
 		rec.Project = make([]Project, len(p.RelatedProjects))
 		for i, v := range p.RelatedProjects {
-			rec.Project[i] = Project{
+			p := Project{
 				ID:        v.ProjectID,
 				Title:     v.Project.Title,
 				StartDate: v.Project.StartDate,
 				EndDate:   v.Project.EndDate,
+				GISMOID:   v.Project.GISMOID,
+				IWETOID:   v.Project.IWETOID,
 			}
+			if eu := v.Project.EUProject; eu != nil {
+				p.EUID = eu.ID
+				p.EUCallID = eu.CallID
+				p.EUAcronym = eu.Acronym
+				p.EUFrameworkProgramme = eu.FrameworkProgramme
+			}
+			rec.Project[i] = p
 		}
 	}
 

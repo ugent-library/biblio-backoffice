@@ -10,6 +10,8 @@ type Project struct {
 	DateCreated *time.Time `json:"date_created,omitempty"`
 	DateUpdated *time.Time `json:"date_updated,omitempty"`
 	EUProject   *EUProject `json:"eu,omitempty"`
+	GISMOID     string     `json:"gismo_id,omitempty"`
+	IWETOID     string     `json:"iweto_id,omitempty"`
 }
 
 type EUProject struct {
