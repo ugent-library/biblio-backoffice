@@ -2,6 +2,7 @@ package mutate
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/models"
@@ -209,5 +210,19 @@ func EISSNRemove(p *models.Publication, args []string) error {
 		}
 	}
 	p.EISSN = vals
+	return nil
+}
+
+func ExternalFieldsSet(p *models.Publication, args []string) error {
+	if len(args) < 1 {
+		return errors.New("no key supplied")
+	}
+	if len(args) < 2 {
+		return fmt.Errorf("no values supplied for %s", args[0])
+	}
+	if p.ExternalFields == nil {
+		p.ExternalFields = models.Values{}
+	}
+	p.ExternalFields.SetAll(args[0], args[1:]...)
 	return nil
 }

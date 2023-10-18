@@ -46,7 +46,7 @@ type Dataset struct {
 	Format                  []string               `json:"format,omitempty"`
 	Handle                  string                 `json:"handle,omitempty"`
 	ID                      string                 `json:"id,omitempty"`
-	Identifiers             Identifiers            `json:"identifiers,omitempty"`
+	Identifiers             Values                 `json:"identifiers,omitempty"`
 	Keyword                 []string               `json:"keyword,omitempty"`
 	HasBeenPublic           bool                   `json:"has_been_public"`
 	Language                []string               `json:"language,omitempty"`
