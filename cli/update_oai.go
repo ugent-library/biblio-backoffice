@@ -30,7 +30,7 @@ var updateOai = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		services := newServices()
 
-		oaiEncoder := oaidc.New(config.Frontend.URL)
+		oaiEncoder := oaidc.New(services.Repo, config.Frontend.URL)
 		modsEncoder := mods36.New(services.Repo, config.Frontend.URL)
 
 		client, err := api.NewClient(config.OAI.APIURL, &securitySource{config.OAI.APIKey})
@@ -84,6 +84,13 @@ var updateOai = &cobra.Command{
 			if err != nil {
 				return err
 			}
+		}
+		err = client.AddSet(context.TODO(), &api.AddSetRequest{
+			SetSpec: "biblio:dataset",
+			SetName: "Biblio datasets",
+		})
+		if err != nil {
+			return err
 		}
 
 		repo := newServices().Repo
@@ -165,6 +172,68 @@ var updateOai = &cobra.Command{
 		})
 
 		// TODO add all datasets
+		repo.EachDataset(func(d *models.Dataset) bool {
+			oaiID := "oai:archive.ugent.be:" + d.ID
+
+			if d.Status == "deleted" && d.HasBeenPublic {
+				err = client.DeleteRecord(context.TODO(), &api.DeleteRecordRequest{
+					Identifier: oaiID,
+				})
+				if err != nil {
+					// TODO
+					logger.Fatal(err)
+				}
+				return true
+			}
+
+			if d.Status != "public" {
+				return true
+			}
+
+			metadata, err := oaiEncoder.EncodeDataset(d)
+			if err != nil {
+				// TODO
+				logger.Fatal(err)
+			}
+
+			err = client.AddRecord(context.TODO(), &api.AddRecordRequest{
+				Identifier:     oaiID,
+				MetadataPrefix: "oai_dc",
+				Content:        string(metadata),
+			})
+			if err != nil {
+				logger.Fatal(err)
+			}
+
+			metadata, err = modsEncoder.EncodeDataset(d)
+			if err != nil {
+				// TODO
+				logger.Fatal(err)
+			}
+
+			err = client.AddRecord(context.TODO(), &api.AddRecordRequest{
+				Identifier:     oaiID,
+				MetadataPrefix: "mods_36",
+				Content:        string(metadata),
+			})
+			if err != nil {
+				// TODO
+				logger.Fatal(err)
+			}
+
+			setSpecs := []string{"biblio", "biblio:dataset"}
+
+			err = client.AddItem(context.TODO(), &api.AddItemRequest{
+				Identifier: oaiID,
+				SetSpecs:   setSpecs,
+			})
+			if err != nil {
+				// TODO
+				logger.Fatal(err)
+			}
+
+			return true
+		})
 
 		return nil
 	},

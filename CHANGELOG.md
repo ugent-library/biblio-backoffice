@@ -436,7 +436,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.40...HEAD
+[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.4gg0...HEAD
 [v1.0.40]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.39...v1.0.40
 [v1.0.39]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.38...v1.0.39
 [v1.0.38]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.37...v1.0.38

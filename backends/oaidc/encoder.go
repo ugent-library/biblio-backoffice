@@ -3,10 +3,11 @@ package oaidc
 import (
 	"bytes"
 	"encoding/xml"
-	"fmt"
 
+	"github.com/ugent-library/biblio-backoffice/frontoffice"
 	"github.com/ugent-library/biblio-backoffice/identifiers"
 	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/repositories"
 )
 
 const startTag = `<oai_dc:dc xmlns="http://www.openarchives.org/OAI/2.0/oai_dc/"
@@ -19,31 +20,6 @@ xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.opena
 const endTag = `
 </oai_dc:dc>
 `
-
-// TODO copied from frontoffice handler, DRY this
-var licenses = map[string]string{
-	"CC0-1.0":          "Creative Commons Public Domain Dedication (CC0 1.0)",
-	"CC-BY-4.0":        "Creative Commons Attribution 4.0 International Public License (CC-BY 4.0)",
-	"CC-BY-SA-4.0":     "Creative Commons Attribution-ShareAlike 4.0 International Public License (CC BY-SA 4.0)",
-	"CC-BY-NC-4.0":     "Creative Commons Attribution-NonCommercial 4.0 International Public License (CC BY-NC 4.0)",
-	"CC-BY-ND-4.0":     "Creative Commons Attribution-NoDerivatives 4.0 International Public License (CC BY-ND 4.0)",
-	"CC-BY-NC-SA-4.0":  "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International Public License (CC BY-NC-SA 4.0)",
-	"CC-BY-NC-ND-4.0":  "Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International Public License (CC BY-NC-ND 4.0)",
-	"InCopyright":      "No license (in copyright)",
-	"LicenseNotListed": "A specific license has been chosen by the rights holder. Get in touch with the rights holder for reuse rights.",
-	"CopyrightUnknown": "Information pending",
-	"":                 "No license (in copyright)",
-}
-
-var openLicenses = map[string]struct{}{
-	"CC0-1.0":         {},
-	"CC-BY-4.0":       {},
-	"CC-BY-SA-4.0":    {},
-	"CC-BY-NC-4.0":    {},
-	"CC-BY-ND-4.0":    {},
-	"CC-BY-NC-SA-4.0": {},
-	"CC-BY-NC-ND-4.0": {},
-}
 
 func writeField(b *bytes.Buffer, tag, val string) {
 	if val != "" {
@@ -58,24 +34,26 @@ func writeField(b *bytes.Buffer, tag, val string) {
 }
 
 type Encoder struct {
+	repo    *repositories.Repo
 	baseURL string
 }
 
-func New(baseURL string) *Encoder {
+func New(repo *repositories.Repo, baseURL string) *Encoder {
 	return &Encoder{
+		repo:    repo,
 		baseURL: baseURL,
 	}
 }
 
-func (e *Encoder) EncodePublication(p *models.Publication) ([]byte, error) {
+func (e *Encoder) encode(r *frontoffice.Record) ([]byte, error) {
 	b := &bytes.Buffer{}
 	b.WriteString(startTag)
 
 	var t string
-	switch p.Type {
-	case "book", "book_editor":
+	switch r.Type {
+	case "book", "bookEditor":
 		t = "book"
-	case "book_chapter":
+	case "bookChapter":
 		t = "bookPart"
 	case "conference":
 		t = "conferenceObject"
@@ -86,132 +64,127 @@ func (e *Encoder) EncodePublication(p *models.Publication) ([]byte, error) {
 	default:
 		t = "other"
 	}
-	switch p.MiscellaneousType {
-	case "newsArticle", "newspaperPiece":
+	switch r.MiscType {
+	case "newsArticle", "newspaperPiece", "magazinePiece":
 		t = "contributionToPeriodical"
 	case "bookReview":
 		t = "review"
 	case "report":
 		t = "report"
 	}
+
 	writeField(b, "type", t)
 	writeField(b, "type", "info:eu-repo/semantics/"+t)
 
-	writeField(b, "identifier", "oai:archive.ugent.be:"+p.ID)
-	writeField(b, "identifier", p.Handle)
-	writeField(b, "identifier", e.baseURL+"/publication/"+p.ID)
-	if p.DOI != "" {
-		writeField(b, "identifier", identifiers.DOI.Resolve(p.DOI))
+	writeField(b, "identifier", "oai:archive.ugent.be:"+r.ID)
+	writeField(b, "identifier", r.Handle)
+	writeField(b, "identifier", e.baseURL+"/publication/"+r.ID)
+	for _, val := range r.DOI {
+		writeField(b, "identifier", identifiers.DOI.Resolve(val))
 	}
 
-	switch p.PublicationStatus {
-	case "unpublished":
+	switch r.PublicationStatus {
+	case "unsubmitted":
 		writeField(b, "type", "info:eu-repo/semantics/draft")
-	case "accepted":
+	case "inpress":
 		writeField(b, "type", "info:eu-repo/semantics/acceptedVersion")
 	default:
 		writeField(b, "type", "info:eu-repo/semantics/publishedVersion")
 	}
 
-	writeField(b, "title", p.Title)
-
-	writeField(b, "publisher", p.Publisher)
-
-	writeField(b, "date", p.Year)
-
-	if p.Publication != "" {
-		writeField(b, "source", p.Publication)
+	for _, val := range r.Author {
+		writeField(b, "creator", val.Name)
 	}
-
-	if p.Publication != "" || p.PublicationAbbreviation != "" {
-		for _, val := range p.ISBN {
-			writeField(b, "source", "ISBN: "+val)
-		}
-		for _, val := range p.EISBN {
-			writeField(b, "source", "ISBN: "+val)
+	for _, val := range r.Promoter {
+		writeField(b, "contributor", val.Name)
+	}
+	if r.Type == "bookEditor" || r.Type == "issueEditor" {
+		for _, val := range r.Editor {
+			writeField(b, "creator", val.Name)
 		}
 	} else {
-		for _, val := range p.ISBN {
-			writeField(b, "identifier", "urn:isbn:"+val)
-		}
-		for _, val := range p.EISBN {
-			writeField(b, "identifier", "urn:isbn:"+val)
+		for _, val := range r.Editor {
+			writeField(b, "contributor", val.Name)
 		}
 	}
 
-	for _, val := range p.ISSN {
-		writeField(b, "source", "ISSN: "+val)
+	for _, val := range r.Keyword {
+		writeField(b, "subject", val)
 	}
-	for _, val := range p.EISSN {
-		writeField(b, "source", "ISSN: "+val)
+	for _, val := range r.Subject {
+		writeField(b, "subject", val)
 	}
 
-	for _, val := range p.Language {
+	writeField(b, "title", r.Title)
+
+	if r.Publisher != nil {
+		writeField(b, "publisher", r.Publisher.Name)
+	}
+
+	writeField(b, "date", r.Year)
+
+	for _, val := range r.Abstract {
+		writeField(b, "description", val)
+	}
+
+	for _, val := range r.Language {
 		writeField(b, "language", val)
 	}
 
-	for _, val := range p.Abstract {
-		writeField(b, "description", val.Text)
+	writeField(b, "rights", r.CopyrightStatement)
+
+	if r.Parent != nil {
+		writeField(b, "source", r.Parent.Title)
 	}
 
-	for _, val := range p.Keyword {
-		writeField(b, "subject", val)
-	}
-	for _, val := range p.ResearchField {
-		writeField(b, "subject", val)
+	for _, val := range r.ISSN {
+		writeField(b, "source", "ISSN: "+val)
 	}
 
-	for _, val := range p.Author {
-		writeField(b, "creator", val.Name())
-	}
-	for _, val := range p.Supervisor {
-		writeField(b, "contributor", val.Name())
-	}
-	if p.Type == "book_editor" || p.Type == "issue_editor" {
-		for _, val := range p.Editor {
-			writeField(b, "creator", val.Name())
+	if r.Parent != nil {
+		for _, val := range r.ISBN {
+			writeField(b, "source", "ISBN: "+val)
 		}
 	} else {
-		for _, val := range p.Editor {
-			writeField(b, "contributor", val.Name())
+		for _, val := range r.ISBN {
+			writeField(b, "identifier", "urn:isbn:"+val)
 		}
 	}
 
-	if len(p.File) > 0 {
-		f := p.File[0]
-		writeField(b, "identifier", e.baseURL+"/publication/"+p.ID+"/file/"+f.ID)
+	if len(r.File) > 0 {
+		f := r.File[0]
+		writeField(b, "identifier", e.baseURL+"/publication/"+r.ID+"/file/"+f.ID)
 		writeField(b, "format", f.ContentType)
-		writeField(b, "rights", f.AccessLevel)
-		if f.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
-			writeField(b, "date", "info:eu-repo/date/embargoEnd/"+f.EmbargoDate)
-		}
-	}
-
-	if len(p.File) > 0 {
-		bestLicense := ""
-		for _, f := range p.File {
-			if bestLicense == "" {
-				if _, isLicense := licenses[f.License]; isLicense {
-					bestLicense = f.License
-				}
+		if f.Change != nil && f.Change.To == "open" {
+			writeField(b, "rights", "info:eu-repo/semantics/embargoedAccess")
+			if f.Change.On != "" {
+				writeField(b, "date", "info:eu-repo/date/embargoEnd/"+f.Change.On[0:10])
 			}
-			if _, isOpenLicense := openLicenses[f.License]; isOpenLicense {
-				bestLicense = f.License
-				break
-			}
-		}
-
-		writeField(b, "rights", licenses[bestLicense])
-	}
-
-	for _, val := range p.RelatedProjects {
-		eu := val.Project.EUProject
-		if eu != nil && eu.ID != "" && eu.FrameworkProgramme != "" {
-			writeField(b, "relation", fmt.Sprintf("info:eu-repo/grantAgreement/EC/%s/%s", eu.FrameworkProgramme, eu.ID))
+		} else if f.Access == "open" {
+			writeField(b, "rights", "info:eu-repo/semantics/openAccess")
+		} else if f.Access == "restricted" {
+			writeField(b, "rights", "info:eu-repo/semantics/restrictedAccess")
+		} else if f.Access == "private" {
+			writeField(b, "rights", "info:eu-repo/semantics/closedAccess")
 		}
 	}
+
+	// for _, val := range r.Project {
+	// TODO
+	// if ($project->{eu_id} && $project->{eu_framework_programme}) {
+	// 	push @{$dc->{relation} ||= []}, "info:eu-repo/grantAgreement/EC/$project->{eu_framework_programme}/$project->{eu_id}";
+	// }
+	// }
 
 	b.WriteString(endTag)
 
 	return b.Bytes(), nil
+}
+
+func (e *Encoder) EncodePublication(p *models.Publication) ([]byte, error) {
+	return e.encode(frontoffice.MapPublication(p, e.repo))
+}
+
+func (e *Encoder) EncodeDataset(d *models.Dataset) ([]byte, error) {
+	return e.encode(frontoffice.MapDataset(d, e.repo))
 }
