@@ -26,7 +26,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="u-scroll-wrapper__body w-100 p-6">
         <div class="pb-5">
             <p><strong>Why are the totals wrong?</strong></p>
@@ -35,7 +35,7 @@
         </div>
 
         <div class="card w-100 mb-6">
-            <div class="card-header card-header--auto">
+            <div class="card-header card-header--auto ">
                 <div class="bc-toolbar bc-toolbar--auto">
                     <div class="bc-toolbar-left">
                         <div class="bc-toolbar-item">
@@ -49,7 +49,7 @@
                                 hx-post="{{pathFor "dashboard_refresh_upublications" "type" $.Type}}"
                                 hx-target="#tbl-upublications"
                                 hx-include="[name='ayear']"
-                                hx-indicator="#tbl-upublications .overlay-transparent">
+                                hx-indicator="#tbl-upublications .spinner-card-backdrop">
                                 <option value="">All years</option>
                                 {{ range $uyear := $.AllUPublicationYears}}
                                 <option value="{{$uyear}}" {{if eq $uyear $.UYear}}selected{{end}}>{{$uyear}}</option>
@@ -59,7 +59,7 @@
                     </div>
                 </div>
             </div>
-            <div class="card-body w-100 p-0">
+            <div class="card-body w-100 p-0 position-relative">
                 <div class="table-responsive" id="tbl-upublications">
                     {{partial "dashboard/partials/tbl_publications" ($.Yield "Faculties" $.UFaculties "Publications" $.UPublications "PTypes" $.PTypes)}}
                 </div>
@@ -77,10 +77,10 @@
                             <select
                                 name="ayear"
                                 class="form-select w-100"
-                                hx-post="{{pathFor "dashboard_refresh_apublications" "type" $.Type}}" 
+                                hx-post="{{pathFor "dashboard_refresh_apublications" "type" $.Type}}"
                                 hx-target="#tbl-apublications"
                                 hx-include="[name='uyear']"
-                                hx-indicator="#tbl-apublications .overlay-transparent">
+                                hx-indicator="#tbl-apublications .spinner-card-backdrop">
                                 <option value="">All years</option>
                                 {{ range $ayear := $.AllUPublicationYears}}
                                 <option value="{{$ayear}}" {{if eq $ayear $.AYear}}selected{{end}}>{{$ayear}}</option>
@@ -90,7 +90,7 @@
                     </div>
                 </div>
             </div>
-            <div class="card-body w-100 p-0">
+            <div class="card-body w-100 p-0 position-relative">
                 <div class="table-responsive" id="tbl-apublications">
                     {{partial "dashboard/partials/tbl_publications" ($.Yield "Faculties" $.AFaculties "Publications" $.APublications "PTypes" $.PTypes)}}
                 </div>
