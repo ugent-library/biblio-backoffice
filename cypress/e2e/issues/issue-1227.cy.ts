@@ -8,7 +8,7 @@ describe('Issue #1127: Cannot search any longer on book title, journal title, sh
 
     setUpPublication('Miscellaneous', () => {
       updateDescriptionFields('Publication details', () => {
-        setField('Publisher', `Alternative title: ${randomText}`)
+        cy.setFieldByLabel('Publisher', `Alternative title: ${randomText}`)
       })
     })
 
@@ -21,7 +21,7 @@ describe('Issue #1127: Cannot search any longer on book title, journal title, sh
 
     setUpPublication('Miscellaneous', () => {
       updateDescriptionFields('Publication details', () => {
-        setField('Alternative title', `Alternative title: ${randomText1}`)
+        cy.setFieldByLabel('Alternative title', `Alternative title: ${randomText1}`)
           .closest('.form-value')
           .contains('.btn', 'Add')
           .click()
@@ -41,7 +41,7 @@ describe('Issue #1127: Cannot search any longer on book title, journal title, sh
 
     setUpPublication('Conference contribution', () => {
       updateDescriptionFields('Conference Details', () => {
-        setField('Conference', `The conference name: ${randomText}`)
+        cy.setFieldByLabel('Conference', `The conference name: ${randomText}`)
       })
     })
 
@@ -53,7 +53,7 @@ describe('Issue #1127: Cannot search any longer on book title, journal title, sh
 
     setUpPublication('Journal Article', () => {
       updateDescriptionFields('Publication details', () => {
-        setField('Journal title', `The journal name: ${randomText}`)
+        cy.setFieldByLabel('Journal title', `The journal name: ${randomText}`)
       })
     })
 
@@ -65,7 +65,7 @@ describe('Issue #1127: Cannot search any longer on book title, journal title, sh
 
     setUpPublication('Journal Article', () => {
       updateDescriptionFields('Publication details', () => {
-        setField('Short journal title', `The short journal name: ${randomText}`)
+        cy.setFieldByLabel('Short journal title', `The short journal name: ${randomText}`)
       })
     })
 
@@ -77,7 +77,7 @@ describe('Issue #1127: Cannot search any longer on book title, journal title, sh
 
     setUpPublication('Book Chapter', () => {
       updateDescriptionFields('Publication details', () => {
-        setField('Book', `The book title: ${randomText}`)
+        cy.setFieldByLabel('Book title', `The book title: ${randomText}`)
       })
     })
 
@@ -96,8 +96,8 @@ describe('Issue #1127: Cannot search any longer on book title, journal title, sh
     cy.contains('.btn', 'Add publication(s)').click()
 
     updateDescriptionFields('Publication details', () => {
-      setField('Title', `The primary ${publicationType} title [CYPRESSTEST]`)
-      setField('Publication year', new Date().getFullYear().toString())
+      cy.setFieldByLabel('Title', `The primary ${publicationType} title [CYPRESSTEST]`)
+      cy.setFieldByLabel('Publication year', new Date().getFullYear().toString())
     })
 
     // Custom callback here
@@ -113,17 +113,13 @@ describe('Issue #1127: Cannot search any longer on book title, journal title, sh
   function updateDescriptionFields(section: 'Publication details' | 'Conference Details', callback: () => void) {
     cy.contains('.card-header', section).contains('.btn', 'Edit').click({ scrollBehavior: 'nearest' })
 
-    cy.ensureModal(`Edit ${section.toLowerCase()}`).within(() => {
-      callback()
-
-      cy.contains('.modal-footer .btn', 'Save').click()
-    })
+    cy.ensureModal(`Edit ${section.toLowerCase()}`)
+      .within(() => {
+        callback()
+      })
+      .closeModal(true)
 
     cy.ensureNoModal()
-  }
-
-  function setField(fieldLabel: string, value: string) {
-    return cy.contains('label', fieldLabel).next().find('input').type(value)
   }
 
   function getRandomText() {
