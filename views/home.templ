@@ -40,6 +40,7 @@ templ Home(c *ctx.Ctx) {
             </div>
         </div>
         <div class="u-scroll-wrapper__body w-100 p-6">
+            if c.User != nil {
             <div class="row">
                 <div class="col-xl-8 mb-6">
                     <div class="row">
@@ -52,6 +53,9 @@ templ Home(c *ctx.Ctx) {
                 <div class="col-xl-4" hx-get={ c.PathTo("recent_activity").String() } hx-trigger="load">
                 </div>
             </div>
+            } else {
+                
+            } 
         </div>
     </div>
     }

@@ -239,11 +239,12 @@ func Register(c Config) {
 
 			r.NotFound(handlers.NotFound)
 
+			// home
+			r.Get("/", handlers.Home).Name("home")
+
 			r.Group(func(r *ich.Mux) {
 				r.Use(ctx.RequireUser)
 
-				// home
-				r.Get("/", handlers.Home).Name("home")
 				// home action required component
 				r.Get("/action-required", handlers.ActionRequired).Name("action_required")
 				// home drafts to complete component
