@@ -205,12 +205,12 @@ var tmpl = template.Must(template.New("").Funcs(funcs).Parse(`
 
 	{{range .Rec.Project}}
 	<relatedItem otherType="project">
-		<identifier type="iweto">{{.ID | xml}}</identifier>
-		{{/* TODO
-		[%- IF pro.gismo_id %]
-		<identifier type="gismo-uuid">[% pro.gismo_id | xml_strict %]</identifier>
-		[%- END %]
-		*/}}
+		{{if .IWETOID}}
+		<identifier type="iweto">{{.IWETOID | xml}}</identifier>
+		{{end}}
+		{{if .GISMOID}}
+		<identifier type="gismo-uuid">{{.GISMOID | xml}}</identifier>
+		{{end}}
 		{{if .Title}}
 		<titleInfo>
 			<title>{{.Title | xml}}</title>
