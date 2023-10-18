@@ -75,6 +75,18 @@ func (c *Client) GetProject(id string) (*models.Project, error) {
 		p.EUProject.FrameworkProgramme = v.(string)
 	}
 
+	if v, ok := rec["gismo_id"]; ok {
+		p.GISMOID = v.(string)
+	}
+
+	if v, ok := rec["iweto_id"]; ok {
+		p.IWETOID = v.(string)
+	}
+	// iweto_id not filled in everywhere, but should be same as id for now
+	if p.IWETOID == "" {
+		p.IWETOID = p.ID
+	}
+
 	return p, nil
 }
 
