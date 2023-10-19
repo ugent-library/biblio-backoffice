@@ -52,14 +52,16 @@ type Affiliation struct {
 }
 
 type Person struct {
-	ID          string        `json:"_id,omitempty"`
-	CreditRole  []string      `json:"credit_role,omitempty"`
-	Name        string        `json:"name,omitempty"`
-	FirstName   string        `json:"first_name,omitempty"`
-	LastName    string        `json:"last_name,omitempty"`
-	UGentID     []string      `json:"ugent_id,omitempty"`
-	ORCID       string        `json:"orcid_id,omitempty"`
-	Affiliation []Affiliation `json:"affiliation,omitempty"`
+	ID            string        `json:"_id,omitempty"`
+	BiblioID      string        `json:"biblio_id,omitempty"`
+	CreditRole    []string      `json:"credit_role,omitempty"`
+	Name          string        `json:"name,omitempty"`
+	FirstName     string        `json:"first_name,omitempty"`
+	LastName      string        `json:"last_name,omitempty"`
+	NameLastFirst string        `json:"name_last_first,omitempty"`
+	UGentID       []string      `json:"ugent_id,omitempty"`
+	ORCID         string        `json:"orcid_id,omitempty"`
+	Affiliation   []Affiliation `json:"affiliation,omitempty"`
 }
 
 type Conference struct {
@@ -164,6 +166,7 @@ type Record struct {
 	ArticleType         string               `json:"article_type,omitempty"`
 	ArxivID             string               `json:"arxiv_id,omitempty"`
 	Author              []Person             `json:"author,omitempty"`
+	AuthorSort          string               `json:"author_sort,omitempty"`
 	Classification      string               `json:"classification,omitempty"`
 	Conference          *Conference          `json:"conference,omitempty"`
 	ConferenceType      string               `json:"conference_type,omitempty"`
@@ -182,6 +185,7 @@ type Record struct {
 	EmbargoTo           string               `json:"embargo_to,omitempty"`
 	External            int                  `json:"external"`
 	File                []File               `json:"file,omitempty"`
+	FirstAuthor         []Person             `json:"first_author,omitempty"`
 	Format              []string             `json:"format,omitempty"`
 	Handle              string               `json:"handle,omitempty"`
 	ISBN                []string             `json:"isbn,omitempty"`
@@ -190,6 +194,7 @@ type Record struct {
 	IssueTitle          string               `json:"issue_title,omitempty"`
 	Keyword             []string             `json:"keyword,omitempty"`
 	Language            []string             `json:"language,omitempty"`
+	LastAuthor          []Person             `json:"last_author,omitempty"`
 	License             string               `json:"license,omitempty"`
 	MiscType            string               `json:"misc_type,omitempty"`
 	OtherLicense        string               `json:"other_license,omitempty"`
@@ -201,6 +206,7 @@ type Record struct {
 	Publisher           *Publisher           `json:"publisher,omitempty"`
 	PubMedID            string               `json:"pubmed_id,omitempty"`
 	SeriesTitle         string               `json:"series_title,omitempty"`
+	SoleAuthor          *Person              `json:"sole_author,omitempty"`
 	Source              *Source              `json:"source,omitempty"`
 	Status              string               `json:"status,omitempty"`
 	Subject             []string             `json:"subject,omitempty"`
@@ -237,10 +243,14 @@ type Hits struct {
 func mapContributor(c *models.Contributor) *Person {
 	p := &Person{
 		ID:        c.PersonID,
+		BiblioID:  c.PersonID,
 		FirstName: c.FirstName(),
 		LastName:  c.LastName(),
 		Name:      c.Name(),
 		ORCID:     c.ORCID(),
+	}
+	if p.LastName != "" && p.FirstName != "" {
+		p.NameLastFirst = fmt.Sprintf("%s, %s", p.LastName, p.FirstName)
 	}
 	if c.Person != nil {
 		p.UGentID = c.Person.UGentID
@@ -404,6 +414,33 @@ func MapPublication(p *models.Publication, repo *repositories.Repo) *Record {
 		rec.Promoter = append(rec.Promoter, *c)
 	}
 
+	if len(rec.Author) > 0 && rec.Author[0].NameLastFirst != "" {
+		rec.AuthorSort = rec.Author[0].NameLastFirst
+	}
+
+	if len(rec.Author) == 1 {
+		rec.SoleAuthor = &rec.Author[0]
+	} else if len(rec.Author) > 1 {
+		firstAuthor := make([]Person, 0)
+		lastAuthor := make([]Person, 0)
+		for _, person := range rec.Author {
+			if validation.InArray(person.CreditRole, "first_author") {
+				firstAuthor = append(firstAuthor, person)
+			}
+			if validation.InArray(person.CreditRole, "last_author") {
+				lastAuthor = append(lastAuthor, person)
+			}
+		}
+		if len(firstAuthor) == 0 {
+			firstAuthor = append(firstAuthor, rec.Author[0])
+		}
+		if len(lastAuthor) == 0 {
+			lastAuthor = append(lastAuthor, rec.Author[len(rec.Author)-1])
+		}
+		rec.FirstAuthor = firstAuthor
+		rec.LastAuthor = lastAuthor
+	}
+
 	if p.Keyword != nil {
 		rec.Keyword = append(rec.Keyword, p.Keyword...)
 	}
@@ -421,7 +458,10 @@ func MapPublication(p *models.Publication, repo *repositories.Repo) *Record {
 	}
 
 	if p.CreatorID != "" {
-		rec.CreatedBy = &Person{ID: p.CreatorID}
+		rec.CreatedBy = mapContributor(&models.Contributor{
+			PersonID: p.CreatorID,
+			Person:   p.Creator,
+		})
 	}
 
 	if p.DOI != "" {
