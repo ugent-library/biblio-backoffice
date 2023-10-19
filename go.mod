@@ -168,6 +168,7 @@ require (
 	github.com/tidwall/pretty v1.2.1 // indirect
 	github.com/ugent-library/friendly v0.0.0-20230811091914-e5eb37f47072
 	github.com/ugent-library/httperror v0.0.0-20230123152913-d3d289bcce20
+	github.com/ugent-library/httpx v0.0.0-20230810085329-405b7b83c66c
 	github.com/ugent-library/middleware v0.0.0-20230512145619-4be676c7c423
 	github.com/ugent-library/mix v0.0.0-20230123152737-b51ce0c6439b
 	github.com/ugent-library/oidc v0.0.0-20230810150340-b66acc34dfeb
