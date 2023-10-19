@@ -3,7 +3,7 @@ package util
 import (
 	"fmt"
 
-	"github.com/ugent-library/biblio-backoffice/validation"
+	"slices"
 )
 
 func ParseBoolean(v interface{}) bool {
@@ -46,7 +46,7 @@ func ParseString(v interface{}) string {
 
 func UniqStrings(vals []string) (newVals []string) {
 	for _, val := range vals {
-		if !validation.InArray(newVals, val) {
+		if !slices.Contains(newVals, val) {
 			newVals = append(newVals, val)
 		}
 	}

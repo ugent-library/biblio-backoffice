@@ -94,18 +94,18 @@ func (e *Encoder) encode(r *frontoffice.Record) ([]byte, error) {
 	}
 
 	for _, val := range r.Author {
-		writeField(b, "creator", val.Name)
+		writeField(b, "creator", val.NameLastFirst)
 	}
 	for _, val := range r.Promoter {
-		writeField(b, "contributor", val.Name)
+		writeField(b, "contributor", val.NameLastFirst)
 	}
 	if r.Type == "bookEditor" || r.Type == "issueEditor" {
 		for _, val := range r.Editor {
-			writeField(b, "creator", val.Name)
+			writeField(b, "creator", val.NameLastFirst)
 		}
 	} else {
 		for _, val := range r.Editor {
-			writeField(b, "contributor", val.Name)
+			writeField(b, "contributor", val.NameLastFirst)
 		}
 	}
 

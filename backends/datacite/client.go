@@ -9,6 +9,8 @@ import (
 	"strings"
 	"time"
 
+	"slices"
+
 	"github.com/caltechlibrary/doitools"
 	"github.com/tidwall/gjson"
 	"github.com/ugent-library/biblio-backoffice/models"
@@ -67,13 +69,13 @@ func (c *Client) GetDataset(id string) (*models.Dataset, error) {
 
 	if res := attrs.Get("language"); res.Exists() {
 		if base, err := language.ParseBase(res.String()); err == nil {
-			if validation.InArray(vocabularies.Map["language_codes"], base.ISO3()) {
+			if slices.Contains(vocabularies.Map["language_codes"], base.ISO3()) {
 				d.Language = append(d.Language, base.ISO3())
 			}
 		}
 	}
 	if res := attrs.Get("doi"); res.Exists() {
-		d.Identifiers = models.Identifiers{"DOI": []string{res.String()}}
+		d.Identifiers = models.Values{"DOI": []string{res.String()}}
 	}
 	if res := attrs.Get("publicationYear"); res.Exists() {
 		d.Year = res.String()
@@ -121,7 +123,7 @@ func (c *Client) GetDataset(id string) (*models.Dataset, error) {
 			t := models.Text{Text: r.Get("description").String(), Lang: "und"}
 			if res := r.Get("lang"); res.Exists() {
 				if base, err := language.ParseBase(res.String()); err == nil {
-					if validation.InArray(vocabularies.Map["language_codes"], base.ISO3()) {
+					if slices.Contains(vocabularies.Map["language_codes"], base.ISO3()) {
 						t.Lang = base.ISO3()
 					}
 				}

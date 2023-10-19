@@ -6,6 +6,8 @@ import (
 	"strings"
 	"time"
 
+	"slices"
+
 	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -129,6 +131,18 @@ func (c *Client) recordToPerson(record bson.M) (*models.Person, error) {
 	if v, ok := record["ugent_department_id"]; ok {
 		for _, i := range v.(bson.A) {
 			person.Affiliations = append(person.Affiliations, &models.Affiliation{OrganizationID: i.(string)})
+		}
+	}
+	if v, e := record["object_class"]; e {
+		objectClass := []string{}
+		for _, val := range v.(bson.A) {
+			objectClass = append(objectClass, val.(string))
+		}
+		if slices.Contains(objectClass, "ugentFormerEmployee") && len(person.Affiliations) == 0 {
+			person.Affiliations = append(person.Affiliations, &models.Affiliation{OrganizationID: "UGent"})
+		}
+		if slices.Contains(objectClass, "uzEmployee") {
+			person.Affiliations = append(person.Affiliations, &models.Affiliation{OrganizationID: "UZGent"})
 		}
 	}
 	if v, ok := record["preferred_first_name"]; ok {

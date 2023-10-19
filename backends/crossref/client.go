@@ -8,10 +8,11 @@ import (
 	"strings"
 	"time"
 
+	"slices"
+
 	"github.com/caltechlibrary/doitools"
 	"github.com/tidwall/gjson"
 	"github.com/ugent-library/biblio-backoffice/models"
-	"github.com/ugent-library/biblio-backoffice/validation"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
 	"golang.org/x/text/language"
 )
@@ -180,7 +181,7 @@ func (c *Client) GetPublication(id string) (*models.Publication, error) {
 	}
 	if res := attrs.Get("language"); res.Exists() {
 		if base, err := language.ParseBase(res.String()); err == nil {
-			if validation.InArray(vocabularies.Map["language_codes"], base.ISO3()) {
+			if slices.Contains(vocabularies.Map["language_codes"], base.ISO3()) {
 				p.Language = []string{base.ISO3()}
 			}
 		}
