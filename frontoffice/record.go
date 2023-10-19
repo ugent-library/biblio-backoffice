@@ -52,14 +52,16 @@ type Affiliation struct {
 }
 
 type Person struct {
-	ID          string        `json:"_id,omitempty"`
-	CreditRole  []string      `json:"credit_role,omitempty"`
-	Name        string        `json:"name,omitempty"`
-	FirstName   string        `json:"first_name,omitempty"`
-	LastName    string        `json:"last_name,omitempty"`
-	UGentID     []string      `json:"ugent_id,omitempty"`
-	ORCID       string        `json:"orcid_id,omitempty"`
-	Affiliation []Affiliation `json:"affiliation,omitempty"`
+	ID            string        `json:"_id,omitempty"`
+	BiblioID      string        `json:"biblio_id,omitempty"`
+	CreditRole    []string      `json:"credit_role,omitempty"`
+	Name          string        `json:"name,omitempty"`
+	FirstName     string        `json:"first_name,omitempty"`
+	LastName      string        `json:"last_name,omitempty"`
+	NameLastFirst string        `json:"name_last_first,omitempty"`
+	UGentID       []string      `json:"ugent_id,omitempty"`
+	ORCID         string        `json:"orcid_id,omitempty"`
+	Affiliation   []Affiliation `json:"affiliation,omitempty"`
 }
 
 type Conference struct {
@@ -143,71 +145,84 @@ type Text struct {
 	Lang string `json:"lang,omitempty"`
 }
 
+type ECOOMFund struct {
+	CSS                        string   `json:"css,omitempty"`
+	InternationalCollaboration string   `json:"international_collaboration,omitempty"`
+	Sector                     []string `json:"sector,omitempty"`
+	Validation                 string   `json:"validation,omitempty"`
+	Weight                     string   `json:"weight,omitempty"`
+}
+
 type Record struct {
-	ID                  string        `json:"_id"`
-	Abstract            []string      `json:"abstract,omitempty"`
-	AbstractFull        []Text        `json:"abstract_full,omitempty"`
-	AccessLevel         string        `json:"access_level,omitempty"`
-	AdditionalInfo      string        `json:"additional_info,omitempty"`
-	Affiliation         []Affiliation `json:"affiliation,omitempty"`
-	AlternativeLocation []Link        `json:"alternative_location,omitempty"`
-	AlternativeTitle    []string      `json:"alternative_title,omitempty"`
-	ArticleNumber       string        `json:"article_number,omitempty"`
-	ArticleType         string        `json:"article_type,omitempty"`
-	ArxivID             string        `json:"arxiv_id,omitempty"`
-	Author              []Person      `json:"author,omitempty"`
-	Classification      string        `json:"classification,omitempty"`
-	Conference          *Conference   `json:"conference,omitempty"`
-	ConferenceType      string        `json:"conference_type,omitempty"`
-	CopyrightStatement  string        `json:"copyright_statement,omitempty"`
-	CreatedBy           *Person       `json:"created_by,omitempty"`
-	DateFrom            string        `json:"date_from"`
-	DateCreated         string        `json:"date_created"`
-	DateUpdated         string        `json:"date_updated"`
-	Defense             *Defense      `json:"defense,omitempty"`
-	DOI                 []string      `json:"doi,omitempty"`
-	Edition             string        `json:"edition,omitempty"`
-	Editor              []Person      `json:"editor,omitempty"`
-	ESCIID              string        `json:"esci_id,omitempty"`
-	Embargo             string        `json:"embargo,omitempty"`
-	EmbargoTo           string        `json:"embargo_to,omitempty"`
-	External            int           `json:"external"`
-	File                []File        `json:"file,omitempty"`
-	Format              []string      `json:"format,omitempty"`
-	Handle              string        `json:"handle,omitempty"`
-	ISBN                []string      `json:"isbn,omitempty"`
-	ISSN                []string      `json:"issn,omitempty"`
-	Issue               string        `json:"issue,omitempty"`
-	IssueTitle          string        `json:"issue_title,omitempty"`
-	Keyword             []string      `json:"keyword,omitempty"`
-	Language            []string      `json:"language,omitempty"`
-	License             string        `json:"license,omitempty"`
-	MiscType            string        `json:"misc_type,omitempty"`
-	OtherLicense        string        `json:"other_license,omitempty"`
-	Page                *Page         `json:"page,omitempty"`
-	Parent              *Parent       `json:"parent,omitempty"`
-	Project             []Project     `json:"project,omitempty"`
-	Promoter            []Person      `json:"promoter,omitempty"`
-	PublicationStatus   string        `json:"publication_status,omitempty"`
-	Publisher           *Publisher    `json:"publisher,omitempty"`
-	PubMedID            string        `json:"pubmed_id,omitempty"`
-	SeriesTitle         string        `json:"series_title,omitempty"`
-	Source              *Source       `json:"source,omitempty"`
-	Status              string        `json:"status,omitempty"`
-	Subject             []string      `json:"subject,omitempty"`
-	Title               string        `json:"title,omitempty"`
-	Type                string        `json:"type,omitempty"`
-	URL                 string        `json:"url,omitempty"`
-	Volume              string        `json:"volume,omitempty"`
-	WOSID               string        `json:"wos_id,omitempty"`
-	WOSType             string        `json:"wos_type,omitempty"`
-	Year                string        `json:"year,omitempty"`
-	RelatedPublication  []Relation    `json:"related_publication,omitempty"`
-	RelatedDataset      []Relation    `json:"related_dataset,omitempty"`
-	VABBID              string        `json:"vabb_id,omitempty"`
-	VABBType            string        `json:"vabb_type,omitempty"`
-	VABBApproved        *int          `json:"vabb_approved,omitempty"`
-	VABBYear            []string      `json:"vabb_year,omitempty"`
+	ID                  string               `json:"_id"`
+	Abstract            []string             `json:"abstract,omitempty"`
+	AbstractFull        []Text               `json:"abstract_full,omitempty"`
+	AccessLevel         string               `json:"access_level,omitempty"`
+	AdditionalInfo      string               `json:"additional_info,omitempty"`
+	Affiliation         []Affiliation        `json:"affiliation,omitempty"`
+	AlternativeLocation []Link               `json:"alternative_location,omitempty"`
+	AlternativeTitle    []string             `json:"alternative_title,omitempty"`
+	ArticleNumber       string               `json:"article_number,omitempty"`
+	ArticleType         string               `json:"article_type,omitempty"`
+	ArxivID             string               `json:"arxiv_id,omitempty"`
+	Author              []Person             `json:"author,omitempty"`
+	AuthorSort          string               `json:"author_sort,omitempty"`
+	Classification      string               `json:"classification,omitempty"`
+	Conference          *Conference          `json:"conference,omitempty"`
+	ConferenceType      string               `json:"conference_type,omitempty"`
+	CopyrightStatement  string               `json:"copyright_statement,omitempty"`
+	CreatedBy           *Person              `json:"created_by,omitempty"`
+	DateFrom            string               `json:"date_from"`
+	DateCreated         string               `json:"date_created"`
+	DateUpdated         string               `json:"date_updated"`
+	Defense             *Defense             `json:"defense,omitempty"`
+	DOI                 []string             `json:"doi,omitempty"`
+	ECOOM               map[string]ECOOMFund `json:"ecoom,omitempty"`
+	Edition             string               `json:"edition,omitempty"`
+	Editor              []Person             `json:"editor,omitempty"`
+	ESCIID              string               `json:"esci_id,omitempty"`
+	Embargo             string               `json:"embargo,omitempty"`
+	EmbargoTo           string               `json:"embargo_to,omitempty"`
+	External            int                  `json:"external"`
+	File                []File               `json:"file,omitempty"`
+	FirstAuthor         []Person             `json:"first_author,omitempty"`
+	Format              []string             `json:"format,omitempty"`
+	Handle              string               `json:"handle,omitempty"`
+	ISBN                []string             `json:"isbn,omitempty"`
+	ISSN                []string             `json:"issn,omitempty"`
+	Issue               string               `json:"issue,omitempty"`
+	IssueTitle          string               `json:"issue_title,omitempty"`
+	Keyword             []string             `json:"keyword,omitempty"`
+	Language            []string             `json:"language,omitempty"`
+	LastAuthor          []Person             `json:"last_author,omitempty"`
+	License             string               `json:"license,omitempty"`
+	MiscType            string               `json:"misc_type,omitempty"`
+	OtherLicense        string               `json:"other_license,omitempty"`
+	Page                *Page                `json:"page,omitempty"`
+	Parent              *Parent              `json:"parent,omitempty"`
+	Project             []Project            `json:"project,omitempty"`
+	Promoter            []Person             `json:"promoter,omitempty"`
+	PublicationStatus   string               `json:"publication_status,omitempty"`
+	Publisher           *Publisher           `json:"publisher,omitempty"`
+	PubMedID            string               `json:"pubmed_id,omitempty"`
+	SeriesTitle         string               `json:"series_title,omitempty"`
+	SoleAuthor          *Person              `json:"sole_author,omitempty"`
+	Source              *Source              `json:"source,omitempty"`
+	Status              string               `json:"status,omitempty"`
+	Subject             []string             `json:"subject,omitempty"`
+	Title               string               `json:"title,omitempty"`
+	Type                string               `json:"type,omitempty"`
+	URL                 string               `json:"url,omitempty"`
+	Volume              string               `json:"volume,omitempty"`
+	WOSID               string               `json:"wos_id,omitempty"`
+	WOSType             string               `json:"wos_type,omitempty"`
+	Year                string               `json:"year,omitempty"`
+	RelatedPublication  []Relation           `json:"related_publication,omitempty"`
+	RelatedDataset      []Relation           `json:"related_dataset,omitempty"`
+	VABBID              string               `json:"vabb_id,omitempty"`
+	VABBType            string               `json:"vabb_type,omitempty"`
+	VABBApproved        *int                 `json:"vabb_approved,omitempty"`
+	VABBYear            []string             `json:"vabb_year,omitempty"`
 }
 
 func (r *Record) IsExternal() bool {
@@ -257,10 +272,14 @@ type Hits struct {
 func mapContributor(c *models.Contributor) *Person {
 	p := &Person{
 		ID:        c.PersonID,
+		BiblioID:  c.PersonID,
 		FirstName: c.FirstName(),
 		LastName:  c.LastName(),
 		Name:      c.Name(),
 		ORCID:     c.ORCID(),
+	}
+	if p.LastName != "" && p.FirstName != "" {
+		p.NameLastFirst = fmt.Sprintf("%s, %s", p.LastName, p.FirstName)
 	}
 	if c.Person != nil {
 		p.UGentID = c.Person.UGentID
@@ -424,6 +443,33 @@ func MapPublication(p *models.Publication, repo *repositories.Repo) *Record {
 		rec.Promoter = append(rec.Promoter, *c)
 	}
 
+	if len(rec.Author) > 0 && rec.Author[0].NameLastFirst != "" {
+		rec.AuthorSort = rec.Author[0].NameLastFirst
+	}
+
+	if len(rec.Author) == 1 {
+		rec.SoleAuthor = &rec.Author[0]
+	} else if len(rec.Author) > 1 {
+		firstAuthor := make([]Person, 0)
+		lastAuthor := make([]Person, 0)
+		for _, person := range rec.Author {
+			if validation.InArray(person.CreditRole, "first_author") {
+				firstAuthor = append(firstAuthor, person)
+			}
+			if validation.InArray(person.CreditRole, "last_author") {
+				lastAuthor = append(lastAuthor, person)
+			}
+		}
+		if len(firstAuthor) == 0 {
+			firstAuthor = append(firstAuthor, rec.Author[0])
+		}
+		if len(lastAuthor) == 0 {
+			lastAuthor = append(lastAuthor, rec.Author[len(rec.Author)-1])
+		}
+		rec.FirstAuthor = firstAuthor
+		rec.LastAuthor = lastAuthor
+	}
+
 	if p.Keyword != nil {
 		rec.Keyword = append(rec.Keyword, p.Keyword...)
 	}
@@ -441,7 +487,10 @@ func MapPublication(p *models.Publication, repo *repositories.Repo) *Record {
 	}
 
 	if p.CreatorID != "" {
-		rec.CreatedBy = &Person{ID: p.CreatorID}
+		rec.CreatedBy = mapContributor(&models.Contributor{
+			PersonID: p.CreatorID,
+			Person:   p.Creator,
+		})
 	}
 
 	if p.DOI != "" {
@@ -724,6 +773,31 @@ func MapPublication(p *models.Publication, repo *repositories.Repo) *Record {
 		} else {
 			v := 0
 			rec.VABBApproved = &v
+		}
+	}
+
+	if p.ExternalFields != nil {
+		rec.ECOOM = make(map[string]ECOOMFund)
+		for _, fund := range []string{"bof", "iof"} {
+			fundPrefix := fmt.Sprintf("ecoom-%s", fund)
+			fundFields := models.Values{}
+			for _, f := range []string{"css", "weight", "sector", "validation", "international-collaboration"} {
+				key := fmt.Sprintf("%s-%s", fundPrefix, f)
+				vals := p.ExternalFields.GetAll(key)
+				if len(vals) > 0 {
+					fundFields.SetAll(key, vals...)
+				}
+			}
+			if len(fundFields) == 0 {
+				continue
+			}
+			rec.ECOOM[fund] = ECOOMFund{
+				CSS:                        fundFields.Get(fmt.Sprintf("%s-%s", fundPrefix, "css")),
+				Weight:                     fundFields.Get(fmt.Sprintf("%s-%s", fundPrefix, "weight")),
+				Sector:                     fundFields.GetAll(fmt.Sprintf("%s-%s", fundPrefix, "sector")),
+				Validation:                 fundFields.Get(fmt.Sprintf("%s-%s", fundPrefix, "validation")),
+				InternationalCollaboration: fundFields.Get(fmt.Sprintf("%s-%s", fundPrefix, "international-collaboration")),
+			}
 		}
 	}
 

@@ -73,7 +73,7 @@ func (c *Client) GetDataset(id string) (*models.Dataset, error) {
 		}
 	}
 	if res := attrs.Get("doi"); res.Exists() {
-		d.Identifiers = models.Identifiers{"DOI": []string{res.String()}}
+		d.Identifiers = models.Values{"DOI": []string{res.String()}}
 	}
 	if res := attrs.Get("publicationYear"); res.Exists() {
 		d.Year = res.String()

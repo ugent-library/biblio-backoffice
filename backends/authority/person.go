@@ -11,6 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 
 	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/validation"
 )
 
 func (c *Client) GetPerson(id string) (*models.Person, error) {
@@ -129,6 +130,18 @@ func (c *Client) recordToPerson(record bson.M) (*models.Person, error) {
 	if v, ok := record["ugent_department_id"]; ok {
 		for _, i := range v.(bson.A) {
 			person.Affiliations = append(person.Affiliations, &models.Affiliation{OrganizationID: i.(string)})
+		}
+	}
+	if v, e := record["object_class"]; e {
+		objectClass := []string{}
+		for _, val := range v.(bson.A) {
+			objectClass = append(objectClass, val.(string))
+		}
+		if validation.InArray(objectClass, "ugentFormerEmployee") && len(person.Affiliations) == 0 {
+			person.Affiliations = append(person.Affiliations, &models.Affiliation{OrganizationID: "UGent"})
+		}
+		if validation.InArray(objectClass, "uzEmployee") {
+			person.Affiliations = append(person.Affiliations, &models.Affiliation{OrganizationID: "UZGent"})
 		}
 	}
 	if v, ok := record["preferred_first_name"]; ok {
