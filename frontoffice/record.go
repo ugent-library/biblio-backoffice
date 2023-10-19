@@ -2,6 +2,7 @@ package frontoffice
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	"slices"
@@ -155,6 +156,21 @@ type ECOOMFund struct {
 	Weight                     string   `json:"weight,omitempty"`
 }
 
+type JCR struct {
+	Eigenfactor          *float64 `json:"eigenfactor,omitempty"`
+	ImmediacyIndex       *float64 `json:"immediacy_index,omitempty"`
+	ImpactFactor         *float64 `json:"impact_factor,omitempty"`
+	ImpactFactor5Year    *float64 `json:"impact_factor_5year,omitempty"`
+	TotalCites           *int     `json:"total_cites,omitempty"`
+	Category             *string  `json:"category,omitempty"`
+	CategoryRank         *string  `json:"category_rank,omitempty"`
+	CategoryQuartile     *int     `json:"category_quartile,omitempty"`
+	CategoryDecile       *int     `json:"category_decile,omitempty"`
+	CategoryVigintile    *int     `json:"category_vigintile,omitempty"`
+	PrevImpactFactor     *float64 `json:"prev_impact_factor,omitempty"`
+	PrevCategoryQuartile *int     `json:"prev_category_quartile,omitempty"`
+}
+
 type Record struct {
 	ID                  string               `json:"_id"`
 	Abstract            []string             `json:"abstract,omitempty"`
@@ -194,6 +210,7 @@ type Record struct {
 	ISSN                []string             `json:"issn,omitempty"`
 	Issue               string               `json:"issue,omitempty"`
 	IssueTitle          string               `json:"issue_title,omitempty"`
+	JCR                 *JCR                 `json:"jcr,omitempty"`
 	Keyword             []string             `json:"keyword,omitempty"`
 	Language            []string             `json:"language,omitempty"`
 	LastAuthor          []Person             `json:"last_author,omitempty"`
@@ -772,6 +789,86 @@ func MapPublication(p *models.Publication, repo *repositories.Repo) *Record {
 				InternationalCollaboration: fundFields.Get(fmt.Sprintf("%s-%s", fundPrefix, "international-collaboration")),
 			}
 		}
+	}
+
+	if p.ExternalFields != nil {
+		jcrKeys := []string{
+			"eigenfactor", "immediacy_index", "impact_factor", "impact_factor_5year",
+			"total_cites", "category", "category_rank", "category_quartile",
+			"category_decile", "category_vigintile", "prev_impact_factor",
+			"prev_category_quartile"}
+		jcrFields := &models.Values{}
+		for _, key := range jcrKeys {
+			field := "jcr-" + key
+			if v := p.ExternalFields.Get(field); v != "" {
+				jcrFields.Set(field, v)
+			}
+		}
+		if len(*jcrFields) > 0 {
+			rec.JCR = &JCR{}
+			if v := jcrFields.Get("jcr-eigenfactor"); v != "" {
+				if f, err := strconv.ParseFloat(v, 64); err == nil {
+					rec.JCR.Eigenfactor = &f
+				}
+			}
+			if v := jcrFields.Get("jcr-immediacy_index"); v != "" {
+				if f, err := strconv.ParseFloat(v, 64); err == nil {
+					rec.JCR.ImmediacyIndex = &f
+				}
+			}
+			if v := jcrFields.Get("jcr-impact_factor"); v != "" {
+				if f, err := strconv.ParseFloat(v, 64); err == nil {
+					rec.JCR.ImpactFactor = &f
+				}
+			}
+			if v := jcrFields.Get("jcr-impact_factor_5year"); v != "" {
+				if f, err := strconv.ParseFloat(v, 64); err == nil {
+					rec.JCR.ImpactFactor5Year = &f
+				}
+			}
+			if v := jcrFields.Get("jcr-total_cites"); v != "" {
+				if i, err := strconv.ParseInt(v, 10, 32); err == nil {
+					i32 := int(i)
+					rec.JCR.TotalCites = &i32
+				}
+			}
+			if v := jcrFields.Get("jcr-category"); v != "" {
+				rec.JCR.Category = &v
+			}
+			if v := jcrFields.Get("jcr-category_rank"); v != "" {
+				rec.JCR.CategoryRank = &v
+			}
+			if v := jcrFields.Get("jcr-category_decile"); v != "" {
+				if i, err := strconv.ParseInt(v, 10, 32); err == nil {
+					i32 := int(i)
+					rec.JCR.CategoryDecile = &i32
+				}
+			}
+			if v := jcrFields.Get("jcr-category_quartile"); v != "" {
+				if i, err := strconv.ParseInt(v, 10, 32); err == nil {
+					i32 := int(i)
+					rec.JCR.CategoryQuartile = &i32
+				}
+			}
+			if v := jcrFields.Get("jcr-category_vigintile"); v != "" {
+				if i, err := strconv.ParseInt(v, 10, 32); err == nil {
+					i32 := int(i)
+					rec.JCR.CategoryVigintile = &i32
+				}
+			}
+			if v := jcrFields.Get("jcr-prev_impact_factor"); v != "" {
+				if f, err := strconv.ParseFloat(v, 64); err == nil {
+					rec.JCR.PrevImpactFactor = &f
+				}
+			}
+			if v := jcrFields.Get("jcr-prev_category_quartile"); v != "" {
+				if i, err := strconv.ParseInt(v, 10, 32); err == nil {
+					i32 := int(i)
+					rec.JCR.PrevCategoryQuartile = &i32
+				}
+			}
+		}
+
 	}
 
 	return rec
