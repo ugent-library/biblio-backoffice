@@ -3,6 +3,8 @@ package models
 import (
 	"fmt"
 
+	"slices"
+
 	"github.com/ugent-library/biblio-backoffice/validation"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
 )
@@ -90,7 +92,7 @@ func (c *Contributor) Validate() (errs validation.Errors) {
 		}
 	}
 	for i, cr := range c.CreditRole {
-		if !validation.InArray(vocabularies.Map["credit_roles"], cr) {
+		if !slices.Contains(vocabularies.Map["credit_roles"], cr) {
 			errs = append(errs, &validation.Error{
 				Pointer: fmt.Sprintf("/credit_role/%d", i),
 				Code:    "credit_role.invalid",

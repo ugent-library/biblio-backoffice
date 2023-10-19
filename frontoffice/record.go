@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strings"
 
+	"slices"
+
 	"github.com/caltechlibrary/doitools"
 	"github.com/iancoleman/strcase"
 	"github.com/ugent-library/biblio-backoffice/models"
@@ -453,10 +455,10 @@ func MapPublication(p *models.Publication, repo *repositories.Repo) *Record {
 		firstAuthor := make([]Person, 0)
 		lastAuthor := make([]Person, 0)
 		for _, person := range rec.Author {
-			if validation.InArray(person.CreditRole, "first_author") {
+			if slices.Contains(person.CreditRole, "first_author") {
 				firstAuthor = append(firstAuthor, person)
 			}
-			if validation.InArray(person.CreditRole, "last_author") {
+			if slices.Contains(person.CreditRole, "last_author") {
 				lastAuthor = append(lastAuthor, person)
 			}
 		}

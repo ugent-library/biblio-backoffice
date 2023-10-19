@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"slices"
+
 	"github.com/oklog/ulid/v2"
 	"github.com/ugent-library/biblio-backoffice/pagination"
 	"github.com/ugent-library/biblio-backoffice/validation"
@@ -258,7 +260,7 @@ func (dl *DatasetLink) Validate() (errs validation.Errors) {
 			Code:    "url.required",
 		})
 	}
-	if !validation.InArray(vocabularies.Map["dataset_link_relations"], dl.Relation) {
+	if !slices.Contains(vocabularies.Map["dataset_link_relations"], dl.Relation) {
 		errs = append(errs, &validation.Error{
 			Pointer: "/relation",
 			Code:    "relation.invalid",
@@ -358,7 +360,7 @@ func (d *Dataset) Validate() error {
 	// }
 
 	for i, l := range d.Language {
-		if !validation.InArray(vocabularies.Map["language_codes"], l) {
+		if !slices.Contains(vocabularies.Map["language_codes"], l) {
 			errs = append(errs, &validation.Error{
 				Pointer: fmt.Sprintf("/language/%d", i),
 				Code:    "dataset.language.invalid",

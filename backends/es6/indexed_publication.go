@@ -4,11 +4,12 @@ import (
 	"regexp"
 	"strings"
 
+	"slices"
+
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/models"
 	internal_time "github.com/ugent-library/biblio-backoffice/time"
 	"github.com/ugent-library/biblio-backoffice/util"
-	"github.com/ugent-library/biblio-backoffice/validation"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
 )
 
@@ -92,11 +93,11 @@ func NewIndexedPublication(p *models.Publication) *indexedPublication {
 	// extract faculty_id and all organization id's from organization trees
 	for _, rel := range p.RelatedOrganizations {
 		for _, org := range rel.Organization.Tree {
-			if !validation.InArray(ip.OrganizationID, org.ID) {
+			if !slices.Contains(ip.OrganizationID, org.ID) {
 				ip.OrganizationID = append(ip.OrganizationID, org.ID)
 			}
 
-			if validation.InArray(faculties, org.ID) && !validation.InArray(ip.FacultyID, org.ID) {
+			if slices.Contains(faculties, org.ID) && !slices.Contains(ip.FacultyID, org.ID) {
 				ip.FacultyID = append(ip.FacultyID, org.ID)
 			}
 		}
