@@ -48,7 +48,7 @@ func Home(c *ctx.Ctx) templ.Component {
 				if err != nil {
 					return err
 				}
-				var_4 := `Deposit and Registration office for the Academic bibliography and institutional repository of Ghent University.`
+				var_4 := `Registration- and deposit office for the Academic Bibliography and institutional repository of Ghent University.`
 				_, err = templBuffer.WriteString(var_4)
 				if err != nil {
 					return err
@@ -149,7 +149,7 @@ func Home(c *ctx.Ctx) templ.Component {
 				if err != nil {
 					return err
 				}
-				var_12 := `Registration- and deposit office for the Academic bibliography and institutional repository of Ghent University.`
+				var_12 := `Registration- and deposit office for the Academic Bibliography and institutional repository of Ghent University.`
 				_, err = templBuffer.WriteString(var_12)
 				if err != nil {
 					return err
@@ -194,7 +194,7 @@ func Home(c *ctx.Ctx) templ.Component {
 				if err != nil {
 					return err
 				}
-				var_17 := `Register &amp; deposit your publications to archive them directly in UGent's academic bibliography.`
+				var_17 := `Register &amp; deposit your publications to archive them directly in UGent's Academic Bibliography.`
 				_, err = templBuffer.WriteString(var_17)
 				if err != nil {
 					return err
@@ -212,12 +212,12 @@ func Home(c *ctx.Ctx) templ.Component {
 				if err != nil {
 					return err
 				}
-				var_19 := `Register your published datasets in UGent's academic bibliography.`
+				var_19 := `Register your published datasets in UGent's Academic Bibliography.`
 				_, err = templBuffer.WriteString(var_19)
 				if err != nil {
 					return err
 				}
-				_, err = templBuffer.WriteString("</p></div></div></div></div></div></div><div class=\"row\"><div class=\"col-lg-6 mb-6\"><div class=\"card h-100\"><div class=\"card-body p-8\"><div class=\"bc-avatar-and-text align-items-start\"><div class=\"bc-avatar bc-avatar--large me-6 bc-avatar--rounded bc-avatar--light-blue\"><i class=\"if if-search\"></i></div><div class=\"bc-avatar-text\"><h2>")
+				_, err = templBuffer.WriteString("</p></div></div></div></div></div></div><div class=\"row\"><div class=\"col-lg-6 mb-6\"><div class=\"card\"><div class=\"card-body p-8\"><div class=\"bc-avatar-and-text align-items-start\"><div class=\"bc-avatar bc-avatar--large me-6 bc-avatar--rounded bc-avatar--light-blue\"><i class=\"if if-search\"></i></div><div class=\"bc-avatar-text\"><h2>")
 				if err != nil {
 					return err
 				}
@@ -230,7 +230,7 @@ func Home(c *ctx.Ctx) templ.Component {
 				if err != nil {
 					return err
 				}
-				var_21 := `Your research output will be showcased on our Academic bibliography. Explore 200 years of publications and datasets, published by Ghent University researchers. `
+				var_21 := `Your research output will be showcased on our `
 				_, err = templBuffer.WriteString(var_21)
 				if err != nil {
 					return err
@@ -239,21 +239,21 @@ func Home(c *ctx.Ctx) templ.Component {
 				if err != nil {
 					return err
 				}
-				var_22 := `Visit `
+				var_22 := `public Academic Bibliography `
 				_, err = templBuffer.WriteString(var_22)
 				if err != nil {
 					return err
 				}
-				_, err = templBuffer.WriteString("<span class=\"visually-hidden\">")
+				_, err = templBuffer.WriteString("<i class=\"if if-external-link if--small\" aria-hidden=\"true\"></i></a>")
 				if err != nil {
 					return err
 				}
-				var_23 := `the public Academic Bibliography`
+				var_23 := `. Explore 200 years of publications and datasets, published by Ghent University researchers.`
 				_, err = templBuffer.WriteString(var_23)
 				if err != nil {
 					return err
 				}
-				_, err = templBuffer.WriteString("</span><i class=\"if if-external-link if--small\"></i></a></p></div></div></div></div></div><div class=\"col-lg-6 mb-6\"><div class=\"card h-100\"><div class=\"card-body p-8\"><div class=\"bc-avatar-and-text align-items-start\"><div class=\"bc-avatar bc-avatar--large me-6 bc-avatar--rounded bc-avatar--light-blue\"><i class=\"if if-info-circle\"></i></div><div class=\"bc-avatar-text\"><h2>")
+				_, err = templBuffer.WriteString("</p></div></div></div></div></div><div class=\"col-lg-6 mb-6\"><div class=\"card\"><div class=\"card-body p-8\"><div class=\"bc-avatar-and-text align-items-start\"><div class=\"bc-avatar bc-avatar--large me-6 bc-avatar--rounded bc-avatar--light-blue\"><i class=\"if if-info-circle\"></i></div><div class=\"bc-avatar-text\"><h2>")
 				if err != nil {
 					return err
 				}
@@ -266,8 +266,26 @@ func Home(c *ctx.Ctx) templ.Component {
 				if err != nil {
 					return err
 				}
-				var_25 := `Read about why and how to register and deposit records in Biblio.`
+				var_25 := `Read about why and how to register and deposit records in Biblio in our `
 				_, err = templBuffer.WriteString(var_25)
+				if err != nil {
+					return err
+				}
+				_, err = templBuffer.WriteString("<a class=\"c-link c-link-muted\" href=\"https://www.ugent.be/intranet/en/research/impact/schol-publishing/biblio.htm\" target=\"_blank\">")
+				if err != nil {
+					return err
+				}
+				var_26 := `Research tips `
+				_, err = templBuffer.WriteString(var_26)
+				if err != nil {
+					return err
+				}
+				_, err = templBuffer.WriteString("<i class=\"if if-external-link if--small\" aria-hidden=\"true\"></i></a>")
+				if err != nil {
+					return err
+				}
+				var_27 := `.`
+				_, err = templBuffer.WriteString(var_27)
 				if err != nil {
 					return err
 				}
