@@ -325,6 +325,9 @@ func generatePublicationsDashboard(faculties []string, ptypes []string, searcher
 				}
 			}
 
+			searchArgs.PageSize = 0
+			searchArgs.Page = 1
+
 			searchUrl.RawQuery = queryVals.Encode()
 
 			hits, err := searcher.Search(searchArgs)
