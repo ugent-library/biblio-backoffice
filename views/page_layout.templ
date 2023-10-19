@@ -113,7 +113,7 @@ templ pageLayout(c *ctx.Ctx, title, activeNav string, meta templ.Component) {
                                             </div>
                                         </div>
                                     } else {
-                                        <a class="btn btn-primary btn-sm" href={ templ.URL(c.PathTo("login").String()) }>
+                                        <a class="btn btn-link btn-sm ms-4" href={ templ.URL(c.PathTo("login").String()) }>
                                             <i class="if if-arrow-right ms-0"></i>
                                             <span class="btn-text me-2">Log in</span>
                                         </a>
@@ -150,6 +150,7 @@ templ pageLayout(c *ctx.Ctx, title, activeNav string, meta templ.Component) {
                     </div>
                     }
                     <div class="c-sidebar__menu">
+                        if c.User != nil {
                         <nav>
                             <ul class="c-sidebar-menu">
                                 <li class={"c-sidebar__item", templ.KV("c-sidebar__item--active", activeNav == "publications")}>
@@ -185,6 +186,7 @@ templ pageLayout(c *ctx.Ctx, title, activeNav string, meta templ.Component) {
                                 }
                             </ul>
                         </nav>
+                        }
                     </div>
                     <div class="c-sidebar__bottom">
                         <img src={ c.AssetPath("/images/logo-ugent-white.svg") } class="d-none d-lg-block" alt="Logo UGent" height="48px" width="auto"/>
