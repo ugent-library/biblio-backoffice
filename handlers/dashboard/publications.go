@@ -351,8 +351,8 @@ func (h *Handler) allUPublicationYears() ([]string, error) {
 func (h *Handler) allAPublicationYears() ([]string, error) {
 	return getFilteredTokenValues(h.PublicationSearchIndex, "year", &models.SearchArgs{
 		Filters: map[string][]string{
-			"status":         {"public"},
-			"classification": {"A"},
+			"status":             {"private", "public", "returned"},
+			"publication_status": {"accepted"},
 		},
 	})
 }
