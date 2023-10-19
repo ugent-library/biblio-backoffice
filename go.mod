@@ -1,6 +1,6 @@
 module github.com/ugent-library/biblio-backoffice
 
-go 1.18
+go 1.21
 
 require (
 	github.com/Masterminds/sprig/v3 v3.2.3
@@ -155,7 +155,6 @@ require (
 	github.com/nics/ich v0.0.0-20231010153708-2d9e5a14e2c8
 	github.com/oklog/ulid/v2 v2.1.0
 	github.com/ory/graceful v0.1.3
-	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.1.0 // indirect
 	github.com/shopspring/decimal v1.3.1 // indirect
 	github.com/spf13/afero v1.10.0 // indirect
@@ -176,7 +175,6 @@ require (
 	golang.org/x/oauth2 v0.12.0 // indirect
 	golang.org/x/sys v0.12.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
-	google.golang.org/genproto v0.0.0-20230913181813-007df8e322eb
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect

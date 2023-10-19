@@ -5,11 +5,12 @@ import (
 	"io"
 	"strings"
 
+	"slices"
+
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/backends/excel"
 	"github.com/ugent-library/biblio-backoffice/models"
 	internal_time "github.com/ugent-library/biblio-backoffice/time"
-	"github.com/ugent-library/biblio-backoffice/validation"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
 )
 
@@ -221,7 +222,7 @@ func (x *xlsx) publicationToRow(pub *models.Publication) []string {
 	m["has_file"] = fmt.Sprintf("%t", len(pub.File) > 0)
 	m["has_open_access_file"] = "false"
 	for _, file := range pub.File {
-		if validation.InArray(vocabularies.Map["publication_file_access_levels"], file.AccessLevel) {
+		if slices.Contains(vocabularies.Map["publication_file_access_levels"], file.AccessLevel) {
 			m["has_open_access_file"] = "true"
 			break
 		}

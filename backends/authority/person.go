@@ -6,13 +6,14 @@ import (
 	"strings"
 	"time"
 
+	"slices"
+
 	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/util"
-	"github.com/ugent-library/biblio-backoffice/validation"
 )
 
 func (c *Client) GetPerson(id string) (*models.Person, error) {
@@ -123,10 +124,10 @@ func (c *Client) recordToPerson(record bson.M) (*models.Person, error) {
 		for _, val := range v.(bson.A) {
 			objectClass = append(objectClass, val.(string))
 		}
-		if validation.InArray(objectClass, "ugentFormerEmployee") && len(person.Affiliations) == 0 {
+		if slices.Contains(objectClass, "ugentFormerEmployee") && len(person.Affiliations) == 0 {
 			person.Affiliations = append(person.Affiliations, &models.Affiliation{OrganizationID: "UGent"})
 		}
-		if validation.InArray(objectClass, "uzEmployee") {
+		if slices.Contains(objectClass, "uzEmployee") {
 			person.Affiliations = append(person.Affiliations, &models.Affiliation{OrganizationID: "UZGent"})
 		}
 	}

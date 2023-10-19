@@ -1,11 +1,12 @@
 package es6
 
 import (
+	"slices"
+
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/models"
 	internal_time "github.com/ugent-library/biblio-backoffice/time"
 	"github.com/ugent-library/biblio-backoffice/util"
-	"github.com/ugent-library/biblio-backoffice/validation"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
 )
 
@@ -56,11 +57,11 @@ func NewIndexedDataset(d *models.Dataset) *indexedDataset {
 	// extract faculty_id and organization_id from department trees
 	for _, rel := range d.RelatedOrganizations {
 		for _, org := range rel.Organization.Tree {
-			if !validation.InArray(id.OrganizationID, org.ID) {
+			if !slices.Contains(id.OrganizationID, org.ID) {
 				id.OrganizationID = append(id.OrganizationID, org.ID)
 			}
 
-			if validation.InArray(faculties, org.ID) && !validation.InArray(id.FacultyID, org.ID) {
+			if slices.Contains(faculties, org.ID) && !slices.Contains(id.FacultyID, org.ID) {
 				id.FacultyID = append(id.FacultyID, org.ID)
 			}
 		}

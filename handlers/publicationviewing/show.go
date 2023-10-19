@@ -3,11 +3,12 @@ package publicationviewing
 import (
 	"net/http"
 
+	"slices"
+
 	"github.com/ugent-library/biblio-backoffice/displays"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/render/display"
-	"github.com/ugent-library/biblio-backoffice/validation"
 )
 
 var subNavs = []string{"description", "files", "contributors", "datasets", "activity"}
@@ -57,7 +58,7 @@ type YieldShowActivity struct {
 
 func (h *Handler) Show(w http.ResponseWriter, r *http.Request, ctx Context) {
 	activeSubNav := r.URL.Query().Get("show")
-	if !validation.InArray(subNavs, activeSubNav) {
+	if !slices.Contains(subNavs, activeSubNav) {
 		activeSubNav = "description"
 	}
 
