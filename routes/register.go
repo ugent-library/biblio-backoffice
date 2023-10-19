@@ -32,6 +32,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/handlers/publicationsearching"
 	"github.com/ugent-library/biblio-backoffice/handlers/publicationviewing"
 	"github.com/ugent-library/biblio-backoffice/locale"
+	"github.com/ugent-library/httpx/render"
 	mw "github.com/ugent-library/middleware"
 	"github.com/ugent-library/oidc"
 	"github.com/ugent-library/zaphttp"
@@ -39,7 +40,14 @@ import (
 	"go.uber.org/zap"
 )
 
+type Version struct {
+	Branch string
+	Commit string
+	Image  string
+}
+
 type Config struct {
+	Version          Version
 	Env              string
 	Services         *backends.Services
 	BaseURL          *url.URL
@@ -76,10 +84,19 @@ func Register(c Config) {
 	// static files
 	c.Router.Handle("/static/*", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 
-	// status endpoint
-	// TODO add checkers
-	c.Router.Get("/status", health.NewHandler(health.NewChecker()))
-	// TODO add /info endpoint
+	// mount health and info
+	c.Router.Get("/status", health.NewHandler(health.NewChecker())) // TODO add checkers
+	c.Router.Get("/info", func(w http.ResponseWriter, r *http.Request) {
+		render.JSON(w, http.StatusOK, &struct {
+			Branch string `json:"branch,omitempty"`
+			Commit string `json:"commit,omitempty"`
+			Image  string `json:"image,omitempty"`
+		}{
+			Branch: c.Version.Branch,
+			Commit: c.Version.Commit,
+			Image:  c.Version.Image,
+		})
+	})
 
 	// handlers
 	baseHandler := handlers.BaseHandler{
