@@ -53,7 +53,7 @@ type Affiliation struct {
 
 type Person struct {
 	ID            string        `json:"_id,omitempty"`
-	BIBLIOID      string        `json:"biblio_id,omitempty"`
+	BiblioID      string        `json:"biblio_id,omitempty"`
 	CreditRole    []string      `json:"credit_role,omitempty"`
 	Name          string        `json:"name,omitempty"`
 	FirstName     string        `json:"first_name,omitempty"`
@@ -243,7 +243,7 @@ type Hits struct {
 func mapContributor(c *models.Contributor) *Person {
 	p := &Person{
 		ID:        c.PersonID,
-		BIBLIOID:  c.PersonID,
+		BiblioID:  c.PersonID,
 		FirstName: c.FirstName(),
 		LastName:  c.LastName(),
 		Name:      c.Name(),
