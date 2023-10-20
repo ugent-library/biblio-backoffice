@@ -167,37 +167,37 @@ func RecentActivity(c *ctx.Ctx, acts []Activity) templ.Component {
 						return templ_7745c5c3_Err
 					}
 				case PublishEvent:
-					templ_7745c5c3_Var10 := `published`
+					templ_7745c5c3_Var10 := `published a`
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var10)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				case RepublishEvent:
-					templ_7745c5c3_Var11 := `republished`
+					templ_7745c5c3_Var11 := `republished a`
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var11)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				case WithdrawEvent:
-					templ_7745c5c3_Var12 := `withdrew`
+					templ_7745c5c3_Var12 := `withdrew a`
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var12)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				case LockEvent:
-					templ_7745c5c3_Var13 := `locked`
+					templ_7745c5c3_Var13 := `locked a`
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var13)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				case UpdateEvent:
-					templ_7745c5c3_Var14 := `edited`
+					templ_7745c5c3_Var14 := `edited a`
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var14)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				case MessageEvent:
-					templ_7745c5c3_Var15 := `left a comment on`
+					templ_7745c5c3_Var15 := `left a comment on a`
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var15)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
@@ -226,7 +226,7 @@ func RecentActivity(c *ctx.Ctx, acts []Activity) templ.Component {
 						return templ_7745c5c3_Err
 					}
 				}
-				var templ_7745c5c3_Var19 string = " "
+				var templ_7745c5c3_Var19 string = ": "
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -257,7 +257,16 @@ func RecentActivity(c *ctx.Ctx, acts []Activity) templ.Component {
 						return templ_7745c5c3_Err
 					}
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</a></div></div></div></li>")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</a>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Var23 := `.`
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var23)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div></li>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

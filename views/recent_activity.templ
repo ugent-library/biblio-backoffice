@@ -79,17 +79,17 @@ templ RecentActivity(c *ctx.Ctx, acts []Activity) {
                             case CreateEvent:
                             started a { act.Status }
                             case PublishEvent:
-                            published
+                            published a
                             case RepublishEvent:
-                            republished
+                            republished a
                             case WithdrawEvent:
-                            withdrew
+                            withdrew a
                             case LockEvent:
-                            locked
+                            locked a
                             case UpdateEvent:
-                            edited
+                            edited a
                             case MessageEvent:
-                            left a comment on
+                            left a comment on a
                             }
                             { " " }
                             switch act.Object {
@@ -98,14 +98,14 @@ templ RecentActivity(c *ctx.Ctx, acts []Activity) {
                             case DatasetObject:
                             dataset
                             }
-                            { " " }
+                            { ": " }
                             <a class="c-activity-item__link" href={ templ.URL(act.URL) }>
                                 if act.Title != ""  {
                                     { act.Title }
                                 } else {
                                     Untitled record
                                 }
-                            </a>
+                            </a>.
                         </div>
                     </div>
                 </div>
