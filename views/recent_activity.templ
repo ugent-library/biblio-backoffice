@@ -66,8 +66,10 @@ templ RecentActivity(c *ctx.Ctx, acts []Activity) {
                         <div class="c-activity-item__date">{ act.Datestamp.In(c.Timezone).Format("2006-01-02 15:04") }</div>
                         <div class="c-activity-item__text">
                             <span>
-                            if act.User != nil && act.User.CanCurate() {
-                                A Biblio Team member
+                            if act.User != nil && act.User.ID == c.User.ID {
+                                You
+                            } else if act.User != nil && act.User.CanCurate() {
+                                A Biblio team member
                             } else if act.User != nil {
                                 { act.User.FullName }
                             } else {
