@@ -2,7 +2,6 @@ package es6
 
 import (
 	"regexp"
-	"strings"
 
 	"slices"
 
@@ -53,7 +52,7 @@ type indexedPublication struct {
 	Year                    string   `json:"year,omitempty"`
 }
 
-var reSplitWOS *regexp.Regexp = regexp.MustCompile("[,;]")
+var reSplitWOS *regexp.Regexp = regexp.MustCompile(`\s*[,;]\s*`)
 
 func NewIndexedPublication(p *models.Publication) *indexedPublication {
 	ip := &indexedPublication{
@@ -112,11 +111,7 @@ func NewIndexedPublication(p *models.Publication) *indexedPublication {
 	}
 
 	if p.WOSType != "" {
-		wos_types := reSplitWOS.Split(p.WOSType, -1)
-		for _, wos_type := range wos_types {
-			wt := strings.TrimSpace(wos_type)
-			ip.WOSType = append(ip.WOSType, wt)
-		}
+		ip.WOSType = reSplitWOS.Split(p.WOSType, -1)
 	}
 
 	for _, author := range p.Author {
