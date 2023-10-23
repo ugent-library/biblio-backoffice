@@ -366,7 +366,7 @@ func MapPublication(p *models.Publication, repo *repositories.Repo) *Record {
 		rec.MiscType = strcase.ToLowerCamel(p.MiscellaneousType)
 	}
 
-	// TODO this should be set on import or save (see ris decoder)
+	// TODO remove these mapping fixes
 	if rec.Type == "conference" && rec.ConferenceType == "" && p.WOSType != "" {
 		if strings.Contains(p.WOSType, "Proceeding") {
 			rec.ConferenceType = "proceedingsPaper"

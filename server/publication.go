@@ -11,6 +11,8 @@ import (
 	"strings"
 	"time"
 
+	"slices"
+
 	"github.com/oklog/ulid/v2"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
 	"github.com/ugent-library/biblio-backoffice/backends"
@@ -18,7 +20,6 @@ import (
 	"github.com/ugent-library/biblio-backoffice/repositories"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	"github.com/ugent-library/biblio-backoffice/validation"
-	"golang.org/x/exp/slices"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
