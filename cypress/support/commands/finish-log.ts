@@ -1,20 +1,22 @@
 import { updateConsoleProps, updateLogMessage } from './helpers'
 
 export default function finishLog(subject: unknown, log: Cypress.Log, appendToMessage = false) {
-  let theSubject = subject
-  if (subject === null) {
-    theSubject = '(null)'
-  } else if (subject === '') {
-    theSubject = '""'
+  if (log) {
+    let theSubject = subject
+    if (subject === null) {
+      theSubject = '(null)'
+    } else if (subject === '') {
+      theSubject = '""'
+    }
+
+    updateConsoleProps(log, cp => (cp.yielded = theSubject))
+
+    if (appendToMessage) {
+      updateLogMessage(log, subject)
+    }
+
+    log.finish()
   }
-
-  updateConsoleProps(log, cp => (cp.yielded = theSubject))
-
-  if (appendToMessage) {
-    updateLogMessage(log, subject)
-  }
-
-  log.finish()
 
   return subject
 }

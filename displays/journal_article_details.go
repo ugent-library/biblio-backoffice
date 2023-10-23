@@ -9,7 +9,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/render/display"
 )
 
-func journalArticleDetails(user *models.User, l *locale.Locale, p *models.Publication) *display.Display {
+func journalArticleDetails(user *models.Person, l *locale.Locale, p *models.Publication) *display.Display {
 	d := display.New().
 		WithTheme("default").
 		AddSection(

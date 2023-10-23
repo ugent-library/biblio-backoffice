@@ -19,9 +19,7 @@ describe('Issue #1246: Close button on toast does not work', () => {
 
     cy.contains('.dropdown-item', 'Delete').click()
 
-    cy.ensureModal('Are you sure?').within(() => {
-      cy.contains('.btn', 'Delete').click()
-    })
+    cy.ensureModal('Are you sure?').closeModal('Delete')
 
     cy.ensureNoModal()
 
@@ -37,9 +35,7 @@ describe('Issue #1246: Close button on toast does not work', () => {
 
     cy.contains('.btn', 'Publish to Biblio').click()
 
-    cy.ensureModal('Are you sure?').within(() => {
-      cy.contains('.btn', 'Publish').click()
-    })
+    cy.ensureModal('Are you sure?').closeModal('Publish')
 
     cy.ensureNoModal()
 
@@ -55,9 +51,7 @@ describe('Issue #1246: Close button on toast does not work', () => {
 
     cy.contains('.btn', 'Withdraw').click()
 
-    cy.ensureModal('Are you sure?').within(() => {
-      cy.contains('.btn', 'Withdraw').click()
-    })
+    cy.ensureModal('Are you sure?').closeModal('Withdraw')
 
     cy.ensureNoModal()
 
@@ -73,9 +67,7 @@ describe('Issue #1246: Close button on toast does not work', () => {
 
     cy.contains('.btn', 'Withdraw').click()
 
-    cy.ensureModal('Are you sure?').within(() => {
-      cy.contains('.btn', 'Withdraw').click()
-    })
+    cy.ensureModal('Are you sure?').closeModal('Withdraw')
 
     cy.ensureNoModal()
 
@@ -86,9 +78,7 @@ describe('Issue #1246: Close button on toast does not work', () => {
 
     cy.contains('.btn', 'Republish').click()
 
-    cy.ensureModal('Are you sure?').within(() => {
-      cy.contains('.btn', 'Republish').click()
-    })
+    cy.ensureModal('Are you sure?').closeModal('Republish')
 
     cy.ensureNoModal()
 
@@ -142,12 +132,12 @@ describe('Issue #1246: Close button on toast does not work', () => {
 
     cy.contains('Publication details').closest('.card-header').contains('.btn', 'Edit').click()
 
-    cy.ensureModal('Edit publication details').within(() => {
-      cy.get('input[type=text][name=title]').type('Issue 1246 test [CYPRESSTEST]')
-      cy.get('input[type=text][name=year]').type(new Date().getFullYear().toString())
-
-      cy.contains('.btn', 'Save').click()
-    })
+    cy.ensureModal('Edit publication details')
+      .within(() => {
+        cy.setFieldByLabel('Title', 'Issue 1246 test [CYPRESSTEST]')
+        cy.setFieldByLabel('Publication year', new Date().getFullYear().toString())
+      })
+      .closeModal(true)
 
     cy.contains('People & Affiliations').click()
 
@@ -156,8 +146,8 @@ describe('Issue #1246: Close button on toast does not work', () => {
     cy.ensureModal('Add author').within(() => {
       cy.intercept('/publication/*/contributors/author/suggestions?*').as('suggestions')
 
-      cy.get('input[type=text][name=first_name]').type('Griet')
-      cy.get('input[type=text][name=last_name]').type('Alleman')
+      cy.setFieldByLabel('First name', 'Griet')
+      cy.setFieldByLabel('Last name', 'Alleman')
 
       cy.wait('@suggestions')
 
@@ -168,9 +158,7 @@ describe('Issue #1246: Close button on toast does not work', () => {
 
     cy.wait('@confirmCreate')
 
-    cy.ensureModal('Add author').within(() => {
-      cy.contains('.btn', /^Save$/).click()
-    })
+    cy.ensureModal('Add author').closeModal(/^Save$/)
 
     cy.ensureNoModal()
 

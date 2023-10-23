@@ -13,6 +13,7 @@ import (
 	"github.com/jpillora/ipfilter"
 	"github.com/nics/ich"
 	"github.com/ugent-library/biblio-backoffice/backends"
+	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/handlers/authenticating"
 	"github.com/ugent-library/biblio-backoffice/handlers/dashboard"
@@ -22,7 +23,6 @@ import (
 	"github.com/ugent-library/biblio-backoffice/handlers/datasetsearching"
 	"github.com/ugent-library/biblio-backoffice/handlers/datasetviewing"
 	"github.com/ugent-library/biblio-backoffice/handlers/frontoffice"
-	"github.com/ugent-library/biblio-backoffice/handlers/home"
 	"github.com/ugent-library/biblio-backoffice/handlers/impersonating"
 	"github.com/ugent-library/biblio-backoffice/handlers/mediatypes"
 	"github.com/ugent-library/biblio-backoffice/handlers/publicationbatch"
@@ -32,18 +32,28 @@ import (
 	"github.com/ugent-library/biblio-backoffice/handlers/publicationsearching"
 	"github.com/ugent-library/biblio-backoffice/handlers/publicationviewing"
 	"github.com/ugent-library/biblio-backoffice/locale"
+	"github.com/ugent-library/httpx/render"
 	mw "github.com/ugent-library/middleware"
+	"github.com/ugent-library/mix"
 	"github.com/ugent-library/oidc"
 	"github.com/ugent-library/zaphttp"
 	"github.com/ugent-library/zaphttp/zapchi"
 	"go.uber.org/zap"
 )
 
+type Version struct {
+	Branch string
+	Commit string
+	Image  string
+}
+
 type Config struct {
+	Version          Version
 	Env              string
 	Services         *backends.Services
 	BaseURL          *url.URL
 	Router           *ich.Mux
+	Assets           mix.Manifest
 	SessionStore     sessions.Store
 	SessionName      string
 	Timezone         *time.Location
@@ -76,10 +86,19 @@ func Register(c Config) {
 	// static files
 	c.Router.Handle("/static/*", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 
-	// status endpoint
-	// TODO add checkers
-	c.Router.Get("/status", health.NewHandler(health.NewChecker()))
-	// TODO add /info endpoint
+	// mount health and info
+	c.Router.Get("/status", health.NewHandler(health.NewChecker())) // TODO add checkers
+	c.Router.Get("/info", func(w http.ResponseWriter, r *http.Request) {
+		render.JSON(w, http.StatusOK, &struct {
+			Branch string `json:"branch,omitempty"`
+			Commit string `json:"commit,omitempty"`
+			Image  string `json:"image,omitempty"`
+		}{
+			Branch: c.Version.Branch,
+			Commit: c.Version.Commit,
+			Image:  c.Version.Image,
+		})
+	})
 
 	// handlers
 	baseHandler := handlers.BaseHandler{
@@ -93,9 +112,6 @@ func Register(c Config) {
 		BaseURL:         c.BaseURL,
 		FrontendBaseUrl: c.FrontendURL,
 	}
-	homeHandler := &home.Handler{
-		BaseHandler: baseHandler,
-	}
 	authenticatingHandler := &authenticating.Handler{
 		BaseHandler: baseHandler,
 		OIDCAuth:    c.OIDCAuth,
@@ -104,10 +120,6 @@ func Register(c Config) {
 		BaseHandler:       baseHandler,
 		UserSearchService: c.Services.UserSearchService,
 	}
-	// tasksHandler := &tasks.Handler{
-	// 	BaseHandler: baseHandler,
-	// 	Tasks:       services.Tasks,
-	// }
 	dashboardHandler := &dashboard.Handler{
 		BaseHandler:            baseHandler,
 		DatasetSearchIndex:     c.Services.DatasetSearchIndex,
@@ -222,12 +234,43 @@ func Register(c Config) {
 			csrf.FieldName("csrf-token"),
 		))
 
-		r.NotFound(baseHandler.Wrap(baseHandler.NotFound))
+		// BEGIN NEW STYLE HANDLERS
+		r.Group(func(r *ich.Mux) {
+			r.Use(ctx.Set(ctx.Config{
+				Services:  c.Services,
+				Router:    c.Router,
+				Assets:    c.Assets,
+				Timezone:  c.Timezone,
+				Localizer: c.Localizer,
+				Env:       c.Env,
+				ErrorHandlers: map[int]http.HandlerFunc{
+					http.StatusNotFound:            handlers.NotFound,
+					http.StatusInternalServerError: handlers.InternalServerError,
+				},
+				SessionName:  c.SessionName,
+				SessionStore: c.SessionStore,
+				BaseURL:      c.BaseURL,
+				FrontendURL:  c.FrontendURL,
+				CSRFName:     "_csrf_token",
+			}))
 
-		// home
-		r.Get("/",
-			homeHandler.Wrap(homeHandler.Home)).
-			Name("home")
+			r.NotFound(handlers.NotFound)
+
+			// home
+			r.Get("/", handlers.Home).Name("home")
+
+			r.Group(func(r *ich.Mux) {
+				r.Use(ctx.RequireUser)
+
+				// home action required component
+				r.Get("/action-required", handlers.ActionRequired).Name("action_required")
+				// home drafts to complete component
+				r.Get("/drafts-to-complete", handlers.DraftsToComplete).Name("drafts_to_complete")
+				// home recent activity component
+				r.Get("/recent-activity", handlers.RecentActivity).Name("recent_activity")
+			})
+		})
+		// END NEW STYLE HANDLERS
 
 		// authenticate user
 		r.Get("/auth/openid-connect/callback",

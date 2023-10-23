@@ -414,43 +414,42 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
 
   describe('Add/edit dataset form', () => {
     it('should have clickable labels in the dataset form', () => {
-      setUpDataset(() => {
-        updateFields('Dataset details', () => {
-          cy.intercept('PUT', '/dataset/*/details/edit/refresh-form*').as('refreshForm')
-          cy.getLabel('License').click()
-          cy.focused().select('The license is not listed here')
+      setUpDataset()
 
-          cy.wait('@refreshForm')
+      updateFields('Dataset details', () => {
+        cy.intercept('PUT', '/dataset/*/details/edit/refresh-form*').as('refreshForm')
+        cy.setFieldByLabel('License', 'The license is not listed here')
 
-          testFocusForLabel('Title', 'input[type=text][name="title"]')
-          testFocusForLabel('Persistent identifier type', 'select[name="identifier_type"]')
-          testFocusForLabel('Identifier', 'input[type=text][name="identifier"]')
+        cy.wait('@refreshForm')
 
-          testFocusForLabel('Languages', 'select[name="language"]')
-          testFocusForLabel('Publication year', 'input[type=text][name="year"]')
-          testFocusForLabel('Publisher', 'input[type=text][name="publisher"]')
+        testFocusForLabel('Title', 'input[type=text][name="title"]')
+        testFocusForLabel('Persistent identifier type', 'select[name="identifier_type"]')
+        testFocusForLabel('Identifier', 'input[type=text][name="identifier"]')
 
-          testFocusForLabel('Data format', 'input[type=text][name="format"]')
-          // Keywords field: tagify component doesn't support focussing by label
+        testFocusForLabel('Languages', 'select[name="language"]')
+        testFocusForLabel('Publication year', 'input[type=text][name="year"]')
+        testFocusForLabel('Publisher', 'input[type=text][name="publisher"]')
 
-          testFocusForLabel('License', 'select[name="license"]')
-          testFocusForLabel('Other license', 'input[type=text][name="other_license"]')
+        testFocusForLabel('Data format', 'input[type=text][name="format"]')
+        // Keywords field: tagify component doesn't support focussing by label
 
-          testFocusForLabel('Access level', 'select[name="access_level"]')
-        })
+        testFocusForLabel('License', 'select[name="license"]')
+        testFocusForLabel('Other license', 'input[type=text][name="other_license"]')
 
-        testAbstractSection()
-
-        testLinkSection()
-
-        cy.contains('.nav-tabs .nav-item', 'People & Affiliations').click()
-
-        testCreatorSection()
-
-        cy.contains('.nav-tabs .nav-item', 'Biblio Messages').click()
-
-        testMessagesSection()
+        testFocusForLabel('Access level', 'select[name="access_level"]')
       })
+
+      testAbstractSection()
+
+      testLinkSection()
+
+      cy.contains('.nav-tabs .nav-item', 'People & Affiliations').click()
+
+      testCreatorSection()
+
+      cy.contains('.nav-tabs .nav-item', 'Biblio Messages').click()
+
+      testMessagesSection()
     })
   })
 
@@ -465,9 +464,13 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
       .should('have.length', 1)
       .should(autoFocus ? 'have.focus' : 'not.have.focus')
 
+    if (autoFocus) {
+      cy.focused().blur()
+    }
+
     cy.get('@theLabel').click()
 
-    return cy.get('@theField').should('have.focus')
+    cy.get('@theField').should('have.focus')
   }
 
   function testConferenceDetailsSection() {
@@ -511,8 +514,11 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
 
   function testAuthorSection() {
     updateFields('Author', () => {
-      testFocusForLabel('First name', 'input[name="first_name"]', true).type('Griet')
-      testFocusForLabel('Last name', 'input[name="last_name"]').type('Alleman')
+      testFocusForLabel('First name', 'input[name="first_name"]', true)
+      testFocusForLabel('Last name', 'input[name="last_name"]')
+
+      cy.setFieldByLabel('First name', 'Griet')
+      cy.setFieldByLabel('Last name', 'Alleman')
 
       cy.contains('.btn', 'Add author').click()
 
@@ -568,13 +574,13 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
     updateFields(
       'Publication details',
       () => {
-        setField('Title', `The ${publicationType} title [CYPRESSTEST]`)
+        cy.setFieldByLabel('Title', `The ${publicationType} title [CYPRESSTEST]`)
       },
       true
     )
   }
 
-  function setUpDataset(editDatasetCallback: () => void) {
+  function setUpDataset() {
     cy.visit('/dataset/add')
 
     cy.contains('Register a dataset manually').find(':radio').click()
@@ -583,17 +589,14 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
     updateFields(
       'Dataset details',
       () => {
-        setField('Title', `The dataset title [CYPRESSTEST]`)
+        cy.setFieldByLabel('Title', `The dataset title [CYPRESSTEST]`)
 
-        setField('Persistent identifier type', 'DOI')
+        cy.setFieldByLabel('Persistent identifier type', 'DOI')
 
-        setField('Identifier', '10.5072/test/t')
+        cy.setFieldByLabel('Identifier', '10.5072/test/t')
       },
       true
     )
-
-    // Custom callback here
-    editDatasetCallback()
   }
 
   type FieldsSection =
@@ -615,33 +618,8 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
 
     const modalTitle = new RegExp(`(Edit|Add) ${section}`, 'i')
 
-    cy.ensureModal(modalTitle).within(() => {
-      callback()
-
-      cy.contains('.modal-footer .btn', persist ? 'Save' : 'Cancel').click()
-    })
+    cy.ensureModal(modalTitle).within(callback).closeModal(persist)
 
     cy.ensureNoModal()
-  }
-
-  function setField(fieldLabel: string, value: string): Cypress.Chainable<JQuery<HTMLElement>> {
-    cy.getLabel(fieldLabel).click()
-
-    return cy.focused().then(field => {
-      const $field = cy.wrap(field, { log: false })
-
-      switch (field.prop('tagName')) {
-        case 'INPUT':
-          $field.clear().type(value)
-          break
-
-        case 'SELECT':
-          $field.select(value)
-          break
-
-        default:
-          throw new Error(`Field of type ${fieldLabel} is not supported.`)
-      }
-    })
   }
 })

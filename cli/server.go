@@ -189,10 +189,16 @@ func buildRouter(services *backends.Services) (*ich.Mux, error) {
 
 	// add routes
 	routes.Register(routes.Config{
+		Version: routes.Version{
+			Branch: version.Branch,
+			Commit: version.Commit,
+			Image:  version.Image,
+		},
 		Env:              config.Env,
 		Services:         services,
 		BaseURL:          baseURL,
 		Router:           router,
+		Assets:           assets,
 		SessionStore:     sessionStore,
 		SessionName:      sessionName,
 		Timezone:         timezone,

@@ -5,7 +5,7 @@ type GetLabelOptions = {
 }
 
 export default function (caption: string | RegExp, options: GetLabelOptions = { log: true }) {
-  const log = options.log !== false && logCommand('getLabel', null, caption.toString())
+  const log = options.log !== false && logCommand('getLabel', null, caption)
 
   const getFn = cy.now('get', 'label', { log: false }) as () => JQuery<HTMLElement>
 

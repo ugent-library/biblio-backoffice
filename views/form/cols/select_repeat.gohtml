@@ -13,7 +13,7 @@
     <div class="form-values">
         {{range $i, $v := .Values}}
         <div class="d-flex mb-3 form-value">
-            <select class="custom-select form-control" name="{{$.Name}}" id="{{$.Name}}-{{$i}}" data-tmpl-id="{{.Name}}-{i}">
+            <select class="custom-select form-control" name="{{$.Name}}" id="{{$.Name}}-{{$i}}" data-tmpl-id="{{$.Name}}-{i}">
                 {{if $.EmptyOption}}<option></option>{{end}}
                 {{range $.Options}}
                 <option value="{{.Value}}"{{if eq .Value $v}} selected{{end}}>{{.Label}}</option>

@@ -8,13 +8,17 @@ import ensureNoModal from './ensure-no-modal'
 import visitPublication from './visit-publication'
 import ensureToast from './ensure-toast'
 import ensureNoToast from './ensure-no-toast'
+import setFieldByLabel from './set-field-by-label'
+import search from './search'
 
 // Child commands
 import finishLog from './finish-log'
 import closeToast from './close-toast'
+import setField from './set-field'
 
 // Dual commands
 import extractBiblioId from './extract-biblio-id'
+import closeModal from './close-modal'
 
 // Parent commands
 Cypress.Commands.addAll({
@@ -35,6 +39,10 @@ Cypress.Commands.addAll({
   ensureToast,
 
   ensureNoToast,
+
+  setFieldByLabel,
+
+  search,
 })
 
 // Child commands
@@ -44,6 +52,8 @@ Cypress.Commands.addAll(
     finishLog,
 
     closeToast,
+
+    setField,
   }
 )
 
@@ -54,5 +64,7 @@ Cypress.Commands.addAll(
   },
   {
     extractBiblioId,
+
+    closeModal,
   }
 )
