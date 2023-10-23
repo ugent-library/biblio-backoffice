@@ -128,7 +128,6 @@ func mapRecord(r Record, p *models.Publication) {
 			firstType := types[0]
 			switch {
 			case slices.Contains(types, "article") && slices.Contains(types, "proceedings paper"):
-				p.Type = "original"
 				p.JournalArticleType = "proceedingsPaper"
 			case firstType == "journal article" || firstType == "article" || firstType == "journal paper":
 				p.JournalArticleType = "original"
@@ -189,7 +188,8 @@ func mapRecord(r Record, p *models.Publication) {
 				p.Type = "miscellaneous"
 				p.MiscellaneousType = "bibliography"
 			case firstType == "preprint":
-				p.Type = "preprint"
+				p.Type = "miscellaneous"
+				p.MiscellaneousType = "preprint"
 			case firstType == "data paper":
 				p.Type = "miscellaneous"
 			case firstType == "other" || firstType == "discussion" || firstType == "slide":
