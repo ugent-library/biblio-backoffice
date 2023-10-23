@@ -19,7 +19,7 @@ const (
     WithdrawEvent
     LockEvent
     UpdateEvent
-    MessageEvent   
+    MessageEvent
 )
 
 type Activity struct {
@@ -37,12 +37,6 @@ templ RecentActivity(c *ctx.Ctx, acts []Activity) {
         <div class="bc-toolbar">
             <div class="bc-toolbar-left">
                 <h2>Recent activity</h2>
-            </div>
-            <div class="bc-toolbar-right">
-                <a class="btn btn-tertiary" href="#">
-                    <span class="btn-text">View all</span>
-                    <i class="if if-chevron-right"></i>
-                </a>
             </div>
         </div>
         if len(acts) > 0 {
@@ -72,8 +66,10 @@ templ RecentActivity(c *ctx.Ctx, acts []Activity) {
                         <div class="c-activity-item__date">{ act.Datestamp.In(c.Timezone).Format("2006-01-02 15:04") }</div>
                         <div class="c-activity-item__text">
                             <span>
-                            if act.User != nil && act.User.CanCurate() {
-                                A Biblio Team member
+                            if act.User != nil && act.User.ID == c.User.ID {
+                                You
+                            } else if act.User != nil && act.User.CanCurate() {
+                                A Biblio team member
                             } else if act.User != nil {
                                 { act.User.FullName }
                             } else {
@@ -85,17 +81,17 @@ templ RecentActivity(c *ctx.Ctx, acts []Activity) {
                             case CreateEvent:
                             started a { act.Status }
                             case PublishEvent:
-                            published
+                            published a
                             case RepublishEvent:
-                            republished
+                            republished a
                             case WithdrawEvent:
-                            withdrew
+                            withdrew a
                             case LockEvent:
-                            locked
+                            locked a
                             case UpdateEvent:
-                            edited
+                            edited a
                             case MessageEvent:
-                            left a comment on
+                            left a comment on a
                             }
                             { " " }
                             switch act.Object {
@@ -104,8 +100,14 @@ templ RecentActivity(c *ctx.Ctx, acts []Activity) {
                             case DatasetObject:
                             dataset
                             }
-                            { " " }
-                            <a class="c-activity-item__link" href={ templ.URL(act.URL) }>{ act.Title }</a>
+                            { ": " }
+                            <a class="c-activity-item__link" href={ templ.URL(act.URL) }>
+                                if act.Title != ""  {
+                                    { act.Title }
+                                } else {
+                                    Untitled record
+                                }
+                            </a>.
                         </div>
                     </div>
                 </div>

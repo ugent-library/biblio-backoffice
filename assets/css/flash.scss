@@ -5,6 +5,7 @@
     display: flex;
     flex-direction: column-reverse;
     background-color: transparent;
+    pointer-events: none;
 
     .toast {
         margin: 10rem 0.3rem 1.3rem 0;
