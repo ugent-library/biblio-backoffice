@@ -7,6 +7,8 @@ import (
 	"regexp"
 	"strings"
 
+	"slices"
+
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/models"
 )
@@ -119,48 +121,80 @@ func mapRecord(r Record, p *models.Publication) {
 		switch k {
 		case "TY", "DT", "PT":
 			p.WOSType = v[0]
-			switch v[0] {
-			case "Art Exhibit Review":
-				p.Type = "miscellaneous"
-				p.MiscellaneousType = "exhibitionReview"
-			case "Book Review":
-				p.Type = "miscellaneous"
-				p.MiscellaneousType = "bookReview"
-			case "Dance Performance Review", "Theater Review":
-				p.Type = "miscellaneous"
-				p.MiscellaneousType = "theatreReview"
-			case "Database Review", "Hardware Review", "Software Review":
-				p.Type = "miscellaneous"
-				p.MiscellaneousType = "productReview"
-			case "Editorial Material":
-				p.Type = "miscellaneous"
-				p.MiscellaneousType = "editorialMaterial"
-			case "Fiction, Creative Prose", "Poetry", "Script":
-				p.Type = "miscellaneous"
-				p.MiscellaneousType = "artisticWork"
-			case "Film Review", "TV Review, Radio Review", "TV Review, Radio Review, Video Review":
-				p.Type = "miscellaneous"
-				p.MiscellaneousType = "filmReview"
-			case "Music Score Review", "Music Performance Review", "Record Review":
-				p.Type = "miscellaneous"
-				p.MiscellaneousType = "musicReview"
-			case "Music Score":
-				p.Type = "miscellaneous"
-				p.MiscellaneousType = "musicEdition"
-			case "News Item":
-				p.Type = "miscellaneous"
-				p.MiscellaneousType = "newsArticle"
-			case "Data Paper":
-				p.Type = "miscellaneous"
-			case "BOOK", "Book, Whole":
+			types := reSplit.Split(p.WOSType, -1)
+			for i, t := range types {
+				types[i] = strings.ToLower(t)
+			}
+			firstType := types[0]
+			switch {
+			case slices.Contains(types, "article") && slices.Contains(types, "proceedings paper"):
+				p.JournalArticleType = "proceedingsPaper"
+			case firstType == "journal article" || firstType == "article" || firstType == "journal paper":
+				p.JournalArticleType = "original"
+			case firstType == "review":
+				p.JournalArticleType = "review"
+			case firstType == "letter" || firstType == "note" || firstType == "letter/note":
+				p.JournalArticleType = "letterNote"
+			case firstType == "book":
 				p.Type = "book"
-			case "Book chapter", "CHAP":
+			case firstType == "book chapter":
 				p.Type = "book_chapter"
-			case "Meeting Abstract":
+			case firstType == "meeting abstract":
 				p.Type = "conference"
 				p.ConferenceType = "abstract"
-			case "C", "CONF", "Conference proceeding", "Proceedings Paper", "S":
+			case firstType == "conference proceeding" || firstType == "proceedings paper" || firstType == "conference paper":
 				p.Type = "conference"
+				p.ConferenceType = "proceedingsPaper"
+			case firstType == "poster":
+				p.Type = "conference"
+				p.ConferenceType = "poster"
+			case firstType == "art exhibit review":
+				p.Type = "miscellaneous"
+				p.MiscellaneousType = "exhibitionReview"
+			case firstType == "book review":
+				p.Type = "miscellaneous"
+				p.MiscellaneousType = "bookReview"
+			case firstType == "dance performance review" || firstType == "theatre review" || firstType == "theater review":
+				p.Type = "miscellaneous"
+				p.MiscellaneousType = "theatreReview"
+			case firstType == "database review" || firstType == "hardware review" || firstType == "software review":
+				p.Type = "miscellaneous"
+				p.MiscellaneousType = "productReview"
+			case firstType == "editorial material" || firstType == "editorial":
+				p.Type = "miscellaneous"
+				p.MiscellaneousType = "editorialMaterial"
+			case firstType == "fiction" || firstType == "creative prose" || firstType == "poetry" || firstType == "script":
+				p.Type = "miscellaneous"
+				p.MiscellaneousType = "artisticWork"
+			case firstType == "film review" || firstType == "tv review" || firstType == "radio review" || firstType == "video review":
+				p.Type = "miscellaneous"
+				p.MiscellaneousType = "filmReview"
+			case firstType == "music score review" || firstType == "music performance review" || firstType == "record review":
+				p.Type = "miscellaneous"
+				p.MiscellaneousType = "musicReview"
+			case firstType == "music score":
+				p.Type = "miscellaneous"
+				p.MiscellaneousType = "musicEdition"
+			case firstType == "news item":
+				p.Type = "miscellaneous"
+				p.MiscellaneousType = "newsArticle"
+			case firstType == "correction":
+				p.Type = "miscellaneous"
+				p.MiscellaneousType = "correction"
+			case firstType == "biographical-item" || firstType == "biographical item" || firstType == "item about an individual":
+				p.Type = "miscellaneous"
+				p.MiscellaneousType = "biography"
+			case firstType == "bibliography":
+				p.Type = "miscellaneous"
+				p.MiscellaneousType = "bibliography"
+			case firstType == "preprint":
+				p.Type = "miscellaneous"
+				p.MiscellaneousType = "preprint"
+			case firstType == "data paper":
+				p.Type = "miscellaneous"
+			case firstType == "other" || firstType == "discussion" || firstType == "slide":
+				p.Type = "miscellaneous"
+				p.MiscellaneousType = "other"
 			}
 		case "AF", "AU":
 			// give preference to AF over AU

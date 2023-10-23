@@ -634,7 +634,7 @@ func removeKey(input string, keys ...string) (string, error) {
 }
 
 func addKey(input, key, value string) (string, error) {
-	var m map[string]interface{}
+	var m map[string]any
 	if err := json.Unmarshal([]byte(input), &m); err != nil {
 		return "", err
 	}

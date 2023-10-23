@@ -14,16 +14,16 @@ import (
 )
 
 type jcrRaw struct {
-	Year              *int                   `bson:"year"`
-	Eigenfactor       interface{}            `bson:"eigenfactor,omitempty"`
-	ImmediacyIndex    interface{}            `bson:"immediacy_index,omitempty"` // float or "N/A"
-	ImpactFactor      interface{}            `bson:"impact_factor,omitempty"`
-	ImpactFactor5Yr   interface{}            `bson:"impact_factor_5yr,omitempty"`
-	TotalCites        any                    `bson:"total_cites,omitempty"`
-	CategoryRank      map[string]string      `bson:"category_rank,omitempty"`
-	CategoryQuartile  map[string]interface{} `bson:"category_quartile,omitempty"`
-	CategoryDecile    map[string]interface{} `bson:"category_decile,omitempty"`
-	CategoryVigintile map[string]interface{} `bson:"category_vigintile,omitempty"`
+	Year              *int              `bson:"year"`
+	Eigenfactor       any               `bson:"eigenfactor,omitempty"`
+	ImmediacyIndex    any               `bson:"immediacy_index,omitempty"` // float or "N/A"
+	ImpactFactor      any               `bson:"impact_factor,omitempty"`
+	ImpactFactor5Yr   any               `bson:"impact_factor_5yr,omitempty"`
+	TotalCites        any               `bson:"total_cites,omitempty"`
+	CategoryRank      map[string]string `bson:"category_rank,omitempty"`
+	CategoryQuartile  map[string]any    `bson:"category_quartile,omitempty"`
+	CategoryDecile    map[string]any    `bson:"category_decile,omitempty"`
+	CategoryVigintile map[string]any    `bson:"category_vigintile,omitempty"`
 }
 
 type rank struct {
@@ -309,7 +309,7 @@ func bestJCRCategoryRank(jcrRecords []jcr) (*string, *rank) {
 	return bestCategory, bestRank
 }
 
-func parseInt(i interface{}) (int, bool) {
+func parseInt(i any) (int, bool) {
 	switch v := i.(type) {
 	case int32:
 		return int(v), true
@@ -337,7 +337,7 @@ func ffloat(v float64) string {
 	return strconv.FormatFloat(v, 'f', -1, 64)
 }
 
-func parseFloat(i interface{}) (float64, bool) {
+func parseFloat(i any) (float64, bool) {
 	switch v := i.(type) {
 	case int32:
 		return float64(v), true
