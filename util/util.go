@@ -2,11 +2,9 @@ package util
 
 import (
 	"fmt"
-
-	"slices"
 )
 
-func ParseBoolean(v interface{}) bool {
+func ParseBoolean(v any) bool {
 	switch b := v.(type) {
 	case int32:
 		return b == 1
@@ -20,7 +18,7 @@ func ParseBoolean(v interface{}) bool {
 	return false
 }
 
-func ParseString(v interface{}) string {
+func ParseString(v any) string {
 	switch s := v.(type) {
 	case int:
 		return fmt.Sprintf("%d", s)
@@ -42,13 +40,4 @@ func ParseString(v interface{}) string {
 		}
 	}
 	return ""
-}
-
-func UniqStrings(vals []string) (newVals []string) {
-	for _, val := range vals {
-		if !slices.Contains(newVals, val) {
-			newVals = append(newVals, val)
-		}
-	}
-	return
 }

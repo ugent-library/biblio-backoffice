@@ -19,7 +19,7 @@ type Filterable interface {
 	GetName() string
 	GetField() string
 	GetValues() []string
-	ToQuery() map[string]interface{}
+	ToQuery() map[string]any
 }
 
 type BaseFilter struct {
@@ -45,7 +45,7 @@ type FieldFilter struct {
 	BaseFilter
 }
 
-func (ff *FieldFilter) ToQuery() map[string]interface{} {
+func (ff *FieldFilter) ToQuery() map[string]any {
 	return ParseScope(ff.Name, ff.Values...)
 }
 
@@ -54,7 +54,7 @@ type DateSinceFilter struct {
 	BaseFilter
 }
 
-func (dbf *DateSinceFilter) ToQuery() map[string]interface{} {
+func (dbf *DateSinceFilter) ToQuery() map[string]any {
 	var regexYear = regexp.MustCompile(`^\d{4}$`)
 	var regexDate = regexp.MustCompile(`^\d{4}-\d{2}-\d{2}$`)
 	var regexDatestamp = regexp.MustCompile(`^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$`)
@@ -80,9 +80,9 @@ func (dbf *DateSinceFilter) ToQuery() map[string]interface{} {
 		fdt = internal_time.FormatTimeUTC(&dt)
 	}
 
-	return map[string]interface{}{
-		"range": map[string]interface{}{
-			dbf.Field: map[string]interface{}{
+	return map[string]any{
+		"range": map[string]any{
+			dbf.Field: map[string]any{
 				"gte": fdt,
 			},
 		},

@@ -366,6 +366,7 @@ func MapPublication(p *models.Publication, repo *repositories.Repo) *Record {
 		rec.MiscType = strcase.ToLowerCamel(p.MiscellaneousType)
 	}
 
+	// TODO remove these mapping fixes
 	if rec.Type == "conference" && rec.ConferenceType == "" && p.WOSType != "" {
 		if strings.Contains(p.WOSType, "Proceeding") {
 			rec.ConferenceType = "proceedingsPaper"
@@ -410,14 +411,6 @@ func MapPublication(p *models.Publication, repo *repositories.Repo) *Record {
 			rec.MiscType = "bibliography"
 		} else if strings.Contains(p.WOSType, "Other") {
 			rec.MiscType = "other"
-		}
-	}
-
-	if rec.Type == "misc" {
-		if rec.MiscType == "biographicalItem" {
-			rec.MiscType = "biography"
-		} else if rec.MiscType == "bibliographicalItem" {
-			rec.MiscType = "bibliography"
 		}
 	}
 
@@ -800,7 +793,7 @@ func MapPublication(p *models.Publication, repo *repositories.Repo) *Record {
 		for _, fund := range []string{"bof", "iof"} {
 			fundPrefix := fmt.Sprintf("ecoom-%s", fund)
 			fundFields := models.Values{}
-			for _, f := range []string{"css", "weight", "sector", "validation", "international-collaboration"} {
+			for _, f := range []string{"css", "weight", "sector", "validation", "international_collaboration"} {
 				key := fmt.Sprintf("%s-%s", fundPrefix, f)
 				vals := p.ExternalFields.GetAll(key)
 				if len(vals) > 0 {
@@ -815,7 +808,7 @@ func MapPublication(p *models.Publication, repo *repositories.Repo) *Record {
 				Weight:                     fundFields.Get(fmt.Sprintf("%s-%s", fundPrefix, "weight")),
 				Sector:                     fundFields.GetAll(fmt.Sprintf("%s-%s", fundPrefix, "sector")),
 				Validation:                 fundFields.Get(fmt.Sprintf("%s-%s", fundPrefix, "validation")),
-				InternationalCollaboration: fundFields.Get(fmt.Sprintf("%s-%s", fundPrefix, "international-collaboration")),
+				InternationalCollaboration: fundFields.Get(fmt.Sprintf("%s-%s", fundPrefix, "international_collaboration")),
 			}
 		}
 	}

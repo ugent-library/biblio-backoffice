@@ -42,7 +42,7 @@ func New() *Renderer {
 		contentType:      "text/html; charset=utf-8",
 		partialsTemplate: template.New(""),
 		bufPool: sync.Pool{
-			New: func() interface{} {
+			New: func() any {
 				return &bytes.Buffer{}
 			},
 		},
