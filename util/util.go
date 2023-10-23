@@ -6,7 +6,7 @@ import (
 	"slices"
 )
 
-func ParseBoolean(v interface{}) bool {
+func ParseBoolean(v any) bool {
 	switch b := v.(type) {
 	case int32:
 		return b == 1
@@ -20,7 +20,7 @@ func ParseBoolean(v interface{}) bool {
 	return false
 }
 
-func ParseString(v interface{}) string {
+func ParseString(v any) string {
 	switch s := v.(type) {
 	case int:
 		return fmt.Sprintf("%d", s)

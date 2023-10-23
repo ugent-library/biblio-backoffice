@@ -214,7 +214,7 @@ func updatePublication(jsonl string) (string, string, error) {
 }
 
 func changeTitle(input string, value string) (string, error) {
-	var m map[string]interface{}
+	var m map[string]any
 	if err := json.Unmarshal([]byte(input), &m); err != nil {
 		return "", err
 	}
