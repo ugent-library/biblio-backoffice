@@ -20,7 +20,7 @@ type jcrRaw struct {
 	ImmediacyIndex    any               `bson:"immediacy_index,omitempty"` // float or "N/A"
 	ImpactFactor      any               `bson:"impact_factor,omitempty"`
 	ImpactFactor5Yr   any               `bson:"impact_factor_5yr,omitempty"`
-	TotalCites        *int              `bson:"total_cites,omitempty"`
+	TotalCites        any               `bson:"total_cites,omitempty"`
 	CategoryRank      map[string]string `bson:"category_rank,omitempty"`
 	CategoryQuartile  map[string]any    `bson:"category_quartile,omitempty"`
 	CategoryDecile    map[string]any    `bson:"category_decile,omitempty"`
@@ -108,8 +108,7 @@ func NewPublicationFixer(c *mongo.Client) func(context.Context, *models.Publicat
 			}
 
 			rec := jcr{
-				year:       rawRec.Year,
-				totalCites: rawRec.TotalCites,
+				year: rawRec.Year,
 			}
 
 			if len(rawRec.CategoryRank) > 0 {
@@ -141,6 +140,9 @@ func NewPublicationFixer(c *mongo.Client) func(context.Context, *models.Publicat
 			}
 
 			// fixes "N/A" and strings
+			if v, ok := parseInt(rawRec.TotalCites); ok {
+				rec.totalCites = &v
+			}
 			if v, ok := parseFloat(rawRec.Eigenfactor); ok {
 				rec.eigenfactor = &v
 			}
