@@ -306,6 +306,10 @@ func Register(c Config) {
 			Name("dashboard_publications")
 		r.Get("/dashboard/datasets/{type}", dashboardHandler.Wrap(dashboardHandler.Datasets)).
 			Name("dashboard_datasets")
+		r.Post("/dashboard/refresh-apublications/{type}", dashboardHandler.Wrap(dashboardHandler.RefreshAPublications)).
+			Name("dashboard_refresh_apublications")
+		r.Post("/dashboard/refresh-upublications/{type}", dashboardHandler.Wrap(dashboardHandler.RefreshUPublications)).
+			Name("dashboard_refresh_upublications")
 
 		// search datasets
 		r.Get("/dataset",
