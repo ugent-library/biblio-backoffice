@@ -17,8 +17,8 @@ func init() {
 }
 
 var updateExternalFields = &cobra.Command{
-	Use:   "update-externalfields",
-	Short: "Update publication external_fields",
+	Use:   "update-external-fields",
+	Short: "Update publication external fields",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		mongoClient, err := mongo.Connect(
 			context.Background(),
