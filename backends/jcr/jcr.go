@@ -6,11 +6,12 @@ import (
 	"strconv"
 	"strings"
 
+	"slices"
+
 	"github.com/samber/lo"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	"golang.org/x/exp/slices"
 )
 
 type jcrRaw struct {
