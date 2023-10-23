@@ -771,7 +771,7 @@ func MapPublication(p *models.Publication, repo *repositories.Repo) *Record {
 		for _, fund := range []string{"bof", "iof"} {
 			fundPrefix := fmt.Sprintf("ecoom-%s", fund)
 			fundFields := models.Values{}
-			for _, f := range []string{"css", "weight", "sector", "validation", "international-collaboration"} {
+			for _, f := range []string{"css", "weight", "sector", "validation", "international_collaboration"} {
 				key := fmt.Sprintf("%s-%s", fundPrefix, f)
 				vals := p.ExternalFields.GetAll(key)
 				if len(vals) > 0 {
@@ -786,7 +786,7 @@ func MapPublication(p *models.Publication, repo *repositories.Repo) *Record {
 				Weight:                     fundFields.Get(fmt.Sprintf("%s-%s", fundPrefix, "weight")),
 				Sector:                     fundFields.GetAll(fmt.Sprintf("%s-%s", fundPrefix, "sector")),
 				Validation:                 fundFields.Get(fmt.Sprintf("%s-%s", fundPrefix, "validation")),
-				InternationalCollaboration: fundFields.Get(fmt.Sprintf("%s-%s", fundPrefix, "international-collaboration")),
+				InternationalCollaboration: fundFields.Get(fmt.Sprintf("%s-%s", fundPrefix, "international_collaboration")),
 			}
 		}
 	}
