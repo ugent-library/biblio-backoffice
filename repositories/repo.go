@@ -407,6 +407,31 @@ func (s *Repo) EachPublicationSnapshot(fn func(*models.Publication) bool) error 
 	return c.Err()
 }
 
+func (s *Repo) EachPublicationWithStatus(status string, fn func(*models.Publication) bool) error {
+	sql := `SELECT * FROM publications WHERE date_until IS NULL AND data->>'status' = $1`
+
+	c, err := s.publicationStore.Select(sql, []any{status}, s.opts)
+	if err != nil {
+		return err
+	}
+	defer c.Close()
+
+	for c.HasNext() {
+		snap, err := c.Next()
+		if err != nil {
+			return err
+		}
+		p, err := s.snapshotToPublication(snap)
+		if err != nil {
+			return err
+		}
+		if ok := fn(p); !ok {
+			break
+		}
+	}
+	return c.Err()
+}
+
 // TODO add handle with a listener, then this method isn't needed anymore
 func (s *Repo) EachPublicationWithoutHandle(fn func(*models.Publication) bool) error {
 	sql := `
