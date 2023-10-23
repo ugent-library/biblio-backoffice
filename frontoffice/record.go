@@ -337,6 +337,7 @@ func MapPublication(p *models.Publication, repo *repositories.Repo) *Record {
 		rec.MiscType = strcase.ToLowerCamel(p.MiscellaneousType)
 	}
 
+	// TODO remove these mapping fixes
 	if rec.Type == "conference" && rec.ConferenceType == "" && p.WOSType != "" {
 		if strings.Contains(p.WOSType, "Proceeding") {
 			rec.ConferenceType = "proceedingsPaper"
@@ -381,14 +382,6 @@ func MapPublication(p *models.Publication, repo *repositories.Repo) *Record {
 			rec.MiscType = "bibliography"
 		} else if strings.Contains(p.WOSType, "Other") {
 			rec.MiscType = "other"
-		}
-	}
-
-	if rec.Type == "misc" {
-		if rec.MiscType == "biographicalItem" {
-			rec.MiscType = "biography"
-		} else if rec.MiscType == "bibliographicalItem" {
-			rec.MiscType = "bibliography"
 		}
 	}
 
