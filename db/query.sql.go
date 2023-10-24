@@ -15,6 +15,9 @@ INSERT INTO candidate_records (
 ) VALUES (
   $1, $2, $3, $4, $5, $6
 )
+ON CONFLICT(source_name, source_id)
+DO
+  UPDATE SET source_metadata = EXCLUDED.source_metadata, type = EXCLUDED.type, metadata = EXCLUDED.metadata
 RETURNING id
 `
 
