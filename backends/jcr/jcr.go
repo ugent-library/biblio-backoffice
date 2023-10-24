@@ -120,6 +120,11 @@ func NewPublicationFixer(c *mongo.Client) func(context.Context, *models.Publicat
 					return int(i)
 				})
 
+				// TODO: log junk
+				if len(numbers) != 2 {
+					continue
+				}
+
 				categoryRank := rank{
 					fracture: val,
 					quotient: float64(numbers[0]) / float64(numbers[1]),
