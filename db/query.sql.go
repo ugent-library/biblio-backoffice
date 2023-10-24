@@ -11,28 +11,38 @@ import (
 
 const addCandidateRecord = `-- name: AddCandidateRecord :one
 INSERT INTO candidate_records (
-  source_name, source_id, metadata
+  id, source_name, source_id, source_metadata, type, metadata
 ) VALUES (
-  $1, $2, $3
+  $1, $2, $3, $4, $5, $6
 )
 RETURNING id
 `
 
 type AddCandidateRecordParams struct {
-	SourceName string
-	SourceID   string
-	Metadata   []byte
+	ID             string
+	SourceName     string
+	SourceID       string
+	SourceMetadata []byte
+	Type           string
+	Metadata       []byte
 }
 
 func (q *Queries) AddCandidateRecord(ctx context.Context, arg AddCandidateRecordParams) (string, error) {
-	row := q.db.QueryRow(ctx, addCandidateRecord, arg.SourceName, arg.SourceID, arg.Metadata)
+	row := q.db.QueryRow(ctx, addCandidateRecord,
+		arg.ID,
+		arg.SourceName,
+		arg.SourceID,
+		arg.SourceMetadata,
+		arg.Type,
+		arg.Metadata,
+	)
 	var id string
 	err := row.Scan(&id)
 	return id, err
 }
 
 const getCandidateRecordBySource = `-- name: GetCandidateRecordBySource :one
-SELECT id, metadata, source_name, source_id, date_created FROM candidate_records
+SELECT id, source_name, source_id, source_metadata, type, metadata, date_created FROM candidate_records
 WHERE source_name = $1 AND source_id = $2
 `
 
@@ -46,9 +56,11 @@ func (q *Queries) GetCandidateRecordBySource(ctx context.Context, arg GetCandida
 	var i CandidateRecord
 	err := row.Scan(
 		&i.ID,
-		&i.Metadata,
 		&i.SourceName,
 		&i.SourceID,
+		&i.SourceMetadata,
+		&i.Type,
+		&i.Metadata,
 		&i.DateCreated,
 	)
 	return i, err

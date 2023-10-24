@@ -6,9 +6,10 @@ import (
 )
 
 type CandidateRecord struct {
-	SourceName  string
-	SourceID    string
-	Type        string
-	Metadata    json.RawMessage
-	DateCreated time.Time
+	SourceName     string
+	SourceID       string
+	SourceMetadata []byte
+	Type           string
+	Metadata       json.RawMessage
+	DateCreated    time.Time
 }

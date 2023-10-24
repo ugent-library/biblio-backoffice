@@ -9,11 +9,13 @@ import (
 )
 
 type CandidateRecord struct {
-	ID          string
-	Metadata    []byte
-	SourceName  string
-	SourceID    string
-	DateCreated pgtype.Timestamptz
+	ID             string
+	SourceName     string
+	SourceID       string
+	SourceMetadata []byte
+	Type           string
+	Metadata       []byte
+	DateCreated    pgtype.Timestamptz
 }
 
 type Dataset struct {

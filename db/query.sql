@@ -1,8 +1,8 @@
 -- name: AddCandidateRecord :one
 INSERT INTO candidate_records (
-  source_name, source_id, metadata
+  id, source_name, source_id, source_metadata, type, metadata
 ) VALUES (
-  $1, $2, $3
+  $1, $2, $3, $4, $5, $6
 )
 RETURNING id;
 

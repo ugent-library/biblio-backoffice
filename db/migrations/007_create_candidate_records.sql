@@ -1,8 +1,10 @@
 create table candidate_records (
     id text primary key,
-    metadata jsonb,
     source_name text not null,
     source_id text not null,
+    source_metadata bytea not null,
+    type text not null,
+    metadata jsonb not null,
     date_created timestamptz not null default now(),
     unique(source_name, source_id)
 );

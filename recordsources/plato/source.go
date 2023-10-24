@@ -2,14 +2,11 @@ package plato
 
 import (
 	"context"
-	"encoding/json"
 	"io"
 	"net/http"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/tidwall/gjson"
-	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/recordsources"
 )
 
@@ -18,18 +15,20 @@ func init() {
 }
 
 func New(conn string) (recordsources.Source, error) {
-	return &platoSource{}, nil
+	return &platoSource{
+		url: conn,
+	}, nil
 }
 
 type platoSource struct {
+	url string
 }
 
-func (s *platoSource) GetRecords(ctx context.Context) ([]*models.CandidateRecord, error) {
-	u := "https://plato.ea.ugent.be/service/dr/2biblio.jsp"
+func (s *platoSource) GetRecords(ctx context.Context) ([]recordsources.Record, error) {
 	c := http.Client{
 		Timeout: time.Second * 2,
 	}
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, s.url, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -42,21 +41,13 @@ func (s *platoSource) GetRecords(ctx context.Context) ([]*models.CandidateRecord
 		return nil, err
 	}
 
-	var recs []*models.CandidateRecord
+	var recs []recordsources.Record
 
 	gjson.GetBytes(body, "list").ForEach(func(key, val gjson.Result) bool {
-		p := &models.Publication{}
-
-		if v := val.Get("titel.eng"); v.Exists() {
-			p.Title = v.String()
-		}
-
-		j, _ := json.Marshal(p) // TODO handle error
-		recs = append(recs, &models.CandidateRecord{
-			SourceName: "plato",
-			SourceID:   uuid.NewString(), // TODO
-			Type:       "Publication",
-			Metadata:   j,
+		recs = append(recs, recordsources.Record{
+			SourceName:     "plato",
+			SourceID:       val.Get("plato_id").String(),
+			SourceMetadata: []byte(val.Raw),
 		})
 		return true
 	})

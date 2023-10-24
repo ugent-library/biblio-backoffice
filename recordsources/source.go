@@ -4,12 +4,16 @@ import (
 	"context"
 	"fmt"
 	"sync"
-
-	"github.com/ugent-library/biblio-backoffice/models"
 )
 
 type Source interface {
-	GetRecords(context.Context) ([]*models.CandidateRecord, error)
+	GetRecords(context.Context) ([]Record, error)
+}
+
+type Record struct {
+	SourceName     string
+	SourceID       string
+	SourceMetadata []byte
 }
 
 type Factory func(string) (Source, error)
