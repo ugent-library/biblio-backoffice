@@ -1,11 +1,15 @@
 package recordsources
 
 import (
+	"context"
 	"fmt"
 	"sync"
+
+	"github.com/ugent-library/biblio-backoffice/models"
 )
 
 type Source interface {
+	GetRecords(context.Context) ([]*models.CandidateRecord, error)
 }
 
 type Factory func(string) (Source, error)
