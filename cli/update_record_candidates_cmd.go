@@ -6,6 +6,7 @@ import (
 	"errors"
 	"io"
 	"net/http"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/tidwall/gjson"
@@ -110,12 +111,31 @@ var updateRecordCandidates = &cobra.Command{
 					if err != nil {
 						return err
 					}
+					// TODO visibility
 					f := &models.PublicationFile{
 						Relation:    "main_file",
 						Name:        srcRec.SourceID + ".pdf",
 						ContentType: "application/pdf",
 						Size:        size,
 						SHA256:      sha256,
+					}
+					embargo := md.Get("pdf.embargo").String()
+					access := md.Get("pdf.accesstype").String()
+					if strings.HasPrefix(embargo, "9999") {
+						f.AccessLevel = "info:eu-repo/semantics/closedAccess"
+					} else if embargo != "" {
+						f.AccessLevel = "info:eu-repo/semantics/embargoedAccess"
+						f.AccessLevelDuringEmbargo = "info:eu-repo/semantics/closedAccess"
+						f.EmbargoDate = embargo[:10]
+						if access == "U" {
+							f.AccessLevelAfterEmbargo = "info:eu-repo/semantics/restrictedAccess"
+						} else if access == "W" {
+							f.AccessLevelAfterEmbargo = "info:eu-repo/semantics/openAccess"
+						}
+					} else if access == "U" {
+						f.AccessLevel = "info:eu-repo/semantics/restrictedAccess"
+					} else if access == "W" {
+						f.AccessLevel = "info:eu-repo/semantics/openAccess"
 					}
 					p.File = append(p.File, f)
 				}
