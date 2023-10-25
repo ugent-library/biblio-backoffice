@@ -139,7 +139,7 @@ var tmpl = template.Must(template.New("").Funcs(funcs).Parse(`
 	<classification authority="ugent-publication-credit">ugent</classification>
 	{{end}}
 	{{if and .Rec.JCR .Rec.JCR.CategoryVigintile}}
-	<classification authority="jcr-category-vigintile">{{.Rec.JCR.CategoryVigintile | xml}}</classification>
+	<classification authority="jcr-category-vigintile">{{print .Rec.JCR.CategoryVigintile | xml}}</classification>
 	{{end}}
 
 	{{range .Rec.Author}}

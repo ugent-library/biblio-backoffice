@@ -2,6 +2,7 @@ package cli
 
 import (
 	"context"
+	"regexp"
 
 	"github.com/spf13/cobra"
 	"github.com/ugent-library/oai-service/api/v1"
@@ -29,6 +30,8 @@ var updateOai = &cobra.Command{
 	Short: "Update OAI provider",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		services := newServices()
+
+		reFP := regexp.MustCompile(`^FP[0-9]+$`)
 
 		oaiEncoder := oaidc.New(services.Repo, config.Frontend.URL)
 		modsEncoder := mods36.New(services.Repo, config.Frontend.URL)
@@ -93,7 +96,16 @@ var updateOai = &cobra.Command{
 			return err
 		}
 
+		err = client.AddSet(context.TODO(), &api.AddSetRequest{
+			SetSpec: "ec_fundedresources",
+			SetName: "OpenAire 2.0",
+		})
+		if err != nil {
+			return err
+		}
+
 		repo := newServices().Repo
+
 		// add all publications
 		repo.EachPublication(func(p *models.Publication) bool {
 			oaiID := "oai:archive.ugent.be:" + p.ID
@@ -159,6 +171,13 @@ var updateOai = &cobra.Command{
 				}
 			}
 
+			for _, rp := range p.RelatedProjects {
+				if rp.Project.EUProject != nil && (rp.Project.EUProject.FrameworkProgramme == "H2020" || reFP.MatchString(rp.Project.EUProject.FrameworkProgramme)) {
+					setSpecs = append(setSpecs, "ec_fundedresources")
+					break
+				}
+			}
+
 			err = client.AddItem(context.TODO(), &api.AddItemRequest{
 				Identifier: oaiID,
 				SetSpecs:   setSpecs,
@@ -171,7 +190,6 @@ var updateOai = &cobra.Command{
 			return true
 		})
 
-		// TODO add all datasets
 		repo.EachDataset(func(d *models.Dataset) bool {
 			oaiID := "oai:archive.ugent.be:" + d.ID
 
