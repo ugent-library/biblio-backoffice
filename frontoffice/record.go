@@ -809,17 +809,17 @@ func MapPublication(p *models.Publication, repo *repositories.Repo) *Record {
 					rec.JCR.ImmediacyIndex = &f
 				}
 			}
-			if v := jcrFields.Get("jcr-impact_factor"); v != "" {
+			if v := jcrFields.Get("jcr-impact-factor"); v != "" {
 				if f, err := strconv.ParseFloat(v, 64); err == nil {
 					rec.JCR.ImpactFactor = &f
 				}
 			}
-			if v := jcrFields.Get("jcr-impact_factor_5year"); v != "" {
+			if v := jcrFields.Get("jcr-impact-factor_5year"); v != "" {
 				if f, err := strconv.ParseFloat(v, 64); err == nil {
 					rec.JCR.ImpactFactor5Year = &f
 				}
 			}
-			if v := jcrFields.Get("jcr-total_cites"); v != "" {
+			if v := jcrFields.Get("jcr-total-cites"); v != "" {
 				if i, err := strconv.ParseInt(v, 10, 32); err == nil {
 					i32 := int(i)
 					rec.JCR.TotalCites = &i32
@@ -828,10 +828,10 @@ func MapPublication(p *models.Publication, repo *repositories.Repo) *Record {
 			if v := jcrFields.Get("jcr-category"); v != "" {
 				rec.JCR.Category = &v
 			}
-			if v := jcrFields.Get("jcr-category_rank"); v != "" {
+			if v := jcrFields.Get("jcr-category-rank"); v != "" {
 				rec.JCR.CategoryRank = &v
 			}
-			if v := jcrFields.Get("jcr-category_decile"); v != "" {
+			if v := jcrFields.Get("jcr-category-decile"); v != "" {
 				if i, err := strconv.ParseInt(v, 10, 32); err == nil {
 					i32 := int(i)
 					rec.JCR.CategoryDecile = &i32
@@ -843,18 +843,18 @@ func MapPublication(p *models.Publication, repo *repositories.Repo) *Record {
 					rec.JCR.CategoryQuartile = &i32
 				}
 			}
-			if v := jcrFields.Get("jcr-category_vigintile"); v != "" {
+			if v := jcrFields.Get("jcr-category-vigintile"); v != "" {
 				if i, err := strconv.ParseInt(v, 10, 32); err == nil {
 					i32 := int(i)
 					rec.JCR.CategoryVigintile = &i32
 				}
 			}
-			if v := jcrFields.Get("jcr-prev_impact_factor"); v != "" {
+			if v := jcrFields.Get("jcr-prev-impact-factor"); v != "" {
 				if f, err := strconv.ParseFloat(v, 64); err == nil {
 					rec.JCR.PrevImpactFactor = &f
 				}
 			}
-			if v := jcrFields.Get("jcr-prev_category_quartile"); v != "" {
+			if v := jcrFields.Get("jcr-prev-category-quartile"); v != "" {
 				if i, err := strconv.ParseInt(v, 10, 32); err == nil {
 					i32 := int(i)
 					rec.JCR.PrevCategoryQuartile = &i32

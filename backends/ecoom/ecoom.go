@@ -73,7 +73,7 @@ func NewPublicationFixer(c *mongo.Client) func(context.Context, *models.Publicat
 				newFields.Add(fmt.Sprintf("ecoom-%s-%s", fund, "css"), util.ParseString(v))
 			}
 			if v, ok := fundRecords[0]["internationale_samenwerking"]; ok {
-				newFields.Add(fmt.Sprintf("ecoom-%s-%s", fund, "international_collaboration"), util.ParseString(v))
+				newFields.Add(fmt.Sprintf("ecoom-%s-%s", fund, "international-collaboration"), util.ParseString(v))
 			}
 			if v, ok := fundRecords[0]["hoger_onderwijs"]; ok && util.ParseBoolean(v) {
 				newFields.Add(fmt.Sprintf("ecoom-%s-%s", fund, "sector"), "higher-education")
