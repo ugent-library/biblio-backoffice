@@ -18,12 +18,12 @@ import (
 )
 
 func init() {
-	rootCmd.AddCommand(updateRecordCandidates)
+	rootCmd.AddCommand(updateCandidateRecords)
 }
 
-var updateRecordCandidates = &cobra.Command{
-	Use:   "update-record-candidates",
-	Short: "Update record candidates",
+var updateCandidateRecords = &cobra.Command{
+	Use:   "update-candidate-records",
+	Short: "Update candidate records",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		services := newServices()
 
@@ -59,8 +59,8 @@ var updateRecordCandidates = &cobra.Command{
 				p.DefensePlace = "Ghent, Belgium" // TODO
 
 				ugentID := md.Get("student.ugentid").String()
-				if ugentID == "" {
-					ugentID = md.Get("student.studid").String()
+				if ugentID == "" && md.Get("student.studid").String() != "" {
+					ugentID = "0000" + md.Get("student.studid").String()
 				}
 				if ugentID != "" {
 					hits, err := services.PersonSearchService.SuggestPeople(ugentID)
@@ -72,9 +72,10 @@ var updateRecordCandidates = &cobra.Command{
 					}
 					p.Author = append(p.Author, models.ContributorFromPerson(hits[0]))
 				} else {
-					fn := md.Get("student.first").String()
-					ln := md.Get("student.last").String()
-					p.Author = append(p.Author, models.ContributorFromFirstLastName(fn, ln))
+					c := models.ContributorFromFirstLastName(md.Get("student.first").String(), md.Get("student.last").String())
+					c.ExternalPerson.Affiliation = md.Get("student.affil").String()
+					c.ExternalPerson.HonorificPrefix = md.Get("student.title").String()
+					p.Author = append(p.Author, c)
 				}
 
 				md.Get("supervisors").ForEach(func(key, val gjson.Result) bool {
@@ -90,9 +91,10 @@ var updateRecordCandidates = &cobra.Command{
 						}
 						p.Supervisor = append(p.Supervisor, models.ContributorFromPerson(hits[0]))
 					} else {
-						fn := val.Get("first").String()
-						ln := val.Get("last").String()
-						p.Supervisor = append(p.Supervisor, models.ContributorFromFirstLastName(fn, ln))
+						c := models.ContributorFromFirstLastName(val.Get("first").String(), val.Get("last").String())
+						c.ExternalPerson.Affiliation = val.Get("affil").String()
+						c.ExternalPerson.HonorificPrefix = val.Get("title").String()
+						p.Supervisor = append(p.Supervisor, c)
 					}
 					return true
 				})
