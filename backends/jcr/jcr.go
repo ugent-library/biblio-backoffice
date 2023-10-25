@@ -121,6 +121,11 @@ func NewPublicationFixer(c *mongo.Client) func(context.Context, *models.Publicat
 					return int(i)
 				})
 
+				// TODO: log junk
+				if len(numbers) != 2 {
+					continue
+				}
+
 				categoryRank := rank{
 					fracture: val,
 					quotient: float64(numbers[0]) / float64(numbers[1]),
@@ -198,7 +203,7 @@ func NewPublicationFixer(c *mongo.Client) func(context.Context, *models.Publicat
 			})
 			slices.Sort(immediacy_index)
 			if len(immediacy_index) > 0 {
-				newFields.Set("jcr-immediacy_index", ffloat(immediacy_index[len(immediacy_index)-1]))
+				newFields.Set("jcr-immediacy-index", ffloat(immediacy_index[len(immediacy_index)-1]))
 			}
 			impact_factor := lo.Map(lo.Filter(recordsThisYear, func(rec jcr, idx int) bool {
 				return rec.impactFactor != nil
@@ -207,7 +212,7 @@ func NewPublicationFixer(c *mongo.Client) func(context.Context, *models.Publicat
 			})
 			slices.Sort(impact_factor)
 			if len(impact_factor) > 0 {
-				newFields.Set("jcr-impact_factor", ffloat(impact_factor[len(impact_factor)-1]))
+				newFields.Set("jcr-impact-factor", ffloat(impact_factor[len(impact_factor)-1]))
 			}
 
 			impact_factor_5yr := lo.Map(lo.Filter(recordsThisYear, func(rec jcr, idx int) bool {
@@ -217,7 +222,7 @@ func NewPublicationFixer(c *mongo.Client) func(context.Context, *models.Publicat
 			})
 			slices.Sort(impact_factor_5yr)
 			if len(impact_factor_5yr) > 0 {
-				newFields.Set("jcr-impact_factor_5yr", ffloat(impact_factor_5yr[len(impact_factor_5yr)-1]))
+				newFields.Set("jcr-impact-factor-5yr", ffloat(impact_factor_5yr[len(impact_factor_5yr)-1]))
 			}
 
 			total_cites := lo.Map(lo.Filter(recordsThisYear, func(rec jcr, idx int) bool {
@@ -227,21 +232,21 @@ func NewPublicationFixer(c *mongo.Client) func(context.Context, *models.Publicat
 			})
 			slices.Sort(total_cites)
 			if len(total_cites) > 0 {
-				newFields.Set("jcr-total_cites", fmt.Sprintf("%d", total_cites[len(total_cites)-1]))
+				newFields.Set("jcr-total-cites", fmt.Sprintf("%d", total_cites[len(total_cites)-1]))
 			}
 
 			bestCategory, bestCategoryRank := bestJCRCategoryRank(recordsThisYear)
 			if bestCategory != nil {
 				newFields.Set("jcr-category", *bestCategory)
-				newFields.Set("jcr-category_rank", bestCategoryRank.fracture)
+				newFields.Set("jcr-category-rank", bestCategoryRank.fracture)
 				if bestCategoryRank.quartile != nil {
 					newFields.Set("jcr-category_quartile", fmt.Sprintf("%d", *bestCategoryRank.quartile))
 				}
 				if bestCategoryRank.decile != nil {
-					newFields.Set("jcr-category_decile", fmt.Sprintf("%d", *bestCategoryRank.decile))
+					newFields.Set("jcr-category-decile", fmt.Sprintf("%d", *bestCategoryRank.decile))
 				}
 				if bestCategoryRank.vigintile != nil {
-					newFields.Set("jcr-category_vigintile", fmt.Sprintf("%d", *bestCategoryRank.vigintile))
+					newFields.Set("jcr-category-vigintile", fmt.Sprintf("%d", *bestCategoryRank.vigintile))
 				}
 			}
 		}
@@ -254,19 +259,19 @@ func NewPublicationFixer(c *mongo.Client) func(context.Context, *models.Publicat
 			})
 			slices.Sort(prev_impact_factor)
 			if len(prev_impact_factor) > 0 {
-				newFields.Set("jcr-prev_impact_factor", ffloat(prev_impact_factor[len(prev_impact_factor)-1]))
+				newFields.Set("jcr-prev-impact-factor", ffloat(prev_impact_factor[len(prev_impact_factor)-1]))
 			}
 
 			bestCategory, bestCategoryRank := bestJCRCategoryRank(recordsPrevYear)
 			if bestCategory != nil {
 				if bestCategoryRank.quartile != nil {
-					newFields.Set("jcr-prev_category_quartile", fmt.Sprintf("%d", *bestCategoryRank.quartile))
+					newFields.Set("jcr-prev-category-quartile", fmt.Sprintf("%d", *bestCategoryRank.quartile))
 				}
 				if bestCategoryRank.decile != nil {
 					newFields.Set("jcr-prev_category_decile", fmt.Sprintf("%d", *bestCategoryRank.decile))
 				}
 				if bestCategoryRank.vigintile != nil {
-					newFields.Set("jcr-prev_category_vigintile", fmt.Sprintf("%d", *bestCategoryRank.vigintile))
+					newFields.Set("jcr-prev-category-vigintile", fmt.Sprintf("%d", *bestCategoryRank.vigintile))
 				}
 			}
 		}
