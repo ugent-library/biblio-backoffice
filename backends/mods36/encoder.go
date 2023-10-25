@@ -3,6 +3,7 @@ package mods36
 import (
 	"bytes"
 	"encoding/xml"
+	"strings"
 	"text/template"
 
 	"github.com/ugent-library/biblio-backoffice/frontoffice"
@@ -24,6 +25,7 @@ var funcs = template.FuncMap{
 	"personWithRole": func(p *frontoffice.Person, r string) personWithRole {
 		return personWithRole{p, r}
 	},
+	"hasPrefix": strings.HasPrefix,
 }
 
 var tmpl = template.Must(template.New("").Funcs(funcs).Parse(`
@@ -136,12 +138,10 @@ var tmpl = template.Must(template.New("").Funcs(funcs).Parse(`
 	{{if not .Rec.IsExternal}}
 	<classification authority="ugent-publication-credit">ugent</classification>
 	{{end}}
-	{{/* TODO
-	[%- IF jcr.category_vigintile %]
-	<classification authority="jcr-category-vigintile">[% jcr.category_vigintile | xml_strict %]</classification>
-	[%- END %]
-	*/}}
-	
+	{{if and .Rec.JCR .Rec.JCR.CategoryVigintile}}
+	<classification authority="jcr-category-vigintile">{{print .Rec.JCR.CategoryVigintile | xml}}</classification>
+	{{end}}
+
 	{{range .Rec.Author}}
 	{{template "person" (personWithRole . "author")}}
 	{{end}}
@@ -153,9 +153,11 @@ var tmpl = template.Must(template.New("").Funcs(funcs).Parse(`
 	{{end}}
 	{{range .Rec.Affiliation}}
 	<name type="corporate">
-		{{/* TODO
-		<displayForm>[% departments.item(d.ugent_id).name || d.ugent_id | html %]</displayForm>
-		*/}}
+		{{if .Name}}
+		<displayForm>{{.Name | xml}}</displayForm>
+		{{else}}
+		<displayForm>{{.UGentID | xml}}</displayForm>
+		{{end}}
 		<nameIdentifier type="ugent">{{.UGentID | xml}}</nameIdentifier>
 		<role>
 			<roleTerm authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators" type="code">sht</roleTerm>
@@ -542,34 +544,32 @@ var tmpl = template.Must(template.New("").Funcs(funcs).Parse(`
 			<languageTerm authority="iso639-2b" type="code">eng</languageTerm>
 		</languageOfCataloging>
 		<recordInfoNote type="ugent-submission-status">{{.Rec.Status | xml}}</recordInfoNote>
-		{{/* TODO
-		[%- IF created_by.ugent_id  %]
-		<recordInfoNote type="ugent-creator">[% created_by.ugent_id.0 | xml_strict %]</recordInfoNote>
-		[%- END %]
-		*/}}
+		{{if and .Rec.CreatedBy .Rec.CreatedBy.UGentID}}
+		<recordInfoNote type="ugent-creator">{{index .Rec.CreatedBy.UGentID 0 | xml}}</recordInfoNote>
+		{{end}}
 		{{if and .Rec.Source .Rec.Source.Record}}
 		<recordInfoNote type="source note">{{.Rec.Source.Record | xml}}</recordInfoNote>
 		{{end}}
 		{{if and .Rec.Source .Rec.Source.DB .Rec.Source.ID}}
 		<recordInfoNote type="source identifier">{{.Rec.Source.DB | xml}}:{{.Rec.Source.ID | xml}}</recordInfoNote>
 		{{end}}
-		{{/* TODO
-		[%- FOREACH fund IN ecoom %]
-		[% IF fund.value.weight %]
-		<recordInfoNote type="ecoom-[% fund.key %]-weight">[% fund.value.weight %]</recordInfoNote>
-		[% END %]
-		[% IF fund.value.css %]
-		<recordInfoNote type="ecoom-[% fund.key %]-css">[% fund.value.css %]</recordInfoNote>
-		[% END %]
-		[% IF fund.value.international_collaboration.defined %]
-		<recordInfoNote type="ecoom-[% fund.key %]-international-collaboration">[% fund.value.international_collaboration == 1 ? 'true' : 'false' %]</recordInfoNote>
-		[% END %]
-		[% FOREACH sector IN fund.value.sector %]
-		<recordInfoNote type="ecoom-[% fund.key %]-sector">[% sector %]</recordInfoNote>
-		[% END %]
-		<recordInfoNote type="ecoom-[% fund.key %]-validation">[% fund.value.first_year %]</recordInfoNote>
-		[%- END %]
-		*/}}
+		{{range $fundName, $fund := .Rec.ECOOM}}
+			{{if $fund.Weight}}
+			<recordInfoNote type="ecoom-{{$fundName | xml}}-weight">{{$fund.Weight | xml}}</recordInfoNote>
+			{{end}}
+			{{if $fund.CSS}}
+			<recordInfoNote type="ecoom-{{$fundName | xml}}-css">{{$fund.CSS | xml}}</recordInfoNote>
+			{{end}}
+			{{if $fund.InternationalCollaboration}}
+			<recordInfoNote type="ecoom-{{$fundName | xml}}-international-collaboration">{{$fund.InternationalCollaboration | xml}}</recordInfoNote>
+			{{end}}
+			{{range $fund.Sector}}
+			<recordInfoNote type="ecoom-{{$fundName | xml}}-sector">{{. | xml}}</recordInfoNote>
+			{{end}}
+			{{if $fund.Validation}}
+			<recordInfoNote type="ecoom-{{$fundName | xml}}-validation">{{$fund.Validation | xml}}</recordInfoNote>
+			{{end}}
+		{{end}}
 	</recordInfo>
 </mods>
 {{end}}

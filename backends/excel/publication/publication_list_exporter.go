@@ -76,7 +76,7 @@ var headers = []string{
 	"jcr_eigenfactor",
 	"jcr_immediacy_index",
 	"jcr_impact_factor",
-	"jcr_impact_factor_5year",
+	"jcr_impact_factor_5yr",
 	"jcr_total_cites",
 	"jcr_category_quartile",
 	"jcr_prev_impact_factor",
@@ -232,7 +232,7 @@ func (x *xlsx) publicationToRow(pub *models.Publication) []string {
 	m["jcr_eigenfactor"] = ""
 	m["jcr_immediacy_index"] = ""
 	m["jcr_impact_factor"] = ""
-	m["jcr_impact_factor_5year"] = ""
+	m["jcr_impact_factor_5yr"] = ""
 	m["jcr_total_cites"] = ""
 	m["jcr_category_quartile"] = ""
 	m["jcr_prev_impact_factor"] = ""
