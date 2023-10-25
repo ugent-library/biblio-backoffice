@@ -237,18 +237,11 @@ export BIBLIO_BACKOFFICE_FRONTEND_ES6_URL="http://localhost:9200"
 
 Next, create the database tables by running the migrations:
 
-```
-cp .tern.example.conf tern.conf
-```
-
-Then open `tern.conf` and change the `port` variable to a value that matches the port on which your
-postgresql server listens (default, this should be: 5432).
-
-Now run the migrations using the `tern` program:
+Now run the migrations using the `tern` program (see tern docs for correct env):
 
 ```
 go install github.com/jackc/tern@latest
-tern migrate --migrations etc/snapstore/migrations
+tern migrate --migrations db/migrations
 ```
 
 Next, initialize the ElasticSearch indices:
