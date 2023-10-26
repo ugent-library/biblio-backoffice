@@ -85,15 +85,7 @@ func Register(c Config) {
 	// mount health and info
 	c.Router.Get("/status", health.NewHandler(health.NewChecker())) // TODO add checkers
 	c.Router.Get("/info", func(w http.ResponseWriter, r *http.Request) {
-		httpx.RenderJSON(w, http.StatusOK, &struct {
-			Branch string `json:"branch,omitempty"`
-			Commit string `json:"commit,omitempty"`
-			Image  string `json:"image,omitempty"`
-		}{
-			Branch: c.Version.Branch,
-			Commit: c.Version.Commit,
-			Image:  c.Version.Image,
-		})
+		httpx.RenderJSON(w, http.StatusOK, c.Version)
 	})
 
 	// handlers
