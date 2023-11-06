@@ -6,10 +6,10 @@ import (
 
 	"slices"
 
-	"github.com/ugent-library/biblio-backoffice/bind"
 	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
+	"github.com/ugent-library/bind"
 	"github.com/ugent-library/oidc"
 )
 
@@ -101,7 +101,7 @@ func (h *Handler) UpdateRole(w http.ResponseWriter, r *http.Request, ctx Context
 		return
 	}
 
-	role := bind.PathValues(r).Get("role")
+	role := bind.PathValue(r, "role")
 
 	if !slices.Contains(vocabularies.Map["user_roles"], role) {
 		render.BadRequest(w, r, fmt.Errorf("%s is not a valid role", role))

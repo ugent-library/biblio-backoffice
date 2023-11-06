@@ -3,10 +3,10 @@ package datasetediting
 import (
 	"net/http"
 
-	"github.com/ugent-library/biblio-backoffice/bind"
 	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
+	"github.com/ugent-library/bind"
 )
 
 type BindSuggestPublications struct {

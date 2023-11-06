@@ -4,7 +4,6 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/ugent-library/biblio-backoffice/bind"
 	"github.com/ugent-library/biblio-backoffice/locale"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
@@ -12,6 +11,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	"github.com/ugent-library/biblio-backoffice/validation"
+	"github.com/ugent-library/bind"
 )
 
 type BindMessage struct {

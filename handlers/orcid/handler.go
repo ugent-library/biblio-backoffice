@@ -10,13 +10,13 @@ import (
 
 	"github.com/oklog/ulid/v2"
 	"github.com/ugent-library/biblio-backoffice/backends"
-	"github.com/ugent-library/biblio-backoffice/bind"
 	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/render/flash"
 	"github.com/ugent-library/biblio-backoffice/repositories"
 	"github.com/ugent-library/biblio-backoffice/tasks"
+	"github.com/ugent-library/bind"
 	"github.com/ugent-library/orcid"
 	"golang.org/x/text/language"
 )
