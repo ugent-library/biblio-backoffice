@@ -115,11 +115,7 @@ templ RecentActivity(c *ctx.Ctx, acts []Activity) {
             }
         </ul>
         } else {
-        <div class="card mb-6 flex-grow-1 bg-lightest shadow-none u-mix-blend-multiply">
-            <div class="c-blank-slate py-6">
-                <p>No activity to show.</p>
-            </div>
-        </div>
+        <p class="text-muted">No activity to show.</p>
         }
     </div>
 }
