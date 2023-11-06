@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/oklog/ulid/v2"
-	"github.com/ugent-library/biblio-backoffice/bind"
 	"github.com/ugent-library/biblio-backoffice/displays"
 	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/localize"
@@ -23,6 +22,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	"github.com/ugent-library/biblio-backoffice/validation"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
+	"github.com/ugent-library/bind"
 )
 
 type BindImportSingle struct {
@@ -380,7 +380,7 @@ func (h *Handler) AddMultipleSave(w http.ResponseWriter, r *http.Request, ctx Co
 
 // TODO after changing tabs, the wrong url is pushed in the history
 func (h *Handler) AddMultipleShow(w http.ResponseWriter, r *http.Request, ctx Context) {
-	batchID := bind.PathValues(r).Get("batch_id")
+	batchID := bind.PathValue(r, "batch_id")
 	subNav := r.URL.Query().Get("show")
 	if subNav == "" {
 		subNav = "description"
@@ -400,7 +400,7 @@ func (h *Handler) AddMultipleShow(w http.ResponseWriter, r *http.Request, ctx Co
 
 func (h *Handler) AddMultipleConfirm(w http.ResponseWriter, r *http.Request, ctx Context) {
 	searchArgs := models.NewSearchArgs()
-	if err := bind.RequestQuery(r, searchArgs); err != nil {
+	if err := bind.Query(r, searchArgs); err != nil {
 		h.Logger.Warnw("add multiple confirm publication: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
@@ -408,7 +408,7 @@ func (h *Handler) AddMultipleConfirm(w http.ResponseWriter, r *http.Request, ctx
 
 	searchArgs.WithFacets(vocabularies.Map["publication_facets"]...)
 
-	batchID := bind.PathValues(r).Get("batch_id")
+	batchID := bind.PathValue(r, "batch_id")
 
 	hits, err := h.PublicationSearchIndex.
 		WithScope("status", "private", "public").
@@ -435,7 +435,7 @@ func (h *Handler) AddMultipleConfirm(w http.ResponseWriter, r *http.Request, ctx
 }
 
 func (h *Handler) AddMultiplePublish(w http.ResponseWriter, r *http.Request, ctx Context) {
-	batchID := bind.PathValues(r).Get("batch_id")
+	batchID := bind.PathValue(r, "batch_id")
 
 	err := h.batchPublishPublications(batchID, ctx.User)
 
@@ -468,7 +468,7 @@ func (h *Handler) AddMultiplePublish(w http.ResponseWriter, r *http.Request, ctx
 
 func (h *Handler) AddMultipleFinish(w http.ResponseWriter, r *http.Request, ctx Context) {
 	searchArgs := models.NewSearchArgs()
-	if err := bind.RequestQuery(r, searchArgs); err != nil {
+	if err := bind.Query(r, searchArgs); err != nil {
 		h.Logger.Warnw("add multiple finish publication: could not bind request arguments", "errors", err, "request", r)
 		render.BadRequest(w, r, err)
 		return
@@ -476,7 +476,7 @@ func (h *Handler) AddMultipleFinish(w http.ResponseWriter, r *http.Request, ctx 
 
 	searchArgs.WithFacets(vocabularies.Map["publication_facets"]...)
 
-	batchID := bind.PathValues(r).Get("batch_id")
+	batchID := bind.PathValue(r, "batch_id")
 
 	hits, err := h.PublicationSearchIndex.
 		WithScope("status", "private", "public").

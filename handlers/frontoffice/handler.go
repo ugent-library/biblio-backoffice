@@ -13,13 +13,13 @@ import (
 
 	"github.com/jpillora/ipfilter"
 	"github.com/ugent-library/biblio-backoffice/backends"
-	"github.com/ugent-library/biblio-backoffice/bind"
 	"github.com/ugent-library/biblio-backoffice/frontoffice"
 	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/repositories"
 	internal_time "github.com/ugent-library/biblio-backoffice/time"
+	"github.com/ugent-library/bind"
 )
 
 type Handler struct {
@@ -64,7 +64,7 @@ type Hits struct {
 }
 
 func (h *Handler) GetPublication(w http.ResponseWriter, r *http.Request) {
-	p, err := h.Repo.GetPublication(bind.PathValues(r).Get("id"))
+	p, err := h.Repo.GetPublication(bind.PathValue(r, "id"))
 	if err != nil {
 		if err == models.ErrNotFound {
 			render.NotFound(w, r, err)
@@ -83,7 +83,7 @@ func (h *Handler) GetPublication(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetDataset(w http.ResponseWriter, r *http.Request) {
-	p, err := h.Repo.GetDataset(bind.PathValues(r).Get("id"))
+	p, err := h.Repo.GetDataset(bind.PathValue(r, "id"))
 	if err != nil {
 		if err == models.ErrNotFound {
 			render.NotFound(w, r, err)
@@ -109,7 +109,7 @@ type BindGetAll struct {
 
 func (h *Handler) GetAllPublications(w http.ResponseWriter, r *http.Request) {
 	b := BindGetAll{}
-	if err := bind.RequestQuery(r, &b); err != nil {
+	if err := bind.Query(r, &b); err != nil {
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -156,7 +156,7 @@ func (h *Handler) GetAllPublications(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) GetAllDatasets(w http.ResponseWriter, r *http.Request) {
 	b := BindGetAll{}
-	if err := bind.RequestQuery(r, &b); err != nil {
+	if err := bind.Query(r, &b); err != nil {
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -202,9 +202,7 @@ func (h *Handler) GetAllDatasets(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) DownloadFile(w http.ResponseWriter, r *http.Request) {
-	vals := bind.PathValues(r)
-
-	p, err := h.Repo.GetPublication(vals.Get("id"))
+	p, err := h.Repo.GetPublication(bind.PathValue(r, "id"))
 	if err != nil {
 		if err == models.ErrNotFound {
 			render.NotFound(w, r, err)
@@ -219,7 +217,7 @@ func (h *Handler) DownloadFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	f := p.GetFile(vals.Get("file_id"))
+	f := p.GetFile(bind.PathValue(r, "file_id"))
 	if f == nil {
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
