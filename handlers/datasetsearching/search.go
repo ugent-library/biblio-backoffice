@@ -89,6 +89,15 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request, ctx Context) {
 		isFirstUse = globalHits.Total == 0
 	}
 
+	// you are on the wrong page: cap page to last available page
+	if hits.Total > 0 && len(hits.Hits) == 0 {
+		query := ctx.CurrentURL.Query()
+		query.Set("page", fmt.Sprintf("%d", hits.TotalPages()))
+		ctx.CurrentURL.RawQuery = query.Encode()
+		http.Redirect(w, r, ctx.CurrentURL.String(), http.StatusTemporaryRedirect)
+		return
+	}
+
 	render.Layout(w, "layouts/default", "dataset/pages/search", YieldSearch{
 		Context:      ctx,
 		PageTitle:    "Overview - Datasets - Biblio",
@@ -148,6 +157,15 @@ func (h *Handler) CurationSearch(w http.ResponseWriter, r *http.Request, ctx Con
 			return
 		}
 		isFirstUse = globalHits.Total == 0
+	}
+
+	// you are on the wrong page: cap page to last available page
+	if hits.Total > 0 && len(hits.Hits) == 0 {
+		query := ctx.CurrentURL.Query()
+		query.Set("page", fmt.Sprintf("%d", hits.TotalPages()))
+		ctx.CurrentURL.RawQuery = query.Encode()
+		http.Redirect(w, r, ctx.CurrentURL.String(), http.StatusTemporaryRedirect)
+		return
 	}
 
 	render.Layout(w, "layouts/default", "dataset/pages/search", YieldSearch{
