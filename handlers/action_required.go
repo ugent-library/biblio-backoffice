@@ -14,7 +14,8 @@ func ActionRequired(w http.ResponseWriter, r *http.Request) {
 	pHits, err := c.PublicationSearchIndex.Search(models.NewSearchArgs().
 		WithPageSize(0).
 		WithFilter("creator_id|author_id", c.User.ID).
-		WithFilter("status", "returned"))
+		WithFilter("status", "returned").
+		WithFilter("locked", "false"))
 	if err != nil {
 		c.HandleError(w, r, err)
 		return
@@ -22,7 +23,8 @@ func ActionRequired(w http.ResponseWriter, r *http.Request) {
 	dHits, err := c.DatasetSearchIndex.Search(models.NewSearchArgs().
 		WithPageSize(0).
 		WithFilter("creator_id|author_id", c.User.ID).
-		WithFilter("status", "returned"))
+		WithFilter("status", "returned").
+		WithFilter("locked", "false"))
 	if err != nil {
 		c.HandleError(w, r, err)
 		return
