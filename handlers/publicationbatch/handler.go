@@ -52,7 +52,7 @@ func (h *Handler) Show(w http.ResponseWriter, r *http.Request, ctx Context) {
 	render.Layout(w, "layouts/default", "publication/batch/show", YieldShow{
 		Context:   ctx,
 		PageTitle: "Batch",
-		ActiveNav: "publications",
+		ActiveNav: "batch",
 	})
 }
 

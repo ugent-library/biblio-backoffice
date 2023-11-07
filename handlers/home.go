@@ -9,5 +9,9 @@ import (
 
 func Home(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
-	views.Home(c).Render(r.Context(), w)
+	if c.User != nil {
+		http.Redirect(w, r, c.PathTo("dashboard").String(), http.StatusSeeOther)
+	} else {
+		views.Home(c).Render(r.Context(), w)
+	}
 }

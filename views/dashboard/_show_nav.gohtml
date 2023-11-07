@@ -1,21 +1,21 @@
 <nav>
     <ul class="c-sub-sidebar-menu">
-        <li class="c-sub-sidebar__item{{if eq .ActiveNav "dashboard_publications_faculties"}} c-sub-sidebar__item--active{{end}}">
+        <li class="c-sub-sidebar__item{{if eq .ActiveSubNav "dashboard_publications_faculties"}} c-sub-sidebar__item--active{{end}}">
             <a href="{{pathFor "dashboard_publications" "type" "faculties"}}">
                 <span class="c-sidebar__label">Publications - Faculties</span>
             </a>
         </li>
-        <li class="c-sub-sidebar__item{{if eq .ActiveNav "dashboard_publications_socs"}} c-sub-sidebar__item--active{{end}}">
+        <li class="c-sub-sidebar__item{{if eq .ActiveSubNav "dashboard_publications_socs"}} c-sub-sidebar__item--active{{end}}">
             <a href="{{pathFor "dashboard_publications" "type" "socs"}}">
                 <span class="c-sidebar__label">Publications - SOCs</span>
             </a>
         </li>
-        <li class="c-sub-sidebar__item{{if eq .ActiveNav "dashboard_datasets_faculties"}} c-sub-sidebar__item--active{{end}}">
+        <li class="c-sub-sidebar__item{{if eq .ActiveSubNav "dashboard_datasets_faculties"}} c-sub-sidebar__item--active{{end}}">
             <a href="{{pathFor "dashboard_datasets" "type" "faculties"}}">
                 <span class="c-sidebar__label">Datasets - Faculties</span>
             </a>
         </li>
-        <li class="c-sub-sidebar__item{{if eq .ActiveNav "dashboard_datasets_socs"}} c-sub-sidebar__item--active{{end}}">
+        <li class="c-sub-sidebar__item{{if eq .ActiveSubNav "dashboard_datasets_socs"}} c-sub-sidebar__item--active{{end}}">
             <a href="{{pathFor "dashboard_datasets" "type" "socs"}}">
                 <span class="c-sidebar__label">Datasets - SOCs</span>
             </a>
