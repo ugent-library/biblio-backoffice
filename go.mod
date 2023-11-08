@@ -1,8 +1,6 @@
 module github.com/ugent-library/biblio-backoffice
 
-go 1.21
-
-toolchain go1.21.2
+go 1.21.3
 
 require (
 	github.com/Masterminds/sprig/v3 v3.2.3

@@ -263,6 +263,7 @@ func Register(c Config) {
 				r.Use(ctx.RequireUser)
 
 				r.Get("/dashboard", handlers.DashBoard).Name("dashboard")
+				r.Get("/dashboard-icon", handlers.DashBoardIcon).Name("dashboard_icon")
 				// dashboard action required component
 				r.Get("/action-required", handlers.ActionRequired).Name("action_required")
 				// dashboard drafts to complete component

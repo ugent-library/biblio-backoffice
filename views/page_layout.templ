@@ -155,11 +155,8 @@ templ pageLayout(c *ctx.Ctx, title, activeNav string, meta templ.Component) {
                         <nav>
                             <ul class="c-sidebar-menu">
                                 <li class={"c-sidebar__item", templ.KV("c-sidebar__item--active", activeNav == "dashboard")}>
-                                    <a href={ templ.URL(c.PathTo("dashboard").String()) }>
-                                        <span class="c-sidebar__icon">
-                                            <i class="if if-home"></i>
-                                        </span>
-                                        <span class="c-sidebar__label">Dashboard</span>
+                                    <a href={ templ.URL(c.PathTo("dashboard").String()) } hx-get={ c.PathTo("dashboard_icon").String() } hx-trigger="load, every 5s">
+                                        @DashboardIcon(c, false)
                                     </a>
                                 </li>
                                 <li class={"c-sidebar__item", templ.KV("c-sidebar__item--active", activeNav == "publications")}>
@@ -235,4 +232,15 @@ templ pageLayout(c *ctx.Ctx, title, activeNav string, meta templ.Component) {
     </body>
 
     </html>
+}
+
+templ DashboardIcon(c *ctx.Ctx, notification bool) {
+    <span class="c-sidebar__icon">
+        if notification {
+        <i class="if if-home if--notification if--notification-warning"></i>
+        } else {
+        <i class="if if-home"></i>
+        }
+    </span>
+    <span class="c-sidebar__label">Dashboard</span>
 }
