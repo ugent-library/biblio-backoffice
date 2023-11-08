@@ -37,7 +37,7 @@ templ pageLayout(c *ctx.Ctx, title, activeNav string, meta templ.Component) {
             }
             if c.OriginalUser != nil {
             <div class="alert alert-danger mb-0 py-1" role="alert">
-                <form action={ c.PathTo("delete_impersonation").String() } method="POST">
+                <form action={ templ.URL(c.PathTo("delete_impersonation").String()) } method="POST">
                     @csrfField(c)
                     <label class="my-1 me-2 fw-bold">Viewing the perspective of { c.User.FullName }.</label>
                     <button type="submit" class="btn btn-danger my-1">return to { c.OriginalUser.FullName }</button>.
@@ -131,10 +131,11 @@ templ pageLayout(c *ctx.Ctx, title, activeNav string, meta templ.Component) {
                     if c.User != nil && c.User.CanCurate() {
                     <div class="dropdown mx-lg-4 mb-6 mt-3">
                         <button class="btn btn-dark dropdown-toggle w-100 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        if c.UserRole == "user" {
+                        switch c.UserRole {
+                        case "user":
                             <i class="if if-briefcase mx-2 ms-lg-4"></i>
                             <span class="visually-hidden">Researcher</span>
-                        } else if c.UserRole  == "curator" {
+                        case "curator":
                             <i class="if if-book mx-2 ms-lg-4"></i>
                             <span class="visually-hidden">Librarian</span>
                         }
@@ -153,6 +154,16 @@ templ pageLayout(c *ctx.Ctx, title, activeNav string, meta templ.Component) {
                         if c.User != nil {
                         <nav>
                             <ul class="c-sidebar-menu">
+                                <li class={"c-sidebar__item", templ.KV("c-sidebar__item--active", activeNav == "dashboard")}>
+                                    <a href={ templ.URL(c.PathTo("dashboard").String()) }
+                                        if c.UserRole == "user" {
+                                        hx-get={ c.PathTo("dashboard_icon").String() }
+                                        hx-trigger="load, every 5s"
+                                        }   
+                                    >
+                                        @DashboardIcon(c, false)
+                                    </a>
+                                </li>
                                 <li class={"c-sidebar__item", templ.KV("c-sidebar__item--active", activeNav == "publications")}>
                                     <a href={ templ.URL(c.PathTo("publications").String()) }>
                                         <span class="c-sidebar__icon">
@@ -170,15 +181,7 @@ templ pageLayout(c *ctx.Ctx, title, activeNav string, meta templ.Component) {
                                     </a>
                                 </li>
                                 if c.UserRole == "curator" {
-                                <li class={"c-sidebar__item", templ.KV("c-sidebar__item--active", activeNav == "dashboard")}>
-                                    <a href={ templ.URL(c.PathTo("dashboard_publications", "type", "faculties").String()) }>
-                                        <span class="c-sidebar__icon">
-                                            <i class="if if-grid"></i>
-                                        </span>
-                                        <span class="c-sidebar__label">Dashboard</span>
-                                    </a>
-                                </li>
-                                <li class="c-sidebar__item">
+                                <li class={"c-sidebar__item", templ.KV("c-sidebar__item--active", activeNav == "batch")}>
                                     <a href={ templ.URL(c.PathTo("publication_batch").String()) }>
                                         <span class="c-sidebar__label">Batch</span>
                                     </a>
@@ -234,4 +237,15 @@ templ pageLayout(c *ctx.Ctx, title, activeNav string, meta templ.Component) {
     </body>
 
     </html>
+}
+
+templ DashboardIcon(c *ctx.Ctx, notification bool) {
+    <span class="c-sidebar__icon">
+        if notification {
+        <i class="if if-home if--notification if--notification-warning"></i>
+        } else {
+        <i class="if if-home"></i>
+        }
+    </span>
+    <span class="c-sidebar__label">Dashboard</span>
 }

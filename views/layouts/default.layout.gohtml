@@ -144,6 +144,14 @@
                 <div class="c-sidebar__menu">
                     <nav>
                         <ul class="c-sidebar-menu">
+                            <li class="c-sidebar__item{{if eq .ActiveNav "dashboard"}} c-sidebar__item--active{{end}}">
+                                <a href="{{pathFor "dashboard"}}">
+                                    <span class="c-sidebar__icon">
+                                        <i class="if if-home"></i>
+                                    </span>
+                                    <span class="c-sidebar__label">Dashboard</span>
+                                </a>
+                            </li>
                             <li class="c-sidebar__item{{if eq .ActiveNav "publications"}} c-sidebar__item--active{{end}}">
                                 <a href="{{pathFor "publications"}}">
                                     <span class="c-sidebar__icon">
@@ -161,15 +169,7 @@
                                 </a>
                             </li>
                             {{if eq .UserRole "curator"}}
-                            <li class="c-sidebar__item{{if eq .ActiveNav "dashboard"}} c-sidebar__item--active{{end}}">
-                                <a href="{{pathFor "dashboard_publications" "type" "faculties"}}">
-                                    <span class="c-sidebar__icon">
-                                        <i class="if if-grid"></i>
-                                    </span>
-                                    <span class="c-sidebar__label">Dashboard</span>
-                                </a>
-                            </li>
-                            <li class="c-sidebar__item">
+                            <li class="c-sidebar__item{{if eq .ActiveNav "batch"}} c-sidebar__item--active{{end}}">
                                 <a href="{{pathFor "publication_batch"}}">
                                     <span class="c-sidebar__label">Batch</span>
                                 </a>

@@ -1,12 +1,10 @@
 module github.com/ugent-library/biblio-backoffice
 
-go 1.21
-
-toolchain go1.21.2
+go 1.21.3
 
 require (
 	github.com/Masterminds/sprig/v3 v3.2.3
-	github.com/a-h/templ v0.2.408
+	github.com/a-h/templ v0.2.432
 	github.com/alexliesenfeld/health v0.7.0
 	github.com/alitto/pond v1.8.3
 	github.com/aws/aws-sdk-go-v2 v1.21.0
@@ -180,7 +178,7 @@ require (
 	go.uber.org/zap v1.26.0
 	golang.org/x/crypto v0.13.0 // indirect
 	golang.org/x/oauth2 v0.12.0 // indirect
-	golang.org/x/sys v0.13.0 // indirect
+	golang.org/x/sys v0.14.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect

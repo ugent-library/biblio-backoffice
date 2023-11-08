@@ -250,11 +250,13 @@ func Register(c Config) {
 			r.Group(func(r *ich.Mux) {
 				r.Use(ctx.RequireUser)
 
-				// home action required component
+				r.Get("/dashboard", handlers.DashBoard).Name("dashboard")
+				r.Get("/dashboard-icon", handlers.DashBoardIcon).Name("dashboard_icon")
+				// dashboard action required component
 				r.Get("/action-required", handlers.ActionRequired).Name("action_required")
-				// home drafts to complete component
+				// dashboard drafts to complete component
 				r.Get("/drafts-to-complete", handlers.DraftsToComplete).Name("drafts_to_complete")
-				// home recent activity component
+				// dashboard recent activity component
 				r.Get("/recent-activity", handlers.RecentActivity).Name("recent_activity")
 			})
 		})

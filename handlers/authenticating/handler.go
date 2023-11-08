@@ -123,5 +123,5 @@ func (h *Handler) UpdateRole(w http.ResponseWriter, r *http.Request, ctx Context
 		return
 	}
 
-	w.Header().Set("HX-Redirect", h.PathFor("publications").String())
+	w.Header().Set("HX-Redirect", h.PathFor("dashboard").String())
 }
