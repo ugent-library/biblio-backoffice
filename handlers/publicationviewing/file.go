@@ -6,11 +6,11 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/ugent-library/biblio-backoffice/bind"
+	"github.com/ugent-library/bind"
 )
 
 func (h *Handler) DownloadFile(w http.ResponseWriter, r *http.Request, ctx Context) {
-	f := ctx.Publication.GetFile(bind.PathValues(r).Get("file_id"))
+	f := ctx.Publication.GetFile(bind.PathValue(r, "file_id"))
 
 	if f == nil {
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)

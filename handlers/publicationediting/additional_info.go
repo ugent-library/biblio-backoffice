@@ -5,7 +5,6 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/ugent-library/biblio-backoffice/bind"
 	"github.com/ugent-library/biblio-backoffice/displays"
 	"github.com/ugent-library/biblio-backoffice/locale"
 	"github.com/ugent-library/biblio-backoffice/localize"
@@ -16,6 +15,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	"github.com/ugent-library/biblio-backoffice/validation"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
+	"github.com/ugent-library/bind"
 )
 
 type BindAdditionalInfo struct {
@@ -90,7 +90,7 @@ func (h *Handler) UpdateAdditionalInfo(w http.ResponseWriter, r *http.Request, c
 	})
 }
 
-func additionalInfoForm(user *models.User, l *locale.Locale, p *models.Publication, errors validation.Errors) *form.Form {
+func additionalInfoForm(user *models.Person, l *locale.Locale, p *models.Publication, errors validation.Errors) *form.Form {
 	researchFieldOptions := make([]form.SelectOption, len(vocabularies.Map["research_fields"]))
 	for i, v := range vocabularies.Map["research_fields"] {
 		researchFieldOptions[i].Label = v

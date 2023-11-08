@@ -51,14 +51,12 @@ describe('Clean-up', { redirectionLimit: PAGE_SIZE }, () => {
           // Force is necessary because button is invisible at this point (hidden in popover menu)
           cy.get('@confirm-delete').click({ force: true })
 
-          cy.contains('.modal-dialog .btn', 'Delete')
-            .click()
-            .then(() => {
-              cy.wait('@delete-route')
+          cy.closeModal('Delete').then(() => {
+            cy.wait('@delete-route')
 
-              // Recursive call to delete other items
-              deleteFirstItem()
-            })
+            // Recursive call to delete other items
+            deleteFirstItem()
+          })
         } else {
           cy.get('.card-header').should('be.visible').should('contain.text', 'Showing 0')
         }

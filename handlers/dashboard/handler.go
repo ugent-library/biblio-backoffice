@@ -4,9 +4,9 @@ import (
 	"net/http"
 
 	"github.com/ugent-library/biblio-backoffice/backends"
-	"github.com/ugent-library/biblio-backoffice/bind"
 	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/render"
+	"github.com/ugent-library/bind"
 )
 
 type Handler struct {
@@ -30,7 +30,7 @@ func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) htt
 
 		context := Context{
 			BaseContext: ctx,
-			Type:        bind.PathValues(r).Get("type"),
+			Type:        bind.PathValue(r, "type"),
 		}
 
 		fn(w, r, context)

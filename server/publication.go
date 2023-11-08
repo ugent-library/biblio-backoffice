@@ -7,8 +7,11 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"regexp"
 	"strings"
 	"time"
+
+	"slices"
 
 	"github.com/oklog/ulid/v2"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
@@ -20,6 +23,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
+
+var reSplit = regexp.MustCompile(`\s*[,;]\s*`)
 
 func (s *server) GetPublication(ctx context.Context, req *api.GetPublicationRequest) (*api.GetPublicationResponse, error) {
 	p, err := s.services.Repo.GetPublication(req.Id)
@@ -904,11 +909,98 @@ func (s *server) CleanupPublications(req *api.CleanupPublicationsRequest, stream
 		}
 		p.Keyword = cleanKeywords
 
-		// Remove empty links (temporary)
+		// Remove empty links (only needs to run once)
 		for _, l := range p.Link {
 			if l.URL == "" {
 				p.RemoveLink(l.ID)
 				fixed = true
+			}
+		}
+
+		// Set subtype from wos type (only needs to run once)
+		if p.WOSType != "" {
+			wosTypes := reSplit.Split(p.WOSType, -1)
+			for i, t := range wosTypes {
+				wosTypes[i] = strings.ToLower(t)
+			}
+			firstWOSType := wosTypes[0]
+			if p.Type == "journal_article" && p.JournalArticleType == "" {
+				switch {
+				case slices.Contains(wosTypes, "article") && slices.Contains(wosTypes, "proceedings paper"):
+					p.JournalArticleType = "proceedingsPaper"
+					fixed = true
+				case firstWOSType == "journal article" || firstWOSType == "article" || firstWOSType == "journal paper":
+					p.JournalArticleType = "original"
+					fixed = true
+				case firstWOSType == "review":
+					p.JournalArticleType = "review"
+					fixed = true
+				case firstWOSType == "letter" || firstWOSType == "note" || firstWOSType == "letter/note":
+					p.JournalArticleType = "letterNote"
+					fixed = true
+				}
+			}
+			if p.Type == "conference" && p.ConferenceType == "" {
+				switch {
+				case firstWOSType == "meeting abstract":
+					p.ConferenceType = "abstract"
+					fixed = true
+				case firstWOSType == "conference proceeding" || firstWOSType == "proceedings paper" || firstWOSType == "conference paper":
+					p.ConferenceType = "proceedingsPaper"
+					fixed = true
+				case firstWOSType == "poster":
+					p.ConferenceType = "poster"
+					fixed = true
+				}
+			}
+			if p.Type == "miscellaneous" && p.MiscellaneousType == "" {
+				switch {
+				case firstWOSType == "art exhibit review":
+					p.MiscellaneousType = "exhibitionReview"
+					fixed = true
+				case firstWOSType == "book review":
+					p.MiscellaneousType = "bookReview"
+					fixed = true
+				case firstWOSType == "dance performance review" || firstWOSType == "theatre review" || firstWOSType == "theater review":
+					p.MiscellaneousType = "theatreReview"
+					fixed = true
+				case firstWOSType == "database review" || firstWOSType == "hardware review" || firstWOSType == "software review":
+					p.MiscellaneousType = "productReview"
+					fixed = true
+				case firstWOSType == "editorial material" || firstWOSType == "editorial":
+					p.MiscellaneousType = "editorialMaterial"
+					fixed = true
+				case firstWOSType == "fiction" || firstWOSType == "creative prose" || firstWOSType == "poetry" || firstWOSType == "script":
+					p.MiscellaneousType = "artisticWork"
+					fixed = true
+				case firstWOSType == "film review" || firstWOSType == "tv review" || firstWOSType == "radio review" || firstWOSType == "video review":
+					p.MiscellaneousType = "filmReview"
+					fixed = true
+				case firstWOSType == "music score review" || firstWOSType == "music performance review" || firstWOSType == "record review":
+					p.MiscellaneousType = "musicReview"
+					fixed = true
+				case firstWOSType == "music score":
+					p.MiscellaneousType = "musicEdition"
+					fixed = true
+				case firstWOSType == "news item":
+					p.MiscellaneousType = "newsArticle"
+					fixed = true
+				case firstWOSType == "correction":
+					p.MiscellaneousType = "correction"
+					fixed = true
+				case firstWOSType == "biographical-item" || firstWOSType == "biographical item" || firstWOSType == "item about an individual":
+					p.MiscellaneousType = "biography"
+					fixed = true
+				case firstWOSType == "bibliography":
+					p.MiscellaneousType = "bibliography"
+					fixed = true
+				case firstWOSType == "preprint":
+					p.MiscellaneousType = "preprint"
+					fixed = true
+				case firstWOSType == "other" || firstWOSType == "discussion" || firstWOSType == "slide":
+					p.MiscellaneousType = "other"
+					fixed = true
+				}
 			}
 		}
 

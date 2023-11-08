@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/ugent-library/biblio-backoffice/bind"
 	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/tasks"
+	"github.com/ugent-library/bind"
 )
 
 type Handler struct {

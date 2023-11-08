@@ -2,13 +2,13 @@ package es6
 
 import (
 	"regexp"
-	"strings"
 
+	"slices"
+
+	"github.com/samber/lo"
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/models"
 	internal_time "github.com/ugent-library/biblio-backoffice/time"
-	"github.com/ugent-library/biblio-backoffice/util"
-	"github.com/ugent-library/biblio-backoffice/validation"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
 )
 
@@ -52,7 +52,7 @@ type indexedPublication struct {
 	Year                    string   `json:"year,omitempty"`
 }
 
-var reSplitWOS *regexp.Regexp = regexp.MustCompile("[,;]")
+var reSplitWOS *regexp.Regexp = regexp.MustCompile(`\s*[,;]\s*`)
 
 func NewIndexedPublication(p *models.Publication) *indexedPublication {
 	ip := &indexedPublication{
@@ -92,11 +92,11 @@ func NewIndexedPublication(p *models.Publication) *indexedPublication {
 	// extract faculty_id and all organization id's from organization trees
 	for _, rel := range p.RelatedOrganizations {
 		for _, org := range rel.Organization.Tree {
-			if !validation.InArray(ip.OrganizationID, org.ID) {
+			if !slices.Contains(ip.OrganizationID, org.ID) {
 				ip.OrganizationID = append(ip.OrganizationID, org.ID)
 			}
 
-			if validation.InArray(faculties, org.ID) && !validation.InArray(ip.FacultyID, org.ID) {
+			if slices.Contains(faculties, org.ID) && !slices.Contains(ip.FacultyID, org.ID) {
 				ip.FacultyID = append(ip.FacultyID, org.ID)
 			}
 		}
@@ -111,11 +111,7 @@ func NewIndexedPublication(p *models.Publication) *indexedPublication {
 	}
 
 	if p.WOSType != "" {
-		wos_types := reSplitWOS.Split(p.WOSType, -1)
-		for _, wos_type := range wos_types {
-			wt := strings.TrimSpace(wos_type)
-			ip.WOSType = append(ip.WOSType, wt)
-		}
+		ip.WOSType = reSplitWOS.Split(p.WOSType, -1)
 	}
 
 	for _, author := range p.Author {
@@ -124,7 +120,7 @@ func NewIndexedPublication(p *models.Publication) *indexedPublication {
 			ip.AuthorID = append(ip.AuthorID, author.PersonID)
 		}
 	}
-	ip.AuthorID = util.UniqStrings(ip.AuthorID)
+	ip.AuthorID = lo.Uniq(ip.AuthorID)
 
 	for _, supervisor := range p.Supervisor {
 		ip.Contributor = append(ip.Contributor, supervisor.Name())
@@ -134,12 +130,12 @@ func NewIndexedPublication(p *models.Publication) *indexedPublication {
 		ip.Contributor = append(ip.Contributor, editor.Name())
 	}
 
-	ip.Contributor = util.UniqStrings(ip.Contributor)
+	ip.Contributor = lo.Uniq(ip.Contributor)
 
 	for _, file := range p.File {
 		ip.FileRelation = append(ip.FileRelation, file.Relation)
 	}
-	ip.FileRelation = util.UniqStrings(ip.FileRelation)
+	ip.FileRelation = lo.Uniq(ip.FileRelation)
 
 	if p.DOI != "" {
 		ip.Identifier = append(ip.Identifier, p.DOI)

@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/oklog/ulid/v2"
-	"github.com/ugent-library/biblio-backoffice/bind"
 	"github.com/ugent-library/biblio-backoffice/displays"
 	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/localize"
@@ -19,6 +18,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	"github.com/ugent-library/biblio-backoffice/validation"
+	"github.com/ugent-library/bind"
 )
 
 type BindAdd struct {
@@ -157,9 +157,9 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 
 	d.ID = ulid.Make().String()
 	d.CreatorID = ctx.User.ID
-	d.Creator = &ctx.User.Person
+	d.Creator = ctx.User
 	d.UserID = ctx.User.ID
-	d.User = &ctx.User.Person
+	d.User = ctx.User
 	d.Status = "private"
 
 	if len(ctx.User.Affiliations) > 0 {

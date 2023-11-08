@@ -10,13 +10,13 @@ import (
 
 	"github.com/oklog/ulid/v2"
 	"github.com/ugent-library/biblio-backoffice/backends"
-	"github.com/ugent-library/biblio-backoffice/bind"
 	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/render/flash"
 	"github.com/ugent-library/biblio-backoffice/repositories"
 	"github.com/ugent-library/biblio-backoffice/tasks"
+	"github.com/ugent-library/bind"
 	"github.com/ugent-library/orcid"
 	"golang.org/x/text/language"
 )
@@ -131,7 +131,7 @@ func (h *Handler) AddAll(w http.ResponseWriter, r *http.Request, ctx Context) {
 
 // TODO make workflow
 // TODO add proper logging once moved to workflows
-func (h *Handler) addPublicationToORCID(user *models.User, p *models.Publication) (*models.Publication, error) {
+func (h *Handler) addPublicationToORCID(user *models.Person, p *models.Publication) (*models.Publication, error) {
 	client := orcid.NewMemberClient(orcid.Config{
 		Token:   user.ORCIDToken,
 		Sandbox: h.Sandbox,
@@ -157,7 +157,7 @@ func (h *Handler) addPublicationToORCID(user *models.User, p *models.Publication
 	return p, nil
 }
 
-func (h *Handler) addPublicationsToORCID(user *models.User, s *models.SearchArgs) (string, error) {
+func (h *Handler) addPublicationsToORCID(user *models.Person, s *models.SearchArgs) (string, error) {
 	taskID := "orcid:" + ulid.Make().String()
 
 	h.Tasks.Add(taskID, func(t tasks.Task) error {
@@ -168,7 +168,7 @@ func (h *Handler) addPublicationsToORCID(user *models.User, s *models.SearchArgs
 }
 
 // TODO move to workflows
-func (h *Handler) sendPublicationsToORCIDTask(t tasks.Task, user *models.User, searchArgs *models.SearchArgs) error {
+func (h *Handler) sendPublicationsToORCIDTask(t tasks.Task, user *models.Person, searchArgs *models.SearchArgs) error {
 	orcidClient := orcid.NewMemberClient(orcid.Config{
 		Token:   user.ORCIDToken,
 		Sandbox: h.Sandbox,

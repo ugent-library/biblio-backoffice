@@ -7,6 +7,8 @@ import (
 	"strings"
 	"time"
 
+	"slices"
+
 	"github.com/oklog/ulid/v2"
 	"github.com/ugent-library/biblio-backoffice/pagination"
 	"github.com/ugent-library/biblio-backoffice/validation"
@@ -86,6 +88,7 @@ type Publication struct {
 	EISSN                   []string               `json:"eissn,omitempty"`
 	ESCIID                  string                 `json:"esci_id,omitempty"`
 	Extern                  bool                   `json:"extern"`
+	ExternalFields          Values                 `json:"external_fields,omitempty"`
 	File                    []*PublicationFile     `json:"file,omitempty"`
 	Handle                  string                 `json:"handle,omitempty"`
 	HasConfidentialData     string                 `json:"has_confidential_data,omitempty"`
@@ -868,7 +871,7 @@ func (p *Publication) Validate() error {
 			Pointer: "/classification",
 			Code:    "publication.classification.required",
 		})
-	} else if !validation.InArray(p.ClassificationChoices(), p.Classification) {
+	} else if !slices.Contains(p.ClassificationChoices(), p.Classification) {
 		errs = append(errs, &validation.Error{
 			Pointer: "/classification",
 			Code:    "publication.classification.invalid",
@@ -916,7 +919,7 @@ func (p *Publication) Validate() error {
 	// }
 
 	for i, l := range p.Language {
-		if !validation.InArray(vocabularies.Map["language_codes"], l) {
+		if !slices.Contains(vocabularies.Map["language_codes"], l) {
 			errs = append(errs, &validation.Error{
 				Pointer: fmt.Sprintf("/language/%d", i),
 				Code:    "publication.lang.invalid",
@@ -1106,7 +1109,7 @@ func (p *Publication) validateIssueEditor() (errs validation.Errors) {
 func (p *Publication) validateJournalArticle() (errs validation.Errors) {
 	// TODO: confusing: gui shows select without empty element
 	// but first creation sets this value to empty
-	if p.JournalArticleType != "" && !validation.InArray(vocabularies.Map["journal_article_types"], p.JournalArticleType) {
+	if p.JournalArticleType != "" && !slices.Contains(vocabularies.Map["journal_article_types"], p.JournalArticleType) {
 		errs = append(errs, &validation.Error{
 			Pointer: "/journal_article_type",
 			Code:    "publication.journal_article_type.invalid",
@@ -1159,7 +1162,7 @@ func (p *Publication) validateDissertation() (errs validation.Errors) {
 func (p *Publication) validateMiscellaneous() (errs validation.Errors) {
 	// TODO confusing: gui shows select without empty element
 	// but first creation sets this value to empty
-	if p.MiscellaneousType != "" && !validation.InArray(vocabularies.Map["miscellaneous_types"], p.MiscellaneousType) {
+	if p.MiscellaneousType != "" && !slices.Contains(vocabularies.Map["miscellaneous_types"], p.MiscellaneousType) {
 		errs = append(errs, &validation.Error{
 			Pointer: "/miscellaneous_type",
 			Code:    "publication.miscellaneous_type.invalid",
@@ -1169,7 +1172,7 @@ func (p *Publication) validateMiscellaneous() (errs validation.Errors) {
 }
 
 func (pf *PublicationFile) Validate() (errs validation.Errors) {
-	if !validation.InArray(vocabularies.Map["publication_file_access_levels"], pf.AccessLevel) {
+	if !slices.Contains(vocabularies.Map["publication_file_access_levels"], pf.AccessLevel) {
 		errs = append(errs, &validation.Error{
 			Pointer: "/access_level",
 			Code:    "access_level.invalid",
@@ -1197,7 +1200,7 @@ func (pf *PublicationFile) Validate() (errs validation.Errors) {
 		})
 	}
 
-	if pf.Relation != "" && !validation.InArray(vocabularies.Map["publication_file_relations"], pf.Relation) {
+	if pf.Relation != "" && !slices.Contains(vocabularies.Map["publication_file_relations"], pf.Relation) {
 		errs = append(errs, &validation.Error{
 			Pointer: "/relation",
 			Code:    "relation.invalid",
@@ -1213,7 +1216,7 @@ func (pf *PublicationFile) Validate() (errs validation.Errors) {
 		}
 
 		invalid := false
-		if !validation.InArray(vocabularies.Map["publication_file_access_levels"], pf.AccessLevelAfterEmbargo) {
+		if !slices.Contains(vocabularies.Map["publication_file_access_levels"], pf.AccessLevelAfterEmbargo) {
 			invalid = true
 			errs = append(errs, &validation.Error{
 				Pointer: "/access_level_after_embargo",
@@ -1221,7 +1224,7 @@ func (pf *PublicationFile) Validate() (errs validation.Errors) {
 			})
 		}
 
-		if !validation.InArray(vocabularies.Map["publication_file_access_levels"], pf.AccessLevelDuringEmbargo) {
+		if !slices.Contains(vocabularies.Map["publication_file_access_levels"], pf.AccessLevelDuringEmbargo) {
 			invalid = true
 			errs = append(errs, &validation.Error{
 				Pointer: "/access_level_during_embargo",
@@ -1237,7 +1240,7 @@ func (pf *PublicationFile) Validate() (errs validation.Errors) {
 		}
 	}
 
-	if pf.PublicationVersion != "" && !validation.InArray(vocabularies.Map["publication_versions"], pf.PublicationVersion) {
+	if pf.PublicationVersion != "" && !slices.Contains(vocabularies.Map["publication_versions"], pf.PublicationVersion) {
 		errs = append(errs, &validation.Error{
 			Pointer: "/publication_version",
 			Code:    "publication_version.invalid",
@@ -1260,7 +1263,7 @@ func (pl *PublicationLink) Validate() (errs validation.Errors) {
 			Code:    "url.required",
 		})
 	}
-	if !validation.InArray(vocabularies.Map["publication_link_relations"], pl.Relation) {
+	if !slices.Contains(vocabularies.Map["publication_link_relations"], pl.Relation) {
 		errs = append(errs, &validation.Error{
 			Pointer: "/relation",
 			Code:    "relation.invalid",
@@ -1287,7 +1290,7 @@ func (p *Publication) CleanupUnusedFields() bool {
 		p.MiscellaneousType = ""
 	}
 
-	if !validation.InArray(p.ClassificationChoices(), p.Classification) {
+	if !slices.Contains(p.ClassificationChoices(), p.Classification) {
 		changed = true
 		p.Classification = "U"
 	}

@@ -9,7 +9,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
 )
 
-func DatasetDetails(user *models.User, l *locale.Locale, d *models.Dataset) *display.Display {
+func DatasetDetails(user *models.Person, l *locale.Locale, d *models.Dataset) *display.Display {
 	var identifierType, identifier string
 	for _, key := range vocabularies.Map["dataset_identifier_types"] {
 		if val := d.Identifiers.Get(key); val != "" {

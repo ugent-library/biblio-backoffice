@@ -4,11 +4,11 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/ugent-library/biblio-backoffice/bind"
 	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	"github.com/ugent-library/biblio-backoffice/validation"
+	"github.com/ugent-library/bind"
 )
 
 type BindType struct {
@@ -30,7 +30,7 @@ func (h *Handler) ConfirmUpdateType(w http.ResponseWriter, r *http.Request, ctx 
 
 func (h *Handler) UpdateType(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindType{}
-	if err := bind.RequestForm(r, &b); err != nil {
+	if err := bind.Body(r, &b); err != nil {
 		h.Logger.Warnw("update publication type: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return

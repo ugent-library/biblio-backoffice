@@ -12,7 +12,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/validation"
 )
 
-func detailsForm(user *models.User, l *locale.Locale, p *models.Publication, errors validation.Errors) *form.Form {
+func detailsForm(user *models.Person, l *locale.Locale, p *models.Publication, errors validation.Errors) *form.Form {
 	f := form.New().
 		WithTheme("default").
 		WithErrors(localize.ValidationErrors(l, errors))

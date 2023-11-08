@@ -4,7 +4,6 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/ugent-library/biblio-backoffice/bind"
 	"github.com/ugent-library/biblio-backoffice/locale"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
@@ -12,6 +11,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	"github.com/ugent-library/biblio-backoffice/validation"
+	"github.com/ugent-library/bind"
 )
 
 type BindMessage struct {
@@ -212,7 +212,7 @@ func (h *Handler) UpdateReviewerNote(w http.ResponseWriter, r *http.Request, ctx
 	render.View(w, "dataset/refresh_reviewer_note", ctx)
 }
 
-func messageForm(user *models.User, l *locale.Locale, p *models.Dataset, errors validation.Errors) *form.Form {
+func messageForm(user *models.Person, l *locale.Locale, p *models.Dataset, errors validation.Errors) *form.Form {
 	return form.New().
 		WithTheme("cols").
 		WithErrors(localize.ValidationErrors(l, errors)).
@@ -232,7 +232,7 @@ func messageForm(user *models.User, l *locale.Locale, p *models.Dataset, errors 
 		)
 }
 
-func reviewerTagsForm(user *models.User, l *locale.Locale, p *models.Dataset, errors validation.Errors) *form.Form {
+func reviewerTagsForm(user *models.Person, l *locale.Locale, p *models.Dataset, errors validation.Errors) *form.Form {
 	return form.New().
 		WithTheme("cols").
 		WithErrors(localize.ValidationErrors(l, errors)).
@@ -251,7 +251,7 @@ func reviewerTagsForm(user *models.User, l *locale.Locale, p *models.Dataset, er
 		)
 }
 
-func reviewerNoteForm(user *models.User, l *locale.Locale, p *models.Dataset, errors validation.Errors) *form.Form {
+func reviewerNoteForm(user *models.Person, l *locale.Locale, p *models.Dataset, errors validation.Errors) *form.Form {
 	return form.New().
 		WithTheme("cols").
 		WithErrors(localize.ValidationErrors(l, errors)).

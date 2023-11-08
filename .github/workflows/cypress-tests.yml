@@ -16,6 +16,8 @@ jobs:
           node-version: 18
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          ref: dev
       - name: Uninstall node-sass
         run: npm uninstall node-sass
       - name: Install OS dependencies

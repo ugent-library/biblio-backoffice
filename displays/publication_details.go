@@ -6,7 +6,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/render/display"
 )
 
-func PublicationDetails(user *models.User, l *locale.Locale, p *models.Publication) *display.Display {
+func PublicationDetails(user *models.Person, l *locale.Locale, p *models.Publication) *display.Display {
 	switch p.Type {
 	case "book_chapter":
 		return bookChapterDetails(user, l, p)

@@ -1,0 +1,15 @@
+package views
+
+import "github.com/ugent-library/biblio-backoffice/ctx"
+
+templ csrfField(c *ctx.Ctx) {
+    <input type="hidden" name={ c.CSRFName } value={ c.CSRFToken}/>
+}
+
+// TODO remove need for this
+func html(text string) templ.Component {
+    return templ.ComponentFunc(func(ctx context.Context, w io.Writer) error {
+        _, err := io.WriteString(w, text)
+        return err
+    })
+}

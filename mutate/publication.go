@@ -2,10 +2,12 @@ package mutate
 
 import (
 	"errors"
+	"fmt"
+
+	"slices"
 
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/models"
-	"github.com/ugent-library/biblio-backoffice/validation"
 )
 
 func ProjectAdd(projectService backends.ProjectService) func(*models.Publication, []string) error {
@@ -32,7 +34,7 @@ func ClassificationSet(p *models.Publication, args []string) error {
 
 func KeywordAdd(p *models.Publication, args []string) error {
 	for _, arg := range args {
-		if !validation.InArray(p.Keyword, arg) {
+		if !slices.Contains(p.Keyword, arg) {
 			p.Keyword = append(p.Keyword, arg)
 		}
 	}
@@ -42,7 +44,7 @@ func KeywordAdd(p *models.Publication, args []string) error {
 func KeywordRemove(p *models.Publication, args []string) error {
 	var vals []string
 	for _, val := range p.Keyword {
-		if !validation.InArray(args, val) {
+		if !slices.Contains(args, val) {
 			vals = append(vals, val)
 		}
 	}
@@ -83,7 +85,7 @@ func VABBApprovedSet(p *models.Publication, args []string) error {
 
 func VABBYearAdd(p *models.Publication, args []string) error {
 	for _, arg := range args {
-		if !validation.InArray(p.VABBYear, arg) {
+		if !slices.Contains(p.VABBYear, arg) {
 			p.VABBYear = append(p.VABBYear, arg)
 		}
 	}
@@ -92,7 +94,7 @@ func VABBYearAdd(p *models.Publication, args []string) error {
 
 func ReviewerTagAdd(p *models.Publication, args []string) error {
 	for _, arg := range args {
-		if !validation.InArray(p.ReviewerTags, arg) {
+		if !slices.Contains(p.ReviewerTags, arg) {
 			p.ReviewerTags = append(p.ReviewerTags, arg)
 		}
 	}
@@ -102,7 +104,7 @@ func ReviewerTagAdd(p *models.Publication, args []string) error {
 func ReviewerTagRemove(p *models.Publication, args []string) error {
 	var vals []string
 	for _, val := range p.ReviewerTags {
-		if !validation.InArray(args, val) {
+		if !slices.Contains(args, val) {
 			vals = append(vals, val)
 		}
 	}
@@ -134,7 +136,7 @@ func JournalAbbreviationSet(p *models.Publication, args []string) error {
 
 func ISBNAdd(p *models.Publication, args []string) error {
 	for _, arg := range args {
-		if !validation.InArray(p.ISBN, arg) {
+		if !slices.Contains(p.ISBN, arg) {
 			p.ISBN = append(p.ISBN, arg)
 		}
 	}
@@ -144,7 +146,7 @@ func ISBNAdd(p *models.Publication, args []string) error {
 func ISBNRemove(p *models.Publication, args []string) error {
 	var vals []string
 	for _, val := range p.ISBN {
-		if !validation.InArray(args, val) {
+		if !slices.Contains(args, val) {
 			vals = append(vals, val)
 		}
 	}
@@ -154,7 +156,7 @@ func ISBNRemove(p *models.Publication, args []string) error {
 
 func EISBNAdd(p *models.Publication, args []string) error {
 	for _, arg := range args {
-		if !validation.InArray(p.EISBN, arg) {
+		if !slices.Contains(p.EISBN, arg) {
 			p.EISBN = append(p.EISBN, arg)
 		}
 	}
@@ -164,7 +166,7 @@ func EISBNAdd(p *models.Publication, args []string) error {
 func EISBNRemove(p *models.Publication, args []string) error {
 	var vals []string
 	for _, val := range p.EISBN {
-		if !validation.InArray(args, val) {
+		if !slices.Contains(args, val) {
 			vals = append(vals, val)
 		}
 	}
@@ -174,7 +176,7 @@ func EISBNRemove(p *models.Publication, args []string) error {
 
 func ISSNAdd(p *models.Publication, args []string) error {
 	for _, arg := range args {
-		if !validation.InArray(p.ISSN, arg) {
+		if !slices.Contains(p.ISSN, arg) {
 			p.ISSN = append(p.ISSN, arg)
 		}
 	}
@@ -184,7 +186,7 @@ func ISSNAdd(p *models.Publication, args []string) error {
 func ISSNRemove(p *models.Publication, args []string) error {
 	var vals []string
 	for _, val := range p.ISSN {
-		if !validation.InArray(args, val) {
+		if !slices.Contains(args, val) {
 			vals = append(vals, val)
 		}
 	}
@@ -194,7 +196,7 @@ func ISSNRemove(p *models.Publication, args []string) error {
 
 func EISSNAdd(p *models.Publication, args []string) error {
 	for _, arg := range args {
-		if !validation.InArray(p.EISSN, arg) {
+		if !slices.Contains(p.EISSN, arg) {
 			p.EISSN = append(p.EISSN, arg)
 		}
 	}
@@ -204,10 +206,24 @@ func EISSNAdd(p *models.Publication, args []string) error {
 func EISSNRemove(p *models.Publication, args []string) error {
 	var vals []string
 	for _, val := range p.EISSN {
-		if !validation.InArray(args, val) {
+		if !slices.Contains(args, val) {
 			vals = append(vals, val)
 		}
 	}
 	p.EISSN = vals
+	return nil
+}
+
+func ExternalFieldsSet(p *models.Publication, args []string) error {
+	if len(args) < 1 {
+		return errors.New("no key supplied")
+	}
+	if len(args) < 2 {
+		return fmt.Errorf("no values supplied for %s", args[0])
+	}
+	if p.ExternalFields == nil {
+		p.ExternalFields = models.Values{}
+	}
+	p.ExternalFields.SetAll(args[0], args[1:]...)
 	return nil
 }

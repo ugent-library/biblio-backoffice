@@ -2,33 +2,42 @@ describe('The home page', () => {
   it('should be able to load the home page anonymously', () => {
     cy.visit('/')
 
-    cy.get('h2').should('have.text', 'Biblio Back Office')
+    cy.get('h1').should('have.text', 'Biblio Back Office')
 
     cy.contains('a', 'Log in').should('be.visible')
 
-    cy.contains('h3', 'Publications').should('be.visible')
-    cy.contains('a', 'Go to publications').should('be.visible')
+    cy.contains('h2', 'Publications').should('be.visible')
 
-    cy.contains('h3', 'Datasets').should('be.visible')
-    cy.contains('a', 'Go to datasets').should('be.visible')
+    cy.contains('h2', 'Datasets').should('be.visible')
 
     // On a regular page you don't have to do this to make the "be.visible" assertion work,
     // but in this case the elements are being clipped by an element with "overflow: scroll"
     cy.get('.u-scroll-wrapper__body').scrollTo('bottom', { duration: 250 })
 
-    cy.contains('h3', 'Biblio Academic Bibliography').should('be.visible')
-    cy.contains('a', 'Go to Biblio Academic Bibliography').should('be.visible')
+    cy.contains('h2', 'Biblio Academic Bibliography').should('be.visible')
 
-    cy.contains('h3', 'Help').should('be.visible')
-    cy.contains('a', 'How to register and deposit').should('be.visible')
+    cy.contains('h2', 'Help').should('be.visible')
   })
 
-  it('should redirect to the login page when browsing publications anonymously', () => {
-    redirectAnonymouslyTest('Biblio Publications')
-  })
+  it('should redirect to the login page when clicking the Login buttons', () => {
+    cy.visit('/')
 
-  it('should redirect to the login page when browsing datasets anonymously', () => {
-    redirectAnonymouslyTest('Biblio Datasets')
+    const assertLoginRedirection = href => {
+      cy.request(href).then(response => {
+        expect(response.isOkStatusCode).to.be.true
+        expect(response.redirects).is.an('array').that.has.length(1)
+
+        const redirects = response.redirects
+          .map(url => url.replace(/^3\d\d\: /, '')) // Redirect entries are in form '3XX: {url}'
+          .map(url => new URL(url))
+
+        expect(redirects[0]).to.have.property('hostname', 'test.liblogin.ugent.be')
+      })
+    }
+
+    cy.contains('.bc-navbar .btn', 'Log in').invoke('attr', 'href').then(assertLoginRedirection)
+
+    cy.contains('.bc-toolbar .btn', 'Log in').invoke('attr', 'href').then(assertLoginRedirection)
   })
 
   it('should be able to logon as researcher', () => {
@@ -114,24 +123,4 @@ describe('The home page', () => {
         expect(cookies.filter(c => c.startsWith('biblio-backoffice='))).to.have.length(1)
       })
   })
-
-  function redirectAnonymouslyTest(menuItem: string) {
-    cy.visit('/')
-
-    cy.contains('.c-sidebar nav a', menuItem)
-      .invoke('attr', 'href')
-      .then(href => {
-        cy.request(href).then(response => {
-          expect(response.isOkStatusCode).to.be.true
-          expect(response.redirects).is.an('array').that.has.length(2)
-
-          const redirects = response.redirects
-            .map(url => url.replace(/^\d{3}\: /, '')) // Redirect entries are in form '3XX: {url}'
-            .map(url => new URL(url))
-
-          expect(redirects[0]).to.have.property('pathname', '/login')
-          expect(redirects[1]).to.have.property('hostname', 'test.liblogin.ugent.be')
-        })
-      })
-  }
 })

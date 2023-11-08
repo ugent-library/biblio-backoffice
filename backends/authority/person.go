@@ -6,12 +6,13 @@ import (
 	"strings"
 	"time"
 
+	"slices"
+
 	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 
 	"github.com/ugent-library/biblio-backoffice/models"
-	"github.com/ugent-library/biblio-backoffice/util"
 )
 
 func (c *Client) GetPerson(id string) (*models.Person, error) {
@@ -94,42 +95,69 @@ func (c *Client) SuggestPeople(q string) ([]*models.Person, error) {
 }
 
 func (c *Client) recordToPerson(record bson.M) (*models.Person, error) {
-	var person *models.Person = &models.Person{}
+	person := &models.Person{}
 
-	if v, e := record["_id"]; e {
-		// _id might be stored as number, float or even "null"
-		person.ID = util.ParseString(v)
+	if v, ok := record["_id"]; ok {
+		person.ID = v.(string)
 	}
-	if v, e := record["active"]; e {
-		person.Active = util.ParseBoolean(v)
+	if v, ok := record["email"]; ok {
+		person.Email = strings.ToLower(v.(string))
 	}
-	if v, e := record["orcid_id"]; e {
-		// orcid might be stored as "null"
-		person.ORCID = util.ParseString(v)
+	if v, ok := record["ugent_username"]; ok {
+		person.Username = v.(string)
 	}
-	if v, e := record["ugent_id"]; e {
+	if v, ok := record["active"]; ok {
+		person.Active = v.(int32) == 1
+	}
+	if v, ok := record["orcid_token"]; ok {
+		person.ORCIDToken = v.(string)
+	}
+	if v, ok := record["orcid_id"]; ok {
+		person.ORCID = v.(string)
+	}
+	if v, ok := record["ugent_id"]; ok {
 		for _, i := range v.(bson.A) {
-			person.UGentID = append(person.UGentID, util.ParseString(i))
+			person.UGentID = append(person.UGentID, i.(string))
 		}
 	}
-	if v, e := record["ugent_department_id"]; e {
-		for _, i := range v.(bson.A) {
-			person.Affiliations = append(person.Affiliations, &models.Affiliation{OrganizationID: util.ParseString(i)})
+	if v, ok := record["roles"]; ok {
+		for _, r := range v.(bson.A) {
+			if r.(string) == "biblio-admin" {
+				person.Role = "admin"
+				break
+			}
 		}
 	}
-	if v, e := record["preferred_first_name"]; e {
-		person.FirstName = util.ParseString(v)
-	} else if v, e := record["first_name"]; e {
-		person.FirstName = util.ParseString(v)
+	if v, ok := record["ugent_department_id"]; ok {
+		for _, i := range v.(bson.A) {
+			person.Affiliations = append(person.Affiliations, &models.Affiliation{OrganizationID: i.(string)})
+		}
 	}
-	if v, e := record["preferred_last_name"]; e {
-		person.LastName = util.ParseString(v)
-	} else if v, e := record["last_name"]; e {
-		person.LastName = util.ParseString(v)
+	if v, e := record["object_class"]; e {
+		objectClass := []string{}
+		for _, val := range v.(bson.A) {
+			objectClass = append(objectClass, val.(string))
+		}
+		if slices.Contains(objectClass, "ugentFormerEmployee") && len(person.Affiliations) == 0 {
+			person.Affiliations = append(person.Affiliations, &models.Affiliation{OrganizationID: "UGent"})
+		}
+		if slices.Contains(objectClass, "uzEmployee") {
+			person.Affiliations = append(person.Affiliations, &models.Affiliation{OrganizationID: "UZGent"})
+		}
+	}
+	if v, ok := record["preferred_first_name"]; ok {
+		person.FirstName = v.(string)
+	} else if v, ok := record["first_name"]; ok {
+		person.FirstName = v.(string)
+	}
+	if v, ok := record["preferred_last_name"]; ok {
+		person.LastName = v.(string)
+	} else if v, ok := record["last_name"]; ok {
+		person.LastName = v.(string)
 	}
 
 	// TODO: cleanup when authority database is synchronized with full_name
-	if v, e := record["full_name"]; e {
+	if v, ok := record["full_name"]; ok {
 		person.FullName = v.(string)
 	}
 	if person.FullName == "" {
@@ -142,12 +170,12 @@ func (c *Client) recordToPerson(record bson.M) (*models.Person, error) {
 		}
 	}
 
-	if v, e := record["date_created"]; e {
-		t, _ := time.Parse(time.RFC3339, util.ParseString(v))
+	if v, ok := record["date_created"]; ok {
+		t, _ := time.Parse(time.RFC3339, v.(string))
 		person.DateCreated = &t
 	}
-	if v, e := record["date_updated"]; e {
-		t, _ := time.Parse(time.RFC3339, util.ParseString(v))
+	if v, ok := record["date_updated"]; ok {
+		t, _ := time.Parse(time.RFC3339, v.(string))
 		person.DateUpdated = &t
 	}
 

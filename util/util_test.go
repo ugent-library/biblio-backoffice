@@ -16,7 +16,7 @@ func TestParseString(t *testing.T) {
 	assert.Equal(t, ParseString(float32(1.2)), "1.2")
 	assert.NotEqual(t, ParseString(float32(1.20)), "1.20")
 	assert.Equal(t, ParseString(float64(1.2)), "1.2")
-	var i interface{}
+	var i any
 	assert.Equal(t, ParseString(i), "")
 	assert.Equal(t, ParseString(nil), "")
 }

@@ -1,6 +1,8 @@
 package models
 
 import (
+	"slices"
+
 	"github.com/ugent-library/biblio-backoffice/validation"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
 )
@@ -24,7 +26,7 @@ func (t Text) Validate() (errs validation.Errors) {
 			Pointer: "/lang",
 			Code:    "lang.required",
 		})
-	} else if !validation.InArray(vocabularies.Map["language_codes"], t.Lang) {
+	} else if !slices.Contains(vocabularies.Map["language_codes"], t.Lang) {
 		errs = append(errs, &validation.Error{
 			Pointer: "/lang",
 			Code:    "lang.invalid",
