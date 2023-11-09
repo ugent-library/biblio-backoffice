@@ -14,6 +14,8 @@ import (
 	"github.com/nics/ich"
 	"github.com/ory/graceful"
 	"github.com/spf13/cobra"
+	ffclient "github.com/thomaspoignant/go-feature-flag"
+	"github.com/thomaspoignant/go-feature-flag/retriever/fileretriever"
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/helpers"
 	"github.com/ugent-library/biblio-backoffice/locale"
@@ -46,6 +48,21 @@ var serverStartCmd = &cobra.Command{
 
 		services.MediaTypeSearchService.IndexAll()
 		// e.LicenseSearchService.IndexAll()
+
+		// feature flags
+		if config.FF.Path != "" {
+			err := ffclient.Init(ffclient.Config{
+				PollingInterval: 5 * time.Second,
+				Context:         context.TODO(),
+				Retriever: &fileretriever.Retriever{
+					Path: config.FF.Path,
+				},
+			})
+			if err != nil {
+				return err
+			}
+			defer ffclient.Close()
+		}
 
 		// setup router
 		router, err := buildRouter(services)
