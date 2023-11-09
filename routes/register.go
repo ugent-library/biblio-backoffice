@@ -250,7 +250,7 @@ func Register(c Config) {
 			r.Group(func(r *ich.Mux) {
 				r.Use(ctx.RequireUser)
 
-				r.Get("/dashboard", handlers.DashBoard).Name("dashboard")
+				r.With(ctx.SetNav("dashboard")).Get("/dashboard", handlers.DashBoard).Name("dashboard")
 				r.Get("/dashboard-icon", handlers.DashBoardIcon).Name("dashboard_icon")
 				// dashboard action required component
 				r.Get("/action-required", handlers.ActionRequired).Name("action_required")

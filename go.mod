@@ -10,6 +10,7 @@ require (
 	github.com/aws/aws-sdk-go-v2 v1.21.0
 	github.com/blevesearch/bleve/v2 v2.3.10
 	github.com/bluele/gcache v0.0.2
+	github.com/caarlos0/env/v10 v10.0.0
 	github.com/caltechlibrary/doitools v0.0.1
 	github.com/dimchansky/utfbom v1.1.1
 	github.com/elastic/go-elasticsearch/v6 v6.8.10
@@ -135,7 +136,6 @@ require (
 	github.com/blevesearch/zapx/v13 v13.3.10 // indirect
 	github.com/blevesearch/zapx/v14 v14.3.10 // indirect
 	github.com/blevesearch/zapx/v15 v15.3.13 // indirect
-	github.com/caarlos0/env/v8 v8.0.0
 	github.com/coreos/go-oidc/v3 v3.6.0 // indirect
 	github.com/felixge/httpsnoop v1.0.3 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
