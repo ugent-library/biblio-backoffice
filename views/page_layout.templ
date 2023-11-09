@@ -2,7 +2,7 @@ package views
 
 import "github.com/ugent-library/biblio-backoffice/ctx"
 
-templ pageLayout(c *ctx.Ctx, title, activeNav string, meta templ.Component) {
+templ pageLayout(c *ctx.Ctx, title string, meta templ.Component) {
     <!DOCTYPE html>
     <html class="u-maximize-height" dir="ltr" lang="en">
 
@@ -154,7 +154,7 @@ templ pageLayout(c *ctx.Ctx, title, activeNav string, meta templ.Component) {
                         if c.User != nil {
                         <nav>
                             <ul class="c-sidebar-menu">
-                                <li class={"c-sidebar__item", templ.KV("c-sidebar__item--active", activeNav == "dashboard")}>
+                                <li class={"c-sidebar__item", templ.KV("c-sidebar__item--active", c.Nav == "dashboard")}>
                                     <a href={ templ.URL(c.PathTo("dashboard").String()) }
                                         if c.UserRole == "user" {
                                         hx-get={ c.PathTo("dashboard_icon").String() }
@@ -164,7 +164,7 @@ templ pageLayout(c *ctx.Ctx, title, activeNav string, meta templ.Component) {
                                         @DashboardIcon(c, false)
                                     </a>
                                 </li>
-                                <li class={"c-sidebar__item", templ.KV("c-sidebar__item--active", activeNav == "publications")}>
+                                <li class={"c-sidebar__item", templ.KV("c-sidebar__item--active", c.Nav == "publications")}>
                                     <a href={ templ.URL(c.PathTo("publications").String()) }>
                                         <span class="c-sidebar__icon">
                                             <i class="if if-article"></i>
@@ -172,7 +172,7 @@ templ pageLayout(c *ctx.Ctx, title, activeNav string, meta templ.Component) {
                                         <span class="c-sidebar__label">Biblio Publications</span>
                                     </a>
                                 </li>
-                                <li class={"c-sidebar__item", templ.KV("c-sidebar__item--active", activeNav == "datasets")}>
+                                <li class={"c-sidebar__item", templ.KV("c-sidebar__item--active", c.Nav == "datasets")}>
                                     <a href={ templ.URL(c.PathTo("datasets").String()) }>
                                         <span class="c-sidebar__icon">
                                             <i class="if if-database"></i>
@@ -181,7 +181,7 @@ templ pageLayout(c *ctx.Ctx, title, activeNav string, meta templ.Component) {
                                     </a>
                                 </li>
                                 if c.UserRole == "curator" {
-                                <li class={"c-sidebar__item", templ.KV("c-sidebar__item--active", activeNav == "batch")}>
+                                <li class={"c-sidebar__item", templ.KV("c-sidebar__item--active", c.Nav == "batch")}>
                                     <a href={ templ.URL(c.PathTo("publication_batch").String()) }>
                                         <span class="c-sidebar__label">Batch</span>
                                     </a>

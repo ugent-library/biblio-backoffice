@@ -32,8 +32,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/handlers/publicationsearching"
 	"github.com/ugent-library/biblio-backoffice/handlers/publicationviewing"
 	"github.com/ugent-library/biblio-backoffice/locale"
-	"github.com/ugent-library/httpx/render"
-	mw "github.com/ugent-library/middleware"
+	"github.com/ugent-library/httpx"
 	"github.com/ugent-library/mix"
 	"github.com/ugent-library/oidc"
 	"github.com/ugent-library/zaphttp"
@@ -74,10 +73,7 @@ func Register(c Config) {
 	if c.Env != "local" {
 		c.Router.Use(middleware.RealIP)
 	}
-	c.Router.Use(mw.MethodOverride( // TODO eliminate need for method override
-		mw.MethodFromHeader(mw.MethodHeader),
-		mw.MethodFromForm(mw.MethodParam),
-	))
+	c.Router.Use(httpx.MethodOverride) // TODO eliminate need for method override with htmx
 	c.Router.Use(zaphttp.SetLogger(c.Logger.Desugar(), zapchi.RequestID))
 	c.Router.Use(middleware.RequestLogger(zapchi.LogFormatter()))
 	c.Router.Use(middleware.Recoverer)
@@ -89,15 +85,7 @@ func Register(c Config) {
 	// mount health and info
 	c.Router.Get("/status", health.NewHandler(health.NewChecker())) // TODO add checkers
 	c.Router.Get("/info", func(w http.ResponseWriter, r *http.Request) {
-		render.JSON(w, http.StatusOK, &struct {
-			Branch string `json:"branch,omitempty"`
-			Commit string `json:"commit,omitempty"`
-			Image  string `json:"image,omitempty"`
-		}{
-			Branch: c.Version.Branch,
-			Commit: c.Version.Commit,
-			Image:  c.Version.Image,
-		})
+		httpx.RenderJSON(w, http.StatusOK, c.Version)
 	})
 
 	// handlers
@@ -262,7 +250,7 @@ func Register(c Config) {
 			r.Group(func(r *ich.Mux) {
 				r.Use(ctx.RequireUser)
 
-				r.Get("/dashboard", handlers.DashBoard).Name("dashboard")
+				r.With(ctx.SetNav("dashboard")).Get("/dashboard", handlers.DashBoard).Name("dashboard")
 				r.Get("/dashboard-icon", handlers.DashBoardIcon).Name("dashboard_icon")
 				// dashboard action required component
 				r.Get("/action-required", handlers.ActionRequired).Name("action_required")
