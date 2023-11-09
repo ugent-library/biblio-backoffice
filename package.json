@@ -20,7 +20,7 @@
     "sortablejs": "^1.15.0"
   },
   "devDependencies": {
-    "cypress": "^13.3.0",
+    "cypress": "^13.5.0",
     "cypress-dotenv": "^2.0.0",
     "dotenv": "^16.3.1",
     "js-precommit-hook": "git+https://github.com/ugent-library/js-precommit-hook.git",
@@ -28,6 +28,6 @@
     "resolve-url-loader": "^5.0.0",
     "sass": "^1.68.0",
     "sass-loader": "^12.6.0",
-    "typescript": "^5.1.6"
+    "typescript": "^5.2.2"
   }
 }

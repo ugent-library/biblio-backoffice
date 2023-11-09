@@ -124,6 +124,7 @@ type Ctx struct {
 	OriginalUser *models.Person
 	Flash        []flash.Flash
 	CSRFToken    string
+	Nav          string
 }
 
 func (c *Ctx) HandleError(w http.ResponseWriter, r *http.Request, err error) {
