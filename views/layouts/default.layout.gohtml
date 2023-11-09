@@ -145,7 +145,12 @@
                     <nav>
                         <ul class="c-sidebar-menu">
                             <li class="c-sidebar__item{{if eq .ActiveNav "dashboard"}} c-sidebar__item--active{{end}}">
-                                <a href="{{pathFor "dashboard"}}">
+                                <a href="{{pathFor "dashboard"}}"
+                                    {{if eq .UserRole "user"}}
+                                    hx-get="{{pathFor "dashboard_icon"}}"
+                                    hx-trigger="load, every 5s"
+                                    {{end}}
+                                >
                                     <span class="c-sidebar__icon">
                                         <i class="if if-home"></i>
                                     </span>

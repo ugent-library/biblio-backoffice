@@ -159,7 +159,7 @@ templ pageLayout(c *ctx.Ctx, title string, meta templ.Component) {
                                         if c.UserRole == "user" {
                                         hx-get={ c.PathTo("dashboard_icon").String() }
                                         hx-trigger="load, every 5s"
-                                        }   
+                                        }
                                     >
                                         @DashboardIcon(c, false)
                                     </a>
