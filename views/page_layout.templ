@@ -127,7 +127,7 @@ templ pageLayout(c *ctx.Ctx, title string, meta templ.Component) {
         </header>
         <main>
             <div class="d-flex u-maximize-height">
-                <div class="c-sidebar c-sidebar--dark-gray">
+                <div class={"c-sidebar", templ.KV("c-sidebar--dark-gray", c.UserRole == "curator")}>
                     if c.User != nil && c.User.CanCurate() {
                     <div class="dropdown mx-lg-4 mb-6 mt-3">
                         <button class="btn btn-dark dropdown-toggle w-100 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -150,7 +150,7 @@ templ pageLayout(c *ctx.Ctx, title string, meta templ.Component) {
                         </div>
                     </div>
                     }
-                    <div class={"c-sidebar__menu", templ.KV("c-sidebar--dark-gray", c.UserRole == "curator")}>
+                    <div class="c-sidebar__menu">
                         if c.User != nil {
                         <nav>
                             <ul class="c-sidebar-menu">
