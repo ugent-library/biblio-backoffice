@@ -19,19 +19,19 @@ import (
 
 type BindFile struct {
 	FileID                   string `path:"file_id"`
-	AccessLevel              string `form:"access_level"`
-	License                  string `form:"license"`
-	ContentType              string `form:"content_type"`
-	EmbargoDate              string `form:"embargo_date"`
-	AccessLevelAfterEmbargo  string `form:"access_level_after_embargo"`
-	AccessLevelDuringEmbargo string `form:"access_level_during_embargo"`
-	Name                     string `form:"name"`
-	Size                     int    `form:"size"`
-	SHA256                   string `form:"sha256"`
-	OtherLicense             string `form:"other_license"`
-	PublicationVersion       string `form:"publication_version"`
-	Relation                 string `form:"relation"`
-	URL                      string `form:"url"`
+	AccessLevel              string `query:"access_level" form:"access_level"`
+	License                  string `query:"license" form:"license"`
+	ContentType              string `query:"content_type" form:"content_type"`
+	EmbargoDate              string `query:"embargo_date" form:"embargo_date"`
+	AccessLevelAfterEmbargo  string `query:"access_level_after_embargo" form:"access_level_after_embargo"`
+	AccessLevelDuringEmbargo string `query:"access_level_during_embargo" form:"access_level_during_embargo"`
+	Name                     string `query:"name" form:"name"`
+	Size                     int    `query:"size" form:"size"`
+	SHA256                   string `query:"sha256" form:"sha256"`
+	OtherLicense             string `query:"other_license" form:"other_license"`
+	PublicationVersion       string `query:"publication_version" form:"publication_version"`
+	Relation                 string `query:"relation" form:"relation"`
+	URL                      string `query:"url" form:"url"`
 }
 
 type BindDeleteFile struct {

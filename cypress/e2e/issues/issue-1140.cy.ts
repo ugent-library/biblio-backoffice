@@ -16,10 +16,20 @@ describe('Issue #1140: External contributor info is empty in the suggest box', (
     cy.contains('.btn', 'Add author').click()
 
     cy.ensureModal('Add author').within(() => {
+      cy.intercept({
+        pathname: '/publication/*/contributors/author/suggestions',
+        query: {
+          first_name: 'John',
+          last_name: 'Doe',
+        },
+      }).as('suggestions')
+
       cy.setFieldByLabel('First name', 'John')
       cy.setFieldByLabel('Last name', 'Doe')
 
-      cy.contains('.btn', 'Add external author').click()
+      cy.wait('@suggestions')
+
+      cy.contains('#person-suggestions .list-group-item', 'John Doe').contains('.btn', 'Add external author').click()
     })
 
     cy.ensureModal('Add author')
