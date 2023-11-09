@@ -409,7 +409,7 @@ func pageLayout(c *ctx.Ctx, title string, meta templ.Component) templ.Component 
 			return templ_7745c5c3_Err
 		}
 		if c.User != nil && c.User.CanCurate() {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"dropdown mx-lg-4 mb-6 mt-3\"><button class=\"btn btn-dark dropdown-toggle w-100 d-flex align-items-center justify-content-center\" type=\"button\" data-bs-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"dropdown mx-lg-4 mb-6 mt-3\"><button class=\"btn btn-outline-light dropdown-toggle w-100 d-flex align-items-center justify-content-center\" type=\"button\" data-bs-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
