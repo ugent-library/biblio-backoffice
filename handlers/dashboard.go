@@ -9,6 +9,122 @@ import (
 	"github.com/ugent-library/biblio-backoffice/views"
 )
 
+func DashBoard(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	if c.UserRole == "curator" {
+		// TODO port and render here as CuratorDashboard
+		http.Redirect(w, r, c.PathTo("dashboard_publications", "type", "faculties").String(), http.StatusSeeOther)
+	} else {
+		views.UserDashboard(c).Render(r.Context(), w)
+	}
+}
+
+func DashBoardIcon(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+
+	pHits, err := c.PublicationSearchIndex.Search(models.NewSearchArgs().
+		WithPageSize(0).
+		WithFilter("creator_id|author_id", c.User.ID).
+		WithFilter("status", "private"))
+	if err != nil {
+		c.HandleError(w, r, err)
+		return
+	}
+	if pHits.Total > 0 {
+		views.DashboardIcon(c, true).Render(r.Context(), w)
+		return
+	}
+	dHits, err := c.DatasetSearchIndex.Search(models.NewSearchArgs().
+		WithPageSize(0).
+		WithFilter("creator_id|author_id", c.User.ID).
+		WithFilter("status", "private"))
+	if err != nil {
+		c.HandleError(w, r, err)
+		return
+	}
+	if dHits.Total > 0 {
+		views.DashboardIcon(c, true).Render(r.Context(), w)
+		return
+	}
+
+	pHits, err = c.PublicationSearchIndex.Search(models.NewSearchArgs().
+		WithPageSize(0).
+		WithFilter("creator_id|author_id", c.User.ID).
+		WithFilter("status", "returned").
+		WithFilter("locked", "false"))
+	if err != nil {
+		c.HandleError(w, r, err)
+		return
+	}
+	if pHits.Total > 0 {
+		views.DashboardIcon(c, true).Render(r.Context(), w)
+		return
+	}
+	dHits, err = c.DatasetSearchIndex.Search(models.NewSearchArgs().
+		WithPageSize(0).
+		WithFilter("creator_id|author_id", c.User.ID).
+		WithFilter("status", "returned").
+		WithFilter("locked", "false"))
+	if err != nil {
+		c.HandleError(w, r, err)
+		return
+	}
+	if dHits.Total > 0 {
+		views.DashboardIcon(c, true).Render(r.Context(), w)
+		return
+	}
+
+	views.DashboardIcon(c, false).Render(r.Context(), w)
+}
+
+func DraftsToComplete(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+
+	pHits, err := c.PublicationSearchIndex.Search(models.NewSearchArgs().
+		WithPageSize(0).
+		WithFilter("creator_id|author_id", c.User.ID).
+		WithFilter("status", "private"))
+	if err != nil {
+		c.HandleError(w, r, err)
+		return
+	}
+	dHits, err := c.DatasetSearchIndex.Search(models.NewSearchArgs().
+		WithPageSize(0).
+		WithFilter("creator_id|author_id", c.User.ID).
+		WithFilter("status", "private"))
+	if err != nil {
+		c.HandleError(w, r, err)
+		return
+	}
+
+	views.DraftsToComplete(c, pHits.Total, dHits.Total).Render(r.Context(), w)
+}
+
+func ActionRequired(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+
+	pHits, err := c.PublicationSearchIndex.Search(models.NewSearchArgs().
+		WithPageSize(0).
+		WithFilter("creator_id|author_id", c.User.ID).
+		WithFilter("status", "returned").
+		WithFilter("locked", "false"))
+	if err != nil {
+		c.HandleError(w, r, err)
+		return
+	}
+	dHits, err := c.DatasetSearchIndex.Search(models.NewSearchArgs().
+		WithPageSize(0).
+		WithFilter("creator_id|author_id", c.User.ID).
+		WithFilter("status", "returned").
+		WithFilter("locked", "false"))
+	if err != nil {
+		c.HandleError(w, r, err)
+		return
+	}
+
+	views.ActionRequired(c, pHits.Total, dHits.Total).Render(r.Context(), w)
+}
+
 func RecentActivity(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 

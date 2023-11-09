@@ -6,17 +6,18 @@ import (
 	"net/url"
 
 	"github.com/ugent-library/biblio-backoffice/backends"
-	"github.com/ugent-library/biblio-backoffice/bind"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
+	"github.com/ugent-library/bind"
 )
 
 type YieldPublications struct {
 	Context
 	PageTitle            string
 	ActiveNav            string
+	ActiveSubNav         string
 	UPublications        map[string]map[string][]string
 	APublications        map[string]map[string][]string
 	UFaculties           []string
@@ -43,7 +44,7 @@ type YieldTblPublications struct {
 func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Context) {
 	var faculties []string
 
-	var activeNav string
+	var activeSubNav string
 
 	socs := vocabularies.Map["faculties_socs"]
 	core := vocabularies.Map["faculties_core"]
@@ -51,10 +52,10 @@ func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Conte
 	switch ctx.Type {
 	case "socs":
 		faculties = socs
-		activeNav = "dashboard_publications_socs"
+		activeSubNav = "dashboard_publications_socs"
 	default:
 		faculties = core
-		activeNav = "dashboard_publications_faculties"
+		activeSubNav = "dashboard_publications_faculties"
 	}
 
 	aFacultyCols := append([]string{"all"}, faculties...)
@@ -149,7 +150,8 @@ func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Conte
 	render.Layout(w, "layouts/default", "dashboard/pages/publications", YieldPublications{
 		Context:              ctx,
 		PageTitle:            "Dashboard - Publications - Biblio",
-		ActiveNav:            activeNav,
+		ActiveNav:            "dashboard",
+		ActiveSubNav:         activeSubNav,
 		UPublications:        uPublications,
 		APublications:        aPublications,
 		UFaculties:           uFacultyCols,

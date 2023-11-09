@@ -20,5 +20,6 @@
     "pubmed",
     "socs",
     "tagify"
-  ]
+  ],
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

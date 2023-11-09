@@ -13,25 +13,26 @@ import (
 
 type YieldDatasets struct {
 	Context
-	PageTitle string
-	ActiveNav string
-	Datasets  map[string]map[string][]string
-	Faculties []string
-	PTypes    map[string]string
+	PageTitle    string
+	ActiveNav    string
+	ActiveSubNav string
+	Datasets     map[string]map[string][]string
+	Faculties    []string
+	PTypes       map[string]string
 }
 
 func (h *Handler) Datasets(w http.ResponseWriter, r *http.Request, ctx Context) {
 	var faculties []string
 
-	var activeNav string
+	var activeSubNav string
 
 	switch ctx.Type {
 	case "socs":
 		faculties = vocabularies.Map["faculties_socs"]
-		activeNav = "dashboard_datasets_socs"
+		activeSubNav = "dashboard_datasets_socs"
 	default:
 		faculties = vocabularies.Map["faculties_core"]
-		activeNav = "dashboard_datasets_faculties"
+		activeSubNav = "dashboard_datasets_faculties"
 	}
 
 	faculties = append([]string{"all"}, faculties...)
@@ -54,12 +55,13 @@ func (h *Handler) Datasets(w http.ResponseWriter, r *http.Request, ctx Context) 
 	}
 
 	render.Layout(w, "layouts/default", "dashboard/pages/datasets", YieldDatasets{
-		Context:   ctx,
-		PageTitle: "Dashboard - Datasets - Biblio",
-		ActiveNav: activeNav,
-		PTypes:    locptypes,
-		Datasets:  datasets,
-		Faculties: faculties,
+		Context:      ctx,
+		PageTitle:    "Dashboard - Datasets - Biblio",
+		ActiveNav:    "dashboard",
+		ActiveSubNav: activeSubNav,
+		PTypes:       locptypes,
+		Datasets:     datasets,
+		Faculties:    faculties,
 	})
 }
 

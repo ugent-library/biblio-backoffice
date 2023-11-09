@@ -1,12 +1,10 @@
 module github.com/ugent-library/biblio-backoffice
 
-go 1.21
-
-toolchain go1.21.2
+go 1.21.3
 
 require (
 	github.com/Masterminds/sprig/v3 v3.2.3
-	github.com/a-h/templ v0.2.408
+	github.com/a-h/templ v0.2.432
 	github.com/alexliesenfeld/health v0.7.0
 	github.com/alitto/pond v1.8.3
 	github.com/aws/aws-sdk-go-v2 v1.21.0
@@ -167,9 +165,10 @@ require (
 	github.com/subosito/gotenv v1.6.0 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect
+	github.com/ugent-library/bind v0.0.0-20231106145128-3b6630797063
 	github.com/ugent-library/friendly v0.0.0-20230811091914-e5eb37f47072
 	github.com/ugent-library/httperror v0.0.0-20230123152913-d3d289bcce20
-	github.com/ugent-library/httpx v0.0.0-20230810085329-405b7b83c66c
+	github.com/ugent-library/httpx v0.0.0-20231026122034-e9de0b29458b
 	github.com/ugent-library/middleware v0.0.0-20230512145619-4be676c7c423
 	github.com/ugent-library/mix v0.0.0-20230123152737-b51ce0c6439b
 	github.com/ugent-library/oidc v0.0.0-20230810150340-b66acc34dfeb
@@ -179,7 +178,7 @@ require (
 	go.uber.org/zap v1.26.0
 	golang.org/x/crypto v0.13.0 // indirect
 	golang.org/x/oauth2 v0.12.0 // indirect
-	golang.org/x/sys v0.13.0 // indirect
+	golang.org/x/sys v0.14.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect

@@ -16,13 +16,13 @@ import (
 	"github.com/ory/graceful"
 	"github.com/spf13/cobra"
 	"github.com/ugent-library/biblio-backoffice/backends"
-	"github.com/ugent-library/biblio-backoffice/bind"
 	"github.com/ugent-library/biblio-backoffice/helpers"
 	"github.com/ugent-library/biblio-backoffice/locale"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/routes"
 	"github.com/ugent-library/biblio-backoffice/urls"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
+	"github.com/ugent-library/bind"
 	"github.com/ugent-library/middleware"
 	"github.com/ugent-library/mix"
 	"github.com/ugent-library/oidc"
@@ -144,14 +144,7 @@ func buildRouter(services *backends.Services) (*ich.Mux, error) {
 	render.MustParse()
 
 	// init bind
-	bind.PathValuesFunc = func(r *http.Request) url.Values {
-		p := url.Values{}
-		params := chi.RouteContext(r.Context()).URLParams
-		for i, k := range params.Keys {
-			p.Set(k, params.Values[i])
-		}
-		return p
-	}
+	bind.PathValueFunc = chi.URLParam
 
 	// localizer
 	localizer := locale.NewLocalizer("en")
