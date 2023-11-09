@@ -150,7 +150,7 @@ templ pageLayout(c *ctx.Ctx, title string, meta templ.Component) {
                         </div>
                     </div>
                     }
-                    <div class="c-sidebar__menu">
+                    <div class={"c-sidebar__menu", templ.KV("c-sidebar--dark-gray", c.UserRole == "curator")}>
                         if c.User != nil {
                         <nav>
                             <ul class="c-sidebar-menu">
