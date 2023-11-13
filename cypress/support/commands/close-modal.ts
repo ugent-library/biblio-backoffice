@@ -2,19 +2,32 @@ import { logCommand, updateConsoleProps } from './helpers'
 
 const NO_LOG = { log: false }
 
-export default function closeModal(subject: undefined | JQuery<HTMLElement>, save: boolean | string | RegExp = false) {
+type CloseModalOptions = {
+  log?: boolean
+}
+
+export default function closeModal(
+  subject: undefined | JQuery<HTMLElement>,
+  save: boolean | string | RegExp = false,
+  options: CloseModalOptions = {}
+): void {
   const dismissButtonText = typeof save === 'boolean' ? (save ? 'Save' : 'Cancel') : save
 
-  const log = logCommand('closeModal', { subject, 'Dismiss button text': dismissButtonText }, dismissButtonText)
-  log.set('type', !subject ? 'parent' : 'child')
+  let log: Cypress.Log | null = null
+  if (options.log === true) {
+    log = logCommand('closeModal', { subject, 'Dismiss button text': dismissButtonText }, dismissButtonText)
+    log.set('type', !subject ? 'parent' : 'child')
+  }
 
   const doCloseModal = () => {
     cy.contains('.modal-footer .btn', dismissButtonText, NO_LOG)
       .then($el => {
-        log.set('$el', $el)
-        updateConsoleProps(log, cp => {
-          cp['Button element'] = $el
-        })
+        if (options.log === true) {
+          log.set('$el', $el)
+          updateConsoleProps(log, cp => {
+            cp['Button element'] = $el
+          })
+        }
 
         return $el
       })
@@ -31,8 +44,9 @@ export default function closeModal(subject: undefined | JQuery<HTMLElement>, sav
 declare global {
   namespace Cypress {
     interface Chainable {
-      closeModal(save: boolean): Chainable<void>
-      closeModal(dismissButtonText?: string | RegExp): Chainable<void>
+      closeModal(save: boolean, options?: CloseModalOptions): Chainable<void>
+
+      closeModal(dismissButtonText?: string | RegExp, options?: CloseModalOptions): Chainable<void>
     }
   }
 }
