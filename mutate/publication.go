@@ -232,15 +232,6 @@ func StatusSet(p *models.Publication, args []string) error {
 	if len(args) < 1 {
 		return errors.New("no status given")
 	}
-	switch args[0] {
-	case "private":
-		p.Status = "private"
-	case "public":
-		p.Status = "public"
-	case "returned":
-		p.Status = "returned"
-	default:
-		return errors.New("invalid status given")
-	}
+	p.Status = args[0]
 	return nil
 }
