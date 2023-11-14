@@ -258,6 +258,8 @@ func Register(c Config) {
 				r.Get("/drafts-to-complete", handlers.DraftsToComplete).Name("drafts_to_complete")
 				// dashboard recent activity component
 				r.Get("/recent-activity", handlers.RecentActivity).Name("recent_activity")
+				// dashboard candidate records component
+				r.Get("/candidate-records", handlers.CandidateRecords).Name("candidate_records")
 			})
 		})
 		// END NEW STYLE HANDLERS

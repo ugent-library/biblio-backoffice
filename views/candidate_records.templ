@@ -1,0 +1,27 @@
+package views
+
+import (
+    "github.com/ugent-library/biblio-backoffice/ctx"
+)
+
+templ CandidateRecords(c *ctx.Ctx) {
+    <img class="mt-8 mb-4" src={ c.AssetPath("/images/book-illustration.svg") } alt="" width="auto" height="54"/>
+    <h3>Add research to Biblio</h3>
+    <p class="mb-4">You can add publications and datasets.</p>
+    <div class="dropdown">
+        <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="if if-add"></i>
+            <span class="btn-text">Add research</span>
+        </button>
+        <div class="dropdown-menu">
+            <a class="dropdown-item" href={ templ.URL(c.PathTo("publication_add").String()) }>
+                <i class="if if-article"></i>
+                <span>Add publication</span>
+            </a>
+            <a class="dropdown-item" href={ templ.URL(c.PathTo("dataset_add").String()) }>
+                <i class="if if-database"></i>
+                <span>Add dataset</span>
+            </a>
+        </div>
+    </div>
+}

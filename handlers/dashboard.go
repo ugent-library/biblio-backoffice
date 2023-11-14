@@ -234,3 +234,9 @@ func RecentActivity(w http.ResponseWriter, r *http.Request) {
 
 	views.RecentActivity(c, acts).Render(r.Context(), w)
 }
+
+func CandidateRecords(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+
+	views.CandidateRecords(c).Render(r.Context(), w)
+}

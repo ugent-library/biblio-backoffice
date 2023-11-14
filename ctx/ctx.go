@@ -247,3 +247,13 @@ func (c *Ctx) FlagRecentActivity() bool {
 	}
 	return flag
 }
+
+func (c *Ctx) FlagCandidateRecords() bool {
+	// TODO cache evaluation context?
+	user := ffcontext.NewEvaluationContext(c.User.Username)
+	flag, err := ffclient.BoolVariation("candidate-records", user, false)
+	if err != nil {
+		c.Log.Error(err)
+	}
+	return flag
+}
