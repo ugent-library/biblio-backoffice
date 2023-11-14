@@ -40,7 +40,7 @@ describe('Issue #1127: Cannot search any longer on book title, journal title, sh
     const randomText = getRandomText()
 
     setUpPublication('Conference contribution', () => {
-      updateDescriptionFields('Conference Details', () => {
+      updateDescriptionFields('Conference details', () => {
         cy.setFieldByLabel('Conference', `The conference name: ${randomText}`)
       })
     })
@@ -110,7 +110,7 @@ describe('Issue #1127: Cannot search any longer on book title, journal title, sh
     cy.contains('.btn', 'Save as draft').click()
   }
 
-  function updateDescriptionFields(section: 'Publication details' | 'Conference Details', callback: () => void) {
+  function updateDescriptionFields(section: 'Publication details' | 'Conference details', callback: () => void) {
     cy.contains('.card-header', section).contains('.btn', 'Edit').click({ scrollBehavior: 'nearest' })
 
     cy.ensureModal(`Edit ${section.toLowerCase()}`)
