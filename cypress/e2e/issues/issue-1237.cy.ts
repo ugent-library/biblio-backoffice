@@ -7,7 +7,7 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
     it('should have clickable labels in the Journal Article form', () => {
       setUpPublication('Journal Article')
 
-      updateFields('Publication details', () => {
+      cy.updateFields('Publication details', () => {
         testFocusForLabel('Publication type', 'select[name="type"]')
         testFocusForLabel('Article type', 'select[name="journal_article_type"]')
         testFocusForLabel('DOI', 'input[type=text][name="doi"]')
@@ -67,7 +67,7 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
     it('should have clickable labels in the Book Chapter form', () => {
       setUpPublication('Book Chapter')
 
-      updateFields('Publication details', () => {
+      cy.updateFields('Publication details', () => {
         testFocusForLabel('Publication type', 'select[name="type"]')
         testFocusForLabel('DOI', 'input[type=text][name="doi"]')
 
@@ -120,7 +120,8 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
 
     it('should have clickable labels in the Book form', () => {
       setUpPublication('Book')
-      updateFields('Publication details', () => {
+
+      cy.updateFields('Publication details', () => {
         testFocusForLabel('Publication type', 'select[name="type"]')
         testFocusForLabel('DOI', 'input[type=text][name="doi"]')
 
@@ -169,7 +170,7 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
     it('should have clickable labels in the Conference contribution form', () => {
       setUpPublication('Conference contribution')
 
-      updateFields('Publication details', () => {
+      cy.updateFields('Publication details', () => {
         testFocusForLabel('Publication type', 'select[name="type"]')
         testFocusForLabel('Conference type', 'select[name="conference_type"]')
         testFocusForLabel('DOI', 'input[type=text][name="doi"]')
@@ -227,7 +228,7 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
     it('should have clickable labels in the Dissertation form', () => {
       setUpPublication('Dissertation')
 
-      updateFields('Publication details', () => {
+      cy.updateFields('Publication details', () => {
         testFocusForLabel('Publication type', 'select[name="type"]')
         testFocusForLabel('DOI', 'input[type=text][name="doi"]')
 
@@ -280,7 +281,7 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
     it('should have clickable labels in the Miscellaneous form', () => {
       setUpPublication('Miscellaneous')
 
-      updateFields('Publication details', () => {
+      cy.updateFields('Publication details', () => {
         testFocusForLabel('Publication type', 'select[name="type"]')
         testFocusForLabel('Miscellaneous type', 'select[name="miscellaneous_type"]')
         testFocusForLabel('DOI', 'input[type=text][name="doi"]')
@@ -340,7 +341,7 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
     it('should have clickable labels in the Issue editor form', () => {
       setUpPublication('Issue')
 
-      updateFields('Publication details', () => {
+      cy.updateFields('Publication details', () => {
         testFocusForLabel('Publication type', 'select[name="type"]')
         testFocusForLabel('DOI', 'input[type=text][name="doi"]')
 
@@ -416,7 +417,7 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
     it('should have clickable labels in the dataset form', () => {
       setUpDataset()
 
-      updateFields('Dataset details', () => {
+      cy.updateFields('Dataset details', () => {
         cy.intercept('PUT', '/dataset/*/details/edit/refresh-form*').as('refreshForm')
         cy.setFieldByLabel('License', 'The license is not listed here')
 
@@ -474,7 +475,7 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
   }
 
   function testConferenceDetailsSection() {
-    updateFields('Conference Details', () => {
+    cy.updateFields('Conference Details', () => {
       testFocusForLabel('Conference', 'input[type=text][name="name"]')
       testFocusForLabel('Conference location', 'input[type=text][name="location"]')
       testFocusForLabel('Conference organiser', 'input[type=text][name="organizer"]')
@@ -484,28 +485,28 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
   }
 
   function testAbstractSection() {
-    updateFields('Abstract', () => {
+    cy.updateFields('Abstract', () => {
       testFocusForLabel('Abstract', 'textarea[name="text"]')
       testFocusForLabel('Language', 'select[name="lang"]')
     })
   }
 
   function testLinkSection() {
-    updateFields('Link', () => {
+    cy.updateFields('Link', () => {
       testFocusForLabel('URL', 'input[type=text][name="url"]')
       testFocusForLabel('Relation', 'select[name="relation"]')
       testFocusForLabel('Description', 'input[type=text][name="description"]')
     })
   }
   function testLaySummarySection() {
-    updateFields('Lay summary', () => {
+    cy.updateFields('Lay summary', () => {
       testFocusForLabel('Lay summary', 'textarea[name="text"]')
       testFocusForLabel('Language', 'select[name="lang"]')
     })
   }
 
   function testAdditionalInformationSection() {
-    updateFields('Additional information', () => {
+    cy.updateFields('Additional information', () => {
       testFocusForLabel('Research field', 'select[name="research_field"]')
       // Keywords field: tagify component doesn't support focussing by label
       testFocusForLabel('Additional information', 'textarea[name="additional_info"]')
@@ -513,7 +514,7 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
   }
 
   function testAuthorSection() {
-    updateFields('Author', () => {
+    cy.updateFields('Authors', () => {
       testFocusForLabel('First name', 'input[name="first_name"]', true)
       testFocusForLabel('Last name', 'input[name="last_name"]')
 
@@ -527,28 +528,30 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
   }
 
   function testEditorSection() {
-    updateFields('Editor', () => {
+    cy.updateFields('Editors', () => {
       testFocusForLabel('First name', 'input[name="first_name"]', true)
       testFocusForLabel('Last name', 'input[name="last_name"]')
     })
   }
 
   function testCreatorSection() {
-    updateFields('Creator', () => {
+    cy.updateFields('Creators', () => {
       testFocusForLabel('First name', 'input[name="first_name"]', true)
       testFocusForLabel('Last name', 'input[name="last_name"]')
     })
   }
 
   function testSupervisorSection() {
-    updateFields('Supervisor', () => {
+    cy.updateFields('Supervisors', () => {
       testFocusForLabel('First name', 'input[name="first_name"]', true)
       testFocusForLabel('Last name', 'input[name="last_name"]')
     })
   }
 
+  // TODO: test librarian tags and librarian notes (only in librarian mode)
+
   function testMessagesSection() {
-    updateFields('Messages from and for Biblio team', () => {
+    cy.updateFields('Messages from and for Biblio team', () => {
       testFocusForLabel('Message', 'textarea[name="message"]')
     })
   }
@@ -568,10 +571,14 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
     cy.contains('Enter a publication manually').find(':radio').click()
     cy.contains('.btn', 'Add publication(s)').click()
 
+    cy.intercept(`/publication/*/description*`).as('completeDescription')
+
     cy.contains(new RegExp(`^${publicationType}$`)).click()
     cy.contains('.btn', 'Add publication(s)').click()
 
-    updateFields(
+    cy.wait('@completeDescription')
+
+    cy.updateFields(
       'Publication details',
       () => {
         cy.setFieldByLabel('Title', `The ${publicationType} title [CYPRESSTEST]`)
@@ -583,10 +590,14 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
   function setUpDataset() {
     cy.visit('/dataset/add')
 
+    cy.intercept(`/dataset/*/description*`).as('completeDescription')
+
     cy.contains('Register a dataset manually').find(':radio').click()
     cy.contains('.btn', 'Add dataset').click()
 
-    updateFields(
+    cy.wait('@completeDescription')
+
+    cy.updateFields(
       'Dataset details',
       () => {
         cy.setFieldByLabel('Title', `The dataset title [CYPRESSTEST]`)
@@ -597,29 +608,5 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
       },
       true
     )
-  }
-
-  type FieldsSection =
-    | 'Publication details'
-    | 'Conference Details'
-    | 'Abstract'
-    | 'Link'
-    | 'Lay summary'
-    | 'Additional information'
-    | 'Author'
-    | 'Editor'
-    | 'Supervisor'
-    | 'Messages from and for Biblio team'
-    | 'Dataset details'
-    | 'Creator'
-
-  function updateFields(section: FieldsSection, callback: () => void, persist = false) {
-    cy.contains('.card-header', section).find('.btn').click()
-
-    const modalTitle = new RegExp(`(Edit|Add) ${section}`, 'i')
-
-    cy.ensureModal(modalTitle).within(callback).closeModal(persist)
-
-    cy.ensureNoModal()
   }
 })
