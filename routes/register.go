@@ -73,7 +73,6 @@ func Register(c Config) {
 	if c.Env != "local" {
 		c.Router.Use(middleware.RealIP)
 	}
-	c.Router.Use(httpx.MethodOverride) // TODO eliminate need for method override with htmx
 	c.Router.Use(zaphttp.SetLogger(c.Logger.Desugar(), zapchi.RequestID))
 	c.Router.Use(middleware.RequestLogger(zapchi.LogFormatter()))
 	c.Router.Use(middleware.Recoverer)
@@ -213,6 +212,7 @@ func Register(c Config) {
 	c.Router.Head("/download/{id}/{file_id}", frontofficeHandler.DownloadFile)
 
 	c.Router.Group(func(r *ich.Mux) {
+		r.Use(httpx.MethodOverride) // TODO eliminate need for method override with htmx
 		r.Use(csrf.Protect(
 			[]byte(c.CSRFSecret),
 			csrf.CookieName(c.CSRFName),
@@ -239,7 +239,7 @@ func Register(c Config) {
 				SessionStore: c.SessionStore,
 				BaseURL:      c.BaseURL,
 				FrontendURL:  c.FrontendURL,
-				CSRFName:     "_csrf_token",
+				CSRFName:     "csrf-token",
 			}))
 
 			r.NotFound(handlers.NotFound)
