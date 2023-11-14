@@ -235,3 +235,13 @@ func StatusSet(p *models.Publication, args []string) error {
 	p.Status = args[0]
 	return nil
 }
+
+func Lock(p *models.Publication, args []string) error {
+	p.Locked = true
+	return nil
+}
+
+func Unlock(p *models.Publication, args []string) error {
+	p.Locked = false
+	return nil
+}
