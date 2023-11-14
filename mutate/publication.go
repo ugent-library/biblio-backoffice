@@ -227,3 +227,20 @@ func ExternalFieldsSet(p *models.Publication, args []string) error {
 	p.ExternalFields.SetAll(args[0], args[1:]...)
 	return nil
 }
+
+func StatusSet(p *models.Publication, args []string) error {
+	if len(args) < 1 {
+		return errors.New("no status given")
+	}
+	switch args[0] {
+	case "private":
+		p.Status = "private"
+	case "public":
+		p.Status = "public"
+	case "returned":
+		p.Status = "returned"
+	default:
+		return errors.New("invalid status given")
+	}
+	return nil
+}
