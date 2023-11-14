@@ -7,9 +7,13 @@ describe('Issue #1127: Cannot search any longer on book title, journal title, sh
     const randomText = getRandomText()
 
     setUpPublication('Miscellaneous', () => {
-      updateDescriptionFields('Publication details', () => {
-        cy.setFieldByLabel('Publisher', `Alternative title: ${randomText}`)
-      })
+      cy.updateFields(
+        'Publication details',
+        () => {
+          cy.setFieldByLabel('Publisher', `Alternative title: ${randomText}`)
+        },
+        true
+      )
     })
 
     cy.search(randomText).should('eq', 1)
@@ -20,16 +24,20 @@ describe('Issue #1127: Cannot search any longer on book title, journal title, sh
     const randomText2 = getRandomText()
 
     setUpPublication('Miscellaneous', () => {
-      updateDescriptionFields('Publication details', () => {
-        cy.setFieldByLabel('Alternative title', `Alternative title: ${randomText1}`)
-          .closest('.form-value')
-          .contains('.btn', 'Add')
-          .click()
-          .closest('.form-value')
-          .next('.form-value')
-          .find('input')
-          .type(`Alternative title: ${randomText2}`)
-      })
+      cy.updateFields(
+        'Publication details',
+        () => {
+          cy.setFieldByLabel('Alternative title', `Alternative title: ${randomText1}`)
+            .closest('.form-value')
+            .contains('.btn', 'Add')
+            .click()
+            .closest('.form-value')
+            .next('.form-value')
+            .find('input')
+            .type(`Alternative title: ${randomText2}`)
+        },
+        true
+      )
     })
 
     cy.search(randomText1).should('eq', 1)
@@ -40,9 +48,13 @@ describe('Issue #1127: Cannot search any longer on book title, journal title, sh
     const randomText = getRandomText()
 
     setUpPublication('Conference contribution', () => {
-      updateDescriptionFields('Conference details', () => {
-        cy.setFieldByLabel('Conference', `The conference name: ${randomText}`)
-      })
+      cy.updateFields(
+        'Conference details',
+        () => {
+          cy.setFieldByLabel('Conference', `The conference name: ${randomText}`)
+        },
+        true
+      )
     })
 
     cy.search(randomText).should('eq', 1)
@@ -52,9 +64,13 @@ describe('Issue #1127: Cannot search any longer on book title, journal title, sh
     const randomText = getRandomText()
 
     setUpPublication('Journal Article', () => {
-      updateDescriptionFields('Publication details', () => {
-        cy.setFieldByLabel('Journal title', `The journal name: ${randomText}`)
-      })
+      cy.updateFields(
+        'Publication details',
+        () => {
+          cy.setFieldByLabel('Journal title', `The journal name: ${randomText}`)
+        },
+        true
+      )
     })
 
     cy.search(randomText).should('eq', 1)
@@ -64,9 +80,13 @@ describe('Issue #1127: Cannot search any longer on book title, journal title, sh
     const randomText = getRandomText()
 
     setUpPublication('Journal Article', () => {
-      updateDescriptionFields('Publication details', () => {
-        cy.setFieldByLabel('Short journal title', `The short journal name: ${randomText}`)
-      })
+      cy.updateFields(
+        'Publication details',
+        () => {
+          cy.setFieldByLabel('Short journal title', `The short journal name: ${randomText}`)
+        },
+        true
+      )
     })
 
     cy.search(randomText).should('eq', 1)
@@ -76,9 +96,13 @@ describe('Issue #1127: Cannot search any longer on book title, journal title, sh
     const randomText = getRandomText()
 
     setUpPublication('Book Chapter', () => {
-      updateDescriptionFields('Publication details', () => {
-        cy.setFieldByLabel('Book title', `The book title: ${randomText}`)
-      })
+      cy.updateFields(
+        'Publication details',
+        () => {
+          cy.setFieldByLabel('Book title', `The book title: ${randomText}`)
+        },
+        true
+      )
     })
 
     cy.search(randomText).should('eq', 1)
@@ -95,10 +119,14 @@ describe('Issue #1127: Cannot search any longer on book title, journal title, sh
     cy.contains(publicationType).click()
     cy.contains('.btn', 'Add publication(s)').click()
 
-    updateDescriptionFields('Publication details', () => {
-      cy.setFieldByLabel('Title', `The primary ${publicationType} title [CYPRESSTEST]`)
-      cy.setFieldByLabel('Publication year', new Date().getFullYear().toString())
-    })
+    cy.updateFields(
+      'Publication details',
+      () => {
+        cy.setFieldByLabel('Title', `The primary ${publicationType} title [CYPRESSTEST]`)
+        cy.setFieldByLabel('Publication year', new Date().getFullYear().toString())
+      },
+      true
+    )
 
     // Custom callback here
     editPublicationCallback()
@@ -108,18 +136,6 @@ describe('Issue #1127: Cannot search any longer on book title, journal title, sh
     cy.contains('.btn', 'Complete Description').click()
 
     cy.contains('.btn', 'Save as draft').click()
-  }
-
-  function updateDescriptionFields(section: 'Publication details' | 'Conference details', callback: () => void) {
-    cy.contains('.card-header', section).contains('.btn', 'Edit').click({ scrollBehavior: 'nearest' })
-
-    cy.ensureModal(`Edit ${section.toLowerCase()}`)
-      .within(() => {
-        callback()
-      })
-      .closeModal(true)
-
-    cy.ensureNoModal()
   }
 
   function getRandomText() {
