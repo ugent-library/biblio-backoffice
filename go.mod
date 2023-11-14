@@ -43,12 +43,22 @@ require (
 
 require (
 	github.com/BurntSushi/toml v1.3.2 // indirect
+	github.com/a-h/lexical v0.0.53 // indirect
+	github.com/a-h/parse v0.0.0-20230731060248-8319ff0754b6 // indirect
+	github.com/a-h/protocol v0.0.0-20230224160810-b4eec67c1c22 // indirect
 	github.com/antlr4-go/antlr/v4 v4.13.0 // indirect
 	github.com/blang/semver v3.5.1+incompatible // indirect
+	github.com/cenkalti/backoff/v4 v4.2.1 // indirect
+	github.com/cli/browser v1.3.0 // indirect
 	github.com/jackc/pgconn v1.14.1 // indirect
 	github.com/jackc/pgx/v4 v4.18.1 // indirect
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
+	github.com/natefinch/atomic v1.0.1 // indirect
 	github.com/nikunjy/rules v1.5.0 // indirect
+	github.com/segmentio/encoding v0.3.6 // indirect
+	go.lsp.dev/jsonrpc2 v0.10.0 // indirect
+	go.lsp.dev/pkg v0.0.0-20210717090340-384b27a52fb2 // indirect
+	go.lsp.dev/uri v0.3.0 // indirect
 )
 
 require (

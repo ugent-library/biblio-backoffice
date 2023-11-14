@@ -474,7 +474,7 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
   }
 
   function testConferenceDetailsSection() {
-    updateFields('Conference Details', () => {
+    updateFields('Conference details', () => {
       testFocusForLabel('Conference', 'input[type=text][name="name"]')
       testFocusForLabel('Conference location', 'input[type=text][name="location"]')
       testFocusForLabel('Conference organiser', 'input[type=text][name="organizer"]')
@@ -601,7 +601,7 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
 
   type FieldsSection =
     | 'Publication details'
-    | 'Conference Details'
+    | 'Conference details'
     | 'Abstract'
     | 'Link'
     | 'Lay summary'
