@@ -5,6 +5,7 @@ create table candidate_records (
     source_metadata bytea not null,
     type text not null,
     metadata jsonb not null,
+    assigned_user_id text,
     date_created timestamptz not null default now(),
     unique(source_name, source_id)
 );

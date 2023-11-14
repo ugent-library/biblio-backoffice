@@ -11,5 +11,6 @@ type CandidateRecord struct {
 	SourceMetadata []byte
 	Type           string
 	Metadata       json.RawMessage
+	AssignedUserID string
 	DateCreated    time.Time
 }

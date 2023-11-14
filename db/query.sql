@@ -1,8 +1,8 @@
 -- name: AddCandidateRecord :one
 INSERT INTO candidate_records (
-  id, source_name, source_id, source_metadata, type, metadata
+  id, source_name, source_id, source_metadata, type, metadata, assigned_user_id
 ) VALUES (
-  $1, $2, $3, $4, $5, $6
+  $1, $2, $3, $4, $5, $6, $7
 )
 ON CONFLICT(source_name, source_id)
 DO

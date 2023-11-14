@@ -15,6 +15,8 @@ import (
 	"github.com/gorilla/sessions"
 	"github.com/nics/ich"
 	"github.com/oklog/ulid/v2"
+	ffclient "github.com/thomaspoignant/go-feature-flag"
+	"github.com/thomaspoignant/go-feature-flag/ffcontext"
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/locale"
 	"github.com/ugent-library/biblio-backoffice/models"
@@ -234,4 +236,14 @@ func (c *Ctx) getUserRoleFromSession(session *sessions.Session) string {
 		return ""
 	}
 	return role.(string)
+}
+
+func (c *Ctx) FlagRecentActivity() bool {
+	// TODO cache evaluation context?
+	user := ffcontext.NewEvaluationContext(c.User.Username)
+	flag, err := ffclient.BoolVariation("recent-activity", user, false)
+	if err != nil {
+		c.Log.Error(err)
+	}
+	return flag
 }

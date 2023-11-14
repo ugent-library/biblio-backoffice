@@ -29,8 +29,11 @@ root
 # Tern config files
 tern.*
 
-# env
+# Dotenv
 .env
+
+# Local feature flags config
+ff.yaml
 
 # Cypress
 cypress.env.json
