@@ -17,7 +17,7 @@ const SECTIONS = [
   },
   {
     tab: 'Description',
-    sectionTitle: 'Conference Details',
+    sectionTitle: 'Conference details',
     buttonText: 'Edit',
     modalTitle: 'Edit conference details',
   },
@@ -30,7 +30,7 @@ const SECTIONS = [
   {
     tab: 'Description',
     sectionTitle: 'Link',
-    buttonText: 'Add Link',
+    buttonText: 'Add link',
     modalTitle: 'Add link',
   },
   {
