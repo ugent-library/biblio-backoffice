@@ -40,6 +40,7 @@ var updateCandidateRecords = &cobra.Command{
 			// TODO make record mappers
 			for _, srcRec := range srcRecs {
 				p := &models.Publication{}
+				var assignedUserID string
 				md := gjson.ParseBytes(srcRec.SourceMetadata)
 
 				if v := md.Get("titel.eng"); v.Exists() {
@@ -70,7 +71,9 @@ var updateCandidateRecords = &cobra.Command{
 					if len(hits) != 1 {
 						return errors.New("multiple or no matches for ugent id " + ugentID)
 					}
-					p.Author = append(p.Author, models.ContributorFromPerson(hits[0]))
+					c := models.ContributorFromPerson(hits[0])
+					p.Author = append(p.Author, c)
+					assignedUserID = c.PersonID
 				} else {
 					c := models.ContributorFromFirstLastName(md.Get("student.first").String(), md.Get("student.last").String())
 					c.ExternalPerson.Affiliation = md.Get("student.affil").String()
@@ -146,13 +149,13 @@ var updateCandidateRecords = &cobra.Command{
 				if err != nil {
 					return err
 				}
-
 				if err := services.Repo.AddCandidateRecord(context.TODO(), &models.CandidateRecord{
 					SourceName:     srcRec.SourceName,
 					SourceID:       srcRec.SourceID,
 					SourceMetadata: srcRec.SourceMetadata,
 					Type:           "Publication",
 					Metadata:       j,
+					AssignedUserID: assignedUserID,
 				}); err != nil {
 					return err
 				}

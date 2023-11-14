@@ -19,7 +19,7 @@ INSERT INTO candidate_records (
 )
 ON CONFLICT(source_name, source_id)
 DO
-  UPDATE SET source_metadata = EXCLUDED.source_metadata, type = EXCLUDED.type, metadata = EXCLUDED.metadata
+  UPDATE SET source_metadata = EXCLUDED.source_metadata, type = EXCLUDED.type, metadata = EXCLUDED.metadata, assigned_user_id = EXCLUDED.assigned_user_id
 RETURNING id
 `
 

@@ -20,11 +20,8 @@ node_modules
 
 go.work
 
-# Live reloading (reflex, air)
+# Reflex live reloading
 reflex.conf
-.air.toml
-tmp
-root
 
 # Tern config files
 tern.*
@@ -33,7 +30,7 @@ tern.*
 .env
 
 # Local feature flags config
-ff.yaml
+feature-flags.yml
 
 # Cypress
 cypress.env.json

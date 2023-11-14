@@ -16,6 +16,7 @@ import (
 	"github.com/spf13/cobra"
 	ffclient "github.com/thomaspoignant/go-feature-flag"
 	"github.com/thomaspoignant/go-feature-flag/retriever/fileretriever"
+	"github.com/thomaspoignant/go-feature-flag/retriever/githubretriever"
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/helpers"
 	"github.com/ugent-library/biblio-backoffice/locale"
@@ -50,12 +51,27 @@ var serverStartCmd = &cobra.Command{
 		// e.LicenseSearchService.IndexAll()
 
 		// feature flags
-		if config.FF.Path != "" {
+		if config.FF.FilePath != "" {
 			err := ffclient.Init(ffclient.Config{
 				PollingInterval: 5 * time.Second,
 				Context:         context.TODO(),
 				Retriever: &fileretriever.Retriever{
-					Path: config.FF.Path,
+					Path: config.FF.FilePath,
+				},
+			})
+			if err != nil {
+				return err
+			}
+			defer ffclient.Close()
+		} else if config.FF.GitHubRepo != "" {
+			err := ffclient.Init(ffclient.Config{
+				PollingInterval: 5 * time.Second,
+				Context:         context.TODO(),
+				Retriever: &githubretriever.Retriever{
+					GithubToken:    config.FF.GitHubToken,
+					RepositorySlug: config.FF.GitHubRepo,
+					Branch:         config.FF.GitHubBranch,
+					FilePath:       config.FF.GitHubPath,
 				},
 			})
 			if err != nil {
