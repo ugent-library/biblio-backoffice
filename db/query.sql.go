@@ -48,28 +48,36 @@ func (q *Queries) AddCandidateRecord(ctx context.Context, arg AddCandidateRecord
 	return id, err
 }
 
-const getCandidateRecordBySource = `-- name: GetCandidateRecordBySource :one
+const getCandidateRecordsByUser = `-- name: GetCandidateRecordsByUser :many
 SELECT id, source_name, source_id, source_metadata, type, metadata, assigned_user_id, date_created FROM candidate_records
-WHERE source_name = $1 AND source_id = $2
+WHERE assigned_user_id = $1
 `
 
-type GetCandidateRecordBySourceParams struct {
-	SourceName string
-	SourceID   string
-}
-
-func (q *Queries) GetCandidateRecordBySource(ctx context.Context, arg GetCandidateRecordBySourceParams) (CandidateRecord, error) {
-	row := q.db.QueryRow(ctx, getCandidateRecordBySource, arg.SourceName, arg.SourceID)
-	var i CandidateRecord
-	err := row.Scan(
-		&i.ID,
-		&i.SourceName,
-		&i.SourceID,
-		&i.SourceMetadata,
-		&i.Type,
-		&i.Metadata,
-		&i.AssignedUserID,
-		&i.DateCreated,
-	)
-	return i, err
+func (q *Queries) GetCandidateRecordsByUser(ctx context.Context, assignedUserID pgtype.Text) ([]CandidateRecord, error) {
+	rows, err := q.db.Query(ctx, getCandidateRecordsByUser, assignedUserID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []CandidateRecord
+	for rows.Next() {
+		var i CandidateRecord
+		if err := rows.Scan(
+			&i.ID,
+			&i.SourceName,
+			&i.SourceID,
+			&i.SourceMetadata,
+			&i.Type,
+			&i.Metadata,
+			&i.AssignedUserID,
+			&i.DateCreated,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }

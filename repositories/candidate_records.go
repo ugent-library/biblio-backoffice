@@ -22,3 +22,21 @@ func (r *Repo) AddCandidateRecord(ctx context.Context, rec *models.CandidateReco
 	_, err := r.queries.AddCandidateRecord(ctx, params)
 	return err
 }
+
+func (r *Repo) GetCandidateRecordsByUser(ctx context.Context, userID string) ([]*models.CandidateRecord, error) {
+	rows, err := r.queries.GetCandidateRecordsByUser(ctx, pgtype.Text{String: userID, Valid: true})
+	if err != nil {
+		return nil, err
+	}
+	recs := make([]*models.CandidateRecord, len(rows))
+	for i, row := range rows {
+		rec := &models.CandidateRecord{
+			SourceName:     row.SourceName,
+			SourceID:       row.SourceID,
+			AssignedUserID: row.AssignedUserID.String,
+			DateCreated:    row.DateCreated.Time,
+		}
+		recs[i] = rec
+	}
+	return recs, err
+}

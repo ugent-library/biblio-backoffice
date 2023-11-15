@@ -14,3 +14,11 @@ type CandidateRecord struct {
 	AssignedUserID string
 	DateCreated    time.Time
 }
+
+func PublicationFromCandidateRecord(rec *CandidateRecord) (*Publication, error) {
+	p := &Publication{}
+	if err := json.Unmarshal(rec.Metadata, p); err != nil {
+		return nil, err
+	}
+	return p, nil
+}
