@@ -44,9 +44,7 @@ export default function closeModal(
 declare global {
   namespace Cypress {
     interface Chainable {
-      closeModal(save: boolean, options?: CloseModalOptions): Chainable<void>
-
-      closeModal(dismissButtonText?: string | RegExp, options?: CloseModalOptions): Chainable<void>
+      closeModal(save: boolean | string | RegExp, options?: CloseModalOptions): Chainable<void>
     }
   }
 }

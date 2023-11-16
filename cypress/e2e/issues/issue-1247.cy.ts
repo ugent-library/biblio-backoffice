@@ -43,29 +43,25 @@ describe('Issue #1247: User menu popup hidden behind publication details', () =>
 
     assertUserMenuWorks()
 
-    cy.contains('.card-header', 'Publication details').contains('.btn', 'Edit').click()
-
-    cy.ensureModal('Edit publication details')
-      .within(() => {
+    cy.updateFields(
+      'Publication details',
+      () => {
         cy.contains('label', 'Title').click().type('Test publication [CYPRESSTEST]')
         cy.contains('label', 'Publication year').click().type(new Date().getFullYear().toString())
-      })
-      .closeModal(true)
+      },
+      true
+    )
 
-    cy.ensureNoModal()
-
-    cy.contains('.nav-link', 'People & Affiliations').click()
-
-    cy.contains('.btn', 'Add author').click()
-
-    cy.ensureModal('Add author')
-      .within(() => {
+    cy.updateFields(
+      'Authors',
+      () => {
         cy.contains('label', 'First name').click().type('Dries')
         cy.contains('label', 'Last name').click().type('Moreels')
 
         cy.contains('.btn', 'Add author').click()
-      })
-      .closeModal(/^Save$/)
+      },
+      /^Save$/
+    )
 
     cy.contains('.btn', 'Complete Description').click()
 

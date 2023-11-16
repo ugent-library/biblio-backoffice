@@ -1,5 +1,6 @@
 import { logCommand, updateConsoleProps } from './helpers'
 
+// TODO remove alias here, always use "biblioId"
 export default function extractBiblioId(subject: undefined | JQuery<HTMLElement>, alias = 'biblioId') {
   const log = logCommand('extractBiblioId', { alias }, `@${alias}`)
 

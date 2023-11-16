@@ -1,5 +1,6 @@
 import { logCommand, updateLogMessage, updateConsoleProps } from './helpers'
 
+// TODO remove alias here, always use "biblioId"
 export default function visitPublication(alias = '@biblioId'): void {
   const log = logCommand('visitPublication', { alias }, alias)
 

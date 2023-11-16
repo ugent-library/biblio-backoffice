@@ -11,6 +11,7 @@ import ensureNoToast from './ensure-no-toast'
 import setFieldByLabel from './set-field-by-label'
 import search from './search'
 import updateFields from './update-fields'
+import setUpPublication from './set-up-publication'
 
 // Child commands
 import finishLog from './finish-log'
@@ -46,6 +47,8 @@ Cypress.Commands.addAll({
   search,
 
   updateFields,
+
+  setUpPublication,
 })
 
 // Child commands

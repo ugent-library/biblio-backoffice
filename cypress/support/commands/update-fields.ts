@@ -93,8 +93,12 @@ const SECTIONS = [
 
 type FieldsSection = (typeof SECTIONS)[number]['sectionTitle']
 
-export default function updateFields(section: FieldsSection, callback: () => void, persist = false): void {
-  const log = logCommand('updateFields', { callback, persist }, section).snapshot('before')
+export default function updateFields(
+  section: FieldsSection,
+  callback: () => void,
+  save: boolean | string | RegExp = false
+): void {
+  const log = logCommand('updateFields', { callback, save }, section).snapshot('before')
 
   cy.location('pathname', NO_LOG).then(pathname => {
     if (!pathname.match(/^\/(publication|dataset)\/([A-Z0-9]+|add|add-single\/import\/confirm)$/)) {
@@ -147,7 +151,7 @@ export default function updateFields(section: FieldsSection, callback: () => voi
 
       return modal
     })
-    .closeModal(persist, NO_LOG)
+    .closeModal(save, NO_LOG)
 
   cy.ensureNoModal(NO_LOG).then(() => log.snapshot('after').finish())
 }
@@ -155,7 +159,7 @@ export default function updateFields(section: FieldsSection, callback: () => voi
 declare global {
   namespace Cypress {
     interface Chainable {
-      updateFields(section: FieldsSection, callback: () => void, persist?: boolean): Chainable<void>
+      updateFields(section: FieldsSection, callback: () => void, save?: boolean | string | RegExp): Chainable<void>
     }
   }
 }

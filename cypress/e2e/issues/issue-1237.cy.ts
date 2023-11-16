@@ -5,7 +5,9 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
 
   describe('Add/edit publication forms', () => {
     it('should have clickable labels in the Journal Article form', () => {
-      setUpPublication('Journal Article')
+      cy.setUpPublication('Journal Article')
+
+      cy.visitPublication()
 
       cy.updateFields('Publication details', () => {
         testFocusForLabel('Publication type', 'select[name="type"]')
@@ -65,7 +67,9 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
     })
 
     it('should have clickable labels in the Book Chapter form', () => {
-      setUpPublication('Book Chapter')
+      cy.setUpPublication('Book Chapter')
+
+      cy.visitPublication()
 
       cy.updateFields('Publication details', () => {
         testFocusForLabel('Publication type', 'select[name="type"]')
@@ -119,7 +123,9 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
     })
 
     it('should have clickable labels in the Book form', () => {
-      setUpPublication('Book')
+      cy.setUpPublication('Book')
+
+      cy.visitPublication()
 
       cy.updateFields('Publication details', () => {
         testFocusForLabel('Publication type', 'select[name="type"]')
@@ -168,7 +174,9 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
     })
 
     it('should have clickable labels in the Conference contribution form', () => {
-      setUpPublication('Conference contribution')
+      cy.setUpPublication('Conference contribution')
+
+      cy.visitPublication()
 
       cy.updateFields('Publication details', () => {
         testFocusForLabel('Publication type', 'select[name="type"]')
@@ -226,7 +234,9 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
     })
 
     it('should have clickable labels in the Dissertation form', () => {
-      setUpPublication('Dissertation')
+      cy.setUpPublication('Dissertation')
+
+      cy.visitPublication()
 
       cy.updateFields('Publication details', () => {
         testFocusForLabel('Publication type', 'select[name="type"]')
@@ -279,7 +289,9 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
     })
 
     it('should have clickable labels in the Miscellaneous form', () => {
-      setUpPublication('Miscellaneous')
+      cy.setUpPublication('Miscellaneous')
+
+      cy.visitPublication()
 
       cy.updateFields('Publication details', () => {
         testFocusForLabel('Publication type', 'select[name="type"]')
@@ -339,7 +351,9 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
     })
 
     it('should have clickable labels in the Issue editor form', () => {
-      setUpPublication('Issue')
+      cy.setUpPublication('Issue')
+
+      cy.visitPublication()
 
       cy.updateFields('Publication details', () => {
         testFocusForLabel('Publication type', 'select[name="type"]')
@@ -390,7 +404,9 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
     })
 
     it('should have clickable labels in the file upload form', () => {
-      setUpPublication('Miscellaneous')
+      cy.setUpPublication('Miscellaneous')
+
+      cy.visitPublication()
 
       cy.contains('.nav-tabs .nav-item', 'Full text & Files').click()
 
@@ -556,37 +572,7 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
     })
   }
 
-  type PublicationType =
-    | 'Journal Article'
-    | 'Book Chapter'
-    | 'Book'
-    | 'Conference contribution'
-    | 'Dissertation'
-    | 'Miscellaneous'
-    | 'Issue'
-
-  function setUpPublication(publicationType: PublicationType) {
-    cy.visit('/publication/add')
-
-    cy.contains('Enter a publication manually').find(':radio').click()
-    cy.contains('.btn', 'Add publication(s)').click()
-
-    cy.intercept(`/publication/*/description*`).as('completeDescription')
-
-    cy.contains(new RegExp(`^${publicationType}$`)).click()
-    cy.contains('.btn', 'Add publication(s)').click()
-
-    cy.wait('@completeDescription')
-
-    cy.updateFields(
-      'Publication details',
-      () => {
-        cy.setFieldByLabel('Title', `The ${publicationType} title [CYPRESSTEST]`)
-      },
-      true
-    )
-  }
-
+  // TODO: make a command for this
   function setUpDataset() {
     cy.visit('/dataset/add')
 
