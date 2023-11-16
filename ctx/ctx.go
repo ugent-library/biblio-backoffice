@@ -166,6 +166,14 @@ func (c *Ctx) AssetPath(asset string) string {
 	return p
 }
 
+func (c *Ctx) T(key string, args ...any) string {
+	return c.Locale.Translate(key, args...)
+}
+
+func (c *Ctx) TS(scope, key string, args ...any) string {
+	return c.Locale.TranslateScope(scope, key, args...)
+}
+
 func (c *Ctx) PersistFlash(w http.ResponseWriter, f flash.Flash) {
 	j, err := json.Marshal(f)
 	if err != nil {
