@@ -33,6 +33,8 @@ func (r *Repo) GetCandidateRecordsByUser(ctx context.Context, userID string) ([]
 		rec := &models.CandidateRecord{
 			SourceName:     row.SourceName,
 			SourceID:       row.SourceID,
+			Type:           row.Type,
+			Metadata:       row.Metadata,
 			AssignedUserID: row.AssignedUserID.String,
 			DateCreated:    row.DateCreated.Time,
 		}

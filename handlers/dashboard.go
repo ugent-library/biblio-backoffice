@@ -237,6 +237,10 @@ func RecentActivity(w http.ResponseWriter, r *http.Request) {
 
 func CandidateRecords(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
-	c.Repo.GetCandidateRecordsByUser(r.Context(), c.User.ID)
-	views.CandidateRecords(c).Render(r.Context(), w)
+	recs, err := c.Repo.GetCandidateRecordsByUser(r.Context(), c.User.ID)
+	if err != nil {
+		c.HandleError(w, r, err)
+		return
+	}
+	views.CandidateRecords(c, recs).Render(r.Context(), w)
 }

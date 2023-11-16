@@ -13,12 +13,19 @@ type CandidateRecord struct {
 	Metadata       json.RawMessage
 	AssignedUserID string
 	DateCreated    time.Time
+	publication    *Publication
 }
 
-func PublicationFromCandidateRecord(rec *CandidateRecord) (*Publication, error) {
+// TODO tightly coupled with Publication for now, refactor later
+// TODO handle error
+func (rec *CandidateRecord) AsPublication() *Publication {
+	if rec.publication != nil {
+		return rec.publication
+	}
 	p := &Publication{}
 	if err := json.Unmarshal(rec.Metadata, p); err != nil {
-		return nil, err
+		panic(err)
 	}
-	return p, nil
+	rec.publication = p
+	return p
 }
