@@ -1,8 +1,7 @@
 import { logCommand, updateConsoleProps } from './helpers'
 
-// TODO remove alias here, always use "biblioId"
-export default function extractBiblioId(subject: undefined | JQuery<HTMLElement>, alias = 'biblioId') {
-  const log = logCommand('extractBiblioId', { alias }, `@${alias}`)
+export default function extractBiblioId(subject: undefined | JQuery<HTMLElement>) {
+  const log = logCommand('extractBiblioId')
 
   let cySubject: Cypress.Chainable
   if (subject) {
@@ -22,14 +21,14 @@ export default function extractBiblioId(subject: undefined | JQuery<HTMLElement>
     .contains('Biblio ID:', { log: false })
     .find('.c-code', { log: false })
     .invoke({ log: false }, 'text')
-    .as(alias, { type: 'static' })
+    .as('biblioId', { type: 'static' })
     .finishLog(log, true)
 }
 
 declare global {
   namespace Cypress {
     interface Chainable {
-      extractBiblioId(alias?: string): Chainable<string> | never
+      extractBiblioId(): Chainable<string> | never
     }
   }
 }

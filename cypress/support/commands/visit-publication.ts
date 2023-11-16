@@ -1,10 +1,9 @@
 import { logCommand, updateLogMessage, updateConsoleProps } from './helpers'
 
-// TODO remove alias here, always use "biblioId"
-export default function visitPublication(alias = '@biblioId'): void {
-  const log = logCommand('visitPublication', { alias }, alias)
+export default function visitPublication(): void {
+  const log = logCommand('visitPublication')
 
-  cy.get(alias, { log: false }).then(biblioId => {
+  cy.get('@biblioId', { log: false }).then(biblioId => {
     updateLogMessage(log, biblioId)
     updateConsoleProps(log, cp => (cp['Biblio ID'] = biblioId))
 
@@ -19,7 +18,7 @@ export default function visitPublication(alias = '@biblioId'): void {
 declare global {
   namespace Cypress {
     interface Chainable {
-      visitPublication(alias?: string): Chainable<void>
+      visitPublication(): Chainable<void>
     }
   }
 }
