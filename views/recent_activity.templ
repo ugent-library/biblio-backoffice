@@ -114,6 +114,8 @@ templ RecentActivity(c *ctx.Ctx, acts []Activity) {
             </li>
             }
         </ul>
+        } else {
+        <p class="text-muted">No activity to show.</p>
         }
     </div>
 }
