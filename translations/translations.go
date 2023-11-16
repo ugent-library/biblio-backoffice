@@ -179,7 +179,7 @@ func init() {
 	message.SetString(language.English, "activity_statuses.new", "new")
 	message.SetString(language.English, "activity_statuses.private", "draft")
 	message.SetString(language.English, "activity_statuses.public", "public")
-	message.SetString(language.English, "activity_statuses.returend", "withdrawn")
+	message.SetString(language.English, "activity_statuses.returned", "withdrawn")
 
 	message.SetString(language.English, "publication_file_access_levels.info:eu-repo/semantics/openAccess", "Public access - Open access")
 	message.SetString(language.English, "publication_file_access_levels.info:eu-repo/semantics/embargoedAccess", "Embargoed access")
