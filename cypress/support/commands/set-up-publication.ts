@@ -12,7 +12,7 @@ type PublicationType =
 const NO_LOG = { log: false }
 
 export default function setUpPublication(publicationType: PublicationType, prepareForPublishing = false): void {
-  const log = logCommand(
+  logCommand(
     'setUpPublication',
     {
       'Publication type': publicationType,

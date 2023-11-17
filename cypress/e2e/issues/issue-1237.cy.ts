@@ -431,7 +431,9 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
 
   describe('Add/edit dataset form', () => {
     it('should have clickable labels in the dataset form', () => {
-      setUpDataset()
+      cy.setUpDataset(true)
+
+      cy.visitDataset()
 
       cy.updateFields('Dataset details', () => {
         cy.intercept('PUT', '/dataset/*/details/edit/refresh-form*').as('refreshForm')
@@ -570,29 +572,5 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
     cy.updateFields('Messages from and for Biblio team', () => {
       testFocusForLabel('Message', 'textarea[name="message"]')
     })
-  }
-
-  // TODO: make a command for this
-  function setUpDataset() {
-    cy.visit('/dataset/add')
-
-    cy.intercept(`/dataset/*/description*`).as('completeDescription')
-
-    cy.contains('Register a dataset manually').find(':radio').click()
-    cy.contains('.btn', 'Add dataset').click()
-
-    cy.wait('@completeDescription')
-
-    cy.updateFields(
-      'Dataset details',
-      () => {
-        cy.setFieldByLabel('Title', `The dataset title [CYPRESSTEST]`)
-
-        cy.setFieldByLabel('Persistent identifier type', 'DOI')
-
-        cy.setFieldByLabel('Identifier', '10.5072/test/t')
-      },
-      true
-    )
   }
 })

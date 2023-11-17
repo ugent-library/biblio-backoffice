@@ -31,6 +31,7 @@ describe('Issue #1247: User menu popup hidden behind publication details', () =>
     })
   })
 
+  // TODO: add similar test for datasets
   it(`should fully display the user menu on all pages during manual publication set-up`, () => {
     cy.visit('/publication/add?method=manual')
 
