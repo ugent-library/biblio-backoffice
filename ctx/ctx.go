@@ -127,6 +127,7 @@ type Ctx struct {
 	Flash        []flash.Flash
 	CSRFToken    string
 	Nav          string
+	flagContext  *ffcontext.EvaluationContext
 }
 
 func (c *Ctx) HandleError(w http.ResponseWriter, r *http.Request, err error) {
@@ -246,10 +247,17 @@ func (c *Ctx) getUserRoleFromSession(session *sessions.Session) string {
 	return role.(string)
 }
 
+// TODO keep cache of user flag contexts?
+func (c *Ctx) getFlagContext() ffcontext.Context {
+	if c.flagContext == nil {
+		flagContext := ffcontext.NewEvaluationContext(c.User.Username)
+		c.flagContext = &flagContext
+	}
+	return *c.flagContext
+}
+
 func (c *Ctx) FlagRecentActivity() bool {
-	// TODO cache evaluation context?
-	user := ffcontext.NewEvaluationContext(c.User.Username)
-	flag, err := ffclient.BoolVariation("recent-activity", user, false)
+	flag, err := ffclient.BoolVariation("recent-activity", c.getFlagContext(), false)
 	if err != nil {
 		c.Log.Error(err)
 	}
@@ -257,9 +265,7 @@ func (c *Ctx) FlagRecentActivity() bool {
 }
 
 func (c *Ctx) FlagCandidateRecords() bool {
-	// TODO cache evaluation context?
-	user := ffcontext.NewEvaluationContext(c.User.Username)
-	flag, err := ffclient.BoolVariation("candidate-records", user, false)
+	flag, err := ffclient.BoolVariation("candidate-records", c.getFlagContext(), false)
 	if err != nil {
 		c.Log.Error(err)
 	}
