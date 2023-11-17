@@ -16,6 +16,25 @@ templ ActionRequired(c *ctx.Ctx, pTotal, dTotal int) {
                     }
                 </div>
             </div>
+            <div class="bc-toolbar-right">
+                <div class="d-flex align-items-center">
+                    <a class="text-muted mx-2" href="#" data-bs-container="body" data-bs-toggle="popover-custom" data-bs-placement="right" data-popover-content="#action-required-tooltip">
+                        <i class="if if-info-circle"></i>
+                        <div class="visually-hidden">More info</div>
+                    </a>
+                    <div class="u-hidden" id="action-required-tooltip">
+                        <div class="popover-body p-0">
+                            <p>
+                                For items appearing in <strong>Action required</strong> the Biblio Team requested some extra information. You can complete them and make visible to the public again.
+                                <a class="c-link" target="_blank" href="https://onderzoektips.ugent.be/en/tips/00002173/">
+                                    <span class="text-decoration-underline">Read the research tip</span>
+                                    <i class="if if--small if-external-link"></i>
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         if pTotal > 0 || dTotal > 0 {
         <div class="card mb-6 flex-grow-1">
