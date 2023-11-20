@@ -256,7 +256,19 @@ func (h *Handler) UpdateFile(w http.ResponseWriter, r *http.Request, ctx Context
 
 	ctx.Publication.SetFile(file)
 
-	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
+	validationErrs := ctx.Publication.Validate()
+	// check EmbargoDate is in the future at time of submit
+	if file.EmbargoDate != "" {
+		t, e := time.Parse("2006-01-02", file.EmbargoDate)
+		if e == nil && !t.After(time.Now()) {
+			validationErrs = validation.Append(validationErrs, &validation.Error{
+				Pointer: fmt.Sprintf("/file/%d/embargo_date", ctx.Publication.FileIndex(file.ID)),
+				Code:    "publication.file.embargo_date.expired",
+			})
+		}
+	}
+
+	if validationErrs != nil {
 		render.Layout(w, "refresh_modal", "publication/edit_file", YieldEditFile{
 			Context:  ctx,
 			File:     file,
@@ -492,13 +504,16 @@ func fileForm(l *locale.Locale, publication *models.Publication, file *models.Pu
 			},
 		)
 
+		now := time.Now()
+		nextDay := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location()).Add(24 * time.Hour)
+
 		f.AddSection(
 			&form.Date{
 				Template: "embargo_end",
 				Name:     "embargo_date",
 				Value:    file.EmbargoDate,
 				Label:    l.T("builder.file.embargo_date"),
-				Min:      time.Now().Format("2006-01-02"),
+				Min:      nextDay.Format("2006-01-02"),
 				Error: localize.ValidationErrorAt(
 					l,
 					errors,

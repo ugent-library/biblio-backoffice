@@ -178,6 +178,15 @@ func (p *Publication) GetFile(id string) *PublicationFile {
 	return nil
 }
 
+func (p *Publication) FileIndex(id string) int {
+	for i, file := range p.File {
+		if file.ID == id {
+			return i
+		}
+	}
+	return 0
+}
+
 func (p *Publication) SetFile(f *PublicationFile) {
 	for i, file := range p.File {
 		if file.ID == f.ID {
