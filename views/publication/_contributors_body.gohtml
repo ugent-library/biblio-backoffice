@@ -23,7 +23,7 @@
         >
             {{range $i, $c := (.Publication.Contributors .Role)}}
             <tr id="{{$.Role}}-{{$i}}">
-                {{partial "publication/contributors_columns" (dict "User" $.User "Locale" $.Locale "Publication" $.Publication "Contributor" $c "Position" $i "Role" $.Role)}}
+                {{partial "publication/contributors_columns" (dict "User" $.User "Loc" $.Loc "Publication" $.Publication "Contributor" $c "Position" $i "Role" $.Role)}}
             </tr>
             {{end}}
         </tbody>

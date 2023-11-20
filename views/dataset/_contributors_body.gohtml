@@ -22,7 +22,7 @@
         >
             {{range $i, $c := (.Dataset.Contributors .Role)}}
             <tr id="{{$.Role}}-{{$i}}">
-                {{partial "dataset/contributors_columns" (dict "User" $.User "Locale" $.Locale "Dataset" $.Dataset "Contributor" $c "Position" $i "Role" $.Role)}}
+                {{partial "dataset/contributors_columns" (dict "User" $.User "Loc" $.Loc "Dataset" $.Dataset "Contributor" $c "Position" $i "Role" $.Role)}}
             </tr>
             {{end}}
         </tbody>
