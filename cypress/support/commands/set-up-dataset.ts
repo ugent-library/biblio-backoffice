@@ -35,14 +35,35 @@ export default function setUpDataset(prepareForPublishing = false): void {
     () => {
       cy.setFieldByLabel('Title', `The dataset title [CYPRESSTEST]`)
 
-      if (prepareForPublishing) {
-        cy.setFieldByLabel('Persistent identifier type', 'DOI')
+      cy.setFieldByLabel('Persistent identifier type', 'DOI')
+      cy.setFieldByLabel('Identifier', '10.5072/test/t')
 
-        cy.setFieldByLabel('Identifier', '10.5072/test/t')
+      if (prepareForPublishing) {
+        cy.setFieldByLabel('Access level', 'Open access')
+        cy.setFieldByLabel('Data format', 'text/csv')
+          .next('.autocomplete-hits', NO_LOG)
+          .contains('.badge', 'text/csv', NO_LOG)
+          .click(NO_LOG)
+        cy.setFieldByLabel('Publisher', 'UGent')
+        cy.setFieldByLabel('Publication year', new Date().getFullYear().toString())
+        cy.setFieldByLabel('License', 'CC0 (1.0)')
       }
     },
     true
   )
+
+  if (prepareForPublishing) {
+    cy.updateFields(
+      'Creators',
+      () => {
+        cy.setFieldByLabel('First name', 'Dries')
+        cy.setFieldByLabel('Last name', 'Moreels')
+
+        cy.contains('.btn', 'Add creator', NO_LOG).click(NO_LOG)
+      },
+      /^Save$/
+    )
+  }
 
   cy.contains('.btn', 'Complete Description', NO_LOG).click(NO_LOG)
 }

@@ -75,13 +75,13 @@ const SECTIONS = [
     tab: 'Biblio Messages',
     sectionTitle: 'Librarian tags',
     buttonText: 'Edit',
-    modalTitle: 'Edit librarian tags',
+    modalTitle: /^Edit Librarian tags.+for internal use only$/,
   },
   {
     tab: 'Biblio Messages',
     sectionTitle: 'Librarian note',
     buttonText: 'Edit',
-    modalTitle: 'Edit librarian note',
+    modalTitle: /^Edit Librarian note.+for internal use only$/,
   },
   {
     tab: 'Biblio Messages',

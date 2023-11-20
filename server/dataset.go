@@ -722,23 +722,24 @@ func (s *server) CleanupDatasets(req *api.CleanupDatasetsRequest, stream api.Bib
 
 	count := 0
 	streamErr := s.services.Repo.EachDataset(func(d *models.Dataset) bool {
-		// Guard
+		// guard
 		fixed := false
 
 		// remove empty strings from string array
 		vacuumArray := func(old_values []string) []string {
-			var new_values []string
+			var newVals []string
 			for _, val := range old_values {
-				new_val := strings.TrimSpace(val)
-				if new_val != "" {
-					new_values = append(new_values, val)
+				newVal := strings.TrimSpace(val)
+				if newVal != "" {
+					newVals = append(newVals, val)
 				}
-				if val != new_val {
+				if val != newVal || newVal == "" {
 					fixed = true
 				}
 			}
-			return new_values
+			return newVals
 		}
+
 		d.Format = vacuumArray(d.Format)
 		d.Keyword = vacuumArray(d.Keyword)
 		d.Language = vacuumArray(d.Language)
@@ -750,7 +751,7 @@ func (s *server) CleanupDatasets(req *api.CleanupDatasetsRequest, stream api.Bib
 			contributor.CreditRole = vacuumArray(contributor.CreditRole)
 		}
 
-		// Save record if changed
+		// save record if changed
 		if fixed {
 			d.UserID = ""
 			d.User = nil

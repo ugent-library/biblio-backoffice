@@ -893,23 +893,10 @@ func (s *server) CleanupPublications(req *api.CleanupPublicationsRequest, stream
 
 	count := 0
 	streamErr := s.services.Repo.EachPublication(func(p *models.Publication) bool {
-		// Guard
+		// guard
 		fixed := false
 
-		// Trim keywords, remove empty keywords
-		var cleanKeywords []string
-		for _, kw := range p.Keyword {
-			cleanKw := strings.TrimSpace(kw)
-			if cleanKw != kw || cleanKw == "" {
-				fixed = true
-			}
-			if cleanKw != "" {
-				cleanKeywords = append(cleanKeywords, cleanKw)
-			}
-		}
-		p.Keyword = cleanKeywords
-
-		// Remove empty links (only needs to run once)
+		// remove empty links (only needs to run once)
 		for _, l := range p.Link {
 			if l.URL == "" {
 				p.RemoveLink(l.ID)
@@ -917,7 +904,7 @@ func (s *server) CleanupPublications(req *api.CleanupPublicationsRequest, stream
 			}
 		}
 
-		// Set subtype from wos type (only needs to run once)
+		// set subtype from wos type (only needs to run once)
 		if p.WOSType != "" {
 			wosTypes := reSplit.Split(p.WOSType, -1)
 			for i, t := range wosTypes {
@@ -1004,25 +991,26 @@ func (s *server) CleanupPublications(req *api.CleanupPublicationsRequest, stream
 			}
 		}
 
-		// Remove unused fields
+		// remove unused fields
 		if p.CleanupUnusedFields() {
 			fixed = true
 		}
 
 		// remove empty strings from string array
 		vacuumArray := func(old_values []string) []string {
-			var new_values []string
+			var newVals []string
 			for _, val := range old_values {
-				new_val := strings.TrimSpace(val)
-				if new_val != "" {
-					new_values = append(new_values, val)
+				newVal := strings.TrimSpace(val)
+				if newVal != "" {
+					newVals = append(newVals, val)
 				}
-				if val != new_val {
+				if val != newVal || newVal == "" {
 					fixed = true
 				}
 			}
-			return new_values
+			return newVals
 		}
+
 		p.ISBN = vacuumArray(p.ISBN)
 		p.EISBN = vacuumArray(p.EISBN)
 		p.ISSN = vacuumArray(p.ISSN)
@@ -1043,7 +1031,7 @@ func (s *server) CleanupPublications(req *api.CleanupPublicationsRequest, stream
 			supervisor.CreditRole = vacuumArray(supervisor.CreditRole)
 		}
 
-		// Save record if changed
+		// save record if changed
 		if fixed {
 			p.UserID = ""
 			p.User = nil
