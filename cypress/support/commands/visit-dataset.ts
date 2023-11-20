@@ -1,24 +1,24 @@
 import { logCommand, updateLogMessage, updateConsoleProps } from './helpers'
 
-export default function visitPublication(): void {
-  const log = logCommand('visitPublication')
+export default function visitDataset(): void {
+  const log = logCommand('visitDataset')
 
   cy.get('@biblioId', { log: false }).then(biblioId => {
     updateLogMessage(log, biblioId)
     updateConsoleProps(log, cp => (cp['Biblio ID'] = biblioId))
 
-    cy.intercept(`/publication/${biblioId}/description*`).as('editPublication')
+    cy.intercept(`/dataset/${biblioId}/description*`).as('editDataset')
 
-    cy.visit(`/publication/${biblioId}`, { log: false })
+    cy.visit(`/dataset/${biblioId}`, { log: false })
 
-    cy.wait('@editPublication', { log: false })
+    cy.wait('@editDataset', { log: false })
   })
 }
 
 declare global {
   namespace Cypress {
     interface Chainable {
-      visitPublication(): Chainable<void>
+      visitDataset(): Chainable<void>
     }
   }
 }

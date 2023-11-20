@@ -1,7 +1,13 @@
 import { logCommand } from './helpers'
 
-export default function ensureNoModal(): void {
-  logCommand('ensureNoModal')
+type EnsureNoModalOptions = {
+  log?: boolean
+}
+
+export default function ensureNoModal(options: EnsureNoModalOptions = {}): void {
+  if (options.log === true) {
+    logCommand('ensureNoModal')
+  }
 
   cy.get('#modals *', { log: false })
     .should('have.length', 0)
@@ -17,7 +23,7 @@ export default function ensureNoModal(): void {
 declare global {
   namespace Cypress {
     interface Chainable {
-      ensureNoModal(): Chainable<void>
+      ensureNoModal(options?: EnsureNoModalOptions): Chainable<void>
     }
   }
 }
