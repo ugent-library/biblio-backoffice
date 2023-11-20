@@ -1009,6 +1009,40 @@ func (s *server) CleanupPublications(req *api.CleanupPublicationsRequest, stream
 			fixed = true
 		}
 
+		// remove empty strings from string array
+		vacuumArray := func(old_values []string) []string {
+			var new_values []string
+			for _, val := range old_values {
+				new_val := strings.TrimSpace(val)
+				if new_val != "" {
+					new_values = append(new_values, val)
+				}
+				if val != new_val {
+					fixed = true
+				}
+			}
+			return new_values
+		}
+		p.ISBN = vacuumArray(p.ISBN)
+		p.EISBN = vacuumArray(p.EISBN)
+		p.ISSN = vacuumArray(p.ISSN)
+		p.EISSN = vacuumArray(p.EISSN)
+		p.AlternativeTitle = vacuumArray(p.AlternativeTitle)
+		p.Keyword = vacuumArray(p.Keyword)
+		p.Language = vacuumArray(p.Language)
+		p.ResearchField = vacuumArray(p.ResearchField)
+		p.ReviewerTags = vacuumArray(p.ReviewerTags)
+		p.VABBYear = vacuumArray(p.VABBYear)
+		for _, author := range p.Author {
+			author.CreditRole = vacuumArray(author.CreditRole)
+		}
+		for _, editor := range p.Editor {
+			editor.CreditRole = vacuumArray(editor.CreditRole)
+		}
+		for _, supervisor := range p.Supervisor {
+			supervisor.CreditRole = vacuumArray(supervisor.CreditRole)
+		}
+
 		// Save record if changed
 		if fixed {
 			p.UserID = ""
