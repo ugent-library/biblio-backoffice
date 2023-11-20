@@ -116,7 +116,7 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 	ctx.Dataset.Year = b.Year
 
 	validationErrs := ctx.Dataset.Validate()
-
+	// check EmbargoDate is in the future at time of submit
 	if ctx.Dataset.EmbargoDate != "" {
 		t, e := time.Parse("2006-01-02", ctx.Dataset.EmbargoDate)
 		if e == nil && !t.After(time.Now()) {
@@ -325,6 +325,9 @@ func detailsForm(l *locale.Locale, d *models.Dataset, errors validation.Errors) 
 			},
 		)
 	} else {
+		now := time.Now()
+		nextDay := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location()).Add(24 * time.Hour)
+
 		f.AddSection(
 			&form.Select{
 				Name:        "access_level",
@@ -344,6 +347,7 @@ func detailsForm(l *locale.Locale, d *models.Dataset, errors validation.Errors) 
 				Value: d.EmbargoDate,
 				Label: l.T("builder.embargo_date"),
 				Cols:  3,
+				Min:   nextDay.Format("2006-01-02"),
 				Error: localize.ValidationErrorAt(l, errors, "/embargo_date"),
 				// Disabled: d.AccessLevel != "info:eu-repo/semantics/embargoedAccess",
 			},
