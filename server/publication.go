@@ -1017,7 +1017,9 @@ func (s *server) CleanupPublications(req *api.CleanupPublicationsRequest, stream
 				if new_val != "" {
 					new_values = append(new_values, val)
 				}
-				fixed = val != new_val
+				if val != new_val {
+					fixed = true
+				}
 			}
 			return new_values
 		}
