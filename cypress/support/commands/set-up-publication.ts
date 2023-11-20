@@ -66,7 +66,7 @@ export default function setUpPublication(publicationType: PublicationType, prepa
         cy.setFieldByLabel('First name', 'Griet')
         cy.setFieldByLabel('Last name', 'Alleman')
 
-        cy.contains('.btn', 'Add author').click()
+        cy.contains('.btn', 'Add author', NO_LOG).click(NO_LOG)
       },
       /^Save$/
     )

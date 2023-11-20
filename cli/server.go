@@ -13,7 +13,6 @@ import (
 	"github.com/gorilla/sessions"
 	"github.com/leonelquinteros/gotext"
 	"github.com/nics/ich"
-	"github.com/oklog/ulid/v2"
 	"github.com/ory/graceful"
 	"github.com/spf13/cobra"
 	"github.com/ugent-library/biblio-backoffice/backends"
@@ -23,11 +22,8 @@ import (
 	"github.com/ugent-library/biblio-backoffice/urls"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
 	"github.com/ugent-library/bind"
-	"github.com/ugent-library/middleware"
 	"github.com/ugent-library/mix"
 	"github.com/ugent-library/oidc"
-	"github.com/ugent-library/zaphttp"
-	"go.uber.org/zap"
 )
 
 func init() {
@@ -55,26 +51,11 @@ var serverStartCmd = &cobra.Command{
 			return err
 		}
 
-		// apply these before request reaches the router
-		handler := middleware.Apply(router,
-			middleware.Recover(func(err any) {
-				if config.Env == "local" {
-					logger.With(zap.Stack("stack")).Error(err)
-				} else {
-					logger.Error(err)
-				}
-			}),
-			middleware.SetRequestID(func() string {
-				return ulid.Make().String()
-			}),
-			zaphttp.LogRequests(logger.Desugar()),
-		)
-
 		// setup server
 		addr := fmt.Sprintf("%s:%d", config.Host, config.Port)
 		server := graceful.WithDefaults(&http.Server{
 			Addr:         addr,
-			Handler:      handler,
+			Handler:      router,
 			ReadTimeout:  5 * time.Minute,
 			WriteTimeout: 5 * time.Minute,
 		})
