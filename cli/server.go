@@ -11,6 +11,7 @@ import (
 	"github.com/Masterminds/sprig/v3"
 	"github.com/go-chi/chi/v5"
 	"github.com/gorilla/sessions"
+	"github.com/leonelquinteros/gotext"
 	"github.com/nics/ich"
 	"github.com/oklog/ulid/v2"
 	"github.com/ory/graceful"
@@ -146,10 +147,12 @@ func buildRouter(services *backends.Services) (*ich.Mux, error) {
 	// init bind
 	bind.PathValueFunc = chi.URLParam
 
-	// localizer
+	// locale
+	loc := gotext.NewLocale("locales", "en")
+	loc.AddDomain("default")
 	localizer := locale.NewLocalizer("en")
 
-	//
+	// timezone
 	timezone, err := time.LoadLocation(config.Timezone)
 	if err != nil {
 		return nil, err
@@ -195,6 +198,7 @@ func buildRouter(services *backends.Services) (*ich.Mux, error) {
 		SessionStore:     sessionStore,
 		SessionName:      sessionName,
 		Timezone:         timezone,
+		Loc:              loc,
 		Localizer:        localizer,
 		Logger:           logger,
 		OIDCAuth:         oidcAuth,

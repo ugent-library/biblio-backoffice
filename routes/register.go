@@ -11,6 +11,7 @@ import (
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/sessions"
 	"github.com/jpillora/ipfilter"
+	"github.com/leonelquinteros/gotext"
 	"github.com/nics/ich"
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/ctx"
@@ -56,6 +57,7 @@ type Config struct {
 	SessionStore     sessions.Store
 	SessionName      string
 	Timezone         *time.Location
+	Loc              *gotext.Locale
 	Localizer        *locale.Localizer
 	Logger           *zap.SugaredLogger
 	OIDCAuth         *oidc.Auth
@@ -94,6 +96,7 @@ func Register(c Config) {
 		SessionStore:    c.SessionStore,
 		SessionName:     c.SessionName,
 		Timezone:        c.Timezone,
+		Loc:             c.Loc,
 		Localizer:       c.Localizer,
 		UserService:     c.Services.UserService,
 		BaseURL:         c.BaseURL,
@@ -225,12 +228,12 @@ func Register(c Config) {
 		// BEGIN NEW STYLE HANDLERS
 		r.Group(func(r *ich.Mux) {
 			r.Use(ctx.Set(ctx.Config{
-				Services:  c.Services,
-				Router:    c.Router,
-				Assets:    c.Assets,
-				Timezone:  c.Timezone,
-				Localizer: c.Localizer,
-				Env:       c.Env,
+				Services: c.Services,
+				Router:   c.Router,
+				Assets:   c.Assets,
+				Timezone: c.Timezone,
+				Loc:      c.Loc,
+				Env:      c.Env,
 				ErrorHandlers: map[int]http.HandlerFunc{
 					http.StatusNotFound:            handlers.NotFound,
 					http.StatusInternalServerError: handlers.InternalServerError,

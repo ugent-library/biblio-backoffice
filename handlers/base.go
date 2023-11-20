@@ -12,6 +12,7 @@ import (
 
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/sessions"
+	"github.com/leonelquinteros/gotext"
 	"github.com/nics/ich"
 	"github.com/oklog/ulid/v2"
 	"github.com/ugent-library/biblio-backoffice/backends"
@@ -31,6 +32,7 @@ type BaseHandler struct {
 	SessionStore    sessions.Store
 	UserService     backends.UserService
 	Timezone        *time.Location
+	Loc             *gotext.Locale
 	Localizer       *locale.Localizer
 	BaseURL         *url.URL
 	FrontendBaseUrl string
@@ -40,8 +42,9 @@ type BaseHandler struct {
 type BaseContext struct {
 	CurrentURL      *url.URL
 	Flash           []flash.Flash
-	Locale          *locale.Locale
 	Timezone        *time.Location
+	Loc             *gotext.Locale
+	Locale          *locale.Locale
 	User            *models.Person
 	UserRole        string
 	OriginalUser    *models.Person
@@ -54,8 +57,9 @@ func (c BaseContext) Yield(pairs ...any) map[string]any {
 	yield := map[string]any{
 		"CurrentURL":      c.CurrentURL,
 		"Flash":           c.Flash,
-		"Locale":          c.Locale,
 		"Timezone":        c.Timezone,
+		"Loc":             c.Loc,
+		"Locale":          c.Locale,
 		"User":            c.User,
 		"UserRole":        c.UserRole,
 		"OriginalUser":    c.OriginalUser,
@@ -110,8 +114,9 @@ func (h BaseHandler) NewContext(r *http.Request, w http.ResponseWriter) (BaseCon
 	return BaseContext{
 		CurrentURL:      r.URL,
 		Flash:           flash,
-		Locale:          h.Localizer.GetLocale(r.Header.Get("Accept-Language")),
 		Timezone:        h.Timezone,
+		Loc:             h.Loc,
+		Locale:          h.Localizer.GetLocale(r.Header.Get("Accept-Language")),
 		User:            user,
 		UserRole:        h.getUserRoleFromSession(session),
 		OriginalUser:    originalUser,

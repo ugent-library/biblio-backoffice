@@ -31,6 +31,6 @@
 </div>
 {{else}}
 <div class="card-body">
-    <span class="text-muted">No {{.Locale.TS "publication.contributor.role" .Role}}s</span>
+    <span class="text-muted">No {{.Loc.Get (print "publication.contributor.role." .Role)}}s</span>
 </div>
 {{end}}
