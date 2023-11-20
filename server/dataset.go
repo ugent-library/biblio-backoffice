@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/oklog/ulid/v2"
@@ -723,6 +724,31 @@ func (s *server) CleanupDatasets(req *api.CleanupDatasetsRequest, stream api.Bib
 	streamErr := s.services.Repo.EachDataset(func(d *models.Dataset) bool {
 		// Guard
 		fixed := false
+
+		// remove empty strings from string array
+		vacuumArray := func(old_values []string) []string {
+			var new_values []string
+			for _, val := range old_values {
+				new_val := strings.TrimSpace(val)
+				if new_val != "" {
+					new_values = append(new_values, val)
+				}
+				if val != new_val {
+					fixed = true
+				}
+			}
+			return new_values
+		}
+		d.Format = vacuumArray(d.Format)
+		d.Keyword = vacuumArray(d.Keyword)
+		d.Language = vacuumArray(d.Language)
+		d.ReviewerTags = vacuumArray(d.ReviewerTags)
+		for _, author := range d.Author {
+			author.CreditRole = vacuumArray(author.CreditRole)
+		}
+		for _, contributor := range d.Contributor {
+			contributor.CreditRole = vacuumArray(contributor.CreditRole)
+		}
 
 		// Save record if changed
 		if fixed {

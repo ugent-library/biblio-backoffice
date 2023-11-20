@@ -144,7 +144,7 @@
                             {{with .PublicationVersion}}<span class="ms-3 ps-3 border-start">{{$.Locale.TS "publication_versions" .}}</span>{{end}}
                             <div class="bc-toolbar-left flex-wrap">
                                 <div class="bc-toolbar-item">
-                                    <span class="c-body-small text-muted text-truncate my-2">Uploaded {{.DateCreated.In $.Timezone | date "02-01-2006 at 15:04"}}</span>
+                                    <span class="c-body-small text-muted text-truncate my-2">Uploaded {{formatTime .DateCreated $.Timezone "02-01-2006 at 15:04"}}</span>
                                 </div>
                             </div>
                         </div>

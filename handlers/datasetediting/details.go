@@ -5,6 +5,7 @@ import (
 	"errors"
 	"html/template"
 	"net/http"
+	"time"
 
 	"github.com/ugent-library/biblio-backoffice/displays"
 	"github.com/ugent-library/biblio-backoffice/locale"
@@ -114,7 +115,19 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 	ctx.Dataset.Title = b.Title
 	ctx.Dataset.Year = b.Year
 
-	if validationErrs := ctx.Dataset.Validate(); validationErrs != nil {
+	validationErrs := ctx.Dataset.Validate()
+	// check EmbargoDate is in the future at time of submit
+	if ctx.Dataset.EmbargoDate != "" {
+		t, e := time.Parse("2006-01-02", ctx.Dataset.EmbargoDate)
+		if e == nil && !t.After(time.Now()) {
+			validationErrs = validation.Append(validationErrs, &validation.Error{
+				Pointer: "/embargo_date",
+				Code:    "dataset.embargo_date.expired",
+			})
+		}
+	}
+
+	if validationErrs != nil {
 		render.Layout(w, "refresh_modal", "dataset/edit_details", YieldEditDetails{
 			Context:  ctx,
 			Form:     detailsForm(ctx.Locale, ctx.Dataset, validationErrs.(validation.Errors)),
@@ -312,6 +325,9 @@ func detailsForm(l *locale.Locale, d *models.Dataset, errors validation.Errors) 
 			},
 		)
 	} else {
+		now := time.Now()
+		nextDay := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location()).Add(24 * time.Hour)
+
 		f.AddSection(
 			&form.Select{
 				Name:        "access_level",
@@ -331,6 +347,7 @@ func detailsForm(l *locale.Locale, d *models.Dataset, errors validation.Errors) 
 				Value: d.EmbargoDate,
 				Label: l.T("builder.embargo_date"),
 				Cols:  3,
+				Min:   nextDay.Format("2006-01-02"),
 				Error: localize.ValidationErrorAt(l, errors, "/embargo_date"),
 				// Disabled: d.AccessLevel != "info:eu-repo/semantics/embargoedAccess",
 			},

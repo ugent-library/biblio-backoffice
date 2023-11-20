@@ -700,6 +700,7 @@ func init() {
 
 	message.SetString(language.English, "validation.dataset.embargo_date.required", "Embargo date is an invalid value")
 	message.SetString(language.English, "validation.dataset.embargo_date.invalid", "Embargo date is an invalid date")
+	message.SetString(language.English, "validation.dataset.embargo_date.expired", "Embargo end date should be in the future")
 	message.SetString(language.English, "validation.dataset.access_level_after_embargo.required", "Access level after embargo is required")
 	message.SetString(language.English, "validation.dataset.access_level_after_embargo.similar", "Access level after embargo can't be the same as access level")
 	message.SetString(language.English, "validation.dataset.access_level_after_embargo.invalid", "Access level after embargo is not a valid access level value")
@@ -727,6 +728,7 @@ func init() {
 	message.SetString(language.English, "validation.publication.link.url.required", "URL can't be empty")
 
 	message.SetString(language.English, "validation.publication.file.embargo_date.invalid", "The embargo end date is not a valid date")
+	message.SetString(language.English, "validation.publication.file.embargo_date.expired", "The embargo end date should be in the future")
 	message.SetString(language.English, "validation.publication.file.access_level_during_embargo.invalid", "The selected access level is not a valid access level value")
 	message.SetString(language.English, "validation.publication.file.access_level_after_embargo.invalid", "The selected access level is not a valid access level value")
 	message.SetString(language.English, "validation.publication.file.access_level_after_embargo.similar", "The access level after embargo end date can't be the same as the access level during embargo")
