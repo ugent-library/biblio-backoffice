@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/leonelquinteros/gotext"
 	"github.com/ugent-library/biblio-backoffice/handlers"
-	"github.com/ugent-library/biblio-backoffice/locale"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
@@ -121,7 +121,7 @@ func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context
 	render.Layout(w, "show_modal", "publication/edit_file", YieldEditFile{
 		Context: ctx,
 		File:    &pubFile,
-		Form:    fileForm(ctx.Locale, ctx.Publication, &pubFile, nil),
+		Form:    fileForm(ctx.Loc, ctx.Publication, &pubFile, nil),
 	})
 
 }
@@ -151,7 +151,7 @@ func (h *Handler) EditFile(w http.ResponseWriter, r *http.Request, ctx Context) 
 	render.Layout(w, "show_modal", "publication/edit_file", YieldEditFile{
 		Context:  ctx,
 		File:     file,
-		Form:     fileForm(ctx.Locale, ctx.Publication, file, nil),
+		Form:     fileForm(ctx.Loc, ctx.Publication, file, nil),
 		Conflict: false,
 	})
 }
@@ -180,7 +180,7 @@ func (h *Handler) RefreshEditFileForm(w http.ResponseWriter, r *http.Request, ct
 		render.Layout(w, "refresh_modal", "publication/edit_file", YieldEditFile{
 			Context:  ctx,
 			File:     file,
-			Form:     fileForm(ctx.Locale, ctx.Publication, file, nil),
+			Form:     fileForm(ctx.Loc, ctx.Publication, file, nil),
 			Conflict: true,
 		})
 		return
@@ -210,7 +210,7 @@ func (h *Handler) RefreshEditFileForm(w http.ResponseWriter, r *http.Request, ct
 	render.Layout(w, "refresh_modal", "publication/edit_file", YieldEditFile{
 		Context: ctx,
 		File:    file,
-		Form:    fileForm(ctx.Locale, ctx.Publication, file, nil),
+		Form:    fileForm(ctx.Loc, ctx.Publication, file, nil),
 	})
 }
 
@@ -239,7 +239,7 @@ func (h *Handler) UpdateFile(w http.ResponseWriter, r *http.Request, ctx Context
 		render.Layout(w, "refresh_modal", "publication/edit_file", YieldEditFile{
 			Context:  ctx,
 			File:     file,
-			Form:     fileForm(ctx.Locale, ctx.Publication, file, nil),
+			Form:     fileForm(ctx.Loc, ctx.Publication, file, nil),
 			Conflict: false,
 		})
 		return
@@ -272,7 +272,7 @@ func (h *Handler) UpdateFile(w http.ResponseWriter, r *http.Request, ctx Context
 		render.Layout(w, "refresh_modal", "publication/edit_file", YieldEditFile{
 			Context:  ctx,
 			File:     file,
-			Form:     fileForm(ctx.Locale, ctx.Publication, file, validationErrs.(validation.Errors)),
+			Form:     fileForm(ctx.Loc, ctx.Publication, file, validationErrs.(validation.Errors)),
 			Conflict: false,
 		})
 		return
@@ -285,7 +285,7 @@ func (h *Handler) UpdateFile(w http.ResponseWriter, r *http.Request, ctx Context
 		render.Layout(w, "refresh_modal", "publication/edit_file", YieldEditFile{
 			Context:  ctx,
 			File:     file,
-			Form:     fileForm(ctx.Locale, ctx.Publication, file, nil),
+			Form:     fileForm(ctx.Loc, ctx.Publication, file, nil),
 			Conflict: true,
 		})
 		return
@@ -358,7 +358,7 @@ func (h *Handler) DeleteFile(w http.ResponseWriter, r *http.Request, ctx Context
 	})
 }
 
-func fileForm(l *locale.Locale, publication *models.Publication, file *models.PublicationFile, errors validation.Errors) *form.Form {
+func fileForm(loc *gotext.Locale, publication *models.Publication, file *models.PublicationFile, errors validation.Errors) *form.Form {
 	idx := -1
 	for i, f := range publication.File {
 		if f.ID == file.ID {
@@ -369,7 +369,7 @@ func fileForm(l *locale.Locale, publication *models.Publication, file *models.Pu
 
 	f := form.New().
 		WithTheme("file").
-		WithErrors(localize.ValidationErrors(l, errors))
+		WithErrors(localize.ValidationErrors(loc, errors))
 
 	if file.Relation == "main_file" {
 		f.AddTemplatedSection(
@@ -379,12 +379,12 @@ func fileForm(l *locale.Locale, publication *models.Publication, file *models.Pu
 				Template: "document_type",
 				Name:     "relation",
 				Value:    file.Relation,
-				Label:    l.T("builder.file.relation"),
+				Label:    loc.Get("builder.file.relation"),
 				Options: localize.VocabularySelectOptions(
-					l,
+					loc,
 					"publication_file_relations"),
 				Error: localize.ValidationErrorAt(
-					l,
+					loc,
 					errors,
 					fmt.Sprintf("/file/%d/relation", idx)),
 				Vars: struct {
@@ -399,11 +399,11 @@ func fileForm(l *locale.Locale, publication *models.Publication, file *models.Pu
 				Template:    "publication_version",
 				Name:        "publication_version",
 				Value:       file.PublicationVersion,
-				Label:       l.T("builder.file.publication_version"),
+				Label:       loc.Get("builder.file.publication_version"),
 				EmptyOption: true,
-				Options:     localize.VocabularySelectOptions(l, "publication_versions"),
+				Options:     localize.VocabularySelectOptions(loc, "publication_versions"),
 				Error: localize.ValidationErrorAt(
-					l,
+					loc,
 					errors,
 					fmt.Sprintf("/file/%d/publication_version", idx)),
 			},
@@ -416,12 +416,12 @@ func fileForm(l *locale.Locale, publication *models.Publication, file *models.Pu
 				Template: "document_type",
 				Name:     "relation",
 				Value:    file.Relation,
-				Label:    l.T("builder.file.relation"),
+				Label:    loc.Get("builder.file.relation"),
 				Options: localize.VocabularySelectOptions(
-					l,
+					loc,
 					"publication_file_relations"),
 				Error: localize.ValidationErrorAt(
-					l,
+					loc,
 					errors,
 					fmt.Sprintf("/file/%d/relation", idx)),
 				Vars: struct {
@@ -455,11 +455,11 @@ func fileForm(l *locale.Locale, publication *models.Publication, file *models.Pu
 			Template: "file_access_level",
 			Name:     "access_level",
 			Value:    file.AccessLevel,
-			Label:    l.T("builder.file.access_level"),
-			Options:  localize.VocabularySelectOptions(l, "publication_file_access_levels"),
+			Label:    loc.Get("builder.file.access_level"),
+			Options:  localize.VocabularySelectOptions(loc, "publication_file_access_levels"),
 			Cols:     9,
 			Error: localize.ValidationErrorAt(
-				l,
+				loc,
 				errors,
 				fmt.Sprintf("/file/%d/access_level", idx)),
 			Vars: struct {
@@ -483,9 +483,9 @@ func fileForm(l *locale.Locale, publication *models.Publication, file *models.Pu
 				// TODO html in l.T is transformed into html entities
 				// Label:       l.T("builder.file.embargo_during"),
 				EmptyOption: true,
-				Options:     localize.VocabularySelectOptions(l, "publication_file_access_levels_during_embargo"),
+				Options:     localize.VocabularySelectOptions(loc, "publication_file_access_levels_during_embargo"),
 				Error: localize.ValidationErrorAt(
-					l,
+					loc,
 					errors,
 					fmt.Sprintf("/file/%d/access_level_during_embargo", idx)),
 			},
@@ -496,9 +496,9 @@ func fileForm(l *locale.Locale, publication *models.Publication, file *models.Pu
 				// TODO html in l.T is transformed into html entities
 				// Label:       l.T("builder.file.embargo_after"),
 				EmptyOption: true,
-				Options:     localize.VocabularySelectOptions(l, "publication_file_access_levels_after_embargo"),
+				Options:     localize.VocabularySelectOptions(loc, "publication_file_access_levels_after_embargo"),
 				Error: localize.ValidationErrorAt(
-					l,
+					loc,
 					errors,
 					fmt.Sprintf("/file/%d/access_level_after_embargo", idx)),
 			},
@@ -512,10 +512,10 @@ func fileForm(l *locale.Locale, publication *models.Publication, file *models.Pu
 				Template: "embargo_end",
 				Name:     "embargo_date",
 				Value:    file.EmbargoDate,
-				Label:    l.T("builder.file.embargo_date"),
+				Label:    loc.Get("builder.file.embargo_date"),
 				Min:      nextDay.Format("2006-01-02"),
 				Error: localize.ValidationErrorAt(
-					l,
+					loc,
 					errors,
 					fmt.Sprintf("/file/%d/embargo_date", idx)),
 			},
@@ -529,10 +529,10 @@ func fileForm(l *locale.Locale, publication *models.Publication, file *models.Pu
 			Template:    "license",
 			Name:        "license",
 			Value:       file.License,
-			Label:       l.T("builder.file.license"),
-			Tooltip:     l.T("tooltip.publication.file.license"),
+			Label:       loc.Get("builder.file.license"),
+			Tooltip:     loc.Get("tooltip.publication.file.license"),
 			EmptyOption: true,
-			Options:     localize.VocabularySelectOptions(l, "publication_licenses"),
+			Options:     localize.VocabularySelectOptions(loc, "publication_licenses"),
 		},
 	)
 

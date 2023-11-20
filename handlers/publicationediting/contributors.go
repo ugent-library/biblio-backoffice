@@ -633,7 +633,7 @@ func (h *Handler) DeleteContributor(w http.ResponseWriter, r *http.Request, ctx 
 	}
 
 	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
-		errors := form.Errors(localize.ValidationErrors(ctx.Locale, validationErrs.(validation.Errors)))
+		errors := form.Errors(localize.ValidationErrors(ctx.Loc, validationErrs.(validation.Errors)))
 		render.Layout(w, "refresh_modal", "form_errors_dialog", struct {
 			Title  string
 			Errors form.Errors
@@ -762,14 +762,14 @@ func confirmContributorForm(ctx Context, role string, c *models.Contributor, err
 		fields = append(fields, &form.SelectRepeat{
 			Name:        "credit_role",
 			Label:       "Roles",
-			Options:     localize.VocabularySelectOptions(ctx.Locale, "credit_roles"),
+			Options:     localize.VocabularySelectOptions(ctx.Loc, "credit_roles"),
 			Values:      c.CreditRole,
 			EmptyOption: true,
 		})
 	}
 
 	return form.New().
-		WithErrors(localize.ValidationErrors(ctx.Locale, errors)).
+		WithErrors(localize.ValidationErrors(ctx.Loc, errors)).
 		WithTheme("cols").
 		AddSection(fields...)
 }

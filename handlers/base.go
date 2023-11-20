@@ -16,7 +16,6 @@ import (
 	"github.com/nics/ich"
 	"github.com/oklog/ulid/v2"
 	"github.com/ugent-library/biblio-backoffice/backends"
-	"github.com/ugent-library/biblio-backoffice/locale"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/render/flash"
@@ -33,7 +32,6 @@ type BaseHandler struct {
 	UserService     backends.UserService
 	Timezone        *time.Location
 	Loc             *gotext.Locale
-	Localizer       *locale.Localizer
 	BaseURL         *url.URL
 	FrontendBaseUrl string
 }
@@ -44,7 +42,6 @@ type BaseContext struct {
 	Flash           []flash.Flash
 	Timezone        *time.Location
 	Loc             *gotext.Locale
-	Locale          *locale.Locale
 	User            *models.Person
 	UserRole        string
 	OriginalUser    *models.Person
@@ -59,7 +56,6 @@ func (c BaseContext) Yield(pairs ...any) map[string]any {
 		"Flash":           c.Flash,
 		"Timezone":        c.Timezone,
 		"Loc":             c.Loc,
-		"Locale":          c.Locale,
 		"User":            c.User,
 		"UserRole":        c.UserRole,
 		"OriginalUser":    c.OriginalUser,
@@ -116,7 +112,6 @@ func (h BaseHandler) NewContext(r *http.Request, w http.ResponseWriter) (BaseCon
 		Flash:           flash,
 		Timezone:        h.Timezone,
 		Loc:             h.Loc,
-		Locale:          h.Localizer.GetLocale(r.Header.Get("Accept-Language")),
 		User:            user,
 		UserRole:        h.getUserRoleFromSession(session),
 		OriginalUser:    originalUser,

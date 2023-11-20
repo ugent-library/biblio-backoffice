@@ -167,7 +167,7 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 	}
 
 	if validationErrs := d.Validate(); validationErrs != nil {
-		errors := form.Errors(localize.ValidationErrors(ctx.Locale, validationErrs.(validation.Errors)))
+		errors := form.Errors(localize.ValidationErrors(ctx.Loc, validationErrs.(validation.Errors)))
 		render.Layout(w, "layouts/default", "dataset/pages/add_identifier", YieldAdd{
 			Context:    ctx,
 			PageTitle:  "Add - Datasets - Biblio",
@@ -204,7 +204,7 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 		SubNavs:        []string{"description", "contributors", "publications"},
 		ActiveSubNav:   subNav,
 		Dataset:        d,
-		DisplayDetails: displays.DatasetDetails(ctx.User, ctx.Locale, d),
+		DisplayDetails: displays.DatasetDetails(ctx.User, ctx.Loc, d),
 	})
 }
 
@@ -222,7 +222,7 @@ func (h *Handler) AddDescription(w http.ResponseWriter, r *http.Request, ctx Con
 		SubNavs:        []string{"description", "contributors", "publications"},
 		ActiveSubNav:   subNav,
 		Dataset:        ctx.Dataset,
-		DisplayDetails: displays.DatasetDetails(ctx.User, ctx.Locale, ctx.Dataset),
+		DisplayDetails: displays.DatasetDetails(ctx.User, ctx.Loc, ctx.Dataset),
 	})
 }
 
@@ -257,7 +257,7 @@ func (h *Handler) AddPublish(w http.ResponseWriter, r *http.Request, ctx Context
 	ctx.Dataset.Status = "public"
 
 	if err := ctx.Dataset.Validate(); err != nil {
-		errors := form.Errors(localize.ValidationErrors(ctx.Locale, err.(validation.Errors)))
+		errors := form.Errors(localize.ValidationErrors(ctx.Loc, err.(validation.Errors)))
 		render.Layout(w, "show_modal", "form_errors_dialog", struct {
 			Title  string
 			Errors form.Errors

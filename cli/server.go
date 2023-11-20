@@ -18,7 +18,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/helpers"
-	"github.com/ugent-library/biblio-backoffice/locale"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/routes"
 	"github.com/ugent-library/biblio-backoffice/urls"
@@ -29,8 +28,6 @@ import (
 	"github.com/ugent-library/oidc"
 	"github.com/ugent-library/zaphttp"
 	"go.uber.org/zap"
-
-	_ "github.com/ugent-library/biblio-backoffice/translations"
 )
 
 func init() {
@@ -150,7 +147,6 @@ func buildRouter(services *backends.Services) (*ich.Mux, error) {
 	// locale
 	loc := gotext.NewLocale("locales", "en")
 	loc.AddDomain("default")
-	localizer := locale.NewLocalizer("en")
 
 	// timezone
 	timezone, err := time.LoadLocation(config.Timezone)
@@ -199,7 +195,6 @@ func buildRouter(services *backends.Services) (*ich.Mux, error) {
 		SessionName:      sessionName,
 		Timezone:         timezone,
 		Loc:              loc,
-		Localizer:        localizer,
 		Logger:           logger,
 		OIDCAuth:         oidcAuth,
 		FrontendURL:      config.Frontend.URL,

@@ -32,7 +32,6 @@ import (
 	"github.com/ugent-library/biblio-backoffice/handlers/publicationexporting"
 	"github.com/ugent-library/biblio-backoffice/handlers/publicationsearching"
 	"github.com/ugent-library/biblio-backoffice/handlers/publicationviewing"
-	"github.com/ugent-library/biblio-backoffice/locale"
 	"github.com/ugent-library/httpx"
 	"github.com/ugent-library/mix"
 	"github.com/ugent-library/oidc"
@@ -58,7 +57,6 @@ type Config struct {
 	SessionName      string
 	Timezone         *time.Location
 	Loc              *gotext.Locale
-	Localizer        *locale.Localizer
 	Logger           *zap.SugaredLogger
 	OIDCAuth         *oidc.Auth
 	FrontendURL      string
@@ -97,7 +95,6 @@ func Register(c Config) {
 		SessionName:     c.SessionName,
 		Timezone:        c.Timezone,
 		Loc:             c.Loc,
-		Localizer:       c.Localizer,
 		UserService:     c.Services.UserService,
 		BaseURL:         c.BaseURL,
 		FrontendBaseUrl: c.FrontendURL,

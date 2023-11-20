@@ -189,7 +189,7 @@ func (h *Handler) AddSingleImport(w http.ResponseWriter, r *http.Request, ctx Co
 	}
 
 	if validationErrs := p.Validate(); validationErrs != nil {
-		errors := form.Errors(localize.ValidationErrors(ctx.Locale, validationErrs.(validation.Errors)))
+		errors := form.Errors(localize.ValidationErrors(ctx.Loc, validationErrs.(validation.Errors)))
 		render.Layout(w, "layouts/default", "publication/pages/add_identifier", YieldAddSingle{
 			Context:    ctx,
 			PageTitle:  "Add - Publications - Biblio",
@@ -226,7 +226,7 @@ func (h *Handler) AddSingleImport(w http.ResponseWriter, r *http.Request, ctx Co
 		SubNavs:        []string{"description", "files", "contributors", "datasets"},
 		ActiveSubNav:   subNav,
 		Publication:    p,
-		DisplayDetails: displays.PublicationDetails(ctx.User, ctx.Locale, p),
+		DisplayDetails: displays.PublicationDetails(ctx.User, ctx.Loc, p),
 	})
 }
 
@@ -244,7 +244,7 @@ func (h *Handler) AddSingleDescription(w http.ResponseWriter, r *http.Request, c
 		SubNavs:        []string{"description", "files", "contributors", "datasets"},
 		ActiveSubNav:   subNav,
 		Publication:    ctx.Publication,
-		DisplayDetails: displays.PublicationDetails(ctx.User, ctx.Locale, ctx.Publication),
+		DisplayDetails: displays.PublicationDetails(ctx.User, ctx.Loc, ctx.Publication),
 	})
 }
 
@@ -268,7 +268,7 @@ func (h *Handler) AddSinglePublish(w http.ResponseWriter, r *http.Request, ctx C
 	ctx.Publication.Status = "public"
 
 	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
-		errors := form.Errors(localize.ValidationErrors(ctx.Locale, validationErrs.(validation.Errors)))
+		errors := form.Errors(localize.ValidationErrors(ctx.Loc, validationErrs.(validation.Errors)))
 		render.Layout(w, "show_modal", "form_errors_dialog", struct {
 			Title  string
 			Errors form.Errors
@@ -444,7 +444,7 @@ func (h *Handler) AddMultiplePublish(w http.ResponseWriter, r *http.Request, ctx
 	var validationErrs validation.Errors
 	if errors.As(err, &validationErrs) {
 		h.Logger.Warnw("add multiple publish publication: could not validate abstract:", "errors", validationErrs, "batch", batchID, "user", ctx.User.ID)
-		errors := form.Errors(localize.ValidationErrors(ctx.Locale, validationErrs))
+		errors := form.Errors(localize.ValidationErrors(ctx.Loc, validationErrs))
 		render.Layout(w, "show_modal", "form_errors_dialog", struct {
 			Title  string
 			Errors form.Errors
