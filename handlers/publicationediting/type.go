@@ -58,7 +58,7 @@ func (h *Handler) UpdateType(w http.ResponseWriter, r *http.Request, ctx Context
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
 		render.Layout(w, "refresh_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Locale.T("publication.conflict_error_reload"),
+			Message: ctx.Loc.Get("publication.conflict_error_reload"),
 		})
 		return
 	}

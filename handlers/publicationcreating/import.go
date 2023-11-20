@@ -157,7 +157,7 @@ func (h *Handler) AddSingleImport(w http.ResponseWriter, r *http.Request, ctx Co
 
 			flash := flash.SimpleFlash().
 				WithLevel("error").
-				WithBody(template.HTML(ctx.Locale.T("publication.single_import.import_by_id.import_failed")))
+				WithBody(template.HTML(ctx.Loc.Get("publication.single_import.import_by_id.import_failed")))
 
 			ctx.Flash = append(ctx.Flash, *flash)
 
@@ -284,7 +284,7 @@ func (h *Handler) AddSinglePublish(w http.ResponseWriter, r *http.Request, ctx C
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
 		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Locale.T("publication.conflict_error_reload"),
+			Message: ctx.Loc.Get("publication.conflict_error_reload"),
 		})
 		return
 	}

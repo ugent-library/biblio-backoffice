@@ -116,7 +116,7 @@ func (h *Handler) EditLaySummary(w http.ResponseWriter, r *http.Request, ctx Con
 	if laySummary == nil {
 		h.Logger.Warnf("edit publication lay summary: Could not fetch the lay summary:", "publication", ctx.Publication.ID, "abstract", b.LaySummaryID, "user", ctx.User.ID)
 		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Locale.T("publication.conflict_error_reload"),
+			Message: ctx.Loc.Get("publication.conflict_error_reload"),
 		})
 		return
 	}
@@ -201,7 +201,7 @@ func (h *Handler) ConfirmDeleteLaySummary(w http.ResponseWriter, r *http.Request
 
 	if b.SnapshotID != ctx.Publication.SnapshotID {
 		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Locale.T("publication.conflict_error_reload"),
+			Message: ctx.Loc.Get("publication.conflict_error_reload"),
 		})
 		return
 	}
@@ -227,7 +227,7 @@ func (h *Handler) DeleteLaySummary(w http.ResponseWriter, r *http.Request, ctx C
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
 		render.Layout(w, "refresh_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Locale.T("publication.conflict_error_reload"),
+			Message: ctx.Loc.Get("publication.conflict_error_reload"),
 		})
 		return
 	}
