@@ -5,6 +5,7 @@ import (
 	"errors"
 	"html/template"
 	"net/http"
+	"time"
 
 	"github.com/ugent-library/biblio-backoffice/displays"
 	"github.com/ugent-library/biblio-backoffice/locale"
@@ -114,7 +115,19 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 	ctx.Dataset.Title = b.Title
 	ctx.Dataset.Year = b.Year
 
-	if validationErrs := ctx.Dataset.Validate(); validationErrs != nil {
+	validationErrs := ctx.Dataset.Validate()
+
+	if ctx.Dataset.EmbargoDate != "" {
+		t, e := time.Parse("2006-01-02", ctx.Dataset.EmbargoDate)
+		if e == nil && !t.After(time.Now()) {
+			validationErrs = validation.Append(validationErrs, &validation.Error{
+				Pointer: "/embargo_date",
+				Code:    "dataset.embargo_date.expired",
+			})
+		}
+	}
+
+	if validationErrs != nil {
 		render.Layout(w, "refresh_modal", "dataset/edit_details", YieldEditDetails{
 			Context:  ctx,
 			Form:     detailsForm(ctx.Locale, ctx.Dataset, validationErrs.(validation.Errors)),

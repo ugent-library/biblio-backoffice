@@ -700,6 +700,7 @@ func init() {
 
 	message.SetString(language.English, "validation.dataset.embargo_date.required", "Embargo date is an invalid value")
 	message.SetString(language.English, "validation.dataset.embargo_date.invalid", "Embargo date is an invalid date")
+	message.SetString(language.English, "validation.dataset.embargo_date.expired", "Embargo end date should be in the future")
 	message.SetString(language.English, "validation.dataset.access_level_after_embargo.required", "Access level after embargo is required")
 	message.SetString(language.English, "validation.dataset.access_level_after_embargo.similar", "Access level after embargo can't be the same as access level")
 	message.SetString(language.English, "validation.dataset.access_level_after_embargo.invalid", "Access level after embargo is not a valid access level value")
