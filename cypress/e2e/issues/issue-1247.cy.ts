@@ -114,8 +114,14 @@ describe('Issue #1247: User menu popup hidden behind publication details', () =>
         cy.setFieldByLabel('Publication year', new Date().getFullYear().toString())
         cy.setFieldByLabel('Data format', 'text/csv').next('.autocomplete-hits').contains('.badge', 'text/csv').click()
         cy.setFieldByLabel('Publisher', 'UGent')
+
+        cy.intercept('PUT', '/dataset/*/details/edit/refresh-form').as('refreshForm')
+
         cy.setFieldByLabel('License', 'CC0 (1.0)')
+        cy.wait('@refreshForm')
+
         cy.setFieldByLabel('Access level', 'Open access')
+        cy.wait('@refreshForm')
       },
       true
     )
