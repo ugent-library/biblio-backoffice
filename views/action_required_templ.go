@@ -42,7 +42,7 @@ func ActionRequired(c *ctx.Ctx, pTotal, dTotal int) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if pTotal > 0 || dTotal > 0 {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<span class=\"badge bg-danger rounded-pill badge-sm ms-3\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<span class=\"badge bg-danger rounded-pill badge-sm ms-3 d-flex justify-content-center\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
