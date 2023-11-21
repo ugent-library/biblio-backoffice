@@ -189,7 +189,7 @@ func (h *Handler) getCurationSearchActions(ctx Context) []*ActionItem {
 	q, _ := bind.EncodeQuery(ctx.SearchArgs)
 	u.RawQuery = q.Encode()
 	actionItems = append(actionItems, &ActionItem{
-		Label:    ctx.Locale.T("export_to.xlsx"),
+		Label:    ctx.Loc.Get("export_to.xlsx"),
 		URL:      u,
 		Template: "actions/export",
 	})

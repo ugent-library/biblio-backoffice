@@ -10,7 +10,7 @@
                                 <div class="d-flex align-items-start">
                                     <div class="list-group-item-content">
                                         <div class="list-group-item-text">
-                                            <h4 class="c-h4">{{$.Locale.TS "organization" $rel.OrganizationID}}</h4>
+                                            <h4 class="c-h4">{{$.Loc.Get (print "organization." $rel.OrganizationID)}}</h4>
                                             <div class="text-muted c-body-small">Department ID: {{$rel.OrganizationID}}</div>
                                         </div>
                                     </div>

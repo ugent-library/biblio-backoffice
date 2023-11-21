@@ -12,10 +12,10 @@ import (
 
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/sessions"
+	"github.com/leonelquinteros/gotext"
 	"github.com/nics/ich"
 	"github.com/oklog/ulid/v2"
 	"github.com/ugent-library/biblio-backoffice/backends"
-	"github.com/ugent-library/biblio-backoffice/locale"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/render/flash"
@@ -31,7 +31,7 @@ type BaseHandler struct {
 	SessionStore    sessions.Store
 	UserService     backends.UserService
 	Timezone        *time.Location
-	Localizer       *locale.Localizer
+	Loc             *gotext.Locale
 	BaseURL         *url.URL
 	FrontendBaseUrl string
 }
@@ -40,8 +40,8 @@ type BaseHandler struct {
 type BaseContext struct {
 	CurrentURL      *url.URL
 	Flash           []flash.Flash
-	Locale          *locale.Locale
 	Timezone        *time.Location
+	Loc             *gotext.Locale
 	User            *models.Person
 	UserRole        string
 	OriginalUser    *models.Person
@@ -54,8 +54,8 @@ func (c BaseContext) Yield(pairs ...any) map[string]any {
 	yield := map[string]any{
 		"CurrentURL":      c.CurrentURL,
 		"Flash":           c.Flash,
-		"Locale":          c.Locale,
 		"Timezone":        c.Timezone,
+		"Loc":             c.Loc,
 		"User":            c.User,
 		"UserRole":        c.UserRole,
 		"OriginalUser":    c.OriginalUser,
@@ -110,8 +110,8 @@ func (h BaseHandler) NewContext(r *http.Request, w http.ResponseWriter) (BaseCon
 	return BaseContext{
 		CurrentURL:      r.URL,
 		Flash:           flash,
-		Locale:          h.Localizer.GetLocale(r.Header.Get("Accept-Language")),
 		Timezone:        h.Timezone,
+		Loc:             h.Loc,
 		User:            user,
 		UserRole:        h.getUserRoleFromSession(session),
 		OriginalUser:    originalUser,

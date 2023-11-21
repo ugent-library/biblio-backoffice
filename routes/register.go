@@ -11,6 +11,7 @@ import (
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/sessions"
 	"github.com/jpillora/ipfilter"
+	"github.com/leonelquinteros/gotext"
 	"github.com/nics/ich"
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/ctx"
@@ -31,7 +32,6 @@ import (
 	"github.com/ugent-library/biblio-backoffice/handlers/publicationexporting"
 	"github.com/ugent-library/biblio-backoffice/handlers/publicationsearching"
 	"github.com/ugent-library/biblio-backoffice/handlers/publicationviewing"
-	"github.com/ugent-library/biblio-backoffice/locale"
 	"github.com/ugent-library/httpx"
 	"github.com/ugent-library/mix"
 	"github.com/ugent-library/oidc"
@@ -56,7 +56,7 @@ type Config struct {
 	SessionStore     sessions.Store
 	SessionName      string
 	Timezone         *time.Location
-	Localizer        *locale.Localizer
+	Loc              *gotext.Locale
 	Logger           *zap.SugaredLogger
 	OIDCAuth         *oidc.Auth
 	FrontendURL      string
@@ -94,7 +94,7 @@ func Register(c Config) {
 		SessionStore:    c.SessionStore,
 		SessionName:     c.SessionName,
 		Timezone:        c.Timezone,
-		Localizer:       c.Localizer,
+		Loc:             c.Loc,
 		UserService:     c.Services.UserService,
 		BaseURL:         c.BaseURL,
 		FrontendBaseUrl: c.FrontendURL,
@@ -225,12 +225,12 @@ func Register(c Config) {
 		// BEGIN NEW STYLE HANDLERS
 		r.Group(func(r *ich.Mux) {
 			r.Use(ctx.Set(ctx.Config{
-				Services:  c.Services,
-				Router:    c.Router,
-				Assets:    c.Assets,
-				Timezone:  c.Timezone,
-				Localizer: c.Localizer,
-				Env:       c.Env,
+				Services: c.Services,
+				Router:   c.Router,
+				Assets:   c.Assets,
+				Timezone: c.Timezone,
+				Loc:      c.Loc,
+				Env:      c.Env,
 				ErrorHandlers: map[int]http.HandlerFunc{
 					http.StatusNotFound:            handlers.NotFound,
 					http.StatusInternalServerError: handlers.InternalServerError,

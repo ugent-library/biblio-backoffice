@@ -10,7 +10,7 @@
             {{range $i, $v := .}}
                 {{- if gt $i 2}}, &hellip;{{break}}{{end}}
                 {{- if gt $i 0}},{{end}}
-                {{$.Locale.TS "locked" $v -}}
+                {{$.Loc.Get (print "locked." $v) -}}
             {{end}}
         </span>
         {{end}}
@@ -43,7 +43,7 @@
             {{range $i, $f := .Hits.Facets.locked}}
             <div class="form-check {{if lt $i $last}} mb-4{{end}}">
                 <input class="form-check-input" id="filter-locked-{{$i}}" type="checkbox" name="f[locked]" value="{{$f.Value}}"{{if $.SearchArgs.HasFilter "locked" .Value}} checked{{end}}>
-                <label class="form-check-label" for="filter-locked-{{$i}}">{{$.Locale.TS "locked" $f.Value}} ({{$f.Count}})</label>
+                <label class="form-check-label" for="filter-locked-{{$i}}">{{$.Loc.Get (print "locked." $f.Value)}} ({{$f.Count}})</label>
             </div>
             {{end}}
         </div>

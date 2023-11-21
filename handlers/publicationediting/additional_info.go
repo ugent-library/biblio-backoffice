@@ -5,8 +5,8 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/leonelquinteros/gotext"
 	"github.com/ugent-library/biblio-backoffice/displays"
-	"github.com/ugent-library/biblio-backoffice/locale"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
@@ -38,7 +38,7 @@ type YieldEditAdditionalInfo struct {
 func (h *Handler) EditAdditionalInfo(w http.ResponseWriter, r *http.Request, ctx Context) {
 	render.Layout(w, "show_modal", "publication/edit_additional_info", YieldEditAdditionalInfo{
 		Context:  ctx,
-		Form:     additionalInfoForm(ctx.User, ctx.Locale, ctx.Publication, nil),
+		Form:     additionalInfoForm(ctx.User, ctx.Loc, ctx.Publication, nil),
 		Conflict: false,
 	})
 }
@@ -60,7 +60,7 @@ func (h *Handler) UpdateAdditionalInfo(w http.ResponseWriter, r *http.Request, c
 		h.Logger.Warnw("update publication additional info: could not validate additional info:", "errors", validationErrs, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.Layout(w, "refresh_modal", "publication/edit_additional_info", YieldEditAdditionalInfo{
 			Context:  ctx,
-			Form:     additionalInfoForm(ctx.User, ctx.Locale, p, validationErrs.(validation.Errors)),
+			Form:     additionalInfoForm(ctx.User, ctx.Loc, p, validationErrs.(validation.Errors)),
 			Conflict: false,
 		})
 		return
@@ -72,7 +72,7 @@ func (h *Handler) UpdateAdditionalInfo(w http.ResponseWriter, r *http.Request, c
 	if errors.As(err, &conflict) {
 		render.Layout(w, "refresh_modal", "publication/edit_additional_info", YieldEditAdditionalInfo{
 			Context:  ctx,
-			Form:     additionalInfoForm(ctx.User, ctx.Locale, p, nil),
+			Form:     additionalInfoForm(ctx.User, ctx.Loc, p, nil),
 			Conflict: true,
 		})
 		return
@@ -86,11 +86,11 @@ func (h *Handler) UpdateAdditionalInfo(w http.ResponseWriter, r *http.Request, c
 
 	render.View(w, "publication/refresh_additional_info", YieldAdditionalInfo{
 		Context:               ctx,
-		DisplayAdditionalInfo: displays.PublicationAdditionalInfo(ctx.User, ctx.Locale, p),
+		DisplayAdditionalInfo: displays.PublicationAdditionalInfo(ctx.User, ctx.Loc, p),
 	})
 }
 
-func additionalInfoForm(user *models.Person, l *locale.Locale, p *models.Publication, errors validation.Errors) *form.Form {
+func additionalInfoForm(user *models.Person, loc *gotext.Locale, p *models.Publication, errors validation.Errors) *form.Form {
 	researchFieldOptions := make([]form.SelectOption, len(vocabularies.Map["research_fields"]))
 	for i, v := range vocabularies.Map["research_fields"] {
 		researchFieldOptions[i].Label = v
@@ -105,17 +105,17 @@ func additionalInfoForm(user *models.Person, l *locale.Locale, p *models.Publica
 
 	return form.New().
 		WithTheme("default").
-		WithErrors(localize.ValidationErrors(l, errors)).
+		WithErrors(localize.ValidationErrors(loc, errors)).
 		AddSection(
 			&form.SelectRepeat{
 				Name:        "research_field",
 				Options:     researchFieldOptions,
 				Values:      p.ResearchField,
 				EmptyOption: true,
-				Label:       l.T("builder.research_field"),
+				Label:       loc.Get("builder.research_field"),
 				Cols:        9,
 				Error: localize.ValidationErrorAt(
-					l,
+					loc,
 					errors,
 					"/research_field",
 				),
@@ -124,10 +124,10 @@ func additionalInfoForm(user *models.Person, l *locale.Locale, p *models.Publica
 				Name:     "keyword",
 				Value:    keywordStr,
 				Template: "tags",
-				Label:    l.T("builder.keyword"),
+				Label:    loc.Get("builder.keyword"),
 				Cols:     9,
 				Error: localize.ValidationErrorAt(
-					l,
+					loc,
 					errors,
 					"/keyword",
 				),
@@ -135,11 +135,11 @@ func additionalInfoForm(user *models.Person, l *locale.Locale, p *models.Publica
 			&form.TextArea{
 				Name:  "additional_info",
 				Value: p.AdditionalInfo,
-				Label: l.T("builder.additional_info"),
+				Label: loc.Get("builder.additional_info"),
 				Cols:  9,
 				Rows:  4,
 				Error: localize.ValidationErrorAt(
-					l,
+					loc,
 					errors,
 					"/additional_info",
 				),

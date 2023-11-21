@@ -79,7 +79,7 @@ templ RecentActivity(c *ctx.Ctx, acts []Activity) {
                             { " " }
                             switch act.Event {
                             case CreateEvent:
-                            started a { c.TS("activity_statuses", act.Status) }
+                            started a { c.Loc.Get("activity_statuses."+act.Status) }
                             case PublishEvent:
                             published a
                             case RepublishEvent:

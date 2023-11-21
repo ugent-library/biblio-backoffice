@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/leonelquinteros/gotext"
 	"github.com/ugent-library/biblio-backoffice/handlers"
-	"github.com/ugent-library/biblio-backoffice/locale"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
@@ -50,7 +50,7 @@ type YieldDeleteAbstract struct {
 func (h *Handler) AddAbstract(w http.ResponseWriter, r *http.Request, ctx Context) {
 	render.Layout(w, "show_modal", "publication/add_abstract", YieldAddAbstract{
 		Context: ctx,
-		Form:    abstractForm(ctx.Locale, ctx.Publication, &models.Text{}, nil),
+		Form:    abstractForm(ctx.Loc, ctx.Publication, &models.Text{}, nil),
 	})
 }
 
@@ -71,7 +71,7 @@ func (h *Handler) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
 		render.Layout(w, "refresh_modal", "publication/add_abstract", YieldAddAbstract{
 			Context:  ctx,
-			Form:     abstractForm(ctx.Locale, ctx.Publication, &abstract, validationErrs.(validation.Errors)),
+			Form:     abstractForm(ctx.Loc, ctx.Publication, &abstract, validationErrs.(validation.Errors)),
 			Conflict: false,
 		})
 		return
@@ -83,7 +83,7 @@ func (h *Handler) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 	if errors.As(err, &conflict) {
 		render.Layout(w, "refresh_modal", "publication/add_abstract", YieldAddAbstract{
 			Context:  ctx,
-			Form:     abstractForm(ctx.Locale, ctx.Publication, &abstract, nil),
+			Form:     abstractForm(ctx.Loc, ctx.Publication, &abstract, nil),
 			Conflict: true,
 		})
 		return
@@ -113,7 +113,7 @@ func (h *Handler) EditAbstract(w http.ResponseWriter, r *http.Request, ctx Conte
 	if abstract == nil {
 		h.Logger.Warnf("edit publication abstract: Could not fetch the abstract:", "publication", ctx.Publication.ID, "abstract", b.AbstractID, "user", ctx.User.ID)
 		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Locale.T("publication.conflict_error_reload"),
+			Message: ctx.Loc.Get("publication.conflict_error_reload"),
 		})
 		return
 	}
@@ -121,7 +121,7 @@ func (h *Handler) EditAbstract(w http.ResponseWriter, r *http.Request, ctx Conte
 	render.Layout(w, "show_modal", "publication/edit_abstract", YieldEditAbstract{
 		Context:    ctx,
 		AbstractID: b.AbstractID,
-		Form:       abstractForm(ctx.Locale, ctx.Publication, abstract, nil),
+		Form:       abstractForm(ctx.Loc, ctx.Publication, abstract, nil),
 	})
 }
 
@@ -143,7 +143,7 @@ func (h *Handler) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 		render.Layout(w, "refresh_modal", "publication/edit_abstract", YieldEditAbstract{
 			Context:    ctx,
 			AbstractID: b.AbstractID,
-			Form:       abstractForm(ctx.Locale, ctx.Publication, abstract, nil),
+			Form:       abstractForm(ctx.Loc, ctx.Publication, abstract, nil),
 			Conflict:   true,
 		})
 		return
@@ -158,7 +158,7 @@ func (h *Handler) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 		render.Layout(w, "refresh_modal", "publication/edit_abstract", YieldEditAbstract{
 			Context:    ctx,
 			AbstractID: b.AbstractID,
-			Form:       abstractForm(ctx.Locale, ctx.Publication, abstract, validationErrs.(validation.Errors)),
+			Form:       abstractForm(ctx.Loc, ctx.Publication, abstract, validationErrs.(validation.Errors)),
 			Conflict:   false,
 		})
 		return
@@ -171,7 +171,7 @@ func (h *Handler) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 		render.Layout(w, "refresh_modal", "publication/edit_abstract", YieldEditAbstract{
 			Context:    ctx,
 			AbstractID: b.AbstractID,
-			Form:       abstractForm(ctx.Locale, ctx.Publication, abstract, nil),
+			Form:       abstractForm(ctx.Loc, ctx.Publication, abstract, nil),
 			Conflict:   true,
 		})
 		return
@@ -198,7 +198,7 @@ func (h *Handler) ConfirmDeleteAbstract(w http.ResponseWriter, r *http.Request, 
 
 	if b.SnapshotID != ctx.Publication.SnapshotID {
 		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Locale.T("publication.conflict_error_reload"),
+			Message: ctx.Loc.Get("publication.conflict_error_reload"),
 		})
 		return
 	}
@@ -224,7 +224,7 @@ func (h *Handler) DeleteAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
 		render.Layout(w, "refresh_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Locale.T("publication.conflict_error_reload"),
+			Message: ctx.Loc.Get("publication.conflict_error_reload"),
 		})
 		return
 	}
@@ -240,7 +240,7 @@ func (h *Handler) DeleteAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 	})
 }
 
-func abstractForm(l *locale.Locale, publication *models.Publication, abstract *models.Text, errors validation.Errors) *form.Form {
+func abstractForm(loc *gotext.Locale, publication *models.Publication, abstract *models.Text, errors validation.Errors) *form.Form {
 	idx := -1
 	for i, a := range publication.Abstract {
 		if a.ID == abstract.ID {
@@ -250,23 +250,23 @@ func abstractForm(l *locale.Locale, publication *models.Publication, abstract *m
 
 	return form.New().
 		WithTheme("cols").
-		WithErrors(localize.ValidationErrors(l, errors)).
+		WithErrors(localize.ValidationErrors(loc, errors)).
 		AddSection(
 			&form.TextArea{
 				Name:  "text",
 				Value: abstract.Text,
-				Label: l.T("builder.abstract.text"),
+				Label: loc.Get("builder.abstract.text"),
 				Cols:  12,
 				Rows:  6,
-				Error: localize.ValidationErrorAt(l, errors, fmt.Sprintf("/abstract/%d/text", idx)),
+				Error: localize.ValidationErrorAt(loc, errors, fmt.Sprintf("/abstract/%d/text", idx)),
 			},
 			&form.Select{
 				Name:    "lang",
 				Value:   abstract.Lang,
-				Label:   l.T("builder.abstract.lang"),
-				Options: localize.LanguageSelectOptions(l),
+				Label:   loc.Get("builder.abstract.lang"),
+				Options: localize.LanguageSelectOptions(),
 				Cols:    12,
-				Error:   localize.ValidationErrorAt(l, errors, fmt.Sprintf("/abstract/%d/lang", idx)),
+				Error:   localize.ValidationErrorAt(loc, errors, fmt.Sprintf("/abstract/%d/lang", idx)),
 			},
 		)
 }

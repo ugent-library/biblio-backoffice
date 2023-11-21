@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/leonelquinteros/gotext"
 	"github.com/ugent-library/biblio-backoffice/handlers"
-	"github.com/ugent-library/biblio-backoffice/locale"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
@@ -48,7 +48,7 @@ type YieldDeleteAbstract struct {
 }
 
 func (h *Handler) AddAbstract(w http.ResponseWriter, r *http.Request, ctx Context) {
-	form := abstractForm(ctx.Locale, ctx.Dataset, &models.Text{}, nil)
+	form := abstractForm(ctx.Loc, ctx.Dataset, &models.Text{}, nil)
 
 	render.Layout(w, "show_modal", "dataset/add_abstract", YieldAddAbstract{
 		Context:  ctx,
@@ -75,7 +75,7 @@ func (h *Handler) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 	if validationErrs := ctx.Dataset.Validate(); validationErrs != nil {
 		render.Layout(w, "refresh_modal", "dataset/add_abstract", YieldAddAbstract{
 			Context:  ctx,
-			Form:     abstractForm(ctx.Locale, ctx.Dataset, &abstract, validationErrs.(validation.Errors)),
+			Form:     abstractForm(ctx.Loc, ctx.Dataset, &abstract, validationErrs.(validation.Errors)),
 			Conflict: false,
 		})
 		return
@@ -87,7 +87,7 @@ func (h *Handler) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 	if errors.As(err, &conflict) {
 		render.Layout(w, "refresh_modal", "dataset/add_abstract", YieldAddAbstract{
 			Context:  ctx,
-			Form:     abstractForm(ctx.Locale, ctx.Dataset, &abstract, nil),
+			Form:     abstractForm(ctx.Loc, ctx.Dataset, &abstract, nil),
 			Conflict: true,
 		})
 		return
@@ -118,7 +118,7 @@ func (h *Handler) EditAbstract(w http.ResponseWriter, r *http.Request, ctx Conte
 	if abstract == nil {
 		h.Logger.Warnf("edit dataset abstract: Could not fetch the abstract:", "dataset", ctx.Dataset.ID, "abstract", b.AbstractID, "user", ctx.User.ID)
 		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Locale.T("dataset.conflict_error_reload"),
+			Message: ctx.Loc.Get("dataset.conflict_error_reload"),
 		})
 		return
 	}
@@ -126,7 +126,7 @@ func (h *Handler) EditAbstract(w http.ResponseWriter, r *http.Request, ctx Conte
 	render.Layout(w, "show_modal", "dataset/edit_abstract", YieldEditAbstract{
 		Context:    ctx,
 		AbstractID: b.AbstractID,
-		Form:       abstractForm(ctx.Locale, ctx.Dataset, abstract, nil),
+		Form:       abstractForm(ctx.Loc, ctx.Dataset, abstract, nil),
 		Conflict:   false,
 	})
 }
@@ -150,7 +150,7 @@ func (h *Handler) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 		render.Layout(w, "refresh_modal", "dataset/edit_abstract", YieldEditAbstract{
 			Context:    ctx,
 			AbstractID: b.AbstractID,
-			Form:       abstractForm(ctx.Locale, ctx.Dataset, abstract, nil),
+			Form:       abstractForm(ctx.Loc, ctx.Dataset, abstract, nil),
 			Conflict:   true,
 		})
 		return
@@ -165,7 +165,7 @@ func (h *Handler) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 		render.Layout(w, "refresh_modal", "dataset/edit_abstract", YieldEditAbstract{
 			Context:    ctx,
 			AbstractID: b.AbstractID,
-			Form:       abstractForm(ctx.Locale, ctx.Dataset, abstract, validationErrs.(validation.Errors)),
+			Form:       abstractForm(ctx.Loc, ctx.Dataset, abstract, validationErrs.(validation.Errors)),
 			Conflict:   false,
 		})
 		return
@@ -178,7 +178,7 @@ func (h *Handler) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 		render.Layout(w, "refresh_modal", "dataset/edit_abstract", YieldEditAbstract{
 			Context:    ctx,
 			AbstractID: b.AbstractID,
-			Form:       abstractForm(ctx.Locale, ctx.Dataset, abstract, nil),
+			Form:       abstractForm(ctx.Loc, ctx.Dataset, abstract, nil),
 			Conflict:   true,
 		})
 		return
@@ -205,7 +205,7 @@ func (h *Handler) ConfirmDeleteAbstract(w http.ResponseWriter, r *http.Request, 
 
 	if b.SnapshotID != ctx.Dataset.SnapshotID {
 		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Locale.T("dataset.conflict_error_reload"),
+			Message: ctx.Loc.Get("dataset.conflict_error_reload"),
 		})
 		return
 	}
@@ -232,7 +232,7 @@ func (h *Handler) DeleteAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
 		render.Layout(w, "refresh_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Locale.T("dataset.conflict_error_reload"),
+			Message: ctx.Loc.Get("dataset.conflict_error_reload"),
 		})
 		return
 	}
@@ -248,7 +248,7 @@ func (h *Handler) DeleteAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 	})
 }
 
-func abstractForm(l *locale.Locale, dataset *models.Dataset, abstract *models.Text, errors validation.Errors) *form.Form {
+func abstractForm(loc *gotext.Locale, dataset *models.Dataset, abstract *models.Text, errors validation.Errors) *form.Form {
 	idx := -1
 	for i, a := range dataset.Abstract {
 		if a.ID == abstract.ID {
@@ -259,23 +259,23 @@ func abstractForm(l *locale.Locale, dataset *models.Dataset, abstract *models.Te
 
 	return form.New().
 		WithTheme("cols").
-		WithErrors(localize.ValidationErrors(l, errors)).
+		WithErrors(localize.ValidationErrors(loc, errors)).
 		AddSection(
 			&form.TextArea{
 				Name:  "text",
 				Value: abstract.Text,
-				Label: l.T("builder.abstract.text"),
+				Label: loc.Get("builder.abstract.text"),
 				Cols:  12,
 				Rows:  6,
-				Error: localize.ValidationErrorAt(l, errors, fmt.Sprintf("/abstract/%d/text", idx)),
+				Error: localize.ValidationErrorAt(loc, errors, fmt.Sprintf("/abstract/%d/text", idx)),
 			},
 			&form.Select{
 				Name:    "lang",
 				Value:   abstract.Lang,
-				Label:   l.T("builder.abstract.lang"),
-				Options: localize.LanguageSelectOptions(l),
+				Label:   loc.Get("builder.abstract.lang"),
+				Options: localize.LanguageSelectOptions(),
 				Cols:    12,
-				Error:   localize.ValidationErrorAt(l, errors, fmt.Sprintf("/abstract/%d/lang", idx)),
+				Error:   localize.ValidationErrorAt(loc, errors, fmt.Sprintf("/abstract/%d/lang", idx)),
 			},
 		)
 }

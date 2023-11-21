@@ -6,10 +6,14 @@ import switchMode from './switch-mode'
 import ensureModal from './ensure-modal'
 import ensureNoModal from './ensure-no-modal'
 import visitPublication from './visit-publication'
+import visitDataset from './visit-dataset'
 import ensureToast from './ensure-toast'
 import ensureNoToast from './ensure-no-toast'
 import setFieldByLabel from './set-field-by-label'
 import search from './search'
+import updateFields from './update-fields'
+import setUpPublication from './set-up-publication'
+import setUpDataset from './set-up-dataset'
 
 // Child commands
 import finishLog from './finish-log'
@@ -36,6 +40,8 @@ Cypress.Commands.addAll({
 
   visitPublication,
 
+  visitDataset,
+
   ensureToast,
 
   ensureNoToast,
@@ -43,6 +49,12 @@ Cypress.Commands.addAll({
   setFieldByLabel,
 
   search,
+
+  updateFields,
+
+  setUpPublication,
+
+  setUpDataset,
 })
 
 // Child commands

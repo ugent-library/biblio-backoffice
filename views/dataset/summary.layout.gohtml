@@ -18,16 +18,16 @@
                     <div class="c-subline text-nowrap me-3 pe-3 my-2{{if eq .Dataset.AccessLevel "info:eu-repo/semantics/embargoedAccess"}} border-end{{end}}">
                         {{if eq .Dataset.AccessLevel "info:eu-repo/semantics/openAccess"}}
                         <i class="if if-calendar if--small if--muted"></i>
-                        <span class="c-subline text-truncate ps-2">{{.Locale.TS "dataset_access_levels" .Dataset.AccessLevel}}</span>
+                        <span class="c-subline text-truncate ps-2">{{.Loc.Get (print "dataset_access_levels." .Dataset.AccessLevel)}}</span>
                         {{else if eq .Dataset.AccessLevel "info:eu-repo/semantics/embargoedAccess"}}
                         <i class="if if-time if--small if--muted"></i>
-                        <span class="c-subline text-muted ps-2">{{.Locale.TS "dataset_access_levels" .Dataset.AccessLevel}}</span>
+                        <span class="c-subline text-muted ps-2">{{.Loc.Get (print "dataset_access_levels." .Dataset.AccessLevel)}}</span>
                         {{else if eq .Dataset.AccessLevel "info:eu-repo/semantics/restrictedAccess"}}
                         <i class="if if-ghent-university if--small if--muted"></i>
-                        <span class="c-subline text-muted ps-2">{{.Locale.TS "dataset_access_levels" .Dataset.AccessLevel}}</span>
+                        <span class="c-subline text-muted ps-2">{{.Loc.Get (print "dataset_access_levels." .Dataset.AccessLevel)}}</span>
                         {{else if eq .Dataset.AccessLevel "info:eu-repo/semantics/closedAccess"}}
                         <i class="if if-eye-off if--small if--muted"></i>
-                        <span class="c-subline text-muted ps-2">{{.Locale.TS "dataset_access_levels" .Dataset.AccessLevel}}</span>
+                        <span class="c-subline text-muted ps-2">{{.Loc.Get (print "dataset_access_levels." .Dataset.AccessLevel)}}</span>
                         {{else}}
                         <i class="if if-error-circle if--error"></i>
                         <span class="ps-2 text-muted">Access level missing</span>
@@ -40,7 +40,7 @@
                         {{else}}
                         <i class="if if-ghent-university if--small if--muted"></I>
                         {{end}}
-                        <span class="c-subline text-truncate ps-2">{{.Locale.TS "dataset_access_levels_after_embargo" .Dataset.AccessLevelAfterEmbargo}} from {{.Dataset.EmbargoDate }}</span>
+                        <span class="c-subline text-truncate ps-2">{{.Loc.Get (print "dataset_access_levels_after_embargo." .Dataset.AccessLevelAfterEmbargo)}} from {{.Dataset.EmbargoDate }}</span>
                     </div>
                     {{end}}
                 </div>

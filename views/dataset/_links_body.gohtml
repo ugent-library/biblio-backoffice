@@ -16,7 +16,7 @@
                     <a class="text-break" href="{{.URL}}" target="_blank">{{.URL}}</a>
                     <p class="c-body-small text-muted m-0">{{.Description}}</p>
                 </td>
-                <td>{{$.Locale.TS "dataset_link_relations" .Relation}}</td>
+                <td>{{$.Loc.Get (print "dataset_link_relations." .Relation)}}</td>
                 <td class="pe-6">
                     {{if $.User.CanEditDataset $.Dataset}}
                     <div class="c-button-toolbar">

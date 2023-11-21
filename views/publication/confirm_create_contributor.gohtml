@@ -2,12 +2,12 @@
 <div class="modal-dialog modal-dialog-centered modal-fullscreen modal-dialog-scrollable" role="document">
     <div class="modal-content">
         <div class="modal-header">
-            <h2 class="modal-title">Add {{.Locale.TS "publication.contributor.role" .Role}}</h2>
+            <h2 class="modal-title">Add {{.Loc.Get (print "publication.contributor.role." .Role)}}</h2>
         </div>
         <div class="modal-body">
             {{.Form.Errors.Render}}
 
-            <h3>Review {{.Locale.TS "publication.contributor.role" .Role}} information</h3>
+            <h3>Review {{.Loc.Get (print "publication.contributor.role." .Role)}} information</h3>
 
             <ul class="list-group mt-6">
                 <li class="list-group-item">

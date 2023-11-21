@@ -4,41 +4,32 @@ describe('Issue #1140: External contributor info is empty in the suggest box', (
   it('should display the external contributor name in the suggestions', () => {
     cy.loginAsResearcher()
 
-    cy.visit('/publication/add')
+    cy.setUpPublication('Book')
 
-    cy.contains('Import from Web of Science').click()
-    cy.contains('.btn', 'Add publication(s)').click()
+    cy.visitPublication()
 
-    cy.get('input[name=file]').selectFile('cypress/fixtures/wos-000963572100001.txt')
+    cy.updateFields(
+      'Authors',
+      () => {
+        cy.intercept({
+          pathname: '/publication/*/contributors/author/suggestions',
+          query: {
+            first_name: 'John',
+            last_name: 'Doe',
+          },
+        }).as('suggestions')
 
-    cy.contains('People & Affiliations').click()
+        cy.setFieldByLabel('First name', 'John')
+        cy.setFieldByLabel('Last name', 'Doe')
 
-    cy.contains('.btn', 'Add author').click()
+        cy.wait('@suggestions')
 
-    cy.ensureModal('Add author').within(() => {
-      cy.intercept({
-        pathname: '/publication/*/contributors/author/suggestions',
-        query: {
-          first_name: 'John',
-          last_name: 'Doe',
-        },
-      }).as('suggestions')
+        cy.contains('#person-suggestions .list-group-item', 'John Doe').contains('.btn', 'Add external author').click()
 
-      cy.setFieldByLabel('First name', 'John')
-      cy.setFieldByLabel('Last name', 'Doe')
-
-      cy.wait('@suggestions')
-
-      cy.contains('#person-suggestions .list-group-item', 'John Doe').contains('.btn', 'Add external author').click()
-    })
-
-    cy.ensureModal('Add author')
-      .within(() => {
         cy.setFieldByLabel('Roles', 'Validation')
-      })
-      .closeModal(/^Save$/)
-
-    cy.ensureNoModal()
+      },
+      /^Save$/
+    )
 
     cy.contains('table#contributors-author-table tr', 'John Doe').find('.if.if-edit').click()
 

@@ -10,7 +10,7 @@
             {{range $i, $v := .}}
                 {{- if gt $i 2}}, &hellip;{{break}}{{end}}
                 {{- if gt $i 0}},{{end}}
-                {{$.Locale.TS "extern" $v -}}
+                {{$.Loc.Get (print "extern." $v) -}}
             {{end}}
         </span>
         {{end}}
@@ -43,7 +43,7 @@
             {{range $i, $f := .Hits.Facets.extern}}
             <div class="form-check {{if lt $i $last}} mb-4{{end}}">
                 <input class="form-check-input" id="filter-extern-{{$i}}" type="checkbox" name="f[extern]" value="{{$f.Value}}"{{if $.SearchArgs.HasFilter "extern" $f.Value}} checked{{end}}>
-                <label class="form-check-label" for="filter-extern-{{$i}}">{{$.Locale.TS "extern" $f.Value}} ({{$f.Count}})</label>
+                <label class="form-check-label" for="filter-extern-{{$i}}">{{$.Loc.Get (print "extern." $f.Value)}} ({{$f.Count}})</label>
             </div>
             {{end}}
         </div>

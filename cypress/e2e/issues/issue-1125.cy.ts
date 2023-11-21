@@ -4,14 +4,7 @@ describe('Issue #1125: Add "locked" message when record is locked', () => {
   it('should display "locked" message when record is locked', () => {
     cy.loginAsResearcher()
 
-    cy.visit('/publication/add')
-
-    cy.contains('Import from Web of Science').click()
-    cy.contains('.btn', 'Add publication(s)').click()
-
-    cy.get('input[name=file]').selectFile('cypress/fixtures/wos-000963572100001.txt')
-
-    cy.extractBiblioId()
+    cy.setUpPublication('Book')
 
     // Lock the publication
     cy.loginAsLibrarian()

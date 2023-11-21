@@ -1,37 +1,52 @@
 package localize
 
 import (
-	"github.com/ugent-library/biblio-backoffice/locale"
+	"github.com/leonelquinteros/gotext"
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/validation"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
+	"golang.org/x/text/language"
+	"golang.org/x/text/language/display"
 )
 
-func ValidationErrors(loc *locale.Locale, errs validation.Errors) []string {
+// TODO hardcoded to English for now
+var languageNamer = display.Languages(language.MustParse("en"))
+
+func ValidationErrors(loc *gotext.Locale, errs validation.Errors) []string {
 	msgs := make([]string, len(errs))
 	for i, e := range errs {
-		msgs[i] = loc.TranslateScope("validation", e.Code)
+		msgs[i] = loc.Get("validation." + e.Code)
 	}
 	return msgs
 }
 
-func ValidationErrorAt(loc *locale.Locale, errs validation.Errors, ptr string) string {
+func ValidationErrorAt(loc *gotext.Locale, errs validation.Errors, ptr string) string {
 	err := errs.At(ptr)
 	if err == nil {
 		return ""
 	}
-	return loc.TranslateScope("validation", err.Code)
+	return loc.Get("validation." + err.Code)
 }
 
-func LanguageNames(loc *locale.Locale, codes []string) []string {
+// TODO memoize this
+func LanguageName(code string) string {
+	tag := language.Make(code)
+	if name := languageNamer.Name(tag); name != "" {
+		return name
+	}
+	return code
+
+}
+
+func LanguageNames(codes []string) []string {
 	names := make([]string, len(codes))
 	for i, code := range codes {
-		names[i] = loc.LanguageName(code)
+		names[i] = LanguageName(code)
 	}
 	return names
 }
 
-func LanguageSelectOptions(locale *locale.Locale) []form.SelectOption {
+func LanguageSelectOptions() []form.SelectOption {
 	vals, ok := vocabularies.Map["language_codes"]
 	if !ok {
 		return nil
@@ -42,14 +57,14 @@ func LanguageSelectOptions(locale *locale.Locale) []form.SelectOption {
 	for i, v := range vals {
 		opts[i] = form.SelectOption{
 			Value: v,
-			Label: locale.LanguageName(v),
+			Label: LanguageName(v),
 		}
 	}
 
 	return opts
 }
 
-func VocabularyTerms(locale *locale.Locale, key string) map[string]string {
+func VocabularyTerms(loc *gotext.Locale, key string) map[string]string {
 	vals, ok := vocabularies.Map[key]
 	if !ok {
 		return nil
@@ -58,13 +73,13 @@ func VocabularyTerms(locale *locale.Locale, key string) map[string]string {
 	translatedTerms := make(map[string]string, len(vals))
 
 	for _, v := range vals {
-		translatedTerms[v] = locale.TS(key, v)
+		translatedTerms[v] = loc.Get(key + "." + v)
 	}
 
 	return translatedTerms
 }
 
-func VocabularySelectOptions(locale *locale.Locale, key string) []form.SelectOption {
+func VocabularySelectOptions(loc *gotext.Locale, key string) []form.SelectOption {
 	vals, ok := vocabularies.Map[key]
 	if !ok {
 		return nil
@@ -75,7 +90,7 @@ func VocabularySelectOptions(locale *locale.Locale, key string) []form.SelectOpt
 	for i, v := range vals {
 		opts[i] = form.SelectOption{
 			Value: v,
-			Label: locale.TS(key, v),
+			Label: loc.Get(key + "." + v),
 		}
 	}
 

@@ -10,7 +10,7 @@
             {{range $i, $v := .}}
                 {{- if gt $i 2}}, &hellip;{{break}}{{end}}
                 {{- if gt $i 0}}, {{end}}
-                {{$.Locale.TS "publication_types" $v -}}
+                {{$.Loc.Get (print "publication_types." $v) -}}
             {{end}}
         </span>
         {{end}}
@@ -43,7 +43,7 @@
             {{range $i, $f := .Hits.Facets.type}}
             <div class="form-check {{if lt $i $last}} mb-4{{end}}">
                 <input class="form-check-input" id="filter-type-{{$i}}" type="checkbox" name="f[type]" value="{{$f.Value}}"{{if $.SearchArgs.HasFilter "type" $f.Value}} checked{{end}}>
-                <label class="form-check-label" for="filter-type-{{$i}}">{{$.Locale.TS "publication_types" $f.Value}} ({{$f.Count}})</label>
+                <label class="form-check-label" for="filter-type-{{$i}}">{{$.Loc.Get (print "publication_types." $f.Value)}} ({{$f.Count}})</label>
             </div>
             {{end}}
         </div>

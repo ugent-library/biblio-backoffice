@@ -57,7 +57,7 @@ func (h *Handler) Show(w http.ResponseWriter, r *http.Request, ctx Context) {
 
 	render.Layout(w, "layouts/default", "dataset/pages/show", YieldShow{
 		Context:      ctx,
-		PageTitle:    ctx.Locale.T("dataset.page.show.title"),
+		PageTitle:    ctx.Loc.Get("dataset.page.show.title"),
 		SubNavs:      subNavs,
 		ActiveNav:    "datasets",
 		ActiveSubNav: activeSubNav,
@@ -69,7 +69,7 @@ func (h *Handler) ShowDescription(w http.ResponseWriter, r *http.Request, ctx Co
 		Context:        ctx,
 		SubNavs:        subNavs,
 		ActiveSubNav:   "description",
-		DisplayDetails: displays.DatasetDetails(ctx.User, ctx.Locale, ctx.Dataset),
+		DisplayDetails: displays.DatasetDetails(ctx.User, ctx.Loc, ctx.Dataset),
 	})
 }
 

@@ -10,7 +10,7 @@
             {{range $i, $v := .}}
                 {{$lVal := $v}}
                 {{if eq $lVal "missing"}}
-                    {{$lVal =  $.Locale.TS "organization" $lVal}}
+                    {{$lVal =  $.Loc.Get (print "organization." $lVal)}}
                 {{end}}
                 {{- if gt $i 2}}, &hellip;{{break}}{{end}}
                 {{- if gt $i 0}},{{end}}
@@ -47,7 +47,7 @@
             {{range $i, $f := .Hits.Facets.faculty_id}}
             <div class="form-check {{if lt $i $last}} mb-4{{end}}">
                 <input class="form-check-input" id="filter-faculty-id-{{$i}}" type="checkbox" name="f[faculty_id]" value="{{$f.Value}}"{{if $.SearchArgs.HasFilter "faculty_id" $f.Value}} checked{{end}}>
-                <label class="form-check-label" for="filter-faculty-id-{{$i}}">{{$.Locale.TS "organization" $f.Value}} ({{$f.Count}})</label>
+                <label class="form-check-label" for="filter-faculty-id-{{$i}}">{{$.Loc.Get (print "organization." $f.Value)}} ({{$f.Count}})</label>
             </div>
             {{end}}
         </div>

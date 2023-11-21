@@ -6,7 +6,7 @@ describe('Issue #1246: Close button on toast does not work', () => {
   })
 
   it('should be possible to dismiss the delete publication toast', () => {
-    setUpPublication()
+    cy.setUpPublication('Miscellaneous')
 
     cy.contains('.btn', 'Save as draft').click()
 
@@ -27,7 +27,7 @@ describe('Issue #1246: Close button on toast does not work', () => {
   })
 
   it('should be possible to dismiss the publish publication toast', () => {
-    setUpPublication()
+    cy.setUpPublication('Miscellaneous', true)
 
     cy.contains('.btn', 'Save as draft').click()
 
@@ -43,7 +43,7 @@ describe('Issue #1246: Close button on toast does not work', () => {
   })
 
   it('should be possible to dismiss the withdraw publication toast', () => {
-    setUpPublication()
+    cy.setUpPublication('Miscellaneous', true)
 
     cy.contains('.btn', 'Publish to Biblio').click()
 
@@ -59,7 +59,7 @@ describe('Issue #1246: Close button on toast does not work', () => {
   })
 
   it('should be possible to dismiss the republish publication toast', () => {
-    setUpPublication()
+    cy.setUpPublication('Miscellaneous', true)
 
     cy.contains('.btn', 'Publish to Biblio').click()
 
@@ -86,7 +86,7 @@ describe('Issue #1246: Close button on toast does not work', () => {
   })
 
   it('should be possible to dismiss the locked publication toast', () => {
-    setUpPublication()
+    cy.setUpPublication('Miscellaneous')
 
     cy.contains('.btn', 'Publish to Biblio').click()
 
@@ -101,7 +101,7 @@ describe('Issue #1246: Close button on toast does not work', () => {
   })
 
   it('should be possible to dismiss the unlocked publication toast', () => {
-    setUpPublication()
+    cy.setUpPublication('Miscellaneous')
 
     cy.contains('.btn', 'Publish to Biblio').click()
 
@@ -121,51 +121,6 @@ describe('Issue #1246: Close button on toast does not work', () => {
 
     assertToast('Publication was successfully unlocked.')
   })
-
-  function setUpPublication() {
-    cy.visit('/publication/add')
-    cy.contains('Enter a publication manually').click()
-    cy.contains('.btn', 'Add publication(s)').click()
-
-    cy.contains('Miscellaneous').click()
-    cy.contains('.btn', 'Add publication(s)').click()
-
-    cy.contains('Publication details').closest('.card-header').contains('.btn', 'Edit').click()
-
-    cy.ensureModal('Edit publication details')
-      .within(() => {
-        cy.setFieldByLabel('Title', 'Issue 1246 test [CYPRESSTEST]')
-        cy.setFieldByLabel('Publication year', new Date().getFullYear().toString())
-      })
-      .closeModal(true)
-
-    cy.contains('People & Affiliations').click()
-
-    cy.contains('.btn', 'Add author').click()
-
-    cy.ensureModal('Add author').within(() => {
-      cy.intercept('/publication/*/contributors/author/suggestions?*').as('suggestions')
-
-      cy.setFieldByLabel('First name', 'Griet')
-      cy.setFieldByLabel('Last name', 'Alleman')
-
-      cy.wait('@suggestions')
-
-      cy.intercept('/publication/*/contributors/author/confirm-create?*').as('confirmCreate')
-
-      cy.contains('.btn', 'Add author').click()
-    })
-
-    cy.wait('@confirmCreate')
-
-    cy.ensureModal('Add author').closeModal(/^Save$/)
-
-    cy.ensureNoModal()
-
-    cy.contains('.btn', 'Complete Description').click()
-
-    cy.extractBiblioId()
-  }
 
   function assertToast(toastMessage: string) {
     cy.ensureToast(toastMessage).closeToast()

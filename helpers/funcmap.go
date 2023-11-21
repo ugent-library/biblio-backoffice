@@ -3,9 +3,11 @@ package helpers
 import (
 	"fmt"
 	"html/template"
+	"time"
 
 	"github.com/rvflash/elapsed"
 	"github.com/ugent-library/biblio-backoffice/identifiers"
+	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/friendly"
 )
@@ -17,6 +19,8 @@ func FuncMap() template.FuncMap {
 		"formatRange":       FormatRange,
 		"formatBool":        FormatBool,
 		"formatBytes":       friendly.Bytes,
+		"formatTime":        FormatTime,
+		"languageName":      localize.LanguageName,
 		"resolveIdentifier": identifiers.Resolve,
 	}
 }
@@ -41,4 +45,8 @@ func FormatBool(b bool, t, f string) string {
 		return t
 	}
 	return f
+}
+
+func FormatTime(t time.Time, loc *time.Location, fmt string) string {
+	return t.In(loc).Format(fmt)
 }

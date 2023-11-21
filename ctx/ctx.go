@@ -13,10 +13,10 @@ import (
 
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/sessions"
+	"github.com/leonelquinteros/gotext"
 	"github.com/nics/ich"
 	"github.com/oklog/ulid/v2"
 	"github.com/ugent-library/biblio-backoffice/backends"
-	"github.com/ugent-library/biblio-backoffice/locale"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render/flash"
 	"github.com/ugent-library/httperror"
@@ -54,7 +54,7 @@ func Set(config Config) func(http.Handler) http.Handler {
 				host:      r.Host,
 				scheme:    r.URL.Scheme,
 				Log:       zaphttp.Logger(r.Context()).Sugar(),
-				Locale:    config.Localizer.GetLocale(r.Header.Get("Accept-Language")),
+				Loc:       config.Loc,
 				CSRFToken: csrf.Token(r),
 			}
 			if c.scheme == "" {
@@ -102,8 +102,8 @@ type Config struct {
 	*backends.Services
 	Router        *ich.Mux
 	Assets        mix.Manifest
-	Localizer     *locale.Localizer
 	Timezone      *time.Location
+	Loc           *gotext.Locale
 	Env           string
 	ErrorHandlers map[int]http.HandlerFunc
 	SessionName   string
@@ -118,7 +118,7 @@ type Ctx struct {
 	host         string
 	scheme       string
 	Log          *zap.SugaredLogger
-	Locale       *locale.Locale
+	Loc          *gotext.Locale
 	User         *models.Person
 	UserRole     string
 	OriginalUser *models.Person
@@ -164,14 +164,6 @@ func (c *Ctx) AssetPath(asset string) string {
 		panic(err)
 	}
 	return p
-}
-
-func (c *Ctx) T(key string, args ...any) string {
-	return c.Locale.Translate(key, args...)
-}
-
-func (c *Ctx) TS(scope, key string, args ...any) string {
-	return c.Locale.TranslateScope(scope, key, args...)
 }
 
 func (c *Ctx) PersistFlash(w http.ResponseWriter, f flash.Flash) {

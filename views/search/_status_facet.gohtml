@@ -10,7 +10,7 @@
             {{range $i, $v := .}}
                 {{- if gt $i 2}}, &hellip;{{break}}{{end}}
                 {{- if gt $i 0}},{{end}}
-                {{$.Locale.TS "publication_statuses" $v -}}
+                {{$.Loc.Get (print "publication_statuses." $v) -}}
             {{end}}
         </span>
         {{end}}
@@ -43,7 +43,7 @@
             {{range $i, $f := .Hits.Facets.status}}
             <div class="form-check {{if lt $i $last}} mb-4{{end}}">
                 <input class="form-check-input" id="filter-status-{{$i}}" type="checkbox" name="f[status]" value="{{$f.Value}}"{{if $.SearchArgs.HasFilter "status" $f.Value}} checked{{end}}>
-                <label class="form-check-label" for="filter-status-{{$i}}">{{$.Locale.TS "publication_statuses" $f.Value}} ({{$f.Count}})</label>
+                <label class="form-check-label" for="filter-status-{{$i}}">{{$.Loc.Get (print "publication_statuses." $f.Value)}} ({{$f.Count}})</label>
             </div>
             {{end}}
         </div>
