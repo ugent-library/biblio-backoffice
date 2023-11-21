@@ -70,8 +70,6 @@ describe('The home page', () => {
 
     cy.visit('/')
 
-    // TODO: add sidebar color switching again
-
     cy.get('.nav-main .dropdown-menu .dropdown-item').should('have.length', 2)
     cy.contains('.dropdown-menu .dropdown-item', 'View as').should('exist')
     cy.contains('.dropdown-menu .dropdown-item', 'Logout').should('exist')
