@@ -7,6 +7,7 @@ import (
 
 	"github.com/rvflash/elapsed"
 	"github.com/ugent-library/biblio-backoffice/identifiers"
+	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/friendly"
 )
@@ -19,6 +20,7 @@ func FuncMap() template.FuncMap {
 		"formatBool":        FormatBool,
 		"formatBytes":       friendly.Bytes,
 		"formatTime":        FormatTime,
+		"languageName":      localize.LanguageName,
 		"resolveIdentifier": identifiers.Resolve,
 	}
 }

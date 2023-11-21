@@ -29,7 +29,7 @@ func (h *Handler) Lock(w http.ResponseWriter, r *http.Request, ctx Context) {
 	ctx.Dataset.Locked = true
 
 	if validationErrs := ctx.Dataset.Validate(); validationErrs != nil {
-		errors := form.Errors(localize.ValidationErrors(ctx.Locale, validationErrs.(validation.Errors)))
+		errors := form.Errors(localize.ValidationErrors(ctx.Loc, validationErrs.(validation.Errors)))
 		render.Layout(w, "show_modal", "form_errors_dialog", struct {
 			Title  string
 			Errors form.Errors
@@ -45,7 +45,7 @@ func (h *Handler) Lock(w http.ResponseWriter, r *http.Request, ctx Context) {
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
 		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Locale.T("dataset.conflict_error"),
+			Message: ctx.Loc.Get("dataset.conflict_error"),
 		})
 		return
 	}
@@ -75,7 +75,7 @@ func (h *Handler) Unlock(w http.ResponseWriter, r *http.Request, ctx Context) {
 	ctx.Dataset.Locked = false
 
 	if validationErrs := ctx.Dataset.Validate(); validationErrs != nil {
-		errors := form.Errors(localize.ValidationErrors(ctx.Locale, validationErrs.(validation.Errors)))
+		errors := form.Errors(localize.ValidationErrors(ctx.Loc, validationErrs.(validation.Errors)))
 		render.Layout(w, "show_modal", "form_errors_dialog", struct {
 			Title  string
 			Errors form.Errors
@@ -91,7 +91,7 @@ func (h *Handler) Unlock(w http.ResponseWriter, r *http.Request, ctx Context) {
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
 		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message:     ctx.Locale.T("dataset.conflict_error_reload"),
+			Message:     ctx.Loc.Get("dataset.conflict_error_reload"),
 			RedirectURL: r.URL.Query().Get("redirect-url"),
 		})
 		return

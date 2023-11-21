@@ -11,12 +11,12 @@ import (
 	"github.com/Masterminds/sprig/v3"
 	"github.com/go-chi/chi/v5"
 	"github.com/gorilla/sessions"
+	"github.com/leonelquinteros/gotext"
 	"github.com/nics/ich"
 	"github.com/ory/graceful"
 	"github.com/spf13/cobra"
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/helpers"
-	"github.com/ugent-library/biblio-backoffice/locale"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/routes"
 	"github.com/ugent-library/biblio-backoffice/urls"
@@ -24,8 +24,6 @@ import (
 	"github.com/ugent-library/bind"
 	"github.com/ugent-library/mix"
 	"github.com/ugent-library/oidc"
-
-	_ "github.com/ugent-library/biblio-backoffice/translations"
 )
 
 func init() {
@@ -127,10 +125,11 @@ func buildRouter(services *backends.Services) (*ich.Mux, error) {
 	// init bind
 	bind.PathValueFunc = chi.URLParam
 
-	// localizer
-	localizer := locale.NewLocalizer("en")
+	// locale
+	loc := gotext.NewLocale("locales", "en")
+	loc.AddDomain("default")
 
-	//
+	// timezone
 	timezone, err := time.LoadLocation(config.Timezone)
 	if err != nil {
 		return nil, err
@@ -176,7 +175,7 @@ func buildRouter(services *backends.Services) (*ich.Mux, error) {
 		SessionStore:     sessionStore,
 		SessionName:      sessionName,
 		Timezone:         timezone,
-		Localizer:        localizer,
+		Loc:              loc,
 		Logger:           logger,
 		OIDCAuth:         oidcAuth,
 		FrontendURL:      config.Frontend.URL,

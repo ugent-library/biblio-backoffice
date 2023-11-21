@@ -113,7 +113,7 @@
                         </div>
                         {{with .Publication.PublicationStatus}}
                         <div class="bc-toolbar-item">
-                            <p class="c-subline text-nowrap pe-5 border-end">{{$.Locale.TS "publication_publishing_statuses" .}}</p>
+                            <p class="c-subline text-nowrap pe-5 border-end">{{$.Loc.Get (print "publication_publishing_statuses." .)}}</p>
                         </div>
                         {{end}}
                         {{if .Publication.Locked}}
@@ -126,7 +126,7 @@
                         {{end}}
                         <div class="bc-toolbar-item">
                             <span class="c-subline text-nowrap">
-                                {{.Locale.TS "publication_types" .Publication.Type}}
+                                {{.Loc.Get (print "publication_types." .Publication.Type)}}
                                 {{with .Publication.Classification}}: {{.}}{{end}}
                             </span>
                         </div>
