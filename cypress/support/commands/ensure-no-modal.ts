@@ -9,7 +9,7 @@ export default function ensureNoModal(options: EnsureNoModalOptions = {}): void 
     logCommand('ensureNoModal')
   }
 
-  cy.get('#modals *', { log: false })
+  cy.get('#modals > *', { log: false })
     .should('have.length', 0)
     .then(() => {
       // Check before asserting to keep out of command log if ok
