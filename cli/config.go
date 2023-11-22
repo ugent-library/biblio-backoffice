@@ -78,4 +78,8 @@ type Config struct {
 		APIURL string `env:"API_URL"`
 		APIKey string `env:"API_KEY"`
 	} `envPrefix:"OAI_"`
+	Projects struct {
+		APIURL string `env:"API_URL"`
+		APIKEY string `env:"API_KEY"`
+	} `envPrefix:"PROJECTS_"`
 }
