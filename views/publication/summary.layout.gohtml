@@ -18,21 +18,21 @@
                             <span class="text-muted c-body-small ms-2">Locked</span>
                         </div>
                         {{end}}
-                        <span class="c-subline text-nowrap me-3 pe-3 my-2 border-end">{{.Locale.TS "publication_types" .Publication.Type}}{{with .Publication.Classification}}: {{.}}{{end}}</span>
+                        <span class="c-subline text-nowrap me-3 pe-3 my-2 border-end">{{.Loc.Get (print "publication_types." .Publication.Type)}}{{with .Publication.Classification}}: {{.}}{{end}}</span>
                         {{if $mainFile}}
                             <div class="c-subline text-nowrap me-3 pe-3 my-2{{if eq $mainFile.AccessLevel "info:eu-repo/semantics/embargoedAccess"}} border-end{{end}}">
                                 {{if eq $mainFile.AccessLevel "info:eu-repo/semantics/openAccess"}}
                                 <i class="if if-calendar if--small if--muted"></i>
-                                <span class="c-subline text-truncate ps-2">{{.Locale.TS "publication_file_access_levels" $mainFile.AccessLevel}}</span>
+                                <span class="c-subline text-truncate ps-2">{{.Loc.Get (print "publication_file_access_levels." $mainFile.AccessLevel)}}</span>
                                 {{else if eq $mainFile.AccessLevel "info:eu-repo/semantics/embargoedAccess"}}
                                 <i class="if if-time if--small if--muted"></i>
-                                <span class="c-subline text-muted ps-2">{{.Locale.TS "publication_file_access_levels" $mainFile.AccessLevel}}</span>
+                                <span class="c-subline text-muted ps-2">{{.Loc.Get (print "publication_file_access_levels." $mainFile.AccessLevel)}}</span>
                                 {{else if eq $mainFile.AccessLevel "info:eu-repo/semantics/restrictedAccess"}}
                                 <i class="if if-ghent-university if--small if--muted"></i>
-                                <span class="c-subline text-muted ps-2">{{.Locale.TS "publication_file_access_levels" $mainFile.AccessLevel}}</span>
+                                <span class="c-subline text-muted ps-2">{{.Loc.Get (print "publication_file_access_levels." $mainFile.AccessLevel)}}</span>
                                 {{else if eq $mainFile.AccessLevel "info:eu-repo/semantics/closedAccess"}}
                                 <i class="if if-eye-off if--small if--muted"></i>
-                                <span class="c-subline text-muted ps-2">{{.Locale.TS "publication_file_access_levels" $mainFile.AccessLevel}}</span>
+                                <span class="c-subline text-muted ps-2">{{.Loc.Get (print "publication_file_access_levels." $mainFile.AccessLevel)}}</span>
                                 {{end}}
                             </div>
                             {{if eq $mainFile.AccessLevel "info:eu-repo/semantics/embargoedAccess"}}
@@ -42,7 +42,7 @@
                                 {{else}}
                                 <i class="if if-ghent-university if--small if--muted"></I>
                                 {{end}}
-                                <span class="c-subline text-truncate ps-2">{{.Locale.TS "publication_file_access_levels_during_embargo" $mainFile.AccessLevelDuringEmbargo}}</span>
+                                <span class="c-subline text-truncate ps-2">{{.Loc.Get (print "publication_file_access_levels_during_embargo." $mainFile.AccessLevelDuringEmbargo)}}</span>
                             </div>
                             <div class="c-subline text-nowrap me-3 pe-3 my-2">
                                 {{if eq $mainFile.AccessLevelAfterEmbargo "info:eu-repo/semantics/openAccess"}}
@@ -50,7 +50,7 @@
                                 {{else}}
                                 <i class="if if-ghent-university if--small if--muted"></I>
                                 {{end}}
-                                <span class="c-subline text-truncate ps-2">{{.Locale.TS "publication_file_access_levels_after_embargo" $mainFile.AccessLevelAfterEmbargo}} from {{$mainFile.EmbargoDate}}</span>
+                                <span class="c-subline text-truncate ps-2">{{.Loc.Get (print "publication_file_access_levels_after_embargo." $mainFile.AccessLevelAfterEmbargo)}} from {{$mainFile.EmbargoDate}}</span>
                             </div>
                             {{end}}
                         {{else if not .Publication.Extern}}

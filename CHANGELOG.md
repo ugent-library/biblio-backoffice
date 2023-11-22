@@ -11,6 +11,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [v1.0.44] - 2023-11-22
+
+### Added
+
+### Fixed
+
+- Fix display of missing dataset translation strings
+
+## [v1.0.43] - 2023-11-22
+
+### Added
+
+### Fixed
+
+- Fix display of missing publication translation strings
+
+## [v1.0.42] - 2023-11-22
+
+### Added
+
+- User dashboard
+- More Cypress tests
+- Various application structure improvements
+
+### Fixed
+
+- Various ux improvements
+- #1223: Cleanup empty facet values
+- #1241: Only allow future embargo dates
+
 ## [v1.0.41] - 2023-11-15
 
 ### Added
@@ -449,8 +479,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.41...HEAD
-[v1.0.40]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.40...v1.0.41
+[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.44...HEAD
+[v1.0.44]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.43...v1.0.44
+[v1.0.43]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.42...v1.0.43
+[v1.0.42]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.41...v1.0.42
+[v1.0.41]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.40...v1.0.41
 [v1.0.40]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.39...v1.0.40
 [v1.0.39]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.38...v1.0.39
 [v1.0.38]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.37...v1.0.38

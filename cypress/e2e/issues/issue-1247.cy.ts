@@ -31,7 +31,7 @@ describe('Issue #1247: User menu popup hidden behind publication details', () =>
     })
   })
 
-  it(`should fully display the user menu on all pages during manual publication set-up`, () => {
+  it('should fully display the user menu on all pages during manual publication set-up', () => {
     cy.visit('/publication/add?method=manual')
 
     assertUserMenuWorks()
@@ -43,29 +43,25 @@ describe('Issue #1247: User menu popup hidden behind publication details', () =>
 
     assertUserMenuWorks()
 
-    cy.contains('.card-header', 'Publication details').contains('.btn', 'Edit').click()
+    cy.updateFields(
+      'Publication details',
+      () => {
+        cy.setFieldByLabel('Title', 'Test publication [CYPRESSTEST]')
+        cy.setFieldByLabel('Publication year', new Date().getFullYear().toString())
+      },
+      true
+    )
 
-    cy.ensureModal('Edit publication details')
-      .within(() => {
-        cy.contains('label', 'Title').click().type('Test publication [CYPRESSTEST]')
-        cy.contains('label', 'Publication year').click().type(new Date().getFullYear().toString())
-      })
-      .closeModal(true)
-
-    cy.ensureNoModal()
-
-    cy.contains('.nav-link', 'People & Affiliations').click()
-
-    cy.contains('.btn', 'Add author').click()
-
-    cy.ensureModal('Add author')
-      .within(() => {
-        cy.contains('label', 'First name').click().type('Dries')
-        cy.contains('label', 'Last name').click().type('Moreels')
+    cy.updateFields(
+      'Authors',
+      () => {
+        cy.setFieldByLabel('First name', 'Dries')
+        cy.setFieldByLabel('Last name', 'Moreels')
 
         cy.contains('.btn', 'Add author').click()
-      })
-      .closeModal(/^Save$/)
+      },
+      /^Save$/
+    )
 
     cy.contains('.btn', 'Complete Description').click()
 
@@ -91,6 +87,80 @@ describe('Issue #1247: User menu popup hidden behind publication details', () =>
 
     cy.get('@biblioId').then(biblioId => {
       cy.location('pathname').should('eq', `/publication/${biblioId}`)
+    })
+
+    assertUserMenuWorks()
+  })
+
+  it('should fully display the user menu on all pages during manual dataset set-up', () => {
+    cy.visit('/dataset/add')
+
+    assertUserMenuWorks()
+
+    cy.contains('Register a dataset manually').click('left')
+    cy.contains('.btn', 'Add dataset').click()
+
+    cy.location('pathname').should('eq', '/dataset/add')
+
+    assertUserMenuWorks()
+
+    cy.updateFields(
+      'Dataset details',
+      () => {
+        cy.setFieldByLabel('Title', `Test dataset [CYPRESSTEST]`)
+        cy.setFieldByLabel('Persistent identifier type', 'DOI')
+        cy.setFieldByLabel('Identifier', '10.5072/test/t')
+
+        cy.setFieldByLabel('Publication year', new Date().getFullYear().toString())
+        cy.setFieldByLabel('Data format', 'text/csv').next('.autocomplete-hits').contains('.badge', 'text/csv').click()
+        cy.setFieldByLabel('Publisher', 'UGent')
+
+        cy.intercept('PUT', '/dataset/*/details/edit/refresh-form').as('refreshForm')
+
+        cy.setFieldByLabel('License', 'CC0 (1.0)')
+        cy.wait('@refreshForm')
+
+        cy.setFieldByLabel('Access level', 'Open access')
+        cy.wait('@refreshForm')
+      },
+      true
+    )
+
+    cy.updateFields(
+      'Creators',
+      () => {
+        cy.setFieldByLabel('First name', 'Dries')
+        cy.setFieldByLabel('Last name', 'Moreels')
+
+        cy.contains('.btn', 'Add creator').click()
+      },
+      /^Save$/
+    )
+
+    cy.contains('.btn', 'Complete Description').click()
+
+    cy.location('pathname').should('match', new RegExp('/dataset/\\w+/add/confirm'))
+
+    cy.extractBiblioId()
+
+    assertUserMenuWorks()
+
+    cy.contains('.btn', 'Publish to Biblio').click()
+
+    cy.location('pathname').should('match', new RegExp('/dataset/\\w+/add/finish'))
+
+    assertUserMenuWorks()
+
+    cy.contains('.btn', 'Continue to overview').click()
+
+    cy.location('pathname').should('eq', '/dataset')
+
+    assertUserMenuWorks()
+
+    cy.visitDataset()
+
+    cy.get('@biblioId').then(biblioId => {
+      cy.location('pathname').should('eq', `/dataset/${biblioId}`)
     })
 
     assertUserMenuWorks()

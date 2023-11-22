@@ -2,6 +2,13 @@ package validation
 
 type Errors []*Error
 
+func Append(err error, e *Error) error {
+	if err == nil {
+		return Errors{e}
+	}
+	return append(err.(Errors), e)
+}
+
 type Error struct {
 	Pointer string
 	Code    string

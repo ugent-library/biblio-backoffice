@@ -17,6 +17,8 @@ describe('The home page', () => {
     cy.contains('h2', 'Biblio Academic Bibliography').should('be.visible')
 
     cy.contains('h2', 'Help').should('be.visible')
+
+    cy.get('.c-sidebar').should('not.have.class', 'c-sidebar--dark-gray')
   })
 
   it('should redirect to the login page when clicking the Login buttons', () => {
@@ -59,6 +61,8 @@ describe('The home page', () => {
     cy.contains('.c-sidebar__item', 'Biblio Publications').should('be.visible')
     cy.contains('.c-sidebar__item', 'Biblio Datasets').should('be.visible')
     cy.contains('.c-sidebar__item', 'Batch').should('not.exist')
+
+    cy.get('.c-sidebar').should('not.have.class', 'c-sidebar--dark-gray')
   })
 
   it('should be able to logon as librarian and switch to librarian mode', () => {
@@ -79,6 +83,8 @@ describe('The home page', () => {
     cy.contains('.c-sidebar__item', 'Biblio Datasets').should('be.visible')
     cy.contains('.c-sidebar__item', 'Batch').should('not.exist')
 
+    cy.get('.c-sidebar').should('not.have.class', 'c-sidebar--dark-gray')
+
     cy.switchMode('Librarian')
 
     cy.get('.c-sidebar button.dropdown-toggle').find('.if-book').should('be.visible')
@@ -90,6 +96,8 @@ describe('The home page', () => {
     cy.contains('.c-sidebar__item', 'Biblio Datasets').should('be.visible')
     cy.contains('.c-sidebar__item', 'Batch').should('be.visible')
 
+    cy.get('.c-sidebar').should('have.class', 'c-sidebar--dark-gray')
+
     cy.switchMode('Researcher')
 
     cy.get('.c-sidebar button.dropdown-toggle').find('.if-briefcase').should('be.visible')
@@ -100,6 +108,8 @@ describe('The home page', () => {
     cy.contains('.c-sidebar__item', 'Biblio Publications').should('be.visible')
     cy.contains('.c-sidebar__item', 'Biblio Datasets').should('be.visible')
     cy.contains('.c-sidebar__item', 'Batch').should('not.exist')
+
+    cy.get('.c-sidebar').should('not.have.class', 'c-sidebar--dark-gray')
   })
 
   it('should not set the biblio-backoffice cookie twice when switching roles', () => {

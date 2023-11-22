@@ -119,7 +119,7 @@ func (h *Handler) ConfirmDeletePublication(w http.ResponseWriter, r *http.Reques
 
 	if b.SnapshotID != ctx.Dataset.SnapshotID {
 		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Locale.T("dataset.conflict_error_reload"),
+			Message: ctx.Loc.Get("dataset.conflict_error_reload"),
 		})
 		return
 	}

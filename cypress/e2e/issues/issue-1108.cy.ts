@@ -4,28 +4,24 @@ describe('Issue #1108: Cannot add author without first name', () => {
   beforeEach(() => {
     cy.loginAsResearcher()
 
-    cy.visit('/publication/add')
+    cy.setUpPublication('Book')
 
-    cy.contains('Import from Web of Science').click()
-    cy.contains('.btn', 'Add publication(s)').click()
-
-    cy.get('input[name=file]').selectFile('cypress/fixtures/wos-000963572100001.txt')
-
-    cy.contains('People & Affiliations').click()
-
-    cy.contains('.btn', 'Add author').click()
+    cy.visitPublication()
   })
 
   it('should be possible to add author without first name', () => {
-    cy.ensureModal('Add author').within(() => {
-      cy.setFieldByLabel('Last name', 'Doe')
+    cy.updateFields(
+      'Authors',
+      () => {
+        cy.setFieldByLabel('Last name', 'Doe')
 
-      cy.contains('Doe External, non-UGent').closest('.list-group-item').contains('.btn', 'Add external author').click()
-    })
-
-    cy.ensureModal('Add author').closeModal(/^Save$/)
-
-    cy.ensureNoModal()
+        cy.contains('Doe External, non-UGent')
+          .closest('.list-group-item')
+          .contains('.btn', 'Add external author')
+          .click()
+      },
+      /^Save$/
+    )
 
     cy.get('.card#authors')
       .find('#contributors-author-table tr')
@@ -37,18 +33,18 @@ describe('Issue #1108: Cannot add author without first name', () => {
   })
 
   it('should be possible to add author without last name', () => {
-    cy.ensureModal('Add author').within(() => {
-      cy.setFieldByLabel('First name', 'John')
+    cy.updateFields(
+      'Authors',
+      () => {
+        cy.setFieldByLabel('First name', 'John')
 
-      cy.contains('John External, non-UGent')
-        .closest('.list-group-item')
-        .contains('.btn', 'Add external author')
-        .click()
-    })
-
-    cy.ensureModal('Add author').closeModal(/^Save$/)
-
-    cy.ensureNoModal()
+        cy.contains('John External, non-UGent')
+          .closest('.list-group-item')
+          .contains('.btn', 'Add external author')
+          .click()
+      },
+      /^Save$/
+    )
 
     cy.get('.card#authors')
       .find('#contributors-author-table tr')
