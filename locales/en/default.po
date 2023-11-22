@@ -266,6 +266,9 @@ msgstr "Dissertation"
 msgid "publication_types.miscellaneous"
 msgstr "Miscellaneous"
 
+msgid "journal_article_types."
+msgstr "-"
+
 msgid "journal_article_types.original"
 msgstr "Original Article"
 
@@ -278,6 +281,9 @@ msgstr "Letter / Note"
 msgid "journal_article_types.proceedingsPaper"
 msgstr "Proceedings Paper"
 
+msgid "conference_types."
+msgstr "-"
+
 msgid "conference_types.proceedingsPaper"
 msgstr "Proceedings Paper"
 
@@ -289,6 +295,9 @@ msgstr "Poster"
 
 msgid "conference_types.other"
 msgstr "Other Conference Contribution"
+
+msgid "miscellaneous_types."
+msgstr "-"
 
 msgid "miscellaneous_types.artReview"
 msgstr "Art review"
@@ -416,6 +425,10 @@ msgstr "V - miscellaneous"
 msgid "publication_classifications.U"
 msgstr "U - undetermined"
 
+msgid "publication_publishing_statuses."
+msgstr "-"
+
+# TODO is this used?
 msgid "publication_publishing_statuses.missing"
 msgstr "No publication status"
 
