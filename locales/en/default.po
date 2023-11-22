@@ -175,6 +175,9 @@ msgstr "The license is not listed here"
 msgid "publication_licenses.CopyrightUnknown"
 msgstr "I don't know the status of the copyright of this publication"
 
+msgid "dataset_licenses."
+msgstr "-"
+
 msgid "dataset_licenses.CC0-1.0"
 msgstr "CC0 (1.0)"
 
@@ -199,6 +202,9 @@ msgstr "CC BY-NC-ND (4.0)"
 msgid "dataset_licenses.LicenseNotListed"
 msgstr "The license is not listed here"
 
+msgid "dataset_access_levels."
+msgstr "-"
+
 msgid "dataset_access_levels.info:eu-repo/semantics/openAccess"
 msgstr "Open access"
 
@@ -210,6 +216,9 @@ msgstr "Restricted access"
 
 msgid "dataset_access_levels.info:eu-repo/semantics/closedAccess"
 msgstr "Closed access"
+
+msgid "dataset_access_levels_after_embargo."
+msgstr "-"
 
 msgid "dataset_access_levels_after_embargo.info:eu-repo/semantics/openAccess"
 msgstr "Open access"
@@ -2323,6 +2332,9 @@ msgstr "Register a first datasets"
 
 msgid "export_to.xlsx"
 msgstr "Export to Excel"
+
+msgid "identifier."
+msgstr "-"
 
 msgid "identifier.BioStudies"
 msgstr "BioStudies"
