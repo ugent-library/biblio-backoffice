@@ -11,7 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [v1.0.45] - 2023-11-23
+
+### Added
+
+### Fixed
+
+- Fix display of missing dissertation translation strings
+
 ## [v1.0.44] - 2023-11-22
+
 
 ### Added
 
@@ -479,7 +488,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.44...HEAD
+[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.45...HEAD
+[v1.0.45]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.44...v1.0.45
 [v1.0.44]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.43...v1.0.44
 [v1.0.43]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.42...v1.0.43
 [v1.0.42]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.41...v1.0.42
