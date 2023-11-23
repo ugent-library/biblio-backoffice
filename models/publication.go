@@ -986,19 +986,13 @@ func (p *Publication) Validate() error {
 
 	for i, rel := range p.RelatedOrganizations {
 		if rel.OrganizationID == "" {
-			errs.Errors = append(errs.Errors, &okay.Error{
-				Key:  fmt.Sprintf("/department/%d/id", i),
-				Rule: "publication.department.id.required",
-			})
+			errs.Add(okay.NewError(fmt.Sprintf("/department/%d/id", i), "publication.department.id.required"))
 		}
 	}
 
 	for i, rel := range p.RelatedDataset {
 		if rel.ID == "" {
-			errs.Errors = append(errs.Errors, &okay.Error{
-				Key:  fmt.Sprintf("/related_dataset/%d/id", i),
-				Rule: "publication.related_dataset.id.required",
-			})
+			errs.Add(okay.NewError(fmt.Sprintf("/related_dataset/%d/id", i), "publication.related_dataset.id.required"))
 		}
 	}
 
@@ -1006,10 +1000,7 @@ func (p *Publication) Validate() error {
 		var e *okay.Errors
 		if errors.As(f.Validate(), &e) {
 			for _, err := range e.Errors {
-				errs.Errors = append(errs.Errors, &okay.Error{
-					Key:  fmt.Sprintf("/file/%d%s", i, err.Key),
-					Rule: "publication.file." + err.Rule,
-				})
+				errs.Add(okay.NewError(fmt.Sprintf("/file/%d%s", i, err.Key), "publication.file."+err.Rule))
 			}
 		}
 	}
@@ -1018,10 +1009,7 @@ func (p *Publication) Validate() error {
 		var e *okay.Errors
 		if errors.As(l.Validate(), &e) {
 			for _, err := range e.Errors {
-				errs.Errors = append(errs.Errors, &okay.Error{
-					Key:  fmt.Sprintf("/link/%d%s", i, err.Key),
-					Rule: "publication.link." + err.Rule,
-				})
+				errs.Add(okay.NewError(fmt.Sprintf("/link/%d%s", i, err.Key), "publication.link."+err.Rule))
 			}
 		}
 	}
@@ -1063,16 +1051,10 @@ func (p *Publication) validateJournalArticle() error {
 	// TODO: confusing: gui shows select without empty element
 	// but first creation sets this value to empty
 	if p.JournalArticleType != "" && !slices.Contains(vocabularies.Map["journal_article_types"], p.JournalArticleType) {
-		errs.Errors = append(errs.Errors, &okay.Error{
-			Key:  "/journal_article_type",
-			Rule: "publication.journal_article_type.invalid",
-		})
+		errs.Add(okay.NewError("/journal_article_type", "publication.journal_article_type.invalid"))
 	}
 	if p.Status == "public " && !p.Legacy && p.Publication == "" {
-		errs.Errors = append(errs.Errors, &okay.Error{
-			Key:  "/publication",
-			Rule: "publication.journal_article.publication.required",
-		})
+		errs.Add(okay.NewError("/publication", "publication.journal_article.publication.required"))
 	}
 
 	return errs.ErrorOrNil()
@@ -1094,22 +1076,13 @@ func (p *Publication) validateDissertation() error {
 	errs := okay.NewErrors()
 
 	if p.Status == "public" && !p.Legacy && p.DefensePlace == "" {
-		errs.Errors = append(errs.Errors, &okay.Error{
-			Key:  "/defense_place",
-			Rule: "publication.defense_place.required",
-		})
+		errs.Add(okay.NewError("/defense_place", "publication.defense_place.required"))
 	}
 	if p.Status == "public" && !p.Legacy && p.DefenseDate == "" {
-		errs.Errors = append(errs.Errors, &okay.Error{
-			Key:  "/defense_date",
-			Rule: "publication.defense_date.required",
-		})
+		errs.Add(okay.NewError("/defense_date", "publication.defense_date.required"))
 	}
 	if p.DefenseDate != "" && !util.IsDate(p.DefenseDate) {
-		errs.Errors = append(errs.Errors, &okay.Error{
-			Key:  "/defense_date",
-			Rule: "publication.defense_date.invalid",
-		})
+		errs.Add(okay.NewError("/defense_date", "publication.defense_date.invalid"))
 	}
 
 	return errs.ErrorOrNil()
@@ -1121,10 +1094,7 @@ func (p *Publication) validateMiscellaneous() error {
 	// TODO confusing: gui shows select without empty element
 	// but first creation sets this value to empty
 	if p.MiscellaneousType != "" && !slices.Contains(vocabularies.Map["miscellaneous_types"], p.MiscellaneousType) {
-		errs.Errors = append(errs.Errors, &okay.Error{
-			Key:  "/miscellaneous_type",
-			Rule: "publication.miscellaneous_type.invalid",
-		})
+		errs.Add(okay.NewError("/miscellaneous_type", "publication.miscellaneous_type.invalid"))
 	}
 
 	return errs.ErrorOrNil()
@@ -1134,78 +1104,48 @@ func (pf *PublicationFile) Validate() error {
 	errs := okay.NewErrors()
 
 	if !slices.Contains(vocabularies.Map["publication_file_access_levels"], pf.AccessLevel) {
-		errs.Errors = append(errs.Errors, &okay.Error{
-			Key:  "/access_level",
-			Rule: "access_level.invalid",
-		})
+		errs.Add(okay.NewError("/access_level", "access_level.invalid"))
 	}
 
 	if pf.Size == 0 {
-		errs.Errors = append(errs.Errors, &okay.Error{
-			Key:  "/size",
-			Rule: "size.empty",
-		})
+		errs.Add(okay.NewError("/size", "size.empty"))
 	}
 
 	if pf.ContentType == "" {
-		errs.Errors = append(errs.Errors, &okay.Error{
-			Key:  "/content_type",
-			Rule: "content_type.required",
-		})
+		errs.Add(okay.NewError("/content_type", "content_type.required"))
 	}
 
 	if pf.ID == "" {
-		errs.Errors = append(errs.Errors, &okay.Error{
-			Key:  "/id",
-			Rule: "id.required",
-		})
+		errs.Add(okay.NewError("/id", "id.required"))
 	}
 
 	if pf.Relation != "" && !slices.Contains(vocabularies.Map["publication_file_relations"], pf.Relation) {
-		errs.Errors = append(errs.Errors, &okay.Error{
-			Key:  "/relation",
-			Rule: "relation.invalid",
-		})
+		errs.Add(okay.NewError("/relation", "relation.invalid"))
 	}
 
 	if pf.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
 		if !util.IsDate(pf.EmbargoDate) {
-			errs.Errors = append(errs.Errors, &okay.Error{
-				Key:  "/embargo_date",
-				Rule: "embargo_date.invalid",
-			})
+			errs.Add(okay.NewError("/embargo_date", "embargo_date.invalid"))
 		}
 
 		invalid := false
 		if !slices.Contains(vocabularies.Map["publication_file_access_levels"], pf.AccessLevelAfterEmbargo) {
 			invalid = true
-			errs.Errors = append(errs.Errors, &okay.Error{
-				Key:  "/access_level_after_embargo",
-				Rule: "access_level_after_embargo.invalid",
-			})
+			errs.Add(okay.NewError("/access_level_after_embargo", "access_level_after_embargo.invalid"))
 		}
 
 		if !slices.Contains(vocabularies.Map["publication_file_access_levels"], pf.AccessLevelDuringEmbargo) {
 			invalid = true
-			errs.Errors = append(errs.Errors, &okay.Error{
-				Key:  "/access_level_during_embargo",
-				Rule: "access_level_during_embargo.invalid",
-			})
+			errs.Add(okay.NewError("/access_level_during_embargo", "access_level_during_embargo.invalid"))
 		}
 
 		if pf.AccessLevelAfterEmbargo == pf.AccessLevelDuringEmbargo && !invalid {
-			errs.Errors = append(errs.Errors, &okay.Error{
-				Key:  "/access_level_after_embargo",
-				Rule: "access_level_after_embargo.similar",
-			})
+			errs.Add(okay.NewError("/access_level_after_embargo", "access_level_after_embargo.similar"))
 		}
 	}
 
 	if pf.PublicationVersion != "" && !slices.Contains(vocabularies.Map["publication_versions"], pf.PublicationVersion) {
-		errs.Errors = append(errs.Errors, &okay.Error{
-			Key:  "/publication_version",
-			Rule: "publication_version.invalid",
-		})
+		errs.Add(okay.NewError("/publication_version", "publication_version.invalid"))
 	}
 
 	return errs.ErrorOrNil()
@@ -1215,22 +1155,13 @@ func (pl *PublicationLink) Validate() error {
 	errs := okay.NewErrors()
 
 	if pl.ID == "" {
-		errs.Errors = append(errs.Errors, &okay.Error{
-			Key:  "/id",
-			Rule: "id.required",
-		})
+		errs.Add(okay.NewError("/id", "id.required"))
 	}
 	if pl.URL == "" {
-		errs.Errors = append(errs.Errors, &okay.Error{
-			Key:  "/url",
-			Rule: "url.required",
-		})
+		errs.Add(okay.NewError("/url", "url.required"))
 	}
 	if !slices.Contains(vocabularies.Map["publication_link_relations"], pl.Relation) {
-		errs.Errors = append(errs.Errors, &okay.Error{
-			Key:  "/relation",
-			Rule: "relation.invalid",
-		})
+		errs.Add(okay.NewError("/relation", "relation.invalid"))
 	}
 
 	return errs.ErrorOrNil()
