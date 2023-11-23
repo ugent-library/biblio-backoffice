@@ -52,6 +52,9 @@ msgstr "Biblio Messages"
 msgid "dataset.page.show.title"
 msgstr "Dataset - Biblio"
 
+msgid "confirmations."
+msgstr "-"
+
 msgid "confirmations.yes"
 msgstr "Yes"
 
