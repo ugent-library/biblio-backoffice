@@ -17,29 +17,17 @@ func (t Text) Validate() error {
 	errs := okay.NewErrors()
 
 	if t.ID == "" {
-		errs.Errors = append(errs.Errors, &okay.Error{
-			Key:  "/id",
-			Rule: "id.required",
-		})
+		errs.Add(okay.NewError("/id", "id.required"))
 	}
 
 	if t.Lang == "" {
-		errs.Errors = append(errs.Errors, &okay.Error{
-			Key:  "/lang",
-			Rule: "lang.required",
-		})
+		errs.Add(okay.NewError("/lang", "lang.required"))
 	} else if !slices.Contains(vocabularies.Map["language_codes"], t.Lang) {
-		errs.Errors = append(errs.Errors, &okay.Error{
-			Key:  "/lang",
-			Rule: "lang.invalid",
-		})
+		errs.Add(okay.NewError("/lang", "lang.invalid"))
 	}
 
 	if t.Text == "" {
-		errs.Errors = append(errs.Errors, &okay.Error{
-			Key:  "/text",
-			Rule: "text.required",
-		})
+		errs.Add(okay.NewError("/text", "text.required"))
 	}
 
 	return errs.ErrorOrNil()
