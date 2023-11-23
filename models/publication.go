@@ -1084,35 +1084,37 @@ func (p *Publication) Validate() error {
 	// type specific validation
 	switch p.Type {
 	case "dissertation":
-		errs = append(errs, p.validateDissertation()...)
+		okay.Add(errs, p.validateDissertation())
 	case "journal_article":
-		errs = append(errs, p.validateJournalArticle()...)
+		okay.Add(errs, p.validateJournalArticle())
 	case "miscellaneous":
-		errs = append(errs, p.validateMiscellaneous()...)
+		okay.Add(errs, p.validateMiscellaneous())
 	case "book":
-		errs = append(errs, p.validateBook()...)
+		okay.Add(errs, p.validateBook())
 	case "book_chapter":
-		errs = append(errs, p.validateBookChapter()...)
+		okay.Add(errs, p.validateBookChapter())
 	case "conference":
-		errs = append(errs, p.validateConference()...)
+		okay.Add(errs, p.validateConference())
 	case "book_editor":
-		errs = append(errs, p.validateBookEditor()...)
+		okay.Add(errs, p.validateBookEditor())
 	case "issue_editor":
-		errs = append(errs, p.validateIssueEditor()...)
+		okay.Add(errs, p.validateIssueEditor())
 	}
 
 	return errs.ErrorOrNil()
 }
 
-func (p *Publication) validateBookEditor() (errs *okay.Errors) {
-	return
+func (p *Publication) validateBookEditor() error {
+	return nil
 }
 
-func (p *Publication) validateIssueEditor() (errs *okay.Errors) {
-	return
+func (p *Publication) validateIssueEditor() error {
+	return nil
 }
 
-func (p *Publication) validateJournalArticle() (errs *okay.Errors) {
+func (p *Publication) validateJournalArticle() error {
+	errs := okay.NewErrors()
+
 	// TODO: confusing: gui shows select without empty element
 	// but first creation sets this value to empty
 	if p.JournalArticleType != "" && !slices.Contains(vocabularies.Map["journal_article_types"], p.JournalArticleType) {
@@ -1127,22 +1129,25 @@ func (p *Publication) validateJournalArticle() (errs *okay.Errors) {
 			Rule: "publication.journal_article.publication.required",
 		})
 	}
-	return
+
+	return errs.ErrorOrNil()
 }
 
-func (p *Publication) validateBook() (errs *okay.Errors) {
-	return
+func (p *Publication) validateBook() error {
+	return nil
 }
 
-func (p *Publication) validateConference() (errs *okay.Errors) {
-	return
+func (p *Publication) validateConference() error {
+	return nil
 }
 
-func (p *Publication) validateBookChapter() (errs *okay.Errors) {
-	return
+func (p *Publication) validateBookChapter() error {
+	return nil
 }
 
-func (p *Publication) validateDissertation() (errs *okay.Errors) {
+func (p *Publication) validateDissertation() error {
+	errs := okay.NewErrors()
+
 	if p.Status == "public" && !p.Legacy && p.DefensePlace == "" {
 		errs.Errors = append(errs.Errors, &okay.Error{
 			Key:  "/defense_place",
@@ -1162,10 +1167,12 @@ func (p *Publication) validateDissertation() (errs *okay.Errors) {
 		})
 	}
 
-	return
+	return errs.ErrorOrNil()
 }
 
-func (p *Publication) validateMiscellaneous() (errs *okay.Errors) {
+func (p *Publication) validateMiscellaneous() error {
+	errs := okay.NewErrors()
+
 	// TODO confusing: gui shows select without empty element
 	// but first creation sets this value to empty
 	if p.MiscellaneousType != "" && !slices.Contains(vocabularies.Map["miscellaneous_types"], p.MiscellaneousType) {
@@ -1174,7 +1181,8 @@ func (p *Publication) validateMiscellaneous() (errs *okay.Errors) {
 			Rule: "publication.miscellaneous_type.invalid",
 		})
 	}
-	return
+
+	return errs.ErrorOrNil()
 }
 
 func (pf *PublicationFile) Validate() error {
