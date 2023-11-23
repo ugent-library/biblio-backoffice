@@ -5,6 +5,7 @@ import (
 
 	"github.com/ugent-library/biblio-backoffice/validation"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
+	"github.com/ugent-library/okay"
 )
 
 type Text struct {
@@ -13,7 +14,7 @@ type Text struct {
 	ID   string `json:"id,omitempty"`
 }
 
-func (t Text) Validate() (errs validation.Errors) {
+func (t Text) Validate() (errs *okay.Errors) {
 	if t.ID == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/id",

@@ -172,6 +172,7 @@ require (
 	github.com/ugent-library/httpx v0.0.0-20231026122034-e9de0b29458b
 	github.com/ugent-library/mix v0.0.0-20230123152737-b51ce0c6439b
 	github.com/ugent-library/oidc v0.0.0-20230810150340-b66acc34dfeb
+	github.com/ugent-library/okay v0.0.0-20231122144918-c2ad1fa9fa73
 	github.com/ugent-library/zaphttp v0.0.0-20230513174723-52c27d21c5ce
 	go.etcd.io/bbolt v1.3.7 // indirect
 	go.uber.org/multierr v1.11.0 // indirect

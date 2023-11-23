@@ -9,8 +9,10 @@ import (
 
 	"github.com/oklog/ulid/v2"
 	"github.com/ugent-library/biblio-backoffice/pagination"
+	"github.com/ugent-library/biblio-backoffice/util"
 	"github.com/ugent-library/biblio-backoffice/validation"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
+	"github.com/ugent-library/okay"
 )
 
 type DatasetHits struct {
@@ -247,30 +249,24 @@ func (d *Dataset) RemoveOrganization(id string) {
 	d.RelatedOrganizations = rels
 }
 
-func (dl *DatasetLink) Validate() (errs validation.Errors) {
+func (dl *DatasetLink) Validate() error {
+	errs := okay.NewErrors()
+
 	if dl.ID == "" {
-		errs = append(errs, &validation.Error{
-			Pointer: "/id",
-			Code:    "id.required",
-		})
+		errs.Add(okay.NewError("/id", "id.required"))
 	}
 	if dl.URL == "" {
-		errs = append(errs, &validation.Error{
-			Pointer: "/url",
-			Code:    "url.required",
-		})
+		errs.Add(okay.NewError("/url", "url.required"))
 	}
 	if !slices.Contains(vocabularies.Map["dataset_link_relations"], dl.Relation) {
-		errs = append(errs, &validation.Error{
-			Pointer: "/relation",
-			Code:    "relation.invalid",
-		})
+		errs.Add(okay.NewError("/relation", "relation.invalid"))
 	}
-	return
+
+	return errs.ErrorOrNil()
 }
 
 func (d *Dataset) Validate() error {
-	var errs validation.Errors
+	errs := okay.NewErrors()
 
 	if d.ID == "" {
 		errs = append(errs, &validation.Error{
@@ -284,7 +280,7 @@ func (d *Dataset) Validate() error {
 			Pointer: "/status",
 			Code:    "dataset.status.required",
 		})
-	} else if !validation.IsStatus(d.Status) {
+	} else if !util.IsStatus(d.Status) {
 		errs = append(errs, &validation.Error{
 			Pointer: "/status",
 			Code:    "dataset.status.invalid",
@@ -297,7 +293,7 @@ func (d *Dataset) Validate() error {
 			Code:    "dataset.access_level.required",
 		})
 	}
-	if d.AccessLevel != "" && !validation.IsDatasetAccessLevel(d.AccessLevel) {
+	if d.AccessLevel != "" && !util.IsDatasetAccessLevel(d.AccessLevel) {
 		errs = append(errs, &validation.Error{
 			Pointer: "/access_level",
 			Code:    "dataset.access_level.invalid",
@@ -317,7 +313,7 @@ func (d *Dataset) Validate() error {
 				Code:    "dataset.identifier.required",
 			})
 			break
-		} else if !validation.IsDatasetIdentifierType(key) {
+		} else if !util.IsDatasetIdentifierType(key) {
 			errs = append(errs, &validation.Error{
 				Pointer: "/identifier",
 				Code:    "dataset.identifier.invalid",
@@ -387,7 +383,7 @@ func (d *Dataset) Validate() error {
 			Code:    "dataset.year.required",
 		})
 	}
-	if d.Year != "" && !validation.IsYear(d.Year) {
+	if d.Year != "" && !util.IsYear(d.Year) {
 		errs = append(errs, &validation.Error{
 			Pointer: "/year",
 			Code:    "dataset.year.invalid",
@@ -402,6 +398,7 @@ func (d *Dataset) Validate() error {
 	}
 
 	for i, c := range d.Author {
+		// okay.AddWithPrefix(errs, fmt.Sprintf("/author/%d", i), c.Validate())
 		for _, err := range c.Validate() {
 			errs = append(errs, &validation.Error{
 				Pointer: fmt.Sprintf("/author/%d%s", i, err.Pointer),
@@ -479,7 +476,7 @@ func (d *Dataset) Validate() error {
 				Pointer: "/embargo_date",
 				Code:    "dataset.embargo_date.required",
 			})
-		} else if !validation.IsDate(d.EmbargoDate) {
+		} else if !util.IsDate(d.EmbargoDate) {
 			errs = append(errs, &validation.Error{
 				Pointer: "/embargo_date",
 				Code:    "dataset.embargo_date.invalid",
@@ -503,7 +500,7 @@ func (d *Dataset) Validate() error {
 			})
 		}
 
-		if !validation.IsDatasetAccessLevel(d.AccessLevelAfterEmbargo) && !invalid {
+		if !util.IsDatasetAccessLevel(d.AccessLevelAfterEmbargo) && !invalid {
 			errs = append(errs, &validation.Error{
 				Pointer: "/access_level_after_embargo",
 				Code:    "dataset.access_level_after_embargo.invalid", // TODO better code
@@ -520,11 +517,7 @@ func (d *Dataset) Validate() error {
 		}
 	}
 
-	// TODO: why is the nil slice validationErrors(nil) != nil in mutantdb validation?
-	if len(errs) > 0 {
-		return errs
-	}
-	return nil
+	return errs.ErrorOrNil()
 }
 
 func (d *Dataset) ClearEmbargo() {

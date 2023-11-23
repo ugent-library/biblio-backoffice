@@ -13,8 +13,8 @@ import (
 	"github.com/ugent-library/biblio-backoffice/render/display"
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
-	"github.com/ugent-library/biblio-backoffice/validation"
 	"github.com/ugent-library/bind"
+	"github.com/ugent-library/okay"
 )
 
 type BindConference struct {
@@ -63,7 +63,7 @@ func (h *Handler) UpdateConference(w http.ResponseWriter, r *http.Request, ctx C
 	if validationErrs := p.Validate(); validationErrs != nil {
 		render.Layout(w, "refresh_modal", "publication/edit_conference", YieldEditConference{
 			Context:  ctx,
-			Form:     conferenceForm(ctx.Loc, p, validationErrs.(validation.Errors)),
+			Form:     conferenceForm(ctx.Loc, p, validationErrs.(*okay.Errors)),
 			Conflict: false,
 		})
 		return
@@ -93,7 +93,7 @@ func (h *Handler) UpdateConference(w http.ResponseWriter, r *http.Request, ctx C
 	})
 }
 
-func conferenceForm(loc *gotext.Locale, publication *models.Publication, errors validation.Errors) *form.Form {
+func conferenceForm(loc *gotext.Locale, publication *models.Publication, errors *okay.Errors) *form.Form {
 	return form.New().
 		WithTheme("default").
 		WithErrors(localize.ValidationErrors(loc, errors)).

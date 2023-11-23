@@ -9,10 +9,10 @@ import (
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render/display"
 	"github.com/ugent-library/biblio-backoffice/render/form"
-	"github.com/ugent-library/biblio-backoffice/validation"
+	"github.com/ugent-library/okay"
 )
 
-func detailsForm(user *models.Person, loc *gotext.Locale, p *models.Publication, errors validation.Errors) *form.Form {
+func detailsForm(user *models.Person, loc *gotext.Locale, p *models.Publication, errors *okay.Errors) *form.Form {
 	f := form.New().
 		WithTheme("default").
 		WithErrors(localize.ValidationErrors(loc, errors))

@@ -550,6 +550,12 @@ github.com/ugent-library/oai-service v0.0.0-20230922094424-2e5e8941ea8a h1:cgXtI
 github.com/ugent-library/oai-service v0.0.0-20230922094424-2e5e8941ea8a/go.mod h1:qpSUL5uSFjml30WyJonXnIo5F9hh/BLHhwF5teYfUGA=
 github.com/ugent-library/oidc v0.0.0-20230810150340-b66acc34dfeb h1:/MM0LyIxH8y0OyHfQhCNUKMLeeraKBOkXstI1H5JEY4=
 github.com/ugent-library/oidc v0.0.0-20230810150340-b66acc34dfeb/go.mod h1:2LCM3IglxvIwUSO610PQUJ9aA3kROToNfUGCip6/Ozs=
+github.com/ugent-library/okay v0.0.0-20231122141608-794a198d397f h1:nqVct10b7XUfHIp+gswTfdkl6PDzPUvv7eOegUfEryU=
+github.com/ugent-library/okay v0.0.0-20231122141608-794a198d397f/go.mod h1:zF9L8aA06ik8U87qGR1GEhuLbxSZh+HmSEOfF3Z0Mrw=
+github.com/ugent-library/okay v0.0.0-20231122144531-69c28fe15ddb h1:4JJeo9RxrsK1CKysR9nRyd3hWhXXNyWL7zV8LxLeIfs=
+github.com/ugent-library/okay v0.0.0-20231122144531-69c28fe15ddb/go.mod h1:zF9L8aA06ik8U87qGR1GEhuLbxSZh+HmSEOfF3Z0Mrw=
+github.com/ugent-library/okay v0.0.0-20231122144918-c2ad1fa9fa73 h1:+egy2Zqf3bsdCb80A+06QmkJGfSHoRkiJo+QK2LaG1A=
+github.com/ugent-library/okay v0.0.0-20231122144918-c2ad1fa9fa73/go.mod h1:zF9L8aA06ik8U87qGR1GEhuLbxSZh+HmSEOfF3Z0Mrw=
 github.com/ugent-library/orcid v0.0.0-20230615125240-eb68c23bc33c h1:NRpS8TkbFjDJ9vM8oXDHr8noK66LgnZBoarpMt6+H7M=
 github.com/ugent-library/orcid v0.0.0-20230615125240-eb68c23bc33c/go.mod h1:g5C6oHMPfeceP48vaQLY24pFWtfKKi6mFni+tWbpgvU=
 github.com/ugent-library/zaphttp v0.0.0-20230513174723-52c27d21c5ce h1:+TNoKsfMTTveEe1RQRaJ7TZnHVh1k98Nk+4gTg2mENA=

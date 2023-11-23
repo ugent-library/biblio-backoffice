@@ -12,8 +12,8 @@ import (
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
-	"github.com/ugent-library/biblio-backoffice/validation"
 	"github.com/ugent-library/bind"
+	"github.com/ugent-library/okay"
 )
 
 type BindLink struct {
@@ -73,7 +73,7 @@ func (h *Handler) CreateLink(w http.ResponseWriter, r *http.Request, ctx Context
 	if validationErrs := ctx.Dataset.Validate(); validationErrs != nil {
 		render.Layout(w, "refresh_modal", "dataset/add_link", YieldAddLink{
 			Context:  ctx,
-			Form:     linkForm(ctx.Loc, ctx.Dataset, &datasetLink, validationErrs.(validation.Errors)),
+			Form:     linkForm(ctx.Loc, ctx.Dataset, &datasetLink, validationErrs.(*okay.Errors)),
 			Conflict: false,
 		})
 		return
@@ -157,7 +157,7 @@ func (h *Handler) UpdateLink(w http.ResponseWriter, r *http.Request, ctx Context
 		render.Layout(w, "refresh_modal", "dataset/edit_link", YieldEditLink{
 			Context:  ctx,
 			LinkID:   b.LinkID,
-			Form:     linkForm(ctx.Loc, ctx.Dataset, link, validationErrs.(validation.Errors)),
+			Form:     linkForm(ctx.Loc, ctx.Dataset, link, validationErrs.(*okay.Errors)),
 			Conflict: false,
 		})
 		return
@@ -240,7 +240,7 @@ func (h *Handler) DeleteLink(w http.ResponseWriter, r *http.Request, ctx Context
 	})
 }
 
-func linkForm(loc *gotext.Locale, dataset *models.Dataset, link *models.DatasetLink, errors validation.Errors) *form.Form {
+func linkForm(loc *gotext.Locale, dataset *models.Dataset, link *models.DatasetLink, errors *okay.Errors) *form.Form {
 	idx := -1
 	for i, l := range dataset.Link {
 		if l.ID == link.ID {

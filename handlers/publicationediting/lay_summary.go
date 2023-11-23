@@ -12,8 +12,8 @@ import (
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
-	"github.com/ugent-library/biblio-backoffice/validation"
 	"github.com/ugent-library/bind"
+	"github.com/ugent-library/okay"
 )
 
 type BindLaySummary struct {
@@ -73,7 +73,7 @@ func (h *Handler) CreateLaySummary(w http.ResponseWriter, r *http.Request, ctx C
 		h.Logger.Warnw("create publication lay summary: could not validate contributor:", "errors", validationErrs, "identifier", ctx.Publication.ID)
 		render.Layout(w, "refresh_modal", "publication/add_lay_summary", YieldAddLaySummary{
 			Context:  ctx,
-			Form:     laySummaryForm(ctx.Loc, ctx.Publication, &laySummary, validationErrs.(validation.Errors)),
+			Form:     laySummaryForm(ctx.Loc, ctx.Publication, &laySummary, validationErrs.(*okay.Errors)),
 			Conflict: false,
 		})
 		return
@@ -161,7 +161,7 @@ func (h *Handler) UpdateLaySummary(w http.ResponseWriter, r *http.Request, ctx C
 		render.Layout(w, "refresh_modal", "publication/edit_lay_summary", YieldEditLaySummary{
 			Context:      ctx,
 			LaySummaryID: b.LaySummaryID,
-			Form:         laySummaryForm(ctx.Loc, ctx.Publication, laySummary, validationErrs.(validation.Errors)),
+			Form:         laySummaryForm(ctx.Loc, ctx.Publication, laySummary, validationErrs.(*okay.Errors)),
 			Conflict:     false,
 		})
 		return
@@ -243,7 +243,7 @@ func (h *Handler) DeleteLaySummary(w http.ResponseWriter, r *http.Request, ctx C
 	})
 }
 
-func laySummaryForm(loc *gotext.Locale, publication *models.Publication, laySummary *models.Text, errors validation.Errors) *form.Form {
+func laySummaryForm(loc *gotext.Locale, publication *models.Publication, laySummary *models.Text, errors *okay.Errors) *form.Form {
 	idx := -1
 	for i, ls := range publication.LaySummary {
 		if ls.ID == laySummary.ID {

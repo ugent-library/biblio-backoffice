@@ -11,8 +11,10 @@ import (
 
 	"github.com/oklog/ulid/v2"
 	"github.com/ugent-library/biblio-backoffice/pagination"
+	"github.com/ugent-library/biblio-backoffice/util"
 	"github.com/ugent-library/biblio-backoffice/validation"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
+	"github.com/ugent-library/okay"
 )
 
 type PublicationHits struct {
@@ -855,7 +857,7 @@ func (p *Publication) ShowDefenseAsRequired() bool {
 }
 
 func (p *Publication) Validate() error {
-	var errs validation.Errors
+	var errs *okay.Errors
 
 	if p.ID == "" {
 		errs = append(errs, &validation.Error{
@@ -868,7 +870,7 @@ func (p *Publication) Validate() error {
 			Pointer: "/type",
 			Code:    "publication.type.required",
 		})
-	} else if !validation.IsPublicationType(p.Type) {
+	} else if !util.IsPublicationType(p.Type) {
 		errs = append(errs, &validation.Error{
 			Pointer: "/type",
 			Code:    "publication.type.invalid",
@@ -891,7 +893,7 @@ func (p *Publication) Validate() error {
 			Pointer: "/status",
 			Code:    "publication.status.required",
 		})
-	} else if !validation.IsStatus(p.Status) {
+	} else if !util.IsStatus(p.Status) {
 		errs = append(errs, &validation.Error{
 			Pointer: "/status",
 			Code:    "publication.status.invalid",
@@ -911,7 +913,7 @@ func (p *Publication) Validate() error {
 			Code:    "publication.year.required",
 		})
 	}
-	if p.Year != "" && !validation.IsYear(p.Year) {
+	if p.Year != "" && !util.IsYear(p.Year) {
 		errs = append(errs, &validation.Error{
 			Pointer: "/year",
 			Code:    "publication.year.invalid",
@@ -1107,15 +1109,15 @@ func (p *Publication) Validate() error {
 	return nil
 }
 
-func (p *Publication) validateBookEditor() (errs validation.Errors) {
+func (p *Publication) validateBookEditor() (errs *okay.Errors) {
 	return
 }
 
-func (p *Publication) validateIssueEditor() (errs validation.Errors) {
+func (p *Publication) validateIssueEditor() (errs *okay.Errors) {
 	return
 }
 
-func (p *Publication) validateJournalArticle() (errs validation.Errors) {
+func (p *Publication) validateJournalArticle() (errs *okay.Errors) {
 	// TODO: confusing: gui shows select without empty element
 	// but first creation sets this value to empty
 	if p.JournalArticleType != "" && !slices.Contains(vocabularies.Map["journal_article_types"], p.JournalArticleType) {
@@ -1133,19 +1135,19 @@ func (p *Publication) validateJournalArticle() (errs validation.Errors) {
 	return
 }
 
-func (p *Publication) validateBook() (errs validation.Errors) {
+func (p *Publication) validateBook() (errs *okay.Errors) {
 	return
 }
 
-func (p *Publication) validateConference() (errs validation.Errors) {
+func (p *Publication) validateConference() (errs *okay.Errors) {
 	return
 }
 
-func (p *Publication) validateBookChapter() (errs validation.Errors) {
+func (p *Publication) validateBookChapter() (errs *okay.Errors) {
 	return
 }
 
-func (p *Publication) validateDissertation() (errs validation.Errors) {
+func (p *Publication) validateDissertation() (errs *okay.Errors) {
 	if p.Status == "public" && !p.Legacy && p.DefensePlace == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/defense_place",
@@ -1158,7 +1160,7 @@ func (p *Publication) validateDissertation() (errs validation.Errors) {
 			Code:    "publication.defense_date.required",
 		})
 	}
-	if p.DefenseDate != "" && !validation.IsDate(p.DefenseDate) {
+	if p.DefenseDate != "" && !util.IsDate(p.DefenseDate) {
 		errs = append(errs, &validation.Error{
 			Pointer: "/defense_date",
 			Code:    "publication.defense_date.invalid",
@@ -1168,7 +1170,7 @@ func (p *Publication) validateDissertation() (errs validation.Errors) {
 	return
 }
 
-func (p *Publication) validateMiscellaneous() (errs validation.Errors) {
+func (p *Publication) validateMiscellaneous() (errs *okay.Errors) {
 	// TODO confusing: gui shows select without empty element
 	// but first creation sets this value to empty
 	if p.MiscellaneousType != "" && !slices.Contains(vocabularies.Map["miscellaneous_types"], p.MiscellaneousType) {
@@ -1180,7 +1182,7 @@ func (p *Publication) validateMiscellaneous() (errs validation.Errors) {
 	return
 }
 
-func (pf *PublicationFile) Validate() (errs validation.Errors) {
+func (pf *PublicationFile) Validate() (errs *okay.Errors) {
 	if !slices.Contains(vocabularies.Map["publication_file_access_levels"], pf.AccessLevel) {
 		errs = append(errs, &validation.Error{
 			Pointer: "/access_level",
@@ -1217,7 +1219,7 @@ func (pf *PublicationFile) Validate() (errs validation.Errors) {
 	}
 
 	if pf.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
-		if !validation.IsDate(pf.EmbargoDate) {
+		if !util.IsDate(pf.EmbargoDate) {
 			errs = append(errs, &validation.Error{
 				Pointer: "/embargo_date",
 				Code:    "embargo_date.invalid",
@@ -1259,7 +1261,7 @@ func (pf *PublicationFile) Validate() (errs validation.Errors) {
 	return
 }
 
-func (pl *PublicationLink) Validate() (errs validation.Errors) {
+func (pl *PublicationLink) Validate() (errs *okay.Errors) {
 	if pl.ID == "" {
 		errs = append(errs, &validation.Error{
 			Pointer: "/id",

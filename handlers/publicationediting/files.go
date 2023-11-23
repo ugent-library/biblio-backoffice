@@ -13,8 +13,8 @@ import (
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
-	"github.com/ugent-library/biblio-backoffice/validation"
 	"github.com/ugent-library/bind"
+	"github.com/ugent-library/okay"
 )
 
 type BindFile struct {
@@ -261,10 +261,7 @@ func (h *Handler) UpdateFile(w http.ResponseWriter, r *http.Request, ctx Context
 	if file.EmbargoDate != "" {
 		t, e := time.Parse("2006-01-02", file.EmbargoDate)
 		if e == nil && !t.After(time.Now()) {
-			validationErrs = validation.Append(validationErrs, &validation.Error{
-				Pointer: fmt.Sprintf("/file/%d/embargo_date", ctx.Publication.FileIndex(file.ID)),
-				Code:    "publication.file.embargo_date.expired",
-			})
+			okay.Add(validationErrs, okay.NewError(fmt.Sprintf("/file/%d/embargo_date", ctx.Publication.FileIndex(file.ID)), "publication.file.embargo_date.expired"))
 		}
 	}
 
@@ -272,7 +269,7 @@ func (h *Handler) UpdateFile(w http.ResponseWriter, r *http.Request, ctx Context
 		render.Layout(w, "refresh_modal", "publication/edit_file", YieldEditFile{
 			Context:  ctx,
 			File:     file,
-			Form:     fileForm(ctx.Loc, ctx.Publication, file, validationErrs.(validation.Errors)),
+			Form:     fileForm(ctx.Loc, ctx.Publication, file, validationErrs.(*okay.Errors)),
 			Conflict: false,
 		})
 		return
@@ -358,7 +355,7 @@ func (h *Handler) DeleteFile(w http.ResponseWriter, r *http.Request, ctx Context
 	})
 }
 
-func fileForm(loc *gotext.Locale, publication *models.Publication, file *models.PublicationFile, errors validation.Errors) *form.Form {
+func fileForm(loc *gotext.Locale, publication *models.Publication, file *models.PublicationFile, errors *okay.Errors) *form.Form {
 	idx := -1
 	for i, f := range publication.File {
 		if f.ID == file.ID {
