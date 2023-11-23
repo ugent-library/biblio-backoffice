@@ -397,11 +397,14 @@ func (d *Dataset) Validate() error {
 	}
 
 	for i, c := range d.Author {
-		for _, err := range c.Validate() {
-			errs.Errors = append(errs.Errors, &okay.Error{
-				Key:  fmt.Sprintf("/author/%d%s", i, err.Key),
-				Rule: "dataset.author." + err.Code,
-			})
+		var e *okay.Errors
+		if errors.As(c.Validate(), &e) {
+			for _, err := range e.Errors {
+				errs.Errors = append(errs.Errors, &okay.Error{
+					Key:  fmt.Sprintf("/author/%d%s", i, err.Key),
+					Rule: "dataset.author." + err.Rule,
+				})
+			}
 		}
 	}
 
@@ -459,11 +462,14 @@ func (d *Dataset) Validate() error {
 	}
 
 	for i, l := range d.Link {
-		for _, err := range l.Validate() {
-			errs.Errors = append(errs.Errors, &okay.Error{
-				Key:  fmt.Sprintf("/link/%d%s", i, err.Key),
-				Rule: "dataset.link." + err.Code,
-			})
+		var e *okay.Errors
+		if errors.As(l.Validate(), &e) {
+			for _, err := range e.Errors {
+				errs.Errors = append(errs.Errors, &okay.Error{
+					Key:  fmt.Sprintf("/link/%d%s", i, err.Key),
+					Rule: "dataset.link." + err.Rule,
+				})
+			}
 		}
 	}
 
@@ -507,11 +513,14 @@ func (d *Dataset) Validate() error {
 	}
 
 	for i, abstract := range d.Abstract {
-		for _, err := range abstract.Validate() {
-			errs.Errors = append(errs.Errors, &okay.Error{
-				Key:  fmt.Sprintf("/abstract/%d%s", i, err.Key),
-				Rule: "dataset.abstract." + err.Code,
-			})
+		var e *okay.Errors
+		if errors.As(abstract.Validate(), &e) {
+			for _, err := range e.Errors {
+				errs.Errors = append(errs.Errors, &okay.Error{
+					Key:  fmt.Sprintf("/abstract/%d%s", i, err.Key),
+					Rule: "dataset.abstract." + err.Rule,
+				})
+			}
 		}
 	}
 

@@ -938,20 +938,26 @@ func (p *Publication) Validate() error {
 	}
 
 	for i, a := range p.Abstract {
-		for _, err := range a.Validate() {
-			errs.Errors = append(errs.Errors, &okay.Error{
-				Key:  fmt.Sprintf("/abstract/%d%s", i, err.Key),
-				Rule: "publication.abstract." + err.Code,
-			})
+		var e *okay.Errors
+		if errors.As(a.Validate(), &e) {
+			for _, err := range e.Errors {
+				errs.Errors = append(errs.Errors, &okay.Error{
+					Key:  fmt.Sprintf("/abstract/%d%s", i, err.Key),
+					Rule: "publication.abstract." + err.Rule,
+				})
+			}
 		}
 	}
 
 	for i, l := range p.LaySummary {
-		for _, err := range l.Validate() {
-			errs.Errors = append(errs.Errors, &okay.Error{
-				Key:  fmt.Sprintf("/lay_summary/%d%s", i, err.Key),
-				Rule: "publication.lay_summary." + err.Code,
-			})
+		var e *okay.Errors
+		if errors.As(l.Validate(), &e) {
+			for _, err := range e.Errors {
+				errs.Errors = append(errs.Errors, &okay.Error{
+					Key:  fmt.Sprintf("/lay_summary/%d%s", i, err.Key),
+					Rule: "publication.lay_summary." + err.Rule,
+				})
+			}
 		}
 	}
 
@@ -1012,27 +1018,36 @@ func (p *Publication) Validate() error {
 	}
 
 	for i, c := range p.Author {
-		for _, err := range c.Validate() {
-			errs.Errors = append(errs.Errors, &okay.Error{
-				Key:  fmt.Sprintf("/author/%d%s", i, err.Key),
-				Rule: "publication.author." + err.Code,
-			})
+		var e *okay.Errors
+		if errors.As(c.Validate(), &e) {
+			for _, err := range e.Errors {
+				errs.Errors = append(errs.Errors, &okay.Error{
+					Key:  fmt.Sprintf("/author/%d%s", i, err.Key),
+					Rule: "publication.author." + err.Rule,
+				})
+			}
 		}
 	}
 	for i, c := range p.Editor {
-		for _, err := range c.Validate() {
-			errs.Errors = append(errs.Errors, &okay.Error{
-				Key:  fmt.Sprintf("/editor/%d%s", i, err.Key),
-				Rule: "publication.editor." + err.Code,
-			})
+		var e *okay.Errors
+		if errors.As(c.Validate(), &e) {
+			for _, err := range e.Errors {
+				errs.Errors = append(errs.Errors, &okay.Error{
+					Key:  fmt.Sprintf("/editor/%d%s", i, err.Key),
+					Rule: "publication.editor." + err.Rule,
+				})
+			}
 		}
 	}
 	for i, c := range p.Supervisor {
-		for _, err := range c.Validate() {
-			errs.Errors = append(errs.Errors, &okay.Error{
-				Key:  fmt.Sprintf("/supervisor/%d%s", i, err.Key),
-				Rule: "publication.supervisor." + err.Code,
-			})
+		var e *okay.Errors
+		if errors.As(c.Validate(), &e) {
+			for _, err := range e.Errors {
+				errs.Errors = append(errs.Errors, &okay.Error{
+					Key:  fmt.Sprintf("/supervisor/%d%s", i, err.Key),
+					Rule: "publication.supervisor." + err.Rule,
+				})
+			}
 		}
 	}
 
@@ -1064,20 +1079,26 @@ func (p *Publication) Validate() error {
 	}
 
 	for i, f := range p.File {
-		for _, err := range f.Validate() {
-			errs.Errors = append(errs.Errors, &okay.Error{
-				Key:  fmt.Sprintf("/file/%d%s", i, err.Key),
-				Rule: "publication.file." + err.Code,
-			})
+		var e *okay.Errors
+		if errors.As(f.Validate(), &e) {
+			for _, err := range e.Errors {
+				errs.Errors = append(errs.Errors, &okay.Error{
+					Key:  fmt.Sprintf("/file/%d%s", i, err.Key),
+					Rule: "publication.file." + err.Rule,
+				})
+			}
 		}
 	}
 
 	for i, l := range p.Link {
-		for _, err := range l.Validate() {
-			errs.Errors = append(errs.Errors, &okay.Error{
-				Key:  fmt.Sprintf("/link/%d%s", i, err.Key),
-				Rule: "publication.link." + err.Code,
-			})
+		var e *okay.Errors
+		if errors.As(l.Validate(), &e) {
+			for _, err := range e.Errors {
+				errs.Errors = append(errs.Errors, &okay.Error{
+					Key:  fmt.Sprintf("/link/%d%s", i, err.Key),
+					Rule: "publication.link." + err.Rule,
+				})
+			}
 		}
 	}
 
