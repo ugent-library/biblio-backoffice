@@ -859,44 +859,23 @@ func (p *Publication) Validate() error {
 	errs := okay.NewErrors()
 
 	if p.ID == "" {
-		errs.Errors = append(errs.Errors, &okay.Error{
-			Key:  "/id",
-			Rule: "publication.id.required",
-		})
+		errs.Add(okay.NewError("/id", "publication.id.required"))
 	}
 	if p.Type == "" {
-		errs.Errors = append(errs.Errors, &okay.Error{
-			Key:  "/type",
-			Rule: "publication.type.required",
-		})
+		errs.Add(okay.NewError("/type", "publication.type.required"))
 	} else if !util.IsPublicationType(p.Type) {
-		errs.Errors = append(errs.Errors, &okay.Error{
-			Key:  "/type",
-			Rule: "publication.type.invalid",
-		})
+		errs.Add(okay.NewError("/type", "publication.type.invalid"))
 	}
 	// TODO check classification validity
 	if p.Classification == "" {
-		errs.Errors = append(errs.Errors, &okay.Error{
-			Key:  "/classification",
-			Rule: "publication.classification.required",
-		})
+		errs.Add(okay.NewError("/classification", "publication.classification.required"))
 	} else if !slices.Contains(p.ClassificationChoices(), p.Classification) {
-		errs.Errors = append(errs.Errors, &okay.Error{
-			Key:  "/classification",
-			Rule: "publication.classification.invalid",
-		})
+		errs.Add(okay.NewError("/classification", "publication.classification.invalid"))
 	}
 	if p.Status == "" {
-		errs.Errors = append(errs.Errors, &okay.Error{
-			Key:  "/status",
-			Rule: "publication.status.required",
-		})
+		errs.Add(okay.NewError("/status", "publication.status.required"))
 	} else if !util.IsStatus(p.Status) {
-		errs.Errors = append(errs.Errors, &okay.Error{
-			Key:  "/status",
-			Rule: "publication.status.invalid",
-		})
+		errs.Add(okay.NewError("/status", "publication.status.invalid"))
 	}
 
 	if p.Status == "public" && p.Title == "" {
