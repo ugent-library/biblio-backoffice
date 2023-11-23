@@ -1,21 +1,61 @@
-<ul class="list-group mt-6">
-{{range .Hits}}
-<li class="list-group-item">
-    <div class="row">
-        <div class="col-md-8">
-            <h4 class="c-h4">{{.Heading}}</h4>
-            <div class="c-body-small text-muted">{{.Description}}</div>
-            <div class="text-muted c-body-small">Project ID: {{.ID}}</div>
+<ul class="list-group">
+    {{range .Hits}}
+    <li class="list-group-item">
+        <div class="list-group-item-inner">
+            <div class="list-group-item-main">
+                <div class="d-flex align-items-top">
+                    <div class="me-5">
+                        <span class="badge badge-default rounded-pill mt-1">ELECTRA</span>
+                    </div>
+                    <div class="mx-3">
+                        <div class="mb-3">
+                            <h3>{{.Heading}}</h3>
+                            <p>Kennis in perspectief: epistemologische studie van complexe dynamische systemen met een bijdrage tot de ontwikkeling van een actuele transcendentale wetenschapsfilosofie</p>
+                        </div>
+                        <p class="mb-3 text-muted">Research, based on the theory of complex dynamical systems, of the relation between ontology - epistemology, more specifically of the context-related nature of knowledge: (i) study of literature of the organizational aspects of living systems, within spatial and temporal constraints, coupled to those of its intentional character within the frame of a phenomenological and/or transcendental philosophy of science.</p>
+                        <div class="mb-3">
+                            <ul class="c-meta-list c-meta-list-horizontal pb-0">
+                                <li class="c-meta-item">
+                                    <div class="me-4 pe-4 border-right">
+                                        <p>EU Funding programme: Horizon 2020</p>
+                                    </div>
+                                    <div class="me-4 pe-4 border-right">
+                                        <p>Period: 2020 – 2023</p>
+                                    </div>
+                                    <div class="me-4 pe-4">
+                                        <p><a class="c-link" href="https://biblio.ugent.be/project/41Z00119" target="blank">Read more {{/*link-to-gismo-project if available, otherwise biblio*/}} <i class="if if-external-link if--small"></i></a></p>
+                                    </div>
+                                </li>
+                            </ul>
+                            <ul class="c-meta-list c-meta-list-horizontal">
+                                <li class="c-meta-item">
+                                    <div class="me-4 pe-4 border-right">
+                                        <span class=" me-2">Project ID:</span>
+                                        <code class="c-code">{{.ID}}</code>
+                                    </div>
+                                    <div class="me-4 pe-4 border-right">
+                                        <span class=" me-2">GISMO ID:</span>
+                                        <code class="c-code">{{.ID}}</code>
+                                    </div>
+                                    <div class="me-4 pe-4">
+                                        <span class=" me-2">IWETO ID:</span>
+                                        <code class="c-code">{{.ID}}</code>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="c-button-toolbar">
+                <button class="btn btn-primary"
+                    hx-post="{{pathFor "dataset_create_project" "id" $.Dataset.ID}}"
+                    hx-headers='{"If-Match": "{{$.Dataset.SnapshotID}}"}'
+                    hx-vals='{"project_id": "{{.ID}}"}'
+                    hx-swap="none"
+                >Add project</button>
+            </div>
         </div>
-        <div class="col-md-4 d-flex justify-content-md-end">
-            <button class="btn btn-primary"
-                hx-post="{{pathFor "dataset_create_project" "id" $.Dataset.ID}}"
-                hx-headers='{"If-Match": "{{$.Dataset.SnapshotID}}"}'
-                hx-vals='{"project_id": "{{.ID}}"}'
-                hx-swap="none"
-            >Add project</button>
-        </div>
-    </div>
-</li>
-{{end}}
+    </li>
+    {{end}}
 </ul>

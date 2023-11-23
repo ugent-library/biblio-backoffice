@@ -1,17 +1,32 @@
-<ul class="list-group mt-6">
-{{range .Hits}}
-<li class="list-group-item">
-    <div class="list-group-item-inner">
-        <div class="list-group-item-main">
-            <div class="bc-avatar-and-text align-items-start">
-                <div class="bc-avatar-and-text align-items-start">
-                    <div class="bc-avatar bc-avatar--muted bc-avatar--medium">
-                        <i class="if if-list-check"></i>
+<ul class="list-group">
+    {{range .Hits}}
+    <li class="list-group-item">
+        <div class="list-group-item-inner">
+            <div class="list-group-item-main">
+                <div class="d-flex align-items-top">
+                    <div class="me-5">
+                        <span class="badge badge-default rounded-pill mt-1">ELECTRA</span>
                     </div>
-                    <div class="bc-avatar-text">
+                    <div class="mx-3">
                         <div class="mb-3">
-                            <h3 class="mb-0">{{.Heading}}</span></h3>
+                            <h3>{{.Heading}}</h3>
                             <p>Kennis in perspectief: epistemologische studie van complexe dynamische systemen met een bijdrage tot de ontwikkeling van een actuele transcendentale wetenschapsfilosofie</p>
+                        </div>
+                        <p class="mb-3 text-muted">Research, based on the theory of complex dynamical systems, of the relation between ontology - epistemology, more specifically of the context-related nature of knowledge: (i) study of literature of the organizational aspects of living systems, within spatial and temporal constraints, coupled to those of its intentional character within the frame of a phenomenological and/or transcendental philosophy of science.</p>
+                        <div class="mb-3">
+                            <ul class="c-meta-list c-meta-list-horizontal pb-0">
+                                <li class="c-meta-item">
+                                    <div class="me-4 pe-4 border-right">
+                                        <p>EU Funding programme: Horizon 2020</p>
+                                    </div>
+                                    <div class="me-4 pe-4 border-right">
+                                        <p>Period: 2020 – 2023</p>
+                                    </div>
+                                    <div class="me-4 pe-4">
+                                        <p><a class="c-link" href="https://biblio.ugent.be/project/41Z00119" target="blank">Read more {{/*link-to-gismo-project if available, otherwise biblio*/}} <i class="if if-external-link if--small"></i></a></p>
+                                    </div>
+                                </li>
+                            </ul>
                             <ul class="c-meta-list c-meta-list-horizontal">
                                 <li class="c-meta-item">
                                     <div class="me-4 pe-4 border-right">
@@ -29,21 +44,18 @@
                                 </li>
                             </ul>
                         </div>
-                        <p class="mb-3">Research, based on the theory of complex dynamical systems, of the relation between ontology - epistemology, more specifically of the context-related nature of knowledge: (i) study of literature of the organizational aspects of living systems, within spatial and temporal constraints, coupled to those of its intentional character within the frame of a phenomenological and/or transcendental philosophy of science. <a class="c-link c-link-muted" href="#">Read more {{/*link-to-gismo-project*/}} <i class="if if-external-link if--small"></i></a></p>
-                        <p class="my-2 text-muted">EU Funding programme: Horizon 2020 &mdash; Period: 2020–2023</p>
                     </div>
                 </div>
             </div>
+            <div class="c-button-toolbar">
+                <button class="btn btn-primary"
+                    hx-post="{{pathFor "publication_create_project" "id" $.Publication.ID}}"
+                    hx-headers='{"If-Match": "{{$.Publication.SnapshotID}}"}'
+                    hx-vals='{"project_id": "{{.ID}}"}'
+                    hx-swap="none"
+                >Add project</button>
+            </div>
         </div>
-        <div class="c-button-toolbar">
-            <button class="btn btn-primary"
-                hx-post="{{pathFor "publication_create_project" "id" $.Publication.ID}}"
-                hx-headers='{"If-Match": "{{$.Publication.SnapshotID}}"}'
-                hx-vals='{"project_id": "{{.ID}}"}'
-                hx-swap="none"
-            >Add project</button>
-        </div>
-    </div>
-</li>
-{{end}}
+    </li>
+    {{end}}
 </ul>
