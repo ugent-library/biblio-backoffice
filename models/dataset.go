@@ -10,7 +10,6 @@ import (
 	"github.com/oklog/ulid/v2"
 	"github.com/ugent-library/biblio-backoffice/pagination"
 	"github.com/ugent-library/biblio-backoffice/util"
-	"github.com/ugent-library/biblio-backoffice/validation"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
 	"github.com/ugent-library/okay"
 )
@@ -269,62 +268,62 @@ func (d *Dataset) Validate() error {
 	errs := okay.NewErrors()
 
 	if d.ID == "" {
-		errs = append(errs, &validation.Error{
-			Pointer: "/id",
-			Code:    "dataset.id.required",
+		errs.Errors = append(errs.Errors, &okay.Error{
+			Key:  "/id",
+			Rule: "dataset.id.required",
 		})
 	}
 
 	if d.Status == "" {
-		errs = append(errs, &validation.Error{
-			Pointer: "/status",
-			Code:    "dataset.status.required",
+		errs.Errors = append(errs.Errors, &okay.Error{
+			Key:  "/status",
+			Rule: "dataset.status.required",
 		})
 	} else if !util.IsStatus(d.Status) {
-		errs = append(errs, &validation.Error{
-			Pointer: "/status",
-			Code:    "dataset.status.invalid",
+		errs.Errors = append(errs.Errors, &okay.Error{
+			Key:  "/status",
+			Rule: "dataset.status.invalid",
 		})
 	}
 
 	if d.Status == "public" && d.AccessLevel == "" {
-		errs = append(errs, &validation.Error{
-			Pointer: "/access_level",
-			Code:    "dataset.access_level.required",
+		errs.Errors = append(errs.Errors, &okay.Error{
+			Key:  "/access_level",
+			Rule: "dataset.access_level.required",
 		})
 	}
 	if d.AccessLevel != "" && !util.IsDatasetAccessLevel(d.AccessLevel) {
-		errs = append(errs, &validation.Error{
-			Pointer: "/access_level",
-			Code:    "dataset.access_level.invalid",
+		errs.Errors = append(errs.Errors, &okay.Error{
+			Key:  "/access_level",
+			Rule: "dataset.access_level.invalid",
 		})
 	}
 
 	if d.Status == "public" && len(d.Identifiers) == 0 {
-		errs = append(errs, &validation.Error{
-			Pointer: "/identifier",
-			Code:    "dataset.identifier.required",
+		errs.Errors = append(errs.Errors, &okay.Error{
+			Key:  "/identifier",
+			Rule: "dataset.identifier.required",
 		})
 	}
 	for key, vals := range d.Identifiers {
 		if key == "" {
-			errs = append(errs, &validation.Error{
-				Pointer: "/identifier",
-				Code:    "dataset.identifier.required",
+			errs.Errors = append(errs.Errors, &okay.Error{
+				Key:  "/identifier",
+				Rule: "dataset.identifier.required",
 			})
 			break
 		} else if !util.IsDatasetIdentifierType(key) {
-			errs = append(errs, &validation.Error{
-				Pointer: "/identifier",
-				Code:    "dataset.identifier.invalid",
+			errs.Errors = append(errs.Errors, &okay.Error{
+				Key:  "/identifier",
+				Rule: "dataset.identifier.invalid",
 			})
 			break
 		}
 		for _, val := range vals {
 			if val == "" {
-				errs = append(errs, &validation.Error{
-					Pointer: "/identifier",
-					Code:    "dataset.identifier.required",
+				errs.Errors = append(errs.Errors, &okay.Error{
+					Key:  "/identifier",
+					Rule: "dataset.identifier.required",
 				})
 				break
 			}
@@ -332,77 +331,76 @@ func (d *Dataset) Validate() error {
 	}
 
 	if d.Status == "public" && len(d.Format) == 0 {
-		errs = append(errs, &validation.Error{
-			Pointer: "/format",
-			Code:    "dataset.format.required",
+		errs.Errors = append(errs.Errors, &okay.Error{
+			Key:  "/format",
+			Rule: "dataset.format.required",
 		})
 	}
 	for i, f := range d.Format {
 		if f == "" {
-			errs = append(errs, &validation.Error{
-				Pointer: fmt.Sprintf("/format/%d", i),
-				Code:    "dataset.format.invalid",
+			errs.Errors = append(errs.Errors, &okay.Error{
+				Key:  fmt.Sprintf("/format/%d", i),
+				Rule: "dataset.format.invalid",
 			})
 		}
 	}
 
 	// for i, k := range d.Keyword {
 	// 	if k == "" {
-	// 		errs = append(errs, &validation.Error{
-	// 			Pointer: fmt.Sprintf("/keyword/%d", i),
-	// 			Code:    "dataset.keyword.invalid",
+	// 		errs.Errors = append(errs.Errors, &okay.Error{
+	// 			Key: fmt.Sprintf("/keyword/%d", i),
+	// 			Rule:    "dataset.keyword.invalid",
 	// 		})
 	// 	}
 	// }
 
 	for i, l := range d.Language {
 		if !slices.Contains(vocabularies.Map["language_codes"], l) {
-			errs = append(errs, &validation.Error{
-				Pointer: fmt.Sprintf("/language/%d", i),
-				Code:    "dataset.language.invalid",
+			errs.Errors = append(errs.Errors, &okay.Error{
+				Key:  fmt.Sprintf("/language/%d", i),
+				Rule: "dataset.language.invalid",
 			})
 		}
 	}
 
 	if d.Status == "public" && d.Publisher == "" {
-		errs = append(errs, &validation.Error{
-			Pointer: "/publisher",
-			Code:    "dataset.publisher.required",
+		errs.Errors = append(errs.Errors, &okay.Error{
+			Key:  "/publisher",
+			Rule: "dataset.publisher.required",
 		})
 	}
 	if d.Status == "public" && d.Title == "" {
-		errs = append(errs, &validation.Error{
-			Pointer: "/title",
-			Code:    "dataset.title.required",
+		errs.Errors = append(errs.Errors, &okay.Error{
+			Key:  "/title",
+			Rule: "dataset.title.required",
 		})
 	}
 
 	if d.Status == "public" && d.Year == "" {
-		errs = append(errs, &validation.Error{
-			Pointer: "/year",
-			Code:    "dataset.year.required",
+		errs.Errors = append(errs.Errors, &okay.Error{
+			Key:  "/year",
+			Rule: "dataset.year.required",
 		})
 	}
 	if d.Year != "" && !util.IsYear(d.Year) {
-		errs = append(errs, &validation.Error{
-			Pointer: "/year",
-			Code:    "dataset.year.invalid",
+		errs.Errors = append(errs.Errors, &okay.Error{
+			Key:  "/year",
+			Rule: "dataset.year.invalid",
 		})
 	}
 
 	if d.Status == "public" && len(d.Author) == 0 {
-		errs = append(errs, &validation.Error{
-			Pointer: "/author",
-			Code:    "dataset.author.required",
+		errs.Errors = append(errs.Errors, &okay.Error{
+			Key:  "/author",
+			Rule: "dataset.author.required",
 		})
 	}
 
 	for i, c := range d.Author {
-		// okay.AddWithPrefix(errs, fmt.Sprintf("/author/%d", i), c.Validate())
 		for _, err := range c.Validate() {
-			errs = append(errs, &validation.Error{
-				Pointer: fmt.Sprintf("/author/%d%s", i, err.Pointer),
-				Code:    "dataset.author." + err.Code,
+			errs.Errors = append(errs.Errors, &okay.Error{
+				Key:  fmt.Sprintf("/author/%d%s", i, err.Key),
+				Rule: "dataset.author." + err.Code,
 			})
 		}
 	}
@@ -417,9 +415,9 @@ func (d *Dataset) Validate() error {
 			}
 		}
 		if !hasUgentAuthors {
-			errs = append(errs, &validation.Error{
-				Pointer: "/author",
-				Code:    "dataset.author.min_ugent_authors",
+			errs.Errors = append(errs.Errors, &okay.Error{
+				Key:  "/author",
+				Rule: "dataset.author.min_ugent_authors",
 			})
 		}
 	}
@@ -427,44 +425,44 @@ func (d *Dataset) Validate() error {
 	// license or other_license -> TODO: base error?
 	// now "fixed" by (incorrectly) pointing at license
 	if d.Status == "public" && d.License == "" && d.OtherLicense == "" {
-		errs = append(errs, &validation.Error{
-			Pointer: "/license",
-			Code:    "dataset.license.required",
+		errs.Errors = append(errs.Errors, &okay.Error{
+			Key:  "/license",
+			Rule: "dataset.license.required",
 		})
 	}
 
 	for i, rel := range d.RelatedPublication {
 		if rel.ID == "" {
-			errs = append(errs, &validation.Error{
-				Pointer: fmt.Sprintf("/related_publication/%d/id", i),
-				Code:    "dataset.related_publication.required",
+			errs.Errors = append(errs.Errors, &okay.Error{
+				Key:  fmt.Sprintf("/related_publication/%d/id", i),
+				Rule: "dataset.related_publication.required",
 			})
 		}
 	}
 
 	for i, rel := range d.RelatedProjects {
 		if rel.ProjectID == "" {
-			errs = append(errs, &validation.Error{
-				Pointer: fmt.Sprintf("/project/%d/id", i),
-				Code:    "dataset.project.id.required",
+			errs.Errors = append(errs.Errors, &okay.Error{
+				Key:  fmt.Sprintf("/project/%d/id", i),
+				Rule: "dataset.project.id.required",
 			})
 		}
 	}
 
 	for i, rel := range d.RelatedOrganizations {
 		if rel.OrganizationID == "" {
-			errs = append(errs, &validation.Error{
-				Pointer: fmt.Sprintf("/department/%d/id", i),
-				Code:    "dataset.department.id.required",
+			errs.Errors = append(errs.Errors, &okay.Error{
+				Key:  fmt.Sprintf("/department/%d/id", i),
+				Rule: "dataset.department.id.required",
 			})
 		}
 	}
 
 	for i, l := range d.Link {
 		for _, err := range l.Validate() {
-			errs = append(errs, &validation.Error{
-				Pointer: fmt.Sprintf("/link/%d%s", i, err.Pointer),
-				Code:    "dataset.link." + err.Code,
+			errs.Errors = append(errs.Errors, &okay.Error{
+				Key:  fmt.Sprintf("/link/%d%s", i, err.Key),
+				Rule: "dataset.link." + err.Code,
 			})
 		}
 	}
@@ -472,47 +470,47 @@ func (d *Dataset) Validate() error {
 	// TODO IsDate and co. are only checked when dataset is public
 	if d.Status == "public" && d.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
 		if d.EmbargoDate == "" {
-			errs = append(errs, &validation.Error{
-				Pointer: "/embargo_date",
-				Code:    "dataset.embargo_date.required",
+			errs.Errors = append(errs.Errors, &okay.Error{
+				Key:  "/embargo_date",
+				Rule: "dataset.embargo_date.required",
 			})
 		} else if !util.IsDate(d.EmbargoDate) {
-			errs = append(errs, &validation.Error{
-				Pointer: "/embargo_date",
-				Code:    "dataset.embargo_date.invalid",
+			errs.Errors = append(errs.Errors, &okay.Error{
+				Key:  "/embargo_date",
+				Rule: "dataset.embargo_date.invalid",
 			})
 		}
 
 		invalid := false
 		if d.AccessLevelAfterEmbargo == "" {
 			invalid = true
-			errs = append(errs, &validation.Error{
-				Pointer: "/access_level_after_embargo",
-				Code:    "dataset.access_level_after_embargo.required",
+			errs.Errors = append(errs.Errors, &okay.Error{
+				Key:  "/access_level_after_embargo",
+				Rule: "dataset.access_level_after_embargo.required",
 			})
 		}
 
 		if d.AccessLevel == d.AccessLevelAfterEmbargo && !invalid {
 			invalid = true
-			errs = append(errs, &validation.Error{
-				Pointer: "/access_level_after_embargo",
-				Code:    "dataset.access_level_after_embargo.similar", // TODO better code
+			errs.Errors = append(errs.Errors, &okay.Error{
+				Key:  "/access_level_after_embargo",
+				Rule: "dataset.access_level_after_embargo.similar", // TODO better code
 			})
 		}
 
 		if !util.IsDatasetAccessLevel(d.AccessLevelAfterEmbargo) && !invalid {
-			errs = append(errs, &validation.Error{
-				Pointer: "/access_level_after_embargo",
-				Code:    "dataset.access_level_after_embargo.invalid", // TODO better code
+			errs.Errors = append(errs.Errors, &okay.Error{
+				Key:  "/access_level_after_embargo",
+				Rule: "dataset.access_level_after_embargo.invalid", // TODO better code
 			})
 		}
 	}
 
 	for i, abstract := range d.Abstract {
 		for _, err := range abstract.Validate() {
-			errs = append(errs, &validation.Error{
-				Pointer: fmt.Sprintf("/abstract/%d%s", i, err.Pointer),
-				Code:    "dataset.abstract." + err.Code,
+			errs.Errors = append(errs.Errors, &okay.Error{
+				Key:  fmt.Sprintf("/abstract/%d%s", i, err.Key),
+				Rule: "dataset.abstract." + err.Code,
 			})
 		}
 	}

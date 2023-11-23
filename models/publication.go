@@ -12,7 +12,6 @@ import (
 	"github.com/oklog/ulid/v2"
 	"github.com/ugent-library/biblio-backoffice/pagination"
 	"github.com/ugent-library/biblio-backoffice/util"
-	"github.com/ugent-library/biblio-backoffice/validation"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
 	"github.com/ugent-library/okay"
 )
@@ -857,109 +856,109 @@ func (p *Publication) ShowDefenseAsRequired() bool {
 }
 
 func (p *Publication) Validate() error {
-	var errs *okay.Errors
+	errs := okay.NewErrors()
 
 	if p.ID == "" {
-		errs = append(errs, &validation.Error{
-			Pointer: "/id",
-			Code:    "publication.id.required",
+		errs.Errors = append(errs.Errors, &okay.Error{
+			Key:  "/id",
+			Rule: "publication.id.required",
 		})
 	}
 	if p.Type == "" {
-		errs = append(errs, &validation.Error{
-			Pointer: "/type",
-			Code:    "publication.type.required",
+		errs.Errors = append(errs.Errors, &okay.Error{
+			Key:  "/type",
+			Rule: "publication.type.required",
 		})
 	} else if !util.IsPublicationType(p.Type) {
-		errs = append(errs, &validation.Error{
-			Pointer: "/type",
-			Code:    "publication.type.invalid",
+		errs.Errors = append(errs.Errors, &okay.Error{
+			Key:  "/type",
+			Rule: "publication.type.invalid",
 		})
 	}
 	// TODO check classification validity
 	if p.Classification == "" {
-		errs = append(errs, &validation.Error{
-			Pointer: "/classification",
-			Code:    "publication.classification.required",
+		errs.Errors = append(errs.Errors, &okay.Error{
+			Key:  "/classification",
+			Rule: "publication.classification.required",
 		})
 	} else if !slices.Contains(p.ClassificationChoices(), p.Classification) {
-		errs = append(errs, &validation.Error{
-			Pointer: "/classification",
-			Code:    "publication.classification.invalid",
+		errs.Errors = append(errs.Errors, &okay.Error{
+			Key:  "/classification",
+			Rule: "publication.classification.invalid",
 		})
 	}
 	if p.Status == "" {
-		errs = append(errs, &validation.Error{
-			Pointer: "/status",
-			Code:    "publication.status.required",
+		errs.Errors = append(errs.Errors, &okay.Error{
+			Key:  "/status",
+			Rule: "publication.status.required",
 		})
 	} else if !util.IsStatus(p.Status) {
-		errs = append(errs, &validation.Error{
-			Pointer: "/status",
-			Code:    "publication.status.invalid",
+		errs.Errors = append(errs.Errors, &okay.Error{
+			Key:  "/status",
+			Rule: "publication.status.invalid",
 		})
 	}
 
 	if p.Status == "public" && p.Title == "" {
-		errs = append(errs, &validation.Error{
-			Pointer: "/title",
-			Code:    "publication.title.required",
+		errs.Errors = append(errs.Errors, &okay.Error{
+			Key:  "/title",
+			Rule: "publication.title.required",
 		})
 	}
 
 	if p.Status == "public" && !p.Legacy && p.Year == "" {
-		errs = append(errs, &validation.Error{
-			Pointer: "/year",
-			Code:    "publication.year.required",
+		errs.Errors = append(errs.Errors, &okay.Error{
+			Key:  "/year",
+			Rule: "publication.year.required",
 		})
 	}
 	if p.Year != "" && !util.IsYear(p.Year) {
-		errs = append(errs, &validation.Error{
-			Pointer: "/year",
-			Code:    "publication.year.invalid",
+		errs.Errors = append(errs.Errors, &okay.Error{
+			Key:  "/year",
+			Rule: "publication.year.invalid",
 		})
 	}
 
 	// for i, k := range p.Keyword {
 	// 	if k == "" {
-	// 		errs = append(errs, &validation.Error{
-	// 			Pointer: fmt.Sprintf("/keyword/%d", i),
-	// 			Code:    "publication.keyword.invalid",
+	// 		errs.Errors = append(errs.Errors, &okay.Error{
+	// 			Key: fmt.Sprintf("/keyword/%d", i),
+	// 			Rule:    "publication.keyword.invalid",
 	// 		})
 	// 	}
 	// }
 
 	for i, l := range p.Language {
 		if !slices.Contains(vocabularies.Map["language_codes"], l) {
-			errs = append(errs, &validation.Error{
-				Pointer: fmt.Sprintf("/language/%d", i),
-				Code:    "publication.lang.invalid",
+			errs.Errors = append(errs.Errors, &okay.Error{
+				Key:  fmt.Sprintf("/language/%d", i),
+				Rule: "publication.lang.invalid",
 			})
 		}
 	}
 
 	for i, a := range p.Abstract {
 		for _, err := range a.Validate() {
-			errs = append(errs, &validation.Error{
-				Pointer: fmt.Sprintf("/abstract/%d%s", i, err.Pointer),
-				Code:    "publication.abstract." + err.Code,
+			errs.Errors = append(errs.Errors, &okay.Error{
+				Key:  fmt.Sprintf("/abstract/%d%s", i, err.Key),
+				Rule: "publication.abstract." + err.Code,
 			})
 		}
 	}
 
 	for i, l := range p.LaySummary {
 		for _, err := range l.Validate() {
-			errs = append(errs, &validation.Error{
-				Pointer: fmt.Sprintf("/lay_summary/%d%s", i, err.Pointer),
-				Code:    "publication.lay_summary." + err.Code,
+			errs.Errors = append(errs.Errors, &okay.Error{
+				Key:  fmt.Sprintf("/lay_summary/%d%s", i, err.Key),
+				Rule: "publication.lay_summary." + err.Code,
 			})
 		}
 	}
 
 	if p.Status == "public" && p.UsesAuthor() && len(p.Author) == 0 {
-		errs = append(errs, &validation.Error{
-			Pointer: "/author",
-			Code:    "publication.author.required",
+		errs.Errors = append(errs.Errors, &okay.Error{
+			Key:  "/author",
+			Rule: "publication.author.required",
 		})
 
 	}
@@ -974,17 +973,17 @@ func (p *Publication) Validate() error {
 			}
 		}
 		if !hasUgentAuthors {
-			errs = append(errs, &validation.Error{
-				Pointer: "/author",
-				Code:    "publication.author.min_ugent_authors",
+			errs.Errors = append(errs.Errors, &okay.Error{
+				Key:  "/author",
+				Rule: "publication.author.min_ugent_authors",
 			})
 		}
 	}
 
 	if p.Status == "public" && p.UsesEditor() && !p.UsesAuthor() && len(p.Editor) == 0 {
-		errs = append(errs, &validation.Error{
-			Pointer: "/editor",
-			Code:    "publication.editor.required",
+		errs.Errors = append(errs.Errors, &okay.Error{
+			Key:  "/editor",
+			Rule: "publication.editor.required",
 		})
 	}
 
@@ -998,86 +997,86 @@ func (p *Publication) Validate() error {
 			}
 		}
 		if !hasUgentEditors {
-			errs = append(errs, &validation.Error{
-				Pointer: "/editor",
-				Code:    "publication.editor.min_ugent_editors",
+			errs.Errors = append(errs.Errors, &okay.Error{
+				Key:  "/editor",
+				Rule: "publication.editor.min_ugent_editors",
 			})
 		}
 	}
 
 	if p.Status == "public" && !p.Legacy && p.UsesSupervisor() && len(p.Supervisor) == 0 {
-		errs = append(errs, &validation.Error{
-			Pointer: "/supervisor",
-			Code:    "publication.supervisor.required",
+		errs.Errors = append(errs.Errors, &okay.Error{
+			Key:  "/supervisor",
+			Rule: "publication.supervisor.required",
 		})
 	}
 
 	for i, c := range p.Author {
 		for _, err := range c.Validate() {
-			errs = append(errs, &validation.Error{
-				Pointer: fmt.Sprintf("/author/%d%s", i, err.Pointer),
-				Code:    "publication.author." + err.Code,
+			errs.Errors = append(errs.Errors, &okay.Error{
+				Key:  fmt.Sprintf("/author/%d%s", i, err.Key),
+				Rule: "publication.author." + err.Code,
 			})
 		}
 	}
 	for i, c := range p.Editor {
 		for _, err := range c.Validate() {
-			errs = append(errs, &validation.Error{
-				Pointer: fmt.Sprintf("/editor/%d%s", i, err.Pointer),
-				Code:    "publication.editor." + err.Code,
+			errs.Errors = append(errs.Errors, &okay.Error{
+				Key:  fmt.Sprintf("/editor/%d%s", i, err.Key),
+				Rule: "publication.editor." + err.Code,
 			})
 		}
 	}
 	for i, c := range p.Supervisor {
 		for _, err := range c.Validate() {
-			errs = append(errs, &validation.Error{
-				Pointer: fmt.Sprintf("/supervisor/%d%s", i, err.Pointer),
-				Code:    "publication.supervisor." + err.Code,
+			errs.Errors = append(errs.Errors, &okay.Error{
+				Key:  fmt.Sprintf("/supervisor/%d%s", i, err.Key),
+				Rule: "publication.supervisor." + err.Code,
 			})
 		}
 	}
 
 	for i, rel := range p.RelatedProjects {
 		if rel.ProjectID == "" {
-			errs = append(errs, &validation.Error{
-				Pointer: fmt.Sprintf("/project/%d/id", i),
-				Code:    "publication.project.id.required",
+			errs.Errors = append(errs.Errors, &okay.Error{
+				Key:  fmt.Sprintf("/project/%d/id", i),
+				Rule: "publication.project.id.required",
 			})
 		}
 	}
 
 	for i, rel := range p.RelatedOrganizations {
 		if rel.OrganizationID == "" {
-			errs = append(errs, &validation.Error{
-				Pointer: fmt.Sprintf("/department/%d/id", i),
-				Code:    "publication.department.id.required",
+			errs.Errors = append(errs.Errors, &okay.Error{
+				Key:  fmt.Sprintf("/department/%d/id", i),
+				Rule: "publication.department.id.required",
 			})
 		}
 	}
 
 	for i, rel := range p.RelatedDataset {
 		if rel.ID == "" {
-			errs = append(errs, &validation.Error{
-				Pointer: fmt.Sprintf("/related_dataset/%d/id", i),
-				Code:    "publication.related_dataset.id.required",
+			errs.Errors = append(errs.Errors, &okay.Error{
+				Key:  fmt.Sprintf("/related_dataset/%d/id", i),
+				Rule: "publication.related_dataset.id.required",
 			})
 		}
 	}
 
 	for i, f := range p.File {
 		for _, err := range f.Validate() {
-			errs = append(errs, &validation.Error{
-				Pointer: fmt.Sprintf("/file/%d%s", i, err.Pointer),
-				Code:    "publication.file." + err.Code,
+			errs.Errors = append(errs.Errors, &okay.Error{
+				Key:  fmt.Sprintf("/file/%d%s", i, err.Key),
+				Rule: "publication.file." + err.Code,
 			})
 		}
 	}
 
 	for i, l := range p.Link {
 		for _, err := range l.Validate() {
-			errs = append(errs, &validation.Error{
-				Pointer: fmt.Sprintf("/link/%d%s", i, err.Pointer),
-				Code:    "publication.link." + err.Code,
+			errs.Errors = append(errs.Errors, &okay.Error{
+				Key:  fmt.Sprintf("/link/%d%s", i, err.Key),
+				Rule: "publication.link." + err.Code,
 			})
 		}
 	}
@@ -1102,11 +1101,7 @@ func (p *Publication) Validate() error {
 		errs = append(errs, p.validateIssueEditor()...)
 	}
 
-	// TODO: why is the nil slice validationErrors(nil) != nil in mutantdb validation?
-	if len(errs) > 0 {
-		return errs
-	}
-	return nil
+	return errs.ErrorOrNil()
 }
 
 func (p *Publication) validateBookEditor() (errs *okay.Errors) {
@@ -1121,15 +1116,15 @@ func (p *Publication) validateJournalArticle() (errs *okay.Errors) {
 	// TODO: confusing: gui shows select without empty element
 	// but first creation sets this value to empty
 	if p.JournalArticleType != "" && !slices.Contains(vocabularies.Map["journal_article_types"], p.JournalArticleType) {
-		errs = append(errs, &validation.Error{
-			Pointer: "/journal_article_type",
-			Code:    "publication.journal_article_type.invalid",
+		errs.Errors = append(errs.Errors, &okay.Error{
+			Key:  "/journal_article_type",
+			Rule: "publication.journal_article_type.invalid",
 		})
 	}
 	if p.Status == "public " && !p.Legacy && p.Publication == "" {
-		errs = append(errs, &validation.Error{
-			Pointer: "/publication",
-			Code:    "publication.journal_article.publication.required",
+		errs.Errors = append(errs.Errors, &okay.Error{
+			Key:  "/publication",
+			Rule: "publication.journal_article.publication.required",
 		})
 	}
 	return
@@ -1149,21 +1144,21 @@ func (p *Publication) validateBookChapter() (errs *okay.Errors) {
 
 func (p *Publication) validateDissertation() (errs *okay.Errors) {
 	if p.Status == "public" && !p.Legacy && p.DefensePlace == "" {
-		errs = append(errs, &validation.Error{
-			Pointer: "/defense_place",
-			Code:    "publication.defense_place.required",
+		errs.Errors = append(errs.Errors, &okay.Error{
+			Key:  "/defense_place",
+			Rule: "publication.defense_place.required",
 		})
 	}
 	if p.Status == "public" && !p.Legacy && p.DefenseDate == "" {
-		errs = append(errs, &validation.Error{
-			Pointer: "/defense_date",
-			Code:    "publication.defense_date.required",
+		errs.Errors = append(errs.Errors, &okay.Error{
+			Key:  "/defense_date",
+			Rule: "publication.defense_date.required",
 		})
 	}
 	if p.DefenseDate != "" && !util.IsDate(p.DefenseDate) {
-		errs = append(errs, &validation.Error{
-			Pointer: "/defense_date",
-			Code:    "publication.defense_date.invalid",
+		errs.Errors = append(errs.Errors, &okay.Error{
+			Key:  "/defense_date",
+			Rule: "publication.defense_date.invalid",
 		})
 	}
 
@@ -1174,113 +1169,118 @@ func (p *Publication) validateMiscellaneous() (errs *okay.Errors) {
 	// TODO confusing: gui shows select without empty element
 	// but first creation sets this value to empty
 	if p.MiscellaneousType != "" && !slices.Contains(vocabularies.Map["miscellaneous_types"], p.MiscellaneousType) {
-		errs = append(errs, &validation.Error{
-			Pointer: "/miscellaneous_type",
-			Code:    "publication.miscellaneous_type.invalid",
+		errs.Errors = append(errs.Errors, &okay.Error{
+			Key:  "/miscellaneous_type",
+			Rule: "publication.miscellaneous_type.invalid",
 		})
 	}
 	return
 }
 
-func (pf *PublicationFile) Validate() (errs *okay.Errors) {
+func (pf *PublicationFile) Validate() error {
+	errs := okay.NewErrors()
+
 	if !slices.Contains(vocabularies.Map["publication_file_access_levels"], pf.AccessLevel) {
-		errs = append(errs, &validation.Error{
-			Pointer: "/access_level",
-			Code:    "access_level.invalid",
+		errs.Errors = append(errs.Errors, &okay.Error{
+			Key:  "/access_level",
+			Rule: "access_level.invalid",
 		})
 	}
 
 	if pf.Size == 0 {
-		errs = append(errs, &validation.Error{
-			Pointer: "/size",
-			Code:    "size.empty",
+		errs.Errors = append(errs.Errors, &okay.Error{
+			Key:  "/size",
+			Rule: "size.empty",
 		})
 	}
 
 	if pf.ContentType == "" {
-		errs = append(errs, &validation.Error{
-			Pointer: "/content_type",
-			Code:    "content_type.required",
+		errs.Errors = append(errs.Errors, &okay.Error{
+			Key:  "/content_type",
+			Rule: "content_type.required",
 		})
 	}
 
 	if pf.ID == "" {
-		errs = append(errs, &validation.Error{
-			Pointer: "/id",
-			Code:    "id.required",
+		errs.Errors = append(errs.Errors, &okay.Error{
+			Key:  "/id",
+			Rule: "id.required",
 		})
 	}
 
 	if pf.Relation != "" && !slices.Contains(vocabularies.Map["publication_file_relations"], pf.Relation) {
-		errs = append(errs, &validation.Error{
-			Pointer: "/relation",
-			Code:    "relation.invalid",
+		errs.Errors = append(errs.Errors, &okay.Error{
+			Key:  "/relation",
+			Rule: "relation.invalid",
 		})
 	}
 
 	if pf.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
 		if !util.IsDate(pf.EmbargoDate) {
-			errs = append(errs, &validation.Error{
-				Pointer: "/embargo_date",
-				Code:    "embargo_date.invalid",
+			errs.Errors = append(errs.Errors, &okay.Error{
+				Key:  "/embargo_date",
+				Rule: "embargo_date.invalid",
 			})
 		}
 
 		invalid := false
 		if !slices.Contains(vocabularies.Map["publication_file_access_levels"], pf.AccessLevelAfterEmbargo) {
 			invalid = true
-			errs = append(errs, &validation.Error{
-				Pointer: "/access_level_after_embargo",
-				Code:    "access_level_after_embargo.invalid",
+			errs.Errors = append(errs.Errors, &okay.Error{
+				Key:  "/access_level_after_embargo",
+				Rule: "access_level_after_embargo.invalid",
 			})
 		}
 
 		if !slices.Contains(vocabularies.Map["publication_file_access_levels"], pf.AccessLevelDuringEmbargo) {
 			invalid = true
-			errs = append(errs, &validation.Error{
-				Pointer: "/access_level_during_embargo",
-				Code:    "access_level_during_embargo.invalid",
+			errs.Errors = append(errs.Errors, &okay.Error{
+				Key:  "/access_level_during_embargo",
+				Rule: "access_level_during_embargo.invalid",
 			})
 		}
 
 		if pf.AccessLevelAfterEmbargo == pf.AccessLevelDuringEmbargo && !invalid {
-			errs = append(errs, &validation.Error{
-				Pointer: "/access_level_after_embargo",
-				Code:    "access_level_after_embargo.similar",
+			errs.Errors = append(errs.Errors, &okay.Error{
+				Key:  "/access_level_after_embargo",
+				Rule: "access_level_after_embargo.similar",
 			})
 		}
 	}
 
 	if pf.PublicationVersion != "" && !slices.Contains(vocabularies.Map["publication_versions"], pf.PublicationVersion) {
-		errs = append(errs, &validation.Error{
-			Pointer: "/publication_version",
-			Code:    "publication_version.invalid",
+		errs.Errors = append(errs.Errors, &okay.Error{
+			Key:  "/publication_version",
+			Rule: "publication_version.invalid",
 		})
 	}
 
-	return
+	return errs.ErrorOrNil()
 }
 
-func (pl *PublicationLink) Validate() (errs *okay.Errors) {
+func (pl *PublicationLink) Validate() error {
+	errs := okay.NewErrors()
+
 	if pl.ID == "" {
-		errs = append(errs, &validation.Error{
-			Pointer: "/id",
-			Code:    "id.required",
+		errs.Errors = append(errs.Errors, &okay.Error{
+			Key:  "/id",
+			Rule: "id.required",
 		})
 	}
 	if pl.URL == "" {
-		errs = append(errs, &validation.Error{
-			Pointer: "/url",
-			Code:    "url.required",
+		errs.Errors = append(errs.Errors, &okay.Error{
+			Key:  "/url",
+			Rule: "url.required",
 		})
 	}
 	if !slices.Contains(vocabularies.Map["publication_link_relations"], pl.Relation) {
-		errs = append(errs, &validation.Error{
-			Pointer: "/relation",
-			Code:    "relation.invalid",
+		errs.Errors = append(errs.Errors, &okay.Error{
+			Key:  "/relation",
+			Rule: "relation.invalid",
 		})
 	}
-	return
+
+	return errs.ErrorOrNil()
 }
 
 func (p *Publication) CleanupUnusedFields() bool {

@@ -3,7 +3,6 @@ package models
 import (
 	"slices"
 
-	"github.com/ugent-library/biblio-backoffice/validation"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
 	"github.com/ugent-library/okay"
 )
@@ -14,31 +13,34 @@ type Text struct {
 	ID   string `json:"id,omitempty"`
 }
 
-func (t Text) Validate() (errs *okay.Errors) {
+func (t Text) Validate() error {
+	errs := okay.NewErrors()
+
 	if t.ID == "" {
-		errs = append(errs, &validation.Error{
-			Pointer: "/id",
-			Code:    "id.required",
+		errs.Errors = append(errs.Errors, &okay.Error{
+			Key:  "/id",
+			Rule: "id.required",
 		})
 	}
 
 	if t.Lang == "" {
-		errs = append(errs, &validation.Error{
-			Pointer: "/lang",
-			Code:    "lang.required",
+		errs.Errors = append(errs.Errors, &okay.Error{
+			Key:  "/lang",
+			Rule: "lang.required",
 		})
 	} else if !slices.Contains(vocabularies.Map["language_codes"], t.Lang) {
-		errs = append(errs, &validation.Error{
-			Pointer: "/lang",
-			Code:    "lang.invalid",
+		errs.Errors = append(errs.Errors, &okay.Error{
+			Key:  "/lang",
+			Rule: "lang.invalid",
 		})
 	}
 
 	if t.Text == "" {
-		errs = append(errs, &validation.Error{
-			Pointer: "/text",
-			Code:    "text.required",
+		errs.Errors = append(errs.Errors, &okay.Error{
+			Key:  "/text",
+			Rule: "text.required",
 		})
 	}
-	return
+
+	return errs.ErrorOrNil()
 }
