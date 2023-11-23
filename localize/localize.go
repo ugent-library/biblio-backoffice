@@ -13,6 +13,9 @@ import (
 var languageNamer = display.Languages(language.MustParse("en"))
 
 func ValidationErrors(loc *gotext.Locale, errs *okay.Errors) []string {
+	if errs == nil || len(errs.Errors) == 0 {
+		return nil
+	}
 	msgs := make([]string, len(errs.Errors))
 	for i, e := range errs.Errors {
 		msgs[i] = loc.Get("validation." + e.Rule)
@@ -21,6 +24,9 @@ func ValidationErrors(loc *gotext.Locale, errs *okay.Errors) []string {
 }
 
 func ValidationErrorAt(loc *gotext.Locale, errs *okay.Errors, key string) string {
+	if errs == nil {
+		return ""
+	}
 	err := errs.Get(key)
 	if err == nil {
 		return ""

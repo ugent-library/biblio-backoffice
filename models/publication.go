@@ -919,15 +919,6 @@ func (p *Publication) Validate() error {
 		})
 	}
 
-	// for i, k := range p.Keyword {
-	// 	if k == "" {
-	// 		errs.Errors = append(errs.Errors, &okay.Error{
-	// 			Key: fmt.Sprintf("/keyword/%d", i),
-	// 			Rule:    "publication.keyword.invalid",
-	// 		})
-	// 	}
-	// }
-
 	for i, l := range p.Language {
 		if !slices.Contains(vocabularies.Map["language_codes"], l) {
 			errs.Errors = append(errs.Errors, &okay.Error{

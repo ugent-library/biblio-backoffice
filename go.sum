@@ -556,6 +556,8 @@ github.com/ugent-library/okay v0.0.0-20231122144531-69c28fe15ddb h1:4JJeo9RxrsK1
 github.com/ugent-library/okay v0.0.0-20231122144531-69c28fe15ddb/go.mod h1:zF9L8aA06ik8U87qGR1GEhuLbxSZh+HmSEOfF3Z0Mrw=
 github.com/ugent-library/okay v0.0.0-20231122144918-c2ad1fa9fa73 h1:+egy2Zqf3bsdCb80A+06QmkJGfSHoRkiJo+QK2LaG1A=
 github.com/ugent-library/okay v0.0.0-20231122144918-c2ad1fa9fa73/go.mod h1:zF9L8aA06ik8U87qGR1GEhuLbxSZh+HmSEOfF3Z0Mrw=
+github.com/ugent-library/okay v0.0.0-20231123125939-4fee8735cd74 h1:0hwwB+KNp/B3iImzTdkhFBsjDB137Kir1xpQytruHeo=
+github.com/ugent-library/okay v0.0.0-20231123125939-4fee8735cd74/go.mod h1:zF9L8aA06ik8U87qGR1GEhuLbxSZh+HmSEOfF3Z0Mrw=
 github.com/ugent-library/orcid v0.0.0-20230615125240-eb68c23bc33c h1:NRpS8TkbFjDJ9vM8oXDHr8noK66LgnZBoarpMt6+H7M=
 github.com/ugent-library/orcid v0.0.0-20230615125240-eb68c23bc33c/go.mod h1:g5C6oHMPfeceP48vaQLY24pFWtfKKi6mFni+tWbpgvU=
 github.com/ugent-library/zaphttp v0.0.0-20230513174723-52c27d21c5ce h1:+TNoKsfMTTveEe1RQRaJ7TZnHVh1k98Nk+4gTg2mENA=
