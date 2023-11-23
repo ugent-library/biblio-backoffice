@@ -879,31 +879,19 @@ func (p *Publication) Validate() error {
 	}
 
 	if p.Status == "public" && p.Title == "" {
-		errs.Errors = append(errs.Errors, &okay.Error{
-			Key:  "/title",
-			Rule: "publication.title.required",
-		})
+		errs.Add(okay.NewError("/title", "publication.title.required"))
 	}
 
 	if p.Status == "public" && !p.Legacy && p.Year == "" {
-		errs.Errors = append(errs.Errors, &okay.Error{
-			Key:  "/year",
-			Rule: "publication.year.required",
-		})
+		errs.Add(okay.NewError("/year", "publication.year.required"))
 	}
 	if p.Year != "" && !util.IsYear(p.Year) {
-		errs.Errors = append(errs.Errors, &okay.Error{
-			Key:  "/year",
-			Rule: "publication.year.invalid",
-		})
+		errs.Add(okay.NewError("/year", "publication.year.invalid"))
 	}
 
 	for i, l := range p.Language {
 		if !slices.Contains(vocabularies.Map["language_codes"], l) {
-			errs.Errors = append(errs.Errors, &okay.Error{
-				Key:  fmt.Sprintf("/language/%d", i),
-				Rule: "publication.lang.invalid",
-			})
+			errs.Add(okay.NewError(fmt.Sprintf("/language/%d", i), "publication.lang.invalid"))
 		}
 	}
 
@@ -911,10 +899,7 @@ func (p *Publication) Validate() error {
 		var e *okay.Errors
 		if errors.As(a.Validate(), &e) {
 			for _, err := range e.Errors {
-				errs.Errors = append(errs.Errors, &okay.Error{
-					Key:  fmt.Sprintf("/abstract/%d%s", i, err.Key),
-					Rule: "publication.abstract." + err.Rule,
-				})
+				errs.Add(okay.NewError(fmt.Sprintf("/abstract/%d%s", i, err.Key), "publication.abstract."+err.Rule))
 			}
 		}
 	}
@@ -923,20 +908,13 @@ func (p *Publication) Validate() error {
 		var e *okay.Errors
 		if errors.As(l.Validate(), &e) {
 			for _, err := range e.Errors {
-				errs.Errors = append(errs.Errors, &okay.Error{
-					Key:  fmt.Sprintf("/lay_summary/%d%s", i, err.Key),
-					Rule: "publication.lay_summary." + err.Rule,
-				})
+				errs.Add(okay.NewError(fmt.Sprintf("/lay_summary/%d%s", i, err.Key), "publication.lay_summary."+err.Rule))
 			}
 		}
 	}
 
 	if p.Status == "public" && p.UsesAuthor() && len(p.Author) == 0 {
-		errs.Errors = append(errs.Errors, &okay.Error{
-			Key:  "/author",
-			Rule: "publication.author.required",
-		})
-
+		errs.Add(okay.NewError("/author", "publication.author.required"))
 	}
 
 	// at least one ugent author if not external
@@ -949,18 +927,12 @@ func (p *Publication) Validate() error {
 			}
 		}
 		if !hasUgentAuthors {
-			errs.Errors = append(errs.Errors, &okay.Error{
-				Key:  "/author",
-				Rule: "publication.author.min_ugent_authors",
-			})
+			errs.Add(okay.NewError("/author", "publication.author.min_ugent_authors"))
 		}
 	}
 
 	if p.Status == "public" && p.UsesEditor() && !p.UsesAuthor() && len(p.Editor) == 0 {
-		errs.Errors = append(errs.Errors, &okay.Error{
-			Key:  "/editor",
-			Rule: "publication.editor.required",
-		})
+		errs.Add(okay.NewError("/editor", "publication.editor.required"))
 	}
 
 	// at least one ugent editor for editor types if not external
@@ -973,28 +945,19 @@ func (p *Publication) Validate() error {
 			}
 		}
 		if !hasUgentEditors {
-			errs.Errors = append(errs.Errors, &okay.Error{
-				Key:  "/editor",
-				Rule: "publication.editor.min_ugent_editors",
-			})
+			errs.Add(okay.NewError("/editor", "publication.editor.min_ugent_editors"))
 		}
 	}
 
 	if p.Status == "public" && !p.Legacy && p.UsesSupervisor() && len(p.Supervisor) == 0 {
-		errs.Errors = append(errs.Errors, &okay.Error{
-			Key:  "/supervisor",
-			Rule: "publication.supervisor.required",
-		})
+		errs.Add(okay.NewError("/supervisor", "publication.supervisor.required"))
 	}
 
 	for i, c := range p.Author {
 		var e *okay.Errors
 		if errors.As(c.Validate(), &e) {
 			for _, err := range e.Errors {
-				errs.Errors = append(errs.Errors, &okay.Error{
-					Key:  fmt.Sprintf("/author/%d%s", i, err.Key),
-					Rule: "publication.author." + err.Rule,
-				})
+				errs.Add(okay.NewError(fmt.Sprintf("/author/%d%s", i, err.Key), "publication.author."+err.Rule))
 			}
 		}
 	}
@@ -1002,10 +965,7 @@ func (p *Publication) Validate() error {
 		var e *okay.Errors
 		if errors.As(c.Validate(), &e) {
 			for _, err := range e.Errors {
-				errs.Errors = append(errs.Errors, &okay.Error{
-					Key:  fmt.Sprintf("/editor/%d%s", i, err.Key),
-					Rule: "publication.editor." + err.Rule,
-				})
+				errs.Add(okay.NewError(fmt.Sprintf("/editor/%d%s", i, err.Key), "publication.editor."+err.Rule))
 			}
 		}
 	}
@@ -1013,20 +973,14 @@ func (p *Publication) Validate() error {
 		var e *okay.Errors
 		if errors.As(c.Validate(), &e) {
 			for _, err := range e.Errors {
-				errs.Errors = append(errs.Errors, &okay.Error{
-					Key:  fmt.Sprintf("/supervisor/%d%s", i, err.Key),
-					Rule: "publication.supervisor." + err.Rule,
-				})
+				errs.Add(okay.NewError(fmt.Sprintf("/supervisor/%d%s", i, err.Key), "publication.supervisor."+err.Rule))
 			}
 		}
 	}
 
 	for i, rel := range p.RelatedProjects {
 		if rel.ProjectID == "" {
-			errs.Errors = append(errs.Errors, &okay.Error{
-				Key:  fmt.Sprintf("/project/%d/id", i),
-				Rule: "publication.project.id.required",
-			})
+			errs.Add(okay.NewError(fmt.Sprintf("/project/%d/id", i), "publication.project.id.required"))
 		}
 	}
 
