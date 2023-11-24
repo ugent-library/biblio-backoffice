@@ -47,7 +47,9 @@ templ UserDashboard(c *ctx.Ctx) {
                             <div class="col-xl-6" hx-get={ c.PathTo("action_required").String() } hx-trigger="load"></div>
                             <div class="col-xl-6" hx-get={ c.PathTo("drafts_to_complete").String() } hx-trigger="load"></div>
                         </div>
+                        if c.FlagCandidateRecords() {
                         <div hx-get={ c.PathTo("candidate_records").String() } hx-trigger="load"></div>
+                        }
                     </div>
                     if c.FlagRecentActivity() {
                     <div class="col-xl-4" hx-get={ c.PathTo("recent_activity").String() } hx-trigger="load"></div>
