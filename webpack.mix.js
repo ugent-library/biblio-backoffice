@@ -5,6 +5,7 @@ mix.sass('./assets/css/app.scss', 'css')
 mix.setPublicPath('./static')
 
 // copy images
+mix.copy('assets/images/**/*', 'static/images');
 mix.copy('assets/ugent/images/**/*', 'static/images');
 mix.copy('assets/ugent/favicon.ico', 'static/favicon.ico');
 

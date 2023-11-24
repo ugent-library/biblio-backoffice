@@ -16,6 +16,8 @@ import (
 	"github.com/leonelquinteros/gotext"
 	"github.com/nics/ich"
 	"github.com/oklog/ulid/v2"
+	ffclient "github.com/thomaspoignant/go-feature-flag"
+	"github.com/thomaspoignant/go-feature-flag/ffcontext"
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render/flash"
@@ -125,6 +127,7 @@ type Ctx struct {
 	Flash        []flash.Flash
 	CSRFToken    string
 	Nav          string
+	flagContext  *ffcontext.EvaluationContext
 }
 
 func (c *Ctx) HandleError(w http.ResponseWriter, r *http.Request, err error) {
@@ -234,4 +237,29 @@ func (c *Ctx) getUserRoleFromSession(session *sessions.Session) string {
 		return ""
 	}
 	return role.(string)
+}
+
+// TODO keep cache of user flag contexts?
+func (c *Ctx) getFlagContext() ffcontext.Context {
+	if c.flagContext == nil {
+		flagContext := ffcontext.NewEvaluationContext(c.User.Username)
+		c.flagContext = &flagContext
+	}
+	return *c.flagContext
+}
+
+func (c *Ctx) FlagRecentActivity() bool {
+	flag, err := ffclient.BoolVariation("recent-activity", c.getFlagContext(), false)
+	if err != nil {
+		c.Log.Error(err)
+	}
+	return flag
+}
+
+func (c *Ctx) FlagCandidateRecords() bool {
+	flag, err := ffclient.BoolVariation("candidate-records", c.getFlagContext(), false)
+	if err != nil {
+		c.Log.Error(err)
+	}
+	return flag
 }
