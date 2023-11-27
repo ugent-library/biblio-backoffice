@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- #1330: Fix setting HasBeenPublic for publications
+
 ## [v1.0.45] - 2023-11-23
 
 ### Added
