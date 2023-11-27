@@ -738,9 +738,9 @@ func (s *server) CleanupDatasets(req *api.CleanupDatasetsRequest, stream api.Bib
 		}
 
 		// remove empty strings from string array
-		vacuumArray := func(old_values []string) []string {
+		vacuumArray := func(oldVals []string) []string {
 			var newVals []string
-			for _, val := range old_values {
+			for _, val := range oldVals {
 				newVal := strings.TrimSpace(val)
 				if newVal != "" {
 					newVals = append(newVals, newVal)
