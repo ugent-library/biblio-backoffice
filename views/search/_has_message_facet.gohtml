@@ -10,7 +10,7 @@
             {{range $i, $v := .}}
                 {{- if gt $i 2}}, &hellip;{{break}}{{end}}
                 {{- if gt $i 0}},{{end}}
-                {{$.Locale.TS "has_message" $v -}}
+                {{$.Loc.Get (print "has_message." $v) -}}
             {{end}}
         </span>
         {{end}}
@@ -43,7 +43,7 @@
             {{range $i, $f := .Hits.Facets.has_message}}
             <div class="form-check {{if lt $i $last}} mb-4{{end}}">
                 <input class="form-check-input" id="filter-has-message-{{$i}}" type="checkbox" name="f[has_message]" value="{{$f.Value}}"{{if $.SearchArgs.HasFilter "has_message" $f.Value}} checked{{end}}>
-                <label class="form-check-label" for="filter-has-message-{{$i}}">{{$.Locale.TS "has_message" $f.Value}} ({{$f.Count}})</label>
+                <label class="form-check-label" for="filter-has-message-{{$i}}">{{$.Loc.Get (print "has_message." $f.Value)}} ({{$f.Count}})</label>
             </div>
             {{end}}
         </div>

@@ -1,7 +1,7 @@
 {{define "page_content"}}
 <div class="w-100 u-scroll-wrapper">
     <div class="bg-white">
-        <div class="bc-navbar bc-navbar--large bc-navbar--bordered-bottom bc-navbar--white">
+        <div class="bc-navbar bc-navbar--large bc-navbar--white">
             <div class="bc-toolbar">
                 <div class="bc-toolbar-left">
                     <div class="bc-toolbar-item">
@@ -40,7 +40,7 @@
                 <li class="nav-item">
                     <a class="nav-link{{if $.SearchArgs.HasFilter "scope" .}} active{{end}}"
                         href="{{pathFor "datasets"|query ($.SearchArgs.Clone.WithFilter "scope" .)}}">
-                        {{$.Locale.TS "dataset.search.scopes" .}}
+                        {{$.Loc.Get (print "dataset.search.scopes." .)}}
                     </a>
                 </li>
                 {{end}}
@@ -73,8 +73,8 @@
                     <div class="bc-avatar bc-avatar--medium">
                         <i class="if if-info-circle"></i>
                     </div>
-                    <h3 class="c-blank-slate-title">{{$.Locale.TS "dataset.search.empty.title" $.CurrentScope}}</h3>
-                    <p>{{$.Locale.TS "dataset.search.empty.description" $.CurrentScope}}</p>
+                    <h3 class="c-blank-slate-title">{{$.Loc.Get (print "dataset.search.empty.title." $.CurrentScope)}}</h3>
+                    <p>{{$.Loc.Get (print "dataset.search.empty.description." $.CurrentScope)}}</p>
                     <div class="c-button-toolbar">
                         <a class="btn btn-outline-primary" href="{{pathFor "dataset_add"}}">
                             <i class="if if-add"></i>

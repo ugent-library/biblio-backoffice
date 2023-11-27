@@ -12,7 +12,7 @@ templ ActionRequired(c *ctx.Ctx, pTotal, dTotal int) {
                 <div class="d-flex align-items-center">
                     <h2 class="mb-0">Action required</h2>
                     if pTotal > 0 || dTotal > 0 {
-                    <span class="badge bg-danger rounded-pill badge-sm ms-3">{ fmt.Sprint(pTotal+dTotal) }</span>
+                    <span class="badge bg-danger rounded-pill badge-sm ms-3 d-flex justify-content-center">{ fmt.Sprint(pTotal+dTotal) }</span>
                     }
                 </div>
             </div>

@@ -63,7 +63,7 @@ func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Conte
 	ptypes := vocabularies.Map["publication_types"]
 	ptypes = append([]string{"all"}, ptypes...)
 
-	locptypes := localize.VocabularyTerms(ctx.Locale, "publication_types")
+	locptypes := localize.VocabularyTerms(ctx.Loc, "publication_types")
 	locptypes["all"] = "All"
 
 	allUPublicationYears, err := h.allUPublicationYears()
@@ -179,7 +179,7 @@ func (h *Handler) RefreshAPublications(w http.ResponseWriter, r *http.Request, c
 	ptypes := vocabularies.Map["publication_types"]
 	ptypes = append([]string{"all"}, ptypes...)
 
-	locptypes := localize.VocabularyTerms(ctx.Locale, "publication_types")
+	locptypes := localize.VocabularyTerms(ctx.Loc, "publication_types")
 	locptypes["all"] = "All"
 
 	bindPublications := BindPublications{}
@@ -248,7 +248,7 @@ func (h *Handler) RefreshUPublications(w http.ResponseWriter, r *http.Request, c
 	facultyCols = append(facultyCols, "UGent", "-")
 	ptypes := append([]string{"all"}, vocabularies.Map["publication_types"]...)
 
-	locptypes := localize.VocabularyTerms(ctx.Locale, "publication_types")
+	locptypes := localize.VocabularyTerms(ctx.Loc, "publication_types")
 	locptypes["all"] = "All"
 
 	bindPublications := BindPublications{}

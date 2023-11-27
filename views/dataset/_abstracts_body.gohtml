@@ -14,7 +14,7 @@
                 <td class="ps-6">
                     <p>{{$a.Text}}</p>
                 </td>
-                <td>{{$.Locale.LanguageName $a.Lang}}</td>
+                <td>{{languageName $a.Lang}}</td>
                 <td class="pe-6">
                     {{if $.User.CanEditDataset $.Dataset}}
                     <div class="c-button-toolbar">

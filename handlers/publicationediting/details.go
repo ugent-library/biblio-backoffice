@@ -71,7 +71,7 @@ type YieldEditDetails struct {
 func (h *Handler) EditDetails(w http.ResponseWriter, r *http.Request, ctx Context) {
 	render.Layout(w, "show_modal", "publication/edit_details", YieldEditDetails{
 		Context:  ctx,
-		Form:     detailsForm(ctx.User, ctx.Locale, ctx.Publication, nil),
+		Form:     detailsForm(ctx.User, ctx.Loc, ctx.Publication, nil),
 		Conflict: false,
 	})
 }
@@ -136,7 +136,7 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
 		render.Layout(w, "refresh_modal", "publication/edit_details", YieldEditDetails{
 			Context:  ctx,
-			Form:     detailsForm(ctx.User, ctx.Locale, ctx.Publication, validationErrs.(validation.Errors)),
+			Form:     detailsForm(ctx.User, ctx.Loc, ctx.Publication, validationErrs.(validation.Errors)),
 			Conflict: false,
 		})
 		return
@@ -148,7 +148,7 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 	if errors.As(err, &conflict) {
 		render.Layout(w, "refresh_modal", "publication/edit_details", YieldEditDetails{
 			Context:  ctx,
-			Form:     detailsForm(ctx.User, ctx.Locale, ctx.Publication, nil),
+			Form:     detailsForm(ctx.User, ctx.Loc, ctx.Publication, nil),
 			Conflict: true,
 		})
 		return
@@ -162,6 +162,6 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 
 	render.View(w, "publication/refresh_details", YieldDetails{
 		Context:        ctx,
-		DisplayDetails: displays.PublicationDetails(ctx.User, ctx.Locale, ctx.Publication),
+		DisplayDetails: displays.PublicationDetails(ctx.User, ctx.Loc, ctx.Publication),
 	})
 }
