@@ -896,6 +896,18 @@ func (s *server) CleanupPublications(req *api.CleanupPublicationsRequest, stream
 		// guard
 		fixed := false
 
+		// correctly set HasBeenPublic (only needs to run once)
+		if p.Status == "deleted" && !p.HasBeenPublic {
+			s.services.Repo.PublicationHistory(p.ID, func(pp *models.Publication) bool {
+				if pp.Status == "public" {
+					p.HasBeenPublic = true
+					fixed = true
+					return false
+				}
+				return true
+			})
+		}
+
 		// remove empty links (only needs to run once)
 		for _, l := range p.Link {
 			if l.URL == "" {
@@ -997,12 +1009,12 @@ func (s *server) CleanupPublications(req *api.CleanupPublicationsRequest, stream
 		}
 
 		// remove empty strings from string array
-		vacuumArray := func(old_values []string) []string {
+		vacuumArray := func(oldVals []string) []string {
 			var newVals []string
-			for _, val := range old_values {
+			for _, val := range oldVals {
 				newVal := strings.TrimSpace(val)
 				if newVal != "" {
-					newVals = append(newVals, val)
+					newVals = append(newVals, newVal)
 				}
 				if val != newVal || newVal == "" {
 					fixed = true
