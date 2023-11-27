@@ -256,14 +256,6 @@ func (c *Ctx) getFlagContext() ffcontext.Context {
 	return *c.flagContext
 }
 
-func (c *Ctx) FlagRecentActivity() bool {
-	flag, err := ffclient.BoolVariation("recent-activity", c.getFlagContext(), false)
-	if err != nil {
-		c.Log.Error(err)
-	}
-	return flag
-}
-
 func (c *Ctx) FlagCandidateRecords() bool {
 	flag, err := ffclient.BoolVariation("candidate-records", c.getFlagContext(), false)
 	if err != nil {
