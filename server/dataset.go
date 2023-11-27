@@ -725,6 +725,18 @@ func (s *server) CleanupDatasets(req *api.CleanupDatasetsRequest, stream api.Bib
 		// guard
 		fixed := false
 
+		// correctly set HasBeenPublic (only needs to run once)
+		if d.Status == "deleted" && !d.HasBeenPublic {
+			s.services.Repo.PublicationHistory(d.ID, func(dd *models.Publication) bool {
+				if dd.Status == "public" {
+					d.HasBeenPublic = true
+					fixed = true
+					return false
+				}
+				return true
+			})
+		}
+
 		// remove empty strings from string array
 		vacuumArray := func(old_values []string) []string {
 			var newVals []string
