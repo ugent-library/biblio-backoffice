@@ -743,7 +743,7 @@ func (s *server) CleanupDatasets(req *api.CleanupDatasetsRequest, stream api.Bib
 			for _, val := range old_values {
 				newVal := strings.TrimSpace(val)
 				if newVal != "" {
-					newVals = append(newVals, val)
+					newVals = append(newVals, newVal)
 				}
 				if val != newVal || newVal == "" {
 					fixed = true

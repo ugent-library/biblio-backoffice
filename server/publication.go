@@ -1009,12 +1009,12 @@ func (s *server) CleanupPublications(req *api.CleanupPublicationsRequest, stream
 		}
 
 		// remove empty strings from string array
-		vacuumArray := func(old_values []string) []string {
+		vacuumArray := func(oldVals []string) []string {
 			var newVals []string
-			for _, val := range old_values {
+			for _, val := range oldVals {
 				newVal := strings.TrimSpace(val)
 				if newVal != "" {
-					newVals = append(newVals, val)
+					newVals = append(newVals, newVal)
 				}
 				if val != newVal || newVal == "" {
 					fixed = true
