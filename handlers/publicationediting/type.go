@@ -7,8 +7,8 @@ import (
 	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
-	"github.com/ugent-library/biblio-backoffice/validation"
 	"github.com/ugent-library/bind"
+	"github.com/ugent-library/okay"
 )
 
 type BindType struct {
@@ -44,7 +44,7 @@ func (h *Handler) UpdateType(w http.ResponseWriter, r *http.Request, ctx Context
 	//  won't become available and the user won't be able to set a supervisor, therefor being unable
 	//  to satisfy the validation rule. (circular logic)
 	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
-		form := detailsForm(ctx.User, ctx.Loc, ctx.Publication, validationErrs.(validation.Errors))
+		form := detailsForm(ctx.User, ctx.Loc, ctx.Publication, validationErrs.(*okay.Errors))
 
 		render.Layout(w, "refresh_modal", "publication/edit_details", YieldEditDetails{
 			Context: ctx,

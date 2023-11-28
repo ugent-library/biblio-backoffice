@@ -17,8 +17,8 @@ import (
 	"github.com/ugent-library/biblio-backoffice/render/flash"
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
-	"github.com/ugent-library/biblio-backoffice/validation"
 	"github.com/ugent-library/bind"
+	"github.com/ugent-library/okay"
 )
 
 type BindAdd struct {
@@ -167,7 +167,7 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 	}
 
 	if validationErrs := d.Validate(); validationErrs != nil {
-		errors := form.Errors(localize.ValidationErrors(ctx.Loc, validationErrs.(validation.Errors)))
+		errors := form.Errors(localize.ValidationErrors(ctx.Loc, validationErrs.(*okay.Errors)))
 		render.Layout(w, "layouts/default", "dataset/pages/add_identifier", YieldAdd{
 			Context:    ctx,
 			PageTitle:  "Add - Datasets - Biblio",
@@ -257,7 +257,7 @@ func (h *Handler) AddPublish(w http.ResponseWriter, r *http.Request, ctx Context
 	ctx.Dataset.Status = "public"
 
 	if err := ctx.Dataset.Validate(); err != nil {
-		errors := form.Errors(localize.ValidationErrors(ctx.Loc, err.(validation.Errors)))
+		errors := form.Errors(localize.ValidationErrors(ctx.Loc, err.(*okay.Errors)))
 		render.Layout(w, "show_modal", "form_errors_dialog", struct {
 			Title  string
 			Errors form.Errors

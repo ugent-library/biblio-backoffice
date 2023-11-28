@@ -16,7 +16,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/repositories"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
-	"github.com/ugent-library/biblio-backoffice/validation"
+	"github.com/ugent-library/okay"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -477,7 +477,7 @@ func (s *server) ValidateDatasets(stream api.Biblio_ValidateDatasetsServer) erro
 		}
 
 		err = d.Validate()
-		var validationErrs validation.Errors
+		var validationErrs *okay.Errors
 		if errors.As(err, &validationErrs) {
 			if err = stream.Send(&api.ValidateDatasetsResponse{
 				Response: &api.ValidateDatasetsResponse_Results{
@@ -725,13 +725,25 @@ func (s *server) CleanupDatasets(req *api.CleanupDatasetsRequest, stream api.Bib
 		// guard
 		fixed := false
 
+		// correctly set HasBeenPublic (only needs to run once)
+		if d.Status == "deleted" && !d.HasBeenPublic {
+			s.services.Repo.PublicationHistory(d.ID, func(dd *models.Publication) bool {
+				if dd.Status == "public" {
+					d.HasBeenPublic = true
+					fixed = true
+					return false
+				}
+				return true
+			})
+		}
+
 		// remove empty strings from string array
-		vacuumArray := func(old_values []string) []string {
+		vacuumArray := func(oldVals []string) []string {
 			var newVals []string
-			for _, val := range old_values {
+			for _, val := range oldVals {
 				newVal := strings.TrimSpace(val)
 				if newVal != "" {
-					newVals = append(newVals, val)
+					newVals = append(newVals, newVal)
 				}
 				if val != newVal || newVal == "" {
 					fixed = true

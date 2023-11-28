@@ -1,0 +1,53 @@
+package views
+
+import (
+    "fmt"
+    "github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+)
+
+templ CandidateRecords(c *ctx.Ctx, recs []*models.CandidateRecord) {
+    if len(recs) > 0 {
+        <div class="mb-6">
+            <div class="bc-toolbar">
+                <div class="bc-toolbar-left">
+                    <div class="d-flex align-items-center">
+                        <h2 class="mb-0">Research that might belong to you</h2>
+                        <span class="badge badge-primary rounded-pill badge-sm ms-3">{ fmt.Sprint(len(recs)) }</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <ul class="list-group list-group-flush">
+                    for _, rec := range recs {
+                    <li class="list-group-item bg-transparent">
+                        @CandidatePublicationSummary(c, rec.AsPublication())
+                    </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    } else {
+        <div class="d-flex flex-column align-items-center justify-content-center h-25 pt-8">
+            <img class="mt-8 mb-4" src={ c.AssetPath("/images/book-illustration.svg") } alt="" width="auto" height="54"/>
+            <h3>Add research to Biblio</h3>
+            <p class="mb-4">You can add publications and datasets.</p>
+            <div class="dropdown">
+                <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="if if-add"></i>
+                    <span class="btn-text">Add research</span>
+                </button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href={ templ.URL(c.PathTo("publication_add").String()) }>
+                        <i class="if if-article"></i>
+                        <span>Add publication</span>
+                    </a>
+                    <a class="dropdown-item" href={ templ.URL(c.PathTo("dataset_add").String()) }>
+                        <i class="if if-database"></i>
+                        <span>Add dataset</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+}

@@ -14,7 +14,7 @@ import (
 	"github.com/caltechlibrary/doitools"
 	"github.com/tidwall/gjson"
 	"github.com/ugent-library/biblio-backoffice/models"
-	"github.com/ugent-library/biblio-backoffice/validation"
+	"github.com/ugent-library/biblio-backoffice/util"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
 	"golang.org/x/text/language"
 )
@@ -135,7 +135,7 @@ func (c *Client) GetDataset(id string) (*models.Dataset, error) {
 		license := strings.ToUpper(res.String())
 
 		// @todo Clean IsDatasetLicense() up.
-		if validation.IsDatasetLicense(license) {
+		if util.IsDatasetLicense(license) {
 			d.License = license
 		} else {
 			d.License = "LicenseNotListed"

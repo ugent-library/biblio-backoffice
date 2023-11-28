@@ -3,7 +3,7 @@ package cli
 import (
 	_ "time/tzdata"
 
-	"github.com/caarlos0/env/v8"
+	"github.com/caarlos0/env/v10"
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
