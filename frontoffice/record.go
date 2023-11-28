@@ -11,7 +11,7 @@ import (
 	"github.com/iancoleman/strcase"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/repositories"
-	"github.com/ugent-library/biblio-backoffice/validation"
+	"github.com/ugent-library/biblio-backoffice/util"
 )
 
 const timestampFmt = "2006-01-02 15:04:05"
@@ -529,7 +529,7 @@ func MapPublication(p *models.Publication, repo *repositories.Repo) *Record {
 		rec.Language = []string{"und"}
 	}
 
-	if validation.IsYear(p.Year) {
+	if util.IsYear(p.Year) {
 		rec.Year = p.Year
 	}
 
@@ -630,7 +630,7 @@ func MapPublication(p *models.Publication, repo *repositories.Repo) *Record {
 		rec.Conference.Organizer = p.ConferenceOrganizer
 	}
 
-	if validation.IsDate(p.DefenseDate) {
+	if util.IsDate(p.DefenseDate) {
 		if rec.Defense == nil {
 			rec.Defense = &Defense{}
 		}

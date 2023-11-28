@@ -11,7 +11,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/render/flash"
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
-	"github.com/ugent-library/biblio-backoffice/validation"
+	"github.com/ugent-library/okay"
 )
 
 type YieldRepublish struct {
@@ -36,7 +36,7 @@ func (h *Handler) Republish(w http.ResponseWriter, r *http.Request, ctx Context)
 	ctx.Publication.Status = "public"
 
 	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
-		errors := form.Errors(localize.ValidationErrors(ctx.Loc, validationErrs.(validation.Errors)))
+		errors := form.Errors(localize.ValidationErrors(ctx.Loc, validationErrs.(*okay.Errors)))
 		render.Layout(w, "refresh_modal", "form_errors_dialog", struct {
 			Title  string
 			Errors form.Errors

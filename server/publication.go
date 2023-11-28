@@ -19,7 +19,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/repositories"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
-	"github.com/ugent-library/biblio-backoffice/validation"
+	"github.com/ugent-library/okay"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -495,7 +495,7 @@ func (s *server) ValidatePublications(stream api.Biblio_ValidatePublicationsServ
 		}
 
 		err = p.Validate()
-		var validationErrs validation.Errors
+		var validationErrs *okay.Errors
 		if errors.As(err, &validationErrs) {
 			if err = stream.Send(&api.ValidatePublicationsResponse{
 				Response: &api.ValidatePublicationsResponse_Results{

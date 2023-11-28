@@ -9,8 +9,8 @@ import (
 	"github.com/ugent-library/biblio-backoffice/render/display"
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
-	"github.com/ugent-library/biblio-backoffice/validation"
 	"github.com/ugent-library/bind"
+	"github.com/ugent-library/okay"
 )
 
 type BindDetails struct {
@@ -136,7 +136,7 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
 		render.Layout(w, "refresh_modal", "publication/edit_details", YieldEditDetails{
 			Context:  ctx,
-			Form:     detailsForm(ctx.User, ctx.Loc, ctx.Publication, validationErrs.(validation.Errors)),
+			Form:     detailsForm(ctx.User, ctx.Loc, ctx.Publication, validationErrs.(*okay.Errors)),
 			Conflict: false,
 		})
 		return

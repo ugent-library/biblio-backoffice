@@ -10,8 +10,8 @@ import (
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
-	"github.com/ugent-library/biblio-backoffice/validation"
 	"github.com/ugent-library/bind"
+	"github.com/ugent-library/okay"
 )
 
 type BindMessage struct {
@@ -66,7 +66,7 @@ func (h *Handler) UpdateMessage(w http.ResponseWriter, r *http.Request, ctx Cont
 		h.Logger.Warnw("update dataset reviewer note: could not validate message:", "errors", validationErrs, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
 		render.Layout(w, "refresh_modal", "dataset/edit_message", YieldEditMessage{
 			Context:  ctx,
-			Form:     messageForm(ctx.User, ctx.Loc, p, validationErrs.(validation.Errors)),
+			Form:     messageForm(ctx.User, ctx.Loc, p, validationErrs.(*okay.Errors)),
 			Conflict: false,
 		})
 		return
@@ -125,7 +125,7 @@ func (h *Handler) UpdateReviewerTags(w http.ResponseWriter, r *http.Request, ctx
 		h.Logger.Warnw("update dataset reviewer tags: could not validate reviewer tags:", "errors", validationErrs, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
 		render.Layout(w, "refresh_modal", "dataset/edit_reviewer_tags", YieldEditReviewerTags{
 			Context:  ctx,
-			Form:     reviewerTagsForm(ctx.User, ctx.Loc, p, validationErrs.(validation.Errors)),
+			Form:     reviewerTagsForm(ctx.User, ctx.Loc, p, validationErrs.(*okay.Errors)),
 			Conflict: false,
 		})
 		return
@@ -185,7 +185,7 @@ func (h *Handler) UpdateReviewerNote(w http.ResponseWriter, r *http.Request, ctx
 		h.Logger.Warnw("update dataset reviewer note: could not validate reviewer note:", "errors", validationErrs, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
 		render.Layout(w, "refresh_modal", "dataset/edit_reviewer_note", YieldEditReviewerNote{
 			Context:  ctx,
-			Form:     reviewerNoteForm(ctx.User, ctx.Loc, p, validationErrs.(validation.Errors)),
+			Form:     reviewerNoteForm(ctx.User, ctx.Loc, p, validationErrs.(*okay.Errors)),
 			Conflict: false,
 		})
 		return
@@ -212,7 +212,7 @@ func (h *Handler) UpdateReviewerNote(w http.ResponseWriter, r *http.Request, ctx
 	render.View(w, "dataset/refresh_reviewer_note", ctx)
 }
 
-func messageForm(user *models.Person, loc *gotext.Locale, p *models.Dataset, errors validation.Errors) *form.Form {
+func messageForm(user *models.Person, loc *gotext.Locale, p *models.Dataset, errors *okay.Errors) *form.Form {
 	return form.New().
 		WithTheme("cols").
 		WithErrors(localize.ValidationErrors(loc, errors)).
@@ -232,7 +232,7 @@ func messageForm(user *models.Person, loc *gotext.Locale, p *models.Dataset, err
 		)
 }
 
-func reviewerTagsForm(user *models.Person, loc *gotext.Locale, p *models.Dataset, errors validation.Errors) *form.Form {
+func reviewerTagsForm(user *models.Person, loc *gotext.Locale, p *models.Dataset, errors *okay.Errors) *form.Form {
 	return form.New().
 		WithTheme("cols").
 		WithErrors(localize.ValidationErrors(loc, errors)).
@@ -251,7 +251,7 @@ func reviewerTagsForm(user *models.Person, loc *gotext.Locale, p *models.Dataset
 		)
 }
 
-func reviewerNoteForm(user *models.Person, loc *gotext.Locale, p *models.Dataset, errors validation.Errors) *form.Form {
+func reviewerNoteForm(user *models.Person, loc *gotext.Locale, p *models.Dataset, errors *okay.Errors) *form.Form {
 	return form.New().
 		WithTheme("cols").
 		WithErrors(localize.ValidationErrors(loc, errors)).

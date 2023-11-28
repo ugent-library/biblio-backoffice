@@ -11,8 +11,8 @@ import (
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
-	"github.com/ugent-library/biblio-backoffice/validation"
 	"github.com/ugent-library/bind"
+	"github.com/ugent-library/okay"
 )
 
 type BindAddContributor struct {
@@ -290,7 +290,7 @@ func (h *Handler) CreateContributor(w http.ResponseWriter, r *http.Request, ctx 
 			Role:        b.Role,
 			Contributor: c,
 			Active:      active,
-			Form:        confirmContributorForm(ctx, b.Role, c, validationErrs.(validation.Errors)),
+			Form:        confirmContributorForm(ctx, b.Role, c, validationErrs.(*okay.Errors)),
 		})
 
 		return
@@ -538,7 +538,7 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 			Position:    b.Position,
 			Contributor: c,
 			Active:      active,
-			Form:        confirmContributorForm(ctx, b.Role, c, validationErrs.(validation.Errors)),
+			Form:        confirmContributorForm(ctx, b.Role, c, validationErrs.(*okay.Errors)),
 			EditNext:    b.Position+1 < len(ctx.Publication.Contributors(b.Role)),
 		})
 
@@ -633,7 +633,7 @@ func (h *Handler) DeleteContributor(w http.ResponseWriter, r *http.Request, ctx 
 	}
 
 	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
-		errors := form.Errors(localize.ValidationErrors(ctx.Loc, validationErrs.(validation.Errors)))
+		errors := form.Errors(localize.ValidationErrors(ctx.Loc, validationErrs.(*okay.Errors)))
 		render.Layout(w, "refresh_modal", "form_errors_dialog", struct {
 			Title  string
 			Errors form.Errors
@@ -739,7 +739,7 @@ func contributorForm(ctx Context, c *models.Contributor, suggestURL string) *for
 		)
 }
 
-func confirmContributorForm(ctx Context, role string, c *models.Contributor, errors validation.Errors) *form.Form {
+func confirmContributorForm(ctx Context, role string, c *models.Contributor, errors *okay.Errors) *form.Form {
 	var fields []form.Field
 
 	if c.PersonID != "" {

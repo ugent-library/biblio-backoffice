@@ -13,9 +13,9 @@ import (
 	"github.com/ugent-library/biblio-backoffice/render/display"
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
-	"github.com/ugent-library/biblio-backoffice/validation"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
 	"github.com/ugent-library/bind"
+	"github.com/ugent-library/okay"
 )
 
 type BindAdditionalInfo struct {
@@ -60,7 +60,7 @@ func (h *Handler) UpdateAdditionalInfo(w http.ResponseWriter, r *http.Request, c
 		h.Logger.Warnw("update publication additional info: could not validate additional info:", "errors", validationErrs, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.Layout(w, "refresh_modal", "publication/edit_additional_info", YieldEditAdditionalInfo{
 			Context:  ctx,
-			Form:     additionalInfoForm(ctx.User, ctx.Loc, p, validationErrs.(validation.Errors)),
+			Form:     additionalInfoForm(ctx.User, ctx.Loc, p, validationErrs.(*okay.Errors)),
 			Conflict: false,
 		})
 		return
@@ -90,7 +90,7 @@ func (h *Handler) UpdateAdditionalInfo(w http.ResponseWriter, r *http.Request, c
 	})
 }
 
-func additionalInfoForm(user *models.Person, loc *gotext.Locale, p *models.Publication, errors validation.Errors) *form.Form {
+func additionalInfoForm(user *models.Person, loc *gotext.Locale, p *models.Publication, errors *okay.Errors) *form.Form {
 	researchFieldOptions := make([]form.SelectOption, len(vocabularies.Map["research_fields"]))
 	for i, v := range vocabularies.Map["research_fields"] {
 		researchFieldOptions[i].Label = v
