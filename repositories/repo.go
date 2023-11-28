@@ -8,9 +8,10 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/jackc/pgx/v4"
-	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/oklog/ulid/v2"
+	"github.com/ugent-library/biblio-backoffice/db"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 )
@@ -26,6 +27,8 @@ type Repo struct {
 	publicationStore *snapstore.Store
 	datasetStore     *snapstore.Store
 	opts             snapstore.Options
+	// sqlc
+	queries *db.Queries
 }
 
 type Config struct {
@@ -46,12 +49,12 @@ type PublicationVisitor = func(*models.Publication) error
 type DatasetVisitor = func(*models.Dataset) error
 
 func New(c Config) (*Repo, error) {
-	db, err := pgxpool.Connect(context.Background(), c.DSN)
+	conn, err := pgxpool.New(context.Background(), c.DSN)
 	if err != nil {
 		return nil, err
 	}
 
-	client := snapstore.New(db, []string{"publications", "datasets"},
+	client := snapstore.New(conn, []string{"publications", "datasets"},
 		snapstore.WithIDGenerator(func() (string, error) {
 			return ulid.Make().String(), nil
 		}),
@@ -62,6 +65,7 @@ func New(c Config) (*Repo, error) {
 		client:           client,
 		publicationStore: client.Store("publications"),
 		datasetStore:     client.Store("datasets"),
+		queries:          db.New(conn),
 	}, nil
 }
 

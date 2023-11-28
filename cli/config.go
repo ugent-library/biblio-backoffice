@@ -78,4 +78,12 @@ type Config struct {
 		APIURL string `env:"API_URL"`
 		APIKey string `env:"API_KEY"`
 	} `envPrefix:"OAI_"`
+	// feature flags
+	FF struct {
+		FilePath     string `env:"FILE_PATH"`
+		GitHubToken  string `env:"GITHUB_TOKEN"`
+		GitHubRepo   string `env:"GITHUB_REPO"`
+		GitHubBranch string `env:"GITHUB_BRANCH" envDefault:"main"`
+		GitHubPath   string `env:"GITHUB_PATH"`
+	} `envPrefix:"FF_"`
 }
