@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/base64"
-	"encoding/gob"
 	"encoding/json"
 	"fmt"
 	"html/template"
@@ -13,21 +12,15 @@ import (
 
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/sessions"
+	"github.com/leonelquinteros/gotext"
 	"github.com/nics/ich"
 	"github.com/oklog/ulid/v2"
 	"github.com/ugent-library/biblio-backoffice/backends"
-	"github.com/ugent-library/biblio-backoffice/locale"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/render/flash"
 	"go.uber.org/zap"
 )
-
-func init() {
-	// register flash.Flash as a gob Type to make SecureCookieStore happy
-	// see https://github.com/gin-contrib/sessions/issues/39
-	gob.Register(flash.Flash{})
-}
 
 // TODO handlers should only have access to a url builder,
 // the session and maybe the localizer
@@ -38,7 +31,7 @@ type BaseHandler struct {
 	SessionStore    sessions.Store
 	UserService     backends.UserService
 	Timezone        *time.Location
-	Localizer       *locale.Localizer
+	Loc             *gotext.Locale
 	BaseURL         *url.URL
 	FrontendBaseUrl string
 }
@@ -47,11 +40,11 @@ type BaseHandler struct {
 type BaseContext struct {
 	CurrentURL      *url.URL
 	Flash           []flash.Flash
-	Locale          *locale.Locale
 	Timezone        *time.Location
-	User            *models.User
+	Loc             *gotext.Locale
+	User            *models.Person
 	UserRole        string
-	OriginalUser    *models.User
+	OriginalUser    *models.Person
 	CSRFToken       string
 	CSRFTag         template.HTML
 	FrontendBaseUrl string
@@ -61,8 +54,8 @@ func (c BaseContext) Yield(pairs ...any) map[string]any {
 	yield := map[string]any{
 		"CurrentURL":      c.CurrentURL,
 		"Flash":           c.Flash,
-		"Locale":          c.Locale,
 		"Timezone":        c.Timezone,
+		"Loc":             c.Loc,
 		"User":            c.User,
 		"UserRole":        c.UserRole,
 		"OriginalUser":    c.OriginalUser,
@@ -117,8 +110,8 @@ func (h BaseHandler) NewContext(r *http.Request, w http.ResponseWriter) (BaseCon
 	return BaseContext{
 		CurrentURL:      r.URL,
 		Flash:           flash,
-		Locale:          h.Localizer.GetLocale(r.Header.Get("Accept-Language")),
 		Timezone:        h.Timezone,
+		Loc:             h.Loc,
 		User:            user,
 		UserRole:        h.getUserRoleFromSession(session),
 		OriginalUser:    originalUser,
@@ -176,7 +169,7 @@ func (h BaseHandler) getFlashFromCookies(r *http.Request, w http.ResponseWriter)
 	return flashes, nil
 }
 
-func (h BaseHandler) getUserFromSession(session *sessions.Session, r *http.Request, sessionKey string) (*models.User, error) {
+func (h BaseHandler) getUserFromSession(session *sessions.Session, r *http.Request, sessionKey string) (*models.Person, error) {
 	userID := session.Values[sessionKey]
 	if userID == nil {
 		return nil, nil

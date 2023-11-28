@@ -2,33 +2,44 @@ describe('The home page', () => {
   it('should be able to load the home page anonymously', () => {
     cy.visit('/')
 
-    cy.get('h2').should('have.text', 'Biblio Back Office')
+    cy.get('h1').should('have.text', 'Biblio Back Office')
 
     cy.contains('a', 'Log in').should('be.visible')
 
-    cy.contains('h3', 'Publications').should('be.visible')
-    cy.contains('a', 'Go to publications').should('be.visible')
+    cy.contains('h2', 'Publications').should('be.visible')
 
-    cy.contains('h3', 'Datasets').should('be.visible')
-    cy.contains('a', 'Go to datasets').should('be.visible')
+    cy.contains('h2', 'Datasets').should('be.visible')
 
     // On a regular page you don't have to do this to make the "be.visible" assertion work,
     // but in this case the elements are being clipped by an element with "overflow: scroll"
     cy.get('.u-scroll-wrapper__body').scrollTo('bottom', { duration: 250 })
 
-    cy.contains('h3', 'Biblio Academic Bibliography').should('be.visible')
-    cy.contains('a', 'Go to Biblio Academic Bibliography').should('be.visible')
+    cy.contains('h2', 'Biblio Academic Bibliography').should('be.visible')
 
-    cy.contains('h3', 'Help').should('be.visible')
-    cy.contains('a', 'How to register and deposit').should('be.visible')
+    cy.contains('h2', 'Help').should('be.visible')
+
+    cy.get('.c-sidebar').should('not.have.class', 'c-sidebar--dark-gray')
   })
 
-  it('should redirect to the login page when browsing publications anonymously', () => {
-    redirectAnonymouslyTest('Biblio Publications')
-  })
+  it('should redirect to the login page when clicking the Login buttons', () => {
+    cy.visit('/')
 
-  it('should redirect to the login page when browsing datasets anonymously', () => {
-    redirectAnonymouslyTest('Biblio Datasets')
+    const assertLoginRedirection = href => {
+      cy.request(href).then(response => {
+        expect(response.isOkStatusCode).to.be.true
+        expect(response.redirects).is.an('array').that.has.length(1)
+
+        const redirects = response.redirects
+          .map(url => url.replace(/^3\d\d\: /, '')) // Redirect entries are in form '3XX: {url}'
+          .map(url => new URL(url))
+
+        expect(redirects[0]).to.have.property('hostname', 'test.liblogin.ugent.be')
+      })
+    }
+
+    cy.contains('.bc-navbar .btn', 'Log in').invoke('attr', 'href').then(assertLoginRedirection)
+
+    cy.contains('.bc-toolbar .btn', 'Log in').invoke('attr', 'href').then(assertLoginRedirection)
   })
 
   it('should be able to logon as researcher', () => {
@@ -45,10 +56,13 @@ describe('The home page', () => {
     cy.contains('.dropdown-menu .dropdown-item', 'Logout').should('exist')
 
     cy.get('.c-sidebar button.dropdown-toggle').should('not.exist')
-    cy.get('.c-sidebar-menu .c-sidebar__item').should('have.length', 2)
+    cy.get('.c-sidebar-menu .c-sidebar__item').should('have.length', 3)
+    cy.contains('.c-sidebar__item', 'Dashboard').should('be.visible')
     cy.contains('.c-sidebar__item', 'Biblio Publications').should('be.visible')
     cy.contains('.c-sidebar__item', 'Biblio Datasets').should('be.visible')
-    cy.contains('.c-sidebar__item', 'Dashboard').should('not.exist')
+    cy.contains('.c-sidebar__item', 'Batch').should('not.exist')
+
+    cy.get('.c-sidebar').should('not.have.class', 'c-sidebar--dark-gray')
   })
 
   it('should be able to logon as librarian and switch to librarian mode', () => {
@@ -63,10 +77,13 @@ describe('The home page', () => {
     cy.get('.c-sidebar button.dropdown-toggle').find('.if-briefcase').should('be.visible')
     cy.get('.c-sidebar button.dropdown-toggle').find('.if-book').should('not.exist')
     cy.get('.c-sidebar button.dropdown-toggle').should('contain.text', 'Researcher')
-    cy.get('.c-sidebar-menu .c-sidebar__item').should('have.length', 2)
+    cy.get('.c-sidebar-menu .c-sidebar__item').should('have.length', 3)
+    cy.contains('.c-sidebar__item', 'Dashboard').should('be.visible')
     cy.contains('.c-sidebar__item', 'Biblio Publications').should('be.visible')
     cy.contains('.c-sidebar__item', 'Biblio Datasets').should('be.visible')
-    cy.contains('.c-sidebar__item', 'Dashboard').should('not.exist')
+    cy.contains('.c-sidebar__item', 'Batch').should('not.exist')
+
+    cy.get('.c-sidebar').should('not.have.class', 'c-sidebar--dark-gray')
 
     cy.switchMode('Librarian')
 
@@ -74,20 +91,25 @@ describe('The home page', () => {
     cy.get('.c-sidebar button.dropdown-toggle').find('.if-briefcase').should('not.exist')
     cy.get('.c-sidebar button.dropdown-toggle').should('contain.text', 'Librarian')
     cy.get('.c-sidebar-menu .c-sidebar__item').should('have.length', 4)
+    cy.contains('.c-sidebar__item', 'Dashboard').should('be.visible')
     cy.contains('.c-sidebar__item', 'Biblio Publications').should('be.visible')
     cy.contains('.c-sidebar__item', 'Biblio Datasets').should('be.visible')
-    cy.contains('.c-sidebar__item', 'Dashboard').should('be.visible')
     cy.contains('.c-sidebar__item', 'Batch').should('be.visible')
+
+    cy.get('.c-sidebar').should('have.class', 'c-sidebar--dark-gray')
 
     cy.switchMode('Researcher')
 
     cy.get('.c-sidebar button.dropdown-toggle').find('.if-briefcase').should('be.visible')
     cy.get('.c-sidebar button.dropdown-toggle').find('.if-book').should('not.exist')
     cy.get('.c-sidebar button.dropdown-toggle').should('contain.text', 'Researcher')
-    cy.get('.c-sidebar-menu .c-sidebar__item').should('have.length', 2)
+    cy.get('.c-sidebar-menu .c-sidebar__item').should('have.length', 3)
+    cy.contains('.c-sidebar__item', 'Dashboard').should('be.visible')
     cy.contains('.c-sidebar__item', 'Biblio Publications').should('be.visible')
     cy.contains('.c-sidebar__item', 'Biblio Datasets').should('be.visible')
-    cy.contains('.c-sidebar__item', 'Dashboard').should('not.exist')
+    cy.contains('.c-sidebar__item', 'Batch').should('not.exist')
+
+    cy.get('.c-sidebar').should('not.have.class', 'c-sidebar--dark-gray')
   })
 
   it('should not set the biblio-backoffice cookie twice when switching roles', () => {
@@ -114,24 +136,4 @@ describe('The home page', () => {
         expect(cookies.filter(c => c.startsWith('biblio-backoffice='))).to.have.length(1)
       })
   })
-
-  function redirectAnonymouslyTest(menuItem: string) {
-    cy.visit('/')
-
-    cy.contains('.c-sidebar nav a', menuItem)
-      .invoke('attr', 'href')
-      .then(href => {
-        cy.request(href).then(response => {
-          expect(response.isOkStatusCode).to.be.true
-          expect(response.redirects).is.an('array').that.has.length(2)
-
-          const redirects = response.redirects
-            .map(url => url.replace(/^\d{3}\: /, '')) // Redirect entries are in form '3XX: {url}'
-            .map(url => new URL(url))
-
-          expect(redirects[0]).to.have.property('pathname', '/login')
-          expect(redirects[1]).to.have.property('hostname', 'test.liblogin.ugent.be')
-        })
-      })
-  }
 })

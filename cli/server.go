@@ -11,25 +11,19 @@ import (
 	"github.com/Masterminds/sprig/v3"
 	"github.com/go-chi/chi/v5"
 	"github.com/gorilla/sessions"
+	"github.com/leonelquinteros/gotext"
 	"github.com/nics/ich"
-	"github.com/oklog/ulid/v2"
 	"github.com/ory/graceful"
 	"github.com/spf13/cobra"
 	"github.com/ugent-library/biblio-backoffice/backends"
-	"github.com/ugent-library/biblio-backoffice/bind"
 	"github.com/ugent-library/biblio-backoffice/helpers"
-	"github.com/ugent-library/biblio-backoffice/locale"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/routes"
 	"github.com/ugent-library/biblio-backoffice/urls"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
-	"github.com/ugent-library/middleware"
+	"github.com/ugent-library/bind"
 	"github.com/ugent-library/mix"
 	"github.com/ugent-library/oidc"
-	"github.com/ugent-library/zaphttp"
-	"go.uber.org/zap"
-
-	_ "github.com/ugent-library/biblio-backoffice/translations"
 )
 
 func init() {
@@ -57,26 +51,11 @@ var serverStartCmd = &cobra.Command{
 			return err
 		}
 
-		// apply these before request reaches the router
-		handler := middleware.Apply(router,
-			middleware.Recover(func(err any) {
-				if config.Env == "local" {
-					logger.With(zap.Stack("stack")).Error(err)
-				} else {
-					logger.Error(err)
-				}
-			}),
-			middleware.SetRequestID(func() string {
-				return ulid.Make().String()
-			}),
-			zaphttp.LogRequests(logger.Desugar()),
-		)
-
 		// setup server
 		addr := fmt.Sprintf("%s:%d", config.Host, config.Port)
 		server := graceful.WithDefaults(&http.Server{
 			Addr:         addr,
-			Handler:      handler,
+			Handler:      router,
 			ReadTimeout:  5 * time.Minute,
 			WriteTimeout: 5 * time.Minute,
 		})
@@ -144,19 +123,13 @@ func buildRouter(services *backends.Services) (*ich.Mux, error) {
 	render.MustParse()
 
 	// init bind
-	bind.PathValuesFunc = func(r *http.Request) url.Values {
-		p := url.Values{}
-		params := chi.RouteContext(r.Context()).URLParams
-		for i, k := range params.Keys {
-			p.Set(k, params.Values[i])
-		}
-		return p
-	}
+	bind.PathValueFunc = chi.URLParam
 
-	// localizer
-	localizer := locale.NewLocalizer("en")
+	// locale
+	loc := gotext.NewLocale("locales", "en")
+	loc.AddDomain("default")
 
-	//
+	// timezone
 	timezone, err := time.LoadLocation(config.Timezone)
 	if err != nil {
 		return nil, err
@@ -198,10 +171,11 @@ func buildRouter(services *backends.Services) (*ich.Mux, error) {
 		Services:         services,
 		BaseURL:          baseURL,
 		Router:           router,
+		Assets:           assets,
 		SessionStore:     sessionStore,
 		SessionName:      sessionName,
 		Timezone:         timezone,
-		Localizer:        localizer,
+		Loc:              loc,
 		Logger:           logger,
 		OIDCAuth:         oidcAuth,
 		FrontendURL:      config.Frontend.URL,

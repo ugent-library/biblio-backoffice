@@ -4,11 +4,11 @@ import (
 	"net/http"
 
 	"github.com/ugent-library/biblio-backoffice/backends"
-	"github.com/ugent-library/biblio-backoffice/bind"
 	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/repositories"
+	"github.com/ugent-library/bind"
 )
 
 type Handler struct {
@@ -37,7 +37,7 @@ func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) htt
 			return
 		}
 
-		id := bind.PathValues(r).Get("id")
+		id := bind.PathValue(r, "id")
 		pub, err := h.Repo.GetPublication(id)
 		if err != nil {
 			if err == models.ErrNotFound {

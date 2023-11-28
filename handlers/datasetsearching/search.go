@@ -6,10 +6,10 @@ import (
 	"net/url"
 
 	"github.com/ugent-library/biblio-backoffice/backends"
-	"github.com/ugent-library/biblio-backoffice/bind"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
+	"github.com/ugent-library/bind"
 )
 
 var (
@@ -89,6 +89,15 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request, ctx Context) {
 		isFirstUse = globalHits.Total == 0
 	}
 
+	// you are on the wrong page: cap page to last available page
+	if hits.Total > 0 && len(hits.Hits) == 0 {
+		query := ctx.CurrentURL.Query()
+		query.Set("page", fmt.Sprintf("%d", hits.TotalPages()))
+		ctx.CurrentURL.RawQuery = query.Encode()
+		http.Redirect(w, r, ctx.CurrentURL.String(), http.StatusTemporaryRedirect)
+		return
+	}
+
 	render.Layout(w, "layouts/default", "dataset/pages/search", YieldSearch{
 		Context:      ctx,
 		PageTitle:    "Overview - Datasets - Biblio",
@@ -150,6 +159,15 @@ func (h *Handler) CurationSearch(w http.ResponseWriter, r *http.Request, ctx Con
 		isFirstUse = globalHits.Total == 0
 	}
 
+	// you are on the wrong page: cap page to last available page
+	if hits.Total > 0 && len(hits.Hits) == 0 {
+		query := ctx.CurrentURL.Query()
+		query.Set("page", fmt.Sprintf("%d", hits.TotalPages()))
+		ctx.CurrentURL.RawQuery = query.Encode()
+		http.Redirect(w, r, ctx.CurrentURL.String(), http.StatusTemporaryRedirect)
+		return
+	}
+
 	render.Layout(w, "layouts/default", "dataset/pages/search", YieldSearch{
 		Context:      ctx,
 		PageTitle:    "Overview - Datasets - Biblio",
@@ -171,7 +189,7 @@ func (h *Handler) getCurationDatasetActions(ctx Context) []*ActionItem {
 	q, _ := bind.EncodeQuery(ctx.SearchArgs)
 	u.RawQuery = q.Encode()
 	actionItems = append(actionItems, &ActionItem{
-		Label:    ctx.Locale.T("export_to.xlsx"),
+		Label:    ctx.Loc.Get("export_to.xlsx"),
 		URL:      u,
 		Template: "actions/export",
 	})

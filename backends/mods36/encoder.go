@@ -3,6 +3,7 @@ package mods36
 import (
 	"bytes"
 	"encoding/xml"
+	"strings"
 	"text/template"
 
 	"github.com/ugent-library/biblio-backoffice/frontoffice"
@@ -24,6 +25,7 @@ var funcs = template.FuncMap{
 	"personWithRole": func(p *frontoffice.Person, r string) personWithRole {
 		return personWithRole{p, r}
 	},
+	"hasPrefix": strings.HasPrefix,
 }
 
 var tmpl = template.Must(template.New("").Funcs(funcs).Parse(`
@@ -136,12 +138,10 @@ var tmpl = template.Must(template.New("").Funcs(funcs).Parse(`
 	{{if not .Rec.IsExternal}}
 	<classification authority="ugent-publication-credit">ugent</classification>
 	{{end}}
-	{{/* TODO
-	[%- IF jcr.category_vigintile %]
-	<classification authority="jcr-category-vigintile">[% jcr.category_vigintile | xml_strict %]</classification>
-	[%- END %]
-	*/}}
-	
+	{{if and .Rec.JCR .Rec.JCR.CategoryVigintile}}
+	<classification authority="jcr-category-vigintile">{{print .Rec.JCR.CategoryVigintile | xml}}</classification>
+	{{end}}
+
 	{{range .Rec.Author}}
 	{{template "person" (personWithRole . "author")}}
 	{{end}}
@@ -153,9 +153,11 @@ var tmpl = template.Must(template.New("").Funcs(funcs).Parse(`
 	{{end}}
 	{{range .Rec.Affiliation}}
 	<name type="corporate">
-		{{/* TODO
-		<displayForm>[% departments.item(d.ugent_id).name || d.ugent_id | html %]</displayForm>
-		*/}}
+		{{if .Name}}
+		<displayForm>{{.Name | xml}}</displayForm>
+		{{else}}
+		<displayForm>{{.UGentID | xml}}</displayForm>
+		{{end}}
 		<nameIdentifier type="ugent">{{.UGentID | xml}}</nameIdentifier>
 		<role>
 			<roleTerm authority="marcrelator" authorityURI="http://id.loc.gov/vocabulary/relators" type="code">sht</roleTerm>
@@ -468,6 +470,107 @@ var tmpl = template.Must(template.New("").Funcs(funcs).Parse(`
 		<topic lang="und">{{. | xml}}</topic>
 	</subject>
 	{{end}}
+
+	{{$bestFile := .Rec.BestFile}}
+	{{if $bestFile}}
+		{{if $bestFile.Change}}
+		<accessCondition type="accessRights">info:eu-repo/semantics/embargoedAccess</accessCondition>
+		<accessCondition type="embargoEnd">{{$bestFile.Change.On | xml}}</accessCondition>
+		{{else if eq $bestFile.Access "open"}}
+		<accessCondition type="accessRights">info:eu-repo/semantics/openAccess</accessCondition>
+		{{else if eq $bestFile.Access "restricted"}}
+		<accessCondition type="accessRights">info:eu-repo/semantics/restrictedAccess</accessCondition>
+		{{else if eq $bestFile.Access "private"}}
+		<accessCondition type="accessRights">info:eu-repo/semantics/closedAccess</accessCondition>
+		{{end}}
+	{{end}}
+
+	{{range .Rec.File}}
+	<location>
+		<url displayLabel="{{.Name | xml}}" access="raw object">{{$.BaseURL | xml}}/publication/{{$.Rec.ID | xml}}/file/{{.ID | xml}}</url>
+		<holdingExternal>
+			<dcterms:simpledc xmlns:dcterms="http://purl.org/dc/terms/">
+				{{if .Change}}
+				<dcterms:accessRights>info:eu-repo/semantics/embargoedAccess</dcterms:accessRights>
+				<dcterms:accessRights>info:eu-repo/date/embargoEnd/{{.Change.On | xml}}</dcterms:accessRights>
+				{{else if eq .Access "open"}}
+				<accessCondition type="accessRights">info:eu-repo/semantics/openAccess</accessCondition>
+				{{else if eq .Access "restricted"}}
+				<accessCondition type="accessRights">info:eu-repo/semantics/restrictedAccess</accessCondition>
+				{{else if eq .Access "private"}}
+				<accessCondition type="accessRights">info:eu-repo/semantics/closedAccess</accessCondition>
+				{{end}}
+				{{if .ContentType}}
+				<dcterms:format>https://www.iana.org/assignments/media-types/{{.ContentType | xml}}</dcterms:format>
+				{{end}}
+				<dcterms:coverage>{{.Kind | xml}}</dcterms:coverage>
+				<dcterms:type>http://purl.org/dc/dcmitype/Text</dcterms:type>
+				<dcterms:extent>{{.Size | xml}} bytes</dcterms:extent>
+				<dcterms:title>{{.Name | xml}}</dcterms:title>
+			</dcterms:simpledc>
+		</holdingExternal>
+	</location>
+	{{end}}
+
+	{{range .Rec.AlternativeLocation}}
+	<location>
+		<url access="object in context">{{.URL | xml}}</url>
+		<holdingExternal>
+			<dcterms:simpledc xmlns:dcterms="http://purl.org/dc/terms/">
+				<dcterms:accessRights>{{.Access | xml}}</dcterms:accessRights>
+				<dcterms:coverage>{{.Kind | xml}}</dcterms:coverage>
+				<dcterms:type>http://purl.org/dc/dcmitype/InteractiveResource</dcterms:type>
+			</dcterms:simpledc>
+		</holdingExternal>
+	</location>
+	{{end}}
+
+	{{/* TODO
+	[%- IF plain_text_cite.fwo %]
+	<note type="preferred citation" lang="eng">[% plain_text_cite.fwo | xml_strict %]</note>
+	[%- END %]
+	*/}}
+
+	{{if .Rec.AdditionalInfo}}
+	<note type="content" lang="und">{{.Rec.AdditionalInfo | xml}}</note>
+	{{end}}
+
+	<recordInfo lang="eng">
+		<recordContentSource>Ghent University Library</recordContentSource>
+		<recordIdentifier>pug01:{{.Rec.ID}}</recordIdentifier>
+		<recordCreationDate encoding="w3cdtf">{{slice .Rec.DateCreated 0 10 | xml}}T{{slice .Rec.DateCreated 11 | xml}}Z</recordCreationDate>
+		<recordChangeDate encoding="w3cdtf">{{slice .Rec.DateUpdated 0 10 | xml}}T{{slice .Rec.DateUpdated 11 | xml}}Z</recordChangeDate>
+		<languageOfCataloging>
+			<languageTerm authority="iso639-2b" type="code">eng</languageTerm>
+		</languageOfCataloging>
+		<recordInfoNote type="ugent-submission-status">{{.Rec.Status | xml}}</recordInfoNote>
+		{{if and .Rec.CreatedBy .Rec.CreatedBy.UGentID}}
+		<recordInfoNote type="ugent-creator">{{index .Rec.CreatedBy.UGentID 0 | xml}}</recordInfoNote>
+		{{end}}
+		{{if and .Rec.Source .Rec.Source.Record}}
+		<recordInfoNote type="source note">{{.Rec.Source.Record | xml}}</recordInfoNote>
+		{{end}}
+		{{if and .Rec.Source .Rec.Source.DB .Rec.Source.ID}}
+		<recordInfoNote type="source identifier">{{.Rec.Source.DB | xml}}:{{.Rec.Source.ID | xml}}</recordInfoNote>
+		{{end}}
+		{{range $fundName, $fund := .Rec.ECOOM}}
+			{{if $fund.Weight}}
+			<recordInfoNote type="ecoom-{{$fundName | xml}}-weight">{{$fund.Weight | xml}}</recordInfoNote>
+			{{end}}
+			{{if $fund.CSS}}
+			<recordInfoNote type="ecoom-{{$fundName | xml}}-css">{{$fund.CSS | xml}}</recordInfoNote>
+			{{end}}
+			{{if $fund.InternationalCollaboration}}
+			<recordInfoNote type="ecoom-{{$fundName | xml}}-international-collaboration">{{$fund.InternationalCollaboration | xml}}</recordInfoNote>
+			{{end}}
+			{{range $fund.Sector}}
+			<recordInfoNote type="ecoom-{{$fundName | xml}}-sector">{{. | xml}}</recordInfoNote>
+			{{end}}
+			{{if $fund.Validation}}
+			<recordInfoNote type="ecoom-{{$fundName | xml}}-validation">{{$fund.Validation | xml}}</recordInfoNote>
+			{{end}}
+		{{end}}
+	</recordInfo>
 </mods>
 {{end}}
 `))
@@ -487,9 +590,11 @@ func New(repo *repositories.Repo, baseURL string) *Encoder {
 func (e *Encoder) encode(r *frontoffice.Record) ([]byte, error) {
 	b := bytes.Buffer{}
 	err := tmpl.ExecuteTemplate(&b, "record", struct {
-		Rec *frontoffice.Record
+		BaseURL string
+		Rec     *frontoffice.Record
 	}{
-		Rec: r,
+		BaseURL: e.baseURL,
+		Rec:     r,
 	})
 	return b.Bytes(), err
 }

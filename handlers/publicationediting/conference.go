@@ -5,9 +5,8 @@ import (
 	"html/template"
 	"net/http"
 
-	"github.com/ugent-library/biblio-backoffice/bind"
+	"github.com/leonelquinteros/gotext"
 	"github.com/ugent-library/biblio-backoffice/displays"
-	"github.com/ugent-library/biblio-backoffice/locale"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
@@ -15,6 +14,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	"github.com/ugent-library/biblio-backoffice/validation"
+	"github.com/ugent-library/bind"
 )
 
 type BindConference struct {
@@ -39,7 +39,7 @@ type YieldEditConference struct {
 func (h *Handler) EditConference(w http.ResponseWriter, r *http.Request, ctx Context) {
 	render.Layout(w, "show_modal", "publication/edit_conference", YieldEditConference{
 		Context:  ctx,
-		Form:     conferenceForm(ctx.Locale, ctx.Publication, nil),
+		Form:     conferenceForm(ctx.Loc, ctx.Publication, nil),
 		Conflict: false,
 	})
 }
@@ -63,7 +63,7 @@ func (h *Handler) UpdateConference(w http.ResponseWriter, r *http.Request, ctx C
 	if validationErrs := p.Validate(); validationErrs != nil {
 		render.Layout(w, "refresh_modal", "publication/edit_conference", YieldEditConference{
 			Context:  ctx,
-			Form:     conferenceForm(ctx.Locale, p, validationErrs.(validation.Errors)),
+			Form:     conferenceForm(ctx.Loc, p, validationErrs.(validation.Errors)),
 			Conflict: false,
 		})
 		return
@@ -75,7 +75,7 @@ func (h *Handler) UpdateConference(w http.ResponseWriter, r *http.Request, ctx C
 	if errors.As(err, &conflict) {
 		render.Layout(w, "refresh_modal", "publication/edit_conference", YieldEditConference{
 			Context:  ctx,
-			Form:     conferenceForm(ctx.Locale, p, nil),
+			Form:     conferenceForm(ctx.Loc, p, nil),
 			Conflict: true,
 		})
 		return
@@ -89,22 +89,22 @@ func (h *Handler) UpdateConference(w http.ResponseWriter, r *http.Request, ctx C
 
 	render.View(w, "publication/refresh_conference", YieldConference{
 		Context:           ctx,
-		DisplayConference: displays.PublicationConference(ctx.User, ctx.Locale, p),
+		DisplayConference: displays.PublicationConference(ctx.User, ctx.Loc, p),
 	})
 }
 
-func conferenceForm(l *locale.Locale, publication *models.Publication, errors validation.Errors) *form.Form {
+func conferenceForm(loc *gotext.Locale, publication *models.Publication, errors validation.Errors) *form.Form {
 	return form.New().
 		WithTheme("default").
-		WithErrors(localize.ValidationErrors(l, errors)).
+		WithErrors(localize.ValidationErrors(loc, errors)).
 		AddSection(
 			&form.Text{
 				Name:  "name",
 				Value: publication.ConferenceName,
-				Label: l.T("builder.conference.name"),
+				Label: loc.Get("builder.conference.name"),
 				Cols:  9,
 				Error: localize.ValidationErrorAt(
-					l,
+					loc,
 					errors,
 					"/conference_name",
 				),
@@ -112,10 +112,10 @@ func conferenceForm(l *locale.Locale, publication *models.Publication, errors va
 			&form.Text{
 				Name:  "location",
 				Value: publication.ConferenceLocation,
-				Label: l.T("builder.conference.location"),
+				Label: loc.Get("builder.conference.location"),
 				Cols:  9,
 				Error: localize.ValidationErrorAt(
-					l,
+					loc,
 					errors,
 					"/conference_location",
 				),
@@ -123,10 +123,10 @@ func conferenceForm(l *locale.Locale, publication *models.Publication, errors va
 			&form.Text{
 				Name:  "organizer",
 				Value: publication.ConferenceOrganizer,
-				Label: l.T("builder.conference.organizer"),
+				Label: loc.Get("builder.conference.organizer"),
 				Cols:  9,
 				Error: localize.ValidationErrorAt(
-					l,
+					loc,
 					errors,
 					"/conference_organizer",
 				),
@@ -134,11 +134,11 @@ func conferenceForm(l *locale.Locale, publication *models.Publication, errors va
 			&form.Text{
 				Name:  "start_date",
 				Value: publication.ConferenceStartDate,
-				Label: l.T("builder.conference.start_date"),
+				Label: loc.Get("builder.conference.start_date"),
 				Cols:  3,
-				Help:  template.HTML(l.T("builder.conference.start_date.help")),
+				Help:  template.HTML(loc.Get("builder.conference.start_date.help")),
 				Error: localize.ValidationErrorAt(
-					l,
+					loc,
 					errors,
 					"/conference_start_date",
 				),
@@ -146,11 +146,11 @@ func conferenceForm(l *locale.Locale, publication *models.Publication, errors va
 			&form.Text{
 				Name:  "end_date",
 				Value: publication.ConferenceEndDate,
-				Label: l.T("builder.conference.end_date"),
+				Label: loc.Get("builder.conference.end_date"),
 				Cols:  3,
-				Help:  template.HTML(l.T("builder.conference.end_date.help")),
+				Help:  template.HTML(loc.Get("builder.conference.end_date.help")),
 				Error: localize.ValidationErrorAt(
-					l,
+					loc,
 					errors,
 					"/conference_end_date",
 				),

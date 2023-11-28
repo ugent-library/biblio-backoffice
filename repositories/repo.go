@@ -162,7 +162,7 @@ func (s *Repo) ImportPublication(p *models.Publication) error {
 	return nil
 }
 
-func (s *Repo) SavePublication(p *models.Publication, u *models.User) error {
+func (s *Repo) SavePublication(p *models.Publication, u *models.Person) error {
 	oldPublication, err := s.GetPublication(p.ID)
 	if err != nil && err != models.ErrNotFound {
 		return err
@@ -179,10 +179,10 @@ func (s *Repo) SavePublication(p *models.Publication, u *models.User) error {
 	p.DateUpdated = &now
 
 	if u != nil {
-		p.UserID = u.Person.ID
-		p.User = &u.Person
-		p.LastUserID = u.Person.ID
-		p.LastUser = &u.Person
+		p.UserID = u.ID
+		p.User = u
+		p.LastUserID = u.ID
+		p.LastUser = u
 	} else {
 		p.UserID = ""
 		p.User = nil
@@ -190,6 +190,10 @@ func (s *Repo) SavePublication(p *models.Publication, u *models.User) error {
 
 	if err := p.Validate(); err != nil {
 		return err
+	}
+
+	if p.Status == "public" && !p.HasBeenPublic {
+		p.HasBeenPublic = true
 	}
 
 	if err := s.publicationStore.Add(p.ID, p, s.opts); err != nil {
@@ -207,7 +211,7 @@ func (s *Repo) SavePublication(p *models.Publication, u *models.User) error {
 	return nil
 }
 
-func (s *Repo) UpdatePublication(snapshotID string, p *models.Publication, u *models.User) error {
+func (s *Repo) UpdatePublication(snapshotID string, p *models.Publication, u *models.Person) error {
 	if oldPublication, err := s.GetPublication(p.ID); err != nil {
 		return err
 	} else if reflect.DeepEqual(oldPublication, p) {
@@ -219,13 +223,17 @@ func (s *Repo) UpdatePublication(snapshotID string, p *models.Publication, u *mo
 	p.DateUpdated = &now
 
 	if u != nil {
-		p.UserID = u.Person.ID
-		p.User = &u.Person
-		p.LastUserID = u.Person.ID
-		p.LastUser = &u.Person
+		p.UserID = u.ID
+		p.User = u
+		p.LastUserID = u.ID
+		p.LastUser = u
 	} else {
 		p.UserID = ""
 		p.User = nil
+	}
+
+	if p.Status == "public" && !p.HasBeenPublic {
+		p.HasBeenPublic = true
 	}
 
 	snapshotID, err := s.publicationStore.AddAfter(snapshotID, p.ID, p, s.opts)
@@ -268,7 +276,7 @@ func (s *Repo) UpdatePublicationInPlace(p *models.Publication) error {
 	return nil
 }
 
-func (s *Repo) MutatePublication(id string, u *models.User, muts ...Mutation) error {
+func (s *Repo) MutatePublication(id string, u *models.Person, muts ...Mutation) error {
 	if len(muts) == 0 {
 		return nil
 	}
@@ -407,6 +415,31 @@ func (s *Repo) EachPublicationSnapshot(fn func(*models.Publication) bool) error 
 	return c.Err()
 }
 
+func (s *Repo) EachPublicationWithStatus(status string, fn func(*models.Publication) bool) error {
+	sql := `SELECT * FROM publications WHERE date_until IS NULL AND data->>'status' = $1`
+
+	c, err := s.publicationStore.Select(sql, []any{status}, s.opts)
+	if err != nil {
+		return err
+	}
+	defer c.Close()
+
+	for c.HasNext() {
+		snap, err := c.Next()
+		if err != nil {
+			return err
+		}
+		p, err := s.snapshotToPublication(snap)
+		if err != nil {
+			return err
+		}
+		if ok := fn(p); !ok {
+			break
+		}
+	}
+	return c.Err()
+}
+
 // TODO add handle with a listener, then this method isn't needed anymore
 func (s *Repo) EachPublicationWithoutHandle(fn func(*models.Publication) bool) error {
 	sql := `
@@ -433,6 +466,21 @@ func (s *Repo) EachPublicationWithoutHandle(fn func(*models.Publication) bool) e
 		}
 	}
 	return c.Err()
+}
+
+func (s *Repo) GetPublicationSnapshotBefore(id string, dateFrom time.Time) (*models.Publication, error) {
+	snap, err := s.publicationStore.GetSnapshotBefore(id, dateFrom, s.opts)
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, models.ErrNotFound
+		}
+		return nil, err
+	}
+	p, err := s.snapshotToPublication(snap)
+	if err != nil {
+		return nil, err
+	}
+	return p, nil
 }
 
 func (s *Repo) PublicationHistory(id string, fn func(*models.Publication) bool) error {
@@ -583,7 +631,7 @@ func (s *Repo) ImportDataset(d *models.Dataset) error {
 	return nil
 }
 
-func (s *Repo) SaveDataset(d *models.Dataset, u *models.User) error {
+func (s *Repo) SaveDataset(d *models.Dataset, u *models.Person) error {
 	oldDataset, err := s.GetDataset(d.ID)
 	if err != nil && err != models.ErrNotFound {
 		return err
@@ -600,10 +648,10 @@ func (s *Repo) SaveDataset(d *models.Dataset, u *models.User) error {
 	d.DateUpdated = &now
 
 	if u != nil {
-		d.UserID = u.Person.ID
-		d.User = &u.Person
-		d.LastUserID = u.Person.ID
-		d.LastUser = &u.Person
+		d.UserID = u.ID
+		d.User = u
+		d.LastUserID = u.ID
+		d.LastUser = u
 	} else {
 		d.UserID = ""
 		d.User = nil
@@ -613,7 +661,6 @@ func (s *Repo) SaveDataset(d *models.Dataset, u *models.User) error {
 		return err
 	}
 
-	//TODO: move outside
 	if d.Status == "public" && !d.HasBeenPublic {
 		d.HasBeenPublic = true
 	}
@@ -633,29 +680,29 @@ func (s *Repo) SaveDataset(d *models.Dataset, u *models.User) error {
 	return nil
 }
 
-func (s *Repo) UpdateDataset(snapshotID string, d *models.Dataset, u *models.User) error {
+func (s *Repo) UpdateDataset(snapshotID string, d *models.Dataset, u *models.Person) error {
 	if oldDataset, err := s.GetDataset(d.ID); err != nil {
 		return err
 	} else if reflect.DeepEqual(oldDataset, d) {
 		return nil
 	}
 
-	//TODO: move outside
-	if d.Status == "public" && !d.HasBeenPublic {
-		d.HasBeenPublic = true
-	}
 	oldDateUpdated := d.DateUpdated
 	now := time.Now()
 	d.DateUpdated = &now
 
 	if u != nil {
-		d.UserID = u.Person.ID
-		d.User = &u.Person
-		d.LastUserID = u.Person.ID
-		d.LastUser = &u.Person
+		d.UserID = u.ID
+		d.User = u
+		d.LastUserID = u.ID
+		d.LastUser = u
 	} else {
 		d.UserID = ""
 		d.User = nil
+	}
+
+	if d.Status == "public" && !d.HasBeenPublic {
+		d.HasBeenPublic = true
 	}
 
 	snapshotID, err := s.datasetStore.AddAfter(snapshotID, d.ID, d, s.opts)
@@ -676,7 +723,7 @@ func (s *Repo) UpdateDataset(snapshotID string, d *models.Dataset, u *models.Use
 	return nil
 }
 
-func (s *Repo) MutateDataset(id string, u *models.User, muts ...Mutation) error {
+func (s *Repo) MutateDataset(id string, u *models.Person, muts ...Mutation) error {
 	if len(muts) == 0 {
 		return nil
 	}
@@ -842,6 +889,21 @@ func (s *Repo) EachDatasetWithoutHandle(fn func(*models.Dataset) bool) error {
 	return c.Err()
 }
 
+func (s *Repo) GetDatasetSnapshotBefore(id string, dateFrom time.Time) (*models.Dataset, error) {
+	snap, err := s.datasetStore.GetSnapshotBefore(id, dateFrom, s.opts)
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, models.ErrNotFound
+		}
+		return nil, err
+	}
+	d, err := s.snapshotToDataset(snap)
+	if err != nil {
+		return nil, err
+	}
+	return d, nil
+}
+
 func (s *Repo) DatasetHistory(id string, fn func(*models.Dataset) bool) error {
 	c, err := s.publicationStore.GetHistory(id, s.opts)
 	if err != nil {
@@ -918,7 +980,7 @@ func (s *Repo) GetPublicationDatasets(p *models.Publication) ([]*models.Dataset,
 	return s.GetDatasets(datasetIds)
 }
 
-func (s *Repo) GetVisiblePublicationDatasets(u *models.User, p *models.Publication) ([]*models.Dataset, error) {
+func (s *Repo) GetVisiblePublicationDatasets(u *models.Person, p *models.Publication) ([]*models.Dataset, error) {
 	datasets, err := s.GetPublicationDatasets(p)
 	if err != nil {
 		return nil, err
@@ -940,7 +1002,7 @@ func (s *Repo) GetDatasetPublications(d *models.Dataset) ([]*models.Publication,
 	return s.GetPublications(publicationIds)
 }
 
-func (s *Repo) GetVisibleDatasetPublications(u *models.User, d *models.Dataset) ([]*models.Publication, error) {
+func (s *Repo) GetVisibleDatasetPublications(u *models.Person, d *models.Dataset) ([]*models.Publication, error) {
 	publications, err := s.GetDatasetPublications(d)
 	if err != nil {
 		return nil, err
@@ -954,7 +1016,7 @@ func (s *Repo) GetVisibleDatasetPublications(u *models.User, d *models.Dataset) 
 	return filteredPublications, nil
 }
 
-func (s *Repo) AddPublicationDataset(p *models.Publication, d *models.Dataset, u *models.User) error {
+func (s *Repo) AddPublicationDataset(p *models.Publication, d *models.Dataset, u *models.Person) error {
 	return s.tx(context.Background(), func(s *Repo) error {
 		if !p.HasRelatedDataset(d.ID) {
 			p.RelatedDataset = append(p.RelatedDataset, models.RelatedDataset{ID: d.ID})
@@ -973,7 +1035,7 @@ func (s *Repo) AddPublicationDataset(p *models.Publication, d *models.Dataset, u
 	})
 }
 
-func (s *Repo) RemovePublicationDataset(p *models.Publication, d *models.Dataset, u *models.User) error {
+func (s *Repo) RemovePublicationDataset(p *models.Publication, d *models.Dataset, u *models.Person) error {
 	return s.tx(context.Background(), func(s *Repo) error {
 		if p.HasRelatedDataset(d.ID) {
 			p.RemoveRelatedDataset(d.ID)

@@ -1,421 +1,442 @@
 describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable in form elements', () => {
-  beforeEach(() => {
-    cy.loginAsResearcher()
-  })
-
-  describe('Add/edit publication forms', () => {
-    it('should have clickable labels in the Journal Article form', () => {
-      setUpPublication('Journal Article')
-
-      updateFields('Publication details', () => {
-        testFocusForLabel('Publication type', 'select[name="type"]')
-        testFocusForLabel('Article type', 'select[name="journal_article_type"]')
-        testFocusForLabel('DOI', 'input[type=text][name="doi"]')
-
-        testFocusForLabel('Title', 'input[type=text][name="title"]')
-        testFocusForLabel('Alternative title', 'input[type=text][name="alternative_title"]')
-        testFocusForLabel('Journal title', 'input[type=text][name="publication"]')
-        testFocusForLabel('Short journal title', 'input[type=text][name="publication_abbreviation"]')
-
-        testFocusForLabel('Languages', 'select[name="language"]')
-        testFocusForLabel('Publishing status', 'select[name="publication_status"]')
-        testFocusForLabel(
-          'Published while none of the authors and editors were employed at UGent',
-          ':checkbox[name="extern"]'
-        )
-        testFocusForLabel('Publication year', 'input[type=text][name="year"]')
-        testFocusForLabel('Place of publication', 'input[type=text][name="place_of_publication"]')
-        testFocusForLabel('Publisher', 'input[type=text][name="publisher"]')
-
-        testFocusForLabel('Volume', 'input[type=text][name="volume"]')
-        testFocusForLabel('Issue', 'input[type=text][name="issue"]')
-        testFocusForLabel('Special issue title', 'input[type=text][name="issue_title"]')
-        testFocusForLabel('First page', 'input[type=text][name="page_first"]')
-        testFocusForLabel('Last page', 'input[type=text][name="page_last"]')
-        testFocusForLabel('Number of pages', 'input[type=text][name="page_count"]')
-        testFocusForLabel('Article number', 'input[type=text][name="article_number"]')
-
-        testFocusForLabel('Web of Science ID', 'input[type=text][name="wos_id"]')
-        testFocusForLabel('ISSN', 'input[type=text][name="issn"]')
-        testFocusForLabel('E-ISSN', 'input[type=text][name="eissn"]')
-        testFocusForLabel('ISBN', 'input[type=text][name="isbn"]')
-        testFocusForLabel('E-ISBN', 'input[type=text][name="eisbn"]')
-        testFocusForLabel('PubMed ID', 'input[type=text][name="pubmed_id"]')
-        testFocusForLabel('Arxiv ID', 'input[type=text][name="arxiv_id"]')
-        testFocusForLabel('ESCI ID', 'input[type=text][name="esci_id"]')
-      })
-
-      testConferenceDetailsSection()
-
-      testAbstractSection()
-
-      testLinkSection()
-
-      testAdditionalInformationSection()
-
-      cy.contains('.nav-tabs .nav-item', 'People & Affiliations').click()
-
-      testAuthorSection()
-
-      testEditorSection()
-
-      cy.contains('.nav-tabs .nav-item', 'Biblio Messages').click()
-
-      testMessagesSection()
+  describe('In researcher mode', () => {
+    beforeEach(() => {
+      cy.loginAsResearcher()
     })
 
-    it('should have clickable labels in the Book Chapter form', () => {
-      setUpPublication('Book Chapter')
+    describe('Add/edit publication forms', () => {
+      it('should have clickable labels in the Journal Article form', () => {
+        cy.setUpPublication('Journal Article')
 
-      updateFields('Publication details', () => {
-        testFocusForLabel('Publication type', 'select[name="type"]')
-        testFocusForLabel('DOI', 'input[type=text][name="doi"]')
+        cy.visitPublication()
 
-        testFocusForLabel('Title', 'input[type=text][name="title"]')
-        testFocusForLabel('Alternative title', 'input[type=text][name="alternative_title"]')
-        testFocusForLabel('Book title', 'input[type=text][name="publication"]')
+        cy.updateFields('Publication details', () => {
+          testFocusForLabel('Publication type', 'select[name="type"]')
+          testFocusForLabel('Article type', 'select[name="journal_article_type"]')
+          testFocusForLabel('DOI', 'input[type=text][name="doi"]')
 
-        testFocusForLabel('Languages', 'select[name="language"]')
-        testFocusForLabel('Publishing status', 'select[name="publication_status"]')
-        testFocusForLabel(
-          'Published while none of the authors and editors were employed at UGent',
-          ':checkbox[name="extern"]'
-        )
-        testFocusForLabel('Publication year', 'input[type=text][name="year"]')
-        testFocusForLabel('Place of publication', 'input[type=text][name="place_of_publication"]')
-        testFocusForLabel('Publisher', 'input[type=text][name="publisher"]')
+          testFocusForLabel('Title', 'input[type=text][name="title"]')
+          testFocusForLabel('Alternative title', 'input[type=text][name="alternative_title"]')
+          testFocusForLabel('Journal title', 'input[type=text][name="publication"]')
+          testFocusForLabel('Short journal title', 'input[type=text][name="publication_abbreviation"]')
 
-        testFocusForLabel('Series title', 'input[type=text][name="series_title"]')
-        testFocusForLabel('Volume', 'input[type=text][name="volume"]')
-        testFocusForLabel('Edition', 'input[type=text][name="edition"]')
-        testFocusForLabel('First page', 'input[type=text][name="page_first"]')
-        testFocusForLabel('Last page', 'input[type=text][name="page_last"]')
-        testFocusForLabel('Number of pages', 'input[type=text][name="page_count"]')
+          testFocusForLabel('Languages', 'select[name="language"]')
+          testFocusForLabel('Publishing status', 'select[name="publication_status"]')
+          testFocusForLabel(
+            'Published while none of the authors and editors were employed at UGent',
+            ':checkbox[name="extern"]'
+          )
+          testFocusForLabel('Publication year', 'input[type=text][name="year"]')
+          testFocusForLabel('Place of publication', 'input[type=text][name="place_of_publication"]')
+          testFocusForLabel('Publisher', 'input[type=text][name="publisher"]')
 
-        testFocusForLabel('Web of Science ID', 'input[type=text][name="wos_id"]')
-        testFocusForLabel('ISSN', 'input[type=text][name="issn"]')
-        testFocusForLabel('E-ISSN', 'input[type=text][name="eissn"]')
-        testFocusForLabel('ISBN', 'input[type=text][name="isbn"]')
-        testFocusForLabel('E-ISBN', 'input[type=text][name="eisbn"]')
+          testFocusForLabel('Volume', 'input[type=text][name="volume"]')
+          testFocusForLabel('Issue', 'input[type=text][name="issue"]')
+          testFocusForLabel('Special issue title', 'input[type=text][name="issue_title"]')
+          testFocusForLabel('First page', 'input[type=text][name="page_first"]')
+          testFocusForLabel('Last page', 'input[type=text][name="page_last"]')
+          testFocusForLabel('Number of pages', 'input[type=text][name="page_count"]')
+          testFocusForLabel('Article number', 'input[type=text][name="article_number"]')
+
+          testFocusForLabel('Web of Science ID', 'input[type=text][name="wos_id"]')
+          testFocusForLabel('ISSN', 'input[type=text][name="issn"]')
+          testFocusForLabel('E-ISSN', 'input[type=text][name="eissn"]')
+          testFocusForLabel('ISBN', 'input[type=text][name="isbn"]')
+          testFocusForLabel('E-ISBN', 'input[type=text][name="eisbn"]')
+          testFocusForLabel('PubMed ID', 'input[type=text][name="pubmed_id"]')
+          testFocusForLabel('Arxiv ID', 'input[type=text][name="arxiv_id"]')
+          testFocusForLabel('ESCI ID', 'input[type=text][name="esci_id"]')
+        })
+
+        testConferenceDetailsSection()
+
+        testAbstractSection()
+
+        testLinkSection()
+
+        testAdditionalInformationSection()
+
+        cy.contains('.nav-tabs .nav-item', 'People & Affiliations').click()
+
+        testAuthorSection()
+
+        testEditorSection()
+
+        cy.contains('.nav-tabs .nav-item', 'Biblio Messages').click()
+
+        testMessagesSection()
       })
 
-      testConferenceDetailsSection()
+      it('should have clickable labels in the Book Chapter form', () => {
+        cy.setUpPublication('Book Chapter')
 
-      testAbstractSection()
+        cy.visitPublication()
 
-      testLinkSection()
+        cy.updateFields('Publication details', () => {
+          testFocusForLabel('Publication type', 'select[name="type"]')
+          testFocusForLabel('DOI', 'input[type=text][name="doi"]')
 
-      testAdditionalInformationSection()
+          testFocusForLabel('Title', 'input[type=text][name="title"]')
+          testFocusForLabel('Alternative title', 'input[type=text][name="alternative_title"]')
+          testFocusForLabel('Book title', 'input[type=text][name="publication"]')
 
-      cy.contains('.nav-tabs .nav-item', 'People & Affiliations').click()
+          testFocusForLabel('Languages', 'select[name="language"]')
+          testFocusForLabel('Publishing status', 'select[name="publication_status"]')
+          testFocusForLabel(
+            'Published while none of the authors and editors were employed at UGent',
+            ':checkbox[name="extern"]'
+          )
+          testFocusForLabel('Publication year', 'input[type=text][name="year"]')
+          testFocusForLabel('Place of publication', 'input[type=text][name="place_of_publication"]')
+          testFocusForLabel('Publisher', 'input[type=text][name="publisher"]')
 
-      testAuthorSection()
+          testFocusForLabel('Series title', 'input[type=text][name="series_title"]')
+          testFocusForLabel('Volume', 'input[type=text][name="volume"]')
+          testFocusForLabel('Edition', 'input[type=text][name="edition"]')
+          testFocusForLabel('First page', 'input[type=text][name="page_first"]')
+          testFocusForLabel('Last page', 'input[type=text][name="page_last"]')
+          testFocusForLabel('Number of pages', 'input[type=text][name="page_count"]')
 
-      testEditorSection()
+          testFocusForLabel('Web of Science ID', 'input[type=text][name="wos_id"]')
+          testFocusForLabel('ISSN', 'input[type=text][name="issn"]')
+          testFocusForLabel('E-ISSN', 'input[type=text][name="eissn"]')
+          testFocusForLabel('ISBN', 'input[type=text][name="isbn"]')
+          testFocusForLabel('E-ISBN', 'input[type=text][name="eisbn"]')
+        })
 
-      cy.contains('.nav-tabs .nav-item', 'Biblio Messages').click()
+        testConferenceDetailsSection()
 
-      testMessagesSection()
-    })
+        testAbstractSection()
 
-    it('should have clickable labels in the Book form', () => {
-      setUpPublication('Book')
-      updateFields('Publication details', () => {
-        testFocusForLabel('Publication type', 'select[name="type"]')
-        testFocusForLabel('DOI', 'input[type=text][name="doi"]')
+        testLinkSection()
 
-        testFocusForLabel('Title', 'input[type=text][name="title"]')
-        testFocusForLabel('Alternative title', 'input[type=text][name="alternative_title"]')
+        testAdditionalInformationSection()
 
-        testFocusForLabel('Languages', 'select[name="language"]')
-        testFocusForLabel('Publishing status', 'select[name="publication_status"]')
-        testFocusForLabel(
-          'Published while none of the authors and editors were employed at UGent',
-          ':checkbox[name="extern"]'
-        )
-        testFocusForLabel('Publication year', 'input[type=text][name="year"]')
-        testFocusForLabel('Place of publication', 'input[type=text][name="place_of_publication"]')
-        testFocusForLabel('Publisher', 'input[type=text][name="publisher"]')
+        cy.contains('.nav-tabs .nav-item', 'People & Affiliations').click()
 
-        testFocusForLabel('Series title', 'input[type=text][name="series_title"]')
-        testFocusForLabel('Volume', 'input[type=text][name="volume"]')
-        testFocusForLabel('Edition', 'input[type=text][name="edition"]')
-        testFocusForLabel('Number of pages', 'input[type=text][name="page_count"]')
+        testAuthorSection()
 
-        testFocusForLabel('Web of Science ID', 'input[type=text][name="wos_id"]')
-        testFocusForLabel('ISSN', 'input[type=text][name="issn"]')
-        testFocusForLabel('E-ISSN', 'input[type=text][name="eissn"]')
-        testFocusForLabel('ISBN', 'input[type=text][name="isbn"]')
-        testFocusForLabel('E-ISBN', 'input[type=text][name="eisbn"]')
+        testEditorSection()
+
+        cy.contains('.nav-tabs .nav-item', 'Biblio Messages').click()
+
+        testMessagesSection()
       })
 
-      testAbstractSection()
+      it('should have clickable labels in the Book form', () => {
+        cy.setUpPublication('Book')
 
-      testLinkSection()
+        cy.visitPublication()
 
-      testAdditionalInformationSection()
+        cy.updateFields('Publication details', () => {
+          testFocusForLabel('Publication type', 'select[name="type"]')
+          testFocusForLabel('DOI', 'input[type=text][name="doi"]')
 
-      cy.contains('.nav-tabs .nav-item', 'People & Affiliations').click()
+          testFocusForLabel('Title', 'input[type=text][name="title"]')
+          testFocusForLabel('Alternative title', 'input[type=text][name="alternative_title"]')
 
-      testAuthorSection()
+          testFocusForLabel('Languages', 'select[name="language"]')
+          testFocusForLabel('Publishing status', 'select[name="publication_status"]')
+          testFocusForLabel(
+            'Published while none of the authors and editors were employed at UGent',
+            ':checkbox[name="extern"]'
+          )
+          testFocusForLabel('Publication year', 'input[type=text][name="year"]')
+          testFocusForLabel('Place of publication', 'input[type=text][name="place_of_publication"]')
+          testFocusForLabel('Publisher', 'input[type=text][name="publisher"]')
 
-      testEditorSection()
+          testFocusForLabel('Series title', 'input[type=text][name="series_title"]')
+          testFocusForLabel('Volume', 'input[type=text][name="volume"]')
+          testFocusForLabel('Edition', 'input[type=text][name="edition"]')
+          testFocusForLabel('Number of pages', 'input[type=text][name="page_count"]')
 
-      cy.contains('.nav-tabs .nav-item', 'Biblio Messages').click()
+          testFocusForLabel('Web of Science ID', 'input[type=text][name="wos_id"]')
+          testFocusForLabel('ISSN', 'input[type=text][name="issn"]')
+          testFocusForLabel('E-ISSN', 'input[type=text][name="eissn"]')
+          testFocusForLabel('ISBN', 'input[type=text][name="isbn"]')
+          testFocusForLabel('E-ISBN', 'input[type=text][name="eisbn"]')
+        })
 
-      testMessagesSection()
-    })
+        testAbstractSection()
 
-    it('should have clickable labels in the Conference contribution form', () => {
-      setUpPublication('Conference contribution')
+        testLinkSection()
 
-      updateFields('Publication details', () => {
-        testFocusForLabel('Publication type', 'select[name="type"]')
-        testFocusForLabel('Conference type', 'select[name="conference_type"]')
-        testFocusForLabel('DOI', 'input[type=text][name="doi"]')
+        testAdditionalInformationSection()
 
-        testFocusForLabel('Title', 'input[type=text][name="title"]')
-        testFocusForLabel('Alternative title', 'input[type=text][name="alternative_title"]')
-        testFocusForLabel('Proceedings title', 'input[type=text][name="publication"]')
-        testFocusForLabel('Publication short title', 'input[type=text][name="publication_abbreviation"]')
+        cy.contains('.nav-tabs .nav-item', 'People & Affiliations').click()
 
-        testFocusForLabel('Languages', 'select[name="language"]')
-        testFocusForLabel('Publishing status', 'select[name="publication_status"]')
-        testFocusForLabel(
-          'Published while none of the authors and editors were employed at UGent',
-          ':checkbox[name="extern"]'
-        )
-        testFocusForLabel('Publication year', 'input[type=text][name="year"]')
-        testFocusForLabel('Place of publication', 'input[type=text][name="place_of_publication"]')
-        testFocusForLabel('Publisher', 'input[type=text][name="publisher"]')
+        testAuthorSection()
 
-        testFocusForLabel('Series title', 'input[type=text][name="series_title"]')
-        testFocusForLabel('Volume', 'input[type=text][name="volume"]')
-        testFocusForLabel('Issue', 'input[type=text][name="issue"]')
-        testFocusForLabel('Special issue title', 'input[type=text][name="issue_title"]')
-        testFocusForLabel('First page', 'input[type=text][name="page_first"]')
-        testFocusForLabel('Last page', 'input[type=text][name="page_last"]')
-        testFocusForLabel('Number of pages', 'input[type=text][name="page_count"]')
-        testFocusForLabel('Article number', 'input[type=text][name="article_number"]')
+        testEditorSection()
 
-        testFocusForLabel('Web of Science ID', 'input[type=text][name="wos_id"]')
-        testFocusForLabel('ISSN', 'input[type=text][name="issn"]')
-        testFocusForLabel('E-ISSN', 'input[type=text][name="eissn"]')
-        testFocusForLabel('ISBN', 'input[type=text][name="isbn"]')
-        testFocusForLabel('E-ISBN', 'input[type=text][name="eisbn"]')
+        cy.contains('.nav-tabs .nav-item', 'Biblio Messages').click()
+
+        testMessagesSection()
       })
 
-      testConferenceDetailsSection()
+      it('should have clickable labels in the Conference contribution form', () => {
+        cy.setUpPublication('Conference contribution')
 
-      testAbstractSection()
+        cy.visitPublication()
 
-      testLinkSection()
+        cy.updateFields('Publication details', () => {
+          testFocusForLabel('Publication type', 'select[name="type"]')
+          testFocusForLabel('Conference type', 'select[name="conference_type"]')
+          testFocusForLabel('DOI', 'input[type=text][name="doi"]')
 
-      testAdditionalInformationSection()
+          testFocusForLabel('Title', 'input[type=text][name="title"]')
+          testFocusForLabel('Alternative title', 'input[type=text][name="alternative_title"]')
+          testFocusForLabel('Proceedings title', 'input[type=text][name="publication"]')
+          testFocusForLabel('Publication short title', 'input[type=text][name="publication_abbreviation"]')
 
-      cy.contains('.nav-tabs .nav-item', 'People & Affiliations').click()
+          testFocusForLabel('Languages', 'select[name="language"]')
+          testFocusForLabel('Publishing status', 'select[name="publication_status"]')
+          testFocusForLabel(
+            'Published while none of the authors and editors were employed at UGent',
+            ':checkbox[name="extern"]'
+          )
+          testFocusForLabel('Publication year', 'input[type=text][name="year"]')
+          testFocusForLabel('Place of publication', 'input[type=text][name="place_of_publication"]')
+          testFocusForLabel('Publisher', 'input[type=text][name="publisher"]')
 
-      testAuthorSection()
+          testFocusForLabel('Series title', 'input[type=text][name="series_title"]')
+          testFocusForLabel('Volume', 'input[type=text][name="volume"]')
+          testFocusForLabel('Issue', 'input[type=text][name="issue"]')
+          testFocusForLabel('Special issue title', 'input[type=text][name="issue_title"]')
+          testFocusForLabel('First page', 'input[type=text][name="page_first"]')
+          testFocusForLabel('Last page', 'input[type=text][name="page_last"]')
+          testFocusForLabel('Number of pages', 'input[type=text][name="page_count"]')
+          testFocusForLabel('Article number', 'input[type=text][name="article_number"]')
 
-      testEditorSection()
+          testFocusForLabel('Web of Science ID', 'input[type=text][name="wos_id"]')
+          testFocusForLabel('ISSN', 'input[type=text][name="issn"]')
+          testFocusForLabel('E-ISSN', 'input[type=text][name="eissn"]')
+          testFocusForLabel('ISBN', 'input[type=text][name="isbn"]')
+          testFocusForLabel('E-ISBN', 'input[type=text][name="eisbn"]')
+        })
 
-      cy.contains('.nav-tabs .nav-item', 'Biblio Messages').click()
+        testConferenceDetailsSection()
 
-      testMessagesSection()
-    })
+        testAbstractSection()
 
-    it('should have clickable labels in the Dissertation form', () => {
-      setUpPublication('Dissertation')
+        testLinkSection()
 
-      updateFields('Publication details', () => {
-        testFocusForLabel('Publication type', 'select[name="type"]')
-        testFocusForLabel('DOI', 'input[type=text][name="doi"]')
+        testAdditionalInformationSection()
 
-        testFocusForLabel('Title', 'input[type=text][name="title"]')
-        testFocusForLabel('Alternative title', 'input[type=text][name="alternative_title"]')
+        cy.contains('.nav-tabs .nav-item', 'People & Affiliations').click()
 
-        testFocusForLabel('Languages', 'select[name="language"]')
-        testFocusForLabel('Publishing status', 'select[name="publication_status"]')
-        testFocusForLabel(
-          'Published while none of the authors and editors were employed at UGent',
-          ':checkbox[name="extern"]'
-        )
-        testFocusForLabel('Publication year', 'input[type=text][name="year"]')
-        testFocusForLabel('Place of publication', 'input[type=text][name="place_of_publication"]')
-        testFocusForLabel('Publisher', 'input[type=text][name="publisher"]')
+        testAuthorSection()
 
-        testFocusForLabel('Series title', 'input[type=text][name="series_title"]')
-        testFocusForLabel('Volume', 'input[type=text][name="volume"]')
-        testFocusForLabel('Number of pages', 'input[type=text][name="page_count"]')
+        testEditorSection()
 
-        testFocusForLabel('Date of defense', 'input[type=text][name="defense_date"]')
-        testFocusForLabel('Place of defense', 'input[type=text][name="defense_place"]')
+        cy.contains('.nav-tabs .nav-item', 'Biblio Messages').click()
 
-        testFocusForLabel('Web of Science ID', 'input[type=text][name="wos_id"]')
-        testFocusForLabel('ISSN', 'input[type=text][name="issn"]')
-        testFocusForLabel('E-ISSN', 'input[type=text][name="eissn"]')
-        testFocusForLabel('ISBN', 'input[type=text][name="isbn"]')
-        testFocusForLabel('E-ISBN', 'input[type=text][name="eisbn"]')
+        testMessagesSection()
       })
 
-      testAbstractSection()
+      it('should have clickable labels in the Dissertation form', () => {
+        cy.setUpPublication('Dissertation')
 
-      testLinkSection()
+        cy.visitPublication()
 
-      testLaySummarySection()
+        cy.updateFields('Publication details', () => {
+          testFocusForLabel('Publication type', 'select[name="type"]')
+          testFocusForLabel('DOI', 'input[type=text][name="doi"]')
 
-      testAdditionalInformationSection()
+          testFocusForLabel('Title', 'input[type=text][name="title"]')
+          testFocusForLabel('Alternative title', 'input[type=text][name="alternative_title"]')
 
-      cy.contains('.nav-tabs .nav-item', 'People & Affiliations').click()
+          testFocusForLabel('Languages', 'select[name="language"]')
+          testFocusForLabel('Publishing status', 'select[name="publication_status"]')
+          testFocusForLabel(
+            'Published while none of the authors and editors were employed at UGent',
+            ':checkbox[name="extern"]'
+          )
+          testFocusForLabel('Publication year', 'input[type=text][name="year"]')
+          testFocusForLabel('Place of publication', 'input[type=text][name="place_of_publication"]')
+          testFocusForLabel('Publisher', 'input[type=text][name="publisher"]')
 
-      testAuthorSection()
+          testFocusForLabel('Series title', 'input[type=text][name="series_title"]')
+          testFocusForLabel('Volume', 'input[type=text][name="volume"]')
+          testFocusForLabel('Number of pages', 'input[type=text][name="page_count"]')
 
-      testSupervisorSection()
+          testFocusForLabel('Date of defense', 'input[type=text][name="defense_date"]')
+          testFocusForLabel('Place of defense', 'input[type=text][name="defense_place"]')
 
-      cy.contains('.nav-tabs .nav-item', 'Biblio Messages').click()
+          testFocusForLabel('Web of Science ID', 'input[type=text][name="wos_id"]')
+          testFocusForLabel('ISSN', 'input[type=text][name="issn"]')
+          testFocusForLabel('E-ISSN', 'input[type=text][name="eissn"]')
+          testFocusForLabel('ISBN', 'input[type=text][name="isbn"]')
+          testFocusForLabel('E-ISBN', 'input[type=text][name="eisbn"]')
+        })
 
-      testMessagesSection()
-    })
+        testAbstractSection()
 
-    it('should have clickable labels in the Miscellaneous form', () => {
-      setUpPublication('Miscellaneous')
+        testLinkSection()
 
-      updateFields('Publication details', () => {
-        testFocusForLabel('Publication type', 'select[name="type"]')
-        testFocusForLabel('Miscellaneous type', 'select[name="miscellaneous_type"]')
-        testFocusForLabel('DOI', 'input[type=text][name="doi"]')
+        testLaySummarySection()
 
-        testFocusForLabel('Title', 'input[type=text][name="title"]')
-        testFocusForLabel('Alternative title', 'input[type=text][name="alternative_title"]')
-        testFocusForLabel('Publication title', 'input[type=text][name="publication"]')
-        testFocusForLabel('Publication short title', 'input[type=text][name="publication_abbreviation"]')
+        testAdditionalInformationSection()
 
-        testFocusForLabel('Languages', 'select[name="language"]')
-        testFocusForLabel('Publishing status', 'select[name="publication_status"]')
-        testFocusForLabel(
-          'Published while none of the authors and editors were employed at UGent',
-          ':checkbox[name="extern"]'
-        )
-        testFocusForLabel('Publication year', 'input[type=text][name="year"]')
-        testFocusForLabel('Place of publication', 'input[type=text][name="place_of_publication"]')
-        testFocusForLabel('Publisher', 'input[type=text][name="publisher"]')
+        cy.contains('.nav-tabs .nav-item', 'People & Affiliations').click()
 
-        testFocusForLabel('Series title', 'input[type=text][name="series_title"]')
-        testFocusForLabel('Volume', 'input[type=text][name="volume"]')
-        testFocusForLabel('Issue', 'input[type=text][name="issue"]')
-        testFocusForLabel('Special issue title', 'input[type=text][name="issue_title"]')
-        testFocusForLabel('Edition', 'input[type=text][name="edition"]')
-        testFocusForLabel('First page', 'input[type=text][name="page_first"]')
-        testFocusForLabel('Last page', 'input[type=text][name="page_last"]')
-        testFocusForLabel('Number of pages', 'input[type=text][name="page_count"]')
-        testFocusForLabel('Article number', 'input[type=text][name="article_number"]')
-        testFocusForLabel('Report number', 'input[type=text][name="report_number"]')
+        testAuthorSection()
 
-        testFocusForLabel('Web of Science ID', 'input[type=text][name="wos_id"]')
-        testFocusForLabel('ISSN', 'input[type=text][name="issn"]')
-        testFocusForLabel('E-ISSN', 'input[type=text][name="eissn"]')
-        testFocusForLabel('ISBN', 'input[type=text][name="isbn"]')
-        testFocusForLabel('PubMed ID', 'input[type=text][name="pubmed_id"]')
-        testFocusForLabel('Arxiv ID', 'input[type=text][name="arxiv_id"]')
-        testFocusForLabel('ESCI ID', 'input[type=text][name="esci_id"]')
+        testSupervisorSection()
+
+        cy.contains('.nav-tabs .nav-item', 'Biblio Messages').click()
+
+        testMessagesSection()
       })
 
-      testAbstractSection()
+      it('should have clickable labels in the Miscellaneous form', () => {
+        cy.setUpPublication('Miscellaneous')
 
-      testLinkSection()
+        cy.visitPublication()
 
-      testAdditionalInformationSection()
+        cy.updateFields('Publication details', () => {
+          testFocusForLabel('Publication type', 'select[name="type"]')
+          testFocusForLabel('Miscellaneous type', 'select[name="miscellaneous_type"]')
+          testFocusForLabel('DOI', 'input[type=text][name="doi"]')
 
-      cy.contains('.nav-tabs .nav-item', 'People & Affiliations').click()
+          testFocusForLabel('Title', 'input[type=text][name="title"]')
+          testFocusForLabel('Alternative title', 'input[type=text][name="alternative_title"]')
+          testFocusForLabel('Publication title', 'input[type=text][name="publication"]')
+          testFocusForLabel('Publication short title', 'input[type=text][name="publication_abbreviation"]')
 
-      testAuthorSection()
+          testFocusForLabel('Languages', 'select[name="language"]')
+          testFocusForLabel('Publishing status', 'select[name="publication_status"]')
+          testFocusForLabel(
+            'Published while none of the authors and editors were employed at UGent',
+            ':checkbox[name="extern"]'
+          )
+          testFocusForLabel('Publication year', 'input[type=text][name="year"]')
+          testFocusForLabel('Place of publication', 'input[type=text][name="place_of_publication"]')
+          testFocusForLabel('Publisher', 'input[type=text][name="publisher"]')
 
-      testEditorSection()
+          testFocusForLabel('Series title', 'input[type=text][name="series_title"]')
+          testFocusForLabel('Volume', 'input[type=text][name="volume"]')
+          testFocusForLabel('Issue', 'input[type=text][name="issue"]')
+          testFocusForLabel('Special issue title', 'input[type=text][name="issue_title"]')
+          testFocusForLabel('Edition', 'input[type=text][name="edition"]')
+          testFocusForLabel('First page', 'input[type=text][name="page_first"]')
+          testFocusForLabel('Last page', 'input[type=text][name="page_last"]')
+          testFocusForLabel('Number of pages', 'input[type=text][name="page_count"]')
+          testFocusForLabel('Article number', 'input[type=text][name="article_number"]')
+          testFocusForLabel('Report number', 'input[type=text][name="report_number"]')
 
-      cy.contains('.nav-tabs .nav-item', 'Biblio Messages').click()
+          testFocusForLabel('Web of Science ID', 'input[type=text][name="wos_id"]')
+          testFocusForLabel('ISSN', 'input[type=text][name="issn"]')
+          testFocusForLabel('E-ISSN', 'input[type=text][name="eissn"]')
+          testFocusForLabel('ISBN', 'input[type=text][name="isbn"]')
+          testFocusForLabel('PubMed ID', 'input[type=text][name="pubmed_id"]')
+          testFocusForLabel('Arxiv ID', 'input[type=text][name="arxiv_id"]')
+          testFocusForLabel('ESCI ID', 'input[type=text][name="esci_id"]')
+        })
 
-      testMessagesSection()
-    })
+        testAbstractSection()
 
-    it('should have clickable labels in the Issue editor form', () => {
-      setUpPublication('Issue')
+        testLinkSection()
 
-      updateFields('Publication details', () => {
-        testFocusForLabel('Publication type', 'select[name="type"]')
-        testFocusForLabel('DOI', 'input[type=text][name="doi"]')
+        testAdditionalInformationSection()
 
-        testFocusForLabel('Title', 'input[type=text][name="title"]')
-        testFocusForLabel('Alternative title', 'input[type=text][name="alternative_title"]')
-        testFocusForLabel('Journal title', 'input[type=text][name="publication"]')
-        testFocusForLabel('Short journal title', 'input[type=text][name="publication_abbreviation"]')
+        cy.contains('.nav-tabs .nav-item', 'People & Affiliations').click()
 
-        testFocusForLabel('Languages', 'select[name="language"]')
-        testFocusForLabel('Publishing status', 'select[name="publication_status"]')
-        testFocusForLabel(
-          'Published while none of the authors and editors were employed at UGent',
-          ':checkbox[name="extern"]'
-        )
-        testFocusForLabel('Publication year', 'input[type=text][name="year"]')
-        testFocusForLabel('Place of publication', 'input[type=text][name="place_of_publication"]')
-        testFocusForLabel('Publisher', 'input[type=text][name="publisher"]')
+        testAuthorSection()
 
-        testFocusForLabel('Volume', 'input[type=text][name="volume"]')
-        testFocusForLabel('Issue', 'input[type=text][name="issue"]')
-        testFocusForLabel('Special issue title', 'input[type=text][name="issue_title"]')
-        testFocusForLabel('Edition', 'input[type=text][name="edition"]')
-        testFocusForLabel('Number of pages', 'input[type=text][name="page_count"]')
+        testEditorSection()
 
-        testFocusForLabel('Web of Science ID', 'input[type=text][name="wos_id"]')
-        testFocusForLabel('ISSN', 'input[type=text][name="issn"]')
-        testFocusForLabel('E-ISSN', 'input[type=text][name="eissn"]')
-        testFocusForLabel('ISBN', 'input[type=text][name="isbn"]')
+        cy.contains('.nav-tabs .nav-item', 'Biblio Messages').click()
+
+        testMessagesSection()
       })
 
-      testConferenceDetailsSection()
+      it('should have clickable labels in the Issue editor form', () => {
+        cy.setUpPublication('Issue')
 
-      testAbstractSection()
+        cy.visitPublication()
 
-      testLinkSection()
+        cy.updateFields('Publication details', () => {
+          testFocusForLabel('Publication type', 'select[name="type"]')
+          testFocusForLabel('DOI', 'input[type=text][name="doi"]')
 
-      testAdditionalInformationSection()
+          testFocusForLabel('Title', 'input[type=text][name="title"]')
+          testFocusForLabel('Alternative title', 'input[type=text][name="alternative_title"]')
+          testFocusForLabel('Journal title', 'input[type=text][name="publication"]')
+          testFocusForLabel('Short journal title', 'input[type=text][name="publication_abbreviation"]')
 
-      cy.contains('.nav-tabs .nav-item', 'People & Affiliations').click()
+          testFocusForLabel('Languages', 'select[name="language"]')
+          testFocusForLabel('Publishing status', 'select[name="publication_status"]')
+          testFocusForLabel(
+            'Published while none of the authors and editors were employed at UGent',
+            ':checkbox[name="extern"]'
+          )
+          testFocusForLabel('Publication year', 'input[type=text][name="year"]')
+          testFocusForLabel('Place of publication', 'input[type=text][name="place_of_publication"]')
+          testFocusForLabel('Publisher', 'input[type=text][name="publisher"]')
 
-      testEditorSection()
+          testFocusForLabel('Volume', 'input[type=text][name="volume"]')
+          testFocusForLabel('Issue', 'input[type=text][name="issue"]')
+          testFocusForLabel('Special issue title', 'input[type=text][name="issue_title"]')
+          testFocusForLabel('Edition', 'input[type=text][name="edition"]')
+          testFocusForLabel('Number of pages', 'input[type=text][name="page_count"]')
 
-      cy.contains('.nav-tabs .nav-item', 'Biblio Messages').click()
+          testFocusForLabel('Web of Science ID', 'input[type=text][name="wos_id"]')
+          testFocusForLabel('ISSN', 'input[type=text][name="issn"]')
+          testFocusForLabel('E-ISSN', 'input[type=text][name="eissn"]')
+          testFocusForLabel('ISBN', 'input[type=text][name="isbn"]')
+        })
 
-      testMessagesSection()
-    })
+        testConferenceDetailsSection()
 
-    it('should have clickable labels in the file upload form', () => {
-      setUpPublication('Miscellaneous')
+        testAbstractSection()
 
-      cy.contains('.nav-tabs .nav-item', 'Full text & Files').click()
+        testLinkSection()
 
-      cy.get('input[type=file][name=file]').selectFile('cypress/fixtures/empty-pdf.pdf')
+        testAdditionalInformationSection()
 
-      cy.ensureModal('Document details for file empty-pdf.pdf').within(() => {
-        cy.intercept('/publication/*/files/*/refresh-form*').as('refreshForm')
+        cy.contains('.nav-tabs .nav-item', 'People & Affiliations').click()
 
-        cy.getLabel(/Embargoed access/).click()
+        testEditorSection()
 
-        cy.wait('@refreshForm')
+        cy.contains('.nav-tabs .nav-item', 'Biblio Messages').click()
 
-        testFocusForLabel('Document type', 'select[name="relation"]')
-        testFocusForLabel('Publication version', 'select[name="publication_version"]')
-        testFocusForLabel('Access level during embargo', 'select[name="access_level_during_embargo"]')
-        testFocusForLabel('Access level after embargo', 'select[name="access_level_after_embargo"]')
-        testFocusForLabel('Embargo end', 'input[type=date][name="embargo_date"]')
-        testFocusForLabel('License granted by the rights holder', 'select[name="license"]')
+        testMessagesSection()
+      })
+
+      it('should have clickable labels in the file upload form', () => {
+        cy.setUpPublication('Miscellaneous')
+
+        cy.visitPublication()
+
+        cy.contains('.nav-tabs .nav-item', 'Full text & Files').click()
+
+        cy.get('input[type=file][name=file]').selectFile('cypress/fixtures/empty-pdf.pdf')
+
+        cy.ensureModal('Document details for file empty-pdf.pdf').within(() => {
+          cy.intercept('/publication/*/files/*/refresh-form*').as('refreshForm')
+
+          cy.getLabel(/Embargoed access/).click()
+
+          cy.wait('@refreshForm')
+
+          testFocusForLabel('Document type', 'select[name="relation"]')
+          testFocusForLabel('Publication version', 'select[name="publication_version"]')
+          testFocusForLabel('Access level during embargo', 'select[name="access_level_during_embargo"]')
+          testFocusForLabel('Access level after embargo', 'select[name="access_level_after_embargo"]')
+          testFocusForLabel('Embargo end', 'input[type=date][name="embargo_date"]')
+          testFocusForLabel('License granted by the rights holder', 'select[name="license"]')
+        })
       })
     })
-  })
 
-  describe('Add/edit dataset form', () => {
-    it('should have clickable labels in the dataset form', () => {
-      setUpDataset(() => {
-        updateFields('Dataset details', () => {
+    describe('Add/edit dataset form', () => {
+      it('should have clickable labels in the dataset form', () => {
+        cy.setUpDataset()
+
+        cy.visitDataset()
+
+        cy.updateFields('Dataset details', () => {
           cy.intercept('PUT', '/dataset/*/details/edit/refresh-form*').as('refreshForm')
           cy.setFieldByLabel('License', 'The license is not listed here')
 
@@ -453,28 +474,62 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
     })
   })
 
+  describe('In librarian mode', () => {
+    beforeEach(() => {
+      cy.loginAsLibrarian()
+
+      cy.switchMode('Librarian')
+    })
+
+    describe('Add/edit publication forms', () => {
+      it('should have clickable labels in librarian only sections', () => {
+        cy.setUpPublication('Book')
+
+        cy.visitPublication()
+
+        testLibrarianTagsSection()
+
+        testLibrarianNoteSection()
+      })
+    })
+
+    describe('Add/edit dataset form', () => {
+      it('should have clickable labels in librarian only sections', () => {
+        cy.setUpDataset()
+
+        cy.visitDataset()
+
+        testLibrarianTagsSection()
+
+        testLibrarianNoteSection()
+      })
+    })
+  })
+
   function testFocusForLabel(labelText: string, fieldSelector: string, autoFocus = false) {
     cy.getLabel(labelText)
-      .as('theLabel')
+      .as('theLabel', { type: 'static' })
       .should('have.length', 1)
       .parent({ log: false })
       .find(fieldSelector)
-      .first()
-      .as('theField')
       .should('have.length', 1)
-      .should(autoFocus ? 'have.focus' : 'not.have.focus')
+      .first({ log: false })
+      .as('theField', { type: 'static' })
+      .should(autoFocus ? 'be.focused' : 'not.be.focused')
 
     if (autoFocus) {
       cy.focused().blur()
+
+      cy.get('@theField').should('not.be.focused')
     }
 
     cy.get('@theLabel').click()
 
-    cy.get('@theField').should('have.focus')
+    cy.get('@theField').should('be.focused')
   }
 
   function testConferenceDetailsSection() {
-    updateFields('Conference Details', () => {
+    cy.updateFields('Conference details', () => {
       testFocusForLabel('Conference', 'input[type=text][name="name"]')
       testFocusForLabel('Conference location', 'input[type=text][name="location"]')
       testFocusForLabel('Conference organiser', 'input[type=text][name="organizer"]')
@@ -484,28 +539,28 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
   }
 
   function testAbstractSection() {
-    updateFields('Abstract', () => {
+    cy.updateFields('Abstract', () => {
       testFocusForLabel('Abstract', 'textarea[name="text"]')
       testFocusForLabel('Language', 'select[name="lang"]')
     })
   }
 
   function testLinkSection() {
-    updateFields('Link', () => {
+    cy.updateFields('Link', () => {
       testFocusForLabel('URL', 'input[type=text][name="url"]')
       testFocusForLabel('Relation', 'select[name="relation"]')
       testFocusForLabel('Description', 'input[type=text][name="description"]')
     })
   }
   function testLaySummarySection() {
-    updateFields('Lay summary', () => {
+    cy.updateFields('Lay summary', () => {
       testFocusForLabel('Lay summary', 'textarea[name="text"]')
       testFocusForLabel('Language', 'select[name="lang"]')
     })
   }
 
   function testAdditionalInformationSection() {
-    updateFields('Additional information', () => {
+    cy.updateFields('Additional information', () => {
       testFocusForLabel('Research field', 'select[name="research_field"]')
       // Keywords field: tagify component doesn't support focussing by label
       testFocusForLabel('Additional information', 'textarea[name="additional_info"]')
@@ -513,7 +568,7 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
   }
 
   function testAuthorSection() {
-    updateFields('Author', () => {
+    cy.updateFields('Authors', () => {
       testFocusForLabel('First name', 'input[name="first_name"]', true)
       testFocusForLabel('Last name', 'input[name="last_name"]')
 
@@ -527,106 +582,41 @@ describe('Issue #1237: Accessibility and mark-up: make sure labels are clickable
   }
 
   function testEditorSection() {
-    updateFields('Editor', () => {
+    cy.updateFields('Editors', () => {
       testFocusForLabel('First name', 'input[name="first_name"]', true)
       testFocusForLabel('Last name', 'input[name="last_name"]')
     })
   }
 
   function testCreatorSection() {
-    updateFields('Creator', () => {
+    cy.updateFields('Creators', () => {
       testFocusForLabel('First name', 'input[name="first_name"]', true)
       testFocusForLabel('Last name', 'input[name="last_name"]')
     })
   }
 
   function testSupervisorSection() {
-    updateFields('Supervisor', () => {
+    cy.updateFields('Supervisors', () => {
       testFocusForLabel('First name', 'input[name="first_name"]', true)
       testFocusForLabel('Last name', 'input[name="last_name"]')
     })
   }
 
+  function testLibrarianTagsSection() {
+    cy.updateFields('Librarian tags', () => {
+      testFocusForLabel('Librarian tags', 'input[name="reviewer_tags"]')
+    })
+  }
+
+  function testLibrarianNoteSection() {
+    cy.updateFields('Librarian note', () => {
+      testFocusForLabel('Librarian note', 'textarea[name="reviewer_note"]')
+    })
+  }
+
   function testMessagesSection() {
-    updateFields('Messages from and for Biblio team', () => {
+    cy.updateFields('Messages from and for Biblio team', () => {
       testFocusForLabel('Message', 'textarea[name="message"]')
     })
-  }
-
-  type PublicationType =
-    | 'Journal Article'
-    | 'Book Chapter'
-    | 'Book'
-    | 'Conference contribution'
-    | 'Dissertation'
-    | 'Miscellaneous'
-    | 'Issue'
-
-  function setUpPublication(publicationType: PublicationType) {
-    cy.visit('/publication/add')
-
-    cy.contains('Enter a publication manually').find(':radio').click()
-    cy.contains('.btn', 'Add publication(s)').click()
-
-    cy.contains(new RegExp(`^${publicationType}$`)).click()
-    cy.contains('.btn', 'Add publication(s)').click()
-
-    updateFields(
-      'Publication details',
-      () => {
-        cy.setFieldByLabel('Title', `The ${publicationType} title [CYPRESSTEST]`)
-      },
-      true
-    )
-  }
-
-  function setUpDataset(editDatasetCallback: () => void) {
-    cy.visit('/dataset/add')
-
-    cy.contains('Register a dataset manually').find(':radio').click()
-    cy.contains('.btn', 'Add dataset').click()
-
-    updateFields(
-      'Dataset details',
-      () => {
-        cy.setFieldByLabel('Title', `The dataset title [CYPRESSTEST]`)
-
-        cy.setFieldByLabel('Persistent identifier type', 'DOI')
-
-        cy.setFieldByLabel('Identifier', '10.5072/test/t')
-      },
-      true
-    )
-
-    // Custom callback here
-    editDatasetCallback()
-  }
-
-  type FieldsSection =
-    | 'Publication details'
-    | 'Conference Details'
-    | 'Abstract'
-    | 'Link'
-    | 'Lay summary'
-    | 'Additional information'
-    | 'Author'
-    | 'Editor'
-    | 'Supervisor'
-    | 'Messages from and for Biblio team'
-    | 'Dataset details'
-    | 'Creator'
-
-  function updateFields(section: FieldsSection, callback: () => void, persist = false) {
-    cy.contains('.card-header', section).find('.btn').click()
-
-    const modalTitle = new RegExp(`(Edit|Add) ${section}`, 'i')
-
-    cy.ensureModal(modalTitle).within(() => {
-      callback()
-
-      cy.contains('.modal-footer .btn', persist ? 'Save' : 'Cancel').click()
-    })
-
-    cy.ensureNoModal()
   }
 })

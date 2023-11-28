@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/oklog/ulid/v2"
-	"github.com/ugent-library/biblio-backoffice/bind"
 	"github.com/ugent-library/biblio-backoffice/displays"
 	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/localize"
@@ -23,6 +22,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	"github.com/ugent-library/biblio-backoffice/validation"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
+	"github.com/ugent-library/bind"
 )
 
 type BindImportSingle struct {
@@ -157,7 +157,7 @@ func (h *Handler) AddSingleImport(w http.ResponseWriter, r *http.Request, ctx Co
 
 			flash := flash.SimpleFlash().
 				WithLevel("error").
-				WithBody(template.HTML(ctx.Locale.T("publication.single_import.import_by_id.import_failed")))
+				WithBody(template.HTML(ctx.Loc.Get("publication.single_import.import_by_id.import_failed")))
 
 			ctx.Flash = append(ctx.Flash, *flash)
 
@@ -177,10 +177,10 @@ func (h *Handler) AddSingleImport(w http.ResponseWriter, r *http.Request, ctx Co
 	}
 
 	p.ID = ulid.Make().String()
-	p.CreatorID = ctx.User.Person.ID
-	p.Creator = &ctx.User.Person
-	p.UserID = ctx.User.Person.ID
-	p.User = &ctx.User.Person
+	p.CreatorID = ctx.User.ID
+	p.Creator = ctx.User
+	p.UserID = ctx.User.ID
+	p.User = ctx.User
 	p.Status = "private"
 	p.Classification = "U"
 
@@ -189,7 +189,7 @@ func (h *Handler) AddSingleImport(w http.ResponseWriter, r *http.Request, ctx Co
 	}
 
 	if validationErrs := p.Validate(); validationErrs != nil {
-		errors := form.Errors(localize.ValidationErrors(ctx.Locale, validationErrs.(validation.Errors)))
+		errors := form.Errors(localize.ValidationErrors(ctx.Loc, validationErrs.(validation.Errors)))
 		render.Layout(w, "layouts/default", "publication/pages/add_identifier", YieldAddSingle{
 			Context:    ctx,
 			PageTitle:  "Add - Publications - Biblio",
@@ -226,7 +226,7 @@ func (h *Handler) AddSingleImport(w http.ResponseWriter, r *http.Request, ctx Co
 		SubNavs:        []string{"description", "files", "contributors", "datasets"},
 		ActiveSubNav:   subNav,
 		Publication:    p,
-		DisplayDetails: displays.PublicationDetails(ctx.User, ctx.Locale, p),
+		DisplayDetails: displays.PublicationDetails(ctx.User, ctx.Loc, p),
 	})
 }
 
@@ -244,7 +244,7 @@ func (h *Handler) AddSingleDescription(w http.ResponseWriter, r *http.Request, c
 		SubNavs:        []string{"description", "files", "contributors", "datasets"},
 		ActiveSubNav:   subNav,
 		Publication:    ctx.Publication,
-		DisplayDetails: displays.PublicationDetails(ctx.User, ctx.Locale, ctx.Publication),
+		DisplayDetails: displays.PublicationDetails(ctx.User, ctx.Loc, ctx.Publication),
 	})
 }
 
@@ -268,7 +268,7 @@ func (h *Handler) AddSinglePublish(w http.ResponseWriter, r *http.Request, ctx C
 	ctx.Publication.Status = "public"
 
 	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
-		errors := form.Errors(localize.ValidationErrors(ctx.Locale, validationErrs.(validation.Errors)))
+		errors := form.Errors(localize.ValidationErrors(ctx.Loc, validationErrs.(validation.Errors)))
 		render.Layout(w, "show_modal", "form_errors_dialog", struct {
 			Title  string
 			Errors form.Errors
@@ -284,7 +284,7 @@ func (h *Handler) AddSinglePublish(w http.ResponseWriter, r *http.Request, ctx C
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
 		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Locale.T("publication.conflict_error_reload"),
+			Message: ctx.Loc.Get("publication.conflict_error_reload"),
 		})
 		return
 	}
@@ -380,7 +380,7 @@ func (h *Handler) AddMultipleSave(w http.ResponseWriter, r *http.Request, ctx Co
 
 // TODO after changing tabs, the wrong url is pushed in the history
 func (h *Handler) AddMultipleShow(w http.ResponseWriter, r *http.Request, ctx Context) {
-	batchID := bind.PathValues(r).Get("batch_id")
+	batchID := bind.PathValue(r, "batch_id")
 	subNav := r.URL.Query().Get("show")
 	if subNav == "" {
 		subNav = "description"
@@ -400,7 +400,7 @@ func (h *Handler) AddMultipleShow(w http.ResponseWriter, r *http.Request, ctx Co
 
 func (h *Handler) AddMultipleConfirm(w http.ResponseWriter, r *http.Request, ctx Context) {
 	searchArgs := models.NewSearchArgs()
-	if err := bind.RequestQuery(r, searchArgs); err != nil {
+	if err := bind.Query(r, searchArgs); err != nil {
 		h.Logger.Warnw("add multiple confirm publication: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
@@ -408,7 +408,7 @@ func (h *Handler) AddMultipleConfirm(w http.ResponseWriter, r *http.Request, ctx
 
 	searchArgs.WithFacets(vocabularies.Map["publication_facets"]...)
 
-	batchID := bind.PathValues(r).Get("batch_id")
+	batchID := bind.PathValue(r, "batch_id")
 
 	hits, err := h.PublicationSearchIndex.
 		WithScope("status", "private", "public").
@@ -435,7 +435,7 @@ func (h *Handler) AddMultipleConfirm(w http.ResponseWriter, r *http.Request, ctx
 }
 
 func (h *Handler) AddMultiplePublish(w http.ResponseWriter, r *http.Request, ctx Context) {
-	batchID := bind.PathValues(r).Get("batch_id")
+	batchID := bind.PathValue(r, "batch_id")
 
 	err := h.batchPublishPublications(batchID, ctx.User)
 
@@ -444,7 +444,7 @@ func (h *Handler) AddMultiplePublish(w http.ResponseWriter, r *http.Request, ctx
 	var validationErrs validation.Errors
 	if errors.As(err, &validationErrs) {
 		h.Logger.Warnw("add multiple publish publication: could not validate abstract:", "errors", validationErrs, "batch", batchID, "user", ctx.User.ID)
-		errors := form.Errors(localize.ValidationErrors(ctx.Locale, validationErrs))
+		errors := form.Errors(localize.ValidationErrors(ctx.Loc, validationErrs))
 		render.Layout(w, "show_modal", "form_errors_dialog", struct {
 			Title  string
 			Errors form.Errors
@@ -468,7 +468,7 @@ func (h *Handler) AddMultiplePublish(w http.ResponseWriter, r *http.Request, ctx
 
 func (h *Handler) AddMultipleFinish(w http.ResponseWriter, r *http.Request, ctx Context) {
 	searchArgs := models.NewSearchArgs()
-	if err := bind.RequestQuery(r, searchArgs); err != nil {
+	if err := bind.Query(r, searchArgs); err != nil {
 		h.Logger.Warnw("add multiple finish publication: could not bind request arguments", "errors", err, "request", r)
 		render.BadRequest(w, r, err)
 		return
@@ -476,7 +476,7 @@ func (h *Handler) AddMultipleFinish(w http.ResponseWriter, r *http.Request, ctx 
 
 	searchArgs.WithFacets(vocabularies.Map["publication_facets"]...)
 
-	batchID := bind.PathValues(r).Get("batch_id")
+	batchID := bind.PathValue(r, "batch_id")
 
 	hits, err := h.PublicationSearchIndex.
 		WithScope("status", "private", "public").
@@ -517,7 +517,7 @@ func (h *Handler) fetchPublicationByIdentifier(source, identifier string) (*mode
 	return d, nil
 }
 
-func (h *Handler) importPublications(user *models.User, source string, file io.Reader) (string, error) {
+func (h *Handler) importPublications(user *models.Person, source string, file io.Reader) (string, error) {
 	batchID := ulid.Make().String()
 
 	decFactory, ok := h.PublicationDecoders[source]
@@ -533,10 +533,10 @@ func (h *Handler) importPublications(user *models.User, source string, file io.R
 			BatchID:        batchID,
 			Status:         "private",
 			Classification: "U",
-			CreatorID:      user.Person.ID,
-			Creator:        &user.Person,
-			UserID:         user.Person.ID,
-			User:           &user.Person,
+			CreatorID:      user.ID,
+			Creator:        user,
+			UserID:         user.ID,
+			User:           user,
 		}
 
 		if len(user.Affiliations) > 0 {
@@ -565,7 +565,7 @@ func (h *Handler) importPublications(user *models.User, source string, file io.R
 }
 
 // TODO check conflicts?
-func (h *Handler) batchPublishPublications(batchID string, user *models.User) (err error) {
+func (h *Handler) batchPublishPublications(batchID string, user *models.Person) (err error) {
 	searcher := h.PublicationSearchIndex.
 		WithScope("status", "private", "public").
 		WithScope("creator_id", user.ID).

@@ -4,14 +4,14 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/ugent-library/biblio-backoffice/bind"
-	"github.com/ugent-library/biblio-backoffice/locale"
+	"github.com/leonelquinteros/gotext"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	"github.com/ugent-library/biblio-backoffice/validation"
+	"github.com/ugent-library/bind"
 )
 
 type BindMessage struct {
@@ -47,7 +47,7 @@ type YieldEditReviewerNote struct {
 func (h *Handler) EditMessage(w http.ResponseWriter, r *http.Request, ctx Context) {
 	render.Layout(w, "show_modal", "publication/edit_message", YieldEditMessage{
 		Context:  ctx,
-		Form:     messageForm(ctx.User, ctx.Locale, ctx.Publication, nil),
+		Form:     messageForm(ctx.User, ctx.Loc, ctx.Publication, nil),
 		Conflict: false,
 	})
 }
@@ -67,7 +67,7 @@ func (h *Handler) UpdateMessage(w http.ResponseWriter, r *http.Request, ctx Cont
 		h.Logger.Warnw("update publication reviewer note: could not validate message:", "errors", validationErrs, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.Layout(w, "refresh_modal", "publication/edit_message", YieldEditMessage{
 			Context:  ctx,
-			Form:     messageForm(ctx.User, ctx.Locale, p, validationErrs.(validation.Errors)),
+			Form:     messageForm(ctx.User, ctx.Loc, p, validationErrs.(validation.Errors)),
 			Conflict: false,
 		})
 		return
@@ -79,7 +79,7 @@ func (h *Handler) UpdateMessage(w http.ResponseWriter, r *http.Request, ctx Cont
 	if errors.As(err, &conflict) {
 		render.Layout(w, "refresh_modal", "publication/edit_message", YieldEditMessage{
 			Context:  ctx,
-			Form:     messageForm(ctx.User, ctx.Locale, p, nil),
+			Form:     messageForm(ctx.User, ctx.Loc, p, nil),
 			Conflict: true,
 		})
 		return
@@ -102,7 +102,7 @@ func (h *Handler) EditReviewerTags(w http.ResponseWriter, r *http.Request, ctx C
 
 	render.Layout(w, "show_modal", "publication/edit_reviewer_tags", YieldEditReviewerTags{
 		Context:  ctx,
-		Form:     reviewerTagsForm(ctx.User, ctx.Locale, ctx.Publication, nil),
+		Form:     reviewerTagsForm(ctx.User, ctx.Loc, ctx.Publication, nil),
 		Conflict: false,
 	})
 }
@@ -127,7 +127,7 @@ func (h *Handler) UpdateReviewerTags(w http.ResponseWriter, r *http.Request, ctx
 		h.Logger.Warnw("update publication reviewer tags: could not validate reviewer tags:", "errors", validationErrs, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.Layout(w, "refresh_modal", "publication/edit_reviewer_tags", YieldEditReviewerTags{
 			Context:  ctx,
-			Form:     reviewerTagsForm(ctx.User, ctx.Locale, p, validationErrs.(validation.Errors)),
+			Form:     reviewerTagsForm(ctx.User, ctx.Loc, p, validationErrs.(validation.Errors)),
 			Conflict: false,
 		})
 		return
@@ -139,7 +139,7 @@ func (h *Handler) UpdateReviewerTags(w http.ResponseWriter, r *http.Request, ctx
 	if errors.As(err, &conflict) {
 		render.Layout(w, "refresh_modal", "publication/edit_reviewer_tags", YieldEditReviewerTags{
 			Context:  ctx,
-			Form:     reviewerTagsForm(ctx.User, ctx.Locale, p, nil),
+			Form:     reviewerTagsForm(ctx.User, ctx.Loc, p, nil),
 			Conflict: true,
 		})
 		return
@@ -162,7 +162,7 @@ func (h *Handler) EditReviewerNote(w http.ResponseWriter, r *http.Request, ctx C
 
 	render.Layout(w, "show_modal", "publication/edit_reviewer_note", YieldEditReviewerNote{
 		Context:  ctx,
-		Form:     reviewerNoteForm(ctx.User, ctx.Locale, ctx.Publication, nil),
+		Form:     reviewerNoteForm(ctx.User, ctx.Loc, ctx.Publication, nil),
 		Conflict: false,
 	})
 }
@@ -187,7 +187,7 @@ func (h *Handler) UpdateReviewerNote(w http.ResponseWriter, r *http.Request, ctx
 		h.Logger.Warnw("update publication reviewer note: could not validate reviewer note:", "errors", validationErrs, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.Layout(w, "refresh_modal", "publication/edit_reviewer_note", YieldEditReviewerNote{
 			Context:  ctx,
-			Form:     reviewerNoteForm(ctx.User, ctx.Locale, p, validationErrs.(validation.Errors)),
+			Form:     reviewerNoteForm(ctx.User, ctx.Loc, p, validationErrs.(validation.Errors)),
 			Conflict: false,
 		})
 		return
@@ -199,7 +199,7 @@ func (h *Handler) UpdateReviewerNote(w http.ResponseWriter, r *http.Request, ctx
 	if errors.As(err, &conflict) {
 		render.Layout(w, "refresh_modal", "publication/edit_reviewer_note", YieldEditReviewerNote{
 			Context:  ctx,
-			Form:     reviewerNoteForm(ctx.User, ctx.Locale, p, nil),
+			Form:     reviewerNoteForm(ctx.User, ctx.Loc, p, nil),
 			Conflict: true,
 		})
 		return
@@ -214,19 +214,19 @@ func (h *Handler) UpdateReviewerNote(w http.ResponseWriter, r *http.Request, ctx
 	render.View(w, "publication/refresh_reviewer_note", ctx)
 }
 
-func messageForm(user *models.User, l *locale.Locale, p *models.Publication, errors validation.Errors) *form.Form {
+func messageForm(user *models.Person, loc *gotext.Locale, p *models.Publication, errors validation.Errors) *form.Form {
 	return form.New().
 		WithTheme("cols").
-		WithErrors(localize.ValidationErrors(l, errors)).
+		WithErrors(localize.ValidationErrors(loc, errors)).
 		AddSection(
 			&form.TextArea{
 				Name:  "message",
 				Value: p.Message,
-				Label: l.T("builder.message"),
+				Label: loc.Get("builder.message"),
 				Cols:  9,
 				Rows:  10,
 				Error: localize.ValidationErrorAt(
-					l,
+					loc,
 					errors,
 					"/message",
 				),
@@ -234,18 +234,18 @@ func messageForm(user *models.User, l *locale.Locale, p *models.Publication, err
 		)
 }
 
-func reviewerTagsForm(user *models.User, l *locale.Locale, p *models.Publication, errors validation.Errors) *form.Form {
+func reviewerTagsForm(user *models.Person, loc *gotext.Locale, p *models.Publication, errors validation.Errors) *form.Form {
 	return form.New().
 		WithTheme("cols").
-		WithErrors(localize.ValidationErrors(l, errors)).
+		WithErrors(localize.ValidationErrors(loc, errors)).
 		AddSection(
 			&form.TextRepeat{
 				Name:   "reviewer_tags",
 				Values: p.ReviewerTags,
-				Label:  l.T("builder.reviewer_tags"),
+				Label:  loc.Get("builder.reviewer_tags"),
 				Cols:   9,
 				Error: localize.ValidationErrorAt(
-					l,
+					loc,
 					errors,
 					"/reviewer_tags",
 				),
@@ -253,19 +253,19 @@ func reviewerTagsForm(user *models.User, l *locale.Locale, p *models.Publication
 		)
 }
 
-func reviewerNoteForm(user *models.User, l *locale.Locale, p *models.Publication, errors validation.Errors) *form.Form {
+func reviewerNoteForm(user *models.Person, loc *gotext.Locale, p *models.Publication, errors validation.Errors) *form.Form {
 	return form.New().
 		WithTheme("cols").
-		WithErrors(localize.ValidationErrors(l, errors)).
+		WithErrors(localize.ValidationErrors(loc, errors)).
 		AddSection(
 			&form.TextArea{
 				Name:  "reviewer_note",
 				Value: p.ReviewerNote,
-				Label: l.T("builder.reviewer_note"),
+				Label: loc.Get("builder.reviewer_note"),
 				Cols:  9,
 				Rows:  10,
 				Error: localize.ValidationErrorAt(
-					l,
+					loc,
 					errors,
 					"/reviewer_note",
 				),

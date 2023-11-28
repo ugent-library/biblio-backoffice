@@ -64,7 +64,7 @@ func (h *Handler) Show(w http.ResponseWriter, r *http.Request, ctx Context) {
 
 	render.Layout(w, "layouts/default", "publication/pages/show", YieldShow{
 		Context:      ctx,
-		PageTitle:    ctx.Locale.T("publication.page.show.title"),
+		PageTitle:    ctx.Loc.Get("publication.page.show.title"),
 		SubNavs:      subNavs,
 		ActiveNav:    "publications",
 		ActiveSubNav: activeSubNav,
@@ -76,9 +76,9 @@ func (h *Handler) ShowDescription(w http.ResponseWriter, r *http.Request, ctx Co
 		Context:               ctx,
 		SubNavs:               subNavs,
 		ActiveSubNav:          "description",
-		DisplayDetails:        displays.PublicationDetails(ctx.User, ctx.Locale, ctx.Publication),
-		DisplayConference:     displays.PublicationConference(ctx.User, ctx.Locale, ctx.Publication),
-		DisplayAdditionalInfo: displays.PublicationAdditionalInfo(ctx.User, ctx.Locale, ctx.Publication),
+		DisplayDetails:        displays.PublicationDetails(ctx.User, ctx.Loc, ctx.Publication),
+		DisplayConference:     displays.PublicationConference(ctx.User, ctx.Loc, ctx.Publication),
+		DisplayAdditionalInfo: displays.PublicationAdditionalInfo(ctx.User, ctx.Loc, ctx.Publication),
 	})
 }
 

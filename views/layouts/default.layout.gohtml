@@ -119,7 +119,7 @@
     </header>
     <main>
         <div class="d-flex u-maximize-height">
-            <div class="c-sidebar {{if and .User .User.CanCurate (eq .UserRole "curator")}} c-sidebar--dark-gray {{end}}">
+            <div class="c-sidebar {{if eq .UserRole "curator"}} c-sidebar--dark-gray{{end}}">
                 {{if and .User .User.CanCurate}}
                 <div class="dropdown mx-lg-4 mb-6 mt-3">
                     <button class="btn btn-outline-light dropdown-toggle w-100 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -144,6 +144,19 @@
                 <div class="c-sidebar__menu">
                     <nav>
                         <ul class="c-sidebar-menu">
+                            <li class="c-sidebar__item{{if eq .ActiveNav "dashboard"}} c-sidebar__item--active{{end}}">
+                                <a href="{{pathFor "dashboard"}}"
+                                    {{if eq .UserRole "user"}}
+                                    hx-get="{{pathFor "dashboard_icon"}}"
+                                    hx-trigger="load, every 5s"
+                                    {{end}}
+                                >
+                                    <span class="c-sidebar__icon">
+                                        <i class="if if-home"></i>
+                                    </span>
+                                    <span class="c-sidebar__label">Dashboard</span>
+                                </a>
+                            </li>
                             <li class="c-sidebar__item{{if eq .ActiveNav "publications"}} c-sidebar__item--active{{end}}">
                                 <a href="{{pathFor "publications"}}">
                                     <span class="c-sidebar__icon">
@@ -161,15 +174,7 @@
                                 </a>
                             </li>
                             {{if eq .UserRole "curator"}}
-                            <li class="c-sidebar__item{{if eq .ActiveNav "dashboard"}} c-sidebar__item--active{{end}}">
-                                <a href="{{pathFor "dashboard_publications" "type" "faculties"}}">
-                                    <span class="c-sidebar__icon">
-                                        <i class="if if-grid"></i>
-                                    </span>
-                                    <span class="c-sidebar__label">Dashboard</span>
-                                </a>
-                            </li>
-                            <li class="c-sidebar__item">
+                            <li class="c-sidebar__item{{if eq .ActiveNav "batch"}} c-sidebar__item--active{{end}}">
                                 <a href="{{pathFor "publication_batch"}}">
                                     <span class="c-sidebar__label">Batch</span>
                                 </a>

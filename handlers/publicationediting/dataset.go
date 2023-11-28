@@ -3,10 +3,10 @@ package publicationediting
 import (
 	"net/http"
 
-	"github.com/ugent-library/biblio-backoffice/bind"
 	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
+	"github.com/ugent-library/bind"
 )
 
 type BindSuggestDatasets struct {
@@ -125,7 +125,7 @@ func (h *Handler) ConfirmDeleteDataset(w http.ResponseWriter, r *http.Request, c
 
 	if b.SnapshotID != ctx.Publication.SnapshotID {
 		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Locale.T("publication.conflict_error_reload"),
+			Message: ctx.Loc.Get("publication.conflict_error_reload"),
 		})
 		return
 	}
@@ -146,7 +146,7 @@ func (h *Handler) DeleteDataset(w http.ResponseWriter, r *http.Request, ctx Cont
 
 	if !ctx.Publication.HasRelatedDataset(b.DatasetID) {
 		render.Layout(w, "refresh_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Locale.T("publication.conflict_error_reload"),
+			Message: ctx.Loc.Get("publication.conflict_error_reload"),
 		})
 		return
 	}
@@ -191,7 +191,7 @@ func (h *Handler) DeleteDataset(w http.ResponseWriter, r *http.Request, ctx Cont
 	})
 }
 
-func (h *Handler) searchRelatedDatasets(user *models.User, p *models.Publication, q string) (*models.DatasetHits, error) {
+func (h *Handler) searchRelatedDatasets(user *models.Person, p *models.Publication, q string) (*models.DatasetHits, error) {
 	args := models.NewSearchArgs().WithQuery(q)
 
 	// add exclusion filter if necessary

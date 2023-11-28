@@ -1,27 +1,27 @@
 package displays
 
 import (
-	"github.com/ugent-library/biblio-backoffice/locale"
+	"github.com/leonelquinteros/gotext"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render/display"
 )
 
-func PublicationAdditionalInfo(user *models.User, l *locale.Locale, p *models.Publication) *display.Display {
+func PublicationAdditionalInfo(user *models.Person, loc *gotext.Locale, p *models.Publication) *display.Display {
 	return display.New().
 		WithTheme("default").
 		AddSection(
 			&display.List{
-				Label:  l.T("builder.research_field"),
+				Label:  loc.Get("builder.research_field"),
 				Values: p.ResearchField,
 			},
 			&display.List{
 				Inline:        true,
-				Label:         l.T("builder.keyword"),
+				Label:         loc.Get("builder.keyword"),
 				Values:        p.Keyword,
 				ValueTemplate: "format/badge",
 			},
 			&display.Text{
-				Label: l.T("builder.additional_info"),
+				Label: loc.Get("builder.additional_info"),
 				Value: p.AdditionalInfo,
 			},
 		)

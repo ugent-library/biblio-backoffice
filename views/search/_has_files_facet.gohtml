@@ -10,7 +10,7 @@
             {{range $i, $v := .}}
                 {{- if gt $i 2}}, &hellip;{{break}}{{end}}
                 {{- if gt $i 0}},{{end}}
-                {{$.Locale.TS "has_files" $v -}}
+                {{$.Loc.Get (print "has_files." $v) -}}
             {{end}}
         </span>
         {{end}}
@@ -43,7 +43,7 @@
             {{range $i, $f := .Hits.Facets.has_files}}
             <div class="custom-control custom-checkbox{{if lt $i $last}} mb-4{{end}}">
                 <input class="custom-control-input" id="filter-has-files-{{$i}}" type="checkbox" name="f[has_files]" value="{{$f.Value}}"{{if $.SearchArgs.HasFilter "has_files" $f.Value}} checked{{end}}>
-                <label class="custom-control-label" for="filter-has-files-{{$i}}">{{$.Locale.TS "has_files" $f.Value}} ({{$f.Count}})</label>
+                <label class="custom-control-label" for="filter-has-files-{{$i}}">{{$.Loc.Get (print "has_files." $f.Value)}} ({{$f.Count}})</label>
             </div>
             {{end}}
         </div>

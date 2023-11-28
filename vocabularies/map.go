@@ -14,6 +14,7 @@ var Map = map[string][]string{
 	},
 	"publication_facets": {
 		"status",
+		"locked",
 		"faculty_id",
 		"type",
 		"wos_type",
@@ -26,8 +27,8 @@ var Map = map[string][]string{
 	},
 	"publication_curation_facets": {
 		"status",
-		"publication_status",
 		"locked",
+		"publication_status",
 		"extern",
 		"faculty_id",
 		"type",
@@ -45,6 +46,7 @@ var Map = map[string][]string{
 	},
 	"dataset_facets": {
 		"status",
+		"locked",
 		"faculty_id",
 		"created_since",
 		"updated_since",

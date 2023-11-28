@@ -5,15 +5,15 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/ugent-library/biblio-backoffice/bind"
+	"github.com/leonelquinteros/gotext"
 	"github.com/ugent-library/biblio-backoffice/handlers"
-	"github.com/ugent-library/biblio-backoffice/locale"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	"github.com/ugent-library/biblio-backoffice/validation"
+	"github.com/ugent-library/bind"
 )
 
 type BindLink struct {
@@ -48,7 +48,7 @@ type YieldDeleteLink struct {
 }
 
 func (h *Handler) AddLink(w http.ResponseWriter, r *http.Request, ctx Context) {
-	form := linkForm(ctx.Locale, ctx.Dataset, &models.DatasetLink{}, nil)
+	form := linkForm(ctx.Loc, ctx.Dataset, &models.DatasetLink{}, nil)
 	render.Layout(w, "show_modal", "dataset/add_link", YieldAddLink{
 		Context: ctx,
 		Form:    form,
@@ -73,7 +73,7 @@ func (h *Handler) CreateLink(w http.ResponseWriter, r *http.Request, ctx Context
 	if validationErrs := ctx.Dataset.Validate(); validationErrs != nil {
 		render.Layout(w, "refresh_modal", "dataset/add_link", YieldAddLink{
 			Context:  ctx,
-			Form:     linkForm(ctx.Locale, ctx.Dataset, &datasetLink, validationErrs.(validation.Errors)),
+			Form:     linkForm(ctx.Loc, ctx.Dataset, &datasetLink, validationErrs.(validation.Errors)),
 			Conflict: false,
 		})
 		return
@@ -85,7 +85,7 @@ func (h *Handler) CreateLink(w http.ResponseWriter, r *http.Request, ctx Context
 	if errors.As(err, &conflict) {
 		render.Layout(w, "refresh_modal", "dataset/add_link", YieldAddLink{
 			Context:  ctx,
-			Form:     linkForm(ctx.Locale, ctx.Dataset, &datasetLink, nil),
+			Form:     linkForm(ctx.Loc, ctx.Dataset, &datasetLink, nil),
 			Conflict: true,
 		})
 		return
@@ -125,7 +125,7 @@ func (h *Handler) EditLink(w http.ResponseWriter, r *http.Request, ctx Context) 
 	render.Layout(w, "show_modal", "dataset/edit_link", YieldEditLink{
 		Context:  ctx,
 		LinkID:   b.LinkID,
-		Form:     linkForm(ctx.Locale, ctx.Dataset, link, nil),
+		Form:     linkForm(ctx.Loc, ctx.Dataset, link, nil),
 		Conflict: false,
 	})
 }
@@ -142,7 +142,7 @@ func (h *Handler) UpdateLink(w http.ResponseWriter, r *http.Request, ctx Context
 	if link == nil {
 		h.Logger.Warnw("update dataset link: could not get link", "link", b.LinkID, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
 		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Locale.T("dataset.conflict_error_reload"),
+			Message: ctx.Loc.Get("dataset.conflict_error_reload"),
 		})
 		return
 	}
@@ -157,7 +157,7 @@ func (h *Handler) UpdateLink(w http.ResponseWriter, r *http.Request, ctx Context
 		render.Layout(w, "refresh_modal", "dataset/edit_link", YieldEditLink{
 			Context:  ctx,
 			LinkID:   b.LinkID,
-			Form:     linkForm(ctx.Locale, ctx.Dataset, link, validationErrs.(validation.Errors)),
+			Form:     linkForm(ctx.Loc, ctx.Dataset, link, validationErrs.(validation.Errors)),
 			Conflict: false,
 		})
 		return
@@ -170,7 +170,7 @@ func (h *Handler) UpdateLink(w http.ResponseWriter, r *http.Request, ctx Context
 		render.Layout(w, "refresh_modal", "dataset/edit_link", YieldEditLink{
 			Context:  ctx,
 			LinkID:   b.LinkID,
-			Form:     linkForm(ctx.Locale, ctx.Dataset, link, nil),
+			Form:     linkForm(ctx.Loc, ctx.Dataset, link, nil),
 			Conflict: true,
 		})
 		return
@@ -198,7 +198,7 @@ func (h *Handler) ConfirmDeleteLink(w http.ResponseWriter, r *http.Request, ctx 
 	// TODO catch non-existing item in UI
 	if b.SnapshotID != ctx.Dataset.SnapshotID {
 		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Locale.T("dataset.conflict_error_reload"),
+			Message: ctx.Loc.Get("dataset.conflict_error_reload"),
 		})
 		return
 	}
@@ -224,7 +224,7 @@ func (h *Handler) DeleteLink(w http.ResponseWriter, r *http.Request, ctx Context
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
 		render.Layout(w, "refresh_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Locale.T("dataset.conflict_error_reload"),
+			Message: ctx.Loc.Get("dataset.conflict_error_reload"),
 		})
 		return
 	}
@@ -240,7 +240,7 @@ func (h *Handler) DeleteLink(w http.ResponseWriter, r *http.Request, ctx Context
 	})
 }
 
-func linkForm(l *locale.Locale, dataset *models.Dataset, link *models.DatasetLink, errors validation.Errors) *form.Form {
+func linkForm(loc *gotext.Locale, dataset *models.Dataset, link *models.DatasetLink, errors validation.Errors) *form.Form {
 	idx := -1
 	for i, l := range dataset.Link {
 		if l.ID == link.ID {
@@ -250,16 +250,16 @@ func linkForm(l *locale.Locale, dataset *models.Dataset, link *models.DatasetLin
 	}
 	return form.New().
 		WithTheme("cols").
-		WithErrors(localize.ValidationErrors(l, errors)).
+		WithErrors(localize.ValidationErrors(loc, errors)).
 		AddSection(
 			&form.Text{
 				Name:     "url",
 				Value:    link.URL,
-				Label:    l.T("builder.link.url"),
+				Label:    loc.Get("builder.link.url"),
 				Required: true,
 				Cols:     12,
 				Error: localize.ValidationErrorAt(
-					l,
+					loc,
 					errors,
 					fmt.Sprintf("/link/%d/url", idx),
 				),
@@ -267,11 +267,11 @@ func linkForm(l *locale.Locale, dataset *models.Dataset, link *models.DatasetLin
 			&form.Select{
 				Name:    "relation",
 				Value:   link.Relation,
-				Label:   l.T("builder.link.relation"),
-				Options: localize.VocabularySelectOptions(l, "dataset_link_relations"),
+				Label:   loc.Get("builder.link.relation"),
+				Options: localize.VocabularySelectOptions(loc, "dataset_link_relations"),
 				Cols:    12,
 				Error: localize.ValidationErrorAt(
-					l,
+					loc,
 					errors,
 					fmt.Sprintf("/link/%d/relation", idx),
 				),
@@ -279,10 +279,10 @@ func linkForm(l *locale.Locale, dataset *models.Dataset, link *models.DatasetLin
 			&form.Text{
 				Name:  "description",
 				Value: link.Description,
-				Label: l.T("builder.link.description"),
+				Label: loc.Get("builder.link.description"),
 				Cols:  12,
 				Error: localize.ValidationErrorAt(
-					l,
+					loc,
 					errors,
 					fmt.Sprintf("/link/%d/description", idx),
 				),

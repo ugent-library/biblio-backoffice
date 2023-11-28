@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/ugent-library/biblio-backoffice/bind"
 	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
@@ -13,6 +12,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	"github.com/ugent-library/biblio-backoffice/validation"
+	"github.com/ugent-library/bind"
 )
 
 type BindAddContributor struct {
@@ -298,7 +298,7 @@ func (h *Handler) CreateContributor(w http.ResponseWriter, r *http.Request, ctx 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
 		render.Layout(w, "refresh_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Locale.T("dataset.conflict_error_reload"),
+			Message: ctx.Loc.Get("dataset.conflict_error_reload"),
 		})
 		return
 	}
@@ -537,7 +537,7 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
 		render.Layout(w, "refresh_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Locale.T("dataset.conflict_error_reload"),
+			Message: ctx.Loc.Get("dataset.conflict_error_reload"),
 		})
 		return
 	}
@@ -620,7 +620,7 @@ func (h *Handler) DeleteContributor(w http.ResponseWriter, r *http.Request, ctx 
 	}
 
 	if validationErrs := ctx.Dataset.Validate(); validationErrs != nil {
-		errors := form.Errors(localize.ValidationErrors(ctx.Locale, validationErrs.(validation.Errors)))
+		errors := form.Errors(localize.ValidationErrors(ctx.Loc, validationErrs.(validation.Errors)))
 		render.Layout(w, "refresh_modal", "form_errors_dialog", struct {
 			Title  string
 			Errors form.Errors
@@ -637,7 +637,7 @@ func (h *Handler) DeleteContributor(w http.ResponseWriter, r *http.Request, ctx 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
 		render.Layout(w, "refresh_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Locale.T("dataset.conflict_error_reload"),
+			Message: ctx.Loc.Get("dataset.conflict_error_reload"),
 		})
 		return
 	}
@@ -680,7 +680,7 @@ func (h *Handler) OrderContributors(w http.ResponseWriter, r *http.Request, ctx 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
 		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Locale.T("dataset.conflict_error_reload"),
+			Message: ctx.Loc.Get("dataset.conflict_error_reload"),
 		})
 		return
 	}
@@ -746,7 +746,7 @@ func confirmContributorForm(ctx Context, role string, c *models.Contributor, err
 	}
 
 	return form.New().
-		WithErrors(localize.ValidationErrors(ctx.Locale, errors)).
+		WithErrors(localize.ValidationErrors(ctx.Loc, errors)).
 		WithTheme("cols").
 		AddSection(fields...)
 }

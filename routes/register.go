@@ -11,8 +11,10 @@ import (
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/sessions"
 	"github.com/jpillora/ipfilter"
+	"github.com/leonelquinteros/gotext"
 	"github.com/nics/ich"
 	"github.com/ugent-library/biblio-backoffice/backends"
+	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/handlers/authenticating"
 	"github.com/ugent-library/biblio-backoffice/handlers/dashboard"
@@ -22,7 +24,6 @@ import (
 	"github.com/ugent-library/biblio-backoffice/handlers/datasetsearching"
 	"github.com/ugent-library/biblio-backoffice/handlers/datasetviewing"
 	"github.com/ugent-library/biblio-backoffice/handlers/frontoffice"
-	"github.com/ugent-library/biblio-backoffice/handlers/home"
 	"github.com/ugent-library/biblio-backoffice/handlers/impersonating"
 	"github.com/ugent-library/biblio-backoffice/handlers/mediatypes"
 	"github.com/ugent-library/biblio-backoffice/handlers/publicationbatch"
@@ -31,9 +32,8 @@ import (
 	"github.com/ugent-library/biblio-backoffice/handlers/publicationexporting"
 	"github.com/ugent-library/biblio-backoffice/handlers/publicationsearching"
 	"github.com/ugent-library/biblio-backoffice/handlers/publicationviewing"
-	"github.com/ugent-library/biblio-backoffice/locale"
-	"github.com/ugent-library/httpx/render"
-	mw "github.com/ugent-library/middleware"
+	"github.com/ugent-library/httpx"
+	"github.com/ugent-library/mix"
 	"github.com/ugent-library/oidc"
 	"github.com/ugent-library/zaphttp"
 	"github.com/ugent-library/zaphttp/zapchi"
@@ -52,10 +52,11 @@ type Config struct {
 	Services         *backends.Services
 	BaseURL          *url.URL
 	Router           *ich.Mux
+	Assets           mix.Manifest
 	SessionStore     sessions.Store
 	SessionName      string
 	Timezone         *time.Location
-	Localizer        *locale.Localizer
+	Loc              *gotext.Locale
 	Logger           *zap.SugaredLogger
 	OIDCAuth         *oidc.Auth
 	FrontendURL      string
@@ -72,10 +73,6 @@ func Register(c Config) {
 	if c.Env != "local" {
 		c.Router.Use(middleware.RealIP)
 	}
-	c.Router.Use(mw.MethodOverride( // TODO eliminate need for method override
-		mw.MethodFromHeader(mw.MethodHeader),
-		mw.MethodFromForm(mw.MethodParam),
-	))
 	c.Router.Use(zaphttp.SetLogger(c.Logger.Desugar(), zapchi.RequestID))
 	c.Router.Use(middleware.RequestLogger(zapchi.LogFormatter()))
 	c.Router.Use(middleware.Recoverer)
@@ -87,15 +84,7 @@ func Register(c Config) {
 	// mount health and info
 	c.Router.Get("/status", health.NewHandler(health.NewChecker())) // TODO add checkers
 	c.Router.Get("/info", func(w http.ResponseWriter, r *http.Request) {
-		render.JSON(w, http.StatusOK, &struct {
-			Branch string `json:"branch,omitempty"`
-			Commit string `json:"commit,omitempty"`
-			Image  string `json:"image,omitempty"`
-		}{
-			Branch: c.Version.Branch,
-			Commit: c.Version.Commit,
-			Image:  c.Version.Image,
-		})
+		httpx.RenderJSON(w, http.StatusOK, c.Version)
 	})
 
 	// handlers
@@ -105,13 +94,10 @@ func Register(c Config) {
 		SessionStore:    c.SessionStore,
 		SessionName:     c.SessionName,
 		Timezone:        c.Timezone,
-		Localizer:       c.Localizer,
+		Loc:             c.Loc,
 		UserService:     c.Services.UserService,
 		BaseURL:         c.BaseURL,
 		FrontendBaseUrl: c.FrontendURL,
-	}
-	homeHandler := &home.Handler{
-		BaseHandler: baseHandler,
 	}
 	authenticatingHandler := &authenticating.Handler{
 		BaseHandler: baseHandler,
@@ -121,10 +107,6 @@ func Register(c Config) {
 		BaseHandler:       baseHandler,
 		UserSearchService: c.Services.UserSearchService,
 	}
-	// tasksHandler := &tasks.Handler{
-	// 	BaseHandler: baseHandler,
-	// 	Tasks:       services.Tasks,
-	// }
 	dashboardHandler := &dashboard.Handler{
 		BaseHandler:            baseHandler,
 		DatasetSearchIndex:     c.Services.DatasetSearchIndex,
@@ -230,6 +212,7 @@ func Register(c Config) {
 	c.Router.Head("/download/{id}/{file_id}", frontofficeHandler.DownloadFile)
 
 	c.Router.Group(func(r *ich.Mux) {
+		r.Use(httpx.MethodOverride) // TODO eliminate need for method override with htmx
 		r.Use(csrf.Protect(
 			[]byte(c.CSRFSecret),
 			csrf.CookieName(c.CSRFName),
@@ -239,12 +222,45 @@ func Register(c Config) {
 			csrf.FieldName("csrf-token"),
 		))
 
-		r.NotFound(baseHandler.Wrap(baseHandler.NotFound))
+		// BEGIN NEW STYLE HANDLERS
+		r.Group(func(r *ich.Mux) {
+			r.Use(ctx.Set(ctx.Config{
+				Services: c.Services,
+				Router:   c.Router,
+				Assets:   c.Assets,
+				Timezone: c.Timezone,
+				Loc:      c.Loc,
+				Env:      c.Env,
+				ErrorHandlers: map[int]http.HandlerFunc{
+					http.StatusNotFound:            handlers.NotFound,
+					http.StatusInternalServerError: handlers.InternalServerError,
+				},
+				SessionName:  c.SessionName,
+				SessionStore: c.SessionStore,
+				BaseURL:      c.BaseURL,
+				FrontendURL:  c.FrontendURL,
+				CSRFName:     "csrf-token",
+			}))
 
-		// home
-		r.Get("/",
-			homeHandler.Wrap(homeHandler.Home)).
-			Name("home")
+			r.NotFound(handlers.NotFound)
+
+			// home
+			r.Get("/", handlers.Home).Name("home")
+
+			r.Group(func(r *ich.Mux) {
+				r.Use(ctx.RequireUser)
+
+				r.With(ctx.SetNav("dashboard")).Get("/dashboard", handlers.DashBoard).Name("dashboard")
+				r.Get("/dashboard-icon", handlers.DashBoardIcon).Name("dashboard_icon")
+				// dashboard action required component
+				r.Get("/action-required", handlers.ActionRequired).Name("action_required")
+				// dashboard drafts to complete component
+				r.Get("/drafts-to-complete", handlers.DraftsToComplete).Name("drafts_to_complete")
+				// dashboard recent activity component
+				r.Get("/recent-activity", handlers.RecentActivity).Name("recent_activity")
+			})
+		})
+		// END NEW STYLE HANDLERS
 
 		// authenticate user
 		r.Get("/auth/openid-connect/callback",
@@ -280,6 +296,10 @@ func Register(c Config) {
 			Name("dashboard_publications")
 		r.Get("/dashboard/datasets/{type}", dashboardHandler.Wrap(dashboardHandler.Datasets)).
 			Name("dashboard_datasets")
+		r.Post("/dashboard/refresh-apublications/{type}", dashboardHandler.Wrap(dashboardHandler.RefreshAPublications)).
+			Name("dashboard_refresh_apublications")
+		r.Post("/dashboard/refresh-upublications/{type}", dashboardHandler.Wrap(dashboardHandler.RefreshUPublications)).
+			Name("dashboard_refresh_upublications")
 
 		// search datasets
 		r.Get("/dataset",

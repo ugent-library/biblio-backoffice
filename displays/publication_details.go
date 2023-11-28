@@ -1,29 +1,29 @@
 package displays
 
 import (
-	"github.com/ugent-library/biblio-backoffice/locale"
+	"github.com/leonelquinteros/gotext"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render/display"
 )
 
-func PublicationDetails(user *models.User, l *locale.Locale, p *models.Publication) *display.Display {
+func PublicationDetails(user *models.Person, loc *gotext.Locale, p *models.Publication) *display.Display {
 	switch p.Type {
 	case "book_chapter":
-		return bookChapterDetails(user, l, p)
+		return bookChapterDetails(user, loc, p)
 	case "book_editor":
-		return bookEditorDetails(user, l, p)
+		return bookEditorDetails(user, loc, p)
 	case "book":
-		return bookDetails(user, l, p)
+		return bookDetails(user, loc, p)
 	case "conference":
-		return conferenceDetails(user, l, p)
+		return conferenceDetails(user, loc, p)
 	case "dissertation":
-		return dissertationDetails(user, l, p)
+		return dissertationDetails(user, loc, p)
 	case "issue_editor":
-		return issueEditorDetails(user, l, p)
+		return issueEditorDetails(user, loc, p)
 	case "journal_article":
-		return journalArticleDetails(user, l, p)
+		return journalArticleDetails(user, loc, p)
 	case "miscellaneous":
-		return miscellaneousDetails(user, l, p)
+		return miscellaneousDetails(user, loc, p)
 	default:
 		return display.New()
 	}

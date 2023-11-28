@@ -7,6 +7,7 @@
     "Arxiv",
     "biblio",
     "Biblio",
+    "bibtex",
     "briefcase",
     "CYPRESSTEST",
     "eisbn",
@@ -16,7 +17,10 @@
     "issn",
     "liblogin",
     "Moreels",
+    "organiser",
     "pubmed",
+    "socs",
     "tagify"
-  ]
+  ],
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

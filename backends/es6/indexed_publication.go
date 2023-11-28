@@ -5,10 +5,10 @@ import (
 
 	"slices"
 
+	"github.com/samber/lo"
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/models"
 	internal_time "github.com/ugent-library/biblio-backoffice/time"
-	"github.com/ugent-library/biblio-backoffice/util"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
 )
 
@@ -120,7 +120,7 @@ func NewIndexedPublication(p *models.Publication) *indexedPublication {
 			ip.AuthorID = append(ip.AuthorID, author.PersonID)
 		}
 	}
-	ip.AuthorID = util.UniqStrings(ip.AuthorID)
+	ip.AuthorID = lo.Uniq(ip.AuthorID)
 
 	for _, supervisor := range p.Supervisor {
 		ip.Contributor = append(ip.Contributor, supervisor.Name())
@@ -130,12 +130,12 @@ func NewIndexedPublication(p *models.Publication) *indexedPublication {
 		ip.Contributor = append(ip.Contributor, editor.Name())
 	}
 
-	ip.Contributor = util.UniqStrings(ip.Contributor)
+	ip.Contributor = lo.Uniq(ip.Contributor)
 
 	for _, file := range p.File {
 		ip.FileRelation = append(ip.FileRelation, file.Relation)
 	}
-	ip.FileRelation = util.UniqStrings(ip.FileRelation)
+	ip.FileRelation = lo.Uniq(ip.FileRelation)
 
 	if p.DOI != "" {
 		ip.Identifier = append(ip.Identifier, p.DOI)

@@ -3,10 +3,10 @@ package datasetediting
 import (
 	"net/http"
 
-	"github.com/ugent-library/biblio-backoffice/bind"
 	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
+	"github.com/ugent-library/bind"
 )
 
 type BindSuggestPublications struct {
@@ -119,7 +119,7 @@ func (h *Handler) ConfirmDeletePublication(w http.ResponseWriter, r *http.Reques
 
 	if b.SnapshotID != ctx.Dataset.SnapshotID {
 		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Locale.T("dataset.conflict_error_reload"),
+			Message: ctx.Loc.Get("dataset.conflict_error_reload"),
 		})
 		return
 	}
@@ -178,7 +178,7 @@ func (h *Handler) DeletePublication(w http.ResponseWriter, r *http.Request, ctx 
 	})
 }
 
-func (h *Handler) searchRelatedPublications(user *models.User, d *models.Dataset, q string) (*models.PublicationHits, error) {
+func (h *Handler) searchRelatedPublications(user *models.Person, d *models.Dataset, q string) (*models.PublicationHits, error) {
 	args := models.NewSearchArgs().WithQuery(q)
 
 	// add exclusion filter if necessary

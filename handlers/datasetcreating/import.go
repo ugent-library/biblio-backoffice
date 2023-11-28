@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/oklog/ulid/v2"
-	"github.com/ugent-library/biblio-backoffice/bind"
 	"github.com/ugent-library/biblio-backoffice/displays"
 	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/localize"
@@ -19,6 +18,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	"github.com/ugent-library/biblio-backoffice/validation"
+	"github.com/ugent-library/bind"
 )
 
 type BindAdd struct {
@@ -136,7 +136,7 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 			flash := flash.SimpleFlash().
 				WithLevel("error").
 				WithTitle("Failed to save draft").
-				WithBody(template.HTML(ctx.Locale.TS("dataset.single_import", "import_by_id.import_failed")))
+				WithBody(template.HTML(ctx.Loc.Get("dataset.single_import.import_by_id.import_failed")))
 
 			ctx.Flash = append(ctx.Flash, *flash)
 
@@ -157,9 +157,9 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 
 	d.ID = ulid.Make().String()
 	d.CreatorID = ctx.User.ID
-	d.Creator = &ctx.User.Person
+	d.Creator = ctx.User
 	d.UserID = ctx.User.ID
-	d.User = &ctx.User.Person
+	d.User = ctx.User
 	d.Status = "private"
 
 	if len(ctx.User.Affiliations) > 0 {
@@ -167,7 +167,7 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 	}
 
 	if validationErrs := d.Validate(); validationErrs != nil {
-		errors := form.Errors(localize.ValidationErrors(ctx.Locale, validationErrs.(validation.Errors)))
+		errors := form.Errors(localize.ValidationErrors(ctx.Loc, validationErrs.(validation.Errors)))
 		render.Layout(w, "layouts/default", "dataset/pages/add_identifier", YieldAdd{
 			Context:    ctx,
 			PageTitle:  "Add - Datasets - Biblio",
@@ -204,7 +204,7 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 		SubNavs:        []string{"description", "contributors", "publications"},
 		ActiveSubNav:   subNav,
 		Dataset:        d,
-		DisplayDetails: displays.DatasetDetails(ctx.User, ctx.Locale, d),
+		DisplayDetails: displays.DatasetDetails(ctx.User, ctx.Loc, d),
 	})
 }
 
@@ -222,7 +222,7 @@ func (h *Handler) AddDescription(w http.ResponseWriter, r *http.Request, ctx Con
 		SubNavs:        []string{"description", "contributors", "publications"},
 		ActiveSubNav:   subNav,
 		Dataset:        ctx.Dataset,
-		DisplayDetails: displays.DatasetDetails(ctx.User, ctx.Locale, ctx.Dataset),
+		DisplayDetails: displays.DatasetDetails(ctx.User, ctx.Loc, ctx.Dataset),
 	})
 }
 
@@ -257,7 +257,7 @@ func (h *Handler) AddPublish(w http.ResponseWriter, r *http.Request, ctx Context
 	ctx.Dataset.Status = "public"
 
 	if err := ctx.Dataset.Validate(); err != nil {
-		errors := form.Errors(localize.ValidationErrors(ctx.Locale, err.(validation.Errors)))
+		errors := form.Errors(localize.ValidationErrors(ctx.Loc, err.(validation.Errors)))
 		render.Layout(w, "show_modal", "form_errors_dialog", struct {
 			Title  string
 			Errors form.Errors
@@ -273,7 +273,7 @@ func (h *Handler) AddPublish(w http.ResponseWriter, r *http.Request, ctx Context
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
 		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Locale.T("dataset.conflict_error_reload"),
+			Message: ctx.Loc.Get("dataset.conflict_error_reload"),
 		})
 		return
 	}

@@ -50,6 +50,7 @@ type AffiliationPath struct {
 
 type Affiliation struct {
 	Path    []AffiliationPath `json:"path,omitempty"`
+	Name    string            `json:"-"`
 	UGentID string            `json:"ugent_id,omitempty"`
 }
 
@@ -159,7 +160,7 @@ type JCR struct {
 	Eigenfactor          *float64 `json:"eigenfactor,omitempty"`
 	ImmediacyIndex       *float64 `json:"immediacy_index,omitempty"`
 	ImpactFactor         *float64 `json:"impact_factor,omitempty"`
-	ImpactFactor5Year    *float64 `json:"impact_factor_5year,omitempty"`
+	ImpactFactor5Yr      *float64 `json:"impact_factor_5yr,omitempty"`
 	TotalCites           *int     `json:"total_cites,omitempty"`
 	Category             *string  `json:"category,omitempty"`
 	CategoryRank         *string  `json:"category_rank,omitempty"`
@@ -251,6 +252,35 @@ func (r *Record) IsVABBApproved() bool {
 	return r.VABBApproved != nil && *r.VABBApproved == 1
 }
 
+func (r *Record) BestFile() *File {
+	for _, f := range r.File {
+		if f.Access == "open" {
+			return &f
+		}
+	}
+	for _, f := range r.File {
+		if f.Access == "restricted" && f.Change != nil && f.Change.To == "open" {
+			return &f
+		}
+	}
+	for _, f := range r.File {
+		if f.Access == "restricted" {
+			return &f
+		}
+	}
+	for _, f := range r.File {
+		if f.Access == "private" && f.Change != nil && f.Change.To == "restricted" {
+			return &f
+		}
+	}
+	for _, f := range r.File {
+		if f.Access == "private" {
+			return &f
+		}
+	}
+	return nil
+}
+
 type Hits struct {
 	Limit  int       `json:"limit"`
 	Offset int       `json:"offset"`
@@ -273,7 +303,11 @@ func mapContributor(c *models.Contributor) *Person {
 	if c.Person != nil {
 		p.UGentID = c.Person.UGentID
 		for _, a := range c.Person.Affiliations {
-			aff := Affiliation{UGentID: a.OrganizationID, Path: make([]AffiliationPath, len(a.Organization.Tree))}
+			aff := Affiliation{
+				UGentID: a.OrganizationID,
+				Name:    a.Organization.Name,
+				Path:    make([]AffiliationPath, len(a.Organization.Tree)),
+			}
 			for i, t := range a.Organization.Tree {
 				aff.Path[i].UGentID = t.ID
 			}
@@ -342,7 +376,11 @@ func MapPublication(p *models.Publication, repo *repositories.Repo) *Record {
 	}
 
 	for _, rel := range p.RelatedOrganizations {
-		aff := Affiliation{UGentID: rel.OrganizationID, Path: make([]AffiliationPath, len(rel.Organization.Tree))}
+		aff := Affiliation{
+			UGentID: rel.OrganizationID,
+			Name:    rel.Organization.Name,
+			Path:    make([]AffiliationPath, len(rel.Organization.Tree)),
+		}
 		for i, t := range rel.Organization.Tree {
 			aff.Path[i] = AffiliationPath{UGentID: t.ID}
 		}
@@ -737,10 +775,10 @@ func MapPublication(p *models.Publication, repo *repositories.Repo) *Record {
 
 	if p.ExternalFields != nil {
 		jcrKeys := []string{
-			"eigenfactor", "immediacy_index", "impact_factor", "impact_factor_5year",
-			"total_cites", "category", "category_rank", "category_quartile",
-			"category_decile", "category_vigintile", "prev_impact_factor",
-			"prev_category_quartile"}
+			"eigenfactor", "immediacy-index", "impact-factor", "impact-factor-5yr",
+			"total-cites", "category", "category-rank", "category-quartile",
+			"category-decile", "category-vigintile", "prev-impact-factor",
+			"prev-category-quartile"}
 		jcrFields := &models.Values{}
 		for _, key := range jcrKeys {
 			field := "jcr-" + key
@@ -755,22 +793,22 @@ func MapPublication(p *models.Publication, repo *repositories.Repo) *Record {
 					rec.JCR.Eigenfactor = &f
 				}
 			}
-			if v := jcrFields.Get("jcr-immediacy_index"); v != "" {
+			if v := jcrFields.Get("jcr-immediacy-index"); v != "" {
 				if f, err := strconv.ParseFloat(v, 64); err == nil {
 					rec.JCR.ImmediacyIndex = &f
 				}
 			}
-			if v := jcrFields.Get("jcr-impact_factor"); v != "" {
+			if v := jcrFields.Get("jcr-impact-factor"); v != "" {
 				if f, err := strconv.ParseFloat(v, 64); err == nil {
 					rec.JCR.ImpactFactor = &f
 				}
 			}
-			if v := jcrFields.Get("jcr-impact_factor_5year"); v != "" {
+			if v := jcrFields.Get("jcr-impact-factor_5yr"); v != "" {
 				if f, err := strconv.ParseFloat(v, 64); err == nil {
-					rec.JCR.ImpactFactor5Year = &f
+					rec.JCR.ImpactFactor5Yr = &f
 				}
 			}
-			if v := jcrFields.Get("jcr-total_cites"); v != "" {
+			if v := jcrFields.Get("jcr-total-cites"); v != "" {
 				if i, err := strconv.ParseInt(v, 10, 32); err == nil {
 					i32 := int(i)
 					rec.JCR.TotalCites = &i32
@@ -779,10 +817,10 @@ func MapPublication(p *models.Publication, repo *repositories.Repo) *Record {
 			if v := jcrFields.Get("jcr-category"); v != "" {
 				rec.JCR.Category = &v
 			}
-			if v := jcrFields.Get("jcr-category_rank"); v != "" {
+			if v := jcrFields.Get("jcr-category-rank"); v != "" {
 				rec.JCR.CategoryRank = &v
 			}
-			if v := jcrFields.Get("jcr-category_decile"); v != "" {
+			if v := jcrFields.Get("jcr-category-decile"); v != "" {
 				if i, err := strconv.ParseInt(v, 10, 32); err == nil {
 					i32 := int(i)
 					rec.JCR.CategoryDecile = &i32
@@ -794,18 +832,18 @@ func MapPublication(p *models.Publication, repo *repositories.Repo) *Record {
 					rec.JCR.CategoryQuartile = &i32
 				}
 			}
-			if v := jcrFields.Get("jcr-category_vigintile"); v != "" {
+			if v := jcrFields.Get("jcr-category-vigintile"); v != "" {
 				if i, err := strconv.ParseInt(v, 10, 32); err == nil {
 					i32 := int(i)
 					rec.JCR.CategoryVigintile = &i32
 				}
 			}
-			if v := jcrFields.Get("jcr-prev_impact_factor"); v != "" {
+			if v := jcrFields.Get("jcr-prev-impact-factor"); v != "" {
 				if f, err := strconv.ParseFloat(v, 64); err == nil {
 					rec.JCR.PrevImpactFactor = &f
 				}
 			}
-			if v := jcrFields.Get("jcr-prev_category_quartile"); v != "" {
+			if v := jcrFields.Get("jcr-prev-category-quartile"); v != "" {
 				if i, err := strconv.ParseInt(v, 10, 32); err == nil {
 					i32 := int(i)
 					rec.JCR.PrevCategoryQuartile = &i32
@@ -846,7 +884,10 @@ func MapDataset(d *models.Dataset, repo *repositories.Repo) *Record {
 	}
 
 	for _, rel := range d.RelatedOrganizations {
-		aff := Affiliation{UGentID: rel.OrganizationID}
+		aff := Affiliation{
+			UGentID: rel.OrganizationID,
+			Name:    rel.Organization.Name,
+		}
 		for i := len(rel.Organization.Tree) - 1; i >= 0; i-- {
 			aff.Path = append(aff.Path, AffiliationPath{UGentID: rel.Organization.Tree[i].ID})
 		}
@@ -860,7 +901,10 @@ func MapDataset(d *models.Dataset, repo *repositories.Repo) *Record {
 	}
 
 	if d.CreatorID != "" {
-		rec.CreatedBy = &Person{ID: d.CreatorID}
+		rec.CreatedBy = mapContributor(&models.Contributor{
+			PersonID: d.CreatorID,
+			Person:   d.Creator,
+		})
 	}
 
 	if val := d.Identifiers.Get("DOI"); val != "" {
