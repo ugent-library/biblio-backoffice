@@ -81,14 +81,14 @@ func newServices() *backends.Services {
 		OrganizationService: organizationService,
 	}
 
-	// var projectSearchService backends.ProjectSearchService
-	// projectSearchService = authorityClient
-	// projectService := caching.NewProjectService(authorityClient)
-
-	projectsClient := projects.New(projects.Config{
+	projectsClient, err := projects.New(projects.Config{
 		APIUrl: config.Projects.APIURL,
 		APIKey: config.Projects.APIKEY,
 	})
+	if err != nil {
+		panic(err)
+	}
+
 	projectService := caching.NewProjectService(projectsClient)
 	projectSearchService := projectsClient
 
