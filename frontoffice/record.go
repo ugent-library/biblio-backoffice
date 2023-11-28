@@ -3,7 +3,6 @@ package frontoffice
 import (
 	"fmt"
 	"strconv"
-	"strings"
 
 	"slices"
 
@@ -369,54 +368,6 @@ func MapPublication(p *models.Publication, repo *repositories.Repo) *Record {
 
 	if p.MiscellaneousType != "" {
 		rec.MiscType = strcase.ToLowerCamel(p.MiscellaneousType)
-	}
-
-	// TODO remove these mapping fixes
-	if rec.Type == "conference" && rec.ConferenceType == "" && p.WOSType != "" {
-		if strings.Contains(p.WOSType, "Proceeding") {
-			rec.ConferenceType = "proceedingsPaper"
-		} else if strings.Contains(p.WOSType, "Conference Paper") {
-			rec.ConferenceType = "conferencePaper"
-		} else if strings.Contains(p.WOSType, "Abstract") {
-			rec.ConferenceType = "meetingAbstract"
-		} else if strings.Contains(p.WOSType, "Other") {
-			rec.ConferenceType = "other"
-		}
-	}
-	if rec.Type == "conference" && rec.ConferenceType == "" && p.Classification == "P1" {
-		rec.ConferenceType = "proceedingsPaper"
-	}
-
-	if rec.Type == "journalArticle" && rec.ArticleType == "" && p.WOSType != "" {
-		if strings.Contains(p.WOSType, "Article") || strings.Contains(p.WOSType, "Journal Paper") {
-			rec.ArticleType = "original"
-		} else if strings.Contains(p.WOSType, "Proceedings Paper") {
-			rec.ArticleType = "proceedingsPaper"
-		} else if strings.Contains(p.WOSType, "Letter") || strings.Contains(p.WOSType, "Note") {
-			rec.ArticleType = "letterNote"
-		} else if strings.Contains(p.WOSType, "Review") {
-			rec.ArticleType = "review"
-		}
-	}
-
-	if rec.Type == "misc" && rec.MiscType == "" && p.WOSType != "" {
-		if strings.Contains(p.WOSType, "Book Review") {
-			rec.MiscType = "bookReview"
-		} else if strings.Contains(p.WOSType, "Theatre Review") {
-			rec.MiscType = "theatreReview"
-		} else if strings.Contains(p.WOSType, "Correction") {
-			rec.MiscType = "correction"
-		} else if strings.Contains(p.WOSType, "Editorial Material") {
-			rec.MiscType = "editorialMaterial"
-		} else if strings.Contains(p.WOSType, "Biographical-Item") || strings.Contains(p.WOSType, "Item About An Individual") {
-			rec.MiscType = "biography"
-		} else if strings.Contains(p.WOSType, "News Item") {
-			rec.MiscType = "newsArticle"
-		} else if strings.Contains(p.WOSType, "Bibliography") {
-			rec.MiscType = "bibliography"
-		} else if strings.Contains(p.WOSType, "Other") {
-			rec.MiscType = "other"
-		}
 	}
 
 	for _, v := range p.Abstract {
