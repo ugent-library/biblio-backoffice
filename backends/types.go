@@ -34,7 +34,6 @@ type Services struct {
 	PublicationListExporters  map[string]PublicationListExporterFactory
 	DatasetListExporters      map[string]DatasetListExporterFactory
 	HandleService             HandleService
-	// Tasks                      *tasks.Hub
 }
 
 type PublicationEncoder func(*models.Publication) ([]byte, error)

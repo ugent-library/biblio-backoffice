@@ -15,9 +15,9 @@ import (
 	"github.com/ugent-library/biblio-backoffice/render/display"
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
-	"github.com/ugent-library/biblio-backoffice/validation"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
 	"github.com/ugent-library/bind"
+	"github.com/ugent-library/okay"
 )
 
 type BindDetails struct {
@@ -120,17 +120,14 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 	if ctx.Dataset.EmbargoDate != "" {
 		t, e := time.Parse("2006-01-02", ctx.Dataset.EmbargoDate)
 		if e == nil && !t.After(time.Now()) {
-			validationErrs = validation.Append(validationErrs, &validation.Error{
-				Pointer: "/embargo_date",
-				Code:    "dataset.embargo_date.expired",
-			})
+			okay.Add(validationErrs, okay.NewError("/embargo_date", "dataset.embargo_date.expired"))
 		}
 	}
 
 	if validationErrs != nil {
 		render.Layout(w, "refresh_modal", "dataset/edit_details", YieldEditDetails{
 			Context:  ctx,
-			Form:     detailsForm(ctx.Loc, ctx.Dataset, validationErrs.(validation.Errors)),
+			Form:     detailsForm(ctx.Loc, ctx.Dataset, validationErrs.(*okay.Errors)),
 			Conflict: false,
 		})
 		return
@@ -160,7 +157,7 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 	})
 }
 
-func detailsForm(loc *gotext.Locale, d *models.Dataset, errors validation.Errors) *form.Form {
+func detailsForm(loc *gotext.Locale, d *models.Dataset, errors *okay.Errors) *form.Form {
 	if d.Keyword == nil {
 		d.Keyword = []string{}
 	}

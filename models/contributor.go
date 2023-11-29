@@ -5,8 +5,8 @@ import (
 
 	"slices"
 
-	"github.com/ugent-library/biblio-backoffice/validation"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
+	"github.com/ugent-library/okay"
 )
 
 type Contributor struct {
@@ -70,35 +70,25 @@ func (c *Contributor) ORCID() string {
 	return ""
 }
 
-func (c *Contributor) Validate() (errs validation.Errors) {
+func (c *Contributor) Validate() error {
+	errs := okay.NewErrors()
+
 	if c.ExternalPerson != nil {
 		if c.ExternalPerson.FullName == "" {
-			errs = append(errs, &validation.Error{
-				Pointer: "/full_name",
-				Code:    "full_name.required",
-			})
+			errs.Add(okay.NewError("/full_name", "full_name.required"))
 		}
 		if c.ExternalPerson.FirstName == "" {
-			errs = append(errs, &validation.Error{
-				Pointer: "/first_name",
-				Code:    "first_name.required",
-			})
+			errs.Add(okay.NewError("/first_name", "first_name.required"))
 		}
 		if c.ExternalPerson.LastName == "" {
-			errs = append(errs, &validation.Error{
-				Pointer: "/last_name",
-				Code:    "last_name.required",
-			})
+			errs.Add(okay.NewError("/last_name", "last_name.required"))
 		}
 	}
 	for i, cr := range c.CreditRole {
 		if !slices.Contains(vocabularies.Map["credit_roles"], cr) {
-			errs = append(errs, &validation.Error{
-				Pointer: fmt.Sprintf("/credit_role/%d", i),
-				Code:    "credit_role.invalid",
-			})
+			errs.Add(okay.NewError(fmt.Sprintf("/credit_role/%d", i), "credit_role.invalid"))
 		}
 	}
 
-	return
+	return errs.ErrorOrNil()
 }

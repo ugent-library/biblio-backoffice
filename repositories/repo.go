@@ -8,9 +8,10 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/jackc/pgx/v4"
-	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/oklog/ulid/v2"
+	"github.com/ugent-library/biblio-backoffice/db"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 )
@@ -26,6 +27,8 @@ type Repo struct {
 	publicationStore *snapstore.Store
 	datasetStore     *snapstore.Store
 	opts             snapstore.Options
+	// sqlc
+	queries *db.Queries
 }
 
 type Config struct {
@@ -46,12 +49,12 @@ type PublicationVisitor = func(*models.Publication) error
 type DatasetVisitor = func(*models.Dataset) error
 
 func New(c Config) (*Repo, error) {
-	db, err := pgxpool.Connect(context.Background(), c.DSN)
+	conn, err := pgxpool.New(context.Background(), c.DSN)
 	if err != nil {
 		return nil, err
 	}
 
-	client := snapstore.New(db, []string{"publications", "datasets"},
+	client := snapstore.New(conn, []string{"publications", "datasets"},
 		snapstore.WithIDGenerator(func() (string, error) {
 			return ulid.Make().String(), nil
 		}),
@@ -62,6 +65,7 @@ func New(c Config) (*Repo, error) {
 		client:           client,
 		publicationStore: client.Store("publications"),
 		datasetStore:     client.Store("datasets"),
+		queries:          db.New(conn),
 	}, nil
 }
 
@@ -192,6 +196,10 @@ func (s *Repo) SavePublication(p *models.Publication, u *models.Person) error {
 		return err
 	}
 
+	if p.Status == "public" && !p.HasBeenPublic {
+		p.HasBeenPublic = true
+	}
+
 	if err := s.publicationStore.Add(p.ID, p, s.opts); err != nil {
 		return err
 	}
@@ -226,6 +234,10 @@ func (s *Repo) UpdatePublication(snapshotID string, p *models.Publication, u *mo
 	} else {
 		p.UserID = ""
 		p.User = nil
+	}
+
+	if p.Status == "public" && !p.HasBeenPublic {
+		p.HasBeenPublic = true
 	}
 
 	snapshotID, err := s.publicationStore.AddAfter(snapshotID, p.ID, p, s.opts)
@@ -653,7 +665,6 @@ func (s *Repo) SaveDataset(d *models.Dataset, u *models.Person) error {
 		return err
 	}
 
-	//TODO: move outside
 	if d.Status == "public" && !d.HasBeenPublic {
 		d.HasBeenPublic = true
 	}
@@ -680,10 +691,6 @@ func (s *Repo) UpdateDataset(snapshotID string, d *models.Dataset, u *models.Per
 		return nil
 	}
 
-	//TODO: move outside
-	if d.Status == "public" && !d.HasBeenPublic {
-		d.HasBeenPublic = true
-	}
 	oldDateUpdated := d.DateUpdated
 	now := time.Now()
 	d.DateUpdated = &now
@@ -696,6 +703,10 @@ func (s *Repo) UpdateDataset(snapshotID string, d *models.Dataset, u *models.Per
 	} else {
 		d.UserID = ""
 		d.User = nil
+	}
+
+	if d.Status == "public" && !d.HasBeenPublic {
+		d.HasBeenPublic = true
 	}
 
 	snapshotID, err := s.datasetStore.AddAfter(snapshotID, d.ID, d, s.opts)

@@ -12,8 +12,8 @@ import (
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
-	"github.com/ugent-library/biblio-backoffice/validation"
 	"github.com/ugent-library/bind"
+	"github.com/ugent-library/okay"
 )
 
 type BindAbstract struct {
@@ -71,7 +71,7 @@ func (h *Handler) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
 		render.Layout(w, "refresh_modal", "publication/add_abstract", YieldAddAbstract{
 			Context:  ctx,
-			Form:     abstractForm(ctx.Loc, ctx.Publication, &abstract, validationErrs.(validation.Errors)),
+			Form:     abstractForm(ctx.Loc, ctx.Publication, &abstract, validationErrs.(*okay.Errors)),
 			Conflict: false,
 		})
 		return
@@ -158,7 +158,7 @@ func (h *Handler) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 		render.Layout(w, "refresh_modal", "publication/edit_abstract", YieldEditAbstract{
 			Context:    ctx,
 			AbstractID: b.AbstractID,
-			Form:       abstractForm(ctx.Loc, ctx.Publication, abstract, validationErrs.(validation.Errors)),
+			Form:       abstractForm(ctx.Loc, ctx.Publication, abstract, validationErrs.(*okay.Errors)),
 			Conflict:   false,
 		})
 		return
@@ -240,7 +240,7 @@ func (h *Handler) DeleteAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 	})
 }
 
-func abstractForm(loc *gotext.Locale, publication *models.Publication, abstract *models.Text, errors validation.Errors) *form.Form {
+func abstractForm(loc *gotext.Locale, publication *models.Publication, abstract *models.Text, errors *okay.Errors) *form.Form {
 	idx := -1
 	for i, a := range publication.Abstract {
 		if a.ID == abstract.ID {

@@ -3,8 +3,8 @@ package models
 import (
 	"slices"
 
-	"github.com/ugent-library/biblio-backoffice/validation"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
+	"github.com/ugent-library/okay"
 )
 
 type Text struct {
@@ -13,31 +13,22 @@ type Text struct {
 	ID   string `json:"id,omitempty"`
 }
 
-func (t Text) Validate() (errs validation.Errors) {
+func (t Text) Validate() error {
+	errs := okay.NewErrors()
+
 	if t.ID == "" {
-		errs = append(errs, &validation.Error{
-			Pointer: "/id",
-			Code:    "id.required",
-		})
+		errs.Add(okay.NewError("/id", "id.required"))
 	}
 
 	if t.Lang == "" {
-		errs = append(errs, &validation.Error{
-			Pointer: "/lang",
-			Code:    "lang.required",
-		})
+		errs.Add(okay.NewError("/lang", "lang.required"))
 	} else if !slices.Contains(vocabularies.Map["language_codes"], t.Lang) {
-		errs = append(errs, &validation.Error{
-			Pointer: "/lang",
-			Code:    "lang.invalid",
-		})
+		errs.Add(okay.NewError("/lang", "lang.invalid"))
 	}
 
 	if t.Text == "" {
-		errs = append(errs, &validation.Error{
-			Pointer: "/text",
-			Code:    "text.required",
-		})
+		errs.Add(okay.NewError("/text", "text.required"))
 	}
-	return
+
+	return errs.ErrorOrNil()
 }

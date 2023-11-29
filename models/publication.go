@@ -11,8 +11,9 @@ import (
 
 	"github.com/oklog/ulid/v2"
 	"github.com/ugent-library/biblio-backoffice/pagination"
-	"github.com/ugent-library/biblio-backoffice/validation"
+	"github.com/ugent-library/biblio-backoffice/util"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
+	"github.com/ugent-library/okay"
 )
 
 type PublicationHits struct {
@@ -855,111 +856,65 @@ func (p *Publication) ShowDefenseAsRequired() bool {
 }
 
 func (p *Publication) Validate() error {
-	var errs validation.Errors
+	errs := okay.NewErrors()
 
 	if p.ID == "" {
-		errs = append(errs, &validation.Error{
-			Pointer: "/id",
-			Code:    "publication.id.required",
-		})
+		errs.Add(okay.NewError("/id", "publication.id.required"))
 	}
 	if p.Type == "" {
-		errs = append(errs, &validation.Error{
-			Pointer: "/type",
-			Code:    "publication.type.required",
-		})
-	} else if !validation.IsPublicationType(p.Type) {
-		errs = append(errs, &validation.Error{
-			Pointer: "/type",
-			Code:    "publication.type.invalid",
-		})
+		errs.Add(okay.NewError("/type", "publication.type.required"))
+	} else if !util.IsPublicationType(p.Type) {
+		errs.Add(okay.NewError("/type", "publication.type.invalid"))
 	}
 	// TODO check classification validity
 	if p.Classification == "" {
-		errs = append(errs, &validation.Error{
-			Pointer: "/classification",
-			Code:    "publication.classification.required",
-		})
+		errs.Add(okay.NewError("/classification", "publication.classification.required"))
 	} else if !slices.Contains(p.ClassificationChoices(), p.Classification) {
-		errs = append(errs, &validation.Error{
-			Pointer: "/classification",
-			Code:    "publication.classification.invalid",
-		})
+		errs.Add(okay.NewError("/classification", "publication.classification.invalid"))
 	}
 	if p.Status == "" {
-		errs = append(errs, &validation.Error{
-			Pointer: "/status",
-			Code:    "publication.status.required",
-		})
-	} else if !validation.IsStatus(p.Status) {
-		errs = append(errs, &validation.Error{
-			Pointer: "/status",
-			Code:    "publication.status.invalid",
-		})
+		errs.Add(okay.NewError("/status", "publication.status.required"))
+	} else if !util.IsStatus(p.Status) {
+		errs.Add(okay.NewError("/status", "publication.status.invalid"))
 	}
 
 	if p.Status == "public" && p.Title == "" {
-		errs = append(errs, &validation.Error{
-			Pointer: "/title",
-			Code:    "publication.title.required",
-		})
+		errs.Add(okay.NewError("/title", "publication.title.required"))
 	}
 
 	if p.Status == "public" && !p.Legacy && p.Year == "" {
-		errs = append(errs, &validation.Error{
-			Pointer: "/year",
-			Code:    "publication.year.required",
-		})
+		errs.Add(okay.NewError("/year", "publication.year.required"))
 	}
-	if p.Year != "" && !validation.IsYear(p.Year) {
-		errs = append(errs, &validation.Error{
-			Pointer: "/year",
-			Code:    "publication.year.invalid",
-		})
+	if p.Year != "" && !util.IsYear(p.Year) {
+		errs.Add(okay.NewError("/year", "publication.year.invalid"))
 	}
-
-	// for i, k := range p.Keyword {
-	// 	if k == "" {
-	// 		errs = append(errs, &validation.Error{
-	// 			Pointer: fmt.Sprintf("/keyword/%d", i),
-	// 			Code:    "publication.keyword.invalid",
-	// 		})
-	// 	}
-	// }
 
 	for i, l := range p.Language {
 		if !slices.Contains(vocabularies.Map["language_codes"], l) {
-			errs = append(errs, &validation.Error{
-				Pointer: fmt.Sprintf("/language/%d", i),
-				Code:    "publication.lang.invalid",
-			})
+			errs.Add(okay.NewError(fmt.Sprintf("/language/%d", i), "publication.lang.invalid"))
 		}
 	}
 
 	for i, a := range p.Abstract {
-		for _, err := range a.Validate() {
-			errs = append(errs, &validation.Error{
-				Pointer: fmt.Sprintf("/abstract/%d%s", i, err.Pointer),
-				Code:    "publication.abstract." + err.Code,
-			})
+		var e *okay.Errors
+		if errors.As(a.Validate(), &e) {
+			for _, err := range e.Errors {
+				errs.Add(okay.NewError(fmt.Sprintf("/abstract/%d%s", i, err.Key), "publication.abstract."+err.Rule))
+			}
 		}
 	}
 
 	for i, l := range p.LaySummary {
-		for _, err := range l.Validate() {
-			errs = append(errs, &validation.Error{
-				Pointer: fmt.Sprintf("/lay_summary/%d%s", i, err.Pointer),
-				Code:    "publication.lay_summary." + err.Code,
-			})
+		var e *okay.Errors
+		if errors.As(l.Validate(), &e) {
+			for _, err := range e.Errors {
+				errs.Add(okay.NewError(fmt.Sprintf("/lay_summary/%d%s", i, err.Key), "publication.lay_summary."+err.Rule))
+			}
 		}
 	}
 
 	if p.Status == "public" && p.UsesAuthor() && len(p.Author) == 0 {
-		errs = append(errs, &validation.Error{
-			Pointer: "/author",
-			Code:    "publication.author.required",
-		})
-
+		errs.Add(okay.NewError("/author", "publication.author.required"))
 	}
 
 	// at least one ugent author if not external
@@ -972,18 +927,12 @@ func (p *Publication) Validate() error {
 			}
 		}
 		if !hasUgentAuthors {
-			errs = append(errs, &validation.Error{
-				Pointer: "/author",
-				Code:    "publication.author.min_ugent_authors",
-			})
+			errs.Add(okay.NewError("/author", "publication.author.min_ugent_authors"))
 		}
 	}
 
 	if p.Status == "public" && p.UsesEditor() && !p.UsesAuthor() && len(p.Editor) == 0 {
-		errs = append(errs, &validation.Error{
-			Pointer: "/editor",
-			Code:    "publication.editor.required",
-		})
+		errs.Add(okay.NewError("/editor", "publication.editor.required"))
 	}
 
 	// at least one ugent editor for editor types if not external
@@ -996,289 +945,226 @@ func (p *Publication) Validate() error {
 			}
 		}
 		if !hasUgentEditors {
-			errs = append(errs, &validation.Error{
-				Pointer: "/editor",
-				Code:    "publication.editor.min_ugent_editors",
-			})
+			errs.Add(okay.NewError("/editor", "publication.editor.min_ugent_editors"))
 		}
 	}
 
 	if p.Status == "public" && !p.Legacy && p.UsesSupervisor() && len(p.Supervisor) == 0 {
-		errs = append(errs, &validation.Error{
-			Pointer: "/supervisor",
-			Code:    "publication.supervisor.required",
-		})
+		errs.Add(okay.NewError("/supervisor", "publication.supervisor.required"))
 	}
 
 	for i, c := range p.Author {
-		for _, err := range c.Validate() {
-			errs = append(errs, &validation.Error{
-				Pointer: fmt.Sprintf("/author/%d%s", i, err.Pointer),
-				Code:    "publication.author." + err.Code,
-			})
+		var e *okay.Errors
+		if errors.As(c.Validate(), &e) {
+			for _, err := range e.Errors {
+				errs.Add(okay.NewError(fmt.Sprintf("/author/%d%s", i, err.Key), "publication.author."+err.Rule))
+			}
 		}
 	}
 	for i, c := range p.Editor {
-		for _, err := range c.Validate() {
-			errs = append(errs, &validation.Error{
-				Pointer: fmt.Sprintf("/editor/%d%s", i, err.Pointer),
-				Code:    "publication.editor." + err.Code,
-			})
+		var e *okay.Errors
+		if errors.As(c.Validate(), &e) {
+			for _, err := range e.Errors {
+				errs.Add(okay.NewError(fmt.Sprintf("/editor/%d%s", i, err.Key), "publication.editor."+err.Rule))
+			}
 		}
 	}
 	for i, c := range p.Supervisor {
-		for _, err := range c.Validate() {
-			errs = append(errs, &validation.Error{
-				Pointer: fmt.Sprintf("/supervisor/%d%s", i, err.Pointer),
-				Code:    "publication.supervisor." + err.Code,
-			})
+		var e *okay.Errors
+		if errors.As(c.Validate(), &e) {
+			for _, err := range e.Errors {
+				errs.Add(okay.NewError(fmt.Sprintf("/supervisor/%d%s", i, err.Key), "publication.supervisor."+err.Rule))
+			}
 		}
 	}
 
 	for i, rel := range p.RelatedProjects {
 		if rel.ProjectID == "" {
-			errs = append(errs, &validation.Error{
-				Pointer: fmt.Sprintf("/project/%d/id", i),
-				Code:    "publication.project.id.required",
-			})
+			errs.Add(okay.NewError(fmt.Sprintf("/project/%d/id", i), "publication.project.id.required"))
 		}
 	}
 
 	for i, rel := range p.RelatedOrganizations {
 		if rel.OrganizationID == "" {
-			errs = append(errs, &validation.Error{
-				Pointer: fmt.Sprintf("/department/%d/id", i),
-				Code:    "publication.department.id.required",
-			})
+			errs.Add(okay.NewError(fmt.Sprintf("/department/%d/id", i), "publication.department.id.required"))
 		}
 	}
 
 	for i, rel := range p.RelatedDataset {
 		if rel.ID == "" {
-			errs = append(errs, &validation.Error{
-				Pointer: fmt.Sprintf("/related_dataset/%d/id", i),
-				Code:    "publication.related_dataset.id.required",
-			})
+			errs.Add(okay.NewError(fmt.Sprintf("/related_dataset/%d/id", i), "publication.related_dataset.id.required"))
 		}
 	}
 
 	for i, f := range p.File {
-		for _, err := range f.Validate() {
-			errs = append(errs, &validation.Error{
-				Pointer: fmt.Sprintf("/file/%d%s", i, err.Pointer),
-				Code:    "publication.file." + err.Code,
-			})
+		var e *okay.Errors
+		if errors.As(f.Validate(), &e) {
+			for _, err := range e.Errors {
+				errs.Add(okay.NewError(fmt.Sprintf("/file/%d%s", i, err.Key), "publication.file."+err.Rule))
+			}
 		}
 	}
 
 	for i, l := range p.Link {
-		for _, err := range l.Validate() {
-			errs = append(errs, &validation.Error{
-				Pointer: fmt.Sprintf("/link/%d%s", i, err.Pointer),
-				Code:    "publication.link." + err.Code,
-			})
+		var e *okay.Errors
+		if errors.As(l.Validate(), &e) {
+			for _, err := range e.Errors {
+				errs.Add(okay.NewError(fmt.Sprintf("/link/%d%s", i, err.Key), "publication.link."+err.Rule))
+			}
 		}
 	}
 
 	// type specific validation
 	switch p.Type {
 	case "dissertation":
-		errs = append(errs, p.validateDissertation()...)
+		okay.Add(errs, p.validateDissertation())
 	case "journal_article":
-		errs = append(errs, p.validateJournalArticle()...)
+		okay.Add(errs, p.validateJournalArticle())
 	case "miscellaneous":
-		errs = append(errs, p.validateMiscellaneous()...)
+		okay.Add(errs, p.validateMiscellaneous())
 	case "book":
-		errs = append(errs, p.validateBook()...)
+		okay.Add(errs, p.validateBook())
 	case "book_chapter":
-		errs = append(errs, p.validateBookChapter()...)
+		okay.Add(errs, p.validateBookChapter())
 	case "conference":
-		errs = append(errs, p.validateConference()...)
+		okay.Add(errs, p.validateConference())
 	case "book_editor":
-		errs = append(errs, p.validateBookEditor()...)
+		okay.Add(errs, p.validateBookEditor())
 	case "issue_editor":
-		errs = append(errs, p.validateIssueEditor()...)
+		okay.Add(errs, p.validateIssueEditor())
 	}
 
-	// TODO: why is the nil slice validationErrors(nil) != nil in mutantdb validation?
-	if len(errs) > 0 {
-		return errs
-	}
+	return errs.ErrorOrNil()
+}
+
+func (p *Publication) validateBookEditor() error {
 	return nil
 }
 
-func (p *Publication) validateBookEditor() (errs validation.Errors) {
-	return
+func (p *Publication) validateIssueEditor() error {
+	return nil
 }
 
-func (p *Publication) validateIssueEditor() (errs validation.Errors) {
-	return
-}
+func (p *Publication) validateJournalArticle() error {
+	errs := okay.NewErrors()
 
-func (p *Publication) validateJournalArticle() (errs validation.Errors) {
 	// TODO: confusing: gui shows select without empty element
 	// but first creation sets this value to empty
 	if p.JournalArticleType != "" && !slices.Contains(vocabularies.Map["journal_article_types"], p.JournalArticleType) {
-		errs = append(errs, &validation.Error{
-			Pointer: "/journal_article_type",
-			Code:    "publication.journal_article_type.invalid",
-		})
+		errs.Add(okay.NewError("/journal_article_type", "publication.journal_article_type.invalid"))
 	}
 	if p.Status == "public " && !p.Legacy && p.Publication == "" {
-		errs = append(errs, &validation.Error{
-			Pointer: "/publication",
-			Code:    "publication.journal_article.publication.required",
-		})
+		errs.Add(okay.NewError("/publication", "publication.journal_article.publication.required"))
 	}
-	return
+
+	return errs.ErrorOrNil()
 }
 
-func (p *Publication) validateBook() (errs validation.Errors) {
-	return
+func (p *Publication) validateBook() error {
+	return nil
 }
 
-func (p *Publication) validateConference() (errs validation.Errors) {
-	return
+func (p *Publication) validateConference() error {
+	return nil
 }
 
-func (p *Publication) validateBookChapter() (errs validation.Errors) {
-	return
+func (p *Publication) validateBookChapter() error {
+	return nil
 }
 
-func (p *Publication) validateDissertation() (errs validation.Errors) {
+func (p *Publication) validateDissertation() error {
+	errs := okay.NewErrors()
+
 	if p.Status == "public" && !p.Legacy && p.DefensePlace == "" {
-		errs = append(errs, &validation.Error{
-			Pointer: "/defense_place",
-			Code:    "publication.defense_place.required",
-		})
+		errs.Add(okay.NewError("/defense_place", "publication.defense_place.required"))
 	}
 	if p.Status == "public" && !p.Legacy && p.DefenseDate == "" {
-		errs = append(errs, &validation.Error{
-			Pointer: "/defense_date",
-			Code:    "publication.defense_date.required",
-		})
+		errs.Add(okay.NewError("/defense_date", "publication.defense_date.required"))
 	}
-	if p.DefenseDate != "" && !validation.IsDate(p.DefenseDate) {
-		errs = append(errs, &validation.Error{
-			Pointer: "/defense_date",
-			Code:    "publication.defense_date.invalid",
-		})
+	if p.DefenseDate != "" && !util.IsDate(p.DefenseDate) {
+		errs.Add(okay.NewError("/defense_date", "publication.defense_date.invalid"))
 	}
 
-	return
+	return errs.ErrorOrNil()
 }
 
-func (p *Publication) validateMiscellaneous() (errs validation.Errors) {
+func (p *Publication) validateMiscellaneous() error {
+	errs := okay.NewErrors()
+
 	// TODO confusing: gui shows select without empty element
 	// but first creation sets this value to empty
 	if p.MiscellaneousType != "" && !slices.Contains(vocabularies.Map["miscellaneous_types"], p.MiscellaneousType) {
-		errs = append(errs, &validation.Error{
-			Pointer: "/miscellaneous_type",
-			Code:    "publication.miscellaneous_type.invalid",
-		})
+		errs.Add(okay.NewError("/miscellaneous_type", "publication.miscellaneous_type.invalid"))
 	}
-	return
+
+	return errs.ErrorOrNil()
 }
 
-func (pf *PublicationFile) Validate() (errs validation.Errors) {
+func (pf *PublicationFile) Validate() error {
+	errs := okay.NewErrors()
+
 	if !slices.Contains(vocabularies.Map["publication_file_access_levels"], pf.AccessLevel) {
-		errs = append(errs, &validation.Error{
-			Pointer: "/access_level",
-			Code:    "access_level.invalid",
-		})
+		errs.Add(okay.NewError("/access_level", "access_level.invalid"))
 	}
 
 	if pf.Size == 0 {
-		errs = append(errs, &validation.Error{
-			Pointer: "/size",
-			Code:    "size.empty",
-		})
+		errs.Add(okay.NewError("/size", "size.empty"))
 	}
 
 	if pf.ContentType == "" {
-		errs = append(errs, &validation.Error{
-			Pointer: "/content_type",
-			Code:    "content_type.required",
-		})
+		errs.Add(okay.NewError("/content_type", "content_type.required"))
 	}
 
 	if pf.ID == "" {
-		errs = append(errs, &validation.Error{
-			Pointer: "/id",
-			Code:    "id.required",
-		})
+		errs.Add(okay.NewError("/id", "id.required"))
 	}
 
 	if pf.Relation != "" && !slices.Contains(vocabularies.Map["publication_file_relations"], pf.Relation) {
-		errs = append(errs, &validation.Error{
-			Pointer: "/relation",
-			Code:    "relation.invalid",
-		})
+		errs.Add(okay.NewError("/relation", "relation.invalid"))
 	}
 
 	if pf.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
-		if !validation.IsDate(pf.EmbargoDate) {
-			errs = append(errs, &validation.Error{
-				Pointer: "/embargo_date",
-				Code:    "embargo_date.invalid",
-			})
+		if !util.IsDate(pf.EmbargoDate) {
+			errs.Add(okay.NewError("/embargo_date", "embargo_date.invalid"))
 		}
 
 		invalid := false
 		if !slices.Contains(vocabularies.Map["publication_file_access_levels"], pf.AccessLevelAfterEmbargo) {
 			invalid = true
-			errs = append(errs, &validation.Error{
-				Pointer: "/access_level_after_embargo",
-				Code:    "access_level_after_embargo.invalid",
-			})
+			errs.Add(okay.NewError("/access_level_after_embargo", "access_level_after_embargo.invalid"))
 		}
 
 		if !slices.Contains(vocabularies.Map["publication_file_access_levels"], pf.AccessLevelDuringEmbargo) {
 			invalid = true
-			errs = append(errs, &validation.Error{
-				Pointer: "/access_level_during_embargo",
-				Code:    "access_level_during_embargo.invalid",
-			})
+			errs.Add(okay.NewError("/access_level_during_embargo", "access_level_during_embargo.invalid"))
 		}
 
 		if pf.AccessLevelAfterEmbargo == pf.AccessLevelDuringEmbargo && !invalid {
-			errs = append(errs, &validation.Error{
-				Pointer: "/access_level_after_embargo",
-				Code:    "access_level_after_embargo.similar",
-			})
+			errs.Add(okay.NewError("/access_level_after_embargo", "access_level_after_embargo.similar"))
 		}
 	}
 
 	if pf.PublicationVersion != "" && !slices.Contains(vocabularies.Map["publication_versions"], pf.PublicationVersion) {
-		errs = append(errs, &validation.Error{
-			Pointer: "/publication_version",
-			Code:    "publication_version.invalid",
-		})
+		errs.Add(okay.NewError("/publication_version", "publication_version.invalid"))
 	}
 
-	return
+	return errs.ErrorOrNil()
 }
 
-func (pl *PublicationLink) Validate() (errs validation.Errors) {
+func (pl *PublicationLink) Validate() error {
+	errs := okay.NewErrors()
+
 	if pl.ID == "" {
-		errs = append(errs, &validation.Error{
-			Pointer: "/id",
-			Code:    "id.required",
-		})
+		errs.Add(okay.NewError("/id", "id.required"))
 	}
 	if pl.URL == "" {
-		errs = append(errs, &validation.Error{
-			Pointer: "/url",
-			Code:    "url.required",
-		})
+		errs.Add(okay.NewError("/url", "url.required"))
 	}
 	if !slices.Contains(vocabularies.Map["publication_link_relations"], pl.Relation) {
-		errs = append(errs, &validation.Error{
-			Pointer: "/relation",
-			Code:    "relation.invalid",
-		})
+		errs.Add(okay.NewError("/relation", "relation.invalid"))
 	}
-	return
+
+	return errs.ErrorOrNil()
 }
 
 func (p *Publication) CleanupUnusedFields() bool {
