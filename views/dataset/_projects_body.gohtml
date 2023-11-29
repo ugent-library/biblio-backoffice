@@ -30,7 +30,7 @@
                                 </button>
                                 <div class="dropdown-menu">
                                     <button class="dropdown-item" type="button"
-                                        hx-get="{{pathFor "dataset_confirm_delete_project" "id" $.Dataset.ID "snapshot_id" $.Dataset.SnapshotID "project_id" $rel.ProjectID}}"
+                                        hx-get="{{pathFor "dataset_confirm_delete_project" "id" $.Dataset.ID "snapshot_id" $.Dataset.SnapshotID "project_id" (pathEscape $rel.ProjectID)}}"
                                         hx-target="#modals"
                                     >
                                         <i class="if if-delete"></i>

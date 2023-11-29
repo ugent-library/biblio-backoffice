@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- #1332: Path escape project id's when necessary
+
 ## [v1.0.46] - 2023-11-27
 
 ### Added

@@ -160,7 +160,7 @@ require (
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/mschoch/smat v0.2.0 // indirect
-	github.com/nics/ich v0.0.0-20231010153708-2d9e5a14e2c8
+	github.com/nics/ich v0.0.0-20231128155525-f5704f956383
 	github.com/oklog/ulid/v2 v2.1.0
 	github.com/pelletier/go-toml/v2 v2.1.0 // indirect
 	github.com/shopspring/decimal v1.3.1 // indirect

@@ -3,6 +3,7 @@ package datasetediting
 import (
 	"errors"
 	"net/http"
+	"net/url"
 
 	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/models"
@@ -124,9 +125,11 @@ func (h *Handler) ConfirmDeleteProject(w http.ResponseWriter, r *http.Request, c
 		return
 	}
 
+	projectID, _ := url.PathUnescape(b.ProjectID)
+
 	render.Layout(w, "show_modal", "dataset/confirm_delete_project", YieldDeleteProject{
 		Context:   ctx,
-		ProjectID: b.ProjectID,
+		ProjectID: projectID,
 	})
 }
 
@@ -138,7 +141,9 @@ func (h *Handler) DeleteProject(w http.ResponseWriter, r *http.Request, ctx Cont
 		return
 	}
 
-	ctx.Dataset.RemoveProject(b.ProjectID)
+	projectID, _ := url.PathUnescape(b.ProjectID)
+
+	ctx.Dataset.RemoveProject(projectID)
 
 	// TODO handle validation errors
 
