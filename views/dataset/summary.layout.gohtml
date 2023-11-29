@@ -76,17 +76,8 @@
                             {{if .Dataset.Year}}<li class="c-meta-item">{{.Dataset.Year}}</li>{{end}}
                             {{if .Dataset.Publisher}}<li class="c-meta-item">{{.Dataset.Publisher}}</li>{{end}}
                             {{range $type, $vals := .Dataset.Identifiers}}
-                                <li class="c-meta-item">
-                                    <span class="c-body-small text-muted">
-                                        {{$type}}
-                                    </span>
-                                </li>
-                                <li class="c-meta-item">
-                                    <span class="c-body-small text-muted">
-                                        <a class="c-link c-link-muted" target="_blank" href="{{resolveIdentifier $type (index $vals 0)}}">
-                                            <span class="text-decoration-underline"> View in external repository</span> <i class="if if--small if-external-link"></i>
-                                        </a>
-                                    </span>
+                                <li class="c-meta-item text-muted">
+                                    {{$type}}
                                 </li>
                                 {{break}}
                             {{end}}
