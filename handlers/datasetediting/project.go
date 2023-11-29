@@ -27,7 +27,7 @@ type YieldProjects struct {
 }
 type YieldAddProject struct {
 	Context
-	Hits []models.Completion
+	Hits []models.Project
 }
 type YieldDeleteProject struct {
 	Context

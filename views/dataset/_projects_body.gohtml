@@ -1,51 +1,89 @@
 {{if .Dataset.RelatedProjects}}
-<div class="card-body p-0">
-    <table class="table">
-        <tbody>
-            {{range $i, $rel := .Dataset.RelatedProjects}}
-                <tr class="row-{{$i}}">
-                    <td class="ps-6">
-                        <div class="d-flex w-100">
-                            <div class="w-100">
-                                <div class="d-flex align-items-start">
-                                    <div class="list-group-item-content">
-                                        <div class="list-group-item-text">
-                                            <h4 class="c-h4">{{$rel.Project.Title}}</h4>
-                                            <div class="c-body-small text-muted">Description</div>
-                                            <div class="text-muted c-body-small">Project ID: {{$rel.ProjectID}}</div>
-                                        </div>
+<ul class="list-group list-group-flush">
+    {{range $i, $rel := .Dataset.RelatedProjects}}
+    <li class="row-{{$i}} list-group-item">
+        <div class="list-group-item-inner">
+            <div class="list-group-item-main">
+                <div class="d-flex align-items-top">
+                    {{if $rel.Project.Acronym}}
+                    <div class="me-5">
+                        <span class="badge badge-default rounded-pill mt-1">{{$rel.Project.Acronym}}</span>
+                    </div>
+                    {{end}}
+                    <div class="mx-3">
+                        <div class="mb-3">
+                            <h2 class="h3">{{$rel.Project.Title}}</h2>
+                            {{if $rel.Project.Description}}
+                            <p class="text-muted mb-4">
+                                {{$rel.Project.Description}}
+                            </p>
+                            {{end}}
+                            <ul class="c-meta-list pb-0">
+                                <li class="c-meta-item">
+                                    {{if $rel.Project.EUProject.FrameworkProgramme }}
+                                    <div class="pe-4 me-3 border-right">
+                                        EU Funding programme: Horizon 2020
                                     </div>
+                                    {{end}}
+                                    {{if and $rel.Project.StartDate $rel.Project.EndDate}}
+                                    <div class="pe-4 me-3 border-right">
+                                        Period: {{$rel.Project.StartDate}} – {{$rel.Project.EndDate}}
                                     </div>
-                                </div>
-                            </div>
+                                    {{end}}
+                                    <div class="me-3">
+                                        <a class="c-link c-link-muted" href="{{(print "https://biblio.ugent.be/project/" $rel.Project.ID)}}" target="blank">Read more <i class="if if-external-link if--small"></i></a>
+                                    </div>
+                                </li>
+                            </ul>
+                            <ul class="c-meta-list mb-2">
+                                <li class="c-meta-item">
+                                    <div class="pe-4 me-3 border-right">
+                                        <span>Project ID</span>
+                                        <code class="c-code d-inline-block">{{$rel.Project.ID}}</code>
+                                    </div>
+                                    {{if $rel.Project.IWETOID}}
+                                    <div class="pe-4 me-3{{if $rel.Project.EUProject.ID}} border-right{{end}}">
+                                        <span>IWETO ID</span>
+                                        <code class="c-code d-inline-block">{{$rel.Project.IWETOID}}</code>
+                                    </div>
+                                    {{end}}
+                                    {{if $rel.Project.EUProject.ID}}
+                                    <div class="me-3">
+                                        <span>CORDIS ID</span>
+                                        <code class="c-code d-inline-block">{{$rel.Project.EUProject.ID}}</code>
+                                    </div>
+                                    {{end}}
+                                </li>
+                            </ul>
                         </div>
-                    </td>
-                    <td class="pe-6">
-                        {{if $.User.CanEditDataset $.Dataset}}
-                        <div class="c-button-toolbar">
-                            <div class="dropdown">
-                                <button class="btn btn-link btn-icon-only btn-link-muted" type="button"
-                                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <i class="if if-more"></i>
-                                </button>
-                                <div class="dropdown-menu">
-                                    <button class="dropdown-item" type="button"
-                                        hx-get="{{pathFor "dataset_confirm_delete_project" "id" $.Dataset.ID "snapshot_id" $.Dataset.SnapshotID "project_id" $rel.ProjectID}}"
-                                        hx-target="#modals"
-                                    >
-                                        <i class="if if-delete"></i>
-                                        <span>Remove from dataset</span>
-                                    </button>
-                                </div>
-                            </div>
+                    </div>
+                </div>
+            </div>
+            <div class="c-button-toolbar">
+                {{if $.User.CanEditDataset $.Dataset}}
+                <div class="c-button-toolbar">
+                    <div class="dropdown">
+                        <button class="btn btn-link btn-icon-only btn-link-muted" type="button"
+                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="if if-more"></i>
+                        </button>
+                        <div class="dropdown-menu">
+                            <button class="dropdown-item" type="button"
+                                hx-get="{{pathFor "dataset_confirm_delete_project" "id" $.Dataset.ID "snapshot_id" $.Dataset.SnapshotID "project_id" $rel.ProjectID}}"
+                                hx-target="#modals"
+                            >
+                                <i class="if if-delete"></i>
+                                <span>Remove from dataset</span>
+                            </button>
                         </div>
-                        {{end}}
-                    </td>
-                </tr>
-            {{end}}
-        </tbody>
-    </table>
-</div>
+                    </div>
+                </div>
+                {{end}}
+            </div>
+        </div>
+    </li>
+    {{end}}
+</ul>
 {{else}}
 <div class="card-body">
     <span class="text-muted">No projects</span>
