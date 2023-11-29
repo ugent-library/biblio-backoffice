@@ -1,20 +1,23 @@
-<div class="c-meta-list c-meta-list-horizontal">
-    {{if gt (len .RelatedOrganizations) 3}}
-        {{range (slice .RelatedOrganizations 0 3)}}
-            {{partial "shared/organization" .Organization}}
-        {{end}}
-        <div class="c-meta-item">
-            {{if .ContributorsURL}}
-            <a class="c-link c-link-muted" href="{{.ContributorsURL}}">
+<div class="d-flex align-items-center mb-4">
+    <i class="if if-building if--small if--muted me-3"></i>
+    <ul class="badge-list">
+        {{if gt (len .RelatedOrganizations) 3}}
+            {{range (slice .RelatedOrganizations 0 3)}}
+                {{partial "shared/organization" .Organization}}
             {{end}}
-            {{sub (len $.RelatedOrganizations) 3}} more department{{if gt (sub (len $.RelatedOrganizations) 3) 1}}s{{end}}
-            {{if .ContributorsURL}}
-            </a>
+            <li class="badge badge-light badge-sm">
+                {{if .ContributorsURL}}
+                <a class="c-link c-link-muted" href="{{.ContributorsURL}}">
+                {{end}}
+                {{sub (len $.RelatedOrganizations) 3}} more department{{if gt (sub (len $.RelatedOrganizations) 3) 1}}s{{end}}
+                {{if .ContributorsURL}}
+                </a>
+                {{end}}
+            </li>
+        {{else}}
+            {{range .RelatedOrganizations}}
+                {{partial "shared/organization" .Organization}}
             {{end}}
-        </div>
-    {{else}}
-        {{range .RelatedOrganizations}}
-            {{partial "shared/organization" .Organization}}
         {{end}}
-    {{end}}
+    </ul>
 </div>
