@@ -3,6 +3,7 @@ package helpers
 import (
 	"fmt"
 	"html/template"
+	"net/url"
 	"time"
 
 	"github.com/rvflash/elapsed"
@@ -22,6 +23,7 @@ func FuncMap() template.FuncMap {
 		"formatTime":        FormatTime,
 		"languageName":      localize.LanguageName,
 		"resolveIdentifier": identifiers.Resolve,
+		"pathEscape":        url.PathEscape,
 	}
 }
 

@@ -14,7 +14,7 @@
                 </div>
                 <div class="bc-toolbar-right">
                     <button class="btn btn-danger"
-                        hx-delete="{{pathFor "publication_delete_project" "id" .Publication.ID "project_id" .ProjectID}}"
+                        hx-delete="{{pathFor "publication_delete_project" "id" .Publication.ID "project_id" (pathEscape .ProjectID)}}"
                         hx-headers='{"If-Match": "{{.Publication.SnapshotID}}"}'
                         hx-swap="none"
                     >Delete</button>
