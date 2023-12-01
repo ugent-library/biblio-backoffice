@@ -12,7 +12,18 @@
                     </div>
                 </div>
                 <div class="bc-toolbar-right">
-                   {{if and (.User.CanEditDataset .Dataset) (eq .Dataset.Status "public") (not .Dataset.Locked)}}
+                    {{if and (.User.CanEditDataset .Dataset) (eq .Dataset.Status "public") (not .Dataset.Locked)}}
+                    <div class="bc-toolbar-item">
+                        <button class="btn btn-outline-danger"
+                            hx-get="{{pathFor "dataset_confirm_withdraw" "id" .Dataset.ID|querySet "redirect-url" .CurrentURL.String}}"
+                            hx-target="#modals"
+                        >
+                            <i class="if if-arrow-go-back"></I>
+                            <span class="btn-text">Withdraw</span>
+                        </button>
+                    </div>
+                    {{end}}
+                    {{if and .User.CanCurate .Dataset.Locked}}
                     <div class="bc-toolbar-item">
                         <button class="btn btn-outline-danger"
                             hx-get="{{pathFor "dataset_confirm_withdraw" "id" .Dataset.ID|querySet "redirect-url" .CurrentURL.String}}"

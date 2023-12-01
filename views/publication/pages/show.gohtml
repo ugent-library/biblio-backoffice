@@ -12,7 +12,18 @@
                     </div>
                 </div>
                 <div class="bc-toolbar-right">
-                   {{if and (.User.CanEditPublication .Publication) (eq .Publication.Status "public") (not .Publication.Locked)}}
+                    {{if and (.User.CanEditPublication .Publication) (eq .Publication.Status "public") (not .Publication.Locked)}}
+                    <div class="bc-toolbar-item">
+                        <button class="btn btn-outline-danger"
+                            hx-get="{{pathFor "publication_confirm_withdraw" "id" .Publication.ID|querySet "redirect-url" .CurrentURL.String}}"
+                            hx-target="#modals"
+                        >
+                            <i class="if if-arrow-go-back"></I>
+                            <span class="btn-text">Withdraw</span>
+                        </button>
+                    </div>
+                    {{end}}
+                    {{if and .User.CanCurate .Publication.Locked}}
                     <div class="bc-toolbar-item">
                         <button class="btn btn-outline-danger"
                             hx-get="{{pathFor "publication_confirm_withdraw" "id" .Publication.ID|querySet "redirect-url" .CurrentURL.String}}"
