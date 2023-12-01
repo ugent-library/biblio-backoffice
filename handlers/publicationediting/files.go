@@ -261,7 +261,7 @@ func (h *Handler) UpdateFile(w http.ResponseWriter, r *http.Request, ctx Context
 	if file.EmbargoDate != "" {
 		t, e := time.Parse("2006-01-02", file.EmbargoDate)
 		if e == nil && !t.After(time.Now()) {
-			okay.Add(validationErrs, okay.NewError(fmt.Sprintf("/file/%d/embargo_date", ctx.Publication.FileIndex(file.ID)), "publication.file.embargo_date.expired"))
+			validationErrs = okay.Add(validationErrs, okay.NewError(fmt.Sprintf("/file/%d/embargo_date", ctx.Publication.FileIndex(file.ID)), "publication.file.embargo_date.expired"))
 		}
 	}
 

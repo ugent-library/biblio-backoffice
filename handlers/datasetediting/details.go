@@ -120,7 +120,7 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 	if ctx.Dataset.EmbargoDate != "" {
 		t, e := time.Parse("2006-01-02", ctx.Dataset.EmbargoDate)
 		if e == nil && !t.After(time.Now()) {
-			okay.Add(validationErrs, okay.NewError("/embargo_date", "dataset.embargo_date.expired"))
+			validationErrs = okay.Add(validationErrs, okay.NewError("/embargo_date", "dataset.embargo_date.expired"))
 		}
 	}
 
