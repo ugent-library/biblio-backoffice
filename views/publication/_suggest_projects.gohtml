@@ -21,10 +21,12 @@
                         <div class="mb-3">
                             <ul class="c-meta-list c-meta-list-horizontal pb-0">
                                    <li class="c-meta-item">
-                                    {{if .EUProject.FrameworkProgramme }}
-                                    <div class="pe-4 me-4 border-right">
-                                        EU Funding programme: Horizon 2020
-                                    </div>
+                                    {{if .EUProject}}
+                                        {{if .EUProject.FrameworkProgramme }}
+                                        <div class="pe-4 me-4 border-right">
+                                            EU Funding programme: Horizon 2020
+                                        </div>
+                                        {{end}}
                                     {{end}}
                                     {{if and .StartDate .EndDate}}
                                     <div class="pe-4 me-4 border-right">
@@ -48,11 +50,13 @@
                                         <code class="c-code d-inline-block">{{.IWETOID}}</code>
                                     </div>
                                     {{end}}
-                                    {{if .EUProject.ID}}
-                                    <div class="me-4">
-                                        <span>CORDIS ID</span>
-                                        <code class="c-code d-inline-block">{{.EUProject.ID}}</code>
-                                    </div>
+                                    {{if .EUProject}}
+                                        {{if .EUProject.ID}}
+                                        <div class="me-4">
+                                            <span>CORDIS ID</span>
+                                            <code class="c-code d-inline-block">{{.EUProject.ID}}</code>
+                                        </div>
+                                        {{end}}
                                     {{end}}
                                 </li>
                             </ul>

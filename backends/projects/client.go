@@ -76,9 +76,7 @@ func (c *Client) SuggestProjects(q string) ([]models.Project, error) {
 }
 
 func (c *Client) mapper(ap *api.GetProject) *models.Project {
-	p := &models.Project{
-		EUProject: &models.EUProject{},
-	}
+	p := &models.Project{}
 
 	if idx := strings.LastIndex(ap.GetID(), ":"); idx != -1 {
 		p.ID = ap.GetID()[idx+1:]
@@ -113,11 +111,18 @@ func (c *Client) mapper(ap *api.GetProject) *models.Project {
 
 	for _, v := range ap.GetIdentifier() {
 		if v.GetPropertyID() == "CORDIS" {
+			if p.EUProject == nil {
+				p.EUProject = &models.EUProject{}
+			}
 			p.EUProject.ID = v.GetValue()
 		}
 	}
 
 	if v, ok := ap.IsFundedBy.Get(); ok {
+		if p.EUProject == nil {
+			p.EUProject = &models.EUProject{}
+		}
+
 		if cid, ok := v.HasCallNumber.Get(); ok {
 			p.EUProject.CallID = cid
 		}
