@@ -20,6 +20,7 @@ import (
 	excel_publication "github.com/ugent-library/biblio-backoffice/backends/excel/publication"
 	"github.com/ugent-library/biblio-backoffice/backends/fsstore"
 	"github.com/ugent-library/biblio-backoffice/backends/handle"
+	"github.com/ugent-library/biblio-backoffice/backends/projects"
 	"github.com/ugent-library/biblio-backoffice/backends/s3store"
 	"github.com/ugent-library/biblio-backoffice/caching"
 	"github.com/ugent-library/biblio-backoffice/models"
@@ -80,7 +81,16 @@ func newServices() *backends.Services {
 		OrganizationService: organizationService,
 	}
 
-	projectService := caching.NewProjectService(authorityClient)
+	projectsClient, err := projects.New(projects.Config{
+		APIUrl: config.Projects.APIURL,
+		APIKey: config.Projects.APIKey,
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	projectService := caching.NewProjectService(projectsClient)
+	projectSearchService := projectsClient
 
 	repo := newRepo(personService, organizationService, projectService)
 
@@ -100,7 +110,7 @@ func newServices() *backends.Services {
 		UserService:               userService,
 		OrganizationSearchService: authorityClient,
 		PersonSearchService:       authorityClient,
-		ProjectSearchService:      authorityClient,
+		ProjectSearchService:      projectSearchService,
 		UserSearchService:         authorityClient,
 		LicenseSearchService:      spdxlicenses.New(),
 		MediaTypeSearchService:    ianamedia.New(),
