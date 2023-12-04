@@ -65,11 +65,11 @@ func (c *Client) SuggestProjects(q string) ([]models.Project, error) {
 		return nil, err
 	}
 
-	projects := make([]models.Project, 0)
+	projects := make([]models.Project, 0, len(res.Data))
 
-	for _, hit := range res.Data {
+	for k, hit := range res.Data {
 		p := c.mapper(&hit)
-		projects = append(projects, *p)
+		projects[k] = *p
 	}
 
 	return projects, nil
