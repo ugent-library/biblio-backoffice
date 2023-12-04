@@ -80,7 +80,7 @@ type Config struct {
 	} `envPrefix:"OAI_"`
 	Projects struct {
 		APIURL string `env:"API_URL"`
-		APIKEY string `env:"API_KEY"`
+		APIKey string `env:"API_KEY"`
 	} `envPrefix:"PROJECTS_"`
 	// feature flags
 	FF struct {

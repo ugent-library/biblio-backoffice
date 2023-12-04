@@ -83,7 +83,7 @@ func newServices() *backends.Services {
 
 	projectsClient, err := projects.New(projects.Config{
 		APIUrl: config.Projects.APIURL,
-		APIKey: config.Projects.APIKEY,
+		APIKey: config.Projects.APIKey,
 	})
 	if err != nil {
 		panic(err)
