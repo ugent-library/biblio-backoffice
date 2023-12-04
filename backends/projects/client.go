@@ -65,7 +65,7 @@ func (c *Client) SuggestProjects(q string) ([]models.Project, error) {
 		return nil, err
 	}
 
-	projects := make([]models.Project, 0, len(res.Data))
+	projects := make([]models.Project, len(res.Data))
 
 	for i, hit := range res.Data {
 		p := c.mapper(&hit)
