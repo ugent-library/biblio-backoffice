@@ -40,7 +40,7 @@ func New(c Config) (*Client, error) {
 }
 
 func (c *Client) GetProject(id string) (*models.Project, error) {
-	ctx := context.Background()
+	ctx := context.TODO()
 
 	res, err := c.client.GetProject(ctx, &api.GetProjectRequest{ID: fmt.Sprintf("urn:iweto:%s", id)})
 	if err != nil {
