@@ -56,6 +56,14 @@ func (u *Person) CanViewPublication(p *Publication) bool {
 	return false
 }
 
+func (u *Person) CanWithdrawPublication(p *Publication) bool {
+	return p.Status == "public" && u.CanEditPublication(p)
+}
+
+func (u *Person) CanPublishPublication(p *Publication) bool {
+	return p.Status != "public" && u.CanEditPublication(p)
+}
+
 func (u *Person) CanEditPublication(p *Publication) bool {
 	if !u.Active {
 		return false
@@ -136,6 +144,14 @@ func (u *Person) CanViewDataset(d *Dataset) bool {
 		}
 	}
 	return false
+}
+
+func (u *Person) CanWithdrawDataset(d *Dataset) bool {
+	return d.Status == "public" && u.CanEditDataset(d)
+}
+
+func (u *Person) CanPublishDataset(d *Dataset) bool {
+	return d.Status != "public" && u.CanEditDataset(d)
 }
 
 func (u *Person) CanEditDataset(d *Dataset) bool {

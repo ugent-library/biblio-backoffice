@@ -27,7 +27,7 @@ func (h *Handler) ConfirmRepublish(w http.ResponseWriter, r *http.Request, ctx C
 }
 
 func (h *Handler) Republish(w http.ResponseWriter, r *http.Request, ctx Context) {
-	if !ctx.User.CanEditDataset(ctx.Dataset) {
+	if !ctx.User.CanPublishDataset(ctx.Dataset) {
 		h.Logger.Warnw("republish dataset: user has no permission to republish", "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
 		render.Forbidden(w, r)
 		return
