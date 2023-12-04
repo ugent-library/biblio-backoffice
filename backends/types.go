@@ -232,7 +232,7 @@ type PersonSearchService interface {
 }
 
 type ProjectSearchService interface {
-	SuggestProjects(string) ([]models.Completion, error)
+	SuggestProjects(string) ([]models.Project, error)
 }
 
 type UserSearchService interface {
