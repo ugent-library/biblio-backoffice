@@ -12,18 +12,18 @@
                     </div>
                 </div>
                 <div class="bc-toolbar-right">
-                   {{if and (.User.CanEditDataset .Dataset) (eq .Dataset.Status "public") (not .Dataset.Locked)}}
+                    {{if .User.CanWithdrawDataset .Dataset}}
                     <div class="bc-toolbar-item">
                         <button class="btn btn-outline-danger"
                             hx-get="{{pathFor "dataset_confirm_withdraw" "id" .Dataset.ID|querySet "redirect-url" .CurrentURL.String}}"
                             hx-target="#modals"
                         >
-                            <i class="if if-arrow-go-back"></I>
+                            <i class="if if-arrow-go-back"></i>
                             <span class="btn-text">Withdraw</span>
                         </button>
-                    </div>
+                    </div>  
                     {{end}}
-                    {{if and (.User.CanEditDataset .Dataset) (eq .Dataset.Status "returned") (not .Dataset.Locked)}}
+                    {{if and (.User.CanPublishDataset .Dataset) (eq .Dataset.Status "returned")}}
                     <div class="bc-toolbar-item">
                         <button class="btn btn-success"
                             hx-get="{{pathFor "dataset_confirm_republish" "id" .Dataset.ID|querySet "redirect-url" .CurrentURL.String}}"
@@ -33,7 +33,7 @@
                         </button>
                     </div>
                     {{end}}
-                    {{if and (.User.CanEditDataset .Dataset) (ne .Dataset.Status "returned") (ne .Dataset.Status "public") (not .Dataset.Locked)}}
+                    {{if and (.User.CanPublishDataset .Dataset) (ne .Dataset.Status "returned")}}
                     <div class="bc-toolbar-item">
                         <button class="btn btn-success"
                             hx-get="{{pathFor "dataset_confirm_publish" "id" .Dataset.ID|querySet "redirect-url" .CurrentURL.String}}"
@@ -49,7 +49,7 @@
                             hx-post="{{pathFor "dataset_unlock" "id" .Dataset.ID|querySet "redirect-url" .CurrentURL.String}}"
                             hx-swap="none"
                         >
-                            <i class="if if-lock-unlock"></I>
+                            <i class="if if-lock-unlock"></i>
                             <span class="btn-text">Unlock record</span>
                         </button>
                         {{else if .User.CanCurate}}
@@ -57,7 +57,7 @@
                             hx-post="{{pathFor "dataset_lock" "id" .Dataset.ID|querySet "redirect-url" .CurrentURL.String}}"
                             hx-swap="none"
                         >
-                            <i class="if if-lock"></I>
+                            <i class="if if-lock"></i>
                             <span class="btn-text">Lock record</span>
                         </button>
                         {{end}}

@@ -259,7 +259,7 @@ func (h *Handler) AddSingleConfirm(w http.ResponseWriter, r *http.Request, ctx C
 }
 
 func (h *Handler) AddSinglePublish(w http.ResponseWriter, r *http.Request, ctx Context) {
-	if !ctx.User.CanEditPublication(ctx.Publication) {
+	if !ctx.User.CanPublishPublication(ctx.Publication) {
 		h.Logger.Warnw("add single publication publish: user has no permission to publish publication.", "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.Forbidden(w, r)
 		return
