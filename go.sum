@@ -587,6 +587,8 @@ github.com/ugent-library/oidc v0.0.0-20230810150340-b66acc34dfeb h1:/MM0LyIxH8y0
 github.com/ugent-library/oidc v0.0.0-20230810150340-b66acc34dfeb/go.mod h1:2LCM3IglxvIwUSO610PQUJ9aA3kROToNfUGCip6/Ozs=
 github.com/ugent-library/okay v0.0.0-20231123125939-4fee8735cd74 h1:0hwwB+KNp/B3iImzTdkhFBsjDB137Kir1xpQytruHeo=
 github.com/ugent-library/okay v0.0.0-20231123125939-4fee8735cd74/go.mod h1:zF9L8aA06ik8U87qGR1GEhuLbxSZh+HmSEOfF3Z0Mrw=
+github.com/ugent-library/okay v0.0.0-20231205122923-396c4d3a29f2 h1:p0a4ziTOupWFjubaV3aMoVJW2065W+Gjov/uMAdgkr8=
+github.com/ugent-library/okay v0.0.0-20231205122923-396c4d3a29f2/go.mod h1:zF9L8aA06ik8U87qGR1GEhuLbxSZh+HmSEOfF3Z0Mrw=
 github.com/ugent-library/orcid v0.0.0-20230615125240-eb68c23bc33c h1:NRpS8TkbFjDJ9vM8oXDHr8noK66LgnZBoarpMt6+H7M=
 github.com/ugent-library/orcid v0.0.0-20230615125240-eb68c23bc33c/go.mod h1:g5C6oHMPfeceP48vaQLY24pFWtfKKi6mFni+tWbpgvU=
 github.com/ugent-library/projects-service v0.0.0-20231124152414-66adc1aa8935 h1:21qrDm0ouDWj9f+rby8nwlacRARhfk+20icIFnquzo4=

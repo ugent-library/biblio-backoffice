@@ -722,13 +722,12 @@ func MapPublication(p *models.Publication, repo *repositories.Repo) *Record {
 		for _, rd := range p.RelatedDataset {
 			rel_ids = append(rel_ids, rd.ID)
 		}
-		related_datasets, _ := repo.GetDatasets(rel_ids)
-		rec.RelatedDataset = make([]Relation, 0, len(related_datasets))
-		for _, rd := range related_datasets {
-			if rd.Status != "public" {
-				continue
+		relatedDatasets, _ := repo.GetDatasets(rel_ids)
+		rec.RelatedDataset = make([]Relation, 0, len(relatedDatasets))
+		for _, rd := range relatedDatasets {
+			if rd.Status == "public" {
+				rec.RelatedDataset = append(rec.RelatedDataset, Relation{ID: rd.ID})
 			}
-			rec.RelatedDataset = append(rec.RelatedDataset, Relation{ID: rd.ID})
 		}
 	}
 
@@ -955,13 +954,12 @@ func MapDataset(d *models.Dataset, repo *repositories.Repo) *Record {
 		for _, rp := range d.RelatedPublication {
 			rel_ids = append(rel_ids, rp.ID)
 		}
-		related_publications, _ := repo.GetPublications(rel_ids)
-		rec.RelatedPublication = make([]Relation, 0, len(related_publications))
-		for _, rp := range related_publications {
-			if rp.Status != "public" {
-				continue
+		relatedPublications, _ := repo.GetPublications(rel_ids)
+		rec.RelatedPublication = make([]Relation, 0, len(relatedPublications))
+		for _, rp := range relatedPublications {
+			if rp.Status == "public" {
+				rec.RelatedPublication = append(rec.RelatedPublication, Relation{ID: rp.ID})
 			}
-			rec.RelatedPublication = append(rec.RelatedPublication, Relation{ID: rp.ID})
 		}
 	}
 
