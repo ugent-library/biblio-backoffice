@@ -18,8 +18,7 @@
         </div>
         <div class="col-3">
             <div class="d-flex">
-                <label class="col-form-label pe-3" for="sort" style="white-space: nowrap">Sort
-                    by</label>
+                <label class="col-form-label pe-3 text-nowrap" for="sort">Sort by</label>
                 <select class="form-select form-change-submit" name="sort">
                     {{range vocabulary "publication_sorts"}}
                     <option value="{{.}}"{{if $.SearchArgs.HasSort .}} selected{{end}}>{{$.Loc.Get (print "publication_sorts." .)}}</option>
