@@ -94,14 +94,27 @@ func (c *Client) GetUser(biblioID string) (*models.Person, error) {
 		return nil, models.ErrNotFound
 	}
 
-	p, err := c.GetPerson(biblioID)
+	ctx := context.TODO()
+
+	res, err := c.client.GetPeopleByIdentifier(ctx, &api.GetPeopleByIdentifierRequest{
+		Identifier: []string{"urn:biblio_id:" + biblioID},
+	})
 	if err != nil {
 		return nil, err
 	}
-	if !p.Active {
+
+	res.Data = lo.Filter(res.Data, func(ap api.Person, idx int) bool {
+		return ap.Active.Value
+	})
+	if len(res.Data) == 0 {
 		return nil, models.ErrNotFound
 	}
-	return p, nil
+
+	people, err := c.mapPeople(ctx, res.Data[0])
+	if err != nil {
+		return nil, err
+	}
+	return people[0], nil
 }
 
 func (c *Client) GetUserByUsername(username string) (*models.Person, error) {
