@@ -82,6 +82,10 @@ type Config struct {
 		APIURL string `env:"API_URL"`
 		APIKey string `env:"API_KEY"`
 	} `envPrefix:"PROJECTS_"`
+	People struct {
+		APIURL string `env:"API_URL"`
+		APIKey string `env:"API_KEY"`
+	} `envPrefix:"PEOPLE_"`
 	// feature flags
 	FF struct {
 		FilePath     string `env:"FILE_PATH"`
