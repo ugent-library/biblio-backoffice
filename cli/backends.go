@@ -5,12 +5,10 @@ import (
 	"fmt"
 	"log"
 	"path"
-	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/backends/arxiv"
-	"github.com/ugent-library/biblio-backoffice/backends/authority"
 	"github.com/ugent-library/biblio-backoffice/backends/bibtex"
 	"github.com/ugent-library/biblio-backoffice/backends/citeproc"
 	"github.com/ugent-library/biblio-backoffice/backends/crossref"
@@ -20,6 +18,7 @@ import (
 	excel_publication "github.com/ugent-library/biblio-backoffice/backends/excel/publication"
 	"github.com/ugent-library/biblio-backoffice/backends/fsstore"
 	"github.com/ugent-library/biblio-backoffice/backends/handle"
+	"github.com/ugent-library/biblio-backoffice/backends/peopleservice"
 	"github.com/ugent-library/biblio-backoffice/backends/projects"
 	"github.com/ugent-library/biblio-backoffice/backends/s3store"
 	"github.com/ugent-library/biblio-backoffice/caching"
@@ -36,12 +35,12 @@ import (
 )
 
 func newServices() *backends.Services {
-	authorityClient, authorityClientErr := authority.New(authority.Config{
-		MongoDBURI: config.MongoDBURL,
-		ESURI:      strings.Split(config.Frontend.Es6URL, ","),
+	peopleServiceClient, err := peopleservice.New(peopleservice.Config{
+		APIUrl: config.People.APIURL,
+		APIKey: config.People.APIKey,
 	})
-	if authorityClientErr != nil {
-		panic(authorityClientErr)
+	if err != nil {
+		panic(err)
 	}
 
 	orcidConfig := orcid.Config{
@@ -67,17 +66,17 @@ func newServices() *backends.Services {
 		)
 	}
 
-	organizationService := caching.NewOrganizationService(authorityClient)
+	organizationService := caching.NewOrganizationService(peopleServiceClient)
 
 	// always add organization info to user affiliations
 	userService := &backends.UserWithOrganizationsService{
-		UserService:         caching.NewUserService(authorityClient),
+		UserService:         caching.NewUserService(peopleServiceClient),
 		OrganizationService: organizationService,
 	}
 
 	// always add organization info to person affiliations
 	personService := &backends.PersonWithOrganizationsService{
-		PersonService:       caching.NewPersonService(authorityClient),
+		PersonService:       caching.NewPersonService(peopleServiceClient),
 		OrganizationService: organizationService,
 	}
 
@@ -108,10 +107,10 @@ func newServices() *backends.Services {
 		PersonService:             personService,
 		ProjectService:            projectService,
 		UserService:               userService,
-		OrganizationSearchService: authorityClient,
-		PersonSearchService:       authorityClient,
+		OrganizationSearchService: peopleServiceClient,
+		PersonSearchService:       peopleServiceClient,
 		ProjectSearchService:      projectSearchService,
-		UserSearchService:         authorityClient,
+		UserSearchService:         peopleServiceClient,
 		LicenseSearchService:      spdxlicenses.New(),
 		MediaTypeSearchService:    ianamedia.New(),
 		DatasetSources: map[string]backends.DatasetGetter{

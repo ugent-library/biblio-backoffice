@@ -282,6 +282,9 @@ func (s *PersonWithOrganizationsService) GetPerson(id string) (*models.Person, e
 		return nil, err
 	}
 	for _, a := range p.Affiliations {
+		if a.Organization != nil {
+			continue
+		}
 		o, err := s.OrganizationService.GetOrganization(a.OrganizationID)
 		if err == models.ErrNotFound {
 			a.Organization = NewDummyOrganization(a.OrganizationID)
@@ -305,6 +308,9 @@ func (s *UserWithOrganizationsService) GetUser(id string) (*models.Person, error
 		return nil, err
 	}
 	for _, a := range u.Affiliations {
+		if a.Organization != nil {
+			continue
+		}
 		o, err := s.OrganizationService.GetOrganization(a.OrganizationID)
 		if err == models.ErrNotFound {
 			a.Organization = NewDummyOrganization(a.OrganizationID)
@@ -323,6 +329,9 @@ func (s *UserWithOrganizationsService) GetUserByUsername(username string) (*mode
 		return nil, err
 	}
 	for _, a := range u.Affiliations {
+		if a.Organization != nil {
+			continue
+		}
 		o, err := s.OrganizationService.GetOrganization(a.OrganizationID)
 		if err == models.ErrNotFound {
 			a.Organization = NewDummyOrganization(a.OrganizationID)
@@ -340,9 +349,7 @@ func NewDummyOrganization(id string) *models.Organization {
 	return &models.Organization{
 		ID:   id,
 		Name: id,
-		Tree: []struct {
-			ID string `json:"id,omitempty"`
-		}{
+		Tree: []models.OrganizationTreeElement{
 			{ID: id},
 		},
 	}
