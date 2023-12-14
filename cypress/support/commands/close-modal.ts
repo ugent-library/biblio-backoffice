@@ -35,7 +35,7 @@ export default function closeModal(
   }
 
   if (subject) {
-    cy.wrap(subject, NO_LOG).then(doCloseModal)
+    cy.wrap(subject, NO_LOG).within(NO_LOG, doCloseModal)
   } else {
     doCloseModal()
   }
