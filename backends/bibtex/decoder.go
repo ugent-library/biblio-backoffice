@@ -1,19 +1,13 @@
 package bibtex
 
 import (
-	"bufio"
 	"io"
 	"regexp"
 	"strings"
-	"unicode"
 
-	"github.com/dimchansky/utfbom"
-	"github.com/nickng/bibtex"
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/models"
-	"golang.org/x/text/runes"
-	"golang.org/x/text/transform"
-	"golang.org/x/text/unicode/norm"
+	"github.com/ugent-library/bibtex"
 )
 
 var (
@@ -22,71 +16,33 @@ var (
 )
 
 type Decoder struct {
-	r      io.Reader
-	bibtex *bibtex.BibTex
-	i      int
+	parser *bibtex.Parser
 }
 
 func NewDecoder(r io.Reader) backends.PublicationDecoder {
-	return &Decoder{r: r}
-}
-
-func (d *Decoder) parse() error {
-	// cleanup
-	var r io.Reader
-	// remove utf8 bom
-	r = utfbom.SkipOnly(d.r)
-	// remove unicode non spacing marks
-	// note that the parser doens't actually fail on combined grave, acute, circumflex, umlaut accents in field values
-	r = transform.NewReader(r, transform.Chain(norm.NFD, runes.Remove(runes.In(unicode.Mn)), norm.NFC))
-	// skip file preambles, comments, etc until we encounter the first entry
-	b := bufio.NewReader(r)
-	for {
-		c, _, err := b.ReadRune()
-		if err != nil {
-			return err
-		}
-		if c == '@' {
-			b.UnreadRune()
-			break
-		}
-	}
-
-	bib, err := bibtex.Parse(b)
-	if err != nil {
-		return err
-	}
-	d.bibtex = bib
-
-	return nil
+	return &Decoder{parser: bibtex.NewParser(r)}
 }
 
 func (d *Decoder) Decode(p *models.Publication) error {
-	if d.bibtex == nil {
-		if err := d.parse(); err != nil {
-			return err
-		}
+	entry, err := d.parser.Next()
+	if err != nil {
+		return err
 	}
-
-	if len(d.bibtex.Entries) == 0 || d.i >= len(d.bibtex.Entries) {
+	if entry == nil {
 		return io.EOF
 	}
-
-	entry := d.bibtex.Entries[d.i]
-	d.i++
 
 	mapEntry(entry, p)
 
 	return nil
 }
 
-func mapEntry(e *bibtex.BibEntry, p *models.Publication) {
+func mapEntry(e *bibtex.Entry, p *models.Publication) {
 	p.Type = "journal_article"
 
-	// field names may have capitals
-	entries := map[string]string{}
-	for key, val := range e.Fields {
-		entries[strings.ToLower(key)] = val.String()
+	fields := make(map[string]string, len(e.Fields))
+	for _, f := range e.Fields {
+		fields[f.Name] = f.Value
 	}
 
 	switch e.Type {
@@ -108,89 +64,87 @@ func mapEntry(e *bibtex.BibEntry, p *models.Publication) {
 		p.MiscellaneousType = "report"
 	}
 
-	if f, ok := entries["title"]; ok {
+	for _, name := range e.Authors {
+		nameParts := reSplit.Split(name, -1)
+		lastName := nameParts[0]
+		firstName := "[missing]" // TODO
+		if len(nameParts) > 1 {
+			firstName = nameParts[1]
+		}
+		p.Author = append(p.Author, models.ContributorFromFirstLastName(firstName, lastName))
+	}
+
+	for _, name := range e.Editors {
+		nameParts := reSplit.Split(name, -1)
+		lastName := nameParts[0]
+		firstName := "[missing]" // TODO
+		if len(nameParts) > 1 {
+			firstName = nameParts[1]
+		}
+		p.Editor = append(p.Editor, models.ContributorFromFirstLastName(firstName, lastName))
+	}
+
+	if f, ok := fields["title"]; ok {
 		p.Title = f
 	}
-	if f, ok := entries["year"]; ok {
+	if f, ok := fields["year"]; ok {
 		p.Year = f
 	}
-	if f, ok := entries["pages"]; ok {
+	if f, ok := fields["pages"]; ok {
 		pageParts := reSplitPages.Split(f, -1)
 		p.PageFirst = pageParts[0]
 		if len(pageParts) > 1 {
 			p.PageLast = pageParts[1]
 		}
 	}
-	if f, ok := entries["keywords"]; ok {
+	if f, ok := fields["keywords"]; ok {
 		p.Keyword = reSplit.Split(f, -1)
 	}
-	if f, ok := entries["abstract"]; ok {
+	if f, ok := fields["abstract"]; ok {
 		p.AddAbstract(&models.Text{Text: f, Lang: "und"})
 	}
-	if f, ok := entries["volume"]; ok {
+	if f, ok := fields["volume"]; ok {
 		p.Volume = f
 	}
-	if f, ok := entries["number"]; ok {
+	if f, ok := fields["number"]; ok {
 		p.Issue = f
 	}
-	if f, ok := entries["address"]; ok {
+	if f, ok := fields["address"]; ok {
 		p.PlaceOfPublication = f
 	}
-	if f, ok := entries["doi"]; ok {
+	if f, ok := fields["doi"]; ok {
 		p.DOI = f
 	}
-	if f, ok := entries["issn"]; ok {
+	if f, ok := fields["issn"]; ok {
 		p.ISSN = []string{f}
 	}
-	if f, ok := entries["isbn"]; ok {
+	if f, ok := fields["isbn"]; ok {
 		p.ISBN = []string{f}
 	}
-	if f, ok := entries["series"]; ok {
+	if f, ok := fields["series"]; ok {
 		p.SeriesTitle = f
 	}
-	if f, ok := entries["journal"]; ok {
+	if f, ok := fields["journal"]; ok {
 		p.Publication = f
 	}
-	if f, ok := entries["booktitle"]; ok {
+	if f, ok := fields["booktitle"]; ok {
 		p.Publication = f
 	}
-	if f, ok := entries["school"]; ok {
+	if f, ok := fields["school"]; ok {
 		p.Publisher = f
 	}
-	if f, ok := entries["publisher"]; ok {
+	if f, ok := fields["publisher"]; ok {
 		p.Publisher = f
-	}
-	if f, ok := entries["author"]; ok {
-		for _, v := range strings.Split(f, " and ") {
-			nameParts := reSplit.Split(v, -1)
-			lastName := nameParts[0]
-			firstName := "[missing]" // TODO
-			if len(nameParts) > 1 {
-				firstName = nameParts[1]
-			}
-			p.Author = append(p.Author, models.ContributorFromFirstLastName(firstName, lastName))
-		}
-	}
-	if f, ok := entries["editor"]; ok {
-		for _, v := range strings.Split(f, " and ") {
-			nameParts := reSplit.Split(v, -1)
-			lastName := nameParts[0]
-			firstName := "[missing]" // TODO
-			if len(nameParts) > 1 {
-				firstName = nameParts[1]
-			}
-			p.Editor = append(p.Editor, models.ContributorFromFirstLastName(firstName, lastName))
-		}
 	}
 
 	// WoS bibtex records
-	if f, ok := entries["journal-iso"]; ok {
+	if f, ok := fields["journal-iso"]; ok {
 		p.PublicationAbbreviation = f
 	}
-	if f, ok := entries["keywords-plus"]; ok {
+	if f, ok := fields["keywords-plus"]; ok {
 		p.Keyword = append(p.Keyword, reSplit.Split(f, -1)...)
 	}
-	if f, ok := entries["unique-id"]; ok {
+	if f, ok := fields["unique-id"]; ok {
 		if strings.HasPrefix(f, "ISI:") {
 			p.WOSID = strings.TrimPrefix(f, "ISI:")
 		}

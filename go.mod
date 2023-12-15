@@ -11,7 +11,6 @@ require (
 	github.com/blevesearch/bleve/v2 v2.3.10
 	github.com/bluele/gcache v0.0.2
 	github.com/caltechlibrary/doitools v0.0.1
-	github.com/dimchansky/utfbom v1.1.1
 	github.com/elastic/go-elasticsearch/v6 v6.8.10
 	github.com/go-chi/chi/v5 v5.0.10
 	github.com/go-playground/form/v4 v4.2.1
@@ -24,7 +23,6 @@ require (
 	github.com/jackc/pgx/v4 v4.18.1
 	github.com/joho/godotenv v1.5.1
 	github.com/jpillora/ipfilter v1.2.9
-	github.com/nickng/bibtex v1.2.0
 	github.com/ory/graceful v0.1.3
 	github.com/pkg/errors v0.9.1
 	github.com/rvflash/elapsed v0.3.0
@@ -166,6 +164,7 @@ require (
 	github.com/subosito/gotenv v1.6.0 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect
+	github.com/ugent-library/bibtex v0.0.0-20231215144723-4e5925e47a69
 	github.com/ugent-library/bind v0.0.0-20231106145128-3b6630797063
 	github.com/ugent-library/friendly v0.0.0-20230811091914-e5eb37f47072
 	github.com/ugent-library/httperror v0.0.0-20230123152913-d3d289bcce20
