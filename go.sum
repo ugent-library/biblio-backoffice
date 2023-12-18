@@ -570,6 +570,8 @@ github.com/ugent-library/bibtex v0.0.0-20231215145146-1fe1e3cb7593 h1:f9kckfPSu0
 github.com/ugent-library/bibtex v0.0.0-20231215145146-1fe1e3cb7593/go.mod h1:UX+eTPyILtVo9OmXGgO+1Pl0NU4nj/KxB0JxgR/4LNo=
 github.com/ugent-library/bibtex v0.0.0-20231218092526-f6aaaf0fc110 h1:NRSMUE+sOkUJIkXu6pqSFb4UxxhmpL/f0u9OboN7OKQ=
 github.com/ugent-library/bibtex v0.0.0-20231218092526-f6aaaf0fc110/go.mod h1:UX+eTPyILtVo9OmXGgO+1Pl0NU4nj/KxB0JxgR/4LNo=
+github.com/ugent-library/bibtex v0.0.0-20231218123206-c910132512fe h1:eEE0YMGBc4/bIOSBdQjYMEUWkrrElhLuZTtD9YiFHOU=
+github.com/ugent-library/bibtex v0.0.0-20231218123206-c910132512fe/go.mod h1:UX+eTPyILtVo9OmXGgO+1Pl0NU4nj/KxB0JxgR/4LNo=
 github.com/ugent-library/bind v0.0.0-20231106145128-3b6630797063 h1:uU2vnCNHaJF8Lx+exuV4PcZgZQX/PJ5hcgQCZEvg+Fg=
 github.com/ugent-library/bind v0.0.0-20231106145128-3b6630797063/go.mod h1:QN9gGk5/ux2xoIia5EQbkw7XdO7yYQ5dG7/p6WSvp0o=
 github.com/ugent-library/crypt v0.0.0-20230630063634-8c02106fd40e h1:LnsNQmbNBSNTNd2mdozNfy87fbUOZ5ZxjBxA+T8h0lg=
