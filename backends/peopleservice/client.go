@@ -7,7 +7,6 @@ import (
 	"github.com/samber/lo"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/people-service/api/v1"
-	pmodels "github.com/ugent-library/people-service/models"
 )
 
 type Config struct {
@@ -207,16 +206,16 @@ func (c *Client) mapPeople(ctx context.Context, apiPeople ...api.Person) ([]*mod
 			}
 		}
 		for _, id := range ap.Identifier {
-			urn, _ := pmodels.ParseURN(id)
-			switch urn.Namespace {
+			ns, val := parseURN(id)
+			switch ns {
 			case "orcid":
-				p.ORCID = urn.Value
+				p.ORCID = val
 			case "biblio_id":
-				p.ID = urn.Value
+				p.ID = val
 			case "historic_ugent_id":
-				p.UGentID = append(p.UGentID, urn.Value)
+				p.UGentID = append(p.UGentID, val)
 			case "ugent_username":
-				p.Username = urn.Value
+				p.Username = val
 			}
 		}
 		if tokens, ok := ap.Token.Get(); ok {
@@ -282,9 +281,9 @@ func (c *Client) SuggestOrganizations(query string) ([]models.Completion, error)
 			Heading: apiOrg.NameEng.Value,
 		}
 		for _, id := range apiOrg.Identifier {
-			urn, _ := pmodels.ParseURN(id)
-			if urn.Namespace == "biblio_id" {
-				completion.ID = urn.Value
+			ns, val := parseURN(id)
+			if ns == "biblio_id" {
+				completion.ID = val
 			}
 		}
 		completions = append(completions, completion)
@@ -298,9 +297,9 @@ func (c *Client) mapOrganization(ctx context.Context, ao *api.Organization) (*mo
 		Name: ao.NameEng.Value,
 	}
 	for _, id := range ao.Identifier {
-		urn, _ := pmodels.ParseURN(id)
-		if urn.Namespace == "biblio_id" {
-			o.ID = urn.Value
+		ns, val := parseURN(id)
+		if ns == "biblio_id" {
+			o.ID = val
 			break
 		}
 	}
@@ -319,9 +318,9 @@ func (c *Client) mapOrganization(ctx context.Context, ao *api.Organization) (*mo
 			}
 			parentBiblioID := ""
 			for _, id := range apiParentOrg.Identifier {
-				urn, _ := pmodels.ParseURN(id)
-				if urn.Namespace == "biblio_id" {
-					parentBiblioID = urn.Value
+				ns, val := parseURN(id)
+				if ns == "biblio_id" {
+					parentBiblioID = val
 				}
 			}
 			o.Tree = append([]models.OrganizationTreeElement{{ID: parentBiblioID}}, o.Tree...)
@@ -334,4 +333,12 @@ func (c *Client) mapOrganization(ctx context.Context, ao *api.Organization) (*mo
 	}
 
 	return o, nil
+}
+
+func parseURN(val string) (string, string) {
+	parts := strings.Split(val, ":")
+	if len(parts) < 3 {
+		return "", ""
+	}
+	return parts[1], strings.Join(parts[2:], ":")
 }
