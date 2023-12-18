@@ -532,6 +532,8 @@ github.com/tomasen/realip v0.0.0-20180522021738-f0c99a92ddce h1:fb190+cK2Xz/dvi9
 github.com/tomasen/realip v0.0.0-20180522021738-f0c99a92ddce/go.mod h1:o8v6yHRoik09Xen7gje4m9ERNah1d1PPsVq1VEx9vE4=
 github.com/ugent-library/bibtex v0.0.0-20231215144723-4e5925e47a69 h1:jU4/3Q3NXjIV0ncULkiLSV1GaCvKsxFNl0x3+dRdY3k=
 github.com/ugent-library/bibtex v0.0.0-20231215144723-4e5925e47a69/go.mod h1:UX+eTPyILtVo9OmXGgO+1Pl0NU4nj/KxB0JxgR/4LNo=
+github.com/ugent-library/bibtex v0.0.0-20231215145146-1fe1e3cb7593 h1:f9kckfPSu0YrfFo99vzXFLzriwGuTItE7kuOYtbBOuk=
+github.com/ugent-library/bibtex v0.0.0-20231215145146-1fe1e3cb7593/go.mod h1:UX+eTPyILtVo9OmXGgO+1Pl0NU4nj/KxB0JxgR/4LNo=
 github.com/ugent-library/bind v0.0.0-20231106145128-3b6630797063 h1:uU2vnCNHaJF8Lx+exuV4PcZgZQX/PJ5hcgQCZEvg+Fg=
 github.com/ugent-library/bind v0.0.0-20231106145128-3b6630797063/go.mod h1:QN9gGk5/ux2xoIia5EQbkw7XdO7yYQ5dG7/p6WSvp0o=
 github.com/ugent-library/crypt v0.0.0-20230630063634-8c02106fd40e h1:LnsNQmbNBSNTNd2mdozNfy87fbUOZ5ZxjBxA+T8h0lg=
