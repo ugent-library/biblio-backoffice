@@ -170,7 +170,7 @@ require (
 	github.com/thomaspoignant/go-feature-flag v1.18.0
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect
-	github.com/ugent-library/bibtex v0.0.0-20231215144723-4e5925e47a69
+	github.com/ugent-library/bibtex v0.0.0-20231215145146-1fe1e3cb7593
 	github.com/ugent-library/bind v0.0.0-20231106145128-3b6630797063
 	github.com/ugent-library/friendly v0.0.0-20230811091914-e5eb37f47072
 	github.com/ugent-library/httperror v0.0.0-20230123152913-d3d289bcce20
