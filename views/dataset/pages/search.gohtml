@@ -64,7 +64,7 @@
                     <li class="list-group-item">
                         {{layout "dataset/summary" "dataset/search_hit" ($.Yield
                             "Dataset" .
-                            "DatasetURL" (pathFor "dataset" "id" .ID))}}
+                            "DatasetURL" (pathFor "dataset" "id" .ID|querySet "redirect-url" $.CurrentURL.String))}}
                     </li>
                     {{end}}
                 </ul>
