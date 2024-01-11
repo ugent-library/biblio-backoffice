@@ -9,13 +9,17 @@ type CloseModalOptions = {
 export default function closeModal(
   subject: undefined | JQuery<HTMLElement>,
   save: boolean | string | RegExp = false,
-  options: CloseModalOptions = {}
+  options: CloseModalOptions = { log: true }
 ): void {
   const dismissButtonText = typeof save === 'boolean' ? (save ? 'Save' : 'Cancel') : save
 
   let log: Cypress.Log | null = null
   if (options.log === true) {
-    log = logCommand('closeModal', { subject, 'Dismiss button text': dismissButtonText }, dismissButtonText)
+    log = logCommand(
+      'closeModal',
+      { subject: subject && subject.get(0), 'Dismiss button text': dismissButtonText },
+      dismissButtonText
+    )
     log.set('type', !subject ? 'parent' : 'child')
   }
 
@@ -25,7 +29,7 @@ export default function closeModal(
         if (options.log === true) {
           log.set('$el', $el)
           updateConsoleProps(log, cp => {
-            cp['Button element'] = $el
+            cp['Button element'] = $el.get(0)
           })
         }
 

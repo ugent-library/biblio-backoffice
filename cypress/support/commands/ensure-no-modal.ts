@@ -4,7 +4,7 @@ type EnsureNoModalOptions = {
   log?: boolean
 }
 
-export default function ensureNoModal(options: EnsureNoModalOptions = {}): void {
+export default function ensureNoModal(options: EnsureNoModalOptions = { log: true }): void {
   if (options.log === true) {
     logCommand('ensureNoModal')
   }
