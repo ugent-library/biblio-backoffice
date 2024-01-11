@@ -85,7 +85,7 @@ func (e *Encoder) encode(r *frontoffice.Record) ([]byte, error) {
 	}
 
 	switch r.PublicationStatus {
-	case "unsubmitted":
+	case "unpublished":
 		writeField(b, "type", "info:eu-repo/semantics/draft")
 	case "inpress":
 		writeField(b, "type", "info:eu-repo/semantics/acceptedVersion")

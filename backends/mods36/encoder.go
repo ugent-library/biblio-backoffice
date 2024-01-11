@@ -69,6 +69,7 @@ var tmpl = template.Must(template.New("").Funcs(funcs).Parse(`
     xmlns="http://www.loc.gov/mods/v3"
     xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd"
 >
+	<identifier type="hdl">http://hdl.handle.net/1854/LU-{{.Rec.ID | xml}}</identifier>
 	{{range .Rec.DOI}}
 	<identifier type="doi">{{. | xml }}</identifier>
 	{{end}}
@@ -285,7 +286,7 @@ var tmpl = template.Must(template.New("").Funcs(funcs).Parse(`
 				<placeTerm>{{.Rec.Publisher.Location | xml}}</placeTerm>
 			</place>
 			{{end}}
-			{{if and .Rec.Publisher .Rec.Publisher.Location}}
+			{{if and .Rec.Publisher .Rec.Publisher.Name}}
 			<publisher>{{.Rec.Publisher.Name | xml}}</publisher>
 			{{end}}
 			<dateIssued encoding="w3cdtf">{{.Rec.Year | xml}}</dateIssued>
@@ -371,7 +372,7 @@ var tmpl = template.Must(template.New("").Funcs(funcs).Parse(`
 					<placeTerm>{{.Rec.Publisher.Location | xml}}</placeTerm>
 				</place>
 				{{end}}
-				{{if and .Rec.Publisher .Rec.Publisher.Location}}
+				{{if and .Rec.Publisher .Rec.Publisher.Name}}
 				<publisher>{{.Rec.Publisher.Name | xml}}</publisher>
 				{{end}}
 				<dateIssued encoding="w3cdtf">{{.Rec.Year | xml}}</dateIssued>
@@ -439,7 +440,7 @@ var tmpl = template.Must(template.New("").Funcs(funcs).Parse(`
 				<placeTerm>{{.Rec.Publisher.Location | xml}}</placeTerm>
 			</place>
 			{{end}}
-			{{if and .Rec.Publisher .Rec.Publisher.Location}}
+			{{if and .Rec.Publisher .Rec.Publisher.Name}}
 			<publisher>{{.Rec.Publisher.Name | xml}}</publisher>
 			{{end}}
 			<dateIssued encoding="w3cdtf">{{.Rec.Year | xml}}</dateIssued>
