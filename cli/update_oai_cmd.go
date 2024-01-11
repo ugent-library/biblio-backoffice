@@ -111,12 +111,15 @@ var updateOai = &cobra.Command{
 			oaiID := "oai:archive.ugent.be:" + p.ID
 
 			if p.Status == "deleted" && p.HasBeenPublic {
-				err = client.DeleteRecord(context.TODO(), &api.DeleteRecordRequest{
-					Identifier: oaiID,
-				})
-				if err != nil {
-					// TODO
-					logger.Fatal(err)
+				for _, metadataPrefix := range []string{"oai_dc", "mods_36"} {
+					err = client.DeleteRecord(context.TODO(), &api.DeleteRecordRequest{
+						Identifier:     oaiID,
+						MetadataPrefix: metadataPrefix,
+					})
+					if err != nil {
+						// TODO
+						logger.Fatal(err)
+					}
 				}
 				return true
 			}
@@ -194,12 +197,15 @@ var updateOai = &cobra.Command{
 			oaiID := "oai:archive.ugent.be:" + d.ID
 
 			if d.Status == "deleted" && d.HasBeenPublic {
-				err = client.DeleteRecord(context.TODO(), &api.DeleteRecordRequest{
-					Identifier: oaiID,
-				})
-				if err != nil {
-					// TODO
-					logger.Fatal(err)
+				for _, metadataPrefix := range []string{"oai_dc", "mods_36"} {
+					err = client.DeleteRecord(context.TODO(), &api.DeleteRecordRequest{
+						Identifier:     oaiID,
+						MetadataPrefix: metadataPrefix,
+					})
+					if err != nil {
+						// TODO
+						logger.Fatal(err)
+					}
 				}
 				return true
 			}
