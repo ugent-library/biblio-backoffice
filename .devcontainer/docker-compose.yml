@@ -55,6 +55,25 @@ services:
     depends_on:
       - db-people
 
+  projects:
+    image: ugentlib/projects:latest
+    restart: unless-stopped
+    env_file:
+      - .env
+    command:
+      - sh
+      - -c
+      - |
+        cd /dist
+        /dist/tern status
+        /dist/tern migrate
+        /dist/app reindex
+        /dist/app server
+    network_mode: service:app
+    depends_on:
+      - es
+      - db-projects
+
   db-backoffice:
     image: postgres:16-alpine
     restart: unless-stopped
@@ -83,6 +102,22 @@ services:
       POSTGRES_PASSWORD: people
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U people -d people"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  db-projects:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    user: postgres
+    volumes:
+      - projects-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DATABASE: projects
+      POSTGRES_USER: projects
+      POSTGRES_PASSWORD: projects
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U projects -d projects"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -126,6 +161,12 @@ volumes:
       driver_opts:
         type: none
         device: ~/biblio-backoffice/people/db_data
+        o: bind
+    projects-data:
+      driver: local 
+      driver_opts:
+        type: none
+        device: ~/biblio-backoffice/projects/db_data
         o: bind
 
 
