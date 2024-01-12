@@ -23,9 +23,6 @@ go.work
 # Reflex live reloading
 reflex.conf
 
-# Tern config files
-tern.*
-
 # Dotenv
 .env
 

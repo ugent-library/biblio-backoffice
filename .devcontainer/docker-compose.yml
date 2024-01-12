@@ -1,0 +1,111 @@
+version: '3.8'
+
+services:
+  app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+        # Ensure that the variables in .env match the same variables in devcontainer.json
+        - ./.env
+
+    volumes:
+      - ../..:/workspace/biblio-backoffice:cached
+      - ~/biblio-backoffice/files:/workspace/files:cached
+      
+    # Overrides default command so things don't shut down after the process ends.
+    command: 
+      - bash
+      - -c
+      - |
+        cd /workspace/biblio-backoffice
+        go mod download -x
+        bash -i -c 'nvm install'
+        npm install
+        tern status
+        tern migrate
+        sleep infinity
+
+    # Runs app on the same network as the database container, allows "forwardPorts" in devcontainer.json function.
+    # network_mode: service:db
+
+    # Use "forwardPorts" in **devcontainer.json** to forward an app port locally. 
+    # (Adding the "ports" property to this file will not forward from a Codespace.)
+
+  oidc:
+    build: 
+      context: .
+      dockerfile: oidc.Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+    network_mode: service:app
+
+  people:
+    build: 
+      context: .
+      dockerfile: people.Dockerfile
+    restart: unless-stopped
+    volumes:
+      - .:/tern
+      - ~/Workspace/people-service:/src
+    env_file:
+      - .env
+    command:
+      - sh
+      - -c
+      - |
+        tern migrate
+        /opt/people-service/people-service server
+    network_mode: service:app
+
+  db-backoffice:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    user: postgres
+    volumes:
+      - biblio-backoffice-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DATABASE: biblio
+      POSTGRES_USER: biblio
+      POSTGRES_PASSWORD: biblio
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U biblio -d biblio"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  db-people:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    user: postgres
+    volumes:
+      - people-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DATABASE: people
+      POSTGRES_USER: people
+      POSTGRES_PASSWORD: people
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U people -d people"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+
+volumes:
+    biblio-backoffice-data:
+      driver: local 
+      driver_opts:
+        type: none
+        device: ~/biblio-backoffice/backoffice/db_data
+        o: bind
+    people-data:
+      driver: local 
+      driver_opts:
+        type: none
+        device: ~/biblio-backoffice/people/db_data
+        o: bind
+
+
+# Add "forwardPorts": ["5432"] to **devcontainer.json** to forward PostgreSQL locally.
+# (Adding the "ports" property to this file will not forward from a Codespace.)

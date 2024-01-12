@@ -1,0 +1,34 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/go-postgres
+{
+	"name": "Biblio Backoffice",
+	"dockerComposeFile": "docker-compose.yml",
+	"service": "app",
+
+	// Override default workspace folder to be consistent and accessible in the
+	// Dockerfile
+	"mounts": [
+		"source=${localWorkspaceFolder},target=/workspace/biblio-backoffice,type=bind,consistency=cached",
+		"source=${localEnv:HOME}/biblio-backoffice/files,target=/workspace/files,type=bind,consistency=cached"
+	],
+	"workspaceFolder": "/workspace/biblio-backoffice",
+
+	// Features to add to the dev container. More info: https://containers.dev/features.
+	// "features": {},
+
+	// Configure tool-specific properties.
+	// "customizations": {},
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	"forwardPorts": [3001, 3000, 3999, "db-backoffice:5432"],
+
+	// Use 'postCreateCommand' to run commands after the container is created.
+	// 
+	// "postCreateCommand": "/workspace/biblio-backoffice/.devcontainer/commands/post-create-command.sh",
+	// "waitFor": "postCreateCommand",
+
+	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+	// "remoteUser": "root",
+
+	"shutdownAction": "stopCompose"
+}
