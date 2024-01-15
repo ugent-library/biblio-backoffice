@@ -558,6 +558,8 @@ github.com/ugent-library/orcid v0.0.0-20230615125240-eb68c23bc33c h1:NRpS8TkbFjD
 github.com/ugent-library/orcid v0.0.0-20230615125240-eb68c23bc33c/go.mod h1:g5C6oHMPfeceP48vaQLY24pFWtfKKi6mFni+tWbpgvU=
 github.com/ugent-library/zaphttp v0.0.0-20230513174723-52c27d21c5ce h1:+TNoKsfMTTveEe1RQRaJ7TZnHVh1k98Nk+4gTg2mENA=
 github.com/ugent-library/zaphttp v0.0.0-20230513174723-52c27d21c5ce/go.mod h1:CzM8mO+4QRZi4Sx0rPTt9csR6b2IgbIyoveLwFz+bQM=
+github.com/unrolled/secure v1.14.0 h1:u9vJTU/pR4Bny0ntLUMxdfLtmIRGvQf2sEFuA0TG9AE=
+github.com/unrolled/secure v1.14.0/go.mod h1:BmF5hyM6tXczk3MpQkFf1hpKSRqCyhqcbiQtiAF7+40=
 github.com/xdg-go/pbkdf2 v1.0.0 h1:Su7DPu48wXMwC3bs7MCNG+z4FhcyEuz5dlvchbq0B0c=
 github.com/xdg-go/pbkdf2 v1.0.0/go.mod h1:jrpuAogTd400dnrH08LKmI/xc1MbPOebTwRqcT5RDeI=
 github.com/xdg-go/scram v1.1.2 h1:FHX5I5B4i4hKRVRBCFRxq1iQRej7WO3hhBuJf+UUySY=
