@@ -1,0 +1,27 @@
+[
+    {
+        "id": "biblio",
+        "claims": [
+            {
+                    "name":  "name",
+                    "value": "biblio"
+            },
+            {
+                    "name":  "given_name",
+                    "value": "biblio"
+            },
+            {
+                    "name":  "family_name",
+                    "value": "biblio"
+            },
+            {
+                    "name":  "preferred_username",
+                    "value": "biblio"
+            },
+            {
+                    "name":  "email",
+                    "value": "biblio@example.com"
+            }
+        ]
+    }
+  ]

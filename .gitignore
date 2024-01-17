@@ -34,3 +34,6 @@ cypress.env.json
 cypress/videos
 cypress/screenshots
 cypress/cypress-record.sh
+
+# Docker
+tmp

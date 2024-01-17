@@ -9,7 +9,7 @@ services:
         - ./.env
     volumes:
       - ../..:/workspace/biblio-backoffice:cached
-      - ~/biblio-backoffice/files:/workspace/files:cached
+      - ./tmp/files:/workspace/files:cached
     command: 
       - bash
       - -c
@@ -24,13 +24,13 @@ services:
         sleep infinity
     depends_on:
       - es
-      - db-backoffice
+      - db-app
 
   oidc:
-    build: 
-      context: .
-      dockerfile: oidc.Dockerfile
+    image: ugentlib/mock-oidc-server
     restart: unless-stopped
+    volumes:
+      - ./oidc:/dist/.data
     env_file:
       - .env
     network_mode: service:app
@@ -74,7 +74,7 @@ services:
       - es
       - db-projects
 
-  db-backoffice:
+  db-app:
     image: postgres:16-alpine
     restart: unless-stopped
     user: postgres
@@ -183,27 +183,23 @@ volumes:
       driver: local 
       driver_opts:
         type: none
-        device: ~/biblio-backoffice/backoffice/es_data
+        device: ../tmp/backoffice/es_data
         o: bind    
     biblio-backoffice-app-db-data:
       driver: local 
       driver_opts:
         type: none
-        device: ~/biblio-backoffice/backoffice/db_data
+        device: ../tmp/backoffice/db_data
         o: bind
     biblio-backoffice-people-db-data:
       driver: local 
       driver_opts:
         type: none
-        device: ~/biblio-backoffice/people/db_data
+        device: ../tmp/people/db_data
         o: bind
     biblio-backoffice-projects-db-data:
       driver: local 
       driver_opts:
         type: none
-        device: ~/biblio-backoffice/projects/db_data
+        device: ../tmp/projects/db_data
         o: bind
-
-
-# Add "forwardPorts": ["5432"] to **devcontainer.json** to forward PostgreSQL locally.
-# (Adding the "ports" property to this file will not forward from a Codespace.)

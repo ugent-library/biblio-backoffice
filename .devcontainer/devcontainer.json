@@ -17,10 +17,10 @@
 	// "features": {},
 
 	// Configure tool-specific properties.
-	// "customizations": {},
+	// "customizations": {}
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"forwardPorts": [3001, 3000, 3999, 4000, "db-backoffice:5432", "es:9200"],
+	"forwardPorts": [3000, 3999, 4000, "db-backoffice:5432", "es:9200"],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// 
