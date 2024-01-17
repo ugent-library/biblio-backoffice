@@ -36,27 +36,25 @@ services:
     network_mode: service:app
 
   people:
-    build: 
-      context: .
-      dockerfile: people.Dockerfile
+    image: ugentlib/people-service:dev
     restart: unless-stopped
-    volumes:
-      - .:/tern
-      - ~/Workspace/people-service:/src
     env_file:
       - .env
+    environment:
+      TERN_MIGRATIONS: "etc/migrations"
     command:
       - sh
       - -c
       - |
-        tern migrate
-        /opt/people-service/people-service server
+        /opt/people-service/tern status &&
+        /opt/people-service/tern migrate &&
+        /opt/people-service/people-service server;
     network_mode: service:app
     depends_on:
       - db-people
 
   projects:
-    image: ugentlib/projects:latest
+    image: ugentlib/projects-service:dev
     restart: unless-stopped
     env_file:
       - .env
