@@ -1,20 +1,20 @@
 {{define "summary_actions"}}
-<div class="bc-toolbar-item ml-auto ml-lg-0">
+<div class="bc-toolbar-item ms-auto ms-lg-0">
     <div class="c-button-toolbar">
         <a class="btn btn-link btn-link-p-0 btn-icon-only" href="{{.PublicationURL}}">
             <i class="if if-eye"></i>
-            <div class="sr-only">View publication</div>
+            <div class="visually-hidden">View publication</div>
         </a>
         {{if eq .UserMode "curator"}}
         <a class="btn btn-link btn-link-p-0 btn-icon-only" href="{{.PublicationURL|querySet "show" "files"}}">
             <i class="if if-file"></i>
-            <div class="sr-only">View full texts &amp; files</div>
+            <div class="visually-hidden">View full texts &amp; files</div>
         </a>
         {{end}}
         <div class="dropdown">
-            <button class="btn btn-link btn-link-p-0 btn-icon-only" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <button class="btn btn-link btn-link-p-0 btn-icon-only" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="if if-more"></i>
-                <div class="sr-only">More options</div>
+                <div class="visually-hidden">More options</div>
             </button>
             <div class="dropdown-menu">
                 <a class="dropdown-item" href="{{.PublicationURL}}">
@@ -23,7 +23,7 @@
                 </a>
                 <div class="dropdown-divider"></div>
                 {{if eq .Publication.Status "public"}}
-                <a class="dropdown-item" href="https://biblio.ugent.be/publication/{{.Publication.ID}}" target="_blank">
+                <a class="dropdown-item" href="{{.FrontendBaseUrl}}/publication/{{.Publication.ID}}" target="_blank">
                     <i class="if if-book"></i>
                     <span>Public Biblio Location</span>
                 </a>
@@ -40,13 +40,13 @@
                     </a>
                     {{end}}
                     {{with .Publication.WOSID}}
-                    <a class="dropdown-item" href="{{resolveIdentifier "WebOfScienceID" .}}" target="_blank">
+                    <a class="dropdown-item" href="{{resolveIdentifier "WebOfScience" .}}" target="_blank">
                         <i class="if if-external-link"></i>
                         <span>WoS</span>
                     </a>
                     {{end}}
                     {{with .Publication.PubMedID}}
-                    <a class="dropdown-item" href="{{resolveIdentifier "PubMedID" .}}" target="_blank">
+                    <a class="dropdown-item" href="{{resolveIdentifier "PubMed" .}}" target="_blank">
                         <i class="if if-external-link"></i>
                         <span>PubMed</span>
                     </a>

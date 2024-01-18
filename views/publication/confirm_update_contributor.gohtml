@@ -2,20 +2,20 @@
 <div class="modal-dialog modal-dialog-centered modal-fullscreen modal-dialog-scrollable" role="document">
     <div class="modal-content">
         <div class="modal-header">
-            <h2 class="modal-title">Edit {{.Locale.TS "publication.contributor.role" .Role}}</h2>
+            <h2 class="modal-title">Edit {{.Loc.Get (print "publication.contributor.role." .Role)}}</h2>
         </div>
         <div class="modal-body">
             {{.Form.Errors.Render}}
             
-            <h3>Review {{.Locale.TS "publication.contributor.role" .Role}} information</h3>
+            <h3>Review {{.Loc.Get (print "publication.contributor.role." .Role)}} information</h3>
 
             <ul class="list-group mt-6">
                 <li class="list-group-item">
-                    <div class="list-group-item-inner">
-                        <div class="list-group-item-main">
+                    <div class="row">
+                        <div class="col-md-6">
                             {{partial "shared/contributor_summary" (.Yield "Contributor" .Contributor "Current" false "Active" .Active)}}
                         </div>
-                        <div class="list-group-item-main person-attributes">
+                        <div class="col-md-6 person-attributes">
                             {{range .Form.Sections}}
                                 {{.Render}}
                             {{end}}
@@ -24,9 +24,9 @@
                 </li>
             </ul>
         </div>
-        <div class="modal-footer">
-            <div class="bc-toolbar">
-                <div class="bc-toolbar-right">
+        <div class="modal-footer h-auto py-4">
+            <div class="bc-toolbar h-auto">
+                <div class="bc-toolbar-left flex-wrap">
                     <div class="bc-toolbar-item">
                         <button class="btn btn-link modal-close">Cancel</button>
                     </div>
@@ -40,6 +40,8 @@
                           <span class="button-text">Back to search</span>
                         </button>
                     </div>
+                </div>
+                <div class="bc-toolbar-right flex-wrap">
                     {{if .EditNext}}
                     <div class="bc-toolbar-item">
                         <button class="btn btn-outline-primary"

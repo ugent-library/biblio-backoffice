@@ -29,6 +29,10 @@
   max-width: none;
   height: calc(100% - 4.8rem);
   width: calc(100% - 4.8rem);
+  margin: 1.5rem 2rem;
+  .modal-content {
+    border-radius: 0.8rem;
+  }
 }
 
 .modal-fullscreen {

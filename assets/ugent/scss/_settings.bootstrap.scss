@@ -16,7 +16,6 @@ $warning:       $warning;
 $light:         $gray-50;
 $dark:          $gray-900;
 
-
 // Body
 //
 // Settings for the `<body>` element.
@@ -24,7 +23,7 @@ $dark:          $gray-900;
 $body-color              : $gray-700;
 
 // Can't use global $enable-rounded since we want rounded in some cases (e.g. tabs)
-$border-radius           : .3rem;
+$border-radius           : .5rem;
 $border-radius-lg        : 0.375rem;
 $border-radius-sm        : 0.125rem;
 
@@ -96,40 +95,51 @@ $spacers: map-merge(
 // Options
 //
 // Quickly modify global styling by enabling or disabling optional features.
-$enable-shadows:              true !default;
+$enable-shadows:              true;
+$enable-negative-margins:     true;
+$enable-dark-mode:            false;
 
 // Fonts
 //
 // Font, line-height, and color for body text, headings, and more.
 
-$font-size-base:              1.5rem;
+$font-size-base:              1.4rem;
 $font-size-lg:                $font-size-base * 1.25 !default;
-$font-size-sm:                1.3rem;
+$font-size-sm:                1.2rem;
 
 $font-weight-lighter:         lighter !default;
 $font-weight-light:           300 !default;
 $font-weight-normal:          400 !default;
 $font-weight-bold:            500 !default;
-$font-weight-bolder:          bolder !default;
+$font-weight-bolder:          600 !default;
 
 $font-weight-base:            $font-weight-normal !default;
 $line-height-base:            1.5 !default;
 
-$h1-font-size:                2.4rem;
-$h2-font-size:                2rem;
-$h3-font-size:                1.8rem;
-$h4-font-size:                1.5rem;
+$h1-font-size:                2rem;
+$h2-font-size:                1.8rem;
+$h3-font-size:                1.6rem;
+$h4-font-size:                1.4rem;
+
+$headings-font-weight:        500;
 
 $text-muted:                  $text-muted;
 
+
+// Tables
+//
+// Customizes the `.table` component with basic values, each used across all table variations.
+
+// scss-docs-start table-variables
+$table-bg:                    #FFF;
 // Buttons + s
 //
 // Shared variables that are reassigned to `$input-` and `$btn-` specific variables.
 
-$input-btn-padding-y:         0;
-$input-btn-padding-x:         1.6rem;
+$input-btn-padding-y:         .45rem;
+$input-btn-padding-x:         1.2rem;
 
-$input-btn-padding-y-sm:      0;
+$input-btn-padding-y-sm:      0.4rem;
 $input-btn-padding-x-sm:      .5rem;
 
 // Buttons
@@ -137,16 +147,20 @@ $input-btn-padding-x-sm:      .5rem;
 // For each of Bootstrap's buttons, define text, background, and border color.
 
 $btn-font-weight:             500;
+$btn-box-shadow:              none;
 
 $btn-link-disabled-color:     rgba($blue, .5);
 
 // Allows for customizing button radius independently from global border radius
 $btn-border-radius-sm:        $border-radius;
+$btn-border-width:            0.1rem;
+$btn-box-shadow:              none;
 
 // Links
 //
 // Style anchor elements.
 
+$link-decoration:                         none;
 $link-hover-color:                        $dark-blue;
 $link-hover-decoration:                   none;
 
@@ -164,7 +178,7 @@ $paragraph-margin-bottom:   0;
 $alert-padding-y:                   1.6rem;
 $alert-padding-x:                   1.6rem;
 $alert-border-width:                0;
-
+$alert-border-radius:               0.6rem;
 
 // Dropdowns
 //
@@ -189,9 +203,9 @@ $dropdown-header-padding:           .8rem 1.2rem;
 
 // Forms
 
-$label-margin-bottom:                   .8rem;
+$label-margin-bottom:                   0;
 
-$input-padding-y:                       .6rem;
+$input-padding-y:                       .45rem;
 $input-padding-x:                       1.2rem;
 
 $input-disabled-bg:                     $gray-50;
@@ -203,9 +217,12 @@ $input-focus-border-color:              $primary;
 
 $input-placeholder-color:               $text-muted;
 
-$input-height:                          3.6rem;
+$input-height:                          3.2rem;
+$input-line-height:                     1.5;
 
-// $form-text-margin-top:                  .25rem !default;
+$form-text-margin-top:                  0.4rem;
+
+$form-check-margin-bottom:                0;
 
 // $form-check-input-gutter:               1.25rem !default;
 // $form-check-input-margin-y:             .3rem !default;
@@ -214,23 +231,23 @@ $input-height:                          3.6rem;
 // $form-check-inline-margin-x:            .75rem !default;
 // $form-check-inline-input-margin-x:      .3125rem !default;
 
-$custom-control-gutter:                 0.8rem;
+$form-control-gutter:                 0.8rem;
 $form-grid-gutter-width:                1.6rem;
-$form-group-margin-bottom:              2.4rem;
+$form-group-margin-bottom:              1.6rem;
 
 $input-group-addon-color:               $text-muted;
 $input-group-addon-bg:                  $gray-50;
 
-$custom-control-indicator-size:         1.6rem;
+$form-control-indicator-size:         1.6rem;
 
-$custom-control-indicator-border-color: $gray-200;
+$form-control-indicator-border-color: $gray-200;
 
-$custom-control-indicator-disabled-bg:          $gray-100;
+$form-control-indicator-disabled-bg:          $gray-100;
 
-$custom-control-indicator-checked-color:        $white;
-$custom-control-indicator-checked-bg:           $primary;
-$custom-control-indicator-checked-disabled-bg:  $gray-100;
-$custom-control-indicator-checked-border-color: $primary;
+$form-control-indicator-checked-color:        $white;
+$form-control-indicator-checked-bg:           $primary;
+$form-control-indicator-checked-disabled-bg:  $gray-100;
+$form-control-indicator-checked-border-color: $primary;
 
 $custom-checkbox-indicator-indeterminate-bg:           $primary;
 $custom-checkbox-indicator-indeterminate-color:        $white;
@@ -239,6 +256,8 @@ $custom-checkbox-indicator-indeterminate-border-color: $primary;
 $custom-switch-width:                           4rem;
 $custom-switch-indicator-border-radius:         1.2rem;
 $custom-switch-indicator-size:                  1.4rem;
+
+$custom-select-disabled-bg:         $gray-50;
 
 // Modals
 
@@ -249,7 +268,7 @@ $modal-inner-padding:               2.4rem;
 $modal-footer-margin-between:       1.6rem;
 
 $modal-content-border-color:        $border;
-$modal-content-border-radius:       .3rem;
+$modal-content-border-radius:       .8rem;
 
 $modal-backdrop-bg:                 $gray-1000;
 $modal-backdrop-opacity:            .8;
@@ -289,7 +308,6 @@ $popover-arrow-width:               1.6rem;
 $popover-arrow-height:              .8rem;
 
 
-
 // Toasts
 
 $toast-max-width:                   400px;
@@ -301,12 +319,13 @@ $toast-border-radius:               0.3rem;
 
 // Badges
 
-$badge-font-size:                   1.3rem;
+$badge-font-size:                   1.2rem;
 $badge-font-weight:                 500;
 $badge-padding-y:                   .5rem;
-$badge-padding-x:                   1.2rem;
+$badge-padding-x:                   .8rem;
+$badge-border-radius:               $border-radius;
 
-$badge-pill-padding-x:              1.2rem;
+$rounded-pill-padding-x:              1.2rem;
 
 // Navs
 
@@ -320,13 +339,14 @@ $nav-tabs-link-active-border-color: $primary;
 
 // Cards
 
-$card-spacer-y:                     0;
+$card-spacer-y:                     2.4rem;
 $card-spacer-x:                     2.4rem;
-$card-border-color:                 $border;
+$card-border-color:                 $gray-100;
 $card-cap-bg:                       $white;
 $card-cap-color:                    $header;
 $card-color:                        $text;
 $card-bg:                           $white;
+$card-border-radius:                0.8rem;
 
 
 // Pagination
@@ -341,18 +361,20 @@ $pagination-hover-color:            $text;
 $pagination-hover-bg:               $light-blue;
 $pagination-hover-border-color:     $blue;
 
-$pagination-active-color:           $white;
-$pagination-active-bg:              $blue;
+$pagination-active-color:           $blue;
+$pagination-active-bg:              $blue-50;
 $pagination-active-border-color:    $blue;
 
 $pagination-disabled-color:         $gray-200;
-$pagination-disabled-border-color:  $border;
+$pagination-disabled-bg:            $white;
+$pagination-disabled-border-color:  $gray-100;
+
 
 // List group
 
 $list-group-border-color:           $border;
 
-$list-group-item-padding-y:         2rem;
+$list-group-item-padding-y:         1.6rem;
 $list-group-item-padding-x:         2.4rem;
 
 $list-group-action-active-bg:       $gray-25;
@@ -361,13 +383,31 @@ $list-group-hover-bg:               $gray-25;
 $list-group-active-color:           $text;
 $list-group-active-bg:              $gray-25;
 $list-group-active-border-color:    $border;
+$list-group-border-radius:           0.6rem;
 
 
 // Breadcrumb
 
+$breadcrumb-font-size:              1.2rem;
 $breadcrumb-bg:                     none;
 $breadcrumb-margin-bottom:          0;
-$breadcrumb-padding-x:              0.8rem;
-$breadcrumb-padding-y:              0.4rem;
-$breadcrumb-item-padding:           0;
-$breadcrumb-divider:                none;
+$breadcrumb-padding-x:              0;
+$breadcrumb-padding-y:              0;
+$breadcrumb-divider:                url("data:image/svg+xml,%0A%3Csvg width='24' height='32' viewBox='0 0 24 32' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cg clip-path='url(%23clip0_1131_19680)'%3E%3Cpath d='M15.5 16L7 0H8.414L17 16L8.5 32H7L15.5 16Z' fill='%23DEDEDE'/%3E%3C/g%3E%3C/svg%3E%0A");;
+$breadcrumb-active-color:           $gray-900;
+
+// Close
+
+$btn-close-bg:               url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 10.586L16.95 5.636L18.364 7.05L13.414 12L18.364 16.95L16.95 18.364L12 13.414L7.05 18.364L5.636 16.95L10.586 12L5.636 7.05L7.05 5.636L12 10.586Z' fill='%23666666'/%3E%3C/svg%3E");
+$btn-close-width:            2rem;
+$btn-close-height:           2rem;
+
+// Carousel
+
+$carousel-control-color:             $primary;
+$carousel-control-width:             3.2rem;
+$carousel-control-prev-icon-bg:      url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cg clip-path='url(%23clip0_962_18257)'%3E%3Cpath d='M10.828 12L15.778 16.95L14.364 18.364L8 12L14.364 5.63599L15.778 7.04999L10.828 12Z' fill='%231E64C8'/%3E%3C/g%3E%3Cdefs%3E%3CclipPath id='clip0_962_18257'%3E%3Crect width='24' height='24' fill='white'/%3E%3C/clipPath%3E%3C/defs%3E%3C/svg%3E%0A");
+$carousel-control-next-icon-bg:      url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cg clip-path='url(%23clip0_836_22138)'%3E%3Cpath d='M13.1717 12L8.22168 7.04999L9.63568 5.63599L15.9997 12L9.63568 18.364L8.22168 16.95L13.1717 12Z' fill='%231E64C8'/%3E%3C/g%3E%3Cdefs%3E%3CclipPath id='clip0_836_22138'%3E%3Crect width='24' height='24' fill='white'/%3E%3C/clipPath%3E%3C/defs%3E%3C/svg%3E%0A");
+
+// Code
+$code-font-size:                    1.1rem;

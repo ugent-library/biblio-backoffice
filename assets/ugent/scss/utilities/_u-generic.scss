@@ -66,3 +66,28 @@
 .u-z-reset {
   z-index: auto;
 }
+
+.u-max-w-720 {
+  max-width: 72rem;
+}
+
+.u-smooth-scroll {
+  scroll-behavior: smooth;
+}
+
+.u-mix-blend-multiply {
+  mix-blend-mode: multiply;
+}
+
+.u-border-light {
+  border-color: $gray-100 !important;
+}
+
+.u-min-w-8 {
+  min-width: 8rem;
+}
+
+.u-min-w-auto {
+  min-width: auto;
+}
+

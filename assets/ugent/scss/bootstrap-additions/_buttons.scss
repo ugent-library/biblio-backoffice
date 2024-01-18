@@ -4,7 +4,7 @@
 
 .btn {
   align-self: center;
-  line-height: 3.4rem;
+  line-height: 1.5;
   white-space: nowrap;
 
   .btn-text {
@@ -21,14 +21,14 @@
 
 .if + .btn-text,
 .btn-text + .if {
-  padding-left: .4rem;
+  margin-left: .4rem;
 }
 
-.btn:not(.btn-icon-only):not(.btn-link-p-0):not(.btn-sm) .if:first-child {
+.btn:not(.btn-icon-only):not(.btn-link-p-0):not(.btn-sm):not(.btn-tertiary) .if:first-child {
   margin-left: -.8rem;
 }
 
-.btn:not(.btn-icon-only):not(.btn-link-p-0):not(.btn-sm) .if:last-child {
+.btn:not(.btn-icon-only):not(.btn-link-p-0):not(.btn-sm):not(.btn-tertiary) .if:last-child {
   margin-right: -.8rem;
 }
 
@@ -37,7 +37,7 @@
 }
 
 .btn-link-p-0 {
-  padding-left: 0;
+  margin-left: 0;
 }
 // Skins
 
@@ -50,6 +50,25 @@
   }
 }
 
+.btn-tertiary {
+  color: $gray-600;
+  padding-left: 0;
+  padding-right: 0;
+
+  &:not(:has(> .if)){
+    text-decoration: underline;
+  }
+
+  &:hover,
+  &:hover .btn-text {
+    text-decoration: none;
+  }
+
+  .btn-text {
+    text-decoration: underline;
+  }
+}
+
 .btn-outline-primary {
   &:hover,
   &:focus {
@@ -59,13 +78,15 @@
 }
 
 .btn-outline-secondary {
-  color: $text;
+  color: $gray-700;
+  background-color: white;
   border-color: $border;
 
   &:hover,
   &:focus {
     background-color: $gray-50;
   }
+
 }
 
 .btn-outline-success {
@@ -131,23 +152,31 @@
   }
 }
 
+.btn-dark {
+  background-color:  mix($dark-gray, $white, 80%);;
+  &:hover,
+  &:focus {
+    background-color:  mix($dark-gray, $white, 75%);;
+  }
+}
+
 // Icon only button
 
 .btn-icon-only {
-  width: 3.6rem;
+  width: 3.2rem;
   text-align: center;
-  padding: 0;
-  height: 3.6rem;
-  min-width: 3.6rem;
-  min-height: 3.6rem;
+  padding-left: 0;
+  padding-right: 0;
+  height: 3.2rem;
+  min-width: 3.2rem;
+  min-height: 3.2rem;
 }
 
 // Small buttons
 
 .btn-sm {
-  height: 2.8rem;
-  font-size: 1.3rem;
-  line-height: 2.8rem;
+  line-height: 1.5;
+  font-size: 1.2rem;
   .if {
     font-size: 1.6rem;
     top: 0;
@@ -272,4 +301,23 @@
       color: $gray-1000;
     }
   }
+}
+
+// Override color-contrast() functio
+.btn-success,
+.btn-danger,
+.btn-info {
+  --bs-btn-color: #FFF;
+  --bs-btn-hover-color: #FFF;
+}
+
+.btn-secondary,
+.btn-light {
+  --bs-btn-color: #{$gray-700};
+  --bs-btn-hover-color: #{$gray-800};
+}
+
+.btn[data-bs-toggle="collapse"][aria-expanded="true"] .if-chevron-down,
+.btn[data-bs-toggle="collapse"][aria-expanded="true"] .if-arrow-double-down {
+  transform: rotate(180deg);
 }

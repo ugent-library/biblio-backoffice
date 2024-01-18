@@ -1,31 +1,78 @@
-<ul class="list-group mt-6">
-{{range .Hits}}
-<li class="list-group-item">
-    <div class="d-flex w-100">
-        <div class="w-100">
-            <div class="d-flex align-items-start">
-                <div class="list-group-item-content">
-                    <div class="list-group-item-text">
-                        <h4 class="c-h4">{{.Heading}}</h4>
-                        <div class="c-body-small text-muted">{{.Description}}</div>
-                        <div class="text-muted c-body-small">Project ID: {{.ID}}</div>
+<ul class="list-group">
+    {{range .Hits}}
+    <li class="list-group-item">
+        <div class="list-group-item-inner">
+            <div class="list-group-item-main">
+                <div class="d-flex align-items-top">
+                    {{if .Acronym}}
+                    <div class="me-5">
+                        <span class="badge badge-default rounded-pill mt-1">{{.Acronym}}</span>
                     </div>
-                    <div class="list-group-item-meta mt-2">
-                        <div class="list-group-item-meta-left">
+                    {{end}}
+                    <div class="mx-3">
+                        <div class="mb-3">
+                            <h3>{{.Title}}</h3>
                         </div>
-                        <div class="list-group-item-meta-right">
-                            <button class="btn btn-primary"
-                                hx-post="{{pathFor "publication_create_project" "id" $.Publication.ID}}"
-                                hx-headers='{"If-Match": "{{$.Publication.SnapshotID}}"}'
-                                hx-vals='{"project_id": "{{.ID}}"}'
-                                hx-swap="none"
-                            >Add project</button>
+                        {{if .Description}}
+                        <p class="mb-3 text-muted">
+                            {{.Description}}
+                        </p>
+                        {{end}}
+                        <div class="mb-3">
+                            <ul class="c-meta-list c-meta-list-horizontal pb-0">
+                                   <li class="c-meta-item">
+                                    {{if .EUProject}}
+                                        {{if .EUProject.FrameworkProgramme }}
+                                        <div class="pe-4 me-4 border-right">
+                                            EU Funding programme: Horizon 2020
+                                        </div>
+                                        {{end}}
+                                    {{end}}
+                                    {{if and .StartDate .EndDate}}
+                                    <div class="pe-4 me-4 border-right">
+                                        Period: {{.StartDate}} – {{.EndDate}}
+                                    </div>
+                                    {{end}}
+                                    <div class="me-43">
+                                        <a class="c-link c-link-muted" href="{{(print "https://biblio.ugent.be/project/" .ID)}}" target="blank">Read more <i class="if if-external-link if--small"></i></a>
+                                    </div>
+                                </li>
+                            </ul>
+                            <ul class="c-meta-list c-meta-list-horizontal">
+                                <li class="c-meta-item">
+                                    <div class="pe-4 me-4 border-right">
+                                        <span>Project ID</span>
+                                        <code class="c-code d-inline-block">{{.ID}}</code>
+                                    </div>
+                                    {{if .IWETOID}}
+                                    <div class="pe-4 me-4{{if .EUProject.ID}} border-right{{end}}">
+                                        <span>IWETO ID</span>
+                                        <code class="c-code d-inline-block">{{.IWETOID}}</code>
+                                    </div>
+                                    {{end}}
+                                    {{if .EUProject}}
+                                        {{if .EUProject.ID}}
+                                        <div class="me-4">
+                                            <span>CORDIS ID</span>
+                                            <code class="c-code d-inline-block">{{.EUProject.ID}}</code>
+                                        </div>
+                                        {{end}}
+                                    {{end}}
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>
             </div>
+            <div class="c-button-toolbar">
+                <button class="btn btn-primary"
+                    hx-post="{{pathFor "publication_create_project" "id" $.Publication.ID}}"
+                    hx-headers='{"If-Match": "{{$.Publication.SnapshotID}}"}'
+                    hx-vals='{"project_id": "{{.ID}}"}'
+                    hx-swap="none"
+                >Add project</button>
+            </div>
         </div>
-    </div>
-</li>
-{{end}}
+    </li>
+    {{end}}
 </ul>

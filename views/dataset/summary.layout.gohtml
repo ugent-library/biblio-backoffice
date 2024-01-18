@@ -6,41 +6,41 @@
         <div class="c-thumbnail-text u-min-w-0">
             <div class="bc-toolbar bc-toolbar--auto">
                 <div class="bc-toolbar-left flex-wrap">
-                    <span class="c-subline text-nowrap pr-3 my-2">
+                    <span class="c-subline text-nowrap pe-3 my-2">
                         {{partial "shared/status" .Dataset}}
                     </span>
                     {{if .Dataset.Locked}}
-                    <span class="c-subline text-nowrap mr-3 pr-3 my-2 border-right" data-toggle="tooltip" data-placement="bottom" data-original-title="Locked for editing">
+                    <div class="c-subline text-nowrap me-3 pe-3 my-2 border-end" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Locked for editing">
                         <i class="if if-lock if--small if--muted"></i>
-                        <span class="text-muted c-body-small ml-2">Locked</span>
-                    </span>
+                        <span class="text-muted c-body-small ms-2">Locked</span>
+                    </div>
                     {{end}}
-                    <div class="c-subline text-nowrap mr-3 pr-3 my-2{{if eq .Dataset.AccessLevel "info:eu-repo/semantics/embargoedAccess"}} border-right{{end}}">
+                    <div class="c-subline text-nowrap me-3 pe-3 my-2{{if eq .Dataset.AccessLevel "info:eu-repo/semantics/embargoedAccess"}} border-end{{end}}">
                         {{if eq .Dataset.AccessLevel "info:eu-repo/semantics/openAccess"}}
                         <i class="if if-calendar if--small if--muted"></i>
-                        <span class="c-subline text-truncate pl-2">{{.Locale.TS "dataset_access_levels" .Dataset.AccessLevel}}</span>
+                        <span class="c-subline text-truncate ps-2">{{.Loc.Get (print "dataset_access_levels." .Dataset.AccessLevel)}}</span>
                         {{else if eq .Dataset.AccessLevel "info:eu-repo/semantics/embargoedAccess"}}
                         <i class="if if-time if--small if--muted"></i>
-                        <span class="c-subline text-muted pl-2">{{.Locale.TS "dataset_access_levels" .Dataset.AccessLevel}}</span>
+                        <span class="c-subline text-muted ps-2">{{.Loc.Get (print "dataset_access_levels." .Dataset.AccessLevel)}}</span>
                         {{else if eq .Dataset.AccessLevel "info:eu-repo/semantics/restrictedAccess"}}
                         <i class="if if-ghent-university if--small if--muted"></i>
-                        <span class="c-subline text-muted pl-2">{{.Locale.TS "dataset_access_levels" .Dataset.AccessLevel}}</span>
+                        <span class="c-subline text-muted ps-2">{{.Loc.Get (print "dataset_access_levels." .Dataset.AccessLevel)}}</span>
                         {{else if eq .Dataset.AccessLevel "info:eu-repo/semantics/closedAccess"}}
                         <i class="if if-eye-off if--small if--muted"></i>
-                        <span class="c-subline text-muted pl-2">{{.Locale.TS "dataset_access_levels" .Dataset.AccessLevel}}</span>
+                        <span class="c-subline text-muted ps-2">{{.Loc.Get (print "dataset_access_levels." .Dataset.AccessLevel)}}</span>
                         {{else}}
                         <i class="if if-error-circle if--error"></i>
-                        <span class="pl-2 text-muted">Access level missing</span>
+                        <span class="ps-2 text-muted">Access level missing</span>
                         {{end}}
                     </div>
                     {{if eq .Dataset.AccessLevel "info:eu-repo/semantics/embargoedAccess"}}
-                    <div class="c-subline text-nowrap mr-3 pr-3 my-2">
+                    <div class="c-subline text-nowrap me-3 pe-3 my-2">
                         {{if eq .Dataset.AccessLevelAfterEmbargo "info:eu-repo/semantics/openAccess"}}
                         <i class="if if-calendar if--small if--muted"></I>
                         {{else}}
                         <i class="if if-ghent-university if--small if--muted"></I>
                         {{end}}
-                        <span class="c-subline text-truncate pl-2">{{.Locale.TS "dataset_access_levels_after_embargo" .Dataset.AccessLevelAfterEmbargo}} from {{.Dataset.EmbargoDate }}</span>
+                        <span class="c-subline text-truncate ps-2">{{.Loc.Get (print "dataset_access_levels_after_embargo." .Dataset.AccessLevelAfterEmbargo)}} from {{.Dataset.EmbargoDate }}</span>
                     </div>
                     {{end}}
                 </div>
@@ -77,8 +77,7 @@
                     <span class="c-meta-item">
                         <span class="c-body-small text-muted">
                             <a class="c-link c-link-muted" target="_blank" href="{{resolveIdentifier $type (index $vals 0)}}">
-                                <span class="text-decoration-underline"> View in external repository</span>
-                                <i class="if if--small if-external-link"></i>
+                                <span class="text-decoration-underline"> View in external repository</span> <i class="if if--small if-external-link"></i>
                             </a>
                         </span>
                     </span>
@@ -91,7 +90,7 @@
             <div class="bc-toolbar bc-toolbar-responsive">
                 <div class="bc-toolbar-left">
                     <div class="text-muted c-body-small text-truncate my-3">Biblio ID:
-                        <code class="c-code ml-3">{{.Dataset.ID}}</code>
+                        <code class="c-code ms-3">{{.Dataset.ID}}</code>
                     </div>
                 </div>
                 <div class="bc-toolbar-right flex-wrap">
@@ -103,12 +102,12 @@
                     <div class="bc-toolbar-item">
                         <ul class="c-meta-list c-meta-list-horizontal flex-nowrap">
                             {{if .Dataset.RelatedPublication}}
-                            <li class="c-meta-item" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="{{len .Dataset.RelatedPublication}} related publications">
-                                <i class="if if-article if--muted if--small mr-2"></i>
+                            <li class="c-meta-item" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="{{len .Dataset.RelatedPublication}} related publications">
+                                <i class="if if-article if--muted if--small me-2"></i>
                                 <span class="text-muted c-body-small">{{len .Dataset.RelatedPublication}}</span>
                             </li>
                             {{end}}
-                            {{/* <li class="c-meta-item" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Sent to Orcid">
+                            {{/* <li class="c-meta-item" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Sent to Orcid">
                                 <i class="if if-orcid if--muted if--small"></i>
                                 <i class="if if-check text-success if--small"></i>
                             </li> */}}

@@ -4,12 +4,10 @@
   width: 400px;
   z-index: 9999;
 
-  .close {
+  .btn-close {
     position: absolute;
     top: 0.8rem;
-    right: 1.6rem;
-    width: 2rem;
-    height: 2rem;
+    right: 2rem;
   }
 
   .c-button-toolbar {
@@ -18,8 +16,8 @@
 }
 
 .toast-body {
-  .close {
-    top: 2rem;
+  .btn-close {
+    top: 1.8rem;
   }
 
   p:last-child {

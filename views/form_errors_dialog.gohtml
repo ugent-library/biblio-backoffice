@@ -1,5 +1,5 @@
 {{define "modal_dialog"}}
-<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+<div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" role="document">
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">{{.Title}}</h2>
@@ -8,7 +8,11 @@
             {{.Errors.Render}}
         </div>
         <div class="modal-footer">
-            <button class="btn btn-link modal-close">Close</button>
+            <div class="bc-toolbar">
+                <div class="bc-toolbar-left">
+                    <button class="btn btn-link modal-close">Close</button>
+                </div>
+            </div>
         </div>
     </div>
 </div>

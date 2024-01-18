@@ -1,2 +1,4 @@
-// Import commands.js using ES2015 syntax:
+import 'cypress-common'
+
 import './commands'
+import './queries'

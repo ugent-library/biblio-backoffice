@@ -9,7 +9,7 @@ import (
 	"github.com/spf13/cobra"
 	api "github.com/ugent-library/biblio-backoffice/api/v1"
 	cnx "github.com/ugent-library/biblio-backoffice/client/connection"
-	"github.com/ugent-library/biblio-backoffice/internal/models"
+	"github.com/ugent-library/biblio-backoffice/models"
 )
 
 func init() {

@@ -2,15 +2,15 @@
 <div class="modal-dialog modal-dialog-centered modal-fullscreen modal-dialog-scrollable" role="document">
     <div class="modal-content">
         <div class="modal-header">
-            <h2 class="modal-title">Edit or change {{.Locale.TS "dataset.contributor.role" .Role}}</h2>
+            <h2 class="modal-title">Edit or change {{.Loc.Get (print "dataset.contributor.role." .Role)}}</h2>
         </div>
 
         <div class="p-6 border-bottom">
-            <h3>Search {{.Locale.TS "dataset.contributor.role" .Role}}</h3>
-        
+            <h3>Search {{.Loc.Get (print "dataset.contributor.role." .Role)}}</h3>
+
             <div class="person-attributes">
                 {{range .Form.Sections}}
-                <div class="form-row align-items-end">
+                <div class="row align-items-end">
                     {{.Render}}
                 </div>
                 {{end}}
@@ -23,7 +23,7 @@
 
         <div class="modal-footer">
             <div class="bc-toolbar">
-                <div class="bc-toolbar-right">
+                <div class="bc-toolbar-left">
                     <div class="bc-toolbar-item">
                         <button class="btn btn-link modal-close">Cancel</button>
                     </div>

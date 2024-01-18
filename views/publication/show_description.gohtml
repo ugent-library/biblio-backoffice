@@ -5,9 +5,9 @@
 <div hx-swap-oob="innerHTML:#show-sidebar">
     <div class="c-sub-sidebar c-sub-sidebar--bordered u-z-reset h-100" data-sidebar="">
         <div class="bc-navbar bc-navbar--bordered-bottom bc-navbar--large">
-            <button class="btn btn-link btn-icon-only ml-n3" type="button" data-sidebar-toggle="">
+            <button class="btn btn-link btn-icon-only ms-n3" type="button" data-sidebar-toggle="">
                 <i class="if if-menu"></i>
-                <div class="sr-only">Sections</div>
+                <div class="visually-hidden">Sections</div>
             </button>
         </div>
         <div class="c-sub-sidebar__content">
@@ -30,6 +30,15 @@
     </div>
 </div>
 
+{{if .Publication.Locked}}
+<div class="alert alert-info mb-5">
+    <i class="if if-info-circle-filled"></I>
+    <div class="alert-content">
+        <h3 class="alert-title">This record has been reviewed and locked.</h3>
+        <p class="mb-2">For any change requests or questions, get in touch via <a href="mailto:biblio@ugent.be">biblio@ugent.be</a>. Thank you for your contribution!</p>
+    </div>
+</div>
+{{end}}
 {{partial "publication/show_details" .}}
 {{partial "publication/show_projects" .}}
 {{if .Publication.UsesConference}}

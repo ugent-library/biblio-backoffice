@@ -9,14 +9,188 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Fixed
+
+## [v1.0.48] - 2023-12-18
+
+### Added
+
+### Fixed
+
+- #1343: Switch to a more lenient BibTeX parser
+- #1345: Fix dataset redirect url
+
+## [v1.0.47] - 2023-11-29
+
+### Added
+
+### Fixed
+
+- #1332: Path escape project id's when necessary
+
+## [v1.0.46] - 2023-11-27
+
+### Added
+
+### Fixed
+
+- #1330: Fix setting HasBeenPublic for publications
+
+## [v1.0.45] - 2023-11-23
+
+### Added
+
+### Fixed
+
+- Fix display of missing dissertation translation strings
+
+## [v1.0.44] - 2023-11-22
+
+
+### Added
+
+### Fixed
+
+- Fix display of missing dataset translation strings
+
+## [v1.0.43] - 2023-11-22
+
+### Added
+
+### Fixed
+
+- Fix display of missing publication translation strings
+
+## [v1.0.42] - 2023-11-22
+
+### Added
+
+- User dashboard
+- More Cypress tests
+- Various application structure improvements
+
+### Fixed
+
+- Various ux improvements
+- #1223: Cleanup empty facet values
+- #1241: Only allow future embargo dates
+
+## [v1.0.41] - 2023-11-15
+
+### Added
+
+- Add status.set, lock, unlock batch operations
+- Determine subtype based on wos type
+- Move frontoffice index-time enrichments to backoffice record
+
+### Fixed
+
+- Fix sidebar color switching
+- #1299: Handle out of range pagination
+
+## [v1.0.40] - 2023-10-17
+
+### Added
+
+### Fixed
+
+- #1267: Fix edit roles dialog
+
+## [v1.0.39] - 2023-10-17
+
+### Added
+
+- Cypress testing improvements
+- Switch to Bootstrap 5
+- Application structure simplifications and improvements
+- Various ux improvements
+- #1237: Various accessibility improvements
+- #1227: Make conference name searchable
+
+### Fixed
+
+- #1223: Fix empty librarian tag facet values
+
+## [v1.0.38] - 2023-09-22
+
+### Added
+
+### Fixed
+
+- Fix regression in searchable fields
+
+## [v1.0.37] - 2023-09-20
+
+### Added
+
+- Start bringing code structure in line with our other apps (deliver, oai-service and people-service)
+
+### Fixed
+
+- #1227: Fix regression in searchable fields
+
+## [v1.0.36] - 2023-09-19
+
+### Added
+
+### Fixed
+
+- #1226: Fix lock record button after edit
+
+## [v1.0.35] - 2023-09-19
+
+### Added
+
 - #1110: Keep related object metadata up-to-date
 - #812: remove confirmation dialog for Lock and Unlock
-- Only save a new version of a publication or dataset if the record has changes
 - Smaller and more efficient search index
+- Add vabb_id.set, vabb_type.set, vabb_approved.set batch operations
+- Various ux improvements
+- remove downtime banner
 
 ### Fixed
 
 - #1108: Cannot add author without first name
+
+## [v1.0.34] - 2023-09-15
+
+### Added
+
+- add planned downtime banner
+
+### Fixed
+
+## [v1.0.33] - 2023-06-30
+
+### Added
+
+### Fixed
+
+- Lower limit for suggest to 20
+
+## [v1.0.32] - 2023-06-20
+
+### Added
+
+- Only save a new version of a publication or dataset if the record has changes
+
+### Fixed
+
+## [v1.0.31] - 2023-06-20
+
+### Added
+
+- Only save a new version of a publication or dataset if the record has changes
+
+### Fixed
+
+## [v1.0.30] - 2023-06-20
+
+### Added
+
+- Add vabb_id.set, vabb_type.set, vabb_approved.set batch operations
+
+### Fixed
 
 ## [v1.0.29] - 2023-06-13
 
@@ -339,7 +513,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.29...HEAD
+[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.48...HEAD
+[v1.0.48]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.47...v1.0.48
+[v1.0.47]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.46...v1.0.47
+[v1.0.46]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.45...v1.0.46
+[v1.0.45]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.44...v1.0.45
+[v1.0.44]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.43...v1.0.44
+[v1.0.43]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.42...v1.0.43
+[v1.0.42]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.41...v1.0.42
+[v1.0.41]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.40...v1.0.41
+[v1.0.40]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.39...v1.0.40
+[v1.0.39]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.38...v1.0.39
+[v1.0.38]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.37...v1.0.38
+[v1.0.37]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.36...v1.0.37
+[v1.0.36]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.35...v1.0.36
+[v1.0.35]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.34...v1.0.35
+[v1.0.34]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.33...v1.0.34
+[v1.0.33]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.32...v1.0.33
+[v1.0.32]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.31...v1.0.32
+[v1.0.31]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.30...v1.0.31
+[v1.0.30]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.29...v1.0.30
 [v1.0.29]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.28...v1.0.29
 [v1.0.28]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.27...v1.0.28
 [v1.0.27]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.26...v1.0.27

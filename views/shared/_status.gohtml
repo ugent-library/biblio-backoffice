@@ -1,13 +1,16 @@
 {{if eq .Status "public"}}
-<span class="badge badge-pill badge-default">
-    <span class="badge-text">Biblio Public</span>
+<span class="badge badge-sm rounded-pill badge-success-light my-2 me-3">
+    <span class="badge-circle"></span>
+    <span class="badge-text">Biblio public</span>
 </span>
 {{else if eq .Status "returned"}}
-<span class="badge badge-pill badge-danger">
-    <span class="badge-text">Biblio Withdrawn</span>
+<span class="badge badge-sm rounded-pill badge-danger-light my-2 me-3">
+    <span class="badge-circle"></span>
+    <span class="badge-text">Biblio withdrawn</span>
 </span>
 {{else if eq .Status "private"}}
-<span class="badge badge-pill badge-secondary">
-    <span class="badge-text">Biblio Draft</span>
+<span class="badge badge-sm rounded-pill badge-warning-light my-2 me-3">
+    <span class="badge-circle"></span>
+    <span class="badge-text">Biblio draft</span>
 </span>
 {{end}}

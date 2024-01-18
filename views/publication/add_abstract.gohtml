@@ -1,5 +1,5 @@
 {{define "modal_dialog"}}
-<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+<div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" role="document">
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">Add abstract</h2>
@@ -17,19 +17,27 @@
             {{end}}
         </div>
         <div class="modal-footer">
-            {{if .Conflict}}
-            <button class="btn btn-primary modal-close">Close</button>
-            {{else}}
-            <button class="btn btn-link modal-close">Cancel</button>
-            <button type="button" name="create" class="btn btn-primary"
-                hx-post="{{pathFor "publication_create_abstract" "id" .Publication.ID}}"
-                hx-headers='{"If-Match": "{{.Publication.SnapshotID}}"}'
-                hx-include=".modal-body"
-                hx-swap="none"
-            >
-                Add abstract
-            </button>
-            {{end}}
+            <div class="bc-toolbar">
+                {{if .Conflict}}
+                <div class="bc-toolbar-left">
+                    <button class="btn btn-primary modal-close">Close</button>
+                </div>
+                {{else}}
+                <div class="bc-toolbar-left">
+                    <button class="btn btn-link modal-close">Cancel</button>
+                </div>
+                <div class="bc-toolbar-right">
+                    <button type="button" name="create" class="btn btn-primary"
+                        hx-post="{{pathFor "publication_create_abstract" "id" .Publication.ID}}"
+                        hx-headers='{"If-Match": "{{.Publication.SnapshotID}}"}'
+                        hx-include=".modal-body"
+                        hx-swap="none"
+                    >
+                        Add abstract
+                    </button>
+                </div>
+                {{end}}
+            </div>
         </div>
     </div>
 </div>

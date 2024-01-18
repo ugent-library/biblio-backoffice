@@ -30,7 +30,7 @@ $bc-avatar-tiny-dimensions: 1.6rem !default;
   justify-content: center;
 
   .if {
-    font-size: 2rem;
+    font-size: 1.8rem;
   }
 }
 
@@ -107,6 +107,10 @@ $bc-avatar-tiny-dimensions: 1.6rem !default;
   }
 }
 
+.bc-avatar--square {
+  border-radius: 0.6rem;
+}
+
 .bc-avatar-and-text {
   display: flex;
   align-items: center;
@@ -121,18 +125,55 @@ $bc-avatar-tiny-dimensions: 1.6rem !default;
 }
 
 .bc-avatar-icon .if{
-  font-size: 1.6rem;
+  font-size: 2rem;
 }
 
 .bc-avatar--rounded {
   border-radius: 0.3rem;
 }
 
-
-.bc-avatar--muted {
-  background-color: $gray-300;
+/* Semantic colors */
+.bc-avatar--light-blue {
+  background: $blue-50;
+  color: $blue-600;
 }
 
+.bc-avatar--danger-light {
+  background-color: $red-50;
+  color: $red-600;
+}
+
+.bc-avatar--warning-light {
+  background-color: $orange-50;
+  color: $orange-600;
+}
+
+.bc-avatar--success-light {
+  background-color: $green-50;
+  color: $green-600;
+}
+
+.bc-avatar--danger {
+  background-color: $warm-red;
+  color: $white;
+}
+
+.bc-avatar--warning {
+  background-color: $warning;
+  color: $orange-800;
+}
+
+.bc-avatar--success {
+  background-color: $success;
+  color: $white;
+}
+
+.bc-avatar--muted {
+  background-color: $gray-50;
+  color: $gray-600;
+}
+
+/* Other colors */
 .bc-avatar--turquoise {
   background: $turquoise;
 }
@@ -161,17 +202,31 @@ $bc-avatar-tiny-dimensions: 1.6rem !default;
   background: $salmon-pink;
 }
 
-.bc-avatar--light-blue {
-  background: $light-blue;
-  color: $blue;
+.bc-avatar--multiple {
+  display: flex;
+  align-items: center;
+  flex-direction: row-reverse;
+  .bc-avatar {
+    box-shadow: 0 0 0 2px $white;
+  }
+
+  .bc-avatar + .bc-avatar {
+    margin-right: -0.2rem;
+  }
 }
 
-.bc-avatar--light-danger {
-  background-color: $light-warm-red;
-  color: $warm-red;
+.bc-avatar--animation-wrapper {
+
+  .bc-avatar {
+    transform: translateX(10%); /* Start the avatars off the right side of the container */
+    opacity: 0;
+    transition: transform 300ms cubic-bezier(0.4, 0.0, 0.2, 1),
+    opacity 300ms cubic-bezier(0.4, 0.0, 0.2, 1);
+  }
+
+  .slide-in {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
-.bc-avatar--danger {
-  background-color: $warm-red;
-  color: $white;
-}

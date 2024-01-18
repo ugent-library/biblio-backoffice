@@ -166,7 +166,8 @@
                     "type": "keyword"
                 },
                 "faculty_id": {
-                    "type": "keyword"
+                    "type": "keyword",
+                    "copy_to": "all"
                 },
                 "extern": {
                     "type": "boolean"
@@ -205,6 +206,9 @@
                 "has_message": {
                     "type": "boolean"
                 },
+                "has_files": {
+                    "type": "boolean"
+                },
                 "publication_status": {
                     "type": "keyword"
                 },
@@ -226,6 +230,39 @@
                 "isxn": {
                     "type": "text",
                     "analyzer": "isxn"
+                },
+                "keyword": {
+                    "type": "text",
+                    "analyzer": "keyword_lowercase",
+                    "copy_to": "all"
+                },
+                "alternative_title": {
+                    "type": "text",
+                    "copy_to": "all"
+                },
+                "issue_title": {
+                    "type": "text",
+                    "copy_to": "all"
+                },
+                "publisher": {
+                    "type": "text",
+                    "copy_to": "all"
+                },
+                "publication": {
+                    "type": "text",
+                    "copy_to": "all"
+                },
+                "publication_abbreviation": {
+                    "type": "text",
+                    "copy_to": "all"
+                },
+                "series_title": {
+                    "type": "text",
+                    "copy_to": "all"
+                },
+                "conference_name": {
+                    "type": "text",
+                    "copy_to": "all"
                 }
             }
         }

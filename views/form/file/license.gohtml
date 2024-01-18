@@ -1,14 +1,15 @@
-<div class="form-group col-md-6{{if .Error}} is-invalid{{end}}">
+<div class="mb-6 col-md-6{{if .Error}} is-invalid{{end}}">
     <label class="col-form-label" for="{{.Name}}">
-        {{.Label}}{{if .Required}}&nbsp;<abbr class="required" title="Required">*</abbr>{{end}}
+        {{.Label}}
         {{with .Tooltip}}
-        <a class="text-muted mx-2" href="https://onderzoektips.ugent.be/en/tips/00002073" data-container="body" data-toggle="popover" data-trigger="focus" data-placement="right" data-content="{{.}}">
+        <a class="text-muted mx-2" href="https://onderzoektips.ugent.be/en/tips/00002073" data-bs-container="body" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right" data-bs-content="{{.}}">
             <i class="if if-info-circle if--small"></i>
-            <div class="sr-only">More info</div>
+            <div class="visually-hidden">More info</div>
         </a>
         {{end}}
+        {{if .Required}}&nbsp;<span class="badge badge-outline-primary badge-sm">Required</span>{{end}}
     </label>
-    <select class="custom-select form-control{{if .Error}} is-invalid{{end}}" name="{{.Name}}"{{if .Disabled}} disabled{{end}}>
+    <select class="form-select form-control{{if .Error}} is-invalid{{end}}" id="{{.Name}}" name="{{.Name}}"{{if .Disabled}} disabled{{end}}>
         {{if .EmptyOption}}<option></option>{{end}}
         {{range .Options}}
         <option value="{{.Value}}"{{if eq .Value $.Value}} selected{{end}}>{{.Label}}</option>

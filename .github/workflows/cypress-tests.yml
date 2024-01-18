@@ -3,17 +3,21 @@ name: Cypress Tests
 on:
   schedule:
     - cron: '30 8 * * *'
+  workflow_dispatch:
+
 
 jobs:
   cypress-run:
     runs-on: ubuntu-latest
     steps:
-      - name: Setup Node.js 14
+      - name: Setup Node.js 18
         uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 18
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          ref: dev
       - name: Uninstall node-sass
         run: npm uninstall node-sass
       - name: Install OS dependencies
@@ -31,6 +35,8 @@ jobs:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           CYPRESS_RESEARCHER_USER_NAME: ${{ secrets.CYPRESS_RESEARCHER_USER_NAME }}
           CYPRESS_RESEARCHER_USER_PASSWORD: ${{ secrets.CYPRESS_RESEARCHER_USER_PASSWORD }}
+          CYPRESS_RESEARCHER_NAME: ${{ vars.CYPRESS_RESEARCHER_NAME }}
           CYPRESS_LIBRARIAN_USER_NAME: ${{ secrets.CYPRESS_LIBRARIAN_USER_NAME }}
           CYPRESS_LIBRARIAN_USER_PASSWORD: ${{ secrets.CYPRESS_LIBRARIAN_USER_PASSWORD }}
+          CYPRESS_LIBRARIAN_NAME: ${{ vars.CYPRESS_LIBRARIAN_NAME }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,6 +1,6 @@
 {{define "page_content"}}
 <div class="w-100 u-scroll-wrapper">
-    <div class="c-header-collapsible bg-white" data-collapsed="true">
+    <div class="bg-white">
         <div class="bc-navbar bc-navbar--large bc-navbar--white">
             <div class="bc-toolbar">
                 <div class="bc-toolbar-left">
@@ -12,18 +12,18 @@
                     </div>
                 </div>
                 <div class="bc-toolbar-right">
-                   {{if and (.User.CanEditDataset .Dataset) (eq .Dataset.Status "public") (not .Dataset.Locked)}}
+                    {{if .User.CanWithdrawDataset .Dataset}}
                     <div class="bc-toolbar-item">
                         <button class="btn btn-outline-danger"
                             hx-get="{{pathFor "dataset_confirm_withdraw" "id" .Dataset.ID|querySet "redirect-url" .CurrentURL.String}}"
                             hx-target="#modals"
                         >
-                            <i class="if if-arrow-go-back"></I>
+                            <i class="if if-arrow-go-back"></i>
                             <span class="btn-text">Withdraw</span>
                         </button>
-                    </div>
+                    </div>  
                     {{end}}
-                    {{if and (.User.CanEditDataset .Dataset) (eq .Dataset.Status "returned") (not .Dataset.Locked)}}
+                    {{if and (.User.CanPublishDataset .Dataset) (eq .Dataset.Status "returned")}}
                     <div class="bc-toolbar-item">
                         <button class="btn btn-success"
                             hx-get="{{pathFor "dataset_confirm_republish" "id" .Dataset.ID|querySet "redirect-url" .CurrentURL.String}}"
@@ -33,7 +33,7 @@
                         </button>
                     </div>
                     {{end}}
-                    {{if and (.User.CanEditDataset .Dataset) (ne .Dataset.Status "returned") (ne .Dataset.Status "public") (not .Dataset.Locked)}}
+                    {{if and (.User.CanPublishDataset .Dataset) (ne .Dataset.Status "returned")}}
                     <div class="bc-toolbar-item">
                         <button class="btn btn-success"
                             hx-get="{{pathFor "dataset_confirm_publish" "id" .Dataset.ID|querySet "redirect-url" .CurrentURL.String}}"
@@ -47,32 +47,30 @@
                         {{if and .User.CanCurate .Dataset.Locked}}
                         <button class="btn btn-outline-secondary"
                             hx-post="{{pathFor "dataset_unlock" "id" .Dataset.ID|querySet "redirect-url" .CurrentURL.String}}"
-                            hx-headers='{"If-Match": "{{.Dataset.SnapshotID}}"}'
                             hx-swap="none"
                         >
-                            <i class="if if-lock-unlock"></I>
+                            <i class="if if-lock-unlock"></i>
                             <span class="btn-text">Unlock record</span>
                         </button>
                         {{else if .User.CanCurate}}
                         <button class="btn btn-outline-secondary"
                             hx-post="{{pathFor "dataset_lock" "id" .Dataset.ID|querySet "redirect-url" .CurrentURL.String}}"
-                            hx-headers='{"If-Match": "{{.Dataset.SnapshotID}}"}'
                             hx-swap="none"
                         >
-                            <i class="if if-lock"></I>
+                            <i class="if if-lock"></i>
                             <span class="btn-text">Lock record</span>
                         </button>
                         {{end}}
                     </div>
+                    {{if .User.CanDeleteDataset .Dataset}}
                     <div class="bc-toolbar-item">
                         <div class="dropdown">
                             <button class="btn btn-outline-primary btn-icon-only"
-                                type="button" data-toggle="dropdown"
+                                type="button" data-bs-toggle="dropdown"
                                 aria-haspopup="true" aria-expanded="false">
                                 <i class="if if-more"></i>
                             </button>
                             <div class="dropdown-menu">
-                                {{if .User.CanDeleteDataset .Dataset}}
                                 <button class="dropdown-item"
                                     hx-get="{{pathFor "dataset_confirm_delete" "id" .Dataset.ID|querySet "redirect-url" .RedirectURL}}"
                                     hx-target="#modals"
@@ -80,10 +78,10 @@
                                     <i class="if if-delete"></i>
                                     <span>Delete</span>
                                 </button>
-                                {{end}}
                             </div>
                         </div>
                     </div>
+                    {{end}}
                 </div>
             </div>
         </div>
@@ -97,18 +95,18 @@
                             {{partial "shared/status" .Dataset}}
                         </div>
                         {{if .Dataset.Locked}}
-                        <div class="bc-toolbar-item">
-                            <span class="c-subline text-nowrap pr-5 border-right" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Locked for editing">
+                        <div class="bc-toolbar-item" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Locked for editing">
+                            <span class="c-subline text-nowrap pe-5 border-end">
                               <i class="if if-lock if--small if--muted"></i>
-                              <span class="text-muted c-body-small ml-2">Locked</span>
+                              <span class="text-muted c-body-small ms-2">Locked</span>
                             </span>
                         </div>
                         {{end}}
                       </div>
                       <div class="bc-toolbar-right">
-                        <div class="bc-toolbar-item mr-auto mr-lg-0">
-                          <div class="d-flex align-items-center flex-wrap justify-content-md-end">
-                            <span class="c-subline text-truncate text-nowrap pr-5">
+                        <div class="bc-toolbar-item me-auto me-lg-0">
+                          <div class="d-flex align-items-center flex-wrap justify-content-end">
+                            <span class="c-subline text-truncate text-nowrap pe-5">
                                {{partial "shared/created_by" .Dataset}}
                             </span>
                             <span class="c-subline text-truncate text-nowrap">

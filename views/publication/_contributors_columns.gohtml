@@ -1,4 +1,4 @@
-<td class="pl-8 col-5">
+<td>
     {{if .User.CanEditPublication .Publication}}
     <input type="hidden" name="position" value="{{.Position}}">
     {{end}}
@@ -15,17 +15,17 @@
         <div class="bc-avatar-text">
             {{.Contributor.Name}}
             {{with .Contributor.ORCID}}
-            <span class="text-muted c-body-small ml-4"><i class="if if-orcid if--small text-success"></i> {{.}}</span>
+            <span class="text-muted c-body-small ms-4"><i class="if if-orcid if--small text-success"></i> {{.}}</span>
             {{end}}
         </div>
     </div>
 </td>
 {{if eq .Role "author"}}
-<td class="col-2">
+<td>
     {{if .Contributor.CreditRole}}
     <ul class="list-unstyled">
         {{range .Contributor.CreditRole}}
-        <li>{{$.Locale.TS "credit_roles" .}}</li>
+        <li>{{$.Loc.Get (print "credit_roles." .)}}</li>
         {{end}}
     </ul>
     {{else}}
@@ -33,25 +33,25 @@
     {{end}}
 </td>
 {{end}}
-<td class="col-2">
+<td>
     {{if .Contributor.Person}}
     <i class="if if-ghent-university text-default"></i>
-    <span>UGent {{.Locale.TS "publication.contributor.role" .Role}}</span>
+    <span>UGent</span>
     {{else}}
-    External {{.Locale.TS "publication.contributor.role" .Role}}
+    External
     {{end}}
 </td>
-<td class="col-2">
+<td>
     {{if .Contributor.Person}}
         <ul class="c-meta-list c-meta-list-horizontal">
         {{range $i, $cd := .Contributor.Person.Affiliations}}
             <li class="c-meta-item">
-                <span class="badge badge-pill badge-default">
+                <span class="badge rounded-pill badge-default">
                     <span class="badge-text">{{$cd.OrganizationID}}</span>
                     {{with $cd.Organization}}
-                    <a class="ml-4" href="#" data-container="body" data-toggle="popover" data-trigger="focus" data-placement="right" data-content="{{.Name}}">
+                    <a class="ms-4" href="#" data-bs-container="body" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right" data-bs-content="{{.Name}}">
                         <i class="if if-info-circle if--small"></i>
-                        <div class="sr-only">More info</div>
+                        <div class="visually-hidden">More info</div>
                     </a>
                     {{end}}
                 </span>
@@ -60,7 +60,7 @@
         </ul>
     {{end}}
 </td>
-<td class="pr-4 col-3">
+<td>
     {{if .User.CanEditPublication .Publication}}
     <div class="c-button-toolbar">
         <button type="button" class="btn btn-default"

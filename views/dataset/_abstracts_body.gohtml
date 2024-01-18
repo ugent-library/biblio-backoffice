@@ -3,23 +3,23 @@
     <table class="table">
         <thead>
             <tr>
-                <th class="pl-6">Abstract</th>
+                <th class="ps-6">Abstract</th>
                 <th>Language</th>
-                <th class="pr-6"></th>
+                <th class="pe-6"></th>
             </tr>
         </thead>
         <tbody>
         {{range $i, $a := .Dataset.Abstract}}
             <tr class="row-{{$i}}">
-                <td class="pl-6">
+                <td class="ps-6">
                     <p>{{$a.Text}}</p>
                 </td>
-                <td>{{$.Locale.LanguageName $a.Lang}}</td>
-                <td class="pr-6">
+                <td>{{languageName $a.Lang}}</td>
+                <td class="pe-6">
                     {{if $.User.CanEditDataset $.Dataset}}
                     <div class="c-button-toolbar">
                         <div class="dropdown">
-                            <button class="btn btn-link btn-icon-only btn-link-muted" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <button class="btn btn-link btn-icon-only btn-link-muted" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="if if-more"></i>
                             </button>
                             <div class="dropdown-menu">

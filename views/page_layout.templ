@@ -1,0 +1,251 @@
+package views
+
+import "github.com/ugent-library/biblio-backoffice/ctx"
+
+templ pageLayout(c *ctx.Ctx, title string, meta templ.Component) {
+    <!DOCTYPE html>
+    <html class="u-maximize-height" dir="ltr" lang="en">
+
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <meta name="robots" content="noindex"/>
+        <link rel="stylesheet" href={ c.AssetPath("/css/app.css") }/>
+        <link rel="icon" href={ c.AssetPath("/favicon.ico") }/>
+        <title>{ title }</title>
+        <meta name="csrf-token" content={ c.CSRFToken }/>
+        if meta != nil {
+        {! meta }
+        }
+    </head>
+
+    <body class="u-maximize-height overflow-hidden u-scroll-wrapper">
+        <header>
+            if c.Env == "development" {
+            <div class="alert alert-warning mb-0 py-1" role="alert">
+                <p>
+                    <strong>Warning!</strong>&nbsp;This is the&nbsp;<strong>development</strong>&nbsp;version of the Biblio backend. Features may not work correctly and data entered here will not be retained.
+                </p>
+            </div>
+            }
+            if c.Env == "staging" {
+            <div class="alert alert-warning mb-0 py-1" role="alert">
+                <p>
+                    <strong>Warning!</strong>&nbsp;This is the&nbsp;<strong>test</strong>&nbsp;version of the Biblio backend. Data entered here will not be retained.
+                </p>
+            </div>
+            }
+            if c.OriginalUser != nil {
+            <div class="alert alert-danger mb-0 py-1" role="alert">
+                <form action={ templ.URL(c.PathTo("delete_impersonation").String()) } method="POST">
+                    @csrfField(c)
+                    <label class="my-1 me-2 fw-bold">Viewing the perspective of { c.User.FullName }.</label>
+                    <button type="submit" class="btn btn-danger my-1">return to { c.OriginalUser.FullName }</button>.
+                </form>
+            </div>
+            }
+            <div class="bc-navbar bc-navbar--small bc-navbar--bordered-bottom bc-navbar--white bc-navbar--fixed shadow-sm px-4">
+                <div class="bc-toolbar bc-toolbar-sm">
+                    <div class="bc-toolbar-left">
+                        <div class="bc-toolbar-item">
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item">
+                                        <a href={ templ.URL(c.PathTo("home").String()) }>
+                                            <img class="c-logo d-none d-xl-inline-block" src={ c.AssetPath("/images/ghent-university-library-logo.svg") } alt="Ghent University Library"/>
+                                            <img class="c-logo d-inline-block d-xl-none" src={ c.AssetPath("/images/ghent-university-library-mark.svg") } alt="Ghent University Library"/>
+                                        </a>
+                                    </li>
+                                    <li class="breadcrumb-item">
+                                        <a href={ templ.URL(c.PathTo("home").String()) }>
+                                            <i class="if if-book if--small me-3"></i>Biblio
+                                        </a>
+                                    </li>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                    <div class="bc-toolbar-right">
+                        <div class="bc-toolbar-item">
+                            <ul class="nav nav-main">
+                                <li class="nav-item">
+                                    <a class="nav-link collapsed" href={ templ.URL(c.FrontendURL + "/contact") } target="_blank">
+                                        <i class="if if-info-circle if--small text-muted"></i>
+                                        <span class="btn-text">Help</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    if c.User != nil {
+                                        <div class="dropdown">
+                                            <button class="nav-link dropdown-toggle" role="button"
+                                                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <div class="bc-avatar-and-text">
+                                                    <div class="bc-avatar bc-avatar--tiny bc-avatar--light-blue me-3">
+                                                        <i class="if if-user"></i>
+                                                    </div>
+                                                    <div class="bc-avatar-text">{ c.User.FullName }</div>
+                                                </div>
+                                            </button>
+                                            <div class="dropdown-menu mt-2" x-placement="top">
+                                                <div class="bc-avatar-and-text m-4">
+                                                    <div class="bc-avatar bc-avatar-icon bc-avatar--small">
+                                                        <i class="if if-user"></i>
+                                                    </div>
+                                                    <div class="bc-avatar-text">
+                                                        <h4>{ c.User.FullName }</h4>
+                                                        <p class="text-muted c-body-small">{ c.User.Email }</p>
+                                                    </div>
+                                                </div>
+                                                <hr class="dropdown-divider"/>
+                                                if c.User.CanImpersonateUser() && c.OriginalUser == nil {
+                                                <a class="dropdown-item" href="#"
+                                                    hx-get={ c.PathTo("add_impersonation").String() }
+                                                    hx-target="#modals"
+                                                >
+                                                    <i class="if if-eye"></i>
+                                                    View as
+                                                </a>
+                                                }
+                                                <a class="dropdown-item" href={ templ.URL(c.PathTo("logout").String()) }>
+                                                    <i class="if if-log-out"></i>
+                                                    Logout
+                                                </a>
+                                            </div>
+                                        </div>
+                                    } else {
+                                        <a class="btn btn-link btn-sm ms-4" href={ templ.URL(c.PathTo("login").String()) }>
+                                            <i class="if if-arrow-right ms-0"></i>
+                                            <span class="btn-text me-2">Log in</span>
+                                        </a>
+                                    }
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <main>
+            <div class="d-flex u-maximize-height">
+                <div class={"c-sidebar", templ.KV("c-sidebar--dark-gray", c.UserRole == "curator")}>
+                    if c.User != nil && c.User.CanCurate() {
+                    <div class="dropdown mx-lg-4 mb-6 mt-3">
+                        <button class="btn btn-outline-light dropdown-toggle w-100 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        switch c.UserRole {
+                        case "user":
+                            <i class="if if-briefcase mx-2 ms-lg-4"></i>
+                            <span class="visually-hidden">Researcher</span>
+                        case "curator":
+                            <i class="if if-book mx-2 ms-lg-4"></i>
+                            <span class="visually-hidden">Librarian</span>
+                        }
+                        </button>
+                        <div class="dropdown-menu">
+                            <button class="dropdown-item" hx-put={ c.PathTo("update_role", "role", "user").String() } hx-swap="none">
+                                <i class="if if-briefcase"></i> Researcher
+                            </button>
+                            <button class="dropdown-item" hx-put={ c.PathTo("update_role", "role", "curator").String() } hx-swap="none">
+                                <i class="if if-book"></i> Librarian
+                            </button>
+                        </div>
+                    </div>
+                    }
+                    <div class="c-sidebar__menu">
+                        if c.User != nil {
+                        <nav>
+                            <ul class="c-sidebar-menu">
+                                <li class={"c-sidebar__item", templ.KV("c-sidebar__item--active", c.Nav == "dashboard")}>
+                                    <a href={ templ.URL(c.PathTo("dashboard").String()) }
+                                        if c.UserRole == "user" {
+                                        hx-get={ c.PathTo("dashboard_icon").String() }
+                                        hx-trigger="load, every 5s"
+                                        }
+                                    >
+                                        @DashboardIcon(c, false)
+                                    </a>
+                                </li>
+                                <li class={"c-sidebar__item", templ.KV("c-sidebar__item--active", c.Nav == "publications")}>
+                                    <a href={ templ.URL(c.PathTo("publications").String()) }>
+                                        <span class="c-sidebar__icon">
+                                            <i class="if if-article"></i>
+                                        </span>
+                                        <span class="c-sidebar__label">Biblio Publications</span>
+                                    </a>
+                                </li>
+                                <li class={"c-sidebar__item", templ.KV("c-sidebar__item--active", c.Nav == "datasets")}>
+                                    <a href={ templ.URL(c.PathTo("datasets").String()) }>
+                                        <span class="c-sidebar__icon">
+                                            <i class="if if-database"></i>
+                                        </span>
+                                        <span class="c-sidebar__label">Biblio Datasets</span>
+                                    </a>
+                                </li>
+                                if c.UserRole == "curator" {
+                                <li class={"c-sidebar__item", templ.KV("c-sidebar__item--active", c.Nav == "batch")}>
+                                    <a href={ templ.URL(c.PathTo("publication_batch").String()) }>
+                                        <span class="c-sidebar__label">Batch</span>
+                                    </a>
+                                </li>
+                                }
+                            </ul>
+                        </nav>
+                        }
+                    </div>
+                    <div class="c-sidebar__bottom">
+                        <img src={ c.AssetPath("/images/logo-ugent-white.svg") } class="d-none d-lg-block" alt="Logo UGent" height="48px" width="auto"/>
+                        <img src={ c.AssetPath("/images/mark-ugent-white.svg") } class="d-block d-lg-none" alt="Logo UGent" height="20px" width="auto"/>
+                    </div>
+                </div>
+                { children... }
+            </div>
+        </main>
+
+        <div id="modals"></div>
+
+        <template class="template-modal-error">
+            <div class="d-block modal-backdrop fade show"></div>
+            <div class="d-block modal show" tabindex="-1" aria-modal="true" role="dialog">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <div class="c-blank-slate c-blank-slate-danger">
+                                <div class="bc-avatar">
+                                    <i class="if if-error-circle"></i>
+                                </div>
+                                <p class="msg"></p>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="bc-toolbar">
+                                <div class="bc-toolbar-left">
+                                    <button class="btn btn-link modal-close">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <div id="flash-messages">
+            for _, f := range c.Flash {
+                @flashMessage(f)
+            }
+        </div>
+
+        <script type="application/javascript" src={ c.AssetPath("/js/app.js") }></script>
+    </body>
+
+    </html>
+}
+
+templ DashboardIcon(c *ctx.Ctx, notification bool) {
+    <span class="c-sidebar__icon">
+        if notification {
+        <i class="if if-home if--notification if--notification-warning"></i>
+        } else {
+        <i class="if if-home"></i>
+        }
+    </span>
+    <span class="c-sidebar__label">Dashboard</span>
+}

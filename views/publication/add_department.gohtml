@@ -5,7 +5,7 @@
             <h2 class="modal-title">Select departments</h2>
         </div>
         <div class="modal-body">
-            <label class="sr-only" for="department-q">Search</label>
+            <label class="visually-hidden" for="department-q">Search</label>
             <input class="form-control" type="text" id="department-q" name="q" placeholder="Search..."
                 hx-get="{{pathFor "publication_suggest_departments" "id" .Publication.ID}}"
                 hx-trigger="keyup changed delay:500ms"
@@ -16,7 +16,11 @@
             </div>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-link modal-close" data-dismiss="modal">Cancel</button>
+            <div class="bc-toolbar">
+                <div class="bc-toolbar-left">
+                    <button class="btn btn-link modal-close" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
         </div>
     </div>
 </div>

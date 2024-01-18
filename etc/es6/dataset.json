@@ -151,7 +151,8 @@
                     "type": "keyword"
                 },
                 "faculty_id": {
-                    "type": "keyword"
+                    "type": "keyword",
+                    "copy_to": "all"
                 },
                 "id": {
                     "type": "keyword"
@@ -189,6 +190,15 @@
                 "year": {
                     "type": "date",
                     "format": "year",
+                    "copy_to": "all"
+                },
+                "keyword": {
+                    "type": "text",
+                    "analyzer": "keyword_lowercase",
+                    "copy_to": "all"
+                },
+                "publisher": {
+                    "type": "text",
                     "copy_to": "all"
                 }
             }

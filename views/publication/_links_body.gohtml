@@ -3,25 +3,25 @@
     <table class="table" id="links-table">
         <thead>
             <tr>
-                <th class="pl-6">Link</th>
+                <th class="ps-6">Link</th>
                 <th>Relation</th>
-                <th class="pr-6"></th>
+                <th class="pe-6"></th>
             </tr>
         </thead>
         <tbody>
         {{range $k, $a := .Publication.Link}}
             {{$k = $k|toString}}
             <tr class="row-{{$k}}">
-                <td class="pl-6">
+                <td class="ps-6">
                     <a class="text-break" target="_blank" href="{{.URL}}">{{.URL}}</a>
                     <p class="c-body-small text-muted m-0">{{.Description}}</p>
                 </td>
-                <td>{{$.Locale.TS "publication_link_relations" .Relation}}</td>
-                <td class="pr-6">
+                <td>{{$.Loc.Get (print "publication_link_relations." .Relation)}}</td>
+                <td class="pe-6">
                     {{if $.User.CanEditPublication $.Publication}}
                     <div class="c-button-toolbar">
                         <div class="dropdown">
-                            <button class="btn btn-link btn-icon-only btn-link-muted" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <button class="btn btn-link btn-icon-only btn-link-muted" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="if if-more"></i>
                             </button>
                             <div class="dropdown-menu">

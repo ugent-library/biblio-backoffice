@@ -5,16 +5,22 @@
             <h2 class="modal-title">Changing the publication type might result in data loss</h2>
         </div>
         <div class="modal-body">
-            <p>Are you sure you want to change the type to {{.Locale.TS "publication_types" .Type}}?</p>
+            <p>Are you sure you want to change the type to {{.Loc.Get (print "publication_types." .Type)}}?</p>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-link modal-close">Cancel</button>
-            <button class="btn btn-danger"
-                hx-put="{{pathFor "publication_update_type" "id" .Publication.ID}}"
-                hx-headers='{"If-Match": "{{.Publication.SnapshotID}}"}'
-                hx-vals='{"type": "{{.Type}}"}'
-                hx-swap="none"
-            >Proceed</button>
+            <div class="bc-toolbar">
+                <div class="bc-toolbar-left">
+                    <button class="btn btn-link modal-close">Cancel</button>
+                </div>
+                <div class="bc-toolbar-right">
+                    <button class="btn btn-danger"
+                        hx-put="{{pathFor "publication_update_type" "id" .Publication.ID}}"
+                        hx-headers='{"If-Match": "{{.Publication.SnapshotID}}"}'
+                        hx-vals='{"type": "{{.Type}}"}'
+                        hx-swap="none"
+                    >Proceed</button>
+                </div>
+            </div>
         </div>
     </div>
 </div>

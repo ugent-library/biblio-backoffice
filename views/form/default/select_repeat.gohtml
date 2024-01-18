@@ -1,41 +1,41 @@
-<div class="form-group row">
-    <label class="col-lg-3 col-form-label d-flex align-items-stretch" for="{{.Name}}">
-         {{.Label}}{{if .Required}}&nbsp;<abbr class="required" title="Required">*</abbr>{{end}}
-         {{if .Tooltip}}
-         <a class="text-muted mx-2" href="#" data-container="body" data-toggle="popover" data-trigger="focus" data-placement="right" data-content="{{.Tooltip}}">
-             <i class="if if-info-circle if--small"></i>
-             <div class="sr-only">More info</div>
-         </a>
-         {{end}}
+<div class="mb-6 row">
+    <label class="col-lg-3 col-form-label mt-2" for="{{.Name}}-0">
+        {{.Label}}
+        {{if .Tooltip}}
+        <a class="text-muted mx-2" href="#" data-bs-container="body" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right" data-bs-content="{{.Tooltip}}">
+            <i class="if if-info-circle if--small"></i>
+            <div class="visually-hidden">More info</div>
+        </a>
+        {{end}}
+        {{if .Required}}&nbsp;<span class="badge badge-outline-primary badge-sm">Required</span>{{end}}
      </label>
      <div class="col-lg-{{.Cols}} form-values">
          {{range $i, $v := .Values}}
          <div class="d-flex mb-3 form-value">
-             <select class="custom-select form-control" name="{{$.Name}}[{{$i}}]" data-tmpl-name="{{$.Name}}[{i}]">
+             <select class="custom-select form-control" name="{{$.Name}}" id="{{$.Name}}-{{$i}}" data-tmpl-id="{{$.Name}}-{i}">
                  {{if $.EmptyOption}}<option></option>{{end}}
                  {{range $.Options}}
                  <option value="{{.Value}}"{{if eq .Value $v}} selected{{end}}>{{.Label}}</option>
                  {{end}}
              </select>
-             <button class="btn btn-link-muted btn-icon-only ml-3 form-value-delete" type="button">
+             <button class="btn btn-link-muted btn-icon-only ms-3 form-value-delete" type="button">
                  <i class="if if-delete"></i>
-                 <div class="sr-only">Delete</div>
+                 <div class="visually-hidden">Delete</div>
              </button>
          </div>
          {{end}}
- 
+
          <div class="d-flex mb-3 form-value">
-             <select class="custom-select form-control" name="{{.Name}}[{{len .Values}}]" data-tmpl-name="{{.Name}}[{i}]">
+             <select class="custom-select form-control" id="{{.Name}}-{{len .Values}}" name="{{.Name}}" data-tmpl-id="{{$.Name}}-{i}">
                  {{if .EmptyOption}}<option></option>{{end}}
                  {{range .Options}}
                  <option value="{{.Value}}">{{.Label}}</option>
                  {{end}}
              </select>
-             <button class="btn btn-outline-primary btn-icon-only ml-3 form-value-add" type="button">
+             <button class="btn btn-outline-primary btn-icon-only ms-3 form-value-add" type="button">
                  <i class="if if-add"></i>
-                 <div class="sr-only">Add</div>
+                 <div class="visually-hidden">Add</div>
              </button>
          </div>
      </div>
  </div>
- 

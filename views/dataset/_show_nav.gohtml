@@ -9,7 +9,7 @@
             hx-push-url="{{$u}}"
             role="tab"
             aria-controls="{{.}}"
-            aria-selected="{{if eq $.ActiveSubNav .}}true{{else}}false{{end}}">{{$.Locale.TS "dataset.subnav" .}}</a>
+            aria-selected="{{if eq $.ActiveSubNav .}}true{{else}}false{{end}}">{{$.Loc.Get (print "dataset.subnav." .)}}</a>
     </li>
 {{end}}
 </ul>

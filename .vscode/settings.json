@@ -1,7 +1,26 @@
 {
-    "protoc": {
-        "options": [
-            "-I ./api/v1"
-        ]
-    }
+  "protoc": {
+    "options": ["-I ./api/v1"]
+  },
+  "cSpell.words": [
+    "arxiv",
+    "Arxiv",
+    "biblio",
+    "Biblio",
+    "bibtex",
+    "briefcase",
+    "CYPRESSTEST",
+    "eisbn",
+    "eissn",
+    "esci",
+    "isbn",
+    "issn",
+    "liblogin",
+    "Moreels",
+    "organiser",
+    "pubmed",
+    "socs",
+    "tagify"
+  ],
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

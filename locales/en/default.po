@@ -1,0 +1,2364 @@
+msgid ""
+msgstr ""
+
+msgid "publication.search.scopes.all"
+msgstr "All"
+
+msgid "publication.search.scopes.contributed"
+msgstr "My publications"
+
+msgid "publication.search.scopes.created"
+msgstr "Registered by me"
+
+msgid "dataset.search.scopes.all"
+msgstr "All"
+
+msgid "dataset.search.scopes.contributed"
+msgstr "My datasets"
+
+msgid "dataset.search.scopes.created"
+msgstr "Registered by me"
+
+msgid "publication.subnav.description"
+msgstr "Description"
+
+msgid "publication.subnav.contributors"
+msgstr "People & Affiliations"
+
+msgid "publication.subnav.datasets"
+msgstr "Datasets"
+
+msgid "publication.subnav.files"
+msgstr "Full text & Files"
+
+msgid "publication.subnav.activity"
+msgstr "Biblio Messages"
+
+msgid "publication.page.show.title"
+msgstr "Publication - Biblio"
+
+msgid "dataset.subnav.description"
+msgstr "Description"
+
+msgid "dataset.subnav.contributors"
+msgstr "People & Affiliations"
+
+msgid "dataset.subnav.publications"
+msgstr "Publications"
+
+msgid "dataset.subnav.activity"
+msgstr "Biblio Messages"
+
+msgid "dataset.page.show.title"
+msgstr "Dataset - Biblio"
+
+msgid "confirmations."
+msgstr "-"
+
+msgid "confirmations.yes"
+msgstr "Yes"
+
+msgid "confirmations.no"
+msgstr "No"
+
+msgid "confirmations.dontknow"
+msgstr "Don't know"
+
+msgid "contributor.first_name"
+msgstr "First name"
+
+msgid "contributor.last_name"
+msgstr "Last name"
+
+msgid "publication.contributor.title.author"
+msgstr "Authors"
+
+msgid "publication.contributor.title.editor"
+msgstr "Editors"
+
+msgid "publication.contributor.title.supervisor"
+msgstr "Supervisors"
+
+msgid "dataset.contributor.title.author"
+msgstr "Creators"
+
+msgid "dataset.contributor.title.contributor"
+msgstr "Contributors"
+
+msgid "publication.contributor.role.author"
+msgstr "author"
+
+msgid "publication.contributor.role.editor"
+msgstr "editor"
+
+msgid "publication.contributor.role.supervisor"
+msgstr "supervisor"
+
+msgid "dataset.contributor.role.author"
+msgstr "creator"
+
+msgid "dataset.contributor.role.contributor"
+msgstr "contributor"
+
+msgid "credit_roles.first_author"
+msgstr "First author"
+
+msgid "credit_roles.last_author"
+msgstr "Last author"
+
+msgid "credit_roles.conceptualization"
+msgstr "Conceptualization"
+
+msgid "credit_roles.data_curation"
+msgstr "Datacuration"
+
+msgid "credit_roles.formal_analysis"
+msgstr "Formal analysis"
+
+msgid "credit_roles.funding_acquisition"
+msgstr "Funding acquisition"
+
+msgid "credit_roles.investigation"
+msgstr "Investigation"
+
+msgid "credit_roles.methodology"
+msgstr "Methodology"
+
+msgid "credit_roles.project_administration"
+msgstr "Project administration"
+
+msgid "credit_roles.resources"
+msgstr "Resources"
+
+msgid "credit_roles.software"
+msgstr "Software"
+
+msgid "credit_roles.supervision"
+msgstr "Supervision"
+
+msgid "credit_roles.validation"
+msgstr "Validation"
+
+msgid "credit_roles.visualization"
+msgstr "Visualization"
+
+msgid "credit_roles.writing_original_draft"
+msgstr "Writing - original draft"
+
+msgid "credit_roles.writing_review_editing"
+msgstr "Writing - review & editing"
+
+msgid "publication_licenses.CC0-1.0"
+msgstr "CC0 (1.0)"
+
+msgid "publication_licenses.CC-BY-4.0"
+msgstr "CC BY (4.0)"
+
+msgid "publication_licenses.CC-BY-SA-4.0"
+msgstr "CC BY-SA (4.0)"
+
+msgid "publication_licenses.CC-BY-NC-4.0"
+msgstr "CC BY-NC (4.0)"
+
+msgid "publication_licenses.CC-BY-ND-4.0"
+msgstr "CC BY-ND (4.0)"
+
+msgid "publication_licenses.CC-BY-NC-SA-4.0"
+msgstr "CC BY-NC-SA (4.0)"
+
+msgid "publication_licenses.CC-BY-NC-ND-4.0"
+msgstr "CC BY-NC-ND (4.0)"
+
+msgid "publication_licenses.InCopyright"
+msgstr "No license (in copyright)"
+
+msgid "publication_licenses.LicenseNotListed"
+msgstr "The license is not listed here"
+
+msgid "publication_licenses.CopyrightUnknown"
+msgstr "I don't know the status of the copyright of this publication"
+
+msgid "dataset_licenses."
+msgstr "-"
+
+msgid "dataset_licenses.CC0-1.0"
+msgstr "CC0 (1.0)"
+
+msgid "dataset_licenses.CC-BY-4.0"
+msgstr "CC BY (4.0)"
+
+msgid "dataset_licenses.CC-BY-SA-4.0"
+msgstr "CC BY-SA (4.0)"
+
+msgid "dataset_licenses.CC-BY-NC-4.0"
+msgstr "CC BY-NC (4.0)"
+
+msgid "dataset_licenses.CC-BY-ND-4.0"
+msgstr "CC BY-ND (4.0)"
+
+msgid "dataset_licenses.CC-BY-NC-SA-4.0"
+msgstr "CC BY-NC-SA (4.0)"
+
+msgid "dataset_licenses.CC-BY-NC-ND-4.0"
+msgstr "CC BY-NC-ND (4.0)"
+
+msgid "dataset_licenses.LicenseNotListed"
+msgstr "The license is not listed here"
+
+msgid "dataset_access_levels."
+msgstr "-"
+
+msgid "dataset_access_levels.info:eu-repo/semantics/openAccess"
+msgstr "Open access"
+
+msgid "dataset_access_levels.info:eu-repo/semantics/embargoedAccess"
+msgstr "Embargoed access"
+
+msgid "dataset_access_levels.info:eu-repo/semantics/restrictedAccess"
+msgstr "Restricted access"
+
+msgid "dataset_access_levels.info:eu-repo/semantics/closedAccess"
+msgstr "Closed access"
+
+msgid "dataset_access_levels_after_embargo."
+msgstr "-"
+
+msgid "dataset_access_levels_after_embargo.info:eu-repo/semantics/openAccess"
+msgstr "Open access"
+
+msgid ""
+"dataset_access_levels_after_embargo.info:eu-repo/semantics/restrictedAccess"
+msgstr "Restricted access"
+
+msgid "dataset_link_relations.data_management_plan"
+msgstr "Data management plan"
+
+msgid "dataset_link_relations.homepage"
+msgstr "Accompanying website"
+
+msgid "dataset_link_relations.related_information"
+msgstr "Related information"
+
+msgid "dataset_link_relations.software"
+msgstr "Software"
+
+msgid "publication_sorts.date-updated-desc"
+msgstr "Updated (newest first)"
+
+msgid "publication_sorts.date-created-asc"
+msgstr "Added (oldest first)"
+
+msgid "publication_sorts.date-created-desc"
+msgstr "Added (newest first)"
+
+msgid "publication_sorts.year-desc"
+msgstr "Publication year (newest first)"
+
+msgid "publication_types.journal_article"
+msgstr "Journal article"
+
+msgid "publication_types.book"
+msgstr "Book"
+
+msgid "publication_types.book_chapter"
+msgstr "Book chapter"
+
+msgid "publication_types.book_editor"
+msgstr "Book editor"
+
+msgid "publication_types.issue_editor"
+msgstr "Issue editor"
+
+msgid "publication_types.conference"
+msgstr "Conference"
+
+msgid "publication_types.dissertation"
+msgstr "Dissertation"
+
+msgid "publication_types.miscellaneous"
+msgstr "Miscellaneous"
+
+msgid "journal_article_types."
+msgstr "-"
+
+msgid "journal_article_types.original"
+msgstr "Original Article"
+
+msgid "journal_article_types.review"
+msgstr "Review Article"
+
+msgid "journal_article_types.letterNote"
+msgstr "Letter / Note"
+
+msgid "journal_article_types.proceedingsPaper"
+msgstr "Proceedings Paper"
+
+msgid "conference_types."
+msgstr "-"
+
+msgid "conference_types.proceedingsPaper"
+msgstr "Proceedings Paper"
+
+msgid "conference_types.abstract"
+msgstr "Meeting Abstract"
+
+msgid "conference_types.poster"
+msgstr "Poster"
+
+msgid "conference_types.other"
+msgstr "Other Conference Contribution"
+
+msgid "miscellaneous_types."
+msgstr "-"
+
+msgid "miscellaneous_types.artReview"
+msgstr "Art review"
+
+msgid "miscellaneous_types.artisticWork"
+msgstr "Artistic Work"
+
+msgid "miscellaneous_types.bibliography"
+msgstr "Bibliography"
+
+msgid "miscellaneous_types.biography"
+msgstr "Biography"
+
+msgid "miscellaneous_types.blogPost"
+msgstr "Blogpost"
+
+msgid "miscellaneous_types.bookReview"
+msgstr "Book review"
+
+msgid "miscellaneous_types.correction"
+msgstr "Correction"
+
+msgid "miscellaneous_types.dictionaryEntry"
+msgstr "Dictionary entry"
+
+msgid "miscellaneous_types.editorialMaterial"
+msgstr "Editorial material"
+
+msgid "miscellaneous_types.encyclopediaEntry"
+msgstr "Encyclopedia entry"
+
+msgid "miscellaneous_types.exhibitionReview"
+msgstr "Exhibition review"
+
+msgid "miscellaneous_types.filmReview"
+msgstr "Film review"
+
+msgid "miscellaneous_types.lectureSpeech"
+msgstr "Lecture speech"
+
+msgid "miscellaneous_types.lemma"
+msgstr "Lemma"
+
+msgid "miscellaneous_types.magazinePiece"
+msgstr "Magazine piece"
+
+msgid "miscellaneous_types.manual"
+msgstr "Manual"
+
+msgid "miscellaneous_types.musicEdition"
+msgstr "Music edition"
+
+msgid "miscellaneous_types.musicReview"
+msgstr "Music review"
+
+msgid "miscellaneous_types.newsArticle"
+msgstr "News article"
+
+msgid "miscellaneous_types.newspaperPiece"
+msgstr "Newspaper piece"
+
+msgid "miscellaneous_types.other"
+msgstr "Other"
+
+msgid "miscellaneous_types.preprint"
+msgstr "Preprint"
+
+msgid "miscellaneous_types.productReview"
+msgstr "Product review"
+
+msgid "miscellaneous_types.report"
+msgstr "Report"
+
+msgid "miscellaneous_types.technicalStandard"
+msgstr "Technical standard"
+
+msgid "miscellaneous_types.textEdition"
+msgstr "Text edition"
+
+msgid "miscellaneous_types.textTranslation"
+msgstr "Text translation"
+
+msgid "miscellaneous_types.theatreReview"
+msgstr "Theatre review"
+
+msgid "miscellaneous_types.workingPaper"
+msgstr "Working paper"
+
+msgid "publication_classifications.A1"
+msgstr "A1 - article in the Web of Science"
+
+msgid "publication_classifications.A2"
+msgstr "A2 - article published in an international peer reviewed journal"
+
+msgid "publication_classifications.A3"
+msgstr "A3 - article published in a national peer reviewed journal"
+
+msgid "publication_classifications.A4"
+msgstr "A4 - article published in a journal (not A1, A2 or A3)"
+
+msgid "publication_classifications.B1"
+msgstr "B1 - author or coauthor of a book"
+
+msgid "publication_classifications.B2"
+msgstr "B2 - author or coauthor of a book chapter"
+
+msgid "publication_classifications.B3"
+msgstr "B3 - editor of a book or journal issue"
+
+msgid "publication_classifications.C1"
+msgstr "C1 - conference paper (not WoS)"
+
+msgid "publication_classifications.C3"
+msgstr "C3 - meeting abstract"
+
+msgid "publication_classifications.D1"
+msgstr "D1 - doctoral thesis"
+
+msgid "publication_classifications.P1"
+msgstr "P1 - proceedings paper (WoS)"
+
+msgid "publication_classifications.V"
+msgstr "V - miscellaneous"
+
+msgid "publication_classifications.U"
+msgstr "U - undetermined"
+
+msgid "publication_publishing_statuses."
+msgstr "-"
+
+# TODO is this used?
+msgid "publication_publishing_statuses.missing"
+msgstr "No publication status"
+
+msgid "publication_publishing_statuses.unpublished"
+msgstr "Unpublished"
+
+msgid "publication_publishing_statuses.accepted"
+msgstr "Accepted"
+
+msgid "publication_publishing_statuses.published"
+msgstr "Published"
+
+msgid "publication_statuses.new"
+msgstr "New"
+
+msgid "publication_statuses.private"
+msgstr "Draft"
+
+msgid "publication_statuses.public"
+msgstr "Public"
+
+msgid "publication_statuses.returned"
+msgstr "Withdrawn"
+
+msgid "activity_statuses.new"
+msgstr "new"
+
+msgid "activity_statuses.private"
+msgstr "draft"
+
+msgid "activity_statuses.public"
+msgstr "public"
+
+msgid "activity_statuses.returned"
+msgstr "withdrawn"
+
+msgid "publication_file_access_levels.info:eu-repo/semantics/openAccess"
+msgstr "Public access - Open access"
+
+msgid "publication_file_access_levels.info:eu-repo/semantics/embargoedAccess"
+msgstr "Embargoed access"
+
+msgid "publication_file_access_levels.info:eu-repo/semantics/restrictedAccess"
+msgstr "UGent access - Local access"
+
+msgid "publication_file_access_levels.info:eu-repo/semantics/closedAccess"
+msgstr "Private access - Closed access"
+
+msgid ""
+"publication_file_access_levels_during_embargo.info:eu-repo/semantics/"
+"restrictedAccess"
+msgstr "UGent access - Local access"
+
+msgid ""
+"publication_file_access_levels_during_embargo.info:eu-repo/semantics/"
+"closedAccess"
+msgstr "Private access - Closed access"
+
+msgid ""
+"publication_file_access_levels_after_embargo.info:eu-repo/semantics/"
+"openAccess"
+msgstr "Public access - Open access"
+
+msgid ""
+"publication_file_access_levels_after_embargo.info:eu-repo/semantics/"
+"restrictedAccess"
+msgstr "UGent access - Local access"
+
+msgid "publication_versions.publishedVersion"
+msgstr "Publisher version/Version of record (VoR)"
+
+msgid "publication_versions.authorVersion"
+msgstr "Author's original (AO)"
+
+msgid "publication_versions.acceptedVersion"
+msgstr "Author's accepted manuscript (AAM)"
+
+msgid "publication_versions.updatedVersion"
+msgstr "Corrected version of record (CVoR)"
+
+msgid "publication_file_relations.main_file"
+msgstr "Full text"
+
+msgid "publication_file_relations.colophon"
+msgstr "Colophon/Title page"
+
+msgid "publication_file_relations.data_fact_sheet"
+msgstr "Data fact sheet"
+
+msgid "publication_file_relations.peer_review_report"
+msgstr "Peer review report"
+
+msgid "publication_file_relations.table_of_contents"
+msgstr "Table of contents"
+
+msgid "publication_file_relations.agreement"
+msgstr "Contract/Agreement"
+
+msgid "publication_file_relations.supplementary_material"
+msgstr "Supplementary material"
+
+msgid "publication_link_relations.data_management_plan"
+msgstr "Data management plan"
+
+msgid "publication_link_relations.homepage"
+msgstr "Accompanying website"
+
+msgid "publication_link_relations.peer_review_report"
+msgstr "Peer review report"
+
+msgid "publication_link_relations.related_information"
+msgstr "Related information"
+
+msgid "publication_link_relations.software"
+msgstr "Software"
+
+msgid "publication_link_relations.table_of_contents"
+msgstr "Table of contents"
+
+msgid "publication_link_relations.main_file"
+msgstr "Full text"
+
+msgid "builder.access_level"
+msgstr "Access level"
+
+msgid "builder.additional_info"
+msgstr "Additional information"
+
+msgid "builder.alternative_title"
+msgstr "Alternative title"
+
+msgid "builder.article_number"
+msgstr "Article number"
+
+msgid "builder.arxiv_id"
+msgstr "Arxiv ID"
+
+msgid "builder.classification"
+msgstr "Classification"
+
+msgid "builder.conference_type"
+msgstr "Conference type"
+
+msgid "builder.defense_date"
+msgstr "Date of defense"
+
+msgid "builder.defense_place"
+msgstr "Place of defense"
+
+msgid "builder.doi"
+msgstr "DOI"
+
+msgid "builder.edition"
+msgstr "Edition"
+
+msgid "builder.embargo_date"
+msgstr "Embargo end"
+
+msgid "builder.access_level_after_embargo"
+msgstr "Access level after embargo"
+
+msgid "builder.esci_id"
+msgstr "ESCI ID"
+
+msgid "builder.extern"
+msgstr "Published while none of the authors and editors were employed at UGent"
+
+msgid "builder.format"
+msgstr "Data format"
+
+msgid "builder.has_confidential_data"
+msgstr "Does the dissertation contain confidential or personal data?"
+
+msgid "builder.has_patent_application"
+msgstr "Is a patent application ongoing or planned?"
+
+msgid "builder.has_publications_planned"
+msgstr ""
+"Are other publications planned based on this dissertation (e.g. articles or "
+"book)?"
+
+msgid "builder.has_published_material"
+msgstr ""
+"Does the dissertation contain published articles (publisher's version or "
+"accepted manuscript)?"
+
+msgid "builder.identifier"
+msgstr "Identifier"
+
+msgid "builder.identifier_type"
+msgstr "Persistent identifier type"
+
+msgid "builder.isbn"
+msgstr "ISBN"
+
+msgid "builder.issn"
+msgstr "ISSN"
+
+msgid "builder.eisbn"
+msgstr "E-ISBN"
+
+msgid "builder.eissn"
+msgstr "E-ISSN"
+
+msgid "builder.issue"
+msgstr "Issue"
+
+msgid "builder.issue_title"
+msgstr "Special issue title"
+
+msgid "builder.journal_article_type"
+msgstr "Article type"
+
+msgid "builder.keyword"
+msgstr "Keywords"
+
+msgid "builder.language"
+msgstr "Languages"
+
+msgid "builder.legacy"
+msgstr "Legacy publication"
+
+msgid "builder.license"
+msgstr "License"
+
+msgid "builder.message"
+msgstr "Message"
+
+msgid "builder.miscellaneous_type"
+msgstr "Miscellaneous type"
+
+msgid "builder.other_license"
+msgstr "Other license"
+
+msgid "builder.page_first"
+msgstr "First page"
+
+msgid "builder.page_last"
+msgstr "Last page"
+
+msgid "builder.page_count"
+msgstr "Number of pages"
+
+msgid "builder.pages"
+msgstr "Pages"
+
+msgid "builder.place_of_publication"
+msgstr "Place of publication"
+
+msgid "builder.publication"
+msgstr "Publication title"
+
+msgid "builder.publication_abbreviation"
+msgstr "Publication short title"
+
+msgid "builder.publication_status"
+msgstr "Publishing status"
+
+msgid "builder.publisher"
+msgstr "Publisher"
+
+msgid "builder.pubmed_id"
+msgstr "PubMed ID"
+
+msgid "builder.wos_id"
+msgstr "Web of Science ID"
+
+msgid "builder.report_number"
+msgstr "Report number"
+
+msgid "builder.research_field"
+msgstr "Research field"
+
+msgid "builder.reviewer_tags"
+msgstr "Librarian tags"
+
+msgid "builder.reviewer_note"
+msgstr "Librarian note"
+
+msgid "builder.series_title"
+msgstr "Series title"
+
+msgid "builder.title"
+msgstr "Title"
+
+msgid "builder.type"
+msgstr "Publication type"
+
+msgid "builder.url"
+msgstr "URL"
+
+msgid "builder.volume"
+msgstr "Volume"
+
+msgid "builder.wos_type"
+msgstr "Web of Science type"
+
+msgid "builder.year"
+msgstr "Publication year"
+
+# TODO could conflict with the conference type fields
+msgid "builder.conference.name"
+msgstr "Conference"
+
+msgid "builder.conference.location"
+msgstr "Conference location"
+
+msgid "builder.conference.organizer"
+msgstr "Conference organiser"
+
+msgid "builder.conference.date"
+msgstr "Conference date"
+
+msgid "builder.conference.start_date"
+msgstr "Conference start date"
+
+msgid "builder.conference.start_date.help"
+msgstr "YYYY-MM-DD"
+
+msgid "builder.conference.end_date"
+msgstr "Conference end date"
+
+msgid "builder.conference.end_date.help"
+msgstr "YYYY-MM-DD"
+
+msgid "builder.abstract.text"
+msgstr "Abstract"
+
+msgid "builder.abstract.lang"
+msgstr "Language"
+
+msgid "builder.lay_summary.text"
+msgstr "Lay summary"
+
+msgid "builder.lay_summary.lang"
+msgstr "Language"
+
+msgid "builder.link.url"
+msgstr "URL"
+
+msgid "builder.link.relation"
+msgstr "Relation"
+
+msgid "builder.link.description"
+msgstr "Description"
+
+msgid "builder.book.publication"
+msgstr "Series title"
+
+msgid "builder.book_chapter.publication"
+msgstr "Book title"
+
+msgid "builder.conference.publication"
+msgstr "Proceedings title"
+
+msgid "builder.conference.publication_abbreviation"
+msgstr "Publication short title"
+
+msgid "builder.conference.series_title"
+msgstr "Series or journal title"
+
+msgid "builder.issue_editor.publication"
+msgstr "Journal title"
+
+msgid "builder.issue_editor.publication_abbreviation"
+msgstr "Short journal title"
+
+msgid "builder.journal_article.publication"
+msgstr "Journal title"
+
+msgid "builder.journal_article.publication_abbreviation"
+msgstr "Short journal title"
+
+msgid "builder.miscellaneous.publication"
+msgstr "Publication title"
+
+msgid "builder.miscellaneous.publication_abbreviation"
+msgstr "Publication short title"
+
+msgid "organization.missing"
+msgstr "No affiliation"
+
+msgid "organization.CA"
+msgstr "Central Administration"
+
+msgid "organization.CA01"
+msgstr "Rector's Office"
+
+msgid "organization.CA02"
+msgstr "Vice-rector's Office"
+
+msgid "organization.CA03"
+msgstr "Chief Academic Administrator"
+
+msgid "organization.CA04"
+msgstr "Chief Logistics Administrator"
+
+msgid "organization.CA05"
+msgstr "Secretariat of the Board of Governors"
+
+msgid "organization.CA06"
+msgstr "Department UCBO-UCRO"
+
+msgid "organization.CA09"
+msgstr "Centre for Academic Heritage and Archives"
+
+msgid "organization.CA10"
+msgstr "Department of Educational Affairs"
+
+msgid "organization.CA20"
+msgstr "Department of Research Affairs"
+
+msgid "organization.CA30"
+msgstr "Department of Administrative Affairs"
+
+msgid "organization.CA40"
+msgstr "Department of Personnel and Organization"
+
+msgid "organization.CA50"
+msgstr "Financial Department"
+
+msgid "organization.CA60"
+msgstr "Information and Communication Technology Department"
+
+msgid "organization.CA70"
+msgstr "Department of Infrastructure and Facility Management"
+
+msgid "organization.CA80"
+msgstr "Department of Student Facilities"
+
+msgid "organization.CA93"
+msgstr "Supervisory authorities"
+
+msgid "organization.CA94"
+msgstr "Court of Audit"
+
+msgid "organization.CA95"
+msgstr "Ghent University Association"
+
+msgid "organization.DI"
+msgstr "Faculty of Veterinary Medicine"
+
+msgid "organization.DI01"
+msgstr "Department of Comparative physiology and biometrics"
+
+msgid "organization.DI02"
+msgstr ""
+"Department of Pharmacology, Toxicology and Biochemistry (ceased 1-1-2022)"
+
+msgid "organization.DI03"
+msgstr "Department of Morphology (ceased 1-1-2022)"
+
+msgid "organization.DI04*"
+msgstr "Department of Virology, parasitology and immunology (ceased 1-1-2022)"
+
+msgid "organization.DI04"
+msgstr "Department of Translational Physiology, Infectiology and Public Health"
+
+msgid "organization.DI05*"
+msgstr ""
+"Department of Pathology, bacteriology and poultry diseases (ceased 1-1-2022)"
+
+msgid "organization.DI05"
+msgstr "Department of Pathobiology, Pharmacology and Zoological Medicine"
+
+msgid "organization.DI06"
+msgstr ""
+"Department of Veterinary Public Health and Food Safety (ceased 1-1-2022)"
+
+msgid "organization.DI07*"
+msgstr "Department of Nutrition, Genetics and Ethology (ceased 1-1-2022)"
+
+msgid "organization.DI07"
+msgstr "Department of Veterinary and Biosciences"
+
+msgid "organization.DI08*"
+msgstr ""
+"Department of Obstetrics, reproduction and herd health (ceased 1-1-2022)"
+
+msgid "organization.DI08"
+msgstr "Department of Internal Medicine, Reproduction and Population Medicine"
+
+msgid "organization.DI09"
+msgstr "Department of Small animals"
+
+msgid "organization.DI10"
+msgstr "Department of Large Animal Surgery, Anaesthesia and Orthopaedics"
+
+msgid "organization.DI11*"
+msgstr ""
+"Department of Veterinary medical imaging and small animal orthopaedics "
+"(ceased 1-1-2022)"
+
+msgid "organization.DI11"
+msgstr ""
+"Department of Morphology, Imaging, Orthopedics, Rehabilitation and Nutrition"
+
+msgid "organization.DI12"
+msgstr ""
+"Department of Internal medicine and clinical biology of large animals "
+"(ceased 1-1-2022)"
+
+msgid "organization.DI51"
+msgstr "Dean's Office of the Faculty of Veterinary Medicine"
+
+msgid "organization.DI52"
+msgstr "Student Administration Office of the Faculty of Veterinary Medicine"
+
+msgid "organization.DI54"
+msgstr "PC-Lab of the faculty of Veterinary Medicine"
+
+msgid "organization.DI56"
+msgstr "Faculty of Veterinary Medicine - Institute for Continuing Education"
+
+msgid "organization.DI61"
+msgstr "Faculty of Veterinary Medicine Workshop"
+
+msgid "organization.DI62"
+msgstr "Biocenter AgriVet"
+
+msgid "organization.DS"
+msgstr "Doctoral Schools"
+
+msgid "organization.DS10"
+msgstr "Doctoral School of Arts, Humanities and Law"
+
+msgid "organization.DS20"
+msgstr "Doctoral School of Social and Behavioural Sciences"
+
+msgid "organization.DS30"
+msgstr "Doctoral School of Natural Sciences"
+
+msgid "organization.DS40"
+msgstr "Doctoral School of Life Sciences and Medicine"
+
+msgid "organization.DS50"
+msgstr "Doctoral School of (Bioscience) Engineering"
+
+msgid "organization.EB"
+msgstr "Faculty of Economics and Business Administration"
+
+msgid "organization.EB01"
+msgstr "Department of General economics (ceased)"
+
+msgid "organization.EB02"
+msgstr "Department of Financial economics (ceased)"
+
+msgid "organization.EB03"
+msgstr "Department of Social economics (ceased)"
+
+msgid "organization.EB05"
+msgstr "Department of Accountancy and Corporate Finance (ceased)"
+
+msgid "organization.EB07"
+msgstr "Department of Marketing (ceased)"
+
+msgid "organization.EB08"
+msgstr "Department of Business Informatics and Operations Management (ceased)"
+
+msgid "organization.EB09"
+msgstr ""
+"Department of Innovation, Entrepreneurship and Service Management (ceased)"
+
+msgid "organization.EB10"
+msgstr "Department of Public Governance, Management and Finance (ceased)"
+
+msgid "organization.EB11"
+msgstr ""
+"Department of Human Resource Management and Organizational Behaviour (ceased)"
+
+msgid "organization.EB21"
+msgstr "Department of Economics"
+
+msgid "organization.EB22"
+msgstr "Department of Accounting, Corporate Finance and Taxation"
+
+msgid "organization.EB23"
+msgstr "Department of Marketing, Innovation and Organisation"
+
+msgid "organization.EB24"
+msgstr "Department of Business Informatics and Operations Management"
+
+msgid "organization.EB25"
+msgstr "Department of Public Governance and Management"
+
+msgid "organization.EB51"
+msgstr "Dean's Office of the Faculty of Economics and Business Administration"
+
+msgid "organization.EB52"
+msgstr ""
+"Student Administration Office of the Faculty of Economics and Business "
+"Administration (ceased)"
+
+msgid "organization.EB54"
+msgstr "PC-Lab of the Faculty of Economics and Business Administration"
+
+msgid "organization.EB55"
+msgstr "Library of the Faculty of Economics and Business Administration"
+
+msgid "organization.EB56"
+msgstr "FEB Academy"
+
+msgid "organization.EB57"
+msgstr "Institute of Higher Education in Accounting and Tax"
+
+msgid "organization.EB58"
+msgstr "Faculty Education Services Economics and Business Administration"
+
+msgid "organization.EB61"
+msgstr "Technique and Budget"
+
+msgid "organization.FlandersMake"
+msgstr "Flanders Make"
+
+msgid "organization.FW"
+msgstr "Faculty of Pharmaceutical Sciences"
+
+msgid "organization.FW01"
+msgstr "Department of Pharmaceutics"
+
+msgid "organization.FW02"
+msgstr "Department of Pharmaceutical analysis"
+
+msgid "organization.FW03"
+msgstr "Department of Bio-analysis"
+
+msgid "organization.FW51"
+msgstr "Dean's Office of the Faculty of Pharmaceutical Sciences"
+
+msgid "organization.FW52"
+msgstr ""
+"Student Administration Office of the Faculty of Pharmaceutical Sciences"
+
+msgid "organization.FW54"
+msgstr "PC-Lab of the Faculty of Pharmaceutical Sciences"
+
+msgid "organization.FW61"
+msgstr "Laboratories of the Faculty of Pharmaceutical Sciences"
+
+msgid "organization.GE"
+msgstr "Faculty of Medicine and Health Sciences"
+
+msgid "organization.GE01"
+msgstr "Department of Internal medicine (ceased 1-10-2018)"
+
+msgid "organization.GE02"
+msgstr "Department of Pediatrics and medical genetics (ceased 1-10-2018)"
+
+msgid "organization.GE03"
+msgstr ""
+"Department of Physical medicine and orthopaedic surgery (ceased 1-10-2018)"
+
+msgid "organization.GE04"
+msgstr "Department of Uro-gynaecology (ceased 1-10-2018)"
+
+msgid "organization.GE05"
+msgstr "Department of Basic Medical Sciences (ceased 1-10-2018)"
+
+msgid "organization.GE06"
+msgstr ""
+"Department of Clinical chemistry, microbiology and immunology (ceased "
+"1-10-2018)"
+
+msgid "organization.GE07"
+msgstr "Department of Biochemistry (ceased 1-10-2018)"
+
+msgid "organization.GE08"
+msgstr ""
+"Department of General physiology and human physiology and pathophysiology "
+"(ceased 01-10-2008)"
+
+msgid "organization.GE09"
+msgstr "Department of Pharmacology (ceased 1-10-2018)"
+
+msgid "organization.GE10"
+msgstr "Department of Surgery (ceased 1-10-2018)"
+
+msgid "organization.GE11"
+msgstr "Department of Dentistry (ceased 1-10-2018)"
+
+msgid "organization.GE12"
+msgstr "Department of Public health (ceased 1-10-2018)"
+
+msgid "organization.GE13"
+msgstr "Department of Psychiatry and Medical Psychology (ceased 1-10-2018)"
+
+msgid "organization.GE14"
+msgstr "Department of Forensic medicine (ceased 1-10-2018)"
+
+msgid "organization.GE15"
+msgstr "Department of Dermatology (ceased 1-10-2018)"
+
+msgid "organization.GE16"
+msgstr "Department of Radiology and nuclear medicine (ceased 1-10-2018)"
+
+msgid "organization.GE17"
+msgstr ""
+"Department of Radiation oncology and experimental cancer research (ceased "
+"1-10-2018)"
+
+msgid "organization.GE18"
+msgstr "Department of Ophthalmology (ceased 1-10-2018)"
+
+msgid "organization.GE19"
+msgstr ""
+"Department of Oto-rhino-laryngology and logopaedic-audiologic sciences "
+"(ceased 1-10-2018)"
+
+msgid "organization.GE21"
+msgstr ""
+"Department of General practice and primary health care (ceased 1-10-2018)"
+
+msgid "organization.GE22"
+msgstr "Department of Pathology (ceased 1-10-2018)"
+
+msgid "organization.GE23"
+msgstr "Department of Anaesthesiology (ceased 1-10-2018)"
+
+msgid "organization.GE24"
+msgstr ""
+"Department of Physical therapy and motor rehabilitation (ceased 1-10-2018)"
+
+msgid "organization.GE25"
+msgstr "Department of Movement and Sports Sciences (ceased 1-10-2018)"
+
+msgid "organization.GE27"
+msgstr "Department of Speech, Language and Hearing Sciences (ceased 1-10-2018)"
+
+msgid "organization.GE30"
+msgstr "Department of Movement and Sports Sciences"
+
+msgid "organization.GE31"
+msgstr "Department of Biomolecular Medicine"
+
+msgid "organization.GE32"
+msgstr "Department of Diagnostic Sciences"
+
+msgid "organization.GE33"
+msgstr "Department of Basic and Applied Medical Sciences"
+
+msgid "organization.GE34"
+msgstr "Department of Head and Skin"
+
+msgid "organization.GE35"
+msgstr "Department of Internal Medicine and Pediatrics"
+
+msgid "organization.GE36"
+msgstr "Department of Oral Health Sciences"
+
+msgid "organization.GE37"
+msgstr "Department of Rehabilitation Sciences"
+
+msgid "organization.GE38"
+msgstr "Department of Human Structure and Repair"
+
+msgid "organization.GE39"
+msgstr "Department of Public Health and Primary Care"
+
+msgid "organization.GE51"
+msgstr "Dean's Office of the Faculty of Medicine and Health Sciences"
+
+msgid "organization.GE52"
+msgstr ""
+"Student Administration Office of the Faculty of Medicine and Health Sciences "
+"(ceased)"
+
+msgid "organization.GE53"
+msgstr "Logistic Department for Teaching (ceased)"
+
+msgid "organization.GE54"
+msgstr "PC-Lab of the Faculty of Medicine and Health Sciences"
+
+msgid "organization.GE55"
+msgstr "Knowledge Centre for Health Ghent"
+
+msgid "organization.GE56"
+msgstr "The GHALL (Ghent Health Academy for Lifelong Learning)"
+
+msgid "organization.GE57"
+msgstr "IPVK-Institute for Postgraduate Activities in Physiotherapy"
+
+msgid "organization.GE58"
+msgstr "Faculty Education Services Medicine and Health Sciences"
+
+msgid "organization.GE61"
+msgstr "Animalarium"
+
+msgid "organization.GE63"
+msgstr "Center for Healthy and Safe Working Conditions"
+
+msgid "organization.GE64"
+msgstr "Center for Prevention and Early Detection of Cancer"
+
+msgid "organization.GUK"
+msgstr "Global Campus Korea"
+
+msgid "organization.HOART"
+msgstr "University College Artevelde"
+
+msgid "organization.HOGENT"
+msgstr "University College Ghent"
+
+msgid "organization.HOWEST"
+msgstr "University College West Flanders"
+
+msgid "organization.IBBT"
+msgstr "iMinds"
+
+msgid "organization.IMEC"
+msgstr "Imec"
+
+msgid "organization.KR01"
+msgstr ""
+"Department of Environmental Technology, Food Technology and Molecular "
+"Biotechnology"
+
+msgid "organization.KR71"
+msgstr "Admissions and enrollment office"
+
+msgid "organization.KR73"
+msgstr "Recruitment office"
+
+msgid "organization.LA"
+msgstr "Faculty of Bioscience Engineering"
+
+msgid "organization.LA01"
+msgstr "Department of Agricultural economics (ceased 1-1-2018)"
+
+msgid "organization.LA02"
+msgstr "Department of Plant production (ceased 1-1-2018)"
+
+msgid "organization.LA03"
+msgstr "Department of Crop protection (ceased 1-1-2018)"
+
+msgid "organization.LA04"
+msgstr "Department of Forest and water management (ceased 1-1-2018)"
+
+msgid "organization.LA05"
+msgstr "Department of Biosystems Engineering (ceased 1-1-2018)"
+
+msgid "organization.LA06"
+msgstr "Department of Biochemical and microbial technology (ceased 1-1-2018)"
+
+msgid "organization.LA07"
+msgstr "Department of Food safety and food quality (ceased 1-1-2018)"
+
+msgid "organization.LA08"
+msgstr ""
+"Department of Applied analytical and physical chemistry (ceased 1-1-2018)"
+
+msgid "organization.LA09"
+msgstr ""
+"Department of Applied ecology and environmental biology (ceased 1-1-2018)"
+
+msgid "organization.LA10"
+msgstr ""
+"Department of Mathematical Modelling, Statistics and Bio-informatics (ceased "
+"1-1-2018)"
+
+msgid "organization.LA11"
+msgstr ""
+"Department of Sustainable Organic Chemistry and Technology (ceased 1-1-2018)"
+
+msgid "organization.LA12"
+msgstr "Department of Soil Management (ceased 1-1-2018)"
+
+msgid "organization.LA13"
+msgstr "Department of Animal production (ceased 1-1-2018)"
+
+msgid "organization.LA14"
+msgstr "Department of Molecular biotechnology (ceased 1-1-2018)"
+
+msgid "organization.LA15"
+msgstr "Department of Applied biosciences (ceased 1-1-2018)"
+
+msgid "organization.LA16"
+msgstr "Department of Industrial Biological Sciences (ceased 1-1-2018)"
+
+msgid "organization.LA20"
+msgstr "Department of Environment"
+
+msgid "organization.LA21"
+msgstr "Department of Plants and Crops"
+
+msgid "organization.LA22"
+msgstr "Department of Animal Sciences and Aquatic Ecology"
+
+msgid "organization.LA23"
+msgstr "Department of Food technology, Safety and Health"
+
+msgid "organization.LA24"
+msgstr "Department of Green Chemistry and Technology"
+
+msgid "organization.LA25"
+msgstr "Department of Biotechnology"
+
+msgid "organization.LA26"
+msgstr "Department of Data analysis and mathematical modelling"
+
+msgid "organization.LA27"
+msgstr "Department of Agricultural Economics"
+
+msgid "organization.LA51"
+msgstr ""
+"Dean's Office of the Faculty of Agricultural and Applied Biological Sciences"
+
+msgid "organization.LA52"
+msgstr ""
+"Student Administration Office of the Faculty of Agricultural and Applied "
+"Biological Sciences (ceased 1-1-2018)"
+
+msgid "organization.LA53"
+msgstr ""
+"Quality Cell Education Faculty of Agricultural and Applied Biological "
+"Sciences (ceased 1-1-2018)"
+
+msgid "organization.LA54"
+msgstr ""
+"PC-Lab of the Faculty of Agricultural and Applied Biological Sciences "
+"(ceased 1-1-2018)"
+
+msgid "organization.LA55"
+msgstr "Library faculty of Bioscience Engineering"
+
+msgid "organization.LA58"
+msgstr "Faculty Education Services Bioscience Engineering"
+
+msgid "organization.LA59"
+msgstr "Research Services of the Faculty Bioscience Engineering"
+
+msgid "organization.LA60"
+msgstr "Internationalization Services of the Faculty Bioscience Engineering"
+
+msgid "organization.LA61"
+msgstr "Biocenter AgriVet (ceased 1-1-2018)"
+
+msgid "organization.LA62"
+msgstr "PR & Communication Services of the Faculty Bioscience Engineering"
+
+msgid "organization.LA63"
+msgstr "Logistics Services of the Faculty Bioscience Engineering"
+
+msgid "organization.LW"
+msgstr "Faculty of Arts and Philosophy"
+
+msgid "organization.LW01"
+msgstr "Department of Philosophy and moral sciences"
+
+msgid "organization.LW02"
+msgstr "Department of Archaeology"
+
+msgid "organization.LW03*"
+msgstr "Department of Medieval History (ceased 1-1-2010)"
+
+msgid "organization.LW03"
+msgstr "Department of History"
+
+msgid "organization.LW04*"
+msgstr "Department of Early Modern History (ceased 1-1-2010)"
+
+msgid "organization.LW05*"
+msgstr "Department of Modern History (ceased 1-1-2010)"
+
+msgid "organization.LW06*"
+msgstr "Department of Latin and Greek (ceased 1-1-2011)"
+
+msgid "organization.LW06"
+msgstr "Department of Linguistics"
+
+msgid "organization.LW07*"
+msgstr "Department of French (ceased 1-1-2011)"
+
+msgid "organization.LW07"
+msgstr "Department of Literary studies"
+
+msgid "organization.LW08*"
+msgstr "Department of Romance languages (other than French) (ceased 1-1-2011)"
+
+msgid "organization.LW09*"
+msgstr "Department of Dutch Linguistics (ceased 1-1-2011)"
+
+msgid "organization.LW10*"
+msgstr "Department of Dutch Literature (ceased 1-1-2011)"
+
+msgid "organization.LW11*"
+msgstr "Department of English (ceased 1-1-2011)"
+
+msgid "organization.LW12*"
+msgstr "Department of German (ceased 1-1-2011)"
+
+msgid "organization.LW13*"
+msgstr "Department of Nordic studies (ceased 1-1-2011)"
+
+msgid "organization.LW14"
+msgstr ""
+"Department of Languages and cultures of the Near East and North Africa "
+"(ceased 1-1-2013)"
+
+msgid "organization.LW15"
+msgstr ""
+"Department of Languages and cultures of South and East Asia (ceased 1-1-2013)"
+
+msgid "organization.LW16"
+msgstr "Department of Slavonic and East-European studies (ceased 1-1-2013)"
+
+msgid "organization.LW17"
+msgstr "Department of Art, music and theatre sciences"
+
+msgid "organization.LW18"
+msgstr "Department of Comparative sciences of culture"
+
+msgid "organization.LW19"
+msgstr "Department of African languages and cultures (ceased 1-1-2013)"
+
+msgid "organization.LW20"
+msgstr "Department of Language and communication"
+
+msgid "organization.LW21"
+msgstr "Department of Languages and cultures"
+
+msgid "organization.LW22"
+msgstr "Department of Translation, Interpreting and Communication"
+
+msgid "organization.LW51"
+msgstr "Dean's Office of the Faculty of Arts and Philosophy"
+
+msgid "organization.LW52"
+msgstr "Student Administration Office of the Faculty of Arts and Philosophy"
+
+msgid "organization.LW53"
+msgstr "Logistic Department for Teaching at the Faculty Arts and Philosophy"
+
+msgid "organization.LW54"
+msgstr "PC-Lab of the Faculty of Arts and Philosophy"
+
+msgid "organization.LW55"
+msgstr "Library of the Faculty of Arts and Philosophy"
+
+msgid "organization.LW58"
+msgstr "Faculty Education Services Arts and Philosophy"
+
+msgid "organization.PP"
+msgstr "Faculty of Psychology and Educational Sciences"
+
+msgid "organization.PP01"
+msgstr "Department of Data-analysis"
+
+msgid "organization.PP02"
+msgstr "Department of Experimental psychology"
+
+msgid "organization.PP03"
+msgstr "Department of Pedagogy"
+
+msgid "organization.PP04"
+msgstr "Department of Social Work and Social Pedagogy"
+
+msgid "organization.PP05"
+msgstr "Department of Experimental clinical and health psychology"
+
+msgid "organization.PP06"
+msgstr "Department of Educational Studies"
+
+msgid "organization.PP07"
+msgstr "Department of developmental, personality and social psychology"
+
+msgid "organization.PP08"
+msgstr "Department of Psycho-analysis and clinical consulting"
+
+msgid "organization.PP09"
+msgstr "Department of Work, Organisation and Society"
+
+msgid "organization.PP10"
+msgstr "Department of Special Needs Education"
+
+msgid "organization.PP11"
+msgstr "Department of Human Resource Management and Organisational Psychology"
+
+msgid "organization.PP51"
+msgstr "Dean's Office of the Faculty of Psychology and Educational Sciences"
+
+msgid "organization.PP52"
+msgstr ""
+"Student Administration Office of the Faculty of Psychology and Educational "
+"Sciences (ceased 1-10-2014)"
+
+msgid "organization.PP53"
+msgstr ""
+"Department of Teaching Support of the Faculty of Psychology and Pedagogical "
+"Sciences (ceased 1-10-2014)"
+
+msgid "organization.PP54"
+msgstr "PC-Lab of the Faculty of Psychology and Educational Sciences"
+
+msgid "organization.PP55"
+msgstr "Library of the Faculty of Psychology and Educational Sciences"
+
+msgid "organization.PP58"
+msgstr "Faculty Education Services Psychology and Educational Sciences"
+
+msgid "organization.PP59"
+msgstr "Research Support Office FPPW"
+
+msgid "organization.PP61"
+msgstr ""
+"Testing Laboratory at the Faculty of Psychology and Pedagogical Sciences"
+
+msgid "organization.PP62"
+msgstr "Management Common Infrastructure of the Faculty PP (ceased)"
+
+msgid "organization.PS"
+msgstr "Faculty of Political and Social Sciences"
+
+msgid "organization.PS01"
+msgstr "Department of Communication studies"
+
+msgid "organization.PS03"
+msgstr "Department of Political science"
+
+msgid "organization.PS04"
+msgstr "Department of Sociology"
+
+msgid "organization.PS05"
+msgstr "Department of Conflict and Development Studies"
+
+msgid "organization.PS51"
+msgstr "Dean's Office of the Faculty of Political and Social Sciences"
+
+msgid "organization.PS52"
+msgstr ""
+"Student Administration Office of the Faculty of Political and Social Sciences"
+
+msgid "organization.PS53"
+msgstr "Service for Educational Support Faculty PS"
+
+msgid "organization.PS54"
+msgstr "PC-Lab of the Faculty of Political and Social Sciences"
+
+msgid "organization.PS56"
+msgstr ""
+"Faculty of Political and Social Sciences - Institute for Permanent Education"
+
+msgid "organization.PS57"
+msgstr "Research and Internationalization Office (RIO)"
+
+msgid "organization.PS58"
+msgstr "Faculty Education Services Political and Social Sciences"
+
+msgid "organization.RE"
+msgstr "Faculty of Law and Criminology"
+
+msgid "organization.RE02"
+msgstr "Department of Legal theory and legal history (ceased 1-10-2014)"
+
+msgid "organization.RE03"
+msgstr "Department of Civil law (ceased 1-10-2014)"
+
+msgid "organization.RE05"
+msgstr "Department of Business law (ceased 1-10-2014)"
+
+msgid "organization.RE06"
+msgstr "Department of International public law (ceased 1-10-2014)"
+
+msgid "organization.RE07"
+msgstr "Department of European law (ceased 1-10-2014)"
+
+msgid "organization.RE08"
+msgstr "Department of Penal law and criminology (ceased 1-10-2014)"
+
+msgid "organization.RE09"
+msgstr "Department of Labour law and social security law (ceased 1-10-2014)"
+
+msgid "organization.RE10"
+msgstr "Department of Tax law (ceased 1-10-2014)"
+
+msgid "organization.RE11"
+msgstr ""
+"Department of Procedural law, arbitration and private international law "
+"(ceased 1-10-2014)"
+
+msgid "organization.RE12"
+msgstr "Department of Public Law (ceased 1-10-2014)"
+
+msgid "organization.RE21"
+msgstr ""
+"Department of Interdisciplinary Study of Law, Private Law and Business Law"
+
+msgid "organization.RE22"
+msgstr "Department of European, Public and International Law"
+
+msgid "organization.RE23"
+msgstr "Department of Criminology, Penal Law and Social Law"
+
+msgid "organization.RE51"
+msgstr "Dean's Office of the Faculty of Law and Criminology"
+
+msgid "organization.RE52"
+msgstr "Student Administration Office of the Faculty of Law (ceased)"
+
+msgid "organization.RE54"
+msgstr "PC-Lab of the Faculty of Law and Criminology"
+
+msgid "organization.RE55"
+msgstr "Library of the Faculty of Law and Criminology"
+
+msgid "organization.RE56"
+msgstr "Institute for Continuing Education in Law"
+
+msgid "organization.RE58"
+msgstr "Faculty Education Services Law and Criminology"
+
+msgid "organization.ResearchCenter"
+msgstr "Interuniversity Research Center"
+
+msgid "organization.TW"
+msgstr "Faculty of Engineering and Architecture"
+
+msgid "organization.TW01"
+msgstr "Department of Architecture and urban planning"
+
+msgid "organization.TW03"
+msgstr "Department of Flow, heat and combustion mechanics"
+
+msgid "organization.TW04"
+msgstr "Department of Mechanical construction and production"
+
+msgid "organization.TW05"
+msgstr "Department of Information technology"
+
+msgid "organization.TW06"
+msgstr "Department of Electronics and information systems"
+
+msgid "organization.TW07"
+msgstr "Department of Telecommunications and information processing"
+
+msgid "organization.TW08"
+msgstr "Department of Electromechanical, Systems and Metal Engineering"
+
+msgid "organization.TW10"
+msgstr "Department of Materials Science and Engineering (ceased 1-2-2017)"
+
+msgid "organization.TW11*"
+msgstr "Department of Textiles (ceased 1-2-2017)"
+
+msgid "organization.TW11"
+msgstr "Department of Materials, Textiles and Chemical Engineering"
+
+msgid "organization.TW12"
+msgstr ""
+"Department of Chemical engineering and technical chemistry (ceased 1-2-2017)"
+
+msgid "organization.TW14"
+msgstr "Department of Structural engineering"
+
+msgid "organization.TW15"
+msgstr "Department of Civil engineering"
+
+msgid "organization.TW16"
+msgstr "Department of Mathematical analysis"
+
+msgid "organization.TW17"
+msgstr "Department of Applied physics"
+
+msgid "organization.TW18"
+msgstr "Department of Industrial Systems Engineering and Product Design"
+
+msgid "organization.TW19"
+msgstr "Department of Industrial System and Product Design"
+
+msgid "organization.TW20"
+msgstr "Department of Industrial Technology and Construction"
+
+msgid "organization.TW51"
+msgstr "Dean's Office of the Faculty of Engineering and Architecture"
+
+msgid "organization.TW52"
+msgstr ""
+"Student Administration Office of the Faculty of Engineering and Architecture"
+
+msgid "organization.TW53"
+msgstr ""
+"Logistic Department for Teaching at the Faculty of Engineering and "
+"Architecture"
+
+msgid "organization.TW54"
+msgstr "PC-Lab of the Faculty of Engineering and Architecture"
+
+msgid "organization.TW55"
+msgstr "Facultaire bibliotheek Ingenieurswetenschappen en Architectuur"
+
+msgid "organization.TW56"
+msgstr ""
+"Instituut permanente vorming van de faculteit Ingenieurswetenschappen en "
+"Architectuur (IVPV)"
+
+msgid "organization.UGent"
+msgstr "Ghent University"
+
+msgid "organization.UGentAssoc"
+msgstr "University College"
+
+msgid "organization.UZGent"
+msgstr "Ghent University Hospital"
+
+msgid "organization.VIB"
+msgstr "VIB"
+
+msgid "organization.WE"
+msgstr "Faculty of Sciences"
+
+msgid "organization.WE01*"
+msgstr "Department of Mathematics (ceased 1-1-2019)"
+
+msgid "organization.WE01"
+msgstr "Department of Mathematics: Algebra and Geometry"
+
+msgid "organization.WE02"
+msgstr "Department of Applied mathematics, computer science and statistics"
+
+msgid "organization.WE03*"
+msgstr "Department of Mathematical Physics and Astronomy (ceased 1-1-2010)"
+
+msgid "organization.WE04"
+msgstr "Department of Solid state sciences"
+
+msgid "organization.WE05"
+msgstr "Department of Physics and astronomy"
+
+msgid "organization.WE06*"
+msgstr "Department of Inorganic and physical chemistry (ceased 1-1-2018)"
+
+msgid "organization.WE06"
+msgstr "Department of Chemistry"
+
+msgid "organization.WE07"
+msgstr "Department of Organic and Macromolecular Chemistry"
+
+msgid "organization.WE08"
+msgstr "Department of Analytical chemistry (ceased 1-1-2018)"
+
+msgid "organization.WE09"
+msgstr "Department of Plant Biotechnology and Bioinformatics"
+
+msgid "organization.WE10"
+msgstr "Department of Biochemistry and microbiology"
+
+msgid "organization.WE11"
+msgstr "Department of Biology"
+
+msgid "organization.WE12"
+msgstr "Department of Geography"
+
+msgid "organization.WE13"
+msgstr "Department of Geology"
+
+msgid "organization.WE14"
+msgstr "Department of Biomedical molecular biology"
+
+msgid "organization.WE15"
+msgstr "Department of Physiology (ceased)"
+
+msgid "organization.WE16"
+msgstr "Department of Mathematics: Analysis, Logic and Discrete Mathematics"
+
+msgid "organization.WE51"
+msgstr "Dean's Office of the Faculty of Science"
+
+msgid "organization.WE52"
+msgstr "Student Administration Office of the Faculty of Science (ceased)"
+
+msgid "organization.WE53"
+msgstr "Logistic Department for Teaching at the Faculty of Sciences (ceased)"
+
+msgid "organization.WE54"
+msgstr "PC-Lab of the Faculty of Science"
+
+msgid "organization.WE55"
+msgstr "Science Faculty Library"
+
+msgid "organization.WE56"
+msgstr "Institute for Continuing Education in Science - ICES"
+
+msgid "organization.WE58"
+msgstr "Faculty Education Services Sciences"
+
+msgid "organization.WE61"
+msgstr "Botanical Garden"
+
+msgid "organization.WE62"
+msgstr "Workshop of the Faculty of Science"
+
+msgid "organization.WE63"
+msgstr "Zoology Museum"
+
+msgid "organization.WE64"
+msgstr "Museum of the History of Sciences"
+
+msgid "organization.WE65"
+msgstr "Honeybee Valley"
+
+msgid "validation.required"
+msgstr "is required"
+
+msgid "publication.single_import.import_by_id.id_not_found"
+msgstr "Unable to find this DOI"
+
+msgid "publication.single_import.import_by_id.string.minLength"
+msgstr "Not a valid DOI"
+
+msgid "publication.single_import.import_by_id.import_failed"
+msgstr "Sorry, something went wrong. Could not import the publication"
+
+msgid "dataset.single_import.import_by_id.id_not_found"
+msgstr "Unable to find this DOI in DataCite"
+
+msgid "dataset.single_import.string.minLength"
+msgstr "Not a valid DOI"
+
+msgid "dataset.single_import.import_by_id.import_failed"
+msgstr "Sorry, something went wrong. Could not import the dataset"
+
+msgid "tooltip.publication.classification"
+msgstr ""
+"The publication will be classified by the Biblio team as part of the "
+"bibliographic review process."
+
+msgid "tooltip.publication.contributors"
+msgstr ""
+"<a href=\"https://onderzoektips.ugent.be/en/tips/00002075/\" "
+"target=\"_blank\">More information about authors and editors <i class=\"if "
+"if--small if-external-link\"></i></a>"
+
+msgid "tooltip.publication.related_datasets"
+msgstr ""
+"<a href=\"https://onderzoektips.ugent.be/en/tips/00002061/\" "
+"target=\"_blank\">https://onderzoektips.ugent.be/en/tips/00002061/ <i "
+"class=\"if if--small if-external-link\"></i></a>"
+
+msgid "tooltip.publication.wos_type"
+msgstr ""
+"This is the type assigned by Web of Science when a publication is also "
+"registered in Web of Science and can be different from the Biblio type."
+
+msgid "tooltip.publication.type"
+msgstr "You can no longer change the publication type after publishing."
+
+msgid "tooltip.publication.file.license"
+msgstr ""
+"<a href=\"#\" target=\"_blank\">More info&nbsp;<i class=\"if if--small if-"
+"external-link\"></i></a>"
+
+msgid "tooltip.dataset.access_level"
+msgstr ""
+"Specify the access level that is set in the external data repository. <a "
+"href=\"https://onderzoektips.ugent.be/en/tips/00002057/\" "
+"target=\"_blank\">See documentation <i class=\"if if--small if-external-"
+"link\"></i></a>"
+
+msgid "tooltip.dataset.contributors"
+msgstr ""
+"<a href=\"https://onderzoektips.ugent.be/en/tips/00002059/\" "
+"target=\"_blank\">https://onderzoektips.ugent.be/en/tips/00002059/ <i "
+"class=\"if if--small if-external-link\"></i></a>"
+
+msgid "tooltip.dataset.format"
+msgstr ""
+"Technical format of the data (select an <a href=\"https://www.iana.org/"
+"assignments/media-types/media-types.xhtml\">Internet Media Type</a> from the "
+"autocomplete drop-down menu (e.g. text/csv, image/jpeg) or enter <a "
+"href=\"https://en.wikipedia.org/wiki/List_of_file_formats\">free text</a>). "
+"<a href=\"https://onderzoektips.ugent.be/en/tips/00002058/\" "
+"target=\"_blank\">See documentation <i class=\"if if--small if-external-"
+"link\"></i></a>"
+
+msgid "tooltip.dataset.identifier"
+msgstr ""
+"Persistent identifier or accession number that uniquely identifies and "
+"locates your dataset."
+
+msgid "tooltip.dataset.license"
+msgstr ""
+"Specify the license that is set in the external data repository. This "
+"license lets potential users of your data know in advance what they are "
+"allowed to do with the data. The supported licenses in the list are "
+"harvested from spdx.org/licenses. If you cannot find the license you're "
+"looking for, you can add a URL or URI to the license. <a href=\"https://"
+"onderzoektips.ugent.be/en/tips/00002057/\" target=\"_blank\">See "
+"documentation <i class=\"if if--small if-external-link\"></i></a>"
+
+msgid "tooltip.dataset.publisher"
+msgstr ""
+"The name of the entity that holds, archives, publishes prints, distributes, "
+"releases, issues, or produces the resource. Typically, the name of the data "
+"repository in which the datasets was deposited."
+
+msgid "tooltip.dataset.related_publications"
+msgstr ""
+"<a href=\"https://onderzoektips.ugent.be/en/tips/00002061/\" "
+"target=\"_blank\">https://onderzoektips.ugent.be/en/tips/00002061/ <i "
+"class=\"if if--small if-external-link\"></i></a>"
+
+# OLD
+msgid "dataset.validation.error.id.required"
+msgstr "ID is required"
+
+msgid "dataset.validation.error.title.required"
+msgstr "Title is required"
+
+msgid "dataset.validation.error.status.required"
+msgstr "Status is required"
+
+msgid "dataset.validation.error.doi.required"
+msgstr "DOI is required"
+
+msgid "dataset.validation.error.access_level.required"
+msgstr "Access level is required"
+
+msgid "dataset.validation.error.format.required"
+msgstr "Format is required"
+
+msgid "dataset.validation.error.publisher.required"
+msgstr "Publisher is required"
+
+msgid "dataset.validation.error.year.required"
+msgstr "Year is required"
+
+msgid "dataset.validation.error.author.required"
+msgstr "One or more authors are required"
+
+msgid "dataset.validation.error.author.first_name.required"
+msgstr "First name is required"
+
+msgid "dataset.validation.error.author.last_name.required"
+msgstr "Last name is required"
+
+msgid "publication.validation.error.id.required"
+msgstr "ID is required"
+
+msgid "publication.validation.error.title.required"
+msgstr "Title is required"
+
+msgid "publication.validation.error.status.required"
+msgstr "Status is required"
+
+msgid "publication.validation.error.type.required"
+msgstr "Type is required"
+
+msgid "dataset.validation.error.editor.first_name.required"
+msgstr "First name is required"
+
+msgid "dataset.validation.error.editor.last_name.required"
+msgstr "Last name is required"
+
+msgid "dataset.validation.error.supervisor.first_name.required"
+msgstr "First name is required"
+
+msgid "dataset.validation.error.supervisor.last_name.required"
+msgstr "Last name is required"
+
+# NEW
+msgid "validation.dataset.language.invalid"
+msgstr "Language code is not valid"
+
+msgid "validation.dataset.title.required"
+msgstr "Title is required"
+
+msgid "validation.dataset.identifier.required"
+msgstr "Identifier is required"
+
+msgid "validation.dataset.identifier.invalid"
+msgstr "Identifier is invalid"
+
+msgid "validation.dataset.access_level.required"
+msgstr "Access level is required"
+
+msgid "validation.dataset.access_level.invalid"
+msgstr "Access level is an invalid value"
+
+msgid "validation.dataset.format.required"
+msgstr "Format is required"
+
+msgid "validation.dataset.publisher.required"
+msgstr "Publisher is required"
+
+msgid "validation.dataset.year.required"
+msgstr "Publication year is required"
+
+msgid "validation.dataset.year.invalid"
+msgstr "Publication year is an invalid value"
+
+msgid "validation.dataset.department.required"
+msgstr "Department ID is required"
+
+msgid "validation.dataset.project.required"
+msgstr "Project ID is required"
+
+msgid "validation.dataset.abstract.text.required"
+msgstr "Abstract text can't be empty"
+
+msgid "validation.dataset.license.required"
+msgstr "License is required"
+
+msgid "validation.dataset.embargo.required"
+msgstr "Embargo is required"
+
+msgid "validation.dataset.link.url.required"
+msgstr "URL can't be empty"
+
+msgid "validation.dataset.embargo_date.required"
+msgstr "Embargo date is an invalid value"
+
+msgid "validation.dataset.embargo_date.invalid"
+msgstr "Embargo date is an invalid date"
+
+msgid "validation.dataset.embargo_date.expired"
+msgstr "Embargo end date should be in the future"
+
+msgid "validation.dataset.access_level_after_embargo.required"
+msgstr "Access level after embargo is required"
+
+msgid "validation.dataset.access_level_after_embargo.similar"
+msgstr "Access level after embargo can't be the same as access level"
+
+msgid "validation.dataset.access_level_after_embargo.invalid"
+msgstr "Access level after embargo is not a valid access level value"
+
+msgid "validation.dataset.related_publication.required"
+msgstr "Related Publication ID is required"
+
+msgid "validation.dataset.author.min_ugent_authors"
+msgstr "At least one UGent author is required"
+
+msgid "validation.dataset.author.required"
+msgstr "One or more authors are required"
+
+msgid "validation.dataset.author.first_name.required"
+msgstr "First name is required"
+
+msgid "validation.dataset.author.last_name.required"
+msgstr "Last name is required"
+
+msgid "dataset.conflict_error"
+msgstr "Dataset has been modified by another user."
+
+msgid "dataset.conflict_error_reload"
+msgstr "Dataset has been modified by another user. Please reload the page."
+
+msgid "validation.publication.title.required"
+msgstr "Title is required"
+
+msgid "validation.publication.year.required"
+msgstr "Publication year is required"
+
+msgid "validation.publication.year.invalid"
+msgstr "Publication year is an invalid value"
+
+msgid "validation.publication.abstract.text.required"
+msgstr "Abstract text can't be empty"
+
+msgid "validation.publication.lay_summary.text.required"
+msgstr "Lay summary text can't be empty"
+
+msgid "validation.publication.journal_article.publication.required"
+msgstr "Journal title is required"
+
+msgid "validation.publication.defense_place.required"
+msgstr "Defense place is required"
+
+msgid "validation.publication.defense_date.required"
+msgstr "Defense date is required"
+
+msgid "validation.publication.defense_date.invalid"
+msgstr "Defense date is not a valid date"
+
+msgid "validation.publication.file.embargo.invalid"
+msgstr "Embargo is not a valid date"
+
+msgid "validation.publication.link.url.required"
+msgstr "URL can't be empty"
+
+msgid "validation.publication.file.embargo_date.invalid"
+msgstr "The embargo end date is not a valid date"
+
+msgid "validation.publication.file.embargo_date.expired"
+msgstr "The embargo end date should be in the future"
+
+msgid "validation.publication.file.access_level_during_embargo.invalid"
+msgstr "The selected access level is not a valid access level value"
+
+msgid "validation.publication.file.access_level_after_embargo.invalid"
+msgstr "The selected access level is not a valid access level value"
+
+msgid "validation.publication.file.access_level_after_embargo.similar"
+msgstr ""
+"The access level after embargo end date can't be the same as the access "
+"level during embargo"
+
+msgid "validation.publication.file.size.empty"
+msgstr "File is empty"
+
+msgid "validation.publication.author.min_ugent_authors"
+msgstr "At least one UGent author is required"
+
+msgid "validation.publication.author.required"
+msgstr "One or more authors are required"
+
+msgid "validation.publication.editor.min_ugent_editors"
+msgstr "At least one UGent editor is required"
+
+msgid "validation.publication.editor.required"
+msgstr "One or more editors are required"
+
+msgid "validation.publication.supervisor.required"
+msgstr "One or more supervisors are required"
+
+msgid "validation.publication.author.first_name.required"
+msgstr "First name is required"
+
+msgid "validation.publication.author.last_name.required"
+msgstr "Last name is required"
+
+msgid "validation.publication.editor.first_name.required"
+msgstr "First name is required"
+
+msgid "validation.publication.editor.last_name.required"
+msgstr "Last name is required"
+
+msgid "validation.publication.supervisor.first_name.required"
+msgstr "First name is required"
+
+msgid "validation.publication.supervisor.last_name.required"
+msgstr "Last name is required"
+
+msgid "publication.conflict_error"
+msgstr "Publication has been modified by another user."
+
+msgid "publication.conflict_error_reload"
+msgstr "Publication has been modified by another user. Please reload the page."
+
+msgid "publication.file_upload_error"
+msgstr "File upload failed."
+
+msgid "builder.file.title"
+msgstr "Title"
+
+msgid "builder.file.relation"
+msgstr "Document type"
+
+msgid "builder.file.publication_version"
+msgstr "Publication version"
+
+msgid "builder.file.access_level"
+msgstr "Access level"
+
+msgid "builder.file.embargo_date"
+msgstr "Embargo end"
+
+msgid "builder.file.access_level_during_embargo"
+msgstr "Access level <strong>during</strong> embargo"
+
+msgid "builder.file.access_level_after_embargo"
+msgstr "Access level <strong>after</strong> embargo period"
+
+msgid "builder.file.license"
+msgstr "License granted by the rights holder"
+
+msgid "builder.file.description"
+msgstr "Description"
+
+# help texts
+msgid "builder.type.help"
+msgstr "Changing the publication type might result in data loss"
+
+msgid "builder.doi.help"
+msgstr "e.g. 10.1093/plcell/koc126"
+
+msgid "builder.year.help"
+msgstr "e.g. 2022"
+
+msgid "builder.identifier_type.help"
+msgstr ""
+"More information about <a href=\"https://onderzoektips.ugent.be/en/"
+"tips/00001743/\" target=\"_blank\">persistent identifiers.</a><br><a "
+"href=\"mailto:rdm.support@ugent.be\">Contact us</a> if your identifier is "
+"not in the list."
+
+msgid "builder.identifier.help"
+msgstr "e.g. 1854/LU-01H03BX2HH1YNS0KJHBK0T1WYV"
+
+msgid "builder.other_license.help"
+msgstr "e.g. https://creativecommons.org/licenses/publicdomain/"
+
+msgid "builder.page_count.help"
+msgstr ""
+"Only provide the number of pages when the exact first and last page are "
+"unknown."
+
+msgid "builder.wos_id.help"
+msgstr "e.g. 000503382400004"
+
+msgid "builder.issn.help"
+msgstr "e.g. 2049-3630"
+
+msgid "builder.eissn.help"
+msgstr "e.g. 2049-3630"
+
+msgid "builder.isbn.help"
+msgstr "e.g. 978-3-16-148410-0"
+
+msgid "builder.eisbn.help"
+msgstr "e.g. 978-3-16-148410-0"
+
+msgid "builder.defense_date.help"
+msgstr "e.g. 2022-04-30. Formatted as YYYY-mm-dd"
+
+msgid "builder.pubmed_id.help"
+msgstr "e.g. 35172674"
+
+msgid "builder.arxiv_id.help"
+msgstr "e.g. 0706.0001"
+
+msgid "builder.esci_id.help"
+msgstr "e.g. 000752820200004"
+
+msgid "extern.true"
+msgstr "non UGent"
+
+msgid "extern.false"
+msgstr "UGent"
+
+msgid "locked.true"
+msgstr "locked"
+
+msgid "locked.false"
+msgstr "unlocked"
+
+msgid "has_message.true"
+msgstr "with message"
+
+msgid "has_message.false"
+msgstr "without message"
+
+msgid "legacy.true"
+msgstr "legacy publication"
+
+msgid "legacy.false"
+msgstr "normal publication"
+
+msgid "has_files.true"
+msgstr "With files"
+
+msgid "has_files.false"
+msgstr "Without files"
+
+msgid "suggest_custom_data_format"
+msgstr "Use custom data format"
+
+msgid "publication.search.empty.title.all"
+msgstr "No registered publications yet"
+
+msgid "publication.search.empty.description.all"
+msgstr "Register a first publication"
+
+msgid "publication.search.empty.title.contributed"
+msgstr "You have not registered any publications of your own"
+
+msgid "publication.search.empty.description.contributed"
+msgstr "Register your first publication"
+
+msgid "publication.search.empty.title.created"
+msgstr "No registered publications yet"
+
+msgid "publication.search.empty.description.created"
+msgstr "Register a first publication"
+
+msgid "dataset.search.empty.title.all"
+msgstr "No registered datasets yet"
+
+msgid "dataset.search.empty.description.all"
+msgstr "Register a first dataset"
+
+msgid "dataset.search.empty.title.contributed"
+msgstr "You have not registered any datasets of your own"
+
+msgid "dataset.search.empty.description.contributed"
+msgstr "Register your first dataset"
+
+msgid "dataset.search.empty.title.created"
+msgstr "No registered datasets yet"
+
+msgid "dataset.search.empty.description.created"
+msgstr "Register a first datasets"
+
+msgid "export_to.xlsx"
+msgstr "Export to Excel"
+
+msgid "identifier."
+msgstr "-"
+
+msgid "identifier.BioStudies"
+msgstr "BioStudies"
+
+msgid "identifier.DOI"
+msgstr "DOI"
+
+msgid "identifier.ENA"
+msgstr "ENA"
+
+msgid "identifier.ENABioProject"
+msgstr "ENA BioProject"
+
+msgid "identifier.Ensembl"
+msgstr "Ensembl"
+
+msgid "identifier.Handle"
+msgstr "Handle"
+
+msgid "identifier.PubMedID"
+msgstr "PubMed ID"
+
+msgid "identifier.WebOfScience"
+msgstr "Web of Science ID"

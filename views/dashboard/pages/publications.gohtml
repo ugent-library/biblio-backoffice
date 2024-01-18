@@ -16,8 +16,8 @@
 
 <div class="w-100 u-scroll-wrapper">
     <div class="bg-white">
-        <div class="bc-navbar bc-navbar--large bc-navbar--white">
-            <div class="bc-toolbar">
+        <div class="bc-navbar bc-navbar--large bc-navbar--white bc-navbar--bordered-bottom">
+            <div class="bc-toolbar bc-toolbar--auto">
                 <div class="bc-toolbar-left">
                     <div class="bc-toolbar-item">
                         <h4 class="bc-toolbar-title">Publications</h4>
@@ -28,44 +28,40 @@
     </div>
 
     <div class="u-scroll-wrapper__body w-100 p-6">
+        <div class="pb-5">
+            <p><strong>Why are the totals wrong?</strong></p>
+            <p>Some publications are associated with more than 1 faculty.</p>
+            <p>The category "all" in the table header may contain less publications, as it only counts each publication once.</p>
+        </div>
+
         <div class="card w-100 mb-6">
-            <div class="card-header">
-                <div class="bc-toolbar">
+            <div class="card-header card-header--auto ">
+                <div class="bc-toolbar bc-toolbar--auto">
                     <div class="bc-toolbar-left">
-                        <h3 class="card-title">Public with classification U</h3>
+                        <div class="bc-toolbar-item">
+                            <h3 class="card-title">Public with classification U</h3>
+                        </div>
+                    </div>
+                    <div class="bc-toolbar-right text-align-right">
+                        <div>
+                            <select class="form-select w-100"
+                                name="uyear"
+                                hx-post="{{pathFor "dashboard_refresh_upublications" "type" $.Type}}"
+                                hx-target="#tbl-upublications"
+                                hx-include="[name='ayear']"
+                                hx-indicator="#tbl-upublications .spinner-card-backdrop">
+                                <option value="">All years</option>
+                                {{ range $uyear := $.AllUPublicationYears}}
+                                <option value="{{$uyear}}" {{if eq $uyear $.UYear}}selected{{end}}>{{$uyear}}</option>
+                                {{end}}
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="card-body w-100 p-0">
-                <div class="table-responsive">
-                    <table class="table table-sm table-bordered">
-                        <thead>
-                            <tr>
-                                <th class="table-col-sm-fixed table-col-sm-fixed-left" scope="col"></th>
-                                {{range $i,$f := .UFaculties}}
-                                <th scope="col">{{$f}}</th>
-                                {{end}}
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {{range $pti, $pt := .PTypes}}
-                            <tr>
-                                <th class="table-col-sm-fixed table-col-sm-fixed-left" scope="col">{{$pt}}</th>
-                                {{range $fi,$f := $.UFaculties}}
-                                {{with $cell := (index $.UPublications $f $pti)}}
-                                <td>
-                                    {{if eq (index $cell 1) ""}}
-                                    <span>{{index $cell 0}}<span>
-                                    {{else}}
-                                    <a href="{{index $cell 1}}">{{index $cell 0}}</a>
-                                    {{end}}
-                                </td>
-                                {{end}}
-                                {{end}}
-                            </tr>
-                        {{end}}
-                        </tbody>
-                    </table>
+            <div class="card-body w-100 p-0 position-relative">
+                <div class="table-responsive" id="tbl-upublications">
+                    {{partial "dashboard/partials/tbl_publications" ($.Yield "Faculties" $.UFaculties "Publications" $.UPublications "PTypes" $.PTypes)}}
                 </div>
             </div>
         </div>
@@ -76,38 +72,27 @@
                     <div class="bc-toolbar-left">
                         <h3 class="card-title">Accepted</h3>
                     </div>
+                    <div class="bc-toolbar-right text-align-right">
+                        <div>
+                            <select
+                                name="ayear"
+                                class="form-select w-100"
+                                hx-post="{{pathFor "dashboard_refresh_apublications" "type" $.Type}}"
+                                hx-target="#tbl-apublications"
+                                hx-include="[name='uyear']"
+                                hx-indicator="#tbl-apublications .spinner-card-backdrop">
+                                <option value="">All years</option>
+                                {{ range $ayear := $.AllUPublicationYears}}
+                                <option value="{{$ayear}}" {{if eq $ayear $.AYear}}selected{{end}}>{{$ayear}}</option>
+                                {{end}}
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="card-body w-100 p-0">
-                <div class="table-responsive">
-                    <table class="table table-sm table-bordered">
-                        <thead>
-                            <tr>
-                                <th class="table-col-sm-fixed table-col-sm-fixed-left" scope="col"></th>
-                                {{range $i,$f := .AFaculties}}
-                                <th scope="col">{{$f}}</th>
-                                {{end}}
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {{range $pti, $pt := .PTypes}}
-                            <tr>
-                                <th class="table-col-sm-fixed table-col-sm-fixed-left" scope="col">{{$pt}}</th>
-                                {{range $fi,$f := $.AFaculties}}
-                                {{with $cell := (index $.APublications $f $pti)}}
-                                <td>
-                                    {{if eq (index $cell 1) ""}}
-                                    <span>{{index $cell 0}}<span>
-                                    {{else}}
-                                    <a href="{{index $cell 1}}">{{index $cell 0}}</a>
-                                    {{end}}
-                                </td>
-                                {{end}}
-                                {{end}}
-                            </tr>
-                        {{end}}
-                        </tbody>
-                    </table>
+            <div class="card-body w-100 p-0 position-relative">
+                <div class="table-responsive" id="tbl-apublications">
+                    {{partial "dashboard/partials/tbl_publications" ($.Yield "Faculties" $.AFaculties "Publications" $.APublications "PTypes" $.PTypes)}}
                 </div>
             </div>
         </div>

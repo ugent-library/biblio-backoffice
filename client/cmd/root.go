@@ -4,10 +4,12 @@ import (
 	"os"
 	"strings"
 
+	_ "github.com/joho/godotenv/autoload"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	cnx "github.com/ugent-library/biblio-backoffice/client/connection"
 	"google.golang.org/protobuf/encoding/protojson"
+
+	cnx "github.com/ugent-library/biblio-backoffice/client/connection"
 )
 
 var (

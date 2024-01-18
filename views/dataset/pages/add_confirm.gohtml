@@ -64,7 +64,7 @@
                                     <a class="list-group-item list-group-item-action" href="{{pathFor "dataset_add_description" "id" .Dataset.ID|querySet "show" "description"}}">
                                         <div class="d-flex justify-content-between align-items-center">
                                             <div class="d-flex align-items-center">
-                                                <span class="ml-3">Description</span>
+                                                <span class="ms-3">Description</span>
                                             </div>
                                             <i class="if if-chevron-right"></i>
                                         </div>
@@ -72,7 +72,7 @@
                                     <a class="list-group-item list-group-item-action" href="{{pathFor "dataset_add_description" "id" .Dataset.ID|querySet "show" "contributors"}}">
                                         <div class="d-flex justify-content-between align-items-center">
                                             <div class="d-flex align-items-center">
-                                                <span class="ml-3">{{.Locale.T "dataset.subnav.contributors"}}</span>
+                                                <span class="ms-3">{{.Loc.Get "dataset.subnav.contributors"}}</span>
                                             </div>
                                             <i class="if if-chevron-right"></i>
                                         </div>

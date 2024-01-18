@@ -5,16 +5,33 @@
 .breadcrumb {
   align-items: center;
   flex-wrap: nowrap;
+  height: 3.2rem;
 }
 
 .breadcrumb-item {
   display: inline-flex;
   align-items: center;
+  height: 100%;
   font-weight: 500;
 }
 
-.breadcrumb-item + .breadcrumb-item {
-  padding-left: 1.6rem;
-  margin-left: 1.6rem;
-  border-left: 1px solid $border;
+.breadcrumb-item + .breadcrumb-item::before {
+  height: 100%;
+}
+
+.if + .breadcrumb-text,
+.breadcrumb-text + .if {
+  margin-left: .4rem;
+}
+
+.breadcrumb-item a {
+  color: $text-muted;
+
+  &:not(:has(> .if)) {
+    text-decoration: underline;
+  }
+
+  .breadcrumb-text {
+    text-decoration: underline;
+  }
 }

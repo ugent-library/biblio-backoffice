@@ -1,6 +1,6 @@
 {{define "page_content"}}
 <div class="w-100 u-scroll-wrapper">
-    <div class="c-header-collapsible bg-white" data-collapsed="true">
+    <div class="bg-white" data-collapsed="true">
         <div class="bc-navbar bc-navbar--large bc-navbar--white">
             <div class="bc-toolbar">
                 <div class="bc-toolbar-left">
@@ -12,18 +12,18 @@
                     </div>
                 </div>
                 <div class="bc-toolbar-right">
-                   {{if and (.User.CanEditPublication .Publication) (eq .Publication.Status "public") (not .Publication.Locked)}}
+                    {{if .User.CanWithdrawPublication .Publication}}
                     <div class="bc-toolbar-item">
                         <button class="btn btn-outline-danger"
                             hx-get="{{pathFor "publication_confirm_withdraw" "id" .Publication.ID|querySet "redirect-url" .CurrentURL.String}}"
                             hx-target="#modals"
                         >
-                            <i class="if if-arrow-go-back"></I>
+                            <i class="if if-arrow-go-back"></i>
                             <span class="btn-text">Withdraw</span>
                         </button>
                     </div>
                     {{end}}
-                    {{if and (.User.CanEditPublication .Publication) (eq .Publication.Status "returned") (not .Publication.Locked)}}
+                    {{if and (.User.CanPublishPublication .Publication) (eq .Publication.Status "returned")}}
                     <div class="bc-toolbar-item">
                         <button class="btn btn-success"
                             hx-get="{{pathFor "publication_confirm_republish" "id" .Publication.ID|querySet "redirect-url" .CurrentURL.String}}"
@@ -33,7 +33,7 @@
                         </button>
                     </div>
                     {{end}}
-                    {{if and (.User.CanEditPublication .Publication) (ne .Publication.Status "returned") (ne .Publication.Status "public") (not .Publication.Locked)}}
+                    {{if and (.User.CanPublishPublication .Publication) (ne .Publication.Status "returned")}}
                     <div class="bc-toolbar-item">
                         <button class="btn btn-success"
                             hx-get="{{pathFor "publication_confirm_publish" "id" .Publication.ID|querySet "redirect-url" .CurrentURL.String}}"
@@ -48,27 +48,26 @@
                         <button class="btn btn-outline-secondary"
 
                             hx-post="{{pathFor "publication_unlock" "id" .Publication.ID|querySet "redirect-url" .CurrentURL.String}}"
-                            hx-headers='{"If-Match": "{{.Publication.SnapshotID}}"}'
                             hx-swap="none"
                         >
-                            <i class="if if-lock-unlock"></I>
+                            <i class="if if-lock-unlock"></i>
                             <span class="btn-text">Unlock record</span>
                         </button>
                         {{else if .User.CanCurate}}
                         <button class="btn btn-outline-secondary"
                             hx-post="{{pathFor "publication_lock" "id" .Publication.ID|querySet "redirect-url" .CurrentURL.String}}"
-                            hx-headers='{"If-Match": "{{.Publication.SnapshotID}}"}'
                             hx-swap="none"
                         >
-                            <i class="if if-lock"></I>
+                            <i class="if if-lock"></i>
                             <span class="btn-text">Lock record</span>
                         </button>
                         {{end}}
                     </div>
+                    {{if .User.CanDeletePublication .Publication}}
                     <div class="bc-toolbar-item">
                         <div class="dropdown dropleft">
                             <button class="btn btn-outline-primary btn-icon-only"
-                                type="button" data-toggle="dropdown"
+                                type="button" data-bs-toggle="dropdown"
                                 aria-haspopup="true" aria-expanded="false">
                                 <i class="if if-more"></i>
                             </button>
@@ -97,6 +96,7 @@
                             </div>
                         </div>
                     </div>
+                    {{end}}
                 </div>
             </div>
         </div>
@@ -113,33 +113,33 @@
                         </div>
                         {{with .Publication.PublicationStatus}}
                         <div class="bc-toolbar-item">
-                            <p class="c-subline text-nowrap pr-5 border-right">{{$.Locale.TS "publication_publishing_statuses" .}}</p>
+                            <p class="c-subline text-nowrap pe-5 border-end">{{$.Loc.Get (print "publication_publishing_statuses." .)}}</p>
                         </div>
                         {{end}}
                         {{if .Publication.Locked}}
-                        <div class="bc-toolbar-item">
-                            <span class="c-subline text-nowrap pr-5 border-right" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Locked for editing">
+                        <div class="bc-toolbar-item" data-bs-toggle="tooltip" data-bs-title="Locked for editing" data-bs-placement="bottom">
+                            <span class="c-subline text-nowrap pe-5 border-end">
                               <i class="if if-lock if--small if--muted"></i>
-                              <span class="text-muted c-body-small ml-2">Locked</span>
+                              <span class="text-muted c-body-small ms-2">Locked</span>
                             </span>
                         </div>
                         {{end}}
                         <div class="bc-toolbar-item">
                             <span class="c-subline text-nowrap">
-                                {{.Locale.TS "publication_types" .Publication.Type}}
+                                {{.Loc.Get (print "publication_types." .Publication.Type)}}
                                 {{with .Publication.Classification}}: {{.}}{{end}}
                             </span>
                         </div>
                       </div>
 
                       <div class="bc-toolbar-right">
-                        <div class="bc-toolbar-item mr-auto mr-lg-0">
-                          <div class="d-flex align-items-center flex-wrap justify-content-md-end">
+                        <div class="bc-toolbar-item me-auto me-lg-0">
+                          <div class="d-flex align-items-center flex-wrap justify-content-end">
                             <span class="c-subline text-truncate text-nowrap">
-                               {{partial "shared/created_by" .Publication}} 
+                               {{partial "shared/created_by" .Publication}}
                             </span>
-                            <span class="c-subline text-truncate text-nowrap pl-5">
-                               {{partial "shared/updated_by" .Publication}} 
+                            <span class="c-subline text-truncate text-nowrap ps-5">
+                               {{partial "shared/updated_by" .Publication}}
                             </span>
                           </div>
                         </div>

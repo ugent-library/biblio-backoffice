@@ -1,12 +1,11 @@
 .c-radio-card {
   border: .1rem solid $border;
-  border-radius: .3rem;
+  border-radius: .5rem;
   display: flex;
   align-items: center;
-  padding: 2rem 1.6rem;
+  padding: 1.2rem 1.6rem;
   margin: 0;
   font-weight: normal;
-  line-height: 2.4rem;
 
   &:hover,
   &:focus {
@@ -14,7 +13,7 @@
     box-shadow: 0 0 0 3px $light-blue;
   }
 
-  .custom-control-label {
+  .form-check-label {
     height: 2.2rem;
   }
 }
@@ -30,7 +29,7 @@
 }
 
 .c-radio-card + .c-radio-card {
-  margin-top: 1.6rem;
+  margin-top: 0.8rem;
 }
 
 .c-radio-card__hidden-content {

@@ -4,22 +4,24 @@
         <input type="hidden" name="f[{{$field}}]" value="{{.}}">
         {{end}}
     {{end}}
-    <div class="form-row">
-        <div class="col input-group">
-            <label class="sr-only" for="q">Search</label>
-            <input class="form-control" type="text" name="q" value="{{.SearchArgs.Query}}" placeholder="Search..."
-                autocomplete="off">
-            <div class="input-group-append">
-                <button type="submit" class="btn btn-outline-primary" type="button">Search</button>
+    <div class="row">
+        <div class="col">
+            <div class="input-group flex-nowrap">
+                <label class="visually-hidden" for="q">Search</label>
+                <input class="form-control" type="text" name="q" value="{{.SearchArgs.Query}}" placeholder="Search..."
+                    autocomplete="off">
+                <button type="submit" class="btn btn-outline-primary" type="button">
+                    <i class="if if-search"></i>
+                    <span class="btn-text">Search</span>
+                </button>
             </div>
         </div>
         <div class="col-3">
             <div class="d-flex">
-                <label class="col-form-label pr-3" for="sort" style="white-space: nowrap">Sort
-                    by</label>
-                <select class="custom-select form-change-submit" name="sort">
+                <label class="pe-3 text-nowrap" for="sort">Sort by</label>
+                <select class="form-select form-change-submit" name="sort">
                     {{range vocabulary "publication_sorts"}}
-                    <option value="{{.}}"{{if $.SearchArgs.HasSort .}} selected{{end}}>{{$.Locale.TS "publication_sorts" .}}</option>
+                    <option value="{{.}}"{{if $.SearchArgs.HasSort .}} selected{{end}}>{{$.Loc.Get (print "publication_sorts." .)}}</option>
                     {{end}}
                 </select>
             </div>
