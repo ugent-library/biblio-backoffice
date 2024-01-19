@@ -71,7 +71,7 @@ var updateOai = &cobra.Command{
 			SetName: "Biblio records with an open access fulltext file",
 		})
 		if err != nil {
-			logger.Fatal(err)
+			return err
 		}
 
 		err = client.AddSet(context.TODO(), &api.AddSetRequest{
