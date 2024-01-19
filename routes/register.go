@@ -37,6 +37,8 @@ import (
 	"github.com/ugent-library/oidc"
 	"github.com/ugent-library/zaphttp"
 	"github.com/ugent-library/zaphttp/zapchi"
+	"github.com/unrolled/secure"
+	"github.com/unrolled/secure/cspbuilder"
 	"go.uber.org/zap"
 )
 
@@ -221,6 +223,18 @@ func Register(c Config) {
 			csrf.SameSite(csrf.SameSiteStrictMode),
 			csrf.FieldName("csrf-token"),
 		))
+		r.Use(secure.New(secure.Options{
+			IsDevelopment: c.Env == "local",
+			ContentSecurityPolicy: (&cspbuilder.Builder{
+				Directives: map[string][]string{
+					cspbuilder.DefaultSrc: {"'self'"},
+					cspbuilder.ScriptSrc:  {"'self'", "$NONCE"},
+					// TODO: htmx injects style
+					cspbuilder.StyleSrc: {"'self'", "'unsafe-inline'"},
+					cspbuilder.ImgSrc:   {"'self'", "data:"},
+				},
+			}).MustBuild(),
+		}).Handler)
 
 		// BEGIN NEW STYLE HANDLERS
 		r.Group(func(r *ich.Mux) {

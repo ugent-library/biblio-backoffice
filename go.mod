@@ -36,6 +36,7 @@ require (
 	github.com/ugent-library/orcid v0.0.0-20230615125240-eb68c23bc33c
 	github.com/ugent-library/people-service v0.0.0-20231208220140-811a1ba9f2b3
 	github.com/ugent-library/projects-service v0.0.0-20231124152414-66adc1aa8935
+	github.com/unrolled/secure v1.14.0
 	github.com/xuri/excelize/v2 v2.8.0
 	go.mongodb.org/mongo-driver v1.12.1
 	golang.org/x/text v0.14.0
