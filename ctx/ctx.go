@@ -22,6 +22,7 @@ import (
 	"github.com/ugent-library/httperror"
 	"github.com/ugent-library/mix"
 	"github.com/ugent-library/zaphttp"
+	"github.com/unrolled/secure"
 	"go.uber.org/zap"
 )
 
@@ -56,6 +57,7 @@ func Set(config Config) func(http.Handler) http.Handler {
 				Log:       zaphttp.Logger(r.Context()).Sugar(),
 				Loc:       config.Loc,
 				CSRFToken: csrf.Token(r),
+				CSPNonce:  secure.CSPNonce(r.Context()),
 			}
 			if c.scheme == "" {
 				c.scheme = "http"
@@ -124,6 +126,7 @@ type Ctx struct {
 	OriginalUser *models.Person
 	Flash        []flash.Flash
 	CSRFToken    string
+	CSPNonce     string
 	Nav          string
 }
 
