@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- #1354: add CSP headers
+
+### Fixed
+
+## [v1.0.49] - 2024-01-19
+
+### Added
+
+- #1354: add CSP headers
+
 ### Fixed
 
 ## [v1.0.48] - 2023-12-18
@@ -513,7 +523,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.48...HEAD
+[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.49...HEAD
+[v1.0.49]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.48...v1.0.49
 [v1.0.48]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.47...v1.0.48
 [v1.0.47]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.46...v1.0.47
 [v1.0.46]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.45...v1.0.46
