@@ -168,10 +168,10 @@ var Map = map[string][]string{
 		"RE",
 		"TW",
 		"WE",
+		"GUK",
 	},
 	"faculties_socs": {
 		"FlandersMake",
-		"GUK",
 		"UZGent",
 		"HOART",
 		"HOGENT",
