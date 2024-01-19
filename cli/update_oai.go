@@ -3,6 +3,7 @@ package cli
 import (
 	"context"
 	"regexp"
+	"slices"
 
 	"github.com/spf13/cobra"
 	"github.com/ugent-library/oai-service/api/v1"
@@ -10,7 +11,6 @@ import (
 	"github.com/ugent-library/biblio-backoffice/backends/mods36"
 	"github.com/ugent-library/biblio-backoffice/backends/oaidc"
 	"github.com/ugent-library/biblio-backoffice/models"
-	"github.com/ugent-library/biblio-backoffice/vocabularies"
 )
 
 func init() {
@@ -59,46 +59,48 @@ var updateOai = &cobra.Command{
 		}
 
 		err = client.AddSet(context.TODO(), &api.AddSetRequest{
-			SetSpec: "biblio",
-			SetName: "All Biblio records",
-		})
-		if err != nil {
-			return err
-		}
-		err = client.AddSet(context.TODO(), &api.AddSetRequest{
-			SetSpec: "biblio:fulltext",
+			SetSpec: "fulltext",
 			SetName: "Biblio records with a fulltext file",
-		})
-		if err != nil {
-			return err
-		}
-		err = client.AddSet(context.TODO(), &api.AddSetRequest{
-			SetSpec: "biblio:open_access",
-			SetName: "Biblio records with an open access fulltext file",
-		})
-		if err != nil {
-			logger.Fatal(err)
-		}
-		for _, t := range vocabularies.Map["publication_types"] {
-			err = client.AddSet(context.TODO(), &api.AddSetRequest{
-				SetSpec: "biblio:" + t,
-				SetName: "Biblio " + t + " records",
-			})
-			if err != nil {
-				return err
-			}
-		}
-		err = client.AddSet(context.TODO(), &api.AddSetRequest{
-			SetSpec: "biblio:dataset",
-			SetName: "Biblio datasets",
 		})
 		if err != nil {
 			return err
 		}
 
 		err = client.AddSet(context.TODO(), &api.AddSetRequest{
+			SetSpec: "open_access",
+			SetName: "Biblio records with an open access fulltext file",
+		})
+		if err != nil {
+			logger.Fatal(err)
+		}
+
+		err = client.AddSet(context.TODO(), &api.AddSetRequest{
 			SetSpec: "ec_fundedresources",
 			SetName: "OpenAire 2.0",
+		})
+		if err != nil {
+			return err
+		}
+
+		err = client.AddSet(context.TODO(), &api.AddSetRequest{
+			SetSpec: "openaire",
+			SetName: "OpenAire 3.0",
+		})
+		if err != nil {
+			return err
+		}
+
+		err = client.AddSet(context.TODO(), &api.AddSetRequest{
+			SetSpec: "driver",
+			SetName: "Driver",
+		})
+		if err != nil {
+			return err
+		}
+
+		err = client.AddSet(context.TODO(), &api.AddSetRequest{
+			SetSpec: "iminds",
+			SetName: "All iMinds publications",
 		})
 		if err != nil {
 			return err
@@ -159,17 +161,17 @@ var updateOai = &cobra.Command{
 				logger.Fatal(err)
 			}
 
-			setSpecs := []string{"biblio", "biblio:" + p.Type}
+			setSpecs := []string{}
 
 			for _, f := range p.File {
 				if f.Relation == "main_file" {
-					setSpecs = append(setSpecs, "biblio:fulltext")
+					setSpecs = append(setSpecs, "fulltext")
 					break
 				}
 			}
 			for _, f := range p.File {
 				if f.Relation == "main_file" && f.AccessLevel == "info:eu-repo/semantics/openAccess" {
-					setSpecs = append(setSpecs, "biblio:open_access")
+					setSpecs = append(setSpecs, "open_access", "driver")
 					break
 				}
 			}
@@ -177,6 +179,17 @@ var updateOai = &cobra.Command{
 			for _, rp := range p.RelatedProjects {
 				if rp.Project.EUProject != nil && (rp.Project.EUProject.FrameworkProgramme == "H2020" || reFP.MatchString(rp.Project.EUProject.FrameworkProgramme)) {
 					setSpecs = append(setSpecs, "ec_fundedresources")
+					break
+				}
+			}
+
+			if slices.Contains(setSpecs, "open_access") || slices.Contains(setSpecs, "ec_fundedresources") {
+				setSpecs = append(setSpecs, "openaire")
+			}
+
+			for _, relOrg := range p.RelatedOrganizations {
+				if relOrg.OrganizationID == "IBBT" {
+					setSpecs = append(setSpecs, "iminds")
 					break
 				}
 			}
@@ -239,17 +252,6 @@ var updateOai = &cobra.Command{
 				Identifier:     oaiID,
 				MetadataPrefix: "mods_36",
 				Content:        string(metadata),
-			})
-			if err != nil {
-				// TODO
-				logger.Fatal(err)
-			}
-
-			setSpecs := []string{"biblio", "biblio:dataset"}
-
-			err = client.AddItem(context.TODO(), &api.AddItemRequest{
-				Identifier: oaiID,
-				SetSpecs:   setSpecs,
 			})
 			if err != nil {
 				// TODO
