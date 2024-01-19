@@ -285,7 +285,7 @@ var tmpl = template.Must(template.New("").Funcs(funcs).Parse(`
 				<placeTerm>{{.Rec.Publisher.Location | xml}}</placeTerm>
 			</place>
 			{{end}}
-			{{if and .Rec.Publisher .Rec.Publisher.Location}}
+			{{if and .Rec.Publisher .Rec.Publisher.Name}}
 			<publisher>{{.Rec.Publisher.Name | xml}}</publisher>
 			{{end}}
 			<dateIssued encoding="w3cdtf">{{.Rec.Year | xml}}</dateIssued>
@@ -371,7 +371,7 @@ var tmpl = template.Must(template.New("").Funcs(funcs).Parse(`
 					<placeTerm>{{.Rec.Publisher.Location | xml}}</placeTerm>
 				</place>
 				{{end}}
-				{{if and .Rec.Publisher .Rec.Publisher.Location}}
+				{{if and .Rec.Publisher .Rec.Publisher.Name}}
 				<publisher>{{.Rec.Publisher.Name | xml}}</publisher>
 				{{end}}
 				<dateIssued encoding="w3cdtf">{{.Rec.Year | xml}}</dateIssued>
@@ -439,7 +439,7 @@ var tmpl = template.Must(template.New("").Funcs(funcs).Parse(`
 				<placeTerm>{{.Rec.Publisher.Location | xml}}</placeTerm>
 			</place>
 			{{end}}
-			{{if and .Rec.Publisher .Rec.Publisher.Location}}
+			{{if and .Rec.Publisher .Rec.Publisher.Name}}
 			<publisher>{{.Rec.Publisher.Name | xml}}</publisher>
 			{{end}}
 			<dateIssued encoding="w3cdtf">{{.Rec.Year | xml}}</dateIssued>
