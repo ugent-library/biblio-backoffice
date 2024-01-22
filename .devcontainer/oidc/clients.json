@@ -1,6 +1,6 @@
 [
     {
-        "id": "biblio",
-        "secret": "biblio"
+        "id": "biblio-backoffice",
+        "secret": "biblio-backoffice"
     }
 ]
