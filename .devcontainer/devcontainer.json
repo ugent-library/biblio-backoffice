@@ -8,10 +8,10 @@
 	// Override default workspace folder to be consistent and accessible in the
 	// Dockerfile
 	"mounts": [
-		"source=${localWorkspaceFolder},target=/workspace/biblio-backoffice,type=bind,consistency=cached",
-		"source=${localEnv:HOME}/biblio-backoffice/files,target=/workspace/files,type=bind,consistency=cached"
+		"source=${localWorkspaceFolder},target=/src,type=bind,consistency=cached",
+		"source=${localWorkspaceFolder}/tmp/files,target=/data/files,type=bind,consistency=cached"
 	],
-	"workspaceFolder": "/workspace/biblio-backoffice",
+	"workspaceFolder": "/src",
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
