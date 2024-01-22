@@ -20,7 +20,7 @@
 	// "customizations": {}
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"forwardPorts": [3000, 3999, 4000, "db-backoffice:5432", "es:9200"],
+	"forwardPorts": [3002, 3003, 3004, "db-backoffice:3051", "db-people:3052", "db-projects:3053", "es:3061"],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// 
