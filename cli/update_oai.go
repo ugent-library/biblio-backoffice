@@ -112,7 +112,7 @@ var updateOai = &cobra.Command{
 		repo.EachPublication(func(p *models.Publication) bool {
 			oaiID := "oai:archive.ugent.be:" + p.ID
 
-			if p.Status == "deleted" && p.HasBeenPublic {
+			if p.HasBeenPublic && p.Status != "public" {
 				for _, metadataPrefix := range []string{"oai_dc", "mods_36"} {
 					err = client.DeleteRecord(context.TODO(), &api.DeleteRecordRequest{
 						Identifier:     oaiID,
@@ -209,7 +209,7 @@ var updateOai = &cobra.Command{
 		repo.EachDataset(func(d *models.Dataset) bool {
 			oaiID := "oai:archive.ugent.be:" + d.ID
 
-			if d.Status == "deleted" && d.HasBeenPublic {
+			if d.HasBeenPublic && d.Status != "public" {
 				for _, metadataPrefix := range []string{"oai_dc", "mods_36"} {
 					err = client.DeleteRecord(context.TODO(), &api.DeleteRecordRequest{
 						Identifier:     oaiID,
@@ -252,6 +252,15 @@ var updateOai = &cobra.Command{
 				Identifier:     oaiID,
 				MetadataPrefix: "mods_36",
 				Content:        string(metadata),
+			})
+			if err != nil {
+				// TODO
+				logger.Fatal(err)
+			}
+
+			err = client.AddItem(context.TODO(), &api.AddItemRequest{
+				Identifier: oaiID,
+				SetSpecs:   []string{},
 			})
 			if err != nil {
 				// TODO
