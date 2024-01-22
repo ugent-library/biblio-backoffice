@@ -894,6 +894,31 @@ func (s *server) CleanupPublications(req *api.CleanupPublicationsRequest, stream
 		// guard
 		fixed := false
 
+		// restore links that have been deleted because of UsesLink == false bug (only needs to run once)
+		if p.Link == nil {
+			systemUpdate := false
+			s.services.Repo.PublicationHistory(p.ID, func(pp *models.Publication) bool {
+				// restore link if system deleted the link
+				if systemUpdate && pp.Link != nil {
+					p.Link = pp.Link
+					fixed = true
+					return false
+				}
+
+				// stop if link has been deleted by a human
+				if pp.Link != nil {
+					return false
+				}
+
+				systemUpdate = pp.UserID == ""
+
+				return true
+			})
+			if callbackErr != nil {
+				return false
+			}
+		}
+
 		// correctly set HasBeenPublic (only needs to run once)
 		// if p.Status == "deleted" && !p.HasBeenPublic {
 		// 	s.services.Repo.PublicationHistory(p.ID, func(pp *models.Publication) bool {
