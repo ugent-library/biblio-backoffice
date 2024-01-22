@@ -677,7 +677,7 @@ func (p *Publication) UsesLaySummary() bool {
 }
 
 func (p *Publication) UsesLink() bool {
-	return false
+	return true
 }
 
 func (p *Publication) UsesPageCount() bool {
