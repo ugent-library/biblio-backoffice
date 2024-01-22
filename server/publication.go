@@ -920,16 +920,16 @@ func (s *server) CleanupPublications(req *api.CleanupPublicationsRequest, stream
 		}
 
 		// correctly set HasBeenPublic (only needs to run once)
-		// if p.Status == "deleted" && !p.HasBeenPublic {
-		// 	s.services.Repo.PublicationHistory(p.ID, func(pp *models.Publication) bool {
-		// 		if pp.Status == "public" {
-		// 			p.HasBeenPublic = true
-		// 			fixed = true
-		// 			return false
-		// 		}
-		// 		return true
-		// 	})
-		// }
+		if !p.HasBeenPublic {
+			s.services.Repo.PublicationHistory(p.ID, func(pp *models.Publication) bool {
+				if pp.Status == "public" {
+					p.HasBeenPublic = true
+					fixed = true
+					return false
+				}
+				return true
+			})
+		}
 
 		// remove empty links (only needs to run once)
 		// for _, l := range p.Link {
