@@ -8,13 +8,13 @@ services:
     env_file:
         - ./.env
     volumes:
-      - ../..:/workspace/biblio-backoffice:cached
-      - ./tmp/files:/workspace/files:cached
+      - ../..:/src:cached
+      - ./tmp/files:/data/files:cached
     command: 
       - bash
       - -c
       - |
-        cd /workspace/biblio-backoffice
+        cd /src
         go mod download -x
         bash -i -c 'nvm install'
         npm install
