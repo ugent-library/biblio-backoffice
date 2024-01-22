@@ -726,7 +726,7 @@ func (s *server) CleanupDatasets(req *api.CleanupDatasetsRequest, stream api.Bib
 		fixed := false
 
 		// correctly set HasBeenPublic (only needs to run once)
-		if d.Status == "deleted" && !d.HasBeenPublic {
+		if !d.HasBeenPublic {
 			s.services.Repo.DatasetHistory(d.ID, func(dd *models.Dataset) bool {
 				if dd.Status == "public" {
 					d.HasBeenPublic = true
