@@ -275,3 +275,46 @@ PGDATABASE=biblio_backoffice tern migrate
 More info [here](https://github.com/jackc/tern).
 
 List of PG env variables [here](https://www.postgresql.org/docs/current/libpq-envars.html).
+
+## Dev Containers
+
+This project supports [Dev Containers](https://code.visualstudio.com/docs/devcontainers/containers). Following these steps
+will auto setup a containerized development environment for this project. In VS Code, you will be able to start a terminal
+that logs into a Docker container. This will allow you to write and interact with the code inside a self-contained sandbox.
+
+**Installing the Dev Containers extension**
+
+1. Open VS Code.
+2. Go to the [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension page.
+3. Click the `install` button to install the extension in VS Code.
+
+**Open in Dev Containers**
+
+1. Open the project directory in VS Code.
+2. Click on the green "Open a remote window" button in the lower left window corner.
+3. Choose "reopen in container" from the popup menu.
+4. The green button should now read "Dev Container: App name" when successfully opened.
+5. Open a new terminal in VS Code from the `Terminal` menu link.
+
+You are now logged into the dev container and ready to develop code, write code, push to git or execute commands.
+
+**Run the project**
+
+1. Open a new terminal in VS Code from the `Terminal` menu link.
+2. Execute this command `reflex -d none -c reflex.docker.conf`.
+3. Once the application has started, VS Code will show a popup with a link that opens the project in your browser.
+
+**Networking**
+
+The application and its dependencies run on these ports:
+
+| Application          | Port |
+| -------------------- | ---- |
+| Biblio Backoffice    | 3001 |
+| Mock OIDC            | 3002 |
+| People Application   | 3003 |
+| Projects Application | 3004 |
+| DB Application       | 3051 |
+| DB People            | 3052 |
+| DB Projects          | 3053 |
+| Elastic Search       | 3061 |
