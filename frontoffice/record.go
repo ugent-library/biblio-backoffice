@@ -452,7 +452,7 @@ func MapPublication(p *models.Publication, repo *repositories.Repo) *Record {
 
 	if p.Status == "private" {
 		rec.Status = "unsubmitted"
-	} else if p.Status == "deleted" && p.HasBeenPublic {
+	} else if p.HasBeenPublic && p.Status != "public" {
 		rec.Status = "pdeleted"
 	} else {
 		rec.Status = p.Status
@@ -967,7 +967,7 @@ func MapDataset(d *models.Dataset, repo *repositories.Repo) *Record {
 
 	if d.Status == "private" {
 		rec.Status = "unsubmitted"
-	} else if d.Status == "deleted" && d.HasBeenPublic {
+	} else if d.HasBeenPublic && d.Status != "public" {
 		rec.Status = "pdeleted"
 	} else {
 		rec.Status = d.Status
