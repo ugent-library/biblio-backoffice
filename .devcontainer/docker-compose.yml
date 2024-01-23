@@ -40,6 +40,8 @@ services:
     restart: unless-stopped
     env_file:
       - .env
+    volumes:
+      - ./people:/opt/people-service/.data
     environment:
       TERN_MIGRATIONS: "etc/migrations"
     command:
@@ -48,6 +50,7 @@ services:
       - |
         /opt/people-service/tern status &&
         /opt/people-service/tern migrate &&
+        /opt/people-service/people-service seed --people-file /opt/people-service/.data/people.json &&
         /opt/people-service/people-service server;
     network_mode: service:app
     depends_on:
