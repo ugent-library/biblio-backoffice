@@ -1,0 +1,19 @@
+[
+    {
+        "active": true,
+        "name": "biblio",
+        "given_name": "biblio",
+        "family_name": "biblio",
+        "email": "biblio@ugent.be",
+        "identifier": [
+            {
+                "value": "biblio",
+                "namespace": "ugent_username"
+            }
+        ],
+
+        "role": [
+            "admin"
+        ]
+    }
+]
