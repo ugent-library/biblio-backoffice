@@ -11,9 +11,8 @@
                 "namespace": "ugent_username"
             }
         ],
-
         "role": [
-            "admin"
+            "biblio-admin"
         ]
     }
 ]

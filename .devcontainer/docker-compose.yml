@@ -50,11 +50,28 @@ services:
       - |
         /opt/people-service/tern status &&
         /opt/people-service/tern migrate &&
-        /opt/people-service/people-service seed --people-file /opt/people-service/.data/people.json &&
+        /opt/people-service/people-service seed   --people-file /opt/people-service/.data/people.json &&
         /opt/people-service/people-service server;
     network_mode: service:app
     depends_on:
       - db-people
+
+  people-custom:
+    image: ugentlib/people-service:dev
+    restart: on-failure:5
+    env_file:
+      - .env
+    volumes:
+      - ./people:/opt/people-service/.data
+    command:
+      - sh
+      - -c
+      - |
+        /opt/people-service/people-service seed --people-file /opt/people-service/.data/people.json --without-generated-people --force
+    network_mode: service:app
+    depends_on:
+      - db-people
+      - people
 
   projects:
     image: ugentlib/projects-service:dev
