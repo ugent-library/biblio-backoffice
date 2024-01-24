@@ -19,6 +19,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/render/flash"
+	"github.com/unrolled/secure"
 	"go.uber.org/zap"
 )
 
@@ -47,6 +48,7 @@ type BaseContext struct {
 	OriginalUser    *models.Person
 	CSRFToken       string
 	CSRFTag         template.HTML
+	CSPNonce        string
 	FrontendBaseUrl string
 }
 
@@ -117,6 +119,7 @@ func (h BaseHandler) NewContext(r *http.Request, w http.ResponseWriter) (BaseCon
 		OriginalUser:    originalUser,
 		CSRFToken:       csrf.Token(r),
 		CSRFTag:         csrf.TemplateField(r),
+		CSPNonce:        secure.CSPNonce(r.Context()),
 		FrontendBaseUrl: h.FrontendBaseUrl,
 	}, nil
 }
