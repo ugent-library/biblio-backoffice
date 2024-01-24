@@ -2,6 +2,7 @@ import htmx from 'htmx.org';
 import {initCallback} from "bootstrap.native";
 import csrf from './ui/csrf.js'
 import checkbox from './ui/checkbox.js'
+import clipboard from './ui/clipboard.js'
 import popover from './ui/popover.js'
 import header from './ui/header.js' // TODO is this still needed?
 import multiple from './ui/multiple.js'
@@ -26,8 +27,8 @@ htmx.onLoad(initCallback);
 window.htmx = htmx
 require('htmx.org/dist/ext/remove-me.js');
 
-// initialize everyting
-document.addEventListener('DOMContentLoaded', function () {
+// initialize everything
+document.addEventListener('DOMContentLoaded', function (el) {
     csrf()
     checkbox()
     popover()
@@ -44,3 +45,7 @@ document.addEventListener('DOMContentLoaded', function () {
     fileUpload()
     tags()
 });
+
+htmx.onLoad(function(el) {
+    clipboard(el)
+})

@@ -1,111 +1,143 @@
 {{define "summary_actions"}}
-<div class="bc-toolbar-item ms-auto ms-lg-0">
-    <div class="c-button-toolbar">
-        <a class="btn btn-link btn-link-p-0 btn-icon-only" href="{{.PublicationURL}}">
-            <i class="if if-eye"></i>
-            <div class="visually-hidden">View publication</div>
-        </a>
-        {{if eq .UserMode "curator"}}
-        <a class="btn btn-link btn-link-p-0 btn-icon-only" href="{{.PublicationURL|querySet "show" "files"}}">
-            <i class="if if-file"></i>
-            <div class="visually-hidden">View full texts &amp; files</div>
-        </a>
-        {{end}}
-        <div class="dropdown">
-            <button class="btn btn-link btn-link-p-0 btn-icon-only" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="if if-more"></i>
-                <div class="visually-hidden">More options</div>
+<div class="c-button-toolbar">
+    <div class="dropdown">
+        <button class="btn btn-link btn-link-p-0 btn-icon-only" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="if if-more"></i>
+            <span class="visually-hidden">More</span>
+        </button>
+        <div class="dropdown-menu me-3">
+            <a class="dropdown-item" href="{{.PublicationURL}}">
+                <i class="if if-eye"></i>
+                <span>View publication</span>
+            </a>
+            <div class="dropdown-divider"></div>
+            {{if eq .Publication.Status "public"}}
+            <a class="dropdown-item" href="{{.FrontendBaseUrl}}/publication/{{.Publication.ID}}" target="_blank">
+                <i class="if if-book"></i>
+                <span>Public Biblio Location</span>
+            </a>
+            {{end}}
+            {{if eq .UserRole "curator"}}
+                <a class="dropdown-item" href="{{.PublicationURL|querySet "show" "files"}}">
+                    <i class="if if-file"></i>
+                    <span>View full texts &amp; files</span>
+                </a>
+                {{with .Publication.DOI}}
+                <a class="dropdown-item" href="{{resolveIdentifier "DOI" .}}" target="_blank">
+                    <i class="if if-external-link"></i>
+                    <span>DOI</span>
+                </a>
+                {{end}}
+                {{with .Publication.WOSID}}
+                <a class="dropdown-item" href="{{resolveIdentifier "WebOfScience" .}}" target="_blank">
+                    <i class="if if-external-link"></i>
+                    <span>WoS</span>
+                </a>
+                {{end}}
+                {{with .Publication.PubMedID}}
+                <a class="dropdown-item" href="{{resolveIdentifier "PubMed" .}}" target="_blank">
+                    <i class="if if-external-link"></i>
+                    <span>PubMed</span>
+                </a>
+                {{end}}
+            {{else}}
+                {{if .Publication.DOI}}
+                <a class="dropdown-item" href="https://www.altmetric.com/explorer/outputs?scope=all&identifier={{.Publication.DOI}}" target="_blank">
+                    <i class="if if-external-link"></i>
+                    <span>Altmetric</span>
+                </a>
+                {{end}}
+            {{end}}
+            {{/*
+            {{if and (eq .Publication.Status "public") .User.ORCID .User.ORCIDToken}}
+            <button class="dropdown-item"
+                hx-post="{{pathFor "publication_orcid_add" "id" .Publication.ID}}"
+                hx-target="#publication-{{.Publication.ID}}-orcid-status"
+                hx-trigger="click"
+                hx-swap="outerHTML"
+            >
+                <i class="if if-orcid" style="color: #A6CE39"></i>
+                <span>Send to ORCID</span>
             </button>
-            <div class="dropdown-menu">
-                <a class="dropdown-item" href="{{.PublicationURL}}">
-                    <i class="if if-eye"></i>
-                    <span>View publication</span>
-                </a>
-                <div class="dropdown-divider"></div>
-                {{if eq .Publication.Status "public"}}
-                <a class="dropdown-item" href="{{.FrontendBaseUrl}}/publication/{{.Publication.ID}}" target="_blank">
-                    <i class="if if-book"></i>
-                    <span>Public Biblio Location</span>
-                </a>
-                {{end}}
-                {{if eq .UserRole "curator"}}
-                    <a class="dropdown-item" href="{{.PublicationURL|querySet "show" "files"}}">
-                        <i class="if if-file"></i>
-                        <span>View full texts &amp; files</span>
-                    </a>
-                    {{with .Publication.DOI}}
-                    <a class="dropdown-item" href="{{resolveIdentifier "DOI" .}}" target="_blank">
-                        <i class="if if-external-link"></i>
-                        <span>DOI</span>
-                    </a>
-                    {{end}}
-                    {{with .Publication.WOSID}}
-                    <a class="dropdown-item" href="{{resolveIdentifier "WebOfScience" .}}" target="_blank">
-                        <i class="if if-external-link"></i>
-                        <span>WoS</span>
-                    </a>
-                    {{end}}
-                    {{with .Publication.PubMedID}}
-                    <a class="dropdown-item" href="{{resolveIdentifier "PubMed" .}}" target="_blank">
-                        <i class="if if-external-link"></i>
-                        <span>PubMed</span>
-                    </a>
-                    {{end}}
-                {{else}}
-                    {{if .Publication.DOI}}
-                    <a class="dropdown-item" href="https://www.altmetric.com/explorer/outputs?scope=all&identifier={{.Publication.DOI}}" target="_blank">
-                        <i class="if if-external-link"></i>
-                        <span>Altmetric</span>
-                    </a>
-                    {{end}}
-                {{end}}
-                {{/*
-                {{if and (eq .Publication.Status "public") .User.ORCID .User.ORCIDToken}}
-                <button class="dropdown-item"
-                    hx-post="{{pathFor "publication_orcid_add" "id" .Publication.ID}}"
-                    hx-target="#publication-{{.Publication.ID}}-orcid-status"
-                    hx-trigger="click"
-                    hx-swap="outerHTML"
-                >
-                    <i class="if if-orcid" style="color: #A6CE39"></i>
-                    <span>Send to ORCID</span>
-                </button>
-                {{end}}
-                */}}
-                {{if .User.CanDeletePublication .Publication}}
-                <div class="dropdown-divider"></div>
-                <button class="dropdown-item"
-                    hx-get="{{pathFor "publication_confirm_delete" "id" .Publication.ID|querySet "redirect-url" .CurrentURL.String}}"
-                    hx-target="#modals"
-                >
-                    <i class="if if-delete"></i>
-                    <span>Delete</span>
-                </button>
-                {{end}}
-            </div>
+            {{end}}
+            */}}
+            {{if .User.CanDeletePublication .Publication}}
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item"
+                hx-get="{{pathFor "publication_confirm_delete" "id" .Publication.ID|querySet "redirect-url" .CurrentURL.String}}"
+                hx-target="#modals"
+            >
+                <i class="if if-delete"></i>
+                <span>Delete</span>
+            </button>
+            {{end}}
         </div>
     </div>
+    {{if eq .UserRole "curator"}}
+    <a class="btn btn-link btn-link-p-0 btn-icon-only" href="{{.PublicationURL|querySet "show" "files"}}">
+        <i class="if if-file"></i>
+        <span class="visually-hidden">Files</span>
+    </a>
+    {{end}}
+    <a class="btn btn-link btn-link-p-0 btn-icon-only" href="{{.PublicationURL}}">
+        <i class="if if-eye"></i>
+        <span class="visually-hidden">View</span>
+    </a>
 </div>
 {{end}}
 
 {{define "summary_footer"}}
     {{with .Publication.Message}}
-    <div class="c-comment mt-4">
-        <div class="bc-avatar-and-text align-items-start">
-            <div class="bc-avatar bc-avatar-icon">
-                <i class="if if-message"></i>
-            </div>
-            <div class="bc-avatar-text flex-fill">
-                <div class="bc-toolbar bc-toolbar--auto w-100">
-                    <div class="bc-toolbar-left">
-                        <h4 class="c-comment-title">Message</h4>
-                    </div>
-                    <div class="bc-toolbar-right">
-                    </div>
-                </div>
-                <p class="mt-2">{{.}}</p>
-            </div>
+    <div class="alert alert-info">
+        <i class="if if-message"></i>
+        <div class="alert-content">
+            <h3 class="Biblio message">Biblio message</h3>
+            <p class="mt-2">{{.}}</p>
         </div>
     </div>
     {{end}}
+{{end}}
+
+{{define "summary_links"}}
+    <ul class="c-meta-list d-block c-meta-list-horizontal">
+        <li class="c-meta-item c-body-small me-2">
+            <a class="dropdown-item" href="{{.PublicationURL|querySet "show" "files"}}">
+                <i class="if if-file pe-2 if--small"></i>
+                <span>Full texts &amp; files</span>
+            </a>
+        </li>
+        {{with .Publication.DOI}}
+        <li class="c-meta-item c-body-small ps-3 me-2 border-start">
+            <a class="dropdown-item" href="{{resolveIdentifier "DOI" .}}" target="_blank">
+                <i class="if if-external-link pe-2 if--small"></i>
+                <span>DOI</span>
+            </a>
+        </li>
+        {{end}}
+        {{with .Publication.WOSID}}
+        <li class="c-meta-item c-body-small ps-3 me-2 border-start">
+            <a class="dropdown-item" href="{{resolveIdentifier "WebOfScience" .}}" target="_blank">
+                <i class="if if-external-link pe-2 if--small"></i>
+                <span>WoS</span>
+            </a>
+        </li>
+        {{end}}
+        {{with .Publication.PubMedID}}
+        <li class="c-meta-item c-body-small ps-3 me-2 border-start">
+            <a class="dropdown-item" href="{{resolveIdentifier "PubMed" .}}" target="_blank">
+                <i class="if if-external-link pe-2 if--small"></i>
+                <span>PubMed</span>
+            </a>
+        </li>
+        {{end}}
+
+        {{if eq .Publication.Status "public"}}
+        <li class="c-meta-item c-body-small ps-3 me-2 border-start">
+            <a class="dropdown-item" href="{{.FrontendBaseUrl}}/publication/{{.Publication.ID}}" target="_blank">
+                <i class="if if-book pe-2 if--small"></i>
+                <span>Public Biblio Location</span>
+            </a>
+        </li>
+        {{end}}
+    </ul>
 {{end}}
