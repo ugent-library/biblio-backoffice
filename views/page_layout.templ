@@ -233,7 +233,7 @@ templ pageLayout(c *ctx.Ctx, title string, meta templ.Component) {
             }
         </div>
 
-        <script type="application/javascript" src={ c.AssetPath("/js/app.js") }></script>
+        <script nonce={ c.CSPNonce } type="application/javascript" src={ c.AssetPath("/js/app.js") }></script>
     </body>
 
     </html>
