@@ -28,7 +28,7 @@ window.htmx = htmx
 require('htmx.org/dist/ext/remove-me.js');
 
 // initialize everything
-document.addEventListener('DOMContentLoaded', function (el) {
+document.addEventListener('DOMContentLoaded', function () {
     csrf()
     checkbox()
     popover()
