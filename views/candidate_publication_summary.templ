@@ -6,50 +6,52 @@ import (
 )
 
 templ CandidatePublicationSummary(c *ctx.Ctx, p *models.Publication) {
-    <div class="d-flex">
-        <div class="d-flex align-items-start w-100">
-            <div class="c-thumbnail c-thumbnail-1-1 c-thumbnail-img me-5">
+    <div class="w-100">
+        <div class="c-thumbnail-and-text align-items-start w-100">
+            <div class="c-thumbnail c-thumbnail-1-1 c-thumbnail-img c-thumbnail-small c-thumbnail-lg-large">
                 <div class="c-thumbnail-inner">
                     <img src={ c.AssetPath("/images/plato-logo-temporary-white.svg") }/>
                 </div>
             </div>
-            <div class="flex-grow-1">
-                <div class="bc-toolbar h-auto mb-2">
-                    <div class="bc-toolbar-left">
-                        <div class="d-inline-flex align-items-center flex-wrap">
-                            <span class="badge badge-sm rounded-pill badge-default my-2 me-3">
-                                <span class="badge-circle"></span>
-                                <span class="badge-text">Biblio suggestion</span>
-                            </span>
-                            <span class="c-subline text-nowrap me-3 pe-3 my-2 border-end">Dissertation</span>
-                            <span class="c-subline ps-2">Embargoed access</span>
+            <div class="c-thumbnail-text">
+                <div class="hstack-lg-responsive align-items-start gap-7 w-100">
+                    <div class="vstack gap-7">
+                        <div class="vstack gap-3">
+                            <div class="d-inline-flex align-items-center flex-wrap">
+                                <span class="badge rounded-pill badge-default me-3 my-2">
+                                    <span class="badge-circle"></span>
+                                    <span class="badge-text">Biblio suggestion</span>
+                                </span>
+                                <span class="c-subline text-nowrap me-2 pe-3 my-2 border-end">Dissertation</span>
+                                <span class="c-subline ps-2">Embargoed access</span>
+                            </div>
+                            <div>
+                                <a href="/plato-test/quick-view.html">
+                                    <h4 class="list-group-item-title">{ p.Title }</h4>
+                                </a>
+                            </div>
+                            <ul class="c-meta-list c-meta-list-inline">
+                                <li class="c-meta-item">{ p.Year }</li>
+                                <li class="c-meta-item">Ghent University. Department of Experimental clinical and health psychology</li>
+                            </ul>
+                            <div class="c-author-list">
+                                <div class="c-author">
+                                    <i class="if if-ghent-university" data-bs-toggle="tooltip" data-bs-placement="bottom" aria-label="UGent author" data-bs-original-title="UGent author"></i>
+                                    <span>Danna Oomen</span>
+                                </div>
+                                <span class="badge badge-light badge-sm">Your role: Supervisor</span>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div>
-                    <a href="/plato-test/quick-view.html">
-                        <h4 class="list-group-item-title">{ p.Title }</h4>
-                    </a>
-                    <ul class="c-meta-list d-block c-meta-list-horizontal">
-                        <li class="c-meta-item d-inline">{ p.Year }</li>
-                        <li class="c-meta-item d-inline">Ghent University. Department of Experimental clinical and health psychology</li>
-                    </ul>
-                    <div class="c-author-list">
-                        <div class="c-author">
-                            <i class="if if-ghent-university" data-bs-toggle="tooltip" data-bs-placement="bottom" aria-label="UGent author" data-bs-original-title="UGent author"></i>
-                            <span>Danna Oomen</span>
-                        </div>
-                        <span class="badge badge-light badge-sm">Your role: Supervisor</span>
+                    <div class="c-button-toolbar c-button-toolbar--vertical flex-column-reverse justify-content-end flex-lg-row">
+                        <a class="btn btn-link btn-link-muted" href="#">
+                            <div class="btn-text">Remove suggestion</div>
+                        </a>
+                        <a class="btn btn-outline-primary" href="/plato-test/quick-view.html">
+                            <div class="btn-text">Claim</div>
+                        </a>
                     </div>
                 </div>
-            </div>
-            <div class="c-button-toolbar c-button-toolbar--vertical flex-column-reverse justify-content-end flex-lg-row">
-                <a class="btn btn-link btn-link-muted" href="#">
-                    <div class="btn-text">Remove suggestion</div>
-                </a>
-                <a class="btn btn-outline-primary" href="/plato-test/quick-view.html">
-                    <div class="btn-text">Claim</div>
-                </a>
             </div>
         </div>
     </div>
