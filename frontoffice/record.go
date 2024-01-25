@@ -8,6 +8,7 @@ import (
 
 	"github.com/caltechlibrary/doitools"
 	"github.com/iancoleman/strcase"
+	"github.com/ugent-library/biblio-backoffice/identifiers"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/repositories"
 	"github.com/ugent-library/biblio-backoffice/validation"
@@ -171,6 +172,12 @@ type JCR struct {
 	PrevCategoryQuartile *int     `json:"prev_category_quartile,omitempty"`
 }
 
+type Identifier struct {
+	Type  string `json:"type"`
+	Value string `json:"value"`
+	URL   string `json:"url,omitempty"`
+}
+
 type Record struct {
 	ID                  string               `json:"_id"`
 	Abstract            []string             `json:"abstract,omitempty"`
@@ -206,6 +213,7 @@ type Record struct {
 	FirstAuthor         []Person             `json:"first_author,omitempty"`
 	Format              []string             `json:"format,omitempty"`
 	Handle              string               `json:"handle,omitempty"`
+	Identifier          []Identifier         `json:"identifier,omitempty"`
 	ISBN                []string             `json:"isbn,omitempty"`
 	ISSN                []string             `json:"issn,omitempty"`
 	Issue               string               `json:"issue,omitempty"`
@@ -913,6 +921,16 @@ func MapDataset(d *models.Dataset, repo *repositories.Repo) *Record {
 			rec.DOI = append(rec.DOI, val)
 		} else {
 			rec.DOI = append(rec.DOI, doi)
+		}
+	}
+
+	for typ, values := range d.Identifiers {
+		for _, value := range values {
+			rec.Identifier = append(rec.Identifier, Identifier{
+				Type:  typ,
+				Value: value,
+				URL:   identifiers.Resolve(typ, value),
+			})
 		}
 	}
 
