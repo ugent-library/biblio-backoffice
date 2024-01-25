@@ -15,7 +15,6 @@ services:
       - -c
       - |
         cd /src
-        go mod download -x
         bash -i -c 'nvm install'
         npm install
         tern status
