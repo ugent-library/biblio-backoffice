@@ -20,7 +20,6 @@ services:
         npm install
         tern status
         tern migrate
-        go run main.go reset --confirm
         sleep infinity
     depends_on:
       - es
