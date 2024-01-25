@@ -88,7 +88,7 @@
 
 {{define "summary_footer"}}
     {{with .Publication.Message}}
-    <div class="alert alert-info">
+    <div class="alert alert-info mt-5">
         <i class="if if-message"></i>
         <div class="alert-content">
             <h3 class="Biblio message">Biblio message</h3>
@@ -99,16 +99,16 @@
 {{end}}
 
 {{define "summary_links"}}
-    <ul class="c-meta-list d-block c-meta-list-horizontal">
+    <ul class="c-meta-list c-meta-list-inline mt-4">
         <li class="c-meta-item c-body-small me-2">
-            <a class="dropdown-item" href="{{.PublicationURL|querySet "show" "files"}}">
+            <a class="c-link-muted" href="{{.PublicationURL|querySet "show" "files"}}">
                 <i class="if if-file pe-2 if--small"></i>
                 <span>Full texts &amp; files</span>
             </a>
         </li>
         {{with .Publication.DOI}}
         <li class="c-meta-item c-body-small ps-3 me-2 border-start">
-            <a class="dropdown-item" href="{{resolveIdentifier "DOI" .}}" target="_blank">
+            <a class="c-link-muted" href="{{resolveIdentifier "DOI" .}}" target="_blank">
                 <i class="if if-external-link pe-2 if--small"></i>
                 <span>DOI</span>
             </a>
@@ -116,7 +116,7 @@
         {{end}}
         {{with .Publication.WOSID}}
         <li class="c-meta-item c-body-small ps-3 me-2 border-start">
-            <a class="dropdown-item" href="{{resolveIdentifier "WebOfScience" .}}" target="_blank">
+            <a class="c-link-muted" href="{{resolveIdentifier "WebOfScience" .}}" target="_blank">
                 <i class="if if-external-link pe-2 if--small"></i>
                 <span>WoS</span>
             </a>
@@ -124,7 +124,7 @@
         {{end}}
         {{with .Publication.PubMedID}}
         <li class="c-meta-item c-body-small ps-3 me-2 border-start">
-            <a class="dropdown-item" href="{{resolveIdentifier "PubMed" .}}" target="_blank">
+            <a class="c-link-muted" href="{{resolveIdentifier "PubMed" .}}" target="_blank">
                 <i class="if if-external-link pe-2 if--small"></i>
                 <span>PubMed</span>
             </a>
@@ -133,7 +133,7 @@
 
         {{if eq .Publication.Status "public"}}
         <li class="c-meta-item c-body-small ps-3 me-2 border-start">
-            <a class="dropdown-item" href="{{.FrontendBaseUrl}}/publication/{{.Publication.ID}}" target="_blank">
+            <a class="c-link-muted" href="{{.FrontendBaseUrl}}/publication/{{.Publication.ID}}" target="_blank">
                 <i class="if if-book pe-2 if--small"></i>
                 <span>Public Biblio Location</span>
             </a>

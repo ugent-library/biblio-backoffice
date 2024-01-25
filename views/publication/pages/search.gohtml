@@ -72,7 +72,7 @@
                 {{if gt (len .Hits.Hits) 0}}
                 <ul class="list-group list-group-flush">
                     {{range .Hits.Hits}}
-                    <li class="list-group-item">
+                    <li class="list-group-item overflow-hidden">
                         {{layout "publication/summary" "publication/search_hit" ($.Yield
                             "Publication" .
                             "PublicationURL" (pathFor "publication" "id" .ID|querySet "redirect-url" $.CurrentURL.String))}}

@@ -1,15 +1,15 @@
-<div class="d-flex">
-    <div class="d-flex align-items-start w-100">
+<div class="w-100">
+    <div class="c-thumbnail-and-text align-items-start w-100">
         {{if eq .UserRole "curator"}}
-        <div class="me-6 d-none d-lg-block">
+        <div class="c-thumbnail c-thumbnail-1-1 c-thumbnail-img c-thumbnail-small c-thumbnail-lg-large d-none d-lg-block">
             <a href="{{.DatasetURL}}">
                 {{partial "dataset/thumbnail" .Dataset}}
             </a>
         </div>
         {{end}}
-        <div class="flex-grow-1">
-            <div class="d-flex flex-column">
-                <div class="d-flex align-items-start w-100">
+        <div class="c-thumbnail-text">
+            <div class="hstack-lg-responsive align-items-start gap-7 w-100">
+                <div class="vstack gap-7">
                     <div class="flex-grow-1">
                         <div class="bc-toolbar h-auto mb-2">
                             <div class="bc-toolbar-left flex-wrap">
@@ -51,9 +51,6 @@
                                 </span>
                                 {{end}}
                             </div>
-                            <div class="bc-toolbar-right">
-                                {{block "summary_actions" .}}{{end}}
-                            </div>
                         </div>
                         <h4 class="list-group-item-title mb-0">
                             {{if eq .UserRole "curator"}}
@@ -72,7 +69,7 @@
                             </a>
                             {{end}}
                         </h4>
-                        <ul class="c-meta-list d-block c-meta-list-horizontal">
+                        <ul class="c-meta-list c-meta-list-inline">
                             {{if .Dataset.Year}}<li class="c-meta-item">{{.Dataset.Year}}</li>{{end}}
                             {{if .Dataset.Publisher}}<li class="c-meta-item">{{.Dataset.Publisher}}</li>{{end}}
                             {{range $type, $vals := .Dataset.Identifiers}}
@@ -85,7 +82,29 @@
 
                         {{with .Dataset.Author}}{{partial "shared/contributors" (dict "Contributors" . "ContributorsURL" ($.DatasetURL | querySet "show" "contributors"))}}{{end}}
 
-                        <div class="bc-toolbar bc-toolbar-responsive my-4">
+                        <div>
+                            <ul class="c-meta-list c-meta-list-inline flex-nowrap">
+                                {{if .Dataset.RelatedPublication}}
+                                <li class="c-meta-item" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="{{len .Dataset.RelatedPublication}} related publications">
+                                    <i class="if if-article if--muted if--small me-2"></i>
+                                    <span class="text-muted c-body-small">{{len .Dataset.RelatedPublication}}</span>
+                                </li>
+                                {{end}}
+                                {{/* <li class="c-meta-item" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Sent to Orcid">
+                                    <i class="if if-orcid if--muted if--small"></i>
+                                    <i class="if if-check text-success if--small"></i>
+                                </li> */}}
+                            </ul>
+                        </div>
+
+                        <div class="d-lg-flex flex-row-reverse align-items-center justify-content-end gap-4">
+                            <div class="bc-toolbar-right flex-wrap">
+                                <ul class="c-meta-list c-meta-list-horizontal d-block">
+                                    <li class="c-meta-item c-body-small d-inline">
+                                        {{partial "shared/updated_by" .Dataset}}
+                                    </li>
+                                </ul>
+                            </div>
                             <div class="bc-toolbar-left">
                                 <div class="input-group">
                                     <button type="button" class="btn btn-outline-secondary btn-sm pe-2" data-clipboard="{{.Dataset.ID}}">
@@ -95,35 +114,15 @@
                                     <code class="c-code">{{.Dataset.ID}}</code>
                                 </div>
                             </div>
-                            <div class="bc-toolbar-right flex-wrap">
-                                <div class="bc-toolbar-item">
-                                    <span class="c-body-small text-muted my-2">
-                                        {{partial "shared/updated_by" .Dataset}}
-                                    </span>
-                                </div>
-                                <div class="bc-toolbar-item">
-                                    <ul class="c-meta-list d-block c-meta-list-horizontal flex-nowrap">
-                                        {{if .Dataset.RelatedPublication}}
-                                        <li class="c-meta-item" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="{{len .Dataset.RelatedPublication}} related publications">
-                                            <i class="if if-article if--muted if--small me-2"></i>
-                                            <span class="text-muted c-body-small">{{len .Dataset.RelatedPublication}}</span>
-                                        </li>
-                                        {{end}}
-                                        {{/* <li class="c-meta-item" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Sent to Orcid">
-                                            <i class="if if-orcid if--muted if--small"></i>
-                                            <i class="if if-check text-success if--small"></i>
-                                        </li> */}}
-                                    </ul>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
-                {{block "summary_footer" .}}{{end}}
-                {{if eq .UserRole "curator"}}
-                    {{block "summary_links" .}}{{end}}
-                {{end}}
+                {{block "summary_actions" .}}{{end}}
             </div>
         </div>
     </div>
 </div>
+{{block "summary_footer" .}}{{end}}
+{{if eq .UserRole "curator"}}
+    {{block "summary_links" .}}{{end}}
+{{end}}

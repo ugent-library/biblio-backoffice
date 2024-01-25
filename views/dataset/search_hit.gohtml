@@ -58,7 +58,7 @@
 
 {{define "summary_footer"}}
     {{with .Dataset.Message}}
-    <div class="alert alert-info">
+    <div class="alert alert-info mt-7">
         <i class="if if-message"></i>
         <div class="alert-content">
             <h3 class="Biblio message">Biblio message</h3>
@@ -69,10 +69,10 @@
 {{end}}
 
 {{define "summary_links"}}
-    <ul class="c-meta-list d-block c-meta-list-horizontal">
+    <ul class="c-meta-list c-meta-list-inline">
         {{range $type, $vals := .Dataset.Identifiers}}
         <li class="c-meta-item c-body-small me-2">
-            <a class="dropdown-item" href="{{resolveIdentifier $type (index $vals 0)}}" target="_blank">
+            <a class="c-link-muted" href="{{resolveIdentifier $type (index $vals 0)}}" target="_blank">
                 <i class="if if-external-link pe-2 if--small"></i>
                 <span>View in external repository</span>
             </a>
@@ -82,7 +82,7 @@
 
         {{if eq .Dataset.Status "public"}}
         <li class="c-meta-item c-body-small ps-3 me-2 border-start">
-            <a class="dropdown-item" href="{{.FrontendBaseUrl}}/publication/{{.Dataset.ID}}" target="_blank">
+            <a class="c-link-muted" href="{{.FrontendBaseUrl}}/publication/{{.Dataset.ID}}" target="_blank">
                 <i class="if if-book pe-2 if--small"></i>
                 <span>Public Biblio Location</span>
             </a>
