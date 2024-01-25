@@ -1,24 +1,6 @@
-.list-group-item-content {
-  height: 100%;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.list-group-item-inner {
-  display: flex;
-  align-items: center;
-
-  .list-group-item-main+.list-group-item-main,
-  .list-group-item-main+.c-button-toolbar {
-    margin-left: 2.4rem;
-  }
-}
-
-.list-group-item-main {
-  flex: 1;
-  min-width: 0;
-}
+//
+// Additions to Bootstrap `_list-group.scss`
+//
 
 .list-group-item-title {
   font-weight: 500;
@@ -200,5 +182,57 @@ a:hover .list-group-item-title {
     height: 100%;
     top: 0;
     left:0;
+  }
+}
+
+/* Use stacks component to stack items within a list item  */
+.list-group-item-content {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.list-group-item-inner {
+  display: flex;
+  align-items: center;
+  gap: 2.4rem;
+}
+
+.list-group-item-inner-lg-responsive {
+  display: flex;
+  align-items: center;
+  gap: 2.4rem;
+
+  @include media-breakpoint-down(lg) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.2rem;
+  }
+}
+
+.list-group-item-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.list-group-wrapper {
+  display: flex;
+  align-items: flex-start;
+
+  .list-group-item-inner {
+    flex: 1;
+  }
+
+  .c-thumbnail {
+    margin-right: 1.6rem;
+  }
+
+  @include media-breakpoint-down(sm) {
+    .c-thumbnail {
+      display: none;
+    }
   }
 }
