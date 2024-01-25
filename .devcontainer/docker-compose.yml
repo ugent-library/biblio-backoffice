@@ -15,12 +15,10 @@ services:
       - -c
       - |
         cd /src
-        go mod download -x
         bash -i -c 'nvm install'
         npm install
         tern status
         tern migrate
-        go run main.go reset --confirm
         sleep infinity
     depends_on:
       - es
