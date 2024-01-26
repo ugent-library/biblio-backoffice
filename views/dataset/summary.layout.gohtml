@@ -113,7 +113,7 @@
                         </div>
                     </div>
 
-
+                    {{block "summary_footer" .}}{{end}}
                     <div class="d-lg-flex flex-row-reverse align-items-center justify-content-end gap-4">
                         <ul class="c-meta-list c-meta-list-horizontal d-block">
                             <li class="c-meta-item c-body-small d-inline">
@@ -130,7 +130,6 @@
                             </div>
                         </div>
                     </div>
-                    {{block "summary_footer" .}}{{end}}
                     {{if eq .UserRole "curator"}}
                         {{block "summary_links" .}}{{end}}
                     {{end}}

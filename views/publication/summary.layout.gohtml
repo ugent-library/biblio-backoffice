@@ -142,6 +142,7 @@
                         </div>
                     </div>
 
+                    {{block "summary_footer" .}}{{end}}
                     <div class="d-lg-flex flex-row-reverse align-items-center justify-content-end vstack gap-3 flex-wrap">
                         <ul class="c-meta-list c-meta-list-inline c-body-small">
                             <li class="c-meta-item">
@@ -161,12 +162,9 @@
                             </div>
                         </div>
                     </div>
-                    <div class="vstack gap-3">
-                        {{block "summary_footer" .}}{{end}}
-                        {{if eq .UserRole "curator"}}
-                            {{block "summary_links" .}}{{end}}
-                        {{end}}
-                    </div>
+                    {{if eq .UserRole "curator"}}
+                        {{block "summary_links" .}}{{end}}
+                    {{end}}
                 </div>
                 {{block "summary_actions" .}}{{end}}
             </div>
