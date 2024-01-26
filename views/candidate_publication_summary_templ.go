@@ -36,7 +36,7 @@ func CandidatePublicationSummary(c *ctx.Ctx, p *models.Publication) templ.Compon
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"></div></div><div class=\"c-thumbnail-text\"><div class=\"hstack-lg-responsive align-items-start gap-7 w-100\"><div class=\"vstack gap-7\"><div class=\"vstack gap-3\"><div class=\"d-inline-flex align-items-center flex-wrap\"><span class=\"badge rounded-pill badge-default me-3 my-2\"><span class=\"badge-circle\"></span> <span class=\"badge-text\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"></div></div><div class=\"c-thumbnail-text\"><div class=\"hstack-lg-responsive align-items-start gap-3 w-100\"><div class=\"vstack gap-5\"><div class=\"vstack gap-2\"><div class=\"d-inline-flex align-items-center flex-wrap\"><span class=\"badge rounded-pill badge-default me-3 my-2\"><span class=\"badge-circle\"></span> <span class=\"badge-text\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -63,7 +63,7 @@ func CandidatePublicationSummary(c *ctx.Ctx, p *models.Publication) templ.Compon
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span></div><div><a href=\"/plato-test/quick-view.html\"><h4 class=\"list-group-item-title\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span></div><h4 class=\"mb-0\"><a href=\"/plato-test/quick-view.html\"><span class=\"list-group-item-title\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -72,7 +72,7 @@ func CandidatePublicationSummary(c *ctx.Ctx, p *models.Publication) templ.Compon
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h4></a></div><ul class=\"c-meta-list c-meta-list-inline\"><li class=\"c-meta-item\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span></a></h4><ul class=\"c-meta-list c-meta-list-inline\"><li class=\"c-meta-item\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -108,7 +108,7 @@ func CandidatePublicationSummary(c *ctx.Ctx, p *models.Publication) templ.Compon
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span></div></div></div><div class=\"c-button-toolbar c-button-toolbar--vertical flex-column-reverse justify-content-end flex-lg-row\"><a class=\"btn btn-link btn-link-muted\" href=\"#\"><div class=\"btn-text\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span></div></div></div><div class=\"c-button-toolbar flex-row-reverse flex-lg-row\"><a class=\"btn btn-link btn-link-muted\" href=\"#\"><div class=\"btn-text\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
