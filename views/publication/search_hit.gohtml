@@ -1,9 +1,15 @@
 {{define "summary_actions"}}
 <div class="c-button-toolbar">
+    <button class="btn btn-tertiary btn-lg-only-responsive pt-0" card-content-toggle>
+        <i class="if if-info-circle"></i>
+        <span class="btn-text d-md-none d-lg-inline-block">More info</span>
+        <span class="visually-hidden">View more details</span>
+    </button>
     <div class="dropdown">
-        <button class="btn btn-link btn-link-p-0 btn-icon-only" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <button class="btn btn-tertiary btn-lg-only-responsive pt-0" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <i class="if if-more"></i>
-            <span class="visually-hidden">More</span>
+            <span class="btn-text d-md-none d-lg-inline-block">Actions</span>
+            <span class="visually-hidden">View more actions</span>
         </button>
         <div class="dropdown-menu me-3">
             <a class="dropdown-item" href="{{.PublicationURL}}">
@@ -73,22 +79,17 @@
             {{end}}
         </div>
     </div>
-    {{if eq .UserRole "curator"}}
-    <a class="btn btn-link btn-link-p-0 btn-icon-only" href="{{.PublicationURL|querySet "show" "files"}}">
-        <i class="if if-file"></i>
-        <span class="visually-hidden">Files</span>
-    </a>
-    {{end}}
-    <a class="btn btn-link btn-link-p-0 btn-icon-only" href="{{.PublicationURL}}">
+    <a class="btn btn-tertiary btn-lg-only-responsive pt-0" href="{{.PublicationURL}}">
         <i class="if if-eye"></i>
-        <span class="visually-hidden">View</span>
+        <span class="btn-text d-md-none d-lg-inline-block">View</span>
+        <span class="visually-hidden">Go to record</span>
     </a>
 </div>
 {{end}}
 
 {{define "summary_footer"}}
     {{with .Publication.Message}}
-    <div class="alert alert-info mt-5">
+    <div class="alert alert-info mb-0">
         <i class="if if-message"></i>
         <div class="alert-content">
             <h3 class="Biblio message">Biblio message</h3>
@@ -99,44 +100,31 @@
 {{end}}
 
 {{define "summary_links"}}
-    <ul class="c-meta-list c-meta-list-inline mt-4">
-        <li class="c-meta-item c-body-small me-2">
-            <a class="c-link-muted" href="{{.PublicationURL|querySet "show" "files"}}">
-                <i class="if if-file pe-2 if--small"></i>
-                <span>Full texts &amp; files</span>
-            </a>
+    <ul class="c-meta-list c-meta-list-inline">
+        <li class="c-meta-item">
+            <a class="c-link-muted c-body-small" href="{{.PublicationURL}}">View publication</a>
+        </li>
+        <li class="c-meta-item">
+            <a class="c-link-muted c-body-small" href="{{.PublicationURL|querySet "show" "files"}}">Full texts &amp; files</a>
         </li>
         {{with .Publication.DOI}}
-        <li class="c-meta-item c-body-small ps-3 me-2 border-start">
-            <a class="c-link-muted" href="{{resolveIdentifier "DOI" .}}" target="_blank">
-                <i class="if if-external-link pe-2 if--small"></i>
-                <span>DOI</span>
-            </a>
+        <li class="c-meta-item">
+            <a class="c-link-muted c-body-small" href="{{resolveIdentifier "DOI" .}}" target="_blank">DOI</a>
         </li>
         {{end}}
         {{with .Publication.WOSID}}
-        <li class="c-meta-item c-body-small ps-3 me-2 border-start">
-            <a class="c-link-muted" href="{{resolveIdentifier "WebOfScience" .}}" target="_blank">
-                <i class="if if-external-link pe-2 if--small"></i>
-                <span>WoS</span>
-            </a>
+        <li class="c-meta-item">
+            <a class="c-link-muted c-body-small" href="{{resolveIdentifier "WebOfScience" .}}" target="_blank">WoS</a>
         </li>
         {{end}}
         {{with .Publication.PubMedID}}
-        <li class="c-meta-item c-body-small ps-3 me-2 border-start">
-            <a class="c-link-muted" href="{{resolveIdentifier "PubMed" .}}" target="_blank">
-                <i class="if if-external-link pe-2 if--small"></i>
-                <span>PubMed</span>
-            </a>
+        <li class="c-meta-item">
+            <a class="c-link-muted c-body-small" href="{{resolveIdentifier "PubMed" .}}" target="_blank">PubMed</a>
         </li>
         {{end}}
-
         {{if eq .Publication.Status "public"}}
-        <li class="c-meta-item c-body-small ps-3 me-2 border-start">
-            <a class="c-link-muted" href="{{.FrontendBaseUrl}}/publication/{{.Publication.ID}}" target="_blank">
-                <i class="if if-book pe-2 if--small"></i>
-                <span>Public Biblio Location</span>
-            </a>
+        <li class="c-meta-item">
+            <a class="c-link-muted c-body-small" href="{{.FrontendBaseUrl}}/publication/{{.Publication.ID}}" target="_blank">Public Biblio Location</a>
         </li>
         {{end}}
     </ul>

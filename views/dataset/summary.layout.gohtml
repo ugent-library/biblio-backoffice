@@ -1,56 +1,52 @@
 <div class="w-100">
     <div class="c-thumbnail-and-text align-items-start w-100">
         {{if eq .UserRole "curator"}}
-        <div class="c-thumbnail c-thumbnail-1-1 c-thumbnail-img c-thumbnail-small c-thumbnail-lg-large d-none d-lg-block">
+        <div class="c-thumbnail c-thumbnail-1-1 c-thumbnail-img c-thumbnail-md-small c-thumbnail-lg-large d-none d-lg-block">
             <a href="{{.DatasetURL}}">
                 {{partial "dataset/thumbnail" .Dataset}}
             </a>
         </div>
         {{end}}
         <div class="c-thumbnail-text">
-            <div class="hstack-lg-responsive align-items-start gap-7 w-100">
-                <div class="vstack gap-7">
-                    <div class="flex-grow-1">
-                        <div class="bc-toolbar h-auto mb-2">
-                            <div class="bc-toolbar-left flex-wrap">
-                                <span class="d-inline-flex align-items-center">
-                                    {{partial "shared/status" .Dataset}}
-                                </span>
-                                {{if .Dataset.Locked}}
-                                <span class="c-subline ps-2 me-3 pe-3 border-end" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Locked for editing">
-                                    <i class="if if-lock if--small if--muted"></i>
-                                    <span class="text-muted c-body-small ms-2">Locked</span>
-                                </span>
-                                {{end}}
-                                <span class="c-subline me-3 pe-3 {{if eq .Dataset.AccessLevel "info:eu-repo/semantics/embargoedAccess"}} border-end{{end}}">
-                                    {{if eq .Dataset.AccessLevel "info:eu-repo/semantics/openAccess"}}
-                                        <i class="if if-download if--small if--success"></i>
-                                        <span class="c-subline text-truncate ps-2">{{.Loc.Get (print "dataset_access_levels." .Dataset.AccessLevel)}}</span>
-                                    {{else if eq .Dataset.AccessLevel "info:eu-repo/semantics/embargoedAccess"}}
-                                        <i class="if if-time if--small if--muted"></i>
-                                        <span class="c-subline text-muted ps-2">{{.Loc.Get (print "dataset_access_levels." .Dataset.AccessLevel)}}</span>
-                                    {{else if eq .Dataset.AccessLevel "info:eu-repo/semantics/restrictedAccess"}}
-                                        <i class="if if-ghent-university if--small if--primary"></i>
-                                        <span class="c-subline text-muted ps-2">{{.Loc.Get (print "dataset_access_levels." .Dataset.AccessLevel)}}</span>
-                                    {{else if eq .Dataset.AccessLevel "info:eu-repo/semantics/closedAccess"}}
-                                        <i class="if if-eye-off if--small if--muted"></i>
-                                        <span class="c-subline text-muted ps-2">{{.Loc.Get (print "dataset_access_levels." .Dataset.AccessLevel)}}</span>
-                                    {{else}}
-                                        <i class="if if-error-circle if--small if--error"></i>
-                                        <span class="ps-1">Access level missing</span>
-                                    {{end}}
-                                </span>
-                                {{if eq .Dataset.AccessLevel "info:eu-repo/semantics/embargoedAccess"}}
-                                <span class="c-subline me-3 pe-3">
-                                    {{if eq .Dataset.AccessLevelAfterEmbargo "info:eu-repo/semantics/openAccess"}}
+            <div class="hstack-md-responsive align-items-start gap-3 w-100">
+                <div class="vstack gap-5">
+                    <div class="vstack gap-3">
+                        <div class="d-inline-flex align-items-center flex-wrap">
+                            {{partial "shared/status" .Dataset}}
+                            {{if .Dataset.Locked}}
+                            <span class="c-subline ps-2 me-3 pe-3 border-end" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Locked for editing">
+                                <i class="if if-lock if--small if--muted"></i>
+                                <span class="text-muted c-body-small ms-2">Locked</span>
+                            </span>
+                            {{end}}
+                            <span class="c-subline me-3 pe-3 {{if eq .Dataset.AccessLevel "info:eu-repo/semantics/embargoedAccess"}} border-end{{end}}">
+                                {{if eq .Dataset.AccessLevel "info:eu-repo/semantics/openAccess"}}
                                     <i class="if if-download if--small if--success"></i>
-                                    {{else}}
+                                    <span class="c-subline text-truncate ps-2">{{.Loc.Get (print "dataset_access_levels." .Dataset.AccessLevel)}}</span>
+                                {{else if eq .Dataset.AccessLevel "info:eu-repo/semantics/embargoedAccess"}}
+                                    <i class="if if-time if--small if--muted"></i>
+                                    <span class="c-subline text-muted ps-2">{{.Loc.Get (print "dataset_access_levels." .Dataset.AccessLevel)}}</span>
+                                {{else if eq .Dataset.AccessLevel "info:eu-repo/semantics/restrictedAccess"}}
                                     <i class="if if-ghent-university if--small if--primary"></i>
-                                    {{end}}
-                                    <span class="c-subline text-truncate ps-2">{{.Loc.Get (print "dataset_access_levels_after_embargo." .Dataset.AccessLevelAfterEmbargo)}} from {{.Dataset.EmbargoDate }}</span>
-                                </span>
+                                    <span class="c-subline text-muted ps-2">{{.Loc.Get (print "dataset_access_levels." .Dataset.AccessLevel)}}</span>
+                                {{else if eq .Dataset.AccessLevel "info:eu-repo/semantics/closedAccess"}}
+                                    <i class="if if-eye-off if--small if--muted"></i>
+                                    <span class="c-subline text-muted ps-2">{{.Loc.Get (print "dataset_access_levels." .Dataset.AccessLevel)}}</span>
+                                {{else}}
+                                    <i class="if if-error-circle if--small if--error"></i>
+                                    <span class="ps-1">Access level missing</span>
                                 {{end}}
-                            </div>
+                            </span>
+                            {{if eq .Dataset.AccessLevel "info:eu-repo/semantics/embargoedAccess"}}
+                            <span class="c-subline me-3 pe-3">
+                                {{if eq .Dataset.AccessLevelAfterEmbargo "info:eu-repo/semantics/openAccess"}}
+                                <i class="if if-download if--small if--success"></i>
+                                {{else}}
+                                <i class="if if-ghent-university if--small if--primary"></i>
+                                {{end}}
+                                <span class="c-subline text-truncate ps-2">{{.Loc.Get (print "dataset_access_levels_after_embargo." .Dataset.AccessLevelAfterEmbargo)}} from {{.Dataset.EmbargoDate }}</span>
+                            </span>
+                            {{end}}
                         </div>
                         <h4 class="list-group-item-title mb-0">
                             {{if eq .UserRole "curator"}}
@@ -81,13 +77,30 @@
                         </ul>
 
                         {{with .Dataset.Author}}{{partial "shared/contributors" (dict "Contributors" . "ContributorsURL" ($.DatasetURL | querySet "show" "contributors"))}}{{end}}
+                    </div>
 
-                        <div>
-                            <ul class="c-meta-list c-meta-list-inline flex-nowrap">
+
+                    <div class="collapsible-card-content collapse" card-content>
+                        <div class="vstack gap-3">
+                            <div class="d-flex align-items-center">
+                                <i class="if if-building if--small if--muted me-2"></i>
+                                {{if .Dataset.RelatedOrganizations}}
+                                    {{with .Dataset.RelatedOrganizations}}
+                                        {{partial "shared/related_organizations" (dict "RelatedOrganizations" . "ContributorsURL" ($.DatasetURL | querySet "show" "contributors"))}}
+                                    {{end}}
+                                {{else}}
+                                    <a href="{{.DatasetURL|querySet "show" "contributors"}}" class="badge badge-warning-light badge-sm ps-3">
+                                        <i class="if if-edit if--small"></i>
+                                        <span class="badge-text">Departments missing</a>
+                                    </a>
+                                {{end}}
+                            </div>
+
+                            <ul class="c-meta-list c-meta-list-inline">
                                 {{if .Dataset.RelatedPublication}}
                                 <li class="c-meta-item" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="{{len .Dataset.RelatedPublication}} related publications">
-                                    <i class="if if-article if--muted if--small me-2"></i>
-                                    <span class="text-muted c-body-small">{{len .Dataset.RelatedPublication}}</span>
+                                    <i class="if if-database if--muted if--small"></i>
+                                    <span class="text-muted">{{len .Dataset.RelatedPublication}}</span>
                                 </li>
                                 {{end}}
                                 {{/* <li class="c-meta-item" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Sent to Orcid">
@@ -96,33 +109,32 @@
                                 </li> */}}
                             </ul>
                         </div>
+                    </div>
 
-                        <div class="d-lg-flex flex-row-reverse align-items-center justify-content-end gap-4">
-                            <div class="bc-toolbar-right flex-wrap">
-                                <ul class="c-meta-list c-meta-list-horizontal d-block">
-                                    <li class="c-meta-item c-body-small d-inline">
-                                        {{partial "shared/updated_by" .Dataset}}
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="bc-toolbar-left">
-                                <div class="input-group">
-                                    <button type="button" class="btn btn-outline-secondary btn-sm pe-2" data-clipboard="{{.Dataset.ID}}">
-                                        <i class="if if-copy text-muted "></i>
-                                        <span class="btn-text ms-0 me-1">Biblio ID</span>
-                                    </button>
-                                    <code class="c-code">{{.Dataset.ID}}</code>
-                                </div>
+
+                    <div class="d-lg-flex flex-row-reverse align-items-center justify-content-end gap-4">
+                        <ul class="c-meta-list c-meta-list-horizontal d-block">
+                            <li class="c-meta-item c-body-small d-inline">
+                                {{partial "shared/updated_by" .Dataset}}
+                            </li>
+                        </ul>
+                        <div>
+                            <div class="input-group">
+                                <button type="button" class="btn btn-outline-secondary btn-sm pe-2" data-clipboard="{{.Dataset.ID}}">
+                                    <i class="if if-copy text-muted "></i>
+                                    <span class="btn-text ms-0 me-1">Biblio ID</span>
+                                </button>
+                                <code class="c-code">{{.Dataset.ID}}</code>
                             </div>
                         </div>
                     </div>
+                    {{block "summary_footer" .}}{{end}}
+                    {{if eq .UserRole "curator"}}
+                        {{block "summary_links" .}}{{end}}
+                    {{end}}
                 </div>
                 {{block "summary_actions" .}}{{end}}
             </div>
         </div>
     </div>
 </div>
-{{block "summary_footer" .}}{{end}}
-{{if eq .UserRole "curator"}}
-    {{block "summary_links" .}}{{end}}
-{{end}}

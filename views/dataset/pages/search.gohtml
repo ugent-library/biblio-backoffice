@@ -71,7 +71,7 @@
                 {{if gt (len .Hits.Hits) 0}}
                 <ul class="list-group list-group-flush">
                     {{range .Hits.Hits}}
-                    <li class="list-group-item overflow-hidden">
+                    <li class="list-group-item">
                         {{layout "dataset/summary" "dataset/search_hit" ($.Yield
                             "Dataset" .
                             "DatasetURL" (pathFor "dataset" "id" .ID|querySet "redirect-url" $.CurrentURL.String))}}
