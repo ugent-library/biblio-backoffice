@@ -48,7 +48,7 @@
                             </span>
                             {{end}}
                         </div>
-                        <h4 class="list-group-item-title mb-0">
+                        <h4 class="mb-0">
                             {{if eq .UserRole "curator"}}
                             {{if .Dataset.Title}}
                                 {{.Dataset.Title}}
@@ -57,11 +57,13 @@
                             {{end}}
                             {{else}}
                             <a href="{{.DatasetURL}}">
-                            {{if .Dataset.Title}}
-                                {{.Dataset.Title}}
-                            {{else}}
-                                Untitled record
-                            {{end}}
+                                <span class="list-group-item-title">
+                                    {{if .Dataset.Title}}
+                                        {{.Dataset.Title}}
+                                    {{else}}
+                                        Untitled record
+                                    {{end}}
+                                </span>
                             </a>
                             {{end}}
                         </h4>

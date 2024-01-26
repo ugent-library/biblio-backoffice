@@ -64,7 +64,7 @@
                             </span>
                             {{end}}
                         </div>
-                        <h4 class="list-group-item-title mb-0">
+                        <h4 class="mb-0">
                             {{if eq .UserRole "curator"}}
                             {{if .Publication.Title}}
                                 {{.Publication.Title}}
@@ -72,12 +72,14 @@
                                 Untitled record
                             {{end}}
                             {{else}}
-                            <a href="{{.PublicationURL}}" class="link-dark">
-                            {{if .Publication.Title}}
-                                {{.Publication.Title}}
-                            {{else}}
-                                Untitled record
-                            {{end}}
+                            <a href="{{.PublicationURL}}">
+                                <span class="list-group-item-title">
+                                    {{if .Publication.Title}}
+                                        {{.Publication.Title}}
+                                    {{else}}
+                                        Untitled record
+                                    {{end}}
+                                </span>
                             </a>
                             {{end}}
                         </h4>
