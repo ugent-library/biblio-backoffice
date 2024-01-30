@@ -5,6 +5,7 @@ var (
 	DOI           = &DOIType{}
 	ENA           = &ENAType{}
 	ENABioProject = &ENABioProjectType{}
+	EGA           = &EGAType{}
 	Ensembl       = &EnsemblType{}
 	Handle        = &HandleType{}
 	PubMed        = &PubMedType{}
@@ -14,6 +15,7 @@ var (
 var types = map[string]Type{
 	"BioStudies":    BioStudies,
 	"DOI":           DOI,
+	"EGA":           EGA,
 	"ENA":           ENA,
 	"ENABioProject": ENABioProject,
 	"Ensembl":       Ensembl,

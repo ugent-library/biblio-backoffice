@@ -2348,6 +2348,9 @@ msgstr "DOI"
 msgid "identifier.ENA"
 msgstr "ENA"
 
+msgid "identifier.EGA"
+msgstr "EGA"
+
 msgid "identifier.ENABioProject"
 msgstr "ENA BioProject"
 
