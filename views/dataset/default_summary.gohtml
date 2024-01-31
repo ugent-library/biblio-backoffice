@@ -1,19 +1,10 @@
 {{define "summary_actions"}}
     <div class="bc-toolbar-item ms-auto ms-lg-0">
         <div class="c-button-toolbar">
-            <div class="dropdown dropleft">
-                <button class="btn btn-link btn-link-p-0 btn-icon-only"
-                    type="button" data-bs-toggle="dropdown"
-                    aria-haspopup="true" aria-expanded="false">
-                    <i class="if if-more"></i>
-                </button>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="{{.DatasetURL}}">
-                        <i class="if if-eye"></i>
-                        <span>View dataset</span>
-                    </a>
-                </div>
-            </div>
+            <a class="btn btn-tertiary" href="{{.DatasetURL}}">
+                <i class="if if-eye"></i>
+                <span class="btn-text">View dataset</span>
+            </a>
         </div>
     </div>
 {{end}}
