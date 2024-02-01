@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"regexp"
 	"strings"
 	"time"
 
@@ -21,8 +20,6 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
-
-var reSplit = regexp.MustCompile(`\s*[,;]\s*`)
 
 func (s *server) GetPublication(ctx context.Context, req *api.GetPublicationRequest) (*api.GetPublicationResponse, error) {
 	p, err := s.services.Repo.GetPublication(req.Id)
