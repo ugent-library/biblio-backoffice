@@ -86,10 +86,8 @@
                         <div class="vstack gap-3">
                             <div class="d-flex align-items-center">
                                 <i class="if if-building if--small if--muted me-2"></i>
-                                {{if .Dataset.RelatedOrganizations}}
-                                    {{with .Dataset.RelatedOrganizations}}
-                                        {{partial "shared/related_organizations" (dict "RelatedOrganizations" . "ContributorsURL" ($.DatasetURL | querySet "show" "contributors"))}}
-                                    {{end}}
+                                {{with .Dataset.RelatedOrganizations}}
+                                    {{partial "shared/related_organizations" (dict "RelatedOrganizations" . "ContributorsURL" ($.DatasetURL | querySet "show" "contributors"))}}
                                 {{else}}
                                     <a href="{{.DatasetURL|querySet "show" "contributors"}}" class="badge badge-warning-light badge-sm ps-3">
                                         <i class="if if-edit if--small"></i>
