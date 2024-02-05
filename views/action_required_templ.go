@@ -56,7 +56,7 @@ func ActionRequired(c *ctx.Ctx, pTotal, dTotal int) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div><div class=\"bc-toolbar-right\"><div class=\"d-flex align-items-center\"><a class=\"text-muted mx-2\" href=\"#\" data-bs-container=\"body\" data-bs-toggle=\"popover-custom\" data-bs-placement=\"right\" data-popover-content=\"#action-required-tooltip\"><i class=\"if if-info-circle\"></i><div class=\"visually-hidden\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div><div class=\"bc-toolbar-right\"><div class=\"d-flex align-items-center\"><a class=\"text-muted mx-2\" href=\"#\" data-bs-container=\"body\" data-bs-toggle=\"popover-custom\" data-bs-placement=\"right\" data-popover-content=\"#action-required-tooltip\"><i class=\"if if-info-circle\"></i> <span class=\"visually-hidden\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -65,7 +65,7 @@ func ActionRequired(c *ctx.Ctx, pTotal, dTotal int) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></a><div class=\"u-hidden\" id=\"action-required-tooltip\"><div class=\"popover-body p-0\"><p>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span></a><div class=\"u-hidden\" id=\"action-required-tooltip\"><div class=\"popover-body p-0\"><p>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
