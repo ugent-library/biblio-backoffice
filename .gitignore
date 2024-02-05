@@ -24,7 +24,7 @@ go.work
 reflex.conf
 
 # Dotenv
-/.env
+.env
 
 # Local feature flags config
 feature-flags.yml
