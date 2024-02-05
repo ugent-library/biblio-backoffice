@@ -6,13 +6,13 @@ import htmx from 'htmx.org';
 
 export default function() {
     let toggler = function(evt) {
-        let showCardInfo = evt.currentTarget.closest('.hstack-md-responsive')
-        let cardContent = showCardInfo.querySelector('[card-content]')
+        let showCardInfo = evt.currentTarget.closest('[data-collapsible-card]')
+        let cardContent = showCardInfo.querySelector('[data-collapsible-card-content]')
         cardContent.classList.toggle('show')
     }
 
     let addEvents = function() {
-        document.querySelectorAll('[card-content-toggle]').forEach(cardContent =>
+        document.querySelectorAll('[data-collapsible-card-toggle]').forEach(cardContent =>
             cardContent.addEventListener('click', toggler)
         )
     }

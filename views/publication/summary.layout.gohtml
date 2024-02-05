@@ -9,7 +9,7 @@
         </div>
         {{end}}
         <div class="c-thumbnail-text">
-            <div class="hstack-md-responsive align-items-start gap-3 w-100">
+            <div class="hstack-md-responsive align-items-start gap-3 w-100" data-collapsible-card>
                 <div class="vstack gap-5">
                     <div class="vstack gap-2">
                         <div class="d-inline-flex align-items-center flex-wrap">
@@ -92,7 +92,7 @@
                         {{with .Publication.Author}}{{partial "shared/contributors" (dict "Contributors" . "ContributorsURL" ($.PublicationURL | querySet "show" "contributors"))}}{{end}}
                     </div>
 
-                    <div class="collapsible-card-content collapse" card-content>
+                    <div class="collapsible-card-content collapse" data-collapsible-card-content>
                         <div class="vstack gap-3">
                             <div class="d-flex align-items-center">
                                 <i class="if if-building if--small if--muted me-2"></i>
