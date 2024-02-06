@@ -1,9 +1,9 @@
-<div class="c-meta-list c-meta-list-horizontal">
+<ul class="badge-list">
     {{if gt (len .RelatedOrganizations) 3}}
         {{range (slice .RelatedOrganizations 0 3)}}
             {{partial "shared/organization" .Organization}}
         {{end}}
-        <div class="c-meta-item">
+        <li class="badge badge-light badge-sm">
             {{if .ContributorsURL}}
             <a class="c-link c-link-muted" href="{{.ContributorsURL}}">
             {{end}}
@@ -11,10 +11,10 @@
             {{if .ContributorsURL}}
             </a>
             {{end}}
-        </div>
+        </li>
     {{else}}
         {{range .RelatedOrganizations}}
             {{partial "shared/organization" .Organization}}
         {{end}}
     {{end}}
-</div>
+</ul>

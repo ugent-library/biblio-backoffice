@@ -119,8 +119,8 @@ $bc-avatar-tiny-dimensions: 1.6rem !default;
     margin-right: 1.6rem;
   }
 
-  &__text {
-    padding-right: .5rem;
+  .bc-avatar-text {
+    flex: 1;
   }
 }
 
@@ -229,4 +229,3 @@ $bc-avatar-tiny-dimensions: 1.6rem !default;
     opacity: 1;
   }
 }
-

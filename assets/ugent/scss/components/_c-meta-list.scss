@@ -1,35 +1,64 @@
 /* ==========================================================================
-    Component: Meta
-   ========================================================================== */
+  Component: Meta
+  ========================================================================== */
 
 .c-meta-list {
-  padding: 0.3rem 0;
+  padding-left: 0;
 }
 
-.c-meta-list-horizontal {
+.c-meta-list-vertical {
   display: flex;
-  align-items: center;
-
-  .c-meta-item:not(:last-child) {
-    margin-right: 1.2rem;
-    margin-bottom: 0.2rem;
-  }
+  flex-direction: column;
 }
 
 .c-meta-item:not(:last-child) {
   margin-bottom: 1.2rem;
 }
 
+.c-meta-list-horizontal {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  .c-meta-item {
+    margin: 0;
+  }
+
+  .c-meta-item:not(:last-child) {
+    margin-right: 1.2rem;
+  }
+}
+
+.c-meta-list-inline {
+  display: block;
+  flex-wrap: wrap;
+
+  .c-meta-item {
+    margin: 0;
+    display: inline;
+  }
+
+  .c-meta-item:not(:last-child) {
+    margin-right: 1.2rem;
+  }
+}
+
+
+.c-meta-list-narrow-spacing {
+  .c-meta-item:not(:last-child) {
+    margin-bottom: 0.4rem;
+  }
+}
+
 .c-meta-item {
-  line-height: 1.6;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   color: $text-muted;
-  margin: 0.2rem 0;
+  line-height: 1.6;
 
   > .if {
     color: $icon-muted;
     font-size: 1.6rem;
-    padding-right: 0.2rem;
+    padding-right: 0.6rem;
   }
 }

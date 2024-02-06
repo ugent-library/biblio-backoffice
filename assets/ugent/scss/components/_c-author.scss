@@ -1,18 +1,17 @@
 /* ==========================================================================
-    Component: Author
-   ========================================================================== */
+  Component: Author
+  ========================================================================== */
 
 .c-author-list {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  padding: 0.3rem 0;
   color: $text-muted;
 }
 
 .c-author {
-  margin: 0.2rem 1.6rem 0.4rem 0;
-  line-height: 1.4;
+  margin: 0 1.6rem 0 0;
+  line-height: 1.6;
   display: flex;
   align-items: center;
 

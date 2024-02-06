@@ -135,9 +135,11 @@
                                     </div>
                                 </div>
                             </div>
-                            <h4 class="list-group-item-title">
+                            <h4>
                                 <a href="{{pathFor "publication_download_file" "id" $.Publication.ID "file_id" .ID}}">
-                                    <h4 class="c-h4">{{.Name}}</h4>
+                                    <span class="list-group-item-title">
+                                        {{.Name}}
+                                    </span>
                                 </a>
                             </h4>
                             {{with .Relation}}<span>{{$.Loc.Get (print "publication_file_relations." .)}}</span>{{end}}
