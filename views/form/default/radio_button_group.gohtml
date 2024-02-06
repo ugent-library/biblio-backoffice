@@ -3,9 +3,9 @@
         <div class="w-100">
             {{.Label}}
             {{with .Tooltip}}
-            <a class="text-muted mx-2" href="#" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="right" data-bs-content="{{.}}">
+            <a class="text-muted px-2" href="#" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="right" data-bs-content="{{.}}">
                 <i class="if if-info-circle if--small"></i>
-                <div class="visually-hidden">More info</div>
+                <span class="visually-hidden">More info</span>
             </a>
             {{end}}
         </div>

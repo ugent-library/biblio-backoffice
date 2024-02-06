@@ -2,9 +2,9 @@
     <label class="col-lg-3 col-form-label">
         {{.Label}}
         {{if .Tooltip}}
-        <a class="text-muted mx-2" href="#" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="right" data-bs-content="{{.Tooltip}}">
+        <a class="text-muted px-2" href="#" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="right" data-bs-content="{{.Tooltip}}">
             <i class="if if-info-circle if--small"></i>
-            <div class="visually-hidden">More info</div>
+            <span class="visually-hidden">More info</span>
         </a>
         {{end}}
         {{if .Required}}&nbsp;<span class="badge badge-outline-primary badge-sm">Required</span>{{end}}
