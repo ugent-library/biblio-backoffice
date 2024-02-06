@@ -95,6 +95,7 @@ $theme-colors: map-merge($theme-colors, $custom-theme-colors);
 @import "bootstrap-additions/popover";
 @import "bootstrap-additions/progress";
 @import "bootstrap-additions/reboot";
+@import "bootstrap-additions/stacks";
 @import "bootstrap-additions/table";
 @import "bootstrap-additions/toasts";
 @import "bootstrap-additions/tooltip";

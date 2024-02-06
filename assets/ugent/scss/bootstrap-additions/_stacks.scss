@@ -1,0 +1,42 @@
+//
+// Additions to Bootstrap `_stacks.scss`
+//
+
+.hstack-md-responsive {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  align-self: stretch;
+
+  @include media-breakpoint-down(md) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.2rem;
+  }
+}
+
+.hstack-lg-responsive {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  align-self: stretch;
+
+  @include media-breakpoint-down(lg) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.2rem;
+  }
+}
+
+.hstack-xl-responsive {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  align-self: stretch;
+
+  @include media-breakpoint-down(xl) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.2rem;
+  }
+}

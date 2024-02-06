@@ -1,7 +1,7 @@
 {{define "page_content"}}
 
 <div class="w-100 u-scroll-wrapper">
-    <div class="bg-white">
+    <div class="bg-white bc-navbar--bordered-bottom">
         <div class="bc-navbar bc-navbar--large bc-navbar--white">
             <div class="bc-toolbar">
                 <div class="bc-toolbar-left">
@@ -35,7 +35,7 @@
         </div>
         {{if .Scopes}}
         <div class="c-divider my-0 mx-6"></div>
-        <div class="bc-navbar bc-navbar--bordered-bottom bc-navbar--white">
+        <div class="bc-navbar bc-navbar--white">
             <ul class="nav nav-tabs">
                 {{range .Scopes}}
                 <li class="nav-item">
@@ -54,9 +54,19 @@
         {{partial "search/facets" .}}
 
         <div class="card mb-6">
-            <div class="card-header">
-                <h4 class="me-5 d-inline">Publications</h4>
-                {{partial "search/count" .}}
+            <div class="card-header fw-normal">
+                <div class="bc-toolbar">
+                    <div class="bc-toolbar-left">
+                        <div class="bc-toolbar-item">
+                            <nav aria-label="Page navigation">
+                                {{partial "search/pagination" .}}
+                            </nav>
+                        </div>
+                        <div class="bc-toolbar-item">
+                            <p class="text-muted c-body-small">{{partial "search/count" .}} publications</p>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="card-body p-0">
                 {{if gt (len .Hits.Hits) 0}}
@@ -99,6 +109,20 @@
                 </div>
                 {{end}}
             </div>
+            <div class="card-footer">
+                <div class="bc-toolbar">
+                    <div class="bc-toolbar-left">
+                        <div class="bc-toolbar-item">
+                            <nav aria-label="Page navigation">
+                                {{partial "search/pagination" .}}
+                            </nav>
+                        </div>
+                        <div class="bc-toolbar-item">
+                            <p class="text-muted c-body-small">{{partial "search/count" .}} publications</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         {{if and (not .Hits.HasNextPage) (gt .Hits.UncappedTotalPages .Hits.TotalPages)}}
@@ -113,10 +137,6 @@
             </div>
         </div>
         {{end}}
-
-        <nav aria-label="Page navigation">
-            {{partial "search/pagination" .}}
-        </nav>
     </div>
 </div>
 {{end}}

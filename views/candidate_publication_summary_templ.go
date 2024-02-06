@@ -28,7 +28,7 @@ func CandidatePublicationSummary(c *ctx.Ctx, p *models.Publication) templ.Compon
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"d-flex\"><div class=\"d-flex align-items-start w-100\"><div class=\"c-thumbnail c-thumbnail-1-1 c-thumbnail-img me-5\"><div class=\"c-thumbnail-inner\"><img src=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"w-100\"><div class=\"c-thumbnail-and-text align-items-start w-100\"><div class=\"c-thumbnail c-thumbnail-1-1 c-thumbnail-img c-thumbnail-small c-thumbnail-lg-large\"><div class=\"c-thumbnail-inner\"><img src=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -36,7 +36,7 @@ func CandidatePublicationSummary(c *ctx.Ctx, p *models.Publication) templ.Compon
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"></div></div><div class=\"flex-grow-1\"><div class=\"bc-toolbar h-auto mb-2\"><div class=\"bc-toolbar-left\"><div class=\"d-inline-flex align-items-center flex-wrap\"><span class=\"badge badge-sm rounded-pill badge-default my-2 me-3\"><span class=\"badge-circle\"></span> <span class=\"badge-text\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"></div></div><div class=\"c-thumbnail-text\"><div class=\"hstack-lg-responsive align-items-start gap-3 w-100\"><div class=\"vstack gap-5\"><div class=\"vstack gap-2\"><div class=\"d-inline-flex align-items-center flex-wrap\"><span class=\"badge rounded-pill badge-default me-3 my-2\"><span class=\"badge-circle\"></span> <span class=\"badge-text\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -45,7 +45,7 @@ func CandidatePublicationSummary(c *ctx.Ctx, p *models.Publication) templ.Compon
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span></span> <span class=\"c-subline text-nowrap me-3 pe-3 my-2 border-end\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span></span> <span class=\"c-subline text-nowrap me-2 pe-3 my-2 border-end\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -63,7 +63,7 @@ func CandidatePublicationSummary(c *ctx.Ctx, p *models.Publication) templ.Compon
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span></div></div></div><div><a href=\"/plato-test/quick-view.html\"><h4 class=\"list-group-item-title\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span></div><h4 class=\"mb-0\"><a href=\"/plato-test/quick-view.html\"><span class=\"list-group-item-title\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -72,7 +72,7 @@ func CandidatePublicationSummary(c *ctx.Ctx, p *models.Publication) templ.Compon
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h4></a><ul class=\"c-meta-list d-block c-meta-list-horizontal\"><li class=\"c-meta-item d-inline\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span></a></h4><ul class=\"c-meta-list c-meta-list-inline\"><li class=\"c-meta-item\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -81,7 +81,7 @@ func CandidatePublicationSummary(c *ctx.Ctx, p *models.Publication) templ.Compon
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</li><li class=\"c-meta-item d-inline\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</li><li class=\"c-meta-item\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -108,7 +108,7 @@ func CandidatePublicationSummary(c *ctx.Ctx, p *models.Publication) templ.Compon
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span></div></div></div><div class=\"c-button-toolbar c-button-toolbar--vertical flex-column-reverse justify-content-end flex-lg-row\"><a class=\"btn btn-link btn-link-muted\" href=\"#\"><div class=\"btn-text\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span></div></div></div><div class=\"c-button-toolbar flex-row-reverse flex-lg-row\"><a class=\"btn btn-link btn-link-muted\" href=\"#\"><div class=\"btn-text\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -126,7 +126,7 @@ func CandidatePublicationSummary(c *ctx.Ctx, p *models.Publication) templ.Compon
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></a></div></div></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></a></div></div></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -2,6 +2,7 @@ import htmx from 'htmx.org';
 import {initCallback} from "bootstrap.native";
 import csrf from './ui/csrf.js'
 import checkbox from './ui/checkbox.js'
+import clipboard from './ui/clipboard.js'
 import popover from './ui/popover.js'
 import header from './ui/header.js' // TODO is this still needed?
 import multiple from './ui/multiple.js'
@@ -11,6 +12,7 @@ import modalClose from './ui/modal_close.js'
 import radioCard from './ui/radio_card.js'
 import toast from './ui/toast.js'
 import sortable from './ui/sortable.js';
+import collapseCard from './ui/collapsible_card.js'
 import collapseSubSidebar from './ui/collapsible_sub_sidebar.js'
 import formAutoFocus from './ui/form_auto_focus.js'
 import fileUpload from './ui/file_upload.js'
@@ -26,7 +28,7 @@ htmx.onLoad(initCallback);
 window.htmx = htmx
 require('htmx.org/dist/ext/remove-me.js');
 
-// initialize everyting
+// initialize everything
 document.addEventListener('DOMContentLoaded', function () {
     csrf()
     checkbox()
@@ -40,7 +42,12 @@ document.addEventListener('DOMContentLoaded', function () {
     toast()
     sortable()
     collapseSubSidebar()
+    collapseCard()
     formAutoFocus()
     fileUpload()
     tags()
 });
+
+htmx.onLoad(function(el) {
+    clipboard(el)
+})
