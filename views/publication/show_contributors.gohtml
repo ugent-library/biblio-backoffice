@@ -7,7 +7,7 @@
         <div class="bc-navbar bc-navbar--bordered-bottom bc-navbar--large">
             <button class="btn btn-link btn-icon-only ms-n3" type="button" data-sidebar-toggle="">
                 <i class="if if-menu"></i>
-                <div class="visually-hidden">Sections</div>
+                <span class="visually-hidden">Sections</span>
             </button>
         </div>
         <div class="c-sub-sidebar__content">
@@ -36,10 +36,10 @@
         <div class="bc-toolbar">
             <div class="bc-toolbar-left">
                 <h1 class="bc-toolbar-title">{{$.Loc.Get (print "publication.contributor.title." $role)}}</h1>
-                <a class="text-muted mx-2" href="#" data-bs-container="body" data-bs-toggle="popover"
-                    data-trigger="focus" data-bs-placement="right" data-bs-content="{{$.Loc.Get "tooltip.publication.contributors"}}">
+                <a class="text-muted px-2" href="#" data-bs-container="body" data-bs-toggle="popover"
+                    data-bs-placement="right" data-bs-content="{{$.Loc.Get "tooltip.publication.contributors"}}">
                     <i class="if if-info-circle if--small"></i>
-                    <div class="visually-hidden">More info</div>
+                    <span class="visually-hidden">More info</span>
                 </a>
             </div>
             <div class="bc-toolbar-right">
