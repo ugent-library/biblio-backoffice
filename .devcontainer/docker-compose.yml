@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     env_file:
-        - ./.devcontainer.env
+        - ./.env
     volumes:
       - ../..:/src:cached
       - ./tmp/files:/data/files:cached
