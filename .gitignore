@@ -25,6 +25,7 @@ reflex.conf
 
 # Dotenv
 .env
+!.devcontainer/.env
 
 # Local feature flags config
 feature-flags.yml
