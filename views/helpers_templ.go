@@ -10,6 +10,8 @@ import "context"
 import "io"
 import "bytes"
 
+import "net/url"
+import "github.com/go-playground/form/v4"
 import "github.com/ugent-library/biblio-backoffice/ctx"
 
 func csrfField(c *ctx.Ctx) templ.Component {
@@ -58,4 +60,23 @@ func html(text string) templ.Component {
 		_, err := io.WriteString(w, text)
 		return err
 	})
+}
+
+var queryEncoder = newQueryEncoder()
+
+func newQueryEncoder() *form.Encoder {
+	queryEncoder := form.NewEncoder()
+	queryEncoder.SetTagName("query")
+	queryEncoder.SetMode(form.ModeExplicit)
+	return queryEncoder
+}
+
+func urlWithQuery(u *url.URL, v any) templ.SafeURL {
+	vals, err := queryEncoder.Encode(v)
+	if err != nil {
+		return templ.SafeURL(u.String())
+	}
+	newU := *u
+	newU.RawQuery = vals.Encode()
+	return templ.SafeURL(newU.String())
 }

@@ -32,16 +32,16 @@ var updateCandidateRecords = &cobra.Command{
 			if err != nil {
 				return err
 			}
-			srcRecs, err := src.GetRecords(context.Background())
-			if err != nil {
-				return err
-			}
 
 			// TODO make record mappers
-			for _, srcRec := range srcRecs {
+			err = src.GetRecords(context.Background(), func(srcRec recordsources.Record) error {
 				p := &models.Publication{}
 				var assignedUserID string
 				md := gjson.ParseBytes(srcRec.SourceMetadata)
+
+				p.Type = "dissertation"
+				p.Status = "private"
+				p.Classification = "U"
 
 				if v := md.Get("titel.eng"); v.Exists() {
 					p.Title = v.String()
@@ -109,7 +109,7 @@ var updateCandidateRecords = &cobra.Command{
 					p.ISBN = append(p.ISBN, v.String())
 				}
 				if v := md.Get("pdf.abstract"); v.Exists() {
-					p.Abstract = append(p.Abstract, &models.Text{Lang: "und", Text: v.String()})
+					p.AddAbstract(&models.Text{Lang: "und", Text: v.String()})
 				}
 				if v := md.Get("pdf.url"); v.Exists() {
 					sha256, size, err := storeFile(context.TODO(), services.FileStore, v.String())
@@ -142,7 +142,7 @@ var updateCandidateRecords = &cobra.Command{
 					} else if access == "W" {
 						f.AccessLevel = "info:eu-repo/semantics/openAccess"
 					}
-					p.File = append(p.File, f)
+					p.AddFile(f)
 				}
 
 				j, err := json.Marshal(p)
@@ -159,6 +159,15 @@ var updateCandidateRecords = &cobra.Command{
 				}); err != nil {
 					return err
 				}
+
+				platoID := md.Get("plato_id").String()
+				logger.Infof("added candidate record %s from source plato", platoID)
+
+				return nil
+			})
+
+			if err != nil {
+				return err
 			}
 		}
 

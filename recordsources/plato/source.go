@@ -2,8 +2,10 @@ package plato
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/tidwall/gjson"
@@ -24,33 +26,64 @@ type platoSource struct {
 	url string
 }
 
-func (s *platoSource) GetRecords(ctx context.Context) ([]recordsources.Record, error) {
+func (s *platoSource) GetRecords(ctx context.Context, cb func(recordsources.Record) error) error {
 	c := http.Client{
 		Timeout: time.Second * 2,
 	}
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, s.url, nil)
+
+	baseURL, err := url.ParseRequestURI(s.url)
 	if err != nil {
-		return nil, err
-	}
-	res, err := c.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		return nil, err
+		return err
 	}
 
-	var recs []recordsources.Record
+	const count = 50
+	from := 1
 
-	gjson.GetBytes(body, "list").ForEach(func(key, val gjson.Result) bool {
-		recs = append(recs, recordsources.Record{
-			SourceName:     "plato",
-			SourceID:       val.Get("plato_id").String(),
-			SourceMetadata: []byte(val.Raw),
+	for {
+		u := *baseURL
+		q := u.Query()
+		q.Set("from", fmt.Sprintf("%d", from))
+		q.Set("count", fmt.Sprintf("%d", count))
+		u.RawQuery = q.Encode()
+
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, u.String(), nil)
+		if err != nil {
+			return err
+		}
+		res, err := c.Do(req)
+		if err != nil {
+			return err
+		}
+		body, err := io.ReadAll(res.Body)
+		if err != nil {
+			return err
+		}
+
+		listSize := 0
+		var cbErr error
+		gjson.GetBytes(body, "list").ForEach(func(key, val gjson.Result) bool {
+			err = cb(recordsources.Record{
+				SourceName:     "plato",
+				SourceID:       val.Get("plato_id").String(),
+				SourceMetadata: []byte(val.Raw),
+			})
+			if err != nil {
+				cbErr = err
+				return false
+			}
+			listSize++
+			return true
 		})
-		return true
-	})
+		if cbErr != nil {
+			return cbErr
+		}
 
-	return recs, nil
+		if listSize < count {
+			break
+		}
+
+		from += count
+	}
+
+	return nil
 }

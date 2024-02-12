@@ -179,6 +179,18 @@
                                     <span class="c-sidebar__label">Batch</span>
                                 </a>
                             </li>
+                            <li class="c-sidebar__item{{if eq .ActiveNav "suggestions"}} c-sidebar__item--active{{end}}">
+                                <a
+                                    href="{{pathFor "suggestions"}}"
+                                    hx-get="{{pathFor "suggestions_icon"}}"
+                                    hx-trigger="load, every 10s"
+                                >
+                                    <span class="c-sidebar__icon">
+                                        <i class="if if-draft"></i>
+                                    </span>
+                                    <span class="c-sidebar__label">Suggestions</span>
+                                </a>
+                            </li>
                             {{end}}
                         </ul>
                     </nav>

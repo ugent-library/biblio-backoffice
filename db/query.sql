@@ -11,4 +11,16 @@ RETURNING id;
 
 -- name: GetCandidateRecordsByUser :many
 SELECT * FROM candidate_records
-WHERE assigned_user_id = $1;
+WHERE assigned_user_id = $1 AND status = 'new';
+
+-- name: GetCandidateRecords :many
+SELECT * FROM candidate_records WHERE status = 'new' ORDER BY date_created ASC LIMIT $1 OFFSET $2;
+
+-- name: CountCandidateRecords :one
+SELECT count(*) count FROM candidate_records WHERE status = 'new';
+
+-- name: GetCandidateRecord :one
+SELECT * FROM candidate_records WHERE status = 'new' AND id = $1 LIMIT 1;
+
+-- name: SetStatusCandidateRecord :one
+UPDATE candidate_records SET status = $1 WHERE id = $2 RETURNING id;

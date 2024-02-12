@@ -32,6 +32,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/handlers/publicationexporting"
 	"github.com/ugent-library/biblio-backoffice/handlers/publicationsearching"
 	"github.com/ugent-library/biblio-backoffice/handlers/publicationviewing"
+	"github.com/ugent-library/biblio-backoffice/handlers/suggestions"
 	"github.com/ugent-library/httpx"
 	"github.com/ugent-library/mix"
 	"github.com/ugent-library/oidc"
@@ -274,6 +275,12 @@ func Register(c Config) {
 				r.Get("/recent-activity", handlers.RecentActivity).Name("recent_activity")
 				// dashboard candidate records component
 				r.Get("/candidate-records", handlers.CandidateRecords).Name("candidate_records")
+				// all candidate records
+				r.With(ctx.SetNav("suggestions")).Get("/suggestions", suggestions.Suggestions).Name("suggestions")
+				r.Get("/suggestions-icon", suggestions.SuggestionsIcon).Name("suggestions_icon")
+				r.Get("/suggestions/{id}/confirm-delete", suggestions.ConfirmDeleteSuggestion).Name("confirm_delete_suggestion")
+				r.Delete("/suggestions/{id}", suggestions.DeleteSuggestion).Name("delete_suggestion")
+				r.Put("/suggestions/{id}/import", suggestions.ImportSuggestion).Name("import_suggestion")
 			})
 		})
 		// END NEW STYLE HANDLERS

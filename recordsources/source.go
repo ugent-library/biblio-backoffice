@@ -7,7 +7,7 @@ import (
 )
 
 type Source interface {
-	GetRecords(context.Context) ([]Record, error)
+	GetRecords(context.Context, func(Record) error) error
 }
 
 type Record struct {
