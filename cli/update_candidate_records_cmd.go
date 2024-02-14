@@ -118,11 +118,12 @@ var updateCandidateRecords = &cobra.Command{
 					}
 					// TODO visibility
 					f := &models.PublicationFile{
-						Relation:    "main_file",
-						Name:        srcRec.SourceID + ".pdf",
-						ContentType: "application/pdf",
-						Size:        size,
-						SHA256:      sha256,
+						Relation:           "main_file",
+						Name:               srcRec.SourceID + ".pdf",
+						ContentType:        "application/pdf",
+						Size:               size,
+						SHA256:             sha256,
+						PublicationVersion: "publishedVersion",
 					}
 					embargo := md.Get("pdf.embargo").String()
 					access := md.Get("pdf.accesstype").String()
