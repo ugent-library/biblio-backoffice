@@ -54,7 +54,7 @@ var updateCandidateRecords = &cobra.Command{
 				if v := md.Get("year"); v.Exists() {
 					p.Year = v.String()
 				}
-				if v := md.Get("defense.date"); v.Exists() {
+				if v := md.Get("defence.date"); v.Exists() {
 					p.DefenseDate = v.String()
 				}
 				p.DefensePlace = "Ghent, Belgium" // TODO
