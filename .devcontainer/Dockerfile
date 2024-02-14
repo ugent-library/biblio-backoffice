@@ -27,14 +27,8 @@ Here are some useful commands to get you started:\n\
 Start the app:\n\
     reflex -d none -c reflex.docker.conf\n\
 \n\
-Seed the app with dummy data:\n\
-    go run main.go seed\n\
-\n\
-If you already have data in the database, you can force seeding:\n\
-    go run main.go seed --force\n\
-\n\
 Purge all data from the database:\n\
-    go run main.go reset --force\n\
+    go run main.go reset --confirm\n\
 \n\
 Happy hacking!\n"\
     > /etc/motd
