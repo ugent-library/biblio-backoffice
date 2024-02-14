@@ -87,7 +87,6 @@ services:
   db-app:
     image: postgres:16-alpine
     restart: unless-stopped
-    user: postgres
     volumes:
       - ../tmp/backoffice/db_data:/var/lib/postgresql/data
     environment:
@@ -104,7 +103,6 @@ services:
   db-people:
     image: postgres:16-alpine
     restart: unless-stopped
-    user: postgres
     volumes:
       - ../tmp/people/db_data:/var/lib/postgresql/data
     environment:
@@ -121,7 +119,6 @@ services:
   db-projects:
     image: postgres:16-alpine
     restart: unless-stopped
-    user: postgres
     volumes:
       - ../tmp/projects/db_data:/var/lib/postgresql/data
     environment:
