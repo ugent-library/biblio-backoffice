@@ -28,7 +28,7 @@ Start the app:\n\
     reflex -d none -c reflex.docker.conf\n\
 \n\
 Purge all data from the database:\n\
-    go run main.go reset --confirm\n\
+    go run main.go reset --force\n\
 \n\
 Happy hacking!\n"\
     > /etc/motd
