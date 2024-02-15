@@ -105,7 +105,7 @@ func DeleteSuggestion(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := c.Repo.DeleteCandidateRecord(r.Context(), b.ID)
+	err := c.Repo.RejectCandidateRecord(r.Context(), b.ID)
 	if err != nil {
 		c.HandleError(w, r, err)
 		return

@@ -72,8 +72,8 @@ func (r *Repo) GetCandidateRecord(ctx context.Context, id string) (*models.Candi
 	}, nil
 }
 
-func (r *Repo) DeleteCandidateRecord(ctx context.Context, id string) error {
-	_, err := r.queries.SetStatusCandidateRecord(ctx, db.SetStatusCandidateRecordParams{Status: "deleted", ID: id})
+func (r *Repo) RejectCandidateRecord(ctx context.Context, id string) error {
+	_, err := r.queries.SetStatusCandidateRecord(ctx, db.SetStatusCandidateRecordParams{Status: "rejected", ID: id})
 
 	switch {
 	case errors.Is(err, pgx.ErrNoRows):
