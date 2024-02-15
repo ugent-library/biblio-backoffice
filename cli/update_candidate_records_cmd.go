@@ -36,7 +36,6 @@ var updateCandidateRecords = &cobra.Command{
 			// TODO make record mappers
 			err = src.GetRecords(context.Background(), func(srcRec recordsources.Record) error {
 				p := &models.Publication{}
-				var assignedUserID string
 				md := gjson.ParseBytes(srcRec.SourceMetadata)
 
 				p.Type = "dissertation"
@@ -73,7 +72,6 @@ var updateCandidateRecords = &cobra.Command{
 					}
 					c := models.ContributorFromPerson(hits[0])
 					p.Author = append(p.Author, c)
-					assignedUserID = c.PersonID
 				} else {
 					c := models.ContributorFromFirstLastName(md.Get("student.first").String(), md.Get("student.last").String())
 					c.ExternalPerson.Affiliation = md.Get("student.affil").String()
@@ -156,7 +154,6 @@ var updateCandidateRecords = &cobra.Command{
 					SourceMetadata: srcRec.SourceMetadata,
 					Type:           "Publication",
 					Metadata:       j,
-					AssignedUserID: assignedUserID,
 				}); err != nil {
 					return err
 				}

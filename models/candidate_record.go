@@ -12,7 +12,6 @@ type CandidateRecord struct {
 	SourceMetadata []byte
 	Type           string
 	Metadata       json.RawMessage
-	AssignedUserID string
 	Status         string
 	DateCreated    time.Time
 	publication    *Publication

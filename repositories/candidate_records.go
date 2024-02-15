@@ -5,7 +5,6 @@ import (
 	"errors"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/oklog/ulid/v2"
 	"github.com/ugent-library/biblio-backoffice/db"
 	"github.com/ugent-library/biblio-backoffice/models"
@@ -19,32 +18,9 @@ func (r *Repo) AddCandidateRecord(ctx context.Context, rec *models.CandidateReco
 		SourceMetadata: rec.SourceMetadata,
 		Type:           rec.Type,
 		Metadata:       rec.Metadata,
-		AssignedUserID: pgtype.Text{String: rec.AssignedUserID, Valid: rec.AssignedUserID != ""},
 	}
 	_, err := r.queries.AddCandidateRecord(ctx, params)
 	return err
-}
-
-func (r *Repo) GetCandidateRecordsByUser(ctx context.Context, userID string) ([]*models.CandidateRecord, error) {
-	rows, err := r.queries.GetCandidateRecordsByUser(ctx, pgtype.Text{String: userID, Valid: true})
-	if err != nil {
-		return nil, err
-	}
-	recs := make([]*models.CandidateRecord, len(rows))
-	for i, row := range rows {
-		rec := &models.CandidateRecord{
-			ID:             row.ID,
-			SourceName:     row.SourceName,
-			SourceID:       row.SourceID,
-			Type:           row.Type,
-			Metadata:       row.Metadata,
-			AssignedUserID: row.AssignedUserID.String,
-			DateCreated:    row.DateCreated.Time,
-			Status:         row.Status,
-		}
-		recs[i] = rec
-	}
-	return recs, err
 }
 
 func (r *Repo) GetCandidateRecords(ctx context.Context, start int, limit int) ([]*models.CandidateRecord, error) {
@@ -58,14 +34,13 @@ func (r *Repo) GetCandidateRecords(ctx context.Context, start int, limit int) ([
 	recs := make([]*models.CandidateRecord, len(rows))
 	for i, row := range rows {
 		rec := &models.CandidateRecord{
-			ID:             row.ID,
-			SourceName:     row.SourceName,
-			SourceID:       row.SourceID,
-			Type:           row.Type,
-			Metadata:       row.Metadata,
-			AssignedUserID: row.AssignedUserID.String,
-			DateCreated:    row.DateCreated.Time,
-			Status:         row.Status,
+			ID:          row.ID,
+			SourceName:  row.SourceName,
+			SourceID:    row.SourceID,
+			Type:        row.Type,
+			Metadata:    row.Metadata,
+			DateCreated: row.DateCreated.Time,
+			Status:      row.Status,
 		}
 		recs[i] = rec
 	}
@@ -87,14 +62,13 @@ func (r *Repo) GetCandidateRecord(ctx context.Context, id string) (*models.Candi
 	}
 
 	return &models.CandidateRecord{
-		ID:             row.ID,
-		SourceName:     row.SourceName,
-		SourceID:       row.SourceID,
-		Type:           row.Type,
-		Metadata:       row.Metadata,
-		AssignedUserID: row.AssignedUserID.String,
-		DateCreated:    row.DateCreated.Time,
-		Status:         row.Status,
+		ID:          row.ID,
+		SourceName:  row.SourceName,
+		SourceID:    row.SourceID,
+		Type:        row.Type,
+		Metadata:    row.Metadata,
+		DateCreated: row.DateCreated.Time,
+		Status:      row.Status,
 	}, nil
 }
 

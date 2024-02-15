@@ -15,7 +15,6 @@ type CandidateRecord struct {
 	SourceMetadata []byte
 	Type           string
 	Metadata       []byte
-	AssignedUserID pgtype.Text
 	DateCreated    pgtype.Timestamptz
 	Status         string
 }

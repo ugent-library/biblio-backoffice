@@ -273,8 +273,6 @@ func Register(c Config) {
 				r.Get("/drafts-to-complete", handlers.DraftsToComplete).Name("drafts_to_complete")
 				// dashboard recent activity component
 				r.Get("/recent-activity", handlers.RecentActivity).Name("recent_activity")
-				// dashboard candidate records component
-				r.Get("/candidate-records", handlers.CandidateRecords).Name("candidate_records")
 				// all candidate records
 				r.With(ctx.SetNav("suggestions")).Get("/suggestions", suggestions.Suggestions).Name("suggestions")
 				r.Get("/suggestions-icon", suggestions.SuggestionsIcon).Name("suggestions_icon")
