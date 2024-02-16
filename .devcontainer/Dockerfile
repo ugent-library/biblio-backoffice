@@ -27,7 +27,7 @@ Here are some useful commands to get you started:\n\
 Start the app:\n\
     reflex -d none -c reflex.docker.conf\n\
 \n\
-Purge all data from the database:\n\
+Purge all data from the database and initialize all tables/indexes:\n\
     go run main.go reset --force\n\
 \n\
 Happy hacking!\n"\

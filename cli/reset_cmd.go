@@ -10,14 +10,15 @@ import (
 
 func init() {
 	rootCmd.AddCommand(resetCmd)
-	resetCmd.Flags().Bool("confirm", false, "destructive reset of all data")
+	resetCmd.Flags().Bool("force", false, "force destructive reset of all data")
 }
 
 var resetCmd = &cobra.Command{
 	Use:   "reset",
 	Short: "Destructive reset",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if confirm, _ := cmd.Flags().GetBool("confirm"); !confirm {
+		if force, _ := cmd.Flags().GetBool("force"); !force {
+			cmd.Println("The --force flag is required to perform a destructive reset.")
 			return nil
 		}
 
