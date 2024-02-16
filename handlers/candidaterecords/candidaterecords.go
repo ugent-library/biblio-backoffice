@@ -1,4 +1,4 @@
-package suggestions
+package candidaterecords
 
 import (
 	"html/template"
@@ -14,11 +14,11 @@ import (
 	"github.com/ugent-library/httperror"
 )
 
-type bindSuggestion struct {
+type bindCandidateRecord struct {
 	ID string `path:"id" form:"id"`
 }
 
-func Suggestions(w http.ResponseWriter, r *http.Request) {
+func CandidateRecords(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 
 	if !c.User.CanCurate() {
@@ -51,10 +51,10 @@ func Suggestions(w http.ResponseWriter, r *http.Request) {
 			Total:  countRecs,
 		},
 	}
-	views.Suggestions(c, searchArgs, searchHits, recs).Render(r.Context(), w)
+	views.CandidateRecords(c, searchArgs, searchHits, recs).Render(r.Context(), w)
 }
 
-func SuggestionsIcon(w http.ResponseWriter, r *http.Request) {
+func CandidateRecordsIcon(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 
 	countRecs, err := c.Repo.CountCandidateRecords(r.Context())
@@ -62,11 +62,10 @@ func SuggestionsIcon(w http.ResponseWriter, r *http.Request) {
 		c.HandleError(w, r, err)
 		return
 	}
-
-	views.SuggestionsIcon(c, countRecs > 0).Render(r.Context(), w)
+	views.CandidateRecordsIcon(c, countRecs > 0).Render(r.Context(), w)
 }
 
-func ConfirmDeleteSuggestion(w http.ResponseWriter, r *http.Request) {
+func ConfirmRejectCandidateRecord(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 
 	if !c.User.CanCurate() {
@@ -74,9 +73,9 @@ func ConfirmDeleteSuggestion(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	b := bindSuggestion{}
+	b := bindCandidateRecord{}
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("confirm delete suggestion: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.Log.Warnw("confirm reject candidate record: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -87,10 +86,10 @@ func ConfirmDeleteSuggestion(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	views.ConfirmDeleteSuggestion(c, rec).Render(r.Context(), w)
+	views.ConfirmRejectCandidateRecord(c, rec).Render(r.Context(), w)
 }
 
-func DeleteSuggestion(w http.ResponseWriter, r *http.Request) {
+func RejectCandidateRecord(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 
 	if !c.User.CanCurate() {
@@ -98,9 +97,9 @@ func DeleteSuggestion(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	b := bindSuggestion{}
+	b := bindCandidateRecord{}
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("delete suggestion: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.Log.Warnw("reject candidate record: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -113,14 +112,14 @@ func DeleteSuggestion(w http.ResponseWriter, r *http.Request) {
 
 	f := flash.SimpleFlash().
 		WithLevel("success").
-		WithBody(template.HTML("<p>Suggestion was successfully deleted.</p>"))
+		WithBody(template.HTML("<p>Candidate record was successfully deleted.</p>"))
 
 	c.PersistFlash(w, *f)
 
-	w.Header().Set("HX-Redirect", c.URLTo("suggestions").String())
+	w.Header().Set("HX-Redirect", c.URLTo("candidate_records").String())
 }
 
-func ImportSuggestion(w http.ResponseWriter, r *http.Request) {
+func ImportCandidateRecord(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 
 	if !c.User.CanCurate() {
@@ -128,9 +127,9 @@ func ImportSuggestion(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	b := bindSuggestion{}
+	b := bindCandidateRecord{}
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("import suggestion: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.Log.Warnw("import candidate record: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
