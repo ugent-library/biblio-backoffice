@@ -17,6 +17,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/handlers/authenticating"
+	"github.com/ugent-library/biblio-backoffice/handlers/candidaterecords"
 	"github.com/ugent-library/biblio-backoffice/handlers/dashboard"
 	"github.com/ugent-library/biblio-backoffice/handlers/datasetcreating"
 	"github.com/ugent-library/biblio-backoffice/handlers/datasetediting"
@@ -32,7 +33,6 @@ import (
 	"github.com/ugent-library/biblio-backoffice/handlers/publicationexporting"
 	"github.com/ugent-library/biblio-backoffice/handlers/publicationsearching"
 	"github.com/ugent-library/biblio-backoffice/handlers/publicationviewing"
-	"github.com/ugent-library/biblio-backoffice/handlers/suggestions"
 	"github.com/ugent-library/httpx"
 	"github.com/ugent-library/mix"
 	"github.com/ugent-library/oidc"
@@ -274,11 +274,11 @@ func Register(c Config) {
 				// dashboard recent activity component
 				r.Get("/recent-activity", handlers.RecentActivity).Name("recent_activity")
 				// all candidate records
-				r.With(ctx.SetNav("suggestions")).Get("/suggestions", suggestions.Suggestions).Name("suggestions")
-				r.Get("/suggestions-icon", suggestions.SuggestionsIcon).Name("suggestions_icon")
-				r.Get("/suggestions/{id}/confirm-delete", suggestions.ConfirmDeleteSuggestion).Name("confirm_delete_suggestion")
-				r.Delete("/suggestions/{id}", suggestions.DeleteSuggestion).Name("delete_suggestion")
-				r.Put("/suggestions/{id}/import", suggestions.ImportSuggestion).Name("import_suggestion")
+				r.With(ctx.SetNav("candidate_records")).Get("/candidate-records", candidaterecords.CandidateRecords).Name("candidate_records")
+				r.Get("/candidate-records-icon", candidaterecords.CandidateRecordsIcon).Name("candidate_records_icon")
+				r.Get("/candidate-records/{id}/confirm-reject", candidaterecords.ConfirmRejectCandidateRecord).Name("confirm_reject_candidate_record")
+				r.Put("/candidate-records/{id}/reject", candidaterecords.RejectCandidateRecord).Name("reject_candidate_record")
+				r.Put("/candidate-records/{id}/import", candidaterecords.ImportCandidateRecord).Name("import_candidate_record")
 			})
 		})
 		// END NEW STYLE HANDLERS

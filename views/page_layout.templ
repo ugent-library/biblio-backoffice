@@ -186,15 +186,17 @@ templ pageLayout(c *ctx.Ctx, title string, meta templ.Component) {
                                         <span class="c-sidebar__label">Batch</span>
                                     </a>
                                 </li>
-                                <li class={"c-sidebar__item", templ.KV("c-sidebar__item--active", c.Nav == "suggestions")}>
+                                if c.FlagCandidateRecords() {
+                                <li class={"c-sidebar__item", templ.KV("c-sidebar__item--active", c.Nav == "candidate_records")}>
                                     <a
-                                        href={ templ.URL(c.PathTo("suggestions").String()) }
-                                        hx-get={ c.PathTo("suggestions_icon").String() }
-                                        hx-trigger="load, every 10s"
+                                        href={ templ.URL(c.PathTo("candidate_records").String()) }
+                                        hx-get={ c.PathTo("candidate_records_icon").String() }
+                                        hx-trigger="load, every 5s"
                                     >
-                                        @SuggestionsIcon(c, false)
+                                        @CandidateRecordsIcon(c, false)
                                     </a>
                                 </li>
+                                }
                                 }
                             </ul>
                         </nav>
@@ -259,7 +261,7 @@ templ DashboardIcon(c *ctx.Ctx, notification bool) {
     <span class="c-sidebar__label">Dashboard</span>
 }
 
-templ SuggestionsIcon(c *ctx.Ctx, notification bool) {
+templ CandidateRecordsIcon(c *ctx.Ctx, notification bool) {
     <span class="c-sidebar__icon">
         if notification {
             <i class="if if-draft if--notification if--notification-warning"></i>

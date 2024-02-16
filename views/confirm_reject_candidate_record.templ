@@ -5,7 +5,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/models"
 )
 
-templ ConfirmDeleteSuggestion(c *ctx.Ctx, rec *models.CandidateRecord) {
+templ ConfirmRejectCandidateRecord(c *ctx.Ctx, rec *models.CandidateRecord) {
     @showModalLayout(c, nil) {
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
@@ -28,7 +28,7 @@ templ ConfirmDeleteSuggestion(c *ctx.Ctx, rec *models.CandidateRecord) {
                         <div class="bc-toolbar-right">
                             <button
                                 class="btn btn-danger"
-                                hx-delete={ c.PathTo("delete_suggestion", "id", rec.ID).String() }
+                                hx-put={ c.PathTo("reject_candidate_record", "id", rec.ID).String() }
                                 hx-swap="none"
                             >Yes, delete suggestion</button>
                         </div>
