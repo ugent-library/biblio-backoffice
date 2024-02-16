@@ -55,8 +55,34 @@ func (r *Repo) CountCandidateRecords(ctx context.Context) (int, error) {
 	return int(num), nil
 }
 
+func (r *Repo) GetCandidateRecordBySource(ctx context.Context, sourceName string, sourceID string) (*models.CandidateRecord, error) {
+	row, err := r.queries.GetCandidateRecordBySource(ctx, db.GetCandidateRecordBySourceParams{
+		SourceName: sourceName,
+		SourceID:   sourceID,
+	})
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, models.ErrNotFound
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return &models.CandidateRecord{
+		ID:          row.ID,
+		SourceName:  row.SourceName,
+		SourceID:    row.SourceID,
+		Type:        row.Type,
+		Metadata:    row.Metadata,
+		DateCreated: row.DateCreated.Time,
+		Status:      row.Status,
+	}, nil
+}
+
 func (r *Repo) GetCandidateRecord(ctx context.Context, id string) (*models.CandidateRecord, error) {
 	row, err := r.queries.GetCandidateRecord(ctx, id)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, models.ErrNotFound
+	}
 	if err != nil {
 		return nil, err
 	}

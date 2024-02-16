@@ -13,10 +13,10 @@ import (
 )
 
 func init() {
-	recordsources.Register("plato", New)
+	recordsources.Register("plato", NewSource)
 }
 
-func New(conn string) (recordsources.Source, error) {
+func NewSource(conn string) (recordsources.Source, error) {
 	return &platoSource{
 		url: conn,
 	}, nil
@@ -62,11 +62,7 @@ func (s *platoSource) GetRecords(ctx context.Context, cb func(recordsources.Reco
 		listSize := 0
 		var cbErr error
 		gjson.GetBytes(body, "list").ForEach(func(key, val gjson.Result) bool {
-			err = cb(recordsources.Record{
-				SourceName:     "plato",
-				SourceID:       val.Get("plato_id").String(),
-				SourceMetadata: []byte(val.Raw),
-			})
+			err = cb(NewRecord(val.Get("plato_id").String(), []byte(val.Raw)))
 			if err != nil {
 				cbErr = err
 				return false

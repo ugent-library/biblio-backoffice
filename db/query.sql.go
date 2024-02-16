@@ -75,6 +75,31 @@ func (q *Queries) GetCandidateRecord(ctx context.Context, id string) (CandidateR
 	return i, err
 }
 
+const getCandidateRecordBySource = `-- name: GetCandidateRecordBySource :one
+SELECT id, source_name, source_id, source_metadata, type, metadata, date_created, status FROM candidate_records WHERE source_name = $1 AND source_id = $2 LIMIT 1
+`
+
+type GetCandidateRecordBySourceParams struct {
+	SourceName string
+	SourceID   string
+}
+
+func (q *Queries) GetCandidateRecordBySource(ctx context.Context, arg GetCandidateRecordBySourceParams) (CandidateRecord, error) {
+	row := q.db.QueryRow(ctx, getCandidateRecordBySource, arg.SourceName, arg.SourceID)
+	var i CandidateRecord
+	err := row.Scan(
+		&i.ID,
+		&i.SourceName,
+		&i.SourceID,
+		&i.SourceMetadata,
+		&i.Type,
+		&i.Metadata,
+		&i.DateCreated,
+		&i.Status,
+	)
+	return i, err
+}
+
 const getCandidateRecords = `-- name: GetCandidateRecords :many
 SELECT id, source_name, source_id, source_metadata, type, metadata, date_created, status FROM candidate_records WHERE status = 'new' ORDER BY date_created ASC LIMIT $1 OFFSET $2
 `
