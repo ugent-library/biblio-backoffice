@@ -18,3 +18,16 @@ func RequireUser(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 	})
 }
+
+func RequireCurator(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		c := Get(r)
+
+		if c.User == nil || !c.User.CanCurate() {
+			c.HandleError(w, r, httperror.Unauthorized)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}
