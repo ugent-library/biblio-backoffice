@@ -99,7 +99,7 @@ func (r *Repo) GetCandidateRecord(ctx context.Context, id string) (*models.Candi
 }
 
 func (r *Repo) RejectCandidateRecord(ctx context.Context, id string) error {
-	_, err := r.queries.SetStatusCandidateRecord(ctx, db.SetStatusCandidateRecordParams{Status: "rejected", ID: id})
+	_, err := r.queries.SetCandidateRecordStatus(ctx, db.SetCandidateRecordStatusParams{Status: "rejected", ID: id})
 
 	switch {
 	case errors.Is(err, pgx.ErrNoRows):
@@ -122,7 +122,7 @@ func (r *Repo) ImportCandidateRecordAsPublication(ctx context.Context, rec *mode
 			return err
 		}
 
-		if _, err := r.queries.SetStatusCandidateRecord(ctx, db.SetStatusCandidateRecordParams{ID: rec.ID, Status: "imported"}); err != nil {
+		if _, err := r.queries.SetCandidateRecordStatus(ctx, db.SetCandidateRecordStatusParams{ID: rec.ID, Status: "imported"}); err != nil {
 			return err
 		}
 

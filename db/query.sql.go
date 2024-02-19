@@ -138,17 +138,17 @@ func (q *Queries) GetCandidateRecords(ctx context.Context, arg GetCandidateRecor
 	return items, nil
 }
 
-const setStatusCandidateRecord = `-- name: SetStatusCandidateRecord :one
+const setCandidateRecordStatus = `-- name: SetCandidateRecordStatus :one
 UPDATE candidate_records SET status = $1 WHERE id = $2 RETURNING id
 `
 
-type SetStatusCandidateRecordParams struct {
+type SetCandidateRecordStatusParams struct {
 	Status string
 	ID     string
 }
 
-func (q *Queries) SetStatusCandidateRecord(ctx context.Context, arg SetStatusCandidateRecordParams) (string, error) {
-	row := q.db.QueryRow(ctx, setStatusCandidateRecord, arg.Status, arg.ID)
+func (q *Queries) SetCandidateRecordStatus(ctx context.Context, arg SetCandidateRecordStatusParams) (string, error) {
+	row := q.db.QueryRow(ctx, setCandidateRecordStatus, arg.Status, arg.ID)
 	var id string
 	err := row.Scan(&id)
 	return id, err

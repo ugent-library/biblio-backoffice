@@ -18,7 +18,7 @@ SELECT count(*) count FROM candidate_records WHERE status = 'new';
 -- name: GetCandidateRecord :one
 SELECT * FROM candidate_records WHERE status = 'new' AND id = $1 LIMIT 1;
 
--- name: SetStatusCandidateRecord :one
+-- name: SetCandidateRecordStatus :one
 UPDATE candidate_records SET status = $1 WHERE id = $2 RETURNING id;
 
 -- name: GetCandidateRecordBySource :one
