@@ -4,7 +4,7 @@ go 1.21.4
 
 require (
 	github.com/Masterminds/sprig/v3 v3.2.3
-	github.com/a-h/templ v0.2.432
+	github.com/a-h/templ v0.2.543
 	github.com/alexliesenfeld/health v0.7.0
 	github.com/alitto/pond v1.8.3
 	github.com/aws/aws-sdk-go-v2 v1.21.2
