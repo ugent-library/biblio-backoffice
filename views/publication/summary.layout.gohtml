@@ -57,9 +57,9 @@
                             {{end}}
                             {{else if not .Publication.Extern}}
                             <span class="c-subline ps-2 me-3 pe-3">
-                                <a href="{{.PublicationURL|querySet "show" "files"}}" class="badge badge-danger-light badge-sm ps-3">
+                                <a href="{{.PublicationURL|querySet "show" "files"}}" class="c-link-muted">
                                     <i class="if if-edit if--small"></i>
-                                    <span class="badge-text">Add document type: full text</a>
+                                    <em>Add document type: full text</em>
                                 </a>
                             </span>
                             {{end}}
@@ -89,7 +89,14 @@
                             {{end}}
                         </ul>
 
-                        {{with .Publication.Author}}{{partial "shared/contributors" (dict "Contributors" . "ContributorsURL" ($.PublicationURL | querySet "show" "contributors"))}}{{end}}
+                        {{with .Publication.Author}}
+                            {{partial "shared/contributors" (dict "Contributors" . "ContributorsURL" ($.PublicationURL | querySet "show" "contributors"))}}
+                        {{else}}
+                            <a href="{{.PublicationURL|querySet "show" "contributors"}}" class="c-link-muted">
+                                <i class="if if-edit if--small"></i>
+                                <em>UGent authors missing</em>
+                            </a>
+                        {{end}}
                     </div>
 
                     <div class="collapsible-card-content collapse" data-collapsible-card-content>
@@ -99,9 +106,8 @@
                                 {{with .Publication.RelatedOrganizations}}
                                     {{partial "shared/related_organizations" (dict "RelatedOrganizations" . "ContributorsURL" ($.PublicationURL | querySet "show" "contributors"))}}
                                 {{else}}
-                                    <a href="{{.PublicationURL|querySet "show" "contributors"}}" class="badge badge-warning-light badge-sm ps-3">
-                                        <i class="if if-edit if--small"></i>
-                                        <span class="badge-text">Departments missing</a>
+                                    <a href="{{.PublicationURL|querySet "show" "contributors"}}" class="c-link-muted">
+                                        <em>Add department</em>
                                     </a>
                                 {{end}}
                             </div>

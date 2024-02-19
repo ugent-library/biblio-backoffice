@@ -19,6 +19,16 @@
                                 <span class="text-muted c-body-small ms-2">Locked</span>
                             </span>
                             {{end}}
+                            <span class="c-subline me-3 pe-3 border-end">
+                                {{if .Dataset.License}}
+                                    <span class="c-subline text-truncate ps-2">{{.Dataset.License}}</span>
+                                {{else}}
+                                    <a href="{{.DatasetURL|querySet "show" "description"}}" class="c-link-muted">
+                                        <i class="if if-edit if--small"></i>
+                                        <em>Add license</em>
+                                    </a>
+                                {{end}}
+                            </span>
                             <span class="c-subline me-3 pe-3 {{if eq .Dataset.AccessLevel "info:eu-repo/semantics/embargoedAccess"}} border-end{{end}}">
                                 {{if eq .Dataset.AccessLevel "info:eu-repo/semantics/openAccess"}}
                                     <i class="if if-download if--small if--success"></i>
@@ -33,8 +43,10 @@
                                     <i class="if if-eye-off if--small if--muted"></i>
                                     <span class="c-subline text-muted ps-2">{{.Loc.Get (print "dataset_access_levels." .Dataset.AccessLevel)}}</span>
                                 {{else}}
-                                    <i class="if if-error-circle if--small if--error"></i>
-                                    <span class="ps-1">Access level missing</span>
+                                    <a href="{{.DatasetURL|querySet "show" "description"}}" class="c-link-muted">
+                                        <i class="if if-edit if--small"></i>
+                                        <em>Add document access level</em>
+                                    </a>
                                 {{end}}
                             </span>
                             {{if eq .Dataset.AccessLevel "info:eu-repo/semantics/embargoedAccess"}}
@@ -68,17 +80,40 @@
                             {{end}}
                         </h4>
                         <ul class="c-meta-list c-meta-list-inline">
-                            {{if .Dataset.Year}}<li class="c-meta-item">{{.Dataset.Year}}</li>{{end}}
-                            {{if .Dataset.Publisher}}<li class="c-meta-item">{{.Dataset.Publisher}}</li>{{end}}
+                            {{if .Dataset.Year}}
+                                <li class="c-meta-item">
+                                    {{.Dataset.Year}}
+                                </li>
+                            {{end}}
+                            {{if .Dataset.Publisher}}
+                                <li class="c-meta-item">
+                                    {{.Dataset.Publisher}}
+                                </li>
+                            {{end}}
                             {{range $type, $vals := .Dataset.Identifiers}}
-                                <li class="c-meta-item text-muted">
+                                <li class="c-meta-item">
                                     {{$type}}
+                                </li>
+                                <li class="c-meta-item">
+                                    {{(index $vals 0)}}
                                 </li>
                                 {{break}}
                             {{end}}
+                            {{if .Dataset.Format}}
+                                <li class="c-meta-item">
+                                    {{(index .Dataset.Format 0)}}
+                                </li>
+                            {{end}}
                         </ul>
 
-                        {{with .Dataset.Author}}{{partial "shared/contributors" (dict "Contributors" . "ContributorsURL" ($.DatasetURL | querySet "show" "contributors"))}}{{end}}
+                        {{with .Dataset.Author}}
+                            {{partial "shared/contributors" (dict "Contributors" . "ContributorsURL" ($.DatasetURL | querySet "show" "contributors"))}}
+                        {{else}}
+                            <a href="{{.DatasetURL|querySet "show" "contributors"}}" class="c-link-muted">
+                                <i class="if if-edit if--small"></i>
+                                <em>UGent authors missing</em>
+                            </a>
+                        {{end}}
                     </div>
 
 
@@ -89,9 +124,9 @@
                                 {{with .Dataset.RelatedOrganizations}}
                                     {{partial "shared/related_organizations" (dict "RelatedOrganizations" . "ContributorsURL" ($.DatasetURL | querySet "show" "contributors"))}}
                                 {{else}}
-                                    <a href="{{.DatasetURL|querySet "show" "contributors"}}" class="badge badge-warning-light badge-sm ps-3">
+                                    <a href="{{.DatasetURL|querySet "show" "contributors"}}" class="c-link-muted">
                                         <i class="if if-edit if--small"></i>
-                                        <span class="badge-text">Departments missing</a>
+                                        <em>Add department</em>
                                     </a>
                                 {{end}}
                             </div>
