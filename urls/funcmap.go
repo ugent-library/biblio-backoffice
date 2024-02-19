@@ -11,7 +11,10 @@ import (
 	"mvdan.cc/xurls/v2"
 )
 
-var queryEncoder = form.NewEncoder()
+var (
+	queryEncoder = form.NewEncoder()
+	reURL, _     = xurls.StrictMatchingScheme("https")
+)
 
 func init() {
 	queryEncoder.SetTagName("query")
@@ -28,7 +31,7 @@ func FuncMap(r *ich.Mux, scheme, host string) template.FuncMap {
 		"queryAdd":   queryAdd,
 		"queryDel":   queryDel,
 		"queryClear": queryClear,
-		"renderMsg":  renderMsg,
+		"linkify":    linkify,
 	}
 }
 
@@ -91,36 +94,32 @@ func queryClear(u *url.URL) (*url.URL, error) {
 	return &newU, nil
 }
 
-func renderMsg(oldVal string) template.HTML {
-	oldVal = html.EscapeString(oldVal)
+func linkify(text string) template.HTML {
+	text = html.EscapeString(text)
 
-	oldVal = strings.ReplaceAll(oldVal, "\r\n", "<br>")
+	matches := reURL.FindAllStringIndex(text, -1)
 
-	re, _ := xurls.StrictMatchingScheme("https")
-	urlIndexPairs := re.FindAllStringIndex(oldVal, -1)
-
-	newValBuilder := strings.Builder{}
-	startPos := 0
-	for _, pair := range urlIndexPairs {
-		// NON URL
-		prefix := oldVal[startPos:pair[0]]
-		if len(prefix) > 0 {
-			newValBuilder.WriteString(prefix)
+	b := strings.Builder{}
+	pos := 0
+	for _, match := range matches {
+		before := text[pos:match[0]]
+		if len(before) > 0 {
+			b.WriteString(before)
 		}
 
-		//URL
-		postfix := oldVal[pair[0]:pair[1]]
-		newValBuilder.WriteString("<a href=\"")
-		newValBuilder.WriteString(postfix)
-		newValBuilder.WriteString("\" target=\"_blank\">")
-		newValBuilder.WriteString(postfix)
-		newValBuilder.WriteString("</a>")
-		startPos = pair[1]
-	}
-	prefix := oldVal[startPos:]
-	if len(prefix) > 0 {
-		newValBuilder.WriteString(prefix)
+		link := text[match[0]:match[1]]
+		b.WriteString(`<a href="`)
+		b.WriteString(link)
+		b.WriteString(`" target="_blank">`)
+		b.WriteString(link)
+		b.WriteString(`</a>`)
+		pos = match[1]
 	}
 
-	return template.HTML(newValBuilder.String())
+	after := text[pos:]
+	if len(after) > 0 {
+		b.WriteString(after)
+	}
+
+	return template.HTML(b.String())
 }
