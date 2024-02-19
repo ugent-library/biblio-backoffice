@@ -7,7 +7,7 @@ type Version struct {
 	Image  string `env:"IMAGE_NAME"`
 }
 
-// TODO set notEmpty where approriate
+// Application config
 type Config struct {
 	// Env must be local, development, test or production
 	// TODO rename MODE to ENV
@@ -86,7 +86,7 @@ type Config struct {
 		APIURL string `env:"API_URL"`
 		APIKey string `env:"API_KEY"`
 	} `envPrefix:"PEOPLE_"`
-	// feature flags
+	// Feature flags
 	FF struct {
 		FilePath     string `env:"FILE_PATH"`
 		GitHubToken  string `env:"GITHUB_TOKEN"`
