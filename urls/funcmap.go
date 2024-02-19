@@ -1,11 +1,14 @@
 package urls
 
 import (
+	"html"
 	"html/template"
 	"net/url"
+	"strings"
 
 	"github.com/go-playground/form/v4"
 	"github.com/nics/ich"
+	"mvdan.cc/xurls/v2"
 )
 
 var queryEncoder = form.NewEncoder()
@@ -25,6 +28,7 @@ func FuncMap(r *ich.Mux, scheme, host string) template.FuncMap {
 		"queryAdd":   queryAdd,
 		"queryDel":   queryDel,
 		"queryClear": queryClear,
+		"renderMsg":  renderMsg,
 	}
 }
 
@@ -85,4 +89,38 @@ func queryClear(u *url.URL) (*url.URL, error) {
 	newU.RawQuery = ""
 
 	return &newU, nil
+}
+
+func renderMsg(oldVal string) template.HTML {
+	oldVal = html.EscapeString(oldVal)
+
+	oldVal = strings.ReplaceAll(oldVal, "\r\n", "<br>")
+
+	re, _ := xurls.StrictMatchingScheme("https")
+	urlIndexPairs := re.FindAllStringIndex(oldVal, -1)
+
+	newValBuilder := strings.Builder{}
+	startPos := 0
+	for _, pair := range urlIndexPairs {
+		// NON URL
+		prefix := oldVal[startPos:pair[0]]
+		if len(prefix) > 0 {
+			newValBuilder.WriteString(prefix)
+		}
+
+		//URL
+		postfix := oldVal[pair[0]:pair[1]]
+		newValBuilder.WriteString("<a href=\"")
+		newValBuilder.WriteString(postfix)
+		newValBuilder.WriteString("\" target=\"_blank\">")
+		newValBuilder.WriteString(postfix)
+		newValBuilder.WriteString("</a>")
+		startPos = pair[1]
+	}
+	prefix := oldVal[startPos:]
+	if len(prefix) > 0 {
+		newValBuilder.WriteString(prefix)
+	}
+
+	return template.HTML(newValBuilder.String())
 }
