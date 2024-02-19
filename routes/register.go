@@ -274,10 +274,10 @@ func Register(c Config) {
 				// dashboard recent activity component
 				r.Get("/recent-activity", handlers.RecentActivity).Name("recent_activity")
 
+				// candidate records
 				r.Group(func(r *ich.Mux) {
-					r.Use(ctx.RequireUserRole("curator"))
+					r.Use(ctx.RequireCurator)
 
-					// all candidate records
 					r.With(ctx.SetNav("candidate_records")).Get("/candidate-records", candidaterecords.CandidateRecords).Name("candidate_records")
 					r.Get("/candidate-records-icon", candidaterecords.CandidateRecordsIcon).Name("candidate_records_icon")
 					r.Get("/candidate-records/{id}/confirm-reject", candidaterecords.ConfirmRejectCandidateRecord).Name("confirm_reject_candidate_record")
