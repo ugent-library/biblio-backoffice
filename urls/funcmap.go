@@ -94,8 +94,7 @@ func queryClear(u *url.URL) (*url.URL, error) {
 func renderMsg(oldVal string) template.HTML {
 	oldVal = html.EscapeString(oldVal)
 
-	oldVal = strings.ReplaceAll(oldVal, "\r\n", "\n")
-	oldVal = strings.ReplaceAll(oldVal, "\n", "<br>")
+	oldVal = strings.ReplaceAll(oldVal, "\r\n", "<br>")
 
 	re, _ := xurls.StrictMatchingScheme("https")
 	urlIndexPairs := re.FindAllStringIndex(oldVal, -1)
@@ -112,7 +111,7 @@ func renderMsg(oldVal string) template.HTML {
 		//URL
 		postfix := oldVal[pair[0]:pair[1]]
 		newValBuilder.WriteString("<a href=\"")
-		newValBuilder.WriteString(html.EscapeString(postfix))
+		newValBuilder.WriteString(postfix)
 		newValBuilder.WriteString("\" target=\"_blank\">")
 		newValBuilder.WriteString(postfix)
 		newValBuilder.WriteString("</a>")
