@@ -11,6 +11,7 @@ import (
 	"github.com/Masterminds/sprig/v3"
 	"github.com/go-chi/chi/v5"
 	"github.com/gorilla/sessions"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/leonelquinteros/gotext"
 	"github.com/nics/ich"
 	"github.com/ory/graceful"
@@ -18,8 +19,10 @@ import (
 	ffclient "github.com/thomaspoignant/go-feature-flag"
 	"github.com/thomaspoignant/go-feature-flag/retriever/fileretriever"
 	"github.com/thomaspoignant/go-feature-flag/retriever/githubretriever"
+	"github.com/ugent-library/biblio-backoffice/api/v2"
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/helpers"
+	"github.com/ugent-library/biblio-backoffice/projects"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/routes"
 	"github.com/ugent-library/biblio-backoffice/urls"
@@ -193,6 +196,26 @@ func buildRouter(services *backends.Services) (*ich.Mux, error) {
 		return nil, err
 	}
 
+	// api server
+	ctx := context.Background()
+
+	pool, err := pgxpool.New(ctx, config.PgConn)
+	if err != nil {
+		return nil, err
+	}
+
+	projectsRepo, err := projects.NewRepo(projects.RepoConfig{
+		Conn: pool,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	apiServer, err := api.NewServer(api.NewService(projectsRepo), &api.ApiSecurityHandler{APIKey: config.APIKey})
+	if err != nil {
+		return nil, err
+	}
+
 	// add routes
 	routes.Register(routes.Config{
 		Version: routes.Version{
@@ -218,6 +241,7 @@ func buildRouter(services *backends.Services) (*ich.Mux, error) {
 		MaxFileSize:      config.MaxFileSize,
 		CSRFName:         config.CSRF.Name,
 		CSRFSecret:       config.CSRF.Secret,
+		ApiServer:        apiServer,
 	})
 
 	return router, nil

@@ -67,6 +67,7 @@ type Config struct {
 	} `envPrefix:"OIDC_"`
 	CiteprocURL string `env:"CITEPROC_URL"`
 	MongoDBURL  string `env:"MONGODB_URL"`
+	APIKey      string `env:"API_KEY"`
 	Handle      struct {
 		Enabled  bool   `env:"ENABLED"`
 		URL      string `env:"URL"`

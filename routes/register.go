@@ -13,6 +13,7 @@ import (
 	"github.com/jpillora/ipfilter"
 	"github.com/leonelquinteros/gotext"
 	"github.com/nics/ich"
+	"github.com/swaggest/swgui/v5emb"
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/handlers"
@@ -69,6 +70,7 @@ type Config struct {
 	MaxFileSize      int
 	CSRFName         string
 	CSRFSecret       string
+	ApiServer        http.Handler
 }
 
 func Register(c Config) {
@@ -89,6 +91,17 @@ func Register(c Config) {
 	c.Router.Get("/info", func(w http.ResponseWriter, r *http.Request) {
 		httpx.RenderJSON(w, http.StatusOK, c.Version)
 	})
+
+	// rest api (api/v2)
+	c.Router.Mount("/api/v2", http.StripPrefix("/api/v2", c.ApiServer))
+	c.Router.Get("/api/v2/openapi.yaml", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "api/v2/openapi.yaml")
+	})
+	c.Router.Mount("/api/v2/docs", v5emb.New(
+		"Biblio Backoffice",
+		"/api/v2/openapi.yaml",
+		"/api/v2/docs",
+	))
 
 	// handlers
 	baseHandler := handlers.BaseHandler{
