@@ -5,8 +5,8 @@ import (
 	"errors"
 	"slices"
 
-	"github.com/jackc/pgtype"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 var ErrNotFound = errors.New("not found")
@@ -34,7 +34,8 @@ func (r *Repo) AddProject(ctx context.Context, p *Project) error {
 
 	var existingProjects []getProjectsByIdentifierRow
 	for _, id := range p.Identifiers {
-		found, err := getProjectsByIdentifier(ctx, tx, getProjectsByIdentifierParams(id))
+		args := []getProjectsByIdentifierParams{getProjectsByIdentifierParams(id)}
+		found, err := getProjectsByIdentifier(ctx, tx, args)
 		if err != nil && err != pgx.ErrNoRows {
 			return err
 		}
@@ -58,16 +59,34 @@ func (r *Repo) AddProject(ctx context.Context, p *Project) error {
 	})
 
 	if len(existingProjects) == 0 {
-		createProject(ctx, tx, &createProjectParams{
+		_, err = createProject(ctx, tx, &createProjectParams{
 			Names:           p.Names,
 			Descriptions:    p.Descriptions,
 			FoundingDate:    pgtype.Text{String: p.FoundingDate},
 			DissolutionDate: pgtype.Text{String: p.DissolutionDate},
 			Attributes:      p.Attributes,
+			Identifiers:     p.Identifiers,
 		})
 		if err != nil {
 			return err
 		}
+
+		return tx.Commit(ctx)
+	}
+
+	projectID := existingProjects[0].ID
+
+	err = updateProject(ctx, tx, &updateProjectParams{
+		ID:              projectID,
+		Names:           p.Names,
+		Descriptions:    p.Descriptions,
+		FoundingDate:    pgtype.Text{String: p.FoundingDate},
+		DissolutionDate: pgtype.Text{String: p.DissolutionDate},
+		Attributes:      p.Attributes,
+		Identifiers:     p.Identifiers,
+	})
+	if err != nil {
+		return err
 	}
 
 	return tx.Commit(ctx)

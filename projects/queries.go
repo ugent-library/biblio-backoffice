@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 
 	"github.com/georgysavva/scany/v2/pgxscan"
-	"github.com/jackc/pgtype"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type conn interface {
@@ -18,7 +18,7 @@ type conn interface {
 }
 
 const getProjectsByIdentifierQuery = `
-SELECT p.* FROM projects WHERE p.identifiers::JSONB @> $1
+SELECT p.* FROM projects p WHERE p.identifiers::JSONB @> $1
 `
 
 type getProjectsByIdentifierParams struct {
@@ -38,7 +38,7 @@ type getProjectsByIdentifierRow struct {
 	UpdatedAt       pgtype.Timestamptz
 }
 
-func getProjectsByIdentifier(ctx context.Context, conn conn, arg getProjectsByIdentifierParams) ([]*getProjectsByIdentifierRow, error) {
+func getProjectsByIdentifier(ctx context.Context, conn conn, arg []getProjectsByIdentifierParams) ([]*getProjectsByIdentifierRow, error) {
 	var rows []*getProjectsByIdentifierRow
 
 	j, err := json.Marshal(arg)
@@ -46,7 +46,7 @@ func getProjectsByIdentifier(ctx context.Context, conn conn, arg getProjectsById
 		return rows, err
 	}
 
-	err = pgxscan.Select(ctx, conn, &rows, string(j))
+	err = pgxscan.Select(ctx, conn, &rows, getProjectsByIdentifierQuery, string(j))
 	if err == pgx.ErrNoRows {
 		return nil, ErrNotFound
 	}
@@ -63,9 +63,10 @@ INSERT INTO projects(
 	descriptions,
 	founding_date,
 	dissolution_date,
-	attributes
+	attributes,
+	identifiers
 )
-VAlUES($1, $2, $3, $4, $5)
+VAlUES($1, $2, $3, $4, $5, $6)
 RETURNING id
 `
 
@@ -75,6 +76,7 @@ type createProjectParams struct {
 	FoundingDate    pgtype.Text
 	DissolutionDate pgtype.Text
 	Attributes      []Attribute
+	Identifiers     []Identifier
 }
 
 func createProject(ctx context.Context, conn conn, arg *createProjectParams) (int64, error) {
@@ -86,6 +88,7 @@ func createProject(ctx context.Context, conn conn, arg *createProjectParams) (in
 		arg.FoundingDate,
 		arg.DissolutionDate,
 		arg.Attributes,
+		arg.Identifiers,
 	)
 	err := row.Scan(&id)
 
@@ -99,8 +102,9 @@ UPDATE projects SET (
 	founding_date,
 	dissolution_date,
 	attributes,
+	identifiers,
 	updated_at
-) = ($2, $3, $4, $5, $6, CURRENT_TIMESTAMP)
+) = ($2, $3, $4, $5, $6, $7, CURRENT_TIMESTAMP)
 WHERE id = $1
 `
 
@@ -111,6 +115,7 @@ type updateProjectParams struct {
 	FoundingDate    pgtype.Text
 	DissolutionDate pgtype.Text
 	Attributes      []Attribute
+	Identifiers     []Identifier
 }
 
 func updateProject(ctx context.Context, conn conn, arg *updateProjectParams) error {
@@ -121,6 +126,7 @@ func updateProject(ctx context.Context, conn conn, arg *updateProjectParams) err
 		arg.FoundingDate,
 		arg.DissolutionDate,
 		arg.Attributes,
+		arg.Identifiers,
 	)
 
 	return err
