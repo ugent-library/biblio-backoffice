@@ -1,0 +1,149 @@
+openapi: 3.1.0
+
+servers:
+  - url: /api/v1
+
+info:
+  title: Projects Service
+  version: 0.0.1
+
+paths:
+  "/add-project":
+    post:
+      summary: Upsert a project
+      description: Upsert a project
+      operationId: addProject
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+        required: true
+      responses:
+        '200':
+          description: Success
+        default:
+          $ref: "#/components/responses/Error"
+
+security:
+  - apiKey: []
+
+
+components:
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: X-Api-Key
+
+  responses:
+    Error:
+      description: Error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int64
+        message:
+          type: string
+      required:
+        - code
+        - message
+
+    Project:
+      type: object
+      properties:
+        name:
+          type: array
+          items:
+            $ref: "#/components/schemas/Translation"
+        description:
+          type: array
+          items:
+            $ref: "#/components/schemas/Translation"
+        foundingDate:
+          type: string
+        dissolutionDate:
+          type: string
+        attributes:
+          type: array
+          items:
+            $ref: "#/components/schemas/Attribute"
+        identifiers:
+          type: array
+          items:
+            $ref: "#/components/schemas/Identifier"
+  
+    Attribute:
+      type: object
+      properties:
+        scope:
+          type: string
+          minLength: 1
+        key:
+          type: string
+          minLength: 1
+        value:
+          type: string
+          minLength: 1
+      required: [scope, key, value]
+
+    Identifier:
+      type: object
+      properties:
+        type:
+          type: string
+          minLength: 1
+        value:
+          type: string
+          minLength: 1
+      required: [type, value]
+    
+    Translation:
+      type: object
+      properties:
+        lang:
+          type: string
+          minLength: 1
+        value:
+          type: string
+          minLength: 1
+      required: [lang, value]
+
+    ProjectRecord:
+      type: object
+      properties:
+        name:
+          type: array
+          items:
+            $ref: "#/components/schemas/Translation"
+        description:
+          type: array
+          items:
+            $ref: "#/components/schemas/Translation"
+        foundingDate:
+          type: string
+        dissolutionDate:
+          type: string
+        attributes:
+          type: array
+          items:
+            $ref: "#/components/schemas/Attribute"
+        identifiers:
+          type: array
+          items:
+            $ref: "#/components/schemas/Identifier"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [name, identifiers, createdAt, updatedAt]
