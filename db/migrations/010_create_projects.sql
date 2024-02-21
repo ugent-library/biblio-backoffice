@@ -1,7 +1,7 @@
 create table projects (
   id bigserial primary key,
-  name jsonb null,
-  description jsonb null,
+  names jsonb null,
+  descriptions jsonb null,
   founding_date text null,
   dissolution_date text null,
   attributes jsonb,
