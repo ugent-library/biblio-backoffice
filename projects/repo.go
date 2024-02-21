@@ -59,8 +59,8 @@ func (r *Repo) AddProject(ctx context.Context, p *Project) error {
 
 	if len(existingProjects) == 0 {
 		createProject(ctx, tx, &createProjectParams{
-			Name:            p.Names,
-			Description:     p.Descriptions,
+			Names:           p.Names,
+			Descriptions:    p.Descriptions,
 			FoundingDate:    pgtype.Text{String: p.FoundingDate},
 			DissolutionDate: pgtype.Text{String: p.DissolutionDate},
 			Attributes:      p.Attributes,

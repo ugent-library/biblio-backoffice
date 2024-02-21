@@ -28,8 +28,8 @@ type getProjectsByIdentifierParams struct {
 
 type getProjectsByIdentifierRow struct {
 	ID              int64
-	Name            []Text
-	Description     []Text
+	Names           []Text
+	Descriptions    []Text
 	FoundingDate    pgtype.Text
 	DissolutionDate pgtype.Text
 	Attributes      []Attribute
@@ -59,8 +59,8 @@ func getProjectsByIdentifier(ctx context.Context, conn conn, arg getProjectsById
 
 const createProjectQuery = `
 INSERT INTO projects(
-	name,
-	description,
+	names,
+	descriptions,
 	founding_date,
 	dissolution_date,
 	attributes
@@ -70,8 +70,8 @@ RETURNING id
 `
 
 type createProjectParams struct {
-	Name            []Text
-	Description     []Text
+	Names           []Text
+	Descriptions    []Text
 	FoundingDate    pgtype.Text
 	DissolutionDate pgtype.Text
 	Attributes      []Attribute
@@ -81,8 +81,8 @@ func createProject(ctx context.Context, conn conn, arg *createProjectParams) (in
 	var id int64
 
 	row := conn.QueryRow(ctx, createProjectQuery,
-		arg.Name,
-		arg.Description,
+		arg.Names,
+		arg.Descriptions,
 		arg.FoundingDate,
 		arg.DissolutionDate,
 		arg.Attributes,
@@ -94,8 +94,8 @@ func createProject(ctx context.Context, conn conn, arg *createProjectParams) (in
 
 const updateProjectQuery = `
 UPDATE projects SET (
-	name,
-	description,
+	names,
+	descriptions,
 	founding_date,
 	dissolution_date,
 	attributes,
@@ -106,8 +106,8 @@ WHERE id = $1
 
 type updateProjectParams struct {
 	ID              int64
-	Name            []Text
-	Description     []Text
+	Names           []Text
+	Descriptions    []Text
 	FoundingDate    pgtype.Text
 	DissolutionDate pgtype.Text
 	Attributes      []Attribute
@@ -116,8 +116,8 @@ type updateProjectParams struct {
 func updateProject(ctx context.Context, conn conn, arg *updateProjectParams) error {
 	_, err := conn.Exec(ctx, updateProjectQuery,
 		arg.ID,
-		arg.Name,
-		arg.Description,
+		arg.Names,
+		arg.Descriptions,
 		arg.FoundingDate,
 		arg.DissolutionDate,
 		arg.Attributes,
