@@ -11,6 +11,7 @@ create table projects (
 );
 
 create index projects_updated_at_idx on projects (updated_at);
+create index projects_identifiers_gin_idx on projects using gin (identifiers);
 
 ---- create above / drop below ----
 
