@@ -10,6 +10,137 @@ func (s *ErrorStatusCode) Error() string {
 	return fmt.Sprintf("code %d: %+v", s.StatusCode, s.Response)
 }
 
+// AddPersonOK is response for AddPerson operation.
+type AddPersonOK struct{}
+
+// Ref: #/components/schemas/AddPersonRequest
+type AddPersonRequest struct {
+	Person AddPersonRequestPerson `json:"person"`
+}
+
+// GetPerson returns the value of Person.
+func (s *AddPersonRequest) GetPerson() AddPersonRequestPerson {
+	return s.Person
+}
+
+// SetPerson sets the value of Person.
+func (s *AddPersonRequest) SetPerson(val AddPersonRequestPerson) {
+	s.Person = val
+}
+
+type AddPersonRequestPerson struct {
+	Identifiers         []PersonIdentifier `json:"identifiers"`
+	Name                string             `json:"name"`
+	PreferredName       OptString          `json:"preferredName"`
+	GivenName           OptString          `json:"givenName"`
+	PreferredGivenName  OptString          `json:"preferredGivenName"`
+	FamilyName          OptString          `json:"familyName"`
+	PreferredFamilyName OptString          `json:"preferredFamilyName"`
+	HonorificPrefix     OptString          `json:"honorificPrefix"`
+	Email               OptString          `json:"email"`
+	Attributes          []PersonAttribute  `json:"attributes"`
+}
+
+// GetIdentifiers returns the value of Identifiers.
+func (s *AddPersonRequestPerson) GetIdentifiers() []PersonIdentifier {
+	return s.Identifiers
+}
+
+// GetName returns the value of Name.
+func (s *AddPersonRequestPerson) GetName() string {
+	return s.Name
+}
+
+// GetPreferredName returns the value of PreferredName.
+func (s *AddPersonRequestPerson) GetPreferredName() OptString {
+	return s.PreferredName
+}
+
+// GetGivenName returns the value of GivenName.
+func (s *AddPersonRequestPerson) GetGivenName() OptString {
+	return s.GivenName
+}
+
+// GetPreferredGivenName returns the value of PreferredGivenName.
+func (s *AddPersonRequestPerson) GetPreferredGivenName() OptString {
+	return s.PreferredGivenName
+}
+
+// GetFamilyName returns the value of FamilyName.
+func (s *AddPersonRequestPerson) GetFamilyName() OptString {
+	return s.FamilyName
+}
+
+// GetPreferredFamilyName returns the value of PreferredFamilyName.
+func (s *AddPersonRequestPerson) GetPreferredFamilyName() OptString {
+	return s.PreferredFamilyName
+}
+
+// GetHonorificPrefix returns the value of HonorificPrefix.
+func (s *AddPersonRequestPerson) GetHonorificPrefix() OptString {
+	return s.HonorificPrefix
+}
+
+// GetEmail returns the value of Email.
+func (s *AddPersonRequestPerson) GetEmail() OptString {
+	return s.Email
+}
+
+// GetAttributes returns the value of Attributes.
+func (s *AddPersonRequestPerson) GetAttributes() []PersonAttribute {
+	return s.Attributes
+}
+
+// SetIdentifiers sets the value of Identifiers.
+func (s *AddPersonRequestPerson) SetIdentifiers(val []PersonIdentifier) {
+	s.Identifiers = val
+}
+
+// SetName sets the value of Name.
+func (s *AddPersonRequestPerson) SetName(val string) {
+	s.Name = val
+}
+
+// SetPreferredName sets the value of PreferredName.
+func (s *AddPersonRequestPerson) SetPreferredName(val OptString) {
+	s.PreferredName = val
+}
+
+// SetGivenName sets the value of GivenName.
+func (s *AddPersonRequestPerson) SetGivenName(val OptString) {
+	s.GivenName = val
+}
+
+// SetPreferredGivenName sets the value of PreferredGivenName.
+func (s *AddPersonRequestPerson) SetPreferredGivenName(val OptString) {
+	s.PreferredGivenName = val
+}
+
+// SetFamilyName sets the value of FamilyName.
+func (s *AddPersonRequestPerson) SetFamilyName(val OptString) {
+	s.FamilyName = val
+}
+
+// SetPreferredFamilyName sets the value of PreferredFamilyName.
+func (s *AddPersonRequestPerson) SetPreferredFamilyName(val OptString) {
+	s.PreferredFamilyName = val
+}
+
+// SetHonorificPrefix sets the value of HonorificPrefix.
+func (s *AddPersonRequestPerson) SetHonorificPrefix(val OptString) {
+	s.HonorificPrefix = val
+}
+
+// SetEmail sets the value of Email.
+func (s *AddPersonRequestPerson) SetEmail(val OptString) {
+	s.Email = val
+}
+
+// SetAttributes sets the value of Attributes.
+func (s *AddPersonRequestPerson) SetAttributes(val []PersonAttribute) {
+	s.Attributes = val
+}
+
 // AddProjectOK is response for AddProject operation.
 type AddProjectOK struct{}
 
@@ -186,6 +317,69 @@ func (o OptString) Or(d string) string {
 		return v
 	}
 	return d
+}
+
+// Ref: #/components/schemas/PersonAttribute
+type PersonAttribute struct {
+	Scope string `json:"scope"`
+	Key   string `json:"key"`
+	Value string `json:"value"`
+}
+
+// GetScope returns the value of Scope.
+func (s *PersonAttribute) GetScope() string {
+	return s.Scope
+}
+
+// GetKey returns the value of Key.
+func (s *PersonAttribute) GetKey() string {
+	return s.Key
+}
+
+// GetValue returns the value of Value.
+func (s *PersonAttribute) GetValue() string {
+	return s.Value
+}
+
+// SetScope sets the value of Scope.
+func (s *PersonAttribute) SetScope(val string) {
+	s.Scope = val
+}
+
+// SetKey sets the value of Key.
+func (s *PersonAttribute) SetKey(val string) {
+	s.Key = val
+}
+
+// SetValue sets the value of Value.
+func (s *PersonAttribute) SetValue(val string) {
+	s.Value = val
+}
+
+// Ref: #/components/schemas/PersonIdentifier
+type PersonIdentifier struct {
+	Kind  string `json:"kind"`
+	Value string `json:"value"`
+}
+
+// GetKind returns the value of Kind.
+func (s *PersonIdentifier) GetKind() string {
+	return s.Kind
+}
+
+// GetValue returns the value of Value.
+func (s *PersonIdentifier) GetValue() string {
+	return s.Value
+}
+
+// SetKind sets the value of Kind.
+func (s *PersonIdentifier) SetKind(val string) {
+	s.Kind = val
+}
+
+// SetValue sets the value of Value.
+func (s *PersonIdentifier) SetValue(val string) {
+	s.Value = val
 }
 
 // Ref: #/components/schemas/Project

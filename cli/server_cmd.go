@@ -22,6 +22,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/api/v2"
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/helpers"
+	"github.com/ugent-library/biblio-backoffice/people"
 	"github.com/ugent-library/biblio-backoffice/projects"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/routes"
@@ -204,6 +205,13 @@ func buildRouter(services *backends.Services) (*ich.Mux, error) {
 		return nil, err
 	}
 
+	peopleRepo, err := people.NewRepo(people.RepoConfig{
+		Conn: pool,
+	})
+	if err != nil {
+		return nil, err
+	}
+
 	projectsRepo, err := projects.NewRepo(projects.RepoConfig{
 		Conn: pool,
 	})
@@ -211,7 +219,8 @@ func buildRouter(services *backends.Services) (*ich.Mux, error) {
 		return nil, err
 	}
 
-	apiServer, err := api.NewServer(api.NewService(projectsRepo), &api.ApiSecurityHandler{APIKey: config.APIKey})
+	apiService := api.NewService(peopleRepo, projectsRepo)
+	apiServer, err := api.NewServer(apiService, &api.ApiSecurityHandler{APIKey: config.APIKey})
 	if err != nil {
 		return nil, err
 	}

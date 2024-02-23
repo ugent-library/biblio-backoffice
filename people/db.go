@@ -2,9 +2,11 @@ package people
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type Conn interface {
@@ -29,7 +31,7 @@ SELECT id,
 	   created_at,
 	   updated_at
 FROM people
-WHERE identifiers::jsonb @> jsonb_build_array(jsonb_build_object('kind', $1, 'value', $2)) AND
+WHERE identifiers::jsonb @> $1 AND
 	  replaced_by_id IS NULL;
 `
 
@@ -40,7 +42,10 @@ type personRow struct {
 
 func getPersonByIdentifier(ctx context.Context, conn Conn, kind, value string) (*personRow, error) {
 	var row personRow
-	err := conn.QueryRow(ctx, getPersonByIdentifierQuery, kind, value).Scan(
+
+	arg, _ := json.Marshal([]string{kind, value})
+
+	err := conn.QueryRow(ctx, getPersonByIdentifierQuery, arg).Scan(
 		&row.ID,
 		&row.Identifiers,
 		&row.Name,
@@ -83,13 +88,13 @@ func insertPerson(ctx context.Context, conn Conn, params AddPersonParams) (int64
 	err := conn.QueryRow(ctx, insertPersonQuery,
 		params.Identifiers,
 		params.Name,
-		params.PreferredName,
-		params.GivenName,
-		params.PreferredGivenName,
-		params.FamilyName,
-		params.PreferredFamilyName,
-		params.HonorificPrefix,
-		params.Email,
+		pgtype.Text{Valid: params.PreferredName != "", String: params.PreferredName},
+		pgtype.Text{Valid: params.GivenName != "", String: params.GivenName},
+		pgtype.Text{Valid: params.PreferredGivenName != "", String: params.PreferredGivenName},
+		pgtype.Text{Valid: params.FamilyName != "", String: params.FamilyName},
+		pgtype.Text{Valid: params.PreferredFamilyName != "", String: params.PreferredFamilyName},
+		pgtype.Text{Valid: params.HonorificPrefix != "", String: params.HonorificPrefix},
+		pgtype.Text{Valid: params.Email != "", String: params.Email},
 		params.Attributes,
 	).Scan(&id)
 	return id, err
@@ -116,13 +121,13 @@ func updatePerson(ctx context.Context, conn Conn, id int64, params AddPersonPara
 		id,
 		params.Identifiers,
 		params.Name,
-		params.PreferredName,
-		params.GivenName,
-		params.PreferredGivenName,
-		params.FamilyName,
-		params.PreferredFamilyName,
-		params.HonorificPrefix,
-		params.Email,
+		pgtype.Text{Valid: params.PreferredName != "", String: params.PreferredName},
+		pgtype.Text{Valid: params.GivenName != "", String: params.GivenName},
+		pgtype.Text{Valid: params.PreferredGivenName != "", String: params.PreferredGivenName},
+		pgtype.Text{Valid: params.FamilyName != "", String: params.FamilyName},
+		pgtype.Text{Valid: params.PreferredFamilyName != "", String: params.PreferredFamilyName},
+		pgtype.Text{Valid: params.HonorificPrefix != "", String: params.HonorificPrefix},
+		pgtype.Text{Valid: params.Email != "", String: params.Email},
 		params.Attributes,
 	)
 	return err

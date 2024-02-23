@@ -3,17 +3,52 @@ package api
 import (
 	"context"
 
+	"github.com/ugent-library/biblio-backoffice/people"
 	"github.com/ugent-library/biblio-backoffice/projects"
 )
 
 type Service struct {
-	repo *projects.Repo
+	peopleRepo   *people.Repo
+	projectsRepo *projects.Repo
 }
 
-func NewService(repo *projects.Repo) *Service {
+func NewService(
+	peopleRepo *people.Repo,
+	projectsRepo *projects.Repo,
+) *Service {
 	return &Service{
-		repo: repo,
+		peopleRepo:   peopleRepo,
+		projectsRepo: projectsRepo,
 	}
+}
+
+func (s *Service) AddPerson(ctx context.Context, req *AddPersonRequest) error {
+	p := req.Person
+
+	identifiers := make([]people.Identifier, len(p.Identifiers))
+	for i, id := range p.Identifiers {
+		identifiers[i] = people.Identifier(id)
+	}
+
+	attributes := make([]people.Attribute, len(p.Attributes))
+	for i, attr := range p.Attributes {
+		attributes[i] = people.Attribute(attr)
+	}
+
+	return s.peopleRepo.AddPerson(ctx, people.AddPersonParams{
+		Identifiers:         identifiers,
+		Name:                p.Name,
+		PreferredName:       p.PreferredName.Value,
+		GivenName:           p.GivenName.Value,
+		PreferredGivenName:  p.PreferredGivenName.Value,
+		FamilyName:          p.FamilyName.Value,
+		PreferredFamilyName: p.PreferredFamilyName.Value,
+		HonorificPrefix:     p.HonorificPrefix.Value,
+		Email:               p.Email.Value,
+		// Active:              p.Active.Value,
+		// Username:            p.Username.Value,
+		Attributes: attributes,
+	})
 }
 
 func (s *Service) AddProject(ctx context.Context, p *Project) error {
@@ -47,7 +82,7 @@ func (s *Service) AddProject(ctx context.Context, p *Project) error {
 		dissolutionDate = v
 	}
 
-	return s.repo.AddProject(ctx, &projects.Project{
+	return s.projectsRepo.AddProject(ctx, &projects.Project{
 		Names:           names,
 		Descriptions:    descriptions,
 		FoundingDate:    foundingDate,
